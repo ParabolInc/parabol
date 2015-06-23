@@ -1,25 +1,26 @@
 {
-  "presets": [
-    "es2015",
-    "react",
-  ],
+  "stage": 0,
+  "optional": "runtime",
+  "loose": "all",
   "plugins": [
-    "syntax-class-properties",
-    "syntax-decorators",
-    "syntax-object-rest-spread",
-    "transform-class-properties",
-    "transform-decorators-legacy",
-    "transform-object-rest-spread"
+    "typecheck"
   ],
   "env": {
     "development": {
-      "plugins": [["react-transform", {
-        "transforms": [{
-          "transform": "react-transform-hmr",
-          "imports": ["react"],
-          "locals": ["module"]
-        }]
-      }]]
+      "plugins": [
+        "react-transform"
+      ],
+      "extra": {
+        "react-transform": {
+          "transforms": [{
+            "transform": "react-transform-catch-errors",
+            "imports": [
+              "react",
+              "redbox-react"
+            ]
+          }]
+        }
+      }
     }
   }
 }
