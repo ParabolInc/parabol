@@ -20,8 +20,11 @@
     "grunt-sync": "~0.0.4",
     "include-all": "~0.1.3",
     "rc": "~0.5.0",
+    "react": "^0.14.5",
+    "react-dom": "^0.14.5",
     "sails": "~0.11.3",
-    "sails-disk": "~0.10.0"
+    "sails-disk": "~0.10.0",
+    "sails-webpack": "^1.0.13"
   },
   "scripts": {
     "debug": "node debug app.js",
@@ -33,5 +36,19 @@
     "url": "git://github.com/jordanhusney/action-t.git"
   },
   "author": "jordanhusney",
-  "license": ""
+  "license": "",
+  "devDependencies": {
+    "babel-core": "^6.3.26",
+    "babel-loader": "^6.2.0",
+    "babel-plugin-syntax-class-properties": "^6.3.13",
+    "babel-plugin-syntax-decorators": "^6.3.13",
+    "babel-plugin-syntax-object-rest-spread": "^6.3.13",
+    "babel-plugin-transform-class-properties": "^6.3.13",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-plugin-transform-object-rest-spread": "^6.3.13",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-react": "^6.3.13",
+    "copy-webpack-plugin": "^0.3.3",
+    "file-loader": "^0.8.5"
+  }
 }

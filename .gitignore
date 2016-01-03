@@ -29,6 +29,5 @@ node_modules
 # Misc
 .DS_Store
 
-# Sails stuff
+# Sails publicly served static assets built with webpack
 .tmp
-

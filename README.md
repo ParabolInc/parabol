@@ -49,6 +49,11 @@ An open-source tool for meaningful meetings
 
 ### Code Standards
 
+#### Adding Javascript Modules
+
+When you add a javascript module to the project via `npm install --save`, make sure you document *why* the module was added in `docs/modules.md`.
+
+
 #### Tests
 
 _Use [Jest](https://facebook.github.io/jest/)?_
