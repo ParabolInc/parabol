@@ -12,22 +12,6 @@
 
 module.exports.http = {
 
-  customMiddleware: function (app) {
-    var webpack = require('webpack');
-    var webpackConfig = require('./webpack').webpack.options;
-    var compiler = webpack(webpackConfig);
-
-    app.use(require("webpack-dev-middleware")(compiler,
-      {
-        noInfo: false,
-        publicPath: webpackConfig.output.publicPath
-      }
-    ));
-    app.use(require("webpack-hot-middleware")(compiler,
-      { reload: true }
-    ));
-  },
-
   /****************************************************************************
   *                                                                           *
   * Express middleware to use for every Sails request. To add custom          *

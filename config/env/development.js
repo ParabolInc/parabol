@@ -12,6 +12,28 @@
 
 module.exports = {
 
+  /*
+   * Enable webpack hotloading while in development mode:
+   */
+
+  http: {
+    customMiddleware: function (app) {
+      var webpack = require('webpack');
+      var webpackConfig = require('../webpack').webpack.options;
+      var compiler = webpack(webpackConfig);
+
+      app.use(require("webpack-dev-middleware")(compiler,
+        {
+          noInfo: true,
+          publicPath: webpackConfig.output.publicPath
+        }
+      ));
+      app.use(require("webpack-hot-middleware")(compiler,
+        { reload: true }
+      ));
+    },
+  }
+
   /***************************************************************************
    * Set the default database connection for models in the development       *
    * environment (see config/connections.js and config/models.js )           *
