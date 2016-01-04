@@ -13,10 +13,12 @@ module.exports.webpack = {
 
     entry: [
       './assets/js',
+      'webpack-hot-middleware/client'
     ],
 
     output: {
       path: path.resolve(__dirname, '../.tmp/public'),
+      publicPath: "/",
       filename: 'bundle.js'
     },
 

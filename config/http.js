@@ -9,7 +9,24 @@
  * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.http.html
  */
 
+
 module.exports.http = {
+
+  customMiddleware: function (app) {
+    var webpack = require('webpack');
+    var webpackConfig = require('./webpack').webpack.options;
+    var compiler = webpack(webpackConfig);
+
+    app.use(require("webpack-dev-middleware")(compiler,
+      {
+        noInfo: false,
+        publicPath: webpackConfig.output.publicPath
+      }
+    ));
+    app.use(require("webpack-hot-middleware")(compiler,
+      { reload: true }
+    ));
+  },
 
   /****************************************************************************
   *                                                                           *
@@ -21,7 +38,7 @@ module.exports.http = {
   *                                                                           *
   ****************************************************************************/
 
-  // middleware: {
+  middleware: {
 
   /***************************************************************************
   *                                                                          *
@@ -30,23 +47,25 @@ module.exports.http = {
   *                                                                          *
   ***************************************************************************/
 
-    // order: [
-    //   'startRequestTimer',
-    //   'cookieParser',
-    //   'session',
-    //   'myRequestLogger',
-    //   'bodyParser',
-    //   'handleBodyParserError',
-    //   'compress',
-    //   'methodOverride',
-    //   'poweredBy',
-    //   '$custom',
-    //   'router',
-    //   'www',
-    //   'favicon',
-    //   '404',
-    //   '500'
-    // ],
+    order: [
+      'startRequestTimer',
+      'cookieParser',
+      'session',
+      'myRequestLogger',
+      'bodyParser',
+      'handleBodyParserError',
+      'compress',
+      'methodOverride',
+      'poweredBy',
+      '$custom',
+      'webpackDevMiddleware',
+      'webpackHotMiddleware',
+      'router',
+      'www',
+      'favicon',
+      '404',
+      '500'
+    ],
 
   /****************************************************************************
   *                                                                           *
@@ -59,7 +78,6 @@ module.exports.http = {
     //     return next();
     // }
 
-
   /***************************************************************************
   *                                                                          *
   * The body parser that will handle incoming multipart HTTP requests. By    *
@@ -70,8 +88,7 @@ module.exports.http = {
   ***************************************************************************/
 
     // bodyParser: require('skipper')
-
-  // },
+  },
 
   /***************************************************************************
   *                                                                          *
