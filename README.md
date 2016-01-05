@@ -39,6 +39,21 @@ An open-source tool for meaningful meetings
 
 ## Set-up
 
+1) Install prerequisites:
+
+```bash
+$ sudo npm -g install sails
+$ npm install
+```
+
+2) Run server
+
+```bash
+$ sails lift
+```
+
+3) Visit http://localhost:1337/
+
 ### Installation
 
 ### Local environment
@@ -47,12 +62,28 @@ An open-source tool for meaningful meetings
 
 ### Stack Information
 
+Action is built on [Sails.js](http://sailsjs.org), which provides an MVC
+framework similar to Ruby on Rails but written in Javascript and built on
+top of Express and Node.js.
+
+Backend services (e.g. the router, CRUD API, controllers, and policies) are
+standard Sails.
+
+The front-end is written using [React.js](https://facebook.github.io/react/).
+It is styled using (SASS)[http://sass-lang.com/] and
+[PostCSS](https://github.com/postcss/postcss). Front-end assets are assembled
+using [webpack](https://webpack.github.io/) and are done so automatically
+when the application is started with the `sails lift` command or via
+running `app.js`. Note that Sails by default, as it is configured here, will
+assemble all static assets into `.tmp/public`.
+
+Action intentionally prioritizes *iteration* over *optimization*. The codebase
+has not yet been configured for production. This includes items such as
+configuring webpack for production (extracting CSS, disabling source maps,
+chunking, using hashes for CDN deployment).
+
+
 ### Code Standards
-
-#### Adding Javascript Modules
-
-When you add a javascript module to the project via `npm install --save`, make sure you document *why* the module was added in `docs/modules.md`.
-
 
 #### Tests
 
