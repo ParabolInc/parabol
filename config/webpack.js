@@ -3,8 +3,6 @@ var path = require('path');
 
 // Webpack plugins
 var CopyWebpackPlugin = require('copy-webpack-plugin');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
-
 
 // compile js assets into a single bundle file
 module.exports.webpack = {
@@ -35,9 +33,7 @@ module.exports.webpack = {
           to: 'js/dependencies',
           force: true
         }
-      ]),
-
-      new ExtractTextPlugin('styles/app.css')
+      ])
     ],
 
     resolve: {
@@ -54,8 +50,7 @@ module.exports.webpack = {
         },
         {
           test: /\.css$/,
-          loader: ExtractTextPlugin.extract('style-loader',
-                    'css-loader!postcss-loader')
+          loader: 'style-loader!css-loader!postcss-loader'
         },
         {
           test: /\.jpe?g$|\.png$|\.gif|\.svg$/,
