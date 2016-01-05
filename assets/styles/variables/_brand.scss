@@ -1,0 +1,181 @@
+
+// _brand.scss
+
+///////////////
+// Palette T4b
+///////////////
+
+// See: Color Palette T4b on zeplin.io
+
+// See:
+//      patterns/_background-color.scss
+//      patterns/_border-color.scss
+//      patterns/_text-color.scss
+
+// Base colors
+// ------------
+
+$slate-grey: #4e495f;   // Slate
+$greyblue: #676c8a;     // Purple
+$darkish-pink: #c62575; // Pink
+$egg-shell: #fffcc6;    // Cream
+$dark-cyan: #098d8f;    // Teal
+
+$slate: $slate-grey;
+$purple: $greyblue;
+$pink: $darkish-pink;
+$cream: $egg-shell;
+$teal: $dark-cyan;
+
+$slate-hue: hue($slate);
+$purple-hue: hue($purple);
+$pink-hue: hue($pink);
+$cream-hue: hue($cream);
+$teal-hue: hue($teal);
+
+$theme-a: $slate;
+$theme-b: $purple;
+$theme-c: $pink;
+$theme-d: $cream;
+$theme-e: $teal;
+
+$theme-a-hue: $slate-hue;
+$theme-b-hue: $purple-hue;
+$theme-c-hue: $pink-hue;
+$theme-d-hue: $cream-hue;
+$theme-e-hue: $teal-hue;
+
+////////////////
+// HSL variants
+////////////////
+
+$theme-a-50-50: hsl($theme-a-hue, 50, 50);
+$theme-c-75-25: hsl($theme-c-hue, 75, 25);
+$theme-e-90-90: hsl($theme-e-hue, 90, 90);
+
+/////////////////
+// HSLA variants
+/////////////////
+
+$theme-a-50-50-50: hsla($theme-a-hue, 50, 50, .5);
+$theme-c-75-25-35: hsla($theme-c-hue, 75, 25, .35);
+$theme-e-90-90-75: hsla($theme-e-hue, 90, 90, .75);
+
+//////////////////
+// Alpha variants
+//////////////////
+
+// Dark cyan
+// ----------
+
+$dark-cyan-05: rgba(9, 141, 143, .05);
+$dark-cyan-10: rgba(9, 141, 143, .10);
+$dark-cyan-15: rgba(9, 141, 143, .15);
+$dark-cyan-20: rgba(9, 141, 143, .20);
+$dark-cyan-25: rgba(9, 141, 143, .25);
+$dark-cyan-30: rgba(9, 141, 143, .30);
+$dark-cyan-35: rgba(9, 141, 143, .35);
+$dark-cyan-40: rgba(9, 141, 143, .40);
+$dark-cyan-45: rgba(9, 141, 143, .45);
+$dark-cyan-50: rgba(9, 141, 143, .50);
+$dark-cyan-55: rgba(9, 141, 143, .55);
+$dark-cyan-60: rgba(9, 141, 143, .60);
+$dark-cyan-65: rgba(9, 141, 143, .65);
+$dark-cyan-70: rgba(9, 141, 143, .70);
+$dark-cyan-75: rgba(9, 141, 143, .75);
+$dark-cyan-80: rgba(9, 141, 143, .80);
+$dark-cyan-85: rgba(9, 141, 143, .85);
+$dark-cyan-90: rgba(9, 141, 143, .90);
+$dark-cyan-95: rgba(9, 141, 143, .95);
+
+// Darkish pink
+// -------------
+
+$darkish-pink-05: rgba(198, 37, 117, .05);
+$darkish-pink-10: rgba(198, 37, 117, .10);
+$darkish-pink-15: rgba(198, 37, 117, .15);
+$darkish-pink-20: rgba(198, 37, 117, .20);
+$darkish-pink-25: rgba(198, 37, 117, .25);
+$darkish-pink-30: rgba(198, 37, 117, .30);
+$darkish-pink-35: rgba(198, 37, 117, .35);
+$darkish-pink-40: rgba(198, 37, 117, .40);
+$darkish-pink-45: rgba(198, 37, 117, .45);
+$darkish-pink-50: rgba(198, 37, 117, .50);
+$darkish-pink-55: rgba(198, 37, 117, .55);
+$darkish-pink-60: rgba(198, 37, 117, .60);
+$darkish-pink-65: rgba(198, 37, 117, .65);
+$darkish-pink-70: rgba(198, 37, 117, .70);
+$darkish-pink-75: rgba(198, 37, 117, .75);
+$darkish-pink-80: rgba(198, 37, 117, .80);
+$darkish-pink-85: rgba(198, 37, 117, .85);
+$darkish-pink-90: rgba(198, 37, 117, .90);
+$darkish-pink-95: rgba(198, 37, 117, .95);
+
+// Egg shell
+// ----------
+
+$egg-shell-05: rgba(255, 252, 198, .05);
+$egg-shell-10: rgba(255, 252, 198, .10);
+$egg-shell-15: rgba(255, 252, 198, .15);
+$egg-shell-20: rgba(255, 252, 198, .20);
+$egg-shell-25: rgba(255, 252, 198, .25);
+$egg-shell-30: rgba(255, 252, 198, .30);
+$egg-shell-35: rgba(255, 252, 198, .35);
+$egg-shell-40: rgba(255, 252, 198, .40);
+$egg-shell-45: rgba(255, 252, 198, .45);
+$egg-shell-50: rgba(255, 252, 198, .50);
+$egg-shell-55: rgba(255, 252, 198, .55);
+$egg-shell-60: rgba(255, 252, 198, .60);
+$egg-shell-65: rgba(255, 252, 198, .65);
+$egg-shell-70: rgba(255, 252, 198, .70);
+$egg-shell-75: rgba(255, 252, 198, .75);
+$egg-shell-80: rgba(255, 252, 198, .80);
+$egg-shell-85: rgba(255, 252, 198, .85);
+$egg-shell-90: rgba(255, 252, 198, .90);
+$egg-shell-95: rgba(255, 252, 198, .95);
+
+// Greyblue
+// ---------
+
+$greyblue-05: rgba(103, 108, 138, .05);
+$greyblue-10: rgba(103, 108, 138, .10);
+$greyblue-15: rgba(103, 108, 138, .15);
+$greyblue-20: rgba(103, 108, 138, .20);
+$greyblue-25: rgba(103, 108, 138, .25);
+$greyblue-30: rgba(103, 108, 138, .30);
+$greyblue-35: rgba(103, 108, 138, .35);
+$greyblue-40: rgba(103, 108, 138, .40);
+$greyblue-45: rgba(103, 108, 138, .45);
+$greyblue-50: rgba(103, 108, 138, .50);
+$greyblue-55: rgba(103, 108, 138, .55);
+$greyblue-60: rgba(103, 108, 138, .60);
+$greyblue-65: rgba(103, 108, 138, .65);
+$greyblue-70: rgba(103, 108, 138, .70);
+$greyblue-75: rgba(103, 108, 138, .75);
+$greyblue-80: rgba(103, 108, 138, .80);
+$greyblue-85: rgba(103, 108, 138, .85);
+$greyblue-90: rgba(103, 108, 138, .90);
+$greyblue-95: rgba(103, 108, 138, .95);
+
+// Slate grey
+// -----------
+
+$slate-grey-05: rgba(78, 73, 95, .05);
+$slate-grey-10: rgba(78, 73, 95, .10);
+$slate-grey-15: rgba(78, 73, 95, .15);
+$slate-grey-20: rgba(78, 73, 95, .20);
+$slate-grey-25: rgba(78, 73, 95, .25);
+$slate-grey-30: rgba(78, 73, 95, .30);
+$slate-grey-35: rgba(78, 73, 95, .35);
+$slate-grey-40: rgba(78, 73, 95, .40);
+$slate-grey-45: rgba(78, 73, 95, .45);
+$slate-grey-50: rgba(78, 73, 95, .50);
+$slate-grey-55: rgba(78, 73, 95, .55);
+$slate-grey-60: rgba(78, 73, 95, .60);
+$slate-grey-65: rgba(78, 73, 95, .65);
+$slate-grey-70: rgba(78, 73, 95, .70);
+$slate-grey-75: rgba(78, 73, 95, .75);
+$slate-grey-80: rgba(78, 73, 95, .80);
+$slate-grey-85: rgba(78, 73, 95, .85);
+$slate-grey-90: rgba(78, 73, 95, .90);
+$slate-grey-95: rgba(78, 73, 95, .95);

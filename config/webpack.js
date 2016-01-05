@@ -49,8 +49,8 @@ module.exports.webpack = {
           loader: 'babel',
         },
         {
-          test: /\.css$/,
-          loader: 'style-loader!css-loader!postcss-loader'
+          test: /\.scss$/,
+          loader: 'style-loader!css-loader!postcss-loader!sass-loader'
         },
         {
           test: /\.jpe?g$|\.png$|\.gif|\.svg$/,
@@ -68,12 +68,13 @@ module.exports.webpack = {
     }
   },
 
-  postcss: [
+  postcss: function plugins(bundler) {
     // PostCSS plugins
-    require('postcss-import')({
-      path: ['node_modules', './src']
-    })
-  ],
+    return [
+      require('autoprefixer')({ browsers: ['last 2 versions'] }),
+      require('postcss-color-rgba-fallback')()
+    ]
+  },
 
   // docs: https://webpack.github.io/docs/node.js-api.html#compiler
   watchOptions: {

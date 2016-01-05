@@ -1,0 +1,35 @@
+
+// _theme.scss
+
+.theme-example {
+  border-style: solid;
+  border-width: 1px;
+  display: inline-block;
+  height: 64px;
+  margin: 16px;
+  position: relative;
+  width: 64px;
+}
+
+.theme-example[class*='-bg'],
+.theme-example[class*='-color'] {
+  border-color: transparent;
+}
+
+.theme-example[class*='-color'] {
+  &:after {
+    content: 'Sample';
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    height: 32px;
+    line-height: 32px;
+    margin-top: -16px;
+    position: absolute;
+    text-align: center;
+    top: 50%;
+    width: 100%;
+  }
+}
+
+// Cut, paste and hack from variabes/_theme.scss

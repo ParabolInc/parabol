@@ -1,0 +1,232 @@
+
+// _theme.scss
+
+// Map brand color variables to theme letters (a-# where # is the letter depending on how many brand colors you have).
+
+$theme-colors: (
+  a: $teal,
+  b: $pink,
+  c: $slate,
+  d: $purple,
+  e: $cream
+) !default;
+
+$theme-prefix: 'tu' !default; // 'tu' for 'theme utility'
+
+// $alpha-values: 5 10 15 20 25 30 35 40 45 50 55 60 65 70 75 80 85 90 95;
+$alpha-values: 10 20 30 40 50 60 70 80 90 !default;
+
+$properties: (
+  bg: background-color,
+  bc: border-color,
+  color: color
+) !default;
+
+// $darkened-base: false;
+// $opaque-base: false;
+
+$darkened-base: #000 !default;
+$opaque-base: #fff !default;
+
+@mixin make-theme-utility-classes {
+  @each $theme-slug, $color in $theme-colors {
+
+    @each $property-slug, $property in $properties {
+
+      .#{$theme-prefix}-#{$theme-slug}-#{$property-slug} {
+        #{$property}: $color;
+      }
+
+      @each $value in $alpha-values {
+        $percent: $value * .01;
+        $alpha-color: rgba($color, $percent);
+
+        .#{$theme-prefix}-#{$theme-slug}-#{$property-slug}-#{$value}a {
+          #{$property}: $alpha-color;
+        }
+
+        @if $darkened-base {
+          $darkened-color: mix($color, $darkened-base, $value);
+
+          .#{$theme-prefix}-#{$theme-slug}-#{$property-slug}-#{$value}d {
+            #{$property}: $darkened-color;
+          }
+        }
+
+        @if $opaque-base {
+          $opaque-color: mix($color, $opaque-base, $value);
+
+          .#{$theme-prefix}-#{$theme-slug}-#{$property-slug}-#{$value}o {
+            #{$property}: $opaque-color;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Color mixin
+// http://thesassway.com/intermediate/mixins-for-semi-transparent-colors
+// ----------------------------------------------------------------------
+
+@mixin alpha-attribute($attribute, $color, $background) {
+  $percent: alpha($color) * 100%;
+  $opaque: opacify($color, 1);
+  $solid-color: mix($opaque, $background, $percent);
+  #{$attribute}: $solid-color;
+  // #{$attribute}: $color;
+}
+
+@import 'brand';
+
+// Set up your theme using your desired palette:
+// ----------------------------------------------
+
+// Cool  (A)
+// Warm  (B)
+// Dark  (C)
+// Mid   (D)
+// Light (E)
+
+$theme-cool: $teal;
+$theme-a: $theme-cool;
+
+$theme-warm: $pink;
+$theme-b: $theme-warm;
+
+$theme-dark: $slate;
+$theme-c: $theme-dark;
+
+$theme-mid: $purple;
+$theme-d: $theme-mid;
+
+$theme-light: $cream;
+$theme-e: $theme-light;
+
+// Theme hue values
+// -----------------
+
+$theme-a-hue: hue($theme-a);
+$theme-b-hue: hue($theme-b);
+$theme-c-hue: hue($theme-c);
+$theme-d-hue: hue($theme-d);
+$theme-e-hue: hue($theme-e);
+
+//////////////////
+// Alpha variants
+//////////////////
+
+// Theme A alpha variables
+// ------------------------
+
+$theme-a-05: rgba($theme-a, .05);
+$theme-a-10: rgba($theme-a, .10);
+$theme-a-15: rgba($theme-a, .15);
+$theme-a-20: rgba($theme-a, .20);
+$theme-a-25: rgba($theme-a, .25);
+$theme-a-30: rgba($theme-a, .30);
+$theme-a-35: rgba($theme-a, .35);
+$theme-a-40: rgba($theme-a, .40);
+$theme-a-45: rgba($theme-a, .45);
+$theme-a-50: rgba($theme-a, .50);
+$theme-a-55: rgba($theme-a, .55);
+$theme-a-60: rgba($theme-a, .60);
+$theme-a-65: rgba($theme-a, .65);
+$theme-a-70: rgba($theme-a, .70);
+$theme-a-75: rgba($theme-a, .75);
+$theme-a-80: rgba($theme-a, .80);
+$theme-a-85: rgba($theme-a, .85);
+$theme-a-90: rgba($theme-a, .90);
+$theme-a-95: rgba($theme-a, .95);
+
+// Theme B alpha variables
+// ------------------------
+
+$theme-b-05: rgba($theme-b, .05);
+$theme-b-10: rgba($theme-b, .10);
+$theme-b-15: rgba($theme-b, .15);
+$theme-b-20: rgba($theme-b, .20);
+$theme-b-25: rgba($theme-b, .25);
+$theme-b-30: rgba($theme-b, .30);
+$theme-b-35: rgba($theme-b, .35);
+$theme-b-40: rgba($theme-b, .40);
+$theme-b-45: rgba($theme-b, .45);
+$theme-b-50: rgba($theme-b, .50);
+$theme-b-55: rgba($theme-b, .55);
+$theme-b-60: rgba($theme-b, .60);
+$theme-b-65: rgba($theme-b, .65);
+$theme-b-70: rgba($theme-b, .70);
+$theme-b-75: rgba($theme-b, .75);
+$theme-b-80: rgba($theme-b, .80);
+$theme-b-85: rgba($theme-b, .85);
+$theme-b-90: rgba($theme-b, .90);
+$theme-b-95: rgba($theme-b, .95);
+
+// Theme C alpha variables
+// ------------------------
+
+$theme-c-05: rgba($theme-c, .05);
+$theme-c-10: rgba($theme-c, .10);
+$theme-c-15: rgba($theme-c, .15);
+$theme-c-20: rgba($theme-c, .20);
+$theme-c-25: rgba($theme-c, .25);
+$theme-c-30: rgba($theme-c, .30);
+$theme-c-35: rgba($theme-c, .35);
+$theme-c-40: rgba($theme-c, .40);
+$theme-c-45: rgba($theme-c, .45);
+$theme-c-50: rgba($theme-c, .50);
+$theme-c-55: rgba($theme-c, .55);
+$theme-c-60: rgba($theme-c, .60);
+$theme-c-65: rgba($theme-c, .65);
+$theme-c-70: rgba($theme-c, .70);
+$theme-c-75: rgba($theme-c, .75);
+$theme-c-80: rgba($theme-c, .80);
+$theme-c-85: rgba($theme-c, .85);
+$theme-c-90: rgba($theme-c, .90);
+$theme-c-95: rgba($theme-c, .95);
+
+// Theme D alpha variables
+// ------------------------
+
+$theme-d-05: rgba($theme-d, .05);
+$theme-d-10: rgba($theme-d, .10);
+$theme-d-15: rgba($theme-d, .15);
+$theme-d-20: rgba($theme-d, .20);
+$theme-d-25: rgba($theme-d, .25);
+$theme-d-30: rgba($theme-d, .30);
+$theme-d-35: rgba($theme-d, .35);
+$theme-d-40: rgba($theme-d, .40);
+$theme-d-45: rgba($theme-d, .45);
+$theme-d-50: rgba($theme-d, .50);
+$theme-d-55: rgba($theme-d, .55);
+$theme-d-60: rgba($theme-d, .60);
+$theme-d-65: rgba($theme-d, .65);
+$theme-d-70: rgba($theme-d, .70);
+$theme-d-75: rgba($theme-d, .75);
+$theme-d-80: rgba($theme-d, .80);
+$theme-d-85: rgba($theme-d, .85);
+$theme-d-90: rgba($theme-d, .90);
+$theme-d-95: rgba($theme-d, .95);
+
+// Theme E alpha variables
+// ------------------------
+
+$theme-e-05: rgba($theme-e, .05);
+$theme-e-10: rgba($theme-e, .10);
+$theme-e-15: rgba($theme-e, .15);
+$theme-e-20: rgba($theme-e, .20);
+$theme-e-25: rgba($theme-e, .25);
+$theme-e-30: rgba($theme-e, .30);
+$theme-e-35: rgba($theme-e, .35);
+$theme-e-40: rgba($theme-e, .40);
+$theme-e-45: rgba($theme-e, .45);
+$theme-e-50: rgba($theme-e, .50);
+$theme-e-55: rgba($theme-e, .55);
+$theme-e-60: rgba($theme-e, .60);
+$theme-e-65: rgba($theme-e, .65);
+$theme-e-70: rgba($theme-e, .70);
+$theme-e-75: rgba($theme-e, .75);
+$theme-e-80: rgba($theme-e, .80);
+$theme-e-85: rgba($theme-e, .85);
+$theme-e-90: rgba($theme-e, .90);
+$theme-e-95: rgba($theme-e, .95);

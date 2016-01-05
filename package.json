@@ -5,6 +5,7 @@
   "description": "a Sails application",
   "keywords": [],
   "dependencies": {
+    "autoprefixer": "^6.2.3",
     "babel-core": "^6.3.26",
     "babel-loader": "^6.2.0",
     "babel-plugin-syntax-class-properties": "^6.3.13",
@@ -32,7 +33,8 @@
     "grunt-sails-linker": "~0.9.5",
     "grunt-sync": "~0.0.4",
     "include-all": "~0.1.3",
-    "postcss-import": "^7.1.3",
+    "node-sass": "^3.4.2",
+    "postcss-color-rgba-fallback": "^2.2.0",
     "postcss-loader": "^0.8.0",
     "rc": "~0.5.0",
     "react": "^0.14.5",
@@ -40,6 +42,7 @@
     "sails": "~0.11.3",
     "sails-disk": "~0.10.0",
     "sails-webpack": "^1.0.13",
+    "sass-loader": "^3.1.2",
     "style-loader": "^0.13.0",
     "webpack-sources": "^0.1.0"
   },
