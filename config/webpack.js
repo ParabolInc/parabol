@@ -17,9 +17,9 @@ module.exports.webpack = {
     ],
 
     output: {
-      path: path.resolve(__dirname, '../.tmp/public'),
+      path: path.resolve(__dirname, '../.tmp/public/assets'),
       publicPath: "/",
-      filename: 'bundle.js'
+      filename: 'js/app.js'
     },
 
     plugins: [
@@ -30,7 +30,7 @@ module.exports.webpack = {
       new CopyWebpackPlugin([
         {
           from: 'assets/js/dependencies',
-          to: 'dependencies',
+          to: 'assets/js/dependencies',
           force: true
         }
       ]),
@@ -42,10 +42,9 @@ module.exports.webpack = {
 
     module: {
       loaders: [
-        { test: /\.js$/, loaders: ['babel'] },
         {
           test: /\.jsx?$/,
-          exclude: /node_modules/,
+          exclude: /(bower_components|node_modules)/,
           loader: 'babel',
         },
         { test: /\.css$/, loader: 'style!css' },
