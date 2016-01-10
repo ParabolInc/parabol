@@ -1,0 +1,9 @@
+
+// File:    _overflow-touch.scss
+// Purpose: Controls overflow scrolling
+// Note:    Adds momentum scrolling effect on iOS
+
+@mixin overflow-touch {
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}

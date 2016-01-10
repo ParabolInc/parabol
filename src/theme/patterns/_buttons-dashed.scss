@@ -1,0 +1,35 @@
+
+// _buttons-dashed.scss
+
+@mixin make-button-dashed($color) {
+  @include button-variant($color, #fff, $color);
+
+  border-style: dashed;
+
+  &:hover,
+  &:focus,
+  &:active {
+    background-color: #fff;
+    border-style: solid;
+  }
+}
+
+.btn-dashed-primary {
+  @include make-button-dashed($brand-primary);
+}
+
+.btn-dashed-success {
+  @include make-button-dashed($brand-success);
+}
+
+.btn-dashed-info {
+  @include make-button-dashed($brand-info);
+}
+
+.btn-dashed-warning {
+  @include make-button-dashed($brand-warning);
+}
+
+.btn-dashed-danger {
+  @include make-button-dashed($brand-danger);
+}

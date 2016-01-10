@@ -1,0 +1,50 @@
+
+// _buttons-outlined.scss
+
+@mixin make-button-outlined($color) {
+  @include button-variant($color, #fff, $color);
+  background-color: transparent;
+
+  &:hover,
+  &:focus,
+  &:active {
+    background-color: $color;
+    color: #fff;
+  }
+}
+
+// Bootstrap UI color naming
+// --------------------------
+
+.btn-outlined-primary {
+  @include make-button-outlined($brand-primary);
+}
+
+.btn-outlined-success {
+  @include make-button-outlined($brand-success);
+}
+
+.btn-outlined-info {
+  @include make-button-outlined($brand-info);
+}
+
+.btn-outlined-warning {
+  @include make-button-outlined($brand-warning);
+}
+
+.btn-outlined-danger {
+  @include make-button-outlined($brand-danger);
+}
+
+// UI colors
+// ----------
+
+.btn-outlined-white {
+  @include make-button-outlined($white);
+
+  &:hover,
+  &:focus,
+  &:active {
+    color: $theme-c;
+  }
+}

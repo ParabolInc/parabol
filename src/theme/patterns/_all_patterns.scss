@@ -1,0 +1,23 @@
+
+// _all_patterns.scss
+
+@import
+  'anchors',
+  'background-color',
+  'border-color',
+  'card',
+  'font-family',
+  'img',
+  'opacity',
+  'text-color',
+  'text-shadow',
+  'typography',
+  'viewport'
+;
+
+// Excluded, because of Bootstrap dependency
+// ------------------------------------------
+// _buttons-dashed.scss
+// _buttons-outlined.scss
+// _containers.scss
+// _form-controls.scss

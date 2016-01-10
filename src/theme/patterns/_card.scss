@@ -1,0 +1,96 @@
+
+// _card.scss
+
+//////////
+// Mixins
+//////////
+
+@mixin make-card {
+  height: 0;
+  padding: 65% 0 0;
+  position: relative;
+  width: 100%;
+}
+
+@mixin make-card-inner {
+  @include position-all(0, absolute);
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+@mixin make-card-content {
+  text-align: center;
+  overflow: hidden;
+  padding: 1rem;
+}
+
+//////////////
+// Components
+//////////////
+
+.card {
+  @include make-card;
+}
+
+.card-inner {
+  @include make-card-inner;
+}
+
+.card-content {
+  @include make-card-content;
+}
+
+.card-icon {
+  display: inline-block;
+  height: auto;
+  max-height: 57px;
+  max-width: 56px;
+  vertical-align: middle;
+  width: auto;
+}
+
+// Responsive variants
+// --------------------
+
+@include mq($mq-sm-min) {
+  .card-sm-min {
+    @include make-card;
+  }
+
+  .card-inner-sm-min {
+    @include make-card-inner;
+  }
+
+  .card-content-sm-min {
+    @include make-card-content;
+  }
+}
+
+@include mq($mq-md-min) {
+  .card-md-min {
+    @include make-card;
+  }
+
+  .card-inner-md-min {
+    @include make-card-inner;
+  }
+
+  .card-content-md-min {
+    @include make-card-content;
+  }
+}
+
+@include mq($mq-lg-min) {
+  .card-lg-min {
+    @include make-card;
+  }
+
+  .card-inner-lg-min {
+    @include make-card-inner;
+  }
+
+  .card-content-lg-min {
+    @include make-card-content;
+  }
+}

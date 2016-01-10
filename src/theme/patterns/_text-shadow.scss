@@ -1,0 +1,106 @@
+
+// _text-shadow.scss
+
+// Note: This pattern uses the prefix 'ts' for the 'text-shadow' property.
+
+// Variables
+// ----------
+
+$ts-05: 0 1px 0 rgba(0, 0, 0, .05);
+$ts-10: 0 1px 0 rgba(0, 0, 0, .10);
+$ts-15: 0 1px 0 rgba(0, 0, 0, .15);
+$ts-20: 0 1px 0 rgba(0, 0, 0, .20);
+$ts-25: 0 1px 0 rgba(0, 0, 0, .25);
+$ts-30: 0 1px 0 rgba(0, 0, 0, .30);
+$ts-35: 0 1px 0 rgba(0, 0, 0, .35);
+$ts-40: 0 1px 0 rgba(0, 0, 0, .40);
+$ts-45: 0 1px 0 rgba(0, 0, 0, .45);
+$ts-50: 0 1px 0 rgba(0, 0, 0, .50);
+$ts-55: 0 1px 0 rgba(0, 0, 0, .55);
+$ts-60: 0 1px 0 rgba(0, 0, 0, .60);
+$ts-65: 0 1px 0 rgba(0, 0, 0, .65);
+$ts-70: 0 1px 0 rgba(0, 0, 0, .70);
+$ts-75: 0 1px 0 rgba(0, 0, 0, .75);
+$ts-80: 0 1px 0 rgba(0, 0, 0, .80);
+$ts-85: 0 1px 0 rgba(0, 0, 0, .85);
+$ts-90: 0 1px 0 rgba(0, 0, 0, .90);
+$ts-95: 0 1px 0 rgba(0, 0, 0, .95);
+
+// Utility classes
+// ----------------
+
+.ts-05 {
+  text-shadow: $ts-05;
+}
+
+.ts-10 {
+  text-shadow: $ts-10;
+}
+
+.ts-15 {
+  text-shadow: $ts-15;
+}
+
+.ts-20 {
+  text-shadow: $ts-20;
+}
+
+.ts-25 {
+  text-shadow: $ts-25;
+}
+
+.ts-30 {
+  text-shadow: $ts-30;
+}
+
+.ts-35 {
+  text-shadow: $ts-35;
+}
+
+.ts-40 {
+  text-shadow: $ts-40;
+}
+
+.ts-45 {
+  text-shadow: $ts-45;
+}
+
+.ts-50 {
+  text-shadow: $ts-50;
+}
+
+.ts-55 {
+  text-shadow: $ts-55;
+}
+
+.ts-60 {
+  text-shadow: $ts-60;
+}
+
+.ts-65 {
+  text-shadow: $ts-65;
+}
+
+.ts-70 {
+  text-shadow: $ts-70;
+}
+
+.ts-75 {
+  text-shadow: $ts-75;
+}
+
+.ts-80 {
+  text-shadow: $ts-80;
+}
+
+.ts-85 {
+  text-shadow: $ts-85;
+}
+
+.ts-90 {
+  text-shadow: $ts-90;
+}
+
+.ts-95 {
+  text-shadow: $ts-95;
+}

@@ -1,0 +1,32 @@
+
+// _media-queries.scss
+// scss-lint:disable ZeroUnit
+
+// Min-width breakpoints
+// ----------------------
+
+$mq-xxxs-min:     0px;
+$mq-xxs-min:    240px;
+$mq-xs-min:     480px;
+
+$mq-sm-min:     720px;
+$mq-md-min:     960px;
+$mq-lg-min:    1200px;
+
+$mq-xl-min:    1440px;
+$mq-xxl-min:   1680px;
+$mq-xxxl-min:  1920px;
+
+// Max-width breakpoints
+// ----------------------
+
+$mq-xxxs-max:  $mq-xxs-min - 1px;
+$mq-xxs-max:    $mq-xs-min - 1px;
+$mq-xs-max:     $mq-sm-min - 1px;
+
+$mq-sm-max:     $mq-md-min - 1px;
+$mq-md-max:     $mq-lg-min - 1px;
+$mq-lg-max:     $mq-xl-min - 1px;
+
+$mq-xl-max:    $mq-xxl-min - 1px;
+$mq-xxl-max:  $mq-xxxl-min - 1px;

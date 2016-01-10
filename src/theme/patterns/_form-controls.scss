@@ -1,0 +1,80 @@
+
+// _form-controls.scss
+
+.form-control {
+  &::placeholder {
+    font-style: italic;
+  }
+}
+
+// Form control, dashed
+// ---------------------
+
+.form-control-dashed {
+  border-style: dashed;
+
+  &:focus,
+  &:active {
+    border-color: currentColor;
+    border-style: solid;
+  }
+}
+
+.form-control-revealed {
+  border-color: transparent;
+  font-size: inherit;
+  height: auto;
+  line-height: inherit;
+  // #shame overriding -underlined variant (TA)
+  padding: 0 !important;
+
+  &:hover {
+    border-color: currentColor;
+    border-style: dashed;
+  }
+
+  &:focus,
+  &:active {
+    border-style: solid;
+  }
+}
+
+// Form control, underlined
+// -------------------------
+
+.form-control-underlined {
+  border-radius: 0;
+  border-width: 0 0 1px;
+  // #shame use of !important, overriding Bootstrap (TA)
+  box-shadow: none !important;
+  padding-left: .125rem;
+
+  &:focus,
+  &:active {
+    border-color: currentColor;
+  }
+}
+
+// Form group, active editing
+// ---------------------------
+
+.form-group-active-editing {
+  position: relative;
+
+  &::after {
+    background-color: $theme-b;
+    display: inline-block;
+    color: #fff;
+    content: attr(data-editor) ' editing';
+    font-size: 1.2rem;
+    left: 0;
+    top: 100%;
+    padding: .1rem .4rem;
+    position: absolute;
+  }
+
+  .form-control {
+    border-color: $theme-b;
+    border-style: solid;
+  }
+}

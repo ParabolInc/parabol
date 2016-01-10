@@ -1,0 +1,24 @@
+
+// _background-color.scss
+
+// Prefix: '.bg-' for 'background'
+
+.bg-transparent {
+  background-color: transparent;
+}
+
+// Solid background colors
+// ------------------------
+// Todo: Add alpha variants for #000 (black)
+// Todo: Add alpha variants for #fff (white)
+
+.bg-black {
+  background-color: #000;
+}
+
+.bg-white {
+  background-color: #fff;
+}
+
+// Todo: Add loop for theme utility classes when
+//       abstracting the mixin with more options. (TA)

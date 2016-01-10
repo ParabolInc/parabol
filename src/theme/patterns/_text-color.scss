@@ -1,0 +1,20 @@
+
+// _text-color.scss
+
+// Todo: Rename utility class pattern from .text- to .color-
+
+// UI colors
+// ----------
+// Todo: Add alpha variants for #000 (black)
+// Todo: Add alpha variants for #fff (white)
+
+.text-black {
+  color: #000;
+}
+
+.text-white {
+  color: #fff;
+}
+
+// Todo: Add loop for theme utility classes when
+//       abstracting the mixin with more options. (TA)

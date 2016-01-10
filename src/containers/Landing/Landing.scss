@@ -1,0 +1,95 @@
+
+// _action-landing.scss
+
+@import '../LandingLayout/LandingLayout.scss';
+
+.action-landing-logo {
+  background-color: #fff;
+  border-radius: .5rem;
+  display: inline-block;
+  height: 5rem;
+  position: relative;
+  width: 5rem;
+
+  @media #{$breakpoint-large} {
+    height: 6rem;
+    width: 6rem;
+  }
+
+  img {
+    height: 59px;
+    left: 50%;
+    margin-left: -28px;
+    margin-top: -30px;
+    position: absolute;
+    top: 50%;
+    width: 56px;
+
+    @media #{$breakpoint-large} {
+      height: 70px;
+      margin-left: -34px;
+      margin-top: -35px;
+      width: 67px;
+    }
+  }
+}
+
+.action-landing-heading {
+  font-size: 1.75rem;
+
+  @media #{$breakpoint-large} {
+    font-size: 3rem;
+  }
+}
+
+.action-landing-cta-button {
+  &,
+  &:link,
+  &:visited {
+    border: 1px solid #fff;
+    color: #fff;
+    display: inline-block;
+    font-size: 1.25rem;
+    margin: .5rem 0;
+    padding: .5em .75em;
+    text-align: center;
+    text-decoration: none;
+
+    @media #{$breakpoint-large} {
+      font-size: 1.5rem;
+      margin: 1rem 0;
+    }
+  }
+
+  &:hover,
+  &:focus {
+    color: #fff;
+    opacity: .65;
+    text-decoration: none;
+  }
+}
+
+.action-landing-hiw-badge {
+  background-color: $theme-b;
+  border-radius: 100%;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  height: 2rem;
+  left: 50%;
+  line-height: 2rem;
+  margin-left: -1rem;
+  position: absolute;
+  text-align: center;
+  top: -1rem;
+  width: 2rem;
+
+  @media #{$breakpoint-large} {
+    font-size: 2rem;
+    height: 2.75rem;
+    line-height: 2.75rem;
+    margin-left: -1.375rem;
+    top: -1.375rem;
+    width: 2.75rem;
+  }
+}

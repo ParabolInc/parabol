@@ -1,0 +1,31 @@
+
+// _anchors-color.scss
+
+@import 'variables/theme';
+
+// White
+// ------
+
+.a-white {
+  color: #fff;
+
+  &:hover,
+  &:focus {
+    color: rgba(255, 255, 255, .65);
+  }
+}
+
+// Theme variants
+// ---------------
+// .a-theme-[a-e]
+
+@each $theme-slug, $color in $theme-colors {
+  .a-theme-#{$theme-slug} {
+    color: $color;
+
+    &:hover,
+    &:focus {
+      color: darken($color, 15%);
+    }
+  }
+}

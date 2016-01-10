@@ -1,0 +1,11 @@
+
+// _viewport.scss
+// A common viewport container, usually first child of the body element.
+
+.viewport {
+  height: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+}

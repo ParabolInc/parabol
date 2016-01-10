@@ -1,15 +1,11 @@
 import React from 'react';
-import {IndexRoute, Route} from 'react-router';
+import { IndexRoute, Route } from 'react-router';
 import { isLoaded as isAuthLoaded, load as loadAuth } from 'redux/modules/auth';
 import {
-    App,
-    Chat,
-    Home,
-    Widgets,
-    About,
+    LandingLayout,
+    Landing,
     Login,
     LoginSuccess,
-    Survey,
     NotFound,
   } from 'containers';
 
@@ -34,22 +30,23 @@ export default (store) => {
   /**
    * Please keep routes in alphabetical order
    */
+  /**
+   * NB, a reminder on how to require authentication:
+   *
+   *  <Route onEnter={requireLogin}>
+   *    <Route path="chat" component={Chat}/>
+   *    <Route path="loginSuccess" component={LoginSuccess}/>
+   *  </Route>
+   */
   return (
-    <Route path="/" component={App}>
+    <Route path="/" component={LandingLayout}>
       { /* Home (main) route */ }
-      <IndexRoute component={Home}/>
+      <IndexRoute component={Landing}/>
 
       { /* Routes requiring login */ }
-      <Route onEnter={requireLogin}>
-        <Route path="chat" component={Chat}/>
-        <Route path="loginSuccess" component={LoginSuccess}/>
-      </Route>
 
       { /* Routes */ }
-      <Route path="about" component={About}/>
       <Route path="login" component={Login}/>
-      <Route path="survey" component={Survey}/>
-      <Route path="widgets" component={Widgets}/>
 
       { /* Catch all route */ }
       <Route path="*" component={NotFound} status={404} />

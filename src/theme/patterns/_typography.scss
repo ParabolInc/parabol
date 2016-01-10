@@ -1,0 +1,16 @@
+
+// _typography.scss
+
+// Variables
+// ---------
+
+$text-color: $theme-c !default;
+
+// Components
+// ----------
+
+body {
+  color: $text-color;
+  font-family: $font-family-karla;
+  line-height: 1.5;
+}
