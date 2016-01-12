@@ -1,7 +1,27 @@
-.idea/
-node_modules/
+# Build
 dist/
+
+# Tmp
+.tmp/
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids/
+*.pid
+*.seed
+
+# node-waf configuration
+.lock-wscript
+
+# Dependency directory
+# https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
+node_modules/
+
+# Misc
+.idea/
 *.iml
 webpack-assets.json
 webpack-stats.json
-npm-debug.log
