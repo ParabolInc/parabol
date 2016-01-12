@@ -22,7 +22,6 @@ export default class Landing extends Component {
       <div>
         { /* Header */ }
         <div className={mapStyles(styles, 'header tu-bg-b text-white tc pvm pvl-m pvxl-l pos-rel')} >
-          <div className={mapStyles(styles, 'jumbotron')}></div>
           <img className={mapStyles(styles, 'pos-abs top-2 left-2 dn db-m db-l')} src={parabolLogoMark} />
           <div className={mapStyles(styles, 'mw8 dib w-100')}>
             <div className={styles['action-landing-logo']}>
