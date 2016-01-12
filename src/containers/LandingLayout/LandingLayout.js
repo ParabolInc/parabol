@@ -7,6 +7,8 @@ import { pushState } from 'redux-router';
 import connectData from 'helpers/connectData';
 import config from '../../config';
 
+const styles = require('./LandingLayout.scss');
+
 function fetchData(getState, dispatch) {
   const promises = [];
   if (!isInfoLoaded(getState())) {
@@ -51,17 +53,16 @@ export default class LandingLayout extends Component {
 
   render() {
     const {user} = this.props;
-    const styles = require('./LandingLayout.scss');
 
     return (
-      <div>
+      <div className={styles.viewport} id="viewport">
         <Helmet {...config.app.head}/>
 
         <div>
           {user &&
             <p>Logged in as <strong>{user.name}</strong>.</p>}
         </div>
-        <div className={styles.appContent}>
+        <div>
           {this.props.children}
         </div>
       </div>

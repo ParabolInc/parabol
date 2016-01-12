@@ -7,6 +7,7 @@
 // Mixins
 // -------
 @import '../../theme/mixins/all_mixins';
+@include make-theme-utility-classes;
 
 // Tachyons
 // ---------
@@ -14,7 +15,7 @@ $breakpoint-not-small: 'screen and (min-width: 30rem)' !default;
 $breakpoint-medium: 'screen and (min-width: 30rem) and (max-width: 60rem)' !default;
 $breakpoint-large: 'screen and (min-width: 60rem)' !default;
 $breakpoint-extra-large: 'screen and (min-width: 120rem)' !default;
-@import '../../../node_modules/tachyons-sass/tachyons';
+@import '~tachyons-sass/tachyons';
 
 // Patterns
 // ---------

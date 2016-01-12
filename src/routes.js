@@ -1,15 +1,16 @@
 import React from 'react';
 import { IndexRoute, Route } from 'react-router';
-import { isLoaded as isAuthLoaded, load as loadAuth } from 'redux/modules/auth';
+// import { isLoaded as isAuthLoaded, load as loadAuth } from 'redux/modules/auth';
 import {
     LandingLayout,
     Landing,
     Login,
-    LoginSuccess,
+/*    LoginSuccess, */
     NotFound,
   } from 'containers';
 
-export default (store) => {
+export default (store) => { // eslint-disable-line
+  /*
   const requireLogin = (nextState, replaceState, cb) => {
     function checkAuth() {
       const { auth: { user }} = store.getState();
@@ -26,6 +27,7 @@ export default (store) => {
       checkAuth();
     }
   };
+  */
 
   /**
    * Please keep routes in alphabetical order
