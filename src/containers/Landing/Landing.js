@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router';
 import mapStyles from '../../helpers/mapStyles';
 
 
@@ -33,7 +34,9 @@ export default class Landing extends Component {
               Time-friendly. <br className={mapStyles(styles, 'dn-m dn-l')} />
               Meaningful take-aways.
             </h2>
-            <a className={mapStyles(styles, 'action-landing-cta-button')} href="#" title="Start a Meeting">Start a Meeting</a>
+            <Link className={mapStyles(styles, 'action-landing-cta-button')} title="Start a Meeting" to="/meeting">
+              Start a Meeting
+            </Link>
           </div>
         </div>
 

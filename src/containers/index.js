@@ -1,7 +1,9 @@
+export App from './App/App';
 export LandingLayout from './LandingLayout/LandingLayout';
 export Landing from './Landing/Landing';
 export Login from './Login/Login';
 export LoginSuccess from './LoginSuccess/LoginSuccess';
+export MeetingLayout from './MeetingLayout/MeetingLayout';
 export NotFound from './NotFound/NotFound';
 
 /*
@@ -15,4 +17,3 @@ export Chat from './boilerplate/Chat/Chat';
 export Survey from './boilerplate/Survey/Survey';
 export Widgets from './boilerplate/Widgets/Widgets';
 */
-

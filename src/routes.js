@@ -2,9 +2,10 @@ import React from 'react';
 import { IndexRoute, Route } from 'react-router';
 // import { isLoaded as isAuthLoaded, load as loadAuth } from 'redux/modules/auth';
 import {
+    App,
     LandingLayout,
-    Landing,
     Login,
+    MeetingLayout,
 /*    LoginSuccess, */
     NotFound,
   } from 'containers';
@@ -41,9 +42,11 @@ export default (store) => { // eslint-disable-line
    *  </Route>
    */
   return (
-    <Route path="/" component={LandingLayout}>
+    <Route path="/" component={App}>
       { /* Home (main) route */ }
-      <IndexRoute component={Landing}/>
+      <IndexRoute component={LandingLayout}/>
+
+      <Route path="meeting" component={MeetingLayout} />
 
       { /* Routes requiring login */ }
 
