@@ -1,0 +1,48 @@
+
+@import '../../theme/variables.scss';
+
+// Variables
+
+$NotificationBar-backgroundColor: $theme-b;
+$NotificationBar-color: $theme-b;
+
+// Elements
+
+.bar {
+  background-color: $NotificationBar-backgroundColor;
+  color: #fff;
+  padding: .625rem;
+  text-align: center;
+}
+
+.timer {
+  background-color: #fff;
+  border-radius: 4em;
+  color: $NotificationBar-color;
+  display: inline-block;
+  font-size: .8125rem;
+  font-weight: bold;
+  margin-right: .5rem;
+  padding: 0 .5rem;
+  vertical-align: middle;
+}
+
+.name {
+  display: inline-block;
+  font-weight: 700;
+  margin-right: 1rem;
+  vertical-align: middle;
+}
+
+.link {
+  color: #fff;
+  display: inline-block;
+  text-decoration: underline;
+  vertical-align: middle;
+
+  &:hover,
+  &:focus {
+    color: #fff;
+    opacity: .65;
+  }
+}

@@ -1,0 +1,58 @@
+
+// Variables
+
+@import '../../theme/variables.scss';
+
+// Elements
+
+.item {
+  border-radius: 0 .25rem .25rem 0;
+  color: #fff;
+  height: 2rem;
+  font-size: $font-size-s4;
+  line-height: 2rem;
+  margin: 0 0 .5rem;
+  padding: 0 0 0 3rem;
+  position: relative;
+  text-transform: uppercase;
+
+  &:hover,
+  &:focus {
+    background-color: rgba($theme-c, .5);
+    cursor: pointer;
+  }
+}
+
+.itemActive {
+  composes: item;
+  background-color: $theme-c;
+
+  &:hover,
+  &:focus {
+    background-color: $theme-c;
+    cursor: default;
+  }
+}
+
+.badge {
+  background-color: $theme-b;
+  border-radius: 4em;
+  font-size: $font-size-s7;
+  font-weight: 700;
+  height: 1rem;
+  line-height: 1rem;
+  padding: 0 .5rem;
+  position: absolute;
+  right: .5rem;
+  top: .5rem;
+}
+
+.icon {
+  font-size: $font-size-s6;
+  height: 2rem;
+  left: 1rem;
+  line-height: 2rem;
+  position: absolute;
+  text-align: center;
+  width: 2rem;
+}

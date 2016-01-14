@@ -1,0 +1,24 @@
+
+@import '../../theme/variables.scss';
+
+// Variables
+
+$UserDrawer-backgroundColor: mix($theme-e, #fff, 35%);
+$UserDrawer-color: $theme-c;
+$UserDrawer-width: $drawer-width-lg;
+
+// Elements
+
+.panel {
+  background-color: $UserDrawer-backgroundColor;
+  bottom: 0;
+  color: $UserDrawer-color;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem 0 1rem 2rem;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: $UserDrawer-width;
+  z-index: 200;
+}

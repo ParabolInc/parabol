@@ -6,6 +6,64 @@
  *
  */
 
+// Brand colors
+// -------------
+
+$slate-grey:    #4e495f; // Slate
+$greyblue:      #676c8a; // Purple
+$darkish-pink:  #c62575; // Pink
+$egg-shell:     #fffcc6; // Cream
+$dark-cyan:     #098d8f; // Teal
+
+// Theme colors
+// -------------
+
+$theme-cool:  $dark-cyan !default;
+$theme-a:     $theme-cool !default;
+
+$theme-warm:  $darkish-pink !default;
+$theme-b:     $theme-warm !default;
+
+$theme-dark:  $slate-grey !default;
+$theme-c:     $theme-dark !default;
+
+$theme-mid:   $greyblue !default;
+$theme-d:     $theme-mid !default;
+
+$theme-light: $egg-shell !default;
+$theme-e:     $theme-light !default;
+
+// Layout
+// -------
+
+$drawer-width-lg: 320px;
+$drawer-width-sm: 240px;
+
+// Font size
+// ----------
+// Based on 1rem being 16px
+
+$font-size-base: 1rem;    // 16px
+$font-size-s1: 3rem;      // 48px
+$font-size-s2: 2.25rem;   // 36px
+$font-size-s3: 1.5rem;    // 24px
+$font-size-s4: 1.25rem;   // 20px
+$font-size-s5: 1.125rem;  // 18px
+$font-size-s6: .875rem;   // 14px
+$font-size-s7: .8125rem;  // 13px
+
+// Headings
+// ---------
+// Based on 1rem being 16px
+
+$heading-s1: 3rem;      // 48px
+$heading-s2: 2.25rem;   // 36px
+$heading-s3: 1.5rem;    // 24px
+$heading-s4: 1.25rem;   // 20px
+$heading-s5: 1.125rem;  // 18px
+$heading-s6: .875rem;   // 14px
+$heading-s7: .8125rem;  // 13px
+
 // Custom Colors
 $cyan: #33e0ff;
 $humility: #777;

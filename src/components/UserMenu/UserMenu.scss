@@ -1,0 +1,31 @@
+
+// Variables
+
+@import '../../theme/variables.scss';
+
+// Elements
+
+.main {
+  border-top: 1px solid rgba($theme-c, .5);
+  margin: 0 0 1rem;
+  padding-right: 1rem;
+}
+
+.heading {
+  color: $theme-a;
+  font-size: $font-size-s6;
+  margin: .25rem 0;
+  text-transform: uppercase;
+}
+
+.item {
+  display: block;
+  color: mix($theme-c, #000, 65%);
+  font-size: $font-size-s5;
+  margin: .5rem 0;
+
+  &:hover,
+  &:focus {
+    color: $theme-a;
+  }
+}

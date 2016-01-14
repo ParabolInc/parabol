@@ -1,0 +1,31 @@
+
+@import '../../theme/variables.scss';
+
+// Variables
+
+$MenuDrawer-backgroundColor: $theme-d;
+$MenuDrawer-color: #fff;
+$MenuDrawer-gutter: 3rem;
+$MenuDrawer-width: $drawer-width-lg;
+
+// Elements
+
+.panel {
+  background-color: $MenuDrawer-backgroundColor;
+  bottom: 0;
+  color: $MenuDrawer-color;
+  left: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: .5rem 0;
+  position: absolute;
+  top: 0;
+  width: $MenuDrawer-width;
+  z-index: 400;
+}
+
+.hr {
+  background-color: rgba(255, 255, 255, .5);
+  height: 1px;
+  margin: 2rem $MenuDrawer-gutter;
+}

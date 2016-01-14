@@ -3,6 +3,7 @@ export LandingLayout from './LandingLayout/LandingLayout';
 export Landing from './Landing/Landing';
 export Login from './Login/Login';
 export LoginSuccess from './LoginSuccess/LoginSuccess';
+export AppLayout from './AppLayout/AppLayout';
 export MeetingLayout from './MeetingLayout/MeetingLayout';
 export NotFound from './NotFound/NotFound';
 

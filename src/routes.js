@@ -5,6 +5,7 @@ import {
     App,
     LandingLayout,
     Login,
+    AppLayout,
     MeetingLayout,
 /*    LoginSuccess, */
     NotFound,
@@ -47,6 +48,7 @@ export default (store) => { // eslint-disable-line
       <IndexRoute component={LandingLayout}/>
 
       <Route path="meeting" component={MeetingLayout} />
+      <Route path="applayout" component={AppLayout} />
 
       { /* Routes requiring login */ }
 
