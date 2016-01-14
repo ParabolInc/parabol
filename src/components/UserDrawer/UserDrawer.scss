@@ -1,13 +1,16 @@
 
-@import '../../theme/variables.scss';
-
 // Variables
+// ----------
+
+@import '../../theme/variables.scss';
 
 $UserDrawer-backgroundColor: mix($theme-e, #fff, 35%);
 $UserDrawer-color: $theme-c;
-$UserDrawer-width: $drawer-width-lg;
+$UserDrawer-width-sm: $drawer-width-sm;
+$UserDrawer-width-lg: $drawer-width-lg;
 
 // Elements
+// ---------
 
 .panel {
   background-color: $UserDrawer-backgroundColor;
@@ -19,6 +22,14 @@ $UserDrawer-width: $drawer-width-lg;
   position: absolute;
   right: 0;
   top: 0;
-  width: $UserDrawer-width;
+  width: $UserDrawer-width-sm;
   z-index: 200;
+
+  @media #{$mq-userDrawer-hidden-max} {
+    transform: translate3d($UserDrawer-width-sm, 0, 0);
+  }
+
+  @media #{$mq-userDrawer-visible-min} {
+    width: $UserDrawer-width-lg;
+  }
 }

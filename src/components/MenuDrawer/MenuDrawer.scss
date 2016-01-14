@@ -1,14 +1,20 @@
 
-@import '../../theme/variables.scss';
-
 // Variables
+// ----------
+
+@import '../../theme/variables.scss';
 
 $MenuDrawer-backgroundColor: $theme-d;
 $MenuDrawer-color: #fff;
-$MenuDrawer-gutter: 3rem;
-$MenuDrawer-width: $drawer-width-lg;
+
+$MenuDrawer-gutterLeft-sm: $drawer-gutterLeft-sm;
+$MenuDrawer-gutter-lg: $drawer-gutter-lg;
+
+$MenuDrawer-width-sm: $drawer-width-sm;
+$MenuDrawer-width-lg: $drawer-width-lg;
 
 // Elements
+// ---------
 
 .panel {
   background-color: $MenuDrawer-backgroundColor;
@@ -20,12 +26,30 @@ $MenuDrawer-width: $drawer-width-lg;
   padding: .5rem 0;
   position: absolute;
   top: 0;
-  width: $MenuDrawer-width;
+  width: $MenuDrawer-width-sm;
   z-index: 400;
+
+  @media #{$mq-menuDrawer-hidden-max} {
+    transition: transform $transition-fast;
+    transform: translate3d((-$MenuDrawer-width-sm), 0, 0);
+  }
+
+  @media #{$mq-menuDrawer-visible-min} {
+    // Define
+  }
+
+  @media #{$mq-lg-min} {
+    width: $MenuDrawer-width-lg;
+  }
 }
 
 .hr {
   background-color: rgba(255, 255, 255, .5);
   height: 1px;
-  margin: 2rem $MenuDrawer-gutter;
+  margin: 1rem 0 1rem $MenuDrawer-gutterLeft-sm;
+
+  @media #{$mq-lg-min} {
+    margin-left: $MenuDrawer-gutter-lg;
+    margin-right: $MenuDrawer-gutter-lg;
+  }
 }

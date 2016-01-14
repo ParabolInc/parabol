@@ -15,8 +15,14 @@ export default class AppLayout extends Component {
         <div className={styles.inner}>
           <UserDrawer />
           <MenuDrawer />
-          <h1 className={styles.heading}>Heading Label</h1>
-          <p>I am an app layout WIP.</p>
+          <div className={styles.header}>
+            <a className={styles.menuDrawerToggle} href="#" title="Toggle Menu">Toggle Menu</a>
+            <a className={styles.userDrawerToggle} href="#" title="Toggle User Menu">Toggle User Menu</a>
+            <h1 className={styles.heading}>Heading Label</h1>
+          </div>
+          <div className={styles.content}>
+            <p>I am an app layout WIP.</p>
+          </div>
         </div>
       </div>
     );

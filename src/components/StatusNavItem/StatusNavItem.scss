@@ -1,18 +1,26 @@
 
 // Variables
+// ----------
 
 @import '../../theme/variables.scss';
 
+$StatusNavItem-fontSize-sm: $font-size-s5;
+$StatusNavItem-fontSize-lg: $font-size-s4;
+
+$StatusNavItem-gutterLeft-sm: $drawer-gutterLeft-sm;
+$StatusNavItem-gutter-lg: $drawer-gutter-lg;
+
 // Elements
+// ---------
 
 .item {
   border-radius: 0 .25rem .25rem 0;
   color: #fff;
   height: 2rem;
-  font-size: $font-size-s4;
+  font-size: $StatusNavItem-fontSize-sm;
   line-height: 2rem;
   margin: 0 0 .5rem;
-  padding: 0 0 0 3rem;
+  padding: 0 0 0 $StatusNavItem-gutterLeft-sm;
   position: relative;
   text-transform: uppercase;
 
@@ -20,6 +28,11 @@
   &:focus {
     background-color: rgba($theme-c, .5);
     cursor: pointer;
+  }
+
+  @media #{$mq-lg-min} {
+    font-size: $StatusNavItem-fontSize-lg;
+    padding-left: $StatusNavItem-gutter-lg;
   }
 }
 
@@ -50,9 +63,13 @@
 .icon {
   font-size: $font-size-s6;
   height: 2rem;
-  left: 1rem;
+  left: 0;
   line-height: 2rem;
   position: absolute;
   text-align: center;
   width: 2rem;
+
+  @media #{$mq-lg-min} {
+    left: 1rem;
+  }
 }

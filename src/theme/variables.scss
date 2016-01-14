@@ -36,8 +36,27 @@ $theme-e:     $theme-light !default;
 // Layout
 // -------
 
-$drawer-width-lg: 320px;
 $drawer-width-sm: 240px;
+$drawer-width-lg: 320px;
+
+$drawer-gutterLeft-sm: 2rem;
+$drawer-gutterRight-sm: .875rem;
+$drawer-gutter-lg: 3rem;
+
+// Media queries
+// --------------
+
+$mq-xs-min: 'screen and (min-width: 480px)';
+$mq-sm-min: 'screen and (min-width: 600px)';
+$mq-md-min: 'screen and (min-width: 768px)';
+$mq-lg-min: 'screen and (min-width: 1024px)';
+$mq-xl-min: 'screen and (min-width: 1280px)';
+
+$mq-menuDrawer-hidden-max: 'screen and (max-width: 767px)';
+$mq-menuDrawer-visible-min: 'screen and (min-width: 768px)';
+
+$mq-userDrawer-hidden-max: 'screen and (max-width: 1399px)';
+$mq-userDrawer-visible-min: 'screen and (min-width: 1400px)';
 
 // Font size
 // ----------
@@ -64,19 +83,29 @@ $heading-s5: 1.125rem;  // 18px
 $heading-s6: .875rem;   // 14px
 $heading-s7: .8125rem;  // 13px
 
-// Custom Colors
+// Transitions
+// ------------
+
+$transition-fast: 'ease-in .2s';
+$transition-slow: 'ease-in .4s';
+
+// Custom colors
+// --------------
+// Todo: Scrub vars (TA)
+
 $cyan: #33e0ff;
 $humility: #777;
 
-// Bootstrap Variables
+// Bootstrap variables
+// --------------------
+// Todo: Scrub vars (TA)
+
 $brand-primary: darken(#428bca, 6.5%);
 $brand-secondary: #e25139;
 $brand-success: #5cb85c;
 $brand-warning: #f0ad4e;
 $brand-danger: #d9534f;
 $brand-info: #5bc0de;
-
 $text-color: #333;
-
 $font-size-base: 16px;
 $font-family-sans-serif: "Helvetica Neue", Helvetica, sans-serif;

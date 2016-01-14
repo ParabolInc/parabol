@@ -1,11 +1,20 @@
 
 // Variables
+// ----------
 
 @import '../../theme/variables.scss';
 
+$StatusNav-gutterRight-sm: $drawer-gutterRight-sm;
+$StatusNav-gutter-lg: $drawer-gutter-lg;
+
 // Elements
+// ---------
 
 .nav {
   margin: 1rem 0;
-  padding-right: 3rem;
+  padding-right: $StatusNav-gutterRight-sm;
+
+  @media #{$mq-lg-min} {
+    padding-right: $StatusNav-gutter-lg;
+  }
 }

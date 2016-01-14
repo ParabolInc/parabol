@@ -1,13 +1,18 @@
 @charset 'utf-8';
 
 // Variables
+// ----------
 
 @import '../../theme/variables.scss';
 
-$AppLayout-paddingHorizontal: $drawer-width-lg;
-$AppLayout-heading-fontSize: $heading-s2;
+$AppLayout-paddingHorizontal-sm: $drawer-width-sm;
+$AppLayout-paddingHorizontal-lg: $drawer-width-lg;
+
+$AppLayout-heading-fontSize-sm: $heading-s5;
+$AppLayout-heading-fontSize-lg: $heading-s2;
 
 // Elements
+// ---------
 
 html {
   font-size: 16px !important;
@@ -25,11 +30,62 @@ body {
 
 .inner {
   flex: 1;
-  padding: 1rem ($AppLayout-paddingHorizontal + 16px);
   position: relative;
   width: 100%;
+
+  @media #{$mq-menuDrawer-visible-min} {
+    padding-left: $AppLayout-paddingHorizontal-sm;
+  }
+
+  @media #{$mq-lg-min} {
+    padding-left: $AppLayout-paddingHorizontal-lg;
+  }
+
+  @media #{mq-userDrawer-visible-min} {
+    padding-right: $AppLayout-paddingHorizontal-lg;
+  }
+}
+
+.header {
+  border-bottom: 1px solid rgba($theme-c, .35);
+  padding: .875rem;
+
+  @media #{$mq-menuDrawer-hidden-max} {
+    text-align: center;
+  }
+
+  @media #{$mq-lg-min} {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+}
+
+.menuDrawerToggle {
+  @media #{$mq-menuDrawer-visible-min} {
+    display: none;
+  }
+}
+
+.userDrawerToggle {
+  @media #{$mq-userDrawer-visible-min} {
+    display: none;
+  }
 }
 
 .heading {
-  font-size: $AppLayout-heading-fontSize;
+  font-size: $AppLayout-heading-fontSize-sm;
+  font-weight: 700;
+
+  @media #{$mq-menuDrawer-visible-min} {
+    font-size: $AppLayout-heading-fontSize-lg;
+    font-weight: 400;
+  }
+}
+
+.content {
+  padding: .875rem;
+
+  @media #{$mq-lg-min} {
+    padding: 1rem;
+  }
 }

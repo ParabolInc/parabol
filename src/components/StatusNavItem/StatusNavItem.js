@@ -8,7 +8,7 @@ export default class StatusNavItem extends Component {
         <div className={styles.icon}>
           <i className="fa fa-folder-o"></i>
         </div>
-        Label
+        Meeting History
         <div className={styles.badge}>
           3
         </div>
