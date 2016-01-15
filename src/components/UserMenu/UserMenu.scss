@@ -1,9 +1,11 @@
 
 // Variables
+// ----------
 
-@import '../../theme/variables.scss';
+@import '../../theme/variables';
 
 // Elements
+// ---------
 
 .main {
   border-top: 1px solid rgba($theme-c, .5);
@@ -19,8 +21,8 @@
 }
 
 .item {
+  color: mix($theme-c, $ui-black, 65%);
   display: block;
-  color: mix($theme-c, #000, 65%);
   font-size: $font-size-s5;
   margin: .5rem 0;
 

@@ -1,0 +1,40 @@
+
+// Variables
+// ----------
+
+@import '../../theme/variables';
+
+// Elements
+// ---------
+
+.main {
+  margin: 1rem 0;
+}
+
+.checkboxBlock {
+  border: 1px solid $theme-d;
+  border-radius: $border-radius-md;
+  display: inline-block;
+  height: 2.75rem;
+  line-height: 2.625rem;
+  margin-right: 2rem;
+  text-align: center;
+  vertical-align: middle;
+  width: 2.75rem;
+}
+
+.label {
+  color: $theme-d;
+  display: inline-block;
+  font-size: $font-size-s6;
+  font-style: italic;
+  height: 2.75rem;
+  line-height: 2.75rem;
+  margin-right: 2rem;
+  vertical-align: middle;
+}
+
+.nav {
+  display: inline-block;
+  vertical-align: middle;
+}

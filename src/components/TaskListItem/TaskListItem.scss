@@ -1,0 +1,15 @@
+
+// Variables
+// ----------
+
+@import '../../theme/variables';
+
+// Elements
+// ---------
+
+.item {
+  background-color: $ui-lightest;
+  border-radius: $border-radius-md;
+  margin: .5rem 0;
+  padding: .5rem;
+}

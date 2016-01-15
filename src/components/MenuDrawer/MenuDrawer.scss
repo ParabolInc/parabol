@@ -2,7 +2,7 @@
 // Variables
 // ----------
 
-@import '../../theme/variables.scss';
+@import '../../theme/variables';
 
 $MenuDrawer-backgroundColor: $theme-d;
 $MenuDrawer-color: #fff;
@@ -30,8 +30,8 @@ $MenuDrawer-width-lg: $drawer-width-lg;
   z-index: 400;
 
   @media #{$mq-menuDrawer-hidden-max} {
-    transition: transform $transition-fast;
     transform: translate3d((-$MenuDrawer-width-sm), 0, 0);
+    transition: transform $transition-fast;
   }
 
   @media #{$mq-menuDrawer-visible-min} {

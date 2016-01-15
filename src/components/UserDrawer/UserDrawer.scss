@@ -2,9 +2,9 @@
 // Variables
 // ----------
 
-@import '../../theme/variables.scss';
+@import '../../theme/variables';
 
-$UserDrawer-backgroundColor: mix($theme-e, #fff, 35%);
+$UserDrawer-backgroundColor: mix($theme-e, $ui-white, 35%);
 $UserDrawer-color: $theme-c;
 $UserDrawer-width-sm: $drawer-width-sm;
 $UserDrawer-width-lg: $drawer-width-lg;

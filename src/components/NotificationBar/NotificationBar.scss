@@ -2,7 +2,7 @@
 // Variables
 // ----------
 
-@import '../../theme/variables.scss';
+@import '../../theme/variables';
 
 $NotificationBar-backgroundColor: $theme-b;
 $NotificationBar-color: $theme-b;
@@ -12,13 +12,13 @@ $NotificationBar-color: $theme-b;
 
 .bar {
   background-color: $NotificationBar-backgroundColor;
-  color: #fff;
+  color: $ui-white;
   padding: .625rem;
   text-align: center;
 }
 
 .timer {
-  background-color: #fff;
+  background-color: $ui-white;
   border-radius: 4em;
   color: $NotificationBar-color;
   display: none;
@@ -46,7 +46,7 @@ $NotificationBar-color: $theme-b;
 }
 
 .link {
-  color: #fff;
+  color: $ui-white;
   display: inline-block;
   font-size: $font-size-s7;
   text-decoration: underline;
@@ -58,7 +58,7 @@ $NotificationBar-color: $theme-b;
 
   &:hover,
   &:focus {
-    color: #fff;
+    color: $ui-white;
     opacity: .65;
   }
 }

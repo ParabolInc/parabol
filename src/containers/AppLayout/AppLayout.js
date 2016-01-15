@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Helmet from 'react-helmet';
-import { NotificationBar, MenuDrawer, UserDrawer } from 'components';
+import { NotificationBar, MenuDrawer, UserDrawer, ListFilterSet, TaskList } from 'components';
 
 const styles = require('./AppLayout.scss'); // eslint-disable-line
 
@@ -30,6 +30,8 @@ export default class AppLayout extends Component {
           </div>
           <div className={styles.content}>
             <p>I am an app layout WIP.</p>
+            <ListFilterSet />
+            <TaskList />
           </div>
         </div>
       </div>

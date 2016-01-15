@@ -33,15 +33,37 @@ $theme-d:     $theme-mid !default;
 $theme-light: $egg-shell !default;
 $theme-e:     $theme-light !default;
 
+// UI colors
+// ----------
+
+$ui-black: #000;
+$ui-white: #fff;
+
+$ui-darkest: #333;
+$ui-darker: #555;
+$ui-dark: #777;
+
+$ui-lightest: #eee;
+$ui-lighter: #ccc;
+$ui-light: #aaa;
+
 // Layout
 // -------
 
-$drawer-width-sm: 240px;
-$drawer-width-lg: 320px;
+$drawer-width-sm: 208px;
+// $drawer-width-lg: 320px;
+$drawer-width-lg: 280px;
 
 $drawer-gutterLeft-sm: 2rem;
 $drawer-gutterRight-sm: .875rem;
-$drawer-gutter-lg: 3rem;
+$drawer-gutter-lg: 2.5rem;
+
+// Border radius
+// --------------
+
+$border-radius-sm: .125rem;
+$border-radius-md: .25rem;
+$border-radius-lg: .5rem;
 
 // Media queries
 // --------------
@@ -100,12 +122,13 @@ $humility: #777;
 // --------------------
 // Todo: Scrub vars (TA)
 
-$brand-primary: darken(#428bca, 6.5%);
-$brand-secondary: #e25139;
-$brand-success: #5cb85c;
-$brand-warning: #f0ad4e;
-$brand-danger: #d9534f;
-$brand-info: #5bc0de;
+$brand-primary:         $theme-b;
+$brand-secondary:       $theme-a;
+$brand-success:         $theme-a;
+$brand-info:            $theme-c;
+$brand-warning:         $theme-b;
+$brand-danger:          $theme-b;
+
 $text-color: #333;
 $font-size-base: 16px;
 $font-family-sans-serif: "Helvetica Neue", Helvetica, sans-serif;

@@ -1,9 +1,11 @@
 
 // Variables
+// ----------
 
-@import '../../theme/variables.scss';
+@import '../../theme/variables';
 
 // Elements
+// ---------
 
 .main {
   margin: 0 0 1rem;
@@ -15,8 +17,8 @@
 }
 
 .link {
-  display: block;
   color: $theme-a;
+  display: block;
   font-size: $font-size-s6;
 
   &:hover,

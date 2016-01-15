@@ -2,22 +2,24 @@
 // Variables
 // ----------
 
-@import '../../theme/variables.scss';
+@import '../../theme/variables';
 
-$StatusNavItem-fontSize-sm: $font-size-s5;
-$StatusNavItem-fontSize-lg: $font-size-s4;
+$StatusNavItem-fontSize-sm: $font-size-s6;
+$StatusNavItem-fontSize-lg: $font-size-base;
 
 $StatusNavItem-gutterLeft-sm: $drawer-gutterLeft-sm;
 $StatusNavItem-gutter-lg: $drawer-gutter-lg;
+
+$StatusNavItem-icon-boxSize: 2rem;
 
 // Elements
 // ---------
 
 .item {
   border-radius: 0 .25rem .25rem 0;
-  color: #fff;
-  height: 2rem;
+  color: $ui-white;
   font-size: $StatusNavItem-fontSize-sm;
+  height: 2rem;
   line-height: 2rem;
   margin: 0 0 .5rem;
   padding: 0 0 0 $StatusNavItem-gutterLeft-sm;
@@ -62,14 +64,14 @@ $StatusNavItem-gutter-lg: $drawer-gutter-lg;
 
 .icon {
   font-size: $font-size-s6;
-  height: 2rem;
+  height: $StatusNavItem-icon-boxSize;
   left: 0;
-  line-height: 2rem;
+  line-height: $StatusNavItem-icon-boxSize;
   position: absolute;
   text-align: center;
-  width: 2rem;
+  width: $StatusNavItem-icon-boxSize;
 
   @media #{$mq-lg-min} {
-    left: 1rem;
+    left: ($StatusNavItem-gutter-lg - $StatusNavItem-icon-boxSize);
   }
 }

@@ -1,0 +1,13 @@
+exclude:
+  - 'mixins/_all_mixins.scss'
+  - 'patterns/_all_patterns.scss'
+  - 'variables/_all_variables.scss'
+  - '../containers/boilerplate/*.scss'
+
+linters:
+  NameFormat:
+      enabled: false
+  PlaceholderInExtend:
+    enabled: false
+  SelectorFormat:
+      enabled: false
