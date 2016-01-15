@@ -8,6 +8,10 @@ import PrettyError from 'pretty-error';
 import http from 'http';
 import SocketIo from 'socket.io';
 
+import falcorExpress from 'falcor-express';
+import FalcorRouter from 'falcor-router';
+import falcorRoutes from './falcor/index';
+
 const pretty = new PrettyError();
 const app = express();
 
@@ -24,6 +28,10 @@ app.use(session({
 }));
 app.use(bodyParser.json());
 
+// Initialze falcor routes:
+app.use('/model.json', falcorExpress.dataSourceRoute( (req, res) => { // eslint-disable-line no-unused-vars
+  return new FalcorRouter(falcorRoutes);
+}));
 
 app.use((req, res) => {
   const splittedUrlPath = req.url.split('?')[0].split('/').slice(1);
