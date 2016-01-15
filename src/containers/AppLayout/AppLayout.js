@@ -1,13 +1,21 @@
 import React, { Component } from 'react';
 import Helmet from 'react-helmet';
-import { NotificationBar } from 'components';
-import { MenuDrawer } from 'components';
-import { UserDrawer } from 'components';
+import { NotificationBar, MenuDrawer, UserDrawer } from 'components';
 
 const styles = require('./AppLayout.scss'); // eslint-disable-line
 
 export default class AppLayout extends Component {
   render() {
+    const handleMenuDrawerToggle = (event) => {
+      event.preventDefault();
+      console.log('handleMenuDrawerToggle');
+    };
+
+    const handleUserDrawerToggle = (event) => {
+      event.preventDefault();
+      console.log('handleUserDrawerToggle');
+    };
+
     return (
       <div className={styles.main}>
         <Helmet title="App Layout" />
@@ -16,8 +24,8 @@ export default class AppLayout extends Component {
           <UserDrawer />
           <MenuDrawer />
           <div className={styles.header}>
-            <a className={styles.menuDrawerToggle} href="#" title="Toggle Menu">Toggle Menu</a>
-            <a className={styles.userDrawerToggle} href="#" title="Toggle User Menu">Toggle User Menu</a>
+            <a className={styles.menuDrawerToggle} href="#" onClick={handleMenuDrawerToggle} title="Toggle Menu Drawer">M</a>
+            <a className={styles.userDrawerToggle} href="#" onClick={handleUserDrawerToggle} title="Toggle User Drawer">U</a>
             <h1 className={styles.heading}>Heading Label</h1>
           </div>
           <div className={styles.content}>

@@ -1,12 +1,14 @@
 
-@import '../../theme/variables.scss';
-
 // Variables
+// ----------
+
+@import '../../theme/variables.scss';
 
 $NotificationBar-backgroundColor: $theme-b;
 $NotificationBar-color: $theme-b;
 
 // Elements
+// ---------
 
 .bar {
   background-color: $NotificationBar-backgroundColor;
@@ -19,26 +21,40 @@ $NotificationBar-color: $theme-b;
   background-color: #fff;
   border-radius: 4em;
   color: $NotificationBar-color;
-  display: inline-block;
-  font-size: .8125rem;
+  display: none;
+  font-size: $font-size-s7;
   font-weight: bold;
   margin-right: .5rem;
   padding: 0 .5rem;
   vertical-align: middle;
+
+  @media #{$mq-sm-min} {
+    display: inline-block;
+  }
 }
 
 .name {
   display: inline-block;
+  font-size: $font-size-s7;
   font-weight: 700;
   margin-right: 1rem;
   vertical-align: middle;
+
+  @media #{$mq-sm-min} {
+    font-size: $font-size-base;
+  }
 }
 
 .link {
   color: #fff;
   display: inline-block;
+  font-size: $font-size-s7;
   text-decoration: underline;
   vertical-align: middle;
+
+  @media #{$mq-sm-min} {
+    font-size: $font-size-base;
+  }
 
   &:hover,
   &:focus {
