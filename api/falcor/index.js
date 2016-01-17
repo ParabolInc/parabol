@@ -6,7 +6,7 @@ const subRoutes = [
 
 let allRoutes = [];
 for (const routes of subRoutes) {
-  allRoutes = allRoutes.concat(routes);
+  allRoutes = [...allRoutes, routes];
 }
 
 export default allRoutes;

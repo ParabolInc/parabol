@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Helmet from 'react-helmet';
-import config from '../../config';
+import config from '../../../config/config';
 import { Landing } from 'containers';
 
 const styles = require('./LandingLayout.scss'); // eslint-disable-line
