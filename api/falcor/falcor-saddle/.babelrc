@@ -1,0 +1,8 @@
+{
+  "stage": 0,
+  "optional": "runtime",
+  "loose": "all",
+  "plugins": [
+    "typecheck"
+  ],
+}

@@ -1,12 +1,7 @@
 import meetings from './meetings';
 
-const subRoutes = [
-  meetings
+const allRoutes = [
+  ...meetings,
 ];
-
-let allRoutes = [];
-for (const routes of subRoutes) {
-  allRoutes = [...allRoutes, routes];
-}
 
 export default allRoutes;
