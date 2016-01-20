@@ -7,9 +7,47 @@
 // Elements
 // ---------
 
+.innerElement {
+  display: inline-block;
+  margin: 0 1rem;
+  vertical-align: middle;
+}
+
 .item {
   background-color: $ui-lightest;
   border-radius: $border-radius-md;
   margin: .5rem 0;
-  padding: .5rem;
+  padding: .5rem 1rem;
+}
+
+.itemSelected {
+  composes: item;
+  background-color: mix($theme-e, $ui-white, 50%);
+}
+
+.tag {
+  composes: innerElement;
+  background-color: $ui-white;
+  border: 1px solid $ui-lighter;
+  border-radius: 4em;
+  font-size: $font-size-s7;
+  min-width: 4.5rem;
+  text-align: center;
+}
+
+.team {
+  composes: innerElement;
+  font-size: $font-size-s6;
+  min-width: 5rem;
+}
+
+.timePassed {
+  float: right;
+  font-size: $font-size-s6;
+  font-style: italic;
+}
+
+.title {
+  composes: innerElement;
+  font-weight: 700;
 }
