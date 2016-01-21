@@ -9,8 +9,7 @@ import http from 'http';
 import SocketIo from 'socket.io';
 
 import falcorExpress from 'falcor-express';
-import FalcorRouter from 'falcor-router';
-import falcorRoutes from './falcor/index';
+import FalcorRoutes from './falcor/index';
 
 const pretty = new PrettyError();
 const app = express();
@@ -29,11 +28,10 @@ app.use(session({
 app.use(bodyParser.json());
 
 // Initialze falcor routes:
-app.use('/model.json', falcorExpress.dataSourceRoute( (req, res) => { // eslint-disable-line no-unused-vars
-  return new FalcorRouter(falcorRoutes);
-}));
+app.use('/model.json', bodyParser.urlencoded({extended: false}),
+  falcorExpress.dataSourceRoute( () => new FalcorRoutes() ));
 
-app.use((req, res) => {
+app.use(bodyParser.json(), (req, res) => {
   const splittedUrlPath = req.url.split('?')[0].split('/').slice(1);
 
   const {action, params} = mapUrl(actions, splittedUrlPath);
@@ -58,7 +56,6 @@ app.use((req, res) => {
     res.status(404).end('NOT FOUND');
   }
 });
-
 
 const bufferSize = 100;
 const messageBuffer = new Array(bufferSize);

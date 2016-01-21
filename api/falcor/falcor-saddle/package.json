@@ -34,6 +34,9 @@
     "mocha": "^2.1.0",
     "pre-commit": "^1.1.1"
   },
-  "dependencies": {},
+  "dependencies": {
+    "lodash": "^4.0.0",
+    "validate.js": "^0.9.0"
+  },
   "engine": "node >= 4.2.0"
 }

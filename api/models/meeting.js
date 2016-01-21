@@ -5,11 +5,18 @@ const type = Database.type;
 const Meeting = Database.createModel('Meeting', {
   id: type.string(),
   createdAt: Date,
+  updatedAt: Date,
   content: type.string(),
 });
 
-Meeting.save([
-  { createdAt: Date.now(), content: 'this is a new test' }
-]);
+function preHook(next) {
+  if (typeof this.createdAt === 'undefined') {
+    this.createdAt = Date.now();
+  }
+  this.updatedAt = Date.now();
+  next();
+}
+
+Meeting.pre('save', preHook);
 
 export default Meeting;
