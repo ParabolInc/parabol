@@ -21,11 +21,13 @@
 }
 
 .itemSelected {
+  // scss-lint:disable PropertySpelling, PropertySortOrder
   composes: item;
   background-color: mix($theme-e, $ui-white, 50%);
 }
 
 .tag {
+  // scss-lint:disable PropertySpelling, PropertySortOrder
   composes: innerElement;
   background-color: $ui-white;
   border: 1px solid $ui-lighter;
@@ -36,6 +38,7 @@
 }
 
 .team {
+  // scss-lint:disable PropertySpelling, PropertySortOrder
   composes: innerElement;
   font-size: $font-size-s6;
   min-width: 5rem;
@@ -45,9 +48,10 @@
   float: right;
   font-size: $font-size-s6;
   font-style: italic;
-}
+  }
 
 .title {
+  // scss-lint:disable PropertySpelling, PropertySortOrder
   composes: innerElement;
   font-weight: 700;
 }

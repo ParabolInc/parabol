@@ -1,0 +1,59 @@
+
+// Variables
+// ----------
+
+@import '../../theme/variables';
+
+// Elements
+// ---------
+
+.root {
+  border-top: 2px solid mix($theme-c, $ui-white, 30%);
+  padding: 2rem 2rem 3rem 0;
+  position: relative;
+  width: 100%;
+}
+
+.rootActive {
+  // scss-lint:disable PropertySpelling, PropertySortOrder
+  composes: root;
+  border-top: 2px solid mix($theme-b, $ui-white, 30%);
+}
+
+.bullet {
+  color: $theme-c;
+  font-size: $font-size-s3;
+  height: 1.5em;
+  left: -3em;
+  line-height: 1.5;
+  padding-right: .5em;
+  position: absolute;
+  text-align: right;
+  width: 3em;
+}
+
+.bulletActive {
+  // scss-lint:disable PropertySpelling, PropertySortOrder
+  composes: bullet;
+  color: $theme-b;
+}
+
+.heading {
+  color: $theme-c;
+  font-size: $font-size-s3;
+  line-height: 1.5;
+  margin: 0 0 .5em;
+}
+
+.headingActive {
+  // scss-lint:disable PropertySpelling, PropertySortOrder
+  composes: heading;
+  color: $theme-b;
+}
+
+.description {
+  font-size: $font-size-s6;
+  font-style: italic;
+  margin: 0 0 2rem;
+  max-width: 30rem;
+}

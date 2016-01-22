@@ -1,0 +1,40 @@
+
+// Variables
+// ----------
+
+@import '../../theme/variables';
+
+// Elements
+// ---------
+
+.root {
+  position: relative;
+}
+
+.input {
+  border: 0;
+  border-bottom: 1px dashed $theme-c;
+  color: $theme-c;
+  height: 2rem;
+  line-height: 2rem;
+  margin: 0;
+  padding: 0 .5rem 0 0;
+  width: 100%;
+}
+
+.inputActive {
+  // scss-lint:disable PropertySpelling, PropertySortOrder
+  composes: input;
+  border-bottom: 1px solid $theme-b;
+}
+
+.activeLabel {
+  background-color: $theme-b;
+  color: $ui-white;
+  display: block;
+  font-size: .75rem;
+  left: 0;
+  padding: .125rem .5rem;
+  position: absolute;
+  top: 100%;
+}

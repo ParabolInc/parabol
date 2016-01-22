@@ -26,6 +26,7 @@
   height: auto;
   line-height: inherit;
   // #shame overriding -underlined variant (TA)
+  // scss-lint:disable ImportantRule
   padding: 0 !important;
 
   &:hover {
@@ -46,6 +47,7 @@
   border-radius: 0;
   border-width: 0 0 1px;
   // #shame use of !important, overriding Bootstrap (TA)
+  // scss-lint:disable ImportantRule
   box-shadow: none !important;
   padding-left: .125rem;
 
@@ -63,14 +65,14 @@
 
   &::after {
     background-color: $theme-b;
-    display: inline-block;
-    color: #fff;
+    color: $ui-white;
     content: attr(data-editor) ' editing';
+    display: inline-block;
     font-size: 1.2rem;
     left: 0;
-    top: 100%;
     padding: .1rem .4rem;
     position: absolute;
+    top: 100%;
   }
 
   .form-control {
