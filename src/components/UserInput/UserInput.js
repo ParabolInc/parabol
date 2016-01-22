@@ -4,7 +4,7 @@ export default class UserInput extends Component {
   static propTypes = {
     active: PropTypes.bool.isRequired,
     activeLabelMessage: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired,
+    onUserInputChange: PropTypes.func.isRequired,
     placeholder: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
     value: PropTypes.string.isRequired
@@ -24,7 +24,11 @@ export default class UserInput extends Component {
     };
     return (
       <div className={styles.root}>
-        <input className={inputClassName} onChange={this.onChange} placeholder={props.placeholder} type={props.type} value={props.value} />
+        <input className={inputClassName}
+               onChange={() => props.onUserInputChange()}
+               placeholder={props.placeholder}
+               type={props.type}
+               value={props.value} />
         {activeLabel()}
       </div>
     );

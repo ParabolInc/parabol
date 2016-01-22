@@ -29,14 +29,9 @@ const exampleSections = [
   }
 ];
 
-const handleInputChange = () => {
-  console.log('Input changed');
-};
-
 const exampleInput = {
   active: false,
   activeLabelMessage: '@User is editing',
-  onChange: handleInputChange,
   placeholder: 'Type something here',
   type: 'text',
   value: 'Something was typed here'
@@ -62,20 +57,34 @@ export default class MeetingLayout extends Component {
   render() {
     const styles = require('./MeetingLayout.scss');
 
+    const handleOnLeaveMeetingClick = () => {
+      console.log('handleOnLeaveMeetingClick');
+    };
+
+    const handleUserInputChange = () => {
+      console.log('handleUserInputChange');
+    };
+
+    const handleOnMeetingNameChange = () => {
+      console.log('handleOnMeetingNameChange');
+    };
+
+    const exampleMeetingName = 'Core Action Meeting';
+
     return (
       <div className={styles.root}>
-        <Helmet title="Meeting" />
-        <MeetingNavbar />
+        <Helmet title={exampleMeetingName} />
+        <MeetingNavbar onLeaveMeetingClick={() => handleOnLeaveMeetingClick()} />
         <div className={styles.main}>
-          <MeetingHeader />
+          <MeetingHeader onMeetingNameChange={() => handleOnMeetingNameChange()} meetingName={exampleMeetingName} />
           <MeetingSection {...exampleSections[0]} key={exampleSections[0].id}>
-            <UserInput {...exampleInput} />
+            <UserInput {...exampleInput} onUserInputChange={() => handleUserInputChange()} />
           </MeetingSection>
           <MeetingSection {...exampleSections[1]} key={exampleSections[1].id}>
-            <UserInput {...exampleInputActive} />
+            <UserInput {...exampleInputActive} onUserInputChange={() => handleUserInputChange()} />
           </MeetingSection>
           <MeetingSection {...exampleSections[2]} key={exampleSections[2].id}>
-            <UserInput {...exampleInput} />
+            <UserInput {...exampleInput} onUserInputChange={() => handleUserInputChange()} />
           </MeetingSection>
         </div>
       </div>
