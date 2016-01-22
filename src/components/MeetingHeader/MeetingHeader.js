@@ -27,7 +27,11 @@ export default class MeetingHeader extends Component {
         <div className={styles.label}>
           Action Meeting
         </div>
-        <input className={styles.name} onChange={() => props.onMeetingNameChange()} placeholder={props.meetingName} type="text" value={props.meetingName} />
+        <input className={styles.name}
+               onChange={() => props.onMeetingNameChange()}
+               placeholder={props.meetingName}
+               type="text"
+               value={props.meetingName} />
       </div>
     );
   }
