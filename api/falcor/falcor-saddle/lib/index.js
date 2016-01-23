@@ -191,17 +191,20 @@ export function createSetByIdRoute(routeBasename, acceptedKeys, getByIdPromise, 
 
 /*
  * createPromise = async (modelParams) => [newModelObj, newCollectionLength]
+ * getLengthPromise = async () => count
  * modelIdGetter = (modelObject) => modelObject.id
  */
 
-export function createCallCreateRoute(routeBasename, acceptedKeys, createPromise,
+export function createCallCreateRoute(routeBasename, acceptedKeys,
+  createPromise, getLengthPromise,
   modelIdGetter = defModelIdGetter) {
   return {
     route: routeBasename + routeSuffixCreate,
     async call(callPath, args) { // eslint-disable-line no-unused-vars
       const objParams = _.pick(args[0], acceptedKeys);
       try {
-        const [newObj, newLength] = await createPromise(objParams);
+        const newObj = await createPromise(objParams);
+        const newLength = await getLengthPromise();
 
         return [
           jsonGraph.pathValue(
@@ -219,6 +222,7 @@ export function createCallCreateRoute(routeBasename, acceptedKeys, createPromise
 
 /*
  * deleteByIdPromise = async (obj) => null;
+ * getLengthPromise = async () => count
  */
 
 export function createCallDeleteRoute(routeBasename,
@@ -301,6 +305,7 @@ export function createRoutes(options) {
   const optionalParams = {
     modelKeyGetter: defModelKeyGetter,
     modelIdKey: defModelIdKey,
+    modelIdGetter: defModelIdGetter,
   };
 
   // Check for unknown params:
@@ -331,7 +336,7 @@ export function createRoutes(options) {
         params.modelKeyGetter, params.modelIdKey),
     ),
     createCallCreateRoute(params.routeBasename, params.acceptedKeys,
-      params.create, params.modelIdGetter),
+      params.create, params.getLength, params.modelIdGetter),
     createCallDeleteRoute(params.routeBasename,
       params.delete, params.getLength)
   ];
