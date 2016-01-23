@@ -16,7 +16,8 @@ export default [
       const newLength = await Meeting.count().execute();
 
       return [newMeeting, newLength];
-    }
+    },
+    delete: async (id) => Meeting.get(id).delete()
   }),
   /*
   {

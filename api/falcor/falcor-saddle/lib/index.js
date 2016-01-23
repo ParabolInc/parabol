@@ -9,6 +9,7 @@ const routeSuffixRanges = '[{ranges:indexRanges}]';
 const routeSuffixById = 'ById';
 const routeSuffixByIdKeys = routeSuffixById + '[{keys:ids}]';
 const routeSuffixCreate = '.create';
+const routeSuffixDelete = '.delete';
 
 const defModelIdKey = 'id';
 const defModelKeyGetter = (model, key) => model[key];
@@ -203,17 +204,11 @@ export function createCallCreateRoute(routeBasename, acceptedKeys, createPromise
         const [newObj, newLength] = await createPromise(objParams);
 
         return [
-          {
-            path: ['meetings', newLength - 1],
-            value: {
-              $type: 'ref',
-              value: [ 'meetingsById', modelIdGetter(newObj) ]
-            }
-          },
-          {
-            path: ['meetings', 'length' ],
-            value: newLength
-          }
+          jsonGraph.pathValue(
+            ['meetings', newLength - 1],
+            jsonGraph.ref([ 'meetingsById', modelIdGetter(newObj) ])
+          ),
+          jsonGraph.pathValue(['meetings', 'length' ], newLength)
         ];
       } catch (err) {
         return jsonGraph.error(err);
@@ -221,6 +216,45 @@ export function createCallCreateRoute(routeBasename, acceptedKeys, createPromise
     }
   };
 }
+
+/*
+ * deleteByIdPromise = async (obj) => null;
+ */
+
+export function createCallDeleteRoute(routeBasename,
+  deleteByIdPromise, getLengthPromise) {
+  const routeByIdBasename = routeBasename + routeSuffixById;
+  return {
+    route: routeByIdBasename + routeSuffixDelete,
+    async call(callPath, args) { // eslint-disable-line no-unused-vars
+      const responses = [];
+
+      for (const id of args) {
+        try {
+          await deleteByIdPromise(id);
+          responses.push(jsonGraph.pathInvalidation([routeByIdBasename, id]));
+        } catch (err) {
+          responses.push(jsonGraph.error(err));
+        }
+      }
+
+      try {
+        const newLength = await getLengthPromise();
+        responses.push(
+          jsonGraph.pathValue(
+            [routeBasename, routeSuffixLength],
+            newLength
+          )
+        );
+      } catch (err) {
+        responses.push(jsonGraph.error(err));
+      }
+
+      return responses;
+    }
+  };
+}
+
 
 export function createRoutes(options) {
   const constraints = {
@@ -249,6 +283,10 @@ export function createRoutes(options) {
       type: 'Function'
     },
     create: {
+      presence: true,
+      type: 'Function'
+    },
+    delete: {
       presence: true,
       type: 'Function'
     },
@@ -293,6 +331,8 @@ export function createRoutes(options) {
         params.modelKeyGetter, params.modelIdKey),
     ),
     createCallCreateRoute(params.routeBasename, params.acceptedKeys,
-      params.create, params.modelIdGetter)
+      params.create, params.modelIdGetter),
+    createCallDeleteRoute(params.routeBasename,
+      params.delete, params.getLength)
   ];
 }
