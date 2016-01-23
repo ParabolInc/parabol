@@ -1,5 +1,8 @@
 import * as _ from 'lodash';
+import * as jsonGraph from 'falcor-json-graph';
 import validate from 'validate.js';
+
+import serialize from './serialization';
 
 const routeSuffixLength = '.length';
 const routeSuffixRanges = '[{ranges:indexRanges}]';
@@ -42,27 +45,28 @@ validate.validators.type.checks = {
   }
 };
 
-export function createGetLengthRoute(routeBasename, modelPromise) {
+/*
+ * getLengthPromise = async () => count
+ */
+
+export function createGetLengthRoute(routeBasename, getLengthPromise) {
   return {
     route: routeBasename + routeSuffixLength,
     async get(pathSet) {
-      const length = await modelPromise();
-      return {
-        path: pathSet,
-        value: length
-      };
+      const length = await getLengthPromise();
+      return jsonGraph.pathValue(pathSet, length);
     }
   };
 }
 
 /*
- * modelPromise = async (from, to) => [modelObject, ...]
+ * getRangePromise = async (from, to) => [modelObject, ...]
  * from, to is range inclusive (i.e. from=0, to=0 is 1 element)
  *
  * modelIdGetter = (modelObject) => modelObject.id
  */
 
-export function createGetRangesRoute(routeBasename, modelPromise,
+export function createGetRangesRoute(routeBasename, getRangePromise,
   modelIdGetter = defModelIdGetter) {
   const routeByIdBasename = routeBasename + routeSuffixById;
 
@@ -71,16 +75,18 @@ export function createGetRangesRoute(routeBasename, modelPromise,
     async get(pathSet) {
       const responses = [];
       for (const { from, to } of pathSet.indexRanges) {
-        const modelObjs = await modelPromise(from, to);
+        const modelObjs = [];
+        try {
+          modelObjs.push(...await getRangePromise(from, to));
+        } catch (err) {
+          responses.push(jsonGraph.error(err));
+        }
         for (let idx = 0; idx < modelObjs.length; idx++) {
-          const response = {
-            path: [routeBasename, from + idx],
-            value: {
-              $type: 'ref',
-              value: [routeByIdBasename, modelIdGetter(modelObjs[idx])]
-            }
-          };
-          responses.push(response);
+          responses.push(
+            jsonGraph.pathValue([routeBasename, from + idx],
+              jsonGraph.ref([routeByIdBasename, modelIdGetter(modelObjs[idx])])
+            )
+          );
         }
       }
       return responses;
@@ -89,11 +95,11 @@ export function createGetRangesRoute(routeBasename, modelPromise,
 }
 
 /*
- * modelPromise = async ([id, ...]) => [modelObject, ...]
+ * getByIdPromise = async (id) => modelObject
  * modelKeyGetter = (modelObject, key) => modelObject[key]
  */
 
-export function createGetByIdRoute(routeBasename, acceptedKeys, modelPromise,
+export function createGetByIdRoute(routeBasename, acceptedKeys, getByIdPromise,
   modelKeyGetter = defModelKeyGetter,
   modelIdKey = defModelIdKey) {
   const routeByIdBasename = routeBasename + routeSuffixById;
@@ -103,15 +109,77 @@ export function createGetByIdRoute(routeBasename, acceptedKeys, modelPromise,
     route: routeBasename + routeSuffixByIdKeys + keysString,
     async get(pathSet) {
       const attributes = pathSet[2];
-      const modelObjs = await modelPromise(pathSet[1]);
+      const modelObjs = [];
       const responses = [];
+      for (const id of pathSet[1]) {
+        try {
+          modelObjs.push(await getByIdPromise(id));
+        } catch (err) {
+          responses.push(jsonGraph.error(err));
+        }
+      }
       for (const modelObj of modelObjs) {
         for (const attribute of attributes) {
-          const response = {
-            path: [routeByIdBasename, modelKeyGetter(modelObj, modelIdKey), attribute],
-            value: JSON.stringify(modelKeyGetter(modelObj, attribute))
-          };
-          responses.push(response);
+          responses.push(
+            jsonGraph.pathValue(
+              [routeByIdBasename, modelKeyGetter(modelObj, modelIdKey), attribute],
+              serialize(modelKeyGetter(modelObj, attribute))
+            )
+          );
+        }
+      }
+      return responses;
+    }
+  };
+}
+
+/*
+ * getByIdPromise = async (id) => modelObject
+ * updatePromise = async (oldObj, newObj) => newObj
+ * modelKeyGetter = (modelObject, key) => modelObject[key]
+ */
+
+export function createSetByIdRoute(routeBasename, acceptedKeys, getByIdPromise, updatePromise,
+  modelKeyGetter = defModelKeyGetter,
+  modelIdKey = defModelIdKey) {
+  const routeByIdBasename = routeBasename + routeSuffixById;
+  const keysString = ('[' + acceptedKeys.map((key) => '"' + key + '"') + ']');
+  return {
+    route: routeBasename + routeSuffixByIdKeys + keysString,
+    async set(jsonGraphArg) {
+      const objsById = jsonGraphArg[routeByIdBasename];
+      const ids = Object.keys(objsById);
+
+      const responses = [ ];
+
+      // iterate on ids, getting, updating, and creating responses.
+      for (const id of ids) {
+        let oldObj = null;
+        let newObj = null;
+
+        try {
+          oldObj = await getByIdPromise(id);
+        } catch (err) {
+          responses.push(jsonGraph.error(err));
+          continue;
+        }
+        try {
+          newObj = await updatePromise(oldObj, objsById[id]);
+        } catch (err) {
+          responses.push(jsonGraph.error(err));
+          continue;
+        }
+        for (const key of acceptedKeys) {
+          if (!modelKeyGetter(newObj, key) ||
+              !modelKeyGetter(newObj, modelIdKey)) {
+            continue;
+          }
+          responses.push(
+            jsonGraph.pathValue(
+              [routeByIdBasename, modelKeyGetter(newObj, modelIdKey), key],
+              serialize(modelKeyGetter(newObj, key))
+            )
+          );
         }
       }
 
@@ -121,31 +189,35 @@ export function createGetByIdRoute(routeBasename, acceptedKeys, modelPromise,
 }
 
 /*
- * modelPromise = async (modelParams) => [newModelObj, newCollectionLength]
+ * createPromise = async (modelParams) => [newModelObj, newCollectionLength]
  * modelIdGetter = (modelObject) => modelObject.id
  */
 
-export function createCallCreateRoute(routeBasename, acceptedKeys, modelPromise,
+export function createCallCreateRoute(routeBasename, acceptedKeys, createPromise,
   modelIdGetter = defModelIdGetter) {
   return {
     route: routeBasename + routeSuffixCreate,
     async call(callPath, args) { // eslint-disable-line no-unused-vars
       const objParams = _.pick(args[0], acceptedKeys);
-      const [newObj, newLength] = await modelPromise(objParams);
+      try {
+        const [newObj, newLength] = await createPromise(objParams);
 
-      return [
-        {
-          path: ['meetings', newLength - 1],
-          value: {
-            $type: 'ref',
-            value: [ 'meetingsById', modelIdGetter(newObj) ]
+        return [
+          {
+            path: ['meetings', newLength - 1],
+            value: {
+              $type: 'ref',
+              value: [ 'meetingsById', modelIdGetter(newObj) ]
+            }
+          },
+          {
+            path: ['meetings', 'length' ],
+            value: newLength
           }
-        },
-        {
-          path: ['meetings', 'length' ],
-          value: newLength
-        }
-      ];
+        ];
+      } catch (err) {
+        return jsonGraph.error(err);
+      }
     }
   };
 }
@@ -160,19 +232,23 @@ export function createRoutes(options) {
       presence: true,
       type: 'Array'
     },
-    getLengthModelPromise: {
+    getLength: {
       presence: true,
       type: 'Function'
     },
-    getRangeModelPromise: {
+    getRange: {
       presence: true,
       type: 'Function'
     },
-    getByIdsModelPromise: {
+    getById: {
       presence: true,
       type: 'Function'
     },
-    callCreateModelPromise: {
+    update: {
+      presence: true,
+      type: 'Function'
+    },
+    create: {
       presence: true,
       type: 'Function'
     },
@@ -202,18 +278,21 @@ export function createRoutes(options) {
   // Perform final parameter validation:
   const errors = validate(params, constraints);
   if (errors) {
-    throw new Error(errors);
+    throw new Error(JSON.stringify(errors));
   }
 
-  console.error('params: ', JSON.stringify(params));
-
   return [
-    createGetLengthRoute(params.routeBasename, params.getLengthModelPromise),
-    createGetRangesRoute(params.routeBasename, params.getRangeModelPromise,
+    createGetLengthRoute(params.routeBasename, params.getLength),
+    createGetRangesRoute(params.routeBasename, params.getRange,
       params.modelIdGetter),
-    createGetByIdRoute(params.routeBasename, params.acceptedKeys,
-      params.getByIdsModelPromise, params.modelKeyGetter, params.modelIdKey),
+    _.extend(
+      createGetByIdRoute(params.routeBasename, params.acceptedKeys,
+        params.getById, params.modelKeyGetter, params.modelIdKey),
+      createSetByIdRoute(params.routeBasename, params.acceptedKeys,
+        params.getById, params.update,
+        params.modelKeyGetter, params.modelIdKey),
+    ),
     createCallCreateRoute(params.routeBasename, params.acceptedKeys,
-      params.callCreateModelPromise, params.modelIdGetter)
+      params.create, params.modelIdGetter)
   ];
 }

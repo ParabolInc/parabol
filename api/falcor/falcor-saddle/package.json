@@ -1,7 +1,7 @@
 {
   "name": "falcor-saddle",
   "version": "0.1.0",
-  "description": "Extensible route generator for falcor – giddyup!",
+  "description": "Extensible route generator for falcor-router – giddyup!",
   "main": "lib/index.js",
   "files": [
     "lib/",
@@ -35,6 +35,7 @@
     "pre-commit": "^1.1.1"
   },
   "dependencies": {
+    "falcor-json-graph": "^1.1.7",
     "lodash": "^4.0.0",
     "validate.js": "^0.9.0"
   },
