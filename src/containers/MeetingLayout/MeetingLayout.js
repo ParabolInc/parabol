@@ -53,7 +53,7 @@ const exampleInputActive = {
   value: 'Somebody is typing here…'
 };
 
-@connectData(null, fetchData)
+@connectData(fetchData)
 @connect(
   state => ({
     meeting: state.meeting
