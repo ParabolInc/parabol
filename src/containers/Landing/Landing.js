@@ -1,10 +1,15 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router';
+import React, { Component, PropTypes } from 'react';
+// import { Link } from 'react-router';
 import mapStyles from '../../helpers/mapStyles';
 
 
 export default class Landing extends Component {
+  static propTypes = {
+    onMeetinCreateClick: PropTypes.func.isRequired
+  };
   render() {
+    const {onMeetinCreateClick} = this.props;
+
     const styles = require('./Landing.scss');
     const parabolLogoMark = require('./images/parabol-logo-mark.svg');
     const actionClapper = require('./images/action-clapper.svg');
@@ -21,7 +26,7 @@ export default class Landing extends Component {
 
     return (
       <div>
-        { /* Header */ }
+      { /* Header */ }
         <div className={mapStyles(styles, 'header tu-bg-b text-white tc pvm pvl-m pvxl-l pos-rel')} >
           <img className={mapStyles(styles, 'pos-abs top-2 left-2 dn db-m db-l')} src={parabolLogoMark} />
           <div className={mapStyles(styles, 'mw8 dib w-100')}>
@@ -34,9 +39,11 @@ export default class Landing extends Component {
               Time-friendly. <br className={mapStyles(styles, 'dn-m dn-l')} />
               Meaningful take-aways.
             </h2>
-            <Link className={mapStyles(styles, 'action-landing-cta-button')} title="Start a Meeting" to="/meeting">
+            <button className={mapStyles(styles, 'action-landing-cta-button')}
+                    onClick={onMeetinCreateClick}
+                    title="Start a Meeting">
               Start a Meeting
-            </Link>
+            </button>
           </div>
         </div>
 

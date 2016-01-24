@@ -1,7 +1,10 @@
 import superagent from 'superagent';
+import falcor from 'falcor';
+import HttpDataSource from 'falcor-http-datasource';
 import config from '../../config/config';
 
-const methods = ['get', 'post', 'put', 'patch', 'del'];
+const httpMethods = ['get', 'post', 'put', 'patch', 'del'];
+const falcorModelName = 'model.json';
 
 function formatUrl(path) {
   const adjustedPath = path[0] !== '/' ? '/' + path : path;
@@ -21,8 +24,9 @@ function formatUrl(path) {
  */
 class _ApiClient {
   constructor(req) {
-    methods.forEach((method) =>
-      this[method] = (path, { params, data } = {}) => new Promise((resolve, reject) => {
+    this.http = {};
+    httpMethods.forEach((method) =>
+      this.http[method] = (path, { params, data } = {}) => new Promise((resolve, reject) => {
         const request = superagent[method](formatUrl(path));
 
         if (params) {
@@ -39,6 +43,10 @@ class _ApiClient {
 
         request.end((err, { body } = {}) => err ? reject(body || err) : resolve(body));
       }));
+
+    // Falcor methods are already promises, we can add here as object property:
+    this.falcor = new falcor.Model(
+      { source: new HttpDataSource(formatUrl(falcorModelName)) });
   }
 }
 

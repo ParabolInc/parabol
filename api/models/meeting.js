@@ -13,6 +13,9 @@ function preHook(next) {
   if (typeof this.createdAt === 'undefined') {
     this.createdAt = Date.now();
   }
+  if (typeof this.content === 'undefined') {
+    this.content = '';
+  }
   this.updatedAt = Date.now();
   next();
 }

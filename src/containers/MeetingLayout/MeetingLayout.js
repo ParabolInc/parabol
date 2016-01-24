@@ -1,9 +1,19 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import Helmet from 'react-helmet';
+import { connect } from 'react-redux';
+import connectData from 'helpers/connectData';
+import { pushState } from 'redux-router';
+import { isLoaded as isMeetingLoaded,
+         load as loadMeeting } from 'redux/modules/meeting';
 import { MeetingHeader, MeetingNavbar, MeetingSection, UserInput } from 'components';
 
-import falcor from 'falcor';
-import HttpDataSource from 'falcor-http-datasource';
+async function fetchData(getState, dispatch, location, params) { // eslint-disable-line
+  if (!isMeetingLoaded(getState())) {
+    if (params && params.id) {
+      await dispatch(loadMeeting(params.id));
+    }
+  }
+}
 
 const exampleSections = [
   {
@@ -43,15 +53,78 @@ const exampleInputActive = {
   value: 'Somebody is typing here…'
 };
 
+@connectData(null, fetchData)
+@connect(
+  state => ({
+    meeting: state.meeting
+  }),
+  {pushState})
 export default class MeetingLayout extends Component {
+  static propTypes = {
+    meeting: PropTypes.object.isRequired,
+    pushState: PropTypes.func.isRequired
+  }
 
   componentWillMount() {
+  /*
+   * This here code is going to hangout as a reference until these patterns
+   * are used elsewhere...
+   *
     const model = new falcor.Model({source: new HttpDataSource('/api/model.json') });
+
     model.
-      get('greeting').
-      then((response) => {
-        console.log(response.json.greeting);
+      getValue('meetings.length')
+      .then((response) => {
+        console.log('meetings.length: ' + JSON.stringify(response));
       });
+
+    model.
+      get('meetings[0..1]["id", "content"]')
+      .then((response) => {
+        console.log('meetings[0..1]: ' + JSON.stringify(response));
+        const setReq = {
+          json: {
+            meetingsById: {
+              'bd8d468d-a330-4a13-b916-9ff46be54f3e': {
+                content: 'this is some new content'
+              }
+            }
+          }
+        };
+        setReq.json.meetingsById[response.json.meetings['0'].id] = {
+          'content': 'whoa!'
+        };
+        model.
+          set(setReq)
+          .then((setResponse) => {
+            console.log('set(meetings[0]):' + JSON.stringify(setResponse));
+          });
+      });
+    model.
+      getValue('meetings.length')
+      .then((length) => {
+        const rando = Math.floor(Math.random() * (length + 1));
+        model.getValue(['meetings', rando, 'id']).then((id) => {
+          console.log('meeting[', rando, ']["id"] = ', id);
+          model.call('meetingsById.delete', [id]).then((response) => {
+            console.log('delete suceeded: ', response);
+          })
+          .catch( (error) => console.log(error));
+        });
+      });
+
+    model.
+      call('meetings.create', [{
+        content: 'snow day today' }],
+        ['id', 'content', 'createdAt']
+      )
+      .then((response) => {
+        console.log('meetings.create: ' + JSON.stringify(response));
+      })
+      .catch((response) => {
+        console.log('meetings.create (error): ' + JSON.stringify(response));
+      });
+  */
   }
 
   render() {

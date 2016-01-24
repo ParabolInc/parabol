@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { isLoaded as isInfoLoaded, load as loadInfo } from 'redux/modules/info';
 import { isLoaded as isAuthLoaded, load as loadAuth, logout } from 'redux/modules/auth';
 import { pushState } from 'redux-router';
 import connectData from 'helpers/connectData';
@@ -9,9 +8,6 @@ const styles = require('./App.scss');
 
 function fetchData(getState, dispatch) {
   const promises = [];
-  if (!isInfoLoaded(getState())) {
-    promises.push(dispatch(loadInfo()));
-  }
   if (!isAuthLoaded(getState())) {
     promises.push(dispatch(loadAuth()));
   }

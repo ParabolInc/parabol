@@ -47,7 +47,7 @@ export default (store) => { // eslint-disable-line
       { /* Home (main) route */ }
       <IndexRoute component={LandingLayout}/>
 
-      <Route path="meeting" component={MeetingLayout} />
+      <Route path="meeting/:id" component={MeetingLayout} />
       <Route path="applayout" component={AppLayout} />
 
       { /* Routes requiring login */ }
