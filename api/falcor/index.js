@@ -5,6 +5,4 @@ const allRoutes = [
   ...meetings,
 ];
 
-console.error(JSON.stringify(allRoutes));
-
 export default falcorRouter.createClass(allRoutes);
