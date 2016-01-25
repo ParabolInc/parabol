@@ -1,14 +1,19 @@
-import React, {Component} from 'react';
+import React, {PropTypes, Component} from 'react';
+import cssModules from 'react-css-modules';
+import styles from './StatusNav.scss';
 import { StatusNavItem } from 'components';
 
+@cssModules(styles)
 export default class StatusNav extends Component {
+  static propTypes = {
+    navItems: PropTypes.array.isRequired
+  }
   render() {
-    const styles = require('./StatusNav.scss');
     return (
-      <div className={styles.nav}>
-        <StatusNavItem />
-        <StatusNavItem />
-        <StatusNavItem />
+      <div styleName="nav">
+        {this.props.navItems.map(item =>
+          <StatusNavItem {...item} key={item.id} />
+        )}
       </div>
     );
   }

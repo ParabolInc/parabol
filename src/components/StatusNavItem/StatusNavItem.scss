@@ -39,7 +39,9 @@ $StatusNavItem-icon-boxSize: 2rem;
 }
 
 .itemActive {
+  // scss-lint:disable PropertySpelling, PropertySortOrder
   composes: item;
+  // scss-lint:enable PropertySpelling, PropertySortOrder
   background-color: $theme-c;
 
   &:hover,

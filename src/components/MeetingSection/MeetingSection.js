@@ -1,5 +1,8 @@
 import React, {PropTypes, Component} from 'react';
+import cssModules from 'react-css-modules';
+import styles from './MeetingSection.scss';
 
+@cssModules(styles)
 export default class MeetingSection extends Component {
   static propTypes = {
     id: PropTypes.number.isRequired,
@@ -10,7 +13,6 @@ export default class MeetingSection extends Component {
     children: PropTypes.object.isRequired
   }
   render() {
-    const styles = require('./MeetingSection.scss');
     const props = this.props;
     const rootClassName = props.active ? styles.rootActive : styles.root;
     const bulletClassName = props.active ? styles.bulletActive : styles.bullet;
@@ -23,7 +25,7 @@ export default class MeetingSection extends Component {
         <div className={headingClassName}>
           {props.heading}
         </div>
-        <div className={styles.description}>
+        <div styleName="description">
           {props.description}
         </div>
         <div className="row">

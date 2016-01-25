@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import Helmet from 'react-helmet';
+import cssModules from 'react-css-modules';
+import styles from './MeetingLayout.scss';
 import { connect } from 'react-redux';
 import connectData from 'helpers/connectData';
 import { pushState } from 'redux-router';
@@ -59,6 +61,7 @@ const exampleInputActive = {
     meeting: state.meeting
   }),
   {pushState})
+@cssModules(styles)
 export default class MeetingLayout extends Component {
   static propTypes = {
     meeting: PropTypes.object.isRequired,
@@ -128,8 +131,6 @@ export default class MeetingLayout extends Component {
   }
 
   render() {
-    const styles = require('./MeetingLayout.scss');
-
     const handleOnLeaveMeetingClick = () => {
       console.log('handleOnLeaveMeetingClick');
     };
@@ -145,10 +146,10 @@ export default class MeetingLayout extends Component {
     const exampleMeetingName = 'Core Action Meeting';
 
     return (
-      <div className={styles.root}>
+      <div styleName="root">
         <Helmet title={exampleMeetingName} />
         <MeetingNavbar onLeaveMeetingClick={() => handleOnLeaveMeetingClick()} />
-        <div className={styles.main}>
+        <div styleName="main">
           <MeetingHeader onMeetingNameChange={() => handleOnMeetingNameChange()} meetingName={exampleMeetingName} />
           <MeetingSection {...exampleSections[0]} key={exampleSections[0].id}>
             <UserInput {...exampleInput} onUserInputChange={() => handleUserInputChange()} />

@@ -1,13 +1,15 @@
 import React, {PropTypes, Component} from 'react';
+import cssModules from 'react-css-modules';
+import styles from './MeetingHeader.scss';
 import { MeetingLink } from 'components';
 
+@cssModules(styles)
 export default class MeetingHeader extends Component {
   static propTypes = {
     onMeetingNameChange: PropTypes.func.isRequired,
     meetingName: PropTypes.string.isRequired
   }
   render() {
-    const styles = require('./MeetingHeader.scss');
     const props = this.props;
     const handleOnMeetingLinkInputChange = () => {
       console.log('handleOnMeetingLinkInputChange');
@@ -16,18 +18,18 @@ export default class MeetingHeader extends Component {
       console.log('handleOnMeetingLinkButtonClicked');
     };
     return (
-      <div className={styles.root}>
-        <div className={styles.linkBlock}>
+      <div styleName="root">
+        <div styleName="linkBlock">
           <MeetingLink
             onMeetingLinkInputChange={() => handleOnMeetingLinkInputChange()}
             onMeetingLinkButtonClicked={() => handleOnMeetingLinkButtonClicked()}
             url="https://so.me/link"
           />
         </div>
-        <div className={styles.label}>
+        <div styleName="label">
           Action Meeting
         </div>
-        <input className={styles.name}
+        <input styleName="name"
                onChange={() => props.onMeetingNameChange()}
                placeholder={props.meetingName}
                type="text"

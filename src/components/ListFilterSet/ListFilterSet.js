@@ -1,17 +1,19 @@
 import React, {Component} from 'react';
+import cssModules from 'react-css-modules';
+import styles from './ListFilterSet.scss';
 
+@cssModules(styles)
 export default class ListFilterSet extends Component {
   render() {
-    const styles = require('./ListFilterSet.scss');
     return (
-      <div className={styles.main}>
-        <div className={styles.checkboxBlock}>
+      <div styleName="main">
+        <div styleName="checkboxBlock">
           <input type="checkbox" />
         </div>
-        <div className={styles.label}>
+        <div styleName="label">
           Filter by:
         </div>
-        <div className={styles.nav}>
+        <div styleName="nav">
           {/* Bootstrap nav component */}
           <ul className="nav nav-pills">
             <li role="presentation" className="active">

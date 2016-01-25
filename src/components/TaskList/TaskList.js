@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import cssModules from 'react-css-modules';
+import styles from './TaskList.scss';
 import {TaskListItem} from 'components';
 
 const exampleItems = [
@@ -28,14 +30,14 @@ const exampleItems = [
   }
 ];
 
+@cssModules(styles)
 export default class TaskList extends Component {
   render() {
-    const styles = require('./TaskList.scss');
     const handleCheckboxChanged = (id) => {
       console.log(`Checkbox for item[${id}] was clicked`);
     };
     return (
-      <div className={styles.list}>
+      <div styleName="list">
         {exampleItems.map(item =>
           <TaskListItem {...item} key={item.id} onCheckboxChanged={() => handleCheckboxChanged(item.id)} />
         )}

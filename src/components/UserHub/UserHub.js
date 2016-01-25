@@ -1,13 +1,21 @@
-import React, {Component} from 'react';
+import React, {PropTypes, Component} from 'react';
+import cssModules from 'react-css-modules';
+import styles from './UserHub.scss';
 
+@cssModules(styles)
 export default class UserHub extends Component {
+  static propTypes = {
+    name: PropTypes.string.isRequired
+  }
   render() {
-    const styles = require('./UserHub.scss');
+    const props = this.props;
     return (
-      <div className={styles.main}>
-        <div className={styles.name}>Jerry Seabass</div>
-        <a className={styles.link} href="#" title="Settings">Settings</a>
-        <a className={styles.link} href="#" title="Log Out">Log Out</a>
+      <div styleName="main">
+        <div styleName="name">
+          {props.name}
+        </div>
+        <a styleName="link" href="#" title="Settings">Settings</a>
+        <a styleName="link" href="#" title="Log Out">Log Out</a>
       </div>
     );
   }

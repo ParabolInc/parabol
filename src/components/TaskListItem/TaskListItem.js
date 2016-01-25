@@ -1,5 +1,8 @@
 import React, {PropTypes, Component} from 'react';
+import cssModules from 'react-css-modules';
+import styles from './TaskListItem.scss';
 
+@cssModules(styles)
 export default class TaskListItem extends Component {
   static propTypes = {
     checked: PropTypes.bool.isRequired,
@@ -10,7 +13,6 @@ export default class TaskListItem extends Component {
     title: PropTypes.string.isRequired
   }
   render() {
-    const styles = require('./TaskListItem.scss');
     const props = this.props;
     const itemClassName = props.checked ? styles.itemSelected : styles.item;
     return (
@@ -18,16 +20,16 @@ export default class TaskListItem extends Component {
         <input type="checkbox"
                checked={props.checked ? 'checked' : false}
                onChange={props.onCheckboxChanged} />
-        <div className={styles.tag}>
+        <div styleName="tag">
           {props.label}
         </div>
-        <div className={styles.team}>
+        <div styleName="team">
           {props.team}
         </div>
-        <div className={styles.title}>
+        <div styleName="title">
           {props.title}
         </div>
-        <div className={styles.timePassed}>
+        <div styleName="timePassed">
           {props.timePassed}
         </div>
       </div>

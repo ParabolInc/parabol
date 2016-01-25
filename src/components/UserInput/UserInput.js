@@ -1,5 +1,8 @@
 import React, {PropTypes, Component} from 'react';
+import cssModules from 'react-css-modules';
+import styles from './UserInput.scss';
 
+@cssModules(styles)
 export default class UserInput extends Component {
   static propTypes = {
     active: PropTypes.bool.isRequired,
@@ -10,20 +13,19 @@ export default class UserInput extends Component {
     value: PropTypes.string.isRequired
   }
   render() {
-    const styles = require('./UserInput.scss');
     const props = this.props;
     const inputClassName = props.active ? styles.inputActive : styles.input;
     const activeLabel = () => {
       if (props.active) {
         return (
-          <div className={styles.activeLabel}>
+          <div styleName="activeLabel">
             {props.activeLabelMessage}
           </div>
         );
       }
     };
     return (
-      <div className={styles.root}>
+      <div styleName="root">
         <input className={inputClassName}
                onChange={() => props.onUserInputChange()}
                placeholder={props.placeholder}

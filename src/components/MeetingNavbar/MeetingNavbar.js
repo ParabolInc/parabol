@@ -1,15 +1,17 @@
 import React, {PropTypes, Component} from 'react';
+import cssModules from 'react-css-modules';
+import styles from './MeetingNavbar.scss';
 
+@cssModules(styles)
 export default class MeetingNavbar extends Component {
   static propTypes = {
     onLeaveMeetingClick: PropTypes.func.isRequired
   }
   render() {
-    const styles = require('./MeetingNavbar.scss');
     const props = this.props;
     return (
-      <div className={styles.root}>
-        <div className={styles.logo}>
+      <div styleName="root">
+        <div styleName="logo">
           ACTION
         </div>
         {/*
