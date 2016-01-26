@@ -4,19 +4,13 @@ const type = Database.type;
 
 const Meeting = Database.createModel('Meeting', {
   id: type.string(),
-  createdAt: Date,
-  updatedAt: Date,
-  content: type.string(),
+  createdAt: type.date().default(Database.r.now()),
+  updatedAt: type.date(),
+  content: type.string().default(''),
 });
 
 function preHook(next) {
-  if (typeof this.createdAt === 'undefined') {
-    this.createdAt = Date.now();
-  }
-  if (typeof this.content === 'undefined') {
-    this.content = '';
-  }
-  this.updatedAt = Date.now();
+  this.updatedAt = Database.r.now();
   next();
 }
 

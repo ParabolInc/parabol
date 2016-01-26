@@ -1,15 +1,17 @@
 import express from 'express';
 import session from 'express-session';
+import sessionRethinkDB from 'session-rethinkdb';
 import bodyParser from 'body-parser';
-import config from '../config/config';
-import * as actions from './actions/index';
-import {mapUrl} from './utils/url';
+import cookieParser from 'cookie-parser';
 import PrettyError from 'pretty-error';
 import http from 'http';
 import SocketIo from 'socket.io';
-
 import falcorExpress from 'falcor-express';
+
+import * as actions from './actions/index';
+import config from '../config/config';
 import FalcorRoutes from './falcor/index';
+import {mapUrl} from './utils/url';
 
 const pretty = new PrettyError();
 const app = express();
@@ -19,12 +21,26 @@ const server = new http.Server(app);
 const io = new SocketIo(server);
 io.path('/ws');
 
+const RDBStore = sessionRethinkDB(session);
+const rDBStore = new RDBStore({
+  db: config.thinky.db,
+  servers: [
+    { host: config.thinky.host, port: config.thinky.port }
+  ],
+  clearInterval: 60000,
+  table: 'Session'
+});
+
+app.use( cookieParser() );
 app.use(session({
-  secret: 'react and redux rule!!!!',
+  cookie: { maxAge: 86000 },
+  key: 'sid',
   resave: false,
-  saveUninitialized: false,
-  cookie: { maxAge: 60000 }
+  saveUninitialized: true,
+  secret: config.session.secret,
+  store: rDBStore
 }));
+
 app.use(bodyParser.json());
 
 // Initialze falcor routes:
