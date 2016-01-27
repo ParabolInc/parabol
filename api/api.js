@@ -2,7 +2,6 @@ import express from 'express';
 import session from 'express-session';
 import sessionRethinkDB from 'session-rethinkdb';
 import bodyParser from 'body-parser';
-import cookieParser from 'cookie-parser';
 import PrettyError from 'pretty-error';
 import http from 'http';
 import SocketIo from 'socket.io';
@@ -10,8 +9,9 @@ import falcorExpress from 'falcor-express';
 
 import * as actions from './actions/index';
 import config from '../config/config';
+import { Database } from './models/index';
 import FalcorRoutes from './falcor/index';
-import {mapUrl} from './utils/url';
+import { mapUrl } from './utils/url';
 
 const pretty = new PrettyError();
 const app = express();
@@ -22,16 +22,10 @@ const io = new SocketIo(server);
 io.path('/ws');
 
 const RDBStore = sessionRethinkDB(session);
-const rDBStore = new RDBStore({
-  db: config.thinky.db,
-  servers: [
-    { host: config.thinky.host, port: config.thinky.port }
-  ],
-  clearInterval: 60000,
+const rDBStore = new RDBStore(Database.r, {
   table: 'Session'
 });
 
-app.use( cookieParser() );
 app.use(session({
   cookie: { maxAge: 86000 },
   key: 'sid',
