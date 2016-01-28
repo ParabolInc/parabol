@@ -1,6 +1,7 @@
 import superagent from 'superagent';
 import falcor from 'falcor';
 import HttpDataSource from 'falcor-http-datasource';
+import SocketManager from './SocketManager';
 import config from '../../config/config';
 
 const httpMethods = ['get', 'post', 'put', 'patch', 'del'];
@@ -44,9 +45,16 @@ class _ApiClient {
         request.end((err, { body } = {}) => err ? reject(body || err) : resolve(body));
       }));
 
-    // Falcor methods are already promises, we can add here as object property:
+    // Falcor client, N.B. API is promised-based so we add as simple prop:
     this.falcor = new falcor.Model(
       { source: new HttpDataSource(formatUrl(falcorModelName)) });
+
+    // WebSockets:
+    this.sm = new SocketManager();
+  }
+
+  setStore(store) {
+    this.sm.setStore(store);
   }
 }
 

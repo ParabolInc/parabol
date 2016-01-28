@@ -1,13 +1,33 @@
+import { subscriptionManager } from '../../helpers/subscriptionManager';
+import { CONNECTED as SOCKET_CONNECTED } from './socket';
+
 const CREATE = 'action/meeting/CREATE';
 const CREATE_SUCCESS = 'action/meeting/CREATE_SUCCESS';
 const CREATE_FAIL = 'action/meeting/CREATE_FAIL';
 const LOAD = 'action/meeting/LOAD';
 const LOAD_SUCCESS = 'action/meeting/LOAD_SUCCESS';
 const LOAD_FAIL = 'action/meeting/LOAD_FAIL';
+const UPDATE_CONTENT = 'action/meeting/UPDATE_CONTENT';
+const UPDATE_CONTENT_SUCCESS = 'action/meeting/UPDATE_CONTENT_SUCCESS';
+const UPDATE_CONTENT_FAIL = 'action/meeting/UPDATE_CONTENT_FAIL';
+const UPDATE_EDITING = 'action/meeting/UPDATE_EDITING';
+const UPDATE_EDITING_SUCCESS = 'action/meeting/UPDATE_EDITING_SUCCESS';
+const UPDATE_EDITING_FAIL = 'action/meeting/UPDATE_EDITING_FAIL';
+const SUBSCRIBE = 'action/meeting/SUBSCRIBE';
+const SUBSCRIBE_SUCCESS = 'action/meeting/SUBSCRIBE_SUCCESS';
+const SUBSCRIBE_FAIL = 'action/meeting/SUBSCRIBE_SUCCESS';
+const UNSUBSCRIBE = 'action/meeting/UNSUBSCRIBE';
+const UNSUBSCRIBE_SUCCESS = 'action/meeting/UNSUBSCRIBE_SUCCESS';
+const UNSUBSCRIBE_FAIL = 'action/meeting/UNSUBSCRIBE_SUCCESS';
+const S_MEETING_INSERT = 'action/meeting/S_MEETING_INSERT';
+const S_MEETING_UPDATE = 'action/meeting/S_MEETING_UPDATE';
+const S_MEETING_DELETE = 'action/meeting/S_MEETING_DELETE';
 
 const initialState = {
   loaded: false,
   instance: null,
+  mySocketId: '',
+  otherEditing: false
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -59,6 +79,31 @@ export default function reducer(state = initialState, action = {}) {
         instance: null,
         error: action.error
       };
+    case UPDATE_CONTENT_SUCCESS:
+      return {
+        ...state,
+        instance: {
+          ...state.instance,
+          ...action.result
+        }
+      };
+    case S_MEETING_UPDATE:
+      return {
+        ...state,
+        instance: {
+          ...state.instance,
+          ...action.payload.new_val
+        },
+        otherEditing: (
+          action.payload.new_val.editing &&
+          state.mySocketId !== action.payload.new_val.authoredBy
+        )
+      };
+    case SOCKET_CONNECTED:
+      return {
+        ...state,
+        mySocketId: action.id
+      };
     default:
       return state;
   }
@@ -91,62 +136,65 @@ export function create() {
   };
 }
 
-/*
- * This here code is going to hangout as a reference until these patterns
- * are used elsewhere...
- *
-  const model = new falcor.Model({source: new HttpDataSource('/api/model.json') });
-
-  model.
-    getValue('meetings.length')
-    .then((response) => {
-      console.log('meetings.length: ' + JSON.stringify(response));
-    });
-
-  model.
-    get('meetings[0..1]["id", "content"]')
-    .then((response) => {
-      console.log('meetings[0..1]: ' + JSON.stringify(response));
-      const setReq = {
-        json: {
-          meetingsById: {
-            'bd8d468d-a330-4a13-b916-9ff46be54f3e': {
-              content: 'this is some new content'
-            }
-          }
-        }
+export function updateContent(id, content, socketId) {
+  // TODO: refactor for optimistic updates
+  return {
+    types: [UPDATE_CONTENT, UPDATE_CONTENT_SUCCESS, UPDATE_CONTENT_FAIL],
+    promise: (client) => {
+      const payload = { json: { meetingsById: { } } };
+      const { meetingsById } = payload.json;
+      meetingsById[id] = {
+        content: content,
+        updatedBy: socketId
       };
-      setReq.json.meetingsById[response.json.meetings['0'].id] = {
-        'content': 'whoa!'
-      };
-      model.
-        set(setReq)
-        .then((setResponse) => {
-          console.log('set(meetings[0]):' + JSON.stringify(setResponse));
+      return client.falcor
+        .set(payload)
+        .then( () => {
+          return {
+            content: content
+          };
         });
-    });
-  model.
-    getValue('meetings.length')
-    .then((length) => {
-      const rando = Math.floor(Math.random() * (length + 1));
-      model.getValue(['meetings', rando, 'id']).then((id) => {
-        console.log('meeting[', rando, ']["id"] = ', id);
-        model.call('meetingsById.delete', [id]).then((response) => {
-          console.log('delete suceeded: ', response);
-        })
-        .catch( (error) => console.log(error));
-      });
-    });
+    }
+  };
+}
 
-  model.
-    call('meetings.create', [{
-      content: 'snow day today' }],
-      ['id', 'content', 'createdAt']
+export function updateEditing(id, editing, socketId) {
+  // TODO: refactor for optimistic updates
+  return {
+    types: [UPDATE_EDITING, UPDATE_EDITING_SUCCESS, UPDATE_EDITING_FAIL],
+    promise: (client) => {
+      const payload = { json: { meetingsById: { } } };
+      const { meetingsById } = payload.json;
+      meetingsById[id] = {
+        editing: editing,
+        updatedBy: socketId
+      };
+      return client.falcor
+        .set(payload)
+        .then( () => {
+          return {
+            editing: editing
+          };
+        });
+    }
+  };
+}
+
+export function subscribe(room, id) {
+  return {
+    types: [SUBSCRIBE, SUBSCRIBE_SUCCESS, SUBSCRIBE_FAIL],
+    promise: (client) => subscriptionManager.subscribe(
+      client, 'meetingsById', { id: id }, room,
+      [ S_MEETING_INSERT, S_MEETING_UPDATE, S_MEETING_DELETE ]
     )
-    .then((response) => {
-      console.log('meetings.create: ' + JSON.stringify(response));
-    })
-    .catch((response) => {
-      console.log('meetings.create (error): ' + JSON.stringify(response));
-    });
-*/
+  };
+}
+
+export function unsubscribe(room, id) {
+  return {
+    types: [UNSUBSCRIBE, UNSUBSCRIBE_SUCCESS, UNSUBSCRIBE_FAIL],
+    promise: (client) => subscriptionManager.unsubscribe(
+      client, 'meetingsById', { id: id }, room,
+    )
+  };
+}

@@ -29,5 +29,8 @@ export default function createStore(reduxReactRouter, getRoutes, createHistory, 
     });
   }
 
+  // Give handle to store to client, it dispatches websocket actions:
+  client.setStore(store);
+
   return store;
 }

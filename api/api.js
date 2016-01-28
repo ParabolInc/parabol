@@ -1,45 +1,59 @@
 import express from 'express';
-import session from 'express-session';
+import expressSession from 'express-session';
 import sessionRethinkDB from 'session-rethinkdb';
 import bodyParser from 'body-parser';
 import PrettyError from 'pretty-error';
 import http from 'http';
 import SocketIo from 'socket.io';
+import socketSession from 'socket.io-express-session';
 import falcorExpress from 'falcor-express';
 
 import * as actions from './actions/index';
 import config from '../config/config';
 import { Database } from './models/index';
-import FalcorRoutes from './falcor/index';
+import FalcorRouter from './falcor/index';
+import { onConnection } from './socketio/index';
 import { mapUrl } from './utils/url';
 
 const pretty = new PrettyError();
-const app = express();
 
+/*
+ * Initialize app and HTTP server:
+ */
+const app = express();
 const server = new http.Server(app);
 
-const io = new SocketIo(server);
-io.path('/ws');
-
-const RDBStore = sessionRethinkDB(session);
+/*
+ * Initialize session store – common to both
+ * HTTP and socket.io servers:
+ */
+const RDBStore = sessionRethinkDB(expressSession);
 const rDBStore = new RDBStore(Database.r, {
   table: 'Session'
 });
-
-app.use(session({
+const session = expressSession({
   cookie: { maxAge: 86000 },
   key: 'sid',
   resave: false,
   saveUninitialized: true,
   secret: config.session.secret,
   store: rDBStore
-}));
+});
 
+
+const io = new SocketIo(server);
+io.path('/ws');
+io.use(socketSession(session));
+app.set('io', io); // stash a handle to our socket.io instance
+
+app.use(session);
 app.use(bodyParser.json());
 
 // Initialze falcor routes:
 app.use('/model.json', bodyParser.urlencoded({extended: false}),
-  falcorExpress.dataSourceRoute( () => new FalcorRoutes() ));
+  falcorExpress.dataSourceRoute( (req, res, next) =>
+    new FalcorRouter(req, res, next)
+));
 
 app.use(bodyParser.json(), (req, res) => {
   const splittedUrlPath = req.url.split('?')[0].split('/').slice(1);
@@ -67,10 +81,6 @@ app.use(bodyParser.json(), (req, res) => {
   }
 });
 
-const bufferSize = 100;
-const messageBuffer = new Array(bufferSize);
-let messageIndex = 0;
-
 if (config.apiPort) {
   const runnable = app.listen(config.apiPort, (err) => {
     if (err) {
@@ -80,26 +90,7 @@ if (config.apiPort) {
     console.info('==> 💻  Send requests to http://%s:%s', config.apiHost, config.apiPort);
   });
 
-  io.on('connection', (socket) => {
-    socket.emit('news', {msg: `'Hello World!' from server`});
-
-    socket.on('history', () => {
-      for (let index = 0; index < bufferSize; index++) {
-        const msgNo = (messageIndex + index) % bufferSize;
-        const msg = messageBuffer[msgNo];
-        if (msg) {
-          socket.emit('msg', msg);
-        }
-      }
-    });
-
-    socket.on('msg', (data) => {
-      data.id = messageIndex;
-      messageBuffer[messageIndex % bufferSize] = data;
-      messageIndex++;
-      io.emit('msg', data);
-    });
-  });
+  io.on('connection', (socket) => onConnection(io, socket));
   io.listen(runnable);
 } else {
   console.error('==>     ERROR: No PORT environment variable has been specified');

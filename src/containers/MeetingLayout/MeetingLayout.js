@@ -7,9 +7,11 @@ import connectData from 'helpers/connectData';
 import { pushState } from 'redux-router';
 import { isLoaded as isMeetingLoaded,
          load as loadMeeting } from 'redux/modules/meeting';
+import * as socketActions from 'redux/modules/socket';
+import * as meetingActions from 'redux/modules/meeting';
 import { MeetingHeader, MeetingNavbar, MeetingSection, UserInput } from 'components';
 
-async function fetchData(getState, dispatch, location, params) { // eslint-disable-line
+async function fetchData(getState, dispatch, location, params) { // eslint-disable-line no-unused-vars
   if (!isMeetingLoaded(getState())) {
     if (params && params.id) {
       await dispatch(loadMeeting(params.id));
@@ -46,7 +48,7 @@ const exampleInput = {
   activeLabelMessage: '@User is editing',
   placeholder: 'Type something here',
   type: 'text',
-  value: 'Something was typed here'
+  value: ''
 };
 
 const exampleInputActive = {
@@ -58,85 +60,57 @@ const exampleInputActive = {
 @connectData(fetchData)
 @connect(
   state => ({
-    meeting: state.meeting
+    location: state.router.location.pathname,
+    meeting: state.meeting,
+    socketId: state.socket.id
   }),
-  {pushState})
+  {...socketActions, ...meetingActions, pushState})
 @cssModules(styles)
 export default class MeetingLayout extends Component {
   static propTypes = {
+    location: PropTypes.string.isRequired,
     meeting: PropTypes.object.isRequired,
+    roomJoin: PropTypes.func.isRequired,
+    roomLeave: PropTypes.func.isRequired,
+    socketId: PropTypes.string.isRequired,
+    subscribe: PropTypes.func.isRequired,
+    unsubscribe: PropTypes.func.isRequired,
+    updateContent: PropTypes.func.isRequired,
+    updateEditing: PropTypes.func.isRequired,
     pushState: PropTypes.func.isRequired
   }
 
-  componentWillMount() {
-  /*
-   * This here code is going to hangout as a reference until these patterns
-   * are used elsewhere...
-   *
-    const model = new falcor.Model({source: new HttpDataSource('/api/model.json') });
+  componentDidMount() {
+    const { roomJoin, location, subscribe, meeting } = this.props;
+    roomJoin(location);
+    subscribe(location, meeting.instance.id);
+  }
 
-    model.
-      getValue('meetings.length')
-      .then((response) => {
-        console.log('meetings.length: ' + JSON.stringify(response));
-      });
-
-    model.
-      get('meetings[0..1]["id", "content"]')
-      .then((response) => {
-        console.log('meetings[0..1]: ' + JSON.stringify(response));
-        const setReq = {
-          json: {
-            meetingsById: {
-              'bd8d468d-a330-4a13-b916-9ff46be54f3e': {
-                content: 'this is some new content'
-              }
-            }
-          }
-        };
-        setReq.json.meetingsById[response.json.meetings['0'].id] = {
-          'content': 'whoa!'
-        };
-        model.
-          set(setReq)
-          .then((setResponse) => {
-            console.log('set(meetings[0]):' + JSON.stringify(setResponse));
-          });
-      });
-    model.
-      getValue('meetings.length')
-      .then((length) => {
-        const rando = Math.floor(Math.random() * (length + 1));
-        model.getValue(['meetings', rando, 'id']).then((id) => {
-          console.log('meeting[', rando, ']["id"] = ', id);
-          model.call('meetingsById.delete', [id]).then((response) => {
-            console.log('delete suceeded: ', response);
-          })
-          .catch( (error) => console.log(error));
-        });
-      });
-
-    model.
-      call('meetings.create', [{
-        content: 'snow day today' }],
-        ['id', 'content', 'createdAt']
-      )
-      .then((response) => {
-        console.log('meetings.create: ' + JSON.stringify(response));
-      })
-      .catch((response) => {
-        console.log('meetings.create (error): ' + JSON.stringify(response));
-      });
-  */
+  componentWillUnmount() {
+    const { roomLeave, location, unsubscribe, meeting } = this.props;
+    roomLeave(location);
+    unsubscribe(location, meeting.instance.id);
   }
 
   render() {
+    const { props } = this;
     const handleOnLeaveMeetingClick = () => {
       console.log('handleOnLeaveMeetingClick');
     };
 
-    const handleUserInputChange = () => {
-      console.log('handleUserInputChange');
+    const handleUserInputFocus = () => {
+      const { updateEditing, meeting, socketId } = this.props;
+      updateEditing(meeting.instance.id, true, socketId);
+    };
+
+    const handleUserInputBlur = () => {
+      const { updateEditing, meeting, socketId } = this.props;
+      updateEditing(meeting.instance.id, false, socketId);
+    };
+
+    const handleUserInputChange = (event) => {
+      const { updateContent, meeting, socketId } = this.props;
+      updateContent(meeting.instance.id, event.target.value, socketId);
     };
 
     const handleOnMeetingNameChange = () => {
@@ -148,17 +122,23 @@ export default class MeetingLayout extends Component {
     return (
       <div styleName="root">
         <Helmet title={exampleMeetingName} />
-        <MeetingNavbar onLeaveMeetingClick={() => handleOnLeaveMeetingClick()} />
+        <MeetingNavbar onLeaveMeetingClick={handleOnLeaveMeetingClick} />
         <div styleName="main">
-          <MeetingHeader onMeetingNameChange={() => handleOnMeetingNameChange()} meetingName={exampleMeetingName} />
+          <MeetingHeader onMeetingNameChange={handleOnMeetingNameChange} meetingName={exampleMeetingName} />
           <MeetingSection {...exampleSections[0]} key={exampleSections[0].id}>
-            <UserInput {...exampleInput} onUserInputChange={() => handleUserInputChange()} />
+            <UserInput {...exampleInput}
+              active={props.meeting.otherEditing}
+              value={props.meeting.instance.content}
+              onUserInputChange={handleUserInputChange}
+              onUserInputFocus={handleUserInputFocus}
+              onUserInputBlur={handleUserInputBlur}
+            />
           </MeetingSection>
           <MeetingSection {...exampleSections[1]} key={exampleSections[1].id}>
-            <UserInput {...exampleInputActive} onUserInputChange={() => handleUserInputChange()} />
+            <UserInput {...exampleInputActive} onUserInputChange={handleUserInputChange} />
           </MeetingSection>
           <MeetingSection {...exampleSections[2]} key={exampleSections[2].id}>
-            <UserInput {...exampleInput} onUserInputChange={() => handleUserInputChange()} />
+            <UserInput {...exampleInput} onUserInputChange={handleUserInputChange} />
           </MeetingSection>
         </div>
       </div>
