@@ -1,5 +1,5 @@
 import Meeting from '../models/meeting';
-import { createRoutes } from './falcor-saddle';
+import { createRoutes } from 'falcor-saddle';
 
 export default [
   ...createRoutes({
