@@ -1,8 +1,6 @@
 import { expect } from 'chai';
-import {
-  INSERT, UPDATE, DELETE,
-  Subscriptions
-} from '../subscriptionManager';
+import { Subscriptions } from '../subscriptionManager';
+import { INSERT, UPDATE, DELETE } from '../../../api/socketio/publish';
 
 const insertFn = () => 'insert';
 const updateFn = () => 'update';
@@ -132,7 +130,7 @@ describe('Subscriptions', () => {
     subs.add('test', params[0], actions[0]);
     subs.add('test', params[1], actions[1]);
     expect( subs.lookupActions('test', UPDATE) )
-      .to.be.deep.equals( [updateFn, updateFn2]);
+      .to.be.deep.equals( [updateFn, updateFn2] );
   });
 
   it('Subscriptions remove 1', () => {
