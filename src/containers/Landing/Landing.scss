@@ -1,10 +1,11 @@
 
-// _action-landing.scss
+// Landing.scss
 
-@import '../LandingLayout/LandingLayout.scss';
+@import '../../theme/variables';
+@import '../LandingLayout/LandingLayout';
 
 .action-landing-logo {
-  background-color: #fff;
+  background-color: $ui-white;
   border-radius: .5rem;
   display: inline-block;
   height: 5rem;
@@ -47,8 +48,8 @@
   &:link,
   &:visited {
     background-color: transparent;
-    border: 1px solid #fff;
-    color: #fff;
+    border: 1px solid $ui-white;
+    color: $ui-white;
     display: inline-block;
     font-size: 1.25rem;
     margin: .5rem 0;
@@ -64,7 +65,7 @@
 
   &:hover,
   &:focus {
-    color: #fff;
+    color: $ui-white;
     opacity: .65;
     text-decoration: none;
   }
@@ -73,7 +74,7 @@
 .action-landing-hiw-badge {
   background-color: $theme-b;
   border-radius: 100%;
-  color: #fff;
+  color: $ui-white;
   font-size: 1.5rem;
   font-weight: 700;
   height: 2rem;
