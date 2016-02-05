@@ -1,4 +1,4 @@
-import React, {PropTypes, Component} from 'react';
+import React, { Component, PropTypes } from 'react';
 import cssModules from 'react-css-modules';
 import styles from './UserInput.scss';
 
@@ -18,13 +18,11 @@ export default class UserInput extends Component {
     const { props } = this;
     const inputClassName = props.active ? styles.inputActive : styles.input;
     const activeLabel = () => {
-      if (props.active) {
-        return (
-          <div styleName="activeLabel">
-            {props.activeLabelMessage}
-          </div>
-        );
-      }
+      return (
+        <div styleName="activeLabel">
+          {props.activeLabelMessage}
+        </div>
+      );
     };
     return (
       <div styleName="root">
@@ -35,7 +33,7 @@ export default class UserInput extends Component {
                placeholder={props.placeholder}
                type={props.type}
                value={props.value} />
-        {activeLabel()}
+        {props.active && activeLabel()}
       </div>
     );
   }

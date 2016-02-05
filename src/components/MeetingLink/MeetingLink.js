@@ -1,23 +1,35 @@
-import React, {PropTypes, Component} from 'react';
+import React, { Component, PropTypes } from 'react';
+import CopyToClipboard from 'react-copy-to-clipboard';
 
 export default class MeetingLink extends Component {
   static propTypes = {
-    onMeetingLinkInputChange: PropTypes.func.isRequired,
-    onMeetingLinkButtonClicked: PropTypes.func.isRequired,
-    url: PropTypes.string.isRequired
+    location: PropTypes.string.isRequired,
+    onChange: PropTypes.func,
+    onCopy: PropTypes.func
   }
+
+  onChange() {
+    console.log('Meeting URL input');
+  }
+
+  onCopy() {
+    console.log('Meeting URL copied!');
+  }
+
   render() {
-    const props = this.props;
+    const { props } = this;
+    const meetingURL = props.location;
     return (
       <div className="input-group">
         {/*
           * Bootstrap input group, using base style configuration
-          * Todo: Style refactor (TA)
           *
           */}
-        <input className="form-control" onChange={() => props.onMeetingLinkInputChange()} placeholder={props.url} type="text" value={props.url} />
+        <input className="form-control" onChange={this.onChange} placeholder={meetingURL} type="text" value={meetingURL} />
         <span className="input-group-btn">
-          <button className="btn btn-default" onClick={() => props.onMeetingLinkButtonClicked()} type="button">Copy</button>
+          <CopyToClipboard text={meetingURL} onCopy={this.onCopy}>
+            <button className="btn btn-default" type="button">Copy</button>
+          </CopyToClipboard>
         </span>
       </div>
     );

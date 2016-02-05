@@ -110,6 +110,7 @@
     "query-string": "^3.0.0",
     "react": "^0.14.2",
     "react-bootstrap": "^0.28.1",
+    "react-copy-to-clipboard": "^4.0.1",
     "react-css-modules": "^3.6.8",
     "react-dom": "^0.14.1",
     "react-helmet": "^2.2.0",

@@ -124,7 +124,7 @@ export default class MeetingLayout extends Component {
         <Helmet title={exampleMeetingName} />
         <MeetingNavbar onLeaveMeetingClick={handleOnLeaveMeetingClick} />
         <div styleName="main">
-          <MeetingHeader onMeetingNameChange={handleOnMeetingNameChange} meetingName={exampleMeetingName} />
+          <MeetingHeader onMeetingNameChange={handleOnMeetingNameChange} meetingName={exampleMeetingName} meetingLocation={props.location} />
           <MeetingSection {...exampleSections[0]} key={exampleSections[0].id}>
             <UserInput {...exampleInput}
               active={props.meeting.otherEditing}
