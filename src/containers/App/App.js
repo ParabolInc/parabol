@@ -17,7 +17,9 @@ function fetchData(getState, dispatch) {
   if (!isAuthLoaded(getState())) {
     promises.push(dispatch(loadAuth()));
   }
-  promises.push(dispatch(addPathHelpers(hostname, port)));
+  if (hostname && port) {
+    promises.push(dispatch(addPathHelpers(hostname, port)));
+  }
   return Promise.all(promises);
 }
 
