@@ -17,7 +17,9 @@ function fetchData(getState, dispatch) {
   if (!isAuthLoaded(getState())) {
     promises.push(dispatch(loadAuth()));
   }
-  if (hostname && port) {
+  // If we have a port, assume we are working locally
+  // If we have a hostname other than localhost assume we are in a hosted env
+  if (port || hostname !== 'localhost') {
     promises.push(dispatch(addPathHelpers(hostname, port)));
   }
   return Promise.all(promises);
