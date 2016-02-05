@@ -19,16 +19,24 @@ export default class MeetingLink extends Component {
   }
 
   onChange() {
-    console.log('Meeting URL input');
+    // Todo: use callback?
+    console.log('Meeting URL input onChange');
   }
 
   onCopy() {
+    // Todo: use callback?
     console.log('Meeting URL copied!');
   }
 
   render() {
     const { props } = this;
-    const meetingURL = `${props.hostname}${props.port}${props.location}`;
+    const URLport = `:${props.port}`;
+    const meetingURL = (
+      // Todo: configure correct protocol
+      props.port === '' ?
+      `http://${props.hostname}${props.location}` :
+      `http://${props.hostname}${URLport}${props.location}`
+    );
     return (
       <div className="input-group">
         {/*
