@@ -7,7 +7,6 @@ import { MeetingLink } from 'components';
 export default class MeetingHeader extends Component {
   static propTypes = {
     onMeetingNameChange: PropTypes.func.isRequired,
-    meetingLocation: PropTypes.string.isRequired,
     meetingName: PropTypes.string.isRequired
   }
   render() {
@@ -15,7 +14,7 @@ export default class MeetingHeader extends Component {
     return (
       <div styleName="root">
         <div styleName="linkBlock">
-          <MeetingLink location={props.meetingLocation} />
+          <MeetingLink />
         </div>
         <div styleName="label">
           Action Meeting

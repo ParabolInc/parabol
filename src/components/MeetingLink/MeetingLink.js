@@ -1,9 +1,19 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 import CopyToClipboard from 'react-copy-to-clipboard';
 
+@connect(
+  state => ({
+    hostname: state.appInfo.hostname,
+    port: state.appInfo.port,
+    location: state.router.location.pathname
+  })
+)
 export default class MeetingLink extends Component {
   static propTypes = {
-    location: PropTypes.string.isRequired,
+    hostname: PropTypes.string,
+    port: PropTypes.string,
+    location: PropTypes.string,
     onChange: PropTypes.func,
     onCopy: PropTypes.func
   }
@@ -18,7 +28,7 @@ export default class MeetingLink extends Component {
 
   render() {
     const { props } = this;
-    const meetingURL = props.location;
+    const meetingURL = `${props.hostname}${props.port}${props.location}`;
     return (
       <div className="input-group">
         {/*
