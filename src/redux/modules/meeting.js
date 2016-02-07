@@ -1,3 +1,5 @@
+import * as _ from 'lodash';
+
 import { subscriptionManager } from '../../helpers/subscriptionManager';
 import { CONNECTED as SOCKET_CONNECTED } from './socket';
 
@@ -7,6 +9,7 @@ const CREATE_FAIL = 'action/meeting/CREATE_FAIL';
 const LOAD = 'action/meeting/LOAD';
 const LOAD_SUCCESS = 'action/meeting/LOAD_SUCCESS';
 const LOAD_FAIL = 'action/meeting/LOAD_FAIL';
+const UPDATE_CONTENT_OPTIMISTIC = 'action/meeting/UPDATE_CONTENT_OPTIMISTIC';
 const UPDATE_CONTENT = 'action/meeting/UPDATE_CONTENT';
 const UPDATE_CONTENT_SUCCESS = 'action/meeting/UPDATE_CONTENT_SUCCESS';
 const UPDATE_CONTENT_FAIL = 'action/meeting/UPDATE_CONTENT_FAIL';
@@ -22,6 +25,8 @@ const UNSUBSCRIBE_FAIL = 'action/meeting/UNSUBSCRIBE_SUCCESS';
 const S_MEETING_INSERT = 'action/meeting/S_MEETING_INSERT';
 const S_MEETING_UPDATE = 'action/meeting/S_MEETING_UPDATE';
 const S_MEETING_DELETE = 'action/meeting/S_MEETING_DELETE';
+
+const THROTTLED_NETWORK_RATE = 500; // ms
 
 const initialState = {
   loaded: false,
@@ -79,12 +84,12 @@ export default function reducer(state = initialState, action = {}) {
         instance: null,
         error: action.error
       };
-    case UPDATE_CONTENT_SUCCESS:
+    case UPDATE_CONTENT_OPTIMISTIC:
       return {
         ...state,
         instance: {
           ...state.instance,
-          ...action.result
+          content: action.payload.content
         }
       };
     case S_MEETING_UPDATE:
@@ -136,9 +141,17 @@ export function create() {
   };
 }
 
-export function updateContent(id, content, socketId) {
-  // TODO: refactor for optimistic updates
+function updateContentOptimistic(content) {
   return {
+    type: UPDATE_CONTENT_OPTIMISTIC,
+    payload: {
+      content: content
+    }
+  };
+}
+
+const _throttledUpdateContent = _.throttle((dispatch, id, content, socketId) => {
+  dispatch({
     types: [UPDATE_CONTENT, UPDATE_CONTENT_SUCCESS, UPDATE_CONTENT_FAIL],
     promise: (client) => {
       const payload = { json: { meetingsById: { } } };
@@ -155,11 +168,17 @@ export function updateContent(id, content, socketId) {
           };
         });
     }
+  });
+}, THROTTLED_NETWORK_RATE);
+
+export function updateContent(id, content, socketId) {
+  return (dispatch) => { // Hey, I'm a thunk!
+    dispatch(updateContentOptimistic(content)); // sync update
+    _throttledUpdateContent(dispatch, id, content, socketId); // throttled async
   };
 }
 
 export function updateEditing(id, editing, socketId) {
-  // TODO: refactor for optimistic updates
   return {
     types: [UPDATE_EDITING, UPDATE_EDITING_SUCCESS, UPDATE_EDITING_FAIL],
     promise: (client) => {

@@ -35,7 +35,7 @@ export default class SocketManager {
   }
 
   connect() {
-    this.socket = io('', {path: '/ws', transports: ['websocket']});
+    this.socket = io('', { path: '/ws' });
     this.addListener('connect',
       (payload, store) => store.dispatch(connected(this.socket.id)));
     this.addListener('disconnect',
