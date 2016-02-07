@@ -28,3 +28,5 @@ rethinkdb_data/
 *.iml
 webpack-assets.json
 webpack-stats.json
+.DS_Store
+
