@@ -1,59 +1,59 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { isLoaded as isAuthLoaded, load as loadAuth, logout } from 'redux/modules/auth';
-import { addPathHelpers } from 'redux/modules/appInfo';
+import { updateAppUrl } from 'redux/modules/appInfo';
 import { pushState } from 'redux-router';
 import connectData from 'helpers/connectData';
 
 const styles = require('./App.scss');
 
-function fetchData(getState, dispatch) {
-  const promises = [];
-  // Path helpers (hostname, port)
-  // Gets app info available server side and pushes to state,
-  // making it available when client state is rehydrated.
-  const hostname = process.env.HOST || 'localhost';
-  const port = process.env.PORT;
+async function fetchData(getState, dispatch) {
   if (!isAuthLoaded(getState())) {
-    promises.push(dispatch(loadAuth()));
+    await dispatch(loadAuth());
   }
-  // If we have a port, assume we are working locally
-  // If we have a hostname other than localhost assume we are in a hosted env
-  if (port || hostname !== 'localhost') {
-    promises.push(dispatch(addPathHelpers(hostname, port)));
-  }
-  return Promise.all(promises);
 }
 
 @connectData(fetchData)
 @connect(
   state => ({user: state.auth.user}),
-  {logout, pushState})
+  {logout, pushState, updateAppUrl})
 export default class App extends Component {
   static propTypes = {
     children: PropTypes.object.isRequired,
     user: PropTypes.object,
     logout: PropTypes.func.isRequired,
-    pushState: PropTypes.func.isRequired
+    pushState: PropTypes.func.isRequired,
+    updateAppUrl: PropTypes.func.isRequired
   };
 
   static contextTypes = {
     store: PropTypes.object.isRequired
   };
 
+  componentDidMount() {
+    const { props } = this;
+    props.updateAppUrl(window.location.href);
+  }
+
   componentWillReceiveProps(nextProps) {
-    if (!this.props.user && nextProps.user) {
+    const { props } = this;
+    if (typeof window !== 'undefined' && window.location &&
+          window.location.href) {
+      props.updateAppUrl(window.location.href);
+    }
+    if (!props.user && nextProps.user) {
       // login
-      this.props.pushState(null, '/loginSuccess');
+      props.pushState(null, '/loginSuccess');
     } else if (this.props.user && !nextProps.user) {
       // logout
-      this.props.pushState(null, '/');
+      props.pushState(null, '/');
     }
   }
 
   handleLogout = (event) => {
+    const { props } = this;
     event.preventDefault();
-    this.props.logout();
+    props.logout();
   }
 
   render() {

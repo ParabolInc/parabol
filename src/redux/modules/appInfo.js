@@ -1,24 +1,26 @@
-const SET_PATH_HELPERS = 'appInfo/SET_PATH_HELPERS';
+const UPDATE_APP_URL = 'appInfo/UPDATE_APP_URL';
 
-export default function reducer(state = {}, action = {}) {
+const initialState = {
+  url: ''
+};
+
+export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
-    case SET_PATH_HELPERS:
+    case UPDATE_APP_URL:
       return {
         ...state,
-        hostname: action.payload.hostname,
-        port: action.payload.port
+        url: action.payload.url
       };
     default:
       return state;
   }
 }
 
-export function addPathHelpers(hostname, port) {
+export function updateAppUrl(url) {
   return {
-    type: SET_PATH_HELPERS,
+    type: UPDATE_APP_URL,
     payload: {
-      hostname,
-      port
+      url
     }
   };
 }
