@@ -93,7 +93,7 @@ If you're forging out on your own, have a look in `config/` and
 ## Getting Involved
 
 We track our development missions on the
-[https://waffle.io/ParabolInc/action](Action waffle.io Board). Check it
+[Action waffle.io Board](https://waffle.io/ParabolInc/action). Check it
 out, grab a mission (or contribute your own) and we'll gladly (and thankfully)
 merge your pull request.
 
