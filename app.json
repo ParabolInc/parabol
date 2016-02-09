@@ -1,8 +1,7 @@
 {
-  "name": "react-redux-universal-hot-example",
-  "description": "Example of an isomorphic (universal) webapp using react redux and hot reloading",
-  "repository": "https://github.com/erikras/react-redux-universal-hot-example",
-  "logo": "http://node-js-sample.herokuapp.com/node.svg",
+  "name": "action",
+  "description": "Meaningful meetings for building smarter teams",
+  "repository": "https://github.com/ParabolInc/action",
   "keywords": [
     "react",
     "isomorphic",
@@ -13,7 +12,6 @@
     "react-hot-reloader",
     "redux",
     "starter",
-    "boilerplate",
     "babel"
   ]
 }
