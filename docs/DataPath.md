@@ -42,8 +42,9 @@ serialized and the initial page served to the client.
 
 ### Client-side Render, Subscriptions, & Model Updates
 
-On the client, any components using `@connectData` will call their
-`fetchDataDeferred()` method.
+As a user navigates the application and new React components are
+mounted to the DOM data will be fetched on the client from the server
+using the same @connectData decorator.
 
 In Action, a convention is followed where the container component just
 under `App` is called the _layout_ (for example, `LandingLayout`). A layout
