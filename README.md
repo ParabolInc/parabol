@@ -99,7 +99,9 @@ merge your pull request.
 
 ## Releases
 
-UNRELEASED - Nothing to share here yet ;)
+| Version            | Summary                                      |
+|--------------------|----------------------------------------------|
+| 0.0.1              | Developer preview and architecture demo      |
 
 ## About
 

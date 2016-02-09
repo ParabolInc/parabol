@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## [Unreleased]
+## v0.0.1
 ### Added
 - Initial fork from
   [react-redux-universal-hot-example](https://github.com/erikras/react-redux-universal-hot-example) by @jrhusney
@@ -14,5 +14,5 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
   [falcor-saddle](https://github.com/ParabolInc/falcor-saddle) integration
   by @jrhusney
 - socket.io change feed → client Redux implementation by @jrhusney
-- Demonstration realtime collaboration by @jrhusney & @ackernaut
+- Demonstration of realtime collaboration by @jrhusney & @ackernaut
 - Documentation by @jrhusney
