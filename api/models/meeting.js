@@ -27,7 +27,10 @@ function subscribe(io, room, params, modelPath) {
   }
   const { id } = params;
   this.get(id).changes().then( (cursor) => {
-    subscriptions.add(modelPath, params, cursor);
+    try {
+      subscriptions.add(modelPath, params, cursor);
+      subscriptions.addRoomTo(modelPath, params, room);
+    } catch (e) { }
     cursor.on('change', (doc) => {
       const rooms = subscriptions.getRoomsFor(modelPath, params);
       publish(io, rooms, modelPath, doc, doc.updatedBy);
