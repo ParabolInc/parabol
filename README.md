@@ -9,6 +9,8 @@ agile teams.
 
 From [Parabol, Inc](http://parabol.co).
 
+Live demo: http://action-staging.parabol.co/
+
 ### Quick Links
 
 * [Stack Information](#stack-information)
