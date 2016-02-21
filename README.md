@@ -1,5 +1,7 @@
 # Action
 
+[![Slack Status](http://slackin.parabol.co/badge.svg)](http://slackin.parabol.co/)
+
 ## Overview
 
 An open-source tool for meaningful meetings to build smarter, more
@@ -17,7 +19,7 @@ Live demo: http://action-staging.parabol.co/
 * [Setup](#setup)
   * [Installation](#installation)
     * [Prerequisites](#prerequisites)
-    * [Source-code](#source-code)
+    * [Source Code](#source-code)
   * [Running in Development](#running-in-development)
   * [Production](#running-in-development)
 * [Getting Involved](#getting-involved)
@@ -54,7 +56,7 @@ Action requires Node.js and >4.1.1 (we're using 5.3.0 in development).
 Action also depends upon have an instance of
 [RethinkDB](https://rethinkdb.com/). Make sure you have it installed.
 
-#### Source-code
+#### Source code
 
 ```bash
 $ git clone https://github.com/ParabolInc/action.git action
@@ -92,10 +94,19 @@ If you're forging out on your own, have a look in `config/` and
 
 ## Getting Involved
 
-We track our development missions on the
-[Action waffle.io Board](https://waffle.io/ParabolInc/action). Check it
-out, grab a mission (or contribute your own) and we'll gladly (and thankfully)
-merge your pull request.
+Action is software built with the community for the community. We can't do
+it without your help!
+
+Our [Action waffle.io Board](https://waffle.io/ParabolInc/action) organizes
+available design and development missions. Check it out, grab a mission
+(or contribute your own) and we'll gladly (and thankfully!) merge your pull
+request.
+
+You're contribution won't go unrewarded: Parabol offers equity in our
+young company for qualified contributions to Action.
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for more information on how to
+get involved and how to get compensated.
 
 ## Releases
 
