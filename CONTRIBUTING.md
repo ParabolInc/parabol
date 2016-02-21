@@ -172,7 +172,7 @@ during our board meeting.
 ## Questions
 
 If you’ve got questions, please don’t hesitate to reach out. You can
-always reach us at [love@parabol.co](mailto:love@parabol.co)
+always reach us at [love@parabol.co](mailto:love@parabol.co).
 
 
 # Mission specs
@@ -188,7 +188,7 @@ answer a few vital questions to frame in the job to be done including:
   * How many points do we think the work is worth?
 
 The official Action mission template document can be found
-[here](https://goo.gl/mB32GD)
+[here](https://goo.gl/mB32GD).
 
 # Design specs
 
@@ -219,4 +219,4 @@ Questions? Want to collaborate? Come join us on our Slack community.
 
 [![Slack Status](http://slackin.parabol.co/badge.svg)](http://slackin.parabol.co/)
 
-Sign up at http://slackin.parabol.co/
+Sign up at http://slackin.parabol.co/.
