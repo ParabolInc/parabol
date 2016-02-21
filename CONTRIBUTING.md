@@ -12,7 +12,8 @@ workplace is to support individuals and teams to:
 * See and celebrate progress.
 
 We’re a young organization, and we won’t be able to develop this software
-and realize this vision without your help.
+and realize this vision without your help. Whether you’re a designer or a
+developer, we could use a hand.
 
 However, we also believe that contributing to Action _isn’t_ its own reward.
 That’s why we’re offering equity compensation for designers and coders who
@@ -24,11 +25,10 @@ Here’s how contributing to Action works.
 
 # Find an Issue
 
-Whether you’re a designer or a developer, we could use a hand.
-
-All of the development work for Action is captured as an issue on Github
-issues. To see which issues are available for you to help with, have a look
-at our [waffle.io board](https://waffle.io/ParabolInc/action).
+All of the design and development work for Action is captured as GitHub issues.
+They are tagged and arranged on our
+[waffle.io board](https://waffle.io/ParabolInc/action). To see where you can
+jump in, begin by having a look at the issues in the following stages:
 
 All Issues begin in our *Backlog*. Consider these a list of things we _could_
 do but aren’t actively looking to develop yet. Issues ready for contribution
@@ -38,7 +38,8 @@ appear in *Needs Design Spec* or *Ready for Build*.
 
 ![Contributing to Action - Designers](./docs/images/ContributingToActionDesigners.png)
 
-Whether helping us develop a new spinner or rethinking the UX of our on-boarding flow, we could use your talent.
+Whether its helping us to develop a new spinner or rethinking the UX of our
+on-boarding flow, we could use your talent!
 
 Here’s how to get involved:
 
@@ -48,17 +49,17 @@ Here’s how to get involved:
 2. Click on the issue number and read the comments. Inside you’ll find a
    link to the issue’s *mission spec* which details the work to be done.
 
-3. If you’re interested in taking the mission, add a comment to it and
+3. If you’re interested in taking on the mission, add a comment to it and
    tell us how many points you’re interested in doing the job for
    (see: [Compensation](#compensation)). We’ll acknowledge that the issue
    now belongs to you and move it to the *Designing* column.
 
 4. Contribute your work along the guidelines in the mission spec. Once you’re
-   done add a comment to the issue. We’ll look over your work and provide
+   done add a comment to the issue. We’ll review your hard work and provide
    feedback.
 
 5. Once any feedback is addressed, we’ll assign you points to compensate you
-   for your work, and grant you our eternal thanks!
+   for your work, and give you our eternal thanks!
 
 ## If you’re a coder
 
@@ -80,14 +81,15 @@ Contributing is easy:
 
 3. If you’re interested in taking the mission, add a comment to it and
    tell us how many points you’re interested in doing the job for
-   (see: [Compensation](#compensation)). We’ll acknowledge that the issue
+   (see: [Compensation](#compensation)). We’ll acknowledge the issue
    now belongs to you and move it to the *Building* column.
 
 4. Create a branch named similarly to `feature-name-#issue` where `#issue`
-   is the GitHub issue number (e.g. `timer-feature-#42`).
+   is the GitHub issue number (e.g. `timer-feature-#42`). This keeps our
+   waffle board happy.
 
 5. Contribute your work along the guidelines provided in the spec documents.
-   Once you’re done, add a comment to the issue. We’ll look over your work,
+   Once you’re done, add a comment to the issue. We’ll review your work,
    and provide feedback.
 
 6. Once any feedback is addressed, we’ll assign you points to compensate you
@@ -114,30 +116,11 @@ Contributing is easy:
    for your work, and grant you our eternal thanks!
 
 
-# Points and sizes
-
-Before you begin working on an issue, you size it. Most issues will have a
-*swag* sizing from one of the Action maintainers, but it’s up to you to
-adjust it to what you think is fair.
-
-|  Points  | Individual *or* team effort required |
-| -------- | ------------------------------------ |
-|    1     | Less than a single day               |
-|    2     | One or two days                      |
-|    3     | Three or four days                   |
-|    5     | Five to seven days                   |
-|    8     | Less than two weeks                  |
-|    13    | Two to three weeks                   |
-|    20    | Three to four weeks                  |
-|    40    | Four to eight weeks                  |
-|    100   | Too big! Let’s break it down…        |
-
-
 # Compensation
 
-For giving us a hand and helping the broader Action community your
-contributions can be converted into equity in Parabol Inc. Here’s how it
-works:
+For giving us a hand and helping the broader Action community, your
+qualifying contributions may be converted into equity in Parabol Inc. Here’s
+how it works:
 
 1. When an issue is merged into the
    [Parabol Inc Action Repository](https://github.com/ParabolInc/action) by
@@ -161,30 +144,43 @@ works:
    accrue points by contributing, we’ll amend your advisory agreement no
    less frequently than once per quarter.
 
+## Points and sizes
+
+Before you begin working on an issue, you size it. Most issues will have a
+*swag* sizing from one of the Action maintainers, but it’s up to you to
+adjust it to what you think is fair.
+
+|  Points  | Individual *or* team effort required |
+| -------- | ------------------------------------ |
+|    1     | Less than a single day               |
+|    2     | One or two days                      |
+|    3     | Three or four days                   |
+|    5     | Five to seven days                   |
+|    8     | Less than two weeks                  |
+|    13    | Two to three weeks                   |
+|    20    | Three to four weeks                  |
+|    40    | Four to eight weeks                  |
+|    100   | Too big! Let’s break it down…        |
+
 ## Conversion rate
 
 At present, 100 points convert to options for 10,000 shares in Parabol Inc.
 With 10,000,000 shares outstanding, that’s 0.1% of the company.
 
 We currently will reevaluate this conversion rate once per calendar quarter
-during our board meeting.
-
-## Questions
-
-If you’ve got questions, please don’t hesitate to reach out. You can
-always reach us at [love@parabol.co](mailto:love@parabol.co).
+at our board meeting.
 
 
 # Mission specs
 
 Mission specs are brief definitions of design or engineering work. They
-answer a few vital questions to frame in the job to be done including:
+answer a few vital questions to frame in the work to be done, including:
 
   * Why is this work important?
   * Which user(s) does it serve?
   * What’s the primary journey or experience?
   * Which skills are needed to do the work?
-  * What quantitative and qualitative metrics can we measure?
+  * How can we measure if the work is successful?
   * How many points do we think the work is worth?
 
 The official Action mission template document can be found
@@ -194,7 +190,8 @@ The official Action mission template document can be found
 
 Some GitHub issues require a design spec in addition to a mission spec.
 Design specs are needed when a particular mission is complicated enough
-that a more in-depth written description, series of diagrams, or prototype is necessary to communicate intent.
+that a more in-depth written description, series of diagrams, or prototype is
+necessary to communicate intent.
 
 There are no specific requirements for how to create a design, but some
 examples we like are:
@@ -215,8 +212,14 @@ feedback.
 
 # Community
 
-Questions? Want to collaborate? Come join us on our Slack community.
+Want to collaborate? Join us on our Slack community!
 
 [![Slack Status](http://slackin.parabol.co/badge.svg)](http://slackin.parabol.co/)
 
 Sign up at http://slackin.parabol.co/.
+
+## Questions
+
+If you’ve got questions you'd like to inquire about privately, please don’t
+hesitate to reach out. You can reach us at
+[love@parabol.co](mailto:love@parabol.co).
