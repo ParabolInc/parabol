@@ -94,7 +94,7 @@
     "falcor-express": "^0.1.2",
     "falcor-http-datasource": "^0.1.2",
     "falcor-router": "^0.2.12",
-    "falcor-saddle": "0.0.1",
+    "falcor-saddle": "0.0.3",
     "file-loader": "^0.8.5",
     "history": "1.17.0",
     "hoist-non-react-statics": "^1.0.3",
