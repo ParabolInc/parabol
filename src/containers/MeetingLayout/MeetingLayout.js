@@ -113,6 +113,10 @@ export default class MeetingLayout extends Component {
       updateContent(meeting.instance.id, event.target.value, socketId);
     };
 
+    const handleUserInputChangeMocked = () => {
+      console.log('handleUserInputChangeMocked');
+    };
+
     const handleOnMeetingNameChange = () => {
       console.log('handleOnMeetingNameChange');
     };
@@ -135,10 +139,10 @@ export default class MeetingLayout extends Component {
             />
           </MeetingSection>
           <MeetingSection {...exampleSections[1]} key={exampleSections[1].id}>
-            <UserInput {...exampleInputActive} onUserInputChange={handleUserInputChange} />
+            <UserInput {...exampleInputActive} onUserInputChange={handleUserInputChangeMocked} />
           </MeetingSection>
           <MeetingSection {...exampleSections[2]} key={exampleSections[2].id}>
-            <UserInput {...exampleInput} onUserInputChange={handleUserInputChange} />
+            <UserInput {...exampleInput} onUserInputChange={handleUserInputChangeMocked} />
           </MeetingSection>
         </div>
       </div>
