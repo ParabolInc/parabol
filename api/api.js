@@ -4,6 +4,7 @@ import sessionRethinkDB from 'session-rethinkdb';
 import bodyParser from 'body-parser';
 import PrettyError from 'pretty-error';
 import http from 'http';
+import jwt from 'express-jwt';
 import SocketIo from 'socket.io';
 import socketSession from 'socket.io-express-session';
 import falcorExpress from 'falcor-express';
@@ -16,6 +17,11 @@ import { onConnection } from './socketio/index';
 import { mapUrl } from './utils/url';
 
 const pretty = new PrettyError();
+
+const authenticate = jwt({
+  secret: new Buffer(config.auth0.secret, 'base64'),
+  audience: config.auth0.audience
+});
 
 /*
  * Initialize app and HTTP server:
@@ -50,7 +56,7 @@ app.use(session);
 app.use(bodyParser.json());
 
 // Initialze falcor routes:
-app.use('/model.json', bodyParser.urlencoded({extended: false}),
+app.use('/model.json', authenticate, bodyParser.urlencoded({extended: false}),
   falcorExpress.dataSourceRoute( (req, res, next) =>
     new FalcorRouter(req, res, next)
 ));

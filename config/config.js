@@ -37,6 +37,10 @@ module.exports = Object.assign({
         {property: 'og:site', content: '@jrhusney'},
         {property: 'og:creator', content: '@jrhusney'},
       ]
+    },
+    auth0: {
+      clientId: 'w3mBrhiXGsE3DsrSMgpAz2bS6VzLhOyJ',
+      account: 'parabol.auth0.com'
     }
   },
 

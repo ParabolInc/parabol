@@ -1,4 +1,6 @@
 import Express from 'express';
+import cookieParser from 'cookie-parser';
+import cookie from 'react-cookie';
 import React from 'react';
 import ReactDOM from 'react-dom/server';
 import config from '../config/config';
@@ -34,6 +36,8 @@ app.use(favicon(path.join(__dirname, '..', 'static', 'favicon.ico')));
 
 app.use(Express.static(path.join(__dirname, '..', 'static')));
 
+app.use(cookieParser(config.session.secret));
+
 // Proxy to API server
 app.use('/api', (req, res) => {
   proxy.web(req, res, {target: targetUrl});
@@ -62,6 +66,9 @@ proxy.on('error', (error, req, res) => {
 });
 
 app.use((req, res) => {
+  // enable server-side access to cookies:
+  cookie.plugToRequest(req, res);
+
   if (__DEVELOPMENT__) {
     // Do not cache webpack stats: the script file would change since
     // hot module replacement is enabled in the development env

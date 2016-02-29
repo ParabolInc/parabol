@@ -30,7 +30,7 @@ function subscribe(io, room, params, modelPath) {
     try {
       subscriptions.add(modelPath, params, cursor);
       subscriptions.addRoomTo(modelPath, params, room);
-    } catch (e) { }
+    } catch (e) { console.log(e); } // eslint-disable-line
     cursor.on('change', (doc) => {
       const rooms = subscriptions.getRoomsFor(modelPath, params);
       publish(io, rooms, modelPath, doc, doc.updatedBy);
@@ -58,5 +58,3 @@ function unsubscribe(room, params, modelPath) {
 }
 
 Meeting.defineStatic('unsubscribe', unsubscribe);
-
-export default Meeting;

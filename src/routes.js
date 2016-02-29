@@ -7,8 +7,8 @@ import {
     Login,
     AppLayout,
     MeetingLayout,
-/*    LoginSuccess, */
     NotFound,
+    SigninSuccess
   } from 'containers';
 
 export default (store) => { // eslint-disable-line
@@ -47,10 +47,10 @@ export default (store) => { // eslint-disable-line
       { /* Home (main) route */ }
       <IndexRoute component={LandingLayout}/>
 
-      <Route path="meeting/:id" component={MeetingLayout} />
-      <Route path="applayout" component={AppLayout} />
-
       { /* Routes requiring login */ }
+      <Route path="applayout" component={AppLayout} />
+      <Route path="meeting/:id" component={MeetingLayout} />
+      <Route path="signin/:action" component={SigninSuccess} />
 
       { /* Routes */ }
       <Route path="login" component={Login}/>
