@@ -2,6 +2,7 @@ import io from 'socket.io-client';
 import * as _ from 'lodash';
 import { connected, disconnected } from '../redux/modules/socket';
 
+// TODO: secure with JWT
 
 export default class SocketManager {
   constructor() {

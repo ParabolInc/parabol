@@ -78,6 +78,7 @@ _Remember: if RethinkDB is running locally, you can reach its dashboard at
 2) Start Action in development mode:
 
 ```bash
+$ npm run migrate
 $ npm run dev
 ```
 

@@ -73,7 +73,16 @@ module.exports = {
       { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=10000&mimetype=application/octet-stream" },
       { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: "file" },
       { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=10000&mimetype=image/svg+xml" },
-      { test: webpackIsomorphicToolsPlugin.regular_expression('images'), loader: 'url-loader?limit=10240' }
+      { test: webpackIsomorphicToolsPlugin.regular_expression('images'), loader: 'url-loader?limit=10240' },
+      { test: /node_modules\/auth0-lock\/.*\.js$/,
+        loaders: [
+          'transform-loader/cacheable?brfs',
+          'transform-loader/cacheable?packageify'
+        ]
+      }, {
+        test: /node_modules\/auth0-lock\/.*\.ejs$/,
+        loader: 'transform-loader/cacheable?ejsify'
+      }
     ]
   },
   node: {
@@ -92,6 +101,8 @@ module.exports = {
     // hot reload
     new webpack.HotModuleReplacementPlugin(),
     new webpack.IgnorePlugin(/webpack-stats\.json$/),
+    // ignore utility scripts
+    new webpack.IgnorePlugin(/\.sh$/),
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __SERVER__: false,

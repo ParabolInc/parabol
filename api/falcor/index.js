@@ -1,8 +1,10 @@
 import meetings from './meetings';
+import users from './users';
 import FalcorRouter from 'falcor-router';
 
 const allRoutes = [
   ...meetings,
+  ...users,
 ];
 
 class ExpressFalcorRouter extends FalcorRouter.createClass(allRoutes) {
