@@ -16,8 +16,9 @@ and realize this vision without your help. Whether you’re a designer or a
 developer, we could use a hand.
 
 However, we also believe that contributing to Action _isn’t_ its own reward.
-That’s why we’re offering equity compensation for designers and coders who
-contribute to Action. We were influenced by
+That’s why we’re offering equity compensation for qualifying designers
+and coders who sign a [lightweight contract](https://goo.gl/MmR74i)
+and contribute to Action. We were influenced by
 [18F’s Open Source Micro-Purchasing model](https://18f.gsa.gov/2015/10/13/open-source-micropurchasing/).
 
 Here’s how contributing to Action works.
@@ -52,13 +53,16 @@ Here’s how to get involved:
 3. If you’re interested in taking on the mission, add a comment to it and
    tell us how many points you’re interested in doing the job for
    (see: [Compensation](#compensation)). We’ll acknowledge that the issue
-   now belongs to you and move it to the *Designing* column.
+   now belongs to you and send you a lightweight contract to sign.
 
-4. Contribute your work along the guidelines in the mission spec. Once you’re
+4. Once you've signed our contract, we'll move the issue to the *Designing*
+   column.
+
+5. Contribute your work along the guidelines in the mission spec. Once you’re
    done add a comment to the issue. We’ll review your hard work and provide
    feedback.
 
-5. Once any feedback is addressed, we’ll assign you points to compensate you
+6. Once any feedback is addressed, we’ll assign you points to compensate you
    for your work, and give you our eternal thanks!
 
 ## If you’re a coder
@@ -81,19 +85,25 @@ Contributing is easy:
 
 3. If you’re interested in taking the mission, add a comment to it and
    tell us how many points you’re interested in doing the job for
-   (see: [Compensation](#compensation)). We’ll acknowledge the issue
-   now belongs to you and move it to the *Building* column.
+   (see: [Compensation](#compensation)). We'll send you a lightweight
+   contract to review and sign.
 
-4. Create a branch named similarly to `feature-name-#issue` where `#issue`
+4. Once signed, we’ll acknowledge the issue now belongs to you and move
+   it to the *Building* column on [Action’s waffle.io board](https://waffle.io/ParabolInc/action).
+
+5. Create a branch named similarly to `feature-name-#issue` where `#issue`
    is the GitHub issue number (e.g. `timer-feature-#42`). This keeps our
    waffle board happy.
 
-5. Contribute your work along the guidelines provided in the spec documents.
+6. Contribute your work along the guidelines provided in the spec documents.
    Once you’re done, add a comment to the issue. We’ll review your work,
    and provide feedback.
 
-6. Once any feedback is addressed, we’ll assign you points to compensate you
+7. Once any feedback is addressed, we’ll assign you points to compensate you
    for your work, and grant you our eternal thanks!
+
+If you don't see an issue you're interested in, don't be discouraged. Write
+your own!
 
 ### If it’s a bug
 
@@ -103,16 +113,19 @@ Contributing is easy:
 2. If you’re interested in fixing it, tell us how many points you think it’s
    worth (see: [Compensation](#compensation)).
 
-3. Add a comment to the issue telling us that you’ve got it, we’ll
-   acknowledge it by moving the issue to the *Building* column on
+3. Add a comment to the issue telling us that you’ve got it and we’ll
+   send you a lightweight contract to review and sign.
+
+4. Once signed, we’ll acknowledge the issue now belongs to you and move
+   it to the *Building* column on
    [Action’s waffle.io board](https://waffle.io/ParabolInc/action).
 
-4. Create a branch named similarly to `bugfix-description-#issue` where
+5. Create a branch named similarly to `bugfix-description-#issue` where
    `#issue` is the GitHub issue number (e.g. `bugfix-authentication-#43`).
 
-4. Submit the PR with the fix.
+6. Submit the PR with the fix.
 
-5. Once any feedback is addressed, we’ll assign you points to compensate you
+7. Once any feedback is addressed, we’ll assign you points to compensate you
    for your work, and grant you our eternal thanks!
 
 
@@ -133,21 +146,18 @@ how it works:
    unless your team has requested an alternate
    distribution in the issue comments.
 
-3. Once you’ve accumulated more than 100 points, we’ll send you an advisory
-   agreement offering to convert your points to options in Parabol Inc.
-   (see: [Conversion rate](#conversion-rate)). The vesting clock will be
-   backdated to the date your *first* pull request was merged into the Action
-   repository.
+3. Once you’ve accumulated more than 100 points, we'll put an Options Grant
+   proposal before our Board of Directors to convert your points to options
+   in Parabol Inc. (see: [Conversion rate](#conversion-rate)) and grant
+   these options to you (subject to board approval). The vesting clock
+   will be backdated to the date we received a signature on the consulting
+   contract for your first mission.
 
-4. Once we’ve received your signed advisory agreement, we’ll issue you options
-   for equity in Parabol Inc. along their vesting schedule. If you continue to
-   accrue points by contributing, we’ll amend your advisory agreement no
-   less frequently than once per quarter.
 
 ## Points and sizes
 
 Before you begin working on an issue, you size it. Most issues will have a
-*swag* sizing from one of the Action maintainers, but it’s up to you to
+*SWAG* sizing from one of the Action maintainers, but it’s up to you to
 adjust it to what you think is fair.
 
 |  Points  | Individual *or* team effort required |
