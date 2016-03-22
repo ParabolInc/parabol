@@ -1,4 +1,5 @@
 import superagent from 'superagent';
+import cookie from 'react-cookie';
 import falcor from 'falcor';
 import HttpDataSource from 'falcor-http-datasource';
 import SocketManager from './SocketManager';
@@ -6,6 +7,7 @@ import config from '../../config/config';
 
 const httpMethods = ['get', 'post', 'put', 'patch', 'del'];
 const falcorModelName = 'model.json';
+const tokenCookieName = 'authorization';
 
 function formatUrl(path) {
   const adjustedPath = path[0] !== '/' ? '/' + path : path;
@@ -25,6 +27,10 @@ function formatUrl(path) {
  */
 class _ApiClient {
   constructor(req) {
+    this.token = null;
+    if (cookie && cookie.load(tokenCookieName)) {
+      this.token = cookie.load(tokenCookieName).token;
+    }
     this.http = {};
     httpMethods.forEach((method) =>
       this.http[method] = (path, { params, data } = {}) => new Promise((resolve, reject) => {
@@ -38,6 +44,10 @@ class _ApiClient {
           request.set('cookie', req.get('cookie'));
         }
 
+        if (this.token !== null) {
+          request.set(tokenCookieName, 'Bearer ' + this.token);
+        }
+
         if (data) {
           request.send(data);
         }
@@ -45,16 +55,43 @@ class _ApiClient {
         request.end((err, { body } = {}) => err ? reject(body || err) : resolve(body));
       }));
 
-    // Falcor client, N.B. API is promised-based so we add as simple prop:
-    this.falcor = new falcor.Model(
-      { source: new HttpDataSource(formatUrl(falcorModelName)) });
+    // Falcor client, N.B. API is promised-based so we add as a property:
+    this.falcor = this.falcorFactory();
 
     // WebSockets:
     this.sm = new SocketManager();
   }
 
+  // Method for propagating the redux store to the SocketManager:
   setStore(store) {
     this.sm.setStore(store);
+  }
+
+  // Method for updating JWT token:
+  updateToken(token) {
+    this.token = token;
+    cookie.save(tokenCookieName, { token: token });
+
+    // Recreate falcor client:
+    this.falcor = this.falcorFactory();
+
+    // TODO: propagate token update to socket manager
+  }
+
+  falcorFactory() {
+    if (this.token !== null) {
+      const jwtSource = {
+        source: new HttpDataSource(formatUrl(falcorModelName), {
+          headers: { 'Authorization': 'Bearer ' + this.token }
+        })
+      };
+      return new falcor.Model(jwtSource);
+    }
+
+    const anonSource = {
+      source: new HttpDataSource(formatUrl(falcorModelName))
+    };
+    return new falcor.Model(anonSource);
   }
 }
 

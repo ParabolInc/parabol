@@ -24,7 +24,7 @@
   ],
   "main": "bin/server.js",
   "scripts": {
-    "start": "concurrent --kill-others \"npm run start-prod\" \"npm run start-prod-api\"",
+    "start": "npm run migrate && concurrent --kill-others \"npm run start-prod\" \"npm run start-prod-api\"",
     "start-prod": "better-npm-run start-prod",
     "start-prod-api": "better-npm-run start-prod-api",
     "build": "webpack --verbose --colors --display-error-details --config webpack/prod.config.js",
@@ -37,7 +37,8 @@
     "prod": "concurrent --kill-others \"npm run start-prod\" \"npm run start-prod-api\"",
     "test": "karma start",
     "test-node": "./node_modules/mocha/bin/mocha $(find api -name '*-test.js') --compilers js:babel-core/register",
-    "test-node-watch": "./node_modules/mocha/bin/mocha $(find api -name '*-test.js') --compilers js:babel-core/register --watch"
+    "test-node-watch": "./node_modules/mocha/bin/mocha $(find api -name '*-test.js') --compilers js:babel-core/register --watch",
+    "migrate": "./bin/migrate.sh up-all"
   },
   "betterScripts": {
     "start-prod": {
@@ -83,18 +84,21 @@
     }
   },
   "dependencies": {
+    "auth0": "^2.0.0",
+    "auth0-lock": "^9.0.0",
     "babel": "~5.8.29",
     "babel-plugin-typecheck": "^2.0.0",
     "body-parser": "^1.14.1",
     "compression": "^1.6.0",
     "cookie-parser": "^1.4.1",
     "express": "^4.13.3",
+    "express-jwt": "^3.3.0",
     "express-session": "^1.12.1",
     "falcor": "^0.1.15",
     "falcor-express": "^0.1.2",
     "falcor-http-datasource": "^0.1.2",
     "falcor-router": "^0.2.12",
-    "falcor-saddle": "0.0.1",
+    "falcor-saddle": "0.1.0",
     "file-loader": "^0.8.5",
     "history": "1.17.0",
     "hoist-non-react-statics": "^1.0.3",
@@ -111,6 +115,7 @@
     "query-string": "^3.0.0",
     "react": "^0.14.2",
     "react-bootstrap": "^0.28.1",
+    "react-cookie": "^0.4.5",
     "react-copy-to-clipboard": "^4.0.1",
     "react-css-modules": "^3.6.8",
     "react-dom": "^0.14.1",
@@ -122,6 +127,7 @@
     "redux": "^3.0.4",
     "redux-form": "^3.0.12",
     "redux-router": "1.0.0-beta5",
+    "rethink-migrate": "^1.2.2",
     "scroll-behavior": "^0.3.0",
     "serialize-javascript": "^1.1.2",
     "serve-favicon": "^2.3.0",
@@ -131,6 +137,7 @@
     "socket.io-express-session": "^0.1.3",
     "superagent": "^1.4.0",
     "thinky": "^2.2.4",
+    "transform-loader": "^0.2.3",
     "url-loader": "^0.5.7",
     "warning": "^2.1.0",
     "webpack-isomorphic-tools": "^2.2.18"
