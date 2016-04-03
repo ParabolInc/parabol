@@ -1,26 +1,7 @@
 {
-  "stage": 0,
-  "optional": "runtime",
-  "loose": "all",
+  "presets": ["react", "es2015", "stage-0"],
   "plugins": [
-    "typecheck"
-  ],
-  "env": {
-    "development": {
-      "plugins": [
-        "react-transform"
-      ],
-      "extra": {
-        "react-transform": {
-          "transforms": [{
-            "transform": "react-transform-catch-errors",
-            "imports": [
-              "react",
-              "redbox-react"
-            ]
-          }]
-        }
-      }
-    }
-  }
+    ["transform-decorators-legacy"],
+    ["add-module-exports"]
+  ]
 }

@@ -1,0 +1,45 @@
+
+.notes {
+  margin: 0.5em;
+  padding-left: 0;
+  max-width: 10em;
+  list-style: none;
+  min-height: 1em;
+}
+
+.note {
+  margin-bottom: 0.5em;
+  padding: 0.5em;
+
+  background-color: #fdfdfd;
+  box-shadow: 0 0 0.3em .03em rgba(0,0,0,.3);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.note:hover {
+  box-shadow: 0 0 0.3em .03em rgba(0,0,0,.7);
+  transition: .6s;
+}
+
+.note .value {
+  /* force to use inline-block so that it gets minimum height */
+  display: inline-block;
+}
+
+.delete {
+  visibility: hidden;
+  display: flex;
+  align-self: center;
+  background: magenta;
+  border-radius: 100%;
+  width: 1em;
+  height: 1em;
+  justify-content: center;
+  font-size: .8em;
+  line-height: 1em;
+  cursor: pointer;
+}
+.note:hover .delete {
+  visibility: visible;
+}

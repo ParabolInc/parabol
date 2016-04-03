@@ -1,0 +1,9 @@
+.component {
+  flex: 1;
+  min-height: 700px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /*align-content: center;*/
+  /*align-items: center;*/
+}

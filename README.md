@@ -1,6 +1,7 @@
 # Action
 
 [![Slack Status](http://slackin.parabol.co/badge.svg)](http://slackin.parabol.co/)
+[![Circle CI](https://img.shields.io/circleci/project/parabol/action/master.svg)](https://circleci.com/gh/ParabolInc/action)
 
 ## Overview
 
@@ -30,68 +31,63 @@ Live demo: http://action-staging.parabol.co/
 
 ## Stack Information
 
-Action is a Node.js application based upon the excellent and
-ever-evolving [react-redux-universal-hot-example](https://github.com/erikras/react-redux-universal-hot-example)
-boilerplate.
+Action is a Node.js application based upon the meatier stack:
 
 | Concern            | Solution                                     |
 |--------------------|----------------------------------------------|
 | Server             | [Node 5](https://nodejs.org/)                |
 | Server Framework   | [Express](http://expressjs.com/)             |
 | Database           | [RethinkDB](https://www.rethinkdb.com/)      |
-| ORM                | [Thinky](http://thinky.io/)                  |
-| Model API          | [Falcor](https://netflix.github.io/falcor/)  |
-| Change Publishing  | [socket.io](http://socket.io/)               |
+| Data Transport     | [GraphQL](https://github.com/graphql/graphql-js) |
+| Sockets            | [socketcluster](http://socketcluster.io/)    |
 | Client State       | [Redux](http://redux.js.org/)                |
 | Front-end          | [React](https://facebook.github.io/react/)   |
+
+
 ## Setup
 
 ### Installation
 
 #### Prerequisites
 
-Action requires Node.js and >4.1.1 (we're using 5.3.0 in development).
+Action requires Node.js and >4.1.1 (we're using 5.10.0 in development).
 [Go here](https://nodejs.org/) to install a version for your system.
+If you already have node, we recommend [n](https://github.com/tj/n) to manage your node versions.
 
-Action also depends upon have an instance of
-[RethinkDB](https://rethinkdb.com/). Make sure you have it installed.
+Action also depends on [RethinkDB](https://rethinkdb.com/). Make sure you have it installed.
+If you have OSX, we recommend homebrew so upgrades are as easy as `brew update && brew upgrade rethinkdb`
 
 #### Source code
 
 ```bash
-$ git clone https://github.com/ParabolInc/action.git action
+$ git clone https://github.com/ParabolInc/action.git
 $ cd action
 $ npm install
-```
-
-### Running in Development
-
-1) In one terminal window, start RethinkDB (if it's not running already):
-
-```bash
+$ npm run quickstart
 $ rethinkdb
-```
-
 _Remember: if RethinkDB is running locally, you can reach its dashboard at
 [http://localhost:8080](http://localhost:8080) by default._
-
-2) Start Action in development mode:
-
-```bash
-$ npm run migrate
-$ npm run dev
 ```
 
-The application ready when you see the message `webpack built (pack) in
-(time)`.
+### Client-side development
 
-3) Open a browser and visit [http://localhost:3000/](http://localhost:3000/)
+In this mode, webpack will hot swap your updated client modules without restarting the server.
+```bash
+$ npm run dev
+```
+[http://localhost:3000/](http://localhost:3000/)
 
-### Production
+### Server-side development
 
-Information for running Action in a production environment is coming soon.
-If you're forging out on your own, have a look in `config/` and
-`config/env/production.js` to see which configuration is available.
+In this mode, the server will use your pre-built client bundle & only restart the server with fresh code. 
+```bash
+$ npm run prod
+```
+[http://localhost:3000/](http://localhost:3000/)
+
+### Database development
+- All tables are managed in `./src/server/setupDB.js`. Just add your tables & indices to that file and rerun
+- http://localhost:3000/graphql for testing out new queries/mutations
 
 ## Getting Involved
 
@@ -113,6 +109,7 @@ get involved and how to get compensated.
 
 | Version            | Summary                                      |
 |--------------------|----------------------------------------------|
+| 0.1.0              | Things got a whole lot meatier               |
 | 0.0.1              | Developer preview and architecture demo      |
 
 ## About

@@ -1,32 +1,7 @@
-# Build
-dist/
-
-# Tmp
-.tmp/
-
-# Logs
-logs
-*.log
-
-# Runtime data
-pids/
-*.pid
-*.seed
-
-# node-waf configuration
-.lock-wscript
-
-# Dependency directory
-# https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
-node_modules/
-
-# Database files
-rethinkdb_data/
-
-# Misc
 .idea/
-*.iml
-webpack-assets.json
-webpack-stats.json
+node_modules/
+rethinkdb_data/
+build/
 .DS_Store
-
+npm-debug.log
+stats.json
