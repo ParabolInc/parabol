@@ -66,6 +66,20 @@ export default {
         test: /\.js$/,
         loader: 'babel',
         include: serverInclude
+      },
+      {
+        test: /\.scss$/,
+        loader: 'style!css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss!sass?outputStyle=expanded&sourceMap'
+      },
+      {
+        test: /auth0-lock\/.*\.js$/,
+        loaders: [
+          'transform-loader/cacheable?brfs',
+          'transform-loader/cacheable?packageify'
+        ]
+      }, {
+        test: /auth0-lock\/.*\.ejs$/,
+        loader: 'transform-loader/cacheable?ejsify'
       }
     ]
   }

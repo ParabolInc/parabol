@@ -82,14 +82,14 @@ export default {
         include: clientInclude
       },
       {
-        test: /\.scss$/,
-        loader: 'style!css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss!sass?outputStyle=expanded&sourceMap'
-      },
-      {
         test: /\.js$/,
         loader: 'babel',
         query: babelQuery,
         include: clientInclude
+      },
+      {
+        test: /\.scss$/,
+        loader: 'style!css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss!sass?outputStyle=expanded&sourceMap'
       },
       {
         test: /auth0-lock\/.*\.js$/,

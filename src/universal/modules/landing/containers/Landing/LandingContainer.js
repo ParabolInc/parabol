@@ -17,7 +17,7 @@ const mapStateToProps = state => {
 @connect(mapStateToProps)
 export default class LandingContainer extends Component {
   static propTypes = {
-    children: PropTypes.element.isRequired,
+    children: PropTypes.element,
     isAuthenticated: PropTypes.bool.isRequired,
     meeting: PropTypes.shape({
       content: PropTypes.string,

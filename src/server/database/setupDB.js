@@ -1,12 +1,10 @@
 import r from './rethinkdriver';
 
-// ava is the test database
-const databases = ['meatier', 'ava'];
+const databases = ['action', 'actionTesting'];
 
 const database = [
-  {name: 'users', indices: ['email']},
-  {name: 'lanes', indices: ['userId']},
-  {name: 'notes', indices: ['laneId']}
+  {name: 'CachedUser', indices: ['userId']},
+  {name: 'Meeting', indices: []}
 ];
 
 export default async function setupDB(isUpdate = false) {

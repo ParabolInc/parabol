@@ -6,6 +6,12 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ## v0.1.0
 - Moved to the meatier stack
+- Fixed JWT expiry handling
+- Removed cookies
+- Removed sessions
+- Removed Sails
+- Switched from Falcor to GraphQL
+- 
 ## v0.0.1
 ### Added
 - Initial fork from

@@ -14,15 +14,12 @@ import glasses from './images/glasses.svg';
 import forwardSign from './images/forward-sign.svg';
 import github from './images/github.svg';
 
-import Footer from 'universal/components/Footer/Footer';
-import Navigation from 'universal/components/Navigation/Navigation';
-
 // TODO break apart into 1 component per section
 // TODO get rid of mapStyles
 export default class Landing extends Component {
   static propTypes = {
     // children included here for multi-part landing pages (FAQs, pricing, cha la la)
-    children: PropTypes.element.isRequired,
+    children: PropTypes.element,
     onMeetinCreateClick: PropTypes.func.isRequired
   };
   render() {
