@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch';
-import socketOptions from './socketOptions';
+import socketOptions from './clientOptions';
 import {getGraphQLHost, getGraphQLProtocol} from './graphQLConfig';
 
 export function parseJSON(response) {

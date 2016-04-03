@@ -5,7 +5,7 @@ import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import Kanban from 'universal/modules/kanban/components/Kanban/Kanban';
 import {reduxSocket} from 'redux-socket-cluster';
-import socketOptions from 'universal/utils/socketOptions';
+import {localStorageVars} from 'universal/utils/clientOptions';
 import {loadLanes, laneActions} from 'universal/modules/kanban/ducks/lanes';
 import {loadNotes} from 'universal/modules/kanban/ducks/notes';
 import {ensureState} from 'redux-optimistic-ui';
@@ -13,7 +13,7 @@ import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 
 @connect(mapStateToProps, mapDispatchToProps)
 @requireAuth
-@reduxSocket(socketOptions)
+@reduxSocket(localStorageVars.authTokenName)
 @DragDropContext(HTML5Backend)
 export default class KanbanContainer extends Component {
   static propTypes = {

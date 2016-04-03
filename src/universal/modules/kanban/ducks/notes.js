@@ -1,5 +1,5 @@
 import socketCluster from 'socketcluster-client';
-import socketOptions from '../../../utils/socketOptions';
+import socketOptions from '../../../utils/clientOptions';
 import {fromJS, Map as iMap, List as iList} from 'immutable';
 import {ensureState} from 'redux-optimistic-ui';
 import {prepareGraphQLParams} from '../../../utils/fetching';

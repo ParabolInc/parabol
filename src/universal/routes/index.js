@@ -2,11 +2,17 @@ import AppContainer from 'universal/containers/App/AppContainer';
 
 export default store => {
   return {
+    /*
+     * setting a component above the '/' route allows for sharing a container across a landing page
+     * as the index route and repeat that container for child routes
+     */
     component: AppContainer,
     childRoutes: [
+      // require('./appLayout'),
       require('./landing'),
-      require('./kanban')(store),
-      require('./accounts')(store),
+      // require('./signin'),
+      // require('./login'),
+      // require('./meeting'),
       require('./graphql'),
       require('./notFound')
     ]

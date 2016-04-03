@@ -1,0 +1,38 @@
+
+// _buttons-revealed.scss
+
+@mixin make-button-revealed($color) {
+  @include button-variant($color, #fff, $color);
+
+  border-color: transparent;
+
+  &:hover,
+  &:focus {
+    background-color: #fff;
+    border-style: dashed;
+  }
+
+  &:focus {
+    border-style: solid;
+  }
+}
+
+.btn-revealed-primary {
+  @include make-button-revealed($brand-primary);
+}
+
+.btn-revealed-success {
+  @include make-button-revealed($brand-success);
+}
+
+.btn-revealed-info {
+  @include make-button-revealed($brand-info);
+}
+
+.btn-revealed-warning {
+  @include make-button-revealed($brand-warning);
+}
+
+.btn-revealed-danger {
+  @include make-button-revealed($brand-danger);
+}

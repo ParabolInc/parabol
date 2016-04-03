@@ -1,0 +1,20 @@
+
+// _anchors.scss
+
+// Variables
+// ---------
+
+$anchor-color: $theme-b !default;
+$anchor-color-hover: darken($anchor-color, 10%) !default;
+
+// Components
+// ----------
+
+a {
+  color: $anchor-color;
+
+  &:hover,
+  &:focus {
+    color: $anchor-color-hover;
+  }
+}

@@ -1,0 +1,24 @@
+
+// _border-color.scss
+
+// Prefix: '.bc-' for 'border-color'
+
+.bc-transparent {
+  border-color: transparent;
+}
+
+// Solid border colors
+// --------------------
+// Todo: Add alpha variants for #000 (black)
+// Todo: Add alpha variants for #fff (white)
+
+.bc-black {
+  border-color: #000;
+}
+
+.bc-white {
+  border-color: #fff;
+}
+
+// Todo: Add loop for theme utility classes when
+//       abstracting the mixin with more options. (TA)

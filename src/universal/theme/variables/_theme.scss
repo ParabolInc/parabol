@@ -1,0 +1,117 @@
+
+// _theme.scss
+
+@import 'brand';
+
+///////////////////////////////
+// Set up your theme variables
+///////////////////////////////
+
+// Cool  (A)
+// Warm  (B)
+// Dark  (C)
+// Mid   (D)
+// Light (E)
+
+$theme-cool:  $dark-cyan !default;
+$theme-a:     $theme-cool !default;
+
+$theme-warm:  $darkish-pink !default;
+$theme-b:     $theme-warm !default;
+
+$theme-dark:  $slate-grey !default;
+$theme-c:     $theme-dark !default;
+
+$theme-mid:   $greyblue !default;
+$theme-d:     $theme-mid !default;
+
+$theme-light: $egg-shell !default;
+$theme-e:     $theme-light !default;
+
+////////////////////////////////
+// Set up theme utility classes
+////////////////////////////////
+
+// Map brand/theme color variables to theme letter
+// slugs a-# where # is the letter depending on
+// how many brand/theme colors you have.
+
+$theme-prefix: 'tu' !default; // 'tu' for 'theme utility'
+
+$properties: (
+  bg: background-color,
+  bc: border-color,
+  color: color
+) !default;
+
+$theme-colors: (
+  a: $theme-a,
+  b: $theme-b,
+  c: $theme-c,
+  d: $theme-d,
+  e: $theme-e
+) !default;
+
+$alpha-values: 10 20 30 40 50 60 70 80 90 !default;
+
+// Enable darkened and/or opaque utility classes
+// ----------------------------------------------
+
+// $darkened-base: false;
+// $opaque-base: false;
+
+$darkened-base: #000 !default;
+$opaque-base: #fff !default;
+
+// Todo: Move this to the proper place for mixins (TA)
+
+@mixin make-theme-utility-classes {
+  @each $theme-slug, $color in $theme-colors {
+
+    @each $property-slug, $property in $properties {
+
+      .#{$theme-prefix}-#{$property-slug}-#{$theme-slug} {
+        #{$property}: $color;
+      }
+
+      @each $value in $alpha-values {
+        $percent: $value * .01;
+        $alpha-color: rgba($color, $percent);
+
+        .#{$theme-prefix}-#{$property-slug}-#{$theme-slug}-#{$value}a {
+          #{$property}: $alpha-color;
+        }
+
+        @if $darkened-base {
+          $darkened-color: mix($color, $darkened-base, $value);
+
+          .#{$theme-prefix}-#{$property-slug}-#{$theme-slug}-#{$value}d {
+            #{$property}: $darkened-color;
+          }
+        }
+
+        @if $opaque-base {
+          $opaque-color: mix($color, $opaque-base, $value);
+
+          .#{$theme-prefix}-#{$property-slug}-#{$theme-slug}-#{$value}o {
+            #{$property}: $opaque-color;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Alpha attribute, fallback color mixin
+// --------------------------------------
+// Credit: http://thesassway.com/intermediate/mixins-for-semi-transparent-colors
+
+// Todo: Move this to the proper place for mixins (TA)
+
+@mixin alpha-attribute($attribute, $color, $background) {
+  $percent: alpha($color) * 100%;
+  $opaque: opacify($color, 1);
+  $solid-color: mix($opaque, $background, $percent);
+  #{$attribute}: $solid-color;
+  #{$attribute}: $color;
+}

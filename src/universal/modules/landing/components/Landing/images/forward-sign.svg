@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="112px" height="104px" viewBox="0 0 112 104" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.4.4 (17249) - http://www.bohemiancoding.com/sketch -->
+    <title>Shape</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Welcome" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Desktop-HD" sketch:type="MSArtboardGroup" transform="translate(-664.000000, -2437.000000)" fill="#C62575">
+            <g id="Group" sketch:type="MSLayerGroup" transform="translate(0.000000, 1427.000000)">
+                <g transform="translate(360.000000, 942.000000)" id="1034-sign@2x" sketch:type="MSShapeGroup">
+                    <g transform="translate(304.000000, 68.000000)">
+                        <g id="_x31_034-sign_x40_2x.png">
+                            <path d="M34,38 L73.172,38 L60.586,50.586 C60.224,50.948 60,51.448 60,52 C60,53.106 60.896,54 62,54 C62.552,54 63.052,53.776 63.414,53.414 L79.414,37.414 C79.778,37.052 80,36.552 80,36 C80,35.448 79.778,34.948 79.414,34.586 L63.414,18.586 C63.052,18.224 62.552,18 62,18 C60.896,18 60,18.894 60,20 C60,20.552 60.224,21.052 60.586,21.414 L73.172,34 L34,34 C32.896,34 32,34.894 32,36 C32,37.106 32.896,38 34,38 L34,38 Z M108,0 L4,0 C1.792,0 0,1.792 0,4 L0,68 C0,70.208 1.792,72 4,72 L48,72 L48,104 L52,104 L52,72 L60,72 L60,104 L64,104 L64,72 L108,72 C110.208,72 112,70.208 112,68 L112,4 C112,1.792 110.208,0 108,0 L108,0 Z M108,68 L64,68 L48,68 L4,68 L4,4 L108,4 L108,68 L108,68 Z" id="Shape"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

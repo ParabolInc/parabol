@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import GraphiQL from 'graphiql';
 import fetch from 'isomorphic-fetch';
-import socketOptions from 'universal/utils/socketOptions';
+import socketOptions from 'universal/utils/clientOptions';
 import 'universal/styles/global/graphiql.css';
 import {getGraphQLHost, getGraphQLProtocol} from 'universal/utils/graphQLConfig';
 

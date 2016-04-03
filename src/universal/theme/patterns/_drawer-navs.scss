@@ -1,0 +1,45 @@
+
+// _drawer-navs.scss
+
+// Variables
+
+@import '../variables.scss';
+
+// Components
+
+.drawer-nav {
+  margin: 1rem 0;
+}
+
+.drawer-nav-icon {
+  height: 2rem;
+  left: 2rem;
+  line-height: 2rem;
+  position: absolute;
+  text-align: center;
+  width: 2rem;
+}
+
+.drawer-nav-item {
+  color: #fff;
+  height: 2rem;
+  font-size: $font-size-s4;
+  line-height: 2rem;
+  padding: 0 0 0 4rem;
+  position: relative;
+
+  &:hover,
+  &:focus {
+    background-color: $theme-c;
+  }
+}
+
+.drawer-nav-badge {
+  background-color: $theme-b;
+  border-radius: 4em;
+  font-size: $font-size-s7;
+  font-weight: 700;
+  position: absolute;
+  right: .5rem;
+  top: .5rem;
+}

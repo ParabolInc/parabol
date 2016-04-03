@@ -1,16 +1,24 @@
 import React, {PropTypes, Component} from 'react';
-import {loginToken} from '../../modules/auth/ducks/auth';
+import {loginUserSuccess} from '../../modules/auth/ducks/auth';
+import jwtDecode from 'jwt-decode';
 
-export default authTokenName => ComposedComponent => {
+export default ({authTokenName, profileName}) => ComposedComponent => {
   return class TokenizedComp extends Component {
     static propTypes = {
-      dispatch: PropTypes.func
+      dispatch: PropTypes.func.isRequired
     }
+
     componentWillMount() {
       if (__CLIENT__) {
         const authToken = localStorage.getItem(authTokenName);
         if (authToken) {
-          this.props.dispatch(loginToken());
+          const authTokenObj = jwtDecode(authToken);
+          if (authTokenObj.exp < Date.now()) {
+            localStorage.removeItem(authTokenName);
+          } else {
+            const profile = localStorage.getItem(profileName)
+            this.props.dispatch(loginUserSuccess({authToken, profile}));
+          }
         }
       }
     }

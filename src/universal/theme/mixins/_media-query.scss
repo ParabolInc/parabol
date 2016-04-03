@@ -1,0 +1,42 @@
+
+// File:    _media-query.scss
+// Purpose: Useful @media query shorthand
+
+/////////////
+// Arguments
+/////////////
+
+// 1. Default:  @include mq(value|variable) { // Min-width styles }
+// 2. Optional: @include mq($max-width: value|variable) { // Max-width styles }
+// 3. Optional: @include mq($min-width: value|variable, $max-width: value|variable) { // Scoped min- to -max-width styles }
+// 4. Optional: @include mq($mq: string|variable) { // Advanced media query styles, including height-based queries }
+
+@mixin mq($min-width: false, $max-width: false, $mq: false, $media-type: 'screen') {
+  @if $min-width {
+    @if $max-width {
+      // Has both min- and max-widths
+      @media #{$media-type} and (min-width: $min-width) and (max-width: $max-width) {
+        @content;
+      }
+    } @else {
+      // Simple min-width query
+      // Note: No need to use the argument name since it’s the first argument.
+      @media #{$media-type} and (min-width: $min-width) {
+        @content;
+      }
+    }
+  } @else if $max-width {
+    // Simple max-width query
+    @media #{$media-type} and (max-width: $max-width) {
+      @content;
+    }
+  } @else if $mq {
+    // Advanced media query
+    // Note: This may not be shorter in single instances, but can make use of shared variables.
+    //       Also, consistent usage can be updated globally when improving the mixin.
+    $media-query: unquote($mq);
+    @media #{$media-query} {
+      @content;
+    }
+  }
+}

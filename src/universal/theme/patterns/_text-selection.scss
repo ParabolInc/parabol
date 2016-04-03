@@ -1,0 +1,7 @@
+
+// _text-selection.scss
+
+::selection {
+  background-color: rgba($theme-a, .25);
+  color: $theme-c;
+}

@@ -1,0 +1,22 @@
+
+// _img.scss
+
+.img {
+  // Define
+}
+
+.img-svg-shadow {
+  display: inline-block;
+  position: relative;
+}
+
+.img-svg-shadow-upper {
+  position: relative;
+  z-index: $zi-4;
+}
+
+.img-svg-shadow-lower {
+  left: 0;
+  position: absolute;
+  top: 1px;
+}

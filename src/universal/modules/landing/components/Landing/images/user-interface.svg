@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="56px" height="48px" viewBox="0 0 56 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.4.4 (17249) - http://www.bohemiancoding.com/sketch -->
+    <title>Shape</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Welcome" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Desktop-HD" sketch:type="MSArtboardGroup" transform="translate(-265.000000, -1210.000000)" fill="#098D8F">
+            <g id="Group" sketch:type="MSLayerGroup" transform="translate(0.000000, 963.000000)">
+                <g id="A-clean,-minimal-UI--+-_x37_86-browser_x40_2x.png" transform="translate(265.000000, 247.000000)" sketch:type="MSShapeGroup">
+                    <g id="_x37_86-browser_x40_2x.png">
+                        <path d="M11,30 L25,30 C25.553,30 26,29.553 26,29 C26,28.448 25.553,28 25,28 L11,28 C10.447,28 10,28.448 10,29 C10,29.553 10.447,30 11,30 L11,30 Z M18,4 C16.896,4 16,4.896 16,6 C16,7.104 16.896,8 18,8 C19.104,8 20,7.104 20,6 C20,4.896 19.104,4 18,4 L18,4 Z M31,38 L45,38 C45.553,38 46,37.553 46,37 L46,21 C46,20.447 45.553,20 45,20 L31,20 C30.447,20 30,20.447 30,21 L30,37 C30,37.553 30.447,38 31,38 L31,38 Z M32,22 L44,22 L44,36 L32,36 L32,22 L32,22 Z M11,22 L25,22 C25.553,22 26,21.553 26,21 C26,20.447 25.553,20 25,20 L11,20 C10.447,20 10,20.447 10,21 C10,21.553 10.447,22 11,22 L11,22 Z M11,38 L25,38 C25.553,38 26,37.553 26,37 C26,36.448 25.553,36 25,36 L11,36 C10.447,36 10,36.448 10,37 C10,37.553 10.447,38 11,38 L11,38 Z M6,4 C4.896,4 4,4.896 4,6 C4,7.104 4.896,8 6,8 C7.104,8 8,7.104 8,6 C8,4.896 7.104,4 6,4 L6,4 Z M12,4 C10.896,4 10,4.896 10,6 C10,7.104 10.896,8 12,8 C13.104,8 14,7.104 14,6 C14,4.896 13.104,4 12,4 L12,4 Z M52,0 L4,0 C1.791,0 0,1.791 0,4 L0,44 C0,46.209 1.791,48 4,48 L52,48 C54.209,48 56,46.209 56,44 L56,4 C56,1.791 54.209,0 52,0 L52,0 Z M54,44 C54,45.104 53.104,46 52,46 L4,46 C2.896,46 2,45.104 2,44 L2,12 L54,12 L54,44 L54,44 Z M54,10 L2,10 L2,4 C2,2.896 2.896,2 4,2 L52,2 C53.104,2 54,2.896 54,4 L54,10 L54,10 Z" id="Shape"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
