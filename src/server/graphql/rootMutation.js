@@ -1,9 +1,8 @@
 import {GraphQLObjectType} from 'graphql';
 import cachedUser from './models/CachedUser/cachedUserMutation';
-import lane from './models/Lanes/laneMutation';
-import note from './models/Notes/noteMutation';
+import meeting from './models/Meeting/meetingMutation'
 
-const rootFields = {cachedUser, lane, note};
+const rootFields = {cachedUser, meeting};
 
 export default new GraphQLObjectType({
   name: 'Mutation',
