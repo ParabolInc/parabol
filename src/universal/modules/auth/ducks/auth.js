@@ -1,6 +1,7 @@
 import {push, replace} from 'react-router-redux';
 import {localStorageVars} from '../../../utils/clientOptions';
 import {fromJS, Map as iMap} from 'immutable';
+import {fetchGraphQL} from '../../../utils/fetching';
 
 const {authTokenName} = localStorageVars;
 
@@ -62,11 +63,45 @@ export function loginUserError(error) {
   };
 }
 
-export function loginAndRedirect(redirect, profile, authToken) {
+export const loginAndRedirect = (redirect, authToken) => {
   const {profileName, authTokenName} = localStorageVars;
-  localStorage.setItem(profileName, JSON.stringify(profile));
   localStorage.setItem(authTokenName, authToken);
-  return function (dispatch) {
+  return async dispatch => {
+    const query = `
+    mutation ($authToken: String!) {
+      profile: updateUserWithIdToken(idToken: $authToken) {
+        id
+        cachedAt
+        cacheExpiresAt
+        createdAt
+        updatedAt
+        userId
+        email
+        emailVerified
+        picture
+        name
+        nickname
+        identities {
+          connection
+          userId
+          provider
+          isSocial
+        }
+        loginsCount
+        blockedFor {
+          identifier
+          id
+        }
+      }
+    }`;
+    const {error, data} = await fetchGraphQL({query, variables: {authToken}});
+    //TODO enable once we get the server credentials for good stuff
+    // if (error) {
+    //   return dispatch({type: LOGIN_USER_ERROR, error});
+    // }
+    // const {profile} = data;
+    const profile = {name: 'joe'};
+    localStorage.setItem(profileName, JSON.stringify(profile));
     dispatch(loginUserSuccess({profile, authToken}));
     dispatch(push(redirect));
   };

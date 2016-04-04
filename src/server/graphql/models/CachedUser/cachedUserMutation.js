@@ -5,6 +5,7 @@ import {getUserByUserId} from './helpers';
 import { AuthenticationClient } from 'auth0';
 import {auth0} from '../../../../universal/utils/clientOptions';
 
+//TODO this stuff is no good, we need the good server stuff so we don't 401
 const auth0Client = new AuthenticationClient({
   domain: auth0.account,
   clientId: auth0.clientId
@@ -25,9 +26,9 @@ export default {
       const user = await getUserByUserId(userInfo.user_id); //eslint-disable-line camelcase
       const id = user && user.id;
       const newUserObj = {
-        cachedAt: r.now(),
+        cachedAt: new Date(),
         //TODO set expiry here
-        cacheExpiresAt: r.now(),
+        cacheExpiresAt: new Date(),
         //from auth0
         createdAt: userInfo.created_at,
         updatedAt: userInfo.updated_at,

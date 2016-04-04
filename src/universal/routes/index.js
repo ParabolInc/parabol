@@ -12,7 +12,7 @@ export default store => {
       require('./landing'),
       require('./signin'),
       // require('./login'),
-      // require('./meeting'),
+      require('./meeting')(store),
       require('./graphql'),
       require('./notFound')
     ]

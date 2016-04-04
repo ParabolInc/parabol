@@ -1,7 +1,9 @@
 import {fromJS, Map as iMap} from 'immutable';
 import {push, replace} from 'react-router-redux';
-import {fetchGraphQL} from '../../../utils/fetching';
+import {fetchGraphQL, prepareGraphQLParams} from '../../../utils/fetching';
 import {ensureState} from 'redux-optimistic-ui';
+import {localStorageVars} from '../../../utils/clientOptions';
+import socketCluster from 'socketcluster-client';
 
 // Changed string consts because chances are we'll have more than 1 "CREATE_SUCCESS" down the road
 export const CREATE_MEETING_REQUEST = 'action/meeting/CREATE_MEETING_REQUEST';
@@ -61,5 +63,38 @@ export function createMeetingAndRedirect() {
     const id = ensureState(getState()).getIn(['meeting', 'instance', 'id']);
     // replace, don't push so a click on the back button does what we want
     dispatch(replace(`/meeting/${id}`));
+  };
+}
+
+export function loadMeeting(meetingId) {
+  const query = `
+  subscription($meetingId: !String) {
+    getMeeting(meetingId: $meetingId) {
+      id,
+      content
+    }
+  }`;
+  const serializedParams = prepareGraphQLParams({query});
+  const sub = 'getMeeting';
+  const {authTokenName} = localStorageVars;
+  const socket = socketCluster.connect({authTokenName});
+  socket.subscribe(serializedParams, {waitForAuth: true});
+  return dispatch => {
+    // client-side changefeed handler
+    socket.on(sub, data => {
+      const meta = {synced: true};
+      if (!data.old_val) {
+        dispatch(addLane(data.new_val, meta));
+      } else if (!data.new_val) { // eslint-disable-line no-negated-condition
+        dispatch(deleteLane(data.old_val.id, meta));
+      } else {
+        dispatch(updateLane(data.new_val, meta));
+      }
+    });
+    socket.on('unsubscribe', channelName => {
+      if (channelName === sub) {
+        dispatch({type: CLEAR_LANES});
+      }
+    });
   };
 }

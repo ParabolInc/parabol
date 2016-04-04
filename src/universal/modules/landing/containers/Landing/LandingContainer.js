@@ -59,7 +59,7 @@ export default class LandingContainer extends Component {
           if (error) {
             return dispatch(loginUserError(error))
           }
-          dispatch(loginAndRedirect('/signin/createmeeting', profile, authToken));
+          dispatch(loginAndRedirect('/signin/createmeeting', authToken));
 
         })
       }

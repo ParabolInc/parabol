@@ -96,6 +96,8 @@
     "node-uuid": "1.4.7",
     "piping": "0.3.0",
     "react": "0.14.8",
+    "react-copy-to-clipboard": "^4.0.2",
+    "react-css-modules": "^3.7.6",
     "react-dnd": "2.1.4",
     "react-dnd-html5-backend": "2.1.2",
     "react-dom": "0.14.8",
