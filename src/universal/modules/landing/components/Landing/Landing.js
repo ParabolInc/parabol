@@ -20,10 +20,11 @@ export default class Landing extends Component {
   static propTypes = {
     // children included here for multi-part landing pages (FAQs, pricing, cha la la)
     // children: PropTypes.element,
-    onMeetinCreateClick: PropTypes.func.isRequired
+    onMeetingCreateClick: PropTypes.func.isRequired
   };
   render() {
-    const {onMeetinCreateClick} = this.props;
+
+    const {onMeetingCreateClick} = this.props;
 
     return (
       <div>
@@ -41,7 +42,7 @@ export default class Landing extends Component {
               Meaningful take-aways.
             </h2>
             <button className={mapStyles(styles, 'action-landing-cta-button')}
-                    onClick={onMeetinCreateClick}
+                    onClick={onMeetingCreateClick}
                     title="Start a Meeting">
               Start a Meeting
             </button>

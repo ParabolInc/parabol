@@ -22,7 +22,9 @@ export default {
     },
     async resolve(source, {idToken}) {
       const userInfo = await auth0Client.tokens.getInfo(idToken);
-      //TODO if it isn't already, add the userId to the JWT to eliminate call to DB
+      console.log('**** USER INFO ****', userInfo)
+      //TODO add the userId to the JWT to eliminate call to DB? JWT.sub is the userId, not id, maybe it'll do
+      //TODO loginsCount and blockedFor are not a part of this API response
       const user = await getUserByUserId(userInfo.user_id); //eslint-disable-line camelcase
       const id = user && user.id;
       const newUserObj = {
@@ -42,7 +44,7 @@ export default {
         loginsCount: userInfo.logins_count,
         blockedFor: userInfo.blocked_for
       };
-      await r.table('CachedUser').get(id).insert(newUserObj, {conflict: 'update'});
+      await r.table('CachedUser').insert(newUserObj, {conflict: 'update'});
       return newUserObj;
     }
   }

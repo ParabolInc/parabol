@@ -10,6 +10,7 @@ export default store => {
       const {component, ...asyncReducers} = getKanbanImports(importMap);
       const newReducer = makeReducer(asyncReducers);
       store.replaceReducer(newReducer);
+
       cb(null, component);
     }
   }

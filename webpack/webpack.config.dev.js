@@ -31,7 +31,11 @@ export default {
   devtool: 'eval',
   context: path.join(root, "src"),
   entry: {
-    app: ['babel-polyfill', 'client/client.js', 'webpack-hot-middleware/client']
+    app: ['babel-polyfill',
+      'bootstrap-sass!universal/theme/bootstrap.config.js',
+      'font-awesome-webpack!universal/theme/font-awesome.config.js',
+      'client/client.js',
+      'webpack-hot-middleware/client']
   },
   output: {
     // https://github.com/webpack/webpack/issues/1752
@@ -86,6 +90,10 @@ export default {
       {
         test: /\.scss$/,
         loader: 'style!css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss!sass?outputStyle=expanded&sourceMap'
+      },
+      {
+        test: /\.less/,
+        loader: 'style!css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss!less?outputStyle=expanded&sourceMap'
       },
       {
         test: /auth0-lock\/.*\.js$/,

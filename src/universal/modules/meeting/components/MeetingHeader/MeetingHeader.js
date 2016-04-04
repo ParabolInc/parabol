@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import cssModules from 'react-css-modules';
 import styles from './MeetingHeader.scss';
-import { MeetingLink } from '../../components/MeetingLink/MeetingLink';
+import MeetingLink from '../../components/MeetingLink/MeetingLink';
 
 @cssModules(styles)
 export default class MeetingHeader extends Component {

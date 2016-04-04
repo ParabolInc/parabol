@@ -12,7 +12,7 @@ export default class UserInput extends Component {
     onUserInputBlur: PropTypes.func,
     placeholder: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
-    value: PropTypes.string.isRequired
+    value: PropTypes.string
   }
   render() {
     const { props } = this;

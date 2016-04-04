@@ -13,7 +13,7 @@ export default ({authTokenName, profileName}) => ComposedComponent => {
         const authToken = localStorage.getItem(authTokenName);
         if (authToken) {
           const authTokenObj = jwtDecode(authToken);
-          if (authTokenObj.exp < Date.now()) {
+          if (authTokenObj.exp < Date.now() / 1000) {
             localStorage.removeItem(authTokenName);
           } else {
             const profile = localStorage.getItem(profileName)

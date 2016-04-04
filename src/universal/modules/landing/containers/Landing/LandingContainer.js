@@ -17,7 +17,7 @@ const mapStateToProps = state => {
 @connect(mapStateToProps)
 export default class LandingContainer extends Component {
   static propTypes = {
-    children: PropTypes.element,
+    // children: PropTypes.element,
     isAuthenticated: PropTypes.bool.isRequired,
     meeting: PropTypes.shape({
       content: PropTypes.string,
@@ -31,7 +31,7 @@ export default class LandingContainer extends Component {
     return (
       <div>
         <Helmet title="Welcome to Action" {...head} />
-        <Landing onMeetinCreateClick={this.handleOnMeetingCreateClick} {...this.props} />
+        <Landing onMeetingCreateClick={this.handleOnMeetingCreateClick} {...this.props} />
       </div>
     );
   }

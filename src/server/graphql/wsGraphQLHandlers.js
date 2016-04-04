@@ -19,8 +19,35 @@ export const wsGraphQLHandler = async function (body, cb) {
   cb(error, data);
 };
 
-export const wsGraphQLSubHandler = function (subscription) {
-  const {query, variables, ...rootVals} = JSON.parse(subscription);
+export const wsGraphQLSubHandler = function (subbedChannelName) {
   const authToken = this.getAuthToken();
-  graphql(Schema, query, {socket: this, authToken, ...rootVals}, variables);
+  const {query, variables, ...rootVals} = parseChannelName(subbedChannelName);
+  graphql(Schema, query, {socket: this, authToken, subbedChannelName, ...rootVals}, variables);
 };
+
+const parseChannelName = channelName => {
+  const channelVars = channelName.split('/');
+  const subscriptionName = channelVars.shift();
+  const queryFactory = subscriptionLookup[subscriptionName];
+  return queryFactory ? queryFactory(...channelVars) : {};
+}
+
+/*
+ * This is where you add subscription logic
+ * It's a lookup table that turns a channelName into a graphQL query
+ * By creating this on the server it keeps payloads really small
+ * */
+const subscriptionLookup = {
+  getMeeting(meetingId) {
+    return {
+      queryString: `
+        subscription($meetingId: !String) {
+          getMeeting(meetingId: $meetingId) {
+            id,
+            content
+          }
+        }`,
+      variables: {meetingId}
+    }
+  }
+}

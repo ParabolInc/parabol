@@ -1,5 +1,5 @@
 import socketCluster from 'socketcluster-client';
-import socketOptions from '../../utils/clientOptions';
+import {localStorageVars} from '../../utils/clientOptions';
 import {BEGIN, COMMIT, REVERT} from 'redux-optimistic-ui';
 
 const _SUCCESS = '_SUCCESS';
@@ -18,7 +18,8 @@ export default () => next => action => {
 
   const transactionID = nextTransactionID++;
   next(Object.assign({}, action, {meta: {optimistic: {type: BEGIN, id: transactionID}}})); // execute optimistic update
-  const socket = socketCluster.connect(socketOptions);
+  // const socket = socketCluster.connect({authTokenName: localStorageVars.authTokenName});
+  const socket = {};
   socket.emit('graphql', payload, error => {
     next({
       type: type + (error ? _ERROR : _SUCCESS),

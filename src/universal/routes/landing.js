@@ -5,8 +5,8 @@ import Landing from 'universal/modules/landing/components/Landing/Landing';
 export default {
   path: '/',
   component: LandingContainer,
-  indexRoute: {
-    component: Landing
-  }
+  // indexRoute: {
+  //   component: Landing
+  // }
   // childRoutes: []
 };

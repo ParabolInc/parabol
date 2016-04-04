@@ -9,7 +9,7 @@ import config from '../../webpack/webpack.config.dev';
 import createSSR from './createSSR';
 import {auth0} from '../universal/utils/clientOptions';
 
-// import {jwtSecret} from './secrets';
+import {auth0Secret} from './secrets';
 import {wsGraphQLHandler, wsGraphQLSubHandler} from './graphql/wsGraphQLHandlers';
 import httpGraphQLHandler from './graphql/httpGraphQLHandler';
 
@@ -41,9 +41,10 @@ export function run(worker) {
     app.use(compression());
     app.use('/static', express.static('build'));
   }
+
   // HTTP GraphQL endpoint
   app.post('/graphql', jwt({
-    secret: new Buffer(auth0.account, 'base64'),
+    secret: new Buffer(auth0Secret, 'base64'),
     audience: auth0.clientId,
     credentialsRequired: false
   }), httpGraphQLHandler);

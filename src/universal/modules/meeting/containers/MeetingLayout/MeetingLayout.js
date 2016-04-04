@@ -1,24 +1,17 @@
-import React, { Component, PropTypes } from 'react';
+import React, {Component, PropTypes} from 'react';
 import Helmet from 'react-helmet';
 import cssModules from 'react-css-modules';
 import styles from './MeetingLayout.scss';
-import { connect } from 'react-redux';
-import {MeetingHeader} from '../../components/MeetingHeader/MeetingHeader';
-import {MeetingNavbar} from '../../components/MeetingNavbar/MeetingNavbar';
-import {MeetingSection} from '../../components/MeetingSection/MeetingSection';
-import {UserInput} from '../../components/UserInput/UserInput';
+import {connect} from 'react-redux';
+import MeetingHeader from '../../components/MeetingHeader/MeetingHeader';
+import MeetingNavbar from '../../components/MeetingNavbar/MeetingNavbar';
+import MeetingSection from '../../components/MeetingSection/MeetingSection';
+import UserInput from '../../components/UserInput/UserInput';
 import {ensureState} from 'redux-optimistic-ui';
 import {reduxSocket} from 'redux-socket-cluster';
 import {localStorageVars} from 'universal/utils/clientOptions';
-
-
-// async function fetchData(getState, dispatch, location, params) { // eslint-disable-line no-unused-vars
-//   if (!isMeetingLoaded(getState())) {
-//     if (params && params.id) {
-//       await dispatch(loadMeeting(params.id));
-//     }
-//   }
-// }
+import {loadMeeting, setMeetingId, } from '../../ducks/meeting';
+import {push} from 'react-router-redux';
 
 const exampleSections = [
   {
@@ -64,7 +57,7 @@ const exampleInputActive = {
 //   socketId: state.socket.id
 // });
 
-function mapStateToProps(state) {
+const mapStateToProps = state => {
   state = ensureState(state);
   const auth = state.get('auth');
   const meeting = state.get('meeting');
@@ -76,8 +69,8 @@ function mapStateToProps(state) {
   };
 }
 
-@connect(mapStateToProps)
 @reduxSocket({authTokenName: localStorageVars.authTokenName})
+@connect(mapStateToProps)
 @cssModules(styles)
 export default class MeetingLayout extends Component {
   // static propTypes = {
@@ -106,31 +99,45 @@ export default class MeetingLayout extends Component {
   // }
   constructor(props) {
     super(props);
-    const {dispatch, socketState, meeting} = props;
+    const {dispatch, socketState, meeting, params} = props;
+
+    // catch for those who just landed at this url
+    // TODO lock it down? invite only, password, etc.
+    if (!meeting.instance) {
+      if (params.id) {
+        dispatch(setMeetingId(params.id))
+      } else {
+        dispatch(push('/404'))
+      }
+    }
+
+    console.log('props', props)
     if (socketState === 'closed') {
       // TODO this is ugly, but we'll have to use this until i finish building Cashay
-      dispatch(loadMeeting(meeting.id));
+      // dispatch(loadMeeting(meeting.id));
     }
   }
 
   render() {
-    const { props } = this;
+    const {props} = this;
+    const {content} = props.meeting.instance || {};
     const handleOnLeaveMeetingClick = () => {
+      props.dispatch(push('/'));
       console.log('handleOnLeaveMeetingClick');
     };
 
     const handleUserInputFocus = () => {
-      const { updateEditing, meeting, socketId } = this.props;
+      const {meeting, socketId} = this.props;
       updateEditing(meeting.instance.id, true, socketId);
     };
 
     const handleUserInputBlur = () => {
-      const { updateEditing, meeting, socketId } = this.props;
+      const {meeting, socketId} = this.props;
       updateEditing(meeting.instance.id, false, socketId);
     };
 
     const handleUserInputChange = (event) => {
-      const { updateContent, meeting, socketId } = this.props;
+      const {updateContent, meeting, socketId} = this.props;
       updateContent(meeting.instance.id, event.target.value, socketId);
     };
 
@@ -143,30 +150,30 @@ export default class MeetingLayout extends Component {
     };
 
     const exampleMeetingName = 'Core Action Meeting';
-
     return (
       <div styleName="root">
-        <Helmet title={exampleMeetingName} />
-        <MeetingNavbar onLeaveMeetingClick={handleOnLeaveMeetingClick} />
+        <Helmet title={exampleMeetingName}/>
+        <MeetingNavbar onLeaveMeetingClick={handleOnLeaveMeetingClick}/>
         <div styleName="main">
-          <MeetingHeader onMeetingNameChange={handleOnMeetingNameChange} meetingName={exampleMeetingName} />
+          <MeetingHeader onMeetingNameChange={handleOnMeetingNameChange} meetingName={exampleMeetingName}/>
           <MeetingSection {...exampleSections[0]} key={exampleSections[0].id}>
             <UserInput {...exampleInput}
               active={props.meeting.otherEditing}
-              value={props.meeting.instance.content}
+              value={content}
               onUserInputChange={handleUserInputChange}
               onUserInputFocus={handleUserInputFocus}
               onUserInputBlur={handleUserInputBlur}
             />
           </MeetingSection>
           <MeetingSection {...exampleSections[1]} key={exampleSections[1].id}>
-            <UserInput {...exampleInputActive} onUserInputChange={handleUserInputChangeMocked} />
+            <UserInput {...exampleInputActive} onUserInputChange={handleUserInputChangeMocked}/>
           </MeetingSection>
           <MeetingSection {...exampleSections[2]} key={exampleSections[2].id}>
-            <UserInput {...exampleInput} onUserInputChange={handleUserInputChangeMocked} />
+            <UserInput {...exampleInput} onUserInputChange={handleUserInputChangeMocked}/>
           </MeetingSection>
         </div>
       </div>
     );
+
   }
 }

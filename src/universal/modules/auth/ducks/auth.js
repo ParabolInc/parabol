@@ -70,37 +70,36 @@ export const loginAndRedirect = (redirect, authToken) => {
     const query = `
     mutation ($authToken: String!) {
       profile: updateUserWithIdToken(idToken: $authToken) {
-        id
-        cachedAt
-        cacheExpiresAt
-        createdAt
-        updatedAt
-        userId
-        email
-        emailVerified
-        picture
-        name
-        nickname
+        id,
+        cachedAt,
+        cacheExpiresAt,
+        createdAt,
+        updatedAt,
+        userId,
+        email,
+        emailVerified,
+        picture,
+        name,
+        nickname,
         identities {
-          connection
-          userId
-          provider
-          isSocial
+          connection,
+          userId,
+          provider,
+          isSocial,
         }
-        loginsCount
+        loginsCount,
         blockedFor {
-          identifier
-          id
+          identifier,
+          id,
         }
       }
     }`;
     const {error, data} = await fetchGraphQL({query, variables: {authToken}});
     //TODO enable once we get the server credentials for good stuff
-    // if (error) {
-    //   return dispatch({type: LOGIN_USER_ERROR, error});
-    // }
-    // const {profile} = data;
-    const profile = {name: 'joe'};
+    if (error) {
+      return dispatch({type: LOGIN_USER_ERROR, error});
+    }
+    const {profile} = data;
     localStorage.setItem(profileName, JSON.stringify(profile));
     dispatch(loginUserSuccess({profile, authToken}));
     dispatch(push(redirect));

@@ -46,7 +46,7 @@ export const CachedUser = new GraphQLObjectType({
   name: 'CachedUser',
   description: 'The user account profile',
   fields: () => ({
-    id: {type: new GraphQLNonNull(GraphQLID), description: 'The userId'},
+    id: {type: GraphQLID, description: 'The userId'},
     cachedAt: {type: GraphQLString, description: 'The timestamp of the user was cached'},
     cacheExpiresAt: {type: GraphQLString, description: 'The timestamp when the cached user expires'},
     createdAt: {type: GraphQLString, description: 'The datetime the user was created'},

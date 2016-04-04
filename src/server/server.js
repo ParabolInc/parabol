@@ -1,15 +1,14 @@
 import {SocketCluster} from 'socketcluster';
-import os from 'os';
-import {jwtSecret} from './secrets';
+import {auth0Secret} from './secrets';
 import path from 'path';
+// import os from 'os';
 
-const numCpus = os.cpus().length;
-
+// const numCpus = os.cpus().length;
 export const options = {
-  authKey: jwtSecret,
+  authKey: new Buffer(auth0Secret, 'base64'),
   logLevel: 1,
   // change this to scale vertically
-  workers: 1 || numCpus,
+  workers: 1,
   brokers: 1,
   port: 3000,
   appName: 'Meatier',

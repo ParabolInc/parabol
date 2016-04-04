@@ -1,18 +1,10 @@
 import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
 import CopyToClipboard from 'react-copy-to-clipboard';
 
-@connect(
-  state => ({
-    url: state.appInfo.url,
-    location: state.router.location.pathname
-  })
-)
 export default class MeetingLink extends Component {
   static propTypes = {
     hostname: PropTypes.string,
     port: PropTypes.string,
-    location: PropTypes.string,
     onChange: PropTypes.func,
     onCopy: PropTypes.func
   }
@@ -23,18 +15,19 @@ export default class MeetingLink extends Component {
   }
 
   render() {
+    if (!__CLIENT__) return;
     const { props } = this;
-
+    const currentUrl = window && window.location.href;
     return (
       <div className="input-group">
       {/*
       * Bootstrap input group, using base style configuration
       *
       */}
-        <input className="form-control" placeholder={props.url} type="text"
-          readOnly="true" value={props.url} />
+        <input className="form-control" placeholder={currentUrl} type="text"
+          readOnly="true" value={currentUrl} />
         <span className="input-group-btn">
-          <CopyToClipboard text={props.url} onCopy={this.onCopy}>
+          <CopyToClipboard text={currentUrl} onCopy={this.onCopy}>
             <button className="btn btn-default" type="button">Copy</button>
           </CopyToClipboard>
         </span>
