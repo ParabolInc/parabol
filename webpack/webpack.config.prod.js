@@ -26,11 +26,7 @@ const vendor = [
   'joi'
 ];
 
-const prefetches = [
-  'react-dnd/lib/index.js',
-  'joi/lib/index.js',
-  'universal/modules/kanban/containers/Kanban/KanbanContainer.js'
-];
+const prefetches = [];
 
 const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(specifier));
 
@@ -64,7 +60,7 @@ export default {
     }),
     new webpack.optimize.AggressiveMergingPlugin(),
     new webpack.optimize.MinChunkSizePlugin({minChunkSize: 50000}),
-    new webpack.optimize.UglifyJsPlugin({compressor: {warnings: false}, comments: /(?:)/}),
+    // new webpack.optimize.UglifyJsPlugin({compressor: {warnings: false}, comments: /(?:)/}),
     new AssetsPlugin({path: path.join(root, 'build'), filename: 'assets.json'}),
     new webpack.NoErrorsPlugin(),
     new webpack.DefinePlugin({
@@ -97,7 +93,7 @@ export default {
       },
       {
         test: /\.scss$/,
-        loader: 'style!css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss!sass?outputStyle=expanded&sourceMap'
+        loader: 'fake-style!css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss!sass'
       },
       {
         test: /auth0-lock\/.*\.js$/,

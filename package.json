@@ -71,6 +71,7 @@
     "tachyons-sass": "^0.1.0"
   },
   "dependencies": {
+    "auth0": "^2.1.0",
     "auth0-lock": "^9.0.1",
     "babel-polyfill": "6.7.4",
     "babel-runtime": "6.6.1",
@@ -113,6 +114,7 @@
     "redux-socket-cluster": "0.5.1",
     "redux-thunk": "2.0.1",
     "rethinkdbdash": "2.2.18",
+    "serve-favicon": "^2.3.0",
     "socketcluster": "4.3.3",
     "socketcluster-client": "4.3.12"
   }

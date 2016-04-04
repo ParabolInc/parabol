@@ -1,19 +1,12 @@
-import fetch from 'isomorphic-fetch';
 import {push, replace} from 'react-router-redux';
-import {parseJSON, hostUrl, fetchGraphQL} from '../../../utils/fetching';
 import {localStorageVars} from '../../../utils/clientOptions';
-import validateSecretToken from '../../../utils/validateSecretToken';
 import {fromJS, Map as iMap} from 'immutable';
-import {ensureState} from 'redux-optimistic-ui';
 
 const {authTokenName} = localStorageVars;
 
 export const LOGIN_USER_REQUEST = 'LOGIN_USER_REQUEST';
 export const LOGIN_USER_ERROR = 'LOGIN_USER_ERROR';
 export const LOGIN_USER_SUCCESS = 'LOGIN_USER_SUCCESS';
-export const SIGNUP_USER_REQUEST = 'SIGNUP_USER_REQUEST';
-export const SIGNUP_USER_ERROR = 'SIGNUP_USER_ERROR';
-export const SIGNUP_USER_SUCCESS = 'SIGNUP_USER_SUCCESS';
 export const LOGOUT_USER = 'LOGOUT_USER';
 
 const initialState = iMap({
@@ -26,14 +19,13 @@ const initialState = iMap({
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
+
     case LOGIN_USER_REQUEST:
-    case SIGNUP_USER_REQUEST:
       return state.merge({
         error: iMap(),
         isAuthenticating: true
       });
     case LOGIN_USER_SUCCESS:
-    case SIGNUP_USER_SUCCESS:
       return state.merge({
         error: iMap(),
         isAuthenticating: false,
@@ -42,7 +34,6 @@ export default function reducer(state = initialState, action = {}) {
         user: fromJS(action.payload.profile)
       });
     case LOGIN_USER_ERROR:
-    case SIGNUP_USER_ERROR:
       return state.merge({
         error: fromJS(action.error) || iMap(),
         isAuthenticating: false,
@@ -71,81 +62,14 @@ export function loginUserError(error) {
   };
 }
 
-export function signupUserSuccess(payload) {
-  return {
-    type: SIGNUP_USER_SUCCESS,
-    payload
+export function loginAndRedirect(redirect, profile, authToken) {
+  const {profileName, authTokenName} = localStorageVars;
+  localStorage.setItem(profileName, JSON.stringify(profile));
+  localStorage.setItem(authTokenName, authToken);
+  return function (dispatch) {
+    dispatch(loginUserSuccess({profile, authToken}));
+    dispatch(push(redirect));
   };
-}
-
-export function signupUserError(error) {
-  return {
-    type: SIGNUP_USER_ERROR,
-    error
-  };
-}
-
-const user = `
-{
-  id,
-  email,
-  strategies {
-    local {
-      isVerified
-    }
-  }
-}`;
-
-const userWithAuthToken = `
-{
-  user ${user},
-  authToken
-}`;
-
-export const loginUser = (dispatch, variables, redirect) => {
-  dispatch({type: LOGIN_USER_REQUEST});
-  return new Promise(async (resolve, reject) => {
-    const query = `
-    query($email: Email!, $password: Password!){
-       payload: login(email: $email, password: $password)
-       ${userWithAuthToken}
-    }`;
-    const {error, data} = await fetchGraphQL({query, variables});
-    if (error) {
-      localStorage.removeItem(authTokenName);
-      dispatch(loginUserError(error));
-      reject(error);
-    } else {
-      const {payload} = data;
-      localStorage.setItem(authTokenName, payload.authToken);
-      dispatch(loginUserSuccess(payload));
-      dispatch(push(redirect));
-      resolve();
-    }
-  });
-};
-
-export function signupUser(dispatch, variables, redirect) {
-  dispatch({type: SIGNUP_USER_REQUEST});
-  return new Promise(async function (resolve, reject) {
-    const query = `
-    mutation($email: Email!, $password: Password!){
-       payload: createUser(email: $email, password: $password)
-       ${userWithAuthToken}
-    }`;
-    const {error, data} = await fetchGraphQL({query, variables});
-    if (error) {
-      localStorage.removeItem(authTokenName);
-      dispatch(signupUserError(error));
-      reject(error);
-    } else {
-      const {payload} = data;
-      localStorage.setItem(authTokenName, payload.authToken);
-      dispatch(signupUserSuccess(payload));
-      dispatch(push(redirect));
-      resolve();
-    }
-  });
 }
 
 export function logoutAndRedirect() {

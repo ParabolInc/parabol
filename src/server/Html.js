@@ -15,7 +15,7 @@ export default class Html extends Component {
 
   render() {
     const PROD = process.env.NODE_ENV === 'production';
-    const {store, assets, renderProps} = this.props;
+    const {title, store, assets, renderProps} = this.props;
     const {manifest, app, vendor} = assets || {};
     const initialState = `window.__INITIAL_STATE__ = ${JSON.stringify(store.getState())}`;
     const root = PROD && renderToString(
@@ -28,6 +28,7 @@ export default class Html extends Component {
           <meta charSet="utf-8"/>
           <meta property="description" content="Team transparency, made easy." />
           {PROD && <link rel="stylesheet" href="/static/prerender.css" type="text/css"/>}
+          <title>{title}</title>
         </head>
         <body>
           <script dangerouslySetInnerHTML={{__html: initialState}}/>

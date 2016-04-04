@@ -10,7 +10,7 @@ export default store => {
     childRoutes: [
       // require('./appLayout'),
       require('./landing'),
-      // require('./signin'),
+      require('./signin'),
       // require('./login'),
       // require('./meeting'),
       require('./graphql'),

@@ -7,13 +7,7 @@ const root = process.cwd();
 const serverInclude = [path.join(root, 'src', 'server'), path.join(root, 'src', 'universal')];
 const globalCSS = path.join(root, 'src', 'universal', 'styles', 'global');
 
-const prefetches = [
-  'react-dnd-html5-backend/lib/index.js',
-  'react-dnd/lib/index.js',
-  'joi/lib/index.js',
-  'redux-form/lib/index.js',
-  'material-ui/lib/raised-button.js'
-];
+const prefetches = [];
 const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(specifier));
 
 export default {
@@ -37,7 +31,7 @@ export default {
   plugins: [...prefetchPlugins,
     new webpack.NoErrorsPlugin(),
     new ExtractTextPlugin('[name].css'),
-    new webpack.optimize.UglifyJsPlugin({compressor: {warnings: false}}),
+    // new webpack.optimize.UglifyJsPlugin({compressor: {warnings: false}}),
     new webpack.optimize.LimitChunkCountPlugin({maxChunks: 1}),
     new webpack.DefinePlugin({
       '__CLIENT__': false,
@@ -69,7 +63,7 @@ export default {
       },
       {
         test: /\.scss$/,
-        loader: 'style!css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss!sass?outputStyle=expanded&sourceMap'
+        loader: ExtractTextPlugin.extract('fake-style', 'css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss!sass'),
       },
       {
         test: /auth0-lock\/.*\.js$/,

@@ -2,6 +2,7 @@ import Schema from './rootSchema';
 import {graphql} from 'graphql';
 
 export default async (req, res) => {
+  console.log('is JWT verified?', req.user)
   // Check for admin privileges
   const {query, variables, ...rootVals} = req.body;
   const authToken = req.user || {};

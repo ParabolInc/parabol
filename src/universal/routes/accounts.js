@@ -4,7 +4,7 @@ export default function (store) {
   return {
     component: LandingContainer,
     childRoutes: [
-      require('./login')(store),
+      require('./signin')(store),
       require('./signup'),
       require('./logout'),
       require('./verifyEmail')

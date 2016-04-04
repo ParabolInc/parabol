@@ -5,7 +5,7 @@ import {ensureState} from 'redux-optimistic-ui';
 import Helmet from 'react-helmet';
 import {head, auth0} from 'universal/utils/clientOptions';
 import {push} from 'react-router-redux';
-import Auth0Lock from 'auth0-lock';
+import {loginUserError, loginAndRedirect} from 'universal/modules/auth/ducks/auth';
 
 const mapStateToProps = state => {
   return {
@@ -46,13 +46,24 @@ export default class LandingContainer extends Component {
         dispatch(push(`/signin/createmeeting`));
       }
     } else {
-      const {clientId, account} = auth0;
-      const lock = new Auth0Lock(clientId, account);
-      lock.show({
-        authParams: {
-          state: '/signin/createmeeting'
-        }
-      })
+      if (__CLIENT__) {
+        //TODO handle auth0 css files in webpack build to make it work on server?
+        const Auth0Lock = require('auth0-lock');
+        const {clientId, account} = auth0;
+        const lock = new Auth0Lock(clientId, account);
+        lock.show({
+          authParams: {
+            state: '/signin/createmeeting'
+          }
+        }, (error, profile, authToken) => {
+          if (error) {
+            return dispatch(loginUserError(error))
+          }
+          dispatch(loginAndRedirect('/signin/createmeeting', profile, authToken));
+
+        })
+      }
     }
   }
-}
+};
+

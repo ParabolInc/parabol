@@ -1,13 +1,14 @@
-import {reducer as form} from 'redux-form';
 import {compose} from 'redux';
 import {combineReducers} from 'redux-immutablejs';
 import auth from '../modules/auth/ducks/auth';
+import meeting from '../modules/meeting/ducks/meeting';
 import {routing} from './routing';
 
+// TODO make auth and meeting async
 const currentReducers = {
   auth,
-  routing,
-  form
+  meeting,
+  routing
 };
 
 export default (newReducers, reducerEnhancers) => {

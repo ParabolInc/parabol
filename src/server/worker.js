@@ -4,11 +4,12 @@ import compression from 'compression';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import jwt from 'express-jwt';
-
+import favicon from 'serve-favicon';
 import config from '../../webpack/webpack.config.dev';
 import createSSR from './createSSR';
-import {jwtSecret} from './secrets';
-import {googleAuthUrl, googleAuthCallback} from './graphql/models/User/oauthGoogle';
+import {auth0} from '../universal/utils/clientOptions';
+
+// import {jwtSecret} from './secrets';
 import {wsGraphQLHandler, wsGraphQLSubHandler} from './graphql/wsGraphQLHandlers';
 import httpGraphQLHandler from './graphql/httpGraphQLHandler';
 
@@ -34,24 +35,18 @@ export function run(worker) {
   // setup middleware
   app.use(bodyParser.json());
   app.use(cors({origin: true, credentials: true}));
-  app.use((req, res, next) => {
-    if (/\/favicon\.?(jpe?g|png|ico|gif)?$/i.test(req.url)) {
-      res.status(404).end();
-    } else {
-      next();
-    }
-  });
+  app.use('/static', express.static('static'));
+  app.use(favicon(__dirname + '/../../static/favicon.ico'));
   if (PROD) {
     app.use(compression());
     app.use('/static', express.static('build'));
   }
-
-  // Oauth
-  app.get('/auth/google', (req, res) => res.redirect(googleAuthUrl));
-  app.get('/auth/google/callback', googleAuthCallback);
-
   // HTTP GraphQL endpoint
-  app.post('/graphql', jwt({secret: jwtSecret, credentialsRequired: false}), httpGraphQLHandler);
+  app.post('/graphql', jwt({
+    secret: new Buffer(auth0.account, 'base64'),
+    audience: auth0.clientId,
+    credentialsRequired: false
+  }), httpGraphQLHandler);
 
   // server-side rendering
   app.get('*', createSSR);
@@ -67,4 +62,3 @@ export function run(worker) {
     socket.on('disconnect', () => console.log('Client disconnected:', socket.id));
   });
 }
-// TODO: dont let tokens expire while still connected, depends on PR to SC

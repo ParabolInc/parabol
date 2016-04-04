@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import GraphiQL from 'graphiql';
 import fetch from 'isomorphic-fetch';
-import socketOptions from 'universal/utils/clientOptions';
+import {localStorageVars} from 'universal/utils/clientOptions';
 import 'universal/styles/global/graphiql.css';
 import {getGraphQLHost, getGraphQLProtocol} from 'universal/utils/graphQLConfig';
 
@@ -12,7 +12,7 @@ const graphQLFetcher = async ({query, variables}) => {
   if (!__CLIENT__) {
     return;
   }
-  const authToken = localStorage.getItem(socketOptions.authTokenName);
+  const authToken = localStorage.getItem(localStorageVars.authTokenName);
   variables = variables ? JSON.parse(variables) : undefined;
   const res = await fetch(`${graphQLProtocol}//${graphQLHost}/graphql`, {
     method: 'post',

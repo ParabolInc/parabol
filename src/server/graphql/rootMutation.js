@@ -2,7 +2,7 @@ import {GraphQLObjectType} from 'graphql';
 import cachedUser from './models/CachedUser/cachedUserMutation';
 import meeting from './models/Meeting/meetingMutation'
 
-const rootFields = {cachedUser, meeting};
+const rootFields = Object.assign(cachedUser, meeting);
 
 export default new GraphQLObjectType({
   name: 'Mutation',

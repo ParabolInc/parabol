@@ -19,7 +19,7 @@ import github from './images/github.svg';
 export default class Landing extends Component {
   static propTypes = {
     // children included here for multi-part landing pages (FAQs, pricing, cha la la)
-    children: PropTypes.element,
+    // children: PropTypes.element,
     onMeetinCreateClick: PropTypes.func.isRequired
   };
   render() {
