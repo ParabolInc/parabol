@@ -10,8 +10,9 @@ import UserInput from '../../components/UserInput/UserInput';
 import {ensureState} from 'redux-optimistic-ui';
 import {reduxSocket} from 'redux-socket-cluster';
 import {localStorageVars} from 'universal/utils/clientOptions';
-import {loadMeeting, setMeetingId, } from '../../ducks/meeting';
+import {loadMeeting, updateEditing, updateContent} from '../../ducks/meeting';
 import {push} from 'react-router-redux';
+import ensureMeetingId from '../../decorators/ensureMeetingId/ensureMeetingId';
 
 const exampleSections = [
   {
@@ -65,75 +66,45 @@ const mapStateToProps = state => {
     meeting: meeting && meeting.toJS(),
     userId: auth.getIn(['user', 'id']),
     socketState: state.getIn(['socket', 'socketState']),
+    socketSubs: state.getIn(['socket', 'subs']).toJS(),
+    socketId: state.getIn(['socket', 'id']),
     isAuthenticated: auth.get('isAuthenticated')
   };
 }
 
 @reduxSocket({authTokenName: localStorageVars.authTokenName})
 @connect(mapStateToProps)
+@ensureMeetingId // catch for those who just landed at this url
 @cssModules(styles)
 export default class MeetingLayout extends Component {
-  // static propTypes = {
-  //   location: PropTypes.string.isRequired,
-  //   meeting: PropTypes.object.isRequired,
-  //   roomJoin: PropTypes.func.isRequired,
-  //   roomLeave: PropTypes.func.isRequired,
-  //   socketId: PropTypes.string.isRequired,
-  //   subscribe: PropTypes.func.isRequired,
-  //   unsubscribe: PropTypes.func.isRequired,
-  //   updateContent: PropTypes.func.isRequired,
-  //   updateEditing: PropTypes.func.isRequired,
-  //   pushState: PropTypes.func.isRequired
-  // }
-
-  // componentDidMount() {
-  //   const { roomJoin, location, subscribe, meeting } = this.props;
-  //   roomJoin(location);
-  //   subscribe(location, meeting.instance.id);
-  // }
-  //
-  // componentWillUnmount() {
-  //   const { roomLeave, location, unsubscribe, meeting } = this.props;
-  //   roomLeave(location);
-  //   unsubscribe(location, meeting.instance.id);
-  // }
   constructor(props) {
     super(props);
-    const {dispatch, socketState, meeting, params} = props;
+    const {dispatch, socketSubs, socketId, meeting} = props;
 
-    // catch for those who just landed at this url
     // TODO lock it down? invite only, password, etc.
-    if (!meeting.instance) {
-      if (params.id) {
-        dispatch(setMeetingId(params.id))
-      } else {
-        dispatch(push('/404'))
-      }
-    }
-
-    console.log('props', props)
-    if (socketState === 'closed') {
+    if (!socketSubs.length) {
       // TODO this is ugly, but we'll have to use this until i finish building Cashay
-      // dispatch(loadMeeting(meeting.id));
+      dispatch(loadMeeting(meeting.instance.id));
     }
   }
 
   render() {
-    const {props} = this;
-    const {content} = props.meeting.instance || {};
+    const {meeting, dispatch} = this.props;
+    const {content} = meeting.instance || {};
+    const isActive = meeting.currentEditors ? Boolean(meeting.currentEditors.length) : false;
     const handleOnLeaveMeetingClick = () => {
-      props.dispatch(push('/'));
+      dispatch(push('/'));
       console.log('handleOnLeaveMeetingClick');
     };
 
     const handleUserInputFocus = () => {
       const {meeting, socketId} = this.props;
-      updateEditing(meeting.instance.id, true, socketId);
+      dispatch(updateEditing(meeting.instance.id, socketId, true));
     };
 
     const handleUserInputBlur = () => {
       const {meeting, socketId} = this.props;
-      updateEditing(meeting.instance.id, false, socketId);
+      dispatch(updateEditing(meeting.instance.id, socketId, false));
     };
 
     const handleUserInputChange = (event) => {
@@ -158,7 +129,7 @@ export default class MeetingLayout extends Component {
           <MeetingHeader onMeetingNameChange={handleOnMeetingNameChange} meetingName={exampleMeetingName}/>
           <MeetingSection {...exampleSections[0]} key={exampleSections[0].id}>
             <UserInput {...exampleInput}
-              active={props.meeting.otherEditing}
+              active={isActive}
               value={content}
               onUserInputChange={handleUserInputChange}
               onUserInputFocus={handleUserInputFocus}

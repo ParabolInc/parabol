@@ -8,7 +8,7 @@ import socketCluster from 'socketcluster-client';
 // Changed string consts because chances are we'll have more than 1 "CREATE_SUCCESS" down the road
 export const CREATE_MEETING_REQUEST = 'action/meeting/CREATE_MEETING_REQUEST';
 export const CREATE_MEETING_ERROR = 'action/meeting/CREATE_MEETING_ERROR';
-export const CREATE_MEETING_SUCCESS =  'action/meeting/CREATE_MEETING_SUCCESS';
+export const CREATE_MEETING_SUCCESS = 'action/meeting/CREATE_MEETING_SUCCESS';
 const SET_MEETING_ID = 'action/meeting/SET_MEETING_ID';
 export const UPDATE_MEETING_REQUEST = 'action/meeting/UPDATE_MEETING_REQUEST';
 export const UPDATE_MEETING_ERROR = 'action/meeting/UPDATE_MEETING_ERROR';
@@ -56,7 +56,7 @@ export default function reducer(state = initialState, action = {}) {
       });
     case UPDATE_MEETING_SUCCESS:
       return state.merge({
-        instance: action.payload
+        instance: iMap(action.payload)
       });
     default:
       return state
@@ -101,7 +101,7 @@ const updateMeetingSuccess = (payload, meta) => {
 export const loadMeeting = meetingId => {
   const sub = `getMeeting/${meetingId}`;
   const {authTokenName} = localStorageVars;
-  // const socket = socketCluster.connect({authTokenName});
+  const socket = socketCluster.connect({authTokenName});
   socket.subscribe(sub, {waitForAuth: true});
   return dispatch => {
     // client-side changefeed handler
@@ -122,33 +122,22 @@ export const loadMeeting = meetingId => {
 }
 
 export const updateEditing = (meetingId, editor, isEditing) => {
-  const mutation = isEditing ? 'editContent' : 'finishEditContent';
-  const query = `
-  mutation($meetingId: !String, $editor: !String) {
-    ${mutation}(meetingId: $meetingId, editor: $editor) {
-      id,
-      currentEditors
+  console.log('udate')
+  return async dispatch => {
+    const mutation = isEditing ? 'editContent' : 'finishEditContent';
+    const query = `
+      mutation($meetingId: ID!, $editor: String!) {
+        payload: ${mutation}(meetingId: $meetingId, editor: $editor) {
+          id,
+          currentEditors
+        }
+      }`;
+    const {error, data} = await fetchGraphQL({query, variables: {meetingId, editor}});
+    //TODO enable once we get the server credentials for good stuff
+    if (error) {
+      return dispatch({type: EDIT_MEETING_ERROR, error});
     }
-  }`;
-  const serializedParams = prepareGraphQLParams({query});
-  const sub = 'getMeeting';
-  const {authTokenName} = localStorageVars;
-  // const socket = socketCluster.connect({authTokenName});
-  socket.subscribe(serializedParams, {waitForAuth: true});
-  return dispatch => {
-    // client-side changefeed handler
-    socket.on(sub, data => {
-      dispatch({
-        type: UPDATE_MEETING_SUCCESS,
-        // data = changefeed.new_val
-        payload: data,
-        meta: {synced: true}
-      })
-    });
-    socket.on('unsubscribe', channelName => {
-      if (channelName === sub) {
-        // TODO anything?
-      }
-    });
+    const {payload} = data;
+    dispatch(updateMeetingSuccess(payload));
   };
 }
