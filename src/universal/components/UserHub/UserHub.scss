@@ -1,0 +1,29 @@
+
+// Variables
+// ----------
+
+@import '../../theme/variables';
+
+// Elements
+// ---------
+
+.main {
+  margin: 0 0 1rem;
+  padding-right: 1rem;
+}
+
+.name {
+  font-size: $font-size-s4;
+}
+
+.link {
+  color: $theme-a;
+  display: block;
+  font-size: $font-size-s6;
+
+  &:hover,
+  &:focus {
+    color: $theme-a;
+    opacity: .65;
+  }
+}

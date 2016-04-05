@@ -18,8 +18,7 @@ export default () => next => action => {
 
   const transactionID = nextTransactionID++;
   next(Object.assign({}, action, {meta: {optimistic: {type: BEGIN, id: transactionID}}})); // execute optimistic update
-  // const socket = socketCluster.connect({authTokenName: localStorageVars.authTokenName});
-  const socket = {};
+  const socket = socketCluster.connect({authTokenName: localStorageVars.authTokenName});
   socket.emit('graphql', payload, error => {
     next({
       type: type + (error ? _ERROR : _SUCCESS),

@@ -1,6 +1,6 @@
-import {fromJS, Map as iMap} from 'immutable';
+import {Map as iMap, List as iList} from 'immutable';
 import {push, replace} from 'react-router-redux';
-import {fetchGraphQL, prepareGraphQLParams} from '../../../utils/fetching';
+import {fetchGraphQL} from '../../../utils/fetching';
 import {ensureState} from 'redux-optimistic-ui';
 import {localStorageVars} from '../../../utils/clientOptions';
 import socketCluster from 'socketcluster-client';
@@ -10,20 +10,22 @@ export const CREATE_MEETING_REQUEST = 'action/meeting/CREATE_MEETING_REQUEST';
 export const CREATE_MEETING_ERROR = 'action/meeting/CREATE_MEETING_ERROR';
 export const CREATE_MEETING_SUCCESS = 'action/meeting/CREATE_MEETING_SUCCESS';
 const SET_MEETING_ID = 'action/meeting/SET_MEETING_ID';
+// TODO is a request necessary?
 export const UPDATE_MEETING_REQUEST = 'action/meeting/UPDATE_MEETING_REQUEST';
 export const UPDATE_MEETING_ERROR = 'action/meeting/UPDATE_MEETING_ERROR';
 export const UPDATE_MEETING_SUCCESS = 'action/meeting/UPDATE_MEETING_SUCCESS';
-export const EDIT_MEETING_REQUEST = 'action/meeting/EDIT_MEETING_REQUEST';
-export const EDIT_MEETING_ERROR = 'action/meeting/EDIT_MEETING_ERROR';
-export const EDIT_MEETING_SUCCESS = 'action/meeting/EDIT_MEETING_SUCCESS';
 //TODO multiple meetings at once? It's possible with redux-operations
 // making the switch to redux-operations now is cheap, later on it'll become a pain to switch
 
-//TODO state doesn't have an isLoading field to know when we're requesting something
 const initialState = iMap({
   isLoading: false,
   isLoaded: false,
-  instance: null,
+  instance: iMap({
+    id: '',
+    content: '',
+    lastUpdatedBy: '',
+    currentEditors: iList()
+  }),
   mySocketId: '',
   otherEditing: false
 });
@@ -31,7 +33,7 @@ const initialState = iMap({
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
     case SET_MEETING_ID:
-      return state.merge({
+      return state.mergeDeep({
         instance: iMap({
           id: action.payload.id
         })
@@ -41,7 +43,7 @@ export default function reducer(state = initialState, action = {}) {
         isLoading: true
       });
     case CREATE_MEETING_SUCCESS:
-      return state.merge({
+      return state.mergeDeep({
         isLoading: false,
         isLoaded: true,
         instance: iMap({
@@ -55,7 +57,7 @@ export default function reducer(state = initialState, action = {}) {
         error: action.error
       });
     case UPDATE_MEETING_SUCCESS:
-      return state.merge({
+      return state.mergeDeep({
         instance: iMap(action.payload)
       });
     default:
@@ -85,7 +87,7 @@ export const createMeetingAndRedirect = () => {
     const {payload} = data;
     dispatch({type: CREATE_MEETING_SUCCESS, payload});
     const id = ensureState(getState()).getIn(['meeting', 'instance', 'id']);
-    // replace, don't push so a click on the back button does what we want
+    // replace, don't use push. a click should go back 2.
     dispatch(replace(`/meeting/${id}`));
   };
 }
@@ -106,9 +108,9 @@ export const loadMeeting = meetingId => {
   return dispatch => {
     // client-side changefeed handler
     socket.on(sub, data => {
+      console.log('DATA', data)
       dispatch({
         type: UPDATE_MEETING_SUCCESS,
-        // data = changefeed.new_val
         payload: data,
         meta: {synced: true}
       })
@@ -122,7 +124,10 @@ export const loadMeeting = meetingId => {
 }
 
 export const updateEditing = (meetingId, editor, isEditing) => {
-  console.log('udate')
+  if (!editor) {
+    //can remove
+    console.log('updateEditing has no editor')
+  }
   return async dispatch => {
     const mutation = isEditing ? 'editContent' : 'finishEditContent';
     const query = `
@@ -133,9 +138,27 @@ export const updateEditing = (meetingId, editor, isEditing) => {
         }
       }`;
     const {error, data} = await fetchGraphQL({query, variables: {meetingId, editor}});
-    //TODO enable once we get the server credentials for good stuff
     if (error) {
-      return dispatch({type: EDIT_MEETING_ERROR, error});
+      return dispatch({type: UPDATE_MEETING_ERROR, error});
+    }
+    const {payload} = data;
+    dispatch(updateMeetingSuccess(payload));
+  };
+}
+
+export const updateContent = (meetingId, content, updatedBy) => {
+  return async dispatch => {
+    const query = `
+      mutation($meetingId: ID!, $content: String!, $updatedBy: String!) {
+        payload: updateContent(meetingId: $meetingId, content: $content, updatedBy: $updatedBy) {
+          id,
+          content,
+          lastUpdatedBy
+        }
+      }`;
+    const {error, data} = await fetchGraphQL({query, variables: {meetingId, content, updatedBy}});
+    if (error) {
+      return dispatch({type: UPDATE_MEETING_ERROR, error});
     }
     const {payload} = data;
     dispatch(updateMeetingSuccess(payload));

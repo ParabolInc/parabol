@@ -1,0 +1,124 @@
+@charset 'utf-8';
+
+// Variables
+// ----------
+
+@import '../../theme/variables';
+
+$AppLayout-paddingHorizontal-sm: $drawer-width-sm;
+$AppLayout-paddingHorizontal-lg: $drawer-width-lg;
+
+$AppLayout-heading-fontSize-sm: $heading-s5;
+$AppLayout-heading-fontSize-md: $heading-s3;
+$AppLayout-heading-fontSize-lg: $heading-s2;
+
+$AppLayout-inner-padding-sm: .875rem;
+$AppLayout-inner-padding-lg: 1rem;
+
+$AppLayout-toggle-size: 2rem;
+
+// Elements
+// ---------
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-size: 16px;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.inner {
+  flex: 1;
+  position: relative;
+  width: 100%;
+
+  @media #{$mq-menuDrawer-visible-min} {
+    padding-left: $AppLayout-paddingHorizontal-sm;
+  }
+
+  @media #{$mq-lg-min} {
+    padding-left: $AppLayout-paddingHorizontal-lg;
+  }
+
+  @media #{$mq-userDrawer-visible-min} {
+    padding-right: $AppLayout-paddingHorizontal-lg;
+  }
+}
+
+.header {
+  border-bottom: 1px solid rgba($theme-c, .35);
+  padding: $AppLayout-inner-padding-sm $AppLayout-toggle-size;
+  position: relative;
+  text-align: center;
+
+  @media #{$mq-menuDrawer-visible-min} {
+    padding-left: $AppLayout-inner-padding-sm;
+    text-align: left;
+  }
+
+  @media #{$mq-lg-min} {
+    border-bottom: 0;
+    padding: $AppLayout-inner-padding-lg;
+  }
+}
+
+.drawerToggle {
+  bottom: 0;
+  display: block;
+  font-weight: 700;
+  height: $AppLayout-toggle-size;
+  line-height: $AppLayout-toggle-size;
+  margin: auto;
+  position: absolute;
+  text-align: center;
+  top: 0;
+  width: $AppLayout-toggle-size;
+}
+
+.menuDrawerToggle {
+  composes: drawerToggle;
+  left: 0;
+
+  @media #{$mq-menuDrawer-visible-min} {
+    display: none;
+  }
+}
+
+.userDrawerToggle {
+  composes: drawerToggle;
+  right: 0;
+
+  @media #{$mq-userDrawer-visible-min} {
+    display: none;
+  }
+}
+
+.heading {
+  font-size: $AppLayout-heading-fontSize-sm;
+  font-weight: 700;
+  margin: 0;
+
+  @media #{$mq-menuDrawer-visible-min} {
+    font-size: $AppLayout-heading-fontSize-md;
+    font-weight: 400;
+  }
+
+  @media #{$mq-lg-min} {
+    font-size: $AppLayout-heading-fontSize-lg;
+  }
+}
+
+.content {
+  padding: $AppLayout-inner-padding-sm;
+
+  @media #{$mq-lg-min} {
+    padding: $AppLayout-inner-padding-lg;
+  }
+}

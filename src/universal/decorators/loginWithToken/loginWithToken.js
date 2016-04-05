@@ -16,8 +16,8 @@ export default ({authTokenName, profileName}) => ComposedComponent => {
           if (authTokenObj.exp < Date.now() / 1000) {
             localStorage.removeItem(authTokenName);
           } else {
-            const profile = localStorage.getItem(profileName)
-            this.props.dispatch(loginUserSuccess({authToken, profile}));
+            const profile = localStorage.getItem(profileName);
+            this.props.dispatch(loginUserSuccess({authToken, profile: JSON.parse(profile)}));
           }
         }
       }

@@ -7,7 +7,7 @@ export default ComposedComponent => {
 
     componentWillMount() {
       const {meeting, params, dispatch} = this.props;
-      if (!meeting.instance) {
+      if (!meeting.instance.id) {
         if (params.id) {
           dispatch(setMeetingId(params.id))
         } else {

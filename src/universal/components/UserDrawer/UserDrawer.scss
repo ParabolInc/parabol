@@ -1,0 +1,35 @@
+
+// Variables
+// ----------
+
+@import '../../theme/variables';
+
+$UserDrawer-backgroundColor: mix($theme-e, $ui-white, 35%);
+$UserDrawer-color: $theme-c;
+$UserDrawer-width-sm: $drawer-width-sm;
+$UserDrawer-width-lg: $drawer-width-lg;
+
+// Elements
+// ---------
+
+.panel {
+  background-color: $UserDrawer-backgroundColor;
+  bottom: 0;
+  color: $UserDrawer-color;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem 0 1rem 2rem;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: $UserDrawer-width-sm;
+  z-index: 200;
+
+  @media #{$mq-userDrawer-hidden-max} {
+    transform: translate3d($UserDrawer-width-sm, 0, 0);
+  }
+
+  @media #{$mq-userDrawer-visible-min} {
+    width: $UserDrawer-width-lg;
+  }
+}

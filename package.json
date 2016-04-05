@@ -24,7 +24,7 @@
     "build:db": "node ./src/server/database/setupDB.babel.js",
     "update:db": "node ./src/server/database/setupDB.babel.js true",
     "test": "NODE_ENV=testing ava ./src/**/__tests___/**/*.js --verbose",
-    "lint": "xo --fix 'src/**/*.js' 'tests/*.js' 'webpack/*.js'",
+    "lint": "eslint 'src/**/*.js' 'tests/*.js' 'webpack/*.js'",
     "profile": "NODE_ENV=production webpack --config ./webpack/prod.babel.js --profile --json > stats.json"
   },
   "devDependencies": {
@@ -43,13 +43,16 @@
     "babel-register": "6.7.2",
     "concurrently": "2.0.0",
     "css-loader": "0.23.1",
-    "eslint": "2.6.0",
+    "eslint": "^2.6.0",
+    "eslint-config-airbnb": "^6.2.0",
     "eslint-config-xo-react": "0.5.0",
+    "eslint-plugin-import": "^1.4.0",
     "eslint-plugin-react": "4.2.3",
     "extract-text-webpack-plugin": "1.0.1",
     "fake-style-loader": "1.0.0",
     "file-loader": "0.8.5",
     "json-loader": "0.5.4",
+    "node-sass": "^3.4.2",
     "null-loader": "0.1.1",
     "postcss-loader": "0.8.2",
     "postcss-modules-values": "1.1.2",
@@ -62,13 +65,12 @@
     "sass-loader": "^3.2.0",
     "stats-webpack-plugin": "0.3.1",
     "style-loader": "0.13.1",
+    "tachyons-sass": "^0.1.0",
     "transform-loader": "^0.2.3",
     "url-loader": "0.5.7",
     "webpack": "2.1.0-beta.4",
     "webpack-dev-middleware": "1.6.1",
-    "webpack-hot-middleware": "2.10.0",
-    "node-sass": "^3.4.2",
-    "tachyons-sass": "^0.1.0"
+    "webpack-hot-middleware": "2.10.0"
   },
   "dependencies": {
     "less": "^2.5.3",

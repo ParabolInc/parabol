@@ -11,6 +11,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Removed sessions
 - Removed Sails
 - Switched from Falcor to GraphQL
+- Added GraphiQL
 - Upgrade to Babel 6
 - Upgrade to react-router
 - Upgrade to react-router-redux

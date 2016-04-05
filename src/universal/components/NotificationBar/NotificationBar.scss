@@ -1,0 +1,64 @@
+
+// Variables
+// ----------
+
+@import '../../theme/variables';
+
+$NotificationBar-backgroundColor: $theme-b;
+$NotificationBar-color: $theme-b;
+
+// Elements
+// ---------
+
+.bar {
+  background-color: $NotificationBar-backgroundColor;
+  color: $ui-white;
+  padding: .625rem;
+  text-align: center;
+}
+
+.timer {
+  background-color: $ui-white;
+  border-radius: 4em;
+  color: $NotificationBar-color;
+  display: none;
+  font-size: $font-size-s7;
+  font-weight: bold;
+  margin-right: .5rem;
+  padding: 0 .5rem;
+  vertical-align: middle;
+
+  @media #{$mq-sm-min} {
+    display: inline-block;
+  }
+}
+
+.name {
+  display: inline-block;
+  font-size: $font-size-s7;
+  font-weight: 700;
+  margin-right: 1rem;
+  vertical-align: middle;
+
+  @media #{$mq-sm-min} {
+    font-size: $font-size-base;
+  }
+}
+
+.link {
+  color: $ui-white;
+  display: inline-block;
+  font-size: $font-size-s7;
+  text-decoration: underline;
+  vertical-align: middle;
+
+  @media #{$mq-sm-min} {
+    font-size: $font-size-base;
+  }
+
+  &:hover,
+  &:focus {
+    color: $ui-white;
+    opacity: .65;
+  }
+}

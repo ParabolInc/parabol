@@ -66,7 +66,7 @@ export default {
     args: {
       meetingId: {type: new GraphQLNonNull(GraphQLID), description: 'The unique meeting ID'},
       updatedBy: {type: new GraphQLNonNull(GraphQLString), description: 'the socketId that updated the content'},
-      content: {type: new GraphQLNonNull(GraphQLBoolean), description: 'the new content'}
+      content: {type: new GraphQLNonNull(GraphQLString), description: 'the new content'}
     },
     async resolve(source, {meetingId, updatedBy, content}, {rootValue}) {
       const {authToken} = rootValue;

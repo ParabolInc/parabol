@@ -1,0 +1,55 @@
+
+// Variables
+// ----------
+
+@import '../../theme/variables';
+
+$MenuDrawer-backgroundColor: $theme-d;
+$MenuDrawer-color: #fff;
+
+$MenuDrawer-gutterLeft-sm: $drawer-gutterLeft-sm;
+$MenuDrawer-gutter-lg: $drawer-gutter-lg;
+
+$MenuDrawer-width-sm: $drawer-width-sm;
+$MenuDrawer-width-lg: $drawer-width-lg;
+
+// Elements
+// ---------
+
+.panel {
+  background-color: $MenuDrawer-backgroundColor;
+  bottom: 0;
+  color: $MenuDrawer-color;
+  left: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: .5rem 0;
+  position: absolute;
+  top: 0;
+  width: $MenuDrawer-width-sm;
+  z-index: 400;
+
+  @media #{$mq-menuDrawer-hidden-max} {
+    transform: translate3d((-$MenuDrawer-width-sm), 0, 0);
+    transition: transform $transition-fast;
+  }
+
+  @media #{$mq-menuDrawer-visible-min} {
+    // Define
+  }
+
+  @media #{$mq-lg-min} {
+    width: $MenuDrawer-width-lg;
+  }
+}
+
+.hr {
+  background-color: rgba(255, 255, 255, .5);
+  height: 1px;
+  margin: 1rem 0 1rem $MenuDrawer-gutterLeft-sm;
+
+  @media #{$mq-lg-min} {
+    margin-left: $MenuDrawer-gutter-lg;
+    margin-right: $MenuDrawer-gutter-lg;
+  }
+}

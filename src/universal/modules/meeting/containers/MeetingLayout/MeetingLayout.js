@@ -52,12 +52,6 @@ const exampleInputActive = {
   value: 'Somebody is typing here…'
 };
 
-// const mapStateToProps = state => ({
-//   location: state.router.location.pathname,
-//   meeting: state.meeting,
-//   socketId: state.socket.id
-// });
-
 const mapStateToProps = state => {
   state = ensureState(state);
   const auth = state.get('auth');
@@ -72,6 +66,13 @@ const mapStateToProps = state => {
   };
 }
 
+const socketClusterListeners = {
+  unsubscribe(props) {
+    debugger
+    const {meeting, socketId, dispatch} = props;
+    dispatch(updateEditing(meeting.instance.id, socketId, false));
+  }
+}
 @reduxSocket({authTokenName: localStorageVars.authTokenName})
 @connect(mapStateToProps)
 @ensureMeetingId // catch for those who just landed at this url
@@ -89,9 +90,11 @@ export default class MeetingLayout extends Component {
   }
 
   render() {
-    const {meeting, dispatch} = this.props;
-    const {content} = meeting.instance || {};
-    const isActive = meeting.currentEditors ? Boolean(meeting.currentEditors.length) : false;
+    const {meeting: {instance}, dispatch} = this.props;
+    const {content, currentEditors} = instance;
+    console.log('instance', instance);
+    const isActive = Boolean(currentEditors.length);
+    console.log('currentEditors', currentEditors)
     const handleOnLeaveMeetingClick = () => {
       dispatch(push('/'));
       console.log('handleOnLeaveMeetingClick');
@@ -104,12 +107,13 @@ export default class MeetingLayout extends Component {
 
     const handleUserInputBlur = () => {
       const {meeting, socketId} = this.props;
+      console.log('blur')
       dispatch(updateEditing(meeting.instance.id, socketId, false));
     };
 
     const handleUserInputChange = (event) => {
-      const {updateContent, meeting, socketId} = this.props;
-      updateContent(meeting.instance.id, event.target.value, socketId);
+      const {meeting, socketId} = this.props;
+      dispatch(updateContent(meeting.instance.id, event.target.value, socketId));
     };
 
     const handleUserInputChangeMocked = () => {

@@ -21,8 +21,8 @@ export const wsGraphQLHandler = async function (body, cb) {
 
 export const wsGraphQLSubHandler = function (subbedChannelName) {
   const authToken = this.getAuthToken();
-  const {query, variables, ...rootVals} = parseChannelName(subbedChannelName);
-  graphql(Schema, query, {socket: this, authToken, subbedChannelName, ...rootVals}, variables);
+  const {queryString, variables, ...rootVals} = parseChannelName(subbedChannelName);
+  graphql(Schema, queryString, {socket: this, authToken, subbedChannelName, ...rootVals}, variables);
 };
 
 const parseChannelName = channelName => {
@@ -41,10 +41,12 @@ const subscriptionLookup = {
   getMeeting(meetingId) {
     return {
       queryString: `
-        subscription($meetingId: !String) {
+        subscription($meetingId: ID!) {
           getMeeting(meetingId: $meetingId) {
             id,
-            content
+            content,
+            currentEditors,
+            lastUpdatedBy
           }
         }`,
       variables: {meetingId}

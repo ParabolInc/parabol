@@ -1,0 +1,20 @@
+
+// Variables
+// ----------
+
+@import '../../theme/variables';
+
+$StatusNav-gutterRight-sm: $drawer-gutterRight-sm;
+$StatusNav-gutter-lg: $drawer-gutter-lg;
+
+// Elements
+// ---------
+
+.nav {
+  margin: 1rem 0;
+  padding-right: $StatusNav-gutterRight-sm;
+
+  @media #{$mq-lg-min} {
+    padding-right: $StatusNav-gutter-lg;
+  }
+}
