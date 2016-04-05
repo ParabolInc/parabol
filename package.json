@@ -126,7 +126,7 @@
     "redux-thunk": "2.0.1",
     "rethinkdbdash": "2.2.18",
     "serve-favicon": "^2.3.0",
-    "socketcluster": "4.3.3",
+    "socketcluster": "git://github.com/mattkrick/socketcluster.git#242b38a8660af47b0f9212206230e93d041ea5b6",
     "socketcluster-client": "4.3.12"
   }
 }
