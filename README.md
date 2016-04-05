@@ -18,15 +18,9 @@ Live demo: http://action-staging.parabol.co/
 
 * [Stack Information](#stack-information)
 * [Setup](#setup)
-  * [Installation](#installation)
-    * [Prerequisites](#prerequisites)
-    * [Source Code](#source-code)
-  * [Running in Development](#running-in-development)
-  * [Production](#running-in-development)
 * [Getting Involved](#getting-involved)
 * [Releases](#releases)
 * [About](#about)
-  * [Parabol Core Team](#parabol-core-team)
 * [License](#license)
 
 ## Stack Information
@@ -65,9 +59,9 @@ $ cd action
 $ npm install
 $ npm run quickstart
 $ rethinkdb
+```
 _Remember: if RethinkDB is running locally, you can reach its dashboard at
 [http://localhost:8080](http://localhost:8080) by default._
-```
 
 ### Client-side development
 
