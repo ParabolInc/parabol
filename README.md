@@ -67,7 +67,7 @@ _Remember: if RethinkDB is running locally, you can reach its dashboard at
 
 In this mode, webpack will hot swap your updated client modules without restarting the server.
 ```bash
-$ npm run dev
+$ npm start
 ```
 [http://localhost:3000/](http://localhost:3000/)
 

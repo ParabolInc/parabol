@@ -73,8 +73,6 @@
     "webpack-hot-middleware": "2.10.0"
   },
   "dependencies": {
-    "less": "^2.5.3",
-    "less-loader": "^2.2.1",
     "auth0": "^2.1.0",
     "auth0-lock": "^9.0.1",
     "babel-polyfill": "6.7.4",
@@ -99,6 +97,8 @@
     "joi": "8.0.5",
     "jsonwebtoken": "5.7.0",
     "jwt-decode": "^2.0.1",
+    "less": "^2.5.3",
+    "less-loader": "^2.2.1",
     "material-ui": "0.15.0-alpha.2",
     "node-env-flag": "0.1.0",
     "node-uuid": "1.4.7",
@@ -126,7 +126,7 @@
     "redux-thunk": "2.0.1",
     "rethinkdbdash": "2.2.18",
     "serve-favicon": "^2.3.0",
-    "socketcluster": "git://github.com/mattkrick/socketcluster.git#242b38a8660af47b0f9212206230e93d041ea5b6",
-    "socketcluster-client": "4.3.12"
+    "socketcluster": "^4.3.4",
+    "socketcluster-client": "^4.3.13"
   }
 }
