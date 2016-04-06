@@ -2,17 +2,9 @@
 
 Action is being architected for reactivity and realtime collaboration.
 
-We use a hybrid approach for collaboration and updates: receiving initial
-values and publishing model changes are performed using
-[Falcor](http://netflix.github.io/falcor/). However, subscribed Model
-change events are received over a [socket.io](http://socket.io) connection.
-
 Generating model changes relies heavily on
 [RethinkDB's](https://www.rethinkdb.com/)
-[changefeed feature](https://rethinkdb.com/docs/changefeeds/javascript/),
-[socket.io rooms](http://socket.io/docs/rooms-and-namespaces/), and
-proprietary logic (see: `api/models/helpers/subscriptions.js` and
-`api/socketio/publish.js`) for gluing the two together.
+[changefeed feature](https://rethinkdb.com/docs/changefeeds/javascript/)
 
 ## Detail
 
@@ -66,15 +58,6 @@ which will modify the Falcor model. When possible, local redux state
 transitions are performed optimistically.
 
 ## Future Directions
-
-### Falcor Maturity
-
-[Netflix Falcor](http://netflix.github.io/falcor/) is a fairly new
-technology. It was architected from edge to edge to use Javascript
-[Observable](https://github.com/Reactive-Extensions/RxJS) objects. At the
-moment, [Falcor does not support real-time updates](https://github.com/Netflix/falcor/issues/425). When this should
-change, we'll consider re-archecting our application to use a single
-strategy for handling model updates.
 
 ### Scaling notes
 
