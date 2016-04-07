@@ -9,7 +9,6 @@ import config from '../../webpack/webpack.config.dev';
 import createSSR from './createSSR';
 import {auth0} from '../universal/utils/clientOptions';
 
-import {auth0Secret} from './secrets';
 import {wsGraphQLHandler, wsGraphQLSubHandler} from './graphql/wsGraphQLHandlers';
 import httpGraphQLHandler from './graphql/httpGraphQLHandler';
 
@@ -44,7 +43,9 @@ export function run(worker) {
 
   // HTTP GraphQL endpoint
   app.post('/graphql', jwt({
-    secret: new Buffer(auth0Secret, 'base64'),
+    secret: process.env.AUTH0_CLIENT_SECRET ?
+      new Buffer(process.env.AUTH0_CLIENT_SECRET, 'base64') :
+      new Buffer('BksPeQQrRkXhDrugzQDg5Nw-IInub9RkQ-pSWohUM9s6Oii4xoGVCrK2_OcUCfYZ', 'base64'),
     audience: auth0.clientId,
     credentialsRequired: false
   }), httpGraphQLHandler);
