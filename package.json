@@ -132,7 +132,7 @@
     "socketcluster-client": "^4.3.13"
   },
   "engines": {
-  "node": "5.10.0",
-  "npm": "3.8.3"
+  "node": "5.10.1",
+  "npm": "3.8.5"
   }
 }

@@ -1,22 +1,16 @@
 import {SocketCluster} from 'socketcluster';
 import path from 'path';
-import dotenv from 'dotenv';
-import dotenvExpand from 'dotenv-expand';
-// import os from 'os';
+import { getDotenv } from '../universal/utils/dotenv';
 
 // Import .env and expand variables:
-try {
-  const myEnv = dotenv.config({silent: true});
-  dotenvExpand(myEnv);
-} catch (e) {
-  console.warn(`Unable to load .env: ${e}`);
-}
+getDotenv();
+
+const clientSecret = process.env.AUTH0_CLIENT_SECRET ||
+  'BksPeQQrRkXhDrugzQDg5Nw-IInub9RkQ-pSWohUM9s6Oii4xoGVCrK2_OcUCfYZ';
 
 // const numCpus = os.cpus().length;
 export const options = {
-  authKey: process.env.AUTH0_CLIENT_SECRET ?
-    new Buffer(process.env.AUTH0_CLIENT_SECRET, 'base64') :
-    new Buffer('BksPeQQrRkXhDrugzQDg5Nw-IInub9RkQ-pSWohUM9s6Oii4xoGVCrK2_OcUCfYZ', 'base64'),
+  authKey: new Buffer(clientSecret, 'base64'),
   logLevel: 1,
   // change this to scale vertically
   workers: 1,

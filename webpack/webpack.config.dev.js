@@ -1,16 +1,10 @@
 import path from 'path';
 import webpack from 'webpack';
 import cssModulesValues from 'postcss-modules-values';
-import dotenv from 'dotenv';
-import dotenvExpand from 'dotenv-expand';
+import { getDotenv } from '../src/universal/utils/dotenv';
 
 // Import .env and expand variables:
-try {
-  const myEnv = dotenv.config({silent: true});
-  dotenvExpand(myEnv);
-} catch (e) {
-  console.warn(`webpack: unable to load .env: ${e}`);
-}
+getDotenv();
 
 const root = process.cwd();
 const clientInclude = [
@@ -68,7 +62,9 @@ export default {
     }),
     new webpack.EnvironmentPlugin([
       'AUTH0_CLIENT_ID',
-      'AUTH0_DOMAIN'
+      'AUTH0_DOMAIN',
+      'HOST',
+      'PORT'
     ])
   ],
   resolve: {
