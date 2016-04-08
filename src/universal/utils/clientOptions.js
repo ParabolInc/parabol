@@ -5,8 +5,8 @@ export const localStorageVars = {
 };
 
 export const auth0 = {
-  clientId: 'w3mBrhiXGsE3DsrSMgpAz2bS6VzLhOyJ',
-  account: 'parabol.auth0.com'
+  clientId: process.env.AUTH0_CLIENT_ID || 'w3mBrhiXGsE3DsrSMgpAz2bS6VzLhOyJ',
+  account: process.env.AUTH0_DOMAIN || 'parabol.auth0.com'
 };
 
 export const head = {

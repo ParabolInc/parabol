@@ -2,15 +2,12 @@ import {SocketCluster} from 'socketcluster';
 import path from 'path';
 import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
-import fs from 'fs';
 // import os from 'os';
 
 // Import .env and expand variables:
 try {
-  if (fs.existsSync('../.env')) {
-    const myEnv = dotenv.config();
-    dotenvExpand(myEnv);
-  }
+  const myEnv = dotenv.config({silent: true});
+  dotenvExpand(myEnv);
 } catch (e) {
   console.warn(`Unable to load .env: ${e}`);
 }
