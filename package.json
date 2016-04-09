@@ -1,9 +1,9 @@
 {
   "name": "parabol-action",
-  "description": "An open-source tool for meaningful meetings to build smarter, more agile teams.",
+  "description": "An open-source app for building smarter, more agile teams.",
   "author": "Jordan Husney <jordan@parabol.com> (http://github.com/jrhusney)",
   "license": "Apache-2.0",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -14,10 +14,10 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=development node ./src/server/server.babel.js",
-    "prod": "NODE_ENV=production node ./src/server/server.babel.js",
+    "start": "NODE_ENV=production node ./src/server/server.babel.js",
+    "dev": "NODE_ENV=development node ./src/server/server.babel.js",
     "build": "rimraf build && concurrently \"npm run build:client\" \"npm run build:server\"",
-    "bs": "rimraf build && concurrently \"npm run build:client\" \"npm run build:server\" \"npm run prod\"",
+    "bs": "rimraf build && concurrently \"npm run build:client\" \"npm run build:server\" \"npm run start\"",
     "quickstart": "rimraf build && concurrently \"npm run build:db\" \"npm run build:client\" \"npm run build:server\" \"npm run prod\"",
     "build:client": "NODE_ENV=production webpack --config ./webpack/prod.babel.js",
     "build:server": "NODE_ENV=production webpack --config ./webpack/server.babel.js",
@@ -84,6 +84,8 @@
     "compression": "1.6.1",
     "cors": "2.7.1",
     "deep-equal": "1.0.1",
+    "dotenv": "^2.0.0",
+    "dotenv-expand": "^0.1.0",
     "es6-promisify": "4.0.0",
     "express": "4.13.4",
     "express-jwt": "3.3.0",
@@ -128,5 +130,9 @@
     "serve-favicon": "^2.3.0",
     "socketcluster": "^4.3.4",
     "socketcluster-client": "^4.3.13"
+  },
+  "engines": {
+  "node": "5.10.1",
+  "npm": "3.8.5"
   }
 }
