@@ -41,12 +41,12 @@ export function run(worker) {
     app.use('/static', express.static('build'));
   }
 
-  const clientSecret = process.env.AUTH0_CLIENT_SECRET ||
+  const secretKey = process.env.AUTH0_CLIENT_SECRET ||
     'BksPeQQrRkXhDrugzQDg5Nw-IInub9RkQ-pSWohUM9s6Oii4xoGVCrK2_OcUCfYZ';
 
   // HTTP GraphQL endpoint
   app.post('/graphql', jwt({
-    secret: new Buffer(clientSecret, 'base64'),
+    secret: new Buffer(secretKey, 'base64'),
     audience: auth0.clientId,
     credentialsRequired: false
   }), httpGraphQLHandler);

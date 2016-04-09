@@ -5,12 +5,12 @@ import { getDotenv } from '../universal/utils/dotenv';
 // Import .env and expand variables:
 getDotenv();
 
-const clientSecret = process.env.AUTH0_CLIENT_SECRET ||
+const secretKey = process.env.AUTH0_CLIENT_SECRET ||
   'BksPeQQrRkXhDrugzQDg5Nw-IInub9RkQ-pSWohUM9s6Oii4xoGVCrK2_OcUCfYZ';
 
 // const numCpus = os.cpus().length;
 export const options = {
-  authKey: new Buffer(clientSecret, 'base64'),
+  authKey: new Buffer(secretKey, 'base64'),
   logLevel: 1,
   // change this to scale vertically
   workers: 1,
