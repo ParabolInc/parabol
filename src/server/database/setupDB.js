@@ -1,4 +1,8 @@
 import r from './rethinkdriver';
+import { getDotenv } from '../../universal/utils/dotenv';
+
+// Import .env and expand variables:
+getDotenv();
 
 const databases = ['action', 'actionTesting'];
 

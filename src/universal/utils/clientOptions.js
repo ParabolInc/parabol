@@ -2,12 +2,12 @@ export const localStorageVars = {
   // names to store in localStorage
   authTokenName: 'action.authToken',
   profileName: 'action.profile'
-}
+};
 
 export const auth0 = {
-  clientId: 'w3mBrhiXGsE3DsrSMgpAz2bS6VzLhOyJ',
-  account: 'parabol.auth0.com'
-}
+  clientId: process.env.AUTH0_CLIENT_ID || 'w3mBrhiXGsE3DsrSMgpAz2bS6VzLhOyJ',
+  account: process.env.AUTH0_DOMAIN || 'parabol.auth0.com'
+};
 
 export const head = {
   titleTemplate: '%s | Parabol, Inc.',
@@ -26,5 +26,3 @@ export const head = {
     {property: 'og:creator', content: '@jrhusney'},
   ]
 };
-
-

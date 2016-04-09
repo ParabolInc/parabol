@@ -1,9 +1,16 @@
 import path from 'path';
 import webpack from 'webpack';
 import cssModulesValues from 'postcss-modules-values';
+import { getDotenv } from '../src/universal/utils/dotenv';
+
+// Import .env and expand variables:
+getDotenv();
 
 const root = process.cwd();
-const clientInclude = [path.join(root, 'src', 'client'), path.join(root, 'src', 'universal')];
+const clientInclude = [
+  path.join(root, 'src', 'client'),
+  path.join(root, 'src', 'universal')
+];
 const globalCSS = path.join(root, 'src', 'universal', 'styles', 'global');
 
 const prefetches = [];
@@ -12,15 +19,15 @@ const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(s
 
 const babelQuery = {
   plugins: [
-    ["transform-decorators-legacy"],
-    ["react-transform", {
+    ['transform-decorators-legacy'],
+    ['react-transform', {
       transforms: [{
-        transform: "react-transform-hmr",
-        imports: ["react"],
-        locals: ["module"]
+        transform: 'react-transform-hmr',
+        imports: ['react'],
+        locals: ['module']
       }, {
-        transform: "react-transform-catch-errors",
-        imports: ["react", "redbox-react"]
+        transform: 'react-transform-catch-errors',
+        imports: ['react', 'redbox-react']
       }]
     }]
   ]
@@ -29,7 +36,7 @@ const babelQuery = {
 export default {
   // devtool: 'source-maps',
   devtool: 'eval',
-  context: path.join(root, "src"),
+  context: path.join(root, 'src'),
   entry: {
     app: ['babel-polyfill',
       'bootstrap-sass!universal/theme/bootstrap.config.js',
@@ -49,10 +56,16 @@ export default {
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),
     new webpack.DefinePlugin({
-      "__CLIENT__": true,
-      "__PRODUCTION__": false,
-      "process.env.NODE_ENV": JSON.stringify('development')
-    })
+      __CLIENT__: true,
+      __PRODUCTION__: false,
+      'process.env.NODE_ENV': JSON.stringify('development')
+    }),
+    new webpack.EnvironmentPlugin([
+      'AUTH0_CLIENT_ID',
+      'AUTH0_DOMAIN',
+      'HOST',
+      'PORT'
+    ])
   ],
   resolve: {
     extensions: ['.js'],
@@ -77,7 +90,7 @@ export default {
       },
       {
         test: /\.css$/,
-        loader: 'style!css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss',
+        loader: 'style!css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss', // eslint-disable-line max-len
         exclude: globalCSS,
         include: clientInclude
       },
@@ -89,11 +102,11 @@ export default {
       },
       {
         test: /\.scss$/,
-        loader: 'style!css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss!sass?outputStyle=expanded&sourceMap'
+        loader: 'style!css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss!sass?outputStyle=expanded&sourceMap' // eslint-disable-line max-len
       },
       {
         test: /\.less/,
-        loader: 'style!css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss!less?outputStyle=expanded&sourceMap'
+        loader: 'style!css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss!less?outputStyle=expanded&sourceMap' // eslint-disable-line max-len
       },
       {
         test: /auth0-lock\/.*\.js$/,

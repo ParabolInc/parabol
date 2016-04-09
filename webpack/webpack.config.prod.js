@@ -2,9 +2,17 @@ import path from 'path';
 import webpack from 'webpack';
 import AssetsPlugin from 'assets-webpack-plugin';
 import cssModulesValues from 'postcss-modules-values';
+import { getDotenv } from '../src/universal/utils/dotenv';
+
+// Import .env and expand variables:
+getDotenv();
 
 const root = process.cwd();
-const clientInclude = [path.join(root, 'src', 'client'), path.join(root, 'src', 'universal'), /joi/, /isemail/, /hoek/, /topo/];
+const clientInclude = [
+  path.join(root, 'src', 'client'),
+  path.join(root, 'src', 'universal'),
+  /joi/, /isemail/, /hoek/, /topo/
+];
 const globalCSS = path.join(root, 'src', 'universal', 'styles', 'global');
 
 /* code can be: vendor-common, vendor-page-specific, meatier-common, meatier-page-specific
@@ -64,10 +72,16 @@ export default {
     new AssetsPlugin({path: path.join(root, 'build'), filename: 'assets.json'}),
     new webpack.NoErrorsPlugin(),
     new webpack.DefinePlugin({
-      '__CLIENT__': true,
-      '__PRODUCTION__': true,
+      __CLIENT__: true,
+      __PRODUCTION__: true,
       'process.env.NODE_ENV': JSON.stringify('production')
-    })
+    }),
+    new webpack.EnvironmentPlugin([
+      'AUTH0_CLIENT_ID',
+      'AUTH0_DOMAIN',
+      'HOST',
+      'PORT'
+    ])
   ],
   module: {
     loaders: [
@@ -77,7 +91,7 @@ export default {
       {test: /\.(eot|ttf|wav|mp3)$/, loader: 'file-loader'},
       {
         test: /\.css$/,
-        loader: 'fake-style!css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss',
+        loader: 'fake-style!css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss', // eslint-disable-line max-len
         include: clientInclude,
         exclude: globalCSS
       },
@@ -93,7 +107,7 @@ export default {
       },
       {
         test: /\.scss$/,
-        loader: 'fake-style!css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss!sass'
+        loader: 'fake-style!css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss!sass' // eslint-disable-line max-len
       },
       {
         test: /auth0-lock\/.*\.js$/,
