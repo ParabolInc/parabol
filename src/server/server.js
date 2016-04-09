@@ -15,7 +15,6 @@ export const options = {
   // change this to scale vertically
   workers: 1,
   brokers: 1,
-  host: process.env.HOST || '127.0.0.1',
   port: process.env.PORT || 3000,
   appName: 'Meatier',
   allowClientPublish: false,
