@@ -15,8 +15,8 @@ export default class MeetingLink extends Component {
   }
 
   render() {
-    if (!__CLIENT__) return;
-    const { props } = this;
+    if (!__CLIENT__) return undefined;
+    const { props } = this; // eslint-disable-line no-unused-vars
     const currentUrl = window && window.location.href;
     return (
       <div className="input-group">

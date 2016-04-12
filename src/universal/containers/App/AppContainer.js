@@ -5,6 +5,12 @@ import {localStorageVars} from '../../utils/clientOptions';
 import loginWithToken from '../../decorators/loginWithToken/loginWithToken';
 import {ensureState} from 'redux-optimistic-ui';
 
+function mapStateToProps(state) {
+  return {
+    isAuthenticated: ensureState(state).getIn(['auth', 'isAuthenticated'])
+  };
+}
+
 @connect(mapStateToProps)
 @loginWithToken(localStorageVars)
 export default class AppContainer extends Component {
@@ -16,10 +22,4 @@ export default class AppContainer extends Component {
   render() {
     return <App {...this.props}/>;
   }
-}
-
-function mapStateToProps(state) {
-  return {
-    isAuthenticated: ensureState(state).getIn(['auth', 'isAuthenticated'])
-  };
 }

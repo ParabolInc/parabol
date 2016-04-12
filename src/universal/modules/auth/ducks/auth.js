@@ -64,8 +64,8 @@ export function loginUserError(error) {
 }
 
 export const loginAndRedirect = (redirect, authToken) => {
-  const {profileName, authTokenName} = localStorageVars;
-  localStorage.setItem(authTokenName, authToken);
+  const {profileName, innerAuthTokenName} = localStorageVars;
+  localStorage.setItem(innerAuthTokenName, authToken);
   return async dispatch => {
     const query = `
     mutation ($authToken: String!) {
@@ -95,21 +95,21 @@ export const loginAndRedirect = (redirect, authToken) => {
       }
     }`;
     const {error, data} = await fetchGraphQL({query, variables: {authToken}});
-    //TODO enable once we get the server credentials for good stuff
+    // TODO enable once we get the server credentials for good stuff
     if (error) {
       return dispatch({type: LOGIN_USER_ERROR, error});
     }
     const {profile} = data;
     localStorage.setItem(profileName, JSON.stringify(profile));
-    console.log('PROFILE', profile)
+    console.log('PROFILE', profile);
     dispatch(loginUserSuccess({profile, authToken}));
     dispatch(push(redirect));
   };
-}
+};
 
 export function logoutAndRedirect() {
   localStorage.removeItem(authTokenName);
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch({type: LOGOUT_USER});
     dispatch(replace('/'));
   };
