@@ -30,7 +30,7 @@ export default initialState => {
     }
     store = createStore(reducer, initialState, compose(
       applyMiddleware(...middlewares),
-      devtoolsExt || (f => f)
+      devtoolsExt || (func => func)
     ));
   }
   return store;
