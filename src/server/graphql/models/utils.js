@@ -38,20 +38,18 @@ export const makeRequired = (fields, requiredFieldNames) => {
   return newFields;
 };
 
-export function getFields(context, asts = context.fieldASTs) {
+export function getFields(context, astsParams = context.fieldASTs) {
   // for recursion...Fragments doesn't have many sets...
-  if (!Array.isArray(asts)) {
-    asts = [asts];
-  }
+  const asts = Array.isArray(astsParams) ? astsParams : [astsParams];
 
   // get all selectionSets
-  const selections = asts.reduce((selections, source) => {
+  const selectionSets = asts.reduce((selections, source) => {
     selections.push(...source.selectionSet.selections);
     return selections;
   }, []);
 
   // return fields
-  return selections.reduce((list, ast) => {
+  return selectionSets.reduce((list, ast) => {
     switch (ast.kind) {
       case 'Field' :
         list[ast.name.value] = true;

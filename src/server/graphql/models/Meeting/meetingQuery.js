@@ -1,4 +1,4 @@
-import {Meeting} from './meetingSchema';
+// import {Meeting} from './meetingSchema';
 
 export default {
   // getUserByUserId: {
@@ -15,4 +15,3 @@ export default {
   //   }
   // }
 };
-
