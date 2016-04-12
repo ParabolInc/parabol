@@ -27,6 +27,8 @@
     "lint": "eslint 'src/**/*.js' 'tests/*.js' 'webpack/*.js'",
     "profile": "NODE_ENV=production webpack --config ./webpack/prod.babel.js --profile --json > stats.json"
   },
+  "pre-commit": [
+  ],
   "devDependencies": {
     "assets-webpack-plugin": "3.4.0",
     "ava": "0.13.0",
@@ -56,6 +58,7 @@
     "null-loader": "0.1.1",
     "postcss-loader": "0.8.2",
     "postcss-modules-values": "1.1.2",
+    "pre-commit": "^1.1.2",
     "raw-loader": "0.5.1",
     "react-addons-test-utils": "0.14.8",
     "react-transform-catch-errors": "1.0.2",
@@ -132,7 +135,7 @@
     "socketcluster-client": "^4.3.13"
   },
   "engines": {
-  "node": "5.10.1",
-  "npm": "3.8.5"
+    "node": "5.10.1",
+    "npm": "3.8.5"
   }
 }
