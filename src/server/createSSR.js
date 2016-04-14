@@ -1,10 +1,11 @@
 import React from 'react';
+import { Presets, Plugins, StyleSheet } from 'react-look';
 import {createStore, applyMiddleware} from 'redux';
 import makeReducer from '../universal/redux/makeReducer';
 import {match} from 'react-router';
 import Html from './Html';
 import {push} from 'react-router-redux';
-import {renderToStaticMarkup} from 'react-dom-stream/server';
+import {renderToStaticMarkup} from 'react-dom/server';
 import fs from 'fs';
 import {join, basename} from 'path';
 import promisify from 'es6-promisify';
@@ -13,19 +14,29 @@ import {Map as iMap} from 'immutable';
 
 // https://github.com/systemjs/systemjs/issues/953
 
-function renderApp(res, store, assets, renderProps) {
+const lookConfig = Presets['react-dom'];
+process.env.NODE_ENV !== 'production' &&
+  lookConfig.plugins.push(Plugins.friendlyClassName);
+
+function renderApp(req, res, store, assets, renderProps) {
   const location = renderProps && renderProps.location && renderProps.location.pathname || '/';
   // Needed so some components can render based on location
   store.dispatch(push(location));
-  const htmlStream = renderToStaticMarkup(<Html
-    title="Action | Parabol Inc"
+  lookConfig.userAgent = req.headers['user-agent'];
+  lookConfig.styleElementId = '_look';
+  const htmlString = renderToStaticMarkup(<Html
+    title='Action | Parabol Inc'
+    lookStyleElementId='_look'
+    lookCSSToken='<!-- appCSS -->'
+    lookConfig={lookConfig}
     store={store}
     assets={assets}
     renderProps={renderProps}
     />);
+  const appCSS = StyleSheet.renderToString(lookConfig.prefixer);
   res.write('<!DOCTYPE html>');
-  htmlStream.pipe(res, {end: false});
-  htmlStream.on('end', () => res.end());
+  res.write(htmlString.replace('<!-- appCSS -->', appCSS));
+  res.end();
 }
 
 export default async function createSSR(req, res) {
@@ -43,13 +54,13 @@ export default async function createSSR(req, res) {
       } else if (redirectLocation) {
         res.redirect(redirectLocation.pathname + redirectLocation.search);
       } else if (renderProps) {
-        renderApp(res, store, assets, renderProps);
+        renderApp(req, res, store, assets, renderProps);
       } else {
         res.status(404).send('Not found');
       }
     });
   } else {
     // just send a cheap html doc + stringified store
-    renderApp(res, store);
+    renderApp(req, res, store);
   }
 }

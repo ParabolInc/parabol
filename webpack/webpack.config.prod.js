@@ -52,7 +52,7 @@ export default {
   },
   resolve: {
     extensions: ['.js'],
-    modules: [path.join(root, 'src'), 'node_modules']
+    modules: [path.join(root, 'src'), 'node_modules', path.join(root, 'build')]
   },
   node: {
     dns: 'mock',

@@ -20,7 +20,8 @@
     "bs": "rimraf build && concurrently \"npm run build:client\" \"npm run build:server\" \"npm run start\"",
     "quickstart": "rimraf build && concurrently \"npm run build:db\" \"npm run build:client\" \"npm run build:server\" \"npm run prod\"",
     "build:client": "NODE_ENV=production webpack --config ./webpack/prod.babel.js",
-    "build:server": "NODE_ENV=production webpack --config ./webpack/server.babel.js",
+    "build:server": "npm run build:theme && NODE_ENV=production webpack --config ./webpack/server.babel.js",
+    "build:theme": "NODE_ENV=development mkdir -p build && babel-node ./src/universal/utils/buildThemeJS.js > ./build/theme-build.js",
     "build:db": "node ./src/server/database/setupDB.babel.js",
     "update:db": "node ./src/server/database/setupDB.babel.js true",
     "test": "NODE_ENV=testing ava ./src/**/__tests___/**/*.js --verbose",
@@ -112,8 +113,9 @@
     "react-dnd": "2.1.4",
     "react-dnd-html5-backend": "2.1.2",
     "react-dom": "0.14.8",
-    "react-dom-stream": "0.5.0",
+    "react-fontawesome": "^0.3.3",
     "react-helmet": "^3.0.0",
+    "react-look": "^1.0.0-beta8",
     "react-redux": "4.4.1",
     "react-router": "2.0.1",
     "react-router-redux": "4.0.1",
@@ -129,10 +131,11 @@
     "rethinkdbdash": "2.2.18",
     "serve-favicon": "^2.3.0",
     "socketcluster": "^4.3.4",
-    "socketcluster-client": "^4.3.13"
+    "socketcluster-client": "^4.3.13",
+    "tinycolor2": "^1.3.0"
   },
   "engines": {
-  "node": "5.10.1",
-  "npm": "3.8.5"
+    "node": "5.10.1",
+    "npm": "3.8.5"
   }
 }

@@ -8,7 +8,6 @@ export default store => {
      */
     component: AppContainer,
     childRoutes: [
-      require('./appLayout'),
       require('./landing'),
       require('./signin'),
       require('./meeting')(store),
