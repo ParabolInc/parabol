@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import Helmet from 'react-helmet';
-import cssModules from 'react-css-modules';
-import styles from './MeetingLayout.scss';
+import look, { StyleSheet } from 'react-look';
+import theme from '../../../../theme/variables/theme';
 import {connect} from 'react-redux';
 import MeetingHeader from '../../components/MeetingHeader/MeetingHeader';
 import MeetingNavbar from '../../components/MeetingNavbar/MeetingNavbar';
@@ -68,7 +68,6 @@ const mapStateToProps = state => {
 
 const socketClusterListeners = {
   unsubscribe(props) {
-    debugger
     const {meeting, socketId, dispatch} = props;
     dispatch(updateEditing(meeting.instance.id, socketId, false));
   }
@@ -76,7 +75,7 @@ const socketClusterListeners = {
 @reduxSocket({authTokenName: localStorageVars.authTokenName})
 @connect(mapStateToProps)
 @ensureMeetingId // catch for those who just landed at this url
-@cssModules(styles)
+@look
 export default class MeetingLayout extends Component {
   constructor(props) {
     super(props);
@@ -126,10 +125,10 @@ export default class MeetingLayout extends Component {
 
     const exampleMeetingName = 'Core Action Meeting';
     return (
-      <div styleName="root">
+      <div className={styles.root}>
         <Helmet title={exampleMeetingName}/>
         <MeetingNavbar onLeaveMeetingClick={handleOnLeaveMeetingClick}/>
-        <div styleName="main">
+        <div className={styles.main}>
           <MeetingHeader onMeetingNameChange={handleOnMeetingNameChange} meetingName={exampleMeetingName}/>
           <MeetingSection {...exampleSections[0]} key={exampleSections[0].id}>
             <UserInput {...exampleInput}
@@ -152,3 +151,30 @@ export default class MeetingLayout extends Component {
 
   }
 }
+
+const styles = StyleSheet.create({
+  root: {
+    backgroundColor: theme.c,
+    display: 'flex',
+    flexDirection: 'column',
+    margin: 0,
+    minHeight: '100vh',
+    padding: 0,
+    width: '100%'
+  },
+
+  main: {
+    backgroundColor: '#fff',
+    flex: 1,
+    margin: '0 auto',
+    maxWidth: '1440px',
+    overflow: 'hidden',
+    paddingLeft: '3rem',
+    width: '100%',
+
+    '@media screen and (min-width: 1280px)': {
+      paddingLeft: '320px'
+    }
+  }
+
+});
