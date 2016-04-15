@@ -4,6 +4,8 @@ import styles from './MeetingHeader.scss';
 import MeetingLink from '../../components/MeetingLink/MeetingLink';
 
 @cssModules(styles)
+// for the decorators
+// eslint-disable-next-line react/prefer-stateless-function
 export default class MeetingHeader extends Component {
   static propTypes = {
     onMeetingNameChange: PropTypes.func.isRequired,
@@ -20,10 +22,11 @@ export default class MeetingHeader extends Component {
           Action Meeting
         </div>
         <input styleName="name"
-               onChange={props.onMeetingNameChange}
-               placeholder={props.meetingName}
-               type="text"
-               value={props.meetingName} />
+          onChange={props.onMeetingNameChange}
+          placeholder={props.meetingName}
+          type="text"
+          value={props.meetingName}
+        />
       </div>
     );
   }

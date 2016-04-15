@@ -27,13 +27,13 @@
     "lint": "eslint 'src/**/*.js' 'tests/*.js' 'webpack/*.js'",
     "profile": "NODE_ENV=production webpack --config ./webpack/prod.babel.js --profile --json > stats.json"
   },
-  "pre-commit": [
-  ],
+  "pre-commit": [],
   "devDependencies": {
     "assets-webpack-plugin": "3.4.0",
     "ava": "0.13.0",
     "babel-cli": "6.6.5",
     "babel-core": "6.7.4",
+    "babel-eslint": "^6.0.2",
     "babel-loader": "6.2.4",
     "babel-plugin-add-module-exports": "0.1.2",
     "babel-plugin-react-transform": "2.0.2",

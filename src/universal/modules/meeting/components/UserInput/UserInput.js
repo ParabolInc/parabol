@@ -3,6 +3,8 @@ import cssModules from 'react-css-modules';
 import styles from './UserInput.scss';
 
 @cssModules(styles)
+// for the decorators
+// eslint-disable-next-line react/prefer-stateless-function
 export default class UserInput extends Component {
   static propTypes = {
     active: PropTypes.bool.isRequired,
@@ -17,22 +19,21 @@ export default class UserInput extends Component {
   render() {
     const { props } = this;
     const inputClassName = props.active ? styles.inputActive : styles.input;
-    const activeLabel = () => {
-      return (
-        <div styleName="activeLabel">
-          {props.activeLabelMessage}
-        </div>
-      );
-    };
+    const activeLabel = () => (
+      <div styleName="activeLabel">
+        {props.activeLabelMessage}
+      </div>
+    );
     return (
       <div styleName="root">
         <input className={inputClassName}
-               onChange={props.onUserInputChange}
-               onFocus={props.onUserInputFocus}
-               onBlur={props.onUserInputBlur}
-               placeholder={props.placeholder}
-               type={props.type}
-               value={props.value} />
+          onChange={props.onUserInputChange}
+          onFocus={props.onUserInputFocus}
+          onBlur={props.onUserInputBlur}
+          placeholder={props.placeholder}
+          type={props.type}
+          value={props.value}
+        />
         {props.active && activeLabel()}
       </div>
     );

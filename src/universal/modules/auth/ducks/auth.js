@@ -49,21 +49,18 @@ export default function reducer(state = initialState, action = {}) {
   }
 }
 
-export function loginUserSuccess(payload) {
-  return {
-    type: LOGIN_USER_SUCCESS,
-    payload
-  };
-}
+export const loginUserSuccess = (payload) => ({
+  type: LOGIN_USER_SUCCESS,
+  payload
+});
 
-export function loginUserError(error) {
-  return {
-    type: LOGIN_USER_ERROR,
-    error
-  };
-}
+export const loginUserError = (error) => ({
+  type: LOGIN_USER_ERROR,
+  error
+});
 
 export const loginAndRedirect = (redirect, authToken) => {
+  // eslint-disable-next-line no-shadow
   const {profileName, authTokenName} = localStorageVars;
   localStorage.setItem(authTokenName, authToken);
   return async dispatch => {
@@ -95,22 +92,22 @@ export const loginAndRedirect = (redirect, authToken) => {
       }
     }`;
     const {error, data} = await fetchGraphQL({query, variables: {authToken}});
-    //TODO enable once we get the server credentials for good stuff
+    // TODO enable once we get the server credentials for good stuff
     if (error) {
       return dispatch({type: LOGIN_USER_ERROR, error});
     }
     const {profile} = data;
     localStorage.setItem(profileName, JSON.stringify(profile));
-    console.log('PROFILE', profile)
+    console.log('PROFILE', profile);
     dispatch(loginUserSuccess({profile, authToken}));
-    dispatch(push(redirect));
+    return dispatch(push(redirect));
   };
-}
+};
 
-export function logoutAndRedirect() {
+export const logoutAndRedirect = () => {
   localStorage.removeItem(authTokenName);
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch({type: LOGOUT_USER});
     dispatch(replace('/'));
   };
-}
+};

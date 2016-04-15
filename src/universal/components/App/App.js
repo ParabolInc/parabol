@@ -1,16 +1,14 @@
-import React, {PropTypes, Component} from 'react';
+import React, {PropTypes} from 'react';
 import styles from './App.css';
 
-export default class App extends Component {
-  static propTypes = {
-    children: PropTypes.any
-  }
-
-  render() {
-    return (
-      <div className={styles.app}>
-        {this.props.children}
-      </div>
-    );
-  }
+export default function App(props) {
+  return (
+    <div className={styles.app}>
+      {props.children}
+    </div>
+  );
 }
+
+App.propTypes = {
+  children: PropTypes.any
+};

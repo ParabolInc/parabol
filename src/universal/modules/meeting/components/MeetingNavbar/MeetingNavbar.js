@@ -3,6 +3,8 @@ import cssModules from 'react-css-modules';
 import styles from './MeetingNavbar.scss';
 
 @cssModules(styles)
+// for the decorators
+// eslint-disable-next-line react/prefer-stateless-function
 export default class MeetingNavbar extends Component {
   static propTypes = {
     onLeaveMeetingClick: PropTypes.func.isRequired
@@ -20,8 +22,9 @@ export default class MeetingNavbar extends Component {
           *
           */}
         <button className="btn btn-primary pull-right"
-                onClick={() => props.onLeaveMeetingClick()}
-                title="Leave Meeting">
+          onClick={() => props.onLeaveMeetingClick()}
+          title="Leave Meeting"
+        >
           Leave Meeting
         </button>
       </div>

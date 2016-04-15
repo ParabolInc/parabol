@@ -17,7 +17,7 @@ export function postJSON(route, obj) {
     method: 'post',
     credentials: 'include',
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(obj)
@@ -34,7 +34,7 @@ export function getJSON(route) {
 
 export const getClientError = errors => {
   if (!errors) {
-    return;
+    return undefined;
   }
   const error = errors[0].message;
   return (error.indexOf('{"_error"') === -1) ? {_error: 'Server query error'} : JSON.parse(error);
@@ -42,8 +42,9 @@ export const getClientError = errors => {
 
 export const prepareGraphQLParams = graphParams => {
   // compress
-  graphParams.query = graphParams.query.replace(/\s/g, '');
-  return JSON.stringify(graphParams);
+  const params = graphParams;
+  params.query = params.query.replace(/\s/g, '');
+  return JSON.stringify(params);
 };
 
 export const fetchGraphQL = async graphParams => {
@@ -55,7 +56,7 @@ export const fetchGraphQL = async graphParams => {
     method: 'post',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${authToken}`
+      Authorization: `Bearer ${authToken}`
     },
     body: serializedParams
   });

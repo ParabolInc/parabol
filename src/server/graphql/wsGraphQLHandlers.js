@@ -2,7 +2,7 @@ import {graphql} from 'graphql';
 import {prepareClientError} from './models/utils';
 import Schema from './rootSchema';
 
-export const wsGraphQLHandler = async function (body, cb) {
+export const wsGraphQLHandler = async (body, cb) => {
   const {query, variables, ...rootVals} = body;
   const authToken = this.getAuthToken();
   const docId = variables.doc && variables.doc.id || variables.id;
@@ -11,26 +11,16 @@ export const wsGraphQLHandler = async function (body, cb) {
     return cb({_error: 'No documentId found'});
   }
   this.docQueue.add(docId);
-  const result = await graphql(Schema, query, {socket: this, authToken, ...rootVals}, variables);
+  const result = await graphql(Schema, query, {
+    socket: this,
+    authToken, ...rootVals
+  }, variables);
   const {error, data} = prepareClientError(result);
   if (error) {
     this.docQueue.delete(docId);
   }
-  cb(error, data);
+  return cb(error, data);
 };
-
-export const wsGraphQLSubHandler = function (subbedChannelName) {
-  const authToken = this.getAuthToken();
-  const {queryString, variables, ...rootVals} = parseChannelName(subbedChannelName);
-  graphql(Schema, queryString, {socket: this, authToken, subbedChannelName, ...rootVals}, variables);
-};
-
-const parseChannelName = channelName => {
-  const channelVars = channelName.split('/');
-  const subscriptionName = channelVars.shift();
-  const queryFactory = subscriptionLookup[subscriptionName];
-  return queryFactory ? queryFactory(...channelVars) : {};
-}
 
 /*
  * This is where you add subscription logic
@@ -50,6 +40,21 @@ const subscriptionLookup = {
           }
         }`,
       variables: {meetingId}
-    }
+    };
   }
+};
+
+const parseChannelName = channelName => {
+  const channelVars = channelName.split('/');
+  const subscriptionName = channelVars.shift();
+  const queryFactory = subscriptionLookup[subscriptionName];
+  return queryFactory ? queryFactory(...channelVars) : {};
+};
+
+// This should be arrow syntax, but doesn't work when it is
+export function wsGraphQLSubHandler(subbedChannelName) {
+  const authToken = this.getAuthToken();
+  const {queryString, variables, ...rootVals} = parseChannelName(subbedChannelName);
+  graphql(Schema, queryString, {
+    socket: this, authToken, subbedChannelName, ...rootVals}, variables);
 }

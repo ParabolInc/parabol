@@ -2,6 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 
 @connect(state => ({ time: state.info.data.time }))
+// for the decorators
+// eslint-disable-next-line react/prefer-stateless-function
 export default class MiniInfoBar extends Component {
   static propTypes = {
     time: PropTypes.number

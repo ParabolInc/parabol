@@ -1,4 +1,10 @@
-{ "extends": "eslint-config-airbnb",
+{ "extends": [
+    "plugin:react/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "eslint-config-airbnb/base",
+    "eslint-config-airbnb/rules/react"
+  ],
   "env": {
     "browser": true,
     "node": true,
@@ -21,14 +27,17 @@
   "plugins": [
     "react", "import"
   ],
+  "parser": "babel-eslint",
   "settings": {
     "import/parser": "babel-eslint",
     "import/resolve": {
       moduleDirectory: ["node_modules", "src"]
-    }
+    },
+    "import/ignore": [".scss$", ".css$", ".svg$"]
   },
   "globals": {
     "__DEVELOPMENT__": true,
+    "__PRODUCTION__": true,
     "__CLIENT__": true,
     "__SERVER__": true,
     "__DISABLE_SSR__": true,
