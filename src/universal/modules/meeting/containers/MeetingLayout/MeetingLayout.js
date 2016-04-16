@@ -75,7 +75,6 @@ const mapStateToProps = stateParams => {
 
 const socketClusterListeners = { // eslint-disable-line no-unused-vars
   unsubscribe(props) {
-    debugger;
     const {meeting, socketId, dispatch} = props;
     dispatch(updateEditing(meeting.instance.id, socketId, false));
   }
