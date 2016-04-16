@@ -2,7 +2,7 @@ import {graphql} from 'graphql';
 import {prepareClientError} from './models/utils';
 import Schema from './rootSchema';
 
-export const wsGraphQLHandler = async function (body, cb) {
+export const wsGraphQLHandler = async (body, cb) => {
   const {query, variables, ...rootVals} = body;
   const authToken = this.getAuthToken();
   const docId = variables.doc && variables.doc.id || variables.id;
@@ -18,19 +18,6 @@ export const wsGraphQLHandler = async function (body, cb) {
   }
   cb(error, data);
 };
-
-export const wsGraphQLSubHandler = function (subbedChannelName) {
-  const authToken = this.getAuthToken();
-  const {queryString, variables, ...rootVals} = parseChannelName(subbedChannelName);
-  graphql(Schema, queryString, {socket: this, authToken, subbedChannelName, ...rootVals}, variables);
-};
-
-const parseChannelName = channelName => {
-  const channelVars = channelName.split('/');
-  const subscriptionName = channelVars.shift();
-  const queryFactory = subscriptionLookup[subscriptionName];
-  return queryFactory ? queryFactory(...channelVars) : {};
-}
 
 /*
  * This is where you add subscription logic
@@ -50,6 +37,19 @@ const subscriptionLookup = {
           }
         }`,
       variables: {meetingId}
-    }
+    };
   }
-}
+};
+
+const parseChannelName = channelName => {
+  const channelVars = channelName.split('/');
+  const subscriptionName = channelVars.shift();
+  const queryFactory = subscriptionLookup[subscriptionName];
+  return queryFactory ? queryFactory(...channelVars) : {};
+};
+
+export const wsGraphQLSubHandler = (subbedChannelName) => {
+  const authToken = this.getAuthToken();
+  const {queryString, variables, ...rootVals} = parseChannelName(subbedChannelName);
+  graphql(Schema, queryString, {socket: this, authToken, subbedChannelName, ...rootVals}, variables);
+};

@@ -1,8 +1,8 @@
-import r from '../../../database/rethinkdriver';
-import {isLoggedIn} from '../authorization';
+import r from '../../../database/rethinkdriver'; // eslint-disable-line id-length
+// import {isLoggedIn} from '../authorization';
 import {getFields} from '../utils';
 import {Meeting} from './meetingSchema';
-import {GraphQLNonNull, GraphQLID} from 'graphql'
+import {GraphQLNonNull, GraphQLID} from 'graphql';
 
 export default {
   getMeeting: {
@@ -12,7 +12,7 @@ export default {
     },
     async resolve(source, {meetingId}, refs) {
       const {rootValue} = refs;
-      const {socket, authToken, subbedChannelName} = rootValue;
+      const {socket, authToken, subbedChannelName} = rootValue; // eslint-disable-line no-unused-vars
       const requestedFields = Object.keys(getFields(refs));
       // isLoggedIn(rootValue);
       r.table('Meeting')
@@ -26,9 +26,9 @@ export default {
           if (err) {
             throw err;
           }
-          cursor.each((err, data) => {
-            if (err) {
-              throw err;
+          cursor.each((error, data) => {
+            if (error) {
+              throw error;
             }
             const docId = data.new_val.id;
             if (socket.docQueue.has(docId)) {

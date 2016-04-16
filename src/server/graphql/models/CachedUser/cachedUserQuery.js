@@ -1,5 +1,6 @@
 import {GraphQLNonNull, GraphQLID} from 'graphql';
 import {CachedUser} from './cachedUserSchema';
+import {getUserByUserId} from './helpers';
 import {errorObj} from '../utils';
 
 export default {
@@ -17,4 +18,3 @@ export default {
     }
   }
 };
-

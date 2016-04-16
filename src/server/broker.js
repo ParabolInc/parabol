@@ -1,4 +1,3 @@
-
-module.exports.run = function () {
+module.exports.run = () => {
   console.log('   >> Broker PID:', process.pid);
 };

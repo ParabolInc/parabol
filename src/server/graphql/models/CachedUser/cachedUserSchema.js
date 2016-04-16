@@ -14,8 +14,8 @@ const IdentityType = new GraphQLObjectType({
   fields: () => ({
     connection: {
       type: GraphQLString,
-      description: `The connection name. 
-      This field is not itself updateable 
+      description: `The connection name.
+      This field is not itself updateable
       but is needed when updating email, email_verified, username or password.`
     },
     userId: {
@@ -59,7 +59,7 @@ export const CachedUser = new GraphQLObjectType({
     nickname: {type: GraphQLString, description: 'Nickname associated with the user'},
     identities: {
       type: new GraphQLList(IdentityType),
-      description: `An array of objects with information about the user's identities. 
+      description: `An array of objects with information about the user's identities.
       More than one will exists in case accounts are linked`
     },
     loginsCount: {type: GraphQLInt, description: 'The number of logins for this user'},

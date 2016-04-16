@@ -8,12 +8,12 @@ import {getGraphQLHost, getGraphQLProtocol} from 'universal/utils/graphQLConfig'
 const graphQLHost = getGraphQLHost();
 const graphQLProtocol = getGraphQLProtocol();
 
-const graphQLFetcher = async ({query, variables}) => {
+const graphQLFetcher = async ({query, variableParams}) => {
   if (!__CLIENT__) {
-    return;
+    return undefined;
   }
   const authToken = localStorage.getItem(localStorageVars.authTokenName);
-  variables = variables ? JSON.parse(variables) : undefined;
+  const variables = variableParams ? JSON.parse(variableParams) : undefined;
   const res = await fetch(`${graphQLProtocol}//${graphQLHost}/graphql`, {
     method: 'post',
     headers: {

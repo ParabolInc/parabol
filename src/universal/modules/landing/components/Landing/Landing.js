@@ -23,9 +23,7 @@ export default class Landing extends Component {
     onMeetingCreateClick: PropTypes.func.isRequired
   };
   render() {
-
     const {onMeetingCreateClick} = this.props;
-
     return (
       <div>
         { /* Header */ }

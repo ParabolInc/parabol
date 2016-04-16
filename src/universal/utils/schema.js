@@ -4,8 +4,8 @@ export function parsedJoiErrors(error) {
   }
   const errors = {};
   const allErrors = error.details;
-  for (let i = 0; i < allErrors.length; i++) {
-    const curError = allErrors[i];
+  for (let index = 0; index < allErrors.length; index++) {
+    const curError = allErrors[index];
     if (errors[curError.path]) {
       continue;
     }

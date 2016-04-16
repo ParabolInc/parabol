@@ -52,8 +52,8 @@ const exampleInputActive = {
   value: 'Somebody is typing here…'
 };
 
-const mapStateToProps = state => {
-  state = ensureState(state);
+const mapStateToProps = stateParams => {
+  const state = ensureState(stateParams);
   const auth = state.get('auth');
   const meeting = state.get('meeting');
   return {
@@ -64,23 +64,29 @@ const mapStateToProps = state => {
     socketId: state.getIn(['socket', 'id']),
     isAuthenticated: auth.get('isAuthenticated')
   };
-}
+};
 
-const socketClusterListeners = {
+const socketClusterListeners = { // eslint-disable-line no-unused-vars
   unsubscribe(props) {
-    debugger
+    debugger;
     const {meeting, socketId, dispatch} = props;
     dispatch(updateEditing(meeting.instance.id, socketId, false));
   }
-}
+};
 @reduxSocket({authTokenName: localStorageVars.authTokenName})
 @connect(mapStateToProps)
 @ensureMeetingId // catch for those who just landed at this url
 @cssModules(styles)
 export default class MeetingLayout extends Component {
+  static propTypes = {
+    meeting: PropTypes.object,
+    socketId: PropTypes.string,
+    dispatch: PropTypes.func
+  }
+
   constructor(props) {
     super(props);
-    const {dispatch, socketSubs, socketId, meeting} = props;
+    const {dispatch, socketSubs, socketId, meeting} = props; // eslint-disable-line no-unused-vars
 
     // TODO lock it down? invite only, password, etc.
     if (!socketSubs.length) {
@@ -94,7 +100,7 @@ export default class MeetingLayout extends Component {
     const {content, currentEditors} = instance;
     console.log('instance', instance);
     const isActive = Boolean(currentEditors.length);
-    console.log('currentEditors', currentEditors)
+    console.log('currentEditors', currentEditors);
     const handleOnLeaveMeetingClick = () => {
       dispatch(push('/'));
       console.log('handleOnLeaveMeetingClick');
@@ -107,7 +113,7 @@ export default class MeetingLayout extends Component {
 
     const handleUserInputBlur = () => {
       const {meeting, socketId} = this.props;
-      console.log('blur')
+      console.log('blur');
       dispatch(updateEditing(meeting.instance.id, socketId, false));
     };
 
@@ -149,6 +155,5 @@ export default class MeetingLayout extends Component {
         </div>
       </div>
     );
-
   }
 }

@@ -1,20 +1,20 @@
 import {Meeting} from './meetingSchema';
-import r from '../../../database/rethinkdriver';
-import {isLoggedIn} from '../authorization';
+import r from '../../../database/rethinkdriver'; // eslint-disable-line id-length
+// import {isLoggedIn} from '../authorization';
 import uuid from 'node-uuid';
 import {
-  GraphQLBoolean,
+  // GraphQLBoolean,
   GraphQLString,
-  GraphQLObjectType,
+  // GraphQLObjectType,
   GraphQLNonNull,
   GraphQLID,
-  GraphQLList
+  // GraphQLList
 } from 'graphql';
 
 export default {
   createMeeting: {
     type: Meeting,
-    async resolve(source, args, {rootValue}) {
+    async resolve(source, args, {rootValue}) { // eslint-disable-line no-unused-vars
       const {authToken} = rootValue;
       // isLoggedIn(authToken);
       const newMeeting = {
@@ -26,7 +26,7 @@ export default {
         // TODO should this be a name? If so we need to add names to the JWT & discuss overall JWT shape
         currentEditors: [],
         content: ''
-      }
+      };
       await r.table('Meeting').insert(newMeeting);
       return newMeeting;
     }
@@ -37,11 +37,11 @@ export default {
       meetingId: {type: new GraphQLNonNull(GraphQLID), description: 'The unique meeting ID'},
       editor: {type: new GraphQLNonNull(GraphQLString), description: 'the socketId currently editing the content'},
     },
-    async resolve(source, {meetingId, editor}, {rootValue}) {
-      const {authToken} = rootValue;
+    async resolve(source, {meetingId, editor}, {rootValue}) { // eslint-disable-line no-unused-vars
+      // const {authToken} = rootValue;
       const updatedMeeting = await r.table('Meeting').get(meetingId).update({
         currentEditors: r.row('currentEditors').append(editor)
-      }, {returnChanges: true})
+      }, {returnChanges: true});
       return updatedMeeting.changes[0].new_val;
     }
   },
@@ -51,13 +51,13 @@ export default {
       meetingId: {type: new GraphQLNonNull(GraphQLID), description: 'The unique meeting ID'},
       editor: {type: new GraphQLNonNull(GraphQLString), description: 'the socketId currently editing the content'},
     },
-    async resolve(source, {meetingId, editor}, {rootValue}) {
-      const {authToken} = rootValue;
+    async resolve(source, {meetingId, editor}, {rootValue}) { // eslint-disable-line no-unused-vars
+      // const {authToken} = rootValue;
       const updatedMeeting = await r.table('Meeting').get(meetingId).update(row => {
         return {
           currentEditors: row('currentEditors').filter(user => user.ne(editor))
-        }
-      }, {returnChanges: true})
+        };
+      }, {returnChanges: true});
       return updatedMeeting.changes[0].new_val;
     }
   },
@@ -68,13 +68,13 @@ export default {
       updatedBy: {type: new GraphQLNonNull(GraphQLString), description: 'the socketId that updated the content'},
       content: {type: new GraphQLNonNull(GraphQLString), description: 'the new content'}
     },
-    async resolve(source, {meetingId, updatedBy, content}, {rootValue}) {
-      const {authToken} = rootValue;
+    async resolve(source, {meetingId, updatedBy, content}, {rootValue}) { // eslint-disable-line no-unused-vars
+      // const {authToken} = rootValue;
 
-      let updatedMeeting = await r.table('Meeting').get(meetingId).update({
+      const updatedMeeting = await r.table('Meeting').get(meetingId).update({
         content,
         lastUpdatedBy: updatedBy
-      }, {returnChanges: true})
+      }, {returnChanges: true});
       return updatedMeeting.changes[0].new_val;
     }
   }

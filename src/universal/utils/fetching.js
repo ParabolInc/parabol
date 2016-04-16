@@ -34,7 +34,7 @@ export function getJSON(route) {
 
 export const getClientError = errors => {
   if (!errors) {
-    return;
+    return undefined;
   }
   const error = errors[0].message;
   return (error.indexOf('{"_error"') === -1) ? {_error: 'Server query error'} : JSON.parse(error);
