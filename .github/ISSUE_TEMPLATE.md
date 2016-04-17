@@ -12,18 +12,19 @@
 
 [Describe the bug here, remove this section if issue is a feature enhancement request]
 
-- OS: OSX / Linux / Windows / ?
-- Browser: Chrome / Safari / Lynx / ? + version
-- Node version: `node --version`
-- NPM version: `npm --version`
-- RethinkDB version: `rethinkdb --version`
-- Estimated effort: X points ([see CONTRIBUTING.md](https://github.com/ParabolInc/action/blob/master/CONTRIBUTING.md#points-and-sizes))
-- (Optional) link to mission spec: ([duplicate and edit template](https://docs.google.com/document/d/1lgTJnJzBt9-4If883iOvthmc0hy-6C6hBF7KNN-lsXU/edit))
+- **OS:** OSX / Linux / Windows / ?
+- **Browser:** Chrome / Safari / Lynx / ? + version
+- **Node version:** `node --version`
+- **NPM version:** `npm --version`
+- **RethinkDB version:** `rethinkdb --version`
+- **Estimated effort:** X points ([see CONTRIBUTING.md](https://github.com/ParabolInc/action/blob/master/CONTRIBUTING.md#points-and-sizes))
+- **(Optional) link to mission spec:** ([duplicate and edit template](https://docs.google.com/document/d/1lgTJnJzBt9-4If883iOvthmc0hy-6C6hBF7KNN-lsXU/edit))
 
 
 ## Issue - Enhancement
 
 [Describe why the feature is AWESOME and would make Action SUPER AWESOME, remove section if issue is a bug]
 
-- Estimated effort: X points ([see CONTRIBUTING.md](https://github.com/ParabolInc/action/blob/master/CONTRIBUTING.md#points-and-sizes))
-- (Optional) link to mission spec: ([duplicate and edit template](https://docs.google.com/document/d/1lgTJnJzBt9-4If883iOvthmc0hy-6C6hBF7KNN-lsXU/edit))
+- **Estimated effort:** X points ([see CONTRIBUTING.md](https://github.com/ParabolInc/action/blob/master/CONTRIBUTING.md#points-and-sizes))
+- **(Optional) link to mission spec:** ([duplicate and edit template](https://docs.google.com/document/d/1lgTJnJzBt9-4If883iOvthmc0hy-6C6hBF7KNN-lsXU/edit))
+
