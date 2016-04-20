@@ -5,6 +5,8 @@ import theme from 'universal/styles/theme/theme';
 
 import actionUIMark from './images/action-ui-mark.svg';
 
+const combineStyles = StyleSheet.combineStyles;
+
 @look
 export default class Sidebar extends Component {
   static propTypes = {
@@ -32,25 +34,25 @@ export default class Sidebar extends Component {
         <nav className={styles.nav}>
           <ul className={styles.navList}>
             <li className={styles.navListItem}>
-              <a href="/action-ui/set-up/" title="Set-up">
+              <a className={combineStyles(styles.navListItemLink, styles.navListItemLinkActive)} href="/action-ui/set-up/" title="Set-up">
                 <span className={styles.bullet}></span>
                 <span className={styles.label}>Set-up</span>
               </a>
             </li>
             <li className={styles.navListItem}>
-              <a href="/action-ui/check-in/" title="Check-in">
+              <a className={styles.navListItemLink} href="/action-ui/check-in/" title="Check-in">
                 <span className={styles.bullet}>i.</span>
                 <span className={styles.label}>Check-in</span>
               </a>
             </li>
             <li className={styles.navListItem}>
-              <a href="/action-ui/project-updates/" title="Project updates">
+              <a className={styles.navListItemLink} href="/action-ui/project-updates/" title="Project updates">
                 <span className={styles.bullet}>ii.</span>
                 <span className={styles.label}>Project updates</span>
               </a>
             </li>
             <li className={styles.navListItem}>
-              <a href="/action-ui/requests/" title="Requests">
+              <a className={styles.navListItemLink} href="/action-ui/requests/" title="Requests">
                 <span className={styles.bullet}>iii.</span>
                 <span className={styles.label}>Requests</span>
               </a>
@@ -115,7 +117,16 @@ const styles = StyleSheet.create({
     lineHeight: '2.5rem'
   },
 
-  navListItemActive: {
+  // TODO: clean up global link styles (Bootstrap scrub)
+  navListItemLink: {
+    color: '#95929f',
+    textDecoration: 'none',
+    ':hover': {
+      color: '#4e495f'
+    }
+  },
+
+  navListItemLinkActive: {
     color: '#4e495f'
   },
 
@@ -136,25 +147,30 @@ const styles = StyleSheet.create({
     display: 'block',
     // TODO: fontSize: $fs2,
     fontSize: '13px',
+    lineHeight: 'normal',
     marginBottom: '.625rem',
-    textDecoration: 'none'
+    textDecoration: 'none',
+    ':hover': {
+      color: '#4e495f'
+    }
   },
 
   teamName: {
     color: theme.a,
     // TODO: fontFamily: $action-ui-serif,
-    fontFamily: 'Merriweather,Georgia,"Times New Roman",Times,serif',
+    fontFamily: 'Merriweather, Georgia, "Times New Roman", Times, serif',
     // TODO: fontSize: $fs5,
     fontSize: '20px',
     fontStyle: 'italic',
     fontWeight: 700,
+    lineHeight: 'normal',
     marginBottom: '.5rem'
   },
 
   timer: {
     color: theme.b,
     // TODO: fontFamily: $action-ui-monospace;
-    fontFamily: 'Menlo,Monaco,Consolas,"Courier New",monospace',
+    fontFamily: 'Menlo, Monaco, Consolas, "Courier New", monospace',
     // TODO: fontSize: $fs4;
     fontSize: "18px"
   }

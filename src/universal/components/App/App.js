@@ -22,28 +22,21 @@ export default class App extends Component {
 
 const styles = StyleSheet.create({
   app: {
-    height: '100vh',
-    maxWidth: layoutStyle.maxWidth,
-    fontFamily: 'sans-serif',
     color: '#222',
-    fontWeight: '100',
-    fontSize: '1em', /* ~16px; */
-    lineHeight: '1.375em', /* ~22px */
-    margin: '0',
+    fontFamily: 'Karla, "Helvetica Neue", Helvetica, Arial, sans-serif',
+    fontSize: '16px',
+    fontWeight: '400',
+    height: '100vh',
+    lineHeight: 'normal',
+    margin: 0,
+    maxWidth: layoutStyle.maxWidth,
     padding: 0
-  },
-
-  /* TODO: where is this used? */
-  component: {
-    minHeight: '700px',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center'
   }
 });
 
 StyleSheet.addCSS({
-   'body :global': {
-     margin: 0
-   }
-})
+  'body :global': {
+    fontSize: '16px',
+    margin: 0
+  }
+});

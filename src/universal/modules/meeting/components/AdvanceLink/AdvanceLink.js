@@ -50,11 +50,12 @@ const styles = StyleSheet.create({
     }
   },
 
+  // TODO: custom styles are conflicting with .fa classes, hence !important
   advanceLinkIcon: {
     color: 'inherit',
-    display: 'block',
-    fontSize: '1.75rem',
-    margin: '-.125rem 0 0 .25rem',
+    display: 'inline-block !important',
+    fontSize: '28px !important',
+    margin: '-.125rem 0 0 .5rem',
     verticalAlign: 'middle'
   }
 });
