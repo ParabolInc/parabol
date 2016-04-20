@@ -22,14 +22,14 @@ export default class App extends Component {
 
 const styles = StyleSheet.create({
   app: {
-    height: '100vh',
-    maxWidth: layoutStyle.maxWidth,
-    fontFamily: 'Karla, "Helvetica Neue", Helvetica, Arial, sans-serif',
     color: '#222',
+    fontFamily: 'Karla, "Helvetica Neue", Helvetica, Arial, sans-serif',
+    fontSize: '16px',
     fontWeight: '400',
-    fontSize: '1em', /* ~16px; */
-    lineHeight: '1.375em', /* ~22px */
-    margin: '0',
+    height: '100vh',
+    lineHeight: 'normal',
+    margin: 0,
+    maxWidth: layoutStyle.maxWidth,
     padding: 0
   },
 
@@ -43,7 +43,8 @@ const styles = StyleSheet.create({
 });
 
 StyleSheet.addCSS({
-   'body :global': {
-     margin: 0
-   }
-})
+  'body :global': {
+    fontSize: '16px',
+    margin: 0
+  }
+});
