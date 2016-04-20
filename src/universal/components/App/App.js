@@ -2,19 +2,6 @@ import React, {PropTypes, Component} from 'react';
 import { Presets, LookRoot, StyleSheet } from 'react-look';
 import layoutStyle from 'universal/styles/layout';
 
-import karlaBold from './fonts/Karla-Bold.ttf';
-import karlaBoldItalic from './fonts/Karla-BoldItalic.ttf';
-import karlaItalic from './fonts/Karla-Italic.ttf';
-import karlaRegular from './fonts/Karla-Regular.ttf';
-
-import merriweatherBlack from './fonts/Merriweather-Black.ttf';
-import merriweatherBlackItalic from './fonts/Merriweather-BlackItalic.ttf';
-import merriweatherBold from './fonts/Merriweather-Bold.ttf';
-import merriweatherBoldItalic from './fonts/Merriweather-BoldItalic.ttf';
-import merriweatherItalic from './fonts/Merriweather-Italic.ttf';
-import merriweatherLight from './fonts/Merriweather-Light.ttf';
-import merriweatherLightItalic from './fonts/Merriweather-LightItalic.ttf';
-import merriweatherRegular from './fonts/Merriweather-Regular.ttf';
 
 const config = Presets['react-dom'];
 
@@ -54,17 +41,3 @@ StyleSheet.addCSS({
     margin: 0
   }
 });
-
-StyleSheet.font(
-  'Karla',
-  [karlaBold, karlaBoldItalic, karlaItalic, karlaRegular]
-);
-
-StyleSheet.font(
-  'Merriweather',
-  [
-    merriweatherBlack, merriweatherBlackItalic, merriweatherBold,
-    merriweatherBoldItalic, merriweatherItalic, merriweatherLight,
-    merriweatherLightItalic, merriweatherRegular
-  ]
-);
