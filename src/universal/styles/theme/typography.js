@@ -1,19 +1,5 @@
 import { StyleSheet } from 'react-look';
 
-import karlaBold from './fonts/Karla-Bold.ttf';
-import karlaBoldItalic from './fonts/Karla-BoldItalic.ttf';
-import karlaItalic from './fonts/Karla-Italic.ttf';
-import karlaRegular from './fonts/Karla-Regular.ttf';
-
-import merriweatherBlack from './fonts/Merriweather-Black.ttf';
-import merriweatherBlackItalic from './fonts/Merriweather-BlackItalic.ttf';
-import merriweatherBold from './fonts/Merriweather-Bold.ttf';
-import merriweatherBoldItalic from './fonts/Merriweather-BoldItalic.ttf';
-import merriweatherItalic from './fonts/Merriweather-Italic.ttf';
-import merriweatherLight from './fonts/Merriweather-Light.ttf';
-import merriweatherLightItalic from './fonts/Merriweather-LightItalic.ttf';
-import merriweatherRegular from './fonts/Merriweather-Regular.ttf';
-
 const typography = {
 
   // Fonts:
@@ -33,18 +19,41 @@ const typography = {
   fs8: '3rem',     // 48px
 };
 
-StyleSheet.font(
-  'Karla',
-  [karlaBold, karlaBoldItalic, karlaItalic, karlaRegular]
-);
+/*
+ * We keep all of the required font files here and add them to
+ * the react-look global stylesheet.
+ *
+ * TODO: these are probably more than we need, and should pair them
+ *       down based upon actual usage.
+ */
+if (typeof __WEBPACK__ !== 'undefined' && __WEBPACK__) {
+  const karlaBold = require('./fonts/Karla-Bold.ttf');
+  const karlaBoldItalic = require('./fonts/Karla-BoldItalic.ttf');
+  const karlaItalic = require('./fonts/Karla-Italic.ttf');
+  const karlaRegular = require('./fonts/Karla-Regular.ttf');
 
-StyleSheet.font(
-  'Merriweather',
-  [
-    merriweatherBlack, merriweatherBlackItalic, merriweatherBold,
-    merriweatherBoldItalic, merriweatherItalic, merriweatherLight,
-    merriweatherLightItalic, merriweatherRegular
-  ]
-);
+  const merriweatherBlack = require('./fonts/Merriweather-Black.ttf');
+  const merriweatherBlackItalic = require('./fonts/Merriweather-BlackItalic.ttf');
+  const merriweatherBold = require('./fonts/Merriweather-Bold.ttf');
+  const merriweatherBoldItalic = require('./fonts/Merriweather-BoldItalic.ttf');
+  const merriweatherItalic = require('./fonts/Merriweather-Italic.ttf');
+  const merriweatherLight = require('./fonts/Merriweather-Light.ttf');
+  const merriweatherLightItalic = require('./fonts/Merriweather-LightItalic.ttf');
+  const merriweatherRegular = require('./fonts/Merriweather-Regular.ttf');
+
+  StyleSheet.font(
+    'Karla',
+    [karlaBold, karlaBoldItalic, karlaItalic, karlaRegular]
+  );
+
+  StyleSheet.font(
+    'Merriweather',
+    [
+      merriweatherBlack, merriweatherBlackItalic, merriweatherBold,
+      merriweatherBoldItalic, merriweatherItalic, merriweatherLight,
+      merriweatherLightItalic, merriweatherRegular
+    ]
+  );
+}
 
 export default typography;

@@ -58,7 +58,8 @@ export default {
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: false,
-      'process.env.NODE_ENV': JSON.stringify('development')
+      'process.env.NODE_ENV': JSON.stringify('development'),
+      __WEBPACK__: true
     }),
     new webpack.EnvironmentPlugin([
       'AUTH0_CLIENT_ID',
