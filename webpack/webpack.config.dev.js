@@ -40,7 +40,7 @@ export default {
   entry: {
     app: ['babel-polyfill',
       'bootstrap-sass!universal/theme/bootstrap.config.js',
-      'font-awesome-webpack!universal/theme/font-awesome.config.js',
+      'font-awesome-webpack!universal/styles/global/font-awesome/font-awesome.config.js',
       'client/client.js',
       'webpack-hot-middleware/client']
   },
@@ -58,7 +58,8 @@ export default {
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: false,
-      'process.env.NODE_ENV': JSON.stringify('development')
+      'process.env.NODE_ENV': JSON.stringify('development'),
+      __WEBPACK__: true
     }),
     new webpack.EnvironmentPlugin([
       'AUTH0_CLIENT_ID',

@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import look, { StyleSheet } from 'react-look';
 
-import theme from 'universal/styles/theme/theme';
+import theme from 'universal/styles/theme';
 
 import actionUIMark from './images/action-ui-mark.svg';
 
@@ -86,8 +86,7 @@ const styles = StyleSheet.create({
 
   bullet: {
     display: 'inline-block',
-    // TODO: font-size: $fs4;
-    fontSize: '18px',
+    fontSize: theme.typography.fs4,
     marginRight: '.75rem',
     textAlign: 'right',
     verticalAlign: 'middle',
@@ -96,8 +95,7 @@ const styles = StyleSheet.create({
 
   label: {
     display: 'inline-block',
-    // TODO: font-size: $fs4;
-    fontSize: '18px',
+    fontSize: theme.typography.fs4,
     verticalAlign: 'middle'
   },
 
@@ -145,8 +143,7 @@ const styles = StyleSheet.create({
   shortUrl: {
     color: '#08080a',
     display: 'block',
-    // TODO: fontSize: $fs2,
-    fontSize: '13px',
+    fontSize: theme.typography.fs2,
     lineHeight: 'normal',
     marginBottom: '.625rem',
     textDecoration: 'none',
@@ -156,11 +153,9 @@ const styles = StyleSheet.create({
   },
 
   teamName: {
-    color: theme.a,
-    // TODO: fontFamily: $action-ui-serif,
-    fontFamily: 'Merriweather, Georgia, "Times New Roman", Times, serif',
-    // TODO: fontSize: $fs5,
-    fontSize: '20px',
+    color: theme.palette.a,
+    fontFamily: theme.typography.actionUISerif,
+    fontSize: theme.typography.fs5,
     fontStyle: 'italic',
     fontWeight: 700,
     lineHeight: 'normal',
@@ -168,10 +163,8 @@ const styles = StyleSheet.create({
   },
 
   timer: {
-    color: theme.b,
-    // TODO: fontFamily: $action-ui-monospace;
-    fontFamily: 'Menlo, Monaco, Consolas, "Courier New", monospace',
-    // TODO: fontSize: $fs4;
-    fontSize: "18px"
+    color: theme.palette.b,
+    fontFamily: theme.typography.actionUIMonospace,
+    fontSize: theme.typography.fs4,
   }
 });

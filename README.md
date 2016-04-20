@@ -56,9 +56,9 @@ If you have OSX, we recommend homebrew so upgrades are as easy as `brew update &
 ```bash
 $ git clone https://github.com/ParabolInc/action.git
 $ cd action
+$ rethinkdb # in a separate window
 $ npm install
 $ npm run quickstart
-$ rethinkdb
 ```
 _Remember: if RethinkDB is running locally, you can reach its dashboard at
 [http://localhost:8080](http://localhost:8080) by default._
@@ -73,7 +73,7 @@ $ npm start
 
 ### Server-side development
 
-In this mode, the server will use your pre-built client bundle & only restart the server with fresh code. 
+In this mode, the server will use your pre-built client bundle & only restart the server with fresh code.
 ```bash
 $ npm run prod
 ```

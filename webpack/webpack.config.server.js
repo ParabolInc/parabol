@@ -34,9 +34,10 @@ export default {
     // new webpack.optimize.UglifyJsPlugin({compressor: {warnings: false}}),
     new webpack.optimize.LimitChunkCountPlugin({maxChunks: 1}),
     new webpack.DefinePlugin({
-      '__CLIENT__': false,
-      '__PRODUCTION__': true,
-      'process.env.NODE_ENV': JSON.stringify('production')
+      __CLIENT__: false,
+      __PRODUCTION__: true,
+      'process.env.NODE_ENV': JSON.stringify('production'),
+      __WEBPACK__: true
     })
   ],
   module: {

@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import look, { StyleSheet } from 'react-look';
 import FontAwesome from 'react-fontawesome';
 import tinycolor from 'tinycolor2';
-import theme from 'universal/styles/theme/theme';
+import theme from 'universal/styles/theme';
 
 @look
 export default class AdvanceLink extends Component {
@@ -29,23 +29,21 @@ export default class AdvanceLink extends Component {
 
 const styles = StyleSheet.create({
   advanceLink: {
-    color: theme.b,
-    // TODO: fontFamily: $action-ui-serif;
-    fontFamily: 'Merriweather, Georgia, "Times New Roman", Times, serif',
-    // TODO: fontSize: $fs5;
-    fontSize: '20px',
+    color: theme.palette.b,
+    fontFamily: theme.typography.actionUISerif,
+    fontSize: theme.typography.fs5,
     fontStyle: 'italic',
     fontWeight: 700,
     marginTop: '2rem',
     textDecoration: 'none',
 
     ":hover": {
-      color: tinycolor(theme.b).darken(15),
+      color: tinycolor(theme.palette.b).darken(15),
       textDecoration: 'none'
     },
 
     ":focus": {
-      color: tinycolor(theme.b).darken(15),
+      color: tinycolor(theme.palette.b).darken(15),
       textDecoration: 'none'
     }
   },
