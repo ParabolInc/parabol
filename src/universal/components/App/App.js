@@ -24,9 +24,9 @@ const styles = StyleSheet.create({
   app: {
     height: '100vh',
     maxWidth: layoutStyle.maxWidth,
-    fontFamily: 'sans-serif',
+    fontFamily: 'Karla, "Helvetica Neue", Helvetica, Arial, sans-serif',
     color: '#222',
-    fontWeight: '100',
+    fontWeight: '400',
     fontSize: '1em', /* ~16px; */
     lineHeight: '1.375em', /* ~22px */
     margin: '0',

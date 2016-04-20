@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     fontSize: '20px',
     fontStyle: 'italic',
     fontWeight: 700,
-    marginTop: '2rem',
+    marginTop: '32px',
     textDecoration: 'none',
 
     ":hover": {
@@ -50,11 +50,13 @@ const styles = StyleSheet.create({
     }
   },
 
+  // TODO: set correct size for rem units, or use spacing scale const
+  // TODO: custom styles are conflicting with .fa classes, hence !important
   advanceLinkIcon: {
     color: 'inherit',
-    display: 'block',
-    fontSize: '1.75rem',
-    margin: '-.125rem 0 0 .25rem',
+    display: 'inline-block !important',
+    fontSize: '28px !important',
+    margin: '-2px 0 0 8px',
     verticalAlign: 'middle'
   }
 });
