@@ -113,6 +113,7 @@
     "react-dnd": "2.1.4",
     "react-dnd-html5-backend": "2.1.2",
     "react-dom": "0.14.8",
+    "react-fontawesome": "^0.3.3",
     "react-helmet": "^3.0.0",
     "react-look": "^1.0.0-beta8",
     "react-redux": "4.4.1",

@@ -1,4 +1,4 @@
-import theme from '../theme/variables/theme';
+import theme from '../styles/theme/theme';
 
 console.log(`
 const theme = ${JSON.stringify(theme)};
