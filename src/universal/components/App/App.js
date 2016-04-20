@@ -31,14 +31,6 @@ const styles = StyleSheet.create({
     margin: 0,
     maxWidth: layoutStyle.maxWidth,
     padding: 0
-  },
-
-  /* TODO: where is this used? */
-  component: {
-    minHeight: '700px',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center'
   }
 });
 
