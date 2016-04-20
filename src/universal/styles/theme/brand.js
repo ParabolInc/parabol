@@ -1,18 +1,9 @@
 
 // brand.js
 
-// Note: Use only to assign theme colors
-// See:  _theme.scss
-
-///////////////
-// Palette T4b
-///////////////
-
-// See: Color Palette T4b on zeplin.io
-
-// Note: Using the original name from Zeplin
-//       for the Sass variables. The short name
-//       for reference is in the comments.
+// Note: Using the original name from Zeplin.
+//       The short name for reference is in
+//       the comments.
 
 // Brand colors
 // -------------
