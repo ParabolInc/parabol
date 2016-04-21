@@ -1,4 +1,4 @@
-import r from './rethinkdriver'; // eslint-disable-line id-length
+import r from './rethinkdriver';
 import { getDotenv } from '../../universal/utils/dotenv';
 
 // Import .env and expand variables:

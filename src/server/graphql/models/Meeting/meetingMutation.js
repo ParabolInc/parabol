@@ -1,5 +1,5 @@
 import {Meeting} from './meetingSchema';
-import r from '../../../database/rethinkdriver'; // eslint-disable-line id-length
+import r from '../../../database/rethinkdriver';
 import uuid from 'node-uuid';
 import {
   GraphQLString,
