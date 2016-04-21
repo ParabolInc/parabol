@@ -9,6 +9,8 @@
 // Variables
 /////////////
 
+// TODO: Test and report '@mediascreen' bug to react-look (TA)
+
 const layoutBreakpoint = '@media (min-width: 64rem)';
 const headerBreakpoint = '@media (min-width: 48rem)';
 const cardBreakpoint = '@media (min-width: 75rem)';
