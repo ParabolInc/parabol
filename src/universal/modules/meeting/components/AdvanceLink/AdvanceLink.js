@@ -37,13 +37,13 @@ const styles = StyleSheet.create({
     marginTop: '2rem',
     textDecoration: 'none',
 
-    ":hover": {
-      color: tinycolor(theme.palette.b).darken(15),
+    ':hover': {
+      color: tinycolor(theme.palette.b).darken(15).toString(),
       textDecoration: 'none'
     },
 
-    ":focus": {
-      color: tinycolor(theme.palette.b).darken(15),
+    ':focus': {
+      color: tinycolor(theme.palette.b).darken(15).toString(),
       textDecoration: 'none'
     }
   },
