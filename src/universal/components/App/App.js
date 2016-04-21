@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
 });
 
 StyleSheet.addCSS({
+  // TODO: Resolve: Was :global an artefact from CSS Modules? (TA)
   'body :global': {
     fontSize: '16px',
     margin: 0
