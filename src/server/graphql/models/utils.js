@@ -11,9 +11,9 @@ export function resolveForAdmin(source, args, ref) {
     ref.rootValue.authToken.isAdmin ? defaultResolveFn.apply(this, [source, args, ref]) : null;
 }
 
+// Stringify an object to handle multiple errors
+// Wrap it in a new Error type to avoid sending it twice via the originalError field
 export const errorObj = obj =>
-  // Stringify an object to handle multiple errors
-  // Wrap it in a new Error type to avoid sending it twice via the originalError field
   new Error(JSON.stringify(obj));
 
 // Showing a GraphQL error to the client is ugly
