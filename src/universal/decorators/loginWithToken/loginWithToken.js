@@ -2,7 +2,6 @@ import React, {PropTypes, Component} from 'react';
 import {loginUserSuccess} from '../../modules/auth/ducks/auth';
 import jwtDecode from 'jwt-decode';
 
-// TODO: Not sure why eslint doesn't like this block
 // eslint-disable-next-line arrow-body-style
 export default ({authTokenName, profileName}) => ComposedComponent => {
   return class TokenizedComp extends Component {

@@ -1,5 +1,4 @@
 import {
-  // GraphQLBoolean,
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,

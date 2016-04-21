@@ -1,5 +1,4 @@
 import r from '../../../database/rethinkdriver'; // eslint-disable-line id-length
-// import {isLoggedIn} from '../authorization';
 import {getFields} from '../utils';
 import {Meeting} from './meetingSchema';
 import {GraphQLNonNull, GraphQLID} from 'graphql';

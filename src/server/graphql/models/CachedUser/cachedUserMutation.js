@@ -1,7 +1,6 @@
 import r from '../../../database/rethinkdriver'; // eslint-disable-line id-length
 import {GraphQLString} from 'graphql';
 import {CachedUser} from './cachedUserSchema';
-// import {getUserByUserId} from './helpers';
 import { AuthenticationClient } from 'auth0';
 import {auth0} from '../../../../universal/utils/clientOptions';
 

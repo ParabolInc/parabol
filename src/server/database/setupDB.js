@@ -30,7 +30,6 @@ async function reset({db, isUpdate}) {
     return Promise.resolve(false);
   }));
   console.log(`>>Adding table indices on: ${db}`);
-  // TODO: Not sure why eslint doesn't like this block
   const tableIndicies = await Promise.all(database.map(table =>
     r.db(db).table(table.name).indexList().run()
   ));

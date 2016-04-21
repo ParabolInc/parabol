@@ -11,7 +11,6 @@ export function resolveForAdmin(source, args, ref) {
     ref.rootValue.authToken.isAdmin ? defaultResolveFn.apply(this, [source, args, ref]) : null;
 }
 
-// TODO: Not sure why eslint doesn't like this block
 export const errorObj = obj =>
   // Stringify an object to handle multiple errors
   // Wrap it in a new Error type to avoid sending it twice via the originalError field

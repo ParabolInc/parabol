@@ -13,11 +13,9 @@ export default class UserMenu extends Component {
   }
   render() {
     const props = this.props;
-    // TODO: Not sure why eslint doesn't like this block
     const menuItem = (id, label) => (
       <a className={styles.item} href="#" key={id} title={label}>{label}</a>
     );
-    // TODO: Not sure why eslint doesn't like this block
     const mapMenuItems = (menuItems) => (
       menuItems.map(item =>
         menuItem(item.id, item.label)

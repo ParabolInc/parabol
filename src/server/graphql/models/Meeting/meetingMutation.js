@@ -1,14 +1,10 @@
 import {Meeting} from './meetingSchema';
 import r from '../../../database/rethinkdriver'; // eslint-disable-line id-length
-// import {isLoggedIn} from '../authorization';
 import uuid from 'node-uuid';
 import {
-  // GraphQLBoolean,
   GraphQLString,
-  // GraphQLObjectType,
   GraphQLNonNull,
   GraphQLID,
-  // GraphQLList
 } from 'graphql';
 
 export default {
@@ -16,7 +12,6 @@ export default {
     type: Meeting,
     async resolve(source, args, {rootValue}) { // eslint-disable-line no-unused-vars
       const {authToken} = rootValue;
-      // isLoggedIn(authToken);
       const newMeeting = {
         // TODO: a uuid is overkill. let's make it small for smaller urls & friendly socket payloads
         id: uuid.v4(),
@@ -45,7 +40,6 @@ export default {
       },
     },
     async resolve(source, {meetingId, editor}, {rootValue}) { // eslint-disable-line no-unused-vars
-      // const {authToken} = rootValue;
       const updatedMeeting = await r.table('Meeting').get(meetingId).update({
         currentEditors: r.row('currentEditors').append(editor)
       }, {returnChanges: true});
@@ -65,8 +59,6 @@ export default {
       },
     },
     async resolve(source, {meetingId, editor}, {rootValue}) { // eslint-disable-line no-unused-vars
-      // const {authToken} = rootValue;
-      // TODO: Not sure why eslint doesn't like this block
       const updatedMeeting = await r.table('Meeting').get(meetingId).update(row => ({
         currentEditors: row('currentEditors').filter(user => user.ne(editor))
       }), {returnChanges: true});
@@ -91,8 +83,6 @@ export default {
     },
     // eslint-disable-next-line no-unused-vars
     async resolve(source, {meetingId, updatedBy, content}, {rootValue}) {
-      // const {authToken} = rootValue;
-
       const updatedMeeting = await r.table('Meeting').get(meetingId).update({
         content,
         lastUpdatedBy: updatedBy
