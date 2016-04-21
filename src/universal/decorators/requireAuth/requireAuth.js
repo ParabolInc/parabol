@@ -3,8 +3,8 @@ import {push} from 'react-router-redux';
 import {localStorageVars} from '../../utils/clientOptions';
 
 let key;
-export default function ComposedComponent() {
-  return class RequiredAuth extends Component {
+export default ComposedComponent =>
+  class RequiredAuth extends Component {
     static propTypes = {
       isAuthenticated: PropTypes.bool,
       dispatch: PropTypes.func,
@@ -48,4 +48,3 @@ export default function ComposedComponent() {
       }
     }
   };
-}
