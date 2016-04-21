@@ -23,7 +23,7 @@
     "build:server": "NODE_ENV=production webpack --config ./webpack/server.babel.js",
     "build:db": "node ./src/server/database/setupDB.babel.js",
     "update:db": "node ./src/server/database/setupDB.babel.js true",
-    "test": "npm run lint && NODE_ENV=testing ava ./src/**/__tests___/**/*.js --verbose",
+    "test": "NODE_ENV=testing ava ./src/**/__tests___/**/*.js --verbose",
     "lint": "eslint 'src/**/*.js' 'tests/*.js' 'webpack/*.js'",
     "profile": "NODE_ENV=production webpack --config ./webpack/prod.babel.js --profile --json > stats.json"
   },
