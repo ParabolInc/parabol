@@ -60,9 +60,8 @@ export const loginUserError = (error) => ({
 });
 
 export const loginAndRedirect = (redirect, authToken) => {
-  // eslint-disable-next-line no-shadow
-  const {profileName, authTokenName} = localStorageVars;
-  localStorage.setItem(authTokenName, authToken);
+  const {profileName, authTokenName: tokenName} = localStorageVars;
+  localStorage.setItem(tokenName, authToken);
   return async dispatch => {
     const query = `
     mutation ($authToken: String!) {
