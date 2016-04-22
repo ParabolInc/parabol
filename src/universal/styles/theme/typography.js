@@ -19,14 +19,18 @@ const typography = {
   fs8: '3rem',     // 48px
 };
 
-/*
- * We keep all of the required font files here and add them to
- * the react-look global stylesheet.
- *
- * TODO: these are probably more than we need, and should pair them
- *       down based upon actual usage.
- */
 if (typeof __WEBPACK__ !== 'undefined' && __WEBPACK__) {
+  /*
+   * We keep all of the required font files here and add them to
+   * the react-look global stylesheet.
+   *
+   * TODO: these are probably more than we need, and should pair them
+   *       down based upon actual usage.
+   *
+   * N.B, this will not run when buildThemeJSON.js is processing our
+   * theme:
+   */
+
   const karlaBold = require('./fonts/Karla-Bold.ttf');
   const karlaBoldItalic = require('./fonts/Karla-BoldItalic.ttf');
   const karlaItalic = require('./fonts/Karla-Italic.ttf');

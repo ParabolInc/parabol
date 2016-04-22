@@ -1,12 +1,18 @@
 
-export const theme = {
-  brand: require('./brand'),
-  palette: require('./palette'),
-  typography: require('./typography')
-};
+let theme = {};
 
-export const brand = theme.brand;
-export const palette = theme.palette;
-export const typography = theme.typography;
+if (typeof __PRODUCTION__ !== "undefined" && __PRODUCTION__) {
+  /*
+   * Production optimization, built by npm run build:server
+   * and /src/universal/utils/buildThemeJS.js:
+   */
+  theme = require('theme.json');
+} else {
+  theme = {
+    brand: require('./brand'),
+    palette: require('./palette'),
+    typography: require('./typography')
+  };
+}
 
 export default theme;
