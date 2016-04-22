@@ -323,10 +323,6 @@ const styles = StyleSheet.create({
       margin: '0 1rem',
       maxWidth: 'none',
       padding: '4rem 1rem'
-    },
-
-    [cardBreakpoint]: {
-      padding: '4rem 2rem'
     }
   },
 
