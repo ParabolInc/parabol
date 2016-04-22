@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     display: 'inline-block',
     fontSize: '1.25rem',
     fontWeight: 700,
-    margin: '.5rem 0',
+    margin: '.5rem 0 1rem',
     padding: '.75em 1.25em',
     textAlign: 'center',
     textDecoration: 'none',
