@@ -36,6 +36,7 @@ export default {
     new webpack.DefinePlugin({
       '__CLIENT__': false,
       '__PRODUCTION__': true,
+      '__WEBPACK__': true,
       'process.env.NODE_ENV': JSON.stringify('production')
     })
   ],

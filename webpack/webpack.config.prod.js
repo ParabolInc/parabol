@@ -41,7 +41,11 @@ const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(s
 export default {
   context: path.join(root, 'src'),
   entry: {
-    app: ['babel-polyfill', 'client/client.js'],
+    app: [
+      'babel-polyfill',
+      'font-awesome-webpack!universal/styles/global/font-awesome/font-awesome.config.js',
+      'client/client.js'
+    ],
     vendor
   },
   output: {
@@ -74,6 +78,7 @@ export default {
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: true,
+      __WEBPACK__: true,
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
     new webpack.EnvironmentPlugin([
