@@ -39,7 +39,6 @@ export default {
   context: path.join(root, 'src'),
   entry: {
     app: ['babel-polyfill',
-      'bootstrap-sass!universal/theme/bootstrap.config.js',
       'font-awesome-webpack!universal/styles/global/font-awesome/font-awesome.config.js',
       'client/client.js',
       'webpack-hot-middleware/client']

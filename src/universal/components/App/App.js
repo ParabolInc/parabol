@@ -1,7 +1,8 @@
 import React, {PropTypes, Component} from 'react';
 import { Presets, LookRoot, StyleSheet } from 'react-look';
+import theme from 'universal/styles/theme';
+import tinycolor from 'tinycolor2';
 import layoutStyle from 'universal/styles/layout';
-
 
 const config = Presets['react-dom'];
 
@@ -23,12 +24,7 @@ export default class App extends Component {
 
 const styles = StyleSheet.create({
   app: {
-    color: '#222',
-    fontFamily: 'Karla, "Helvetica Neue", Helvetica, Arial, sans-serif',
-    fontSize: '16px',
-    fontWeight: '400',
     height: '100vh',
-    lineHeight: 'normal',
     margin: 0,
     maxWidth: layoutStyle.maxWidth,
     padding: 0
@@ -36,9 +32,29 @@ const styles = StyleSheet.create({
 });
 
 StyleSheet.addCSS({
-  // TODO: Resolve: Was :global an artefact from CSS Modules? (TA)
-  'body :global': {
+  'html': {
+    fontSize: '16px'
+  },
+
+  'body': {
+    // TODO: Use tinycolor.mix() for Sass mix(theme.palette.c, #000, 40%),
+    color: '#2F2C39',
+    fontFamily: theme.typography.actionUISansSerif,
+    '-moz-osx-font-smoothing': 'grayscale',
+    '-webkit-font-smoothing': 'antialiased',
     fontSize: '16px',
-    margin: 0
+    fontWeight: '400',
+    lineHeight: 'normal',
+    margin: 0,
+    padding: 0
+  },
+
+  'a': {
+    color: theme.palette.b,
+  },
+
+  'a:hover, a:focus': {
+    color: tinycolor(theme.palette.b).darken(15).toString(),
+    textDecoration: 'underline'
   }
 });

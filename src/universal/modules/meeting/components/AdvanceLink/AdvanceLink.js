@@ -32,7 +32,6 @@ const styles = StyleSheet.create({
     color: theme.palette.b,
     fontFamily: theme.typography.actionUISerif,
     fontSize: theme.typography.fs5,
-    fontStyle: 'italic',
     fontWeight: 700,
     marginTop: '2rem',
     textDecoration: 'none',
