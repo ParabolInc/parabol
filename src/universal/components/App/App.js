@@ -51,6 +51,7 @@ StyleSheet.addCSS({
 
   'a': {
     color: theme.palette.b,
+    textDecoration: 'none'
   },
 
   'a:hover, a:focus': {
