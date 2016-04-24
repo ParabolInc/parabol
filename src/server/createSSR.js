@@ -17,6 +17,7 @@ import {Map as iMap} from 'immutable';
 const lookConfig = Presets['react-dom'];
 process.env.NODE_ENV !== 'production' &&
   lookConfig.plugins.push(Plugins.friendlyClassName);
+lookConfig.plugins.push(Plugins.friendlyClassName);
 
 function renderApp(req, res, store, assets, renderProps) {
   const location = renderProps && renderProps.location && renderProps.location.pathname || '/';
@@ -24,16 +25,18 @@ function renderApp(req, res, store, assets, renderProps) {
   store.dispatch(push(location));
   lookConfig.userAgent = req.headers['user-agent'];
   lookConfig.styleElementId = '_look';
-  const htmlString = renderToStaticMarkup(<Html
-    title='Action | Parabol Inc'
-    lookStyleElementId='_look'
-    lookCSSToken='<!-- appCSS -->'
-    lookConfig={lookConfig}
-    store={store}
-    assets={assets}
-    renderProps={renderProps}
-    />);
+  const htmlString = renderToStaticMarkup(
+    <Html
+      title='Action | Parabol Inc'
+      lookConfig={lookConfig}
+      lookCSSToken='<!-- appCSS -->'
+      store={store}
+      assets={assets}
+      renderProps={renderProps}
+    />
+  );
   const appCSS = StyleSheet.renderToString(lookConfig.prefixer);
+  console.log(`appCSS: ${appCSS}`);
   res.write('<!DOCTYPE html>');
   res.write(htmlString.replace('<!-- appCSS -->', appCSS));
   res.end();
@@ -47,7 +50,7 @@ export default async function createSSR(req, res) {
     const assets = require('../../build/assets.json');
     const readFile = promisify(fs.readFile);
     assets.manifest.text = await readFile(join(__dirname, '..', '..', 'build', basename(assets.manifest.js)), 'utf-8');
-      const routes = makeRoutes(store);
+    const routes = makeRoutes(store);
     match({routes, location: req.url}, (error, redirectLocation, renderProps) => {
       if (error) {
         res.status(500).send(error.message);

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Presets, LookRoot } from 'react-look';
+import { Presets, Plugins, LookRoot } from 'react-look';
 import {Router, browserHistory} from 'react-router';
 import {Provider} from 'react-redux';
 import routes from '../universal/routes/index';
@@ -8,6 +8,9 @@ import {ensureState} from 'redux-optimistic-ui';
 
 const lookConfig = Presets['react-dom'];
 lookConfig.styleElementId = '_look';
+
+process.env.NODE_ENV !== 'production' &&
+  lookConfig.plugins.push(Plugins.friendlyClassName);
 
 export default class Root extends Component {
   static propTypes = {

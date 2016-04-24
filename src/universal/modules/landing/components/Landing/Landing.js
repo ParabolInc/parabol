@@ -22,9 +22,15 @@ export default class Landing extends Component {
     // children: PropTypes.element,
     onMeetingCreateClick: PropTypes.func.isRequired
   };
+  static contextTypes = {
+    _lookConfig: PropTypes.object.isRequired
+  };
+
   render() {
 
     const {onMeetingCreateClick} = this.props;
+
+    console.log(`Landing.js context: ${JSON.stringify(this.context._lookConfig)}`);
 
     return (
       <div className={styles.layout}>
@@ -114,6 +120,8 @@ export default class Landing extends Component {
     );
   }
 }
+
+console.log('Landing.js: W00t!');
 
 // Breakpoint constants
 const layoutBreakpoint = '@media (min-width: 64rem)';
