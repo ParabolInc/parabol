@@ -1,23 +1,25 @@
 import React, {PropTypes, Component} from 'react';
-import { Presets, LookRoot, StyleSheet } from 'react-look';
+import look, { StyleSheet } from 'react-look';
 import theme from 'universal/styles/theme';
 import tinycolor from 'tinycolor2';
 import layoutStyle from 'universal/styles/layout';
 
-const config = Presets['react-dom'];
-
+@look
 export default class App extends Component {
   static propTypes = {
     children: PropTypes.any
-  }
+  };
+  static contextTypes = {
+    _lookConfig: PropTypes.object.isRequired
+  };
 
   render() {
+    console.log(`App.js context: ${JSON.stringify(this.context._lookConfig)}`);
+
     return (
-      <LookRoot config={config}>
-        <div className={styles.app}>
-          {this.props.children}
-        </div>
-      </LookRoot>
+      <div className={styles.app}>
+        {this.props.children}
+      </div>
     );
   }
 }
