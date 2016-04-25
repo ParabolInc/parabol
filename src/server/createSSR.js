@@ -5,7 +5,7 @@ import makeReducer from '../universal/redux/makeReducer';
 import {match} from 'react-router';
 import Html from './Html';
 import {push} from 'react-router-redux';
-import {renderToStaticMarkup} from 'react-dom/server';
+import {renderToStaticMarkup, renderToString} from 'react-dom/server';
 import fs from 'fs';
 import {join, basename} from 'path';
 import promisify from 'es6-promisify';
@@ -14,9 +14,10 @@ import {Map as iMap} from 'immutable';
 
 // https://github.com/systemjs/systemjs/issues/953
 
+// process.env.NODE_ENV !== 'production' &&
+//   lookConfig.plugins.push(Plugins.friendlyClassName);
+
 const lookConfig = Presets['react-dom'];
-process.env.NODE_ENV !== 'production' &&
-  lookConfig.plugins.push(Plugins.friendlyClassName);
 lookConfig.plugins.push(Plugins.friendlyClassName);
 
 function renderApp(req, res, store, assets, renderProps) {
@@ -25,11 +26,12 @@ function renderApp(req, res, store, assets, renderProps) {
   store.dispatch(push(location));
   lookConfig.userAgent = req.headers['user-agent'];
   lookConfig.styleElementId = '_look';
-  const htmlString = renderToStaticMarkup(
+  const lookToken = '<!-- appCSS -->';
+  const htmlString = renderToString(
     <Html
       title='Action | Parabol Inc'
       lookConfig={lookConfig}
-      lookCSSToken='<!-- appCSS -->'
+      lookCSSToken={lookToken}
       store={store}
       assets={assets}
       renderProps={renderProps}
@@ -37,9 +39,7 @@ function renderApp(req, res, store, assets, renderProps) {
   );
   const appCSS = StyleSheet.renderToString(lookConfig.prefixer);
   console.log(`appCSS: ${appCSS}`);
-  res.write('<!DOCTYPE html>');
-  res.write(htmlString.replace('<!-- appCSS -->', appCSS));
-  res.end();
+  res.send(`<!DOCTYPE html> ${htmlString.replace(lookToken, appCSS)}`)
 }
 
 export default async function createSSR(req, res) {
