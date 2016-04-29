@@ -3,6 +3,8 @@ import cssModules from 'react-css-modules';
 import styles from './StatusNavItem.scss';
 
 @cssModules(styles)
+// for the decorators
+// eslint-disable-next-line react/prefer-stateless-function
 export default class StatusNavItem extends Component {
   static propTypes = {
     id: PropTypes.number.isRequired,
@@ -13,7 +15,7 @@ export default class StatusNavItem extends Component {
   }
   render() {
     const props = this.props;
-    const itemStyles = props.active ? styles.itemActive : styles. item;
+    const itemStyles = props.active ? styles.itemActive : styles.item;
     const icon = () => {
       if (props.icon) {
         switch (props.icon) {
@@ -27,6 +29,7 @@ export default class StatusNavItem extends Component {
             return null;
         }
       }
+      return null;
     };
     const badge = () => {
       if (props.alerts) {
@@ -36,6 +39,7 @@ export default class StatusNavItem extends Component {
           </div>
         );
       }
+      return null;
     };
     return (
       <div className={itemStyles}>

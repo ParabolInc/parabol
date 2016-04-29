@@ -15,8 +15,8 @@ export default class MeetingLink extends Component {
   }
 
   render() {
-    if (!__CLIENT__) return;
-    const { props } = this;
+    if (!__CLIENT__) return undefined;
+    const { props } = this; // eslint-disable-line no-unused-vars
     const currentUrl = window && window.location.href;
     return (
       <div className="input-group">
@@ -25,7 +25,8 @@ export default class MeetingLink extends Component {
       *
       */}
         <input className="form-control" placeholder={currentUrl} type="text"
-          readOnly="true" value={currentUrl} />
+          readOnly="true" value={currentUrl}
+        />
         <span className="input-group-btn">
           <CopyToClipboard text={currentUrl} onCopy={this.onCopy}>
             <button className="btn btn-default" type="button">Copy</button>

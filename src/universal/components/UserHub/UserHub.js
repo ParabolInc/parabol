@@ -3,6 +3,8 @@ import cssModules from 'react-css-modules';
 import styles from './UserHub.scss';
 
 @cssModules(styles)
+// for the decorators
+// eslint-disable-next-line react/prefer-stateless-function
 export default class UserHub extends Component {
   static propTypes = {
     name: PropTypes.string.isRequired

@@ -20,21 +20,28 @@ const exampleSections = [
     active: false,
     position: 'I.',
     heading: 'Check-In',
-    description: 'The facilitator announces, “check-in round!” and asks each participant, “what’s on your mind that might keep you from being fully present?”'
+    description: 'The facilitator announces, “check-in round!” and ' +
+      'asks each participant, “what’s on your mind that might keep you ' +
+      'from being fully present?”'
   },
   {
     id: 1,
     active: true,
     position: 'II.',
     heading: 'Project Updates',
-    description: 'For each project, the owner gives an update only on what’s changed since last meeting. New agenda items can be added by anyone.'
+    description: 'For each project, the owner gives an update only on ' +
+      'what’s changed since last meeting. New agenda items ' +
+      'can be added by anyone.'
   },
   {
     id: 2,
     active: false,
     position: 'III.',
     heading: 'Agenda',
-    description: 'Process each agenda item into new projects and actions. Assign items using @Mentions. Remember: an action can be completed quickly, while a project may live for multiple Action meetings until it’s completed.'
+    description: 'Process each agenda item into new projects and ' +
+      'actions. Assign items using @Mentions. Remember: an action can ' +
+      'be completed quickly, while a project may live for multiple ' +
+      'Action meetings until it’s completed.'
   }
 ];
 
@@ -52,8 +59,8 @@ const exampleInputActive = {
   value: 'Somebody is typing here…'
 };
 
-const mapStateToProps = state => {
-  state = ensureState(state);
+const mapStateToProps = stateParams => {
+  const state = ensureState(stateParams);
   const auth = state.get('auth');
   const meeting = state.get('meeting');
   return {
@@ -64,23 +71,28 @@ const mapStateToProps = state => {
     socketId: state.getIn(['socket', 'id']),
     isAuthenticated: auth.get('isAuthenticated')
   };
-}
+};
 
-const socketClusterListeners = {
+const socketClusterListeners = { // eslint-disable-line no-unused-vars
   unsubscribe(props) {
-    debugger
     const {meeting, socketId, dispatch} = props;
     dispatch(updateEditing(meeting.instance.id, socketId, false));
   }
-}
+};
 @reduxSocket({authTokenName: localStorageVars.authTokenName})
 @connect(mapStateToProps)
 @ensureMeetingId // catch for those who just landed at this url
 @cssModules(styles)
 export default class MeetingLayout extends Component {
+  static propTypes = {
+    meeting: PropTypes.object,
+    socketId: PropTypes.string,
+    dispatch: PropTypes.func
+  }
+
   constructor(props) {
     super(props);
-    const {dispatch, socketSubs, socketId, meeting} = props;
+    const {dispatch, socketSubs, socketId, meeting} = props; // eslint-disable-line no-unused-vars
 
     // TODO lock it down? invite only, password, etc.
     if (!socketSubs.length) {
@@ -94,7 +106,7 @@ export default class MeetingLayout extends Component {
     const {content, currentEditors} = instance;
     console.log('instance', instance);
     const isActive = Boolean(currentEditors.length);
-    console.log('currentEditors', currentEditors)
+    console.log('currentEditors', currentEditors);
     const handleOnLeaveMeetingClick = () => {
       dispatch(push('/'));
       console.log('handleOnLeaveMeetingClick');
@@ -107,7 +119,7 @@ export default class MeetingLayout extends Component {
 
     const handleUserInputBlur = () => {
       const {meeting, socketId} = this.props;
-      console.log('blur')
+      console.log('blur');
       dispatch(updateEditing(meeting.instance.id, socketId, false));
     };
 
@@ -127,10 +139,13 @@ export default class MeetingLayout extends Component {
     const exampleMeetingName = 'Core Action Meeting';
     return (
       <div styleName="root">
-        <Helmet title={exampleMeetingName}/>
-        <MeetingNavbar onLeaveMeetingClick={handleOnLeaveMeetingClick}/>
+        <Helmet title={exampleMeetingName} />
+        <MeetingNavbar onLeaveMeetingClick={handleOnLeaveMeetingClick} />
         <div styleName="main">
-          <MeetingHeader onMeetingNameChange={handleOnMeetingNameChange} meetingName={exampleMeetingName}/>
+          <MeetingHeader
+            onMeetingNameChange={handleOnMeetingNameChange}
+            meetingName={exampleMeetingName}
+          />
           <MeetingSection {...exampleSections[0]} key={exampleSections[0].id}>
             <UserInput {...exampleInput}
               active={isActive}
@@ -141,14 +156,13 @@ export default class MeetingLayout extends Component {
             />
           </MeetingSection>
           <MeetingSection {...exampleSections[1]} key={exampleSections[1].id}>
-            <UserInput {...exampleInputActive} onUserInputChange={handleUserInputChangeMocked}/>
+            <UserInput {...exampleInputActive} onUserInputChange={handleUserInputChangeMocked} />
           </MeetingSection>
           <MeetingSection {...exampleSections[2]} key={exampleSections[2].id}>
-            <UserInput {...exampleInput} onUserInputChange={handleUserInputChangeMocked}/>
+            <UserInput {...exampleInput} onUserInputChange={handleUserInputChangeMocked} />
           </MeetingSection>
         </div>
       </div>
     );
-
   }
 }

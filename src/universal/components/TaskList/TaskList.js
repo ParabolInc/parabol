@@ -31,6 +31,8 @@ const exampleItems = [
 ];
 
 @cssModules(styles)
+// for the decorators
+// eslint-disable-next-line react/prefer-stateless-function
 export default class TaskList extends Component {
   render() {
     const handleCheckboxChanged = (id) => {
@@ -39,7 +41,9 @@ export default class TaskList extends Component {
     return (
       <div styleName="list">
         {exampleItems.map(item =>
-          <TaskListItem {...item} key={item.id} onCheckboxChanged={() => handleCheckboxChanged(item.id)} />
+          <TaskListItem {...item}
+            key={item.id} onCheckboxChanged={() => handleCheckboxChanged(item.id)}
+          />
         )}
       </div>
     );

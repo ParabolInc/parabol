@@ -3,6 +3,8 @@ import cssModules from 'react-css-modules';
 import styles from './MeetingSection.scss';
 
 @cssModules(styles)
+// for the decorators
+// eslint-disable-next-line react/prefer-stateless-function
 export default class MeetingSection extends Component {
   static propTypes = {
     id: PropTypes.number.isRequired,

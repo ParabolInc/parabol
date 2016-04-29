@@ -2,6 +2,7 @@ import React, {PropTypes, Component} from 'react';
 import {loginUserSuccess} from '../../modules/auth/ducks/auth';
 import jwtDecode from 'jwt-decode';
 
+// eslint-disable-next-line arrow-body-style
 export default ({authTokenName, profileName}) => ComposedComponent => {
   return class TokenizedComp extends Component {
     static propTypes = {
@@ -25,7 +26,7 @@ export default ({authTokenName, profileName}) => ComposedComponent => {
 
     render() {
       return (
-        <ComposedComponent {...this.props}/>
+        <ComposedComponent {...this.props} />
       );
     }
   };

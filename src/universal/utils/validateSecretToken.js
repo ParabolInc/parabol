@@ -15,11 +15,14 @@ export default function validateSecretToken(secretToken) {
   let secretTokenObj;
   try {
     secretTokenObj = JSON.parse(secretTokenStr);
-  } catch (e) {
+  } catch (err) {
     return invalidToken;
   }
 
-  if (!secretTokenObj.exp || !secretTokenObj.id || !secretTokenObj.sec || Object.keys(secretTokenObj).length !== 3) {
+  if (!secretTokenObj.exp ||
+      !secretTokenObj.id ||
+      !secretTokenObj.sec ||
+      Object.keys(secretTokenObj).length !== 3) {
     return invalidToken;
   }
 

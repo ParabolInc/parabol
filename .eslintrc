@@ -1,4 +1,10 @@
-{ "extends": "eslint-config-airbnb",
+{ "extends": [
+    "plugin:react/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "eslint-config-airbnb/base",
+    "eslint-config-airbnb/rules/react"
+  ],
   "env": {
     "browser": true,
     "node": true,
@@ -13,6 +19,7 @@
     "import/no-unresolved": 0,
     "import/no-named-as-default": 2,
     "comma-dangle": 0,  // not sure why airbnb turned this on. gross!
+    "id-length": 0,
     "indent": [2, 2, {"SwitchCase": 1}],
     "no-console": 0,
     "no-alert": 0,
@@ -21,17 +28,17 @@
   "plugins": [
     "react", "import"
   ],
+  "parser": "babel-eslint",
   "settings": {
     "import/parser": "babel-eslint",
     "import/resolve": {
       moduleDirectory: ["node_modules", "src"]
-    }
+    },
+    "import/ignore": [".scss$", ".css$", ".svg$"]
   },
   "globals": {
-    "__DEVELOPMENT__": true,
+    "__PRODUCTION__": true,
     "__CLIENT__": true,
-    "__SERVER__": true,
-    "__DISABLE_SSR__": true,
     "__DEVTOOLS__": true,
     "socket": true,
     "webpackIsomorphicTools": true

@@ -22,7 +22,16 @@ export default {
     publicPath: '/static/'
   },
   // ignore anything that throws warnings & doesn't affect the view
-  externals: ['isomorphic-fetch', 'es6-promisify', 'socketcluster-client', 'joi', 'hoek', 'topo', 'isemail', 'moment'],
+  externals: [
+    'isomorphic-fetch',
+    'es6-promisify',
+    'socketcluster-client',
+    'joi',
+    'hoek',
+    'topo',
+    'isemail',
+    'moment'
+  ],
   postcss: [cssModulesValues],
   resolve: {
     extensions: ['.js'],
@@ -34,8 +43,8 @@ export default {
     // new webpack.optimize.UglifyJsPlugin({compressor: {warnings: false}}),
     new webpack.optimize.LimitChunkCountPlugin({maxChunks: 1}),
     new webpack.DefinePlugin({
-      '__CLIENT__': false,
-      '__PRODUCTION__': true,
+      __CLIENT__: false,
+      __PRODUCTION__: true,
       'process.env.NODE_ENV': JSON.stringify('production')
     })
   ],
@@ -47,7 +56,8 @@ export default {
       {test: /\.(eot|ttf|wav|mp3)$/, loader: 'file-loader'},
       {
         test: /\.css$/,
-        loader: ExtractTextPlugin.extract('fake-style', 'css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss'),
+        loader: ExtractTextPlugin.extract('fake-style',
+          'css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss'),
         include: serverInclude,
         exclude: globalCSS
       },
@@ -63,7 +73,8 @@ export default {
       },
       {
         test: /\.scss$/,
-        loader: ExtractTextPlugin.extract('fake-style', 'css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss!sass'),
+        loader: ExtractTextPlugin.extract('fake-style',
+          'css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss!sass'),
       },
       {
         test: /auth0-lock\/.*\.js$/,

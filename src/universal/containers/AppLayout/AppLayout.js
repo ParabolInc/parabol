@@ -9,6 +9,8 @@ import ListFilterSet from 'universal/components/ListFilterSet/ListFilterSet';
 import TaskList from 'universal/components/TaskList/TaskList';
 
 @cssModules(styles)
+// for the decorators
+// eslint-disable-next-line react/prefer-stateless-function
 export default class AppLayout extends Component {
   render() {
     const handleMenuDrawerToggle = (event) => {
@@ -29,8 +31,18 @@ export default class AppLayout extends Component {
           <UserDrawer />
           <MenuDrawer />
           <div styleName="header">
-            <a styleName="menuDrawerToggle" href="#" onClick={handleMenuDrawerToggle} title="Toggle Menu Drawer">M</a>
-            <a styleName="userDrawerToggle" href="#" onClick={handleUserDrawerToggle} title="Toggle User Drawer">U</a>
+            <a
+              styleName="menuDrawerToggle"
+              href="#"
+              onClick={handleMenuDrawerToggle}
+              title="Toggle Menu Drawer"
+            >M</a>
+            <a
+              styleName="userDrawerToggle"
+              href="#"
+              onClick={handleUserDrawerToggle}
+              title="Toggle User Drawer"
+            >U</a>
             <h1 styleName="heading">Heading Label</h1>
           </div>
           <div styleName="content">

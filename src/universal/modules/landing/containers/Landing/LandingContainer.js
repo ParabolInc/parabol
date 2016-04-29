@@ -7,14 +7,14 @@ import {head, auth0} from 'universal/utils/clientOptions';
 import {push} from 'react-router-redux';
 import {loginUserError, loginAndRedirect} from 'universal/modules/auth/ducks/auth';
 
-const mapStateToProps = state => {
-  return {
-    isAuthenticated: ensureState(state).getIn(['auth', 'isAuthenticated']),
-    meeting: ensureState(state).getIn(['meeting', 'instance'])
-  };
-}
+const mapStateToProps = state => ({
+  isAuthenticated: ensureState(state).getIn(['auth', 'isAuthenticated']),
+  meeting: ensureState(state).getIn(['meeting', 'instance'])
+});
 
 @connect(mapStateToProps)
+// for the decorators
+// eslint-disable-next-line react/prefer-stateless-function
 export default class LandingContainer extends Component {
   static propTypes = {
     // children: PropTypes.element,
@@ -27,15 +27,6 @@ export default class LandingContainer extends Component {
     dispatch: PropTypes.func.isRequired
   };
 
-  render() {
-    return (
-      <div>
-        <Helmet title="Welcome to Action" {...head} />
-        <Landing onMeetingCreateClick={this.handleOnMeetingCreateClick} {...this.props} />
-      </div>
-    );
-  }
-
   handleOnMeetingCreateClick = () => {
     const {isAuthenticated, meeting, dispatch} = this.props;
     if (isAuthenticated) {
@@ -43,11 +34,11 @@ export default class LandingContainer extends Component {
       if (meeting && meeting.id) {
         dispatch(push(`/meeting/${meeting.id}`));
       } else {
-        dispatch(push(`/signin/createmeeting`));
+        dispatch(push('/signin/createmeeting'));
       }
     } else {
       if (__CLIENT__) {
-        //TODO handle auth0 css files in webpack build to make it work on server?
+        // TODO handle auth0 css files in webpack build to make it work on server?
         const Auth0Lock = require('auth0-lock');
         const {clientId, account} = auth0;
         const lock = new Auth0Lock(clientId, account);
@@ -57,13 +48,20 @@ export default class LandingContainer extends Component {
           }
         }, (error, profile, authToken) => {
           if (error) {
-            return dispatch(loginUserError(error))
+            return dispatch(loginUserError(error));
           }
-          dispatch(loginAndRedirect('/signin/createmeeting', authToken));
-
-        })
+          return dispatch(loginAndRedirect('/signin/createmeeting', authToken));
+        });
       }
     }
-  }
-};
+  };
 
+  render() {
+    return (
+      <div>
+        <Helmet title="Welcome to Action" {...head} />
+        <Landing onMeetingCreateClick={this.handleOnMeetingCreateClick} {...this.props} />
+      </div>
+    );
+  }
+}

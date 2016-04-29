@@ -3,6 +3,8 @@ import cssModules from 'react-css-modules';
 import styles from './TaskListItem.scss';
 
 @cssModules(styles)
+// for the decorators
+// eslint-disable-next-line react/prefer-stateless-function
 export default class TaskListItem extends Component {
   static propTypes = {
     checked: PropTypes.bool.isRequired,
@@ -18,8 +20,9 @@ export default class TaskListItem extends Component {
     return (
       <div className={itemClassName}>
         <input type="checkbox"
-               checked={props.checked ? 'checked' : false}
-               onChange={props.onCheckboxChanged} />
+          checked={props.checked ? 'checked' : false}
+          onChange={props.onCheckboxChanged}
+        />
         <div styleName="tag">
           {props.label}
         </div>

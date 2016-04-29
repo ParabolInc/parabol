@@ -9,11 +9,10 @@ import lodash from 'lodash';
  * @returns {Array}
  */
 
-export default (cssMap, stylesString) => {
-  return lodash.chain(stylesString)
+export default (cssMap, stylesString) =>
+  lodash.chain(stylesString)
                .words(/[^ ]+/g)
                .map((style) => cssMap[style])
                .without(undefined)
                .value()
                .join(' ');
-};
