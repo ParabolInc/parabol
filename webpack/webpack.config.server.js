@@ -12,7 +12,7 @@ const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(s
 
 export default {
   context: path.join(root, 'src'),
-  entry: {prerender: 'universal/routes/index.js'},
+  entry: {prerender: '../src/server/routesOrPrerender.js'},
   target: 'node',
   output: {
     path: path.join(root, 'build'),
