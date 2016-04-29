@@ -108,7 +108,6 @@ export const loadMeeting = meetingId => {
   return dispatch => {
     // client-side changefeed handler
     socket.on(sub, data => {
-      console.log('DATA', data)
       dispatch({
         type: UPDATE_MEETING_SUCCESS,
         payload: data,

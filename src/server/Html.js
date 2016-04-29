@@ -23,8 +23,6 @@ export default class Html extends Component {
     const {manifest, app, vendor} = assets || {};
     const initialState = `window.__INITIAL_STATE__ = ${JSON.stringify(store.getState())}`;
 
-    console.log(`LookRoot config: ${JSON.stringify(lookConfig)}`);
-
     const root = PROD && renderToString(
       <LookRoot config={lookConfig}>
         <Provider store={store}>
@@ -34,7 +32,6 @@ export default class Html extends Component {
     );
 
     const otherCSS = StyleSheet.renderToString(lookConfig.prefixer);
-    console.log(`otherCSS: ${otherCSS}`);
 
     return (
       <html>

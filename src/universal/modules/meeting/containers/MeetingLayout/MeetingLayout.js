@@ -50,9 +50,7 @@ export default class MeetingLayout extends Component {
   render() {
     const {meeting: {instance}, dispatch} = this.props;
     const {content, currentEditors} = instance;
-    console.log('instance', instance);
     const isActive = Boolean(currentEditors.length);
-    console.log('currentEditors', currentEditors)
 
     return (
       <div className={styles.viewport}>
