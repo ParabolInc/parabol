@@ -27,7 +27,16 @@ export default {
     publicPath: '/static/'
   },
   // ignore anything that throws warnings & doesn't affect the view
-  externals: ['isomorphic-fetch', 'es6-promisify', 'socketcluster-client', 'joi', 'hoek', 'topo', 'isemail', 'moment'],
+  externals: [
+    'isomorphic-fetch',
+    'es6-promisify',
+    'socketcluster-client',
+    'joi',
+    'hoek',
+    'topo',
+    'isemail',
+    'moment'
+  ],
   postcss: [cssModulesValues],
   resolve: {
     extensions: ['.js'],
@@ -53,7 +62,8 @@ export default {
       {test: /\.(eot|ttf|wav|mp3)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file-loader'},
       {
         test: /\.css$/,
-        loader: ExtractTextPlugin.extract('fake-style', 'css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss'),
+        loader: ExtractTextPlugin.extract('fake-style',
+          'css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss'),
         include: serverInclude,
         exclude: globalCSS
       },

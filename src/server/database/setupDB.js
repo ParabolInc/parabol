@@ -11,12 +11,6 @@ const database = [
   {name: 'Meeting', indices: []}
 ];
 
-export default async function setupDB(isUpdate = false) {
-  await Promise.all(databases.map(db => ({db, isUpdate})).map(reset));
-  await r.getPool().drain();
-  console.log(`>>Database setup complete!`);
-}
-
 async function reset({db, isUpdate}) {
   const dbList = await r.dbList();
   if (dbList.indexOf(db) === -1) {
@@ -36,11 +30,11 @@ async function reset({db, isUpdate}) {
     return Promise.resolve(false);
   }));
   console.log(`>>Adding table indices on: ${db}`);
-  const tableIndicies = await Promise.all(database.map(table => {
-    return r.db(db).table(table.name).indexList().run();
-  }));
-  await Promise.all([...database.map((table, i) => {
-    const indicies = tableIndicies[i] || [];
+  const tableIndicies = await Promise.all(database.map(table =>
+    r.db(db).table(table.name).indexList().run()
+  ));
+  await Promise.all([...database.map((table, ind) => {
+    const indicies = tableIndicies[ind] || [];
     return table.indices.map(index => {
       if (indicies.indexOf(index) === -1) {
         return r.db(db).table(table.name).indexCreate(index).run();
@@ -49,4 +43,10 @@ async function reset({db, isUpdate}) {
     });
   })]);
   console.log(`>>Setup complete for: ${db}`);
+}
+
+export default async function setupDB(isUpdate = false) {
+  await Promise.all(databases.map(db => ({db, isUpdate})).map(reset));
+  await r.getPool().drain();
+  console.log('>>Database setup complete!');
 }

@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from 'react';
-import Helmet from 'react-helmet';
 import look, { StyleSheet } from 'react-look';
 import { connect } from 'react-redux';
 import { ensureState } from 'redux-optimistic-ui';

@@ -31,3 +31,7 @@ export default class Root extends Component {
     );
   }
 }
+
+Root.propTypes = {
+  store: React.PropTypes.object.isRequired
+};

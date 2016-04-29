@@ -35,7 +35,7 @@ export function run(worker) {
   app.use(bodyParser.json());
   app.use(cors({origin: true, credentials: true}));
   app.use('/static', express.static('static'));
-  app.use(favicon(__dirname + '/../../static/favicon.ico'));
+  app.use(favicon(`${__dirname}/../../static/favicon.ico`));
   if (PROD) {
     app.use(compression());
     app.use('/static', express.static('build'));
@@ -59,6 +59,7 @@ export function run(worker) {
     console.log('Client connected:', socket.id);
     // hold the client-submitted docs in a queue while they get validated & handled in the DB
     // then, when the DB emits a change, we know if the client caused it or not
+    // eslint-disable-next-line no-param-reassign
     socket.docQueue = new Set();
     socket.on('graphql', wsGraphQLHandler);
     socket.on('subscribe', wsGraphQLSubHandler);

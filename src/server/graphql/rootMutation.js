@@ -1,6 +1,6 @@
 import {GraphQLObjectType} from 'graphql';
 import cachedUser from './models/CachedUser/cachedUserMutation';
-import meeting from './models/Meeting/meetingMutation'
+import meeting from './models/Meeting/meetingMutation';
 
 const rootFields = Object.assign(cachedUser, meeting);
 

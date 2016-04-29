@@ -5,8 +5,14 @@ import {localStorageVars} from '../../utils/clientOptions';
 import loginWithToken from '../../decorators/loginWithToken/loginWithToken';
 import {ensureState} from 'redux-optimistic-ui';
 
+const mapStateToProps = (state) => ({
+  isAuthenticated: ensureState(state).getIn(['auth', 'isAuthenticated'])
+});
+
 @connect(mapStateToProps)
 @loginWithToken(localStorageVars)
+// for the decorators
+// eslint-disable-next-line react/prefer-stateless-function
 export default class AppContainer extends Component {
   static propTypes = {
     children: PropTypes.element.isRequired,
@@ -14,12 +20,6 @@ export default class AppContainer extends Component {
   };
 
   render() {
-    return <App {...this.props}/>;
+    return <App {...this.props} />;
   }
-}
-
-function mapStateToProps(state) {
-  return {
-    isAuthenticated: ensureState(state).getIn(['auth', 'isAuthenticated'])
-  };
 }
