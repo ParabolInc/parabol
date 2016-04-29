@@ -1,6 +1,7 @@
 import path from 'path';
 import webpack from 'webpack';
 import AssetsPlugin from 'assets-webpack-plugin';
+import HappyPack from 'happypack';
 import { getDotenv } from '../src/universal/utils/dotenv';
 
 // Import .env and expand variables:
@@ -69,7 +70,11 @@ export default {
       'AUTH0_DOMAIN',
       'HOST',
       'PORT'
-    ])
+    ]),
+    new HappyPack({
+      loaders: ['babel'],
+      threads: 2
+    })
   ],
   module: {
     loaders: [
@@ -79,7 +84,7 @@ export default {
       {test: /\.(eot|ttf|wav|mp3)(\?\S*)?$/, loader: 'file-loader'},
       {
         test: /\.js$/,
-        loader: 'babel',
+        loader: 'happypack/loader',
         include: clientInclude
       },
       {

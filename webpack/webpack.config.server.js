@@ -1,9 +1,9 @@
 import path from 'path';
 import webpack from 'webpack';
+import HappyPack from 'happypack';
 
 const root = process.cwd();
 const serverInclude = [path.join(root, 'src', 'server'), path.join(root, 'src', 'universal')];
-
 
 const prefetches = [];
 const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(specifier));
@@ -38,6 +38,10 @@ export default {
       '__PRODUCTION__': true,
       '__WEBPACK__': true,
       'process.env.NODE_ENV': JSON.stringify('production')
+    }),
+    new HappyPack({
+      loaders: ['babel'],
+      threads: 2
     })
   ],
   module: {
@@ -48,7 +52,7 @@ export default {
       {test: /\.(eot|ttf|wav|mp3)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file-loader'},
       {
         test: /\.js$/,
-        loader: 'babel',
+        loader: 'happypack/loader',
         include: serverInclude
       },
       {
