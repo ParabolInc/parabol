@@ -2,7 +2,9 @@
 node_modules/
 rethinkdb_data/
 build/
+.happypack/
 .DS_Store
 npm-debug.log
 stats.json
 .env
+
