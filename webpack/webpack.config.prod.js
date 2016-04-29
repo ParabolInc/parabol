@@ -13,7 +13,10 @@ const clientInclude = [
   path.join(root, 'src', 'universal'),
   /joi/, /isemail/, /hoek/, /topo/
 ];
-const globalCSS = path.join(root, 'src', 'universal', 'styles', 'global');
+const globalCSS = [
+  path.join(root, 'src', 'universal', 'styles', 'global'),
+  path.join(root, 'node_modules', 'font-awesome', 'css')
+];
 
 /* code can be: vendor-common, vendor-page-specific, meatier-common, meatier-page-specific
  * a small, fast landing page means only include the common from vendor + meatier
@@ -41,7 +44,10 @@ const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(s
 export default {
   context: path.join(root, 'src'),
   entry: {
-    app: ['babel-polyfill', 'client/client.js'],
+    app: [
+      'babel-polyfill',
+      'client/client.js'
+    ],
     vendor
   },
   output: {
@@ -52,7 +58,7 @@ export default {
   },
   resolve: {
     extensions: ['.js'],
-    modules: [path.join(root, 'src'), 'node_modules']
+    modules: [path.join(root, 'src'), 'node_modules', path.join(root, 'build')]
   },
   node: {
     dns: 'mock',
@@ -74,6 +80,7 @@ export default {
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: true,
+      __WEBPACK__: true,
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
     new webpack.EnvironmentPlugin([
@@ -87,8 +94,8 @@ export default {
     loaders: [
       {test: /\.json$/, loader: 'json-loader'},
       {test: /\.txt$/, loader: 'raw-loader'},
-      {test: /\.(png|jpg|jpeg|gif|svg|woff|woff2)$/, loader: 'url-loader?limit=10000'},
-      {test: /\.(eot|ttf|wav|mp3)$/, loader: 'file-loader'},
+      {test: /\.(png|jpg|jpeg|gif|svg|woff|woff2)(\?\S*)?$/, loader: 'url-loader?limit=10000'},
+      {test: /\.(eot|ttf|wav|mp3)(\?\S*)?$/, loader: 'file-loader'},
       {
         test: /\.css$/,
         loader: 'fake-style!css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss', // eslint-disable-line max-len
@@ -104,10 +111,6 @@ export default {
         test: /\.js$/,
         loader: 'babel',
         include: clientInclude
-      },
-      {
-        test: /\.scss$/,
-        loader: 'fake-style!css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss!sass' // eslint-disable-line max-len
       },
       {
         test: /auth0-lock\/.*\.js$/,

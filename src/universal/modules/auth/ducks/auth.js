@@ -97,7 +97,6 @@ export const loginAndRedirect = (redirect, authToken) => {
     }
     const {profile} = data;
     localStorage.setItem(profileName, JSON.stringify(profile));
-    console.log('PROFILE', profile);
     dispatch(loginUserSuccess({profile, authToken}));
     return dispatch(push(redirect));
   };
