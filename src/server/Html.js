@@ -40,7 +40,6 @@ export default class Html extends Component {
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <meta property="description" content="Team transparency, made easy." />
           <style dangerouslySetInnerHTML={{__html: lookCSSToken}} id={lookConfig.styleElementId} />
-          {PROD && <link rel="stylesheet" href="/static/prerender.css" type="text/css"/>}
           <title>{title}</title>
         </head>
         <body>

@@ -1,3 +1,4 @@
+import './addFontAwesome';
 import React, {PropTypes, Component} from 'react';
 import look, { StyleSheet } from 'react-look';
 import theme from 'universal/styles/theme';
@@ -8,9 +9,6 @@ import layoutStyle from 'universal/styles/layout';
 export default class App extends Component {
   static propTypes = {
     children: PropTypes.any
-  };
-  static contextTypes = {
-    _lookConfig: PropTypes.object.isRequired
   };
 
   render() {
@@ -59,8 +57,7 @@ StyleSheet.addCSS({
     textDecoration: 'underline'
   }
 });
-
 // Include font-awesome styles (and fonts) here for now:
-if (typeof __WEBPACK__ !== 'undefined' && __WEBPACK__) {
-  require('font-awesome/css/font-awesome.css');
-}
+// if (typeof __WEBPACK__ !== 'undefined' && __WEBPACK__) {
+//   require('font-awesome/css/font-awesome.css');
+// }

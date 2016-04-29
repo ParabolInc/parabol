@@ -1,14 +1,8 @@
 import path from 'path';
 import webpack from 'webpack';
-import ExtractTextPlugin from 'extract-text-webpack-plugin';
-import cssModulesValues from 'postcss-modules-values';
 
 const root = process.cwd();
 const serverInclude = [path.join(root, 'src', 'server'), path.join(root, 'src', 'universal')];
-const globalCSS = [
-  path.join(root, 'src', 'universal', 'styles', 'global'),
-  path.join(root, 'node_modules', 'font-awesome', 'css')
-];
 
 
 const prefetches = [];
@@ -30,22 +24,14 @@ export default {
   externals: [
     'isomorphic-fetch',
     'es6-promisify',
-    'socketcluster-client',
-    'joi',
-    'hoek',
-    'topo',
-    'isemail',
-    'moment'
+    'socketcluster-client'
   ],
-  postcss: [cssModulesValues],
   resolve: {
     extensions: ['.js'],
     modules: [path.join(root, 'src'), 'node_modules', path.join(root, 'build')]
   },
   plugins: [...prefetchPlugins,
     new webpack.NoErrorsPlugin(),
-    new ExtractTextPlugin('[name].css'),
-    // new webpack.optimize.UglifyJsPlugin({compressor: {warnings: false}}),
     new webpack.optimize.LimitChunkCountPlugin({maxChunks: 1}),
     new webpack.DefinePlugin({
       '__CLIENT__': false,
@@ -60,18 +46,6 @@ export default {
       {test: /\.txt$/, loader: 'raw-loader'},
       {test: /\.(png|jpg|jpeg|gif|svg|woff|woff2)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'url-loader?limit=10000'},
       {test: /\.(eot|ttf|wav|mp3)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file-loader'},
-      {
-        test: /\.css$/,
-        loader: ExtractTextPlugin.extract('fake-style',
-          'css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss'),
-        include: serverInclude,
-        exclude: globalCSS
-      },
-      {
-        test: /\.css$/,
-        loader: ExtractTextPlugin.extract('fake-style', 'css'),
-        include: globalCSS
-      },
       {
         test: /\.js$/,
         loader: 'babel',

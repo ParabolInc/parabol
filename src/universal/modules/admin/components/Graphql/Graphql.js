@@ -1,8 +1,8 @@
+import './addCSS';
 import React from 'react';
 import GraphiQL from 'graphiql';
 import fetch from 'isomorphic-fetch';
 import {localStorageVars} from 'universal/utils/clientOptions';
-import 'universal/styles/global/graphiql.css';
 import {getGraphQLHost, getGraphQLProtocol} from 'universal/utils/graphQLConfig';
 
 const graphQLHost = getGraphQLHost();
