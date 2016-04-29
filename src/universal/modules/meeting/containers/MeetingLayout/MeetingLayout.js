@@ -78,12 +78,12 @@ export default class MeetingLayout extends Component {
 const styles = StyleSheet.create({
   viewport: {
     backgroundColor: '#fff',
-    display: 'flex',
+    display: 'flex !important',
     minHeight: '100vh'
   },
 
   main: {
-    display: 'flex',
+    display: 'flex !important',
     flex: 1,
     flexDirection: 'column',
     order: 2
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
 
   contentGroup: {
     alignItems: 'center',
-    display: 'flex',
+    display: 'flex !important',
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center'

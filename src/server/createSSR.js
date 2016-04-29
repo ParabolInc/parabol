@@ -32,6 +32,7 @@ export default async function createSSR(req, res) {
     });
   } else {
     // just send a cheap html doc + stringified store
+    const routesOrPrerender = require('./routesOrPrerender');
     routesOrPrerender()(req, res, store);
   }
 }

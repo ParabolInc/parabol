@@ -59,3 +59,8 @@ StyleSheet.addCSS({
     textDecoration: 'underline'
   }
 });
+
+// Include font-awesome styles (and fonts) here for now:
+if (typeof __WEBPACK__ !== 'undefined' && __WEBPACK__) {
+  require('font-awesome/css/font-awesome.css');
+}

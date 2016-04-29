@@ -5,10 +5,15 @@ import cssModulesValues from 'postcss-modules-values';
 
 const root = process.cwd();
 const serverInclude = [path.join(root, 'src', 'server'), path.join(root, 'src', 'universal')];
-const globalCSS = path.join(root, 'src', 'universal', 'styles', 'global');
+const globalCSS = [
+  path.join(root, 'src', 'universal', 'styles', 'global'),
+  path.join(root, 'node_modules', 'font-awesome', 'css')
+];
+
 
 const prefetches = [];
 const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(specifier));
+
 
 export default {
   context: path.join(root, 'src'),
@@ -44,8 +49,8 @@ export default {
     loaders: [
       {test: /\.json$/, loader: 'json-loader'},
       {test: /\.txt$/, loader: 'raw-loader'},
-      {test: /\.(png|jpg|jpeg|gif|svg|woff|woff2)$/, loader: 'url-loader?limit=10000'},
-      {test: /\.(eot|ttf|wav|mp3)$/, loader: 'file-loader'},
+      {test: /\.(png|jpg|jpeg|gif|svg|woff|woff2)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'url-loader?limit=10000'},
+      {test: /\.(eot|ttf|wav|mp3)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file-loader'},
       {
         test: /\.css$/,
         loader: ExtractTextPlugin.extract('fake-style', 'css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss'),
@@ -61,10 +66,6 @@ export default {
         test: /\.js$/,
         loader: 'babel',
         include: serverInclude
-      },
-      {
-        test: /\.scss$/,
-        loader: ExtractTextPlugin.extract('fake-style', 'css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss!sass'),
       },
       {
         test: /auth0-lock\/.*\.js$/,

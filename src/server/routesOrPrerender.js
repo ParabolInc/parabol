@@ -3,7 +3,7 @@ import {push} from 'react-router-redux';
 import {renderToStaticMarkup} from 'react-dom/server';
 import routes from '../universal/routes/index';
 import Html from './Html';
-import React from 'react'
+import React from 'react';
 
 export default option => {
   if (option === 'routes') return routes;
@@ -27,5 +27,5 @@ export default option => {
     );
     const appCSS = StyleSheet.renderToString(lookConfig.prefixer);
     res.send('<!DOCTYPE html>' + htmlString.replace(lookCSSToken, appCSS));
-  }
-}
+  };
+};
