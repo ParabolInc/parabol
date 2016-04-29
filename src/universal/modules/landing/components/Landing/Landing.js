@@ -30,8 +30,6 @@ export default class Landing extends Component {
 
     const {onMeetingCreateClick} = this.props;
 
-    console.log(`Landing.js context: ${JSON.stringify(this.context._lookConfig)}`);
-
     return (
       <div className={styles.layout}>
         { /* Header */ }
@@ -120,8 +118,6 @@ export default class Landing extends Component {
     );
   }
 }
-
-console.log('Landing.js: W00t!');
 
 // Breakpoint constants
 const layoutBreakpoint = '@media (min-width: 64rem)';

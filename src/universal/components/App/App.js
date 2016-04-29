@@ -14,8 +14,6 @@ export default class App extends Component {
   };
 
   render() {
-    console.log(`App.js context: ${JSON.stringify(this.context._lookConfig)}`);
-
     return (
       <div className={styles.app}>
         {this.props.children}

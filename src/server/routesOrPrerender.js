@@ -7,7 +7,6 @@ import React from 'react'
 
 export default option => {
   if (option === 'routes') return routes;
-  // console.log('HEY GUY')
   return function renderApp(req, res, store, assets, renderProps) {
     const location = renderProps && renderProps.location && renderProps.location.pathname || '/';
     const lookConfig = Presets['react-dom'];
