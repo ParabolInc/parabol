@@ -1,21 +1,30 @@
-## Pre-submit checklist
+### Pre-submission instructions (remove me before creating an issue)
 
-- [ ] This is a bug or feature request (for questions and discussions, join the chat in [slack](http://slackin.parabol.co/).) 
+- [ ] Decide is this is a bug or an enhancement request (if you can't decide, join the chat in [slack](http://slackin.parabol.co/) and ask in `#general`)
 - [ ] I've checked open (and closed!) issues and made sure that the issue doesn't already exist.
 - [ ] I've updated RethinkDB, node, and npm to the latest version available
-- [ ] I'll delete this checklist section and the unnecessary section below before I hit submit
+- [ ] If this is a bug, I've completed the Bug section below and deleted the Enhancement section
+- [ ] If this is a new mission, I've completed the Enhancement section below and deleted the Bug section
+- [ ] I'll delete this checklist section before I hit submit
+
 
 ## Issue - Bug
 
-- OS: OSX / Linux / Windows / ?
-- Node version: `node --version`
-- NPM version: `npm --version`
-- RethinkDB version: `rethinkdb --version`
+[Describe the bug here, remove this section if issue is a feature enhancement request]
 
-[Describe the issue here, remove section if issue is a feature request]
+- **OS:** OSX / Linux / Windows / ?
+- **Browser:** Chrome / Safari / Lynx / ? + version
+- **Node version:** `node --version`
+- **NPM version:** `npm --version`
+- **RethinkDB version:** `rethinkdb --version`
+- **Estimated effort:** X points ([see CONTRIBUTING.md](https://github.com/ParabolInc/action/blob/master/CONTRIBUTING.md#points-and-sizes))
+- **(Optional) link to mission spec:** ([duplicate and edit template](https://docs.google.com/document/d/1lgTJnJzBt9-4If883iOvthmc0hy-6C6hBF7KNN-lsXU/edit))
 
-## Issue - Feature Request
 
-[Describe why the feature is AWESOME and would make action SUPER AWESOME, remove section if issue is a bug]
+## Issue - Enhancement
 
+[Describe why the feature is AWESOME and would make Action SUPER AWESOME, remove section if issue is a bug]
+
+- **Estimated effort:** X points ([see CONTRIBUTING.md](https://github.com/ParabolInc/action/blob/master/CONTRIBUTING.md#points-and-sizes))
+- **(Optional) link to mission spec:** ([duplicate and edit template](https://docs.google.com/document/d/1lgTJnJzBt9-4If883iOvthmc0hy-6C6hBF7KNN-lsXU/edit))
 
