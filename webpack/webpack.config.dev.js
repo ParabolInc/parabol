@@ -1,6 +1,6 @@
 import path from 'path';
 import webpack from 'webpack';
-import cssModulesValues from 'postcss-modules-values';
+import HappyPack from 'happypack';
 import { getDotenv } from '../src/universal/utils/dotenv';
 
 // Import .env and expand variables:
@@ -10,10 +10,6 @@ const root = process.cwd();
 const clientInclude = [
   path.join(root, 'src', 'client'),
   path.join(root, 'src', 'universal')
-];
-const globalCSS = [
-  path.join(root, 'src', 'universal', 'styles', 'global'),
-  path.join(root, 'node_modules', 'font-awesome', 'css')
 ];
 
 const prefetches = [];
@@ -68,18 +64,16 @@ export default {
       'AUTH0_DOMAIN',
       'HOST',
       'PORT'
-    ])
+    ]),
+    new HappyPack({
+      loaders: ['babel'],
+      threads: 4
+    })
   ],
   resolve: {
     extensions: ['.js'],
     modules: [path.join(root, 'src'), 'node_modules']
   },
-  // used for joi validation on client
-  node: {
-    dns: 'mock',
-    net: 'mock'
-  },
-  postcss: [cssModulesValues],
   module: {
     loaders: [
       {test: /\.json$/, loader: 'json-loader'},
@@ -87,19 +81,8 @@ export default {
       {test: /\.(png|jpg|jpeg|gif|svg|woff|woff2)(\?\S*)?$/, loader: 'url-loader?limit=10000'},
       {test: /\.(eot|ttf|wav|mp3)(\?\S*)?$/, loader: 'file-loader'},
       {
-        test: /\.css$/,
-        loader: 'style!css',
-        include: globalCSS
-      },
-      {
-        test: /\.css$/,
-        loader: 'style!css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]!postcss', // eslint-disable-line max-len
-        exclude: globalCSS,
-        include: clientInclude
-      },
-      {
         test: /\.js$/,
-        loader: 'babel',
+        loader: 'happypack/loader',
         query: babelQuery,
         include: clientInclude
       },
