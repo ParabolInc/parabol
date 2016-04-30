@@ -1,19 +1,30 @@
 import { StyleSheet } from 'react-look';
 
+if (typeof __WEBPACK__ !== 'undefined' && __WEBPACK__) {
+  /* eslint-disable global-require */
+  const fontFiles = [
+    require('font-awesome/fonts/fontawesome-webfont.eot?v=4.6.1'),
+    require('font-awesome/fonts/fontawesome-webfont.eot?#iefix&v=4.6.1'),
+    require('font-awesome/fonts/fontawesome-webfont.woff2?v=4.6.1'),
+    require('font-awesome/fonts/fontawesome-webfont.woff?v=4.6.1'),
+    require('font-awesome/fonts/fontawesome-webfont.ttf?v=4.6.1'),
+    require('font-awesome/fonts/fontawesome-webfont.svg?v=4.6.1#fontawesomeregular')
+  ];
+  /* eslint-enable */
+
+  const fontStyles = {
+    fontWeight: 'normal',
+    fontStyles: 'normal'
+  };
+
+  StyleSheet.font('FontAwesome', fontFiles, fontStyles);
+}
+
 StyleSheet.addCSS(`
 /*!
  *  Font Awesome 4.6.1 by @davegandy - http://fontawesome.io - @fontawesome
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
  */
-/* FONT PATH
- * -------------------------- */
-@font-face {
-  font-family: 'FontAwesome';
-  src: url('../fonts/fontawesome-webfont.eot?v=4.6.1');
-  src: url('../fonts/fontawesome-webfont.eot?#iefix&v=4.6.1') format('embedded-opentype'), url('../fonts/fontawesome-webfont.woff2?v=4.6.1') format('woff2'), url('../fonts/fontawesome-webfont.woff?v=4.6.1') format('woff'), url('../fonts/fontawesome-webfont.ttf?v=4.6.1') format('truetype'), url('../fonts/fontawesome-webfont.svg?v=4.6.1#fontawesomeregular') format('svg');
-  font-weight: normal;
-  font-style: normal;
-}
 .fa {
   display: inline-block;
   font-style: normal;
