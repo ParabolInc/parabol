@@ -1,11 +1,14 @@
-import './addFontAwesome';
 import React, {PropTypes, Component} from 'react';
 import look, { StyleSheet } from 'react-look';
 import theme from 'universal/styles/theme';
 import tinycolor from 'tinycolor2';
 import layoutStyle from 'universal/styles/layout';
+import './addFontAwesome';
+
+let styles = {};
 
 @look
+// eslint-disable-next-line react/prefer-stateless-function
 export default class App extends Component {
   static propTypes = {
     children: PropTypes.any
@@ -20,7 +23,7 @@ export default class App extends Component {
   }
 }
 
-const styles = StyleSheet.create({
+styles = StyleSheet.create({
   app: {
     height: '100vh',
     margin: 0,
@@ -30,13 +33,12 @@ const styles = StyleSheet.create({
 });
 
 StyleSheet.addCSS({
-  'html': {
+  html: {
     fontSize: '16px'
   },
 
-  'body': {
-    // TODO: Use tinycolor.mix() for Sass mix(theme.palette.c, #000, 40%),
-    color: '#2F2C39',
+  body: {
+    color: tinycolor.mix(theme.palette.c, '#000', 0.4),
     fontFamily: theme.typography.actionUISansSerif,
     '-moz-osx-font-smoothing': 'grayscale',
     '-webkit-font-smoothing': 'antialiased',
@@ -47,7 +49,7 @@ StyleSheet.addCSS({
     padding: 0
   },
 
-  'a': {
+  a: {
     color: theme.palette.b,
     textDecoration: 'none'
   },
@@ -57,7 +59,3 @@ StyleSheet.addCSS({
     textDecoration: 'underline'
   }
 });
-// Include font-awesome styles (and fonts) here for now:
-// if (typeof __WEBPACK__ !== 'undefined' && __WEBPACK__) {
-//   require('font-awesome/css/font-awesome.css');
-// }

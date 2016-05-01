@@ -1,6 +1,6 @@
 /* A secret token is a reset or email verification token, not a JWT*/
 export default function validateSecretToken(secretToken) {
-  const invalidToken = {_error: 'Invalid Token'};
+  const invalidToken = {error: 'Invalid Token'};
   if (typeof secretToken !== 'string') {
     return invalidToken;
   }
@@ -27,7 +27,7 @@ export default function validateSecretToken(secretToken) {
   }
 
   if (secretTokenObj.exp < Date.now()) {
-    invalidToken._error = 'Your token has expired, please try sending a new email';
+    invalidToken.error = 'Your token has expired, please try sending a new email';
     return invalidToken;
   }
   return secretTokenObj;

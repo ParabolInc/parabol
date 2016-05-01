@@ -1,5 +1,7 @@
 import { StyleSheet } from 'react-look';
 
+/* eslint-disable max-len */
+
 StyleSheet.addCSS(`
 #graphiql-container {
   color: #141823;
@@ -1071,3 +1073,5 @@ li.CodeMirror-hint-active {
   margin-bottom: -1px;
 }
 `.replace(/\s/g, ''));
+
+/* eslint-enable */

@@ -4,7 +4,10 @@ import FontAwesome from 'react-fontawesome';
 import tinycolor from 'tinycolor2';
 import theme from 'universal/styles/theme';
 
+let styles = {};
+
 @look
+// eslint-disable-next-line react/prefer-stateless-function
 export default class AdvanceLink extends Component {
   static propTypes = {
     href: PropTypes.string,
@@ -27,7 +30,7 @@ export default class AdvanceLink extends Component {
   }
 }
 
-const styles = StyleSheet.create({
+styles = StyleSheet.create({
   advanceLink: {
     color: theme.palette.b,
     fontFamily: theme.typography.actionUISerif,

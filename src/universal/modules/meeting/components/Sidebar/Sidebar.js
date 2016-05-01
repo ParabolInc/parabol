@@ -7,7 +7,10 @@ import actionUIMark from './images/action-ui-mark.svg';
 
 const combineStyles = StyleSheet.combineStyles;
 
+let styles = {};
+
 @look
+// eslint-disable-next-line react/prefer-stateless-function
 export default class Sidebar extends Component {
   static propTypes = {
     shortUrl: PropTypes.string,
@@ -34,7 +37,11 @@ export default class Sidebar extends Component {
         <nav className={styles.nav}>
           <ul className={styles.navList}>
             <li className={styles.navListItem}>
-              <a className={combineStyles(styles.navListItemLink, styles.navListItemLinkActive)} href="/action-ui/set-up/" title="Set-up">
+              <a
+                className={combineStyles(styles.navListItemLink, styles.navListItemLinkActive)}
+                href="/action-ui/set-up/"
+                title="Set-up"
+              >
                 <span className={styles.bullet}></span>
                 <span className={styles.label}>Set-up</span>
               </a>
@@ -46,7 +53,11 @@ export default class Sidebar extends Component {
               </a>
             </li>
             <li className={styles.navListItem}>
-              <a className={styles.navListItemLink} href="/action-ui/project-updates/" title="Project updates">
+              <a
+                className={styles.navListItemLink}
+                href="/action-ui/project-updates/"
+                title="Project updates"
+              >
                 <span className={styles.bullet}>ii.</span>
                 <span className={styles.label}>Project updates</span>
               </a>
@@ -69,7 +80,7 @@ export default class Sidebar extends Component {
   }
 }
 
-const styles = StyleSheet.create({
+styles = StyleSheet.create({
   brandMark: {
     display: 'block',
     height: 'auto',
