@@ -4,7 +4,7 @@ import {Map as iMap, fromJS} from 'immutable';
 import makeStore from './makeStore';
 import Root from './Root';
 
-const {auth, routing, form} = window.__INITIAL_STATE__;
+const {auth, routing, form} = window.__INITIAL_STATE__; // eslint-disable-line no-underscore-dangle
 
 // form & routing are currently regular JS objects. This may change in the future
 const initialState = iMap([

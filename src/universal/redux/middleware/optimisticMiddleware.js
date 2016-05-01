@@ -2,8 +2,10 @@ import socketCluster from 'socketcluster-client';
 import {localStorageVars} from '../../utils/clientOptions';
 import {BEGIN, COMMIT, REVERT} from 'redux-optimistic-ui';
 
+/* eslint-disable no-underscore-dangle */
 const _SUCCESS = '_SUCCESS';
 const _ERROR = '_ERROR';
+/* eslint-enable */
 let nextTransactionID = 0;
 export default () => next => action => {
   if (!action.meta || action.meta.synced !== false) {

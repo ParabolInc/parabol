@@ -1,7 +1,8 @@
 
 let theme = {};
 
-if (typeof __PRODUCTION__ !== "undefined" && __PRODUCTION__) {
+/* eslint-disable global-require */
+if (typeof __PRODUCTION__ !== 'undefined' && __PRODUCTION__) {
   /*
    * Production optimization, built by npm run build:server
    * and /src/universal/utils/buildThemeJS.js:
@@ -14,5 +15,6 @@ if (typeof __PRODUCTION__ !== "undefined" && __PRODUCTION__) {
     typography: require('./typography')
   };
 }
+/* eslint-enable */
 
 export default theme;

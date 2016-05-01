@@ -1,4 +1,3 @@
-import React from 'react';
 import {createStore, applyMiddleware} from 'redux';
 import makeReducer from '../universal/redux/makeReducer';
 import {match} from 'react-router';
@@ -12,11 +11,16 @@ export default async function createSSR(req, res) {
   const finalCreateStore = applyMiddleware(thunkMiddleware)(createStore);
   const store = finalCreateStore(makeReducer(), iMap());
   if (process.env.NODE_ENV === 'production') {
+    // eslint-disable-next-line global-require
     const routesOrPrerender = require('../../build/prerender');
     const makeRoutes = routesOrPrerender('routes');
+    // eslint-disable-next-line global-require
     const assets = require('../../build/assets.json');
     const readFile = promisify(fs.readFile);
-    assets.manifest.text = await readFile(join(__dirname, '..', '..', 'build', basename(assets.manifest.js)), 'utf-8');
+    assets.manifest.text = await readFile(
+      join(__dirname, '..', '..', 'build', basename(assets.manifest.js)),
+      'utf-8'
+    );
     const routes = makeRoutes(store);
     match({routes, location: req.url}, (error, redirectLocation, renderProps) => {
       if (error) {
@@ -32,6 +36,7 @@ export default async function createSSR(req, res) {
     });
   } else {
     // just send a cheap html doc + stringified store
+    // eslint-disable-next-line global-require
     const routesOrPrerender = require('./routesOrPrerender');
     routesOrPrerender()(req, res, store);
   }

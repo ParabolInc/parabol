@@ -23,5 +23,6 @@ export const options = {
   brokerController: path.join(__dirname, '/broker.js'),
   socketChannelLimit: 1000,
   rebootWorkerOnCrash: true,
+  fail: true
 };
 new SocketCluster(options); // eslint-disable-line no-new

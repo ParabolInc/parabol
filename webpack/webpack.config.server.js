@@ -34,9 +34,9 @@ export default {
     new webpack.NoErrorsPlugin(),
     new webpack.optimize.LimitChunkCountPlugin({maxChunks: 1}),
     new webpack.DefinePlugin({
-      '__CLIENT__': false,
-      '__PRODUCTION__': true,
-      '__WEBPACK__': true,
+      __CLIENT__: false,
+      __PRODUCTION__: true,
+      __WEBPACK__: true,
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
     new HappyPack({
@@ -48,7 +48,10 @@ export default {
     loaders: [
       {test: /\.json$/, loader: 'json-loader'},
       {test: /\.txt$/, loader: 'raw-loader'},
-      {test: /\.(png|jpg|jpeg|gif|svg|woff|woff2)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'url-loader?limit=10000'},
+      {
+        test: /\.(png|jpg|jpeg|gif|svg|woff|woff2)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        loader: 'url-loader?limit=10000'
+      },
       {test: /\.(eot|ttf|wav|mp3)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file-loader'},
       {
         test: /\.js$/,

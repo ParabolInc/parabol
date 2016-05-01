@@ -31,6 +31,7 @@ if (typeof __WEBPACK__ !== 'undefined' && __WEBPACK__) {
    * theme:
    */
 
+  /* eslint-disable global-require */
   const karlaBold = require('./fonts/Karla-Bold.ttf');
   const karlaBoldItalic = require('./fonts/Karla-BoldItalic.ttf');
   const karlaItalic = require('./fonts/Karla-Italic.ttf');
@@ -44,6 +45,7 @@ if (typeof __WEBPACK__ !== 'undefined' && __WEBPACK__) {
   const merriweatherLight = require('./fonts/Merriweather-Light.ttf');
   const merriweatherLightItalic = require('./fonts/Merriweather-LightItalic.ttf');
   const merriweatherRegular = require('./fonts/Merriweather-Regular.ttf');
+  /* eslint-enable */
 
   StyleSheet.font(
     'Karla',
