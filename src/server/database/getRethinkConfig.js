@@ -1,17 +1,25 @@
-import {readCert} from './readCert';
+import url from 'url';
+import { readCert } from './readCert';
 import flag from 'node-env-flag';
+import { getDotenv } from '../../universal/utils/dotenv';
+
+// Import .env and expand variables:
+getDotenv();
 
 export const getRethinkConfig = () => {
+  const urlString = process.env.RETHINKDB_URL || 'rethinkdb://localhost:28015';
+  const u = url.parse(urlString);
+
   const config = {
-    host: process.env.DATABASE_HOST || 'localhost',
-    port: process.env.DATABASE_PORT || 28015,
-    authKey: process.env.DATABASE_AUTH_KEY || '',
+    host: u.hostname,
+    port: parseInt(u.port, 10),
+    authKey: process.env.RETHINKDB_AUTH_KEY || '',
     db: process.env.NODE_ENV === 'testing' ? 'actionTesting' : 'action',
     min: process.env.NODE_ENV === 'production' ? 50 : 3,
     buffer: process.env.NODE_ENV === 'production' ? 50 : 3
   };
 
-  if (process.env.NODE_ENV && flag(process.env.DATABASE_SSL)) {
+  if (process.env.NODE_ENV && flag(process.env.RETHINKDB_SSL)) {
     // we may need a cert for production deployment
     // Compose.io requires this, for example.
     // https://www.compose.io/articles/rethinkdb-and-ssl-think-secure/
