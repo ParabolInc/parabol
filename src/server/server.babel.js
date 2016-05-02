@@ -1,5 +1,5 @@
 if (process.env.NODE_ENV !== 'production') {
-  if (!require('piping')({
+  if (!require('piping')({ // eslint-disable-line global-require
     hook: false,
     ignore: /(\/\.|~$|\.json$)/i
   })) {

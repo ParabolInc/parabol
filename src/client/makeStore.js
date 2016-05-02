@@ -21,7 +21,7 @@ export default initialState => {
     const devtoolsExt = global.devToolsExtension && global.devToolsExtension();
     if (!devtoolsExt) {
       // We don't have the Redux extension in the browser, show the Redux logger
-      const createLogger = require('redux-logger');
+      const createLogger = require('redux-logger'); // eslint-disable-line global-require
       const logger = createLogger({
         level: 'info',
         collapsed: true

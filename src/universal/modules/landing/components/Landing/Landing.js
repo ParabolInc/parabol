@@ -1,7 +1,6 @@
 import React, {PropTypes, Component} from 'react';
 import look, { StyleSheet } from 'react-look';
 import theme from 'universal/styles/theme';
-import tinycolor from 'tinycolor2';
 
 // SVG images
 import parabolLogoMark from './images/parabol-logo-mark.svg';
@@ -11,11 +10,13 @@ import mapIcon from './images/map-icon.svg';
 import megaphoneIcon from './images/megaphone-icon.svg';
 import github from './images/github.svg';
 
+let styles = {};
 const combineStyles = StyleSheet.combineStyles;
 
 // TODO break apart into 1 component per section
 
 @look
+// eslint-disable-next-line react/prefer-stateless-function
 export default class Landing extends Component {
   static propTypes = {
     // children included here for multi-part landing pages (FAQs, pricing, cha la la)
@@ -27,7 +28,6 @@ export default class Landing extends Component {
   };
 
   render() {
-
     const {onMeetingCreateClick} = this.props;
 
     return (
@@ -43,7 +43,13 @@ export default class Landing extends Component {
             <h2 className={styles.mainSubheading}>
               A rhythm for humans to enjoy <i>meaningful</i> work.
             </h2>
-            <button className={styles.ctaButton} onClick={onMeetingCreateClick} title="Get Started">Get Started</button>
+            <button
+              className={styles.ctaButton}
+              onClick={onMeetingCreateClick}
+              title="Get Started"
+            >
+              Get Started
+            </button>
             <br />
             { /* TODO: Add click handler for logging in */ }
             <a className={styles.headerLink} href="#" title="Log In">Or, log in</a>
@@ -93,7 +99,9 @@ export default class Landing extends Component {
               <br />
               <div className={styles.copyGroup}>
                 <p className={styles.copyParagraph}>
-                  Action is an open-source software solution crafted with care by the folks at Parabol. We created this tool to make work meaningful for agile business teams.
+                  Action is an open-source software solution crafted with
+                  care by the folks at Parabol. We created this tool to make
+                  work meaningful for agile business teams.
                 </p>
                 <p className={styles.copyParagraph}>
                   To get involved, <a href="https://github.com/ParabolInc/action/blob/master/CONTRIBUTING.md" title="Guidelines for contributing">see our guidelines for contributing on GitHub</a>.
@@ -124,7 +132,7 @@ const layoutBreakpoint = '@media (min-width: 64rem)';
 const headerBreakpoint = '@media (min-width: 48rem)';
 const cardBreakpoint = '@media (min-width: 75rem)';
 
-const styles = StyleSheet.create({
+styles = StyleSheet.create({
   // Layout
   // -------
 
