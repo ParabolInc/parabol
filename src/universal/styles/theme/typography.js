@@ -32,35 +32,33 @@ if (typeof __WEBPACK__ !== 'undefined' && __WEBPACK__) {
    */
 
   /* eslint-disable global-require */
+  // TODO: Switch to .woff files (TA)
+  // TODO: Consider .eot files for IE (TA)
+  const karlaRegular = require('./fonts/Karla-Regular.ttf');
+  const karlaItalic = require('./fonts/Karla-Italic.ttf');
   const karlaBold = require('./fonts/Karla-Bold.ttf');
   const karlaBoldItalic = require('./fonts/Karla-BoldItalic.ttf');
-  const karlaItalic = require('./fonts/Karla-Italic.ttf');
-  const karlaRegular = require('./fonts/Karla-Regular.ttf');
 
-  const merriweatherBlack = require('./fonts/Merriweather-Black.ttf');
-  const merriweatherBlackItalic = require('./fonts/Merriweather-BlackItalic.ttf');
+  const merriweatherRegular = require('./fonts/Merriweather-Regular.ttf');
+  const merriweatherItalic = require('./fonts/Merriweather-Italic.ttf');
   const merriweatherBold = require('./fonts/Merriweather-Bold.ttf');
   const merriweatherBoldItalic = require('./fonts/Merriweather-BoldItalic.ttf');
-  const merriweatherItalic = require('./fonts/Merriweather-Italic.ttf');
-  const merriweatherLight = require('./fonts/Merriweather-Light.ttf');
-  const merriweatherLightItalic = require('./fonts/Merriweather-LightItalic.ttf');
-  const merriweatherRegular = require('./fonts/Merriweather-Regular.ttf');
   /* eslint-enable */
 
-  StyleSheet.font(
-    'Karla',
-    [karlaBold, karlaBoldItalic, karlaItalic, karlaRegular]
-  );
+  const fontStylesRegular = {fontWeight: 400, fontStretch: 'normal', fontStyle: 'normal'};
+  const fontStylesItalic = {fontWeight: 400, fontStretch: 'normal', fontStyle: 'italic'};
+  const fontStylesBold = {fontWeight: 700, fontStretch: 'normal', fontStyle: 'normal'};
+  const fontStylesBoldItalic = {fontWeight: 700, fontStretch: 'normal', fontStyle: 'italic'};
 
-  StyleSheet.font(
-    'Merriweather',
-    [
-      merriweatherBlack, merriweatherBlackItalic,
-      merriweatherBold, merriweatherBoldItalic,
-      merriweatherRegular, merriweatherItalic,
-      merriweatherLight, merriweatherLightItalic
-    ]
-  );
+  StyleSheet.font('Karla', [karlaRegular], fontStylesRegular);
+  StyleSheet.font('Karla', [karlaItalic], fontStylesItalic);
+  StyleSheet.font('Karla', [karlaBold], fontStylesBold);
+  StyleSheet.font('Karla', [karlaBoldItalic], fontStylesBoldItalic);
+
+  StyleSheet.font('Merriweather', [merriweatherRegular], fontStylesRegular);
+  StyleSheet.font('Merriweather', [merriweatherItalic], fontStylesItalic);
+  StyleSheet.font('Merriweather', [merriweatherBold], fontStylesBold);
+  StyleSheet.font('Merriweather', [merriweatherBoldItalic], fontStylesBoldItalic);
 }
 
 export default typography;

@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import look, { StyleSheet } from 'react-look';
 import FontAwesome from 'react-fontawesome';
 import tinycolor from 'tinycolor2';
@@ -12,20 +12,16 @@ let styles = {};
 @look
 // eslint-disable-next-line react/prefer-stateless-function
 export default class SetupField extends Component {
-  // static propTypes = {
-  //   href: PropTypes.string,
-  //   icon: PropTypes.string,
-  //   label: PropTypes.string
-  // }
-
   render() {
-    // const { href, icon, label } = this.props;
-
     return (
-      <div>
+      <div className={styles.setupFieldContainer}>
         {/* Field block */}
         <div className={styles.fieldBlock}>
-          <input className={combineStyles(styles.field, styles.fieldLarger)} placeholder="Team name" type="text" />
+          <input
+            className={combineStyles(styles.field, styles.fieldLarger)}
+            placeholder="Team name"
+            type="text"
+          />
           <button className={combineStyles(styles.fieldButton, styles.fieldSubmit)}>
             <FontAwesome name="check-circle" size="2x" />
           </button>
@@ -37,11 +33,17 @@ export default class SetupField extends Component {
         <br />
         {/* Field block */}
         <div className={styles.fieldBlock}>
-          <input className={combineStyles(styles.field, styles.fieldLarger, styles.fieldWider)} placeholder="Search users or invite by email*" type="text" />
+          <input
+            className={combineStyles(styles.field, styles.fieldLarger, styles.fieldWider)}
+            placeholder="Search users or invite by email*"
+            type="text"
+          />
           <button className={combineStyles(styles.fieldButton, styles.fieldSubmit)}>
             <FontAwesome name="check-circle" size="2x" />
           </button>
-          <div className={styles.fieldHelpText}>*You can paste a comma-separated string of multiple emails.</div>
+          <div className={styles.fieldHelpText}>
+            *You can paste a comma-separated string of multiple emails.
+          </div>
         </div>
         <br />
         <br />
@@ -53,7 +55,10 @@ export default class SetupField extends Component {
             <div className={styles.fieldGroupLabel}>Invited</div>
           </div>
           <div className={combineStyles(styles.fieldGroupColumn, styles.fieldGroupColumn1of2)}>
-            <div className={combineStyles(styles.fieldGroupLabel, styles.fieldGroupLabelForFields)}>Outcome</div>
+            {/* eslint-disable-next-line max-len */}
+            <div className={combineStyles(styles.fieldGroupLabel, styles.fieldGroupLabelForFields)}>
+              Outcome
+            </div>
           </div>
         </div>
         <div className={styles.fieldGroup}>
@@ -64,7 +69,12 @@ export default class SetupField extends Component {
             <div className={styles.fieldLabel}>jordan@parabol.co</div>
           </div>
           <div className={combineStyles(styles.fieldGroupColumn, styles.fieldGroupColumn1of2)}>
-            <input className={styles.field} placeholder="Outcome realized" type="text" value="Project iterated" />
+            <input
+              className={styles.field}
+              placeholder="Outcome realized"
+              type="text"
+              value="Project iterated"
+            />
           </div>
         </div>
         <div className={styles.fieldGroup}>
@@ -75,7 +85,12 @@ export default class SetupField extends Component {
             <div className={styles.fieldLabel}>robert@parabol.co</div>
           </div>
           <div className={combineStyles(styles.fieldGroupColumn, styles.fieldGroupColumn1of2)}>
-            <input className={styles.field} placeholder="Outcome realized" type="text" value="Project iterated" />
+            <input
+              className={styles.field}
+              placeholder="Outcome realized"
+              type="text"
+              value="Project iterated"
+            />
           </div>
         </div>
         <div className={styles.fieldGroup}>
@@ -86,7 +101,12 @@ export default class SetupField extends Component {
             <div className={styles.fieldLabel}>taya@parabol.co</div>
           </div>
           <div className={combineStyles(styles.fieldGroupColumn, styles.fieldGroupColumn1of2)}>
-            <input className={styles.field} placeholder="Outcome realized" type="text" value="Project iterated" />
+            <input
+              className={styles.field}
+              placeholder="Outcome realized"
+              type="text"
+              value="Project iterated"
+            />
           </div>
         </div>
         <div className={styles.fieldGroup}>
@@ -97,7 +117,12 @@ export default class SetupField extends Component {
             <div className={styles.fieldLabel}>terry@parabol.co</div>
           </div>
           <div className={combineStyles(styles.fieldGroupColumn, styles.fieldGroupColumn1of2)}>
-            <input className={styles.field} placeholder="Outcome realized" type="text" value="Project iterated" />
+            <input
+              className={styles.field}
+              placeholder="Outcome realized"
+              type="text"
+              value="Project iterated"
+            />
           </div>
         </div>
       </div>
@@ -106,6 +131,17 @@ export default class SetupField extends Component {
 }
 
 styles = StyleSheet.create({
+  // NOTE: setupFieldContainer can be discarded
+  //       once the field elements are properly
+  //       abstracted as components (TA)
+  setupFieldContainer: {
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    width: '100%'
+  },
+
   fieldGroup: {
     display: 'flex',
     maxWidth: '40rem',
