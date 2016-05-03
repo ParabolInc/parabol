@@ -5,6 +5,7 @@ import { ensureState } from 'redux-optimistic-ui';
 import { reduxSocket } from 'redux-socket-cluster';
 import { localStorageVars } from 'universal/utils/clientOptions';
 import AdvanceLink from '../../components/AdvanceLink/AdvanceLink';
+import SetupHeader from '../../components/SetupHeader/SetupHeader';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import ensureMeetingId from '../../decorators/ensureMeetingId/ensureMeetingId';
 
@@ -35,6 +36,10 @@ export default class MeetingLayout extends Component {
       <div className={styles.viewport}>
         <div className={styles.main}>
           <div className={styles.contentGroup}>
+            <SetupHeader
+              heading="Let’s get started!"
+              subHeading="What do you call your team?"
+            />
             <AdvanceLink
               href="/action-ui/set-up/"
               icon="arrow-circle-right"
