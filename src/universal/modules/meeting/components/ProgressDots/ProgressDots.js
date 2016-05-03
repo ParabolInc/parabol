@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import look, { StyleSheet } from 'react-look';
 import tinycolor from 'tinycolor2';
 import theme from 'universal/styles/theme';

@@ -70,7 +70,6 @@ StyleSheet.addCSS({
   input: {
     fontFamily: theme.typography.actionUISansSerif,
     '-moz-osx-font-smoothing': 'grayscale',
-    '-webkit-font-smoothing': 'antialiased',
-    fontWeight: '400 !important'
+    '-webkit-font-smoothing': 'antialiased'
   }
 });
