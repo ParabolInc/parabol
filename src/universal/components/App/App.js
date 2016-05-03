@@ -33,6 +33,14 @@ styles = StyleSheet.create({
 });
 
 StyleSheet.addCSS({
+  '*': {
+    boxSizing: 'border-box'
+  },
+
+  '*::before, *::after': {
+    boxSizing: 'border-box'
+  },
+
   html: {
     fontSize: '16px'
   },
@@ -57,5 +65,12 @@ StyleSheet.addCSS({
   'a:hover, a:focus': {
     color: tinycolor(theme.palette.b).darken(15).toString(),
     textDecoration: 'underline'
+  },
+
+  input: {
+    fontFamily: theme.typography.actionUISansSerif,
+    '-moz-osx-font-smoothing': 'grayscale',
+    '-webkit-font-smoothing': 'antialiased',
+    fontWeight: '400 !important'
   }
 });
