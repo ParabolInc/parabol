@@ -75,14 +75,14 @@ Object.keys(themeColors).forEach((color) => {
 
       if (darkendBase) {
         const darkendColor = tinycolor.mix(themeColors[color], darkendBase, value)
-                               .toRgbString();
+                               .toHexString();
         const darkSlug = `${prefix}${_.capitalize(property)}${_.capitalize(color)}${value}d`;
         theme[darkSlug] = { [property]: darkendColor };
       }
 
       if (opaqueBase) {
-        const opaqueColor = tinycolor.mix(themeColors[color], opaqueBase, value)
-                               .toRgbString();
+        const opaqueColor = tinycolor.mix(opaqueBase, themeColors[color], value)
+                               .toHexString();
         const opaqueSlug = `${prefix}${_.capitalize(property)}${_.capitalize(color)}${value}o`;
         theme[opaqueSlug] = { [property]: opaqueColor };
       }

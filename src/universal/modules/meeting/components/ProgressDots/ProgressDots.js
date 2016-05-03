@@ -4,22 +4,14 @@ import tinycolor from 'tinycolor2';
 import theme from 'universal/styles/theme';
 
 const combineStyles = StyleSheet.combineStyles;
-// TODO: Get color via theme and tinycolor.mix()
-const progressDotColor = '#b3b6c5';
+const progressDotColor = tinycolor.mix(theme.palette.d, '#fff', 50).toHexString();
 
 let styles = {};
 
 @look
 // eslint-disable-next-line react/prefer-stateless-function
 export default class ProgressDots extends Component {
-  // static propTypes = {
-  //   heading: PropTypes.string,
-  //   subHeading: PropTypes.string
-  // }
-
   render() {
-    // const { heading, subHeading } = this.props;
-
     return (
       <div className={styles.progressDotGroup}>
         <a className={combineStyles(styles.progressDot, styles.progressDotCurrent)} href="#">

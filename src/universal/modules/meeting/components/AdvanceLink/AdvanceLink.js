@@ -39,18 +39,18 @@ styles = StyleSheet.create({
     marginTop: '2rem',
     textDecoration: 'none',
 
+    // NOTE: Same styles for both :hover, :focus
     ':hover': {
       color: tinycolor(theme.palette.b).darken(15).toString(),
       textDecoration: 'none'
     },
-
     ':focus': {
       color: tinycolor(theme.palette.b).darken(15).toString(),
       textDecoration: 'none'
     }
   },
 
-  // TODO: custom styles are conflicting with .fa classes, hence !important
+  // NOTE: Custom styles are conflicting with .fa classes, hence #shame !important
   advanceLinkIcon: {
     color: 'inherit',
     display: 'inline-block !important',

@@ -222,8 +222,6 @@ styles = StyleSheet.create({
   },
 
   ctaButton: {
-    // TODO: Is there an elegant way to target :link and/or :visited
-    //       without having to duplicate code? (TA)
     backgroundColor: 'transparent',
     border: '1px solid currentColor',
     color: 'inherit',
@@ -242,8 +240,7 @@ styles = StyleSheet.create({
       margin: '1rem 0'
     },
 
-    // TODO: Is there an elegant way to target both :hover and :focus
-    //       without having to duplicate code? (TA)
+    // NOTE: Same styles for both :hover, :focus
     ':hover': {
       color: 'inherit',
       opacity: '.65',
@@ -261,8 +258,7 @@ styles = StyleSheet.create({
     display: 'inline-block',
     fontWeight: 700,
 
-    // TODO: Is there an elegant way to target both :hover and :focus
-    //       without having to duplicate code? (TA)
+    // NOTE: Same styles for both :hover, :focus
     ':hover': {
       color: 'inherit',
       opacity: '.75'
@@ -280,8 +276,7 @@ styles = StyleSheet.create({
 
   // Combine styles with section
   sectionHasBorder: {
-    // TODO: Use palette to @extend .tu-bc-a-30a
-    borderColor: 'rgba(9, 141, 143, .3)',
+    borderColor: theme.palette.tuBcA30a.bc,
     borderTopStyle: 'solid',
     borderTopWidth: '2px'
   },
@@ -320,8 +315,7 @@ styles = StyleSheet.create({
   // --------
 
   card: {
-    // TODO: Use theme palette to @extend .tu-bc-b-30a
-    borderColor: 'rgba(198, 37, 117, .3)',
+    borderColor: theme.palette.tuBcB30a.bc,
     borderRadius: '1rem',
     borderStyle: 'solid',
     borderWidth: '2px',
@@ -338,7 +332,7 @@ styles = StyleSheet.create({
     }
   },
 
-  // Combine styles with card
+  // NOTE: Modifies card
   cardIsLast: {
     marginBottom: 0
   },
@@ -359,7 +353,8 @@ styles = StyleSheet.create({
     width: '2rem',
 
     [layoutBreakpoint]: {
-      fontSize: '2rem', // Breaks away from type scale, by design
+      // NOTE: Breaks away from type scale, by design
+      fontSize: '2rem',
       height: '2.75rem',
       lineHeight: '2.75rem',
       marginLeft: '-1.375rem',
@@ -456,8 +451,7 @@ styles = StyleSheet.create({
     color: 'inherit',
     fontWeight: 700,
 
-    // TODO: Is there an elegant way to target both :hover and :focus
-    //       without having to duplicate code? (TA)
+    // NOTE: Same styles for both :hover, :focus
     ':hover': {
       color: 'inherit',
       opacity: '.75'
