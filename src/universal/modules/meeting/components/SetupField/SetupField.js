@@ -5,9 +5,7 @@ import tinycolor from 'tinycolor2';
 import theme from 'universal/styles/theme';
 
 const combineStyles = StyleSheet.combineStyles;
-
-// TODO: Use theme and tinycolor.mix()
-const fieldLightGray = '#a7a4af';
+const fieldLightGray = tinycolor.mix(theme.palette.c, '#fff', 50).toHexString();
 
 let styles = {};
 
@@ -125,8 +123,7 @@ styles = StyleSheet.create({
   },
 
   fieldGroupLabel: {
-    // TODO: Use theme etc. for color value
-    color: '#4e495f',
+    color: theme.palette.c,
     fontSize: theme.typography.fs2,
     fontWeight: 700,
     margin: '0 0 .5rem',
@@ -146,8 +143,7 @@ styles = StyleSheet.create({
   },
 
   fieldLabel: {
-    // TODO: Use theme etc. for color value
-    color: '#4e495f',
+    color: theme.palette.c,
     fontSize: theme.typography.fs4,
     lineHeight: 1.5
   },
@@ -201,8 +197,7 @@ styles = StyleSheet.create({
   fieldButton: {
     background: 'none',
     border: 0,
-    // TODO: Use theme etc. for color value
-    color: '#9dd2d3',
+    color: theme.palette.tuColorA40o.color,
     cursor: 'pointer',
     fontSize: theme.typography.fs3,
 
@@ -232,14 +227,14 @@ styles = StyleSheet.create({
   // NOTE: Modifies fieldRemoval
   //       Use when hidden until parent:hover
   //       Touch devices need to show at all times (no hover state)
-  //       Alternately, hide/show using only JS (no CSS, detect touchevens/no-touchevents)
+  //       Alternately, hide/show using only JS (no CSS, detect touchevents/no-touchevents)
   fieldRemovalHoverOnly: {
     display: 'none'
   },
 
   // NOTE: Modifies fieldRemoval, fieldRemovalHoverOnly
   //       When the parent item has :hover, set this to show via JS
-  //       Alternately, hide/show using only JS (no CSS, detect touchevens/no-touchevents)
+  //       Alternately, hide/show using only JS (no CSS, detect touchevents/no-touchevents)
   fieldRemovalHasParentHover: {
     display: 'block'
   },
@@ -253,8 +248,7 @@ styles = StyleSheet.create({
   },
 
   fieldHelpText: {
-    // TODO: Use theme etc. for color value
-    color: '#4e495f',
+    color: theme.palette.c,
     fontSize: theme.typography.fs3,
     fontStyle: 'italic',
     fontWeight: 700

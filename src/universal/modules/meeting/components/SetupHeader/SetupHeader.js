@@ -45,8 +45,7 @@ styles = StyleSheet.create({
   },
 
   setupSubHeading: {
-    // TODO: use tinycolor mix()
-    color: '#08080a',
+    color: theme.palette.tuColorC90d.color,
     fontSize: theme.typography.fs6,
     margin: '0 0 2rem',
     textAlign: 'center'

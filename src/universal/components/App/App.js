@@ -46,7 +46,7 @@ StyleSheet.addCSS({
   },
 
   body: {
-    color: tinycolor.mix(theme.palette.c, '#000', 0.4),
+    color: theme.palette.tuColorC90d.color,
     fontFamily: theme.typography.actionUISansSerif,
     '-moz-osx-font-smoothing': 'grayscale',
     '-webkit-font-smoothing': 'antialiased',
@@ -63,7 +63,7 @@ StyleSheet.addCSS({
   },
 
   'a:hover, a:focus': {
-    color: tinycolor(theme.palette.b).darken(15).toString(),
+    color: tinycolor(theme.palette.b).darken(15).toHexString(),
     textDecoration: 'underline'
   },
 

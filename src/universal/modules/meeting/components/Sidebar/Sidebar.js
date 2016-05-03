@@ -126,21 +126,21 @@ styles = StyleSheet.create({
     lineHeight: '2.5rem'
   },
 
-  // TODO: clean up global link styles (Bootstrap scrub)
   navListItemLink: {
-    color: '#95929f',
+    color: theme.palette.tuColorC60o.color,
     textDecoration: 'none',
+
     ':hover': {
-      color: '#4e495f'
+      color: theme.palette.c
     }
   },
 
   navListItemLinkActive: {
-    color: '#4e495f'
+    color: theme.palette.c
   },
 
   sidebar: {
-    backgroundColor: '#ededef',
+    backgroundColor: theme.palette.tuBgC10o.bg,
     order: 1,
     padding: '2rem 0',
     width: '15rem'
@@ -152,14 +152,15 @@ styles = StyleSheet.create({
   },
 
   shortUrl: {
-    color: '#08080a',
+    color: theme.palette.tuColorC90d.color,
     display: 'block',
     fontSize: theme.typography.fs2,
     lineHeight: 'normal',
     marginBottom: '.625rem',
     textDecoration: 'none',
+
     ':hover': {
-      color: '#4e495f'
+      color: theme.palette.c
     }
   },
 
