@@ -55,9 +55,10 @@ if (typeof __WEBPACK__ !== 'undefined' && __WEBPACK__) {
   StyleSheet.font(
     'Merriweather',
     [
-      merriweatherBlack, merriweatherBlackItalic, merriweatherBold,
-      merriweatherBoldItalic, merriweatherItalic, merriweatherLight,
-      merriweatherLightItalic, merriweatherRegular
+      merriweatherBlack, merriweatherBlackItalic,
+      merriweatherBold, merriweatherBoldItalic,
+      merriweatherRegular, merriweatherItalic,
+      merriweatherLight, merriweatherLightItalic
     ]
   );
 }

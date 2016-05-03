@@ -4,8 +4,10 @@ import { connect } from 'react-redux';
 import { ensureState } from 'redux-optimistic-ui';
 import { reduxSocket } from 'redux-socket-cluster';
 import { localStorageVars } from 'universal/utils/clientOptions';
-import AdvanceLink from '../../components/AdvanceLink/AdvanceLink';
+import ProgressDots from '../../components/ProgressDots/ProgressDots';
 import SetupHeader from '../../components/SetupHeader/SetupHeader';
+import SetupField from '../../components/SetupField/SetupField';
+import AdvanceLink from '../../components/AdvanceLink/AdvanceLink';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import ensureMeetingId from '../../decorators/ensureMeetingId/ensureMeetingId';
 
@@ -36,10 +38,16 @@ export default class MeetingLayout extends Component {
       <div className={styles.viewport}>
         <div className={styles.main}>
           <div className={styles.contentGroup}>
+            <ProgressDots />
             <SetupHeader
               heading="Let’s get started!"
               subHeading="What do you call your team?"
             />
+            <SetupHeader
+              heading="Invite team members"
+              subHeading="Who will be joining you?"
+            />
+            <SetupField />
             <AdvanceLink
               href="/action-ui/set-up/"
               icon="arrow-circle-right"
@@ -77,6 +85,7 @@ styles = StyleSheet.create({
     display: 'flex !important',
     flex: 1,
     flexDirection: 'column',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    padding: '2rem'
   }
 });
