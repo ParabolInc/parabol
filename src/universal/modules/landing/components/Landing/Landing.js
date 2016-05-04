@@ -462,3 +462,61 @@ styles = StyleSheet.create({
     }
   }
 });
+
+StyleSheet.addCSS({
+  // auth0 lock customization
+  // -------------------------
+  // TODO: This should probably live somewhere else. (TA)
+  // TODO: Add logo via CDN (TA)
+  // NOTE: https://auth0.com/docs/libraries/lock/ui-customization
+  // NOTE: Beware what lies ahead, oh brave soul! #shame
+
+  'body #a0-lock.a0-theme-default .a0-panel *': {
+    fontFamily: theme.typography.actionUISansSerif
+  },
+
+  'body #a0-lock.a0-theme-default .a0-panel .a0-bg-gradient': {
+    backgroundColor: theme.palette.tuBgC10o.bg,
+    backgroundImage: 'none'
+  },
+
+  'body #a0-lock.a0-theme-default .a0-panel .a0-icon-container .a0-image': {
+    backgroundImage: 'url("http://parabolinc.github.io/front-end-prototypes/assets/dist/images/brand/logo-variants/mark-color@3x.png")',
+    backgroundPosition: '0 14px',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: '62px 56px',
+    display: 'block',
+    margin: '0 auto 12px',
+    padding: 0,
+    height: '70px',
+    width: '62px'
+  },
+
+  'body #a0-lock.a0-theme-default .a0-panel .a0-icon-container .a0-image img': {
+    display: 'none'
+  },
+
+  'body #a0-lock.a0-theme-default .a0-switch': {
+    borderColor: theme.palette.c
+  },
+
+  'body #a0-lock.a0-theme-default .a0-switch .a0-active': {
+    backgroundColor: theme.palette.c
+  },
+
+  'body #a0-lock.a0-theme-default .a0-switch span': {
+    color: theme.palette.c,
+    fontWeight: 700
+  },
+
+  'body #a0-lock.a0-theme-default .a0-panel .a0-email .a0-input-box, body #a0-lock.a0-theme-default .a0-panel .a0-password .a0-input-box, body #a0-lock.a0-theme-default .a0-panel .a0-repeatPassword .a0-input-box, body #a0-lock.a0-theme-default .a0-panel .a0-username .a0-input-box': {
+    backgroundColor: '#fff',
+    borderColor: `transparent transparent ${theme.palette.tuBcC50o.bc}`,
+    borderStyle: 'dashed',
+    borderWidth: '1px 0'
+  },
+
+  'body #a0-lock.a0-theme-default .a0-panel button.a0-primary': {
+    backgroundColor: `${theme.palette.b} !important`
+  }
+});
