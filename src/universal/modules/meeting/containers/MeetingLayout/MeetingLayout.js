@@ -66,15 +66,19 @@ export default class MeetingLayout extends Component {
   }
 }
 
+// TODO: Scrub !important after inline-style-prefix-all
+//       dependency of react-look is updated to write
+//       non-vendor property last in order. (TA)
+
 styles = StyleSheet.create({
   viewport: {
     backgroundColor: '#fff',
-    display: 'flex',
+    display: 'flex !important',
     minHeight: '100vh'
   },
 
   main: {
-    display: 'flex',
+    display: 'flex !important',
     flex: 1,
     flexDirection: 'column',
     order: 2
@@ -82,7 +86,7 @@ styles = StyleSheet.create({
 
   contentGroup: {
     alignItems: 'center',
-    display: 'flex',
+    display: 'flex !important',
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
