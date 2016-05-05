@@ -11,15 +11,21 @@ let styles = {};
 export default class AdvanceLink extends Component {
   static propTypes = {
     href: PropTypes.string,
+    onClick: PropTypes.func,
     icon: PropTypes.string,
     label: PropTypes.string
   }
 
   render() {
-    const { href, icon, label } = this.props;
+    const { href, icon, label, onClick } = this.props;
 
     return (
-      <a className={styles.advanceLink} href={href} title={label}>
+      <a
+        className={styles.advanceLink}
+        href={href}
+        onClick={onClick}
+        title={label}
+      >
         {label}
         <FontAwesome
           className={styles.advanceLinkIcon}
