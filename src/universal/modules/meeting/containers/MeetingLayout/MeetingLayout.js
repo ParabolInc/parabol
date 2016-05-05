@@ -1,15 +1,18 @@
-import React, {Component} from 'react';
+import React, { Component, PropTypes } from 'react';
 import look, { StyleSheet } from 'react-look';
 import { connect } from 'react-redux';
 import { ensureState } from 'redux-optimistic-ui';
 import { reduxSocket } from 'redux-socket-cluster';
 import { localStorageVars } from 'universal/utils/clientOptions';
-import ProgressDots from '../../components/ProgressDots/ProgressDots';
-import SetupHeader from '../../components/SetupHeader/SetupHeader';
-import SetupField from '../../components/SetupField/SetupField';
-import AdvanceLink from '../../components/AdvanceLink/AdvanceLink';
+import Setup0GetStarted from '../../components/Setup0GetStarted/Setup0GetStarted';
+import Setup1InviteTeam from '../../components/Setup1InviteTeam/Setup1InviteTeam';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import ensureMeetingId from '../../decorators/ensureMeetingId/ensureMeetingId';
+
+import {
+  NAVIGATE_SETUP_0_GET_STARTED,
+  NAVIGATE_SETUP_1_INVITE_TEAM
+} from '../../ducks/meeting.js';
 
 let styles = {};
 
@@ -33,26 +36,31 @@ const mapStateToProps = state => {
 @look
 // eslint-disable-next-line react/prefer-stateless-function
 export default class MeetingLayout extends Component {
+  static propTypes = {
+    // children included here for multi-part landing pages (FAQs, pricing, cha la la)
+    // children: PropTypes.element,
+    dispatch: PropTypes.func.isRequired,
+    meeting: PropTypes.object.isRequired
+  };
+
   render() {
+    const { dispatch, meeting } = this.props;
+
     return (
       <div className={styles.viewport}>
         <div className={styles.main}>
           <div className={styles.contentGroup}>
-            <ProgressDots />
-            <SetupHeader
-              heading="Let’s get started!"
-              subHeading="What do you call your team?"
-            />
-            <SetupHeader
-              heading="Invite team members"
-              subHeading="Who will be joining you?"
-            />
-            <SetupField />
-            <AdvanceLink
-              href="/action-ui/set-up/"
-              icon="arrow-circle-right"
-              label="Set-up"
-            />
+            {(() => {
+              switch (meeting.navigation) {
+                case NAVIGATE_SETUP_0_GET_STARTED:
+                  return <Setup0GetStarted dispatch={dispatch} />;
+                case NAVIGATE_SETUP_1_INVITE_TEAM:
+                  return <Setup1InviteTeam />;
+                default:
+                  return <Setup0GetStarted />;
+              }
+            })()}
+            { /* <SetupField /> */ }
           </div>
         </div>
 
@@ -80,7 +88,7 @@ styles = StyleSheet.create({
   main: {
     display: 'flex !important',
     flex: 1,
-    flexDirection: 'column',
+
     order: 2
   },
 

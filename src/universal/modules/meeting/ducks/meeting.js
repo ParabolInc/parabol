@@ -17,6 +17,9 @@ export const UPDATE_MEETING_SUCCESS = 'action/meeting/UPDATE_MEETING_SUCCESS';
 // TODO multiple meetings at once? It's possible with redux-operations
 // making the switch to redux-operations now is cheap, later on it'll become a pain to switch
 
+export const NAVIGATE_SETUP_0_GET_STARTED = 'action/meeting/NAVIGATE_SETUP_0_GET_STARTED';
+export const NAVIGATE_SETUP_1_INVITE_TEAM = 'action/meeting/NAVIGATE_SETUP_1_INVITE_TEAM';
+
 const initialState = iMap({
   isLoading: false,
   isLoaded: false,
@@ -26,8 +29,7 @@ const initialState = iMap({
     lastUpdatedBy: '',
     currentEditors: iList()
   }),
-  mySocketId: '',
-  otherEditing: false
+  navigation: NAVIGATE_SETUP_0_GET_STARTED
 });
 
 export default function reducer(state = initialState, action = {}) {
@@ -59,6 +61,14 @@ export default function reducer(state = initialState, action = {}) {
     case UPDATE_MEETING_SUCCESS:
       return state.mergeDeep({
         instance: iMap(action.payload)
+      });
+    case NAVIGATE_SETUP_0_GET_STARTED:
+      return state.merge({
+        navigation: NAVIGATE_SETUP_0_GET_STARTED
+      });
+    case NAVIGATE_SETUP_1_INVITE_TEAM:
+      return state.merge({
+        navigation: NAVIGATE_SETUP_1_INVITE_TEAM
       });
     default:
       return state;
