@@ -9,6 +9,8 @@ import teamCheckIcon from './images/team-check-icon.svg';
 import mapIcon from './images/map-icon.svg';
 import megaphoneIcon from './images/megaphone-icon.svg';
 import github from './images/github.svg';
+// NOTE: The 3x PNG seems to hold up better as a background-image, opposed to the SVG
+import parabolLogoColor from 'universal/styles/theme/images/brand/mark-color@4x.png';
 
 let styles = {};
 const combineStyles = StyleSheet.combineStyles;
@@ -466,10 +468,8 @@ styles = StyleSheet.create({
 StyleSheet.addCSS({
   // auth0 lock customization
   // -------------------------
-  // TODO: This should probably live somewhere else. (TA)
-  // TODO: Add logo via CDN (TA)
   // NOTE: https://auth0.com/docs/libraries/lock/ui-customization
-  // NOTE: Beware what lies ahead, oh brave soul! #shame
+  // NOTE: Beware what lies ahead, oh brave soul! #shame (TA)
 
   'body #a0-lock.a0-theme-default .a0-panel *': {
     fontFamily: theme.typography.actionUISansSerif
@@ -481,7 +481,7 @@ StyleSheet.addCSS({
   },
 
   'body #a0-lock.a0-theme-default .a0-panel .a0-icon-container .a0-image': {
-    backgroundImage: 'url("http://parabolinc.github.io/front-end-prototypes/assets/dist/images/brand/logo-variants/mark-color@3x.png")',
+    backgroundImage: `url("${parabolLogoColor}")`,
     backgroundPosition: '0 14px',
     backgroundRepeat: 'no-repeat',
     backgroundSize: '62px 56px',
