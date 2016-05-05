@@ -509,6 +509,7 @@ StyleSheet.addCSS({
     fontWeight: 700
   },
 
+  // eslint-disable-next-line max-len
   'body #a0-lock.a0-theme-default .a0-panel .a0-email .a0-input-box, body #a0-lock.a0-theme-default .a0-panel .a0-password .a0-input-box, body #a0-lock.a0-theme-default .a0-panel .a0-repeatPassword .a0-input-box, body #a0-lock.a0-theme-default .a0-panel .a0-username .a0-input-box': {
     backgroundColor: '#fff',
     borderColor: `transparent transparent ${theme.palette.tuBcC50o.bc}`,
