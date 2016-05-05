@@ -9,7 +9,7 @@ import teamCheckIcon from './images/team-check-icon.svg';
 import mapIcon from './images/map-icon.svg';
 import megaphoneIcon from './images/megaphone-icon.svg';
 import github from './images/github.svg';
-// NOTE: The 3x PNG seems to hold up better as a background-image, opposed to the SVG
+// NOTE: The 4x PNG seems to hold up better as a background-image, opposed to the SVG
 import parabolLogoColor from 'universal/styles/theme/images/brand/mark-color@4x.png';
 
 let styles = {};
