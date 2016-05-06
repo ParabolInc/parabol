@@ -17,12 +17,12 @@ export default class Setup1InviteTeam extends Component {
         />
         <SetupField
           buttonIcon="check-circle"
-          hasButton={true}
-          hasHelpText={true}
+          hasButton
+          hasHelpText
           helpText="*You can paste a comma-separated string of multiple emails."
           inputType="text"
-          isLarger={true}
-          isWider={true}
+          isLarger
+          isWider
           onButtonClick={() => console.log('SetupField.onButtonClick')}
           onInputClick={() => console.log('SetupField.onInputClick')}
           placeholderText="Search users or invite by email*"
