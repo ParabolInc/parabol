@@ -24,7 +24,7 @@ export default class Setup0GetStarted extends Component {
         <ProgressDots />
         <SetupHeader
           heading="Let’s get started!"
-          subHeading="What do you call your team?"
+          subHeadingString="What do you call your team?"
         />
         <SetupField
           buttonIcon="check-circle"
