@@ -23,7 +23,7 @@ export default class SetupField extends Component {
     isWider: PropTypes.bool,
     label: PropTypes.string,
     onButtonClick: PropTypes.func,
-    onInputClick: PropTypes.func,
+    onInputFocus: PropTypes.func,
     placeholderText: PropTypes.string,
     shortcutHint: PropTypes.string
   }
@@ -40,7 +40,7 @@ export default class SetupField extends Component {
       isWider,
       label,
       onButtonClick,
-      onInputClick,
+      onInputFocus,
       placeholderText,
       shortcutHint
     } = this.props;
@@ -63,7 +63,7 @@ export default class SetupField extends Component {
       <div className={styles.fieldBlock}>
         <input
           className={fieldStyles}
-          onClick={onInputClick}
+          onFocus={onInputFocus}
           placeholder={placeholderText}
           type={inputType}
         />

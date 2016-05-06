@@ -8,6 +8,11 @@ import SetupHeader from '../../components/SetupHeader/SetupHeader';
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Setup2InviteTeam extends Component {
   render() {
+    const onInputFocus = (event) => {
+      event.preventDefault();
+      console.log('SetupField.onInputFocus()');
+    };
+
     return (
       <SetupContent>
         <ProgressDots />
@@ -17,9 +22,23 @@ export default class Setup2InviteTeam extends Component {
         />
         <SetupField
           inputType="text"
-          onButtonClick={() => console.log('SetupField.onButtonClick')}
-          onInputClick={() => console.log('SetupField.onInputClick')}
-          placeholderText="Project outcome realized*"
+          onInputFocus={onInputFocus}
+          placeholderText="Project outcome realized"
+        />
+        <SetupField
+          inputType="text"
+          onInputFocus={onInputFocus}
+          placeholderText="Project outcome realized"
+        />
+        <SetupField
+          inputType="text"
+          onInputFocus={onInputFocus}
+          placeholderText="Project outcome realized"
+        />
+        <SetupField
+          inputType="text"
+          onInputFocus={onInputFocus}
+          placeholderText="Project outcome realized"
         />
       </SetupContent>
     );
