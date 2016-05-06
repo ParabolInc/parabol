@@ -35,7 +35,7 @@ export default class Setup1InviteTeam extends Component {
           isLarger
           isWider
           onButtonClick={() => console.log('SetupField.onButtonClick')}
-          onInputClick={() => console.log('SetupField.onInputClick')}
+          onInputFocus={() => console.log('SetupField.onInputFocus')}
           placeholderText="Search users or invite by email*"
         />
         <AdvanceLink

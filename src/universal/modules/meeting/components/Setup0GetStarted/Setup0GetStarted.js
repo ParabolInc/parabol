@@ -33,7 +33,7 @@ export default class Setup0GetStarted extends Component {
           inputType="text"
           isLarger
           onButtonClick={() => console.log('SetupField.onButtonClick')}
-          onInputClick={() => console.log('SetupField.onInputClick')}
+          onInputFocus={() => console.log('SetupField.onInputFocus')}
           placeholderText="Team name"
           shortcutHint="Press enter"
         />
