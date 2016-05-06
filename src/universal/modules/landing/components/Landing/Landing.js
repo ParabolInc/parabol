@@ -308,7 +308,8 @@ styles = StyleSheet.create({
 
   cardGroup: {
     [layoutBreakpoint]: {
-      display: 'flex',
+      // #shame use !important to force non-vendor prefix (TA)
+      display: 'flex !important',
       justifyContent: 'center'
     }
   },
