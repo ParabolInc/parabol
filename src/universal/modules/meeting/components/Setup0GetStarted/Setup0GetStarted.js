@@ -28,10 +28,10 @@ export default class Setup0GetStarted extends Component {
         />
         <SetupField
           buttonIcon="check-circle"
-          hasButton={true}
-          hasShortcutHint={true}
+          hasButton
+          hasShortcutHint
           inputType="text"
-          isLarger={true}
+          isLarger
           onButtonClick={() => console.log('SetupField.onButtonClick')}
           onInputClick={() => console.log('SetupField.onInputClick')}
           placeholderText="Team name"
