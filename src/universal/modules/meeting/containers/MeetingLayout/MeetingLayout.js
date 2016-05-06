@@ -88,7 +88,7 @@ styles = StyleSheet.create({
   main: {
     display: 'flex !important',
     flex: 1,
-
+    flexDirection: 'column',
     order: 2
   },
 

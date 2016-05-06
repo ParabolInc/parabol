@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import look, { StyleSheet } from 'react-look';
 import FontAwesome from 'react-fontawesome';
 import tinycolor from 'tinycolor2';
@@ -12,165 +12,78 @@ let styles = {};
 @look
 // eslint-disable-next-line react/prefer-stateless-function
 export default class SetupField extends Component {
+  static propTypes = {
+    buttonIcon: PropTypes.string,
+    hasButton: PropTypes.bool,
+    hasHelpText: PropTypes.bool,
+    hasShortcutHint: PropTypes.bool,
+    helpText: PropTypes.string,
+    inputType: PropTypes.string,
+    isLarger: PropTypes.bool,
+    isWider: PropTypes.bool,
+    label: PropTypes.string,
+    onButtonClick: PropTypes.func,
+    onInputClick: PropTypes.func,
+    placeholderText: PropTypes.string,
+    shortcutHint: PropTypes.string
+  }
+
   render() {
+    const {
+      buttonIcon,
+      hasButton,
+      hasHelpText,
+      hasShortcutHint,
+      helpText,
+      inputType,
+      isLarger,
+      isWider,
+      label,
+      onButtonClick,
+      onInputClick,
+      placeholderText,
+      shortcutHint
+    } = this.props;
+
+    let fieldStyles = styles.field;
+
+    const largerStyles = combineStyles(styles.field, styles.fieldLarger);
+    const widerStyles = combineStyles(styles.field, styles.widerLarger);
+    const largerAndWiderStyles = combineStyles(styles.field, styles.fieldLarger, styles.fieldWider);
+
+    if (isLarger && isWider) {
+      fieldStyles = largerAndWiderStyles;
+    } else if (isLarger) {
+      fieldStyles = largerStyles;
+    } else if (isWider) {
+      fieldStyles = widerStyles;
+    }
+
     return (
-      <div className={styles.setupFieldContainer}>
-        {/* Field block */}
-        <div className={styles.fieldBlock}>
-          <input
-            className={combineStyles(styles.field, styles.fieldLarger)}
-            placeholder="Team name"
-            type="text"
-          />
-          <button className={combineStyles(styles.fieldButton, styles.fieldSubmit)}>
-            <FontAwesome name="check-circle" size="2x" />
+      <div className={styles.fieldBlock}>
+        <input
+          className={fieldStyles}
+          onClick={onInputClick}
+          placeholder={placeholderText}
+          type={inputType}
+        />
+        { hasButton &&
+          <button className={combineStyles(styles.fieldButton, styles.fieldSubmit)} onClick={onButtonClick}>
+            <FontAwesome name={buttonIcon} size="2x" />
           </button>
-          <div className={styles.fieldShortcutHint}>Press enter</div>
-        </div>
-        <br />
-        <br />
-        <br />
-        <br />
-        {/* Field block */}
-        <div className={styles.fieldBlock}>
-          <input
-            className={combineStyles(styles.field, styles.fieldLarger, styles.fieldWider)}
-            placeholder="Search users or invite by email*"
-            type="text"
-          />
-          <button className={combineStyles(styles.fieldButton, styles.fieldSubmit)}>
-            <FontAwesome name="check-circle" size="2x" />
-          </button>
-          <div className={styles.fieldHelpText}>
-            *You can paste a comma-separated string of multiple emails.
-          </div>
-        </div>
-        <br />
-        <br />
-        <br />
-        <br />
-        {/* Field group (with two columns) */}
-        <div className={styles.fieldGroup}>
-          <div className={combineStyles(styles.fieldGroupColumn, styles.fieldGroupColumn1of2)}>
-            <div className={styles.fieldGroupLabel}>Invited</div>
-          </div>
-          <div className={combineStyles(styles.fieldGroupColumn, styles.fieldGroupColumn1of2)}>
-            {/* eslint-disable-next-line max-len */}
-            <div className={combineStyles(styles.fieldGroupLabel, styles.fieldGroupLabelForFields)}>
-              Outcome
-            </div>
-          </div>
-        </div>
-        <div className={styles.fieldGroup}>
-          <div className={combineStyles(styles.fieldGroupColumn, styles.fieldGroupColumn1of2)}>
-            <button className={combineStyles(styles.fieldButton, styles.fieldRemoval)}>
-              <FontAwesome name="times-circle" size="2x" />
-            </button>
-            <div className={styles.fieldLabel}>jordan@parabol.co</div>
-          </div>
-          <div className={combineStyles(styles.fieldGroupColumn, styles.fieldGroupColumn1of2)}>
-            <input
-              className={styles.field}
-              placeholder="Outcome realized"
-              type="text"
-              value="Project iterated"
-            />
-          </div>
-        </div>
-        <div className={styles.fieldGroup}>
-          <div className={combineStyles(styles.fieldGroupColumn, styles.fieldGroupColumn1of2)}>
-            <button className={combineStyles(styles.fieldButton, styles.fieldRemoval)}>
-              <FontAwesome name="times-circle" size="2x" />
-            </button>
-            <div className={styles.fieldLabel}>robert@parabol.co</div>
-          </div>
-          <div className={combineStyles(styles.fieldGroupColumn, styles.fieldGroupColumn1of2)}>
-            <input
-              className={styles.field}
-              placeholder="Outcome realized"
-              type="text"
-              value="Project iterated"
-            />
-          </div>
-        </div>
-        <div className={styles.fieldGroup}>
-          <div className={combineStyles(styles.fieldGroupColumn, styles.fieldGroupColumn1of2)}>
-            <button className={combineStyles(styles.fieldButton, styles.fieldRemoval)}>
-              <FontAwesome name="times-circle" size="2x" />
-            </button>
-            <div className={styles.fieldLabel}>taya@parabol.co</div>
-          </div>
-          <div className={combineStyles(styles.fieldGroupColumn, styles.fieldGroupColumn1of2)}>
-            <input
-              className={styles.field}
-              placeholder="Outcome realized"
-              type="text"
-              value="Project iterated"
-            />
-          </div>
-        </div>
-        <div className={styles.fieldGroup}>
-          <div className={combineStyles(styles.fieldGroupColumn, styles.fieldGroupColumn1of2)}>
-            <button className={combineStyles(styles.fieldButton, styles.fieldRemoval)}>
-              <FontAwesome name="times-circle" size="2x" />
-            </button>
-            <div className={styles.fieldLabel}>terry@parabol.co</div>
-          </div>
-          <div className={combineStyles(styles.fieldGroupColumn, styles.fieldGroupColumn1of2)}>
-            <input
-              className={styles.field}
-              placeholder="Outcome realized"
-              type="text"
-              value="Project iterated"
-            />
-          </div>
-        </div>
+        }
+        { hasHelpText &&
+          <div className={styles.fieldHelpText}>{helpText}</div>
+        }
+        { hasShortcutHint &&
+          <div className={styles.fieldShortcutHint}>{shortcutHint}</div>
+        }
       </div>
     );
   }
 }
 
 styles = StyleSheet.create({
-  // NOTE: setupFieldContainer can be discarded
-  //       once the field elements are properly
-  //       abstracted as components (TA)
-  setupFieldContainer: {
-    alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    width: '100%'
-  },
-
-  fieldGroup: {
-    display: 'flex',
-    maxWidth: '40rem',
-    width: '100%'
-  },
-
-  fieldGroupColumn: {
-    margin: '0 0 1rem',
-    position: 'relative',
-  },
-
-  // NOTE: Modifies fieldGroupColumn
-  fieldGroupColumn1of2: {
-    width: '50%'
-  },
-
-  fieldGroupLabel: {
-    color: theme.palette.c,
-    fontSize: theme.typography.fs2,
-    fontWeight: 700,
-    margin: '0 0 .5rem',
-    textTransform: 'uppercase'
-  },
-
-  // NOTE: Modifies fieldGroupLabel
-  fieldGroupLabelForFields: {
-    paddingLeft: '.5rem'
-  },
-
   fieldBlock: {
     margin: '0 auto',
     maxWidth: '100%',
@@ -250,29 +163,6 @@ styles = StyleSheet.create({
       color: theme.palette.a,
       outline: 'none'
     }
-  },
-
-  // NOTE: Modifies fieldButton
-  fieldRemoval: {
-    padding: '0 1rem 0 0',
-    position: 'absolute',
-    right: '100%',
-    top: '-.125rem',
-  },
-
-  // NOTE: Modifies fieldRemoval
-  //       Use when hidden until parent:hover
-  //       Touch devices need to show at all times (no hover state)
-  //       Alternately, hide/show using only JS (no CSS, detect touchevents/no-touchevents)
-  fieldRemovalHoverOnly: {
-    display: 'none'
-  },
-
-  // NOTE: Modifies fieldRemoval, fieldRemovalHoverOnly
-  //       When the parent item has :hover, set this to show via JS
-  //       Alternately, hide/show using only JS (no CSS, detect touchevents/no-touchevents)
-  fieldRemovalHasParentHover: {
-    display: 'block'
   },
 
   // NOTE: Modifies fieldButton

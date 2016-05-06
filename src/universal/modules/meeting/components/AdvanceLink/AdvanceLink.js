@@ -39,6 +39,7 @@ export default class AdvanceLink extends Component {
 styles = StyleSheet.create({
   advanceLink: {
     color: theme.palette.b,
+    cursor: 'pointer',
     fontFamily: theme.typography.actionUISerif,
     fontSize: theme.typography.fs5,
     fontWeight: 700,
