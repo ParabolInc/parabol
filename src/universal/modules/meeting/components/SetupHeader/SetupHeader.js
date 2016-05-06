@@ -9,20 +9,26 @@ let styles = {};
 export default class SetupHeader extends Component {
   static propTypes = {
     heading: PropTypes.string,
-    subHeading: PropTypes.string
+    subHeadingInnerHTML: PropTypes.string,
+    subHeadingString: PropTypes.string
   }
 
   render() {
-    const { heading, subHeading } = this.props;
+    const { heading, subHeadingInnerHTML, subHeadingString } = this.props;
 
     return (
       <div className={styles.setupHeader}>
         <h1 className={styles.setupHeading}>
           {heading}
         </h1>
-        <h2 className={styles.setupSubHeading}>
-          {subHeading}
-        </h2>
+        { subHeadingString &&
+          <h2 className={styles.setupSubHeading}>
+            {subHeadingString}
+          </h2>
+        }
+        { subHeadingInnerHTML &&
+          <h2 className={styles.setupSubHeading} dangerouslySetInnerHTML={{__html: subHeadingInnerHTML}}></h2>
+        }
       </div>
     );
   }

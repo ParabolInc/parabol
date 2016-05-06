@@ -19,6 +19,7 @@ export const UPDATE_MEETING_SUCCESS = 'action/meeting/UPDATE_MEETING_SUCCESS';
 
 export const NAVIGATE_SETUP_0_GET_STARTED = 'action/meeting/NAVIGATE_SETUP_0_GET_STARTED';
 export const NAVIGATE_SETUP_1_INVITE_TEAM = 'action/meeting/NAVIGATE_SETUP_1_INVITE_TEAM';
+export const NAVIGATE_SETUP_2_INVITE_TEAM = 'action/meeting/NAVIGATE_SETUP_2_INVITE_TEAM';
 
 const initialState = iMap({
   isLoading: false,
@@ -69,6 +70,10 @@ export default function reducer(state = initialState, action = {}) {
     case NAVIGATE_SETUP_1_INVITE_TEAM:
       return state.merge({
         navigation: NAVIGATE_SETUP_1_INVITE_TEAM
+      });
+    case NAVIGATE_SETUP_2_INVITE_TEAM:
+      return state.merge({
+        navigation: NAVIGATE_SETUP_2_INVITE_TEAM
       });
     default:
       return state;

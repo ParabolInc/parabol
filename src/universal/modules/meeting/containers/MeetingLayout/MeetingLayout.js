@@ -6,12 +6,14 @@ import { reduxSocket } from 'redux-socket-cluster';
 import { localStorageVars } from 'universal/utils/clientOptions';
 import Setup0GetStarted from '../../components/Setup0GetStarted/Setup0GetStarted';
 import Setup1InviteTeam from '../../components/Setup1InviteTeam/Setup1InviteTeam';
+import Setup2InviteTeam from '../../components/Setup2InviteTeam/Setup2InviteTeam';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import ensureMeetingId from '../../decorators/ensureMeetingId/ensureMeetingId';
 
 import {
   NAVIGATE_SETUP_0_GET_STARTED,
-  NAVIGATE_SETUP_1_INVITE_TEAM
+  NAVIGATE_SETUP_1_INVITE_TEAM,
+  NAVIGATE_SETUP_2_INVITE_TEAM
 } from '../../ducks/meeting.js';
 
 let styles = {};
@@ -55,7 +57,9 @@ export default class MeetingLayout extends Component {
                 case NAVIGATE_SETUP_0_GET_STARTED:
                   return <Setup0GetStarted dispatch={dispatch} />;
                 case NAVIGATE_SETUP_1_INVITE_TEAM:
-                  return <Setup1InviteTeam />;
+                  return <Setup1InviteTeam dispatch={dispatch} />;
+                case NAVIGATE_SETUP_2_INVITE_TEAM:
+                  return <Setup2InviteTeam />;
                 default:
                   return <Setup0GetStarted />;
               }
