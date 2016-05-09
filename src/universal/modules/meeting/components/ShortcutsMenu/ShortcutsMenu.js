@@ -10,19 +10,19 @@ const shortcutsKeystrokeHeight = '1.5rem';
 const shortcutsRequests = [
   {
     keystroke: 'a',
-    definition: 'Add an <b>Action</b> for this request'
+    definition: <span>Add an <b>Action</b> for this request</span>
   },
   {
     keystroke: 'p',
-    definition: 'Add a <b>Project</b> for this request'
+    definition: <span>Add a <b>Project</b> for this request</span>
   },
   {
     keystroke: '@',
-    definition: '<b>Assign</b> to a team member'
+    definition: <span><b>Assign</b> to a team member</span>
   },
   {
     keystroke: 'r',
-    definition: 'Mark this request as <b>resolved</b>'
+    definition: <span>Mark this request as <b>resolved</b></span>
   }
 ];
 
@@ -41,7 +41,7 @@ export default class ShortcutsMenu extends Component {
     if (index === 0) {
       itemStyle = combineStyles(styles.shortcutsKeystroke, styles.shortcutsKeystrokeIsFirst);
     } else if (index === array.length - 1) {
-      itemStyle = combineStyles(styles.shortcutsKeystroke, styles.shortcutsKeystrokeIsLast)
+      itemStyle = combineStyles(styles.shortcutsKeystroke, styles.shortcutsKeystrokeIsLast);
     } else {
       itemStyle = styles.shortcutsItem;
     }
@@ -49,10 +49,10 @@ export default class ShortcutsMenu extends Component {
     return (
       <li className={itemStyle} key={index}>
         <span className={styles.shortcutsKeystroke}>{shortcut.keystroke}</span>
-        <span className={styles.shortcutsDefinition} dangerouslySetInnerHTML={{__html: shortcut.definition}}></span>
+        <span className={styles.shortcutsDefinition}>{shortcut.definition}></span>
       </li>
     );
-  };
+  }
 
   render() {
     const { onCloseClick } = this.props;
@@ -68,9 +68,11 @@ export default class ShortcutsMenu extends Component {
         </a>
         <ul className={styles.shortcutsList}>
           {(() => {
-            shortcutsRequests.map((shortcut, index, array) => {
-              this.renderShortcutMenuItem(shortcut, index, array);
-            });
+            const scs = shortcutsRequests.map((shortcut, index, array) =>
+              this.renderShortcutMenuItem(shortcut, index, array)
+            );
+
+            return scs;
           })()}
         </ul>
       </div>
@@ -104,11 +106,11 @@ styles = StyleSheet.create({
     // NOTE: ':hover' y ':focus' son igualitos
     ':hover': {
       color: theme.palette.c,
-      opacity: .5
+      opacity: 0.5
     },
     ':focus': {
       color: theme.palette.c,
-      opacity: .5
+      opacity: 0.5
     }
   },
 
