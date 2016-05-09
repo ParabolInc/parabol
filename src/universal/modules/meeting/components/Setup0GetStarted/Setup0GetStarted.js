@@ -4,6 +4,7 @@ import ProgressDots from '../../components/ProgressDots/ProgressDots';
 import SetupContent from '../../components/SetupContent/SetupContent';
 import SetupField from '../../components/SetupField/SetupField';
 import SetupHeader from '../../components/SetupHeader/SetupHeader';
+import ShortcutsMenu from '../../components/ShortcutsMenu/ShortcutsMenu';
 import { NAVIGATE_SETUP_1_INVITE_TEAM } from '../../ducks/meeting.js';
 
 // eslint-disable-next-line react/prefer-stateless-function
@@ -46,6 +47,7 @@ export default class Setup0GetStarted extends Component {
           icon="arrow-circle-right"
           label="Set-up"
         />
+        <ShortcutsMenu />
       </SetupContent>
     );
   }

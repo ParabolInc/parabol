@@ -4,6 +4,28 @@ import FontAwesome from 'react-fontawesome';
 import theme from 'universal/styles/theme';
 
 const combineStyles = StyleSheet.combineStyles;
+
+const shortcutsKeystrokeHeight = '1.5rem';
+
+const shortcutsRequests = [
+  {
+    keystroke: 'a',
+    definition: 'Add an <b>Action</b> for this request'
+  },
+  {
+    keystroke: 'p',
+    definition: 'Add a <b>Project</b> for this request'
+  },
+  {
+    keystroke: '@',
+    definition: '<b>Assign</b> to a team member'
+  },
+  {
+    keystroke: 'r',
+    definition: 'Mark this request as <b>resolved</b>'
+  }
+];
+
 let styles = {};
 
 @look
@@ -11,33 +33,29 @@ let styles = {};
 export default class ShortcutsMenu extends Component {
   static propTypes = {
     onCloseClick: PropTypes.func
-  }
+  };
+
+  renderShortcutMenuItem(shortcut, index, array) {
+    let itemStyle = null;
+
+    if (index === 0) {
+      itemStyle = combineStyles(styles.shortcutsKeystroke, styles.shortcutsKeystrokeIsFirst);
+    } else if (index === array.length - 1) {
+      itemStyle = combineStyles(styles.shortcutsKeystroke, styles.shortcutsKeystrokeIsLast)
+    } else {
+      itemStyle = styles.shortcutsItem;
+    }
+
+    return (
+      <li className={itemStyle} key={index}>
+        <span className={styles.shortcutsKeystroke}>{shortcut.keystroke}</span>
+        <span className={styles.shortcutsDefinition} dangerouslySetInnerHTML={{__html: shortcut.definition}}></span>
+      </li>
+    );
+  };
 
   render() {
     const { onCloseClick } = this.props;
-
-    const shortcutsRequests = [
-      {
-        index: 0,
-        keystroke: 'a',
-        definition: 'Add an <b>Action</b> for this request'
-      },
-      {
-        index: 1,
-        keystroke: 'p',
-        definition: 'Add a <b>Project</b> for this request'
-      },
-      {
-        index: 2,
-        keystroke: '@',
-        definition: '<b>Assign</b> to a team member'
-      },
-      {
-        index: 3,
-        keystroke: 'r',
-        definition: 'Mark this request as <b>resolved</b>'
-      }
-    ];
 
     return (
       <div className={styles.shortcutsMenu}>
@@ -49,41 +67,16 @@ export default class ShortcutsMenu extends Component {
           <span className={styles.shortcutsCloseLabel}>Close menu</span>
         </a>
         <ul className={styles.shortcutsList}>
-          {
-            shortcutsRequests.map(shortcut => {
-              const shortcutKeystroke = () => {
-                  <span className={styles.shortcutsKeystroke}>{shortcut.keystroke}</span>
-              };
-
-              const shortcutDefinition = () => {
-                  <span className={styles.shortcutsDefinition} dangerouslySetInnerHTML={{__html: shortcut.definition}}></span>
-              };
-
-              if (shortcut.index === 0) {
-                <li className={combineStyles(styles.shortcutsKeystroke, styles.shortcutsKeystrokeIsFirst)} key={shortcut.index}>
-                {shortcutKeystroke}
-                {shortcutDefinition}
-                </li>
-              } else if (shortcut.index === shortcutsRequests.length - 1) {
-                <li className={combineStyles(styles.shortcutsKeystroke, styles.shortcutsKeystrokeIsLast)} key={shortcut.index}>
-                {shortcutKeystroke}
-                {shortcutDefinition}
-                </li>
-              } else {
-                <li className={styles.shortcutsItem} key={shortcut.index}>
-                {shortcutKeystroke}
-                {shortcutDefinition}
-                </li>
-              }
-            }
-          )}
+          {(() => {
+            shortcutsRequests.map((shortcut, index, array) => {
+              this.renderShortcutMenuItem(shortcut, index, array);
+            });
+          })()}
         </ul>
       </div>
     );
   }
 }
-
-const shortcutsKeystrokeHeight = '1.5rem';
 
 styles = StyleSheet.create({
   shortcutsMenu: {

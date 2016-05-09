@@ -37,7 +37,7 @@ export default class ProgressDots extends Component {
     }
 
     return (
-      <a className={dotStyle} href="#">
+      <a className={dotStyle} href="#" key={idx}>
         <span className={styles.progressDotLabel}>Step {idx + 1}</span>
       </a>
     );
