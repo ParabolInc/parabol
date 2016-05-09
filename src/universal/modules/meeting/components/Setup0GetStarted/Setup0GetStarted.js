@@ -4,7 +4,7 @@ import ProgressDots from '../../components/ProgressDots/ProgressDots';
 import SetupContent from '../../components/SetupContent/SetupContent';
 import SetupField from '../../components/SetupField/SetupField';
 import SetupHeader from '../../components/SetupHeader/SetupHeader';
-import { NAVIGATE_SETUP_1_INVITE_TEAM } from '../../ducks/meeting.js';
+import { NAVIGATE_SETUP_1_INVITE_TEAM, updateMeetingTeamName } from '../../ducks/meeting.js';
 
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Setup0GetStarted extends Component {
@@ -17,6 +17,10 @@ export default class Setup0GetStarted extends Component {
     const onClick = (event) => {
       event.preventDefault();
       dispatch({ type: NAVIGATE_SETUP_1_INVITE_TEAM });
+    };
+
+    const onChangeTeamName = (event) => {
+      dispatch(updateMeetingTeamName(event.target.value, 'anonymous'));
     };
 
     return (
@@ -37,6 +41,7 @@ export default class Setup0GetStarted extends Component {
           inputType="text"
           isLarger
           onButtonClick={() => console.log('SetupField.onButtonClick')}
+          onInputChange={onChangeTeamName}
           onInputFocus={() => console.log('SetupField.onInputFocus')}
           placeholderText="Team name"
           shortcutHint="Press enter"
