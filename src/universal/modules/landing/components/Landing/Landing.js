@@ -25,9 +25,6 @@ export default class Landing extends Component {
     // children: PropTypes.element,
     onMeetingCreateClick: PropTypes.func.isRequired
   };
-  static contextTypes = {
-    _lookConfig: PropTypes.object.isRequired
-  };
 
   render() {
     const {onMeetingCreateClick} = this.props;

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import look, { StyleSheet } from 'react-look';
 import tinycolor from 'tinycolor2';
 import theme from 'universal/styles/theme';
@@ -11,18 +11,50 @@ let styles = {};
 @look
 // eslint-disable-next-line react/prefer-stateless-function
 export default class ProgressDots extends Component {
+  static propTypes = {
+    // children included here for multi-part landing pages (FAQs, pricing, cha la la)
+    // children: PropTypes.element,
+    numDots: PropTypes.number.isRequired, // how many total dots shall we draw?
+    numCompleted: PropTypes.number,       // how many of the dots are completed?
+    currentDot: PropTypes.number,         // which dot (0=first dot) is the user on now?
+  };
+
+  renderDot(idx) {
+    const { numCompleted, currentDot } = this.props;
+    let dotStyle = null;
+
+    if (idx === currentDot) {
+      /* we're the active dot */
+      dotStyle = combineStyles(styles.progressDot, styles.progressDotCurrent);
+    } else {
+      if (idx < numCompleted) {
+        /* render a completed dot */
+        dotStyle = combineStyles(styles.progressDot, styles.progressDotCompleted);
+      } else {
+        /* a dot for the future! */
+        dotStyle = styles.progressDot;
+      }
+    }
+
+    return (
+      <a className={dotStyle} href="#" key={idx}>
+        <span className={styles.progressDotLabel}>Step {idx + 1}</span>
+      </a>
+    );
+  }
+
   render() {
+    const { numDots } = this.props;
+
     return (
       <div className={styles.progressDotGroup}>
-        <a className={combineStyles(styles.progressDot, styles.progressDotCurrent)} href="#">
-          <span className={styles.progressDotLabel}>Step one</span>
-        </a>
-        <a className={styles.progressDot} href="#">
-          <span className={styles.progressDotLabel}>Step two</span>
-        </a>
-        <a className={styles.progressDot} href="#">
-          <span className={styles.progressDotLabel}>Step three</span>
-        </a>
+        {(() => {
+          const dots = [];
+          for (let i = 0; i < numDots; i++) {
+            dots.push(this.renderDot(i));
+          }
+          return dots;
+        })()}
       </div>
     );
   }
