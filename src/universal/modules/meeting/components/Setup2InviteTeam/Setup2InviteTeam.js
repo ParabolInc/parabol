@@ -4,6 +4,7 @@ import ProgressDots from '../../components/ProgressDots/ProgressDots';
 import SetupContent from '../../components/SetupContent/SetupContent';
 import SetupField from '../../components/SetupField/SetupField';
 import SetupHeader from '../../components/SetupHeader/SetupHeader';
+import ShortcutsMenu from '../../components/ShortcutsMenu/ShortcutsMenu';
 
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Setup2InviteTeam extends Component {
@@ -40,6 +41,7 @@ export default class Setup2InviteTeam extends Component {
           onInputFocus={onInputFocus}
           placeholderText="Project outcome realized"
         />
+        <ShortcutsMenu />
       </SetupContent>
     );
   }

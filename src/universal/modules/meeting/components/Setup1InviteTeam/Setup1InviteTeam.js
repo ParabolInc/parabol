@@ -4,6 +4,7 @@ import ProgressDots from '../../components/ProgressDots/ProgressDots';
 import SetupContent from '../../components/SetupContent/SetupContent';
 import SetupField from '../../components/SetupField/SetupField';
 import SetupHeader from '../../components/SetupHeader/SetupHeader';
+import ShortcutsToggle from '../../components/ShortcutsToggle/ShortcutsToggle';
 import { NAVIGATE_SETUP_2_INVITE_TEAM } from '../../ducks/meeting.js';
 
 // eslint-disable-next-line react/prefer-stateless-function
@@ -17,6 +18,11 @@ export default class Setup1InviteTeam extends Component {
     const onLinkClick = (event) => {
       event.preventDefault();
       dispatch({ type: NAVIGATE_SETUP_2_INVITE_TEAM });
+    };
+
+    const onShortcutsToggleClick = (event) => {
+      event.preventDefault();
+      console.log('Dispatch ye ole ShortcutsToggle!');
     };
 
     return (
@@ -43,6 +49,7 @@ export default class Setup1InviteTeam extends Component {
           icon="arrow-circle-right"
           label="Carry on!"
         />
+        <ShortcutsToggle onClick={onShortcutsToggleClick} />
       </SetupContent>
     );
   }
