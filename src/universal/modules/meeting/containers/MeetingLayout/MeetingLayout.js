@@ -48,6 +48,8 @@ export default class MeetingLayout extends Component {
   render() {
     const { dispatch, meeting } = this.props;
 
+    const teamName = meeting.instance.team.name || 'Team Name';
+
     return (
       <div className={styles.viewport}>
         <div className={styles.main}>
@@ -70,7 +72,7 @@ export default class MeetingLayout extends Component {
 
         <Sidebar
           shortUrl="https://prbl.io/a/b7s8x9"
-          teamName="Engineering"
+          teamName={teamName}
           timerValue="30:00"
         />
       </div>
