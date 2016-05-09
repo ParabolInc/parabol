@@ -6,15 +6,22 @@ import SetupField from '../../components/SetupField/SetupField';
 import SetupHeader from '../../components/SetupHeader/SetupHeader';
 import ShortcutsMenu from '../../components/ShortcutsMenu/ShortcutsMenu';
 import ShortcutsToggle from '../../components/ShortcutsToggle/ShortcutsToggle';
-import { NAVIGATE_SETUP_1_INVITE_TEAM, updateMeetingTeamName } from '../../ducks/meeting.js';
+import {
+  NAVIGATE_SETUP_1_INVITE_TEAM,
+  updateMeetingTeamName,
+  CLOSE_SHORTCUT_MENU,
+  OPEN_SHORTCUT_MENU
+} from '../../ducks/meeting.js';
 
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Setup0GetStarted extends Component {
   static propTypes = {
-    dispatch: PropTypes.func
+    dispatch: PropTypes.func,
+    uiState: PropTypes.object
   }
   render() {
-    const { dispatch } = this.props;
+    const { dispatch, uiState } = this.props;
+    const { hasOpenShortcutMenu } = uiState;
 
     const onClick = (event) => {
       event.preventDefault();
@@ -25,16 +32,16 @@ export default class Setup0GetStarted extends Component {
       dispatch(updateMeetingTeamName(event.target.value, 'anonymous'));
     };
 
-    let menuOpen = true;
-
+    // TODO: Add shortcut key “?” to open/close ShortcutsMenu
     const onCloseShortcutMenuClose = (event) => {
       event.preventDefault();
-      menuOpen = true;
+      dispatch({ type: CLOSE_SHORTCUT_MENU });
     };
 
+    // TODO: Add shortcut key “?” to open/close ShortcutsMenu
     const onShortcutsToggleClick = (event) => {
       event.preventDefault();
-      menuOpen = false;
+      dispatch({ type: OPEN_SHORTCUT_MENU });
     };
 
     const shortcutsRequests = [
@@ -84,13 +91,13 @@ export default class Setup0GetStarted extends Component {
           icon="arrow-circle-right"
           label="Set-up"
         />
-        {menuOpen &&
+        {hasOpenShortcutMenu &&
           <ShortcutsMenu
             shortcutsList={shortcutsRequests}
             onCloseClick={onCloseShortcutMenuClose}
           />
         }
-        {!menuOpen &&
+        {!hasOpenShortcutMenu &&
           <ShortcutsToggle onClick={onShortcutsToggleClick} />
         }
       </SetupContent>
