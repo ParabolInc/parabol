@@ -9,8 +9,7 @@ import ShortcutsToggle from '../../components/ShortcutsToggle/ShortcutsToggle';
 import {
   NAVIGATE_SETUP_1_INVITE_TEAM,
   updateMeetingTeamName,
-  CLOSE_SHORTCUT_MENU,
-  OPEN_SHORTCUT_MENU
+  UPDATE_SHORTCUT_MENU_STATE
 } from '../../ducks/meeting.js';
 
 // eslint-disable-next-line react/prefer-stateless-function
@@ -33,15 +32,14 @@ export default class Setup0GetStarted extends Component {
     };
 
     // TODO: Add shortcut key “?” to open/close ShortcutsMenu
-    const onCloseShortcutMenuClose = (event) => {
+    const onShortcutMenuToggle = (event) => {
       event.preventDefault();
-      dispatch({ type: CLOSE_SHORTCUT_MENU });
-    };
-
-    // TODO: Add shortcut key “?” to open/close ShortcutsMenu
-    const onShortcutsToggleClick = (event) => {
-      event.preventDefault();
-      dispatch({ type: OPEN_SHORTCUT_MENU });
+      dispatch({
+        type: UPDATE_SHORTCUT_MENU_STATE,
+        payload: {
+          boolean: !hasOpenShortcutMenu
+        }
+      });
     };
 
     const shortcutsRequests = [
@@ -94,11 +92,11 @@ export default class Setup0GetStarted extends Component {
         {hasOpenShortcutMenu &&
           <ShortcutsMenu
             shortcutsList={shortcutsRequests}
-            onCloseClick={onCloseShortcutMenuClose}
+            onCloseClick={onShortcutMenuToggle}
           />
         }
         {!hasOpenShortcutMenu &&
-          <ShortcutsToggle onClick={onShortcutsToggleClick} />
+          <ShortcutsToggle onClick={onShortcutMenuToggle} />
         }
       </SetupContent>
     );

@@ -26,8 +26,7 @@ export const NAVIGATE_SETUP_1_INVITE_TEAM = 'action/meeting/NAVIGATE_SETUP_1_INV
 export const NAVIGATE_SETUP_2_INVITE_TEAM = 'action/meeting/NAVIGATE_SETUP_2_INVITE_TEAM';
 
 // UI State
-export const CLOSE_SHORTCUT_MENU = 'action/meeting/CLOSE_SHORTCUT_MENU';
-export const OPEN_SHORTCUT_MENU = 'action/meeting/OPEN_SHORTCUT_MENU';
+export const UPDATE_SHORTCUT_MENU_STATE = 'action/meeting/UPDATE_SHORTCUT_MENU_STATE';
 
 const initialState = iMap({
   isLoading: false,
@@ -86,16 +85,10 @@ export default function reducer(state = initialState, action = {}) {
           lastUpdatedBy: action.payload.updatedBy
         })
       });
-    case CLOSE_SHORTCUT_MENU:
+    case UPDATE_SHORTCUT_MENU_STATE:
       return state.merge({
         uiState: iMap({
-          hasOpenShortcutMenu: false
-        })
-      });
-    case OPEN_SHORTCUT_MENU:
-      return state.merge({
-        uiState: iMap({
-          hasOpenShortcutMenu: true
+          hasOpenShortcutMenu: action.payload.boolean
         })
       });
     case NAVIGATE_SETUP_0_GET_STARTED:
