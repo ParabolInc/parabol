@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import look, { StyleSheet } from 'react-look';
-import FontAwesome from 'react-fontawesome';
 import tinycolor from 'tinycolor2';
 import theme from 'universal/styles/theme';
+import IconButton from '../../components/IconButton/IconButton';
 
 const combineStyles = StyleSheet.combineStyles;
 const fieldLightGray = tinycolor.mix(theme.palette.c, '#fff', 50).toHexString();
@@ -18,15 +18,15 @@ export default class SetupField extends Component {
     hasHelpText: PropTypes.bool,
     hasShortcutHint: PropTypes.bool,
     helpText: PropTypes.string,
-    inputType: PropTypes.string,
-    inputValue: PropTypes.object,
+    type: PropTypes.string,
+    value: PropTypes.string,
     isLarger: PropTypes.bool,
     isWider: PropTypes.bool,
     onButtonClick: PropTypes.func,
-    onInputBlur: PropTypes.func,
-    onInputChange: PropTypes.func,
-    onInputFocus: PropTypes.func,
-    placeholderText: PropTypes.string,
+    onBlur: PropTypes.func,
+    onChange: PropTypes.func,
+    onFocus: PropTypes.func,
+    placeholder: PropTypes.string,
     shortcutHint: PropTypes.string
   }
 
@@ -37,15 +37,15 @@ export default class SetupField extends Component {
       hasHelpText,
       hasShortcutHint,
       helpText,
-      inputType,
-      inputValue,
+      type,
+      value,
       isLarger,
       isWider,
       onButtonClick,
-      onInputBlur,
-      onInputChange,
-      onInputFocus,
-      placeholderText,
+      onBlur,
+      onChange,
+      onFocus,
+      placeholder,
       shortcutHint
     } = this.props;
 
@@ -54,6 +54,7 @@ export default class SetupField extends Component {
     const largerStyles = combineStyles(styles.field, styles.fieldLarger);
     const widerStyles = combineStyles(styles.field, styles.widerLarger);
     const largerAndWiderStyles = combineStyles(styles.field, styles.fieldLarger, styles.fieldWider);
+    // const value = value || '';
 
     if (isLarger && isWider) {
       fieldStyles = largerAndWiderStyles;
@@ -67,20 +68,17 @@ export default class SetupField extends Component {
       <div className={styles.fieldBlock}>
         <input
           className={fieldStyles}
-          onBlur={onInputBlur}
-          onChange={onInputChange}
-          onFocus={onInputFocus}
-          placeholder={placeholderText}
-          type={inputType}
-          value={inputValue}
+          onBlur={onBlur}
+          onChange={onChange}
+          onFocus={onFocus}
+          placeholder={placeholder}
+          type={type}
+          value={value}
         />
         {hasButton &&
-          <button
-            className={combineStyles(styles.fieldButton, styles.fieldSubmit)}
-            onClick={onButtonClick}
-          >
-            <FontAwesome name={buttonIcon} size="2x" />
-          </button>
+          <div className={styles.fieldButtonBlock}>
+            <IconButton iconName={buttonIcon} iconSize="2x" onClick={onButtonClick} />
+          </div>
         }
         {hasHelpText &&
           <div className={styles.fieldHelpText}>{helpText}</div>
@@ -99,12 +97,6 @@ styles = StyleSheet.create({
     maxWidth: '100%',
     minWidth: '20rem',
     position: 'relative'
-  },
-
-  fieldLabel: {
-    color: theme.palette.c,
-    fontSize: theme.typography.fs4,
-    lineHeight: 1.5
   },
 
   field: {
@@ -153,30 +145,7 @@ styles = StyleSheet.create({
     minWidth: '30rem'
   },
 
-  fieldButton: {
-    background: 'none',
-    border: 0,
-    color: theme.palette.tuColorA40o.color,
-    cursor: 'pointer',
-    fontSize: theme.typography.fs3,
-
-    // NOTE: :hover, :focus, :active have the same styling
-    ':hover': {
-      color: theme.palette.a,
-      outline: 'none'
-    },
-    ':focus': {
-      color: theme.palette.a,
-      outline: 'none'
-    },
-    ':active': {
-      color: theme.palette.a,
-      outline: 'none'
-    }
-  },
-
-  // NOTE: Modifies fieldButton
-  fieldSubmit: {
+  fieldButtonBlock: {
     left: '100%',
     padding: '0 0 0 1rem',
     position: 'absolute',
