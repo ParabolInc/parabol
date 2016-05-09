@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import look, { StyleSheet } from 'react-look';
 import ProgressDots from '../../components/ProgressDots/ProgressDots';
 import SetupContent from '../../components/SetupContent/SetupContent';
 import SetupField from '../../components/SetupField/SetupField';
@@ -16,7 +15,11 @@ export default class Setup2InviteTeam extends Component {
 
     return (
       <SetupContent>
-        <ProgressDots />
+        <ProgressDots
+          numDots={3}
+          numCompleted={2}
+          currentDot={2}
+        />
         <SetupHeader
           heading="Invite team members"
           subHeadingInnerHTML="What’s <i>one outcome</i> each person is working on this week?"

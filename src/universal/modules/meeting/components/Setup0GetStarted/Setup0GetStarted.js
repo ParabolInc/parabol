@@ -21,7 +21,11 @@ export default class Setup0GetStarted extends Component {
 
     return (
       <SetupContent>
-        <ProgressDots />
+        <ProgressDots
+          numDots={3}
+          numCompleted={0}
+          currentDot={0}
+        />
         <SetupHeader
           heading="Let’s get started!"
           subHeadingString="What do you call your team?"

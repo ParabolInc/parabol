@@ -27,7 +27,11 @@ export default class Setup1InviteTeam extends Component {
 
     return (
       <SetupContent>
-        <ProgressDots />
+        <ProgressDots
+          numDots={3}
+          numCompleted={1}
+          currentDot={1}
+        />
         <SetupHeader
           heading="Invite team members"
           subHeadingString="Who will be joining you?"
