@@ -5,6 +5,7 @@ import SetupContent from '../../components/SetupContent/SetupContent';
 import SetupField from '../../components/SetupField/SetupField';
 import SetupHeader from '../../components/SetupHeader/SetupHeader';
 import ShortcutsMenu from '../../components/ShortcutsMenu/ShortcutsMenu';
+import ShortcutsToggle from '../../components/ShortcutsToggle/ShortcutsToggle';
 import { NAVIGATE_SETUP_1_INVITE_TEAM, updateMeetingTeamName } from '../../ducks/meeting.js';
 
 // eslint-disable-next-line react/prefer-stateless-function
@@ -24,6 +25,37 @@ export default class Setup0GetStarted extends Component {
       dispatch(updateMeetingTeamName(event.target.value, 'anonymous'));
     };
 
+    let menuOpen = true;
+
+    const onCloseShortcutMenuClose = (event) => {
+      event.preventDefault();
+      menuOpen = true;
+    };
+
+    const onShortcutsToggleClick = (event) => {
+      event.preventDefault();
+      menuOpen = false;
+    };
+
+    const shortcutsRequests = [
+      {
+        keystroke: 'a',
+        definition: <span>Add an <b>Action</b> for this request</span>
+      },
+      {
+        keystroke: 'p',
+        definition: <span>Add a <b>Project</b> for this request</span>
+      },
+      {
+        keystroke: '@',
+        definition: <span><b>Assign</b> to a team member</span>
+      },
+      {
+        keystroke: 'r',
+        definition: <span>Mark this request as <b>resolved</b></span>
+      }
+    ];
+
     return (
       <SetupContent>
         <ProgressDots
@@ -33,7 +65,7 @@ export default class Setup0GetStarted extends Component {
         />
         <SetupHeader
           heading="Let’s get started!"
-          subHeadingString="What do you call your team?"
+          subHeading={<span>What do you call your team?</span>}
         />
         <SetupField
           buttonIcon="check-circle"
@@ -52,7 +84,15 @@ export default class Setup0GetStarted extends Component {
           icon="arrow-circle-right"
           label="Set-up"
         />
-        <ShortcutsMenu />
+        {menuOpen &&
+          <ShortcutsMenu
+            shortcutsList={shortcutsRequests}
+            onCloseClick={onCloseShortcutMenuClose}
+          />
+        }
+        {!menuOpen &&
+          <ShortcutsToggle onClick={onShortcutsToggleClick} />
+        }
       </SetupContent>
     );
   }

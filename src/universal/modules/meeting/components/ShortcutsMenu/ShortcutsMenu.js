@@ -4,27 +4,7 @@ import FontAwesome from 'react-fontawesome';
 import theme from 'universal/styles/theme';
 
 const combineStyles = StyleSheet.combineStyles;
-
 const shortcutsKeystrokeHeight = '1.5rem';
-
-const shortcutsRequests = [
-  {
-    keystroke: 'a',
-    definition: <span>Add an <b>Action</b> for this request</span>
-  },
-  {
-    keystroke: 'p',
-    definition: <span>Add a <b>Project</b> for this request</span>
-  },
-  {
-    keystroke: '@',
-    definition: <span><b>Assign</b> to a team member</span>
-  },
-  {
-    keystroke: 'r',
-    definition: <span>Mark this request as <b>resolved</b></span>
-  }
-];
 
 let styles = {};
 
@@ -32,30 +12,31 @@ let styles = {};
 // eslint-disable-next-line react/prefer-stateless-function
 export default class ShortcutsMenu extends Component {
   static propTypes = {
+    shortcutsList: PropTypes.array,
     onCloseClick: PropTypes.func
   };
 
   renderShortcutMenuItem(shortcut, index, array) {
-    let itemStyle = null;
+    let keystrokeStyle = null;
 
     if (index === 0) {
-      itemStyle = combineStyles(styles.shortcutsKeystroke, styles.shortcutsKeystrokeIsFirst);
+      keystrokeStyle = combineStyles(styles.shortcutsKeystroke, styles.shortcutsKeystrokeIsFirst);
     } else if (index === array.length - 1) {
-      itemStyle = combineStyles(styles.shortcutsKeystroke, styles.shortcutsKeystrokeIsLast);
+      keystrokeStyle = combineStyles(styles.shortcutsKeystroke, styles.shortcutsKeystrokeIsLast);
     } else {
-      itemStyle = styles.shortcutsItem;
+      keystrokeStyle = styles.shortcutsKeystroke;
     }
 
     return (
-      <li className={itemStyle} key={index}>
-        <span className={styles.shortcutsKeystroke}>{shortcut.keystroke}</span>
-        <span className={styles.shortcutsDefinition}>{shortcut.definition}></span>
+      <li className={styles.shortcutsItem} key={index}>
+        <span className={keystrokeStyle}>{shortcut.keystroke}</span>
+        <span className={styles.shortcutsDefinition}>{shortcut.definition}</span>
       </li>
     );
   }
 
   render() {
-    const { onCloseClick } = this.props;
+    const { shortcutsList, onCloseClick } = this.props;
 
     return (
       <div className={styles.shortcutsMenu}>
@@ -68,7 +49,7 @@ export default class ShortcutsMenu extends Component {
         </a>
         <ul className={styles.shortcutsList}>
           {(() => {
-            const scs = shortcutsRequests.map((shortcut, index, array) =>
+            const scs = shortcutsList.map((shortcut, index, array) =>
               this.renderShortcutMenuItem(shortcut, index, array)
             );
 

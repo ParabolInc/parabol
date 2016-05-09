@@ -34,7 +34,7 @@ export default class Setup1InviteTeam extends Component {
         />
         <SetupHeader
           heading="Invite team members"
-          subHeadingString="Who will be joining you?"
+          subHeading={<span>Who will be joining you?</span>}
         />
         <SetupField
           buttonIcon="check-circle"

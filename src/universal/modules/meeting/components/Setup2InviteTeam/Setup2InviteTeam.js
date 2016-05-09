@@ -21,7 +21,7 @@ export default class Setup2InviteTeam extends Component {
         />
         <SetupHeader
           heading="Invite team members"
-          subHeadingInnerHTML="What’s <i>one outcome</i> each person is working on this week?"
+          subHeading={<span>What’s <i>one outcome</i> each person is working on this week?</span>}
         />
         <SetupField
           inputType="text"
