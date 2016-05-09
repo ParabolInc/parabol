@@ -14,6 +14,10 @@ const SET_MEETING_ID = 'action/meeting/SET_MEETING_ID';
 export const UPDATE_MEETING_REQUEST = 'action/meeting/UPDATE_MEETING_REQUEST';
 export const UPDATE_MEETING_ERROR = 'action/meeting/UPDATE_MEETING_ERROR';
 export const UPDATE_MEETING_SUCCESS = 'action/meeting/UPDATE_MEETING_SUCCESS';
+
+export const UPDATE_MEETING_TEAM_NAME_SUCCESS = 'action/meeting/UPDATE_MEETING_TEAM_NAME_SUCCESS';
+
+
 // TODO multiple meetings at once? It's possible with redux-operations
 // making the switch to redux-operations now is cheap, later on it'll become a pain to switch
 
@@ -27,6 +31,9 @@ const initialState = iMap({
   instance: iMap({
     id: '',
     content: '',
+    team: iMap({  // TODO: make me actually link to nested team object
+      name: ''
+    }),
     lastUpdatedBy: '',
     currentEditors: iList()
   }),
@@ -62,6 +69,15 @@ export default function reducer(state = initialState, action = {}) {
     case UPDATE_MEETING_SUCCESS:
       return state.mergeDeep({
         instance: iMap(action.payload)
+      });
+    case UPDATE_MEETING_TEAM_NAME_SUCCESS:
+      return state.mergeDeep({
+        instance: iMap({
+          team: iMap({
+            name: action.payload.team.name
+          }),
+          lastUpdatedBy: action.payload.updatedBy
+        })
       });
     case NAVIGATE_SETUP_0_GET_STARTED:
       return state.merge({
@@ -171,4 +187,22 @@ export const updateContent = (meetingId, content, updatedBy) =>
     }
     const {payload} = data;
     return dispatch(updateMeetingSuccess(payload));
+  };
+
+const updateMeetingTeamNameSuccess = (payload, meta) => ({
+  type: UPDATE_MEETING_TEAM_NAME_SUCCESS,
+  payload,
+  meta
+});
+
+// TODO: make me actually interact with GraphQL
+export const updateMeetingTeamName = (name, updatedBy) =>
+  async dispatch => {
+    const payload = {
+      team: {
+        name
+      },
+      updatedBy
+    };
+    return dispatch(updateMeetingTeamNameSuccess(payload));
   };

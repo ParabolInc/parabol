@@ -19,10 +19,12 @@ export default class SetupField extends Component {
     hasShortcutHint: PropTypes.bool,
     helpText: PropTypes.string,
     inputType: PropTypes.string,
+    inputValue: PropTypes.object,
     isLarger: PropTypes.bool,
     isWider: PropTypes.bool,
-    label: PropTypes.string,
     onButtonClick: PropTypes.func,
+    onInputBlur: PropTypes.func,
+    onInputChange: PropTypes.func,
     onInputFocus: PropTypes.func,
     placeholderText: PropTypes.string,
     shortcutHint: PropTypes.string
@@ -36,10 +38,12 @@ export default class SetupField extends Component {
       hasShortcutHint,
       helpText,
       inputType,
+      inputValue,
       isLarger,
       isWider,
-      label,
       onButtonClick,
+      onInputBlur,
+      onInputChange,
       onInputFocus,
       placeholderText,
       shortcutHint
@@ -63,19 +67,25 @@ export default class SetupField extends Component {
       <div className={styles.fieldBlock}>
         <input
           className={fieldStyles}
+          onBlur={onInputBlur}
+          onChange={onInputChange}
           onFocus={onInputFocus}
           placeholder={placeholderText}
           type={inputType}
+          value={inputValue}
         />
-        { hasButton &&
-          <button className={combineStyles(styles.fieldButton, styles.fieldSubmit)} onClick={onButtonClick}>
+        {hasButton &&
+          <button
+            className={combineStyles(styles.fieldButton, styles.fieldSubmit)}
+            onClick={onButtonClick}
+          >
             <FontAwesome name={buttonIcon} size="2x" />
           </button>
         }
-        { hasHelpText &&
+        {hasHelpText &&
           <div className={styles.fieldHelpText}>{helpText}</div>
         }
-        { hasShortcutHint &&
+        {hasShortcutHint &&
           <div className={styles.fieldShortcutHint}>{shortcutHint}</div>
         }
       </div>
