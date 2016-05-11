@@ -1,11 +1,18 @@
 import React, { Component, PropTypes } from 'react';
 import AdvanceLink from '../../components/AdvanceLink/AdvanceLink';
+import Avatar from '../../components/Avatar/Avatar';
+import AvatarGroup from '../../components/AvatarGroup/AvatarGroup';
 import ProgressDots from '../../components/ProgressDots/ProgressDots';
 import SetupContent from '../../components/SetupContent/SetupContent';
 import SetupField from '../../components/SetupField/SetupField';
 import SetupHeader from '../../components/SetupHeader/SetupHeader';
 import ShortcutsMenu from '../../components/ShortcutsMenu/ShortcutsMenu';
 import ShortcutsToggle from '../../components/ShortcutsToggle/ShortcutsToggle';
+
+import avatarTerryAcker from 'universal/styles/theme/images/avatars/terry-acker-avatar.jpg';
+import avatarJordanHusney from 'universal/styles/theme/images/avatars/jordan-husney-avatar.jpg';
+import avatarTayaMueller from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
+
 import {
   NAVIGATE_SETUP_1_INVITE_TEAM,
   updateMeetingTeamName,
@@ -61,8 +68,72 @@ export default class Setup0GetStarted extends Component {
       }
     ];
 
+    const avatarsDemo = [
+      {
+        badge: 'absent',
+        image: avatarTerryAcker,
+        name: 'Terry Acker'
+      },
+      {
+        badge: 'present',
+        image: avatarJordanHusney,
+        name: 'Jordan Husney'
+      },
+      {
+        badge: 'active',
+        image: avatarTayaMueller,
+        name: 'Taya Mueller'
+      }
+    ];
+
     return (
       <SetupContent>
+        {/* Testing AvatarGroup component */}
+        <AvatarGroup avatars={avatarsDemo} label="Avatar group:" />
+
+        {/* Testing the Avatar component */}
+        {/* The 'large' variant is seen during project updates and requests. */}
+        <Avatar
+          hasLabel
+          image={avatarTerryAcker}
+          name="Terry Acker"
+          size="large"
+        />
+        <br />
+        <br />
+        {/* The 'medium' variant is intended for card components. */}
+        <Avatar
+          badge="present"
+          hasLabel
+          image={avatarJordanHusney}
+          name="Jordan Husney"
+          size="medium"
+        />
+        <br />
+        <br />
+        {/* The 'small' variant is also the default. */}
+        <Avatar
+          badge="active"
+          hasLabel
+          image={avatarTayaMueller}
+          name="Taya Mueller"
+          size="small"
+        />
+        <br />
+        <br />
+        {/*
+          The 'smallest' variant represents the assignment action
+          in the project creation field during requests.
+        */}
+        <Avatar
+          hasLabel
+          image={avatarJordanHusney}
+          labelRight
+          name="Jordan Husney"
+          size="smallest"
+        />
+        <br />
+        <br />
         <ProgressDots
           numDots={3}
           numCompleted={0}
