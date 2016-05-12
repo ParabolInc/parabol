@@ -120,13 +120,14 @@ styles = StyleSheet.create({
   fieldLabel: {
     color: theme.palette.c,
     fontSize: theme.typography.fs4,
-    lineHeight: 1.5
+    lineHeight: 1.5,
+    padding: '.125rem 0'
   },
 
   fieldRemovalBlock: {
     padding: '0 1rem 0 0',
     position: 'absolute',
     right: '100%',
-    top: '-.125rem',
+    top: 0
   },
 });
