@@ -48,13 +48,11 @@ export default class ShortcutsMenu extends Component {
           <span className={styles.shortcutsCloseLabel}>Close menu</span>
         </a>
         <ul className={styles.shortcutsList}>
-          {(() => {
-            const scs = shortcutsList.map((shortcut, index, array) =>
+          {
+            shortcutsList.map((shortcut, index, array) =>
               this.renderShortcutMenuItem(shortcut, index, array)
-            );
-
-            return scs;
-          })()}
+            )
+          }
         </ul>
       </div>
     );
