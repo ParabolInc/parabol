@@ -69,7 +69,7 @@
   },
   "dependencies": {
     "auth0": "^2.1.0",
-    "auth0-lock": "^9.1.2",
+    "auth0-lock": "^9.1.4",
     "babel-polyfill": "6.7.4",
     "babel-runtime": "6.6.1",
     "body-parser": "1.15.0",
