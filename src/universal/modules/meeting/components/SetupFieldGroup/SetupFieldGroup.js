@@ -80,9 +80,6 @@ export default class SetupFieldGroup extends Component {
 }
 
 styles = StyleSheet.create({
-  // NOTE: fieldGroup can be discarded
-  //       once the field elements are properly
-  //       abstracted as components (TA)
   fieldGroup: {
     alignItems: 'center',
     display: 'flex',
