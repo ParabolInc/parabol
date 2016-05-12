@@ -35,12 +35,12 @@ export default class Setup1InviteTeam extends Component {
           hasButton
           hasHelpText
           helpText="*You can paste a comma-separated string of multiple emails."
-          inputType="text"
+          type="text"
           isLarger
           isWider
           onButtonClick={() => console.log('SetupField.onButtonClick')}
-          onInputFocus={() => console.log('SetupField.onInputFocus')}
-          placeholderText="Search users or invite by email*"
+          onFocus={() => console.log('SetupField.onFocus')}
+          placeholder="Search users or invite by email*"
         />
         <AdvanceLink
           onClick={onLinkClick}

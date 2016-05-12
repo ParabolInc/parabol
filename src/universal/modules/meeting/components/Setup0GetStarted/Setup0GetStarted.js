@@ -147,12 +147,12 @@ export default class Setup0GetStarted extends Component {
           buttonIcon="check-circle"
           hasButton
           hasShortcutHint
-          inputType="text"
+          type="text"
           isLarger
           onButtonClick={() => console.log('SetupField.onButtonClick')}
-          onInputChange={onChangeTeamName}
-          onInputFocus={() => console.log('SetupField.onInputFocus')}
-          placeholderText="Team name"
+          onChange={onChangeTeamName}
+          onFocus={() => console.log('SetupField.onFocus')}
+          placeholder="Team name"
           shortcutHint="Press enter"
         />
         <AdvanceLink
