@@ -21,15 +21,13 @@ export default class AvatarGroup extends Component {
         <div className={styles.avatarGroupLabel}>
           {label}
         </div>
-        {(() => {
-          const avatarGroup = avatars.map((avatar, index) =>
+        {
+          avatars.map((avatar, index) =>
             <div className={styles.avatarGroupItem} key={index}>
               <Avatar {...avatar} />
             </div>
-          );
-
-          return avatarGroup;
-        })()}
+          )
+        }
       </div>
     );
   }
