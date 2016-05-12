@@ -16,7 +16,7 @@ const onSetupFieldGroupInputFocus = () => {
   console.log('onSetupFieldGroupInputFocus()');
 };
 
-const fieldDefault = {
+const fieldInputDefault = {
   onChange: onSetupFieldGroupInputChange,
   onBlur: onSetupFieldGroupInputBlur,
   onFocus: onSetupFieldGroupInputFocus,
@@ -26,24 +26,32 @@ const fieldDefault = {
 
 const demoSetupFieldGroup = [
   {
-    ...fieldDefault,
     label: 'jordan@parabol.co',
-    value: 'Transparency article written'
+    input: {
+      ...fieldInputDefault,
+      value: 'Transparency article written'
+    }
   },
   {
-    ...fieldDefault,
     label: 'matt@parabol.co',
-    value: 'UI component state implemented'
+    input: {
+      ...fieldInputDefault,
+      value: 'UI component state implemented'
+    }
   },
   {
-    ...fieldDefault,
     label: 'taya@parabol.co',
-    value: 'Accounting software researched'
+    input: {
+      ...fieldInputDefault,
+      value: 'Accounting software researched'
+    }
   },
   {
-    ...fieldDefault,
     label: 'terry@parabol.co',
-    value: ''
+    input: {
+      ...fieldInputDefault,
+      value: ''
+    }
   }
 ];
 

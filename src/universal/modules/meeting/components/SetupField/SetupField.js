@@ -99,12 +99,6 @@ styles = StyleSheet.create({
     position: 'relative'
   },
 
-  fieldLabel: {
-    color: theme.palette.c,
-    fontSize: theme.typography.fs4,
-    lineHeight: 1.5
-  },
-
   field: {
     border: 0,
     borderBottom: `1px dashed ${fieldLightGray}`,
