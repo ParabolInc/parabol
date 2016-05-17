@@ -3,7 +3,13 @@ import webpack from 'webpack';
 import HappyPack from 'happypack';
 
 const root = process.cwd();
-const serverInclude = [path.join(root, 'src', 'server'), path.join(root, 'src', 'universal')];
+const serverInclude = [
+  path.join(root, 'src', 'server'),
+  path.join(root, 'src', 'universal')
+];
+const serverExclude = [
+  path.join(root, 'src', 'server', 'database', 'migrations')
+];
 
 const prefetches = [];
 const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(specifier));
@@ -24,7 +30,8 @@ export default {
   externals: [
     'isomorphic-fetch',
     'es6-promisify',
-    'socketcluster-client'
+    'socketcluster-client',
+    ...serverExclude
   ],
   resolve: {
     extensions: ['.js'],
@@ -56,7 +63,8 @@ export default {
       {
         test: /\.js$/,
         loader: 'happypack/loader',
-        include: serverInclude
+        include: serverInclude,
+        exclude: serverExclude
       },
       {
         test: /auth0-lock\/.*\.js$/,
