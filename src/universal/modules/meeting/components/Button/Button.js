@@ -38,100 +38,52 @@ export default class Button extends Component {
       styles.buttonBase
     ];
 
-    let buttonSize = size || 'md';
-    let buttonStyle = style || 'solid';
-    let buttonTheme = theme || 'c';
-
     const buttonTitle = title || label;
 
-    const getButtonSize = () => {
-      switch (size) {
-        case 'xs':
-          buttonSize = styles.buttonSizeXs;
-          return buttonSize;
-        case 'sm':
-          buttonSize = styles.buttonSizeSm;
-          return buttonSize;
-        case 'md':
-          buttonSize = styles.buttonSizeMd;
-          return buttonSize;
-        case 'lg':
-          buttonSize = styles.buttonSizeLg;
-          return buttonSize;
-        case 'xl':
-          buttonSize = styles.buttonSizeXl;
-          return buttonSize;
-        default:
-          buttonSize = styles.buttonSizeMd;
-          return buttonSize;
-      }
-    };
+    let buttonSize = size || styles.buttonSizeMd;
+    let buttonStyle = style || styles.buttonSolid;
+    let buttonTheme = theme || styles.buttonSolidThemeC;
 
-    const getButtonStyle = () => {
-      switch (style) {
-        case 'solid':
-          buttonStyle = styles.buttonSolid;
-          return buttonStyle;
-        case 'outlined':
-          buttonStyle = styles.buttonOutlined;
-          return buttonStyle;
-        default:
-          buttonStyle = styles.buttonSolid;
-          return buttonStyle;
-      }
-    };
+    let buttonIsOutlined = false;
 
-    const getButtonTheme = () => {
-      switch (theme) {
-        case 'a':
-          if (style === 'outlined') {
-            buttonTheme = styles.buttonOutlinedThemeA;
-          } else {
-            buttonTheme = styles.buttonSolidThemeA;
-          }
-          return buttonTheme;
-        case 'b':
-          if (style === 'outlined') {
-            buttonTheme = styles.buttonOutlinedThemeB;
-          } else {
-            buttonTheme = styles.buttonSolidThemeB;
-          }
-          return buttonTheme;
-        case 'c':
-          if (style === 'outlined') {
-            buttonTheme = styles.buttonOutlinedThemeC;
-          } else {
-            buttonTheme = styles.buttonSolidThemeC;
-          }
-          return buttonTheme;
-        case 'd':
-          if (style === 'outlined') {
-            buttonTheme = styles.buttonOutlinedThemeD;
-          } else {
-            buttonTheme = styles.buttonSolidThemeD;
-          }
-          return buttonTheme;
-        case 'e':
-          if (style === 'outlined') {
-            buttonTheme = styles.buttonOutlinedThemeE;
-          } else {
-            buttonTheme = styles.buttonSolidThemeE;
-          }
-          return buttonTheme;
-        default:
-          if (style === 'outlined') {
-            buttonTheme = styles.buttonOutlinedThemeC;
-          } else {
-            buttonTheme = styles.buttonSolidThemeC;
-          }
-          return buttonTheme;
-      }
-    };
+    if (style === 'outlined') {
+      buttonIsOutlined = true;
+    }
+
+    if (size === 'xs') {
+      buttonSize = styles.buttonSizeXs;
+    } else if (size === 'sm') {
+      buttonSize = styles.buttonSizeSm;
+    } else if (size === 'md') {
+      buttonSize = styles.buttonSizeMd;
+    } else if (size === 'lg') {
+      buttonSize = styles.buttonSizeLg;
+    } else if (size === 'xl') {
+      buttonSize = styles.buttonSizeXl;
+    }
+
+    if (style === 'solid') {
+      buttonStyle = styles.buttonSolid;
+    } else if (style === 'outlined') {
+      buttonStyle = styles.buttonOutlined;
+    }
+
+    if (theme === 'a') {
+      buttonTheme = buttonIsOutlined ? styles.buttonOutlinedThemeA : styles.buttonSolidThemeA;
+    } else if (theme === 'b') {
+      buttonTheme = buttonIsOutlined ? styles.buttonOutlinedThemeB : styles.buttonSolidThemeB;
+    } else if (theme === 'c') {
+      buttonTheme = buttonIsOutlined ? styles.buttonOutlinedThemeC : styles.buttonSolidThemeC;
+    } else if (theme === 'd') {
+      buttonTheme = buttonIsOutlined ? styles.buttonOutlinedThemeD : styles.buttonSolidThemeD;
+    } else if (theme === 'e') {
+      buttonTheme = buttonIsOutlined ? styles.buttonOutlinedThemeE : styles.buttonSolidThemeE;
+    }
 
     buttonStyleOptions.push(
-      getButtonSize(),
-      getButtonStyle(),
-      getButtonTheme()
+      buttonSize,
+      buttonStyle,
+      buttonTheme
     );
 
     const buttonStyles = combineStyles.apply(null, buttonStyleOptions);
@@ -167,35 +119,6 @@ const makeButtonOutlinedTheme = (color, opacity = '.5') => ({
 });
 
 const { a, b, c, d, e } = appTheme.palette;
-
-// const buttonThemeNaming = [
-//   {
-//     name: 'A',
-//     value: a
-//   },
-//   {
-//     name: 'B',
-//     value: b
-//   },
-//   {
-//     name: 'C',
-//     value: c
-//   },
-//   {
-//     name: 'D',
-//     value: d
-//   },
-//   {
-//     name: 'E',
-//     value: e
-//   },
-// ];
-//
-// const makeButtonTheme = (themeArray, className, callback) => ({
-//   themeArray.map(i => ({
-//     `${className}${i.name}`: callback(i.value)
-//   });
-// });
 
 styles = StyleSheet.create({
   // Button base
