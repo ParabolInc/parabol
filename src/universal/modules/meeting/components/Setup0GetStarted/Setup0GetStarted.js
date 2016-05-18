@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import AdvanceLink from '../../components/AdvanceLink/AdvanceLink';
 import Avatar from '../../components/Avatar/Avatar';
 import AvatarGroup from '../../components/AvatarGroup/AvatarGroup';
+import Background from '../../components/Background/Background';
 import Button from '../../components/Button/Button';
 import ProgressDots from '../../components/ProgressDots/ProgressDots';
 import SetupContent from '../../components/SetupContent/SetupContent';
@@ -114,6 +115,35 @@ export default class Setup0GetStarted extends Component {
           style="outlined"
           theme="cool"
         />
+
+        <br />
+        <br />
+        <Background align="center" theme="dark">
+          <Button
+            label="Create Project"
+            size="large"
+            style="solid"
+            theme="light"
+          />
+        </Background>
+
+        <Background align="center" theme="cool">
+          <Button
+            label="Create Project"
+            size="large"
+            style="inverted"
+            theme="cool"
+          />
+        </Background>
+
+        <Background align="center" theme="warm" width="full">
+          <Button
+            label="Start Now"
+            size="small"
+            style="outlined"
+            theme="white"
+          />
+        </Background>
 
         <br />
         <br />

@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import look, { StyleSheet } from 'react-look';
 import * as appTheme from 'universal/styles/theme';
+import tinycolor from 'tinycolor2';
 
 const combineStyles = StyleSheet.combineStyles;
 
@@ -13,8 +14,8 @@ export default class Button extends Component {
   // Prop Options:
   // -------------
   // size: smallest, small, medium, large, largest
-  // style: solid, outlined
-  // theme: cool, warm, dark, mid, light
+  // style: solid, outlined, inverted
+  // theme: cool, warm, dark, mid, light, white
 
   static propTypes = {
     label: PropTypes.string,
@@ -48,22 +49,65 @@ export default class Button extends Component {
     const buttonStyleCSS = styles[buttonStyle];
 
     let buttonIsOutlined = false;
+    let buttonIsInverted = false;
     let buttonThemeCSS = styles.solidDark;
 
     if (style === 'outlined') {
       buttonIsOutlined = true;
     }
 
+    if (style === 'inverted') {
+      buttonIsInverted = true;
+    }
+
     if (buttonTheme === 'cool') {
-      buttonThemeCSS = buttonIsOutlined ? styles.outlinedCool : styles.solidCool;
+      if (buttonIsInverted) {
+        buttonThemeCSS = styles.invertedCool;
+      } else if (buttonIsOutlined) {
+        buttonThemeCSS = styles.outlinedCool;
+      } else {
+        buttonThemeCSS = styles.solidCool;
+      }
     } else if (buttonTheme === 'warm') {
-      buttonThemeCSS = buttonIsOutlined ? styles.outlinedWarm : styles.solidWarm;
+      if (buttonIsInverted) {
+        buttonThemeCSS = styles.invertedWarm;
+      } else if (buttonIsOutlined) {
+        buttonThemeCSS = styles.outlinedWarm;
+      } else {
+        buttonThemeCSS = styles.solidWarm;
+      }
     } else if (buttonTheme === 'dark') {
-      buttonThemeCSS = buttonIsOutlined ? styles.outlinedDark : styles.solidDark;
+      if (buttonIsInverted) {
+        buttonThemeCSS = styles.invertedDark;
+      } else if (buttonIsOutlined) {
+        buttonThemeCSS = styles.outlinedDark;
+      } else {
+        buttonThemeCSS = styles.solidDark;
+      }
     } else if (buttonTheme === 'mid') {
-      buttonThemeCSS = buttonIsOutlined ? styles.outlinedMid : styles.solidMid;
+      if (buttonIsInverted) {
+        buttonThemeCSS = styles.invertedMid;
+      } else if (buttonIsOutlined) {
+        buttonThemeCSS = styles.outlinedMid;
+      } else {
+        buttonThemeCSS = styles.solidMid;
+      }
     } else if (buttonTheme === 'light') {
-      buttonThemeCSS = buttonIsOutlined ? styles.outlinedLight : styles.solidLight;
+      if (buttonIsInverted) {
+        buttonThemeCSS = styles.invertedLight;
+      } else if (buttonIsOutlined) {
+        buttonThemeCSS = styles.outlinedLight;
+      } else {
+        buttonThemeCSS = styles.solidLight;
+      }
+    } else if (buttonTheme === 'white') {
+      if (buttonIsInverted) {
+        buttonThemeCSS = styles.invertedWhite;
+      } else if (buttonIsOutlined) {
+        buttonThemeCSS = styles.outlinedWhite;
+      } else {
+        buttonThemeCSS = styles.solidWhite;
+      }
     }
 
     buttonStyleOptions.push(
@@ -86,9 +130,17 @@ export default class Button extends Component {
   }
 }
 
-const makeSolidTheme = color => ({
+const makeSolidTheme = (color, textColor = '#fff') => ({
   backgroundColor: color,
-  borderColor: color
+  borderColor: color,
+  color: textColor,
+
+  ':hover': {
+    color: textColor
+  },
+  ':focus': {
+    color: textColor
+  }
 });
 
 const makeOutlinedTheme = (color, opacity = '.5') => ({
@@ -103,6 +155,27 @@ const makeOutlinedTheme = (color, opacity = '.5') => ({
     opacity
   }
 });
+
+const makeInvertedTheme = (color, textColor, opacity = '.65') => {
+  const colorMix = tinycolor.mix(color, '#fff', 90).toHexString();
+  const textColorMix = tinycolor.mix(textColor, '#000', 10).toHexString();
+
+  return {
+    backgroundColor: colorMix,
+    borderColor: colorMix,
+    color: textColorMix,
+
+    ':hover': {
+      color: textColorMix,
+      opacity
+    },
+    ':focus': {
+      color: textColorMix,
+      opacity
+    }
+  };
+};
+
 
 const { cool, warm, dark, mid, light } = appTheme.palette;
 
@@ -152,14 +225,11 @@ styles = StyleSheet.create({
   solid: {
     backgroundColor: dark,
     border: `1px solid ${dark}`,
-    color: '#fff',
 
     ':hover': {
-      color: '#fff',
       opacity: '.65'
     },
     ':focus': {
-      color: '#fff',
       opacity: '.65'
     }
   },
@@ -169,7 +239,8 @@ styles = StyleSheet.create({
   solidWarm: makeSolidTheme(warm),
   solidDark: makeSolidTheme(dark),
   solidMid: makeSolidTheme(mid),
-  solidLight: makeSolidTheme(light),
+  solidLight: makeSolidTheme(light, dark),
+  solidWhite: makeSolidTheme('#fff', dark),
 
   // Outlined buttons
   outlined: {
@@ -183,5 +254,18 @@ styles = StyleSheet.create({
   outlinedWarm: makeOutlinedTheme(warm),
   outlinedDark: makeOutlinedTheme(dark),
   outlinedMid: makeOutlinedTheme(mid),
-  outlinedLight: makeOutlinedTheme(light)
+  outlinedLight: makeOutlinedTheme(light),
+  outlinedWhite: makeOutlinedTheme('#fff'),
+
+  // Inverted buttons
+  inverted: {
+    // Define
+  },
+
+  invertedCool: makeInvertedTheme(cool, cool),
+  invertedWarm: makeInvertedTheme(warm, warm),
+  invertedDark: makeInvertedTheme(dark, dark),
+  invertedMid: makeInvertedTheme(mid, mid),
+  invertedLight: makeInvertedTheme(light, dark),
+  invertedWhite: makeInvertedTheme('#fff', dark)
 });
