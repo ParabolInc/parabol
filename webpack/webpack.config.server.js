@@ -7,9 +7,6 @@ const serverInclude = [
   path.join(root, 'src', 'server'),
   path.join(root, 'src', 'universal')
 ];
-const serverExclude = [
-  path.join(root, 'src', 'server', 'database', 'migrations')
-];
 
 const prefetches = [];
 const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(specifier));
@@ -30,8 +27,7 @@ export default {
   externals: [
     'isomorphic-fetch',
     'es6-promisify',
-    'socketcluster-client',
-    ...serverExclude
+    'socketcluster-client'
   ],
   resolve: {
     extensions: ['.js'],
@@ -63,8 +59,7 @@ export default {
       {
         test: /\.js$/,
         loader: 'happypack/loader',
-        include: serverInclude,
-        exclude: serverExclude
+        include: serverInclude
       },
       {
         test: /auth0-lock\/.*\.js$/,
