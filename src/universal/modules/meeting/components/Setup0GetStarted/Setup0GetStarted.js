@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import AdvanceLink from '../../components/AdvanceLink/AdvanceLink';
 import Avatar from '../../components/Avatar/Avatar';
 import AvatarGroup from '../../components/AvatarGroup/AvatarGroup';
+import Button from '../../components/Button/Button';
 import ProgressDots from '../../components/ProgressDots/ProgressDots';
 import SetupContent from '../../components/SetupContent/SetupContent';
 import SetupField from '../../components/SetupField/SetupField';
@@ -88,6 +89,35 @@ export default class Setup0GetStarted extends Component {
 
     return (
       <SetupContent>
+        {/* Testing Button component */}
+        <Button
+          label="Start Meeting"
+        />
+
+        <br />
+        <br />
+
+        <Button
+          label="Start Meeting"
+          size="xl"
+          style="outlined"
+          theme="b"
+          title="Let’s get started!"
+        />
+
+        <br />
+        <br />
+
+        <Button
+          label="End Meeting"
+          size="xs"
+          style="outlined"
+          theme="a"
+        />
+
+        <br />
+        <br />
+
         {/* Testing AvatarGroup component */}
         <AvatarGroup avatars={avatarsDemo} label="Avatar group:" />
 
