@@ -11,7 +11,8 @@ let styles = {};
 export default class Button extends Component {
 
   // Prop Options:
-  // size: xs, sm, md, lg, xl
+  // -------------
+  // size: smallest, small, medium, large, largest
   // style: solid, outlined
   // theme: cool, warm, dark, mid, light
 
@@ -38,52 +39,37 @@ export default class Button extends Component {
       styles.buttonBase
     ];
 
+    const buttonSize = size || 'medium';
+    const buttonStyle = style || 'solid';
+    const buttonTheme = theme || 'dark';
     const buttonTitle = title || label;
 
-    let buttonSize = size || styles.buttonSizeMd;
-    let buttonStyle = style || styles.buttonSolid;
-    let buttonTheme = theme || styles.buttonSolidThemeDark;
+    const buttonSizeCSS = styles[buttonSize];
+    const buttonStyleCSS = styles[buttonStyle];
 
     let buttonIsOutlined = false;
+    let buttonThemeCSS = styles.solidDark;
 
     if (style === 'outlined') {
       buttonIsOutlined = true;
     }
 
-    if (size === 'xs') {
-      buttonSize = styles.buttonSizeXs;
-    } else if (size === 'sm') {
-      buttonSize = styles.buttonSizeSm;
-    } else if (size === 'md') {
-      buttonSize = styles.buttonSizeMd;
-    } else if (size === 'lg') {
-      buttonSize = styles.buttonSizeLg;
-    } else if (size === 'xl') {
-      buttonSize = styles.buttonSizeXl;
-    }
-
-    if (style === 'solid') {
-      buttonStyle = styles.buttonSolid;
-    } else if (style === 'outlined') {
-      buttonStyle = styles.buttonOutlined;
-    }
-
-    if (theme === 'cool') {
-      buttonTheme = buttonIsOutlined ? styles.buttonOutlinedThemeCool : styles.buttonSolidThemeCool;
-    } else if (theme === 'warm') {
-      buttonTheme = buttonIsOutlined ? styles.buttonOutlinedThemeWarm : styles.buttonSolidThemeWarm;
-    } else if (theme === 'dark') {
-      buttonTheme = buttonIsOutlined ? styles.buttonOutlinedThemeDark : styles.buttonSolidThemeDark;
-    } else if (theme === 'mid') {
-      buttonTheme = buttonIsOutlined ? styles.buttonOutlinedThemeMid : styles.buttonSolidThemeMid;
-    } else if (theme === 'light') {
-      buttonTheme = buttonIsOutlined ? styles.buttonOutlinedThemeLigh : styles.buttonSolidThemeLigh;
+    if (buttonTheme === 'cool') {
+      buttonThemeCSS = buttonIsOutlined ? styles.outlinedCool : styles.solidCool;
+    } else if (buttonTheme === 'warm') {
+      buttonThemeCSS = buttonIsOutlined ? styles.outlinedWarm : styles.solidWarm;
+    } else if (buttonTheme === 'dark') {
+      buttonThemeCSS = buttonIsOutlined ? styles.outlinedDark : styles.solidDark;
+    } else if (buttonTheme === 'mid') {
+      buttonThemeCSS = buttonIsOutlined ? styles.outlinedMid : styles.solidMid;
+    } else if (buttonTheme === 'light') {
+      buttonThemeCSS = buttonIsOutlined ? styles.outlinedLight : styles.solidLight;
     }
 
     buttonStyleOptions.push(
-      buttonSize,
-      buttonStyle,
-      buttonTheme
+      buttonSizeCSS,
+      buttonStyleCSS,
+      buttonThemeCSS
     );
 
     const buttonStyles = combineStyles.apply(null, buttonStyleOptions);
@@ -100,12 +86,12 @@ export default class Button extends Component {
   }
 }
 
-const makeButtonSolidTheme = color => ({
+const makeSolidTheme = color => ({
   backgroundColor: color,
   borderColor: color
 });
 
-const makeButtonOutlinedTheme = (color, opacity = '.5') => ({
+const makeOutlinedTheme = (color, opacity = '.5') => ({
   color,
 
   ':hover': {
@@ -142,8 +128,28 @@ styles = StyleSheet.create({
     }
   },
 
+  // Button sizes
+  smallest: {
+    fontSize: '.75rem'
+  },
+  small: {
+    fontSize: '.875rem'
+  },
+  medium: {
+    fontSize: '1rem'
+  },
+  large: {
+    fontSize: '1.125rem'
+  },
+  largest: {
+    fontSize: '1.25rem'
+  },
+
+  // TODO: Add “light” variant and “light” themes
+  // TODO: Add white outlined theme
+
   // Solid buttons
-  buttonSolid: {
+  solid: {
     backgroundColor: dark,
     border: `1px solid ${dark}`,
     color: '#fff',
@@ -158,44 +164,24 @@ styles = StyleSheet.create({
     }
   },
 
-  // Button sizes
-  buttonSizeXs: {
-    fontSize: '.75rem'
-  },
-  buttonSizeSm: {
-    fontSize: '.875rem'
-  },
-  buttonSizeMd: {
-    fontSize: '1rem'
-  },
-  buttonSizeLg: {
-    fontSize: '1.125rem'
-  },
-  buttonSizeXl: {
-    fontSize: '1.25rem'
-  },
-
-  // TODO: Add “light” variant and “light” themes
-  // TODO: Add white outlined theme
-
   // Button solid themes
-  buttonSolidThemeCool: makeButtonSolidTheme(cool),
-  buttonSolidThemeWarm: makeButtonSolidTheme(warm),
-  buttonSolidThemeDark: makeButtonSolidTheme(dark),
-  buttonSolidThemeMid: makeButtonSolidTheme(mid),
-  buttonSolidThemeLigh: makeButtonSolidTheme(light),
+  solidCool: makeSolidTheme(cool),
+  solidWarm: makeSolidTheme(warm),
+  solidDark: makeSolidTheme(dark),
+  solidMid: makeSolidTheme(mid),
+  solidLight: makeSolidTheme(light),
 
   // Outlined buttons
-  buttonOutlined: {
+  outlined: {
     backgroundColor: 'transparent',
     borderColor: 'currentColor',
     color: dark,
   },
 
   // Outlined button themes
-  buttonOutlinedThemeCool: makeButtonOutlinedTheme(cool),
-  buttonOutlinedThemeWarm: makeButtonOutlinedTheme(warm),
-  buttonOutlinedThemeDark: makeButtonOutlinedTheme(dark),
-  buttonOutlinedThemeMid: makeButtonOutlinedTheme(mid),
-  buttonOutlinedThemeLigh: makeButtonOutlinedTheme(light)
+  outlinedCool: makeOutlinedTheme(cool),
+  outlinedWarm: makeOutlinedTheme(warm),
+  outlinedDark: makeOutlinedTheme(dark),
+  outlinedMid: makeOutlinedTheme(mid),
+  outlinedLight: makeOutlinedTheme(light)
 });

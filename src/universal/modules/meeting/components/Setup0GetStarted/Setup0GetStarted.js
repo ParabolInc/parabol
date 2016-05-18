@@ -91,7 +91,7 @@ export default class Setup0GetStarted extends Component {
       <SetupContent>
         {/* Testing Button component */}
         <Button
-          label="Start Meeting"
+          label="Sign Up"
         />
 
         <br />
@@ -99,7 +99,7 @@ export default class Setup0GetStarted extends Component {
 
         <Button
           label="Start Meeting"
-          size="xl"
+          size="largest"
           style="outlined"
           theme="warm"
           title="Let’s get started!"
@@ -110,7 +110,7 @@ export default class Setup0GetStarted extends Component {
 
         <Button
           label="End Meeting"
-          size="xs"
+          size="smallest"
           style="outlined"
           theme="cool"
         />
