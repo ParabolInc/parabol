@@ -101,7 +101,7 @@ export default class Setup0GetStarted extends Component {
           label="Start Meeting"
           size="xl"
           style="outlined"
-          theme="b"
+          theme="warm"
           title="Let’s get started!"
         />
 
@@ -112,7 +112,7 @@ export default class Setup0GetStarted extends Component {
           label="End Meeting"
           size="xs"
           style="outlined"
-          theme="a"
+          theme="cool"
         />
 
         <br />

@@ -13,7 +13,7 @@ export default class Button extends Component {
   // Prop Options:
   // size: xs, sm, md, lg, xl
   // style: solid, outlined
-  // theme: a, b, c, d, e
+  // theme: cool, warm, dark, mid, light
 
   static propTypes = {
     label: PropTypes.string,
@@ -42,7 +42,7 @@ export default class Button extends Component {
 
     let buttonSize = size || styles.buttonSizeMd;
     let buttonStyle = style || styles.buttonSolid;
-    let buttonTheme = theme || styles.buttonSolidThemeC;
+    let buttonTheme = theme || styles.buttonSolidThemeDark;
 
     let buttonIsOutlined = false;
 
@@ -68,16 +68,16 @@ export default class Button extends Component {
       buttonStyle = styles.buttonOutlined;
     }
 
-    if (theme === 'a') {
-      buttonTheme = buttonIsOutlined ? styles.buttonOutlinedThemeA : styles.buttonSolidThemeA;
-    } else if (theme === 'b') {
-      buttonTheme = buttonIsOutlined ? styles.buttonOutlinedThemeB : styles.buttonSolidThemeB;
-    } else if (theme === 'c') {
-      buttonTheme = buttonIsOutlined ? styles.buttonOutlinedThemeC : styles.buttonSolidThemeC;
-    } else if (theme === 'd') {
-      buttonTheme = buttonIsOutlined ? styles.buttonOutlinedThemeD : styles.buttonSolidThemeD;
-    } else if (theme === 'e') {
-      buttonTheme = buttonIsOutlined ? styles.buttonOutlinedThemeE : styles.buttonSolidThemeE;
+    if (theme === 'cool') {
+      buttonTheme = buttonIsOutlined ? styles.buttonOutlinedThemeCool : styles.buttonSolidThemeCool;
+    } else if (theme === 'warm') {
+      buttonTheme = buttonIsOutlined ? styles.buttonOutlinedThemeWarm : styles.buttonSolidThemeWarm;
+    } else if (theme === 'dark') {
+      buttonTheme = buttonIsOutlined ? styles.buttonOutlinedThemeDark : styles.buttonSolidThemeDark;
+    } else if (theme === 'mid') {
+      buttonTheme = buttonIsOutlined ? styles.buttonOutlinedThemeMid : styles.buttonSolidThemeMid;
+    } else if (theme === 'light') {
+      buttonTheme = buttonIsOutlined ? styles.buttonOutlinedThemeLigh : styles.buttonSolidThemeLigh;
     }
 
     buttonStyleOptions.push(
@@ -118,7 +118,7 @@ const makeButtonOutlinedTheme = (color, opacity = '.5') => ({
   }
 });
 
-const { a, b, c, d, e } = appTheme.palette;
+const { cool, warm, dark, mid, light } = appTheme.palette;
 
 styles = StyleSheet.create({
   // Button base
@@ -144,8 +144,8 @@ styles = StyleSheet.create({
 
   // Solid buttons
   buttonSolid: {
-    backgroundColor: c,
-    border: `1px solid ${c}`,
+    backgroundColor: dark,
+    border: `1px solid ${dark}`,
     color: '#fff',
 
     ':hover': {
@@ -179,23 +179,23 @@ styles = StyleSheet.create({
   // TODO: Add white outlined theme
 
   // Button solid themes
-  buttonSolidThemeA: makeButtonSolidTheme(a),
-  buttonSolidThemeB: makeButtonSolidTheme(b),
-  buttonSolidThemeC: makeButtonSolidTheme(c),
-  buttonSolidThemeD: makeButtonSolidTheme(d),
-  buttonSolidThemeE: makeButtonSolidTheme(e),
+  buttonSolidThemeCool: makeButtonSolidTheme(cool),
+  buttonSolidThemeWarm: makeButtonSolidTheme(warm),
+  buttonSolidThemeDark: makeButtonSolidTheme(dark),
+  buttonSolidThemeMid: makeButtonSolidTheme(mid),
+  buttonSolidThemeLigh: makeButtonSolidTheme(light),
 
   // Outlined buttons
   buttonOutlined: {
     backgroundColor: 'transparent',
     borderColor: 'currentColor',
-    color: c,
+    color: dark,
   },
 
   // Outlined button themes
-  buttonOutlinedThemeA: makeButtonOutlinedTheme(a),
-  buttonOutlinedThemeB: makeButtonOutlinedTheme(b),
-  buttonOutlinedThemeC: makeButtonOutlinedTheme(c),
-  buttonOutlinedThemeD: makeButtonOutlinedTheme(d),
-  buttonOutlinedThemeE: makeButtonOutlinedTheme(e)
+  buttonOutlinedThemeCool: makeButtonOutlinedTheme(cool),
+  buttonOutlinedThemeWarm: makeButtonOutlinedTheme(warm),
+  buttonOutlinedThemeDark: makeButtonOutlinedTheme(dark),
+  buttonOutlinedThemeMid: makeButtonOutlinedTheme(mid),
+  buttonOutlinedThemeLigh: makeButtonOutlinedTheme(light)
 });
