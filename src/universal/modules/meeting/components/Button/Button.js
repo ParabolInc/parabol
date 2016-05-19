@@ -68,7 +68,6 @@ export default class Button extends Component {
     let buttonThemeCSS = styles.solidDark;
 
     if (style === 'solid') {
-      buttonStyleOptions.push(styles[style]);
       buttonThemeCSS = solidCSS[theme];
     }
 
