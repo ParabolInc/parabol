@@ -88,16 +88,22 @@ export default class Setup0GetStarted extends Component {
       }
     ];
 
+    const onDemoButtonClick = event => {
+      event.preventDefault();
+      console.log('onDemoButtonClick');
+    };
+
     return (
       <SetupContent>
         {/* Testing Button component */}
-        <Button label="Sign Up" />
+        <Button />
 
         <br />
         <br />
 
         <Button
           label="Start Meeting"
+          onClick={onDemoButtonClick}
           size="largest"
           style="outlined"
           theme="warm"
