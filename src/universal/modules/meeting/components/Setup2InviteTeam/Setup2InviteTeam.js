@@ -1,8 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import ProgressDots from '../../components/ProgressDots/ProgressDots';
 import SetupContent from '../../components/SetupContent/SetupContent';
 import SetupFieldGroup from '../../components/SetupFieldGroup/SetupFieldGroup';
 import SetupHeader from '../../components/SetupHeader/SetupHeader';
+import * as _ from 'lodash';
+import { removeInvitee } from '../../ducks/meeting.js';
 
 const onSetupFieldGroupInputChange = () => {
   console.log('onSetupFieldGroupInputChange()');
@@ -24,52 +26,46 @@ const fieldInputDefault = {
   type: 'text'
 };
 
-const demoSetupFieldGroup = [
-  {
-    label: 'jordan@parabol.co',
-    input: {
-      ...fieldInputDefault,
-      value: 'Transparency article written'
-    }
-  },
-  {
-    label: 'matt@parabol.co',
-    input: {
-      ...fieldInputDefault,
-      value: 'UI component state implemented'
-    }
-  },
-  {
-    label: 'taya@parabol.co',
-    input: {
-      ...fieldInputDefault,
-      value: 'Accounting software researched'
-    }
-  },
-  {
-    label: 'terry@parabol.co',
-    input: {
-      ...fieldInputDefault,
-      value: ''
-    }
-  }
-];
-
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Setup2InviteTeam extends Component {
+  static propTypes = {
+    dispatch: PropTypes.func.isRequired,
+    uiState: PropTypes.object.isRequired
+  };
+
   render() {
+    const {dispatch, uiState} = this.props;
+
+    const onInviteeRemove = (label) => {
+      dispatch(removeInvitee(label));
+    };
+
+    const fieldGroup = _.map(uiState.setup1.emails, (emailItem) => {
+      const label = emailItem.name || emailItem.address;
+      return ({
+        button: {
+          onClick: () => onInviteeRemove(label)
+        },
+        input: {
+          ... fieldInputDefault,
+          value: ''
+        },
+        label
+      });
+    });
+
     return (
       <SetupContent>
         <ProgressDots
           numDots={3}
-          numCompleted={1}
-          currentDot={1}
+          numCompleted={3}
+          currentDot={3}
         />
         <SetupHeader
           heading="Invite team members"
           subHeading={<span>What’s <i>one outcome</i> each person is working on this week?</span>}
         />
-        <SetupFieldGroup contentLabel="Invited" fields={demoSetupFieldGroup} fieldLabel="Outcome" />
+        <SetupFieldGroup contentLabel="Invited" fields={fieldGroup} fieldLabel="Outcome" />
       </SetupContent>
     );
   }

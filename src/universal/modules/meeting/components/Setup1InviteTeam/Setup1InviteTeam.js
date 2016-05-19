@@ -4,27 +4,42 @@ import ProgressDots from '../../components/ProgressDots/ProgressDots';
 import SetupContent from '../../components/SetupContent/SetupContent';
 import SetupField from '../../components/SetupField/SetupField';
 import SetupHeader from '../../components/SetupHeader/SetupHeader';
-import { NAVIGATE_SETUP_2_INVITE_TEAM } from '../../ducks/meeting.js';
+import {
+  NAVIGATE_SETUP_2_INVITE_TEAM,
+  addInvitesFromInvitesField,
+  updateInvitesField
+} from '../../ducks/meeting.js';
 
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Setup1InviteTeam extends Component {
   static propTypes = {
-    dispatch: PropTypes.func
+    dispatch: PropTypes.func.isRequired,
+    uiState: PropTypes.object.isRequired
   }
   render() {
-    const { dispatch } = this.props;
+    const { dispatch, uiState } = this.props;
 
     const onLinkClick = (event) => {
       event.preventDefault();
       dispatch({ type: NAVIGATE_SETUP_2_INVITE_TEAM });
     };
 
+    const onChangeInvites = (event) => {
+      event.preventDefault();
+      dispatch(updateInvitesField(event.target.value));
+    };
+
+    const onSubmitInvites = (event, emails) => {
+      event.preventDefault();
+      dispatch(addInvitesFromInvitesField(emails));
+    };
+
     return (
       <SetupContent>
         <ProgressDots
           numDots={3}
-          numCompleted={1}
-          currentDot={1}
+          numCompleted={2}
+          currentDot={2}
         />
         <SetupHeader
           heading="Invite team members"
@@ -38,9 +53,11 @@ export default class Setup1InviteTeam extends Component {
           type="text"
           isLarger
           isWider
-          onButtonClick={() => console.log('SetupField.onButtonClick')}
+          onButtonClick={(event) => onSubmitInvites(event, uiState.setup1.invitesField)}
+          onChange={onChangeInvites}
           onFocus={() => console.log('SetupField.onFocus')}
           placeholder="Search users or invite by email*"
+          value={uiState.setup1.invitesField}
         />
         <AdvanceLink
           onClick={onLinkClick}
