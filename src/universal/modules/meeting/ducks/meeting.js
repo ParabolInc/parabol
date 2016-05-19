@@ -61,10 +61,11 @@ const initialState = iMap({
   })
 });
 
-const remove = (list, idx) => [
-  ...list.slice(0, idx),
-  ...list.slice(idx + 1)
-];
+// TODO: Scrub this code, not used?
+// const remove = (list, idx) => [
+//   ...list.slice(0, idx),
+//   ...list.slice(idx + 1)
+// ];
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
