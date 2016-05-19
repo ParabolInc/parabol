@@ -6,6 +6,11 @@ import theme from 'universal/styles/theme';
 const combineStyles = StyleSheet.combineStyles;
 const progressDotColor = tinycolor.mix(theme.palette.d, '#fff', 50).toHexString();
 
+const onClick = event => {
+  event.preventDefault();
+  console.log('TODO: Navigate to step');
+};
+
 let styles = {};
 
 @look
@@ -39,7 +44,7 @@ export default class ProgressDots extends Component {
     }
 
     return (
-      <a className={dotStyle} href="#" key={idx}>
+      <a className={dotStyle} href="#" key={idx} onClick={onClick}>
         <span className={styles.progressDotLabel}>Step {idx + 1}</span>
       </a>
     );
@@ -74,13 +79,15 @@ styles = StyleSheet.create({
     backgroundColor: 'transparent',
     border: `1px solid ${progressDotColor}`,
     borderRadius: '100%',
+    // NOTE: Removing cursor until dots can change navigation
+    cursor: 'default',
     display: 'inline-block',
     height: '.75rem',
     margin: '0 .375rem',
     width: '.75rem'
   },
 
-  // NOTE: Same thang, diff. semantics (completed, current)
+  // NOTE: Same thing, different semantics (completed, current)
   progressDotCompleted: {
     backgroundColor: progressDotColor
   },

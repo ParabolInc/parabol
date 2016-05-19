@@ -21,14 +21,14 @@ export default class AdvanceLink extends Component {
 
     return (
       <a
-        className={styles.advanceLink}
+        className={styles.link}
         href={href}
         onClick={onClick}
         title={label}
       >
         {label}
         <FontAwesome
-          className={styles.advanceLinkIcon}
+          className={styles.icon}
           name={icon}
         />
       </a>
@@ -37,11 +37,12 @@ export default class AdvanceLink extends Component {
 }
 
 styles = StyleSheet.create({
-  advanceLink: {
+  link: {
     color: theme.palette.b,
     cursor: 'pointer',
     fontFamily: theme.typography.actionUISerif,
     fontSize: theme.typography.fs5,
+    fontStyle: 'italic',
     fontWeight: 700,
     marginTop: '2rem',
     textDecoration: 'none',
@@ -58,7 +59,7 @@ styles = StyleSheet.create({
   },
 
   // NOTE: Custom styles are conflicting with .fa classes, hence #shame !important
-  advanceLinkIcon: {
+  icon: {
     color: 'inherit',
     display: 'inline-block !important',
     fontSize: '28px !important',

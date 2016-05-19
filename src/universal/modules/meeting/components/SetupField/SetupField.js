@@ -13,11 +13,13 @@ let styles = {};
 // eslint-disable-next-line react/prefer-stateless-function
 export default class SetupField extends Component {
   static propTypes = {
+    buttonDisabled: PropTypes.bool,
     buttonIcon: PropTypes.string,
     hasButton: PropTypes.bool,
+    hasErrorText: PropTypes.bool,
     hasHelpText: PropTypes.bool,
     hasShortcutHint: PropTypes.bool,
-    helpText: PropTypes.string,
+    helpText: PropTypes.object,
     type: PropTypes.string,
     value: PropTypes.string,
     isLarger: PropTypes.bool,
@@ -26,14 +28,17 @@ export default class SetupField extends Component {
     onBlur: PropTypes.func,
     onChange: PropTypes.func,
     onFocus: PropTypes.func,
+    onKeyUp: PropTypes.func,
     placeholder: PropTypes.string,
     shortcutHint: PropTypes.string
   }
 
   render() {
     const {
+      buttonDisabled,
       buttonIcon,
       hasButton,
+      hasErrorText,
       hasHelpText,
       hasShortcutHint,
       helpText,
@@ -45,6 +50,7 @@ export default class SetupField extends Component {
       onBlur,
       onChange,
       onFocus,
+      onKeyUp,
       placeholder,
       shortcutHint
     } = this.props;
@@ -54,7 +60,14 @@ export default class SetupField extends Component {
     const largerStyles = combineStyles(styles.field, styles.fieldLarger);
     const widerStyles = combineStyles(styles.field, styles.widerLarger);
     const largerAndWiderStyles = combineStyles(styles.field, styles.fieldLarger, styles.fieldWider);
-    // const value = value || '';
+    const helpTextErrorStyles = combineStyles(styles.helpText, styles.helpTextError);
+    const helpTextStyles = hasErrorText ? helpTextErrorStyles : styles.helpText;
+    const shortcutHintDisabledStyles = combineStyles(
+      styles.shortcutHint,
+      styles.shortcutHintDisabled
+    );
+    const shortcutHintStyles = buttonDisabled ?
+      shortcutHintDisabledStyles : styles.shortcutHint;
 
     if (isLarger && isWider) {
       fieldStyles = largerAndWiderStyles;
@@ -71,20 +84,26 @@ export default class SetupField extends Component {
           onBlur={onBlur}
           onChange={onChange}
           onFocus={onFocus}
+          onKeyUp={onKeyUp}
           placeholder={placeholder}
           type={type}
           value={value}
         />
         {hasButton &&
-          <div className={styles.fieldButtonBlock}>
-            <IconButton iconName={buttonIcon} iconSize="2x" onClick={onButtonClick} />
+          <div className={styles.buttonBlock}>
+            <IconButton
+              disabled={buttonDisabled}
+              iconName={buttonIcon}
+              iconSize="2x"
+              onClick={onButtonClick}
+            />
           </div>
         }
         {hasHelpText &&
-          <div className={styles.fieldHelpText}>{helpText}</div>
+          <div className={helpTextStyles}>{helpText}</div>
         }
         {hasShortcutHint &&
-          <div className={styles.fieldShortcutHint}>{shortcutHint}</div>
+          <div className={shortcutHintStyles}>{shortcutHint}</div>
         }
       </div>
     );
@@ -145,25 +164,35 @@ styles = StyleSheet.create({
     minWidth: '30rem'
   },
 
-  fieldButtonBlock: {
+  buttonBlock: {
     left: '100%',
     padding: '0 0 0 1rem',
     position: 'absolute',
-    top: '.25rem'
+    top: '.375rem'
   },
 
-  fieldHelpText: {
+  helpText: {
     color: theme.palette.c,
     fontSize: theme.typography.fs3,
     fontStyle: 'italic',
     fontWeight: 700
   },
 
-  fieldShortcutHint: {
+  // NOTE: Modifies helpText
+  helpTextError: {
+    color: theme.palette.b
+  },
+
+  shortcutHint: {
     color: theme.palette.b,
     fontSize: theme.typography.fs3,
     fontStyle: 'italic',
     fontWeight: 700,
     textAlign: 'right'
+  },
+
+  // NOTE: Modifies shortcutHint
+  shortcutHintDisabled: {
+    opacity: '.5'
   }
 });

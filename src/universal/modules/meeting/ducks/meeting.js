@@ -52,19 +52,18 @@ const initialState = iMap({
   }),
   navigation: NAVIGATE_SETUP_0_GET_STARTED,
   uiState: iMap({
-    hasOpenShortcutMenu: false,
+    shortcuts: iMap({
+      hasOpenShortcutMenu: false
+    }),
     setup1: iMap({
       emails: iList(),
       invitesField: '',
-      invitesFieldError: ''
+      invitesFieldHasValue: false,
+      invitesFieldError: '',
+      invitesFieldHasError: false
     })
   })
 });
-
-const remove = (list, idx) => [
-  ...list.slice(0, idx),
-  ...list.slice(idx + 1)
-];
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
@@ -106,9 +105,11 @@ export default function reducer(state = initialState, action = {}) {
         })
       });
     case UPDATE_SHORTCUT_MENU_STATE:
-      return state.merge({
+      return state.mergeDeep({
         uiState: iMap({
-          hasOpenShortcutMenu: action.payload.boolean
+          shortcuts: iMap({
+            hasOpenShortcutMenu: action.payload.boolean
+          })
         })
       });
     case NAVIGATE_SETUP_0_GET_STARTED:
@@ -127,7 +128,8 @@ export default function reducer(state = initialState, action = {}) {
       return state.mergeDeep({
         uiState: iMap({
           setup1: iMap({
-            invitesFieldError: 'invalid email addresses'
+            invitesFieldError: 'invalid email addresses',
+            invitesFieldHasError: true
           })
         })
       });
@@ -137,7 +139,9 @@ export default function reducer(state = initialState, action = {}) {
           setup1: iMap({
             emails: iList(action.payload),
             invitesField: '',
-            invitesFieldError: ''
+            invitesFieldHasValue: false,
+            invitesFieldError: '',
+            invitesFieldHasError: false
           })
         })
       });
@@ -145,8 +149,10 @@ export default function reducer(state = initialState, action = {}) {
       return state.mergeDeep({
         uiState: iMap({
           setup1: iMap({
-            invitesField: action.payload,
-            invitesFieldError: ''
+            invitesField: action.payload.value,
+            invitesFieldHasValue: action.payload.hasValue,
+            invitesFieldError: '',
+            invitesFieldHasError: false
           })
         })
       });
@@ -295,10 +301,19 @@ export const addInvitesFromInvitesField = (emailsString) => {
   });
 };
 
-export const updateInvitesField = (value) => ({
-  type: SETUP1_UPDATE_INVITES_FIELD,
-  payload: value
-});
+export const updateInvitesField = (value) => {
+  let hasValue = true;
+  if (value === '') {
+    hasValue = false;
+  }
+  return ({
+    type: SETUP1_UPDATE_INVITES_FIELD,
+    payload: {
+      value,
+      hasValue
+    }
+  });
+};
 
 export const removeInvitee = (nameOrEmail) =>
   (dispatch, getState) => {
