@@ -36,76 +36,49 @@ export default class Button extends Component {
       title
     } = this.props;
 
-    const buttonStyleOptions = [
-      styles.base
-    ];
-
+    const buttonStyleOptions = [styles.base];
     const buttonSize = size || 'medium';
-    const buttonTheme = theme || 'dark';
     const buttonTitle = title || label;
     const buttonSizeCSS = styles[buttonSize];
 
-    let buttonIsOutlined = false;
-    let buttonIsInverted = false;
+    const solidCSS = {};
+    solidCSS.cool = styles.solidCool;
+    solidCSS.warm = styles.solidWarm;
+    solidCSS.dark = styles.solidDark;
+    solidCSS.mid = styles.solidMid;
+    solidCSS.light = styles.solidLight;
+    solidCSS.white = styles.solidWhite;
+
+    const outlinedCSS = {};
+    outlinedCSS.cool = styles.outlinedCool;
+    outlinedCSS.warm = styles.outlinedWarm;
+    outlinedCSS.dark = styles.outlinedDark;
+    outlinedCSS.mid = styles.outlinedMid;
+    outlinedCSS.light = styles.outlinedLight;
+    outlinedCSS.white = styles.outlinedWhite;
+
+    const invertedCSS = {};
+    invertedCSS.cool = styles.invertedCool;
+    invertedCSS.warm = styles.invertedWarm;
+    invertedCSS.dark = styles.invertedDark;
+    invertedCSS.mid = styles.invertedMid;
+    invertedCSS.light = styles.invertedLight;
+    invertedCSS.white = styles.invertedWhite;
+
     let buttonThemeCSS = styles.solidDark;
 
-    if (style === 'outlined') {
-      buttonIsOutlined = true;
+    if (style === 'solid') {
       buttonStyleOptions.push(styles[style]);
+      buttonThemeCSS = solidCSS[theme];
+    }
+
+    if (style === 'outlined') {
+      buttonStyleOptions.push(styles[style]);
+      buttonThemeCSS = outlinedCSS[theme];
     }
 
     if (style === 'inverted') {
-      buttonIsInverted = true;
-    }
-
-    if (buttonTheme === 'cool') {
-      if (buttonIsInverted) {
-        buttonThemeCSS = styles.invertedCool;
-      } else if (buttonIsOutlined) {
-        buttonThemeCSS = styles.outlinedCool;
-      } else {
-        buttonThemeCSS = styles.solidCool;
-      }
-    } else if (buttonTheme === 'warm') {
-      if (buttonIsInverted) {
-        buttonThemeCSS = styles.invertedWarm;
-      } else if (buttonIsOutlined) {
-        buttonThemeCSS = styles.outlinedWarm;
-      } else {
-        buttonThemeCSS = styles.solidWarm;
-      }
-    } else if (buttonTheme === 'dark') {
-      if (buttonIsInverted) {
-        buttonThemeCSS = styles.invertedDark;
-      } else if (buttonIsOutlined) {
-        buttonThemeCSS = styles.outlinedDark;
-      } else {
-        buttonThemeCSS = styles.solidDark;
-      }
-    } else if (buttonTheme === 'mid') {
-      if (buttonIsInverted) {
-        buttonThemeCSS = styles.invertedMid;
-      } else if (buttonIsOutlined) {
-        buttonThemeCSS = styles.outlinedMid;
-      } else {
-        buttonThemeCSS = styles.solidMid;
-      }
-    } else if (buttonTheme === 'light') {
-      if (buttonIsInverted) {
-        buttonThemeCSS = styles.invertedLight;
-      } else if (buttonIsOutlined) {
-        buttonThemeCSS = styles.outlinedLight;
-      } else {
-        buttonThemeCSS = styles.solidLight;
-      }
-    } else if (buttonTheme === 'white') {
-      if (buttonIsInverted) {
-        buttonThemeCSS = styles.invertedWhite;
-      } else if (buttonIsOutlined) {
-        buttonThemeCSS = styles.outlinedWhite;
-      } else {
-        buttonThemeCSS = styles.solidWhite;
-      }
+      buttonThemeCSS = invertedCSS[theme];
     }
 
     buttonStyleOptions.push(buttonSizeCSS, buttonThemeCSS);
@@ -113,11 +86,7 @@ export default class Button extends Component {
     const buttonStyles = combineStyles.apply(null, buttonStyleOptions);
 
     return (
-      <button
-        className={buttonStyles}
-        onClick={onClick}
-        title={buttonTitle}
-      >
+      <button className={buttonStyles} onClick={onClick} title={buttonTitle}>
         {label}
       </button>
     );
@@ -171,7 +140,6 @@ const makeInvertedTheme = (buttonColor, color, opacity = '.65') => {
     }
   };
 };
-
 
 const { cool, warm, dark, mid, light } = appTheme.palette;
 
