@@ -16,11 +16,13 @@ export default class ProgressDots extends Component {
     // children: PropTypes.element,
     numDots: PropTypes.number.isRequired, // how many total dots shall we draw?
     numCompleted: PropTypes.number,       // how many of the dots are completed?
-    currentDot: PropTypes.number,         // which dot (0=first dot) is the user on now?
+    currentDot: PropTypes.number,         // which dot (1=first dot) is the user on now?
   };
 
   renderDot(idx) {
-    const { numCompleted, currentDot } = this.props;
+    let { numCompleted, currentDot } = this.props;
+    numCompleted--;
+    currentDot--;
     let dotStyle = null;
 
     if (idx === currentDot) {

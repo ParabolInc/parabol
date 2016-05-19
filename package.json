@@ -78,6 +78,7 @@
     "dotenv": "^2.0.0",
     "dotenv-expand": "^0.1.0",
     "es6-promisify": "4.1.0",
+    "email-addresses": "^2.0.2",
     "express": "4.13.4",
     "express-jwt": "3.4.0",
     "font-awesome": "^4.6.3",

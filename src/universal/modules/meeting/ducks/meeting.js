@@ -4,6 +4,8 @@ import {fetchGraphQL} from '../../../utils/fetching';
 import {ensureState} from 'redux-optimistic-ui';
 import {localStorageVars} from '../../../utils/clientOptions';
 import socketCluster from 'socketcluster-client';
+import emailAddresses from 'email-addresses';
+import * as _ from 'lodash';
 
 // Changed string consts because chances are we'll have more than 1 "CREATE_SUCCESS" down the road
 export const CREATE_MEETING_REQUEST = 'action/meeting/CREATE_MEETING_REQUEST';
@@ -28,6 +30,14 @@ export const NAVIGATE_SETUP_2_INVITE_TEAM = 'action/meeting/NAVIGATE_SETUP_2_INV
 // UI State
 export const UPDATE_SHORTCUT_MENU_STATE = 'action/meeting/UPDATE_SHORTCUT_MENU_STATE';
 
+// Setup 1
+export const SETUP1_ADD_EMAILS_SUCCESS = 'action/meeting/SETUP1_ADD_EMAILS_SUCCESS';
+export const SETUP1_ADD_EMAILS_ERROR = 'action/meeting/SETUP1_ADD_EMAILS_ERROR';
+export const SETUP1_UPDATE_INVITES_FIELD = 'action/meeting/SETUP1_UPDATE_INVITES_FIELD';
+
+// Setup 2
+export const SETUP2_REMOVE_INVITEE = 'action/meeting/SETUP2_REMOVE_INVITEE';
+
 const initialState = iMap({
   isLoading: false,
   isLoaded: false,
@@ -42,9 +52,19 @@ const initialState = iMap({
   }),
   navigation: NAVIGATE_SETUP_0_GET_STARTED,
   uiState: iMap({
-    hasOpenShortcutMenu: false
+    hasOpenShortcutMenu: false,
+    setup1: iMap({
+      emails: iList(),
+      invitesField: '',
+      invitesFieldError: ''
+    })
   })
 });
+
+const remove = (list, idx) => [
+  ...list.slice(0, idx),
+  ...list.slice(idx + 1)
+];
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
@@ -103,6 +123,47 @@ export default function reducer(state = initialState, action = {}) {
       return state.merge({
         navigation: NAVIGATE_SETUP_2_INVITE_TEAM
       });
+    case SETUP1_ADD_EMAILS_ERROR:
+      return state.mergeDeep({
+        uiState: iMap({
+          setup1: iMap({
+            invitesFieldError: 'invalid email addresses'
+          })
+        })
+      });
+    case SETUP1_ADD_EMAILS_SUCCESS:
+      return state.mergeDeep({
+        uiState: iMap({
+          setup1: iMap({
+            emails: iList(action.payload),
+            invitesField: '',
+            invitesFieldError: ''
+          })
+        })
+      });
+    case SETUP1_UPDATE_INVITES_FIELD:
+      return state.mergeDeep({
+        uiState: iMap({
+          setup1: iMap({
+            invitesField: action.payload,
+            invitesFieldError: ''
+          })
+        })
+      });
+    case SETUP2_REMOVE_INVITEE: {
+      const idx = action.payload;
+      const list = state.getIn(['uiState', 'setup1', 'emails']);
+      return state.mergeDeep({
+        uiState: iMap({
+          setup1: iMap({
+            emails: [
+              ...list.slice(0, idx),
+              ...list.slice(idx + 1)
+            ]
+          })
+        })
+      });
+    }
     default:
       return state;
   }
@@ -217,4 +278,35 @@ export const updateMeetingTeamName = (name, updatedBy) =>
       updatedBy
     };
     return dispatch(updateMeetingTeamNameSuccess(payload));
+  };
+
+export const addInvitesFromInvitesField = (emailsString) => {
+  let emails = emailAddresses.parseAddressList(emailsString);
+  if (emails === null) {
+    return ({
+      type: SETUP1_ADD_EMAILS_ERROR,
+      payload: null
+    });
+  }
+  emails = _.map(emails, (em) => _.pick(em, ['name', 'address']));
+  return ({
+    type: SETUP1_ADD_EMAILS_SUCCESS,
+    payload: emails
+  });
+};
+
+export const updateInvitesField = (value) => ({
+  type: SETUP1_UPDATE_INVITES_FIELD,
+  payload: value
+});
+
+export const removeInvitee = (nameOrEmail) =>
+  (dispatch, getState) => {
+    const idx = getState()
+      .getIn(['meeting', 'uiState', 'setup1', 'emails'])
+      .findIndex((em) => em.name === nameOrEmail || em.address === nameOrEmail);
+    return dispatch({
+      type: SETUP2_REMOVE_INVITEE,
+      payload: idx
+    });
   };

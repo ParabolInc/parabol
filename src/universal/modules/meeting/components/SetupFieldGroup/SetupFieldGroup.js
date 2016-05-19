@@ -62,7 +62,11 @@ export default class SetupFieldGroup extends Component {
             >
               <div className={columnStyles}>
                 <div className={styles.fieldRemovalBlock}>
-                  <IconButton iconName="times-circle" iconSize="2x" />
+                  <IconButton
+                    iconName="times-circle"
+                    iconSize="2x"
+                    onClick={field.button.onClick}
+                  />
                 </div>
                 <div className={styles.fieldLabel}>
                   {field.label}
