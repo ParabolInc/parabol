@@ -93,6 +93,7 @@ export default class Setup0GetStarted extends Component {
         {/* Testing Button component */}
         <Button
           label="Sign Up"
+          theme="cool"
         />
 
         <br />

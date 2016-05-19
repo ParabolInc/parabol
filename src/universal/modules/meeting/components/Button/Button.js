@@ -37,16 +37,13 @@ export default class Button extends Component {
     } = this.props;
 
     const buttonStyleOptions = [
-      styles.buttonBase
+      styles.base
     ];
 
     const buttonSize = size || 'medium';
-    const buttonStyle = style || 'solid';
     const buttonTheme = theme || 'dark';
     const buttonTitle = title || label;
-
     const buttonSizeCSS = styles[buttonSize];
-    const buttonStyleCSS = styles[buttonStyle];
 
     let buttonIsOutlined = false;
     let buttonIsInverted = false;
@@ -54,6 +51,7 @@ export default class Button extends Component {
 
     if (style === 'outlined') {
       buttonIsOutlined = true;
+      buttonStyleOptions.push(styles[style]);
     }
 
     if (style === 'inverted') {
@@ -110,11 +108,7 @@ export default class Button extends Component {
       }
     }
 
-    buttonStyleOptions.push(
-      buttonSizeCSS,
-      buttonStyleCSS,
-      buttonThemeCSS
-    );
+    buttonStyleOptions.push(buttonSizeCSS, buttonThemeCSS);
 
     const buttonStyles = combineStyles.apply(null, buttonStyleOptions);
 
@@ -130,16 +124,18 @@ export default class Button extends Component {
   }
 }
 
-const makeSolidTheme = (color, textColor = '#fff') => ({
-  backgroundColor: color,
-  borderColor: color,
-  color: textColor,
+const makeSolidTheme = (buttonColor, color = '#fff', opacity = '.65') => ({
+  backgroundColor: buttonColor,
+  borderColor: buttonColor,
+  color,
 
   ':hover': {
-    color: textColor
+    color,
+    opacity
   },
   ':focus': {
-    color: textColor
+    color,
+    opacity
   }
 });
 
@@ -156,21 +152,21 @@ const makeOutlinedTheme = (color, opacity = '.5') => ({
   }
 });
 
-const makeInvertedTheme = (color, textColor, opacity = '.65') => {
-  const colorMix = tinycolor.mix(color, '#fff', 90).toHexString();
-  const textColorMix = tinycolor.mix(textColor, '#000', 10).toHexString();
+const makeInvertedTheme = (buttonColor, color, opacity = '.65') => {
+  const buttonColorMix = tinycolor.mix(buttonColor, '#fff', 90).toHexString();
+  const colorMix = tinycolor.mix(color, '#000', 10).toHexString();
 
   return {
-    backgroundColor: colorMix,
-    borderColor: colorMix,
-    color: textColorMix,
+    backgroundColor: buttonColorMix,
+    borderColor: buttonColorMix,
+    color: colorMix,
 
     ':hover': {
-      color: textColorMix,
+      color: colorMix,
       opacity
     },
     ':focus': {
-      color: textColorMix,
+      color: colorMix,
       opacity
     }
   };
@@ -181,7 +177,7 @@ const { cool, warm, dark, mid, light } = appTheme.palette;
 
 styles = StyleSheet.create({
   // Button base
-  buttonBase: {
+  base: {
     border: '1px solid transparent',
     cursor: 'pointer',
     display: 'inline-block',
@@ -218,22 +214,6 @@ styles = StyleSheet.create({
     fontSize: '1.25rem'
   },
 
-  // TODO: Add “light” variant and “light” themes
-  // TODO: Add white outlined theme
-
-  // Solid buttons
-  solid: {
-    backgroundColor: dark,
-    border: `1px solid ${dark}`,
-
-    ':hover': {
-      opacity: '.65'
-    },
-    ':focus': {
-      opacity: '.65'
-    }
-  },
-
   // Button solid themes
   solidCool: makeSolidTheme(cool),
   solidWarm: makeSolidTheme(warm),
@@ -245,8 +225,7 @@ styles = StyleSheet.create({
   // Outlined buttons
   outlined: {
     backgroundColor: 'transparent',
-    borderColor: 'currentColor',
-    color: dark,
+    borderColor: 'currentColor'
   },
 
   // Outlined button themes
@@ -257,11 +236,7 @@ styles = StyleSheet.create({
   outlinedLight: makeOutlinedTheme(light),
   outlinedWhite: makeOutlinedTheme('#fff'),
 
-  // Inverted buttons
-  inverted: {
-    // Define
-  },
-
+  // Inverted button themes
   invertedCool: makeInvertedTheme(cool, cool),
   invertedWarm: makeInvertedTheme(warm, warm),
   invertedDark: makeInvertedTheme(dark, dark),
