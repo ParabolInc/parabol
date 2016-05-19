@@ -102,6 +102,7 @@ export default class Setup0GetStarted extends Component {
         <br />
 
         <Button
+          disabled
           label="Start Meeting"
           onClick={onDemoButtonClick}
           size="largest"
@@ -124,6 +125,7 @@ export default class Setup0GetStarted extends Component {
         <br />
         <Background align="center" theme="dark">
           <Button
+            disabled
             label="Create Project"
             size="large"
             style="solid"

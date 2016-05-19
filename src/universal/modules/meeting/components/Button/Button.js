@@ -60,6 +60,7 @@ export default class Button extends Component {
   // theme: cool, warm, dark, mid, light, white
 
   static propTypes = {
+    disabled: PropTypes.bool,
     label: PropTypes.string,
     onClick: PropTypes.func,
     size: PropTypes.string,
@@ -70,6 +71,7 @@ export default class Button extends Component {
 
   render() {
     const {
+      disabled,
       label,
       onClick,
       size,
@@ -85,10 +87,18 @@ export default class Button extends Component {
     const buttonTitle = title || buttonLabel;
     const themeName = buttonTheme.charAt(0).toUpperCase() + buttonTheme.slice(1);
     const styleThemeName = `${buttonStyle}${themeName}`;
-    const buttonStyles = combineStyles(styles.base, styles[buttonSize], styles[styleThemeName]);
+    const buttonOptions = [styles.base, styles[buttonSize], styles[styleThemeName]];
+
+    let buttonStyles;
+
+    if (disabled) {
+      buttonOptions.push(styles.disabled);
+    }
+
+    buttonStyles = combineStyles.apply(null, buttonOptions);
 
     return (
-      <button className={buttonStyles} onClick={onClick} title={buttonTitle}>
+      <button className={buttonStyles} disabled={disabled} onClick={onClick} title={buttonTitle}>
         {buttonLabel}
       </button>
     );
@@ -121,6 +131,7 @@ styles = StyleSheet.create({
     textAlign: 'center',
     textDecoration: 'none',
     textTransform: 'uppercase',
+    userSelect: 'none',
 
     ':hover': {
       textDecoration: 'none'
@@ -175,5 +186,22 @@ styles = StyleSheet.create({
   invertedDark: makeSolidTheme(dark, dark, 'inverted'),
   invertedMid: makeSolidTheme(mid, mid, 'inverted'),
   invertedLight: makeSolidTheme(light, dark, 'inverted'),
-  invertedWhite: makeSolidTheme('#fff', dark, 'inverted')
+  invertedWhite: makeSolidTheme('#fff', dark, 'inverted'),
+
+  // Disabled state
+  disabled: {
+    cursor: 'not-allowed',
+    opacity: '.5',
+
+    ':hover': {
+      opacity: '.5'
+    },
+    ':focus': {
+      opacity: '.5'
+    },
+
+    ':active': {
+      animation: 'none'
+    }
+  }
 });
