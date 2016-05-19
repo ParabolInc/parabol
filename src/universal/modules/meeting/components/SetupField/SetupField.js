@@ -149,7 +149,7 @@ styles = StyleSheet.create({
     left: '100%',
     padding: '0 0 0 1rem',
     position: 'absolute',
-    top: '.25rem'
+    top: '.375rem'
   },
 
   fieldHelpText: {

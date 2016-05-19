@@ -47,7 +47,7 @@ const demoSetupFieldGroup = [
     }
   },
   {
-    label: 'terry@parabol.co',
+    label: 'ackernaut@longdomainname.com',
     input: {
       ...fieldInputDefault,
       value: ''

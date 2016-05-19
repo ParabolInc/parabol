@@ -3,6 +3,8 @@ import look, { StyleSheet } from 'react-look';
 import FontAwesome from 'react-fontawesome';
 import theme from 'universal/styles/theme';
 
+const { cool } = theme.palette;
+
 let styles = {};
 
 @look
@@ -44,21 +46,23 @@ styles = StyleSheet.create({
   iconButton: {
     background: 'none',
     border: 0,
+    borderRadius: 0,
     color: theme.palette.tuColorA40o.color,
     cursor: 'pointer',
     fontSize: theme.typography.fs3,
+    padding: 0,
 
     // NOTE: :hover, :focus, :active have the same styling
     ':hover': {
-      color: theme.palette.a,
+      color: cool,
       outline: 'none'
     },
     ':focus': {
-      color: theme.palette.a,
+      color: cool,
       outline: 'none'
     },
     ':active': {
-      color: theme.palette.a,
+      color: cool,
       outline: 'none'
     }
   }

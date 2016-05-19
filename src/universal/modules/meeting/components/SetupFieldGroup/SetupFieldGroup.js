@@ -22,7 +22,8 @@ export default class SetupFieldGroup extends Component {
 
   render() {
     const { contentLabel, fields, fieldLabel } = this.props;
-    const columnStyles = combineStyles(styles.fieldGroupColumn, styles.fieldGroupColumn1of2);
+    const columnLeftStyles = combineStyles(styles.fieldGroupColumn, styles.fieldGroupColumnLeft);
+    const columnRightStyles = combineStyles(styles.fieldGroupColumn, styles.fieldGroupColumnRight);
     const fieldLabelStyles = combineStyles(styles.fieldGroupLabel, styles.fieldGroupLabelForFields);
 
     const handleMouseOut = () => {
@@ -41,12 +42,12 @@ export default class SetupFieldGroup extends Component {
         {/* Field group (with two columns) */}
 
         <div className={styles.fieldGroupRow}>
-          <div className={columnStyles}>
+          <div className={columnLeftStyles}>
             <div className={styles.fieldGroupLabel}>
               {contentLabel}
             </div>
           </div>
-          <div className={columnStyles}>
+          <div className={columnRightStyles}>
             <div className={fieldLabelStyles}>
               {fieldLabel}
             </div>
@@ -60,7 +61,7 @@ export default class SetupFieldGroup extends Component {
               onMouseOut={handleMouseOut}
               onMouseOver={handleMouseOver}
             >
-              <div className={columnStyles}>
+              <div className={columnLeftStyles}>
                 <div className={styles.fieldRemovalBlock}>
                   <IconButton iconName="times-circle" iconSize="2x" />
                 </div>
@@ -68,7 +69,7 @@ export default class SetupFieldGroup extends Component {
                   {field.label}
                 </div>
               </div>
-              <div className={columnStyles}>
+              <div className={columnRightStyles}>
                 <SetupField {...field.input} />
               </div>
             </div>
@@ -90,8 +91,10 @@ styles = StyleSheet.create({
 
   fieldGroupRow: {
     display: 'flex',
-    maxWidth: '40rem',
-    width: '100%'
+    maxWidth: '100%',
+    paddingLeft: '3.5rem',
+    paddingRight: '3.5rem',
+    width: '47.5rem'
   },
 
   fieldGroupColumn: {
@@ -100,8 +103,11 @@ styles = StyleSheet.create({
   },
 
   // NOTE: Modifies fieldGroupColumn
-  fieldGroupColumn1of2: {
-    width: '50%'
+  fieldGroupColumnLeft: {
+    width: '40%'
+  },
+  fieldGroupColumnRight: {
+    width: '60%'
   },
 
   fieldGroupLabel: {
@@ -121,13 +127,17 @@ styles = StyleSheet.create({
     color: theme.palette.c,
     fontSize: theme.typography.fs4,
     lineHeight: 1.5,
-    padding: '.125rem 0'
+    overflow: 'hidden',
+    padding: '.125rem 1rem .125rem 0',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    width: '100%'
   },
 
   fieldRemovalBlock: {
     padding: '0 1rem 0 0',
     position: 'absolute',
     right: '100%',
-    top: 0
+    top: '.125rem'
   },
 });
