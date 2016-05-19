@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import AdvanceLink from '../../components/AdvanceLink/AdvanceLink';
 import ProgressDots from '../../components/ProgressDots/ProgressDots';
 import SetupContent from '../../components/SetupContent/SetupContent';
 import SetupField from '../../components/SetupField/SetupField';
@@ -19,7 +18,7 @@ export default class Setup1InviteTeam extends Component {
   render() {
     const { dispatch, uiState } = this.props;
 
-    const onLinkClick = (event) => {
+    const handleNavigateToNextStep = (event) => {
       event.preventDefault();
       dispatch({ type: NAVIGATE_SETUP_2_INVITE_TEAM });
     };
@@ -32,6 +31,7 @@ export default class Setup1InviteTeam extends Component {
     const onSubmitInvites = (event, emails) => {
       event.preventDefault();
       dispatch(addInvitesFromInvitesField(emails));
+      handleNavigateToNextStep(event);
     };
 
     return (
@@ -58,11 +58,6 @@ export default class Setup1InviteTeam extends Component {
           onFocus={() => console.log('SetupField.onFocus')}
           placeholder="Search users or invite by email*"
           value={uiState.setup1.invitesField}
-        />
-        <AdvanceLink
-          onClick={onLinkClick}
-          icon="arrow-circle-right"
-          label="Carry on!"
         />
       </SetupContent>
     );

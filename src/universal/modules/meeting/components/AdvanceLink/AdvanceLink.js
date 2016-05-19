@@ -42,6 +42,7 @@ styles = StyleSheet.create({
     cursor: 'pointer',
     fontFamily: theme.typography.actionUISerif,
     fontSize: theme.typography.fs5,
+    fontStyle: 'italic',
     fontWeight: 700,
     marginTop: '2rem',
     textDecoration: 'none',

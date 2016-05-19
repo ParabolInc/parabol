@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import AdvanceLink from '../../components/AdvanceLink/AdvanceLink';
 import ProgressDots from '../../components/ProgressDots/ProgressDots';
 import SetupContent from '../../components/SetupContent/SetupContent';
 import SetupField from '../../components/SetupField/SetupField';
@@ -24,7 +23,7 @@ export default class Setup0GetStarted extends Component {
     const { dispatch, uiState } = this.props;
     const { hasOpenShortcutMenu } = uiState;
 
-    const onClick = (event) => {
+    const handleNavigateToNextStep = (event) => {
       event.preventDefault();
       dispatch({ type: NAVIGATE_SETUP_1_INVITE_TEAM });
     };
@@ -80,16 +79,11 @@ export default class Setup0GetStarted extends Component {
           hasShortcutHint
           type="text"
           isLarger
-          onButtonClick={() => console.log('SetupField.onButtonClick')}
+          onButtonClick={handleNavigateToNextStep}
           onChange={onChangeTeamName}
           onFocus={() => console.log('SetupField.onFocus')}
           placeholder="Team name"
           shortcutHint="Press enter"
-        />
-        <AdvanceLink
-          onClick={onClick}
-          icon="arrow-circle-right"
-          label="Set-up"
         />
         {hasOpenShortcutMenu &&
           <ShortcutsMenu
