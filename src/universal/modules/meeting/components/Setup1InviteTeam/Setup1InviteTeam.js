@@ -15,13 +15,26 @@ export default class Setup1InviteTeam extends Component {
     dispatch: PropTypes.func.isRequired,
     uiState: PropTypes.object.isRequired
   }
+
+  componentDidUpdate() {
+    const { dispatch, uiState } = this.props;
+
+    const emailLength = uiState.setup1.emails.length;
+
+    const handleNavigateToNextStep = () => {
+      dispatch({ type: NAVIGATE_SETUP_2_INVITE_TEAM });
+    };
+
+    if (emailLength > 0) {
+      handleNavigateToNextStep();
+    }
+  }
+
   render() {
     const { dispatch, uiState } = this.props;
 
-    const handleNavigateToNextStep = (event) => {
-      event.preventDefault();
-      dispatch({ type: NAVIGATE_SETUP_2_INVITE_TEAM });
-    };
+    const invitesFieldHasValue = uiState.setup1.invitesFieldHasValue;
+    const invitesFieldHasError = uiState.setup1.invitesFieldHasError;
 
     const onChangeInvites = (event) => {
       event.preventDefault();
@@ -31,8 +44,12 @@ export default class Setup1InviteTeam extends Component {
     const onSubmitInvites = (event, emails) => {
       event.preventDefault();
       dispatch(addInvitesFromInvitesField(emails));
-      handleNavigateToNextStep(event);
     };
+
+    const helpText = invitesFieldHasError ?
+      // eslint-disable-next-line max-len
+      <span>Oops! Please make sure email addresses are valid <br />and separated by a single comma.</span> :
+      <span>You can paste multiple emails separated by a comma.<br />&nbsp;</span>;
 
     return (
       <SetupContent>
@@ -46,17 +63,19 @@ export default class Setup1InviteTeam extends Component {
           subHeading={<span>Who will be joining you?</span>}
         />
         <SetupField
+          buttonDisabled={!invitesFieldHasValue}
           buttonIcon="check-circle"
           hasButton
+          hasErrorText={invitesFieldHasError}
           hasHelpText
-          helpText="*You can paste a comma-separated string of multiple emails."
+          helpText={helpText}
           type="text"
           isLarger
           isWider
           onButtonClick={(event) => onSubmitInvites(event, uiState.setup1.invitesField)}
           onChange={onChangeInvites}
           onFocus={() => console.log('SetupField.onFocus')}
-          placeholder="Search users or invite by email*"
+          placeholder="b.bunny@acme.co, d.duck@acme.co, e.fudd@acme.co"
           value={uiState.setup1.invitesField}
         />
       </SetupContent>

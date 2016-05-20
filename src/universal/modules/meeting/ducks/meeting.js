@@ -45,7 +45,8 @@ const initialState = iMap({
     id: '',
     content: '',
     team: iMap({  // TODO: make me actually link to nested team object
-      name: ''
+      name: '',
+      nameFieldHasValue: false
     }),
     lastUpdatedBy: '',
     currentEditors: iList()
@@ -56,16 +57,12 @@ const initialState = iMap({
     setup1: iMap({
       emails: iList(),
       invitesField: '',
-      invitesFieldError: ''
+      invitesFieldHasValue: false,
+      invitesFieldError: '',
+      invitesFieldHasError: false
     })
   })
 });
-
-// TODO: Scrub this code, not used?
-// const remove = (list, idx) => [
-//   ...list.slice(0, idx),
-//   ...list.slice(idx + 1)
-// ];
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
@@ -101,7 +98,8 @@ export default function reducer(state = initialState, action = {}) {
       return state.mergeDeep({
         instance: iMap({
           team: iMap({
-            name: action.payload.team.name
+            name: action.payload.team.name,
+            nameFieldHasValue: action.payload.team.nameFieldHasValue
           }),
           lastUpdatedBy: action.payload.updatedBy
         })
@@ -128,7 +126,8 @@ export default function reducer(state = initialState, action = {}) {
       return state.mergeDeep({
         uiState: iMap({
           setup1: iMap({
-            invitesFieldError: 'invalid email addresses'
+            invitesFieldError: 'invalid email addresses',
+            invitesFieldHasError: true
           })
         })
       });
@@ -138,7 +137,9 @@ export default function reducer(state = initialState, action = {}) {
           setup1: iMap({
             emails: iList(action.payload),
             invitesField: '',
-            invitesFieldError: ''
+            invitesFieldHasValue: false,
+            invitesFieldError: '',
+            invitesFieldHasError: false
           })
         })
       });
@@ -147,7 +148,9 @@ export default function reducer(state = initialState, action = {}) {
         uiState: iMap({
           setup1: iMap({
             invitesField: action.payload,
-            invitesFieldError: ''
+            invitesFieldHasValue: true,
+            invitesFieldError: '',
+            invitesFieldHasError: false
           })
         })
       });
@@ -272,9 +275,14 @@ const updateMeetingTeamNameSuccess = (payload, meta) => ({
 // TODO: make me actually interact with GraphQL
 export const updateMeetingTeamName = (name, updatedBy) =>
   async dispatch => {
+    let nameFieldHasValue = true;
+    if (name === '') {
+      nameFieldHasValue = false;
+    }
     const payload = {
       team: {
-        name
+        name,
+        nameFieldHasValue
       },
       updatedBy
     };

@@ -48,6 +48,7 @@ export default class MeetingLayout extends Component {
   render() {
     const { dispatch, meeting } = this.props;
 
+    const team = meeting.instance.team;
     const teamName = meeting.instance.team.name || 'Team Name';
 
     const uiState = meeting.uiState;
@@ -59,7 +60,7 @@ export default class MeetingLayout extends Component {
             {(() => {
               switch (meeting.navigation) {
                 case NAVIGATE_SETUP_0_GET_STARTED:
-                  return <Setup0GetStarted dispatch={dispatch} uiState={uiState} />;
+                  return <Setup0GetStarted dispatch={dispatch} uiState={uiState} team={team} />;
                 case NAVIGATE_SETUP_1_INVITE_TEAM:
                   return <Setup1InviteTeam dispatch={dispatch} uiState={uiState} />;
                 case NAVIGATE_SETUP_2_INVITE_TEAM:

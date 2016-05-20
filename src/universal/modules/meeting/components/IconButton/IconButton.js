@@ -3,7 +3,9 @@ import look, { StyleSheet } from 'react-look';
 import FontAwesome from 'react-fontawesome';
 import theme from 'universal/styles/theme';
 
+const combineStyles = StyleSheet.combineStyles;
 const { cool } = theme.palette;
+const baseButtonColor = theme.palette.tuColorA40o.color;
 
 let styles = {};
 
@@ -11,43 +13,31 @@ let styles = {};
 // eslint-disable-next-line react/prefer-stateless-function
 export default class IconButton extends Component {
   static propTypes = {
+    disabled: PropTypes.bool,
     iconName: PropTypes.string,
     iconSize: PropTypes.string,
     onClick: PropTypes.func
   }
 
-  renderIcon(name, size) {
-    let icon;
-
-    // Size options: "lg","2x","3x","4x","5x"
-    if (size) {
-      icon = <FontAwesome name={name} size={size} />;
-    } else {
-      icon = <FontAwesome name={name} />;
-    }
-
-    return icon;
-  }
-
   render() {
-    const { iconName, iconSize, onClick } = this.props;
+    const { disabled, iconName, iconSize, onClick } = this.props;
+    const disabledStyles = combineStyles(styles.base, styles.disabled);
+    const buttonStyles = disabled ? disabledStyles : styles.base;
 
     return (
-      <button className={styles.iconButton} onClick={onClick}>
-        {
-          this.renderIcon(iconName, iconSize)
-        }
+      <button className={buttonStyles} disabled={disabled} onClick={onClick}>
+        <FontAwesome name={iconName} size={iconSize} />
       </button>
     );
   }
 }
 
 styles = StyleSheet.create({
-  iconButton: {
+  base: {
     background: 'none',
     border: 0,
     borderRadius: 0,
-    color: theme.palette.tuColorA40o.color,
+    color: baseButtonColor,
     cursor: 'pointer',
     fontSize: theme.typography.fs3,
     padding: 0,
@@ -64,6 +54,22 @@ styles = StyleSheet.create({
     ':active': {
       color: cool,
       outline: 'none'
+    }
+  },
+
+  disabled: {
+    cursor: 'not-allowed',
+    opacity: '.5',
+
+    // NOTE: :hover, :focus, :active have the same styling
+    ':hover': {
+      color: baseButtonColor
+    },
+    ':focus': {
+      color: baseButtonColor
+    },
+    ':active': {
+      color: baseButtonColor
     }
   }
 });

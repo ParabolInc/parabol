@@ -6,7 +6,6 @@ import SetupHeader from '../../components/SetupHeader/SetupHeader';
 import ShortcutsMenu from '../../components/ShortcutsMenu/ShortcutsMenu';
 import ShortcutsToggle from '../../components/ShortcutsToggle/ShortcutsToggle';
 
-
 import {
   NAVIGATE_SETUP_1_INVITE_TEAM,
   updateMeetingTeamName,
@@ -17,10 +16,11 @@ import {
 export default class Setup0GetStarted extends Component {
   static propTypes = {
     dispatch: PropTypes.func,
-    uiState: PropTypes.object
+    uiState: PropTypes.object,
+    team: PropTypes.object
   }
   render() {
-    const { dispatch, uiState } = this.props;
+    const { dispatch, uiState, team } = this.props;
     const { hasOpenShortcutMenu } = uiState;
 
     const handleNavigateToNextStep = (event) => {
@@ -74,6 +74,7 @@ export default class Setup0GetStarted extends Component {
           subHeading={<span>What do you call your team?</span>}
         />
         <SetupField
+          buttonDisabled={!team.nameFieldHasValue}
           buttonIcon="check-circle"
           hasButton
           hasShortcutHint

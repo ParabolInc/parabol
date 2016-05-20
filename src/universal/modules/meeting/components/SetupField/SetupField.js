@@ -13,11 +13,13 @@ let styles = {};
 // eslint-disable-next-line react/prefer-stateless-function
 export default class SetupField extends Component {
   static propTypes = {
+    buttonDisabled: PropTypes.bool,
     buttonIcon: PropTypes.string,
     hasButton: PropTypes.bool,
+    hasErrorText: PropTypes.bool,
     hasHelpText: PropTypes.bool,
     hasShortcutHint: PropTypes.bool,
-    helpText: PropTypes.string,
+    helpText: PropTypes.object,
     type: PropTypes.string,
     value: PropTypes.string,
     isLarger: PropTypes.bool,
@@ -32,8 +34,10 @@ export default class SetupField extends Component {
 
   render() {
     const {
+      buttonDisabled,
       buttonIcon,
       hasButton,
+      hasErrorText,
       hasHelpText,
       hasShortcutHint,
       helpText,
@@ -54,7 +58,8 @@ export default class SetupField extends Component {
     const largerStyles = combineStyles(styles.field, styles.fieldLarger);
     const widerStyles = combineStyles(styles.field, styles.widerLarger);
     const largerAndWiderStyles = combineStyles(styles.field, styles.fieldLarger, styles.fieldWider);
-    // const value = value || '';
+    const helpTextErrorStyles = combineStyles(styles.fieldHelpText, styles.fieldHelpTextError);
+    const helpTextStyles = hasErrorText ? helpTextErrorStyles : styles.fieldHelpText;
 
     if (isLarger && isWider) {
       fieldStyles = largerAndWiderStyles;
@@ -77,11 +82,16 @@ export default class SetupField extends Component {
         />
         {hasButton &&
           <div className={styles.fieldButtonBlock}>
-            <IconButton iconName={buttonIcon} iconSize="2x" onClick={onButtonClick} />
+            <IconButton
+              disabled={buttonDisabled}
+              iconName={buttonIcon}
+              iconSize="2x"
+              onClick={onButtonClick}
+            />
           </div>
         }
         {hasHelpText &&
-          <div className={styles.fieldHelpText}>{helpText}</div>
+          <div className={helpTextStyles}>{helpText}</div>
         }
         {hasShortcutHint &&
           <div className={styles.fieldShortcutHint}>{shortcutHint}</div>
@@ -157,6 +167,10 @@ styles = StyleSheet.create({
     fontSize: theme.typography.fs3,
     fontStyle: 'italic',
     fontWeight: 700
+  },
+
+  fieldHelpTextError: {
+    color: theme.palette.b
   },
 
   fieldShortcutHint: {
