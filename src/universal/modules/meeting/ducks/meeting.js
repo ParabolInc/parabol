@@ -147,8 +147,8 @@ export default function reducer(state = initialState, action = {}) {
       return state.mergeDeep({
         uiState: iMap({
           setup1: iMap({
-            invitesField: action.payload,
-            invitesFieldHasValue: true,
+            invitesField: action.payload.value,
+            invitesFieldHasValue: action.payload.hasValue,
             invitesFieldError: '',
             invitesFieldHasError: false
           })
@@ -304,10 +304,19 @@ export const addInvitesFromInvitesField = (emailsString) => {
   });
 };
 
-export const updateInvitesField = (value) => ({
-  type: SETUP1_UPDATE_INVITES_FIELD,
-  payload: value
-});
+export const updateInvitesField = (value) => {
+  let hasValue = true;
+  if (value === '') {
+    hasValue = false;
+  }
+  return ({
+    type: SETUP1_UPDATE_INVITES_FIELD,
+    payload: {
+      value,
+      hasValue
+    }
+  });
+};
 
 export const removeInvitee = (nameOrEmail) =>
   (dispatch, getState) => {

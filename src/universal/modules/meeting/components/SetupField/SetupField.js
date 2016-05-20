@@ -169,6 +169,7 @@ styles = StyleSheet.create({
     fontWeight: 700
   },
 
+  // NOTE: Modifies fieldHelpText
   fieldHelpTextError: {
     color: theme.palette.b
   },
