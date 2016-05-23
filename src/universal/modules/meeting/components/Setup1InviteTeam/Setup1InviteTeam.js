@@ -21,12 +21,8 @@ export default class Setup1InviteTeam extends Component {
 
     const emailLength = uiState.setup1.emails.length;
 
-    const handleNavigateToNextStep = () => {
-      dispatch({ type: NAVIGATE_SETUP_2_INVITE_TEAM });
-    };
-
     if (emailLength > 0) {
-      handleNavigateToNextStep();
+      dispatch({ type: NAVIGATE_SETUP_2_INVITE_TEAM });
     }
   }
 

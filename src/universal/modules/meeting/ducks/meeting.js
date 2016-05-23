@@ -45,8 +45,7 @@ const initialState = iMap({
     id: '',
     content: '',
     team: iMap({  // TODO: make me actually link to nested team object
-      name: '',
-      nameFieldHasValue: false
+      name: ''
     }),
     lastUpdatedBy: '',
     currentEditors: iList()
@@ -98,8 +97,7 @@ export default function reducer(state = initialState, action = {}) {
       return state.mergeDeep({
         instance: iMap({
           team: iMap({
-            name: action.payload.team.name,
-            nameFieldHasValue: action.payload.team.nameFieldHasValue
+            name: action.payload.team.name
           }),
           lastUpdatedBy: action.payload.updatedBy
         })
@@ -275,14 +273,9 @@ const updateMeetingTeamNameSuccess = (payload, meta) => ({
 // TODO: make me actually interact with GraphQL
 export const updateMeetingTeamName = (name, updatedBy) =>
   async dispatch => {
-    let nameFieldHasValue = true;
-    if (name === '') {
-      nameFieldHasValue = false;
-    }
     const payload = {
       team: {
-        name,
-        nameFieldHasValue
+        name
       },
       updatedBy
     };

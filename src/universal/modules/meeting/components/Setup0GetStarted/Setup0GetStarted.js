@@ -19,6 +19,7 @@ export default class Setup0GetStarted extends Component {
     uiState: PropTypes.object,
     team: PropTypes.object
   }
+
   render() {
     const { dispatch, uiState, team } = this.props;
     const { hasOpenShortcutMenu } = uiState;
@@ -31,6 +32,12 @@ export default class Setup0GetStarted extends Component {
     const onChangeTeamName = (event) => {
       dispatch(updateMeetingTeamName(event.target.value, 'anonymous'));
     };
+
+    let nameFieldHasValue = true;
+
+    if (team.name === '') {
+      nameFieldHasValue = false;
+    }
 
     // TODO: Add shortcut key “?” to open/close ShortcutsMenu
     const onShortcutMenuToggle = (event) => {
@@ -74,7 +81,7 @@ export default class Setup0GetStarted extends Component {
           subHeading={<span>What do you call your team?</span>}
         />
         <SetupField
-          buttonDisabled={!team.nameFieldHasValue}
+          buttonDisabled={!nameFieldHasValue}
           buttonIcon="check-circle"
           hasButton
           hasShortcutHint
