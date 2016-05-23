@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import keydown from 'react-keydown';
 import ProgressDots from '../../components/ProgressDots/ProgressDots';
 import SetupContent from '../../components/SetupContent/SetupContent';
 import SetupField from '../../components/SetupField/SetupField';
@@ -12,6 +13,9 @@ import {
   UPDATE_SHORTCUT_MENU_STATE
 } from '../../ducks/meeting.js';
 
+const KEYS = ['enter', 'shift+/'];
+
+@keydown(KEYS)
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Setup0GetStarted extends Component {
   static propTypes = {
@@ -20,9 +24,30 @@ export default class Setup0GetStarted extends Component {
     team: PropTypes.object
   }
 
+  componentWillReceiveProps(nextProps) {
+    const { dispatch, uiState } = this.props;
+    const { keydown: { event } } = nextProps;
+    if (event) {
+      console.log(nextProps);
+      console.log(event);
+      console.log(event.which);
+      if (event.which === 191) {
+        console.log('? 191');
+        if (!uiState.shortcuts.hasOpenShortcutMenu) {
+          dispatch({
+            type: UPDATE_SHORTCUT_MENU_STATE,
+            payload: {
+              boolean: !uiState.shortcuts.hasOpenShortcutMenu
+            }
+          });
+        }
+      }
+    }
+  }
+
   render() {
     const { dispatch, uiState, team } = this.props;
-    const { hasOpenShortcutMenu } = uiState;
+    const { hasOpenShortcutMenu } = uiState.shortcuts;
 
     const handleNavigateToNextStep = (event) => {
       event.preventDefault();

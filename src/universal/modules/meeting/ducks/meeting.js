@@ -52,7 +52,9 @@ const initialState = iMap({
   }),
   navigation: NAVIGATE_SETUP_0_GET_STARTED,
   uiState: iMap({
-    hasOpenShortcutMenu: false,
+    shortcuts: iMap({
+      hasOpenShortcutMenu: false
+    }),
     setup1: iMap({
       emails: iList(),
       invitesField: '',
@@ -105,7 +107,9 @@ export default function reducer(state = initialState, action = {}) {
     case UPDATE_SHORTCUT_MENU_STATE:
       return state.merge({
         uiState: iMap({
-          hasOpenShortcutMenu: action.payload.boolean
+          shortcuts: iMap({
+            hasOpenShortcutMenu: action.payload.boolean
+          })
         })
       });
     case NAVIGATE_SETUP_0_GET_STARTED:
