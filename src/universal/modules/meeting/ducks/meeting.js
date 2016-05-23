@@ -105,7 +105,7 @@ export default function reducer(state = initialState, action = {}) {
         })
       });
     case UPDATE_SHORTCUT_MENU_STATE:
-      return state.merge({
+      return state.mergeDeep({
         uiState: iMap({
           shortcuts: iMap({
             hasOpenShortcutMenu: action.payload.boolean
