@@ -13,9 +13,9 @@ import {
   UPDATE_SHORTCUT_MENU_STATE
 } from '../../ducks/meeting.js';
 
-const KEYS = ['enter', 'shift+/'];
+// const KEYS = ['enter', 'shift+/'];
 
-@keydown(KEYS)
+// @keydown(KEYS)
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Setup0GetStarted extends Component {
   static propTypes = {
@@ -24,30 +24,22 @@ export default class Setup0GetStarted extends Component {
     team: PropTypes.object
   }
 
-  componentWillReceiveProps(nextProps) {
+  @keydown('shift+/')
+  handleMenuToggle() {
     const { dispatch, uiState } = this.props;
-    const { keydown: { event } } = nextProps;
-    if (event) {
-      console.log(nextProps);
-      console.log(event);
-      console.log(event.which);
-      if (event.which === 191) {
-        console.log('? 191');
-        if (!uiState.shortcuts.hasOpenShortcutMenu) {
-          dispatch({
-            type: UPDATE_SHORTCUT_MENU_STATE,
-            payload: {
-              boolean: !uiState.shortcuts.hasOpenShortcutMenu
-            }
-          });
-        }
+    dispatch({
+      type: UPDATE_SHORTCUT_MENU_STATE,
+      payload: {
+        boolean: !uiState.shortcuts.hasOpenShortcutMenu
       }
-    }
+    });
   }
 
   render() {
     const { dispatch, uiState, team } = this.props;
     const { hasOpenShortcutMenu } = uiState.shortcuts;
+
+    console.log(this.props);
 
     const handleNavigateToNextStep = (event) => {
       event.preventDefault();
@@ -67,12 +59,13 @@ export default class Setup0GetStarted extends Component {
     // TODO: Add shortcut key “?” to open/close ShortcutsMenu
     const onShortcutMenuToggle = (event) => {
       event.preventDefault();
-      dispatch({
-        type: UPDATE_SHORTCUT_MENU_STATE,
-        payload: {
-          boolean: !hasOpenShortcutMenu
-        }
-      });
+      this.handleMenuToggle();
+      // dispatch({
+      //   type: UPDATE_SHORTCUT_MENU_STATE,
+      //   payload: {
+      //     boolean: !hasOpenShortcutMenu
+      //   }
+      // });
     };
 
     const shortcutsRequests = [
