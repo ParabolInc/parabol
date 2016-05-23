@@ -1,40 +1,38 @@
 import React, { Component, PropTypes } from 'react';
-import keydown from 'react-keydown';
+import { HotKeys } from 'react-hotkeys';
 import ProgressDots from '../../components/ProgressDots/ProgressDots';
 import SetupContent from '../../components/SetupContent/SetupContent';
 import SetupField from '../../components/SetupField/SetupField';
 import SetupHeader from '../../components/SetupHeader/SetupHeader';
 import ShortcutsMenu from '../../components/ShortcutsMenu/ShortcutsMenu';
 import ShortcutsToggle from '../../components/ShortcutsToggle/ShortcutsToggle';
-
 import {
   NAVIGATE_SETUP_1_INVITE_TEAM,
   updateMeetingTeamName,
-  UPDATE_SHORTCUT_MENU_STATE
 } from '../../ducks/meeting.js';
+import { UPDATE_SHORTCUT_MENU_STATE } from '../../ducks/shortcuts.js';
 
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Setup0GetStarted extends Component {
   static propTypes = {
-    dispatch: PropTypes.func,
-    uiState: PropTypes.object,
+    dispatch: PropTypes.func.isRequired,
+    shortcuts: PropTypes.object.isRequired,
     team: PropTypes.object
   }
 
-  @keydown('shift+/')
   handleMenuToggle() {
-    const { dispatch, uiState } = this.props;
+    const { dispatch, shortcuts } = this.props;
     dispatch({
       type: UPDATE_SHORTCUT_MENU_STATE,
       payload: {
-        boolean: !uiState.shortcuts.hasOpenShortcutMenu
+        boolean: !shortcuts.hasOpenShortcutMenu
       }
     });
   }
 
   render() {
-    const { dispatch, uiState, team } = this.props;
-    const { hasOpenShortcutMenu } = uiState.shortcuts;
+    const { dispatch, shortcuts, team } = this.props;
+    const { hasOpenShortcutMenu } = shortcuts;
 
     const handleNavigateToNextStep = (event) => {
       event.preventDefault();
@@ -45,23 +43,24 @@ export default class Setup0GetStarted extends Component {
       dispatch(updateMeetingTeamName(event.target.value, 'anonymous'));
     };
 
+    const handleFieldKeyEnter = () => {
+      handleNavigateToNextStep(event);
+    };
+
+    const onShortcutMenuToggle = (event) => {
+      event.preventDefault();
+      this.handleMenuToggle();
+    };
+
+    const keyHandlers = {
+      seqHelp: onShortcutMenuToggle
+    };
+
     let nameFieldHasValue = true;
 
     if (team.name === '') {
       nameFieldHasValue = false;
     }
-
-    // TODO: Add shortcut key “?” to open/close ShortcutsMenu
-    const onShortcutMenuToggle = (event) => {
-      event.preventDefault();
-      this.handleMenuToggle();
-      // dispatch({
-      //   type: UPDATE_SHORTCUT_MENU_STATE,
-      //   payload: {
-      //     boolean: !hasOpenShortcutMenu
-      //   }
-      // });
-    };
 
     const shortcutsRequests = [
       {
@@ -82,47 +81,49 @@ export default class Setup0GetStarted extends Component {
       }
     ];
 
-    const handleFieldKeyEnter = (event) => {
-      if (event.keyCode === 13) {
-        handleNavigateToNextStep(event);
-      }
-    };
 
     return (
-      <SetupContent>
-        <ProgressDots
-          numDots={3}
-          numCompleted={1}
-          currentDot={1}
-        />
-        <SetupHeader
-          heading="Let’s get started!"
-          subHeading={<span>What do you call your team?</span>}
-        />
-        <SetupField
-          buttonDisabled={!nameFieldHasValue}
-          buttonIcon="check-circle"
-          hasButton
-          hasShortcutHint
-          type="text"
-          isLarger
-          onButtonClick={handleNavigateToNextStep}
-          onChange={onChangeTeamName}
-          onFocus={() => console.log('SetupField.onFocus')}
-          onKeyUp={handleFieldKeyEnter}
-          placeholder="Team name"
-          shortcutHint="Press enter"
-        />
-        {hasOpenShortcutMenu &&
-          <ShortcutsMenu
-            shortcutsList={shortcutsRequests}
-            onCloseClick={onShortcutMenuToggle}
+      <HotKeys
+        focused
+        attach={window}
+        handlers={{ seqHelp: onShortcutMenuToggle }}
+      >
+        <SetupContent>
+          <ProgressDots
+            numDots={3}
+            numCompleted={1}
+            currentDot={1}
           />
-        }
-        {!hasOpenShortcutMenu &&
-          <ShortcutsToggle onClick={onShortcutMenuToggle} />
-        }
-      </SetupContent>
+          <SetupHeader
+            heading="Let’s get started!"
+            subHeading={<span>What do you call your team?</span>}
+          />
+          <HotKeys handlers={{ keyEnter: handleFieldKeyEnter }} >
+            <SetupField
+              buttonDisabled={!nameFieldHasValue}
+              buttonIcon="check-circle"
+              hasButton
+              hasShortcutHint
+              type="text"
+              isLarger
+              onButtonClick={handleNavigateToNextStep}
+              onChange={onChangeTeamName}
+              onFocus={() => console.log('SetupField.onFocus')}
+              placeholder="Team name"
+              shortcutHint="Press enter"
+            />
+          </HotKeys>
+          {hasOpenShortcutMenu &&
+            <ShortcutsMenu
+              shortcutsList={shortcutsRequests}
+              onCloseClick={onShortcutMenuToggle}
+            />
+          }
+          {!hasOpenShortcutMenu &&
+            <ShortcutsToggle onClick={onShortcutMenuToggle} />
+          }
+        </SetupContent>
+      </HotKeys>
     );
   }
 }

@@ -27,9 +27,6 @@ export const NAVIGATE_SETUP_0_GET_STARTED = 'action/meeting/NAVIGATE_SETUP_0_GET
 export const NAVIGATE_SETUP_1_INVITE_TEAM = 'action/meeting/NAVIGATE_SETUP_1_INVITE_TEAM';
 export const NAVIGATE_SETUP_2_INVITE_TEAM = 'action/meeting/NAVIGATE_SETUP_2_INVITE_TEAM';
 
-// UI State
-export const UPDATE_SHORTCUT_MENU_STATE = 'action/meeting/UPDATE_SHORTCUT_MENU_STATE';
-
 // Setup 1
 export const SETUP1_ADD_EMAILS_SUCCESS = 'action/meeting/SETUP1_ADD_EMAILS_SUCCESS';
 export const SETUP1_ADD_EMAILS_ERROR = 'action/meeting/SETUP1_ADD_EMAILS_ERROR';
@@ -52,9 +49,6 @@ const initialState = iMap({
   }),
   navigation: NAVIGATE_SETUP_0_GET_STARTED,
   uiState: iMap({
-    shortcuts: iMap({
-      hasOpenShortcutMenu: false
-    }),
     setup1: iMap({
       emails: iList(),
       invitesField: '',
@@ -102,14 +96,6 @@ export default function reducer(state = initialState, action = {}) {
             name: action.payload.team.name
           }),
           lastUpdatedBy: action.payload.updatedBy
-        })
-      });
-    case UPDATE_SHORTCUT_MENU_STATE:
-      return state.mergeDeep({
-        uiState: iMap({
-          shortcuts: iMap({
-            hasOpenShortcutMenu: action.payload.boolean
-          })
         })
       });
     case NAVIGATE_SETUP_0_GET_STARTED:
@@ -194,7 +180,7 @@ export const createMeetingAndRedirect = () =>
     }
     const {payload} = data;
     dispatch({type: CREATE_MEETING_SUCCESS, payload});
-    const id = ensureState(getState()).getIn(['meeting', 'instance', 'id']);
+    const id = ensureState(getState()).getIn(['meeting', 'meeting', 'instance', 'id']);
     // replace, don't use push. a click should go back 2.
     return dispatch(replace(`/meeting/${id}`));
   };

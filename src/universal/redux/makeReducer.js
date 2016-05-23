@@ -1,7 +1,7 @@
 import {compose} from 'redux';
 import {combineReducers} from 'redux-immutablejs';
 import auth from '../modules/auth/ducks/auth';
-import meeting from '../modules/meeting/ducks/meeting';
+import meeting from '../modules/meeting/ducks/index';
 import {routing} from './routing';
 
 // TODO make auth and meeting async

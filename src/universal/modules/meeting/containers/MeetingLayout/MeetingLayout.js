@@ -3,6 +3,7 @@ import look, { StyleSheet } from 'react-look';
 import { connect } from 'react-redux';
 import { ensureState } from 'redux-optimistic-ui';
 import { reduxSocket } from 'redux-socket-cluster';
+import { HotKeys } from 'react-hotkeys';
 import { localStorageVars } from 'universal/utils/clientOptions';
 import Setup0GetStarted from '../../components/Setup0GetStarted/Setup0GetStarted';
 import Setup1InviteTeam from '../../components/Setup1InviteTeam/Setup1InviteTeam';
@@ -18,17 +19,23 @@ import {
 
 let styles = {};
 
+const keyMap = {
+  keyEnter: 'enter',
+  seqHelp: 'shift+/',
+};
+
 const mapStateToProps = state => {
   const myState = ensureState(state);
   const auth = myState.get('auth');
-  const meeting = myState.get('meeting');
+  const meeting = myState.getIn(['meeting', 'meeting']);
   return {
+    isAuthenticated: auth.get('isAuthenticated'),
     meeting: meeting && meeting.toJS(),
-    userId: auth.getIn(['user', 'id']),
     socketState: myState.getIn(['socket', 'socketState']),
     socketSubs: myState.getIn(['socket', 'subs']).toJS(),
     socketId: myState.getIn(['socket', 'id']),
-    isAuthenticated: auth.get('isAuthenticated')
+    shortcuts: myState.getIn(['meeting', 'shortcuts']).toJS(),
+    userId: auth.getIn(['user', 'id'])
   };
 };
 
@@ -42,11 +49,12 @@ export default class MeetingLayout extends Component {
     // children included here for multi-part landing pages (FAQs, pricing, cha la la)
     // children: PropTypes.element,
     dispatch: PropTypes.func.isRequired,
-    meeting: PropTypes.object.isRequired
+    meeting: PropTypes.object.isRequired,
+    shortcuts: PropTypes.object.isRequired
   };
 
   render() {
-    const { dispatch, meeting } = this.props;
+    const { dispatch, meeting, shortcuts } = this.props;
 
     const team = meeting.instance.team;
     const teamName = meeting.instance.team.name || 'Team Name';
@@ -54,31 +62,39 @@ export default class MeetingLayout extends Component {
     const uiState = meeting.uiState;
 
     return (
-      <div className={styles.viewport}>
-        <div className={styles.main}>
-          <div className={styles.contentGroup}>
-            {(() => {
-              switch (meeting.navigation) {
-                case NAVIGATE_SETUP_0_GET_STARTED:
-                  return <Setup0GetStarted dispatch={dispatch} uiState={uiState} team={team} />;
-                case NAVIGATE_SETUP_1_INVITE_TEAM:
-                  return <Setup1InviteTeam dispatch={dispatch} uiState={uiState} />;
-                case NAVIGATE_SETUP_2_INVITE_TEAM:
-                  return <Setup2InviteTeam dispatch={dispatch} uiState={uiState} />;
-                default:
-                  return <Setup0GetStarted uiState={uiState} />;
-              }
-            })()}
-            { /* <SetupField /> */ }
+      <HotKeys focused attach={window} keyMap={keyMap}>
+        <div className={styles.viewport}>
+          <div className={styles.main}>
+            <div className={styles.contentGroup}>
+              {(() => {
+                switch (meeting.navigation) {
+                  case NAVIGATE_SETUP_0_GET_STARTED:
+                    return (
+                      <Setup0GetStarted
+                        dispatch={dispatch}
+                        shortcuts={shortcuts}
+                        team={team}
+                      />
+                    );
+                  case NAVIGATE_SETUP_1_INVITE_TEAM:
+                    return <Setup1InviteTeam dispatch={dispatch} uiState={uiState} />;
+                  case NAVIGATE_SETUP_2_INVITE_TEAM:
+                    return <Setup2InviteTeam dispatch={dispatch} uiState={uiState} />;
+                  default:
+                    return <Setup0GetStarted uiState={uiState} />;
+                }
+              })()}
+              { /* <SetupField /> */ }
+            </div>
           </div>
-        </div>
 
-        <Sidebar
-          shortUrl="https://prbl.io/a/b7s8x9"
-          teamName={teamName}
-          timerValue="30:00"
-        />
-      </div>
+          <Sidebar
+            shortUrl="https://prbl.io/a/b7s8x9"
+            teamName={teamName}
+            timerValue="30:00"
+          />
+        </div>
+      </HotKeys>
     );
   }
 }
