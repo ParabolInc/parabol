@@ -42,6 +42,12 @@ export default class Setup1InviteTeam extends Component {
       dispatch(addInvitesFromInvitesField(emails));
     };
 
+    const handleFieldKeyEnter = (event) => {
+      if (event.keyCode === 13) {
+        onSubmitInvites(event, uiState.setup1.invitesField);
+      }
+    };
+
     const helpText = invitesFieldHasError ?
       // eslint-disable-next-line max-len
       <span>Oops! Please make sure email addresses are valid <br />and separated by a single comma.</span> :
@@ -71,6 +77,7 @@ export default class Setup1InviteTeam extends Component {
           onButtonClick={(event) => onSubmitInvites(event, uiState.setup1.invitesField)}
           onChange={onChangeInvites}
           onFocus={() => console.log('SetupField.onFocus')}
+          onKeyUp={handleFieldKeyEnter}
           placeholder="b.bunny@acme.co, d.duck@acme.co, e.fudd@acme.co"
           value={uiState.setup1.invitesField}
         />

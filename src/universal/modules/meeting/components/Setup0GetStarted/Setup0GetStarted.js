@@ -13,9 +13,6 @@ import {
   UPDATE_SHORTCUT_MENU_STATE
 } from '../../ducks/meeting.js';
 
-// const KEYS = ['enter', 'shift+/'];
-
-// @keydown(KEYS)
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Setup0GetStarted extends Component {
   static propTypes = {
@@ -38,8 +35,6 @@ export default class Setup0GetStarted extends Component {
   render() {
     const { dispatch, uiState, team } = this.props;
     const { hasOpenShortcutMenu } = uiState.shortcuts;
-
-    console.log(this.props);
 
     const handleNavigateToNextStep = (event) => {
       event.preventDefault();
@@ -87,6 +82,12 @@ export default class Setup0GetStarted extends Component {
       }
     ];
 
+    const handleFieldKeyEnter = (event) => {
+      if (event.keyCode === 13) {
+        handleNavigateToNextStep(event);
+      }
+    };
+
     return (
       <SetupContent>
         <ProgressDots
@@ -108,6 +109,7 @@ export default class Setup0GetStarted extends Component {
           onButtonClick={handleNavigateToNextStep}
           onChange={onChangeTeamName}
           onFocus={() => console.log('SetupField.onFocus')}
+          onKeyUp={handleFieldKeyEnter}
           placeholder="Team name"
           shortcutHint="Press enter"
         />
