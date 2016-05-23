@@ -60,8 +60,14 @@ export default class SetupField extends Component {
     const largerStyles = combineStyles(styles.field, styles.fieldLarger);
     const widerStyles = combineStyles(styles.field, styles.widerLarger);
     const largerAndWiderStyles = combineStyles(styles.field, styles.fieldLarger, styles.fieldWider);
-    const helpTextErrorStyles = combineStyles(styles.fieldHelpText, styles.fieldHelpTextError);
-    const helpTextStyles = hasErrorText ? helpTextErrorStyles : styles.fieldHelpText;
+    const helpTextErrorStyles = combineStyles(styles.helpText, styles.helpTextError);
+    const helpTextStyles = hasErrorText ? helpTextErrorStyles : styles.helpText;
+    const shortcutHintDisabledStyles = combineStyles(
+      styles.shortcutHint,
+      styles.shortcutHintDisabled
+    );
+    const shortcutHintStyles = buttonDisabled ?
+      shortcutHintDisabledStyles : styles.shortcutHint;
 
     if (isLarger && isWider) {
       fieldStyles = largerAndWiderStyles;
@@ -84,7 +90,7 @@ export default class SetupField extends Component {
           value={value}
         />
         {hasButton &&
-          <div className={styles.fieldButtonBlock}>
+          <div className={styles.buttonBlock}>
             <IconButton
               disabled={buttonDisabled}
               iconName={buttonIcon}
@@ -97,7 +103,7 @@ export default class SetupField extends Component {
           <div className={helpTextStyles}>{helpText}</div>
         }
         {hasShortcutHint &&
-          <div className={styles.fieldShortcutHint}>{shortcutHint}</div>
+          <div className={shortcutHintStyles}>{shortcutHint}</div>
         }
       </div>
     );
@@ -158,30 +164,35 @@ styles = StyleSheet.create({
     minWidth: '30rem'
   },
 
-  fieldButtonBlock: {
+  buttonBlock: {
     left: '100%',
     padding: '0 0 0 1rem',
     position: 'absolute',
     top: '.375rem'
   },
 
-  fieldHelpText: {
+  helpText: {
     color: theme.palette.c,
     fontSize: theme.typography.fs3,
     fontStyle: 'italic',
     fontWeight: 700
   },
 
-  // NOTE: Modifies fieldHelpText
-  fieldHelpTextError: {
+  // NOTE: Modifies helpText
+  helpTextError: {
     color: theme.palette.b
   },
 
-  fieldShortcutHint: {
+  shortcutHint: {
     color: theme.palette.b,
     fontSize: theme.typography.fs3,
     fontStyle: 'italic',
     fontWeight: 700,
     textAlign: 'right'
+  },
+
+  // NOTE: Modifies shortcutHint
+  shortcutHintDisabled: {
+    opacity: '.5'
   }
 });
