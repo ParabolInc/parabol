@@ -6,35 +6,34 @@ import SetupField from '../../components/SetupField/SetupField';
 import SetupHeader from '../../components/SetupHeader/SetupHeader';
 import ShortcutsMenu from '../../components/ShortcutsMenu/ShortcutsMenu';
 import ShortcutsToggle from '../../components/ShortcutsToggle/ShortcutsToggle';
-
 import {
   NAVIGATE_SETUP_1_INVITE_TEAM,
   updateMeetingTeamName,
-  UPDATE_SHORTCUT_MENU_STATE
 } from '../../ducks/meeting.js';
+import { UPDATE_SHORTCUT_MENU_STATE } from '../../ducks/shortcuts.js';
 
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Setup0GetStarted extends Component {
   static propTypes = {
-    dispatch: PropTypes.func,
-    uiState: PropTypes.object,
+    dispatch: PropTypes.func.isRequired,
+    shortcuts: PropTypes.object.isRequired,
     team: PropTypes.object
   }
 
   @keydown('shift+/')
   handleMenuToggle() {
-    const { dispatch, uiState } = this.props;
+    const { dispatch, shortcuts } = this.props;
     dispatch({
       type: UPDATE_SHORTCUT_MENU_STATE,
       payload: {
-        boolean: !uiState.shortcuts.hasOpenShortcutMenu
+        boolean: !shortcuts.hasOpenShortcutMenu
       }
     });
   }
 
   render() {
-    const { dispatch, uiState, team } = this.props;
-    const { hasOpenShortcutMenu } = uiState.shortcuts;
+    const { dispatch, shortcuts, team } = this.props;
+    const { hasOpenShortcutMenu } = shortcuts;
 
     const handleNavigateToNextStep = (event) => {
       event.preventDefault();
