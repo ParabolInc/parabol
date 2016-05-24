@@ -65,7 +65,7 @@ export default class Setup2InviteTeam extends Component {
         row: {
           onMouseEnter: onInviteeRowMouseEnter,
           onMouseLeave: onInviteeRowMouseLeave,
-          rowHasHover: uiState.setup2.rowWithHover
+          rowWithHover: uiState.setup2.rowWithHover
         },
         button: {
           onClick: () => onInviteeRemove(label),

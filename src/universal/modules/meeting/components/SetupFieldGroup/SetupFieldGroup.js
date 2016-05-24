@@ -53,7 +53,7 @@ export default class SetupFieldGroup extends Component {
             >
               <div className={columnLeftStyles}>
                 <div className={styles.fieldRemovalBlock}>
-                  {(field.row.rowHasHover === index) &&
+                  {(field.row.rowWithHover === index) &&
                     <IconButton
                       iconName="times-circle"
                       iconSize="2x"
