@@ -17,7 +17,7 @@ const buttonPropsList = [
     description: <span>Sets the boolean HTML attribute and causes disabled styling</span>
   },
   { name: 'label', type: 'string',
-    description: <span>The visible button text. Defaults to “<i>Label Me</i>”</span>
+    description: <span>The visible button text. <b>Defaults</b> to “<i>Label Me</i>”</span>
   },
   { name: 'onClick', type: 'func',
     description: <span>Handler for when the button is clicked</span>
@@ -30,7 +30,8 @@ const buttonPropsList = [
     description: <span>Style options: solid (<b>default</b>), inverted (light over color background), outlined</span>
   },
   { name: 'theme', type: 'string',
-    description: <span>Theme palette value: cool, warm, dark (<b>default</b>), mid, light</span>
+    // eslint-disable-next-line max-len
+    description: <span>Theme palette value: cool, warm, dark (<b>default</b>), mid, light, white</span>
   },
     { name: 'title', type: 'string',
     // eslint-disable-next-line max-len
