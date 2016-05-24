@@ -108,7 +108,6 @@ export default class Setup0GetStarted extends Component {
               isLarger
               onButtonClick={handleNavigateToNextStep}
               onChange={onChangeTeamName}
-              onFocus={() => console.log('SetupField.onFocus')}
               placeholder="Team name"
               shortcutHint="Press enter"
             />

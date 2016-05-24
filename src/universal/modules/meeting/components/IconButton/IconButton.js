@@ -16,16 +16,17 @@ export default class IconButton extends Component {
     disabled: PropTypes.bool,
     iconName: PropTypes.string,
     iconSize: PropTypes.string,
-    onClick: PropTypes.func
+    onClick: PropTypes.func,
+    title: PropTypes.string
   }
 
   render() {
-    const { disabled, iconName, iconSize, onClick } = this.props;
+    const { disabled, iconName, iconSize, onClick, title } = this.props;
     const disabledStyles = combineStyles(styles.base, styles.disabled);
     const buttonStyles = disabled ? disabledStyles : styles.base;
 
     return (
-      <button className={buttonStyles} disabled={disabled} onClick={onClick}>
+      <button className={buttonStyles} disabled={disabled} onClick={onClick} title={title}>
         <FontAwesome name={iconName} size={iconSize} />
       </button>
     );

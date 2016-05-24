@@ -4,26 +4,38 @@ import FontAwesome from 'react-fontawesome';
 import tinycolor from 'tinycolor2';
 import theme from 'universal/styles/theme';
 
+const combineStyles = StyleSheet.combineStyles;
+const initialColor = theme.palette.warm;
+const hoverColor = tinycolor(initialColor).darken(15).toString();
 let styles = {};
 
 @look
 // eslint-disable-next-line react/prefer-stateless-function
 export default class AdvanceLink extends Component {
   static propTypes = {
+    disabled: PropTypes.bool,
     href: PropTypes.string,
     onClick: PropTypes.func,
     icon: PropTypes.string,
     label: PropTypes.string
   }
 
+  clickHandler = () => {
+    const { disabled, onClick } = this.props;
+    onClick(disabled);
+  }
+
   render() {
-    const { href, icon, label, onClick } = this.props;
+    const { disabled, href, icon, label } = this.props;
+
+    const disabledStyles = combineStyles(styles.link, styles.disabled);
+    const linkStyles = disabled ? disabledStyles : styles.link;
 
     return (
       <a
-        className={styles.link}
+        className={linkStyles}
         href={href}
-        onClick={onClick}
+        onClick={this.clickHandler}
         title={label}
       >
         {label}
@@ -38,7 +50,7 @@ export default class AdvanceLink extends Component {
 
 styles = StyleSheet.create({
   link: {
-    color: theme.palette.b,
+    color: initialColor,
     cursor: 'pointer',
     fontFamily: theme.typography.actionUISerif,
     fontSize: theme.typography.fs5,
@@ -46,15 +58,31 @@ styles = StyleSheet.create({
     fontWeight: 700,
     marginTop: '2rem',
     textDecoration: 'none',
+    userSelect: 'none',
 
     // NOTE: Same styles for both :hover, :focus
     ':hover': {
-      color: tinycolor(theme.palette.b).darken(15).toString(),
+      color: hoverColor,
       textDecoration: 'none'
     },
     ':focus': {
-      color: tinycolor(theme.palette.b).darken(15).toString(),
+      color: hoverColor,
       textDecoration: 'none'
+    }
+  },
+
+  // TODO: Create theme color options
+
+  disabled: {
+    cursor: 'not-allowed',
+    opacity: '.5',
+
+    // NOTE: Same styles for both :hover, :focus
+    ':hover': {
+      color: initialColor
+    },
+    ':focus': {
+      color: initialColor
     }
   },
 

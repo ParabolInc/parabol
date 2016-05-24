@@ -76,7 +76,6 @@ export default class Setup1InviteTeam extends Component {
             isWider
             onButtonClick={handleSubmitInvites}
             onChange={onChangeInvites}
-            onFocus={() => console.log('SetupField.onFocus')}
             placeholder="b.bunny@acme.co, d.duck@acme.co, e.fudd@acme.co"
             value={uiState.setup1.invitesField}
           />
