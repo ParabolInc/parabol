@@ -3,6 +3,7 @@ import look, { StyleSheet } from 'react-look';
 import { connect } from 'react-redux';
 import { ensureState } from 'redux-optimistic-ui';
 import { reduxSocket } from 'redux-socket-cluster';
+import { HotKeys } from 'react-hotkeys';
 import { localStorageVars } from 'universal/utils/clientOptions';
 import Setup0GetStarted from '../../components/Setup0GetStarted/Setup0GetStarted';
 import Setup1InviteTeam from '../../components/Setup1InviteTeam/Setup1InviteTeam';
@@ -17,6 +18,11 @@ import {
 } from '../../ducks/meeting.js';
 
 let styles = {};
+
+const keyMap = {
+  keyEnter: 'enter',
+  seqHelp: 'shift+/',
+};
 
 const mapStateToProps = state => {
   const myState = ensureState(state);
@@ -56,37 +62,39 @@ export default class MeetingLayout extends Component {
     const uiState = meeting.uiState;
 
     return (
-      <div className={styles.viewport}>
-        <div className={styles.main}>
-          <div className={styles.contentGroup}>
-            {(() => {
-              switch (meeting.navigation) {
-                case NAVIGATE_SETUP_0_GET_STARTED:
-                  return (
-                    <Setup0GetStarted
-                      dispatch={dispatch}
-                      shortcuts={shortcuts}
-                      team={team}
-                    />
-                  );
-                case NAVIGATE_SETUP_1_INVITE_TEAM:
-                  return <Setup1InviteTeam dispatch={dispatch} uiState={uiState} />;
-                case NAVIGATE_SETUP_2_INVITE_TEAM:
-                  return <Setup2InviteTeam dispatch={dispatch} uiState={uiState} />;
-                default:
-                  return <Setup0GetStarted uiState={uiState} />;
-              }
-            })()}
-            { /* <SetupField /> */ }
+      <HotKeys focused attach={window} keyMap={keyMap}>
+        <div className={styles.viewport}>
+          <div className={styles.main}>
+            <div className={styles.contentGroup}>
+              {(() => {
+                switch (meeting.navigation) {
+                  case NAVIGATE_SETUP_0_GET_STARTED:
+                    return (
+                      <Setup0GetStarted
+                        dispatch={dispatch}
+                        shortcuts={shortcuts}
+                        team={team}
+                      />
+                    );
+                  case NAVIGATE_SETUP_1_INVITE_TEAM:
+                    return <Setup1InviteTeam dispatch={dispatch} uiState={uiState} />;
+                  case NAVIGATE_SETUP_2_INVITE_TEAM:
+                    return <Setup2InviteTeam dispatch={dispatch} uiState={uiState} />;
+                  default:
+                    return <Setup0GetStarted uiState={uiState} />;
+                }
+              })()}
+              { /* <SetupField /> */ }
+            </div>
           </div>
-        </div>
 
-        <Sidebar
-          shortUrl="https://prbl.io/a/b7s8x9"
-          teamName={teamName}
-          timerValue="30:00"
-        />
-      </div>
+          <Sidebar
+            shortUrl="https://prbl.io/a/b7s8x9"
+            teamName={teamName}
+            timerValue="30:00"
+          />
+        </div>
+      </HotKeys>
     );
   }
 }
