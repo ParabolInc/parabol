@@ -5,24 +5,18 @@ import SetupContent from '../../components/SetupContent/SetupContent';
 import SetupFieldGroup from '../../components/SetupFieldGroup/SetupFieldGroup';
 import SetupHeader from '../../components/SetupHeader/SetupHeader';
 import * as _ from 'lodash';
-import { NAVIGATE_SETUP_1_INVITE_TEAM, removeInvitee } from '../../ducks/meeting.js';
+import {
+  NAVIGATE_SETUP_1_INVITE_TEAM,
+  removeInvitee,
+  SETUP2_UPDATE_ROW_HOVER
+} from '../../ducks/meeting.js';
 
 const onSetupFieldGroupInputChange = () => {
   console.log('onSetupFieldGroupInputChange()');
 };
 
-const onSetupFieldGroupInputBlur = () => {
-  console.log('onSetupFieldGroupInputBlur()');
-};
-
-const onSetupFieldGroupInputFocus = () => {
-  console.log('onSetupFieldGroupInputFocus()');
-};
-
 const fieldInputDefault = {
   onChange: onSetupFieldGroupInputChange,
-  onBlur: onSetupFieldGroupInputBlur,
-  onFocus: onSetupFieldGroupInputFocus,
   placeholder: 'Outcome realized',
   type: 'text'
 };
@@ -39,7 +33,10 @@ export default class Setup2InviteTeam extends Component {
 
     const emptyList = uiState.setup1.emails.length === 0;
 
-    const handleNavigateToPreviousStep = event => {
+    // TODO: Set 'projectFieldsCompleted' to true when all project fields are completed
+    const projectFieldsCompleted = false;
+
+    const handleNavigateToPreviousStep = (event) => {
       event.preventDefault();
       dispatch({ type: NAVIGATE_SETUP_1_INVITE_TEAM });
     };
@@ -48,19 +45,47 @@ export default class Setup2InviteTeam extends Component {
       dispatch(removeInvitee(label));
     };
 
+    const onInviteeRowMouseEnter = (index) => {
+      dispatch({
+        type: SETUP2_UPDATE_ROW_HOVER,
+        payload: index
+      });
+    };
+
+    const onInviteeRowMouseLeave = () => {
+      dispatch({
+        type: SETUP2_UPDATE_ROW_HOVER,
+        payload: ''
+      });
+    };
+
     const fieldGroup = _.map(uiState.setup1.emails, (emailItem) => {
       const label = emailItem.name || emailItem.address;
       return ({
+        row: {
+          onMouseEnter: onInviteeRowMouseEnter,
+          onMouseLeave: onInviteeRowMouseLeave,
+          rowWithHover: uiState.setup2.rowWithHover
+        },
         button: {
-          onClick: () => onInviteeRemove(label)
+          onClick: () => onInviteeRemove(label),
+          title: 'Remove this email invitation'
         },
         input: {
-          ... fieldInputDefault,
+          ...fieldInputDefault,
           value: ''
         },
         label
       });
     });
+
+    const handleContinue = (disabled) => {
+      if (disabled) {
+        console.log('handleContinue: disabled');
+      } else {
+        console.log('handleContinue: NOT disabled');
+      }
+    };
 
     return (
       <SetupContent>
@@ -83,7 +108,8 @@ export default class Setup2InviteTeam extends Component {
           <SetupContent>
             <SetupFieldGroup contentLabel="Invited" fields={fieldGroup} fieldLabel="Outcome" />
             <AdvanceLink
-              onClick={() => console.log('Continue!')}
+              disabled={!projectFieldsCompleted}
+              onClick={handleContinue}
               icon="arrow-circle-right"
               label="Continue"
             />

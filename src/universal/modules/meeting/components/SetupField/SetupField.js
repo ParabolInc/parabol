@@ -28,7 +28,6 @@ export default class SetupField extends Component {
     onBlur: PropTypes.func,
     onChange: PropTypes.func,
     onFocus: PropTypes.func,
-    onKeyUp: PropTypes.func,
     placeholder: PropTypes.string,
     shortcutHint: PropTypes.string
   }
@@ -50,7 +49,6 @@ export default class SetupField extends Component {
       onBlur,
       onChange,
       onFocus,
-      onKeyUp,
       placeholder,
       shortcutHint
     } = this.props;
@@ -84,7 +82,6 @@ export default class SetupField extends Component {
           onBlur={onBlur}
           onChange={onChange}
           onFocus={onFocus}
-          onKeyUp={onKeyUp}
           placeholder={placeholder}
           type={type}
           value={value}

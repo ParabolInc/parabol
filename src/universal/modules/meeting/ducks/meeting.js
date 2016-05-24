@@ -34,6 +34,7 @@ export const SETUP1_UPDATE_INVITES_FIELD = 'action/meeting/SETUP1_UPDATE_INVITES
 
 // Setup 2
 export const SETUP2_REMOVE_INVITEE = 'action/meeting/SETUP2_REMOVE_INVITEE';
+export const SETUP2_UPDATE_ROW_HOVER = 'action/meeting/SETUP2_UPDATE_ROW_HOVER';
 
 const initialState = iMap({
   isLoading: false,
@@ -55,6 +56,9 @@ const initialState = iMap({
       invitesFieldHasValue: false,
       invitesFieldError: '',
       invitesFieldHasError: false
+    }),
+    setup2: iMap({
+      rowWithHover: ''
     })
   })
 });
@@ -156,6 +160,14 @@ export default function reducer(state = initialState, action = {}) {
         })
       });
     }
+    case SETUP2_UPDATE_ROW_HOVER:
+      return state.mergeDeep({
+        uiState: iMap({
+          setup2: iMap({
+            rowWithHover: action.payload
+          })
+        })
+      });
     default:
       return state;
   }
@@ -304,7 +316,7 @@ export const updateInvitesField = (value) => {
 export const removeInvitee = (nameOrEmail) =>
   (dispatch, getState) => {
     const idx = getState()
-      .getIn(['meeting', 'uiState', 'setup1', 'emails'])
+      .getIn(['meeting', 'meeting', 'uiState', 'setup1', 'emails'])
       .findIndex((em) => em.name === nameOrEmail || em.address === nameOrEmail);
     return dispatch({
       type: SETUP2_REMOVE_INVITEE,

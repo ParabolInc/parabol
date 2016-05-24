@@ -26,16 +26,6 @@ export default class SetupFieldGroup extends Component {
     const columnRightStyles = combineStyles(styles.fieldGroupColumn, styles.fieldGroupColumnRight);
     const fieldLabelStyles = combineStyles(styles.fieldGroupLabel, styles.fieldGroupLabelForFields);
 
-    const handleMouseOut = () => {
-      console.log('SetupFieldGroupRow.onMouseOut.handleMouseOut()');
-      // TODO: Dispatch UI state for hover to hide/show removal button
-    };
-
-    const handleMouseOver = () => {
-      console.log('SetupFieldGroupRow.onMouseOver.handleMouseOver()');
-      // TODO: Dispatch UI state for hover to hide/show removal button
-    };
-
     return (
       <div className={styles.fieldGroup}>
 
@@ -58,16 +48,19 @@ export default class SetupFieldGroup extends Component {
             <div
               className={styles.fieldGroupRow}
               key={index}
-              onMouseOut={handleMouseOut}
-              onMouseOver={handleMouseOver}
+              onMouseEnter={() => field.row.onMouseEnter(index)}
+              onMouseLeave={() => field.row.onMouseLeave(index)}
             >
               <div className={columnLeftStyles}>
                 <div className={styles.fieldRemovalBlock}>
-                  <IconButton
-                    iconName="times-circle"
-                    iconSize="2x"
-                    onClick={field.button.onClick}
-                  />
+                  {(field.row.rowWithHover === index) &&
+                    <IconButton
+                      iconName="times-circle"
+                      iconSize="2x"
+                      onClick={field.button.onClick}
+                      title={field.button.title}
+                    />
+                  }
                 </div>
                 <div className={styles.fieldLabel}>
                   {field.label}

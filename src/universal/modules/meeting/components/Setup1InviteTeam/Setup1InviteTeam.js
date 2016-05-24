@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { HotKeys } from 'react-hotkeys';
 import ProgressDots from '../../components/ProgressDots/ProgressDots';
 import SetupContent from '../../components/SetupContent/SetupContent';
 import SetupField from '../../components/SetupField/SetupField';
@@ -42,10 +43,8 @@ export default class Setup1InviteTeam extends Component {
       dispatch(addInvitesFromInvitesField(emails));
     };
 
-    const handleFieldKeyEnter = (event) => {
-      if (event.keyCode === 13) {
-        onSubmitInvites(event, uiState.setup1.invitesField);
-      }
+    const handleSubmitInvites = (event) => {
+      onSubmitInvites(event, uiState.setup1.invitesField);
     };
 
     const helpText = invitesFieldHasError ?
@@ -64,23 +63,23 @@ export default class Setup1InviteTeam extends Component {
           heading="Invite team members"
           subHeading={<span>Who will be joining you?</span>}
         />
-        <SetupField
-          buttonDisabled={!invitesFieldHasValue}
-          buttonIcon="check-circle"
-          hasButton
-          hasErrorText={invitesFieldHasError}
-          hasHelpText
-          helpText={helpText}
-          type="text"
-          isLarger
-          isWider
-          onButtonClick={(event) => onSubmitInvites(event, uiState.setup1.invitesField)}
-          onChange={onChangeInvites}
-          onFocus={() => console.log('SetupField.onFocus')}
-          onKeyUp={handleFieldKeyEnter}
-          placeholder="b.bunny@acme.co, d.duck@acme.co, e.fudd@acme.co"
-          value={uiState.setup1.invitesField}
-        />
+        <HotKeys handlers={{ keyEnter: handleSubmitInvites }}>
+          <SetupField
+            buttonDisabled={!invitesFieldHasValue}
+            buttonIcon="check-circle"
+            hasButton
+            hasErrorText={invitesFieldHasError}
+            hasHelpText
+            helpText={helpText}
+            type="text"
+            isLarger
+            isWider
+            onButtonClick={handleSubmitInvites}
+            onChange={onChangeInvites}
+            placeholder="b.bunny@acme.co, d.duck@acme.co, e.fudd@acme.co"
+            value={uiState.setup1.invitesField}
+          />
+        </HotKeys>
       </SetupContent>
     );
   }
