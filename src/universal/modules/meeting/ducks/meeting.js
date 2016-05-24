@@ -1,25 +1,22 @@
-import {Map as iMap, List as iList} from 'immutable';
+import {Map as iMap, List as iList, fromJS} from 'immutable';
 import {push, replace} from 'react-router-redux'; // eslint-disable-line no-unused-vars
 import {fetchGraphQL} from '../../../utils/fetching';
 import {ensureState} from 'redux-optimistic-ui';
 import {localStorageVars} from '../../../utils/clientOptions';
 import socketCluster from 'socketcluster-client';
+import {createTeam, loadTeam} from './team';
 
-// Changed string consts because chances are we'll have more than 1 "CREATE_SUCCESS" down the road
 export const CREATE_MEETING_REQUEST = 'action/meeting/CREATE_MEETING_REQUEST';
 export const CREATE_MEETING_ERROR = 'action/meeting/CREATE_MEETING_ERROR';
 export const CREATE_MEETING_SUCCESS = 'action/meeting/CREATE_MEETING_SUCCESS';
-const SET_MEETING_ID = 'action/meeting/SET_MEETING_ID';
-// TODO is a request necessary?
+
+export const LOAD_MEETING_REQUEST = 'action/meeting/LOAD_MEETING_REQUEST';
+export const LOAD_MEETING_ERROR = 'action/meeting/LOAD_MEETING_ERROR';
+export const LOAD_MEETING_SUCCESS = 'action/meeting/LOAD_MEETING_SUCCESS';
+
 export const UPDATE_MEETING_REQUEST = 'action/meeting/UPDATE_MEETING_REQUEST';
 export const UPDATE_MEETING_ERROR = 'action/meeting/UPDATE_MEETING_ERROR';
 export const UPDATE_MEETING_SUCCESS = 'action/meeting/UPDATE_MEETING_SUCCESS';
-
-export const UPDATE_MEETING_TEAM_NAME_SUCCESS = 'action/meeting/UPDATE_MEETING_TEAM_NAME_SUCCESS';
-
-
-// TODO multiple meetings at once? It's possible with redux-operations
-// making the switch to redux-operations now is cheap, later on it'll become a pain to switch
 
 export const NAVIGATE_SETUP_0_GET_STARTED = 'action/meeting/NAVIGATE_SETUP_0_GET_STARTED';
 export const NAVIGATE_SETUP_1_INVITE_TEAM = 'action/meeting/NAVIGATE_SETUP_1_INVITE_TEAM';
@@ -30,11 +27,9 @@ const initialState = iMap({
   isLoaded: false,
   instance: iMap({
     id: '',
-    content: '',
-    team: iMap({  // TODO: make me actually link to nested team object
-      name: ''
-    }),
     lastUpdatedBy: '',
+    teamId: '',
+    content: '',
     currentEditors: iList()
   }),
   navigation: NAVIGATE_SETUP_0_GET_STARTED
@@ -42,25 +37,20 @@ const initialState = iMap({
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
-    case SET_MEETING_ID:
-      return state.mergeDeep({
-        instance: iMap({
-          id: action.payload.id
-        })
-      });
     case CREATE_MEETING_REQUEST:
+    case LOAD_MEETING_REQUEST:
       return state.merge({
         isLoading: true
       });
     case CREATE_MEETING_SUCCESS:
+    case LOAD_MEETING_SUCCESS:
       return state.mergeDeep({
         isLoading: false,
         isLoaded: true,
-        instance: iMap({
-          id: action.payload.id
-        })
+        instance: fromJS(action.payload)
       });
     case CREATE_MEETING_ERROR:
+    case LOAD_MEETING_ERROR:
     case UPDATE_MEETING_ERROR:
       return state.merge({
         isLoading: false,
@@ -69,15 +59,6 @@ export default function reducer(state = initialState, action = {}) {
     case UPDATE_MEETING_SUCCESS:
       return state.mergeDeep({
         instance: iMap(action.payload)
-      });
-    case UPDATE_MEETING_TEAM_NAME_SUCCESS:
-      return state.mergeDeep({
-        instance: iMap({
-          team: iMap({
-            name: action.payload.team.name
-          }),
-          lastUpdatedBy: action.payload.updatedBy
-        })
       });
     case NAVIGATE_SETUP_0_GET_STARTED:
       return state.merge({
@@ -96,20 +77,19 @@ export default function reducer(state = initialState, action = {}) {
   }
 }
 
-export const setMeetingId = meetingId => ({
-  type: SET_MEETING_ID,
-  payload: {id: meetingId}
-});
-
-export const createMeetingAndRedirect = () =>
+export const createTeamAndMeetingThenRedirect = () =>
   async (dispatch, getState) => {
+    await dispatch(createTeam(''));
+    const teamId = ensureState(getState())
+      .getIn(['meetingModule', 'team', 'instance', 'id']);
     const query = `
-    mutation {
-      payload: createMeeting {
-        id
+    mutation($teamId: ID!) {
+      payload: createMeeting(teamId: $teamId) {
+        id,
+        teamId
       }
     }`;
-    const {error, data} = await fetchGraphQL({query});
+    const {error, data} = await fetchGraphQL({query, variables: {teamId}});
     if (error) {
       return dispatch({type: CREATE_MEETING_ERROR, error});
     }
@@ -147,6 +127,29 @@ export const loadMeeting = meetingId => {
     });
   };
 };
+
+export const loadMeetingAndTeam = (meetingId) =>
+  async dispatch => {
+    dispatch({type: LOAD_MEETING_REQUEST});
+    const query = `
+      query($meetingId: ID!) {
+        payload: getMeetingById(meetingId: $meetingId) {
+          id,
+          createdAt,
+          updatedAt,
+          lastUpdatedBy,
+          teamId,
+          content
+        }
+      }`;
+    const {error, data} = await fetchGraphQL({query, variables: {meetingId}});
+    if (error) {
+      return dispatch({type: LOAD_MEETING_ERROR, error});
+    }
+    const {payload} = data;
+    dispatch({type: LOAD_MEETING_SUCCESS, payload});
+    return dispatch(loadTeam(payload.teamId));
+  };
 
 export const updateEditing = (meetingId, editor, isEditing) => {
   if (!editor) {
@@ -187,22 +190,4 @@ export const updateContent = (meetingId, content, updatedBy) =>
     }
     const {payload} = data;
     return dispatch(updateMeetingSuccess(payload));
-  };
-
-const updateMeetingTeamNameSuccess = (payload, meta) => ({
-  type: UPDATE_MEETING_TEAM_NAME_SUCCESS,
-  payload,
-  meta
-});
-
-// TODO: make me actually interact with GraphQL
-export const updateMeetingTeamName = (name, updatedBy) =>
-  async dispatch => {
-    const payload = {
-      team: {
-        name
-      },
-      updatedBy
-    };
-    return dispatch(updateMeetingTeamNameSuccess(payload));
   };

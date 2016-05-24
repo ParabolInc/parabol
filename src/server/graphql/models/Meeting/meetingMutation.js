@@ -10,7 +10,13 @@ import {
 export default {
   createMeeting: {
     type: Meeting,
-    async resolve(source, args, {rootValue}) { // eslint-disable-line no-unused-vars
+    args: {
+      teamId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The team ID this meeting belongs to'
+      },
+    },
+    async resolve(source, {teamId}, {rootValue}) {
       const {authToken} = rootValue;
       const newMeeting = {
         // TODO: a uuid is overkill. let's make it small for smaller urls & friendly socket payloads
@@ -18,6 +24,7 @@ export default {
         createdAt: new Date(),
         updatedAt: new Date(),
         lastUpdatedBy: authToken.id,
+        teamId,
         // TODO should this be a name?
         // If so we need to add names to the JWT & discuss overall JWT shape
         currentEditors: [],

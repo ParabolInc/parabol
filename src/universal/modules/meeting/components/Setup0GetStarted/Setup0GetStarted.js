@@ -6,11 +6,9 @@ import SetupField from '../../components/SetupField/SetupField';
 import SetupHeader from '../../components/SetupHeader/SetupHeader';
 import ShortcutsMenu from '../../components/ShortcutsMenu/ShortcutsMenu';
 import ShortcutsToggle from '../../components/ShortcutsToggle/ShortcutsToggle';
-import {
-  NAVIGATE_SETUP_1_INVITE_TEAM,
-  updateMeetingTeamName,
-} from '../../ducks/meeting.js';
+import { NAVIGATE_SETUP_1_INVITE_TEAM } from '../../ducks/meeting.js';
 import { UPDATE_SHORTCUT_MENU_STATE } from '../../ducks/shortcuts.js';
+import { updateTeamName } from '../../ducks/team.js';
 
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Setup0GetStarted extends Component {
@@ -21,7 +19,7 @@ export default class Setup0GetStarted extends Component {
   }
 
   handleMenuToggle() {
-    const { dispatch, shortcuts } = this.props;
+    const { dispatch, shortcuts, team } = this.props;
     dispatch({
       type: UPDATE_SHORTCUT_MENU_STATE,
       payload: {
@@ -40,7 +38,7 @@ export default class Setup0GetStarted extends Component {
     };
 
     const onChangeTeamName = (event) => {
-      dispatch(updateMeetingTeamName(event.target.value, 'anonymous'));
+      dispatch(updateTeamName(team.instance.id, event.target.value));
     };
 
     const handleFieldKeyEnter = () => {
@@ -57,8 +55,7 @@ export default class Setup0GetStarted extends Component {
     };
 
     let nameFieldHasValue = true;
-
-    if (team.name === '') {
+    if (team.instance.name === '') {
       nameFieldHasValue = false;
     }
 
