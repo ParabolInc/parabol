@@ -3,7 +3,10 @@ import webpack from 'webpack';
 import HappyPack from 'happypack';
 
 const root = process.cwd();
-const serverInclude = [path.join(root, 'src', 'server'), path.join(root, 'src', 'universal')];
+const serverInclude = [
+  path.join(root, 'src', 'server'),
+  path.join(root, 'src', 'universal')
+];
 
 const prefetches = [];
 const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(specifier));

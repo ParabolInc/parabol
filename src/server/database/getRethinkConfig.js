@@ -7,14 +7,14 @@ import { getDotenv } from '../../universal/utils/dotenv';
 getDotenv();
 
 export const getRethinkConfig = () => {
-  const urlString = process.env.RETHINKDB_URL || 'rethinkdb://localhost:28015';
+  const urlString = process.env.RETHINKDB_URL || 'rethinkdb://localhost:28015/actionDevelopment';
   const u = url.parse(urlString);
 
   const config = {
     host: u.hostname,
     port: parseInt(u.port, 10),
     authKey: process.env.RETHINKDB_AUTH_KEY || '',
-    db: process.env.NODE_ENV === 'testing' ? 'actionTesting' : 'action',
+    db: u.path.split('/')[1],
     min: process.env.NODE_ENV === 'production' ? 50 : 3,
     buffer: process.env.NODE_ENV === 'production' ? 50 : 3
   };

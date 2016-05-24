@@ -27,15 +27,15 @@ Live demo: http://action-staging.parabol.co/
 
 Action is a Node.js application based upon the meatier stack:
 
-| Concern            | Solution                                     |
-|--------------------|----------------------------------------------|
-| Server             | [Node 5](https://nodejs.org/)                |
-| Server Framework   | [Express](http://expressjs.com/)             |
-| Database           | [RethinkDB](https://www.rethinkdb.com/)      |
+| Concern            | Solution                                         |
+|--------------------|--------------------------------------------------|
+| Server             | [Node 5](https://nodejs.org/)                    |
+| Server Framework   | [Express](http://expressjs.com/)                 |
+| Database           | [RethinkDB](https://www.rethinkdb.com/)          |
 | Data Transport     | [GraphQL](https://github.com/graphql/graphql-js) |
-| Sockets            | [socketcluster](http://socketcluster.io/)    |
-| Client State       | [Redux](http://redux.js.org/)                |
-| Front-end          | [React](https://facebook.github.io/react/)   |
+| Sockets            | [socketcluster](http://socketcluster.io/)        |
+| Client State       | [Redux](http://redux.js.org/)                    |
+| Front-end          | [React](https://facebook.github.io/react/)       |
 
 
 ## Setup
@@ -75,7 +75,7 @@ $ npm start
 
 In this mode, the server will use your pre-built client bundle & only restart the server with fresh code.
 ```bash
-$ npm run prod
+$ npm run bs
 ```
 [http://localhost:3000/](http://localhost:3000/)
 
@@ -115,6 +115,7 @@ Authored and maintained by [Parabol](http://parabol.co).
 * [jordanh](https://github.com/jordanh)
 * [jrwells](https://github.com/jrwells)
 * [ackernaut](https://github.com/ackernaut)
+* [mattkrick](https://github.com/mattkrick)
 
 ### License
 
