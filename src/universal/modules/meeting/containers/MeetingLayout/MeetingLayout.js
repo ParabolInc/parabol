@@ -9,7 +9,8 @@ import Setup0GetStarted from '../../components/Setup0GetStarted/Setup0GetStarted
 import Setup1InviteTeam from '../../components/Setup1InviteTeam/Setup1InviteTeam';
 import Setup2InviteTeam from '../../components/Setup2InviteTeam/Setup2InviteTeam';
 import Sidebar from '../../components/Sidebar/Sidebar';
-import ensureMeetingId from '../../decorators/ensureMeetingId/ensureMeetingId';
+import ensureMeetingAndTeamLoaded from
+  '../../decorators/ensureMeetingAndTeamLoaded/ensureMeetingAndTeamLoaded';
 
 import {
   NAVIGATE_SETUP_0_GET_STARTED,
@@ -36,13 +37,14 @@ const mapStateToProps = state => {
     socketId: myState.getIn(['socket', 'id']),
     setup: myState.getIn(['meetingModule', 'setup']).toJS(),
     shortcuts: myState.getIn(['meetingModule', 'shortcuts']).toJS(),
+    team: myState.getIn(['meetingModule', 'team']).toJS(),
     userId: auth.getIn(['user', 'id'])
   };
 };
 
 @reduxSocket({authTokenName: localStorageVars.authTokenName})
 @connect(mapStateToProps)
-@ensureMeetingId // catch for those who just landed at this url
+@ensureMeetingAndTeamLoaded // catch for those who just landed at this url
 @look
 // eslint-disable-next-line react/prefer-stateless-function
 export default class MeetingLayout extends Component {
@@ -52,14 +54,14 @@ export default class MeetingLayout extends Component {
     dispatch: PropTypes.func.isRequired,
     meeting: PropTypes.object.isRequired,
     setup: PropTypes.object.isRequired,
-    shortcuts: PropTypes.object.isRequired
+    shortcuts: PropTypes.object.isRequired,
+    team: PropTypes.object.isRequired
   };
 
   render() {
-    const { dispatch, meeting, setup, shortcuts } = this.props;
+    const { dispatch, meeting, setup, shortcuts, team } = this.props;
 
-    const team = meeting.instance.team;
-    const teamName = meeting.instance.team.name || 'Team Name';
+    const teamName = team.instance.name || 'Team Name';
 
     return (
       <HotKeys focused attach={window} keyMap={keyMap}>
