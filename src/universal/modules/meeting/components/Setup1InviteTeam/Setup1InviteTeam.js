@@ -4,23 +4,20 @@ import ProgressDots from '../../components/ProgressDots/ProgressDots';
 import SetupContent from '../../components/SetupContent/SetupContent';
 import SetupField from '../../components/SetupField/SetupField';
 import SetupHeader from '../../components/SetupHeader/SetupHeader';
-import {
-  NAVIGATE_SETUP_2_INVITE_TEAM,
-  addInvitesFromInvitesField,
-  updateInvitesField
-} from '../../ducks/meeting.js';
+import { NAVIGATE_SETUP_2_INVITE_TEAM, } from '../../ducks/meeting.js';
+import { addInvitesFromInvitesField, updateInvitesField } from '../../ducks/setup.js';
 
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Setup1InviteTeam extends Component {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
-    uiState: PropTypes.object.isRequired
+    setup: PropTypes.object.isRequired
   }
 
   componentDidUpdate() {
-    const { dispatch, uiState } = this.props;
+    const { dispatch, setup } = this.props;
 
-    const emailLength = uiState.setup1.emails.length;
+    const emailLength = setup.setup1.emails.length;
 
     if (emailLength > 0) {
       dispatch({ type: NAVIGATE_SETUP_2_INVITE_TEAM });
@@ -28,10 +25,10 @@ export default class Setup1InviteTeam extends Component {
   }
 
   render() {
-    const { dispatch, uiState } = this.props;
+    const { dispatch, setup } = this.props;
 
-    const invitesFieldHasValue = uiState.setup1.invitesFieldHasValue;
-    const invitesFieldHasError = uiState.setup1.invitesFieldHasError;
+    const invitesFieldHasValue = setup.setup1.invitesFieldHasValue;
+    const invitesFieldHasError = setup.setup1.invitesFieldHasError;
 
     const onChangeInvites = (event) => {
       event.preventDefault();
@@ -44,7 +41,7 @@ export default class Setup1InviteTeam extends Component {
     };
 
     const handleSubmitInvites = (event) => {
-      onSubmitInvites(event, uiState.setup1.invitesField);
+      onSubmitInvites(event, setup.setup1.invitesField);
     };
 
     const helpText = invitesFieldHasError ?
@@ -77,7 +74,7 @@ export default class Setup1InviteTeam extends Component {
             onButtonClick={handleSubmitInvites}
             onChange={onChangeInvites}
             placeholder="b.bunny@acme.co, d.duck@acme.co, e.fudd@acme.co"
-            value={uiState.setup1.invitesField}
+            value={setup.setup1.invitesField}
           />
         </HotKeys>
       </SetupContent>

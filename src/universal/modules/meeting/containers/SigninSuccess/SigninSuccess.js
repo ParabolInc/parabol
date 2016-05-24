@@ -6,7 +6,7 @@ import {createMeetingAndRedirect} from 'universal/modules/meeting/ducks/meeting'
 const SIGNIN_ACTION_CREATE_MEETING = 'createmeeting';
 
 const mapStateToProps = state => ({
-  meeting: state.getIn(['meeting', 'meeting', 'instance'])
+  meeting: state.getIn(['meetingModule', 'meeting', 'instance'])
 });
 // @connectData(fetchData)
 @connect(mapStateToProps)
