@@ -86,7 +86,7 @@ export default class Setup0GetStarted extends Component {
       <HotKeys
         focused
         attach={window}
-        handlers={{ seqHelp: onShortcutMenuToggle }}
+        handlers={keyHandlers}
       >
         <SetupContent>
           <ProgressDots
@@ -98,7 +98,7 @@ export default class Setup0GetStarted extends Component {
             heading="Let’s get started!"
             subHeading={<span>What do you call your team?</span>}
           />
-          <HotKeys handlers={{ keyEnter: handleFieldKeyEnter }} >
+          <HotKeys handlers={{ keyEnter: handleFieldKeyEnter }}>
             <SetupField
               buttonDisabled={!nameFieldHasValue}
               buttonIcon="check-circle"

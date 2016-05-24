@@ -304,7 +304,7 @@ export const updateInvitesField = (value) => {
 export const removeInvitee = (nameOrEmail) =>
   (dispatch, getState) => {
     const idx = getState()
-      .getIn(['meeting', 'uiState', 'setup1', 'emails'])
+      .getIn(['meeting', 'meeting', 'uiState', 'setup1', 'emails'])
       .findIndex((em) => em.name === nameOrEmail || em.address === nameOrEmail);
     return dispatch({
       type: SETUP2_REMOVE_INVITEE,
