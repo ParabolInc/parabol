@@ -59,7 +59,8 @@ export default class PatternsContainer extends Component {
 
         <SectionHeader
           heading="Button"
-          description="A general purpose button element with customizable colors"
+          // eslint-disable-next-line max-len
+          description="A general purpose button element with customizable theme colors and style options"
         />
 
         <Example>
