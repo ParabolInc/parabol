@@ -12,6 +12,7 @@ export default store => ({
     require('./signin'),
     require('./meeting')(store),
     require('./graphql'),
+    require('./patterns'),
     require('./notFound')
   ]
 });
