@@ -5,11 +5,8 @@ import SetupContent from '../../components/SetupContent/SetupContent';
 import SetupFieldGroup from '../../components/SetupFieldGroup/SetupFieldGroup';
 import SetupHeader from '../../components/SetupHeader/SetupHeader';
 import * as _ from 'lodash';
-import {
-  NAVIGATE_SETUP_1_INVITE_TEAM,
-  removeInvitee,
-  SETUP2_UPDATE_ROW_HOVER
-} from '../../ducks/meeting.js';
+import { NAVIGATE_SETUP_1_INVITE_TEAM, } from '../../ducks/meeting.js';
+import { removeInvitee, SETUP2_UPDATE_ROW_HOVER } from '../../ducks/setup.js';
 
 const onSetupFieldGroupInputChange = () => {
   console.log('onSetupFieldGroupInputChange()');
@@ -25,13 +22,13 @@ const fieldInputDefault = {
 export default class Setup2InviteTeam extends Component {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
-    uiState: PropTypes.object.isRequired
+    setup: PropTypes.object.isRequired
   };
 
   render() {
-    const {dispatch, uiState} = this.props;
+    const {dispatch, setup} = this.props;
 
-    const emptyList = uiState.setup1.emails.length === 0;
+    const emptyList = setup.setup1.emails.length === 0;
 
     // TODO: Set 'projectFieldsCompleted' to true when all project fields are completed
     const projectFieldsCompleted = false;
@@ -59,13 +56,13 @@ export default class Setup2InviteTeam extends Component {
       });
     };
 
-    const fieldGroup = _.map(uiState.setup1.emails, (emailItem) => {
+    const fieldGroup = _.map(setup.setup1.emails, (emailItem) => {
       const label = emailItem.name || emailItem.address;
       return ({
         row: {
           onMouseEnter: onInviteeRowMouseEnter,
           onMouseLeave: onInviteeRowMouseLeave,
-          rowWithHover: uiState.setup2.rowWithHover
+          rowWithHover: setup.setup2.rowWithHover
         },
         button: {
           onClick: () => onInviteeRemove(label),

@@ -27,14 +27,15 @@ const keyMap = {
 const mapStateToProps = state => {
   const myState = ensureState(state);
   const auth = myState.get('auth');
-  const meeting = myState.getIn(['meeting', 'meeting']);
+  const meeting = myState.getIn(['meetingModule', 'meeting']);
   return {
     isAuthenticated: auth.get('isAuthenticated'),
     meeting: meeting && meeting.toJS(),
     socketState: myState.getIn(['socket', 'socketState']),
     socketSubs: myState.getIn(['socket', 'subs']).toJS(),
     socketId: myState.getIn(['socket', 'id']),
-    shortcuts: myState.getIn(['meeting', 'shortcuts']).toJS(),
+    setup: myState.getIn(['meetingModule', 'setup']).toJS(),
+    shortcuts: myState.getIn(['meetingModule', 'shortcuts']).toJS(),
     userId: auth.getIn(['user', 'id'])
   };
 };
@@ -50,16 +51,15 @@ export default class MeetingLayout extends Component {
     // children: PropTypes.element,
     dispatch: PropTypes.func.isRequired,
     meeting: PropTypes.object.isRequired,
+    setup: PropTypes.object.isRequired,
     shortcuts: PropTypes.object.isRequired
   };
 
   render() {
-    const { dispatch, meeting, shortcuts } = this.props;
+    const { dispatch, meeting, setup, shortcuts } = this.props;
 
     const team = meeting.instance.team;
     const teamName = meeting.instance.team.name || 'Team Name';
-
-    const uiState = meeting.uiState;
 
     return (
       <HotKeys focused attach={window} keyMap={keyMap}>
@@ -68,7 +68,12 @@ export default class MeetingLayout extends Component {
             <div className={styles.contentGroup}>
               {(() => {
                 switch (meeting.navigation) {
+                  case NAVIGATE_SETUP_1_INVITE_TEAM:
+                    return <Setup1InviteTeam dispatch={dispatch} setup={setup} />;
+                  case NAVIGATE_SETUP_2_INVITE_TEAM:
+                    return <Setup2InviteTeam dispatch={dispatch} setup={setup} />;
                   case NAVIGATE_SETUP_0_GET_STARTED:
+                  default:
                     return (
                       <Setup0GetStarted
                         dispatch={dispatch}
@@ -76,12 +81,6 @@ export default class MeetingLayout extends Component {
                         team={team}
                       />
                     );
-                  case NAVIGATE_SETUP_1_INVITE_TEAM:
-                    return <Setup1InviteTeam dispatch={dispatch} uiState={uiState} />;
-                  case NAVIGATE_SETUP_2_INVITE_TEAM:
-                    return <Setup2InviteTeam dispatch={dispatch} uiState={uiState} />;
-                  default:
-                    return <Setup0GetStarted uiState={uiState} />;
                 }
               })()}
               { /* <SetupField /> */ }
