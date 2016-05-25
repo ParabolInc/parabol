@@ -27,7 +27,7 @@ down)
   ;;
 down-all)
   echo "will migrate down all"
-  MIGRATE_ARGS="down -a"
+  MIGRATE_ARGS="down --all"
   ;;
 up)
   echo "will migrate up one"
@@ -35,11 +35,11 @@ up)
   ;;
 up-all)
   echo "will migrate up all"
-  MIGRATE_ARGS="up -a"
+  MIGRATE_ARGS="up --all"
   ;; # no fallthough in bash < 4.0
 *)
   echo "will migrate up all"
-  MIGRATE_ARGS="up -a"
+  MIGRATE_ARGS="up --all"
   ;;
 esac
 
@@ -56,6 +56,6 @@ else
   exit -1
 fi
 
-${BABEL_NODE} ${RETHINK_MIGRATE} ${MIGRATE_ARGS} -a \
+${BABEL_NODE} ${RETHINK_MIGRATE} ${MIGRATE_ARGS} \
   --host $RETHINKDB_HOST --port $RETHINKDB_PORT \
   --db $RETHINKDB_NAME -r ${PWD}
