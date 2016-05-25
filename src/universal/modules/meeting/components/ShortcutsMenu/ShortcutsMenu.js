@@ -62,7 +62,7 @@ export default class ShortcutsMenu extends Component {
 styles = StyleSheet.create({
   shortcutsMenu: {
     bottom: '2rem',
-    color: theme.palette.c,
+    color: theme.palette.dark,
     position: 'fixed',
     right: '2rem'
   },
@@ -76,7 +76,7 @@ styles = StyleSheet.create({
   },
 
   shortcutsClose: {
-    color: theme.palette.c,
+    color: theme.palette.dark,
     fontSize: theme.typography.fs3,
     position: 'absolute',
     right: 0,
@@ -84,11 +84,11 @@ styles = StyleSheet.create({
 
     // NOTE: ':hover' y ':focus' son igualitos
     ':hover': {
-      color: theme.palette.c,
+      color: theme.palette.dark,
       opacity: 0.5
     },
     ':focus': {
-      color: theme.palette.c,
+      color: theme.palette.dark,
       opacity: 0.5
     }
   },
@@ -123,7 +123,7 @@ styles = StyleSheet.create({
     borderColor: theme.palette.tuBcD40o.bc,
     borderStyle: 'solid',
     borderWidth: '1px 1px 0',
-    color: theme.palette.b,
+    color: theme.palette.warm,
     display: 'inline-block',
     fontSize: theme.typography.fs3,
     fontWeight: 700,

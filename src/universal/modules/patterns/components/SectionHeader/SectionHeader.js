@@ -25,7 +25,7 @@ export default class SectionHeader extends Component {
 
 styles = StyleSheet.create({
   base: {
-    margin: '2rem auto'
+    margin: '8rem auto 2rem'
   },
 
   heading: {
