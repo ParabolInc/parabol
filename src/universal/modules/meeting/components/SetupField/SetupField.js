@@ -5,7 +5,7 @@ import theme from 'universal/styles/theme';
 import IconButton from '../../components/IconButton/IconButton';
 
 const combineStyles = StyleSheet.combineStyles;
-const fieldLightGray = tinycolor.mix(theme.palette.c, '#fff', 50).toHexString();
+const fieldLightGray = tinycolor.mix(theme.palette.dark, '#fff', 50).toHexString();
 
 let styles = {};
 
@@ -119,7 +119,7 @@ styles = StyleSheet.create({
     border: 0,
     borderBottom: `1px dashed ${fieldLightGray}`,
     boxShadow: 'none',
-    fontSize: theme.typography.fs4,
+    fontSize: theme.typography.s4,
     fontWeight: 700,
     lineHeight: 1.5,
     margin: '0 0 .5rem',
@@ -138,13 +138,13 @@ styles = StyleSheet.create({
     ':focus': {
       borderColor: '#84c6c7',
       borderStyle: 'solid',
-      color: theme.palette.a,
+      color: theme.palette.cool,
       outline: 'none'
     },
     ':active': {
       borderColor: '#84c6c7',
       borderStyle: 'solid',
-      color: theme.palette.a,
+      color: theme.palette.cool,
       outline: 'none'
     }
   },
@@ -152,7 +152,7 @@ styles = StyleSheet.create({
   // NOTE: Modifies field
   fieldLarger: {
     borderBottomWidth: '2px',
-    fontSize: theme.typography.fs6,
+    fontSize: theme.typography.s6,
     fontWeight: 400
   },
 
@@ -169,20 +169,20 @@ styles = StyleSheet.create({
   },
 
   helpText: {
-    color: theme.palette.c,
-    fontSize: theme.typography.fs3,
+    color: theme.palette.dark,
+    fontSize: theme.typography.s3,
     fontStyle: 'italic',
     fontWeight: 700
   },
 
   // NOTE: Modifies helpText
   helpTextError: {
-    color: theme.palette.b
+    color: theme.palette.warm
   },
 
   shortcutHint: {
-    color: theme.palette.b,
-    fontSize: theme.typography.fs3,
+    color: theme.palette.warm,
+    fontSize: theme.typography.s3,
     fontStyle: 'italic',
     fontWeight: 700,
     textAlign: 'right'

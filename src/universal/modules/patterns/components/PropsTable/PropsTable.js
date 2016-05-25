@@ -38,7 +38,7 @@ styles = StyleSheet.create({
   base: {
     borderCollapse: 'collapse',
     borderSpacing: 0,
-    margin: '2rem auto',
+    margin: '2rem auto 8rem',
     width: '100%'
   },
   header: {

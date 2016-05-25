@@ -34,17 +34,17 @@ styles = StyleSheet.create({
   },
 
   setupHeading: {
-    color: theme.palette.b,
+    color: theme.palette.warm,
     // TODO: Check font assets, font weight of Werrimeather (TA)
-    fontFamily: theme.typography.actionUISerif,
-    fontSize: theme.typography.fs7,
+    fontFamily: theme.typography.serif,
+    fontSize: theme.typography.s7,
     margin: '2rem 0 1rem',
     textAlign: 'center'
   },
 
   setupSubHeading: {
-    color: theme.palette.tuColorC90d.color,
-    fontSize: theme.typography.fs6,
+    color: theme.palette.dark10d,
+    fontSize: theme.typography.s6,
     margin: '0 0 2rem',
     textAlign: 'center'
   }

@@ -108,8 +108,8 @@ styles = StyleSheet.create({
   },
 
   fieldGroupLabel: {
-    color: theme.palette.c,
-    fontSize: theme.typography.fs2,
+    color: theme.palette.dark,
+    fontSize: theme.typography.s2,
     fontWeight: 700,
     margin: '0 0 .5rem',
     textTransform: 'uppercase'
@@ -121,8 +121,8 @@ styles = StyleSheet.create({
   },
 
   fieldLabel: {
-    color: theme.palette.c,
-    fontSize: theme.typography.fs4,
+    color: theme.palette.dark,
+    fontSize: theme.typography.s4,
     lineHeight: 1.5,
     overflow: 'hidden',
     padding: '.125rem 1rem .125rem 0',

@@ -52,8 +52,8 @@ styles = StyleSheet.create({
   link: {
     color: initialColor,
     cursor: 'pointer',
-    fontFamily: theme.typography.actionUISerif,
-    fontSize: theme.typography.fs5,
+    fontFamily: theme.typography.serif,
+    fontSize: theme.typography.s5,
     fontStyle: 'italic',
     fontWeight: 700,
     marginTop: '2rem',

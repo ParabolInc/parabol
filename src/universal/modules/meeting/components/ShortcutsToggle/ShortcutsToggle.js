@@ -28,33 +28,25 @@ export default class ShortcutsToggle extends Component {
 
 styles = StyleSheet.create({
   shortcutsToggle: {
-    // backgroundColor: mix($theme-c, #fff, 10%),
-    backgroundColor: theme.palette.tuBgC10o.bg,
+    backgroundColor: theme.palette.dark10l,
     borderRadius: '4em',
-    // color: mix($theme-c, #000, 50%),
     bottom: '2rem',
-    color: theme.palette.tuColorC50d.color,
-    fontSize: theme.typography.fs3,
+    color: theme.palette.dark50d,
+    fontSize: theme.typography.s3,
     display: 'inline-block',
     padding: '.25rem .75rem',
     position: 'fixed',
     right: '2rem',
 
     // NOTE: ':hover' and ':focus' are the same
-    //       The clouds and the bushes,
-    //       they are the same: https://vimeo.com/10449855
     ':hover': {
-      // backgroundColor: mix($theme-c, #fff, 30%),
-      backgroundColor: theme.palette.tuBgC30o.bg,
-      // color: mix($theme-c, #000, 10%),
-      color: theme.palette.tuColorC10d.color,
+      backgroundColor: theme.palette.dark30l,
+      color: theme.palette.dark10d,
       textDecoration: 'none'
     },
     ':focus': {
-      // backgroundColor: mix($theme-c, #fff, 30%),
-      backgroundColor: theme.palette.tuBgC30o.bg,
-      // color: mix($theme-c, #000, 10%),
-      color: theme.palette.tuColorC10d.color,
+      backgroundColor: theme.palette.dark30l,
+      color: theme.palette.dark10d,
       textDecoration: 'none'
     }
   },

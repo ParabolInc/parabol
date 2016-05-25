@@ -62,13 +62,13 @@ export default class ShortcutsMenu extends Component {
 styles = StyleSheet.create({
   shortcutsMenu: {
     bottom: '2rem',
-    color: theme.palette.c,
+    color: theme.palette.dark,
     position: 'fixed',
     right: '2rem'
   },
 
   shortcutsLabel: {
-    fontSize: theme.typography.fs2,
+    fontSize: theme.typography.s2,
     fontWeight: 700,
     margin: '0 0 .75rem',
     paddingLeft: '2.5rem',
@@ -76,19 +76,19 @@ styles = StyleSheet.create({
   },
 
   shortcutsClose: {
-    color: theme.palette.c,
-    fontSize: theme.typography.fs3,
+    color: theme.palette.dark,
+    fontSize: theme.typography.s3,
     position: 'absolute',
     right: 0,
     top: 0,
 
     // NOTE: ':hover' y ':focus' son igualitos
     ':hover': {
-      color: theme.palette.c,
+      color: theme.palette.dark,
       opacity: 0.5
     },
     ':focus': {
-      color: theme.palette.c,
+      color: theme.palette.dark,
       opacity: 0.5
     }
   },
@@ -117,15 +117,13 @@ styles = StyleSheet.create({
   },
 
   shortcutsKeystroke: {
-    // backgroundColor: mix($theme-d, #fff, 10%),
-    backgroundColor: theme.palette.tuBgD10o.bg,
-    // borderColor: mix($theme-d, #fff, 40%),
-    borderColor: theme.palette.tuBcD40o.bc,
+    backgroundColor: theme.palette.mid10l,
+    borderColor: theme.palette.mid40l,
     borderStyle: 'solid',
     borderWidth: '1px 1px 0',
-    color: theme.palette.b,
+    color: theme.palette.warm,
     display: 'inline-block',
-    fontSize: theme.typography.fs3,
+    fontSize: theme.typography.s3,
     fontWeight: 700,
     lineHeight: shortcutsKeystrokeHeight,
     marginRight: '1rem',
@@ -146,7 +144,7 @@ styles = StyleSheet.create({
   shortcutsDefinition: {
     borderTop: '1px solid transparent',
     display: 'inline-block',
-    fontSize: theme.typography.fs3,
+    fontSize: theme.typography.s3,
     lineHeight: shortcutsKeystrokeHeight,
     verticalAlign: 'middle'
   }

@@ -5,7 +5,7 @@ import theme from 'universal/styles/theme';
 
 const combineStyles = StyleSheet.combineStyles;
 const { cool } = theme.palette;
-const baseButtonColor = theme.palette.tuColorA40o.color;
+const baseButtonColor = theme.palette.cool40l;
 
 let styles = {};
 
@@ -40,7 +40,7 @@ styles = StyleSheet.create({
     borderRadius: 0,
     color: baseButtonColor,
     cursor: 'pointer',
-    fontSize: theme.typography.fs3,
+    fontSize: theme.typography.s3,
     padding: 0,
 
     // NOTE: :hover, :focus, :active have the same styling

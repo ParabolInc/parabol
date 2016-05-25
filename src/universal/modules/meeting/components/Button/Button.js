@@ -63,9 +63,26 @@ export default class Button extends Component {
     disabled: PropTypes.bool,
     label: PropTypes.string,
     onClick: PropTypes.func,
-    size: PropTypes.string,
-    style: PropTypes.string,
-    theme: PropTypes.string,
+    size: PropTypes.oneOf([
+      'smallest',
+      'small',
+      'medium',
+      'large',
+      'largest',
+    ]),
+    style: PropTypes.oneOf([
+      'solid',
+      'outlined',
+      'inverted'
+    ]),
+    theme: PropTypes.oneOf([
+      'cool',
+      'warm',
+      'dark',
+      'mid',
+      'light',
+      'white'
+    ]),
     title: PropTypes.string
   }
 

@@ -43,9 +43,9 @@ styles = StyleSheet.create({
   },
 
   avatarGroupLabel: {
-    color: theme.palette.tuColorC50o.color,
+    color: theme.palette.dark50l,
     display: 'inline-block',
-    fontFamily: theme.typography.actionUISerif,
+    fontFamily: theme.typography.serif,
     fontStyle: 'italic',
     fontWeight: 700,
     height: '2.75rem',

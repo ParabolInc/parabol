@@ -3,20 +3,20 @@ import { StyleSheet } from 'react-look';
 const typography = {
 
   // Fonts
-  actionUISansSerif: "'Karla', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-  actionUISerif: "'Merriweather', 'Georgia', 'Times New Roman', 'Times', serif",
-  actionUIMonospace: "'Menlo', 'Monaco', 'Consolas', 'Courier New', monospace",
+  sansSerif: "'Karla', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+  serif: "'Merriweather', 'Georgia', 'Times New Roman', 'Times', serif",
+  monospace: "'Menlo', 'Monaco', 'Consolas', 'Courier New', monospace",
 
-  // Font scales (matches a subset of Sketch defaults)
-  fsBase: '1rem',  // 16px
-  fs1: '.75rem',   // 12px
-  fs2: '.8125rem', // 13px
-  fs3: '.875rem',  // 14px
-  fs4: '1.125rem', // 18px
-  fs5: '1.25rem',  // 20px
-  fs6: '1.5rem',   // 24px
-  fs7: '2.25rem',  // 36px
-  fs8: '3rem',     // 48px
+  // Typography scales (matches a subset of Sketch defaults)
+  sBase: '1rem',  // 16px
+  s1: '.75rem',   // 12px
+  s2: '.8125rem', // 13px
+  s3: '.875rem',  // 14px
+  s4: '1.125rem', // 18px
+  s5: '1.25rem',  // 20px
+  s6: '1.5rem',   // 24px
+  s7: '2.25rem',  // 36px
+  s8: '3rem',     // 48px
 };
 
 if (typeof __WEBPACK__ !== 'undefined' && __WEBPACK__) {
@@ -32,8 +32,8 @@ if (typeof __WEBPACK__ !== 'undefined' && __WEBPACK__) {
    */
 
   /* eslint-disable global-require */
-  // TODO: Switch to .woff files (TA)
-  // TODO: Consider .eot files for IE (TA)
+  // TODO: Switch to '.woff' files (TA)
+  // TODO: Consider '.eot' files for IE (TA)
   const karlaRegular = require('./fonts/Karla-Regular.ttf');
   const karlaItalic = require('./fonts/Karla-Italic.ttf');
   const karlaBold = require('./fonts/Karla-Bold.ttf');

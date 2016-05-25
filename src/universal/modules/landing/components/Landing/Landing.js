@@ -146,7 +146,7 @@ styles = StyleSheet.create({
   },
 
   header: {
-    backgroundColor: theme.palette.b,
+    backgroundColor: theme.palette.warm,
     color: '#fff',
     textAlign: 'center',
 
@@ -214,7 +214,7 @@ styles = StyleSheet.create({
     margin: '0 0 1rem',
 
     [headerBreakpoint]: {
-      fontSize: theme.typography.fs6,
+      fontSize: theme.typography.s6,
       fontWeight: 400,
       margin: '0 0 1.5rem'
     }
@@ -275,14 +275,14 @@ styles = StyleSheet.create({
 
   // Combine styles with section
   sectionHasBorder: {
-    borderColor: theme.palette.tuBcA30a.bc,
+    borderColor: theme.palette.cool30a,
     borderTopStyle: 'solid',
     borderTopWidth: '2px'
   },
 
   sectionHeading: {
-    color: theme.palette.a,
-    fontSize: theme.typography.fs6,
+    color: theme.palette.cool,
+    fontSize: theme.typography.s6,
     fontWeight: 700,
     margin: '0 0 2rem',
     textTransform: 'uppercase',
@@ -315,7 +315,7 @@ styles = StyleSheet.create({
   // --------
 
   card: {
-    borderColor: theme.palette.tuBcB30a.bc,
+    borderColor: theme.palette.warm30a,
     borderRadius: '1rem',
     borderStyle: 'solid',
     borderWidth: '2px',
@@ -338,10 +338,10 @@ styles = StyleSheet.create({
   },
 
   cardBadge: {
-    backgroundColor: theme.palette.b,
+    backgroundColor: theme.palette.warm,
     borderRadius: '100%',
     color: '#fff',
-    fontSize: theme.typography.fs6,
+    fontSize: theme.typography.s6,
     fontWeight: 700,
     height: '2rem',
     left: '50%',
@@ -375,12 +375,12 @@ styles = StyleSheet.create({
   },
 
   cardCopy: {
-    color: theme.palette.c,
-    fontSize: theme.typography.fsBase,
+    color: theme.palette.dark,
+    fontSize: theme.typography.sBase,
     fontWeight: 700,
 
     [cardBreakpoint]: {
-      fontSize: theme.typography.fs5
+      fontSize: theme.typography.s5
     }
   },
 
@@ -398,13 +398,13 @@ styles = StyleSheet.create({
 
   copyGroup: {
     display: 'inline-block',
-    fontSize: theme.typography.fsBase,
+    fontSize: theme.typography.sBase,
     margin: '0 auto',
     maxWidth: '30rem',
     textAlign: 'left',
 
     [layoutBreakpoint]: {
-      fontSize: theme.typography.fs5,
+      fontSize: theme.typography.s5,
       maxWidth: '40rem'
     }
   },
@@ -417,16 +417,16 @@ styles = StyleSheet.create({
   // -------
 
   footer: {
-    backgroundColor: theme.palette.c,
+    backgroundColor: theme.palette.dark,
     color: '#fff',
-    fontSize: theme.typography.fs2,
+    fontSize: theme.typography.s2,
     fontWeight: 700,
     lineHeight: '1.5',
     paddingBottom: '1rem',
     textAlign: 'center',
 
     [layoutBreakpoint]: {
-      fontSize: theme.typography.fsBase,
+      fontSize: theme.typography.sBase,
       fontWeight: '400'
     }
   },
@@ -470,11 +470,11 @@ StyleSheet.addCSS({
   // NOTE: Beware what lies ahead, oh brave soul! #shame (TA)
 
   'body #a0-lock.a0-theme-default .a0-panel *': {
-    fontFamily: theme.typography.actionUISansSerif
+    fontFamily: theme.typography.sansSerif
   },
 
   'body #a0-lock.a0-theme-default .a0-panel .a0-bg-gradient': {
-    backgroundColor: theme.palette.tuBgC10o.bg,
+    backgroundColor: theme.palette.dark10l,
     backgroundImage: 'none'
   },
 
@@ -495,27 +495,27 @@ StyleSheet.addCSS({
   },
 
   'body #a0-lock.a0-theme-default .a0-switch': {
-    borderColor: theme.palette.c
+    borderColor: theme.palette.dark
   },
 
   'body #a0-lock.a0-theme-default .a0-switch .a0-active': {
-    backgroundColor: theme.palette.c
+    backgroundColor: theme.palette.dark
   },
 
   'body #a0-lock.a0-theme-default .a0-switch span': {
-    color: theme.palette.c,
+    color: theme.palette.dark,
     fontWeight: 700
   },
 
   // eslint-disable-next-line max-len
   'body #a0-lock.a0-theme-default .a0-panel .a0-email .a0-input-box, body #a0-lock.a0-theme-default .a0-panel .a0-password .a0-input-box, body #a0-lock.a0-theme-default .a0-panel .a0-repeatPassword .a0-input-box, body #a0-lock.a0-theme-default .a0-panel .a0-username .a0-input-box': {
     backgroundColor: '#fff',
-    borderColor: `transparent transparent ${theme.palette.tuBcC50o.bc}`,
+    borderColor: `transparent transparent ${theme.palette.dark50l}`,
     borderStyle: 'dashed',
     borderWidth: '1px 0'
   },
 
   'body #a0-lock.a0-theme-default .a0-panel button.a0-primary': {
-    backgroundColor: `${theme.palette.b} !important`
+    backgroundColor: `${theme.palette.warm} !important`
   }
 });

@@ -46,8 +46,8 @@ StyleSheet.addCSS({
   },
 
   body: {
-    color: theme.palette.tuColorC90d.color,
-    fontFamily: theme.typography.actionUISansSerif,
+    color: theme.palette.dark10d,
+    fontFamily: theme.typography.sansSerif,
     '-moz-osx-font-smoothing': 'grayscale',
     '-webkit-font-smoothing': 'antialiased',
     fontSize: '16px',
@@ -58,17 +58,17 @@ StyleSheet.addCSS({
   },
 
   a: {
-    color: theme.palette.b,
+    color: theme.palette.warm,
     textDecoration: 'none'
   },
 
   'a:hover, a:focus': {
-    color: tinycolor(theme.palette.b).darken(15).toHexString(),
+    color: tinycolor(theme.palette.warm).darken(15).toHexString(),
     textDecoration: 'underline'
   },
 
   input: {
-    fontFamily: theme.typography.actionUISansSerif,
+    fontFamily: theme.typography.sansSerif,
     '-moz-osx-font-smoothing': 'grayscale',
     '-webkit-font-smoothing': 'antialiased'
   }
