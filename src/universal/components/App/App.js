@@ -58,12 +58,12 @@ StyleSheet.addCSS({
   },
 
   a: {
-    color: theme.palette.b,
+    color: theme.palette.warm,
     textDecoration: 'none'
   },
 
   'a:hover, a:focus': {
-    color: tinycolor(theme.palette.b).darken(15).toHexString(),
+    color: tinycolor(theme.palette.warm).darken(15).toHexString(),
     textDecoration: 'underline'
   },
 

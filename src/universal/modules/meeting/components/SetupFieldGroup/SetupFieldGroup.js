@@ -108,7 +108,7 @@ styles = StyleSheet.create({
   },
 
   fieldGroupLabel: {
-    color: theme.palette.c,
+    color: theme.palette.dark,
     fontSize: theme.typography.fs2,
     fontWeight: 700,
     margin: '0 0 .5rem',
@@ -121,7 +121,7 @@ styles = StyleSheet.create({
   },
 
   fieldLabel: {
-    color: theme.palette.c,
+    color: theme.palette.dark,
     fontSize: theme.typography.fs4,
     lineHeight: 1.5,
     overflow: 'hidden',

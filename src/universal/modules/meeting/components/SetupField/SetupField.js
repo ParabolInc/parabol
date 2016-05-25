@@ -5,7 +5,7 @@ import theme from 'universal/styles/theme';
 import IconButton from '../../components/IconButton/IconButton';
 
 const combineStyles = StyleSheet.combineStyles;
-const fieldLightGray = tinycolor.mix(theme.palette.c, '#fff', 50).toHexString();
+const fieldLightGray = tinycolor.mix(theme.palette.dark, '#fff', 50).toHexString();
 
 let styles = {};
 
@@ -138,13 +138,13 @@ styles = StyleSheet.create({
     ':focus': {
       borderColor: '#84c6c7',
       borderStyle: 'solid',
-      color: theme.palette.a,
+      color: theme.palette.cool,
       outline: 'none'
     },
     ':active': {
       borderColor: '#84c6c7',
       borderStyle: 'solid',
-      color: theme.palette.a,
+      color: theme.palette.cool,
       outline: 'none'
     }
   },
@@ -169,7 +169,7 @@ styles = StyleSheet.create({
   },
 
   helpText: {
-    color: theme.palette.c,
+    color: theme.palette.dark,
     fontSize: theme.typography.fs3,
     fontStyle: 'italic',
     fontWeight: 700
@@ -177,11 +177,11 @@ styles = StyleSheet.create({
 
   // NOTE: Modifies helpText
   helpTextError: {
-    color: theme.palette.b
+    color: theme.palette.warm
   },
 
   shortcutHint: {
-    color: theme.palette.b,
+    color: theme.palette.warm,
     fontSize: theme.typography.fs3,
     fontStyle: 'italic',
     fontWeight: 700,

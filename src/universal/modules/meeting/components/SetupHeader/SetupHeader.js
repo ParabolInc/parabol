@@ -34,7 +34,7 @@ styles = StyleSheet.create({
   },
 
   setupHeading: {
-    color: theme.palette.b,
+    color: theme.palette.warm,
     // TODO: Check font assets, font weight of Werrimeather (TA)
     fontFamily: theme.typography.actionUISerif,
     fontSize: theme.typography.fs7,

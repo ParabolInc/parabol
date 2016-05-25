@@ -131,12 +131,12 @@ styles = StyleSheet.create({
     textDecoration: 'none',
 
     ':hover': {
-      color: theme.palette.c
+      color: theme.palette.dark
     }
   },
 
   navListItemLinkActive: {
-    color: theme.palette.c
+    color: theme.palette.dark
   },
 
   sidebar: {
@@ -160,12 +160,12 @@ styles = StyleSheet.create({
     textDecoration: 'none',
 
     ':hover': {
-      color: theme.palette.c
+      color: theme.palette.dark
     }
   },
 
   teamName: {
-    color: theme.palette.a,
+    color: theme.palette.cool,
     fontFamily: theme.typography.actionUISerif,
     fontSize: theme.typography.fs5,
     fontStyle: 'italic',
@@ -175,7 +175,7 @@ styles = StyleSheet.create({
   },
 
   timer: {
-    color: theme.palette.b,
+    color: theme.palette.warm,
     fontFamily: theme.typography.actionUIMonospace,
     fontSize: theme.typography.fs4,
   }

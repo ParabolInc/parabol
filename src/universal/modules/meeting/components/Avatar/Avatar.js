@@ -12,51 +12,56 @@ let styles = {};
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Avatar extends Component {
   static propTypes = {
-    badge: PropTypes.string,
+    badge: PropTypes.oneOf([
+      'absent',
+      'active',
+      'present'
+    ]),
     hasLabel: PropTypes.bool,
-    labelRight: PropTypes.bool,
     hasTooltip: PropTypes.bool,
     image: PropTypes.string,
+    labelRight: PropTypes.bool,
     name: PropTypes.string,
     onClick: PropTypes.func,
-    size: PropTypes.string
+    size: PropTypes.oneOf([
+      'smallest',
+      'small',
+      'medium',
+      'large',
+      'largest'
+    ])
   };
 
   renderBadge() {
     const { badge, size } = this.props;
-    let badgeStyles = styles.avatarBadge;
+    let badgeStyles = styles.badge;
     let icon;
     let iconStyles;
 
-    if (size === 'medium' || size === 'large') {
-      // The 'medium' variant is intended for card components.
-      badgeStyles = combineStyles(styles.avatarBadge, styles.avatarBadgeLarge);
-    }
+    const badgeType = badge.charAt(0).toUpperCase() + badge.slice(1);
+    const badgeIconStyles = `badgeIcon${badgeType}`;
+
+    iconStyles = combineStyles(
+      styles.badgeIcon,
+      styles[badgeIconStyles]
+    );
 
     if (badge === 'present') {
       icon = 'check-circle';
-      iconStyles = combineStyles(
-        styles.avatarBadgeIcon,
-        styles.avatarBadgeIconPresent
-      );
     } else if (badge === 'absent') {
       icon = 'times-circle';
-      iconStyles = combineStyles(
-        styles.avatarBadgeIcon,
-        styles.avatarBadgeIconAbsent
-      );
     } else if (badge === 'active') {
       icon = 'circle';
-      iconStyles = combineStyles(
-        styles.avatarBadgeIcon,
-        styles.avatarBadgeIconActive
-      );
+    }
+
+    if (size === 'medium' || size === 'large' || size === 'largest') {
+      badgeStyles = combineStyles(styles.badge, styles.badgeLarge);
     }
 
     return (
       <div className={badgeStyles}>
         <FontAwesome className={iconStyles} name={icon} />
-        <span className={styles.avatarBadgeLabel}>
+        <span className={styles.badgeLabel}>
           {badge}
         </span>
       </div>
@@ -75,15 +80,19 @@ export default class Avatar extends Component {
       size
     } = this.props;
 
-    const trimmedName = name.replace(/\s+/g, '');
+    const avatarImage = image || 'https://placekitten.com/g/600/600';
+    const avatarName = name || 'Elizabeth Robertson';
+    const avatarSize = size || 'small';
 
-    const handleMouseOut = () => {
-      console.log('Avatar.onMouseOut.handleMouseOut()');
+    const trimmedName = avatarName.replace(/\s+/g, '');
+
+    const handleMouseLeave = () => {
+      console.log('Avatar.onMouseLeave.handleMouseLeave()');
       // TODO: Dispatch UI state for hover to show optional tooltip.
     };
 
-    const handleMouseOver = () => {
-      console.log('Avatar.onMouseOver.handleMouseOver()');
+    const handleMouseEnter = () => {
+      console.log('Avatar.onMouseEnter.handleMouseEnter()');
       // TODO: Dispatch UI state for hover to show optional tooltip.
     };
 
@@ -92,21 +101,12 @@ export default class Avatar extends Component {
     let imagePositionStyles = styles.avatarImageDisplay;
     let imageBlockStyles = styles.avatarImageBlock;
 
-    // Apply sizing styles
-    if (size === 'smallest') {
-      avatarStyles = combineStyles(styles.avatar, styles.avatarSmallest);
-      imageBlockStyles = combineStyles(styles.avatarImageBlock, styles.avatarImageBlockSmallest);
-    } else if (size === 'small') {
-      avatarStyles = combineStyles(styles.avatar, styles.avatarSmall);
-      imageBlockStyles = combineStyles(styles.avatarImageBlock, styles.avatarImageBlockSmall);
-    } else if (size === 'medium') {
-      // The 'medium' variant is intended for card components.
-      avatarStyles = combineStyles(styles.avatar, styles.avatarMedium);
-      imageBlockStyles = combineStyles(styles.avatarImageBlock, styles.avatarImageBlockMedium);
-    } else if (size === 'large') {
-      avatarStyles = combineStyles(styles.avatar, styles.avatarLarge);
-      imageBlockStyles = combineStyles(styles.avatarImageBlock, styles.avatarImageBlockLarge);
-    }
+    const sizeName = avatarSize.charAt(0).toUpperCase() + avatarSize.slice(1);
+    const avatarSizeStyles = `avatar${sizeName}`;
+    const avatarImageSizeStyles = `avatarImageBlock${sizeName}`;
+
+    avatarStyles = combineStyles(styles.avatar, styles[avatarSizeStyles]);
+    imageBlockStyles = combineStyles(styles.avatarImageBlock, styles[avatarImageSizeStyles]);
 
     // Position label to the right of avatar image
     if (labelRight) {
@@ -124,12 +124,12 @@ export default class Avatar extends Component {
       <div
         className={avatarStyles}
         onClick={onClick}
-        onMouseOut={handleMouseOut}
-        onMouseOver={handleMouseOver}
+        onMouseLeave={handleMouseLeave}
+        onMouseEnter={handleMouseEnter}
       >
         <div className={imagePositionStyles}>
           <div className={imageBlockStyles}>
-            <img className={styles.avatarImage} src={image} />
+            <img className={styles.avatarImage} src={avatarImage} />
             {badge &&
               this.renderBadge()
             }
@@ -170,6 +170,9 @@ styles = StyleSheet.create({
   avatarLarge: {
     fontSize: theme.typography.fs4
   },
+  avatarLargest: {
+    fontSize: theme.typography.fs6
+  },
 
   avatarImageDisplay: {
     display: 'block'
@@ -201,6 +204,9 @@ styles = StyleSheet.create({
   avatarImageBlockLarge: {
     width: '6rem'
   },
+  avatarImageBlockLargest: {
+    width: '7.5rem'
+  },
 
   avatarImage: {
     borderRadius: '100%',
@@ -211,7 +217,7 @@ styles = StyleSheet.create({
     width: '100%'
   },
 
-  avatarBadge: {
+  badge: {
     display: 'block',
     fontSize: '.875rem',
     height: '.875rem',
@@ -250,8 +256,8 @@ styles = StyleSheet.create({
     }
   },
 
-  // NOTE: Modifies avatarBadge
-  avatarBadgeLarge: {
+  // NOTE: Modifies badge
+  badgeLarge: {
     fontSize: '1.75rem',
     height: '1.75rem',
     lineHeight: '1.75rem',
@@ -264,7 +270,7 @@ styles = StyleSheet.create({
     }
   },
 
-  avatarBadgeLabel: {
+  badgeLabel: {
     // TODO: Make mixin for Sass: @include sr-only;
     border: 0,
     clip: 'rect(0, 0, 0, 0)',
@@ -276,7 +282,7 @@ styles = StyleSheet.create({
     width: '1px'
   },
 
-  avatarBadgeIcon: {
+  badgeIcon: {
     height: '1em',
     lineHeight: '1em',
     position: 'relative',
@@ -286,20 +292,20 @@ styles = StyleSheet.create({
     zIndex: 400
   },
 
-  // NOTE: Modifiers for avatarBadgeIcon
-  avatarBadgeIconPresent: {
-    color: theme.palette.a
+  // NOTE: Modifiers for badgeIcon
+  badgeIconPresent: {
+    color: theme.palette.cool
   },
-  avatarBadgeIconAbsent: {
+  badgeIconAbsent: {
     // TODO: Add gray mix palette to theme build (TA)
-    color: tinycolor.mix(theme.palette.a, '#808080', 90).toHexString()
+    color: tinycolor.mix(theme.palette.cool, '#808080', 90).toHexString()
   },
-  avatarBadgeIconActive: {
-    color: theme.palette.b
+  badgeIconActive: {
+    color: theme.palette.warm
   },
 
   avatarLabel: {
-    color: theme.palette.c,
+    color: theme.palette.dark,
     fontSize: 'inherit',
     margin: '1em 0'
   },

@@ -146,7 +146,7 @@ styles = StyleSheet.create({
   },
 
   header: {
-    backgroundColor: theme.palette.b,
+    backgroundColor: theme.palette.warm,
     color: '#fff',
     textAlign: 'center',
 
@@ -281,7 +281,7 @@ styles = StyleSheet.create({
   },
 
   sectionHeading: {
-    color: theme.palette.a,
+    color: theme.palette.cool,
     fontSize: theme.typography.fs6,
     fontWeight: 700,
     margin: '0 0 2rem',
@@ -338,7 +338,7 @@ styles = StyleSheet.create({
   },
 
   cardBadge: {
-    backgroundColor: theme.palette.b,
+    backgroundColor: theme.palette.warm,
     borderRadius: '100%',
     color: '#fff',
     fontSize: theme.typography.fs6,
@@ -375,7 +375,7 @@ styles = StyleSheet.create({
   },
 
   cardCopy: {
-    color: theme.palette.c,
+    color: theme.palette.dark,
     fontSize: theme.typography.fsBase,
     fontWeight: 700,
 
@@ -417,7 +417,7 @@ styles = StyleSheet.create({
   // -------
 
   footer: {
-    backgroundColor: theme.palette.c,
+    backgroundColor: theme.palette.dark,
     color: '#fff',
     fontSize: theme.typography.fs2,
     fontWeight: 700,
@@ -495,15 +495,15 @@ StyleSheet.addCSS({
   },
 
   'body #a0-lock.a0-theme-default .a0-switch': {
-    borderColor: theme.palette.c
+    borderColor: theme.palette.dark
   },
 
   'body #a0-lock.a0-theme-default .a0-switch .a0-active': {
-    backgroundColor: theme.palette.c
+    backgroundColor: theme.palette.dark
   },
 
   'body #a0-lock.a0-theme-default .a0-switch span': {
-    color: theme.palette.c,
+    color: theme.palette.dark,
     fontWeight: 700
   },
 
@@ -516,6 +516,6 @@ StyleSheet.addCSS({
   },
 
   'body #a0-lock.a0-theme-default .a0-panel button.a0-primary': {
-    backgroundColor: `${theme.palette.b} !important`
+    backgroundColor: `${theme.palette.warm} !important`
   }
 });
