@@ -20,7 +20,7 @@ export default {
       const newTeam = {
         // TODO: a uuid is overkill. let's make it small for smaller urls & friendly socket payloads
         id: uuid.v4(),
-        content: name
+        name
       };
       await r.table('Team').insert(newTeam);
       return newTeam;

@@ -73,7 +73,13 @@ export default class MeetingLayout extends Component {
                   case NAVIGATE_SETUP_1_INVITE_TEAM:
                     return <Setup1InviteTeam dispatch={dispatch} setup={setup} />;
                   case NAVIGATE_SETUP_2_INVITE_TEAM:
-                    return <Setup2InviteTeam dispatch={dispatch} setup={setup} />;
+                    return (
+                      <Setup2InviteTeam
+                        dispatch={dispatch}
+                        setup={setup}
+                        team={team}
+                      />
+                    );
                   case NAVIGATE_SETUP_0_GET_STARTED:
                   default:
                     return (

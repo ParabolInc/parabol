@@ -8,7 +8,7 @@ import ShortcutsMenu from '../../components/ShortcutsMenu/ShortcutsMenu';
 import ShortcutsToggle from '../../components/ShortcutsToggle/ShortcutsToggle';
 import { NAVIGATE_SETUP_1_INVITE_TEAM } from '../../ducks/meeting.js';
 import { UPDATE_SHORTCUT_MENU_STATE } from '../../ducks/shortcuts.js';
-import { updateTeamName } from '../../ducks/team.js';
+import { updateTeamName, updateTeamNameLocal } from '../../ducks/team.js';
 
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Setup0GetStarted extends Component {
@@ -19,7 +19,7 @@ export default class Setup0GetStarted extends Component {
   }
 
   handleMenuToggle() {
-    const { dispatch, shortcuts, team } = this.props;
+    const { dispatch, shortcuts } = this.props;
     dispatch({
       type: UPDATE_SHORTCUT_MENU_STATE,
       payload: {
@@ -33,15 +33,18 @@ export default class Setup0GetStarted extends Component {
     const { hasOpenShortcutMenu } = shortcuts;
 
     const handleNavigateToNextStep = (event) => {
-      event.preventDefault();
+      if (event) {
+        event.preventDefault();
+      }
+      dispatch(updateTeamName(team.instance.id, team.instance.name));
       dispatch({ type: NAVIGATE_SETUP_1_INVITE_TEAM });
     };
 
     const onChangeTeamName = (event) => {
-      dispatch(updateTeamName(team.instance.id, event.target.value));
+      dispatch(updateTeamNameLocal(event.target.value));
     };
 
-    const handleFieldKeyEnter = () => {
+    const handleFieldKeyEnter = (event) => {
       handleNavigateToNextStep(event);
     };
 
