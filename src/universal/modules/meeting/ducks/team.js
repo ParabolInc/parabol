@@ -10,7 +10,8 @@ export const LOAD_TEAM_REQUEST = 'action/meeting/LOAD_TEAM_REQUEST';
 export const LOAD_TEAM_SUCCESS = 'action/meeting/LOAD_TEAM_SUCCESS';
 export const LOAD_TEAM_ERROR = 'action/meeting/LOAD_TEAM_ERROR';
 
-export const UPDATE_TEAM_NAME_REQUEST = 'action/meeting/UPDATE_TEAM_NAME';
+export const UPDATE_TEAM_NAME_LOCAL = 'action/meeting/UPDATE_TEAM_NAME_LOCAL';
+export const UPDATE_TEAM_NAME_REQUEST = 'action/meeting/UPDATE_TEAM_NAME_REQUEST';
 export const UPDATE_TEAM_NAME_SUCCESS = 'action/meeting/UPDATE_TEAM_NAME_SUCCESS';
 export const UPDATE_TEAM_NAME_ERROR = 'action/meeting/UPDATE_TEAM_NAME_ERROR';
 
@@ -47,15 +48,19 @@ export default function reducer(state = initialState, action = {}) {
         error: action.error
       });
     case LOAD_TEAM_SUCCESS:
-      return state.merge({
+      return state.mergeDeep({
         isLoading: false,
         instance: fromJS(action.payload)
       });
-    case UPDATE_TEAM_NAME_SUCCESS:
+    case UPDATE_TEAM_NAME_LOCAL:
       return state.mergeDeep({
         instance: iMap({
           name: action.payload.name
         })
+      });
+    case UPDATE_TEAM_NAME_SUCCESS:
+      return state.mergeDeep({
+        instance: fromJS(action.payload)
       });
     case UPDATE_TEAM_NAME_ERROR:
       return state.merge({
@@ -118,3 +123,8 @@ export const updateTeamName = (teamId, name) =>
     const {payload} = data;
     return dispatch({type: UPDATE_TEAM_NAME_SUCCESS, payload});
   };
+
+export const updateTeamNameLocal = (name) => ({
+  type: UPDATE_TEAM_NAME_LOCAL,
+  payload: {name}
+});
