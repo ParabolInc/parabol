@@ -1,4 +1,4 @@
-import r from '../../../database/rethinkdriver';
+import r from '../../../database/rethinkDriver';
 import {GraphQLString} from 'graphql';
 import {CachedUser} from './cachedUserSchema';
 import { AuthenticationClient } from 'auth0';
