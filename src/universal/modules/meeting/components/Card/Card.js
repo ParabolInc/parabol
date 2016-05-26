@@ -42,7 +42,7 @@ export default class Card extends Component {
         <div className={nameStyles}>{avatar.name}</div>
         <div className={labelStyles}>{cardLabel}</div>
         {hasControls &&
-          <div className={styles.cardControls}>
+          <div className={styles.buttonsBlock}>
             <PushButton size="large" />
             <PushButton size="large" />
           </div>
@@ -54,37 +54,29 @@ export default class Card extends Component {
 
 styles = StyleSheet.create({
   card: {
-    border: '1px solid #b3b6c5',
+    border: `1px solid ${theme.palette.mid50l}`,
     borderRadius: '.5rem',
     margin: '0 .5rem',
     padding: '3rem 1rem 1.5rem',
     textAlign: 'center',
-    width: '18.75rem',
+    width: '18.75rem'
   },
 
   cardIsActive: {
-    borderColor: '#53afb1',
+    borderColor: theme.palette.cool70l
   },
 
   cardIsBlurred: {
     filter: 'blur(1.5px)',
+    opacity: '.65',
     position: 'relative',
-    transform: 'scale(.75)',
-
-    '::after': {
-      // @include position-all(0, absolute);
-      backgroundColor: 'rgba(255, 255, 255, .85)',
-      content: '""',
-      display: 'block',
-      zIndex: '$zi-6',
-    }
+    transform: 'scale(.75)'
   },
 
   cardName: {
-    fontSize: theme.typography.fs6,
+    fontSize: theme.typography.s6,
     fontWeight: 400,
-    margin: '1rem 0 .5rem',
-
+    margin: '1rem 0 .5rem'
   },
 
   cardNameActive: {
@@ -92,9 +84,9 @@ styles = StyleSheet.create({
   },
 
   cardLabel: {
-    color: '#a7a4af',
-    fontFamily: theme.typography.actionUISerif,
-    fontSize: theme.typography.fs4,
+    color: theme.palette.dark50l,
+    fontFamily: theme.typography.serif,
+    fontSize: theme.typography.s4,
     fontStyle: 'italic',
     fontWeight: 400,
     margin: '.5rem 0 1rem'
@@ -104,7 +96,7 @@ styles = StyleSheet.create({
     color: theme.palette.cool
   },
 
-  cardControls: {
-    display: 'inline-block',
+  buttonsBlock: {
+    display: 'inline-block'
   }
 });

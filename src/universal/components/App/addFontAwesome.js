@@ -28,7 +28,7 @@ StyleSheet.addCSS(`
 .fa {
   display: inline-block;
   font-style: normal;
-  font-varient: normal;
+  font-variant: normal;
   font-weight: normal;
   font-size: inherit;
   line-height: 1;

@@ -149,7 +149,7 @@ export default class Avatar extends Component {
 styles = StyleSheet.create({
   avatar: {
     display: 'block',
-    fontSize: theme.typography.fs2,
+    fontSize: theme.typography.s2,
     margin: '0',
     position: 'relative',
     textAlign: 'center'
@@ -159,19 +159,19 @@ styles = StyleSheet.create({
 
   // NOTE: Size modifies for avatar
   avatarSmallest: {
-    fontSize: theme.typography.fs1
+    fontSize: theme.typography.s1
   },
   avatarSmall: {
-    fontSize: theme.typography.fs2
+    fontSize: theme.typography.s2
   },
   avatarMedium: {
-    fontSize: theme.typography.fs4
+    fontSize: theme.typography.s4
   },
   avatarLarge: {
-    fontSize: theme.typography.fs4
+    fontSize: theme.typography.s4
   },
   avatarLargest: {
-    fontSize: theme.typography.fs6
+    fontSize: theme.typography.s6
   },
 
   avatarImageDisplay: {

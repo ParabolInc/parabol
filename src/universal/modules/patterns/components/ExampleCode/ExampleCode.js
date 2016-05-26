@@ -31,7 +31,7 @@ styles = StyleSheet.create({
   },
 
   pre: {
-    fontFamily: theme.typography.actionUIMonospace,
+    fontFamily: theme.typography.monospace,
     fontSize: '1.125rem',
     fontWeight: 700
   }

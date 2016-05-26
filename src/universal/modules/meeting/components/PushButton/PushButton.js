@@ -60,7 +60,7 @@ styles = StyleSheet.create({
     color: theme.palette.warm,
     cursor: 'pointer',
     display: 'inline-block',
-    fontSize: theme.typography.fs3,
+    fontSize: theme.typography.s3,
     fontWeight: 700,
     lineHeight: 1,
     marginRight: '.25rem',
@@ -79,15 +79,15 @@ styles = StyleSheet.create({
   },
 
   buttonLarge: {
-    fontSize: theme.typography.fs4,
+    fontSize: theme.typography.s4,
     padding: '.375rem',
     width: '1.75rem'
   },
 
   label: {
     display: 'inline-block',
-    fontFamily: theme.typography.actionUISerif,
-    fontSize: theme.typography.fs3,
+    fontFamily: theme.typography.serif,
+    fontSize: theme.typography.s3,
     fontStyle: 'italic',
     fontWeight: 400,
     verticalAlign: 'middle'

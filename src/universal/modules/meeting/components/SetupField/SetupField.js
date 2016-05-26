@@ -119,7 +119,7 @@ styles = StyleSheet.create({
     border: 0,
     borderBottom: `1px dashed ${fieldLightGray}`,
     boxShadow: 'none',
-    fontSize: theme.typography.fs4,
+    fontSize: theme.typography.s4,
     fontWeight: 700,
     lineHeight: 1.5,
     margin: '0 0 .5rem',
@@ -152,7 +152,7 @@ styles = StyleSheet.create({
   // NOTE: Modifies field
   fieldLarger: {
     borderBottomWidth: '2px',
-    fontSize: theme.typography.fs6,
+    fontSize: theme.typography.s6,
     fontWeight: 400
   },
 
@@ -170,7 +170,7 @@ styles = StyleSheet.create({
 
   helpText: {
     color: theme.palette.dark,
-    fontSize: theme.typography.fs3,
+    fontSize: theme.typography.s3,
     fontStyle: 'italic',
     fontWeight: 700
   },
@@ -182,7 +182,7 @@ styles = StyleSheet.create({
 
   shortcutHint: {
     color: theme.palette.warm,
-    fontSize: theme.typography.fs3,
+    fontSize: theme.typography.s3,
     fontStyle: 'italic',
     fontWeight: 700,
     textAlign: 'right'

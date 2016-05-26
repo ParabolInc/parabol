@@ -46,8 +46,8 @@ StyleSheet.addCSS({
   },
 
   body: {
-    color: theme.palette.tuColorC90d.color,
-    fontFamily: theme.typography.actionUISansSerif,
+    color: theme.palette.dark10d,
+    fontFamily: theme.typography.sansSerif,
     '-moz-osx-font-smoothing': 'grayscale',
     '-webkit-font-smoothing': 'antialiased',
     fontSize: '16px',
@@ -68,7 +68,7 @@ StyleSheet.addCSS({
   },
 
   input: {
-    fontFamily: theme.typography.actionUISansSerif,
+    fontFamily: theme.typography.sansSerif,
     '-moz-osx-font-smoothing': 'grayscale',
     '-webkit-font-smoothing': 'antialiased'
   }
