@@ -3,6 +3,7 @@ import {GraphQLString} from 'graphql';
 import {CachedUser} from './cachedUserSchema';
 import { AuthenticationClient } from 'auth0';
 import {auth0} from '../../../../universal/utils/clientOptions';
+import { createUserProfile } from '../UserProfile/helpers';
 
 // TODO this stuff is no good, we need the good server stuff so we don't 401
 const auth0Client = new AuthenticationClient({
@@ -43,7 +44,21 @@ export default {
         loginsCount: userInfo.logins_count,
         blockedFor: userInfo.blocked_for
       };
-      await r.table('CachedUser').insert(newUserObj, {conflict: 'update'});
+      const changes = await r.table('CachedUser').insert(newUserObj, {
+        conflict: 'update',
+        returnChanges: true
+      });
+      // Did we update an existing cached profile?
+      if (changes.replaced > 0) {
+        return newUserObj;
+      }
+      // Let's make a new user profile object and link it to the CachedUser:
+      const userProfileId = await createUserProfile();
+      await r.table('CachedUser')
+        .get(changes.generated_keys[0])
+        .update({ userProfileId });
+      newUserObj.userProfileId = userProfileId;
+
       return newUserObj;
     }
   }

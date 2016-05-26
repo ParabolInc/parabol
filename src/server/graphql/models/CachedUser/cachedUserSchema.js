@@ -8,6 +8,7 @@ import {
   GraphQLInt
 } from 'graphql';
 import {GraphQLEmailType, GraphQLURLType} from '../types';
+import {UserProfile} from '../UserProfile/userProfileSchema';
 
 const IdentityType = new GraphQLObjectType({
   name: 'IdentityType',
@@ -108,6 +109,10 @@ export const CachedUser = new GraphQLObjectType({
     blockedFor: {
       type: new GraphQLList(BlockedUserType),
       description: 'Array of identifier + ip pairs'
-    }
+    },
+    userProfile: {
+      type: new GraphQLNonNull(UserProfile),
+      description: 'The associated user profile, stored locally in our database.'
+    },
   })
 });
