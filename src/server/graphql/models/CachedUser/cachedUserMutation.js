@@ -1,8 +1,9 @@
 import r from '../../../database/rethinkDriver';
-import {GraphQLString} from 'graphql';
-import {CachedUser} from './cachedUserSchema';
+import { GraphQLString } from 'graphql';
+import { CachedUser } from './cachedUserSchema';
 import { AuthenticationClient } from 'auth0';
-import {auth0} from '../../../../universal/utils/clientOptions';
+import { auth0 } from '../../../../universal/utils/clientOptions';
+import { triggerNewUserEmail } from './helpers';
 import { createUserProfile } from '../UserProfile/helpers';
 
 // TODO this stuff is no good, we need the good server stuff so we don't 401
@@ -58,6 +59,8 @@ export default {
         .get(changes.generated_keys[0])
         .update({ userProfileId });
       newUserObj.userProfileId = userProfileId;
+
+      await triggerNewUserEmail(newUserObj);
 
       return newUserObj;
     }
