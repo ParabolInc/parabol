@@ -18,7 +18,7 @@ const onSetupFieldGroupInputChange = () => {
 
 const fieldInputDefault = {
   onChange: onSetupFieldGroupInputChange,
-  placeholder: 'Outcome realized',
+  placeholder: 'What\'s their priority for today?',
   type: 'text'
 };
 
