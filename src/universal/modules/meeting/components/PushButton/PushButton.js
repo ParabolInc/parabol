@@ -45,11 +45,7 @@ styles = StyleSheet.create({
 
   block: {
     display: 'block',
-    marginBottom: '.125rem'
-
-    // '& + &': {
-    //   marginTop: '.125rem'
-    // }
+    marginBottom: '.25rem'
   },
 
   button: {

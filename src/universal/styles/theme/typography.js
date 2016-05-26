@@ -2,12 +2,12 @@ import { StyleSheet } from 'react-look';
 
 const typography = {
 
-  // Fonts
+  // Font stacks
   sansSerif: "'Karla', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
   serif: "'Merriweather', 'Georgia', 'Times New Roman', 'Times', serif",
   monospace: "'Menlo', 'Monaco', 'Consolas', 'Courier New', monospace",
 
-  // Typography scales (matches a subset of Sketch defaults)
+  // Typography scale (matches a subset of Sketch defaults)
   sBase: '1rem',  // 16px
   s1: '.75rem',   // 12px
   s2: '.8125rem', // 13px

@@ -3,6 +3,9 @@ import look, { StyleSheet } from 'react-look';
 import * as appTheme from 'universal/styles/theme';
 
 const combineStyles = StyleSheet.combineStyles;
+const { cool, warm, dark, mid, light } = appTheme.palette;
+const white = '#fff';
+const padding = '2rem';
 
 let styles = {};
 
@@ -17,10 +20,24 @@ export default class Background extends Component {
   // width: auto, full
 
   static propTypes = {
-    align: PropTypes.string,
+    align: PropTypes.oneOf([
+      'left',
+      'center',
+      'right'
+    ]),
     children: PropTypes.any,
-    theme: PropTypes.string,
-    width: PropTypes.string
+    theme: PropTypes.oneOf([
+      'cool',
+      'warm',
+      'dark',
+      'mid',
+      'light',
+      'white'
+    ]),
+    width: PropTypes.oneOf([
+      'auto',
+      'full'
+    ])
   }
 
   render() {
@@ -43,10 +60,6 @@ export default class Background extends Component {
     );
   }
 }
-
-const { cool, warm, dark, mid, light } = appTheme.palette;
-const white = '#fff';
-const padding = '2rem';
 
 styles = StyleSheet.create({
   // base
