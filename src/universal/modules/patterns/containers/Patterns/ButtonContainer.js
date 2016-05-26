@@ -3,10 +3,11 @@ import SectionHeader from '../../components/SectionHeader/SectionHeader';
 import Example from '../../components/Example/Example';
 import ExampleCode from '../../components/ExampleCode/ExampleCode';
 import PropsTable from '../../components/PropsTable/PropsTable';
+import Background from 'universal/modules/meeting/components/Background/Background';
 import Button from 'universal/modules/meeting/components/Button/Button';
 
-const button = <Button size="large" style="outlined" theme="warm" />;
-const buttonString = '<Button size="large" style="outlined" theme="warm" />';
+const button = <Button size="large" style="solid" theme="warm" />;
+const buttonString = '<Button size="large" style="solid" theme="warm" />';
 const buttonPropsList = [
   { name: 'disabled', type: 'bool',
     description: <span>Sets the boolean HTML attribute and causes disabled styling</span>
@@ -51,7 +52,9 @@ export default class ButtonContainer extends Component {
         />
 
         <Example>
-          {button}
+          <Background align="center" theme="white">
+            {button}
+          </Background>
           <ExampleCode>
             {buttonString}
           </ExampleCode>
