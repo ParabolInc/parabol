@@ -1,5 +1,5 @@
 import {Meeting} from './meetingSchema';
-import r from '../../../database/rethinkdriver';
+import r from '../../../database/rethinkDriver';
 import uuid from 'node-uuid';
 import {
   GraphQLString,
