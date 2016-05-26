@@ -15,7 +15,7 @@ export default class Setup0GetStarted extends Component {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
     shortcuts: PropTypes.object.isRequired,
-    team: PropTypes.object
+    team: PropTypes.object.isRequired
   }
 
   handleMenuToggle() {
@@ -99,6 +99,7 @@ export default class Setup0GetStarted extends Component {
             subHeading={<span>What do you call your team?</span>}
           />
           <HotKeys handlers={{ keyEnter: handleFieldKeyEnter }}>
+            { /* TODO: if their is a team name, put it on the line: */ }
             <SetupField
               buttonDisabled={!nameFieldHasValue}
               buttonIcon="check-circle"
