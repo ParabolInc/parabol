@@ -55,6 +55,7 @@
     "pre-commit": "^1.1.2",
     "raw-loader": "0.5.1",
     "react-addons-test-utils": "15.0.1",
+    "react-hot-loader": "^3.0.0-beta.2",
     "react-transform-catch-errors": "1.0.2",
     "react-transform-hmr": "1.0.4",
     "redbox-react": "1.2.3",
@@ -64,7 +65,7 @@
     "url-loader": "0.5.7",
     "webpack": "2.1.0-beta.4",
     "webpack-dev-middleware": "1.6.1",
-    "webpack-hot-middleware": "2.10.0"
+    "webpack-hot-middleware": "^2.10.0"
   },
   "dependencies": {
     "auth0": "^2.1.0",
