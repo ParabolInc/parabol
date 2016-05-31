@@ -1,11 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import look, { StyleSheet } from 'react-look';
-import tinycolor from 'tinycolor2';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme';
 import IconButton from '../../components/IconButton/IconButton';
 
 const combineStyles = StyleSheet.combineStyles;
-const fieldLightGray = tinycolor.mix(theme.palette.dark, '#fff', 50).toHexString();
+const fieldLightGray = appTheme.palette.dark50l;
 
 let styles = {};
 
@@ -20,16 +19,20 @@ export default class SetupField extends Component {
     hasHelpText: PropTypes.bool,
     hasShortcutHint: PropTypes.bool,
     helpText: PropTypes.object,
-    type: PropTypes.string,
-    value: PropTypes.string,
     isLarger: PropTypes.bool,
     isWider: PropTypes.bool,
-    onButtonClick: PropTypes.func,
     onBlur: PropTypes.func,
+    onButtonClick: PropTypes.func,
     onChange: PropTypes.func,
     onFocus: PropTypes.func,
     placeholder: PropTypes.string,
-    shortcutHint: PropTypes.string
+    shortcutHint: PropTypes.string,
+    theme: PropTypes.oneOf([
+      'cool',
+      'warm'
+    ]),
+    type: PropTypes.string,
+    value: PropTypes.string
   }
 
   render() {
@@ -41,23 +44,21 @@ export default class SetupField extends Component {
       hasHelpText,
       hasShortcutHint,
       helpText,
-      type,
-      value,
       isLarger,
       isWider,
-      onButtonClick,
       onBlur,
+      onButtonClick,
       onChange,
       onFocus,
       placeholder,
-      shortcutHint
+      shortcutHint,
+      theme,
+      type,
+      value
     } = this.props;
 
-    let fieldStyles = styles.field;
-
-    const largerStyles = combineStyles(styles.field, styles.fieldLarger);
-    const widerStyles = combineStyles(styles.field, styles.widerLarger);
-    const largerAndWiderStyles = combineStyles(styles.field, styles.fieldLarger, styles.fieldWider);
+    const styleTheme = theme || 'cool';
+    const styleOptions = [styles.field, styles[styleTheme]];
     const helpTextErrorStyles = combineStyles(styles.helpText, styles.helpTextError);
     const helpTextStyles = hasErrorText ? helpTextErrorStyles : styles.helpText;
     const shortcutHintDisabledStyles = combineStyles(
@@ -67,13 +68,16 @@ export default class SetupField extends Component {
     const shortcutHintStyles = buttonDisabled ?
       shortcutHintDisabledStyles : styles.shortcutHint;
 
-    if (isLarger && isWider) {
-      fieldStyles = largerAndWiderStyles;
-    } else if (isLarger) {
-      fieldStyles = largerStyles;
-    } else if (isWider) {
-      fieldStyles = widerStyles;
+    let fieldStyles;
+
+    if (isLarger) {
+      styleOptions.push(styles.fieldLarger);
     }
+    if (isWider) {
+      styleOptions.push(styles.fieldWider);
+    }
+
+    fieldStyles = combineStyles.apply('null', styleOptions);
 
     return (
       <div className={styles.fieldBlock}>
@@ -119,16 +123,12 @@ styles = StyleSheet.create({
     border: 0,
     borderBottom: `1px dashed ${fieldLightGray}`,
     boxShadow: 'none',
-    fontSize: theme.typography.s4,
+    fontSize: appTheme.typography.s4,
     fontWeight: 700,
     lineHeight: 1.5,
     margin: '0 0 .5rem',
     padding: '.125rem .5rem',
     width: '100%',
-
-    '::selection': {
-      backgroundColor: '#e6f4f4'
-    },
 
     '::placeholder': {
       color: fieldLightGray
@@ -136,23 +136,51 @@ styles = StyleSheet.create({
 
     // NOTE: :focus, :active have same styles
     ':focus': {
-      borderColor: '#84c6c7',
       borderStyle: 'solid',
-      color: theme.palette.cool,
       outline: 'none'
     },
     ':active': {
-      borderColor: '#84c6c7',
       borderStyle: 'solid',
-      color: theme.palette.cool,
       outline: 'none'
+    }
+  },
+
+  cool: {
+    '::selection': {
+      backgroundColor: appTheme.palette.cool10l
+    },
+
+    // NOTE: :focus, :active have same styles
+    ':focus': {
+      borderColor: appTheme.palette.cool50l,
+      color: appTheme.palette.cool,
+    },
+    ':active': {
+      borderColor: appTheme.palette.cool50l,
+      color: appTheme.palette.cool,
+    }
+  },
+
+  warm: {
+    '::selection': {
+      backgroundColor: appTheme.palette.warm10l
+    },
+
+    // NOTE: :focus, :active have same styles
+    ':focus': {
+      borderColor: appTheme.palette.warm50l,
+      color: appTheme.palette.warm,
+    },
+    ':active': {
+      borderColor: appTheme.palette.warm50l,
+      color: appTheme.palette.warm,
     }
   },
 
   // NOTE: Modifies field
   fieldLarger: {
     borderBottomWidth: '2px',
-    fontSize: theme.typography.s6,
+    fontSize: appTheme.typography.s6,
     fontWeight: 400
   },
 
@@ -169,20 +197,20 @@ styles = StyleSheet.create({
   },
 
   helpText: {
-    color: theme.palette.dark,
-    fontSize: theme.typography.s3,
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s3,
     fontStyle: 'italic',
     fontWeight: 700
   },
 
   // NOTE: Modifies helpText
   helpTextError: {
-    color: theme.palette.warm
+    color: appTheme.palette.warm
   },
 
   shortcutHint: {
-    color: theme.palette.warm,
-    fontSize: theme.typography.s3,
+    color: appTheme.palette.warm,
+    fontSize: appTheme.typography.s3,
     fontStyle: 'italic',
     fontWeight: 700,
     textAlign: 'right'
