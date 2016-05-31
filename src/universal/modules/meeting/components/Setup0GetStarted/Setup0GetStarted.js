@@ -111,6 +111,7 @@ export default class Setup0GetStarted extends Component {
               onChange={onChangeTeamName}
               placeholder="Team name"
               shortcutHint="Press enter"
+              value={team.instance.name}
             />
           </HotKeys>
           {hasOpenShortcutMenu &&
