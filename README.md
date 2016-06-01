@@ -29,7 +29,7 @@ Action is a Node.js application based upon the meatier stack:
 
 | Concern            | Solution                                         |
 |--------------------|--------------------------------------------------|
-| Server             | [Node 5](https://nodejs.org/)                    |
+| Server             | [Node 6](https://nodejs.org/)                    |
 | Server Framework   | [Express](http://expressjs.com/)                 |
 | Database           | [RethinkDB](https://www.rethinkdb.com/)          |
 | Data Transport     | [GraphQL](https://github.com/graphql/graphql-js) |
@@ -44,7 +44,7 @@ Action is a Node.js application based upon the meatier stack:
 
 #### Prerequisites
 
-Action requires Node.js and >4.1.1 (we're using 5.10.0 in development).
+Action requires Node.js and >4.1.1 (we're using 6.2.0 in development).
 [Go here](https://nodejs.org/) to install a version for your system.
 If you already have node, we recommend [n](https://github.com/tj/n) to manage your node versions.
 
