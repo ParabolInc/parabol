@@ -29,11 +29,11 @@ export default class Sidebar extends Component {
           </a>
           <div className={styles.teamName}>{teamName}</div>
           <a className={styles.shortUrl} href={shortUrl}>{shortUrl}</a>
-          { /* TODO: make me respond to props */ }
+          {/* TODO: make me respond to props */}
           <div className={styles.timer}>{timerValue}</div>
         </div>
 
-        { /* TODO: make me respond to props */ }
+        {/* TODO: make me respond to props */}
         <nav className={styles.nav}>
           <ul className={styles.navList}>
             <li className={styles.navListItem}>
