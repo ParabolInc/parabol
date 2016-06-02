@@ -10,8 +10,7 @@ import {
 export default {
   createMeeting: {
     type: Meeting,
-    async resolve(source, args, {rootValue}) { // eslint-disable-line no-unused-vars
-      const {authToken} = rootValue;
+    async resolve(source, args, {authToken}) { // eslint-disable-line no-unused-vars
       const newMeeting = {
         // TODO: a uuid is overkill. let's make it small for smaller urls & friendly socket payloads
         id: uuid.v4(),
@@ -39,7 +38,7 @@ export default {
         description: 'the socketId currently editing the content'
       },
     },
-    async resolve(source, {meetingId, editor}, {rootValue}) { // eslint-disable-line no-unused-vars
+    async resolve(source, {meetingId, editor}) { // eslint-disable-line no-unused-vars
       const updatedMeeting = await r.table('Meeting').get(meetingId).update({
         currentEditors: r.row('currentEditors').append(editor)
       }, {returnChanges: true});
@@ -58,7 +57,7 @@ export default {
         description: 'the socketId currently editing the content'
       },
     },
-    async resolve(source, {meetingId, editor}, {rootValue}) { // eslint-disable-line no-unused-vars
+    async resolve(source, {meetingId, editor}) { // eslint-disable-line no-unused-vars
       const updatedMeeting = await r.table('Meeting').get(meetingId).update(row => ({
         currentEditors: row('currentEditors').filter(user => user.ne(editor))
       }), {returnChanges: true});
@@ -82,7 +81,7 @@ export default {
       }
     },
     // eslint-disable-next-line no-unused-vars
-    async resolve(source, {meetingId, updatedBy, content}, {rootValue}) {
+    async resolve(source, {meetingId, updatedBy, content}) {
       const updatedMeeting = await r.table('Meeting').get(meetingId).update({
         content,
         lastUpdatedBy: updatedBy
