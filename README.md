@@ -44,14 +44,9 @@ Action is a Node.js application based upon the meatier stack:
 
 #### Prerequisites
 
-<<<<<<< HEAD
-Action requires Node.js and >4.1.1 (we're using 6.2.0 in development).
-[Go here](https://nodejs.org/) to install a version for your system.
-If you already have node, we recommend [n](https://github.com/tj/n) to manage your node versions.
-=======
-Action requires Node.js >=5.10.1. We recommend using
-[n](https://github.com/tj/n) to install and manage your node versions.
->>>>>>> ec54f65... Updated documentation; introduced db:migrate-*
+Action requires Node.js >=5.10.1 (we're using 6.2.0 in development).
+We recommend using [n](https://github.com/tj/n) to install and manage your
+node versions.
 
 Action also depends on [RethinkDB](https://rethinkdb.com/). Make sure
 you have it installed. If you have OSX, we recommend homebrew so
@@ -154,7 +149,6 @@ Authored and maintained by [Parabol](http://parabol.co).
 * [jordanh](https://github.com/jordanh)
 * [ackernaut](https://github.com/ackernaut)
 * [mattkrick](https://github.com/mattkrick)
-* [jrwells](https://github.com/jrwells)
 
 ### License
 

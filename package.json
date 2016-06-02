@@ -104,7 +104,7 @@
     "react-fontawesome": "^1.1.0",
     "react-helmet": "^3.1.0",
     "react-hotkeys": "^0.8.0",
-    "react-look": "^1.0.0-beta8",
+    "react-look": "^1.0.0-beta9",
     "react-redux": "4.4.5",
     "react-router": "2.4.1",
     "react-router-redux": "4.0.4",
