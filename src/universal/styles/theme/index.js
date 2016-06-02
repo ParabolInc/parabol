@@ -17,4 +17,5 @@ if (typeof __PRODUCTION__ !== 'undefined' && __PRODUCTION__) {
 }
 /* eslint-enable */
 
-export default theme;
+const exportTheme = theme;
+export default exportTheme;

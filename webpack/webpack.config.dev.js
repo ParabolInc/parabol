@@ -38,9 +38,12 @@ export default {
   devtool: 'eval',
   context: path.join(root, 'src'),
   entry: {
-    app: ['babel-polyfill',
-      'client/client.js',
-      'webpack-hot-middleware/client']
+    app: [
+      'babel-polyfill',
+      'react-hot-loader/patch',
+      'webpack-hot-middleware/client',
+      'client/client.js'
+    ]
   },
   output: {
     // https://github.com/webpack/webpack/issues/1752
@@ -51,6 +54,7 @@ export default {
   },
   plugins: [
     ...prefetchPlugins,
+    new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),
     new webpack.DefinePlugin({
