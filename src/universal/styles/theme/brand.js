@@ -1,13 +1,6 @@
 
 // brand.js
 
-// Note: Using the original name from Zeplin.
-//       The short name for reference is in
-//       the comments.
-
-// Brand colors
-// -------------
-
 const brand = {
   slateGray: '#4e495f',   // Slate
   greyBlue: '#676c8a',    // Purple

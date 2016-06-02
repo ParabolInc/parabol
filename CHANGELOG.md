@@ -4,7 +4,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.2.0
+### Added
+- Adopted `react-look` for inline styling
+- Restructured styles into a computed set of themes
+- Began UI pattern library
+- Reintroduced migrations using `rethink-migrate`
+- Implemented new team creation and invitations process
+
 ## v0.1.0
+### Added
 - Moved to the meatier stack
 - Fixed JWT expiry handling
 - Fixed FOUCs in dev mode

@@ -1,9 +1,9 @@
-import React, {PropTypes, Component} from 'react';
-import {setMeetingId} from '../../ducks/meeting';
-import {push} from 'react-router-redux';
+import React, { PropTypes, Component } from 'react';
+import { loadMeetingAndTeam } from '../../ducks/meeting';
+import { push } from 'react-router-redux';
 
 export default ComposedComponent =>
-  class EnsureMeetingId extends Component {
+  class EnsureMeetingAndTeamLoaded extends Component {
     static propTypes = {
       meeting: PropTypes.object,
       params: PropTypes.object,
@@ -12,9 +12,9 @@ export default ComposedComponent =>
 
     componentWillMount() {
       const {meeting, params, dispatch} = this.props;
-      if (!meeting.instance.id) {
+      if (!meeting.isLoaded) {
         if (params.id) {
-          dispatch(setMeetingId(params.id));
+          dispatch(loadMeetingAndTeam(params.id));
         } else {
           dispatch(push('/404'));
         }

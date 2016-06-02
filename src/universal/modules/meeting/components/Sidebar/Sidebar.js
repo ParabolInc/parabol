@@ -97,7 +97,7 @@ styles = StyleSheet.create({
 
   bullet: {
     display: 'inline-block',
-    fontSize: theme.typography.fs4,
+    fontSize: theme.typography.s4,
     marginRight: '.75rem',
     textAlign: 'right',
     verticalAlign: 'middle',
@@ -106,7 +106,7 @@ styles = StyleSheet.create({
 
   label: {
     display: 'inline-block',
-    fontSize: theme.typography.fs4,
+    fontSize: theme.typography.s4,
     verticalAlign: 'middle'
   },
 
@@ -126,21 +126,21 @@ styles = StyleSheet.create({
     lineHeight: '2.5rem'
   },
 
-  // TODO: clean up global link styles (Bootstrap scrub)
   navListItemLink: {
-    color: '#95929f',
+    color: theme.palette.dark60l,
     textDecoration: 'none',
+
     ':hover': {
-      color: '#4e495f'
+      color: theme.palette.dark
     }
   },
 
   navListItemLinkActive: {
-    color: '#4e495f'
+    color: theme.palette.dark
   },
 
   sidebar: {
-    backgroundColor: '#ededef',
+    backgroundColor: theme.palette.dark10l,
     order: 1,
     padding: '2rem 0',
     width: '15rem'
@@ -152,21 +152,25 @@ styles = StyleSheet.create({
   },
 
   shortUrl: {
-    color: '#08080a',
+    color: theme.palette.dark10d,
     display: 'block',
-    fontSize: theme.typography.fs2,
+    fontSize: theme.typography.s2,
     lineHeight: 'normal',
     marginBottom: '.625rem',
     textDecoration: 'none',
+
     ':hover': {
-      color: '#4e495f'
+      color: theme.palette.dark
+    },
+    ':focus': {
+      color: theme.palette.dark
     }
   },
 
   teamName: {
-    color: theme.palette.a,
-    fontFamily: theme.typography.actionUISerif,
-    fontSize: theme.typography.fs5,
+    color: theme.palette.cool,
+    fontFamily: theme.typography.serif,
+    fontSize: theme.typography.s5,
     fontStyle: 'italic',
     fontWeight: 700,
     lineHeight: 'normal',
@@ -174,8 +178,8 @@ styles = StyleSheet.create({
   },
 
   timer: {
-    color: theme.palette.b,
-    fontFamily: theme.typography.actionUIMonospace,
-    fontSize: theme.typography.fs4,
+    color: theme.palette.warm,
+    fontFamily: theme.typography.monospace,
+    fontSize: theme.typography.s4,
   }
 });
