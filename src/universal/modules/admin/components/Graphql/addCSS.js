@@ -1075,10 +1075,10 @@ span.CodeMirror-selectedtext { background: none; }
   cursor: pointer;
 }
 .CodeMirror-foldgutter-open:after {
-  content: "\25BE";
+  content: "\u25BE";
 }
 .CodeMirror-foldgutter-folded:after {
-  content: "\25B8";
+  content: "\u25BE";
 }
 /* The lint marker gutter */
 .CodeMirror-lint-markers {

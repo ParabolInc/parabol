@@ -1,14 +1,14 @@
-import React, { Component, PropTypes } from 'react';
-import { HotKeys } from 'react-hotkeys';
+import React, {Component, PropTypes} from 'react';
+import {HotKeys} from 'react-hotkeys';
 import ProgressDots from '../../components/ProgressDots/ProgressDots';
 import SetupContent from '../../components/SetupContent/SetupContent';
 import SetupField from '../../components/SetupField/SetupField';
 import SetupHeader from '../../components/SetupHeader/SetupHeader';
 import ShortcutsMenu from '../../components/ShortcutsMenu/ShortcutsMenu';
 import ShortcutsToggle from '../../components/ShortcutsToggle/ShortcutsToggle';
-import { NAVIGATE_SETUP_1_INVITE_TEAM } from '../../ducks/meeting.js';
-import { UPDATE_SHORTCUT_MENU_STATE } from '../../ducks/shortcuts.js';
-import { updateTeamName, updateTeamNameLocal } from '../../ducks/team.js';
+import {NAVIGATE_SETUP_1_INVITE_TEAM} from '../../ducks/meeting.js';
+import {UPDATE_SHORTCUT_MENU_STATE} from '../../ducks/shortcuts.js';
+import {updateTeamName, updateTeamNameLocal} from '../../ducks/team.js';
 
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Setup0GetStarted extends Component {
@@ -19,7 +19,7 @@ export default class Setup0GetStarted extends Component {
   }
 
   handleMenuToggle() {
-    const { dispatch, shortcuts } = this.props;
+    const {dispatch, shortcuts} = this.props;
     dispatch({
       type: UPDATE_SHORTCUT_MENU_STATE,
       payload: {
@@ -29,15 +29,15 @@ export default class Setup0GetStarted extends Component {
   }
 
   render() {
-    const { dispatch, shortcuts, team } = this.props;
-    const { hasOpenShortcutMenu } = shortcuts;
+    const {dispatch, shortcuts, team} = this.props;
+    const {hasOpenShortcutMenu} = shortcuts;
 
     const handleNavigateToNextStep = (event) => {
       if (event) {
         event.preventDefault();
       }
       dispatch(updateTeamName(team.instance.id, team.instance.name));
-      dispatch({ type: NAVIGATE_SETUP_1_INVITE_TEAM });
+      dispatch({type: NAVIGATE_SETUP_1_INVITE_TEAM});
     };
 
     const onChangeTeamName = (event) => {
@@ -99,7 +99,7 @@ export default class Setup0GetStarted extends Component {
             subHeading={<span>What do you call your team?</span>}
           />
           <HotKeys handlers={{ keyEnter: handleFieldKeyEnter }}>
-            { /* TODO: if their is a team name, put it on the line: */ }
+            {/* TODO: if there is a team name, put it on the line: */}
             <SetupField
               buttonDisabled={!nameFieldHasValue}
               buttonIcon="check-circle"
@@ -121,7 +121,7 @@ export default class Setup0GetStarted extends Component {
             />
           }
           {!hasOpenShortcutMenu &&
-            <ShortcutsToggle onClick={onShortcutMenuToggle} />
+            <ShortcutsToggle onClick={onShortcutMenuToggle}/>
           }
         </SetupContent>
       </HotKeys>

@@ -23,7 +23,8 @@
     "indent": [2, 2, {"SwitchCase": 1}],
     "no-console": 0,
     "no-alert": 0,
-    "object-curly-spacing": 0
+    "object-curly-spacing": 0,
+    "react/jsx-space-before-closing": 0
   },
   "plugins": [
     "react", "import"
@@ -34,7 +35,7 @@
     "import/resolve": {
       moduleDirectory: ["node_modules", "src"]
     },
-    "import/ignore": [".scss$", ".css$", ".svg$"]
+    "import/ignore": [".scss$", ".css$", ".svg$"],
   },
   "globals": {
     "__PRODUCTION__": true,
