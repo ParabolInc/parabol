@@ -25,7 +25,8 @@ Live demo: http://action-staging.parabol.co/
 
 ## Stack Information
 
-Action is a Node.js application based upon the meatier stack:
+Action is a Node.js application based upon the
+[Meatier](https://github.com/mattkrick/meatier) stack:
 
 | Concern            | Solution                                                  |
 |--------------------|-----------------------------------------------------------|
