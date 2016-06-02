@@ -29,7 +29,7 @@ Action is a Node.js application based upon the meatier stack:
 
 | Concern            | Solution                                                  |
 |--------------------|-----------------------------------------------------------|
-| Server             | [Node 5](https://nodejs.org/)                             |
+| Server             | [Node 6](https://nodejs.org/)                    |
 | Server Framework   | [Express](http://expressjs.com/)                          |
 | Database           | [RethinkDB](https://www.rethinkdb.com/)                   |
 | Data Transport     | [GraphQL](https://github.com/graphql/graphql-js)          |
@@ -38,15 +38,16 @@ Action is a Node.js application based upon the meatier stack:
 | Front-end          | [React](https://facebook.github.io/react/)                |
 | Styling            | [react-look](https://github.com/rofrischmann/react-look/) |
 
-
 ## Setup
 
 ### Installation
 
 #### Prerequisites
 
-Action requires Node.js >=5.10.1. We recommend using
-[n](https://github.com/tj/n) to install and manage your node versions.
+Action requires Node.js and >=5.10.1 (we're using 6.2.0 in development).
+[Go here](https://nodejs.org/) to install a version for your system.
+If you already have node, we recommend [n](https://github.com/tj/n) to
+manage your node versions.
 
 Action also depends on [RethinkDB](https://rethinkdb.com/). Make sure
 you have it installed. If you have OSX, we recommend homebrew so

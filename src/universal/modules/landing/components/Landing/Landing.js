@@ -31,7 +31,7 @@ export default class Landing extends Component {
 
     return (
       <div className={styles.layout}>
-        { /* Header */ }
+        {/* Header */}
         <div className={styles.header}>
           <div className={styles.container}>
             <a href="http://www.parabol.co/" title="Parabol, Inc.">
@@ -50,14 +50,14 @@ export default class Landing extends Component {
               Get Started
             </button>
             <br />
-            { /* TODO: Add click handler for logging in */ }
+            {/* TODO: Add click handler for logging in */}
             <a className={styles.headerLink} href="#" title="Log In">Or, log in</a>
           </div>
         </div>
 
-        { /* Content */ }
+        {/* Content */}
         <div className={styles.content}>
-          { /* How It Works */ }
+          {/* How It Works */}
           <div className={styles.section}>
             <div className={styles.container}>
               <h2 className={styles.sectionHeading}>How It Works</h2>
@@ -90,7 +90,7 @@ export default class Landing extends Component {
             </div>
           </div>
 
-          { /* Get Involved */ }
+          {/* Get Involved */}
           <div className={combineStyles(styles.section, styles.sectionHasBorder)}>
             <div className={styles.container}>
               <h2 className={styles.sectionHeading}>Get Involved</h2>
@@ -110,7 +110,7 @@ export default class Landing extends Component {
           </div>
         </div>
 
-        { /* Footer */ }
+        {/* Footer */}
         <div className={styles.footer}>
           <div className={styles.container}>
             <a href="http://www.parabol.co/" title="Parabol, Inc.">

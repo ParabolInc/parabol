@@ -24,13 +24,16 @@ export function run(worker) {
   // HMR
   if (!PROD) {
     const compiler = webpack(config);
-    // eslint-disable-next-line global-require
+    /* eslint-disable global-require */
     app.use(require('webpack-dev-middleware')(compiler, {
-      noInfo: true,
-      publicPath: config.output.publicPath
+      noInfo: false,
+      publicPath: config.output.publicPath,
+      stats: {
+        colors: true
+      }
     }));
-    // eslint-disable-next-line global-require
     app.use(require('webpack-hot-middleware')(compiler));
+    /* eslint-enable global-require */
   }
 
   // setup middleware
