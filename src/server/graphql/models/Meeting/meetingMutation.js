@@ -16,8 +16,7 @@ export default {
         description: 'The team ID this meeting belongs to'
       },
     },
-    async resolve(source, {teamId}, {rootValue}) {
-      const {authToken} = rootValue;
+    async resolve(source, {teamId}, {authToken}) {
       const newMeeting = {
         // TODO: a uuid is overkill. let's make it small for smaller urls & friendly socket payloads
         id: uuid.v4(),

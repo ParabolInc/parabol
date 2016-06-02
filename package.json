@@ -28,7 +28,7 @@
     "db:migrate-up-all": "npm run db:migrate",
     "db:migrate-down": "./src/server/database/migrate.sh down",
     "db:migrate-down-all": "./src/server/database/migrate.sh down-all",
-    "test": "NODE_ENV=testing ava ./src/**/__tests___/**/*.js --verbose",
+    "test": "NODE_ENV=testing ava ./src/**/__tests__/**/*-tests.js --verbose",
     "lint": "eslint 'src/**/*.js' 'tests/*.js' 'webpack/*.js'",
     "profile": "NODE_ENV=production webpack --config ./webpack/prod.babel.js --profile --json > stats.json"
   },

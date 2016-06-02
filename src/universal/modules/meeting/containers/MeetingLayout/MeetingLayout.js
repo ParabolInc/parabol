@@ -1,10 +1,10 @@
-import React, { Component, PropTypes } from 'react';
-import look, { StyleSheet } from 'react-look';
-import { connect } from 'react-redux';
-import { ensureState } from 'redux-optimistic-ui';
-import { reduxSocket } from 'redux-socket-cluster';
-import { HotKeys } from 'react-hotkeys';
-import { localStorageVars } from 'universal/utils/clientOptions';
+import React, {Component, PropTypes} from 'react';
+import look, {StyleSheet} from 'react-look';
+import {connect} from 'react-redux';
+import {ensureState} from 'redux-optimistic-ui';
+import {reduxSocket} from 'redux-socket-cluster';
+import {HotKeys} from 'react-hotkeys';
+import {localStorageVars} from 'universal/utils/clientOptions';
 import Setup0GetStarted from '../../components/Setup0GetStarted/Setup0GetStarted';
 import Setup1InviteTeam from '../../components/Setup1InviteTeam/Setup1InviteTeam';
 import Setup2InviteTeam from '../../components/Setup2InviteTeam/Setup2InviteTeam';
@@ -59,7 +59,7 @@ export default class MeetingLayout extends Component {
   };
 
   render() {
-    const { dispatch, meeting, setup, shortcuts, team } = this.props;
+    const {dispatch, meeting, setup, shortcuts, team} = this.props;
 
     const teamName = team.instance.name || 'Team Name';
 
@@ -71,7 +71,12 @@ export default class MeetingLayout extends Component {
               {(() => {
                 switch (meeting.navigation) {
                   case NAVIGATE_SETUP_1_INVITE_TEAM:
-                    return <Setup1InviteTeam dispatch={dispatch} setup={setup} />;
+                    return (
+                      <Setup1InviteTeam
+                        dispatch={dispatch}
+                        setup={setup}
+                      />
+                    );
                   case NAVIGATE_SETUP_2_INVITE_TEAM:
                     return (
                       <Setup2InviteTeam
@@ -91,7 +96,7 @@ export default class MeetingLayout extends Component {
                     );
                 }
               })()}
-              { /* <SetupField /> */ }
+              {/* <SetupField /> */}
             </div>
           </div>
 
