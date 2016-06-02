@@ -33,13 +33,21 @@ styles = StyleSheet.create({
 });
 
 StyleSheet.addCSS({
+  '*': {
+    boxSizing: 'border-box'
+  },
+
+  '*::before, *::after': {
+    boxSizing: 'border-box'
+  },
+
   html: {
     fontSize: '16px'
   },
 
   body: {
-    color: tinycolor.mix(theme.palette.c, '#000', 0.4),
-    fontFamily: theme.typography.actionUISansSerif,
+    color: theme.palette.dark10d,
+    fontFamily: theme.typography.sansSerif,
     '-moz-osx-font-smoothing': 'grayscale',
     '-webkit-font-smoothing': 'antialiased',
     fontSize: '16px',
@@ -50,12 +58,18 @@ StyleSheet.addCSS({
   },
 
   a: {
-    color: theme.palette.b,
+    color: theme.palette.warm,
     textDecoration: 'none'
   },
 
   'a:hover, a:focus': {
-    color: tinycolor(theme.palette.b).darken(15).toString(),
+    color: tinycolor(theme.palette.warm).darken(15).toHexString(),
     textDecoration: 'underline'
+  },
+
+  input: {
+    fontFamily: theme.typography.sansSerif,
+    '-moz-osx-font-smoothing': 'grayscale',
+    '-webkit-font-smoothing': 'antialiased'
   }
 });

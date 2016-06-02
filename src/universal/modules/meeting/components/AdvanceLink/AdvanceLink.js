@@ -4,25 +4,43 @@ import FontAwesome from 'react-fontawesome';
 import tinycolor from 'tinycolor2';
 import theme from 'universal/styles/theme';
 
+const combineStyles = StyleSheet.combineStyles;
+const initialColor = theme.palette.warm;
+const hoverColor = tinycolor(initialColor).darken(15).toString();
 let styles = {};
 
 @look
 // eslint-disable-next-line react/prefer-stateless-function
 export default class AdvanceLink extends Component {
   static propTypes = {
+    disabled: PropTypes.bool,
     href: PropTypes.string,
+    onClick: PropTypes.func,
     icon: PropTypes.string,
     label: PropTypes.string
   }
 
+  clickHandler = () => {
+    const { disabled, onClick } = this.props;
+    onClick(disabled);
+  }
+
   render() {
-    const { href, icon, label } = this.props;
+    const { disabled, href, icon, label } = this.props;
+
+    const disabledStyles = combineStyles(styles.link, styles.disabled);
+    const linkStyles = disabled ? disabledStyles : styles.link;
 
     return (
-      <a className={styles.advanceLink} href={href} title={label}>
+      <a
+        className={linkStyles}
+        href={href}
+        onClick={this.clickHandler}
+        title={label}
+      >
         {label}
         <FontAwesome
-          className={styles.advanceLinkIcon}
+          className={styles.icon}
           name={icon}
         />
       </a>
@@ -31,27 +49,45 @@ export default class AdvanceLink extends Component {
 }
 
 styles = StyleSheet.create({
-  advanceLink: {
-    color: theme.palette.b,
-    fontFamily: theme.typography.actionUISerif,
-    fontSize: theme.typography.fs5,
+  link: {
+    color: initialColor,
+    cursor: 'pointer',
+    fontFamily: theme.typography.serif,
+    fontSize: theme.typography.s5,
+    fontStyle: 'italic',
     fontWeight: 700,
     marginTop: '2rem',
     textDecoration: 'none',
+    userSelect: 'none',
 
+    // NOTE: Same styles for both :hover, :focus
     ':hover': {
-      color: tinycolor(theme.palette.b).darken(15).toString(),
+      color: hoverColor,
       textDecoration: 'none'
     },
-
     ':focus': {
-      color: tinycolor(theme.palette.b).darken(15).toString(),
+      color: hoverColor,
       textDecoration: 'none'
     }
   },
 
-  // TODO: custom styles are conflicting with .fa classes, hence !important
-  advanceLinkIcon: {
+  // TODO: Create theme color options
+
+  disabled: {
+    cursor: 'not-allowed',
+    opacity: '.5',
+
+    // NOTE: Same styles for both :hover, :focus
+    ':hover': {
+      color: initialColor
+    },
+    ':focus': {
+      color: initialColor
+    }
+  },
+
+  // NOTE: Custom styles are conflicting with .fa classes, hence #shame !important
+  icon: {
     color: 'inherit',
     display: 'inline-block !important',
     fontSize: '28px !important',

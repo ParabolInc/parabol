@@ -27,16 +27,16 @@ Live demo: http://action-staging.parabol.co/
 
 Action is a Node.js application based upon the meatier stack:
 
-| Concern            | Solution                                         |
-|--------------------|--------------------------------------------------|
-| Server             | [Node 6](https://nodejs.org/)                    |
-| Server Framework   | [Express](http://expressjs.com/)                 |
-| Database           | [RethinkDB](https://www.rethinkdb.com/)          |
-| Data Transport     | [GraphQL](https://github.com/graphql/graphql-js) |
-| Sockets            | [socketcluster](http://socketcluster.io/)        |
-| Client State       | [Redux](http://redux.js.org/)                    |
-| Front-end          | [React](https://facebook.github.io/react/)       |
-
+| Concern            | Solution                                                  |
+|--------------------|-----------------------------------------------------------|
+| Server             | [Node 6](https://nodejs.org/)                             |
+| Server Framework   | [Express](http://expressjs.com/)                          |
+| Database           | [RethinkDB](https://www.rethinkdb.com/)                   |
+| Data Transport     | [GraphQL](https://github.com/graphql/graphql-js)          |
+| Sockets            | [socketcluster](http://socketcluster.io/)                 |
+| Client State       | [Redux](http://redux.js.org/)                             |
+| Front-end          | [React](https://facebook.github.io/react/)                |
+| Styling            | [react-look](https://github.com/rofrischmann/react-look/) |
 
 ## Setup
 
@@ -44,12 +44,13 @@ Action is a Node.js application based upon the meatier stack:
 
 #### Prerequisites
 
-Action requires Node.js and >4.1.1 (we're using 6.2.0 in development).
-[Go here](https://nodejs.org/) to install a version for your system.
-If you already have node, we recommend [n](https://github.com/tj/n) to manage your node versions.
+Action requires Node.js >=5.10.1 (we're using 6.2.0 in development).
+We recommend using [n](https://github.com/tj/n) to install and manage your
+node versions.
 
-Action also depends on [RethinkDB](https://rethinkdb.com/). Make sure you have it installed.
-If you have OSX, we recommend homebrew so upgrades are as easy as `brew update && brew upgrade rethinkdb`
+Action also depends on [RethinkDB](https://rethinkdb.com/). Make sure
+you have it installed. If you have OSX, we recommend homebrew so
+upgrades are as easy as `brew update && brew upgrade rethinkdb`
 
 #### Source code
 
@@ -65,23 +66,55 @@ _Remember: if RethinkDB is running locally, you can reach its dashboard at
 
 ### Client-side development
 
-In this mode, webpack will hot swap your updated client modules without restarting the server.
+In this mode, webpack will hot swap your updated client modules without
+restarting the server.
 ```bash
-$ npm start
+$ npm run dev
 ```
 [http://localhost:3000/](http://localhost:3000/)
 
 ### Server-side development
 
-In this mode, the server will use your pre-built client bundle & only restart the server with fresh code.
+In this mode, the server will build client bundle and start a production
+server with the fresh code.
 ```bash
 $ npm run bs
 ```
 [http://localhost:3000/](http://localhost:3000/)
 
 ### Database development
-- All tables are managed in `./src/server/setupDB.js`. Just add your tables & indices to that file and rerun
-- http://localhost:3000/graphql for testing out new queries/mutations
+Database schema version is managed by
+[rethink-migrate](https://github.com/JohanObrink/rethink-migrate). These
+migrations are stored in `./src/server/database/migrations`.
+
+If you make changes to the Action schema, make certain to create a new
+migration.
+
+## Bringing your database up to date
+
+```bash
+$ npm run db:migrate
+```
+
+## Migrating backward and forward
+
+The following commands are available to migrate your database instance
+forward and backward in time:
+
+   * `npm run db:migrate-up` - migrate up one schema version
+   * `npm run db:migrate-up-all` - migrate upward to latest schema
+   * `npm run db:migrate-down` - migrate down one schema version
+   * `npm run db:migrate-down-all` - migrate downward completely (will erase everything)
+
+## Exploring the data API:
+
+While running the app in development mode, navigate to
+http://localhost:3000/graphql for testing out new queries/mutations
+
+## Exploring component design:
+
+We've begun assembling a pattern library of all of the components we've created
+for the app. Too see them, navigate to http://localhost:3000/patterns
 
 ## Getting Involved
 
@@ -103,6 +136,7 @@ get involved and how to get compensated.
 
 | Version            | Summary                                      |
 |--------------------|----------------------------------------------|
+| 0.2.0              | Added first pass at team creation/invitation |
 | 0.1.0              | Things got a whole lot meatier               |
 | 0.0.1              | Developer preview and architecture demo      |
 
@@ -113,7 +147,6 @@ Authored and maintained by [Parabol](http://parabol.co).
 ### Parabol Core Team
 
 * [jordanh](https://github.com/jordanh)
-* [jrwells](https://github.com/jrwells)
 * [ackernaut](https://github.com/ackernaut)
 * [mattkrick](https://github.com/mattkrick)
 

@@ -1,4 +1,4 @@
-import r from '../src/server/database/rethinkdriver';
+import r from '../src/server/database/rethinkDriver';
 
 export default async function pretest() {
   const tables = await r.tableList();

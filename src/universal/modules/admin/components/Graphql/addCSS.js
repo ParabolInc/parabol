@@ -5,14 +5,28 @@ import { StyleSheet } from 'react-look';
 StyleSheet.addCSS(`
 #graphiql-container {
   color: #141823;
-  width: 100%;
-  display: -webkit-flex;
   display:         flex;
-  -webkit-flex-direction: row;
+  display: -webkit-flex;
           flex-direction: row;
-  height: 100%;
-  font-family: system, -apple-system, 'San Francisco', '.SFNSDisplay-Regular', 'Segoe UI', Segoe, 'Segoe WP', 'Helvetica Neue', helvetica, 'Lucida Grande', arial, sans-serif;
+  -webkit-flex-direction: row;
+  font-family:
+    system,
+    -apple-system,
+    'San Francisco',
+    '.SFNSDisplay-Regular',
+    'Segoe UI',
+    Segoe,
+    'Segoe WP',
+    'Helvetica Neue',
+    helvetica,
+    'Lucida Grande',
+    arial,
+    sans-serif;
   font-size: 14px;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  width: 100%;
 }
 
 #graphiql-container .editorWrap {
@@ -41,34 +55,40 @@ StyleSheet.addCSS(`
 }
 
 #graphiql-container .topBar {
-  background: -webkit-linear-gradient(#f7f7f7, #e2e2e2);
-  background:         linear-gradient(#f7f7f7, #e2e2e2);
-  border-bottom: solid 1px #d0d0d0;
-  cursor: default;
-  height: 34px;
-  padding: 7px 14px 6px;
-  -webkit-user-select: none;
-          user-select: none;
-  display: -webkit-flex;
-  display:         flex;
-  -webkit-flex-direction: row;
-          flex-direction: row;
-  -webkit-flex: 1;
-          flex: 1;
   -webkit-align-items: center;
           align-items: center;
+  background: -webkit-linear-gradient(#f7f7f7, #e2e2e2);
+  background:         linear-gradient(#f7f7f7, #e2e2e2);
+  border-bottom: 1px solid #d0d0d0;
+  cursor: default;
+  display: -webkit-flex;
+  display:         flex;
+  height: 34px;
+  padding: 7px 14px 6px;
+  -webkit-flex: 1;
+          flex: 1;
+  -webkit-flex-direction: row;
+          flex-direction: row;
+  -webkit-user-select: none;
+          user-select: none;
+}
+
+#graphiql-container .toolbar {
+  overflow-x: auto;
 }
 
 #graphiql-container .docExplorerShow {
   background: -webkit-linear-gradient(#f7f7f7, #e2e2e2);
   background:         linear-gradient(#f7f7f7, #e2e2e2);
-  border: none;
-  border-bottom: solid 1px #d0d0d0;
-  border-left: solid 1px rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid #d0d0d0;
+  border-left: 1px solid rgba(0, 0, 0, 0.2);
+  border-right: none;
+  border-top: none;
   color: #3B5998;
   cursor: pointer;
   font-size: 14px;
   outline: 0;
+  margin: 0;
   padding: 2px 20px 0 18px;
 }
 
@@ -80,44 +100,45 @@ StyleSheet.addCSS(`
   height: 9px;
   margin: 0 3px -1px 0;
   position: relative;
-  width: 9px;
   -webkit-transform: rotate(-45deg);
           transform: rotate(-45deg);
+  width: 9px;
 }
 
 #graphiql-container .editorBar {
   display: -webkit-flex;
   display:         flex;
-  -webkit-flex-direction: row;
-          flex-direction: row;
   -webkit-flex: 1;
           flex: 1;
+  -webkit-flex-direction: row;
+          flex-direction: row;
 }
 
 #graphiql-container .queryWrap {
   display: -webkit-flex;
   display:         flex;
-  -webkit-flex-direction: column;
-          flex-direction: column;
   -webkit-flex: 1;
           flex: 1;
+  -webkit-flex-direction: column;
+          flex-direction: column;
 }
 
 #graphiql-container .resultWrap {
+  border-left: solid 1px #e0e0e0;
   display: -webkit-flex;
   display:         flex;
-  -webkit-flex-direction: column;
-          flex-direction: column;
+  position: relative;
   -webkit-flex: 1;
           flex: 1;
-  border-left: solid 1px #e0e0e0;
+  -webkit-flex-direction: column;
+          flex-direction: column;
 }
 
 #graphiql-container .docExplorerWrap {
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
-  z-index: 3;
-  position: relative;
   background: white;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 3;
 }
 
 #graphiql-container .docExplorerResizer {
@@ -144,9 +165,9 @@ StyleSheet.addCSS(`
 }
 
 #graphiql-container .variable-editor {
-  height: 30px;
   display: -webkit-flex;
   display:         flex;
+  height: 29px;
   -webkit-flex-direction: column;
           flex-direction: column;
   position: relative;
@@ -154,8 +175,8 @@ StyleSheet.addCSS(`
 
 #graphiql-container .variable-editor-title {
   background: #eeeeee;
-  border-bottom: solid 1px #d6d6d6;
-  border-top: solid 1px #e0e0e0;
+  border-bottom: 1px solid #d6d6d6;
+  border-top: 1px solid #e0e0e0;
   color: #777;
   font-variant: small-caps;
   font-weight: bold;
@@ -181,8 +202,8 @@ StyleSheet.addCSS(`
 
 #graphiql-container .footer {
   background: #f6f7f8;
-  border-left: solid 1px #e0e0e0;
-  border-top: solid 1px #e0e0e0;
+  border-left: 1px solid #e0e0e0;
+  border-top: 1px solid #e0e0e0;
   margin-left: 12px;
   position: relative;
 }
@@ -213,18 +234,61 @@ StyleSheet.addCSS(`
   padding-left: 3px;
 }
 
+#graphiql-container .toolbar-button {
+  background: #fdfdfd;
+  background: -webkit-linear-gradient(#fbfbfb, #f8f8f8);
+  background:         linear-gradient(#fbfbfb, #f8f8f8);
+  border-width: 0.5px;
+  border-style: solid;
+  border-color: #d3d3d3 #d0d0d0 #bababa;
+  border-radius: 4px;
+  box-shadow: 0 1px 1px -1px rgba(0, 0, 0, 0.13), inset 0 1px #fff;
+  color: #444;
+  cursor: pointer;
+  display: inline-block;
+  margin: 0 5px 0;
+  padding: 2px 8px 4px;
+  text-decoration: none;
+}
+
+#graphiql-container .toolbar-button:active {
+  background: -webkit-linear-gradient(#ececec, #d8d8d8);
+  background:         linear-gradient(#ececec, #d8d8d8);
+  border-color: #cacaca #c9c9c9 #b0b0b0;
+  box-shadow:
+    0 1px 0 #fff,
+    inset 0 1px rgba(255, 255, 255, 0.2),
+    inset 0 1px 1px rgba(0, 0, 0, 0.08);
+}
+
+#graphiql-container .toolbar-button.error {
+  background: -webkit-linear-gradient(#fdf3f3, #e6d6d7);
+  background:         linear-gradient(#fdf3f3, #e6d6d7);
+  color: #b00;
+}
+
+#graphiql-container .execute-button-wrap {
+  position: relative;
+  margin: 0 14px 0 28px;
+  height: 34px;
+}
+
 #graphiql-container .execute-button {
   background: -webkit-linear-gradient(#fdfdfd, #d2d3d6);
   background:         linear-gradient(#fdfdfd, #d2d3d6);
-  border: solid 1px rgba(0,0,0,0.25);
+  border: 1px solid rgba(0,0,0,0.25);
   border-radius: 17px;
   box-shadow: 0 1px 0 #fff;
   cursor: pointer;
   fill: #444;
   height: 34px;
-  margin: 0 14px 0 28px;
+  margin: 0;
   padding: 0;
   width: 34px;
+}
+
+#graphiql-container .execute-button svg {
+  pointer-events: none;
 }
 
 #graphiql-container .execute-button:active {
@@ -240,19 +304,49 @@ StyleSheet.addCSS(`
   outline: 0;
 }
 
+#graphiql-container .execute-options {
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.1),
+    0 2px 4px rgba(0,0,0,0.25);
+  left: -1px;
+  margin: 0;
+  padding: 8px 0;
+  position: absolute;
+  top: 37px;
+  z-index: 100;
+}
+
+#graphiql-container .execute-options li {
+  padding: 2px 30px 4px 10px;
+  list-style: none;
+  min-width: 100px;
+  cursor: pointer;
+}
+
+#graphiql-container .execute-options li.selected {
+  background: #e10098;
+  color: white;
+}
+
 #graphiql-container .CodeMirror-scroll {
   -webkit-overflow-scrolling: touch;
 }
 
 #graphiql-container .CodeMirror {
+  color: #141823;
+  font-family:
+    'Consolas',
+    'Inconsolata',
+    'Droid Sans Mono',
+    'Monaco',
+    monospace;
+  font-size: 13px;
+  height: 100%;
+  left: 0;
   position: absolute;
   top: 0;
-  left: 0;
-  height: 100%;
   width: 100%;
-  font-size: 13px;
-  font-family: 'Consolas', 'Inconsolata', 'Droid Sans Mono', 'Monaco', monospace;
-  color: #141823;
 }
 
 #graphiql-container .CodeMirror-lines {
@@ -261,11 +355,13 @@ StyleSheet.addCSS(`
 
 .CodeMirror-hint-information .content {
   -webkit-box-orient: vertical;
+          box-orient: vertical;
   color: #141823;
   display: -webkit-box;
   font-family: system, -apple-system, 'San Francisco', '.SFNSDisplay-Regular', 'Segoe UI', Segoe, 'Segoe WP', 'Helvetica Neue', helvetica, 'Lucida Grande', arial, sans-serif;
   font-size: 13px;
   -webkit-line-clamp: 3;
+          line-clamp: 3;
   line-height: 16px;
   max-height: 48px;
   overflow: hidden;
@@ -282,22 +378,22 @@ StyleSheet.addCSS(`
 
 .CodeMirror-hint-information .infoType {
   color: #30a;
-  margin-right: 0.5em;
-  display: inline;
   cursor: pointer;
+  display: inline;
+  margin-right: 0.5em;
 }
 
 .autoInsertedLeaf.cm-property {
-  padding: 2px 4px 1px;
-  margin: -2px -4px -1px;
-  border-radius: 2px;
-  border-bottom: solid 2px rgba(255, 255, 255, 0);
   -webkit-animation-duration: 6s;
      -moz-animation-duration: 6s;
           animation-duration: 6s;
   -webkit-animation-name: insertionFade;
      -moz-animation-name: insertionFade;
           animation-name: insertionFade;
+  border-bottom: 2px solid rgba(255, 255, 255, 0);
+  border-radius: 2px;
+  margin: -2px -4px -1px;
+  padding: 2px 4px 1px;
 }
 
 @-moz-keyframes insertionFade {
@@ -338,22 +434,32 @@ StyleSheet.addCSS(`
 
 div.CodeMirror-lint-tooltip {
   background-color: white;
-  color: #141823;
   border: 0;
   border-radius: 2px;
-  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
-   -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
-  font-family: system, -apple-system, 'San Francisco', '.SFNSDisplay-Regular', 'Segoe UI', Segoe, 'Segoe WP', 'Helvetica Neue', helvetica, 'Lucida Grande', arial, sans-serif;
+  color: #141823;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  font-family:
+    system,
+    -apple-system,
+    'San Francisco',
+    '.SFNSDisplay-Regular',
+    'Segoe UI',
+    Segoe,
+    'Segoe WP',
+    'Helvetica Neue',
+    helvetica,
+    'Lucida Grande',
+    arial,
+    sans-serif;
   font-size: 13px;
   line-height: 16px;
-  padding: 6px 10px;
   opacity: 0;
-  transition: opacity 0.15s;
-  -moz-transition: opacity 0.15s;
+  padding: 6px 10px;
   -webkit-transition: opacity 0.15s;
-  -o-transition: opacity 0.15s;
-  -ms-transition: opacity 0.15s;
+     -moz-transition: opacity 0.15s;
+      -ms-transition: opacity 0.15s;
+       -o-transition: opacity 0.15s;
+          transition: opacity 0.15s;
 }
 
 div.CodeMirror-lint-message-error, div.CodeMirror-lint-message-warning {
@@ -367,16 +473,15 @@ div.CodeMirror-lint-message-error, div.CodeMirror-lint-message-warning {
   background: #08f;
   background: -webkit-linear-gradient(#43A8FF, #0F83E8);
   background:         linear-gradient(#43A8FF, #0F83E8);
-
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.1);
   color: white;
-  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
-     -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
-      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
   font-family: arial;
-  line-height: 0;
-  padding: 0px 4px 1px;
   font-size: 12px;
+  line-height: 0;
   margin: 0 3px;
+  padding: 0px 4px 1px;
   text-shadow: 0 -1px rgba(0, 0, 0, 0.1);
 }
 
@@ -622,7 +727,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
 }
 
 /* The fake, visible scrollbars. Used to force redraw during scrolling
-   before actuall scrolling happens, thus preventing shaking and
+   before actual scrolling happens, thus preventing shaking and
    flickering artifacts. */
 .CodeMirror-vscrollbar, .CodeMirror-hscrollbar, .CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {
   position: absolute;
@@ -648,12 +753,14 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
 
 .CodeMirror-gutters {
   position: absolute; left: 0; top: 0;
+  min-height: 100%;
   z-index: 3;
 }
 .CodeMirror-gutter {
   white-space: normal;
   height: 100%;
   display: inline-block;
+  vertical-align: top;
   margin-bottom: -30px;
   /* Hack to make IE7 behave */
   *zoom:1;
@@ -662,7 +769,13 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
 .CodeMirror-gutter-wrapper {
   position: absolute;
   z-index: 4;
-  height: 100%;
+  background: none !important;
+  border: none !important;
+}
+.CodeMirror-gutter-background {
+  position: absolute;
+  top: 0; bottom: 0;
+  z-index: 4;
 }
 .CodeMirror-gutter-elt {
   position: absolute;
@@ -695,6 +808,8 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
   position: relative;
   overflow: visible;
   -webkit-tap-highlight-color: transparent;
+  -webkit-font-variant-ligatures: none;
+  font-variant-ligatures: none;
 }
 .CodeMirror-wrap pre {
   word-wrap: break-word;
@@ -737,19 +852,19 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
   overflow: hidden;
   visibility: hidden;
 }
-.CodeMirror-measure pre { position: static; }
 
-.CodeMirror div.CodeMirror-cursor {
-  position: absolute;
-  border-right: none;
-  width: 0;
-}
+.CodeMirror-cursor { position: absolute; }
+.CodeMirror-measure pre { position: static; }
 
 div.CodeMirror-cursors {
   visibility: hidden;
   position: relative;
   z-index: 3;
 }
+div.CodeMirror-dragcursors {
+  visibility: visible;
+}
+
 .CodeMirror-focused div.CodeMirror-cursors {
   visibility: visible;
 }
@@ -757,8 +872,8 @@ div.CodeMirror-cursors {
 .CodeMirror-selected { background: #d9d9d9; }
 .CodeMirror-focused .CodeMirror-selected { background: #d7d4f0; }
 .CodeMirror-crosshair { cursor: crosshair; }
-.CodeMirror ::selection { background: #d7d4f0; }
-.CodeMirror ::-moz-selection { background: #d7d4f0; }
+.CodeMirror-line::selection, .CodeMirror-line > span::selection, .CodeMirror-line > span > span::selection { background: #d7d4f0; }
+.CodeMirror-line::-moz-selection, .CodeMirror-line > span::-moz-selection, .CodeMirror-line > span > span::-moz-selection { background: #d7d4f0; }
 
 .cm-searching {
   background: #ffa;
@@ -918,6 +1033,33 @@ span.CodeMirror-selectedtext { background: none; }
 #graphiql-container .arg:last-child:after {
   content: '';
 }
+
+#graphiql-container .doc-alert-text {
+  color: #F00F00;
+  font-family: 'Consolas', 'Inconsolata', 'Droid Sans Mono', 'Monaco', monospace;
+  font-size: 13px;
+}
+
+#graphiql-container .search-box-outer {
+  border: 1px solid #d3d6db;
+  box-sizing: border-box;
+  display: inline-block;
+  font-size: 12px;
+  height: 24px;
+  margin-bottom: 12px;
+  padding: 3px 8px 5px;
+  vertical-align: middle;
+  width: 100%;
+}
+
+#graphiql-container .search-box-input {
+  border: 0;
+  font-size: 12px;
+  margin: 0;
+  outline: 0;
+  padding: 0;
+  width: 100%;
+}
 .CodeMirror-foldmarker {
   color: blue;
   text-shadow: #b9f 1px 1px 2px, #b9f -1px -1px 2px, #b9f 1px -1px 2px, #b9f -1px 1px 2px;
@@ -931,6 +1073,12 @@ span.CodeMirror-selectedtext { background: none; }
 .CodeMirror-foldgutter-open,
 .CodeMirror-foldgutter-folded {
   cursor: pointer;
+}
+.CodeMirror-foldgutter-open:after {
+  content: "\u25BE";
+}
+.CodeMirror-foldgutter-folded:after {
+  content: "\u25BE";
 }
 /* The lint marker gutter */
 .CodeMirror-lint-markers {
@@ -1004,6 +1152,52 @@ span.CodeMirror-selectedtext { background: none; }
   background-repeat: no-repeat;
   background-position: right bottom;
   width: 100%; height: 100%;
+}
+#graphiql-container .spinner-container {
+  position: absolute;
+  top: 50%;
+  height: 36px;
+  width: 36px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+
+#graphiql-container .spinner {
+  vertical-align: middle;
+  display: inline-block;
+  height: 24px;
+  width: 24px;
+  position: absolute;
+  -webkit-animation: rotation .6s infinite linear;
+  -moz-animation: rotation .6s infinite linear;
+  -o-animation: rotation .6s infinite linear;
+  animation: rotation .6s infinite linear;
+  border-left: 6px solid rgba(150, 150, 150, .15);
+  border-right: 6px solid rgba(150, 150, 150, .15);
+  border-bottom: 6px solid rgba(150, 150, 150, .15);
+  border-top: 6px solid rgba(150, 150, 150, .8);
+  border-radius: 100%;
+}
+
+@-webkit-keyframes rotation {
+  from { -webkit-transform: rotate(0deg); }
+  to { -webkit-transform: rotate(359deg); }
+}
+
+@-moz-keyframes rotation {
+  from { -moz-transform: rotate(0deg); }
+  to { -moz-transform: rotate(359deg); }
+}
+
+@-o-keyframes rotation {
+  from { -o-transform: rotate(0deg); }
+  to { -o-transform: rotate(359deg); }
+}
+
+@keyframes rotation {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(359deg); }
 }
 .CodeMirror-hints {
   background: white;
