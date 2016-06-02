@@ -9,7 +9,7 @@ import {loginUserError, loginAndRedirect} from 'universal/modules/auth/ducks/aut
 
 const mapStateToProps = state => ({
   isAuthenticated: ensureState(state).getIn(['auth', 'isAuthenticated']),
-  meeting: ensureState(state).getIn(['meeting', 'instance'])
+  meeting: ensureState(state).getIn(['meetingModule', 'meeting', 'instance'])
 });
 
 @connect(mapStateToProps)
@@ -18,9 +18,7 @@ export default class LandingContainer extends Component {
     // children: PropTypes.element,
     isAuthenticated: PropTypes.bool.isRequired,
     meeting: PropTypes.shape({
-      content: PropTypes.string,
       id: PropTypes.string
-      // TODO what else?
     }),
     dispatch: PropTypes.func.isRequired
   };
