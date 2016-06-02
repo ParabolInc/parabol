@@ -1,10 +1,8 @@
 
-// theme.js
+// palette.js
 
 import brand from './brand';
-
 import tinycolor from 'tinycolor2';
-import * as _ from 'lodash';
 
 const theme = {
   cool: brand.darkCyan,
@@ -14,80 +12,39 @@ const theme = {
   light: brand.eggShell
 };
 
-// Cool  (A)
-// Warm  (B)
-// Dark  (C)
-// Mid   (D)
-// Light (E)
-
-theme.a = theme.cool;
-theme.b = theme.warm;
-theme.c = theme.dark;
-theme.d = theme.mid;
-theme.e = theme.light;
-
-/*
-   Set up theme utility classes
-*/
-
-// Map brand/theme color variables to theme letter
-// slugs a-# where # is the letter depending on
-// how many brand/theme colors you have.
-
-const prefix = 'tu'; // 'tu' for 'theme utility'
-
-const themeColors = {
-  a: theme.a,
-  b: theme.b,
-  c: theme.c,
-  d: theme.d,
-  e: theme.e
-};
-
+// suffix 'a' results in transparent theme value
 const alphaValues = [10, 20, 30, 40, 50, 60, 70, 80, 90];
+// suffix 'd' results in darkened theme value
+const darkenedBase = '#000';
+// suffix 'g' results in theme color mixed with 50% gray
+const grayedBase = '#808080';
+// suffix 'l' results in lightened theme value
+const lightenedBase = '#fff';
 
-const properties = {
-  bg: 'backgroundColor',
-  bc: 'borderColor',
-  color: 'color'
-};
+Object.keys(theme).forEach((color) => {
+  for (const value of alphaValues) {
+    const alphaColor = tinycolor(theme[color]).setAlpha(value * 0.01).toRgbString();
+    const alphaSlug = `${color}${value}a`;
+    theme[alphaSlug] = alphaColor;
 
-// Enable darkened and/or opaque utility classes
-// ----------------------------------------------
-
-// $darkened-base: false;
-// $opaque-base: false;
-
-const darkendBase = '#000';
-const opaqueBase = '#fff';
-
-Object.keys(themeColors).forEach((color) => {
-  Object.keys(properties).forEach((property) => {
-    const propertySlug = `${prefix}${_.capitalize(color)}${_.capitalize(property)}`;
-    theme[propertySlug] = { [property]: themeColors[color] };
-
-    for (const value of alphaValues) {
-      const alphaColor = tinycolor(themeColors[color])
-                          .setAlpha(value * 0.01)
-                          .toRgbString();
-      const valueSlug = `${prefix}${_.capitalize(property)}${_.capitalize(color)}${value}a`;
-      theme[valueSlug] = { [property]: alphaColor };
-
-      if (darkendBase) {
-        const darkendColor = tinycolor.mix(themeColors[color], darkendBase, value)
-                               .toRgbString();
-        const darkSlug = `${prefix}${_.capitalize(property)}${_.capitalize(color)}${value}d`;
-        theme[darkSlug] = { [property]: darkendColor };
-      }
-
-      if (opaqueBase) {
-        const opaqueColor = tinycolor.mix(themeColors[color], opaqueBase, value)
-                               .toRgbString();
-        const opaqueSlug = `${prefix}${_.capitalize(property)}${_.capitalize(color)}${value}o`;
-        theme[opaqueSlug] = { [property]: opaqueColor };
-      }
+    if (darkenedBase) {
+      const darkenedColor = tinycolor.mix(darkenedBase, theme[color], value).toHexString();
+      const darkenedSlug = `${color}${value}d`;
+      theme[darkenedSlug] = darkenedColor;
     }
-  });
+
+    if (grayedBase) {
+      const grayedColor = tinycolor.mix(grayedBase, theme[color], value).toHexString();
+      const grayedSlug = `${color}${value}g`;
+      theme[grayedSlug] = grayedColor;
+    }
+
+    if (lightenedBase) {
+      const lightenedColor = tinycolor.mix(lightenedBase, theme[color], value).toHexString();
+      const lightenedSlug = `${color}${value}l`;
+      theme[lightenedSlug] = lightenedColor;
+    }
+  }
 });
 
 export default theme;

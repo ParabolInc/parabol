@@ -1,12 +1,12 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {push} from 'react-router-redux';
-import {createMeetingAndRedirect} from 'universal/modules/meeting/ducks/meeting';
+import {createTeamAndMeetingThenRedirect} from 'universal/modules/meeting/ducks/meeting';
 
-const SIGNIN_ACTION_CREATE_MEETING = 'createmeeting';
+const SIGNIN_ACTION_CREATE_TEAM_AND_MEETING = 'create_team_and_meeting';
 
 const mapStateToProps = state => ({
-  meeting: state.getIn(['meeting', 'instance'])
+  meeting: state.getIn(['meetingModule', 'meeting', 'instance'])
 });
 // @connectData(fetchData)
 @connect(mapStateToProps)
@@ -22,8 +22,8 @@ export default class SigninSuccess extends Component {
     const {dispatch, params, meeting} = this.props; // eslint-disable-line no-unused-vars
     const {action} = params || {};
     switch (action) {
-      case SIGNIN_ACTION_CREATE_MEETING:
-        dispatch(createMeetingAndRedirect());
+      case SIGNIN_ACTION_CREATE_TEAM_AND_MEETING:
+        dispatch(createTeamAndMeetingThenRedirect());
         break;
       default:
         dispatch(push('/404'));

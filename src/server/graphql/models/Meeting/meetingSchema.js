@@ -14,6 +14,7 @@ export const Meeting = new GraphQLObjectType({
     createdAt: {type: GraphQLString, description: 'The datetime the meeting was created'},
     updatedAt: {type: GraphQLString, description: 'The datetime the meeting was last updated'},
     lastUpdatedBy: {type: GraphQLString, description: 'The last user to update the content'},
+    teamId: {type: new GraphQLNonNull(GraphQLID), description: 'The team this meeting belongs to'},
     content: {type: GraphQLString, description: 'The content of the meeting'},
     currentEditors: {
       type: new GraphQLList(GraphQLString),

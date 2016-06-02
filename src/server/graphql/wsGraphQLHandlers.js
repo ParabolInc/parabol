@@ -2,8 +2,8 @@ import {graphql} from 'graphql';
 import {prepareClientError} from './models/utils';
 import Schema from './rootSchema';
 
-export const wsGraphQLHandler = async (body, cb) => {
-  const {query, variables, ...rootVals} = body;
+export const wsGraphQLHandler = async(body, cb) => {
+  const {query, variables, ...context} = body;
   const authToken = this.getAuthToken();
   const docId = variables.doc && variables.doc.id || variables.id;
   if (!docId) {
@@ -11,10 +11,8 @@ export const wsGraphQLHandler = async (body, cb) => {
     return cb({_error: 'No documentId found'});
   }
   this.docQueue.add(docId);
-  const result = await graphql(Schema, query, {
-    socket: this,
-    authToken, ...rootVals
-  }, variables);
+  const fullContext = {authToken, socket: this, ...context};
+  const result = await graphql(Schema, query, null, fullContext, variables);
   const {error, data} = prepareClientError(result);
   if (error) {
     this.docQueue.delete(docId);
@@ -56,5 +54,6 @@ export function wsGraphQLSubHandler(subbedChannelName) {
   const authToken = this.getAuthToken();
   const {queryString, variables, ...rootVals} = parseChannelName(subbedChannelName);
   graphql(Schema, queryString, {
-    socket: this, authToken, subbedChannelName, ...rootVals}, variables);
+    socket: this, authToken, subbedChannelName, ...rootVals
+  }, variables);
 }

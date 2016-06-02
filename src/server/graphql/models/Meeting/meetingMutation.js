@@ -1,5 +1,5 @@
 import {Meeting} from './meetingSchema';
-import r from '../../../database/rethinkdriver';
+import r from '../../../database/rethinkDriver';
 import uuid from 'node-uuid';
 import {
   GraphQLString,
@@ -10,14 +10,20 @@ import {
 export default {
   createMeeting: {
     type: Meeting,
-    async resolve(source, args, {rootValue}) { // eslint-disable-line no-unused-vars
-      const {authToken} = rootValue;
+    args: {
+      teamId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The team ID this meeting belongs to'
+      },
+    },
+    async resolve(source, {teamId}, {authToken}) {
       const newMeeting = {
         // TODO: a uuid is overkill. let's make it small for smaller urls & friendly socket payloads
         id: uuid.v4(),
         createdAt: new Date(),
         updatedAt: new Date(),
         lastUpdatedBy: authToken.id,
+        teamId,
         // TODO should this be a name?
         // If so we need to add names to the JWT & discuss overall JWT shape
         currentEditors: [],
@@ -39,7 +45,7 @@ export default {
         description: 'the socketId currently editing the content'
       },
     },
-    async resolve(source, {meetingId, editor}, {rootValue}) { // eslint-disable-line no-unused-vars
+    async resolve(source, {meetingId, editor}) { // eslint-disable-line no-unused-vars
       const updatedMeeting = await r.table('Meeting').get(meetingId).update({
         currentEditors: r.row('currentEditors').append(editor)
       }, {returnChanges: true});
@@ -58,7 +64,7 @@ export default {
         description: 'the socketId currently editing the content'
       },
     },
-    async resolve(source, {meetingId, editor}, {rootValue}) { // eslint-disable-line no-unused-vars
+    async resolve(source, {meetingId, editor}) { // eslint-disable-line no-unused-vars
       const updatedMeeting = await r.table('Meeting').get(meetingId).update(row => ({
         currentEditors: row('currentEditors').filter(user => user.ne(editor))
       }), {returnChanges: true});
@@ -82,7 +88,7 @@ export default {
       }
     },
     // eslint-disable-next-line no-unused-vars
-    async resolve(source, {meetingId, updatedBy, content}, {rootValue}) {
+    async resolve(source, {meetingId, updatedBy, content}) {
       const updatedMeeting = await r.table('Meeting').get(meetingId).update({
         content,
         lastUpdatedBy: updatedBy

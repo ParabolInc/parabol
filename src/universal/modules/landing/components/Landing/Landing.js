@@ -9,6 +9,8 @@ import teamCheckIcon from './images/team-check-icon.svg';
 import mapIcon from './images/map-icon.svg';
 import megaphoneIcon from './images/megaphone-icon.svg';
 import github from './images/github.svg';
+// NOTE: The 4x PNG seems to hold up better as a background-image, opposed to the SVG
+import parabolLogoColor from 'universal/styles/theme/images/brand/mark-color@4x.png';
 
 let styles = {};
 const combineStyles = StyleSheet.combineStyles;
@@ -22,9 +24,6 @@ export default class Landing extends Component {
     // children included here for multi-part landing pages (FAQs, pricing, cha la la)
     // children: PropTypes.element,
     onMeetingCreateClick: PropTypes.func.isRequired
-  };
-  static contextTypes = {
-    _lookConfig: PropTypes.object.isRequired
   };
 
   render() {
@@ -147,7 +146,7 @@ styles = StyleSheet.create({
   },
 
   header: {
-    backgroundColor: theme.palette.b,
+    backgroundColor: theme.palette.warm,
     color: '#fff',
     textAlign: 'center',
 
@@ -215,15 +214,13 @@ styles = StyleSheet.create({
     margin: '0 0 1rem',
 
     [headerBreakpoint]: {
-      fontSize: theme.typography.fs6,
+      fontSize: theme.typography.s6,
       fontWeight: 400,
       margin: '0 0 1.5rem'
     }
   },
 
   ctaButton: {
-    // TODO: Is there an elegant way to target :link and/or :visited
-    //       without having to duplicate code? (TA)
     backgroundColor: 'transparent',
     border: '1px solid currentColor',
     color: 'inherit',
@@ -242,8 +239,7 @@ styles = StyleSheet.create({
       margin: '1rem 0'
     },
 
-    // TODO: Is there an elegant way to target both :hover and :focus
-    //       without having to duplicate code? (TA)
+    // NOTE: Same styles for both :hover, :focus
     ':hover': {
       color: 'inherit',
       opacity: '.65',
@@ -261,8 +257,7 @@ styles = StyleSheet.create({
     display: 'inline-block',
     fontWeight: 700,
 
-    // TODO: Is there an elegant way to target both :hover and :focus
-    //       without having to duplicate code? (TA)
+    // NOTE: Same styles for both :hover, :focus
     ':hover': {
       color: 'inherit',
       opacity: '.75'
@@ -280,15 +275,14 @@ styles = StyleSheet.create({
 
   // Combine styles with section
   sectionHasBorder: {
-    // TODO: Use palette to @extend .tu-bc-a-30a
-    borderColor: 'rgba(9, 141, 143, .3)',
+    borderColor: theme.palette.cool30a,
     borderTopStyle: 'solid',
     borderTopWidth: '2px'
   },
 
   sectionHeading: {
-    color: theme.palette.a,
-    fontSize: theme.typography.fs6,
+    color: theme.palette.cool,
+    fontSize: theme.typography.s6,
     fontWeight: 700,
     margin: '0 0 2rem',
     textTransform: 'uppercase',
@@ -311,7 +305,8 @@ styles = StyleSheet.create({
 
   cardGroup: {
     [layoutBreakpoint]: {
-      display: 'flex',
+      // #shame use !important to force non-vendor prefix (TA)
+      display: 'flex !important',
       justifyContent: 'center'
     }
   },
@@ -320,8 +315,7 @@ styles = StyleSheet.create({
   // --------
 
   card: {
-    // TODO: Use theme palette to @extend .tu-bc-b-30a
-    borderColor: 'rgba(198, 37, 117, .3)',
+    borderColor: theme.palette.warm30a,
     borderRadius: '1rem',
     borderStyle: 'solid',
     borderWidth: '2px',
@@ -338,16 +332,16 @@ styles = StyleSheet.create({
     }
   },
 
-  // Combine styles with card
+  // NOTE: Modifies card
   cardIsLast: {
     marginBottom: 0
   },
 
   cardBadge: {
-    backgroundColor: theme.palette.b,
+    backgroundColor: theme.palette.warm,
     borderRadius: '100%',
     color: '#fff',
-    fontSize: theme.typography.fs6,
+    fontSize: theme.typography.s6,
     fontWeight: 700,
     height: '2rem',
     left: '50%',
@@ -359,7 +353,8 @@ styles = StyleSheet.create({
     width: '2rem',
 
     [layoutBreakpoint]: {
-      fontSize: '2rem', // Breaks away from type scale, by design
+      // NOTE: Breaks away from type scale, by design
+      fontSize: '2rem',
       height: '2.75rem',
       lineHeight: '2.75rem',
       marginLeft: '-1.375rem',
@@ -380,12 +375,12 @@ styles = StyleSheet.create({
   },
 
   cardCopy: {
-    color: theme.palette.c,
-    fontSize: theme.typography.fsBase,
+    color: theme.palette.dark,
+    fontSize: theme.typography.sBase,
     fontWeight: 700,
 
     [cardBreakpoint]: {
-      fontSize: theme.typography.fs5
+      fontSize: theme.typography.s5
     }
   },
 
@@ -403,13 +398,13 @@ styles = StyleSheet.create({
 
   copyGroup: {
     display: 'inline-block',
-    fontSize: theme.typography.fsBase,
+    fontSize: theme.typography.sBase,
     margin: '0 auto',
     maxWidth: '30rem',
     textAlign: 'left',
 
     [layoutBreakpoint]: {
-      fontSize: theme.typography.fs5,
+      fontSize: theme.typography.s5,
       maxWidth: '40rem'
     }
   },
@@ -422,16 +417,16 @@ styles = StyleSheet.create({
   // -------
 
   footer: {
-    backgroundColor: theme.palette.c,
+    backgroundColor: theme.palette.dark,
     color: '#fff',
-    fontSize: theme.typography.fs2,
+    fontSize: theme.typography.s2,
     fontWeight: 700,
     lineHeight: '1.5',
     paddingBottom: '1rem',
     textAlign: 'center',
 
     [layoutBreakpoint]: {
-      fontSize: theme.typography.fsBase,
+      fontSize: theme.typography.sBase,
       fontWeight: '400'
     }
   },
@@ -456,8 +451,7 @@ styles = StyleSheet.create({
     color: 'inherit',
     fontWeight: 700,
 
-    // TODO: Is there an elegant way to target both :hover and :focus
-    //       without having to duplicate code? (TA)
+    // NOTE: Same styles for both :hover, :focus
     ':hover': {
       color: 'inherit',
       opacity: '.75'
@@ -466,5 +460,62 @@ styles = StyleSheet.create({
       color: 'inherit',
       opacity: '.75'
     }
+  }
+});
+
+StyleSheet.addCSS({
+  // auth0 lock customization
+  // -------------------------
+  // NOTE: https://auth0.com/docs/libraries/lock/ui-customization
+  // NOTE: Beware what lies ahead, oh brave soul! #shame (TA)
+
+  'body #a0-lock.a0-theme-default .a0-panel *': {
+    fontFamily: theme.typography.sansSerif
+  },
+
+  'body #a0-lock.a0-theme-default .a0-panel .a0-bg-gradient': {
+    backgroundColor: theme.palette.dark10l,
+    backgroundImage: 'none'
+  },
+
+  'body #a0-lock.a0-theme-default .a0-panel .a0-icon-container .a0-image': {
+    backgroundImage: `url("${parabolLogoColor}")`,
+    backgroundPosition: '0 14px',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: '62px 56px',
+    display: 'block',
+    margin: '0 auto 12px',
+    padding: 0,
+    height: '70px',
+    width: '62px'
+  },
+
+  'body #a0-lock.a0-theme-default .a0-panel .a0-icon-container .a0-image img': {
+    display: 'none'
+  },
+
+  'body #a0-lock.a0-theme-default .a0-switch': {
+    borderColor: theme.palette.dark
+  },
+
+  'body #a0-lock.a0-theme-default .a0-switch .a0-active': {
+    backgroundColor: theme.palette.dark
+  },
+
+  'body #a0-lock.a0-theme-default .a0-switch span': {
+    color: theme.palette.dark,
+    fontWeight: 700
+  },
+
+  // eslint-disable-next-line max-len
+  'body #a0-lock.a0-theme-default .a0-panel .a0-email .a0-input-box, body #a0-lock.a0-theme-default .a0-panel .a0-password .a0-input-box, body #a0-lock.a0-theme-default .a0-panel .a0-repeatPassword .a0-input-box, body #a0-lock.a0-theme-default .a0-panel .a0-username .a0-input-box': {
+    backgroundColor: '#fff',
+    borderColor: `transparent transparent ${theme.palette.dark50l}`,
+    borderStyle: 'dashed',
+    borderWidth: '1px 0'
+  },
+
+  'body #a0-lock.a0-theme-default .a0-panel button.a0-primary': {
+    backgroundColor: `${theme.palette.warm} !important`
   }
 });

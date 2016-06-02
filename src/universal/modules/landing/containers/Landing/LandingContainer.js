@@ -9,7 +9,7 @@ import {loginUserError, loginAndRedirect} from 'universal/modules/auth/ducks/aut
 
 const mapStateToProps = state => ({
   isAuthenticated: ensureState(state).getIn(['auth', 'isAuthenticated']),
-  meeting: ensureState(state).getIn(['meeting', 'instance'])
+  meeting: ensureState(state).getIn(['meetingModule', 'meeting', 'instance'])
 });
 
 @connect(mapStateToProps)
@@ -18,9 +18,7 @@ export default class LandingContainer extends Component {
     // children: PropTypes.element,
     isAuthenticated: PropTypes.bool.isRequired,
     meeting: PropTypes.shape({
-      content: PropTypes.string,
       id: PropTypes.string
-      // TODO what else?
     }),
     dispatch: PropTypes.func.isRequired
   };
@@ -32,7 +30,7 @@ export default class LandingContainer extends Component {
       if (meeting && meeting.id) {
         dispatch(push(`/meeting/${meeting.id}`));
       } else {
-        dispatch(push('/signin/createmeeting'));
+        dispatch(push('/signin/create_team_and_meeting'));
       }
     } else {
       if (__CLIENT__) {
@@ -42,13 +40,16 @@ export default class LandingContainer extends Component {
         const lock = new Auth0Lock(clientId, account);
         lock.show({
           authParams: {
-            state: '/signin/createmeeting'
+            state: '/signin/create_team_and_meeting'
           }
         }, (error, profile, authToken) => {
           if (error) {
             return dispatch(loginUserError(error));
           }
-          return dispatch(loginAndRedirect('/signin/createmeeting', authToken));
+          return dispatch(
+            loginAndRedirect('/signin/create_team_and_meeting',
+            authToken
+          ));
         });
       }
     }
