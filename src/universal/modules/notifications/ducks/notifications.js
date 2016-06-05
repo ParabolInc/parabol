@@ -2,8 +2,8 @@ import {Map as iMap, List as iList} from 'immutable';
 import omit from 'lodash/omit';
 import uuid from 'node-uuid';
 
-export const NOTIFICATIONS_SHOW = 'notifications/NOTIFICATIONS_SHOW';
-export const NOTIFICATIONS_HIDE = 'notifications/NOTIFICATIONS_HIDE';
+const NOTIFICATIONS_SHOW = 'notifications/NOTIFICATIONS_SHOW';
+const NOTIFICATIONS_HIDE = 'notifications/NOTIFICATIONS_HIDE';
 
 const initialState = iList();
 

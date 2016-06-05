@@ -1,33 +1,35 @@
 import each from 'lodash/each';
 import React, {PropTypes} from 'react';
+import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import NotificationSystem from 'react-notification-system';
 
 import theme from 'universal/styles/theme';
-import {hide} from '../../ducks/notifications';
+import * as notificationActions from '../../ducks/notifications';
 
 const mapStateToProps = state => ({
   notifications: state.get('notifications').toJS()
 });
 
-@connect(mapStateToProps)
+const mapDispatchToProps = dispatch => ({
+  actions: bindActionCreators(notificationActions, dispatch)
+});
+
+@connect(mapStateToProps, mapDispatchToProps)
 export default class Notifications extends React.Component {
   static propTypes = {
+    actions: PropTypes.object.isRequired,
     notifications: PropTypes.array
   }
 
-  static contextTypes = {
-    store: PropTypes.object
-  };
-
   componentWillReceiveProps(nextProps) {
-    const {notifications} = nextProps;
+    const {actions, notifications} = nextProps;
 
     each(notifications, notification => {
       this.system().addNotification({
         ...notification,
         onRemove: () => {
-          this.context.store.dispatch(hide(notification.uuid));
+          actions.hide(notification.uuid);
         }
       });
     });
@@ -53,7 +55,7 @@ export default class Notifications extends React.Component {
 
         success: { // Applied only to the success notification container
           borderTop: `2px solid ${theme.palette.cool}`,
-          backgroundColor: theme.palette.cool20a,
+          backgroundColor: theme.palette.cool20l,
           color: theme.palette.cool,
           WebkitBoxShadow: `0 0 1px ${theme.palette.cool90a}`,
           MozBoxShadow: `0 0 1px ${theme.palette.cool90a}`,
