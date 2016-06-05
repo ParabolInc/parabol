@@ -1,18 +1,14 @@
 import each from 'lodash/each';
 import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {ensureState} from 'redux-optimistic-ui';
 import NotificationSystem from 'react-notification-system';
 
 import theme from 'universal/styles/theme';
 import {hide} from '../../ducks/notifications';
 
-const mapStateToProps = state => {
-  const myState = ensureState(state);
-  return ({
-    notifications: myState.get('notifications').toJS()
-  });
-};
+const mapStateToProps = state => ({
+  notifications: state.get('notifications').toJS()
+});
 
 @connect(mapStateToProps)
 export default class Notifications extends React.Component {
