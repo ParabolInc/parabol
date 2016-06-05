@@ -31,7 +31,7 @@ export default class Notifications extends React.Component {
       this.system().addNotification({
         ...notification,
         onRemove: () => {
-          this.context.store.dispatch(hide(notification.uid));
+          this.context.store.dispatch(hide(notification.uuid));
         }
       });
     });

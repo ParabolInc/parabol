@@ -11,10 +11,10 @@ export default function reducer(state = initialState, action) {
   switch (action.type) {
     case NOTIFICATIONS_SHOW:
       return state.push(
-        iMap({ ...omit(action, 'type'), uid: uuid.v4() })
+        iMap({ ...omit(action, 'type'), uuid: uuid.v4() })
       );
     case NOTIFICATIONS_HIDE:
-      return state.filter(notification => notification.uid !== action.uid);
+      return state.filter(notification => notification.uuid !== action.uuid);
     default:
       return state;
   }
@@ -44,9 +44,9 @@ export function info(opts) {
   return show(opts, 'info');
 }
 
-export function hide(aUid) {
+export function hide(aUuid) {
   return {
     type: NOTIFICATIONS_HIDE,
-    aUid
+    aUuid
   };
 }
