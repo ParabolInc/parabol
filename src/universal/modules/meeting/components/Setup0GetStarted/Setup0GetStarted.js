@@ -9,6 +9,7 @@ import ShortcutsToggle from '../../components/ShortcutsToggle/ShortcutsToggle';
 import {NAVIGATE_SETUP_1_INVITE_TEAM} from '../../ducks/meeting.js';
 import {UPDATE_SHORTCUT_MENU_STATE} from '../../ducks/shortcuts.js';
 import {updateTeamName, updateTeamNameLocal} from '../../ducks/team.js';
+import {show as showNotification} from '../../../notifications/ducks/notifications';
 
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Setup0GetStarted extends Component {
@@ -38,6 +39,11 @@ export default class Setup0GetStarted extends Component {
       }
       dispatch(updateTeamName(team.instance.id, team.instance.name));
       dispatch({type: NAVIGATE_SETUP_1_INVITE_TEAM});
+      dispatch(showNotification({
+        title: 'Nice name!',
+        message: `Ok, team "${team.instance.name}" created.`,
+        level: 'success'
+      }));
     };
 
     const onChangeTeamName = (event) => {

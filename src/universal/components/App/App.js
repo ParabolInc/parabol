@@ -3,6 +3,8 @@ import look, { StyleSheet } from 'react-look';
 import theme from 'universal/styles/theme';
 import tinycolor from 'tinycolor2';
 import layoutStyle from 'universal/styles/layout';
+import Notifications
+  from 'universal/modules/notifications/containers/notifications/Notifications';
 import './addFontAwesome';
 
 let styles = {};
@@ -17,6 +19,7 @@ export default class App extends Component {
   render() {
     return (
       <div className={styles.app}>
+        <Notifications />
         {this.props.children}
       </div>
     );
