@@ -11,6 +11,7 @@ import {
   removeInvitee,
   SETUP2_UPDATE_ROW_HOVER
 } from '../../ducks/setup.js';
+import {show as showNotification} from '../../../notifications/ducks/notifications';
 
 const onSetupFieldGroupInputChange = () => {
   console.log('onSetupFieldGroupInputChange()');
@@ -86,7 +87,13 @@ export default class Setup2InviteTeam extends Component {
         console.log('handleContinue: disabled');
       } else {
         dispatch(createInvites(team.instance.id));
-        console.log('handleContinue: NOT disabled');
+        dispatch(showNotification({
+          title: 'Check Your Inboxes!',
+          message: `We just sent out invitations to
+                    ${setup.setup1.emails.length}
+                    ${setup.setup1.emails.length > 1 ? 'people' : 'person'}.`,
+          level: 'success'
+        }));
       }
     };
 
