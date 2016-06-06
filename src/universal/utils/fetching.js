@@ -1,6 +1,10 @@
 import fetch from 'isomorphic-fetch';
 import {localStorageVars} from './clientOptions';
-import {getGraphQLHost, getGraphQLProtocol} from './graphQLConfig';
+import {
+  getGraphQLHost,
+  getGraphQLProtocol,
+  getGraphQLUri
+} from './graphQLConfig';
 
 export function parseJSON(response) {
   return response.json();
@@ -50,9 +54,7 @@ export const prepareGraphQLParams = graphParams => {
 export const fetchGraphQL = async graphParams => {
   const serializedParams = prepareGraphQLParams(graphParams);
   const authToken = localStorage.getItem(localStorageVars.authTokenName);
-  const currentHostUrl = hostUrl();
-  const graphQLUrl = `${currentHostUrl}/graphql`;
-  const res = await fetch(graphQLUrl, {
+  const res = await fetch(getGraphQLUri(), {
     method: 'post',
     headers: {
       'Content-Type': 'application/json',

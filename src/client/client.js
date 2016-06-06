@@ -2,8 +2,11 @@ import {render} from 'react-dom';
 import React from 'react';
 import { AppContainer } from 'react-hot-loader';
 import {Map as iMap, fromJS} from 'immutable';
+import {Cashay, HTTPTransport} from 'cashay';
 import makeStore from './makeStore';
 import Root from './Root';
+import {getGraphQLUri} from 'universal/utils/graphQLConfig';
+import {localStorageVars} from 'universal/utils/clientOptions';
 
 const {auth, routing, form} = window.__INITIAL_STATE__; // eslint-disable-line no-underscore-dangle
 
@@ -14,7 +17,32 @@ const initialState = iMap([
   ['form', form]
 ]);
 
+// Create the store:
 const store = makeStore(initialState);
+
+// Create the Cashay singleton:
+const cashaySchema = require('../../build/graphqlSchema.json');
+const authToken = localStorage.getItem(localStorageVars.authTokenName);
+const cashayHttpTransport = new HTTPTransport(
+  getGraphQLUri(),
+  {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${authToken}`
+    }
+  }
+);
+const cashayParams = {
+  store,
+  schema: cashaySchema,
+  getToState: reduxStore => reduxStore.getState().get('cashay'),
+  transport: cashayHttpTransport
+};
+
+// export the Cashay singleton:
+export const cashay = new Cashay(cashayParams);
+
+
 render(
   <AppContainer>
     <Root store={store} />
