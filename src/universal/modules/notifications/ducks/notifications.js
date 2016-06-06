@@ -1,20 +1,20 @@
 import {Map as iMap, List as iList} from 'immutable';
 import omit from 'lodash/omit';
-import uuid from 'node-uuid';
 
 const NOTIFICATIONS_SHOW = 'notifications/NOTIFICATIONS_SHOW';
 const NOTIFICATIONS_HIDE = 'notifications/NOTIFICATIONS_HIDE';
 
 const initialState = iList();
+let nid = 0;
 
 export default function reducer(state = initialState, action) {
   switch (action.type) {
     case NOTIFICATIONS_SHOW:
       return state.push(
-        iMap({ ...omit(action, 'type'), uuid: uuid.v4() })
+        iMap({ ...omit(action, 'type'), nid: ++nid })
       );
     case NOTIFICATIONS_HIDE:
-      return state.filter(notification => notification.uuid !== action.uuid);
+      return state.filter(notification => notification.nid !== action.nid);
     default:
       return state;
   }
@@ -44,9 +44,9 @@ export function info(opts) {
   return show(opts, 'info');
 }
 
-export function hide(aUuid) {
+export function hide(aNid) {
   return {
     type: NOTIFICATIONS_HIDE,
-    aUuid
+    aNid
   };
 }

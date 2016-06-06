@@ -1,42 +1,66 @@
-import each from 'lodash/each';
 import React, {PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import NotificationSystem from 'react-notification-system';
 
 import theme from 'universal/styles/theme';
-import * as notificationActions from '../../ducks/notifications';
+import * as _notificationActions from '../../ducks/notifications';
 
 const mapStateToProps = state => ({
   notifications: state.get('notifications').toJS()
 });
 
 const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators(notificationActions, dispatch)
+  notificationActions: bindActionCreators(_notificationActions, dispatch)
 });
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class Notifications extends React.Component {
   static propTypes = {
-    actions: PropTypes.object.isRequired,
-    notifications: PropTypes.array
+    notifications: PropTypes.array,
+    notificationActions: PropTypes.object.isRequired,
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      maxNid: 0
+    };
   }
 
   componentWillReceiveProps(nextProps) {
-    const {actions, notifications} = nextProps;
+    const {notifications, notificationActions} = nextProps;
+    const {maxNid} = this.state;
 
-    each(notifications, notification => {
-      this.system().addNotification({
-        ...notification,
-        onRemove: () => {
-          actions.hide(notification.uuid);
+    notifications
+      .filter(notification => notification.nid > maxNid)
+      .forEach(notification => {
+        this.system().addNotification({
+          ...notification,
+          onRemove: () => {
+            notificationActions.hide(notification.nid);
+          }
+        });
+        if (notification.nid > maxNid) {
+          this.setState({maxNid: maxNid + 1});
         }
       });
-    });
   }
 
   shouldComponentUpdate(nextProps) {
-    return this.props !== nextProps;
+    const {notifications} = nextProps;
+
+    if (notifications.length > 0) {
+      const {maxNid} = this.state;
+      const nextNid = Math.max.apply(
+        Math,
+        notifications.map(n => n.nid)
+      );
+
+      return nextNid > maxNid;
+    }
+
+    return false;
   }
 
   system() {
