@@ -4,7 +4,11 @@ import {fetchGraphQL} from '../../../utils/fetching';
 import {ensureState} from 'redux-optimistic-ui';
 import {localStorageVars} from '../../../utils/clientOptions';
 import socketCluster from 'socketcluster-client';
-import {createTeam, loadTeam} from './team';
+import {
+  createTeam,
+  loadTeam,
+  LOAD_TEAM_SUCCESS
+} from './team';
 
 export const CREATE_MEETING_REQUEST = 'action/meeting/CREATE_MEETING_REQUEST';
 export const CREATE_MEETING_ERROR = 'action/meeting/CREATE_MEETING_ERROR';
@@ -138,17 +142,23 @@ export const loadMeetingAndTeam = (meetingId) =>
           createdAt,
           updatedAt,
           lastUpdatedBy,
-          teamId,
+          team {
+            id,
+            name
+          },
           content
         }
       }`;
     const {error, data} = await fetchGraphQL({query, variables: {meetingId}});
+    console.log(data);
     if (error) {
       return dispatch({type: LOAD_MEETING_ERROR, error});
     }
     const {payload} = data;
-    dispatch({type: LOAD_MEETING_SUCCESS, payload});
-    return dispatch(loadTeam(payload.teamId));
+    return dispatch({
+      type: LOAD_TEAM_SUCCESS,
+      payload
+    });
   };
 
 export const updateEditing = (meetingId, editor, isEditing) => {

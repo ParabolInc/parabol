@@ -12,6 +12,21 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import ensureMeetingAndTeamLoaded from
   '../../decorators/ensureMeetingAndTeamLoaded/ensureMeetingAndTeamLoaded';
 
+`
+  query($meetingId: ID!, $teamId: ID!) {
+    meeting: getMeetingById(meetingId: $meetingId) {
+      createdAt,
+      updatedAt,
+      lastUpdatedBy,
+      teamId,
+      content
+    },
+    team: getTeamById(teamId: $teamId) {
+      name
+    }
+  }
+`
+
 import {
   NAVIGATE_SETUP_0_GET_STARTED,
   NAVIGATE_SETUP_1_INVITE_TEAM,
