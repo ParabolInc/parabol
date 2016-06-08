@@ -25,7 +25,11 @@ Action Hero
 `
   };
 
-  await mailgun.messages().send(emailConfig);
+  try {
+    await mailgun.messages().send(emailConfig);
+  } catch (e) {
+    console.warn(`mailgun: unable to send welcome message ${e}`);
+  }
 
   return true;
 };
