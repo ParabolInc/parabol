@@ -6,9 +6,6 @@ import {cashay} from 'client/client';
 
 const SIGNIN_ACTION_CREATE_TEAM_AND_MEETING = 'create_team_and_meeting';
 
-const newTeamId = uuid.v4();
-const newMeetingId = uuid.v4();
-
 const graphQuery = `
   query($teamId: ID!) {
     team: getTeamById(teamId: $teamId) {
@@ -23,13 +20,13 @@ const graphQuery = `
 const mutationHandlers = {
   createTeam: (optimisticVariables, serverData) => {
     if (optimisticVariables) {
-      return undefined;
+      return null;
     }
     return serverData;
   },
   createMeeting: (optimisticVariables, serverData) => {
     if (optimisticVariables) {
-      return undefined;
+      return null;
     }
     return serverData;
   }
@@ -38,12 +35,15 @@ const mutationHandlers = {
 const cashayOpts = {
   component: 'SigninSuccess',
   mutationHandlers,
-  variables: { teamId: newTeamId }
+  variables: { teamId: null }
 };
 
-const mapStateToProps = () => ({
-  meetingAndTeam: cashay.query(graphQuery, cashayOpts)
-});
+const mapStateToProps = (state) => {
+  cashayOpts.variables.teamId = state.teamId;
+  return {
+    meetingAndTeam: cashay.query(graphQuery, cashayOpts)
+  };
+};
 // @connectData(fetchData)
 @connect(mapStateToProps)
 export default class SigninSuccess extends Component {
@@ -51,6 +51,14 @@ export default class SigninSuccess extends Component {
     meetingAndTeam: PropTypes.object,
     params: PropTypes.object,
     dispatch: PropTypes.func
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      newTeamId: null,
+      newMeetingId: null
+    };
   }
 
   componentWillMount() {
@@ -68,17 +76,22 @@ export default class SigninSuccess extends Component {
     switch (action) {
       case SIGNIN_ACTION_CREATE_TEAM_AND_MEETING:
         if (!team) {
+          const newTeamId = uuid.v4();
+          this.setState({newTeamId});
           cashay.mutate('createTeam', { variables: {
             id: newTeamId,
             name: ''
           }});
         }
-        if (!meeting && nextProps.meetingAndTeam.team.id) {
+        if (team && !meeting &&
+              nextProps && nextProps.meetingAndTeam.team.id) {
+          const newMeetingId = uuid.v4();
+          this.setState({newMeetingId});
           cashay.mutate('createMeeting', { variables: {
-            id: newMeetingId,
+            id: newMeetingId
           }});
         }
-        if (meeting.id) {
+        if (meeting && meeting.id) {
           dispatch(replace(`/meeting/${meeting.id}`));
         }
         break;
