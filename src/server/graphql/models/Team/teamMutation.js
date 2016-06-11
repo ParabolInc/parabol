@@ -1,6 +1,5 @@
 import { Team } from './teamSchema';
 import r from '../../../database/rethinkDriver';
-import uuid from 'node-uuid';
 import {
   GraphQLString,
   GraphQLNonNull,
@@ -11,15 +10,18 @@ export default {
   createTeam: {
     type: Team,
     args: {
+      id: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'the new team id'
+      },
       name: {
         type: new GraphQLNonNull(GraphQLString),
         description: 'the new team name'
       }
     },
-    async resolve(source, {name}) {
+    async resolve(source, {id, name}) {
       const newTeam = {
-        // TODO: a uuid is overkill. let's make it small for smaller urls & friendly socket payloads
-        id: uuid.v4(),
+        id,
         name
       };
       await r.table('Team').insert(newTeam);

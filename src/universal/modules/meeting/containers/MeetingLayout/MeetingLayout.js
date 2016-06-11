@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {ensureState} from 'redux-optimistic-ui';
 import {reduxSocket} from 'redux-socket-cluster';
 import {HotKeys} from 'react-hotkeys';
+import {cashay} from 'client/client';
 import {localStorageVars} from 'universal/utils/clientOptions';
 import Setup0GetStarted from '../../components/Setup0GetStarted/Setup0GetStarted';
 import Setup1InviteTeam from '../../components/Setup1InviteTeam/Setup1InviteTeam';
@@ -11,21 +12,6 @@ import Setup2InviteTeam from '../../components/Setup2InviteTeam/Setup2InviteTeam
 import Sidebar from '../../components/Sidebar/Sidebar';
 import ensureMeetingAndTeamLoaded from
   '../../decorators/ensureMeetingAndTeamLoaded/ensureMeetingAndTeamLoaded';
-
-`
-  query($meetingId: ID!, $teamId: ID!) {
-    meeting: getMeetingById(meetingId: $meetingId) {
-      createdAt,
-      updatedAt,
-      lastUpdatedBy,
-      teamId,
-      content
-    },
-    team: getTeamById(teamId: $teamId) {
-      name
-    }
-  }
-`
 
 import {
   NAVIGATE_SETUP_0_GET_STARTED,
@@ -40,10 +26,32 @@ const keyMap = {
   seqHelp: 'shift+/',
 };
 
-const mapStateToProps = state => {
+const meetingQueryString = `
+  query($meetingId: ID!) {
+    payload: getMeetingById(meetingId: $meetingId) {
+      id,
+      createdAt,
+      updatedAt,
+      lastUpdatedBy,
+      team {
+        id,
+        name
+      },
+      content
+    }
+  }`;
+
+const cashayOpts = {
+  component: 'MeetingLayout'
+};
+
+const mapStateToProps = (state, props) => {
   const myState = ensureState(state);
   const auth = myState.get('auth');
   const meeting = myState.getIn(['meetingModule', 'meeting']);
+  cashayOpts.variables = {
+    meetingId: props.params.id
+  };
   return {
     isAuthenticated: auth.get('isAuthenticated'),
     meeting: meeting && meeting.toJS(),
@@ -53,7 +61,8 @@ const mapStateToProps = state => {
     setup: myState.getIn(['meetingModule', 'setup']).toJS(),
     shortcuts: myState.getIn(['meetingModule', 'shortcuts']).toJS(),
     team: myState.getIn(['meetingModule', 'team']).toJS(),
-    userId: auth.getIn(['user', 'id'])
+    userId: auth.getIn(['user', 'id']),
+    showMeTheCash: cashay.query(meetingQueryString, cashayOpts)
   };
 };
 
@@ -70,13 +79,16 @@ export default class MeetingLayout extends Component {
     meeting: PropTypes.object.isRequired,
     setup: PropTypes.object.isRequired,
     shortcuts: PropTypes.object.isRequired,
-    team: PropTypes.object.isRequired
+    team: PropTypes.object.isRequired,
+    showMeTheCash: PropTypes.object.isRequired
   };
 
   render() {
-    const {dispatch, meeting, setup, shortcuts, team} = this.props;
+    const {dispatch, meeting, setup, shortcuts, team, showMeTheCash} = this.props;
 
     const teamName = team.instance.name || 'Team Name';
+
+    console.log(showMeTheCash);
 
     return (
       <HotKeys focused attach={window} keyMap={keyMap}>
