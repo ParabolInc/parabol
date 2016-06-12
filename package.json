@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Jordan Husney <jordan@parabol.com> (http://github.com/jrhusney)",
   "license": "Apache-2.0",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -20,10 +20,8 @@
     "bs": "rimraf build && concurrently \"npm run build:client\" \"npm run build:server\" \"npm run start\"",
     "quickstart": "rimraf build && concurrently \"npm run db:migrate\" \"npm run build:client\" \"npm run build:server\" \"npm run start\"",
     "build:client": "NODE_ENV=production webpack -p --config ./webpack/prod.babel.js",
-    "build:server": "npm run build:assets && NODE_ENV=production webpack -p --config ./webpack/server.babel.js",
-    "build:assets": "concurrently \"npm run build:theme\" \"npm run build:gqlschema\"",
+    "build:server": "npm run build:theme && NODE_ENV=production webpack -p --config ./webpack/server.babel.js",
     "build:theme": "NODE_ENV=development mkdir -p build && babel-node ./src/universal/utils/buildThemeJSON.js > ./build/theme.json",
-    "build:gqlschema": "NODE_ENV=development mkdir -p build && cashay-schema src/server/graphql/rootSchema.js build/graphqlSchema.json --oncomplete src/server/database/rethinkExit.js",
     "db:migrate": "./src/server/database/migrate.sh up-all",
     "test": "NODE_ENV=testing ava ./src/**/__tests__/**/*-tests.js --verbose",
     "db:migrate-up": "./src/server/database/migrate.sh up",
