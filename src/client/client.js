@@ -21,7 +21,7 @@ const initialState = iMap([
 const store = makeStore(initialState);
 
 // Create the Cashay singleton:
-const cashaySchema = require('../../build/graphqlSchema.json');
+const cashaySchema = require('raw!cashay!../server/utils/getCashaySchema.babel.js');
 const authToken = localStorage.getItem(localStorageVars.authTokenName);
 const cashayHttpTransport = new HTTPTransport(
   getGraphQLUri(),
