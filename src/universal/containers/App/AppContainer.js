@@ -3,15 +3,49 @@ import App from '../../components/App/App';
 import {connect} from 'react-redux';
 import {localStorageVars} from '../../utils/clientOptions';
 import loginWithToken from '../../decorators/loginWithToken/loginWithToken';
+import {cashay} from 'client/client';
 
-const mapStateToProps = (state) => ({
-  isAuthenticated: state.getIn(['auth', 'isAuthenticated'])
+const queryString = `
+query {
+  profile: updateUserWithAuthToken(authToken: $authToken) {
+    id,
+    cachedAt,
+    cacheExpiresAt,
+    createdAt,
+    updatedAt,
+    userId,
+    email,
+    emailVerified,
+    picture,
+    name,
+    nickname,
+    identities {
+      connection,
+      userId,
+      provider,
+      isSocial,
+    }
+    loginsCount,
+    blockedFor {
+      identifier,
+      id,
+    }
+  }
+}`;
+
+const cashayOptions = {
+  component: 'AppContainer',
+  variables: {
+    
+  }
+}
+const mapStateToProps = () => ({
+  response: cashay.query(queryString, cashayOptions)
 });
 
-@connect(mapStateToProps)
-@loginWithToken(localStorageVars)
 // for the decorators
 // eslint-disable-next-line react/prefer-stateless-function
+@connect(mapStateToProps)
 export default class AppContainer extends Component {
   static propTypes = {
     children: PropTypes.element.isRequired,

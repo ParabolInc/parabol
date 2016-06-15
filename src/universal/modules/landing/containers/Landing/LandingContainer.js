@@ -9,7 +9,6 @@ import {cashay} from 'client/client';
 
 
 const mapStateToProps = state => ({
-  response: cashay.query(),
   isAuthenticated: state.getIn(['auth', 'isAuthenticated']),
   userId: state.getIn(['auth', 'user', 'id'])
 });
@@ -41,6 +40,7 @@ export default class LandingContainer extends Component {
           if (error) {
             return dispatch(loginUserError(error));
           }
+          
           return dispatch(
             loginAndRedirect('/signin/create_team_and_meeting',
             authToken

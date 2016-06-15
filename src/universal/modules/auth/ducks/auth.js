@@ -10,6 +10,14 @@ export const LOGIN_USER_ERROR = 'LOGIN_USER_ERROR';
 export const LOGIN_USER_SUCCESS = 'LOGIN_USER_SUCCESS';
 export const LOGOUT_USER = 'LOGOUT_USER';
 
+
+// error will be held by cashay
+// isAuthenticated is true if user is an object
+// isAuthenticating is true if isComplete is false on a query for user stuff
+// authToken will come along for the ride
+// user will be a primary GraphQLType
+
+
 const initialState = iMap({
   error: iMap(),
   isAuthenticated: false,
@@ -52,7 +60,7 @@ export default function reducer(state = initialState, action = {}) {
 export const loginUserSuccess = payload => ({
   type: LOGIN_USER_SUCCESS,
   payload
-});
+})
 
 export const loginUserError = error => ({
   type: LOGIN_USER_ERROR,

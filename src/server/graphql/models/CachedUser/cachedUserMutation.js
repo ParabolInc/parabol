@@ -13,16 +13,16 @@ const auth0Client = new AuthenticationClient({
 });
 
 export default {
-  updateUserWithIdToken: {
+  updateUserWithAuthToken: {
     type: CachedUser,
     args: {
-      idToken: {
+      authToken: {
         type: GraphQLString,
         description: 'The ID Token from auth0, a base64 JWT'
       }
     },
-    async resolve(source, {idToken}) {
-      const userInfo = await auth0Client.tokens.getInfo(idToken);
+    async resolve(source, {authToken}) {
+      const userInfo = await auth0Client.tokens.getInfo(authToken);
       // TODO add the userId to the JWT to eliminate call to DB?
       // JWT.sub is the userId, not id, maybe it'll do
       // TODO loginsCount and blockedFor are not a part of this API response

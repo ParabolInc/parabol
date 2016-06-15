@@ -21,7 +21,7 @@ const IdentityType = new GraphQLObjectType({
     },
     userId: {
       type: GraphQLID,
-      description: 'The unique identifier for the user for the identity.',
+      description: 'The unique identifier for the user for the identity.'
     },
     provider: {
       type: GraphQLString,
@@ -113,6 +113,21 @@ export const CachedUser = new GraphQLObjectType({
     userProfile: {
       type: new GraphQLNonNull(UserProfile),
       description: 'The associated user profile, stored locally in our database.'
+    }
+  })
+});
+
+export const CachedUserAndToken = new GraphQLObjectType({
+  name: 'CachedUserAndToken',
+  description: 'The user account profile + JWT',
+  fields: () => ({
+    user: {
+      type: CachedUser,
+      description: 'The user account profile'
     },
+    authToken: {
+      type: GraphQLString,
+      description: 'The JWT that comes from auth0'
+    }
   })
 });
