@@ -1,18 +1,17 @@
-import React, {PropTypes, Component} from 'react';
-import look, { StyleSheet } from 'react-look';
-import theme from 'universal/styles/theme';
+import React, {PropTypes, Component} from "react";
+import look, {StyleSheet} from "react-look";
+import theme from "universal/styles/theme";
+import parabolLogoMark from "./images/parabol-logo-mark.svg";
+import actionLogo from "./images/action-logo.svg";
+import teamCheckIcon from "./images/team-check-icon.svg";
+import mapIcon from "./images/map-icon.svg";
+import megaphoneIcon from "./images/megaphone-icon.svg";
+import github from "./images/github.svg";
+import parabolLogoColor from "universal/styles/theme/images/brand/mark-color@4x.png";
 
 // SVG images
-import parabolLogoMark from './images/parabol-logo-mark.svg';
-import actionLogo from './images/action-logo.svg';
-import teamCheckIcon from './images/team-check-icon.svg';
-import mapIcon from './images/map-icon.svg';
-import megaphoneIcon from './images/megaphone-icon.svg';
-import github from './images/github.svg';
 // NOTE: The 4x PNG seems to hold up better as a background-image, opposed to the SVG
-import parabolLogoColor from 'universal/styles/theme/images/brand/mark-color@4x.png';
 
-let styles = {};
 const combineStyles = StyleSheet.combineStyles;
 
 // TODO break apart into 1 component per section
@@ -131,7 +130,7 @@ const layoutBreakpoint = '@media (min-width: 64rem)';
 const headerBreakpoint = '@media (min-width: 48rem)';
 const cardBreakpoint = '@media (min-width: 75rem)';
 
-styles = StyleSheet.create({
+const styles = StyleSheet.create({
   // Layout
   // -------
 

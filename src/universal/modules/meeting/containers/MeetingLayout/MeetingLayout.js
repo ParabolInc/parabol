@@ -1,7 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import {connect} from 'react-redux';
-import {ensureState} from 'redux-optimistic-ui';
 import {reduxSocket} from 'redux-socket-cluster';
 import {HotKeys} from 'react-hotkeys';
 import {cashay} from 'client/client';
@@ -46,21 +45,20 @@ const cashayOpts = {
 };
 
 const mapStateToProps = (state, props) => {
-  const myState = ensureState(state);
-  const auth = myState.get('auth');
-  const meeting = myState.getIn(['meetingModule', 'meeting']);
+  const auth = state.get('auth');
+  const meeting = state.getIn(['meetingModule', 'meeting']);
   cashayOpts.variables = {
     meetingId: props.params.id
   };
   return {
     isAuthenticated: auth.get('isAuthenticated'),
     meeting: meeting && meeting.toJS(),
-    socketState: myState.getIn(['socket', 'socketState']),
-    socketSubs: myState.getIn(['socket', 'subs']).toJS(),
-    socketId: myState.getIn(['socket', 'id']),
-    setup: myState.getIn(['meetingModule', 'setup']).toJS(),
-    shortcuts: myState.getIn(['meetingModule', 'shortcuts']).toJS(),
-    team: myState.getIn(['meetingModule', 'team']).toJS(),
+    socketState: state.getIn(['socket', 'socketState']),
+    socketSubs: state.getIn(['socket', 'subs']).toJS(),
+    socketId: state.getIn(['socket', 'id']),
+    setup: state.getIn(['meetingModule', 'setup']).toJS(),
+    shortcuts: state.getIn(['meetingModule', 'shortcuts']).toJS(),
+    team: state.getIn(['meetingModule', 'team']).toJS(),
     userId: auth.getIn(['user', 'id']),
     showMeTheCash: cashay.query(meetingQueryString, cashayOpts)
   };

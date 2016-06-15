@@ -49,12 +49,12 @@ export default function reducer(state = initialState, action = {}) {
   }
 }
 
-export const loginUserSuccess = (payload) => ({
+export const loginUserSuccess = payload => ({
   type: LOGIN_USER_SUCCESS,
   payload
 });
 
-export const loginUserError = (error) => ({
+export const loginUserError = error => ({
   type: LOGIN_USER_ERROR,
   error
 });

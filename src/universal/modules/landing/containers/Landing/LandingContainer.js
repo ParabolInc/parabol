@@ -5,9 +5,13 @@ import Helmet from 'react-helmet';
 import {head, auth0} from 'universal/utils/clientOptions';
 import {push} from 'react-router-redux';
 import {loginUserError, loginAndRedirect} from 'universal/modules/auth/ducks/auth';
+import {cashay} from 'client/client';
+
 
 const mapStateToProps = state => ({
+  response: cashay.query(),
   isAuthenticated: state.getIn(['auth', 'isAuthenticated']),
+  userId: state.getIn(['auth', 'user', 'id'])
 });
 
 @connect(mapStateToProps)
@@ -15,13 +19,14 @@ export default class LandingContainer extends Component {
   static propTypes = {
     // children: PropTypes.element,
     isAuthenticated: PropTypes.bool.isRequired,
-    dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired,
+    userId: PropTypes.string
   };
 
   handleOnMeetingCreateClick = () => {
-    const {isAuthenticated, dispatch} = this.props;
-    if (isAuthenticated) {
-      dispatch(push('/signin/create_team_and_meeting'));
+    const {isAuthenticated, dispatch, userId} = this.props;
+    if (isAuthenticated && userId) {
+      dispatch(push(`/me/${userId}`));
     } else {
       if (__CLIENT__) {
         // TODO handle auth0 css files in webpack build to make it work on server?

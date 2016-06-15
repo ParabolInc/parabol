@@ -1,7 +1,6 @@
 import {Map as iMap, List as iList, fromJS} from 'immutable';
 import {push, replace} from 'react-router-redux'; // eslint-disable-line no-unused-vars
 import {fetchGraphQL} from '../../../utils/fetching';
-import {ensureState} from 'redux-optimistic-ui';
 import {localStorageVars} from '../../../utils/clientOptions';
 import socketCluster from 'socketcluster-client';
 import {
@@ -84,8 +83,7 @@ export default function reducer(state = initialState, action = {}) {
 export const createTeamAndMeetingThenRedirect = () =>
   async (dispatch, getState) => {
     await dispatch(createTeam(''));
-    const teamId = ensureState(getState())
-      .getIn(['meetingModule', 'team', 'instance', 'id']);
+    const teamId = getState().getIn(['meetingModule', 'team', 'instance', 'id']);
     const query = `
     mutation($teamId: ID!) {
       payload: createMeeting(teamId: $teamId) {
@@ -99,7 +97,7 @@ export const createTeamAndMeetingThenRedirect = () =>
     }
     const {payload} = data;
     dispatch({type: CREATE_MEETING_SUCCESS, payload});
-    const id = ensureState(getState()).getIn(['meetingModule', 'meeting', 'instance', 'id']);
+    const id = getState().getIn(['meetingModule', 'meeting', 'instance', 'id']);
     // replace, don't use push. a click should go back 2.
     return dispatch(replace(`/meeting/${id}`));
   };

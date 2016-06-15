@@ -112,7 +112,6 @@
     "redux": "3.5.2",
     "redux-immutablejs": "0.0.8",
     "redux-logger": "2.6.1",
-    "redux-optimistic-ui": "0.4.0",
     "redux-promise": "0.5.3",
     "redux-socket-cluster": "0.5.1",
     "redux-thunk": "2.1.0",

@@ -1,5 +1,4 @@
 import {Map as iMap, List as iList} from 'immutable';
-import omit from 'lodash/omit';
 
 const NOTIFICATIONS_SHOW = 'notifications/NOTIFICATIONS_SHOW';
 const NOTIFICATIONS_HIDE = 'notifications/NOTIFICATIONS_HIDE';
@@ -10,8 +9,9 @@ let nid = 0;
 export default function reducer(state = initialState, action) {
   switch (action.type) {
     case NOTIFICATIONS_SHOW:
+      const {type, ...typelessAction} = action;
       return state.push(
-        iMap({ ...omit(action, 'type'), nid: ++nid })
+        iMap({ ...typelessAction, nid: ++nid })
       );
     case NOTIFICATIONS_HIDE:
       return state.filter(notification => notification.nid !== action.nid);

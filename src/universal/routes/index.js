@@ -9,6 +9,8 @@ export default store => ({
   component: AppContainer,
   childRoutes: [
     require('./landing'),
+    require('./welcome'),
+    require('./userDashboard'),
     require('./signin'),
     require('./meeting')(store),
     require('./graphql'),

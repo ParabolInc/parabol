@@ -3,10 +3,9 @@ import App from '../../components/App/App';
 import {connect} from 'react-redux';
 import {localStorageVars} from '../../utils/clientOptions';
 import loginWithToken from '../../decorators/loginWithToken/loginWithToken';
-import {ensureState} from 'redux-optimistic-ui';
 
 const mapStateToProps = (state) => ({
-  isAuthenticated: ensureState(state).getIn(['auth', 'isAuthenticated'])
+  isAuthenticated: state.getIn(['auth', 'isAuthenticated'])
 });
 
 @connect(mapStateToProps)
