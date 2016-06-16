@@ -5,7 +5,6 @@ import {localStorageVars} from '../../../utils/clientOptions';
 import socketCluster from 'socketcluster-client';
 import {
   createTeam,
-  loadTeam,
   LOAD_TEAM_SUCCESS
 } from './team';
 

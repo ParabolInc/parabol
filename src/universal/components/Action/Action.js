@@ -7,6 +7,8 @@ import Notifications
   from 'universal/modules/notifications/containers/notifications/Notifications';
 import './addFontAwesome';
 
+let styles = null;
+
 @look
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Action extends Component {
@@ -24,7 +26,7 @@ export default class Action extends Component {
   }
 }
 
-const styles = StyleSheet.create({
+styles = StyleSheet.create({
   app: {
     height: '100vh',
     margin: 0,

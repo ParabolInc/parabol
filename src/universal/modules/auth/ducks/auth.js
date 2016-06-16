@@ -60,7 +60,7 @@ export default function reducer(state = initialState, action = {}) {
 export const loginUserSuccess = payload => ({
   type: LOGIN_USER_SUCCESS,
   payload
-})
+});
 
 export const loginUserError = error => ({
   type: LOGIN_USER_ERROR,

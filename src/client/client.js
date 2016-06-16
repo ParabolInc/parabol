@@ -19,7 +19,7 @@ const initialState = iMap([
 
 // const authToken = localStorage.getItem(authTokenName);
 
-if (authToken) {
+if (authToken) { // eslint-disable-line
 
 }
 // Create the store:

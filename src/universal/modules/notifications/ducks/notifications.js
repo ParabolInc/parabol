@@ -8,11 +8,13 @@ let nid = 0;
 
 export default function reducer(state = initialState, action) {
   switch (action.type) {
-    case NOTIFICATIONS_SHOW:
+    case NOTIFICATIONS_SHOW: {
+      // eslint-disable-next-line no-unused-vars
       const {type, ...typelessAction} = action;
       return state.push(
         iMap({ ...typelessAction, nid: ++nid })
       );
+    }
     case NOTIFICATIONS_HIDE:
       return state.filter(notification => notification.nid !== action.nid);
     default:

@@ -42,11 +42,13 @@ query {
 const mutationHandlers = {
   updateUserWithAuthToken(optimisticVariables, dataFromServer, currentResponse) {
     if (dataFromServer) {
+      // eslint-disable-next-line no-param-reassign
       currentResponse.cachedUserAndToken = dataFromServer.updateUserWithAuthToken;
       return currentResponse;
     }
+    return undefined;
   }
-}
+};
 
 const cashayOptions = {
   component: 'AppContainer',
@@ -86,7 +88,8 @@ export default class LandingContainer extends Component {
           const cachedUserAndToken = await cashay.mutate('updateUserWithAuthToken', options);
           const {profileName, authTokenName} = localStorageVars;
           localStorage.setItem(authTokenName, authToken);
-          localStorage.setItem(profileName, cachedUserAndToken.data.updateUserWithAuthToken.profile);
+          localStorage.setItem(profileName,
+            cachedUserAndToken.data.updateUserWithAuthToken.profile);
           dispatch(push('/welcome'));
         });
       }
