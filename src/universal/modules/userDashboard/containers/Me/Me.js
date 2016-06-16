@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-// import {cashay} from 'client/client';
+// import {cashay} from 'cashay';
 
 const mapStateToProps = () => {
   return {

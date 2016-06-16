@@ -3,6 +3,7 @@ import {getGraphQLUri} from 'universal/utils/graphQLConfig';
 
 export default class ActionHTTPTransport extends HTTPTransport {
   constructor(authToken) {
+    super();
     this.uri = getGraphQLUri();
     this.init = {
       headers: {

@@ -1,9 +1,9 @@
 import React, {PropTypes, Component} from 'react';
-import App from '../../components/App/App';
+import Action from '../../components/Action/Action';
 import {connect} from 'react-redux';
 import {localStorageVars} from '../../utils/clientOptions';
 import loginWithToken from '../../decorators/loginWithToken/loginWithToken';
-import {cashay} from 'client/client';
+import {cashay} from 'cashay';
 
 const queryString = `
 query {
@@ -40,19 +40,19 @@ const cashayOptions = {
   }
 }
 const mapStateToProps = () => ({
-  response: cashay.query(queryString, cashayOptions)
+  // response: cashay.query(queryString, cashayOptions)
 });
 
 // for the decorators
 // eslint-disable-next-line react/prefer-stateless-function
 @connect(mapStateToProps)
-export default class AppContainer extends Component {
+export default class ActionContainer extends Component {
   static propTypes = {
     children: PropTypes.element.isRequired,
     isAuthenticated: PropTypes.bool.isRequired
   };
 
   render() {
-    return <App {...this.props} />;
+    return <Action {...this.props} />;
   }
 }

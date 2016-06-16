@@ -2,7 +2,7 @@ import path from 'path';
 import webpack from 'webpack';
 import AssetsPlugin from 'assets-webpack-plugin';
 import HappyPack from 'happypack';
-import { getDotenv } from '../src/universal/utils/dotenv';
+import {getDotenv} from '../src/universal/utils/dotenv';
 
 // Import .env and expand variables:
 getDotenv();

@@ -24,7 +24,7 @@ export const prepareClientError = res => {
   }
   const error = errors[0].message;
   if (error && error.indexOf('{"_error"') === -1) {
-    console.log('DEBUG GraphQL Error:', error);
+    console.log('DEBUG PARSING GraphQL Error:', error);
     return {data, error: JSON.stringify({_error: 'Server error while querying data'})};
   }
   return {data, error};

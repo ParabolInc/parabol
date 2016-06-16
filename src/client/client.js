@@ -2,7 +2,7 @@ import {render} from 'react-dom';
 import React from 'react';
 import {AppContainer} from 'react-hot-loader';
 import {Map as iMap, fromJS} from 'immutable';
-import {Cashay} from 'cashay';
+import {cashay} from 'cashay';
 import ActionHTTPTransport from './ActionHTTPTransport';
 import makeStore from './makeStore';
 import Root from './Root';
@@ -31,15 +31,12 @@ const authToken = localStorage.getItem(localStorageVars.authTokenName);
 
 const cashayHttpTransport = new ActionHTTPTransport(authToken);
 
-const cashayParams = {
+cashay.create({
   store,
   schema: cashaySchema,
   getToState: reduxStore => reduxStore.getState().get('cashay'),
   transport: cashayHttpTransport
-};
-
-// export the Cashay singleton:
-export const cashay = new Cashay(cashayParams);
+});
 
 
 render(

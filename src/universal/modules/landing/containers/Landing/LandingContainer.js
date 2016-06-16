@@ -4,13 +4,60 @@ import {connect} from 'react-redux';
 import Helmet from 'react-helmet';
 import {head, auth0} from 'universal/utils/clientOptions';
 import {push} from 'react-router-redux';
-import {loginUserError, loginAndRedirect} from 'universal/modules/auth/ducks/auth';
-import {cashay} from 'client/client';
+import {cashay} from 'cashay';
+import ActionHTTPTransport from 'client/ActionHTTPTransport';
+import {localStorageVars} from '../../../../utils/clientOptions';
 
+const queryString = `
+query {
+  cachedUserAndToken: getUserWithAuthToken(authToken: $authToken) {
+    authToken,
+    user {
+      id,
+      cachedAt,
+      cacheExpiresAt,
+      createdAt,
+      updatedAt,
+      userId,
+      email,
+      emailVerified,
+      picture,
+      name,
+      nickname,
+      identities {
+        connection,
+        userId,
+        provider,
+        isSocial,
+      }
+      loginsCount,
+      blockedFor {
+        identifier,
+        id,
+      }
+    }
+  }
+}`;
 
-const mapStateToProps = state => ({
-  isAuthenticated: state.getIn(['auth', 'isAuthenticated']),
-  userId: state.getIn(['auth', 'user', 'id'])
+const mutationHandlers = {
+  updateUserWithAuthToken(optimisticVariables, dataFromServer, currentResponse) {
+    if (dataFromServer) {
+      currentResponse.cachedUserAndToken = dataFromServer.updateUserWithAuthToken;
+      return currentResponse;
+    }
+  }
+}
+
+const cashayOptions = {
+  component: 'AppContainer',
+  variables: {
+    authToken: response => response.cachedUserAndToken.authToken
+  },
+  mutationHandlers
+};
+
+const mapStateToProps = () => ({
+  response: cashay.query(queryString, cashayOptions)
 });
 
 @connect(mapStateToProps)
@@ -32,23 +79,19 @@ export default class LandingContainer extends Component {
         const Auth0Lock = require('auth0-lock'); // eslint-disable-line global-require
         const {clientId, account} = auth0;
         const lock = new Auth0Lock(clientId, account);
-        lock.show({
-          authParams: {
-            state: '/signin/create_team_and_meeting'
-          }
-        }, (error, profile, authToken) => {
-          if (error) {
-            return dispatch(loginUserError(error));
-          }
-          
-          return dispatch(
-            loginAndRedirect('/signin/create_team_and_meeting',
-            authToken
-          ));
+        lock.show(async (error, profile, authToken) => {
+          if (error) throw error;
+          cashay.transport = new ActionHTTPTransport(authToken);
+          const options = {variables: {authToken}};
+          const cachedUserAndToken = await cashay.mutate('updateUserWithAuthToken', options);
+          const {profileName, authTokenName} = localStorageVars;
+          localStorage.setItem(authTokenName, authToken);
+          localStorage.setItem(profileName, cachedUserAndToken.data.updateUserWithAuthToken.profile);
+          dispatch(push('/welcome'));
         });
       }
     }
-  }
+  };
 
   render() {
     return (

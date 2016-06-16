@@ -3,7 +3,7 @@ import look, {StyleSheet} from 'react-look';
 import {connect} from 'react-redux';
 import {reduxSocket} from 'redux-socket-cluster';
 import {HotKeys} from 'react-hotkeys';
-import {cashay} from 'client/client';
+import {cashay} from 'cashay';
 import {localStorageVars} from 'universal/utils/clientOptions';
 import Setup0GetStarted from '../../components/Setup0GetStarted/Setup0GetStarted';
 import Setup1InviteTeam from '../../components/Setup1InviteTeam/Setup1InviteTeam';
