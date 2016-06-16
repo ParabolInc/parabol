@@ -42,6 +42,8 @@ query {
 const mutationHandlers = {
   updateUserWithAuthToken(optimisticVariables, dataFromServer, currentResponse) {
     if (dataFromServer) {
+      // TODO: modifing params by reference is stylisitically problematic,
+      //       can interface be pure and return new value intead?
       // eslint-disable-next-line no-param-reassign
       currentResponse.cachedUserAndToken = dataFromServer.updateUserWithAuthToken;
       return currentResponse;
