@@ -1,7 +1,7 @@
 import {GraphQLNonNull, GraphQLID, GraphQLString} from 'graphql';
 import {CachedUser, CachedUserAndToken} from './cachedUserSchema';
-import {getUserByUserId} from './helpers';
 import {errorObj} from '../utils';
+import r from '../../../database/rethinkDriver';
 
 export default {
   getUserByUserId: {
@@ -13,7 +13,7 @@ export default {
       }
     },
     async resolve(source, {userId}) {
-      const user = await getUserByUserId(userId);
+      const user = await r.table('CachedUser').get(userId);
       if (!user) {
         throw errorObj({_error: 'User ID not found'});
       }
@@ -29,7 +29,7 @@ export default {
       }
     },
     async resolve(source, args, {authToken}) {
-      const user = await getUserByUserId(authToken.sub);
+      const user = await r.table('CachedUser').get(authToken.sub);
       if (!user) {
         throw errorObj({_error: 'User ID not found'});
       }

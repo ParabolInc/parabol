@@ -9,6 +9,7 @@ import {
 } from 'graphql';
 import {GraphQLEmailType, GraphQLURLType} from '../types';
 import {UserProfile} from '../UserProfile/userProfileSchema';
+import {TeamMember} from '../TeamMember/teamMemberSchema';
 
 const IdentityType = new GraphQLObjectType({
   name: 'IdentityType',
@@ -55,7 +56,7 @@ export const CachedUser = new GraphQLObjectType({
   fields: () => ({
     id: {
       type: GraphQLID,
-      description: 'The userId'
+      description: 'The userId provided by auth0'
     },
     cachedAt: {
       type: GraphQLString,
@@ -72,10 +73,6 @@ export const CachedUser = new GraphQLObjectType({
     updatedAt: {
       type: GraphQLString,
       description: 'The datetime the user was last updated'
-    },
-    userId: {
-      type: GraphQLString,
-      description: 'The user ID, provided by auth0'
     },
     email: {
       type: new GraphQLNonNull(GraphQLEmailType),
@@ -112,7 +109,15 @@ export const CachedUser = new GraphQLObjectType({
     },
     userProfile: {
       type: new GraphQLNonNull(UserProfile),
-      description: 'The associated user profile, stored locally in our database.'
+      description: 'The associated user profile, stored locally in our database.',
+      resolves(source) {
+        console.log(source);
+        return {emailWelcomed: true};
+      }
+    },
+    memberships: {
+      type: new GraphQLList(TeamMember),
+      description: 'The memberships to different teams that the user has'
     }
   })
 });

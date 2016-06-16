@@ -3,6 +3,7 @@ import {
   GraphQLObjectType,
   GraphQLID,
 } from 'graphql';
+import {CachedUser} from '../CachedUser/cachedUserSchema';
 
 export const UserProfile = new GraphQLObjectType({
   name: 'UserProfile',

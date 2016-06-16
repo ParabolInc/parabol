@@ -8,6 +8,9 @@ if (typeof __PRODUCTION__ !== 'undefined' && __PRODUCTION__) {
    * and /src/universal/utils/buildThemeJS.js:
    */
   theme = require('theme.json');
+  const clientSchema = require('clientSchema.json');
+  console.log('SCHEMA', clientSchema);
+  // console.log('THEME', theme);
 } else {
   theme = {
     brand: require('./brand'),

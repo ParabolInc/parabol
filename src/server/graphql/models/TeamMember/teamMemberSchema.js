@@ -13,6 +13,8 @@ export const TeamMember = new GraphQLObjectType({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique team member ID'},
     teamId: {type: new GraphQLNonNull(GraphQLID), description: 'The team this member belongs to'},
     active: {type: GraphQLBoolean, description: 'Is user active?'},
+    isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
+    isFacilitator: {type: GraphQLBoolean, description: 'Is user a team facilitator?'},
     userCacheId: {type: GraphQLID, description: 'Active user\'s UserCache ID'},
     inviteId: {type: GraphQLString, description: 'Token used when inviting a user'},
     name: {

@@ -23,19 +23,15 @@ export default {
     },
     async resolve(source, {authToken}) {
       const userInfo = await auth0Client.tokens.getInfo(authToken);
-      // TODO add the userId to the JWT to eliminate call to DB?
-      // JWT.sub is the userId, not id, maybe it'll do
       // TODO loginsCount and blockedFor are not a part of this API response
-      // const user = await getUserByUserId(userInfo.user_id); // eslint-disable-line camelcase
-      // const id = user && user.id;
       const newUserObj = {
         cachedAt: new Date(),
         // TODO set expiry here
         cacheExpiresAt: new Date(),
         // from auth0
+        id: userInfo.user_id,
         createdAt: userInfo.created_at,
         updatedAt: userInfo.updated_at,
-        userId: userInfo.user_id,
         email: userInfo.email,
         emailVerified: userInfo.email_verified,
         picture: userInfo.picture,
@@ -57,13 +53,9 @@ export default {
       if (changes.replaced > 0) {
         return newUserAndToken;
       }
-      // Let's make a new user profile object and link it to the CachedUser:
-      const userProfileId = await createUserProfile();
-      await r.table('CachedUser')
-        .get(changes.generated_keys[0])
-        .update({userProfileId});
-      newUserObj.userProfileId = userProfileId;
-
+      // Let's make a new user profile object and link it to the CachedUser
+      // TODO promise.all this since they can run in parallel
+      await r.table('UserProfile').insert({id: newUserObj.id, emailWelcomed: false});
       await triggerNewUserEmail(newUserObj);
 
       return newUserAndToken;

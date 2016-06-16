@@ -2,7 +2,9 @@ import path from 'path';
 import webpack from 'webpack';
 import HappyPack from 'happypack';
 import { getDotenv } from '../src/universal/utils/dotenv';
-
+import CashayPlugin from './CashayPlugin';
+import {graphql} from 'graphql';
+import rootSchema from '../src/server/graphql/rootSchema';
 // Import .env and expand variables:
 getDotenv();
 
@@ -54,6 +56,7 @@ export default {
   },
   plugins: [
     ...prefetchPlugins,
+    new CashayPlugin({graphql, rootSchema}),
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),

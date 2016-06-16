@@ -18,7 +18,6 @@ query {
       cacheExpiresAt,
       createdAt,
       updatedAt,
-      userId,
       email,
       emailVerified,
       picture,

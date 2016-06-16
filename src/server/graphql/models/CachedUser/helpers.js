@@ -1,10 +1,10 @@
-import r from '../../../database/rethinkDriver';
+// import r from '../../../database/rethinkDriver';
 import mailgun from '../../../email/mailgunDriver';
 
-export const getUserByUserId = async userId => {
-  const users = await r.table('CachedUser').getAll(userId, {index: 'userId'}).limit(1);
-  return users[0];
-};
+// export const getUserByUserId = async userId => {
+//   const users = await r.table('CachedUser').getAll(userId, {index: 'userId'}).limit(1);
+//   return users[0];
+// };
 
 export const triggerNewUserEmail = async cachedUser => {
   const emailConfig = {
