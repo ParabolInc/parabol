@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import uuid from 'node-uuid';
 import {connect} from 'react-redux';
 import {push, replace} from 'react-router-redux';
-import {cashay} from 'client/client';
+import {cashay} from 'cashay';
 
 const SIGNIN_ACTION_CREATE_TEAM_AND_MEETING = 'create_team_and_meeting';
 

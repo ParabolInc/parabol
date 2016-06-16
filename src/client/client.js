@@ -1,11 +1,11 @@
 import {render} from 'react-dom';
 import React from 'react';
-import { AppContainer } from 'react-hot-loader';
+import {AppContainer} from 'react-hot-loader';
 import {Map as iMap, fromJS} from 'immutable';
-import {Cashay, HTTPTransport} from 'cashay';
+import {cashay} from 'cashay';
+import ActionHTTPTransport from './ActionHTTPTransport';
 import makeStore from './makeStore';
 import Root from './Root';
-import {getGraphQLUri} from 'universal/utils/graphQLConfig';
 import {localStorageVars} from 'universal/utils/clientOptions';
 
 const {auth, routing, form} = window.__INITIAL_STATE__; // eslint-disable-line no-underscore-dangle
@@ -17,35 +17,31 @@ const initialState = iMap([
   ['form', form]
 ]);
 
+// const authToken = localStorage.getItem(authTokenName);
+
+if (authToken) { // eslint-disable-line
+
+}
 // Create the store:
 const store = makeStore(initialState);
 
 // Create the Cashay singleton:
 const cashaySchema = require('cashay!../server/utils/getCashaySchema.js');
 const authToken = localStorage.getItem(localStorageVars.authTokenName);
-const cashayHttpTransport = new HTTPTransport(
-  getGraphQLUri(),
-  {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${authToken}`
-    }
-  }
-);
-const cashayParams = {
+
+const cashayHttpTransport = new ActionHTTPTransport(authToken);
+
+cashay.create({
   store,
   schema: cashaySchema,
   getToState: reduxStore => reduxStore.getState().get('cashay'),
   transport: cashayHttpTransport
-};
-
-// export the Cashay singleton:
-export const cashay = new Cashay(cashayParams);
+});
 
 
 render(
   <AppContainer>
-    <Root store={store} />
+    <Root store={store}/>
   </AppContainer>,
   document.getElementById('root')
 );
@@ -57,10 +53,10 @@ if (module.hot) {
     const Root = require('./Root');
     render(
       <AppContainer>
-        <Root store={store} />
+        <Root store={store}/>
       </AppContainer>,
       document.getElementById('root')
     );
-  /* eslint-enable global-require */
+    /* eslint-enable global-require */
   });
 }

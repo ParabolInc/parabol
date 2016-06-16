@@ -7,7 +7,7 @@ export default ({authTokenName, profileName}) => ComposedComponent => {
   return class TokenizedComp extends Component {
     static propTypes = {
       dispatch: PropTypes.func.isRequired
-    }
+    };
 
     componentWillMount() {
       if (__CLIENT__) {

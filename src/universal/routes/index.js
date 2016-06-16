@@ -1,4 +1,4 @@
-import AppContainer from 'universal/containers/App/AppContainer';
+import ActionContainer from '../containers/Action/ActionContainer';
 
 /* eslint-disable global-require */
 export default store => ({
@@ -6,10 +6,11 @@ export default store => ({
    * setting a component above the '/' route allows for sharing a container across a landing page
    * as the index route and repeat that container for child routes
    */
-  component: AppContainer,
+  component: ActionContainer,
   childRoutes: [
     require('./landing'),
-    require('./signin'),
+    require('./welcome'),
+    require('./userDashboard'),
     require('./meeting')(store),
     require('./graphql'),
     require('./patterns'),
