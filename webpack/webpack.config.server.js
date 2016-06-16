@@ -1,6 +1,5 @@
 import path from 'path';
 import webpack from 'webpack';
-import WebpackShellPlugin from 'webpack-shell-plugin';
 import HappyPack from 'happypack';
 
 const root = process.cwd();
@@ -42,12 +41,6 @@ export default {
       __PRODUCTION__: true,
       __WEBPACK__: true,
       'process.env.NODE_ENV': JSON.stringify('production')
-    }),
-    new WebpackShellPlugin({
-      onBuildStart: [
-        // eslint-disable-next-line max-len
-        'NODE_ENV=development node_modules/.bin/babel-node ./src/universal/utils/buildThemeJSON.js > ./build/theme.json'
-      ],
     }),
     new HappyPack({
       loaders: ['babel'],
