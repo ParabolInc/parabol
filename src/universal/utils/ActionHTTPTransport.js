@@ -5,11 +5,13 @@ export default class ActionHTTPTransport extends HTTPTransport {
   constructor(authToken) {
     super();
     this.uri = getGraphQLUri();
-    this.init = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${authToken}`
-      }
-    };
+    if (authToken) {
+      this.init = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`
+        }
+      };
+    }
   }
 }

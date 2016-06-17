@@ -2,17 +2,16 @@ import './addCSS';
 import React from 'react';
 import GraphiQL from 'graphiql';
 import fetch from 'isomorphic-fetch';
-import {localStorageVars} from 'universal/utils/clientOptions';
 import {getGraphQLHost, getGraphQLProtocol} from 'universal/utils/graphQLConfig';
 
 const graphQLHost = getGraphQLHost();
 const graphQLProtocol = getGraphQLProtocol();
 
+// TODO use cashay to get the authToken
 const graphQLFetcher = async (graphQLParams) => {
   if (!__CLIENT__) {
     return undefined;
   }
-  const authToken = localStorage.getItem(localStorageVars.authTokenName);
   const variables = graphQLParams.variables ?
     JSON.parse(graphQLParams.variables) : undefined;
   const res = await fetch(`${graphQLProtocol}//${graphQLHost}/graphql`, {

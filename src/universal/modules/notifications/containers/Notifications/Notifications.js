@@ -7,7 +7,7 @@ import theme from 'universal/styles/theme';
 import * as _notificationActions from '../../ducks/notifications';
 
 const mapStateToProps = state => ({
-  notifications: state.get('notifications').toJS()
+  notifications: state.notifications
 });
 
 const mapDispatchToProps = dispatch => ({

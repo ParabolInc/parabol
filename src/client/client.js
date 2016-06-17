@@ -1,31 +1,18 @@
 import {render} from 'react-dom';
 import React from 'react';
 import {AppContainer} from 'react-hot-loader';
-import {Map as iMap, fromJS} from 'immutable';
 import {cashay} from 'cashay';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import makeStore from './makeStore';
 import Root from './Root';
-import {localStorageVars} from 'universal/utils/clientOptions';
+import {persistStore} from 'redux-persist';
 
-// const clientSchema = require('../../build/clientSchema.json');
+const {routing} = window.__INITIAL_STATE__; // eslint-disable-line no-underscore-dangle
 
-// console.log(clientSchema)
-const {auth, routing, form} = window.__INITIAL_STATE__; // eslint-disable-line no-underscore-dangle
+const initialState = {
+  routing
+};
 
-// form & routing are currently regular JS objects. This may change in the future
-const initialState = iMap([
-  ['auth', fromJS(auth)],
-  ['routing', routing],
-  ['form', form]
-]);
-
-// const authToken = localStorage.getItem(authTokenName);
-
-if (authToken) { // eslint-disable-line
-
-}
-// Create the store:
 const store = makeStore(initialState);
 
 // Create the Cashay singleton:
@@ -45,24 +32,24 @@ const store = makeStore(initialState);
 //   cashaySchema = require('cashay!../server/utils/getCashaySchema.js');
 // }
 const cashaySchema = require('cashay!../server/utils/getCashaySchema.js');
-const authToken = localStorage.getItem(localStorageVars.authTokenName);
 
-const cashayHttpTransport = new ActionHTTPTransport(authToken);
+const cashayHttpTransport = new ActionHTTPTransport();
 
 cashay.create({
   store,
   schema: cashaySchema,
-  getToState: reduxStore => reduxStore.getState().get('cashay'),
   transport: cashayHttpTransport
 });
 
+persistStore(store, {}, () => {
+  render(
+    <AppContainer>
+      <Root store={store}/>
+    </AppContainer>,
+    document.getElementById('root')
+  );
+});
 
-render(
-  <AppContainer>
-    <Root store={store}/>
-  </AppContainer>,
-  document.getElementById('root')
-);
 
 // Hot Module Replacement API
 if (module.hot) {

@@ -14,8 +14,7 @@ if (!__PRODUCTION__) {
 
 export default function Root({store}) {
   const history = syncHistoryWithStore(
-    browserHistory, store,
-    {selectLocationState: state => state.get('routing')}
+    browserHistory, store
   );
 
   return (

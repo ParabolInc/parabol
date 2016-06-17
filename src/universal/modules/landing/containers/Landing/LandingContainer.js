@@ -6,7 +6,7 @@ import {head, auth0} from 'universal/utils/clientOptions';
 import {push} from 'react-router-redux';
 import {cashay} from 'cashay';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
-import {localStorageVars} from 'universal/utils/clientOptions';
+import jwtDecode from 'jwt-decode';
 
 const queryString = `
 query {
@@ -41,13 +41,9 @@ query {
 const mutationHandlers = {
   updateUserWithAuthToken(optimisticVariables, dataFromServer, currentResponse) {
     if (dataFromServer) {
-      // TODO: modifing params by reference is stylisitically problematic,
-      //       can interface be pure and return new value intead?
-      // eslint-disable-next-line no-param-reassign
       currentResponse.cachedUserAndToken = dataFromServer.updateUserWithAuthToken;
       return currentResponse;
     }
-    return undefined;
   }
 };
 
@@ -62,41 +58,40 @@ const cashayOptions = {
 const mapStateToProps = () => {
   return {
     response: cashay.query(queryString, cashayOptions)
-  }
+  };
 };
 
 @connect(mapStateToProps)
 export default class LandingContainer extends Component {
   static propTypes = {
-    // children: PropTypes.element,
-    isAuthenticated: PropTypes.bool.isRequired,
-    dispatch: PropTypes.func.isRequired,
-    userId: PropTypes.string
+    dispatch: PropTypes.func.isRequired
   };
 
-  handleOnMeetingCreateClick = () => {
-    const {isAuthenticated, dispatch, userId} = this.props;
-    if (isAuthenticated && userId) {
-      dispatch(push(`/me/${userId}`));
-    } else {
-      if (__CLIENT__) {
-        // TODO handle auth0 css files in webpack build to make it work on server?
-        const Auth0Lock = require('auth0-lock'); // eslint-disable-line global-require
-        const {clientId, account} = auth0;
-        const lock = new Auth0Lock(clientId, account);
-        lock.show(async(error, profile, authToken) => {
-          if (error) throw error;
-          cashay.transport = new ActionHTTPTransport(authToken);
-          const options = {variables: {authToken}};
-          const cachedUserAndToken = await cashay.mutate('updateUserWithAuthToken', options);
-          const {profileName, authTokenName} = localStorageVars;
-          localStorage.setItem(authTokenName, authToken);
-          localStorage.setItem(profileName,
-            cachedUserAndToken.data.updateUserWithAuthToken.profile);
-          dispatch(push('/welcome'));
-        });
+  componentWillMount() {
+    const {response, dispatch} = this.props;
+    const {authToken} = response.data.cachedUserAndToken;
+    if (authToken) {
+      const authTokenObj = jwtDecode(authToken);
+      if (authTokenObj.exp > Date.now() / 1000) {
+        dispatch(push('/me'));
+      } else {
+        // TODO how should we handle expired token? Just let it chill in state?
       }
     }
+  }
+
+  handleOnMeetingCreateClick = () => {
+    const {dispatch} = this.props;
+    const Auth0Lock = require('auth0-lock'); // eslint-disable-line global-require
+    const {clientId, account} = auth0;
+    const lock = new Auth0Lock(clientId, account);
+    lock.show(async(error, profile, authToken) => {
+      if (error) throw error;
+      cashay.transport = new ActionHTTPTransport(authToken);
+      const options = {variables: {authToken}};
+      await cashay.mutate('updateUserWithAuthToken', options);
+      dispatch(push('/welcome'));
+    });
   };
 
   render() {

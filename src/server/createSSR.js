@@ -2,11 +2,10 @@ import {createStore, applyMiddleware} from 'redux';
 import makeReducer from '../universal/redux/makeReducer';
 import {match} from 'react-router';
 import thunkMiddleware from 'redux-thunk';
-import {Map as iMap} from 'immutable';
 
 export default function createSSR(req, res) {
   const finalCreateStore = applyMiddleware(thunkMiddleware)(createStore);
-  const store = finalCreateStore(makeReducer(), iMap());
+  const store = finalCreateStore(makeReducer(), {});
   if (process.env.NODE_ENV === 'production') {
     // eslint-disable-next-line global-require
     const routesOrPrerender = require('../../build/prerender');
