@@ -3,7 +3,7 @@ import React from 'react';
 import {AppContainer} from 'react-hot-loader';
 import {Map as iMap, fromJS} from 'immutable';
 import {cashay} from 'cashay';
-import ActionHTTPTransport from './ActionHTTPTransport';
+import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import makeStore from './makeStore';
 import Root from './Root';
 import {localStorageVars} from 'universal/utils/clientOptions';

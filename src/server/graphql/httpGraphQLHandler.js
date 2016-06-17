@@ -1,8 +1,9 @@
-import Schema from './rootSchema';
+// import Schema from './rootSchema';
 import {graphql} from 'graphql';
 
 export default async (req, res) => {
   // Check for admin privileges
+  const Schema = require('./rootSchema');
   const {query, variables, ...newContext} = req.body;
   const authToken = req.user || {};
   const context = {authToken, context: newContext};

@@ -5,7 +5,6 @@ import {connect} from 'react-redux';
 /* eslint-disable no-unused-vars */
 import {localStorageVars} from '../../utils/clientOptions';
 import loginWithToken from '../../decorators/loginWithToken/loginWithToken';
-import {cashay} from 'cashay';
 
 const queryString = `
 query {
@@ -43,9 +42,12 @@ const cashayOptions = {
 };
 // TODO: remove eslint override
 /* eslint-enable no-unused-vars */
-const mapStateToProps = () => ({
+const mapStateToProps = () => {
+  return {
+
+  }
   // response: cashay.query(queryString, cashayOptions)
-});
+};
 
 // for the decorators
 @connect(mapStateToProps)

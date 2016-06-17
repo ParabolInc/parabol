@@ -5,8 +5,8 @@ import Helmet from 'react-helmet';
 import {head, auth0} from 'universal/utils/clientOptions';
 import {push} from 'react-router-redux';
 import {cashay} from 'cashay';
-import ActionHTTPTransport from 'client/ActionHTTPTransport';
-import {localStorageVars} from '../../../../utils/clientOptions';
+import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
+import {localStorageVars} from 'universal/utils/clientOptions';
 
 const queryString = `
 query {
@@ -59,9 +59,11 @@ const cashayOptions = {
   mutationHandlers
 };
 
-const mapStateToProps = () => ({
-  response: cashay.query(queryString, cashayOptions)
-});
+const mapStateToProps = () => {
+  return {
+    response: cashay.query(queryString, cashayOptions)
+  }
+};
 
 @connect(mapStateToProps)
 export default class LandingContainer extends Component {
@@ -82,7 +84,7 @@ export default class LandingContainer extends Component {
         const Auth0Lock = require('auth0-lock'); // eslint-disable-line global-require
         const {clientId, account} = auth0;
         const lock = new Auth0Lock(clientId, account);
-        lock.show(async (error, profile, authToken) => {
+        lock.show(async(error, profile, authToken) => {
           if (error) throw error;
           cashay.transport = new ActionHTTPTransport(authToken);
           const options = {variables: {authToken}};

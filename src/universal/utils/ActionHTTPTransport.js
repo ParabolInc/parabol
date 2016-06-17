@@ -1,5 +1,5 @@
 import {HTTPTransport} from 'cashay';
-import {getGraphQLUri} from 'universal/utils/graphQLConfig';
+import {getGraphQLUri} from './graphQLConfig';
 
 export default class ActionHTTPTransport extends HTTPTransport {
   constructor(authToken) {

@@ -33,7 +33,7 @@
   },
   "pre-commit": [],
   "devDependencies": {
-    "assets-webpack-plugin": "3.4.0",
+    "assets-webpack-plugin": "git://github.com/mattkrick/assets-webpack-plugin.git/#master",
     "ava": "0.15.2",
     "babel-cli": "6.10.1",
     "babel-core": "6.9.1",

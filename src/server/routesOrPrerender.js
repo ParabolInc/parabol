@@ -4,12 +4,15 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import routes from '../universal/routes/index';
 import Html from './Html';
 import React from 'react';
+import {cashay} from 'cashay';
+import ActionHTTPTransport from '../universal/utils/ActionHTTPTransport';
 
 const PROD = process.env.NODE_ENV === 'production';
 
 export default option => {
   if (option === 'routes') return routes;
-  return function renderApp(req, res, store, assets, renderProps) {
+  return function renderApp(req, res, store, entries = {}, renderProps) {
+    const cashaySchema = require('cashay!./utils/getCashaySchema.js');
     const location = renderProps && renderProps.location && renderProps.location.pathname || '/';
     store.dispatch(push(location));
     const lookConfig = Presets['react-dom'];
@@ -18,6 +21,13 @@ export default option => {
       lookConfig.plugins.push(Plugins.friendlyClassName);
     }
     lookConfig.styleElementId = '_look';
+    const cashayHttpTransport = new ActionHTTPTransport();
+    cashay.create({
+      store,
+      schema: cashaySchema,
+      transport: cashayHttpTransport,
+      getToState: reduxStore => reduxStore.getState().get('cashay')
+    });
     // Needed so some components can render based on location
     const lookCSSToken = '<!-- appCSS -->';
     const htmlString = renderToStaticMarkup(
@@ -26,7 +36,7 @@ export default option => {
         lookConfig={lookConfig}
         lookCSSToken={lookCSSToken}
         store={store}
-        assets={assets}
+        entries={entries}
         renderProps={renderProps}
       />
     );
