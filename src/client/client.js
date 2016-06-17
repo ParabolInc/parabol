@@ -26,7 +26,21 @@ if (authToken) { // eslint-disable-line
 const store = makeStore(initialState);
 
 // Create the Cashay singleton:
-const cashaySchema = require('cashay!../server/utils/getCashaySchema.js');
+let cashaySchema = null;
+if (__CLIENT__) {
+  /*
+   * During the client bundle build, the server will need to be stopped:
+   */
+  // eslint-disable-next-line global-require
+  cashaySchema = require('cashay!../server/utils/getCashaySchema.js?stopRethink');
+} else {
+  /*
+   * Hey! We're the server. No need to stop rethink. The server will
+   * take care of that when it wants to exit.
+   */
+  // eslint-disable-next-line global-require
+  cashaySchema = require('cashay!../server/utils/getCashaySchema.js');
+}
 const authToken = localStorage.getItem(localStorageVars.authTokenName);
 
 const cashayHttpTransport = new ActionHTTPTransport(authToken);
