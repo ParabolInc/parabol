@@ -20,8 +20,7 @@
     "bs": "rimraf build && concurrently \"npm run build:client\" \"npm run build:server\" \"npm run start\"",
     "quickstart": "rimraf build && concurrently \"npm run db:migrate\" \"npm run build:client\" \"npm run build:server\" \"npm run start\"",
     "build:client": "NODE_ENV=production webpack --config ./webpack/prod.babel.js",
-    "build:server": "npm run build:theme && NODE_ENV=production webpack --config ./webpack/server.babel.js",
-    "build:theme": "NODE_ENV=development mkdir -p build && babel-node ./src/universal/utils/buildThemeJSON.js > ./build/theme.json",
+    "build:server": "NODE_ENV=production webpack --config ./webpack/server.babel.js",
     "db:migrate": "./src/server/database/migrate.sh up-all",
     "test": "NODE_ENV=testing ava ./src/**/__tests__/**/*-tests.js --verbose",
     "db:migrate-up": "./src/server/database/migrate.sh up",
@@ -69,7 +68,8 @@
     "url-loader": "0.5.7",
     "webpack": "2.1.0-beta.4",
     "webpack-dev-middleware": "1.6.1",
-    "webpack-hot-middleware": "^2.10.0"
+    "webpack-hot-middleware": "^2.10.0",
+    "webpack-shell-plugin": "^0.4.2"
   },
   "dependencies": {
     "auth0": "^2.3.0",
