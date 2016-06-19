@@ -3,6 +3,10 @@ import webpack from 'webpack';
 import HappyPack from 'happypack';
 import { getDotenv } from '../src/universal/utils/dotenv';
 
+/*
+ * Configuration invoked from ./src/server/worker.js, et al.
+ */
+
 // Import .env and expand variables:
 getDotenv();
 
