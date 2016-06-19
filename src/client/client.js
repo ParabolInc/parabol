@@ -27,9 +27,10 @@ const store = makeStore(initialState);
 
 // Create the Cashay singleton:
 let cashaySchema = null;
-if (__CLIENT__) {
+if (__CLIENT__ && __PRODUCTION__) {
   /*
-   * During the client bundle build, the server will need to be stopped:
+   * During the production client bundle build, the server will need to be
+   * stopped.
    */
   // eslint-disable-next-line global-require
   cashaySchema = require('cashay!../server/utils/getCashaySchema.js?stopRethink');
