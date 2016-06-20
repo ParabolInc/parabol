@@ -3,7 +3,7 @@ import {GraphQLString} from 'graphql';
 import {CachedUserAndToken} from './cachedUserSchema';
 import {AuthenticationClient} from 'auth0';
 import {auth0} from '../../../../universal/utils/clientOptions';
-import {triggerNewUserEmail} from './helpers';
+import sendEmail from '../../../email/sendEmail';
 
 const auth0Client = new AuthenticationClient({
   domain: auth0.account,
@@ -55,8 +55,7 @@ export default {
       // Let's make a new user profile object and link it to the CachedUser
       // TODO promise.all this since they can run in parallel
       await r.table('UserProfile').insert({id: newUserObj.id, emailWelcomed: false});
-      await triggerNewUserEmail(newUserObj);
-
+      await sendEmail('newUser', newUserObj);
       return newUserAndToken;
     }
   }

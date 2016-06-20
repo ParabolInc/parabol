@@ -4,7 +4,7 @@ import {resolvePromiseMap} from 'universal/utils/promises';
 const setImports = () =>
   new Map([
     ['component', System.import(
-      'universal/modules/welcome/containers/WelcomeUser/WelcomeUser')],
+      'universal/modules/welcome/containers/Welcome/Welcome')],
     ['reduxForm', System.import('redux-form')],
     ['welcome', System.import('universal/modules/welcome/ducks/welcomeDuck')]
   ]);
@@ -21,7 +21,6 @@ export default store => ({
     const promiseMap = setImports();
     const importMap = await resolvePromiseMap(promiseMap);
     const {component, ...asyncReducers} = getImports(importMap);
-    // debugger
     const newReducer = makeReducer(asyncReducers);
     store.replaceReducer(newReducer);
     cb(null, component);

@@ -1,14 +1,14 @@
 import React, {Component, PropTypes} from 'react';
-import {Field} from 'redux-form';
+import {reduxForm, Field} from 'redux-form';
 
-export default function WelcomeUser(props) {
+const WelcomeTeam = props => {
   const {handleSubmit, pristine, submitting} = props;
   return (
     <div>
-      Please type in your name:
+      Please type in your team name:
       <form onSubmit={handleSubmit(props.onSubmit)}>
         <Field
-          name="fullName"
+          name="teamName"
           component="input"
           type="text"
           autoFocus
@@ -17,4 +17,8 @@ export default function WelcomeUser(props) {
       </form>
     </div>
   );
-}
+};
+
+export default reduxForm({
+  form: 'welcomeTeam'  // a unique identifier for this form
+})(WelcomeTeam);
