@@ -1,9 +1,11 @@
 const SET_WELCOME_NAME = 'action/welcome/SET_WELCOME_NAME';
-const SET_WELCOME_TEAM_NAME = 'action/welcome/SET_WELCOME_TEAM_NAME';
+const SET_WELCOME_TEAM = 'action/welcome/SET_WELCOME_TEAM';
 
 const initialState = {
   fullName: null,
-  teamName: null
+  teamName: null,
+  teamId: null,
+  teamMemberId: null
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -12,10 +14,8 @@ export default function reducer(state = initialState, action = {}) {
       return Object.assign({}, state, {
         fullName: action.payload.fullName
       });
-    case SET_WELCOME_TEAM_NAME:
-      return Object.assign({}, state, {
-        teamName: action.payload.teamName
-      });
+    case SET_WELCOME_TEAM:
+      return Object.assign({}, state, action.payload);
     default:
       return state;
   }
@@ -28,9 +28,9 @@ export const setWelcomeName = fullName => {
   };
 };
 
-export const setWelcomeTeamName = teamName => {
+export const setWelcomeTeam = payload => {
   return {
-    type: SET_WELCOME_TEAM_NAME,
-    payload: {teamName}
+    type: SET_WELCOME_TEAM,
+    payload
   };
 };

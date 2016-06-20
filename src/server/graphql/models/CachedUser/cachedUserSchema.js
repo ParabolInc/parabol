@@ -108,7 +108,7 @@ export const CachedUser = new GraphQLObjectType({
       type: new GraphQLList(BlockedUserType),
       description: 'Array of identifier + ip pairs'
     },
-    userProfile: {
+    profile: {
       type: UserProfile,
       description: 'The associated user profile, stored locally in our database.',
       resolve({id}) {

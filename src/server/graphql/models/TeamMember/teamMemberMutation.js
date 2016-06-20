@@ -1,6 +1,6 @@
-import { TeamMember } from './teamMemberSchema';
+import {TeamMember, TeamMemberInput} from './teamMemberSchema';
 import r from '../../../database/rethinkDriver';
-import uuid from 'node-uuid';
+import shortid from 'shortid';
 import {
   GraphQLString,
   GraphQLNonNull,
@@ -11,28 +11,14 @@ export default {
   createTeamMember: {
     type: TeamMember,
     args: {
-      teamId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'the id of the team the member belongs to'
-      },
-      name: {
-        type: GraphQLString,
-        description: 'the team member\'s name'
-      },
-      email: {
-        type: GraphQLString,
-        description: 'the team member\'s email'
+      newTeamMember: {
+        type: new GraphQLNonNull(TeamMemberInput),
+        description: 'the new team member object'
       }
     },
-    async resolve(source, {teamId, name, email}) {
-      const newTeamMember = {
-        // TODO: a uuid is overkill. let's make it small for smaller urls & friendly socket payloads
-        id: uuid.v4(),
-        teamId,
-        name,
-        email
-      };
-      await r.table('TeamMember').insert(newTeamMember);
+    async resolve(source, {newTeamMember}, {authToken}) {
+      const completeTeamMember = {...newTeamMember, cachedUserId: authToken.sub}
+      r.table('TeamMember').insert(newTeamMember);
       return newTeamMember;
     }
   }

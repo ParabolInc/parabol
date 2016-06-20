@@ -1,4 +1,4 @@
-import { Team } from './teamSchema';
+import {Team, TeamInput} from './teamSchema';
 import r from '../../../database/rethinkDriver';
 import {
   GraphQLString,
@@ -10,21 +10,13 @@ export default {
   createTeam: {
     type: Team,
     args: {
-      id: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'the new team id'
-      },
-      name: {
-        type: new GraphQLNonNull(GraphQLString),
-        description: 'the new team name'
+      newTeam: {
+        type: new GraphQLNonNull(TeamInput),
+        description: 'the new team object'
       }
     },
-    async resolve(source, {id, name}) {
-      const newTeam = {
-        id,
-        name
-      };
-      await r.table('Team').insert(newTeam);
+    async resolve(source, {newTeam}) {
+      r.table('Team').insert(newTeam);
       return newTeam;
     }
   },

@@ -52,10 +52,10 @@ export default {
       if (changes.replaced > 0) {
         return newUserAndToken;
       }
-      // Let's make a new user profile object and link it to the CachedUser
-      // TODO promise.all this since they can run in parallel
-      await r.table('UserProfile').insert({id: newUserObj.id, emailWelcomed: false});
-      await sendEmail('newUser', newUserObj);
+      await r.table('UserProfile').insert({id: newUserObj.id, emailWelcomed: false, isNew: true});
+
+      // returns a promise, but no need to wait
+      sendEmail('newUser', newUserObj);
       return newUserAndToken;
     }
   }

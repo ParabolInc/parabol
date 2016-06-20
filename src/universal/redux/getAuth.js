@@ -27,27 +27,29 @@ query {
         identifier,
         id,
       },
-      userProfile {
-       emailWelcomed
-      },
-      memberships {
-        id,
-        teamId,
-        active,
-        isLead,
-        isFacilitator,
-        cachedUserId,
-        inviteId,
-        name,
-        email
+      profile {
+       emailWelcomed,
+       isNew
       }
     }
   }
 }`;
 
+// memberships {
+//   id,
+//     teamId,
+//     active,
+//     isLead,
+//     isFacilitator,
+//     cachedUserId,
+//     inviteId,
+//     name,
+//     email
+// }
 const updateTokenMutationHandlers = {
   updateUserWithAuthToken(optimisticVariables, dataFromServer, currentResponse) {
     if (dataFromServer) {
+      debugger
       currentResponse.cachedUserAndToken = dataFromServer.updateUserWithAuthToken;
       return currentResponse;
     } else {

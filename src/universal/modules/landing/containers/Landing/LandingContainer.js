@@ -6,6 +6,7 @@ import {push} from 'react-router-redux';
 import {cashay} from 'cashay';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import loginWithAuth from 'universal/decorators/loginWithToken/loginWithToken'
+import getAuth from 'universal/redux/getAuth';
 
 @loginWithAuth
 export default class LandingContainer extends Component {
@@ -22,13 +23,13 @@ export default class LandingContainer extends Component {
       if (error) throw error;
       cashay.transport = new ActionHTTPTransport(authToken);
       const options = {variables: {authToken}};
-      const response = await cashay.mutate('updateUserWithAuthToken', options);
-      const hasTeam = response.user.memberships.length > 0;
-      if (hasTeam) {
+      await cashay.mutate('updateUserWithAuthToken', options);
+      const {user} = getAuth();
+      if (user.profile.isNew) {
+        dispatch(push('/welcome'));
+      } else {
         // TODO make the "createTeam" CTA big n bold when hitting this route from here
         dispatch(push('/me'));
-      } else {
-        dispatch(push('/welcome'));
       }
     });
   };

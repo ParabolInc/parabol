@@ -1,5 +1,5 @@
 import templates from './templates';
-import mailgun from '../../../email/mailgunDriver';
+import mailgun from './mailgunDriver';
 
 export default async function sendEmail(name, variables) {
   const emailFactory = templates[name];

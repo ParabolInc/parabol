@@ -10,7 +10,7 @@ export default ComposedComponent => {
       const auth = getAuth(true);
       const {dispatch} = cashay.store;
       // remove expired tokens from state
-      if (auth.authToken) {
+      if (auth.authToken && !auth.user.profile.isNew) {
         dispatch(push('/me'));
         return null;
       }

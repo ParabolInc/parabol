@@ -14,6 +14,10 @@ export const UserProfile = new GraphQLObjectType({
       type: GraphQLID,
       description: 'The primary key'
     },
+    isNew: {
+      type: GraphQLBoolean,
+      description: 'Has the user ever had a team'
+    },
     emailWelcomed: {
       type: GraphQLBoolean,
       description: 'Have we sent the user a welcome email?'
