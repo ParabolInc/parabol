@@ -10,6 +10,7 @@ import {
 import {GraphQLEmailType, GraphQLURLType} from '../types';
 import {UserProfile} from '../UserProfile/userProfileSchema';
 import {TeamMember} from '../TeamMember/teamMemberSchema';
+import r from '../../../database/rethinkDriver';
 
 const IdentityType = new GraphQLObjectType({
   name: 'IdentityType',
@@ -108,11 +109,10 @@ export const CachedUser = new GraphQLObjectType({
       description: 'Array of identifier + ip pairs'
     },
     userProfile: {
-      type: new GraphQLNonNull(UserProfile),
+      type: UserProfile,
       description: 'The associated user profile, stored locally in our database.',
-      resolves(source) {
-        console.log(source);
-        return {emailWelcomed: true};
+      resolve({id}) {
+        return r.table('UserProfile').get(id);
       }
     },
     memberships: {

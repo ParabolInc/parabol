@@ -6,6 +6,7 @@ import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import makeStore from './makeStore';
 import Root from './Root';
 import {persistStore} from 'redux-persist';
+import getAuth from 'universal/redux/getAuth';
 
 const {routing} = window.__INITIAL_STATE__; // eslint-disable-line no-underscore-dangle
 
@@ -33,15 +34,15 @@ const store = makeStore(initialState);
 // }
 const cashaySchema = require('cashay!../server/utils/getCashaySchema.js');
 
-const cashayHttpTransport = new ActionHTTPTransport();
-
-cashay.create({
-  store,
-  schema: cashaySchema,
-  transport: cashayHttpTransport
-});
-
-persistStore(store, {}, () => {
+persistStore(store, {blacklist: ['routing']}, () => {
+  // don't include a transport so it doesn't send a request to the server
+  cashay.create({
+    store,
+    schema: cashaySchema
+  });
+  const auth = getAuth(true);
+  // authToken is undefined if this is a first-time visit or token expired
+  cashay.create({transport: new ActionHTTPTransport(auth.authToken)});
   render(
     <AppContainer>
       <Root store={store}/>

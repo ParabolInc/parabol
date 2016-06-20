@@ -4,9 +4,7 @@ import {CachedUserAndToken} from './cachedUserSchema';
 import {AuthenticationClient} from 'auth0';
 import {auth0} from '../../../../universal/utils/clientOptions';
 import {triggerNewUserEmail} from './helpers';
-import {createUserProfile} from '../UserProfile/helpers';
 
-// TODO this stuff is no good, we need the good server stuff so we don't 401
 const auth0Client = new AuthenticationClient({
   domain: auth0.account,
   clientId: auth0.clientId
@@ -15,6 +13,7 @@ const auth0Client = new AuthenticationClient({
 export default {
   updateUserWithAuthToken: {
     type: CachedUserAndToken,
+    // even though the token comes with the bearer, we include it here we use it like an arg 
     args: {
       authToken: {
         type: GraphQLString,

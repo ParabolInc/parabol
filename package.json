@@ -103,7 +103,7 @@
     "react-fontawesome": "^1.1.0",
     "react-helmet": "^3.1.0",
     "react-hotkeys": "^0.8.0",
-    "react-look": "^1.0.0-beta9",
+    "react-look": "file:../react-look-1.0.0-beta9.tgz",
     "react-notification-system": "^0.2.7",
     "react-redux": "4.4.5",
     "react-router": "2.4.1",
