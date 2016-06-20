@@ -22,8 +22,14 @@ export default class LandingContainer extends Component {
       if (error) throw error;
       cashay.transport = new ActionHTTPTransport(authToken);
       const options = {variables: {authToken}};
-      await cashay.mutate('updateUserWithAuthToken', options);
-      dispatch(push('/welcome'));
+      const response = await cashay.mutate('updateUserWithAuthToken', options);
+      const hasTeam = response.user.memberships.length > 0;
+      if (hasTeam) {
+        // TODO make the "createMeeting" CTA big n bold when hitting this route from here 
+        dispatch(push('/me'));
+      } else {
+        dispatch(push('/welcome'));
+      }
     });
   };
 

@@ -1,12 +1,12 @@
 import {compose, combineReducers} from 'redux';
 import {cashayReducer} from 'cashay';
-// import meetingModule from '../modules/meeting/ducks/index';
 import notifications from '../modules/notifications/ducks/notifications';
+import {reducer as formReducer} from 'redux-form';
 import {routing} from './routing';
 
-// TODO make auth and meeting async
 const currentReducers = {
   cashay: cashayReducer,
+  form: formReducer,
   notifications,
   routing
 };

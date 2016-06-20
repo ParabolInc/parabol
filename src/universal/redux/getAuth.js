@@ -27,13 +27,23 @@ query {
         identifier,
         id,
       },
+      userProfile {
+       emailWelcomed
+      },
+      memberships {
+        id,
+        teamId,
+        active,
+        isLead,
+        isFacilitator,
+        cachedUserId,
+        inviteId,
+        name,
+        email
+      }
     }
   }
 }`;
-
-// userProfile {
-//   emailWelcomed
-// }
 
 const updateTokenMutationHandlers = {
   updateUserWithAuthToken(optimisticVariables, dataFromServer, currentResponse) {

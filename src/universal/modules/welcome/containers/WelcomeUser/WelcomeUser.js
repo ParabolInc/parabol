@@ -1,31 +1,26 @@
 import React, {Component, PropTypes} from 'react';
+import {setWelcomeName} from 'universal/modules/welcome/ducks/welcomeDuck';
+import WelcomeUser from 'universal/modules/welcome/components/WelcomeUser/WelcomeUser';
 import {connect} from 'react-redux';
-// import {cashay} from 'cashay';
+import {reduxForm} from 'redux-form';
+import {push} from 'react-router-redux';
 
-
-const mapStateToProps = () => { // eslint-disable-line arrow-body-style
-  return {
-    // meetingAndTeam: cashay.query(graphQuery, cashayOpts)
-  };
-};
-@connect(mapStateToProps)
-// TODO: rewrite as stateless
-// eslint-disable-next-line react/prefer-stateless-function
-export default class WelcomeUser extends Component {
+@connect()
+@reduxForm({form: 'fullNameForm'})
+export default class WelcomeUserContainer extends Component {
   static propTypes = {
-    meetingAndTeam: PropTypes.object,
-    params: PropTypes.object,
     dispatch: PropTypes.func
-  }
+  };
+
+  onSubmit = data => {
+    const {dispatch} = this.props;
+    const {fullName} = data;
+    debugger
+    dispatch(setWelcomeName(fullName));
+    dispatch(push('/welcome-team-name'));
+  };
 
   render() {
-    const {userId} = this.props.params; // eslint-disable-line no-unused-vars
-    return (
-      <div>
-        Please type in your name:
-        <input type="text"/>
-        <button>Next</button>
-      </div>
-    );
+    return <WelcomeUser onSubmit={this.onSubmit} {...this.props} />;
   }
 }

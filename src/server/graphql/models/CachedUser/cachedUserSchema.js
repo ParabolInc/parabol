@@ -117,7 +117,10 @@ export const CachedUser = new GraphQLObjectType({
     },
     memberships: {
       type: new GraphQLList(TeamMember),
-      description: 'The memberships to different teams that the user has'
+      description: 'The memberships to different teams that the user has',
+      resolve({id}) {
+        return r.table('TeamMember').getAll(id, {index: 'cachedUserId'});
+      }
     }
   })
 });

@@ -4,6 +4,7 @@ import {
   GraphQLID,
 } from 'graphql';
 import {CachedUser} from '../CachedUser/cachedUserSchema';
+import r from '../../../database/rethinkDriver';
 
 export const UserProfile = new GraphQLObjectType({
   name: 'UserProfile',
@@ -16,6 +17,13 @@ export const UserProfile = new GraphQLObjectType({
     emailWelcomed: {
       type: GraphQLBoolean,
       description: 'Have we sent the user a welcome email?'
+    },
+    cachedUser: {
+      type: CachedUser,
+      description: 'A cached version of the user profile from auth0',
+      resolve({id}) {
+        return r.table('CachedUser').get(id);
+      }
     }
   })
 });
