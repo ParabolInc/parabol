@@ -4,6 +4,14 @@ import WelcomeFullName from '../../components/WelcomeFullName/WelcomeFullName';
 import WelcomeTeam from '../../components/WelcomeTeam/WelcomeTeam';
 import {connect} from 'react-redux';
 import shortid from 'shortid';
+import {show} from 'universal/modules/notifications/ducks/notifications';
+import {push} from 'react-router-redux';
+
+const emailInviteSuccess = {
+  title: 'Invitations sent!',
+  message: `Your team members will get their invite via email`,
+  level: 'success'
+};
 
 const mapStateToProps = state => ({
   welcome: state.welcome
@@ -54,9 +62,23 @@ export default class WelcomeContainer extends Component {
 
   onInviteTeamSubmit = data => {
     const {dispatch, welcome: {teamId}} = this.props;
-    const {inviteEmails} = data;
-    cashay.mutate('inviteTeam');
-    
+    const {invitees} = data;
+    const options = {
+      variables: {
+        teamId,
+        invitees
+      }
+    };
+    cashay.mutate('inviteTeam', options)
+      .then(res => {
+        console.log('inviteTeamRes', res);
+        if (res.error) {
+          // TODO make a really ambiguous error because we don't wait to figure out which emails failed 
+        } else if (res.data) {
+          dispatch(show(emailInviteSuccess));
+        }
+      });
+
     // TODO dispatch email success notification
     dispatch(push(`/team/${teamId}`));
   };

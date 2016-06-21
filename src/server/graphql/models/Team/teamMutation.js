@@ -4,6 +4,7 @@ import {
   GraphQLString,
   GraphQLNonNull,
   GraphQLID,
+  GraphQLBoolean
 } from 'graphql';
 
 export default {

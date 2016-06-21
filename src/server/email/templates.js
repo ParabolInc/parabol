@@ -14,6 +14,9 @@ export default ({
     --
     Action Hero
     `
+  }),
+  inviteTeamMember: variables => ({
+    
   })
 });
 

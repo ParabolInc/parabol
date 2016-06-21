@@ -4,8 +4,11 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLID,
-  GraphQLInputObjectType
+  GraphQLInputObjectType,
+  GraphQLList
 } from 'graphql';
+
+import {GraphQLEmailType} from '../types';
 
 export const TeamMemberInput = new GraphQLInputObjectType({
   name: 'TeamMemberInput',
@@ -29,13 +32,41 @@ export const TeamMemberInput = new GraphQLInputObjectType({
   // }
 });
 
+const EmailAndTask = new GraphQLInputObjectType({
+  email: {
+    type: new GraphQLNonNull(GraphQLEmailType),
+    description: 'The email address of the invitee'
+  },
+  task: {
+    type: GraphQLString,
+    description: 'The current task the invitee is working on'
+  }
+});
+
+export const InviteesInput = new GraphQLInputObjectType({
+  name: 'InviteesInput',
+  description: 'The list of invitees and their tasks for a given team',
+  fields: () => ({
+    invitees: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(EmailAndTask))),
+      description: 'A list of invitees and the task that that the team lead assigned them'
+    },
+    teamId: {
+      type: new GraphQLNonNull(GraphQLID)
+    }
+  })
+});
+
 export const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',
-  description: 'A member of a team. teamId and cachedUserId are a pseudo composite PK',
+  description: 'A member of a team',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique team member ID'},
     teamId: {type: new GraphQLNonNull(GraphQLID), description: 'The team this member belongs to'},
-    cachedUserId: {type: new GraphQLNonNull(GraphQLID), description: 'Active user\'s CachedUser ID'},
+    cachedUserId: {
+      type: GraphQLID,
+      description: 'Active user\'s CachedUser ID. Will be blank if invitee has not accepted'
+    },
     isActive: {type: GraphQLBoolean, description: 'Is user active?', defaultValue: true},
     isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
     isFacilitator: {type: GraphQLBoolean, description: 'Is user a team facilitator?'},

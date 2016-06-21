@@ -1,5 +1,3 @@
-// import {Map as iMap, List as iList} from 'immutable';
-
 const NOTIFICATIONS_SHOW = 'notifications/NOTIFICATIONS_SHOW';
 const NOTIFICATIONS_HIDE = 'notifications/NOTIFICATIONS_HIDE';
 
