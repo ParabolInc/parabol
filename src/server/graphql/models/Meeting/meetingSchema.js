@@ -2,10 +2,9 @@ import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
-  GraphQLID,
-  GraphQLList
+  GraphQLID
 } from 'graphql';
-import {errorObj} from '../utils';
+// import {errorObj} from '../utils';
 
 // import {Team} from '../Team/teamSchema';
 // import {getTeamById} from '../Team/helpers';

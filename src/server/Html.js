@@ -17,7 +17,7 @@ export default function Html({
   const PROD = process.env.NODE_ENV === 'production';
   const {manifest, app, vendor} = entries;
   const initialState = `window.__INITIAL_STATE__ = ${JSON.stringify(store.getState())}`;
-  
+
   const root = PROD && renderToString(
     <LookRoot config={lookConfig}>
       <Provider store={store}>
@@ -53,6 +53,6 @@ Html.propTypes = {
   title: PropTypes.string.isRequired,
   lookConfig: PropTypes.object.isRequired,
   lookCSSToken: PropTypes.string.isRequired,
-  assets: PropTypes.object,
+  entries: PropTypes.object,
   renderProps: PropTypes.object
 };

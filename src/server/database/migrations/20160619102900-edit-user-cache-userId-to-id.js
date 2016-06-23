@@ -1,4 +1,4 @@
-exports.up = async(r, connection) => {
+exports.up = async r => {
   await r.table('CachedUser').config().update({name: 'CachedUser_old'});
   await r.tableCreate('CachedUser');
   await r.table('CachedUser').insert(r.table('CachedUser_old').map(doc => {
@@ -7,7 +7,7 @@ exports.up = async(r, connection) => {
   await r.tableDrop('CachedUser_old');
 };
 
-exports.down = async(r, connection) => {
+exports.down = async r => {
   await r.tableCreate('CachedUser_new');
   await r.table('CachedUser_new').insert(r.table('CachedUser').map(doc => {
     return doc.merge({userId: doc('id')});

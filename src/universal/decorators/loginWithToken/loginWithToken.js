@@ -1,4 +1,4 @@
-import React, {PropTypes, Component} from 'react';
+import React, {Component} from 'react';
 import {push} from 'react-router-redux';
 import getAuth from 'universal/redux/getAuth';
 import {cashay} from 'cashay';

@@ -17,6 +17,7 @@ export default option => {
     const lookConfig = Presets['react-dom'];
     lookConfig.userAgent = req.headers['user-agent'];
     if (PROD) {
+      // eslint-disable-next-line global-require
       const cashaySchema = require('cashay!./utils/getCashaySchema.js');
       const cashayHttpTransport = new ActionHTTPTransport();
       cashay.create({

@@ -1,7 +1,6 @@
 import r from '../../../database/rethinkDriver';
 import {
-  GraphQLNonNull,
-  GraphQLBoolean
+  GraphQLNonNull
 } from 'graphql';
 import {requireSUOrSelf} from '../authorization';
 import {UserProfile, UpdateProfileInput} from './userProfileSchema';

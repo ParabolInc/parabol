@@ -24,7 +24,6 @@ export default {
       }
     },
     async resolve(source, {authToken}) {
-
       // This is the only resolve function where authToken refers to a base64 string and not an object
       if (!authToken) {
         throw errorObj({_error: 'No JWT was provided'});

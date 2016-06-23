@@ -12,4 +12,4 @@ export default function makeSecretToken(id, epocExpiration) {
     sec: crypto.randomBytes(8).toString('base64'),
     exp: epocExpiration
   })).toString('base64');
-};
+}

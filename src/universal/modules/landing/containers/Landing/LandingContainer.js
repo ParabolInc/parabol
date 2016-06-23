@@ -5,7 +5,7 @@ import {head, auth0} from 'universal/utils/clientOptions';
 import {push} from 'react-router-redux';
 import {cashay} from 'cashay';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
-import loginWithAuth from 'universal/decorators/loginWithToken/loginWithToken'
+import loginWithAuth from 'universal/decorators/loginWithToken/loginWithToken';
 import getAuth from 'universal/redux/getAuth';
 
 @loginWithAuth
@@ -23,11 +23,10 @@ export default class LandingContainer extends Component {
       authParams: {
         scope: 'openid rol'
       }
-    },async(error, profile, authToken) => {
+    }, async(error, profile, authToken) => {
       if (error) throw error;
       cashay.transport = new ActionHTTPTransport(authToken);
       const options = {variables: {authToken}};
-      debugger
       await cashay.mutate('updateUserWithAuthToken', options);
       const {user} = getAuth();
       if (!user.profile) {

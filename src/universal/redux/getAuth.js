@@ -1,5 +1,4 @@
 import {cashay} from 'cashay';
-import jwtDecode from 'jwt-decode';
 
 const getAuthQueryString = `
 query {
@@ -74,4 +73,4 @@ const loginWithTokenOptions = {
 
 export default function getAuth() {
   return cashay.query(getAuthQueryString, loginWithTokenOptions).data.cachedUserAndToken;
-};
+}

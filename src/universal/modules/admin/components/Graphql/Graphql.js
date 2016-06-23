@@ -1,5 +1,5 @@
 import './addCSS';
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 import GraphiQL from 'graphiql';
 import fetch from 'isomorphic-fetch';
 import {getGraphQLHost, getGraphQLProtocol} from 'universal/utils/graphQLConfig';
@@ -40,7 +40,15 @@ const mapStateToProps = () => {
 };
 
 @connect(mapStateToProps)
+// eslint-disable-next-line react/prefer-stateless-function
 export default class Graphiql extends Component {
+  static propTypes = {
+    response: PropTypes.shape({
+      data: PropTypes.shape({
+        cachedUserAndToken: PropTypes.string
+      })
+    })
+  }
   render() {
     const {response} = this.props;
     const {authToken} = response.data.cachedUserAndToken;
@@ -69,6 +77,4 @@ const makeGraphQLFetcher = authToken => {
     return res.json();
   };
 };
-
-
 

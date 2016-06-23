@@ -2,7 +2,7 @@
 import {graphql} from 'graphql';
 
 export default async (req, res) => {
-  // Check for admin privileges
+  // eslint-disable-next-line global-require
   const Schema = require('./rootSchema');
   const {query, variables, ...newContext} = req.body;
   const authToken = req.user || {};

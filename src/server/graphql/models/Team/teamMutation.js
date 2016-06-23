@@ -1,9 +1,7 @@
 import {Team, CreateTeamInput, UpdateTeamInput} from './teamSchema';
 import r from '../../../database/rethinkDriver';
 import {
-  GraphQLString,
   GraphQLNonNull,
-  GraphQLID,
   GraphQLBoolean
 } from 'graphql';
 import {requireSUOrTeamMember, requireSUOrSelf} from '../authorization';

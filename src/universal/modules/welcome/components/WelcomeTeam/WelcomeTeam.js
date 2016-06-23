@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import {reduxForm, Field} from 'redux-form';
 
 const WelcomeTeam = props => {
@@ -17,6 +17,13 @@ const WelcomeTeam = props => {
       </form>
     </div>
   );
+};
+
+WelcomeTeam.propTypes = {
+  handleSubmit: PropTypes.func,
+  pristine: PropTypes.bool,
+  submitting: PropTypes.bool,
+  onSubmit: PropTypes.func
 };
 
 export default reduxForm({

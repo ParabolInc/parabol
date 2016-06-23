@@ -1,3 +1,4 @@
+import r from '../../../database/rethinkDriver';
 import {GraphQLNonNull, GraphQLID} from 'graphql';
 import {Team} from './teamSchema';
 import {errorObj} from '../utils';

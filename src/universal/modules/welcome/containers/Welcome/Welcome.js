@@ -13,7 +13,7 @@ import getAuth from 'universal/redux/getAuth';
 
 const emailInviteSuccess = {
   title: 'Invitation sent!',
-  message: `Your team members will get their invite via email`,
+  message: 'Your team members will get their invite via email',
   level: 'success'
 };
 
@@ -31,7 +31,13 @@ const mapStateToProps = state => ({
 @requireAuth
 export default class WelcomeContainer extends Component {
   static propTypes = {
-    dispatch: PropTypes.func
+    dispatch: PropTypes.func,
+    welcome: PropTypes.shape({
+      preferredName: PropTypes.string,
+      teamName: PropTypes.string,
+      teamId: PropTypes.string,
+      teamMemberId: PropTypes.string
+    })
   };
 
   onPreferredNameSubmit = data => {
@@ -110,9 +116,8 @@ export default class WelcomeContainer extends Component {
       return <WelcomePreferredName onSubmit={this.onPreferredNameSubmit} {...this.props} />;
     } else if (!welcome.teamName) {
       return <WelcomeTeam onSubmit={this.onTeamNameSubmit} {...this.props} />;
-    } else {
-      return <InviteTeam onSubmit={this.onInviteTeamSubmit} {...this.props} />;
     }
+    return <InviteTeam onSubmit={this.onInviteTeamSubmit} {...this.props} />;
   }
 }
 

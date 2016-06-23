@@ -6,7 +6,7 @@ import {
   GraphQLID,
   GraphQLList
 } from 'graphql';
-import {foo, TeamMember, CreateTeamMemberInput} from '../TeamMember/teamMemberSchema';
+import {TeamMember, CreateTeamMemberInput} from '../TeamMember/teamMemberSchema';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {nonnullifyInputThunk} from '../utils';
 
