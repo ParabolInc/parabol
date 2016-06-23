@@ -1,5 +1,5 @@
 import React, {PropTypes, Component} from 'react';
-import Action from '../../components/Action/Action';
+import Action from 'universal/components/Action/Action';
 
 // eslint-disable-next-line react/prefer-stateless-function
 export default class ActionContainer extends Component {

@@ -1,11 +1,12 @@
 import React, {PropTypes, Component} from 'react';
-import look, { StyleSheet } from 'react-look';
+import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import tinycolor from 'tinycolor2';
 import layoutStyle from 'universal/styles/layout';
-import Notifications
-  from 'universal/modules/notifications/containers/notifications/Notifications';
+import Notifications from 'universal/modules/notifications/containers/notifications/Notifications';
 import './addFontAwesome';
+
+let styles = {};
 
 @look
 // eslint-disable-next-line react/prefer-stateless-function
@@ -24,7 +25,7 @@ export default class Action extends Component {
   }
 }
 
-const styles = StyleSheet.create({
+styles = StyleSheet.create({
   app: {
     height: '100vh',
     margin: 0,

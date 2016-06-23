@@ -51,12 +51,12 @@ const updateTokenMutationHandlers = {
       currentResponse.cachedUserAndToken = queryResponse;
       return currentResponse;
     }
+    return undefined;
   },
   updateUserProfile(optimisticVariables, queryResponse, currentResponse) {
     if (optimisticVariables) {
       Object.assign(currentResponse.cachedUserAndToken.user.profile, optimisticVariables.updatedProfile);
-    }
-    if (queryResponse) {
+    } else if (queryResponse) {
       Object.assign(currentResponse.cachedUserAndToken.user.profile, queryResponse.profile);
     }
     return currentResponse;

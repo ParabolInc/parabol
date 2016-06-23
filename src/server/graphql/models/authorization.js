@@ -19,6 +19,7 @@ export const getTeamMember = (authToken, teamId) => {
       .pluck('teamId');
     return teamMembers[0];
   }
+  return undefined;
 };
 
 export const requireAuth = authToken => {
@@ -37,14 +38,14 @@ export const requireSU = authToken => {
 };
 
 export const requireSUOrTeamMember = (authToken, teamId) => {
-  if (isSuperUser(authToken)) return;
+  if (isSuperUser(authToken)) return undefined;
   const teamMember = getTeamMember(authToken, teamId);
   if (teamMember) return teamMember;
   throw errorObj({_error: 'Unauthorized. Must be a member of the team.'});
 };
 
 export const requireSUOrSelf = (authToken, cachedUserId) => {
-  if (isSuperUser(authToken)) return;
+  if (isSuperUser(authToken)) return undefined;
   const userId = getUserId(authToken);
   if (userId === cachedUserId) {
     return userId;

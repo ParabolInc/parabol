@@ -9,6 +9,25 @@ import {connect} from 'react-redux';
 const graphQLHost = getGraphQLHost();
 const graphQLProtocol = getGraphQLProtocol();
 
+const makeGraphQLFetcher = authToken => {
+  return async(graphQLParams) => {
+    if (!__CLIENT__) {
+      return undefined;
+    }
+    const variables = graphQLParams.variables ?
+      JSON.parse(graphQLParams.variables) : undefined;
+    const res = await fetch(`${graphQLProtocol}//${graphQLHost}/graphql`, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authToken}`
+      },
+      body: JSON.stringify({query: graphQLParams.query, variables})
+    });
+    return res.json();
+  };
+};
+
 const queryString = `
 query {
   cachedUserAndToken: getUserWithAuthToken(authToken: $authToken) {
@@ -22,6 +41,7 @@ const mutationHandlers = {
       currentResponse.cachedUserAndToken = queryResponse;
       return currentResponse;
     }
+    return undefined;
   }
 };
 
@@ -49,6 +69,7 @@ export default class Graphiql extends Component {
       })
     })
   }
+
   render() {
     const {response} = this.props;
     const {authToken} = response.data.cachedUserAndToken;
@@ -58,23 +79,3 @@ export default class Graphiql extends Component {
     );
   }
 }
-
-const makeGraphQLFetcher = authToken => {
-  return async(graphQLParams) => {
-    if (!__CLIENT__) {
-      return undefined;
-    }
-    const variables = graphQLParams.variables ?
-      JSON.parse(graphQLParams.variables) : undefined;
-    const res = await fetch(`${graphQLProtocol}//${graphQLHost}/graphql`, {
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${authToken}`
-      },
-      body: JSON.stringify({query: graphQLParams.query, variables})
-    });
-    return res.json();
-  };
-};
-
