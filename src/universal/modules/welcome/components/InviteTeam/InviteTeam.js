@@ -1,11 +1,13 @@
 import React from 'react';
 import {reduxForm, Field} from 'redux-form';
 
+// TODO sync validation & parsing
+// TODO async validation via mailgun on submit
 const InviteTeam = props => {
   const {handleSubmit, pristine, submitting} = props;
   return (
     <div>
-      Enter your team members emails & their tasks:
+      Enter your team members emails & their tasks. THIS IS BROKEN UNTIL WE DO PARSING:
       <form onSubmit={handleSubmit(props.onSubmit)}>
         <Field
           name="inviteeEmail"

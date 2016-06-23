@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {setWelcomeName, setWelcomeTeam} from 'universal/modules/welcome/ducks/welcomeDuck';
-import WelcomeFullName from '../../components/WelcomeFullName/WelcomeFullName';
+import WelcomePreferredName from '../../components/WelcomePreferredName/WelcomePreferredName';
 import WelcomeTeam from '../../components/WelcomeTeam/WelcomeTeam';
 import InviteTeam from '../../components/InviteTeam/InviteTeam';
 import {connect} from 'react-redux';
@@ -9,6 +9,7 @@ import {show} from 'universal/modules/notifications/ducks/notifications';
 import {push} from 'react-router-redux';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {cashay} from 'cashay';
+import getAuth from 'universal/redux/getAuth';
 
 const emailInviteSuccess = {
   title: 'Invitation sent!',
@@ -16,9 +17,14 @@ const emailInviteSuccess = {
   level: 'success'
 };
 
+const emailInviteFail = emailsNotDelivered => ({
+  title: 'Invitations not sent!',
+  message: `The following emails were not sent: ${emailsNotDelivered}`,
+  level: 'error'
+});
+
 const mapStateToProps = state => ({
-  welcome: state.welcome,
-  response: cashay.query()
+  welcome: state.welcome
 });
 
 @connect(mapStateToProps)
@@ -28,10 +34,20 @@ export default class WelcomeContainer extends Component {
     dispatch: PropTypes.func
   };
 
-  onFullNameSubmit = data => {
+  onPreferredNameSubmit = data => {
     const {dispatch} = this.props;
-    const {fullName} = data;
-    dispatch(setWelcomeName(fullName));
+    const {preferredName} = data;
+    const {user} = getAuth();
+    const options = {
+      variables: {
+        updatedProfile: {
+          id: user.id,
+          preferredName
+        }
+      }
+    };
+    dispatch(setWelcomeName(preferredName));
+    cashay.mutate('updateUserProfile', options);
   };
 
   onTeamNameSubmit = data => {
@@ -39,28 +55,25 @@ export default class WelcomeContainer extends Component {
     const {teamName} = data;
     const teamId = shortid.generate();
     const teamMemberId = shortid.generate();
+    const {user} = getAuth();
     dispatch(setWelcomeTeam({teamName, teamId, teamMemberId}));
     const createTeamOptions = {
       variables: {
         newTeam: {
           id: teamId,
-          name: teamName
-        }
-      }
-    };
-    const createTeamMemberOptions = {
-      variables: {
-        newTeamMember: {
-          id: teamMemberId,
-          teamId,
-          isLead: true,
-          isFacilitator: true
+          name: teamName,
+          leader: {
+            id: teamMemberId,
+            teamId,
+            cachedUserId: user.id,
+            isActive: true,
+            isLead: true,
+            isFacilitator: true
+          }
         }
       }
     };
     cashay.mutate('createTeam', createTeamOptions);
-    //TODO once we know where the fullname goes, cashay.mutate('updateFullName'...)
-
   };
 
   onInviteTeamSubmit = data => {
@@ -74,10 +87,14 @@ export default class WelcomeContainer extends Component {
     };
     cashay.mutate('inviteTeam', options)
       .then(res => {
-        debugger
+        // TODO make sure this resolves after the route changes
         console.log('inviteTeamRes', res);
         if (res.error) {
-          // TODO make a really ambiguous error because we don't wait to figure out which emails failed 
+          const {failedEmails} = JSON.parse(res.error);
+          if (Array.isArray(failedEmails)) {
+            const emailsNotDelivered = failedEmails.map(invitee => invitee.email).join(', ');
+            dispatch(show(emailInviteFail(emailsNotDelivered)));
+          }
         } else if (res.data) {
           dispatch(show(emailInviteSuccess));
         }
@@ -89,8 +106,8 @@ export default class WelcomeContainer extends Component {
 
   render() {
     const {welcome} = this.props;
-    if (!welcome.fullName) {
-      return <WelcomeFullName onSubmit={this.onFullNameSubmit} {...this.props} />;
+    if (!welcome.preferredName) {
+      return <WelcomePreferredName onSubmit={this.onPreferredNameSubmit} {...this.props} />;
     } else if (!welcome.teamName) {
       return <WelcomeTeam onSubmit={this.onTeamNameSubmit} {...this.props} />;
     } else {

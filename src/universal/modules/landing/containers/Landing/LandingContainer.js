@@ -27,8 +27,13 @@ export default class LandingContainer extends Component {
       if (error) throw error;
       cashay.transport = new ActionHTTPTransport(authToken);
       const options = {variables: {authToken}};
+      debugger
       await cashay.mutate('updateUserWithAuthToken', options);
       const {user} = getAuth();
+      if (!user.profile) {
+        // TODO handle this. either join CachedUser with UserProfile, write a mutation to correct it, etc.
+        console.warn('User profile was not instatiated when the account was created');
+      }
       if (user.profile.isNew) {
         dispatch(push('/welcome'));
       } else {

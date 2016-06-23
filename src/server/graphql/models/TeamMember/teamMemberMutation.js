@@ -3,7 +3,8 @@ import {TeamMember, TeamMemberInput, InviteesInput} from './teamMemberSchema';
 import shortid from 'shortid';
 import {
   GraphQLNonNull,
-  GraphQLBoolean
+  GraphQLBoolean,
+  GraphQLString
 } from 'graphql';
 import sendEmail from '../../../email/sendEmail';
 import {requireSUOrTeamMember} from '../authorization';

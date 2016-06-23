@@ -16,18 +16,17 @@ export function resolveForAdmin(source, args, ref) {
 export const errorObj = obj => new Error(JSON.stringify(obj));
 
 // if the add & update schemas have different required fields, use this
-export const inputObjectFactory = (name, inputFields, requiredFieldNames) => {
-  const newFields = {...inputFields};
-  requiredFieldNames.forEach(name => {
-    newFields[name] = Object.assign({}, newFields[name], {
-      type: new GraphQLNonNull(newFields[name].type)
-    });
-  });
+export const nonnullifyInputThunk = (name, inputThunk, requiredFieldNames) => {
   return new GraphQLInputObjectType({
     name,
-    fields: () => newFields
+    fields: () => {
+      const newFields = inputThunk();
+      requiredFieldNames.forEach(fieldName => {
+        newFields[fieldName].type = new GraphQLNonNull(newFields[fieldName].type);
+      });
+      return newFields;
+    }
   });
-  
 };
 
 export function getFields(context, astsParams = context.fieldASTs) {

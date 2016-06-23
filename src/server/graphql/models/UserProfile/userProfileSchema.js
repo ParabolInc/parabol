@@ -4,18 +4,20 @@ import {
   GraphQLObjectType,
   GraphQLID,
   GraphQLString,
-  GraphQLList
+  GraphQLList,
+  GraphQLNonNull
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {CachedUser} from '../CachedUser/cachedUserSchema';
 import {TeamMember} from '../TeamMember/teamMemberSchema';
+import {nonnullifyInputThunk} from '../utils';
 
 export const UserProfile = new GraphQLObjectType({
   name: 'UserProfile',
   description: 'User-level Action application profile info and preferences',
   fields: () => ({
     id: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The primary key'
     },
     isNew: {
@@ -46,3 +48,13 @@ export const UserProfile = new GraphQLObjectType({
     }
   })
 });
+
+const profileInputThunk = () => ({
+  id: {type: GraphQLID, description: 'The unique team ID'},
+  preferredName: {
+    type: GraphQLString,
+    description: 'The name, as confirmed by the user'
+  }
+});
+
+export const UpdateProfileInput = nonnullifyInputThunk('UpdateProfileInput', profileInputThunk, ['id']);

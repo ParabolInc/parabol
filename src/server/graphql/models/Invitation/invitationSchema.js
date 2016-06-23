@@ -9,25 +9,6 @@ import {
 import {GraphQLEmailType} from '../types';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 
-export const Invitee = new GraphQLInputObjectType({
-  name: 'Invitee',
-  description: 'The email and task of an invited team member',
-  fields: () => ({
-    email: {
-      type: new GraphQLNonNull(GraphQLEmailType),
-      description: 'The email address of the invitee'
-    },
-    fullName: {
-      type: GraphQLString,
-      description: 'The name derived from an RFC5322 email string'
-    },
-    task: {
-      type: GraphQLString,
-      description: 'The current task the invitee is working on'
-    }
-  })
-});
-
 export const Invitation = new GraphQLObjectType({
   name: 'Invitation',
   description: 'An invitation to become a team member',
@@ -68,6 +49,25 @@ export const Invitation = new GraphQLObjectType({
     task: {
       type: GraphQLString,
       description: 'The task that the invitee is currently working on'
+    }
+  })
+});
+
+export const Invitee = new GraphQLInputObjectType({
+  name: 'Invitee',
+  description: 'The email and task of an invited team member',
+  fields: () => ({
+    email: {
+      type: new GraphQLNonNull(GraphQLEmailType),
+      description: 'The email address of the invitee'
+    },
+    fullName: {
+      type: GraphQLString,
+      description: 'The name derived from an RFC5322 email string'
+    },
+    task: {
+      type: GraphQLString,
+      description: 'The current task the invitee is working on'
     }
   })
 });

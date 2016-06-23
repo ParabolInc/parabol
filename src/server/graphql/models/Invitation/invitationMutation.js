@@ -13,7 +13,7 @@ import {resolveSentEmails, makeInvitations, getTeamNameInvitedBy, sendInvitation
 
 export default {
   inviteTeamMembers: {
-    type: new GraphQLList(Invitee),
+    type: GraphQLBoolean,
     description: 'Send invitation emails to a list of email addresses, add them to the invitation table',
     args: {
       teamId: {
@@ -33,9 +33,12 @@ export default {
       const invitations = makeInvitations(invitees, teamId);
       const sendEmailPromises = sendInvitations(invitedBy, teamName, invitations);
       const {inviteeErrors, invitationsToStore} = await resolveSentEmails(sendEmailPromises, invitees, invitations);
-      // Bulk insert, no waiting for result
-      r.table('Invitation').insert(invitationsToStore);
-      return inviteeErrors;
+      // Bulk insert, wait in case something queries the invitation table
+      await r.table('Invitation').insert(invitationsToStore);
+      if (inviteeErrors) {
+        throw errorObj({_error: 'Some invitations were not sent', failedEmails: inviteeErrors});
+      }
+      return true;
     }
   }
 };

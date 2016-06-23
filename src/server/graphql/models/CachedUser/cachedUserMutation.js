@@ -24,6 +24,7 @@ export default {
       }
     },
     async resolve(source, {authToken}) {
+
       // This is the only resolve function where authToken refers to a base64 string and not an object
       if (!authToken) {
         throw errorObj({_error: 'No JWT was provided'});
@@ -62,9 +63,8 @@ export default {
       }
       const emailWelcomed = await sendEmail('newUser', newUserObj);
       const welcomeSentAt = emailWelcomed ? new Date() : null;
-      r.table('UserProfile').insert({id: newUserObj.id, welcomeSentAt, isNew: true});
-
-      // no need to wait for email success
+      await r.table('UserProfile').insert({id: newUserObj.id, welcomeSentAt, isNew: true});
+      // must wait for write to UserProfile because a query could follow quickly after
       return newUserAndToken;
     }
   }

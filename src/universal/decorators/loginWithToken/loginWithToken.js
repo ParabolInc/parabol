@@ -7,11 +7,15 @@ import {cashay} from 'cashay';
 export default ComposedComponent => {
   return class TokenizedComp extends Component {
     render() {
-      const auth = getAuth(true);
+      const auth = getAuth();
       const {dispatch} = cashay.store;
       // remove expired tokens from state
-      if (auth.authToken && !auth.user.profile.isNew) {
-        dispatch(push('/me'));
+      if (auth.authToken) {
+        if (auth.user.profile.isNew) {
+          dispatch(push('/welcome'));
+        } else {
+          dispatch(push('/me'));
+        }
         return null;
       }
       return <ComposedComponent {...this.props} dispatch={dispatch}/>;

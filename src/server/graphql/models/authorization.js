@@ -30,6 +30,12 @@ export const requireAuth = authToken => {
 /*
  * Won't return a teamMember if it's a super user
  */
+export const requireSU = authToken => {
+  if (!isSuperUser(authToken)) {
+    throw errorObj({_error: 'Unauthorized. Must be a super user to run this query.'});
+  }
+};
+
 export const requireSUOrTeamMember = (authToken, teamId) => {
   if (isSuperUser(authToken)) return;
   const teamMember = getTeamMember(authToken, teamId);
@@ -37,8 +43,11 @@ export const requireSUOrTeamMember = (authToken, teamId) => {
   throw errorObj({_error: 'Unauthorized. Must be a member of the team.'});
 };
 
-export const requireSU = authToken => {
-  if (!isSuperUser(authToken)) {
-    throw errorObj({_error: 'Unauthorized. Must be a super user to run this query.'});
+export const requireSUOrSelf = (authToken, cachedUserId) => {
+  if (isSuperUser(authToken)) return;
+  const userId = getUserId(authToken);
+  if (userId === cachedUserId) {
+    return userId;
   }
+  throw errorObj({_error: 'Unauthorized. You cannot modify another user.'});
 };

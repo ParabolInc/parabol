@@ -17,9 +17,9 @@ query {
 }`;
 
 const mutationHandlers = {
-  updateUserWithAuthToken(optimisticVariables, dataFromServer, currentResponse) {
-    if (dataFromServer) {
-      currentResponse.cachedUserAndToken = dataFromServer.updateUserWithAuthToken;
+  updateUserWithAuthToken(optimisticVariables, queryResponse, currentResponse) {
+    if (queryResponse) {
+      currentResponse.cachedUserAndToken = queryResponse;
       return currentResponse;
     }
   }

@@ -20,4 +20,5 @@ export default createTransform(
   state => state,
   cashayDeserializer,
   {whitelist: ['cashay']}
-)
+);
+

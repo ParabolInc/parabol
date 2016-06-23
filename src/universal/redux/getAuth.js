@@ -28,8 +28,8 @@ query {
         id,
       },
       profile {
-       welcomeSentAt,
-       isNew
+       isNew,
+       preferredName
       }
     }
   }
@@ -47,11 +47,20 @@ query {
 //     email
 // }
 const updateTokenMutationHandlers = {
-  updateUserWithAuthToken(optimisticVariables, dataFromServer, currentResponse) {
-    if (dataFromServer) {
-      currentResponse.cachedUserAndToken = dataFromServer.updateUserWithAuthToken;
+  updateUserWithAuthToken(optimisticVariables, queryResponse, currentResponse) {
+    if (queryResponse) {
+      currentResponse.cachedUserAndToken = queryResponse;
       return currentResponse;
     }
+  },
+  updateUserProfile(optimisticVariables, queryResponse, currentResponse) {
+    if (optimisticVariables) {
+      Object.assign(currentResponse.cachedUserAndToken.user.profile, optimisticVariables.updatedProfile);
+    }
+    if (queryResponse) {
+      Object.assign(currentResponse.cachedUserAndToken.user.profile, queryResponse.profile);
+    }
+    return currentResponse;
   }
 };
 

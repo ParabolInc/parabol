@@ -6,22 +6,9 @@ import {
   GraphQLID,
   GraphQLList
 } from 'graphql';
-import {TeamMember, TeamMemberInput} from '../TeamMember/teamMemberSchema';
+import {foo, TeamMember, CreateTeamMemberInput} from '../TeamMember/teamMemberSchema';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
-import {inputObjectFactory} from '../utils';
-
-const teamInputFields = {
-  id: {type: GraphQLID, description: 'The unique team ID'},
-  name: {type: GraphQLString, description: 'The name of the team'},
-  leader: {
-    type: new GraphQLList(TeamMemberInput),
-    description: 'Each team must have at least 1 team member, the leader.'
-  }
-};
-
-export const CreateTeamInput = inputObjectFactory('CreateTeamInput', teamInputFields, ['id', 'name']);
-export const UpdateTeamInput = inputObjectFactory('UpdateTeamInput', teamInputFields, ['id']);
-
+import {nonnullifyInputThunk} from '../utils';
 
 export const Team = new GraphQLObjectType({
   name: 'Team',
@@ -46,3 +33,15 @@ export const Team = new GraphQLObjectType({
     }
   })
 });
+
+const teamInputThunk = () => ({
+  id: {type: GraphQLID, description: 'The unique team ID'},
+  name: {type: GraphQLString, description: 'The name of the team'},
+  leader: {
+    type: new GraphQLList(CreateTeamMemberInput),
+    description: 'Each team must have at least 1 team member, the leader.'
+  }
+});
+
+export const CreateTeamInput = nonnullifyInputThunk('CreateTeamInput', teamInputThunk, ['id', 'name']);
+export const UpdateTeamInput = nonnullifyInputThunk('UpdateTeamInput', teamInputThunk, ['id']);

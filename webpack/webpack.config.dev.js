@@ -71,7 +71,8 @@ export default {
     ]),
     new HappyPack({
       loaders: ['babel'],
-      threads: 4
+      threads: 4,
+      verbose: false
     })
   ],
   resolve: {
