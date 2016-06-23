@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default function Me(props) {
   const {name, nickname} = props.user;
   return (

@@ -19,7 +19,11 @@ export default class LandingContainer extends Component {
     const Auth0Lock = require('auth0-lock'); // eslint-disable-line global-require
     const {clientId, account} = auth0;
     const lock = new Auth0Lock(clientId, account);
-    lock.show(async(error, profile, authToken) => {
+    lock.show({
+      authParams: {
+        scope: 'openid rol'
+      }
+    },async(error, profile, authToken) => {
       if (error) throw error;
       cashay.transport = new ActionHTTPTransport(authToken);
       const options = {variables: {authToken}};

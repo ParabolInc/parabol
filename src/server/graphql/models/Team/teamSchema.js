@@ -1,24 +1,48 @@
+import r from '../../../database/rethinkDriver';
 import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLID,
-  GraphQLInputObjectType
+  GraphQLList
 } from 'graphql';
+import {TeamMember, TeamMemberInput} from '../TeamMember/teamMemberSchema';
+import GraphQLISO8601Type from 'graphql-custom-datetype';
+import {inputObjectFactory} from '../utils';
 
-export const TeamInput = new GraphQLInputObjectType({
-  name: 'TeamInput',
-  fields: () => ({
-    id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique team ID'},
-    name: {type: GraphQLString, description: 'The name of the team'}
-  })
-});
+const teamInputFields = {
+  id: {type: GraphQLID, description: 'The unique team ID'},
+  name: {type: GraphQLString, description: 'The name of the team'},
+  leader: {
+    type: new GraphQLList(TeamMemberInput),
+    description: 'Each team must have at least 1 team member, the leader.'
+  }
+};
+
+export const CreateTeamInput = inputObjectFactory('CreateTeamInput', teamInputFields, ['id', 'name']);
+export const UpdateTeamInput = inputObjectFactory('UpdateTeamInput', teamInputFields, ['id']);
+
 
 export const Team = new GraphQLObjectType({
   name: 'Team',
   description: 'A team',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique team ID'},
-    name: {type: GraphQLString, description: 'The name of the team'}
+    name: {type: GraphQLString, description: 'The name of the team'},
+    createdAt: {
+      type: new GraphQLNonNull(GraphQLISO8601Type),
+      description: 'The datetime the team was created'
+    },
+    updatedAt: {
+      type: GraphQLISO8601Type,
+      description: 'The datetime the team was last updated (not including members)'
+    },
+    members: {
+      type: new GraphQLList(TeamMember),
+      description: 'All the team members associated with this team',
+      async resolve({id}) {
+        return await r.table('TeamMember').getAll(id, {index: 'teamId'});
+      }
+    }
   })
 });

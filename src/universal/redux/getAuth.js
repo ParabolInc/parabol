@@ -28,7 +28,7 @@ query {
         id,
       },
       profile {
-       emailWelcomed,
+       welcomeSentAt,
        isNew
       }
     }
@@ -49,18 +49,8 @@ query {
 const updateTokenMutationHandlers = {
   updateUserWithAuthToken(optimisticVariables, dataFromServer, currentResponse) {
     if (dataFromServer) {
-      debugger
       currentResponse.cachedUserAndToken = dataFromServer.updateUserWithAuthToken;
       return currentResponse;
-    } else {
-      const {authToken} = currentResponse.cachedUserAndToken;
-      if (authToken) {
-        const authTokenObj = jwtDecode(authToken);
-        if (authTokenObj.exp < Date.now() / 1000) {
-          currentResponse.cachedUserAndToken.authToken = null;
-          return currentResponse;
-        }
-      }
     }
   }
 };
@@ -73,12 +63,6 @@ const loginWithTokenOptions = {
   mutationHandlers: updateTokenMutationHandlers
 };
 
-export default function getAuth(clearBadToken) {
-  const response = cashay.query(getAuthQueryString, loginWithTokenOptions);
-  if (clearBadToken) {
-    // mutates response.data.cachedUserAndToken.authToken if it's no good
-    cashay.mutate('updateUserWithAuthToken', {localOnly: true});
-  }
-  return response.data.cachedUserAndToken;
-
+export default function getAuth() {
+  return cashay.query(getAuthQueryString, loginWithTokenOptions).data.cachedUserAndToken;
 };

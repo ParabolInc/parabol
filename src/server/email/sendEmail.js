@@ -11,6 +11,7 @@ export default async function sendEmail(name, variables) {
     await mailgun.messages().send(email);
   } catch (e) {
     console.warn(`mailgun: unable to send welcome message ${e}`);
+    return false;
   }
 
   return true;

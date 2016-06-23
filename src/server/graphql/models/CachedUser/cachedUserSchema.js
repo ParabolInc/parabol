@@ -8,6 +8,8 @@ import {
   GraphQLInt
 } from 'graphql';
 import {GraphQLEmailType, GraphQLURLType} from '../types';
+import GraphQLISO8601Type from 'graphql-custom-datetype';
+
 import {UserProfile} from '../UserProfile/userProfileSchema';
 import {TeamMember} from '../TeamMember/teamMemberSchema';
 import r from '../../../database/rethinkDriver';
@@ -60,20 +62,20 @@ export const CachedUser = new GraphQLObjectType({
       description: 'The userId provided by auth0'
     },
     cachedAt: {
-      type: GraphQLString,
+      type: GraphQLISO8601Type,
       description: 'The timestamp of the user was cached'
     },
     cacheExpiresAt: {
-      type: GraphQLString,
+      type: GraphQLISO8601Type,
       description: 'The timestamp when the cached user expires'
     },
     createdAt: {
-      type: GraphQLString,
-      description: 'The datetime the user was created'
+      type: GraphQLISO8601Type,
+      description: 'The timestamp the user was created'
     },
     updatedAt: {
-      type: GraphQLString,
-      description: 'The datetime the user was last updated'
+      type: GraphQLISO8601Type,
+      description: 'The timestamp the user was last updated'
     },
     email: {
       type: new GraphQLNonNull(GraphQLEmailType),
@@ -111,15 +113,16 @@ export const CachedUser = new GraphQLObjectType({
     profile: {
       type: UserProfile,
       description: 'The associated user profile, stored locally in our database.',
-      resolve({id}) {
-        return r.table('UserProfile').get(id);
+      async resolve({id}) {
+        // not entirely sure why i have to await this, i thought GraphQL allowed subsequent promises
+        return await r.table('UserProfile').get(id);
       }
     },
     memberships: {
       type: new GraphQLList(TeamMember),
       description: 'The memberships to different teams that the user has',
-      resolve({id}) {
-        return r.table('TeamMember').getAll(id, {index: 'cachedUserId'});
+      async resolve({id}) {
+        return await r.table('TeamMember').getAll(id, {index: 'cachedUserId'});
       }
     }
   })

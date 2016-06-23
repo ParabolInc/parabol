@@ -18,7 +18,7 @@ export default ({
   inviteTeamMember: variables => ({
     from: 'Action Hero <action@mail.parabol.co>',
     to: `<${variables.email}>`,
-    subject: 'You\'ve been invited!',
+    subject: 'You\'ve been invited! (i swear this isn\'t spam)',
     text: `
     Someone invited your to Action.
     

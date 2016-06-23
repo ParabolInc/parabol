@@ -7,6 +7,7 @@ import makeStore from './makeStore';
 import Root from './Root';
 import {persistStore} from 'redux-persist';
 import getAuth from 'universal/redux/getAuth';
+import cashayPersistTransform from './cashayPersistTransform';
 
 const {routing} = window.__INITIAL_STATE__; // eslint-disable-line no-underscore-dangle
 
@@ -17,30 +18,29 @@ const initialState = {
 const store = makeStore(initialState);
 
 // Create the Cashay singleton:
-// let cashaySchema = null;
-// if (__CLIENT__) {
-//   /*
-//    * During the client bundle build, the server will need to be stopped:
-//    */
-//   // eslint-disable-next-line global-require
-//   cashaySchema = require('cashay!../server/utils/getCashaySchema.js?stopRethink');
-// } else {
-//   /*
-//    * Hey! We're the server. No need to stop rethink. The server will
-//    * take care of that when it wants to exit.
-//    */
-//   // eslint-disable-next-line global-require
-//   cashaySchema = require('cashay!../server/utils/getCashaySchema.js');
-// }
-const cashaySchema = require('cashay!../server/utils/getCashaySchema.js');
+let cashaySchema = null;
+if (__CLIENT__) {
+  /*
+   * During the client bundle build, the server will need to be stopped:
+   */
+  // eslint-disable-next-line global-require
+  cashaySchema = require('cashay!../server/utils/getCashaySchema.js?stopRethink');
+} else {
+  /*
+   * Hey! We're the server. No need to stop rethink. The server will
+   * take care of that when it wants to exit.
+   */
+  // eslint-disable-next-line global-require
+  cashaySchema = require('cashay!../server/utils/getCashaySchema.js');
+}
 
-persistStore(store, {blacklist: ['routing']}, () => {
-  // don't include a transport so it doesn't send a request to the server
+persistStore(store, {blacklist: ['routing'], transforms: [cashayPersistTransform]}, () => {
+  // don't include a transport so getAuth doesn't send a request to the server
   cashay.create({
     store,
     schema: cashaySchema
   });
-  const auth = getAuth(true);
+  const auth = getAuth();
   // authToken is undefined if this is a first-time visit or token expired
   cashay.create({transport: new ActionHTTPTransport(auth.authToken)});
   render(

@@ -4,6 +4,8 @@ import {CachedUserAndToken} from './cachedUserSchema';
 import {AuthenticationClient} from 'auth0';
 import {auth0} from '../../../../universal/utils/clientOptions';
 import sendEmail from '../../../email/sendEmail';
+import ms from 'ms';
+import {errorObj} from '../utils';
 
 const auth0Client = new AuthenticationClient({
   domain: auth0.account,
@@ -13,24 +15,30 @@ const auth0Client = new AuthenticationClient({
 export default {
   updateUserWithAuthToken: {
     type: CachedUserAndToken,
-    // even though the token comes with the bearer, we include it here we use it like an arg 
+    description: 'Given a new auth token, grab all the information we can from auth0 about the user',
     args: {
+      // even though the token comes with the bearer, we include it here we use it like an arg
       authToken: {
         type: GraphQLString,
         description: 'The ID Token from auth0, a base64 JWT'
       }
     },
     async resolve(source, {authToken}) {
+      // This is the only resolve function where authToken refers to a base64 string and not an object
+      if (!authToken) {
+        throw errorObj({_error: 'No JWT was provided'});
+      }
       const userInfo = await auth0Client.tokens.getInfo(authToken);
+      const now = new Date();
       // TODO loginsCount and blockedFor are not a part of this API response
       const newUserObj = {
-        cachedAt: new Date(),
+        cachedAt: now,
         // TODO set expiry here
-        cacheExpiresAt: new Date(),
+        cacheExpiresAt: new Date(now.valueOf() + ms('30d')),
         // from auth0
         id: userInfo.user_id,
-        createdAt: userInfo.created_at,
-        updatedAt: userInfo.updated_at,
+        createdAt: new Date(userInfo.created_at),
+        updatedAt: new Date(userInfo.updated_at),
         email: userInfo.email,
         emailVerified: userInfo.email_verified,
         picture: userInfo.picture,
@@ -52,10 +60,11 @@ export default {
       if (changes.replaced > 0) {
         return newUserAndToken;
       }
-      await r.table('UserProfile').insert({id: newUserObj.id, emailWelcomed: false, isNew: true});
+      const emailWelcomed = await sendEmail('newUser', newUserObj);
+      const welcomeSentAt = emailWelcomed ? new Date() : null;
+      r.table('UserProfile').insert({id: newUserObj.id, welcomeSentAt, isNew: true});
 
-      // returns a promise, but no need to wait
-      sendEmail('newUser', newUserObj);
+      // no need to wait for email success
       return newUserAndToken;
     }
   }

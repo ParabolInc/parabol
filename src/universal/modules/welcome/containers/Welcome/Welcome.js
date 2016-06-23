@@ -2,22 +2,27 @@ import React, {Component, PropTypes} from 'react';
 import {setWelcomeName, setWelcomeTeam} from 'universal/modules/welcome/ducks/welcomeDuck';
 import WelcomeFullName from '../../components/WelcomeFullName/WelcomeFullName';
 import WelcomeTeam from '../../components/WelcomeTeam/WelcomeTeam';
+import InviteTeam from '../../components/InviteTeam/InviteTeam';
 import {connect} from 'react-redux';
 import shortid from 'shortid';
 import {show} from 'universal/modules/notifications/ducks/notifications';
 import {push} from 'react-router-redux';
+import requireAuth from 'universal/decorators/requireAuth/requireAuth';
+import {cashay} from 'cashay';
 
 const emailInviteSuccess = {
-  title: 'Invitations sent!',
+  title: 'Invitation sent!',
   message: `Your team members will get their invite via email`,
   level: 'success'
 };
 
 const mapStateToProps = state => ({
-  welcome: state.welcome
+  welcome: state.welcome,
+  response: cashay.query()
 });
 
 @connect(mapStateToProps)
+@requireAuth
 export default class WelcomeContainer extends Component {
   static propTypes = {
     dispatch: PropTypes.func
@@ -27,7 +32,6 @@ export default class WelcomeContainer extends Component {
     const {dispatch} = this.props;
     const {fullName} = data;
     dispatch(setWelcomeName(fullName));
-    // dispatch(push('/welcome-team-name'));
   };
 
   onTeamNameSubmit = data => {
@@ -55,7 +59,6 @@ export default class WelcomeContainer extends Component {
       }
     };
     cashay.mutate('createTeam', createTeamOptions);
-    cashay.mutate('createTeamMember', createTeamMemberOptions);
     //TODO once we know where the fullname goes, cashay.mutate('updateFullName'...)
 
   };
@@ -71,6 +74,7 @@ export default class WelcomeContainer extends Component {
     };
     cashay.mutate('inviteTeam', options)
       .then(res => {
+        debugger
         console.log('inviteTeamRes', res);
         if (res.error) {
           // TODO make a really ambiguous error because we don't wait to figure out which emails failed 
