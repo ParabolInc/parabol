@@ -1,5 +1,4 @@
 import {graphql} from 'graphql';
-import {prepareClientError} from './models/utils';
 import Schema from './rootSchema';
 
 export const wsGraphQLHandler = async(body, cb) => {
@@ -12,12 +11,12 @@ export const wsGraphQLHandler = async(body, cb) => {
   }
   this.docQueue.add(docId);
   const fullContext = {authToken, socket: this, ...context};
-  const result = await graphql(Schema, query, null, fullContext, variables);
-  const {error, data} = prepareClientError(result);
-  if (error) {
+  const {errors, data} = await graphql(Schema, query, null, fullContext, variables);
+  if (errors) {
     this.docQueue.delete(docId);
+    return cb(errors);
   }
-  return cb(error, data);
+  return cb(null, data);
 };
 
 /*

@@ -1,101 +1,46 @@
 import React, {PropTypes, Component} from 'react';
 import Landing from 'universal/modules/landing/components/Landing/Landing';
-import {connect} from 'react-redux';
 import Helmet from 'react-helmet';
 import {head, auth0} from 'universal/utils/clientOptions';
 import {push} from 'react-router-redux';
 import {cashay} from 'cashay';
-import ActionHTTPTransport from 'client/ActionHTTPTransport';
-import {localStorageVars} from '../../../../utils/clientOptions';
+import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
+import loginWithAuth from 'universal/decorators/loginWithToken/loginWithToken'
+import getAuth from 'universal/redux/getAuth';
 
-const queryString = `
-query {
-  cachedUserAndToken: getUserWithAuthToken(authToken: $authToken) {
-    authToken,
-    user {
-      id,
-      cachedAt,
-      cacheExpiresAt,
-      createdAt,
-      updatedAt,
-      userId,
-      email,
-      emailVerified,
-      picture,
-      name,
-      nickname,
-      identities {
-        connection,
-        userId,
-        provider,
-        isSocial,
-      }
-      loginsCount,
-      blockedFor {
-        identifier,
-        id,
-      }
-    }
-  }
-}`;
-
-const mutationHandlers = {
-  updateUserWithAuthToken(optimisticVariables, dataFromServer, currentResponse) {
-    if (dataFromServer) {
-      // TODO: modifing params by reference is stylisitically problematic,
-      //       can interface be pure and return new value intead?
-      // eslint-disable-next-line no-param-reassign
-      currentResponse.cachedUserAndToken = dataFromServer.updateUserWithAuthToken;
-      return currentResponse;
-    }
-    return undefined;
-  }
-};
-
-const cashayOptions = {
-  component: 'AppContainer',
-  variables: {
-    authToken: response => response.cachedUserAndToken.authToken
-  },
-  mutationHandlers
-};
-
-const mapStateToProps = () => ({
-  response: cashay.query(queryString, cashayOptions)
-});
-
-@connect(mapStateToProps)
+@loginWithAuth
 export default class LandingContainer extends Component {
   static propTypes = {
-    // children: PropTypes.element,
-    isAuthenticated: PropTypes.bool.isRequired,
-    dispatch: PropTypes.func.isRequired,
-    userId: PropTypes.string
+    dispatch: PropTypes.func.isRequired
   };
 
   handleOnMeetingCreateClick = () => {
-    const {isAuthenticated, dispatch, userId} = this.props;
-    if (isAuthenticated && userId) {
-      dispatch(push(`/me/${userId}`));
-    } else {
-      if (__CLIENT__) {
-        // TODO handle auth0 css files in webpack build to make it work on server?
-        const Auth0Lock = require('auth0-lock'); // eslint-disable-line global-require
-        const {clientId, account} = auth0;
-        const lock = new Auth0Lock(clientId, account);
-        lock.show(async (error, profile, authToken) => {
-          if (error) throw error;
-          cashay.transport = new ActionHTTPTransport(authToken);
-          const options = {variables: {authToken}};
-          const cachedUserAndToken = await cashay.mutate('updateUserWithAuthToken', options);
-          const {profileName, authTokenName} = localStorageVars;
-          localStorage.setItem(authTokenName, authToken);
-          localStorage.setItem(profileName,
-            cachedUserAndToken.data.updateUserWithAuthToken.profile);
-          dispatch(push('/welcome'));
-        });
+    const {dispatch} = this.props;
+    const Auth0Lock = require('auth0-lock'); // eslint-disable-line global-require
+    const {clientId, account} = auth0;
+    const lock = new Auth0Lock(clientId, account);
+    lock.show({
+      authParams: {
+        scope: 'openid rol'
       }
-    }
+    },async(error, profile, authToken) => {
+      if (error) throw error;
+      cashay.transport = new ActionHTTPTransport(authToken);
+      const options = {variables: {authToken}};
+      debugger
+      await cashay.mutate('updateUserWithAuthToken', options);
+      const {user} = getAuth();
+      if (!user.profile) {
+        // TODO handle this. either join CachedUser with UserProfile, write a mutation to correct it, etc.
+        console.warn('User profile was not instatiated when the account was created');
+      }
+      if (user.profile.isNew) {
+        dispatch(push('/welcome'));
+      } else {
+        // TODO make the "createTeam" CTA big n bold when hitting this route from here
+        dispatch(push('/me'));
+      }
+    });
   };
 
   render() {

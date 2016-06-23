@@ -11,13 +11,13 @@ export default function Html({
   title,
   lookConfig,
   lookCSSToken,
-  assets,
+  entries,
   renderProps
 }) {
   const PROD = process.env.NODE_ENV === 'production';
-  const {manifest, app, vendor} = assets || {};
+  const {manifest, app, vendor} = entries;
   const initialState = `window.__INITIAL_STATE__ = ${JSON.stringify(store.getState())}`;
-
+  
   const root = PROD && renderToString(
     <LookRoot config={lookConfig}>
       <Provider store={store}>

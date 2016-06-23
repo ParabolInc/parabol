@@ -1,28 +1,20 @@
 import {render} from 'react-dom';
 import React from 'react';
 import {AppContainer} from 'react-hot-loader';
-import {Map as iMap, fromJS} from 'immutable';
 import {cashay} from 'cashay';
-import ActionHTTPTransport from './ActionHTTPTransport';
+import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import makeStore from './makeStore';
 import Root from './Root';
-import {localStorageVars} from 'universal/utils/clientOptions';
+import {persistStore} from 'redux-persist';
+import getAuth from 'universal/redux/getAuth';
+import cashayPersistTransform from './cashayPersistTransform';
 
-const {auth, routing, form} = window.__INITIAL_STATE__; // eslint-disable-line no-underscore-dangle
+const {routing} = window.__INITIAL_STATE__; // eslint-disable-line no-underscore-dangle
 
-// form & routing are currently regular JS objects. This may change in the future
-const initialState = iMap([
-  ['auth', fromJS(auth)],
-  ['routing', routing],
-  ['form', form]
-]);
+const initialState = {
+  routing
+};
 
-// const authToken = localStorage.getItem(authTokenName);
-
-if (authToken) { // eslint-disable-line
-
-}
-// Create the store:
 const store = makeStore(initialState);
 
 // Create the Cashay singleton:
@@ -42,24 +34,24 @@ if (__CLIENT__ && __PRODUCTION__) {
   // eslint-disable-next-line global-require
   cashaySchema = require('cashay!../server/utils/getCashaySchema.js');
 }
-const authToken = localStorage.getItem(localStorageVars.authTokenName);
 
-const cashayHttpTransport = new ActionHTTPTransport(authToken);
-
-cashay.create({
-  store,
-  schema: cashaySchema,
-  getToState: reduxStore => reduxStore.getState().get('cashay'),
-  transport: cashayHttpTransport
+persistStore(store, {blacklist: ['routing'], transforms: [cashayPersistTransform]}, () => {
+  // don't include a transport so getAuth doesn't send a request to the server
+  cashay.create({
+    store,
+    schema: cashaySchema
+  });
+  const auth = getAuth();
+  // authToken is undefined if this is a first-time visit or token expired
+  cashay.create({transport: new ActionHTTPTransport(auth.authToken)});
+  render(
+    <AppContainer>
+      <Root store={store}/>
+    </AppContainer>,
+    document.getElementById('root')
+  );
 });
 
-
-render(
-  <AppContainer>
-    <Root store={store}/>
-  </AppContainer>,
-  document.getElementById('root')
-);
 
 // Hot Module Replacement API
 if (module.hot) {

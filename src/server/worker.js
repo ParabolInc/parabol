@@ -29,6 +29,7 @@ export function run(worker) {
       noInfo: false,
       publicPath: config.output.publicPath,
       stats: {
+        chunks: false,
         colors: true
       }
     }));
@@ -48,7 +49,7 @@ export function run(worker) {
 
   const secretKey = process.env.AUTH0_CLIENT_SECRET ||
     'BksPeQQrRkXhDrugzQDg5Nw-IInub9RkQ-pSWohUM9s6Oii4xoGVCrK2_OcUCfYZ';
-
+  
   // HTTP GraphQL endpoint
   app.post('/graphql', jwt({
     secret: new Buffer(secretKey, 'base64'),

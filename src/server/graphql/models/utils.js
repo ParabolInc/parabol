@@ -1,4 +1,4 @@
-import {GraphQLNonNull} from 'graphql';
+import {GraphQLNonNull, GraphQLInputObjectType} from 'graphql';
 
 export const defaultResolveFn = (source, args, {fieldName}) => {
   const property = source[fieldName];
@@ -7,38 +7,26 @@ export const defaultResolveFn = (source, args, {fieldName}) => {
 
 export function resolveForAdmin(source, args, ref) {
   return ref.rootValue &&
-    ref.rootValue.authToken &&
-    ref.rootValue.authToken.isAdmin ? defaultResolveFn.apply(this, [source, args, ref]) : null;
+  ref.rootValue.authToken &&
+  ref.rootValue.authToken.isAdmin ? defaultResolveFn.apply(this, [source, args, ref]) : null;
 }
 
 // Stringify an object to handle multiple errors
 // Wrap it in a new Error type to avoid sending it twice via the originalError field
-export const errorObj = obj =>
-  new Error(JSON.stringify(obj));
-
-// Showing a GraphQL error to the client is ugly
-export const prepareClientError = res => {
-  const {errors, data} = res;
-  if (!errors) {
-    return res;
-  }
-  const error = errors[0].message;
-  if (error && error.indexOf('{"_error"') === -1) {
-    console.log('DEBUG PARSING GraphQL Error:', error);
-    return {data, error: JSON.stringify({_error: 'Server error while querying data'})};
-  }
-  return {data, error};
-};
+export const errorObj = obj => new Error(JSON.stringify(obj));
 
 // if the add & update schemas have different required fields, use this
-export const makeRequired = (fields, requiredFieldNames) => {
-  const newFields = Object.assign({}, fields);
-  requiredFieldNames.forEach(name => {
-    newFields[name] = Object.assign({}, newFields[name], {
-      type: new GraphQLNonNull(newFields[name].type)
-    });
+export const nonnullifyInputThunk = (name, inputThunk, requiredFieldNames) => {
+  return new GraphQLInputObjectType({
+    name,
+    fields: () => {
+      const newFields = inputThunk();
+      requiredFieldNames.forEach(fieldName => {
+        newFields[fieldName].type = new GraphQLNonNull(newFields[fieldName].type);
+      });
+      return newFields;
+    }
   });
-  return newFields;
 };
 
 export function getFields(context, astsParams = context.fieldASTs) {

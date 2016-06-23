@@ -1,50 +1,54 @@
-import { Team } from './teamSchema';
+import {Team, CreateTeamInput, UpdateTeamInput} from './teamSchema';
 import r from '../../../database/rethinkDriver';
 import {
   GraphQLString,
   GraphQLNonNull,
   GraphQLID,
+  GraphQLBoolean
 } from 'graphql';
+import {requireSUOrTeamMember, requireSUOrSelf} from '../authorization';
 
 export default {
   createTeam: {
-    type: Team,
+    type: GraphQLBoolean,
+    description: 'Create a new team and add the first team member',
     args: {
-      id: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'the new team id'
-      },
-      name: {
-        type: new GraphQLNonNull(GraphQLString),
-        description: 'the new team name'
+      newTeam: {
+        type: new GraphQLNonNull(CreateTeamInput),
+        description: 'The new team object with exactly 1 team member'
       }
     },
-    async resolve(source, {id, name}) {
-      const newTeam = {
-        id,
-        name
-      };
-      await r.table('Team').insert(newTeam);
-      return newTeam;
+    async resolve(source, {newTeam}, {authToken}) {
+      // require cachedUserId in the input so an admin can also create a team
+      const userId = newTeam.leader.cachedUserId;
+      requireSUOrSelf(authToken, userId);
+      const {leader, ...team} = newTeam;
+      // can't trust the client
+      const verifiedLeader = {...leader, isActive: true, isLead: true, isFacilitator: true};
+      r.table('TeamMember').insert(verifiedLeader);
+      r.table('Team').insert(team);
+      r.table('UserProfile').get(userId).update({isNew: false});
+      return true;
     }
   },
   updateTeamName: {
     type: Team,
     args: {
-      teamId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The unique team ID'
-      },
-      name: {
-        type: new GraphQLNonNull(GraphQLString),
-        description: 'the new team name'
+      updatedTeam: {
+        type: new GraphQLNonNull(UpdateTeamInput),
+        description: 'The input object containing the teamId and any modified fields'
       }
     },
-    async resolve(source, {teamId, name}) {
-      const updatedTeam = await r.table('Team').get(teamId).update({
-        name,
+    async resolve(source, {updatedTeam}, {authToken}) {
+      const {id, name} = updatedTeam;
+      requireSUOrTeamMember(authToken, id);
+      const teamFromDB = await r.table('Team').get(id).update({
+        name
       }, {returnChanges: true});
-      return updatedTeam.changes[0].new_val;
+      // TODO this mutation throws an error, but we don't have a use for it in the app yet
+      console.log(teamFromDB);
+      // TODO think hard about if we can pluck only the changed values (in this case, name)
+      return teamFromDB.changes[0].new_val;
     }
   }
 };

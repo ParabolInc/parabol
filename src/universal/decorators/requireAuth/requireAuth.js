@@ -1,50 +1,23 @@
 import React, {PropTypes, Component} from 'react';
 import {push} from 'react-router-redux';
-import {localStorageVars} from '../../utils/clientOptions';
+import getAuth from 'universal/redux/getAuth';
+import {cashay} from 'cashay';
 
-let key;
-export default ComposedComponent =>
-  class RequiredAuth extends Component {
-    static propTypes = {
-      isAuthenticated: PropTypes.bool,
-      dispatch: PropTypes.func,
-      hasAuthError: PropTypes.bool,
-      location: PropTypes.shape({
-        query: PropTypes.shape({
-          e: PropTypes.string,
-          next: PropTypes.string
-        })
-      })
-    }
-
-    componentWillMount() {
-      this.checkForAuth(this.props);
-    }
-
-    componentWillReceiveProps(nextProps) {
-      this.checkForAuth(nextProps);
-    }
-
+export default ComposedComponent => {
+  return class RequiredAuth extends Component {
     render() {
-      const {isAuthenticated} = this.props;
-      if (isAuthenticated) {
-        return <ComposedComponent {...this.props} />;
+      // no need to check for expired tokens here, right?
+      // We check initial validation in the client.js. Our job should be to keep them logged in.
+      const auth = getAuth();
+      if (auth.authToken) {
+        return <ComposedComponent {...this.props} auth={auth} />;
       }
-      return <div>Logging in...</div>;
-    }
+      // I probably shouldn't encourage this behavior
+      cashay.store.dispatch(push('/'));
 
-    checkForAuth(props) {
-      if (__CLIENT__) {
-        const {dispatch, hasAuthError, location} = props;
-        const newKey = location && location.key || 'none';
-        if (newKey === key) {
-          return;
-        }
-        key = newKey;
-        const authToken = localStorage.getItem(localStorageVars.authTokenName);
-        if (hasAuthError || !authToken) {
-          dispatch(push('/login?next=%2Fkanban'));
-        }
-      }
+      // react is a stickler for returning an element or null
+      return null;
     }
   };
+};
+

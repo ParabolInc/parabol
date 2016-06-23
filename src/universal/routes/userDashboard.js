@@ -1,5 +1,5 @@
 export default {
-  path: '/me/:userId',
+  path: '/me',
   getComponent: async(location, cb) => {
     const component = await System.import(
       'universal/modules/userDashboard/containers/Me/Me');

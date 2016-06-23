@@ -3,6 +3,8 @@ import thunkMiddleware from 'redux-thunk';
 import {routerMiddleware} from 'react-router-redux';
 import {browserHistory} from 'react-router';
 import makeReducer from '../universal/redux/makeReducer';
+import {autoRehydrate} from 'redux-persist';
+
 
 export default initialState => {
   let store;
@@ -14,7 +16,7 @@ export default initialState => {
   ];
 
   if (__PRODUCTION__) {
-    store = createStore(reducer, initialState, applyMiddleware(...middlewares));
+    store = createStore(reducer, initialState, compose(autoRehydrate(), applyMiddleware(...middlewares)));
   } else {
     const devtoolsExt = global.devToolsExtension && global.devToolsExtension();
     if (!devtoolsExt) {
@@ -28,7 +30,8 @@ export default initialState => {
     }
     store = createStore(reducer, initialState, compose(
       applyMiddleware(...middlewares),
-      devtoolsExt || (f => f)
+      autoRehydrate(),
+      devtoolsExt || (f => f),
     ));
   }
   return store;

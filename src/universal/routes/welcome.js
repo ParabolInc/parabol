@@ -1,8 +1,28 @@
-export default {
+import makeReducer from 'universal/redux/makeReducer';
+import {resolvePromiseMap} from 'universal/utils/promises';
+
+const setImports = () =>
+  new Map([
+    ['component', System.import(
+      'universal/modules/welcome/containers/Welcome/Welcome')],
+    ['reduxForm', System.import('redux-form')],
+    ['welcome', System.import('universal/modules/welcome/ducks/welcomeDuck')]
+  ]);
+
+const getImports = importMap => ({
+  component: importMap.get('component'),
+  reduxForm: importMap.get('reduxForm'),
+  welcome: importMap.get('welcome').default
+});
+
+export default store => ({
   path: '/welcome',
   getComponent: async(location, cb) => {
-    const component = await System.import(
-      'universal/modules/welcome/containers/WelcomeUser/WelcomeUser');
+    const promiseMap = setImports();
+    const importMap = await resolvePromiseMap(promiseMap);
+    const {component, ...asyncReducers} = getImports(importMap);
+    const newReducer = makeReducer(asyncReducers);
+    store.replaceReducer(newReducer);
     cb(null, component);
   }
-};
+});
