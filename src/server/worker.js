@@ -29,6 +29,7 @@ export function run(worker) {
       noInfo: false,
       publicPath: config.output.publicPath,
       stats: {
+        chunks: false,
         colors: true
       }
     }));

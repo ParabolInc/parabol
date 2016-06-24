@@ -3,10 +3,10 @@ import {GraphQLString} from 'graphql';
 import {CachedUserAndToken} from './cachedUserSchema';
 import {AuthenticationClient} from 'auth0';
 import {auth0} from '../../../../universal/utils/clientOptions';
-import {triggerNewUserEmail} from './helpers';
-import {createUserProfile} from '../UserProfile/helpers';
+import sendEmail from '../../../email/sendEmail';
+import ms from 'ms';
+import {errorObj} from '../utils';
 
-// TODO this stuff is no good, we need the good server stuff so we don't 401
 const auth0Client = new AuthenticationClient({
   domain: auth0.account,
   clientId: auth0.clientId
@@ -15,27 +15,30 @@ const auth0Client = new AuthenticationClient({
 export default {
   updateUserWithAuthToken: {
     type: CachedUserAndToken,
+    description: 'Given a new auth token, grab all the information we can from auth0 about the user',
     args: {
+      // even though the token comes with the bearer, we include it here we use it like an arg
       authToken: {
         type: GraphQLString,
         description: 'The ID Token from auth0, a base64 JWT'
       }
     },
     async resolve(source, {authToken}) {
+      // This is the only resolve function where authToken refers to a base64 string and not an object
+      if (!authToken) {
+        throw errorObj({_error: 'No JWT was provided'});
+      }
       const userInfo = await auth0Client.tokens.getInfo(authToken);
-      // TODO add the userId to the JWT to eliminate call to DB?
-      // JWT.sub is the userId, not id, maybe it'll do
+      const now = new Date();
       // TODO loginsCount and blockedFor are not a part of this API response
-      // const user = await getUserByUserId(userInfo.user_id); // eslint-disable-line camelcase
-      // const id = user && user.id;
       const newUserObj = {
-        cachedAt: new Date(),
+        cachedAt: now,
         // TODO set expiry here
-        cacheExpiresAt: new Date(),
+        cacheExpiresAt: new Date(now.valueOf() + ms('30d')),
         // from auth0
-        createdAt: userInfo.created_at,
-        updatedAt: userInfo.updated_at,
-        userId: userInfo.user_id,
+        id: userInfo.user_id,
+        createdAt: new Date(userInfo.created_at),
+        updatedAt: new Date(userInfo.updated_at),
         email: userInfo.email,
         emailVerified: userInfo.email_verified,
         picture: userInfo.picture,
@@ -57,15 +60,10 @@ export default {
       if (changes.replaced > 0) {
         return newUserAndToken;
       }
-      // Let's make a new user profile object and link it to the CachedUser:
-      const userProfileId = await createUserProfile();
-      await r.table('CachedUser')
-        .get(changes.generated_keys[0])
-        .update({userProfileId});
-      newUserObj.userProfileId = userProfileId;
-
-      await triggerNewUserEmail(newUserObj);
-
+      const emailWelcomed = await sendEmail('newUser', newUserObj);
+      const welcomeSentAt = emailWelcomed ? new Date() : null;
+      await r.table('UserProfile').insert({id: newUserObj.id, welcomeSentAt, isNew: true});
+      // must wait for write to UserProfile because a query could follow quickly after
       return newUserAndToken;
     }
   }

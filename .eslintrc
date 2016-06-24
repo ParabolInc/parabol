@@ -24,7 +24,10 @@
     "no-console": 0,
     "no-alert": 0,
     "object-curly-spacing": 0,
-    "react/jsx-space-before-closing": 0
+    "react/jsx-space-before-closing": 0,
+    "arrow-body-style": 0,
+    "max-len": [1, 120],
+    "no-param-reassign": 0
   },
   "plugins": [
     "react", "import"
@@ -35,13 +38,12 @@
     "import/resolve": {
       moduleDirectory: ["node_modules", "src"]
     },
-    "import/ignore": [".scss$", ".css$", ".svg$"],
+    "import/ignore": [".scss$", ".css$", ".svg$"]
   },
   "globals": {
     "__PRODUCTION__": true,
     "__CLIENT__": true,
     "__WEBPACK__": true,
-    "socket": true,
-    "webpackIsomorphicTools": true
+    "socket": true
   }
 }

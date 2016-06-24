@@ -4,8 +4,10 @@ const {transformSchema} = require('cashay');
 const graphql = require('graphql').graphql;
 const rootSchema = require('../graphql/rootSchema');
 const r = require('../database/rethinkDriver');
-module.exports = (param) => {
-  if (param === '?stopRethink') {
+
+module.exports = params => {
+  if (params === '?exitRethink') {
+    // optional pool draining if your schema starts a DB connection pool
     r.getPoolMaster().drain();
   }
   return transformSchema(rootSchema, graphql);

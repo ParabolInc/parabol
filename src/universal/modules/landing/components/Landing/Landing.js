@@ -35,9 +35,9 @@ export default class Landing extends Component {
         <div className={styles.header}>
           <div className={styles.container}>
             <a href="http://www.parabol.co/" title="Parabol, Inc.">
-              <img className={styles.headerBrand} src={parabolLogoMark} />
+              <img className={styles.headerBrand} src={parabolLogoMark}/>
             </a>
-            <img className={styles.actionLogo} src={actionLogo} />
+            <img className={styles.actionLogo} src={actionLogo}/>
             <h1 className={styles.mainHeading}>Action</h1>
             <h2 className={styles.mainSubheading}>
               A rhythm for humans to enjoy <i>meaningful</i> work.
@@ -66,7 +66,7 @@ export default class Landing extends Component {
                 <div className={styles.card}>
                   <div className={styles.cardBadge}>1</div>
                   <div className={styles.cardIconGroup}>
-                    <img className={styles.cardIcon} src={teamCheckIcon} />
+                    <img className={styles.cardIcon} src={teamCheckIcon}/>
                   </div>
                   <div className={styles.cardCopy}>Check in with your team.</div>
                 </div>
@@ -74,7 +74,7 @@ export default class Landing extends Component {
                 <div className={styles.card}>
                   <div className={styles.cardBadge}>2</div>
                   <div className={styles.cardIconGroup}>
-                    <img className={styles.cardIcon} src={mapIcon} />
+                    <img className={styles.cardIcon} src={mapIcon}/>
                   </div>
                   <div className={styles.cardCopy}>Journey toward your next goals.</div>
                 </div>
@@ -82,7 +82,7 @@ export default class Landing extends Component {
                 <div className={combineStyles(styles.card, styles.cardIsLast)}>
                   <div className={styles.cardBadge}>3</div>
                   <div className={styles.cardIconGroup}>
-                    <img className={styles.cardIcon} src={megaphoneIcon} />
+                    <img className={styles.cardIcon} src={megaphoneIcon}/>
                   </div>
                   <div className={styles.cardCopy}>Share your progress!</div>
                 </div>
@@ -94,7 +94,7 @@ export default class Landing extends Component {
           <div className={combineStyles(styles.section, styles.sectionHasBorder)}>
             <div className={styles.container}>
               <h2 className={styles.sectionHeading}>Get Involved</h2>
-              <img className={styles.githubIcon} src={github} />
+              <img className={styles.githubIcon} src={github}/>
               <br />
               <div className={styles.copyGroup}>
                 <p className={styles.copyParagraph}>
@@ -103,7 +103,13 @@ export default class Landing extends Component {
                   work meaningful for agile business teams.
                 </p>
                 <p className={styles.copyParagraph}>
-                  To get involved, <a href="https://github.com/ParabolInc/action/blob/master/CONTRIBUTING.md" title="Guidelines for contributing">see our guidelines for contributing on GitHub</a>.
+                  To get involved,
+                  <a
+                    href="https://github.com/ParabolInc/action/blob/master/CONTRIBUTING.md"
+                    title="Guidelines for contributing"
+                  >
+                    see our guidelines for contributing on GitHub
+                  </a>.
                 </p>
               </div>
             </div>
@@ -114,10 +120,28 @@ export default class Landing extends Component {
         <div className={styles.footer}>
           <div className={styles.container}>
             <a href="http://www.parabol.co/" title="Parabol, Inc.">
-              <img className={styles.footerBrand} src={parabolLogoMark} />
+              <img className={styles.footerBrand} src={parabolLogoMark}/>
             </a>
             <div className={styles.footerCopy}>
-              ©2016 <a className={styles.footerLink} href="http://www.parabol.co/" title="Parabol, Inc.">Parabol, Inc.</a> <br className={styles.footerBreak} />Made with care by friendly folks. <br className={styles.footerBreak} />Say hello: <a className={styles.footerLink} href="mailto:love@parabol.co" title="Say hello!">love@parabol.co</a>
+              ©2016
+              <a
+                className={styles.footerLink}
+                href="http://www.parabol.co/"
+                title="Parabol, Inc."
+              >
+                Parabol, Inc.
+              </a>
+              <br className={styles.footerBreak}/>
+              Made with care by friendly folks.
+              <br className={styles.footerBreak}/>
+              Say hello:
+              <a
+                className={styles.footerLink}
+                href="mailto:love@parabol.co"
+                title="Say hello!"
+              >
+                love@parabol.co
+              </a>
             </div>
           </div>
         </div>

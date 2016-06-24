@@ -12,6 +12,8 @@ const secretKey = process.env.AUTH0_CLIENT_SECRET ||
 export const options = {
   authKey: new Buffer(secretKey, 'base64'),
   logLevel: 1,
+  // socket engine written in C++? don't mind if i do!
+  wsEngine: 'uws',
   // change this to scale vertically
   workers: 1,
   brokers: 1,
@@ -22,7 +24,6 @@ export const options = {
   workerController: path.join(__dirname, '/worker.js'),
   brokerController: path.join(__dirname, '/broker.js'),
   socketChannelLimit: 1000,
-  rebootWorkerOnCrash: true,
-  fail: true
+  rebootWorkerOnCrash: true
 };
 new SocketCluster(options); // eslint-disable-line no-new

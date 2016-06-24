@@ -1,9 +1,7 @@
-import {Map as iMap, List as iList} from 'immutable';
-
 const NOTIFICATIONS_SHOW = 'notifications/NOTIFICATIONS_SHOW';
 const NOTIFICATIONS_HIDE = 'notifications/NOTIFICATIONS_HIDE';
 
-const initialState = iList();
+const initialState = [];
 let nid = 0;
 
 export default function reducer(state = initialState, action) {
@@ -11,9 +9,7 @@ export default function reducer(state = initialState, action) {
     case NOTIFICATIONS_SHOW: {
       // eslint-disable-next-line no-unused-vars
       const {type, ...typelessAction} = action;
-      return state.push(
-        iMap({ ...typelessAction, nid: ++nid })
-      );
+      return state.concat({...typelessAction, nid: ++nid});
     }
     case NOTIFICATIONS_HIDE:
       return state.filter(notification => notification.nid !== action.nid);

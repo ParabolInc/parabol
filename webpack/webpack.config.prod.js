@@ -58,7 +58,7 @@ export default {
     // new webpack.optimize.AggressiveMergingPlugin(),
     // new webpack.optimize.MinChunkSizePlugin({minChunkSize: 50000}),
     // new webpack.optimize.UglifyJsPlugin({compressor: {warnings: false}, comments: /(?:)/}),
-    new AssetsPlugin({path: path.join(root, 'build'), filename: 'assets.json'}),
+    new AssetsPlugin({path: path.join(root, 'build'), filename: 'assets.json', includeManifest: true}),
     new webpack.NoErrorsPlugin(),
     new webpack.DefinePlugin({
       __CLIENT__: true,

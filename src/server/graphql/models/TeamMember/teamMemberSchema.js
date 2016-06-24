@@ -1,10 +1,13 @@
 import {
   GraphQLBoolean,
-  GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
-  GraphQLID,
+  GraphQLID
 } from 'graphql';
+import {Team} from '../Team/teamSchema';
+import {CachedUser} from '../CachedUser/cachedUserSchema';
+import {UserProfile} from '../UserProfile/userProfileSchema';
+import {nonnullifyInputThunk} from '../utils';
 
 export const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',
@@ -12,16 +15,36 @@ export const TeamMember = new GraphQLObjectType({
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique team member ID'},
     teamId: {type: new GraphQLNonNull(GraphQLID), description: 'The team this member belongs to'},
-    active: {type: GraphQLBoolean, description: 'Is user active?'},
-    userCacheId: {type: GraphQLID, description: 'Active user\'s UserCache ID'},
-    inviteId: {type: GraphQLString, description: 'Token used when inviting a user'},
-    name: {
-      type: GraphQLString,
-      description: 'The name of the team member, preferred over a value from UserCache'
+    cachedUserId: {
+      type: GraphQLID,
+      description: 'Active user\'s CachedUser Id'
     },
-    email: {
-      type: GraphQLString,
-      description: 'User\'s email, only used if user is not active; else refer to UserCache'
+    isActive: {type: GraphQLBoolean, description: 'Is user active?'},
+    isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
+    isFacilitator: {type: GraphQLBoolean, description: 'Is user a team facilitator?'},
+    team: {
+      type: Team,
+      description: 'The team this team member belongs to'
+    },
+    cachedUser: {
+      type: CachedUser,
+      description: 'The cached user for the team member'
+    },
+    userProfile: {
+      type: UserProfile,
+      description: 'The user profile for the team member'
     }
   })
 });
+
+const teamMemberInputThunk = () => ({
+  id: {type: GraphQLID, description: 'The unique team member ID'},
+  teamId: {type: GraphQLID, description: 'The team this member belongs to'},
+  cachedUserId: {type: GraphQLID, description: 'Active user\'s CachedUser Id'},
+  isActive: {type: GraphQLBoolean, description: 'Is user active?'},
+  isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
+  isFacilitator: {type: GraphQLBoolean, description: 'Is user a team facilitator?'}
+});
+
+export const CreateTeamMemberInput =
+  nonnullifyInputThunk('CreateTeamMemberInput', teamMemberInputThunk, ['id', 'teamId', 'cachedUserId']);

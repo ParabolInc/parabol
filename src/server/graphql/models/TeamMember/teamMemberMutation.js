@@ -1,39 +1,28 @@
-import { TeamMember } from './teamMemberSchema';
-import r from '../../../database/rethinkDriver';
-import uuid from 'node-uuid';
+// import r from '../../../database/rethinkDriver';
+import {TeamMember} from './teamMemberSchema';
+// import shortid from 'shortid';
 import {
-  GraphQLString,
   GraphQLNonNull,
-  GraphQLID,
+  GraphQLString
 } from 'graphql';
+// import sendEmail from '../../../email/sendEmail';
+// import {requireSUOrTeamMember} from '../authorization';
 
 export default {
-  createTeamMember: {
+  acceptInvitation: {
     type: TeamMember,
     args: {
-      teamId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'the id of the team the member belongs to'
-      },
-      name: {
-        type: GraphQLString,
-        description: 'the team member\'s name'
-      },
-      email: {
-        type: GraphQLString,
-        description: 'the team member\'s email'
+      inviteToken: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: 'The invite token from an email'
       }
     },
-    async resolve(source, {teamId, name, email}) {
-      const newTeamMember = {
-        // TODO: a uuid is overkill. let's make it small for smaller urls & friendly socket payloads
-        id: uuid.v4(),
-        teamId,
-        name,
-        email
-      };
-      await r.table('TeamMember').insert(newTeamMember);
-      return newTeamMember;
+    async resolve() {
+    // async resolve(source, {newTeamMember}, {authToken}) {
+      // TODO complete all invitations for the given email address
+      // const completeTeamMember = {...newTeamMember, cachedUserId: authToken.sub, isActive: true}
+      // r.table('TeamMember').insert(completeTeamMember);
+      // return newTeamMember;
     }
   }
 };

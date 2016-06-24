@@ -8,7 +8,11 @@ import {
   GraphQLInt
 } from 'graphql';
 import {GraphQLEmailType, GraphQLURLType} from '../types';
+import GraphQLISO8601Type from 'graphql-custom-datetype';
+
 import {UserProfile} from '../UserProfile/userProfileSchema';
+import {TeamMember} from '../TeamMember/teamMemberSchema';
+import r from '../../../database/rethinkDriver';
 
 const IdentityType = new GraphQLObjectType({
   name: 'IdentityType',
@@ -55,27 +59,23 @@ export const CachedUser = new GraphQLObjectType({
   fields: () => ({
     id: {
       type: GraphQLID,
-      description: 'The userId'
+      description: 'The userId provided by auth0'
     },
     cachedAt: {
-      type: GraphQLString,
+      type: GraphQLISO8601Type,
       description: 'The timestamp of the user was cached'
     },
     cacheExpiresAt: {
-      type: GraphQLString,
+      type: GraphQLISO8601Type,
       description: 'The timestamp when the cached user expires'
     },
     createdAt: {
-      type: GraphQLString,
-      description: 'The datetime the user was created'
+      type: GraphQLISO8601Type,
+      description: 'The timestamp the user was created'
     },
     updatedAt: {
-      type: GraphQLString,
-      description: 'The datetime the user was last updated'
-    },
-    userId: {
-      type: GraphQLString,
-      description: 'The user ID, provided by auth0'
+      type: GraphQLISO8601Type,
+      description: 'The timestamp the user was last updated'
     },
     email: {
       type: new GraphQLNonNull(GraphQLEmailType),
@@ -110,9 +110,22 @@ export const CachedUser = new GraphQLObjectType({
       type: new GraphQLList(BlockedUserType),
       description: 'Array of identifier + ip pairs'
     },
-    userProfile: {
-      type: new GraphQLNonNull(UserProfile),
-      description: 'The associated user profile, stored locally in our database.'
+    profile: {
+      type: UserProfile,
+      description: 'The associated user profile, stored locally in our database.',
+      async resolve({id}) {
+        // not entirely sure why i have to await this, i thought GraphQL allowed subsequent promises
+        const userProfile = await r.table('UserProfile').get(id);
+        console.log('UP', userProfile, id);
+        return userProfile;
+      }
+    },
+    memberships: {
+      type: new GraphQLList(TeamMember),
+      description: 'The memberships to different teams that the user has',
+      async resolve({id}) {
+        return await r.table('TeamMember').getAll(id, {index: 'cachedUserId'});
+      }
     }
   })
 });

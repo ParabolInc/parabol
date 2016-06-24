@@ -1,28 +1,18 @@
 import React, {Component, PropTypes} from 'react';
-import {connect} from 'react-redux';
-// import {cashay} from 'cashay';
+import Me from 'universal/modules/userDashboard/components/Me/Me';
+import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 
-const mapStateToProps = () => { // eslint-disable-line arrow-body-style
-  return {
-    // meetingAndTeam: cashay.query(graphQuery, cashayOpts)
-  };
-};
-@connect(mapStateToProps)
-// TODO: make stateless
+@requireAuth
 // eslint-disable-next-line react/prefer-stateless-function
-export default class Me extends Component {
+export default class MeContainer extends Component {
   static propTypes = {
-    meetingAndTeam: PropTypes.object,
-    params: PropTypes.object,
-    dispatch: PropTypes.func
-  }
+    auth: PropTypes.shape({
+      user: PropTypes.string
+    })
+  };
 
   render() {
-    const {userId} = this.props.params;
-    return (
-      <div>
-        It's the Me show! starring: {userId}
-      </div>
-    );
+    const {user} = this.props.auth;
+    return <Me user={user}/>;
   }
 }

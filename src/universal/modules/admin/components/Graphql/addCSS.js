@@ -1266,6 +1266,6 @@ li.CodeMirror-hint-active {
   border-top: none;
   margin-bottom: -1px;
 }
-`.replace(/\s/g, ''));
+`);
 
 /* eslint-enable */
