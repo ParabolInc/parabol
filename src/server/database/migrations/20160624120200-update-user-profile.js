@@ -3,12 +3,11 @@ exports.up = async r => {
     isNew: false,
     welcomeSentAt: null,
     preferredName: '',
-    memberships: []
   });
 };
 
 exports.down = async r => {
   return await r.table('UserProfile').replace(
-    r.row.without('isNew', 'welcomeSentAt', 'preferredName', 'memberships')
+    r.row.without('isNew', 'welcomeSentAt', 'preferredName')
   );
 };
