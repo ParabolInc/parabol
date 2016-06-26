@@ -26,6 +26,20 @@ if (__CLIENT__ && __PRODUCTION__) {
    */
   // eslint-disable-next-line global-require
   cashaySchema = require('cashay!../server/utils/getCashaySchema.js?stopRethink');
+  // Hot Module Replacement API
+  if (module.hot) {
+    /* eslint-disable global-require, no-shadow */
+    module.hot.accept('./Root', () => {
+      const Root = require('./Root');
+      render(
+        <AppContainer>
+          <Root store={store}/>
+        </AppContainer>,
+        document.getElementById('root')
+      );
+      /* eslint-enable global-require */
+    });
+  }
 } else {
   /*
    * Hey! We're the server. No need to stop rethink. The server will
@@ -51,19 +65,3 @@ persistStore(store, {blacklist: ['routing'], transforms: [cashayPersistTransform
     document.getElementById('root')
   );
 });
-
-
-// Hot Module Replacement API
-if (module.hot) {
-  /* eslint-disable global-require, no-shadow */
-  module.hot.accept('./Root', () => {
-    const Root = require('./Root');
-    render(
-      <AppContainer>
-        <Root store={store}/>
-      </AppContainer>,
-      document.getElementById('root')
-    );
-    /* eslint-enable global-require */
-  });
-}
