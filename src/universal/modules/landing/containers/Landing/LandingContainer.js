@@ -7,7 +7,6 @@ import {cashay} from 'cashay';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import loginWithAuth from 'universal/decorators/loginWithToken/loginWithToken';
 import getAuth from 'universal/redux/getAuth';
-import Auth0Lock from 'auth0-lock';
 
 @loginWithAuth
 export default class LandingContainer extends Component {
@@ -17,6 +16,8 @@ export default class LandingContainer extends Component {
 
   handleOnMeetingCreateClick = () => {
     const {dispatch} = this.props;
+    // Lock isn't smart enough to run in a SSR context
+    const Auth0Lock = require('auth0-lock'); // eslint-disable-line global-require
     const {clientId, account} = auth0;
     const lock = new Auth0Lock(clientId, account);
     lock.show({
