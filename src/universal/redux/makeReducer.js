@@ -1,10 +1,12 @@
 import {compose, combineReducers} from 'redux';
 import {cashayReducer} from 'cashay';
-import notifications from '../modules/notifications/ducks/notifications';
+import notifications from 'universal/modules/notifications/ducks/notifications';
 import {reducer as formReducer} from 'redux-form';
 import {routing} from './routing';
+import authToken from 'universal/modules/landing/ducks/auth';
 
 const currentReducers = {
+  authToken,
   cashay: cashayReducer,
   form: formReducer,
   notifications,

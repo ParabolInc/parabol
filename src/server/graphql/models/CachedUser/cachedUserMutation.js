@@ -1,6 +1,6 @@
 import r from '../../../database/rethinkDriver';
-import {GraphQLString} from 'graphql';
-import {CachedUserAndToken} from './cachedUserSchema';
+import {GraphQLString, GraphQLNonNull} from 'graphql';
+import {CachedUser} from './cachedUserSchema';
 import {AuthenticationClient} from 'auth0';
 import {auth0} from '../../../../universal/utils/clientOptions';
 import sendEmail from '../../../email/sendEmail';
@@ -14,24 +14,22 @@ const auth0Client = new AuthenticationClient({
 
 export default {
   updateUserWithAuthToken: {
-    type: CachedUserAndToken,
+    type: CachedUser,
     description: 'Given a new auth token, grab all the information we can from auth0 about the user',
     args: {
-      // even though the token comes with the bearer, we include it here we use it like an arg
+      // even though the token comes with the bearer, we include it here we use it like an arg since the gatekeeper
+      // decodes it into an object
       authToken: {
-        type: GraphQLString,
+        type: new GraphQLNonNull(GraphQLString),
         description: 'The ID Token from auth0, a base64 JWT'
       }
     },
     async resolve(source, {authToken}) {
       // This is the only resolve function where authToken refers to a base64 string and not an object
-      if (!authToken) {
-        throw errorObj({_error: 'No JWT was provided'});
-      }
       const userInfo = await auth0Client.tokens.getInfo(authToken);
       const now = new Date();
       // TODO loginsCount and blockedFor are not a part of this API response
-      const newUserObj = {
+      const newUser = {
         cachedAt: now,
         // TODO set expiry here
         cacheExpiresAt: new Date(now.valueOf() + ms('30d')),
@@ -48,23 +46,18 @@ export default {
         loginsCount: userInfo.logins_count,
         blockedFor: userInfo.blocked_for || []
       };
-      const newUserAndToken = {
-        user: newUserObj,
-        authToken
-      };
-      const changes = await r.table('CachedUser').insert(newUserObj, {
+      const changes = await r.table('CachedUser').insert(newUser, {
         conflict: 'update',
         returnChanges: true
       });
       // Did we update an existing cached profile?
-      if (changes.replaced > 0) {
-        return newUserAndToken;
+      if (changes.replaced === 0) {
+        const emailWelcomed = await sendEmail('newUser', newUser);
+        const welcomeSentAt = emailWelcomed ? new Date() : null;
+        // must wait for write to UserProfile because a query could follow quickly after
+        await r.table('UserProfile').insert({id: newUser.id, welcomeSentAt, isNew: true});
       }
-      const emailWelcomed = await sendEmail('newUser', newUserObj);
-      const welcomeSentAt = emailWelcomed ? new Date() : null;
-      await r.table('UserProfile').insert({id: newUserObj.id, welcomeSentAt, isNew: true});
-      // must wait for write to UserProfile because a query could follow quickly after
-      return newUserAndToken;
+      return newUser;
     }
   }
 };

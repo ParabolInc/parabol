@@ -6,13 +6,11 @@ import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 // eslint-disable-next-line react/prefer-stateless-function
 export default class MeContainer extends Component {
   static propTypes = {
-    auth: PropTypes.shape({
-      user: PropTypes.string
-    })
+    user: PropTypes.object
   };
 
   render() {
-    const {user} = this.props.auth;
+    const {user} = this.props;
     return <Me user={user}/>;
   }
 }

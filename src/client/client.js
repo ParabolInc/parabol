@@ -5,8 +5,8 @@ import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import makeStore from './makeStore';
 import Root from './Root';
 import {persistStore} from 'redux-persist';
-import getAuth from 'universal/redux/getAuth';
-import cashayPersistTransform from './cashayPersistTransform';
+import getAuthedUser from 'universal/redux/getAuthedUser';
+import expireAuthTransform from './expireAuthTransform';
 
 const {routing} = window.__INITIAL_STATE__; // eslint-disable-line no-underscore-dangle
 
@@ -15,6 +15,15 @@ const initialState = {
 };
 
 const store = makeStore(initialState);
+
+const createCashay = store => {
+  const persistedToken = store.getState().authToken;
+  cashay.create({
+    store,
+    schema: cashaySchema,
+    transport: new ActionHTTPTransport(persistedToken)
+  });
+};
 
 // Create the Cashay singleton:
 let cashaySchema = null;
@@ -26,15 +35,8 @@ if (__PRODUCTION__) {
   // eslint-disable-next-line global-require
   cashaySchema = require('cashay!../server/utils/getCashaySchema.js?stopRethink');
 
-  persistStore(store, {blacklist: ['routing'], transforms: [cashayPersistTransform]}, () => {
-    // don't include a transport so getAuth doesn't send a request to the server
-    cashay.create({
-      store,
-      schema: cashaySchema
-    });
-    const auth = getAuth();
-    // authToken is undefined if this is a first-time visit or token expired
-    cashay.create({transport: new ActionHTTPTransport(auth.authToken)});
+  persistStore(store, {blacklist: ['routing'], transforms: [expireAuthTransform]}, () => {
+    createCashay(store);
     render(
       <Root store={store}/>,
       document.getElementById('root')
@@ -51,16 +53,8 @@ if (__PRODUCTION__) {
   // Hot Module Replacement API
   // eslint-disable-next-line global-require
   const {AppContainer} = require('react-hot-loader');
-
-  persistStore(store, {blacklist: ['routing'], transforms: [cashayPersistTransform]}, () => {
-    // don't include a transport so getAuth doesn't send a request to the server
-    cashay.create({
-      store,
-      schema: cashaySchema
-    });
-    const auth = getAuth();
-    // authToken is undefined if this is a first-time visit or token expired
-    cashay.create({transport: new ActionHTTPTransport(auth.authToken)});
+  persistStore(store, {blacklist: ['routing'], transforms: [expireAuthTransform]}, () => {
+    createCashay(store);
     render(
       <AppContainer>
         <Root store={store}/>

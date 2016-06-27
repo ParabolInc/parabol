@@ -12,11 +12,11 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import ensureMeetingAndTeamLoaded from
   '../../decorators/ensureMeetingAndTeamLoaded/ensureMeetingAndTeamLoaded';
 
-import {
-  NAVIGATE_SETUP_0_GET_STARTED,
-  NAVIGATE_SETUP_1_INVITE_TEAM,
-  NAVIGATE_SETUP_2_INVITE_TEAM
-} from '../../ducks/meeting.js';
+// import {
+//   NAVIGATE_SETUP_0_GET_STARTED,
+//   NAVIGATE_SETUP_1_INVITE_TEAM,
+//   NAVIGATE_SETUP_2_INVITE_TEAM
+// } from '../../ducks/meeting.js';
 
 let styles = {};
 
@@ -25,23 +25,23 @@ const keyMap = {
   seqHelp: 'shift+/',
 };
 
-const meetingQueryString = `
-  query($meetingId: ID!) {
-    payload: getMeetingById(meetingId: $meetingId) {
-      id,
-      createdAt,
-      updatedAt,
-      lastUpdatedBy,
-      team {
-        id,
-        name
-      },
-      content
-    }
-  }`;
+// const meetingQueryString = `
+//   query($meetingId: ID!) {
+//     payload: getMeetingById(meetingId: $meetingId) {
+//       id,
+//       createdAt,
+//       updatedAt,
+//       lastUpdatedBy,
+//       team {
+//         id,
+//         name
+//       },
+//       content
+//     }
+//   }`;
 
 const cashayOpts = {
-  component: 'MeetingLayout'
+  component: 'MeetingLobby'
 };
 
 const mapStateToProps = (state, props) => {
@@ -69,7 +69,7 @@ const mapStateToProps = (state, props) => {
 @ensureMeetingAndTeamLoaded // catch for those who just landed at this url
 @look
 // eslint-disable-next-line react/prefer-stateless-function
-export default class MeetingLayout extends Component {
+export default class MeetingLobby extends Component {
   static propTypes = {
     // children included here for multi-part landing pages (FAQs, pricing, cha la la)
     // children: PropTypes.element,

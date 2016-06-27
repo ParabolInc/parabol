@@ -6,7 +6,8 @@ import {push} from 'react-router-redux';
 import {cashay} from 'cashay';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import loginWithAuth from 'universal/decorators/loginWithToken/loginWithToken';
-import getAuth from 'universal/redux/getAuth';
+import getAuthedUser from 'universal/redux/getAuthedUser';
+import {setAuthToken} from 'universal/modules/landing/ducks/auth';
 
 @loginWithAuth
 export default class LandingContainer extends Component {
@@ -26,10 +27,13 @@ export default class LandingContainer extends Component {
       }
     }, async(error, profile, authToken) => {
       if (error) throw error;
-      cashay.transport = new ActionHTTPTransport(authToken);
+      dispatch(setAuthToken(authToken));
+      cashay.create({transport: new ActionHTTPTransport(authToken)});
+      // start redux listener
+      getAuthedUser();
       const options = {variables: {authToken}};
       await cashay.mutate('updateUserWithAuthToken', options);
-      const {user} = getAuth();
+      const user = getAuthedUser();
       if (!user.profile) {
         // TODO handle this. either join CachedUser with UserProfile, write a mutation to correct it, etc.
         console.warn('User profile was not instatiated when the account was created');
