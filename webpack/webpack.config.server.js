@@ -44,7 +44,8 @@ export default {
     }),
     new HappyPack({
       loaders: ['babel'],
-      threads: 2
+      threads: 2,
+      verbose: false
     })
   ],
   module: {

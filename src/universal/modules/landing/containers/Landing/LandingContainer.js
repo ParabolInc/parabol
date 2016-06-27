@@ -16,6 +16,7 @@ export default class LandingContainer extends Component {
 
   handleOnMeetingCreateClick = () => {
     const {dispatch} = this.props;
+    // Lock isn't smart enough to run in a SSR context
     const Auth0Lock = require('auth0-lock'); // eslint-disable-line global-require
     const {clientId, account} = auth0;
     const lock = new Auth0Lock(clientId, account);

@@ -16,18 +16,23 @@ const clientInclude = [
 
 
 const vendor = [
+  'auth0-lock',
   'react',
   'react-dom',
-  // 'react-router',
-  // 'react-redux',
-  // 'redux',
-  // 'redux-thunk',
-  // 'redux-form',
+  'react-redux',
+  'react-router',
+  'redux',
+  'redux-thunk'
 ];
 
 const prefetches = [];
-
 const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(specifier));
+
+const deployPlugins = [];
+if (process.env.DEPLOY) {
+  deployPlugins.push(new webpack.optimize.UglifyJsPlugin({compressor: {warnings: false}, comments: /(?:)/}));
+  deployPlugins.push(new webpack.LoaderOptionsPlugin({comments: false}));
+}
 
 export default {
   context: path.join(root, 'src'),
@@ -50,14 +55,14 @@ export default {
   },
   plugins: [
     ...prefetchPlugins,
+    ...deployPlugins,
     new webpack.NamedModulesPlugin(),
     new webpack.optimize.CommonsChunkPlugin({
       names: ['vendor', 'manifest'],
       minChunks: Infinity
     }),
-    // new webpack.optimize.AggressiveMergingPlugin(),
-    // new webpack.optimize.MinChunkSizePlugin({minChunkSize: 50000}),
-    // new webpack.optimize.UglifyJsPlugin({compressor: {warnings: false}, comments: /(?:)/}),
+    new webpack.optimize.AggressiveMergingPlugin(),
+    new webpack.optimize.MinChunkSizePlugin({minChunkSize: 50000}),
     new AssetsPlugin({path: path.join(root, 'build'), filename: 'assets.json', includeManifest: true}),
     new webpack.NoErrorsPlugin(),
     new webpack.DefinePlugin({
@@ -76,11 +81,12 @@ export default {
       onBuildStart: [
         // eslint-disable-next-line max-len
         'NODE_ENV=development mkdir -p ./build && node_modules/.bin/babel-node ./src/universal/utils/buildThemeJSON.js > ./build/theme.json'
-      ],
+      ]
     }),
     new HappyPack({
       loaders: ['babel'],
-      threads: 2
+      threads: 2,
+      verbose: false
     })
   ],
   module: {
