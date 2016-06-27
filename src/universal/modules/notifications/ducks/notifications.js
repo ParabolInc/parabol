@@ -11,8 +11,10 @@ export default function reducer(state = initialState, action) {
       const {type, ...typelessAction} = action;
       return state.concat({...typelessAction, nid: ++nid});
     }
-    case NOTIFICATIONS_HIDE:
+    case NOTIFICATIONS_HIDE: {
+      console.log(action);
       return state.filter(notification => notification.nid !== action.nid);
+    }
     default:
       return state;
   }
@@ -45,6 +47,6 @@ export function info(opts) {
 export function hide(aNid) {
   return {
     type: NOTIFICATIONS_HIDE,
-    aNid
+    nid: aNid
   };
 }
