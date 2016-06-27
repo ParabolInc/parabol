@@ -4,7 +4,7 @@ import Example from '../../components/Example/Example';
 import ExampleCode from '../../components/ExampleCode/ExampleCode';
 import PropsTable from '../../components/PropsTable/PropsTable';
 import Background from 'universal/modules/meeting/components/Background/Background';
-import Button from 'universal/modules/meeting/components/Button/Button';
+import Button from 'universal/components/Button/Button';
 
 const button = <Button size="large" style="solid" theme="warm" />;
 const buttonString = '<Button size="large" style="solid" theme="warm" />';
