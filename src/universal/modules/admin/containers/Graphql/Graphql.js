@@ -61,7 +61,7 @@ const mapStateToProps = () => {
 };
 
 @connect(mapStateToProps)
-@requireAuthAndRole('sup')
+@requireAuthAndRole('su')
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Graphiql extends Component {
   static propTypes = {
