@@ -116,7 +116,6 @@ export const CachedUser = new GraphQLObjectType({
       async resolve({id}) {
         // not entirely sure why i have to await this, i thought GraphQL allowed subsequent promises
         const userProfile = await r.table('UserProfile').get(id);
-        console.log('UP', userProfile, id);
         return userProfile;
       }
     },
