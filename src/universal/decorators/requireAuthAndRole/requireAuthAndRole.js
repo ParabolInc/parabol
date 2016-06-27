@@ -10,7 +10,7 @@ const unauthorized = {
   message: 'Hey! You\'re not supposed to be there. Bringing you someplace safe.',
 };
 
-export default (role) => {
+export default role => {
   return (ComposedComponent) => {
     return class RequireAuthAndRole extends Component {
       static propTypes = {
