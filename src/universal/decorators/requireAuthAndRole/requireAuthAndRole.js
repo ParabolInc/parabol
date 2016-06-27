@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {push} from 'react-router-redux';
 import getAuth from 'universal/redux/getAuth';
 import {cashay} from 'cashay';
@@ -13,14 +13,23 @@ const unauthorized = {
 export default (role) => {
   return (ComposedComponent) => {
     return class RequireAuthAndRole extends Component {
+      static propTypes = {
+        lastPathName: PropTypes.string,
+      }
+
       render() {
         // no need to check for expired tokens here, right?
         // We check initial validation in the client.js. Our job should be to keep them logged in.
         const auth = getAuth();
         const authObj = auth.authToken && jwtDecode(auth.authToken);
-        console.log(`auth: ${JSON.stringify(authObj)}`);
-        if (authObj && authObj.rol === role) {
-          return <ComposedComponent {...this.props} auth={auth} />;
+        if (authObj) {
+          if (role && authObj.rol === role) {
+            // We had a role to check, and role checks out:
+            return <ComposedComponent {...this.props} auth={auth} />;
+          } else if (role === undefined) {
+            // We were looking for any authenticated user only:
+            return <ComposedComponent {...this.props} auth={auth} />;
+          }
         }
         // TODO: redirect back from whence they came
         cashay.store.dispatch(showError(unauthorized));
