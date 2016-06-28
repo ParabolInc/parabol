@@ -98,6 +98,7 @@
     "ms": "^0.7.1",
     "node-env-flag": "0.1.0",
     "node-uuid": "1.4.7",
+    "oy-vey": "^1.0.0-alpha",
     "piping": "1.0.0-rc.2",
     "react": "15.1.0",
     "react-copy-to-clipboard": "^4.1.0",
