@@ -68,14 +68,14 @@ export default class WelcomeContainer extends Component {
         newTeam: {
           id: teamId,
           name: teamName,
-          leader: {
+          leader: [{
             id: teamMemberId,
             teamId,
             cachedUserId: user.id,
             isActive: true,
             isLead: true,
             isFacilitator: true
-          }
+          }]
         }
       }
     };
@@ -120,4 +120,3 @@ export default class WelcomeContainer extends Component {
     return <InviteTeam onSubmit={this.onInviteTeamSubmit} {...this.props} />;
   }
 }
-

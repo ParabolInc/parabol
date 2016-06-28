@@ -19,7 +19,7 @@ export default {
     },
     async resolve(source, {newTeam}, {authToken}) {
       // require cachedUserId in the input so an admin can also create a team
-      const userId = newTeam.leader.cachedUserId;
+      const userId = newTeam.leader[0].cachedUserId;
       requireSUOrSelf(authToken, userId);
       const {leader, ...team} = newTeam;
       // can't trust the client
