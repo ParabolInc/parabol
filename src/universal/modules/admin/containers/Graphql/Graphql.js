@@ -5,6 +5,7 @@ import fetch from 'isomorphic-fetch';
 import {getGraphQLHost, getGraphQLProtocol} from 'universal/utils/graphQLConfig';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
+import requireAuthAndRole from 'universal/decorators/requireAuthAndRole/requireAuthAndRole';
 
 const graphQLHost = getGraphQLHost();
 const graphQLProtocol = getGraphQLProtocol();
@@ -60,12 +61,15 @@ const mapStateToProps = () => {
 };
 
 @connect(mapStateToProps)
+@requireAuthAndRole('su')
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Graphiql extends Component {
   static propTypes = {
     response: PropTypes.shape({
       data: PropTypes.shape({
-        cachedUserAndToken: PropTypes.string
+        cachedUserAndToken: PropTypes.shape({
+          authToken: PropTypes.string
+        })
       })
     })
   }

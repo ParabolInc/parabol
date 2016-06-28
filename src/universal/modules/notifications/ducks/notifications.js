@@ -45,6 +45,6 @@ export function info(opts) {
 export function hide(aNid) {
   return {
     type: NOTIFICATIONS_HIDE,
-    aNid
+    nid: aNid
   };
 }
