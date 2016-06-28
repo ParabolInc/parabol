@@ -1,15 +1,18 @@
 import React, {Component, PropTypes} from 'react';
-import {setWelcomeName, setWelcomeTeam} from 'universal/modules/welcome/ducks/welcomeDuck';
-import WelcomePreferredName from '../../components/WelcomePreferredName/WelcomePreferredName';
-import WelcomeTeam from '../../components/WelcomeTeam/WelcomeTeam';
-import InviteTeam from '../../components/InviteTeam/InviteTeam';
 import {connect} from 'react-redux';
+import {formValueSelector} from 'redux-form';
 import shortid from 'shortid';
-import {show} from 'universal/modules/notifications/ducks/notifications';
 import {push} from 'react-router-redux';
-import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {cashay} from 'cashay';
+import {setWelcomeTeam} from 'universal/modules/welcome/ducks/welcomeDuck';
+import {show} from 'universal/modules/notifications/ducks/notifications';
+import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import getAuth from 'universal/redux/getAuth';
+import {
+  Step1PreferredName,
+  Step2TeamName
+} from '../../components/WelcomeWizardForms';
+import InviteTeam from '../../components/InviteTeam/InviteTeam';
 
 const emailInviteSuccess = {
   title: 'Invitation sent!',
@@ -23,7 +26,11 @@ const emailInviteFail = emailsNotDelivered => ({
   level: 'error'
 });
 
+const selector = formValueSelector('welcomeWizard');
+
 const mapStateToProps = state => ({
+  preferredName: selector(state, 'preferredName'),
+  teamName: selector(state, 'teamName'),
   welcome: state.welcome
 });
 
@@ -32,16 +39,25 @@ const mapStateToProps = state => ({
 export default class WelcomeContainer extends Component {
   static propTypes = {
     dispatch: PropTypes.func,
+    preferredName: PropTypes.string,
+    teamName: PropTypes.string,
     welcome: PropTypes.shape({
-      preferredName: PropTypes.string,
-      teamName: PropTypes.string,
       teamId: PropTypes.string,
       teamMemberId: PropTypes.string
     })
   };
 
+  constructor(props) {
+    super(props);
+    this.onPreferredNameSubmit = this.onPreferredNameSubmit.bind(this);
+    this.onTeamNameSubmit = this.onTeamNameSubmit.bind(this);
+    this.onInviteTeamSubmit = this.onInviteTeamSubmit.bind(this);
+    this.state = {
+      page: 1
+    };
+  }
+
   onPreferredNameSubmit = data => {
-    const {dispatch} = this.props;
     const {preferredName} = data;
     const {user} = getAuth();
     const options = {
@@ -52,8 +68,8 @@ export default class WelcomeContainer extends Component {
         }
       }
     };
-    dispatch(setWelcomeName(preferredName));
     cashay.mutate('updateUserProfile', options);
+    this.nextPage();
   };
 
   onTeamNameSubmit = data => {
@@ -62,7 +78,7 @@ export default class WelcomeContainer extends Component {
     const teamId = shortid.generate();
     const teamMemberId = shortid.generate();
     const {user} = getAuth();
-    dispatch(setWelcomeTeam({teamName, teamId, teamMemberId}));
+    dispatch(setWelcomeTeam({teamId, teamMemberId}));
     const createTeamOptions = {
       variables: {
         newTeam: {
@@ -80,6 +96,7 @@ export default class WelcomeContainer extends Component {
       }
     };
     cashay.mutate('createTeam', createTeamOptions);
+    this.nextPage();
   };
 
   onInviteTeamSubmit = data => {
@@ -110,13 +127,28 @@ export default class WelcomeContainer extends Component {
     dispatch(push(`/team/${teamId}`));
   };
 
+  nextPage() {
+    this.setState({ page: this.state.page + 1 });
+  }
+
+  previousPage() {
+    this.setState({ page: this.state.page - 1 });
+  }
+
   render() {
-    const {welcome} = this.props;
-    if (!welcome.preferredName) {
-      return <WelcomePreferredName onSubmit={this.onPreferredNameSubmit} {...this.props} />;
-    } else if (!welcome.teamName) {
-      return <WelcomeTeam onSubmit={this.onTeamNameSubmit} {...this.props} />;
-    }
-    return <InviteTeam onSubmit={this.onInviteTeamSubmit} {...this.props} />;
+    const {page} = this.state;
+    return (
+      <div>
+        {page === 1 && <Step1PreferredName
+          onSubmit={this.onPreferredNameSubmit} {...this.props}
+        />}
+        {page === 2 && <Step2TeamName
+          onSubmit={this.onTeamNameSubmit} {...this.props}
+        />}
+        {page === 3 && <InviteTeam
+          onSubmit={this.onInviteTeamSubmit} {...this.props}
+        />}
+      </div>
+    );
   }
 }

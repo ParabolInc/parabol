@@ -1,13 +1,14 @@
 import React, {PropTypes} from 'react';
-import {reduxForm, Field} from 'redux-form';
+import {reduxForm} from 'redux-form';
+import Field from 'universal/components/Field/Field';
 import ProgressDots from '../ProgressDots/ProgressDots';
 import WelcomeContent from '../WelcomeContent/WelcomeContent';
 import WelcomeHeader from '../WelcomeHeader/WelcomeHeader';
 import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import WelcomeLayout from '../WelcomeLayout/WelcomeLayout';
 
-const WelcomePreferredName = props => {
-  const {handleSubmit, pristine, submitting} = props;
+const Step1PreferredName = props => {
+  const {handleSubmit, preferredName} = props;
   return (
     <WelcomeLayout>
       <WelcomeHeader heading={<span>Hello!</span>} />
@@ -21,13 +22,17 @@ const WelcomePreferredName = props => {
           <WelcomeHeading copy={<span>Please type in your name:</span>} />
           <form onSubmit={handleSubmit(props.onSubmit)}>
             <Field
-              name="preferredName"
-              component="input"
-              placeholder="Albert Einstein"
-              type="text"
               autoFocus
+              buttonDisabled={!preferredName}
+              buttonIcon="check-circle"
+              hasButton
+              hasShortcutHint
+              isLarger
+              name="preferredName"
+              placeholder="Albert Einstein"
+              shortcutHint="Press enter"
+              type="text"
             />
-            <button type="submit" disabled={pristine || submitting}>Next</button>
           </form>
         </div>
       </WelcomeContent>
@@ -35,13 +40,14 @@ const WelcomePreferredName = props => {
   );
 };
 
-WelcomePreferredName.propTypes = {
+Step1PreferredName.propTypes = {
   handleSubmit: PropTypes.func,
-  pristine: PropTypes.bool,
-  submitting: PropTypes.bool,
+  preferredName: PropTypes.string,
   onSubmit: PropTypes.func
 };
 
 export default reduxForm({
-  form: 'welcomePreferredName'  // a unique identifier for this form
-})(WelcomePreferredName);
+  form: 'welcomeWizard',
+  destroyOnUnmount: false,
+  // TODO: add validations
+})(Step1PreferredName);
