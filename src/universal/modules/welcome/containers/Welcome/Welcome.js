@@ -4,15 +4,21 @@ import {formValueSelector} from 'redux-form';
 import shortid from 'shortid';
 import {push} from 'react-router-redux';
 import {cashay} from 'cashay';
+import {HotKeys} from 'react-hotkeys';
 import {setWelcomeTeam} from 'universal/modules/welcome/ducks/welcomeDuck';
 import {show} from 'universal/modules/notifications/ducks/notifications';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import getAuth from 'universal/redux/getAuth';
 import {
   Step1PreferredName,
-  Step2TeamName
+  Step2TeamName,
+  Step3InviteTeam
 } from '../../components/WelcomeWizardForms';
-import InviteTeam from '../../components/InviteTeam/InviteTeam';
+
+const keyMap = {
+  keyEnter: 'enter',
+  seqHelp: 'shift+/', // TODO: presently unused
+};
 
 const emailInviteSuccess = {
   title: 'Invitation sent!',
@@ -29,6 +35,7 @@ const emailInviteFail = emailsNotDelivered => ({
 const selector = formValueSelector('welcomeWizard');
 
 const mapStateToProps = state => ({
+  inviteesRaw: selector(state, 'inviteesRaw'),
   preferredName: selector(state, 'preferredName'),
   teamName: selector(state, 'teamName'),
   welcome: state.welcome
@@ -39,6 +46,7 @@ const mapStateToProps = state => ({
 export default class WelcomeContainer extends Component {
   static propTypes = {
     dispatch: PropTypes.func,
+    inviteesRaw: PropTypes.string,
     preferredName: PropTypes.string,
     teamName: PropTypes.string,
     welcome: PropTypes.shape({
@@ -138,17 +146,17 @@ export default class WelcomeContainer extends Component {
   render() {
     const {page} = this.state;
     return (
-      <div>
+      <HotKeys focused attach={window} keyMap={keyMap}>
         {page === 1 && <Step1PreferredName
           onSubmit={this.onPreferredNameSubmit} {...this.props}
         />}
         {page === 2 && <Step2TeamName
           onSubmit={this.onTeamNameSubmit} {...this.props}
         />}
-        {page === 3 && <InviteTeam
+        {page === 3 && <Step3InviteTeam
           onSubmit={this.onInviteTeamSubmit} {...this.props}
         />}
-      </div>
+      </HotKeys>
     );
   }
 }
