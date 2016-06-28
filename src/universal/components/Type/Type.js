@@ -37,6 +37,7 @@ export default class Background extends Component {
       's3',
       's4',
       's5',
+      's6',
       's7',
       's8',
     ]),
