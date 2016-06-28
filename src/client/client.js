@@ -4,9 +4,6 @@ import {cashay} from 'cashay';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import makeStore from './makeStore';
 import Root from './Root';
-import {persistStore} from 'redux-persist';
-import getAuthedUser from 'universal/redux/getAuthedUser';
-import expireAuthTransform from './expireAuthTransform';
 
 const {routing} = window.__INITIAL_STATE__; // eslint-disable-line no-underscore-dangle
 
@@ -14,9 +11,7 @@ const initialState = {
   routing
 };
 
-const store = makeStore(initialState);
-
-const createCashay = store => {
+const createCashay = (store, cashaySchema) => {
   const persistedToken = store.getState().authToken;
   cashay.create({
     store,
@@ -25,55 +20,54 @@ const createCashay = store => {
   });
 };
 
-// Create the Cashay singleton:
-let cashaySchema = null;
-if (__PRODUCTION__) {
-  /*
-   * During the production client bundle build, the server will need to be
-   * stopped.
-   */
-  // eslint-disable-next-line global-require
-  cashaySchema = require('cashay!../server/utils/getCashaySchema.js?stopRethink');
+(async() => {
+  const store = await makeStore(initialState);
 
-  persistStore(store, {blacklist: ['routing'], transforms: [expireAuthTransform]}, () => {
-    createCashay(store);
+// Create the Cashay singleton:
+  let cashaySchema = null;
+  if (__PRODUCTION__) {
+    /*
+     * During the production client bundle build, the server will need to be
+     * stopped.
+     */
+    // eslint-disable-next-line global-require
+    cashaySchema = require('cashay!../server/utils/getCashaySchema.js?stopRethink');
+    createCashay(store, cashaySchema);
     render(
       <Root store={store}/>,
       document.getElementById('root')
     );
-  });
-} else {
-  /*
-   * Hey! We're the server. No need to stop rethink. The server will
-   * take care of that when it wants to exit.
-   */
-  // eslint-disable-next-line global-require
-  cashaySchema = require('cashay!../server/utils/getCashaySchema.js');
+  } else {
+    /*
+     * Hey! We're the server. No need to stop rethink. The server will
+     * take care of that when it wants to exit.
+     */
+    // eslint-disable-next-line global-require
+    cashaySchema = require('cashay!../server/utils/getCashaySchema.js');
 
-  // Hot Module Replacement API
-  // eslint-disable-next-line global-require
-  const {AppContainer} = require('react-hot-loader');
-  persistStore(store, {blacklist: ['routing'], transforms: [expireAuthTransform]}, () => {
-    createCashay(store);
+    // Hot Module Replacement API
+    // eslint-disable-next-line global-require
+    const {AppContainer} = require('react-hot-loader');
+    createCashay(store, cashaySchema);
     render(
       <AppContainer>
         <Root store={store}/>
       </AppContainer>,
       document.getElementById('root')
     );
-  });
 
-  if (module.hot) {
-    /* eslint-disable global-require, no-shadow */
-    module.hot.accept('./Root', () => {
-      const Root = require('./Root');
-      render(
-        <AppContainer>
-          <Root store={store}/>
-        </AppContainer>,
-        document.getElementById('root')
-      );
-      /* eslint-enable global-require */
-    });
+    if (module.hot) {
+      /* eslint-disable global-require, no-shadow */
+      module.hot.accept('./Root', () => {
+        const Root = require('./Root');
+        render(
+          <AppContainer>
+            <Root store={store}/>
+          </AppContainer>,
+          document.getElementById('root')
+        );
+        /* eslint-enable global-require */
+      });
+    }
   }
-}
+})();

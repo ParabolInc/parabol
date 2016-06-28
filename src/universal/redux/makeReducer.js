@@ -1,9 +1,11 @@
-import {compose, combineReducers} from 'redux';
+import {combineReducers} from 'redux';
 import {cashayReducer} from 'cashay';
 import notifications from 'universal/modules/notifications/ducks/notifications';
 import {reducer as formReducer} from 'redux-form';
 import {routing} from './routing';
 import authToken from 'universal/modules/landing/ducks/auth';
+import {reducer as storageReducer} from 'redux-storage';
+import storageMerger from 'universal/redux/storageMerger';
 
 const currentReducers = {
   authToken,
@@ -13,12 +15,8 @@ const currentReducers = {
   routing
 };
 
-export default (newReducers, reducerEnhancers) => {
+export default (newReducers) => {
   Object.assign(currentReducers, newReducers);
   const reducer = combineReducers({...currentReducers});
-  if (reducerEnhancers) {
-    return Array.isArray(reducerEnhancers) ?
-      compose(...reducerEnhancers)(reducer) : reducerEnhancers(reducer);
-  }
-  return reducer;
+  return storageReducer(reducer, storageMerger);
 };
