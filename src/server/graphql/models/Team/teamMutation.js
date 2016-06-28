@@ -5,6 +5,7 @@ import {
   GraphQLBoolean
 } from 'graphql';
 import {requireSUOrTeamMember, requireSUOrSelf} from '../authorization';
+import {updatedOrOriginal} from '../utils';
 
 export default {
   createTeam: {
@@ -46,7 +47,7 @@ export default {
       // TODO this mutation throws an error, but we don't have a use for it in the app yet
       console.log(teamFromDB);
       // TODO think hard about if we can pluck only the changed values (in this case, name)
-      return teamFromDB.changes[0].new_val;
+      return updatedOrOriginal(teamFromDB, updatedTeam);
     }
   }
 };
