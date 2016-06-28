@@ -1,5 +1,5 @@
-import {GraphQLNonNull, GraphQLID, GraphQLString} from 'graphql';
-import {CachedUser, CachedUserAndToken} from './cachedUserSchema';
+import {GraphQLNonNull, GraphQLID} from 'graphql';
+import {CachedUser} from './cachedUserSchema';
 import {errorObj} from '../utils';
 import r from '../../../database/rethinkDriver';
 import {requireAuth, requireSU} from '../authorization';

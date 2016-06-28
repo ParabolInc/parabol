@@ -3,7 +3,6 @@ import look, {StyleSheet} from 'react-look';
 import {connect} from 'react-redux';
 import {reduxSocket} from 'redux-socket-cluster';
 import {HotKeys} from 'react-hotkeys';
-import {cashay} from 'cashay';
 import {localStorageVars} from 'universal/utils/clientOptions';
 import Setup0GetStarted from '../../components/Setup0GetStarted/Setup0GetStarted';
 import Setup1InviteTeam from '../../components/Setup1InviteTeam/Setup1InviteTeam';
@@ -12,11 +11,11 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import ensureMeetingAndTeamLoaded from
   '../../decorators/ensureMeetingAndTeamLoaded/ensureMeetingAndTeamLoaded';
 
-// import {
-//   NAVIGATE_SETUP_0_GET_STARTED,
-//   NAVIGATE_SETUP_1_INVITE_TEAM,
-//   NAVIGATE_SETUP_2_INVITE_TEAM
-// } from '../../ducks/meeting.js';
+import {
+  NAVIGATE_SETUP_0_GET_STARTED,
+  NAVIGATE_SETUP_1_INVITE_TEAM,
+  NAVIGATE_SETUP_2_INVITE_TEAM
+} from '../../ducks/meeting.js';
 
 let styles = {};
 
@@ -59,8 +58,7 @@ const mapStateToProps = (state, props) => {
     setup: state.getIn(['meetingModule', 'setup']).toJS(),
     shortcuts: state.getIn(['meetingModule', 'shortcuts']).toJS(),
     team: state.getIn(['meetingModule', 'team']).toJS(),
-    userId: auth.getIn(['user', 'id']),
-    showMeTheCash: cashay.query(meetingQueryString, cashayOpts)
+    userId: auth.getIn(['user', 'id'])
   };
 };
 
@@ -78,15 +76,12 @@ export default class MeetingLobby extends Component {
     setup: PropTypes.object.isRequired,
     shortcuts: PropTypes.object.isRequired,
     team: PropTypes.object.isRequired,
-    showMeTheCash: PropTypes.object.isRequired
   };
 
   render() {
-    const {dispatch, meeting, setup, shortcuts, team, showMeTheCash} = this.props;
+    const {dispatch, meeting, setup, shortcuts, team} = this.props;
 
     const teamName = team.instance.name || 'Team Name';
-
-    console.log(showMeTheCash);
 
     return (
       <HotKeys focused attach={window} keyMap={keyMap}>

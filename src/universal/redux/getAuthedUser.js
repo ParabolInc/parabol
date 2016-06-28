@@ -76,4 +76,5 @@ export default function getAuthedUser() {
     }
     return userThunk();
   }
+  return undefined;
 }

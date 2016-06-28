@@ -20,7 +20,7 @@ export default async initialState => {
   ];
 
   if (__PRODUCTION__) {
-    store = createStore(reducer, initialState, compose(autoRehydrate(), applyMiddleware(...middlewares)));
+    store = createStore(reducer, initialState, compose(applyMiddleware(...middlewares)));
   } else {
     const devtoolsExt = global.devToolsExtension && global.devToolsExtension();
     if (!devtoolsExt) {

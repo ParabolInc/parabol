@@ -5,7 +5,6 @@ import {AuthenticationClient} from 'auth0';
 import {auth0} from '../../../../universal/utils/clientOptions';
 import sendEmail from '../../../email/sendEmail';
 import ms from 'ms';
-import {errorObj} from '../utils';
 
 const auth0Client = new AuthenticationClient({
   domain: auth0.account,
