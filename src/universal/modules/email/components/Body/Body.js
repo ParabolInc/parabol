@@ -7,8 +7,8 @@ const Body = (props) => {
     color: theme.palette.dark,
     backgroundColor: '#F9FAFB',
     fontFamily: '"Karla", "Helvetica Neue", serif',
-    fontSize: '18px',
-    lineHeight: '1.25'
+    fontSize: `${props.fontSize}px`,
+    lineHeight: `${props.lineHeight}`
   };
 
   return (
@@ -30,7 +30,14 @@ const Body = (props) => {
 };
 
 Body.propTypes = {
-  children: PropTypes.any
+  children: PropTypes.any,
+  fontSize: PropTypes.number,
+  lineHeight: PropTypes.number
+};
+
+Body.defaultProps = {
+  fontSize: 18,
+  lineHeight: 1.25
 };
 
 export default Body;

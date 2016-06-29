@@ -48,7 +48,7 @@ const Footer = (props) => {
                   >
 
                     <EmptySpace height="10" />
-                    <img src="/static/images/brand/mark-color@3x.png" style={{width: '31px'}} />
+                    <img src="/static/images/brand/mark-color@3x.png" height="28" width="31" />
                     <EmptySpace height="10" />
 
                     Crafted with care by by the folks at <a
