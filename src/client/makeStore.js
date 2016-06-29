@@ -3,20 +3,24 @@ import thunkMiddleware from 'redux-thunk';
 import {routerMiddleware} from 'react-router-redux';
 import {browserHistory} from 'react-router';
 import makeReducer from '../universal/redux/makeReducer';
-import {autoRehydrate} from 'redux-persist';
+import createEngine from 'redux-storage-engine-localstorage';
+import {APP_NAME} from 'universal/utils/clientOptions';
+import {createMiddleware, createLoader} from 'redux-storage';
 
-
-export default initialState => {
+export default async initialState => {
   let store;
   const reducer = makeReducer();
   const reduxRouterMiddleware = routerMiddleware(browserHistory);
+  const engine = createEngine(APP_NAME);
+  const storageMiddleware = createMiddleware(engine);
   const middlewares = [
+    storageMiddleware,
     reduxRouterMiddleware,
     thunkMiddleware
   ];
 
   if (__PRODUCTION__) {
-    store = createStore(reducer, initialState, compose(autoRehydrate(), applyMiddleware(...middlewares)));
+    store = createStore(reducer, initialState, compose(applyMiddleware(...middlewares)));
   } else {
     const devtoolsExt = global.devToolsExtension && global.devToolsExtension();
     if (!devtoolsExt) {
@@ -30,9 +34,10 @@ export default initialState => {
     }
     store = createStore(reducer, initialState, compose(
       applyMiddleware(...middlewares),
-      autoRehydrate(),
       devtoolsExt || (f => f),
     ));
   }
+  const load = createLoader(engine);
+  await load(store);
   return store;
 };

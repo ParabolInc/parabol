@@ -1,19 +1,24 @@
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {push} from 'react-router-redux';
-import getAuth from 'universal/redux/getAuth';
-import {cashay} from 'cashay';
+import getAuthedUser from 'universal/redux/getAuthedUser';
 
 // eslint-disable-next-line arrow-body-style
 export default ComposedComponent => {
   return class TokenizedComp extends Component {
+    static propTypes = {
+      dispatch: PropTypes.func,
+      authToken: PropTypes.string
+    };
+
     render() {
-      const auth = getAuth();
-      const {dispatch} = cashay.store;
+      const user = getAuthedUser();
+      const {dispatch, authToken} = this.props;
+
       // remove expired tokens from state
-      if (auth.authToken) {
-        if (auth.user.profile.isNew) {
+      if (authToken && user) {
+        if (user.profile.isNew) {
           dispatch(push('/welcome'));
-        } else {
+        } else if (user.profile.isNew === false) {
           dispatch(push('/me'));
         }
         return null;

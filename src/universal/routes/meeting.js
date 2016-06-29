@@ -4,7 +4,7 @@ import makeReducer from 'universal/redux/makeReducer';
 const setMeetingImports = () =>
   new Map([
     ['component', System.import(
-      'universal/modules/meeting/containers/MeetingLayout/MeetingLayout')],
+      'universal/modules/meeting/containers/MeetingLobby/MeetingLobby')],
     ['socket', System.import('redux-socket-cluster')]
   ]);
 

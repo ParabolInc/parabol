@@ -9,7 +9,7 @@ import {show} from 'universal/modules/notifications/ducks/notifications';
 import {push} from 'react-router-redux';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {cashay} from 'cashay';
-import getAuth from 'universal/redux/getAuth';
+import getAuthedUser from 'universal/redux/getAuthedUser';
 
 const emailInviteSuccess = {
   title: 'Invitation sent!',
@@ -24,6 +24,7 @@ const emailInviteFail = emailsNotDelivered => ({
 });
 
 const mapStateToProps = state => ({
+  authToken: state.authToken,
   welcome: state.welcome
 });
 
@@ -43,7 +44,7 @@ export default class WelcomeContainer extends Component {
   onPreferredNameSubmit = data => {
     const {dispatch} = this.props;
     const {preferredName} = data;
-    const {user} = getAuth();
+    const user = getAuthedUser();
     const options = {
       variables: {
         updatedProfile: {
@@ -61,7 +62,7 @@ export default class WelcomeContainer extends Component {
     const {teamName} = data;
     const teamId = shortid.generate();
     const teamMemberId = shortid.generate();
-    const {user} = getAuth();
+    const user = getAuthedUser();
     dispatch(setWelcomeTeam({teamName, teamId, teamMemberId}));
     const createTeamOptions = {
       variables: {
