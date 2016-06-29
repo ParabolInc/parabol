@@ -9,7 +9,11 @@ const fieldLightGray = appTheme.palette.dark50l;
 
 let styles = {};
 
-const Field = props => {
+/*
+ * Why are we defining this here?
+ * See: https://github.com/erikras/redux-form/releases/tag/v6.0.0-alpha.14
+ */
+const FieldBlock = props => {
   const {
     buttonDisabled,
     buttonIcon,
@@ -20,7 +24,6 @@ const Field = props => {
     helpText,
     isLarger,
     isWider,
-    name,
     onButtonClick,
     shortcutHint,
     theme,
@@ -48,34 +51,65 @@ const Field = props => {
 
   return (
     <div className={styles.fieldBlock}>
+      <input
+        className={fieldStyles}
+        {...props}
+      />
+      {hasButton &&
+        <div className={styles.buttonBlock}>
+          <IconButton
+            disabled={buttonDisabled}
+            iconName={buttonIcon}
+            iconSize="2x"
+            onClick={onButtonClick}
+          />
+        </div>
+      }
+      {hasHelpText &&
+        <div className={helpTextStyles}>{helpText}</div>
+      }
+      {hasShortcutHint &&
+        <div className={shortcutHintStyles}>{shortcutHint}</div>
+      }
+    </div>
+  );
+};
+
+FieldBlock.propTypes = {
+  autoFocus: PropTypes.bool,
+  buttonDisabled: PropTypes.bool,
+  buttonIcon: PropTypes.string,
+  hasButton: PropTypes.bool,
+  hasErrorText: PropTypes.bool,
+  hasHelpText: PropTypes.bool,
+  hasShortcutHint: PropTypes.bool,
+  helpText: PropTypes.object,
+  isLarger: PropTypes.bool,
+  isWider: PropTypes.bool,
+  onBlur: PropTypes.func,
+  onButtonClick: PropTypes.func,
+  onChange: PropTypes.func,
+  onFocus: PropTypes.func,
+  placeholder: PropTypes.string,
+  shortcutHint: PropTypes.string,
+  theme: PropTypes.oneOf([
+    'cool',
+    'warm'
+  ]),
+  type: PropTypes.string,
+  value: PropTypes.string
+};
+
+const Field = props => {
+  const {
+    name,
+  } = props;
+
+  return (
+    <div className={styles.fieldBlock}>
       <ReduxFormField
         name={name}
-        component={nestedProps => {
-          return (
-            <div className={styles.fieldBlock}>
-              <input
-                className={fieldStyles}
-                {...nestedProps}
-              />
-              {hasButton &&
-                <div className={styles.buttonBlock}>
-                  <IconButton
-                    disabled={buttonDisabled}
-                    iconName={buttonIcon}
-                    iconSize="2x"
-                    onClick={onButtonClick}
-                  />
-                </div>
-              }
-              {hasHelpText &&
-                <div className={helpTextStyles}>{helpText}</div>
-              }
-              {hasShortcutHint &&
-                <div className={shortcutHintStyles}>{shortcutHint}</div>
-              }
-            </div>
-          );
-        }}
+        component={FieldBlock}
         {...props}
       />
     </div>

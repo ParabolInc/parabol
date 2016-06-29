@@ -25,6 +25,7 @@ export default class Step3InviteTeam extends Component {
     invitees: PropTypes.array,
     inviteesRaw: PropTypes.string,
     onSubmit: PropTypes.func,
+    submitting: PropTypes.bool,
     teamName: PropTypes.string.isRequired
   }
 
@@ -45,15 +46,15 @@ export default class Step3InviteTeam extends Component {
     }
     parsedAddresses.forEach(email => {
       dispatch(arrayPush('welcomeWizard', 'invitees', {
-        address: email.address,
-        name: email.name,
+        email: email.address,
+        fullName: email.name,
         label: email.name ? `"${email.name}" <${email.address}>` : email.address
       }));
     });
   }
 
   render() {
-    const {handleSubmit, invitees, inviteesRaw, teamName} = this.props;
+    const {handleSubmit, invitees, inviteesRaw, submitting, teamName} = this.props;
 
     const invitesFieldHasError = false; // TODO: wire this up for real
     const helpText = invitesFieldHasError ?
@@ -77,7 +78,7 @@ export default class Step3InviteTeam extends Component {
             <WelcomeHeading copy={<span>Let’s invite some folks to the <b>{teamName}</b> team.</span>} />
             <HotKeys handlers={{ keyEnter: this.onAddInviteesButtonClick}}>
               <Field
-                autoFocus
+                autoFocus={!invitees || invitees.length === 0}
                 buttonDisabled={!inviteesRaw}
                 buttonIcon="check-circle"
                 hasButton
@@ -97,8 +98,9 @@ export default class Step3InviteTeam extends Component {
                   labelHeader="Invitee"
                   labelSource="invitees"
                   nestedFieldHeader="This Week's Priority"
-                  nestedFieldName="outcome"
+                  nestedFieldName="task"
                 />
+                <button type="submit" disabled={submitting}>Submit</button>
               </form>
             </HotKeys>
           </div>

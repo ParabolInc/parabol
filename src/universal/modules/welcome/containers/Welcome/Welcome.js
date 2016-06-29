@@ -111,6 +111,7 @@ export default class WelcomeContainer extends Component {
 
   onInviteTeamSubmit = data => {
     const {dispatch, welcome: {teamId}} = this.props;
+    debugger;
     const {invitees} = data;
     const options = {
       variables: {
@@ -118,7 +119,7 @@ export default class WelcomeContainer extends Component {
         invitees
       }
     };
-    cashay.mutate('inviteTeam', options)
+    cashay.mutate('inviteTeamMembers', options)
       .then(res => {
         // TODO make sure this resolves after the route changes
         console.log('inviteTeamRes', res);
