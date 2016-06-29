@@ -35,6 +35,7 @@ const emailInviteFail = emailsNotDelivered => ({
 const selector = formValueSelector('welcomeWizard');
 
 const mapStateToProps = state => ({
+  invitees: selector(state, 'invitees'),
   inviteesRaw: selector(state, 'inviteesRaw'),
   preferredName: selector(state, 'preferredName'),
   teamName: selector(state, 'teamName'),
@@ -46,6 +47,7 @@ const mapStateToProps = state => ({
 export default class WelcomeContainer extends Component {
   static propTypes = {
     dispatch: PropTypes.func,
+    invitees: PropTypes.array,
     inviteesRaw: PropTypes.string,
     preferredName: PropTypes.string,
     teamName: PropTypes.string,

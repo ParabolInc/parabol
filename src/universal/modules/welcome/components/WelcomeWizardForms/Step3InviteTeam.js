@@ -1,8 +1,9 @@
 import React, {PropTypes, Component} from 'react';
-import {reduxForm, change} from 'redux-form';
+import {reduxForm, change, arrayPush} from 'redux-form';
 import {HotKeys} from 'react-hotkeys';
 import emailAddresses from 'email-addresses';
 import Field from 'universal/components/Field/Field';
+import LabeledFieldArray from 'universal/components/LabeledFieldArray/LabeledFieldArray';
 import Type from 'universal/components/Type/Type';
 import ProgressDots from '../ProgressDots/ProgressDots';
 import WelcomeContent from '../WelcomeContent/WelcomeContent';
@@ -21,44 +22,44 @@ export default class Step3InviteTeam extends Component {
   static propTypes = {
     dispatch: PropTypes.func,
     handleSubmit: PropTypes.func,
+    invitees: PropTypes.array,
     inviteesRaw: PropTypes.string,
-    pristine: PropTypes.bool,
-    submitting: PropTypes.bool,
     onSubmit: PropTypes.func,
-    welcome: PropTypes.object
+    teamName: PropTypes.string.isRequired
   }
 
   constructor(props) {
     super(props);
     this.onAddInviteesButtonClick = this.onAddInviteesButtonClick.bind(this);
-    this.state = {
-      // maps emailAddress -> fullName
-      parsedEmailsMap: {}
-    };
   }
 
   onAddInviteesButtonClick = (event) => {
     const {dispatch, inviteesRaw} = this.props;
-    const parsedEmailsMap = Object.assign({}, this.state.parsedEmailsMap);
+    const parsedAddresses = emailAddresses.parseAddressList(inviteesRaw);
+
     event.preventDefault();
-    emailAddresses.parseAddressList(inviteesRaw).forEach(email => {
-      parsedEmailsMap[email.address] = email.name;
-    });
-    this.setState({parsedEmailsMap});
     // clear the inviteesRaw form component:
     dispatch(change('welcomeWizard', 'inviteesRaw', ''));
+    if (!parsedAddresses) {
+      return;
+    }
+    parsedAddresses.forEach(email => {
+      dispatch(arrayPush('welcomeWizard', 'invitees', {
+        address: email.address,
+        name: email.name,
+        label: email.name ? `"${email.name}" <${email.address}>` : email.address
+      }));
+    });
   }
 
   render() {
-    const {handleSubmit, inviteesRaw, pristine, submitting, welcome} = this.props;
+    const {handleSubmit, invitees, inviteesRaw, teamName} = this.props;
 
     const invitesFieldHasError = false; // TODO: wire this up for real
     const helpText = invitesFieldHasError ?
       // eslint-disable-next-line max-len
       <span>Oops! Please make sure email addresses are valid <br />and separated by a single comma.</span> :
       <span>You can paste multiple emails separated by a comma.<br />&nbsp;</span>;
-
-    console.log(this.state.parsedEmailsMap);
 
     return (
       <WelcomeLayout>
@@ -73,12 +74,7 @@ export default class Step3InviteTeam extends Component {
             <Type align="center" italic scale="s6">
               Sounds like a great team!
             </Type>
-            <WelcomeHeading copy={<span>Let’s invite some folks to the <b>{welcome.teamName}</b> team.</span>} />
-            <br/ >
-            <br/ >
-            <b>THIS IS BROKEN UNTIL WE DO PARSING:</b>
-            <br />
-            <br />
+            <WelcomeHeading copy={<span>Let’s invite some folks to the <b>{teamName}</b> team.</span>} />
             <HotKeys handlers={{ keyEnter: this.onAddInviteesButtonClick}}>
               <Field
                 autoFocus
@@ -95,25 +91,16 @@ export default class Step3InviteTeam extends Component {
                 onButtonClick={this.onAddInviteesButtonClick}
                 placeholder="b.bunny@acme.co, d.duck@acme.co, e.fudd@acme.co"
               />
+              <form onSubmit={handleSubmit(this.props.onSubmit)}>
+                <LabeledFieldArray
+                  labelGetter={(idx) => invitees[idx].label}
+                  labelHeader="Invitee"
+                  labelSource="invitees"
+                  nestedFieldHeader="This Week's Priority"
+                  nestedFieldName="outcome"
+                />
+              </form>
             </HotKeys>
-            {/*
-            <form onSubmit={handleSubmit(this.props.onSubmit)}>
-              <Field
-                name="inviteeEmail"
-                component="input"
-                placeholder="Email address"
-                type="text"
-                autoFocus
-              />
-              <Field
-                name="inviteeTask"
-                component="input"
-                placeholder="What is their priority today?"
-                type="text"
-              />
-              <button type="submit" disabled={pristine || submitting}>Next</button>
-            </form>
-            */}
           </div>
         </WelcomeContent>
       </WelcomeLayout>
