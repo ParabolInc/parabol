@@ -33,7 +33,7 @@ const Features = (props) => {
               />
             </td>
             <td style={copyStyle}>
-              Build team momentum <br />by creating achievable weekly goals
+              Build team momentum by <br />creating achievable weekly goals
             </td>
           </tr>
           <tr>
@@ -77,7 +77,7 @@ Features.propTypes = {
 
 Features.defaultProps = {
   fontSize: 16,
-  lineHeight: 1.25,
+  lineHeight: 1.5,
   vSpacing: 32
 };
 
