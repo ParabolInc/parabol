@@ -7,7 +7,8 @@ const Body = (props) => {
     color: theme.palette.dark,
     backgroundColor: '#F9FAFB',
     fontFamily: '"Karla", "Helvetica Neue", serif',
-    fontSize: '18px'
+    fontSize: '18px',
+    lineHeight: '1.25'
   };
 
   return (
