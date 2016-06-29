@@ -3,7 +3,7 @@ import {cashayReducer} from 'cashay';
 import notifications from 'universal/modules/notifications/ducks/notifications';
 import {reducer as formReducer} from 'redux-form';
 import {routing} from './routing';
-import authToken from 'authDuck.js';
+import authToken from './authDuck';
 import {reducer as storageReducer} from 'redux-storage';
 import storageMerger from 'universal/redux/storageMerger';
 
