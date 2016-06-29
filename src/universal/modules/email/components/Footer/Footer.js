@@ -71,9 +71,9 @@ const Footer = (props) => {
         </tr>
 
         <tr>
-          <td><EmptySpace height="20" /></td>
-          <td><EmptySpace height="20" /></td>
-          <td><EmptySpace height="20" /></td>
+          <td><EmptySpace height="48" /></td>
+          <td><EmptySpace height="48" /></td>
+          <td><EmptySpace height="48" /></td>
         </tr>
       </tbody>
     </table>
