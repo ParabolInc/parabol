@@ -7,7 +7,7 @@ import {cashay} from 'cashay';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import loginWithAuth from 'universal/decorators/loginWithToken/loginWithToken';
 import getAuthedUser from 'universal/redux/getAuthedUser';
-import {setAuthToken} from 'authDuck.js';
+import {setAuthToken} from 'universal/redux/authDuck';
 import {connect} from 'react-redux';
 
 const mapStateToProps = state => ({
