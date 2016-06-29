@@ -24,6 +24,7 @@ const emailInviteFail = emailsNotDelivered => ({
 });
 
 const mapStateToProps = state => ({
+  authToken: state.authToken,
   welcome: state.welcome
 });
 

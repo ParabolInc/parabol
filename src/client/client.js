@@ -22,8 +22,7 @@ const createCashay = (store, cashaySchema) => {
 
 (async() => {
   const store = await makeStore(initialState);
-
-// Create the Cashay singleton:
+  // Create the Cashay singleton:
   let cashaySchema = null;
   if (__PRODUCTION__) {
     /*
@@ -49,6 +48,12 @@ const createCashay = (store, cashaySchema) => {
     // eslint-disable-next-line global-require
     const {AppContainer} = require('react-hot-loader');
     createCashay(store, cashaySchema);
+    render(
+      <AppContainer>
+        <Root store={store}/>
+      </AppContainer>,
+      document.getElementById('root')
+    );
 
     if (module.hot) {
       /* eslint-disable global-require, no-shadow */

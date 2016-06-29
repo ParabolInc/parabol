@@ -7,8 +7,14 @@ import {cashay} from 'cashay';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import loginWithAuth from 'universal/decorators/loginWithToken/loginWithToken';
 import getAuthedUser from 'universal/redux/getAuthedUser';
-import {setAuthToken} from 'universal/modules/landing/ducks/auth';
+import {setAuthToken} from 'authDuck.js';
+import {connect} from 'react-redux';
 
+const mapStateToProps = state => ({
+  authToken: state.authToken
+});
+
+@connect(mapStateToProps)
 @loginWithAuth
 export default class LandingContainer extends Component {
   static propTypes = {
