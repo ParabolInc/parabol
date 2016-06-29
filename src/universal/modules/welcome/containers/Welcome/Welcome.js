@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {formValueSelector} from 'redux-form';
+import {formValueSelector, destroy} from 'redux-form';
 import shortid from 'shortid';
 import {push} from 'react-router-redux';
 import {cashay} from 'cashay';
@@ -9,6 +9,8 @@ import {setWelcomeTeam} from 'universal/modules/welcome/ducks/welcomeDuck';
 import {show} from 'universal/modules/notifications/ducks/notifications';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import getAuth from 'universal/redux/getAuth';
+import {pick} from 'universal/utils/objects';
+
 import {
   Step1PreferredName,
   Step2TeamName,
@@ -111,25 +113,32 @@ export default class WelcomeContainer extends Component {
 
   onInviteTeamSubmit = data => {
     const {dispatch, welcome: {teamId}} = this.props;
-    debugger;
-    const {invitees} = data;
+    const invitees = data.invitees.map(i =>
+      // Remove label field:
+      pick(i, 'email', 'fullName', 'task')
+    );
     const options = {
       variables: {
         teamId,
         invitees
       }
     };
+
     cashay.mutate('inviteTeamMembers', options)
       .then(res => {
         // TODO make sure this resolves after the route changes
         console.log('inviteTeamRes', res);
         if (res.error) {
-          const {failedEmails} = JSON.parse(res.error);
+          console.log(res.error);
+          const {failedEmails} = JSON.parse(res.errors);
           if (Array.isArray(failedEmails)) {
             const emailsNotDelivered = failedEmails.map(invitee => invitee.email).join(', ');
             dispatch(show(emailInviteFail(emailsNotDelivered)));
           }
         } else if (res.data) {
+          // Bye bye form data:
+          dispatch(destroy('welcomeWizard'));
+          // Proudly trumpet our user's brilliance:
           dispatch(show(emailInviteSuccess));
         }
       });
