@@ -65,12 +65,11 @@ export default class TeamInvite extends Component {
                 </td>
                 <td style={{paddingLeft: '16px'}}>
                   Jordan Husney<br />
-                  <span style={colorCool}>jordan@parabol.co</span>
+                  <span style={{...colorCool, fontSize: '14px'}}>jordan@parabol.co</span>
                 </td>
               </tr>
             </tbody>
           </table>
-          <br />
           <EmptySpace height={40} />
           <b>Hi <span style={colorWarm}>terry@parabol.co</span>!<br />
           Jordan has invited you to join a team on Action:</b>
