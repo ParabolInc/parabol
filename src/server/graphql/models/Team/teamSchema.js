@@ -38,8 +38,8 @@ const teamInputThunk = () => ({
   id: {type: GraphQLID, description: 'The unique team ID'},
   name: {type: GraphQLString, description: 'The name of the team'},
   leader: {
-    type: new GraphQLList(CreateTeamMemberInput),
-    description: 'Each team must have at least 1 team member, the leader.'
+    type: CreateTeamMemberInput,
+    description: 'Each team must be created with 1 team member, the leader.'
   }
 });
 

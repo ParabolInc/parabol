@@ -6,9 +6,25 @@ import WelcomeContent from '../WelcomeContent/WelcomeContent';
 import WelcomeHeader from '../WelcomeHeader/WelcomeHeader';
 import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import WelcomeLayout from '../WelcomeLayout/WelcomeLayout';
+import {cashay} from 'cashay';
+import {nextPage} from 'universal/modules/welcome/ducks/welcomeDuck';
 
 const Step1PreferredName = props => {
-  const {handleSubmit, preferredName} = props;
+  const {handleSubmit, preferredName, dispatch} = props;
+  const onPreferredNameSubmit = data => {
+    const {preferredName} = data;
+    const {user} = getAuth();
+    const options = {
+      variables: {
+        updatedProfile: {
+          id: user.id,
+          preferredName
+        }
+      }
+    };
+    cashay.mutate('updateUserProfile', options);
+    dispatch(nextPage());
+  };
   return (
     <WelcomeLayout>
       <WelcomeHeader heading={<span>Hello!</span>} />
@@ -20,7 +36,7 @@ const Step1PreferredName = props => {
         />
         <div>{/* Div for that flexy flex */}
           <WelcomeHeading copy={<span>Please type in your name:</span>} />
-          <form onSubmit={handleSubmit(props.onSubmit)}>
+          <form onSubmit={handleSubmit(onPreferredNameSubmit)}>
             <Field
               autoFocus
               buttonDisabled={!preferredName}
