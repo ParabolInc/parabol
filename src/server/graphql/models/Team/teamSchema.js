@@ -24,6 +24,7 @@ export const Team = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The datetime the team was last updated (not including members)'
     },
+    meetingSlug: {type: GraphQLString, description: 'The slug for the meeting uri'},
     members: {
       type: new GraphQLList(TeamMember),
       description: 'All the team members associated with this team',

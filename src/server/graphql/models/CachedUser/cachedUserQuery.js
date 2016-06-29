@@ -1,5 +1,5 @@
-import {GraphQLNonNull, GraphQLID, GraphQLString} from 'graphql';
-import {CachedUser, CachedUserAndToken} from './cachedUserSchema';
+import {GraphQLNonNull, GraphQLID} from 'graphql';
+import {CachedUser} from './cachedUserSchema';
 import {errorObj} from '../utils';
 import r from '../../../database/rethinkDriver';
 import {requireAuth, requireSU} from '../authorization';
@@ -23,25 +23,16 @@ export default {
       throw errorObj({_error: 'User ID not found'});
     }
   },
-  getUserWithAuthToken: {
-    type: CachedUserAndToken,
+  getCurrentUser: {
+    type: CachedUser,
     description: 'Given an auth token, return the user and auth token',
-    args: {
-      authToken: {
-        type: new GraphQLNonNull(GraphQLString),
-        description: 'The ID Token from auth0, a base64 JWT'
-      }
-    },
     async resolve(source, args, {authToken}) {
       const userId = requireAuth(authToken);
       const user = await r.table('CachedUser').get(userId);
-      if (user) {
-        return {
-          user,
-          authToken: args.authToken
-        };
+      if (!user) {
+        throw errorObj({_error: 'User ID not found'});
       }
-      throw errorObj({_error: 'User ID not found'});
+      return user;
     }
   }
 };

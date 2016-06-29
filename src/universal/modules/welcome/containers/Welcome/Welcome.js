@@ -22,6 +22,7 @@ const mapStateToProps = state => ({
   inviteesRaw: selector(state, 'inviteesRaw'),
   preferredName: selector(state, 'preferredName'),
   teamName: selector(state, 'teamName'),
+  authToken: state.authToken,
   welcome: state.welcome
 });
 

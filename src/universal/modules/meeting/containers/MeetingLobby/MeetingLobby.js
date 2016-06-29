@@ -3,7 +3,6 @@ import look, {StyleSheet} from 'react-look';
 import {connect} from 'react-redux';
 import {reduxSocket} from 'redux-socket-cluster';
 import {HotKeys} from 'react-hotkeys';
-import {cashay} from 'cashay';
 import {localStorageVars} from 'universal/utils/clientOptions';
 import Setup0GetStarted from '../../components/Setup0GetStarted/Setup0GetStarted';
 import Setup1InviteTeam from '../../components/Setup1InviteTeam/Setup1InviteTeam';
@@ -25,23 +24,23 @@ const keyMap = {
   seqHelp: 'shift+/',
 };
 
-const meetingQueryString = `
-  query($meetingId: ID!) {
-    payload: getMeetingById(meetingId: $meetingId) {
-      id,
-      createdAt,
-      updatedAt,
-      lastUpdatedBy,
-      team {
-        id,
-        name
-      },
-      content
-    }
-  }`;
+// const meetingQueryString = `
+//   query($meetingId: ID!) {
+//     payload: getMeetingById(meetingId: $meetingId) {
+//       id,
+//       createdAt,
+//       updatedAt,
+//       lastUpdatedBy,
+//       team {
+//         id,
+//         name
+//       },
+//       content
+//     }
+//   }`;
 
 const cashayOpts = {
-  component: 'MeetingLayout'
+  component: 'MeetingLobby'
 };
 
 const mapStateToProps = (state, props) => {
@@ -59,8 +58,7 @@ const mapStateToProps = (state, props) => {
     setup: state.getIn(['meetingModule', 'setup']).toJS(),
     shortcuts: state.getIn(['meetingModule', 'shortcuts']).toJS(),
     team: state.getIn(['meetingModule', 'team']).toJS(),
-    userId: auth.getIn(['user', 'id']),
-    showMeTheCash: cashay.query(meetingQueryString, cashayOpts)
+    userId: auth.getIn(['user', 'id'])
   };
 };
 
@@ -69,7 +67,7 @@ const mapStateToProps = (state, props) => {
 @ensureMeetingAndTeamLoaded // catch for those who just landed at this url
 @look
 // eslint-disable-next-line react/prefer-stateless-function
-export default class MeetingLayout extends Component {
+export default class MeetingLobby extends Component {
   static propTypes = {
     // children included here for multi-part landing pages (FAQs, pricing, cha la la)
     // children: PropTypes.element,
@@ -78,15 +76,12 @@ export default class MeetingLayout extends Component {
     setup: PropTypes.object.isRequired,
     shortcuts: PropTypes.object.isRequired,
     team: PropTypes.object.isRequired,
-    showMeTheCash: PropTypes.object.isRequired
   };
 
   render() {
-    const {dispatch, meeting, setup, shortcuts, team, showMeTheCash} = this.props;
+    const {dispatch, meeting, setup, shortcuts, team} = this.props;
 
     const teamName = team.instance.name || 'Team Name';
-
-    console.log(showMeTheCash);
 
     return (
       <HotKeys focused attach={window} keyMap={keyMap}>

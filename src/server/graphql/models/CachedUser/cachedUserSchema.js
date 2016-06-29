@@ -128,18 +128,3 @@ export const CachedUser = new GraphQLObjectType({
     }
   })
 });
-
-export const CachedUserAndToken = new GraphQLObjectType({
-  name: 'CachedUserAndToken',
-  description: 'The user account profile + JWT',
-  fields: () => ({
-    user: {
-      type: CachedUser,
-      description: 'The user account profile'
-    },
-    authToken: {
-      type: GraphQLString,
-      description: 'The JWT that comes from auth0'
-    }
-  })
-});

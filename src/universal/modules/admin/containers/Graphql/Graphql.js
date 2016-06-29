@@ -3,7 +3,6 @@ import React, {Component, PropTypes} from 'react';
 import GraphiQL from 'graphiql';
 import fetch from 'isomorphic-fetch';
 import {getGraphQLHost, getGraphQLProtocol} from 'universal/utils/graphQLConfig';
-import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import requireAuthAndRole from 'universal/decorators/requireAuthAndRole/requireAuthAndRole';
 
@@ -29,34 +28,9 @@ const makeGraphQLFetcher = authToken => {
   };
 };
 
-const queryString = `
-query {
-  cachedUserAndToken: getUserWithAuthToken(authToken: $authToken) {
-    authToken
-  }
-}`;
-
-const mutationHandlers = {
-  updateUserWithAuthToken(optimisticVariables, queryResponse, currentResponse) {
-    if (queryResponse) {
-      currentResponse.cachedUserAndToken = queryResponse;
-      return currentResponse;
-    }
-    return undefined;
-  }
-};
-
-const cashayOptions = {
-  component: 'Graphql',
-  variables: {
-    authToken: response => response.cachedUserAndToken.authToken
-  },
-  mutationHandlers
-};
-
-const mapStateToProps = () => {
+const mapStateToProps = state => {
   return {
-    response: cashay.query(queryString, cashayOptions)
+    authToken: state.authToken
   };
 };
 
@@ -65,18 +39,11 @@ const mapStateToProps = () => {
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Graphiql extends Component {
   static propTypes = {
-    response: PropTypes.shape({
-      data: PropTypes.shape({
-        cachedUserAndToken: PropTypes.shape({
-          authToken: PropTypes.string
-        })
-      })
-    })
-  }
+    authToken: PropTypes.string
+  };
 
   render() {
-    const {response} = this.props;
-    const {authToken} = response.data.cachedUserAndToken;
+    const {authToken} = this.props;
     const graphQLFetcher = makeGraphQLFetcher(authToken);
     return (
       <GraphiQL fetcher={graphQLFetcher}/>
