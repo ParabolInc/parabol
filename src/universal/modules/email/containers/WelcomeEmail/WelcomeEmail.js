@@ -49,7 +49,7 @@ export default class WelcomeEmail extends Component {
         <Body lineHeight={1.5}>
           <Callout vSpacing={0}>
             Hi <span style={{color: theme.palette.warm}}>terry@parabol.co</span>,<br />
-            We’re so glad you’re here!!
+            We’re <i>so glad</i> you’re here!!
           </Callout>
           <EmptySpace height={48} />
           <b>Action</b> is a place where you can:
