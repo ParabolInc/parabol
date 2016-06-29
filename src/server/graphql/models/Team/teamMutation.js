@@ -23,10 +23,11 @@ export default {
       requireSUOrSelf(authToken, userId);
       const {leader, ...team} = newTeam;
       // can't trust the client
-      const verifiedLeader = {...leader, isActive: true, isLead: true, isFacilitator: true};
-      r.table('TeamMember').insert(verifiedLeader);
-      r.table('Team').insert(team);
-      r.table('UserProfile').get(userId).update({isNew: false});
+      const verifiedLeader = {...leader[0], isActive: true, isLead: true, isFacilitator: true};
+      await r.table('TeamMember').insert(verifiedLeader);
+      await r.table('Team').insert(team);
+      await r.table('UserProfile').get(userId).update({isNew: false});
+      // TODO: trigger welcome email
       return true;
     }
   },
@@ -40,7 +41,7 @@ export default {
     },
     async resolve(source, {updatedTeam}, {authToken}) {
       const {id, name} = updatedTeam;
-      requireSUOrTeamMember(authToken, id);
+      await requireSUOrTeamMember(authToken, id);
       const teamFromDB = await r.table('Team').get(id).update({
         name
       }, {returnChanges: true});

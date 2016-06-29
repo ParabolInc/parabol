@@ -58,7 +58,7 @@ export const sendInvitations = (invitedBy, teamName, invitations) => {
       task,
       fullName
     };
+    console.log(emailData);
     return sendEmail('inviteTeamMember', emailData);
   });
 };
-

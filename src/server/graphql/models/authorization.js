@@ -10,10 +10,10 @@ export const isSuperUser = authToken => {
   return userId && authToken.rol === 'su';
 };
 
-export const getTeamMember = (authToken, teamId) => {
+export const getTeamMember = async (authToken, teamId) => {
   const userId = getUserId(authToken);
   if (userId) {
-    const teamMembers = r.table('TeamMember')
+    const teamMembers = await r.table('TeamMember')
       .getAll(teamId, {index: 'teamId'})
       .filter({cachedUserId: userId})
       .pluck('teamId');
@@ -37,9 +37,9 @@ export const requireSU = authToken => {
   }
 };
 
-export const requireSUOrTeamMember = (authToken, teamId) => {
+export const requireSUOrTeamMember = async (authToken, teamId) => {
   if (isSuperUser(authToken)) return undefined;
-  const teamMember = getTeamMember(authToken, teamId);
+  const teamMember = await getTeamMember(authToken, teamId);
   if (teamMember) return teamMember;
   throw errorObj({_error: 'Unauthorized. Must be a member of the team.'});
 };
