@@ -1,11 +1,15 @@
 import test from 'ava';
 import reducer, {setWelcomeTeam, nextPage, previousPage} from '../welcomeDuck';
 
+const stateTemplate = {
+  page: 1,
+  teamId: null,
+  teamMemberId: null
+};
+
 test('initial state', t => {
   const initialState = reducer();
-  t.deepEqual(initialState,
-    {page: 1, teamId: null, teamMemberId: null}
-  );
+  t.deepEqual(initialState, stateTemplate);
 });
 
 test('setWelcomeTeam() updates teamId, teamMemberId', t => {
@@ -17,16 +21,20 @@ test('setWelcomeTeam() updates teamId, teamMemberId', t => {
         teamId: 'apple1',
         teamMemberId: 'banana2'
       })
-    ),
-    {page: 1, teamId: 'apple1', teamMemberId: 'banana2'}
+    ), {
+      ...stateTemplate,
+      teamId: 'apple1',
+      teamMemberId: 'banana2'
+    }
   );
 });
 
 test('nextPage() increments', t => {
   const initialState = reducer();
-  t.deepEqual(reducer(initialState, nextPage()),
-    {page: 2, teamId: null, teamMemberId: null}
-  );
+  t.deepEqual(reducer(initialState, nextPage()), {
+    ...stateTemplate,
+    page: 2
+  });
 });
 
 test('nextPage() does not exceed 3', t => {
@@ -35,25 +43,28 @@ test('nextPage() does not exceed 3', t => {
     state = reducer(state, nextPage());
   }
 
-  t.deepEqual(reducer(state, nextPage()),
-    {page: 3, teamId: null, teamMemberId: null}
-  );
+  t.deepEqual(reducer(state, nextPage()), {
+    ...stateTemplate,
+    page: 3
+  });
 });
 
 test('previousPage() decrements', t => {
   let state = reducer();
   state = reducer(state, nextPage());
 
-  t.deepEqual(reducer(state, previousPage()),
-    {page: 1, teamId: null, teamMemberId: null}
-  );
+  t.deepEqual(reducer(state, previousPage()), {
+    ...stateTemplate,
+    page: 1
+  });
 });
 
 test('previousPage() is never less than one', t => {
   let state = reducer();
   state = reducer(state, previousPage());
 
-  t.deepEqual(reducer(state, previousPage()),
-    {page: 1, teamId: null, teamMemberId: null}
-  );
+  t.deepEqual(reducer(state, previousPage()), {
+    ...stateTemplate,
+    page: 1
+  });
 });
