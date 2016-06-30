@@ -1,5 +1,4 @@
 import React, {PropTypes} from 'react';
-import EmptySpace from '../EmptySpace/EmptySpace';
 import theme from 'universal/styles/theme';
 
 const Button = (props) => {
@@ -8,6 +7,18 @@ const Button = (props) => {
     color: '#FFFFFF',
     fontWeight: 'bold',
     textTransform: 'uppercase'
+  };
+
+  const linkStyle = {
+    backgroundColor: `${props.backgroundColor}`,
+    color: '#FFFFFF',
+    display: 'block',
+    fontWeight: 'bold',
+    paddingBottom: `${props.vPadding}px`,
+    paddingTop: `${props.vPadding}px`,
+    textDecoration: 'none',
+    textTransform: 'uppercase',
+    width: '100%'
   };
 
   return (
@@ -20,9 +31,9 @@ const Button = (props) => {
             align="center"
             style={style}
           >
-            <EmptySpace height={props.paddingVertical} />
-            {props.children}
-            <EmptySpace height={props.paddingVertical} />
+            <a href={props.url} style={linkStyle}>
+              {props.children}
+            </a>
           </td>
         </tr>
       </tbody>
@@ -32,15 +43,16 @@ const Button = (props) => {
 
 Button.defaultProps = {
   backgroundColor: theme.palette.cool,
-  paddingVertical: '12',
-  width: '240'
+  vPadding: 12,
+  width: 240
 };
 
 Button.propTypes = {
   backgroundColor: PropTypes.string,
   children: PropTypes.any,
-  paddingVertical: PropTypes.string,
-  width: PropTypes.string
+  vPadding: PropTypes.number,
+  url: PropTypes.string,
+  width: PropTypes.number
 };
 
 export default Button;

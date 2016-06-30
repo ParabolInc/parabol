@@ -38,7 +38,16 @@ const projectNameStyle = {
 };
 
 const TeamInvite = props => {
-  const {inviterName, inviterEmail} = props;
+  const {
+    inviterAvatar,
+    inviterName,
+    inviterFirstName,
+    inviterEmail,
+    inviteeEmail,
+    firstProject,
+    teamName,
+    teamLink
+  } = props;
 
   return (
     <Layout>
@@ -61,7 +70,7 @@ const TeamInvite = props => {
           <tbody>
             <tr>
               <td width="64">
-                <img src="/static/images/avatars/jh-linkedin-avatar.jpg" height="64" width="64" />
+                <img src={inviterAvatar} height="64" width="64" />
               </td>
               <td style={{paddingLeft: '16px'}}>
                 {inviterName}<br />
@@ -71,23 +80,27 @@ const TeamInvite = props => {
           </tbody>
         </table>
         <EmptySpace height={40} />
-        <b>Hi <span style={colorWarm}>terry@parabol.co</span>!<br />
-        Jordan has invited you to join a team on Action:</b>
+        <b>Hi <span style={colorWarm}>{inviteeEmail}</span>!<br />
+        {inviterFirstName} has invited you to join a team on Action:</b>
         <EmptySpace height={40} />
-        <span style={teamNameStyle}>Engineering</span>
+        <span style={teamNameStyle}>{teamName}</span>
         <EmptySpace height={40} />
         <a href="https://action-staging.parabol.co/" style={boldLinkStyle}>Action</a>
         &nbsp;is a place where you and your team <br />will develop your <b><i>weekly rhythm</i></b>.<br />
         <EmptySpace height={40} />
-        <b>Jordan added one of your projects to Action</b>:
-        <EmptySpace height={32} />
-        <span style={projectNameStyle}>“Onboarding flow shipped”</span>
-        <EmptySpace height={32} />
-        <Button backgroundColor={theme.palette.warm}>
+        {firstProject &&
+          <div>
+            <b>{inviterFirstName} added one of your projects to Action</b>:
+            <EmptySpace height={32} />
+            <span style={projectNameStyle}>“{firstProject}”</span>
+            <EmptySpace height={32} />
+          </div>
+        }
+        <Button backgroundColor={theme.palette.warm} url={teamLink}>
           Join Team
         </Button>
         <EmptySpace height={16} />
-        Or go to: <a href="https://prbl.io/a/b7s8x9" style={colorWarm}>https://prbl.io/a/b7s8x9</a>
+        Or go to: <a href={teamLink} style={colorWarm}>{teamLink}</a>
       </Body>
       <Footer color={theme.palette.dark} />
     </Layout>
@@ -95,8 +108,27 @@ const TeamInvite = props => {
 };
 
 TeamInvite.propTypes = {
+  inviterAvatar: PropTypes.string.isRequired,
   inviterName: PropTypes.string.isRequired,
-  inviterEmail: PropTypes.string.isRequired
+  inviterFirstName: PropTypes.string.isRequired,
+  inviterEmail: PropTypes.string.isRequired,
+  inviteeEmail: PropTypes.string.isRequired,
+  firstProject: PropTypes.string,
+  teamName: PropTypes.string.isRequired,
+  teamLink: PropTypes.string.isRequired
 };
+
+export const teamInviteText = (props) => `
+Hello ${props.inviteeEmail},
+
+${props.inviterName} has invited you to join the ${props.teamName} on Action.
+
+Action is a place where your team will develop a weekly rhythm.
+
+Get started here: ${props.teamLink}
+
+Your friends,
+The Parabol Crew
+`;
 
 export default TeamInvite;

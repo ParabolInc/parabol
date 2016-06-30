@@ -72,7 +72,9 @@ WelcomeEmail.propTypes = {
 };
 
 // TODO: add props, and make me dynamic!!
-export const welcomeEmailText = () => `
+export const welcomeEmailText = (props) => `
+Hello ${props.email},
+
 Thank you for signing up for Action!
 
 Greater team momentum is only a few clicks away. Can you feel it? It's
