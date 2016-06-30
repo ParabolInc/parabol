@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react';
-import {reduxForm, change, arrayPush} from 'redux-form';
+import {reduxForm, change, arrayPush, destroy} from 'redux-form';
 import {HotKeys} from 'react-hotkeys';
 import emailAddresses from 'email-addresses';
 import Field from 'universal/components/Field/Field';
@@ -12,7 +12,6 @@ import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import WelcomeLayout from '../WelcomeLayout/WelcomeLayout';
 import {cashay} from 'cashay';
 import {show} from 'universal/modules/notifications/ducks/notifications';
-import {destroy} from 'redux-form';
 import {push} from 'react-router-redux';
 
 const emailInviteSuccess = {
@@ -50,7 +49,7 @@ const Step3InviteTeam = props => {
   const onInviteTeamSubmit = async reqData => {
     const serverInvitees = reqData.invitees.map(invitee => {
       // Remove label field:
-      const {label, ...inviteeForServer} = invitee;
+      const {label, ...inviteeForServer} = invitee; // eslint-disable-line no-unused-vars
       return inviteeForServer;
     });
     const options = {
@@ -139,7 +138,10 @@ Step3InviteTeam.propTypes = {
   inviteesRaw: PropTypes.string,
   onSubmit: PropTypes.func,
   submitting: PropTypes.bool,
-  teamName: PropTypes.string.isRequired
+  teamName: PropTypes.string.isRequired,
+  welcome: PropTypes.shape({
+    teamId: PropTypes.string,
+  })
 };
 
 export default reduxForm({

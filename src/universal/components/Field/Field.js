@@ -101,9 +101,7 @@ FieldBlock.propTypes = {
 };
 
 const Field = props => {
-  const {
-    name,
-  } = props;
+  const {name} = props;
 
   return (
     <div className={styles.fieldBlock}>
