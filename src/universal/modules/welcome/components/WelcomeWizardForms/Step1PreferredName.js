@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react';
 import {reduxForm} from 'redux-form';
-import getAuth from 'universal/redux/getAuth';
 import Field from 'universal/components/Field/Field';
 import ProgressDots from '../ProgressDots/ProgressDots';
 import WelcomeContent from '../WelcomeContent/WelcomeContent';
@@ -13,14 +12,14 @@ import getAuthedUser from 'universal/redux/getAuthedUser';
 
 const Step1PreferredName = props => {
   const {handleSubmit, preferredName, dispatch} = props;
-  const onPreferredNameSubmit = data => {
-    const {preferredName} = data;
+  const onPreferredNameSubmit = submissionData => {
+    const {preferredName: newPrefferedName} = submissionData;
     const user = getAuthedUser();
     const options = {
       variables: {
         updatedProfile: {
           id: user.id,
-          preferredName: myPreferredName
+          preferredName: newPrefferedName
         }
       }
     };

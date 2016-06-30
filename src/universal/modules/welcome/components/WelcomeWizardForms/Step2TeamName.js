@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react';
 import {reduxForm} from 'redux-form';
-import getAuth from 'universal/redux/getAuth';
 import Field from 'universal/components/Field/Field';
 import Type from 'universal/components/Type/Type';
 import ProgressDots from '../ProgressDots/ProgressDots';

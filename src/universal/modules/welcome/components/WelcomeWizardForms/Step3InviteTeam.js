@@ -46,8 +46,8 @@ const Step3InviteTeam = props => {
     });
   };
 
-  const onInviteTeamSubmit = async reqData => {
-    const serverInvitees = reqData.invitees.map(invitee => {
+  const onInviteTeamSubmit = async submissionData => {
+    const serverInvitees = submissionData.invitees.map(invitee => {
       // Remove label field:
       const {label, ...inviteeForServer} = invitee; // eslint-disable-line no-unused-vars
       return inviteeForServer;

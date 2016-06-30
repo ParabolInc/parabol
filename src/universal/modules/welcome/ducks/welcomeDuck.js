@@ -25,14 +25,6 @@ export default function reducer(state = initialState, action = {}) {
       };
     case SET_WELCOME_TEAM:
       return Object.assign({}, state, action.payload);
-    case NEXT_PAGE:
-      return Object.assign({}, state, {
-        page: state.page + 1
-      });
-    case PREVIOUS_PAGE:
-      return Object.assign({}, state, {
-        page: state.page - 1
-      });
     default:
       return state;
   }
