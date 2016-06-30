@@ -58,6 +58,7 @@ export const sendInvitations = (invitedBy, teamName, invitations) => {
       task,
       fullName
     };
+    // TODO: update to new call signature
     return sendEmail('inviteTeamMember', emailData);
   });
 };

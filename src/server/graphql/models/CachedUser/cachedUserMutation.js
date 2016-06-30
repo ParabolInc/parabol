@@ -51,7 +51,7 @@ export default {
       });
       // Did we update an existing cached profile?
       if (changes.replaced === 0) {
-        const emailWelcomed = await sendEmail('newUser', newUser);
+        const emailWelcomed = await sendEmail(newUser.email, 'welcomeEmail', newUser);
         const welcomeSentAt = emailWelcomed ? new Date() : null;
         // must wait for write to UserProfile because a query could follow quickly after
         await r.table('UserProfile').insert({id: newUser.id, welcomeSentAt, isNew: true});

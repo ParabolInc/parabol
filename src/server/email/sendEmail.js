@@ -1,14 +1,45 @@
+import mailcomposer from 'mailcomposer';
 import templates from './templates';
 import mailgun from './mailgunDriver';
+import {getMailgunOptions} from './getMailgunConfig';
 
-export default async function sendEmail(name, variables) {
-  const emailFactory = templates[name];
+export default async function sendEmail(to, template, props) {
+  const emailFactory = templates[template];
   if (!emailFactory) {
-    throw new Error(`Email template for ${name} does not exist!`);
+    throw new Error(`Email template for ${template} does not exist!`);
   }
-  const email = emailFactory(variables);
+
+  console.log('--------------- moe ---------------');
+  console.log(emailFactory(props));
+
+  const mail = mailcomposer(Object.assign(
+    emailFactory(props), // render the html and text email
+    getMailgunOptions()  // assign default from: address
+  ));
+
+  let message = null;
+
   try {
-    await mailgun.messages().send(email);
+    // TODO: this is returning undefined. We must begin our investigation here.
+    message = await mail.build();
+  } catch (e) {
+    console.warn(`mailcomposer: unable to build message ${e}`);
+    return false;
+  }
+
+  console.log('--------------- larry ---------------');
+  console.log(message);
+
+  const data = ({
+    to,
+    message: message.toString('ascii')
+  });
+
+  console.log('--------------- curly ---------------');
+  console.log(message.toString('ascii'));
+
+  try {
+    await mailgun.messages().sendMime(data);
   } catch (e) {
     console.warn(`mailgun: unable to send welcome message ${e}`);
     return false;
