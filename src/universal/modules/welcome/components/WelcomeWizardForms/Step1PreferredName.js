@@ -6,9 +6,26 @@ import WelcomeContent from '../WelcomeContent/WelcomeContent';
 import WelcomeHeader from '../WelcomeHeader/WelcomeHeader';
 import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import WelcomeLayout from '../WelcomeLayout/WelcomeLayout';
+import {cashay} from 'cashay';
+import {nextPage} from 'universal/modules/welcome/ducks/welcomeDuck';
+import getAuthedUser from 'universal/redux/getAuthedUser';
 
 const Step1PreferredName = props => {
-  const {handleSubmit, preferredName} = props;
+  const {handleSubmit, preferredName, dispatch} = props;
+  const onPreferredNameSubmit = submissionData => {
+    const {preferredName: newPrefferedName} = submissionData;
+    const user = getAuthedUser();
+    const options = {
+      variables: {
+        updatedProfile: {
+          id: user.id,
+          preferredName: newPrefferedName
+        }
+      }
+    };
+    cashay.mutate('updateUserProfile', options);
+    dispatch(nextPage());
+  };
   return (
     <WelcomeLayout>
       <WelcomeHeader heading={<span>Hello!</span>} />
@@ -20,7 +37,7 @@ const Step1PreferredName = props => {
         />
         <div>{/* Div for that flexy flex */}
           <WelcomeHeading copy={<span>Please type in your name:</span>} />
-          <form onSubmit={handleSubmit(props.onSubmit)}>
+          <form onSubmit={handleSubmit(onPreferredNameSubmit)}>
             <Field
               autoFocus
               buttonDisabled={!preferredName}
@@ -41,6 +58,7 @@ const Step1PreferredName = props => {
 };
 
 Step1PreferredName.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func,
   preferredName: PropTypes.string,
   onSubmit: PropTypes.func
@@ -48,6 +66,6 @@ Step1PreferredName.propTypes = {
 
 export default reduxForm({
   form: 'welcomeWizard',
-  destroyOnUnmount: false,
+  destroyOnUnmount: false
   // TODO: add validations
 })(Step1PreferredName);

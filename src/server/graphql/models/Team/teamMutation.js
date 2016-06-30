@@ -19,11 +19,11 @@ export default {
     },
     async resolve(source, {newTeam}, {authToken}) {
       // require cachedUserId in the input so an admin can also create a team
-      const userId = newTeam.leader[0].cachedUserId;
-      requireSUOrSelf(authToken, userId);
       const {leader, ...team} = newTeam;
+      const userId = leader.cachedUserId;
+      requireSUOrSelf(authToken, userId);
       // can't trust the client
-      const verifiedLeader = {...leader[0], isActive: true, isLead: true, isFacilitator: true};
+      const verifiedLeader = {...leader, isActive: true, isLead: true, isFacilitator: true};
       await r.table('TeamMember').insert(verifiedLeader);
       await r.table('Team').insert(team);
       await r.table('UserProfile').get(userId).update({isNew: false});

@@ -17,7 +17,7 @@
     "start": "NODE_ENV=production node ./src/server/server.babel.js",
     "dev": "NODE_ENV=development node ./src/server/server.babel.js",
     "build": "rimraf build && concurrently \"npm run build:client\" \"npm run build:server\"",
-    "bs": "rimraf build && concurrently \"npm run build:client\" \"npm run build:server\" \"npm run start\"",
+    "bs": "npm run build && npm start",
     "quickstart": "rimraf build && concurrently \"npm run db:migrate\" \"npm run build:client\" \"npm run build:server\" \"npm run start\"",
     "build:client": "NODE_ENV=production webpack --config ./webpack/prod.babel.js",
     "build:client-min": "NODE_ENV=production DEPLOY=true webpack --config ./webpack/prod.babel.js",
@@ -78,7 +78,7 @@
     "babel-polyfill": "6.9.1",
     "babel-runtime": "6.9.2",
     "body-parser": "1.15.2",
-    "cashay": "^0.11.1",
+    "cashay": "^0.11.3",
     "compression": "1.6.2",
     "cors": "2.7.1",
     "dotenv": "^2.0.0",
@@ -115,9 +115,10 @@
     "redux": "3.5.2",
     "redux-form": "^6.0.0-alpha.15",
     "redux-logger": "2.6.1",
-    "redux-persist": "^3.2.2",
     "redux-promise": "0.5.3",
     "redux-socket-cluster": "0.5.1",
+    "redux-storage": "^4.0.1",
+    "redux-storage-engine-localstorage": "^1.1.1",
     "redux-thunk": "2.1.0",
     "rethink-migrate": "^1.3.1",
     "rethinkdbdash": "2.3.10",
@@ -126,6 +127,12 @@
     "socketcluster": "^4.6.2",
     "socketcluster-client": "^4.3.19",
     "tinycolor2": "^1.3.0"
+  },
+  "ava": {
+    "babel": "inherit",
+    "require": [
+      "babel-register"
+    ]
   },
   "engines": {
     "node": "6.2.0",

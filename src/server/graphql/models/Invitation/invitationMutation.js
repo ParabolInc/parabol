@@ -36,7 +36,7 @@ export default {
       // Bulk insert, wait in case something queries the invitation table
       await r.table('Invitation').insert(invitationsToStore);
       if (inviteeErrors) {
-        throw errorObj({_error: 'Some invitations were not sent', failedEmails: inviteeErrors});
+        throw errorObj({_error: 'Some invitations were not sent', type: 'inviteSendFail', failedEmails: inviteeErrors});
       }
       return true;
     }

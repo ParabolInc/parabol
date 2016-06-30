@@ -7,9 +7,38 @@ import WelcomeContent from '../WelcomeContent/WelcomeContent';
 import WelcomeHeader from '../WelcomeHeader/WelcomeHeader';
 import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import WelcomeLayout from '../WelcomeLayout/WelcomeLayout';
+import {nextPage, setWelcomeTeam} from 'universal/modules/welcome/ducks/welcomeDuck';
+import shortid from 'shortid';
+import {cashay} from 'cashay';
+import getAuthedUser from 'universal/redux/getAuthedUser';
 
 const Step2TeamName = props => {
-  const {handleSubmit, preferredName, teamName} = props;
+  const {dispatch, handleSubmit, preferredName, teamName} = props;
+  const onTeamNameSubmit = data => {
+    const myTeamName = data.teamName;
+    const teamId = shortid.generate();
+    const teamMemberId = shortid.generate();
+    const user = getAuthedUser();
+    dispatch(setWelcomeTeam({teamId, teamMemberId}));
+    const createTeamOptions = {
+      variables: {
+        newTeam: {
+          id: teamId,
+          name: myTeamName,
+          leader: {
+            id: teamMemberId,
+            teamId,
+            cachedUserId: user.id,
+            isActive: true,
+            isLead: true,
+            isFacilitator: true
+          }
+        }
+      }
+    };
+    cashay.mutate('createTeam', createTeamOptions);
+    dispatch(nextPage());
+  };
   return (
     <WelcomeLayout>
       <WelcomeHeader heading={<span>Invite your team.</span>} />
@@ -24,7 +53,7 @@ const Step2TeamName = props => {
             Nice to meet you, {preferredName}!
           </Type>
           <WelcomeHeading copy={<span>Please type in your team name:</span>} />
-          <form onSubmit={handleSubmit(props.onSubmit)}>
+          <form onSubmit={handleSubmit(onTeamNameSubmit)}>
             <Field
               autoFocus
               buttonDisabled={!teamName}
@@ -44,6 +73,7 @@ const Step2TeamName = props => {
 };
 
 Step2TeamName.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func,
   onSubmit: PropTypes.func,
   preferredName: PropTypes.string.isRequired,
@@ -52,6 +82,6 @@ Step2TeamName.propTypes = {
 
 export default reduxForm({
   form: 'welcomeWizard',
-  destroyOnUnmount: false,
+  destroyOnUnmount: false
   // TODO: add validations
 })(Step2TeamName);

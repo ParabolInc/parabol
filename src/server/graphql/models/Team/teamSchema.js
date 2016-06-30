@@ -24,6 +24,7 @@ export const Team = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The datetime the team was last updated (not including members)'
     },
+    meetingSlug: {type: GraphQLString, description: 'The slug for the meeting uri'},
     members: {
       type: new GraphQLList(TeamMember),
       description: 'All the team members associated with this team',
@@ -38,8 +39,8 @@ const teamInputThunk = () => ({
   id: {type: GraphQLID, description: 'The unique team ID'},
   name: {type: GraphQLString, description: 'The name of the team'},
   leader: {
-    type: new GraphQLList(CreateTeamMemberInput),
-    description: 'Each team must have at least 1 team member, the leader.'
+    type: CreateTeamMemberInput,
+    description: 'Each team must be created with 1 team member, the leader.'
   }
 });
 
