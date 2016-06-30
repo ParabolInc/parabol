@@ -35,6 +35,7 @@ const Layout = (props) =>
             oy-ignore-rules
             src="example.com/tracker"
             height="1"
+            width="1"
             style={{display: 'block', height: '1px', width: '1px'}}
           />
         </td>

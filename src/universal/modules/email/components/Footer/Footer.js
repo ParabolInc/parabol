@@ -24,8 +24,6 @@ const Footer = (props) => {
           <td><EmptySpace height="20" /></td>
           <td><EmptySpace height="20" /></td>
           <td><EmptySpace height="20" /></td>
-          <td><EmptySpace height="20" /></td>
-          <td><EmptySpace height="20" /></td>
         </tr>
 
         <tr>
@@ -48,10 +46,10 @@ const Footer = (props) => {
                   >
 
                     <EmptySpace height="10" />
-                    <img src="/static/images/brand/mark-color@3x.png" style={{width: '31px'}} />
+                    <img src="/static/images/brand/mark-color@3x.png" height="28" width="31" />
                     <EmptySpace height="10" />
 
-                    Crafted with care by by the folks at <a
+                    Crafted with care by the folks at <a
                       style={{color: theme.palette.warm, textDecoration: 'none'}}
                       href="http://www.parabol.co/"
                     > Parabol</a>.
@@ -73,11 +71,9 @@ const Footer = (props) => {
         </tr>
 
         <tr>
-          <td><EmptySpace height="20" /></td>
-          <td><EmptySpace height="20" /></td>
-          <td><EmptySpace height="20" /></td>
-          <td><EmptySpace height="20" /></td>
-          <td><EmptySpace height="20" /></td>
+          <td><EmptySpace height="48" /></td>
+          <td><EmptySpace height="48" /></td>
+          <td><EmptySpace height="48" /></td>
         </tr>
       </tbody>
     </table>

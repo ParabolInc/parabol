@@ -1,7 +1,7 @@
 // import Schema from './rootSchema';
 import {graphql} from 'graphql';
 
-export default async (req, res) => {
+export default async(req, res) => {
   // eslint-disable-next-line global-require
   const Schema = require('./rootSchema');
   const {query, variables, ...newContext} = req.body;
@@ -10,6 +10,9 @@ export default async (req, res) => {
   const result = await graphql(Schema, query, null, context, variables);
   if (result.errors) {
     console.log('DEBUG GraphQL Error:', result.errors);
+  }
+  if (Array.isArray(result.errors)) {
+    result.errors = result.errors.map(err => ({message: err.message}));
   }
   res.send(result);
 };

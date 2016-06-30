@@ -21,6 +21,7 @@ const emailInviteSuccess = {
   level: 'success'
 };
 
+// TODO why is this showing up green like success?
 const emailInviteFail = emailsNotDelivered => ({
   title: 'Invitations not sent!',
   message: `The following emails were not sent: ${emailsNotDelivered}`,
@@ -46,8 +47,8 @@ const Step3InviteTeam = props => {
     });
   };
 
-  const onInviteTeamSubmit = async data => {
-    const serverInvitees = data.invitees.map(invitee => {
+  const onInviteTeamSubmit = async reqData => {
+    const serverInvitees = reqData.invitees.map(invitee => {
       // Remove label field:
       const {label, ...inviteeForServer} = invitee;
       return inviteeForServer;
@@ -59,20 +60,23 @@ const Step3InviteTeam = props => {
       }
     };
 
-    const res = await cashay.mutate('inviteTeamMembers', options);
-    if (res.data) {
+    const {error, data} = await cashay.mutate('inviteTeamMembers', options);
+    if (error) {
+      const {failedEmails, errors} = error;
+      if (errors) {
+        console.warn('an error other than the 1 we expected occured. we need a pattern to fix this');
+      }
+      if (Array.isArray(failedEmails)) {
+        const emailsNotDelivered = failedEmails.map(invitee => invitee.email).join(', ');
+        dispatch(show(emailInviteFail(emailsNotDelivered)));
+        // TODO I think we want to remove the failures from the array so they can click try again. thoughts?
+      }
+    } else if (data) {
       dispatch(push(`/team/${teamId}`));
       // Bye bye form data:
       dispatch(destroy('welcomeWizard'));
       // Proudly trumpet our user's brilliance:
       dispatch(show(emailInviteSuccess));
-    } else if (res.error) {
-      const {errors} = res.error;
-      const {failedEmails} = JSON.parse(errors);
-      if (Array.isArray(failedEmails)) {
-        const emailsNotDelivered = failedEmails.map(invitee => invitee.email).join(', ');
-        dispatch(show(emailInviteFail(emailsNotDelivered)));
-      }
     }
   };
   const invitesFieldHasError = false; // TODO: wire this up for real

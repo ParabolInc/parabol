@@ -8,12 +8,13 @@ import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import WelcomeLayout from '../WelcomeLayout/WelcomeLayout';
 import {cashay} from 'cashay';
 import {nextPage} from 'universal/modules/welcome/ducks/welcomeDuck';
+import getAuthedUser from 'universal/redux/getAuthedUser';
 
 const Step1PreferredName = props => {
   const {handleSubmit, preferredName, dispatch} = props;
   const onPreferredNameSubmit = data => {
     const {preferredName} = data;
-    const {user} = getAuth();
+    const user = getAuthedUser();
     const options = {
       variables: {
         updatedProfile: {
@@ -64,6 +65,6 @@ Step1PreferredName.propTypes = {
 
 export default reduxForm({
   form: 'welcomeWizard',
-  destroyOnUnmount: false,
+  destroyOnUnmount: false
   // TODO: add validations
 })(Step1PreferredName);
