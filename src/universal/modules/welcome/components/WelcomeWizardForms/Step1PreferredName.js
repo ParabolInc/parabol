@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
 import {reduxForm} from 'redux-form';
+import getAuth from 'universal/redux/getAuth';
 import Field from 'universal/components/Field/Field';
 import ProgressDots from '../ProgressDots/ProgressDots';
 import WelcomeContent from '../WelcomeContent/WelcomeContent';
@@ -12,13 +13,13 @@ import {nextPage} from 'universal/modules/welcome/ducks/welcomeDuck';
 const Step1PreferredName = props => {
   const {handleSubmit, preferredName, dispatch} = props;
   const onPreferredNameSubmit = data => {
-    const {preferredName} = data;
+    const myPreferredName = data.preferredName;
     const {user} = getAuth();
     const options = {
       variables: {
         updatedProfile: {
           id: user.id,
-          preferredName
+          preferredName: myPreferredName
         }
       }
     };
@@ -57,6 +58,7 @@ const Step1PreferredName = props => {
 };
 
 Step1PreferredName.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func,
   preferredName: PropTypes.string,
   onSubmit: PropTypes.func

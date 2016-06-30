@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
 import {reduxForm} from 'redux-form';
+import getAuth from 'universal/redux/getAuth';
 import Field from 'universal/components/Field/Field';
 import Type from 'universal/components/Type/Type';
 import ProgressDots from '../ProgressDots/ProgressDots';
@@ -14,7 +15,7 @@ import {cashay} from 'cashay';
 const Step2TeamName = props => {
   const {dispatch, handleSubmit, preferredName, teamName} = props;
   const onTeamNameSubmit = data => {
-    const {teamName} = data;
+    const myTeamName = data.teamName;
     const teamId = shortid.generate();
     const teamMemberId = shortid.generate();
     const {user} = getAuth();
@@ -23,7 +24,7 @@ const Step2TeamName = props => {
       variables: {
         newTeam: {
           id: teamId,
-          name: teamName,
+          name: myTeamName,
           leader: {
             id: teamMemberId,
             teamId,
@@ -72,6 +73,7 @@ const Step2TeamName = props => {
 };
 
 Step2TeamName.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func,
   onSubmit: PropTypes.func,
   preferredName: PropTypes.string.isRequired,

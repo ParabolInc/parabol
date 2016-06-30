@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import Layout from '../../components/Layout/Layout';
-import Header from '../../components/Header/Header';
 import Button from '../../components/Button/Button';
 import EmptySpace from '../../components/EmptySpace/EmptySpace';
 import Body from '../../components/Body/Body';
