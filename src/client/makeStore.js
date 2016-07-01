@@ -1,18 +1,24 @@
 import {createStore, applyMiddleware, compose} from 'redux';
 import thunkMiddleware from 'redux-thunk';
-import {routerMiddleware} from 'react-router-redux';
+import {routerMiddleware, CALL_HISTORY_METHOD, LOCATION_CHANGE} from 'react-router-redux';
 import {browserHistory} from 'react-router';
 import makeReducer from '../universal/redux/makeReducer';
 import createEngine from 'redux-storage-engine-localstorage';
 import {APP_NAME} from 'universal/utils/clientOptions';
 import {createMiddleware, createLoader} from 'redux-storage';
 
+// A list of actions that shouldn't trigger a call to persist data
+const blackListedActions = [
+  CALL_HISTORY_METHOD,
+  LOCATION_CHANGE
+];
+
 export default async initialState => {
   let store;
   const reducer = makeReducer();
   const reduxRouterMiddleware = routerMiddleware(browserHistory);
   const engine = createEngine(APP_NAME);
-  const storageMiddleware = createMiddleware(engine);
+  const storageMiddleware = createMiddleware(engine, blackListedActions);
   const middlewares = [
     storageMiddleware,
     reduxRouterMiddleware,
