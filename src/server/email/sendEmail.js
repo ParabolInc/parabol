@@ -2,6 +2,7 @@ import mailcomposer from 'mailcomposer';
 import templates from './templates';
 import mailgun from './mailgunDriver';
 import {getMailgunOptions} from './getMailgunConfig';
+import createEmbeddedImages from './createEmbeddedImages';
 
 export default async function sendEmail(to, template, props) {
   const emailFactory = templates[template];
@@ -10,7 +11,9 @@ export default async function sendEmail(to, template, props) {
   }
 
   const mailOptions = Object.assign(
-    emailFactory(props), // render the html and text email
+    createEmbeddedImages( // extract image attachments
+      emailFactory(props) // render the html and text email
+    ),
     getMailgunOptions(), // assign default from: address
     { to }               // assign to: address
   );
