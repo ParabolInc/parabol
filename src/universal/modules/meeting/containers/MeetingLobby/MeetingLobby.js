@@ -3,68 +3,24 @@ import look, {StyleSheet} from 'react-look';
 import {connect} from 'react-redux';
 import {reduxSocket} from 'redux-socket-cluster';
 import {HotKeys} from 'react-hotkeys';
-import {localStorageVars} from 'universal/utils/clientOptions';
-import Setup0GetStarted from '../../components/Setup0GetStarted/Setup0GetStarted';
-import Setup1InviteTeam from '../../components/Setup1InviteTeam/Setup1InviteTeam';
-import Setup2InviteTeam from '../../components/Setup2InviteTeam/Setup2InviteTeam';
-import Sidebar from '../../components/Sidebar/Sidebar';
-import ensureMeetingAndTeamLoaded from
-  '../../decorators/ensureMeetingAndTeamLoaded/ensureMeetingAndTeamLoaded';
+import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 
-import {
-  NAVIGATE_SETUP_0_GET_STARTED,
-  NAVIGATE_SETUP_1_INVITE_TEAM,
-  NAVIGATE_SETUP_2_INVITE_TEAM
-} from '../../ducks/meeting.js';
+import AuthEngine from 'universal/redux/AuthEngine';
 
 let styles = {};
 
 const keyMap = {
   keyEnter: 'enter',
-  seqHelp: 'shift+/',
+  seqHelp: 'shift+/'
 };
 
-// const meetingQueryString = `
-//   query($meetingId: ID!) {
-//     payload: getMeetingById(meetingId: $meetingId) {
-//       id,
-//       createdAt,
-//       updatedAt,
-//       lastUpdatedBy,
-//       team {
-//         id,
-//         name
-//       },
-//       content
-//     }
-//   }`;
+const mapStateToProps = state => ({
+  authToken: state.authToken
+});
 
-const cashayOpts = {
-  component: 'MeetingLobby'
-};
-
-const mapStateToProps = (state, props) => {
-  const auth = state.get('auth');
-  const meeting = state.getIn(['meetingModule', 'meeting']);
-  cashayOpts.variables = {
-    meetingId: props.params.id
-  };
-  return {
-    isAuthenticated: auth.get('isAuthenticated'),
-    meeting: meeting && meeting.toJS(),
-    socketState: state.getIn(['socket', 'socketState']),
-    socketSubs: state.getIn(['socket', 'subs']).toJS(),
-    socketId: state.getIn(['socket', 'id']),
-    setup: state.getIn(['meetingModule', 'setup']).toJS(),
-    shortcuts: state.getIn(['meetingModule', 'shortcuts']).toJS(),
-    team: state.getIn(['meetingModule', 'team']).toJS(),
-    userId: auth.getIn(['user', 'id'])
-  };
-};
-
-@reduxSocket({authTokenName: localStorageVars.authTokenName})
 @connect(mapStateToProps)
-@ensureMeetingAndTeamLoaded // catch for those who just landed at this url
+@requireAuth
+@reduxSocket({}, {AuthEngine})
 @look
 // eslint-disable-next-line react/prefer-stateless-function
 export default class MeetingLobby extends Component {
@@ -79,55 +35,23 @@ export default class MeetingLobby extends Component {
   };
 
   render() {
-    const {dispatch, meeting, setup, shortcuts, team} = this.props;
-
-    const teamName = team.instance.name || 'Team Name';
-
     return (
       <HotKeys focused attach={window} keyMap={keyMap}>
         <div className={styles.viewport}>
           <div className={styles.main}>
             <div className={styles.contentGroup}>
-              {(() => {
-                switch (meeting.navigation) {
-                  case NAVIGATE_SETUP_1_INVITE_TEAM:
-                    return (
-                      <Setup1InviteTeam
-                        dispatch={dispatch}
-                        setup={setup}
-                      />
-                    );
-                  case NAVIGATE_SETUP_2_INVITE_TEAM:
-                    return (
-                      <Setup2InviteTeam
-                        dispatch={dispatch}
-                        setup={setup}
-                        team={team}
-                      />
-                    );
-                  case NAVIGATE_SETUP_0_GET_STARTED:
-                  default:
-                    return (
-                      <Setup0GetStarted
-                        dispatch={dispatch}
-                        shortcuts={shortcuts}
-                        team={team}
-                      />
-                    );
-                }
-              })()}
+              HI GUY
               {/* <SetupField /> */}
             </div>
           </div>
-
-          <Sidebar
-            shortUrl="https://prbl.io/a/b7s8x9"
-            teamName={teamName}
-            timerValue="30:00"
-          />
         </div>
       </HotKeys>
     );
+          // <Sidebar
+          //   shortUrl="https://prbl.io/a/b7s8x9"
+          //   teamName={teamName}
+          //   timerValue="30:00"
+          // />
   }
 }
 
