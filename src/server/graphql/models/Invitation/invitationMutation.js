@@ -9,7 +9,12 @@ import {Invitee} from './invitationSchema';
 import {errorObj} from '../utils';
 import {requireSUOrTeamMember, getUserId} from '../authorization';
 
-import {resolveSentEmails, makeInvitations, getTeamNameInvitedBy, sendInvitations} from './helpers';
+import {
+  resolveSentEmails,
+  makeInvitations,
+  getInviterInfoAndTeamName,
+  sendInvitations
+} from './helpers';
 
 export default {
   inviteTeamMembers: {
@@ -29,9 +34,9 @@ export default {
       const userId = getUserId(authToken);
 
       // TODO on client: https://documentation.mailgun.com/api-email-validation.html#email-validation
-      const {teamName, invitedBy} = await getTeamNameInvitedBy(teamId, userId);
+      const inviterInfoAndTeamName = await getInviterInfoAndTeamName(teamId, userId);
       const invitations = makeInvitations(invitees, teamId);
-      const sendEmailPromises = sendInvitations(invitedBy, teamName, invitations);
+      const sendEmailPromises = sendInvitations(inviterInfoAndTeamName, invitations);
       const {inviteeErrors, invitationsToStore} = await resolveSentEmails(sendEmailPromises, invitees, invitations);
       // Bulk insert, wait in case something queries the invitation table
       await r.table('Invitation').insert(invitationsToStore);
