@@ -3,13 +3,15 @@ const REMOVE_AUTH_TOKEN = 'notifications/REMOVE_AUTH_TOKEN';
 
 const initialState = null;
 
-export default function reducer(state = initialState, action) {
-  if (action.type === SET_AUTH_TOKEN) {
-    return action.payload.authToken;
-  } else if (action.type === REMOVE_AUTH_TOKEN) {
-    return null;
+export default function reducer(state = initialState, action = {}) {
+  switch (action.type) {
+    case SET_AUTH_TOKEN:
+      return action.payload.authToken;
+    case REMOVE_AUTH_TOKEN:
+      return null;
+    default:
+      return state;
   }
-  return state;
 }
 
 export function setAuthToken(authToken) {

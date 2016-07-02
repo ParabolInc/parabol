@@ -1,8 +1,9 @@
 import {setAuthToken, removeAuthToken} from './authDuck';
 
 export default class ReduxAuthEngine {
-  constructor(store) {
+  constructor(store, reducerName = 'authToken') {
     this.store = store;
+    this.reducerName = reducerName;
   }
   saveToken(name, token, options, callback) {
     this.store.dispatch(setAuthToken(token));
@@ -10,14 +11,13 @@ export default class ReduxAuthEngine {
   }
 
   removeToken(name, callback) {
-    const token = this.store.getState().authToken;
+    const token = this.store.getState()[this.reducerName];
     this.store.dispatch(removeAuthToken());
     if (callback) callback(null, token);
   }
 
   loadToken(name, callback) {
-    const token = this.store.getState().authToken;
+    const token = this.store.getState()[this.reducerName];
     if (callback) callback(null, token);
   }
 }
-
