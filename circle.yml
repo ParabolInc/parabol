@@ -17,3 +17,4 @@ dependencies:
 test:
   post:
     - npm run lint
+    - npm run test

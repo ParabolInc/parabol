@@ -7,6 +7,7 @@ import jwt from 'express-jwt';
 import favicon from 'serve-favicon';
 import config from '../../webpack/webpack.config.dev';
 import createSSR from './createSSR';
+import emailSSR from './emailSSR';
 import {auth0} from '../universal/utils/clientOptions';
 
 import {wsGraphQLHandler, wsGraphQLSubHandler} from './graphql/wsGraphQLHandlers';
@@ -56,6 +57,9 @@ export function run(worker) {
     audience: auth0.clientId,
     credentialsRequired: false
   }), httpGraphQLHandler);
+
+  // server-side rendering for emails
+  app.get('/email', emailSSR);
 
   // server-side rendering
   app.get('*', createSSR);

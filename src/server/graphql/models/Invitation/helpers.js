@@ -4,14 +4,24 @@ import ms from 'ms';
 import sendEmail from '../../../email/sendEmail';
 import r from '../../../database/rethinkDriver';
 
-export const getTeamNameInvitedBy = async (teamId, userId) => {
-  const promises = [
-    r.table('Team').get(teamId).pluck('name'),
-    r.table('UserProfile').get(userId).pluck('preferredName')
-  ];
-
-  const [{name: teamName}, {preferredName: invitedBy}] = await Promise.all(promises);
-  return {teamName, invitedBy};
+export const getInviterInfoAndTeamName = async (teamId, userId) => {
+  /**
+   * (1) Fetch user email and picture link from CachedUser.
+   * (2) Rename fields to match TeamInvite email props
+   * (3) Join 'UserProfile' to fetch preferredName as inviterName
+   * (4) Join Team.name by using teamId as teamName
+   */
+  return await r.table('CachedUser').get(userId)
+    .pluck('id', 'email', 'picture')
+    .merge((doc) => ({
+      inviterAvatar: doc('picture'),
+      inviterEmail: doc('email'),
+      inviterName: r.table('UserProfile').get(doc('id'))
+        .pluck('preferredName')('preferredName'),
+      teamName: r.table('Team').get(teamId)
+        .pluck('name')('name'),
+    })
+  );
 };
 
 export const resolveSentEmails = async (sendEmailPromises, invitees, invitations) => {
@@ -47,18 +57,17 @@ export const makeInvitations = (invitees, teamId) => {
   });
 };
 
-export const sendInvitations = (invitedBy, teamName, invitations) => {
+export const sendInvitations = (inviterInfoAndTeamName, invitations) => {
   return invitations.map(invitation => {
-    const {email, task, fullName, inviteToken} = invitation;
-    const emailData = {
-      invitedBy,
-      teamName,
-      inviteToken,
-      email,
-      task,
-      fullName
-    };
-    return sendEmail('inviteTeamMember', emailData);
+    const emailProps = Object.assign(
+      inviterInfoAndTeamName,
+      {
+        inviteeEmail: invitation.email,
+        firstProject: invitation.task,
+        // TODO: change me
+        inviteLink: `http://action-staging.parabol.co/welcome/invite?token=${invitation.inviteToken}`,
+      }
+    );
+    return sendEmail(invitation.email, 'teamInvite', emailProps);
   });
 };
-
