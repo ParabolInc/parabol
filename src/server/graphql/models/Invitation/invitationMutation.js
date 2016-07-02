@@ -40,7 +40,7 @@ export default {
       const {inviteeErrors, invitationsToStore} = await resolveSentEmails(sendEmailPromises, invitees, invitations);
       // Bulk insert, wait in case something queries the invitation table
       await r.table('Invitation').insert(invitationsToStore);
-      if (inviteeErrors) {
+      if (inviteeErrors.length > 0) {
         throw errorObj({_error: 'Some invitations were not sent', type: 'inviteSendFail', failedEmails: inviteeErrors});
       }
       return true;
