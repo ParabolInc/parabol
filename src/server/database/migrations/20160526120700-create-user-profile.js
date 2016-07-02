@@ -4,8 +4,6 @@ exports.up = async (r, connection) => {
   return await r.table('CachedUser').indexCreate('userProfileId').run(connection);
 };
 
-exports.down = async (r, connection) => {
-  await r.table('CachedUser').indexDrop('userProfileId').run(connection);
-  await r.table('UserProfile').indexDrop('cachedUserId').run(connection);
-  return await r.tableDrop('UserProfile').run(connection);
+exports.down = async r => {
+  return await r.tableDrop('UserProfile');
 };

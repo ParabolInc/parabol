@@ -1,124 +1,54 @@
-import React, {Component, PropTypes} from 'react';
-import {setWelcomeName, setWelcomeTeam} from 'universal/modules/welcome/ducks/welcomeDuck';
-import WelcomePreferredName from '../../components/WelcomePreferredName/WelcomePreferredName';
-import WelcomeTeam from '../../components/WelcomeTeam/WelcomeTeam';
-import InviteTeam from '../../components/InviteTeam/InviteTeam';
+import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
-import shortid from 'shortid';
-import {show} from 'universal/modules/notifications/ducks/notifications';
-import {push} from 'react-router-redux';
+import {formValueSelector} from 'redux-form';
+import {HotKeys} from 'react-hotkeys';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
-import {cashay} from 'cashay';
-import getAuthedUser from 'universal/redux/getAuthedUser';
 
-const emailInviteSuccess = {
-  title: 'Invitation sent!',
-  message: 'Your team members will get their invite via email',
-  level: 'success'
+import {
+  Step1PreferredName,
+  Step2TeamName,
+  Step3InviteTeam
+} from '../../components/WelcomeWizardForms';
+
+const keyMap = {
+  keyEnter: 'enter',
+  seqHelp: 'shift+/' // TODO: presently unused
 };
 
-const emailInviteFail = emailsNotDelivered => ({
-  title: 'Invitations not sent!',
-  message: `The following emails were not sent: ${emailsNotDelivered}`,
-  level: 'error'
-});
+const selector = formValueSelector('welcomeWizard');
 
 const mapStateToProps = state => ({
+  invitees: selector(state, 'invitees'),
+  inviteesRaw: selector(state, 'inviteesRaw'),
+  preferredName: selector(state, 'preferredName'),
+  teamName: selector(state, 'teamName'),
   authToken: state.authToken,
   welcome: state.welcome
 });
 
-@connect(mapStateToProps)
-@requireAuth
-export default class WelcomeContainer extends Component {
-  static propTypes = {
-    dispatch: PropTypes.func,
-    welcome: PropTypes.shape({
-      preferredName: PropTypes.string,
-      teamName: PropTypes.string,
-      teamId: PropTypes.string,
-      teamMemberId: PropTypes.string
-    })
-  };
+const WelcomeContainer = props => {
+  const {page} = props.welcome;
+  return (
+    <HotKeys focused attach={window} keyMap={keyMap}>
+      {page === 1 && <Step1PreferredName {...props}/>}
+      {page === 2 && <Step2TeamName {...props}/>}
+      {page === 3 && <Step3InviteTeam {...props}/>}
+    </HotKeys>
+  );
+};
 
-  onPreferredNameSubmit = data => {
-    const {dispatch} = this.props;
-    const {preferredName} = data;
-    const user = getAuthedUser();
-    const options = {
-      variables: {
-        updatedProfile: {
-          id: user.id,
-          preferredName
-        }
-      }
-    };
-    dispatch(setWelcomeName(preferredName));
-    cashay.mutate('updateUserProfile', options);
-  };
+WelcomeContainer.propTypes = {
+  dispatch: PropTypes.func,
+  invitees: PropTypes.array,
+  inviteesRaw: PropTypes.string,
+  preferredName: PropTypes.string,
+  teamName: PropTypes.string,
+  welcome: PropTypes.shape({
+    teamId: PropTypes.string,
+    teamMemberId: PropTypes.string
+  })
+};
 
-  onTeamNameSubmit = data => {
-    const {dispatch} = this.props;
-    const {teamName} = data;
-    const teamId = shortid.generate();
-    const teamMemberId = shortid.generate();
-    const user = getAuthedUser();
-    dispatch(setWelcomeTeam({teamName, teamId, teamMemberId}));
-    const createTeamOptions = {
-      variables: {
-        newTeam: {
-          id: teamId,
-          name: teamName,
-          leader: {
-            id: teamMemberId,
-            teamId,
-            cachedUserId: user.id,
-            isActive: true,
-            isLead: true,
-            isFacilitator: true
-          }
-        }
-      }
-    };
-    cashay.mutate('createTeam', createTeamOptions);
-  };
-
-  onInviteTeamSubmit = data => {
-    const {dispatch, welcome: {teamId}} = this.props;
-    const {invitees} = data;
-    const options = {
-      variables: {
-        teamId,
-        invitees
-      }
-    };
-    cashay.mutate('inviteTeam', options)
-      .then(res => {
-        // TODO make sure this resolves after the route changes
-        console.log('inviteTeamRes', res);
-        if (res.error) {
-          const {failedEmails} = JSON.parse(res.error);
-          if (Array.isArray(failedEmails)) {
-            const emailsNotDelivered = failedEmails.map(invitee => invitee.email).join(', ');
-            dispatch(show(emailInviteFail(emailsNotDelivered)));
-          }
-        } else if (res.data) {
-          dispatch(show(emailInviteSuccess));
-        }
-      });
-
-    // TODO dispatch email success notification
-    dispatch(push(`/team/${teamId}`));
-  };
-
-  render() {
-    const {welcome} = this.props;
-    if (!welcome.preferredName) {
-      return <WelcomePreferredName onSubmit={this.onPreferredNameSubmit} {...this.props} />;
-    } else if (!welcome.teamName) {
-      return <WelcomeTeam onSubmit={this.onTeamNameSubmit} {...this.props} />;
-    }
-    return <InviteTeam onSubmit={this.onInviteTeamSubmit} {...this.props} />;
-  }
-}
-
+export default connect(mapStateToProps)(
+  requireAuth(WelcomeContainer)
+);

@@ -61,3 +61,17 @@ export function getFields(context, astsParams = context.fieldASTs) {
     }
   }, {});
 }
+
+export function updatedOrOriginal(possiblyUpdatedResult, original) {
+  /*
+   * There will only be changes to return if there were changes made to the
+   * DB. Therefore, we've got to check.
+   */
+  if (possiblyUpdatedResult.changes.length) {
+    if (possiblyUpdatedResult.changes.length > 1) {
+      console.warn('updatedOrOriginal() detects more than 1 change, returning 1st.');
+    }
+    return possiblyUpdatedResult.changes[0].new_val;
+  }
+  return original;
+}
