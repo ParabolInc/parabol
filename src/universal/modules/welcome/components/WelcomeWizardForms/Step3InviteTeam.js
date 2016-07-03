@@ -71,11 +71,14 @@ const Step3InviteTeam = props => {
         // TODO I think we want to remove the failures from the array so they can click try again. thoughts?
       }
     } else if (data) {
-      dispatch(push(`/team/${teamId}`));
-      // Bye bye form data:
-      dispatch(destroy('welcomeWizard'));
-      // Proudly trumpet our user's brilliance:
-      dispatch(show(emailInviteSuccess));
+      // Dispatch sequential success thunk:
+      dispatch(
+        Promise.all([
+          dispatch(show(emailInviteSuccess)), // trumpet our leader's brilliance!
+          dispatch(push(`/team/${teamId}`)),  // redirect leader to their new team
+          dispatch(destroy('welcomeWizard')), // Bye bye form data!
+        ])
+      );
     }
   };
   const invitesFieldHasError = false; // TODO: wire this up for real
