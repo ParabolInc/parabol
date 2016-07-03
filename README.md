@@ -135,11 +135,12 @@ get involved and how to get compensated.
 
 ## Releases
 
-| Version            | Summary                                      |
-|--------------------|----------------------------------------------|
-| 0.2.0              | Added first pass at team creation/invitation |
-| 0.1.0              | Things got a whole lot meatier               |
-| 0.0.1              | Developer preview and architecture demo      |
+| Release | Summary                                    |
+|---------|--------------------------------------------|
+| 0.3.0   | Add Welcome journey, redux-storage         |
+| 0.2.0   | Add first pass at team creation/invitation |
+| 0.1.0   | Things got a whole lot meatier             |
+| 0.0.1   | Developer preview and archtecture demo     |
 
 ## About
 
