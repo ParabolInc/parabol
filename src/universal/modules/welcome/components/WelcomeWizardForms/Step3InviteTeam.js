@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import {reduxForm, change, arrayPush, destroy} from 'redux-form';
 import {HotKeys} from 'react-hotkeys';
 import emailAddresses from 'email-addresses';
+import Button from 'universal/components/Button/Button';
 import Field from 'universal/components/Field/Field';
 import LabeledFieldArray from 'universal/components/LabeledFieldArray/LabeledFieldArray';
 import Type from 'universal/components/Type/Type';
@@ -125,7 +126,16 @@ const Step3InviteTeam = props => {
                 nestedFieldHeader="This Week's Priority"
                 nestedFieldName="task"
               />
-              <button type="submit" disabled={submitting}>Submit</button>
+              <div style={{textAlign: 'center'}}>
+                <Button
+                  disabled={submitting}
+                  label="Look’s Good!"
+                  size="medium"
+                  style="solid"
+                  theme="warm"
+                  type="submit"
+                />
+              </div>
             </form>
           </HotKeys>
         </div>
