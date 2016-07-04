@@ -130,8 +130,6 @@ const Step3InviteTeam = props => {
                 <Button
                   disabled={submitting}
                   label="Look’s Good!"
-                  size="medium"
-                  style="solid"
                   theme="warm"
                   type="submit"
                 />

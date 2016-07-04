@@ -66,16 +66,6 @@ const Button = props => {
   const styleThemeName = `${style}${themeName}`;
   const buttonOptions = [styles.base, styles[size], styles[styleThemeName]];
 
-  // console.log('---------- Button props ----------');
-  // console.log(`disabled: ${disabled}`);
-  // console.log(`label: ${label}`);
-  // console.log(`onClick: ${onClick}`);
-  // console.log(`size: ${size}`);
-  // console.log(`style: ${style}`);
-  // console.log(`theme: ${theme}`);
-  // console.log(`title: ${title}`);
-  // console.log(`type: ${type}`);
-
   let buttonStyles;
 
   if (disabled) {
