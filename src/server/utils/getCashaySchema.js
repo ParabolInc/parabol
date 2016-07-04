@@ -1,4 +1,16 @@
-require('babel-register');
+const path = require('path');
+require('babel-register')({
+  /*
+   * Setup require and ES6 import statements to resolve from our app's
+   * root path, just like our webpack environment is configured to do.
+   *
+   * We need this here because getCashaySchema runs from cashay,
+   * it's very own node and babel context.
+   */
+  resolveModuleSource: require('babel-resolver')( // eslint-disable-line global-require
+    path.join(__dirname, '..', '..')
+  )
+});
 require('babel-polyfill');
 const {transformSchema} = require('cashay');
 const graphql = require('graphql').graphql;
