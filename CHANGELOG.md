@@ -4,13 +4,41 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v0.2.0
+
+## v0.3.0 - 04-July-2016
 ### Added
+- `rethink-migrate` back to project
+- CircleCI
+- Toast notifications based upon `react-notification-system`
+- [Cashay](https://github.com/mattkrick/cashay)
+- JSON theme generation using `WebpackShellPlugin`
+- `redux-form`
+- `redux-persist`
+- Email generation
+   - `mailgun` sending emails
+   - `oy` for HTML4 email content generation
+   - `mailcomposer` for MIME email creation
+   - `cheerio` to parse HTML and custom code to embed images
+- Refactored team leader on-boarding journey to use `cashay` and refactored into `Welcome` module
+- Refactored authentication token handling system (see `ReduxAuthEngine`)
+- Numerous components
+- First suite of unit tests
+
+### Removed
+- ImmutableJS
+- `react-hot-loader` from production configuration
+
+### Fixed
+- GraphiQL queries with variables
+
+
+## v0.2.0 (untagged)
 - Adopted `react-look` for inline styling
 - Restructured styles into a computed set of themes
 - Began UI pattern library
 - Reintroduced migrations using `rethink-migrate`
 - Implemented new team creation and invitations process
+
 
 ## v0.1.0
 ### Added
@@ -27,7 +55,8 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Upgraded to react-router
 - Upgraded to react-router-redux
 
-## v0.0.1
+
+## v0.0.1 (untagged)
 ### Added
 - Initial fork from
   [react-redux-universal-hot-example](https://github.com/erikras/react-redux-universal-hot-example) by @jrhusney
