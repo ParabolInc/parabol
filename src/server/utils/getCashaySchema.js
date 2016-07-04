@@ -1,4 +1,5 @@
 const path = require('path');
+const resolve = require('resolve');
 require('babel-register')({
   /*
    * Setup require and ES6 import statements to resolve from our app's
@@ -6,10 +7,18 @@ require('babel-register')({
    *
    * We need this here because getCashaySchema runs from cashay,
    * it's very own node and babel context.
+   *
    */
-  resolveModuleSource: require('babel-resolver')( // eslint-disable-line global-require
-    path.join(__dirname, '..', '..')
-  )
+  resolveModuleSource(source, filename) {
+    return resolve.sync(source, {
+      basedir: path.resolve(filename, '..'),
+      extensions: ['.js'],
+      moduleDirectory: [
+        path.join(__dirname, '..', '..'),  // application root
+        path.join(__dirname, '..', '..', '..', 'node_modules'),
+      ]
+    });
+  }
 });
 require('babel-polyfill');
 const {transformSchema} = require('cashay');
