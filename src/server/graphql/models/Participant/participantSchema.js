@@ -20,11 +20,11 @@ export const Participant = new GraphQLObjectType({
       description: 'The overall connection status (best of all connections)',
       resolve(source) {
         const {connections} = source;
-        const topPrioirty = connections.reduce((highScore, connection) => {
+        const topPriority = connections.reduce((highScore, connection) => {
           const connectionScore = connectionPriority.indexOf(connection.status);
           return Math.max(highScore, connectionScore);
         });
-        return connectionPriority[topPrioirty];
+        return connectionPriority[topPriority];
       }
     }
   })

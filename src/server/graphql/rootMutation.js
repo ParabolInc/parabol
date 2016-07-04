@@ -5,8 +5,11 @@ import team from './models/Team/teamMutation';
 import teamMember from './models/TeamMember/teamMemberMutation';
 import userProfile from './models/UserProfile/userProfileMutation';
 import invitation from './models/Invitation/invitationMutation';
+import connection from './models/Connection/connectionMutation';
 
-const rootFields = Object.assign(cachedUser, meeting, team, teamMember, userProfile, invitation);
+// import participant from './models/Participant/';
+
+const rootFields = Object.assign(cachedUser, meeting, team, teamMember, userProfile, invitation, connection);
 
 export default new GraphQLObjectType({
   name: 'Mutation',

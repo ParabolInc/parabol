@@ -1,10 +1,10 @@
 import r from '../../../database/rethinkDriver';
-import {getFields} from '../utils';
+import {getFields, handleRethinkChangefeed} from '../utils';
 import {Meeting} from './meetingSchema';
 import {GraphQLNonNull, GraphQLID} from 'graphql';
 
 export default {
-  getMeeting: {
+  meeting: {
     type: Meeting,
     args: {
       meetingId: {
@@ -12,36 +12,26 @@ export default {
         description: 'The unique meeting ID'
       }
     },
-    async resolve(source, {meetingId}, refs) {
-      const {rootValue} = refs;
+    async resolve(source, {meetingId}, {authToken, socket, subbedChannelName}, refs) {
       // eslint-disable-next-line no-unused-vars
-      const {socket, authToken, subbedChannelName} = rootValue;
       const requestedFields = Object.keys(getFields(refs));
-      // isLoggedIn(rootValue);
+      // const mapper = handleRethinkChangefeed(requestedFields);
+      const fields = r.expr(requestedFields);
       r.table('Meeting')
         .get(meetingId)
         // point changefeeds don't support pluck yet https://github.com/rethinkdb/rethinkdb/issues/3623
-        // .pluck(requestedFields)
-        // TODO change this to a 1 time query
-        // instead of includeInitial so we can use the socket.publish?
         .changes({includeInitial: true})
-        .map(row => ({new_val: row('new_val').pluck(requestedFields)}))
+        // .filter(row => fields.contains(field => {
+        //   return row('new_val')(field).ne(row('old_val')(field)).default(true);
+        // }))
+        .map(row => ({new_val: row('new_val').default({}).pluck(fields), old_val: row('old_val').default({}).pluck(fields)}))
         .run({cursor: true}, (err, cursor) => {
-          if (err) {
-            throw err;
-          }
+          if (err) throw err;
           cursor.each((error, data) => {
-            if (error) {
-              throw error;
-            }
-            const docId = data.new_val.id;
-            if (socket.docQueue.has(docId)) {
-              // don't bother sending it back to the originator,
-              // they were already optimistically updated
-              socket.docQueue.delete(docId);
-            } else {
-              socket.emit(subbedChannelName, data.new_val);
-            }
+            if (error) throw error;
+            const formattedData = handleRethinkChangefeed(data);
+            console.log('emitting meeting data', subbedChannelName, formattedData)
+            socket.emit(subbedChannelName, formattedData);
           });
           socket.on('unsubscribe', channelName => {
             if (channelName === subbedChannelName) {

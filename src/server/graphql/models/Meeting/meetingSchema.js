@@ -2,8 +2,11 @@ import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
-  GraphQLID
+  GraphQLID,
+  GraphQLList
 } from 'graphql';
+import {Participant} from '../Participant/participantSchema';
+
 // import {errorObj} from '../utils';
 
 // import {Team} from '../Team/teamSchema';
@@ -17,6 +20,13 @@ export const Meeting = new GraphQLObjectType({
     createdAt: {type: GraphQLString, description: 'The datetime the meeting was created'},
     updatedAt: {type: GraphQLString, description: 'The datetime the meeting was last updated'},
     lastUpdatedBy: {type: GraphQLString, description: 'The last user to update the content'},
+    participants: {
+      type: new GraphQLList(Participant),
+      description: 'The participants involved in the meeting',
+      async resolve(source, args, context) {
+        await r.table('Participant')
+      }
+    }
     // team: {
     //   type: Team,
     //   async resolve(source) {

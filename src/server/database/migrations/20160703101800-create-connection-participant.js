@@ -1,6 +1,7 @@
 exports.up = async r => {
   try {
-    await r.tableCreate('Meeting');
+    await r.tableCreate('Connection');
+    await r.tableCreate('Participant');
   } catch(e) {
     console.log(e);
   }
@@ -8,7 +9,8 @@ exports.up = async r => {
 
 exports.down = async r => {
   try {
-    return await r.tableDrop('Meeting');
+    await r.tableDrop('Connection');
+    await r.tableDrop('Participant');
   } catch(e) {
     console.log(e);
   }

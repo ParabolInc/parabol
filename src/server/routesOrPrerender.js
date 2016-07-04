@@ -18,7 +18,8 @@ export default option => {
     lookConfig.userAgent = req.headers['user-agent'];
     if (PROD) {
       // eslint-disable-next-line global-require
-      const cashaySchema = require('cashay!./utils/getCashaySchema.js');
+      const cashaySchema = {};
+      // const cashaySchema = require('cashay!./utils/getCashaySchema.js');
       const cashayHttpTransport = new ActionHTTPTransport();
       cashay.create({
         store,

@@ -4,8 +4,11 @@ import {connect} from 'react-redux';
 import {reduxSocket} from 'redux-socket-cluster';
 import {HotKeys} from 'react-hotkeys';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
-
 import AuthEngine from 'universal/redux/AuthEngine';
+import {cashay} from 'cashay';
+import channelLookupMap from 'universal/redux/channelLookupMap';
+import subscriber from 'universal/redux/subscriber';
+import socketCluster from 'socketcluster-client';
 
 let styles = {};
 
@@ -14,13 +17,24 @@ const keyMap = {
   seqHelp: 'shift+/'
 };
 
-const mapStateToProps = state => ({
-  authToken: state.authToken
-});
+const meetingSubscriptionString = channelLookupMap.get('meeting');
 
+const mapStateToProps = (state, props) => {
+  console.log('mstp', props);
+  const options = {
+    variables: {
+      meetingId: props.params.meetingId
+    }
+  };
+  return {
+    authToken: state.authToken,
+    result: cashay.subscribe(meetingSubscriptionString, subscriber, options)
+  };
+};
+
+@reduxSocket({}, {AuthEngine, socketCluster, keepAlive: 0})
 @connect(mapStateToProps)
 @requireAuth
-@reduxSocket({}, {AuthEngine})
 @look
 // eslint-disable-next-line react/prefer-stateless-function
 export default class MeetingLobby extends Component {
@@ -35,6 +49,11 @@ export default class MeetingLobby extends Component {
   };
 
   render() {
+    // const socket = socketCluster.connect();
+    // socket.subscribe('foo');
+    console.log('result', this.props.result);
+    const {data} = this.props.result;
+    console.log('data', data);
     return (
       <HotKeys focused attach={window} keyMap={keyMap}>
         <div className={styles.viewport}>
@@ -47,11 +66,11 @@ export default class MeetingLobby extends Component {
         </div>
       </HotKeys>
     );
-          // <Sidebar
-          //   shortUrl="https://prbl.io/a/b7s8x9"
-          //   teamName={teamName}
-          //   timerValue="30:00"
-          // />
+    // <Sidebar
+    //   shortUrl="https://prbl.io/a/b7s8x9"
+    //   teamName={teamName}
+    //   timerValue="30:00"
+    // />
   }
 }
 

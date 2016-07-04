@@ -1,5 +1,6 @@
 import {graphql} from 'graphql';
 import Schema from './rootSchema';
+import channelLookupMap from 'universal/redux/channelLookupMap';
 
 export const wsGraphQLHandler = async(body, cb) => {
   const {query, variables, ...context} = body;
@@ -24,35 +25,30 @@ export const wsGraphQLHandler = async(body, cb) => {
  * It's a lookup table that turns a channelName into a graphQL query
  * By creating this on the server it keeps payloads really small
  * */
-const subscriptionLookup = {
-  getMeeting(meetingId) {
-    return {
-      queryString: `
-        subscription($meetingId: ID!) {
-          getMeeting(meetingId: $meetingId) {
-            id,
-            content,
-            currentEditors,
-            lastUpdatedBy
-          }
-        }`,
-      variables: {meetingId}
-    };
+const variableParser = {
+  meeting(variablesStr) {
+    return {meetingId: variablesStr};
   }
 };
 
-const parseChannelName = channelName => {
-  const channelVars = channelName.split('/');
-  const subscriptionName = channelVars.shift();
-  const queryFactory = subscriptionLookup[subscriptionName];
-  return queryFactory ? queryFactory(...channelVars) : {};
-};
-
 // This should be arrow syntax, but doesn't work when it is
-export function wsGraphQLSubHandler(subbedChannelName) {
+export async function wsGraphQLSubHandler(subbedChannelName) {
   const authToken = this.getAuthToken();
-  const {queryString, variables, ...rootVals} = parseChannelName(subbedChannelName);
-  graphql(Schema, queryString, {
-    socket: this, authToken, subbedChannelName, ...rootVals
-  }, variables);
+  const firstSlashLoc = subbedChannelName.indexOf('/');
+  const subscriptionName = subbedChannelName.substr(0,firstSlashLoc);
+  const channelVars = subbedChannelName.substr(firstSlashLoc+1);
+  const queryString = channelLookupMap.get(subscriptionName);
+  const variables = variableParser[subscriptionName](channelVars);
+  const context = {
+    authToken,
+    socket: this,
+    subbedChannelName
+  };
+  let foo;
+  try {
+    foo = await graphql(Schema, queryString, null, context, variables);
+  } catch(e) {
+    console.log('SUB ERR', e)
+  }
+  console.log('res', foo)
 }

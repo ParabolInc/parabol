@@ -1,7 +1,7 @@
-import { GraphQLNonNull, GraphQLID } from 'graphql';
-import { Meeting } from './meetingSchema';
-import { errorObj } from '../utils';
-import { getMeetingById, getMeetingByTeamId } from './helpers';
+import {GraphQLNonNull, GraphQLID} from 'graphql';
+import {Meeting} from './meetingSchema';
+import {errorObj} from '../utils';
+import {getMeetingById, getMeetingByTeamId} from './helpers';
 
 export default {
   getMeetingById: {

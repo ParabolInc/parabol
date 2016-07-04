@@ -9,8 +9,7 @@ import config from '../../webpack/webpack.config.dev';
 import createSSR from './createSSR';
 import emailSSR from './emailSSR';
 import {auth0} from '../universal/utils/clientOptions';
-
-import {wsGraphQLHandler, wsGraphQLSubHandler} from './graphql/wsGraphQLHandlers';
+import scConnectionHandler from './scConnectionHandler';
 import httpGraphQLHandler from './graphql/httpGraphQLHandler';
 
 const PROD = process.env.NODE_ENV === 'production';
@@ -65,14 +64,5 @@ export function run(worker) {
   app.get('*', createSSR);
 
   // handle sockets
-  scServer.on('connection', socket => {
-    console.log('Client connected:', socket.id);
-    // hold the client-submitted docs in a queue while they get validated & handled in the DB
-    // then, when the DB emits a change, we know if the client caused it or not
-    // eslint-disable-next-line no-param-reassign
-    socket.docQueue = new Set();
-    socket.on('graphql', wsGraphQLHandler);
-    socket.on('subscribe', wsGraphQLSubHandler);
-    socket.on('disconnect', () => console.log('Client disconnected:', socket.id));
-  });
+  scServer.on('connection', scConnectionHandler);
 }
