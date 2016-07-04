@@ -76,7 +76,6 @@
     "auth0": "^2.3.0",
     "auth0-lock": "^9.2.1",
     "babel-polyfill": "6.9.1",
-    "babel-resolver": "0.0.18",
     "babel-runtime": "6.9.2",
     "body-parser": "1.15.2",
     "cashay": "^0.11.3",
