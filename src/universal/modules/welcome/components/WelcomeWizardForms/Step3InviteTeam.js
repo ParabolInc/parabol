@@ -87,10 +87,7 @@ const Step3InviteTeam = props => {
     // eslint-disable-next-line max-len
     <span>Oops! Please make sure email addresses are valid <br />and separated by a single comma.</span> :
     <span>You can paste multiple emails separated by a comma.<br />&nbsp;</span>;
-  let fieldArrayHasValue = false;
-  if (invitees)
-    fieldArrayHasValue = invitees && invitees[0] != null;
-  }
+  const fieldArrayHasValue = invitees && invitees[0] != null;
 
   return (
     <WelcomeLayout>
