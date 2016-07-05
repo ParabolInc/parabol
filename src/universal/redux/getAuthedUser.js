@@ -27,7 +27,16 @@ query {
     profile {
      isNew,
      preferredName
-    }
+    },
+    memberships {
+         team {
+           id,
+           name
+         },
+         isLead,
+         isActive,
+         isFacilitator
+   }
   }
 }`;
 

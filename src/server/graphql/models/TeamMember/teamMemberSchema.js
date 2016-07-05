@@ -8,6 +8,7 @@ import {Team} from '../Team/teamSchema';
 import {CachedUser} from '../CachedUser/cachedUserSchema';
 import {UserProfile} from '../UserProfile/userProfileSchema';
 import {nonnullifyInputThunk} from '../utils';
+import r from '../../../database/rethinkDriver';
 
 export const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',
@@ -24,7 +25,11 @@ export const TeamMember = new GraphQLObjectType({
     isFacilitator: {type: GraphQLBoolean, description: 'Is user a team facilitator?'},
     team: {
       type: Team,
-      description: 'The team this team member belongs to'
+      description: 'The team this team member belongs to',
+      async resolve({id}) {
+        // TODO: use teamId instead
+        return await r.table('Team').get(id);
+      }
     },
     cachedUser: {
       type: CachedUser,
