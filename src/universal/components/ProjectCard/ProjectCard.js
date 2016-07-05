@@ -22,25 +22,24 @@ const ProjectCard = props => {
 
   const makeStatusButton = () => {
     const buttonStyles = combineStyles(styles.statusButton, styles[status]);
-    let icon;
-    /*  */ if (status === 'active') {
-      icon = 'arrow-right';
-    } else if (status === 'stuck') {
-      icon = 'exclamation-triangle';
-    } else if (status === 'done') {
-      icon = 'check';
-    } else if (status === 'future') {
-      icon = 'clock-o';
-    }
+    const statusIcon = {
+      active: 'arrow-right',
+      stuck: 'exclamation-triangle',
+      done: 'check',
+      future: 'clock-o'
+    };
     return (
       <button
         className={buttonStyles}
         onClick={openStatusMenu}
       >
-        <FontAwesome name={icon} style={{lineHeight: avatarSize}} />
+        <FontAwesome name={statusIcon[status]} style={{lineHeight: avatarSize}} />
       </button>
     );
   };
+
+  const avatarImage = showByTeam ? team.avatar : owner.avatar;
+  const avatarName = showByTeam ? team.name : owner.name;
 
   return (
     <div className={combineStyles(styles.root, styles[status])}>
@@ -55,24 +54,16 @@ const ProjectCard = props => {
       </div>
       {/* card footer */}
       <div className={styles.footer}>
-        {showByTeam &&
-          <div className={styles.avatarBlock}>
-            <img alt={team.name} className={styles.avatar} src={team.avatar} />
-            <div className={styles.name}>{team.name}</div>
-          </div>
-        }
-        {!showByTeam &&
-          <div className={styles.avatarBlock}>
-            <img alt={owner.name} className={styles.avatar} src={owner.avatar} />
-            <div className={styles.name}>{owner.name}</div>
-          </div>
-        }
+        <div className={styles.avatarBlock}>
+          <img alt={team.name} className={styles.avatar} src={avatarImage} />
+          <div className={styles.name}>{avatarName}</div>
+        </div>
         <div className={styles.statusBlock}>
           <div className={styles.statusButton}>
             {makeStatusButton()}
           </div>
           {isArchived &&
-            <div>Archived</div>
+            <div>TODO: Style archived</div>
           }
         </div>
       </div>
@@ -168,7 +159,7 @@ styles = StyleSheet.create({
   },
 
   name: {
-    color: theme.palette.mid,
+    color: theme.palette.dark,
     display: 'inline-block',
     fontSize: theme.typography.s2,
     fontWeight: 700,
@@ -179,6 +170,25 @@ styles = StyleSheet.create({
   statusBlock: {
     alignSelf: 'flex-end'
   },
+
+  statusButton: {
+    backgroundColor: theme.palette.mid10l,
+    border: 0,
+    borderRadius: '.5rem',
+    cursor: 'pointer',
+    fontSize: theme.typography.s3,
+    fontWeight: 700,
+    height: avatarSize,
+    lineHeight: avatarSize,
+    margin: 0,
+    outline: 'none',
+    padding: 0,
+    textAlign: 'center',
+    width: avatarSize
+  },
+
+  // Status theme decorators
+  // Note: Can share color properties
 
   active: {
     borderTopColor: theme.palette.dark10d,
@@ -198,22 +208,6 @@ styles = StyleSheet.create({
   future: {
     borderTopColor: theme.palette.mid,
     color: theme.palette.mid
-  },
-
-  statusButton: {
-    backgroundColor: theme.palette.mid10l,
-    border: 0,
-    borderRadius: '.5rem',
-    cursor: 'pointer',
-    fontSize: theme.typography.s3,
-    fontWeight: 700,
-    height: avatarSize,
-    lineHeight: avatarSize,
-    margin: 0,
-    outline: 'none',
-    padding: 0,
-    textAlign: 'center',
-    width: avatarSize
   }
 });
 
