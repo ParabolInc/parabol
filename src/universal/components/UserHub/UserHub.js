@@ -1,37 +1,33 @@
-import React, { Component, PropTypes } from 'react';
-import look, { StyleSheet } from 'react-look';
+import React, {PropTypes} from 'react';
+import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import FontAwesome from 'react-fontawesome';
 
 let styles = {};
 
-@look
-// eslint-disable-next-line react/prefer-stateless-function
-export default class UserHub extends Component {
+const UserHub = (props) => {
+  const {name, nickname} = props.user;
+  const avatar = props.user.avatar || 'https://placekitten.com/g/44/44';
 
-  static propTypes = {
-    user: PropTypes.object
-  }
-
-  render() {
-    const {user} = this.props;
-
-    return (
-      <div className={styles.root}>
-        <img alt="Me" className={styles.avatar} src={user.avatar} />
-        <div className={styles.info}>
-          <div className={styles.name}>{user.name}</div>
-          <div className={styles.email}>{user.email}</div>
-        </div>
-        <div className={styles.settings}>
-          <div className={styles.settingsIcon}>
-            <FontAwesome name="cog" />
-          </div>
+  return (
+    <div className={styles.root}>
+      <img alt="Me" className={styles.avatar} src={avatar} />
+      <div className={styles.info}>
+        <div className={styles.name}>{nickname}</div>
+        <div className={styles.email}>{name}</div>
+      </div>
+      <div className={styles.settings}>
+        <div className={styles.settingsIcon}>
+          <FontAwesome name="cog" />
         </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
+
+UserHub.propTypes = {
+  user: PropTypes.object
+};
 
 styles = StyleSheet.create({
   root: {
@@ -81,3 +77,5 @@ styles = StyleSheet.create({
     width: '14px'
   }
 });
+
+export default look(UserHub);

@@ -1,30 +1,25 @@
-import React, { Component, PropTypes } from 'react';
-import look, { StyleSheet } from 'react-look';
+import React, {PropTypes} from 'react';
+import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 
 const combineStyles = StyleSheet.combineStyles;
 let styles = {};
 
-@look
-// eslint-disable-next-line react/prefer-stateless-function
-export default class DashNavItem extends Component {
+const DashNavItem = (props) => {
+  const activeStyles = combineStyles(styles.root, styles.active);
+  const itemStyles = props.active ? activeStyles : styles.root;
 
-  static propTypes = {
-    active: PropTypes.bool,
-    label: PropTypes.string
-  }
+  return (
+    <div className={itemStyles} title={props.label}>
+      {props.label}
+    </div>
+  );
+};
 
-  render() {
-    const activeStyles = combineStyles(styles.root, styles.active);
-    const itemStyles = this.props.active ? activeStyles : styles.root;
-
-    return (
-      <div className={itemStyles} title={this.props.label}>
-        {this.props.label}
-      </div>
-    );
-  }
-}
+DashNavItem.propTypes = {
+  active: PropTypes.bool,
+  label: PropTypes.string
+};
 
 styles = StyleSheet.create({
   root: {
@@ -56,3 +51,5 @@ styles = StyleSheet.create({
     }
   }
 });
+
+export default look(DashNavItem);

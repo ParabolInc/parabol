@@ -6,10 +6,10 @@ import {head} from 'universal/utils/clientOptions';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 
-import DashContent from '../../components/DashContent/DashContent';
-import DashHeader from '../../components/DashHeader/DashHeader';
-import DashSidebar from '../../components/DashSidebar/DashSidebar';
-import NotificationBar from '../../components/NotificationBar/NotificationBar';
+import DashContent from 'universal/components/DashContent/DashContent';
+import DashHeader from 'universal/components/DashHeader/DashHeader';
+import DashSidebar from 'universal/components/DashSidebar/DashSidebar';
+import NotificationBar from 'universal/components/NotificationBar/NotificationBar';
 
 let styles = {};
 
