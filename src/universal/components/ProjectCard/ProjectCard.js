@@ -15,7 +15,7 @@ const ProjectCard = props => {
     openStatusMenu,
     isArchived,
     owner,
-    showByOwner,
+    showByTeam,
     team,
     timestamp
   } = props;
@@ -55,16 +55,16 @@ const ProjectCard = props => {
       </div>
       {/* card footer */}
       <div className={styles.footer}>
-        {showByOwner &&
-          <div className={styles.avatarBlock}>
-            <img alt={owner.name} className={styles.avatar} src={owner.avatar} />
-            <div className={styles.name}>{owner.name}</div>
-          </div>
-        }
-        {!showByOwner &&
+        {showByTeam &&
           <div className={styles.avatarBlock}>
             <img alt={team.name} className={styles.avatar} src={team.avatar} />
             <div className={styles.name}>{team.name}</div>
+          </div>
+        }
+        {!showByTeam &&
+          <div className={styles.avatarBlock}>
+            <img alt={owner.name} className={styles.avatar} src={owner.avatar} />
+            <div className={styles.name}>{owner.name}</div>
           </div>
         }
         <div className={styles.statusBlock}>
@@ -93,7 +93,7 @@ ProjectCard.propTypes = {
   owner: PropTypes.object,
   team: PropTypes.object,
   timestamp: PropTypes.string,
-  showByOwner: PropTypes.bool
+  showByTeam: PropTypes.bool
 };
 
 ProjectCard.defaultProps = {
@@ -112,7 +112,7 @@ ProjectCard.defaultProps = {
     avatar: 'https://placekitten.com/g/24/24'
   },
   timestamp: '1 day ago',
-  showByOwner: true
+  showByTeam: false
 };
 
 styles = StyleSheet.create({
@@ -121,7 +121,8 @@ styles = StyleSheet.create({
     border: `1px solid ${theme.palette.mid30l}`,
     borderRadius: '.5rem',
     borderTop: `.25rem solid ${theme.palette.dark10d}`,
-    maxWidth: '20rem'
+    maxWidth: '20rem',
+    width: '100%'
   },
 
   main: {

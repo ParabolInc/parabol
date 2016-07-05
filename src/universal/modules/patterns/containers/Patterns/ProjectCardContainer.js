@@ -10,11 +10,8 @@ const projectCardString = '<ProjectCard />';
 
 // TODO: Add all props to demo
 const projectCardPropsList = [
-  { name: 'description', type: 'string',
-    description: <span>A string of text describing the desired outcome</span>
-  },
-  { name: 'status', type: 'oneOf',
-    description: <span>active, stuck, done, future</span>
+  { name: 'TBD', type: 'TBD',
+    description: <span>TBD: Component is actively being developed…</span>
   }
 ];
 
@@ -31,7 +28,7 @@ export default class CardContainer extends Component {
         <SectionHeader
           heading="ProjectCard"
           // eslint-disable-next-line max-len
-          description="A ProjectCard component with avatar, label and optional controls"
+          description="A ProjectCard component with description, timestamp, owner/team, and status"
         />
 
         <Example>

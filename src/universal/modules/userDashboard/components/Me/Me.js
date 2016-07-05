@@ -6,9 +6,11 @@ import {head} from 'universal/utils/clientOptions';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 
+import DashColumns from 'universal/components/DashColumns/DashColumns';
 import DashContent from 'universal/components/DashContent/DashContent';
 import DashHeader from 'universal/components/DashHeader/DashHeader';
 import DashSidebar from 'universal/components/DashSidebar/DashSidebar';
+import dashTimestamp from 'universal/components/DashTimestamp/DashTimestamp';
 import NotificationBar from 'universal/components/NotificationBar/NotificationBar';
 
 let styles = {};
@@ -26,9 +28,10 @@ const Me = (props) => {
           <DashSidebar user={props.user} teams={memberships} />
         </div>
         <div className={styles.content}>
-          <DashHeader title="My Outcomes" meta="Tuesday, June 21 • Carpe diem!" />
+          <DashHeader title="My Outcomes" meta={`${dashTimestamp} • Carpe diem!`} />
           <DashContent>
             It’s the Me show! starring: <b>{name}</b>, AKA <b>{nickname}</b>
+            <DashColumns />
           </DashContent>
         </div>
       </div>
