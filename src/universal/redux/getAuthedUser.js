@@ -29,14 +29,15 @@ query {
      preferredName
     },
     memberships {
-         team {
-           id,
-           name
-         },
-         isLead,
-         isActive,
-         isFacilitator
-   }
+      id,
+      team {
+       id,
+       name
+      },
+      isLead,
+      isActive,
+      isFacilitator
+    }
   }
 }`;
 

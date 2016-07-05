@@ -26,18 +26,23 @@ export const TeamMember = new GraphQLObjectType({
     team: {
       type: Team,
       description: 'The team this team member belongs to',
-      async resolve({id}) {
-        // TODO: use teamId instead
-        return await r.table('Team').get(id);
+      async resolve({teamId}) {
+        return await r.table('Team').get(teamId);
       }
     },
     cachedUser: {
       type: CachedUser,
-      description: 'The cached user for the team member'
+      description: 'The cached user for the team member',
+      async resolve({cachedUserId}) {
+        return await r.table('CachedUser').get(cachedUserId);
+      }
     },
     userProfile: {
       type: UserProfile,
-      description: 'The user profile for the team member'
+      description: 'The user profile for the team member',
+      async resolve({cachedUserId}) {
+        return await r.table('UserProfile').get(cachedUserId);
+      }
     }
   })
 });
