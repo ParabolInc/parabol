@@ -33,13 +33,18 @@ const ProjectCard = props => {
         className={buttonStyles}
         onClick={openStatusMenu}
       >
-        <FontAwesome name={statusIcon[status]} style={{lineHeight: avatarSize}} />
+        <FontAwesome
+          name={statusIcon[status]}
+          style={{lineHeight: avatarSize}}
+        />
       </button>
     );
   };
 
   const avatarImage = showByTeam ? team.avatar : owner.avatar;
   const avatarName = showByTeam ? team.name : owner.name;
+  const avatarTeamStyles = combineStyles(styles.avatar, styles.avatarTeam);
+  const avatarStyles = showByTeam ? avatarTeamStyles : styles.avatar;
 
   return (
     <div className={combineStyles(styles.root, styles[status])}>
@@ -55,7 +60,7 @@ const ProjectCard = props => {
       {/* card footer */}
       <div className={styles.footer}>
         <div className={styles.avatarBlock}>
-          <img alt={team.name} className={styles.avatar} src={avatarImage} />
+          <img alt={avatarName} className={avatarStyles} src={avatarImage} />
           <div className={styles.name}>{avatarName}</div>
         </div>
         <div className={styles.statusBlock}>

@@ -5,8 +5,8 @@ import ExampleCode from '../../components/ExampleCode/ExampleCode';
 import PropsTable from '../../components/PropsTable/PropsTable';
 import ProjectCard from 'universal/components/ProjectCard/ProjectCard';
 
-const projectCard = <ProjectCard />;
-const projectCardString = '<ProjectCard />';
+const projectCard = <ProjectCard showByTeam />;
+const projectCardString = '<ProjectCard showByTeam />';
 
 // TODO: Add all props to demo
 const projectCardPropsList = [
