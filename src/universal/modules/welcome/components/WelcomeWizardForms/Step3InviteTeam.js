@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import {reduxForm, change, arrayPush, destroy} from 'redux-form';
 import {HotKeys} from 'react-hotkeys';
 import emailAddresses from 'email-addresses';
+import Button from 'universal/components/Button/Button';
 import Field from 'universal/components/Field/Field';
 import LabeledFieldArray from 'universal/components/LabeledFieldArray/LabeledFieldArray';
 import Type from 'universal/components/Type/Type';
@@ -86,6 +87,7 @@ const Step3InviteTeam = props => {
     // eslint-disable-next-line max-len
     <span>Oops! Please make sure email addresses are valid <br />and separated by a single comma.</span> :
     <span>You can paste multiple emails separated by a comma.<br />&nbsp;</span>;
+  const fieldArrayHasValue = invitees && invitees[0] != null;
 
   return (
     <WelcomeLayout>
@@ -102,30 +104,43 @@ const Step3InviteTeam = props => {
           </Type>
           <WelcomeHeading copy={<span>Let’s invite some folks to the <b>{teamName}</b> team.</span>}/>
           <HotKeys handlers={{ keyEnter: onAddInviteesButtonClick}}>
-            <Field
-              autoFocus={!invitees || invitees.length === 0}
-              buttonDisabled={!inviteesRaw}
-              buttonIcon="check-circle"
-              hasButton
-              hasErrorText={invitesFieldHasError}
-              hasHelpText
-              helpText={helpText}
-              isLarger
-              isWider
-              name="inviteesRaw"
-              type="text"
-              onButtonClick={onAddInviteesButtonClick}
-              placeholder="b.bunny@acme.co, d.duck@acme.co, e.fudd@acme.co"
-            />
-            <form onSubmit={handleSubmit(onInviteTeamSubmit)}>
-              <LabeledFieldArray
-                labelGetter={(idx) => invitees[idx].label}
-                labelHeader="Invitee"
-                labelSource="invitees"
-                nestedFieldHeader="This Week's Priority"
-                nestedFieldName="task"
+            <div style={{margin: '0 auto', width: '30rem'}}>
+              <Field
+                autoFocus={!invitees || invitees.length === 0}
+                buttonDisabled={!inviteesRaw}
+                buttonIcon="check-circle"
+                hasButton
+                hasErrorText={invitesFieldHasError}
+                hasHelpText
+                helpText={helpText}
+                isLarger
+                isWider
+                name="inviteesRaw"
+                onButtonClick={onAddInviteesButtonClick}
+                placeholder="b.bunny@acme.co, d.duck@acme.co, e.fudd@acme.co"
+                type="text"
               />
-              <button type="submit" disabled={submitting}>Submit</button>
+            </div>
+            <form onSubmit={handleSubmit(onInviteTeamSubmit)}>
+              {fieldArrayHasValue &&
+                <div style={{margin: '2rem 0 0'}}>
+                  <LabeledFieldArray
+                    labelGetter={(idx) => invitees[idx].label}
+                    labelHeader="Invitee"
+                    labelSource="invitees"
+                    nestedFieldHeader="This Week's Priority"
+                    nestedFieldName="task"
+                  />
+                </div>
+              }
+              <div style={{margin: '2rem 0 0', textAlign: 'center'}}>
+                <Button
+                  disabled={submitting || !fieldArrayHasValue}
+                  label="Look’s Good!"
+                  theme="warm"
+                  type="submit"
+                />
+              </div>
             </form>
           </HotKeys>
         </div>
