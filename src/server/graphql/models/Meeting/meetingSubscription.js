@@ -24,7 +24,10 @@ export default {
         // .filter(row => fields.contains(field => {
         //   return row('new_val')(field).ne(row('old_val')(field)).default(true);
         // }))
-        .map(row => ({new_val: row('new_val').default({}).pluck(fields), old_val: row('old_val').default({}).pluck(fields)}))
+        .map(row => ({
+          new_val: row('new_val').default({}).pluck(fields),
+          old_val: row('old_val').default({}).pluck(fields)
+        }))
         .run({cursor: true}, (err, cursor) => {
           if (err) throw err;
           cursor.each((error, data) => {
