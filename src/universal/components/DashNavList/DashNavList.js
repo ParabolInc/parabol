@@ -6,6 +6,7 @@ import theme from 'universal/styles/theme';
 let styles = {};
 
 const DashNavList = (props) => {
+  const {dispatch} = props;
   const hasItems = props.items[0] !== undefined;
   return (
     <div className={styles.root}>
@@ -13,7 +14,7 @@ const DashNavList = (props) => {
         <div>
           {props.items.map((item, index) =>
             <div className={styles.item} key={index}>
-              <DashNavItem {...item} />
+              <DashNavItem dispatch={dispatch} {...item} />
             </div>
           )}
         </div>
@@ -27,6 +28,7 @@ const DashNavList = (props) => {
 
 DashNavList.propTypes = {
   activeId: PropTypes.string,
+  dispatch: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(
     PropTypes.shape({
       active: PropTypes.bool,

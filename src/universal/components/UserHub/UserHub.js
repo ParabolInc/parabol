@@ -1,13 +1,21 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
+import {push} from 'react-router-redux';
 import theme from 'universal/styles/theme';
 import FontAwesome from 'react-fontawesome';
 
 let styles = {};
 
+
 const UserHub = (props) => {
   const {name, nickname} = props.user;
   const avatar = props.user.avatar || 'https://placekitten.com/g/44/44';
+
+  const onSettingsClick = (event) => {
+    const {dispatch} = props;
+    event.preventDefault();
+    dispatch(push('/me/settings'));
+  };
 
   return (
     <div className={styles.root}>
@@ -18,7 +26,7 @@ const UserHub = (props) => {
       </div>
       <div className={styles.settings}>
         <div className={styles.settingsIcon}>
-          <FontAwesome name="cog" />
+          <FontAwesome name="cog" onClick={(e) => onSettingsClick(e)} />
         </div>
       </div>
     </div>
@@ -26,6 +34,7 @@ const UserHub = (props) => {
 };
 
 UserHub.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   user: PropTypes.object
 };
 

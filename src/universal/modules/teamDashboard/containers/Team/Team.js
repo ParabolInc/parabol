@@ -23,7 +23,7 @@ export default class TeamContainer extends Component {
   };
 
   render() {
-    const {urlParams, user} = this.props;
-    return <Team urlParams={urlParams} user={user} />;
+    const {urlParams, user, ...props} = this.props;
+    return <Team urlParams={urlParams} user={user} {...props} />;
   }
 }

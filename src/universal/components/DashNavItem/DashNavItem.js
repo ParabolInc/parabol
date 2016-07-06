@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
+import {push} from 'react-router-redux';
 import theme from 'universal/styles/theme';
 
 const combineStyles = StyleSheet.combineStyles;
@@ -9,10 +10,16 @@ const DashNavItem = (props) => {
   const activeStyles = combineStyles(styles.root, styles.active);
   const itemStyles = props.active ? activeStyles : styles.root;
 
+  const onClick = (event) => {
+    const {dispatch, href} = props;
+    event.preventDefault();
+    dispatch(push(href));
+  };
+
   return (
     <div className={itemStyles} title={props.label}>
       {props.href && !props.active ?
-        <a href={props.href}>{props.label}</a> :
+        <a href="#" onClick={(e) => onClick(e)}>{props.label}</a> :
         props.label
       }
     </div>
@@ -21,6 +28,7 @@ const DashNavItem = (props) => {
 
 DashNavItem.propTypes = {
   active: PropTypes.bool,
+  dispatch: PropTypes.func.isRequired,
   href: PropTypes.string,
   label: PropTypes.string.isRequired,
 };

@@ -6,17 +6,16 @@ import {head} from 'universal/utils/clientOptions';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 
-import DashColumns from 'universal/components/DashColumns/DashColumns';
-import DashContent from 'universal/components/DashContent/DashContent';
-import DashHeader from 'universal/components/DashHeader/DashHeader';
+import Outcomes from 'universal/modules/userDashboard/components/Outcomes/Outcomes';
+import Settings from 'universal/modules/userDashboard/components/Preferences/Preferences';
+
 import DashSidebar from 'universal/components/DashSidebar/DashSidebar';
-import dashTimestamp from 'universal/components/DashTimestamp/DashTimestamp';
 import NotificationBar from 'universal/components/NotificationBar/NotificationBar';
 
 let styles = {};
 
 const Me = (props) => {
-  const {name, nickname} = props.user;
+  const {dispatch, location} = props;
   return (
     <div className={styles.viewport}>
       <Helmet title="Action Dashboard" {...head} />
@@ -25,14 +24,11 @@ const Me = (props) => {
       </NotificationBar>
       <div className={styles.main}>
         <div className={styles.sidebar}>
-          <DashSidebar user={props.user} />
+          <DashSidebar dispatch={dispatch} user={props.user} />
         </div>
         <div className={styles.content}>
-          <DashHeader title="My Outcomes" meta={`${dashTimestamp} • Carpe diem!`} />
-          <DashContent>
-            It’s the Me show! starring: <b>{name}</b>, AKA <b>{nickname}</b>
-            <DashColumns />
-          </DashContent>
+          {location === '/me' && <Outcomes user={props.user} />}
+          {location === '/me/settings' && <Settings user={props.user} />}
         </div>
       </div>
     </div>
@@ -40,6 +36,8 @@ const Me = (props) => {
 };
 
 Me.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  location: PropTypes.string,
   user: PropTypes.shape({
     name: PropTypes.string,
     nickname: PropTypes.string,

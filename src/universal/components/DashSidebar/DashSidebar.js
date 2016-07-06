@@ -28,7 +28,7 @@ let styles = {};
 // ];
 
 const DashSidebar = (props) => {
-  const {activeTeamId} = props;
+  const {activeTeamId, dispatch} = props;
   const teamItems = props.user.memberships.map(m => ({
     active: m.team.id === activeTeamId,
     href: `/team/${m.team.id}`,
@@ -37,19 +37,20 @@ const DashSidebar = (props) => {
 
   return (
     <div className={styles.root}>
-      <UserHub user={props.user} />
+      <UserHub dispatch={dispatch} user={props.user} />
       <nav className={styles.nav}>
         <div className={styles.singleNavItem}>
           <DashNavItem
             active={typeof activeTeamId === 'undefined'}
-            href='/me'
+            dispatch={dispatch}
+            href="/me"
             label="My Outcomes"
           />
         </div>
         <div className={styles.navLabel}>
           Teams
         </div>
-        <DashNavList items={teamItems} />
+        <DashNavList dispatch={dispatch} items={teamItems} />
         <div className={styles.addTeam} title="Add New Team">
           <div className={styles.addTeamIcon}>
             <FontAwesome name="plus-square" />
@@ -65,6 +66,7 @@ const DashSidebar = (props) => {
 
 DashSidebar.propTypes = {
   activeTeamId: PropTypes.string,
+  dispatch: PropTypes.func.isRequired,
   user: PropTypes.shape({
     name: PropTypes.string,
     nickname: PropTypes.string,

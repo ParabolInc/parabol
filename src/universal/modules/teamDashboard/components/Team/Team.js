@@ -14,6 +14,7 @@ import NotificationBar from 'universal/components/NotificationBar/NotificationBa
 let styles = {};
 
 const Team = (props) => {
+  const {dispatch, user} = props;
   const activeTeamId = props.urlParams.id;
 
   return (
@@ -24,7 +25,11 @@ const Team = (props) => {
       </NotificationBar>
       <div className={styles.main}>
         <div className={styles.sidebar}>
-          <DashSidebar activeTeamId={activeTeamId} user={props.user} />
+          <DashSidebar
+            activeTeamId={activeTeamId}
+            dispatch={dispatch}
+            user={user}
+          />
         </div>
         <div className={styles.content}>
           <DashHeader title="My Outcomes" meta="Tuesday, June 21 • Carpe diem!" />
@@ -38,6 +43,7 @@ const Team = (props) => {
 };
 
 Team.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   urlParams: PropTypes.shape({
     id: PropTypes.string.isRequired
   }).isRequired,
