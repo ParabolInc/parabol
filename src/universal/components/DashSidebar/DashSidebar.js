@@ -27,31 +27,56 @@ let styles = {};
 //   }
 // ];
 
-const DashSidebar = (props) =>
-  <div className={styles.root}>
-    <UserHub user={props.user} />
-    <nav className={styles.nav}>
-      <div className={styles.singleNavItem}>
-        <DashNavItem active label="My Outcomes" />
-      </div>
-      <div className={styles.navLabel}>
-        Teams
-      </div>
-      <DashNavList items={props.teams} />
-      <div className={styles.addTeam} title="Add New Team">
-        <div className={styles.addTeamIcon}>
-          <FontAwesome name="plus-square" />
+const DashSidebar = (props) => {
+  const {activeTeamId} = props;
+  const teamItems = props.user.memberships.map(m => ({
+    active: m.team.id === activeTeamId,
+    href: `/team/${m.team.id}`,
+    label: m.team.name
+  }));
+
+  return (
+    <div className={styles.root}>
+      <UserHub user={props.user} />
+      <nav className={styles.nav}>
+        <div className={styles.singleNavItem}>
+          <DashNavItem
+            active={typeof activeTeamId === 'undefined'}
+            href='/me'
+            label="My Outcomes"
+          />
         </div>
-        <div className={styles.addTeamLabel}>
-          Add New Team
+        <div className={styles.navLabel}>
+          Teams
         </div>
-      </div>
-    </nav>
-  </div>;
+        <DashNavList items={teamItems} />
+        <div className={styles.addTeam} title="Add New Team">
+          <div className={styles.addTeamIcon}>
+            <FontAwesome name="plus-square" />
+          </div>
+          <div className={styles.addTeamLabel}>
+            Add New Team
+          </div>
+        </div>
+      </nav>
+    </div>
+  );
+};
 
 DashSidebar.propTypes = {
-  user: PropTypes.object,
-  teams: PropTypes.array
+  activeTeamId: PropTypes.string,
+  user: PropTypes.shape({
+    name: PropTypes.string,
+    nickname: PropTypes.string,
+    memberships: PropTypes.arrayOf(
+      PropTypes.shape({
+        team: PropTypes.shape({
+          id: PropTypes.string.isRequired,
+          name: PropTypes.string.isRequired
+        })
+      })
+    )
+  })
 };
 
 styles = StyleSheet.create({

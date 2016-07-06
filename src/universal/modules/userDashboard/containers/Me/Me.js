@@ -17,7 +17,6 @@ export default class MeContainer extends Component {
 
   render() {
     const {user} = this.props;
-    console.log(user);
     return <Me user={user}/>;
   }
 }

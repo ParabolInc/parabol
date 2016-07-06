@@ -11,14 +11,18 @@ const DashNavItem = (props) => {
 
   return (
     <div className={itemStyles} title={props.label}>
-      {props.label}
+      {props.href && !props.active ?
+        <a href={props.href}>{props.label}</a> :
+        props.label
+      }
     </div>
   );
 };
 
 DashNavItem.propTypes = {
   active: PropTypes.bool,
-  label: PropTypes.string
+  href: PropTypes.string,
+  label: PropTypes.string.isRequired,
 };
 
 styles = StyleSheet.create({

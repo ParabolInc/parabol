@@ -8,7 +8,7 @@ export default store => ({
    */
   component: ActionContainer,
   childRoutes: [
-    require('./team')(store),
+    require('./teamDashboard')(store),
     require('./landing'),
     require('./welcome')(store),
     require('./userDashboard'),

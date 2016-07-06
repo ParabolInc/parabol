@@ -16,7 +16,7 @@ import NotificationBar from 'universal/components/NotificationBar/NotificationBa
 let styles = {};
 
 const Me = (props) => {
-  const {name, nickname, memberships} = props.user;
+  const {name, nickname} = props.user;
   return (
     <div className={styles.viewport}>
       <Helmet title="Action Dashboard" {...head} />
@@ -25,7 +25,7 @@ const Me = (props) => {
       </NotificationBar>
       <div className={styles.main}>
         <div className={styles.sidebar}>
-          <DashSidebar user={props.user} teams={memberships} />
+          <DashSidebar user={props.user} />
         </div>
         <div className={styles.content}>
           <DashHeader title="My Outcomes" meta={`${dashTimestamp} • Carpe diem!`} />

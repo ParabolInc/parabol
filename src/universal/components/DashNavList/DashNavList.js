@@ -6,20 +6,19 @@ import theme from 'universal/styles/theme';
 let styles = {};
 
 const DashNavList = (props) => {
-  const hasTeams = props.items[0] !== undefined;
+  const hasItems = props.items[0] !== undefined;
   return (
     <div className={styles.root}>
-      {console.log(props.items)}
-      {hasTeams &&
+      {hasItems &&
         <div>
           {props.items.map((item, index) =>
             <div className={styles.item} key={index}>
-              <DashNavItem active={item.active} label={item.label} />
+              <DashNavItem {...item} />
             </div>
           )}
         </div>
       }
-      {!hasTeams &&
+      {!hasItems &&
         <div className={styles.emptyTeams}>It appears you are not a member of any team!</div>
       }
     </div>
@@ -27,8 +26,14 @@ const DashNavList = (props) => {
 };
 
 DashNavList.propTypes = {
-  children: PropTypes.any,
-  items: PropTypes.array
+  activeId: PropTypes.string,
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      active: PropTypes.bool,
+      href: PropTypes.string,
+      label: PropTypes.string.isRequired
+    })
+  ).isRequired
 };
 
 styles = StyleSheet.create({

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {PropTypes} from 'react';
 
 import Helmet from 'react-helmet';
 import {head} from 'universal/utils/clientOptions';
@@ -13,31 +13,40 @@ import NotificationBar from 'universal/components/NotificationBar/NotificationBa
 
 let styles = {};
 
-@look
-// eslint-disable-next-line react/prefer-stateless-function
-export default class DashContainer extends Component {
-  render() {
-    return (
-      <div className={styles.viewport}>
-        <Helmet title="Action Dashboard" {...head} />
-        <NotificationBar>
-          Notified!
-        </NotificationBar>
-        <div className={styles.main}>
-          <div className={styles.sidebar}>
-            <DashSidebar />
-          </div>
-          <div className={styles.content}>
-            <DashHeader title="My Outcomes" meta="Tuesday, June 21 • Carpe diem!" />
-            <DashContent>
-              Dashboard Content
-            </DashContent>
-          </div>
+const Team = (props) => {
+  const activeTeamId = props.urlParams.id;
+
+  return (
+    <div className={styles.viewport}>
+      <Helmet title="Action Dashboard" {...head} />
+      <NotificationBar>
+        Notified!
+      </NotificationBar>
+      <div className={styles.main}>
+        <div className={styles.sidebar}>
+          <DashSidebar activeTeamId={activeTeamId} user={props.user} />
+        </div>
+        <div className={styles.content}>
+          <DashHeader title="My Outcomes" meta="Tuesday, June 21 • Carpe diem!" />
+          <DashContent>
+            Dashboard Content
+          </DashContent>
         </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
+
+Team.propTypes = {
+  urlParams: PropTypes.shape({
+    id: PropTypes.string.isRequired
+  }).isRequired,
+  user: PropTypes.shape({
+    name: PropTypes.string,
+    nickname: PropTypes.string,
+    memberships: PropTypes.array
+  })
+};
 
 styles = StyleSheet.create({
   viewport: {
@@ -64,3 +73,5 @@ styles = StyleSheet.create({
     flexDirection: 'column'
   }
 });
+
+export default look(Team);
