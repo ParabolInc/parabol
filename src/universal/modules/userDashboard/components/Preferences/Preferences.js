@@ -11,15 +11,13 @@ class Preferences extends Component {
     handleSubmit: PropTypes.func,
     user: PropTypes.shape({
       name: PropTypes.string,
-      nickname: PropTypes.string,
     })
   };
 
   componentWillMount() {
-    const {dispatch, user: {name, nickname}} = this.props;
+    const {dispatch, user: {name}} = this.props;
     dispatch(initialize('userPreferences', {
       preferredName: name,
-      nickname
     }));
   }
 
@@ -40,13 +38,6 @@ class Preferences extends Component {
             placeholder="Albert Einstein"
             type="text"
           />
-          <Field
-            autoFocus
-            hasShortcutHint
-            name="nickname"
-            placeholder="Weird Al"
-            type="text"
-          />
           <Button
             label="Update"
             size="small"
@@ -61,6 +52,5 @@ class Preferences extends Component {
 
 export default reduxForm({
   form: 'userPreferences',
-  destroyOnUnmount: false
   // TODO: add sync + mailgun async validations
 })(Preferences);
