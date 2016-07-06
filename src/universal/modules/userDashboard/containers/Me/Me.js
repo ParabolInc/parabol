@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from 'react';
-// import {formValueSelector} from 'redux-form';
 import {connect} from 'react-redux';
 
 import Me from 'universal/modules/userDashboard/components/Me/Me';
@@ -10,7 +9,7 @@ import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 const mapStateToProps = (state, router) => {
   return {
     authToken: state.authToken,
-    location: router.location.pathname
+    location: router.location.pathname,
   };
 };
 

@@ -8,7 +8,7 @@ let styles = {};
 
 
 const UserHub = (props) => {
-  const {name, nickname} = props.user;
+  const {email, profile: {preferredName}} = props.user;
   const avatar = props.user.avatar || 'https://placekitten.com/g/44/44';
 
   const onSettingsClick = (event) => {
@@ -21,8 +21,8 @@ const UserHub = (props) => {
     <div className={styles.root}>
       <img alt="Me" className={styles.avatar} src={avatar} />
       <div className={styles.info}>
-        <div className={styles.name}>{nickname}</div>
-        <div className={styles.email}>{name}</div>
+        <div className={styles.name}>{preferredName}</div>
+        <div className={styles.email}>{email}</div>
       </div>
       <div className={styles.settings}>
         <div className={styles.settingsIcon}>
