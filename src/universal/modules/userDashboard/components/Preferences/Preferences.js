@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {reduxForm, initialize} from 'redux-form';
 import {cashay} from 'cashay';
+import look, {StyleSheet} from 'react-look';
 import DashContent from 'universal/components/DashContent/DashContent';
 import DashHeader from 'universal/components/DashHeader/DashHeader';
 import Button from 'universal/components/Button/Button';
@@ -14,6 +15,9 @@ const updateSuccess = {
   message: 'We won\'t forget who you are.',
   level: 'success'
 };
+
+let styles = {};
+
 @look
 class Preferences extends Component {
   static propTypes = {
@@ -86,7 +90,7 @@ styles = StyleSheet.create({
     display: 'flex !important',
     flex: 1,
     flexDirection: 'column'
-}
+  }
 });
 
 export default reduxForm({
