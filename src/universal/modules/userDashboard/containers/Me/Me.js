@@ -1,10 +1,13 @@
 import React, {Component, PropTypes} from 'react';
-import Me from 'universal/modules/userDashboard/components/Me/Me';
-import requireAuth from 'universal/decorators/requireAuth/requireAuth';
+// import {formValueSelector} from 'redux-form';
 import {connect} from 'react-redux';
 
+import Me from 'universal/modules/userDashboard/components/Me/Me';
+import requireAuth from 'universal/decorators/requireAuth/requireAuth';
+
+// const selector = formValueSelector('userPreferences');
+
 const mapStateToProps = (state, router) => {
-  console.log(router.location.pathname);
   return {
     authToken: state.authToken,
     location: router.location.pathname

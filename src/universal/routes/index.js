@@ -11,7 +11,7 @@ export default store => ({
     require('./teamDashboard')(store),
     require('./landing'),
     require('./welcome')(store),
-    require('./userDashboard'),
+    require('./userDashboard')(store),
     require('./meeting')(store),
     require('./graphql'),
     require('./patterns'),

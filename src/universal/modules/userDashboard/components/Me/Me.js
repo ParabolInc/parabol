@@ -27,8 +27,8 @@ const Me = (props) => {
           <DashSidebar dispatch={dispatch} user={props.user} />
         </div>
         <div className={styles.content}>
-          {location === '/me' && <Outcomes user={props.user} />}
-          {location === '/me/settings' && <Settings user={props.user} />}
+          {location === '/me' && <Outcomes {...props} />}
+          {location === '/me/settings' && <Settings {...props} />}
         </div>
       </div>
     </div>
