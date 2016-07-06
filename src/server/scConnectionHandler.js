@@ -13,6 +13,10 @@ export default async socket => {
   // console.log('toke', socket.getAuthToken());
   const isConnectionWritten = await graphql(Schema, addConnectionString, null, {authToken: authTokenObj}, variables);
   console.log('connection written', isConnectionWritten);
+  socket.on('message', message => {
+    if (message === '#2') return;
+    console.log('SOCKET:', message);
+  });
   socket.on('graphql', wsGraphQLHandler);
   socket.on('subscribe', wsGraphQLSubHandler);
   socket.on('disconnect', () => {

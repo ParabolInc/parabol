@@ -16,7 +16,7 @@ export default function subscriber(subscriptionString, handlers, variables) {
   socket.subscribe(channelName, {waitForAuth: true});
   socket.on(channelName, data => {
     if (data.type === 'add') {
-      add(data.fields, 'meeting');
+      add(data.fields);
     } else if (data.type === 'remove') {
       remove(data.id);
     } else {

@@ -1,3 +1,4 @@
+import r from '../../../database/rethinkDriver';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -11,6 +12,8 @@ import {Participant} from '../Participant/participantSchema';
 
 // import {Team} from '../Team/teamSchema';
 // import {getTeamById} from '../Team/helpers';
+import {getRequestedFields} from '../utils';
+import makeChangefeedHandler from '../makeChangefeedHandler';
 
 export const Meeting = new GraphQLObjectType({
   name: 'Meeting',
@@ -23,8 +26,24 @@ export const Meeting = new GraphQLObjectType({
     participants: {
       type: new GraphQLList(Participant),
       description: 'The participants involved in the meeting',
-      async resolve(source, args, context) {
-        await r.table('Participant')
+      async resolve(source, args, {socket, subbedChannelName}, refs) {
+        const {operation: {operation}, fieldName} = refs;
+        if (operation === 'subscription') {
+          const requestedFields = getRequestedFields(refs);
+          const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName, {patch: refs.fieldName});
+          r.table('Participant')
+            .getAll(source.id, {index: 'meetingId'})
+            .pluck(requestedFields)
+            .changes({includeInitial: true})
+            .run({cursor: true}, changefeedHandler);
+        } else {
+          if (source && (typeof source === 'object' || typeof source === 'function')) {
+            const property = source[fieldName];
+            return typeof property === 'function' ? property() : property;
+          }
+        }
+        return [{id: 'part'}];
+        // await r.table('Participant')
       }
     }
     // team: {

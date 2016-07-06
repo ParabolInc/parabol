@@ -19,7 +19,7 @@ export const nonnullifyInputThunk = (name, inputThunk, requiredFieldNames) => {
   });
 };
 
-export function getFields(context, astsParams = context.fieldASTs) {
+function getFields(context, astsParams = context.fieldASTs) {
   // for recursion...Fragments doesn't have many sets...
   const asts = Array.isArray(astsParams) ? astsParams : [astsParams];
 
@@ -52,6 +52,11 @@ export function getFields(context, astsParams = context.fieldASTs) {
   }, {});
 }
 
+export function getRequestedFields(refs) {
+  const fieldsObj = getFields(refs);
+  return Object.keys(fieldsObj);
+}
+
 export function updatedOrOriginal(possiblyUpdatedResult, original) {
   /*
    * There will only be changes to return if there were changes made to the
@@ -64,63 +69,4 @@ export function updatedOrOriginal(possiblyUpdatedResult, original) {
     return possiblyUpdatedResult.changes[0].new_val;
   }
   return original;
-}
-
-const handleRethinkAdd = newVal => {
-  return {
-    type: 'add',
-    fields: newVal
-  };
-};
-
-const handleRethinkRemove = id => {
-  return {
-    type: 'remove',
-    id
-  };
-};
-
-const handleRethinkUpdate = doc => {
-  const oldVals = doc.old_val;
-  const newVals = doc.new_val;
-  const changeKeys = [...Object.keys(oldVals), ...Object.keys(newVals)];
-  const removeKeys = [];
-  const diff = {};
-  for (let i = 0; i < changeKeys.length; i++) {
-    const key = changeKeys[i];
-
-    // flag keys to remove
-    if (!newVals.hasOwnProperty(key)) {
-      removeKeys.push(key);
-      continue;
-    }
-
-    // explicit check to ensure we send down falsy values
-    if (!oldVals.hasOwnProperty(key)) {
-      diff[key] = newVals[key];
-      continue;
-    }
-    const oldVal = oldVals[key];
-    const newVal = newVals[key];
-
-    // don't send down unchanged values
-    if (oldVal === newVal || jsonEqual(oldVal, newVal)) {
-      continue;
-    }
-    diff[key] = newVals[key];
-  }
-  return {
-    type: 'update',
-    fields: diff,
-    removeKeys
-  };
-};
-
-export function handleRethinkChangefeed(doc) {
-  if (Object.keys(doc.old_val).length === 0) {
-    return handleRethinkAdd(doc.new_val);
-  } else if (Object.keys(doc.new_val).length === 0) {
-    return handleRethinkRemove(doc.old_val.id);
-  }
-  return handleRethinkUpdate(doc);
 }

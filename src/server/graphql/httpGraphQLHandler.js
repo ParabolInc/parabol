@@ -7,7 +7,7 @@ export default async(req, res) => {
   const {query, variables, ...newContext} = req.body;
   const authToken = req.user || {};
   const context = {authToken, context: newContext};
-  const result = await graphql(Schema, query, null, context, variables);
+  const result = await graphql(Schema, query, {}, context, variables);
   if (result.errors) {
     console.log('DEBUG GraphQL Error:', result.errors);
   }

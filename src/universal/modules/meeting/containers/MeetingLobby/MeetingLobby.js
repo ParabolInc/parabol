@@ -20,7 +20,6 @@ const keyMap = {
 const meetingSubscriptionString = channelLookupMap.get('meeting');
 
 const mapStateToProps = (state, props) => {
-  console.log('mstp', props);
   const options = {
     variables: {
       meetingId: props.params.meetingId

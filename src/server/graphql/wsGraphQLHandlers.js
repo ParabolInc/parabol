@@ -12,7 +12,7 @@ export const wsGraphQLHandler = async(body, cb) => {
   }
   this.docQueue.add(docId);
   const fullContext = {authToken, socket: this, ...context};
-  const {errors, data} = await graphql(Schema, query, null, fullContext, variables);
+  const {errors, data} = await graphql(Schema, query, {}, fullContext, variables);
   if (errors) {
     this.docQueue.delete(docId);
     return cb(errors);
@@ -33,6 +33,7 @@ const variableParser = {
 
 // This should be arrow syntax, but doesn't work when it is
 export async function wsGraphQLSubHandler(subbedChannelName) {
+  console.log('subscribe called');
   const authToken = this.getAuthToken();
   const firstSlashLoc = subbedChannelName.indexOf('/');
   const subscriptionName = subbedChannelName.substr(0,firstSlashLoc);
@@ -44,11 +45,6 @@ export async function wsGraphQLSubHandler(subbedChannelName) {
     socket: this,
     subbedChannelName
   };
-  let foo;
-  try {
-    foo = await graphql(Schema, queryString, null, context, variables);
-  } catch(e) {
-    console.log('SUB ERR', e)
-  }
-  console.log('res', foo)
+  // swallow return value, it's a subscription
+  graphql(Schema, queryString, {}, context, variables);
 }
