@@ -1,8 +1,5 @@
 import React, {PropTypes} from 'react';
-
-import DashLayout from 'universal/components/DashLayout/DashLayout';
-import DashSidebar from 'universal/components/DashSidebar/DashSidebar';
-
+import {DashLayout, DashSidebar} from 'universal/components/Dashboard';
 import Outcomes from 'universal/modules/userDashboard/components/Outcomes/Outcomes';
 import Settings from 'universal/modules/userDashboard/components/Preferences/Preferences';
 

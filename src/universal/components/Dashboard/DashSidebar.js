@@ -3,8 +3,8 @@ import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import tinycolor from 'tinycolor2';
 import FontAwesome from 'react-fontawesome';
-import DashNavList from 'universal/components/DashNavList/DashNavList';
-import DashNavItem from 'universal/components/DashNavItem/DashNavItem';
+import DashNavList from './DashNavList';
+import DashNavItem from './DashNavItem';
 import UserHub from 'universal/components/UserHub/UserHub';
 
 const textColor = tinycolor.mix(theme.palette.mid10l, '#fff', 50).toHexString();

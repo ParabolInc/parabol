@@ -62,11 +62,19 @@ styles = StyleSheet.create({
   },
 
   name: {
-    fontSize: theme.typography.s5
+    fontSize: theme.typography.sBase,
+    fontWeight: 700,
+    lineHeight: '1.375rem',
+    maxWidth: '8rem',
+    overflow: 'hidden',
+    paddingTop: '.125rem',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap'
   },
 
   email: {
     fontSize: theme.typography.s2,
+    lineHeight: theme.typography.sBase,
     marginTop: '.125rem'
   },
 

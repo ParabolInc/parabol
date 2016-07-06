@@ -5,18 +5,24 @@ import theme from 'universal/styles/theme';
 let styles = {};
 
 const DashHeader = (props) =>
-  <div className={styles.header}>
-    <div className={styles.title}>{props.title}</div>
-    <div className={styles.meta}>{props.meta}</div>
+  <div className={styles.root}>
+    <div className={styles.title}>
+      {props.title}
+    </div>
+    {props.children &&
+      <div className={styles.children}>
+        {props.children}
+      </div>
+    }
   </div>;
 
 DashHeader.propTypes = {
-  meta: PropTypes.string,
+  children: PropTypes.any,
   title: PropTypes.string
 };
 
 styles = StyleSheet.create({
-  header: {
+  root: {
     backgroundColor: '#fff',
     borderBottom: '2px solid rgba(0, 0, 0, .10)',
     alignItems: 'flex-start',
@@ -29,12 +35,14 @@ styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: theme.typography.s5
+    fontSize: theme.typography.s5,
+    lineHeight: theme.typography.s6,
   },
 
-  meta: {
+  children: {
     color: theme.palette.dark70l,
     fontSize: theme.typography.s2,
+    lineHeight: theme.typography.sBase,
     marginTop: '.125rem'
   }
 });

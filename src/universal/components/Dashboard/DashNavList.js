@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import DashNavItem from '../DashNavItem/DashNavItem';
+import DashNavItem from './DashNavItem';
 import theme from 'universal/styles/theme';
 
 let styles = {};
