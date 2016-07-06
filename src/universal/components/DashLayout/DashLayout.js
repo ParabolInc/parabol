@@ -8,18 +8,26 @@ import NotificationBar from 'universal/components/NotificationBar/NotificationBa
 
 let styles = {};
 
-const DashLayout = (props) =>
-  <div className={styles.root}>
-    <Helmet title={props.title} {...head} />
-    {props.hasNotification &&
-      <NotificationBar>
-        {props.notification.message}
-      </NotificationBar>
-    }
-    <div className={styles.main}>
-      {props.children}
+const DashLayout = (props) => {
+  const {
+    children,
+    notification,
+    hasNotification,
+    title
+  } = props;
+
+  return (
+    <div className={styles.root}>
+      <Helmet title={title} {...head} />
+      {hasNotification &&
+        <NotificationBar notification={notification} />
+      }
+      <div className={styles.main}>
+        {children}
+      </div>
     </div>
-  </div>;
+  );
+};
 
 DashLayout.propTypes = {
   children: PropTypes.any,
@@ -30,9 +38,12 @@ DashLayout.propTypes = {
 
 DashLayout.defaultProps = {
   notification: {
-    message: 'This bar alerts you when your team is meeting!'
+    link: 'https://prbl.io/1v2b3n',
+    linkLabel: 'Join Active Meeting',
+    message: 'Product',
+    timestamp: '12:32'
   },
-  hasNotification: false,
+  hasNotification: true,
   title: 'Action Dashboard'
 };
 

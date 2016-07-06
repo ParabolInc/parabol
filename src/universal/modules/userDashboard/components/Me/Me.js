@@ -7,10 +7,10 @@ import Outcomes from 'universal/modules/userDashboard/components/Outcomes/Outcom
 import Settings from 'universal/modules/userDashboard/components/Preferences/Preferences';
 
 const Me = (props) => {
-  const {dispatch, location} = props;
+  const {dispatch, location, user} = props;
   return (
     <DashLayout title="My Dashboard">
-      <DashSidebar dispatch={dispatch} user={props.user} />
+      <DashSidebar dispatch={dispatch} location={location} user={user} />
       {location === '/me' && <Outcomes {...props} />}
       {location === '/me/settings' && <Settings {...props} />}
     </DashLayout>

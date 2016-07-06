@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {reduxForm, initialize} from 'redux-form';
 import {cashay} from 'cashay';
 import look, {StyleSheet} from 'react-look';
+import theme from 'universal/styles/theme';
 import DashContent from 'universal/components/DashContent/DashContent';
 import DashHeader from 'universal/components/DashHeader/DashHeader';
 import Button from 'universal/components/Button/Button';
@@ -66,19 +67,27 @@ class Preferences extends Component {
       <form className={styles.root} onSubmit={handleSubmit(this.onSubmit)}>
         <DashHeader title="My Preferences" />
         <DashContent>
-          <Field
-            autoFocus
-            hasShortcutHint
-            name="preferredName"
-            placeholder="Albert Einstein"
-            type="text"
-          />
-          <Button
-            label="Update"
-            size="small"
-            theme="cool"
-            type="submit"
-          />
+          <div className={styles.body}>
+            <div className={styles.row}>
+              <div className={styles.label}>
+                Name
+              </div>
+              <Field
+                autoFocus
+                hasShortcutHint
+                name="preferredName"
+                placeholder="Albert Einstein"
+                type="text"
+              />
+            </div>
+            <Button
+              isBlock
+              label="Update"
+              size="small"
+              theme="cool"
+              type="submit"
+            />
+          </div>
         </DashContent>
       </form>
     );
@@ -90,6 +99,23 @@ styles = StyleSheet.create({
     display: 'flex !important',
     flex: 1,
     flexDirection: 'column'
+  },
+
+  body: {
+    maxWidth: '20rem'
+  },
+
+  row: {
+    margin: '0 0 1.5rem'
+  },
+
+  label: {
+    color: theme.palette.dark,
+    fontSize: theme.typography.s2,
+    fontWeight: 700,
+    margin: '0 0 .5rem',
+    padding: '0 0 0 .5rem',
+    textTransform: 'uppercase'
   }
 });
 

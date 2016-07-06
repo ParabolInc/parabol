@@ -52,6 +52,7 @@ let styles = {};
 const Button = props => {
   const {
     disabled,
+    isBlock,
     label,
     onClick,
     size,
@@ -72,6 +73,10 @@ const Button = props => {
     buttonOptions.push(styles.disabled);
   }
 
+  if (isBlock) {
+    buttonOptions.push(styles.isBlock);
+  }
+
   buttonStyles = combineStyles.apply(null, buttonOptions);
 
   return (
@@ -89,6 +94,7 @@ const Button = props => {
 
 Button.propTypes = {
   disabled: PropTypes.bool,
+  isBlock: PropTypes.bool,
   label: PropTypes.string,
   onClick: PropTypes.func,
   size: PropTypes.oneOf([
@@ -121,6 +127,7 @@ Button.propTypes = {
 };
 
 Button.defaultProps = {
+  isBlock: false,
   label: 'Label Me',
   size: 'medium',
   style: 'solid',
@@ -168,6 +175,11 @@ styles = StyleSheet.create({
       animationName: keyframesDip,
       animationTimingFunction: 'ease-in'
     }
+  },
+
+  isBlock: {
+    display: 'block',
+    width: '100%'
   },
 
   // Button sizes

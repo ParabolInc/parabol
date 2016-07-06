@@ -25,7 +25,7 @@ const UserHub = (props) => {
         <div className={styles.email}>{email}</div>
       </div>
       <div className={styles.settings}>
-        <div className={styles.settingsIcon}>
+        <div className={styles.settingsIcon} title="My Preferences">
           <FontAwesome name="cog" onClick={(e) => onSettingsClick(e)} />
         </div>
       </div>
@@ -79,11 +79,19 @@ styles = StyleSheet.create({
   },
 
   settingsIcon: {
+    cursor: 'pointer',
     fontSize: '14px',
     height: '14px',
     lineHeight: '14px',
     textAlign: 'center',
-    width: '14px'
+    width: '14px',
+
+    ':hover': {
+      opacity: '.5'
+    },
+    ':focus': {
+      opacity: '.5'
+    }
   }
 });
 
