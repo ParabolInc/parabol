@@ -19,7 +19,7 @@ const DashNavItem = (props) => {
   return (
     <div className={itemStyles} title={props.label}>
       {props.href && !props.active ?
-        <a href="#" onClick={(e) => onClick(e)}>{props.label}</a> :
+        <a className={styles.link} href="#" onClick={(e) => onClick(e)}>{props.label}</a> :
         props.label
       }
     </div>
@@ -60,6 +60,19 @@ styles = StyleSheet.create({
     ':focus': {
       backgroundColor: theme.palette.dark,
       cursor: 'default'
+    }
+  },
+
+  link: {
+    color: 'inherit',
+
+    ':hover': {
+      color: 'inherit',
+      textDecoration: 'none'
+    },
+    ':focus': {
+      color: 'inherit',
+      textDecoration: 'none'
     }
   }
 });

@@ -1,31 +1,14 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
+import tinycolor from 'tinycolor2';
 import FontAwesome from 'react-fontawesome';
 import DashNavList from 'universal/components/DashNavList/DashNavList';
 import DashNavItem from 'universal/components/DashNavItem/DashNavItem';
 import UserHub from 'universal/components/UserHub/UserHub';
 
+const textColor = tinycolor.mix(theme.palette.mid10l, '#fff', 50).toHexString();
 let styles = {};
-
-// const sampleDashNav = [
-//   {
-//     active: false,
-//     label: 'Core'
-//   },
-//   {
-//     active: false,
-//     label: 'Engineering'
-//   },
-//   {
-//     active: false,
-//     label: 'Product'
-//   },
-//   {
-//     active: false,
-//     label: 'Talent'
-//   }
-// ];
 
 const DashSidebar = (props) => {
   const {activeTeamId, dispatch} = props;
@@ -83,7 +66,10 @@ DashSidebar.propTypes = {
 
 styles = StyleSheet.create({
   root: {
-    width: '100%'
+    backgroundColor: theme.palette.mid,
+    color: textColor,
+    paddingBottom: '1.25rem',
+    width: '15rem'
   },
 
   nav: {

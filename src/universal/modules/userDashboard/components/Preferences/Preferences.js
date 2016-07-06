@@ -14,7 +14,7 @@ const updateSuccess = {
   message: 'We won\'t forget who you are.',
   level: 'success'
 };
-
+@look
 class Preferences extends Component {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
@@ -59,7 +59,7 @@ class Preferences extends Component {
   render() {
     const {handleSubmit} = this.props;
     return (
-      <form onSubmit={handleSubmit(this.onSubmit)}>
+      <form className={styles.root} onSubmit={handleSubmit(this.onSubmit)}>
         <DashHeader title="My Preferences" />
         <DashContent>
           <Field
@@ -79,7 +79,15 @@ class Preferences extends Component {
       </form>
     );
   }
+  }
+
+styles = StyleSheet.create({
+  root: {
+    display: 'flex !important',
+    flex: 1,
+    flexDirection: 'column'
 }
+});
 
 export default reduxForm({
   form: 'userPreferences',

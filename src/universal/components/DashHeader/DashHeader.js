@@ -17,6 +17,7 @@ DashHeader.propTypes = {
 
 styles = StyleSheet.create({
   header: {
+    backgroundColor: '#fff',
     borderBottom: '2px solid rgba(0, 0, 0, .10)',
     alignItems: 'flex-start',
     display: 'flex',
