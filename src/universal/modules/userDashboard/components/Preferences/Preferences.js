@@ -17,7 +17,8 @@ const updateSuccess = {
 let styles = {};
 
 @look
-class Preferences extends Component {
+@reduxForm({form: 'userPreferences'})
+export default class Preferences extends Component {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
     handleSubmit: PropTypes.func,
@@ -114,8 +115,3 @@ styles = StyleSheet.create({
     textTransform: 'uppercase'
   }
 });
-
-export default reduxForm({
-  form: 'userPreferences',
-  // TODO: add sync + mailgun async validations
-})(Preferences);
