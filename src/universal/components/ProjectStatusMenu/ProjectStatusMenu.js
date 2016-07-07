@@ -11,31 +11,57 @@ const ProjectStatusMenu = props => {
     isArchived
   } = props;
 
-  const onClickItem = (e) => {
-    e.preventDefault();
-    console.log('ProjectStatusMenuItem onClick');
+  const onClickItem = (value) => {
+    console.log(`ProjectStatusMenuItem onClick ${value}`);
   };
+
+  console.log(`ProjectStatusMenu currentStatus ${currentStatus}`);
+
+  // TODO: Add HotKeys
 
   return (
     <div className={styles.root}>
-      {console.log(currentStatus)}
       <div className={styles.menuLabel}>Set Status:</div>
-      <ProjectStatusMenuItem icon="arrow-right" onClick={onClickItem} value="active">
+      <ProjectStatusMenuItem
+        icon="arrow-right"
+        isCurrent={currentStatus === 'active'}
+        onClick={onClickItem}
+        value="active"
+      >
         <span className={styles.keystroke}>A</span>ctive
       </ProjectStatusMenuItem>
-      <ProjectStatusMenuItem icon="exclamation-triangle" onClick={onClickItem} value="stuck">
+      <ProjectStatusMenuItem
+        icon="exclamation-triangle"
+        isCurrent={currentStatus === 'stuck'}
+        onClick={onClickItem}
+        value="stuck"
+      >
         <span className={styles.keystroke}>S</span>tuck
       </ProjectStatusMenuItem>
-      <ProjectStatusMenuItem icon="check" onClick={onClickItem} value="done">
+      <ProjectStatusMenuItem
+        icon="check"
+        isCurrent={currentStatus === 'done'}
+        onClick={onClickItem}
+        value="done"
+      >
         <span className={styles.keystroke}>D</span>one
       </ProjectStatusMenuItem>
-      <ProjectStatusMenuItem icon="clock-o" onClick={onClickItem} value="future">
+      <ProjectStatusMenuItem
+        icon="clock-o"
+        isCurrent={currentStatus === 'future'}
+        onClick={onClickItem}
+        value="future"
+      >
         <span className={styles.keystroke}>F</span>uture
       </ProjectStatusMenuItem>
       <div className={styles.hr} />
       {isArchived ?
-        <div>isArhived, TODO: Un-archive?</div> :
-        <ProjectStatusMenuItem icon="archive" onClick={onClickItem} value="archive">
+        <div>isArchived, TODO: Un-archive?</div> :
+        <ProjectStatusMenuItem
+          icon="archive"
+          onClick={onClickItem}
+          value="archive"
+        >
           Ar<span className={styles.keystroke}>c</span>hive
         </ProjectStatusMenuItem>
       }

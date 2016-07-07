@@ -3,6 +3,8 @@ import look, {StyleSheet} from 'react-look';
 import FontAwesome from 'react-fontawesome';
 import theme from 'universal/styles/theme';
 
+const combineStyles = StyleSheet.combineStyles;
+
 const colors = {
   active: theme.palette.dark10d,
   stuck: theme.palette.warm,
@@ -14,7 +16,7 @@ const colors = {
 let styles = {};
 
 const ProjectStatusMenuItem = props => {
-  const {children, icon, onClick, value} = props;
+  const {children, icon, isCurrent, onClick, value} = props;
 
   const color = {
     color: colors[value]
@@ -24,8 +26,15 @@ const ProjectStatusMenuItem = props => {
     backgroundColor: colors[value]
   };
 
+  const rootStyles = isCurrent ? combineStyles(styles.root, styles.current) : styles.root;
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    onClick(value);
+  };
+
   return (
-    <a className={styles.root} href="#" onClick={onClick}>
+    <a className={rootStyles} href="#" onClick={handleClick}>
       <div className={styles.icon} style={backgroundColor}>
         <FontAwesome name={icon} style={{lineHeight: 'inherit'}} />
       </div>
@@ -39,6 +48,7 @@ const ProjectStatusMenuItem = props => {
 ProjectStatusMenuItem.propTypes = {
   children: PropTypes.any,
   icon: PropTypes.string,
+  isCurrent: PropTypes.bool,
   onClick: PropTypes.func,
   value: PropTypes.oneOf([
     'active',
@@ -51,6 +61,7 @@ ProjectStatusMenuItem.propTypes = {
 
 ProjectStatusMenuItem.defaultProps = {
   icon: 'arrow-right',
+  isCurrent: false,
   value: 'active'
 };
 
@@ -68,6 +79,11 @@ styles = StyleSheet.create({
     ':focus': {
       backgroundColor: theme.palette.mid20l
     }
+  },
+
+  current: {
+    backgroundColor: theme.palette.mid20l,
+    cursor: 'default'
   },
 
   icon: {
