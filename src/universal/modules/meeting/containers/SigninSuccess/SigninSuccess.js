@@ -44,7 +44,7 @@ const mapStateToProps = (state) => {
     meetingAndTeam: cashay.query(graphQuery, cashayOpts)
   };
 };
-// @connectData(fetchData)
+
 @connect(mapStateToProps)
 export default class SigninSuccess extends Component {
   static propTypes = {

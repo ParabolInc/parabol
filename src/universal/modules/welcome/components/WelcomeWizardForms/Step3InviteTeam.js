@@ -1,4 +1,4 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {reduxForm, change, arrayPush, destroy} from 'redux-form';
 import {HotKeys} from 'react-hotkeys';
 import emailAddresses from 'email-addresses';
@@ -28,9 +28,37 @@ const emailInviteFail = emailsNotDelivered => ({
   level: 'error'
 });
 
-const Step3InviteTeam = props => {
-  const {dispatch, handleSubmit, invitees, inviteesRaw, submitting, teamName, welcome: {teamId}} = props;
-  const onAddInviteesButtonClick = event => {
+
+@reduxForm({
+  form: 'welcomeWizard',
+  destroyOnUnmount: false
+  // TODO: add sync + mailgun async validations
+})
+export default class Step3InviteTeam extends Component {
+  static propTypes = {
+    dispatch: PropTypes.func,
+    handleSubmit: PropTypes.func,
+    invitees: PropTypes.array,
+    inviteesRaw: PropTypes.string,
+    onSubmit: PropTypes.func,
+    submitting: PropTypes.bool,
+    teamName: PropTypes.string,
+    welcome: PropTypes.shape({
+      teamId: PropTypes.string,
+    })
+  };
+
+  shouldComponentUpdate(nextProps) {
+    const {teamName, submitting} = nextProps;
+    if (submitting & !teamName) {
+      // do not update if we're submitting
+      return false;
+    }
+    return true;
+  }
+
+  onAddInviteesButtonClick = event => {
+    const {dispatch, inviteesRaw} = this.props;
     const parsedAddresses = emailAddresses.parseAddressList(inviteesRaw);
     event.preventDefault();
     // clear the inviteesRaw form component:
@@ -47,7 +75,8 @@ const Step3InviteTeam = props => {
     });
   };
 
-  const onInviteTeamSubmit = async submissionData => {
+  onInviteTeamSubmit = async submissionData => {
+    const {dispatch, welcome: {teamId}} = this.props;
     const serverInvitees = submissionData.invitees.map(invitee => {
       // Remove label field:
       const {label, ...inviteeForServer} = invitee; // eslint-disable-line no-unused-vars
@@ -73,97 +102,81 @@ const Step3InviteTeam = props => {
       }
     } else if (data) {
       // Dispatch sequential success thunk:
-      dispatch(
-        Promise.all([
-          dispatch(show(emailInviteSuccess)), // trumpet our leader's brilliance!
-          dispatch(push(`/team/${teamId}`)),  // redirect leader to their new team
-          dispatch(destroy('welcomeWizard')), // Bye bye form data!
-        ])
-      );
+      dispatch(() => Promise.all([
+        dispatch(destroy('welcomeWizard')), // bye bye form data!
+        dispatch(push(`/team/${teamId}`)),  // redirect leader to their new team
+        dispatch(show(emailInviteSuccess)), // trumpet our leader's brilliance!
+      ]));
     }
   };
-  const invitesFieldHasError = false; // TODO: wire this up for real
-  const helpText = invitesFieldHasError ?
-    // eslint-disable-next-line max-len
-    <span>Oops! Please make sure email addresses are valid <br />and separated by a single comma.</span> :
-    <span>You can paste multiple emails separated by a comma.<br />&nbsp;</span>;
-  const fieldArrayHasValue = invitees && invitees[0] != null;
 
-  return (
-    <WelcomeLayout>
-      <WelcomeHeader heading={<span>Invite your team.</span>}/>
-      <WelcomeContent>
-        <ProgressDots
-          numDots={2}
-          numCompleted={1}
-          currentDot={2}
-        />
-        <div>{/* Div for that flexy flex */}
-          <Type align="center" italic scale="s6">
-            Sounds like a great team!
-          </Type>
-          <WelcomeHeading copy={<span>Let’s invite some folks to the <b>{teamName}</b> team.</span>}/>
-          <HotKeys handlers={{ keyEnter: onAddInviteesButtonClick}}>
-            <div style={{margin: '0 auto', width: '30rem'}}>
-              <Field
-                autoFocus={!invitees || invitees.length === 0}
-                buttonDisabled={!inviteesRaw}
-                buttonIcon="check-circle"
-                hasButton
-                hasErrorText={invitesFieldHasError}
-                hasHelpText
-                helpText={helpText}
-                isLarger
-                isWider
-                name="inviteesRaw"
-                onButtonClick={onAddInviteesButtonClick}
-                placeholder="b.bunny@acme.co, d.duck@acme.co, e.fudd@acme.co"
-                type="text"
-              />
-            </div>
-            <form onSubmit={handleSubmit(onInviteTeamSubmit)}>
-              {fieldArrayHasValue &&
-                <div style={{margin: '2rem 0 0'}}>
-                  <LabeledFieldArray
-                    labelGetter={(idx) => invitees[idx].label}
-                    labelHeader="Invitee"
-                    labelSource="invitees"
-                    nestedFieldHeader="This Week's Priority"
-                    nestedFieldName="task"
-                  />
-                </div>
-              }
-              <div style={{margin: '2rem 0 0', textAlign: 'center'}}>
-                <Button
-                  disabled={submitting || !fieldArrayHasValue}
-                  label="Look’s Good!"
-                  theme="warm"
-                  type="submit"
+  render() {
+    const {handleSubmit, invitees, inviteesRaw, submitting, teamName} = this.props;
+
+    const invitesFieldHasError = false; // TODO: wire this up for real
+    const helpText = invitesFieldHasError ?
+      // eslint-disable-next-line max-len
+      <span>Oops! Please make sure email addresses are valid <br />and separated by a single comma.</span> :
+      <span>You can paste multiple emails separated by a comma.<br />&nbsp;</span>;
+    const fieldArrayHasValue = invitees && invitees[0] != null;
+
+    return (
+      <WelcomeLayout>
+        <WelcomeHeader heading={<span>Invite your team.</span>}/>
+        <WelcomeContent>
+          <ProgressDots
+            numDots={2}
+            numCompleted={1}
+            currentDot={2}
+          />
+          <div>{/* Div for that flexy flex */}
+            <Type align="center" italic scale="s6">
+              Sounds like a great team!
+            </Type>
+            <WelcomeHeading copy={<span>Let’s invite some folks to the <b>{teamName}</b> team.</span>}/>
+            <HotKeys handlers={{ keyEnter: this.onAddInviteesButtonClick}}>
+              <div style={{margin: '0 auto', width: '30rem'}}>
+                <Field
+                  autoFocus={!invitees || invitees.length === 0}
+                  buttonDisabled={!inviteesRaw}
+                  buttonIcon="check-circle"
+                  hasButton
+                  hasErrorText={invitesFieldHasError}
+                  hasHelpText
+                  helpText={helpText}
+                  isLarger
+                  isWider
+                  name="inviteesRaw"
+                  onButtonClick={this.onAddInviteesButtonClick}
+                  placeholder="b.bunny@acme.co, d.duck@acme.co, e.fudd@acme.co"
+                  type="text"
                 />
               </div>
-            </form>
-          </HotKeys>
-        </div>
-      </WelcomeContent>
-    </WelcomeLayout>
-  );
-};
-
-Step3InviteTeam.propTypes = {
-  dispatch: PropTypes.func,
-  handleSubmit: PropTypes.func,
-  invitees: PropTypes.array,
-  inviteesRaw: PropTypes.string,
-  onSubmit: PropTypes.func,
-  submitting: PropTypes.bool,
-  teamName: PropTypes.string.isRequired,
-  welcome: PropTypes.shape({
-    teamId: PropTypes.string,
-  })
-};
-
-export default reduxForm({
-  form: 'welcomeWizard',
-  destroyOnUnmount: false
-  // TODO: add sync + mailgun async validations
-})(Step3InviteTeam);
+              <form onSubmit={handleSubmit(this.onInviteTeamSubmit)}>
+                {fieldArrayHasValue &&
+                  <div style={{margin: '2rem 0 0'}}>
+                    <LabeledFieldArray
+                      labelGetter={(idx) => invitees[idx].label}
+                      labelHeader="Invitee"
+                      labelSource="invitees"
+                      nestedFieldHeader="This Week's Priority"
+                      nestedFieldName="task"
+                    />
+                  </div>
+                }
+                <div style={{margin: '2rem 0 0', textAlign: 'center'}}>
+                  <Button
+                    disabled={submitting || !fieldArrayHasValue}
+                    label="Look’s Good!"
+                    theme="warm"
+                    type="submit"
+                  />
+                </div>
+              </form>
+            </HotKeys>
+          </div>
+        </WelcomeContent>
+      </WelcomeLayout>
+    );
+  }
+}
