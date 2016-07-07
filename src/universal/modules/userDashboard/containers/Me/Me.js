@@ -2,7 +2,6 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
-import {setAuthToken} from 'universal/redux/authDuck';
 import Me from 'universal/modules/userDashboard/components/Me/Me';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 
