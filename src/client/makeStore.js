@@ -20,9 +20,9 @@ export default async initialState => {
   const engine = createEngine(APP_NAME);
   const storageMiddleware = createMiddleware(engine, blackListedActions);
   const middlewares = [
+    thunkMiddleware,
     storageMiddleware,
     reduxRouterMiddleware,
-    thunkMiddleware
   ];
 
   if (__PRODUCTION__) {
