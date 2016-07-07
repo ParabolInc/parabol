@@ -102,10 +102,10 @@ export default class Step3InviteTeam extends Component {
       }
     } else if (data) {
       // Dispatch sequential success thunk:
-      dispatch(() => Promise.all([
-        dispatch(destroy('welcomeWizard')), // bye bye form data!
-        dispatch(push(`/team/${teamId}`)),  // redirect leader to their new team
-        dispatch(show(emailInviteSuccess)), // trumpet our leader's brilliance!
+      dispatch((thunkDispatch) => Promise.all([
+        thunkDispatch(destroy('welcomeWizard')), // bye bye form data!
+        thunkDispatch(push(`/team/${teamId}`)),  // redirect leader to their new team
+        thunkDispatch(show(emailInviteSuccess)), // trumpet our leader's brilliance!
       ]));
     }
   };

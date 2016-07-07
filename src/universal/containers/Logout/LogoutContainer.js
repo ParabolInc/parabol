@@ -18,10 +18,10 @@ export default class LogoutContainer extends Component {
 
   componentWillMount() {
     const {dispatch} = this.props;
-    dispatch(() => Promise.all([
-      dispatch(removeAuthToken()),
-      dispatch(push('/')),
-      dispatch(show(logoutSuccess))
+    dispatch((thunkDispatch) => Promise.all([
+      thunkDispatch(removeAuthToken()),
+      thunkDispatch(push('/')),
+      thunkDispatch(show(logoutSuccess))
     ]));
   }
 
