@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import FontAwesome from 'react-fontawesome';
+import Textarea from 'react-textarea-autosize';
 import theme from 'universal/styles/theme';
 import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
 
@@ -49,14 +50,10 @@ const ProjectCard = props => {
   return (
     <div className={combineStyles(styles.root, styles[status])}>
       {/* card main */}
-      <div className={styles.main}>
-        <div className={styles.timestamp}>
-          {timestamp}
-        </div>
-        <div className={styles.description}>
-          {description}
-        </div>
+      <div className={styles.timestamp}>
+        {timestamp}
       </div>
+      <Textarea className={styles.description} defaultValue={description} />
       {/* card footer */}
       <div className={styles.footer}>
         <div className={styles.avatarBlock}>
@@ -121,20 +118,37 @@ styles = StyleSheet.create({
     width: '100%'
   },
 
-  main: {
-    padding: '.5rem'
-  },
-
   timestamp: {
     color: theme.palette.dark,
     fontSize: theme.typography.s1,
     fontWeight: 700,
+    padding: '.5rem',
     textAlign: 'right'
   },
 
   description: {
+    border: 0,
+    borderTop: '1px solid transparent',
     color: theme.palette.dark10d,
-    fontSize: theme.typography.s3
+    display: 'block',
+    fontFamily: theme.typography.sansSerif,
+    fontSize: theme.typography.s3,
+    padding: '.5rem .5rem 1rem',
+    resize: 'none',
+    width: '100%',
+
+    ':focus': {
+      backgroundColor: theme.palette.cool10l,
+      borderTopColor: 'currentColor',
+      color: theme.palette.cool,
+      outline: 'none'
+    },
+    ':active': {
+      backgroundColor: theme.palette.cool10l,
+      borderTopColor: 'currentColor',
+      color: theme.palette.cool,
+      outline: 'none'
+    }
   },
 
   footer: {
@@ -189,7 +203,11 @@ styles = StyleSheet.create({
     outline: 'none',
     padding: 0,
     textAlign: 'center',
-    width: avatarSize
+    width: avatarSize,
+
+    ':focus': {
+      boxShadow: '0 0 2px 2px rgba(9, 141, 143, .5)'
+    }
   },
 
   // Status theme decorators

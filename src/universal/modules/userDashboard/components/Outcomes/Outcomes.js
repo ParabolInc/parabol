@@ -6,6 +6,7 @@ import {
   DashMain,
   dashTimestamp
 } from 'universal/components/Dashboard';
+import ProjectStatusMenu from 'universal/components/ProjectStatusMenu/ProjectStatusMenu';
 
 const Outcomes = (props) => {
   const {name, nickname} = props.user;
@@ -16,6 +17,12 @@ const Outcomes = (props) => {
       </DashHeader>
       <DashContent>
         It’s the Me show! starring: <b>{name}</b>, AKA <b>{nickname}</b>
+        <br />
+        <br />
+        ProjectStatusMenu
+        <br />
+        <br />
+        <ProjectStatusMenu />
         <DashColumns />
       </DashContent>
     </DashMain>
