@@ -6,8 +6,6 @@ import theme from 'universal/styles/theme';
 import {DashContent, DashHeader} from 'universal/components/Dashboard';
 import Button from 'universal/components/Button/Button';
 import Field from 'universal/components/Field/Field';
-import getAuthedUser from 'universal/redux/getAuthedUser';
-
 import {show} from 'universal/modules/notifications/ducks/notifications';
 
 const updateSuccess = {
@@ -40,9 +38,8 @@ class Preferences extends Component {
   }
 
   onSubmit = async (submissionData) => {
-    const {dispatch} = this.props;
+    const {dispatch, user} = this.props;
     const {preferredName} = submissionData;
-    const user = getAuthedUser();
     const options = {
       variables: {
         updatedProfile: {

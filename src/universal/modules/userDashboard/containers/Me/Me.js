@@ -1,15 +1,15 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-
+import {cashay} from 'cashay';
+import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
 import Me from 'universal/modules/userDashboard/components/Me/Me';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
-
-// const selector = formValueSelector('userPreferences');
 
 const mapStateToProps = (state, router) => {
   return {
     authToken: state.authToken,
     location: router.location.pathname,
+    user: cashay.query(getAuthQueryString, authedOptions).data.user
   };
 };
 
