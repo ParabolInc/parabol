@@ -1,5 +1,5 @@
 import React from 'react';
-import { Presets, Plugins, LookRoot } from 'react-look';
+import {Presets, Plugins, LookRoot} from 'react-look';
 import {Router, browserHistory} from 'react-router';
 import {Provider} from 'react-redux';
 import routes from '../universal/routes/index';
