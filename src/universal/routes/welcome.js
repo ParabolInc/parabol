@@ -5,13 +5,11 @@ const setImports = () =>
   new Map([
     ['component', System.import(
       'universal/modules/welcome/containers/Welcome/Welcome')],
-    ['reduxForm', System.import('redux-form')],
     ['welcome', System.import('universal/modules/welcome/ducks/welcomeDuck')]
   ]);
 
 const getImports = importMap => ({
   component: importMap.get('component'),
-  reduxForm: importMap.get('reduxForm'),
   welcome: importMap.get('welcome').default
 });
 
