@@ -10,15 +10,13 @@ import WelcomeLayout from '../WelcomeLayout/WelcomeLayout';
 import {nextPage, setWelcomeTeam} from 'universal/modules/welcome/ducks/welcomeDuck';
 import shortid from 'shortid';
 import {cashay} from 'cashay';
-import getAuthedUser from 'universal/redux/getAuthedUser';
 
 const Step2TeamName = props => {
-  const {dispatch, handleSubmit, preferredName, teamName} = props;
+  const {dispatch, handleSubmit, preferredName, teamName, user} = props;
   const onTeamNameSubmit = data => {
     const myTeamName = data.teamName;
     const teamId = shortid.generate();
     const teamMemberId = shortid.generate();
-    const user = getAuthedUser();
     dispatch(setWelcomeTeam({teamId, teamMemberId}));
     const createTeamOptions = {
       variables: {
@@ -77,7 +75,8 @@ Step2TeamName.propTypes = {
   handleSubmit: PropTypes.func,
   onSubmit: PropTypes.func,
   preferredName: PropTypes.string.isRequired,
-  teamName: PropTypes.string
+  teamName: PropTypes.string,
+  user: PropTypes.object
 };
 
 export default reduxForm({

@@ -1,7 +1,15 @@
 exports.up = async r => {
-  return await r.table('TeamMember').indexCreate('cachedUserId');
+  try {
+    return await r.table('TeamMember').indexCreate('cachedUserId');
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 exports.down = async r => {
-  return await r.table('TeamMember').indexDrop('cachedUserId');
+  try {
+    return await r.table('TeamMember').indexDrop('cachedUserId');
+  } catch (e) {
+    console.log(e);
+  }
 };
