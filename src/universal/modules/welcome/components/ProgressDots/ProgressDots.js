@@ -55,7 +55,7 @@ export default class ProgressDots extends Component {
   }
 
   render() {
-    const { numDots } = this.props;
+    const {numDots} = this.props;
 
     return (
       <div className={styles.progressDotGroup}>
@@ -85,7 +85,6 @@ styles = StyleSheet.create({
     backgroundColor: '#fff',
     border: `2px solid ${theme.palette.mid50l}`,
     borderRadius: '100%',
-    // NOTE: Removing cursor until dots can change navigation
     cursor: 'default',
     display: 'inline-block',
     height: '1rem',
@@ -93,18 +92,17 @@ styles = StyleSheet.create({
     width: '1rem'
   },
 
-  // NOTE: Same thing, different semantics (completed, current)
   progressDotCompleted: {
     backgroundColor: theme.palette.mid50l,
     cursor: 'pointer'
   },
+
   progressDotCurrent: {
     backgroundColor: theme.palette.warm,
     borderColor: theme.palette.warm
   },
 
   progressDotLabel: {
-    // TODO: Make mixin for Sass: @include sr-only;
     border: 0,
     clip: 'rect(0, 0, 0, 0)',
     height: '1px',
