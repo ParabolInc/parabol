@@ -61,12 +61,12 @@ DashSidebar.propTypes = {
     memberships: PropTypes.arrayOf(
       PropTypes.shape({
         team: PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          name: PropTypes.string.isRequired
-        })
-      })
-    )
-  })
+          id: PropTypes.string,
+          name: PropTypes.string
+        }).isRequired
+      }).isRequired
+    ).isRequired
+  }).isRequired
 };
 
 styles = StyleSheet.create({
