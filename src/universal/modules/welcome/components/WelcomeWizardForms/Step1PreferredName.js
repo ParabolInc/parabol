@@ -9,7 +9,7 @@ import WelcomeLayout from '../WelcomeLayout/WelcomeLayout';
 import {cashay} from 'cashay';
 import {nextPage} from 'universal/modules/welcome/ducks/welcomeDuck';
 
-const Step1PreferredName = props => {
+const Step1PreferredName = (props) => {
   const {handleSubmit, preferredName, dispatch, user} = props;
   const onPreferredNameSubmit = submissionData => {
     const {preferredName: newPrefferedName} = submissionData;

@@ -17,7 +17,7 @@ const keyMap = {
 
 const selector = formValueSelector('welcomeWizard');
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   invitees: selector(state, 'invitees'),
   inviteesRaw: selector(state, 'inviteesRaw'),
   preferredName: selector(state, 'preferredName'),
@@ -26,7 +26,7 @@ const mapStateToProps = state => ({
   welcome: state.welcome
 });
 
-const WelcomeContainer = props => {
+const WelcomeContainer = (props) => {
   const {page} = props.welcome;
   return (
     <HotKeys focused attach={window} keyMap={keyMap}>
