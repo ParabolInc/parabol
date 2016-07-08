@@ -32,6 +32,7 @@ const Team = (props) => {
   return (
     <DashLayout title="Team Dashboard">
       <DashSidebar
+        activeArea="team"
         activeTeamId={teamId}
         dispatch={dispatch}
         user={user}

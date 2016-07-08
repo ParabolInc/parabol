@@ -4,7 +4,7 @@ import {cashay} from 'cashay';
 import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {DashLayout, DashSidebar} from 'universal/components/Dashboard';
-import Outcomes from 'universal/modules/userDashboard/components/Outcomes/Outcomes';
+import Settings from 'universal/modules/userDashboard/components/Preferences/Preferences';
 
 
 const mapStateToProps = (state) => {
@@ -14,25 +14,25 @@ const mapStateToProps = (state) => {
   };
 };
 
-const MeContainer = (props) => {
+const MeSettingsContainer = (props) => {
   const {dispatch, user, ...otherProps} = props;
   return (
     <DashLayout title="My Dashboard">
-      <DashSidebar activeArea="outcomes" dispatch={dispatch} user={user} />
-      <Outcomes user={user} {...otherProps} />
+      <DashSidebar activeArea="settings" dispatch={dispatch} user={user} />
+      <Settings user={user} {...otherProps} />
     </DashLayout>
   );
 };
 
-MeContainer.propTypes = {
+MeSettingsContainer.propTypes = {
   dispatch: PropTypes.func.isRequired,
   user: PropTypes.shape({
     name: PropTypes.string,
     nickname: PropTypes.string,
     memberships: PropTypes.array
-  }).isRequired
+  })
 };
 
 export default connect(mapStateToProps)(
-  requireAuth(MeContainer)
+  requireAuth(MeSettingsContainer)
 );

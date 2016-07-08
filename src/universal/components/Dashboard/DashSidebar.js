@@ -11,13 +11,12 @@ const textColor = tinycolor.mix(theme.palette.mid10l, '#fff', 50).toHexString();
 let styles = {};
 
 const DashSidebar = (props) => {
-  const {activeTeamId, dispatch, location} = props;
+  const {activeArea, activeTeamId, dispatch} = props;
   const teamItems = props.user.memberships.map(m => ({
-    active: m.team.id === activeTeamId,
+    active: activeArea === 'team' && m.team.id === activeTeamId,
     href: `/team/${m.team.id}`,
     label: m.team.name
   }));
-  const meNavActive = typeof activeTeamId === 'undefined' && location !== '/me/settings';
 
   return (
     <div className={styles.root}>
@@ -25,7 +24,7 @@ const DashSidebar = (props) => {
       <nav className={styles.nav}>
         <div className={styles.singleNavItem}>
           <DashNavItem
-            active={meNavActive}
+            active={activeArea === 'outcomes'}
             dispatch={dispatch}
             href="/me"
             label="My Outcomes"
@@ -49,9 +48,13 @@ const DashSidebar = (props) => {
 };
 
 DashSidebar.propTypes = {
+  activeArea: PropTypes.oneOf([
+    'outcomes',
+    'settings',
+    'team'
+  ]).isRequired,
   activeTeamId: PropTypes.string,
   dispatch: PropTypes.func.isRequired,
-  location: PropTypes.string,
   user: PropTypes.shape({
     name: PropTypes.string,
     nickname: PropTypes.string,
