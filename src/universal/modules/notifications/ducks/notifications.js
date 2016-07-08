@@ -9,7 +9,7 @@ export default function reducer(state = initialState, action) {
     case NOTIFICATIONS_SHOW: {
       // eslint-disable-next-line no-unused-vars
       const {type, ...typelessAction} = action;
-      return state.concat({...typelessAction, nid: ++nid});
+      return state.concat({...typelessAction});
     }
     case NOTIFICATIONS_HIDE:
       return state.filter(notification => notification.nid !== action.nid);
@@ -22,7 +22,8 @@ export function show(opts, level = 'success') {
   return {
     type: NOTIFICATIONS_SHOW,
     ...opts,
-    level
+    level,
+    nid: ++nid
   };
 }
 

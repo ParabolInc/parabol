@@ -22,14 +22,12 @@ export default ComposedComponent => {
 
     render() {
       const {dispatch, authToken, user} = this.props;
-
       if (authToken && user) {
-        if (user.profile.isNew) {
+        if (user.profile.isNew === true) {
           dispatch(push('/welcome'));
         } else if (user.profile.isNew === false) {
           dispatch(push('/me'));
         }
-        return null;
       }
       return <ComposedComponent {...this.props}/>;
     }
