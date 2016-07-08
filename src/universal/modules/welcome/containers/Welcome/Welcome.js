@@ -27,11 +27,11 @@ const mapStateToProps = (state) => ({
 });
 
 const WelcomeContainer = (props) => {
-  const {page} = props.welcome;
+  const {page, completed} = props.welcome;
   return (
     <HotKeys focused attach={window} keyMap={keyMap}>
-      {page === 1 && <Step1PreferredName {...props}/>}
-      {page === 2 && <Step2TeamName {...props}/>}
+      {page === 1 && <Step1PreferredName completed={completed} {...props}/>}
+      {page === 2 && <Step2TeamName completed={completed} {...props}/>}
       {page === 3 && <Step3InviteTeam {...props}/>}
     </HotKeys>
   );
