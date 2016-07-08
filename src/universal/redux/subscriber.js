@@ -1,16 +1,11 @@
 import socketCluster from 'socketcluster-client';
-import channelLookupMap from './channelLookupMap';
+import subscriptions from './subscriptions';
 import AuthEngine from 'universal/redux/AuthEngine';
 
 export default function subscriber(subscriptionString, handlers, variables) {
   let baseChannel;
-  for (const [key, value] of channelLookupMap.entries()) {
-    if (value === subscriptionString) {
-      baseChannel = key;
-      break;
-    }
-  }
-  const channelName = `${baseChannel}/${variables.meetingId}`;
+  const {channelfy} = subscriptions.find(sub => sub.string === subscriptionString);
+  const channelName = channelfy(variables);
   const socket = socketCluster.connect({}, {AuthEngine});
   const {add, update, remove, error} = handlers;
   socket.subscribe(channelName, {waitForAuth: true});

@@ -6,7 +6,7 @@ import {HotKeys} from 'react-hotkeys';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import AuthEngine from 'universal/redux/AuthEngine';
 import {cashay} from 'cashay';
-import channelLookupMap from 'universal/redux/channelLookupMap';
+import channelLookupMap from 'subscriptions.js';
 import subscriber from 'universal/redux/subscriber';
 import socketCluster from 'socketcluster-client';
 

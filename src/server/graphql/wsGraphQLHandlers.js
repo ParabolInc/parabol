@@ -1,6 +1,6 @@
 import {graphql} from 'graphql';
 import Schema from './rootSchema';
-import channelLookupMap from 'universal/redux/channelLookupMap';
+import channelLookupMap from 'subscriptions.js';
 
 export const wsGraphQLHandler = async(body, cb) => {
   const {query, variables, ...context} = body;

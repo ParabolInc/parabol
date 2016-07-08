@@ -19,7 +19,7 @@ export const options = {
   brokers: 1,
   port: process.env.PORT || 3000,
   appName: 'Meatier',
-  allowClientPublish: false,
+  // allowClientPublish: false,
   initController: path.join(__dirname, '/init.js'),
   workerController: path.join(__dirname, '/worker.js'),
   brokerController: path.join(__dirname, '/broker.js'),
