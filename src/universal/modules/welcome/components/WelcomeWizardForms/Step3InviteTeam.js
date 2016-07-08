@@ -28,9 +28,9 @@ const emailInviteFail = emailsNotDelivered => ({
   level: 'error'
 });
 
-const Step3InviteTeam = props => {
-  const {dispatch, handleSubmit, invitees, inviteesRaw, submitting, teamName, welcome: {teamId}} = props;
+const Step3InviteTeam = (props) => {
   const onAddInviteesButtonClick = event => {
+    const {dispatch, inviteesRaw} = props;
     const parsedAddresses = emailAddresses.parseAddressList(inviteesRaw);
     event.preventDefault();
     // clear the inviteesRaw form component:
@@ -48,6 +48,7 @@ const Step3InviteTeam = props => {
   };
 
   const onInviteTeamSubmit = async submissionData => {
+    const {dispatch, welcome: {teamId}} = props;
     const serverInvitees = submissionData.invitees.map(invitee => {
       // Remove label field:
       const {label, ...inviteeForServer} = invitee; // eslint-disable-line no-unused-vars
@@ -72,16 +73,14 @@ const Step3InviteTeam = props => {
         // TODO I think we want to remove the failures from the array so they can click try again. thoughts?
       }
     } else if (data) {
-      // Dispatch sequential success thunk:
-      dispatch(
-        Promise.all([
-          dispatch(show(emailInviteSuccess)), // trumpet our leader's brilliance!
-          dispatch(push(`/team/${teamId}`)),  // redirect leader to their new team
-          dispatch(destroy('welcomeWizard')), // Bye bye form data!
-        ])
-      );
+      dispatch(push(`/team/${teamId}`));  // redirect leader to their new team
+      dispatch(show(emailInviteSuccess)); // trumpet our leader's brilliance!
+      dispatch(destroy('welcomeWizard')); // bye bye form data!
     }
   };
+
+  const {handleSubmit, invitees, inviteesRaw, submitting, teamName} = props;
+
   const invitesFieldHasError = false; // TODO: wire this up for real
   const helpText = invitesFieldHasError ?
     // eslint-disable-next-line max-len
@@ -156,7 +155,7 @@ Step3InviteTeam.propTypes = {
   inviteesRaw: PropTypes.string,
   onSubmit: PropTypes.func,
   submitting: PropTypes.bool,
-  teamName: PropTypes.string.isRequired,
+  teamName: PropTypes.string,
   welcome: PropTypes.shape({
     teamId: PropTypes.string,
   })

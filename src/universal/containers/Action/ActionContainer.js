@@ -1,13 +1,11 @@
-import React, {PropTypes, Component} from 'react';
+import React, {PropTypes} from 'react';
 import Action from 'universal/components/Action/Action';
 
-// eslint-disable-next-line react/prefer-stateless-function
-export default class ActionContainer extends Component {
-  static propTypes = {
-    children: PropTypes.element.isRequired
-  };
+const ActionContainer = props =>
+  <Action {...props} />;
 
-  render() {
-    return <Action {...this.props} />;
-  }
-}
+ActionContainer.propTypes = {
+  children: PropTypes.element.isRequired
+};
+
+export default ActionContainer;

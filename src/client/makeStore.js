@@ -19,10 +19,14 @@ export default async initialState => {
   const reduxRouterMiddleware = routerMiddleware(browserHistory);
   const engine = createEngine(APP_NAME);
   const storageMiddleware = createMiddleware(engine, blackListedActions);
+  /*
+   * Special action types, such as thunks, must be placed before
+   * storageMiddleware so they can be properly interpreted:
+   */
   const middlewares = [
+    thunkMiddleware,
     storageMiddleware,
     reduxRouterMiddleware,
-    thunkMiddleware
   ];
 
   if (__PRODUCTION__) {
