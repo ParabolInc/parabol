@@ -38,10 +38,10 @@ const Step2TeamName = (props) => {
     dispatch(updateCompleted(3));
     dispatch(nextPage());
   };
-  const progressDotClick = (idx) => {
-    if (idx === 0) {
+  const progressDotClick = (dot) => {
+    if (dot === 1) {
       dispatch(previousPage());
-    } else if (idx === 2) {
+    } else if (dot === 3) {
       if (teamName) {
         dispatch(nextPage());
       }

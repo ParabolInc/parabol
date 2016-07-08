@@ -26,7 +26,7 @@ export default class ProgressDots extends Component {
 
     const handleClick = (e) => {
       e.preventDefault();
-      this.props.onClick(idx);
+      this.props.onClick(idx + 1);
     };
 
     if (idx === currentDot) {

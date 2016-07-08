@@ -27,9 +27,11 @@ const Step1PreferredName = (props) => {
     }
     dispatch(nextPage());
   };
-  const progressDotClick = (idx) => {
-    if (preferredName) {
-      dispatch(goToPage(idx));
+  const progressDotClick = (dot) => {
+    if (dot === 2 && preferredName) {
+      dispatch(goToPage(2));
+    } else if (dot === 3 && completed === 3) {
+      dispatch(goToPage(3));
     }
   };
   return (

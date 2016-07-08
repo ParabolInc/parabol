@@ -29,7 +29,7 @@ export default function reducer(state = initialState, action = {}) {
     case GO_TO_PAGE:
       return {
         ...state,
-        page: action.payload + 1
+        page: action.payload
       };
     case UPDATE_COMPLETED:
       return {

@@ -88,9 +88,9 @@ const Step3InviteTeam = (props) => {
     <span>Oops! Please make sure email addresses are valid <br />and separated by a single comma.</span> :
     <span>You can paste multiple emails separated by a comma.<br />&nbsp;</span>;
   const fieldArrayHasValue = invitees && invitees[0] != null;
-  const progressDotClick = (idx) => {
-    if (idx !== 2) {
-      props.dispatch(goToPage(idx));
+  const progressDotClick = (dot) => {
+    if (dot !== 3) {
+      props.dispatch(goToPage(dot));
     }
   };
   return (
