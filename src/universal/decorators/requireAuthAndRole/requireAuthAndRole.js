@@ -16,14 +16,15 @@ const unauthenticated = {
   message: 'Hey! You haven\'t signed in yet. Taking you to the sign in page.'
 };
 
-const mapStateToProps = state => {
-  return {
-    authToken: state.authToken,
-    user: cashay.query(getAuthQueryString, authedOptions).data.user
-  };
-};
 
-export default role => ComposedComponent => {
+export default (role, cashayAuthQueryOpts = authedOptions) => (ComposedComponent) => {
+  const mapStateToProps = state => {
+    return {
+      authToken: state.authToken,
+      user: cashay.query(getAuthQueryString, cashayAuthQueryOpts).data.user
+    };
+  };
+
   @connect(mapStateToProps)
   class RequiredAuthAndRole extends Component {
     static propTypes = {
