@@ -54,6 +54,21 @@ const updateTokenMutationHandlers = {
       Object.assign(currentResponse.user.profile, queryResponse.profile);
     }
     return currentResponse;
+  },
+  createTeam(optimisticVariables, queryResponse, currentResponse) {
+    if (optimisticVariables) {
+      const {leader, id, name, isActive, isLead, isFacilitator} = optimisticVariables.newTeam;
+      const membership = {
+        id: leader.id,
+        team: {id, name},
+        isActive,
+        isLead,
+        isFacilitator
+      };
+      currentResponse.user.memberships.push(membership);
+      return currentResponse;
+    }
+    return undefined;
   }
 };
 
