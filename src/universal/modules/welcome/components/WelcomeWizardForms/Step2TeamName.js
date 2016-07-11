@@ -11,14 +11,6 @@ import {nextPage, setWelcomeTeam} from 'universal/modules/welcome/ducks/welcomeD
 import shortid from 'shortid';
 import {cashay} from 'cashay';
 
-export const mutationHandlers = {
-  createTeam(optimisticVariables, queryResponse, currentResponse) {
-    if (queryResponse) {
-      currentResponse.user.memberships.push(queryResponse.leader);
-    }
-    return currentResponse;
-  }
-};
 
 const Step2TeamName = (props) => {
   const {dispatch, handleSubmit, preferredName, teamName, user} = props;

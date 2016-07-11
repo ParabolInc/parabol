@@ -5,8 +5,6 @@ import {HotKeys} from 'react-hotkeys';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {authedOptions} from 'universal/redux/getAuthedUser';
 
-import {mutationHandlers as Step2MutationHandlers} from '../../components/WelcomeWizardForms/Step2TeamName';
-
 import {
   Step1PreferredName,
   Step2TeamName,
@@ -18,8 +16,16 @@ import {
  */
 const cashayAuthQueryOpts = {
   component: 'WelcomeContainer',
-  mutationHandlers: Object.assign(authedOptions.mutationHandlers,
-    Step2MutationHandlers,
+  mutationHandlers: Object.assign({},
+    authedOptions.mutationHandlers,
+    {
+      createTeam(optimisticVariables, queryResponse, currentResponse) {
+        if (queryResponse) {
+          currentResponse.user.memberships.push(queryResponse.leader);
+        }
+        return currentResponse;
+      }
+    }
   ),
   localOnly: true
 };
