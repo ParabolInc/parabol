@@ -7,6 +7,7 @@ import {
   GraphQLList
 } from 'graphql';
 import {TeamMember, CreateTeamMemberInput} from '../TeamMember/teamMemberSchema';
+import {UserProfile} from '../UserProfile/userProfileSchema';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {nonnullifyInputThunk} from '../utils';
 
@@ -46,3 +47,22 @@ const teamInputThunk = () => ({
 
 export const CreateTeamInput = nonnullifyInputThunk('CreateTeamInput', teamInputThunk, ['id', 'name']);
 export const UpdateTeamInput = nonnullifyInputThunk('UpdateTeamInput', teamInputThunk, ['id']);
+
+export const CreateTeamOutput = new GraphQLObjectType({
+  name: 'CreateTeamOutput',
+  description: 'A compound type returned by createTeam mutation',
+  fields: () => ({
+    team: {
+      type: Team,
+      description: 'the new team'
+    },
+    leader: {
+      type: TeamMember,
+      description: 'the new team\'s leader'
+    },
+    updatedProfile: {
+      type: UserProfile,
+      description: 'the updated user profile'
+    }
+  }),
+});

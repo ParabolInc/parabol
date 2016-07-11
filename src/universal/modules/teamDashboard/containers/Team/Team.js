@@ -25,5 +25,5 @@ TeamContainer.propTypes = {
 };
 
 export default connect(mapStateToProps)(
-  requireAuth(TeamContainer)
+  requireAuth()(TeamContainer)
 );

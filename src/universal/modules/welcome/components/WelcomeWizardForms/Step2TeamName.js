@@ -11,6 +11,7 @@ import {nextPage, setWelcomeTeam} from 'universal/modules/welcome/ducks/welcomeD
 import shortid from 'shortid';
 import {cashay} from 'cashay';
 
+
 const Step2TeamName = (props) => {
   const {dispatch, handleSubmit, preferredName, teamName, user} = props;
   const onTeamNameSubmit = data => {
@@ -19,6 +20,7 @@ const Step2TeamName = (props) => {
     const teamMemberId = shortid.generate();
     dispatch(setWelcomeTeam({teamId, teamMemberId}));
     const createTeamOptions = {
+      component: 'WelcomeContainer',
       variables: {
         newTeam: {
           id: teamId,

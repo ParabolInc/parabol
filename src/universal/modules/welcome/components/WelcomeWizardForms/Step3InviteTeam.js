@@ -55,6 +55,7 @@ const Step3InviteTeam = (props) => {
       return inviteeForServer;
     });
     const options = {
+      component: 'WelcomeContainer',
       variables: {
         teamId,
         invitees: serverInvitees

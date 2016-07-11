@@ -14,6 +14,7 @@ const Step1PreferredName = (props) => {
   const onPreferredNameSubmit = submissionData => {
     const {preferredName: newPrefferedName} = submissionData;
     const options = {
+      component: 'WelcomeContainer',
       variables: {
         updatedProfile: {
           id: user.id,

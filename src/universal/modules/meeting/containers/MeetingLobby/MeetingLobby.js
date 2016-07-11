@@ -19,7 +19,7 @@ const mapStateToProps = state => ({
 });
 
 @connect(mapStateToProps)
-@requireAuth
+@requireAuth()
 @reduxSocket({}, {AuthEngine})
 @look
 // eslint-disable-next-line react/prefer-stateless-function

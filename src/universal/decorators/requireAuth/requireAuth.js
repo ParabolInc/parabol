@@ -1,3 +1,4 @@
+import {authedOptions} from 'universal/redux/getAuthedUser';
 import requireAuthAndRole from '../requireAuthAndRole/requireAuthAndRole';
 
 /*
@@ -5,4 +6,5 @@ import requireAuthAndRole from '../requireAuthAndRole/requireAuthAndRole';
  * user requireAuthAndRole but pass it an undefined role to match. This
  * checks only for an authenticated user.
  */
-export default ComposedComponent => requireAuthAndRole()(ComposedComponent);
+export default (cashayAuthQueryOpts = authedOptions) => (ComposedComponent) =>
+  requireAuthAndRole(null, cashayAuthQueryOpts)(ComposedComponent);

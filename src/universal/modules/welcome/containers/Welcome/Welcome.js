@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {formValueSelector} from 'redux-form';
 import {HotKeys} from 'react-hotkeys';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
+import {authedOptions} from 'universal/redux/getAuthedUser';
 
 import {
   Step1PreferredName,
@@ -10,19 +11,46 @@ import {
   Step3InviteTeam
 } from '../../components/WelcomeWizardForms';
 
+/*
+ * Setup and extend requireAuth cashay mutation handlers:
+ */
+const cashayAuthQueryOpts = {
+  component: 'WelcomeContainer',
+  mutationHandlers: Object.assign({},
+    authedOptions.mutationHandlers,
+    {
+      createTeam(optimisticVariables, queryResponse, currentResponse) {
+        if (queryResponse) {
+          currentResponse.user.memberships.push(queryResponse.leader);
+        }
+        return currentResponse;
+      }
+    }
+  ),
+  localOnly: true
+};
+
+/*
+ * Setup HotKeys events:
+ */
+
 const keyMap = {
   keyEnter: 'enter',
   seqHelp: 'shift+/' // TODO: presently unused
 };
 
+/*
+ * Setup `redux-form` selector
+ */
+
 const selector = formValueSelector('welcomeWizard');
 
 const mapStateToProps = (state) => ({
+  authToken: state.authToken,
   invitees: selector(state, 'invitees'),
   inviteesRaw: selector(state, 'inviteesRaw'),
   preferredName: selector(state, 'preferredName'),
   teamName: selector(state, 'teamName'),
-  authToken: state.authToken,
   welcome: state.welcome
 });
 
@@ -50,5 +78,5 @@ WelcomeContainer.propTypes = {
 };
 
 export default connect(mapStateToProps)(
-  requireAuth(WelcomeContainer)
+  requireAuth(cashayAuthQueryOpts)(WelcomeContainer)
 );

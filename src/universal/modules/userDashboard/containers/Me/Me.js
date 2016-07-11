@@ -34,5 +34,5 @@ MeContainer.propTypes = {
 };
 
 export default connect(mapStateToProps)(
-  requireAuth(MeContainer)
+  requireAuth()(MeContainer)
 );
