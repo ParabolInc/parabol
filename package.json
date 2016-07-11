@@ -78,7 +78,7 @@
     "babel-polyfill": "6.9.1",
     "babel-runtime": "6.9.2",
     "body-parser": "1.15.2",
-    "cashay": "^0.11.4",
+    "cashay": "^0.12.0",
     "cheerio": "^0.20.0",
     "compression": "1.6.2",
     "cors": "2.7.1",
