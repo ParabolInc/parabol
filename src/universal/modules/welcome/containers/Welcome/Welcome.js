@@ -45,10 +45,6 @@ const mapStateToProps = (state) => ({
   inviteesRaw: selector(state, 'inviteesRaw'),
   preferredName: selector(state, 'preferredName'),
   teamName: selector(state, 'teamName'),
-  /*
-   * NOTE: cashay user object doesn't appear he, as we won't depend on
-   *       rendering upon it.
-   */
   welcome: state.welcome
 });
 
