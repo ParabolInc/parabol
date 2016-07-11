@@ -1,8 +1,9 @@
 import shortid from 'shortid';
-import makeSecretToken from '../../../utils/makeSecretToken';
 import ms from 'ms';
-import sendEmail from '../../../email/sendEmail';
 import r from '../../../database/rethinkDriver';
+import sendEmail from '../../../email/sendEmail';
+import makeAppLink from '../../../utils/makeAppLink';
+import makeSecretToken from '../../../utils/makeSecretToken';
 
 export const getInviterInfoAndTeamName = async (teamId, userId) => {
   /**
@@ -64,8 +65,7 @@ export const sendInvitations = (inviterInfoAndTeamName, invitations) => {
       {
         inviteeEmail: invitation.email,
         firstProject: invitation.task,
-        // TODO: change me
-        inviteLink: `http://action-staging.parabol.co/welcome/invite?token=${invitation.inviteToken}`,
+        inviteLink: makeAppLink(`invitation/${invitation.inviteToken}`)
       }
     );
     return sendEmail(invitation.email, 'teamInvite', emailProps);
