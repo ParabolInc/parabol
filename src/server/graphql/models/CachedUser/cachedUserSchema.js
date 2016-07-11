@@ -115,8 +115,7 @@ export const CachedUser = new GraphQLObjectType({
       description: 'The associated user profile, stored locally in our database.',
       async resolve({id}) {
         // not entirely sure why i have to await this, i thought GraphQL allowed subsequent promises
-        const userProfile = await r.table('UserProfile').get(id);
-        return userProfile;
+        return await r.table('UserProfile').get(id);
       }
     },
     memberships: {

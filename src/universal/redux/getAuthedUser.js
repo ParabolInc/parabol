@@ -1,6 +1,4 @@
-import {cashay} from 'cashay';
-
-const getAuthQueryString = `
+export const getAuthQueryString = `
 query {
   user: getCurrentUser {
     id,
@@ -27,21 +25,20 @@ query {
     profile {
      isNew,
      preferredName
+    },
+    memberships {
+      id,
+      team {
+       id,
+       name
+      },
+      isLead,
+      isActive,
+      isFacilitator
     }
   }
 }`;
 
-// memberships {
-//   id,
-//     teamId,
-//     active,
-//     isLead,
-//     isFacilitator,
-//     cachedUserId,
-//     inviteId,
-//     name,
-//     email
-// }
 const updateTokenMutationHandlers = {
   updateUserWithAuthToken(optimisticVariables, queryResponse, currentResponse) {
     if (queryResponse) {
@@ -60,21 +57,8 @@ const updateTokenMutationHandlers = {
   }
 };
 
-const authedOptions = {
+export const authedOptions = {
   component: 'getAuthedUser',
-  mutationHandlers: updateTokenMutationHandlers
+  mutationHandlers: updateTokenMutationHandlers,
+  localOnly: true
 };
-
-const userThunk = () => cashay.query(getAuthQueryString, authedOptions).data.user;
-
-let unsubscribe;
-export default function getAuthedUser() {
-  const {authToken} = cashay.store.getState();
-  if (authToken) {
-    if (!unsubscribe) {
-      unsubscribe = cashay.store.subscribe(userThunk);
-    }
-    return userThunk();
-  }
-  return undefined;
-}

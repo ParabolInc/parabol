@@ -1,22 +1,38 @@
-import React, {Component, PropTypes} from 'react';
-import Me from 'universal/modules/userDashboard/components/Me/Me';
-import requireAuth from 'universal/decorators/requireAuth/requireAuth';
+import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
+import {cashay} from 'cashay';
+import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
+import requireAuth from 'universal/decorators/requireAuth/requireAuth';
+import {DashLayout, DashSidebar} from 'universal/components/Dashboard';
+import Outcomes from 'universal/modules/userDashboard/components/Outcomes/Outcomes';
 
-const mapStateToProps = state => ({
-  authToken: state.authToken
-});
 
-@connect(mapStateToProps)
-@requireAuth
-// eslint-disable-next-line react/prefer-stateless-function
-export default class MeContainer extends Component {
-  static propTypes = {
-    user: PropTypes.object
+const mapStateToProps = (state) => {
+  return {
+    authToken: state.authToken,
+    user: cashay.query(getAuthQueryString, authedOptions).data.user
   };
+};
 
-  render() {
-    const {user} = this.props;
-    return <Me user={user}/>;
-  }
-}
+const MeContainer = (props) => {
+  const {dispatch, user, ...otherProps} = props;
+  return (
+    <DashLayout title="My Dashboard">
+      <DashSidebar activeArea="outcomes" dispatch={dispatch} user={user} />
+      <Outcomes user={user} {...otherProps} />
+    </DashLayout>
+  );
+};
+
+MeContainer.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  user: PropTypes.shape({
+    name: PropTypes.string,
+    nickname: PropTypes.string,
+    memberships: PropTypes.array
+  }).isRequired
+};
+
+export default connect(mapStateToProps)(
+  requireAuth(MeContainer)
+);

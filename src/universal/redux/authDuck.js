@@ -21,9 +21,9 @@ export function setAuthToken(authToken) {
   };
 }
 
-export function removeAuthToken(authToken) {
+export function removeAuthToken() {
   return {
     type: REMOVE_AUTH_TOKEN,
-    payload: {authToken}
+    payload: {}
   };
 }

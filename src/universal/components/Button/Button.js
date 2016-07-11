@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 import look, { StyleSheet } from 'react-look';
 import * as appTheme from 'universal/styles/theme';
 import tinycolor from 'tinycolor2';
@@ -49,78 +49,91 @@ const makeOutlinedTheme = (color, opacity = '.5') => ({
 let keyframesDip = {};
 let styles = {};
 
-@look
-// eslint-disable-next-line react/prefer-stateless-function
-export default class Button extends Component {
+const Button = props => {
+  const {
+    disabled,
+    isBlock,
+    label,
+    onClick,
+    size,
+    style,
+    theme,
+    title,
+    type
+  } = props;
 
-  // Prop Options:
-  // -------------
-  // size: smallest, small, medium, large, largest
-  // style: solid, outlined, inverted
-  // theme: cool, warm, dark, mid, light, white
+  const buttonTitle = title || label;
+  const themeName = theme.charAt(0).toUpperCase() + theme.slice(1);
+  const styleThemeName = `${style}${themeName}`;
+  const buttonOptions = [styles.base, styles[size], styles[styleThemeName]];
 
-  static propTypes = {
-    disabled: PropTypes.bool,
-    label: PropTypes.string,
-    onClick: PropTypes.func,
-    size: PropTypes.oneOf([
-      'smallest',
-      'small',
-      'medium',
-      'large',
-      'largest',
-    ]),
-    style: PropTypes.oneOf([
-      'solid',
-      'outlined',
-      'inverted'
-    ]),
-    theme: PropTypes.oneOf([
-      'cool',
-      'warm',
-      'dark',
-      'mid',
-      'light',
-      'white'
-    ]),
-    title: PropTypes.string
+  let buttonStyles;
+
+  if (disabled) {
+    buttonOptions.push(styles.disabled);
   }
 
-  render() {
-    const {
-      disabled,
-      label,
-      onClick,
-      size,
-      style,
-      theme,
-      title
-    } = this.props;
-
-    const buttonLabel = label || 'Label Me';
-    const buttonSize = size || 'medium';
-    const buttonStyle = style || 'solid';
-    const buttonTheme = theme || 'dark';
-    const buttonTitle = title || buttonLabel;
-    const themeName = buttonTheme.charAt(0).toUpperCase() + buttonTheme.slice(1);
-    const styleThemeName = `${buttonStyle}${themeName}`;
-    const buttonOptions = [styles.base, styles[buttonSize], styles[styleThemeName]];
-
-    let buttonStyles;
-
-    if (disabled) {
-      buttonOptions.push(styles.disabled);
-    }
-
-    buttonStyles = combineStyles.apply(null, buttonOptions);
-
-    return (
-      <button className={buttonStyles} disabled={disabled} onClick={onClick} title={buttonTitle}>
-        {buttonLabel}
-      </button>
-    );
+  if (isBlock) {
+    buttonOptions.push(styles.isBlock);
   }
-}
+
+  buttonStyles = combineStyles.apply(null, buttonOptions);
+
+  return (
+    <button
+      className={buttonStyles}
+      disabled={disabled}
+      onClick={onClick}
+      title={buttonTitle}
+      type={type}
+    >
+      {label}
+    </button>
+  );
+};
+
+Button.propTypes = {
+  disabled: PropTypes.bool,
+  isBlock: PropTypes.bool,
+  label: PropTypes.string,
+  onClick: PropTypes.func,
+  size: PropTypes.oneOf([
+    'smallest',
+    'small',
+    'medium',
+    'large',
+    'largest'
+  ]),
+  style: PropTypes.oneOf([
+    'solid',
+    'outlined',
+    'inverted'
+  ]),
+  theme: PropTypes.oneOf([
+    'cool',
+    'warm',
+    'dark',
+    'mid',
+    'light',
+    'white'
+  ]),
+  title: PropTypes.string,
+  type: PropTypes.oneOf([
+    'button',
+    'menu',
+    'submit',
+    'reset'
+  ])
+};
+
+Button.defaultProps = {
+  isBlock: false,
+  label: 'Label Me',
+  size: 'medium',
+  style: 'solid',
+  theme: 'dark',
+  type: 'button'
+};
 
 keyframesDip = StyleSheet.keyframes({
   '0%': {
@@ -162,6 +175,11 @@ styles = StyleSheet.create({
       animationName: keyframesDip,
       animationTimingFunction: 'ease-in'
     }
+  },
+
+  isBlock: {
+    display: 'block',
+    width: '100%'
   },
 
   // Button sizes
@@ -222,3 +240,5 @@ styles = StyleSheet.create({
     }
   }
 });
+
+export default look(Button);

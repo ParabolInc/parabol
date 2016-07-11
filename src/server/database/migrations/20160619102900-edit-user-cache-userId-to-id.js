@@ -4,7 +4,7 @@ exports.up = async r => {
   await r.table('CachedUser').insert(r.table('CachedUser_old').map(doc => {
     return doc.merge({id: doc('userId')}).without('userId');
   }));
-  await r.tableDrop('CachedUser_old');
+  return await r.tableDrop('CachedUser_old');
 };
 
 exports.down = async r => {
@@ -14,4 +14,5 @@ exports.down = async r => {
   }));
   await r.tableDrop('CachedUser');
   await r.table('CachedUser_new').config().update({name: 'CachedUser'});
+  return await r.table('CachedUser').indexCreate('userId');
 };

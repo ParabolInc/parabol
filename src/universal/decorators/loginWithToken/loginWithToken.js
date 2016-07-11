@@ -1,29 +1,34 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import {push} from 'react-router-redux';
-import getAuthedUser from 'universal/redux/getAuthedUser';
+import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
+import {cashay} from 'cashay';
+import {connect} from 'react-redux';
 
-// eslint-disable-next-line arrow-body-style
-export default ComposedComponent => {
-  return class TokenizedComp extends Component {
-    static propTypes = {
-      dispatch: PropTypes.func,
-      authToken: PropTypes.string
-    };
-
-    render() {
-      const user = getAuthedUser();
-      const {dispatch, authToken} = this.props;
-
-      // remove expired tokens from state
-      if (authToken && user) {
-        if (user.profile.isNew) {
-          dispatch(push('/welcome'));
-        } else if (user.profile.isNew === false) {
-          dispatch(push('/me'));
-        }
-        return null;
-      }
-      return <ComposedComponent {...this.props} dispatch={dispatch}/>;
-    }
+const mapStateToProps = state => {
+  return {
+    authToken: state.authToken,
+    user: cashay.query(getAuthQueryString, authedOptions).data.user
   };
+};
+
+export default ComposedComponent => {
+  const TokenizedComp = (props) => {
+    const {dispatch, authToken, user} = props;
+    if (authToken && user) {
+      if (user.profile.isNew === true) {
+        dispatch(push('/welcome'));
+      } else if (user.profile.isNew === false) {
+        dispatch(push('/me'));
+      }
+    }
+    return <ComposedComponent {...props}/>;
+  };
+
+  TokenizedComp.propTypes = {
+    dispatch: PropTypes.func,
+    authToken: PropTypes.string,
+    user: PropTypes.object
+  };
+
+  return connect(mapStateToProps)(TokenizedComp);
 };

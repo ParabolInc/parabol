@@ -1,8 +1,10 @@
 import React, {Component, PropTypes} from 'react';
 import {push} from 'react-router-redux';
-import getAuthedUser from 'universal/redux/getAuthedUser';
 import jwtDecode from 'jwt-decode';
 import {error as showError} from 'universal/modules/notifications/ducks/notifications';
+import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
+import {cashay} from 'cashay';
+import {connect} from 'react-redux';
 
 const unauthorized = {
   title: 'Unauthorized',
@@ -14,16 +16,23 @@ const unauthenticated = {
   message: 'Hey! You haven\'t signed in yet. Taking you to the sign in page.'
 };
 
+const mapStateToProps = state => {
+  return {
+    authToken: state.authToken,
+    user: cashay.query(getAuthQueryString, authedOptions).data.user
+  };
+};
+
 export default role => ComposedComponent => {
-  return class RequiredAuthAndRole extends Component {
+  @connect(mapStateToProps)
+  class RequiredAuthAndRole extends Component {
     static propTypes = {
       authToken: PropTypes.string,
+      user: PropTypes.object,
       dispatch: PropTypes.func
     };
-
     render() {
-      const user = getAuthedUser();
-      const {authToken, dispatch} = this.props;
+      const {authToken, dispatch, user} = this.props;
       if (authToken === undefined) {
         throw new Error('Auth token undefined. Did you put @connect on your component?');
       }
@@ -44,5 +53,6 @@ export default role => ComposedComponent => {
       dispatch(push('/'));
       return null;
     }
-  };
+  }
+  return RequiredAuthAndRole;
 };

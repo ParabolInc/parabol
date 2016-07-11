@@ -60,12 +60,12 @@ StyleSheet.addCSS({
   },
 
   a: {
-    color: theme.palette.warm,
+    color: theme.palette.cool,
     textDecoration: 'none'
   },
 
   'a:hover, a:focus': {
-    color: tinycolor(theme.palette.warm).darken(15).toHexString(),
+    color: tinycolor(theme.palette.cool).darken(15).toHexString(),
     textDecoration: 'underline'
   },
 

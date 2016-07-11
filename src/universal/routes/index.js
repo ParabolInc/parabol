@@ -8,13 +8,15 @@ export default store => ({
    */
   component: ActionContainer,
   childRoutes: [
-    require('./team')(store),
-    require('./landing'),
-    require('./welcome')(store),
-    require('./userDashboard'),
-    require('./meeting')(store),
     require('./graphql'),
+    require('./landing'),
+    require('./logout'),
+    require('./meeting')(store),
     require('./patterns'),
+    require('./teamDashboard'),
+    ...require('./userDashboardRoutes'),
+    require('./welcome')(store),
+    // Catch-all:
     require('./notFound')
   ]
 });
