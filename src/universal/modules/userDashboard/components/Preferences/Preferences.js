@@ -26,10 +26,10 @@ let styles = {};
 @reduxForm({form: 'userPreferences'})
 export default class Preferences extends Component {
   static propTypes = {
-    activity: PropTypes.string,            // from settingsDuck
+    activity: PropTypes.string,          // from settingsDuck
     dispatch: PropTypes.func.isRequired,
     handleSubmit: PropTypes.func,
-    nextPage: PropTypes.string,           // from settingsDuck
+    nextPage: PropTypes.string,          // from settingsDuck
     /* User for form defaults: */
     user: PropTypes.shape({
       profile: PropTypes.shape({
@@ -60,10 +60,9 @@ export default class Preferences extends Component {
     await cashay.mutate('updateUserProfile', options);
     dispatch(show(updateSuccess));
     if (activity === ACTIVITY_WELCOME) {
-      console.log('TODO: mark user as not new anymore.');
+      dispatch(clearActivity());
     }
     if (nextPage) {
-      dispatch(clearActivity());
       dispatch(push(nextPage));
     }
   }
