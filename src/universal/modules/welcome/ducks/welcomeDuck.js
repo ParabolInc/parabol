@@ -43,7 +43,7 @@ export default function reducer(state = initialState, action = {}) {
   }
 }
 
-export const setWelcomeTeam = payload => {
+export const setWelcomeTeam = (payload) => {
   return {
     type: SET_WELCOME_TEAM,
     payload
