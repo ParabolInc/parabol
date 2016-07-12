@@ -3,7 +3,7 @@ import ms from 'ms';
 import r from '../../../database/rethinkDriver';
 import sendEmail from '../../../email/sendEmail';
 import makeAppLink from '../../../utils/makeAppLink';
-import makeSecretToken from '../../../utils/makeSecretToken';
+import {makeInviteToken} from '../../../utils/inviteTokens';
 
 export const getInviterInfoAndTeamName = async (teamId, userId) => {
   /**
@@ -45,12 +45,13 @@ export const makeInvitations = (invitees, teamId) => {
   const tokenExpiration = Date.now() + ms('30d');
   return invitees.map(invitee => {
     const {email, task, fullName} = invitee;
+    const id = shortid.generate();
     return {
-      id: shortid.generate(),
+      id,
       teamId,
       createdAt: now,
       isAccepted: false,
-      inviteToken: makeSecretToken(email, tokenExpiration),
+      inviteToken: makeInviteToken(id, tokenExpiration),
       fullName,
       email,
       task

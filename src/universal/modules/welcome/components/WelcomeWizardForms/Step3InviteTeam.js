@@ -48,7 +48,7 @@ const Step3InviteTeam = (props) => {
     });
   };
 
-  const onInviteTeamSubmit = async submissionData => {
+  const onInviteTeamSubmit = async (submissionData) => {
     const {dispatch, welcome: {teamId}} = props;
     const serverInvitees = submissionData.invitees.map(invitee => {
       // Remove label field:

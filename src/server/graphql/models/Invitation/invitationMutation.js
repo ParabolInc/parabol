@@ -3,11 +3,12 @@ import {
   GraphQLNonNull,
   GraphQLBoolean,
   GraphQLID,
-  GraphQLList
+  GraphQLList,
 } from 'graphql';
 import {Invitee} from './invitationSchema';
 import {errorObj} from '../utils';
 import {requireSUOrTeamMember, getUserId} from '../authorization';
+
 
 import {
   resolveSentEmails,

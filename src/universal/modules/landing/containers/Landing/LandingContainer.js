@@ -24,7 +24,7 @@ export default class LandingContainer extends Component {
       authParams: {
         scope: 'openid rol'
       }
-    }, async(error, profile, authToken) => {
+    }, async (error, profile, authToken) => {
       if (error) throw error;
       const {dispatch} = this.props;
       dispatch(setAuthToken(authToken));

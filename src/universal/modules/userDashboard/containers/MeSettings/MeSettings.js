@@ -9,7 +9,9 @@ import Settings from 'universal/modules/userDashboard/components/Preferences/Pre
 
 const mapStateToProps = (state) => {
   return {
+    activity: state.userDashboardSettings.activity,
     authToken: state.authToken,
+    nextPage: state.userDashboardSettings.nextPage,
     user: cashay.query(getAuthQueryString, authedOptions).data.user
   };
 };
@@ -25,7 +27,9 @@ const MeSettingsContainer = (props) => {
 };
 
 MeSettingsContainer.propTypes = {
+  activity: PropTypes.string,
   dispatch: PropTypes.func.isRequired,
+  nextPage: PropTypes.string,
   user: PropTypes.shape({
     name: PropTypes.string,
     nickname: PropTypes.string,
