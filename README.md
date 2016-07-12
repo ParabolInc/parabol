@@ -1,7 +1,7 @@
 # Action
 
 [![Slack Status](http://slackin.parabol.co/badge.svg)](http://slackin.parabol.co/)
-[![Circle CI](https://img.shields.io/circleci/project/parabol/action/master.svg)](https://circleci.com/gh/ParabolInc/action)
+[![CircleCI](https://circleci.com/gh/ParabolInc/action.svg?style=svg)](https://circleci.com/gh/ParabolInc/action)
 
 ## Overview
 
