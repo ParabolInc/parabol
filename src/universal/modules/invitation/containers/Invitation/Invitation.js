@@ -7,6 +7,11 @@ import {auth0} from 'universal/utils/clientOptions';
 import {setAuthToken} from 'universal/redux/authDuck';
 import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
 import {setWelcomeActivity} from 'universal/modules/userDashboard/ducks/settingsDuck';
+import {
+  error as showError,
+  success as showSuccess,
+  warning as showWarning
+} from 'universal/modules/notifications/ducks/notifications';
 
 const mapStateToProps = (state, props) => {
   const {params: {id}} = props;
@@ -26,8 +31,16 @@ export default class Invitation extends Component {
     user: PropTypes.object
   };
 
+  componentDidMount() {
+    this.stateMachine(this.props);
+  }
+
   componentWillReceiveProps(nextProps) {
-    const {authToken, dispatch, user} = nextProps;
+    this.stateMachine(nextProps);
+  }
+
+  stateMachine = (props) => {
+    const {authToken, dispatch, user} = props;
 
     if (authToken) {
       if (user && user.profile.isNew === false) {
@@ -39,6 +52,7 @@ export default class Invitation extends Component {
       }
     }
   }
+
 
   showLock = () => {
     // eslint-disable-next-line global-require
@@ -69,13 +83,73 @@ export default class Invitation extends Component {
     };
     cashay.mutate('acceptInvitation', options).then(({data, error}) => {
       if (error) {
-        console.warn('unable to accept invitation:');
-        console.warn(error);
+        if (error.subtype === 'alreadyJoined') {
+          /*
+           * This should be *very* difficult to have occur:
+           */
+          dispatch(showError({
+            title: 'Team already joined',
+            message: `
+              Hey, we think you already belong to this team.
+            `,
+            action: {
+              label: 'Ok',
+            },
+            autoDismiss: 0
+          }));
+          dispatch(push('/settings/me'));
+          return;
+        } else if (error.subtype === 'invalidEmail') {
+          const {user: {email}} = this.props;
+          dispatch(showError({
+            title: 'Invitation invalid',
+            message: `
+              That invitation isn't valid for the email address
+              ${email}. Perhaps switch accounts or ask for a new invitation?
+            `,
+            action: {
+              label: 'Ok',
+            },
+            autoDismiss: 0
+          }));
+        } else if (error.subtype === 'invalidToken') {
+          dispatch(showError({
+            title: 'Invitation invalid',
+            message: `
+              We had difficulty with that link. Did you paste it correctly?
+            `,
+            action: {
+              label: 'Ok',
+            },
+            autoDismiss: 10
+          }));
+        } else if (error.subtype === 'notFound') {
+          dispatch(showWarning({
+            title: 'Invitation not found, but don\'t worry',
+            message: `
+              Hey we couldn't find that invitation. If you'd like to
+              create your own team, you can start that process here.
+            `,
+            action: {
+              label: 'Got it',
+            },
+            autoDismiss: 0
+          }));
+        } else {
+          console.warn('unable to accept invitation:');
+          console.warn(error);
+        }
         // TODO: pop them a toast and tell them what happened?
         dispatch(push('/welcome'));
       } else if (data) {
         const {id} = data.acceptInvitation.team;
         dispatch(setWelcomeActivity(`/team/${id}`));
+        dispatch(showSuccess({
+          title: 'You\'re in!',
+          message: `
+            Welcome to Action. Let's get you set up.
+          `
+        }));
         dispatch(push('/me/settings'));
       }
     }).catch(console.warn.bind(console));

@@ -26,19 +26,43 @@ Side effect: deletes all other outstanding invitations for user.`,
     async resolve(source, {inviteToken}, {authToken}) {
       const {token, valid, error} = validateInviteToken(inviteToken);
       if (!valid) {
-        throw errorObj({_error: error, type: 'acceptInvitation'});
+        throw errorObj({
+          _error: error,
+          type: 'acceptInvitation',
+          subtype: 'invalidToken'
+        });
       }
       const userId = getUserId(authToken);
       const user = await r.table('CachedUser').get(userId);
       const invitation = await r.table('Invitation').get(token.id);
       if (!invitation) {
-        throw errorObj({_error: 'unable to find invitation', type: 'acceptInvitation'});
+        throw errorObj({
+          _error: 'unable to find invitation',
+          type: 'acceptInvitation',
+          subtype: 'notFound'
+        });
       }
       // check inviteToken email
       if (invitation.email !== user.email) {
-        throw errorObj({_error: 'invitation invalid for your email address', type: 'acceptInvitation'});
+        throw errorObj({
+          _error: 'invitation invalid for your email address',
+          type: 'acceptInvitation',
+          subtype: 'invalidEmail'
+        });
       }
-      // TODO: check if TeamMember already exists (i.e. user invited themselves:)
+      // Check if TeamMember already exists (i.e. user invited themselves):
+      const teamMemberExists = await r.table('TeamMember')
+        .getAll(userId, {index: 'cachedUserId'})
+        .filter({ teamId: invitation.teamId})
+        .isEmpty()
+        .not();
+      if (teamMemberExists) {
+        throw errorObj({
+          _error: 'Cannot accept invitation, already a member of team.',
+          type: 'acceptInvitation',
+          subtype: 'alreadyJoined'
+        });
+      }
       // add user to TeamMembers
       const newTeamMember = {
         teamId: invitation.teamId,
@@ -47,8 +71,11 @@ Side effect: deletes all other outstanding invitations for user.`,
         isLead: false,
         isFacilitator: false
       };
-      const {changes: [{new_val: {id}}]} = await r.table('TeamMember')
-        .insert(newTeamMember, {returnChanges: true});
+      const {id} = await r.table('TeamMember')
+        .insert(newTeamMember, {returnChanges: true})
+        /* return the single doc that was inserted: */
+        .do((doc) => doc('changes').reduce((left) => left('new_val'))('new_val'))
+        .pluck('id');
       if (!id) {
         throw errorObj({_error: 'unable to create new team membership', type: 'acceptInvitation'});
       }
