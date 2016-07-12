@@ -26,8 +26,9 @@ const UserHub = (props) => {
   };
 
   const onSignOutClick = (event) => {
+    const {dispatch} = props;
     event.preventDefault();
-    console.log('onSignOutClick');
+    dispatch(push('/logout'));
   };
 
   return (
