@@ -59,18 +59,15 @@ const handleRethinkChangefeed = doc => {
 
 
 export default function makeChangefeedHandler(socket, subbedChannelName, options = {}) {
-  const {patch, operationName} = options;
+  const {path} = options;
   return (err, cursor) => {
     if (err) throw err;
     cursor.each((error, data) => {
       if (error) throw error;
       // console.log('data', data)?
       const payload = handleRethinkChangefeed(data);
-      if (patch) {
-        payload.patch = patch;
-      }
-      if (operationName) {
-        payload.op = operationName;
+      if (path) {
+        payload.path = path;
       }
       socket.emit(subbedChannelName, payload);
     });

@@ -7,9 +7,6 @@ export default [
        meeting(meetingId: $meetingId) {
          id
          createdAt
-         participants {
-           id
-         }
        }
     }`,
     channelfy: variables => `meeting/${variables.meetingId}`

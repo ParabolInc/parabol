@@ -6,7 +6,7 @@ import {HotKeys} from 'react-hotkeys';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import AuthEngine from 'universal/redux/AuthEngine';
 import {cashay} from 'cashay';
-import channelLookupMap from 'subscriptions.js';
+import subscriptions from 'universal/redux/subscriptions';
 import subscriber from 'universal/redux/subscriber';
 import socketCluster from 'socketcluster-client';
 
@@ -17,7 +17,7 @@ const keyMap = {
   seqHelp: 'shift+/'
 };
 
-const meetingSubscriptionString = channelLookupMap.get('meeting');
+const meetingSubscriptionString = subscriptions.find(sub => sub.channel === 'meeting').string;
 
 const mapStateToProps = (state, props) => {
   const options = {
@@ -48,17 +48,15 @@ export default class MeetingLobby extends Component {
   };
 
   render() {
-    // const socket = socketCluster.connect();
-    // socket.subscribe('foo');
-    console.log('result', this.props.result);
-    const {data} = this.props.result;
-    console.log('data', data);
+    const {meeting} = this.props.result.data;
     return (
       <HotKeys focused attach={window} keyMap={keyMap}>
         <div className={styles.viewport}>
           <div className={styles.main}>
             <div className={styles.contentGroup}>
-              HI GUY
+              <div>HI GUY</div>
+              <div>Your meeting id is: {meeting.id}</div>
+              <div>It was created at: {meeting.createdAt}</div>
               {/* <SetupField /> */}
             </div>
           </div>

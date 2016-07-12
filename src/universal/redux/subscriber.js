@@ -3,7 +3,6 @@ import subscriptions from './subscriptions';
 import AuthEngine from 'universal/redux/AuthEngine';
 
 export default function subscriber(subscriptionString, handlers, variables) {
-  let baseChannel;
   const {channelfy} = subscriptions.find(sub => sub.string === subscriptionString);
   const channelName = channelfy(variables);
   const socket = socketCluster.connect({}, {AuthEngine});

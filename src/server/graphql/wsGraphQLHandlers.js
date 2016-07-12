@@ -1,6 +1,6 @@
 import {graphql} from 'graphql';
 import Schema from './rootSchema';
-import channelLookupMap from 'subscriptions.js';
+import subscriptions from 'universal/redux/subscriptions';
 
 export const wsGraphQLHandler = async(body, cb) => {
   const {query, variables, ...context} = body;
@@ -33,12 +33,11 @@ const variableParser = {
 
 // This should be arrow syntax, but doesn't work when it is
 export async function wsGraphQLSubHandler(subbedChannelName) {
-  console.log('subscribe called');
   const authToken = this.getAuthToken();
   const firstSlashLoc = subbedChannelName.indexOf('/');
   const subscriptionName = subbedChannelName.substr(0,firstSlashLoc);
   const channelVars = subbedChannelName.substr(firstSlashLoc+1);
-  const queryString = channelLookupMap.get(subscriptionName);
+  const queryString = subscriptions.find(sub => sub.channel === subscriptionName).string;
   const variables = variableParser[subscriptionName](channelVars);
   const context = {
     authToken,

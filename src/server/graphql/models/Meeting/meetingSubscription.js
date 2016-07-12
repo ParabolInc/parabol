@@ -29,7 +29,6 @@ export default {
           old_val: row('old_val').default({}).pluck(requestedFields)
         }))
         .run({cursor: true}, changefeedHandler);
-      return {id: meetingId};
     }
   }
 };
