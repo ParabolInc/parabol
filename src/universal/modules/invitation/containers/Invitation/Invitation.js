@@ -2,9 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {push} from 'react-router-redux';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
-import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
-import {auth0} from 'universal/utils/clientOptions';
-import {setAuthToken} from 'universal/redux/authDuck';
+import Auth0ShowLock from 'universal/components/Auth0ShowLock/Auth0ShowLock';
 import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
 import {setWelcomeActivity} from 'universal/modules/userDashboard/ducks/settingsDuck';
 import {
@@ -52,27 +50,6 @@ export default class Invitation extends Component {
       }
     }
   }
-
-
-  showLock = () => {
-    // eslint-disable-next-line global-require
-    const Auth0Lock = require('auth0-lock');
-    const {clientId, account} = auth0;
-    const lock = new Auth0Lock(clientId, account);
-    lock.show({
-      authParams: {
-        scope: 'openid rol'
-      }
-    }, async (error, profile, authToken) => {
-      if (error) throw error;
-      const {dispatch} = this.props;
-      // TODO: stuff this in a utility function:
-      dispatch(setAuthToken(authToken));
-      cashay.create({transport: new ActionHTTPTransport(authToken)});
-      const options = {variables: {authToken}};
-      cashay.mutate('updateUserWithAuthToken', options);
-    });
-  };
 
   processInvitation = () => {
     const {dispatch, inviteToken} = this.props;
@@ -159,10 +136,7 @@ export default class Invitation extends Component {
     <div>
       <h1>Hey! Welcome.</h1>
       <h2>We're going to design a landing page here for you soon.</h2>
-      {
-        /* auth0 lock can't SSR: */
-        __CLIENT__ && this.showLock()
-      }
+      <Auth0ShowLock {...this.props} />
     </div>
   );
 
