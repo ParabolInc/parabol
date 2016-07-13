@@ -25,7 +25,7 @@ const patoHop = StyleSheet.keyframes({
     transform: 'translate(0, 0)'
   },
   '100%': {
-    transform: 'translate(0)'
+    transform: 'translate(0, 0)'
   }
 });
 
@@ -45,9 +45,9 @@ const patoStyles = {
 const LoadingView = () =>
   <div className={styles.root}>
     <h1 className={styles.heading}>Welcome to Action!</h1>
-    <img alt="Duck by Sergey Demushkin" className={styles.patoUno} src={Pato} />
-    <img alt="Duck by Sergey Demushkin" className={styles.patoDos} src={Pato} />
-    <img alt="Duck by Sergey Demushkin" className={styles.patoTres} src={Pato} />
+    <img alt="Duck by Sergey Demushkin" className={styles.pato1} src={Pato} />
+    <img alt="Duck by Sergey Demushkin" className={styles.pato2} src={Pato} />
+    <img alt="Duck by Sergey Demushkin" className={styles.pato3} src={Pato} />
     <h2 className={styles.message}>Just putting our ducks in a row…</h2>
   </div>;
 
@@ -66,17 +66,17 @@ styles = StyleSheet.create({
     margin: '0 0 2rem'
   },
 
-  patoUno: {
+  pato1: {
     ...patoStyles,
     animationDelay: '200ms'
   },
 
-  patoDos: {
+  pato2: {
     ...patoStyles,
     animationDelay: '500ms'
   },
 
-  patoTres: {
+  pato3: {
     ...patoStyles,
     animationDelay: '800ms'
   },
