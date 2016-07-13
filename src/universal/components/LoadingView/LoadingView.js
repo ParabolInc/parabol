@@ -86,17 +86,14 @@ const patoStyles = {
   width: '2rem'
 };
 
-const LoadingView = () => {
-  return (
-    <div className={styles.root}>
-      <h1 className={styles.heading}>Welcome to Action!</h1>
-      <img alt="Duck by Sergey Demushkin" className={styles.patoUno} src={Pato} />
-      <img alt="Duck by Sergey Demushkin" className={styles.patoDos} src={Pato} />
-      <img alt="Duck by Sergey Demushkin" className={styles.patoTres} src={Pato} />
-      <h2 className={styles.message}>Just putting our ducks in a row…</h2>
-    </div>
-  );
-};
+const LoadingView = () =>
+  <div className={styles.root}>
+    <h1 className={styles.heading}>Welcome to Action!</h1>
+    <img alt="Duck by Sergey Demushkin" className={styles.patoUno} src={Pato} />
+    <img alt="Duck by Sergey Demushkin" className={styles.patoDos} src={Pato} />
+    <img alt="Duck by Sergey Demushkin" className={styles.patoTres} src={Pato} />
+    <h2 className={styles.message}>Just putting our ducks in a row…</h2>
+  </div>;
 
 styles = StyleSheet.create({
   root: {
