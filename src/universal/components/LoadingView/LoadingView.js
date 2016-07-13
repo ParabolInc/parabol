@@ -5,7 +5,7 @@ import Pato from 'universal/styles/theme/images/graphics/pato.svg';
 
 let styles = {};
 
-const keyframesUno = StyleSheet.keyframes({
+const patoHop = StyleSheet.keyframes({
   '0%': {
     transform: 'translate(0, 0)'
   },
@@ -29,59 +29,12 @@ const keyframesUno = StyleSheet.keyframes({
   }
 });
 
-const keyframesDos = StyleSheet.keyframes({
-  '0%': {
-    transform: 'translate(0, 0)'
-  },
-  '20%': {
-    transform: 'translate(0, .125rem)'
-  },
-  '30%': {
-    transform: 'translate(0, -.5rem)'
-  },
-  '40%': {
-    transform: 'translate(0, .25rem)'
-  },
-  '50%': {
-    transform: 'translate(0, -.125rem)'
-  },
-  '55%': {
-    transform: 'translate(0, 0)'
-  },
-  '100%': {
-    transform: 'translate(0)'
-  }
-});
-
-const keyframesTres = StyleSheet.keyframes({
-  '0%': {
-    transform: 'translate(0, 0)'
-  },
-  '30%': {
-    transform: 'translate(0, .125rem)'
-  },
-  '40%': {
-    transform: 'translate(0, -.5rem)'
-  },
-  '50%': {
-    transform: 'translate(0, .25rem)'
-  },
-  '60%': {
-    transform: 'translate(0, -.125rem)'
-  },
-  '65%': {
-    transform: 'translate(0, 0)'
-  },
-  '100%': {
-    transform: 'translate(0)'
-  }
-});
-
 const cbTiming = 'cubic-bezier(.37, 1.13, .58, 1.13)';
 
 const patoStyles = {
   animationDuration: '1.5s',
   animationIterationCount: 'infinite',
+  animationName: patoHop,
   animationTimingFunction: cbTiming,
   display: 'inline-block',
   height: 'auto',
@@ -115,17 +68,17 @@ styles = StyleSheet.create({
 
   patoUno: {
     ...patoStyles,
-    animationName: keyframesUno
+    animationDelay: '200ms'
   },
 
   patoDos: {
     ...patoStyles,
-    animationName: keyframesDos
+    animationDelay: '500ms'
   },
 
   patoTres: {
     ...patoStyles,
-    animationName: keyframesTres
+    animationDelay: '800ms'
   },
 
   message: {
