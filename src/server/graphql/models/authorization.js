@@ -52,3 +52,15 @@ export const requireSUOrSelf = (authToken, cachedUserId) => {
   }
   throw errorObj({_error: 'Unauthorized. You cannot modify another user.'});
 };
+
+export const requireWebsocket = (socket) => {
+  if (!socket) {
+    throw errorObj({_error: 'this must be called from a websocket'});
+  }
+};
+
+export const requireWebsocketExchange = (exchange) => {
+  if (!exchange) {
+    throw errorObj({_error: 'this requires a websocket channel exchange'});
+  }
+};

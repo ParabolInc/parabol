@@ -10,12 +10,8 @@ export default function wsGraphQLHandler(exchange, socket) {
       exchange,
       socket
     };
-    const {errors, data} = await graphql(Schema, query, {}, context, variables);
-    if (errors) {
-      // don't send data if we have an error
-      cb(errors);
-    } else {
-      cb(null, data);
-    }
+    // response = {errors, data}
+    const response = await graphql(Schema, query, {}, context, variables);
+    cb(response);
   };
 };

@@ -7,13 +7,11 @@ import {
   GraphQLList
 } from 'graphql';
 import {Participant} from '../Participant/participantSchema';
-
-// import {errorObj} from '../utils';
-
-// import {Team} from '../Team/teamSchema';
-// import {getTeamById} from '../Team/helpers';
 import {getRequestedFields} from '../utils';
 import makeChangefeedHandler from '../makeChangefeedHandler';
+
+export const SOUNDOFF = 'SOUNDOFF';
+export const PRESENT = 'PRESENT';
 
 export const Meeting = new GraphQLObjectType({
   name: 'Meeting',

@@ -9,6 +9,8 @@ import {cashay} from 'cashay';
 import subscriptions from 'universal/redux/subscriptions';
 import subscriber from 'universal/redux/subscriber';
 import socketCluster from 'socketcluster-client';
+import actionSocketTransport from 'universal/utils/actionSocketTransport.js';
+
 
 let styles = {};
 
@@ -18,20 +20,44 @@ const keyMap = {
 };
 
 const meetingSubscriptionString = subscriptions.find(sub => sub.channel === 'meeting').string;
+const presenceSubscriptionString = subscriptions.find(sub => sub.channel === 'presence').string;
+
+const presenceSubscriber = (subscriptionString, handlers, variables) => {
+  const {channelfy} = subscriptions.find(sub => sub.string === subscriptionString);
+  const channelName = channelfy(variables);
+  const socket = socketCluster.connect({}, {AuthEngine});
+  const {add, update, remove, error} = handlers;
+  console.log('in the subscriber');
+  socket.subscribe(channelName, {waitForAuth: true});
+};
 
 const mapStateToProps = (state, props) => {
-  const options = {
-    variables: {
-      meetingId: props.params.meetingId
-    }
+  const meetingVariables ={meetingId: props.params.meetingId};
+
+  const meetingSubOptions = {
+    component: 'meetingSub',
+    variables: meetingVariables
   };
+
+  const presenceSubOptions = {
+    component: 'presenceSub',
+    variables: meetingVariables
+  };
+
   return {
     authToken: state.authToken,
-    result: cashay.subscribe(meetingSubscriptionString, subscriber, options)
+    meetingSub: cashay.subscribe(meetingSubscriptionString, subscriber, meetingSubOptions),
+    presenceSub: cashay.subscribe(presenceSubscriptionString, presenceSubscriber, presenceSubOptions)
   };
 };
 
-@reduxSocket({}, {AuthEngine, socketCluster, keepAlive: 0})
+const onConnect = () => {
+  console.log('calling onCon');
+  cashay.create({transport: actionSocketTransport});
+}
+// TODO const onDisconnect = () => cashay.create({transport: new ActionHTTPTransport(persistedToken)})
+
+@reduxSocket({}, {AuthEngine, socketCluster, onConnect, keepAlive: 0})
 @connect(mapStateToProps)
 @requireAuth
 @look
@@ -47,8 +73,18 @@ export default class MeetingLobby extends Component {
     team: PropTypes.object.isRequired,
   };
 
+  constructor(props) {
+    super(props);
+    const options = {
+      variables: {
+        meetingId: props.params.meetingId
+      }
+    };
+    console.log('cashay transport', cashay.transport);
+    cashay.mutate('soundOff', options)
+  }
   render() {
-    const {meeting} = this.props.result.data;
+    const {meeting} = this.props.meetingSub.data;
     return (
       <HotKeys focused attach={window} keyMap={keyMap}>
         <div className={styles.viewport}>

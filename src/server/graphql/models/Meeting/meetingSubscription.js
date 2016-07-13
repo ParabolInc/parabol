@@ -2,7 +2,7 @@ import r from '../../../database/rethinkDriver';
 import {getRequestedFields} from '../utils';
 import {Meeting} from './meetingSchema';
 import {GraphQLNonNull, GraphQLID} from 'graphql';
-import {requireSUOrTeamMember} from '../authorization';
+import {requireSUOrTeamMember, requireWebsocketExchange} from '../authorization';
 import makeChangefeedHandler from '../makeChangefeedHandler';
 
 export default {
@@ -29,6 +29,29 @@ export default {
           old_val: row('old_val').default({}).pluck(requestedFields)
         }))
         .run({cursor: true}, changefeedHandler);
+    }
+  },
+  presence: {
+    description: 'Listen for new folks to join a specified meeting & when they call `soundOff`, respond with `present`',
+    type: GraphQLID,
+    args: {
+      meetingId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The unique meeting ID'
+      }
+    },
+    resolve(source, {meetingId}, {authToken, exchange, socket}) {
+      requireSUOrTeamMember(authToken, meetingId);
+      requireWebsocketExchange(exchange);
+      const channel = `presence/${meetingId}`;
+      console.log('resolving presence');
+      socket.on('message', message => {
+        if (message === '#2') return;
+        console.log('SOCKET FROM GQL SAYS:', message);
+      });
+      socket.on(channel, (data, res) => {
+        console.log(`listening on channel ${channel}. yay! the data are ${data}`);
+      });
     }
   }
 };

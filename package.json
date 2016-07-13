@@ -120,7 +120,7 @@
     "redux-form": "^6.0.0-alpha.15",
     "redux-logger": "2.6.1",
     "redux-promise": "0.5.3",
-    "redux-socket-cluster": "0.5.1",
+    "redux-socket-cluster": "^0.7.0",
     "redux-storage": "^4.0.1",
     "redux-storage-engine-localstorage": "^1.1.1",
     "redux-thunk": "2.1.0",
