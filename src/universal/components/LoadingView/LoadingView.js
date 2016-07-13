@@ -10,28 +10,7 @@ const keyframesUno = StyleSheet.keyframes({
     transform: 'translate(0, 0)'
   },
   '10%': {
-    transform: 'translate(0, -.5rem)'
-  },
-  '20%': {
-    transform: 'translate(0, .25rem)'
-  },
-  '30%': {
-    transform: 'translate(0, -.125rem)'
-  },
-  '35%': {
-    transform: 'translate(0, 0)'
-  },
-  '100%': {
-    transform: 'translate(0)'
-  }
-});
-
-const keyframesDos = StyleSheet.keyframes({
-  '0%': {
-    transform: 'translate(0, 0)'
-  },
-  '10%': {
-    transform: 'translate(0, 0)'
+    transform: 'translate(0, .125rem)'
   },
   '20%': {
     transform: 'translate(0, -.5rem)'
@@ -50,12 +29,12 @@ const keyframesDos = StyleSheet.keyframes({
   }
 });
 
-const keyframesTres = StyleSheet.keyframes({
+const keyframesDos = StyleSheet.keyframes({
   '0%': {
     transform: 'translate(0, 0)'
   },
   '20%': {
-    transform: 'translate(0, 0)'
+    transform: 'translate(0, .125rem)'
   },
   '30%': {
     transform: 'translate(0, -.5rem)'
@@ -67,6 +46,30 @@ const keyframesTres = StyleSheet.keyframes({
     transform: 'translate(0, -.125rem)'
   },
   '55%': {
+    transform: 'translate(0, 0)'
+  },
+  '100%': {
+    transform: 'translate(0)'
+  }
+});
+
+const keyframesTres = StyleSheet.keyframes({
+  '0%': {
+    transform: 'translate(0, 0)'
+  },
+  '30%': {
+    transform: 'translate(0, .125rem)'
+  },
+  '40%': {
+    transform: 'translate(0, -.5rem)'
+  },
+  '50%': {
+    transform: 'translate(0, .25rem)'
+  },
+  '60%': {
+    transform: 'translate(0, -.125rem)'
+  },
+  '65%': {
     transform: 'translate(0, 0)'
   },
   '100%': {
