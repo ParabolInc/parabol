@@ -9,7 +9,7 @@ import config from '../../webpack/webpack.config.dev';
 import createSSR from './createSSR';
 import emailSSR from './emailSSR';
 import {auth0} from '../universal/utils/clientOptions';
-import scConnectionHandler from './scConnectionHandler';
+import scConnectionHandler from './socketHandlers/scConnectionHandler';
 import httpGraphQLHandler from './graphql/httpGraphQLHandler';
 
 const PROD = process.env.NODE_ENV === 'production';
@@ -64,5 +64,6 @@ export function run(worker) {
   app.get('*', createSSR);
 
   // handle sockets
-  scServer.on('connection', scConnectionHandler);
+  const connectionHandler = scConnectionHandler(scServer.exchange);
+  scServer.on('connection', connectionHandler);
 }

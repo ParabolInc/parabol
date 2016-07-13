@@ -1,6 +1,8 @@
-import {Meeting} from './meetingSchema';
 import r from '../../../database/rethinkDriver';
-import uuid from 'node-uuid';
+import {Meeting} from './meetingSchema';
+import {errorObj} from '../utils';
+import {requireAuth} from '../authorization';
+
 import {
   GraphQLString,
   GraphQLNonNull,
@@ -8,29 +10,32 @@ import {
 } from 'graphql';
 
 export default {
-  createMeeting: {
-    type: Meeting,
+  present: {
+    description: 'Annouce to a participant channel that you are present in a particular meeting',
+    type: GraphQLID,
     args: {
       teamId: {
         type: new GraphQLNonNull(GraphQLID),
         description: 'The team ID this meeting belongs to'
       },
+      userId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The cachedUserId that wants to know your status'
+      }
     },
-    async resolve(source, {teamId}, {authToken}) {
-      const newMeeting = {
-        // TODO: a uuid is overkill. let's make it small for smaller urls & friendly socket payloads
-        id: uuid.v4(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        lastUpdatedBy: authToken.id,
-        teamId,
-        // TODO should this be a name?
-        // If so we need to add names to the JWT & discuss overall JWT shape
-        currentEditors: [],
-        content: ''
-      };
-      await r.table('Meeting').insert(newMeeting);
-      return newMeeting;
+    async resolve(source, {teamId, userId}, {authToken, exchange, socket}) {
+      requireAuth(authToken);
+      const teamMembers = await r.table('TeamMember').getAll(teamId, {index: 'teamId'}).pluck('cachedUserId');
+      if (!teamMembers.includes(authToken.sub)) {
+        throw errorObj({_error: `You are not a member of team: ${teamId}`});
+      }
+      if (!teamMembers.includes(userId)) {
+        throw errorObj({_error: `user ${userId} is not a part of your team: ${teamId}`});
+      }
+      if (!socket || !exchange) {
+        throw errorObj({_error: 'this must be called from a websocket'});
+      }
+
     }
   },
   editContent: {

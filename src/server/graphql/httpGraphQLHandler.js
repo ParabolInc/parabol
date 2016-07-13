@@ -4,9 +4,9 @@ import {graphql} from 'graphql';
 export default async(req, res) => {
   // eslint-disable-next-line global-require
   const Schema = require('./rootSchema');
-  const {query, variables, ...newContext} = req.body;
+  const {query, variables} = req.body;
   const authToken = req.user || {};
-  const context = {authToken, context: newContext};
+  const context = {authToken};
   const result = await graphql(Schema, query, {}, context, variables);
   if (result.errors) {
     console.log('DEBUG GraphQL Error:', result.errors);
