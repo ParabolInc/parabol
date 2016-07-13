@@ -42,12 +42,14 @@ const patoStyles = {
   width: '2rem'
 };
 
+const credz = 'Duck by Sergey Demushkin';
+
 const LoadingView = () =>
   <div className={styles.root}>
     <h1 className={styles.heading}>Welcome to Action!</h1>
-    <img alt="Duck by Sergey Demushkin" className={styles.pato1} src={Pato} />
-    <img alt="Duck by Sergey Demushkin" className={styles.pato2} src={Pato} />
-    <img alt="Duck by Sergey Demushkin" className={styles.pato3} src={Pato} />
+    <img alt={credz} className={styles.pato1} src={Pato} />
+    <img alt={credz} className={styles.pato2} src={Pato} />
+    <img alt={credz} className={styles.pato3} src={Pato} />
     <h2 className={styles.message}>Just putting our ducks in a row…</h2>
   </div>;
 
