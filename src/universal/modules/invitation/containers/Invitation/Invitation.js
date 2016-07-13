@@ -3,6 +3,7 @@ import {push} from 'react-router-redux';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import Auth0ShowLock from 'universal/components/Auth0ShowLock/Auth0ShowLock';
+import LoadingView from 'universal/components/LoadingView/LoadingView';
 import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
 import {setWelcomeActivity} from 'universal/modules/userDashboard/ducks/settingsDuck';
 import {
@@ -134,8 +135,7 @@ export default class Invitation extends Component {
 
   renderLogin = () => (
     <div>
-      <h1>Hey! Welcome.</h1>
-      <h2>We're going to design a landing page here for you soon.</h2>
+      <LoadingView />
       <Auth0ShowLock {...this.props} />
     </div>
   );
