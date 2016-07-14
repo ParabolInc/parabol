@@ -13,21 +13,18 @@ const UserHub = (props) => {
   const {email, profile: {preferredName}} = props.user;
   const avatar = props.user.avatar || 'https://placekitten.com/g/44/44';
 
-  const onSettingsClick = (event) => {
+  const onSettingsClick = () => {
     const {dispatch} = props;
-    event.preventDefault();
     dispatch(push('/me/settings'));
   };
 
-  const onCloseSettingsClick = (event) => {
+  const onCloseSettingsClick = () => {
     const {dispatch} = props;
-    event.preventDefault();
     dispatch(push('/me'));
   };
 
-  const onSignOutClick = (event) => {
+  const onSignOutClick = () => {
     const {dispatch} = props;
-    event.preventDefault();
     dispatch(push('/logout'));
   };
 
@@ -44,7 +41,7 @@ const UserHub = (props) => {
             <div className={styles.settingsIcon} title="My Preferences">
               <FontAwesome
                 name="cog"
-                onClick={(e) => onSettingsClick(e)}
+                onClick={onSettingsClick}
                 style={faStyle}
               />
             </div>
@@ -54,7 +51,7 @@ const UserHub = (props) => {
           <a
             className={styles.link}
             href="#"
-            onClick={(e) => onSignOutClick(e)}
+            onClick={onSignOutClick}
             title="Sign Out"
           >
             <div className={styles.linkIcon}>
@@ -70,7 +67,7 @@ const UserHub = (props) => {
           <div className={styles.closeIcon} title="My Preferences">
             <FontAwesome
               name="times-circle"
-              onClick={(e) => onCloseSettingsClick(e)}
+              onClick={onCloseSettingsClick}
               style={faStyle}
               title="Close My Preferences"
             />

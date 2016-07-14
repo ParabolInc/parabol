@@ -10,8 +10,6 @@ let styles = {};
 // eslint-disable-next-line react/prefer-stateless-function
 export default class ProgressDots extends Component {
   static propTypes = {
-    // children included here for multi-part landing pages (FAQs, pricing, cha la la)
-    // children: PropTypes.element,
     numDots: PropTypes.number.isRequired, // how many total dots shall we draw?
     numCompleted: PropTypes.number,       // how many of the dots are completed?
     currentDot: PropTypes.number,         // which dot (1=first dot) is the user on now?

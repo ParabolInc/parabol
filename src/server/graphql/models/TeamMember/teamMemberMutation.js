@@ -2,25 +2,29 @@ import r from '../../../database/rethinkDriver';
 import {TeamMember} from './teamMemberSchema';
 import {
   GraphQLNonNull,
-  GraphQLString
+  GraphQLString,
+  GraphQLID
 } from 'graphql';
 import {errorObj} from '../utils';
 import {getUserId} from '../authorization';
 import {validateInviteToken} from '../../../utils/inviteTokens';
+import bcrypt from 'bcrypt';
+import promisify from 'es6-promisify';
+
+const compare = promisify(bcrypt.compare);
 
 export default {
   acceptInvitation: {
     type: TeamMember,
     description: `Add a user to a Team given an invitationToken.
-
-If the invitationToken is valid, returns the Team objective they've been
-added to. Returns null otherwise.
-
-Side effect: deletes all other outstanding invitations for user.`,
+    If the invitationToken is valid, returns the Team objective they've been
+    added to. Returns null otherwise.
+    
+    Side effect: deletes all other outstanding invitations for user.`,
     args: {
       inviteToken: {
-        type: new GraphQLNonNull(GraphQLString),
-        description: 'The invitation token'
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The invitation token (defaults to an 8-char ascii)'
       }
     },
     async resolve(source, {inviteToken}, {authToken}) {

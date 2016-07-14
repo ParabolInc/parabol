@@ -5,15 +5,16 @@ import fs from 'fs';
 
 const STATIC_ASSETS = path.join(__dirname, '../../../static');
 
-function fileExists(filePath) {
+// TODO make async
+const fileExists = (filePath) => {
   try {
     return fs.statSync(filePath).isFile();
   } catch (err) {
     return false;
   }
-}
+};
 
- /**
+/**
  * Given an HTML document, returns a new HTML document containing embedded
  * images and an array of attachments suitable for embedding in an email.
  *
@@ -21,17 +22,16 @@ function fileExists(filePath) {
  * and exists within fsPath, it will replace the src with an embedded cid
  * and add the path to the list of returned attachments.
  *
- * @param {Object} mailcomposer compatible object, including html key
+ * @param {Object} email contains subject, body, html
  * @param {String} urnPrefix
  * @param {String} fsPath
  * @return {Object} replaced html key and attachments key
  */
-const createEmbeddedImages = (email, urnPrefix = '/static', fsPath = STATIC_ASSETS) => {
-  if (!('html' in email)) {
-    // nothing to do:
+export default function createEmbeddedImages(email, urnPrefix = '/static', fsPath = STATIC_ASSETS) {
+  const {html} = email;
+  if (!html) {
     return email;
   }
-  const {html} = email;
   const attachments = [];
 
   const $ = cheerio.load(html);
@@ -65,6 +65,4 @@ const createEmbeddedImages = (email, urnPrefix = '/static', fsPath = STATIC_ASSE
     html: $.html(),
     attachments
   };
-};
-
-export default createEmbeddedImages;
+}

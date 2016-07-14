@@ -1,18 +1,14 @@
 import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {cashay} from 'cashay';
-import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {DashLayout, DashSidebar} from 'universal/components/Dashboard';
-import Settings from 'universal/modules/userDashboard/components/Preferences/Preferences';
+import Preferences from 'universal/modules/userDashboard/components/Preferences/Preferences';
 
 
 const mapStateToProps = (state) => {
   return {
     activity: state.userDashboardSettings.activity,
-    authToken: state.authToken,
     nextPage: state.userDashboardSettings.nextPage,
-    user: cashay.query(getAuthQueryString, authedOptions).data.user
   };
 };
 
@@ -21,7 +17,7 @@ const MeSettingsContainer = (props) => {
   return (
     <DashLayout title="My Dashboard">
       <DashSidebar activeArea="settings" dispatch={dispatch} user={user} />
-      <Settings user={user} {...otherProps} />
+      <Preferences user={user} {...otherProps} />
     </DashLayout>
   );
 };

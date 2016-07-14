@@ -4,49 +4,56 @@ import mailgun from './mailgunDriver';
 import {getMailgunOptions} from './getMailgunConfig';
 import createEmbeddedImages from './createEmbeddedImages';
 
+const buildMail = (options) => new Promise((resolve, reject) => {
+  mailcomposer(options).build((error, message) => {
+    if (error) {
+      return reject(error);
+    }
+    return resolve(message);
+  });
+});
+
+const maybeBuildMail = async(mailOptions) => {
+  try {
+    await buildMail(mailOptions);
+  } catch (e) {
+    console.warn(`mailcomposer: unable to build message ${e}`);
+    return false;
+  }
+  return true;
+};
+
+const maybeSendMail = async(mimeData) => {
+  try {
+    await mailgun.messages().sendMime(mimeData);
+  } catch (e) {
+    console.warn(`mailgun: unable to send welcome message ${e}`);
+    return false;
+  }
+  return true;
+};
+
 export default async function sendEmail(to, template, props) {
   const emailFactory = templates[template];
   if (!emailFactory) {
     throw new Error(`Email template for ${template} does not exist!`);
   }
+  const renderedEmail = emailFactory(props);
+  const emailWithAttachments = createEmbeddedImages(renderedEmail);
+  const {from} = getMailgunOptions();
+  const mailOptions = {
+    ...emailWithAttachments,
+    from,
+    to
+  };
 
-  const mailOptions = Object.assign(
-    createEmbeddedImages( // extract image attachments
-      emailFactory(props) // render the html and text email
-    ),
-    getMailgunOptions(), // assign default from: address
-    { to }               // assign to: address
-  );
-
-  const buildMail = (options) => new Promise((resolve, reject) => {
-    mailcomposer(options).build((error, message) => {
-      if (error) {
-        return reject(error);
-      }
-      return resolve(message);
-    });
-  });
-
-  let message = null;
-  try {
-    // TODO: this is returning undefined. We must begin our investigation here.
-    message = await buildMail(mailOptions);
-  } catch (e) {
-    console.warn(`mailcomposer: unable to build message ${e}`);
+  const message = await maybeBuildMail(mailOptions);
+  if (!message) {
     return false;
   }
-
-  const data = ({
+  const mimeData = {
     to,
     message: message.toString('ascii')
-  });
-
-  try {
-    await mailgun.messages().sendMime(data);
-  } catch (e) {
-    console.warn(`mailgun: unable to send welcome message ${e}`);
-    return false;
-  }
-
-  return true;
+  };
+  return await maybeSendMail(mimeData);
 }
