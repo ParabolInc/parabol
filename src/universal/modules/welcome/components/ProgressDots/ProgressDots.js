@@ -4,22 +4,16 @@ import theme from 'universal/styles/theme';
 
 const combineStyles = StyleSheet.combineStyles;
 
-const onClick = event => {
-  event.preventDefault();
-  console.log('TODO: Navigate to step');
-};
-
 let styles = {};
 
 @look
 // eslint-disable-next-line react/prefer-stateless-function
 export default class ProgressDots extends Component {
   static propTypes = {
-    // children included here for multi-part landing pages (FAQs, pricing, cha la la)
-    // children: PropTypes.element,
     numDots: PropTypes.number.isRequired, // how many total dots shall we draw?
     numCompleted: PropTypes.number,       // how many of the dots are completed?
     currentDot: PropTypes.number,         // which dot (1=first dot) is the user on now?
+    onClick: PropTypes.func
   };
 
   renderDot(idx) {
@@ -27,6 +21,11 @@ export default class ProgressDots extends Component {
     numCompleted--;
     currentDot--;
     let dotStyle = null;
+
+    const handleClick = (e) => {
+      e.preventDefault();
+      this.props.onClick(idx + 1);
+    };
 
     if (idx === currentDot) {
       /* we're the active dot */
@@ -42,14 +41,19 @@ export default class ProgressDots extends Component {
     }
 
     return (
-      <a className={dotStyle} href="#" key={idx} onClick={onClick}>
+      <a
+        className={dotStyle}
+        href="#"
+        key={idx}
+        onClick={(e) => handleClick(e)}
+      >
         <span className={styles.progressDotLabel}>Step {idx + 1}</span>
       </a>
     );
   }
 
   render() {
-    const { numDots } = this.props;
+    const {numDots} = this.props;
 
     return (
       <div className={styles.progressDotGroup}>
@@ -79,7 +83,6 @@ styles = StyleSheet.create({
     backgroundColor: '#fff',
     border: `2px solid ${theme.palette.mid50l}`,
     borderRadius: '100%',
-    // NOTE: Removing cursor until dots can change navigation
     cursor: 'default',
     display: 'inline-block',
     height: '1rem',
@@ -87,17 +90,17 @@ styles = StyleSheet.create({
     width: '1rem'
   },
 
-  // NOTE: Same thing, different semantics (completed, current)
   progressDotCompleted: {
-    backgroundColor: theme.palette.mid50l
+    backgroundColor: theme.palette.mid50l,
+    cursor: 'pointer'
   },
+
   progressDotCurrent: {
     backgroundColor: theme.palette.warm,
     borderColor: theme.palette.warm
   },
 
   progressDotLabel: {
-    // TODO: Make mixin for Sass: @include sr-only;
     border: 0,
     clip: 'rect(0, 0, 0, 0)',
     height: '1px',

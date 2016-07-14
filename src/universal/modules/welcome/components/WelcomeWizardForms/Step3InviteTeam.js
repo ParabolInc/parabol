@@ -11,6 +11,7 @@ import WelcomeContent from '../WelcomeContent/WelcomeContent';
 import WelcomeHeader from '../WelcomeHeader/WelcomeHeader';
 import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import WelcomeLayout from '../WelcomeLayout/WelcomeLayout';
+import {goToPage} from 'universal/modules/welcome/ducks/welcomeDuck';
 import {cashay} from 'cashay';
 import {show} from 'universal/modules/notifications/ducks/notifications';
 import {push} from 'react-router-redux';
@@ -47,7 +48,7 @@ const Step3InviteTeam = (props) => {
     });
   };
 
-  const onInviteTeamSubmit = async submissionData => {
+  const onInviteTeamSubmit = async (submissionData) => {
     const {dispatch, welcome: {teamId}} = props;
     const serverInvitees = submissionData.invitees.map(invitee => {
       // Remove label field:
@@ -87,15 +88,20 @@ const Step3InviteTeam = (props) => {
     <span>Oops! Please make sure email addresses are valid <br />and separated by a single comma.</span> :
     <span>You can paste multiple emails separated by a comma.<br />&nbsp;</span>;
   const fieldArrayHasValue = invitees && invitees[0] != null;
-
+  const progressDotClick = (dot) => {
+    if (dot !== 3) {
+      props.dispatch(goToPage(dot));
+    }
+  };
   return (
     <WelcomeLayout>
       <WelcomeHeader heading={<span>Invite your team.</span>}/>
       <WelcomeContent>
         <ProgressDots
-          numDots={2}
-          numCompleted={1}
-          currentDot={2}
+          numDots={3}
+          numCompleted={3}
+          currentDot={3}
+          onClick={progressDotClick}
         />
         <div>{/* Div for that flexy flex */}
           <Type align="center" italic scale="s6">

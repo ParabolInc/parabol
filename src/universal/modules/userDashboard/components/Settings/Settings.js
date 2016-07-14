@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {reduxForm, initialize} from 'redux-form';
+import {push} from 'react-router-redux';
 import {cashay} from 'cashay';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
@@ -8,8 +9,13 @@ import Button from 'universal/components/Button/Button';
 import Field from 'universal/components/Field/Field';
 import {show} from 'universal/modules/notifications/ducks/notifications';
 
+import {
+  ACTIVITY_WELCOME,
+  clearActivity
+} from 'universal/modules/userDashboard/ducks/settingsDuck';
+
 const updateSuccess = {
-  title: 'Preferences saved!',
+  title: 'Settings saved!',
   message: 'We won\'t forget who you are.',
   level: 'success'
 };
@@ -17,11 +23,13 @@ const updateSuccess = {
 let styles = {};
 
 @look
-@reduxForm({form: 'userPreferences'})
-export default class Preferences extends Component {
+@reduxForm({form: 'userSettings'})
+export default class Settings extends Component {
   static propTypes = {
+    activity: PropTypes.string,          // from settingsDuck
     dispatch: PropTypes.func.isRequired,
     handleSubmit: PropTypes.func,
+    nextPage: PropTypes.string,          // from settingsDuck
     /* User for form defaults: */
     user: PropTypes.shape({
       profile: PropTypes.shape({
@@ -29,7 +37,7 @@ export default class Preferences extends Component {
       })
     }),
     /* Data from form for mutation: */
-    userPreferences: PropTypes.shape({
+    userSettings: PropTypes.shape({
       preferredName: PropTypes.string
     })
   };
@@ -39,7 +47,7 @@ export default class Preferences extends Component {
   }
 
   onSubmit = async (submissionData) => {
-    const {dispatch, user} = this.props;
+    const {activity, dispatch, nextPage, user} = this.props;
     const {preferredName} = submissionData;
     const options = {
       variables: {
@@ -51,20 +59,42 @@ export default class Preferences extends Component {
     };
     await cashay.mutate('updateUserProfile', options);
     dispatch(show(updateSuccess));
+    if (activity === ACTIVITY_WELCOME) {
+      dispatch(clearActivity());
+    }
+    if (nextPage) {
+      dispatch(push(nextPage));
+    }
   }
 
   initializeForm() {
     const {dispatch, user: { profile: {preferredName} } } = this.props;
-    return dispatch(initialize('userPreferences', { preferredName }));
+    return dispatch(initialize('userSettings', { preferredName }));
+  }
+
+  renderActivity(activity) {
+    return (
+      <div>
+      {
+        activity === ACTIVITY_WELCOME && `
+          Hey, welcome aboard! In order for your team to recognize who you
+          are, do you mind telling us your name?
+        `
+      }
+      </div>
+    );
   }
 
   render() {
-    const {handleSubmit} = this.props;
+    const {activity, handleSubmit} = this.props;
     return (
       <form className={styles.root} onSubmit={handleSubmit(this.onSubmit)}>
-        <DashHeader title="My Preferences" />
+        <DashHeader title="My Settings" />
         <DashContent>
           <div className={styles.body}>
+            <div className={styles.row}>
+              {this.renderActivity(activity)}
+            </div>
             <div className={styles.row}>
               <div className={styles.label}>
                 Name

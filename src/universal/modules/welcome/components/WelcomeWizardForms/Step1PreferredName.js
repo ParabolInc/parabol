@@ -7,10 +7,10 @@ import WelcomeHeader from '../WelcomeHeader/WelcomeHeader';
 import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import WelcomeLayout from '../WelcomeLayout/WelcomeLayout';
 import {cashay} from 'cashay';
-import {nextPage} from 'universal/modules/welcome/ducks/welcomeDuck';
+import {nextPage, goToPage, updateCompleted} from 'universal/modules/welcome/ducks/welcomeDuck';
 
 const Step1PreferredName = (props) => {
-  const {handleSubmit, preferredName, dispatch, user} = props;
+  const {handleSubmit, preferredName, dispatch, user, completed} = props;
   const onPreferredNameSubmit = submissionData => {
     const {preferredName: newPrefferedName} = submissionData;
     const options = {
@@ -22,16 +22,27 @@ const Step1PreferredName = (props) => {
       }
     };
     cashay.mutate('updateUserProfile', options);
+    if (completed !== 3) {
+      dispatch(updateCompleted(2));
+    }
     dispatch(nextPage());
+  };
+  const progressDotClick = (dot) => {
+    if (dot === 2 && preferredName) {
+      dispatch(goToPage(2));
+    } else if (dot === 3 && completed === 3) {
+      dispatch(goToPage(3));
+    }
   };
   return (
     <WelcomeLayout>
       <WelcomeHeader heading={<span>Hello!</span>} />
       <WelcomeContent>
         <ProgressDots
-          numDots={2}
-          numCompleted={0}
+          numDots={3}
+          numCompleted={completed}
           currentDot={1}
+          onClick={progressDotClick}
         />
         <div>{/* Div for that flexy flex */}
           <WelcomeHeading copy={<span>Please type in your name:</span>} />
@@ -60,7 +71,8 @@ Step1PreferredName.propTypes = {
   handleSubmit: PropTypes.func,
   preferredName: PropTypes.string,
   onSubmit: PropTypes.func,
-  user: PropTypes.object
+  user: PropTypes.object,
+  completed: PropTypes.number
 };
 
 export default reduxForm({

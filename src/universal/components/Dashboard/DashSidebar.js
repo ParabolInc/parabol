@@ -20,7 +20,7 @@ const DashSidebar = (props) => {
 
   return (
     <div className={styles.root}>
-      <UserHub dispatch={dispatch} user={props.user} />
+      <UserHub activeArea={activeArea} dispatch={dispatch} user={props.user} />
       <nav className={styles.nav}>
         <div className={styles.singleNavItem}>
           <DashNavItem

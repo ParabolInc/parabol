@@ -9,12 +9,13 @@ export default store => ({
   component: ActionContainer,
   childRoutes: [
     require('./graphql'),
+    require('./invitation')(store),
     require('./landing'),
     require('./logout'),
     require('./meeting')(store),
     require('./patterns'),
     require('./teamDashboard'),
-    ...require('./userDashboardRoutes'),
+    ...require('./userDashboardRoutes')(store),
     require('./welcome')(store),
     // Catch-all:
     require('./notFound')

@@ -30,7 +30,7 @@ export const Invitation = new GraphQLObjectType({
     },
     isAccepted: {
       type: GraphQLBoolean,
-      description: 'Has the invitation been accepted yet? Storing this is a boolean means no required indexing.'
+      description: 'Has the invitation been accepted yet? Storing this as a boolean means no required indexing.'
     },
     inviteToken: {
       type: new GraphQLNonNull(GraphQLString),

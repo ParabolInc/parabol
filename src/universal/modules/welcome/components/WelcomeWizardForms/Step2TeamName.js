@@ -7,12 +7,12 @@ import WelcomeContent from '../WelcomeContent/WelcomeContent';
 import WelcomeHeader from '../WelcomeHeader/WelcomeHeader';
 import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import WelcomeLayout from '../WelcomeLayout/WelcomeLayout';
-import {nextPage, setWelcomeTeam} from 'universal/modules/welcome/ducks/welcomeDuck';
+import {nextPage, previousPage, updateCompleted, setWelcomeTeam} from 'universal/modules/welcome/ducks/welcomeDuck';
 import shortid from 'shortid';
 import {cashay} from 'cashay';
 
 const Step2TeamName = (props) => {
-  const {dispatch, handleSubmit, preferredName, teamName, user} = props;
+  const {dispatch, handleSubmit, preferredName, teamName, user, completed} = props;
   const onTeamNameSubmit = data => {
     const myTeamName = data.teamName;
     const teamId = shortid.generate();
@@ -35,16 +35,27 @@ const Step2TeamName = (props) => {
       }
     };
     cashay.mutate('createTeam', createTeamOptions);
+    dispatch(updateCompleted(3));
     dispatch(nextPage());
+  };
+  const progressDotClick = (dot) => {
+    if (dot === 1) {
+      dispatch(previousPage());
+    } else if (dot === 3) {
+      if (teamName) {
+        dispatch(nextPage());
+      }
+    }
   };
   return (
     <WelcomeLayout>
       <WelcomeHeader heading={<span>Invite your team.</span>} />
       <WelcomeContent>
         <ProgressDots
-          numDots={2}
-          numCompleted={1}
+          numDots={3}
+          numCompleted={completed}
           currentDot={2}
+          onClick={progressDotClick}
         />
         <div>{/* Div for that flexy flex */}
           <Type align="center" italic scale="s6">
@@ -76,7 +87,8 @@ Step2TeamName.propTypes = {
   onSubmit: PropTypes.func,
   preferredName: PropTypes.string.isRequired,
   teamName: PropTypes.string,
-  user: PropTypes.object
+  user: PropTypes.object,
+  completed: PropTypes.number
 };
 
 export default reduxForm({
