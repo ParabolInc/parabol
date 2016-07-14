@@ -7,25 +7,25 @@ let styles = {};
 
 const patoHop = StyleSheet.keyframes({
   '0%': {
-    transform: 'translate(0, 0)'
+    transform: 'translate3d(0, 0, 0)'
   },
   '10%': {
-    transform: 'translate(0, .125rem)'
+    transform: 'translate3d(0, .125rem, 0)'
   },
   '20%': {
-    transform: 'translate(0, -.5rem)'
+    transform: 'translate3d(0, -.5rem, 0)'
   },
   '30%': {
-    transform: 'translate(0, .25rem)'
+    transform: 'translate3d(0, .25rem, 0)'
   },
   '40%': {
-    transform: 'translate(0, -.125rem)'
+    transform: 'translate3d(0, -.125rem, 0)'
   },
   '45%': {
-    transform: 'translate(0, 0)'
+    transform: 'translate3d(0, 0, 0)'
   },
   '100%': {
-    transform: 'translate(0, 0)'
+    transform: 'translate3d(0, 0, 0)'
   }
 });
 
