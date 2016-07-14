@@ -6,7 +6,7 @@ import {
 } from 'graphql';
 import {errorObj} from '../utils';
 import {getUserId} from '../authorization';
-import {validateTokenHash, validateTokenType} from '../../../utils/inviteTokens';
+import {validateTokenType} from '../../../utils/inviteTokens';
 
 export default {
   acceptInvitation: {
@@ -19,7 +19,7 @@ export default {
     args: {
       inviteToken: {
         type: new GraphQLNonNull(GraphQLID),
-        description: 'The invitation token (defaults to an 8-char ascii)'
+        description: 'The invitation token'
       }
     },
     async resolve(source, {inviteToken}, {authToken}) {
@@ -39,14 +39,6 @@ export default {
           _error: 'unable to find invitation',
           type: 'acceptInvitation',
           subtype: 'notFound'
-        });
-      }
-      const validHash = validateTokenHash(inviteToken, invitation.hashedToken);
-      if (!validHash) {
-        throw errorObj({
-          _error: 'invitation token is invald',
-          type: 'acceptInvitation',
-          subtype: 'invalidToken'
         });
       }
       // check inviteToken email

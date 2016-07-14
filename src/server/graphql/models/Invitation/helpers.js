@@ -1,7 +1,6 @@
 import ms from 'ms';
 import r from '../../../database/rethinkDriver';
 import sendEmailPromise from '../../../email/sendEmail';
-import {hashToken} from '../../../utils/inviteTokens';
 import makeAppLink from '../../../utils/makeAppLink';
 
 export const getInviterInfoAndTeamName = async(teamId, userId) => {
@@ -50,8 +49,7 @@ export const makeInvitationsForDB = async (invitees, teamId) => {
       fullName,
       email,
       task,
-      tokenExpiration,
-      hashedToken: hashToken(inviteToken)
+      tokenExpiration
     };
   });
 };
