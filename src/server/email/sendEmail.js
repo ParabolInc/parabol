@@ -15,12 +15,11 @@ const buildMail = (options) => new Promise((resolve, reject) => {
 
 const maybeBuildMail = async(mailOptions) => {
   try {
-    await buildMail(mailOptions);
+    return await buildMail(mailOptions);
   } catch (e) {
     console.warn(`mailcomposer: unable to build message ${e}`);
-    return false;
   }
-  return true;
+  return false;
 };
 
 const maybeSendMail = async(mimeData) => {
@@ -33,7 +32,7 @@ const maybeSendMail = async(mimeData) => {
   return true;
 };
 
-export default async function sendEmail(to, template, props) {
+export default async function sendEmailPromise(to, template, props) {
   const emailFactory = templates[template];
   if (!emailFactory) {
     throw new Error(`Email template for ${template} does not exist!`);
@@ -55,5 +54,5 @@ export default async function sendEmail(to, template, props) {
     to,
     message: message.toString('ascii')
   };
-  return await maybeSendMail(mimeData);
+  return maybeSendMail(mimeData);
 }

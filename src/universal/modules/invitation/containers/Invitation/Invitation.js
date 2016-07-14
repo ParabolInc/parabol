@@ -77,19 +77,6 @@ export default class Invitation extends Component {
           }));
           dispatch(push('/settings/me'));
           return;
-        } else if (error.subtype === 'invalidEmail') {
-          const {user: {email}} = this.props;
-          dispatch(showError({
-            title: 'Invitation invalid',
-            message: `
-              That invitation isn't valid for the email address
-              ${email}. Perhaps switch accounts or ask for a new invitation?
-            `,
-            action: {
-              label: 'Ok',
-            },
-            autoDismiss: 0
-          }));
         } else if (error.subtype === 'invalidToken') {
           dispatch(showError({
             title: 'Invitation invalid',

@@ -6,12 +6,10 @@ import {
 } from 'graphql';
 import {errorObj} from '../utils';
 import {getUserId} from '../authorization';
-import bcrypt from 'bcrypt';
-import promisify from 'es6-promisify';
 import shortid from 'shortid';
 import acceptInviteDB from './helpers';
+import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
 
-const compare = promisify(bcrypt.compare);
 
 export default {
   acceptInvitation: {
@@ -19,7 +17,7 @@ export default {
     description: `Add a user to a Team given an invitationToken.
     If the invitationToken is valid, returns the Team objective they've been
     added to. Returns null otherwise.
-    
+
     Side effect: deletes all other outstanding invitations for user.`,
     args: {
       inviteToken: {
@@ -29,8 +27,7 @@ export default {
     },
     async resolve(source, {inviteToken}, {authToken}) {
       const now = new Date();
-      const inviteId = inviteToken.slice(0, 6);
-      const tokenId = inviteToken.slice(6);
+      const {id: inviteId, key: tokenKey} = parseInviteToken(inviteToken);
 
       // see if the invitation exists
       const invitation = await r.table('Invitation').get(inviteId);
@@ -52,7 +49,9 @@ export default {
       }
 
       // see if the invitation hash is valid
-      const isCorrectToken = await compare(tokenId, invitation.hashedToken);
+      console.log(tokenKey);
+      console.log(invitation.hashedToken);
+      const isCorrectToken = await validateInviteTokenKey(tokenKey, invitation.hashedToken);
       if (!isCorrectToken) {
         throw errorObj({
           _error: 'invalid invitation token',

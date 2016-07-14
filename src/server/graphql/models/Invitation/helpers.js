@@ -1,15 +1,20 @@
 import ms from 'ms';
 import r from '../../../database/rethinkDriver';
-import sendEmail from '../../../email/sendEmail';
+import sendEmailPromise from '../../../email/sendEmail';
 import makeAppLink from '../../../utils/makeAppLink';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import promisify from 'es6-promisify';
 
+const INVITE_TOKEN_INVITE_ID_LEN = 6;
+const INVITE_TOKEN_KEY_LEN = 8;
+const INVITE_TOKEN_KEY_HASH_ROUNDS = process.env.INVITE_TOKEN_KEY_HASH_ROUNDS || 10;
+
 const hash = promisify(bcrypt.hash);
+const compare = promisify(bcrypt.compare);
 
 const asciiAlphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_';
-export const randomSafeString = (length = 8, chars = asciiAlphabet) => {
+const randomSafeString = (length = 8, chars = asciiAlphabet) => {
   const randomBytes = crypto.randomBytes(length);
   const result = new Array(length);
   let cursor = 0;
@@ -19,6 +24,22 @@ export const randomSafeString = (length = 8, chars = asciiAlphabet) => {
   }
   return result.join('');
 };
+
+export const makeInviteToken = () =>
+  `${randomSafeString(INVITE_TOKEN_INVITE_ID_LEN)}${randomSafeString(INVITE_TOKEN_KEY_LEN)}`;
+
+export const parseInviteToken = (uriTokenString) => ({
+  id: uriTokenString.slice(0, INVITE_TOKEN_INVITE_ID_LEN),
+  key: uriTokenString.slice(INVITE_TOKEN_INVITE_ID_LEN)
+});
+
+export const hashInviteTokenKey = async (uriTokenString) => {
+  const {key} = parseInviteToken(uriTokenString);
+  return await hash(key, INVITE_TOKEN_KEY_HASH_ROUNDS);
+};
+
+export const validateInviteTokenKey = async(key, hashStringToCompare) =>
+  await compare(key, hashStringToCompare);
 
 export const getInviterInfoAndTeamName = async(teamId, userId) => {
   /**
@@ -56,13 +77,15 @@ export const resolveSentEmails = async(sendEmailPromises, inviteesWithTokens) =>
 export const makeInvitationsForDB = async(invitees, teamId) => {
   const now = new Date();
   const tokenExpiration = now.valueOf() + ms('30d');
-  // Turn to 12 for deployment, increase by 1 ~every 2 years
-  const hashPromises = invitees.map(invitee => hash(invitee.inviteToken.slice(6), 10));
+  const hashPromises = invitees.map(invitee => hashInviteTokenKey(invitee.inviteToken));
   const hashedTokens = await Promise.all(hashPromises);
   return invitees.map((invitee, idx) => {
-    const {email, task, fullName} = invitee;
+    const {email, inviteToken, task, fullName} = invitee;
+    const {id, key} = parseInviteToken(inviteToken);
+    console.log(key);
+    console.log(hashedTokens[idx]);
     return {
-      id: invitee.inviteToken.slice(0, 6),
+      id,
       teamId,
       createdAt: now,
       isAccepted: false,
@@ -83,6 +106,6 @@ export const createEmailPromises = (inviterInfoAndTeamName, inviteesWithTokens) 
       firstProject: invitee.task,
       inviteLink: makeAppLink(`invitation/${invitee.inviteToken}`)
     };
-    return sendEmail(emailProps.inviteeEmail, 'teamInvite', emailProps);
+    return sendEmailPromise(emailProps.inviteeEmail, 'teamInvite', emailProps);
   });
 };

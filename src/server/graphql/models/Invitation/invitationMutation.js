@@ -10,11 +10,11 @@ import {errorObj} from '../utils';
 import {requireSUOrTeamMember, getUserId} from '../authorization';
 
 import {
+  makeInviteToken,
   resolveSentEmails,
   makeInvitationsForDB,
   getInviterInfoAndTeamName,
   createEmailPromises,
-  randomSafeString
 } from './helpers';
 
 export default {
@@ -33,11 +33,11 @@ export default {
     async resolve(source, {invitees, teamId}, {authToken}) {
       requireSUOrTeamMember(authToken, teamId);
       const userId = getUserId(authToken);
-      const inviteesWithTokens = invitees.map(invitee => ({...invitee, inviteToken: randomSafeString(14)}));
+      const inviteesWithTokens = invitees.map(invitee => ({...invitee, inviteToken: makeInviteToken()}));
       const inviterInfoAndTeamName = await getInviterInfoAndTeamName(teamId, userId);
       const sendEmailPromises = createEmailPromises(inviterInfoAndTeamName, inviteesWithTokens);
       const {inviteeErrors, inviteesToStore} = await resolveSentEmails(sendEmailPromises, inviteesWithTokens);
-      const invitationsForDB = makeInvitationsForDB(inviteesToStore, teamId);
+      const invitationsForDB = await makeInvitationsForDB(inviteesToStore, teamId);
       // Bulk insert, wait in case something queries the invitation table
       await r.table('Invitation').insert(invitationsForDB);
       if (inviteeErrors.length > 0) {
