@@ -30,14 +30,13 @@ export const getInviterInfoAndTeamName = async(teamId, userId) => {
   return await r.table('CachedUser').get(userId)
     .pluck('id', 'email', 'picture')
     .merge((doc) => ({
-        inviterAvatar: doc('picture'),
-        inviterEmail: doc('email'),
-        inviterName: r.table('UserProfile').get(doc('id'))
-          .pluck('preferredName')('preferredName'),
-        teamName: r.table('Team').get(teamId)
-          .pluck('name')('name'),
-      })
-    );
+      inviterAvatar: doc('picture'),
+      inviterEmail: doc('email'),
+      inviterName: r.table('UserProfile').get(doc('id'))
+        .pluck('preferredName')('preferredName'),
+      teamName: r.table('Team').get(teamId)
+        .pluck('name')('name'),
+    }));
 };
 
 // can't use Promise.all because we want to try n+1, even if n was an error. we're not quitters!
