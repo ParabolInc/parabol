@@ -13,13 +13,13 @@ const patoHop = StyleSheet.keyframes({
     transform: 'translate3d(0, .125rem, 0)'
   },
   '20%': {
-    transform: 'translate3d(0, -.5rem, 0)'
+    transform: 'translate3d(0, -.5rem, 0) scaleY(1.1)'
   },
   '30%': {
-    transform: 'translate3d(0, .25rem, 0)'
+    transform: 'translate3d(0, .25rem, 0) scaleY(.8)'
   },
   '40%': {
-    transform: 'translate3d(0, -.125rem, 0)'
+    transform: 'translate3d(0, -.125rem, 0) scaleY(1)'
   },
   '45%': {
     transform: 'translate3d(0, 0, 0)'
