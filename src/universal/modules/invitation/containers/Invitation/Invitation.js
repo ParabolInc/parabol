@@ -90,6 +90,8 @@ export default class Invitation extends Component {
             },
             autoDismiss: 0
           }));
+          dispatch(push('/logout'));
+          return;
         } else if (error.subtype === 'invalidToken') {
           dispatch(showError({
             title: 'Invitation invalid',
@@ -100,6 +102,20 @@ export default class Invitation extends Component {
               label: 'Ok',
             },
             autoDismiss: 10
+          }));
+          dispatch(push('/logout'));
+          return;
+        } else if (error.subtype === 'invalidExpired') {
+          dispatch(showError({
+            title: 'Invitation expired, but don\'t worry',
+            message: `
+              Shucks! That team invitation has expired. If you'd like to
+              create your own team, you can start that process here.
+            `,
+            action: {
+              label: 'Ok',
+            },
+            autoDismiss: 0
           }));
         } else if (error.subtype === 'notFound') {
           dispatch(showWarning({
@@ -117,7 +133,7 @@ export default class Invitation extends Component {
           console.warn('unable to accept invitation:');
           console.warn(error);
         }
-        // TODO: pop them a toast and tell them what happened?
+        // Default action: take them to welcome
         dispatch(push('/welcome'));
       } else if (data) {
         const {id} = data.acceptInvitation.team;

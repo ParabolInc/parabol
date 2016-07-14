@@ -49,6 +49,14 @@ export default {
           subtype: 'invalidEmail'
         });
       }
+      // check expiration:
+      if (Date.now() > invitation.tokenExpiration) {
+        throw errorObj({
+          _error: 'inivitation token has expired',
+          type: 'acceptInvitation',
+          subtype: 'invalidExpired'
+        });
+      }
       // Check if TeamMember already exists (i.e. user invited themselves):
       const teamMemberExists = await r.table('TeamMember')
         .getAll(userId, {index: 'cachedUserId'})
