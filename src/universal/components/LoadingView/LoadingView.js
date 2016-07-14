@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import Pato from 'universal/styles/theme/images/graphics/pato.svg';
@@ -42,7 +42,17 @@ const patoStyles = {
   width: '2rem'
 };
 
-const LoadingDuck = (props) => <img alt={'Duck by Sergey Demushkin'} className={props.className} src={Pato}/>;
+const LoadingDuck = (props) =>
+  <img
+    alt={'Duck by Sergey Demushkin'}
+    className={props.className}
+    src={Pato}
+  />;
+
+LoadingDuck.propTypes = {
+  className: PropTypes.object.isRequired,
+};
+
 const LoadingView = () => {
   const {pato1, pato2, pato3} = styles;
   const duckStyles = [pato1, pato2, pato3];
