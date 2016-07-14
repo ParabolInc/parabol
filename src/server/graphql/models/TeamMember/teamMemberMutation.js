@@ -2,14 +2,14 @@ import r from '../../../database/rethinkDriver';
 import {TeamMember} from './teamMemberSchema';
 import {
   GraphQLNonNull,
-  GraphQLString,
   GraphQLID
 } from 'graphql';
 import {errorObj} from '../utils';
 import {getUserId} from '../authorization';
-import {validateInviteToken} from '../../../utils/inviteTokens';
 import bcrypt from 'bcrypt';
 import promisify from 'es6-promisify';
+import shortid from 'shortid';
+import acceptInviteDB from './helpers';
 
 const compare = promisify(bcrypt.compare);
 
@@ -24,21 +24,16 @@ export default {
     args: {
       inviteToken: {
         type: new GraphQLNonNull(GraphQLID),
-        description: 'The invitation token (defaults to an 8-char ascii)'
+        description: 'The invitation token (first 6 bytes are the id, next 8 are the pre-hash)'
       }
     },
     async resolve(source, {inviteToken}, {authToken}) {
-      const {token, valid, error} = validateInviteToken(inviteToken);
-      if (!valid) {
-        throw errorObj({
-          _error: error,
-          type: 'acceptInvitation',
-          subtype: 'invalidToken'
-        });
-      }
-      const userId = getUserId(authToken);
-      const user = await r.table('CachedUser').get(userId);
-      const invitation = await r.table('Invitation').get(token.id);
+      const now = new Date();
+      const inviteId = inviteToken.slice(0, 6);
+      const tokenId = inviteToken.slice(6);
+
+      // see if the invitation exists
+      const invitation = await r.table('Invitation').get(inviteId);
       if (!invitation) {
         throw errorObj({
           _error: 'unable to find invitation',
@@ -46,18 +41,33 @@ export default {
           subtype: 'notFound'
         });
       }
-      // check inviteToken email
-      if (invitation.email !== user.email) {
+
+      // see if the invitation has expired
+      if (invitation.tokenExpiration < now) {
         throw errorObj({
-          _error: 'invitation invalid for your email address',
+          _error: 'invitation has expired',
           type: 'acceptInvitation',
-          subtype: 'invalidEmail'
+          subtype: 'expiredInvitation'
         });
       }
+
+      // see if the invitation hash is valid
+      const isCorrectToken = await compare(tokenId, invitation.hashedToken);
+      if (!isCorrectToken) {
+        throw errorObj({
+          _error: 'invalid invitation token',
+          type: 'acceptInvitation',
+          subtype: 'invalidToken'
+        });
+      }
+
+      const userId = getUserId(authToken);
+      const user = await r.table('CachedUser').get(userId);
+
       // Check if TeamMember already exists (i.e. user invited themselves):
       const teamMemberExists = await r.table('TeamMember')
         .getAll(userId, {index: 'cachedUserId'})
-        .filter({ teamId: invitation.teamId})
+        .filter({teamId: invitation.teamId})
         .isEmpty()
         .not();
       if (teamMemberExists) {
@@ -69,29 +79,28 @@ export default {
       }
       // add user to TeamMembers
       const newTeamMember = {
+        id: shortid.generate(),
         teamId: invitation.teamId,
         cachedUserId: userId,
         isActive: true,
         isLead: false,
         isFacilitator: false
       };
-      const {id} = await r.table('TeamMember')
-        .insert(newTeamMember, {returnChanges: true})
-        /* return the single doc that was inserted: */
-        .do((doc) => doc('changes').reduce((left) => left('new_val'))('new_val'))
-        .pluck('id');
-      if (!id) {
-        throw errorObj({_error: 'unable to create new team membership', type: 'acceptInvitation'});
-      }
-      newTeamMember.id = id;
+      await r.table('TeamMember').insert(newTeamMember);
+
       /*
        * TODO: if other outstanding invitations, create actionable
        *       notifications in users notification center.
        */
-      // delete other outstanding invitations for email
-      await r.table('Invitation').getAll(user.email, {index: 'email'}).delete();
 
+      // mark invitation as accepted
+      await acceptInviteDB(invitation.email, now);
+
+      // if user created an account with a different email, flag those oustanding invites, too
+      if (user.email !== invitation.email) {
+        await acceptInviteDB(user.email, now);
+      }
       return newTeamMember;
     }
-  },
+  }
 };

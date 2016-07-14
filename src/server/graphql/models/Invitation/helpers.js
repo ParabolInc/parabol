@@ -1,4 +1,3 @@
-import shortid from 'shortid';
 import ms from 'ms';
 import r from '../../../database/rethinkDriver';
 import sendEmail from '../../../email/sendEmail';
@@ -9,7 +8,7 @@ import promisify from 'es6-promisify';
 
 const hash = promisify(bcrypt.hash);
 
-const asciiAlphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+const asciiAlphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_';
 export const randomSafeString = (length = 8, chars = asciiAlphabet) => {
   const randomBytes = crypto.randomBytes(length);
   const result = new Array(length);
@@ -59,12 +58,12 @@ export const makeInvitationsForDB = async(invitees, teamId) => {
   const now = new Date();
   const tokenExpiration = now.valueOf() + ms('30d');
   // Turn to 12 for deployment, increase by 1 ~every 2 years
-  const hashPromises = invitees.map(invitee => hash(invitee.inviteToken, 10));
+  const hashPromises = invitees.map(invitee => hash(invitee.inviteToken.slice(6), 10));
   const hashedTokens = await Promise.all(hashPromises);
-  return invitees.map(invitee => {
+  return invitees.map((invitee, idx) => {
     const {email, task, fullName} = invitee;
     return {
-      id: shortid.generate(),
+      id: invitee.inviteToken.slice(0, 6),
       teamId,
       createdAt: now,
       isAccepted: false,
@@ -72,7 +71,7 @@ export const makeInvitationsForDB = async(invitees, teamId) => {
       email,
       task,
       tokenExpiration,
-      hashedToken: hashedTokens[i]
+      hashedToken: hashedTokens[idx]
     };
   });
 };

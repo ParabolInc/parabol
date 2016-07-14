@@ -13,7 +13,7 @@ export function showLock(dispatch) {
     authParams: {
       scope: 'openid rol'
     }
-  }, async (error, profile, authToken) => {
+  }, async(error, profile, authToken) => {
     if (error) throw error;
     // TODO: stuff this in a utility function:
     dispatch(setAuthToken(authToken));

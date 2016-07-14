@@ -9,7 +9,6 @@ import {Invitee} from './invitationSchema';
 import {errorObj} from '../utils';
 import {requireSUOrTeamMember, getUserId} from '../authorization';
 
-
 import {
   resolveSentEmails,
   makeInvitationsForDB,
@@ -34,7 +33,7 @@ export default {
     async resolve(source, {invitees, teamId}, {authToken}) {
       requireSUOrTeamMember(authToken, teamId);
       const userId = getUserId(authToken);
-      const inviteesWithTokens = invitees.map(invitee => ({...invitee, inviteToken: randomSafeString()}));
+      const inviteesWithTokens = invitees.map(invitee => ({...invitee, inviteToken: randomSafeString(14)}));
       const inviterInfoAndTeamName = await getInviterInfoAndTeamName(teamId, userId);
       const sendEmailPromises = createEmailPromises(inviterInfoAndTeamName, inviteesWithTokens);
       const {inviteeErrors, inviteesToStore} = await resolveSentEmails(sendEmailPromises, inviteesWithTokens);
