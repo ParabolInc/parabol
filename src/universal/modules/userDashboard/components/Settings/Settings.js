@@ -15,7 +15,7 @@ import {
 } from 'universal/modules/userDashboard/ducks/settingsDuck';
 
 const updateSuccess = {
-  title: 'Preferences saved!',
+  title: 'Settings saved!',
   message: 'We won\'t forget who you are.',
   level: 'success'
 };
@@ -23,8 +23,8 @@ const updateSuccess = {
 let styles = {};
 
 @look
-@reduxForm({form: 'userPreferences'})
-export default class Preferences extends Component {
+@reduxForm({form: 'userSettings'})
+export default class Settings extends Component {
   static propTypes = {
     activity: PropTypes.string,          // from settingsDuck
     dispatch: PropTypes.func.isRequired,
@@ -37,7 +37,7 @@ export default class Preferences extends Component {
       })
     }),
     /* Data from form for mutation: */
-    userPreferences: PropTypes.shape({
+    userSettings: PropTypes.shape({
       preferredName: PropTypes.string
     })
   };
@@ -69,7 +69,7 @@ export default class Preferences extends Component {
 
   initializeForm() {
     const {dispatch, user: { profile: {preferredName} } } = this.props;
-    return dispatch(initialize('userPreferences', { preferredName }));
+    return dispatch(initialize('userSettings', { preferredName }));
   }
 
   renderActivity(activity) {
@@ -89,7 +89,7 @@ export default class Preferences extends Component {
     const {activity, handleSubmit} = this.props;
     return (
       <form className={styles.root} onSubmit={handleSubmit(this.onSubmit)}>
-        <DashHeader title="My Preferences" />
+        <DashHeader title="My Settings" />
         <DashContent>
           <div className={styles.body}>
             <div className={styles.row}>

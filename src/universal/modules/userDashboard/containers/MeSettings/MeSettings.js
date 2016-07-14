@@ -4,7 +4,7 @@ import {cashay} from 'cashay';
 import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {DashLayout, DashSidebar} from 'universal/components/Dashboard';
-import Settings from 'universal/modules/userDashboard/components/Preferences/Preferences';
+import Settings from 'universal/modules/userDashboard/components/Settings/Settings';
 
 
 const mapStateToProps = (state) => {
