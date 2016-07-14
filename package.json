@@ -77,7 +77,6 @@
     "auth0-lock": "^9.2.1",
     "babel-polyfill": "6.9.1",
     "babel-runtime": "6.9.2",
-    "bcrypt": "^0.8.7",
     "body-parser": "1.15.2",
     "cashay": "^0.12.1",
     "cheerio": "^0.20.0",

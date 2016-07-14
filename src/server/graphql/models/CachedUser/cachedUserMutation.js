@@ -3,7 +3,7 @@ import {GraphQLString, GraphQLNonNull} from 'graphql';
 import {CachedUser} from './cachedUserSchema';
 import {AuthenticationClient} from 'auth0';
 import {auth0} from '../../../../universal/utils/clientOptions';
-import sendEmail from '../../../email/sendEmail';
+import sendEmailPromise from '../../../email/sendEmail';
 import ms from 'ms';
 
 const auth0Client = new AuthenticationClient({
@@ -51,7 +51,7 @@ export default {
       });
       // Did we update an existing cached profile?
       if (changes.replaced === 0) {
-        const emailWelcomed = await sendEmail(newUser.email, 'welcomeEmail', newUser);
+        const emailWelcomed = await sendEmailPromise(newUser.email, 'welcomeEmail', newUser);
         const welcomeSentAt = emailWelcomed ? new Date() : null;
         // must wait for write to UserProfile because a query could follow quickly after
         await r.table('UserProfile').insert({id: newUser.id, welcomeSentAt, isNew: true});

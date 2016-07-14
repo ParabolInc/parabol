@@ -2,16 +2,11 @@ import r from '../../../database/rethinkDriver';
 import {TeamMember} from './teamMemberSchema';
 import {
   GraphQLNonNull,
-  GraphQLString,
   GraphQLID
 } from 'graphql';
 import {errorObj} from '../utils';
 import {getUserId} from '../authorization';
-import {validateInviteToken} from '../../../utils/inviteTokens';
-import bcrypt from 'bcrypt';
-import promisify from 'es6-promisify';
-
-const compare = promisify(bcrypt.compare);
+import {validateTokenHash, validateTokenType} from '../../../utils/inviteTokens';
 
 export default {
   acceptInvitation: {
@@ -19,7 +14,7 @@ export default {
     description: `Add a user to a Team given an invitationToken.
     If the invitationToken is valid, returns the Team objective they've been
     added to. Returns null otherwise.
-    
+
     Side effect: deletes all other outstanding invitations for user.`,
     args: {
       inviteToken: {
@@ -28,22 +23,30 @@ export default {
       }
     },
     async resolve(source, {inviteToken}, {authToken}) {
-      const {token, valid, error} = validateInviteToken(inviteToken);
-      if (!valid) {
+      const validFormat = validateTokenType(inviteToken);
+      if (!validFormat) {
         throw errorObj({
-          _error: error,
+          _error: 'invitation token format is invalid',
           type: 'acceptInvitation',
           subtype: 'invalidToken'
         });
       }
       const userId = getUserId(authToken);
       const user = await r.table('CachedUser').get(userId);
-      const invitation = await r.table('Invitation').get(token.id);
+      const invitation = await r.table('Invitation').get(inviteToken);
       if (!invitation) {
         throw errorObj({
           _error: 'unable to find invitation',
           type: 'acceptInvitation',
           subtype: 'notFound'
+        });
+      }
+      const validHash = validateTokenHash(inviteToken, invitation.hashedToken);
+      if (!validHash) {
+        throw errorObj({
+          _error: 'invitation token is invald',
+          type: 'acceptInvitation',
+          subtype: 'invalidToken'
         });
       }
       // check inviteToken email
