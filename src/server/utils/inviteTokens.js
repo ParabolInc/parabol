@@ -6,6 +6,11 @@ import crypto from 'crypto';
  * the secret keeps out attackers (proxy for rate limiting, IP blocking, still encouraged)
  * storing it in the DB means there exists only 1, one-time use key, unlike a JWT, which has many, multi-use keys
  */
+
+export const xorBuffers = (buf1, buf2) => {
+  return buf1.map((val, idx) => val ^ buf2[idx]);
+};
+
 export function makeInviteToken(id, epocExpiration) {
   return new Buffer(JSON.stringify({
     id,

@@ -42,16 +42,18 @@ const patoStyles = {
   width: '2rem'
 };
 
-const credz = 'Duck by Sergey Demushkin';
-
-const LoadingView = () =>
-  <div className={styles.root}>
-    <h1 className={styles.heading}>Welcome to Action!</h1>
-    <img alt={credz} className={styles.pato1} src={Pato} />
-    <img alt={credz} className={styles.pato2} src={Pato} />
-    <img alt={credz} className={styles.pato3} src={Pato} />
-    <h2 className={styles.message}>Just putting our ducks in a row…</h2>
-  </div>;
+const LoadingDuck = (props) => <img alt={'Duck by Sergey Demushkin'} className={props.className} src={Pato}/>;
+const LoadingView = () => {
+  const {pato1, pato2, pato3} = styles;
+  const duckStyles = [pato1, pato2, pato3];
+  return (
+    <div className={styles.root}>
+      <h1 className={styles.heading}>Welcome to Action!</h1>
+      {duckStyles.map(className => <LoadingDuck className={className}/>)}
+      <h2 className={styles.message}>Just putting our ducks in a row…</h2>
+    </div>
+  );
+};
 
 styles = StyleSheet.create({
   root: {
