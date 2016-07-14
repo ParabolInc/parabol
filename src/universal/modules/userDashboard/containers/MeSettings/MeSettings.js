@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {DashLayout, DashSidebar} from 'universal/components/Dashboard';
-import Preferences from 'universal/modules/userDashboard/components/Preferences/Preferences';
+import Preferences from 'universal/modules/userDashboard/components/Settings/Settings';
 
 const mapStateToProps = (state) => {
   return {
