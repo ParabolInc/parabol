@@ -7,8 +7,8 @@ const combineStyles = StyleSheet.combineStyles;
 let styles = {};
 
 const DashNavItem = (props) => {
-  const activeStyles = combineStyles(styles.root, styles.active);
-  const itemStyles = props.active ? activeStyles : styles.root;
+  const activeStyles = combineStyles(styles.link, styles.active);
+  const itemStyles = props.active ? activeStyles : styles.link;
 
   const onClick = (event) => {
     const {dispatch, href} = props;
@@ -17,10 +17,19 @@ const DashNavItem = (props) => {
   };
 
   return (
-    <div className={itemStyles} title={props.label}>
+    <div className={styles.root}>
       {props.href && !props.active ?
-        <a className={styles.link} href="#" onClick={(e) => onClick(e)}>{props.label}</a> :
-        props.label
+        <a
+          className={itemStyles}
+          href="#"
+          onClick={(e) => onClick(e)}
+          title={props.label}
+        >
+          {props.label}
+        </a> :
+        <div className={itemStyles}>
+          {props.label}
+        </div>
       }
     </div>
   );
@@ -35,18 +44,29 @@ DashNavItem.propTypes = {
 
 styles = StyleSheet.create({
   root: {
+    width: '100%'
+  },
+
+  link: {
     backgroundColor: 'transparent',
     borderRadius: '.25rem 0 0 .25rem',
+    color: 'inherit',
+    display: 'block',
     fontSize: theme.typography.s4,
     padding: '.3125rem .5rem .3125rem 1rem',
+    userSelect: 'none',
 
     ':hover': {
       backgroundColor: theme.palette.dark50a,
-      cursor: 'pointer'
+      color: 'inherit',
+      cursor: 'pointer',
+      textDecoration: 'none'
     },
     ':focus': {
       backgroundColor: theme.palette.dark50a,
-      cursor: 'pointer'
+      color: 'inherit',
+      cursor: 'pointer',
+      textDecoration: 'none'
     }
   },
 
@@ -60,19 +80,6 @@ styles = StyleSheet.create({
     ':focus': {
       backgroundColor: theme.palette.dark,
       cursor: 'default'
-    }
-  },
-
-  link: {
-    color: 'inherit',
-
-    ':hover': {
-      color: 'inherit',
-      textDecoration: 'none'
-    },
-    ':focus': {
-      color: 'inherit',
-      textDecoration: 'none'
     }
   }
 });

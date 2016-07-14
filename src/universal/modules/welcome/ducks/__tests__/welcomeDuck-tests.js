@@ -1,7 +1,13 @@
 import test from 'ava';
-import reducer, {setWelcomeTeam, nextPage, previousPage} from '../welcomeDuck';
+import reducer, {
+  setWelcomeTeam,
+  nextPage,
+  previousPage,
+  updateCompleted
+} from '../welcomeDuck';
 
 const stateTemplate = {
+  completed: 0,
   page: 1,
   teamId: null,
   teamMemberId: null
@@ -66,5 +72,13 @@ test('previousPage() is never less than one', t => {
   t.deepEqual(reducer(state, previousPage()), {
     ...stateTemplate,
     page: 1
+  });
+});
+
+test('updateCompleted() updates state', t => {
+  const state = reducer();
+  t.deepEqual(reducer(state, updateCompleted(2)), {
+    ...stateTemplate,
+    completed: 2
   });
 });

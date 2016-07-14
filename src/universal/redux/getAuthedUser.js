@@ -40,20 +40,12 @@ query {
 }`;
 
 const updateTokenMutationHandlers = {
-  updateUserWithAuthToken(optimisticVariables, queryResponse, currentResponse) {
+  acceptInvitation(optimisticVariables, queryResponse, currentResponse) {
     if (queryResponse) {
-      currentResponse.user = queryResponse;
-      return currentResponse;
+      // we can't be optimistic, server must process our invite token:
+      currentResponse.user.memberships.push(queryResponse);
     }
     return undefined;
-  },
-  updateUserProfile(optimisticVariables, queryResponse, currentResponse) {
-    if (optimisticVariables) {
-      Object.assign(currentResponse.user.profile, optimisticVariables.updatedProfile);
-    } else if (queryResponse) {
-      Object.assign(currentResponse.user.profile, queryResponse.profile);
-    }
-    return currentResponse;
   },
   createTeam(optimisticVariables, queryResponse, currentResponse) {
     if (optimisticVariables) {
@@ -69,7 +61,22 @@ const updateTokenMutationHandlers = {
       return currentResponse;
     }
     return undefined;
-  }
+  },
+  updateUserProfile(optimisticVariables, queryResponse, currentResponse) {
+    if (optimisticVariables) {
+      Object.assign(currentResponse.user.profile, optimisticVariables.updatedProfile);
+    } else if (queryResponse) {
+      Object.assign(currentResponse.user.profile, queryResponse.profile);
+    }
+    return currentResponse;
+  },
+  updateUserWithAuthToken(optimisticVariables, queryResponse, currentResponse) {
+    if (queryResponse) {
+      currentResponse.user = queryResponse;
+      return currentResponse;
+    }
+    return undefined;
+  },
 };
 
 export const authedOptions = {
