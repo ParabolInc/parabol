@@ -38,7 +38,7 @@ const UserHub = (props) => {
             <div className={styles.email}>{email}</div>
           </div>
           <div className={styles.settings}>
-            <div className={styles.settingsIcon} title="My Preferences">
+            <div className={styles.settingsIcon} title="My Settings">
               <FontAwesome
                 name="cog"
                 onClick={onSettingsClick}
@@ -64,12 +64,12 @@ const UserHub = (props) => {
               Sign Out
             </div>
           </a>
-          <div className={styles.closeIcon} title="My Preferences">
+          <div className={styles.closeIcon} title="My Settings">
             <FontAwesome
               name="times-circle"
               onClick={onCloseSettingsClick}
               style={faStyle}
-              title="Close My Preferences"
+              title="Close My Settings"
             />
           </div>
         </div>

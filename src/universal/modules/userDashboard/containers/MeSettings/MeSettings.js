@@ -4,7 +4,6 @@ import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {DashLayout, DashSidebar} from 'universal/components/Dashboard';
 import Preferences from 'universal/modules/userDashboard/components/Preferences/Preferences';
 
-
 const mapStateToProps = (state) => {
   return {
     activity: state.userDashboardSettings.activity,
