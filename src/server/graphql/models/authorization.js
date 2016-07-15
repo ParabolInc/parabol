@@ -10,13 +10,13 @@ export const isSuperUser = authToken => {
   return userId && authToken.rol === 'su';
 };
 
-export const getTeamMember = async (authToken, teamId) => {
+export const getTeamMember = async (authToken, meetingId) => {
   const userId = getUserId(authToken);
   if (userId) {
     const teamMembers = await r.table('TeamMember')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({cachedUserId: userId})
-      .pluck('teamId');
+      .getAll(meetingId, {index: 'meetingId'})
+      .filter({userId: userId})
+      .pluck('meetingId');
     return teamMembers[0];
   }
   return undefined;
@@ -37,17 +37,18 @@ export const requireSU = authToken => {
   }
 };
 
-export const requireSUOrTeamMember = async (authToken, teamId) => {
+export const requireSUOrTeamMember = async (authToken, meetingId) => {
   if (isSuperUser(authToken)) return undefined;
-  const teamMember = await getTeamMember(authToken, teamId);
+  const teamMember = await getTeamMember(authToken, meetingId);
   if (teamMember) return teamMember;
-  throw errorObj({_error: 'Unauthorized. Must be a member of the team.'});
+  console.log('throwin suo err', authToken, meetingId)
+  throw errorObj({_error: 'Unauthorized to view meeting details.'});
 };
 
-export const requireSUOrSelf = (authToken, cachedUserId) => {
+export const requireSUOrSelf = (authToken, userId) => {
   if (isSuperUser(authToken)) return undefined;
-  const userId = getUserId(authToken);
-  if (userId === cachedUserId) {
+  const authTokenUserId = getUserId(authToken);
+  if (authTokenUserId === userId) {
     return userId;
   }
   throw errorObj({_error: 'Unauthorized. You cannot modify another user.'});

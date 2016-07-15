@@ -31,7 +31,7 @@ export default option => {
       cashay.create({
         store,
         schema: cashaySchema,
-        transport: cashayHttpTransport,
+        httpTransport: cashayHttpTransport
       });
     } else {
       lookConfig.plugins.push(Plugins.friendlyClassName);

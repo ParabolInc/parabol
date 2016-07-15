@@ -5,11 +5,10 @@ import {reduxSocket} from 'redux-socket-cluster';
 import {HotKeys} from 'react-hotkeys';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import AuthEngine from 'universal/redux/AuthEngine';
-import {cashay} from 'cashay';
+import {cashay, Transport} from 'cashay';
 import subscriptions from 'universal/redux/subscriptions';
 import subscriber from 'universal/redux/subscriber';
 import socketCluster from 'socketcluster-client';
-import actionSocketTransport from 'universal/utils/actionSocketTransport.js';
 
 
 let styles = {};
@@ -32,8 +31,8 @@ const presenceSubscriber = (subscriptionString, handlers, variables) => {
 };
 
 const mapStateToProps = (state, props) => {
-  const meetingVariables ={meetingId: props.params.meetingId};
-
+  const meetingVariables = {meetingId: props.params.meetingId};
+  console.log('meetingVars', meetingVariables)
   const meetingSubOptions = {
     component: 'meetingSub',
     variables: meetingVariables
@@ -51,13 +50,21 @@ const mapStateToProps = (state, props) => {
   };
 };
 
-const onConnect = () => {
-  console.log('calling onCon');
-  cashay.create({transport: actionSocketTransport});
-}
-// TODO const onDisconnect = () => cashay.create({transport: new ActionHTTPTransport(persistedToken)})
+const onConnect = (options, hocOptions, socket) => {
+  const sendToServer = request => {
+    return new Promise((resolve) => {
+      socket.emit('graphql', request, (error, response) => {
+        console.log('resolving', response)
+        resolve(response);
+      });
+    });
+  };
+  const priorityTransport = new Transport(sendToServer);
+  cashay.create({priorityTransport});
+};
+const onDisconnect = () => cashay.create({priorityTransport: null});
 
-@reduxSocket({}, {AuthEngine, socketCluster, onConnect, keepAlive: 0})
+@reduxSocket({}, {AuthEngine, socketCluster, onConnect, onDisconnect, keepAlive: 0})
 @connect(mapStateToProps)
 @requireAuth
 @look
@@ -80,7 +87,10 @@ export default class MeetingLobby extends Component {
         meetingId: props.params.meetingId
       }
     };
-    console.log('cashay transport', cashay.transport);
+
+    const authEngine = new AuthEngine()
+    const socket = socketCluster.connect({}, {AuthEngine});
+    socket.on('message', msg => console.log('MSG' + msg))
     cashay.mutate('soundOff', options)
   }
   render() {

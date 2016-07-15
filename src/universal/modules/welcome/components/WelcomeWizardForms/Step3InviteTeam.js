@@ -49,7 +49,7 @@ const Step3InviteTeam = (props) => {
   };
 
   const onInviteTeamSubmit = async (submissionData) => {
-    const {dispatch, welcome: {teamId}} = props;
+    const {dispatch, welcome: {meetingId}} = props;
     const serverInvitees = submissionData.invitees.map(invitee => {
       // Remove label field:
       const {label, ...inviteeForServer} = invitee; // eslint-disable-line no-unused-vars
@@ -57,7 +57,7 @@ const Step3InviteTeam = (props) => {
     });
     const options = {
       variables: {
-        teamId,
+        meetingId,
         invitees: serverInvitees
       }
     };
@@ -74,7 +74,7 @@ const Step3InviteTeam = (props) => {
         // TODO I think we want to remove the failures from the array so they can click try again. thoughts?
       }
     } else if (data) {
-      dispatch(push(`/team/${teamId}`));  // redirect leader to their new team
+      dispatch(push(`/team/${meetingId}`));  // redirect leader to their new team
       dispatch(show(emailInviteSuccess)); // trumpet our leader's brilliance!
       dispatch(destroy('welcomeWizard')); // bye bye form data!
     }
@@ -163,7 +163,7 @@ Step3InviteTeam.propTypes = {
   submitting: PropTypes.bool,
   teamName: PropTypes.string,
   welcome: PropTypes.shape({
-    teamId: PropTypes.string,
+    meetingId: PropTypes.string,
   })
 };
 

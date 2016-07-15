@@ -1,6 +1,6 @@
 import React from 'react';
 import Oy from 'oy-vey';
-import TeamInvite from 'universal/modules/email/containers/TeamInvite/TeamInvite';
+import TeamInvite from '../universal/modules/email/containers/MeetingInvite/MeetingInvite';
 // import WelcomeEmail from 'universal/modules/email/containers/WelcomeEmail/WelcomeEmail';
 
 const demoInviteProps = {

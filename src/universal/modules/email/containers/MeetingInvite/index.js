@@ -1,13 +1,13 @@
 import React from 'react';
 import Oy from 'oy-vey';
-import TeamInvite, {teamInviteText} from './TeamInvite';
+import MeetingInvite, {meetingInviteText} from './MeetingInvite';
 
 const subject = 'You’ve been invited to Action by Parabol';
 
 export default (props) => ({
   subject,
-  body: teamInviteText(props),
-  html: Oy.renderTemplate(<TeamInvite {...props} />, {
+  body: meetingInviteText(props),
+  html: Oy.renderTemplate(<MeetingInvite {...props} />, {
     title: subject,
     previewText: subject
   })

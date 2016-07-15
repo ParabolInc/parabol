@@ -6,9 +6,9 @@ import {
   GraphQLID,
   GraphQLList
 } from 'graphql';
-import {Participant} from '../Participant/participantSchema';
-import {getRequestedFields} from '../utils';
-import makeChangefeedHandler from '../makeChangefeedHandler';
+import GraphQLISO8601Type from 'graphql-custom-datetype';
+import {TeamMember, CreateTeamMemberInput} from '../TeamMember/teamMemberSchema';
+import {nonnullifyInputThunk} from '../utils';
 
 export const SOUNDOFF = 'SOUNDOFF';
 export const PRESENT = 'PRESENT';
@@ -18,48 +18,33 @@ export const Meeting = new GraphQLObjectType({
   description: 'A meeting',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique meeting ID'},
-    createdAt: {type: GraphQLString, description: 'The datetime the meeting was created'},
-    updatedAt: {type: GraphQLString, description: 'The datetime the meeting was last updated'},
-    lastUpdatedBy: {type: GraphQLString, description: 'The last user to update the content'},
-    participants: {
-      type: new GraphQLList(Participant),
-      description: 'The participants involved in the meeting',
-      async resolve(source, args, {socket, subbedChannelName}, refs) {
-        const {operation: {operation}, fieldName} = refs;
-        if (operation === 'subscription') {
-          const requestedFields = getRequestedFields(refs);
-          const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName, {patch: refs.fieldName});
-          r.table('Participant')
-            .getAll(source.id, {index: 'meetingId'})
-            .pluck(requestedFields)
-            .changes({includeInitial: true})
-            .run({cursor: true}, changefeedHandler);
-        } else {
-          if (source && (typeof source === 'object' || typeof source === 'function')) {
-            const property = source[fieldName];
-            return typeof property === 'function' ? property() : property;
-          }
-        }
-        return [{id: 'part'}];
-        // await r.table('Participant')
+    name: {type: GraphQLString, description: 'The name of the meeting'},
+    createdAt: {
+      type: new GraphQLNonNull(GraphQLISO8601Type),
+      description: 'The datetime the meeting was created'
+    },
+    updatedAt: {
+      type: GraphQLISO8601Type,
+      description: 'The datetime the meeting was last updated'
+    },
+    teamMembers: {
+      type: new GraphQLList(TeamMember),
+      description: 'All the team members associated who can join this meeting',
+      async resolve({id}) {
+        return await r.table('TeamMember').getAll(id, {index: 'meetingId'});
       }
     }
-    // team: {
-    //   type: Team,
-    //   async resolve(source) {
-    //     console.log(source);
-    //     const team = await getTeamById(source.teamId);
-    //     if (!team) {
-    //       throw errorObj({_error: 'Team not found'});
-    //     }
-    //     return team;
-    //   }
-    // },
-    // teamId: {type: new GraphQLNonNull(GraphQLID), description: 'The team this meeting belongs to'},
-    // content: {type: GraphQLString, description: 'The content of the meeting'},
-    // currentEditors: {
-    //   type: new GraphQLList(GraphQLString),
-    //   description: 'a list of socketIds currently editing the content'
-    // }
   })
 });
+
+const meetingInputThunk = () => ({
+  id: {type: GraphQLID, description: 'The unique meeting ID'},
+  name: {type: GraphQLString, description: 'The name of the meeting'},
+  leader: {
+    type: CreateTeamMemberInput,
+    description: 'Each meeting must be created with 1 meeting member, the leader.'
+  }
+});
+
+export const CreateMeetingInput = nonnullifyInputThunk('CreateMeetingInput', meetingInputThunk, ['id', 'name']);
+export const UpdateMeetingInput = nonnullifyInputThunk('UpdateMeetingInput', meetingInputThunk, ['id']);

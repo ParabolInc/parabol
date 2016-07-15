@@ -15,7 +15,7 @@ export default {
       }
     },
     async resolve(source, {meetingId}, {authToken, socket, subbedChannelName}, refs) {
-      // Assumes teamId === meetingId
+      // Assumes meetingId === meetingId
       requireSUOrTeamMember(authToken, meetingId);
       // eslint-disable-next-line no-unused-vars
       const requestedFields = getRequestedFields(refs);

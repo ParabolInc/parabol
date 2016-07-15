@@ -12,6 +12,7 @@ export default function wsGraphQLHandler(exchange, socket) {
     };
     // response = {errors, data}
     const response = await graphql(Schema, query, {}, context, variables);
-    cb(response);
+    console.log('GQL RES: ', response)
+    cb(null, response);
   };
 };

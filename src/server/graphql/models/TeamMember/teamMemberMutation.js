@@ -65,8 +65,8 @@ export default {
 
       // Check if TeamMember already exists (i.e. user invited themselves):
       const teamMemberExists = await r.table('TeamMember')
-        .getAll(userId, {index: 'cachedUserId'})
-        .filter({teamId: invitation.teamId})
+        .getAll(userId, {index: 'userId'})
+        .filter({meetingId: invitation.meetingId})
         .isEmpty()
         .not();
       if (teamMemberExists) {
@@ -79,8 +79,8 @@ export default {
       // add user to TeamMembers
       const newTeamMember = {
         id: shortid.generate(),
-        teamId: invitation.teamId,
-        cachedUserId: userId,
+        meetingId: invitation.meetingId,
+        userId,
         isActive: true,
         isLead: false,
         isFacilitator: false

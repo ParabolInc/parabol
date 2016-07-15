@@ -44,7 +44,7 @@ WelcomeContainer.propTypes = {
   preferredName: PropTypes.string,
   teamName: PropTypes.string,
   welcome: PropTypes.shape({
-    teamId: PropTypes.string,
+    meetingId: PropTypes.string,
     teamMemberId: PropTypes.string
   })
 };

@@ -22,7 +22,7 @@ export const UserProfile = new GraphQLObjectType({
     },
     isNew: {
       type: GraphQLBoolean,
-      description: 'Has the user ever had a team'
+      description: 'Has the user ever been associated with a meeting'
     },
     welcomeSentAt: {
       type: GraphQLISO8601Type,
@@ -43,14 +43,14 @@ export const UserProfile = new GraphQLObjectType({
       type: new GraphQLList(TeamMember),
       description: 'The memberships to different teams that the user has',
       async resolve({id}) {
-        return await r.table('TeamMember').getAll(id, {index: 'cachedUserId'});
+        return await r.table('TeamMember').getAll(id, {index: 'userId'});
       }
     }
   })
 });
 
 const profileInputThunk = () => ({
-  id: {type: GraphQLID, description: 'The unique team ID'},
+  id: {type: GraphQLID, description: 'The unique userId'},
   preferredName: {
     type: GraphQLString,
     description: 'The name, as confirmed by the user'

@@ -116,7 +116,7 @@ TeamInvite.propTypes = {
   inviteLink: PropTypes.string.isRequired
 };
 
-export const teamInviteText = (props) => `
+export const meetingInviteText = (props) => `
 Hello ${props.inviteeEmail},
 
 ${props.inviterName} has invited you to join the ${props.teamName} on Action.

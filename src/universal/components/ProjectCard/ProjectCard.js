@@ -16,8 +16,8 @@ const ProjectCard = props => {
     openStatusMenu,
     isArchived,
     owner,
-    showByTeam,
-    team,
+    showByMeeting,
+    meeting,
     timestamp
   } = props;
 
@@ -42,10 +42,10 @@ const ProjectCard = props => {
     );
   };
 
-  const avatarImage = showByTeam ? team.avatar : owner.avatar;
-  const avatarName = showByTeam ? team.name : owner.name;
+  const avatarImage = showByMeeting ? meeting.avatar : owner.avatar;
+  const avatarName = showByMeeting ? meeting.name : owner.name;
   const avatarTeamStyles = combineStyles(styles.avatar, styles.avatarTeam);
-  const avatarStyles = showByTeam ? avatarTeamStyles : styles.avatar;
+  const avatarStyles = showByMeeting ? avatarTeamStyles : styles.avatar;
 
   return (
     <div className={combineStyles(styles.root, styles[status])}>
@@ -84,9 +84,9 @@ ProjectCard.propTypes = {
   openStatusMenu: PropTypes.func,
   isArchived: PropTypes.bool,
   owner: PropTypes.object,
-  team: PropTypes.object,
+  meeting: PropTypes.object,
   timestamp: PropTypes.string,
-  showByTeam: PropTypes.bool
+  showByMeeting: PropTypes.bool
 };
 
 ProjectCard.defaultProps = {
@@ -100,12 +100,12 @@ ProjectCard.defaultProps = {
     name: 'Taya Mueller',
     avatar: TayaAvatar
   },
-  team: {
+  meeting: {
     name: 'Engineering',
     avatar: 'https://placekitten.com/g/24/24'
   },
   timestamp: '1 day ago',
-  showByTeam: false
+  showByMeeting: false
 };
 
 styles = StyleSheet.create({

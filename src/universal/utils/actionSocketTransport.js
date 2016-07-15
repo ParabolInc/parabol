@@ -1,4 +1,4 @@
-import {SocketTransport} from 'cashay';
+import {Transport} from 'cashay';
 import socket from 'universal/utils/socketDriver';
 
 const sendToServer = request => {
@@ -9,4 +9,4 @@ const sendToServer = request => {
   });
 };
 
-export default new SocketTransport(sendToServer);
+export default new Transport(sendToServer);

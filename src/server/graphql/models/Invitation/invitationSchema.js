@@ -14,7 +14,7 @@ export const Invitation = new GraphQLObjectType({
   description: 'An invitation to become a team member',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique invitation Id'},
-    teamId: {type: new GraphQLNonNull(GraphQLID), description: 'The team invited to'},
+    meetingId: {type: new GraphQLNonNull(GraphQLID), description: 'The meeting invited to'},
     invitedBy: {type: GraphQLID, description: 'The CachedUserId of the person that sent the invitation'},
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),

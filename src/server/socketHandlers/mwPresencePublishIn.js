@@ -20,7 +20,7 @@
 //   const {sub: userId} = req.socket.getAuthToken();
 //   const {authorization} = req.socket;
 //   if (!checkPermission(authorization, meetingId)) {
-//     req.socket.authorization = await r.table('TeamMember').getAll(userId, {index: 'cachedUserId'});
+//     req.socket.authorization = await r.table('TeamMember').getAll(userId, {index: 'userId'});
 //   }
 //   if (checkPermission(authorization, meetingId)) {
 //     const {data} = req;

@@ -1,6 +1,6 @@
 import {setAuthToken, removeAuthToken} from './authDuck';
 
-export default class ReduxAuthEngine {
+export default class AuthEngine {
   constructor(store, reducerName = 'authToken') {
     this.store = store;
     this.reducerName = reducerName;

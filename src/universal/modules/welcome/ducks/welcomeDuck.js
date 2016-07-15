@@ -10,7 +10,7 @@ const MAX_PAGE = 3;
 const initialState = {
   page: 1,
   completed: 0,
-  teamId: null,
+  meetingId: null,
   teamMemberId: null
 };
 

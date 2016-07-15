@@ -25,7 +25,7 @@
 //
 //   const authTokenObj = req.socket.getAuthToken();
 //   // we're going around the standard graphql data transport here because there's no need to parse & exec
-//   req.socket.authorization = await r.table('TeamMember').getAll(authTokenObj.sub, {index: 'cachedUserId'});
+//   req.socket.authorization = await r.table('TeamMember').getAll(authTokenObj.sub, {index: 'userId'});
 //   if (checkPermission(authorization, meetingId)) {
 //     next();
 //   } else {
