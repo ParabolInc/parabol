@@ -49,8 +49,6 @@ export default {
       }
 
       // see if the invitation hash is valid
-      console.log(tokenKey);
-      console.log(invitation.hashedToken);
       const isCorrectToken = await validateInviteTokenKey(tokenKey, invitation.hashedToken);
       if (!isCorrectToken) {
         throw errorObj({

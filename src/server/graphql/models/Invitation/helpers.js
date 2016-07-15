@@ -82,8 +82,6 @@ export const makeInvitationsForDB = async(invitees, teamId) => {
   return invitees.map((invitee, idx) => {
     const {email, inviteToken, task, fullName} = invitee;
     const {id, key} = parseInviteToken(inviteToken);
-    console.log(key);
-    console.log(hashedTokens[idx]);
     return {
       id,
       teamId,
