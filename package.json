@@ -104,7 +104,7 @@
     "oy-vey": "^1.0.0-alpha",
     "piping": "1.0.0-rc.2",
     "react": "15.1.0",
-    "react-copy-to-clipboard": "^4.1.0",
+    "react-copy-to-clipboard": "^4.2.0",
     "react-css-modules": "^3.7.6",
     "react-dom": "15.1.0",
     "react-fontawesome": "^1.1.0",

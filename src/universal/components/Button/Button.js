@@ -1,5 +1,5 @@
-import React, { PropTypes } from 'react';
-import look, { StyleSheet } from 'react-look';
+import React, {PropTypes} from 'react';
+import look, {StyleSheet} from 'react-look';
 import * as appTheme from 'universal/styles/theme';
 import tinycolor from 'tinycolor2';
 

@@ -3,7 +3,7 @@ import look, { StyleSheet } from 'react-look';
 // import FontAwesome from 'react-fontawesome';
 // import tinycolor from 'tinycolor2';
 import theme from 'universal/styles/theme';
-import Avatar from '../../components/Avatar/Avatar';
+import Avatar from 'universal/components/Avatar/Avatar';
 import PushButton from '../../components/PushButton/PushButton';
 
 const combineStyles = StyleSheet.combineStyles;

@@ -3,7 +3,7 @@ import SectionHeader from '../../components/SectionHeader/SectionHeader';
 import Example from '../../components/Example/Example';
 import ExampleCode from '../../components/ExampleCode/ExampleCode';
 import PropsTable from '../../components/PropsTable/PropsTable';
-import Avatar from 'universal/modules/meeting/components/Avatar/Avatar';
+import Avatar from 'universal/components/Avatar/Avatar';
 
 const avatar = <Avatar badge="present" hasLabel size="largest" />;
 const avatarString = '<Avatar badge="present" hasLabel size="largest" />';
