@@ -1,6 +1,6 @@
 import {graphql} from 'graphql';
 import Schema from 'server/graphql/rootSchema';
-import subscriptions from 'universal/redux/subscriptions';
+import subscriptions from '../../universal/subscriptions/subscriptions';
 import parseChannel from './parseChannel';
 
 /*

@@ -6,7 +6,8 @@ import {
   GraphQLID,
   GraphQLBoolean
 } from 'graphql';
-import {SOUNDOFF, PRESENT, CreateMeetingInput, UpdateMeetingInput, Meeting} from './meetingSchema';
+import {CreateMeetingInput, UpdateMeetingInput, Meeting} from './meetingSchema';
+import {SOUNDOFF, PRESENT} from 'universal/decorators/socketWithPresence/constants';
 
 export default {
   createMeeting: {

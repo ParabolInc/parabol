@@ -1,6 +1,12 @@
 import parseChannel from './parseChannel';
 import {getTeamMember} from 'server/graphql/models/authorization';
 
+// const mockGetTeamMember = () => new Promise(resolve => {
+//   setTimeout(() => {
+//     resolve('hi');
+//   }, 2000);
+// });
+
 export default async function mwPresenceSubscribe(req, next) {
   if (req.authTokenExpiredError) {
     next(req.authTokenExpiredError);
@@ -12,17 +18,8 @@ export default async function mwPresenceSubscribe(req, next) {
     next();
     return;
   }
-  // const {authorization} = req.socket;
-  // req.socket.authorization = req.socket.authorization || [];
-  // if (checkPermission(authorization, meetingId)) {
-  //   // this user can & has subscribed to something before
-  //   // if we want to revoke access in real time, we'll need another function to track down each socket owned by that user &
-  //   // remove that teamMember from their arrays
-  //   next();
-  //   return;
-  // }
-
   const authToken = req.socket.getAuthToken();
+  // TODO cache all memberships on the socket?
   const teamMember = await getTeamMember(authToken, meetingId);
   if (teamMember) {
     next();

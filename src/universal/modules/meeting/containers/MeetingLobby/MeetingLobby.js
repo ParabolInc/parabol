@@ -1,91 +1,27 @@
 import React, {Component, PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import {connect} from 'react-redux';
-import {reduxSocket} from 'redux-socket-cluster';
-import {HotKeys} from 'react-hotkeys';
-import requireAuth from 'universal/decorators/requireAuth/requireAuth';
-import AuthEngine from 'universal/redux/AuthEngine';
-import {cashay, Transport} from 'cashay';
-import subscriptions from 'universal/redux/subscriptions';
-import subscriber from 'universal/redux/subscriber';
-import socketCluster from 'socketcluster-client';
-
+import {cashay} from 'cashay';
+import subscriptions from 'universal/subscriptions/subscriptions';
+import subscriber from 'universal/subscriptions/subscriber';
+import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 
 let styles = {};
 
-const keyMap = {
-  keyEnter: 'enter',
-  seqHelp: 'shift+/'
-};
-
 const meetingSubscriptionString = subscriptions.find(sub => sub.channel === 'meeting').string;
-const presenceSubscriptionString = subscriptions.find(sub => sub.channel === 'presence').string;
-const userSubscriptionString = subscriptions.find(sub => sub.channel === 'user').string;
-
-const presenceSubscriber = (subscriptionString, variables, handlers, getCachedResult) => {
-  const {channel, channelfy} = subscriptions.find(sub => sub.string === subscriptionString);
-  const channelName = channelfy(variables);
-  const socket = socketCluster.connect();
-  const {add, update, remove, error} = handlers;
-  socket.subscribe(channelName, {waitForAuth: true});
-  socket.watch(channelName, data => {
-    if (data.type === 'SOUNDOFF') {
-      const options = {
-        variables: {
-          meetingId: variables.meetingId,
-          targetId: data.targetId
-        }
-      };
-      console.log('SOUNDOFF CALLED BY:', data.targetId);
-      cashay.mutate('present', options);
-    }
-    if (data.type === 'PRESENT') {
-      const {presence} = getCachedResult();
-      const alreadyPresent = presence.find(user => user === data.user);
-      if (!alreadyPresent) {
-        add(data.user);
-      }
-      console.log('PRESENT', data.user);
-    }
-  });
-};
-
 const mapStateToProps = (state, props) => {
-  const meetingVariables = {meetingId: props.params.meetingId};
   const meetingSubOptions = {
-    component: 'meetingSub',
-    variables: meetingVariables
+    variables: {meetingId: props.params.meetingId},
+    component: 'meetingSub'
   };
-
-  const presenceSubOptions = {
-    component: 'presenceSub',
-    variables: meetingVariables
-  };
-
   return {
     meetingSub: cashay.subscribe(meetingSubscriptionString, subscriber, meetingSubOptions),
-    presenceSub: cashay.subscribe(presenceSubscriptionString, presenceSubscriber, presenceSubOptions)
   };
 };
-
-const onConnect = (options, hocOptions, socket) => {
-  const sendToServer = request => {
-    return new Promise((resolve) => {
-      socket.emit('graphql', request, (error, response) => {
-        resolve(response);
-      });
-    });
-  };
-  const priorityTransport = new Transport(sendToServer);
-  cashay.create({priorityTransport});
-};
-const onDisconnect = () => cashay.create({priorityTransport: null});
-
-@reduxSocket({}, {AuthEngine, socketCluster, onConnect, onDisconnect, keepAlive: 0})
-@connect(mapStateToProps)
-@requireAuth
-@look
 // eslint-disable-next-line react/prefer-stateless-function
+@socketWithPresence
+@connect(mapStateToProps)
+@look
 export default class MeetingLobby extends Component {
   static propTypes = {
     meetingSub: PropTypes.object.isRequired,
@@ -93,22 +29,10 @@ export default class MeetingLobby extends Component {
     user: PropTypes.object.isRequired,
   };
 
-  constructor(props) {
-    super(props);
-    const options = {
-      variables: {
-        meetingId: props.params.meetingId
-      }
-    };
-    cashay.mutate('soundOff', options);
-    cashay.mutate('present', options);
-  }
-
   render() {
     const {meeting} = this.props.meetingSub.data;
     const {presence} = this.props.presenceSub.data;
     return (
-      <HotKeys focused attach={window} keyMap={keyMap}>
         <div className={styles.viewport}>
           <div className={styles.main}>
             <div className={styles.contentGroup}>
@@ -120,7 +44,6 @@ export default class MeetingLobby extends Component {
             </div>
           </div>
         </div>
-      </HotKeys>
     );
   }
 }

@@ -10,9 +10,6 @@ import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {TeamMember, CreateTeamMemberInput} from '../TeamMember/teamMemberSchema';
 import {nonnullifyInputThunk} from '../utils';
 
-export const SOUNDOFF = 'SOUNDOFF';
-export const PRESENT = 'PRESENT';
-
 export const Meeting = new GraphQLObjectType({
   name: 'Meeting',
   description: 'A meeting',

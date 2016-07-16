@@ -1,7 +1,5 @@
 import parseChannel from './parseChannel';
-
-const PRESENT = 'PRESENT';
-const SOUNDOFF = 'SOUNDOFF';
+import {PRESENT, SOUNDOFF} from 'universal/decorators/socketWithPresence/constants';
 
 export default function mwPresencePublishOut(req, next) {
   const {channel} = parseChannel(req.channel);
@@ -21,6 +19,5 @@ export default function mwPresencePublishOut(req, next) {
       }
     }
   }
-  console.log('PUBLISH OUT EMIT:', req.socket.id, req.data)
   next();
 }
