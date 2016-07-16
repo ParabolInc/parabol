@@ -44,7 +44,7 @@ const TeamInvite = props => {
     inviterEmail,
     inviteeEmail,
     firstProject,
-    teamName,
+    meetingName,
     inviteLink
   } = props;
 
@@ -82,7 +82,7 @@ const TeamInvite = props => {
         <b>Hi <span style={colorWarm}>{inviteeEmail}</span>!<br />
         {inviterName} has invited you to join a team on Action:</b>
         <EmptySpace height={40} />
-        <span style={teamNameStyle}>{teamName}</span>
+        <span style={teamNameStyle}>{meetingName}</span>
         <EmptySpace height={40} />
         <a href="https://action-staging.parabol.co/" style={boldLinkStyle}>Action</a>
         &nbsp;is a place where you and your team <br />will develop your <b><i>weekly rhythm</i></b>.<br />
@@ -112,14 +112,14 @@ TeamInvite.propTypes = {
   inviterEmail: PropTypes.string.isRequired,
   inviteeEmail: PropTypes.string.isRequired,
   firstProject: PropTypes.string,
-  teamName: PropTypes.string.isRequired,
+  meetingName: PropTypes.string.isRequired,
   inviteLink: PropTypes.string.isRequired
 };
 
 export const meetingInviteText = (props) => `
 Hello ${props.inviteeEmail},
 
-${props.inviterName} has invited you to join the ${props.teamName} on Action.
+${props.inviterName} has invited you to join the ${props.meetingName} on Action.
 
 Action is a place where your team will develop a weekly rhythm.
 

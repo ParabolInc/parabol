@@ -11,6 +11,8 @@ import emailSSR from './emailSSR';
 import {auth0} from '../universal/utils/clientOptions';
 import scConnectionHandler from './socketHandlers/scConnectionHandler';
 import httpGraphQLHandler from './graphql/httpGraphQLHandler';
+import mwPresencePublishOut from './socketHandlers/mwPresencePublishOut';
+import mwPresenceSubscribe from './socketHandlers/mwPresenceSubscribe';
 
 const PROD = process.env.NODE_ENV === 'production';
 
@@ -64,6 +66,9 @@ export function run(worker) {
   app.get('*', createSSR);
 
   // handle sockets
+  const {MIDDLEWARE_PUBLISH_OUT, MIDDLEWARE_SUBSCRIBE} = scServer;
+  scServer.addMiddleware(MIDDLEWARE_PUBLISH_OUT, mwPresencePublishOut);
+  scServer.addMiddleware(MIDDLEWARE_SUBSCRIBE, mwPresenceSubscribe);
   const connectionHandler = scConnectionHandler(scServer.exchange);
   scServer.on('connection', connectionHandler);
 }

@@ -15,7 +15,7 @@ export const getTeamMember = async (authToken, meetingId) => {
   if (userId) {
     const teamMembers = await r.table('TeamMember')
       .getAll(meetingId, {index: 'meetingId'})
-      .filter({userId: userId})
+      .filter({userId})
       .pluck('meetingId');
     return teamMembers[0];
   }
@@ -41,7 +41,6 @@ export const requireSUOrTeamMember = async (authToken, meetingId) => {
   if (isSuperUser(authToken)) return undefined;
   const teamMember = await getTeamMember(authToken, meetingId);
   if (teamMember) return teamMember;
-  console.log('throwin suo err', authToken, meetingId)
   throw errorObj({_error: 'Unauthorized to view meeting details.'});
 };
 

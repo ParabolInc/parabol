@@ -1,11 +1,10 @@
 import socketCluster from 'socketcluster-client';
 import subscriptions from './subscriptions';
-import AuthEngine from 'universal/redux/AuthEngine';
 
-export default function subscriber(subscriptionString, handlers, variables) {
+export default function subscriber(subscriptionString, variables, handlers, cachedResult) {
   const {channelfy} = subscriptions.find(sub => sub.string === subscriptionString);
   const channelName = channelfy(variables);
-  const socket = socketCluster.connect({}, {AuthEngine});
+  const socket = socketCluster.connect();
   const {add, update, remove, error} = handlers;
   socket.subscribe(channelName, {waitForAuth: true});
   socket.on(channelName, data => {

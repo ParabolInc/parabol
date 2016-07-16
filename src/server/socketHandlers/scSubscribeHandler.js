@@ -29,7 +29,6 @@ export default function scSubscribeHandler(exchange, socket) {
         socket,
         subbedChannelName
       };
-      console.log('sub handler has exchange', !!exchange)
       // swallow return value, it's a subscription
       graphql(Schema, subscription.string, {}, context, variables);
     } else {

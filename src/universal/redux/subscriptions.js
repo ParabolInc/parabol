@@ -18,5 +18,13 @@ export default [
       presence(meetingId: $meetingId)
     }`,
     channelfy: variables => `presence/${variables.meetingId}`
+  },
+  {
+    channel: 'user',
+    string: `
+    subscription($userId: ID!) {
+      user(userId: $userId)
+    }`,
+    channelfy: variables => `user/${variables.userId}`
   }
 ];

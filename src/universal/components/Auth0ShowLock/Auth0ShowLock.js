@@ -3,6 +3,7 @@ import {cashay} from 'cashay';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import {auth0} from 'universal/utils/clientOptions';
 import {setAuthToken} from 'universal/redux/authDuck';
+import {HTTPTransport} from 'cashay';
 
 export function showLock(dispatch) {
   // eslint-disable-next-line global-require
@@ -17,7 +18,7 @@ export function showLock(dispatch) {
     if (error) throw error;
     // TODO: stuff this in a utility function:
     dispatch(setAuthToken(authToken));
-    cashay.create({transport: new ActionHTTPTransport(authToken)});
+    cashay.create({httpTransport: new ActionHTTPTransport(authToken)});
     const options = {variables: {authToken}};
     cashay.mutate('updateUserWithAuthToken', options);
   });
