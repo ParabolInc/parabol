@@ -7,7 +7,7 @@ import {
   GraphQLBoolean
 } from 'graphql';
 import {CreateMeetingInput, UpdateMeetingInput, Meeting} from './meetingSchema';
-import {SOUNDOFF, PRESENT} from 'universal/decorators/socketWithPresence/constants';
+import {SOUNDOFF, PRESENT} from '../../../../universal/subscriptions/constants';
 
 export default {
   createMeeting: {
@@ -66,12 +66,13 @@ export default {
         description: 'The target socketId that wants to know about presence'
       }
     },
-    async resolve(source, {meetingId, targetId}, {authToken, exchange}) {
+    async resolve(source, {meetingId, targetId}, {authToken, exchange, socket}) {
       await requireSUOrTeamMember(authToken, meetingId);
       requireWebsocketExchange(exchange);
+      requireWebsocket(socket);
       const channel = `presence/${meetingId}`;
       // tell targetId that user is in the meeting
-      const payload = {type: PRESENT, user: authToken.sub};
+      const payload = {type: PRESENT, userId: authToken.sub, socketId: socket.id};
       if (targetId) {
         payload.targetId = targetId;
       }
@@ -92,9 +93,10 @@ export default {
       requireWebsocketExchange(exchange);
       requireWebsocket(socket);
       const channel = `presence/${meetingId}`;
-      // who wants to know? this guy
-      const payload = {type: SOUNDOFF, targetId: socket.id};
-      exchange.publish(channel, payload);
+      const soundoff = {type: SOUNDOFF, targetId: socket.id};
+      const present = {type: PRESENT, userId: authToken.sub, socketId: socket.id};
+      exchange.publish(channel, soundoff);
+      exchange.publish(channel, present);
     }
   }
 };

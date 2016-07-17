@@ -1,6 +1,6 @@
 import subscriptions from 'universal/subscriptions/subscriptions';
 import socketCluster from 'socketcluster-client';
-import {PRESENT, SOUNDOFF} from 'universal/decorators/socketWithPresence/constants';
+import {PRESENT, SOUNDOFF, LEAVE} from '../../subscriptions/constants';
 import {cashay} from 'cashay';
 
 export default function presenceSubscriber(subscriptionString, variables, handlers, getCachedResult) {
@@ -20,11 +20,13 @@ export default function presenceSubscriber(subscriptionString, variables, handle
       cashay.mutate('present', options);
     }
     if (data.type === PRESENT) {
-      const {presence} = getCachedResult();
-      const alreadyPresent = presence.find(user => user === data.user);
-      if (!alreadyPresent) {
-        add(data.user);
-      }
+      add({
+        id: data.socketId,
+        userId: data.userId
+      });
+    }
+    if (data.type === LEAVE) {
+      remove(data.socketId);
     }
   });
 };

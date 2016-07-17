@@ -5,10 +5,10 @@ import {cashay} from 'cashay';
 import subscriptions from 'universal/subscriptions/subscriptions';
 import subscriber from 'universal/subscriptions/subscriber';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
-
+import {MEETING} from 'universal/subscriptions/constants';
 let styles = {};
 
-const meetingSubscriptionString = subscriptions.find(sub => sub.channel === 'meeting').string;
+const meetingSubscriptionString = subscriptions.find(sub => sub.channel === MEETING).string;
 const mapStateToProps = (state, props) => {
   const meetingSubOptions = {
     variables: {meetingId: props.params.meetingId},
@@ -32,6 +32,9 @@ export default class MeetingLobby extends Component {
   render() {
     const {meeting} = this.props.meetingSub.data;
     const {presence} = this.props.presenceSub.data;
+    const socketsPresent = presence.map(con => con.id).join(', ');
+    const usersPresent = presence.map(con => con.userId).join(', ');
+
     return (
         <div className={styles.viewport}>
           <div className={styles.main}>
@@ -39,7 +42,8 @@ export default class MeetingLobby extends Component {
               <div>HI GUY</div>
               <div>Your meeting id is: {meeting.id}</div>
               <div>Your userId is: {this.props.user.id}</div>
-              <div>Folks present: {presence}</div>
+              <div>Folks present: {usersPresent}</div>
+              <div>Sockets present: {socketsPresent}</div>
               {/* <SetupField /> */}
             </div>
           </div>

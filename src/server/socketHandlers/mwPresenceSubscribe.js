@@ -1,5 +1,6 @@
 import parseChannel from './parseChannel';
 import {getTeamMember} from 'server/graphql/models/authorization';
+import {PRESENCE} from 'universal/subscriptions/constants';
 
 // const mockGetTeamMember = () => new Promise(resolve => {
 //   setTimeout(() => {
@@ -13,7 +14,7 @@ export default async function mwPresenceSubscribe(req, next) {
     return;
   }
   const {channel, variableString: meetingId} = parseChannel(req.channel);
-  if (channel !== 'presence') {
+  if (channel !== PRESENCE) {
     // all auth is taken care of inside GraphQL
     next();
     return;

@@ -10,6 +10,15 @@ import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {TeamMember, CreateTeamMemberInput} from '../TeamMember/teamMemberSchema';
 import {nonnullifyInputThunk} from '../utils';
 
+export const Presence = new GraphQLObjectType({
+  name: 'Presence',
+  description: 'A connection\'s presence in a meeting',
+  fields: () => ({
+    id: {type: new GraphQLNonNull(GraphQLID), description: 'The socketId representing a single socket connection'},
+    userId: {type: new GraphQLNonNull(GraphQLID), description: 'The userId representing 1 or more sockets'}
+  })
+});
+
 export const Meeting = new GraphQLObjectType({
   name: 'Meeting',
   description: 'A meeting',

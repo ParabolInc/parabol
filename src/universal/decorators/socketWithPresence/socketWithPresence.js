@@ -6,10 +6,9 @@ import {cashay} from 'cashay';
 import subscriptions from 'universal/subscriptions/subscriptions';
 import presenceSubscriber from './presenceSubscriber';
 import reduxSocketOptions from './reduxSocketOptions';
-import socketCluster from 'socketcluster-client';
+import {PRESENCE} from 'universal/subscriptions/constants';
 
-const {OPEN, AUTHENTICATED} = socketCluster.SCSocket;
-const presenceSubscription = subscriptions.find(sub => sub.channel === 'presence');
+const presenceSubscription = subscriptions.find(sub => sub.channel === PRESENCE);
 
 
 // const userSubscriptionString = subscriptions.find(sub => sub.channel === 'user').string;
@@ -56,10 +55,15 @@ export default ComposedComponent => {
         if (canPublish) {
           const options = {variables: {meetingId}};
           cashay.mutate('soundOff', options);
-          cashay.mutate('present', options);
+          // cashay.mutate('present', options);
           this.setState({isSubbed: true});
         }
       }
+    }
+    componentWillUnmount() {
+      const {meetingId} = this.props.params;
+      const options = {variables: {meetingId}};
+      cashay.mutate('leave', options);
     }
 
     render() {

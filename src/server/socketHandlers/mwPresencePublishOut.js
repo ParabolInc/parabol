@@ -1,9 +1,9 @@
 import parseChannel from './parseChannel';
-import {PRESENT, SOUNDOFF} from 'universal/decorators/socketWithPresence/constants';
+import {PRESENT, SOUNDOFF, PRESENCE} from 'universal/subscriptions/constants';
 
 export default function mwPresencePublishOut(req, next) {
   const {channel} = parseChannel(req.channel);
-  if (channel === 'presence') {
+  if (channel === PRESENCE) {
     const {type, targetId} = req.data;
     if (type === SOUNDOFF) {
       // don't ping yourself
