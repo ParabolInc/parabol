@@ -1,6 +1,7 @@
 import {SocketCluster} from 'socketcluster';
 import path from 'path';
-import {getDotenv} from 'universal/utils/dotenv';
+// path must stay relative since this is before all babelfication
+import {getDotenv} from '../universal/utils/dotenv';
 
 // Import .env and expand variables:
 getDotenv();

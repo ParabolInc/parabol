@@ -9,10 +9,6 @@ import reduxSocketOptions from './reduxSocketOptions';
 import {PRESENCE} from 'universal/subscriptions/constants';
 
 const presenceSubscription = subscriptions.find(sub => sub.channel === PRESENCE);
-
-
-// const userSubscriptionString = subscriptions.find(sub => sub.channel === 'user').string;
-
 const mapStateToProps = (state, props) => {
   const presenceSubOptions = {
     variables: {meetingId: props.params.meetingId},
@@ -56,11 +52,6 @@ export default ComposedComponent => {
           this.setState({isSubbed: true});
         }
       }
-    }
-    componentWillUnmount() {
-      const {meetingId} = this.props.params;
-      const options = {variables: {meetingId}};
-      cashay.mutate('leave', options);
     }
 
     render() {
