@@ -1,17 +1,12 @@
 import {createStore, applyMiddleware, compose} from 'redux';
 import thunkMiddleware from 'redux-thunk';
-import {routerMiddleware, CALL_HISTORY_METHOD, LOCATION_CHANGE} from 'react-router-redux';
+import {routerMiddleware} from 'react-router-redux';
 import {browserHistory} from 'react-router';
-import makeReducer from '../universal/redux/makeReducer';
+import makeReducer from 'universal/redux/makeReducer';
 import createEngine from 'redux-storage-engine-localstorage';
 import {APP_NAME} from 'universal/utils/clientOptions';
 import {createMiddleware, createLoader} from 'redux-storage-whitelist-fn';
 
-// A list of actions that shouldn't trigger a call to persist data
-const blackListedActions = [
-  CALL_HISTORY_METHOD,
-  LOCATION_CHANGE
-];
 const storageWhitelist = type => {
   const whitelistPrefixes = ['@@cashay'];
   for (let i = 0; i < whitelistPrefixes.length; i++) {

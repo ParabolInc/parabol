@@ -1,6 +1,6 @@
 import {graphql} from 'graphql';
 import Schema from 'server/graphql/rootSchema';
-import subscriptions from '../../universal/subscriptions/subscriptions';
+import subscriptions from 'universal/subscriptions/subscriptions';
 import parseChannel from './parseChannel';
 
 /*
@@ -32,7 +32,7 @@ export default function scSubscribeHandler(exchange, socket) {
       // swallow return value, it's a subscription
       graphql(Schema, subscription.string, {}, context, variables);
     } else {
-      console.log(`GraphQL subscription for ${channel} not found`)
+      console.log(`GraphQL subscription for ${channel} not found`);
       // not a graphql subscription
     }
   };

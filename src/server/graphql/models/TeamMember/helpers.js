@@ -1,4 +1,4 @@
-import r from '../../../database/rethinkDriver';
+import r from 'server/database/rethinkDriver';
 
 export default function acceptInviteDB(email, time) {
   r.table('Invitation').getAll(email, {index: 'email'}).update({

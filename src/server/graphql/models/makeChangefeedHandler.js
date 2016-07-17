@@ -1,3 +1,5 @@
+import jsonEqual from 'universal/utils/jsonEqual';
+
 const handleRethinkAdd = newVal => {
   return {
     type: 'add',
@@ -77,4 +79,4 @@ export default function makeChangefeedHandler(socket, subbedChannelName, options
       }
     });
   };
-};
+}

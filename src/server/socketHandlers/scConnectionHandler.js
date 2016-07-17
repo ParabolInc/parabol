@@ -1,4 +1,3 @@
-import {graphql} from 'graphql';
 import scSubscribeHandler from './scSubscribeHandler';
 import scUnsubscribeHandler from './scUnsubscribeHandler';
 import scGraphQLHandler from './scGraphQLHandler';

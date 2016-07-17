@@ -6,6 +6,7 @@ import subscriptions from 'universal/subscriptions/subscriptions';
 import subscriber from 'universal/subscriptions/subscriber';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 import {MEETING} from 'universal/subscriptions/constants';
+
 let styles = {};
 
 const meetingSubscriptionString = subscriptions.find(sub => sub.channel === MEETING).string;
@@ -18,10 +19,11 @@ const mapStateToProps = (state, props) => {
     meetingSub: cashay.subscribe(meetingSubscriptionString, subscriber, meetingSubOptions),
   };
 };
-// eslint-disable-next-line react/prefer-stateless-function
+
 @socketWithPresence
 @connect(mapStateToProps)
 @look
+// eslint-disable-next-line react/prefer-stateless-function
 export default class MeetingLobby extends Component {
   static propTypes = {
     meetingSub: PropTypes.object.isRequired,
@@ -36,18 +38,18 @@ export default class MeetingLobby extends Component {
     const usersPresent = presence.map(con => con.userId).join(', ');
 
     return (
-        <div className={styles.viewport}>
-          <div className={styles.main}>
-            <div className={styles.contentGroup}>
-              <div>HI GUY</div>
-              <div>Your meeting id is: {meeting.id}</div>
-              <div>Your userId is: {this.props.user.id}</div>
-              <div>Folks present: {usersPresent}</div>
-              <div>Sockets present: {socketsPresent}</div>
-              {/* <SetupField /> */}
-            </div>
+      <div className={styles.viewport}>
+        <div className={styles.main}>
+          <div className={styles.contentGroup}>
+            <div>HI GUY</div>
+            <div>Your meeting id is: {meeting.id}</div>
+            <div>Your userId is: {this.props.user.id}</div>
+            <div>Folks present: {usersPresent}</div>
+            <div>Sockets present: {socketsPresent}</div>
+            {/* <SetupField /> */}
           </div>
         </div>
+      </div>
     );
   }
 }

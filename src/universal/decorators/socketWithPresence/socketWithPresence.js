@@ -31,16 +31,14 @@ export default ComposedComponent => {
   class SocketWithPresence extends Component {
     static propTypes = {
       user: PropTypes.object,
-      dispatch: PropTypes.func
+      dispatch: PropTypes.func,
+      params: PropTypes.shape({
+        meetingId: PropTypes.string
+      })
     };
 
     constructor(props) {
       super(props);
-      const options = {
-        variables: {
-          meetingId: props.params.meetingId
-        }
-      };
       this.state = {
         isSubbed: false
       };
@@ -55,7 +53,6 @@ export default ComposedComponent => {
         if (canPublish) {
           const options = {variables: {meetingId}};
           cashay.mutate('soundOff', options);
-          // cashay.mutate('present', options);
           this.setState({isSubbed: true});
         }
       }

@@ -1,13 +1,13 @@
 import subscriptions from 'universal/subscriptions/subscriptions';
 import socketCluster from 'socketcluster-client';
-import {PRESENT, SOUNDOFF, LEAVE} from '../../subscriptions/constants';
+import {PRESENT, SOUNDOFF, LEAVE} from 'universal/subscriptions/constants';
 import {cashay} from 'cashay';
 
-export default function presenceSubscriber(subscriptionString, variables, handlers, getCachedResult) {
+export default function presenceSubscriber(subscriptionString, variables, handlers) {
   const {channelfy} = subscriptions.find(sub => sub.string === subscriptionString);
   const channelName = channelfy(variables);
   const socket = socketCluster.connect();
-  const {add, update, remove, error} = handlers;
+  const {add, remove} = handlers;
   socket.subscribe(channelName, {waitForAuth: true});
   socket.watch(channelName, data => {
     if (data.type === SOUNDOFF) {
@@ -29,4 +29,4 @@ export default function presenceSubscriber(subscriptionString, variables, handle
       remove(data.socketId);
     }
   });
-};
+}

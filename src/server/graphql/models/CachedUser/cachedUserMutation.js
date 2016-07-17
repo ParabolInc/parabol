@@ -1,9 +1,9 @@
-import r from '../../../database/rethinkDriver';
+import r from 'server/database/rethinkDriver';
 import {GraphQLString, GraphQLNonNull} from 'graphql';
 import {CachedUser} from './cachedUserSchema';
 import {AuthenticationClient} from 'auth0';
-import {auth0} from '../../../../universal/utils/clientOptions';
-import sendEmail from '../../../email/sendEmail';
+import {auth0} from 'universal/utils/clientOptions';
+import sendEmail from 'server/email/sendEmail';
 import ms from 'ms';
 
 const auth0Client = new AuthenticationClient({

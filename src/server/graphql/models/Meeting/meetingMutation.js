@@ -1,5 +1,5 @@
-import r from '../../../database/rethinkDriver';
-import {requireSUOrTeamMember,requireSUOrSelf, requireWebsocketExchange, requireWebsocket} from '../authorization';
+import r from 'server/database/rethinkDriver';
+import {requireSUOrTeamMember, requireSUOrSelf, requireWebsocketExchange, requireWebsocket} from '../authorization';
 import {updatedOrOriginal} from '../utils';
 import {
   GraphQLNonNull,
@@ -7,7 +7,7 @@ import {
   GraphQLBoolean
 } from 'graphql';
 import {CreateMeetingInput, UpdateMeetingInput, Meeting} from './meetingSchema';
-import {SOUNDOFF, PRESENT} from '../../../../universal/subscriptions/constants';
+import {SOUNDOFF, PRESENT} from 'universal/subscriptions/constants';
 
 export default {
   createMeeting: {

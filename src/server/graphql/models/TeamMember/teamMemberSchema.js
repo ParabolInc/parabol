@@ -8,7 +8,7 @@ import {Meeting} from '../Meeting/meetingSchema';
 import {CachedUser} from '../CachedUser/cachedUserSchema';
 import {UserProfile} from '../UserProfile/userProfileSchema';
 import {nonnullifyInputThunk} from '../utils';
-import r from '../../../database/rethinkDriver';
+import r from 'server/database/rethinkDriver';
 
 export const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',

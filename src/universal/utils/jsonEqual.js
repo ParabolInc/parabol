@@ -7,4 +7,4 @@ export default function jsonEqual(newObj, oldObj) {
     }
   }
   return false;
-};
+}

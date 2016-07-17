@@ -8,7 +8,7 @@ import favicon from 'serve-favicon';
 import config from '../../webpack/webpack.config.dev';
 import createSSR from './createSSR';
 import emailSSR from './emailSSR';
-import {auth0} from '../universal/utils/clientOptions';
+import {auth0} from 'universal/utils/clientOptions';
 import scConnectionHandler from './socketHandlers/scConnectionHandler';
 import httpGraphQLHandler from './graphql/httpGraphQLHandler';
 import mwPresencePublishOut from './socketHandlers/mwPresencePublishOut';

@@ -1,4 +1,4 @@
-import r from '../../../database/rethinkDriver';
+import r from 'server/database/rethinkDriver';
 
 export const getMeetingById = async id => await r.table('Meeting').get(id);
 

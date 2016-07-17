@@ -1,11 +1,11 @@
 import socketCluster from 'socketcluster-client';
 import subscriptions from './subscriptions';
 
-export default function subscriber(subscriptionString, variables, handlers, cachedResult) {
+export default function subscriber(subscriptionString, variables, handlers) {
   const {channelfy} = subscriptions.find(sub => sub.string === subscriptionString);
   const channelName = channelfy(variables);
   const socket = socketCluster.connect();
-  const {add, update, remove, error} = handlers;
+  const {add, update, remove} = handlers;
   socket.subscribe(channelName, {waitForAuth: true});
   socket.on(channelName, data => {
     if (data.type === 'add') {
@@ -22,4 +22,4 @@ export default function subscriber(subscriptionString, variables, handlers, cach
     }
   });
   return () => socket.unsubscribe(channelName);
-};
+}

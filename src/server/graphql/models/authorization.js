@@ -1,4 +1,4 @@
-import r from '../../database/rethinkDriver';
+import r from 'server/database/rethinkDriver';
 import {errorObj} from './utils';
 
 export const getUserId = authToken => {

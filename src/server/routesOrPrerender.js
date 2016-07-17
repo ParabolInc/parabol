@@ -1,11 +1,11 @@
 import {Presets, Plugins, StyleSheet} from 'react-look';
 import {push} from 'react-router-redux';
 import {renderToStaticMarkup} from 'react-dom/server';
-import routes from '../universal/routes/index';
+import routes from 'universal/routes/index';
 import Html from './Html';
 import React from 'react';
 import {cashay} from 'cashay';
-import ActionHTTPTransport from '../universal/utils/ActionHTTPTransport';
+import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 
 const PROD = process.env.NODE_ENV === 'production';
 

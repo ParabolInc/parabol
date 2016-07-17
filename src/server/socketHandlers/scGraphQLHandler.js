@@ -15,4 +15,4 @@ export default function wsGraphQLHandler(exchange, socket) {
     // console.log('GQL RES: ', response)
     cb(null, response);
   };
-};
+}

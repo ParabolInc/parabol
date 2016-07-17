@@ -1,5 +1,4 @@
 import {GraphQLNonNull, GraphQLInputObjectType} from 'graphql';
-import jsonEqual from 'universal/utils/jsonEqual';
 
 // Stringify an object to handle multiple errors
 // Wrap it in a new Error type to avoid sending it twice via the originalError field

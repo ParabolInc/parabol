@@ -1,4 +1,4 @@
-import r from '../../../database/rethinkDriver';
+import r from 'server/database/rethinkDriver';
 import {getRequestedFields} from '../utils';
 import {Meeting, Presence} from './meetingSchema';
 import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
