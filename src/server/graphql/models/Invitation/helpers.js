@@ -81,7 +81,7 @@ export const makeInvitationsForDB = async(invitees, meetingId) => {
   const hashedTokens = await Promise.all(hashPromises);
   return invitees.map((invitee, idx) => {
     const {email, inviteToken, task, fullName} = invitee;
-    const {id, key} = parseInviteToken(inviteToken);
+    const {id} = parseInviteToken(inviteToken);
     return {
       id,
       meetingId,
