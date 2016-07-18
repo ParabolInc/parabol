@@ -133,6 +133,7 @@ styles = StyleSheet.create({
     display: 'block',
     fontFamily: theme.typography.sansSerif,
     fontSize: theme.typography.s3,
+    minHeight: '3.125rem',
     padding: '.5rem .5rem 1rem',
     resize: 'none',
     width: '100%',

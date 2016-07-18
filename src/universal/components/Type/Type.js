@@ -31,15 +31,15 @@ export default class Background extends Component {
     ]),
     italic: PropTypes.bool,
     scale: PropTypes.oneOf([
-      'sBase',
-      's1',
-      's2',
-      's3',
-      's4',
-      's5',
-      's6',
-      's7',
-      's8',
+      'sBase', // 16px
+      's1',    // 12px
+      's2',    // 13px
+      's3',    // 14px
+      's4',    // 18px
+      's5',    // 20px
+      's6',    // 24px
+      's7',    // 36px
+      's8',    // 48px
     ]),
     theme: PropTypes.oneOf([
       'cool',
