@@ -1,152 +1,148 @@
-import React, { Component, PropTypes } from 'react';
-import look, { StyleSheet } from 'react-look';
+import React, {PropTypes} from 'react';
+import look, {StyleSheet} from 'react-look';
 import FontAwesome from 'react-fontawesome';
-import tinycolor from 'tinycolor2';
 import theme from 'universal/styles/theme';
 
 const combineStyles = StyleSheet.combineStyles;
 
-let styles = {};
+let s = {};
 
-@look
-// eslint-disable-next-line react/prefer-stateless-function
-export default class Avatar extends Component {
-  static propTypes = {
-    badge: PropTypes.oneOf([
-      'absent',
-      'active',
-      'present'
-    ]),
-    hasLabel: PropTypes.bool,
-    hasTooltip: PropTypes.bool,
-    image: PropTypes.string,
-    labelRight: PropTypes.bool,
-    name: PropTypes.string,
-    onClick: PropTypes.func,
-    size: PropTypes.oneOf([
-      'smallest',
-      'small',
-      'medium',
-      'large',
-      'largest'
-    ])
+const renderBadge = (badge, size) => {
+  let badgeStyles = s.badge;
+  let icon;
+  let iconStyles;
+
+  const badgeType = badge.charAt(0).toUpperCase() + badge.slice(1);
+  const badgeIconStyles = `badgeIcon${badgeType}`;
+
+  iconStyles = combineStyles(
+    s.badgeIcon,
+    s[badgeIconStyles]
+  );
+
+  if (badge === 'present') {
+    icon = 'check-circle';
+  } else if (badge === 'absent') {
+    icon = 'times-circle';
+  } else {
+    icon = 'circle';
+  }
+
+  if (size === 'medium' || size === 'large' || size === 'largest') {
+    badgeStyles = combineStyles(s.badge, s.badgeLarge);
+  }
+
+  return (
+    <div className={badgeStyles}>
+      <FontAwesome className={iconStyles} name={icon} />
+      <span className={s.badgeLabel}>
+        {badge}
+      </span>
+    </div>
+  );
+};
+
+const Avatar = (props) => {
+  const {
+    badge,
+    hasLabel,
+    labelRight,
+    hasTooltip,
+    image,
+    name,
+    onClick,
+    size
+  } = props;
+
+  const trimmedName = name.replace(/\s+/g, '');
+
+  const handleMouseLeave = () => {
+    console.log('Avatar.onMouseLeave.handleMouseLeave()');
+    // TODO: Dispatch UI state for hover to show optional tooltip.
   };
 
-  renderBadge() {
-    const { badge, size } = this.props;
-    let badgeStyles = styles.badge;
-    let icon;
-    let iconStyles;
+  const handleMouseEnter = () => {
+    console.log('Avatar.onMouseEnter.handleMouseEnter()');
+    // TODO: Dispatch UI state for hover to show optional tooltip.
+  };
 
-    const badgeType = badge.charAt(0).toUpperCase() + badge.slice(1);
-    const badgeIconStyles = `badgeIcon${badgeType}`;
+  let avatarStyles = s.avatar;
+  let avatarLabelStyles = s.avatarLabel;
+  let imagePositionStyles = s.avatarImageDisplay;
+  let imageBlockStyles = s.avatarImageBlock;
 
-    iconStyles = combineStyles(
-      styles.badgeIcon,
-      styles[badgeIconStyles]
+  const sizeName = size.charAt(0).toUpperCase() + size.slice(1);
+  const sizeStyles = `avatar${sizeName}`;
+  const imageSizeStyles = `avatarImageBlock${sizeName}`;
+
+  avatarStyles = combineStyles(s.avatar, s[sizeStyles]);
+  imageBlockStyles = combineStyles(s.avatarImageBlock, s[imageSizeStyles]);
+
+  // Position label to the right of avatar image
+  if (labelRight) {
+    imagePositionStyles = combineStyles(
+      s.avatarImageDisplay,
+      s.avatarImageDisplayInlineBlock
     );
-
-    if (badge === 'present') {
-      icon = 'check-circle';
-    } else if (badge === 'absent') {
-      icon = 'times-circle';
-    } else if (badge === 'active') {
-      icon = 'circle';
-    }
-
-    if (size === 'medium' || size === 'large' || size === 'largest') {
-      badgeStyles = combineStyles(styles.badge, styles.badgeLarge);
-    }
-
-    return (
-      <div className={badgeStyles}>
-        <FontAwesome className={iconStyles} name={icon} />
-        <span className={styles.badgeLabel}>
-          {badge}
-        </span>
-      </div>
+    avatarLabelStyles = combineStyles(
+      s.avatarLabel,
+      s.avatarLabelInlineBlock
     );
   }
 
-  render() {
-    const {
-      badge,
-      hasLabel,
-      labelRight,
-      hasTooltip,
-      image,
-      name,
-      onClick,
-      size
-    } = this.props;
-
-    const avatarImage = image || 'https://placekitten.com/g/600/600';
-    const avatarName = name || 'Elizabeth Robertson';
-    const avatarSize = size || 'small';
-
-    const trimmedName = avatarName.replace(/\s+/g, '');
-
-    const handleMouseLeave = () => {
-      console.log('Avatar.onMouseLeave.handleMouseLeave()');
-      // TODO: Dispatch UI state for hover to show optional tooltip.
-    };
-
-    const handleMouseEnter = () => {
-      console.log('Avatar.onMouseEnter.handleMouseEnter()');
-      // TODO: Dispatch UI state for hover to show optional tooltip.
-    };
-
-    let avatarStyles = styles.avatar;
-    let avatarLabelStyles = styles.avatarLabel;
-    let imagePositionStyles = styles.avatarImageDisplay;
-    let imageBlockStyles = styles.avatarImageBlock;
-
-    const sizeName = avatarSize.charAt(0).toUpperCase() + avatarSize.slice(1);
-    const avatarSizeStyles = `avatar${sizeName}`;
-    const avatarImageSizeStyles = `avatarImageBlock${sizeName}`;
-
-    avatarStyles = combineStyles(styles.avatar, styles[avatarSizeStyles]);
-    imageBlockStyles = combineStyles(styles.avatarImageBlock, styles[avatarImageSizeStyles]);
-
-    // Position label to the right of avatar image
-    if (labelRight) {
-      imagePositionStyles = combineStyles(
-        styles.avatarImageDisplay,
-        styles.avatarImageDisplayInlineBlock
-      );
-      avatarLabelStyles = combineStyles(
-        styles.avatarLabel,
-        styles.avatarLabelInlineBlock
-      );
-    }
-
-    return (
-      <div
-        className={avatarStyles}
-        onClick={onClick}
-        onMouseLeave={handleMouseLeave}
-        onMouseEnter={handleMouseEnter}
-      >
-        <div className={imagePositionStyles}>
-          <div className={imageBlockStyles}>
-            <img className={styles.avatarImage} src={avatarImage} />
-            {badge &&
-              this.renderBadge()
-            }
-          </div>
+  return (
+    <div
+      className={avatarStyles}
+      onClick={onClick}
+      onMouseLeave={handleMouseLeave}
+      onMouseEnter={handleMouseEnter}
+    >
+      <div className={imagePositionStyles}>
+        <div className={imageBlockStyles}>
+          <img className={s.avatarImage} src={image} />
+          {badge && renderBadge(badge, size)}
         </div>
-        {hasLabel &&
-          <div className={avatarLabelStyles}>@{trimmedName}</div>
-        }
-        {hasTooltip &&
-          <div className={styles.avatarTooltip}>@{trimmedName}</div>
-        }
       </div>
-    );
-  }
-}
+      {hasLabel &&
+        <div className={avatarLabelStyles}>@{trimmedName}</div>
+      }
+      {hasTooltip &&
+        <div className={s.avatarTooltip}>@{trimmedName}</div>
+      }
+    </div>
+  );
+};
 
-styles = StyleSheet.create({
+Avatar.propTypes = {
+  badge: PropTypes.oneOf([
+    'absent',
+    'active',
+    'offline',
+    'online',
+    'present'
+  ]),
+  hasLabel: PropTypes.bool,
+  hasTooltip: PropTypes.bool,
+  image: PropTypes.string,
+  labelRight: PropTypes.bool,
+  name: PropTypes.string,
+  onClick: PropTypes.func,
+  size: PropTypes.oneOf([
+    'smallest',
+    'small',
+    'medium',
+    'large',
+    'largest'
+  ])
+};
+
+Avatar.defaultProps = {
+  image: 'https://placekitten.com/g/600/600',
+  name: 'Elizabeth Robertson',
+  size: 'small'
+};
+
+s = StyleSheet.create({
   avatar: {
     display: 'block',
     fontSize: theme.typography.s2,
@@ -155,7 +151,7 @@ styles = StyleSheet.create({
     textAlign: 'center'
   },
 
-  // TODO: Add ':hover' styles for onClick handler
+  // TODO: Add ':hover' s for onClick handler
 
   // NOTE: Size modifies for avatar
   avatarSmallest: {
@@ -210,7 +206,6 @@ styles = StyleSheet.create({
 
   avatarImage: {
     borderRadius: '100%',
-    // TODO: Set theme value for consistent box-shadow values
     boxShadow: '0 0 1px 1px rgba(0, 0, 0, .2)',
     display: 'block',
     height: 'auto',
@@ -236,8 +231,6 @@ styles = StyleSheet.create({
       right: '1px',
       top: '1px',
       width: '.75rem',
-      // TODO: Set UI/theme variables for z-index scale
-      // z-index: $zi-3;
       zIndex: 300
     },
 
@@ -250,8 +243,6 @@ styles = StyleSheet.create({
       right: 0,
       top: 0,
       width: '1em',
-      // TODO: Set UI/theme variables for z-index scale
-      // z-index: $zi-2;
       zIndex: 200
     }
   },
@@ -287,8 +278,6 @@ styles = StyleSheet.create({
     lineHeight: '1em',
     position: 'relative',
     width: '1em',
-    // TODO: Set UI/theme variables for z-index scale
-    // z-index: $zi-4;
     zIndex: 400
   },
 
@@ -297,11 +286,16 @@ styles = StyleSheet.create({
     color: theme.palette.cool
   },
   badgeIconAbsent: {
-    // TODO: Add gray mix palette to theme build (TA)
-    color: tinycolor.mix(theme.palette.cool, '#808080', 90).toHexString()
+    color: theme.palette.cool10g
   },
   badgeIconActive: {
     color: theme.palette.warm
+  },
+  badgeIconOffline: {
+    color: theme.palette.cool10g
+  },
+  badgeIconOnline: {
+    color: theme.palette.cool
   },
 
   avatarLabel: {
@@ -320,3 +314,5 @@ styles = StyleSheet.create({
     // TODO: Style this sub-component
   }
 });
+
+export default look(Avatar);

@@ -25,19 +25,23 @@ const exampleTeam = {
   members: [
     {
       image: Jordan,
-      size: 'small'
+      size: 'small',
+      badge: 'online'
     },
     {
       image: Matt,
-      size: 'small'
+      size: 'small',
+      badge: 'offline'
     },
     {
       image: Taya,
-      size: 'small'
+      size: 'small',
+      badge: 'online'
     },
     {
       image: Terry,
-      size: 'small'
+      size: 'small',
+      badge: 'offline'
     }
   ]
 };
