@@ -149,6 +149,7 @@ IconLink.propTypes = {
 
 IconLink.defaultProps = {
   disabled: false,
+  icon: 'check',
   iconPlacement: 'left',
   onClick(disabled) {
     console.log(`IconLink onClick, disabled? ${disabled}`);
