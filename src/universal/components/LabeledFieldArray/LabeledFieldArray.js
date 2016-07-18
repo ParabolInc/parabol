@@ -64,6 +64,7 @@ const FieldsBlock = props => {
           </div>
           <div className={columnRightStyles}>
             <Field
+              autoFocus={index === 0}
               name={`${item}.${nestedFieldName}`}
               placeholder="What’s their priority this week?"
               type="text"
