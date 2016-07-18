@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import FontAwesome from 'react-fontawesome';
 import theme from 'universal/styles/theme';
+import {srOnly} from 'universal/styles/helpers';
 
 const combineStyles = StyleSheet.combineStyles;
 
@@ -262,15 +263,7 @@ s = StyleSheet.create({
   },
 
   badgeLabel: {
-    // TODO: Make mixin for Sass: @include sr-only;
-    border: 0,
-    clip: 'rect(0, 0, 0, 0)',
-    height: '1px',
-    margin: '-1px',
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    width: '1px'
+    ...srOnly
   },
 
   badgeIcon: {

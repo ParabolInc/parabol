@@ -1,108 +1,130 @@
-import React, { Component, PropTypes } from 'react';
-import look, { StyleSheet } from 'react-look';
+import React, {PropTypes} from 'react';
+import look, {StyleSheet} from 'react-look';
 import FontAwesome from 'react-fontawesome';
-import theme from 'universal/styles/theme';
+import t from 'universal/styles/theme';
+import {srOnly} from 'universal/styles/helpers';
 
-const combineStyles = StyleSheet.combineStyles;
-const shortcutsKeystrokeHeight = '1.5rem';
+const cs = StyleSheet.combineStyles;
+const keystrokeHeight = '1.5rem';
 
-let styles = {};
+let s = {};
 
-@look
-// eslint-disable-next-line react/prefer-stateless-function
-export default class ShortcutsMenu extends Component {
-  static propTypes = {
-    shortcutsList: PropTypes.array,
-    onCloseClick: PropTypes.func
-  };
-
-  renderShortcutMenuItem(shortcut, index, array) {
+const ShortcutsMenu = (props) => {
+  const renderMenuItem = (shortcut, index, array) => {
     let keystrokeStyle = null;
 
     if (index === 0) {
-      keystrokeStyle = combineStyles(styles.shortcutsKeystroke, styles.shortcutsKeystrokeIsFirst);
+      keystrokeStyle = cs(s.keystroke, s.keystrokeIsFirst);
     } else if (index === array.length - 1) {
-      keystrokeStyle = combineStyles(styles.shortcutsKeystroke, styles.shortcutsKeystrokeIsLast);
+      keystrokeStyle = cs(s.keystroke, s.keystrokeIsLast);
     } else {
-      keystrokeStyle = styles.shortcutsKeystroke;
+      keystrokeStyle = s.keystroke;
     }
 
     return (
-      <li className={styles.shortcutsItem} key={index}>
+      <li className={s.shortcutsItem} key={index}>
         <span className={keystrokeStyle}>{shortcut.keystroke}</span>
-        <span className={styles.shortcutsDefinition}>{shortcut.definition}</span>
+        <span className={s.definition}>{shortcut.definition}</span>
       </li>
     );
-  }
+  };
 
-  render() {
-    const { shortcutsList, onCloseClick } = this.props;
+  const {shortcutsList, onCloseClick} = props;
 
-    return (
-      <div className={styles.shortcutsMenu}>
-        <div className={styles.shortcutsLabel}>
-          Keyboard Shortcuts
-        </div>
-        <a className={styles.shortcutsClose} href="#" onClick={onCloseClick} title="Close menu">
-          <FontAwesome name="times-circle" />
-          <span className={styles.shortcutsCloseLabel}>Close menu</span>
-        </a>
-        <ul className={styles.shortcutsList}>
-          {
-            shortcutsList.map((shortcut, index, array) =>
-              this.renderShortcutMenuItem(shortcut, index, array)
-            )
-          }
-        </ul>
+  const handleCloseClick = (e) => {
+    e.preventDefault();
+    onCloseClick();
+  };
+
+  return (
+    <div className={s.menu}>
+      <div className={s.label}>
+        Keyboard Shortcuts
       </div>
-    );
-  }
-}
+      <a className={s.close} href="#" onClick={(e) => handleCloseClick(e)} title="Close menu">
+        <FontAwesome name="times-circle" />
+        <span className={s.closeLabel}>Close menu</span>
+      </a>
+      <ul className={s.shortcutsList}>
+        {
+          shortcutsList.map((shortcut, index, array) =>
+            renderMenuItem(shortcut, index, array)
+          )
+        }
+      </ul>
+    </div>
+  );
+};
 
-styles = StyleSheet.create({
-  shortcutsMenu: {
+ShortcutsMenu.propTypes = {
+  shortcutsList: PropTypes.array,
+  onCloseClick: PropTypes.func
+};
+
+// TODO: Allow for children with text formatting
+//       in definitions using spans, className, etc. (TA)
+
+ShortcutsMenu.defaultProps = {
+  shortcutsList: [
+    {
+      keystroke: 'a',
+      definition: 'Set project to Active'
+    },
+    {
+      keystroke: 's',
+      definition: 'Set project to Stuck'
+    },
+    {
+      keystroke: 'd',
+      definition: 'Set project to Done'
+    },
+    {
+      keystroke: 'f',
+      definition: 'Set project to Future'
+    }
+  ],
+  onCloseClick() {
+    console.log('ShortcutsMenu onCloseClick()');
+  }
+};
+
+s = StyleSheet.create({
+  menu: {
     bottom: '2rem',
-    color: theme.palette.dark,
+    color: t.palette.dark,
     position: 'fixed',
     right: '2rem'
   },
 
-  shortcutsLabel: {
-    fontSize: theme.typography.s2,
+  label: {
+    fontSize: t.typography.s2,
     fontWeight: 700,
     margin: '0 0 .75rem',
     paddingLeft: '2.5rem',
+    paddingRight: '1.125rem',
     textTransform: 'uppercase'
   },
 
-  shortcutsClose: {
-    color: theme.palette.dark,
-    fontSize: theme.typography.s3,
+  close: {
+    color: t.palette.dark,
+    fontSize: t.typography.s3,
     position: 'absolute',
     right: 0,
     top: 0,
 
     // NOTE: ':hover' y ':focus' son igualitos
     ':hover': {
-      color: theme.palette.dark,
+      color: t.palette.dark,
       opacity: 0.5
     },
     ':focus': {
-      color: theme.palette.dark,
+      color: t.palette.dark,
       opacity: 0.5
     }
   },
 
-  shortcutsCloseLabel: {
-    // TODO: Make mixin for Sass: @include sr-only;
-    border: 0,
-    clip: 'rect(0, 0, 0, 0)',
-    height: '1px',
-    margin: '-1px',
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    width: '1px'
+  closeLabel: {
+    ...srOnly
   },
 
   shortcutsList: {
@@ -116,36 +138,38 @@ styles = StyleSheet.create({
     fontSize: 0
   },
 
-  shortcutsKeystroke: {
-    backgroundColor: theme.palette.mid10l,
-    borderColor: theme.palette.mid40l,
+  keystroke: {
+    backgroundColor: t.palette.mid10l,
+    borderColor: t.palette.mid40l,
     borderStyle: 'solid',
     borderWidth: '1px 1px 0',
-    color: theme.palette.warm,
+    color: t.palette.warm,
     display: 'inline-block',
-    fontSize: theme.typography.s3,
+    fontSize: t.typography.s3,
     fontWeight: 700,
-    lineHeight: shortcutsKeystrokeHeight,
+    lineHeight: keystrokeHeight,
     marginRight: '1rem',
-    minWidth: shortcutsKeystrokeHeight,
+    minWidth: keystrokeHeight,
     textAlign: 'center',
     verticalAlign: 'middle'
   },
 
-  shortcutsKeystrokeIsFirst: {
+  keystrokeIsFirst: {
     borderRadius: '.25rem .25rem 0 0'
   },
 
-  shortcutsKeystrokeIsLast: {
+  keystrokeIsLast: {
     borderRadius: '0 0 .25rem .25rem',
     borderWidth: '1px'
   },
 
-  shortcutsDefinition: {
+  definition: {
     borderTop: '1px solid transparent',
     display: 'inline-block',
-    fontSize: theme.typography.s3,
-    lineHeight: shortcutsKeystrokeHeight,
+    fontSize: t.typography.s3,
+    lineHeight: keystrokeHeight,
     verticalAlign: 'middle'
   }
 });
+
+export default look(ShortcutsMenu);

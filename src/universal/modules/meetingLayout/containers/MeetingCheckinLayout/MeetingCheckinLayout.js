@@ -3,8 +3,10 @@ import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 
 import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
-import IconLink from 'universal/modules/meeting/components/IconLink/IconLink';
+import IconLink from 'universal/components/IconLink/IconLink';
+import ProgressBar from 'universal/components/ProgressBar/ProgressBar';
 import CardStage from 'universal/modules/meeting/components/CardStage/CardStage';
+import ShortcutsMenu from 'universal/modules/meeting/components/ShortcutsMenu/ShortcutsMenu';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
@@ -94,7 +96,12 @@ const MeetingCheckinLayout = (props) => {
       <MeetingMain>
         {/* */}
         <MeetingSection paddingBottom="2rem" paddingTop="2rem">
-          <AvatarGroup avatars={members} label="Team:" />
+          <div className={s.avatars}>
+            <AvatarGroup avatars={members} label="Team:" />
+            <div className={s.progress}>
+              <ProgressBar />
+            </div>
+          </div>
         </MeetingSection>
         {/* */}
         {/* */}
@@ -122,6 +129,8 @@ const MeetingCheckinLayout = (props) => {
         {/* */}
       </MeetingMain>
       {/* */}
+      <ShortcutsMenu />
+      {/* */}
     </MeetingLayout>
   );
 };
@@ -129,6 +138,16 @@ const MeetingCheckinLayout = (props) => {
 s = StyleSheet.create({
   name: {
     color: theme.palette.warm
+  },
+
+  avatars: {
+    // Define
+  },
+
+  progress: {
+    paddingLeft: '5.25rem',
+    paddingRight: '.75rem',
+    paddingTop: '1rem'
   }
 });
 
