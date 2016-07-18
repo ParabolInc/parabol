@@ -1,13 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import look, { StyleSheet } from 'react-look';
-
 import theme from 'universal/styles/theme';
-
-import actionUIMark from './images/action-ui-mark.svg';
+import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
+import PlaceholderList from 'universal/modules/meeting/components/PlaceholderList/PlaceholderList';
+import PlaceholderInput from 'universal/modules/meeting/components/PlaceholderInput/PlaceholderInput';
 
 const combineStyles = StyleSheet.combineStyles;
 
-let styles = {};
+let s = {};
 
 @look
 // eslint-disable-next-line react/prefer-stateless-function
@@ -20,74 +20,65 @@ export default class Sidebar extends Component {
 
   render() {
     const { shortUrl, teamName, timerValue } = this.props;
+    const activeNavAnchor = combineStyles(s.navListItemLink, s.navListItemLinkActive);
+    const labels = {
+      checkin: 'Check-In',
+      updates: 'Updates',
+      requests: 'Requests',
+    };
 
     return (
-      <div className={styles.sidebar}>
-        <div className={styles.sidebarHeader}>
-          <a className={styles.brandMarkLink} href="/action-ui/">
-            <img className={styles.brandMark} src={actionUIMark} />
+      <div className={s.sidebar}>
+        <div className={s.sidebarHeader}>
+          <a className={s.brandLink} href="/action-ui/">
+            <img className={s.brandLogo} src={actionUIMark} />
           </a>
-          <div className={styles.teamName}>{teamName}</div>
-          <a className={styles.shortUrl} href={shortUrl}>{shortUrl}</a>
+          <div className={s.teamName}>{teamName}</div>
+          <a className={s.shortUrl} href={shortUrl}>{shortUrl}</a>
           {/* TODO: make me respond to props */}
-          <div className={styles.timer}>{timerValue}</div>
+          <div className={s.timer}>{timerValue}</div>
         </div>
 
         {/* TODO: make me respond to props */}
-        <nav className={styles.nav}>
-          <ul className={styles.navList}>
-            <li className={styles.navListItem}>
+        <nav className={s.nav}>
+          <ul className={s.navList}>
+            <li className={s.navListItem}>
+              <a className={s.navListItemLink} href="#check-in" title={labels.checkin}>
+                <span className={s.bullet}>i.</span>
+                <span className={s.label}>{labels.checkin}</span>
+              </a>
+            </li>
+            <li className={s.navListItem}>
               <a
-                className={combineStyles(styles.navListItemLink, styles.navListItemLinkActive)}
-                href="/action-ui/set-up/"
-                title="Set-up"
+                className={s.navListItemLink} href="#updates" title={labels.updates}
               >
-                <span className={styles.bullet}></span>
-                <span className={styles.label}>Set-up</span>
+                <span className={s.bullet}>ii.</span>
+                <span className={s.label}>{labels.updates}</span>
               </a>
             </li>
-            <li className={styles.navListItem}>
-              <a className={styles.navListItemLink} href="/action-ui/check-in/" title="Check-in">
-                <span className={styles.bullet}>i.</span>
-                <span className={styles.label}>Check-in</span>
-              </a>
-            </li>
-            <li className={styles.navListItem}>
-              <a
-                className={styles.navListItemLink}
-                href="/action-ui/project-updates/"
-                title="Project updates"
-              >
-                <span className={styles.bullet}>ii.</span>
-                <span className={styles.label}>Project updates</span>
-              </a>
-            </li>
-            <li className={styles.navListItem}>
-              <a className={styles.navListItemLink} href="/action-ui/requests/" title="Requests">
-                <span className={styles.bullet}>iii.</span>
-                <span className={styles.label}>Requests</span>
-              </a>
-              <br />
-              <br />
-              <a href="#" title="Add a request placeholder">
-                Press “+” to <br />add a request <br />placeholder
+            <li className={s.navListItem}>
+              <a className={activeNavAnchor} href="#requests" title={labels.requests}>
+                <span className={s.bullet}>iii.</span>
+                <span className={s.label}>{labels.requests}</span>
               </a>
             </li>
           </ul>
+          <PlaceholderList />
+          <PlaceholderInput />
         </nav>
       </div>
     );
   }
 }
 
-styles = StyleSheet.create({
-  brandMark: {
+s = StyleSheet.create({
+  brandLogo: {
     display: 'block',
     height: 'auto',
     width: '100%'
   },
 
-  brandMarkLink: {
+  brandLink: {
     display: 'block',
     height: 'auto',
     left: '1.25rem',
@@ -141,7 +132,6 @@ styles = StyleSheet.create({
 
   sidebar: {
     backgroundColor: theme.palette.dark10l,
-    order: 1,
     padding: '2rem 0',
     width: '15rem'
   },
