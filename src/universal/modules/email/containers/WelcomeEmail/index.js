@@ -2,7 +2,7 @@ import React from 'react';
 import Oy from 'oy-vey';
 import WelcomeEmail, {welcomeEmailText} from './WelcomeEmail';
 
-const subject = 'Welome to Action by Parabol';
+const subject = 'Welcome to Action by Parabol';
 
 export default (props) => ({
   subject,
