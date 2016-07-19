@@ -40,6 +40,8 @@ const IconLink = (props) => {
     }
   });
 
+  // TODO: Change scope of StyleSheet.create() (TA)
+
   s = StyleSheet.create({
     root: {
       color: t.palette[theme],

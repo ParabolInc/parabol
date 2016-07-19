@@ -15,6 +15,8 @@ const ProgressBar = (props) => {
   const height = scale === 'large' ? '.5rem' : '.25rem';
   const backgroundColor = theme === 'cool' ? t.palette.cool50l : t.palette.warm50l;
 
+  // TODO: Change scope of StyleSheet.create() (TA)
+
   s = StyleSheet.create({
     root: {
       display: 'block',
