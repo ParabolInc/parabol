@@ -17,7 +17,8 @@ styles = StyleSheet.create({
     backgroundColor: '#fff',
     display: 'flex !important',
     flex: 1,
-    flexDirection: 'column'
+    flexDirection: 'column',
+    width: '100%'
   }
 });
 

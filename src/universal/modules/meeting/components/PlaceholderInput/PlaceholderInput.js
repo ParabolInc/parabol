@@ -23,25 +23,19 @@ const PlaceholderInput = (props) => {
 
 s = StyleSheet.create({
   root: {
-    backgroundColor: 'transparent',
+    backgroundColor: theme.palette.light,
     color: theme.palette.cool,
     fontSize: theme.typography.s3,
     padding: '.5rem .75rem .5rem 4rem',
     position: 'relative',
     width: '100%',
-
-    ':hover': {
-      backgroundColor: theme.palette.light
-    },
-    ':focus': {
-      backgroundColor: theme.palette.light
-    }
   },
 
   input: {
     backgroundColor: 'transparent',
     border: 0,
     boxShadow: 'none',
+    color: theme.palette.dark10d,
     display: 'block',
     fontFamily: theme.typography.serif,
     fontSize: theme.typography.s3,
@@ -50,7 +44,11 @@ s = StyleSheet.create({
     margin: 0,
     outline: 'none',
     padding: 0,
-    width: '100%'
+    width: '100%',
+
+    '::placeholder': {
+      color: theme.palette.dark50l
+    },
   },
 
   author: {

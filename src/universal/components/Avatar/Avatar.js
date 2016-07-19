@@ -8,22 +8,18 @@ const combineStyles = StyleSheet.combineStyles;
 
 let s = {};
 
-const renderBadge = (badge, size) => {
+const renderBadge = (checkin, connection, size) => {
   let badgeStyles = s.badge;
   let icon;
-  let iconStyles;
 
-  const badgeType = badge.charAt(0).toUpperCase() + badge.slice(1);
-  const badgeIconStyles = `badgeIcon${badgeType}`;
-
-  iconStyles = combineStyles(
+  const iconStyles = combineStyles(
     s.badgeIcon,
-    s[badgeIconStyles]
+    s[connection]
   );
 
-  if (badge === 'check') {
+  if (checkin === 'present') {
     icon = 'check-circle';
-  } else if (badge === 'absent') {
+  } else if (checkin === 'absent') {
     icon = 'times-circle';
   } else {
     icon = 'circle';
@@ -36,8 +32,8 @@ const renderBadge = (badge, size) => {
   return (
     <div className={badgeStyles}>
       <FontAwesome className={iconStyles} name={icon} />
-      <span className={s.badgeLabel}>
-        {badge}
+      <span className={s.srOnly}>
+        {`${connection}, `}{checkin}
       </span>
     </div>
   );
@@ -45,7 +41,9 @@ const renderBadge = (badge, size) => {
 
 const Avatar = (props) => {
   const {
-    badge,
+    checkin,
+    connection,
+    hasBadge,
     hasLabel,
     labelRight,
     hasTooltip,
@@ -101,7 +99,7 @@ const Avatar = (props) => {
       <div className={imagePositionStyles}>
         <div className={imageBlockStyles}>
           <img className={s.avatarImage} src={image} />
-          {badge && renderBadge(badge, size)}
+          {hasBadge && renderBadge(checkin, connection, size)}
         </div>
       </div>
       {hasLabel &&
@@ -115,12 +113,15 @@ const Avatar = (props) => {
 };
 
 Avatar.propTypes = {
-  badge: PropTypes.oneOf([
+  hasBadge: PropTypes.bool,
+  checkin: PropTypes.oneOf([
+    'tbd',
     'absent',
-    'active',
+    'present'
+  ]),
+  connection: PropTypes.oneOf([
     'offline',
-    'online',
-    'check'
+    'online'
   ]),
   hasLabel: PropTypes.bool,
   hasTooltip: PropTypes.bool,
@@ -138,6 +139,8 @@ Avatar.propTypes = {
 };
 
 Avatar.defaultProps = {
+  checkin: 'tbd',
+  connection: 'offline',
   image: 'https://placekitten.com/g/600/600',
   name: 'Elizabeth Robertson',
   size: 'small'
@@ -262,7 +265,7 @@ s = StyleSheet.create({
     }
   },
 
-  badgeLabel: {
+  srOnly: {
     ...srOnly
   },
 
@@ -272,23 +275,6 @@ s = StyleSheet.create({
     position: 'relative',
     width: '1em',
     zIndex: 400
-  },
-
-  // NOTE: Modifiers for badgeIcon
-  badgeIconCheck: {
-    color: theme.palette.cool
-  },
-  badgeIconAbsent: {
-    color: theme.palette.cool10g
-  },
-  badgeIconActive: {
-    color: theme.palette.warm
-  },
-  badgeIconOffline: {
-    color: theme.palette.cool10g
-  },
-  badgeIconOnline: {
-    color: theme.palette.cool
   },
 
   avatarLabel: {
@@ -305,7 +291,15 @@ s = StyleSheet.create({
 
   avatarTooltip: {
     // TODO: Style this sub-component
-  }
+  },
+
+  offline: {
+    color: theme.palette.cool10g
+  },
+
+  online: {
+    color: theme.palette.cool
+  },
 });
 
 export default look(Avatar);

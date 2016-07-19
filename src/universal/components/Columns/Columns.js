@@ -54,7 +54,7 @@ const Columns = () =>
           <ProjectCard status="done" />
         </div>
       </div>
-      <div className={styles.column}>
+      <div className={styles.columnLast}>
         <div className={styles.columnHeading}>Future</div>
         <div className={styles.cardBlock}>
           <ProjectCard status="future" />
@@ -72,6 +72,11 @@ const Columns = () =>
     </div>
   </div>;
 
+const columnStyles = {
+  flex: 1,
+  width: '25%'
+};
+
 styles = StyleSheet.create({
   root: {
     borderTop: `1px solid ${borderColor}`,
@@ -81,18 +86,25 @@ styles = StyleSheet.create({
 
   columns: {
     display: 'flex !important',
-    maxWidth: '80rem'
+    maxWidth: '80rem',
+    width: '100%'
   },
 
   columnFirst: {
-    flex: 1,
+    ...columnStyles,
     padding: '1rem 1rem 0 0'
   },
 
   column: {
+    ...columnStyles,
     borderLeft: `1px solid ${borderColor}`,
-    flex: 1,
     padding: '1rem 1rem 0'
+  },
+
+  columnLast: {
+    ...columnStyles,
+    borderLeft: `1px solid ${borderColor}`,
+    padding: '1rem 0 0 1rem',
   },
 
   columnHeading: {
@@ -103,7 +115,6 @@ styles = StyleSheet.create({
 
   cardBlock: {
     marginBottom: '1rem',
-    minWidth: '15rem',
     width: '100%'
   }
 });

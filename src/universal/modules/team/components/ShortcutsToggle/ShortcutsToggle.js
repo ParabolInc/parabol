@@ -17,7 +17,7 @@ const ShortcutsToggle = (props) => {
       <FontAwesome name="keyboard-o" />
       &nbsp;
       <FontAwesome name="question-circle" />
-      <span className={s.label}>Show shortcuts</span>
+      <span className={s.srOnly}>Show shortcuts</span>
     </a>
   );
 };
@@ -52,7 +52,7 @@ s = StyleSheet.create({
     }
   },
 
-  label: {
+  srOnly: {
     ...srOnly
   }
 });

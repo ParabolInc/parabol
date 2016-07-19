@@ -44,6 +44,7 @@ s = StyleSheet.create({
     display: 'flex !important',
     flexDirection: 'column',
     justifyContent: 'center',
+    maxWidth: '100%',
     width: '100%'
   },
 

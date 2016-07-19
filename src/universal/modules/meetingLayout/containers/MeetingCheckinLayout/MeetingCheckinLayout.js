@@ -26,21 +26,30 @@ const exampleTeam = {
   timerValue: '30:00',
   members: [
     {
+      checkin: 'present',
+      connection: 'online',
+      hasBadge: true,
       image: Jordan,
-      size: 'small',
-      badge: 'check'
+      size: 'small'
     },
     {
+      checkin: 'present',
+      connection: 'online',
+      hasBadge: true,
       image: Matt,
-      size: 'small',
-      badge: 'check'
+      size: 'small'
     },
     {
+      checkin: 'tbd',
+      connection: 'offline',
+      hasBadge: true,
       image: Taya,
-      size: 'small',
-      badge: 'active'
+      size: 'small'
     },
     {
+      checkin: 'tbd',
+      connection: 'offline',
+      hasBadge: true,
       image: Terry,
       size: 'small'
     }
@@ -50,54 +59,54 @@ const exampleTeam = {
 const demoCards = [
   {
     name: '@FirstKitty',
+    hasBadge: false,
     image: 'https://placekitten.com/g/600/600',
-    badge: null, // absent || active || present
     state: 'invited', // invited || not attending || fully present,
     isCurrent: false
   },
   {
     name: '@SecondKitty',
+    hasBadge: false,
     image: 'https://placekitten.com/g/600/600',
-    badge: null, // absent || active || present
     state: 'invited', // invited || not attending || fully present,
     isCurrent: false
   },
   {
     name: '@ThirdKitty',
+    hasBadge: false,
     image: 'https://placekitten.com/g/600/600',
-    badge: null, // absent || active || present
     state: 'invited', // invited || not attending || fully present,
     isCurrent: true
   },
   {
     name: '@FourthKitty',
+    hasBadge: false,
     image: 'https://placekitten.com/g/600/600',
-    badge: null, // absent || active || present
     state: 'invited', // invited || not attending || fully present,
     isCurrent: false
   },
   {
     name: '@FifthKitty',
+    hasBadge: false,
     image: 'https://placekitten.com/g/600/600',
-    badge: null, // absent || active || present
     state: 'invited', // invited || not attending || fully present,
     isCurrent: false
   }
 ];
 
 const MeetingCheckinLayout = (props) => {
-  const {members} = props;
+  const {team} = props;
   // const handleClick = (e) => e.preventDefault();
   return (
     <MeetingLayout>
       {/* */}
-      <Sidebar {...props} />
+      <Sidebar facilitatorLocation="checkin" location="checkin" {...team} />
       {/* */}
       <MeetingMain>
         {/* */}
         <MeetingSection paddingBottom="2rem" paddingTop="2rem">
           <div className={s.avatars}>
-            <AvatarGroup avatars={members} label="Team:" />
+            <AvatarGroup avatars={team.members} label="Team:" />
             <div className={s.progress}>
               <ProgressBar />
             </div>
@@ -152,9 +161,11 @@ s = StyleSheet.create({
 });
 
 MeetingCheckinLayout.propTypes = {
-  members: PropTypes.array
+  team: PropTypes.object
 };
 
-MeetingCheckinLayout.defaultProps = {...exampleTeam};
+MeetingCheckinLayout.defaultProps = {
+  team: exampleTeam
+};
 
 export default look(MeetingCheckinLayout);

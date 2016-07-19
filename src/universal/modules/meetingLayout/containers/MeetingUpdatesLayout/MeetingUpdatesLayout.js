@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
 
+import Avatar from 'universal/components/Avatar/Avatar';
 import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
 import Columns from 'universal/components/Columns/Columns';
 import IconLink from 'universal/components/IconLink/IconLink';
@@ -27,41 +27,48 @@ const exampleTeam = {
   timerValue: '30:00',
   members: [
     {
+      checkin: 'present',
+      connection: 'online',
+      hasBadge: true,
       image: Jordan,
-      size: 'small',
-      badge: 'check'
+      size: 'small'
     },
     {
+      checkin: 'present',
+      connection: 'online',
+      hasBadge: true,
       image: Matt,
-      size: 'small',
-      badge: 'check'
+      size: 'small'
     },
     {
+      checkin: 'present',
+      connection: 'offline',
+      hasBadge: true,
       image: Taya,
-      size: 'small',
-      badge: 'active'
+      size: 'small'
     },
     {
+      checkin: 'absent',
+      connection: 'offline',
+      hasBadge: true,
       image: Terry,
       size: 'small'
     }
   ]
 };
 
-console.log(s, theme);
-
-const MeetingCheckinLayout = (props) => {
-  const {members} = props;
+const MeetingUpdatesLayout = (props) => {
+  const {team} = props;
   return (
     <MeetingLayout>
       {/* */}
-      <Sidebar {...props} />
+      <Sidebar facilitatorLocation="checkin" location="updates" {...team} />
       {/* */}
       <MeetingMain>
         {/* */}
         <MeetingSection paddingBottom="2rem" paddingTop="2rem">
           <div className={s.avatars}>
-            <AvatarGroup avatars={members} label="Updates given:" />
+            <AvatarGroup avatars={team.members} label="Updates given:" />
           </div>
         </MeetingSection>
         {/* */}
@@ -77,16 +84,16 @@ const MeetingCheckinLayout = (props) => {
             </MeetingSectionSubheading>
           </MeetingSection>
           {/* */}
-          <Columns />
-          <MeetingSection paddingBottom="2rem">
-            <IconLink
-              icon="arrow-circle-right"
-              iconPlacement="right"
-              label="Next teammate (press enter)"
-              scale="large"
-              theme="warm"
-            />
-          </MeetingSection>
+          <div className={s.layout}>
+            <div className={s.nav}>
+              <IconLink icon="arrow-circle-left" label="Previous team member" />
+              <div className={s.avatar}>
+                <Avatar hasLabel image={Taya} name="Taya Mueller" labelRight size="medium" />
+              </div>
+              <IconLink icon="arrow-circle-right" iconPlacement="right" label="Next team member" />
+            </div>
+            <Columns />
+          </div>
           {/* */}
           {/* */}
         </MeetingSection>
@@ -100,13 +107,29 @@ const MeetingCheckinLayout = (props) => {
 };
 
 s = StyleSheet.create({
-  // Define
+  layout: {
+    margin: '0 auto',
+    maxWidth: '80rem',
+    padding: '0 2rem',
+    width: '100%'
+  },
+
+  nav: {
+    display: 'flex !important',
+    width: '100%'
+  },
+
+  avatar: {
+    flex: 1
+  }
 });
 
-MeetingCheckinLayout.propTypes = {
-  members: PropTypes.array
+MeetingUpdatesLayout.propTypes = {
+  team: PropTypes.object
 };
 
-MeetingCheckinLayout.defaultProps = {...exampleTeam};
+MeetingUpdatesLayout.defaultProps = {
+  team: exampleTeam
+};
 
-export default look(MeetingCheckinLayout);
+export default look(MeetingUpdatesLayout);

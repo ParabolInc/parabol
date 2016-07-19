@@ -43,7 +43,7 @@ const ShortcutsMenu = (props) => {
       </div>
       <a className={s.close} href="#" onClick={(e) => handleCloseClick(e)} title="Close menu">
         <FontAwesome name="times-circle" />
-        <span className={s.closeLabel}>Close menu</span>
+        <span className={s.srOnly}>Close menu</span>
       </a>
       <ul className={s.shortcutsList}>
         {
@@ -90,6 +90,7 @@ ShortcutsMenu.defaultProps = {
 
 s = StyleSheet.create({
   menu: {
+    backgroundColor: 'rgba(255, 255, 255, .85)',
     bottom: '2rem',
     color: t.palette.dark,
     position: 'fixed',
@@ -123,7 +124,7 @@ s = StyleSheet.create({
     }
   },
 
-  closeLabel: {
+  srOnly: {
     ...srOnly
   },
 

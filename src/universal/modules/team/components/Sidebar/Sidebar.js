@@ -3,6 +3,7 @@ import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import PlaceholderList from 'universal/modules/meeting/components/PlaceholderList/PlaceholderList';
+import PlaceholderAddLink from 'universal/modules/meeting/components/PlaceholderAddLink/PlaceholderAddLink';
 import PlaceholderInput from 'universal/modules/meeting/components/PlaceholderInput/PlaceholderInput';
 
 const combineStyles = StyleSheet.combineStyles;
@@ -10,13 +11,28 @@ const combineStyles = StyleSheet.combineStyles;
 let s = {};
 
 const Sidebar = (props) => {
-  const {shortUrl, teamName, timerValue} = props;
+  const {
+    facilitatorLocation,
+    location,
+    shortUrl,
+    teamName,
+    timerValue
+  } = props;
+  const facilitatorLocationItemStyles = combineStyles(s.navListItem, s.navListItemMeetingMarker);
   const activeNavAnchor = combineStyles(s.navListItemLink, s.navListItemLinkActive);
   const labels = {
     checkin: 'Check-In',
     updates: 'Updates',
     requests: 'Requests',
   };
+
+  const checkinLinkStyles = location === 'checkin' ? activeNavAnchor : s.navListItemLink;
+  const updatesLinkStyles = location === 'updates' ? activeNavAnchor : s.navListItemLink;
+  const requestsLinkStyles = location === 'requests' ? activeNavAnchor : s.navListItemLink;
+
+  const checkinNavItemStyles = facilitatorLocation === 'checkin' ? facilitatorLocationItemStyles : s.navListItem;
+  const updatesNavItemStyles = facilitatorLocation === 'updates' ? facilitatorLocationItemStyles : s.navListItem;
+  const requestsNavItemStyles = facilitatorLocation === 'requests' ? facilitatorLocationItemStyles : s.navListItem;
 
   return (
     <div className={s.sidebar}>
@@ -25,7 +41,7 @@ const Sidebar = (props) => {
           <img className={s.brandLogo} src={actionUIMark} />
         </a>
         <div className={s.teamName}>{teamName}</div>
-        <a className={s.shortUrl} href={shortUrl}>{shortUrl}</a>
+        <a className={s.shortUrl} href="/meetingLayout/lobby">{shortUrl}</a>
         {/* TODO: make me respond to props */}
         <div className={s.timer}>{timerValue}</div>
       </div>
@@ -33,28 +49,39 @@ const Sidebar = (props) => {
       {/* TODO: make me respond to props */}
       <nav className={s.nav}>
         <ul className={s.navList}>
-          <li className={s.navListItem}>
-            <a className={s.navListItemLink} href="#check-in" title={labels.checkin}>
+          <li className={checkinNavItemStyles}>
+            <a
+              className={checkinLinkStyles}
+              href="/meetingLayout/checkin"
+              title={labels.checkin}
+            >
               <span className={s.bullet}>i.</span>
               <span className={s.label}>{labels.checkin}</span>
             </a>
           </li>
-          <li className={s.navListItem}>
+          <li className={updatesNavItemStyles}>
             <a
-              className={s.navListItemLink} href="#updates" title={labels.updates}
+              className={updatesLinkStyles}
+              href="/meetingLayout/updates"
+              title={labels.updates}
             >
               <span className={s.bullet}>ii.</span>
               <span className={s.label}>{labels.updates}</span>
             </a>
           </li>
-          <li className={s.navListItem}>
-            <a className={activeNavAnchor} href="#requests" title={labels.requests}>
+          <li className={requestsNavItemStyles}>
+            <a
+              className={requestsLinkStyles}
+              href="#requests"
+              title={labels.requests}
+            >
               <span className={s.bullet}>iii.</span>
               <span className={s.label}>{labels.requests}</span>
             </a>
           </li>
         </ul>
         <PlaceholderList />
+        <PlaceholderAddLink />
         <PlaceholderInput />
       </nav>
     </div>
@@ -62,6 +89,20 @@ const Sidebar = (props) => {
 };
 
 Sidebar.propTypes = {
+  facilitatorLocation: PropTypes.oneOf([
+    'lobby',
+    'checkin',
+    'updates',
+    'requests',
+    'summary'
+  ]),
+  location: PropTypes.oneOf([
+    'lobby',
+    'checkin',
+    'updates',
+    'requests',
+    'summary'
+  ]),
   shortUrl: PropTypes.string,
   teamName: PropTypes.string,
   timerValue: PropTypes.string
@@ -122,6 +163,23 @@ s = StyleSheet.create({
     }
   },
 
+  navListItemMeetingMarker: {
+    position: 'relative',
+
+    '::after': {
+      backgroundColor: theme.palette.warm,
+      borderRadius: '100%',
+      display: 'block',
+      content: '""',
+      height: '.75rem',
+      marginTop: '-.375rem',
+      position: 'absolute',
+      right: '-.375rem',
+      top: '50%',
+      width: '.75rem'
+    }
+  },
+
   navListItemLinkActive: {
     color: theme.palette.dark
   },
@@ -129,7 +187,8 @@ s = StyleSheet.create({
   sidebar: {
     backgroundColor: theme.palette.dark10l,
     padding: '2rem 0',
-    width: '15rem'
+    maxWidth: '15rem',
+    width: '100%'
   },
 
   sidebarHeader: {

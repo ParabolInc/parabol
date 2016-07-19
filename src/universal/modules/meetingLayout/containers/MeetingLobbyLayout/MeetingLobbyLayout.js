@@ -24,24 +24,32 @@ const exampleTeam = {
   timerValue: '30:00',
   members: [
     {
+      checkin: 'tbd',
+      connection: 'online',
+      hasBadge: true,
       image: Jordan,
-      size: 'small',
-      badge: 'online'
+      size: 'small'
     },
     {
+      checkin: 'tbd',
+      connection: 'online',
+      hasBadge: true,
       image: Matt,
-      size: 'small',
-      badge: 'offline'
+      size: 'small'
     },
     {
+      checkin: 'tbd',
+      connection: 'offline',
+      hasBadge: true,
       image: Taya,
-      size: 'small',
-      badge: 'online'
+      size: 'small'
     },
     {
+      checkin: 'tbd',
+      connection: 'offline',
+      hasBadge: true,
       image: Terry,
-      size: 'small',
-      badge: 'offline'
+      size: 'small'
     }
   ]
 };
@@ -55,7 +63,7 @@ const MeetingLobbyLayout = (props) => {
   return (
     <MeetingLayout>
       {/* */}
-      <Sidebar {...props} />
+      <Sidebar facilitatorLocation="lobby" location="lobby" shortUrl={shortUrl} teamName={teamName} members={members} />
       {/* */}
       <MeetingMain>
         {/* */}
@@ -158,6 +166,6 @@ MeetingLobbyLayout.propTypes = {
   members: PropTypes.array
 };
 
-MeetingLobbyLayout.defaultProps = {...exampleTeam};
+MeetingLobbyLayout.defaultProps = exampleTeam;
 
 export default look(MeetingLobbyLayout);

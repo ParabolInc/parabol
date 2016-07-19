@@ -26,7 +26,7 @@ const Card = (props) => {
   return (
     <div className={cardStyles}>
       {/* NOTE: Not using the <Avatar /> label. Using card name styles. */}
-      <Avatar badge={avatar.badge} image={avatar.image} size="largest" />
+      <Avatar checkin={avatar.checkin} connection={avatar.connection} image={avatar.image} size="largest" />
       <div className={nameStyles}>{avatar.name}</div>
       <div className={labelStyles}>{cardLabel}</div>
       {hasControls &&
