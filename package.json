@@ -2,7 +2,7 @@
   "name": "parabol-action",
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Jordan Husney <jordan@parabol.com> (http://github.com/jrhusney)",
-  "license": "AGPLv3",
+  "license": "AGPL-3.0",
   "version": "0.3.0",
   "repository": {
     "type": "git",
