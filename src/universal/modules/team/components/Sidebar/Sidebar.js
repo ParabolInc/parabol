@@ -80,6 +80,7 @@ const Sidebar = (props) => {
             </a>
           </li>
         </ul>
+        {/* TODO: Toggle PlaceholderAddLink and PlaceholderInput (TA) */}
         <PlaceholderList />
         <PlaceholderAddLink />
         <PlaceholderInput />
@@ -88,21 +89,17 @@ const Sidebar = (props) => {
   );
 };
 
+const meetingLocations = [
+  'lobby',
+  'checkin',
+  'updates',
+  'requests',
+  'summary'
+];
+
 Sidebar.propTypes = {
-  facilitatorLocation: PropTypes.oneOf([
-    'lobby',
-    'checkin',
-    'updates',
-    'requests',
-    'summary'
-  ]),
-  location: PropTypes.oneOf([
-    'lobby',
-    'checkin',
-    'updates',
-    'requests',
-    'summary'
-  ]),
+  facilitatorLocation: PropTypes.oneOf(meetingLocations),
+  location: PropTypes.oneOf(meetingLocations),
   shortUrl: PropTypes.string,
   teamName: PropTypes.string,
   timerValue: PropTypes.string
