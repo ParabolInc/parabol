@@ -1,11 +1,11 @@
-import {Team, CreateTeamInput, UpdateTeamInput} from './teamSchema';
-import r from '../../../database/rethinkDriver';
+import r from 'server/database/rethinkDriver';
+import {requireSUOrTeamMember, requireSUOrSelf} from '../authorization';
+import {updatedOrOriginal} from '../utils';
 import {
   GraphQLNonNull,
   GraphQLBoolean
 } from 'graphql';
-import {requireSUOrTeamMember, requireSUOrSelf} from '../authorization';
-import {updatedOrOriginal} from '../utils';
+import {CreateTeamInput, UpdateTeamInput, Team} from './teamSchema';
 
 export default {
   createTeam: {
@@ -18,9 +18,9 @@ export default {
       }
     },
     async resolve(source, {newTeam}, {authToken}) {
-      // require cachedUserId in the input so an admin can also create a team
+      // require userId in the input so an admin can also create a team
       const {leader, ...team} = newTeam;
-      const userId = leader.cachedUserId;
+      const userId = leader.userId;
       requireSUOrSelf(authToken, userId);
       // can't trust the client
       const verifiedLeader = {...leader, isActive: true, isLead: true, isFacilitator: true};

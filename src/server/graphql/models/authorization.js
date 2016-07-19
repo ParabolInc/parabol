@@ -1,4 +1,4 @@
-import r from '../../database/rethinkDriver';
+import r from 'server/database/rethinkDriver';
 import {errorObj} from './utils';
 
 export const getUserId = authToken => {
@@ -15,7 +15,7 @@ export const getTeamMember = async (authToken, teamId) => {
   if (userId) {
     const teamMembers = await r.table('TeamMember')
       .getAll(teamId, {index: 'teamId'})
-      .filter({cachedUserId: userId})
+      .filter({userId})
       .pluck('teamId');
     return teamMembers[0];
   }
@@ -41,14 +41,26 @@ export const requireSUOrTeamMember = async (authToken, teamId) => {
   if (isSuperUser(authToken)) return undefined;
   const teamMember = await getTeamMember(authToken, teamId);
   if (teamMember) return teamMember;
-  throw errorObj({_error: 'Unauthorized. Must be a member of the team.'});
+  throw errorObj({_error: 'Unauthorized to view team details.'});
 };
 
-export const requireSUOrSelf = (authToken, cachedUserId) => {
+export const requireSUOrSelf = (authToken, userId) => {
   if (isSuperUser(authToken)) return undefined;
-  const userId = getUserId(authToken);
-  if (userId === cachedUserId) {
+  const authTokenUserId = getUserId(authToken);
+  if (authTokenUserId === userId) {
     return userId;
   }
   throw errorObj({_error: 'Unauthorized. You cannot modify another user.'});
+};
+
+export const requireWebsocket = (socket) => {
+  if (!socket) {
+    throw errorObj({_error: 'this must be called from a websocket'});
+  }
+};
+
+export const requireWebsocketExchange = (exchange) => {
+  if (!exchange) {
+    throw errorObj({_error: 'this requires a websocket channel exchange'});
+  }
 };

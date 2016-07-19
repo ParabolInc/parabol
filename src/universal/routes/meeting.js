@@ -8,17 +8,17 @@ const setMeetingImports = () =>
     ['socket', System.import('redux-socket-cluster')]
   ]);
 
-const getKanbanImports = importMap => ({
+const getMeetingImports = importMap => ({
   component: importMap.get('component'),
   socket: importMap.get('socket').socketClusterReducer
 });
 
 export default store => ({
-  path: 'meeting/:id',
+  path: 'meeting/:teamId',
   getComponent: async(location, cb) => {
     const promiseMap = setMeetingImports();
     const importMap = await resolvePromiseMap(promiseMap);
-    const {component, ...asyncReducers} = getKanbanImports(importMap);
+    const {component, ...asyncReducers} = getMeetingImports(importMap);
     const newReducer = makeReducer(asyncReducers);
     store.replaceReducer(newReducer);
 

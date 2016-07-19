@@ -1,16 +1,5 @@
 import {GraphQLNonNull, GraphQLInputObjectType} from 'graphql';
 
-export const defaultResolveFn = (source, args, {fieldName}) => {
-  const property = source[fieldName];
-  return typeof property === 'function' ? property.call(source) : property;
-};
-
-export function resolveForAdmin(source, args, ref) {
-  return ref.rootValue &&
-  ref.rootValue.authToken &&
-  ref.rootValue.authToken.isAdmin ? defaultResolveFn.apply(this, [source, args, ref]) : null;
-}
-
 // Stringify an object to handle multiple errors
 // Wrap it in a new Error type to avoid sending it twice via the originalError field
 export const errorObj = obj => new Error(JSON.stringify(obj));
@@ -29,7 +18,7 @@ export const nonnullifyInputThunk = (name, inputThunk, requiredFieldNames) => {
   });
 };
 
-export function getFields(context, astsParams = context.fieldASTs) {
+function getFields(context, astsParams = context.fieldASTs) {
   // for recursion...Fragments doesn't have many sets...
   const asts = Array.isArray(astsParams) ? astsParams : [astsParams];
 
@@ -60,6 +49,11 @@ export function getFields(context, astsParams = context.fieldASTs) {
         throw new Error('Unsuported query selection');
     }
   }, {});
+}
+
+export function getRequestedFields(refs) {
+  const fieldsObj = getFields(refs);
+  return Object.keys(fieldsObj);
 }
 
 export function updatedOrOriginal(possiblyUpdatedResult, original) {

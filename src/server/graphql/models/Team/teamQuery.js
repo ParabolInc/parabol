@@ -1,25 +1,39 @@
-import r from '../../../database/rethinkDriver';
-import {GraphQLNonNull, GraphQLID} from 'graphql';
-import {Team} from './teamSchema';
-import {errorObj} from '../utils';
-import {requireSUOrTeamMember} from '../authorization';
-export default {
-  getTeamById: {
-    type: Team,
-    description: 'Get a team by the team ID',
-    args: {
-      teamId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The ID for the desired team'
-      }
-    },
-    async resolve(source, {teamId}, {authToken}) {
-      requireSUOrTeamMember(authToken, teamId);
-      const team = await r.table('Team').get(teamId);
-      if (team) {
-        return team;
-      }
-      throw errorObj({_error: 'Team not found'});
-    }
-  }
-};
+// import {GraphQLNonNull, GraphQLID} from 'graphql';
+// import {Team} from './teamSchema';
+// import {errorObj} from '../utils';
+// import {getTeamById, getTeamByTeamId} from './helpers';
+//
+// export default {
+//   getTeamById: {
+//     type: Team,
+//     args: {
+//       teamId: {
+//         type: new GraphQLNonNull(GraphQLID),
+//         description: 'The ID for the desired Team'
+//       }
+//     },
+//     async resolve(source, {teamId}) {
+//       const team = await getTeamById(teamId);
+//       if (!team) {
+//         throw errorObj({_error: 'Team not found'});
+//       }
+//       return team;
+//     }
+//   },
+//   getTeamByTeamId: {
+//     type: Team,
+//     args: {
+//       teamId: {
+//         type: new GraphQLNonNull(GraphQLID),
+//         description: 'The team ID for the desired Team'
+//       }
+//     },
+//     async resolve(source, {teamId}) {
+//       const team = await getTeamByTeamId(teamId);
+//       if (!team) {
+//         throw errorObj({_error: 'Team not found'});
+//       }
+//       return team;
+//     }
+//   }
+// };

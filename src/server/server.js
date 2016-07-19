@@ -1,5 +1,6 @@
 import {SocketCluster} from 'socketcluster';
 import path from 'path';
+// path must stay relative since this is before all babelfication
 import {getDotenv} from '../universal/utils/dotenv';
 
 // Import .env and expand variables:
@@ -18,7 +19,7 @@ export const options = {
   workers: 1,
   brokers: 1,
   port: process.env.PORT || 3000,
-  appName: 'Meatier',
+  appName: 'Action',
   allowClientPublish: false,
   initController: path.join(__dirname, '/init.js'),
   workerController: path.join(__dirname, '/worker.js'),

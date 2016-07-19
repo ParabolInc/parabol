@@ -1,4 +1,4 @@
-import r from '../../../database/rethinkDriver';
+import r from 'server/database/rethinkDriver';
 
 export const createUserProfile = async () => {
   const changes = await r.table('UserProfile').insert({

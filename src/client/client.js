@@ -16,7 +16,7 @@ const createCashay = (store, cashaySchema) => {
   cashay.create({
     store,
     schema: cashaySchema,
-    transport: new ActionHTTPTransport(persistedToken)
+    httpTransport: new ActionHTTPTransport(persistedToken)
   });
 };
 

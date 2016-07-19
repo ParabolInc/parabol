@@ -15,6 +15,9 @@ export default function merger(initialState, persistedState) {
         continue;
       }
     }
+    if (reducerName === 'cashay') {
+      value.data.result.presence = undefined;
+    }
     result[reducerName] = value;
   }
   return result;

@@ -1,7 +1,7 @@
 import {GraphQLNonNull, GraphQLID} from 'graphql';
 import {CachedUser} from './cachedUserSchema';
 import {errorObj} from '../utils';
-import r from '../../../database/rethinkDriver';
+import r from 'server/database/rethinkDriver';
 import {requireAuth, requireSU} from '../authorization';
 
 export default {

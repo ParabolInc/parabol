@@ -1,4 +1,4 @@
-import r from '../../../database/rethinkDriver';
+import r from 'server/database/rethinkDriver';
 import {
   GraphQLNonNull
 } from 'graphql';
@@ -23,7 +23,7 @@ export default {
        * ReQL query at the expense of readability:
        */
       const hasTeam = await r.table('TeamMember')
-        .getAll(id, {index: 'cachedUserId'})
+        .getAll(id, {index: 'userId'})
         .isEmpty()
         .not();
       const dbProfile = await r.table('UserProfile').get(id)

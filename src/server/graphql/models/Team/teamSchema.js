@@ -1,4 +1,4 @@
-import r from '../../../database/rethinkDriver';
+import r from 'server/database/rethinkDriver';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -6,9 +6,18 @@ import {
   GraphQLID,
   GraphQLList
 } from 'graphql';
-import {TeamMember, CreateTeamMemberInput} from '../TeamMember/teamMemberSchema';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
+import {TeamMember, CreateTeamMemberInput} from '../TeamMember/teamMemberSchema';
 import {nonnullifyInputThunk} from '../utils';
+
+export const Presence = new GraphQLObjectType({
+  name: 'Presence',
+  description: 'A connection\'s presence in a team',
+  fields: () => ({
+    id: {type: new GraphQLNonNull(GraphQLID), description: 'The socketId representing a single socket connection'},
+    userId: {type: new GraphQLNonNull(GraphQLID), description: 'The userId representing 1 or more sockets'}
+  })
+});
 
 export const Team = new GraphQLObjectType({
   name: 'Team',
@@ -22,12 +31,11 @@ export const Team = new GraphQLObjectType({
     },
     updatedAt: {
       type: GraphQLISO8601Type,
-      description: 'The datetime the team was last updated (not including members)'
+      description: 'The datetime the team was last updated'
     },
-    meetingSlug: {type: GraphQLString, description: 'The slug for the meeting uri'},
-    members: {
+    teamMembers: {
       type: new GraphQLList(TeamMember),
-      description: 'All the team members associated with this team',
+      description: 'All the team members associated who can join this team',
       async resolve({id}) {
         return await r.table('TeamMember').getAll(id, {index: 'teamId'});
       }
