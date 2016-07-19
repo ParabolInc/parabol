@@ -107,7 +107,7 @@ export default class Invitation extends Component {
         // TODO: pop them a toast and tell them what happened?
         dispatch(push('/welcome'));
       } else if (data) {
-        const {id} = data.acceptInvitation.meeting;
+        const {id} = data.acceptInvitation.team;
         dispatch(setWelcomeActivity(`/team/${id}`));
         dispatch(showSuccess({
           title: 'You\'re in!',

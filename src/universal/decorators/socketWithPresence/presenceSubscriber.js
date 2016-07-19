@@ -13,7 +13,7 @@ export default function presenceSubscriber(subscriptionString, variables, handle
     if (data.type === SOUNDOFF) {
       const options = {
         variables: {
-          meetingId: variables.meetingId,
+          teamId: variables.teamId,
           targetId: data.targetId
         }
       };

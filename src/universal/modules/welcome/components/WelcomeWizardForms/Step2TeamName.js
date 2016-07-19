@@ -15,17 +15,17 @@ const Step2TeamName = (props) => {
   const {dispatch, handleSubmit, preferredName, teamName, user, completed} = props;
   const onTeamNameSubmit = data => {
     const myTeamName = data.teamName;
-    const meetingId = shortid.generate();
+    const teamId = shortid.generate();
     const teamMemberId = shortid.generate();
-    dispatch(setWelcomeTeam({meetingId, teamMemberId}));
-    const createMeetingOptions = {
+    dispatch(setWelcomeTeam({teamId, teamMemberId}));
+    const createTeamOptions = {
       variables: {
-        newMeeting: {
-          id: meetingId,
+        newTeam: {
+          id: teamId,
           name: myTeamName,
           leader: {
             id: teamMemberId,
-            meetingId,
+            teamId,
             userId: user.id,
             isActive: true,
             isLead: true,
@@ -34,7 +34,7 @@ const Step2TeamName = (props) => {
         }
       }
     };
-    cashay.mutate('createMeeting', createMeetingOptions);
+    cashay.mutate('createTeam', createTeamOptions);
     dispatch(updateCompleted(3));
     dispatch(nextPage());
   };

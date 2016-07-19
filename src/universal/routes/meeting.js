@@ -14,7 +14,7 @@ const getKanbanImports = importMap => ({
 });
 
 export default store => ({
-  path: 'meeting/:meetingId',
+  path: 'meeting/:teamId',
   getComponent: async(location, cb) => {
     const promiseMap = setMeetingImports();
     const importMap = await resolvePromiseMap(promiseMap);

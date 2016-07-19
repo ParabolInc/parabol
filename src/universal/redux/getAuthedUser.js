@@ -28,7 +28,7 @@ query {
     },
     memberships {
       id,
-      meeting {
+      team {
        id,
        name
       },
@@ -47,12 +47,12 @@ const updateTokenMutationHandlers = {
     }
     return undefined;
   },
-  createMeeting(optimisticVariables, queryResponse, currentResponse) {
+  createTeam(optimisticVariables, queryResponse, currentResponse) {
     if (optimisticVariables) {
-      const {leader, id, name, isActive, isLead, isFacilitator} = optimisticVariables.newMeeting;
+      const {leader, id, name, isActive, isLead, isFacilitator} = optimisticVariables.newTeam;
       const membership = {
         id: leader.id,
-        meeting: {id, name},
+        team: {id, name},
         isActive,
         isLead,
         isFacilitator

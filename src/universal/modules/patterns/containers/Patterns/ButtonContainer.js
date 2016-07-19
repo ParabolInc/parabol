@@ -3,7 +3,7 @@ import SectionHeader from '../../components/SectionHeader/SectionHeader';
 import Example from '../../components/Example/Example';
 import ExampleCode from '../../components/ExampleCode/ExampleCode';
 import PropsTable from '../../components/PropsTable/PropsTable';
-import Background from 'universal/modules/meeting/components/Background/Background';
+import Background from 'universal/modules/team/components/Background/Background';
 import Button from 'universal/components/Button/Button';
 
 const button = <Button size="large" style="solid" theme="warm" />;

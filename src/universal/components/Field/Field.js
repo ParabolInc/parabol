@@ -13,21 +13,36 @@ let styles = {};
  * Why are we defining this here?
  * See: https://github.com/erikras/redux-form/releases/tag/v6.0.0-alpha.14
  */
-const FieldBlock = props => {
+const makeDomInput = (input) => ({
+  autoFocus: input.autoFocus,
+  name: input.name,
+  onBlur: input.onBlur,
+  onChange: input.onChange,
+  onFocus: input.onFocus,
+  placeholder: input.placeholder,
+  type: input.type,
+  value: input.value,
+});
+
+const FieldBlock = (props) => {
+  const {
+    hasErrorText,
+    hasHelpText,
+    helpText,
+    input,
+    isWider,
+    theme
+  } = props;
   const {
     buttonDisabled,
     buttonIcon,
     hasButton,
-    hasErrorText,
-    hasHelpText,
     hasShortcutHint,
-    helpText,
     isLarger,
-    isWider,
     onButtonClick,
     shortcutHint,
-    theme,
-  } = props;
+  } = input;
+  const domInput = makeDomInput(input);
 
   const styleTheme = theme || 'cool';
   const styleOptions = [styles.field, styles[styleTheme]];
@@ -48,12 +63,13 @@ const FieldBlock = props => {
   }
 
   const fieldStyles = combineStyles.apply('null', styleOptions);
-
+  // allow hotkeys to be triggered when inside a field input
+  const allClassNames = [fieldStyles, 'mousetrap'].join(', ');
   return (
     <div className={styles.fieldBlock}>
       <input
-        className={fieldStyles}
-        {...props}
+        className={allClassNames}
+        {...domInput}
       />
       {hasButton &&
         <div className={styles.buttonBlock}>
@@ -75,34 +91,37 @@ const FieldBlock = props => {
   );
 };
 
-FieldBlock.propTypes = {
-  autoFocus: PropTypes.bool,
-  buttonDisabled: PropTypes.bool,
-  buttonIcon: PropTypes.string,
-  hasButton: PropTypes.bool,
+const propTypes = {
+  name: PropTypes.string,
   hasErrorText: PropTypes.bool,
   hasHelpText: PropTypes.bool,
-  hasShortcutHint: PropTypes.bool,
   helpText: PropTypes.object,
-  isLarger: PropTypes.bool,
+  input: PropTypes.shape({
+    autoFocus: PropTypes.bool,
+    buttonDisabled: PropTypes.bool,
+    buttonIcon: PropTypes.string,
+    hasButton: PropTypes.bool,
+    hasShortcutHint: PropTypes.bool,
+    isLarger: PropTypes.bool,
+    name: PropTypes.string,
+    onBlur: PropTypes.func,
+    onButtonClick: PropTypes.func,
+    onChange: PropTypes.func,
+    onFocus: PropTypes.func,
+    placeholder: PropTypes.string,
+    shortcutHint: PropTypes.string,
+    type: PropTypes.string,
+    value: PropTypes.string
+  }),
   isWider: PropTypes.bool,
-  onBlur: PropTypes.func,
-  onButtonClick: PropTypes.func,
-  onChange: PropTypes.func,
-  onFocus: PropTypes.func,
-  placeholder: PropTypes.string,
-  shortcutHint: PropTypes.string,
   theme: PropTypes.oneOf([
     'cool',
     'warm'
-  ]),
-  type: PropTypes.string,
-  value: PropTypes.string
+  ])
 };
 
-const Field = props => {
+const Field = (props) => {
   const {name} = props;
-
   return (
     <div className={styles.fieldBlock}>
       <ReduxFormField
@@ -114,32 +133,8 @@ const Field = props => {
   );
 };
 
-Field.propTypes = {
-  autoFocus: PropTypes.bool,
-  buttonDisabled: PropTypes.bool,
-  buttonIcon: PropTypes.string,
-  hasButton: PropTypes.bool,
-  hasErrorText: PropTypes.bool,
-  hasHelpText: PropTypes.bool,
-  hasShortcutHint: PropTypes.bool,
-  helpText: PropTypes.object,
-  isLarger: PropTypes.bool,
-  isWider: PropTypes.bool,
-  name: PropTypes.string.isRequired,
-  onBlur: PropTypes.func,
-  onButtonClick: PropTypes.func,
-  onChange: PropTypes.func,
-  onFocus: PropTypes.func,
-  placeholder: PropTypes.string,
-  shortcutHint: PropTypes.string,
-  theme: PropTypes.oneOf([
-    'cool',
-    'warm'
-  ]),
-  type: PropTypes.string,
-  value: PropTypes.string
-};
-
+Field.propTypes = propTypes;
+FieldBlock.propTypes = propTypes;
 styles = StyleSheet.create({
   fieldBlock: {
     margin: '0 auto',

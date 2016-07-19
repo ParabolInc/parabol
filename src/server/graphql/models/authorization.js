@@ -10,13 +10,13 @@ export const isSuperUser = authToken => {
   return userId && authToken.rol === 'su';
 };
 
-export const getTeamMember = async (authToken, meetingId) => {
+export const getTeamMember = async (authToken, teamId) => {
   const userId = getUserId(authToken);
   if (userId) {
     const teamMembers = await r.table('TeamMember')
-      .getAll(meetingId, {index: 'meetingId'})
+      .getAll(teamId, {index: 'teamId'})
       .filter({userId})
-      .pluck('meetingId');
+      .pluck('teamId');
     return teamMembers[0];
   }
   return undefined;
@@ -37,11 +37,11 @@ export const requireSU = authToken => {
   }
 };
 
-export const requireSUOrTeamMember = async (authToken, meetingId) => {
+export const requireSUOrTeamMember = async (authToken, teamId) => {
   if (isSuperUser(authToken)) return undefined;
-  const teamMember = await getTeamMember(authToken, meetingId);
+  const teamMember = await getTeamMember(authToken, teamId);
   if (teamMember) return teamMember;
-  throw errorObj({_error: 'Unauthorized to view meeting details.'});
+  throw errorObj({_error: 'Unauthorized to view team details.'});
 };
 
 export const requireSUOrSelf = (authToken, userId) => {

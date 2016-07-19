@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import look, { StyleSheet } from 'react-look';
 import appTheme from 'universal/styles/theme';
-import IconButton from '../../components/IconButton/IconButton';
+import IconButton from '../IconButton/IconButton';
 
 const combineStyles = StyleSheet.combineStyles;
 const fieldLightGray = appTheme.palette.dark50l;

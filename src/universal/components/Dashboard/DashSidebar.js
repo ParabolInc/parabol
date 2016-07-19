@@ -13,9 +13,9 @@ let styles = {};
 const DashSidebar = (props) => {
   const {activeArea, activeTeamId, dispatch} = props;
   const teamItems = props.user.memberships.map(m => ({
-    active: activeArea === 'team' && m.meeting.id === activeTeamId,
-    href: `/team/${m.meeting.id}`,
-    label: m.meeting.name
+    active: activeArea === 'team' && m.team.id === activeTeamId,
+    href: `/team/${m.team.id}`,
+    label: m.team.name
   }));
 
   return (
@@ -60,7 +60,7 @@ DashSidebar.propTypes = {
     nickname: PropTypes.string,
     memberships: PropTypes.arrayOf(
       PropTypes.shape({
-        meeting: PropTypes.shape({
+        team: PropTypes.shape({
           id: PropTypes.string,
           name: PropTypes.string
         }).isRequired

@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {formValueSelector} from 'redux-form';
-import {HotKeys} from 'react-hotkeys';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 
 import {
@@ -10,10 +9,6 @@ import {
   Step3InviteTeam
 } from '../../components/WelcomeWizardForms';
 
-const keyMap = {
-  keyEnter: 'enter',
-  seqHelp: 'shift+/' // TODO: presently unused
-};
 
 const selector = formValueSelector('welcomeWizard');
 
@@ -29,11 +24,11 @@ const mapStateToProps = (state) => ({
 const WelcomeContainer = (props) => {
   const {page, completed} = props.welcome;
   return (
-    <HotKeys focused attach={window} keyMap={keyMap}>
+    <div>
       {page === 1 && <Step1PreferredName completed={completed} {...props}/>}
       {page === 2 && <Step2TeamName completed={completed} {...props}/>}
       {page === 3 && <Step3InviteTeam {...props}/>}
-    </HotKeys>
+    </div>
   );
 };
 
@@ -44,7 +39,7 @@ WelcomeContainer.propTypes = {
   preferredName: PropTypes.string,
   teamName: PropTypes.string,
   welcome: PropTypes.shape({
-    meetingId: PropTypes.string,
+    teamId: PropTypes.string,
     teamMemberId: PropTypes.string
   })
 };

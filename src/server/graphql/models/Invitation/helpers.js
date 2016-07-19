@@ -41,12 +41,12 @@ export const hashInviteTokenKey = async (uriTokenString) => {
 export const validateInviteTokenKey = async(key, hashStringToCompare) =>
   await compare(key, hashStringToCompare);
 
-export const getInviterInfoAndMeetingName = async(meetingId, userId) => {
+export const getInviterInfoAndTeamName = async(teamId, userId) => {
   /**
    * (1) Fetch user email and picture link from CachedUser.
-   * (2) Rename fields to match MeetingInvite email props
+   * (2) Rename fields to match TeamInvite email props
    * (3) Join 'UserProfile' to fetch preferredName as inviterName
-   * (4) Join Meeting.name by using meetingId as meetingName
+   * (4) Join Team.name by using teamId as teamName
    */
   return await r.table('CachedUser').get(userId)
     .pluck('id', 'email', 'picture')
@@ -55,7 +55,7 @@ export const getInviterInfoAndMeetingName = async(meetingId, userId) => {
       inviterEmail: doc('email'),
       inviterName: r.table('UserProfile').get(doc('id'))
         .pluck('preferredName')('preferredName'),
-      meetingName: r.table('Meeting').get(meetingId)
+      teamName: r.table('Team').get(teamId)
         .pluck('name')('name'),
     }));
 };
@@ -74,7 +74,7 @@ export const resolveSentEmails = async(sendEmailPromises, inviteesWithTokens) =>
   return {inviteeErrors, inviteesToStore};
 };
 
-export const makeInvitationsForDB = async(invitees, meetingId) => {
+export const makeInvitationsForDB = async(invitees, teamId) => {
   const now = new Date();
   const tokenExpiration = now.valueOf() + ms('30d');
   const hashPromises = invitees.map(invitee => hashInviteTokenKey(invitee.inviteToken));
@@ -84,7 +84,7 @@ export const makeInvitationsForDB = async(invitees, meetingId) => {
     const {id} = parseInviteToken(inviteToken);
     return {
       id,
-      meetingId,
+      teamId,
       createdAt: now,
       isAccepted: false,
       fullName,
@@ -96,14 +96,14 @@ export const makeInvitationsForDB = async(invitees, meetingId) => {
   });
 };
 
-export const createEmailPromises = (inviterInfoAndMeetingName, inviteesWithTokens) => {
+export const createEmailPromises = (inviterInfoAndTeamName, inviteesWithTokens) => {
   return inviteesWithTokens.map(invitee => {
     const emailProps = {
-      ...inviterInfoAndMeetingName,
+      ...inviterInfoAndTeamName,
       inviteeEmail: invitee.email,
       firstProject: invitee.task,
       inviteLink: makeAppLink(`invitation/${invitee.inviteToken}`)
     };
-    return sendEmailPromise(emailProps.inviteeEmail, 'meetingInvite', emailProps);
+    return sendEmailPromise(emailProps.inviteeEmail, 'teamInvite', emailProps);
   });
 };

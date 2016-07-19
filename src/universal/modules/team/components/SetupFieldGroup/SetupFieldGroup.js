@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import look, { StyleSheet } from 'react-look';
 import theme from 'universal/styles/theme';
-import IconButton from '../../components/IconButton/IconButton';
-import SetupField from '../../components/SetupField/SetupField';
+import IconButton from '../IconButton/IconButton';
+import SetupField from '../SetupField/SetupField';
 
 const combineStyles = StyleSheet.combineStyles;
 

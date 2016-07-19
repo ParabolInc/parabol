@@ -12,7 +12,7 @@ let styles = {};
 const meetingSubscriptionString = subscriptions.find(sub => sub.channel === MEETING).string;
 const mapStateToProps = (state, props) => {
   const meetingSubOptions = {
-    variables: {meetingId: props.params.meetingId},
+    variables: {teamId: props.params.teamId},
     component: 'meetingSub'
   };
   return {

@@ -3,7 +3,7 @@ import SectionHeader from '../../components/SectionHeader/SectionHeader';
 import Example from '../../components/Example/Example';
 import ExampleCode from '../../components/ExampleCode/ExampleCode';
 import PropsTable from '../../components/PropsTable/PropsTable';
-import CardStage from 'universal/modules/meeting/components/CardStage/CardStage';
+import CardStage from 'universal/modules/team/components/CardStage/CardStage';
 
 const demoCards = [
   {

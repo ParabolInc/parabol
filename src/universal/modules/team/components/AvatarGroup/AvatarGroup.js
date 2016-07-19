@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import look, { StyleSheet } from 'react-look';
 import theme from 'universal/styles/theme';
-import Avatar from '../../components/Avatar/Avatar';
+import Avatar from '../Avatar/Avatar';
 
 let styles = {};
 

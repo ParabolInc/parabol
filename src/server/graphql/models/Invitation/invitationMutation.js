@@ -13,7 +13,7 @@ import {
   makeInviteToken,
   resolveSentEmails,
   makeInvitationsForDB,
-  getInviterInfoAndMeetingName,
+  getInviterInfoAndTeamName,
   createEmailPromises,
 } from './helpers';
 
@@ -22,22 +22,22 @@ export default {
     type: GraphQLBoolean,
     description: 'Send invitation emails to a list of email addresses, add them to the invitation table',
     args: {
-      meetingId: {
+      teamId: {
         type: new GraphQLNonNull(GraphQLID),
-        description: 'The id of the inviting meeting'
+        description: 'The id of the inviting team'
       },
       invitees: {
         type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Invitee)))
       }
     },
-    async resolve(source, {invitees, meetingId}, {authToken}) {
-      await requireSUOrTeamMember(authToken, meetingId);
+    async resolve(source, {invitees, teamId}, {authToken}) {
+      await requireSUOrTeamMember(authToken, teamId);
       const userId = getUserId(authToken);
       const inviteesWithTokens = invitees.map(invitee => ({...invitee, inviteToken: makeInviteToken()}));
-      const inviterInfoAndTeamName = await getInviterInfoAndMeetingName(meetingId, userId);
+      const inviterInfoAndTeamName = await getInviterInfoAndTeamName(teamId, userId);
       const sendEmailPromises = createEmailPromises(inviterInfoAndTeamName, inviteesWithTokens);
       const {inviteeErrors, inviteesToStore} = await resolveSentEmails(sendEmailPromises, inviteesWithTokens);
-      const invitationsForDB = await makeInvitationsForDB(inviteesToStore, meetingId);
+      const invitationsForDB = await makeInvitationsForDB(inviteesToStore, teamId);
       // Bulk insert, wait in case something queries the invitation table
       await r.table('Invitation').insert(invitationsForDB);
       if (inviteeErrors.length > 0) {

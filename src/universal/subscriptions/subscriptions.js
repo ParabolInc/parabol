@@ -5,24 +5,24 @@ export default [
   {
     channel: MEETING,
     string: `
-    subscription($meetingId: ID!) {
-       meeting(meetingId: $meetingId) {
+    subscription($teamId: ID!) {
+       meeting(teamId: $teamId) {
          id
          createdAt
        }
     }`,
-    channelfy: variables => `meeting/${variables.meetingId}`
+    channelfy: variables => `meeting/${variables.teamId}`
   },
   {
     channel: PRESENCE,
     string: `
-    subscription($meetingId: ID!) {
-      presence(meetingId: $meetingId) {
+    subscription($teamId: ID!) {
+      presence(teamId: $teamId) {
         id
         userId
       }
     }`,
-    channelfy: variables => `presence/${variables.meetingId}`
+    channelfy: variables => `presence/${variables.teamId}`
   },
   {
     channel: 'user',

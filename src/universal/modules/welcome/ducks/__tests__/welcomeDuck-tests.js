@@ -9,7 +9,7 @@ import reducer, {
 const stateTemplate = {
   completed: 0,
   page: 1,
-  meetingId: null,
+  teamId: null,
   teamMemberId: null
 };
 
@@ -18,18 +18,18 @@ test('initial state', t => {
   t.deepEqual(initialState, stateTemplate);
 });
 
-test('setWelcomeTeam() updates meetingId, teamMemberId', t => {
+test('setWelcomeTeam() updates teamId, teamMemberId', t => {
   const state = reducer();
 
   t.deepEqual(
     reducer(state,
       setWelcomeTeam({
-        meetingId: 'apple1',
+        teamId: 'apple1',
         teamMemberId: 'banana2'
       })
     ), {
       ...stateTemplate,
-      meetingId: 'apple1',
+      teamId: 'apple1',
       teamMemberId: 'banana2'
     }
   );

@@ -10,10 +10,10 @@ import parseChannel from './parseChannel';
  * */
 const dechannelfy = {
   meeting(variableString) {
-    return {meetingId: variableString};
+    return {teamId: variableString};
   },
   presence(variableString) {
-    return {meetingId: variableString};
+    return {teamId: variableString};
   }
 };
 

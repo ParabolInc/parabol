@@ -22,7 +22,7 @@ export const UserProfile = new GraphQLObjectType({
     },
     isNew: {
       type: GraphQLBoolean,
-      description: 'Has the user ever been associated with a meeting'
+      description: 'Has the user ever been associated with a team'
     },
     welcomeSentAt: {
       type: GraphQLISO8601Type,

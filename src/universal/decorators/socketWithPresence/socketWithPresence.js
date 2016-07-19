@@ -11,7 +11,7 @@ import {PRESENCE} from 'universal/subscriptions/constants';
 const presenceSubscription = subscriptions.find(sub => sub.channel === PRESENCE);
 const mapStateToProps = (state, props) => {
   const presenceSubOptions = {
-    variables: {meetingId: props.params.meetingId},
+    variables: {teamId: props.params.teamId},
     component: 'socketWithPresence'
   };
   return {
@@ -29,7 +29,7 @@ export default ComposedComponent => {
       user: PropTypes.object,
       dispatch: PropTypes.func,
       params: PropTypes.shape({
-        meetingId: PropTypes.string
+        teamId: PropTypes.string
       })
     };
 
@@ -43,11 +43,11 @@ export default ComposedComponent => {
     componentWillReceiveProps(newProps) {
       if (!this.state.isSubbed) {
         // The subscribe middleware is async, so we want to listen before we talk (good advice for humans, too)
-        const {params: {meetingId}, socketSubs} = newProps;
-        const presenceSub = presenceSubscription.channelfy({meetingId});
+        const {params: {teamId}, socketSubs} = newProps;
+        const presenceSub = presenceSubscription.channelfy({teamId});
         const canPublish = socketSubs.find(sub => sub === presenceSub);
         if (canPublish) {
-          const options = {variables: {meetingId}};
+          const options = {variables: {teamId}};
           cashay.mutate('soundOff', options);
           this.setState({isSubbed: true});
         }

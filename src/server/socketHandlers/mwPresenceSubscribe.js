@@ -13,7 +13,7 @@ export default async function mwPresenceSubscribe(req, next) {
     next(req.authTokenExpiredError);
     return;
   }
-  const {channel, variableString: meetingId} = parseChannel(req.channel);
+  const {channel, variableString: teamId} = parseChannel(req.channel);
   if (channel !== PRESENCE) {
     // all auth is taken care of inside GraphQL
     next();
@@ -21,10 +21,10 @@ export default async function mwPresenceSubscribe(req, next) {
   }
   const authToken = req.socket.getAuthToken();
   // TODO cache all memberships on the socket?
-  const teamMember = await getTeamMember(authToken, meetingId);
+  const teamMember = await getTeamMember(authToken, teamId);
   if (teamMember) {
     next();
   } else {
-    next({name: 'Unauthorized subscription', message: `You are not a part of team ${meetingId}`});
+    next({name: 'Unauthorized subscription', message: `You are not a part of team ${teamId}`});
   }
 }

@@ -23,7 +23,7 @@ const linkStyle = {
 };
 
 const Team = (props) => {
-  const {dispatch, meetingId, user} = props;
+  const {dispatch, teamId, user} = props;
   const goToLink = (e) => {
     e.preventDefault();
     console.log('TODO: Go to link');
@@ -33,7 +33,7 @@ const Team = (props) => {
     <DashLayout title="Team Dashboard">
       <DashSidebar
         activeArea="team"
-        activeTeamId={meetingId}
+        activeTeamId={teamId}
         dispatch={dispatch}
         user={user}
       />
@@ -66,7 +66,7 @@ const Team = (props) => {
 
 Team.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  meetingId: PropTypes.string.isRequired,
+  teamId: PropTypes.string.isRequired,
   user: PropTypes.shape({
     name: PropTypes.string,
     nickname: PropTypes.string,
