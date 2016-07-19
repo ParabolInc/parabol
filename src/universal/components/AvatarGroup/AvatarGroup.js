@@ -6,7 +6,7 @@ import Avatar from '../Avatar/Avatar';
 let s = {};
 
 const AvatarGroup = (props) => {
-  const { label, avatars } = props;
+  const {label, avatars} = props;
 
   return (
     <div className={s.root}>

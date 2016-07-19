@@ -9,7 +9,7 @@ import Button from 'universal/components/Button/Button';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import Sidebar from 'universal/modules/meeting/components/Sidebar/Sidebar';
+import Sidebar from 'universal/modules/team/components/Sidebar/Sidebar';
 
 import Jordan from 'universal/styles/theme/images/avatars/jordan-husney-avatar.jpg';
 import Matt from 'universal/styles/theme/images/avatars/matt-krick-avatar.jpg';

@@ -1,7 +1,5 @@
-import React, { Component, PropTypes } from 'react';
-import look, { StyleSheet } from 'react-look';
-// import FontAwesome from 'react-fontawesome';
-// import tinycolor from 'tinycolor2';
+import React, {PropTypes} from 'react';
+import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import PushButton from '../../components/PushButton/PushButton';
@@ -10,47 +8,43 @@ const combineStyles = StyleSheet.combineStyles;
 
 let styles = {};
 
-@look
-// eslint-disable-next-line react/prefer-stateless-function
-export default class Card extends Component {
-  static propTypes = {
-    active: PropTypes.bool,
-    avatar: PropTypes.object, // avatar.name, avatar.image, avatar.badge
-    hasControls: PropTypes.bool,
-    label: PropTypes.string
-  };
+const Card = (props) => {
+  const {active, avatar, hasControls, label} = props;
 
-  render() {
-    const { active, avatar, hasControls, label } = this.props;
+  const cardActiveStyles = combineStyles(styles.card, styles.cardIsActive);
+  const cardBlurredStyles = combineStyles(styles.card, styles.cardIsBlurred);
+  const cardStyles = active ? cardActiveStyles : cardBlurredStyles;
+  const cardLabel = label || 'invited';
+  const nameActiveStyles = combineStyles(styles.cardName, styles.cardNameActive);
+  const nameStyles = active ? nameActiveStyles : styles.cardName;
+  let labelStyles = styles.cardLabel;
 
-    const cardActiveStyles = combineStyles(styles.card, styles.cardIsActive);
-    const cardBlurredStyles = combineStyles(styles.card, styles.cardIsBlurred);
-    const cardStyles = active ? cardActiveStyles : cardBlurredStyles;
-    const cardLabel = label || 'invited';
-    const nameActiveStyles = combineStyles(styles.cardName, styles.cardNameActive);
-    const nameStyles = active ? nameActiveStyles : styles.cardName;
-    let labelStyles = styles.cardLabel;
-
-    if (avatar.badge === 'present') {
-      labelStyles = combineStyles(styles.cardLabel, styles.cardLabelPresent);
-    }
-
-    return (
-      <div className={cardStyles}>
-        {/* NOTE: Not using the <Avatar /> label. Using card name styles. */}
-        <Avatar badge={avatar.badge} image={avatar.image} size="largest" />
-        <div className={nameStyles}>{avatar.name}</div>
-        <div className={labelStyles}>{cardLabel}</div>
-        {hasControls &&
-          <div className={styles.buttonsBlock}>
-            <PushButton size="large" />
-            <PushButton size="large" />
-          </div>
-        }
-      </div>
-    );
+  if (avatar.badge === 'check') {
+    labelStyles = combineStyles(styles.cardLabel, styles.cardLabelPresent);
   }
-}
+
+  return (
+    <div className={cardStyles}>
+      {/* NOTE: Not using the <Avatar /> label. Using card name styles. */}
+      <Avatar badge={avatar.badge} image={avatar.image} size="largest" />
+      <div className={nameStyles}>{avatar.name}</div>
+      <div className={labelStyles}>{cardLabel}</div>
+      {hasControls &&
+        <div className={styles.buttonsBlock}>
+          <PushButton size="large" />
+          <PushButton size="large" />
+        </div>
+      }
+    </div>
+  );
+};
+
+Card.propTypes = {
+  active: PropTypes.bool,
+  avatar: PropTypes.object, // avatar.name, avatar.image, avatar.badge
+  hasControls: PropTypes.bool,
+  label: PropTypes.string
+};
 
 styles = StyleSheet.create({
   card: {
@@ -100,3 +94,5 @@ styles = StyleSheet.create({
     display: 'inline-block'
   }
 });
+
+export default look(Card);

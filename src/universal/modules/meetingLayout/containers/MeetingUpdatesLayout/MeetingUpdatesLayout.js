@@ -3,14 +3,15 @@ import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 
 import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
+import Columns from 'universal/components/Columns/Columns';
 import IconLink from 'universal/components/IconLink/IconLink';
-import ProgressBar from 'universal/components/ProgressBar/ProgressBar';
-import CardStage from 'universal/modules/team/components/CardStage/CardStage';
 import ShortcutsMenu from 'universal/modules/team/components/ShortcutsMenu/ShortcutsMenu';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingSectionHeading/MeetingSectionHeading';
+// eslint-disable-next-line max-len
+import MeetingSectionSubheading from 'universal/modules/meeting/components/MeetingSectionSubheading/MeetingSectionSubheading';
 import Sidebar from 'universal/modules/team/components/Sidebar/Sidebar';
 
 import Jordan from 'universal/styles/theme/images/avatars/jordan-husney-avatar.jpg';
@@ -47,47 +48,10 @@ const exampleTeam = {
   ]
 };
 
-const demoCards = [
-  {
-    name: '@FirstKitty',
-    image: 'https://placekitten.com/g/600/600',
-    badge: null, // absent || active || present
-    state: 'invited', // invited || not attending || fully present,
-    isCurrent: false
-  },
-  {
-    name: '@SecondKitty',
-    image: 'https://placekitten.com/g/600/600',
-    badge: null, // absent || active || present
-    state: 'invited', // invited || not attending || fully present,
-    isCurrent: false
-  },
-  {
-    name: '@ThirdKitty',
-    image: 'https://placekitten.com/g/600/600',
-    badge: null, // absent || active || present
-    state: 'invited', // invited || not attending || fully present,
-    isCurrent: true
-  },
-  {
-    name: '@FourthKitty',
-    image: 'https://placekitten.com/g/600/600',
-    badge: null, // absent || active || present
-    state: 'invited', // invited || not attending || fully present,
-    isCurrent: false
-  },
-  {
-    name: '@FifthKitty',
-    image: 'https://placekitten.com/g/600/600',
-    badge: null, // absent || active || present
-    state: 'invited', // invited || not attending || fully present,
-    isCurrent: false
-  }
-];
+console.log(s, theme);
 
 const MeetingCheckinLayout = (props) => {
   const {members} = props;
-  // const handleClick = (e) => e.preventDefault();
   return (
     <MeetingLayout>
       {/* */}
@@ -97,10 +61,7 @@ const MeetingCheckinLayout = (props) => {
         {/* */}
         <MeetingSection paddingBottom="2rem" paddingTop="2rem">
           <div className={s.avatars}>
-            <AvatarGroup avatars={members} label="Team:" />
-            <div className={s.progress}>
-              <ProgressBar />
-            </div>
+            <AvatarGroup avatars={members} label="Updates given:" />
           </div>
         </MeetingSection>
         {/* */}
@@ -109,11 +70,14 @@ const MeetingCheckinLayout = (props) => {
           {/* */}
           <MeetingSection paddingBottom="2rem">
             <MeetingSectionHeading>
-              Hola <span className={s.name}>Kitty</span>, ¿por qué no puedes estar completamente enfocado hoy?
+              What’s changed since last week?
             </MeetingSectionHeading>
+            <MeetingSectionSubheading>
+              Keep ‘em quick—discussion is coming up!
+            </MeetingSectionSubheading>
           </MeetingSection>
           {/* */}
-          <CardStage cards={demoCards} />
+          <Columns />
           <MeetingSection paddingBottom="2rem">
             <IconLink
               icon="arrow-circle-right"
@@ -136,19 +100,7 @@ const MeetingCheckinLayout = (props) => {
 };
 
 s = StyleSheet.create({
-  name: {
-    color: theme.palette.warm
-  },
-
-  avatars: {
-    // Define
-  },
-
-  progress: {
-    paddingLeft: '5.25rem',
-    paddingRight: '.75rem',
-    paddingTop: '1rem'
-  }
+  // Define
 });
 
 MeetingCheckinLayout.propTypes = {

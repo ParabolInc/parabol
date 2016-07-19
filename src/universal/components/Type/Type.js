@@ -16,6 +16,8 @@ const Type = (props) => {
     display,
     family,
     italic,
+    marginBottom,
+    marginTop,
     scale,
     theme,
     width
@@ -32,11 +34,16 @@ const Type = (props) => {
     s[width]
   );
 
+  const marginStyle = {
+    marginBottom,
+    marginTop
+  };
+
   const boldStyles = bold ? s.bold : null;
   const italicStyles = italic ? s.italic : null;
 
   return (
-    <div className={combineStyles(typeStyles, boldStyles, italicStyles)}>
+    <div className={combineStyles(typeStyles, boldStyles, italicStyles)} style={marginStyle}>
       {children}
     </div>
   );
@@ -60,6 +67,8 @@ Type.propTypes = {
     'serif'
   ]),
   italic: PropTypes.bool,
+  marginBottom: PropTypes.string,
+  marginTop: PropTypes.string,
   scale: PropTypes.oneOf([
     'sBase', // 16px
     's1',    // 12px
@@ -89,6 +98,8 @@ Type.defaultProps = {
   align: 'left',
   display: 'block',
   family: 'sansSerif',
+  marginBottom: '0px',
+  marginTop: '0px',
   scale: 'sBase',
   style: 'normal',
   theme: 'dark',

@@ -5,11 +5,11 @@ import ExampleCode from '../../components/ExampleCode/ExampleCode';
 import PropsTable from '../../components/PropsTable/PropsTable';
 import Avatar from 'universal/components/Avatar/Avatar';
 
-const avatar = <Avatar badge="present" hasLabel size="largest" />;
-const avatarString = '<Avatar badge="present" hasLabel size="largest" />';
+const avatar = <Avatar badge="check" hasLabel size="largest" />;
+const avatarString = '<Avatar badge="check" hasLabel size="largest" />';
 const avatarPropsList = [
   { name: 'badge', type: 'oneOf',
-    description: <span>absent, active, present</span>
+    description: <span>absent, active, check</span>
   },
   { name: 'hasLabel', type: 'bool',
     description: <span>Shows a label with the avatar image</span>

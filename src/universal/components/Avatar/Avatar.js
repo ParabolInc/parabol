@@ -21,7 +21,7 @@ const renderBadge = (badge, size) => {
     s[badgeIconStyles]
   );
 
-  if (badge === 'present') {
+  if (badge === 'check') {
     icon = 'check-circle';
   } else if (badge === 'absent') {
     icon = 'times-circle';
@@ -120,7 +120,7 @@ Avatar.propTypes = {
     'active',
     'offline',
     'online',
-    'present'
+    'check'
   ]),
   hasLabel: PropTypes.bool,
   hasTooltip: PropTypes.bool,
@@ -275,7 +275,7 @@ s = StyleSheet.create({
   },
 
   // NOTE: Modifiers for badgeIcon
-  badgeIconPresent: {
+  badgeIconCheck: {
     color: theme.palette.cool
   },
   badgeIconAbsent: {

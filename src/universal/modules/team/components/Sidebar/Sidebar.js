@@ -1,5 +1,5 @@
-import React, { Component, PropTypes } from 'react';
-import look, { StyleSheet } from 'react-look';
+import React, {PropTypes} from 'react';
+import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import PlaceholderList from 'universal/modules/meeting/components/PlaceholderList/PlaceholderList';
@@ -9,67 +9,63 @@ const combineStyles = StyleSheet.combineStyles;
 
 let s = {};
 
-@look
-// eslint-disable-next-line react/prefer-stateless-function
-export default class Sidebar extends Component {
-  static propTypes = {
-    shortUrl: PropTypes.string,
-    teamName: PropTypes.string,
-    timerValue: PropTypes.string
-  }
+const Sidebar = (props) => {
+  const {shortUrl, teamName, timerValue} = props;
+  const activeNavAnchor = combineStyles(s.navListItemLink, s.navListItemLinkActive);
+  const labels = {
+    checkin: 'Check-In',
+    updates: 'Updates',
+    requests: 'Requests',
+  };
 
-  render() {
-    const { shortUrl, teamName, timerValue } = this.props;
-    const activeNavAnchor = combineStyles(s.navListItemLink, s.navListItemLinkActive);
-    const labels = {
-      checkin: 'Check-In',
-      updates: 'Updates',
-      requests: 'Requests',
-    };
-
-    return (
-      <div className={s.sidebar}>
-        <div className={s.sidebarHeader}>
-          <a className={s.brandLink} href="/action-ui/">
-            <img className={s.brandLogo} src={actionUIMark} />
-          </a>
-          <div className={s.teamName}>{teamName}</div>
-          <a className={s.shortUrl} href={shortUrl}>{shortUrl}</a>
-          {/* TODO: make me respond to props */}
-          <div className={s.timer}>{timerValue}</div>
-        </div>
-
+  return (
+    <div className={s.sidebar}>
+      <div className={s.sidebarHeader}>
+        <a className={s.brandLink} href="/action-ui/">
+          <img className={s.brandLogo} src={actionUIMark} />
+        </a>
+        <div className={s.teamName}>{teamName}</div>
+        <a className={s.shortUrl} href={shortUrl}>{shortUrl}</a>
         {/* TODO: make me respond to props */}
-        <nav className={s.nav}>
-          <ul className={s.navList}>
-            <li className={s.navListItem}>
-              <a className={s.navListItemLink} href="#check-in" title={labels.checkin}>
-                <span className={s.bullet}>i.</span>
-                <span className={s.label}>{labels.checkin}</span>
-              </a>
-            </li>
-            <li className={s.navListItem}>
-              <a
-                className={s.navListItemLink} href="#updates" title={labels.updates}
-              >
-                <span className={s.bullet}>ii.</span>
-                <span className={s.label}>{labels.updates}</span>
-              </a>
-            </li>
-            <li className={s.navListItem}>
-              <a className={activeNavAnchor} href="#requests" title={labels.requests}>
-                <span className={s.bullet}>iii.</span>
-                <span className={s.label}>{labels.requests}</span>
-              </a>
-            </li>
-          </ul>
-          <PlaceholderList />
-          <PlaceholderInput />
-        </nav>
+        <div className={s.timer}>{timerValue}</div>
       </div>
-    );
-  }
-}
+
+      {/* TODO: make me respond to props */}
+      <nav className={s.nav}>
+        <ul className={s.navList}>
+          <li className={s.navListItem}>
+            <a className={s.navListItemLink} href="#check-in" title={labels.checkin}>
+              <span className={s.bullet}>i.</span>
+              <span className={s.label}>{labels.checkin}</span>
+            </a>
+          </li>
+          <li className={s.navListItem}>
+            <a
+              className={s.navListItemLink} href="#updates" title={labels.updates}
+            >
+              <span className={s.bullet}>ii.</span>
+              <span className={s.label}>{labels.updates}</span>
+            </a>
+          </li>
+          <li className={s.navListItem}>
+            <a className={activeNavAnchor} href="#requests" title={labels.requests}>
+              <span className={s.bullet}>iii.</span>
+              <span className={s.label}>{labels.requests}</span>
+            </a>
+          </li>
+        </ul>
+        <PlaceholderList />
+        <PlaceholderInput />
+      </nav>
+    </div>
+  );
+};
+
+Sidebar.propTypes = {
+  shortUrl: PropTypes.string,
+  teamName: PropTypes.string,
+  timerValue: PropTypes.string
+};
 
 s = StyleSheet.create({
   brandLogo: {
@@ -173,3 +169,5 @@ s = StyleSheet.create({
     fontSize: theme.typography.s4,
   }
 });
+
+export default look(Sidebar);
