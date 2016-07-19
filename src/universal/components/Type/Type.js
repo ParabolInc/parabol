@@ -1,112 +1,101 @@
-import React, { Component, PropTypes } from 'react';
-import look, { StyleSheet } from 'react-look';
-import * as appTheme from 'universal/styles/theme';
+import React, {PropTypes} from 'react';
+import look, {StyleSheet} from 'react-look';
+import * as t from 'universal/styles/theme';
 
 const combineStyles = StyleSheet.combineStyles;
-const { cool, warm, dark, mid, light } = appTheme.palette;
+const {cool, warm, dark, mid, light} = t.palette;
 const white = '#fff';
 
-let styles = {};
+let s = {};
 
-@look
-// eslint-disable-next-line react/prefer-stateless-function
-export default class Background extends Component {
+const Type = (props) => {
+  const {
+    align,
+    bold,
+    children,
+    display,
+    family,
+    italic,
+    scale,
+    theme,
+    width
+  } = props;
 
-  static propTypes = {
-    align: PropTypes.oneOf([
-      'left',
-      'center',
-      'right'
-    ]),
-    bold: PropTypes.bool,
-    children: PropTypes.any,
-    display: PropTypes.oneOf([
-      'block',
-      'inline',
-      'inlineBlock'
-    ]),
-    family: PropTypes.oneOf([
-      'sansSerif',
-      'serif'
-    ]),
-    italic: PropTypes.bool,
-    scale: PropTypes.oneOf([
-      'sBase', // 16px
-      's1',    // 12px
-      's2',    // 13px
-      's3',    // 14px
-      's4',    // 18px
-      's5',    // 20px
-      's6',    // 24px
-      's7',    // 36px
-      's8',    // 48px
-    ]),
-    theme: PropTypes.oneOf([
-      'cool',
-      'warm',
-      'dark',
-      'mid',
-      'light',
-      'white'
-    ]),
-    width: PropTypes.oneOf([
-      'auto',
-      'full'
-    ])
-  }
+  const typeStyles = combineStyles(
+    s[align],
+    s[bold],
+    s[display],
+    s[family],
+    s[scale],
+    s[theme],
+    s[italic],
+    s[width]
+  );
 
-  static defaultProps = {
-    align: 'left',
-    display: 'block',
-    family: 'sansSerif',
-    scale: 'sBase',
-    style: 'normal',
-    theme: 'dark',
-    width: 'full'
-  }
+  const boldStyles = bold ? s.bold : null;
+  const italicStyles = italic ? s.italic : null;
 
-  render() {
-    const {
-      align,
-      bold,
-      children,
-      display,
-      family,
-      italic,
-      scale,
-      theme,
-      width
-    } = this.props;
+  return (
+    <div className={combineStyles(typeStyles, boldStyles, italicStyles)}>
+      {children}
+    </div>
+  );
+};
 
-    const typeStyles = combineStyles(
-      styles.base,
-      styles[align],
-      styles[bold],
-      styles[display],
-      styles[family],
-      styles[scale],
-      styles[theme],
-      styles[italic],
-      styles[width]
-    );
+Type.propTypes = {
+  align: PropTypes.oneOf([
+    'left',
+    'center',
+    'right'
+  ]),
+  bold: PropTypes.bool,
+  children: PropTypes.any,
+  display: PropTypes.oneOf([
+    'block',
+    'inline',
+    'inlineBlock'
+  ]),
+  family: PropTypes.oneOf([
+    'sansSerif',
+    'serif'
+  ]),
+  italic: PropTypes.bool,
+  scale: PropTypes.oneOf([
+    'sBase', // 16px
+    's1',    // 12px
+    's2',    // 13px
+    's3',    // 14px
+    's4',    // 18px
+    's5',    // 20px
+    's6',    // 24px
+    's7',    // 36px
+    's8',    // 48px
+  ]),
+  theme: PropTypes.oneOf([
+    'cool',
+    'warm',
+    'dark',
+    'mid',
+    'light',
+    'white'
+  ]),
+  width: PropTypes.oneOf([
+    'auto',
+    'full'
+  ])
+};
 
-    const boldStyles = bold ? styles.bold : null;
-    const italicStyles = italic ? styles.italic : null;
+Type.defaultProps = {
+  align: 'left',
+  display: 'block',
+  family: 'sansSerif',
+  scale: 'sBase',
+  style: 'normal',
+  theme: 'dark',
+  width: 'full'
+};
 
-    return (
-      <div className={combineStyles(typeStyles, boldStyles, italicStyles)}>
-        {children}
-      </div>
-    );
-  }
-}
-
-styles = StyleSheet.create({
-  // base
-  base: {
-    // Define
-  },
-
+s = StyleSheet.create({
   // align
   left: {
     textAlign: 'left'
@@ -135,48 +124,48 @@ styles = StyleSheet.create({
 
   // family
   sansSerif: {
-    fontFamily: appTheme.typography.sansSerif
+    fontFamily: t.typography.sansSerif
   },
 
   serif: {
-    fontFamily: appTheme.typography.serif
+    fontFamily: t.typography.serif
   },
 
   // scale
   sBase: {
-    fontSize: appTheme.typography.sBase
+    fontSize: t.typography.sBase
   },
 
   s1: {
-    fontSize: appTheme.typography.s1
+    fontSize: t.typography.s1
   },
 
   s2: {
-    fontSize: appTheme.typography.s2
+    fontSize: t.typography.s2
   },
 
   s3: {
-    fontSize: appTheme.typography.s3
+    fontSize: t.typography.s3
   },
 
   s4: {
-    fontSize: appTheme.typography.s4
+    fontSize: t.typography.s4
   },
 
   s5: {
-    fontSize: appTheme.typography.s5
+    fontSize: t.typography.s5
   },
 
   s6: {
-    fontSize: appTheme.typography.s6
+    fontSize: t.typography.s6
   },
 
   s7: {
-    fontSize: appTheme.typography.s7
+    fontSize: t.typography.s7
   },
 
   s8: {
-    fontSize: appTheme.typography.s8
+    fontSize: t.typography.s8
   },
 
   // style
@@ -223,3 +212,5 @@ styles = StyleSheet.create({
     width: '100%'
   }
 });
+
+export default look(Type);
