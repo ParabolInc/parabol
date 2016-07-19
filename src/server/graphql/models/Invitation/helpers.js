@@ -8,7 +8,7 @@ import promisify from 'es6-promisify';
 
 const INVITE_TOKEN_INVITE_ID_LEN = 6;
 const INVITE_TOKEN_KEY_LEN = 8;
-const INVITE_TOKEN_KEY_HASH_ROUNDS = process.env.INVITE_TOKEN_KEY_HASH_ROUNDS || 10;
+const INVITE_TOKEN_KEY_HASH_ROUNDS = parseInt(process.env.INVITE_TOKEN_KEY_HASH_ROUNDS, 10) || 10;
 
 const hash = promisify(bcrypt.hash);
 const compare = promisify(bcrypt.compare);
