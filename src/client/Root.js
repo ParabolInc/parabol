@@ -2,7 +2,7 @@ import React from 'react';
 import {Presets, Plugins, LookRoot} from 'react-look';
 import {Router, browserHistory} from 'react-router';
 import {Provider} from 'react-redux';
-import routes from '../universal/routes/index';
+import routes from 'universal/routes/index';
 import {syncHistoryWithStore} from 'react-router-redux';
 
 const lookConfig = Presets['react-dom'];

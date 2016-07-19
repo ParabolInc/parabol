@@ -12,7 +12,7 @@ import GraphQLISO8601Type from 'graphql-custom-datetype';
 
 import {UserProfile} from '../UserProfile/userProfileSchema';
 import {TeamMember} from '../TeamMember/teamMemberSchema';
-import r from '../../../database/rethinkDriver';
+import r from 'server/database/rethinkDriver';
 
 const IdentityType = new GraphQLObjectType({
   name: 'IdentityType',
@@ -122,7 +122,7 @@ export const CachedUser = new GraphQLObjectType({
       type: new GraphQLList(TeamMember),
       description: 'The memberships to different teams that the user has',
       async resolve({id}) {
-        return await r.table('TeamMember').getAll(id, {index: 'cachedUserId'});
+        return await r.table('TeamMember').getAll(id, {index: 'userId'});
       }
     }
   })

@@ -1,57 +1,56 @@
 import React, {Component, PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import {connect} from 'react-redux';
-import {reduxSocket} from 'redux-socket-cluster';
-import {HotKeys} from 'react-hotkeys';
-import requireAuth from 'universal/decorators/requireAuth/requireAuth';
-
-import AuthEngine from 'universal/redux/AuthEngine';
+import {cashay} from 'cashay';
+import subscriptions from 'universal/subscriptions/subscriptions';
+import subscriber from 'universal/subscriptions/subscriber';
+import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
+import {MEETING} from 'universal/subscriptions/constants';
 
 let styles = {};
 
-const keyMap = {
-  keyEnter: 'enter',
-  seqHelp: 'shift+/'
+const meetingSubscriptionString = subscriptions.find(sub => sub.channel === MEETING).string;
+const mapStateToProps = (state, props) => {
+  const meetingSubOptions = {
+    variables: {teamId: props.params.teamId},
+    component: 'meetingSub'
+  };
+  return {
+    meetingSub: cashay.subscribe(meetingSubscriptionString, subscriber, meetingSubOptions),
+  };
 };
 
-const mapStateToProps = state => ({
-  authToken: state.authToken
-});
-
+@socketWithPresence
 @connect(mapStateToProps)
-@requireAuth
-@reduxSocket({}, {AuthEngine})
 @look
 // eslint-disable-next-line react/prefer-stateless-function
 export default class MeetingLobby extends Component {
   static propTypes = {
-    // children included here for multi-part landing pages (FAQs, pricing, cha la la)
-    // children: PropTypes.element,
-    dispatch: PropTypes.func.isRequired,
-    meeting: PropTypes.object.isRequired,
-    setup: PropTypes.object.isRequired,
-    shortcuts: PropTypes.object.isRequired,
-    team: PropTypes.object.isRequired,
+    meetingSub: PropTypes.object.isRequired,
+    presenceSub: PropTypes.object.isRequired,
+    user: PropTypes.object.isRequired,
   };
 
   render() {
+    const {meeting} = this.props.meetingSub.data;
+    const {presence} = this.props.presenceSub.data;
+    const socketsPresent = presence.map(con => con.id).join(', ');
+    const usersPresent = presence.map(con => con.userId).join(', ');
+
     return (
-      <HotKeys focused attach={window} keyMap={keyMap}>
-        <div className={styles.viewport}>
-          <div className={styles.main}>
-            <div className={styles.contentGroup}>
-              HI GUY
-              {/* <SetupField /> */}
-            </div>
+      <div className={styles.viewport}>
+        <div className={styles.main}>
+          <div className={styles.contentGroup}>
+            <div>HI GUY</div>
+            <div>Your meeting id is: {meeting.id}</div>
+            <div>Your userId is: {this.props.user.id}</div>
+            <div>Folks present: {usersPresent}</div>
+            <div>Sockets present: {socketsPresent}</div>
+            {/* <SetupField /> */}
           </div>
         </div>
-      </HotKeys>
+      </div>
     );
-          // <Sidebar
-          //   shortUrl="https://prbl.io/a/b7s8x9"
-          //   teamName={teamName}
-          //   timerValue="30:00"
-          // />
   }
 }
 

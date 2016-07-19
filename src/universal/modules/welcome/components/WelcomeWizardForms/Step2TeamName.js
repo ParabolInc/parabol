@@ -26,7 +26,7 @@ const Step2TeamName = (props) => {
           leader: {
             id: teamMemberId,
             teamId,
-            cachedUserId: user.id,
+            userId: user.id,
             isActive: true,
             isLead: true,
             isFacilitator: true

@@ -1,5 +1,5 @@
 import * as querystring from 'querystring';
-import {getDotenv} from '../../universal/utils/dotenv';
+import {getDotenv} from 'universal/utils/dotenv';
 
 getDotenv();
 

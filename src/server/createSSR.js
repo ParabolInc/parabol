@@ -1,5 +1,5 @@
 import {createStore, applyMiddleware} from 'redux';
-import makeReducer from '../universal/redux/makeReducer';
+import makeReducer from 'universal/redux/makeReducer';
 import {match} from 'react-router';
 import thunkMiddleware from 'redux-thunk';
 

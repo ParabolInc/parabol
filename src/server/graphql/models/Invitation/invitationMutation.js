@@ -1,4 +1,4 @@
-import r from '../../../database/rethinkDriver';
+import r from 'server/database/rethinkDriver';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
@@ -31,7 +31,7 @@ export default {
       }
     },
     async resolve(source, {invitees, teamId}, {authToken}) {
-      requireSUOrTeamMember(authToken, teamId);
+      await requireSUOrTeamMember(authToken, teamId);
       const userId = getUserId(authToken);
       const inviteesWithTokens = invitees.map(invitee => ({...invitee, inviteToken: makeInviteToken()}));
       const inviterInfoAndTeamName = await getInviterInfoAndTeamName(teamId, userId);

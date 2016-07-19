@@ -1,4 +1,4 @@
-import r from '../../../database/rethinkDriver';
+import r from 'server/database/rethinkDriver';
 import {TeamMember} from './teamMemberSchema';
 import {
   GraphQLNonNull,
@@ -63,7 +63,7 @@ export default {
 
       // Check if TeamMember already exists (i.e. user invited themselves):
       const teamMemberExists = await r.table('TeamMember')
-        .getAll(userId, {index: 'cachedUserId'})
+        .getAll(userId, {index: 'userId'})
         .filter({teamId: invitation.teamId})
         .isEmpty()
         .not();
@@ -78,7 +78,7 @@ export default {
       const newTeamMember = {
         id: shortid.generate(),
         teamId: invitation.teamId,
-        cachedUserId: userId,
+        userId,
         isActive: true,
         isLead: false,
         isFacilitator: false

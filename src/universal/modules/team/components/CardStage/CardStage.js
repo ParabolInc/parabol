@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import look, { StyleSheet } from 'react-look';
-import Card from '../../components/Card/Card';
+import Card from '../Card/Card';
 
 let styles = {};
 

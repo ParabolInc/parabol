@@ -17,7 +17,7 @@ export function showLock(dispatch) {
     if (error) throw error;
     // TODO: stuff this in a utility function:
     dispatch(setAuthToken(authToken));
-    cashay.create({transport: new ActionHTTPTransport(authToken)});
+    cashay.create({httpTransport: new ActionHTTPTransport(authToken)});
     const options = {variables: {authToken}};
     cashay.mutate('updateUserWithAuthToken', options);
   });

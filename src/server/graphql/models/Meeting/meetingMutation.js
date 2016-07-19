@@ -1,99 +1,56 @@
-import {Meeting} from './meetingSchema';
-import r from '../../../database/rethinkDriver';
-import uuid from 'node-uuid';
+import {requireSUOrTeamMember, requireWebsocketExchange, requireWebsocket} from '../authorization';
 import {
-  GraphQLString,
   GraphQLNonNull,
   GraphQLID,
+  GraphQLBoolean
 } from 'graphql';
+import {SOUNDOFF, PRESENT} from 'universal/subscriptions/constants';
 
 export default {
-  createMeeting: {
-    type: Meeting,
+  present: {
+    description: 'Announce to a presence channel that you are present',
+    type: GraphQLBoolean,
     args: {
       teamId: {
         type: new GraphQLNonNull(GraphQLID),
-        description: 'The team ID this meeting belongs to'
+        description: 'The team id to announce presence in'
       },
-    },
-    async resolve(source, {teamId}, {authToken}) {
-      const newMeeting = {
-        // TODO: a uuid is overkill. let's make it small for smaller urls & friendly socket payloads
-        id: uuid.v4(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        lastUpdatedBy: authToken.id,
-        teamId,
-        // TODO should this be a name?
-        // If so we need to add names to the JWT & discuss overall JWT shape
-        currentEditors: [],
-        content: ''
-      };
-      await r.table('Meeting').insert(newMeeting);
-      return newMeeting;
-    }
-  },
-  editContent: {
-    type: Meeting,
-    args: {
-      meetingId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The unique meeting ID'
-      },
-      editor: {
-        type: new GraphQLNonNull(GraphQLString),
-        description: 'the socketId currently editing the content'
-      },
-    },
-    async resolve(source, {meetingId, editor}) { // eslint-disable-line no-unused-vars
-      const updatedMeeting = await r.table('Meeting').get(meetingId).update({
-        currentEditors: r.row('currentEditors').append(editor)
-      }, {returnChanges: true});
-      return updatedMeeting.changes[0].new_val;
-    }
-  },
-  finishEditContent: {
-    type: Meeting,
-    args: {
-      meetingId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The unique meeting ID'
-      },
-      editor: {
-        type: new GraphQLNonNull(GraphQLString),
-        description: 'the socketId currently editing the content'
-      },
-    },
-    async resolve(source, {meetingId, editor}) { // eslint-disable-line no-unused-vars
-      const updatedMeeting = await r.table('Meeting').get(meetingId).update(row => ({
-        currentEditors: row('currentEditors').filter(user => user.ne(editor))
-      }), {returnChanges: true});
-      return updatedMeeting.changes[0].new_val;
-    }
-  },
-  updateContent: {
-    type: Meeting,
-    args: {
-      meetingId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The unique meeting ID'
-      },
-      updatedBy: {
-        type: new GraphQLNonNull(GraphQLString),
-        description: 'the socketId that updated the content'
-      },
-      content: {
-        type: new GraphQLNonNull(GraphQLString),
-        description: 'the new content'
+      targetId: {
+        type: GraphQLID,
+        description: 'The target socketId that wants to know about presence'
       }
     },
-    // eslint-disable-next-line no-unused-vars
-    async resolve(source, {meetingId, updatedBy, content}) {
-      const updatedMeeting = await r.table('Meeting').get(meetingId).update({
-        content,
-        lastUpdatedBy: updatedBy
-      }, {returnChanges: true});
-      return updatedMeeting.changes[0].new_val;
+    async resolve(source, {teamId, targetId}, {authToken, exchange, socket}) {
+      await requireSUOrTeamMember(authToken, teamId);
+      requireWebsocketExchange(exchange);
+      requireWebsocket(socket);
+      const channel = `presence/${teamId}`;
+      // tell targetId that user is in the team
+      const payload = {type: PRESENT, userId: authToken.sub, socketId: socket.id};
+      if (targetId) {
+        payload.targetId = targetId;
+      }
+      exchange.publish(channel, payload);
+    }
+  },
+  soundOff: {
+    description: 'A ping request to see who is present in a team',
+    type: GraphQLBoolean,
+    args: {
+      teamId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The unique team ID'
+      }
+    },
+    async resolve(source, {teamId}, {authToken, exchange, socket}) {
+      await requireSUOrTeamMember(authToken, teamId);
+      requireWebsocketExchange(exchange);
+      requireWebsocket(socket);
+      const channel = `presence/${teamId}`;
+      const soundoff = {type: SOUNDOFF, targetId: socket.id};
+      const present = {type: PRESENT, userId: authToken.sub, socketId: socket.id};
+      exchange.publish(channel, soundoff);
+      exchange.publish(channel, present);
     }
   }
 };
