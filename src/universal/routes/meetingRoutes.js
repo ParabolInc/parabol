@@ -27,7 +27,7 @@ const getMeetingImports = importMap => ({
 
 export default store => ([
   {
-    path: 'meetingLobby/:id', // TODO: remove me, this is for testing
+    path: 'meetingLobby/:teamId', // TODO: remove me, this is for testing
     getComponent: async(location, cb) => {
       const promiseMap = setMeetingLobbyImports();
       const importMap = await resolvePromiseMap(promiseMap);
