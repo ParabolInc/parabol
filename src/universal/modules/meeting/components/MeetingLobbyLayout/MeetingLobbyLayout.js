@@ -52,8 +52,6 @@ const faFontSize = `${14 * 2}px`; // FA based on 14px
 
 const MeetingLobbyLayout = (props) => {
   const {shortUrl, teamName, members} = props;
-  console.log('have members');
-  console.log(members);
   const handleClick = (e) => e.preventDefault();
   return (
     <MeetingMain>

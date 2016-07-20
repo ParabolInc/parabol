@@ -70,22 +70,37 @@ export default class MeetingContainer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {members: stateMembers} = this.state;
     const {teamMembers} = nextProps.team;
-    const newMembers = [];
+    const {presence} = nextProps.presenceSub.data;
+    this.setMembersState(teamMembers, presence);
+  }
+
+  setMembersState(teamMembers, presence) {
+    const {members: stateMembers} = this.state;
+    let members = [];
+
+    // Detect new members:
     teamMembers.forEach((teamMember) => {
-      const existingMember = stateMembers.find(m => m.id === teamMember.id);
+      const {cachedUser: {id: userId}} = teamMember;
+      const existingMember = stateMembers.find(m => m.id === userId);
       if (!existingMember) {
-        newMembers.push({
-          id: teamMember.id,
-          connection: 'online',
+        members.push({
+          id: teamMember.cachedUser.id,
+          connection: 'offline',
           hasBadge: false,
           image: teamMember.cachedUser.picture,
           size: 'small'
         });
       }
     });
-    this.setState({ members: stateMembers.concat(newMembers) });
+
+    // Update connection status:
+    members = stateMembers.concat(members);
+    members.forEach((member, idx) => {
+      const onlinePresence = presence.find(con => con.userId === member.id);
+      members[idx].connection = onlinePresence ? 'online' : 'offline';
+    });
+    this.setState({ members });
   }
 
   render() {
