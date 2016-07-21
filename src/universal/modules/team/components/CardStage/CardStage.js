@@ -4,13 +4,6 @@ import Card from '../Card/Card';
 
 let styles = {};
 
-const demoUser = {
-  name: '@KittyKitterson',
-  image: 'https://placekitten.com/g/600/600',
-  badge: null, // absent || active || present
-  state: 'invited' // invited || not attending || fully present
-};
-
 @look
 // eslint-disable-next-line react/prefer-stateless-function
 export default class CardStage extends Component {
@@ -34,11 +27,15 @@ export default class CardStage extends Component {
   // }
 
   render() {
+    const {cards} = this.props;
+    const card = cards[0];
+
+    // TODO: testing rendering of data from backend for now
     return (
       <div className={styles.base}>
-        <Card avatar={demoUser} label={demoUser.state} />
-        <Card active avatar={demoUser} hasControls label={demoUser.state} />
-        <Card avatar={demoUser} label={demoUser.state} />
+        <Card avatar={card} label={card.state} />
+        <Card active avatar={card} hasControls label={card.state} />
+        <Card avatar={card} label={card.state} />
       </div>
     );
   }

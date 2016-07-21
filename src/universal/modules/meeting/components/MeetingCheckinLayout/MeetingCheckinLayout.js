@@ -12,47 +12,22 @@ import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingS
 
 let s = {};
 
-const demoCards = [
-  {
-    name: '@FirstKitty',
-    hasBadge: false,
-    image: 'https://placekitten.com/g/600/600',
-    state: 'invited', // invited || not attending || fully present,
-    isCurrent: false
-  },
-  {
-    name: '@SecondKitty',
-    hasBadge: false,
-    image: 'https://placekitten.com/g/600/600',
-    state: 'invited', // invited || not attending || fully present,
-    isCurrent: false
-  },
-  {
-    name: '@ThirdKitty',
-    hasBadge: false,
-    image: 'https://placekitten.com/g/600/600',
-    state: 'invited', // invited || not attending || fully present,
-    isCurrent: true
-  },
-  {
-    name: '@FourthKitty',
-    hasBadge: false,
-    image: 'https://placekitten.com/g/600/600',
-    state: 'invited', // invited || not attending || fully present,
-    isCurrent: false
-  },
-  {
-    name: '@FifthKitty',
-    hasBadge: false,
-    image: 'https://placekitten.com/g/600/600',
-    state: 'invited', // invited || not attending || fully present,
-    isCurrent: false
-  }
-];
+const combineMembersAndCheckins = (members, checkins) =>
+  members.map((member) => {
+    const checkin = checkins.find((c) => c.id === member.id);
+    if (!checkin) {
+      console.warn(`combineMembersAndCheckins: checkin not found for member ${member.id}`);
+    }
+    return {
+      ...member,
+      ...checkin
+    };
+  });
 
 const MeetingCheckinLayout = (props) => {
-  const {members} = props;
-  // const handleClick = (e) => e.preventDefault();
+  const {checkins, members, onCheckinNextTeammateClick} = props;
+  const cards = combineMembersAndCheckins(members, checkins);
+  console.log(cards);
   return (
     <MeetingMain>
       {/* */}
@@ -74,7 +49,7 @@ const MeetingCheckinLayout = (props) => {
           </MeetingSectionHeading>
         </MeetingSection>
         {/* */}
-        <CardStage cards={demoCards} />
+        <CardStage cards={cards} />
         <MeetingSection paddingBottom="2rem">
           <IconLink
             icon="arrow-circle-right"
@@ -82,6 +57,7 @@ const MeetingCheckinLayout = (props) => {
             label="Next teammate (press enter)"
             scale="large"
             theme="warm"
+            onClick={onCheckinNextTeammateClick}
           />
         </MeetingSection>
         {/* */}
@@ -109,7 +85,19 @@ s = StyleSheet.create({
 });
 
 MeetingCheckinLayout.propTypes = {
-  members: PropTypes.array
+  checkins: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      state: PropTypes.oneOf([
+        'invited',
+        'not attending',
+        'fully present'
+      ]).isRequired,
+      isCurrent: PropTypes.bool.isRequired
+    }).isRequired
+  ).isRequired,
+  members: PropTypes.array,
+  onCheckinNextTeammateClick: PropTypes.func.isRequired
 };
 
 export default look(MeetingCheckinLayout);

@@ -7,6 +7,7 @@ import socketWithPresence from 'universal/decorators/socketWithPresence/socketWi
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
 import MeetingCheckinLayout from 'universal/modules/meeting/components/MeetingCheckinLayout/MeetingCheckinLayout';
 import MeetingLobbyLayout from 'universal/modules/meeting/components/MeetingLobbyLayout/MeetingLobbyLayout';
+import MeetingUpdatesLayout from 'universal/modules/meeting/components/MeetingUpdatesLayout/MeetingUpdatesLayout';
 import Sidebar from 'universal/modules/team/components/Sidebar/Sidebar';
 
 import {
@@ -66,6 +67,7 @@ export default class MeetingContainer extends Component {
      */
     this.state = {
       members: [],
+      checkins: [],
       phase: 'lobby'
     };
   }
@@ -74,10 +76,39 @@ export default class MeetingContainer extends Component {
     const {teamMembers} = nextProps.team;
     const {presence} = nextProps.presenceSub.data;
     this.setMembersState(teamMembers, presence);
+    this.setCheckinsState();
+  }
+
+  onCheckinNextTeammateClick = () => {
+    this.setState({ phase: 'updates' });
   }
 
   onStartMeetingClick = () => {
     this.setState({ phase: 'checkin' });
+  }
+
+  setCheckinsState() {
+    const {
+      checkins: stateCheckins,
+      members: stateMembers
+    } = this.state;
+    const checkins = [];
+
+    stateMembers.forEach((member) => {
+      const existingCheckin = stateCheckins.find(m => m.id === member.id);
+      if (!existingCheckin) {
+        // Create new checkin state:
+        checkins.push({
+          id: member.id,
+          state: 'invited',
+          isCurrent: false
+        });
+      } else {
+        checkins.push(existingCheckin);
+      }
+    });
+
+    this.setState({ checkins });
   }
 
   setMembersState(teamMembers, presence) {
@@ -112,7 +143,7 @@ export default class MeetingContainer extends Component {
   }
 
   render() {
-    const {members, phase} = this.state;
+    const {checkins, members, phase} = this.state;
     const {team} = this.props;
     const {teamId} = this.props.params;
 
@@ -138,6 +169,16 @@ export default class MeetingContainer extends Component {
         }
         {phase === 'checkin' &&
           <MeetingCheckinLayout
+            checkins={checkins}
+            members={members}
+            onCheckinNextTeammateClick={this.onCheckinNextTeammateClick}
+            shortUrl={shortUrl}
+            teamName={team.name}
+            timerValue="30:00"
+          />
+        }
+        {phase === 'updates' &&
+          <MeetingUpdatesLayout
             members={members}
             shortUrl={shortUrl}
             teamName={team.name}
