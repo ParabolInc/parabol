@@ -62,6 +62,7 @@ const Avatar = (props) => {
 
   const handleMouseEnter = () => {
     console.log('Avatar.onMouseEnter.handleMouseEnter()');
+    console.log(`Peep is ${props.connection}`);
     // TODO: Dispatch UI state for hover to show optional tooltip.
   };
 
