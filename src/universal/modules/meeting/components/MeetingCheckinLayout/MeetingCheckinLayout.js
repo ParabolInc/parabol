@@ -10,6 +10,8 @@ import MeetingMain from 'universal/modules/meeting/components/MeetingMain/Meetin
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingSectionHeading/MeetingSectionHeading';
 
+// TODO: Reorganize under new folder: /meeting/components/MeetingLayouts (TA)
+
 let s = {};
 
 const combineMembersAndCheckins = (members, checkins) =>

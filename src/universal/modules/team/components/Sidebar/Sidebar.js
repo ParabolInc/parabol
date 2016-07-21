@@ -21,9 +21,11 @@ const Sidebar = (props) => {
   const facilitatorLocationItemStyles = combineStyles(s.navListItem, s.navListItemMeetingMarker);
   const activeNavAnchor = combineStyles(s.navListItemLink, s.navListItemLinkActive);
   const labels = {
+    lobby: 'Lobby',
     checkin: 'Check-In',
     updates: 'Updates',
     requests: 'Requests',
+    summary: 'Summary',
   };
 
   const checkinLinkStyles = location === 'checkin' ? activeNavAnchor : s.navListItemLink;
@@ -72,18 +74,35 @@ const Sidebar = (props) => {
           <li className={requestsNavItemStyles}>
             <a
               className={requestsLinkStyles}
-              href="#requests"
+              href="/meetingLayout/requests"
               title={labels.requests}
             >
               <span className={s.bullet}>iii.</span>
               <span className={s.label}>{labels.requests}</span>
             </a>
           </li>
+          {location === 'summary' &&
+            <li className={combineStyles(s.navListItem, s.navListItemLinkActive)}>
+              <a
+                className={combineStyles(s.navListItemLink, s.navListItemLinkActive)}
+                href="/meetingLayout/summary"
+                title={labels.summary}
+              >
+                <span className={s.bullet}>{' '}</span>
+                <span className={s.label}>{labels.summary}</span>
+              </a>
+            </li>
+          }
         </ul>
-        {/* TODO: Toggle PlaceholderAddLink and PlaceholderInput (TA) */}
-        <PlaceholderList />
-        <PlaceholderAddLink />
-        <PlaceholderInput />
+        {console.log(`Sidebar: ${location}`)}
+        {location !== 'checkin' && location !== 'summary' &&
+          <div>{/* div for JSX */}
+            <PlaceholderList />
+            {/* TODO: Toggle PlaceholderAddLink and PlaceholderInput (TA) */}
+            <PlaceholderAddLink />
+            <PlaceholderInput />
+          </div>
+        }
       </nav>
     </div>
   );

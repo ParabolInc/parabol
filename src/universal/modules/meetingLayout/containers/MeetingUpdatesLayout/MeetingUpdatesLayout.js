@@ -19,6 +19,9 @@ import Matt from 'universal/styles/theme/images/avatars/matt-krick-avatar.jpg';
 import Taya from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
 import Terry from 'universal/styles/theme/images/avatars/terry-acker-avatar.jpg';
 
+// NOTE: This is a throw-away layout component for prototyping.
+//       The real deal is being coded up in /meeting/components
+
 let s = {};
 
 const exampleTeam = {
@@ -120,7 +123,8 @@ s = StyleSheet.create({
   },
 
   avatar: {
-    flex: 1
+    flex: 1,
+    textAlign: 'center'
   }
 });
 

@@ -164,7 +164,6 @@ export default class MeetingContainer extends Component {
             onStartMeetingClick={this.onStartMeetingClick}
             shortUrl={shortUrl}
             teamName={team.name}
-            timerValue="30:00"
           />
         }
         {phase === 'checkin' &&
@@ -172,17 +171,11 @@ export default class MeetingContainer extends Component {
             checkins={checkins}
             members={members}
             onCheckinNextTeammateClick={this.onCheckinNextTeammateClick}
-            shortUrl={shortUrl}
-            teamName={team.name}
-            timerValue="30:00"
           />
         }
         {phase === 'updates' &&
           <MeetingUpdatesLayout
             members={members}
-            shortUrl={shortUrl}
-            teamName={team.name}
-            timerValue="30:00"
           />
         }
       </MeetingLayout>

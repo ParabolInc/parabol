@@ -24,6 +24,7 @@ const Type = (props) => {
   } = props;
 
   const typeStyles = combineStyles(
+    s.root,
     s[align],
     s[bold],
     s[display],
@@ -107,6 +108,10 @@ Type.defaultProps = {
 };
 
 s = StyleSheet.create({
+  root: {
+    lineHeight: '1.5'
+  },
+
   // align
   left: {
     textAlign: 'left'

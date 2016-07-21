@@ -11,6 +11,8 @@ import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingS
 // eslint-disable-next-line max-len
 import MeetingSectionSubheading from 'universal/modules/meeting/components/MeetingSectionSubheading/MeetingSectionSubheading';
 
+// TODO: Reorganize under new folder: /meeting/components/MeetingLayouts (TA)
+
 let s = {};
 
 const MeetingUpdatesLayout = (props) => {
@@ -71,7 +73,8 @@ s = StyleSheet.create({
   },
 
   avatar: {
-    flex: 1
+    flex: 1,
+    textAlign: 'center'
   }
 });
 

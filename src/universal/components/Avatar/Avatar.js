@@ -149,7 +149,7 @@ Avatar.defaultProps = {
 
 s = StyleSheet.create({
   avatar: {
-    display: 'block',
+    display: 'inline-block',
     fontSize: theme.typography.s2,
     margin: '0',
     position: 'relative',

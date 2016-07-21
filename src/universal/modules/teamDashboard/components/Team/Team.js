@@ -40,8 +40,7 @@ const Team = (props) => {
       <DashMain>
         <DashHeader title="Team Name">
           <a
-            href="#"
-            onClick={goToLink}
+            href={`/meeting/${teamId}`}
             style={linkStyle}
             title="Meeting Lobby"
           >

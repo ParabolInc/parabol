@@ -1,6 +1,8 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 
+// TODO: Reorganize under new folder: /meeting/components/MeetingLayouts (TA)
+
 let styles = {};
 
 const MeetingLayout = (props) =>

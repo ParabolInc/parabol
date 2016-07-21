@@ -9,6 +9,8 @@ import Button from 'universal/components/Button/Button';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 
+// TODO: Reorganize under new folder: /meeting/components/MeetingLayouts (TA)
+
 let s = {};
 
 const faStyle = {lineHeight: 'inherit'};
@@ -65,7 +67,6 @@ MeetingLobbyLayout.propTypes = {
   shortUrl: PropTypes.string,
   onStartMeetingClick: PropTypes.func.isRequired,
   teamName: PropTypes.string,
-  timerValue: PropTypes.string,
   members: PropTypes.array
 };
 
