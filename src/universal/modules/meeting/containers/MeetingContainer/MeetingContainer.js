@@ -5,6 +5,7 @@ import subscriber from 'universal/subscriptions/subscriber';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
+import MeetingCheckinLayout from 'universal/modules/meeting/components/MeetingCheckinLayout/MeetingCheckinLayout';
 import MeetingLobbyLayout from 'universal/modules/meeting/components/MeetingLobbyLayout/MeetingLobbyLayout';
 import Sidebar from 'universal/modules/team/components/Sidebar/Sidebar';
 
@@ -75,6 +76,10 @@ export default class MeetingContainer extends Component {
     this.setMembersState(teamMembers, presence);
   }
 
+  onStartMeetingClick = () => {
+    this.setState({ phase: 'checkin' });
+  }
+
   setMembersState(teamMembers, presence) {
     const {members: stateMembers} = this.state;
     const members = [];
@@ -91,6 +96,7 @@ export default class MeetingContainer extends Component {
           connection: onlinePresence,
           hasBadge: false,
           image: teamMember.cachedUser.picture,
+          name: teamMember.cachedUser.profile.preferredName,
           size: 'small'
         });
       } else {
@@ -123,6 +129,15 @@ export default class MeetingContainer extends Component {
         />
         {phase === 'lobby' &&
           <MeetingLobbyLayout
+            members={members}
+            onStartMeetingClick={this.onStartMeetingClick}
+            shortUrl={shortUrl}
+            teamName={team.name}
+            timerValue="30:00"
+          />
+        }
+        {phase === 'checkin' &&
+          <MeetingCheckinLayout
             members={members}
             shortUrl={shortUrl}
             teamName={team.name}

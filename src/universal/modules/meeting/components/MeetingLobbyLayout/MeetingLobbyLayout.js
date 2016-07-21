@@ -11,47 +11,11 @@ import MeetingSection from 'universal/modules/meeting/components/MeetingSection/
 
 let s = {};
 
-// const exampleTeam = {
-//   shortUrl: 'https://prbl.io/a/b7s8x9',
-//   teamName: 'Core',
-//   timerValue: '30:00',
-//   members: [
-//     {
-//       checkin: 'tbd',
-//       connection: 'online',
-//       hasBadge: true,
-//       image: Jordan,
-//       size: 'small'
-//     },
-//     {
-//       checkin: 'tbd',
-//       connection: 'online',
-//       hasBadge: true,
-//       image: Matt,
-//       size: 'small'
-//     },
-//     {
-//       checkin: 'tbd',
-//       connection: 'offline',
-//       hasBadge: true,
-//       image: Taya,
-//       size: 'small'
-//     },
-//     {
-//       checkin: 'tbd',
-//       connection: 'offline',
-//       hasBadge: true,
-//       image: Terry,
-//       size: 'small'
-//     }
-//   ]
-// };
-
 const faStyle = {lineHeight: 'inherit'};
 const faFontSize = `${14 * 2}px`; // FA based on 14px
 
 const MeetingLobbyLayout = (props) => {
-  const {shortUrl, teamName, members} = props;
+  const {onStartMeetingClick, shortUrl, teamName, members} = props;
   const handleClick = (e) => e.preventDefault();
   return (
     <MeetingMain>
@@ -82,13 +46,27 @@ const MeetingLobbyLayout = (props) => {
             </a>
           </CopyToClipboard>
           <h2 className={s.prompt}>Shall we begin with a Check-In round?</h2>
-          <Button label="Start Meeting" size="large" style="outlined" theme="cool" />
+          <Button
+            label="Start Meeting"
+            onClick={onStartMeetingClick}
+            size="large"
+            style="outlined"
+            theme="cool"
+          />
         </div>
         {/* */}
       </MeetingSection>
       {/* */}
     </MeetingMain>
   );
+};
+
+MeetingLobbyLayout.propTypes = {
+  shortUrl: PropTypes.string,
+  onStartMeetingClick: PropTypes.func.isRequired,
+  teamName: PropTypes.string,
+  timerValue: PropTypes.string,
+  members: PropTypes.array
 };
 
 s = StyleSheet.create({
@@ -145,12 +123,5 @@ s = StyleSheet.create({
     margin: '0 0 2rem'
   }
 });
-
-MeetingLobbyLayout.propTypes = {
-  shortUrl: PropTypes.string,
-  teamName: PropTypes.string,
-  timerValue: PropTypes.string,
-  members: PropTypes.array
-};
 
 export default look(MeetingLobbyLayout);
