@@ -9,7 +9,7 @@ import {
 } from 'graphql';
 import {GraphQLEmailType, GraphQLURLType} from '../types';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
-
+import {Task} from '../Task/taskSchema';
 import {UserProfile} from '../UserProfile/userProfileSchema';
 import {TeamMember} from '../TeamMember/teamMemberSchema';
 import r from 'server/database/rethinkDriver';
@@ -124,6 +124,13 @@ export const CachedUser = new GraphQLObjectType({
       async resolve({id}) {
         return await r.table('TeamMember').getAll(id, {index: 'userId'});
       }
+    },
+    tasks: {
+      type: new GraphQLList(Task),
+      description: 'All the tasks across all the user\'s teams for which the user is responsible'
+      },
+    async resolve({id}) {
+        return await r.table('Task').getAll(id, {index: 'userId'})
     }
   })
 });

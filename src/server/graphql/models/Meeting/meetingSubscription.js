@@ -1,6 +1,5 @@
 import r from 'server/database/rethinkDriver';
-import {Presence} from './meetingSchema';
-import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
+import {GraphQLNonNull, GraphQLID} from 'graphql';
 import {getRequestedFields} from '../utils';
 import {Team} from '../Team/teamSchema';
 import {requireSUOrTeamMember} from '../authorization';
@@ -29,16 +28,6 @@ export default {
           old_val: row('old_val').default({}).pluck(requestedFields)
         }))
         .run({cursor: true}, changefeedHandler);
-    }
-  },
-  presence: {
-    description: 'Listen for new folks to join a specified meeting & when they call `soundOff`, respond with `present`',
-    type: new GraphQLList(Presence),
-    args: {
-      teamId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The unique team ID'
-      }
     }
   }
 };

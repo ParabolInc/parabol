@@ -4,20 +4,13 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLID,
+  GraphQLInt
   GraphQLList
 } from 'graphql';
+import {nonnullifyInputThunk} from '../utils';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {TeamMember, CreateTeamMemberInput} from '../TeamMember/teamMemberSchema';
-import {nonnullifyInputThunk} from '../utils';
-
-export const Presence = new GraphQLObjectType({
-  name: 'Presence',
-  description: 'A connection\'s presence in a team',
-  fields: () => ({
-    id: {type: new GraphQLNonNull(GraphQLID), description: 'The socketId representing a single socket connection'},
-    userId: {type: new GraphQLNonNull(GraphQLID), description: 'The userId representing 1 or more sockets'}
-  })
-});
+import {Placeholder} from '../Placeholder/placeholderSchema';
 
 export const Team = new GraphQLObjectType({
   name: 'Team',
@@ -25,6 +18,10 @@ export const Team = new GraphQLObjectType({
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique team ID'},
     name: {type: GraphQLString, description: 'The name of the team'},
+    meetingNumber: {
+      type: GraphQLInt,
+      description: 'The current or most recent meeting number (also the number of meetings the team has had'
+    },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the team was created'
@@ -38,6 +35,13 @@ export const Team = new GraphQLObjectType({
       description: 'All the team members associated who can join this team',
       async resolve({id}) {
         return await r.table('TeamMember').getAll(id, {index: 'teamId'});
+      }
+    },
+    placeholders: {
+      type: new GraphQLList(Placeholder),
+      description: 'The agenda items for the upcoming or current meeting',
+      async resolve({id}) {
+        return await r.table('Placeholder').getAll(id, {index: 'teamId'});
       }
     }
   })
