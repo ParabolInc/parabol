@@ -4,7 +4,7 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLID,
-  GraphQLInt
+  GraphQLInt,
   GraphQLList
 } from 'graphql';
 import {nonnullifyInputThunk} from '../utils';

@@ -127,10 +127,10 @@ export const CachedUser = new GraphQLObjectType({
     },
     tasks: {
       type: new GraphQLList(Task),
-      description: 'All the tasks across all the user\'s teams for which the user is responsible'
-      },
-    async resolve({id}) {
+      description: 'All the tasks across all the user\'s teams for which the user is responsible',
+      async resolve({id}) {
         return await r.table('Task').getAll(id, {index: 'userId'})
+      }
     }
-  })
+    })
 });
