@@ -1,7 +1,6 @@
 exports.up = async (r) => {
   const initialTables = [
-    r.tableCreate('CachedUser'),
-    r.tableCreate('UserProfile'),
+    r.tableCreate('User'),
     r.tableCreate('TeamMember'),
     r.tableCreate('Invitation'),
     r.tableCreate('Team')
@@ -19,8 +18,7 @@ exports.up = async (r) => {
 
 exports.down = async (r) => {
   const initialTables = [
-    r.tableDrop('CachedUser'),
-    r.tableDrop('UserProfile'),
+    r.tableDrop('User'),
     r.tableDrop('TeamMember'),
     r.tableDrop('Invitation'),
     r.tableDrop('Team')

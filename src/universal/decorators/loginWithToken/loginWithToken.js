@@ -15,9 +15,9 @@ export default ComposedComponent => {
   const TokenizedComp = (props) => {
     const {dispatch, authToken, user} = props;
     if (authToken && user) {
-      if (user.profile.isNew === true) {
+      if (user.isNew === true) {
         dispatch(push('/welcome'));
-      } else if (user.profile.isNew === false) {
+      } else if (user.isNew === false) {
         dispatch(push('/me'));
       }
     }

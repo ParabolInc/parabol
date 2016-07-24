@@ -10,7 +10,7 @@ const faStyle = {
 };
 
 const UserHub = (props) => {
-  const {email, profile: {preferredName}} = props.user;
+  const {email, preferredName} = props.user;
   const avatar = props.user.avatar || 'https://placekitten.com/g/44/44';
 
   const onSettingsClick = () => {

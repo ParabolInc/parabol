@@ -116,18 +116,18 @@ export default class MeetingContainer extends Component {
     const members = [];
 
     teamMembers.forEach((teamMember) => {
-      const {cachedUser: {id: userId}} = teamMember;
+      const {user: {id: userId}} = teamMember;
       const existingMember = stateMembers.find(m => m.id === userId);
       const onlinePresence = presence.find(con => con.userId === userId) ?
         'online' : 'offline';
       if (!existingMember) {
         // Create new member:
         members.push({
-          id: teamMember.cachedUser.id,
+          id: teamMember.user.id,
           connection: onlinePresence,
           hasBadge: false,
-          image: teamMember.cachedUser.picture,
-          name: teamMember.cachedUser.profile.preferredName,
+          image: teamMember.user.picture,
+          name: teamMember.user.preferredName,
           size: 'small'
         });
       } else {

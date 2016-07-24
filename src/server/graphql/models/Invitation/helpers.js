@@ -43,18 +43,16 @@ export const validateInviteTokenKey = async(key, hashStringToCompare) =>
 
 export const getInviterInfoAndTeamName = async(teamId, userId) => {
   /**
-   * (1) Fetch user email and picture link from CachedUser.
+   * (1) Fetch user email and picture link from User.
    * (2) Rename fields to match TeamInvite email props
-   * (3) Join 'UserProfile' to fetch preferredName as inviterName
-   * (4) Join Team.name by using teamId as teamName
+   * (3) Join Team.name by using teamId as teamName
    */
-  return await r.table('CachedUser').get(userId)
-    .pluck('id', 'email', 'picture')
+  return await r.table('User').get(userId)
+    .pluck('id', 'email', 'picture', 'preferredName')
     .merge((doc) => ({
       inviterAvatar: doc('picture'),
       inviterEmail: doc('email'),
-      inviterName: r.table('UserProfile').get(doc('id'))
-        .pluck('preferredName')('preferredName'),
+      inviterName: doc('preferredName'),
       teamName: r.table('Team').get(teamId)
         .pluck('name')('name'),
     }));

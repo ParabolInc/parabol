@@ -26,7 +26,7 @@ export default {
       const verifiedLeader = {...leader, isActive: true, isLead: true, isFacilitator: true};
       await r.table('TeamMember').insert(verifiedLeader);
       await r.table('Team').insert(team);
-      await r.table('UserProfile').get(userId).update({isNew: false});
+      await r.table('User').get(userId).update({isNew: false});
       // TODO: trigger welcome email
       return true;
     }

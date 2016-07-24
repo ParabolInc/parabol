@@ -42,10 +42,10 @@ export default class Invitation extends Component {
     const {authToken, dispatch, user} = props;
 
     if (authToken) {
-      if (user && user.profile.isNew === false) {
+      if (user && user.isNew === false) {
         // If user already has an account, let them accept the new team via the UI:
         dispatch(push('/me'));
-      } else if (user && user.profile.isNew === true) {
+      } else if (user && user.isNew === true) {
         // If the user is new let's process their invite:
         this.processInvitation();
       }

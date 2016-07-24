@@ -9,11 +9,9 @@ query ($teamId: ID!){
       isActive
       isLead
       isFacilitator
-      cachedUser {
+      user {
         picture
-        profile {
-          preferredName
-        }
+        preferredName
       }
     }
   }

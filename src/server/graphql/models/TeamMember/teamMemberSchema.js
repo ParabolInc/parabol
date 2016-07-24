@@ -5,8 +5,7 @@ import {
   GraphQLID
 } from 'graphql';
 import {Team} from '../Team/teamSchema';
-import {CachedUser} from '../CachedUser/cachedUserSchema';
-import {UserProfile} from '../UserProfile/userProfileSchema';
+import {User} from '../User/userSchema';
 import {nonnullifyInputThunk} from '../utils';
 import r from 'server/database/rethinkDriver';
 
@@ -18,7 +17,7 @@ export const TeamMember = new GraphQLObjectType({
     teamId: {type: new GraphQLNonNull(GraphQLID), description: 'The team team this member belongs to'},
     userId: {
       type: GraphQLID,
-      description: 'Active user\'s CachedUser Id'
+      description: 'Active user\'s User Id'
     },
     isActive: {type: GraphQLBoolean, description: 'Is user active?'},
     isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
@@ -30,18 +29,11 @@ export const TeamMember = new GraphQLObjectType({
         return await r.table('Team').get(teamId);
       }
     },
-    cachedUser: {
-      type: CachedUser,
-      description: 'The cached user for the team member',
+    user: {
+      type: User,
+      description: 'The user for the team member',
       async resolve({userId}) {
-        return await r.table('CachedUser').get(userId);
-      }
-    },
-    userProfile: {
-      type: UserProfile,
-      description: 'The user profile for the team member',
-      async resolve({userId}) {
-        return await r.table('UserProfile').get(userId);
+        return await r.table('User').get(userId);
       }
     }
   })

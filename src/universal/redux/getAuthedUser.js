@@ -22,10 +22,8 @@ query {
       identifier,
       id,
     },
-    profile {
-     isNew,
-     preferredName
-    },
+    isNew,
+    preferredName,
     memberships {
       id,
       team {
@@ -64,9 +62,9 @@ const updateTokenMutationHandlers = {
   },
   updateUserProfile(optimisticVariables, queryResponse, currentResponse) {
     if (optimisticVariables) {
-      Object.assign(currentResponse.user.profile, optimisticVariables.updatedProfile);
+      Object.assign(currentResponse.user, optimisticVariables.updatedProfile);
     } else if (queryResponse) {
-      Object.assign(currentResponse.user.profile, queryResponse.profile);
+      Object.assign(currentResponse.user, queryResponse);
     }
     return currentResponse;
   },

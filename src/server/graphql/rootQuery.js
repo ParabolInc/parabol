@@ -1,9 +1,9 @@
 import {GraphQLObjectType} from 'graphql';
-import cachedUser from './models/CachedUser/cachedUserQuery';
+import user from './models/User/userQuery';
 import team from './models/Team/teamQuery';
 
 const rootFields = Object.assign({},
-  cachedUser,
+  user,
   team
 );
 

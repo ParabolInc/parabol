@@ -10,9 +10,9 @@ import {
 import {GraphQLEmailType, GraphQLURLType} from '../types';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {Task} from '../Task/taskSchema';
-import {UserProfile} from '../UserProfile/userProfileSchema';
 import {TeamMember} from '../TeamMember/teamMemberSchema';
 import r from 'server/database/rethinkDriver';
+import {nonnullifyInputThunk} from '../utils';
 
 const IdentityType = new GraphQLObjectType({
   name: 'IdentityType',
@@ -53,8 +53,8 @@ const BlockedUserType = new GraphQLObjectType({
   })
 });
 
-export const CachedUser = new GraphQLObjectType({
-  name: 'CachedUser',
+export const User = new GraphQLObjectType({
+  name: 'User',
   description: 'The user account profile',
   fields: () => ({
     id: {
@@ -110,14 +110,20 @@ export const CachedUser = new GraphQLObjectType({
       type: new GraphQLList(BlockedUserType),
       description: 'Array of identifier + ip pairs'
     },
-    profile: {
-      type: UserProfile,
-      description: 'The associated user profile, stored locally in our database.',
-      async resolve({id}) {
-        // not entirely sure why i have to await this, i thought GraphQL allowed subsequent promises
-        return await r.table('UserProfile').get(id);
-      }
+    /* User Profile */
+    isNew: {
+      type: GraphQLBoolean,
+      description: 'Has the user ever been associated with a team'
     },
+    welcomeSentAt: {
+      type: GraphQLISO8601Type,
+      description: 'The datetime that we sent them a welcome email'
+    },
+    preferredName: {
+      type: GraphQLString,
+      description: 'The name, as confirmed by the user'
+    },
+    /* GraphQL Sugar */
     memberships: {
       type: new GraphQLList(TeamMember),
       description: 'The memberships to different teams that the user has',
@@ -132,5 +138,15 @@ export const CachedUser = new GraphQLObjectType({
         return await r.table('Task').getAll(id, {index: 'userId'})
       }
     }
-    })
+  })
 });
+
+const profileInputThunk = () => ({
+  id: {type: GraphQLID, description: 'The unique userId'},
+  preferredName: {
+    type: GraphQLString,
+    description: 'The name, as confirmed by the user'
+  }
+});
+
+export const UpdateUserInput = nonnullifyInputThunk('UpdateUserInput', profileInputThunk, ['id']);
