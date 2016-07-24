@@ -1,12 +1,12 @@
-import r from 'server/database/rethinkDriver';
+import r from '../../../database/rethinkDriver';
 import {GraphQLNonNull, GraphQLID} from 'graphql';
 import {getRequestedFields} from '../utils';
-import {Team} from '../Team/teamSchema';
+import {Team} from './teamSchema';
 import {requireSUOrTeamMember} from '../authorization';
 import makeChangefeedHandler from '../makeChangefeedHandler';
 
 export default {
-  meeting: {
+  team: {
     type: Team,
     args: {
       teamId: {
@@ -16,7 +16,6 @@ export default {
     },
     async resolve(source, {teamId}, {authToken, socket, subbedChannelName}, refs) {
       requireSUOrTeamMember(authToken, teamId);
-      // eslint-disable-next-line no-unused-vars
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
       r.table('Team')

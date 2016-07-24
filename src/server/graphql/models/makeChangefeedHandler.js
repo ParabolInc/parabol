@@ -66,7 +66,6 @@ export default function makeChangefeedHandler(socket, subbedChannelName, options
     if (err) throw err;
     cursor.each((error, data) => {
       if (error) throw error;
-      // console.log('data', data)?
       const payload = handleRethinkChangefeed(data);
       if (path) {
         payload.path = path;

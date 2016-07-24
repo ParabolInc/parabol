@@ -1,9 +1,9 @@
 import {GraphQLObjectType} from 'graphql';
-import meeting from './models/Meeting/meetingSubscription';
+import team from './models/Team/teamSubscription';
 import presence from './models/Presence/presenceSubscription';
 
 const rootFields = Object.assign({},
-  meeting,
+  team,
   presence
 );
 

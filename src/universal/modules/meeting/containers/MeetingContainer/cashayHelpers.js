@@ -1,5 +1,5 @@
 import subscriptions from 'universal/subscriptions/subscriptions';
-import {MEETING} from 'universal/subscriptions/constants';
+import {TEAM} from 'universal/subscriptions/constants';
 
 export const teamQueryString = `
 query ($teamId: ID!){
@@ -26,7 +26,7 @@ export const teamQueryOptions = (teamId) => ({
 });
 
 export const meetingSubString =
-  subscriptions.find(sub => sub.channel === MEETING).string;
+  subscriptions.find(sub => sub.channel === TEAM).string;
 
 export const meetingSubOptions = (teamId) => ({
   component: 'MeetingContainer::Meeting',
