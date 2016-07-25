@@ -2,8 +2,10 @@ import {
   GraphQLBoolean,
   GraphQLObjectType,
   GraphQLNonNull,
-  GraphQLID
+  GraphQLID,
+  GraphQLString
 } from 'graphql';
+import {GraphQLURLType} from '../types';
 import {Team} from '../Team/teamSchema';
 import {User} from '../User/userSchema';
 import {nonnullifyInputThunk} from '../utils';
@@ -22,6 +24,16 @@ export const TeamMember = new GraphQLObjectType({
     isActive: {type: GraphQLBoolean, description: 'Is user active?'},
     isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
     isFacilitator: {type: GraphQLBoolean, description: 'Is user a team facilitator?'},
+    /* denormalized from User */
+    picture: {
+      type: GraphQLURLType,
+      description: 'url of user\'s profile picture'
+    },
+    preferredName: {
+      type: GraphQLString,
+      description: 'The name, as confirmed by the user'
+    },
+    /* GraphQL sugar */
     team: {
       type: Team,
       description: 'The team this team member belongs to',

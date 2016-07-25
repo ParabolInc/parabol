@@ -11,7 +11,8 @@ import MeetingUpdatesLayout from 'universal/modules/meeting/components/MeetingUp
 import Sidebar from 'universal/modules/team/components/Sidebar/Sidebar';
 
 import {
-  meetingSubString,
+  teamSubString,
+  teamMembersSubString,
   meetingSubOptions,
   teamQueryString,
   teamQueryOptions
@@ -38,9 +39,10 @@ const mapStateToProps = (state, props) => {
   const {params: {teamId}} = props;
   return {
     authToken: state.authToken,
-    meetingSub: cashay.subscribe(meetingSubString, subscriber, meetingSubOptions(teamId)),
+    meetingSub: cashay.subscribe(teamSubString, subscriber, meetingSubOptions(teamId)),
     members: state.members,
     team: cashay.query(teamQueryString, teamQueryOptions(teamId)).data.team,
+    teamMembers: cashay.subscribe(teamMembersSubString, subscriber, {component: 'meeting:teamMembers', variables: {teamId}})
   };
 };
 
@@ -80,11 +82,11 @@ export default class MeetingContainer extends Component {
   }
 
   onCheckinNextTeammateClick = () => {
-    this.setState({ phase: 'updates' });
+    this.setState({phase: 'updates'});
   }
 
   onStartMeetingClick = () => {
-    this.setState({ phase: 'checkin' });
+    this.setState({phase: 'checkin'});
   }
 
   setCheckinsState() {
@@ -108,7 +110,7 @@ export default class MeetingContainer extends Component {
       }
     });
 
-    this.setState({ checkins });
+    this.setState({checkins});
   }
 
   setMembersState(teamMembers, presence) {
@@ -139,7 +141,7 @@ export default class MeetingContainer extends Component {
       }
     });
 
-    this.setState({ members });
+    this.setState({members});
   }
 
   render() {
@@ -159,24 +161,24 @@ export default class MeetingContainer extends Component {
           members={members}
         />
         {phase === 'lobby' &&
-          <MeetingLobbyLayout
-            members={members}
-            onStartMeetingClick={this.onStartMeetingClick}
-            shortUrl={shortUrl}
-            teamName={team.name}
-          />
+        <MeetingLobbyLayout
+          members={members}
+          onStartMeetingClick={this.onStartMeetingClick}
+          shortUrl={shortUrl}
+          teamName={team.name}
+        />
         }
         {phase === 'checkin' &&
-          <MeetingCheckinLayout
-            checkins={checkins}
-            members={members}
-            onCheckinNextTeammateClick={this.onCheckinNextTeammateClick}
-          />
+        <MeetingCheckinLayout
+          checkins={checkins}
+          members={members}
+          onCheckinNextTeammateClick={this.onCheckinNextTeammateClick}
+        />
         }
         {phase === 'updates' &&
-          <MeetingUpdatesLayout
-            members={members}
-          />
+        <MeetingUpdatesLayout
+          members={members}
+        />
         }
       </MeetingLayout>
     );

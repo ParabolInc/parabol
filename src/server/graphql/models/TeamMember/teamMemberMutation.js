@@ -81,7 +81,9 @@ export default {
         userId,
         isActive: true,
         isLead: false,
-        isFacilitator: false
+        isFacilitator: false,
+        picture: user.picture,
+        preferredName: user.preferredName
       };
       await r.table('TeamMember').insert(newTeamMember);
 

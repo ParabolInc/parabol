@@ -15,7 +15,7 @@ const Step1PreferredName = (props) => {
     const {preferredName: newPrefferedName} = submissionData;
     const options = {
       variables: {
-        updatedProfile: {
+        updatedUser: {
           id: user.id,
           preferredName: newPrefferedName
         }

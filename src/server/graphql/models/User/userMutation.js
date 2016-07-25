@@ -62,6 +62,11 @@ export default {
         const newInfo = {welcomeSentAt, isNew: true};
         Object.assign(newUser, newInfo);
         await r.table('User').get(newUser.id).update(newInfo);
+      } else {
+        // assume the user has at least 1 team
+        await r.table('TeamMember')
+          .getAll(newUser.id, {index: 'userId'})
+          .update({picture: newUser.picture});
       }
       return newUser;
     }
@@ -90,6 +95,12 @@ export default {
           ...updatedObj,
           isNew: !hasTeam,
         }, {returnChanges: true});
+      if (hasTeam) {
+        // propagate denormalized changes to TeamMember
+        await r.table('TeamMember')
+          .getAll(id, {index: 'userId'})
+          .update({preferredName: updatedUser.preferredName});
+      }
       return updatedOrOriginal(dbProfile, updatedUser);
     }
   }
