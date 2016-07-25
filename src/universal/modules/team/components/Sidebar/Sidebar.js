@@ -12,13 +12,13 @@ let s = {};
 
 const Sidebar = (props) => {
   const {
-    facilitatorLocation,
-    location,
+    facilitatorPhase,
+    localPhase,
     shortUrl,
     teamName,
     timerValue
   } = props;
-  const facilitatorLocationItemStyles = combineStyles(s.navListItem, s.navListItemMeetingMarker);
+  const facilitatorPhaseItemStyles = combineStyles(s.navListItem, s.navListItemMeetingMarker);
   const activeNavAnchor = combineStyles(s.navListItemLink, s.navListItemLinkActive);
   const labels = {
     lobby: 'Lobby',
@@ -28,13 +28,13 @@ const Sidebar = (props) => {
     summary: 'Summary',
   };
 
-  const checkinLinkStyles = location === 'checkin' ? activeNavAnchor : s.navListItemLink;
-  const updatesLinkStyles = location === 'updates' ? activeNavAnchor : s.navListItemLink;
-  const requestsLinkStyles = location === 'requests' ? activeNavAnchor : s.navListItemLink;
+  const checkinLinkStyles = localPhase === 'checkin' ? activeNavAnchor : s.navListItemLink;
+  const updatesLinkStyles = localPhase === 'updates' ? activeNavAnchor : s.navListItemLink;
+  const requestsLinkStyles = localPhase === 'requests' ? activeNavAnchor : s.navListItemLink;
 
-  const checkinNavItemStyles = facilitatorLocation === 'checkin' ? facilitatorLocationItemStyles : s.navListItem;
-  const updatesNavItemStyles = facilitatorLocation === 'updates' ? facilitatorLocationItemStyles : s.navListItem;
-  const requestsNavItemStyles = facilitatorLocation === 'requests' ? facilitatorLocationItemStyles : s.navListItem;
+  const checkinNavItemStyles = facilitatorPhase === 'checkin' ? facilitatorPhaseItemStyles : s.navListItem;
+  const updatesNavItemStyles = facilitatorPhase === 'updates' ? facilitatorPhaseItemStyles : s.navListItem;
+  const requestsNavItemStyles = facilitatorPhase === 'requests' ? facilitatorPhaseItemStyles : s.navListItem;
 
   return (
     <div className={s.sidebar}>
@@ -81,7 +81,7 @@ const Sidebar = (props) => {
               <span className={s.label}>{labels.requests}</span>
             </a>
           </li>
-          {location === 'summary' &&
+          {localPhase === 'summary' &&
             <li className={combineStyles(s.navListItem, s.navListItemLinkActive)}>
               <a
                 className={combineStyles(s.navListItemLink, s.navListItemLinkActive)}
@@ -94,8 +94,8 @@ const Sidebar = (props) => {
             </li>
           }
         </ul>
-        {console.log(`Sidebar: ${location}`)}
-        {location !== 'checkin' && location !== 'summary' &&
+        {console.log(`Sidebar: ${localPhase}`)}
+        {localPhase !== 'checkin' && localPhase !== 'summary' &&
           <div>{/* div for JSX */}
             <PlaceholderList />
             {/* TODO: Toggle PlaceholderAddLink and PlaceholderInput (TA) */}
@@ -117,8 +117,8 @@ const meetingLocations = [
 ];
 
 Sidebar.propTypes = {
-  facilitatorLocation: PropTypes.oneOf(meetingLocations),
-  location: PropTypes.oneOf(meetingLocations),
+  facilitatorPhase: PropTypes.oneOf(meetingLocations),
+  localPhase: PropTypes.oneOf(meetingLocations),
   shortUrl: PropTypes.string,
   teamName: PropTypes.string,
   timerValue: PropTypes.string

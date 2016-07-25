@@ -65,7 +65,7 @@ const MeetingLobbyLayout = (props) => {
 
 MeetingLobbyLayout.propTypes = {
   shortUrl: PropTypes.string,
-  onStartMeetingClick: PropTypes.func.isRequired,
+  // onStartMeetingClick: PropTypes.func.isRequired,
   teamName: PropTypes.string,
   members: PropTypes.array
 };

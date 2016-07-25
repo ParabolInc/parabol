@@ -5,12 +5,23 @@ import {
   GraphQLNonNull,
   GraphQLID,
   GraphQLInt,
-  GraphQLList
+  GraphQLList,
+  GraphQLEnumType
 } from 'graphql';
 import {nonnullifyInputThunk} from '../utils';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {TeamMember, CreateTeamMemberInput} from '../TeamMember/teamMemberSchema';
 import {Placeholder} from '../Placeholder/placeholderSchema';
+
+const Phase = new GraphQLEnumType({
+  name: 'Phase',
+  description: 'The phase of the meeting',
+  values: {
+    CHECKIN: {value: 'CHECKIN'},
+    UPDATES: {value: 'UPDATES'},
+    REQUESTS: {value: 'REQUESTS'},
+  }
+});
 
 export const Team = new GraphQLObjectType({
   name: 'Team',
@@ -30,6 +41,41 @@ export const Team = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The datetime the team was last updated'
     },
+    /* Ephemeral meeting state */
+    meetingId: {
+      type: GraphQLID,
+      description: 'The unique Id of the active meeting'
+    },
+    checkInOrder: {
+      type: new GraphQLList(GraphQLID),
+      description: 'A randomly generated array of team members\' ids'
+    },
+    checkedInMembers: {
+      // MUST...RESIST...BIT TWIDDLING...
+      type: new GraphQLList(GraphQLID),
+      description: 'A list of members that have checked in'
+    },
+    activeFacilitator: {
+      type: GraphQLID,
+      description: 'The current facilitator for this meeting'
+    },
+    facilitatorPhase: {
+      type: Phase,
+      description: 'The phase of the facilitator'
+    },
+    facilitatorPhaseItem: {
+      type: GraphQLInt,
+      description: 'The current item number for the current phase for the facilitator'
+    },
+    meetingPhase: {
+      type: Phase,
+      description: 'The phase of the meeting, usually matches the facilitator phase, be could be further along'
+    },
+    meetingPhaseItem: {
+      type: GraphQLInt,
+      description: 'The current item number for the current phase for the meeting'
+    },
+    /* GraphQL sugar */
     teamMembers: {
       type: new GraphQLList(TeamMember),
       description: 'All the team members associated who can join this team',

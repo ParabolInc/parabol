@@ -18,9 +18,9 @@ export default {
       requireSUOrTeamMember(authToken, teamId);
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
-      console.log('teamMember requested fields', requestedFields);
       r.table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
+        .pluck(requestedFields)
         .changes({includeInitial: true})
         .run({cursor: true}, changefeedHandler);
     }

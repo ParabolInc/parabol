@@ -132,7 +132,7 @@ const MeetingSummaryLayout = (props) => {
   return (
     <MeetingLayout>
       {/* */}
-      <Sidebar facilitatorLocation="summary" location="summary" {...team} />
+      <Sidebar facilitatorPhase="summary" localPhase="summary" {...team} />
       {/* */}
       <MeetingMain>
         {/* */}

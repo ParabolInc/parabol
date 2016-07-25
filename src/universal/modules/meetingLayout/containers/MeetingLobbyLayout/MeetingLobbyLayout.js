@@ -66,7 +66,7 @@ const MeetingLobbyLayout = (props) => {
   return (
     <MeetingLayout>
       {/* */}
-      <Sidebar facilitatorLocation="lobby" location="lobby" shortUrl={shortUrl} teamName={teamName} members={members} />
+      <Sidebar facilitatorPhase="lobby" localPhase="lobby" shortUrl={shortUrl} teamName={teamName} members={members} />
       {/* */}
       <MeetingMain>
         {/* */}

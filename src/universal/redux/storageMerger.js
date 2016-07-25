@@ -16,7 +16,12 @@ export default function merger(initialState, persistedState) {
       }
     }
     if (reducerName === 'cashay') {
+      // remove subscriptions from the result array
       value.data.result.presence = undefined;
+      value.data.result.teamMembers = undefined;
+
+      // remove entities that have unbounded growth (socketIds are random)
+      value.data.entities.Presence = undefined;
     }
     result[reducerName] = value;
   }

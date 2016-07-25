@@ -65,7 +65,7 @@ const MeetingUpdatesLayout = (props) => {
   return (
     <MeetingLayout>
       {/* */}
-      <Sidebar facilitatorLocation="checkin" location="updates" {...team} />
+      <Sidebar facilitatorPhase="checkin" localPhase="updates" {...team} />
       {/* */}
       <MeetingMain>
         {/* */}

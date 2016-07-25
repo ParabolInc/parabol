@@ -14,7 +14,7 @@ const getMeetingImports = importMap => ({
 });
 
 export default store => ({
-  path: 'meeting/:teamId',
+  path: 'meeting/:teamId(/:phase)(/:phaseItem)',
   getComponent: async(location, cb) => {
     const promiseMap = setMeetingImports();
     const importMap = await resolvePromiseMap(promiseMap);

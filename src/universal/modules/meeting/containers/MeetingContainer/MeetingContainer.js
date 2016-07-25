@@ -13,9 +13,6 @@ import Sidebar from 'universal/modules/team/components/Sidebar/Sidebar';
 import {
   teamSubString,
   teamMembersSubString,
-  meetingSubOptions,
-  teamQueryString,
-  teamQueryOptions
 } from './cashayHelpers';
 
 /**
@@ -36,13 +33,10 @@ import {
  */
 
 const mapStateToProps = (state, props) => {
-  const {params: {teamId}} = props;
+  const variables = {teamId: props.params.teamId};
   return {
-    authToken: state.authToken,
-    meetingSub: cashay.subscribe(teamSubString, subscriber, meetingSubOptions(teamId)),
-    members: state.members,
-    team: cashay.query(teamQueryString, teamQueryOptions(teamId)).data.team,
-    teamMembers: cashay.subscribe(teamMembersSubString, subscriber, {component: 'meeting:teamMembers', variables: {teamId}})
+    teamSub: cashay.subscribe(teamSubString, subscriber, {component: 'Meeting::teamSub', variables}),
+    memberSub: cashay.subscribe(teamMembersSubString, subscriber, {component: 'Meeting::memberSub', variables}),
   };
 };
 
@@ -50,15 +44,13 @@ const mapStateToProps = (state, props) => {
 @connect(mapStateToProps)
 export default class MeetingContainer extends Component {
   static propTypes = {
-    authToken: PropTypes.string.isRequired,
     dispatch: PropTypes.func.isRequired,
-    meetingSub: PropTypes.object.isRequired,
+    teamSub: PropTypes.object.isRequired,
     params: PropTypes.shape({
       teamId: PropTypes.string.isRequired
     }).isRequired,
     presenceSub: PropTypes.object.isRequired,
-    team: PropTypes.object.isRequired,
-    user: PropTypes.object.isRequired
+    memberSub: PropTypes.object.isRequired,
   };
 
   constructor(props) {
@@ -70,16 +62,18 @@ export default class MeetingContainer extends Component {
     this.state = {
       members: [],
       checkins: [],
-      phase: 'lobby'
+      shortUrl: `https://prbl.io/m/${props.params.teamId}`
     };
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {teamMembers} = nextProps.team;
-    const {presence} = nextProps.presenceSub.data;
-    this.setMembersState(teamMembers, presence);
-    this.setCheckinsState();
-  }
+  // componentWillReceiveProps(nextProps) {
+  //   const {team} = nextProps.teamSub.data;
+  //   // const {teamMembers} = nextProps.memberSub.data;
+  //   const {presence} = nextProps.presenceSub.data;
+  //   this.createParticipants(team, teamMembers, presence);
+  //   this.setMembersState(teamMembers, presence);
+  //   this.setCheckinsState();
+  // }
 
   onCheckinNextTeammateClick = () => {
     this.setState({phase: 'updates'});
@@ -145,37 +139,45 @@ export default class MeetingContainer extends Component {
   }
 
   render() {
-    const {checkins, members, phase} = this.state;
-    const {team} = this.props;
-    const {teamId} = this.props.params;
-
-    const shortUrl = `https://prbl.io/m/${teamId}`;
+    const {checkins, members, shortUrl} = this.state;
+    const {teamSub, memberSub, params} = this.props;
+    const {teamId, phase, phaseItem} = params;
+    console.log(memberSub.data);
+    const {facilitatorPhase, facilitatorPhaseItem, name: teamName} = teamSub.data.team;
+    // use the phase from the url, next the phase from the facilitator, next goto lobby (meeting hasn't started)
+    const safeFacilitatorPhase = facilitatorPhase || 'lobby';
+    // console.log('safefac', facilitatorPhase, safeFacilitatorPhase)
+    const localPhase = phase || safeFacilitatorPhase;
+    // a phase item isn't necessarily an integer, so there's no default value
+    const localPhaseItem = phaseItem || facilitatorPhaseItem;
+    // console.log(teamSub, memberSub);
+    // console.log('params', this.props.params)
 
     return (
       <MeetingLayout>
         <Sidebar
-          facilitatorLocation={phase}
-          location={phase}
+          facilitatorPhase={safeFacilitatorPhase}
+          localPhase={localPhase}
           shortUrl={shortUrl}
-          teamName={team.name}
+          teamName={teamName}
           members={members}
         />
-        {phase === 'lobby' &&
+        {localPhase === 'lobby' &&
         <MeetingLobbyLayout
           members={members}
           onStartMeetingClick={this.onStartMeetingClick}
           shortUrl={shortUrl}
-          teamName={team.name}
+          teamName={teamName}
         />
         }
-        {phase === 'checkin' &&
+        {localPhase === 'checkin' &&
         <MeetingCheckinLayout
           checkins={checkins}
           members={members}
           onCheckinNextTeammateClick={this.onCheckinNextTeammateClick}
         />
         }
-        {phase === 'updates' &&
+        {localPhase === 'updates' &&
         <MeetingUpdatesLayout
           members={members}
         />
