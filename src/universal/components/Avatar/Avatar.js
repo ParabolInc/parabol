@@ -19,7 +19,7 @@ const renderBadge = (isCheckedIn, isConnected, size) => {
   let icon;
   if (isCheckedIn) {
     icon = 'check-circle';
-  } else if (checkin === false) {
+  } else if (isCheckedIn === false) {
     icon = 'times-circle';
   } else {
     icon = 'circle';
