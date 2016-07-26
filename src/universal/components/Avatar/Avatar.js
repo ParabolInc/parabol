@@ -8,30 +8,28 @@ const combineStyles = StyleSheet.combineStyles;
 
 let s = {};
 
-const renderBadge = (checkin, connection, size) => {
-  let badgeStyles = s.badge;
-  let icon;
-
+const renderBadge = (isCheckedIn, isConnected, size) => {
+  if (!isCheckedIn && !isConnected) return null;
+  const connection = isConnected ? 'online' : 'offline';
+  const checkin = isCheckedIn ? 'present' : 'absent';
   const iconStyles = combineStyles(
     s.badgeIcon,
     s[connection]
   );
-
-  if (checkin === 'present') {
+  let icon;
+  if (isCheckedIn) {
     icon = 'check-circle';
-  } else if (checkin === 'absent') {
+  } else if (checkin === false) {
     icon = 'times-circle';
   } else {
     icon = 'circle';
   }
-
-  if (size === 'medium' || size === 'large' || size === 'largest') {
-    badgeStyles = combineStyles(s.badge, s.badgeLarge);
-  }
+  const largeBadgeClass = size === 'medium' || size === 'large' || size === 'largest';
+  const badgeStyles = largeBadgeClass ? combineStyles(s.badge, s.badgeLarge) : s.badge;
 
   return (
     <div className={badgeStyles}>
-      <FontAwesome className={iconStyles} name={icon} />
+      <FontAwesome className={iconStyles} name={icon}/>
       <span className={s.srOnly}>
         {`${connection}, `}{checkin}
       </span>
@@ -41,20 +39,18 @@ const renderBadge = (checkin, connection, size) => {
 
 const Avatar = (props) => {
   const {
-    checkin,
-    connection,
-    hasBadge,
     hasLabel,
     labelRight,
     hasTooltip,
-    image,
-    name,
+    isConnected,
+    isCheckedIn,
+    picture,
+    preferredName,
     onClick,
     size
   } = props;
 
-  const trimmedName = name.replace(/\s+/g, '');
-
+  const trimmedName = preferredName.replace(/\s+/g, '');
   const handleMouseLeave = () => {
     console.log('Avatar.onMouseLeave.handleMouseLeave()');
     // TODO: Dispatch UI state for hover to show optional tooltip.
@@ -99,8 +95,8 @@ const Avatar = (props) => {
     >
       <div className={imagePositionStyles}>
         <div className={imageBlockStyles}>
-          <img className={s.avatarImage} src={image} />
-          {hasBadge && renderBadge(checkin, connection, size)}
+          <img className={s.avatarImage} src={picture} />
+          {renderBadge(isCheckedIn, isConnected, size)}
         </div>
       </div>
       {hasLabel &&
@@ -114,21 +110,13 @@ const Avatar = (props) => {
 };
 
 Avatar.propTypes = {
-  hasBadge: PropTypes.bool,
-  checkin: PropTypes.oneOf([
-    'tbd',
-    'absent',
-    'present'
-  ]),
-  connection: PropTypes.oneOf([
-    'offline',
-    'online'
-  ]),
   hasLabel: PropTypes.bool,
   hasTooltip: PropTypes.bool,
-  image: PropTypes.string,
+  isCheckedIn: PropTypes.bool,
+  isConnected: PropTypes.bool,
+  picture: PropTypes.string,
   labelRight: PropTypes.bool,
-  name: PropTypes.string,
+  preferredName: PropTypes.string,
   onClick: PropTypes.func,
   size: PropTypes.oneOf([
     'smallest',
@@ -140,10 +128,10 @@ Avatar.propTypes = {
 };
 
 Avatar.defaultProps = {
-  checkin: 'tbd',
-  connection: 'offline',
-  image: 'https://placekitten.com/g/600/600',
-  name: 'Elizabeth Robertson',
+  isCheckedIn: false,
+  isConnected: false,
+  picture: 'https://placekitten.com/g/600/600',
+  preferredName: 'Elizabeth Robertson',
   size: 'small'
 };
 

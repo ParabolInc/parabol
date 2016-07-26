@@ -8,14 +8,11 @@ import Avatar from 'universal/components/Avatar/Avatar';
 const avatar = <Avatar hasLabel size="largest" />;
 const avatarString = '<Avatar hasLabel size="largest" />';
 const avatarPropsList = [
-  { name: 'checkin', type: 'oneOf',
-    description: <span>absent, present, tbd</span>
+  { name: 'isCheckedIn', type: 'bool',
+    description: <span>true if the user has checked in</span>
   },
-  { name: 'connection', type: 'oneOf',
-    description: <span>offline, online</span>
-  },
-  { name: 'hasBadge', type: 'bool',
-    description: <span>Shows a badge with the avatar image</span>
+  { name: 'isConnected', type: 'bool',
+    description: <span>true if the user has a presence</span>
   },
   { name: 'hasLabel', type: 'bool',
     description: <span>Shows a label with the avatar image</span>
@@ -23,13 +20,13 @@ const avatarPropsList = [
   { name: 'hasTooltip', type: 'bool',
     description: <span>Shows a tooltip on hover</span>
   },
-  { name: 'image', type: 'string',
+  { name: 'picture', type: 'string',
     description: <span>The source of the image. A URL or data-uri.</span>
   },
   { name: 'labelRight', type: 'bool',
     description: <span>Moves label to the right of the avatar image</span>
   },
-  { name: 'name', type: 'string',
+  { name: 'preferredName', type: 'string',
     // eslint-disable-next-line max-len
     description: <span>This is the text for the label and/or tooltip, typically a name or username.</span>
   },

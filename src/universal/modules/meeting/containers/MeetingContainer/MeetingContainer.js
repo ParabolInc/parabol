@@ -55,103 +55,52 @@ export default class MeetingContainer extends Component {
 
   constructor(props) {
     super(props);
-    /**
-     * For now, I'm sketching everything out as state on this container
-     * until I figure out where it goes (cashay, redux-form, redux, state)...
-     */
     this.state = {
       members: [],
-      checkins: [],
       shortUrl: `https://prbl.io/m/${props.params.teamId}`
     };
   }
 
-  // componentWillReceiveProps(nextProps) {
-  //   const {team} = nextProps.teamSub.data;
-  //   // const {teamMembers} = nextProps.memberSub.data;
-  //   const {presence} = nextProps.presenceSub.data;
-  //   this.createParticipants(team, teamMembers, presence);
-  //   this.setMembersState(teamMembers, presence);
-  //   this.setCheckinsState();
-  // }
-
-  onCheckinNextTeammateClick = () => {
-    this.setState({phase: 'updates'});
+  componentWillReceiveProps(nextProps) {
+    const {team} = nextProps.teamSub.data;
+    const {teamMembers} = nextProps.memberSub.data;
+    const {presence} = nextProps.presenceSub.data;
+    this.createParticipants(team, teamMembers, presence);
   }
 
-  onStartMeetingClick = () => {
-    this.setState({phase: 'checkin'});
-  }
+  createParticipants = (team, teamMembers, presence) => {
+    const {checkedInMembers, facilitatorPhase} = team;
+    const inLobby = !facilitatorPhase || facilitatorPhase === 'lobby';
+    this.setState({
+      members: teamMembers.map(member => {
 
-  setCheckinsState() {
-    const {
-      checkins: stateCheckins,
-      members: stateMembers
-    } = this.state;
-    const checkins = [];
-
-    stateMembers.forEach((member) => {
-      const existingCheckin = stateCheckins.find(m => m.id === member.id);
-      if (!existingCheckin) {
-        // Create new checkin state:
-        checkins.push({
-          id: member.id,
-          state: 'invited',
-          isCurrent: false
-        });
-      } else {
-        checkins.push(existingCheckin);
-      }
-    });
-
-    this.setState({checkins});
-  }
-
-  setMembersState(teamMembers, presence) {
-    const {members: stateMembers} = this.state;
-    const members = [];
-
-    teamMembers.forEach((teamMember) => {
-      const {user: {id: userId}} = teamMember;
-      const existingMember = stateMembers.find(m => m.id === userId);
-      const onlinePresence = presence.find(con => con.userId === userId) ?
-        'online' : 'offline';
-      if (!existingMember) {
-        // Create new member:
-        members.push({
-          id: teamMember.user.id,
-          connection: onlinePresence,
-          hasBadge: false,
-          image: teamMember.user.picture,
-          name: teamMember.user.preferredName,
+        // ternary state boolean
+        let isCheckedIn;
+        if (!inLobby && Array.isArray(checkedInMembers)) {
+          isCheckedIn = Boolean(checkedInMembers.find(teamMemberId => teamMemberId === member.id))
+        }
+        return {
+          ...member,
+          isConnected: Boolean(presence.find(connection => connection.userId === member.userId)),
+          isCheckedIn,
           size: 'small'
-        });
-      } else {
-        // Update online status of existing members:
-        members.push({
-          ...existingMember,
-          connection: onlinePresence
-        });
-      }
+        };
+      })
     });
-
-    this.setState({members});
-  }
+  };
 
   render() {
     const {checkins, members, shortUrl} = this.state;
     const {teamSub, memberSub, params} = this.props;
     const {teamId, phase, phaseItem} = params;
-    console.log(memberSub.data);
     const {facilitatorPhase, facilitatorPhaseItem, name: teamName} = teamSub.data.team;
+
     // use the phase from the url, next the phase from the facilitator, next goto lobby (meeting hasn't started)
     const safeFacilitatorPhase = facilitatorPhase || 'lobby';
-    // console.log('safefac', facilitatorPhase, safeFacilitatorPhase)
     const localPhase = phase || safeFacilitatorPhase;
+
     // a phase item isn't necessarily an integer, so there's no default value
     const localPhaseItem = phaseItem || facilitatorPhaseItem;
-    // console.log(teamSub, memberSub);
-    // console.log('params', this.props.params)
 
     return (
       <MeetingLayout>
@@ -160,12 +109,10 @@ export default class MeetingContainer extends Component {
           localPhase={localPhase}
           shortUrl={shortUrl}
           teamName={teamName}
-          members={members}
         />
         {localPhase === 'lobby' &&
         <MeetingLobbyLayout
           members={members}
-          onStartMeetingClick={this.onStartMeetingClick}
           shortUrl={shortUrl}
           teamName={teamName}
         />
