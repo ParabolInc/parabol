@@ -4,6 +4,7 @@ import FontAwesome from 'react-fontawesome';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import theme from 'universal/styles/theme';
 import {cashay} from 'cashay';
+import voidClick from 'universal/utils/voidClick';
 
 import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
 import Button from 'universal/components/Button/Button';
@@ -34,7 +35,6 @@ const createStartMeetingHandler = (members, teamId) => {
 const MeetingLobbyLayout = (props) => {
   const {shortUrl, teamName, members, teamId} = props;
   const onStartMeetingClick = createStartMeetingHandler(members, teamId);
-  const handleClick = (e) => e.preventDefault();
   return (
     <MeetingMain>
       {/* */}
@@ -54,7 +54,7 @@ const MeetingLobbyLayout = (props) => {
             <a
               className={s.link}
               href={shortUrl}
-              onClick={(e) => handleClick(e)}
+              onClick={voidClick}
               title={`Copy link to meeting: ${shortUrl}`}
             >
               <span className={s.linkText}>{shortUrl}</span>

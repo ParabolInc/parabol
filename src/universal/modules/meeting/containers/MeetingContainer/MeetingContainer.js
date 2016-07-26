@@ -115,7 +115,7 @@ export default class MeetingContainer extends Component {
 
     // a phase item isn't necessarily an integer, so there's no default value
     const localPhaseItem = phaseItem || facilitatorPhaseItem;
-
+    if (!members.length) return null;
     return (
       <MeetingLayout>
         <Sidebar
@@ -136,6 +136,7 @@ export default class MeetingContainer extends Component {
         <MeetingCheckinLayout
           members={members}
           team={team}
+          localPhaseItem={localPhaseItem}
         />
         }
         {localPhase === 'updates' &&

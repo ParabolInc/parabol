@@ -5,7 +5,7 @@ import theme from 'universal/styles/theme';
 import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
 import IconLink from 'universal/components/IconLink/IconLink';
 import ProgressBar from 'universal/components/ProgressBar/ProgressBar';
-import CardStage from 'universal/modules/team/components/CardStage/CardStage';
+import CheckinCards from 'universal/modules/meeting/components/CheckinCards/CheckinCards';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingSectionHeading/MeetingSectionHeading';
@@ -15,7 +15,7 @@ import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingS
 let s = {};
 
 const MeetingCheckinLayout = (props) => {
-  const {members, team} = props;
+  const {members, team, localPhaseItem} = props;
   const onCheckinNextTeammateClick = () => {};
   return (
     <MeetingMain>
@@ -34,11 +34,11 @@ const MeetingCheckinLayout = (props) => {
         {/* */}
         <MeetingSection paddingBottom="2rem">
           <MeetingSectionHeading>
-            Hola <span className={s.name}>Kitty</span>, ¿por qué no puedes estar completamente enfocado hoy?
+            Hola <span className={s.name}>{members[localPhaseItem].preferredName}</span>, ¿por qué no puedes estar completamente enfocado hoy?
           </MeetingSectionHeading>
         </MeetingSection>
         {/* */}
-        <CardStage cards={members} />
+        <CheckinCards cards={members} localPhaseItem={localPhaseItem}/>
         <MeetingSection paddingBottom="2rem">
           <IconLink
             icon="arrow-circle-right"

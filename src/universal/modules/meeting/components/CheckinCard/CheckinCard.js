@@ -2,19 +2,27 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import Avatar from 'universal/components/Avatar/Avatar';
-import PushButton from '../../components/PushButton/PushButton';
+import PushButton from 'universal/components/PushButton/PushButton';
 
 const combineStyles = StyleSheet.combineStyles;
 
 let styles = {};
 
+const CardButtons = () => {
+  return (
+    <div className={styles.buttonsBlock}>
+      <PushButton size="large"/>
+      <PushButton size="large"/>
+    </div>
+  )
+};
+
 const Card = (props) => {
-  const {active, avatar, hasControls, label} = props;
+  const {active, avatar} = props;
 
   const cardActiveStyles = combineStyles(styles.card, styles.cardIsActive);
   const cardBlurredStyles = combineStyles(styles.card, styles.cardIsBlurred);
   const cardStyles = active ? cardActiveStyles : cardBlurredStyles;
-  const cardLabel = label || 'invited';
   const nameActiveStyles = combineStyles(styles.cardName, styles.cardNameActive);
   const nameStyles = active ? nameActiveStyles : styles.cardName;
   let labelStyles = styles.cardLabel;
@@ -22,26 +30,19 @@ const Card = (props) => {
   if (avatar.isCheckedIn) {
     labelStyles = combineStyles(styles.cardLabel, styles.cardLabelPresent);
   }
-
   return (
     <div className={cardStyles}>
-      {/* NOTE: Not using the <Avatar /> label. Using card name styles. */}
-      <Avatar checkin={avatar.checkin} connection={avatar.connection} image={avatar.image} size="largest" />
-      <div className={nameStyles}>{avatar.name}</div>
-      <div className={labelStyles}>{cardLabel}</div>
-      {hasControls &&
-        <div className={styles.buttonsBlock}>
-          <PushButton size="large" />
-          <PushButton size="large" />
-        </div>
-      }
+      <Avatar {...avatar} size="largest"/>
+      <div className={nameStyles}>{avatar.preferredName}</div>
+      <div className={labelStyles}>A friend</div>
+      {active && <CardButtons/>}
     </div>
   );
 };
 
 Card.propTypes = {
   active: PropTypes.bool,
-  avatar: PropTypes.object, // avatar.name, avatar.image, avatar.badge
+  avatar: PropTypes.object, // avatar.preferredName, avatar.picture, avatar.badge
   hasControls: PropTypes.bool,
   label: PropTypes.string
 };

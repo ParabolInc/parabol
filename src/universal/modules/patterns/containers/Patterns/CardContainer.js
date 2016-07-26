@@ -3,7 +3,7 @@ import SectionHeader from '../../components/SectionHeader/SectionHeader';
 import Example from '../../components/Example/Example';
 import ExampleCode from '../../components/ExampleCode/ExampleCode';
 import PropsTable from '../../components/PropsTable/PropsTable';
-import Card from 'universal/modules/team/components/Card/Card';
+import Card from '../../../meeting/components/CheckinCard/CheckinCard';
 
 const demoUser = {
   name: '@KittyKitterson',
@@ -13,9 +13,9 @@ const demoUser = {
 };
 
 const card = <Card avatar={demoUser} label={demoUser.state} />;
-const cardString = '<Card avatar={demoUser} label={demoUser.state} />';
+const cardString = '<CheckinCard avatar={demoUser} label={demoUser.state} />';
 const cardActive = <Card active avatar={demoUser} hasControls label={demoUser.state} />;
-const cardActiveString = '<Card active avatar={demoUser} hasControls label={demoUser.state} />';
+const cardActiveString = '<CheckinCard active avatar={demoUser} hasControls label={demoUser.state} />';
 
 const cardPropsList = [
   { name: 'active', type: 'bool',
