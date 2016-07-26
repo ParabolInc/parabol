@@ -14,22 +14,9 @@ import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingS
 
 let s = {};
 
-const combineMembersAndCheckins = (members, checkins) =>
-  members.map((member) => {
-    const checkin = checkins.find((c) => c.id === member.id);
-    if (!checkin) {
-      console.warn(`combineMembersAndCheckins: checkin not found for member ${member.id}`);
-    }
-    return {
-      ...member,
-      ...checkin
-    };
-  });
-
 const MeetingCheckinLayout = (props) => {
-  const {checkins, members, onCheckinNextTeammateClick} = props;
-  const cards = combineMembersAndCheckins(members, checkins);
-  console.log(cards);
+  const {members, team} = props;
+  const onCheckinNextTeammateClick = () => {};
   return (
     <MeetingMain>
       {/* */}
@@ -51,7 +38,7 @@ const MeetingCheckinLayout = (props) => {
           </MeetingSectionHeading>
         </MeetingSection>
         {/* */}
-        <CardStage cards={cards} />
+        <CardStage cards={members} />
         <MeetingSection paddingBottom="2rem">
           <IconLink
             icon="arrow-circle-right"
@@ -87,19 +74,7 @@ s = StyleSheet.create({
 });
 
 MeetingCheckinLayout.propTypes = {
-  checkins: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      state: PropTypes.oneOf([
-        'invited',
-        'not attending',
-        'fully present'
-      ]).isRequired,
-      isCurrent: PropTypes.bool.isRequired
-    }).isRequired
-  ).isRequired,
-  members: PropTypes.array,
-  onCheckinNextTeammateClick: PropTypes.func.isRequired
+  members: PropTypes.array
 };
 
 export default look(MeetingCheckinLayout);

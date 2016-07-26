@@ -29,13 +29,16 @@ export default class CardStage extends Component {
   render() {
     const {cards} = this.props;
     const card = cards[0];
-
+    if (!card) return (
+      <div>No cards!</div>
+    );
+    const state = 'invited';
     // TODO: testing rendering of data from backend for now
     return (
       <div className={styles.base}>
-        <Card avatar={card} label={card.state} />
-        <Card active avatar={card} hasControls label={card.state} />
-        <Card avatar={card} label={card.state} />
+        <Card avatar={card} label={state} />
+        <Card active avatar={card} hasControls label={state} />
+        <Card avatar={card} label={state} />
       </div>
     );
   }

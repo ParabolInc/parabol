@@ -28,6 +28,8 @@ export default [
        teamMembers(teamId: $teamId) {
          id,
          isActive,
+         isFacilitator,
+         isLead,
          userId,
          preferredName,
          picture

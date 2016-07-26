@@ -12,14 +12,18 @@ import {nonnullifyInputThunk} from '../utils';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {TeamMember, CreateTeamMemberInput} from '../TeamMember/teamMemberSchema';
 import {Placeholder} from '../Placeholder/placeholderSchema';
+import {phases} from 'universal/utils/constants';
 
+const {LOBBY, CHECKIN, UPDATES, REQUESTS, SUMMARY} = phases;
 const Phase = new GraphQLEnumType({
   name: 'Phase',
   description: 'The phase of the meeting',
   values: {
-    CHECKIN: {value: 'CHECKIN'},
-    UPDATES: {value: 'UPDATES'},
-    REQUESTS: {value: 'REQUESTS'},
+    LOBBY: {value: LOBBY},
+    CHECKIN: {value: CHECKIN},
+    UPDATES: {value: UPDATES},
+    REQUESTS: {value: REQUESTS},
+    SUMMARY: {value: SUMMARY}
   }
 });
 

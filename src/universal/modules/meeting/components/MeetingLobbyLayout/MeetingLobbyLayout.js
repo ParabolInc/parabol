@@ -3,6 +3,7 @@ import look, {StyleSheet} from 'react-look';
 import FontAwesome from 'react-fontawesome';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import theme from 'universal/styles/theme';
+import {cashay} from 'cashay';
 
 import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
 import Button from 'universal/components/Button/Button';
@@ -16,8 +17,23 @@ let s = {};
 const faStyle = {lineHeight: 'inherit'};
 const faFontSize = `${14 * 2}px`; // FA based on 14px
 
+const createStartMeetingHandler = (members, teamId) => {
+  return () => {
+    const self = members.find(member => member.isSelf);
+    if (!self) {
+      throw new Error('You are not a member! How can that be?');
+    }
+    const firstFacilitator = members.find(member => member.isFacilitator);
+    const safeFirstFacilitator = firstFacilitator || self;
+    const facilitatorId = self.isFacilitator ? self.id : safeFirstFacilitator.id;
+    const options = {variables: {teamId, facilitatorId}};
+    cashay.mutate('startMeeting', options);
+  };
+};
+
 const MeetingLobbyLayout = (props) => {
-  const {onStartMeetingClick, shortUrl, teamName, members} = props;
+  const {shortUrl, teamName, members, teamId} = props;
+  const onStartMeetingClick = createStartMeetingHandler(members, teamId);
   const handleClick = (e) => e.preventDefault();
   return (
     <MeetingMain>

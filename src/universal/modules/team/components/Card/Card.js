@@ -19,7 +19,7 @@ const Card = (props) => {
   const nameStyles = active ? nameActiveStyles : styles.cardName;
   let labelStyles = styles.cardLabel;
 
-  if (avatar.badge === 'check') {
+  if (avatar.isCheckedIn) {
     labelStyles = combineStyles(styles.cardLabel, styles.cardLabelPresent);
   }
 

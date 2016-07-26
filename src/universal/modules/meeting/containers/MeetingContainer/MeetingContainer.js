@@ -65,36 +65,50 @@ export default class MeetingContainer extends Component {
     const {team} = nextProps.teamSub.data;
     const {teamMembers} = nextProps.memberSub.data;
     const {presence} = nextProps.presenceSub.data;
-    this.createParticipants(team, teamMembers, presence);
+    this.createParticipants(team, teamMembers, presence, nextProps.user);
   }
 
-  createParticipants = (team, teamMembers, presence) => {
+  createParticipants = (team, teamMembers, presence, user) => {
     const {checkedInMembers, facilitatorPhase} = team;
     const inLobby = !facilitatorPhase || facilitatorPhase === 'lobby';
-    this.setState({
-      members: teamMembers.map(member => {
-
-        // ternary state boolean
-        let isCheckedIn;
-        if (!inLobby && Array.isArray(checkedInMembers)) {
-          isCheckedIn = Boolean(checkedInMembers.find(teamMemberId => teamMemberId === member.id))
-        }
-        return {
-          ...member,
-          isConnected: Boolean(presence.find(connection => connection.userId === member.userId)),
-          isCheckedIn,
-          size: 'small'
-        };
-      })
+    const unsortedMembers = teamMembers.map(member => {
+      // ternary state boolean
+      let isCheckedIn;
+      if (!inLobby && Array.isArray(checkedInMembers)) {
+        isCheckedIn = Boolean(checkedInMembers.find(teamMemberId => teamMemberId === member.id))
+      } else {
+        isCheckedIn = null;
+      }
+      return {
+        ...member,
+        isConnected: Boolean(presence.find(connection => connection.userId === member.userId)),
+        isCheckedIn,
+        isSelf: user.id === member.userId,
+        size: 'small'
+      };
     });
+
+    let sortedMembers;
+    if (team.checkInOrder && team.checkInOrder.length === unsortedMembers.length) {
+      sortedMembers = team.checkInOrder.map(memberId => unsortedMembers.find(member => member.id === memberId));
+    }
+
+    return sortedMembers || unsortedMembers;
+    // this.setState({
+    //   members: sortedMembers || unsortedMembers
+    // });
   };
 
   render() {
-    const {checkins, members, shortUrl} = this.state;
-    const {teamSub, memberSub, params} = this.props;
+    const {shortUrl} = this.state;
+    const {teamSub, memberSub, params, presenceSub, user} = this.props;
     const {teamId, phase, phaseItem} = params;
-    const {facilitatorPhase, facilitatorPhaseItem, name: teamName} = teamSub.data.team;
-
+    const {team} = teamSub.data;
+    const {facilitatorPhase, facilitatorPhaseItem, name: teamName} = team;
+    const {teamMembers} = memberSub.data;
+    const {presence} = presenceSub.data;
+    const members = this.createParticipants(team, teamMembers, presence, user);
+    console.log('render members', members)
     // use the phase from the url, next the phase from the facilitator, next goto lobby (meeting hasn't started)
     const safeFacilitatorPhase = facilitatorPhase || 'lobby';
     const localPhase = phase || safeFacilitatorPhase;
@@ -115,13 +129,13 @@ export default class MeetingContainer extends Component {
           members={members}
           shortUrl={shortUrl}
           teamName={teamName}
+          teamId={teamId}
         />
         }
         {localPhase === 'checkin' &&
         <MeetingCheckinLayout
-          checkins={checkins}
           members={members}
-          onCheckinNextTeammateClick={this.onCheckinNextTeammateClick}
+          team={team}
         />
         }
         {localPhase === 'updates' &&

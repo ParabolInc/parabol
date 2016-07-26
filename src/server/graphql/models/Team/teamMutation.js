@@ -1,13 +1,55 @@
 import r from 'server/database/rethinkDriver';
-import {requireSUOrTeamMember, requireSUOrSelf} from '../authorization';
-import {updatedOrOriginal} from '../utils';
+import {requireSUOrTeamMember, requireSUOrSelf, requireWebsocket, requireWebsocketExchange} from '../authorization';
+import {updatedOrOriginal, errorObj} from '../utils';
 import {
   GraphQLNonNull,
-  GraphQLBoolean
+  GraphQLBoolean,
+  GraphQLID
 } from 'graphql';
 import {CreateTeamInput, UpdateTeamInput, Team} from './teamSchema';
+import shuffle from 'universal/utils/shuffle';
+import shortid from 'shortid';
+import {phases} from 'universal/utils/constants';
+
+const {CHECKIN} = phases;
 
 export default {
+  startMeeting: {
+    type: GraphQLBoolean,
+    description: 'Start a meeting from the lobby',
+    args: {
+      teamId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The team that will be having the meeting'
+      },
+      facilitatorId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The facilitator teamMemberId for this meeting'
+      }
+    },
+    async resolve(source, {teamId, facilitatorId}, {authToken, socket}) {
+      await requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
+      const facilitatorMembership = await r.table('TeamMember').get(facilitatorId);
+      if (facilitatorMembership.teamId !== teamId || !facilitatorMembership.isActive) {
+        throw errorObj({_error: 'facilitator is not active on that team'});
+      }
+      const teamMembers = await r.table('TeamMember').getAll(teamId, {index: 'teamId'}).pluck('id');
+      const checkInOrder = shuffle(teamMembers.map(member => member.id));
+      // note that anyone can be activeFacilitator, even if isFacilitator === false
+      await r.table('Team').get(teamId).update({
+        meetingId: shortid.generate(),
+        checkInOrder,
+        checkedInMembers: 0,
+        activeFacilitator: facilitatorId,
+        facilitatorPhase: CHECKIN,
+        facilitatorPhaseItem: 0,
+        meetingPhase: CHECKIN,
+        meetingPhaseItem: 0
+      });
+      return true;
+    }
+  },
   createTeam: {
     type: GraphQLBoolean,
     description: 'Create a new team and add the first team member',
