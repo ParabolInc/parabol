@@ -29,13 +29,9 @@ export default {
       // This is the only resolve function where authToken refers to a base64 string and not an object
       const now = new Date();
       const userInfo = await auth0Client.tokens.getInfo(authToken);
-      // const {user_id: userId} = userInfo;
-      // const currentUser = await r.table('User').get(userId);
-
       // TODO loginsCount and blockedFor are not a part of this API response
-      const newUser = {
+      const auth0User = {
         cachedAt: now,
-        // TODO set expiry here
         cacheExpiresAt: new Date(now.valueOf() + ms('30d')),
         // from auth0
         id: userInfo.user_id,
@@ -50,25 +46,28 @@ export default {
         loginsCount: userInfo.logins_count,
         blockedFor: userInfo.blocked_for || []
       };
-      const changes = await r.table('User').insert(newUser, {
-        conflict: 'update',
-        returnChanges: true
-      });
-      // Did we update an existing user?
-      if (changes.replaced === 0) {
-        const emailWelcomed = await sendEmail(newUser.email, 'welcomeEmail', newUser);
-        const welcomeSentAt = emailWelcomed ? new Date() : null;
-        // must wait for write to UserProfile because a query could follow quickly after
-        const newInfo = {welcomeSentAt, isNew: true};
-        Object.assign(newUser, newInfo);
-        await r.table('User').get(newUser.id).update(newInfo);
+      const {id: userId, picture} = auth0User;
+      const currentUser = await r.table('User').get(userId);
+      let returnedUser;
+      if (currentUser) {
+        if (currentUser.picture !== picture) {
+          // if the picture we have is not the same as the one that auth0 has, propagate to denormalized refs
+          await r.table('TeamMember').getAll(userId, {index: 'userId'}).update({picture});
+        }
+        returnedUser = Object.assign({}, currentUser, auth0User);
+        await r.table('User').get(userId).update(auth0User);
       } else {
-        // assume the user has at least 1 team
-        await r.table('TeamMember')
-          .getAll(newUser.id, {index: 'userId'})
-          .update({picture: newUser.picture});
+        // new user activate!
+        const emailWelcomed = await sendEmail(auth0User.email, 'welcomeEmail', auth0User);
+        const welcomeSentAt = emailWelcomed ? new Date() : null;
+        returnedUser = {
+          ...auth0User,
+          isNew: true,
+          welcomeSentAt
+        };
+        await r.table('User').get(userId).insert(returnedUser);
       }
-      return newUser;
+      return returnedUser;
     }
   },
   updateUserProfile: {
