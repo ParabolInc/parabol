@@ -15,7 +15,9 @@ import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingS
 let s = {};
 
 const MeetingCheckinLayout = (props) => {
-  const {members, team, localPhaseItem} = props;
+  const {members, team, localPhaseItem, meetingPhase, meetingPhaseItem} = props;
+  const progressBarCompletion = 100 * meetingPhase === 'checkin' ? meetingPhaseItem / members.length : 1;
+  console.log('comp', progressBarCompletion)
   const onCheckinNextTeammateClick = () => {};
   return (
     <MeetingMain>
@@ -24,7 +26,7 @@ const MeetingCheckinLayout = (props) => {
         <div className={s.avatars}>
           <AvatarGroup avatars={members} label="Team:" />
           <div className={s.progress}>
-            <ProgressBar />
+            <ProgressBar completed={progressBarCompletion} />
           </div>
         </div>
       </MeetingSection>

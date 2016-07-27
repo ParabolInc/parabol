@@ -3,7 +3,8 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLID,
-  GraphQLString
+  GraphQLString,
+  GraphQLInt
 } from 'graphql';
 import {GraphQLURLType} from '../types';
 import {Team} from '../Team/teamSchema';
@@ -32,6 +33,15 @@ export const TeamMember = new GraphQLObjectType({
     preferredName: {
       type: GraphQLString,
       description: 'The name, as confirmed by the user'
+    },
+    /* Ephemeral meeting state */
+    checkInOrder: {
+      type: GraphQLInt,
+      description: 'The place in line for checkin, regenerated every meeting'
+    },
+    isCheckedIn: {
+      type: GraphQLBoolean,
+      description: 'true if present, false if absent, null before check-in'
     },
     /* GraphQL sugar */
     team: {

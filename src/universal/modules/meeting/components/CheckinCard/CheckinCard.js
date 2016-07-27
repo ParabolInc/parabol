@@ -11,8 +11,8 @@ let styles = {};
 const CardButtons = () => {
   return (
     <div className={styles.buttonsBlock}>
-      <PushButton size="large"/>
-      <PushButton size="large"/>
+      <PushButton keystroke="c" label="ok, let's do this!" size="large"/>
+      <PushButton keystroke="x" label="can't make this one" size="large"/>
     </div>
   )
 };
@@ -34,7 +34,7 @@ const Card = (props) => {
     <div className={cardStyles}>
       <Avatar {...avatar} size="largest"/>
       <div className={nameStyles}>{avatar.preferredName}</div>
-      <div className={labelStyles}>A friend</div>
+      <div className={labelStyles}>Checking in...</div>
       {active && <CardButtons/>}
     </div>
   );

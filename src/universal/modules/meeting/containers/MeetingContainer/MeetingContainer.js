@@ -62,41 +62,19 @@ export default class MeetingContainer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {team} = nextProps.teamSub.data;
     const {teamMembers} = nextProps.memberSub.data;
     const {presence} = nextProps.presenceSub.data;
-    this.createParticipants(team, teamMembers, presence, nextProps.user);
+    this.createParticipants(teamMembers, presence, nextProps.user);
   }
 
-  createParticipants = (team, teamMembers, presence, user) => {
-    const {checkedInMembers, facilitatorPhase} = team;
-    const inLobby = !facilitatorPhase || facilitatorPhase === 'lobby';
-    const unsortedMembers = teamMembers.map(member => {
-      // ternary state boolean
-      let isCheckedIn;
-      if (!inLobby && Array.isArray(checkedInMembers)) {
-        isCheckedIn = Boolean(checkedInMembers.find(teamMemberId => teamMemberId === member.id))
-      } else {
-        isCheckedIn = null;
-      }
+  createParticipants = (teamMembers, presence, user) => {
+    return teamMembers.map((member) => {
       return {
         ...member,
         isConnected: Boolean(presence.find(connection => connection.userId === member.userId)),
-        isCheckedIn,
-        isSelf: user.id === member.userId,
-        size: 'small'
+        isSelf: user.id === member.userId
       };
     });
-
-    let sortedMembers;
-    if (team.checkInOrder && team.checkInOrder.length === unsortedMembers.length) {
-      sortedMembers = team.checkInOrder.map(memberId => unsortedMembers.find(member => member.id === memberId));
-    }
-
-    return sortedMembers || unsortedMembers;
-    // this.setState({
-    //   members: sortedMembers || unsortedMembers
-    // });
   };
 
   render() {
@@ -104,10 +82,10 @@ export default class MeetingContainer extends Component {
     const {teamSub, memberSub, params, presenceSub, user} = this.props;
     const {teamId, phase, phaseItem} = params;
     const {team} = teamSub.data;
-    const {facilitatorPhase, facilitatorPhaseItem, name: teamName} = team;
+    const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem, name: teamName} = team;
     const {teamMembers} = memberSub.data;
     const {presence} = presenceSub.data;
-    const members = this.createParticipants(team, teamMembers, presence, user);
+    const members = this.createParticipants(teamMembers, presence, user);
     console.log('render members', members)
     // use the phase from the url, next the phase from the facilitator, next goto lobby (meeting hasn't started)
     const safeFacilitatorPhase = facilitatorPhase || 'lobby';
@@ -123,6 +101,7 @@ export default class MeetingContainer extends Component {
           localPhase={localPhase}
           shortUrl={shortUrl}
           teamName={teamName}
+          teamId={team.id}
         />
         {localPhase === 'lobby' &&
         <MeetingLobbyLayout
@@ -137,6 +116,8 @@ export default class MeetingContainer extends Component {
           members={members}
           team={team}
           localPhaseItem={localPhaseItem}
+          meetingPhase={meetingPhase}
+          meetingPhaseItem={meetingPhaseItem}
         />
         }
         {localPhase === 'updates' &&

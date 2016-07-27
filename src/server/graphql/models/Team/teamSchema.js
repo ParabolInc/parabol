@@ -50,15 +50,6 @@ export const Team = new GraphQLObjectType({
       type: GraphQLID,
       description: 'The unique Id of the active meeting'
     },
-    checkInOrder: {
-      type: new GraphQLList(GraphQLID),
-      description: 'A randomly generated array of team members\' ids'
-    },
-    checkedInMembers: {
-      // MUST...RESIST...BIT TWIDDLING...
-      type: new GraphQLList(GraphQLID),
-      description: 'A list of members that have checked in'
-    },
     activeFacilitator: {
       type: GraphQLID,
       description: 'The current facilitator for this meeting'

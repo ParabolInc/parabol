@@ -31,7 +31,7 @@ const ProgressBar = (props) => {
       backgroundColor,
       height,
       transition: 'width .2s ease-in',
-      width: `${completed}%`
+      width: `${completed+2}%`
     },
 
     srOnly

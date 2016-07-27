@@ -1,5 +1,5 @@
 import r from 'server/database/rethinkDriver';
-import {requireSUOrTeamMember, requireSUOrSelf, requireWebsocket, requireWebsocketExchange} from '../authorization';
+import {requireSUOrTeamMember, requireSUOrSelf, requireWebsocket} from '../authorization';
 import {updatedOrOriginal, errorObj} from '../utils';
 import {
   GraphQLNonNull,
@@ -35,17 +35,72 @@ export default {
         throw errorObj({_error: 'facilitator is not active on that team'});
       }
       const teamMembers = await r.table('TeamMember').getAll(teamId, {index: 'teamId'}).pluck('id');
-      const checkInOrder = shuffle(teamMembers.map(member => member.id));
-      // note that anyone can be activeFacilitator, even if isFacilitator === false
-      await r.table('Team').get(teamId).update({
+      shuffle(teamMembers);
+
+      const updatedTeam = {
         meetingId: shortid.generate(),
-        checkInOrder,
-        checkedInMembers: 0,
         activeFacilitator: facilitatorId,
         facilitatorPhase: CHECKIN,
         facilitatorPhaseItem: 0,
         meetingPhase: CHECKIN,
         meetingPhaseItem: 0
+      };
+      const dbPromises = teamMembers.map((member, idx) => {
+        return r.table('TeamMember').get(member.id).update({
+          checkInOrder: idx,
+          isCheckedIn: null
+        });
+      });
+      dbPromises.push(r.table('Team').get(teamId).update(updatedTeam));
+      await Promise.all(dbPromises);
+      return true;
+    }
+  },
+  killMeeting: {
+    type: GraphQLBoolean,
+    description: 'Finish a meeting abruptly',
+    args: {
+      teamId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The team that will be having the meeting'
+      }
+    },
+    async resolve(source, {teamId}, {authToken, socket}) {
+      await requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
+      const ephemeralFields = ['meetingId', 'activeFacilitator', 'facilitatorPhase', 'facilitatorPhaseItem', 'meetingPhase', 'meetingPhaseItem'];
+      await r.table('Team').get(teamId).replace(r.row.without(ephemeralFields));
+      return true;
+    }
+  },
+  checkinMember: {
+    type: GraphQLBoolean,
+    description: 'Check a member in as present or absent',
+    args: {
+      teamId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The team that will be having the meeting'
+      },
+      teamMemberId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The teamMemberId of the person who is being checked in'
+      },
+      isPresent: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        description: 'true if the member is present'
+      }
+    },
+    async resolve(source, {teamId, teamMemberId, isPresent}, {authToken, socket}) {
+      await requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
+      const currentTeam = await r.table('Team').get(teamId);
+      const {meetingPhaseItem, facilitatorPhaseItem} = currentTeam;
+      const nextPhaseItem = meetingPhaseItem + meetingPhaseItem === facilitatorPhaseItem ? 1 : 0;
+
+      await r.table('Team').get(teamId).update({
+        checkedInMembers: 0,
+        facilitatorPhaseItem: nextPhaseItem,
+        meetingPhaseItem: nextPhaseItem
       });
       return true;
     }

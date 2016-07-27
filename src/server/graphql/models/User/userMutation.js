@@ -59,7 +59,8 @@ export default {
       if (currentUser) {
         if (currentUser.picture !== picture) {
           // if the picture we have is not the same as the one that auth0 has, propagate to denormalized refs
-          await r.table('TeamMember').getAll(userId, {index: 'userId'}).update({picture});
+          // TODO: turn this on before launching beta!
+          // await r.table('TeamMember').getAll(userId, {index: 'userId'}).update({picture});
         }
         returnedUser = Object.assign({}, currentUser, auth0User);
         await r.table('User').get(userId).update(auth0User);

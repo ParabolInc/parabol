@@ -10,8 +10,6 @@ export default [
          id,
          name,
          meetingId,
-         checkInOrder,
-         checkedInMembers,
          activeFacilitator,
          facilitatorPhase,
          facilitatorPhaseItem,
@@ -26,13 +24,15 @@ export default [
     string: `
     subscription($teamId: ID!) {
        teamMembers(teamId: $teamId) {
+         checkInOrder,
          id,
          isActive,
+         isCheckedIn,
          isFacilitator,
          isLead,
-         userId,
+         picture,
          preferredName,
-         picture
+         userId,
        }
     }`,
     channelfy: variables => `teamMembers/${variables.teamId}`

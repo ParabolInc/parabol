@@ -5,6 +5,7 @@ import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import PlaceholderList from 'universal/modules/meeting/components/PlaceholderList/PlaceholderList';
 import PlaceholderAddLink from 'universal/modules/meeting/components/PlaceholderAddLink/PlaceholderAddLink';
 import PlaceholderInput from 'universal/modules/meeting/components/PlaceholderInput/PlaceholderInput';
+import {cashay} from 'cashay';
 
 const combineStyles = StyleSheet.combineStyles;
 
@@ -16,7 +17,8 @@ const Sidebar = (props) => {
     localPhase,
     shortUrl,
     teamName,
-    timerValue
+    timerValue,
+    teamId
   } = props;
   const facilitatorPhaseItemStyles = combineStyles(s.navListItem, s.navListItemMeetingMarker);
   const activeNavAnchor = combineStyles(s.navListItemLink, s.navListItemLinkActive);
@@ -36,10 +38,14 @@ const Sidebar = (props) => {
   const updatesNavItemStyles = facilitatorPhase === 'updates' ? facilitatorPhaseItemStyles : s.navListItem;
   const requestsNavItemStyles = facilitatorPhase === 'requests' ? facilitatorPhaseItemStyles : s.navListItem;
 
+  const onLogoClick = (e) => {
+    e.preventDefault();
+    cashay.mutate('killMeeting', {variables: {teamId}});
+  };
   return (
     <div className={s.sidebar}>
       <div className={s.sidebarHeader}>
-        <a className={s.brandLink} href="/action-ui/">
+        <a className={s.brandLink} onClick={onLogoClick}>
           <img className={s.brandLogo} src={actionUIMark} />
         </a>
         <div className={s.teamName}>{teamName}</div>
