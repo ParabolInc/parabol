@@ -1,7 +1,7 @@
 import r from 'server/database/rethinkDriver';
 import {GraphQLString, GraphQLNonNull} from 'graphql';
 import {User, UpdateUserInput} from './userSchema';
-import {AuthenticationClient} from 'auth0';
+import {AuthenticationClient, ManagementClient} from 'auth0';
 import {auth0} from 'universal/utils/clientOptions';
 import sendEmail from 'server/email/sendEmail';
 import ms from 'ms';
@@ -29,6 +29,13 @@ export default {
       // This is the only resolve function where authToken refers to a base64 string and not an object
       const now = new Date();
       const userInfo = await auth0Client.tokens.getInfo(authToken);
+      // const params = {id: userInfo.user_id};
+      // const metadata = {foo: 1};
+      // const auth0ManagementClient = new ManagementClient({
+      //   domain: auth0.account,
+      //   token: process.env.AUTH0_CLIENT_SECRET
+      // });
+      // const updateRes = await auth0ManagementClient.users.updateUserMetadata(params, metadata);
       // TODO loginsCount and blockedFor are not a part of this API response
       const auth0User = {
         cachedAt: now,
@@ -65,7 +72,7 @@ export default {
           isNew: true,
           welcomeSentAt
         };
-        await r.table('User').get(userId).insert(returnedUser);
+        await r.table('User').insert(returnedUser);
       }
       return returnedUser;
     }
