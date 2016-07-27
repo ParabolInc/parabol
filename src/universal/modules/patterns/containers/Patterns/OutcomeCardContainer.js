@@ -3,10 +3,10 @@ import SectionHeader from '../../components/SectionHeader/SectionHeader';
 import Example from '../../components/Example/Example';
 import ExampleCode from '../../components/ExampleCode/ExampleCode';
 import PropsTable from '../../components/PropsTable/PropsTable';
-import ProjectCard from 'universal/components/ProjectCard/ProjectCard';
+import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
 
-const projectCard = <ProjectCard showByTeam />;
-const projectCardString = '<ProjectCard showByTeam />';
+const projectCard = <OutcomeCard showByTeam />;
+const projectCardString = '<OutcomeCard showByTeam />';
 
 // TODO: Add all props to demo
 const projectCardPropsList = [
@@ -26,9 +26,9 @@ export default class CardContainer extends Component {
       <div>
 
         <SectionHeader
-          heading="ProjectCard"
+          heading="OutcomeCard"
           // eslint-disable-next-line max-len
-          description="A ProjectCard component with description, timestamp, owner/team, and status"
+          description="A OutcomeCard component with description, timestamp, owner/team, and status"
         />
 
         <Example>

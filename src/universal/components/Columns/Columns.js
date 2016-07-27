@@ -1,7 +1,7 @@
 import React from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
-import ProjectCard from 'universal/components/ProjectCard/ProjectCard';
+import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
 
 const borderColor = 'rgba(0, 0, 0, .1)';
 let styles = {};
@@ -10,63 +10,63 @@ const Columns = () =>
   <div className={styles.root}>
     <div className={styles.columns}>
       <div className={styles.columnFirst}>
+        <div className={styles.columnHeading}>Done</div>
+        <div className={styles.cardBlock}>
+          <OutcomeCard status="done" />
+        </div>
+        <div className={styles.cardBlock}>
+          <OutcomeCard status="done" />
+        </div>
+        <div className={styles.cardBlock}>
+          <OutcomeCard status="done" />
+        </div>
+        <div className={styles.cardBlock}>
+          <OutcomeCard status="done" />
+        </div>
+      </div>
+      <div className={styles.column}>
         <div className={styles.columnHeading}>Active</div>
         <div className={styles.cardBlock}>
-          <ProjectCard status="active" />
+          <OutcomeCard status="active" />
         </div>
         <div className={styles.cardBlock}>
-          <ProjectCard status="active" />
+          <OutcomeCard status="active" />
         </div>
         <div className={styles.cardBlock}>
-          <ProjectCard status="active" />
+          <OutcomeCard status="active" />
         </div>
         <div className={styles.cardBlock}>
-          <ProjectCard status="active" />
+          <OutcomeCard status="active" />
         </div>
       </div>
       <div className={styles.column}>
         <div className={styles.columnHeading}>Stuck</div>
         <div className={styles.cardBlock}>
-          <ProjectCard status="stuck" />
+          <OutcomeCard status="stuck" />
         </div>
         <div className={styles.cardBlock}>
-          <ProjectCard status="stuck" />
+          <OutcomeCard status="stuck" />
         </div>
         <div className={styles.cardBlock}>
-          <ProjectCard status="stuck" />
+          <OutcomeCard status="stuck" />
         </div>
         <div className={styles.cardBlock}>
-          <ProjectCard status="stuck" />
-        </div>
-      </div>
-      <div className={styles.column}>
-        <div className={styles.columnHeading}>Done</div>
-        <div className={styles.cardBlock}>
-          <ProjectCard status="done" />
-        </div>
-        <div className={styles.cardBlock}>
-          <ProjectCard status="done" />
-        </div>
-        <div className={styles.cardBlock}>
-          <ProjectCard status="done" />
-        </div>
-        <div className={styles.cardBlock}>
-          <ProjectCard status="done" />
+          <OutcomeCard status="stuck" />
         </div>
       </div>
       <div className={styles.columnLast}>
         <div className={styles.columnHeading}>Future</div>
         <div className={styles.cardBlock}>
-          <ProjectCard status="future" />
+          <OutcomeCard status="future" />
         </div>
         <div className={styles.cardBlock}>
-          <ProjectCard status="future" />
+          <OutcomeCard status="future" />
         </div>
         <div className={styles.cardBlock}>
-          <ProjectCard status="future" />
+          <OutcomeCard status="future" />
         </div>
         <div className={styles.cardBlock}>
-          <ProjectCard status="future" />
+          <OutcomeCard status="future" />
         </div>
       </div>
     </div>

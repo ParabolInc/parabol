@@ -11,10 +11,10 @@ let styles = {};
 const CardButtons = () => {
   return (
     <div className={styles.buttonsBlock}>
-      <PushButton keystroke="c" label="ok, let's do this!" size="large"/>
-      <PushButton keystroke="x" label="can't make this one" size="large"/>
+      <PushButton keystroke="c" label="ok, let’s do this!" size="large" />
+      <PushButton keystroke="x" label="can’t make this one" size="large" />
     </div>
-  )
+  );
 };
 
 const Card = (props) => {

@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import FontAwesome from 'react-fontawesome';
-import t from 'universal/styles/t';
+import t from 'universal/styles/theme';
 import {srOnly} from 'universal/styles/helpers';
 
 let s = {};

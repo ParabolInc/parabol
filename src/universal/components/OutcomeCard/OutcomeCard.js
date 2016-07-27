@@ -9,7 +9,7 @@ const combineStyles = StyleSheet.combineStyles;
 const avatarSize = '1.5rem';
 let styles = {};
 
-const ProjectCard = props => {
+const OutcomeCard = props => {
   const {
     description,
     status,
@@ -73,7 +73,7 @@ const ProjectCard = props => {
   );
 };
 
-ProjectCard.propTypes = {
+OutcomeCard.propTypes = {
   description: PropTypes.string,
   status: PropTypes.oneOf([
     'active',
@@ -83,19 +83,21 @@ ProjectCard.propTypes = {
   ]),
   openStatusMenu: PropTypes.func,
   isArchived: PropTypes.bool,
+  isProject: PropTypes.bool,
   owner: PropTypes.object,
   team: PropTypes.object,
   timestamp: PropTypes.string,
   showByTeam: PropTypes.bool
 };
 
-ProjectCard.defaultProps = {
+OutcomeCard.defaultProps = {
   description: 'Parabol website updated',
   status: 'done',
   openStatusMenu() {
     console.log('openStatusMenu');
   },
   isArchived: false,
+  isProject: true,
   owner: {
     name: 'Taya Mueller',
     avatar: TayaAvatar
@@ -215,8 +217,8 @@ styles = StyleSheet.create({
   // Note: Can share color properties
 
   active: {
-    borderTopColor: theme.palette.dark10d,
-    color: theme.palette.dark10d
+    borderTopColor: theme.palette.cool,
+    color: theme.palette.cool
   },
 
   stuck: {
@@ -225,8 +227,8 @@ styles = StyleSheet.create({
   },
 
   done: {
-    borderTopColor: theme.palette.cool,
-    color: theme.palette.cool
+    borderTopColor: theme.palette.dark10d,
+    color: theme.palette.dark10d
   },
 
   future: {
@@ -235,4 +237,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default look(ProjectCard);
+export default look(OutcomeCard);

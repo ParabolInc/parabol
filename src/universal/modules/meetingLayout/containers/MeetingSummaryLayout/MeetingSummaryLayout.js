@@ -68,19 +68,19 @@ const exampleTeam = {
   members: [
     {
       preferredName: 'Jordan Husney',
-      avatar: Jordan
+      picture: Jordan
     },
     {
       preferredName: 'Matt Krick',
-      avatar: Matt
+      picture: Matt
     },
     {
       preferredName: 'Taya Mueller',
-      avatar: Taya
+      picture: Taya
     },
     {
       preferredName: 'Terry Acker',
-      avatar: Terry
+      picture: Terry
     }
   ]
 };

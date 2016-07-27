@@ -30,28 +30,28 @@ const exampleTeam = {
       checkin: 'tbd',
       connection: 'online',
       hasBadge: true,
-      image: Jordan,
+      picture: Jordan,
       size: 'small'
     },
     {
       checkin: 'tbd',
       connection: 'online',
       hasBadge: true,
-      image: Matt,
+      picture: Matt,
       size: 'small'
     },
     {
       checkin: 'tbd',
       connection: 'offline',
       hasBadge: true,
-      image: Taya,
+      picture: Taya,
       size: 'small'
     },
     {
       checkin: 'tbd',
       connection: 'offline',
       hasBadge: true,
-      image: Terry,
+      picture: Terry,
       size: 'small'
     }
   ]

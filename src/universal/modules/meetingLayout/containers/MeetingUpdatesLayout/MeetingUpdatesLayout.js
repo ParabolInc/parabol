@@ -33,28 +33,28 @@ const exampleTeam = {
       checkin: 'present',
       connection: 'online',
       hasBadge: true,
-      image: Jordan,
+      picture: Jordan,
       size: 'small'
     },
     {
       checkin: 'present',
       connection: 'online',
       hasBadge: true,
-      image: Matt,
+      picture: Matt,
       size: 'small'
     },
     {
       checkin: 'present',
       connection: 'offline',
       hasBadge: true,
-      image: Taya,
+      picture: Taya,
       size: 'small'
     },
     {
       checkin: 'absent',
       connection: 'offline',
       hasBadge: true,
-      image: Terry,
+      picture: Terry,
       size: 'small'
     }
   ]
@@ -89,11 +89,13 @@ const MeetingUpdatesLayout = (props) => {
           {/* */}
           <div className={s.layout}>
             <div className={s.nav}>
-              <IconLink icon="arrow-circle-left" label="Previous team member" />
+              <div className={s.linkSpacer}>{' '}</div>
               <div className={s.avatar}>
                 <Avatar hasLabel image={Taya} name="Taya Mueller" labelRight size="medium" />
               </div>
-              <IconLink icon="arrow-circle-right" iconPlacement="right" label="Next team member" />
+              <div className={s.linkSpacer}>
+                <IconLink icon="arrow-circle-right" iconPlacement="right" label="Next team member" />
+              </div>
             </div>
             <Columns />
           </div>
@@ -125,6 +127,11 @@ s = StyleSheet.create({
   avatar: {
     flex: 1,
     textAlign: 'center'
+  },
+
+  linkSpacer: {
+    textAlign: 'right',
+    width: '9.25rem'
   }
 });
 
