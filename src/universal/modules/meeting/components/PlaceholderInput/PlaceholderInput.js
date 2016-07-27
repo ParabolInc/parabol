@@ -12,7 +12,7 @@ const PlaceholderInput = (props) => {
         className={s.input}
         onChange={onChange}
         placeholder={placeholder}
-        title="Placeholder input"
+        title="Add a Request"
         type="text"
         value={value}
       />
