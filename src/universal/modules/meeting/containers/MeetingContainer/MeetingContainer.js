@@ -32,6 +32,16 @@ import {
  *
  */
 
+const createParticipants = (teamMembers, presence, user) => {
+  return teamMembers.map((member) => {
+    return {
+      ...member,
+      isConnected: Boolean(presence.find(connection => connection.userId === member.userId)),
+      isSelf: user.id === member.userId
+    };
+  });
+};
+
 const mapStateToProps = (state, props) => {
   const variables = {teamId: props.params.teamId};
   return {
@@ -57,43 +67,30 @@ export default class MeetingContainer extends Component {
     super(props);
     this.state = {
       members: [],
-      shortUrl: `https://prbl.io/m/${props.params.teamId}`
+      shortUrl: `https://prbl.io/m/${props.params.teamId}`,
     };
   }
 
   componentWillReceiveProps(nextProps) {
     const {teamMembers} = nextProps.memberSub.data;
     const {presence} = nextProps.presenceSub.data;
-    this.createParticipants(teamMembers, presence, nextProps.user);
+    this.setState({
+      members: createParticipants(teamMembers, presence, nextProps.user)
+    });
   }
 
-  createParticipants = (teamMembers, presence, user) => {
-    return teamMembers.map((member) => {
-      return {
-        ...member,
-        isConnected: Boolean(presence.find(connection => connection.userId === member.userId)),
-        isSelf: user.id === member.userId
-      };
-    });
-  };
-
   render() {
-    const {shortUrl} = this.state;
-    const {teamSub, memberSub, params, presenceSub, user} = this.props;
+    const {shortUrl, members} = this.state;
+    const {teamSub, params} = this.props;
     const {teamId, phase, phaseItem} = params;
     const {team} = teamSub.data;
     const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem, name: teamName} = team;
-    const {teamMembers} = memberSub.data;
-    const {presence} = presenceSub.data;
-    const members = this.createParticipants(teamMembers, presence, user);
-    console.log('render members', members)
     // use the phase from the url, next the phase from the facilitator, next goto lobby (meeting hasn't started)
     const safeFacilitatorPhase = facilitatorPhase || 'lobby';
     const localPhase = phase || safeFacilitatorPhase;
 
     // a phase item isn't necessarily an integer, so there's no default value
     const localPhaseItem = phaseItem || facilitatorPhaseItem;
-    if (!members.length) return null;
     return (
       <MeetingLayout>
         <Sidebar

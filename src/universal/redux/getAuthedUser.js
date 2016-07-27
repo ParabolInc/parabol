@@ -1,65 +1,15 @@
 export const getAuthQueryString = `
 query {
   user: getCurrentUser {
-    id,
-    cachedAt,
-    cacheExpiresAt,
-    createdAt,
-    updatedAt,
     email,
-    emailVerified,
-    picture,
-    name,
-    nickname,
-    identities {
-      connection,
-      userId,
-      provider,
-      isSocial,
-    }
-    loginsCount,
-    blockedFor {
-      identifier,
-      id,
-    },
+    id,
     isNew,
-    preferredName,
-    memberships {
-      id,
-      team {
-       id,
-       name
-      },
-      isLead,
-      isActive,
-      isFacilitator
-    }
+    picture,
+    preferredName
   }
 }`;
 
 const updateTokenMutationHandlers = {
-  acceptInvitation(optimisticVariables, queryResponse, currentResponse) {
-    if (queryResponse) {
-      // we can't be optimistic, server must process our invite token:
-      currentResponse.user.memberships.push(queryResponse);
-    }
-    return undefined;
-  },
-  createTeam(optimisticVariables, queryResponse, currentResponse) {
-    if (optimisticVariables) {
-      const {leader, id, name, isActive, isLead, isFacilitator} = optimisticVariables.newTeam;
-      const membership = {
-        id: leader.id,
-        team: {id, name},
-        isActive,
-        isLead,
-        isFacilitator
-      };
-      currentResponse.user.memberships.push(membership);
-      return currentResponse;
-    }
-    return undefined;
-  },
   updateUserProfile(optimisticVariables, queryResponse, currentResponse) {
     if (optimisticVariables) {
       Object.assign(currentResponse.user, optimisticVariables.updatedProfile);

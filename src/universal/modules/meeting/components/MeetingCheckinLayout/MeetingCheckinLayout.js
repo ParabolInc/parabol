@@ -14,11 +14,11 @@ import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingS
 
 let s = {};
 
+const onCheckinNextTeammateClick = () => {};
 const MeetingCheckinLayout = (props) => {
   const {members, team, localPhaseItem, meetingPhase, meetingPhaseItem} = props;
   const progressBarCompletion = 100 * meetingPhase === 'checkin' ? meetingPhaseItem / members.length : 1;
-  console.log('comp', progressBarCompletion)
-  const onCheckinNextTeammateClick = () => {};
+  const currentName = members[localPhaseItem] && members[localPhaseItem].preferredName;
   return (
     <MeetingMain>
       {/* */}
@@ -36,7 +36,7 @@ const MeetingCheckinLayout = (props) => {
         {/* */}
         <MeetingSection paddingBottom="2rem">
           <MeetingSectionHeading>
-            Hola <span className={s.name}>{members[localPhaseItem].preferredName}</span>, ¿por qué no puedes estar completamente enfocado hoy?
+            Hola <span className={s.name}>{currentName}</span>, ¿por qué no puedes estar completamente enfocado hoy?
           </MeetingSectionHeading>
         </MeetingSection>
         {/* */}

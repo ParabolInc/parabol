@@ -11,6 +11,7 @@ let styles = {};
 const DashLayout = (props) => {
   const {
     children,
+    dispatch,
     notification,
     hasNotification,
     title
@@ -20,7 +21,7 @@ const DashLayout = (props) => {
     <div className={styles.root}>
       <Helmet title={title} {...head} />
       {hasNotification &&
-        <NotificationBar notification={notification} />
+        <NotificationBar dispatch={dispatch} link="/meeting/team123" notification={notification} />
       }
       <div className={styles.main}>
         {children}

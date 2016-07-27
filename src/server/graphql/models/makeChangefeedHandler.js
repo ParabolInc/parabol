@@ -14,7 +14,7 @@ const handleRethinkRemove = id => {
   };
 };
 
-const handleRethinkUpdate = doc => {
+const handleRethinkUpdate = (doc, path) => {
   const oldVals = doc.old_val;
   const newVals = doc.new_val;
   const changeKeys = [...Object.keys(oldVals), ...Object.keys(newVals)];
@@ -43,20 +43,24 @@ const handleRethinkUpdate = doc => {
     }
     diff[key] = newVals[key];
   }
-  return {
+  const payload = {
     type: 'update',
     fields: diff,
     removeKeys
   };
+  if (path) {
+    payload.path = `${path}[${payload.id}]`;
+  }
+  return payload;
 };
 
-const handleRethinkChangefeed = doc => {
+const handleRethinkChangefeed = (doc, path) => {
   if (!doc.old_val || Object.keys(doc.old_val).length === 0) {
     return handleRethinkAdd(doc.new_val);
   } else if (!doc.new_val || Object.keys(doc.new_val).length === 0) {
     return handleRethinkRemove(doc.old_val.id);
   }
-  return handleRethinkUpdate(doc);
+  return handleRethinkUpdate(doc, path);
 };
 
 
@@ -66,10 +70,7 @@ export default function makeChangefeedHandler(socket, subbedChannelName, options
     if (err) throw err;
     cursor.each((error, data) => {
       if (error) throw error;
-      const payload = handleRethinkChangefeed(data);
-      if (path) {
-        payload.path = path;
-      }
+      const payload = handleRethinkChangefeed(data, path);
       socket.emit(subbedChannelName, payload);
     });
     socket.on('unsubscribe', channelName => {

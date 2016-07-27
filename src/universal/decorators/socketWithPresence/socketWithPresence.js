@@ -16,8 +16,7 @@ const mapStateToProps = (state, props) => {
     component: 'socketWithPresence'
   };
   return {
-    presenceSub: cashay.subscribe(presenceSubscription.string, presenceSubscriber, presenceSubOptions),
-    socketSubs: state.socket.subs
+    presenceSub: cashay.subscribe(presenceSubscription.string, presenceSubscriber, presenceSubOptions)
   };
 };
 

@@ -27,8 +27,7 @@ MeSettingsContainer.propTypes = {
   nextPage: PropTypes.string,
   user: PropTypes.shape({
     name: PropTypes.string,
-    nickname: PropTypes.string,
-    memberships: PropTypes.array
+    preferredName: PropTypes.string
   })
 };
 

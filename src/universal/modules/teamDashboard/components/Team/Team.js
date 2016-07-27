@@ -68,8 +68,7 @@ Team.propTypes = {
   teamId: PropTypes.string.isRequired,
   user: PropTypes.shape({
     name: PropTypes.string,
-    nickname: PropTypes.string,
-    memberships: PropTypes.array
+    preferredName: PropTypes.string,
   })
 };
 

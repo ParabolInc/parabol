@@ -1,25 +1,25 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import DashNavItem from './DashNavItem';
+import DashNavItem from '../Dashboard/DashNavItem';
 import theme from 'universal/styles/theme';
 
 let styles = {};
 
 const DashNavList = (props) => {
-  const {dispatch} = props;
-  const hasItems = props.items[0] !== undefined;
+  const {dispatch, teams} = props;
+  const hasTeams = teams.length > 0;
   return (
     <div className={styles.root}>
-      {hasItems &&
+      {hasTeams &&
         <div>
-          {props.items.map((item, index) =>
+          {teams.map((item, index) =>
             <div className={styles.item} key={index}>
               <DashNavItem dispatch={dispatch} {...item} />
             </div>
           )}
         </div>
       }
-      {!hasItems &&
+      {!hasTeams &&
         <div className={styles.emptyTeams}>It appears you are not a member of any team!</div>
       }
     </div>
@@ -27,9 +27,8 @@ const DashNavList = (props) => {
 };
 
 DashNavList.propTypes = {
-  activeId: PropTypes.string,
   dispatch: PropTypes.func.isRequired,
-  items: PropTypes.arrayOf(
+  teams: PropTypes.arrayOf(
     PropTypes.shape({
       active: PropTypes.bool,
       href: PropTypes.string,

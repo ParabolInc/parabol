@@ -27,7 +27,13 @@ export default ComposedComponent => {
   TokenizedComp.propTypes = {
     dispatch: PropTypes.func,
     authToken: PropTypes.string,
-    user: PropTypes.object
+    user: PropTypes.shape({
+      email: PropTypes.string,
+      id: PropTypes.string,
+      isNew: PropTypes.bool,
+      picture: PropTypes.string,
+      preferredName: PropTypes.string
+    })
   };
 
   return connect(mapStateToProps)(TokenizedComp);

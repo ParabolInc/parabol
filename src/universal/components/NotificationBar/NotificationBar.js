@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import FontAwesome from 'react-fontawesome';
+import {push} from 'react-router-redux';
 
 let styles = {};
 
@@ -24,6 +25,12 @@ const NotificationBar = (props) => {
     message,
     timestamp
   } = props.notification;
+  const onClick = (event) => {
+    const {dispatch, link} = props;
+    event.preventDefault();
+
+    dispatch(push(link));
+  };
   return (
     <div className={styles.bar}>
       <div className={styles.timestamp}>
@@ -36,7 +43,7 @@ const NotificationBar = (props) => {
         {message}
       </div>
       <div className={styles.inlineBlock}>
-        <a className={styles.link} href={link} title={linkLabel}>
+        <a className={styles.link} onClick={onClick} title={linkLabel}>
           {linkLabel}
         </a>
       </div>
