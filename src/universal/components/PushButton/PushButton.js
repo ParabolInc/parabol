@@ -10,14 +10,10 @@ const PushButton = (props) => {
   const { disabled, keystroke, label, onClick, size } = props;
   const largeStyles = combineStyles(styles.button, styles.buttonLarge);
   const buttonStyles = size === 'large' ? largeStyles : styles.button;
-  const handleClick = (e) => {
-    e.preventDefault();
-    onClick();
-  };
 
   return (
     <div className={styles.block}>
-      <button disabled={disabled} className={buttonStyles} onClick={(e) => handleClick(e)}>
+      <button disabled={disabled} className={buttonStyles} onClick={onClick}>
         {keystroke}
       </button>
       <div className={styles.label}>{label}</div>

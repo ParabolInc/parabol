@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 exports.up = async(r) => {
   const users = [
     {
@@ -81,7 +82,6 @@ exports.up = async(r) => {
     r.table('TeamMember').insert(teamMembers)
   ];
   await Promise.all(mockUsers);
-
 };
 
 exports.down = async(r) => {

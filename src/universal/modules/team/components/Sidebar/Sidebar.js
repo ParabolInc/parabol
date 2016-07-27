@@ -6,7 +6,9 @@ import PlaceholderList from 'universal/modules/meeting/components/PlaceholderLis
 import PlaceholderAddLink from 'universal/modules/meeting/components/PlaceholderAddLink/PlaceholderAddLink';
 import PlaceholderInput from 'universal/modules/meeting/components/PlaceholderInput/PlaceholderInput';
 import {cashay} from 'cashay';
+import {phases} from 'universal/utils/constants';
 
+const {CHECKIN, UPDATES, REQUESTS, SUMMARY} = phases;
 const combineStyles = StyleSheet.combineStyles;
 
 let s = {};
@@ -30,22 +32,23 @@ const Sidebar = (props) => {
     summary: 'Summary',
   };
 
-  const checkinLinkStyles = localPhase === 'checkin' ? activeNavAnchor : s.navListItemLink;
-  const updatesLinkStyles = localPhase === 'updates' ? activeNavAnchor : s.navListItemLink;
-  const requestsLinkStyles = localPhase === 'requests' ? activeNavAnchor : s.navListItemLink;
+  const checkinLinkStyles = localPhase === CHECKIN ? activeNavAnchor : s.navListItemLink;
+  const updatesLinkStyles = localPhase === UPDATES ? activeNavAnchor : s.navListItemLink;
+  const requestsLinkStyles = localPhase === REQUESTS ? activeNavAnchor : s.navListItemLink;
 
-  const checkinNavItemStyles = facilitatorPhase === 'checkin' ? facilitatorPhaseItemStyles : s.navListItem;
-  const updatesNavItemStyles = facilitatorPhase === 'updates' ? facilitatorPhaseItemStyles : s.navListItem;
-  const requestsNavItemStyles = facilitatorPhase === 'requests' ? facilitatorPhaseItemStyles : s.navListItem;
+  const checkinNavItemStyles = facilitatorPhase === CHECKIN ? facilitatorPhaseItemStyles : s.navListItem;
+  const updatesNavItemStyles = facilitatorPhase === UPDATES ? facilitatorPhaseItemStyles : s.navListItem;
+  const requestsNavItemStyles = facilitatorPhase === REQUESTS ? facilitatorPhaseItemStyles : s.navListItem;
 
-  const onLogoClick = (e) => {
+  const handleLogoClick = (e) => {
+    // TODO remove in production, but great for debugging. Just click the logo & it removes the ephemeral meeting state
     e.preventDefault();
     cashay.mutate('killMeeting', {variables: {teamId}});
   };
   return (
     <div className={s.sidebar}>
       <div className={s.sidebarHeader}>
-        <a className={s.brandLink} onClick={onLogoClick}>
+        <a className={s.brandLink} onClick={handleLogoClick}>
           <img className={s.brandLogo} src={actionUIMark} />
         </a>
         <div className={s.teamName}>{teamName}</div>
@@ -87,7 +90,7 @@ const Sidebar = (props) => {
               <span className={s.label}>{labels.requests}</span>
             </a>
           </li>
-          {localPhase === 'summary' &&
+          {localPhase === SUMMARY &&
             <li className={combineStyles(s.navListItem, s.navListItemLinkActive)}>
               <a
                 className={combineStyles(s.navListItemLink, s.navListItemLinkActive)}
@@ -101,7 +104,7 @@ const Sidebar = (props) => {
           }
         </ul>
         {console.log(`Sidebar: ${localPhase}`)}
-        {localPhase !== 'checkin' && localPhase !== 'summary' &&
+        {localPhase !== CHECKIN && localPhase !== SUMMARY &&
           <div>{/* div for JSX */}
             <PlaceholderList />
             {/* TODO: Toggle PlaceholderAddLink and PlaceholderInput (TA) */}
@@ -114,19 +117,14 @@ const Sidebar = (props) => {
   );
 };
 
-const meetingLocations = [
-  'lobby',
-  'checkin',
-  'updates',
-  'requests',
-  'summary'
-];
+const meetingLocations = Object.keys(phases).map(key => phases[key]);
 
 Sidebar.propTypes = {
   facilitatorPhase: PropTypes.oneOf(meetingLocations),
   localPhase: PropTypes.oneOf(meetingLocations),
   shortUrl: PropTypes.string,
   teamName: PropTypes.string,
+  teamId: PropTypes.string,
   timerValue: PropTypes.string
 };
 

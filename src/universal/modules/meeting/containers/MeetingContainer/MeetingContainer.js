@@ -9,12 +9,14 @@ import MeetingCheckinLayout from 'universal/modules/meeting/components/MeetingCh
 import MeetingLobbyLayout from 'universal/modules/meeting/components/MeetingLobbyLayout/MeetingLobbyLayout';
 import MeetingUpdatesLayout from 'universal/modules/meeting/components/MeetingUpdatesLayout/MeetingUpdatesLayout';
 import Sidebar from 'universal/modules/team/components/Sidebar/Sidebar';
+import {phases} from 'universal/utils/constants';
 
 import {
   teamSubString,
   teamMembersSubString,
 } from './cashayHelpers';
 
+const {LOBBY, CHECKIN, UPDATES} = phases;
 /**
  * MeetingContainer
  *
@@ -86,7 +88,7 @@ export default class MeetingContainer extends Component {
     const {team} = teamSub.data;
     const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem, name: teamName} = team;
     // use the phase from the url, next the phase from the facilitator, next goto lobby (meeting hasn't started)
-    const safeFacilitatorPhase = facilitatorPhase || 'lobby';
+    const safeFacilitatorPhase = facilitatorPhase || LOBBY;
     const localPhase = phase || safeFacilitatorPhase;
 
     // a phase item isn't necessarily an integer, so there's no default value
@@ -100,27 +102,27 @@ export default class MeetingContainer extends Component {
           teamName={teamName}
           teamId={team.id}
         />
-        {localPhase === 'lobby' &&
-        <MeetingLobbyLayout
-          members={members}
-          shortUrl={shortUrl}
-          teamName={teamName}
-          teamId={teamId}
-        />
+        {localPhase === LOBBY &&
+          <MeetingLobbyLayout
+            members={members}
+            shortUrl={shortUrl}
+            teamName={teamName}
+            teamId={teamId}
+          />
         }
-        {localPhase === 'checkin' &&
-        <MeetingCheckinLayout
-          members={members}
-          team={team}
-          localPhaseItem={localPhaseItem}
-          meetingPhase={meetingPhase}
-          meetingPhaseItem={meetingPhaseItem}
-        />
+        {localPhase === CHECKIN &&
+          <MeetingCheckinLayout
+            members={members}
+            team={team}
+            localPhaseItem={localPhaseItem}
+            meetingPhase={meetingPhase}
+            meetingPhaseItem={meetingPhaseItem}
+          />
         }
-        {localPhase === 'updates' &&
-        <MeetingUpdatesLayout
-          members={members}
-        />
+        {localPhase === UPDATES &&
+          <MeetingUpdatesLayout
+            members={members}
+          />
         }
       </MeetingLayout>
     );

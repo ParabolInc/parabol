@@ -1,7 +1,7 @@
 import r from 'server/database/rethinkDriver';
 import {GraphQLString, GraphQLNonNull} from 'graphql';
 import {User, UpdateUserInput} from './userSchema';
-import {AuthenticationClient, ManagementClient} from 'auth0';
+import {AuthenticationClient} from 'auth0';
 import {auth0} from 'universal/utils/clientOptions';
 import sendEmail from 'server/email/sendEmail';
 import ms from 'ms';

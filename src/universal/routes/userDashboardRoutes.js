@@ -20,8 +20,8 @@ export default (store) => ({
     const component = await System.import('universal/modules/userDashboard/containers/Me/Me');
     cb(null, {component});
   },
-  getChildRoutes: (location, cb) => {
-    cb(null, [
+  getChildRoutes: (childLocation, cbChild) => {
+    cbChild(null, [
       {
         path: 'settings',
         getComponent: async(location, cb) => {
@@ -33,6 +33,6 @@ export default (store) => ({
           cb(null, component);
         }
       }
-    ])
+    ]);
   }
 });

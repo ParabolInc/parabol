@@ -5,7 +5,7 @@ import theme from 'universal/styles/theme';
 import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
 import IconLink from 'universal/components/IconLink/IconLink';
 import ProgressBar from 'universal/components/ProgressBar/ProgressBar';
-import CheckinCards from '../../../meeting/components/CheckinCards/CheckinCards';
+import CheckinCards from 'universal/modules/meeting/components/CheckinCards/CheckinCards';
 import ShortcutsMenu from 'universal/modules/team/components/ShortcutsMenu/ShortcutsMenu';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';

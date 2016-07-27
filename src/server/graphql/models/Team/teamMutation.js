@@ -68,7 +68,14 @@ export default {
     async resolve(source, {teamId}, {authToken, socket}) {
       await requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
-      const ephemeralFields = ['meetingId', 'activeFacilitator', 'facilitatorPhase', 'facilitatorPhaseItem', 'meetingPhase', 'meetingPhaseItem'];
+      const ephemeralFields = [
+        'meetingId',
+        'activeFacilitator',
+        'facilitatorPhase',
+        'facilitatorPhaseItem',
+        'meetingPhase',
+        'meetingPhaseItem'
+      ];
       await r.table('Team').get(teamId).replace(r.row.without(ephemeralFields));
       return true;
     }

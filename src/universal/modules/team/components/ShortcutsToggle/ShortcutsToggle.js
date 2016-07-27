@@ -7,13 +7,10 @@ import {srOnly} from 'universal/styles/helpers';
 let s = {};
 
 const ShortcutsToggle = (props) => {
-  const handleClick = (e) => {
-    e.preventDefault();
-    props.onClick();
-  };
+  const {handleOnClick} = props;
 
   return (
-    <a className={s.root} href="#" onClick={(e) => handleClick(e)} title="Show shortcuts">
+    <a className={s.root} href="#" onClick={handleOnClick} title="Show shortcuts">
       <FontAwesome name="keyboard-o" />
       &nbsp;
       <FontAwesome name="question-circle" />
@@ -29,7 +26,7 @@ const hoverFocus = {
 };
 
 ShortcutsToggle.propTypes = {
-  onClick: PropTypes.func
+  handleOnClick: PropTypes.func
 };
 
 s = StyleSheet.create({

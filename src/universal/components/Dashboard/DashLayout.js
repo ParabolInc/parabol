@@ -32,6 +32,7 @@ const DashLayout = (props) => {
 
 DashLayout.propTypes = {
   children: PropTypes.any,
+  dispatch: PropTypes.func,
   notification: PropTypes.object,
   hasNotification: PropTypes.bool,
   title: PropTypes.string

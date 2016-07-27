@@ -44,6 +44,6 @@ export const Task = new GraphQLObjectType({
       description: 'The timestamp the task was updated'
     },
     type: {type: new GraphQLNonNull(TaskType), description: 'The type of task (project or action, long or short-term)'},
-    status: {type: new GraphQLNonNull(TaskStatus), description:'The status of the task' },
+    status: {type: new GraphQLNonNull(TaskStatus), description: 'The status of the task' },
   })
 });

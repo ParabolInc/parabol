@@ -31,17 +31,12 @@ const ShortcutsMenu = (props) => {
 
   const {shortcutsList, onCloseClick} = props;
 
-  const handleCloseClick = (e) => {
-    e.preventDefault();
-    onCloseClick();
-  };
-
   return (
     <div className={s.menu}>
       <div className={s.label}>
         Keyboard Shortcuts
       </div>
-      <a className={s.close} href="#" onClick={(e) => handleCloseClick(e)} title="Close menu">
+      <a className={s.close} href="#" onClick={onCloseClick} title="Close menu">
         <FontAwesome name="times-circle" />
         <span className={s.srOnly}>Close menu</span>
       </a>
@@ -83,7 +78,8 @@ ShortcutsMenu.defaultProps = {
       definition: 'Set project to Future'
     }
   ],
-  onCloseClick() {
+  onCloseClick(e) {
+    e.preventDefault();
     console.log('ShortcutsMenu onCloseClick()');
   }
 };

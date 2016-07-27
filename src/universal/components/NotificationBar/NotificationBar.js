@@ -26,9 +26,8 @@ const NotificationBar = (props) => {
     timestamp
   } = props.notification;
   const onClick = (event) => {
-    const {dispatch, link} = props;
     event.preventDefault();
-
+    const {dispatch} = props;
     dispatch(push(link));
   };
   return (
@@ -52,6 +51,7 @@ const NotificationBar = (props) => {
 };
 
 NotificationBar.propTypes = {
+  dispatch: PropTypes.func,
   notification: PropTypes.object
 };
 

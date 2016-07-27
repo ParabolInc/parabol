@@ -5,4 +5,4 @@ export default function shuffle(arr) {
     [arr[m], arr[i]] = [arr[i], arr[m]];
   }
   return arr;
-};
+}

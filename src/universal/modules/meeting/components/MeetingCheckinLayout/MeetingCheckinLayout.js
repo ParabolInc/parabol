@@ -9,15 +9,17 @@ import CheckinCards from 'universal/modules/meeting/components/CheckinCards/Chec
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingSectionHeading/MeetingSectionHeading';
+import {phases} from 'universal/utils/constants';
 
+const {CHECKIN} = phases;
 // TODO: Reorganize under new folder: /meeting/components/MeetingLayouts (TA)
 
 let s = {};
 
 const onCheckinNextTeammateClick = () => {};
 const MeetingCheckinLayout = (props) => {
-  const {members, team, localPhaseItem, meetingPhase, meetingPhaseItem} = props;
-  const progressBarCompletion = 100 * meetingPhase === 'checkin' ? meetingPhaseItem / members.length : 1;
+  const {members, localPhaseItem, meetingPhase, meetingPhaseItem} = props;
+  const progressBarCompletion = 100 * meetingPhase === CHECKIN ? meetingPhaseItem / members.length : 1;
   const currentName = members[localPhaseItem] && members[localPhaseItem].preferredName;
   return (
     <MeetingMain>
@@ -76,7 +78,10 @@ s = StyleSheet.create({
 });
 
 MeetingCheckinLayout.propTypes = {
-  members: PropTypes.array
+  members: PropTypes.array,
+  localPhaseItem: PropTypes.string,
+  meetingPhase: PropTypes.string,
+  meetingPhaseItem: PropTypes.string
 };
 
 export default look(MeetingCheckinLayout);

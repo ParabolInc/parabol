@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
-import SectionHeader from '../../components/SectionHeader/SectionHeader';
-import Example from '../../components/Example/Example';
-import ExampleCode from '../../components/ExampleCode/ExampleCode';
-import PropsTable from '../../components/PropsTable/PropsTable';
-import Card from '../../../meeting/components/CheckinCard/CheckinCard';
+import SectionHeader from 'universal/components/SectionHeader/SectionHeader';
+import Example from 'universal/components/Example/Example';
+import ExampleCode from 'universal/components/ExampleCode/ExampleCode';
+import PropsTable from 'universal/components/PropsTable/PropsTable';
+import Card from 'universal/modules/meeting/components/CheckinCard/CheckinCard';
 
 const demoUser = {
   name: '@KittyKitterson',

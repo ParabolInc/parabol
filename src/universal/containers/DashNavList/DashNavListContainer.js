@@ -49,7 +49,8 @@ const DashNavListContainer = (props) => {
 DashNavListContainer.propTypes = {
   active: PropTypes.bool.isRequired,
   activeTeamId: PropTypes.string,
-  dispatch: PropTypes.func
+  dispatch: PropTypes.func,
+  membershipQuery: PropTypes.object
 };
 
 export default connect(mapStateToProps)(DashNavListContainer);

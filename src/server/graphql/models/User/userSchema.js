@@ -135,7 +135,7 @@ export const User = new GraphQLObjectType({
       type: new GraphQLList(Task),
       description: 'All the tasks across all the user\'s teams for which the user is responsible',
       async resolve({id}) {
-        return await r.table('Task').getAll(id, {index: 'userId'})
+        return await r.table('Task').getAll(id, {index: 'userId'});
       }
     }
   })

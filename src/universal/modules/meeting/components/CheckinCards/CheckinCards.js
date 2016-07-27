@@ -8,7 +8,8 @@ let styles = {};
 // eslint-disable-next-line react/prefer-stateless-function
 export default class CheckinCards extends Component {
   static propTypes = {
-    cards: PropTypes.array
+    cards: PropTypes.array,
+    localPhaseItem: PropTypes.string
   };
 
   render() {
