@@ -13,7 +13,7 @@ const placeholderItems = [
     status: 'processed'
   },
   {
-    desc: 'SPA',
+    desc: 'S.P.A.',
     owner: 'TM',
     status: 'active'
   },

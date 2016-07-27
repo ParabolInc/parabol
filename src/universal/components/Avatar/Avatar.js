@@ -17,6 +17,7 @@ const renderBadge = (isCheckedIn, isConnected, size) => {
     s[connection]
   );
   let icon;
+  // TODO: All avatars at least have a circle badge and connection color (lobby, pre-check-in) (TA)
   if (isCheckedIn) {
     icon = 'check-circle';
   } else if (isCheckedIn === false) {
@@ -58,7 +59,7 @@ const Avatar = (props) => {
 
   const handleMouseEnter = () => {
     console.log('Avatar.onMouseEnter.handleMouseEnter()');
-    console.log(`Peep is ${props.connection}`);
+    console.log(`Peep is ${props.isConnected}`);
     // TODO: Dispatch UI state for hover to show optional tooltip.
   };
 
@@ -141,7 +142,8 @@ s = StyleSheet.create({
     fontSize: theme.typography.s2,
     margin: '0',
     position: 'relative',
-    textAlign: 'center'
+    textAlign: 'center',
+    verticalAlign: 'middle'
   },
 
   // TODO: Add ':hover' s for onClick handler

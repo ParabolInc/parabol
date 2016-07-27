@@ -5,7 +5,7 @@ import AvatarContainer from './AvatarContainer';
 import ButtonContainer from './ButtonContainer';
 import CardContainer from './CardContainer';
 import CardStageContainer from './CardStageContainer';
-import ProjectCardContainer from './ProjectCardContainer';
+import OutcomeCardContainer from './OutcomeCardContainer';
 
 // eslint-disable-next-line react/prefer-stateless-function
 export default class PatternsContainer extends Component {
@@ -20,7 +20,7 @@ export default class PatternsContainer extends Component {
         <ButtonContainer />
         <CardContainer />
         <CardStageContainer />
-        <ProjectCardContainer />
+        <OutcomeCardContainer />
 
       </div>
     );

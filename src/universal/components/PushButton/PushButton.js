@@ -1,42 +1,49 @@
-import React, { Component, PropTypes } from 'react';
-import look, { StyleSheet } from 'react-look';
+import React, {PropTypes} from 'react';
+import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 
 const combineStyles = StyleSheet.combineStyles;
 
 let styles = {};
 
-@look
-// eslint-disable-next-line react/prefer-stateless-function
-export default class PushButton extends Component {
-  static propTypes = {
-    disabled: PropTypes.bool,
-    keystroke: PropTypes.string,
-    label: PropTypes.string,
-    onClick: PropTypes.func,
-    size: PropTypes.oneOf([
-      'default',
-      'large'
-    ])
-  }
+const PushButton = (props) => {
+  const { disabled, keystroke, label, onClick, size } = props;
+  const largeStyles = combineStyles(styles.button, styles.buttonLarge);
+  const buttonStyles = size === 'large' ? largeStyles : styles.button;
+  const handleClick = (e) => {
+    e.preventDefault();
+    onClick();
+  };
 
-  render() {
-    const { disabled, keystroke, label, onClick, size } = this.props;
-    const buttonKeystroke = keystroke || 'D';
-    const buttonLabel = label || 'Delete everything!';
-    const largeStyles = combineStyles(styles.button, styles.buttonLarge);
-    const buttonStyles = size === 'large' ? largeStyles : styles.button;
+  return (
+    <div className={styles.block}>
+      <button disabled={disabled} className={buttonStyles} onClick={(e) => handleClick(e)}>
+        {keystroke}
+      </button>
+      <div className={styles.label}>{label}</div>
+    </div>
+  );
+};
 
-    return (
-      <div className={styles.block}>
-        <button disabled={disabled} className={buttonStyles} onClick={onClick}>
-          {buttonKeystroke}
-        </button>
-        <div className={styles.label}>{buttonLabel}</div>
-      </div>
-    );
-  }
-}
+PushButton.propTypes = {
+  disabled: PropTypes.bool,
+  keystroke: PropTypes.string,
+  label: PropTypes.any,
+  onClick: PropTypes.func,
+  size: PropTypes.oneOf([
+    'default',
+    'large'
+  ])
+};
+
+PushButton.defaultProps = {
+  keystroke: 'D',
+  label: 'Delete everything!',
+  onClick() {
+    console.log('PushButton onClick');
+  },
+  size: 'default'
+};
 
 styles = StyleSheet.create({
   pushButtonGroup: {
@@ -89,3 +96,5 @@ styles = StyleSheet.create({
     verticalAlign: 'middle'
   }
 });
+
+export default look(PushButton);

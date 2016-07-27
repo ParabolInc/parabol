@@ -35,7 +35,7 @@ s = StyleSheet.create({
   },
 
   label: {
-    color: theme.palette.dark50l,
+    color: theme.palette.mid,
     display: 'inline-block',
     fontFamily: theme.typography.serif,
     fontStyle: 'italic',

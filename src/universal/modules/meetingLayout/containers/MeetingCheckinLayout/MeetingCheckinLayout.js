@@ -11,6 +11,7 @@ import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/Me
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingSectionHeading/MeetingSectionHeading';
+import MeetingSectionSubheading from 'universal/modules/meeting/components/MeetingSectionSubheading/MeetingSectionSubheading';
 import Sidebar from 'universal/modules/team/components/Sidebar/Sidebar';
 
 import Jordan from 'universal/styles/theme/images/avatars/jordan-husney-avatar.jpg';
@@ -32,28 +33,28 @@ const exampleTeam = {
       checkin: 'present',
       connection: 'online',
       hasBadge: true,
-      image: Jordan,
+      picture: Jordan,
       size: 'small'
     },
     {
       checkin: 'present',
       connection: 'online',
       hasBadge: true,
-      image: Matt,
+      picture: Matt,
       size: 'small'
     },
     {
       checkin: 'tbd',
       connection: 'offline',
       hasBadge: true,
-      image: Taya,
+      picture: Taya,
       size: 'small'
     },
     {
       checkin: 'tbd',
       connection: 'offline',
       hasBadge: true,
-      image: Terry,
+      picture: Terry,
       size: 'small'
     }
   ]
@@ -121,8 +122,11 @@ const MeetingCheckinLayout = (props) => {
           {/* */}
           <MeetingSection paddingBottom="2rem">
             <MeetingSectionHeading>
-              Hola <span className={s.name}>Kitty</span>, ¿por qué no puedes estar completamente enfocado hoy?
+              Hola <span className={s.name}>Kitty</span>, why is this prototype layout broken?
             </MeetingSectionHeading>
+            <MeetingSectionSubheading>
+              A: Because the component is being updated to do real thangs.
+            </MeetingSectionSubheading>
           </MeetingSection>
           {/* */}
           <CheckinCards cards={demoCards} />

@@ -11,7 +11,7 @@ const PlaceholderAddLink = (props) => {
   };
   return (
     <a className={s.root} href="#add-placeholder" onClick={(e) => handleClick(e)}>
-      Press “+” to <br /><span className={s.underline}>add a request <br />placeholder</span>
+      Press “+” to <br /><span className={s.underline}>Add a Request</span>
     </a>
   );
 };
