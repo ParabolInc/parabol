@@ -79,9 +79,9 @@ s = StyleSheet.create({
 
 MeetingCheckinLayout.propTypes = {
   members: PropTypes.array,
-  localPhaseItem: PropTypes.string,
+  localPhaseItem: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   meetingPhase: PropTypes.string,
-  meetingPhaseItem: PropTypes.string
+  meetingPhaseItem: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 };
 
 export default look(MeetingCheckinLayout);

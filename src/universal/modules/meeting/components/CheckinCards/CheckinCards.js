@@ -9,7 +9,7 @@ let styles = {};
 export default class CheckinCards extends Component {
   static propTypes = {
     cards: PropTypes.array,
-    localPhaseItem: PropTypes.string
+    localPhaseItem: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
   };
 
   render() {
