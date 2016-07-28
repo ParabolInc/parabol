@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
-import SectionHeader from 'universal/components/SectionHeader/SectionHeader';
-import Example from 'universal/components/Example/Example';
-import ExampleCode from 'universal/components/ExampleCode/ExampleCode';
-import PropsTable from 'universal/components/PropsTable/PropsTable';
+import SectionHeader from 'universal/modules/patterns/components/SectionHeader/SectionHeader';
+import Example from 'universal/modules/patterns/components/Example/Example';
+import ExampleCode from 'universal/modules/patterns/components/ExampleCode/ExampleCode';
+import PropsTable from 'universal/modules/patterns/components/PropsTable/PropsTable';
 import Card from 'universal/modules/meeting/components/CheckinCard/CheckinCard';
 
 const demoUser = {

@@ -69,7 +69,7 @@ export default class MeetingContainer extends Component {
     super(props);
     this.state = {
       members: [],
-      shortUrl: `https://prbl.io/m/${props.params.teamId}`,
+      shortUrl: typeof window !== 'undefined' && window.location.href
     };
   }
 
