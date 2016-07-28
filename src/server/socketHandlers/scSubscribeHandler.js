@@ -9,7 +9,10 @@ import parseChannel from './parseChannel';
  * By creating this on the server it keeps payloads really small
  * */
 const dechannelfy = {
-  meeting(variableString) {
+  team(variableString) {
+    return {teamId: variableString};
+  },
+  teamMembers(variableString) {
     return {teamId: variableString};
   },
   presence(variableString) {
@@ -22,7 +25,11 @@ export default function scSubscribeHandler(exchange, socket) {
     const {channel, variableString} = parseChannel(subbedChannelName);
     const subscription = subscriptions.find(sub => sub.channel === channel);
     if (subscription) {
-      const variables = dechannelfy[channel](variableString);
+      const dechannelfier = dechannelfy[channel];
+      if (!dechannelfier) {
+        console.log(`No dechannelfier found for ${channel}`);
+      }
+      const variables = dechannelfier(variableString);
       const context = {
         authToken: socket.getAuthToken(),
         exchange,

@@ -3,24 +3,18 @@ import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import tinycolor from 'tinycolor2';
 import FontAwesome from 'react-fontawesome';
-import DashNavList from './DashNavList';
+import DashNavListContainer from 'universal/containers/DashNavList/DashNavListContainer';
 import DashNavItem from './DashNavItem';
-import UserHub from 'universal/components/UserHub/UserHub';
+import UserHubContainer from 'universal/containers/UserHub/UserHubContainer';
 
 const textColor = tinycolor.mix(theme.palette.mid10l, '#fff', 50).toHexString();
 let styles = {};
 
 const DashSidebar = (props) => {
   const {activeArea, activeTeamId, dispatch} = props;
-  const teamItems = props.user.memberships.map(m => ({
-    active: activeArea === 'team' && m.team.id === activeTeamId,
-    href: `/team/${m.team.id}`,
-    label: m.team.name
-  }));
-
   return (
     <div className={styles.root}>
-      <UserHub activeArea={activeArea} dispatch={dispatch} user={props.user} />
+      <UserHubContainer activeArea={activeArea} />
       <nav className={styles.nav}>
         <div className={styles.singleNavItem}>
           <DashNavItem
@@ -33,7 +27,7 @@ const DashSidebar = (props) => {
         <div className={styles.navLabel}>
           Teams
         </div>
-        <DashNavList dispatch={dispatch} items={teamItems} />
+        <DashNavListContainer active={activeArea === 'team'} activeTeamId={activeTeamId} />
         <div className={styles.addTeam} title="Add New Team">
           <div className={styles.addTeamIcon}>
             <FontAwesome name="plus-square" />
@@ -57,15 +51,7 @@ DashSidebar.propTypes = {
   dispatch: PropTypes.func.isRequired,
   user: PropTypes.shape({
     name: PropTypes.string,
-    nickname: PropTypes.string,
-    memberships: PropTypes.arrayOf(
-      PropTypes.shape({
-        team: PropTypes.shape({
-          id: PropTypes.string,
-          name: PropTypes.string
-        }).isRequired
-      }).isRequired
-    ).isRequired
+    preferredName: PropTypes.string,
   }).isRequired
 };
 

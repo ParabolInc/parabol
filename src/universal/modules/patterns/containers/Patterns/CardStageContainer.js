@@ -3,7 +3,7 @@ import SectionHeader from '../../components/SectionHeader/SectionHeader';
 import Example from '../../components/Example/Example';
 import ExampleCode from '../../components/ExampleCode/ExampleCode';
 import PropsTable from '../../components/PropsTable/PropsTable';
-import CardStage from 'universal/modules/team/components/CardStage/CardStage';
+import CheckinCards from 'universal/modules/meeting/components/CheckinCards/CheckinCards';
 
 const demoCards = [
   {
@@ -43,8 +43,8 @@ const demoCards = [
   }
 ];
 
-const cardStage = <CardStage cards={demoCards} />;
-const cardStageString = '<CardStage cards={demoCards} />';
+const cardStage = <CheckinCards cards={demoCards} />;
+const cardStageString = '<CheckinCards cards={demoCards} />';
 
 const cardStagePropsList = [
   { name: 'cards', type: 'array',
@@ -54,7 +54,7 @@ const cardStagePropsList = [
 ];
 
 // eslint-disable-next-line react/prefer-stateless-function
-export default class CardStageContainer extends Component {
+export default class CheckinCardsContainer extends Component {
   static propTypes = {
     // Define
   };
@@ -64,7 +64,7 @@ export default class CardStageContainer extends Component {
       <div>
 
         <SectionHeader
-          heading="CardStage"
+          heading="CheckinCards"
           // eslint-disable-next-line max-len
           description="Cycles through active, previous and next cards [TODO: Add callback func prop to change current card]"
         />

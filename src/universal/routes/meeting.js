@@ -4,7 +4,7 @@ import makeReducer from 'universal/redux/makeReducer';
 const setMeetingImports = () =>
   new Map([
     ['component', System.import(
-      'universal/modules/meeting/containers/MeetingLobby/MeetingLobby')],
+      'universal/modules/meeting/containers/MeetingContainer/MeetingContainer')],
     ['socket', System.import('redux-socket-cluster')]
   ]);
 
@@ -14,7 +14,7 @@ const getMeetingImports = importMap => ({
 });
 
 export default store => ({
-  path: 'meeting/:teamId',
+  path: 'meeting/:teamId(/:phase)(/:phaseItem)',
   getComponent: async(location, cb) => {
     const promiseMap = setMeetingImports();
     const importMap = await resolvePromiseMap(promiseMap);

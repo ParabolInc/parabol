@@ -14,23 +14,25 @@ const getSettingsImports = importMap => ({
   userDashboardSettings: importMap.get('userDashboardSettings').default
 });
 
-export default (store) => ([
-  {
-    path: '/me',
-    getComponent: async(location, cb) => {
-      const component = await System.import('universal/modules/userDashboard/containers/Me/Me');
-      cb(null, component);
-    }
+export default (store) => ({
+  path: 'me',
+  getIndexRoute: async(location, cb) => {
+    const component = await System.import('universal/modules/userDashboard/containers/Me/Me');
+    cb(null, {component});
   },
-  {
-    path: '/me/settings',
-    getComponent: async(location, cb) => {
-      const promiseMap = setSettingsImports();
-      const importMap = await resolvePromiseMap(promiseMap);
-      const {component, ...asyncReducers} = getSettingsImports(importMap);
-      const newReducer = makeReducer(asyncReducers);
-      store.replaceReducer(newReducer);
-      cb(null, component);
-    },
+  getChildRoutes: (childLocation, cbChild) => {
+    cbChild(null, [
+      {
+        path: 'settings',
+        getComponent: async(location, cb) => {
+          const promiseMap = setSettingsImports();
+          const importMap = await resolvePromiseMap(promiseMap);
+          const {component, ...asyncReducers} = getSettingsImports(importMap);
+          const newReducer = makeReducer(asyncReducers);
+          store.replaceReducer(newReducer);
+          cb(null, component);
+        }
+      }
+    ]);
   }
-]);
+});

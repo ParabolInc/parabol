@@ -59,7 +59,7 @@ export default {
       }
 
       const userId = getUserId(authToken);
-      const user = await r.table('CachedUser').get(userId);
+      const user = await r.table('User').get(userId);
 
       // Check if TeamMember already exists (i.e. user invited themselves):
       const teamMemberExists = await r.table('TeamMember')
@@ -81,7 +81,9 @@ export default {
         userId,
         isActive: true,
         isLead: false,
-        isFacilitator: false
+        isFacilitator: false,
+        picture: user.picture,
+        preferredName: user.preferredName
       };
       await r.table('TeamMember').insert(newTeamMember);
 

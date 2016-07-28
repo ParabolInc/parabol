@@ -15,9 +15,9 @@ export default ComposedComponent => {
   const TokenizedComp = (props) => {
     const {dispatch, authToken, user} = props;
     if (authToken && user) {
-      if (user.profile.isNew === true) {
+      if (user.isNew === true) {
         dispatch(push('/welcome'));
-      } else if (user.profile.isNew === false) {
+      } else if (user.isNew === false) {
         dispatch(push('/me'));
       }
     }
@@ -27,7 +27,13 @@ export default ComposedComponent => {
   TokenizedComp.propTypes = {
     dispatch: PropTypes.func,
     authToken: PropTypes.string,
-    user: PropTypes.object
+    user: PropTypes.shape({
+      email: PropTypes.string,
+      id: PropTypes.string,
+      isNew: PropTypes.bool,
+      picture: PropTypes.string,
+      preferredName: PropTypes.string
+    })
   };
 
   return connect(mapStateToProps)(TokenizedComp);

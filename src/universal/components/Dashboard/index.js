@@ -4,6 +4,5 @@ export DashHeader from './DashHeader.js';
 export DashLayout from './DashLayout.js';
 export DashMain from './DashMain.js';
 export DashNavItem from './DashNavItem.js';
-export DashNavList from './DashNavList.js';
 export DashSidebar from './DashSidebar.js';
 export dashTimestamp from './dashTimestamp.js';

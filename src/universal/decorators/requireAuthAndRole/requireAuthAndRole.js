@@ -17,9 +17,10 @@ const unauthenticated = {
 };
 
 const mapStateToProps = state => {
+  const user = cashay.query(getAuthQueryString, authedOptions).data.user;
   return {
     authToken: state.authToken,
-    user: cashay.query(getAuthQueryString, authedOptions).data.user
+    user
   };
 };
 
@@ -31,8 +32,9 @@ export default role => ComposedComponent => {
       user: PropTypes.object,
       dispatch: PropTypes.func
     };
+
     render() {
-      const {authToken, dispatch, user} = this.props;
+      const {authToken, dispatch} = this.props;
       if (authToken === undefined) {
         throw new Error('Auth token undefined. Did you put @connect on your component?');
       }
@@ -40,12 +42,12 @@ export default role => ComposedComponent => {
       if (role) {
         if (authObj && authObj.rol === role) {
           // We had a role to check, and role checks out:
-          return <ComposedComponent {...this.props} user={user}/>;
+          return <ComposedComponent {...this.props} />;
         }
         dispatch(showError(unauthorized));
       } else if (authObj) {
         // We were looking for any authenticated user only:
-        return <ComposedComponent {...this.props} user={user}/>;
+        return <ComposedComponent {...this.props} />;
       } else {
         // no legit authToken to be had
         dispatch(showError(unauthenticated));

@@ -32,9 +32,7 @@ export default class Settings extends Component {
     nextPage: PropTypes.string,          // from settingsDuck
     /* User for form defaults: */
     user: PropTypes.shape({
-      profile: PropTypes.shape({
-        preferredName: PropTypes.string,
-      })
+      preferredName: PropTypes.string
     }),
     /* Data from form for mutation: */
     userSettings: PropTypes.shape({
@@ -46,7 +44,7 @@ export default class Settings extends Component {
     this.initializeForm();
   }
 
-  onSubmit = async (submissionData) => {
+  onSubmit = async(submissionData) => {
     const {activity, dispatch, nextPage, user} = this.props;
     const {preferredName} = submissionData;
     const options = {
@@ -68,19 +66,19 @@ export default class Settings extends Component {
   }
 
   initializeForm() {
-    const {dispatch, user: { profile: {preferredName} } } = this.props;
-    return dispatch(initialize('userSettings', { preferredName }));
+    const {dispatch, user: {preferredName}} = this.props;
+    return dispatch(initialize('userSettings', {preferredName}));
   }
 
   renderActivity(activity) {
     return (
       <div>
-      {
-        activity === ACTIVITY_WELCOME && `
+        {
+          activity === ACTIVITY_WELCOME && `
           Hey, welcome aboard! In order for your team to recognize who you
           are, do you mind telling us your name?
         `
-      }
+        }
       </div>
     );
   }
@@ -89,7 +87,7 @@ export default class Settings extends Component {
     const {activity, handleSubmit} = this.props;
     return (
       <form className={styles.root} onSubmit={handleSubmit(this.onSubmit)}>
-        <DashHeader title="My Settings" />
+        <DashHeader title="My Settings"/>
         <DashContent>
           <div className={styles.body}>
             <div className={styles.row}>
@@ -119,7 +117,7 @@ export default class Settings extends Component {
       </form>
     );
   }
-  }
+}
 
 styles = StyleSheet.create({
   root: {

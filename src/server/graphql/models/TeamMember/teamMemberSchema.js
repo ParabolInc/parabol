@@ -2,11 +2,13 @@ import {
   GraphQLBoolean,
   GraphQLObjectType,
   GraphQLNonNull,
-  GraphQLID
+  GraphQLID,
+  GraphQLString,
+  GraphQLInt
 } from 'graphql';
+import {GraphQLURLType} from '../types';
 import {Team} from '../Team/teamSchema';
-import {CachedUser} from '../CachedUser/cachedUserSchema';
-import {UserProfile} from '../UserProfile/userProfileSchema';
+import {User} from '../User/userSchema';
 import {nonnullifyInputThunk} from '../utils';
 import r from 'server/database/rethinkDriver';
 
@@ -18,11 +20,30 @@ export const TeamMember = new GraphQLObjectType({
     teamId: {type: new GraphQLNonNull(GraphQLID), description: 'The team team this member belongs to'},
     userId: {
       type: GraphQLID,
-      description: 'Active user\'s CachedUser Id'
+      description: 'Active user\'s User Id'
     },
     isActive: {type: GraphQLBoolean, description: 'Is user active?'},
     isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
     isFacilitator: {type: GraphQLBoolean, description: 'Is user a team facilitator?'},
+    /* denormalized from User */
+    picture: {
+      type: GraphQLURLType,
+      description: 'url of user\'s profile picture'
+    },
+    preferredName: {
+      type: GraphQLString,
+      description: 'The name, as confirmed by the user'
+    },
+    /* Ephemeral meeting state */
+    checkInOrder: {
+      type: GraphQLInt,
+      description: 'The place in line for checkin, regenerated every meeting'
+    },
+    isCheckedIn: {
+      type: GraphQLBoolean,
+      description: 'true if present, false if absent, null before check-in'
+    },
+    /* GraphQL sugar */
     team: {
       type: Team,
       description: 'The team this team member belongs to',
@@ -30,18 +51,11 @@ export const TeamMember = new GraphQLObjectType({
         return await r.table('Team').get(teamId);
       }
     },
-    cachedUser: {
-      type: CachedUser,
-      description: 'The cached user for the team member',
+    user: {
+      type: User,
+      description: 'The user for the team member',
       async resolve({userId}) {
-        return await r.table('CachedUser').get(userId);
-      }
-    },
-    userProfile: {
-      type: UserProfile,
-      description: 'The user profile for the team member',
-      async resolve({userId}) {
-        return await r.table('UserProfile').get(userId);
+        return await r.table('User').get(userId);
       }
     }
   })

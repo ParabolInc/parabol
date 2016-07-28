@@ -1,93 +1,141 @@
-import React, { Component, PropTypes } from 'react';
-import look, { StyleSheet } from 'react-look';
-
+import React, {PropTypes} from 'react';
+import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
+import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
+import PlaceholderList from 'universal/modules/meeting/components/PlaceholderList/PlaceholderList';
+import PlaceholderAddLink from 'universal/modules/meeting/components/PlaceholderAddLink/PlaceholderAddLink';
+import PlaceholderInput from 'universal/modules/meeting/components/PlaceholderInput/PlaceholderInput';
+import {cashay} from 'cashay';
+import {phases} from 'universal/utils/constants';
 
-import actionUIMark from './images/action-ui-mark.svg';
-
+const {CHECKIN, UPDATES, REQUESTS, SUMMARY} = phases;
 const combineStyles = StyleSheet.combineStyles;
 
-let styles = {};
+let s = {};
 
-@look
-// eslint-disable-next-line react/prefer-stateless-function
-export default class Sidebar extends Component {
-  static propTypes = {
-    shortUrl: PropTypes.string,
-    teamName: PropTypes.string,
-    timerValue: PropTypes.string
-  }
+const Sidebar = (props) => {
+  const {
+    facilitatorPhase,
+    localPhase,
+    shortUrl,
+    teamName,
+    timerValue,
+    teamId
+  } = props;
+  const facilitatorPhaseItemStyles = combineStyles(s.navListItem, s.navListItemMeetingMarker);
+  const activeNavAnchor = combineStyles(s.navListItemLink, s.navListItemLinkActive);
+  const labels = {
+    lobby: 'Lobby',
+    checkin: 'Check-In',
+    updates: 'Updates',
+    requests: 'Requests',
+    summary: 'Summary',
+  };
 
-  render() {
-    const { shortUrl, teamName, timerValue } = this.props;
+  const checkinLinkStyles = localPhase === CHECKIN ? activeNavAnchor : s.navListItemLink;
+  const updatesLinkStyles = localPhase === UPDATES ? activeNavAnchor : s.navListItemLink;
+  const requestsLinkStyles = localPhase === REQUESTS ? activeNavAnchor : s.navListItemLink;
 
-    return (
-      <div className={styles.sidebar}>
-        <div className={styles.sidebarHeader}>
-          <a className={styles.brandMarkLink} href="/action-ui/">
-            <img className={styles.brandMark} src={actionUIMark} />
-          </a>
-          <div className={styles.teamName}>{teamName}</div>
-          <a className={styles.shortUrl} href={shortUrl}>{shortUrl}</a>
-          {/* TODO: make me respond to props */}
-          <div className={styles.timer}>{timerValue}</div>
-        </div>
+  const checkinNavItemStyles = facilitatorPhase === CHECKIN ? facilitatorPhaseItemStyles : s.navListItem;
+  const updatesNavItemStyles = facilitatorPhase === UPDATES ? facilitatorPhaseItemStyles : s.navListItem;
+  const requestsNavItemStyles = facilitatorPhase === REQUESTS ? facilitatorPhaseItemStyles : s.navListItem;
 
+  const handleLogoClick = (e) => {
+    // TODO remove in production, but great for debugging. Just click the logo & it removes the ephemeral meeting state
+    e.preventDefault();
+    cashay.mutate('killMeeting', {variables: {teamId}});
+  };
+  return (
+    <div className={s.sidebar}>
+      <div className={s.sidebarHeader}>
+        <a className={s.brandLink} onClick={handleLogoClick}>
+          <img className={s.brandLogo} src={actionUIMark} />
+        </a>
+        <div className={s.teamName}>{teamName}</div>
+        <a className={s.shortUrl} href="/meetingLayout/lobby">{shortUrl}</a>
         {/* TODO: make me respond to props */}
-        <nav className={styles.nav}>
-          <ul className={styles.navList}>
-            <li className={styles.navListItem}>
-              <a
-                className={combineStyles(styles.navListItemLink, styles.navListItemLinkActive)}
-                href="/action-ui/set-up/"
-                title="Set-up"
-              >
-                <span className={styles.bullet}></span>
-                <span className={styles.label}>Set-up</span>
-              </a>
-            </li>
-            <li className={styles.navListItem}>
-              <a className={styles.navListItemLink} href="/action-ui/check-in/" title="Check-in">
-                <span className={styles.bullet}>i.</span>
-                <span className={styles.label}>Check-in</span>
-              </a>
-            </li>
-            <li className={styles.navListItem}>
-              <a
-                className={styles.navListItemLink}
-                href="/action-ui/project-updates/"
-                title="Project updates"
-              >
-                <span className={styles.bullet}>ii.</span>
-                <span className={styles.label}>Project updates</span>
-              </a>
-            </li>
-            <li className={styles.navListItem}>
-              <a className={styles.navListItemLink} href="/action-ui/requests/" title="Requests">
-                <span className={styles.bullet}>iii.</span>
-                <span className={styles.label}>Requests</span>
-              </a>
-              <br />
-              <br />
-              <a href="#" title="Add a request placeholder">
-                Press “+” to <br />add a request <br />placeholder
-              </a>
-            </li>
-          </ul>
-        </nav>
+        <div className={s.timer}>{timerValue}</div>
       </div>
-    );
-  }
-}
 
-styles = StyleSheet.create({
-  brandMark: {
+      {/* TODO: make me respond to props */}
+      <nav className={s.nav}>
+        <ul className={s.navList}>
+          <li className={checkinNavItemStyles}>
+            <a
+              className={checkinLinkStyles}
+              href="/meetingLayout/checkin"
+              title={labels.checkin}
+            >
+              <span className={s.bullet}>i.</span>
+              <span className={s.label}>{labels.checkin}</span>
+            </a>
+          </li>
+          <li className={updatesNavItemStyles}>
+            <a
+              className={updatesLinkStyles}
+              href="/meetingLayout/updates"
+              title={labels.updates}
+            >
+              <span className={s.bullet}>ii.</span>
+              <span className={s.label}>{labels.updates}</span>
+            </a>
+          </li>
+          <li className={requestsNavItemStyles}>
+            <a
+              className={requestsLinkStyles}
+              href="/meetingLayout/requests"
+              title={labels.requests}
+            >
+              <span className={s.bullet}>iii.</span>
+              <span className={s.label}>{labels.requests}</span>
+            </a>
+          </li>
+          {localPhase === SUMMARY &&
+            <li className={combineStyles(s.navListItem, s.navListItemLinkActive)}>
+              <a
+                className={combineStyles(s.navListItemLink, s.navListItemLinkActive)}
+                href="/meetingLayout/summary"
+                title={labels.summary}
+              >
+                <span className={s.bullet}>{' '}</span>
+                <span className={s.label}>{labels.summary}</span>
+              </a>
+            </li>
+          }
+        </ul>
+        {console.log(`Sidebar: ${localPhase}`)}
+        {localPhase !== CHECKIN && localPhase !== SUMMARY &&
+          <div>{/* div for JSX */}
+            <PlaceholderList />
+            {/* TODO: Toggle PlaceholderAddLink and PlaceholderInput (TA) */}
+            <PlaceholderAddLink />
+            <PlaceholderInput />
+          </div>
+        }
+      </nav>
+    </div>
+  );
+};
+
+const meetingLocations = Object.keys(phases).map(key => phases[key]);
+
+Sidebar.propTypes = {
+  facilitatorPhase: PropTypes.oneOf(meetingLocations),
+  localPhase: PropTypes.oneOf(meetingLocations),
+  shortUrl: PropTypes.string,
+  teamName: PropTypes.string,
+  teamId: PropTypes.string,
+  timerValue: PropTypes.string
+};
+
+s = StyleSheet.create({
+  brandLogo: {
     display: 'block',
     height: 'auto',
     width: '100%'
   },
 
-  brandMarkLink: {
+  brandLink: {
     display: 'block',
     height: 'auto',
     left: '1.25rem',
@@ -135,15 +183,32 @@ styles = StyleSheet.create({
     }
   },
 
+  navListItemMeetingMarker: {
+    position: 'relative',
+
+    '::after': {
+      backgroundColor: theme.palette.warm,
+      borderRadius: '100%',
+      display: 'block',
+      content: '""',
+      height: '.75rem',
+      marginTop: '-.375rem',
+      position: 'absolute',
+      right: '-.375rem',
+      top: '50%',
+      width: '.75rem'
+    }
+  },
+
   navListItemLinkActive: {
     color: theme.palette.dark
   },
 
   sidebar: {
     backgroundColor: theme.palette.dark10l,
-    order: 1,
     padding: '2rem 0',
-    width: '15rem'
+    maxWidth: '15rem',
+    width: '100%'
   },
 
   sidebarHeader: {
@@ -183,3 +248,5 @@ styles = StyleSheet.create({
     fontSize: theme.typography.s4,
   }
 });
+
+export default look(Sidebar);

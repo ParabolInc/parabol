@@ -8,10 +8,11 @@ import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
 
 const LandingContainer = (props) => {
   const {dispatch} = props;
+  const showLockThunk = () => showLock(dispatch);
   return (
     <div>
       <Helmet title="Welcome to Action" {...head} />
-      <Landing onMeetingCreateClick={() => showLock(dispatch)} {...props} />
+      <Landing onMeetingCreateClick={showLockThunk} {...props} />
     </div>
   );
 };

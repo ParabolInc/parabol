@@ -7,6 +7,7 @@ import subscriptions from 'universal/subscriptions/subscriptions';
 import presenceSubscriber from './presenceSubscriber';
 import reduxSocketOptions from './reduxSocketOptions';
 import {PRESENCE} from 'universal/subscriptions/constants';
+import socketCluster from 'socketcluster-client';
 
 const presenceSubscription = subscriptions.find(sub => sub.channel === PRESENCE);
 const mapStateToProps = (state, props) => {
@@ -15,8 +16,7 @@ const mapStateToProps = (state, props) => {
     component: 'socketWithPresence'
   };
   return {
-    presenceSub: cashay.subscribe(presenceSubscription.string, presenceSubscriber, presenceSubOptions),
-    socketSubs: state.socket.subs
+    presenceSub: cashay.subscribe(presenceSubscription.string, presenceSubscriber, presenceSubOptions)
   };
 };
 
@@ -35,23 +35,16 @@ export default ComposedComponent => {
 
     constructor(props) {
       super(props);
-      this.state = {
-        isSubbed: false
-      };
-    }
-
-    componentWillReceiveProps(newProps) {
-      if (!this.state.isSubbed) {
-        // The subscribe middleware is async, so we want to listen before we talk (good advice for humans, too)
-        const {params: {teamId}, socketSubs} = newProps;
+      const socket = socketCluster.connect();
+      socket.on('subscribe', channelName => {
+        const {teamId} = props.params;
         const presenceSub = presenceSubscription.channelfy({teamId});
-        const canPublish = socketSubs.find(sub => sub === presenceSub);
+        const canPublish = presenceSub === channelName;
         if (canPublish) {
           const options = {variables: {teamId}};
           cashay.mutate('soundOff', options);
-          this.setState({isSubbed: true});
         }
-      }
+      });
     }
 
     render() {

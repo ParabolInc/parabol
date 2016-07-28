@@ -5,4 +5,5 @@ export const LEAVE = 'LEAVE';
 
 // CHANNELS
 export const PRESENCE = 'presence';
-export const MEETING = 'meeting';
+export const TEAM = 'team';
+export const TEAM_MEMBERS = 'teamMembers';

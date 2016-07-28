@@ -40,8 +40,7 @@ const Team = (props) => {
       <DashMain>
         <DashHeader title="Team Name">
           <a
-            href="#"
-            onClick={goToLink}
+            href={`/meeting/${teamId}`}
             style={linkStyle}
             title="Meeting Lobby"
           >
@@ -69,8 +68,7 @@ Team.propTypes = {
   teamId: PropTypes.string.isRequired,
   user: PropTypes.shape({
     name: PropTypes.string,
-    nickname: PropTypes.string,
-    memberships: PropTypes.array
+    preferredName: PropTypes.string,
   })
 };
 

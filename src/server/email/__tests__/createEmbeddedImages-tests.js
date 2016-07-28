@@ -21,7 +21,7 @@ test('preserves keys', t => {
 const HTML_DOC = `
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
   <html dir="ltr">
-    <head><title>Welome to Action by Parabol</title></head>
+    <head><title>Welcome to Action by Parabol</title></head>
     <body>
       <p>Replace some images!</p>
       <img src="/static/images/email/action-email-header@2x.png" />
@@ -55,7 +55,7 @@ test('returns html with embedded attachments', t => {
 const HTML_DOC_ONE_IMG_NOT_EXIST = `
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
   <html dir="ltr">
-    <head><title>Welome to Action by Parabol</title></head>
+    <head><title>Welcome to Action by Parabol</title></head>
     <body>
       <p>Replace some images!</p>
       <img src="/static/images/email/action-email-header@2x.png" />
@@ -80,7 +80,7 @@ test('omits non-existing files ', t => {
 const HTML_DOC_EXTERNAL_ASSETS = `
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
   <html dir="ltr">
-    <head><title>Welome to Action by Parabol</title></head>
+    <head><title>Welcome to Action by Parabol</title></head>
     <body>
       <p>Replace some images!</p>
       <img src="http://another.server/action-email-header@2x.png" />
