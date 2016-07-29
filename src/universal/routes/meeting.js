@@ -14,7 +14,7 @@ const getMeetingImports = importMap => ({
 });
 
 export default store => ({
-  path: 'meeting/:teamId(/:phase)(/:phaseItem)',
+  path: 'meeting/:teamId',
   getComponent: async(location, cb) => {
     const promiseMap = setMeetingImports();
     const importMap = await resolvePromiseMap(promiseMap);
@@ -23,5 +23,23 @@ export default store => ({
     store.replaceReducer(newReducer);
 
     cb(null, component);
+  },
+  getChildRoutes: (childLocation, cbChild) => {
+    cbChild(null, [
+      {
+        path: 'lobby(/:localPhaseItem)',
+        getComponent: async(location, cb) => {
+          const component = await System.import('universal/modules/meeting/components/MeetingLobby/MeetingLobby');
+          cb(null, component);
+        }
+      },
+      {
+        path: 'checkin(/:localPhaseItem)',
+        getComponent: async(location, cb) => {
+          const component = await System.import('universal/modules/meeting/components/MeetingCheckin/MeetingCheckin');
+          cb(null, component);
+        }
+      }
+    ]);
   }
 });

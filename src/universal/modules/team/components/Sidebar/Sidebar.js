@@ -1,4 +1,4 @@
-import React, {PropTypes} from 'react';
+import React, {PropTypes, Component} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
@@ -7,90 +7,113 @@ import PlaceholderAddLink from 'universal/modules/meeting/components/Placeholder
 import PlaceholderInput from 'universal/modules/meeting/components/PlaceholderInput/PlaceholderInput';
 import {cashay} from 'cashay';
 import {phases} from 'universal/utils/constants';
+import makeMeetingUrl from 'universal/utils/makeMeetingUrl'
 
 const {CHECKIN, UPDATES, REQUESTS, SUMMARY} = phases;
 const combineStyles = StyleSheet.combineStyles;
 
 let s = {};
-
-const Sidebar = (props) => {
-  const {
-    facilitatorPhase,
-    localPhase,
-    shortUrl,
-    teamName,
-    timerValue,
-    teamId
-  } = props;
-  const facilitatorPhaseItemStyles = combineStyles(s.navListItem, s.navListItemMeetingMarker);
-  const activeNavAnchor = combineStyles(s.navListItemLink, s.navListItemLinkActive);
-  const labels = {
-    lobby: 'Lobby',
-    checkin: 'Check-In',
-    updates: 'Updates',
-    requests: 'Requests',
-    summary: 'Summary',
+const meetingLocations = Object.keys(phases).map(key => phases[key]);
+@look
+export default class Sidebar extends Component {
+  static propTypes = {
+    facilitatorPhase: PropTypes.oneOf(meetingLocations),
+    localPhase: PropTypes.oneOf(meetingLocations),
+    teamName: PropTypes.string,
+    teamId: PropTypes.string,
+    timerValue: PropTypes.string
   };
 
-  const checkinLinkStyles = localPhase === CHECKIN ? activeNavAnchor : s.navListItemLink;
-  const updatesLinkStyles = localPhase === UPDATES ? activeNavAnchor : s.navListItemLink;
-  const requestsLinkStyles = localPhase === REQUESTS ? activeNavAnchor : s.navListItemLink;
+  shouldComponentUpdate(nextProps) {
+    const keys = Object.keys(nextProps);
+    for (let i = 0; i < keys.length; i++) {
+      const propName = keys[i];
+      if (nextProps[propName] !== this.props[propName]) {
+        return true;
+      }
+    }
+    return false;
+  }
 
-  const checkinNavItemStyles = facilitatorPhase === CHECKIN ? facilitatorPhaseItemStyles : s.navListItem;
-  const updatesNavItemStyles = facilitatorPhase === UPDATES ? facilitatorPhaseItemStyles : s.navListItem;
-  const requestsNavItemStyles = facilitatorPhase === REQUESTS ? facilitatorPhaseItemStyles : s.navListItem;
+  render() {
+    const {
+      facilitatorPhase,
+      localPhase,
+      teamName,
+      timerValue,
+      teamId
+    } = this.props;
+    const shortUrl = makeMeetingUrl(teamId);
+    const facilitatorPhaseItemStyles = combineStyles(s.navListItem, s.navListItemMeetingMarker);
+    const activeNavAnchor = combineStyles(s.navListItemLink, s.navListItemLinkActive);
+    const labels = {
+      lobby: 'Lobby',
+      checkin: 'Check-In',
+      updates: 'Updates',
+      requests: 'Requests',
+      summary: 'Summary',
+    };
 
-  const handleLogoClick = (e) => {
-    // TODO remove in production, but great for debugging. Just click the logo & it removes the ephemeral meeting state
-    e.preventDefault();
-    cashay.mutate('killMeeting', {variables: {teamId}});
-  };
-  return (
-    <div className={s.sidebar}>
-      <div className={s.sidebarHeader}>
-        <a className={s.brandLink} onClick={handleLogoClick}>
-          <img className={s.brandLogo} src={actionUIMark} />
-        </a>
-        <div className={s.teamName}>{teamName}</div>
-        <a className={s.shortUrl} href="/meetingLayout/lobby">{shortUrl}</a>
+    const checkinLinkStyles = localPhase === CHECKIN ? activeNavAnchor : s.navListItemLink;
+    const updatesLinkStyles = localPhase === UPDATES ? activeNavAnchor : s.navListItemLink;
+    const requestsLinkStyles = localPhase === REQUESTS ? activeNavAnchor : s.navListItemLink;
+
+    const checkinNavItemStyles = facilitatorPhase === CHECKIN ? facilitatorPhaseItemStyles : s.navListItem;
+    const updatesNavItemStyles = facilitatorPhase === UPDATES ? facilitatorPhaseItemStyles : s.navListItem;
+    const requestsNavItemStyles = facilitatorPhase === REQUESTS ? facilitatorPhaseItemStyles : s.navListItem;
+
+    const handleLogoClick = (e) => {
+      // TODO remove in production, but great for debugging. Just click the logo & it removes the ephemeral meeting state
+      e.preventDefault();
+      cashay.mutate('killMeeting', {variables: {teamId}});
+    };
+    console.log('rerendering sidebar');
+    return (
+      <div className={s.sidebar}>
+        <div className={s.sidebarHeader}>
+          <a className={s.brandLink} onClick={handleLogoClick}>
+            <img className={s.brandLogo} src={actionUIMark}/>
+          </a>
+          <div className={s.teamName}>{teamName}</div>
+          <a className={s.shortUrl} href="/meetingLayout/lobby">{shortUrl}</a>
+          {/* TODO: make me respond to props */}
+          <div className={s.timer}>{timerValue}</div>
+        </div>
+
         {/* TODO: make me respond to props */}
-        <div className={s.timer}>{timerValue}</div>
-      </div>
-
-      {/* TODO: make me respond to props */}
-      <nav className={s.nav}>
-        <ul className={s.navList}>
-          <li className={checkinNavItemStyles}>
-            <a
-              className={checkinLinkStyles}
-              href="/meetingLayout/checkin"
-              title={labels.checkin}
-            >
-              <span className={s.bullet}>i.</span>
-              <span className={s.label}>{labels.checkin}</span>
-            </a>
-          </li>
-          <li className={updatesNavItemStyles}>
-            <a
-              className={updatesLinkStyles}
-              href="/meetingLayout/updates"
-              title={labels.updates}
-            >
-              <span className={s.bullet}>ii.</span>
-              <span className={s.label}>{labels.updates}</span>
-            </a>
-          </li>
-          <li className={requestsNavItemStyles}>
-            <a
-              className={requestsLinkStyles}
-              href="/meetingLayout/requests"
-              title={labels.requests}
-            >
-              <span className={s.bullet}>iii.</span>
-              <span className={s.label}>{labels.requests}</span>
-            </a>
-          </li>
-          {localPhase === SUMMARY &&
+        <nav className={s.nav}>
+          <ul className={s.navList}>
+            <li className={checkinNavItemStyles}>
+              <a
+                className={checkinLinkStyles}
+                href="/meetingLayout/checkin"
+                title={labels.checkin}
+              >
+                <span className={s.bullet}>i.</span>
+                <span className={s.label}>{labels.checkin}</span>
+              </a>
+            </li>
+            <li className={updatesNavItemStyles}>
+              <a
+                className={updatesLinkStyles}
+                href="/meetingLayout/updates"
+                title={labels.updates}
+              >
+                <span className={s.bullet}>ii.</span>
+                <span className={s.label}>{labels.updates}</span>
+              </a>
+            </li>
+            <li className={requestsNavItemStyles}>
+              <a
+                className={requestsLinkStyles}
+                href="/meetingLayout/requests"
+                title={labels.requests}
+              >
+                <span className={s.bullet}>iii.</span>
+                <span className={s.label}>{labels.requests}</span>
+              </a>
+            </li>
+            {localPhase === SUMMARY &&
             <li className={combineStyles(s.navListItem, s.navListItemLinkActive)}>
               <a
                 className={combineStyles(s.navListItemLink, s.navListItemLinkActive)}
@@ -101,31 +124,20 @@ const Sidebar = (props) => {
                 <span className={s.label}>{labels.summary}</span>
               </a>
             </li>
-          }
-        </ul>
-        {console.log(`Sidebar: ${localPhase}`)}
-        {localPhase !== CHECKIN && localPhase !== SUMMARY &&
+            }
+          </ul>
+          {localPhase !== CHECKIN && localPhase !== SUMMARY &&
           <div>{/* div for JSX */}
             <PlaceholderList />
             {/* TODO: Toggle PlaceholderAddLink and PlaceholderInput (TA) */}
             <PlaceholderAddLink />
             <PlaceholderInput />
           </div>
-        }
-      </nav>
-    </div>
-  );
-};
-
-const meetingLocations = Object.keys(phases).map(key => phases[key]);
-
-Sidebar.propTypes = {
-  facilitatorPhase: PropTypes.oneOf(meetingLocations),
-  localPhase: PropTypes.oneOf(meetingLocations),
-  shortUrl: PropTypes.string,
-  teamName: PropTypes.string,
-  teamId: PropTypes.string,
-  timerValue: PropTypes.string
+          }
+        </nav>
+      </div>
+    );
+  }
 };
 
 s = StyleSheet.create({
@@ -248,5 +260,3 @@ s = StyleSheet.create({
     fontSize: theme.typography.s4,
   }
 });
-
-export default look(Sidebar);

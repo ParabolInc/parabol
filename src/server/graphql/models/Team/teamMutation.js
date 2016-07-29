@@ -4,9 +4,10 @@ import {updatedOrOriginal, errorObj} from '../utils';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
-  GraphQLID
+  GraphQLID,
+  GraphQLString
 } from 'graphql';
-import {CreateTeamInput, UpdateTeamInput, Team} from './teamSchema';
+import {CreateTeamInput, UpdateTeamInput, Team, Phase} from './teamSchema';
 import shuffle from 'universal/utils/shuffle';
 import shortid from 'shortid';
 import {phases} from 'universal/utils/constants';
@@ -14,6 +15,51 @@ import {phases} from 'universal/utils/constants';
 const {CHECKIN} = phases;
 
 export default {
+  advanceFacilitator: {
+    type: GraphQLBoolean,
+    description: 'Advance the meeting forward. This is only called after the client does the math & sees that the meeting should advance',
+    args: {
+      teamId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The teamId to make sure the socket calling has permission'
+      },
+      nextPhase: {
+        type: Phase,
+        description: 'The desired phase for the meeting'
+      },
+      nextPhaseItem: {
+        type: GraphQLString,
+        description: 'The item within the phase to set the meeting to'
+      }
+    },
+    async resolve(source, {teamId, nextPhase, nextPhaseItem = '0'}, {authToken, socket}) {
+      requireWebsocket(socket);
+      const dbHits = [
+        requireSUOrTeamMember(authToken, teamId),
+        r.table('Team').get(teamId).pluck('activeFacilitator')
+      ];
+      const [teamMember, team] = await Promise.all(dbHits);
+      const {activeFacilitator, facilitatorPhase, meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = team;
+      if (activeFacilitator !== teamMember.id) {
+        throw errorObj({_error: 'Only the facilitator can advance the meeting'});
+      }
+      const isSynced = facilitatorPhase === meetingPhase && facilitatorPhaseItem === meetingPhaseItem;
+      const updatedState = {
+        facilitatorPhaseItem: nextPhaseItem,
+      };
+      if (isSynced) {
+        updatedState.meetingPhaseItem = nextPhaseItem;
+      }
+      if (nextPhase) {
+        updatedState.facilitatorPhase = nextPhase;
+        if (isSynced) {
+          updatedState.meetingPhase = nextPhase;
+        }
+      }
+      await r.table('Team').get(teamId).update(updatedState);
+      return true;
+    }
+  },
   startMeeting: {
     type: GraphQLBoolean,
     description: 'Start a meeting from the lobby',
@@ -41,9 +87,9 @@ export default {
         meetingId: shortid.generate(),
         activeFacilitator: facilitatorId,
         facilitatorPhase: CHECKIN,
-        facilitatorPhaseItem: 0,
+        facilitatorPhaseItem: '0',
         meetingPhase: CHECKIN,
-        meetingPhaseItem: 0
+        meetingPhaseItem: '0'
       };
       const dbPromises = teamMembers.map((member, idx) => {
         return r.table('TeamMember').get(member.id).update({
@@ -77,38 +123,6 @@ export default {
         'meetingPhaseItem'
       ];
       await r.table('Team').get(teamId).replace(r.row.without(ephemeralFields));
-      return true;
-    }
-  },
-  checkinMember: {
-    type: GraphQLBoolean,
-    description: 'Check a member in as present or absent',
-    args: {
-      teamId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The team that will be having the meeting'
-      },
-      teamMemberId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The teamMemberId of the person who is being checked in'
-      },
-      isPresent: {
-        type: new GraphQLNonNull(GraphQLBoolean),
-        description: 'true if the member is present'
-      }
-    },
-    async resolve(source, {teamId, teamMemberId, isPresent}, {authToken, socket}) {
-      await requireSUOrTeamMember(authToken, teamId);
-      requireWebsocket(socket);
-      const currentTeam = await r.table('Team').get(teamId);
-      const {meetingPhaseItem, facilitatorPhaseItem} = currentTeam;
-      const nextPhaseItem = meetingPhaseItem + meetingPhaseItem === facilitatorPhaseItem ? 1 : 0;
-
-      await r.table('Team').get(teamId).update({
-        checkedInMembers: 0,
-        facilitatorPhaseItem: nextPhaseItem,
-        meetingPhaseItem: nextPhaseItem
-      });
       return true;
     }
   },

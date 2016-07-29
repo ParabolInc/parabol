@@ -15,7 +15,7 @@ import {Placeholder} from '../Placeholder/placeholderSchema';
 import {phases} from 'universal/utils/constants';
 
 const {LOBBY, CHECKIN, UPDATES, REQUESTS, SUMMARY} = phases;
-const Phase = new GraphQLEnumType({
+export const Phase = new GraphQLEnumType({
   name: 'Phase',
   description: 'The phase of the meeting',
   values: {

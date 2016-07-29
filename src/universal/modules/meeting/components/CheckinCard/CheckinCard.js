@@ -3,22 +3,40 @@ import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import PushButton from 'universal/components/PushButton/PushButton';
+import {cashay} from 'cashay';
 
 const combineStyles = StyleSheet.combineStyles;
 
 let styles = {};
 
-const CardButtons = () => {
+const makeCheckinHandler = (isCheckedIn, teamId, teamMemberId) => {
+  return () => {
+    const options = {
+      variables: {
+        isCheckedIn,
+        teamId,
+        teamMemberId
+      }
+    };
+    cashay.mutate('checkin', options);
+  }
+};
+
+const CardButtons = (props) => {
+  const {teamId, teamMemberId} = props;
+
+  const handleOnClickPresent = makeCheckinHandler(true, teamId, teamMemberId);
+  const handleOnClickAbsent = makeCheckinHandler(false, teamId, teamMemberId);
   return (
     <div className={styles.buttonsBlock}>
-      <PushButton keystroke="c" label="ok, let’s do this!" size="large" />
-      <PushButton keystroke="x" label="can’t make this one" size="large" />
+      <PushButton handleOnClick={handleOnClickPresent} keystroke="c" label="ok, let’s do this!" size="large"/>
+      <PushButton handleOnClick={handleOnClickAbsent} keystroke="x" label="can’t make this one" size="large"/>
     </div>
   );
 };
 
 const Card = (props) => {
-  const {active, avatar} = props;
+  const {active, avatar, teamId} = props;
 
   const cardActiveStyles = combineStyles(styles.card, styles.cardIsActive);
   const cardBlurredStyles = combineStyles(styles.card, styles.cardIsBlurred);
@@ -35,7 +53,7 @@ const Card = (props) => {
       <Avatar {...avatar} size="largest"/>
       <div className={nameStyles}>{avatar.preferredName}</div>
       <div className={labelStyles}>Checking in...</div>
-      {active && <CardButtons/>}
+      {active && <CardButtons teamId={teamId} teamMemberId={avatar.id}/>}
     </div>
   );
 };
@@ -44,7 +62,8 @@ Card.propTypes = {
   active: PropTypes.bool,
   avatar: PropTypes.object, // avatar.preferredName, avatar.picture, avatar.badge
   hasControls: PropTypes.bool,
-  label: PropTypes.string
+  label: PropTypes.string,
+  teamId: PropTypes.string
 };
 
 styles = StyleSheet.create({

@@ -9,16 +9,15 @@ let styles = {};
 export default class CheckinCards extends Component {
   static propTypes = {
     cards: PropTypes.array,
-    localPhaseItem: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    localPhaseItem: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    teamId: PropTypes.string
   };
 
   render() {
-    const {cards, localPhaseItem} = this.props;
-    console.log('localPhase', localPhaseItem);
-    // TODO: testing rendering of data from backend for now
+    const {cards, localPhaseItem, teamId} = this.props;
     return (
       <div className={styles.base}>
-        {cards.map((card, idx) => <CheckinCard avatar={card} active={idx === localPhaseItem}/>)}
+        {cards.map((card, idx) => <CheckinCard key={`card${card.id}`} avatar={card} active={idx === localPhaseItem} teamId={teamId}/>)}
       </div>
     );
   }

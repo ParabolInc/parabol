@@ -9,7 +9,6 @@ const combineStyles = StyleSheet.combineStyles;
 let s = {};
 
 const renderBadge = (isCheckedIn, isConnected, size) => {
-  if (!isCheckedIn && !isConnected) return null;
   const connection = isConnected ? 'online' : 'offline';
   const checkin = isCheckedIn ? 'present' : 'absent';
   const iconStyles = combineStyles(

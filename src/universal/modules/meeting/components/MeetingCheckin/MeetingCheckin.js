@@ -18,7 +18,7 @@ let s = {};
 
 const onCheckinNextTeammateClick = () => {};
 const MeetingCheckinLayout = (props) => {
-  const {members, localPhaseItem, meetingPhase, meetingPhaseItem} = props;
+  const {members, localPhaseItem, meetingPhase, meetingPhaseItem, teamId} = props;
   const progressBarCompletion = 100 * meetingPhase === CHECKIN ? meetingPhaseItem / members.length : 1;
   const currentName = members[localPhaseItem] && members[localPhaseItem].preferredName;
   return (
@@ -42,7 +42,7 @@ const MeetingCheckinLayout = (props) => {
           </MeetingSectionHeading>
         </MeetingSection>
         {/* */}
-        <CheckinCards cards={members} localPhaseItem={localPhaseItem}/>
+        <CheckinCards cards={members} localPhaseItem={localPhaseItem} teamId={teamId}/>
         <MeetingSection paddingBottom="2rem">
           <IconLink
             icon="arrow-circle-right"
@@ -79,6 +79,7 @@ s = StyleSheet.create({
 
 MeetingCheckinLayout.propTypes = {
   members: PropTypes.array,
+  teamId: PropTypes.string,
   localPhaseItem: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   meetingPhase: PropTypes.string,
   meetingPhaseItem: PropTypes.oneOfType([PropTypes.string, PropTypes.number])

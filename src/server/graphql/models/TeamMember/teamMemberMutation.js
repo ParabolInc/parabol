@@ -2,16 +2,40 @@ import r from 'server/database/rethinkDriver';
 import {TeamMember} from './teamMemberSchema';
 import {
   GraphQLNonNull,
-  GraphQLID
+  GraphQLID,
+  GraphQLBoolean
 } from 'graphql';
 import {errorObj} from '../utils';
-import {getUserId} from '../authorization';
+import {getUserId, requireWebsocket, requireSUOrTeamMember} from '../authorization';
 import shortid from 'shortid';
 import acceptInviteDB from './helpers';
 import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
 
 
 export default {
+  checkin: {
+    type: GraphQLBoolean,
+    description: 'Check a member in as present or absent',
+    args: {
+      teamMemberId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The teamMemberId of the person who is being checked in'
+      },
+      teamId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The teamId to make sure the socket calling has permission'
+      },
+      isCheckedIn: {
+        type: GraphQLBoolean,
+        description: 'true if the member is present, false if absent, null if undecided'
+      }
+    },
+    async resolve(source, {teamId, teamMemberId, isCheckedIn}, {authToken, socket}) {
+      await requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
+      await r.table('TeamMember').get(teamMemberId).update({isCheckedIn});
+    }
+  },
   acceptInvitation: {
     type: TeamMember,
     description: `Add a user to a Team given an invitationToken.

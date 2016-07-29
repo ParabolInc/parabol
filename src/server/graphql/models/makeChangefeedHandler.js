@@ -15,10 +15,11 @@ const handleRethinkRemove = id => {
 };
 
 const handleRethinkUpdate = (doc, path) => {
-  const oldVals = doc.old_val;
-  const newVals = doc.new_val;
+  const oldVals = doc.old_val || {};
+  const newVals = doc.new_val || {};
   const changeKeys = [...Object.keys(oldVals), ...Object.keys(newVals)];
   const removeKeys = [];
+  const docId = oldVals.id || newVals.id;
   const diff = {};
   for (let i = 0; i < changeKeys.length; i++) {
     const key = changeKeys[i];
@@ -49,7 +50,7 @@ const handleRethinkUpdate = (doc, path) => {
     removeKeys
   };
   if (path) {
-    payload.path = `${path}[${payload.id}]`;
+    payload.path = `${path}[${docId}]`;
   }
   return payload;
 };

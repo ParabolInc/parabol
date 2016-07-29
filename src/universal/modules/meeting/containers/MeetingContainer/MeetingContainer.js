@@ -3,11 +3,9 @@ import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import subscriber from 'universal/subscriptions/subscriber';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
+import {push} from 'react-router-redux';
 
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
-import MeetingCheckinLayout from 'universal/modules/meeting/components/MeetingCheckinLayout/MeetingCheckinLayout';
-import MeetingLobbyLayout from 'universal/modules/meeting/components/MeetingLobbyLayout/MeetingLobbyLayout';
-import MeetingUpdatesLayout from 'universal/modules/meeting/components/MeetingUpdatesLayout/MeetingUpdatesLayout';
 import Sidebar from 'universal/modules/team/components/Sidebar/Sidebar';
 import {phases} from 'universal/utils/constants';
 
@@ -17,22 +15,6 @@ import {
 } from './cashayHelpers';
 
 const {LOBBY, CHECKIN, UPDATES} = phases;
-/**
- * MeetingContainer
- *
- * We make action meetings happen.
- *
- * At it's most fundamental, you can think of many of the phases of an
- * action meeting as set of list transformations:
- *
- * Check-In:
- *   [team member, ...] -> [check-in status, ...]
- * Project Updates:
- *   [team member, ...] -> [updated project, ...]
- * Agenda processing:
- *   [agenda item, ...] -> [new project/action, ...]
- *
- */
 
 const createParticipants = (teamMembers, presence, user) => {
   return teamMembers.map((member) => {
@@ -41,7 +23,7 @@ const createParticipants = (teamMembers, presence, user) => {
       isConnected: Boolean(presence.find(connection => connection.userId === member.userId)),
       isSelf: user.id === member.userId
     };
-  });
+  }).sort((a, b) => b.checkInOrder <= a.checkInOrder);
 };
 
 const mapStateToProps = (state, props) => {
@@ -63,67 +45,45 @@ export default class MeetingContainer extends Component {
     }).isRequired,
     presenceSub: PropTypes.object.isRequired,
     memberSub: PropTypes.object.isRequired,
+    children: PropTypes.any
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      members: [],
-      shortUrl: typeof window !== 'undefined' && window.location.href
-    };
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const {teamMembers} = nextProps.memberSub.data;
-    const {presence} = nextProps.presenceSub.data;
-    this.setState({
-      members: createParticipants(teamMembers, presence, nextProps.user)
-    });
-  }
-
   render() {
-    const {shortUrl, members} = this.state;
-    const {teamSub, params} = this.props;
-    const {teamId, phase, phaseItem} = params;
+    const {children, dispatch, location, memberSub, params, presenceSub, teamSub, user} = this.props;
+    const {teamId} = params;
     const {team} = teamSub.data;
-    const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem, name: teamName} = team;
-    // use the phase from the url, next the phase from the facilitator, next goto lobby (meeting hasn't started)
+    const {facilitatorPhase, facilitatorPhaseItem, meetingPhaseItem, name: teamName} = team;
+    if (facilitatorPhase) {
+      if (!children) {
+        dispatch(push(`/meeting/${teamId}/${facilitatorPhase}/${facilitatorPhaseItem}`));
+      }
+    } else {
+      // TODO return a spinner
+    }
+    const {teamMembers} = memberSub.data;
+    const {presence} = presenceSub.data;
+    const members = createParticipants(teamMembers, presence, user);
     const safeFacilitatorPhase = facilitatorPhase || LOBBY;
-    const localPhase = phase || safeFacilitatorPhase;
-
-    // a phase item isn't necessarily an integer, so there's no default value
-    const localPhaseItem = phaseItem || facilitatorPhaseItem;
+    // grab the localPhase from the url
+    const pathnameArray = location.pathname.split('/');
+    const teamIdIdx = pathnameArray.indexOf(teamId);
+    const localPhase = pathnameArray[teamIdIdx + 1] || LOBBY;
     return (
       <MeetingLayout>
         <Sidebar
           facilitatorPhase={safeFacilitatorPhase}
           localPhase={localPhase}
-          shortUrl={shortUrl}
           teamName={teamName}
           teamId={team.id}
         />
-        {localPhase === LOBBY &&
-          <MeetingLobbyLayout
-            members={members}
-            shortUrl={shortUrl}
-            teamName={teamName}
-            teamId={teamId}
-          />
-        }
-        {localPhase === CHECKIN &&
-          <MeetingCheckinLayout
-            members={members}
-            team={team}
-            localPhaseItem={localPhaseItem}
-            meetingPhase={meetingPhase}
-            meetingPhaseItem={meetingPhaseItem}
-          />
-        }
-        {localPhase === UPDATES &&
-          <MeetingUpdatesLayout
-            members={members}
-          />
-        }
+        {children && React.cloneElement(children, {
+          dispatch,
+          facilitatorPhase,
+          facilitatorPhaseItem,
+          members,
+          teamName,
+          meetingPhaseItem
+        })}
       </MeetingLayout>
     );
   }

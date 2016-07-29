@@ -5,14 +5,15 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 import theme from 'universal/styles/theme';
 import {cashay} from 'cashay';
 import voidClick from 'universal/utils/voidClick';
-
+import makeMeetingUrl from 'universal/utils/makeMeetingUrl';
 import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
 import Button from 'universal/components/Button/Button';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
+import {push} from 'react-router-redux';
+import {phases} from 'universal/utils/constants';
 
-// TODO: Reorganize under new folder: /meeting/components/MeetingLayouts (TA)
-
+const {LOBBY} = phases;
 let s = {};
 
 const faStyle = {lineHeight: 'inherit'};
@@ -32,9 +33,15 @@ const createStartMeetingHandler = (members, teamId) => {
   };
 };
 
-const MeetingLobbyLayout = (props) => {
-  const {shortUrl, teamName, members, teamId} = props;
+const MeetingLobby = (props) => {
+  const {dispatch, facilitatorPhaseItem, facilitatorPhase, members, params, teamName} = props;
+  const {teamId} = params;
+  // don't let anyone in the lobby after the meeting has started
+  if (facilitatorPhase !== LOBBY) {
+    dispatch(push(`/meeting/${teamId}/${facilitatorPhase}/${facilitatorPhaseItem}`));
+  }
   const onStartMeetingClick = createStartMeetingHandler(members, teamId);
+  const shortUrl = makeMeetingUrl(teamId);
   return (
     <MeetingMain>
       {/* */}
@@ -79,11 +86,14 @@ const MeetingLobbyLayout = (props) => {
   );
 };
 
-MeetingLobbyLayout.propTypes = {
+MeetingLobby.propTypes = {
   shortUrl: PropTypes.string,
   teamId: PropTypes.string,
   teamName: PropTypes.string,
-  members: PropTypes.array
+  members: PropTypes.array,
+  params: PropTypes.shape({
+    teamId: PropTypes.string
+  })
 };
 
 s = StyleSheet.create({
@@ -141,4 +151,4 @@ s = StyleSheet.create({
   }
 });
 
-export default look(MeetingLobbyLayout);
+export default look(MeetingLobby);

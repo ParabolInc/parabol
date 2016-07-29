@@ -7,13 +7,14 @@ const combineStyles = StyleSheet.combineStyles;
 let styles = {};
 
 const PushButton = (props) => {
-  const { disabled, keystroke, label, onClick, size } = props;
+  // TODO replace focus CSS with isPushed
+  const { disabled, keystroke, label, handleOnClick, size, isPushed } = props;
   const largeStyles = combineStyles(styles.button, styles.buttonLarge);
   const buttonStyles = size === 'large' ? largeStyles : styles.button;
 
   return (
     <div className={styles.block}>
-      <button disabled={disabled} className={buttonStyles} onClick={onClick}>
+      <button disabled={disabled} className={buttonStyles} onClick={handleOnClick}>
         {keystroke}
       </button>
       <div className={styles.label}>{label}</div>
