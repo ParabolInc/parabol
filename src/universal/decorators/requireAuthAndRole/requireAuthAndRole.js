@@ -1,10 +1,10 @@
 import React, {Component, PropTypes} from 'react';
-import {push} from 'react-router-redux';
 import jwtDecode from 'jwt-decode';
 import {error as showError} from 'universal/modules/notifications/ducks/notifications';
 import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
+import {withRouter} from 'react-router';
 
 const unauthorized = {
   title: 'Unauthorized',
@@ -26,15 +26,17 @@ const mapStateToProps = state => {
 
 export default role => ComposedComponent => {
   @connect(mapStateToProps)
+  @withRouter
   class RequiredAuthAndRole extends Component {
     static propTypes = {
       authToken: PropTypes.string,
       user: PropTypes.object,
-      dispatch: PropTypes.func
+      dispatch: PropTypes.func,
+      router: PropTypes.object
     };
 
     render() {
-      const {authToken, dispatch} = this.props;
+      const {authToken, dispatch, router} = this.props;
       if (authToken === undefined) {
         throw new Error('Auth token undefined. Did you put @connect on your component?');
       }
@@ -52,7 +54,7 @@ export default role => ComposedComponent => {
         // no legit authToken to be had
         dispatch(showError(unauthenticated));
       }
-      dispatch(push('/'));
+      router.push('/');
       return null;
     }
   }

@@ -11,7 +11,6 @@ let styles = {};
 const DashLayout = (props) => {
   const {
     children,
-    dispatch,
     notification,
     hasNotification,
     title
@@ -21,7 +20,7 @@ const DashLayout = (props) => {
     <div className={styles.root}>
       <Helmet title={title} {...head} />
       {hasNotification &&
-        <NotificationBar dispatch={dispatch} link="/meeting/team123" notification={notification} />
+        <NotificationBar notification={notification} />
       }
       <div className={styles.main}>
         {children}
@@ -32,7 +31,6 @@ const DashLayout = (props) => {
 
 DashLayout.propTypes = {
   children: PropTypes.any,
-  dispatch: PropTypes.func,
   notification: PropTypes.object,
   hasNotification: PropTypes.bool,
   title: PropTypes.string
@@ -40,7 +38,7 @@ DashLayout.propTypes = {
 
 DashLayout.defaultProps = {
   notification: {
-    link: 'https://prbl.io/1v2b3n',
+    link: '/meeting/team123',
     linkLabel: 'Join Active Meeting',
     message: 'Product',
     timestamp: '12:32'

@@ -11,7 +11,6 @@ import MeetingSection from 'universal/modules/meeting/components/MeetingSection/
 import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingSectionHeading/MeetingSectionHeading';
 import {CHECKIN} from 'universal/utils/constants';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
-import {push} from 'react-router-redux';
 
 let s = {};
 

@@ -10,7 +10,6 @@ import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
 import Button from 'universal/components/Button/Button';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import {push} from 'react-router-redux';
 import {LOBBY} from 'universal/utils/constants';
 
 let s = {};

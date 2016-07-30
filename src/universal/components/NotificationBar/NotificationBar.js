@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import FontAwesome from 'react-fontawesome';
-import {push} from 'react-router-redux';
+import {Link} from 'react-router';
 
 let styles = {};
 
@@ -25,11 +25,7 @@ const NotificationBar = (props) => {
     message,
     timestamp
   } = props.notification;
-  const onClick = (event) => {
-    event.preventDefault();
-    const {dispatch} = props;
-    dispatch(push(link));
-  };
+
   return (
     <div className={styles.bar}>
       <div className={styles.timestamp}>
@@ -42,16 +38,15 @@ const NotificationBar = (props) => {
         {message}
       </div>
       <div className={styles.inlineBlock}>
-        <a className={styles.link} onClick={onClick} title={linkLabel}>
+        <Link className={styles.link} title={linkLabel} to={link}>
           {linkLabel}
-        </a>
+        </Link>
       </div>
     </div>
   );
 };
 
 NotificationBar.propTypes = {
-  dispatch: PropTypes.func,
   notification: PropTypes.object
 };
 

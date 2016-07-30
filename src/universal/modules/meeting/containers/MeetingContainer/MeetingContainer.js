@@ -3,7 +3,6 @@ import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import subscriber from 'universal/subscriptions/subscriber';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
-import {push} from 'react-router-redux';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
 import Sidebar from 'universal/modules/team/components/Sidebar/Sidebar';
@@ -54,11 +53,11 @@ export default class MeetingContainer extends Component {
     const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem, name: teamName} = team;
     const safeFacilitatorPhase = facilitatorPhase || LOBBY;
 
-    if (!children) {
-      const pushURL = makePushURL(teamId, safeFacilitatorPhase);
-      dispatch(push(pushURL));
-      return null;
-    }
+    // if (!children) {
+    //   const pushURL = makePushURL(teamId, safeFacilitatorPhase);
+    //   dispatch(push(pushURL));
+    //   return null;
+    // }
 
     const {teamMembers} = memberSub.data;
     const {presence} = presenceSub.data;
@@ -69,10 +68,10 @@ export default class MeetingContainer extends Component {
     const teamIdIdx = pathnameArray.indexOf(teamId);
     const localPhase = pathnameArray[teamIdIdx + 1] || LOBBY;
     const safeMeetingPhase = meetingPhase || LOBBY;
-    if (localPhase === LOBBY && facilitatorPhase && facilitatorPhase !== LOBBY) {
-      debugger
-      dispatch(push(`/meeting/${teamId}/${facilitatorPhase}/${facilitatorPhaseItem}`));
-    }
+    // if (localPhase === LOBBY && facilitatorPhase && facilitatorPhase !== LOBBY) {
+    //   debugger
+    //   dispatch(push(`/meeting/${teamId}/${facilitatorPhase}/${facilitatorPhaseItem}`));
+    // }
     // if (isSkippingAhead(localPhase, safeMeetingPhase)) {
     //   const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
     //   dispatch(push(pushURL));

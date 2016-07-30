@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {reduxForm, initialize} from 'redux-form';
-import {push} from 'react-router-redux';
+import {withRouter} from 'react-router';
 import {cashay} from 'cashay';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
@@ -24,6 +24,7 @@ let styles = {};
 
 @look
 @reduxForm({form: 'userSettings'})
+@withRouter
 export default class Settings extends Component {
   static propTypes = {
     activity: PropTypes.string,          // from settingsDuck
@@ -45,7 +46,7 @@ export default class Settings extends Component {
   }
 
   onSubmit = async(submissionData) => {
-    const {activity, dispatch, nextPage, user} = this.props;
+    const {activity, dispatch, nextPage, user, router} = this.props;
     const {preferredName} = submissionData;
     const options = {
       variables: {
@@ -61,7 +62,7 @@ export default class Settings extends Component {
       dispatch(clearActivity());
     }
     if (nextPage) {
-      dispatch(push(nextPage));
+      router.push(nextPage);
     }
   }
 

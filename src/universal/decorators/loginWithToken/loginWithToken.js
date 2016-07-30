@@ -1,8 +1,8 @@
 import React, {PropTypes} from 'react';
-import {push} from 'react-router-redux';
 import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
+import {withRouter} from 'react-router';
 
 const mapStateToProps = state => {
   return {
@@ -13,19 +13,18 @@ const mapStateToProps = state => {
 
 export default ComposedComponent => {
   const TokenizedComp = (props) => {
-    const {dispatch, authToken, user} = props;
+    const {authToken, user, router} = props;
     if (authToken && user) {
       if (user.isNew === true) {
-        dispatch(push('/welcome'));
+        router.push('/welcome');
       } else if (user.isNew === false) {
-        dispatch(push('/me'));
+        router.push('/me');
       }
     }
     return <ComposedComponent {...props}/>;
   };
 
   TokenizedComp.propTypes = {
-    dispatch: PropTypes.func,
     authToken: PropTypes.string,
     user: PropTypes.shape({
       email: PropTypes.string,
@@ -33,8 +32,9 @@ export default ComposedComponent => {
       isNew: PropTypes.bool,
       picture: PropTypes.string,
       preferredName: PropTypes.string
-    })
+    }),
+    router: PropTypes.object.isRequired
   };
 
-  return connect(mapStateToProps)(TokenizedComp);
+  return connect(mapStateToProps)(withRouter(TokenizedComp));
 };
