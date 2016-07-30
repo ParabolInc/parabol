@@ -6,7 +6,7 @@ import PlaceholderList from 'universal/modules/meeting/components/PlaceholderLis
 import PlaceholderAddLink from 'universal/modules/meeting/components/PlaceholderAddLink/PlaceholderAddLink';
 import PlaceholderInput from 'universal/modules/meeting/components/PlaceholderInput/PlaceholderInput';
 import {cashay} from 'cashay';
-import {CHECKIN, UPDATES, REQUESTS, SUMMARY, phaseOrder} from 'universal/utils/constants';
+import {CHECKIN, UPDATES, REQUESTS, SUMMARY, phaseArray} from 'universal/utils/constants';
 import makeMeetingUrl from 'universal/utils/makeMeetingUrl'
 
 const combineStyles = StyleSheet.combineStyles;
@@ -16,8 +16,8 @@ let s = {};
 @look
 export default class Sidebar extends Component {
   static propTypes = {
-    facilitatorPhase: PropTypes.oneOf(phaseOrder),
-    localPhase: PropTypes.oneOf(phaseOrder),
+    facilitatorPhase: PropTypes.oneOf(phaseArray),
+    localPhase: PropTypes.oneOf(phaseArray),
     teamName: PropTypes.string,
     teamId: PropTypes.string,
     timerValue: PropTypes.string

@@ -57,13 +57,13 @@ export default class MeetingContainer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    // build the members array by aggregating everything
     const {teamMembers} = nextProps.memberSub.data;
     const {presence} = nextProps.presenceSub.data;
     const {user} = nextProps;
     if (presence !== this.props.presenceSub.data.presence ||
     teamMembers !== this.props.teamSub.data.teamMembers ||
     user !== this.props.user) {
-      // build the team members
       this.setState({
         members: createMembers(teamMembers, presence, user)
       });
@@ -72,7 +72,7 @@ export default class MeetingContainer extends Component {
 
   render() {
     const {children, dispatch, location, params, router, teamSub} = this.props;
-    const {teamId} = params;
+    const {teamId, localPhaseItem} = params;
     const {team} = teamSub.data;
     const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem, name: teamName} = team;
 
@@ -113,6 +113,7 @@ export default class MeetingContainer extends Component {
         />
         {children && React.cloneElement(children, {
           dispatch,
+          localPhaseItem: Number(localPhaseItem),
           facilitatorPhase,
           facilitatorPhaseItem,
           meetingPhase,

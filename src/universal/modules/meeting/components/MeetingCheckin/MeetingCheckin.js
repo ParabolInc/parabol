@@ -9,14 +9,17 @@ import CheckinCards from 'universal/modules/meeting/components/CheckinCards/Chec
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingSectionHeading/MeetingSectionHeading';
-import {CHECKIN} from 'universal/utils/constants';
+import {CHECKIN, UPDATES, phaseOrder} from 'universal/utils/constants';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
+import {withRouter} from 'react-router';
+
 
 let s = {};
 
-const onCheckinNextTeammateClick = () => {};
+
 const MeetingCheckinLayout = (props) => {
   const {
+    localPhaseItem,
     dispatch,
     facilitatorPhase,
     facilitatorPhaseItem,
@@ -24,24 +27,29 @@ const MeetingCheckinLayout = (props) => {
     meetingPhaseItem,
     members,
     params,
+    router,
     teamName,
   } = props;
   const {teamId} = params;
-  // if (isSkippingAhead(CHECKIN, meetingPhase)) {
-  //   const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
-  //   dispatch(push(pushURL));
-  // }
-  const progressBarCompletion = 100 * meetingPhase === CHECKIN ? meetingPhaseItem / members.length : 1;
-  const localPhaseItem = 0;
+  const onCheckinNextTeammateClick = () => {
+    let pushURL;
+    if (localPhaseItem < members.length - 1) {
+      pushURL = makePushURL(teamId, CHECKIN, localPhaseItem + 1);
+    } else {
+      pushURL = makePushURL(teamId, UPDATES, 0);
+    }
+    router.push(pushURL);
+  };
+  const progressBarCompletion = 100 * phaseOrder(meetingPhase) > phaseOrder(CHECKIN) ? 1 : meetingPhaseItem / members.length;
   const currentName = members[localPhaseItem] && members[localPhaseItem].preferredName;
   return (
     <MeetingMain>
       {/* */}
       <MeetingSection paddingBottom="2rem" paddingTop="2rem">
         <div className={s.avatars}>
-          <AvatarGroup avatars={members} label="Team:" />
+          <AvatarGroup avatars={members} label="Team:"/>
           <div className={s.progress}>
-            <ProgressBar completed={progressBarCompletion} />
+            <ProgressBar completed={progressBarCompletion}/>
           </div>
         </div>
       </MeetingSection>
@@ -55,7 +63,7 @@ const MeetingCheckinLayout = (props) => {
           </MeetingSectionHeading>
         </MeetingSection>
         {/* */}
-        <CheckinCards cards={members} localPhaseItem={localPhaseItem} teamId={teamId}/>
+        <CheckinCards members={members} localPhaseItem={localPhaseItem} teamId={teamId}/>
         <MeetingSection paddingBottom="2rem">
           <IconLink
             icon="arrow-circle-right"
@@ -93,9 +101,9 @@ s = StyleSheet.create({
 MeetingCheckinLayout.propTypes = {
   members: PropTypes.array,
   teamId: PropTypes.string,
-  localPhaseItem: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  localPhaseItem: PropTypes.number,
   meetingPhase: PropTypes.string,
-  meetingPhaseItem: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+  meetingPhaseItem: PropTypes.string
 };
 
-export default look(MeetingCheckinLayout);
+export default withRouter(look(MeetingCheckinLayout));

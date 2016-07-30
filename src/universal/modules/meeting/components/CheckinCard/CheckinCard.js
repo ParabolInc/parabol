@@ -4,6 +4,9 @@ import theme from 'universal/styles/theme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import PushButton from 'universal/components/PushButton/PushButton';
 import {cashay} from 'cashay';
+import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
+import {CHECKIN} from 'universal/utils/constants';
+import {withRouter} from 'react-router';
 
 const combineStyles = StyleSheet.combineStyles;
 
@@ -36,31 +39,34 @@ const CardButtons = (props) => {
 };
 
 const Card = (props) => {
-  const {active, avatar, teamId} = props;
+  const {isActive, member, router, teamId} = props;
 
   const cardActiveStyles = combineStyles(styles.card, styles.cardIsActive);
   const cardBlurredStyles = combineStyles(styles.card, styles.cardIsBlurred);
-  const cardStyles = active ? cardActiveStyles : cardBlurredStyles;
+  const cardStyles = isActive ? cardActiveStyles : cardBlurredStyles;
   const nameActiveStyles = combineStyles(styles.cardName, styles.cardNameActive);
-  const nameStyles = active ? nameActiveStyles : styles.cardName;
+  const nameStyles = isActive ? nameActiveStyles : styles.cardName;
   let labelStyles = styles.cardLabel;
-
-  if (avatar.isCheckedIn) {
+  if (member.isCheckedIn) {
     labelStyles = combineStyles(styles.cardLabel, styles.cardLabelPresent);
   }
+  const handleCardClick = () => {
+    const pushURL = makePushURL(teamId, CHECKIN, props.member.checkInOrder);
+    router.push(pushURL);
+  };
   return (
-    <div className={cardStyles}>
-      <Avatar {...avatar} size="largest"/>
-      <div className={nameStyles}>{avatar.preferredName}</div>
+    <div className={cardStyles} onClick={!isActive && handleCardClick}>
+      <Avatar {...member} size="largest"/>
+      <div className={nameStyles}>{member.preferredName}</div>
       <div className={labelStyles}>Checking in...</div>
-      {active && <CardButtons teamId={teamId} teamMemberId={avatar.id}/>}
+      {isActive && <CardButtons teamId={teamId} teamMemberId={member.id}/>}
     </div>
   );
 };
 
 Card.propTypes = {
-  active: PropTypes.bool,
-  avatar: PropTypes.object, // avatar.preferredName, avatar.picture, avatar.badge
+  isActive: PropTypes.bool,
+  member: PropTypes.object,
   hasControls: PropTypes.bool,
   label: PropTypes.string,
   teamId: PropTypes.string
@@ -115,4 +121,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default look(Card);
+export default withRouter(look(Card));

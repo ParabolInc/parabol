@@ -4,4 +4,5 @@ export const CHECKIN = 'checkin';
 export const UPDATES = 'updates';
 export const REQUESTS = 'requests';
 export const SUMMARY = 'summary';
-export const phaseOrder = [LOBBY, CHECKIN, UPDATES, REQUESTS, SUMMARY];
+export const phaseArray = [LOBBY, CHECKIN, UPDATES, REQUESTS, SUMMARY];
+export const phaseOrder = phase => phaseArray.indexOf(phase);
