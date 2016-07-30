@@ -2,7 +2,7 @@ import React from 'react';
 import {Presets, Plugins, LookRoot} from 'react-look';
 import {Router, browserHistory} from 'react-router';
 import {Provider} from 'react-redux';
-import routes from 'universal/routes/index';
+import routesFactory from 'universal/routes/index';
 import {syncHistoryWithStore} from 'react-router-redux';
 
 const lookConfig = Presets['react-dom'];
@@ -16,12 +16,12 @@ export default function Root({store}) {
   const history = syncHistoryWithStore(
     browserHistory, store
   );
-
+  const routes = routesFactory(store);
   return (
     <LookRoot config={lookConfig}>
       <Provider store={store}>
         <div>
-          <Router history={history} routes={routes(store)} />
+          <Router history={history} routes={routes} />
         </div>
       </Provider>
     </LookRoot>

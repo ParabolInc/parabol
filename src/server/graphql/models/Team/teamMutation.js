@@ -10,9 +10,7 @@ import {
 import {CreateTeamInput, UpdateTeamInput, Team, Phase} from './teamSchema';
 import shuffle from 'universal/utils/shuffle';
 import shortid from 'shortid';
-import {phases} from 'universal/utils/constants';
-
-const {CHECKIN} = phases;
+import {CHECKIN} from 'universal/utils/constants';
 
 export default {
   advanceFacilitator: {

@@ -9,17 +9,31 @@ import CheckinCards from 'universal/modules/meeting/components/CheckinCards/Chec
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingSectionHeading/MeetingSectionHeading';
-import {phases} from 'universal/utils/constants';
-
-const {CHECKIN} = phases;
-// TODO: Reorganize under new folder: /meeting/components/MeetingLayouts (TA)
+import {CHECKIN} from 'universal/utils/constants';
+import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
+import {push} from 'react-router-redux';
 
 let s = {};
 
 const onCheckinNextTeammateClick = () => {};
 const MeetingCheckinLayout = (props) => {
-  const {members, localPhaseItem, meetingPhase, meetingPhaseItem, teamId} = props;
+  const {
+    dispatch,
+    facilitatorPhase,
+    facilitatorPhaseItem,
+    meetingPhase,
+    meetingPhaseItem,
+    members,
+    params,
+    teamName,
+  } = props;
+  const {teamId} = params;
+  // if (isSkippingAhead(CHECKIN, meetingPhase)) {
+  //   const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
+  //   dispatch(push(pushURL));
+  // }
   const progressBarCompletion = 100 * meetingPhase === CHECKIN ? meetingPhaseItem / members.length : 1;
+  const localPhaseItem = 0;
   const currentName = members[localPhaseItem] && members[localPhaseItem].preferredName;
   return (
     <MeetingMain>
