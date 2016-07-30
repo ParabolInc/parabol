@@ -14,32 +14,20 @@ const ProgressBar = (props) => {
 
   const height = scale === 'large' ? '.5rem' : '.25rem';
   const backgroundColor = theme === 'cool' ? t.palette.cool50l : t.palette.warm50l;
+  const rootStyle = {
+    borderRadius: height,
+    height
+  };
 
-  // TODO: Change scope of StyleSheet.create() (TA)
-
-  s = StyleSheet.create({
-    root: {
-      display: 'block',
-      backgroundColor: t.palette.dark10l,
-      borderRadius: height,
-      height,
-      overflow: 'hidden',
-      width: '100%'
-    },
-
-    bar: {
-      backgroundColor,
-      height,
-      transition: 'width .2s ease-in',
-      width: `${completed + 2}%`
-    },
-
-    srOnly
-  });
+  const barStyle = {
+    backgroundColor,
+    height,
+    width: `${completed + 2}%`
+  };
 
   return (
-    <div className={s.root}>
-      <div className={s.bar}>
+    <div className={s.root} style={rootStyle}>
+      <div className={s.bar} style={barStyle}>
         <div className={s.srOnly}>{completed}%</div>
       </div>
     </div>
@@ -63,5 +51,22 @@ ProgressBar.defaultProps = {
   scale: 'small',
   theme: 'cool'
 };
+
+s = StyleSheet.create({
+  root: {
+    display: 'block',
+    backgroundColor: t.palette.dark10l,
+    overflow: 'hidden',
+    width: '100%'
+  },
+
+  bar: {
+    transition: 'width .2s ease-in',
+  },
+
+  srOnly: {
+    ...srOnly
+  }
+});
 
 export default look(ProgressBar);
