@@ -21,7 +21,7 @@ export default class LogoutContainer extends Component {
   componentWillMount() {
     const {dispatch, router} = this.props;
     dispatch(removeAuthToken());
-    router.push('/');
+    router.replace('/');
     dispatch(show(logoutSuccess));
   }
 

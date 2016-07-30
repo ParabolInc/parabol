@@ -10,7 +10,6 @@ import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
 import Button from 'universal/components/Button/Button';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import {LOBBY} from 'universal/utils/constants';
 
 let s = {};
 
@@ -31,85 +30,64 @@ const createStartMeetingHandler = (members, teamId) => {
   };
 };
 
-@look
-export default class MeetingLobby extends Component {
-  // constructor(props) {
-  //   super(props)
-  //   const {dispatch, facilitatorPhase, facilitatorPhaseItem, params} = props;
-  //   const {teamId} = params;
-  //   if (facilitatorPhase && facilitatorPhase !== LOBBY) {
-  //     dispatch(push(`/meeting/${teamId}/${facilitatorPhase}/${facilitatorPhaseItem}`));
-  //   }
-  // }
-  //
-  // componentWillReceiveProps(nextProps) {
-  //   const {dispatch, facilitatorPhase, facilitatorPhaseItem, params} = nextProps;
-  //   const {teamId} = params;
-  //   if (facilitatorPhase && facilitatorPhase !== LOBBY) {
-  //     dispatch(push(`/meeting/${teamId}/${facilitatorPhase}/${facilitatorPhaseItem}`));
-  //   }
-  // }
-  render() {
-    const {dispatch, facilitatorPhaseItem, facilitatorPhase, members, params, teamName} = this.props;
-    const {teamId} = params;
-    // don't let anyone in the lobby after the meeting has started
+const MeetingLobby = (props) => {
+  const {facilitatorPhaseItem, facilitatorPhase, members, params, router, teamName} = props;
+  const {teamId} = params;
 
-    const onStartMeetingClick = createStartMeetingHandler(members, teamId);
-    const shortUrl = makeMeetingUrl(teamId);
-    return (
-      <MeetingMain>
+  const onStartMeetingClick = createStartMeetingHandler(members, teamId);
+  const shortUrl = makeMeetingUrl(teamId);
+  return (
+    <MeetingMain>
+      {/* */}
+      <MeetingSection paddingBottom="2rem" paddingTop="2rem">
+        <AvatarGroup avatars={members} label="Team:"/>
+      </MeetingSection>
+      {/* */}
+      <MeetingSection flexToFill paddingBottom="2rem">
         {/* */}
-        <MeetingSection paddingBottom="2rem" paddingTop="2rem">
-          <AvatarGroup avatars={members} label="Team:"/>
-        </MeetingSection>
-        {/* */}
-        <MeetingSection flexToFill paddingBottom="2rem">
+        <div className={s.root}>
+          <h1 className={s.heading}>Hi, {teamName} Team!</h1>
+          <p className={s.label}>Tap to copy and share this meeting:</p>
           {/* */}
-          <div className={s.root}>
-            <h1 className={s.heading}>Hi, {teamName} Team!</h1>
-            <p className={s.label}>Tap to copy and share this meeting:</p>
-            {/* */}
-            {/* TODO: prevent navigation and show a “Copied!” message inline or toast */}
-            {/* */}
-            <CopyToClipboard text={shortUrl}>
-              <a
-                className={s.link}
-                href={shortUrl}
-                onClick={voidClick}
-                title={`Copy link to meeting: ${shortUrl}`}
-              >
-                <span className={s.linkText}>{shortUrl}</span>
-                <span className={s.icon}>
+          {/* TODO: prevent navigation and show a “Copied!” message inline or toast */}
+          {/* */}
+          <CopyToClipboard text={shortUrl}>
+            <a
+              className={s.link}
+              href={shortUrl}
+              onClick={voidClick}
+              title={`Copy link to meeting: ${shortUrl}`}
+            >
+              <span className={s.linkText}>{shortUrl}</span>
+              <span className={s.icon}>
                 <FontAwesome name="copy" style={faStyle}/>
               </span>
-              </a>
-            </CopyToClipboard>
-            <h2 className={s.prompt}>Shall we begin with a Check-In round?</h2>
-            <Button
-              label="Start Meeting"
-              onClick={onStartMeetingClick}
-              size="large"
-              style="outlined"
-              theme="cool"
-            />
-          </div>
-          {/* */}
-        </MeetingSection>
+            </a>
+          </CopyToClipboard>
+          <h2 className={s.prompt}>Shall we begin with a Check-In round?</h2>
+          <Button
+            label="Start Meeting"
+            onClick={onStartMeetingClick}
+            size="large"
+            style="outlined"
+            theme="cool"
+          />
+        </div>
         {/* */}
-      </MeetingMain>
-    );
-  };
-}
+      </MeetingSection>
+      {/* */}
+    </MeetingMain>
+  );
+};
 
-// MeetingLobby.propTypes = {
-//   shortUrl: PropTypes.string,
-//   teamId: PropTypes.string,
-//   teamName: PropTypes.string,
-//   members: PropTypes.array,
-//   params: PropTypes.shape({
-//     teamId: PropTypes.string
-//   })
-// };
+MeetingLobby.propTypes = {
+  teamId: PropTypes.string,
+  teamName: PropTypes.string,
+  members: PropTypes.array,
+  params: PropTypes.shape({
+    teamId: PropTypes.string
+  })
+};
 
 s = StyleSheet.create({
   root: {
@@ -166,4 +144,4 @@ s = StyleSheet.create({
   }
 });
 
-// export default look(MeetingLobby);
+export default look(MeetingLobby);

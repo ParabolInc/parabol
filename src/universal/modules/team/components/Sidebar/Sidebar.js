@@ -66,7 +66,6 @@ export default class Sidebar extends Component {
       e.preventDefault();
       cashay.mutate('killMeeting', {variables: {teamId}});
     };
-    console.log('rerendering sidebar');
     return (
       <div className={s.sidebar}>
         <div className={s.sidebarHeader}>

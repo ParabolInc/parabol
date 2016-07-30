@@ -5,11 +5,9 @@ import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import makeStore from './makeStore';
 import Root from './Root';
 
-const {routing} = window.__INITIAL_STATE__; // eslint-disable-line no-underscore-dangle
+// const {routing} = window.__INITIAL_STATE__; // eslint-disable-line no-underscore-dangle
 
-const initialState = {
-  routing
-};
+const initialState = {};
 
 const createCashay = (store, cashaySchema) => {
   const persistedToken = store.getState().authToken;

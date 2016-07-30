@@ -7,6 +7,8 @@ import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
 import Sidebar from 'universal/modules/team/components/Sidebar/Sidebar';
 import {LOBBY} from 'universal/utils/constants';
+import {withRouter} from 'react-router';
+import isSkippingAhead from 'universal/modules/meeting/helpers/isSkippingAhead';
 
 import {
   teamSubString,
@@ -33,6 +35,7 @@ const mapStateToProps = (state, props) => {
 
 @socketWithPresence
 @connect(mapStateToProps)
+@withRouter
 export default class MeetingContainer extends Component {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
@@ -42,44 +45,68 @@ export default class MeetingContainer extends Component {
     }).isRequired,
     presenceSub: PropTypes.object.isRequired,
     memberSub: PropTypes.object.isRequired,
-    children: PropTypes.any
+    children: PropTypes.any,
+    router: PropTypes.object
   };
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      members: []
+    };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const {teamMembers} = nextProps.memberSub.data;
+    const {presence} = nextProps.presenceSub.data;
+    const {user} = nextProps;
+    if (presence !== this.props.presenceSub.data.presence ||
+    teamMembers !== this.props.teamSub.data.teamMembers ||
+    user !== this.props.user) {
+      // build the team members
+      this.setState({
+        members: createMembers(teamMembers, presence, user)
+      });
+    }
+  }
 
   render() {
-    const {children, dispatch, location, memberSub, params, presenceSub, teamSub, user} = this.props;
+    const {children, dispatch, location, params, router, teamSub} = this.props;
     const {teamId} = params;
     const {team} = teamSub.data;
     const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem, name: teamName} = team;
-    const safeFacilitatorPhase = facilitatorPhase || LOBBY;
 
-    // if (!children) {
-    //   const pushURL = makePushURL(teamId, safeFacilitatorPhase);
-    //   dispatch(push(pushURL));
-    //   return null;
-    // }
-
-    const {teamMembers} = memberSub.data;
-    const {presence} = presenceSub.data;
-    const members = createMembers(teamMembers, presence, user);
+    // if we have a team.id, we have an initial subscription success
+    if (!team.id) {
+      // TODO put a spinner here
+      return <div>RIDE THAT RENDER TRAIN</div>
+    }
+    // make the short url a long url
+    if (!children) {
+      const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
+      router.replace(pushURL);
+    }
 
     // grab the localPhase from the url
     const pathnameArray = location.pathname.split('/');
     const teamIdIdx = pathnameArray.indexOf(teamId);
-    const localPhase = pathnameArray[teamIdIdx + 1] || LOBBY;
-    const safeMeetingPhase = meetingPhase || LOBBY;
-    // if (localPhase === LOBBY && facilitatorPhase && facilitatorPhase !== LOBBY) {
-    //   debugger
-    //   dispatch(push(`/meeting/${teamId}/${facilitatorPhase}/${facilitatorPhaseItem}`));
-    // }
-    // if (isSkippingAhead(localPhase, safeMeetingPhase)) {
-    //   const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
-    //   dispatch(push(pushURL));
-    // }
+    const localPhase = pathnameArray[teamIdIdx + 1];
+
+    // don't let anyone in the lobby after the meeting has started
+    if (localPhase === LOBBY && facilitatorPhase && facilitatorPhase !== LOBBY) {
+      const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
+      router.replace(pushURL);
+    }
+
+    // don't let anyone skip to the next phase
+    if (isSkippingAhead(localPhase, meetingPhase)) {
+      const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
+      router.replace(pushURL);
+    }
     return (
       <MeetingLayout>
         <Sidebar
-          facilitatorPhase={safeFacilitatorPhase}
+          facilitatorPhase={facilitatorPhase}
           localPhase={localPhase}
           teamName={teamName}
           teamId={team.id}
@@ -90,8 +117,8 @@ export default class MeetingContainer extends Component {
           facilitatorPhaseItem,
           meetingPhase,
           meetingPhaseItem,
-          members,
-          teamName,
+          members: this.state.members,
+          teamName
         })}
       </MeetingLayout>
     );
