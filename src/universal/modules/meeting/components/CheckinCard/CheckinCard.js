@@ -39,7 +39,7 @@ const CardButtons = (props) => {
 };
 
 const Card = (props) => {
-  const {isActive, member, router, teamId} = props;
+  const {isActive, isFacilitator, member, router, teamId} = props;
 
   const cardActiveStyles = combineStyles(styles.card, styles.cardIsActive);
   const cardBlurredStyles = combineStyles(styles.card, styles.cardIsBlurred);
@@ -51,7 +51,13 @@ const Card = (props) => {
     labelStyles = combineStyles(styles.cardLabel, styles.cardLabelPresent);
   }
   const handleCardClick = () => {
-    const pushURL = makePushURL(teamId, CHECKIN, props.member.checkInOrder);
+    const nextPhase = CHECKIN;
+    const nextPhaseItem = props.member.checkInOrder;
+    if (isFacilitator) {
+      const options = {variables: {nextPhase, nextPhaseItem, teamId}};
+      cashay.mutate('advanceFacilitator', options);
+    }
+    const pushURL = makePushURL(teamId, nextPhase, nextPhaseItem);
     router.push(pushURL);
   };
   return (

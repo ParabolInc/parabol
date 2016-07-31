@@ -12,15 +12,17 @@ import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingS
 import {CHECKIN, UPDATES, phaseOrder} from 'universal/utils/constants';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import {withRouter} from 'react-router';
-
+import withHotkey from 'react-hotkey-hoc';
+import {cashay} from 'cashay';
 
 let s = {};
 
 
 const MeetingCheckinLayout = (props) => {
   const {
-    localPhaseItem,
+    bindHotkey,
     dispatch,
+    isFacilitator,
     facilitatorPhase,
     facilitatorPhaseItem,
     meetingPhase,
@@ -28,18 +30,28 @@ const MeetingCheckinLayout = (props) => {
     members,
     params,
     router,
-    teamName,
+    teamName
   } = props;
+  const localPhaseItem = Number(props.localPhaseItem);
   const {teamId} = params;
   const onCheckinNextTeammateClick = () => {
-    let pushURL;
+    let nextPhase;
+    let nextPhaseItem;
     if (localPhaseItem < members.length - 1) {
-      pushURL = makePushURL(teamId, CHECKIN, localPhaseItem + 1);
+      nextPhase = CHECKIN;
+      nextPhaseItem = localPhaseItem + 1;
     } else {
-      pushURL = makePushURL(teamId, UPDATES, 0);
+      nextPhase = UPDATES;
+      nextPhaseItem = 0;
+    }
+    const pushURL = makePushURL(teamId, nextPhase, nextPhaseItem);
+    if (isFacilitator) {
+      const options = {variables: {nextPhase, nextPhaseItem, teamId}};
+      cashay.mutate('advanceFacilitator', options);
     }
     router.push(pushURL);
   };
+  bindHotkey('enter', onCheckinNextTeammateClick);
   const progressBarCompletion = 100 * phaseOrder(meetingPhase) > phaseOrder(CHECKIN) ? 1 : meetingPhaseItem / members.length;
   const currentName = members[localPhaseItem] && members[localPhaseItem].preferredName;
   return (
@@ -63,7 +75,7 @@ const MeetingCheckinLayout = (props) => {
           </MeetingSectionHeading>
         </MeetingSection>
         {/* */}
-        <CheckinCards members={members} localPhaseItem={localPhaseItem} teamId={teamId}/>
+        <CheckinCards members={members} localPhaseItem={localPhaseItem} teamId={teamId} isFacilitator={isFacilitator}/>
         <MeetingSection paddingBottom="2rem">
           <IconLink
             icon="arrow-circle-right"
@@ -101,9 +113,9 @@ s = StyleSheet.create({
 MeetingCheckinLayout.propTypes = {
   members: PropTypes.array,
   teamId: PropTypes.string,
-  localPhaseItem: PropTypes.number,
+  localPhaseItem: PropTypes.string,
   meetingPhase: PropTypes.string,
   meetingPhaseItem: PropTypes.string
 };
 
-export default withRouter(look(MeetingCheckinLayout));
+export default withHotkey(withRouter(look(MeetingCheckinLayout)));

@@ -8,6 +8,7 @@ let styles = {};
 // eslint-disable-next-line react/prefer-stateless-function
 export default class CheckinCards extends Component {
   static propTypes = {
+    isFacilitator: PropTypes.bool,
     members: PropTypes.array,
     localPhaseItem: PropTypes.number,
     teamId: PropTypes.string

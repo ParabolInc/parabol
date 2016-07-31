@@ -14,7 +14,7 @@ import {goToPage} from 'universal/modules/welcome/ducks/welcomeDuck';
 import {cashay} from 'cashay';
 import {show} from 'universal/modules/notifications/ducks/notifications';
 import {withRouter} from 'react-router';
-import hotkey from 'react-hotkey-hoc';
+import withHotkey from 'react-hotkey-hoc';
 
 const emailInviteSuccess = {
   title: 'Invitation sent!',
@@ -173,4 +173,4 @@ reduxForm({
   form: 'welcomeWizard',
   destroyOnUnmount: false
   // TODO: add sync + mailgun async validations
-})(withRouter(hotkey(Step3InviteTeam)));
+})(withRouter(withHotkey(Step3InviteTeam)));

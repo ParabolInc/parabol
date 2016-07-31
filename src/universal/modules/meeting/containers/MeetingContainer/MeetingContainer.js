@@ -9,27 +9,20 @@ import Sidebar from 'universal/modules/team/components/Sidebar/Sidebar';
 import {LOBBY} from 'universal/utils/constants';
 import {withRouter} from 'react-router';
 import isSkippingAhead from 'universal/modules/meeting/helpers/isSkippingAhead';
+import {createMembers} from 'universal/modules/meeting/ducks/meetingDuck';
+import getLocalPhase from 'universal/modules/meeting/helpers/getLocalPhase';
 
 import {
   teamSubString,
   teamMembersSubString,
 } from './cashayHelpers';
 
-const createMembers = (teamMembers, presence, user) => {
-  return teamMembers.map((member) => {
-    return {
-      ...member,
-      isConnected: Boolean(presence.find(connection => connection.userId === member.userId)),
-      isSelf: user.id === member.userId
-    };
-  }).sort((a, b) => b.checkInOrder <= a.checkInOrder);
-};
-
 const mapStateToProps = (state, props) => {
   const variables = {teamId: props.params.teamId};
   return {
     teamSub: cashay.subscribe(teamSubString, subscriber, {component: 'Meeting::teamSub', variables}),
-    memberSub: cashay.subscribe(teamMembersSubString, subscriber, {component: 'Meeting::memberSub', variables})
+    memberSub: cashay.subscribe(teamMembersSubString, subscriber, {component: 'Meeting::memberSub', variables}),
+    members: state.meeting.members
   };
 };
 
@@ -52,7 +45,8 @@ export default class MeetingContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      members: []
+      localPhase: null,
+      localPhaseItem: null
     };
   }
 
@@ -60,21 +54,37 @@ export default class MeetingContainer extends Component {
     // build the members array by aggregating everything
     const {teamMembers} = nextProps.memberSub.data;
     const {presence} = nextProps.presenceSub.data;
-    const {user} = nextProps;
+    const {user, router} = nextProps;
     if (presence !== this.props.presenceSub.data.presence ||
-    teamMembers !== this.props.teamSub.data.teamMembers ||
-    user !== this.props.user) {
-      this.setState({
-        members: createMembers(teamMembers, presence, user)
-      });
+      teamMembers !== this.props.memberSub.data.teamMembers ||
+      user !== this.props.user) {
+      nextProps.dispatch(createMembers(teamMembers, presence, user))
+    }
+
+    const {team} = nextProps.teamSub.data;
+
+    // is the facilitator making moves?
+    const oldTeam = this.props.teamSub.data.team;
+    // console.log('facilitator changed!', team, oldTeam)
+    if (team.facilitatorPhaseItem !== oldTeam.facilitatorPhaseItem ||
+      team.facilitatorPhase !== oldTeam.facilitatorPhase
+    ) {
+      const {teamId, localPhaseItem: oldLocalPhaseItem} = this.props.params;
+      const oldLocalPhase = getLocalPhase(this.props.location.pathname, teamId);
+      // were we n'sync?
+      const inSync = oldLocalPhase === oldTeam.facilitatorPhase && oldLocalPhaseItem === oldTeam.facilitatorPhaseItem;
+      if (inSync) {
+        const pushURL = makePushURL(teamId, team.facilitatorPhase, team.facilitatorPhaseItem);
+        router.push(pushURL);
+      }
     }
   }
 
   render() {
-    const {children, dispatch, location, params, router, teamSub} = this.props;
+    const {children, dispatch, location, members, params, router, teamSub, user} = this.props;
     const {teamId, localPhaseItem} = params;
     const {team} = teamSub.data;
-    const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem, name: teamName} = team;
+    const {activeFacilitator, facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem, name: teamName} = team;
 
     // if we have a team.id, we have an initial subscription success
     if (!team.id) {
@@ -87,11 +97,7 @@ export default class MeetingContainer extends Component {
       router.replace(pushURL);
     }
 
-    // grab the localPhase from the url
-    const pathnameArray = location.pathname.split('/');
-    const teamIdIdx = pathnameArray.indexOf(teamId);
-    const localPhase = pathnameArray[teamIdIdx + 1];
-
+    const localPhase = getLocalPhase(location.pathname, teamId);
     // don't let anyone in the lobby after the meeting has started
     if (localPhase === LOBBY && facilitatorPhase && facilitatorPhase !== LOBBY) {
       const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
@@ -103,6 +109,11 @@ export default class MeetingContainer extends Component {
       const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
       router.replace(pushURL);
     }
+
+    // declare if this user is the facilitator
+    const self = members.find(m => m.isSelf);
+    const isFacilitator = self && self.id === activeFacilitator;
+    const isSynced = localPhase === facilitatorPhase && localPhaseItem === facilitatorPhaseItem;
     return (
       <MeetingLayout>
         <Sidebar
@@ -113,12 +124,14 @@ export default class MeetingContainer extends Component {
         />
         {children && React.cloneElement(children, {
           dispatch,
-          localPhaseItem: Number(localPhaseItem),
+          isFacilitator,
+          isSynced,
+          localPhaseItem,
           facilitatorPhase,
           facilitatorPhaseItem,
           meetingPhase,
           meetingPhaseItem,
-          members: this.state.members,
+          members,
           teamName
         })}
       </MeetingLayout>

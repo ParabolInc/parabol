@@ -22,7 +22,8 @@ export default {
         description: 'The teamId to make sure the socket calling has permission'
       },
       nextPhase: {
-        type: Phase,
+        // http://stackoverflow.com/questions/37620012/passing-graphql-enumerated-value-type-as-argument-to-function
+        type: GraphQLString,
         description: 'The desired phase for the meeting'
       },
       nextPhaseItem: {

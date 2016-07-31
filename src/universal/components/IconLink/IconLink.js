@@ -10,6 +10,18 @@ const makeHoverColor = (color) =>
 
 let s = {};
 
+const keyframesDip = StyleSheet.keyframes({
+  '0%': {
+    transform: 'translate(0, 0)'
+  },
+  '50%': {
+    transform: 'translate(0, .25rem)'
+  },
+  '100%': {
+    transform: 'translate(0)'
+  }
+});
+
 const IconLink = (props) => {
   const {
     disabled,
@@ -17,8 +29,6 @@ const IconLink = (props) => {
     icon,
     iconPlacement,
     label,
-    scale,
-    theme
   } = props;
 
   const handleClick = (e) => {
@@ -26,71 +36,7 @@ const IconLink = (props) => {
     props.onClick(disabled);
   };
 
-  const fontSize = scale === 'small' ? t.typography.s3 : t.typography.s5;
-
-  const keyframesDip = StyleSheet.keyframes({
-    '0%': {
-      transform: 'translate(0, 0)'
-    },
-    '50%': {
-      transform: 'translate(0, .25rem)'
-    },
-    '100%': {
-      transform: 'translate(0)'
-    }
-  });
-
   // TODO: Change scope of StyleSheet.create() (TA)
-
-  s = StyleSheet.create({
-    root: {
-      color: t.palette[theme],
-      cursor: 'pointer',
-      display: 'inline-block',
-      fontFamily: t.typography.serif,
-      fontSize,
-      fontStyle: 'italic',
-      fontWeight: 700,
-      marginTop: '2rem',
-      textDecoration: 'none',
-      userSelect: 'none',
-
-      ':hover': {
-        color: makeHoverColor(t.palette[theme]),
-        textDecoration: 'none'
-      },
-      ':focus': {
-        color: makeHoverColor(t.palette[theme]),
-        textDecoration: 'none'
-      },
-
-      ':active': {
-        animationDuration: '.1s',
-        animationName: keyframesDip,
-        animationTimingFunction: 'ease-in'
-      }
-    },
-
-    disabled: {
-      color: t.palette[theme],
-      cursor: 'not-allowed',
-      opacity: '.5',
-
-      ':hover': {
-        color: t.palette[theme]
-      },
-      ':focus': {
-        color: t.palette[theme]
-      }
-    },
-
-    icon: {
-      color: 'inherit',
-      display: 'inline-block !important',
-      fontSize: `${scale === 'small' ? '14px' : '28px'} !important`,
-      verticalAlign: 'middle'
-    }
-  });
 
   const iconBlock = () => {
     let marginStyle = {};
@@ -162,3 +108,53 @@ IconLink.defaultProps = {
 };
 
 export default look(IconLink);
+
+s = StyleSheet.create({
+  root: {
+    color: (props) => t.palette[props.theme],
+    cursor: 'pointer',
+    display: 'inline-block',
+    fontFamily: t.typography.serif,
+    fontSize: (props) => props.scale === 'small' ? t.typography.s3 : t.typography.s5,
+    fontStyle: 'italic',
+    fontWeight: 700,
+    marginTop: '2rem',
+    textDecoration: 'none',
+    userSelect: 'none',
+
+    ':hover': {
+      color: (props) => makeHoverColor(t.palette[props.theme]),
+      textDecoration: 'none'
+    },
+    ':focus': {
+      color: (props) => makeHoverColor(t.palette[props.theme]),
+      textDecoration: 'none'
+    },
+
+    ':active': {
+      animationDuration: '.1s',
+      animationName: keyframesDip,
+      animationTimingFunction: 'ease-in'
+    }
+  },
+
+  disabled: {
+    color: (props) => t.palette[props.theme],
+    cursor: 'not-allowed',
+    opacity: '.5',
+
+    ':hover': {
+      color: (props) => t.palette[props.theme]
+    },
+    ':focus': {
+      color: (props) => t.palette[props.theme]
+    }
+  },
+
+  icon: {
+    color: 'inherit',
+    display: 'inline-block !important',
+    fontSize: (props) => `${props.scale === 'small' ? '14px' : '28px'} !important`,
+    verticalAlign: 'middle'
+  }
+});

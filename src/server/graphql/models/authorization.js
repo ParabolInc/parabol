@@ -16,7 +16,7 @@ export const getTeamMember = async (authToken, teamId) => {
     const teamMembers = await r.table('TeamMember')
       .getAll(teamId, {index: 'teamId'})
       .filter({userId})
-      .pluck('teamId');
+      .pluck('id', 'teamId');
     return teamMembers[0];
   }
   return undefined;
