@@ -52,19 +52,21 @@ export default class MeetingContainer extends Component {
 
   componentWillReceiveProps(nextProps) {
     // build the members array by aggregating everything
-    const {teamMembers} = nextProps.memberSub.data;
     const {presence} = nextProps.presenceSub.data;
+    const {team} = nextProps.teamSub.data;
+    const {teamMembers} = nextProps.memberSub.data;
     const {user, router} = nextProps;
+    const oldTeam = this.props.teamSub.data.team;
     if (presence !== this.props.presenceSub.data.presence ||
       teamMembers !== this.props.memberSub.data.teamMembers ||
-      user !== this.props.user) {
-      nextProps.dispatch(createMembers(teamMembers, presence, user))
+      team.activeFacilitator !== oldTeam.activeFacilitator ||
+      user.id !== this.props.user.id) {
+      nextProps.dispatch(createMembers(teamMembers, presence, team, user))
     }
 
-    const {team} = nextProps.teamSub.data;
 
     // is the facilitator making moves?
-    const oldTeam = this.props.teamSub.data.team;
+
     // console.log('facilitator changed!', team, oldTeam)
     if (team.facilitatorPhaseItem !== oldTeam.facilitatorPhaseItem ||
       team.facilitatorPhase !== oldTeam.facilitatorPhase

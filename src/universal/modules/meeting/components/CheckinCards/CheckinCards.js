@@ -1,5 +1,5 @@
-import React, { Component, PropTypes } from 'react';
-import look, { StyleSheet } from 'react-look';
+import React, {Component, PropTypes} from 'react';
+import look, {StyleSheet} from 'react-look';
 import CheckinCard from 'universal/modules/meeting/components/CheckinCard/CheckinCard';
 
 let styles = {};
@@ -15,10 +15,18 @@ export default class CheckinCards extends Component {
   };
 
   render() {
-    const {members, localPhaseItem, teamId} = this.props;
+    const {isFacilitator, members, localPhaseItem, teamId} = this.props;
     return (
       <div className={styles.base}>
-        {members.map((member, idx) => <CheckinCard key={`card${member.id}`} member={member} isActive={idx === Number(localPhaseItem)} teamId={teamId}/>)}
+        {members.map((member, idx) =>
+          <CheckinCard
+            key={`card${member.id}`}
+            member={member}
+            isActive={idx === Number(localPhaseItem)}
+            isFacilitator={isFacilitator}
+            teamId={teamId}
+          />)
+        }
       </div>
     );
   }

@@ -163,8 +163,10 @@ s = StyleSheet.create({
   avatarLargest: {
     fontSize: theme.typography.s6
   },
-
+  // TODO terry help me make this not look ugly
   avatarImageDisplay: {
+    border: (props) => props.hasBorder && 'solid 3px pink',
+    borderRadius: '100%',
     display: 'block'
   },
 

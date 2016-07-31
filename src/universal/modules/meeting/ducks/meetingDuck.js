@@ -25,11 +25,12 @@ export default function reducer(state = initialState, action = {}) {
   }
 }
 
-export function createMembers(teamMembers, presence, user) {
+export function createMembers(teamMembers, presence, team, user) {
   const members = teamMembers.map((member) => {
     return {
       ...member,
       isConnected: Boolean(presence.find(connection => connection.userId === member.userId)),
+      isFacilitator: team.activeFacilitator === member.id,
       isSelf: user.id === member.userId
     };
   }).sort((a, b) => b.checkInOrder <= a.checkInOrder);
