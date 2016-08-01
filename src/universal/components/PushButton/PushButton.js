@@ -8,7 +8,7 @@ let styles = {};
 
 const PushButton = (props) => {
   // TODO replace focus CSS with isPushed
-  const { disabled, keystroke, label, handleOnClick, size, isPushed } = props;
+  const {disabled, keystroke, label, handleOnClick, size} = props;
   const largeStyles = combineStyles(styles.button, styles.buttonLarge);
   const buttonStyles = size === 'large' ? largeStyles : styles.button;
 
@@ -26,7 +26,7 @@ PushButton.propTypes = {
   disabled: PropTypes.bool,
   keystroke: PropTypes.string,
   label: PropTypes.any,
-  onClick: PropTypes.func,
+  handleOnClick: PropTypes.func,
   size: PropTypes.oneOf([
     'default',
     'large'

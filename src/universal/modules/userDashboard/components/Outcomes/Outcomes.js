@@ -30,9 +30,7 @@ const Outcomes = (props) => {
 };
 
 Outcomes.propTypes = {
-  user: PropTypes.shape({
-    preferredName: PropTypes.string
-  })
+  preferredName: PropTypes.string
 };
 
 export default Outcomes;

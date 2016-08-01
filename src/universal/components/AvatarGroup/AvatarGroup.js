@@ -35,6 +35,7 @@ const AvatarGroup = (props) => {
 
 AvatarGroup.propTypes = {
   label: PropTypes.string,
+  localPhase: PropTypes.string,
   avatars: PropTypes.array
 };
 

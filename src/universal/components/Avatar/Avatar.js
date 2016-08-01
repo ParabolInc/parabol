@@ -166,7 +166,7 @@ s = StyleSheet.create({
   // TODO terry help me make this not look ugly
   avatarImageDisplay: {
     border: 'solid 3px',
-    borderColor: (props) => props.hasBorder ? 'pink' : 'white',
+    borderColor: (props) => (props.hasBorder ? 'pink' : 'white'),
     borderRadius: '100%',
     display: 'block'
   },

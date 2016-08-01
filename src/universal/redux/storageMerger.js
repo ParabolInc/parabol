@@ -16,7 +16,6 @@ export default function merger(initialState, persistedState) {
       }
     }
     if (reducerName === 'cashay') {
-
       // remove everything but the user
       // keep the user because caching it locally means we only need to refetch when we relogin
       // value.data.result = {

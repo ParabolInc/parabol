@@ -1,4 +1,4 @@
-import React, {PropTypes} from 'react';
+import React from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import FontAwesome from 'react-fontawesome';
@@ -10,7 +10,7 @@ const faStyle = {
   color: 'white'
 };
 
-export default function SettingsHub() {
+function SettingsHub() {
   return (
     <div className={styles.root}>
       <Link
@@ -39,7 +39,7 @@ export default function SettingsHub() {
       </div>
     </div>
   );
-};
+}
 
 styles = StyleSheet.create({
   root: {
@@ -104,4 +104,3 @@ styles = StyleSheet.create({
 });
 
 export default look(SettingsHub);
-

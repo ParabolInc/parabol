@@ -31,6 +31,7 @@ export default class Settings extends Component {
     dispatch: PropTypes.func.isRequired,
     handleSubmit: PropTypes.func,
     nextPage: PropTypes.string,          // from settingsDuck
+    router: PropTypes.object.isRequired,
     /* User for form defaults: */
     user: PropTypes.shape({
       preferredName: PropTypes.string

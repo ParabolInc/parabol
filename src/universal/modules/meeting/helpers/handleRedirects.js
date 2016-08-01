@@ -38,4 +38,4 @@ export default function handleRedirects(team, children, localPhaseItem, pathname
     const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
     router.replace(pushURL);
   }
-};
+}

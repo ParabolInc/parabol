@@ -89,7 +89,7 @@ export default {
       // Check if TeamMember already exists (i.e. user invited themselves):
       const teamMemberExists = await r.table('TeamMember')
         .getAll(userId, {index: 'userId'})
-        .filter({teamId: teamId})
+        .filter({teamId})
         .isEmpty()
         .not();
       if (teamMemberExists) {
@@ -106,7 +106,7 @@ export default {
       const newTeamMember = {
         checkInOrder: usersOnTeam + 1,
         id: shortid.generate(),
-        teamId: teamId,
+        teamId,
         userId,
         isActive: true,
         isLead: false,

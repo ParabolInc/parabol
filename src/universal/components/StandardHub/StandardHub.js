@@ -10,7 +10,7 @@ const faStyle = {
   color: 'white'
 };
 
-export default function StandardHub(props) {
+function StandardHub(props) {
   const {picture, preferredName, email} = props;
   return (
     <div className={styles.root}>
@@ -29,7 +29,7 @@ export default function StandardHub(props) {
       </div>
     </div>
   );
-};
+}
 
 styles = StyleSheet.create({
   root: {
@@ -105,4 +105,3 @@ StandardHub.propTypes = {
 };
 
 export default look(StandardHub);
-

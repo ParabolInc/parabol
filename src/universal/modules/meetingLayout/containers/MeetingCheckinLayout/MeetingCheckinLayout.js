@@ -11,7 +11,8 @@ import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/Me
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingSectionHeading/MeetingSectionHeading';
-import MeetingSectionSubheading from 'universal/modules/meeting/components/MeetingSectionSubheading/MeetingSectionSubheading';
+import MeetingSectionSubheading
+  from 'universal/modules/meeting/components/MeetingSectionSubheading/MeetingSectionSubheading';
 import Sidebar from 'universal/modules/team/components/Sidebar/Sidebar';
 
 import Jordan from 'universal/styles/theme/images/avatars/jordan-husney-avatar.jpg';

@@ -7,7 +7,7 @@ import {
   GraphQLID,
   GraphQLString
 } from 'graphql';
-import {CreateTeamInput, UpdateTeamInput, Team, Phase} from './teamSchema';
+import {CreateTeamInput, UpdateTeamInput, Team} from './teamSchema';
 import shuffle from 'universal/utils/shuffle';
 import shortid from 'shortid';
 import {CHECKIN, LOBBY} from 'universal/utils/constants';
@@ -15,7 +15,9 @@ import {CHECKIN, LOBBY} from 'universal/utils/constants';
 export default {
   advanceFacilitator: {
     type: GraphQLBoolean,
-    description: 'Advance the meeting forward. This is only called after the client does the math & sees that the meeting should advance',
+    description: `
+      Advance the meeting forward. This is only called after the
+      client does the math & sees that the meeting should advance`,
     args: {
       teamId: {
         type: new GraphQLNonNull(GraphQLID),

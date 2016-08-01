@@ -46,8 +46,8 @@ const createCashay = (store, cashaySchema) => {
     // eslint-disable-next-line global-require
     const {AppContainer} = require('react-hot-loader');
     createCashay(store, cashaySchema);
-    const {whyDidYouUpdate} = require('why-did-you-update');
     // ENABLE THIS FOR EXPLORING FRONT END PERFORMANCE
+    // const {whyDidYouUpdate} = require('why-did-you-update');
     // whyDidYouUpdate(React);
     render(
       <AppContainer>

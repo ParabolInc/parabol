@@ -23,7 +23,7 @@ const makeCheckinHandler = (isCheckedIn, teamId, teamMemberId) => {
       }
     };
     cashay.mutate('checkin', options);
-  }
+  };
 };
 
 const CardButtons = (props) => {
@@ -39,6 +39,12 @@ const CardButtons = (props) => {
       <PushButton handleOnClick={handleOnClickAbsent} keystroke="x" label="can’t make this one" size="large"/>
     </div>
   );
+};
+
+CardButtons.propTypes = {
+  bindHotkey: PropTypes.func.isRequired,
+  teamId: PropTypes.string.isRequired,
+  teamMemberId: PropTypes.string.isRequired
 };
 
 const Card = (props) => {
@@ -74,10 +80,13 @@ const Card = (props) => {
 };
 
 Card.propTypes = {
-  isActive: PropTypes.bool,
-  member: PropTypes.object,
+  bindHotkey: PropTypes.func.isRequired,
   hasControls: PropTypes.bool,
+  isActive: PropTypes.bool,
+  isFacilitator: PropTypes.bool,
   label: PropTypes.string,
+  member: PropTypes.object,
+  router: PropTypes.object.isRequired,
   teamId: PropTypes.string
 };
 

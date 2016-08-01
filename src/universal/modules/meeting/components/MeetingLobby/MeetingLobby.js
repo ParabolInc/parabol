@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import FontAwesome from 'react-fontawesome';
 import CopyToClipboard from 'react-copy-to-clipboard';
@@ -30,7 +30,7 @@ const createStartMeetingHandler = (members, teamId) => {
 };
 
 const MeetingLobby = (props) => {
-  const {facilitatorPhaseItem, facilitatorPhase, members, params, router, teamName} = props;
+  const {members, params, teamName} = props;
   const {teamId} = params;
 
   const onStartMeetingClick = createStartMeetingHandler(members, teamId);
@@ -76,12 +76,12 @@ const MeetingLobby = (props) => {
 };
 
 MeetingLobby.propTypes = {
-  teamId: PropTypes.string,
-  teamName: PropTypes.string,
   members: PropTypes.array,
   params: PropTypes.shape({
     teamId: PropTypes.string
-  })
+  }),
+  teamId: PropTypes.string,
+  teamName: PropTypes.string,
 };
 
 s = StyleSheet.create({

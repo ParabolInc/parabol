@@ -28,6 +28,7 @@ export default class Invitation extends Component {
     authToken: PropTypes.string,
     dispatch: PropTypes.func.isRequired,
     inviteToken: PropTypes.string.isRequired,
+    router: PropTypes.object.isRequired,
     user: PropTypes.object,
     withRouter: PropTypes.object
   };

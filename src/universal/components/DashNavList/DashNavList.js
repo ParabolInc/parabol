@@ -9,13 +9,22 @@ const DashNavItems = (props) => {
   const {teams} = props;
   return (
     <div>
-      {teams.map((team, idx) =>
+      {teams.map((team) =>
         <div className={styles.team} key={`teamNav${team.href}`}>
           <DashNavItem {...team} />
         </div>
       )}
     </div>
   );
+};
+
+DashNavItems.propTypes = {
+  teams: PropTypes.arrayOf(
+    PropTypes.shape({
+      href: PropTypes.string,
+      label: PropTypes.string.isRequired
+    })
+  ).isRequired
 };
 
 const DashNavList = (props) => {

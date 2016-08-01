@@ -11,6 +11,7 @@ import {createMembers} from 'universal/modules/meeting/ducks/meetingDuck';
 import getLocalPhase from 'universal/modules/meeting/helpers/getLocalPhase';
 import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
 import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
+import LoadingView from 'universal/components/LoadingView/LoadingView';
 
 import {
   teamSubString,
@@ -31,15 +32,21 @@ const mapStateToProps = (state, props) => {
 @withRouter
 export default class MeetingContainer extends Component {
   static propTypes = {
+    children: PropTypes.any,
     dispatch: PropTypes.func.isRequired,
-    teamSub: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    members: PropTypes.array,
+    memberSub: PropTypes.object.isRequired,
     params: PropTypes.shape({
+      localPhaseItem: PropTypes.string,
       teamId: PropTypes.string.isRequired
     }).isRequired,
     presenceSub: PropTypes.object.isRequired,
-    memberSub: PropTypes.object.isRequired,
-    children: PropTypes.any,
-    router: PropTypes.object
+    router: PropTypes.object,
+    teamSub: PropTypes.object.isRequired,
+    user: PropTypes.shape({
+      id: PropTypes.string.isRequired
+    }).isRequired
   };
 
   componentWillReceiveProps(nextProps) {
@@ -62,7 +69,8 @@ export default class MeetingContainer extends Component {
     }
 
     // is the facilitator making moves?
-    if (team.facilitatorPhaseItem !== oldTeam.facilitatorPhaseItem || team.facilitatorPhase !== oldTeam.facilitatorPhase) {
+    if (team.facilitatorPhaseItem !== oldTeam.facilitatorPhaseItem ||
+        team.facilitatorPhase !== oldTeam.facilitatorPhase) {
       const {teamId, localPhaseItem: oldLocalPhaseItem} = this.props.params;
       const oldLocalPhase = getLocalPhase(pathname, teamId);
       // were we n'sync?
@@ -78,12 +86,12 @@ export default class MeetingContainer extends Component {
     const {children, dispatch, location, members, params, teamSub} = this.props;
     const {teamId, localPhaseItem} = params;
     const {team} = teamSub.data;
-    const {activeFacilitator, facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem, name: teamName} = team;
+    const {activeFacilitator, facilitatorPhase, facilitatorPhaseItem,
+           meetingPhase, meetingPhaseItem, name: teamName} = team;
 
     // if we have a team.name, we have an initial subscription success to the team object
     if (!teamName || !members.length) {
-      // TODO put a spinner here
-      return <div>RIDE THAT RENDER TRAIN</div>
+      return <LoadingView />;
     }
     // debugger
     const localPhase = getLocalPhase(location.pathname, teamId);

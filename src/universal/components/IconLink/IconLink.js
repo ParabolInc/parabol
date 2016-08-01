@@ -115,7 +115,7 @@ s = StyleSheet.create({
     cursor: 'pointer',
     display: 'inline-block',
     fontFamily: t.typography.serif,
-    fontSize: (props) => props.scale === 'small' ? t.typography.s3 : t.typography.s5,
+    fontSize: (props) => (props.scale === 'small' ? t.typography.s3 : t.typography.s5),
     fontStyle: 'italic',
     fontWeight: 700,
     marginTop: '2rem',

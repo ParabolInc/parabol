@@ -2,7 +2,6 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 
-import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
 import IconLink from 'universal/components/IconLink/IconLink';
 import ProgressBar from 'universal/components/ProgressBar/ProgressBar';
 import CheckinCards from 'universal/modules/meeting/components/CheckinCards/CheckinCards';
@@ -21,16 +20,12 @@ let s = {};
 const MeetingCheckinLayout = (props) => {
   const {
     bindHotkey,
-    dispatch,
     isFacilitator,
-    facilitatorPhase,
-    facilitatorPhaseItem,
     meetingPhase,
     meetingPhaseItem,
     members,
     params,
     router,
-    teamName
   } = props;
   const localPhaseItem = Number(props.localPhaseItem);
   const {teamId} = params;
@@ -53,7 +48,8 @@ const MeetingCheckinLayout = (props) => {
     router.push(pushURL);
   };
   bindHotkey('enter', onCheckinNextTeammateClick);
-  const progressBarCompletion = 100 * phaseOrder(meetingPhase) > phaseOrder(CHECKIN) ? 1 : meetingPhaseItem / members.length;
+  const progressBarCompletion = 100 * phaseOrder(meetingPhase) > phaseOrder(CHECKIN) ?
+    1 : meetingPhaseItem / members.length;
   const currentName = members[localPhaseItem] && members[localPhaseItem].preferredName;
   return (
     <MeetingMain>
@@ -92,6 +88,19 @@ const MeetingCheckinLayout = (props) => {
   );
 };
 
+MeetingCheckinLayout.propTypes = {
+  bindHotkey: PropTypes.func.isRequired,
+  isFacilitator: PropTypes.bool,
+  localPhaseItem: PropTypes.string,
+  members: PropTypes.array,
+  meetingPhase: PropTypes.string.isRequired,
+  meetingPhaseItem: PropTypes.string.isRequired,
+  params: PropTypes.shape({
+    teamId: PropTypes.string.isRequired
+  }).isRequired,
+  router: PropTypes.object.isRequired,
+};
+
 s = StyleSheet.create({
   name: {
     color: theme.palette.warm
@@ -107,13 +116,5 @@ s = StyleSheet.create({
     paddingTop: '1rem'
   }
 });
-
-MeetingCheckinLayout.propTypes = {
-  members: PropTypes.array,
-  teamId: PropTypes.string,
-  localPhaseItem: PropTypes.string,
-  meetingPhase: PropTypes.string,
-  meetingPhaseItem: PropTypes.string
-};
 
 export default withHotkey(withRouter(look(MeetingCheckinLayout)));

@@ -1,4 +1,4 @@
-import React, {PropTypes, Component} from 'react';
+import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
@@ -7,7 +7,7 @@ import PlaceholderAddLink from 'universal/modules/meeting/components/Placeholder
 import PlaceholderInput from 'universal/modules/meeting/components/PlaceholderInput/PlaceholderInput';
 import {cashay} from 'cashay';
 import {CHECKIN, UPDATES, AGENDA, SUMMARY, phaseArray} from 'universal/utils/constants';
-import makeMeetingUrl from 'universal/utils/makeMeetingUrl'
+import makeMeetingUrl from 'universal/utils/makeMeetingUrl';
 
 const combineStyles = StyleSheet.combineStyles;
 const labels = {
@@ -20,87 +20,77 @@ const labels = {
 
 let s = {};
 
-@look
-export default class Sidebar extends Component {
-  static propTypes = {
-    facilitatorPhase: PropTypes.oneOf(phaseArray),
-    localPhase: PropTypes.oneOf(phaseArray),
-    teamName: PropTypes.string,
-    teamId: PropTypes.string,
-    timerValue: PropTypes.string
+const Sidebar = (props) => {
+  const {
+    facilitatorPhase,
+    localPhase,
+    teamName,
+    timerValue,
+    teamId
+  } = props;
+  const shortUrl = makeMeetingUrl(teamId);
+  const facilitatorPhaseItemStyles = combineStyles(s.navListItem, s.navListItemMeetingMarker);
+  const activeNavAnchor = combineStyles(s.navListItemLink, s.navListItemLinkActive);
+
+  const checkinLinkStyles = localPhase === CHECKIN ? activeNavAnchor : s.navListItemLink;
+  const updatesLinkStyles = localPhase === UPDATES ? activeNavAnchor : s.navListItemLink;
+  const requestsLinkStyles = localPhase === AGENDA ? activeNavAnchor : s.navListItemLink;
+
+  const checkinNavItemStyles = facilitatorPhase === CHECKIN ? facilitatorPhaseItemStyles : s.navListItem;
+  const updatesNavItemStyles = facilitatorPhase === UPDATES ? facilitatorPhaseItemStyles : s.navListItem;
+  const requestsNavItemStyles = facilitatorPhase === AGENDA ? facilitatorPhaseItemStyles : s.navListItem;
+
+  const handleLogoClick = (e) => {
+    // TODO remove in production, but great for debugging. Just click the logo & it removes the ephemeral meeting state
+    e.preventDefault();
+    cashay.mutate('killMeeting', {variables: {teamId}});
   };
-
-  render() {
-    const {
-      facilitatorPhase,
-      localPhase,
-      teamName,
-      timerValue,
-      teamId
-    } = this.props;
-    const shortUrl = makeMeetingUrl(teamId);
-    const facilitatorPhaseItemStyles = combineStyles(s.navListItem, s.navListItemMeetingMarker);
-    const activeNavAnchor = combineStyles(s.navListItemLink, s.navListItemLinkActive);
-
-    const checkinLinkStyles = localPhase === CHECKIN ? activeNavAnchor : s.navListItemLink;
-    const updatesLinkStyles = localPhase === UPDATES ? activeNavAnchor : s.navListItemLink;
-    const requestsLinkStyles = localPhase === AGENDA ? activeNavAnchor : s.navListItemLink;
-
-    const checkinNavItemStyles = facilitatorPhase === CHECKIN ? facilitatorPhaseItemStyles : s.navListItem;
-    const updatesNavItemStyles = facilitatorPhase === UPDATES ? facilitatorPhaseItemStyles : s.navListItem;
-    const requestsNavItemStyles = facilitatorPhase === AGENDA ? facilitatorPhaseItemStyles : s.navListItem;
-
-    const handleLogoClick = (e) => {
-      // TODO remove in production, but great for debugging. Just click the logo & it removes the ephemeral meeting state
-      e.preventDefault();
-      cashay.mutate('killMeeting', {variables: {teamId}});
-    };
-    return (
-      <div className={s.sidebar}>
-        <div className={s.sidebarHeader}>
-          <a className={s.brandLink} onClick={handleLogoClick}>
-            <img className={s.brandLogo} src={actionUIMark}/>
-          </a>
-          <div className={s.teamName}>{teamName}</div>
-          <a className={s.shortUrl} href="/meetingLayout/lobby">{shortUrl}</a>
-          {/* TODO: make me respond to props */}
-          <div className={s.timer}>{timerValue}</div>
-        </div>
-
+  return (
+    <div className={s.sidebar}>
+      <div className={s.sidebarHeader}>
+        <a className={s.brandLink} onClick={handleLogoClick}>
+          <img className={s.brandLogo} src={actionUIMark}/>
+        </a>
+        <div className={s.teamName}>{teamName}</div>
+        <a className={s.shortUrl} href="/meetingLayout/lobby">{shortUrl}</a>
         {/* TODO: make me respond to props */}
-        <nav className={s.nav}>
-          <ul className={s.navList}>
-            <li className={checkinNavItemStyles}>
-              <a
-                className={checkinLinkStyles}
-                href={`/meeting/${teamId}/checkin`}
-                title={labels.checkin}
-              >
-                <span className={s.bullet}>i.</span>
-                <span className={s.label}>{labels.checkin}</span>
-              </a>
-            </li>
-            <li className={updatesNavItemStyles}>
-              <a
-                className={updatesLinkStyles}
-                href={`/meeting/${teamId}/updates`}
-                title={labels.updates}
-              >
-                <span className={s.bullet}>ii.</span>
-                <span className={s.label}>{labels.updates}</span>
-              </a>
-            </li>
-            <li className={requestsNavItemStyles}>
-              <a
-                className={requestsLinkStyles}
-                href={`/meeting/${teamId}/agenda`}
-                title={labels.agenda}
-              >
-                <span className={s.bullet}>iii.</span>
-                <span className={s.label}>{labels.agenda}</span>
-              </a>
-            </li>
-            {localPhase === SUMMARY &&
+        <div className={s.timer}>{timerValue}</div>
+      </div>
+
+      {/* TODO: make me respond to props */}
+      <nav className={s.nav}>
+        <ul className={s.navList}>
+          <li className={checkinNavItemStyles}>
+            <a
+              className={checkinLinkStyles}
+              href={`/meeting/${teamId}/checkin`}
+              title={labels.checkin}
+            >
+              <span className={s.bullet}>i.</span>
+              <span className={s.label}>{labels.checkin}</span>
+            </a>
+          </li>
+          <li className={updatesNavItemStyles}>
+            <a
+              className={updatesLinkStyles}
+              href={`/meeting/${teamId}/updates`}
+              title={labels.updates}
+            >
+              <span className={s.bullet}>ii.</span>
+              <span className={s.label}>{labels.updates}</span>
+            </a>
+          </li>
+          <li className={requestsNavItemStyles}>
+            <a
+              className={requestsLinkStyles}
+              href={`/meeting/${teamId}/agenda`}
+              title={labels.agenda}
+            >
+              <span className={s.bullet}>iii.</span>
+              <span className={s.label}>{labels.agenda}</span>
+            </a>
+          </li>
+          {localPhase === SUMMARY &&
             <li className={combineStyles(s.navListItem, s.navListItemLinkActive)}>
               <a
                 className={combineStyles(s.navListItemLink, s.navListItemLinkActive)}
@@ -111,20 +101,27 @@ export default class Sidebar extends Component {
                 <span className={s.label}>{labels.summary}</span>
               </a>
             </li>
-            }
-          </ul>
-          {localPhase !== CHECKIN && localPhase !== SUMMARY &&
+          }
+        </ul>
+        {localPhase !== CHECKIN && localPhase !== SUMMARY &&
           <div>{/* div for JSX */}
             <PlaceholderList />
             {/* TODO: Toggle PlaceholderAddLink and PlaceholderInput (TA) */}
             <PlaceholderAddLink />
             <PlaceholderInput />
           </div>
-          }
-        </nav>
-      </div>
-    );
-  }
+        }
+      </nav>
+    </div>
+  );
+};
+
+Sidebar.propTypes = {
+  facilitatorPhase: PropTypes.oneOf(phaseArray),
+  localPhase: PropTypes.oneOf(phaseArray),
+  teamName: PropTypes.string,
+  teamId: PropTypes.string,
+  timerValue: PropTypes.string
 };
 
 s = StyleSheet.create({
@@ -247,3 +244,5 @@ s = StyleSheet.create({
     fontSize: theme.typography.s4,
   }
 });
+
+export default look(Sidebar);
