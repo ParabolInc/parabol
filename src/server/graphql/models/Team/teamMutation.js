@@ -10,7 +10,7 @@ import {
 import {CreateTeamInput, UpdateTeamInput, Team, Phase} from './teamSchema';
 import shuffle from 'universal/utils/shuffle';
 import shortid from 'shortid';
-import {CHECKIN} from 'universal/utils/constants';
+import {CHECKIN, LOBBY} from 'universal/utils/constants';
 
 export default {
   advanceFacilitator: {
@@ -113,15 +113,14 @@ export default {
     async resolve(source, {teamId}, {authToken, socket}) {
       await requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
-      const ephemeralFields = [
-        'meetingId',
-        'activeFacilitator',
-        'facilitatorPhase',
-        'facilitatorPhaseItem',
-        'meetingPhase',
-        'meetingPhaseItem'
-      ];
-      await r.table('Team').get(teamId).replace(r.row.without(ephemeralFields));
+      await r.table('Team').get(teamId).update({
+        facilitatorPhase: LOBBY,
+        meetingPhase: LOBBY,
+        meetingId: null,
+        facilitatorPhaseItem: null,
+        meetingPhaseItem: null,
+        activeFacilitator: null
+      });
       return true;
     }
   },
@@ -140,10 +139,14 @@ export default {
       const userId = leader.userId;
       requireSUOrSelf(authToken, userId);
       // can't trust the client
-      const verifiedLeader = {...leader, isActive: true, isLead: true, isFacilitator: true};
-      await r.table('TeamMember').insert(verifiedLeader);
-      await r.table('Team').insert(team);
-      await r.table('User').get(userId).update({isNew: false});
+      const verifiedLeader = {...leader, isActive: true, isLead: true, isFacilitator: true, checkInOrder: 0};
+      const verifiedTeam = {...team, facilitatorPhase: LOBBY, meetingPhase: LOBBY};
+      const dbPromises = [
+        r.table('TeamMember').insert(verifiedLeader),
+        r.table('Team').insert(verifiedTeam),
+        r.table('User').get(userId).update({isNew: false})
+      ];
+      await Promise.all(dbPromises);
       // TODO: trigger welcome email
       return true;
     }

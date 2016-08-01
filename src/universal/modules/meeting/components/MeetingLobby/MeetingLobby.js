@@ -6,7 +6,6 @@ import theme from 'universal/styles/theme';
 import {cashay} from 'cashay';
 import voidClick from 'universal/utils/voidClick';
 import makeMeetingUrl from 'universal/utils/makeMeetingUrl';
-import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
 import Button from 'universal/components/Button/Button';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
@@ -38,10 +37,6 @@ const MeetingLobby = (props) => {
   const shortUrl = makeMeetingUrl(teamId);
   return (
     <MeetingMain>
-      {/* */}
-      <MeetingSection paddingBottom="2rem" paddingTop="2rem">
-        <AvatarGroup avatars={members} label="Team:"/>
-      </MeetingSection>
       {/* */}
       <MeetingSection flexToFill paddingBottom="2rem">
         {/* */}

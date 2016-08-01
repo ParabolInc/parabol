@@ -2,11 +2,20 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import Avatar from '../Avatar/Avatar';
+import {CHECKIN, UPDATES} from 'universal/utils/constants';
 
 let s = {};
 
 const AvatarGroup = (props) => {
-  const {label, avatars} = props;
+  const {localPhase, avatars} = props;
+  let label;
+  if (localPhase === CHECKIN) {
+    label = 'Team:';
+  } else if (localPhase === UPDATES) {
+    label = 'Updates given:';
+  } else {
+    label = '';
+  }
 
   return (
     <div className={s.root}>

@@ -7,6 +7,7 @@ import {cashay} from 'cashay';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import {CHECKIN} from 'universal/utils/constants';
 import {withRouter} from 'react-router';
+import withHotkey from 'react-hotkey-hoc';
 
 const combineStyles = StyleSheet.combineStyles;
 
@@ -26,10 +27,12 @@ const makeCheckinHandler = (isCheckedIn, teamId, teamMemberId) => {
 };
 
 const CardButtons = (props) => {
-  const {teamId, teamMemberId} = props;
+  const {bindHotkey, teamId, teamMemberId} = props;
 
   const handleOnClickPresent = makeCheckinHandler(true, teamId, teamMemberId);
   const handleOnClickAbsent = makeCheckinHandler(false, teamId, teamMemberId);
+  bindHotkey('c', handleOnClickPresent);
+  bindHotkey('x', handleOnClickAbsent);
   return (
     <div className={styles.buttonsBlock}>
       <PushButton handleOnClick={handleOnClickPresent} keystroke="c" label="ok, let’s do this!" size="large"/>
@@ -39,7 +42,7 @@ const CardButtons = (props) => {
 };
 
 const Card = (props) => {
-  const {isActive, isFacilitator, member, router, teamId} = props;
+  const {bindHotkey, isActive, isFacilitator, member, router, teamId} = props;
 
   const cardActiveStyles = combineStyles(styles.card, styles.cardIsActive);
   const cardBlurredStyles = combineStyles(styles.card, styles.cardIsBlurred);
@@ -65,7 +68,7 @@ const Card = (props) => {
       <Avatar {...member} size="largest"/>
       <div className={nameStyles}>{member.preferredName}</div>
       <div className={labelStyles}>Checking in...</div>
-      {isActive && <CardButtons teamId={teamId} teamMemberId={member.id}/>}
+      {isActive && <CardButtons bindHotkey={bindHotkey} teamId={teamId} teamMemberId={member.id}/>}
     </div>
   );
 };
@@ -127,4 +130,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default withRouter(look(Card));
+export default withHotkey(withRouter(look(Card)));

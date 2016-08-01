@@ -34,10 +34,11 @@ const MeetingCheckinLayout = (props) => {
   } = props;
   const localPhaseItem = Number(props.localPhaseItem);
   const {teamId} = params;
+  const isLastMember = localPhaseItem === members.length - 1;
   const onCheckinNextTeammateClick = () => {
     let nextPhase;
     let nextPhaseItem;
-    if (localPhaseItem < members.length - 1) {
+    if (!isLastMember) {
       nextPhase = CHECKIN;
       nextPhaseItem = localPhaseItem + 1;
     } else {
@@ -58,11 +59,8 @@ const MeetingCheckinLayout = (props) => {
     <MeetingMain>
       {/* */}
       <MeetingSection paddingBottom="2rem" paddingTop="2rem">
-        <div className={s.avatars}>
-          <AvatarGroup avatars={members} label="Team:"/>
-          <div className={s.progress}>
-            <ProgressBar completed={progressBarCompletion}/>
-          </div>
+        <div className={s.progress}>
+          <ProgressBar completed={progressBarCompletion}/>
         </div>
       </MeetingSection>
       {/* */}
@@ -80,7 +78,7 @@ const MeetingCheckinLayout = (props) => {
           <IconLink
             icon="arrow-circle-right"
             iconPlacement="right"
-            label="Next teammate (press enter)"
+            label={isLastMember ? 'Move on to updates' : 'Next teammate (press enter)'}
             scale="large"
             theme="warm"
             onClick={onCheckinNextTeammateClick}

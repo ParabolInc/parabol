@@ -12,7 +12,7 @@ import {nonnullifyInputThunk} from '../utils';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {TeamMember, CreateTeamMemberInput} from '../TeamMember/teamMemberSchema';
 import {Placeholder} from '../Placeholder/placeholderSchema';
-import {LOBBY, CHECKIN, UPDATES, REQUESTS, SUMMARY} from 'universal/utils/constants';
+import {LOBBY, CHECKIN, UPDATES, AGENDA, SUMMARY} from 'universal/utils/constants';
 
 export const Phase = new GraphQLEnumType({
   name: 'Phase',
@@ -21,7 +21,7 @@ export const Phase = new GraphQLEnumType({
     LOBBY: {value: LOBBY},
     CHECKIN: {value: CHECKIN},
     UPDATES: {value: UPDATES},
-    REQUESTS: {value: REQUESTS},
+    AGENDA: {value: AGENDA},
     SUMMARY: {value: SUMMARY}
   }
 });

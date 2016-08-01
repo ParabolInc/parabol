@@ -6,10 +6,17 @@ import PlaceholderList from 'universal/modules/meeting/components/PlaceholderLis
 import PlaceholderAddLink from 'universal/modules/meeting/components/PlaceholderAddLink/PlaceholderAddLink';
 import PlaceholderInput from 'universal/modules/meeting/components/PlaceholderInput/PlaceholderInput';
 import {cashay} from 'cashay';
-import {CHECKIN, UPDATES, REQUESTS, SUMMARY, phaseArray} from 'universal/utils/constants';
+import {CHECKIN, UPDATES, AGENDA, SUMMARY, phaseArray} from 'universal/utils/constants';
 import makeMeetingUrl from 'universal/utils/makeMeetingUrl'
 
 const combineStyles = StyleSheet.combineStyles;
+const labels = {
+  lobby: 'Lobby',
+  checkin: 'Check-In',
+  updates: 'Updates',
+  agenda: 'Agenda',
+  summary: 'Summary',
+};
 
 let s = {};
 
@@ -23,17 +30,6 @@ export default class Sidebar extends Component {
     timerValue: PropTypes.string
   };
 
-  shouldComponentUpdate(nextProps) {
-    const keys = Object.keys(nextProps);
-    for (let i = 0; i < keys.length; i++) {
-      const propName = keys[i];
-      if (nextProps[propName] !== this.props[propName]) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   render() {
     const {
       facilitatorPhase,
@@ -45,21 +41,14 @@ export default class Sidebar extends Component {
     const shortUrl = makeMeetingUrl(teamId);
     const facilitatorPhaseItemStyles = combineStyles(s.navListItem, s.navListItemMeetingMarker);
     const activeNavAnchor = combineStyles(s.navListItemLink, s.navListItemLinkActive);
-    const labels = {
-      lobby: 'Lobby',
-      checkin: 'Check-In',
-      updates: 'Updates',
-      requests: 'Requests',
-      summary: 'Summary',
-    };
 
     const checkinLinkStyles = localPhase === CHECKIN ? activeNavAnchor : s.navListItemLink;
     const updatesLinkStyles = localPhase === UPDATES ? activeNavAnchor : s.navListItemLink;
-    const requestsLinkStyles = localPhase === REQUESTS ? activeNavAnchor : s.navListItemLink;
+    const requestsLinkStyles = localPhase === AGENDA ? activeNavAnchor : s.navListItemLink;
 
     const checkinNavItemStyles = facilitatorPhase === CHECKIN ? facilitatorPhaseItemStyles : s.navListItem;
     const updatesNavItemStyles = facilitatorPhase === UPDATES ? facilitatorPhaseItemStyles : s.navListItem;
-    const requestsNavItemStyles = facilitatorPhase === REQUESTS ? facilitatorPhaseItemStyles : s.navListItem;
+    const requestsNavItemStyles = facilitatorPhase === AGENDA ? facilitatorPhaseItemStyles : s.navListItem;
 
     const handleLogoClick = (e) => {
       // TODO remove in production, but great for debugging. Just click the logo & it removes the ephemeral meeting state
@@ -84,7 +73,7 @@ export default class Sidebar extends Component {
             <li className={checkinNavItemStyles}>
               <a
                 className={checkinLinkStyles}
-                href="/meetingLayout/checkin"
+                href={`/meeting/${teamId}/checkin`}
                 title={labels.checkin}
               >
                 <span className={s.bullet}>i.</span>
@@ -94,7 +83,7 @@ export default class Sidebar extends Component {
             <li className={updatesNavItemStyles}>
               <a
                 className={updatesLinkStyles}
-                href="/meetingLayout/updates"
+                href={`/meeting/${teamId}/updates`}
                 title={labels.updates}
               >
                 <span className={s.bullet}>ii.</span>
@@ -104,18 +93,18 @@ export default class Sidebar extends Component {
             <li className={requestsNavItemStyles}>
               <a
                 className={requestsLinkStyles}
-                href="/meetingLayout/requests"
-                title={labels.requests}
+                href={`/meeting/${teamId}/agenda`}
+                title={labels.agenda}
               >
                 <span className={s.bullet}>iii.</span>
-                <span className={s.label}>{labels.requests}</span>
+                <span className={s.label}>{labels.agenda}</span>
               </a>
             </li>
             {localPhase === SUMMARY &&
             <li className={combineStyles(s.navListItem, s.navListItemLinkActive)}>
               <a
                 className={combineStyles(s.navListItemLink, s.navListItemLinkActive)}
-                href="/meetingLayout/summary"
+                href={`/meeting/${teamId}/summary`}
                 title={labels.summary}
               >
                 <span className={s.bullet}>{' '}</span>

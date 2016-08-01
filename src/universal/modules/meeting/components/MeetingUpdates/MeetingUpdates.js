@@ -23,13 +23,6 @@ const MeetingUpdatesLayout = (props) => {
   return (
     <MeetingMain>
       {/* */}
-      <MeetingSection paddingBottom="2rem" paddingTop="2rem">
-        <div className={s.avatars}>
-          <AvatarGroup avatars={members} label="Updates given:" />
-        </div>
-      </MeetingSection>
-      {/* */}
-      {/* */}
       <MeetingSection flexToFill paddingBottom="2rem">
         {/* */}
         <MeetingSection paddingBottom="2rem">
