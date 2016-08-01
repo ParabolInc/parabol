@@ -81,11 +81,11 @@ export default class MeetingContainer extends Component {
     const {activeFacilitator, facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem, name: teamName} = team;
 
     // if we have a team.name, we have an initial subscription success to the team object
-    if (!teamName) {
+    if (!teamName || !members.length) {
       // TODO put a spinner here
       return <div>RIDE THAT RENDER TRAIN</div>
     }
-
+    // debugger
     const localPhase = getLocalPhase(location.pathname, teamId);
     // declare if this user is the facilitator
 
