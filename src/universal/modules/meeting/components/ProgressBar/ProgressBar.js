@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import t from 'universal/styles/theme';
 import {srOnly} from 'universal/styles/helpers';
+import {withRouter} from 'react-router';
 
 let s = {};
 const combineStyles = StyleSheet.combineStyles;
@@ -17,17 +18,17 @@ const blockWidth = avatarWidth + avatarGutter;
 const ProgressBar = (props) => {
   const {
     isComplete,
-    locations,
-    onClick,
-    teamCount
+    facilitatorPhaseItem,
+    localPhaseItem,
+    meetingPhaseItem,
+    clickFactory,
+    membersCount
   } = props;
-
-  const {facilitator, local, meeting} = locations;
-
-  const barWidth = meeting > 0 ? (meeting * blockWidth) - (blockWidth - pointWidth - outerPadding) : 0;
+  console.log('props', props);
+  const barWidth = meetingPhaseItem > 0 ? (meetingPhaseItem * blockWidth) - (blockWidth - pointWidth - outerPadding) : 0;
   const barStyle = isComplete ? {width: '100%'} : {width: `${barWidth}px`};
 
-  const renderPoint = (index) => {
+  const renderPoint = (idx) => {
     let pointStyles;
     const pointStyleVariant = [s.point];
 
@@ -35,15 +36,15 @@ const ProgressBar = (props) => {
       marginRight: `${blockWidth - pointWidth}px`
     };
 
-    if (index === facilitator - 1) {
+    if (idx === facilitatorPhaseItem - 1) {
       pointStyleVariant.push(s.pointFacilitator);
-    } else if (index === local - 1) {
+    } else if (idx === localPhaseItem - 1) {
       pointStyleVariant.push(s.pointLocal);
-    } else if (index <= meeting - 1 || isComplete) {
+    } else if (idx <= meetingPhaseItem - 1 || isComplete) {
       pointStyleVariant.push(s.pointCompleted);
     }
 
-    if (index === teamCount - 1) {
+    if (idx === membersCount - 1) {
       marginRight = {
         marginRight: 0
       };
@@ -51,16 +52,18 @@ const ProgressBar = (props) => {
 
     pointStyles = combineStyles.apply(null, pointStyleVariant);
 
+    const handleOnClick = clickFactory(idx);
+    // key={`point${idx}`}
     return (
-      <div className={pointStyles} onClick={() => onClick(index)} style={marginRight}>
-        <div className={s.srOnly}>{index}</div>
+      <div className={pointStyles} onClick={handleOnClick} style={marginRight}>
+        <div className={s.srOnly}>{idx}</div>
       </div>
     );
   };
 
   const renderPoints = () => {
     const points = [];
-    for (let i = 0; i < teamCount; i++) {
+    for (let i = 0; i < membersCount; i++) {
       points.push(renderPoint(i));
     }
     return points;
@@ -78,22 +81,24 @@ const ProgressBar = (props) => {
 
 ProgressBar.propTypes = {
   isComplete: PropTypes.bool,
-  locations: PropTypes.object,
-  onClick: PropTypes.func,
-  teamCount: PropTypes.number
+  meetingPhaseItem: PropTypes.number,
+  localPhaseItem: PropTypes.number,
+  facilitatorPhaseItem: PropTypes.number,
+  clickFactory: PropTypes.func,
+  membersCount: PropTypes.number
 };
 
 ProgressBar.defaultProps = {
   isComplete: false, // state for 100% progress
-  locations: {
-    facilitator: 5,
-    local: 2,
-    meeting: 3
-  },
+  facilitatorPhaseItem: 5,
+  localPhaseItem: 2,
+  meetingPhaseItem: 3,
   onClick(index) {
-    console.log(`ProgressBar.onClick() index: ${index}`);
+    return () => {
+      console.log(`ProgressBar.onClick() index: ${index}`);
+    }
   },
-  teamCount: 5
+  membersCount: 5
 };
 
 s = StyleSheet.create({
@@ -158,4 +163,4 @@ s = StyleSheet.create({
   }
 });
 
-export default look(ProgressBar);
+export default withRouter(look(ProgressBar));

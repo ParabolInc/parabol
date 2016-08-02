@@ -12,7 +12,7 @@ import getLocalPhase from 'universal/modules/meeting/helpers/getLocalPhase';
 import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
 import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
-
+import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import {
   teamSubString,
   teamMembersSubString,
@@ -70,7 +70,7 @@ export default class MeetingContainer extends Component {
 
     // is the facilitator making moves?
     if (team.facilitatorPhaseItem !== oldTeam.facilitatorPhaseItem ||
-        team.facilitatorPhase !== oldTeam.facilitatorPhase) {
+      team.facilitatorPhase !== oldTeam.facilitatorPhase) {
       const {teamId, localPhaseItem: oldLocalPhaseItem} = this.props.params;
       const oldLocalPhase = getLocalPhase(pathname, teamId);
       // were we n'sync?
@@ -86,8 +86,10 @@ export default class MeetingContainer extends Component {
     const {children, dispatch, location, members, params, teamSub} = this.props;
     const {teamId, localPhaseItem} = params;
     const {team} = teamSub.data;
-    const {activeFacilitator, facilitatorPhase, facilitatorPhaseItem,
-           meetingPhase, meetingPhaseItem, name: teamName} = team;
+    const {
+      activeFacilitator, facilitatorPhase, facilitatorPhaseItem,
+      meetingPhase, meetingPhaseItem, name: teamName
+    } = team;
 
     // if we have a team.name, we have an initial subscription success to the team object
     if (!teamName || !members.length) {
@@ -108,6 +110,7 @@ export default class MeetingContainer extends Component {
           teamId={teamId}
         />
         <div style={{width: 'calc(100% - 15rem)', paddingTop: '2rem', paddingBottom: '2rem'}}>
+          {/*<MeetingMain>*/}
           <AvatarGroup avatars={members} localPhase={localPhase}/>
           {children && React.cloneElement(children, {
             dispatch,
@@ -120,6 +123,7 @@ export default class MeetingContainer extends Component {
             members,
             teamName
           })}
+          {/*</MeetingMain>*/}
         </div>
       </MeetingLayout>
     );

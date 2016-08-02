@@ -3,7 +3,7 @@ import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 
 import IconLink from 'universal/components/IconLink/IconLink';
-import ProgressBar from 'universal/components/ProgressBar/ProgressBar';
+import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
 import CheckinCards from 'universal/modules/meeting/components/CheckinCards/CheckinCards';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
@@ -21,6 +21,7 @@ const MeetingCheckinLayout = (props) => {
   const {
     bindHotkey,
     isFacilitator,
+    facilitatorPhaseItem,
     meetingPhase,
     meetingPhaseItem,
     members,
@@ -48,15 +49,27 @@ const MeetingCheckinLayout = (props) => {
     router.push(pushURL);
   };
   bindHotkey('enter', onCheckinNextTeammateClick);
-  const progressBarCompletion = 100 * phaseOrder(meetingPhase) > phaseOrder(CHECKIN) ?
-    1 : meetingPhaseItem / members.length;
   const currentName = members[localPhaseItem] && members[localPhaseItem].preferredName;
+  const isComplete = phaseOrder(meetingPhase) > phaseOrder(CHECKIN);
+  const progressBarClickFactory = (phaseItem) => {
+    return () => {
+      const pushURL = makePushURL(teamId, CHECKIN, phaseItem);
+      router.push(pushURL);
+    }
+  };
   return (
     <MeetingMain>
       {/* */}
       <MeetingSection paddingBottom="2rem" paddingTop="2rem">
         <div className={s.progress}>
-          <ProgressBar completed={progressBarCompletion}/>
+          <ProgressBar
+            clickFactory={progressBarClickFactory}
+            isComplete={isComplete}
+            facilitatorPhaseItem={Number(facilitatorPhaseItem)}
+            meetingPhaseItem={Number(meetingPhaseItem)}
+            localPhaseItem={localPhaseItem}
+            membersCount={members.length}
+          />
         </div>
       </MeetingSection>
       {/* */}
