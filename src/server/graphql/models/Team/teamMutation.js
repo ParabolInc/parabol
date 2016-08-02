@@ -10,14 +10,12 @@ import {
 import {CreateTeamInput, UpdateTeamInput, Team} from './teamSchema';
 import shuffle from 'universal/utils/shuffle';
 import shortid from 'shortid';
-import {CHECKIN, LOBBY} from 'universal/utils/constants';
+import {CHECKIN, LOBBY, UPDATES, AGENDA} from 'universal/utils/constants';
 
 export default {
-  advanceFacilitator: {
+  moveMeeting: {
     type: GraphQLBoolean,
-    description: `
-      Advance the meeting forward. This is only called after the
-      client does the math & sees that the meeting should advance`,
+    description: `Update the facilitator. If this is new territory for the meetingPhaseItem, advance that, too.`,
     args: {
       teamId: {
         type: new GraphQLNonNull(GraphQLID),
@@ -37,7 +35,7 @@ export default {
       requireWebsocket(socket);
       const dbHits = [
         requireSUOrTeamMember(authToken, teamId),
-        r.table('Team').get(teamId).pluck('activeFacilitator')
+        r.table('Team').get(teamId)
       ];
       const [teamMember, team] = await Promise.all(dbHits);
       const {activeFacilitator, facilitatorPhase, meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = team;
@@ -45,15 +43,24 @@ export default {
         throw errorObj({_error: 'Only the facilitator can advance the meeting'});
       }
       const isSynced = facilitatorPhase === meetingPhase && facilitatorPhaseItem === meetingPhaseItem;
+      let incrementsProgress;
+      if (nextPhase === CHECKIN || nextPhase === UPDATES) {
+        incrementsProgress = Number(nextPhaseItem) - Number(meetingPhaseItem) === 1;
+      } else if (nextPhase === AGENDA) {
+        // TODO
+        // incrementsProgress =
+      }
+      const moveMeeting = isSynced && incrementsProgress;
+
       const updatedState = {
         facilitatorPhaseItem: nextPhaseItem,
       };
-      if (isSynced) {
+      if (moveMeeting) {
         updatedState.meetingPhaseItem = nextPhaseItem;
       }
       if (nextPhase) {
         updatedState.facilitatorPhase = nextPhase;
-        if (isSynced) {
+        if (moveMeeting) {
           updatedState.meetingPhase = nextPhase;
         }
       }

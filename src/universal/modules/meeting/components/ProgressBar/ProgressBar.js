@@ -24,7 +24,6 @@ const ProgressBar = (props) => {
     clickFactory,
     membersCount
   } = props;
-  console.log('props', props);
   // eslint-disable-next-line max-len
   const barWidth = ((meetingPhaseItem + 1) * blockWidth) - (blockWidth - pointWidth - outerPadding);
   const barStyle = isComplete ? {width: '100%'} : {width: `${barWidth}px`};
@@ -54,9 +53,8 @@ const ProgressBar = (props) => {
     pointStyles = combineStyles.apply(null, pointStyleVariant);
 
     const handleOnClick = clickFactory(idx);
-    // key={`point${idx}`}
     return (
-      <div className={pointStyles} onClick={handleOnClick} style={marginRight}>
+      <div className={pointStyles} onClick={handleOnClick} style={marginRight} key={`pbPoint${idx}`}>
         <div className={s.srOnly}>{idx}</div>
       </div>
     );

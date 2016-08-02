@@ -25,7 +25,7 @@ export default class CheckinCards extends Component {
     return () => {
       if (isFacilitator) {
         const options = {variables: {nextPhase, nextPhaseItem, teamId}};
-        cashay.mutate('advanceFacilitator', options);
+        cashay.mutate('moveMeeting', options);
       }
       const pushURL = makePushURL(teamId, nextPhase, nextPhaseItem);
       router.push(pushURL);

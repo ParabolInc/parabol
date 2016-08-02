@@ -44,16 +44,21 @@ const MeetingCheckinLayout = (props) => {
     const pushURL = makePushURL(teamId, nextPhase, nextPhaseItem);
     if (isFacilitator) {
       const options = {variables: {nextPhase, nextPhaseItem, teamId}};
-      cashay.mutate('advanceFacilitator', options);
+      cashay.mutate('moveMeeting', options);
     }
     router.push(pushURL);
   };
   bindHotkey('enter', onCheckinNextTeammateClick);
   const currentName = members[localPhaseItem] && members[localPhaseItem].preferredName;
   const isComplete = phaseOrder(meetingPhase) > phaseOrder(CHECKIN);
-  const progressBarClickFactory = (phaseItem) => {
+  const progressBarClickFactory = (nextPhaseItem) => {
     return () => {
-      const pushURL = makePushURL(teamId, CHECKIN, phaseItem);
+      const nextPhase = CHECKIN;
+      if (isFacilitator) {
+        const options = {variables: {nextPhase, nextPhaseItem, teamId}};
+        cashay.mutate('moveMeeting', options);
+      }
+      const pushURL = makePushURL(teamId, nextPhase, nextPhaseItem);
       router.push(pushURL);
     };
   };

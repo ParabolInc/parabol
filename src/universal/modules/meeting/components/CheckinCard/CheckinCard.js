@@ -6,6 +6,7 @@ import PushButton from 'universal/components/PushButton/PushButton';
 import {cashay} from 'cashay';
 import {withRouter} from 'react-router';
 import withHotkey from 'react-hotkey-hoc';
+import voidClick from 'universal/utils/voidClick';
 
 const combineStyles = StyleSheet.combineStyles;
 
@@ -26,8 +27,8 @@ const makeCheckinHandler = (isCheckedIn, teamId, teamMemberId) => {
 
 const CardButtons = withHotkey((props) => {
   const {bindHotkey, checkinPressFactory, isCheckedIn} = props;
-  const handleOnClickPresent = !isCheckedIn && checkinPressFactory(true);
-  const handleOnClickAbsent = isCheckedIn !== false && checkinPressFactory(false);
+  const handleOnClickPresent = isCheckedIn ? voidClick : checkinPressFactory(true);
+  const handleOnClickAbsent = isCheckedIn !== false ? checkinPressFactory(false) : voidClick;
   bindHotkey('c', handleOnClickPresent);
   bindHotkey('x', handleOnClickAbsent);
   return (
@@ -39,8 +40,8 @@ const CardButtons = withHotkey((props) => {
 });
 
 CardButtons.propTypes = {
-  bindHotkey: PropTypes.func.isRequired,
-  checkinPressFactory: PropTypes.func.isRequired
+  checkinPressFactory: PropTypes.func.isRequired,
+  isCheckedIn: PropTypes.bool,
 };
 
 const Card = (props) => {
