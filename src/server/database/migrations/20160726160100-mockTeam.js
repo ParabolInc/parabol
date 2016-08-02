@@ -1,3 +1,5 @@
+import {LOBBY} from '../../../universal/utils/constants';
+
 /* eslint-disable max-len */
 exports.up = async(r) => {
   const users = [
@@ -32,7 +34,13 @@ exports.up = async(r) => {
   ];
   const team = {
     id: 'team123',
-    name: 'Parabol'
+    name: 'Parabol',
+    facilitatorPhase: LOBBY,
+    meetingPhase: LOBBY,
+    meetingId: null,
+    facilitatorPhaseItem: null,
+    meetingPhaseItem: null,
+    activeFacilitator: null
   };
   const teamMembers = [
     {
