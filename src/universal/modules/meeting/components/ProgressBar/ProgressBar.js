@@ -26,7 +26,7 @@ const ProgressBar = (props) => {
   } = props;
   console.log('props', props);
   // eslint-disable-next-line max-len
-  const barWidth = meetingPhaseItem > 0 ? (meetingPhaseItem * blockWidth) - (blockWidth - pointWidth - outerPadding) : 0;
+  const barWidth = ((meetingPhaseItem + 1) * blockWidth) - (blockWidth - pointWidth - outerPadding);
   const barStyle = isComplete ? {width: '100%'} : {width: `${barWidth}px`};
 
   const renderPoint = (idx) => {
@@ -37,11 +37,11 @@ const ProgressBar = (props) => {
       marginRight: `${blockWidth - pointWidth}px`
     };
 
-    if (idx === facilitatorPhaseItem - 1) {
+    if (idx === facilitatorPhaseItem) {
       pointStyleVariant.push(s.pointFacilitator);
-    } else if (idx === localPhaseItem - 1) {
+    } else if (idx === localPhaseItem) {
       pointStyleVariant.push(s.pointLocal);
-    } else if (idx <= meetingPhaseItem - 1 || isComplete) {
+    } else if (idx <= meetingPhaseItem || isComplete) {
       pointStyleVariant.push(s.pointCompleted);
     }
 
@@ -81,24 +81,23 @@ const ProgressBar = (props) => {
 };
 
 ProgressBar.propTypes = {
-  isComplete: PropTypes.bool,
-  meetingPhaseItem: PropTypes.number,
-  localPhaseItem: PropTypes.number,
-  facilitatorPhaseItem: PropTypes.number,
   clickFactory: PropTypes.func,
-  membersCount: PropTypes.number
+  isComplete: PropTypes.bool,
+  facilitatorPhaseItem: PropTypes.number, // index of 0
+  localPhaseItem: PropTypes.number,       // index of 0
+  meetingPhaseItem: PropTypes.number,     // index of 0
+  membersCount: PropTypes.number          // not 0 indexed
 };
 
 ProgressBar.defaultProps = {
-  isComplete: false, // state for 100% progress
-  facilitatorPhaseItem: 5,
-  localPhaseItem: 2,
-  meetingPhaseItem: 3,
-  onClick(index) {
-    return () => {
-      console.log(`ProgressBar.onClick() index: ${index}`);
-    };
+  clickFactory() {
+    return () =>
+      console.log('ProgressBar');
   },
+  isComplete: false, // state for 100% progress
+  facilitatorPhaseItem: 4,
+  localPhaseItem: 2,
+  meetingPhaseItem: 0,
   membersCount: 5
 };
 
