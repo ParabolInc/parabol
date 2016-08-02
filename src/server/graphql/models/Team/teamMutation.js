@@ -151,7 +151,15 @@ export default {
       requireSUOrSelf(authToken, userId);
       // can't trust the client
       const verifiedLeader = {...leader, isActive: true, isLead: true, isFacilitator: true, checkInOrder: 0};
-      const verifiedTeam = {...team, facilitatorPhase: LOBBY, meetingPhase: LOBBY};
+      const verifiedTeam = {
+        ...team,
+        facilitatorPhase: LOBBY,
+        meetingPhase: LOBBY,
+        meetingId: null,
+        facilitatorPhaseItem: null,
+        meetingPhaseItem: null,
+        activeFacilitator: null
+      };
       const dbPromises = [
         r.table('TeamMember').insert(verifiedLeader),
         r.table('Team').insert(verifiedTeam),
