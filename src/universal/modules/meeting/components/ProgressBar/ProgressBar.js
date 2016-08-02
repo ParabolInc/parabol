@@ -25,6 +25,7 @@ const ProgressBar = (props) => {
     membersCount
   } = props;
   console.log('props', props);
+  // eslint-disable-next-line max-len
   const barWidth = meetingPhaseItem > 0 ? (meetingPhaseItem * blockWidth) - (blockWidth - pointWidth - outerPadding) : 0;
   const barStyle = isComplete ? {width: '100%'} : {width: `${barWidth}px`};
 
@@ -96,7 +97,7 @@ ProgressBar.defaultProps = {
   onClick(index) {
     return () => {
       console.log(`ProgressBar.onClick() index: ${index}`);
-    }
+    };
   },
   membersCount: 5
 };

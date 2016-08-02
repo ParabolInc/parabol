@@ -55,22 +55,20 @@ const MeetingCheckinLayout = (props) => {
     return () => {
       const pushURL = makePushURL(teamId, CHECKIN, phaseItem);
       router.push(pushURL);
-    }
+    };
   };
   return (
     <MeetingMain>
       {/* */}
-      <MeetingSection paddingBottom="2rem" paddingTop="2rem">
-        <div className={s.progress}>
-          <ProgressBar
-            clickFactory={progressBarClickFactory}
-            isComplete={isComplete}
-            facilitatorPhaseItem={Number(facilitatorPhaseItem)}
-            meetingPhaseItem={Number(meetingPhaseItem)}
-            localPhaseItem={localPhaseItem}
-            membersCount={members.length}
-          />
-        </div>
+      <MeetingSection paddingBottom="2rem" paddingTop=".75rem">
+        <ProgressBar
+          clickFactory={progressBarClickFactory}
+          isComplete={isComplete}
+          facilitatorPhaseItem={Number(facilitatorPhaseItem)}
+          meetingPhaseItem={Number(meetingPhaseItem)}
+          localPhaseItem={localPhaseItem}
+          membersCount={members.length}
+        />
       </MeetingSection>
       {/* */}
       {/* */}
@@ -117,16 +115,6 @@ MeetingCheckinLayout.propTypes = {
 s = StyleSheet.create({
   name: {
     color: theme.palette.warm
-  },
-
-  avatars: {
-    // Define
-  },
-
-  progress: {
-    paddingLeft: '5.25rem',
-    paddingRight: '.75rem',
-    paddingTop: '1rem'
   }
 });
 

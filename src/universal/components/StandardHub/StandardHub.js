@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
+import {textOverflow} from 'universal/styles/helpers';
 import theme from 'universal/styles/theme';
 import FontAwesome from 'react-fontawesome';
 import {Link} from 'react-router';
@@ -56,14 +57,12 @@ styles = StyleSheet.create({
   },
 
   name: {
+    ...textOverflow,
     fontSize: theme.typography.sBase,
     fontWeight: 700,
     lineHeight: '1.375rem',
     maxWidth: '132px',
-    overflow: 'hidden',
-    paddingTop: '.125rem',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap'
+    paddingTop: '.125rem'
   },
 
   email: {

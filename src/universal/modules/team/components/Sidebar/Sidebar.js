@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
+import {textOverflow} from 'universal/styles/helpers';
 import theme from 'universal/styles/theme';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import PlaceholderList from 'universal/modules/meeting/components/PlaceholderList/PlaceholderList';
@@ -213,11 +214,13 @@ s = StyleSheet.create({
   },
 
   shortUrl: {
+    ...textOverflow,
     color: theme.palette.dark10d,
     display: 'block',
     fontSize: theme.typography.s2,
     lineHeight: 'normal',
     marginBottom: '.625rem',
+    paddingRight: '.5rem',
     textDecoration: 'none',
 
     ':hover': {

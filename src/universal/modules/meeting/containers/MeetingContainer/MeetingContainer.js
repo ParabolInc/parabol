@@ -5,6 +5,7 @@ import subscriber from 'universal/subscriptions/subscriber';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
+import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import Sidebar from 'universal/modules/team/components/Sidebar/Sidebar';
 import {withRouter} from 'react-router';
 import {createMembers} from 'universal/modules/meeting/ducks/meetingDuck';
@@ -109,9 +110,10 @@ export default class MeetingContainer extends Component {
           teamName={teamName}
           teamId={teamId}
         />
-        <div style={{width: 'calc(100% - 15rem)', paddingTop: '2rem', paddingBottom: '2rem'}}>
-          {/*<MeetingMain>*/}
-          <AvatarGroup avatars={members} localPhase={localPhase}/>
+        <MeetingMain>
+          <MeetingSection paddingTop="2rem">
+            <AvatarGroup avatars={members} localPhase={localPhase}/>
+          </MeetingSection>
           {children && React.cloneElement(children, {
             dispatch,
             isFacilitator,
@@ -123,8 +125,7 @@ export default class MeetingContainer extends Component {
             members,
             teamName
           })}
-          {/*</MeetingMain>*/}
-        </div>
+        </MeetingMain>
       </MeetingLayout>
     );
   }

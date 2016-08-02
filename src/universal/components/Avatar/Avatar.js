@@ -8,6 +8,9 @@ const combineStyles = StyleSheet.combineStyles;
 
 let s = {};
 
+const boxShadowDefault = '0 0 1px 1px rgba(0, 0, 0, .2)';
+const boxShadowWarm = `0 0 1px 1px ${theme.palette.warm}`;
+
 const renderBadge = (isCheckedIn, isConnected, size) => {
   const connection = isConnected ? 'online' : 'offline';
   const checkin = isCheckedIn ? 'present' : 'absent';
@@ -165,8 +168,6 @@ s = StyleSheet.create({
   },
   // TODO terry help me make this not look ugly
   avatarImageDisplay: {
-    border: 'solid 3px',
-    borderColor: (props) => (props.hasBorder ? 'pink' : 'white'),
     borderRadius: '100%',
     display: 'block'
   },
@@ -203,7 +204,7 @@ s = StyleSheet.create({
 
   avatarImage: {
     borderRadius: '100%',
-    boxShadow: '0 0 1px 1px rgba(0, 0, 0, .2)',
+    boxShadow: (props) => (props.hasBorder ? boxShadowWarm : boxShadowDefault),
     display: 'block',
     height: 'auto',
     width: '100%'

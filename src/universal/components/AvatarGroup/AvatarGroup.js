@@ -5,6 +5,8 @@ import Avatar from '../Avatar/Avatar';
 import {CHECKIN, UPDATES} from 'universal/utils/constants';
 
 let s = {};
+// NOTE: outer padding for positioned label and overall centering
+const outerPadding = '8rem';
 
 const AvatarGroup = (props) => {
   const {localPhase, avatars} = props;
@@ -41,6 +43,9 @@ AvatarGroup.propTypes = {
 
 s = StyleSheet.create({
   root: {
+    fontSize: 0,
+    padding: `0 ${outerPadding}`,
+    position: 'relative',
     textAlign: 'center'
   },
 
@@ -48,11 +53,17 @@ s = StyleSheet.create({
     color: theme.palette.mid,
     display: 'inline-block',
     fontFamily: theme.typography.serif,
+    fontSize: theme.typography.s3,
     fontStyle: 'italic',
     fontWeight: 700,
     height: '2.75rem',
+    left: 0,
     lineHeight: '2.75rem',
-    margin: '0 .75rem',
+    minWidth: outerPadding,
+    padding: '0 .75rem 0 0',
+    position: 'absolute',
+    textAlign: 'right',
+    top: 0,
     verticalAlign: 'middle'
   },
 
