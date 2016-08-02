@@ -3,7 +3,6 @@ import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import PushButton from 'universal/components/PushButton/PushButton';
-import {cashay} from 'cashay';
 import {withRouter} from 'react-router';
 import withHotkey from 'react-hotkey-hoc';
 import voidClick from 'universal/utils/voidClick';
@@ -11,19 +10,6 @@ import voidClick from 'universal/utils/voidClick';
 const combineStyles = StyleSheet.combineStyles;
 
 let styles = {};
-
-const makeCheckinHandler = (isCheckedIn, teamId, teamMemberId) => {
-  return () => {
-    const options = {
-      variables: {
-        isCheckedIn,
-        teamId,
-        teamMemberId
-      }
-    };
-    cashay.mutate('checkin', options);
-  };
-};
 
 const CardButtons = withHotkey((props) => {
   const {bindHotkey, checkinPressFactory, isCheckedIn} = props;
@@ -33,8 +19,20 @@ const CardButtons = withHotkey((props) => {
   bindHotkey('x', handleOnClickAbsent);
   return (
     <div className={styles.buttonsBlock}>
-      <PushButton handleOnClick={handleOnClickPresent} isPressed={isCheckedIn === true} keystroke="c" label="ok, let’s do this!" size="large"/>
-      <PushButton handleOnClick={handleOnClickAbsent} isPressed={isCheckedIn === false} keystroke="x" label="can’t make this one" size="large"/>
+      <PushButton
+        handleOnClick={handleOnClickPresent}
+        isPressed={isCheckedIn === true}
+        keystroke="c"
+        label="ok, let’s do this!"
+        size="large"
+      />
+      <PushButton
+        handleOnClick={handleOnClickAbsent}
+        isPressed={isCheckedIn === false}
+        keystroke="x"
+        label="can’t make this one"
+        size="large"
+      />
     </div>
   );
 });

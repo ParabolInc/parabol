@@ -17,6 +17,7 @@ const StandardHubContainer = (props) => {
 };
 
 StandardHubContainer.propTypes = {
+  activeArea: PropTypes.string,
   user: PropTypes.shape({
     email: PropTypes.string,
     picture: PropTypes.string,
