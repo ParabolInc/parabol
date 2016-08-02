@@ -1,11 +1,14 @@
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
 import {head} from 'universal/utils/clientOptions';
-import AvatarContainer from './AvatarContainer';
-import ButtonContainer from './ButtonContainer';
-import CardContainer from './CardContainer';
-import CardStageContainer from './CardStageContainer';
-import OutcomeCardContainer from './OutcomeCardContainer';
+
+import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
+
+// import AvatarContainer from './AvatarContainer';
+// import ButtonContainer from './ButtonContainer';
+// import CardContainer from './CardContainer';
+// import CardStageContainer from './CardStageContainer';
+// import OutcomeCardContainer from './OutcomeCardContainer';
 
 // eslint-disable-next-line react/prefer-stateless-function
 export default class PatternsContainer extends Component {
@@ -16,11 +19,13 @@ export default class PatternsContainer extends Component {
 
         <h1>Pattern Library</h1>
 
-        <AvatarContainer />
+        <ProgressBar />
+
+        {/* <AvatarContainer />
         <ButtonContainer />
         <CardContainer />
         <CardStageContainer />
-        <OutcomeCardContainer />
+        <OutcomeCardContainer /> */}
 
       </div>
     );

@@ -1,6 +1,7 @@
 import React, {PropTypes, Component} from 'react';
 import look, {StyleSheet} from 'react-look';
 import {FieldArray} from 'redux-form';
+import {textOverflow} from 'universal/styles/helpers';
 import theme from 'universal/styles/theme';
 import Field from 'universal/components/Field/Field';
 import IconButton from 'universal/components/IconButton/IconButton';
@@ -176,13 +177,11 @@ styles = StyleSheet.create({
   },
 
   fieldLabel: {
+    ...textOverflow,
     color: theme.palette.dark,
     fontSize: theme.typography.s4,
     lineHeight: 1.5,
-    overflow: 'hidden',
     padding: '.125rem 1rem .125rem 0',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
     width: '100%'
   },
 

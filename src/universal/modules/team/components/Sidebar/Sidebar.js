@@ -1,15 +1,23 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
+import {textOverflow} from 'universal/styles/helpers';
 import theme from 'universal/styles/theme';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import PlaceholderList from 'universal/modules/meeting/components/PlaceholderList/PlaceholderList';
 import PlaceholderAddLink from 'universal/modules/meeting/components/PlaceholderAddLink/PlaceholderAddLink';
 import PlaceholderInput from 'universal/modules/meeting/components/PlaceholderInput/PlaceholderInput';
 import {cashay} from 'cashay';
-import {phases} from 'universal/utils/constants';
+import {CHECKIN, UPDATES, AGENDA, SUMMARY, phaseArray} from 'universal/utils/constants';
+import makeMeetingUrl from 'universal/utils/makeMeetingUrl';
 
-const {CHECKIN, UPDATES, REQUESTS, SUMMARY} = phases;
 const combineStyles = StyleSheet.combineStyles;
+const labels = {
+  lobby: 'Lobby',
+  checkin: 'Check-In',
+  updates: 'Updates',
+  agenda: 'Agenda',
+  summary: 'Summary',
+};
 
 let s = {};
 
@@ -17,28 +25,21 @@ const Sidebar = (props) => {
   const {
     facilitatorPhase,
     localPhase,
-    shortUrl,
     teamName,
     timerValue,
     teamId
   } = props;
+  const shortUrl = makeMeetingUrl(teamId);
   const facilitatorPhaseItemStyles = combineStyles(s.navListItem, s.navListItemMeetingMarker);
   const activeNavAnchor = combineStyles(s.navListItemLink, s.navListItemLinkActive);
-  const labels = {
-    lobby: 'Lobby',
-    checkin: 'Check-In',
-    updates: 'Updates',
-    requests: 'Requests',
-    summary: 'Summary',
-  };
 
   const checkinLinkStyles = localPhase === CHECKIN ? activeNavAnchor : s.navListItemLink;
   const updatesLinkStyles = localPhase === UPDATES ? activeNavAnchor : s.navListItemLink;
-  const requestsLinkStyles = localPhase === REQUESTS ? activeNavAnchor : s.navListItemLink;
+  const requestsLinkStyles = localPhase === AGENDA ? activeNavAnchor : s.navListItemLink;
 
   const checkinNavItemStyles = facilitatorPhase === CHECKIN ? facilitatorPhaseItemStyles : s.navListItem;
   const updatesNavItemStyles = facilitatorPhase === UPDATES ? facilitatorPhaseItemStyles : s.navListItem;
-  const requestsNavItemStyles = facilitatorPhase === REQUESTS ? facilitatorPhaseItemStyles : s.navListItem;
+  const requestsNavItemStyles = facilitatorPhase === AGENDA ? facilitatorPhaseItemStyles : s.navListItem;
 
   const handleLogoClick = (e) => {
     // TODO remove in production, but great for debugging. Just click the logo & it removes the ephemeral meeting state
@@ -49,7 +50,7 @@ const Sidebar = (props) => {
     <div className={s.sidebar}>
       <div className={s.sidebarHeader}>
         <a className={s.brandLink} onClick={handleLogoClick}>
-          <img className={s.brandLogo} src={actionUIMark} />
+          <img className={s.brandLogo} src={actionUIMark}/>
         </a>
         <div className={s.teamName}>{teamName}</div>
         <a className={s.shortUrl} href="/meetingLayout/lobby">{shortUrl}</a>
@@ -63,7 +64,7 @@ const Sidebar = (props) => {
           <li className={checkinNavItemStyles}>
             <a
               className={checkinLinkStyles}
-              href="/meetingLayout/checkin"
+              href={`/meeting/${teamId}/checkin`}
               title={labels.checkin}
             >
               <span className={s.bullet}>i.</span>
@@ -73,7 +74,7 @@ const Sidebar = (props) => {
           <li className={updatesNavItemStyles}>
             <a
               className={updatesLinkStyles}
-              href="/meetingLayout/updates"
+              href={`/meeting/${teamId}/updates`}
               title={labels.updates}
             >
               <span className={s.bullet}>ii.</span>
@@ -83,18 +84,18 @@ const Sidebar = (props) => {
           <li className={requestsNavItemStyles}>
             <a
               className={requestsLinkStyles}
-              href="/meetingLayout/requests"
-              title={labels.requests}
+              href={`/meeting/${teamId}/agenda`}
+              title={labels.agenda}
             >
               <span className={s.bullet}>iii.</span>
-              <span className={s.label}>{labels.requests}</span>
+              <span className={s.label}>{labels.agenda}</span>
             </a>
           </li>
           {localPhase === SUMMARY &&
             <li className={combineStyles(s.navListItem, s.navListItemLinkActive)}>
               <a
                 className={combineStyles(s.navListItemLink, s.navListItemLinkActive)}
-                href="/meetingLayout/summary"
+                href={`/meeting/${teamId}/summary`}
                 title={labels.summary}
               >
                 <span className={s.bullet}>{' '}</span>
@@ -103,7 +104,6 @@ const Sidebar = (props) => {
             </li>
           }
         </ul>
-        {console.log(`Sidebar: ${localPhase}`)}
         {localPhase !== CHECKIN && localPhase !== SUMMARY &&
           <div>{/* div for JSX */}
             <PlaceholderList />
@@ -117,12 +117,9 @@ const Sidebar = (props) => {
   );
 };
 
-const meetingLocations = Object.keys(phases).map(key => phases[key]);
-
 Sidebar.propTypes = {
-  facilitatorPhase: PropTypes.oneOf(meetingLocations),
-  localPhase: PropTypes.oneOf(meetingLocations),
-  shortUrl: PropTypes.string,
+  facilitatorPhase: PropTypes.oneOf(phaseArray),
+  localPhase: PropTypes.oneOf(phaseArray),
   teamName: PropTypes.string,
   teamId: PropTypes.string,
   timerValue: PropTypes.string
@@ -217,11 +214,13 @@ s = StyleSheet.create({
   },
 
   shortUrl: {
+    ...textOverflow,
     color: theme.palette.dark10d,
     display: 'block',
     fontSize: theme.typography.s2,
     lineHeight: 'normal',
     marginBottom: '.625rem',
+    paddingRight: '.5rem',
     textDecoration: 'none',
 
     ':hover': {

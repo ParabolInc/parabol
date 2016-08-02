@@ -5,11 +5,9 @@ import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import makeStore from './makeStore';
 import Root from './Root';
 
-const {routing} = window.__INITIAL_STATE__; // eslint-disable-line no-underscore-dangle
+// const {routing} = window.__INITIAL_STATE__; // eslint-disable-line no-underscore-dangle
 
-const initialState = {
-  routing
-};
+const initialState = {};
 
 const createCashay = (store, cashaySchema) => {
   const persistedToken = store.getState().authToken;
@@ -50,7 +48,7 @@ const createCashay = (store, cashaySchema) => {
     createCashay(store, cashaySchema);
     // ENABLE THIS FOR EXPLORING FRONT END PERFORMANCE
     // const {whyDidYouUpdate} = require('why-did-you-update');
-    // whyDidYouUpdate(React, {include: /^MeetingContainer/});
+    // whyDidYouUpdate(React);
     render(
       <AppContainer>
         <Root store={store}/>

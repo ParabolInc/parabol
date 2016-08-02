@@ -1,14 +1,12 @@
 import {createStore, applyMiddleware, compose} from 'redux';
 import thunkMiddleware from 'redux-thunk';
-import {routerMiddleware} from 'react-router-redux';
-import {browserHistory} from 'react-router';
 import makeReducer from 'universal/redux/makeReducer';
 import createEngine from 'redux-storage-engine-localstorage';
 import {APP_NAME} from 'universal/utils/clientOptions';
 import {createMiddleware, createLoader} from 'redux-storage-whitelist-fn';
 
 const storageWhitelist = type => {
-  const whitelistPrefixes = ['@@cashay'];
+  const whitelistPrefixes = ['@@authToken', '@@cashay'];
   for (let i = 0; i < whitelistPrefixes.length; i++) {
     const prefix = whitelistPrefixes[i];
     if (type.indexOf(prefix) !== -1) {
@@ -20,7 +18,6 @@ const storageWhitelist = type => {
 export default async initialState => {
   let store;
   const reducer = makeReducer();
-  const reduxRouterMiddleware = routerMiddleware(browserHistory);
   const engine = createEngine(APP_NAME);
   const storageMiddleware = createMiddleware(engine, [], storageWhitelist);
   /*
@@ -30,7 +27,6 @@ export default async initialState => {
   const middlewares = [
     thunkMiddleware,
     storageMiddleware,
-    reduxRouterMiddleware,
   ];
 
   if (__PRODUCTION__) {

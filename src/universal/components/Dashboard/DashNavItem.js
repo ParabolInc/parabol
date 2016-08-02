@@ -1,51 +1,31 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import {push} from 'react-router-redux';
 import theme from 'universal/styles/theme';
+import {Link} from 'react-router';
 
-const combineStyles = StyleSheet.combineStyles;
 let styles = {};
 
 const DashNavItem = (props) => {
-  const activeStyles = combineStyles(styles.link, styles.active);
-  const itemStyles = props.active ? activeStyles : styles.link;
-
-  const onClick = (event) => {
-    const {dispatch, href} = props;
-    event.preventDefault();
-    dispatch(push(href));
-  };
-
+  const {label, href} = props;
   return (
-    <div className={styles.root}>
-      {props.href && !props.active ?
-        <a
-          className={itemStyles}
-          href="#"
-          onClick={(e) => onClick(e)}
-          title={props.label}
-        >
-          {props.label}
-        </a> :
-        <div className={itemStyles}>
-          {props.label}
-        </div>
-      }
-    </div>
+    <Link
+      activeClassName={styles.active}
+      className={styles.link}
+      title={label}
+      to={href}
+    >
+      {label}
+    </Link>
   );
 };
 
 DashNavItem.propTypes = {
-  active: PropTypes.bool,
-  dispatch: PropTypes.func.isRequired,
   href: PropTypes.string,
   label: PropTypes.string.isRequired,
 };
 
 styles = StyleSheet.create({
-  root: {
-    width: '100%'
-  },
+  root: {},
 
   link: {
     backgroundColor: 'transparent',
@@ -55,6 +35,7 @@ styles = StyleSheet.create({
     fontSize: theme.typography.s4,
     padding: '.3125rem .5rem .3125rem 1rem',
     userSelect: 'none',
+    width: '100%',
 
     ':hover': {
       backgroundColor: theme.palette.dark50a,

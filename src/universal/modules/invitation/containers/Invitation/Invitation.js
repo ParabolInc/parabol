@@ -1,11 +1,11 @@
 import React, {Component, PropTypes} from 'react';
-import {push} from 'react-router-redux';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import Auth0ShowLock from 'universal/components/Auth0ShowLock/Auth0ShowLock';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
 import {setWelcomeActivity} from 'universal/modules/userDashboard/ducks/settingsDuck';
+import {withRouter} from 'react-router';
 import {
   error as showError,
   success as showSuccess,
@@ -22,12 +22,15 @@ const mapStateToProps = (state, props) => {
 };
 
 @connect(mapStateToProps)
+@withRouter
 export default class Invitation extends Component {
   static propTypes = {
     authToken: PropTypes.string,
     dispatch: PropTypes.func.isRequired,
     inviteToken: PropTypes.string.isRequired,
-    user: PropTypes.object
+    router: PropTypes.object.isRequired,
+    user: PropTypes.object,
+    withRouter: PropTypes.object
   };
 
   componentDidMount() {
@@ -39,12 +42,12 @@ export default class Invitation extends Component {
   }
 
   stateMachine = (props) => {
-    const {authToken, dispatch, user} = props;
+    const {authToken, user, router} = props;
 
     if (authToken) {
       if (user && user.isNew === false) {
         // If user already has an account, let them accept the new team via the UI:
-        dispatch(push('/me'));
+        router.push('/me');
       } else if (user && user.isNew === true) {
         // If the user is new let's process their invite:
         this.processInvitation();
@@ -53,7 +56,7 @@ export default class Invitation extends Component {
   }
 
   processInvitation = () => {
-    const {dispatch, inviteToken} = this.props;
+    const {dispatch, inviteToken, router} = this.props;
     const options = {
       variables: {
         inviteToken
@@ -75,7 +78,7 @@ export default class Invitation extends Component {
             },
             autoDismiss: 0
           }));
-          dispatch(push('/settings/me'));
+          router.push('/settings/me');
           return;
         } else if (error.subtype === 'invalidToken') {
           dispatch(showError({
@@ -105,7 +108,7 @@ export default class Invitation extends Component {
           console.warn(error);
         }
         // TODO: pop them a toast and tell them what happened?
-        dispatch(push('/welcome'));
+        router.push('/welcome');
       } else if (data) {
         const {id} = data.acceptInvitation.team;
         dispatch(setWelcomeActivity(`/team/${id}`));
@@ -115,7 +118,7 @@ export default class Invitation extends Component {
             Welcome to Action. Let's get you set up.
           `
         }));
-        dispatch(push('/me/settings'));
+        router.push('/me/settings');
       }
     }).catch(console.warn.bind(console));
   };

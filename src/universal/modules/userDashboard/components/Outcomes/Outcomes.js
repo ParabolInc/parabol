@@ -9,14 +9,14 @@ import {
 import ProjectStatusMenu from 'universal/components/ProjectStatusMenu/ProjectStatusMenu';
 
 const Outcomes = (props) => {
-  const {name, nickname} = props.user;
+  const {preferredName} = props;
   return (
     <DashMain>
       <DashHeader title="My Outcomes">
         {dashTimestamp} • Carpe diem!
       </DashHeader>
       <DashContent>
-        It’s the Me show! starring: <b>{name}</b>, AKA <b>{nickname}</b>
+        It’s the Me show! starring: <b>{preferredName}</b>
         <br />
         <br />
         ProjectStatusMenu
@@ -30,10 +30,7 @@ const Outcomes = (props) => {
 };
 
 Outcomes.propTypes = {
-  user: PropTypes.shape({
-    name: PropTypes.string,
-    nickname: PropTypes.string,
-  })
+  preferredName: PropTypes.string
 };
 
 export default Outcomes;

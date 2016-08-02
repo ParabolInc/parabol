@@ -3,127 +3,129 @@ import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import subscriber from 'universal/subscriptions/subscriber';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
-
+import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
-import MeetingCheckinLayout from 'universal/modules/meeting/components/MeetingCheckinLayout/MeetingCheckinLayout';
-import MeetingLobbyLayout from 'universal/modules/meeting/components/MeetingLobbyLayout/MeetingLobbyLayout';
-import MeetingUpdatesLayout from 'universal/modules/meeting/components/MeetingUpdatesLayout/MeetingUpdatesLayout';
+import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import Sidebar from 'universal/modules/team/components/Sidebar/Sidebar';
-import {phases} from 'universal/utils/constants';
-
+import {withRouter} from 'react-router';
+import {createMembers} from 'universal/modules/meeting/ducks/meetingDuck';
+import getLocalPhase from 'universal/modules/meeting/helpers/getLocalPhase';
+import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
+import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
+import LoadingView from 'universal/components/LoadingView/LoadingView';
+import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import {
   teamSubString,
   teamMembersSubString,
 } from './cashayHelpers';
-
-const {LOBBY, CHECKIN, UPDATES} = phases;
-/**
- * MeetingContainer
- *
- * We make action meetings happen.
- *
- * At it's most fundamental, you can think of many of the phases of an
- * action meeting as set of list transformations:
- *
- * Check-In:
- *   [team member, ...] -> [check-in status, ...]
- * Project Updates:
- *   [team member, ...] -> [updated project, ...]
- * Agenda processing:
- *   [agenda item, ...] -> [new project/action, ...]
- *
- */
-
-const createParticipants = (teamMembers, presence, user) => {
-  return teamMembers.map((member) => {
-    return {
-      ...member,
-      isConnected: Boolean(presence.find(connection => connection.userId === member.userId)),
-      isSelf: user.id === member.userId
-    };
-  });
-};
 
 const mapStateToProps = (state, props) => {
   const variables = {teamId: props.params.teamId};
   return {
     teamSub: cashay.subscribe(teamSubString, subscriber, {component: 'Meeting::teamSub', variables}),
     memberSub: cashay.subscribe(teamMembersSubString, subscriber, {component: 'Meeting::memberSub', variables}),
+    members: state.meeting.members
   };
 };
 
 @socketWithPresence
 @connect(mapStateToProps)
+@withRouter
 export default class MeetingContainer extends Component {
   static propTypes = {
+    children: PropTypes.any,
     dispatch: PropTypes.func.isRequired,
-    teamSub: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    members: PropTypes.array,
+    memberSub: PropTypes.object.isRequired,
     params: PropTypes.shape({
+      localPhaseItem: PropTypes.string,
       teamId: PropTypes.string.isRequired
     }).isRequired,
     presenceSub: PropTypes.object.isRequired,
-    memberSub: PropTypes.object.isRequired,
+    router: PropTypes.object,
+    teamSub: PropTypes.object.isRequired,
+    user: PropTypes.shape({
+      id: PropTypes.string.isRequired
+    }).isRequired
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      members: [],
-      shortUrl: typeof window !== 'undefined' && window.location.href
-    };
-  }
-
   componentWillReceiveProps(nextProps) {
-    const {teamMembers} = nextProps.memberSub.data;
     const {presence} = nextProps.presenceSub.data;
-    this.setState({
-      members: createParticipants(teamMembers, presence, nextProps.user)
-    });
+    const {team} = nextProps.teamSub.data;
+    const {teamMembers} = nextProps.memberSub.data;
+    const {children, dispatch, user, router, params: {localPhaseItem}, location: {pathname}} = nextProps;
+    const oldTeam = this.props.teamSub.data.team;
+
+    // only needs to run when the url changes or the team subscription initializes
+    // make sure the url is legit, but only run once (when the initial team subscription comes back)
+    handleRedirects(team, children, localPhaseItem, pathname, router);
+
+    if (presence !== this.props.presenceSub.data.presence ||
+      teamMembers !== this.props.memberSub.data.teamMembers ||
+      team.activeFacilitator !== oldTeam.activeFacilitator ||
+      user.id !== this.props.user.id) {
+      // build the members array by aggregating everything
+      dispatch(createMembers(teamMembers, presence, team, user));
+    }
+
+    // is the facilitator making moves?
+    if (team.facilitatorPhaseItem !== oldTeam.facilitatorPhaseItem ||
+      team.facilitatorPhase !== oldTeam.facilitatorPhase) {
+      const {teamId, localPhaseItem: oldLocalPhaseItem} = this.props.params;
+      const oldLocalPhase = getLocalPhase(pathname, teamId);
+      // were we n'sync?
+      const inSync = oldLocalPhase === oldTeam.facilitatorPhase && oldLocalPhaseItem === oldTeam.facilitatorPhaseItem;
+      if (inSync) {
+        const pushURL = makePushURL(teamId, team.facilitatorPhase, team.facilitatorPhaseItem);
+        router.push(pushURL);
+      }
+    }
   }
 
   render() {
-    const {shortUrl, members} = this.state;
-    const {teamSub, params} = this.props;
-    const {teamId, phase, phaseItem} = params;
+    const {children, dispatch, location, members, params, teamSub} = this.props;
+    const {teamId, localPhaseItem} = params;
     const {team} = teamSub.data;
-    const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem, name: teamName} = team;
-    // use the phase from the url, next the phase from the facilitator, next goto lobby (meeting hasn't started)
-    const safeFacilitatorPhase = facilitatorPhase || LOBBY;
-    const localPhase = phase || safeFacilitatorPhase;
+    const {
+      activeFacilitator, facilitatorPhase, facilitatorPhaseItem,
+      meetingPhase, meetingPhaseItem, name: teamName
+    } = team;
 
-    // a phase item isn't necessarily an integer, so there's no default value
-    const localPhaseItem = phaseItem || facilitatorPhaseItem;
+    // if we have a team.name, we have an initial subscription success to the team object
+    if (!teamName || !members.length) {
+      return <LoadingView />;
+    }
+    // debugger
+    const localPhase = getLocalPhase(location.pathname, teamId);
+    // declare if this user is the facilitator
+
+    const self = members.find(m => m.isSelf);
+    const isFacilitator = self && self.id === activeFacilitator;
     return (
       <MeetingLayout>
         <Sidebar
-          facilitatorPhase={safeFacilitatorPhase}
+          facilitatorPhase={facilitatorPhase}
           localPhase={localPhase}
-          shortUrl={shortUrl}
           teamName={teamName}
-          teamId={team.id}
+          teamId={teamId}
         />
-        {localPhase === LOBBY &&
-          <MeetingLobbyLayout
-            members={members}
-            shortUrl={shortUrl}
-            teamName={teamName}
-            teamId={teamId}
-          />
-        }
-        {localPhase === CHECKIN &&
-          <MeetingCheckinLayout
-            members={members}
-            team={team}
-            localPhaseItem={localPhaseItem}
-            meetingPhase={meetingPhase}
-            meetingPhaseItem={meetingPhaseItem}
-          />
-        }
-        {localPhase === UPDATES &&
-          <MeetingUpdatesLayout
-            members={members}
-          />
-        }
+        <MeetingMain>
+          <MeetingSection paddingTop="2rem">
+            <AvatarGroup avatars={members} localPhase={localPhase}/>
+          </MeetingSection>
+          {children && React.cloneElement(children, {
+            dispatch,
+            isFacilitator,
+            localPhaseItem,
+            facilitatorPhase,
+            facilitatorPhaseItem,
+            meetingPhase,
+            meetingPhaseItem,
+            members,
+            teamName
+          })}
+        </MeetingMain>
       </MeetingLayout>
     );
   }

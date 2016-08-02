@@ -3,48 +3,72 @@ import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import PushButton from 'universal/components/PushButton/PushButton';
+import {withRouter} from 'react-router';
+import withHotkey from 'react-hotkey-hoc';
+import voidClick from 'universal/utils/voidClick';
 
 const combineStyles = StyleSheet.combineStyles;
 
 let styles = {};
 
-const CardButtons = () => {
+const CardButtons = withHotkey((props) => {
+  const {bindHotkey, checkinPressFactory, isCheckedIn} = props;
+  const handleOnClickPresent = isCheckedIn ? voidClick : checkinPressFactory(true);
+  const handleOnClickAbsent = isCheckedIn !== false ? checkinPressFactory(false) : voidClick;
+  bindHotkey('c', handleOnClickPresent);
+  bindHotkey('x', handleOnClickAbsent);
   return (
     <div className={styles.buttonsBlock}>
-      <PushButton keystroke="c" label="ok, let’s do this!" size="large" />
-      <PushButton keystroke="x" label="can’t make this one" size="large" />
+      <PushButton
+        handleOnClick={handleOnClickPresent}
+        isPressed={isCheckedIn === true}
+        keystroke="c"
+        label="ok, let’s do this!"
+        size="large"
+      />
+      <PushButton
+        handleOnClick={handleOnClickAbsent}
+        isPressed={isCheckedIn === false}
+        keystroke="x"
+        label="can’t make this one"
+        size="large"
+      />
     </div>
   );
+});
+
+CardButtons.propTypes = {
+  checkinPressFactory: PropTypes.func.isRequired,
+  isCheckedIn: PropTypes.bool,
 };
 
 const Card = (props) => {
-  const {active, avatar} = props;
-
+  const {handleCardClick, isActive, checkinPressFactory, member} = props;
+  const {isCheckedIn, preferredName} = member;
   const cardActiveStyles = combineStyles(styles.card, styles.cardIsActive);
   const cardBlurredStyles = combineStyles(styles.card, styles.cardIsBlurred);
-  const cardStyles = active ? cardActiveStyles : cardBlurredStyles;
+  const cardStyles = isActive ? cardActiveStyles : cardBlurredStyles;
   const nameActiveStyles = combineStyles(styles.cardName, styles.cardNameActive);
-  const nameStyles = active ? nameActiveStyles : styles.cardName;
+  const nameStyles = isActive ? nameActiveStyles : styles.cardName;
   let labelStyles = styles.cardLabel;
-
-  if (avatar.isCheckedIn) {
+  if (isCheckedIn) {
     labelStyles = combineStyles(styles.cardLabel, styles.cardLabelPresent);
   }
   return (
-    <div className={cardStyles}>
-      <Avatar {...avatar} size="largest"/>
-      <div className={nameStyles}>{avatar.preferredName}</div>
+    <div className={cardStyles} onClick={!isActive && handleCardClick}>
+      <Avatar {...member} size="largest"/>
+      <div className={nameStyles}>{preferredName}</div>
       <div className={labelStyles}>Checking in...</div>
-      {active && <CardButtons/>}
+      {isActive && <CardButtons checkinPressFactory={checkinPressFactory} isCheckedIn={isCheckedIn}/>}
     </div>
   );
 };
 
 Card.propTypes = {
-  active: PropTypes.bool,
-  avatar: PropTypes.object, // avatar.preferredName, avatar.picture, avatar.badge
-  hasControls: PropTypes.bool,
-  label: PropTypes.string
+  checkinPressFactory: PropTypes.func,
+  handleCardClick: PropTypes.func,
+  isActive: PropTypes.bool,
+  member: PropTypes.object
 };
 
 styles = StyleSheet.create({
@@ -96,4 +120,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default look(Card);
+export default withRouter(look(Card));

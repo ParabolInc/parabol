@@ -50,7 +50,7 @@ const LoadingDuck = (props) =>
   />;
 
 LoadingDuck.propTypes = {
-  className: PropTypes.object.isRequired,
+  className: PropTypes.string.isRequired,
 };
 
 const LoadingView = () => {
@@ -59,7 +59,8 @@ const LoadingView = () => {
   return (
     <div className={styles.root}>
       <h1 className={styles.heading}>Welcome to Action!</h1>
-      {duckStyles.map(className => <LoadingDuck className={className}/>)}
+      {duckStyles.map((className, idx) =>
+        <LoadingDuck className={className} key={idx}/>)}
       <h2 className={styles.message}>Just putting our ducks in a row…</h2>
     </div>
   );

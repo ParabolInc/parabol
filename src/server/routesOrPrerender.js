@@ -1,5 +1,4 @@
 import {Presets, Plugins, StyleSheet} from 'react-look';
-import {push} from 'react-router-redux';
 import {renderToStaticMarkup} from 'react-dom/server';
 import routes from 'universal/routes/index';
 import Html from './Html';
@@ -12,8 +11,6 @@ const PROD = process.env.NODE_ENV === 'production';
 export default option => {
   if (option === 'routes') return routes;
   return function renderApp(req, res, store, entries = {}, renderProps) {
-    const location = renderProps && renderProps.location && renderProps.location.pathname || '/';
-    store.dispatch(push(location));
     const lookConfig = Presets['react-dom'];
     lookConfig.userAgent = req.headers['user-agent'];
     if (PROD) {

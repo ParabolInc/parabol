@@ -34,22 +34,17 @@ const queryOptions = {
 const mapStateToProps = () => ({membershipQuery: cashay.query(getMemberships, queryOptions)});
 
 const DashNavListContainer = (props) => {
-  const {active, activeTeamId, dispatch, membershipQuery} = props;
-  const teams = membershipQuery.data.currentUser.memberships.map(m => {
+  const teams = props.membershipQuery.data.currentUser.memberships.map(m => {
     const {id, name} = m.team;
     return {
-      active: active && id === activeTeamId,
       href: `/team/${id}`,
       label: name
     };
   });
-  return <DashNavList teams={teams} dispatch={dispatch}/>;
+  return <DashNavList teams={teams}/>;
 };
 
 DashNavListContainer.propTypes = {
-  active: PropTypes.bool.isRequired,
-  activeTeamId: PropTypes.string,
-  dispatch: PropTypes.func,
   membershipQuery: PropTypes.object
 };
 

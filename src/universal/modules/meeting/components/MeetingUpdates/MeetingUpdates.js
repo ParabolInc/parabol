@@ -2,7 +2,6 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 
 import Avatar from 'universal/components/Avatar/Avatar';
-import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
 import Columns from 'universal/components/Columns/Columns';
 import IconLink from 'universal/components/IconLink/IconLink';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
@@ -22,13 +21,6 @@ const MeetingUpdatesLayout = (props) => {
 
   return (
     <MeetingMain>
-      {/* */}
-      <MeetingSection paddingBottom="2rem" paddingTop="2rem">
-        <div className={s.avatars}>
-          <AvatarGroup avatars={members} label="Updates given:" />
-        </div>
-      </MeetingSection>
-      {/* */}
       {/* */}
       <MeetingSection flexToFill paddingBottom="2rem">
         {/* */}

@@ -1,5 +1,5 @@
-const SET_AUTH_TOKEN = 'notifications/SET_AUTH_TOKEN';
-const REMOVE_AUTH_TOKEN = 'notifications/REMOVE_AUTH_TOKEN';
+const SET_AUTH_TOKEN = '@@authToken/SET_AUTH_TOKEN';
+const REMOVE_AUTH_TOKEN = '@@authToken/REMOVE_AUTH_TOKEN';
 
 const initialState = null;
 

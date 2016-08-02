@@ -13,7 +13,7 @@ export default function subscriber(subscriptionString, variables, handlers) {
     } else if (data.type === 'remove') {
       remove(data.id);
     } else {
-      update(data.fields, data.removeKeys);
+      update(data.fields, {path: data.path, removeKeys: data.removeKeys});
     }
   });
   socket.on('unsubscribe', unsubChannel => {

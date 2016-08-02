@@ -2,16 +2,40 @@ import r from 'server/database/rethinkDriver';
 import {TeamMember} from './teamMemberSchema';
 import {
   GraphQLNonNull,
-  GraphQLID
+  GraphQLID,
+  GraphQLBoolean
 } from 'graphql';
 import {errorObj} from '../utils';
-import {getUserId} from '../authorization';
+import {getUserId, requireWebsocket, requireSUOrTeamMember} from '../authorization';
 import shortid from 'shortid';
 import acceptInviteDB from './helpers';
 import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
 
 
 export default {
+  checkin: {
+    type: GraphQLBoolean,
+    description: 'Check a member in as present or absent',
+    args: {
+      teamMemberId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The teamMemberId of the person who is being checked in'
+      },
+      teamId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The teamId to make sure the socket calling has permission'
+      },
+      isCheckedIn: {
+        type: GraphQLBoolean,
+        description: 'true if the member is present, false if absent, null if undecided'
+      }
+    },
+    async resolve(source, {teamId, teamMemberId, isCheckedIn}, {authToken, socket}) {
+      await requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
+      await r.table('TeamMember').get(teamMemberId).update({isCheckedIn});
+    }
+  },
   acceptInvitation: {
     type: TeamMember,
     description: `Add a user to a Team given an invitationToken.
@@ -39,8 +63,9 @@ export default {
         });
       }
 
+      const {tokenExpiration, hashedToken, teamId, email} = invitation;
       // see if the invitation has expired
-      if (invitation.tokenExpiration < now) {
+      if (tokenExpiration < now) {
         throw errorObj({
           _error: 'invitation has expired',
           type: 'acceptInvitation',
@@ -49,7 +74,7 @@ export default {
       }
 
       // see if the invitation hash is valid
-      const isCorrectToken = await validateInviteTokenKey(tokenKey, invitation.hashedToken);
+      const isCorrectToken = await validateInviteTokenKey(tokenKey, hashedToken);
       if (!isCorrectToken) {
         throw errorObj({
           _error: 'invalid invitation token',
@@ -64,7 +89,7 @@ export default {
       // Check if TeamMember already exists (i.e. user invited themselves):
       const teamMemberExists = await r.table('TeamMember')
         .getAll(userId, {index: 'userId'})
-        .filter({teamId: invitation.teamId})
+        .filter({teamId})
         .isEmpty()
         .not();
       if (teamMemberExists) {
@@ -74,16 +99,20 @@ export default {
           subtype: 'alreadyJoined'
         });
       }
+
+      const usersOnTeam = await r.table('TeamMember').getAll(teamId, {index: 'teamId'}).count();
+
       // add user to TeamMembers
       const newTeamMember = {
+        checkInOrder: usersOnTeam + 1,
         id: shortid.generate(),
-        teamId: invitation.teamId,
+        teamId,
         userId,
         isActive: true,
         isLead: false,
         isFacilitator: false,
         picture: user.picture,
-        preferredName: user.preferredName
+        preferredName: user.preferredName,
       };
       await r.table('TeamMember').insert(newTeamMember);
 
@@ -93,10 +122,10 @@ export default {
        */
 
       // mark invitation as accepted
-      await acceptInviteDB(invitation.email, now);
+      await acceptInviteDB(email, now);
 
       // if user created an account with a different email, flag those oustanding invites, too
-      if (user.email !== invitation.email) {
+      if (user.email !== email) {
         await acceptInviteDB(user.email, now);
       }
       return newTeamMember;

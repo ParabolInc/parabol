@@ -5,13 +5,10 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 import theme from 'universal/styles/theme';
 import {cashay} from 'cashay';
 import voidClick from 'universal/utils/voidClick';
-
-import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
+import makeMeetingUrl from 'universal/utils/makeMeetingUrl';
 import Button from 'universal/components/Button/Button';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-
-// TODO: Reorganize under new folder: /meeting/components/MeetingLayouts (TA)
 
 let s = {};
 
@@ -32,15 +29,14 @@ const createStartMeetingHandler = (members, teamId) => {
   };
 };
 
-const MeetingLobbyLayout = (props) => {
-  const {shortUrl, teamName, members, teamId} = props;
+const MeetingLobby = (props) => {
+  const {members, params, teamName} = props;
+  const {teamId} = params;
+
   const onStartMeetingClick = createStartMeetingHandler(members, teamId);
+  const shortUrl = makeMeetingUrl(teamId);
   return (
     <MeetingMain>
-      {/* */}
-      <MeetingSection paddingBottom="2rem" paddingTop="2rem">
-        <AvatarGroup avatars={members} label="Team:" />
-      </MeetingSection>
       {/* */}
       <MeetingSection flexToFill paddingBottom="2rem">
         {/* */}
@@ -48,7 +44,7 @@ const MeetingLobbyLayout = (props) => {
           <h1 className={s.heading}>Hi, {teamName} Team!</h1>
           <p className={s.label}>Tap to copy and share this meeting:</p>
           {/* */}
-{/* TODO: prevent navigation and show a “Copied!” message inline or toast */}
+          {/* TODO: prevent navigation and show a “Copied!” message inline or toast */}
           {/* */}
           <CopyToClipboard text={shortUrl}>
             <a
@@ -59,7 +55,7 @@ const MeetingLobbyLayout = (props) => {
             >
               <span className={s.linkText}>{shortUrl}</span>
               <span className={s.icon}>
-                <FontAwesome name="copy" style={faStyle} />
+                <FontAwesome name="copy" style={faStyle}/>
               </span>
             </a>
           </CopyToClipboard>
@@ -79,11 +75,13 @@ const MeetingLobbyLayout = (props) => {
   );
 };
 
-MeetingLobbyLayout.propTypes = {
-  shortUrl: PropTypes.string,
+MeetingLobby.propTypes = {
+  members: PropTypes.array,
+  params: PropTypes.shape({
+    teamId: PropTypes.string
+  }),
   teamId: PropTypes.string,
   teamName: PropTypes.string,
-  members: PropTypes.array
 };
 
 s = StyleSheet.create({
@@ -141,4 +139,4 @@ s = StyleSheet.create({
   }
 });
 
-export default look(MeetingLobbyLayout);
+export default look(MeetingLobby);

@@ -5,21 +5,21 @@ import tinycolor from 'tinycolor2';
 import FontAwesome from 'react-fontawesome';
 import DashNavListContainer from 'universal/containers/DashNavList/DashNavListContainer';
 import DashNavItem from './DashNavItem';
-import UserHubContainer from 'universal/containers/UserHub/UserHubContainer';
+import SettingsHub from 'universal/components/SettingsHub/SettingsHub';
+import StandardHubContainer from 'universal/containers/StandardHub/StandardHubContainer';
 
 const textColor = tinycolor.mix(theme.palette.mid10l, '#fff', 50).toHexString();
 let styles = {};
 
 const DashSidebar = (props) => {
-  const {activeArea, activeTeamId, dispatch} = props;
+  const {activeArea} = props;
+  const isSettings = activeArea === 'settings';
   return (
     <div className={styles.root}>
-      <UserHubContainer activeArea={activeArea} />
+      {isSettings ? <SettingsHub/> : <StandardHubContainer/>}
       <nav className={styles.nav}>
         <div className={styles.singleNavItem}>
           <DashNavItem
-            active={activeArea === 'outcomes'}
-            dispatch={dispatch}
             href="/me"
             label="My Outcomes"
           />
@@ -27,7 +27,7 @@ const DashSidebar = (props) => {
         <div className={styles.navLabel}>
           Teams
         </div>
-        <DashNavListContainer active={activeArea === 'team'} activeTeamId={activeTeamId} />
+        <DashNavListContainer/>
         <div className={styles.addTeam} title="Add New Team">
           <div className={styles.addTeamIcon}>
             <FontAwesome name="plus-square" />
@@ -47,12 +47,6 @@ DashSidebar.propTypes = {
     'settings',
     'team'
   ]).isRequired,
-  activeTeamId: PropTypes.string,
-  dispatch: PropTypes.func.isRequired,
-  user: PropTypes.shape({
-    name: PropTypes.string,
-    preferredName: PropTypes.string,
-  }).isRequired
 };
 
 styles = StyleSheet.create({

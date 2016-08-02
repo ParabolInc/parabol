@@ -4,16 +4,72 @@ import {updatedOrOriginal, errorObj} from '../utils';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
-  GraphQLID
+  GraphQLID,
+  GraphQLString
 } from 'graphql';
 import {CreateTeamInput, UpdateTeamInput, Team} from './teamSchema';
 import shuffle from 'universal/utils/shuffle';
 import shortid from 'shortid';
-import {phases} from 'universal/utils/constants';
-
-const {CHECKIN} = phases;
+import {CHECKIN, LOBBY, UPDATES, AGENDA} from 'universal/utils/constants';
 
 export default {
+  moveMeeting: {
+    type: GraphQLBoolean,
+    description: 'Update the facilitator. If this is new territory for the meetingPhaseItem, advance that, too.',
+    args: {
+      teamId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The teamId to make sure the socket calling has permission'
+      },
+      nextPhase: {
+        // http://stackoverflow.com/questions/37620012/passing-graphql-enumerated-value-type-as-argument-to-function
+        type: GraphQLString,
+        description: 'The desired phase for the meeting'
+      },
+      nextPhaseItem: {
+        type: GraphQLString,
+        description: 'The item within the phase to set the meeting to'
+      }
+    },
+    async resolve(source, {teamId, nextPhase, nextPhaseItem = '0'}, {authToken, socket}) {
+      requireWebsocket(socket);
+      const dbHits = [
+        requireSUOrTeamMember(authToken, teamId),
+        r.table('Team').get(teamId)
+      ];
+      const [teamMember, team] = await Promise.all(dbHits);
+      const {activeFacilitator, facilitatorPhase, meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = team;
+      if (activeFacilitator !== teamMember.id) {
+        throw errorObj({_error: 'Only the facilitator can advance the meeting'});
+      }
+      const isSynced = facilitatorPhase === meetingPhase && facilitatorPhaseItem === meetingPhaseItem;
+      let incrementsProgress;
+      if (meetingPhase !== nextPhase) {
+        incrementsProgress = true;
+      } else if (nextPhase === CHECKIN || nextPhase === UPDATES) {
+        incrementsProgress = Number(nextPhaseItem) - Number(meetingPhaseItem) === 1;
+      } else if (nextPhase === AGENDA) {
+        // TODO
+        // incrementsProgress =
+      }
+      const moveMeeting = isSynced && incrementsProgress;
+
+      const updatedState = {
+        facilitatorPhaseItem: nextPhaseItem,
+      };
+      if (moveMeeting) {
+        updatedState.meetingPhaseItem = nextPhaseItem;
+      }
+      if (nextPhase) {
+        updatedState.facilitatorPhase = nextPhase;
+        if (moveMeeting) {
+          updatedState.meetingPhase = nextPhase;
+        }
+      }
+      await r.table('Team').get(teamId).update(updatedState);
+      return true;
+    }
+  },
   startMeeting: {
     type: GraphQLBoolean,
     description: 'Start a meeting from the lobby',
@@ -41,9 +97,9 @@ export default {
         meetingId: shortid.generate(),
         activeFacilitator: facilitatorId,
         facilitatorPhase: CHECKIN,
-        facilitatorPhaseItem: 0,
+        facilitatorPhaseItem: '0',
         meetingPhase: CHECKIN,
-        meetingPhaseItem: 0
+        meetingPhaseItem: '0'
       };
       const dbPromises = teamMembers.map((member, idx) => {
         return r.table('TeamMember').get(member.id).update({
@@ -68,46 +124,13 @@ export default {
     async resolve(source, {teamId}, {authToken, socket}) {
       await requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
-      const ephemeralFields = [
-        'meetingId',
-        'activeFacilitator',
-        'facilitatorPhase',
-        'facilitatorPhaseItem',
-        'meetingPhase',
-        'meetingPhaseItem'
-      ];
-      await r.table('Team').get(teamId).replace(r.row.without(ephemeralFields));
-      return true;
-    }
-  },
-  checkinMember: {
-    type: GraphQLBoolean,
-    description: 'Check a member in as present or absent',
-    args: {
-      teamId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The team that will be having the meeting'
-      },
-      teamMemberId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The teamMemberId of the person who is being checked in'
-      },
-      isPresent: {
-        type: new GraphQLNonNull(GraphQLBoolean),
-        description: 'true if the member is present'
-      }
-    },
-    async resolve(source, {teamId, teamMemberId, isPresent}, {authToken, socket}) {
-      await requireSUOrTeamMember(authToken, teamId);
-      requireWebsocket(socket);
-      const currentTeam = await r.table('Team').get(teamId);
-      const {meetingPhaseItem, facilitatorPhaseItem} = currentTeam;
-      const nextPhaseItem = meetingPhaseItem + meetingPhaseItem === facilitatorPhaseItem ? 1 : 0;
-
       await r.table('Team').get(teamId).update({
-        checkedInMembers: 0,
-        facilitatorPhaseItem: nextPhaseItem,
-        meetingPhaseItem: nextPhaseItem
+        facilitatorPhase: LOBBY,
+        meetingPhase: LOBBY,
+        meetingId: null,
+        facilitatorPhaseItem: null,
+        meetingPhaseItem: null,
+        activeFacilitator: null
       });
       return true;
     }
@@ -127,10 +150,22 @@ export default {
       const userId = leader.userId;
       requireSUOrSelf(authToken, userId);
       // can't trust the client
-      const verifiedLeader = {...leader, isActive: true, isLead: true, isFacilitator: true};
-      await r.table('TeamMember').insert(verifiedLeader);
-      await r.table('Team').insert(team);
-      await r.table('User').get(userId).update({isNew: false});
+      const verifiedLeader = {...leader, isActive: true, isLead: true, isFacilitator: true, checkInOrder: 0};
+      const verifiedTeam = {
+        ...team,
+        facilitatorPhase: LOBBY,
+        meetingPhase: LOBBY,
+        meetingId: null,
+        facilitatorPhaseItem: null,
+        meetingPhaseItem: null,
+        activeFacilitator: null
+      };
+      const dbPromises = [
+        r.table('TeamMember').insert(verifiedLeader),
+        r.table('Team').insert(verifiedTeam),
+        r.table('User').get(userId).update({isNew: false})
+      ];
+      await Promise.all(dbPromises);
       // TODO: trigger welcome email
       return true;
     }

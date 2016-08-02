@@ -8,8 +8,10 @@ const combineStyles = StyleSheet.combineStyles;
 
 let s = {};
 
+const boxShadowDefault = '0 0 1px 1px rgba(0, 0, 0, .2)';
+const boxShadowWarm = `0 0 1px 1px ${theme.palette.warm}`;
+
 const renderBadge = (isCheckedIn, isConnected, size) => {
-  if (!isCheckedIn && !isConnected) return null;
   const connection = isConnected ? 'online' : 'offline';
   const checkin = isCheckedIn ? 'present' : 'absent';
   const iconStyles = combineStyles(
@@ -166,6 +168,7 @@ s = StyleSheet.create({
   },
 
   avatarImageDisplay: {
+    borderRadius: '100%',
     display: 'block'
   },
 
@@ -201,7 +204,7 @@ s = StyleSheet.create({
 
   avatarImage: {
     borderRadius: '100%',
-    boxShadow: '0 0 1px 1px rgba(0, 0, 0, .2)',
+    boxShadow: (props) => (props.hasBorder ? boxShadowWarm : boxShadowDefault),
     display: 'block',
     height: 'auto',
     width: '100%'

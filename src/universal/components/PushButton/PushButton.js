@@ -7,13 +7,20 @@ const combineStyles = StyleSheet.combineStyles;
 let styles = {};
 
 const PushButton = (props) => {
-  const { disabled, keystroke, label, onClick, size } = props;
-  const largeStyles = combineStyles(styles.button, styles.buttonLarge);
-  const buttonStyles = size === 'large' ? largeStyles : styles.button;
+  // TODO replace focus CSS with isPushed
+  const {disabled, keystroke, label, handleOnClick, size, isPressed} = props;
+  const buttonStylesArr = [styles.button];
+  if (isPressed) {
+    buttonStylesArr.push(styles.isPressed);
+  }
+  if (size === 'large') {
+    buttonStylesArr.push(styles.buttonLarge);
+  }
+  const buttonStyles = combineStyles(...buttonStylesArr);
 
   return (
     <div className={styles.block}>
-      <button disabled={disabled} className={buttonStyles} onClick={onClick}>
+      <button disabled={disabled} className={buttonStyles} onClick={!isPressed && handleOnClick}>
         {keystroke}
       </button>
       <div className={styles.label}>{label}</div>
@@ -23,9 +30,10 @@ const PushButton = (props) => {
 
 PushButton.propTypes = {
   disabled: PropTypes.bool,
+  handleOnClick: PropTypes.func,
+  isPressed: PropTypes.bool,
   keystroke: PropTypes.string,
   label: PropTypes.any,
-  onClick: PropTypes.func,
   size: PropTypes.oneOf([
     'default',
     'large'
@@ -68,15 +76,13 @@ styles = StyleSheet.create({
     textShadow: '0 1px 0 #fff',
     verticalAlign: 'middle',
     width: '1.5rem',
-
-    ':focus': {
-      backgroundColor: '#dcdbdf',
-      borderBottom: '0',
-      borderTop: '2px solid #a4a7b9',
-      outline: 'none'
-    }
   },
-
+  isPressed: {
+    backgroundColor: '#dcdbdf',
+    borderBottom: '0',
+    borderTop: '2px solid #a4a7b9',
+    outline: 'none'
+  },
   buttonLarge: {
     fontSize: theme.typography.s4,
     padding: '.375rem',
