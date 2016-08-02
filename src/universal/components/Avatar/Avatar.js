@@ -166,7 +166,7 @@ s = StyleSheet.create({
   avatarLargest: {
     fontSize: theme.typography.s6
   },
-  // TODO terry help me make this not look ugly
+
   avatarImageDisplay: {
     borderRadius: '100%',
     display: 'block'
