@@ -4,12 +4,15 @@ import t from 'universal/styles/theme';
 import {srOnly} from 'universal/styles/helpers';
 
 let s = {};
-
 const combineStyles = StyleSheet.combineStyles;
 
-const barHeight = '.375rem';
+const barHeight = 6;
 const pointHeight = barHeight;
-const pointWidth = '.5rem';
+const pointWidth = 8;
+const avatarWidth = 44; // 'small' Avatar size
+const avatarGutter = 24; // see AvatarGroup
+const outerPadding = (avatarWidth - pointWidth) / 2;
+const blockWidth = avatarWidth + avatarGutter;
 
 const ProgressBar = (props) => {
   const {
@@ -19,29 +22,25 @@ const ProgressBar = (props) => {
     teamCount
   } = props;
 
-  // NOTE: All sizing based on:
-  //       • Avatar width = 44px
-  //       • Point width = 8px
-  //       • Gutter between avatars = 24px
-  // TODO: Make sizing more flexible in the future (TA)
+  const {facilitator, local, meeting} = locations;
 
-  const barWidth = `${locations.meeting > 0 ? (locations.meeting * 68) - 42 : 0}px`;
-  const barStyle = isComplete ? {width: '100%'} : {width: barWidth};
+  const barWidth = meeting > 0 ? (meeting * blockWidth) - (blockWidth - pointWidth - outerPadding) : 0;
+  const barStyle = isComplete ? {width: '100%'} : {width: `${barWidth}px`};
 
   const renderPoint = (index) => {
     let pointStyles;
-    const pointStyleOptions = [s.point];
+    const pointStyleVariant = [s.point];
 
     let marginRight = {
-      marginRight: '3.75rem'
+      marginRight: `${blockWidth - pointWidth}px`
     };
 
-    if (index === locations.facilitator - 1) {
-      pointStyleOptions.push(s.pointFacilitator);
-    } else if (index === locations.local - 1) {
-      pointStyleOptions.push(s.pointLocal);
-    } else if (index <= locations.meeting - 1 || isComplete) {
-      pointStyleOptions.push(s.pointCompleted);
+    if (index === facilitator - 1) {
+      pointStyleVariant.push(s.pointFacilitator);
+    } else if (index === local - 1) {
+      pointStyleVariant.push(s.pointLocal);
+    } else if (index <= meeting - 1 || isComplete) {
+      pointStyleVariant.push(s.pointCompleted);
     }
 
     if (index === teamCount - 1) {
@@ -50,7 +49,7 @@ const ProgressBar = (props) => {
       };
     }
 
-    pointStyles = combineStyles.apply(null, pointStyleOptions);
+    pointStyles = combineStyles.apply(null, pointStyleVariant);
 
     return (
       <div className={pointStyles} onClick={() => onClick(index)} style={marginRight}>
@@ -100,18 +99,18 @@ ProgressBar.defaultProps = {
 s = StyleSheet.create({
   root: {
     backgroundColor: t.palette.dark10l,
-    borderRadius: barHeight,
+    borderRadius: `${barHeight}px`,
     display: 'inline-block',
     fontSize: 0,
-    height: barHeight,
+    height: `${barHeight}px`,
     position: 'relative',
     width: 'auto'
   },
 
   bar: {
     backgroundColor: t.palette.cool50l,
-    borderRadius: barHeight,
-    height: barHeight,
+    borderRadius: `${barHeight}px`,
+    height: `${barHeight}px`,
     left: 0,
     position: 'absolute',
     top: 0,
@@ -120,8 +119,8 @@ s = StyleSheet.create({
   },
 
   points: {
-    height: barHeight,
-    padding: '0 1.125rem',
+    height: `${barHeight}px`,
+    padding: `0 ${outerPadding}px`,
     position: 'relative',
     zIndex: 400
   },
@@ -130,9 +129,9 @@ s = StyleSheet.create({
     backgroundColor: t.palette.dark40l,
     cursor: 'pointer',
     display: 'inline-block',
-    height: pointHeight,
+    height: `${pointHeight}px`,
     transition: 'scale .2s ease-in',
-    width: pointWidth,
+    width: `${pointWidth}px`,
 
     ':hover': {
       transform: 'scale(2)'
