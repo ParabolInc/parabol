@@ -20,12 +20,10 @@ export default class CheckinCards extends Component {
     const leftCard = memberNumber > 0 && members[memberNumber - 1];
     const rightCard = memberNumber < members.length - 1 && members[memberNumber + 1];
     const activeCard = members[memberNumber];
-    // const showLowerBound = Math.max(0, memberNumber - 1);
-    // const showMembers = members.slice(showLowerBound, memberNumber + 2);
     return (
       <div className={styles.base}>
         {leftCard && <CheckinCard member={leftCard} teamId={teamId}/>}
-        <CheckinCard member={activeCard} isActive isFacilitator={isFacilitator} teamId={teamId}/>
+        {activeCard && <CheckinCard member={activeCard} isActive isFacilitator={isFacilitator} teamId={teamId}/>}
         {rightCard && <CheckinCard member={rightCard} teamId={teamId}/>}
       </div>
     );
