@@ -26,10 +26,7 @@ const ProgressBar = (props) => {
   // TODO: Make sizing more flexible in the future (TA)
 
   const barWidth = `${locations.meeting > 0 ? (locations.meeting * 68) - 42 : 0}px`;
-
-  const barStyle = {
-    width: barWidth
-  };
+  const barStyle = isComplete ? {width: '100%'} : {width: barWidth};
 
   const renderPoint = (index) => {
     let pointStyles;
@@ -62,22 +59,18 @@ const ProgressBar = (props) => {
     );
   };
 
-  const renderPoints = (count) => {
+  const renderPoints = () => {
     const points = [];
-    for (let i = 0; i < count; i++) {
-      points.push(renderPoint(i, locations, count));
+    for (let i = 0; i < teamCount; i++) {
+      points.push(renderPoint(i));
     }
     return points;
   };
 
-  if (isComplete) {
-    barStyle.width = '100%';
-  }
-
   return (
     <div className={s.root}>
       <div className={s.points}>
-        {renderPoints(teamCount)}
+        {renderPoints()}
       </div>
       <div className={s.bar} style={barStyle}></div>
     </div>
@@ -94,8 +87,8 @@ ProgressBar.propTypes = {
 ProgressBar.defaultProps = {
   isComplete: false, // state for 100% progress
   locations: {
-    facilitator: 3,
-    local: 3,
+    facilitator: 5,
+    local: 2,
     meeting: 3
   },
   onClick(index) {
