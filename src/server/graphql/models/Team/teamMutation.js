@@ -15,7 +15,7 @@ import {CHECKIN, LOBBY, UPDATES, AGENDA} from 'universal/utils/constants';
 export default {
   moveMeeting: {
     type: GraphQLBoolean,
-    description: `Update the facilitator. If this is new territory for the meetingPhaseItem, advance that, too.`,
+    description: 'Update the facilitator. If this is new territory for the meetingPhaseItem, advance that, too.',
     args: {
       teamId: {
         type: new GraphQLNonNull(GraphQLID),
@@ -44,7 +44,9 @@ export default {
       }
       const isSynced = facilitatorPhase === meetingPhase && facilitatorPhaseItem === meetingPhaseItem;
       let incrementsProgress;
-      if (nextPhase === CHECKIN || nextPhase === UPDATES) {
+      if (meetingPhase !== nextPhase) {
+        incrementsProgress = true;
+      } else if (nextPhase === CHECKIN || nextPhase === UPDATES) {
         incrementsProgress = Number(nextPhaseItem) - Number(meetingPhaseItem) === 1;
       } else if (nextPhase === AGENDA) {
         // TODO
