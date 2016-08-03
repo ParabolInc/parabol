@@ -1,7 +1,33 @@
-import {TEAM, TEAM_MEMBERS, PRESENCE} from 'universal/subscriptions/constants';
+import {TEAM, TEAM_MEMBERS, PRESENCE, PROJECTS} from 'universal/subscriptions/constants';
 
 // For now, use an array. In the future, we can make one exclusively for the server that doesn't need to reparse the AST
 export default [
+  {
+    channel: PRESENCE,
+    string: `
+    subscription($teamId: ID!) {
+      presence(teamId: $teamId) {
+        id
+        userId
+      }
+    }`,
+    channelfy: variables => `presence/${variables.teamId}`
+  },
+  {
+    channel: PROJECTS,
+    string: `
+    subscription($teamMemberId: ID!) {
+      projects(teamMemberId: $teamMemberId) {
+        content
+        id
+        status
+        teamMemberId
+        type
+        userId
+      }
+    }`,
+    channelfy: variables => `projects/${variables.teamMemberId}`
+  },
   {
     channel: TEAM,
     string: `
@@ -36,17 +62,6 @@ export default [
        }
     }`,
     channelfy: variables => `teamMembers/${variables.teamId}`
-  },
-  {
-    channel: PRESENCE,
-    string: `
-    subscription($teamId: ID!) {
-      presence(teamId: $teamId) {
-        id
-        userId
-      }
-    }`,
-    channelfy: variables => `presence/${variables.teamId}`
   },
   {
     channel: 'user',

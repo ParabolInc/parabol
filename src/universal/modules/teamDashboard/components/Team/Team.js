@@ -7,6 +7,7 @@ import {
   DashMain,
   DashSidebar
 } from 'universal/components/Dashboard';
+import {Link} from 'react-router';
 
 const faIconStyle = {
   fontSize: '14px',
@@ -23,7 +24,7 @@ const linkStyle = {
 };
 
 const Team = (props) => {
-  const {dispatch, teamId, user} = props;
+  const {dispatch, team, user} = props;
   const goToLink = (e) => {
     e.preventDefault();
     console.log('TODO: Go to link');
@@ -33,27 +34,26 @@ const Team = (props) => {
     <DashLayout title="Team Dashboard">
       <DashSidebar
         activeArea="team"
-        activeTeamId={teamId}
+        activeTeamId={team.id}
         dispatch={dispatch}
         user={user}
       />
       <DashMain>
-        <DashHeader title="Team Name">
-          <a
-            href={`/meeting/${teamId}`}
+        <DashHeader title={team.name}>
+          <Link
+            to={`/meeting/${team.id}`}
             style={linkStyle}
             title="Meeting Lobby"
           >
             <FontAwesome name="arrow-circle-right" style={faIconStyle} /> Meeting Lobby
-          </a>
-          <a
-            href="#"
-            onClick={goToLink}
+          </Link>
+          <Link
+            to={`/meeting/${team.id}/settings`}
             style={linkStyle}
             title="Team Settings"
           >
             <FontAwesome name="cog" style={faIconStyle} /> Team Settings
-          </a>
+          </Link>
         </DashHeader>
         <DashContent>
           Team Outcomes
@@ -65,7 +65,7 @@ const Team = (props) => {
 
 Team.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  teamId: PropTypes.string.isRequired,
+  team: PropTypes.object.isRequired,
   user: PropTypes.shape({
     name: PropTypes.string,
     preferredName: PropTypes.string,

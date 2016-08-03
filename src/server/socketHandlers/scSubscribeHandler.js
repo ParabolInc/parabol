@@ -9,6 +9,9 @@ import parseChannel from './parseChannel';
  * By creating this on the server it keeps payloads really small
  * */
 const dechannelfy = {
+  projects(variableString) {
+    return {teamMemberId: variableString};
+  },
   team(variableString) {
     return {teamId: variableString};
   },

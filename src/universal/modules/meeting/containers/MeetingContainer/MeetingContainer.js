@@ -22,9 +22,9 @@ import {
 const mapStateToProps = (state, props) => {
   const variables = {teamId: props.params.teamId};
   return {
-    teamSub: cashay.subscribe(teamSubString, subscriber, {component: 'Meeting::teamSub', variables}),
-    memberSub: cashay.subscribe(teamMembersSubString, subscriber, {component: 'Meeting::memberSub', variables}),
-    members: state.meeting.members
+    members: state.meeting.members,
+    memberSub: cashay.subscribe(teamMembersSubString, subscriber, {component: 'memberSub', variables}),
+    teamSub: cashay.subscribe(teamSubString, subscriber, {component: 'teamSub', variables})
   };
 };
 
