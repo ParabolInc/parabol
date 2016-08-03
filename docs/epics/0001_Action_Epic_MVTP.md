@@ -218,6 +218,9 @@ near their other teams, so they can get their new group up and going.
 
 ## Personal Dashboard
 
+- [ ] When a user receives an invitation to a new team, they will want to
+be able to accept it, so that they can join their teammates.
+
 - [ ] When a TM navigates to their own personal dashboard, they will
 want to see a list of their projects and actions, so that they can see what
 they are responsible for.
