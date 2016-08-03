@@ -44,6 +44,7 @@ const mutationHandlers = {
     if (queryResponse) {
       // we can't be optimistic, server must process our invite token:
       currentResponse.user.memberships.push(queryResponse);
+      return currentResponse;
     }
     return undefined;
   },
