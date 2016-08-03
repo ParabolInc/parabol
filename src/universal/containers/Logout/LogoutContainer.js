@@ -1,6 +1,6 @@
 import React, {PropTypes, Component} from 'react'; // eslint-disable-line no-unused-vars
 import {connect} from 'react-redux';
-import {show} from 'universal/modules/notifications/ducks/notifications';
+import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
 import {removeAuthToken} from 'universal/redux/authDuck';
 import {withRouter} from 'react-router';
 
@@ -22,7 +22,7 @@ export default class LogoutContainer extends Component {
     const {dispatch, router} = this.props;
     dispatch(removeAuthToken());
     router.replace('/');
-    dispatch(show(logoutSuccess));
+    dispatch(showSuccess(logoutSuccess));
   }
 
   render() { return null; }

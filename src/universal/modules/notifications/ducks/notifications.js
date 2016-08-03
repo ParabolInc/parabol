@@ -1,51 +1,58 @@
 const NOTIFICATIONS_SHOW = 'notifications/NOTIFICATIONS_SHOW';
 const NOTIFICATIONS_HIDE = 'notifications/NOTIFICATIONS_HIDE';
 
+const SUCCESS = 'success';
+const ERROR = 'error';
+const WARNING = 'warning';
+const INFO = 'info';
+
 const initialState = [];
-let nid = 0;
 
 export default function reducer(state = initialState, action) {
   switch (action.type) {
     case NOTIFICATIONS_SHOW: {
-      // eslint-disable-next-line no-unused-vars
-      const {type, ...typelessAction} = action;
-      return state.concat({...typelessAction});
+      return state.concat(action.payload);
     }
     case NOTIFICATIONS_HIDE:
-      return state.filter(notification => notification.nid !== action.nid);
+      return state.filter(notification => notification.nid !== action.payload.nid);
     default:
       return state;
   }
 }
 
-export function show(opts, level = 'success') {
+let nid = 0;
+export function show(opts, level = SUCCESS) {
   return {
     type: NOTIFICATIONS_SHOW,
-    ...opts,
-    level,
-    nid: ++nid
+    payload: {
+      ...opts,
+      level,
+      nid: ++nid
+    }
   };
 }
 
-export function success(opts) {
-  return show(opts, 'success');
+export function showSuccess(opts) {
+  return show(opts, SUCCESS);
 }
 
-export function error(opts) {
-  return show(opts, 'error');
+export function showError(opts) {
+  return show(opts, ERROR);
 }
 
-export function warning(opts) {
-  return show(opts, 'warning');
+export function showWarning(opts) {
+  return show(opts, WARNING);
 }
 
-export function info(opts) {
-  return show(opts, 'info');
+export function showInfo(opts) {
+  return show(opts, INFO);
 }
 
 export function hide(aNid) {
   return {
     type: NOTIFICATIONS_HIDE,
-    nid: aNid
+    payload: {
+      nid: aNid
+    }
   };
 }
