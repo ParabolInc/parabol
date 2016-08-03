@@ -14,9 +14,9 @@ let styles = {};
 export default class CheckinCards extends Component {
   static propTypes = {
     isFacilitator: PropTypes.bool,
-    members: PropTypes.array,
     localPhaseItem: PropTypes.number,
-    router: PropTypes.object,
+    members: PropTypes.array,
+    router: PropTypes.object.isRequired,
     teamId: PropTypes.string
   };
 
@@ -59,13 +59,23 @@ export default class CheckinCards extends Component {
     return (
       <div className={styles.base}>
         {leftCard &&
-          <CheckinCard handleCardClick={this.handleCardClickFactory(memberNumber - 1)} member={leftCard}/>
+          <CheckinCard
+            handleCardClick={this.handleCardClickFactory(memberNumber - 1)}
+            member={leftCard}
+          />
         }
         {activeCard &&
-          <CheckinCard checkinPressFactory={this.makeCheckinPressFactory(activeCard.id)} member={activeCard} isActive/>
+          <CheckinCard
+            checkinPressFactory={this.makeCheckinPressFactory(activeCard.id)}
+            member={activeCard}
+            isActive
+          />
         }
         {rightCard &&
-          <CheckinCard handleCardClick={this.handleCardClickFactory(memberNumber + 1)} member={rightCard}/>
+          <CheckinCard
+            handleCardClick={this.handleCardClickFactory(memberNumber + 1)}
+            member={rightCard}
+          />
         }
       </div>
     );
