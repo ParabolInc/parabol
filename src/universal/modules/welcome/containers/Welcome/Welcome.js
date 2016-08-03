@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
+import {cashay} from 'cashay';
 import {formValueSelector} from 'redux-form';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 
@@ -9,15 +10,61 @@ import {
   Step3InviteTeam
 } from '../../components/WelcomeWizardForms';
 
-
 const selector = formValueSelector('welcomeWizard');
 
+const getUserAndMemberships = `
+query {
+  user: getCurrentUser {
+    id,
+    email,
+    id,
+    isNew,
+    picture,
+    preferredName
+    memberships {
+      id,
+      team {
+       id,
+       name
+      },
+      isLead,
+      isActive,
+      isFacilitator
+    }
+  }
+}`;
+
+const mutationHandlers = {
+  createTeam(optimisticVariables, queryResponse, currentResponse) {
+    if (optimisticVariables) {
+      const {leader, id, name, isActive, isLead, isFacilitator} = optimisticVariables.newTeam;
+      const membership = {
+        id: leader.id,
+        team: {id, name},
+        isActive,
+        isLead,
+        isFacilitator
+      };
+      currentResponse.user.memberships.push(membership);
+      return currentResponse;
+    }
+    return undefined;
+  }
+};
+
+const queryOptions = {
+  component: 'WelcomeContainer',
+  mutationHandlers,
+  localOnly: false
+};
+
 const mapStateToProps = (state) => ({
+  authToken: state.authToken,
   invitees: selector(state, 'invitees'),
   inviteesRaw: selector(state, 'inviteesRaw'),
   preferredName: selector(state, 'preferredName'),
   teamName: selector(state, 'teamName'),
-  authToken: state.authToken,
+  user: cashay.query(getUserAndMemberships, queryOptions).data.user,
   welcome: state.welcome
 });
 

@@ -1,7 +1,14 @@
 import React, {PropTypes} from 'react';
+import {connect} from 'react-redux';
+import {cashay} from 'cashay';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {DashLayout, DashSidebar} from 'universal/components/Dashboard';
 import Outcomes from 'universal/modules/userDashboard/components/Outcomes/Outcomes';
+import {getUserAndMemberships, queryOpts} from 'universal/modules/userDashboard/helpers/getUserAndMemberships';
+
+const mapStateToProps = () => ({
+  user: cashay.query(getUserAndMemberships, queryOpts).data.user
+});
 
 const MeContainer = (props) => {
   const {user} = props;
@@ -15,8 +22,9 @@ const MeContainer = (props) => {
 
 MeContainer.propTypes = {
   user: PropTypes.shape({
+    memberships: PropTypes.array,
     preferredName: PropTypes.string
   })
 };
 
-export default requireAuth(MeContainer);
+export default connect(mapStateToProps)(requireAuth(MeContainer));
