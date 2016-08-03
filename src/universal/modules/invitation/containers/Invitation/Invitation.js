@@ -3,21 +3,74 @@ import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import Auth0ShowLock from 'universal/components/Auth0ShowLock/Auth0ShowLock';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
-import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
 import {setWelcomeActivity} from 'universal/modules/userDashboard/ducks/settingsDuck';
 import {withRouter} from 'react-router';
 import {
-  error as showError,
-  success as showSuccess,
-  warning as showWarning
+  showError,
+  showSuccess,
+  showWarning
 } from 'universal/modules/notifications/ducks/notifications';
+
+import {
+  invalidInvitation,
+  inviteNotFound,
+  teamAlreadyJoined,
+  successfulJoin
+} from 'universal/modules/invitation/helpers/notifications';
+
+const getUserWithMemberships = `
+query {
+  user: getCurrentUser {
+    email,
+    id,
+    isNew,
+    picture,
+    preferredName
+    memberships {
+      id,
+      team {
+        id,
+        name
+      },
+      isLead,
+      isActive,
+      isFacilitator
+    }
+  }
+}`;
+
+const mutationHandlers = {
+  acceptInvitation(optimisticVariables, queryResponse, currentResponse) {
+    if (queryResponse) {
+      // we can't be optimistic, server must process our invite token:
+      currentResponse.user.memberships.push(queryResponse);
+    }
+    return undefined;
+  },
+  updateUserWithAuthToken(optimisticVariables, queryResponse, currentResponse) {
+    if (queryResponse) {
+      currentResponse.user = {
+        ...currentResponse.user,
+        ...queryResponse
+      };
+      return currentResponse;
+    }
+    return undefined;
+  }
+};
+
+const cashayOptions = {
+  component: 'invitation',
+  mutationHandlers,
+  localOnly: true
+};
 
 const mapStateToProps = (state, props) => {
   const {params: {id}} = props;
   return {
     authToken: state.authToken,
     inviteToken: id,
-    user: cashay.query(getAuthQueryString, authedOptions).data.user,
+    user: cashay.query(getUserWithMemberships, cashayOptions).data.user,
   };
 };
 
@@ -53,7 +106,7 @@ export default class Invitation extends Component {
         this.processInvitation();
       }
     }
-  }
+  };
 
   processInvitation = () => {
     const {dispatch, inviteToken, router} = this.props;
@@ -62,65 +115,34 @@ export default class Invitation extends Component {
         inviteToken
       }
     };
-    cashay.mutate('acceptInvitation', options).then(({data, error}) => {
-      if (error) {
-        if (error.subtype === 'alreadyJoined') {
-          /*
-           * This should be *very* difficult to have occur:
-           */
-          dispatch(showError({
-            title: 'Team already joined',
-            message: `
-              Hey, we think you already belong to this team.
-            `,
-            action: {
-              label: 'Ok',
-            },
-            autoDismiss: 0
-          }));
-          router.push('/settings/me');
-          return;
-        } else if (error.subtype === 'invalidToken') {
-          dispatch(showError({
-            title: 'Invitation invalid',
-            message: `
-              We had difficulty with that link. Did you paste it correctly?
-            `,
-            action: {
-              label: 'Ok',
-            },
-            autoDismiss: 10
-          }));
-        } else if (error.subtype === 'notFound') {
-          dispatch(showWarning({
-            title: 'Invitation not found, but don\'t worry',
-            message: `
-              Hey we couldn't find that invitation. If you'd like to
-              create your own team, you can start that process here.
-            `,
-            action: {
-              label: 'Got it',
-            },
-            autoDismiss: 0
-          }));
-        } else {
-          console.warn('unable to accept invitation:');
-          console.warn(error);
+    cashay.mutate('acceptInvitation', options)
+      .then(({data, error}) => {
+        if (error) {
+          if (error.subtype === 'alreadyJoined') {
+            /*
+             * This should be *very* difficult to have occur:
+             */
+            dispatch(showError(teamAlreadyJoined));
+            router.push('/settings/me');
+            return;
+          } else if (error.subtype === 'invalidToken') {
+            dispatch(showError(invalidInvitation));
+          } else if (error.subtype === 'notFound') {
+            dispatch(showWarning(inviteNotFound));
+          } else {
+            console.warn('unable to accept invitation:');
+            console.warn(error);
+          }
+          // TODO: pop them a toast and tell them what happened?
+          router.push('/welcome');
+        } else if (data) {
+          const {id} = data.acceptInvitation.team;
+          dispatch(setWelcomeActivity(`/team/${id}`));
+          dispatch(showSuccess(successfulJoin));
+          router.push('/me/settings');
         }
-        // TODO: pop them a toast and tell them what happened?
-        router.push('/welcome');
-      } else if (data) {
-        const {id} = data.acceptInvitation.team;
-        dispatch(setWelcomeActivity(`/team/${id}`));
-        dispatch(showSuccess({
-          title: 'You\'re in!',
-          message: `
-            Welcome to Action. Let's get you set up.
-          `
-        }));
-        router.push('/me/settings');
-      }
-    }).catch(console.warn.bind(console));
+      })
+      .catch(console.warn.bind(console));
   };
 
   renderLogin = () => (

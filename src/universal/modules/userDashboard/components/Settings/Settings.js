@@ -7,7 +7,7 @@ import theme from 'universal/styles/theme';
 import {DashContent, DashHeader} from 'universal/components/Dashboard';
 import Button from 'universal/components/Button/Button';
 import Field from 'universal/components/Field/Field';
-import {show} from 'universal/modules/notifications/ducks/notifications';
+import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
 
 import {
   ACTIVITY_WELCOME,
@@ -51,14 +51,14 @@ export default class Settings extends Component {
     const {preferredName} = submissionData;
     const options = {
       variables: {
-        updatedProfile: {
+        updatedUser: {
           id: user.id,
           preferredName
         }
       }
     };
     await cashay.mutate('updateUserProfile', options);
-    dispatch(show(updateSuccess));
+    dispatch(showSuccess(updateSuccess));
     if (activity === ACTIVITY_WELCOME) {
       dispatch(clearActivity());
     }

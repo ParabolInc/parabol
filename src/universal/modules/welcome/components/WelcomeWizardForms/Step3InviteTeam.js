@@ -12,7 +12,7 @@ import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import WelcomeLayout from '../WelcomeLayout/WelcomeLayout';
 import {goToPage} from 'universal/modules/welcome/ducks/welcomeDuck';
 import {cashay} from 'cashay';
-import {show} from 'universal/modules/notifications/ducks/notifications';
+import {showSuccess, showError} from 'universal/modules/notifications/ducks/notifications';
 import {withRouter} from 'react-router';
 import withHotkey from 'react-hotkey-hoc';
 
@@ -71,12 +71,12 @@ const Step3InviteTeam = (props) => {
       }
       if (Array.isArray(failedEmails)) {
         const emailsNotDelivered = failedEmails.map(invitee => invitee.email).join(', ');
-        dispatch(show(emailInviteFail(emailsNotDelivered)));
+        dispatch(showError(emailInviteFail(emailsNotDelivered)));
         // TODO I think we want to remove the failures from the array so they can click try again. thoughts?
       }
     } else if (data) {
       router.push(`/team/${teamId}`);  // redirect leader to their new team
-      dispatch(show(emailInviteSuccess)); // trumpet our leader's brilliance!
+      dispatch(showSuccess(emailInviteSuccess)); // trumpet our leader's brilliance!
       dispatch(destroy('welcomeWizard')); // bye bye form data!
     }
   };
