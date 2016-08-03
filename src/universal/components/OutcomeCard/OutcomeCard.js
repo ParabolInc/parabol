@@ -48,7 +48,7 @@ const OutcomeCard = props => {
   const avatarStyles = showByTeam ? avatarTeamStyles : styles.avatar;
 
   return (
-    <div className={combineStyles(styles.root, styles[status])}>
+    <div className={combineStyles(styles.root, styles[status], styles.cardBlock)}>
       {/* card main */}
       <div className={styles.timestamp}>
         {timestamp}
@@ -117,6 +117,11 @@ styles = StyleSheet.create({
     borderRadius: '.5rem',
     borderTop: `.25rem solid ${theme.palette.dark10d}`,
     maxWidth: '20rem',
+    width: '100%'
+  },
+
+  cardBlock: {
+    marginBottom: '1rem',
     width: '100%'
   },
 

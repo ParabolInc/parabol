@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 
 import Avatar from 'universal/components/Avatar/Avatar';
-import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
+import AvatarGroup from '../../../meeting/components/AvatarGroup/AvatarGroup';
 import Columns from 'universal/components/Columns/Columns';
 import IconLink from 'universal/components/IconLink/IconLink';
 import ShortcutsMenu from 'universal/modules/team/components/ShortcutsMenu/ShortcutsMenu';

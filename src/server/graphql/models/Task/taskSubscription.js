@@ -4,6 +4,7 @@ import {getRequestedFields} from '../utils';
 import {Task} from './taskSchema';
 import {requireSUOrTeamMember} from '../authorization';
 import makeChangefeedHandler from '../makeChangefeedHandler';
+import {PROJECT} from 'universal/utils/constants';
 
 export default {
   projects: {
@@ -21,7 +22,7 @@ export default {
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName, {path: 'projects'});
       r.table('Task')
         .getAll(teamMemberId, {index: 'teamMemberId'})
-        .filter({type: 'PROJECT'})
+        .filter({type: PROJECT})
         .pluck(requestedFields)
         .changes({includeInitial: true})
         .run({cursor: true}, changefeedHandler);

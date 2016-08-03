@@ -13,7 +13,7 @@ export default store => ({
     require('./landing'),
     require('./logout'),
     require('./meeting')(store),
-    // ...require('./meetingLayoutRoutes'),
+    ...require('./meetingLayoutRoutes'),
     require('./patterns'),
     require('./teamDashboard'),
     require('./userDashboardRoutes')(store),

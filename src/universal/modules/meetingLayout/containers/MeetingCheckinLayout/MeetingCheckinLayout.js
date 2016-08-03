@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 
-import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
+import AvatarGroup from 'universal/modules/meeting/components/AvatarGroup/AvatarGroup';
 import IconLink from 'universal/components/IconLink/IconLink';
 import ProgressBar from 'universal/components/ProgressBar/ProgressBar';
 import CheckinCards from 'universal/modules/meeting/components/CheckinCards/CheckinCards';

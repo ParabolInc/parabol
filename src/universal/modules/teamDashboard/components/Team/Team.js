@@ -8,6 +8,8 @@ import {
   DashSidebar
 } from 'universal/components/Dashboard';
 import {Link} from 'react-router';
+import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
+import AgendaAndProjects from 'universal/modules/teamDashboard/components/AgendaAndProjects/AgendaAndProjects';
 
 const faIconStyle = {
   fontSize: '14px',
@@ -24,7 +26,7 @@ const linkStyle = {
 };
 
 const Team = (props) => {
-  const {dispatch, team, user} = props;
+  const {dispatch, team, teamMembers, user} = props;
   const goToLink = (e) => {
     e.preventDefault();
     console.log('TODO: Go to link');
@@ -54,9 +56,10 @@ const Team = (props) => {
           >
             <FontAwesome name="cog" style={faIconStyle} /> Team Settings
           </Link>
+          <DashboardAvatars teamMembers={teamMembers}/>
         </DashHeader>
         <DashContent>
-          Team Outcomes
+          <AgendaAndProjects/>
         </DashContent>
       </DashMain>
     </DashLayout>

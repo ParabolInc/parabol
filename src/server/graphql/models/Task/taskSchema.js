@@ -6,13 +6,14 @@ import {
   GraphQLEnumType
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
+import {ACTIVE, STUCK, DONE, FUTURE, ACTION, PROJECT} from 'universal/utils/constants';
 
 export const TaskType = new GraphQLEnumType({
   name: 'TaskType',
   description: 'The type of task (project or action, long or short-term)',
   values: {
-    ACTION: {value: 'ACTION'},
-    PROJECT: {value: 'PROJECT'}
+    ACTION: {value: ACTION},
+    PROJECT: {value: PROJECT}
   }
 });
 
@@ -20,10 +21,10 @@ export const TaskStatus = new GraphQLEnumType({
   name: 'TaskStatus',
   description: 'The status of the task',
   values: {
-    ACTIVE: {value: 'ACTIVE'},
-    STUCK: {value: 'STUCK'},
-    DONE: {value: 'DONE'},
-    FUTURE: {value: 'FUTURE'}
+    ACTIVE: {value: ACTIVE},
+    STUCK: {value: STUCK},
+    DONE: {value: DONE},
+    FUTURE: {value: FUTURE}
   }
 });
 
