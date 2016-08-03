@@ -102,7 +102,7 @@ export default class Invitation extends Component {
       if (user && user.isNew === false) {
         // If user already has an account, let them accept the new team via the UI:
         router.push('/me');
-      } else if (user && user.isNew === true) {
+      } else if (user && user.isNew === true && user.memberships.length === 0) {
         // If the user is new let's process their invite:
         this.processInvitation();
       }
@@ -161,7 +161,10 @@ export default class Invitation extends Component {
       return this.renderLogin();
     }
 
-    // TODO this would be a nice place for a spinner:
-    return (<div/>);
+    return (
+      <div>
+        <LoadingView />
+      </div>
+    );
   }
 }
