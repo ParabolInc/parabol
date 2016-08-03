@@ -5,7 +5,7 @@ import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {cashay} from 'cashay';
 import subscriptions from 'universal/subscriptions/subscriptions';
 import presenceSubscriber from './presenceSubscriber';
-import reduxSocketOptions from './reduxSocketOptions';
+import reduxSocketOptions from 'universal/redux/reduxSocketOptions';
 import {PRESENCE} from 'universal/subscriptions/constants';
 import socketCluster from 'socketcluster-client';
 
