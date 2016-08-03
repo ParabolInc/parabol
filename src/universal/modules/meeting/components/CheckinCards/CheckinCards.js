@@ -16,6 +16,7 @@ export default class CheckinCards extends Component {
     isFacilitator: PropTypes.bool,
     members: PropTypes.array,
     localPhaseItem: PropTypes.number,
+    router: PropTypes.object,
     teamId: PropTypes.string
   };
 
@@ -57,9 +58,15 @@ export default class CheckinCards extends Component {
 
     return (
       <div className={styles.base}>
-        {leftCard && <CheckinCard handleCardClick={this.handleCardClickFactory(memberNumber - 1)} member={leftCard}/>}
-        {activeCard && <CheckinCard checkinPressFactory={this.makeCheckinPressFactory(activeCard.id)} member={activeCard} isActive/>}
-        {rightCard && <CheckinCard handleCardClick={this.handleCardClickFactory(memberNumber + 1)} member={rightCard}/>}
+        {leftCard &&
+          <CheckinCard handleCardClick={this.handleCardClickFactory(memberNumber - 1)} member={leftCard}/>
+        }
+        {activeCard &&
+          <CheckinCard checkinPressFactory={this.makeCheckinPressFactory(activeCard.id)} member={activeCard} isActive/>
+        }
+        {rightCard &&
+          <CheckinCard handleCardClick={this.handleCardClickFactory(memberNumber + 1)} member={rightCard}/>
+        }
       </div>
     );
   }

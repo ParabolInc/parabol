@@ -106,6 +106,7 @@ const MeetingCheckinLayout = (props) => {
 
 MeetingCheckinLayout.propTypes = {
   bindHotkey: PropTypes.func.isRequired,
+  facilitatorPhaseItem: PropTypes.string,
   isFacilitator: PropTypes.bool,
   localPhaseItem: PropTypes.string,
   members: PropTypes.array,
