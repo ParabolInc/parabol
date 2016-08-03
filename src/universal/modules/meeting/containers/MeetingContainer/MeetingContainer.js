@@ -11,7 +11,7 @@ import {withRouter} from 'react-router';
 import {createMembers} from 'universal/modules/meeting/ducks/meetingDuck';
 import getLocalPhase from 'universal/modules/meeting/helpers/getLocalPhase';
 import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
-import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
+import AvatarGroup from 'universal/modules/meeting/components/AvatarGroup/AvatarGroup';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import {
