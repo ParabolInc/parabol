@@ -64,6 +64,7 @@ Type.propTypes = {
     'inlineBlock'
   ]),
   family: PropTypes.oneOf([
+    'monospace',
     'sansSerif',
     'serif'
   ]),
@@ -139,6 +140,10 @@ s = StyleSheet.create({
   },
 
   // family
+  monospace: {
+    fontFamily: t.typography.monospace
+  },
+
   sansSerif: {
     fontFamily: t.typography.sansSerif
   },

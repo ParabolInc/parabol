@@ -47,6 +47,7 @@ export default class TeamContainer extends Component {
     const {teamMembers} = memberSub.data;
     // const projects = [].concat(...projectSubs.map(sub => sub.data.projects));
     // console.log('project Subs', projects);
+    console.log(`teamMembers: ${teamMembers}`);
     return <Team team={team} teamMembers={teamMembers} user={user} {...otherProps} />;
   }
 };

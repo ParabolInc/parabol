@@ -8,10 +8,18 @@ const AgendaAndProjects = (props) => {
   const {teamMemberId} = props;
   return (
     <div className={styles.root}>
-      <TeamAgenda/>
-      <TeamProjects teamMemberId={teamMemberId}/>
+      <div className={styles.agendaLayout}>
+        <TeamAgenda/>
+      </div>
+      <div className={styles.projectsLayout}>
+        <TeamProjects teamMemberId={teamMemberId}/>
+      </div>
     </div>
-  )
+  );
+};
+
+AgendaAndProjects.propTypes = {
+  teamMemberId: PropTypes.string
 };
 
 AgendaAndProjects.styles = StyleSheet.create({
@@ -20,6 +28,14 @@ AgendaAndProjects.styles = StyleSheet.create({
     flex: 1,
     padding: '1rem',
     width: '100%'
+  },
+
+  agendaLayout: {
+    width: '20%'
+  },
+
+  projectsLayout: {
+    width: '80%'
   }
 });
 
