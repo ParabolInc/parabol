@@ -11,7 +11,7 @@ export default store => ({
     require('./graphql'),
     require('./invitation')(store),
     require('./landing'),
-    require('./logout'),
+    require('./logout')(store),
     require('./meeting')(store),
     // ...require('./meetingLayoutRoutes'),
     require('./patterns'),
