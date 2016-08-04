@@ -5,11 +5,12 @@ import TeamProjectsHeader from 'universal/modules/teamDashboard/components/TeamP
 
 const TeamProjects = (props) => {
   const {styles} = TeamProjects;
+  const {teamMemberId} = props;
   const projects = [];
   return (
     <div className={styles.root}>
       <TeamProjectsHeader/>
-      <ProjectColumns projects={projects}/>
+      <ProjectColumns teamMemberId={teamMemberId} projects={projects}/>
     </div>
   )
 };

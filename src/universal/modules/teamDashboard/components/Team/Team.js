@@ -27,11 +27,8 @@ const linkStyle = {
 
 const Team = (props) => {
   const {dispatch, team, teamMembers, user} = props;
-  const goToLink = (e) => {
-    e.preventDefault();
-    console.log('TODO: Go to link');
-  };
-
+  const membership = teamMembers.find(member => member.userId === user.id);
+  const teamMemberId = membership && membership.id;
   return (
     <DashLayout title="Team Dashboard">
       <DashSidebar
@@ -59,7 +56,7 @@ const Team = (props) => {
           <DashboardAvatars teamMembers={teamMembers}/>
         </DashHeader>
         <DashContent>
-          <AgendaAndProjects/>
+          <AgendaAndProjects teamMemberId={teamMemberId}/>
         </DashContent>
       </DashMain>
     </DashLayout>

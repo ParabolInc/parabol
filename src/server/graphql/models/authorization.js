@@ -10,7 +10,7 @@ export const isSuperUser = authToken => {
   return userId && authToken.rol === 'su';
 };
 
-export const getTeamMember = async (authToken, teamId) => {
+export const getTeamMember = async(authToken, teamId) => {
   const userId = getUserId(authToken);
   if (userId) {
     const teamMembers = await r.table('TeamMember')
@@ -20,6 +20,10 @@ export const getTeamMember = async (authToken, teamId) => {
     return teamMembers[0];
   }
   return undefined;
+};
+
+export const getUserIdFromTeamMember = async(teamMemberId) => {
+  return await r.table('TeamMember').get(teamMemberId).pluck('userId');
 };
 
 export const requireAuth = authToken => {
@@ -37,7 +41,7 @@ export const requireSU = authToken => {
   }
 };
 
-export const requireSUOrTeamMember = async (authToken, teamId) => {
+export const requireSUOrTeamMember = async(authToken, teamId) => {
   if (isSuperUser(authToken)) return undefined;
   const teamMember = await getTeamMember(authToken, teamId);
   if (teamMember) return teamMember;
@@ -51,6 +55,16 @@ export const requireSUOrSelf = (authToken, userId) => {
     return userId;
   }
   throw errorObj({_error: 'Unauthorized. You cannot modify another user.'});
+};
+
+export const requireTeamMemberIsSelf = async (authToken, teamMemberId) => {
+  const authTokenUserId = getUserId(authToken);
+  const {userId} = await getUserIdFromTeamMember(teamMemberId);
+  if (userId !== authTokenUserId) {
+    console.log('COM', userId, authTokenUserId, authToken, teamMemberId)
+    throw errorObj({_error: 'Unauthorized. Team member not linked to user.'});
+  }
+  return authTokenUserId;
 };
 
 export const requireWebsocket = (socket) => {

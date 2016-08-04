@@ -19,12 +19,12 @@ const makeProjectsByStatus = (projects) => {
 };
 
 const ProjectColumns = (props) => {
-  const {projects} = props;
+  const {projects, teamMemberId} = props;
   const projectsByStatus = makeProjectsByStatus(projects);
   return (
     <div className={styles.root}>
       <div className={styles.columns}>
-        {columnArray.map((status) => <ProjectColumn status={status} projects={projectsByStatus[status]}/>)}
+        {columnArray.map((status) => <ProjectColumn teamMemberId={teamMemberId} status={status} projects={projectsByStatus[status]}/>)}
       </div>
     </div>
   );

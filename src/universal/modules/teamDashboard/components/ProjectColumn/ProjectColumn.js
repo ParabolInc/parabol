@@ -2,8 +2,10 @@ import React from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
-import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
+import {ACTIVE, STUCK, DONE, FUTURE, PROJECT} from 'universal/utils/constants';
 import FontAwesome from 'react-fontawesome';
+import {cashay} from 'cashay';
+import shortid from 'shortid';
 
 const borderColor = 'rgba(0, 0, 0, .1)';
 let styles = {};
@@ -16,9 +18,16 @@ const labels = {
 };
 
 const ProjectColumn = (props) => {
-  const {status, projects} = props;
+  const {status, projects, teamMemberId} = props;
   const handleAddProject = (e) => {
-    console.log('adding project!');
+    console.log('adding project!', teamMemberId);
+    const newTask = {
+      id: shortid.generate(),
+      type: PROJECT,
+      status,
+      teamMemberId
+    };
+    cashay.mutate('createTask', {variables: {newTask}});
   };
   return (
     <div className={styles.column}>

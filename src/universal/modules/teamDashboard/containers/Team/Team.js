@@ -19,10 +19,10 @@ const mapStateToProps = (state, props) => {
   const memberSub = cashay.subscribe(teamMembersSubString, subscriber, {component: 'memberSub', variables});
   return {
     memberSub,
-    projectSubs: memberSub.data.teamMembers.map((member) => {
-      const teamMemberId = member.id;
-      return cashay.subscribe(projectSubString, subscriber, {component: 'projectSub', key: teamMemberId, variables: {teamMemberId}})
-    }),
+    // projectSubs: memberSub.data.teamMembers.map((member) => {
+    //   const teamMemberId = member.id;
+    //   return cashay.subscribe(projectSubString, subscriber, {component: 'projectSub', key: teamMemberId, variables: {teamMemberId}})
+    // }),
     teamSub: cashay.subscribe(teamSubString, subscriber, {component: 'teamSub', variables}),
   };
 };
@@ -45,7 +45,8 @@ export default class TeamContainer extends Component {
     const {memberSub, projectSubs, teamSub, user, ...otherProps} = this.props;
     const {team} = teamSub.data;
     const {teamMembers} = memberSub.data;
-    console.log('project Subs', projectSubs);
+    // const projects = [].concat(...projectSubs.map(sub => sub.data.projects));
+    // console.log('project Subs', projects);
     return <Team team={team} teamMembers={teamMembers} user={user} {...otherProps} />;
   }
 };
