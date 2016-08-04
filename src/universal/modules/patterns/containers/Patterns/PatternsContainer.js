@@ -27,12 +27,18 @@ export default class PatternsContainer extends Component {
 
         {makeLabel('CreateCard')}
         <CreateCard />
+
         <br />
         <br />
+        <br />
+
         {makeLabel('CreateCard hasControls')}
         <CreateCard hasControls />
+
         <br />
         <br />
+        <br />
+
         {makeLabel('CreateCard createdBy="Marimar Suárez Peñalva" isCreating isProject={false}')}
         <CreateCard createdBy="Marimar Suárez Peñalva" isCreating isProject={false} />
 
@@ -40,8 +46,8 @@ export default class PatternsContainer extends Component {
         <br />
         <br />
 
-        {makeLabel('OutcomeCard')}
-        <OutcomeCard />
+        {makeLabel('OutcomeCard status="active"')}
+        <OutcomeCard status="active" />
 
         <br />
         <br />
