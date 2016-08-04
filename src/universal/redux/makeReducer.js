@@ -15,6 +15,7 @@ const initialReducers = {
 const currentReducers = {...initialReducers};
 
 export default (newReducers) => {
+  Object.assign(initialReducers, newReducers);
   Object.assign(currentReducers, newReducers);
   const reducer = combineReducers({...currentReducers});
   return storageReducer(reducer, storageMerger);
