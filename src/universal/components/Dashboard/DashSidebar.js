@@ -77,6 +77,7 @@ styles = StyleSheet.create({
 
   addTeam: {
     cursor: 'pointer',
+    marginTop: '.5rem',
     position: 'relative',
 
     ':hover': {

@@ -6,6 +6,7 @@ import FontAwesome from 'react-fontawesome';
 import {Link} from 'react-router';
 
 let styles = {};
+const maxWidth = '8.25rem';
 const faStyle = {
   lineHeight: 'inherit',
   color: 'white'
@@ -61,14 +62,16 @@ styles = StyleSheet.create({
     fontSize: theme.typography.sBase,
     fontWeight: 700,
     lineHeight: '1.375rem',
-    maxWidth: '132px',
+    maxWidth,
     paddingTop: '.125rem'
   },
 
   email: {
+    ...textOverflow,
     fontSize: theme.typography.s2,
     lineHeight: theme.typography.sBase,
-    marginTop: '.125rem'
+    marginTop: '.125rem',
+    maxWidth
   },
 
   settings: {

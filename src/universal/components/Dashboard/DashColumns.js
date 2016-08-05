@@ -103,7 +103,6 @@ styles = StyleSheet.create({
 
   cardBlock: {
     marginBottom: '1rem',
-    minWidth: '15rem',
     width: '100%'
   }
 });

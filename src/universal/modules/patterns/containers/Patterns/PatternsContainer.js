@@ -46,8 +46,8 @@ export default class PatternsContainer extends Component {
         <br />
         <br />
 
-        {makeLabel('OutcomeCard status="active"')}
-        <OutcomeCard status="active" />
+        {makeLabel('OutcomeCard isProject={false}')}
+        <OutcomeCard isProject={false} />
 
         <br />
         <br />
