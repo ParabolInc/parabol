@@ -56,6 +56,7 @@ const Team = (props) => {
           <DashboardAvatars teamMembers={teamMembers}/>
         </DashHeader>
         <DashContent>
+          {console.log(`teamMemberId: ${teamMemberId}`)}
           <AgendaAndProjects teamMemberId={teamMemberId}/>
         </DashContent>
       </DashMain>
@@ -66,6 +67,7 @@ const Team = (props) => {
 Team.propTypes = {
   dispatch: PropTypes.func.isRequired,
   team: PropTypes.object.isRequired,
+  teamMembers: PropTypes.array.isRequired,
   user: PropTypes.shape({
     name: PropTypes.string,
     preferredName: PropTypes.string,
