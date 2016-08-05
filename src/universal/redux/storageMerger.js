@@ -29,9 +29,11 @@ export default function merger(initialState, persistedState) {
       value.data.result.presence = undefined;
       value.data.result.teamMembers = undefined;
       value.data.result.team = undefined;
+      value.data.result.projects = undefined;
 
       // remove entities that have unbounded growth (socketIds are random)
       value.data.entities.Presence = undefined;
+      value.data.entities.Task = undefined;
     }
     result[reducerName] = value;
   }
