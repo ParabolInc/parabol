@@ -28,7 +28,7 @@ export default (newReducersInitialState) => {
   return storageReducer(reducer, storageMerger);
 };
 
-export const makeWhitelistedReducer = (whitelist) => {
+export const makeInitialStateReducers = (whitelist) => {
   /**
    * Create a new reducer starting from the initial application state, which
    * may also include the initial states of any reducers which have been
