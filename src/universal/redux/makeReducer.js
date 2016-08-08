@@ -5,16 +5,20 @@ import {reducer as formReducer} from 'redux-form';
 import authToken from './authDuck';
 import {reducer as storageReducer} from 'redux-storage-whitelist-fn';
 import storageMerger from 'universal/redux/storageMerger';
+import makeRootReducer from 'universal/redux/rootDuck';
 
-const currentReducers = {
+const appReducers = {
   authToken,
   cashay: cashayReducer,
   form: formReducer,
   notifications
 };
 
+
 export default (newReducers) => {
-  Object.assign(currentReducers, newReducers);
-  const reducer = combineReducers({...currentReducers});
-  return storageReducer(reducer, storageMerger);
+  Object.assign(appReducers, newReducers);
+  const appReducer = combineReducers({...appReducers});
+  const rootReducer = makeRootReducer(appReducer);
+
+  return storageReducer(rootReducer, storageMerger);
 };
