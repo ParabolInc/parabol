@@ -11,7 +11,7 @@ exports.up = async(r) => {
       preferredName: 'taya'
     },
     {
-      id: 'auth0|5797eb7a12664ba4675745c0',
+      id: 'auth0|57a8fb6cab6c18473e47f518',
       email: 'jordan@prbl.co',
       isNew: false,
       picture: 'http://static1.squarespace.com/static/5654d81ce4b0e1e5861165b7/565e0e3ce4b0f01662c88e7c/565e0e75e4b0e38c74d38ecd/1468511229451/jh-linkedin-avatar.jpg',
@@ -49,7 +49,7 @@ exports.up = async(r) => {
       isFacilitator: true,
       isLead: true,
       teamId: 'team123',
-      userId: 'auth0|5797eb7a12664ba4675745c0',
+      userId: 'auth0|57a8fb6cab6c18473e47f518',
       picture: 'http://static1.squarespace.com/static/5654d81ce4b0e1e5861165b7/565e0e3ce4b0f01662c88e7c/565e0e75e4b0e38c74d38ecd/1468511229451/jh-linkedin-avatar.jpg',
       preferredName: 'jordan'
     },
