@@ -5,11 +5,11 @@ export default function subscriber(subscriptionString, variables, handlers) {
   const {channelfy} = subscriptions.find(sub => sub.string === subscriptionString);
   const channelName = channelfy(variables);
   const socket = socketCluster.connect();
-  const {add, update, remove} = handlers;
+  const {upsert, update, remove} = handlers;
   socket.subscribe(channelName, {waitForAuth: true});
   socket.on(channelName, data => {
     if (data.type === 'add') {
-      add(data.fields);
+      upsert(data.fields);
     } else if (data.type === 'remove') {
       remove(data.id);
     } else {

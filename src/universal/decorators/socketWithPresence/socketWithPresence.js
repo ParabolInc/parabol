@@ -13,7 +13,7 @@ const presenceSubscription = subscriptions.find(sub => sub.channel === PRESENCE)
 const mapStateToProps = (state, props) => {
   const presenceSubOptions = {
     variables: {teamId: props.params.teamId},
-    component: 'socketWithPresence'
+    op: 'socketWithPresence'
   };
   return {
     presenceSub: cashay.subscribe(presenceSubscription.string, presenceSubscriber, presenceSubOptions)

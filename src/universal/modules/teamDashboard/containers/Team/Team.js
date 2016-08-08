@@ -18,7 +18,7 @@ const makeProjectSubs = (teamMembers) => {
   for (let i = 0; i < teamMembers.length; i++) {
     const teamMemberId = teamMembers[i].id;
     projectSubs[i] = cashay.subscribe(projectSubString, subscriber, {
-      component: 'projectSub',
+      op: 'projectSub',
       key: teamMemberId,
       variables: {teamMemberId}
     });
@@ -28,12 +28,12 @@ const makeProjectSubs = (teamMembers) => {
 // TODO memoize the map
 const mapStateToProps = (state, props) => {
   const variables = {teamId: props.params.teamId};
-  const memberSub = cashay.subscribe(teamMembersSubString, subscriber, {component: 'memberSub', variables});
+  const memberSub = cashay.subscribe(teamMembersSubString, subscriber, {op: 'memberSub', variables});
   const projectSubs = makeProjectSubs(memberSub.data.teamMembers);
   return {
     memberSub,
     projectSubs,
-    teamSub: cashay.subscribe(teamSubString, subscriber, {component: 'teamSub', variables}),
+    teamSub: cashay.subscribe(teamSubString, subscriber, {op: 'teamSub', variables}),
   };
 };
 
@@ -50,14 +50,11 @@ export default class TeamContainer extends Component {
     teamSub: PropTypes.object
   };
 
-  componentWillReceiveProps(nextProps) {
-
-  }
-
   render() {
     const {memberSub, teamSub, user, projectSubs, ...otherProps} = this.props;
     const {team} = teamSub.data;
     const {teamMembers} = memberSub.data;
+    console.log('SUB', projectSubs)
     const projects = [].concat(...projectSubs.map(sub => sub.data.projects));
     console.log('project Subs', projects);
     return <Team team={team} teamMembers={teamMembers} user={user} {...otherProps} />;

@@ -60,7 +60,7 @@ const mutationHandlers = {
 };
 
 const cashayOptions = {
-  component: 'invitation',
+  op: 'invitation',
   mutationHandlers,
   localOnly: true
 };

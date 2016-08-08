@@ -13,6 +13,26 @@ import shortid from 'shortid';
 import {CHECKIN, LOBBY, UPDATES, AGENDA} from 'universal/utils/constants';
 
 export default {
+  endMeeting: {
+    type: GraphQLBoolean,
+    description: 'Successfully end the meeting',
+    args: {
+      teamId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The teamId to make sure the socket calling has permission'
+      }
+    },
+    async resolve(source, {teamId}, {authToken, socket}) {
+      // TODO
+      const teamMembers = await r.table('TeamMember').getAll(teamId, {index: 'teamId'}).pluck('id');
+      const dbPromises = teamMembers.map((member, idx) => {
+        return r.table('TeamMember').get(member.id).update({
+          checkInOrder: idx,
+          isCheckedIn: null
+        });
+      });
+    }
+  },
   moveMeeting: {
     type: GraphQLBoolean,
     description: 'Update the facilitator. If this is new territory for the meetingPhaseItem, advance that, too.',
@@ -101,14 +121,7 @@ export default {
         meetingPhase: CHECKIN,
         meetingPhaseItem: '0'
       };
-      const dbPromises = teamMembers.map((member, idx) => {
-        return r.table('TeamMember').get(member.id).update({
-          checkInOrder: idx,
-          isCheckedIn: null
-        });
-      });
-      dbPromises.push(r.table('Team').get(teamId).update(updatedTeam));
-      await Promise.all(dbPromises);
+      await r.table('Team').get(teamId).update(updatedTeam);
       return true;
     }
   },

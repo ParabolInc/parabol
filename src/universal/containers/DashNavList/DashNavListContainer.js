@@ -27,7 +27,7 @@ const mutationHandlers = {
 };
 
 const queryOptions = {
-  component: 'DashNavList',
+  op: 'DashNavList',
   mutationHandlers
 };
 

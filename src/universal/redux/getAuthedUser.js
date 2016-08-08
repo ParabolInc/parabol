@@ -28,7 +28,7 @@ const updateTokenMutationHandlers = {
 };
 
 export const authedOptions = {
-  component: 'getAuthedUser',
+  op: 'getAuthedUser',
   mutationHandlers: updateTokenMutationHandlers,
   localOnly: true
 };

@@ -15,42 +15,37 @@ const handleRethinkRemove = id => {
 };
 
 const handleRethinkUpdate = (doc, path) => {
-  const oldVals = doc.old_val || {};
-  const newVals = doc.new_val || {};
-  const changeKeys = [...Object.keys(oldVals), ...Object.keys(newVals)];
+  const oldVals = doc.old_val;
+  const newVals = doc.new_val;
+  const oldFields = Object.keys(oldVals);
+  const newFields = Object.keys(newVals);
   const removeKeys = [];
-  const docId = oldVals.id || newVals.id;
   const diff = {};
-  for (let i = 0; i < changeKeys.length; i++) {
-    const key = changeKeys[i];
-
-    // flag keys to remove
+  for (let i = 0; i < oldFields.length; i++) {
+    const key = oldFields[i];
     if (!newVals.hasOwnProperty(key)) {
       removeKeys.push(key);
-      continue;
     }
-
-    // explicit check to ensure we send down falsy values
-    if (!oldVals.hasOwnProperty(key)) {
-      diff[key] = newVals[key];
-      continue;
-    }
+  }
+  for (let i = 0; i < newFields.length; i++) {
+    const key = newFields[i];
     const oldVal = oldVals[key];
     const newVal = newVals[key];
-
-    // don't send down unchanged values
     if (oldVal === newVal || jsonEqual(oldVal, newVal)) {
       continue;
     }
-    diff[key] = newVals[key];
+    diff[key] = newVal;
   }
+  diff.id = oldVals.id;
   const payload = {
     type: 'update',
-    fields: diff,
-    removeKeys
+    fields: diff
   };
+  if (removeKeys.length) {
+    payload.removeKeys = removeKeys;
+  }
   if (path) {
-    payload.path = `${path}[${docId}]`;
+    payload.path = `${path}[${oldVals.id}]`;
   }
   return payload;
 };
