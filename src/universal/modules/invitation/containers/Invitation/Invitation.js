@@ -87,6 +87,13 @@ export default class Invitation extends Component {
     withRouter: PropTypes.object
   };
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      processedInvitation: false
+    };
+  }
+
   componentDidMount() {
     this.stateMachine(this.props);
   }
@@ -97,14 +104,26 @@ export default class Invitation extends Component {
 
   stateMachine = (props) => {
     const {authToken, user, router} = props;
+    const {processedInvitation} = this.state;
 
     if (authToken) {
+      /*
       if (user && user.isNew === false) {
         // If user already has an account, let them accept the new team via the UI:
         router.push('/me');
       } else if (user && user.isNew === true && user.memberships.length === 0) {
         // If the user is new let's process their invite:
         this.processInvitation();
+      }
+      */
+      // NOTE: temporarily process all invitations, even for existing users:
+      // TODO: remove below
+      // debugger;
+      if (user.id && !processedInvitation) {
+        this.setState({processedInvitation: true});
+        this.processInvitation();
+      } else if (user.id) {
+        router.push('/me');
       }
     }
   };
