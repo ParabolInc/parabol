@@ -7,6 +7,31 @@ import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avata
 
 const combineStyles = StyleSheet.combineStyles;
 const avatarSize = '1.5rem';
+const buttonBase = {
+  border: 0,
+  borderRadius: '.5rem',
+  cursor: 'pointer',
+  fontSize: theme.typography.s3,
+  fontWeight: 700,
+  height: avatarSize,
+  lineHeight: avatarSize,
+  margin: 0,
+  outline: 'none',
+  padding: 0,
+  textAlign: 'center',
+  width: avatarSize
+};
+const descriptionFA = {
+  backgroundColor: theme.palette.cool10l,
+  borderTopColor: 'currentColor',
+  color: theme.palette.cool,
+  outline: 'none'
+};
+const descriptionActionFA = {
+  backgroundColor: 'rgba(255, 255, 255, .85)',
+  borderTopColor: theme.palette.mid,
+  color: theme.palette.mid10d
+};
 let styles = {};
 
 const OutcomeCard = props => {
@@ -15,6 +40,7 @@ const OutcomeCard = props => {
     status,
     openStatusMenu,
     isArchived,
+    isProject,
     owner,
     showByTeam,
     team,
@@ -42,18 +68,28 @@ const OutcomeCard = props => {
     );
   };
 
+  let rootStyles;
+  const rootStyleOptions = [styles.root, styles.cardBlock];
   const avatarImage = showByTeam ? team.avatar : owner.avatar;
   const avatarName = showByTeam ? team.name : owner.name;
   const avatarTeamStyles = combineStyles(styles.avatar, styles.avatarTeam);
   const avatarStyles = showByTeam ? avatarTeamStyles : styles.avatar;
+  const descStyles = isProject ? styles.description : combineStyles(styles.description, styles.descriptionAction);
+  if (isProject) {
+    rootStyleOptions.push(styles[status]);
+  } else {
+    rootStyleOptions.push(styles.isAction);
+  }
+  rootStyles = combineStyles.apply(null, rootStyleOptions);
 
   return (
-    <div className={combineStyles(styles.root, styles[status], styles.cardBlock)}>
+    <div className={rootStyles}>
+      {console.log(`isProject: ${isProject}`)}
       {/* card main */}
       <div className={styles.timestamp}>
         {timestamp}
       </div>
-      <Textarea className={styles.description} defaultValue={description} />
+      <Textarea className={descStyles} defaultValue={description} />
       {/* card footer */}
       <div className={styles.footer}>
         <div className={styles.avatarBlock}>
@@ -61,9 +97,17 @@ const OutcomeCard = props => {
           <div className={styles.name}>{avatarName}</div>
         </div>
         <div className={styles.statusBlock}>
-          <div className={styles.statusButton}>
-            {makeStatusButton()}
-          </div>
+          {isProject ?
+            <div className={styles.statusButton}>
+              {makeStatusButton()}
+            </div> :
+            <button className={styles.actionButton}>
+              <FontAwesome
+                name="calendar-check-o"
+                style={{lineHeight: avatarSize}}
+              />
+            </button>
+          }
           {isArchived &&
             <div>TODO: Style archived</div>
           }
@@ -92,7 +136,7 @@ OutcomeCard.propTypes = {
 
 OutcomeCard.defaultProps = {
   description: 'Parabol website updated',
-  status: 'done',
+  status: 'active',
   openStatusMenu() {
     console.log('openStatusMenu');
   },
@@ -115,7 +159,7 @@ styles = StyleSheet.create({
     backgroundColor: '#fff',
     border: `1px solid ${theme.palette.mid30l}`,
     borderRadius: '.5rem',
-    borderTop: `.25rem solid ${theme.palette.dark10d}`,
+    borderTop: `.25rem solid ${theme.palette.mid}`,
     maxWidth: '20rem',
     width: '100%'
   },
@@ -123,6 +167,10 @@ styles = StyleSheet.create({
   cardBlock: {
     marginBottom: '1rem',
     width: '100%'
+  },
+
+  isAction: {
+    backgroundColor: theme.palette.light50l
   },
 
   timestamp: {
@@ -134,6 +182,7 @@ styles = StyleSheet.create({
   },
 
   description: {
+    backgroundColor: 'transparent',
     border: 0,
     borderTop: '1px solid transparent',
     color: theme.palette.dark10d,
@@ -146,16 +195,20 @@ styles = StyleSheet.create({
     width: '100%',
 
     ':focus': {
-      backgroundColor: theme.palette.cool10l,
-      borderTopColor: 'currentColor',
-      color: theme.palette.cool,
-      outline: 'none'
+      ...descriptionFA
     },
     ':active': {
-      backgroundColor: theme.palette.cool10l,
-      borderTopColor: 'currentColor',
-      color: theme.palette.cool,
-      outline: 'none'
+      ...descriptionFA
+    }
+  },
+
+  descriptionAction: {
+    // NOTE: modifies styles.description
+    ':focus': {
+      ...descriptionActionFA
+    },
+    ':active': {
+      ...descriptionActionFA
     }
   },
 
@@ -199,22 +252,21 @@ styles = StyleSheet.create({
   },
 
   statusButton: {
+    ...buttonBase,
     backgroundColor: theme.palette.mid10l,
-    border: 0,
-    borderRadius: '.5rem',
-    cursor: 'pointer',
-    fontSize: theme.typography.s3,
-    fontWeight: 700,
-    height: avatarSize,
-    lineHeight: avatarSize,
-    margin: 0,
-    outline: 'none',
-    padding: 0,
-    textAlign: 'center',
-    width: avatarSize,
 
     ':focus': {
       boxShadow: '0 0 2px 2px rgba(9, 141, 143, .5)'
+    }
+  },
+
+  actionButton: {
+    ...buttonBase,
+    backgroundColor: 'transparent',
+    boxShadow: `inset 0 0 0 1px ${theme.palette.mid30l}`,
+
+    ':focus': {
+      boxShadow: `inset 0 0 0 1px ${theme.palette.mid30l}, 0 0 2px 2px rgba(103, 108, 138, .5)`
     }
   },
 

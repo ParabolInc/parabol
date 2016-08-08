@@ -1,10 +1,8 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-// import theme from 'universal/styles/theme';
 import Avatar from 'universal/components/Avatar/Avatar';
 
 let s = {};
-const outerPadding = '8rem';
 
 const DashboardAvatars = (props) => {
   const {teamMembers} = props;
@@ -14,7 +12,7 @@ const DashboardAvatars = (props) => {
       {
         teamMembers.map((avatar, index) =>
           <div className={s.item} key={`dbAvatar${index}`}>
-            <Avatar {...avatar} size="small" />
+            <Avatar {...avatar} hasBadge={false} size="smallest" />
           </div>
         )
       }
@@ -29,9 +27,9 @@ DashboardAvatars.propTypes = {
 s = StyleSheet.create({
   root: {
     fontSize: 0,
-    padding: `0 ${outerPadding}`,
     position: 'relative',
-    textAlign: 'center'
+    textAlign: 'right',
+    width: '100%'
   },
 
   item: {

@@ -204,8 +204,7 @@ s = StyleSheet.create({
   sidebar: {
     backgroundColor: theme.palette.dark10l,
     padding: '2rem 0',
-    maxWidth: '15rem',
-    width: '100%'
+    width: '15rem'
   },
 
   sidebarHeader: {

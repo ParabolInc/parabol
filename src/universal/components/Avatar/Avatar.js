@@ -42,6 +42,7 @@ const renderBadge = (isCheckedIn, isConnected, size) => {
 
 const Avatar = (props) => {
   const {
+    hasBadge,
     hasLabel,
     labelRight,
     hasTooltip,
@@ -99,7 +100,9 @@ const Avatar = (props) => {
       <div className={imagePositionStyles}>
         <div className={imageBlockStyles}>
           <img className={s.avatarImage} src={picture} />
-          {renderBadge(isCheckedIn, isConnected, size)}
+          {hasBadge &&
+            renderBadge(isCheckedIn, isConnected, size)
+          }
         </div>
       </div>
       {hasLabel &&
@@ -113,6 +116,7 @@ const Avatar = (props) => {
 };
 
 Avatar.propTypes = {
+  hasBadge: PropTypes.bool,
   hasLabel: PropTypes.bool,
   hasTooltip: PropTypes.bool,
   isCheckedIn: PropTypes.bool,
@@ -131,6 +135,7 @@ Avatar.propTypes = {
 };
 
 Avatar.defaultProps = {
+  hasBadge: true,
   isCheckedIn: false,
   isConnected: false,
   picture: 'https://placekitten.com/g/600/600',

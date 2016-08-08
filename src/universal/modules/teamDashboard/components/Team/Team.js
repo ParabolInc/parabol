@@ -3,6 +3,7 @@ import FontAwesome from 'react-fontawesome';
 import {
   DashContent,
   DashHeader,
+  DashHeaderInfo,
   DashLayout,
   DashMain,
   DashSidebar
@@ -38,21 +39,23 @@ const Team = (props) => {
         user={user}
       />
       <DashMain>
-        <DashHeader title={team.name}>
-          <Link
-            to={`/meeting/${team.id}`}
-            style={linkStyle}
-            title="Meeting Lobby"
-          >
-            <FontAwesome name="arrow-circle-right" style={faIconStyle} /> Meeting Lobby
-          </Link>
-          <Link
-            to={`/meeting/${team.id}/settings`}
-            style={linkStyle}
-            title="Team Settings"
-          >
-            <FontAwesome name="cog" style={faIconStyle} /> Team Settings
-          </Link>
+        <DashHeader>
+          <DashHeaderInfo title={team.name}>
+            <Link
+              to={`/meeting/${team.id}`}
+              style={linkStyle}
+              title="Meeting Lobby"
+            >
+              <FontAwesome name="arrow-circle-right" style={faIconStyle} /> Meeting Lobby
+            </Link>
+            <Link
+              to={`/meeting/${team.id}/settings`}
+              style={linkStyle}
+              title="Team Settings"
+            >
+              <FontAwesome name="cog" style={faIconStyle} /> Team Settings
+            </Link>
+          </DashHeaderInfo>
           <DashboardAvatars teamMembers={teamMembers}/>
         </DashHeader>
         <DashContent>

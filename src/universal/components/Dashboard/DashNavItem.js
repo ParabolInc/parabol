@@ -5,6 +5,18 @@ import {Link} from 'react-router';
 
 let styles = {};
 
+const linkHF = {
+  backgroundColor: theme.palette.dark50a,
+  color: 'inherit',
+  cursor: 'pointer',
+  textDecoration: 'none'
+};
+
+const activeHF = {
+  backgroundColor: theme.palette.dark,
+  cursor: 'default'
+};
+
 const DashNavItem = (props) => {
   const {label, href} = props;
   return (
@@ -33,21 +45,16 @@ styles = StyleSheet.create({
     color: 'inherit',
     display: 'block',
     fontSize: theme.typography.s4,
+    margin: '.5rem 0',
     padding: '.3125rem .5rem .3125rem 1rem',
     userSelect: 'none',
     width: '100%',
 
     ':hover': {
-      backgroundColor: theme.palette.dark50a,
-      color: 'inherit',
-      cursor: 'pointer',
-      textDecoration: 'none'
+      ...linkHF
     },
     ':focus': {
-      backgroundColor: theme.palette.dark50a,
-      color: 'inherit',
-      cursor: 'pointer',
-      textDecoration: 'none'
+      ...linkHF
     }
   },
 
@@ -55,12 +62,10 @@ styles = StyleSheet.create({
     backgroundColor: theme.palette.dark,
 
     ':hover': {
-      backgroundColor: theme.palette.dark,
-      cursor: 'default'
+      ...activeHF
     },
     ':focus': {
-      backgroundColor: theme.palette.dark,
-      cursor: 'default'
+      ...activeHF
     }
   }
 });
