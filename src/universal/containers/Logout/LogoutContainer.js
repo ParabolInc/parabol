@@ -24,7 +24,7 @@ export default class LogoutContainer extends Component {
     dispatch(removeAuthToken());
     /* reset the app state, but preserve any pending notifications: */
     router.replace('/');
-    dispatch(resetAppState(['notifications']));
+    dispatch(resetAppState());
     dispatch(showSuccess(logoutSuccess));
   }
 
