@@ -57,8 +57,7 @@ export default [
          isFacilitator,
          isLead,
          picture,
-         preferredName,
-         userId,
+         preferredName
        }
     }`,
     channelfy: variables => `teamMembers/${variables.teamId}`

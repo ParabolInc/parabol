@@ -1,5 +1,5 @@
 import r from 'server/database/rethinkDriver';
-import {requireSUOrTeamMember, requireSUOrSelf, requireWebsocket} from '../authorization';
+import {requireAuth, requireSUOrTeamMember, requireWebsocket} from '../authorization';
 import {updatedOrOriginal, errorObj} from '../utils';
 import {
   GraphQLNonNull,
@@ -161,18 +161,17 @@ export default {
       }
     },
     async resolve(source, {newTeam}, {authToken}) {
-      // require userId in the input so an admin can also create a team
-      const {leader, ...team} = newTeam;
-      const userId = leader.userId;
-      requireSUOrSelf(authToken, userId);
+      const userId = requireAuth(authToken);
       // TODO generalize this & spread it to every create action
-      if (newTeam.id.length > 10) {
+      if (newTeam.id.length > 10 || newTeam.id.indexOf('::') !== -1) {
         throw errorObj({_error: 'Bad id'});
       }
+      const teamMemberId = `${userId}::${newTeam.id}`;
+
       // can't trust the client
-      const verifiedLeader = {...leader, isActive: true, isLead: true, isFacilitator: true, checkInOrder: 0};
+      const verifiedLeader = {id: teamMemberId, isActive: true, isLead: true, isFacilitator: true, checkInOrder: 0};
       const verifiedTeam = {
-        ...team,
+        ...newTeam,
         facilitatorPhase: LOBBY,
         meetingPhase: LOBBY,
         meetingId: null,

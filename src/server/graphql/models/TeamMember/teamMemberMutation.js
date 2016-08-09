@@ -8,7 +8,6 @@ import {
 } from 'graphql';
 import {errorObj} from '../utils';
 import {getUserId, requireWebsocket, requireSUOrTeamMember} from '../authorization';
-import shortid from 'shortid';
 import acceptInviteDB from './helpers';
 import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
@@ -115,10 +114,13 @@ export default {
 
       const usersOnTeam = await r.table('TeamMember').getAll(teamId, {index: 'teamId'}).count();
 
+      // team members cannot change users or teams, so let's make the ID meaningful and reduce DB hits
+      const teamMemberId = `${userId}::${teamId}`;
+
       // add user to TeamMembers
       const newTeamMember = {
         checkInOrder: usersOnTeam + 1,
-        id: shortid.generate(),
+        id: teamMemberId,
         teamId,
         userId,
         isActive: true,

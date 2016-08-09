@@ -23,15 +23,7 @@ const Step2TeamName = (props) => {
       variables: {
         newTeam: {
           id: teamId,
-          name: myTeamName,
-          leader: {
-            id: teamMemberId,
-            teamId,
-            userId: user.id,
-            isActive: true,
-            isLead: true,
-            isFacilitator: true
-          }
+          name: myTeamName
         }
       }
     };

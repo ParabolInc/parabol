@@ -10,7 +10,7 @@ import {
 } from 'graphql';
 import {nonnullifyInputThunk} from '../utils';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
-import {TeamMember, CreateTeamMemberInput} from '../TeamMember/teamMemberSchema';
+import {TeamMember} from '../TeamMember/teamMemberSchema';
 import {Placeholder} from '../Placeholder/placeholderSchema';
 import {LOBBY, CHECKIN, UPDATES, AGENDA, SUMMARY} from 'universal/utils/constants';
 
@@ -90,10 +90,6 @@ export const Team = new GraphQLObjectType({
 const teamInputThunk = () => ({
   id: {type: GraphQLID, description: 'The unique team ID'},
   name: {type: GraphQLString, description: 'The name of the team'},
-  leader: {
-    type: CreateTeamMemberInput,
-    description: 'Each team must be created with 1 team member, the leader.'
-  }
 });
 
 export const CreateTeamInput = nonnullifyInputThunk('CreateTeamInput', teamInputThunk, ['id', 'name']);

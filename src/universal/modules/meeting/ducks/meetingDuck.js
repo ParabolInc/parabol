@@ -27,11 +27,12 @@ export default function reducer(state = initialState, action = {}) {
 
 export function createMembers(teamMembers, presence, team, user) {
   const members = teamMembers.map((member) => {
+    const [userId, teamId] = member.id.split('::');
     return {
       ...member,
-      isConnected: Boolean(presence.find(connection => connection.userId === member.userId)),
+      isConnected: Boolean(presence.find(connection => connection.userId === userId)),
       isFacilitator: team.activeFacilitator === member.id,
-      isSelf: user.id === member.userId
+      isSelf: user.id === userId
     };
   }).sort((a, b) => b.checkInOrder <= a.checkInOrder);
 
@@ -40,10 +41,3 @@ export function createMembers(teamMembers, presence, team, user) {
     payload: {members}
   };
 }
-
-// export function setLocalPhase() {
-//   return {
-//     type: REMOVE_AUTH_TOKEN,
-//     payload: {}
-//   };
-// }

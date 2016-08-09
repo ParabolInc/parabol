@@ -17,11 +17,6 @@ export const TeamMember = new GraphQLObjectType({
   description: 'A member of a team team',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique team member ID'},
-    teamId: {type: new GraphQLNonNull(GraphQLID), description: 'The team team this member belongs to'},
-    userId: {
-      type: GraphQLID,
-      description: 'Active user\'s User Id'
-    },
     isActive: {type: GraphQLBoolean, description: 'Is user active?'},
     isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
     isFacilitator: {type: GraphQLBoolean, description: 'Is user a team facilitator?'},
@@ -62,9 +57,7 @@ export const TeamMember = new GraphQLObjectType({
 });
 
 const teamMemberInputThunk = () => ({
-  id: {type: GraphQLID, description: 'The unique team member ID'},
-  teamId: {type: GraphQLID, description: 'The team this member belongs to'},
-  userId: {type: GraphQLID, description: 'Active user\'s  id'},
+  id: {type: GraphQLID, description: 'The unique team member ID, composed of the userId::teamId'},
   isActive: {type: GraphQLBoolean, description: 'Is user active?'},
   isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
   isFacilitator: {type: GraphQLBoolean, description: 'Is user a team facilitator?'}
