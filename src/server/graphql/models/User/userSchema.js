@@ -137,6 +137,10 @@ export const User = new GraphQLObjectType({
       async resolve({id}) {
         return await r.table('Task').getAll(id, {index: 'userId'});
       }
+    },
+    jwt: {
+      type: GraphQLID,
+      description: 'a refreshed JWT'
     }
   })
 });

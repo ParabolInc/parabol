@@ -10,7 +10,7 @@ import {
   showSuccess,
   showWarning
 } from 'universal/modules/notifications/ducks/notifications';
-
+import {setAuthToken} from 'universal/redux/authDuck';
 import {
   invalidInvitation,
   inviteNotFound,
@@ -35,7 +35,8 @@ query {
       isLead,
       isActive,
       isFacilitator
-    }
+    },
+    jwt
   }
 }`;
 
@@ -43,7 +44,7 @@ const mutationHandlers = {
   acceptInvitation(optimisticVariables, queryResponse, currentResponse) {
     if (queryResponse) {
       // we can't be optimistic, server must process our invite token:
-      currentResponse.user.memberships.push(queryResponse);
+      currentResponse.user.memberships.push(queryResponse.teamMember);
     }
     return undefined;
   },
@@ -70,7 +71,7 @@ const mapStateToProps = (state, props) => {
   return {
     authToken: state.authToken,
     inviteToken: id,
-    user: cashay.query(getUserWithMemberships, cashayOptions).data.user,
+    user: cashay.query(getUserWithMemberships, cashayOptions).data.user
   };
 };
 
@@ -136,7 +137,9 @@ export default class Invitation extends Component {
           // TODO: pop them a toast and tell them what happened?
           router.push('/welcome');
         } else if (data) {
-          const {id} = data.acceptInvitation.team;
+          const {teamMember, jwt} = data.acceptInvitation;
+          const {id} = teamMember.team;
+          dispatch(setAuthToken(jwt));
           dispatch(setWelcomeActivity(`/team/${id}`));
           dispatch(showSuccess(successfulJoin));
           router.push('/me/settings');

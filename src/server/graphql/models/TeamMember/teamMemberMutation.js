@@ -3,14 +3,31 @@ import {TeamMember} from './teamMemberSchema';
 import {
   GraphQLNonNull,
   GraphQLID,
-  GraphQLBoolean
+  GraphQLBoolean,
+  GraphQLObjectType
 } from 'graphql';
 import {errorObj} from '../utils';
 import {getUserId, requireWebsocket, requireSUOrTeamMember} from '../authorization';
 import shortid from 'shortid';
 import acceptInviteDB from './helpers';
 import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
+import tmsSignToken from 'server/graphql/models/tmsSignToken';
 
+
+const acceptInvitationPayload = new GraphQLObjectType({
+  name: 'acceptInvitationPayload',
+  description: 'a payload including a new JWT and a team member',
+  fields: () => ({
+    teamMember: {
+      type: TeamMember,
+      description: 'The new team member'
+    },
+    jwt: {
+      type: GraphQLID,
+      description: 'A new JWT including an updated tms field'
+    }
+  })
+});
 
 export default {
   checkin: {
@@ -37,7 +54,7 @@ export default {
     }
   },
   acceptInvitation: {
-    type: TeamMember,
+    type: acceptInvitationPayload,
     description: `Add a user to a Team given an invitationToken.
     If the invitationToken is valid, returns the Team objective they've been
     added to. Returns null otherwise.
@@ -85,13 +102,9 @@ export default {
 
       const userId = getUserId(authToken);
       const user = await r.table('User').get(userId);
-
+      const oldtms = authToken.tms || [];
       // Check if TeamMember already exists (i.e. user invited themselves):
-      const teamMemberExists = await r.table('TeamMember')
-        .getAll(userId, {index: 'userId'})
-        .filter({teamId})
-        .isEmpty()
-        .not();
+      const teamMemberExists = oldtms.includes(teamId);
       if (teamMemberExists) {
         throw errorObj({
           _error: 'Cannot accept invitation, already a member of team.',
@@ -128,7 +141,13 @@ export default {
       if (user.email !== email) {
         await acceptInviteDB(user.email, now);
       }
-      return newTeamMember;
+
+      const tms = oldtms.concat(teamId);
+      const newJWT = tmsSignToken(authToken, tms);
+      return {
+        teamMember: newTeamMember,
+        jwt: newJWT
+      };
     }
   }
 };

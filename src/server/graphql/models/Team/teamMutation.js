@@ -12,8 +12,7 @@ import {CreateTeamInput, UpdateTeamInput, Team} from './teamSchema';
 import shuffle from 'universal/utils/shuffle';
 import shortid from 'shortid';
 import {CHECKIN, LOBBY, UPDATES, AGENDA} from 'universal/utils/constants';
-import {sign} from 'jsonwebtoken';
-import ms from 'ms';
+import tmsSignToken from 'server/graphql/models/tmsSignToken';
 
 export default {
   endMeeting: {
@@ -194,19 +193,8 @@ export default {
         auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
       ];
       await Promise.all(dbPromises);
-      // new token will expire in 30 days
-      // JWT timestamps chop off milliseconds
-      const now = Date.now();
-      const exp = ~~((now + ms('30d')) / 1000);
-      const iat = ~~(now / 1000);
-      const newToken = {
-        ...authToken,
-        exp,
-        iat,
-        tms
-      };
+      return tmsSignToken(authToken, tms);
       // TODO: trigger welcome email
-      return sign(newToken, process.env.AUTH0_CLIENT_SECRET);
     }
   },
   updateTeamName: {
