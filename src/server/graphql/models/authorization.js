@@ -61,7 +61,6 @@ export const requireTeamMemberIsSelf = async (authToken, teamMemberId) => {
   const authTokenUserId = getUserId(authToken);
   const {userId} = await getUserIdFromTeamMember(teamMemberId);
   if (userId !== authTokenUserId) {
-    console.log('COM', userId, authTokenUserId, authToken, teamMemberId)
     throw errorObj({_error: 'Unauthorized. Team member not linked to user.'});
   }
   return authTokenUserId;

@@ -1,7 +1,7 @@
 import React from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
-import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
+import TeamCard from 'universal/modules/teamDashboard/components/TeamCard/TeamCard';
 import {ACTIVE, STUCK, DONE, FUTURE, PROJECT} from 'universal/utils/constants';
 import FontAwesome from 'react-fontawesome';
 import {cashay} from 'cashay';
@@ -18,9 +18,8 @@ const labels = {
 };
 
 const ProjectColumn = (props) => {
-  const {status, projects, teamMemberId} = props;
+  const {status, projects, teamMembers, teamMemberId} = props;
   const handleAddProject = (e) => {
-    console.log('adding project!', teamMemberId);
     const newTask = {
       id: shortid.generate(),
       type: PROJECT,
@@ -35,10 +34,7 @@ const ProjectColumn = (props) => {
         <span>{labels[status]}</span>
         <FontAwesome name="plus-square" onClick={handleAddProject}/>
       </div>
-      <OutcomeCard status={status}/>
-      <OutcomeCard status={status}/>
-      <OutcomeCard status={status}/>
-      <OutcomeCard status={status}/>
+      {projects.map(project => <TeamCard key={`teamCard${project.id}`} teamMemberId={teamMemberId} teamMembers={teamMembers} project={project}/>)}
     </div>
   );
 };

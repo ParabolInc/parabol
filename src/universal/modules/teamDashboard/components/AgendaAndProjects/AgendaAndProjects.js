@@ -5,14 +5,14 @@ import TeamProjects from 'universal/modules/teamDashboard/components/TeamProject
 
 const AgendaAndProjects = (props) => {
   const {styles} = AgendaAndProjects;
-  const {teamMemberId} = props;
+  const {projects, teamMembers, teamMemberId} = props;
   return (
     <div className={styles.root}>
       <div className={styles.agendaLayout}>
         <TeamAgenda/>
       </div>
       <div className={styles.projectsLayout}>
-        <TeamProjects teamMemberId={teamMemberId}/>
+        <TeamProjects projects={projects} teamMembers={teamMembers} teamMemberId={teamMemberId}/>
       </div>
     </div>
   );

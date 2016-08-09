@@ -68,4 +68,6 @@ const taskInputThunk = () => ({
   teamMemberId: {type: GraphQLID, description: 'The team member ID of the person creating the task'}
 });
 
-export const CreateTaskInput = nonnullifyInputThunk('CreateTaskInput', taskInputThunk, ['id', 'type', 'status', 'teamMemberId']);
+export const CreateTaskInput =
+  nonnullifyInputThunk('CreateTaskInput', taskInputThunk, ['id', 'type', 'status', 'teamMemberId']);
+export const UpdateTaskInput = nonnullifyInputThunk('UpdateTaskInput', taskInputThunk, ['id']);

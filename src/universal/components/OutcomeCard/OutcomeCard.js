@@ -36,7 +36,7 @@ let styles = {};
 
 const OutcomeCard = props => {
   const {
-    description,
+    content,
     status,
     openStatusMenu,
     isArchived,
@@ -46,7 +46,6 @@ const OutcomeCard = props => {
     team,
     timestamp
   } = props;
-
   const makeStatusButton = () => {
     const buttonStyles = combineStyles(styles.statusButton, styles[status]);
     const statusIcon = {
@@ -70,11 +69,11 @@ const OutcomeCard = props => {
 
   let rootStyles;
   const rootStyleOptions = [styles.root, styles.cardBlock];
-  const avatarImage = showByTeam ? team.avatar : owner.avatar;
-  const avatarName = showByTeam ? team.name : owner.name;
+  const avatarImage = showByTeam ? team.picture : owner.picture;
+  const avatarName = showByTeam ? team.preferredName : owner.preferredName;
   const avatarTeamStyles = combineStyles(styles.avatar, styles.avatarTeam);
   const avatarStyles = showByTeam ? avatarTeamStyles : styles.avatar;
-  const descStyles = isProject ? styles.description : combineStyles(styles.description, styles.descriptionAction);
+  const descStyles = isProject ? styles.content : combineStyles(styles.content, styles.descriptionAction);
   if (isProject) {
     rootStyleOptions.push(styles[status]);
   } else {
@@ -89,7 +88,7 @@ const OutcomeCard = props => {
       <div className={styles.timestamp}>
         {timestamp}
       </div>
-      <Textarea className={descStyles} defaultValue={description} />
+      <Textarea className={descStyles} defaultValue={content} />
       {/* card footer */}
       <div className={styles.footer}>
         <div className={styles.avatarBlock}>
@@ -118,7 +117,7 @@ const OutcomeCard = props => {
 };
 
 OutcomeCard.propTypes = {
-  description: PropTypes.string,
+  content: PropTypes.string,
   status: PropTypes.oneOf([
     'active',
     'stuck',
@@ -135,7 +134,7 @@ OutcomeCard.propTypes = {
 };
 
 OutcomeCard.defaultProps = {
-  description: 'Parabol website updated',
+  content: 'Parabol website updated',
   status: 'active',
   openStatusMenu() {
     console.log('openStatusMenu');
@@ -143,12 +142,12 @@ OutcomeCard.defaultProps = {
   isArchived: false,
   isProject: true,
   owner: {
-    name: 'Taya Mueller',
-    avatar: TayaAvatar
+    preferredName: 'Taya Mueller',
+    picture: TayaAvatar
   },
   team: {
-    name: 'Engineering',
-    avatar: 'https://placekitten.com/g/24/24'
+    preferredName: 'Engineering',
+    picture: 'https://placekitten.com/g/24/24'
   },
   timestamp: '1 day ago',
   showByTeam: false
@@ -181,7 +180,7 @@ styles = StyleSheet.create({
     textAlign: 'right'
   },
 
-  description: {
+  content: {
     backgroundColor: 'transparent',
     border: 0,
     borderTop: '1px solid transparent',
@@ -203,7 +202,7 @@ styles = StyleSheet.create({
   },
 
   descriptionAction: {
-    // NOTE: modifies styles.description
+    // NOTE: modifies styles.content
     ':focus': {
       ...descriptionActionFA
     },

@@ -72,3 +72,4 @@ const teamMemberInputThunk = () => ({
 
 export const CreateTeamMemberInput =
   nonnullifyInputThunk('CreateTeamMemberInput', teamMemberInputThunk, ['id', 'teamId', 'userId']);
+export const UpdateTeamMemberInput = nonnullifyInputThunk('UpdateTeamMemberInput', teamMemberInputThunk, ['id']);

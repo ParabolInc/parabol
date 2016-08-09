@@ -27,7 +27,7 @@ const linkStyle = {
 };
 
 const Team = (props) => {
-  const {dispatch, team, teamMembers, user} = props;
+  const {dispatch, projects, team, teamMembers, user} = props;
   const membership = teamMembers.find(member => member.userId === user.id);
   const teamMemberId = membership && membership.id;
   return (
@@ -59,8 +59,7 @@ const Team = (props) => {
           <DashboardAvatars teamMembers={teamMembers}/>
         </DashHeader>
         <DashContent>
-          {console.log(`teamMemberId: ${teamMemberId}`)}
-          <AgendaAndProjects teamMemberId={teamMemberId}/>
+          <AgendaAndProjects projects={projects} teamMembers={teamMembers} teamMemberId={teamMemberId}/>
         </DashContent>
       </DashMain>
     </DashLayout>

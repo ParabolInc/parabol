@@ -23,6 +23,7 @@ export default [
         status
         teamMemberId
         type
+        updatedAt
       }
     }`,
     channelfy: variables => `projects/${variables.teamMemberId}`
