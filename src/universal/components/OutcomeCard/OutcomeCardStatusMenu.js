@@ -118,10 +118,6 @@ styles = StyleSheet.create({
     textTransform: 'uppercase'
   },
 
-  u: {
-    textDecoration: 'underline'
-  },
-
   disabled: {
     cursor: 'not-allowed',
     opacity: '.35'

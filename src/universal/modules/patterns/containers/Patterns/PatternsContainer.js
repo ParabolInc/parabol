@@ -60,6 +60,13 @@ export default class PatternsContainer extends Component {
         <br />
         <br />
 
+        {makeLabel('OutcomeCard content="Action completed in a day" isProject={false}')}
+        <OutcomeCard content="Action completed in a day" isProject={false} />
+
+        <br />
+        <br />
+        <br />
+
         {makeLabel('ProgressBar')}
         <ProgressBar />
 
