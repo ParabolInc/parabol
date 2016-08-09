@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import FontAwesome from 'react-fontawesome';
-import Textarea from 'react-textarea-autosize';
+import {reduxForm, Field as ReduxFormField} from 'redux-form';
 import OutcomeCardStatusMenu from './OutcomeCardStatusMenu';
 import theme from 'universal/styles/theme';
 import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
@@ -89,20 +89,26 @@ const OutcomeCard = props => {
     <div className={rootStyles}>
       {/* card main */}
       {hasOpenStatusMenu &&
-        <OutcomeCardStatusMenu isArchived={isArchived} status={status} />
+      <OutcomeCardStatusMenu isArchived={isArchived} status={status}/>
       }
       {!hasOpenAssignMenu && !hasOpenStatusMenu &&
-        <div className={styles.body}>
-          <div className={styles.timestamp}>
-            {timestamp}
-          </div>
-          <Textarea className={descStyles} defaultValue={content} />
+      <div className={styles.body}>
+        <div className={styles.timestamp}>
+          {timestamp}
         </div>
+        {/*<ReduxFormField*/}
+          {/*name={name}*/}
+          {/*component="textarea"*/}
+          {/*className={descStyles}*/}
+          {/*placeholder="A brief description..."*/}
+          {/*{...props}*/}
+        {/*/>*/}
+      </div>
       }
       {/* card footer */}
       <div className={styles.footer}>
         <div className={styles.avatarBlock}>
-          <img alt={avatarName} className={avatarStyles} src={avatarImage} />
+          <img alt={avatarName} className={avatarStyles} src={avatarImage}/>
           <div className={styles.name}>{avatarName}</div>
         </div>
         <div className={styles.statusBlock}>
@@ -117,7 +123,7 @@ const OutcomeCard = props => {
             <div>
               {isProject ?
                 <div className={styles.statusButton}>
-                {makeStatusButton()}
+                  {makeStatusButton()}
                 </div> :
                 <button className={styles.actionButton}>
                   <FontAwesome
@@ -155,7 +161,6 @@ OutcomeCard.propTypes = {
 };
 
 OutcomeCard.defaultProps = {
-  content: 'Parabol website updated',
   status: 'active',
   openStatusMenu() {
     console.log('openStatusMenu');
@@ -327,4 +332,5 @@ styles = StyleSheet.create({
   }
 });
 
-export default look(OutcomeCard);
+const formOptions = {form: 'outcomeCard'};
+export default reduxForm(formOptions)(look(OutcomeCard));

@@ -115,7 +115,7 @@
     "react-router": "2.6.1",
     "react-textarea-autosize": "^4.0.4",
     "redux": "3.5.2",
-    "redux-form": "^6.0.0-rc.3",
+    "redux-form": "^6.0.0-rc.4",
     "redux-logger": "2.6.1",
     "redux-socket-cluster": "^0.8.2",
     "redux-storage-engine-localstorage": "^1.1.1",

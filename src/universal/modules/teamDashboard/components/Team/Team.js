@@ -28,8 +28,7 @@ const linkStyle = {
 
 const Team = (props) => {
   const {dispatch, projects, team, teamMembers, user} = props;
-  const membership = teamMembers.find(member => member.userId === user.id);
-  const teamMemberId = membership && membership.id;
+  const teamMemberId = `${user.id}::${team.id}`
   return (
     <DashLayout title="Team Dashboard">
       <DashSidebar

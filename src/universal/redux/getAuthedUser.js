@@ -9,6 +9,17 @@ query {
   }
 }`;
 
+// we only want the preferredName, we know nothing else will change
+const customMutations = {
+  updateUserProfile: `
+  mutation {
+    updateUserProfile(updatedUser: $updatedUser) {
+      preferredName
+      id
+    }
+  }`
+};
+
 const updateTokenMutationHandlers = {
   updateUserProfile(optimisticVariables, queryResponse, currentResponse) {
     if (optimisticVariables) {
@@ -30,5 +41,6 @@ const updateTokenMutationHandlers = {
 export const authedOptions = {
   op: 'getAuthedUser',
   mutationHandlers: updateTokenMutationHandlers,
+  customMutations,
   localOnly: true
 };
