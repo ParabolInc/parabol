@@ -37,16 +37,13 @@ export default {
         type: new GraphQLNonNull(GraphQLID),
         description: 'The teamMemberId of the person who is being checked in'
       },
-      teamId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The teamId to make sure the socket calling has permission'
-      },
       isCheckedIn: {
         type: GraphQLBoolean,
         description: 'true if the member is present, false if absent, null if undecided'
       }
     },
-    async resolve(source, {teamId, teamMemberId, isCheckedIn}, {authToken, socket}) {
+    async resolve(source, {teamMemberId, isCheckedIn}, {authToken, socket}) {
+      const [userId, teamId] = teamMemberId.split('::');
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
       await r.table('TeamMember').get(teamMemberId).update({isCheckedIn});
@@ -99,8 +96,6 @@ export default {
         });
       }
 
-      const userId = getUserId(authToken);
-      const user = await r.table('User').get(userId);
       const oldtms = authToken.tms || [];
       // Check if TeamMember already exists (i.e. user invited themselves):
       const teamMemberExists = oldtms.includes(teamId);
@@ -112,12 +107,18 @@ export default {
         });
       }
 
-      const usersOnTeam = await r.table('TeamMember').getAll(teamId, {index: 'teamId'}).count();
+      const usersOnTeam = await r.table('TeamMember')
+        .getAll(teamId, {index: 'teamId'})
+        .filter({isActive: true})
+        .count();
+      const userId = getUserId(authToken);
+      const user = await r.table('User').get(userId);
 
       // team members cannot change users or teams, so let's make the ID meaningful and reduce DB hits
       const teamMemberId = `${userId}::${teamId}`;
 
       // add user to TeamMembers
+
       const newTeamMember = {
         checkInOrder: usersOnTeam + 1,
         id: teamMemberId,

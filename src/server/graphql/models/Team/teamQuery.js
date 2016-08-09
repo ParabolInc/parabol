@@ -13,11 +13,12 @@ export default {
       }
     },
     async resolve(source, {teamId}) {
-      const team = await getTeamById(teamId);
-      if (!team) {
-        throw errorObj({_error: 'Team not found'});
-      }
-      return team;
+      // const team = await getTeamById(teamId);
+      // if (!team) {
+      //   throw errorObj({_error: 'Team not found'});
+      // }
+      // return team;
+      return null;
     }
   }
 };

@@ -15,7 +15,7 @@ let s = {};
 const faStyle = {lineHeight: 'inherit'};
 const faFontSize = `${14 * 2}px`; // FA based on 14px
 
-const createStartMeetingHandler = (members, teamId) => {
+const createStartMeetingHandler = (members) => {
   return () => {
     const self = members.find(member => member.isSelf);
     if (!self) {
@@ -24,7 +24,7 @@ const createStartMeetingHandler = (members, teamId) => {
     const firstFacilitator = members.find(member => member.isFacilitator);
     const safeFirstFacilitator = firstFacilitator || self;
     const facilitatorId = self.isFacilitator ? self.id : safeFirstFacilitator.id;
-    const options = {variables: {teamId, facilitatorId}};
+    const options = {variables: {facilitatorId}};
     cashay.mutate('startMeeting', options);
   };
 };
@@ -33,7 +33,7 @@ const MeetingLobby = (props) => {
   const {members, params, teamName} = props;
   const {teamId} = params;
 
-  const onStartMeetingClick = createStartMeetingHandler(members, teamId);
+  const onStartMeetingClick = createStartMeetingHandler(members);
   const shortUrl = makeMeetingUrl(teamId);
   return (
     <MeetingMain>

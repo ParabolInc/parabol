@@ -8,7 +8,6 @@ import {PROJECTS, TEAM, TEAM_MEMBERS} from 'universal/subscriptions/constants';
 import subscriber from 'universal/subscriptions/subscriber';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
-import fromNow from 'universal/utils/fromNow';
 
 const teamMembersSubString = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
 const teamSubString = subscriptions.find(sub => sub.channel === TEAM).string;
@@ -52,13 +51,12 @@ export default class TeamContainer extends Component {
   };
 
   render() {
-    window.fromNow = fromNow;
-    const {memberSub, teamSub, user, projectSubs, ...otherProps} = this.props;
+    const {memberSub, teamSub, user, projectSubs, dispatch} = this.props;
     const {team} = teamSub.data;
     const {teamMembers} = memberSub.data;
     const projects = [].concat(...projectSubs.map(sub => sub.data.projects));
     // console.log('project Subs', projects);
-    return <Team projects={projects} team={team} teamMembers={teamMembers} user={user} {...otherProps} />;
+    return <Team projects={projects} team={team} teamMembers={teamMembers} user={user} dispatch={dispatch} />;
   }
 };
 

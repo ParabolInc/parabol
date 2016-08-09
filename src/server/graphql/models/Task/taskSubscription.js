@@ -19,7 +19,7 @@ export default {
       const [userId, teamId] = teamMemberId.split('::');
       requireSUOrTeamMember(authToken, teamId);
       const requestedFields = getRequestedFields(refs);
-      const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName, {path: 'projects'});
+      const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
       r.table('Task')
         .getAll(teamMemberId, {index: 'teamMemberId'})
         .filter({type: PROJECT})

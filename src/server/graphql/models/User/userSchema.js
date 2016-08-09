@@ -131,13 +131,6 @@ export const User = new GraphQLObjectType({
         return await r.table('TeamMember').getAll(id, {index: 'userId'});
       }
     },
-    tasks: {
-      type: new GraphQLList(Task),
-      description: 'All the tasks across all the user\'s teams for which the user is responsible',
-      async resolve({id}) {
-        return await r.table('Task').getAll(id, {index: 'userId'});
-      }
-    },
     jwt: {
       type: GraphQLID,
       description: 'a refreshed JWT'

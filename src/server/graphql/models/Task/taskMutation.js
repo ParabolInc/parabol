@@ -35,10 +35,7 @@ export default {
     },
     async resolve(source, {newTask}, {authToken}) {
       const {id} = newTask;
-      if (id.indexOf('::') !== -1) {
-        throw errorObj({_error: 'Bad id'});
-      }
-      const [teamId, taskIdPart] = newTask.id.split('::');
+      const [teamId, taskIdPart] = id.split('::');
       requireSUOrTeamMember(authToken, teamId);
       const now = new Date();
       const task = {

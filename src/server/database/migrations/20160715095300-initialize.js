@@ -7,6 +7,8 @@ exports.up = async (r) => {
   ];
   await Promise.all(initialTables);
   const initialIndices = [
+    r.table('TeamMember').indexCreate('teamId'),
+    r.table('TeamMember').indexCreate('userId'),
     // one row per invite, even resending an invite gets a new row
     r.table('Invitation').indexCreate('teamId'),
     r.table('Invitation').indexCreate('email')

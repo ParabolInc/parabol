@@ -8,6 +8,20 @@ import {withRouter} from 'react-router';
 
 let styles = {};
 
+const makeCheckinPressFactory = (teamMemberId) => {
+  return (isCheckedIn) => {
+    return () => {
+      const options = {
+        variables: {
+          isCheckedIn,
+          teamMemberId
+        }
+      };
+      cashay.mutate('checkin', options);
+    };
+  };
+};
+
 @withRouter
 @look
 // eslint-disable-next-line react/prefer-stateless-function
@@ -33,22 +47,6 @@ export default class CheckinCards extends Component {
     };
   };
 
-  makeCheckinPressFactory = (teamMemberId) => {
-    const {teamId} = this.props;
-    return (isCheckedIn) => {
-      return () => {
-        const options = {
-          variables: {
-            isCheckedIn,
-            teamId,
-            teamMemberId
-          }
-        };
-        cashay.mutate('checkin', options);
-      };
-    };
-  };
-
   render() {
     const {members, localPhaseItem} = this.props;
     const memberNumber = Number(localPhaseItem);
@@ -62,7 +60,7 @@ export default class CheckinCards extends Component {
           <CheckinCard handleCardClick={this.handleCardClickFactory(memberNumber - 1)} member={leftCard}/>
         }
         {activeCard &&
-          <CheckinCard checkinPressFactory={this.makeCheckinPressFactory(activeCard.id)} member={activeCard} isActive/>
+          <CheckinCard checkinPressFactory={makeCheckinPressFactory(activeCard.id)} member={activeCard} isActive/>
         }
         {rightCard &&
           <CheckinCard handleCardClick={this.handleCardClickFactory(memberNumber + 1)} member={rightCard}/>

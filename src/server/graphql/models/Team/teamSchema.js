@@ -11,7 +11,7 @@ import {
 import {nonnullifyInputThunk} from '../utils';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {TeamMember} from '../TeamMember/teamMemberSchema';
-import {Placeholder} from '../Placeholder/placeholderSchema';
+import {AgendaItem} from '../AgendaItem/agendaItemSchema';
 import {LOBBY, CHECKIN, UPDATES, AGENDA, SUMMARY} from 'universal/utils/constants';
 
 export const Phase = new GraphQLEnumType({
@@ -77,11 +77,11 @@ export const Team = new GraphQLObjectType({
         return await r.table('TeamMember').getAll(id, {index: 'teamId'});
       }
     },
-    placeholders: {
-      type: new GraphQLList(Placeholder),
+    agendaItems: {
+      type: new GraphQLList(AgendaItem),
       description: 'The agenda items for the upcoming or current meeting',
       async resolve({id}) {
-        return await r.table('Placeholder').getAll(id, {index: 'teamId'});
+        return await r.table('AgendaItem').getAll(id, {index: 'teamId'});
       }
     }
   })

@@ -93,10 +93,7 @@ export default {
        * If we really want to be jocky, we can optmize this into a single
        * ReQL query at the expense of readability:
        */
-      const hasTeam = await r.table('TeamMember')
-        .getAll(id, {index: 'userId'})
-        .isEmpty()
-        .not();
+      const hasTeam = authToken.tms && authToken.tms.length > 0;
       const dbProfile = await r.table('User').get(id)
         .update({
           ...updatedObj,

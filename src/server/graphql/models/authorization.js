@@ -10,22 +10,6 @@ export const isSuperUser = authToken => {
   return userId && authToken.rol === 'su';
 };
 
-export const getTeamMember = async(authToken, teamId) => {
-  const userId = getUserId(authToken);
-  if (userId) {
-    const teamMembers = await r.table('TeamMember')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({userId})
-      .pluck('id', 'teamId');
-    return teamMembers[0];
-  }
-  return undefined;
-};
-
-export const getUserIdFromTeamMember = async(teamMemberId) => {
-  return await r.table('TeamMember').get(teamMemberId).pluck('userId');
-};
-
 export const requireAuth = authToken => {
   const userId = getUserId(authToken);
   if (userId) return userId;
