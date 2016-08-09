@@ -25,7 +25,7 @@ const Outcomes = (props) => {
         ProjectStatusMenu
         <br />
         <br />
-        <ProjectStatusMenu />
+        <ProjectStatusMenu status="done" isArchived={false} />
         <DashColumns />
       </DashContent>
     </DashMain>

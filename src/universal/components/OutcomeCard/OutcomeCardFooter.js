@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import FontAwesome from 'react-fontawesome';
 import theme from 'universal/styles/theme';
+import labels from 'universal/styles/theme/labels';
 import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
 
 const combineStyles = StyleSheet.combineStyles;
@@ -37,19 +38,13 @@ const OutcomeCardFooter = (props) => {
 
   const makeStatusButton = () => {
     const buttonStyles = combineStyles(styles.statusButton, styles[status]);
-    const statusIcon = {
-      active: 'arrow-right',
-      stuck: 'exclamation-triangle',
-      done: 'check',
-      future: 'clock-o'
-    };
     return (
       <button
         className={buttonStyles}
         onClick={openStatusMenu}
       >
         <FontAwesome
-          name={statusIcon[status]}
+          name={labels.projectStatus[status].icon}
           style={{lineHeight: avatarSize}}
         />
       </button>
@@ -97,12 +92,7 @@ const OutcomeCardFooter = (props) => {
 };
 
 OutcomeCardFooter.propTypes = {
-  status: PropTypes.oneOf([
-    'active',
-    'stuck',
-    'done',
-    'future'
-  ]),
+  status: PropTypes.oneOf(labels.projectStatus.slugs),
   openStatusMenu: PropTypes.func,
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,
@@ -114,7 +104,7 @@ OutcomeCardFooter.propTypes = {
 };
 
 OutcomeCardFooter.defaultProps = {
-  status: 'active',
+  status: labels.projectStatus.active.slug,
   openStatusMenu() {
     console.log('openStatusMenu');
   },

@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import FontAwesome from 'react-fontawesome';
 import theme from 'universal/styles/theme';
+import labels from 'universal/styles/theme/labels';
 
 const combineStyles = StyleSheet.combineStyles;
 
@@ -14,9 +15,10 @@ const colors = {
 };
 
 let styles = {};
+const valueArray = labels.projectStatus.slugs.slice(0);
 
 const ProjectStatusMenuItem = props => {
-  const {children, icon, isCurrent, onClick, value} = props;
+  const {icon, isCurrent, label, onClick, value} = props;
 
   const color = {
     color: colors[value]
@@ -39,30 +41,29 @@ const ProjectStatusMenuItem = props => {
         <FontAwesome name={icon} style={{lineHeight: 'inherit'}} />
       </div>
       <div className={styles.label} style={color}>
-        {children}
+        {label}
       </div>
     </a>
   );
 };
 
+valueArray.push('archive');
+
 ProjectStatusMenuItem.propTypes = {
-  children: PropTypes.any,
   icon: PropTypes.string,
   isCurrent: PropTypes.bool,
+  label: PropTypes.any,
   onClick: PropTypes.func,
-  value: PropTypes.oneOf([
-    'active',
-    'stuck',
-    'done',
-    'future',
-    'archive'
-  ])
+  value: PropTypes.oneOf(valueArray)
 };
 
 ProjectStatusMenuItem.defaultProps = {
-  icon: 'arrow-right',
+  icon: labels.projectStatus.active.icon,
   isCurrent: false,
-  value: 'active'
+  onClick() {
+    console.log('ProjectStatusMenuItem.onClick');
+  },
+  value: labels.projectStatus.active.slug
 };
 
 styles = StyleSheet.create({

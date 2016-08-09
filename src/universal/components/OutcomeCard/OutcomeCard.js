@@ -4,6 +4,8 @@ import Textarea from 'react-textarea-autosize';
 import OutcomeCardFooter from './OutcomeCardFooter';
 import OutcomeCardStatusMenu from './OutcomeCardStatusMenu';
 import theme from 'universal/styles/theme';
+import labels from 'universal/styles/theme/labels';
+import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
 
 const combineStyles = StyleSheet.combineStyles;
@@ -63,12 +65,7 @@ const OutcomeCard = (props) => {
 
 OutcomeCard.propTypes = {
   content: PropTypes.string,
-  status: PropTypes.oneOf([
-    'active',
-    'stuck',
-    'done',
-    'future'
-  ]),
+  status: PropTypes.oneOf(labels.projectStatus.slugs),
   openStatusMenu: PropTypes.func,
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,
@@ -82,7 +79,7 @@ OutcomeCard.propTypes = {
 
 OutcomeCard.defaultProps = {
   content: 'Parabol website updated',
-  status: 'active',
+  status: labels.projectStatus.active.slug,
   openStatusMenu() {
     console.log('openStatusMenu');
   },
@@ -173,21 +170,7 @@ styles = StyleSheet.create({
 
   // Status theme colors
 
-  active: {
-    borderTopColor: theme.palette.cool
-  },
-
-  stuck: {
-    borderTopColor: theme.palette.warm
-  },
-
-  done: {
-    borderTopColor: theme.palette.dark10d
-  },
-
-  future: {
-    borderTopColor: theme.palette.mid
-  }
+  ...projectStatusStyles('borderTopColor')
 });
 
 export default look(OutcomeCard);

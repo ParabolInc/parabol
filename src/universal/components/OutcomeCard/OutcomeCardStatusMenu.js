@@ -1,10 +1,11 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import FontAwesome from 'react-fontawesome';
 import theme from 'universal/styles/theme';
+import labels from 'universal/styles/theme/labels';
+import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import upperFirst from 'universal/utils/upperFirst';
+import OutcomeCardMenuButton from './OutcomeCardMenuButton';
 
-const cs = StyleSheet.combineStyles;
 const buttonHF = {
   backgroundColor: 'transparent',
   borderColor: theme.palette.mid50l
@@ -18,81 +19,25 @@ const OutcomeCardStatusMenu = props => {
     status
   } = props;
 
-  console.log(status, isArchived);
+  const isArchivedLabel = <span>Take out of Ar<u>c</u>hive</span>;
+  const notArchivedLabel = <span>Move to Ar<u>c</u>hive</span>;
+  const buttonArray = labels.projectStatus.slugs.slice(0);
 
-  const activeLabel = () =>
-    <span className={styles.label}>
-      <span className={styles.u}>A</span>ctive
-    </span>;
-
-  const stuckLabel = () =>
-    <span className={styles.label}>
-      <span className={styles.u}>S</span>tuck
-    </span>;
-
-  const doneLabel = () =>
-    <span className={styles.label}>
-      <span className={styles.u}>D</span>one
-    </span>;
-
-  const futureLabel = () =>
-    <span className={styles.label}>
-      <span className={styles.u}>F</span>uture
-    </span>;
-
-  const isArchivedLabel = () =>
-    <span className={styles.label}>
-      Take out of Ar<span className={styles.u}>c</span>hive
-    </span>;
-
-  const notArchivedLabel = () =>
-    <span className={styles.label}>
-      Move to Ar<span className={styles.u}>c</span>hive
-    </span>;
-
-  const buttonArray = [
-    {
-      status: 'active',
-      icon: 'arrow-right',
-      label: activeLabel
-    },
-    {
-      status: 'stuck',
-      icon: 'exclamation-triangle',
-      label: stuckLabel
-    },
-    {
-      status: 'done',
-      icon: 'check',
-      label: doneLabel
-    },
-    {
-      status: 'future',
-      icon: 'clock-o',
-      label: futureLabel
-    }
-  ];
-
-  const makeButton = (statusName, icon, label, idx) => {
+  const makeButton = (statusName, icon, label) => {
     let isDisabled = false;
-    let buttonStyles;
-    const buttonStyleOptions = [styles.button, styles[statusName]];
+    const title = `Set status to ${upperFirst(statusName)}`;
     if (status === statusName) {
       isDisabled = true;
-      buttonStyleOptions.push(styles.disabled);
     }
-    buttonStyles = cs.apply('null', buttonStyleOptions);
-
     return (
-      <button
-        className={buttonStyles}
+      <OutcomeCardMenuButton
         disabled={isDisabled}
-        key={idx}
+        icon={icon}
+        label={label}
         onClick={handleButtonClick}
-        title={`Set status to ${upperFirst(statusName)}`}
-      >
-        <FontAwesome name={icon} /> {label()}
-      </button>
+        status={statusName}
+        title={title}
+      />
     );
   };
 
@@ -100,27 +45,26 @@ const OutcomeCardStatusMenu = props => {
 
   return (
     <div className={styles.root}>
-      {buttonArray.map((btn, idx) =>
-        <div className={styles.col}>
-          {makeButton(btn.status, btn.icon, btn.label, idx)}
-        </div>
+      {buttonArray.map((btn, idx) => {
+        const btnStatus = labels.projectStatus[btn];
+        return (
+          <div className={styles.col} key={idx}>
+            {makeButton(btnStatus.slug, btnStatus.icon, btnStatus.shortcutLabel, idx)}
+          </div>
+        );
+      }
       )}
       <div className={styles.archivedBtnBlock}>
-        {makeButton('archived', 'archive', archivedLabel)}
+        {makeButton('archive', 'archive', archivedLabel)}
       </div>
     </div>
   );
 };
 
 OutcomeCardStatusMenu.propTypes = {
-  handleButtonClick: PropTypes.function,
+  handleButtonClick: PropTypes.func,
   isArchived: PropTypes.bool,
-  status: PropTypes.oneOf([
-    'active',
-    'stuck',
-    'done',
-    'future'
-  ])
+  status: PropTypes.oneOf(labels.projectStatus.slugs)
 };
 
 OutcomeCardStatusMenu.defaultProps = {
@@ -128,7 +72,7 @@ OutcomeCardStatusMenu.defaultProps = {
     return console.log('OutcomeCardStatusMenu.handleButtonClick()');
   },
   isArchived: false,
-  status: 'active'
+  status: labels.projectStatus.active.slug
 };
 
 styles = StyleSheet.create({
@@ -183,24 +127,13 @@ styles = StyleSheet.create({
     opacity: '.35'
   },
 
-  active: {
-    color: theme.palette.cool
-  },
+  ...projectStatusStyles('color'),
 
-  stuck: {
-    color: theme.palette.warm
+  archive: {
+    color: labels.archive.color
   },
-
-  done: {
-    color: theme.palette.dark10d
-  },
-
-  future: {
-    color: theme.palette.mid
-  },
-
   archived: {
-    color: theme.palette.dark
+    color: labels.archived.color
   },
 
   archivedBtnBlock: {
