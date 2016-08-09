@@ -35,7 +35,7 @@ export default {
       //   domain: auth0.account,
       //   token: process.env.AUTH0_CLIENT_SECRET
       // });
-      // const updateRes = await auth0ManagementClient.users.updateUserMetadata(params, metadata);
+
       // TODO loginsCount and blockedFor are not a part of this API response
       const auth0User = {
         cachedAt: now,

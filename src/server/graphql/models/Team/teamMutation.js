@@ -7,10 +7,13 @@ import {
   GraphQLID,
   GraphQLString
 } from 'graphql';
+import {ManagementClient} from 'auth0';
 import {CreateTeamInput, UpdateTeamInput, Team} from './teamSchema';
 import shuffle from 'universal/utils/shuffle';
 import shortid from 'shortid';
 import {CHECKIN, LOBBY, UPDATES, AGENDA} from 'universal/utils/constants';
+import {sign} from 'jsonwebtoken';
+import ms from 'ms';
 
 export default {
   endMeeting: {
@@ -149,7 +152,8 @@ export default {
     }
   },
   createTeam: {
-    type: GraphQLBoolean,
+    // return the new JWT that has the new tms field
+    type: GraphQLID,
     description: 'Create a new team and add the first team member',
     args: {
       newTeam: {
@@ -162,6 +166,10 @@ export default {
       const {leader, ...team} = newTeam;
       const userId = leader.userId;
       requireSUOrSelf(authToken, userId);
+      // TODO generalize this & spread it to every create action
+      if (newTeam.id.length > 10) {
+        throw errorObj({_error: 'Bad id'});
+      }
       // can't trust the client
       const verifiedLeader = {...leader, isActive: true, isLead: true, isFacilitator: true, checkInOrder: 0};
       const verifiedTeam = {
@@ -173,14 +181,32 @@ export default {
         meetingPhaseItem: null,
         activeFacilitator: null
       };
+      const auth0ManagementClient = new ManagementClient({
+        domain: process.env.AUTH0_DOMAIN,
+        token: process.env.AUTH0_MANAGEMENT_TOKEN
+      });
+      const oldtms = authToken.tms || [];
+      const tms = oldtms.concat(newTeam.id);
       const dbPromises = [
         r.table('TeamMember').insert(verifiedLeader),
         r.table('Team').insert(verifiedTeam),
-        r.table('User').get(userId).update({isNew: false})
+        r.table('User').get(userId).update({isNew: false}),
+        auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
       ];
       await Promise.all(dbPromises);
+      // new token will expire in 30 days
+      // JWT timestamps chop off milliseconds
+      const now = Date.now();
+      const exp = ~~((now + ms('30d')) / 1000);
+      const iat = ~~(now / 1000);
+      const newToken = {
+        ...authToken,
+        exp,
+        iat,
+        tms
+      };
       // TODO: trigger welcome email
-      return true;
+      return sign(newToken, process.env.AUTH0_CLIENT_SECRET);
     }
   },
   updateTeamName: {

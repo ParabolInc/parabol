@@ -10,6 +10,7 @@ import WelcomeLayout from '../WelcomeLayout/WelcomeLayout';
 import {nextPage, previousPage, updateCompleted, setWelcomeTeam} from 'universal/modules/welcome/ducks/welcomeDuck';
 import shortid from 'shortid';
 import {cashay} from 'cashay';
+import {setAuthToken} from 'universal/redux/authDuck';
 
 const Step2TeamName = (props) => {
   const {dispatch, handleSubmit, preferredName, teamName, user, completed} = props;
@@ -34,7 +35,8 @@ const Step2TeamName = (props) => {
         }
       }
     };
-    cashay.mutate('createTeam', createTeamOptions);
+    // createTeam returns a new JWT with a new tms field
+    cashay.mutate('createTeam', createTeamOptions).then((res) => dispatch(setAuthToken(res.data.createTeam)));
     dispatch(updateCompleted(3));
     dispatch(nextPage());
   };
