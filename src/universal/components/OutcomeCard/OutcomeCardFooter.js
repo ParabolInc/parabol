@@ -4,6 +4,7 @@ import FontAwesome from 'react-fontawesome';
 import theme from 'universal/styles/theme';
 import labels from 'universal/styles/theme/labels';
 import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
+import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 
 const combineStyles = StyleSheet.combineStyles;
 const avatarSize = '1.5rem';
@@ -184,21 +185,7 @@ styles = StyleSheet.create({
 
   // Status theme colors
 
-  active: {
-    color: theme.palette.cool
-  },
-
-  stuck: {
-    color: theme.palette.warm
-  },
-
-  done: {
-    color: theme.palette.dark10d
-  },
-
-  future: {
-    color: theme.palette.mid
-  }
+  ...projectStatusStyles('color')
 });
 
 export default look(OutcomeCardFooter);

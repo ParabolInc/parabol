@@ -6,26 +6,20 @@ import labels from 'universal/styles/theme/labels';
 
 const combineStyles = StyleSheet.combineStyles;
 
-const colors = {
-  active: theme.palette.dark10d,
-  stuck: theme.palette.warm,
-  done: theme.palette.cool,
-  future: theme.palette.mid,
-  archive: theme.palette.dark
-};
-
 let styles = {};
 const valueArray = labels.projectStatus.slugs.slice(0);
 
 const ProjectStatusMenuItem = props => {
   const {icon, isCurrent, label, onClick, value} = props;
 
+  const labelColor = value === 'archive' ? labels.archive.color : labels.projectStatus[value].color;
+
   const color = {
-    color: colors[value]
+    color: labelColor
   };
 
   const backgroundColor = {
-    backgroundColor: colors[value]
+    backgroundColor: labelColor
   };
 
   const rootStyles = isCurrent ? combineStyles(styles.root, styles.current) : styles.root;
