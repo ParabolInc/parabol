@@ -1,3 +1,4 @@
+const RESET_MEETING = '@@meeting/RESET_MEETING';
 const SET_MEMBERS = '@@meeting/SET_MEMBERS';
 const SET_LOCAL_PHASE = '@@meeting/SET_LOCAL_PHASE';
 
@@ -9,6 +10,8 @@ const initialState = {
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
+    case RESET_MEETING:
+      return initialState;
     case SET_MEMBERS:
       return {
         ...state,
@@ -38,6 +41,13 @@ export function createMembers(teamMembers, presence, team, user) {
   return {
     type: SET_MEMBERS,
     payload: {members}
+  };
+}
+
+export function resetMeeting() {
+  return {
+    type: RESET_MEETING,
+    payload: {}
   };
 }
 

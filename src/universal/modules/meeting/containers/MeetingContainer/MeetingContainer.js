@@ -8,7 +8,7 @@ import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/Me
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import Sidebar from 'universal/modules/team/components/Sidebar/Sidebar';
 import {withRouter} from 'react-router';
-import {createMembers} from 'universal/modules/meeting/ducks/meetingDuck';
+import {createMembers, resetMeeting} from 'universal/modules/meeting/ducks/meetingDuck';
 import getLocalPhase from 'universal/modules/meeting/helpers/getLocalPhase';
 import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
 import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
@@ -65,6 +65,8 @@ export default class MeetingContainer extends Component {
       teamMembers !== this.props.memberSub.data.teamMembers ||
       team.activeFacilitator !== oldTeam.activeFacilitator ||
       user.id !== this.props.user.id) {
+      // We've changed teams, reset our container's state:
+      this.resetContainer();
       // build the members array by aggregating everything
       dispatch(createMembers(teamMembers, presence, team, user));
     }
@@ -81,6 +83,18 @@ export default class MeetingContainer extends Component {
         router.push(pushURL);
       }
     }
+  }
+
+  componentWillUnmount() {
+    // Time for clean up!
+    this.resetContainer();
+  }
+
+  resetContainer() {
+    const {dispatch, teamSub, memberSub} = this.props;
+    teamSub.unsubscribe();
+    memberSub.unsubscribe();
+    dispatch(resetMeeting());
   }
 
   render() {
