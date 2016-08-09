@@ -3,6 +3,7 @@ import look, {StyleSheet} from 'react-look';
 import FontAwesome from 'react-fontawesome';
 import theme from 'universal/styles/theme';
 import {srOnly} from 'universal/styles/helpers';
+import upperFirst from 'universal/utils/upperFirst';
 
 const combineStyles = StyleSheet.combineStyles;
 
@@ -71,7 +72,7 @@ const Avatar = (props) => {
   let imagePositionStyles = s.avatarImageDisplay;
   let imageBlockStyles = s.avatarImageBlock;
 
-  const sizeName = size.charAt(0).toUpperCase() + size.slice(1);
+  const sizeName = upperFirst(size);
   const sizeStyles = `avatar${sizeName}`;
   const imageSizeStyles = `avatarImageBlock${sizeName}`;
 
