@@ -4,8 +4,8 @@ import {
   GraphQLNonNull,
   GraphQLBoolean
 } from 'graphql';
-import {requireTeamMemberIsSelf} from '../authorization';
-
+import {requireSUOrTeamMember} from '../authorization';
+import {errorObj} from 'server/graphql/models/utils';
 
 export default {
   updateTask: {
@@ -22,7 +22,6 @@ export default {
       // the task can be mutated by anyone on the team
       // i can find all the teamMembers on a team & filter for the one with userId
 
-      await requireTeamMemberIsSelf(authToken, newTask.teamMemberId);
     }
   },
   createTask: {
@@ -35,7 +34,12 @@ export default {
       }
     },
     async resolve(source, {newTask}, {authToken}) {
-      await requireTeamMemberIsSelf(authToken, newTask.teamMemberId);
+      const {id} = newTask;
+      if (id.indexOf('::') !== -1) {
+        throw errorObj({_error: 'Bad id'});
+      }
+      const [teamId, taskIdPart] = newTask.id.split('::');
+      requireSUOrTeamMember(authToken, teamId);
       const now = new Date();
       const task = {
         ...newTask,

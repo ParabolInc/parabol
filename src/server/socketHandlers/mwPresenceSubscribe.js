@@ -1,14 +1,7 @@
 import parseChannel from './parseChannel';
-import {getTeamMember} from 'server/graphql/models/authorization';
 import {PRESENCE} from 'universal/subscriptions/constants';
 
-// const mockGetTeamMember = () => new Promise(resolve => {
-//   setTimeout(() => {
-//     resolve('hi');
-//   }, 2000);
-// });
-
-export default async function mwPresenceSubscribe(req, next) {
+export default function mwPresenceSubscribe(req, next) {
   if (req.authTokenExpiredError) {
     next(req.authTokenExpiredError);
     return;
@@ -20,9 +13,8 @@ export default async function mwPresenceSubscribe(req, next) {
     return;
   }
   const authToken = req.socket.getAuthToken();
-  // TODO cache all memberships on the socket?
-  const teamMember = await getTeamMember(authToken, teamId);
-  if (teamMember) {
+  const tms = authToken.tms || [];
+  if (tms.includes(teamId)) {
     next();
   } else {
     next({name: 'Unauthorized subscription', message: `You are not a part of team ${teamId}`});

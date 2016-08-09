@@ -31,7 +31,7 @@ export default {
       }
     },
     async resolve(source, {invitees, teamId}, {authToken}) {
-      await requireSUOrTeamMember(authToken, teamId);
+      requireSUOrTeamMember(authToken, teamId);
       const userId = getUserId(authToken);
       const inviteesWithTokens = invitees.map(invitee => ({...invitee, inviteToken: makeInviteToken()}));
       const inviterInfoAndTeamName = await getInviterInfoAndTeamName(teamId, userId);

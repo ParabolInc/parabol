@@ -41,11 +41,13 @@ export const requireSU = authToken => {
   }
 };
 
-export const requireSUOrTeamMember = async(authToken, teamId) => {
-  if (isSuperUser(authToken)) return undefined;
-  const teamMember = await getTeamMember(authToken, teamId);
-  if (teamMember) return teamMember;
-  throw errorObj({_error: 'Unauthorized to view team details.'});
+export const requireSUOrTeamMember = (authToken, teamId) => {
+  if (!isSuperUser(authToken)) {
+    const teams = authToken.tms || [];
+    if (!teams.includes(teamId)) {
+      throw errorObj({_error: 'Unauthorized to view team details.'});
+    }
+  }
 };
 
 export const requireSUOrSelf = (authToken, userId) => {
@@ -55,15 +57,6 @@ export const requireSUOrSelf = (authToken, userId) => {
     return userId;
   }
   throw errorObj({_error: 'Unauthorized. You cannot modify another user.'});
-};
-
-export const requireTeamMemberIsSelf = async (authToken, teamMemberId) => {
-  const authTokenUserId = getUserId(authToken);
-  const {userId} = await getUserIdFromTeamMember(teamMemberId);
-  if (userId !== authTokenUserId) {
-    throw errorObj({_error: 'Unauthorized. Team member not linked to user.'});
-  }
-  return authTokenUserId;
 };
 
 export const requireWebsocket = (socket) => {

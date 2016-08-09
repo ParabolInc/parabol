@@ -16,8 +16,8 @@ export default {
       }
     },
     async resolve(source, {teamMemberId}, {authToken, socket, subbedChannelName}, refs) {
-      const teamMember = await r.table('TeamMember').get(teamMemberId);
-      await requireSUOrTeamMember(authToken, teamMember.teamId);
+      const [userId, teamId] = teamMemberId.split('::');
+      requireSUOrTeamMember(authToken, teamId);
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName, {path: 'projects'});
       r.table('Task')

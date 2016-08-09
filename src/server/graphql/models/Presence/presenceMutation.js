@@ -21,7 +21,7 @@ export default {
       }
     },
     async resolve(source, {teamId, targetId}, {authToken, exchange, socket}) {
-      await requireSUOrTeamMember(authToken, teamId);
+      requireSUOrTeamMember(authToken, teamId);
       requireWebsocketExchange(exchange);
       requireWebsocket(socket);
       const channel = `presence/${teamId}`;
@@ -43,7 +43,7 @@ export default {
       }
     },
     async resolve(source, {teamId}, {authToken, exchange, socket}) {
-      await requireSUOrTeamMember(authToken, teamId);
+      requireSUOrTeamMember(authToken, teamId);
       requireWebsocketExchange(exchange);
       requireWebsocket(socket);
       const channel = `presence/${teamId}`;

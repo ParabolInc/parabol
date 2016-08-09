@@ -47,7 +47,7 @@ export default {
       }
     },
     async resolve(source, {teamId, teamMemberId, isCheckedIn}, {authToken, socket}) {
-      await requireSUOrTeamMember(authToken, teamId);
+      requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
       await r.table('TeamMember').get(teamMemberId).update({isCheckedIn});
     }

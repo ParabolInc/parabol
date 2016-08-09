@@ -19,9 +19,10 @@ const labels = {
 
 const ProjectColumn = (props) => {
   const {status, projects, teamMembers, teamMemberId} = props;
+  const [userId, teamId] = teamMemberId.split('::');
   const handleAddProject = (e) => {
     const newTask = {
-      id: shortid.generate(),
+      id: `${teamId}::${shortid.generate()}`,
       type: PROJECT,
       status,
       teamMemberId

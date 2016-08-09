@@ -1,5 +1,5 @@
 import r from 'server/database/rethinkDriver';
-import {requireAuth, requireSUOrTeamMember, requireWebsocket} from '../authorization';
+import {getUserId, requireAuth, requireSUOrTeamMember, requireWebsocket} from '../authorization';
 import {updatedOrOriginal, errorObj} from '../utils';
 import {
   GraphQLNonNull,
@@ -54,14 +54,13 @@ export default {
       }
     },
     async resolve(source, {teamId, nextPhase, nextPhaseItem = '0'}, {authToken, socket}) {
+      requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
-      const dbHits = [
-        requireSUOrTeamMember(authToken, teamId),
-        r.table('Team').get(teamId)
-      ];
-      const [teamMember, team] = await Promise.all(dbHits);
+      const team = await r.table('Team').get(teamId);
+      const userId = getUserId(authToken);
+      const teamMemberId = `${userId}::${teamId}`;
       const {activeFacilitator, facilitatorPhase, meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = team;
-      if (activeFacilitator !== teamMember.id) {
+      if (activeFacilitator !== teamMemberId) {
         throw errorObj({_error: 'Only the facilitator can advance the meeting'});
       }
       const isSynced = facilitatorPhase === meetingPhase && facilitatorPhaseItem === meetingPhaseItem;
@@ -106,7 +105,7 @@ export default {
       }
     },
     async resolve(source, {teamId, facilitatorId}, {authToken, socket}) {
-      await requireSUOrTeamMember(authToken, teamId);
+      requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
       const facilitatorMembership = await r.table('TeamMember').get(facilitatorId);
       if (facilitatorMembership.teamId !== teamId || !facilitatorMembership.isActive) {
@@ -137,7 +136,7 @@ export default {
       }
     },
     async resolve(source, {teamId}, {authToken, socket}) {
-      await requireSUOrTeamMember(authToken, teamId);
+      requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
       await r.table('Team').get(teamId).update({
         facilitatorPhase: LOBBY,
@@ -206,7 +205,7 @@ export default {
     },
     async resolve(source, {updatedTeam}, {authToken}) {
       const {id, name} = updatedTeam;
-      await requireSUOrTeamMember(authToken, id);
+      requireSUOrTeamMember(authToken, id);
       const teamFromDB = await r.table('Team').get(id).update({
         name
       }, {returnChanges: true});
