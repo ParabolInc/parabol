@@ -5,6 +5,7 @@ import {head} from 'universal/utils/clientOptions';
 import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
 import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
+import OutcomeCardStatusMenu from 'universal/components/OutcomeCard/OutcomeCardStatusMenu';
 import Type from 'universal/components/Type/Type';
 
 // import AvatarContainer from './AvatarContainer';
@@ -24,6 +25,12 @@ export default class PatternsContainer extends Component {
         <Helmet title="Welcome to the Action Pattern Library" {...head} />
 
         <h1>Pattern Library</h1>
+
+        <OutcomeCardStatusMenu />
+
+        <br />
+        <br />
+        <br />
 
         {makeLabel('CreateCard')}
         <CreateCard />
@@ -46,8 +53,8 @@ export default class PatternsContainer extends Component {
         <br />
         <br />
 
-        {makeLabel('OutcomeCard isProject={false}')}
-        <OutcomeCard isProject={false} />
+        {makeLabel('OutcomeCard hasOpenStatusMenu isArchived status="done"')}
+        <OutcomeCard hasOpenStatusMenu isArchived status="done" />
 
         <br />
         <br />

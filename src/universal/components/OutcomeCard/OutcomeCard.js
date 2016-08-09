@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import FontAwesome from 'react-fontawesome';
 import Textarea from 'react-textarea-autosize';
+import OutcomeCardStatusMenu from './OutcomeCardStatusMenu';
 import theme from 'universal/styles/theme';
 import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
 
@@ -39,6 +40,8 @@ const OutcomeCard = props => {
     content,
     status,
     openStatusMenu,
+    hasOpenAssignMenu,
+    hasOpenStatusMenu,
     isArchived,
     isProject,
     owner,
@@ -46,6 +49,7 @@ const OutcomeCard = props => {
     team,
     timestamp
   } = props;
+
   const makeStatusButton = () => {
     const buttonStyles = combineStyles(styles.statusButton, styles[status]);
     const statusIcon = {
@@ -83,12 +87,18 @@ const OutcomeCard = props => {
 
   return (
     <div className={rootStyles}>
-      {console.log(`isProject: ${isProject}`)}
       {/* card main */}
-      <div className={styles.timestamp}>
-        {timestamp}
-      </div>
-      <Textarea className={descStyles} defaultValue={content} />
+      {hasOpenStatusMenu &&
+        <OutcomeCardStatusMenu isArchived={isArchived} status={status} />
+      }
+      {!hasOpenAssignMenu && !hasOpenStatusMenu &&
+        <div className={styles.body}>
+          <div className={styles.timestamp}>
+            {timestamp}
+          </div>
+          <Textarea className={descStyles} defaultValue={content} />
+        </div>
+      }
       {/* card footer */}
       <div className={styles.footer}>
         <div className={styles.avatarBlock}>
@@ -96,20 +106,29 @@ const OutcomeCard = props => {
           <div className={styles.name}>{avatarName}</div>
         </div>
         <div className={styles.statusBlock}>
-          {isProject ?
-            <div className={styles.statusButton}>
-              {makeStatusButton()}
-            </div> :
-            <button className={styles.actionButton}>
+          {/* ugly, refactor */}
+          {hasOpenStatusMenu ?
+            <button className={styles.statusButton}>
               <FontAwesome
-                name="calendar-check-o"
+                name="times"
                 style={{lineHeight: avatarSize}}
               />
-            </button>
+            </button> :
+            <div>
+              {isProject ?
+                <div className={styles.statusButton}>
+                {makeStatusButton()}
+                </div> :
+                <button className={styles.actionButton}>
+                  <FontAwesome
+                    name="calendar-check-o"
+                    style={{lineHeight: avatarSize}}
+                  />
+                </button>
+              }
+            </div>
           }
-          {isArchived &&
-            <div>TODO: Style archived</div>
-          }
+          {isArchived && <div style={{display: 'none'}}>TODO: Style archived</div>}
         </div>
       </div>
     </div>
@@ -125,6 +144,8 @@ OutcomeCard.propTypes = {
     'future'
   ]),
   openStatusMenu: PropTypes.func,
+  hasOpenAssignMenu: PropTypes.bool,
+  hasOpenStatusMenu: PropTypes.bool,
   isArchived: PropTypes.bool,
   isProject: PropTypes.bool,
   owner: PropTypes.object,
@@ -139,6 +160,8 @@ OutcomeCard.defaultProps = {
   openStatusMenu() {
     console.log('openStatusMenu');
   },
+  hasOpenAssignMenu: false,
+  hasOpenStatusMenu: false,
   isArchived: false,
   isProject: true,
   owner: {
@@ -168,6 +191,11 @@ styles = StyleSheet.create({
     width: '100%'
   },
 
+  body: {
+    // TODO: set minHeight? (TA)
+    width: '100%'
+  },
+
   isAction: {
     backgroundColor: theme.palette.light50l
   },
@@ -176,6 +204,7 @@ styles = StyleSheet.create({
     color: theme.palette.dark,
     fontSize: theme.typography.s1,
     fontWeight: 700,
+    lineHeight: theme.typography.s3,
     padding: '.5rem',
     textAlign: 'right'
   },
@@ -188,8 +217,13 @@ styles = StyleSheet.create({
     display: 'block',
     fontFamily: theme.typography.sansSerif,
     fontSize: theme.typography.s3,
-    minHeight: '3.125rem',
-    padding: '.5rem .5rem 1rem',
+    lineHeight: theme.typography.s4,
+    // TODO: Clean up these comments (TA)
+    // minHeight: '2.6875rem', // A
+    // minHeight: '2.1875rem', // B
+    minHeight: '3.3125rem', // Oversizing for menu (TA)
+    padding: '.5rem .5rem 1rem', // A
+    // padding: '.5rem', // B
     resize: 'none',
     width: '100%',
 
