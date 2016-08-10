@@ -12,7 +12,7 @@ const DashboardAvatars = (props) => {
       {
         teamMembers.map((avatar, index) =>
           <div className={s.item} key={`dbAvatar${index}`}>
-            <Avatar {...avatar} hasBadge={false} size="smallest" />
+            <Avatar {...avatar} hasBadge={false} size="smaller" />
           </div>
         )
       }

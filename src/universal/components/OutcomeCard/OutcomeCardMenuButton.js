@@ -13,7 +13,7 @@ const buttonHF = {
 let styles = {};
 const statusValues = labels.projectStatus.slugs.slice(0);
 
-const OutcomeCardMenuButton = props => {
+const OutcomeCardMenuButton = (props) => {
   const {
     disabled,
     icon,

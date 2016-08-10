@@ -12,7 +12,7 @@ const buttonHF = {
 };
 let styles = {};
 
-const OutcomeCardStatusMenu = props => {
+const OutcomeCardStatusMenu = (props) => {
   const {
     handleButtonClick,
     isArchived,

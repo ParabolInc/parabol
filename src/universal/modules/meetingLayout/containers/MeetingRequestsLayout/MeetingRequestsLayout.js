@@ -101,7 +101,7 @@ const MeetingRequestsLayout = (props) => {
             <div className={s.nav}>
               <div className={s.linkSpacer}>{' '}</div>
               <div className={s.avatar}>
-                <Avatar picture={Taya} size="medium" />
+                <Avatar picture={Taya} size="large" />
                 <div className={s.requestLabel}>
                   “{'S.P.A.'}”
                 </div>
