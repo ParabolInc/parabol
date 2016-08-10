@@ -8,7 +8,7 @@ import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/Me
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import Sidebar from 'universal/modules/team/components/Sidebar/Sidebar';
 import {withRouter} from 'react-router';
-import {createMembers} from 'universal/modules/meeting/ducks/meetingDuck';
+import {createMembers, reset as resetDuck} from 'universal/modules/meeting/ducks/meetingDuck';
 import getLocalPhase from 'universal/modules/meeting/helpers/getLocalPhase';
 import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
 import AvatarGroup from 'universal/modules/meeting/components/AvatarGroup/AvatarGroup';
@@ -81,6 +81,11 @@ export default class MeetingContainer extends Component {
         router.push(pushURL);
       }
     }
+  }
+
+  componentWillUnmount() {
+    const {dispatch} = this.props;
+    dispatch(resetDuck());
   }
 
   render() {
