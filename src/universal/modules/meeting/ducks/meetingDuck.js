@@ -1,25 +1,19 @@
-const SET_MEMBERS = '@@meeting/SET_MEMBERS';
-const SET_LOCAL_PHASE = '@@meeting/SET_LOCAL_PHASE';
+const CREATE_MEMBERS = '@@meeting/CREATE_MEMBERS';
+const RESET = '@@meeting/reset';
 
 const initialState = {
-  members: [],
-  localPhase: null,
-  localPhaseItem: null
+  members: []
 };
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
-    case SET_MEMBERS:
+    case CREATE_MEMBERS:
       return {
         ...state,
         members: action.payload.members
       };
-    case SET_LOCAL_PHASE:
-      return {
-        ...state,
-        localPhase: action.payload.localPhase || state.localPhase,
-        localPhaseItem: action.payload.localPhaseItem || state.localPhaseItem
-      };
+    case RESET:
+      return initialState;
     default:
       return state;
   }
@@ -27,7 +21,8 @@ export default function reducer(state = initialState, action = {}) {
 
 export function createMembers(teamMembers, presence, team, user) {
   const members = teamMembers.map((member) => {
-    const [userId, teamId] = member.id.split('::');
+    // member.id is of format 'userId::teamId'
+    const [userId] = member.id.split('::');
     return {
       ...member,
       isConnected: Boolean(presence.find(connection => connection.userId === userId)),
@@ -37,7 +32,14 @@ export function createMembers(teamMembers, presence, team, user) {
   }).sort((a, b) => b.checkInOrder <= a.checkInOrder);
 
   return {
-    type: SET_MEMBERS,
+    type: CREATE_MEMBERS,
     payload: {members}
+  };
+}
+
+export function reset() {
+  return {
+    type: RESET,
+    payload: {}
   };
 }
