@@ -5,7 +5,6 @@ import {
   GraphQLBoolean
 } from 'graphql';
 import {requireSUOrTeamMember} from '../authorization';
-import {errorObj} from 'server/graphql/models/utils';
 
 export default {
   updateTask: {
@@ -18,10 +17,11 @@ export default {
       }
     },
     async resolve(source, {updatedTask}, {authToken}) {
-      // can the userId mutate this task?
-      // the task can be mutated by anyone on the team
-      // i can find all the teamMembers on a team & filter for the one with userId
-
+      const {id, ...task} = updatedTask;
+      const [teamId, taskId] = id.split('::');
+      requireSUOrTeamMember(authToken, teamId);
+      await r.table('Task').get(id).update(task);
+      return true;
     }
   },
   createTask: {

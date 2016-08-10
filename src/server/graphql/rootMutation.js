@@ -1,4 +1,5 @@
 import {GraphQLObjectType} from 'graphql';
+import agenda from './models/AgendaItem/agendaItemMutation';
 import invitation from './models/Invitation/invitationMutation';
 import presence from './models/Presence/presenceMutation';
 import task from './models/Task/taskMutation';
@@ -7,6 +8,7 @@ import teamMember from './models/TeamMember/teamMemberMutation';
 import user from './models/User/userMutation';
 
 const rootFields = Object.assign({},
+  agenda,
   invitation,
   presence,
   task,
