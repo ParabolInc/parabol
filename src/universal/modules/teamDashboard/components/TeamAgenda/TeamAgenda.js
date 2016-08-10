@@ -1,16 +1,14 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-
-const TeamAgenda = () => {
+import AgendaHeader from 'universal/modules/teamDashboard/components/AgendaHeader/AgendaHeader';
+import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput'
+const TeamAgenda = (props) => {
   const {styles} = TeamAgenda;
+  const {teamId} = props;
   return (
     <div className={styles.root}>
-      <div>
-        AGENDA HEADER
-      </div>
-      <div>
-        AGENDA LIST
-      </div>
+      <AgendaHeader/>
+      <AgendaListAndInput teamId={teamId}/>
     </div>
   );
 };

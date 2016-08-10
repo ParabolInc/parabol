@@ -28,12 +28,13 @@ const linkStyle = {
 
 const Team = (props) => {
   const {dispatch, projects, team, teamMembers, user} = props;
-  const teamMemberId = `${user.id}::${team.id}`;
+  const teamId = team.id;
+  const teamMemberId = `${user.id}::${teamId}`;
   return (
     <DashLayout title="Team Dashboard">
       <DashSidebar
         activeArea="team"
-        activeTeamId={team.id}
+        activeTeamId={teamId}
         dispatch={dispatch}
         user={user}
       />
@@ -41,14 +42,14 @@ const Team = (props) => {
         <DashHeader>
           <DashHeaderInfo title={team.name}>
             <Link
-              to={`/meeting/${team.id}`}
+              to={`/meeting/${teamId}`}
               style={linkStyle}
               title="Meeting Lobby"
             >
               <FontAwesome name="arrow-circle-right" style={faIconStyle} /> Meeting Lobby
             </Link>
             <Link
-              to={`/meeting/${team.id}/settings`}
+              to={`/meeting/${teamId}/settings`}
               style={linkStyle}
               title="Team Settings"
             >
@@ -58,7 +59,7 @@ const Team = (props) => {
           <DashboardAvatars teamMembers={teamMembers}/>
         </DashHeader>
         <DashContent>
-          <AgendaAndProjects projects={projects} teamMembers={teamMembers} teamMemberId={teamMemberId}/>
+          <AgendaAndProjects teamId={teamId} projects={projects} teamMembers={teamMembers} teamMemberId={teamMemberId}/>
         </DashContent>
       </DashMain>
     </DashLayout>

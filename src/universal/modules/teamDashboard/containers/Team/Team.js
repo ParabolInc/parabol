@@ -4,14 +4,13 @@ import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import reduxSocketOptions from 'universal/redux/reduxSocketOptions';
 import {reduxSocket} from 'redux-socket-cluster';
 import subscriptions from 'universal/subscriptions/subscriptions';
-import {AGENDA, PROJECTS, TEAM, TEAM_MEMBERS} from 'universal/subscriptions/constants';
+import {PROJECTS, TEAM, TEAM_MEMBERS} from 'universal/subscriptions/constants';
 import subscriber from 'universal/subscriptions/subscriber';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 
 const teamMembersSubString = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
 const teamSubString = subscriptions.find(sub => sub.channel === TEAM).string;
-const agendaSubString = subscriptions.find(sub => sub.channel === AGENDA).string;
 const projectSubString = subscriptions.find(sub => sub.channel === PROJECTS).string;
 
 const makeProjectSubs = (teamMembers) => {
@@ -35,16 +34,14 @@ const mapStateToProps = (state, props) => {
     memberSub,
     projectSubs,
     teamSub: cashay.subscribe(teamSubString, subscriber, {op: 'teamSub', variables}),
-    agendaSub: cashay.subscribe(agendaSubString, subscriber, {op: 'agendaSub', variables})
   };
 };
 
 const TeamContainer = (props) => {
-  const {agendaSub, memberSub, teamSub, user, projectSubs, dispatch} = props;
+  const {memberSub, teamSub, user, projectSubs, dispatch} = props;
   const {team} = teamSub.data;
   const {teamMembers} = memberSub.data;
   const projects = [].concat(...projectSubs.map(sub => sub.data.projects));
-  console.log('agenda Subs', agendaSub);
   return (
     <Team
       projects={projects}
@@ -62,7 +59,6 @@ TeamContainer.propTypes = {
     teamId: PropTypes.string.isRequired
   }),
   user: PropTypes.object,
-  agendaSub: PropTypes.object,
   memberSub: PropTypes.object,
   projectSubs: PropTypes.object,
   teamSub: PropTypes.object
