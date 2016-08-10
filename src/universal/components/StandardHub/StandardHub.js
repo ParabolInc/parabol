@@ -4,6 +4,7 @@ import {textOverflow} from 'universal/styles/helpers';
 import theme from 'universal/styles/theme';
 import FontAwesome from 'react-fontawesome';
 import {Link} from 'react-router';
+import Avatar from 'universal/components/Avatar/Avatar';
 
 let styles = {};
 const maxWidth = '8.25rem';
@@ -16,7 +17,7 @@ function StandardHub(props) {
   const {picture, preferredName, email} = props;
   return (
     <div className={styles.root}>
-      <img alt="Me" className={styles.avatar} src={picture}/>
+      <Avatar hasBadge={false} picture={picture} size="small" />
       <div className={styles.info}>
         <div className={styles.name}>{preferredName}</div>
         <div className={styles.email}>{email}</div>
@@ -24,7 +25,7 @@ function StandardHub(props) {
       <div className={styles.settings}>
         <div className={styles.settingsIcon} title="My Settings">
           <Link to="/me/settings">
-            <FontAwesome name="cog" style={faStyle}/>
+            <FontAwesome name="cog" style={faStyle} />
           </Link>
 
         </div>
@@ -40,12 +41,6 @@ styles = StyleSheet.create({
     minHeight: '4.875rem',
     padding: '1rem 0 1rem 1rem',
     width: '100%'
-  },
-
-  avatar: {
-    borderRadius: '100%',
-    height: '2.75rem',
-    width: '2.75rem'
   },
 
   info: {

@@ -91,7 +91,7 @@ const MeetingUpdatesLayout = (props) => {
             <div className={s.nav}>
               <div className={s.linkSpacer}>{' '}</div>
               <div className={s.avatar}>
-                <Avatar hasLabel image={Taya} name="Taya Mueller" labelRight size="medium" />
+                <Avatar hasLabel image={Taya} name="Taya Mueller" labelRight size="large" />
               </div>
               <div className={s.linkSpacer}>
                 <IconLink icon="arrow-circle-right" iconPlacement="right" label="Next team member" />

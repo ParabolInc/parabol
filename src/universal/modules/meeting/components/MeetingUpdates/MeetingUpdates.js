@@ -37,7 +37,7 @@ const MeetingUpdatesLayout = (props) => {
           <div className={s.nav}>
             <IconLink icon="arrow-circle-left" label="Previous team member" />
             <div className={s.avatar}>
-              <Avatar {...aTeamMember} hasLabel labelRight size="medium" />
+              <Avatar {...aTeamMember} hasLabel labelRight size="large" />
             </div>
             <IconLink icon="arrow-circle-right" iconPlacement="right" label="Next team member" />
           </div>
