@@ -10,7 +10,7 @@ import {
   showSuccess,
   showWarning
 } from 'universal/modules/notifications/ducks/notifications';
-import {setAuthToken} from 'universal/redux/authDuck';
+
 import {
   invalidInvitation,
   inviteNotFound,
@@ -35,8 +35,7 @@ query {
       isLead,
       isActive,
       isFacilitator
-    },
-    jwt
+    }
   }
 }`;
 
@@ -44,7 +43,8 @@ const mutationHandlers = {
   acceptInvitation(optimisticVariables, queryResponse, currentResponse) {
     if (queryResponse) {
       // we can't be optimistic, server must process our invite token:
-      currentResponse.user.memberships.push(queryResponse.teamMember);
+      currentResponse.user.memberships.push(queryResponse);
+      return currentResponse;
     }
     return undefined;
   },
@@ -61,7 +61,7 @@ const mutationHandlers = {
 };
 
 const cashayOptions = {
-  op: 'invitation',
+  component: 'invitation',
   mutationHandlers,
   localOnly: true
 };
@@ -71,7 +71,7 @@ const mapStateToProps = (state, props) => {
   return {
     authToken: state.authToken,
     inviteToken: id,
-    user: cashay.query(getUserWithMemberships, cashayOptions).data.user
+    user: cashay.query(getUserWithMemberships, cashayOptions).data.user,
   };
 };
 
@@ -102,7 +102,7 @@ export default class Invitation extends Component {
       if (user && user.isNew === false) {
         // If user already has an account, let them accept the new team via the UI:
         router.push('/me');
-      } else if (user && user.isNew === true) {
+      } else if (user && user.isNew === true && user.memberships.length === 0) {
         // If the user is new let's process their invite:
         this.processInvitation();
       }
@@ -137,9 +137,7 @@ export default class Invitation extends Component {
           // TODO: pop them a toast and tell them what happened?
           router.push('/welcome');
         } else if (data) {
-          const {teamMember, jwt} = data.acceptInvitation;
-          const {id} = teamMember.team;
-          dispatch(setAuthToken(jwt));
+          const {id} = data.acceptInvitation.team;
           dispatch(setWelcomeActivity(`/team/${id}`));
           dispatch(showSuccess(successfulJoin));
           router.push('/me/settings');
@@ -163,7 +161,10 @@ export default class Invitation extends Component {
       return this.renderLogin();
     }
 
-    // TODO this would be a nice place for a spinner:
-    return (<div/>);
+    return (
+      <div>
+        <LoadingView />
+      </div>
+    );
   }
 }

@@ -3,7 +3,7 @@ import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import tinycolor from 'tinycolor2';
 import layoutStyle from 'universal/styles/layout';
-import Notifications from 'universal/modules/notifications/containers/notifications/Notifications';
+import Notifications from 'universal/modules/notifications/containers/Notifications/Notifications';
 import './addFontAwesome';
 
 let styles = {};

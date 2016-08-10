@@ -6,7 +6,7 @@ import {APP_NAME} from 'universal/utils/clientOptions';
 import {createMiddleware, createLoader} from 'redux-storage-whitelist-fn';
 
 const storageWhitelist = type => {
-  const whitelistPrefixes = ['@@authToken', '@@cashay'];
+  const whitelistPrefixes = ['@@authToken', '@@cashay', '@@root'];
   for (let i = 0; i < whitelistPrefixes.length; i++) {
     const prefix = whitelistPrefixes[i];
     if (type.indexOf(prefix) !== -1) {
