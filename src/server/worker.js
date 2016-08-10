@@ -8,6 +8,7 @@ import favicon from 'serve-favicon';
 import config from '../../webpack/webpack.config.dev';
 import createSSR from './createSSR';
 import emailSSR from './emailSSR';
+import {clientSecret as secretKey} from './utils/auth0Helpers';
 import {auth0} from 'universal/utils/clientOptions';
 import scConnectionHandler from './socketHandlers/scConnectionHandler';
 import httpGraphQLHandler from './graphql/httpGraphQLHandler';
@@ -48,9 +49,6 @@ export function run(worker) {
     app.use(compression());
     app.use('/static', express.static('build'));
   }
-
-  const secretKey = process.env.AUTH0_CLIENT_SECRET ||
-    'BksPeQQrRkXhDrugzQDg5Nw-IInub9RkQ-pSWohUM9s6Oii4xoGVCrK2_OcUCfYZ';
 
   // HTTP GraphQL endpoint
   app.post('/graphql', jwt({

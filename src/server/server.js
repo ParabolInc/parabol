@@ -1,13 +1,6 @@
 import {SocketCluster} from 'socketcluster';
-import path from 'path';
-// path must stay relative since this is before all babelfication
-import {getDotenv} from '../universal/utils/dotenv';
-
-// Import .env and expand variables:
-getDotenv();
-
-const secretKey = process.env.AUTH0_CLIENT_SECRET ||
-  'BksPeQQrRkXhDrugzQDg5Nw-IInub9RkQ-pSWohUM9s6Oii4xoGVCrK2_OcUCfYZ';
+import path from 'path'; // path must stay relative since this is before all babelfication
+import {clientSecret as secretKey} from './utils/auth0Helpers';
 
 // const numCpus = os.cpus().length;
 export const options = {

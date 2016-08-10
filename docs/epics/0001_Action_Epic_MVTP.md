@@ -111,55 +111,56 @@ their next step is (inputting projects, then waiting for their first action
 meeting from their TL), so they feel like their are working toward some kind
 of a tangible goal.
 
+- [ ] When a TM clicks on an invitation link and they _already_ have an
+active account, they'll want to accept the invitation from their dashboard,
+so that they don't have to walk through the new account wizard.
+
 ## Team Action Meeting
 
 - [ ] **(Assumption)** After a TL has invited their team, they want to be
 directed on the next step – scheduling their first action meeting with their
 team, so that they can try working in a new way.
 
-- [ ] When it's time for the first Action meeting, the TL will want a clear
+- [X] When it's time for the first Action meeting, the TL will want a clear
 control to "Start The Meeting" from their team dashboard and an easy link to
 distribute to team members, so that the meeting can be started easily and
 TMs can be gathered.
 
-- [ ] When TMs click on the meeting link, they want a place to gather before
+- [X] When TMs click on the meeting link, they want a place to gather before
 the meeting starts ("the lobby"), so that they can see who's online
 and who's missing and that the meeting doesn't begin without anybody.
 
-- [ ] When the first TM (inclusive of the TL) joins, they'll want to know they
+- [X] When the first TM (inclusive of the TL) joins, they'll want to know they
 are the Facilitator ("F") and what this means, so that they know how to advance the
 phases of the meeting.
 
 - [ ] If the facilitator disconnects, the other TMs will want a new facilitator
 chosen quickly, so the meeting can continue without interruption.
 
-- [ ] When a critical mass of TMs join the Lobby, the F wants to advance to
+- [X] When a critical mass of TMs join the Lobby, the F wants to advance to
 check-in round, so that they meeting can get underway.
 
-- [ ] When meeting phases advance, all TMs will want to how many more steps
+- [X] When meeting phases advance, all TMs will want to how many more steps
 are in this facilitated process, so they can understand the flow of the meeting
 and get an intuitive sense for how long this meeting might take.
 
-- [ ] As individual items (team members, agenda items) are processed within a
+- [X] As individual items (team members, agenda items) are processed within a
 given phase, TMs want to know how many more items are ahead of them, so that
 they have a sense of how quickly they have to work through a phase.
 
-- [ ] When the TMs participate in check-in, they will want to process all
+- [X] When the TMs participate in check-in, they will want to process all
 team members as "fully present" or "absent" (with either the facilitator or
 the online TM controlling input for their check-in state), so that they can
 have an opportunity to say something and build an attendance record.
 
-- [ ] When the last TM has checked-in, the facilitator wants to
+- [X] When the last TM has checked-in, the facilitator wants to
 advance the round to the project updates phase, so that the team can build
 and understanding of the work their teammates are working on and who might
 be stuck and need something from somebody else.
 
-- [ ] If a TM wants to refer to output earlier in the meeting, they want to be
+- [X] If a TM wants to refer to output earlier in the meeting, they want to be
 able to click and navigate away from their other TMs, so that they can get or
 update the information they seek.
-
-- [ ] If a TM wants rejoin the F, they will want an easy control to do so,
-so that they can rejoin the rest of the team.
 
 - [ ] When a TM is asked to give project updates, they will want to know
 what to say, so that they understand what is being asked of them.
@@ -204,11 +205,21 @@ of all projects, so that they can see what their team has signed up to do
 controls, so that they can add new projects, change the status of projects,
 or reassign ownership.
 
-- [ ] When a user doesn't feel comfortable creating a new project for another
+- [ ] When a TM doesn't feel comfortable creating a new project for another
 person, they want to add an agenda item for the next meeting, so the request
 can be made in a more public forum and weighed against other priorities.
 
+- [ ] When a TM wants to invite a new team member, they'll want an obvious
+control that allows them to input one or more email addresses, so that they
+can join their pals.
+
+- [ ] When a TL wants to create a new team, they'll want an obvious control
+near their other teams, so they can get their new group up and going.
+
 ## Personal Dashboard
+
+- [ ] When a user receives an invitation to a new team, they will want to
+be able to accept it, so that they can join their teammates.
 
 - [ ] When a TM navigates to their own personal dashboard, they will
 want to see a list of their projects and actions, so that they can see what

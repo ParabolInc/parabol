@@ -2,6 +2,7 @@ import React, {PropTypes, Component} from 'react'; // eslint-disable-line no-unu
 import {connect} from 'react-redux';
 import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
 import {removeAuthToken} from 'universal/redux/authDuck';
+import {reset as resetAppState} from 'universal/redux/rootDuck';
 import {withRouter} from 'react-router';
 
 const logoutSuccess = {
@@ -21,7 +22,9 @@ export default class LogoutContainer extends Component {
   componentWillMount() {
     const {dispatch, router} = this.props;
     dispatch(removeAuthToken());
+    /* reset the app state, but preserve any pending notifications: */
     router.replace('/');
+    dispatch(resetAppState());
     dispatch(showSuccess(logoutSuccess));
   }
 

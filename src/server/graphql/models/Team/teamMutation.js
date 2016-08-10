@@ -7,11 +7,11 @@ import {
   GraphQLID,
   GraphQLString
 } from 'graphql';
-import {ManagementClient} from 'auth0';
 import {CreateTeamInput, UpdateTeamInput, Team} from './teamSchema';
 import shuffle from 'universal/utils/shuffle';
 import shortid from 'shortid';
 import {CHECKIN, LOBBY, UPDATES, AGENDA} from 'universal/utils/constants';
+import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
 
 export default {
@@ -175,10 +175,6 @@ export default {
         meetingPhaseItem: null,
         activeFacilitator: null
       };
-      const auth0ManagementClient = new ManagementClient({
-        domain: process.env.AUTH0_DOMAIN,
-        token: process.env.AUTH0_MANAGEMENT_TOKEN
-      });
       const oldtms = authToken.tms || [];
       const tms = oldtms.concat(newTeam.id);
       const dbPromises = [
