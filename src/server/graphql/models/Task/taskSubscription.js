@@ -16,7 +16,8 @@ export default {
       }
     },
     async resolve(source, {teamMemberId}, {authToken, socket, subbedChannelName}, refs) {
-      const [userId, teamId] = teamMemberId.split('::');
+      // teamMemberId is of format 'userId::teamId'
+      const [, teamId] = teamMemberId.split('::');
       requireSUOrTeamMember(authToken, teamId);
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);

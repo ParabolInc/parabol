@@ -18,7 +18,8 @@ export default {
     },
     async resolve(source, {updatedTask}, {authToken}) {
       const {id, ...task} = updatedTask;
-      const [teamId, taskId] = id.split('::');
+      // id is of format 'teamId::taskId'
+      const [teamId] = id.split('::');
       requireSUOrTeamMember(authToken, teamId);
       await r.table('Task').get(id).update(task);
       return true;
@@ -35,7 +36,8 @@ export default {
     },
     async resolve(source, {newTask}, {authToken}) {
       const {id} = newTask;
-      const [teamId, taskIdPart] = id.split('::');
+      // format of id is teamId::taskIdPart
+      const [teamId] = id.split('::');
       requireSUOrTeamMember(authToken, teamId);
       const now = new Date();
       const task = {

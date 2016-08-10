@@ -24,10 +24,13 @@ export default {
         description: 'The teamId to make sure the socket calling has permission'
       }
     },
+    // eslint-disable-next-line no-unused-vars
     async resolve(source, {teamId}, {authToken, socket}) {
-      // TODO
+      // TODO & remove above eslint pragma
       const teamMembers = await r.table('TeamMember').getAll(teamId, {index: 'teamId'}).pluck('id');
+    // eslint-disable-next-line no-unused-vars
       const dbPromises = teamMembers.map((member, idx) => {
+        // TODO & remove above eslint pragma
         return r.table('TeamMember').get(member.id).update({
           checkInOrder: idx,
           isCheckedIn: null
@@ -104,7 +107,8 @@ export default {
       }
     },
     async resolve(source, {facilitatorId}, {authToken, socket}) {
-      const [userId, teamId] = facilitatorId.split('::');
+      // facilitatorId is of format 'userId::teamId'
+      const [, teamId] = facilitatorId.split('::');
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
       const facilitatorMembership = await r.table('TeamMember').get(facilitatorId);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import TeamCard from 'universal/modules/teamDashboard/components/TeamCard/TeamCard';
@@ -19,8 +19,9 @@ const labels = {
 
 const ProjectColumn = (props) => {
   const {status, projects, teamMembers, teamMemberId} = props;
-  const [userId, teamId] = teamMemberId.split('::');
-  const handleAddProject = (e) => {
+  // teamMemberId format is 'userId::teamId'
+  const [, teamId] = teamMemberId.split('::');
+  const handleAddProject = () => {
     const newTask = {
       id: `${teamId}::${shortid.generate()}`,
       type: PROJECT,
@@ -35,9 +36,23 @@ const ProjectColumn = (props) => {
         <span>{labels[status]}</span>
         <FontAwesome name="plus-square" onClick={handleAddProject}/>
       </div>
-      {projects.map(project => <TeamCard key={`teamCard${project.id}`} teamMemberId={teamMemberId} teamMembers={teamMembers} project={project}/>)}
+      {projects.map(project =>
+        <TeamCard
+          key={`teamCard${project.id}`}
+          teamMemberId={teamMemberId}
+          teamMembers={teamMembers}
+          project={project}
+        />)
+      }
     </div>
   );
+};
+
+ProjectColumn.propTypes = {
+  projects: PropTypes.array,
+  status: PropTypes.string,
+  teamMembers: PropTypes.array,
+  teamMemberId: PropTypes.string
 };
 
 const columnStyles = {

@@ -11,7 +11,13 @@ const TeamProjects = (props) => {
       <TeamProjectsHeader/>
       <ProjectColumns teamMemberId={teamMemberId} teamMembers={teamMembers} projects={projects}/>
     </div>
-  )
+  );
+};
+
+TeamProjects.propTypes = {
+  projects: PropTypes.array,
+  teamMembers: PropTypes.array,
+  teamMemberId: PropTypes.string
 };
 
 TeamProjects.styles = StyleSheet.create({

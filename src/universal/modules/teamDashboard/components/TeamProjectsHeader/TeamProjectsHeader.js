@@ -3,6 +3,7 @@ import look, {StyleSheet} from 'react-look';
 
 const TeamProjectsHeader = (props) => {
   const {styles} = TeamProjectsHeader;
+  console.log(`TeamProjectsHeader: have props ${props}`);
   return (
     <div className={styles.root}>
       <div>
@@ -12,7 +13,12 @@ const TeamProjectsHeader = (props) => {
         Show by team member: ALL TEAM MEMBERS
       </div>
     </div>
-  )
+  );
+};
+
+TeamProjectsHeader.propTypes = {
+  // TODO
+  children: PropTypes.any
 };
 
 TeamProjectsHeader.styles = StyleSheet.create({

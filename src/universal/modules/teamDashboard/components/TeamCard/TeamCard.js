@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
 import fromNow from 'universal/utils/fromNow';
@@ -23,6 +23,16 @@ const TeamCard = (props) => {
         createdBy={owner.preferredName}
       />
   );
+};
+
+TeamCard.propTypes = {
+  project: PropTypes.shape({
+    content: PropTypes.string,
+    status: PropTypes.string,
+    updatedAt: PropTypes.number
+  }),
+  teamMembers: PropTypes.array,
+  teamMemberId: PropTypes.string
 };
 
 export default TeamCard;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import {columnArray} from 'universal/utils/constants';
@@ -36,6 +36,12 @@ const ProjectColumns = (props) => {
       </div>
     </div>
   );
+};
+
+ProjectColumns.propTypes = {
+  projects: PropTypes.array,
+  teamMembers: PropTypes.array,
+  teamMemberId: PropTypes.string
 };
 
 const columnStyles = {

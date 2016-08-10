@@ -43,7 +43,8 @@ export default {
       }
     },
     async resolve(source, {teamMemberId, isCheckedIn}, {authToken, socket}) {
-      const [userId, teamId] = teamMemberId.split('::');
+      // teamMemberId is of format 'userId::teamId'
+      const [, teamId] = teamMemberId.split('::');
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
       await r.table('TeamMember').get(teamMemberId).update({isCheckedIn});

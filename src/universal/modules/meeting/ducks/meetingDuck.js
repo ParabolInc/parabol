@@ -27,7 +27,8 @@ export default function reducer(state = initialState, action = {}) {
 
 export function createMembers(teamMembers, presence, team, user) {
   const members = teamMembers.map((member) => {
-    const [userId, teamId] = member.id.split('::');
+    // member.id is of format 'userId::teamId'
+    const [userId] = member.id.split('::');
     return {
       ...member,
       isConnected: Boolean(presence.find(connection => connection.userId === userId)),

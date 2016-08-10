@@ -13,7 +13,7 @@ import {cashay} from 'cashay';
 import {setAuthToken} from 'universal/redux/authDuck';
 
 const Step2TeamName = (props) => {
-  const {dispatch, handleSubmit, preferredName, teamName, user, completed} = props;
+  const {dispatch, handleSubmit, preferredName, teamName, completed} = props;
   const onTeamNameSubmit = data => {
     const myTeamName = data.teamName;
     const teamId = shortid.generate();

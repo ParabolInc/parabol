@@ -23,4 +23,6 @@ export default function fromNow(time) {
     }
     prevThresh = thresh;
   }
+  // this is both for eslint, and for chuckles. It should never happen:
+  return 'infinitely long ago';
 }

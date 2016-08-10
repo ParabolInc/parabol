@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 
-const TeamAgenda = (props) => {
+const TeamAgenda = () => {
   const {styles} = TeamAgenda;
   return (
     <div className={styles.root}>
@@ -12,7 +12,12 @@ const TeamAgenda = (props) => {
         AGENDA LIST
       </div>
     </div>
-  )
+  );
+};
+
+TeamAgenda.propTypes = {
+  // TODO:
+  children: PropTypes.any
 };
 
 TeamAgenda.styles = StyleSheet.create({

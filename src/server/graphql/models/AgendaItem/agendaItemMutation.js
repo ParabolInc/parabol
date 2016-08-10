@@ -18,7 +18,8 @@ export default {
     },
     async resolve(source, {newAgendaItem}, {authToken}) {
       const {teamMemberId} = newAgendaItem;
-      const [userId, teamId] = teamMemberId.split('::');
+      // teamMemberId is of format 'userId::teamId'
+      const [, teamId] = teamMemberId.split('::');
       requireSUOrTeamMember(authToken, teamId);
       const now = new Date();
       const agendaItem = {
