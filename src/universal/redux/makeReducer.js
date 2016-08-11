@@ -2,13 +2,13 @@ import {combineReducers} from 'redux';
 import {cashayReducer} from 'cashay';
 import notifications from 'universal/modules/notifications/ducks/notifications';
 import {reducer as formReducer} from 'redux-form';
-import authToken from './authDuck';
+import auth from './authDuck';
 import {reducer as storageReducer} from 'redux-storage-whitelist-fn';
 import storageMerger from 'universal/redux/storageMerger';
 import makeRootReducer from 'universal/redux/rootDuck';
 
 const appReducers = {
-  authToken,
+  auth,
   cashay: cashayReducer,
   form: formReducer,
   notifications
