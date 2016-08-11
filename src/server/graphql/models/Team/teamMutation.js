@@ -184,7 +184,6 @@ export default {
       const dbPromises = [
         r.table('TeamMember').insert(verifiedLeader),
         r.table('Team').insert(verifiedTeam),
-        r.table('User').get(userId).update({isNew: false}),
         auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
       ];
       await Promise.all(dbPromises);

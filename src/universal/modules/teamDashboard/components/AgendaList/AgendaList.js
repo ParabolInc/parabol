@@ -3,10 +3,10 @@ import look, {StyleSheet} from 'react-look';
 
 const AgendaList = (props) => {
   const {styles} = AgendaList;
+  const {agenda} = props;
   return (
     <div className={styles.root}>
-      <div>Item 1</div>
-      <div>Item 2</div>
+      {agenda.map(item => <div>{item.content}</div>)}
     </div>
   );
 };

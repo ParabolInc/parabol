@@ -70,7 +70,6 @@ export default {
         const welcomeSentAt = emailWelcomed ? new Date() : null;
         returnedUser = {
           ...auth0User,
-          isNew: true,
           welcomeSentAt
         };
         await r.table('User').insert(returnedUser);
@@ -94,11 +93,7 @@ export default {
        * ReQL query at the expense of readability:
        */
       const hasTeam = authToken.tms && authToken.tms.length > 0;
-      const dbProfile = await r.table('User').get(id)
-        .update({
-          ...updatedObj,
-          isNew: !hasTeam,
-        }, {returnChanges: true});
+      const dbProfile = await r.table('User').get(id).update(updatedObj, {returnChanges: true});
       if (hasTeam) {
         // propagate denormalized changes to TeamMember
         await r.table('TeamMember')

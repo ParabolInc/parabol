@@ -3,7 +3,6 @@ query {
   user: getCurrentUser {
     email,
     id,
-    isNew,
     picture,
     preferredName
   }

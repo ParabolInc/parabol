@@ -111,10 +111,6 @@ export const User = new GraphQLObjectType({
       description: 'Array of identifier + ip pairs'
     },
     /* User Profile */
-    isNew: {
-      type: GraphQLBoolean,
-      description: 'Has the user ever been associated with a team'
-    },
     welcomeSentAt: {
       type: GraphQLISO8601Type,
       description: 'The datetime that we sent them a welcome email'

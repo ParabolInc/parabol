@@ -1,19 +1,21 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import Field from 'universal/components/Field/Field';
-import {reduxForm} from 'redux-form';
+import {reduxForm, Field} from 'redux-form';
+import AgendaInputField from './AgendaInputField';
+import Avatar from 'universal/components/Avatar/Avatar';
 
 const AgendaInput = (props) => {
   const {styles} = AgendaInput;
+  const {handleAgendaItemSubmit, handleSubmit, teamMemberId, teamMembers} = props;
+  const membership = teamMembers.find(m => m.id === teamMemberId) || {};
   return (
-    <div className={styles.root}>
+    <form className={styles.root} onSubmit={handleSubmit(handleAgendaItemSubmit)}>
       <Field
-        hasShortcutHint
-        name="agendaItemInput"
-        placeholder="Add an item..."
-        type="text"
+        name="agendaItem"
+        component={AgendaInputField}
       />
-    </div>
+      <Avatar picture={membership.picture}></Avatar>
+    </form>
   );
 };
 

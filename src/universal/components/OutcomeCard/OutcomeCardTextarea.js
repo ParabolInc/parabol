@@ -25,7 +25,7 @@ const OutcomeCardTextarea = (props) => {
   const descStyles = isProject ? styles.content : combineStyles(styles.content, styles.descriptionAction);
 
   return (
-    <Textarea className={descStyles} defaultValue={content} />
+    <Textarea className={descStyles} defaultValue={content}/>
   );
 };
 

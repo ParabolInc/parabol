@@ -15,9 +15,11 @@ export default ComposedComponent => {
   const TokenizedComp = (props) => {
     const {authToken, user, router} = props;
     if (authToken && user) {
-      if (user.isNew === true) {
+      // note if you join a team & leave it, tms will be an empty array
+      const isNew = !authToken.hasOwnProperty('tms');
+      if (isNew) {
         router.push('/welcome');
-      } else if (user.isNew === false) {
+      } else {
         router.push('/me');
       }
     }
@@ -29,7 +31,6 @@ export default ComposedComponent => {
     user: PropTypes.shape({
       email: PropTypes.string,
       id: PropTypes.string,
-      isNew: PropTypes.bool,
       picture: PropTypes.string,
       preferredName: PropTypes.string
     }),

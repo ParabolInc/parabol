@@ -3,7 +3,6 @@ import look, {StyleSheet} from 'react-look';
 
 const TeamProjectsHeader = (props) => {
   const {styles} = TeamProjectsHeader;
-  console.log(`TeamProjectsHeader: have props ${props}`);
   return (
     <div className={styles.root}>
       <div>

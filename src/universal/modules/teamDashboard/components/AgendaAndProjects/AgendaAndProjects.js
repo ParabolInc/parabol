@@ -20,6 +20,7 @@ const AgendaAndProjects = (props) => {
 
 AgendaAndProjects.propTypes = {
   projects: PropTypes.array,
+  teamId: PropTypes.string.isRequired,
   teamMembers: PropTypes.array,
   teamMemberId: PropTypes.string
 };

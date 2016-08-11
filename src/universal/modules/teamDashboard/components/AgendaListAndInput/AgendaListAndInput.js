@@ -1,8 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import AgendaListContainer from 'universal/modules/teamDashboard/containers/AgendaList/AgendaListContainer';
-import AgendaInput from 'universal/modules/teamDashboard/components/AgendaInput/AgendaInput';
-
+import AgendaInputContainer from 'universal/modules/teamDashboard/containers/AgendaInput/AgendaInputContainer';
 
 const AgendaListAndInput = (props) => {
   const {styles} = AgendaListAndInput;
@@ -10,7 +9,7 @@ const AgendaListAndInput = (props) => {
   return (
     <div className={styles.root}>
       <AgendaListContainer teamId={teamId}/>
-      <AgendaInput/>
+      <AgendaInputContainer teamId={teamId}/>
     </div>
   );
 };

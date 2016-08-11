@@ -27,8 +27,7 @@ const linkStyle = {
 };
 
 const Team = (props) => {
-  const {dispatch, projects, team, teamMembers, user} = props;
-  const teamId = team.id;
+  const {dispatch, projects, team, teamId, teamMembers, user} = props;
   const teamMemberId = `${user.id}::${teamId}`;
   return (
     <DashLayout title="Team Dashboard">
@@ -69,6 +68,7 @@ const Team = (props) => {
 Team.propTypes = {
   dispatch: PropTypes.func.isRequired,
   projects: PropTypes.array,
+  teamId: PropTypes.string.isRequired,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired,
   user: PropTypes.shape({

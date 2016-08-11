@@ -46,7 +46,7 @@ export const CreateAgendaItemInput = new GraphQLInputObjectType({
 export const UpdateAgendaItemInput = new GraphQLInputObjectType({
   name: 'UpdateAgendaItemInput',
   fields: () => ({
-    id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique agenda item ID'},
+    id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique agenda item ID, composed of a teamId::shortid'},
     content: {type: GraphQLString, description: 'The content of the agenda item'},
     isComplete: {
       type: GraphQLBoolean,

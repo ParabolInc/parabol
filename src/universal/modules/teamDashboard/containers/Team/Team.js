@@ -38,13 +38,14 @@ const mapStateToProps = (state, props) => {
 };
 
 const TeamContainer = (props) => {
-  const {memberSub, teamSub, user, projectSubs, dispatch} = props;
+  const {memberSub, teamSub, user, params: {teamId}, projectSubs, dispatch} = props;
   const {team} = teamSub.data;
   const {teamMembers} = memberSub.data;
   const projects = [].concat(...projectSubs.map(sub => sub.data.projects));
   return (
     <Team
       projects={projects}
+      teamId={teamId}
       team={team}
       teamMembers={teamMembers}
       user={user}
@@ -60,7 +61,7 @@ TeamContainer.propTypes = {
   }),
   user: PropTypes.object,
   memberSub: PropTypes.object,
-  projectSubs: PropTypes.object,
+  projectSubs: PropTypes.array,
   teamSub: PropTypes.object
 };
 

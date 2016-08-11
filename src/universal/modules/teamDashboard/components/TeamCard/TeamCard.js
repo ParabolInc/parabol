@@ -29,7 +29,7 @@ TeamCard.propTypes = {
   project: PropTypes.shape({
     content: PropTypes.string,
     status: PropTypes.string,
-    updatedAt: PropTypes.number
+    updatedAt: PropTypes.instanceOf(Date)
   }),
   teamMembers: PropTypes.array,
   teamMemberId: PropTypes.string

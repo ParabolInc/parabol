@@ -1,6 +1,7 @@
 import {AGENDA, TEAM, TEAM_MEMBERS, PRESENCE, PROJECTS} from 'universal/subscriptions/constants';
 
 // For now, use an array. In the future, we can make one exclusively for the server that doesn't need to reparse the AST
+const defaultRehydrate = fields => fields;
 export default [
   {
     channel: AGENDA,
@@ -13,7 +14,8 @@ export default [
         isComplete
       }
     }`,
-    channelfy: variables => `agenda/${variables.teamId}`
+    channelfy: variables => `agenda/${variables.teamId}`,
+    rehydrate: defaultRehydrate
   },
   {
     channel: PRESENCE,
@@ -24,7 +26,8 @@ export default [
         userId
       }
     }`,
-    channelfy: variables => `presence/${variables.teamId}`
+    channelfy: variables => `presence/${variables.teamId}`,
+    rehydrate: defaultRehydrate
   },
   {
     channel: PROJECTS,
@@ -39,7 +42,11 @@ export default [
         updatedAt
       }
     }`,
-    channelfy: variables => `projects/${variables.teamMemberId}`
+    channelfy: variables => `projects/${variables.teamMemberId}`,
+    rehydrate: fields => {
+      fields.updatedAt = new Date(fields.updatedAt);
+      return fields;
+    }
   },
   {
     channel: TEAM,
@@ -56,7 +63,8 @@ export default [
          meetingPhaseItem
        }
     }`,
-    channelfy: variables => `team/${variables.teamId}`
+    channelfy: variables => `team/${variables.teamId}`,
+    rehydrate: defaultRehydrate
   },
   {
     channel: TEAM_MEMBERS,
@@ -73,7 +81,8 @@ export default [
          preferredName
        }
     }`,
-    channelfy: variables => `teamMembers/${variables.teamId}`
+    channelfy: variables => `teamMembers/${variables.teamId}`,
+    rehydrate: defaultRehydrate
   },
   {
     channel: 'user',
@@ -81,6 +90,7 @@ export default [
     subscription($userId: ID!) {
       user(userId: $userId)
     }`,
-    channelfy: variables => `user/${variables.userId}`
+    channelfy: variables => `user/${variables.userId}`,
+    rehydrate: defaultRehydrate
   }
 ];

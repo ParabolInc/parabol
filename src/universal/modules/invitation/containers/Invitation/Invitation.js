@@ -23,7 +23,6 @@ query {
   user: getCurrentUser {
     email,
     id,
-    isNew,
     picture,
     preferredName
     memberships {
@@ -96,15 +95,16 @@ export default class Invitation extends Component {
   }
 
   stateMachine = (props) => {
-    const {authToken, user, router} = props;
+    const {authToken, router} = props;
 
     if (authToken) {
-      if (user && user.isNew === false) {
-        // If user already has an account, let them accept the new team via the UI:
-        router.push('/me');
-      } else if (user && user.isNew === true && user.memberships.length === 0) {
+      const isNew = !authToken.hasOwnProperty('tms');
+      if (isNew) {
         // If the user is new let's process their invite:
         this.processInvitation();
+      } else {
+        // If user already has an account, let them accept the new team via the UI:
+        router.push('/me');
       }
     }
   };
