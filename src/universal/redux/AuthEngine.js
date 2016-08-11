@@ -11,13 +11,13 @@ export default class AuthEngine {
   }
 
   removeToken(name, callback) {
-    const token = this.store.getState()[this.reducerName];
+    const token = this.store.getState()[this.reducerName].token;
     this.store.dispatch(removeAuthToken());
     if (callback) callback(null, token);
   }
 
   loadToken(name, callback) {
-    const token = this.store.getState()[this.reducerName];
+    const token = this.store.getState()[this.reducerName].token;
     if (callback) callback(null, token);
   }
 }
