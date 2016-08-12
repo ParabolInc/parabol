@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
+import layoutStyle from 'universal/styles/layout';
 import tinycolor from 'tinycolor2';
 import FontAwesome from 'react-fontawesome';
 import DashNavListContainer from 'universal/containers/DashNavList/DashNavListContainer';
@@ -54,7 +55,7 @@ styles = StyleSheet.create({
     backgroundColor: theme.palette.mid,
     color: textColor,
     paddingBottom: '1.25rem',
-    width: '15rem'
+    width: layoutStyle.dashSidebarWidth,
   },
 
   nav: {

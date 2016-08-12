@@ -29,6 +29,8 @@ const IconLink = (props) => {
     icon,
     iconPlacement,
     label,
+    marginBottom,
+    marginTop,
   } = props;
 
   const handleClick = (e) => {
@@ -56,6 +58,10 @@ const IconLink = (props) => {
     );
   };
 
+  const rootStyle = {
+    marginBottom,
+    marginTop
+  };
   const disabledStyles = combineStyles(s.root, s.disabled);
   const styles = disabled ? disabledStyles : s.root;
 
@@ -64,6 +70,7 @@ const IconLink = (props) => {
       className={styles}
       href={href}
       onClick={(e) => handleClick(e)}
+      style={rootStyle}
       title={label}
     >
       {iconPlacement === 'left' && iconBlock()}
@@ -82,6 +89,8 @@ IconLink.propTypes = {
     'right'
   ]),
   label: PropTypes.string,
+  marginBottom: PropTypes.string,
+  marginTop: PropTypes.string,
   onClick: PropTypes.func,
   scale: PropTypes.oneOf([
     'small',
@@ -100,6 +109,8 @@ IconLink.defaultProps = {
   icon: 'check',
   iconPlacement: 'left',
   label: 'prop.label',
+  marginBottom: '0px',
+  marginTop: '2rem',
   onClick(disabled) {
     console.log(`IconLink onClick, disabled? ${disabled}`);
   },
@@ -118,7 +129,6 @@ s = StyleSheet.create({
     fontSize: (props) => (props.scale === 'small' ? t.typography.s3 : t.typography.s5),
     fontStyle: 'italic',
     fontWeight: 700,
-    marginTop: '2rem',
     textDecoration: 'none',
     userSelect: 'none',
 
