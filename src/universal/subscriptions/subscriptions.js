@@ -10,8 +10,9 @@ export default [
       agenda(teamId: $teamId) {
         id
         content
-        teamMemberId
         isComplete
+        sort
+        teamMemberId
       }
     }`,
     channelfy: variables => `agenda/${variables.teamId}`,

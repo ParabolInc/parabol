@@ -6,12 +6,12 @@ const REMOVE_AUTH_TOKEN = '@@authToken/REMOVE_AUTH_TOKEN';
 const initialState = {
   token: null,
   obj: {
+    // rol and tms are not guaranteed
     aud: null,
     exp: null,
     iat: null,
     iss: null,
     sub: null,
-    tms: []
   }
 };
 
@@ -48,8 +48,5 @@ export function setAuthToken(authToken) {
 }
 
 export function removeAuthToken() {
-  return {
-    type: REMOVE_AUTH_TOKEN,
-    payload: {}
-  };
+  return {type: REMOVE_AUTH_TOKEN};
 }

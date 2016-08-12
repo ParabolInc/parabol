@@ -9,8 +9,7 @@ const stateTemplate = {
     exp: null,
     iat: null,
     iss: null,
-    sub: null,
-    tms: []
+    sub: null
   }
 };
 

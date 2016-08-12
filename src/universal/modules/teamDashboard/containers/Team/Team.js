@@ -93,8 +93,8 @@ TeamContainer.propTypes = {
   teamSub: PropTypes.object
 };
 
-export default connect(mapStateToProps)(
+export default requireAuth(connect(mapStateToProps)(
   reduxSocket({}, reduxSocketOptions)(
-    requireAuth(TeamContainer)
+    TeamContainer)
   )
 );

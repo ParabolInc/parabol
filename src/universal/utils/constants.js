@@ -17,3 +17,6 @@ export const columnArray = [ACTIVE, STUCK, DONE, FUTURE];
 /* Task Type */
 export const ACTION = 'action';
 export const PROJECT = 'project';
+
+/* Sorting */
+export const STEP = 1;

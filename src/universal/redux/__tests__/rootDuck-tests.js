@@ -20,8 +20,7 @@ test('initial state', t => {
         exp: null,
         iat: null,
         iss: null,
-        sub: null,
-        tms: []
+        sub: null
       }
     }
   };

@@ -55,8 +55,7 @@ test('removeToken removes token', t => {
           exp: null,
           iat: null,
           iss: null,
-          sub: null,
-          tms: []
+          sub: null
         }
       }
     }

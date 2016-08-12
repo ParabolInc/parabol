@@ -4,7 +4,8 @@ import {
   GraphQLID,
   GraphQLString,
   GraphQLBoolean,
-  GraphQLInputObjectType
+  GraphQLInputObjectType,
+  GraphQLFloat
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 
@@ -27,6 +28,10 @@ export const AgendaItem = new GraphQLObjectType({
     isActive: {
       type: GraphQLBoolean,
       description: 'true until the agenda item has been marked isComplete and the meeting has ended'
+    },
+    sort: {
+      type: GraphQLFloat,
+      description: 'The sort order of the agenda item in the list'
     }
   })
 });
@@ -39,6 +44,10 @@ export const CreateAgendaItemInput = new GraphQLInputObjectType({
     teamMemberId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The team member ID of the person creating the agenda item'
+    },
+    sort: {
+      type: GraphQLFloat,
+      description: 'The sort order of the agenda item in the list'
     }
   })
 });
@@ -55,6 +64,10 @@ export const UpdateAgendaItemInput = new GraphQLInputObjectType({
     isActive: {
       type: GraphQLBoolean,
       description: 'true until the agenda item has been marked isComplete and the meeting has ended'
+    },
+    sort: {
+      type: GraphQLFloat,
+      description: 'The sort order of the agenda item in the list'
     }
   })
 });
