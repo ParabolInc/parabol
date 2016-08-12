@@ -63,6 +63,7 @@ export const Task = new GraphQLObjectType({
 
 const taskInputThunk = () => ({
   id: {type: GraphQLID, description: 'The unique task ID'},
+  content: {type: GraphQLString, description: 'The body of the task. If null, it is a new task.'},
   type: {type: GraphQLString, description: 'The task type (project or action)'},
   status: {type: GraphQLID, description: 'The status of the task created'},
   teamMemberId: {type: GraphQLID, description: 'The team member ID of the person creating the task'}

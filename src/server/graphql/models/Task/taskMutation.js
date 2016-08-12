@@ -21,7 +21,12 @@ export default {
       // id is of format 'teamId::taskId'
       const [teamId] = id.split('::');
       requireSUOrTeamMember(authToken, teamId);
-      await r.table('Task').get(id).update(task);
+      const now = new Date();
+      const newTask = {
+        ...task,
+        updatedAt: now
+      };
+      await r.table('Task').get(id).update(newTask);
       return true;
     }
   },

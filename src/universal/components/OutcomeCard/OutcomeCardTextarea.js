@@ -1,9 +1,8 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import Textarea from 'react-textarea-autosize';
 import theme from 'universal/styles/theme';
 
-const combineStyles = StyleSheet.combineStyles;
+const {combineStyles} = StyleSheet;
 const descriptionFA = {
   backgroundColor: theme.palette.cool10l,
   borderTopColor: 'currentColor',
@@ -15,31 +14,42 @@ const descriptionActionFA = {
   borderTopColor: theme.palette.mid,
   color: theme.palette.mid10d
 };
-let styles = {};
 
-const OutcomeCardTextarea = (props) => {
-  const {
-    content,
-    isProject,
-  } = props;
+const OutcomeCardTextAreaField = (field) => {
+  const {styles} = OutcomeCardTextAreaField;
+  const {input, isProject, handleSubmit, timestamp, meta: {active}} = field;
   const descStyles = isProject ? styles.content : combineStyles(styles.content, styles.descriptionAction);
-
+  const allClassNames = combineStyles(descStyles, 'mousetrap');
+  const handleBlur = () => {
+    handleSubmit();
+    input.onBlur();
+  };
+  let _textarea;
+  const setRef = (c) => _textarea = c;
+  const handleKeyUp = (e) => {
+    if (e.keyCode === 13 && !e.shiftKey) {
+      handleBlur();
+      _textarea.blur()
+    }
+  };
   return (
-    <Textarea className={descStyles} defaultValue={content}/>
+    <div>
+      <div className={styles.timestamp}>
+        {active ? 'editing...' : timestamp}
+      </div>
+      <textarea
+        ref={setRef}
+        className={allClassNames}
+        placeholder="que pedo wey"
+        onBlur={handleBlur}
+        onKeyDown={handleKeyUp}
+        {...field.input}
+      />
+    </div>
   );
 };
 
-OutcomeCardTextarea.propTypes = {
-  content: PropTypes.string,
-  isProject: PropTypes.bool
-};
-
-OutcomeCardTextarea.defaultProps = {
-  content: 'Parabol website updated',
-  isProject: true
-};
-
-styles = StyleSheet.create({
+OutcomeCardTextAreaField.styles = StyleSheet.create({
   content: {
     backgroundColor: 'transparent',
     border: 0,
@@ -65,7 +75,6 @@ styles = StyleSheet.create({
       ...descriptionFA
     }
   },
-
   descriptionAction: {
     // NOTE: modifies styles.content
     ':focus': {
@@ -74,7 +83,15 @@ styles = StyleSheet.create({
     ':active': {
       ...descriptionActionFA
     }
-  }
+  },
+  timestamp: {
+    color: theme.palette.dark,
+    fontSize: theme.typography.s1,
+    fontWeight: 700,
+    lineHeight: theme.typography.s3,
+    padding: '.5rem',
+    textAlign: 'right'
+  },
 });
 
-export default look(OutcomeCardTextarea);
+export default look(OutcomeCardTextAreaField);

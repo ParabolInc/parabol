@@ -10,7 +10,7 @@ import {
   showSuccess,
   showWarning
 } from 'universal/modules/notifications/ducks/notifications';
-
+import jwtDecode from 'jwt-decode';
 import {
   invalidInvitation,
   inviteNotFound,
@@ -98,7 +98,8 @@ export default class Invitation extends Component {
     const {authToken, router} = props;
 
     if (authToken) {
-      const isNew = !authToken.hasOwnProperty('tms');
+      const authObj = authToken && jwtDecode(authToken);
+      const isNew = !authObj.hasOwnProperty('tms');
       if (isNew) {
         // If the user is new let's process their invite:
         this.processInvitation();

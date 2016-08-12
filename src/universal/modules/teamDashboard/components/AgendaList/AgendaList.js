@@ -6,7 +6,7 @@ const AgendaList = (props) => {
   const {agenda} = props;
   return (
     <div className={styles.root}>
-      {agenda.map(item => <div>{item.content}</div>)}
+      {agenda.map(item => <div key={`agendaItem${item.id}`}>{item.content}</div>)}
     </div>
   );
 };

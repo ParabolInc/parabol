@@ -1,54 +1,99 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import OutcomeCardTextarea from './OutcomeCardTextarea';
 import OutcomeCardFooter from './OutcomeCardFooter';
 import OutcomeCardStatusMenu from './OutcomeCardStatusMenu';
 import theme from 'universal/styles/theme';
 import labels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
+import {Field, reduxForm, initialize} from 'redux-form';
+import OutcomeCardTextarea from './OutcomeCardTextarea';
+import {cashay} from 'cashay';
+import fromNow from 'universal/utils/fromNow';
 
 const combineStyles = StyleSheet.combineStyles;
 let styles = {};
 
-const OutcomeCard = (props) => {
-  const {
-    content,
-    status,
-    hasOpenAssignMenu,
-    hasOpenStatusMenu,
-    isArchived,
-    isProject,
-    timestamp
-  } = props;
-
-  let rootStyles;
-  const rootStyleOptions = [styles.root, styles.cardBlock];
-  if (isProject) {
-    rootStyleOptions.push(styles[status]);
-  } else {
-    rootStyleOptions.push(styles.isAction);
+@reduxForm()
+@look
+export default class OutcomeCard extends Component {
+  componentWillMount() {
+    this.initializeValues(this.props.content);
   }
-  rootStyles = combineStyles.apply(null, rootStyleOptions);
 
-  return (
-    <div className={rootStyles}>
-      {/* card main */}
-      {hasOpenStatusMenu &&
-        <OutcomeCardStatusMenu isArchived={isArchived} status={status} />
+  componentWillReceiveProps(nextProps) {
+    const {content} = this.props;
+    const nextContent = nextProps.content;
+    if (nextContent !== content) {
+      this.initializeValues(nextContent);
+    }
+  }
+
+  initializeValues(content) {
+    const {form, projectId} = this.props;
+    cashay.store.dispatch(initialize(form, {[projectId]: content}));
+  }
+
+  render() {
+    const {
+      content,
+      status,
+      hasOpenAssignMenu,
+      hasOpenStatusMenu,
+      isArchived,
+      isProject,
+      updatedAt,
+      projectId,
+      handleSubmit
+    } = this.props;
+
+    let rootStyles;
+    const rootStyleOptions = [styles.root, styles.cardBlock];
+    if (isProject) {
+      rootStyleOptions.push(styles[status]);
+    } else {
+      rootStyleOptions.push(styles.isAction);
+    }
+    rootStyles = combineStyles.apply(null, rootStyleOptions);
+    const handleCardUpdate = (submittedData) => {
+      const submittedContent = submittedData[projectId];
+      if (submittedContent !== content) {
+        const options = {
+          variables: {
+            updatedTask: {
+              id: projectId,
+              content: submittedContent
+            }
+          }
+        };
+        cashay.mutate('updateTask', options);
       }
-      {!hasOpenAssignMenu && !hasOpenStatusMenu &&
+    };
+    return (
+      <div className={rootStyles}>
+        {/* card main */}
+        {hasOpenStatusMenu &&
+        <OutcomeCardStatusMenu isArchived={isArchived} status={status}/>
+        }
+        {!hasOpenAssignMenu && !hasOpenStatusMenu &&
         <div className={styles.body}>
-          <div className={styles.timestamp}>
-            {timestamp}
-          </div>
-          <OutcomeCardTextarea content={content} isProject={isProject} />
+          <form>
+            <Field
+              name={projectId}
+              component={OutcomeCardTextarea}
+              projectId={projectId}
+              isProject={isProject}
+              handleSubmit={handleSubmit(handleCardUpdate)}
+              timestamp={fromNow(updatedAt)}
+            />
+          </form>
         </div>
-      }
-      {/* card footer */}
-      <OutcomeCardFooter {...props} />
-    </div>
-  );
+        }
+        {/* card footer */}
+        <OutcomeCardFooter {...this.props} />
+      </div>
+    );
+  }
 };
 
 OutcomeCard.propTypes = {
@@ -61,12 +106,10 @@ OutcomeCard.propTypes = {
   isProject: PropTypes.bool,
   owner: PropTypes.object,
   team: PropTypes.object,
-  timestamp: PropTypes.string,
   showByTeam: PropTypes.bool
 };
 
 OutcomeCard.defaultProps = {
-  content: 'Parabol website updated',
   status: labels.projectStatus.active.slug,
   openStatusMenu() {
     console.log('openStatusMenu');
@@ -83,7 +126,6 @@ OutcomeCard.defaultProps = {
     preferredName: 'Engineering',
     picture: 'https://placekitten.com/g/24/24'
   },
-  timestamp: '1 day ago',
   showByTeam: false
 };
 
@@ -111,18 +153,7 @@ styles = StyleSheet.create({
     backgroundColor: theme.palette.light50l
   },
 
-  timestamp: {
-    color: theme.palette.dark,
-    fontSize: theme.typography.s1,
-    fontWeight: 700,
-    lineHeight: theme.typography.s3,
-    padding: '.5rem',
-    textAlign: 'right'
-  },
-
   // Status theme colors
 
   ...projectStatusStyles('borderTopColor')
 });
-
-export default look(OutcomeCard);
