@@ -5,8 +5,9 @@ import Outcomes from 'universal/modules/userDashboard/components/Outcomes/Outcom
 
 const MeContainer = (props) => {
   const {user} = props;
+  const activeMeetings = []; // TODO
   return (
-    <DashLayout title="My Dashboard">
+    <DashLayout title="My Dashboard" activeMeetings={activeMeetings}>
       <DashSidebar activeArea="outcomes"/>
       <Outcomes preferredName={user.preferredName}/>
     </DashLayout>

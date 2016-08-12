@@ -15,7 +15,7 @@ const DashLayout = (props) => {
     notification,
     title
   } = props;
-  const hasNotification = activeMeetings.length;
+  const hasNotification = activeMeetings.length > 0;
   return (
     <div className={styles.root}>
       <Helmet title={title} {...head} />
@@ -30,6 +30,7 @@ const DashLayout = (props) => {
 };
 
 DashLayout.propTypes = {
+  activeMeetings: PropTypes.array.isRequired,
   children: PropTypes.any,
   notification: PropTypes.object,
   title: PropTypes.string

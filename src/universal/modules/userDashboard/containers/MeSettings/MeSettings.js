@@ -13,8 +13,9 @@ const mapStateToProps = (state) => {
 
 const MeSettingsContainer = (props) => {
   const {dispatch, user, ...otherProps} = props;
+  const activeMeetings = []; // TODO
   return (
-    <DashLayout title="My Dashboard">
+    <DashLayout title="My Dashboard" activeMeetings={activeMeetings}>
       <DashSidebar activeArea="settings" dispatch={dispatch} user={user} />
       <Preferences user={user} {...otherProps} />
     </DashLayout>
