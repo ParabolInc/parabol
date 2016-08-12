@@ -97,7 +97,7 @@ export default class Invitation extends Component {
   stateMachine = (props) => {
     const {auth, router} = props;
 
-    if (auth) {
+    if (auth.sub) {
       const isNew = !auth.hasOwnProperty('tms');
       if (isNew) {
         // If the user is new let's process their invite:

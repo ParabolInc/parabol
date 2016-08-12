@@ -40,12 +40,12 @@ export default role => ComposedComponent => {
         throw new Error('Auth token undefined. Did you put @connect on your component?');
       }
       if (role) {
-        if (auth && auth.rol === role) {
+        if (auth.sub && auth.rol === role) {
           // We had a role to check, and role checks out:
           return <ComposedComponent {...this.props} />;
         }
         dispatch(showError(unauthorized));
-      } else if (auth) {
+      } else if (auth.sub) {
         // We were looking for any authenticated user only:
         return <ComposedComponent {...this.props} />;
       } else {

@@ -14,7 +14,7 @@ const mapStateToProps = state => {
 export default ComposedComponent => {
   const TokenizedComp = (props) => {
     const {auth, user, router} = props;
-    if (auth && user) {
+    if (auth.sub && user) {
       // note if you join a team & leave it, tms will be an empty array
       const isNew = !auth.hasOwnProperty('tms');
       if (isNew) {
