@@ -3,22 +3,20 @@ import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router';
-import jwtDecode from 'jwt-decode';
 
 const mapStateToProps = state => {
   return {
-    authToken: state.authToken,
+    auth: state.auth.obj,
     user: cashay.query(getAuthQueryString, authedOptions).data.user
   };
 };
 
 export default ComposedComponent => {
   const TokenizedComp = (props) => {
-    const {authToken, user, router} = props;
-    if (authToken && user) {
-      const authObj = authToken && jwtDecode(authToken);
+    const {auth, user, router} = props;
+    if (auth && user) {
       // note if you join a team & leave it, tms will be an empty array
-      const isNew = !authObj.hasOwnProperty('tms');
+      const isNew = !auth.hasOwnProperty('tms');
       if (isNew) {
         router.push('/welcome');
       } else {
@@ -29,7 +27,7 @@ export default ComposedComponent => {
   };
 
   TokenizedComp.propTypes = {
-    authToken: PropTypes.string,
+    auth: PropTypes.object,
     user: PropTypes.shape({
       email: PropTypes.string,
       id: PropTypes.string,

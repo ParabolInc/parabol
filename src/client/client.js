@@ -10,7 +10,7 @@ import Root from './Root';
 const initialState = {};
 
 const createCashay = (store, cashaySchema) => {
-  const persistedToken = store.getState().authToken;
+  const persistedToken = store.getState().auth.token;
   cashay.create({
     store,
     schema: cashaySchema,

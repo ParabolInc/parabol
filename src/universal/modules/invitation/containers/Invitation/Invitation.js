@@ -10,7 +10,7 @@ import {
   showSuccess,
   showWarning
 } from 'universal/modules/notifications/ducks/notifications';
-import jwtDecode from 'jwt-decode';
+
 import {
   invalidInvitation,
   inviteNotFound,
@@ -68,7 +68,7 @@ const cashayOptions = {
 const mapStateToProps = (state, props) => {
   const {params: {id}} = props;
   return {
-    authToken: state.authToken,
+    auth: state.auth.obj,
     inviteToken: id,
     user: cashay.query(getUserWithMemberships, cashayOptions).data.user,
   };
@@ -78,7 +78,7 @@ const mapStateToProps = (state, props) => {
 @withRouter
 export default class Invitation extends Component {
   static propTypes = {
-    authToken: PropTypes.string,
+    auth: PropTypes.object,
     dispatch: PropTypes.func.isRequired,
     inviteToken: PropTypes.string.isRequired,
     router: PropTypes.object.isRequired,
@@ -95,11 +95,10 @@ export default class Invitation extends Component {
   }
 
   stateMachine = (props) => {
-    const {authToken, router} = props;
+    const {auth, router} = props;
 
-    if (authToken) {
-      const authObj = authToken && jwtDecode(authToken);
-      const isNew = !authObj.hasOwnProperty('tms');
+    if (auth) {
+      const isNew = !auth.hasOwnProperty('tms');
       if (isNew) {
         // If the user is new let's process their invite:
         this.processInvitation();
@@ -155,9 +154,9 @@ export default class Invitation extends Component {
   );
 
   render() {
-    const {authToken} = this.props;
+    const {auth} = this.props;
 
-    if (!authToken) {
+    if (!auth) {
       // Authenticate the user, then let's find out what else to do:
       return this.renderLogin();
     }
