@@ -40,7 +40,7 @@ const OutcomeCardTextAreaField = (field) => {
       <textarea
         ref={setRef}
         className={allClassNames}
-        placeholder="que pedo wey"
+        placeholder="Type your project outcome here"
         onBlur={handleBlur}
         onKeyDown={handleKeyUp}
         {...field.input}
