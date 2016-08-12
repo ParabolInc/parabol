@@ -197,17 +197,25 @@ folks who weren't able to attend can see what happened.
 
 ## Team Dashboard
 
-- [ ] When a TM navigates to their team's dashboard, they will want a list
+- [X] When a TM navigates to their team's dashboard, they will want a list
 of all projects, so that they can see what their team has signed up to do
 (and their place in it).
 
-- [ ] When a TM wants to update the team's dashboard, they will want easy
+- [X] When a TM wants to update the team's dashboard, they will want easy
 controls, so that they can add new projects, change the status of projects,
 or reassign ownership.
 
-- [ ] When a TM doesn't feel comfortable creating a new project for another
+- [X] When a TM doesn't feel comfortable creating a new project for another
 person, they want to add an agenda item for the next meeting, so the request
 can be made in a more public forum and weighed against other priorities.
+
+- [X] When a meeting has begun for a TM and the TM visits the team dashboard,
+they want to be notified that their other teammates are meeting, so that they
+can join the meeting.
+
+- [X] When a meeting is active, the TM shouldn't be able to edit the agenda
+or team projects, so that they join their teammates in the meeting and
+participate in the process.
 
 - [ ] When a TM wants to invite a new team member, they'll want an obvious
 control that allows them to input one or more email addresses, so that they
