@@ -1,18 +1,15 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
+import layoutStyle from 'universal/styles/layout';
 
 let styles = {};
 
-const DashModal = (props) => {
-  const rootStyles = styles.root;
-  return (
-    <div className={rootStyles}>
-      <div className={styles.modal}>
-        {props.children}
-      </div>
+const DashModal = (props) =>
+  <div className={styles.root}>
+    <div className={styles.modal}>
+      {props.children}
     </div>
-  );
-};
+  </div>;
 
 DashModal.propTypes = {
   children: PropTypes.any
@@ -27,7 +24,7 @@ styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
-    left: '15rem',
+    left: layoutStyle.dashSidebarWidth,
     position: 'absolute',
     right: 0,
     textAlign: 'center',
