@@ -25,25 +25,53 @@ const makeProjectSubs = (teamMembers) => {
   }
   return projectSubs;
 };
+
+const makeTeamSubs = (teams) => {
+  const teamSubs = {};
+  for (let i = 0; i < teams.length; i++) {
+    const teamId = teams[i];
+    teamSubs[teamId] = cashay.subscribe(teamSubString, subscriber, {
+      op: 'teamSub',
+      key: teamId,
+      variables: {teamId}
+    });
+  }
+  return teamSubs;
+};
 // TODO memoize the map
 const mapStateToProps = (state, props) => {
   const variables = {teamId: props.params.teamId};
   const memberSub = cashay.subscribe(teamMembersSubString, subscriber, {op: 'memberSub', variables});
   const projectSubs = makeProjectSubs(memberSub.data.teamMembers);
+  const teamSubs = makeTeamSubs(state.auth.obj.tms);
   return {
     memberSub,
     projectSubs,
-    teamSub: cashay.subscribe(teamSubString, subscriber, {op: 'teamSub', variables}),
+    teamSubs
   };
 };
 
 const TeamContainer = (props) => {
-  const {memberSub, teamSub, user, params: {teamId}, projectSubs, dispatch} = props;
-  const {team} = teamSub.data;
+  const {memberSub, teamSubs, user, params: {teamId}, projectSubs, dispatch} = props;
+  const {team} = teamSubs[teamId].data;
   const {teamMembers} = memberSub.data;
   const projects = [].concat(...projectSubs.map(sub => sub.data.projects));
+  const teamIds = Object.keys(teamSubs);
+
+  const activeMeetings = [];
+  teamIds.forEach(teamId => {
+    const {team} = teamSubs[teamId].data;
+    if (team.meetingId) {
+      activeMeetings.push({
+        link: `/meeting/${teamId}`,
+        name: team.name
+      });
+    }
+  });
+
   return (
     <Team
+      activeMeetings={activeMeetings}
       projects={projects}
       teamId={teamId}
       team={team}

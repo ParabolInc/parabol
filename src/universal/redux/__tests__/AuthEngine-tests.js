@@ -49,8 +49,15 @@ test('removeToken removes token', t => {
     rae.store.getState(),
     {
       [REDUCER_NAME]: {
-        obj: null,
-        token: null
+        token: null,
+        obj: {
+          aud: null,
+          exp: null,
+          iat: null,
+          iss: null,
+          sub: null,
+          tms: []
+        }
       }
     }
   );

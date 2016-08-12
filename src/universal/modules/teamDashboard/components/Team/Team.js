@@ -27,10 +27,10 @@ const linkStyle = {
 };
 
 const Team = (props) => {
-  const {dispatch, projects, team, teamId, teamMembers, user} = props;
+  const {activeMeetings, dispatch, projects, team, teamId, teamMembers, user} = props;
   const teamMemberId = `${user.id}::${teamId}`;
   return (
-    <DashLayout title="Team Dashboard">
+    <DashLayout activeMeetings={activeMeetings} title="Team Dashboard">
       <DashSidebar
         activeArea="team"
         activeTeamId={teamId}

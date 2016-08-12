@@ -14,8 +14,15 @@ test.beforeEach(t => {
 test('initial state', t => {
   const stateTemplate = {
     auth: {
-      obj: null,
-      token: null
+      token: null,
+      obj: {
+        aud: null,
+        exp: null,
+        iat: null,
+        iss: null,
+        sub: null,
+        tms: []
+      }
     }
   };
   t.deepEqual(t.context.initialState, stateTemplate);

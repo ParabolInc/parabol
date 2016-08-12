@@ -5,7 +5,14 @@ const REMOVE_AUTH_TOKEN = '@@authToken/REMOVE_AUTH_TOKEN';
 
 const initialState = {
   token: null,
-  obj: null
+  obj: {
+    aud: null,
+    exp: null,
+    iat: null,
+    iss: null,
+    sub: null,
+    tms: []
+  }
 };
 
 export default function reducer(state = initialState, action = {}) {

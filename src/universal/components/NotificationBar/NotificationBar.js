@@ -19,28 +19,27 @@ const faHourglassStyle = {
 };
 
 const NotificationBar = (props) => {
-  const {
-    link,
-    linkLabel,
-    message,
-    timestamp
-  } = props.notification;
-
+  const {activeMeetings} = props;
   return (
     <div className={styles.bar}>
-      <div className={styles.timestamp}>
-        <FontAwesome
-          name="hourglass-end"
-          style={faHourglassStyle}
-        /> {timestamp} remaining
-      </div>
+      {/*<div className={styles.timestamp}>*/}
+        {/*<FontAwesome*/}
+          {/*name="hourglass-end"*/}
+          {/*style={faHourglassStyle}*/}
+        {/*/> {"12:32"} remaining*/}
+      {/*</div>*/}
       <div className={styles.message}>
-        {message}
+        {'You\'ve got meeting:'}
       </div>
       <div className={styles.inlineBlock}>
-        <Link className={styles.link} title={linkLabel} to={link}>
-          {linkLabel}
-        </Link>
+        {activeMeetings.map(meeting => {
+          return (
+            <Link key={meeting.link} className={styles.link} title="Join Active Meeting" to={meeting.link}>
+              {meeting.name}
+            </Link>
+          )
+        })}
+
       </div>
     </div>
   );

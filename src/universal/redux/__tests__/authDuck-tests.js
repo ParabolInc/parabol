@@ -4,7 +4,14 @@ import {testToken, testTokenData} from './testTokens';
 
 const stateTemplate = {
   token: null,
-  obj: null
+  obj: {
+    aud: null,
+    exp: null,
+    iat: null,
+    iss: null,
+    sub: null,
+    tms: []
+  }
 };
 
 test('initial state', t => {
