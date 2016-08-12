@@ -56,7 +56,8 @@ styles = StyleSheet.create({
 
   main: {
     display: 'flex !important',
-    flex: 1
+    flex: 1,
+    position: 'relative'
   },
 });
 
