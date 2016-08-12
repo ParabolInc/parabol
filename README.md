@@ -12,6 +12,10 @@ agile teams.
 
 From [Parabol, Inc](http://parabol.co).
 
+Curious what this is all about? Each week we publish a distillation of our
+progress, news, and information in
+[Parabol Focus](https://medium.com/parabol-focus).
+
 Live demo: http://action-staging.parabol.co/
 
 ### Quick Links

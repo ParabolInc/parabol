@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import {textOverflow} from 'universal/styles/helpers';
 import theme from 'universal/styles/theme';
+import layoutStyle from 'universal/styles/layout';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import PlaceholderList from 'universal/modules/meeting/components/PlaceholderList/PlaceholderList';
 import PlaceholderAddLink from 'universal/modules/meeting/components/PlaceholderAddLink/PlaceholderAddLink';
@@ -204,7 +205,7 @@ s = StyleSheet.create({
   sidebar: {
     backgroundColor: theme.palette.dark10l,
     padding: '2rem 0',
-    width: '15rem'
+    width: layoutStyle.meetingSidebarWidth
   },
 
   sidebarHeader: {

@@ -11,6 +11,7 @@ import {
 import {Link} from 'react-router';
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
 import AgendaAndProjects from 'universal/modules/teamDashboard/components/AgendaAndProjects/AgendaAndProjects';
+import TeamDashModal from '../TeamDashModal/TeamDashModal';
 
 const faIconStyle = {
   fontSize: '14px',
@@ -27,8 +28,10 @@ const linkStyle = {
 };
 
 const Team = (props) => {
-  const {activeMeetings, dispatch, projects, team, teamId, teamMembers, user} = props;
+  const {activeMeetings, dispatch, hasOverlay, projects, team, teamId, teamMembers, user} = props;
   const teamMemberId = `${user.id}::${teamId}`;
+  const todoHandleClick = () =>
+    console.log('TeamDashModal.todoHandleClick');
   return (
     <DashLayout activeMeetings={activeMeetings} title="Team Dashboard">
       <DashSidebar
@@ -37,7 +40,10 @@ const Team = (props) => {
         dispatch={dispatch}
         user={user}
       />
-      <DashMain>
+      {hasOverlay &&
+        <TeamDashModal onClick={todoHandleClick} />
+      }
+      <DashMain hasOverlay={hasOverlay}>
         <DashHeader>
           <DashHeaderInfo title={team.name}>
             <Link
@@ -67,6 +73,7 @@ const Team = (props) => {
 
 Team.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  hasOverlay: PropTypes.bool,
   projects: PropTypes.array,
   teamId: PropTypes.string.isRequired,
   team: PropTypes.object.isRequired,
@@ -75,6 +82,10 @@ Team.propTypes = {
     name: PropTypes.string,
     preferredName: PropTypes.string,
   })
+};
+
+Team.defaultProps = {
+  hasOverlay: true
 };
 
 export default Team;
