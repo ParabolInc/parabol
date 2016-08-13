@@ -8,7 +8,7 @@
 An open-source tool for meaningful meetings to build smarter, more
 agile teams.
 
-![Action Screencap Image](./docs/images/20160207_Action_Snapshot.gif)
+![Action Screencap Image](./docs/images/20160813_Action_Snapshot.gif)
 
 From [Parabol, Inc](http://parabol.co).
 
