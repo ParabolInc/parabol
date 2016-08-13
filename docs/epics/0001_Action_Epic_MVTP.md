@@ -201,7 +201,7 @@ folks who weren't able to attend can see what happened.
 of all projects, so that they can see what their team has signed up to do
 (and their place in it).
 
-- [X] When a TM wants to update the team's dashboard, they will want easy
+- [ ] When a TM wants to update the team's dashboard, they will want easy
 controls, so that they can add new projects, change the status of projects,
 or reassign ownership.
 
