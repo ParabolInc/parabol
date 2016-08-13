@@ -35,7 +35,7 @@ export default {
       //   domain: auth0.account,
       //   token: process.env.AUTH0_CLIENT_SECRET
       // });
-      // const updateRes = await auth0ManagementClient.users.updateUserMetadata(params, metadata);
+
       // TODO loginsCount and blockedFor are not a part of this API response
       const auth0User = {
         cachedAt: now,
@@ -70,7 +70,6 @@ export default {
         const welcomeSentAt = emailWelcomed ? new Date() : null;
         returnedUser = {
           ...auth0User,
-          isNew: true,
           welcomeSentAt
         };
         await r.table('User').insert(returnedUser);
@@ -93,15 +92,8 @@ export default {
        * If we really want to be jocky, we can optmize this into a single
        * ReQL query at the expense of readability:
        */
-      const hasTeam = await r.table('TeamMember')
-        .getAll(id, {index: 'userId'})
-        .isEmpty()
-        .not();
-      const dbProfile = await r.table('User').get(id)
-        .update({
-          ...updatedObj,
-          isNew: !hasTeam,
-        }, {returnChanges: true});
+      const hasTeam = authToken.tms && authToken.tms.length > 0;
+      const dbProfile = await r.table('User').get(id).update(updatedObj, {returnChanges: true});
       if (hasTeam) {
         // propagate denormalized changes to TeamMember
         await r.table('TeamMember')

@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
-import Avatar from '../Avatar/Avatar';
+import Avatar from 'universal/components/Avatar/Avatar';
 import {CHECKIN, UPDATES} from 'universal/utils/constants';
 
 let s = {};

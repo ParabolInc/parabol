@@ -10,17 +10,17 @@ let styles = {};
 
 const DashLayout = (props) => {
   const {
+    activeMeetings,
     children,
     notification,
-    hasNotification,
     title
   } = props;
-
+  const hasNotification = activeMeetings.length > 0;
   return (
     <div className={styles.root}>
       <Helmet title={title} {...head} />
       {hasNotification &&
-        <NotificationBar notification={notification} />
+        <NotificationBar activeMeetings={activeMeetings} notification={notification} />
       }
       <div className={styles.main}>
         {children}
@@ -30,9 +30,9 @@ const DashLayout = (props) => {
 };
 
 DashLayout.propTypes = {
+  activeMeetings: PropTypes.array.isRequired,
   children: PropTypes.any,
   notification: PropTypes.object,
-  hasNotification: PropTypes.bool,
   title: PropTypes.string
 };
 
@@ -43,7 +43,6 @@ DashLayout.defaultProps = {
     message: 'Product',
     timestamp: '12:32'
   },
-  hasNotification: true,
   title: 'Action Dashboard'
 };
 
@@ -57,7 +56,8 @@ styles = StyleSheet.create({
 
   main: {
     display: 'flex !important',
-    flex: 1
+    flex: 1,
+    position: 'relative'
   },
 });
 

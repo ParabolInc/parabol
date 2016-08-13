@@ -3,10 +3,15 @@ import FontAwesome from 'react-fontawesome';
 import {
   DashContent,
   DashHeader,
+  DashHeaderInfo,
   DashLayout,
   DashMain,
   DashSidebar
 } from 'universal/components/Dashboard';
+import {Link} from 'react-router';
+import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
+import AgendaAndProjects from 'universal/modules/teamDashboard/components/AgendaAndProjects/AgendaAndProjects';
+import TeamDashModal from '../TeamDashModal/TeamDashModal';
 
 const faIconStyle = {
   fontSize: '14px',
@@ -23,40 +28,42 @@ const linkStyle = {
 };
 
 const Team = (props) => {
-  const {dispatch, teamId, user} = props;
-  const goToLink = (e) => {
-    e.preventDefault();
-    console.log('TODO: Go to link');
-  };
-
+  const {activeMeetings, dispatch, projects, team, teamId, teamMembers, user} = props;
+  const hasOverlay = Boolean(team && team.meetingId);
+  const teamMemberId = `${user.id}::${teamId}`;
   return (
-    <DashLayout title="Team Dashboard">
+    <DashLayout activeMeetings={activeMeetings} title="Team Dashboard">
       <DashSidebar
         activeArea="team"
         activeTeamId={teamId}
         dispatch={dispatch}
         user={user}
       />
-      <DashMain>
-        <DashHeader title="Team Name">
-          <a
-            href={`/meeting/${teamId}`}
-            style={linkStyle}
-            title="Meeting Lobby"
-          >
-            <FontAwesome name="arrow-circle-right" style={faIconStyle} /> Meeting Lobby
-          </a>
-          <a
-            href="#"
-            onClick={goToLink}
-            style={linkStyle}
-            title="Team Settings"
-          >
-            <FontAwesome name="cog" style={faIconStyle} /> Team Settings
-          </a>
+      {hasOverlay &&
+        <TeamDashModal teamId={teamId} />
+      }
+      <DashMain hasOverlay={hasOverlay}>
+        <DashHeader>
+          <DashHeaderInfo title={team.name}>
+            <Link
+              to={`/meeting/${teamId}`}
+              style={linkStyle}
+              title="Meeting Lobby"
+            >
+              <FontAwesome name="arrow-circle-right" style={faIconStyle} /> Meeting Lobby
+            </Link>
+            <Link
+              to={`/meeting/${teamId}/settings`}
+              style={linkStyle}
+              title="Team Settings"
+            >
+              <FontAwesome name="cog" style={faIconStyle} /> Team Settings
+            </Link>
+          </DashHeaderInfo>
+          <DashboardAvatars teamMembers={teamMembers}/>
         </DashHeader>
         <DashContent>
-          Team Outcomes
+          <AgendaAndProjects teamId={teamId} projects={projects} teamMembers={teamMembers} teamMemberId={teamMemberId}/>
         </DashContent>
       </DashMain>
     </DashLayout>
@@ -64,8 +71,12 @@ const Team = (props) => {
 };
 
 Team.propTypes = {
+  activeMeetings: PropTypes.array,
   dispatch: PropTypes.func.isRequired,
+  projects: PropTypes.array,
   teamId: PropTypes.string.isRequired,
+  team: PropTypes.object.isRequired,
+  teamMembers: PropTypes.array.isRequired,
   user: PropTypes.shape({
     name: PropTypes.string,
     preferredName: PropTypes.string,

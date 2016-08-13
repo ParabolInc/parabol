@@ -1,112 +1,133 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import FontAwesome from 'react-fontawesome';
-import Textarea from 'react-textarea-autosize';
+import OutcomeCardFooter from './OutcomeCardFooter';
+import OutcomeCardStatusMenu from './OutcomeCardStatusMenu';
 import theme from 'universal/styles/theme';
+import labels from 'universal/styles/theme/labels';
+import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
+import {Field, reduxForm, initialize} from 'redux-form';
+import OutcomeCardTextarea from './OutcomeCardTextarea';
+import {cashay} from 'cashay';
+import fromNow from 'universal/utils/fromNow';
 
 const combineStyles = StyleSheet.combineStyles;
-const avatarSize = '1.5rem';
 let styles = {};
 
-const OutcomeCard = props => {
-  const {
-    description,
-    status,
-    openStatusMenu,
-    isArchived,
-    owner,
-    showByTeam,
-    team,
-    timestamp
-  } = props;
+@reduxForm()
+@look
+export default class OutcomeCard extends Component {
+  componentWillMount() {
+    this.initializeValues(this.props.content);
+  }
 
-  const makeStatusButton = () => {
-    const buttonStyles = combineStyles(styles.statusButton, styles[status]);
-    const statusIcon = {
-      active: 'arrow-right',
-      stuck: 'exclamation-triangle',
-      done: 'check',
-      future: 'clock-o'
+  componentWillReceiveProps(nextProps) {
+    const {content} = this.props;
+    const nextContent = nextProps.content;
+    if (nextContent !== content) {
+      this.initializeValues(nextContent);
+    }
+  }
+
+  initializeValues(content) {
+    const {form, projectId} = this.props;
+    cashay.store.dispatch(initialize(form, {[projectId]: content}));
+  }
+
+  render() {
+    const {
+      content,
+      status,
+      hasOpenAssignMenu,
+      hasOpenStatusMenu,
+      isArchived,
+      isProject,
+      updatedAt,
+      projectId,
+      handleSubmit
+    } = this.props;
+
+    let rootStyles;
+    const rootStyleOptions = [styles.root, styles.cardBlock];
+    if (isProject) {
+      rootStyleOptions.push(styles[status]);
+    } else {
+      rootStyleOptions.push(styles.isAction);
+    }
+    rootStyles = combineStyles.apply(null, rootStyleOptions);
+    const handleCardUpdate = (submittedData) => {
+      const submittedContent = submittedData[projectId];
+      if (submittedContent !== content) {
+        const options = {
+          variables: {
+            updatedTask: {
+              id: projectId,
+              content: submittedContent
+            }
+          }
+        };
+        cashay.mutate('updateTask', options);
+      }
     };
     return (
-      <button
-        className={buttonStyles}
-        onClick={openStatusMenu}
-      >
-        <FontAwesome
-          name={statusIcon[status]}
-          style={{lineHeight: avatarSize}}
-        />
-      </button>
-    );
-  };
-
-  const avatarImage = showByTeam ? team.avatar : owner.avatar;
-  const avatarName = showByTeam ? team.name : owner.name;
-  const avatarTeamStyles = combineStyles(styles.avatar, styles.avatarTeam);
-  const avatarStyles = showByTeam ? avatarTeamStyles : styles.avatar;
-
-  return (
-    <div className={combineStyles(styles.root, styles[status])}>
-      {/* card main */}
-      <div className={styles.timestamp}>
-        {timestamp}
-      </div>
-      <Textarea className={styles.description} defaultValue={description} />
-      {/* card footer */}
-      <div className={styles.footer}>
-        <div className={styles.avatarBlock}>
-          <img alt={avatarName} className={avatarStyles} src={avatarImage} />
-          <div className={styles.name}>{avatarName}</div>
-        </div>
-        <div className={styles.statusBlock}>
-          <div className={styles.statusButton}>
-            {makeStatusButton()}
+      <div className={rootStyles}>
+        {/* card main */}
+        {hasOpenStatusMenu && <OutcomeCardStatusMenu isArchived={isArchived} status={status}/>}
+        {!hasOpenAssignMenu && !hasOpenStatusMenu &&
+          <div className={styles.body}>
+            <form>
+              <Field
+                name={projectId}
+                component={OutcomeCardTextarea}
+                projectId={projectId}
+                isProject={isProject}
+                handleSubmit={handleSubmit(handleCardUpdate)}
+                timestamp={fromNow(updatedAt)}
+              />
+            </form>
           </div>
-          {isArchived &&
-            <div>TODO: Style archived</div>
-          }
-        </div>
+        }
+        {/* card footer */}
+        <OutcomeCardFooter {...this.props} />
       </div>
-    </div>
-  );
-};
+    );
+  }
+}
 
 OutcomeCard.propTypes = {
-  description: PropTypes.string,
-  status: PropTypes.oneOf([
-    'active',
-    'stuck',
-    'done',
-    'future'
-  ]),
+  content: PropTypes.string,
+  status: PropTypes.oneOf(labels.projectStatus.slugs),
   openStatusMenu: PropTypes.func,
+  hasOpenAssignMenu: PropTypes.bool,
+  hasOpenStatusMenu: PropTypes.bool,
   isArchived: PropTypes.bool,
   isProject: PropTypes.bool,
   owner: PropTypes.object,
   team: PropTypes.object,
-  timestamp: PropTypes.string,
-  showByTeam: PropTypes.bool
+  showByTeam: PropTypes.bool,
+  updatedAt: PropTypes.instanceOf(Date),
+  projectId: PropTypes.string,
+  handleSubmit: PropTypes.func,
+  form: PropTypes.string
 };
 
 OutcomeCard.defaultProps = {
-  description: 'Parabol website updated',
-  status: 'done',
+  status: labels.projectStatus.active.slug,
   openStatusMenu() {
     console.log('openStatusMenu');
   },
+  hasOpenAssignMenu: false,
+  hasOpenStatusMenu: false,
   isArchived: false,
   isProject: true,
   owner: {
-    name: 'Taya Mueller',
-    avatar: TayaAvatar
+    preferredName: 'Taya Mueller',
+    picture: TayaAvatar
   },
   team: {
-    name: 'Engineering',
-    avatar: 'https://placekitten.com/g/24/24'
+    preferredName: 'Engineering',
+    picture: 'https://placekitten.com/g/24/24'
   },
-  timestamp: '1 day ago',
   showByTeam: false
 };
 
@@ -115,126 +136,26 @@ styles = StyleSheet.create({
     backgroundColor: '#fff',
     border: `1px solid ${theme.palette.mid30l}`,
     borderRadius: '.5rem',
-    borderTop: `.25rem solid ${theme.palette.dark10d}`,
+    borderTop: `.25rem solid ${theme.palette.mid}`,
     maxWidth: '20rem',
     width: '100%'
   },
 
-  timestamp: {
-    color: theme.palette.dark,
-    fontSize: theme.typography.s1,
-    fontWeight: 700,
-    padding: '.5rem',
-    textAlign: 'right'
+  cardBlock: {
+    marginBottom: '1rem',
+    width: '100%'
   },
 
-  description: {
-    border: 0,
-    borderTop: '1px solid transparent',
-    color: theme.palette.dark10d,
-    display: 'block',
-    fontFamily: theme.typography.sansSerif,
-    fontSize: theme.typography.s3,
-    minHeight: '3.125rem',
-    padding: '.5rem .5rem 1rem',
-    resize: 'none',
-    width: '100%',
-
-    ':focus': {
-      backgroundColor: theme.palette.cool10l,
-      borderTopColor: 'currentColor',
-      color: theme.palette.cool,
-      outline: 'none'
-    },
-    ':active': {
-      backgroundColor: theme.palette.cool10l,
-      borderTopColor: 'currentColor',
-      color: theme.palette.cool,
-      outline: 'none'
-    }
+  body: {
+    // TODO: set minHeight? (TA)
+    width: '100%'
   },
 
-  footer: {
-    borderTop: `1px solid ${theme.palette.mid30l}`,
-    display: 'flex !important',
-    padding: '.5rem'
+  isAction: {
+    backgroundColor: theme.palette.light50l
   },
 
-  avatarBlock: {
-    alignSelf: 'flex-start',
-    flex: 1,
-    fontSize: 0
-  },
+  // Status theme colors
 
-  avatar: {
-    borderRadius: avatarSize,
-    boxShadow: '0 0 1px 1px rgba(0, 0, 0, .2)',
-    display: 'inline-block',
-    height: avatarSize,
-    marginRight: '.375rem',
-    verticalAlign: 'top',
-    width: avatarSize
-  },
-
-  avatarTeam: {
-    borderRadius: '.125rem'
-  },
-
-  name: {
-    color: theme.palette.dark,
-    display: 'inline-block',
-    fontSize: theme.typography.s2,
-    fontWeight: 700,
-    lineHeight: avatarSize,
-    verticalAlign: 'top'
-  },
-
-  statusBlock: {
-    alignSelf: 'flex-end'
-  },
-
-  statusButton: {
-    backgroundColor: theme.palette.mid10l,
-    border: 0,
-    borderRadius: '.5rem',
-    cursor: 'pointer',
-    fontSize: theme.typography.s3,
-    fontWeight: 700,
-    height: avatarSize,
-    lineHeight: avatarSize,
-    margin: 0,
-    outline: 'none',
-    padding: 0,
-    textAlign: 'center',
-    width: avatarSize,
-
-    ':focus': {
-      boxShadow: '0 0 2px 2px rgba(9, 141, 143, .5)'
-    }
-  },
-
-  // Status theme decorators
-  // Note: Can share color properties
-
-  active: {
-    borderTopColor: theme.palette.cool,
-    color: theme.palette.cool
-  },
-
-  stuck: {
-    borderTopColor: theme.palette.warm,
-    color: theme.palette.warm
-  },
-
-  done: {
-    borderTopColor: theme.palette.dark10d,
-    color: theme.palette.dark10d
-  },
-
-  future: {
-    borderTopColor: theme.palette.mid,
-    color: theme.palette.mid
-  }
+  ...projectStatusStyles('borderTopColor')
 });
-
-export default look(OutcomeCard);

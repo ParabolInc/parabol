@@ -1,4 +1,3 @@
-import r from 'server/database/rethinkDriver';
 import {errorObj} from './utils';
 
 export const getUserId = authToken => {
@@ -8,18 +7,6 @@ export const getUserId = authToken => {
 export const isSuperUser = authToken => {
   const userId = getUserId(authToken);
   return userId && authToken.rol === 'su';
-};
-
-export const getTeamMember = async (authToken, teamId) => {
-  const userId = getUserId(authToken);
-  if (userId) {
-    const teamMembers = await r.table('TeamMember')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({userId})
-      .pluck('id', 'teamId');
-    return teamMembers[0];
-  }
-  return undefined;
 };
 
 export const requireAuth = authToken => {
@@ -37,11 +24,13 @@ export const requireSU = authToken => {
   }
 };
 
-export const requireSUOrTeamMember = async (authToken, teamId) => {
-  if (isSuperUser(authToken)) return undefined;
-  const teamMember = await getTeamMember(authToken, teamId);
-  if (teamMember) return teamMember;
-  throw errorObj({_error: 'Unauthorized to view team details.'});
+export const requireSUOrTeamMember = (authToken, teamId) => {
+  if (!isSuperUser(authToken)) {
+    const teams = authToken.tms || [];
+    if (!teams.includes(teamId)) {
+      throw errorObj({_error: 'Unauthorized to view team details.'});
+    }
+  }
 };
 
 export const requireSUOrSelf = (authToken, userId) => {

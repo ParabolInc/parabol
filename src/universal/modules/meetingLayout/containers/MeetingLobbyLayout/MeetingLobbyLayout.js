@@ -4,7 +4,7 @@ import FontAwesome from 'react-fontawesome';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import theme from 'universal/styles/theme';
 
-import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
+import AvatarGroup from '../../../meeting/components/AvatarGroup/AvatarGroup';
 import Button from 'universal/components/Button/Button';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';

@@ -1,5 +1,5 @@
 import {cashay, Transport} from 'cashay';
-import AuthEngine from 'universal/redux/AuthEngine';
+import AuthEngine from './AuthEngine';
 import socketCluster from 'socketcluster-client';
 
 const onConnect = (options, hocOptions, socket) => {

@@ -2,6 +2,7 @@ import {graphql} from 'graphql';
 import Schema from 'server/graphql/rootSchema';
 import subscriptions from 'universal/subscriptions/subscriptions';
 import parseChannel from './parseChannel';
+import {AGENDA, PROJECTS, PRESENCE, TEAM, TEAM_MEMBERS} from 'universal/subscriptions/constants';
 
 /*
  * This is where you add subscription logic
@@ -9,15 +10,11 @@ import parseChannel from './parseChannel';
  * By creating this on the server it keeps payloads really small
  * */
 const dechannelfy = {
-  team(variableString) {
-    return {teamId: variableString};
-  },
-  teamMembers(variableString) {
-    return {teamId: variableString};
-  },
-  presence(variableString) {
-    return {teamId: variableString};
-  }
+  [AGENDA]: (variableString) => ({teamId: variableString}),
+  [PRESENCE]: (variableString) => ({teamId: variableString}),
+  [PROJECTS]: (variableString) => ({teamMemberId: variableString}),
+  [TEAM]: (variableString) => ({teamId: variableString}),
+  [TEAM_MEMBERS]: (variableString) => ({teamId: variableString})
 };
 
 export default function scSubscribeHandler(exchange, socket) {

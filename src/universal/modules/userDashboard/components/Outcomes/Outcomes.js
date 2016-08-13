@@ -3,6 +3,7 @@ import {
   DashColumns,
   DashContent,
   DashHeader,
+  DashHeaderInfo,
   DashMain,
   dashTimestamp
 } from 'universal/components/Dashboard';
@@ -12,8 +13,10 @@ const Outcomes = (props) => {
   const {preferredName} = props;
   return (
     <DashMain>
-      <DashHeader title="My Outcomes">
-        {dashTimestamp} • Carpe diem!
+      <DashHeader>
+        <DashHeaderInfo title="My Outcomes">
+          {dashTimestamp} • Carpe diem!
+        </DashHeaderInfo>
       </DashHeader>
       <DashContent>
         It’s the Me show! starring: <b>{preferredName}</b>
@@ -22,7 +25,7 @@ const Outcomes = (props) => {
         ProjectStatusMenu
         <br />
         <br />
-        <ProjectStatusMenu />
+        <ProjectStatusMenu status="done" isArchived={false} />
         <DashColumns />
       </DashContent>
     </DashMain>

@@ -9,31 +9,14 @@ const fieldLightGray = appTheme.palette.dark50l;
 
 let styles = {};
 
-/*
- * Why are we defining this here?
- * See: https://github.com/erikras/redux-form/releases/tag/v6.0.0-alpha.14
- */
-const makeDomInput = (input) => ({
-  autoFocus: input.autoFocus,
-  name: input.name,
-  onBlur: input.onBlur,
-  onChange: input.onChange,
-  onFocus: input.onFocus,
-  placeholder: input.placeholder,
-  type: input.type,
-  value: input.value,
-});
-
-const FieldBlock = (props) => {
+const renderField = (field) => {
   const {
     hasErrorText,
     hasHelpText,
     helpText,
     input,
     isWider,
-    theme
-  } = props;
-  const {
+    theme,
     buttonDisabled,
     buttonIcon,
     hasButton,
@@ -41,8 +24,7 @@ const FieldBlock = (props) => {
     isLarger,
     onButtonClick,
     shortcutHint,
-  } = input;
-  const domInput = makeDomInput(input);
+  } = field;
 
   const styleTheme = theme || 'cool';
   const styleOptions = [styles.field, styles[styleTheme]];
@@ -62,15 +44,12 @@ const FieldBlock = (props) => {
     styleOptions.push(styles.fieldWider);
   }
 
-  const fieldStyles = combineStyles.apply('null', styleOptions);
+  const fieldStyles = combineStyles.apply(null, styleOptions);
   // allow hotkeys to be triggered when inside a field input
   const allClassNames = [fieldStyles, 'mousetrap'].join(', ');
   return (
     <div className={styles.fieldBlock}>
-      <input
-        className={allClassNames}
-        {...domInput}
-      />
+      <input className={allClassNames} {...input}/>
       {hasButton &&
         <div className={styles.buttonBlock}>
           <IconButton
@@ -81,12 +60,8 @@ const FieldBlock = (props) => {
           />
         </div>
       }
-      {hasHelpText &&
-        <div className={helpTextStyles}>{helpText}</div>
-      }
-      {hasShortcutHint &&
-        <div className={shortcutHintStyles}>{shortcutHint}</div>
-      }
+      {hasHelpText && <div className={helpTextStyles}>{helpText}</div>}
+      {hasShortcutHint && <div className={shortcutHintStyles}>{shortcutHint}</div>}
     </div>
   );
 };
@@ -126,7 +101,7 @@ const Field = (props) => {
     <div className={styles.fieldBlock}>
       <ReduxFormField
         name={name}
-        component={FieldBlock}
+        component={renderField}
         {...props}
       />
     </div>
@@ -134,7 +109,6 @@ const Field = (props) => {
 };
 
 Field.propTypes = propTypes;
-FieldBlock.propTypes = propTypes;
 styles = StyleSheet.create({
   fieldBlock: {
     margin: '0 auto',

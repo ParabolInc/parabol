@@ -4,7 +4,7 @@ import {withRouter} from 'react-router';
 import {cashay} from 'cashay';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
-import {DashContent, DashHeader} from 'universal/components/Dashboard';
+import {DashContent, DashHeader, DashHeaderInfo} from 'universal/components/Dashboard';
 import Button from 'universal/components/Button/Button';
 import Field from 'universal/components/Field/Field';
 import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
@@ -89,7 +89,9 @@ export default class Settings extends Component {
     const {activity, handleSubmit} = this.props;
     return (
       <form className={styles.root} onSubmit={handleSubmit(this.onSubmit)}>
-        <DashHeader title="My Settings"/>
+        <DashHeader>
+          <DashHeaderInfo title="My Settings"/>
+        </DashHeader>
         <DashContent>
           <div className={styles.body}>
             <div className={styles.row}>

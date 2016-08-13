@@ -54,10 +54,6 @@ styles = StyleSheet.create({
     width: '100%'
   },
 
-  item: {
-    padding: '0 0 .5rem'
-  },
-
   emptyTeams: {
     fontSize: theme.typography.f3,
     fontStyle: 'italic',
