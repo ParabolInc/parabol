@@ -24,12 +24,12 @@ const OutcomeCardTextAreaField = (field) => {
     handleSubmit();
     input.onBlur();
   };
-  let _textarea;
-  const setRef = (c) => _textarea = c;
+  let textAreaRef;
+  const setRef = (c) => { textAreaRef = c; };
   const handleKeyUp = (e) => {
     if (e.keyCode === 13 && !e.shiftKey) {
       handleBlur();
-      _textarea.blur()
+      textAreaRef.blur();
     }
   };
   return (
@@ -47,6 +47,16 @@ const OutcomeCardTextAreaField = (field) => {
       />
     </div>
   );
+};
+
+OutcomeCardTextAreaField.propTypes = {
+  input: PropTypes.object,
+  isProject: PropTypes.bool,
+  handleSubmit: PropTypes.func,
+  timestamp: PropTypes.string,
+  meta: PropTypes.shape({
+    active: PropTypes.bool
+  })
 };
 
 OutcomeCardTextAreaField.styles = StyleSheet.create({

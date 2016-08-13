@@ -18,7 +18,7 @@ const mapStateToProps = (state, props) => {
 const AgendaListContainer = (props) => {
   const {agendaSub} = props;
   const {agenda} = agendaSub.data;
-  const sortedAgenda = agenda.sort((a,b) => a.sort > b.sort);
+  const sortedAgenda = agenda.sort((a, b) => a.sort > b.sort);
   return <AgendaList agenda={sortedAgenda}/>;
 };
 

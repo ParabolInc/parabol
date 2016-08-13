@@ -31,7 +31,8 @@ const TeamDashModal = (props) => {
 };
 
 TeamDashModal.propTypes = {
-  onClick: PropTypes.func
+  router: PropTypes.object.isRequired,
+  teamId: PropTypes.string.isRequired
 };
 
 TeamDashModal.defaultProps = {

@@ -11,6 +11,13 @@ const AgendaList = (props) => {
   );
 };
 
+AgendaList.propTypes = {
+  agenda: PropTypes.arrayOf({
+    id: PropTypes.string,
+    content: PropTypes.string
+  })
+};
+
 AgendaList.styles = StyleSheet.create({
   root: {
     display: 'flex',

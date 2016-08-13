@@ -14,6 +14,10 @@ const AgendaListAndInput = (props) => {
   );
 };
 
+AgendaListAndInput.propTypes = {
+  teamId: PropTypes.string
+};
+
 AgendaListAndInput.styles = StyleSheet.create({
   root: {
     display: 'flex',

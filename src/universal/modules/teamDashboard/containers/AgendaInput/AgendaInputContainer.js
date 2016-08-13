@@ -27,12 +27,13 @@ const AgendaInputContainer = (props) => {
   const {agenda} = agendaSub.data;
   const teamMemberId = `${user.id}::${teamId}`;
   const nextSort = getNextSort(agenda, 'sort');
-  const handleAgendaItemSubmit = ({agendaItem}) => {
+  const handleAgendaItemSubmit = (submittedData) => {
+    const content = submittedData.agendaItem;
     const options = {
       variables: {
         newAgendaItem: {
           id: `${teamId}::${shortid.generate()}`,
-          content: agendaItem,
+          content,
           sort: nextSort,
           teamMemberId
         }
@@ -51,8 +52,12 @@ const AgendaInputContainer = (props) => {
 };
 
 AgendaInputContainer.propTypes = {
-  teamId: PropTypes.string.isRequired,
+  agendaSub: PropTypes.object,
   memberSub: PropTypes.object,
+  teamId: PropTypes.string.isRequired,
+  user: PropTypes.shape({
+    id: PropTypes.string
+  })
 };
 
 export default connect(mapStateToProps)(AgendaInputContainer);

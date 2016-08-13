@@ -72,29 +72,27 @@ export default class OutcomeCard extends Component {
     return (
       <div className={rootStyles}>
         {/* card main */}
-        {hasOpenStatusMenu &&
-        <OutcomeCardStatusMenu isArchived={isArchived} status={status}/>
-        }
+        {hasOpenStatusMenu && <OutcomeCardStatusMenu isArchived={isArchived} status={status}/>}
         {!hasOpenAssignMenu && !hasOpenStatusMenu &&
-        <div className={styles.body}>
-          <form>
-            <Field
-              name={projectId}
-              component={OutcomeCardTextarea}
-              projectId={projectId}
-              isProject={isProject}
-              handleSubmit={handleSubmit(handleCardUpdate)}
-              timestamp={fromNow(updatedAt)}
-            />
-          </form>
-        </div>
+          <div className={styles.body}>
+            <form>
+              <Field
+                name={projectId}
+                component={OutcomeCardTextarea}
+                projectId={projectId}
+                isProject={isProject}
+                handleSubmit={handleSubmit(handleCardUpdate)}
+                timestamp={fromNow(updatedAt)}
+              />
+            </form>
+          </div>
         }
         {/* card footer */}
         <OutcomeCardFooter {...this.props} />
       </div>
     );
   }
-};
+}
 
 OutcomeCard.propTypes = {
   content: PropTypes.string,
@@ -106,7 +104,11 @@ OutcomeCard.propTypes = {
   isProject: PropTypes.bool,
   owner: PropTypes.object,
   team: PropTypes.object,
-  showByTeam: PropTypes.bool
+  showByTeam: PropTypes.bool,
+  updatedAt: PropTypes.instanceOf(Date),
+  projectId: PropTypes.string,
+  handleSubmit: PropTypes.func,
+  form: PropTypes.string
 };
 
 OutcomeCard.defaultProps = {

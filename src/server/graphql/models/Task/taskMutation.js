@@ -1,5 +1,5 @@
 import r from 'server/database/rethinkDriver';
-import {Task, CreateTaskInput, UpdateTaskInput} from './taskSchema';
+import {CreateTaskInput, UpdateTaskInput} from './taskSchema';
 import {
   GraphQLNonNull,
   GraphQLBoolean,

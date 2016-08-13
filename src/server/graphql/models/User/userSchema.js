@@ -9,7 +9,6 @@ import {
 } from 'graphql';
 import {GraphQLEmailType, GraphQLURLType} from '../types';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
-import {Task} from '../Task/taskSchema';
 import {TeamMember} from '../TeamMember/teamMemberSchema';
 import r from 'server/database/rethinkDriver';
 import {nonnullifyInputThunk} from '../utils';

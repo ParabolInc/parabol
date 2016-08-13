@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 
-const TeamProjectsHeader = (props) => {
+const TeamProjectsHeader = () => {
   const {styles} = TeamProjectsHeader;
   return (
     <div className={styles.root}>

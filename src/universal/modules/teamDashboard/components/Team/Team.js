@@ -71,6 +71,7 @@ const Team = (props) => {
 };
 
 Team.propTypes = {
+  activeMeetings: PropTypes.array,
   dispatch: PropTypes.func.isRequired,
   projects: PropTypes.array,
   teamId: PropTypes.string.isRequired,

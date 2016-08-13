@@ -11,6 +11,10 @@ const AgendaInputField = (field) => {
   );
 };
 
+AgendaInputField.propTypes = {
+  input: PropTypes.object
+};
+
 AgendaInputField.styles = StyleSheet.create({
   input: {
     border: 0,

@@ -38,28 +38,12 @@ const makeTeamSubs = (teams) => {
   }
   return teamSubs;
 };
-// TODO memoize the map
-const mapStateToProps = (state, props) => {
-  const variables = {teamId: props.params.teamId};
-  const memberSub = cashay.subscribe(teamMembersSubString, subscriber, {op: 'memberSub', variables});
-  const projectSubs = makeProjectSubs(memberSub.data.teamMembers);
-  const teamSubs = makeTeamSubs(state.auth.obj.tms);
-  return {
-    memberSub,
-    projectSubs,
-    teamSubs
-  };
-};
 
-const TeamContainer = (props) => {
-  const {memberSub, teamSubs, user, params: {teamId}, projectSubs, dispatch} = props;
-  const {team} = teamSubs[teamId].data;
-  const {teamMembers} = memberSub.data;
-  const projects = [].concat(...projectSubs.map(sub => sub.data.projects));
-  const teamIds = Object.keys(teamSubs);
-
+// This should be cached, rather than do it ourselves, let's make cashay better so we can cache it there
+const makeActiveMeetings = (teamIds, teamSubs) => {
   const activeMeetings = [];
-  teamIds.forEach(teamId => {
+  for (let i = 0; i < teamIds.length; i++) {
+    const teamId = teamIds[i];
     const {team} = teamSubs[teamId].data;
     if (team.meetingId) {
       activeMeetings.push({
@@ -67,8 +51,31 @@ const TeamContainer = (props) => {
         name: team.name
       });
     }
-  });
+  }
+  return activeMeetings;
+};
 
+// TODO memoize the map
+const mapStateToProps = (state, props) => {
+  const variables = {teamId: props.params.teamId};
+  const memberSub = cashay.subscribe(teamMembersSubString, subscriber, {op: 'memberSub', variables});
+  const projectSubs = makeProjectSubs(memberSub.data.teamMembers);
+  const {tms} = state.auth.obj;
+  const teamSubs = makeTeamSubs(tms);
+  return {
+    memberSub,
+    projectSubs,
+    teamSubs,
+    tms
+  };
+};
+
+const TeamContainer = (props) => {
+  const {memberSub, teamSubs, tms, user, params: {teamId}, projectSubs, dispatch} = props;
+  const {team} = teamSubs[teamId].data;
+  const {teamMembers} = memberSub.data;
+  const projects = [].concat(...projectSubs.map(sub => sub.data.projects));
+  const activeMeetings = makeActiveMeetings(tms, teamSubs);
   return (
     <Team
       activeMeetings={activeMeetings}
@@ -90,7 +97,8 @@ TeamContainer.propTypes = {
   user: PropTypes.object,
   memberSub: PropTypes.object,
   projectSubs: PropTypes.array,
-  teamSub: PropTypes.object
+  teamSubs: PropTypes.object,
+  tms: PropTypes.array
 };
 
 export default requireAuth(connect(mapStateToProps)(

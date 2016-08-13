@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import AgendaHeader from 'universal/modules/teamDashboard/components/AgendaHeader/AgendaHeader';
-import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput'
+import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput';
 const TeamAgenda = (props) => {
   const {styles} = TeamAgenda;
   const {teamId} = props;

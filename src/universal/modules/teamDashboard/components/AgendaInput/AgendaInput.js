@@ -14,11 +14,17 @@ const AgendaInput = (props) => {
         name="agendaItem"
         component={AgendaInputField}
       />
-      <Avatar picture={membership.picture}></Avatar>
+      <Avatar picture={membership.picture}/>
     </form>
   );
 };
 
+AgendaInput.propTypes = {
+  handleAgendaItemSubmit: PropTypes.func,
+  handleSubmit: PropTypes.func,
+  teamMemberId: PropTypes.string,
+  teamMembers: PropTypes.array
+};
 AgendaInput.styles = StyleSheet.create({
   root: {
     display: 'flex',
