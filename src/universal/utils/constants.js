@@ -19,4 +19,4 @@ export const ACTION = 'action';
 export const PROJECT = 'project';
 
 /* Sorting */
-export const STEP = 1;
+export const SORT_STEP = 1;

@@ -71,6 +71,10 @@ const taskInputThunk = () => ({
   type: {type: GraphQLString, description: 'The task type (project or action)'},
   status: {type: GraphQLID, description: 'The status of the task created'},
   teamMemberId: {type: GraphQLID, description: 'The team member ID of the person creating the task'},
+  /*
+   * teamSort and userSort are floats because GraphQLInt is a
+   * signed 32-bit int, and we want more range.
+   */
   teamSort: {
     type: GraphQLFloat,
     description: 'the per-status sort order for the team dashboard'
