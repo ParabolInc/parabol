@@ -3,7 +3,8 @@ import {
   GraphQLNonNull,
   GraphQLID,
   GraphQLString,
-  GraphQLEnumType
+  GraphQLEnumType,
+  GraphQLFloat
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {ACTIVE, STUCK, DONE, FUTURE, ACTION, PROJECT} from 'universal/utils/constants';
@@ -39,11 +40,6 @@ export const Task = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The id of the team member assigned to this task, or the creator if content is null'
     },
-    // TODO: remove after we're sure we don't need it (userDashboard sprint complete)
-    // userId: {
-    //   type: new GraphQLNonNull(GraphQLID),
-    //   description: 'The id of the user assigned to this task, or creator if content is null'
-    // },
     createdAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the task was created'
@@ -58,6 +54,14 @@ export const Task = new GraphQLObjectType({
     },
     type: {type: new GraphQLNonNull(TaskType), description: 'The type of task (project or action, long or short-term)'},
     status: {type: new GraphQLNonNull(TaskStatus), description: 'The status of the task'},
+    teamSort: {
+      type: GraphQLFloat,
+      description: 'the per-status sort order for the team dashboard'
+    },
+    userSort: {
+      type: GraphQLFloat,
+      description: 'the per-status sort order for the user dashboard'
+    }
   })
 });
 
@@ -66,7 +70,15 @@ const taskInputThunk = () => ({
   content: {type: GraphQLString, description: 'The body of the task. If null, it is a new task.'},
   type: {type: GraphQLString, description: 'The task type (project or action)'},
   status: {type: GraphQLID, description: 'The status of the task created'},
-  teamMemberId: {type: GraphQLID, description: 'The team member ID of the person creating the task'}
+  teamMemberId: {type: GraphQLID, description: 'The team member ID of the person creating the task'},
+  teamSort: {
+    type: GraphQLFloat,
+    description: 'the per-status sort order for the team dashboard'
+  },
+  userSort: {
+    type: GraphQLFloat,
+    description: 'the per-status sort order for the user dashboard'
+  }
 });
 
 export const CreateTaskInput =

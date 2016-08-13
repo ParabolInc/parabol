@@ -28,10 +28,9 @@ const linkStyle = {
 };
 
 const Team = (props) => {
-  const {activeMeetings, dispatch, hasOverlay, projects, team, teamId, teamMembers, user} = props;
+  const {activeMeetings, dispatch, projects, team, teamId, teamMembers, user} = props;
+  const hasOverlay = team && team.meetingId;
   const teamMemberId = `${user.id}::${teamId}`;
-  const todoHandleClick = () =>
-    console.log('TeamDashModal.todoHandleClick');
   return (
     <DashLayout activeMeetings={activeMeetings} title="Team Dashboard">
       <DashSidebar
@@ -41,7 +40,7 @@ const Team = (props) => {
         user={user}
       />
       {hasOverlay &&
-        <TeamDashModal onClick={todoHandleClick} />
+        <TeamDashModal teamId={teamId} />
       }
       <DashMain hasOverlay={hasOverlay}>
         <DashHeader>
@@ -73,7 +72,6 @@ const Team = (props) => {
 
 Team.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  hasOverlay: PropTypes.bool,
   projects: PropTypes.array,
   teamId: PropTypes.string.isRequired,
   team: PropTypes.object.isRequired,
@@ -82,10 +80,6 @@ Team.propTypes = {
     name: PropTypes.string,
     preferredName: PropTypes.string,
   })
-};
-
-Team.defaultProps = {
-  hasOverlay: true
 };
 
 export default Team;

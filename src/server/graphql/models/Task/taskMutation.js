@@ -2,9 +2,11 @@ import r from 'server/database/rethinkDriver';
 import {Task, CreateTaskInput, UpdateTaskInput} from './taskSchema';
 import {
   GraphQLNonNull,
-  GraphQLBoolean
+  GraphQLBoolean,
+  GraphQLString
 } from 'graphql';
 import {requireSUOrTeamMember} from '../authorization';
+import rebalanceTask from './rebalanceTask';
 
 export default {
   updateTask: {
@@ -14,9 +16,13 @@ export default {
       updatedTask: {
         type: new GraphQLNonNull(UpdateTaskInput),
         description: 'the updated task including the id, and at least one other field'
+      },
+      rebalance: {
+        type: GraphQLString,
+        description: 'the name of a status if the sort order got so out of whack that we need to reset the btree'
       }
     },
-    async resolve(source, {updatedTask}, {authToken}) {
+    async resolve(source, {updatedTask, rebalance}, {authToken}) {
       const {id, ...task} = updatedTask;
       // id is of format 'teamId::taskId'
       const [teamId] = id.split('::');
@@ -26,7 +32,11 @@ export default {
         ...task,
         updatedAt: now
       };
+      // we could possibly combine this into the rebalance if we did a resort on the server, but separate logic is nice
       await r.table('Task').get(id).update(newTask);
+      if (rebalance) {
+        await rebalanceTask(rebalance, teamId);
+      }
       return true;
     }
   },

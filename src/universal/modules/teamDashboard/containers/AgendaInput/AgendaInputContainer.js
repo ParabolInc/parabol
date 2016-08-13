@@ -7,7 +7,7 @@ import {connect} from 'react-redux';
 import AgendaInput from 'universal/modules/teamDashboard/components/AgendaInput/AgendaInput';
 import shortid from 'shortid';
 import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
-import {STEP} from 'universal/utils/constants';
+import getNextSort from 'universal/utils/getNextSort';
 
 const teamMembersSubString = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
 const agendaSubString = subscriptions.find(sub => sub.channel === AGENDA).string;
@@ -24,17 +24,16 @@ const mapStateToProps = (state, props) => {
 const AgendaInputContainer = (props) => {
   const {agendaSub, memberSub, teamId, user} = props;
   const {teamMembers} = memberSub.data;
+  const {agenda} = agendaSub.data;
   const teamMemberId = `${user.id}::${teamId}`;
-  const maxSort = Math.max.apply(Math, agendaSub.data.agenda.map(item => item.sort));
-  // if there are no agenda items or none with a sort field
-  const safeMaxSort = (maxSort === -Infinity || isNaN(maxSort)) ? -1 : maxSort;
+  const nextSort = getNextSort(agenda, 'sort');
   const handleAgendaItemSubmit = ({agendaItem}) => {
     const options = {
       variables: {
         newAgendaItem: {
           id: `${teamId}::${shortid.generate()}`,
           content: agendaItem,
-          sort: safeMaxSort + STEP,
+          sort: nextSort,
           teamMemberId
         }
       }

@@ -15,6 +15,7 @@ const makeProjectsByStatus = (projects) => {
   projects.forEach(project => {
     projectsByStatus[project.status].push(project);
   });
+  columnArray.forEach(status => projectsByStatus[status].sort((a,b) => a.teamSort > b.teamSort));
   return projectsByStatus;
 };
 

@@ -6,6 +6,7 @@ import {ACTIVE, STUCK, DONE, FUTURE, PROJECT} from 'universal/utils/constants';
 import FontAwesome from 'react-fontawesome';
 import {cashay} from 'cashay';
 import shortid from 'shortid';
+import getNextSort from 'universal/utils/getNextSort';
 
 const borderColor = 'rgba(0, 0, 0, .1)';
 let styles = {};
@@ -26,7 +27,10 @@ const ProjectColumn = (props) => {
       id: `${teamId}::${shortid.generate()}`,
       type: PROJECT,
       status,
-      teamMemberId
+      teamMemberId,
+      teamSort: getNextSort(projects, 'teamSort'),
+      // put it at the top of the list, make em sort it if they don't like it
+      userSort: 0
     };
     cashay.mutate('createTask', {variables: {newTask}});
   };

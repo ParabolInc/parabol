@@ -2,9 +2,11 @@ import React, {PropTypes} from 'react';
 import {DashModal} from 'universal/components/Dashboard';
 import IconLink from 'universal/components/IconLink/IconLink';
 import Type from 'universal/components/Type/Type';
+import {withRouter} from 'react-router';
 
 const TeamDashModal = (props) => {
-  const {onClick} = props;
+  const {teamId, router} = props;
+  const handleClick = () => router.push(`/meeting/${teamId}`);
   return (
     <DashModal>
       <Type align="center" bold marginBottom="1.5rem" scale="s7" theme="cool">
@@ -20,7 +22,7 @@ const TeamDashModal = (props) => {
         iconPlacement="right"
         label="Join Meeting"
         marginTop="1.5rem"
-        onClick={onClick}
+        onClick={handleClick}
         scale="large"
         theme="warm"
       />
@@ -38,4 +40,4 @@ TeamDashModal.defaultProps = {
   }
 };
 
-export default TeamDashModal;
+export default withRouter(TeamDashModal);
