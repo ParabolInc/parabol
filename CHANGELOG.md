@@ -5,6 +5,37 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 
+## soon -
+### Added
+- User invitations
+   - _Note:_ invites only process currently for new users
+- Lots of infrastructure for pub/sub through the app
+- User presence (who's here? who's just left?)
+- `/logout` route
+- Action meeting:
+   - Lobby
+      - Connection states
+      - Start meeting
+   - Check-in round
+      - Update check-in states
+      - Navigate forward and backward
+   - Placeholder project updates layout
+- Team dashboard:
+   - Agenda items
+   - Add new projects in column
+   - Edit project description
+   - Data model for sorting above list items
+   - Dashboard div marking it unavailable when meeting is in progress
+- Refactored auth token meta-data to include team membership, & more
+- Refactored authDuck to parse auth token
+- `npm run lint:fix`
+- Many redux unit tests
+
+### Removed
+- **Breaking change:** removed original migrations. You'll need to wipe your
+  database and start again.
+
+
 ## v0.3.0 - 04-July-2016
 ### Added
 - `rethink-migrate` back to project
