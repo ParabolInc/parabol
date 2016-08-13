@@ -29,7 +29,7 @@ const linkStyle = {
 
 const Team = (props) => {
   const {activeMeetings, dispatch, projects, team, teamId, teamMembers, user} = props;
-  const hasOverlay = team && team.meetingId;
+  const hasOverlay = Boolean(team && team.meetingId);
   const teamMemberId = `${user.id}::${teamId}`;
   return (
     <DashLayout activeMeetings={activeMeetings} title="Team Dashboard">
