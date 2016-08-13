@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 
-## soon -
+## v0.4.0 - 13-Jul-2016
 ### Added
 - User invitations
    - _Note:_ invites only process currently for new users
