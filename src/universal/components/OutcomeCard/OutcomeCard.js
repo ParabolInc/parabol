@@ -71,8 +71,10 @@ export default class OutcomeCard extends Component {
     const {openMenu} = this.state;
     const {
       content,
+      editingBy,
       owner,
       teamMembers,
+      teamMemberId,
       status,
       isArchived,
       isProject,
@@ -92,6 +94,27 @@ export default class OutcomeCard extends Component {
       rootStyleOptions.push(styles.isAction);
     }
     rootStyles = combineStyles.apply(null, rootStyleOptions);
+
+    const handleCardActive = (activeState) => {
+      const inEditors = editingBy.find((id) => id === teamMemberId) !== undefined;
+      let newEditors = null;
+      if (activeState) {
+        if (inEditors) { return; }
+        newEditors = editingBy.concat(teamMemberId);
+      } else {
+        if (!inEditors) { return; }
+        newEditors = editingBy.filter((m) => m !== teamMemberId);
+      }
+      const options = {
+        variables: {
+          updatedTask: {
+            id: projectId,
+            editingBy: newEditors
+          }
+        }
+      };
+      cashay.mutate('updateTask', options);
+    };
 
     const handleCardUpdate = (submittedData) => {
       const submittedContent = submittedData[projectId];
@@ -132,8 +155,12 @@ export default class OutcomeCard extends Component {
               <Field
                 name={projectId}
                 component={OutcomeCardTextarea}
+                editingBy={editingBy}
+                teamMemberId={teamMemberId}
+                teamMembers={teamMembers}
                 projectId={projectId}
                 isProject={isProject}
+                handleActive={handleCardActive}
                 handleSubmit={handleSubmit(handleCardUpdate)}
                 timestamp={fromNow(updatedAt)}
               />
@@ -155,6 +182,7 @@ export default class OutcomeCard extends Component {
 
 OutcomeCard.propTypes = {
   content: PropTypes.string,
+  editingBy: PropTypes.array,
   status: PropTypes.oneOf(labels.projectStatus.slugs),
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,
@@ -162,6 +190,7 @@ OutcomeCard.propTypes = {
   isProject: PropTypes.bool,
   owner: PropTypes.object,
   team: PropTypes.object,
+  teamMemberId: PropTypes.string,
   teamMembers: PropTypes.array,
   showByTeam: PropTypes.bool,
   updatedAt: PropTypes.instanceOf(Date),
