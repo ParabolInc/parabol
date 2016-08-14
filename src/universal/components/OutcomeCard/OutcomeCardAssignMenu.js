@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
+import {cashay} from 'cashay';
 import Avatar from 'universal/components/Avatar/Avatar';
 import exampleTeam from 'universal/modules/patterns/helpers/exampleTeam';
 
@@ -8,7 +9,25 @@ const defaultExampleTeam = exampleTeam.teamMembers.slice(0);
 const combineStyles = StyleSheet.combineStyles;
 
 const OutcomeCardAssignMenu = (props) => {
-  const {currentOwner, teamMembers} = props;
+  const {currentOwner, onComplete, projectId, teamMembers} = props;
+
+  const handleProjectUpdate = (newOwner) => {
+    if (newOwner === currentOwner) {
+      return;
+    }
+    const options = {
+      variables: {
+        updatedTask: {
+          id: projectId,
+          teamMemberId: newOwner
+        }
+      }
+    };
+    cashay.mutate('updateTask', options);
+    if (onComplete) {
+      onComplete();
+    }
+  };
 
   return (
     <div className={s.root}>
@@ -18,7 +37,13 @@ const OutcomeCardAssignMenu = (props) => {
           const menuItemStyles = isClickable ? combineStyles(s.menuItem, s.menuItemClickable) : s.menuItem;
           return (
             <div className={menuItemStyles} key={`menuItem${idx}`}>
-              <Avatar {...teamMember} isClickable={isClickable} hasBadge={false} size="smallest" />
+              <Avatar
+                {...teamMember}
+                isClickable={isClickable}
+                hasBadge={false}
+                onClick={() => handleProjectUpdate(teamMember.id)}
+                size="smallest"
+              />
             </div>
           );
         })
@@ -29,6 +54,8 @@ const OutcomeCardAssignMenu = (props) => {
 
 OutcomeCardAssignMenu.propTypes = {
   currentOwner: PropTypes.string,
+  onComplete: PropTypes.func,
+  projectId: PropTypes.string,
   teamMembers: PropTypes.array
 };
 

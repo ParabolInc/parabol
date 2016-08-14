@@ -15,11 +15,51 @@ const descriptionActionFA = {
   color: theme.palette.mid10d
 };
 
+function editingStatus(iAmActive, myId, allIds, teamMembers, timestamp) {
+  const everybodyElse = allIds.filter((id) => id !== myId);
+
+  if (iAmActive && everybodyElse.length === 0) {
+    // we're editing all by ourselves
+    return 'editing...';
+  } else if (everybodyElse.length === 1) {
+    const otherEditor = teamMembers.find((m) => m.id === everybodyElse[0]);
+    if (iAmActive) {
+      // we're editing with one other
+      return `${otherEditor.preferredName} editing too...`;
+    }
+    // one other person is editing alone
+    return `${otherEditor.preferredName} editing...`;
+  } else if (everybodyElse.length > 1) {
+    if (iAmActive || everybodyElse.length > 2) {
+      // busy!
+      return 'several are editing...';
+    }
+    // two folks are editing
+    const editorA = teamMembers.find((m) => m.id === everybodyElse[0]);
+    const editorB = teamMembers.find((m) => m.id === everybodyElse[1]);
+    return `${editorA.preferredName} &amp; ${editorB.preferredName} editing...`;
+  }
+  return timestamp;
+}
+
 const OutcomeCardTextAreaField = (field) => {
   const {styles} = OutcomeCardTextAreaField;
-  const {input, isProject, handleSubmit, timestamp, meta: {active}} = field;
+  const {
+    input,
+    isProject,
+    editingBy,
+    teamMemberId,
+    teamMembers,
+    handleActive,
+    handleSubmit,
+    timestamp,
+    meta: {active}
+  } = field;
   const descStyles = isProject ? styles.content : combineStyles(styles.content, styles.descriptionAction);
   const allClassNames = combineStyles(descStyles, 'mousetrap');
+  if (handleActive) {
+    handleActive(active);
+  }
   const handleBlur = () => {
     handleSubmit();
     input.onBlur();
@@ -35,7 +75,7 @@ const OutcomeCardTextAreaField = (field) => {
   return (
     <div>
       <div className={styles.timestamp}>
-        {active ? 'editing...' : timestamp}
+        {editingStatus(active, teamMemberId, editingBy, teamMembers, timestamp)}
       </div>
       <textarea
         ref={setRef}
@@ -52,6 +92,9 @@ const OutcomeCardTextAreaField = (field) => {
 OutcomeCardTextAreaField.propTypes = {
   input: PropTypes.object,
   isProject: PropTypes.bool,
+  teamMemberId: PropTypes.string,
+  teamMembers: PropTypes.array,
+  handleActive: PropTypes.func,
   handleSubmit: PropTypes.func,
   timestamp: PropTypes.string,
   meta: PropTypes.shape({

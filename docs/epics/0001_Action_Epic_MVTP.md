@@ -201,7 +201,7 @@ folks who weren't able to attend can see what happened.
 of all projects, so that they can see what their team has signed up to do
 (and their place in it).
 
-- [ ] When a TM wants to update the team's dashboard, they will want easy
+- [X] When a TM wants to update the team's dashboard, they will want easy
 controls, so that they can add new projects, change the status of projects,
 or reassign ownership.
 
@@ -222,7 +222,8 @@ control that allows them to input one or more email addresses, so that they
 can join their pals.
 
 - [ ] When a TL wants to create a new team, they'll want an obvious control
-near their other teams, so they can get their new group up and going.
+near their other teams to make a new team, so they can get their new group up
+and going.
 
 ## Personal Dashboard
 

@@ -56,6 +56,7 @@ export default [
     subscription($teamMemberId: ID!) {
       projects(teamMemberId: $teamMemberId) {
         content
+        editingBy
         id
         status
         teamMemberId

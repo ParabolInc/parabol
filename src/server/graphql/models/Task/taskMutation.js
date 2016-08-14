@@ -64,6 +64,7 @@ export default {
       const task = {
         ...newTask,
         userId,
+        editingBy: [],
         createdAt: now,
         updatedAt: now
       };

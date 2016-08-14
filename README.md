@@ -141,11 +141,11 @@ get involved and how to get compensated.
 
 | Release | Summary                                    |
 |---------|--------------------------------------------|
-| soon    | Add Lobby, Check-in, start of Team Dash.   |
-| 0.3.0   | Add Welcome journey, redux-storage         |
-| 0.2.0   | Add first pass at team creation/invitation |
-| 0.1.0   | Things got a whole lot meatier             |
-| 0.0.1   | Developer preview and archtecture demo     |
+| v0.4.0  | Add Lobby, Check-in, start of Team Dash.   |
+| v0.3.0  | Add Welcome journey, redux-storage         |
+| v0.2.0  | Add first pass at team creation/invitation |
+| v0.1.0  | Things got a whole lot meatier             |
+| v0.0.1  | Developer preview and archtecture demo     |
 
 ## About
 
