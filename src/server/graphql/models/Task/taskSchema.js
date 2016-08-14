@@ -40,6 +40,10 @@ export const Task = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The id of the team member assigned to this task, or the creator if content is null'
     },
+    userId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The id of the user (first part of teamMemberId). Stored so action items are a single subscription'
+    },
     createdAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the task was created'

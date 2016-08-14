@@ -101,8 +101,11 @@ TeamContainer.propTypes = {
   tms: PropTypes.array
 };
 
-export default requireAuth(connect(mapStateToProps)(
-  reduxSocket({}, reduxSocketOptions)(
-    TeamContainer)
+export default
+requireAuth(
+  connect(mapStateToProps)(
+    reduxSocket({}, reduxSocketOptions)(
+      TeamContainer
+    )
   )
 );

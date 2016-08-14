@@ -11,6 +11,7 @@ exports.up = async (r) => {
   const meetingIndices = [
     r.table('Meeting').indexCreate('teamId'),
     r.table('Task').indexCreate('teamMemberId'),
+    r.table('Task').indexCreate('userId'),
     r.table('AgendaItem').indexCreate('teamId'),
     r.table('Participant').indexCreate('meetingId'),
     r.table('Participant').indexCreate('userId'),

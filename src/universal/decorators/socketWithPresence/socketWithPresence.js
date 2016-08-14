@@ -21,9 +21,9 @@ const mapStateToProps = (state, props) => {
 };
 
 export default ComposedComponent => {
+  @requireAuth
   @reduxSocket({}, reduxSocketOptions)
   @connect(mapStateToProps)
-  @requireAuth
   class SocketWithPresence extends Component {
     static propTypes = {
       user: PropTypes.object,

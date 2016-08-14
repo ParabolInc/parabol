@@ -32,6 +32,11 @@ export default {
         ...task,
         updatedAt: now
       };
+      const {teamMemberId} = task;
+      if (teamMemberId) {
+        const [userId] = teamMemberId.split('::');
+        newTask.userId = userId;
+      }
       // we could possibly combine this into the rebalance if we did a resort on the server, but separate logic is nice
       await r.table('Task').get(id).update(newTask);
       if (rebalance) {
@@ -55,8 +60,10 @@ export default {
       const [teamId] = id.split('::');
       requireSUOrTeamMember(authToken, teamId);
       const now = new Date();
+      const [userId] = newTask.teamMemberId.split('::');
       const task = {
         ...newTask,
+        userId,
         createdAt: now,
         updatedAt: now
       };

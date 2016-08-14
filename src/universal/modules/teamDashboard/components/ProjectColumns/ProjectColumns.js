@@ -3,6 +3,7 @@ import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import {columnArray} from 'universal/utils/constants';
 import ProjectColumn from 'universal/modules/teamDashboard/components/ProjectColumn/ProjectColumn';
+import UserProjectColumn from 'universal/modules/userDashboard/components/UserProjectColumn/UserProjectColumn';
 
 const borderColor = 'rgba(0, 0, 0, .1)';
 let styles = {};
