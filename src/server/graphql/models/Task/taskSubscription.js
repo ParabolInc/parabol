@@ -2,7 +2,7 @@ import r from 'server/database/rethinkDriver';
 import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
 import {getRequestedFields} from '../utils';
 import {Task} from './taskSchema';
-import {requireSUOrSelf} from '../authorization';
+import {requireSUOrTeamMember, requireSUOrSelf} from '../authorization';
 import makeChangefeedHandler from '../makeChangefeedHandler';
 import {ACTION, PROJECT} from 'universal/utils/constants';
 

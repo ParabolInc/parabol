@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import ProjectColumns from 'universal/modules/teamDashboard/components/ProjectColumns/ProjectColumns';
+import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
 import TeamProjectsHeader from 'universal/modules/teamDashboard/components/TeamProjectsHeader/TeamProjectsHeader';
 
 const TeamProjects = (props) => {

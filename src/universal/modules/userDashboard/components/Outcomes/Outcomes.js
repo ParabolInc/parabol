@@ -9,7 +9,7 @@ import {
 } from 'universal/components/Dashboard';
 import look, {StyleSheet} from 'react-look';
 import UserActions from 'universal/modules/userDashboard/components/UserActions/UserActions';
-import ProjectColumns from 'universal/modules/teamDashboard/components/ProjectColumns/ProjectColumns';
+import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
 
 const Outcomes = (props) => {
   const {projects} = props;
@@ -26,7 +26,7 @@ const Outcomes = (props) => {
           <div className={styles.actionsLayout}>
             <UserActions />
           </div>
-          <div className={styles.actionsLayout}>
+          <div className={styles.projectsLayout}>
             <ProjectColumns projects={projects}/>
           </div>
         </div>

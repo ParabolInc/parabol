@@ -1,12 +1,9 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
-import TeamCard from 'universal/modules/teamDashboard/components/TeamCard/TeamCard';
-import {ACTIVE, STUCK, DONE, FUTURE, PROJECT} from 'universal/utils/constants';
-import FontAwesome from 'react-fontawesome';
-import {cashay} from 'cashay';
-import shortid from 'shortid';
-import getNextSort from 'universal/utils/getNextSort';
+import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
+import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
+
 
 const borderColor = 'rgba(0, 0, 0, .1)';
 let styles = {};
@@ -18,39 +15,30 @@ const labels = {
   [FUTURE]: 'Future'
 };
 
-const ProjectColumn = (props) => {
-  const {status, projects, teamMembers, teamMemberId} = props;
-  const handleAddProject = () => {
-    const newTask = {
-      id: `${teamId}::${shortid.generate()}`,
-      type: PROJECT,
-      status,
-      teamMemberId,
-      teamSort: getNextSort(projects, 'teamSort'),
-      // put it at the top of the list, make em sort it if they don't like it
-      userSort: 0
-    };
-    cashay.mutate('createTask', {variables: {newTask}});
-  };
+const UserProjectColumn = (props) => {
+  const {status, projects} = props;
   return (
     <div className={styles.column}>
       <div className={styles.columnHeading}>
         <span>{labels[status]}</span>
-        <FontAwesome name="plus-square" onClick={handleAddProject}/>
       </div>
       {projects.map(project =>
-        <TeamCard
-          key={`teamCard${project.id}`}
-          teamMemberId={teamMemberId}
-          teamMembers={teamMembers}
-          project={project}
+        <OutcomeCard
+          key={`userCard${project.id}`}
+          isProject
+          showByTeam
+          form={project.id}
+          content={project.content}
+          status={project.status}
+          updatedAt={project.updatedAt}
+          projectId={project.id}
         />)
       }
     </div>
   );
 };
 
-ProjectColumn.propTypes = {
+UserProjectColumn.propTypes = {
   projects: PropTypes.array,
   status: PropTypes.string,
   teamMembers: PropTypes.array,
@@ -99,4 +87,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default look(ProjectColumn);
+export default look(UserProjectColumn);

@@ -46,7 +46,6 @@ export default class OutcomeCard extends Component {
       projectId,
       handleSubmit
     } = this.props;
-
     let rootStyles;
     const rootStyleOptions = [styles.root, styles.cardBlock];
     if (isProject) {

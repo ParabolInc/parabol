@@ -23,17 +23,24 @@ const makeProjectsByStatus = (projects) => {
 const ProjectColumns = (props) => {
   const {projects, teamMembers, teamMemberId} = props;
   const projectsByStatus = makeProjectsByStatus(projects);
+  const isUserDash = !Boolean(teamMemberId);
   return (
     <div className={styles.root}>
       <div className={styles.columns}>
         {columnArray.map((status) =>
-          <ProjectColumn
-            key={`projectCol${status}`}
-            teamMembers={teamMembers}
-            teamMemberId={teamMemberId}
-            status={status}
-            projects={projectsByStatus[status]}
-          />
+          isUserDash ?
+            <UserProjectColumn
+              key={`projectCol${status}`}
+              status={status}
+              projects={projectsByStatus[status]}
+            /> :
+            <ProjectColumn
+              key={`projectCol${status}`}
+              teamMembers={teamMembers}
+              teamMemberId={teamMemberId}
+              status={status}
+              projects={projectsByStatus[status]}
+            />
         )}
       </div>
     </div>
