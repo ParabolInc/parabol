@@ -1,5 +1,6 @@
 import React from 'react';
 import theme from 'universal/styles/theme';
+import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
 
 const labels = {
   meetingPhase: {
@@ -26,42 +27,42 @@ const labels = {
   },
   projectStatus: {
     slugs: [
-      'active',
-      'stuck',
-      'done',
-      'future'
+      ACTIVE,
+      STUCK,
+      DONE,
+      FUTURE
     ],
-    active: {
+    [ACTIVE]: {
       color: theme.palette.cool,
       icon: 'arrow-right',
       keystroke: 'a',
       label: 'Active',
       shortcutLabel: <span><u>A</u>ctive</span>,
-      slug: 'active'
+      slug: ACTIVE
     },
-    stuck: {
+    [STUCK]: {
       color: theme.palette.warm,
       icon: 'exclamation-triangle',
       keystroke: 's',
       label: 'Stuck',
       shortcutLabel: <span><u>S</u>tuck</span>,
-      slug: 'stuck'
+      slug: STUCK
     },
-    done: {
+    [DONE]: {
       color: theme.palette.dark10d,
       icon: 'check',
       keystroke: 'd',
       label: 'Done',
       shortcutLabel: <span><u>D</u>one</span>,
-      slug: 'done'
+      slug: DONE
     },
-    future: {
+    [FUTURE]: {
       color: theme.palette.mid,
       icon: 'clock-o',
       keystroke: 'f',
       label: 'Future',
       shortcutLabel: <span><u>F</u>uture</span>,
-      slug: 'future'
+      slug: FUTURE
     }
   },
   archive: {

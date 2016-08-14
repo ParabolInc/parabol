@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import OutcomeCardFooter from './OutcomeCardFooter';
+import OutcomeCardAssignMenu from './OutcomeCardAssignMenu';
 import OutcomeCardStatusMenu from './OutcomeCardStatusMenu';
 import theme from 'universal/styles/theme';
 import labels from 'universal/styles/theme/labels';
@@ -11,12 +12,30 @@ import OutcomeCardTextarea from './OutcomeCardTextarea';
 import {cashay} from 'cashay';
 import fromNow from 'universal/utils/fromNow';
 
+const OPEN_CONTENT_MENU = 'OutcomeCard/openContentMenu';
+const OPEN_ASSIGN_MENU = 'OutcomeCard/openAssignMenu';
+const OPEN_STATUS_MENU = 'OutcomeCard/openStatusMenu';
+
 const combineStyles = StyleSheet.combineStyles;
 let styles = {};
 
 @reduxForm()
 @look
 export default class OutcomeCard extends Component {
+  constructor(props) {
+    super(props);
+
+    let openMenu = OPEN_CONTENT_MENU;
+    if (props.hasOpenAssignMenu) {
+      openMenu = OPEN_ASSIGN_MENU;
+    } else if (props.hasOpenStatusMenu) {
+      openMenu = OPEN_STATUS_MENU;
+    }
+
+    // state drives visibility of differing form elements, like assign menu:
+    this.state = {openMenu};
+  }
+
   componentWillMount() {
     this.initializeValues(this.props.content);
   }
@@ -34,18 +53,36 @@ export default class OutcomeCard extends Component {
     cashay.store.dispatch(initialize(form, {[projectId]: content}));
   }
 
+  toggleStatusMenu(nextOpenMenu) {
+    const {openMenu} = this.state;
+    nextOpenMenu = nextOpenMenu ||
+      openMenu === OPEN_STATUS_MENU ? OPEN_CONTENT_MENU : OPEN_STATUS_MENU;
+    this.setState({openMenu: nextOpenMenu});
+  }
+
+  toggleAssignMenu(nextOpenMenu) {
+    const {openMenu} = this.state;
+    nextOpenMenu = nextOpenMenu ||
+      openMenu === OPEN_ASSIGN_MENU ? OPEN_CONTENT_MENU : OPEN_ASSIGN_MENU;
+    this.setState({openMenu: nextOpenMenu});
+  }
+
   render() {
+    const {openMenu} = this.state;
     const {
       content,
+      owner,
+      teamMembers,
       status,
-      hasOpenAssignMenu,
-      hasOpenStatusMenu,
       isArchived,
       isProject,
       updatedAt,
       projectId,
       handleSubmit
     } = this.props;
+
+    const hasOpenStatusMenu = openMenu === OPEN_STATUS_MENU;
+    const hasOpenAssignMenu = openMenu === OPEN_ASSIGN_MENU;
 
     let rootStyles;
     const rootStyleOptions = [styles.root, styles.cardBlock];
@@ -55,6 +92,7 @@ export default class OutcomeCard extends Component {
       rootStyleOptions.push(styles.isAction);
     }
     rootStyles = combineStyles.apply(null, rootStyleOptions);
+
     const handleCardUpdate = (submittedData) => {
       const submittedContent = submittedData[projectId];
       if (submittedContent !== content) {
@@ -69,10 +107,25 @@ export default class OutcomeCard extends Component {
         cashay.mutate('updateTask', options);
       }
     };
+
     return (
       <div className={rootStyles}>
         {/* card main */}
-        {hasOpenStatusMenu && <OutcomeCardStatusMenu isArchived={isArchived} status={status}/>}
+        {hasOpenAssignMenu &&
+          <OutcomeCardAssignMenu
+            currentOwner={owner}
+            projectId={projectId}
+            teamMembers={teamMembers}
+            onComplete={() => this.toggleAssignMenu(OPEN_CONTENT_MENU)}
+          />
+        }
+        {hasOpenStatusMenu &&
+          <OutcomeCardStatusMenu
+            isArchived={isArchived}
+            projectId={projectId}
+            status={status}
+          />
+        }
         {!hasOpenAssignMenu && !hasOpenStatusMenu &&
           <div className={styles.body}>
             <form>
@@ -88,7 +141,13 @@ export default class OutcomeCard extends Component {
           </div>
         }
         {/* card footer */}
-        <OutcomeCardFooter {...this.props} />
+        <OutcomeCardFooter
+          hasOpenAssignMenu={hasOpenAssignMenu}
+          hasOpenStatusMenu={hasOpenStatusMenu}
+          toggleAssignMenu={() => this.toggleAssignMenu()}
+          toggleStatusMenu={() => this.toggleStatusMenu()}
+          {...this.props}
+        />
       </div>
     );
   }
@@ -97,13 +156,13 @@ export default class OutcomeCard extends Component {
 OutcomeCard.propTypes = {
   content: PropTypes.string,
   status: PropTypes.oneOf(labels.projectStatus.slugs),
-  openStatusMenu: PropTypes.func,
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,
   isArchived: PropTypes.bool,
   isProject: PropTypes.bool,
   owner: PropTypes.object,
   team: PropTypes.object,
+  teamMembers: PropTypes.array,
   showByTeam: PropTypes.bool,
   updatedAt: PropTypes.instanceOf(Date),
   projectId: PropTypes.string,
@@ -113,9 +172,6 @@ OutcomeCard.propTypes = {
 
 OutcomeCard.defaultProps = {
   status: labels.projectStatus.active.slug,
-  openStatusMenu() {
-    console.log('openStatusMenu');
-  },
   hasOpenAssignMenu: false,
   hasOpenStatusMenu: false,
   isArchived: false,

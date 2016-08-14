@@ -27,9 +27,10 @@ let styles = {};
 const OutcomeCardFooter = (props) => {
   const {
     status,
-    openStatusMenu,
     // hasOpenAssignMenu,
     hasOpenStatusMenu,
+    toggleAssignMenu,
+    toggleStatusMenu,
     isArchived,
     isProject,
     owner,
@@ -42,7 +43,7 @@ const OutcomeCardFooter = (props) => {
     return (
       <button
         className={buttonStyles}
-        onClick={openStatusMenu}
+        onClick={toggleStatusMenu}
       >
         <FontAwesome
           name={labels.projectStatus[status].icon}
@@ -60,7 +61,12 @@ const OutcomeCardFooter = (props) => {
   return (
     <div className={styles.root}>
       <div className={styles.avatarBlock}>
-        <img alt={avatarName} className={avatarStyles} src={avatarImage} />
+        <img
+          alt={avatarName}
+          className={avatarStyles}
+          onClick={toggleAssignMenu}
+          src={avatarImage}
+        />
         <div className={styles.name}>{avatarName}</div>
       </div>
       <div className={styles.statusBlock}>
@@ -94,7 +100,8 @@ const OutcomeCardFooter = (props) => {
 
 OutcomeCardFooter.propTypes = {
   status: PropTypes.oneOf(labels.projectStatus.slugs),
-  openStatusMenu: PropTypes.func,
+  toggleAssignMenu: PropTypes.func,
+  toggleStatusMenu: PropTypes.func,
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,
   isArchived: PropTypes.bool,
@@ -106,8 +113,11 @@ OutcomeCardFooter.propTypes = {
 
 OutcomeCardFooter.defaultProps = {
   status: labels.projectStatus.active.slug,
-  openStatusMenu() {
-    console.log('openStatusMenu');
+  toggleAssignMenu() {
+    console.log('toggleAssignMenu');
+  },
+  toggleStatusMenu() {
+    console.log('toggleStatusMenu');
   },
   hasOpenAssignMenu: false,
   hasOpenStatusMenu: false,
