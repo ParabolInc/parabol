@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
+import {cashay} from 'cashay';
 import theme from 'universal/styles/theme';
 import labels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
@@ -14,8 +15,8 @@ let styles = {};
 
 const OutcomeCardStatusMenu = (props) => {
   const {
-    handleButtonClick,
     isArchived,
+    projectId,
     status
   } = props;
 
@@ -23,10 +24,25 @@ const OutcomeCardStatusMenu = (props) => {
   const notArchivedLabel = <span>Move to Ar<u>c</u>hive</span>;
   const buttonArray = labels.projectStatus.slugs.slice(0);
 
-  const makeButton = (statusName, icon, label) => {
+  const handleProjectUpdate = (newStatus) => {
+    if (newStatus === status) {
+      return;
+    }
+    const options = {
+      variables: {
+        updatedTask: {
+          id: projectId,
+          status: newStatus
+        }
+      }
+    };
+    cashay.mutate('updateTask', options);
+  };
+
+  const makeButton = (newStatus, icon, label) => {
     let isDisabled = false;
-    const title = `Set status to ${upperFirst(statusName)}`;
-    if (status === statusName) {
+    const title = `Set status to ${upperFirst(newStatus)}`;
+    if (status === newStatus) {
       isDisabled = true;
     }
     return (
@@ -34,8 +50,8 @@ const OutcomeCardStatusMenu = (props) => {
         disabled={isDisabled}
         icon={icon}
         label={label}
-        onClick={handleButtonClick}
-        status={statusName}
+        onClick={() => handleProjectUpdate(newStatus)}
+        status={newStatus}
         title={title}
       />
     );
@@ -62,15 +78,12 @@ const OutcomeCardStatusMenu = (props) => {
 };
 
 OutcomeCardStatusMenu.propTypes = {
-  handleButtonClick: PropTypes.func,
   isArchived: PropTypes.bool,
+  projectId: PropTypes.string,
   status: PropTypes.oneOf(labels.projectStatus.slugs)
 };
 
 OutcomeCardStatusMenu.defaultProps = {
-  handleButtonClick() {
-    return console.log('OutcomeCardStatusMenu.handleButtonClick()');
-  },
   isArchived: false,
   status: labels.projectStatus.active.slug
 };
