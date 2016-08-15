@@ -31,7 +31,6 @@ export function editingAdd(teamId, normalizedObjId) {
         editing
       }
     };
-    console.log(options);
     return cashay.mutate('present', options);
   };
 }
