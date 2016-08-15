@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
+import themeLabels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import TeamCard from 'universal/modules/teamDashboard/components/TeamCard/TeamCard';
 import {ACTIVE, STUCK, DONE, FUTURE, PROJECT} from 'universal/utils/constants';
@@ -44,7 +45,7 @@ const ProjectColumn = (props) => {
         <span
           className={combineStyles(styles.statusBadge, styles[`${status}Bg`])}
         >
-          <FontAwesome className={styles.statusBadgeIcon} name="check"/>
+          <FontAwesome className={styles.statusBadgeIcon} name={themeLabels.projectStatus[status].icon}/>
         </span>
         <span
           className={combineStyles(styles.statusLabel, styles[status])}
@@ -143,7 +144,9 @@ styles = StyleSheet.create({
 
   statusLabel: {
     flex: 1,
-    fontWeight: 700
+    fontSize: theme.typography.s3,
+    fontWeight: 700,
+    textTransform: 'uppercase'
   },
 
   addIcon: {
