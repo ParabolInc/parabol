@@ -20,7 +20,7 @@ const makeProjectsByStatus = (projects) => {
 };
 
 const ProjectColumns = (props) => {
-  const {projects, teamMembers, teamMemberId} = props;
+  const {dispatch, editing, projects, teamMembers, teamMemberId} = props;
   const projectsByStatus = makeProjectsByStatus(projects);
   return (
     <div className={styles.root}>
@@ -28,6 +28,8 @@ const ProjectColumns = (props) => {
         {columnArray.map((status) =>
           <ProjectColumn
             key={`projectCol${status}`}
+            dispatch={dispatch}
+            editing={editing}
             teamMembers={teamMembers}
             teamMemberId={teamMemberId}
             status={status}
@@ -40,6 +42,8 @@ const ProjectColumns = (props) => {
 };
 
 ProjectColumns.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  editing: PropTypes.object,
   projects: PropTypes.array,
   teamMembers: PropTypes.array,
   teamMemberId: PropTypes.string

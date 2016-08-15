@@ -57,7 +57,6 @@ export default {
       const now = new Date();
       const task = {
         ...newTask,
-        editingBy: [],
         createdAt: now,
         updatedAt: now
       };

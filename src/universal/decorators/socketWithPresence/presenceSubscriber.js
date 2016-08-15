@@ -11,10 +11,12 @@ export default function presenceSubscriber(subscriptionString, variables, handle
   socket.subscribe(channelName, {waitForAuth: true});
   socket.watch(channelName, data => {
     if (data.type === SOUNDOFF) {
+      const {editing} = cashay.store.getState();
       const options = {
         variables: {
           teamId: variables.teamId,
-          targetId: data.targetId
+          targetId: data.targetId,
+          editing
         }
       };
       cashay.mutate('present', options);
@@ -22,7 +24,8 @@ export default function presenceSubscriber(subscriptionString, variables, handle
     if (data.type === PRESENT) {
       upsert({
         id: data.socketId,
-        userId: data.userId
+        userId: data.userId,
+        editing: data.editing
       });
     }
     if (data.type === LEAVE) {

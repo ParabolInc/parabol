@@ -25,6 +25,7 @@ export default [
       presence(teamId: $teamId) {
         id
         userId
+        editing
       }
     }`,
     channelfy: variables => `presence/${variables.teamId}`,
@@ -36,7 +37,6 @@ export default [
     subscription($teamMemberId: ID!) {
       projects(teamMemberId: $teamMemberId) {
         content
-        editingBy
         id
         status
         teamMemberId
