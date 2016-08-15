@@ -2,8 +2,7 @@ import {requireSUOrTeamMember, requireWebsocketExchange, requireWebsocket} from 
 import {
   GraphQLNonNull,
   GraphQLBoolean,
-  GraphQLID,
-  GraphQLList
+  GraphQLID
 } from 'graphql';
 import {SOUNDOFF, PRESENT} from 'universal/subscriptions/constants';
 
