@@ -104,12 +104,12 @@ export default class OutcomeCardTextAreaField extends Component {
           {editingStatus(active, teamMemberId, editingMe, teamMembers, timestamp)}
         </div>
         <textarea
+          {...input}
           ref={setRef}
           className={allClassNames}
           placeholder="Type your project outcome here"
           onBlur={handleBlur}
           onKeyDown={handleKeyUp}
-          {...this.props.input}
         />
       </div>
     );
