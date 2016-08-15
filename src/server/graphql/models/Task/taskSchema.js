@@ -35,7 +35,7 @@ export const Task = new GraphQLObjectType({
   name: 'Task',
   description: 'A task, either a project (long-term) or an action (short-term) assigned to a user',
   fields: () => ({
-    id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique task id'},
+    id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique task id, teamId::shortid'},
     content: {type: GraphQLString, description: 'The body of the task. If null, it is a new task.'},
     editingBy: {
       type: new GraphQLList(GraphQLID),
