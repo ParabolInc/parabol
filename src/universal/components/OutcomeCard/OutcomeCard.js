@@ -1,16 +1,18 @@
 import React, {Component, PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import OutcomeCardFooter from './OutcomeCardFooter';
-import OutcomeCardAssignMenu from './OutcomeCardAssignMenu';
-import OutcomeCardStatusMenu from './OutcomeCardStatusMenu';
+import {cashay} from 'cashay';
+import {Field, reduxForm, initialize} from 'redux-form';
 import theme from 'universal/styles/theme';
 import labels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
-import {Field, reduxForm, initialize} from 'redux-form';
-import OutcomeCardTextarea from './OutcomeCardTextarea';
-import {cashay} from 'cashay';
 import fromNow from 'universal/utils/fromNow';
+import {editingAdd, editingRemove} from 'universal/redux/editingDuck';
+
+import OutcomeCardTextarea from './OutcomeCardTextarea';
+import OutcomeCardFooter from './OutcomeCardFooter';
+import OutcomeCardAssignMenu from './OutcomeCardAssignMenu';
+import OutcomeCardStatusMenu from './OutcomeCardStatusMenu';
 
 const OPEN_CONTENT_MENU = 'OutcomeCard/openContentMenu';
 const OPEN_ASSIGN_MENU = 'OutcomeCard/openAssignMenu';
@@ -49,8 +51,8 @@ export default class OutcomeCard extends Component {
   }
 
   initializeValues(content) {
-    const {form, projectId} = this.props;
-    cashay.store.dispatch(initialize(form, {[projectId]: content}));
+    const {dispatch, form, projectId} = this.props;
+    dispatch(initialize(form, {[projectId]: content}));
   }
 
   toggleStatusMenu(nextOpenMenu) {
@@ -71,8 +73,10 @@ export default class OutcomeCard extends Component {
     const {openMenu} = this.state;
     const {
       content,
-      editingBy,
+      dispatch,
+      editing,
       owner,
+      teamId,
       teamMembers,
       teamMemberId,
       status,
@@ -80,8 +84,10 @@ export default class OutcomeCard extends Component {
       isProject,
       updatedAt,
       projectId,
-      handleSubmit
+      handleSubmit,
     } = this.props;
+    const normalizedProjectId = `Task::${projectId}`;
+    const editingMe = editing[normalizedProjectId] || [];
 
     const hasOpenStatusMenu = openMenu === OPEN_STATUS_MENU;
     const hasOpenAssignMenu = openMenu === OPEN_ASSIGN_MENU;
@@ -96,24 +102,12 @@ export default class OutcomeCard extends Component {
     rootStyles = combineStyles.apply(null, rootStyleOptions);
 
     const handleCardActive = (activeState) => {
-      const inEditors = editingBy.find((id) => id === teamMemberId) !== undefined;
-      let newEditors = null;
+      if (activeState === undefined) { return; }
       if (activeState) {
-        if (inEditors) { return; }
-        newEditors = editingBy.concat(teamMemberId);
+        dispatch(editingAdd(teamId, normalizedProjectId));
       } else {
-        if (!inEditors) { return; }
-        newEditors = editingBy.filter((m) => m !== teamMemberId);
+        dispatch(editingRemove(teamId, normalizedProjectId));
       }
-      const options = {
-        variables: {
-          updatedTask: {
-            id: projectId,
-            editingBy: newEditors
-          }
-        }
-      };
-      cashay.mutate('updateTask', options);
     };
 
     const handleCardUpdate = (submittedData) => {
@@ -155,10 +149,9 @@ export default class OutcomeCard extends Component {
               <Field
                 name={projectId}
                 component={OutcomeCardTextarea}
-                editingBy={editingBy}
+                editingMe={editingMe}
                 teamMemberId={teamMemberId}
                 teamMembers={teamMembers}
-                projectId={projectId}
                 isProject={isProject}
                 handleActive={handleCardActive}
                 handleSubmit={handleSubmit(handleCardUpdate)}
@@ -182,14 +175,15 @@ export default class OutcomeCard extends Component {
 
 OutcomeCard.propTypes = {
   content: PropTypes.string,
-  editingBy: PropTypes.array,
+  dispatch: PropTypes.func.isRequired,
+  editing: PropTypes.object,
   status: PropTypes.oneOf(labels.projectStatus.slugs),
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,
   isArchived: PropTypes.bool,
   isProject: PropTypes.bool,
   owner: PropTypes.object,
-  team: PropTypes.object,
+  teamId: PropTypes.string,
   teamMemberId: PropTypes.string,
   teamMembers: PropTypes.array,
   showByTeam: PropTypes.bool,

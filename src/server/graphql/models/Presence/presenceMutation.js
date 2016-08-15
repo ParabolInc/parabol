@@ -1,8 +1,8 @@
 import {requireSUOrTeamMember, requireWebsocketExchange, requireWebsocket} from '../authorization';
 import {
   GraphQLNonNull,
-  GraphQLID,
-  GraphQLBoolean
+  GraphQLBoolean,
+  GraphQLID
 } from 'graphql';
 import {SOUNDOFF, PRESENT} from 'universal/subscriptions/constants';
 
@@ -18,9 +18,13 @@ export default {
       targetId: {
         type: GraphQLID,
         description: 'The target socketId that wants to know about presence'
+      },
+      editing: {
+        type: GraphQLID,
+        description: 'A list of normalized objects being edited by the user'
       }
     },
-    async resolve(source, {teamId, targetId}, {authToken, exchange, socket}) {
+    async resolve(source, {teamId, targetId, editing}, {authToken, exchange, socket}) {
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocketExchange(exchange);
       requireWebsocket(socket);
@@ -29,6 +33,9 @@ export default {
       const payload = {type: PRESENT, userId: authToken.sub, socketId: socket.id};
       if (targetId) {
         payload.targetId = targetId;
+      }
+      if (editing) {
+        payload.editing = editing;
       }
       exchange.publish(channel, payload);
     }

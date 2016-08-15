@@ -5,16 +5,24 @@ import TeamProjectsHeader from 'universal/modules/teamDashboard/components/TeamP
 
 const TeamProjects = (props) => {
   const {styles} = TeamProjects;
-  const {projects, teamMembers, teamMemberId} = props;
+  const {dispatch, editing, projects, teamMembers, teamMemberId} = props;
   return (
     <div className={styles.root}>
       <TeamProjectsHeader/>
-      <ProjectColumns teamMemberId={teamMemberId} teamMembers={teamMembers} projects={projects}/>
+      <ProjectColumns
+        dispatch={dispatch}
+        editing={editing}
+        teamMemberId={teamMemberId}
+        teamMembers={teamMembers}
+        projects={projects}
+      />
     </div>
   );
 };
 
 TeamProjects.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  editing: PropTypes.object,
   projects: PropTypes.array,
   teamMembers: PropTypes.array,
   teamMemberId: PropTypes.string

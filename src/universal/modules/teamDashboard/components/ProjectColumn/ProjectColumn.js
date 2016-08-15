@@ -19,7 +19,7 @@ const labels = {
 };
 
 const ProjectColumn = (props) => {
-  const {status, projects, teamMembers, teamMemberId} = props;
+  const {dispatch, editing, status, projects, teamMembers, teamMemberId} = props;
   // teamMemberId format is 'userId::teamId'
   const [, teamId] = teamMemberId.split('::');
   const handleAddProject = () => {
@@ -43,6 +43,9 @@ const ProjectColumn = (props) => {
       {projects.map(project =>
         <TeamCard
           key={`teamCard${project.id}`}
+          dispatch={dispatch}
+          editing={editing}
+          teamId={teamId}
           teamMemberId={teamMemberId}
           teamMembers={teamMembers}
           project={project}
@@ -53,6 +56,8 @@ const ProjectColumn = (props) => {
 };
 
 ProjectColumn.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  editing: PropTypes.object,
   projects: PropTypes.array,
   status: PropTypes.string,
   teamMembers: PropTypes.array,

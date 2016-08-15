@@ -5,20 +5,28 @@ import TeamProjects from 'universal/modules/teamDashboard/components/TeamProject
 
 const AgendaAndProjects = (props) => {
   const {styles} = AgendaAndProjects;
-  const {projects, teamId, teamMembers, teamMemberId} = props;
+  const {dispatch, editing, projects, teamId, teamMembers, teamMemberId} = props;
   return (
     <div className={styles.root}>
       <div className={styles.agendaLayout}>
         <TeamAgenda teamId={teamId}/>
       </div>
       <div className={styles.projectsLayout}>
-        <TeamProjects projects={projects} teamMembers={teamMembers} teamMemberId={teamMemberId}/>
+        <TeamProjects
+          dispatch={dispatch}
+          editing={editing}
+          projects={projects}
+          teamMembers={teamMembers}
+          teamMemberId={teamMemberId}
+        />
       </div>
     </div>
   );
 };
 
 AgendaAndProjects.propTypes = {
+  dispatch: PropTypes.func.required,
+  editing: PropTypes.object,
   projects: PropTypes.array,
   teamId: PropTypes.string.isRequired,
   teamMembers: PropTypes.array,

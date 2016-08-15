@@ -3,8 +3,8 @@ import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
 
 const TeamCard = (props) => {
-  const {project, teamMembers, teamMemberId} = props;
-  const {id, content, editingBy, status, updatedAt} = project;
+  const {dispatch, editing, project, teamId, teamMembers, teamMemberId} = props;
+  const {id, content, status, updatedAt} = project;
   const owner = teamMembers.find((m) => m.id === project.teamMemberId);
   const isOutcome = content || owner.id === teamMemberId;
   /**
@@ -20,12 +20,14 @@ const TeamCard = (props) => {
     isOutcome ?
       <OutcomeCard
         content={content}
-        editingBy={editingBy}
+        dispatch={dispatch}
+        editing={editing}
         form={formId}
         status={status}
         isProject
         owner={owner}
         projectId={id}
+        teamId={teamId}
         teamMemberId={teamMemberId}
         teamMembers={teamMembers}
         updatedAt={updatedAt}
@@ -39,11 +41,14 @@ const TeamCard = (props) => {
 };
 
 TeamCard.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  editing: PropTypes.object,
   project: PropTypes.shape({
     content: PropTypes.string,
     status: PropTypes.string,
     updatedAt: PropTypes.instanceOf(Date)
   }),
+  teamId: PropTypes.string,
   teamMemberId: PropTypes.string,
   teamMembers: PropTypes.array
 };
