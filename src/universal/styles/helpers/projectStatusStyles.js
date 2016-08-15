@@ -1,21 +1,22 @@
 import labels from 'universal/styles/theme/labels';
+import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
 
-export default function projectStatusStyles(propertyNameString) {
+export default function projectStatusStyles(propertyNameString, suffix = '') {
   return {
-    active: {
-      [propertyNameString]: labels.projectStatus.active.color
+    [`${ACTIVE}${suffix}`]: {
+      [propertyNameString]: labels.projectStatus[ACTIVE].color
     },
 
-    stuck: {
-      [propertyNameString]: labels.projectStatus.stuck.color
+    [`${STUCK}${suffix}`]: {
+      [propertyNameString]: labels.projectStatus[STUCK].color
     },
 
-    done: {
-      [propertyNameString]: labels.projectStatus.done.color
+    [`${DONE}${suffix}`]: {
+      [propertyNameString]: labels.projectStatus[DONE].color
     },
 
-    future: {
-      [propertyNameString]: labels.projectStatus.future.color
+    [`${FUTURE}${suffix}`]: {
+      [propertyNameString]: labels.projectStatus[FUTURE].color
     }
   };
 }
