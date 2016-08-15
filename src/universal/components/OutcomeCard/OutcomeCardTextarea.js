@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
+import Ellipsis from 'universal/components/Ellipsis/Ellipsis';
 
 const {combineStyles} = StyleSheet;
 const descriptionFA = {
@@ -23,24 +24,24 @@ function editingStatus(iAmActive, myTeamMemberId, editingUserIds, teamMembers, t
 
   if (iAmActive && everybodyElse.length === 0) {
     // we're editing all by ourselves
-    return 'editing...';
+    return <span>editing<Ellipsis/></span>;
   } else if (everybodyElse.length === 1) {
     const otherEditor = teamMembers.find((m) => m.id === everybodyElse[0]);
     if (iAmActive) {
       // we're editing with one other
-      return `${otherEditor.preferredName} editing too...`;
+      return <span>{otherEditor.preferredName} editing too<Ellipsis/></span>;
     }
     // one other person is editing alone
-    return `${otherEditor.preferredName} editing...`;
+    return <span>{otherEditor.preferredName} editing<Ellipsis/></span>;
   } else if (everybodyElse.length > 1) {
     if (iAmActive || everybodyElse.length > 2) {
       // busy!
-      return 'several are editing...';
+      return <span>several are editing<Ellipsis/></span>;
     }
     // two folks are editing
     const editorA = teamMembers.find((m) => m.id === everybodyElse[0]);
     const editorB = teamMembers.find((m) => m.id === everybodyElse[1]);
-    return `${editorA.preferredName} &amp; ${editorB.preferredName} editing...`;
+    return <span>{editorA.preferredName} &amp;{editorB.preferredName} editing<Ellipsis/></span>;
   }
   return timestamp;
 }
