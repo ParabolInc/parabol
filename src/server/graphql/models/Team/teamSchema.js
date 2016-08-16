@@ -10,8 +10,8 @@ import {
 } from 'graphql';
 import {nonnullifyInputThunk} from '../utils';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
-import {TeamMember, CreateTeamMemberInput} from '../TeamMember/teamMemberSchema';
-import {Placeholder} from '../Placeholder/placeholderSchema';
+import {TeamMember} from '../TeamMember/teamMemberSchema';
+import {AgendaItem} from '../AgendaItem/agendaItemSchema';
 import {LOBBY, CHECKIN, UPDATES, AGENDA, SUMMARY} from 'universal/utils/constants';
 
 export const Phase = new GraphQLEnumType({
@@ -77,11 +77,11 @@ export const Team = new GraphQLObjectType({
         return await r.table('TeamMember').getAll(id, {index: 'teamId'});
       }
     },
-    placeholders: {
-      type: new GraphQLList(Placeholder),
+    agendaItems: {
+      type: new GraphQLList(AgendaItem),
       description: 'The agenda items for the upcoming or current meeting',
       async resolve({id}) {
-        return await r.table('Placeholder').getAll(id, {index: 'teamId'});
+        return await r.table('AgendaItem').getAll(id, {index: 'teamId'});
       }
     }
   })
@@ -90,10 +90,6 @@ export const Team = new GraphQLObjectType({
 const teamInputThunk = () => ({
   id: {type: GraphQLID, description: 'The unique team ID'},
   name: {type: GraphQLString, description: 'The name of the team'},
-  leader: {
-    type: CreateTeamMemberInput,
-    description: 'Each team must be created with 1 team member, the leader.'
-  }
 });
 
 export const CreateTeamInput = nonnullifyInputThunk('CreateTeamInput', teamInputThunk, ['id', 'name']);

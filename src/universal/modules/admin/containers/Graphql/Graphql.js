@@ -30,7 +30,7 @@ const makeGraphQLFetcher = authToken => {
 
 const mapStateToProps = state => {
   return {
-    authToken: state.authToken
+    authToken: state.auth.token
   };
 };
 

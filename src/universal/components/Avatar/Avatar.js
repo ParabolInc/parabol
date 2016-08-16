@@ -3,11 +3,15 @@ import look, {StyleSheet} from 'react-look';
 import FontAwesome from 'react-fontawesome';
 import theme from 'universal/styles/theme';
 import {srOnly} from 'universal/styles/helpers';
+import upperFirst from 'universal/utils/upperFirst';
 
-const combineStyles = StyleSheet.combineStyles;
+
+// TODO: Add React Material UI tooltip (TA)
+
 
 let s = {};
 
+const combineStyles = StyleSheet.combineStyles;
 const boxShadowDefault = '0 0 1px 1px rgba(0, 0, 0, .2)';
 const boxShadowWarm = `0 0 1px 1px ${theme.palette.warm}`;
 
@@ -19,7 +23,6 @@ const renderBadge = (isCheckedIn, isConnected, size) => {
     s[connection]
   );
   let icon;
-  // TODO: All avatars at least have a circle badge and connection color (lobby, pre-check-in) (TA)
   if (isCheckedIn) {
     icon = 'check-circle';
   } else if (isCheckedIn === false) {
@@ -27,7 +30,7 @@ const renderBadge = (isCheckedIn, isConnected, size) => {
   } else {
     icon = 'circle';
   }
-  const largeBadgeClass = size === 'medium' || size === 'large' || size === 'largest';
+  const largeBadgeClass = size === 'large' || size === 'larger' || size === 'largest';
   const badgeStyles = largeBadgeClass ? combineStyles(s.badge, s.badgeLarge) : s.badge;
 
   return (
@@ -42,11 +45,13 @@ const renderBadge = (isCheckedIn, isConnected, size) => {
 
 const Avatar = (props) => {
   const {
+    hasBadge,
     hasLabel,
     labelRight,
     hasTooltip,
-    isConnected,
     isCheckedIn,
+    isClickable,
+    isConnected,
     picture,
     preferredName,
     onClick,
@@ -70,9 +75,10 @@ const Avatar = (props) => {
   let imagePositionStyles = s.avatarImageDisplay;
   let imageBlockStyles = s.avatarImageBlock;
 
-  const sizeName = size.charAt(0).toUpperCase() + size.slice(1);
+  const sizeName = upperFirst(size);
   const sizeStyles = `avatar${sizeName}`;
   const imageSizeStyles = `avatarImageBlock${sizeName}`;
+  const rootInlineStyle = isClickable ? {cursor: 'pointer'} : {cursor: 'default'};
 
   avatarStyles = combineStyles(s.avatar, s[sizeStyles]);
   imageBlockStyles = combineStyles(s.avatarImageBlock, s[imageSizeStyles]);
@@ -95,11 +101,14 @@ const Avatar = (props) => {
       onClick={onClick}
       onMouseLeave={handleMouseLeave}
       onMouseEnter={handleMouseEnter}
+      style={rootInlineStyle}
     >
       <div className={imagePositionStyles}>
         <div className={imageBlockStyles}>
           <img className={s.avatarImage} src={picture} />
-          {renderBadge(isCheckedIn, isConnected, size)}
+          {hasBadge &&
+            renderBadge(isCheckedIn, isConnected, size)
+          }
         </div>
       </div>
       {hasLabel &&
@@ -113,9 +122,11 @@ const Avatar = (props) => {
 };
 
 Avatar.propTypes = {
+  hasBadge: PropTypes.bool,
   hasLabel: PropTypes.bool,
   hasTooltip: PropTypes.bool,
   isCheckedIn: PropTypes.bool,
+  isClickable: PropTypes.bool,
   isConnected: PropTypes.bool,
   picture: PropTypes.string,
   labelRight: PropTypes.bool,
@@ -123,16 +134,23 @@ Avatar.propTypes = {
   onClick: PropTypes.func,
   size: PropTypes.oneOf([
     'smallest',
+    'smaller',
     'small',
     'medium',
     'large',
+    'larger',
     'largest'
   ])
 };
 
 Avatar.defaultProps = {
+  hasBadge: true,
   isCheckedIn: false,
+  isClickable: false,
   isConnected: false,
+  onClick() {
+    console.log('Avatar.defaultProps.onClick()');
+  },
   picture: 'https://placekitten.com/g/600/600',
   preferredName: 'Elizabeth Robertson',
   size: 'small'
@@ -154,13 +172,19 @@ s = StyleSheet.create({
   avatarSmallest: {
     fontSize: theme.typography.s1
   },
+  avatarSmaller: {
+    fontSize: theme.typography.s1
+  },
   avatarSmall: {
     fontSize: theme.typography.s2
   },
   avatarMedium: {
-    fontSize: theme.typography.s4
+    fontSize: theme.typography.s3
   },
   avatarLarge: {
+    fontSize: theme.typography.s4
+  },
+  avatarLarger: {
     fontSize: theme.typography.s4
   },
   avatarLargest: {
@@ -187,15 +211,21 @@ s = StyleSheet.create({
 
   // NOTE: Size modifies for avatarImageBlock
   avatarImageBlockSmallest: {
+    width: '1.5rem'
+  },
+  avatarImageBlockSmaller: {
     width: '2rem'
   },
   avatarImageBlockSmall: {
     width: '2.75rem'
   },
   avatarImageBlockMedium: {
-    width: '5rem'
+    width: '4rem'
   },
   avatarImageBlockLarge: {
+    width: '5rem'
+  },
+  avatarImageBlockLarger: {
     width: '6rem'
   },
   avatarImageBlockLargest: {
@@ -204,6 +234,8 @@ s = StyleSheet.create({
 
   avatarImage: {
     borderRadius: '100%',
+    // NOTE: Causes warning in console:
+    //       Unknown props `_lookShouldUpdate`, `_hasFriendlyClassNames` on <img> tag.
     boxShadow: (props) => (props.hasBorder ? boxShadowWarm : boxShadowDefault),
     display: 'block',
     height: 'auto',

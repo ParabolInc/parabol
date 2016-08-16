@@ -1,13 +1,14 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
+import labels from 'universal/styles/theme/labels';
 import ProjectStatusMenuItem from './ProjectStatusMenuItem';
 
 let styles = {};
 
 const ProjectStatusMenu = props => {
   const {
-    currentStatus,
+    status,
     isArchived
   } = props;
 
@@ -15,72 +16,48 @@ const ProjectStatusMenu = props => {
     console.log(`ProjectStatusMenuItem onClick ${value}`);
   };
 
-  console.log(`ProjectStatusMenu currentStatus ${currentStatus}`);
+  const menuStatusItems = labels.projectStatus.slugs.slice(0);
 
   // TODO: Add HotKeys
 
   return (
     <div className={styles.root}>
       <div className={styles.menuLabel}>Set Status:</div>
-      <ProjectStatusMenuItem
-        icon="arrow-right"
-        isCurrent={currentStatus === 'active'}
-        onClick={onClickItem}
-        value="active"
-      >
-        <span className={styles.keystroke}>A</span>ctive
-      </ProjectStatusMenuItem>
-      <ProjectStatusMenuItem
-        icon="exclamation-triangle"
-        isCurrent={currentStatus === 'stuck'}
-        onClick={onClickItem}
-        value="stuck"
-      >
-        <span className={styles.keystroke}>S</span>tuck
-      </ProjectStatusMenuItem>
-      <ProjectStatusMenuItem
-        icon="check"
-        isCurrent={currentStatus === 'done'}
-        onClick={onClickItem}
-        value="done"
-      >
-        <span className={styles.keystroke}>D</span>one
-      </ProjectStatusMenuItem>
-      <ProjectStatusMenuItem
-        icon="clock-o"
-        isCurrent={currentStatus === 'future'}
-        onClick={onClickItem}
-        value="future"
-      >
-        <span className={styles.keystroke}>F</span>uture
-      </ProjectStatusMenuItem>
+      {menuStatusItems.map((statusItem, idx) => {
+        const statusLabel = labels.projectStatus[statusItem];
+        return (
+          <ProjectStatusMenuItem
+            icon={statusLabel.icon}
+            isCurrent={status === statusItem}
+            key={idx}
+            onClick={onClickItem}
+            label={statusLabel.shortcutLabel}
+            value={statusItem}
+          />
+        );
+      }
+      )}
       <div className={styles.hr} />
       {isArchived ?
         <div>isArchived, TODO: Un-archive?</div> :
         <ProjectStatusMenuItem
-          icon="archive"
+          icon={labels.archive.icon}
           onClick={onClickItem}
-          value="archive"
-        >
-          Ar<span className={styles.keystroke}>c</span>hive
-        </ProjectStatusMenuItem>
+          label={labels.archive.shortcutLabel}
+          value={labels.archive.slug}
+        />
       }
     </div>
   );
 };
 
 ProjectStatusMenu.propTypes = {
-  currentStatus: PropTypes.oneOf([
-    'active',
-    'stuck',
-    'done',
-    'future'
-  ]),
+  status: PropTypes.oneOf(labels.projectStatus.slugs),
   isArchived: PropTypes.bool
 };
 
 ProjectStatusMenu.defaultProps = {
-  currentStatus: 'done',
+  status: labels.projectStatus.active.slug,
   isArchived: false
 };
 

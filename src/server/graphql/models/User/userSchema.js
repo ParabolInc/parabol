@@ -9,7 +9,6 @@ import {
 } from 'graphql';
 import {GraphQLEmailType, GraphQLURLType} from '../types';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
-import {Task} from '../Task/taskSchema';
 import {TeamMember} from '../TeamMember/teamMemberSchema';
 import r from 'server/database/rethinkDriver';
 import {nonnullifyInputThunk} from '../utils';
@@ -111,10 +110,6 @@ export const User = new GraphQLObjectType({
       description: 'Array of identifier + ip pairs'
     },
     /* User Profile */
-    isNew: {
-      type: GraphQLBoolean,
-      description: 'Has the user ever been associated with a team'
-    },
     welcomeSentAt: {
       type: GraphQLISO8601Type,
       description: 'The datetime that we sent them a welcome email'
@@ -131,12 +126,9 @@ export const User = new GraphQLObjectType({
         return await r.table('TeamMember').getAll(id, {index: 'userId'});
       }
     },
-    tasks: {
-      type: new GraphQLList(Task),
-      description: 'All the tasks across all the user\'s teams for which the user is responsible',
-      async resolve({id}) {
-        return await r.table('Task').getAll(id, {index: 'userId'});
-      }
+    jwt: {
+      type: GraphQLID,
+      description: 'a refreshed JWT'
     }
   })
 });

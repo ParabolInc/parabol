@@ -8,6 +8,7 @@ export default function mwPresencePublishOut(req, next) {
     if (type === SOUNDOFF) {
       // don't ping yourself
       if (targetId === req.socket.id) {
+        // silently fail
         next(true);
         return;
       }

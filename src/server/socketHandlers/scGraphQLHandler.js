@@ -12,8 +12,10 @@ export default function wsGraphQLHandler(exchange, socket) {
     };
     // response = {errors, data}
     const response = await graphql(Schema, query, {}, context, variables);
-    // UNCOMMENT ME TO FOR DEBUGGING PURPOSES:
-    // console.log('GQL RES: ', response);
+    if (response.errors) {
+      // UNCOMMENT ME TO FOR DEBUGGING PURPOSES:
+      console.log('GQL RES: ', response);
+    }
     cb(null, response);
   };
 }

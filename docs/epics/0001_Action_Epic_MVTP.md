@@ -1,7 +1,7 @@
 
 # Epic: Minimum Viable Testable Product ("MVTP")
 
-In this epic, we'll realize a set of job-stories to enable testing agenda
+In this epic, we'll realize a set of job-stories to enable testing for
 feedback with our most important early stakeholders: the organizational
 development consultant, a manager at a Fortune 500 firm, and a product
 manager at a post-Series A startup.
@@ -197,34 +197,43 @@ folks who weren't able to attend can see what happened.
 
 ## Team Dashboard
 
-- [ ] When a TM navigates to their team's dashboard, they will want a list
+- [X] When a TM navigates to their team's dashboard, they will want a list
 of all projects, so that they can see what their team has signed up to do
 (and their place in it).
 
-- [ ] When a TM wants to update the team's dashboard, they will want easy
+- [X] When a TM wants to update the team's dashboard, they will want easy
 controls, so that they can add new projects, change the status of projects,
 or reassign ownership.
 
-- [ ] When a TM doesn't feel comfortable creating a new project for another
+- [X] When a TM doesn't feel comfortable creating a new project for another
 person, they want to add an agenda item for the next meeting, so the request
 can be made in a more public forum and weighed against other priorities.
+
+- [X] When a meeting has begun for a TM and the TM visits the team dashboard,
+they want to be notified that their other teammates are meeting, so that they
+can join the meeting.
+
+- [X] When a meeting is active, the TM shouldn't be able to edit the agenda
+or team projects, so that they join their teammates in the meeting and
+participate in the process.
 
 - [ ] When a TM wants to invite a new team member, they'll want an obvious
 control that allows them to input one or more email addresses, so that they
 can join their pals.
 
 - [ ] When a TL wants to create a new team, they'll want an obvious control
-near their other teams, so they can get their new group up and going.
+near their other teams to make a new team, so they can get their new group up
+and going.
 
 ## Personal Dashboard
 
 - [ ] When a user receives an invitation to a new team, they will want to
 be able to accept it, so that they can join their teammates.
 
-- [ ] When a TM navigates to their own personal dashboard, they will
+- [X] When a TM navigates to their own personal dashboard, they will
 want to see a list of their projects and actions, so that they can see what
 they are responsible for.
 
-- [ ] When a TM wants to update an item on their dashboard, they will want
+- [X] When a TM wants to update an item on their dashboard, they will want
 controls that feel similar to the controls on the team dashboard, so that
 they now how to keep an accurate account of work they are responsible for.

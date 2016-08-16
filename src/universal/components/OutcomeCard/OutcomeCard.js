@@ -1,112 +1,212 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import FontAwesome from 'react-fontawesome';
-import Textarea from 'react-textarea-autosize';
+import {cashay} from 'cashay';
+import {Field, reduxForm, initialize} from 'redux-form';
 import theme from 'universal/styles/theme';
+import labels from 'universal/styles/theme/labels';
+import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
+import fromNow from 'universal/utils/fromNow';
+import {editingAdd, editingRemove} from 'universal/redux/editingDuck';
+
+import OutcomeCardTextarea from './OutcomeCardTextarea';
+import OutcomeCardFooter from './OutcomeCardFooter';
+import OutcomeCardAssignMenu from './OutcomeCardAssignMenu';
+import OutcomeCardStatusMenu from './OutcomeCardStatusMenu';
+
+const OPEN_CONTENT_MENU = 'OutcomeCard/openContentMenu';
+const OPEN_ASSIGN_MENU = 'OutcomeCard/openAssignMenu';
+const OPEN_STATUS_MENU = 'OutcomeCard/openStatusMenu';
 
 const combineStyles = StyleSheet.combineStyles;
-const avatarSize = '1.5rem';
 let styles = {};
 
-const OutcomeCard = props => {
-  const {
-    description,
-    status,
-    openStatusMenu,
-    isArchived,
-    owner,
-    showByTeam,
-    team,
-    timestamp
-  } = props;
+@reduxForm()
+@look
+export default class OutcomeCard extends Component {
+  constructor(props) {
+    super(props);
 
-  const makeStatusButton = () => {
-    const buttonStyles = combineStyles(styles.statusButton, styles[status]);
-    const statusIcon = {
-      active: 'arrow-right',
-      stuck: 'exclamation-triangle',
-      done: 'check',
-      future: 'clock-o'
+    let openMenu = OPEN_CONTENT_MENU;
+    if (props.hasOpenAssignMenu) {
+      openMenu = OPEN_ASSIGN_MENU;
+    } else if (props.hasOpenStatusMenu) {
+      openMenu = OPEN_STATUS_MENU;
+    }
+
+    // state drives visibility of differing form elements, like assign menu:
+    this.state = {openMenu};
+  }
+
+  componentWillMount() {
+    this.initializeValues(this.props.content);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const {content} = this.props;
+    const nextContent = nextProps.content;
+    if (nextContent !== content) {
+      this.initializeValues(nextContent);
+    }
+  }
+
+  initializeValues(content) {
+    const {dispatch, form, projectId} = this.props;
+    dispatch(initialize(form, {[projectId]: content}));
+  }
+
+  toggleStatusMenu(nextOpenMenu) {
+    const {openMenu} = this.state;
+    nextOpenMenu = nextOpenMenu ||
+      openMenu === OPEN_STATUS_MENU ? OPEN_CONTENT_MENU : OPEN_STATUS_MENU;
+    this.setState({openMenu: nextOpenMenu});
+  }
+
+  toggleAssignMenu(nextOpenMenu) {
+    const {openMenu} = this.state;
+    nextOpenMenu = nextOpenMenu ||
+      openMenu === OPEN_ASSIGN_MENU ? OPEN_CONTENT_MENU : OPEN_ASSIGN_MENU;
+    this.setState({openMenu: nextOpenMenu});
+  }
+
+  render() {
+    const {openMenu} = this.state;
+    const {
+      content,
+      dispatch,
+      editing,
+      owner,
+      teamId,
+      teamMembers,
+      teamMemberId,
+      status,
+      isArchived,
+      isProject,
+      updatedAt,
+      projectId,
+      handleSubmit,
+      showByTeam
+    } = this.props;
+    const normalizedProjectId = `Task::${projectId}`;
+    const editingMe = editing && editing[normalizedProjectId] || [];
+    const hasOpenStatusMenu = openMenu === OPEN_STATUS_MENU;
+    const hasOpenAssignMenu = openMenu === OPEN_ASSIGN_MENU;
+    let rootStyles;
+    const rootStyleOptions = [styles.root, styles.cardBlock];
+    if (isProject) {
+      rootStyleOptions.push(styles[status]);
+    } else {
+      rootStyleOptions.push(styles.isAction);
+    }
+    rootStyles = combineStyles.apply(null, rootStyleOptions);
+
+    const handleCardActive = (activeState) => {
+      if (activeState === undefined) { return; }
+      if (activeState) {
+        dispatch(editingAdd(teamId, normalizedProjectId));
+      } else {
+        dispatch(editingRemove(teamId, normalizedProjectId));
+      }
     };
-    return (
-      <button
-        className={buttonStyles}
-        onClick={openStatusMenu}
-      >
-        <FontAwesome
-          name={statusIcon[status]}
-          style={{lineHeight: avatarSize}}
-        />
-      </button>
-    );
-  };
 
-  const avatarImage = showByTeam ? team.avatar : owner.avatar;
-  const avatarName = showByTeam ? team.name : owner.name;
-  const avatarTeamStyles = combineStyles(styles.avatar, styles.avatarTeam);
-  const avatarStyles = showByTeam ? avatarTeamStyles : styles.avatar;
-
-  return (
-    <div className={combineStyles(styles.root, styles[status])}>
-      {/* card main */}
-      <div className={styles.timestamp}>
-        {timestamp}
-      </div>
-      <Textarea className={styles.description} defaultValue={description} />
-      {/* card footer */}
-      <div className={styles.footer}>
-        <div className={styles.avatarBlock}>
-          <img alt={avatarName} className={avatarStyles} src={avatarImage} />
-          <div className={styles.name}>{avatarName}</div>
-        </div>
-        <div className={styles.statusBlock}>
-          <div className={styles.statusButton}>
-            {makeStatusButton()}
-          </div>
-          {isArchived &&
-            <div>TODO: Style archived</div>
+    const handleCardUpdate = (submittedData) => {
+      const submittedContent = submittedData[projectId];
+      if (submittedContent !== content) {
+        const options = {
+          variables: {
+            updatedTask: {
+              id: projectId,
+              content: submittedContent
+            }
           }
-        </div>
+        };
+        cashay.mutate('updateTask', options);
+      }
+    };
+
+    return (
+      <div className={rootStyles}>
+        {/* card main */}
+        {hasOpenAssignMenu &&
+          <OutcomeCardAssignMenu
+            currentOwner={owner}
+            projectId={projectId}
+            teamMembers={teamMembers}
+            onComplete={() => this.toggleAssignMenu(OPEN_CONTENT_MENU)}
+          />
+        }
+        {hasOpenStatusMenu &&
+          <OutcomeCardStatusMenu
+            isArchived={isArchived}
+            projectId={projectId}
+            status={status}
+          />
+        }
+        {!hasOpenAssignMenu && !hasOpenStatusMenu &&
+          <div className={styles.body}>
+            <form>
+              <Field
+                showByTeam={showByTeam}
+                name={projectId}
+                component={OutcomeCardTextarea}
+                editingMe={editingMe}
+                teamMemberId={teamMemberId}
+                teamMembers={teamMembers}
+                isProject={isProject}
+                handleActive={handleCardActive}
+                handleSubmit={handleSubmit(handleCardUpdate)}
+                timestamp={fromNow(updatedAt)}
+              />
+            </form>
+          </div>
+        }
+        {/* card footer */}
+        <OutcomeCardFooter
+          hasOpenAssignMenu={hasOpenAssignMenu}
+          hasOpenStatusMenu={hasOpenStatusMenu}
+          toggleAssignMenu={() => this.toggleAssignMenu()}
+          toggleStatusMenu={() => this.toggleStatusMenu()}
+          {...this.props}
+        />
       </div>
-    </div>
-  );
-};
+    );
+  }
+}
 
 OutcomeCard.propTypes = {
-  description: PropTypes.string,
-  status: PropTypes.oneOf([
-    'active',
-    'stuck',
-    'done',
-    'future'
-  ]),
-  openStatusMenu: PropTypes.func,
+  content: PropTypes.string,
+  dispatch: PropTypes.func.isRequired,
+  editing: PropTypes.object,
+  status: PropTypes.oneOf(labels.projectStatus.slugs),
+  hasOpenAssignMenu: PropTypes.bool,
+  hasOpenStatusMenu: PropTypes.bool,
   isArchived: PropTypes.bool,
   isProject: PropTypes.bool,
   owner: PropTypes.object,
-  team: PropTypes.object,
-  timestamp: PropTypes.string,
-  showByTeam: PropTypes.bool
+  teamId: PropTypes.string,
+  teamMemberId: PropTypes.string,
+  teamMembers: PropTypes.array,
+  showByTeam: PropTypes.bool,
+  updatedAt: PropTypes.instanceOf(Date),
+  projectId: PropTypes.string,
+  handleSubmit: PropTypes.func,
+  form: PropTypes.string
 };
 
 OutcomeCard.defaultProps = {
-  description: 'Parabol website updated',
-  status: 'done',
-  openStatusMenu() {
-    console.log('openStatusMenu');
-  },
+  status: labels.projectStatus.active.slug,
+  hasOpenAssignMenu: false,
+  hasOpenStatusMenu: false,
   isArchived: false,
   isProject: true,
   owner: {
-    name: 'Taya Mueller',
-    avatar: TayaAvatar
+    preferredName: 'Taya Mueller',
+    picture: TayaAvatar
   },
   team: {
-    name: 'Engineering',
-    avatar: 'https://placekitten.com/g/24/24'
+    preferredName: 'Engineering',
+    picture: 'https://placekitten.com/g/24/24'
   },
-  timestamp: '1 day ago',
   showByTeam: false
 };
 
@@ -115,126 +215,26 @@ styles = StyleSheet.create({
     backgroundColor: '#fff',
     border: `1px solid ${theme.palette.mid30l}`,
     borderRadius: '.5rem',
-    borderTop: `.25rem solid ${theme.palette.dark10d}`,
+    borderTop: `.25rem solid ${theme.palette.mid}`,
     maxWidth: '20rem',
     width: '100%'
   },
 
-  timestamp: {
-    color: theme.palette.dark,
-    fontSize: theme.typography.s1,
-    fontWeight: 700,
-    padding: '.5rem',
-    textAlign: 'right'
+  cardBlock: {
+    marginBottom: '1rem',
+    width: '100%'
   },
 
-  description: {
-    border: 0,
-    borderTop: '1px solid transparent',
-    color: theme.palette.dark10d,
-    display: 'block',
-    fontFamily: theme.typography.sansSerif,
-    fontSize: theme.typography.s3,
-    minHeight: '3.125rem',
-    padding: '.5rem .5rem 1rem',
-    resize: 'none',
-    width: '100%',
-
-    ':focus': {
-      backgroundColor: theme.palette.cool10l,
-      borderTopColor: 'currentColor',
-      color: theme.palette.cool,
-      outline: 'none'
-    },
-    ':active': {
-      backgroundColor: theme.palette.cool10l,
-      borderTopColor: 'currentColor',
-      color: theme.palette.cool,
-      outline: 'none'
-    }
+  body: {
+    // TODO: set minHeight? (TA)
+    width: '100%'
   },
 
-  footer: {
-    borderTop: `1px solid ${theme.palette.mid30l}`,
-    display: 'flex !important',
-    padding: '.5rem'
+  isAction: {
+    backgroundColor: theme.palette.light50l
   },
 
-  avatarBlock: {
-    alignSelf: 'flex-start',
-    flex: 1,
-    fontSize: 0
-  },
+  // Status theme colors
 
-  avatar: {
-    borderRadius: avatarSize,
-    boxShadow: '0 0 1px 1px rgba(0, 0, 0, .2)',
-    display: 'inline-block',
-    height: avatarSize,
-    marginRight: '.375rem',
-    verticalAlign: 'top',
-    width: avatarSize
-  },
-
-  avatarTeam: {
-    borderRadius: '.125rem'
-  },
-
-  name: {
-    color: theme.palette.dark,
-    display: 'inline-block',
-    fontSize: theme.typography.s2,
-    fontWeight: 700,
-    lineHeight: avatarSize,
-    verticalAlign: 'top'
-  },
-
-  statusBlock: {
-    alignSelf: 'flex-end'
-  },
-
-  statusButton: {
-    backgroundColor: theme.palette.mid10l,
-    border: 0,
-    borderRadius: '.5rem',
-    cursor: 'pointer',
-    fontSize: theme.typography.s3,
-    fontWeight: 700,
-    height: avatarSize,
-    lineHeight: avatarSize,
-    margin: 0,
-    outline: 'none',
-    padding: 0,
-    textAlign: 'center',
-    width: avatarSize,
-
-    ':focus': {
-      boxShadow: '0 0 2px 2px rgba(9, 141, 143, .5)'
-    }
-  },
-
-  // Status theme decorators
-  // Note: Can share color properties
-
-  active: {
-    borderTopColor: theme.palette.cool,
-    color: theme.palette.cool
-  },
-
-  stuck: {
-    borderTopColor: theme.palette.warm,
-    color: theme.palette.warm
-  },
-
-  done: {
-    borderTopColor: theme.palette.dark10d,
-    color: theme.palette.dark10d
-  },
-
-  future: {
-    borderTopColor: theme.palette.mid,
-    color: theme.palette.mid
-  }
+  ...projectStatusStyles('borderTopColor')
 });
-
-export default look(OutcomeCard);

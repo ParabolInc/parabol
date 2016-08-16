@@ -8,10 +8,10 @@ import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/Me
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import Sidebar from 'universal/modules/team/components/Sidebar/Sidebar';
 import {withRouter} from 'react-router';
-import {createMembers} from 'universal/modules/meeting/ducks/meetingDuck';
+import {createMembers, reset as resetDuck} from 'universal/modules/meeting/ducks/meetingDuck';
 import getLocalPhase from 'universal/modules/meeting/helpers/getLocalPhase';
 import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
-import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
+import AvatarGroup from 'universal/modules/meeting/components/AvatarGroup/AvatarGroup';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import {
@@ -22,9 +22,9 @@ import {
 const mapStateToProps = (state, props) => {
   const variables = {teamId: props.params.teamId};
   return {
-    teamSub: cashay.subscribe(teamSubString, subscriber, {component: 'Meeting::teamSub', variables}),
-    memberSub: cashay.subscribe(teamMembersSubString, subscriber, {component: 'Meeting::memberSub', variables}),
-    members: state.meeting.members
+    members: state.meeting.members,
+    memberSub: cashay.subscribe(teamMembersSubString, subscriber, {op: 'memberSub', variables}),
+    teamSub: cashay.subscribe(teamSubString, subscriber, {op: 'teamSub', variables})
   };
 };
 
@@ -83,6 +83,11 @@ export default class MeetingContainer extends Component {
     }
   }
 
+  componentWillUnmount() {
+    const {dispatch} = this.props;
+    dispatch(resetDuck());
+  }
+
   render() {
     const {children, dispatch, location, members, params, teamSub} = this.props;
     const {teamId, localPhaseItem} = params;
@@ -96,7 +101,6 @@ export default class MeetingContainer extends Component {
     if (!teamName || !members.length) {
       return <LoadingView />;
     }
-    // debugger
     const localPhase = getLocalPhase(location.pathname, teamId);
     // declare if this user is the facilitator
 

@@ -2,6 +2,8 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 // import FontAwesome from 'react-fontawesome';
 import PushButton from '../PushButton/PushButton';
+import Ellipsis from '../Ellipsis/Ellipsis';
+import Type from '../Type/Type';
 import theme from 'universal/styles/theme';
 
 const combineStyles = StyleSheet.combineStyles;
@@ -15,9 +17,9 @@ const labelStyles = {
 let s = {};
 
 const CreateCard = props => {
-  const {hasControls} = props;
-  const cardHasControlsStyles = combineStyles(s.root, s.rootHasControls);
-  const cardStyles = hasControls ? cardHasControlsStyles : s.root;
+  let cardStyles = s.root;
+  const {createdBy, hasControls, isCreating, isProject} = props;
+  const cardBorderVariantStyles = combineStyles(s.root, s.rootBorderVariant);
 
   const actionLabel = () =>
     <span className={s.label}>
@@ -42,6 +44,12 @@ const CreateCard = props => {
       </span>
     </span>;
 
+  const trimmedName = createdBy.replace(/\s+/g, '');
+
+  if (hasControls || isCreating) {
+    cardStyles = cardBorderVariantStyles;
+  }
+
   return (
     <div className={cardStyles}>
       {hasControls &&
@@ -51,16 +59,27 @@ const CreateCard = props => {
           <PushButton keystroke="n" label={nextRequestLabel()} size="default" />
         </div>
       }
+      {isCreating &&
+        <Type align="center" bold scale="s3" theme="mid">
+          @{trimmedName}<br />is adding {isProject ? 'a Project' : 'an Action'}<Ellipsis />
+        </Type>
+      }
     </div>
   );
 };
 
 CreateCard.propTypes = {
-  hasControls: PropTypes.bool
+  createdBy: PropTypes.string,
+  hasControls: PropTypes.bool,
+  isCreating: PropTypes.bool,
+  isProject: PropTypes.bool
 };
 
 CreateCard.defaultProps = {
-  hasControls: false
+  createdBy: 'Taya Mueller',
+  hasControls: false,
+  isCreating: false,
+  isProject: false
 };
 
 s = StyleSheet.create({
@@ -71,13 +90,14 @@ s = StyleSheet.create({
     borderRadius: '.5rem',
     borderTop: `.25rem solid ${theme.palette.mid40l}`,
     display: 'flex !important',
+    justifyContent: 'center',
     maxWidth: '20rem',
     minHeight: '126px',
     padding: '.5rem 1.25rem',
     width: '100%'
   },
 
-  rootHasControls: {
+  rootBorderVariant: {
     borderTopColor: theme.palette.mid
   },
 

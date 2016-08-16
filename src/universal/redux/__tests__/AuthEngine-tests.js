@@ -1,10 +1,11 @@
 import test from 'ava';
 import {createStore, combineReducers} from 'redux';
-import authToken from '../authDuck';
+import auth from '../authDuck';
 import ReduxAuthEngine from '../AuthEngine';
+import {testToken, testTokenData} from './testTokens';
 
 const REDUCER_NAME = 'marvin'; // use a different key than default for testing
-const reducers = combineReducers({[REDUCER_NAME]: authToken});
+const reducers = combineReducers({[REDUCER_NAME]: auth});
 const store = createStore(reducers, {});
 
 test('constructor stores store', t => {
@@ -17,12 +18,20 @@ test('saveToken saves token', t => {
 
   const cb = (unused, token) => {
     t.is(unused, null);
-    t.is(token, 42);
+    t.is(token, testToken);
   };
 
   const rae = new ReduxAuthEngine(store, REDUCER_NAME);
-  rae.saveToken('aName', 42, null, cb);
-  t.deepEqual(rae.store.getState(), {[REDUCER_NAME]: 42});
+  rae.saveToken('aName', testToken, null, cb);
+  t.deepEqual(
+    rae.store.getState(),
+    {
+      [REDUCER_NAME]: {
+        obj: testTokenData,
+        token: testToken
+      }
+    }
+  );
 });
 
 test('removeToken removes token', t => {
@@ -30,13 +39,27 @@ test('removeToken removes token', t => {
 
   const cb = (unused, token) => {
     t.is(unused, null);
-    t.is(token, 43);
+    t.is(token, testToken);
   };
 
   const rae = new ReduxAuthEngine(store, REDUCER_NAME);
-  rae.saveToken('aName', 43);
+  rae.saveToken('aName', testToken);
   rae.removeToken('aName', cb);
-  t.deepEqual(rae.store.getState(), {[REDUCER_NAME]: null});
+  t.deepEqual(
+    rae.store.getState(),
+    {
+      [REDUCER_NAME]: {
+        token: null,
+        obj: {
+          aud: null,
+          exp: null,
+          iat: null,
+          iss: null,
+          sub: null
+        }
+      }
+    }
+  );
 });
 
 test('loadToken callsback with token', t => {
@@ -44,10 +67,10 @@ test('loadToken callsback with token', t => {
 
   const cb = (unused, token) => {
     t.is(unused, null);
-    t.is(token, 5649);
+    t.is(token, testToken);
   };
 
   const rae = new ReduxAuthEngine(store, REDUCER_NAME);
-  rae.saveToken('aName', 5649);
+  rae.saveToken('aName', testToken);
   rae.loadToken('aName', cb);
 });

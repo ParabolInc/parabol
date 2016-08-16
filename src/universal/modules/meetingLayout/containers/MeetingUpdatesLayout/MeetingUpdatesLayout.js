@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 
 import Avatar from 'universal/components/Avatar/Avatar';
-import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
+import AvatarGroup from '../../../meeting/components/AvatarGroup/AvatarGroup';
 import Columns from 'universal/components/Columns/Columns';
 import IconLink from 'universal/components/IconLink/IconLink';
 import ShortcutsMenu from 'universal/modules/team/components/ShortcutsMenu/ShortcutsMenu';
@@ -91,7 +91,7 @@ const MeetingUpdatesLayout = (props) => {
             <div className={s.nav}>
               <div className={s.linkSpacer}>{' '}</div>
               <div className={s.avatar}>
-                <Avatar hasLabel image={Taya} name="Taya Mueller" labelRight size="medium" />
+                <Avatar hasLabel image={Taya} name="Taya Mueller" labelRight size="large" />
               </div>
               <div className={s.linkSpacer}>
                 <IconLink icon="arrow-circle-right" iconPlacement="right" label="Next team member" />

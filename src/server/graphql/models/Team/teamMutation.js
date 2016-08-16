@@ -1,5 +1,5 @@
 import r from 'server/database/rethinkDriver';
-import {requireSUOrTeamMember, requireSUOrSelf, requireWebsocket} from '../authorization';
+import {getUserId, requireAuth, requireSUOrTeamMember, requireWebsocket} from '../authorization';
 import {updatedOrOriginal, errorObj} from '../utils';
 import {
   GraphQLNonNull,
@@ -11,8 +11,36 @@ import {CreateTeamInput, UpdateTeamInput, Team} from './teamSchema';
 import shuffle from 'universal/utils/shuffle';
 import shortid from 'shortid';
 import {CHECKIN, LOBBY, UPDATES, AGENDA} from 'universal/utils/constants';
+import {auth0ManagementClient} from 'server/utils/auth0Helpers';
+import tmsSignToken from 'server/graphql/models/tmsSignToken';
 
 export default {
+  endMeeting: {
+    type: GraphQLBoolean,
+    description: 'Successfully end the meeting',
+    args: {
+      teamId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The teamId to make sure the socket calling has permission'
+      }
+    },
+    // eslint-disable-next-line no-unused-vars
+    async resolve(source, {teamId}, {authToken, socket}) {
+      // TODO & remove above eslint pragma
+      const teamMembers = await r.table('TeamMember').getAll(teamId, {index: 'teamId'}).pluck('id');
+    // eslint-disable-next-line no-unused-vars
+      const dbPromises = teamMembers.map((member, idx) => {
+        // TODO & remove above eslint pragma
+        return r.table('TeamMember').get(member.id).update({
+          checkInOrder: idx,
+          isCheckedIn: null
+        });
+      });
+
+      const FOO = await r.table('TeamMember').getAll(teamId, {index: 'teamId'}).pluck('id');
+      shuffle(FOO);
+    }
+  },
   moveMeeting: {
     type: GraphQLBoolean,
     description: 'Update the facilitator. If this is new territory for the meetingPhaseItem, advance that, too.',
@@ -32,14 +60,13 @@ export default {
       }
     },
     async resolve(source, {teamId, nextPhase, nextPhaseItem = '0'}, {authToken, socket}) {
+      requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
-      const dbHits = [
-        requireSUOrTeamMember(authToken, teamId),
-        r.table('Team').get(teamId)
-      ];
-      const [teamMember, team] = await Promise.all(dbHits);
+      const team = await r.table('Team').get(teamId);
+      const userId = getUserId(authToken);
+      const teamMemberId = `${userId}::${teamId}`;
       const {activeFacilitator, facilitatorPhase, meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = team;
-      if (activeFacilitator !== teamMember.id) {
+      if (activeFacilitator !== teamMemberId) {
         throw errorObj({_error: 'Only the facilitator can advance the meeting'});
       }
       const isSynced = facilitatorPhase === meetingPhase && facilitatorPhaseItem === meetingPhaseItem;
@@ -74,41 +101,31 @@ export default {
     type: GraphQLBoolean,
     description: 'Start a meeting from the lobby',
     args: {
-      teamId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The team that will be having the meeting'
-      },
       facilitatorId: {
         type: new GraphQLNonNull(GraphQLID),
         description: 'The facilitator teamMemberId for this meeting'
       }
     },
-    async resolve(source, {teamId, facilitatorId}, {authToken, socket}) {
-      await requireSUOrTeamMember(authToken, teamId);
+    async resolve(source, {facilitatorId}, {authToken, socket}) {
+      // facilitatorId is of format 'userId::teamId'
+      const [, teamId] = facilitatorId.split('::');
+      requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
       const facilitatorMembership = await r.table('TeamMember').get(facilitatorId);
-      if (facilitatorMembership.teamId !== teamId || !facilitatorMembership.isActive) {
+      if (!facilitatorMembership || !facilitatorMembership.isActive) {
         throw errorObj({_error: 'facilitator is not active on that team'});
       }
-      const teamMembers = await r.table('TeamMember').getAll(teamId, {index: 'teamId'}).pluck('id');
-      shuffle(teamMembers);
 
+      const meetingId = `${teamId}::${shortid.generate()}`;
       const updatedTeam = {
-        meetingId: shortid.generate(),
+        meetingId,
         activeFacilitator: facilitatorId,
         facilitatorPhase: CHECKIN,
-        facilitatorPhaseItem: '0',
+        facilitatorPhaseItem: 0,
         meetingPhase: CHECKIN,
-        meetingPhaseItem: '0'
+        meetingPhaseItem: 0
       };
-      const dbPromises = teamMembers.map((member, idx) => {
-        return r.table('TeamMember').get(member.id).update({
-          checkInOrder: idx,
-          isCheckedIn: null
-        });
-      });
-      dbPromises.push(r.table('Team').get(teamId).update(updatedTeam));
-      await Promise.all(dbPromises);
+      await r.table('Team').get(teamId).update(updatedTeam);
       return true;
     }
   },
@@ -122,7 +139,7 @@ export default {
       }
     },
     async resolve(source, {teamId}, {authToken, socket}) {
-      await requireSUOrTeamMember(authToken, teamId);
+      requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
       await r.table('Team').get(teamId).update({
         facilitatorPhase: LOBBY,
@@ -136,7 +153,8 @@ export default {
     }
   },
   createTeam: {
-    type: GraphQLBoolean,
+    // return the new JWT that has the new tms field
+    type: GraphQLID,
     description: 'Create a new team and add the first team member',
     args: {
       newTeam: {
@@ -145,14 +163,15 @@ export default {
       }
     },
     async resolve(source, {newTeam}, {authToken}) {
-      // require userId in the input so an admin can also create a team
-      const {leader, ...team} = newTeam;
-      const userId = leader.userId;
-      requireSUOrSelf(authToken, userId);
-      // can't trust the client
-      const verifiedLeader = {...leader, isActive: true, isLead: true, isFacilitator: true, checkInOrder: 0};
+      const userId = requireAuth(authToken);
+      if (newTeam.id.length > 10 || newTeam.id.indexOf('::') !== -1) {
+        throw errorObj({_error: 'Bad id'});
+      }
+      const teamMemberId = `${userId}::${newTeam.id}`;
+
+      const verifiedLeader = {id: teamMemberId, isActive: true, isLead: true, isFacilitator: true, checkInOrder: 0};
       const verifiedTeam = {
-        ...team,
+        ...newTeam,
         facilitatorPhase: LOBBY,
         meetingPhase: LOBBY,
         meetingId: null,
@@ -160,14 +179,16 @@ export default {
         meetingPhaseItem: null,
         activeFacilitator: null
       };
+      const oldtms = authToken.tms || [];
+      const tms = oldtms.concat(newTeam.id);
       const dbPromises = [
         r.table('TeamMember').insert(verifiedLeader),
         r.table('Team').insert(verifiedTeam),
-        r.table('User').get(userId).update({isNew: false})
+        auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
       ];
       await Promise.all(dbPromises);
+      return tmsSignToken(authToken, tms);
       // TODO: trigger welcome email
-      return true;
     }
   },
   updateTeamName: {
@@ -180,12 +201,8 @@ export default {
     },
     async resolve(source, {updatedTeam}, {authToken}) {
       const {id, name} = updatedTeam;
-      await requireSUOrTeamMember(authToken, id);
-      const teamFromDB = await r.table('Team').get(id).update({
-        name
-      }, {returnChanges: true});
-      // TODO this mutation throws an error, but we don't have a use for it in the app yet
-      console.log(teamFromDB);
+      requireSUOrTeamMember(authToken, id);
+      const teamFromDB = await r.table('Team').get(id).update({name}, {returnChanges: true});
       // TODO think hard about if we can pluck only the changed values (in this case, name)
       return updatedOrOriginal(teamFromDB, updatedTeam);
     }

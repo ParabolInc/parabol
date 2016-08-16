@@ -4,8 +4,10 @@ import {textOverflow} from 'universal/styles/helpers';
 import theme from 'universal/styles/theme';
 import FontAwesome from 'react-fontawesome';
 import {Link} from 'react-router';
+import Avatar from 'universal/components/Avatar/Avatar';
 
 let styles = {};
+const maxWidth = '8.25rem';
 const faStyle = {
   lineHeight: 'inherit',
   color: 'white'
@@ -15,7 +17,7 @@ function StandardHub(props) {
   const {picture, preferredName, email} = props;
   return (
     <div className={styles.root}>
-      <img alt="Me" className={styles.avatar} src={picture}/>
+      <Avatar hasBadge={false} picture={picture} size="small" />
       <div className={styles.info}>
         <div className={styles.name}>{preferredName}</div>
         <div className={styles.email}>{email}</div>
@@ -23,7 +25,7 @@ function StandardHub(props) {
       <div className={styles.settings}>
         <div className={styles.settingsIcon} title="My Settings">
           <Link to="/me/settings">
-            <FontAwesome name="cog" style={faStyle}/>
+            <FontAwesome name="cog" style={faStyle} />
           </Link>
 
         </div>
@@ -41,12 +43,6 @@ styles = StyleSheet.create({
     width: '100%'
   },
 
-  avatar: {
-    borderRadius: '100%',
-    height: '2.75rem',
-    width: '2.75rem'
-  },
-
   info: {
     alignItems: 'flex-start',
     display: 'flex',
@@ -61,14 +57,16 @@ styles = StyleSheet.create({
     fontSize: theme.typography.sBase,
     fontWeight: 700,
     lineHeight: '1.375rem',
-    maxWidth: '132px',
+    maxWidth,
     paddingTop: '.125rem'
   },
 
   email: {
+    ...textOverflow,
     fontSize: theme.typography.s2,
     lineHeight: theme.typography.sBase,
-    marginTop: '.125rem'
+    marginTop: '.125rem',
+    maxWidth
   },
 
   settings: {

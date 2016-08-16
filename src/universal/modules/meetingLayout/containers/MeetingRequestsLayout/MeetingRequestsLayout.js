@@ -4,7 +4,7 @@ import theme from 'universal/styles/theme';
 import {srOnly} from 'universal/styles/helpers';
 
 import Avatar from 'universal/components/Avatar/Avatar';
-import AvatarGroup from 'universal/components/AvatarGroup/AvatarGroup';
+import AvatarGroup from '../../../meeting/components/AvatarGroup/AvatarGroup';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
 import IconLink from 'universal/components/IconLink/IconLink';
 import ShortcutsToggle from 'universal/modules/team/components/ShortcutsToggle/ShortcutsToggle';
@@ -101,7 +101,7 @@ const MeetingRequestsLayout = (props) => {
             <div className={s.nav}>
               <div className={s.linkSpacer}>{' '}</div>
               <div className={s.avatar}>
-                <Avatar picture={Taya} size="medium" />
+                <Avatar picture={Taya} size="large" />
                 <div className={s.requestLabel}>
                   “{'S.P.A.'}”
                 </div>

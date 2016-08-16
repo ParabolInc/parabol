@@ -6,18 +6,20 @@ import {withRouter} from 'react-router';
 
 const mapStateToProps = state => {
   return {
-    authToken: state.authToken,
+    auth: state.auth.obj,
     user: cashay.query(getAuthQueryString, authedOptions).data.user
   };
 };
 
 export default ComposedComponent => {
   const TokenizedComp = (props) => {
-    const {authToken, user, router} = props;
-    if (authToken && user) {
-      if (user.isNew === true) {
+    const {auth, user, router} = props;
+    if (auth.sub && user) {
+      // note if you join a team & leave it, tms will be an empty array
+      const isNew = !auth.hasOwnProperty('tms');
+      if (isNew) {
         router.push('/welcome');
-      } else if (user.isNew === false) {
+      } else {
         router.push('/me');
       }
     }
@@ -25,11 +27,10 @@ export default ComposedComponent => {
   };
 
   TokenizedComp.propTypes = {
-    authToken: PropTypes.string,
+    auth: PropTypes.object,
     user: PropTypes.shape({
       email: PropTypes.string,
       id: PropTypes.string,
-      isNew: PropTypes.bool,
       picture: PropTypes.string,
       preferredName: PropTypes.string
     }),

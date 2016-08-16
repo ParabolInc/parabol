@@ -1,16 +1,27 @@
 import {combineReducers} from 'redux';
 import {cashayReducer} from 'cashay';
 import notifications from 'universal/modules/notifications/ducks/notifications';
-import {reducer as formReducer} from 'redux-form';
-import authToken from './authDuck';
+import {reducer as formReducer, actionTypes} from 'redux-form';
+import auth from './authDuck';
+import editing from './editingDuck';
 import {reducer as storageReducer} from 'redux-storage-whitelist-fn';
 import storageMerger from 'universal/redux/storageMerger';
 import makeRootReducer from 'universal/redux/rootDuck';
 
+const {SET_SUBMIT_SUCCEEDED} = actionTypes;
+
+const formPlugin = {
+  agendaInput: (state, action) => {
+    //
+    return (action.type === SET_SUBMIT_SUCCEEDED) ? undefined : state;
+  }
+};
+
 const appReducers = {
-  authToken,
+  auth,
   cashay: cashayReducer,
-  form: formReducer,
+  editing,
+  form: formReducer.plugin(formPlugin),
   notifications
 };
 

@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
-import FontAwesome from 'react-fontawesome';
+// import FontAwesome from 'react-fontawesome';
 import {Link} from 'react-router';
 
 let styles = {};
@@ -12,42 +12,46 @@ const inlineBlock = {
   verticalAlign: 'top'
 };
 
-const faHourglassStyle = {
-  fontSize: '14px',
-  lineHeight: 'inherit',
-  marginRight: '.25rem'
-};
+// const faHourglassStyle = {
+//   fontSize: '14px',
+//   lineHeight: 'inherit',
+//   marginRight: '.25rem'
+// };
+//
+// <div className={styles.timestamp}>
+//   <FontAwesome
+//     name="hourglass-end"
+//     style={faHourglassStyle}
+//   /> {"12:32"} remaining
+// </div>
 
 const NotificationBar = (props) => {
-  const {
-    link,
-    linkLabel,
-    message,
-    timestamp
-  } = props.notification;
-
+  const {activeMeetings} = props;
   return (
     <div className={styles.bar}>
-      <div className={styles.timestamp}>
-        <FontAwesome
-          name="hourglass-end"
-          style={faHourglassStyle}
-        /> {timestamp} remaining
-      </div>
       <div className={styles.message}>
-        {message}
+        {'You\'ve got meeting:'}
       </div>
       <div className={styles.inlineBlock}>
-        <Link className={styles.link} title={linkLabel} to={link}>
-          {linkLabel}
-        </Link>
+        {activeMeetings.map(meeting => {
+          return (
+            <Link key={meeting.link} className={styles.link} title="Join Active Meeting" to={meeting.link}>
+              {meeting.name}
+            </Link>
+          );
+        })}
+
       </div>
     </div>
   );
 };
 
+
 NotificationBar.propTypes = {
-  notification: PropTypes.object
+  activeMeetings: PropTypes.arrayOf({
+    link: PropTypes.string,
+    name: PropTypes.string
+  })
 };
 
 styles = StyleSheet.create({
@@ -93,3 +97,4 @@ styles = StyleSheet.create({
 });
 
 export default look(NotificationBar);
+

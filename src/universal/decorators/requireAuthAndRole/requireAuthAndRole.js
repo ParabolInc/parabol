@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from 'react';
-import jwtDecode from 'jwt-decode';
 import {showError} from 'universal/modules/notifications/ducks/notifications';
 import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
 import {cashay} from 'cashay';
@@ -19,7 +18,7 @@ const unauthenticated = {
 const mapStateToProps = state => {
   const user = cashay.query(getAuthQueryString, authedOptions).data.user;
   return {
-    authToken: state.authToken,
+    auth: state.auth.obj,
     user
   };
 };
@@ -29,25 +28,24 @@ export default role => ComposedComponent => {
   @withRouter
   class RequiredAuthAndRole extends Component {
     static propTypes = {
-      authToken: PropTypes.string,
+      auth: PropTypes.object,
       user: PropTypes.object,
       dispatch: PropTypes.func,
       router: PropTypes.object
     };
 
     render() {
-      const {authToken, dispatch, router} = this.props;
-      if (authToken === undefined) {
+      const {auth, dispatch, router} = this.props;
+      if (auth === undefined) {
         throw new Error('Auth token undefined. Did you put @connect on your component?');
       }
-      const authObj = authToken && jwtDecode(authToken);
       if (role) {
-        if (authObj && authObj.rol === role) {
+        if (auth.sub && auth.rol === role) {
           // We had a role to check, and role checks out:
           return <ComposedComponent {...this.props} />;
         }
         dispatch(showError(unauthorized));
-      } else if (authObj) {
+      } else if (auth.sub) {
         // We were looking for any authenticated user only:
         return <ComposedComponent {...this.props} />;
       } else {

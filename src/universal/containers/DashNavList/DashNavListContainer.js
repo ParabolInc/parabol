@@ -20,14 +20,14 @@ query {
 const mutationHandlers = {
   acceptInvitation(optimisticVariables, queryResponse, currentResponse) {
     if (queryResponse) {
-      currentResponse.user.memberships.push(queryResponse);
+      currentResponse.user.memberships.push(queryResponse.teamMember);
     }
     return undefined;
   }
 };
 
 const queryOptions = {
-  component: 'DashNavList',
+  op: 'DashNavList',
   mutationHandlers
 };
 

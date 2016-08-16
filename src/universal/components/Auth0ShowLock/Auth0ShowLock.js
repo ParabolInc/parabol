@@ -11,7 +11,7 @@ export function showLock(dispatch) {
   const lock = new Auth0Lock(clientId, account);
   lock.show({
     authParams: {
-      scope: 'openid rol'
+      scope: 'openid rol tms'
     }
   }, async(error, profile, authToken) => {
     if (error) throw error;

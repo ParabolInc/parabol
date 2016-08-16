@@ -2,28 +2,24 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import FontAwesome from 'react-fontawesome';
 import theme from 'universal/styles/theme';
+import labels from 'universal/styles/theme/labels';
 
 const combineStyles = StyleSheet.combineStyles;
 
-const colors = {
-  active: theme.palette.dark10d,
-  stuck: theme.palette.warm,
-  done: theme.palette.cool,
-  future: theme.palette.mid,
-  archive: theme.palette.dark
-};
-
 let styles = {};
+const valueArray = labels.projectStatus.slugs.slice(0);
 
 const ProjectStatusMenuItem = props => {
-  const {children, icon, isCurrent, onClick, value} = props;
+  const {icon, isCurrent, label, onClick, value} = props;
+
+  const labelColor = value === 'archive' ? labels.archive.color : labels.projectStatus[value].color;
 
   const color = {
-    color: colors[value]
+    color: labelColor
   };
 
   const backgroundColor = {
-    backgroundColor: colors[value]
+    backgroundColor: labelColor
   };
 
   const rootStyles = isCurrent ? combineStyles(styles.root, styles.current) : styles.root;
@@ -39,30 +35,29 @@ const ProjectStatusMenuItem = props => {
         <FontAwesome name={icon} style={{lineHeight: 'inherit'}} />
       </div>
       <div className={styles.label} style={color}>
-        {children}
+        {label}
       </div>
     </a>
   );
 };
 
+valueArray.push('archive');
+
 ProjectStatusMenuItem.propTypes = {
-  children: PropTypes.any,
   icon: PropTypes.string,
   isCurrent: PropTypes.bool,
+  label: PropTypes.any,
   onClick: PropTypes.func,
-  value: PropTypes.oneOf([
-    'active',
-    'stuck',
-    'done',
-    'future',
-    'archive'
-  ])
+  value: PropTypes.oneOf(valueArray)
 };
 
 ProjectStatusMenuItem.defaultProps = {
-  icon: 'arrow-right',
+  icon: labels.projectStatus.active.icon,
   isCurrent: false,
-  value: 'active'
+  onClick() {
+    console.log('ProjectStatusMenuItem.onClick');
+  },
+  value: labels.projectStatus.active.slug
 };
 
 styles = StyleSheet.create({

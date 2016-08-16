@@ -7,22 +7,25 @@ export default function presenceSubscriber(subscriptionString, variables, handle
   const {channelfy} = subscriptions.find(sub => sub.string === subscriptionString);
   const channelName = channelfy(variables);
   const socket = socketCluster.connect();
-  const {add, remove} = handlers;
+  const {upsert, remove} = handlers;
   socket.subscribe(channelName, {waitForAuth: true});
   socket.watch(channelName, data => {
     if (data.type === SOUNDOFF) {
+      const {editing} = cashay.store.getState();
       const options = {
         variables: {
           teamId: variables.teamId,
-          targetId: data.targetId
+          targetId: data.targetId,
+          editing
         }
       };
       cashay.mutate('present', options);
     }
     if (data.type === PRESENT) {
-      add({
+      upsert({
         id: data.socketId,
-        userId: data.userId
+        userId: data.userId,
+        editing: data.editing
       });
     }
     if (data.type === LEAVE) {

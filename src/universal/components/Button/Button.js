@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import * as appTheme from 'universal/styles/theme';
 import tinycolor from 'tinycolor2';
+import upperFirst from 'universal/utils/upperFirst';
 
 const combineStyles = StyleSheet.combineStyles;
 const { cool, warm, dark, mid, light } = appTheme.palette;
@@ -63,7 +64,7 @@ const Button = props => {
   } = props;
 
   const buttonTitle = title || label;
-  const themeName = theme.charAt(0).toUpperCase() + theme.slice(1);
+  const themeName = upperFirst(theme);
   const styleThemeName = `${style}${themeName}`;
   const buttonOptions = [styles.base, styles[size], styles[styleThemeName]];
 
