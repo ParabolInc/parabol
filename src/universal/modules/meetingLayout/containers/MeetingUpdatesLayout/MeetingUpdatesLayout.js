@@ -97,7 +97,7 @@ const MeetingUpdatesLayout = (props) => {
                 <IconLink icon="arrow-circle-right" iconPlacement="right" label="Next team member" />
               </div>
             </div>
-            <Columns />
+            Outcome Columns
           </div>
           {/* */}
           {/* */}

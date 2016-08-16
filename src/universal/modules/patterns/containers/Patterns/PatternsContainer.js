@@ -4,8 +4,6 @@ import {head} from 'universal/utils/clientOptions';
 
 import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
-import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
-import OutcomeCardAssignMenu from 'universal/components/OutcomeCard/OutcomeCardAssignMenu';
 import Type from 'universal/components/Type/Type';
 
 // import AvatarContainer from './AvatarContainer';
@@ -29,13 +27,6 @@ const PatternsContainer = () =>
 
     <h1>Pattern Library</h1>
 
-    {makeLabel('OutcomeCardAssignMenu')}
-    <OutcomeCardAssignMenu />
-
-    <br />
-    <br />
-    <br />
-
     {makeLabel('CreateCard')}
     <CreateCard />
 
@@ -52,20 +43,6 @@ const PatternsContainer = () =>
 
     {makeLabel('CreateCard createdBy="Marimar Suárez Peñalva" isCreating isProject={false}')}
     <CreateCard createdBy="Marimar Suárez Peñalva" isCreating isProject={false} />
-
-    <br />
-    <br />
-    <br />
-
-    {makeLabel('OutcomeCard hasOpenStatusMenu isArchived status="done"')}
-    <OutcomeCard hasOpenStatusMenu isArchived status="done" />
-
-    <br />
-    <br />
-    <br />
-
-    {makeLabel('OutcomeCard content="Action completed in a day" isProject={false}')}
-    <OutcomeCard content="Action completed in a day" isProject={false} />
 
     <br />
     <br />

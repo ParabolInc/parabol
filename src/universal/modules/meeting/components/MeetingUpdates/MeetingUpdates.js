@@ -35,11 +35,13 @@ const MeetingUpdatesLayout = (props) => {
         {/* */}
         <div className={s.layout}>
           <div className={s.nav}>
-            <IconLink icon="arrow-circle-left" label="Previous team member" />
+            <div className={s.linkSpacer}>{' '}</div>
             <div className={s.avatar}>
               <Avatar {...aTeamMember} hasLabel labelRight size="large" />
             </div>
-            <IconLink icon="arrow-circle-right" iconPlacement="right" label="Next team member" />
+            <div className={s.linkSpacer}>
+              <IconLink icon="arrow-circle-right" iconPlacement="right" label="Next team member" />
+            </div>
           </div>
           <Columns />
         </div>
@@ -67,6 +69,11 @@ s = StyleSheet.create({
   avatar: {
     flex: 1,
     textAlign: 'center'
+  },
+
+  linkSpacer: {
+    textAlign: 'right',
+    width: '9.25rem'
   }
 });
 
