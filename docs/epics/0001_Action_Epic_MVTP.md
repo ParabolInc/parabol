@@ -1,7 +1,7 @@
 
 # Epic: Minimum Viable Testable Product ("MVTP")
 
-In this epic, we'll realize a set of job-stories to enable testing agenda
+In this epic, we'll realize a set of job-stories to enable testing for
 feedback with our most important early stakeholders: the organizational
 development consultant, a manager at a Fortune 500 firm, and a product
 manager at a post-Series A startup.
