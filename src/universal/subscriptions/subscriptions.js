@@ -1,8 +1,28 @@
-import {AGENDA, TEAM, TEAM_MEMBERS, PRESENCE, PROJECTS} from 'universal/subscriptions/constants';
+import {ACTIONS, AGENDA, TEAM, TEAM_MEMBERS, PRESENCE, PROJECTS} from 'universal/subscriptions/constants';
 
 // For now, use an array. In the future, we can make one exclusively for the server that doesn't need to reparse the AST
 const defaultRehydrate = fields => fields;
 export default [
+  {
+    channel: ACTIONS,
+    string: `
+    subscription($userId: ID!) {
+      actions(userId: $userId) {
+        content
+        id
+        status
+        teamMemberId
+        type
+        updatedAt
+        userSort
+      }
+    }`,
+    channelfy: variables => `actions/${variables.teamMemberId}`,
+    rehydrate: fields => {
+      fields.updatedAt = new Date(fields.updatedAt);
+      return fields;
+    }
+  },
   {
     channel: AGENDA,
     string: `
@@ -42,6 +62,8 @@ export default [
         teamMemberId
         type
         updatedAt
+        userSort
+        teamSort
       }
     }`,
     channelfy: variables => `projects/${variables.teamMemberId}`,

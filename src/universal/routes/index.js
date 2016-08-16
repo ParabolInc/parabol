@@ -16,7 +16,7 @@ export default store => ({
     // ...require('./meetingLayoutRoutes'),
     require('./patterns'),
     require('./teamDashboard')(store),
-    require('./userDashboardRoutes')(store),
+    require('./userDashboard')(store),
     require('./welcome')(store),
     // Catch-all:
     require('./notFound')

@@ -85,13 +85,12 @@ export default class OutcomeCard extends Component {
       updatedAt,
       projectId,
       handleSubmit,
+      showByTeam
     } = this.props;
     const normalizedProjectId = `Task::${projectId}`;
-    const editingMe = editing[normalizedProjectId] || [];
-
+    const editingMe = editing && editing[normalizedProjectId] || [];
     const hasOpenStatusMenu = openMenu === OPEN_STATUS_MENU;
     const hasOpenAssignMenu = openMenu === OPEN_ASSIGN_MENU;
-
     let rootStyles;
     const rootStyleOptions = [styles.root, styles.cardBlock];
     if (isProject) {
@@ -147,6 +146,7 @@ export default class OutcomeCard extends Component {
           <div className={styles.body}>
             <form>
               <Field
+                showByTeam={showByTeam}
                 name={projectId}
                 component={OutcomeCardTextarea}
                 editingMe={editingMe}

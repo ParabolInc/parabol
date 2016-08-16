@@ -41,24 +41,23 @@ export default {
         cachedAt: now,
         cacheExpiresAt: new Date(now.valueOf() + ms('30d')),
         // from auth0
-        id: userInfo.user_id,
-        createdAt: new Date(userInfo.created_at),
-        updatedAt: new Date(userInfo.updated_at),
         email: userInfo.email,
         emailVerified: userInfo.email_verified,
+        updatedAt: new Date(userInfo.updated_at),
         picture: userInfo.picture,
+        id: userInfo.user_id,
         name: userInfo.name,
         nickname: userInfo.nickname,
         identities: userInfo.identities || [],
-        loginsCount: userInfo.logins_count,
-        blockedFor: userInfo.blocked_for || []
+        createdAt: new Date(userInfo.created_at),
+        tms: userInfo.tms
       };
       const {id: userId, picture} = auth0User;
       const currentUser = await r.table('User').get(userId);
       let returnedUser;
       if (currentUser) {
         if (currentUser.picture !== picture) {
-          // if the picture we have is not the same as the one that auth0 has, propagate to denormalized refs
+          // if the picture we have is not the same as the one that auth0 has, then invalidate what we have
           // TODO: turn this on before launching beta!
           // await r.table('TeamMember').getAll(userId, {index: 'userId'}).update({picture});
         }
