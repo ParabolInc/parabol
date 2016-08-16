@@ -22,7 +22,10 @@ const TeamProjects = (props) => {
 
 TeamProjects.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  editing: PropTypes.object,
+  editing: PropTypes.shape({
+    current: PropTypes.object.isRequired,
+    focus: PropTypes.string
+  }).isRequired,
   projects: PropTypes.array,
   teamMembers: PropTypes.array,
   teamMemberId: PropTypes.string

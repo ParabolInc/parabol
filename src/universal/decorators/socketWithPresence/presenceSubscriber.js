@@ -11,12 +11,12 @@ export default function presenceSubscriber(subscriptionString, variables, handle
   socket.subscribe(channelName, {waitForAuth: true});
   socket.watch(channelName, data => {
     if (data.type === SOUNDOFF) {
-      const {editing} = cashay.store.getState();
+      const {editing: {current}} = cashay.store.getState();
       const options = {
         variables: {
           teamId: variables.teamId,
           targetId: data.targetId,
-          editing
+          editing: current
         }
       };
       cashay.mutate('present', options);

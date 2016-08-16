@@ -59,10 +59,12 @@ const mapStateToProps = (state, props) => {
   const variables = {teamId: props.params.teamId};
   const memberSub = cashay.subscribe(teamMembersSubString, subscriber, {op: 'memberSub', variables});
   const projectSubs = makeProjectSubs(memberSub.data.teamMembers);
+  const {focus} = state.editing;
   const {tms} = state.auth.obj;
   const teamSubs = makeTeamSubs(tms);
   return {
     memberSub,
+    focus,
     projectSubs,
     teamSubs,
     tms
@@ -72,7 +74,8 @@ const mapStateToProps = (state, props) => {
 const TeamContainer = (props) => {
   const {
     memberSub,
-    presenceSub: {data: {editing}},
+    focus,
+    presenceSub,
     projectSubs,
     teamSubs,
     params: {teamId},
@@ -80,6 +83,10 @@ const TeamContainer = (props) => {
     user,
     dispatch
   } = props;
+  const editing = {
+    current: presenceSub.data.editing,
+    focus,
+  };
   const {team} = teamSubs[teamId].data;
   const {teamMembers} = memberSub.data;
   const projects = [].concat(...projectSubs.map(sub => sub.data.projects));
@@ -105,6 +112,7 @@ TeamContainer.propTypes = {
   }),
   user: PropTypes.object,
   memberSub: PropTypes.object,
+  focus: PropTypes.string,
   presenceSub: PropTypes.object.isRequired,
   projectSubs: PropTypes.array,
   teamSubs: PropTypes.object,

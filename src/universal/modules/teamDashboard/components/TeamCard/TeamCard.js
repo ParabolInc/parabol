@@ -42,7 +42,10 @@ const TeamCard = (props) => {
 
 TeamCard.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  editing: PropTypes.object,
+  editing: PropTypes.shape({
+    current: PropTypes.object.isRequired,
+    focus: PropTypes.string
+  }).isRequired,
   project: PropTypes.shape({
     content: PropTypes.string,
     status: PropTypes.string,

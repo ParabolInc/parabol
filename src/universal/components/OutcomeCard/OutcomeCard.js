@@ -7,7 +7,7 @@ import labels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
 import fromNow from 'universal/utils/fromNow';
-import {editingAdd, editingRemove} from 'universal/redux/editingDuck';
+import {editingSetCurrent, editingClearCurrent, editingClearFocus} from 'universal/redux/editingDuck';
 
 import OutcomeCardTextarea from './OutcomeCardTextarea';
 import OutcomeCardFooter from './OutcomeCardFooter';
@@ -88,7 +88,8 @@ export default class OutcomeCard extends Component {
       showByTeam
     } = this.props;
     const normalizedProjectId = `Task::${projectId}`;
-    const editingMe = editing && editing[normalizedProjectId] || [];
+    const autoFocus = editing.focus === normalizedProjectId;
+    const editingMe = editing.current && editing.current[normalizedProjectId] || [];
     const hasOpenStatusMenu = openMenu === OPEN_STATUS_MENU;
     const hasOpenAssignMenu = openMenu === OPEN_ASSIGN_MENU;
     let rootStyles;
@@ -103,9 +104,9 @@ export default class OutcomeCard extends Component {
     const handleCardActive = (activeState) => {
       if (activeState === undefined) { return; }
       if (activeState) {
-        dispatch(editingAdd(teamId, normalizedProjectId));
+        dispatch(editingSetCurrent(teamId, normalizedProjectId));
       } else {
-        dispatch(editingRemove(teamId, normalizedProjectId));
+        dispatch(editingClearCurrent(teamId));
       }
     };
 
@@ -121,6 +122,9 @@ export default class OutcomeCard extends Component {
           }
         };
         cashay.mutate('updateTask', options);
+        if (autoFocus) {
+          dispatch(editingClearFocus());
+        }
       }
     };
 
@@ -146,16 +150,17 @@ export default class OutcomeCard extends Component {
           <div className={styles.body}>
             <form>
               <Field
-                showByTeam={showByTeam}
                 name={projectId}
+                autoFocus={autoFocus}
                 component={OutcomeCardTextarea}
                 editingMe={editingMe}
+                isProject={isProject}
+                showByTeam={showByTeam}
                 teamMemberId={teamMemberId}
                 teamMembers={teamMembers}
-                isProject={isProject}
+                timestamp={fromNow(updatedAt)}
                 handleActive={handleCardActive}
                 handleSubmit={handleSubmit(handleCardUpdate)}
-                timestamp={fromNow(updatedAt)}
               />
             </form>
           </div>
@@ -176,7 +181,10 @@ export default class OutcomeCard extends Component {
 OutcomeCard.propTypes = {
   content: PropTypes.string,
   dispatch: PropTypes.func.isRequired,
-  editing: PropTypes.object,
+  editing: PropTypes.shape({
+    current: PropTypes.object.isRequired,
+    focus: PropTypes.string
+  }).isRequired,
   status: PropTypes.oneOf(labels.projectStatus.slugs),
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,

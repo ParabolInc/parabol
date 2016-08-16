@@ -1,15 +1,16 @@
 import React, {PropTypes} from 'react';
+import FontAwesome from 'react-fontawesome';
 import look, {StyleSheet} from 'react-look';
+import {cashay} from 'cashay';
+import shortid from 'shortid';
 import theme from 'universal/styles/theme';
 import themeLabels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import TeamCard from 'universal/modules/teamDashboard/components/TeamCard/TeamCard';
 import {ACTIVE, STUCK, DONE, FUTURE, PROJECT} from 'universal/utils/constants';
-import FontAwesome from 'react-fontawesome';
-import {cashay} from 'cashay';
-import shortid from 'shortid';
 import getNextSort from 'universal/utils/getNextSort';
 import upperFirst from 'universal/utils/upperFirst';
+import {editingSetFocus} from 'universal/redux/editingDuck';
 
 const combineStyles = StyleSheet.combineStyles;
 const borderColor = 'rgba(0, 0, 0, .1)';
@@ -28,8 +29,10 @@ const ProjectColumn = (props) => {
   const [, teamId] = teamMemberId.split('::');
   const statusUpperFirst = upperFirst(status);
   const handleAddProject = () => {
+    const projectId = `${teamId}::${shortid.generate()}`;
+    const normalizedProjectId = `Task::${projectId}`;
     const newTask = {
-      id: `${teamId}::${shortid.generate()}`,
+      id: projectId,
       type: PROJECT,
       status,
       teamMemberId,
@@ -38,6 +41,7 @@ const ProjectColumn = (props) => {
       userSort: 0
     };
     cashay.mutate('createTask', {variables: {newTask}});
+    dispatch(editingSetFocus(normalizedProjectId));
   };
   return (
     <div className={styles.column}>
@@ -76,7 +80,10 @@ const ProjectColumn = (props) => {
 
 ProjectColumn.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  editing: PropTypes.object,
+  editing: PropTypes.shape({
+    current: PropTypes.object.isRequired,
+    focus: PropTypes.string
+  }).isRequired,
   projects: PropTypes.array,
   status: PropTypes.string,
   teamMembers: PropTypes.array,

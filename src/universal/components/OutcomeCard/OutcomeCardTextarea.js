@@ -51,6 +51,7 @@ let styles = {};
 @look
 export default class OutcomeCardTextAreaField extends Component {
   static propTypes = {
+    autoFocus: PropTypes.bool,
     editingMe: PropTypes.array.isRequired,
     handleActive: PropTypes.func,
     handleSubmit: PropTypes.func,
@@ -75,6 +76,7 @@ export default class OutcomeCardTextAreaField extends Component {
 
   render() {
     const {
+      autoFocus,
       editingMe,
       handleSubmit,
       input,
@@ -92,7 +94,12 @@ export default class OutcomeCardTextAreaField extends Component {
       input.onBlur();
     };
     let textAreaRef;
-    const setRef = (c) => { textAreaRef = c; };
+    const setRefAndFocus = (c) => {
+      textAreaRef = c;
+      if (c && autoFocus) {
+        c.focus();
+      }
+    };
     const handleKeyUp = (e) => {
       if (e.keyCode === 13 && !e.shiftKey) {
         handleBlur();
@@ -107,7 +114,7 @@ export default class OutcomeCardTextAreaField extends Component {
         </div>
         <textarea
           {...input}
-          ref={setRef}
+          ref={setRefAndFocus}
           className={allClassNames}
           placeholder="Type your project outcome here"
           onBlur={handleBlur}
