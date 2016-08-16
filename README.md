@@ -141,6 +141,7 @@ get involved and how to get compensated.
 
 | Release | Summary                                    |
 |---------|--------------------------------------------|
+| v0.4.1  | Added Me Dash., multiplayer editing states |
 | v0.4.0  | Add Lobby, Check-in, start of Team Dash.   |
 | v0.3.0  | Add Welcome journey, redux-storage         |
 | v0.2.0  | Add first pass at team creation/invitation |
