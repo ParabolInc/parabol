@@ -2,7 +2,7 @@ import {graphql} from 'graphql';
 import Schema from 'server/graphql/rootSchema';
 import subscriptions from 'universal/subscriptions/subscriptions';
 import parseChannel from './parseChannel';
-import {AGENDA, PROJECTS, PRESENCE, TEAM, TEAM_MEMBERS} from 'universal/subscriptions/constants';
+import {ACTIONS, AGENDA, PROJECTS, PRESENCE, TEAM, TEAM_MEMBERS} from 'universal/subscriptions/constants';
 
 /*
  * This is where you add subscription logic
@@ -10,6 +10,7 @@ import {AGENDA, PROJECTS, PRESENCE, TEAM, TEAM_MEMBERS} from 'universal/subscrip
  * By creating this on the server it keeps payloads really small
  * */
 const dechannelfy = {
+  [ACTIONS]: (variableString) => ({userId: variableString}),
   [AGENDA]: (variableString) => ({teamId: variableString}),
   [PRESENCE]: (variableString) => ({teamId: variableString}),
   [PROJECTS]: (variableString) => ({teamMemberId: variableString}),

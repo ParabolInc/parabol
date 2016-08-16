@@ -230,10 +230,10 @@ and going.
 - [ ] When a user receives an invitation to a new team, they will want to
 be able to accept it, so that they can join their teammates.
 
-- [ ] When a TM navigates to their own personal dashboard, they will
+- [X] When a TM navigates to their own personal dashboard, they will
 want to see a list of their projects and actions, so that they can see what
 they are responsible for.
 
-- [ ] When a TM wants to update an item on their dashboard, they will want
+- [X] When a TM wants to update an item on their dashboard, they will want
 controls that feel similar to the controls on the team dashboard, so that
 they now how to keep an accurate account of work they are responsible for.
