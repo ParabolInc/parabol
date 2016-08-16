@@ -12,15 +12,20 @@ const LandingContainer = (props) => {
   return (
     <div>
       <Helmet title="Welcome to Action" {...head} />
-      <Landing onMeetingCreateClick={showLockThunk} {...props} />
+      <Landing handleLoginClick={showLockThunk} {...props} />
     </div>
   );
 };
 
 LandingContainer.propTypes = {
+  auth: PropTypes.object,
+  user: PropTypes.shape({
+    email: PropTypes.string,
+    id: PropTypes.string,
+    picture: PropTypes.string,
+    preferredName: PropTypes.string
+  }),
   dispatch: PropTypes.func.isRequired,
-  authToken: PropTypes.string,
-  user: PropTypes.object
 };
 
 export default loginWithToken(LandingContainer);
