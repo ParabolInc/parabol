@@ -18,7 +18,7 @@ const MeetingUpdatesLayout = (props) => {
   const {members} = props;
   const team = members.filter((m) => m.connection === 'online');
   const aTeamMember = team[0]; // Just for testing
-
+  console.log('in updates');
   return (
     <MeetingMain>
       {/* */}
