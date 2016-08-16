@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ## v0.4.1 - 16-Aug-2016
-## Added
+### Added
 - Added partial `/me` dashboard implementation
 - Wired up project status and ownership assignment on dashboards
 - Added displayed of multiplayer card editing status to project cards
@@ -14,10 +14,10 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Temporary patch allowing invitation links to add existing users to teams
    - Later this will be handled exclusively by the dashboard
 
-## Removed
+### Removed
 - Unused file `universal/utils/schema.js`
 
-## Fixed
+### Fixed
 - onBlur handler for project cards (`OutcomeCardTextAreaField` component)
 
 
