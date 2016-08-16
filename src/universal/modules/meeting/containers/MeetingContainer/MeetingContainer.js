@@ -101,7 +101,6 @@ export default class MeetingContainer extends Component {
     if (!teamName || !members.length) {
       return <LoadingView />;
     }
-    // debugger
     const localPhase = getLocalPhase(location.pathname, teamId);
     // declare if this user is the facilitator
 

@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react';
 import {
-  DashColumns,
   DashContent,
   DashHeader,
   DashHeaderInfo,
@@ -27,7 +26,9 @@ const Outcomes = (props) => {
             <UserActions />
           </div>
           <div className={styles.projectsLayout}>
-            <ProjectColumns projects={projects}/>
+            <ProjectColumns
+              projects={projects}
+            />
           </div>
         </div>
       </DashContent>

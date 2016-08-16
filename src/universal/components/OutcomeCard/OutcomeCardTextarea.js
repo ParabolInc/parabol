@@ -61,7 +61,8 @@ export default class OutcomeCardTextAreaField extends Component {
     timestamp: PropTypes.string,
     meta: PropTypes.shape({
       active: PropTypes.bool
-    })
+    }),
+    showByTeam: PropTypes.bool
   };
 
   componentWillReceiveProps(nextProps) {
@@ -79,6 +80,7 @@ export default class OutcomeCardTextAreaField extends Component {
       input,
       isProject,
       meta: {active},
+      showByTeam,
       teamMemberId,
       teamMembers,
       timestamp
@@ -101,7 +103,7 @@ export default class OutcomeCardTextAreaField extends Component {
     return (
       <div>
         <div className={styles.timestamp}>
-          {editingStatus(active, teamMemberId, editingMe, teamMembers, timestamp)}
+          {!showByTeam && editingStatus(active, teamMemberId, editingMe, teamMembers, timestamp)}
         </div>
         <textarea
           {...input}

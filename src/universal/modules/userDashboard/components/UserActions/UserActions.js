@@ -1,9 +1,9 @@
-import React, {PropTypes} from 'react';
+import React from 'react';
 import look, {StyleSheet} from 'react-look';
 import UserActionHeader from 'universal/modules/userDashboard/components/UserActionHeader/UserActionHeader';
 import UserActionListContainer from 'universal/modules/userDashboard/containers/UserActionList/UserActionListContainer';
 
-const UserActions = (props) => {
+const UserActions = () => {
   const {styles} = UserActions;
   return (
     <div className={styles.root}>

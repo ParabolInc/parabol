@@ -27,8 +27,8 @@ const ProjectColumns = (props) => {
   return (
     <div className={styles.root}>
       <div className={styles.columns}>
-        {columnArray.map((status) =>
-          isUserDash ?
+        {columnArray.map((status) => {
+          return isUserDash ?
             <UserProjectColumn
               key={`projectCol${status}`}
               dispatch={dispatch}
@@ -44,8 +44,8 @@ const ProjectColumns = (props) => {
               teamMemberId={teamMemberId}
               status={status}
               projects={projectsByStatus[status]}
-            />
-        )}
+            />;
+        })}
       </div>
     </div>
   );

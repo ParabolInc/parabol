@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 import reduxSocketOptions from 'universal/redux/reduxSocketOptions';
 import {reduxSocket} from 'redux-socket-cluster';
 import subscriptions from 'universal/subscriptions/subscriptions';
-import {PROJECTS, TEAM, TEAM_MEMBERS} from 'universal/subscriptions/constants';
+import {PROJECTS, TEAM} from 'universal/subscriptions/constants';
 import subscriber from 'universal/subscriptions/subscriber';
 import {cashay} from 'cashay';
 
@@ -58,7 +58,6 @@ const mapStateToProps = (state, props) => {
   const teamMemberIds = tms.map(teamId => `${userId}::${teamId}`);
   const projectSubs = makeProjectSubs(teamMemberIds);
   const teamSubs = makeTeamSubs(tms);
-  console.log('props', props)
   return {
     projectSubs,
     teamSubs,
@@ -81,9 +80,10 @@ const MeContainer = (props) => {
 };
 
 MeContainer.propTypes = {
-  user: PropTypes.shape({
-    preferredName: PropTypes.string
-  })
+  preferredName: PropTypes.string.isRequired,
+  projectSubs: PropTypes.object.isRequired,
+  teamSubs: PropTypes.object.isRequired,
+  tms: PropTypes.array.isRequired
 };
 
 export default

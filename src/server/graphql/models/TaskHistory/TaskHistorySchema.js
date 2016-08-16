@@ -18,24 +18,24 @@ export const ChangeModule = new GraphQLEnumType({
     USER_DASH: {value: USER_DASH}
   }
 });
-const ContentDiff = new GraphQLObjectType({
-  old: {type: GraphQLString, description: 'The content as it was in the task'},
-  new: {type: GraphQLString, description: 'The content that was updated during the meeting'}
-});
-
-const IdDiff = new GraphQLObjectType({
-  old: {type: GraphQLID, description: 'The id as it was pre-meeting'},
-  new: {type: GraphQLID, description: 'The id as it was post-meeting'},
-});
-
-const StatusDiff = new GraphQLObjectType({
-  old: {type: TaskStatus, description: 'The status as it was in pre-meeting'},
-  new: {type: TaskStatus, description: 'The status as it was in post-meeting'},
-});
+// const ContentDiff = new GraphQLObjectType({
+//   old: {type: GraphQLString, description: 'The content as it was in the task'},
+//   new: {type: GraphQLString, description: 'The content that was updated during the meeting'}
+// });
+//
+// const IdDiff = new GraphQLObjectType({
+//   old: {type: GraphQLID, description: 'The id as it was pre-meeting'},
+//   new: {type: GraphQLID, description: 'The id as it was post-meeting'},
+// });
+//
+// const StatusDiff = new GraphQLObjectType({
+//   old: {type: TaskStatus, description: 'The status as it was in pre-meeting'},
+//   new: {type: TaskStatus, description: 'The status as it was in post-meeting'},
+// });
 
 export const TaskHistory = new GraphQLObjectType({
   name: 'TaskHistory',
-  description: `An up-to-date history of every change to content, ownership, and status for every task.`,
+  description: 'An up-to-date history of every change to content, ownership, and status for every task.',
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
