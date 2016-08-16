@@ -23,11 +23,11 @@ export default class Landing extends Component {
   static propTypes = {
     // children included here for multi-part landing pages (FAQs, pricing, cha la la)
     // children: PropTypes.element,
-    onMeetingCreateClick: PropTypes.func.isRequired
+    handleLoginClick: PropTypes.func.isRequired
   };
 
   render() {
-    const {onMeetingCreateClick} = this.props;
+    const {handleLoginClick} = this.props;
 
     return (
       <div className={styles.layout}>
@@ -44,14 +44,21 @@ export default class Landing extends Component {
             </h2>
             <button
               className={styles.ctaButton}
-              onClick={onMeetingCreateClick}
+              onClick={handleLoginClick}
               title="Get Started"
             >
               Get Started
             </button>
             <br />
             {/* TODO: Add click handler for logging in */}
-            <a className={styles.headerLink} href="#" title="Log In">Or, log in</a>
+            <a
+              className={styles.headerLink}
+              href="#"
+              title="Log In"
+              onClick={handleLoginClick}
+            >
+              Or, log in
+            </a>
           </div>
         </div>
 
