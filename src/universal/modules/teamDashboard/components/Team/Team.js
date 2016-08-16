@@ -80,7 +80,10 @@ const Team = (props) => {
 Team.propTypes = {
   activeMeetings: PropTypes.array,
   dispatch: PropTypes.func.isRequired,
-  editing: PropTypes.object,
+  editing: PropTypes.shape({
+    current: PropTypes.object.isRequired,
+    focus: PropTypes.string
+  }).isRequired,
   projects: PropTypes.array,
   teamId: PropTypes.string.isRequired,
   team: PropTypes.object.isRequired,

@@ -26,7 +26,10 @@ const AgendaAndProjects = (props) => {
 
 AgendaAndProjects.propTypes = {
   dispatch: PropTypes.func.required,
-  editing: PropTypes.object,
+  editing: PropTypes.shape({
+    current: PropTypes.object.isRequired,
+    focus: PropTypes.string
+  }).isRequired,
   projects: PropTypes.array,
   teamId: PropTypes.string.isRequired,
   teamMembers: PropTypes.array,

@@ -35,10 +35,6 @@ const createCashay = (store, cashaySchema) => {
       document.getElementById('root')
     );
   } else {
-    /*
-     * Hey! We're the server. No need to stop rethink. The server will
-     * take care of that when it wants to exit.
-     */
     // eslint-disable-next-line global-require
     cashaySchema = require('cashay!../server/utils/getCashaySchema.js');
 
@@ -49,6 +45,9 @@ const createCashay = (store, cashaySchema) => {
     // ENABLE THIS FOR EXPLORING FRONT END PERFORMANCE
     // const {whyDidYouUpdate} = require('why-did-you-update');
     // whyDidYouUpdate(React);
+    // ENABLE THIS AS ANOTHER MEANS OF TESTING FRONT END PERFORMANCE
+    // const Perf = require('react-addons-perf');
+    // window.Perf = Perf;
     render(
       <AppContainer>
         <Root store={store}/>
