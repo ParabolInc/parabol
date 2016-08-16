@@ -2,7 +2,6 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLID,
-  GraphQLList,
   GraphQLString,
   GraphQLEnumType,
   GraphQLFloat
@@ -37,10 +36,6 @@ export const Task = new GraphQLObjectType({
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique task id, teamId::shortid'},
     content: {type: GraphQLString, description: 'The body of the task. If null, it is a new task.'},
-    editingBy: {
-      type: new GraphQLList(GraphQLID),
-      description: 'The list of teamMemberIDs who are actively editing this task'
-    },
     teamMemberId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The id of the team member assigned to this task, or the creator if content is null'
@@ -77,10 +72,6 @@ export const Task = new GraphQLObjectType({
 const taskInputThunk = () => ({
   id: {type: GraphQLID, description: 'The unique task ID'},
   content: {type: GraphQLString, description: 'The body of the task. If null, it is a new task.'},
-  editingBy: {
-    type: new GraphQLList(GraphQLID),
-    description: 'The list of teamMemberIDs who are actively editing this task'
-  },
   type: {type: GraphQLString, description: 'The task type (project or action)'},
   status: {type: GraphQLID, description: 'The status of the task created'},
   teamMemberId: {type: GraphQLID, description: 'The team member ID of the person creating the task'},

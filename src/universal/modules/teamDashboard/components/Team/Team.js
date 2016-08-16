@@ -28,7 +28,7 @@ const linkStyle = {
 };
 
 const Team = (props) => {
-  const {activeMeetings, dispatch, projects, team, teamId, teamMembers, user} = props;
+  const {activeMeetings, editing, dispatch, projects, team, teamId, teamMembers, user} = props;
   const hasOverlay = Boolean(team && team.meetingId);
   const teamMemberId = `${user.id}::${teamId}`;
   return (
@@ -63,7 +63,14 @@ const Team = (props) => {
           <DashboardAvatars teamMembers={teamMembers}/>
         </DashHeader>
         <DashContent>
-          <AgendaAndProjects teamId={teamId} projects={projects} teamMembers={teamMembers} teamMemberId={teamMemberId}/>
+          <AgendaAndProjects
+            dispatch={dispatch}
+            editing={editing}
+            projects={projects}
+            teamId={teamId}
+            teamMembers={teamMembers}
+            teamMemberId={teamMemberId}
+          />
         </DashContent>
       </DashMain>
     </DashLayout>
@@ -73,6 +80,7 @@ const Team = (props) => {
 Team.propTypes = {
   activeMeetings: PropTypes.array,
   dispatch: PropTypes.func.isRequired,
+  editing: PropTypes.object,
   projects: PropTypes.array,
   teamId: PropTypes.string.isRequired,
   team: PropTypes.object.isRequired,

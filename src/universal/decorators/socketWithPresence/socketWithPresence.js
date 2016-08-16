@@ -1,13 +1,14 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {reduxSocket} from 'redux-socket-cluster';
-import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {cashay} from 'cashay';
+import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import subscriptions from 'universal/subscriptions/subscriptions';
-import presenceSubscriber from './presenceSubscriber';
 import reduxSocketOptions from 'universal/redux/reduxSocketOptions';
 import {PRESENCE} from 'universal/subscriptions/constants';
 import socketCluster from 'socketcluster-client';
+import presenceSubscriber from './presenceSubscriber';
+import presenceEditingHelper from './presenceEditingHelper';
 
 const presenceSubscription = subscriptions.find(sub => sub.channel === PRESENCE);
 const mapStateToProps = (state, props) => {
@@ -15,8 +16,17 @@ const mapStateToProps = (state, props) => {
     variables: {teamId: props.params.teamId},
     op: 'socketWithPresence'
   };
+  const presenceSub = cashay.subscribe(
+    presenceSubscription.string, presenceSubscriber, presenceSubOptions);
+  const editing = presenceEditingHelper(presenceSub.data.presence);
   return {
-    presenceSub: cashay.subscribe(presenceSubscription.string, presenceSubscriber, presenceSubOptions)
+    presenceSub: {
+      ...presenceSub,
+      data: {
+        ...presenceSub.data,
+        editing
+      }
+    }
   };
 };
 

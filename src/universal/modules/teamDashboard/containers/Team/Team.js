@@ -1,8 +1,7 @@
 import React, {PropTypes} from 'react';
 import Team from 'universal/modules/teamDashboard/components/Team/Team';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
-import reduxSocketOptions from 'universal/redux/reduxSocketOptions';
-import {reduxSocket} from 'redux-socket-cluster';
+import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 import subscriptions from 'universal/subscriptions/subscriptions';
 import {PROJECTS, TEAM, TEAM_MEMBERS} from 'universal/subscriptions/constants';
 import subscriber from 'universal/subscriptions/subscriber';
@@ -71,7 +70,16 @@ const mapStateToProps = (state, props) => {
 };
 
 const TeamContainer = (props) => {
-  const {memberSub, teamSubs, tms, user, params: {teamId}, projectSubs, dispatch} = props;
+  const {
+    memberSub,
+    presenceSub: {data: {editing}},
+    projectSubs,
+    teamSubs,
+    params: {teamId},
+    tms,
+    user,
+    dispatch
+  } = props;
   const {team} = teamSubs[teamId].data;
   const {teamMembers} = memberSub.data;
   const projects = [].concat(...projectSubs.map(sub => sub.data.projects));
@@ -79,6 +87,7 @@ const TeamContainer = (props) => {
   return (
     <Team
       activeMeetings={activeMeetings}
+      editing={editing}
       projects={projects}
       teamId={teamId}
       team={team}
@@ -96,16 +105,14 @@ TeamContainer.propTypes = {
   }),
   user: PropTypes.object,
   memberSub: PropTypes.object,
+  presenceSub: PropTypes.object.isRequired,
   projectSubs: PropTypes.array,
   teamSubs: PropTypes.object,
   tms: PropTypes.array
 };
 
-export default
-requireAuth(
+export default requireAuth(
   connect(mapStateToProps)(
-    reduxSocket({}, reduxSocketOptions)(
-      TeamContainer
-    )
+    socketWithPresence(TeamContainer)
   )
 );
