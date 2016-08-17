@@ -12,78 +12,70 @@ const teamMembersSubString = subscriptions.find(sub => sub.channel === TEAM_MEMB
 const teamSubString = subscriptions.find(sub => sub.channel === TEAM).string;
 const projectSubString = subscriptions.find(sub => sub.channel === PROJECTS).string;
 
-const makeProjectSubs = (teamMembers) => {
+const resolveProjectSubs = (teamMembers) => {
   const projectSubs = [];
   for (let i = 0; i < teamMembers.length; i++) {
     const teamMemberId = teamMembers[i].id;
     projectSubs[i] = cashay.subscribe(projectSubString, subscriber, {
       op: 'projectSub',
       key: teamMemberId,
-      variables: {teamMemberId}
-    });
+      variables: {teamMemberId},
+      dependency: 'projectSubs'
+    }).data.projects;
   }
-  return projectSubs;
+  return [].concat(...projectSubs);
 };
 
-const makeTeamSubs = (teams) => {
+const resolveTeamsAndMeetings = (tms) => {
   const teamSubs = {};
-  for (let i = 0; i < teams.length; i++) {
-    const teamId = teams[i];
-    teamSubs[teamId] = cashay.subscribe(teamSubString, subscriber, {
+  const activeMeetings = [];
+  for (let i = 0; i < tms.length; i++) {
+    const teamId = tms[i];
+    const {team} = cashay.subscribe(teamSubString, subscriber, {
       op: 'teamSub',
       key: teamId,
-      variables: {teamId}
-    });
-  }
-  return teamSubs;
-};
-
-// This should be cached, rather than do it ourselves, let's make cashay better so we can cache it there
-const makeActiveMeetings = (teamIds, teamSubs) => {
-  const activeMeetings = [];
-  for (let i = 0; i < teamIds.length; i++) {
-    const teamId = teamIds[i];
-    const {team} = teamSubs[teamId].data;
+      variables: {teamId},
+      dependency: 'teamSubs'
+    }).data;
     if (team.meetingId) {
       activeMeetings.push({
         link: `/meeting/${teamId}`,
         name: team.name
       });
     }
+    teamSubs[teamId] = team;
   }
-  return activeMeetings;
+  return {activeMeetings, teamSubs};
 };
 
-// TODO memoize the map
+
 const mapStateToProps = (state, props) => {
-  const variables = {teamId: props.params.teamId};
-  const memberSub = cashay.subscribe(teamMembersSubString, subscriber, {op: 'memberSub', variables});
-  const projectSubs = makeProjectSubs(memberSub.data.teamMembers);
-  const {tms} = state.auth.obj;
-  const teamSubs = makeTeamSubs(tms);
+  const {teamId} = props.params;
+  const {teamMembers} = cashay.subscribe(teamMembersSubString, subscriber, {
+    op: 'teamMembers',
+    variables: {teamId}
+  }).data;
+  const projects = cashay.computed('projectSubs', [teamMembers], resolveProjectSubs);
+  const {activeMeetings, teamSubs} = cashay.computed('teamSubs', [state.auth.obj.tms], resolveTeamsAndMeetings);
   return {
-    memberSub,
-    projectSubs,
-    teamSubs,
-    tms
+    activeMeetings,
+    teamMembers,
+    projects,
+    team: teamSubs[teamId]
   };
 };
 
 const TeamContainer = (props) => {
   const {
-    memberSub,
+    activeMeetings,
+    teamMembers,
     presenceSub: {data: {editing}},
-    projectSubs,
-    teamSubs,
+    projects,
+    team,
     params: {teamId},
-    tms,
     user,
     dispatch
   } = props;
-  const {team} = teamSubs[teamId].data;
-  const {teamMembers} = memberSub.data;
-  const projects = [].concat(...projectSubs.map(sub => sub.data.projects));
-  const activeMeetings = makeActiveMeetings(tms, teamSubs);
   return (
     <Team
       activeMeetings={activeMeetings}
@@ -99,16 +91,21 @@ const TeamContainer = (props) => {
 };
 
 TeamContainer.propTypes = {
+  activeMeetings: PropTypes.array,
+  teamMembers: PropTypes.array.isRequired,
+  projects: PropTypes.array.isRequired,
+
   dispatch: PropTypes.func,
+  user: PropTypes.object,
+  presenceSub: PropTypes.shape({
+    data: PropTypes.shape({
+      editing: PropTypes.object.isRequired
+    })
+  }),
   params: PropTypes.shape({
     teamId: PropTypes.string.isRequired
   }),
-  user: PropTypes.object,
-  memberSub: PropTypes.object,
-  presenceSub: PropTypes.object.isRequired,
-  projectSubs: PropTypes.array,
-  teamSubs: PropTypes.object,
-  tms: PropTypes.array
+  team: PropTypes.object,
 };
 
 export default requireAuth(

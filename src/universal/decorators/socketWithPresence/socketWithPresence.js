@@ -11,13 +11,14 @@ import presenceSubscriber from './presenceSubscriber';
 import presenceEditingHelper from './presenceEditingHelper';
 
 const presenceSubscription = subscriptions.find(sub => sub.channel === PRESENCE);
-const mapStateToProps = (state, props) => {
+
+const resolve = (teamId) => {
   const presenceSubOptions = {
-    variables: {teamId: props.params.teamId},
-    op: 'socketWithPresence'
+    variables: {teamId},
+    op: 'socketWithPresence',
+    dependency: 'editingPresence'
   };
-  const presenceSub = cashay.subscribe(
-    presenceSubscription.string, presenceSubscriber, presenceSubOptions);
+  const presenceSub = cashay.subscribe(presenceSubscription.string, presenceSubscriber, presenceSubOptions);
   const editing = presenceEditingHelper(presenceSub.data.presence);
   return {
     presenceSub: {
@@ -28,6 +29,10 @@ const mapStateToProps = (state, props) => {
       }
     }
   };
+};
+
+const mapStateToProps = (state, props) => {
+  return cashay.computed('editingPresence', [props.params.teamId], resolve)
 };
 
 export default ComposedComponent => {
