@@ -8,7 +8,7 @@ import {
   GraphQLList
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
-import {TaskStatus} from 'server/graphql/models/Task/taskSchema';
+import {ProjectStatus} from '../Project/projectSchema';
 
 const HistoricalAction = new GraphQLObjectType({
   name: 'HistoricalAction',
@@ -42,7 +42,7 @@ const HistoricalProject = new GraphQLObjectType({
       description: 'The description of the action created during the meeting'
     },
     status: {
-      type: TaskStatus,
+      type: ProjectStatus,
       description: 'The description of the action created during the meeting'
     }
   }),

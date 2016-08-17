@@ -30,13 +30,13 @@ const OutcomeCardStatusMenu = (props) => {
     }
     const options = {
       variables: {
-        updatedTask: {
+        updatedProject: {
           id: projectId,
           status: newStatus
         }
       }
     };
-    cashay.mutate('updateTask', options);
+    cashay.mutate('updateProject', options);
   };
 
   const makeButton = (newStatus, icon, label) => {

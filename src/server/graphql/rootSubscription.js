@@ -3,12 +3,14 @@ import agenda from './models/AgendaItem/agendaItemSubscription';
 import team from './models/Team/teamSubscription';
 import teamMember from './models/TeamMember/teamMemberSubscription';
 import presence from './models/Presence/presenceSubscription';
-import task from './models/Task/taskSubscription';
+import project from './models/Project/projectSubscription';
+import action from './models/Action/actionSubscription';
 
 const rootFields = Object.assign({},
+  action,
   agenda,
   presence,
-  task,
+  project,
   team,
   teamMember
 );

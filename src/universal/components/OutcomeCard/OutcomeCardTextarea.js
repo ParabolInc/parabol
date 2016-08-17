@@ -83,7 +83,8 @@ export default class OutcomeCardTextAreaField extends Component {
       showByTeam,
       teamMemberId,
       teamMembers,
-      timestamp
+      timestamp,
+      doFocus
     } = this.props;
     const descStyles = isProject ? styles.content : combineStyles(styles.content, styles.descriptionAction);
     const allClassNames = combineStyles(descStyles, 'mousetrap');
@@ -112,6 +113,7 @@ export default class OutcomeCardTextAreaField extends Component {
           placeholder="Type your project outcome here"
           onBlur={handleBlur}
           onKeyDown={handleKeyUp}
+          autoFocus={doFocus}
         />
       </div>
     );

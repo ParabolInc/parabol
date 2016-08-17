@@ -28,16 +28,15 @@ const ProjectColumn = (props) => {
   const [, teamId] = teamMemberId.split('::');
   const statusUpperFirst = upperFirst(status);
   const handleAddProject = () => {
-    const newTask = {
+    const newProject = {
       id: `${teamId}::${shortid.generate()}`,
-      type: PROJECT,
       status,
       teamMemberId,
       teamSort: getNextSort(projects, 'teamSort'),
       // put it at the top of the list, make em sort it if they don't like it
       userSort: 0
     };
-    cashay.mutate('createTask', {variables: {newTask}});
+    cashay.mutate('createProject', {variables: {newProject}});
   };
   return (
     <div className={styles.column}>

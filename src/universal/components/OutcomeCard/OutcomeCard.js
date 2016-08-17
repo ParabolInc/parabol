@@ -39,7 +39,12 @@ export default class OutcomeCard extends Component {
   }
 
   componentWillMount() {
-    this.initializeValues(this.props.content);
+    const {content, dispatch, field, focus, form } = this.props;
+    if (content) {
+      this.initializeValues(content);
+    } else {
+      dispatch(focus(form, field));
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -58,20 +63,22 @@ export default class OutcomeCard extends Component {
   toggleStatusMenu(nextOpenMenu) {
     const {openMenu} = this.state;
     nextOpenMenu = nextOpenMenu ||
-      openMenu === OPEN_STATUS_MENU ? OPEN_CONTENT_MENU : OPEN_STATUS_MENU;
+    openMenu === OPEN_STATUS_MENU ? OPEN_CONTENT_MENU : OPEN_STATUS_MENU;
     this.setState({openMenu: nextOpenMenu});
   }
 
   toggleAssignMenu(nextOpenMenu) {
     const {openMenu} = this.state;
     nextOpenMenu = nextOpenMenu ||
-      openMenu === OPEN_ASSIGN_MENU ? OPEN_CONTENT_MENU : OPEN_ASSIGN_MENU;
+    openMenu === OPEN_ASSIGN_MENU ? OPEN_CONTENT_MENU : OPEN_ASSIGN_MENU;
     this.setState({openMenu: nextOpenMenu});
   }
 
   render() {
+    console.log('outcome card', this.props);
     const {openMenu} = this.state;
     const {
+      focus,
       content,
       dispatch,
       editing,
@@ -101,7 +108,9 @@ export default class OutcomeCard extends Component {
     rootStyles = combineStyles.apply(null, rootStyleOptions);
 
     const handleCardActive = (activeState) => {
-      if (activeState === undefined) { return; }
+      if (activeState === undefined) {
+        return;
+      }
       if (activeState) {
         dispatch(editingAdd(teamId, normalizedProjectId));
       } else {
@@ -114,13 +123,13 @@ export default class OutcomeCard extends Component {
       if (submittedContent !== content) {
         const options = {
           variables: {
-            updatedTask: {
+            updatedProject: {
               id: projectId,
               content: submittedContent
             }
           }
         };
-        cashay.mutate('updateTask', options);
+        cashay.mutate('updateProject', options);
       }
     };
 
@@ -128,37 +137,38 @@ export default class OutcomeCard extends Component {
       <div className={rootStyles}>
         {/* card main */}
         {hasOpenAssignMenu &&
-          <OutcomeCardAssignMenu
-            currentOwner={owner}
-            projectId={projectId}
-            teamMembers={teamMembers}
-            onComplete={() => this.toggleAssignMenu(OPEN_CONTENT_MENU)}
-          />
+        <OutcomeCardAssignMenu
+          currentOwner={owner}
+          projectId={projectId}
+          teamMembers={teamMembers}
+          onComplete={() => this.toggleAssignMenu(OPEN_CONTENT_MENU)}
+        />
         }
         {hasOpenStatusMenu &&
-          <OutcomeCardStatusMenu
-            isArchived={isArchived}
-            projectId={projectId}
-            status={status}
-          />
+        <OutcomeCardStatusMenu
+          isArchived={isArchived}
+          projectId={projectId}
+          status={status}
+        />
         }
         {!hasOpenAssignMenu && !hasOpenStatusMenu &&
-          <div className={styles.body}>
-            <form>
-              <Field
-                showByTeam={showByTeam}
-                name={projectId}
-                component={OutcomeCardTextarea}
-                editingMe={editingMe}
-                teamMemberId={teamMemberId}
-                teamMembers={teamMembers}
-                isProject={isProject}
-                handleActive={handleCardActive}
-                handleSubmit={handleSubmit(handleCardUpdate)}
-                timestamp={fromNow(updatedAt)}
-              />
-            </form>
-          </div>
+        <div className={styles.body}>
+          <form>
+            <Field
+              showByTeam={showByTeam}
+              name={projectId}
+              component={OutcomeCardTextarea}
+              editingMe={editingMe}
+              teamMemberId={teamMemberId}
+              teamMembers={teamMembers}
+              isProject={isProject}
+              handleActive={handleCardActive}
+              handleSubmit={handleSubmit(handleCardUpdate)}
+              timestamp={fromNow(updatedAt)}
+              doFocus={!content}
+            />
+          </form>
+        </div>
         }
         {/* card footer */}
         <OutcomeCardFooter
