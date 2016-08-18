@@ -14,7 +14,7 @@ import AvatarGroup from 'universal/modules/meeting/components/AvatarGroup/Avatar
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import {teamSubString, teamMembersSubString} from './cashayHelpers';
-import {resolveMembers, resolveProjectSubs} from 'universal/subscriptions/computedSubs';
+import {resolveMembers, resolveProjectsByMember} from 'universal/subscriptions/computedSubs';
 
 const mapStateToProps = (state, props) => {
   const {params: {teamId}, presenceSub} = props;
@@ -27,8 +27,7 @@ const mapStateToProps = (state, props) => {
   }).data;
   const {team} = cashay.subscribe(teamSubString, subscriber, {dependency: 'members', op: 'teamSub', variables}).data;
   const members = cashay.computed('members', [teamId, presenceSub, userId, teamMembers, team], resolveMembers);
-  const projects = cashay.computed('projectSubs', [teamMembers], resolveProjectSubs);
-
+  const projects = cashay.computed('projectSubs', [teamMembers], resolveProjectsByMember);
   return {
     members,
     projects,
@@ -79,7 +78,7 @@ export default class MeetingContainer extends Component {
   }
 
   render() {
-    const {children, dispatch, location, members, params, team} = this.props;
+    const {children, dispatch, editing, location, members, params, projects, team} = this.props;
     const {teamId, localPhaseItem} = params;
     const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem, name: teamName} = team;
 
@@ -106,6 +105,7 @@ export default class MeetingContainer extends Component {
           </MeetingSection>
           {children && React.cloneElement(children, {
             dispatch,
+            editing,
             isFacilitator,
             localPhaseItem: Number(localPhaseItem),
             facilitatorPhase,
@@ -113,6 +113,7 @@ export default class MeetingContainer extends Component {
             meetingPhase,
             meetingPhaseItem,
             members,
+            projects,
             teamName
           })}
         </MeetingMain>
