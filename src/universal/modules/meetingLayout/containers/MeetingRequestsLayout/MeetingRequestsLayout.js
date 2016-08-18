@@ -81,7 +81,7 @@ const MeetingRequestsLayout = (props) => {
         {/* */}
         <MeetingSection paddingBottom="2rem" paddingTop="2rem">
           <div className={s.avatars}>
-            <AvatarGroup avatars={team.members} label="Team:" />
+            <AvatarGroup avatars={team.members} />
           </div>
         </MeetingSection>
         {/* */}
@@ -101,7 +101,7 @@ const MeetingRequestsLayout = (props) => {
             <div className={s.nav}>
               <div className={s.linkSpacer}>{' '}</div>
               <div className={s.avatar}>
-                <Avatar picture={Taya} size="large" />
+                <Avatar picture={Taya} hasBadge={false} size="large" />
                 <div className={s.requestLabel}>
                   “{'S.P.A.'}”
                 </div>

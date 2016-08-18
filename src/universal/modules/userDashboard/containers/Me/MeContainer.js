@@ -44,8 +44,7 @@ const MeContainer = (props) => {
 MeContainer.propTypes = {
   activeMeetings: PropTypes.array.isRequired,
   preferredName: PropTypes.string.isRequired,
-  projects: PropTypes.array.isRequired,
-  tms: PropTypes.array.isRequired
+  projects: PropTypes.array.isRequired
 };
 
 export default

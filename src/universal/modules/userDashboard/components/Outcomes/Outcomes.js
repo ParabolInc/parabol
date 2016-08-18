@@ -16,7 +16,7 @@ const Outcomes = (props) => {
   return (
     <DashMain>
       <DashHeader>
-        <DashHeaderInfo title="My Outcomes">
+        <DashHeaderInfo title="My Dashboard">
           {dashTimestamp} • Carpe diem!
         </DashHeaderInfo>
       </DashHeader>

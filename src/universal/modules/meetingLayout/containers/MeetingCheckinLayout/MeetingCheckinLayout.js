@@ -111,7 +111,7 @@ const MeetingCheckinLayout = (props) => {
         {/* */}
         <MeetingSection paddingBottom="2rem" paddingTop="2rem">
           <div className={s.avatars}>
-            <AvatarGroup avatars={team.members} label="Team:" />
+            <AvatarGroup avatars={team.members} />
             <div className={s.progress}>
               <ProgressBar />
             </div>

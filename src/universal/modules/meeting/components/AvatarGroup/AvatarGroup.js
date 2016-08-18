@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import Avatar from 'universal/components/Avatar/Avatar';
-import {CHECKIN, UPDATES} from 'universal/utils/constants';
+import {UPDATES} from 'universal/utils/constants';
 
 let s = {};
 // NOTE: outer padding for positioned label and overall centering
@@ -11,12 +11,10 @@ const outerPadding = '8rem';
 const AvatarGroup = (props) => {
   const {localPhase, avatars} = props;
   let label;
-  if (localPhase === CHECKIN) {
-    label = 'Team:';
-  } else if (localPhase === UPDATES) {
+  if (localPhase === UPDATES) {
     label = 'Updates given:';
   } else {
-    label = '';
+    label = 'Team:';
   }
 
   return (
@@ -36,7 +34,6 @@ const AvatarGroup = (props) => {
 };
 
 AvatarGroup.propTypes = {
-  label: PropTypes.string,
   localPhase: PropTypes.string,
   avatars: PropTypes.array
 };
