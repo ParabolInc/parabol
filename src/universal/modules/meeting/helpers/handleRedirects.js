@@ -6,17 +6,13 @@ import isSkippingAhead from './isSkippingAhead';
 export default function handleRedirects(team, children, localPhaseItem, pathname, router) {
   const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, id: teamId} = team;
   // bail out fast while we're waiting for the team sub
-  debugger
   if (!teamId) return;
   if (!children) {
     const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
     router.replace(pushURL);
-    return
   }
-
   const localPhase = getLocalPhase(pathname, teamId);
-
-// add a localPhaseItem to the url
+  // add a localPhaseItem to the url
   if (localPhaseItem === undefined && localPhase !== LOBBY && localPhase !== SUMMARY) {
     if (facilitatorPhase === localPhase) {
       const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);

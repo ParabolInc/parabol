@@ -75,7 +75,6 @@ export default class OutcomeCard extends Component {
   }
 
   render() {
-    console.log('outcome card', this.props);
     const {openMenu} = this.state;
     const {
       focus,

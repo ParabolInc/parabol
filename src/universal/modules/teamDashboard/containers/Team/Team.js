@@ -3,51 +3,13 @@ import Team from 'universal/modules/teamDashboard/components/Team/Team';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 import subscriptions from 'universal/subscriptions/subscriptions';
-import {PROJECTS, TEAM, TEAM_MEMBERS} from 'universal/subscriptions/constants';
+import {TEAM_MEMBERS} from 'universal/subscriptions/constants';
 import subscriber from 'universal/subscriptions/subscriber';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
+import {resolveProjectSubs, resolveTeamsAndMeetings} from 'universal/subscriptions/computedSubs';
 
 const teamMembersSubString = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
-const teamSubString = subscriptions.find(sub => sub.channel === TEAM).string;
-const projectSubString = subscriptions.find(sub => sub.channel === PROJECTS).string;
-
-const resolveProjectSubs = (teamMembers) => {
-  const projectSubs = [];
-  for (let i = 0; i < teamMembers.length; i++) {
-    const teamMemberId = teamMembers[i].id;
-    projectSubs[i] = cashay.subscribe(projectSubString, subscriber, {
-      op: 'projectSub',
-      key: teamMemberId,
-      variables: {teamMemberId},
-      dependency: 'projectSubs'
-    }).data.projects;
-  }
-  return [].concat(...projectSubs);
-};
-
-const resolveTeamsAndMeetings = (tms) => {
-  const teamSubs = {};
-  const activeMeetings = [];
-  for (let i = 0; i < tms.length; i++) {
-    const teamId = tms[i];
-    const {team} = cashay.subscribe(teamSubString, subscriber, {
-      op: 'teamSub',
-      key: teamId,
-      variables: {teamId},
-      dependency: 'teamSubs'
-    }).data;
-    if (team.meetingId) {
-      activeMeetings.push({
-        link: `/meeting/${teamId}`,
-        name: team.name
-      });
-    }
-    teamSubs[teamId] = team;
-  }
-  return {activeMeetings, teamSubs};
-};
-
 
 const mapStateToProps = (state, props) => {
   const {teamId} = props.params;
@@ -69,7 +31,7 @@ const TeamContainer = (props) => {
   const {
     activeMeetings,
     teamMembers,
-    presenceSub: {data: {editing}},
+    editing,
     projects,
     team,
     params: {teamId},

@@ -8,23 +8,29 @@ import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/Me
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import Sidebar from 'universal/modules/team/components/Sidebar/Sidebar';
 import {withRouter} from 'react-router';
-import {createMembers, reset as resetDuck} from 'universal/modules/meeting/ducks/meetingDuck';
 import getLocalPhase from 'universal/modules/meeting/helpers/getLocalPhase';
 import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
 import AvatarGroup from 'universal/modules/meeting/components/AvatarGroup/AvatarGroup';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
-import {
-  teamSubString,
-  teamMembersSubString,
-} from './cashayHelpers';
+import {teamSubString, teamMembersSubString} from './cashayHelpers';
+import {resolveMembers} from 'universal/subscriptions/computedSubs';
 
 const mapStateToProps = (state, props) => {
-  const variables = {teamId: props.params.teamId};
+  const {params: {teamId}, presenceSub} = props;
+  const {sub: userId} = state.auth.obj;
+  const variables = {teamId};
+  const memberSub = cashay.subscribe(teamMembersSubString, subscriber, {
+    dependency: 'members',
+    op: 'memberSub',
+    variables,
+  });
+  const teamSub = cashay.subscribe(teamSubString, subscriber, {dependency: 'members', op: 'teamSub', variables});
+  const members = cashay.computed('members', [teamId, presenceSub, userId, memberSub, teamSub], resolveMembers)
   return {
-    members: state.meeting.members,
-    memberSub: cashay.subscribe(teamMembersSubString, subscriber, {op: 'memberSub', variables}),
-    teamSub: cashay.subscribe(teamSubString, subscriber, {op: 'teamSub', variables})
+    members,
+    memberSub,
+    teamSub
   };
 };
 
@@ -51,23 +57,13 @@ export default class MeetingContainer extends Component {
   };
 
   componentWillReceiveProps(nextProps) {
-    const {presence} = nextProps.presenceSub.data;
     const {team} = nextProps.teamSub.data;
-    const {teamMembers} = nextProps.memberSub.data;
-    const {children, dispatch, user, router, params: {localPhaseItem}, location: {pathname}} = nextProps;
+    const {children, router, params: {localPhaseItem}, location: {pathname}} = nextProps;
     const oldTeam = this.props.teamSub.data.team;
 
     // only needs to run when the url changes or the team subscription initializes
     // make sure the url is legit, but only run once (when the initial team subscription comes back)
     handleRedirects(team, children, localPhaseItem, pathname, router);
-
-    if (presence !== this.props.presenceSub.data.presence ||
-      teamMembers !== this.props.memberSub.data.teamMembers ||
-      team.activeFacilitator !== oldTeam.activeFacilitator ||
-      user.id !== this.props.user.id) {
-      // build the members array by aggregating everything
-      dispatch(createMembers(teamMembers, presence, team, user));
-    }
 
     // is the facilitator making moves?
     if (team.facilitatorPhaseItem !== oldTeam.facilitatorPhaseItem ||
@@ -83,19 +79,11 @@ export default class MeetingContainer extends Component {
     }
   }
 
-  componentWillUnmount() {
-    const {dispatch} = this.props;
-    dispatch(resetDuck());
-  }
-
   render() {
     const {children, dispatch, location, members, params, teamSub} = this.props;
     const {teamId, localPhaseItem} = params;
     const {team} = teamSub.data;
-    const {
-      activeFacilitator, facilitatorPhase, facilitatorPhaseItem,
-      meetingPhase, meetingPhaseItem, name: teamName
-    } = team;
+    const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem, name: teamName} = team;
 
     // if we have a team.name, we have an initial subscription success to the team object
     if (!teamName || !members.length) {
@@ -105,7 +93,7 @@ export default class MeetingContainer extends Component {
     // declare if this user is the facilitator
 
     const self = members.find(m => m.isSelf);
-    const isFacilitator = self && self.id === activeFacilitator;
+    const isFacilitator = self && self.isFacilitator;
     return (
       <MeetingLayout>
         <Sidebar

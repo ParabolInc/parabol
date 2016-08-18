@@ -4,72 +4,34 @@ import Me from 'universal/modules/userDashboard/components/Me/Me';
 import {connect} from 'react-redux';
 import reduxSocketOptions from 'universal/redux/reduxSocketOptions';
 import {reduxSocket} from 'redux-socket-cluster';
-import subscriptions from 'universal/subscriptions/subscriptions';
-import {PROJECTS, TEAM} from 'universal/subscriptions/constants';
-import subscriber from 'universal/subscriptions/subscriber';
 import {cashay} from 'cashay';
+import {resolveProjectSubs, resolveTeamsAndMeetings} from 'universal/subscriptions/computedSubs';
 
-const teamSubString = subscriptions.find(sub => sub.channel === TEAM).string;
-const projectSubString = subscriptions.find(sub => sub.channel === PROJECTS).string;
-
-const makeActiveMeetings = (teamIds, teamSubs) => {
-  const activeMeetings = [];
-  for (let i = 0; i < teamIds.length; i++) {
-    const teamId = teamIds[i];
-    const {team} = teamSubs[teamId].data;
-    if (team.meetingId) {
-      activeMeetings.push({
-        link: `/meeting/${teamId}`,
-        name: team.name
-      });
-    }
+// memoized
+const makeTeamMembers = (userId, tms) => {
+  if (tms !== makeTeamMembers.tms || userId !== makeTeamMembers.userId) {
+    makeTeamMembers.tms = tms;
+    makeTeamMembers.userId = userId;
+    makeTeamMembers.cache = tms.map(teamId => ({id: `${userId}::${teamId}`}));
   }
-  return activeMeetings;
-};
-
-const makeProjectSubs = (teamMembersIds) => {
-  const projectSubs = [];
-  for (let i = 0; i < teamMembersIds.length; i++) {
-    const teamMemberId = teamMembersIds[i];
-    projectSubs[i] = cashay.subscribe(projectSubString, subscriber, {
-      op: 'projectSub',
-      key: teamMemberId,
-      variables: {teamMemberId}
-    });
-  }
-  return projectSubs;
-};
-
-const makeTeamSubs = (teams) => {
-  const teamSubs = {};
-  for (let i = 0; i < teams.length; i++) {
-    const teamId = teams[i];
-    teamSubs[teamId] = cashay.subscribe(teamSubString, subscriber, {
-      op: 'teamSub',
-      key: teamId,
-      variables: {teamId}
-    });
-  }
-  return teamSubs;
-};
+  return makeTeamMembers.cache;
+}
 
 const mapStateToProps = (state, props) => {
   const {sub: userId, tms} = state.auth.obj;
-  const teamMemberIds = tms.map(teamId => `${userId}::${teamId}`);
-  const projectSubs = makeProjectSubs(teamMemberIds);
-  const teamSubs = makeTeamSubs(tms);
+  const teamMembers = makeTeamMembers(userId, tms);
+  const {activeMeetings, teamSubs} = cashay.computed('teamSubs', [state.auth.obj.tms], resolveTeamsAndMeetings);
+  const projects = cashay.computed('projectSubs', [teamMembers], resolveProjectSubs);
   return {
-    projectSubs,
+    activeMeetings,
+    projects,
     teamSubs,
-    tms,
     preferredName: props.user.preferredName
   };
 };
 
 const MeContainer = (props) => {
-  const {preferredName, projectSubs, teamSubs, tms} = props;
-  const projects = [].concat(...projectSubs.map(sub => sub.data.projects));
-  const activeMeetings = makeActiveMeetings(tms, teamSubs);
+  const {activeMeetings, preferredName, projects, teamSubs} = props;
   return (
     <Me
       preferredName={preferredName}

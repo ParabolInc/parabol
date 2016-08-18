@@ -20,19 +20,11 @@ const resolve = (teamId) => {
   };
   const presenceSub = cashay.subscribe(presenceSubscription.string, presenceSubscriber, presenceSubOptions);
   const editing = presenceEditingHelper(presenceSub.data.presence);
-  return {
-    presenceSub: {
-      ...presenceSub,
-      data: {
-        ...presenceSub.data,
-        editing
-      }
-    }
-  };
+  return {presenceSub, editing};
 };
 
 const mapStateToProps = (state, props) => {
-  return cashay.computed('editingPresence', [props.params.teamId], resolve)
+  return cashay.computed('editingPresence', [props.params.teamId], resolve);
 };
 
 export default ComposedComponent => {
