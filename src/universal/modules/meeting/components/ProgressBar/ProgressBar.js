@@ -84,6 +84,7 @@ const ProgressBar = (props) => {
 };
 
 ProgressBar.propTypes = {
+  bindHotkey: PropTypes.func.isRequired,
   clickFactory: PropTypes.func,
   isComplete: PropTypes.bool,
   facilitatorPhaseItem: PropTypes.number, // index of 0

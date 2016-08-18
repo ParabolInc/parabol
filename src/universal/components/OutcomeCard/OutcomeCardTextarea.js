@@ -51,6 +51,7 @@ let styles = {};
 @look
 export default class OutcomeCardTextAreaField extends Component {
   static propTypes = {
+    doFocus: PropTypes.bool,
     editingMe: PropTypes.array.isRequired,
     handleActive: PropTypes.func,
     handleSubmit: PropTypes.func,

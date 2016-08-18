@@ -36,6 +36,7 @@ const MeetingUpdates = (props) => {
   const self = members.find(m => m.isSelf);
   const isComplete = phaseOrder(meetingPhase) > phaseOrder(UPDATES);
   const gotoNextItem = phaseItemFactory(localPhaseItem + 1);
+  const teamMemberProjects = currentTeamMember ? projects[currentTeamMember.id] : [];
   return (
     <MeetingMain>
       <MeetingSection paddingBottom="2rem" paddingTop=".75rem">
@@ -79,9 +80,9 @@ const MeetingUpdates = (props) => {
         <ProjectColumns
           dispatch={dispatch}
           editing={editing}
-          teamMemberId={self.id}
+          teamMemberId={self && self.id}
           teamMembers={members}
-          projects={projects[currentTeamMember.id]}
+          projects={teamMemberProjects}
         />
         {/* */}
         {/* */}
@@ -116,7 +117,19 @@ s = StyleSheet.create({
 });
 
 MeetingUpdates.propTypes = {
-  members: PropTypes.array
+  dispatch: PropTypes.func.isRequired,
+  editing: PropTypes.array,
+  facilitatorPhaseItem: PropTypes.number.isRequired,
+  isFacilitator: PropTypes.bool,
+  localPhaseItem: PropTypes.number.isRequired,
+  members: PropTypes.array,
+  meetingPhase: PropTypes.string.isRequired,
+  meetingPhaseItem: PropTypes.number.isRequired,
+  params: PropTypes.shape({
+    teamId: PropTypes.string.isRequired
+  }).isRequired,
+  projects: PropTypes.array,
+  router: PropTypes.object.isRequired,
 };
 
 export default withRouter(look(MeetingUpdates));
