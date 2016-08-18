@@ -14,23 +14,25 @@ import AvatarGroup from 'universal/modules/meeting/components/AvatarGroup/Avatar
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import {teamSubString, teamMembersSubString} from './cashayHelpers';
-import {resolveMembers} from 'universal/subscriptions/computedSubs';
+import {resolveMembers, resolveProjectSubs} from 'universal/subscriptions/computedSubs';
 
 const mapStateToProps = (state, props) => {
   const {params: {teamId}, presenceSub} = props;
   const {sub: userId} = state.auth.obj;
   const variables = {teamId};
-  const memberSub = cashay.subscribe(teamMembersSubString, subscriber, {
+  const {teamMembers} = cashay.subscribe(teamMembersSubString, subscriber, {
     dependency: 'members',
     op: 'memberSub',
     variables,
-  });
-  const teamSub = cashay.subscribe(teamSubString, subscriber, {dependency: 'members', op: 'teamSub', variables});
-  const members = cashay.computed('members', [teamId, presenceSub, userId, memberSub, teamSub], resolveMembers)
+  }).data;
+  const {team} = cashay.subscribe(teamSubString, subscriber, {dependency: 'members', op: 'teamSub', variables}).data;
+  const members = cashay.computed('members', [teamId, presenceSub, userId, teamMembers, team], resolveMembers);
+  const projects = cashay.computed('projectSubs', [teamMembers], resolveProjectSubs);
+
   return {
     members,
-    memberSub,
-    teamSub
+    projects,
+    team
   };
 };
 
@@ -43,28 +45,25 @@ export default class MeetingContainer extends Component {
     dispatch: PropTypes.func.isRequired,
     location: PropTypes.object.isRequired,
     members: PropTypes.array,
-    memberSub: PropTypes.object.isRequired,
     params: PropTypes.shape({
       localPhaseItem: PropTypes.string,
       teamId: PropTypes.string.isRequired
     }).isRequired,
     presenceSub: PropTypes.object.isRequired,
     router: PropTypes.object,
-    teamSub: PropTypes.object.isRequired,
+    team: PropTypes.object.isRequired,
     user: PropTypes.shape({
       id: PropTypes.string.isRequired
     }).isRequired
   };
 
   componentWillReceiveProps(nextProps) {
-    const {team} = nextProps.teamSub.data;
-    const {children, router, params: {localPhaseItem}, location: {pathname}} = nextProps;
-    const oldTeam = this.props.teamSub.data.team;
+    const {children, router, params: {localPhaseItem}, location: {pathname}, team} = nextProps;
+    const {team: oldTeam} = this.props;
 
     // only needs to run when the url changes or the team subscription initializes
     // make sure the url is legit, but only run once (when the initial team subscription comes back)
     handleRedirects(team, children, localPhaseItem, pathname, router);
-
     // is the facilitator making moves?
     if (team.facilitatorPhaseItem !== oldTeam.facilitatorPhaseItem ||
       team.facilitatorPhase !== oldTeam.facilitatorPhase) {
@@ -80,9 +79,8 @@ export default class MeetingContainer extends Component {
   }
 
   render() {
-    const {children, dispatch, location, members, params, teamSub} = this.props;
+    const {children, dispatch, location, members, params, team} = this.props;
     const {teamId, localPhaseItem} = params;
-    const {team} = teamSub.data;
     const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem, name: teamName} = team;
 
     // if we have a team.name, we have an initial subscription success to the team object
@@ -109,7 +107,7 @@ export default class MeetingContainer extends Component {
           {children && React.cloneElement(children, {
             dispatch,
             isFacilitator,
-            localPhaseItem,
+            localPhaseItem: Number(localPhaseItem),
             facilitatorPhase,
             facilitatorPhaseItem,
             meetingPhase,

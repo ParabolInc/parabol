@@ -42,10 +42,8 @@ export const resolveTeamsAndMeetings = (tms) => {
   return {activeMeetings, teamSubs};
 };
 
-const resolveMembers = (teamId, presenceSub, myId, memberSub, teamSub) => {
+export const resolveMembers = (teamId, presenceSub, myId, teamMembers, team) => {
   const {presence} = presenceSub.data;
-  const {team} = teamSub.data;
-  const {teamMembers} = memberSub.data;
   const members = [];
   for (let i = 0; i < teamMembers.length; i++) {
     const member = teamMembers[i];

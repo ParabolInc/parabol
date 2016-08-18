@@ -32,6 +32,7 @@ export default function handleRedirects(team, children, localPhaseItem, pathname
   }
 
   // don't let anyone skip to the next phase
+  // TODO if the facilitator SOMEHOW skips ahead, it goes here we enter an infinite loop
   if (isSkippingAhead(localPhase, meetingPhase)) {
     const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
     router.replace(pushURL);

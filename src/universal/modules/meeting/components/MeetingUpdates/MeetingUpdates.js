@@ -14,7 +14,7 @@ import MeetingSectionSubheading from 'universal/modules/meeting/components/Meeti
 
 let s = {};
 
-const MeetingUpdatesLayout = (props) => {
+const MeetingUpdates = (props) => {
   const {members} = props;
   const team = members.filter((m) => m.connection === 'online');
   const aTeamMember = team[0]; // Just for testing
@@ -77,8 +77,9 @@ s = StyleSheet.create({
   }
 });
 
-MeetingUpdatesLayout.propTypes = {
+MeetingUpdates.propTypes = {
   members: PropTypes.array
 };
 
-export default look(MeetingUpdatesLayout);
+export default look(MeetingUpdates);
+

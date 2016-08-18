@@ -16,10 +16,10 @@ import {cashay} from 'cashay';
 
 let s = {};
 
-
-const MeetingCheckinLayout = (props) => {
+const MeetingCheckin = (props) => {
   const {
     bindHotkey,
+    localPhaseItem,
     isFacilitator,
     facilitatorPhaseItem,
     meetingPhase,
@@ -28,32 +28,16 @@ const MeetingCheckinLayout = (props) => {
     params,
     router,
   } = props;
-  const localPhaseItem = Number(props.localPhaseItem);
   const {teamId} = params;
   const isLastMember = localPhaseItem === members.length - 1;
-  const onCheckinNextTeammateClick = () => {
-    let nextPhase;
-    let nextPhaseItem;
-    if (!isLastMember) {
-      nextPhase = CHECKIN;
-      nextPhaseItem = localPhaseItem + 1;
-    } else {
-      nextPhase = UPDATES;
-      nextPhaseItem = 0;
-    }
-    const pushURL = makePushURL(teamId, nextPhase, nextPhaseItem);
-    if (isFacilitator) {
-      const options = {variables: {nextPhase, nextPhaseItem, teamId}};
-      cashay.mutate('moveMeeting', options);
-    }
-    router.push(pushURL);
-  };
-  bindHotkey('enter', onCheckinNextTeammateClick);
+
   const currentName = members[localPhaseItem] && members[localPhaseItem].preferredName;
   const isComplete = phaseOrder(meetingPhase) > phaseOrder(CHECKIN);
-  const progressBarClickFactory = (nextPhaseItem) => {
+  const phaseItemFactory = (nextPhaseItem) => {
     return () => {
-      const nextPhase = CHECKIN;
+      if (nextPhaseItem < 0) return;
+      const nextPhase = nextPhaseItem < members.length ? CHECKIN : UPDATES;
+      nextPhaseItem = nextPhase === CHECKIN ? nextPhaseItem : 0;
       if (isFacilitator) {
         const options = {variables: {nextPhase, nextPhaseItem, teamId}};
         cashay.mutate('moveMeeting', options);
@@ -62,15 +46,19 @@ const MeetingCheckinLayout = (props) => {
       router.push(pushURL);
     };
   };
+  const gotoNextItem = phaseItemFactory(localPhaseItem+1);
+  const gotoPrevItem = phaseItemFactory(localPhaseItem-1);
+  bindHotkey(['enter', 'right'], gotoNextItem);
+  bindHotkey('left', gotoPrevItem);
   return (
     <MeetingMain>
       {/* */}
       <MeetingSection paddingBottom="2rem" paddingTop=".75rem">
         <ProgressBar
-          clickFactory={progressBarClickFactory}
+          clickFactory={phaseItemFactory}
           isComplete={isComplete}
-          facilitatorPhaseItem={Number(facilitatorPhaseItem)}
-          meetingPhaseItem={Number(meetingPhaseItem)}
+          facilitatorPhaseItem={facilitatorPhaseItem}
+          meetingPhaseItem={meetingPhaseItem}
           localPhaseItem={localPhaseItem}
           membersCount={members.length}
         />
@@ -93,7 +81,7 @@ const MeetingCheckinLayout = (props) => {
             label={isLastMember ? 'Move on to updates' : 'Next teammate (press enter)'}
             scale="large"
             theme="warm"
-            onClick={onCheckinNextTeammateClick}
+            onClick={gotoNextItem}
           />
         </MeetingSection>
         {/* */}
@@ -104,14 +92,14 @@ const MeetingCheckinLayout = (props) => {
   );
 };
 
-MeetingCheckinLayout.propTypes = {
+MeetingCheckin.propTypes = {
   bindHotkey: PropTypes.func.isRequired,
-  facilitatorPhaseItem: PropTypes.string,
+  facilitatorPhaseItem: PropTypes.number.isRequired,
   isFacilitator: PropTypes.bool,
   localPhaseItem: PropTypes.string,
   members: PropTypes.array,
   meetingPhase: PropTypes.string.isRequired,
-  meetingPhaseItem: PropTypes.string.isRequired,
+  meetingPhaseItem: PropTypes.number.isRequired,
   params: PropTypes.shape({
     teamId: PropTypes.string.isRequired
   }).isRequired,
@@ -124,4 +112,4 @@ s = StyleSheet.create({
   }
 });
 
-export default withHotkey(withRouter(look(MeetingCheckinLayout)));
+export default withHotkey(withRouter(look(MeetingCheckin)));
