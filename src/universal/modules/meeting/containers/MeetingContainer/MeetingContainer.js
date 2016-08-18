@@ -60,12 +60,14 @@ export default class MeetingContainer extends Component {
 
   constructor(props) {
     super(props);
-    const {children, router, params: {localPhaseItem}, location: {pathname}, team} = props;
+    const {children, params, router, location: {pathname}, team} = props;
+    const localPhaseItem = Number(params.localPhaseItem);
     handleRedirects(team, children, localPhaseItem, pathname, router);
   }
 
   componentWillReceiveProps(nextProps) {
-    const {children, router, params: {localPhaseItem}, location: {pathname}, team} = nextProps;
+    const {children, router, params, location: {pathname}, team} = nextProps;
+    const localPhaseItem = Number(params.localPhaseItem);
     const {team: oldTeam} = this.props;
 
     // only needs to run when the url changes or the team subscription initializes
@@ -74,7 +76,8 @@ export default class MeetingContainer extends Component {
     // is the facilitator making moves?
     if (team.facilitatorPhaseItem !== oldTeam.facilitatorPhaseItem ||
       team.facilitatorPhase !== oldTeam.facilitatorPhase) {
-      const {teamId, localPhaseItem: oldLocalPhaseItem} = this.props.params;
+      const {teamId} = this.props.params;
+      const oldLocalPhaseItem = Number(this.props.params.localPhaseItem);
       const oldLocalPhase = getLocalPhase(pathname, teamId);
       // were we n'sync?
       const inSync = oldLocalPhase === oldTeam.facilitatorPhase && oldLocalPhaseItem === oldTeam.facilitatorPhaseItem;
@@ -87,7 +90,8 @@ export default class MeetingContainer extends Component {
 
   render() {
     const {children, dispatch, editing, location, members, params, projects, team} = this.props;
-    const {teamId, localPhaseItem} = params;
+    const {teamId} = params;
+    const localPhaseItem = Number(params.localPhaseItem);
     const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem, name: teamName} = team;
 
     // if we have a team.name, we have an initial subscription success to the team object
@@ -115,7 +119,7 @@ export default class MeetingContainer extends Component {
             dispatch,
             editing,
             isFacilitator,
-            localPhaseItem: Number(localPhaseItem),
+            localPhaseItem,
             facilitatorPhase,
             facilitatorPhaseItem,
             meetingPhase,
