@@ -15,7 +15,7 @@ const makeTeamMembers = (userId, tms) => {
     makeTeamMembers.cache = tms.map(teamId => ({id: `${userId}::${teamId}`}));
   }
   return makeTeamMembers.cache;
-}
+};
 
 const mapStateToProps = (state, props) => {
   const {sub: userId, tms} = state.auth.obj;
@@ -31,7 +31,7 @@ const mapStateToProps = (state, props) => {
 };
 
 const MeContainer = (props) => {
-  const {activeMeetings, preferredName, projects, teamSubs} = props;
+  const {activeMeetings, preferredName, projects} = props;
   return (
     <Me
       preferredName={preferredName}
@@ -42,7 +42,9 @@ const MeContainer = (props) => {
 };
 
 MeContainer.propTypes = {
+  activeMeetings: PropTypes.array.isRequired,
   preferredName: PropTypes.string.isRequired,
+  projects: PropTypes.array.isRequired,
   projectSubs: PropTypes.object.isRequired,
   teamSubs: PropTypes.object.isRequired,
   tms: PropTypes.array.isRequired

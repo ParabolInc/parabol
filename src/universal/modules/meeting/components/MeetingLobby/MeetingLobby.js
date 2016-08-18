@@ -9,6 +9,7 @@ import makeMeetingUrl from 'universal/utils/makeMeetingUrl';
 import Button from 'universal/components/Button/Button';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
+import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
 
 let s = {};
 
@@ -41,8 +42,8 @@ const MeetingLobby = (props) => {
       <MeetingSection flexToFill paddingBottom="2rem">
         {/* */}
         <div className={s.root}>
-          <h1 className={s.heading}>Hi, {teamName} Team!</h1>
-          <p className={s.label}>Tap to copy and share this meeting:</p>
+          <MeetingPhaseHeading>Hi, {teamName} Team!</MeetingPhaseHeading>
+          <p className={s.label}>{'Copy & share this meeting:'}</p>
           {/* */}
           {/* TODO: prevent navigation and show a “Copied!” message inline or toast */}
           {/* */}
@@ -59,11 +60,11 @@ const MeetingLobby = (props) => {
               </span>
             </a>
           </CopyToClipboard>
-          <h2 className={s.prompt}>Shall we begin with a Check-In round?</h2>
+          <h2 className={s.prompt}>Team Facilitator: begin the Check-In round!</h2>
           <Button
             label="Start Meeting"
             onClick={onStartMeetingClick}
-            size="large"
+            size="largest"
             style="outlined"
             theme="cool"
           />
@@ -87,14 +88,6 @@ MeetingLobby.propTypes = {
 s = StyleSheet.create({
   root: {
     textAlign: 'center'
-  },
-
-  heading: {
-    color: theme.palette.warm,
-    fontFamily: theme.typography.serif,
-    fontSize: theme.typography.s7,
-    fontWeight: 700,
-    margin: 0
   },
 
   label: {

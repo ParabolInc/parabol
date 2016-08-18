@@ -4,6 +4,7 @@ import * as t from 'universal/styles/theme';
 
 const combineStyles = StyleSheet.combineStyles;
 const {cool, warm, dark, mid, light} = t.palette;
+const black = t.palette.dark10d;
 const white = '#fff';
 
 let s = {};
@@ -88,6 +89,7 @@ Type.propTypes = {
     'dark',
     'mid',
     'light',
+    'black',
     'white'
   ]),
   width: PropTypes.oneOf([
@@ -213,6 +215,10 @@ s = StyleSheet.create({
 
   light: {
     color: light
+  },
+
+  black: {
+    color: black
   },
 
   white: {

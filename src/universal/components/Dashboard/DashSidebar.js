@@ -22,11 +22,11 @@ const DashSidebar = (props) => {
         <div className={styles.singleNavItem}>
           <DashNavItem
             href="/me"
-            label="My Outcomes"
+            label="My Dashboard"
           />
         </div>
         <div className={styles.navLabel}>
-          Teams
+          My Teams
         </div>
         <DashNavListContainer/>
         <div className={styles.addTeam} title="Add New Team">
