@@ -75,14 +75,6 @@ s = StyleSheet.create({
     textAlign: 'center'
   },
 
-  heading: {
-    color: theme.palette.warm,
-    fontFamily: theme.typography.serif,
-    fontSize: theme.typography.s7,
-    fontWeight: 700,
-    margin: 0
-  },
-
   label: {
     color: theme.palette.dark,
     fontSize: theme.typography.s3,
