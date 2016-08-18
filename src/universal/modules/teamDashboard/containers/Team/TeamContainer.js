@@ -59,11 +59,7 @@ TeamContainer.propTypes = {
 
   dispatch: PropTypes.func,
   user: PropTypes.object,
-  presenceSub: PropTypes.shape({
-    data: PropTypes.shape({
-      editing: PropTypes.object.isRequired
-    })
-  }),
+  editing: PropTypes.object.isRequired,
   params: PropTypes.shape({
     teamId: PropTypes.string.isRequired
   }),

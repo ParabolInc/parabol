@@ -9,16 +9,13 @@ import MeetingMain from 'universal/modules/meeting/components/MeetingMain/Meetin
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingSectionHeading/MeetingSectionHeading';
 import {CHECKIN, UPDATES, phaseOrder} from 'universal/utils/constants';
-import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import {withRouter} from 'react-router';
-import withHotkey from 'react-hotkey-hoc';
-import {cashay} from 'cashay';
+import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
 
 let s = {};
 
 const MeetingCheckin = (props) => {
   const {
-    bindHotkey,
     localPhaseItem,
     isFacilitator,
     facilitatorPhaseItem,
@@ -29,27 +26,12 @@ const MeetingCheckin = (props) => {
     router,
   } = props;
   const {teamId} = params;
+  const phaseItemFactory = makePhaseItemFactory(isFacilitator, members.length, router, teamId, CHECKIN, UPDATES);
   const isLastMember = localPhaseItem === members.length - 1;
 
   const currentName = members[localPhaseItem] && members[localPhaseItem].preferredName;
   const isComplete = phaseOrder(meetingPhase) > phaseOrder(CHECKIN);
-  const phaseItemFactory = (nextPhaseItem) => {
-    return () => {
-      if (nextPhaseItem < 0) return;
-      const nextPhase = nextPhaseItem < members.length ? CHECKIN : UPDATES;
-      nextPhaseItem = nextPhase === CHECKIN ? nextPhaseItem : 0;
-      if (isFacilitator) {
-        const options = {variables: {nextPhase, nextPhaseItem, teamId}};
-        cashay.mutate('moveMeeting', options);
-      }
-      const pushURL = makePushURL(teamId, nextPhase, nextPhaseItem);
-      router.push(pushURL);
-    };
-  };
-  const gotoNextItem = phaseItemFactory(localPhaseItem+1);
-  const gotoPrevItem = phaseItemFactory(localPhaseItem-1);
-  bindHotkey(['enter', 'right'], gotoNextItem);
-  bindHotkey('left', gotoPrevItem);
+  const gotoNextItem = phaseItemFactory(localPhaseItem + 1);
   return (
     <MeetingMain>
       {/* */}
@@ -93,10 +75,9 @@ const MeetingCheckin = (props) => {
 };
 
 MeetingCheckin.propTypes = {
-  bindHotkey: PropTypes.func.isRequired,
   facilitatorPhaseItem: PropTypes.number.isRequired,
   isFacilitator: PropTypes.bool,
-  localPhaseItem: PropTypes.string,
+  localPhaseItem: PropTypes.number.isRequired,
   members: PropTypes.array,
   meetingPhase: PropTypes.string.isRequired,
   meetingPhaseItem: PropTypes.number.isRequired,
@@ -112,4 +93,4 @@ s = StyleSheet.create({
   }
 });
 
-export default withHotkey(withRouter(look(MeetingCheckin)));
+export default withRouter(look(MeetingCheckin));

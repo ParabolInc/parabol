@@ -3,6 +3,7 @@ import look, {StyleSheet} from 'react-look';
 import t from 'universal/styles/theme';
 import {srOnly} from 'universal/styles/helpers';
 import {withRouter} from 'react-router';
+import withHotkey from 'react-hotkey-hoc';
 
 let s = {};
 const combineStyles = StyleSheet.combineStyles;
@@ -17,6 +18,7 @@ const blockWidth = avatarWidth + avatarGutter;
 
 const ProgressBar = (props) => {
   const {
+    bindHotkey,
     isComplete,
     facilitatorPhaseItem,
     localPhaseItem,
@@ -67,7 +69,10 @@ const ProgressBar = (props) => {
     }
     return points;
   };
-
+  const gotoNextItem = clickFactory(localPhaseItem + 1);
+  const gotoPrevItem = clickFactory(localPhaseItem - 1);
+  bindHotkey(['enter', 'right'], gotoNextItem);
+  bindHotkey('left', gotoPrevItem);
   return (
     <div className={s.root}>
       <div className={s.points}>
@@ -79,6 +84,7 @@ const ProgressBar = (props) => {
 };
 
 ProgressBar.propTypes = {
+  bindHotkey: PropTypes.func.isRequired,
   clickFactory: PropTypes.func,
   isComplete: PropTypes.bool,
   facilitatorPhaseItem: PropTypes.number, // index of 0
@@ -161,4 +167,4 @@ s = StyleSheet.create({
   }
 });
 
-export default withRouter(look(ProgressBar));
+export default withHotkey(withRouter(look(ProgressBar)));

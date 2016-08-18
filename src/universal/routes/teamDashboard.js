@@ -4,7 +4,7 @@ import makeReducer from 'universal/redux/makeReducer';
 const setImports = () =>
   new Map([
     ['component', System.import(
-      'universal/modules/teamDashboard/containers/Team/Team')],
+      'universal/modules/teamDashboard/containers/Team/TeamContainer')],
     ['socket', System.import('redux-socket-cluster')],
   ]);
 

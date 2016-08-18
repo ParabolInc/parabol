@@ -2,25 +2,53 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 
 import Avatar from 'universal/components/Avatar/Avatar';
-import Columns from 'universal/components/Columns/Columns';
 import IconLink from 'universal/components/IconLink/IconLink';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingSectionHeading/MeetingSectionHeading';
 // eslint-disable-next-line max-len
 import MeetingSectionSubheading from 'universal/modules/meeting/components/MeetingSectionSubheading/MeetingSectionSubheading';
-
-// TODO: Reorganize under new folder: /meeting/components/MeetingLayouts (TA)
+import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
+import {UPDATES, AGENDA, phaseOrder} from 'universal/utils/constants';
+import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
+import {withRouter} from 'react-router';
+import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
 
 let s = {};
 
 const MeetingUpdates = (props) => {
-  const {members} = props;
-  const team = members.filter((m) => m.connection === 'online');
-  const aTeamMember = team[0]; // Just for testing
-  console.log('in updates');
+  const {
+    dispatch,
+    editing,
+    localPhaseItem,
+    isFacilitator,
+    facilitatorPhaseItem,
+    meetingPhase,
+    meetingPhaseItem,
+    members,
+    params,
+    projects,
+    router,
+  } = props;
+  const {teamId} = params;
+  const currentTeamMember = members[localPhaseItem];
+  const phaseItemFactory = makePhaseItemFactory(isFacilitator, members.length, router, teamId, UPDATES, AGENDA);
+  const self = members.find(m => m.isSelf);
+  const isComplete = phaseOrder(meetingPhase) > phaseOrder(UPDATES);
+  const gotoNextItem = phaseItemFactory(localPhaseItem + 1);
+  const teamMemberProjects = currentTeamMember ? projects[currentTeamMember.id] : [];
   return (
     <MeetingMain>
+      <MeetingSection paddingBottom="2rem" paddingTop=".75rem">
+        <ProgressBar
+          clickFactory={phaseItemFactory}
+          isComplete={isComplete}
+          facilitatorPhaseItem={facilitatorPhaseItem}
+          meetingPhaseItem={meetingPhaseItem}
+          localPhaseItem={localPhaseItem}
+          membersCount={members.length}
+        />
+      </MeetingSection>
       {/* */}
       <MeetingSection flexToFill paddingBottom="2rem">
         {/* */}
@@ -37,14 +65,25 @@ const MeetingUpdates = (props) => {
           <div className={s.nav}>
             <div className={s.linkSpacer}>{' '}</div>
             <div className={s.avatar}>
-              <Avatar {...aTeamMember} hasLabel labelRight size="large" />
+              <Avatar {...currentTeamMember} hasLabel labelRight size="large"/>
             </div>
             <div className={s.linkSpacer}>
-              <IconLink icon="arrow-circle-right" iconPlacement="right" label="Next team member" />
+              <IconLink
+                icon="arrow-circle-right"
+                iconPlacement="right"
+                label="Next team member"
+                onClick={gotoNextItem}
+              />
             </div>
           </div>
-          <Columns />
         </div>
+        <ProjectColumns
+          dispatch={dispatch}
+          editing={editing}
+          teamMemberId={self && self.id}
+          teamMembers={members}
+          projects={teamMemberProjects}
+        />
         {/* */}
         {/* */}
       </MeetingSection>
@@ -78,8 +117,20 @@ s = StyleSheet.create({
 });
 
 MeetingUpdates.propTypes = {
-  members: PropTypes.array
+  dispatch: PropTypes.func.isRequired,
+  editing: PropTypes.array,
+  facilitatorPhaseItem: PropTypes.number.isRequired,
+  isFacilitator: PropTypes.bool,
+  localPhaseItem: PropTypes.number.isRequired,
+  members: PropTypes.array,
+  meetingPhase: PropTypes.string.isRequired,
+  meetingPhaseItem: PropTypes.number.isRequired,
+  params: PropTypes.shape({
+    teamId: PropTypes.string.isRequired
+  }).isRequired,
+  projects: PropTypes.array,
+  router: PropTypes.object.isRequired,
 };
 
-export default look(MeetingUpdates);
+export default withRouter(look(MeetingUpdates));
 

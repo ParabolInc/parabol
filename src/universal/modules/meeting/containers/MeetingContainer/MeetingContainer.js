@@ -14,7 +14,7 @@ import AvatarGroup from 'universal/modules/meeting/components/AvatarGroup/Avatar
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import {teamSubString, teamMembersSubString} from './cashayHelpers';
-import {resolveMembers, resolveProjectSubs} from 'universal/subscriptions/computedSubs';
+import {resolveMembers, resolveProjectsByMember} from 'universal/subscriptions/computedSubs';
 
 const mapStateToProps = (state, props) => {
   const {params: {teamId}, presenceSub} = props;
@@ -27,8 +27,7 @@ const mapStateToProps = (state, props) => {
   }).data;
   const {team} = cashay.subscribe(teamSubString, subscriber, {dependency: 'members', op: 'teamSub', variables}).data;
   const members = cashay.computed('members', [teamId, presenceSub, userId, teamMembers, team], resolveMembers);
-  const projects = cashay.computed('projectSubs', [teamMembers], resolveProjectSubs);
-
+  const projects = cashay.computed('projectSubs', [teamMembers], resolveProjectsByMember);
   return {
     members,
     projects,
@@ -43,6 +42,7 @@ export default class MeetingContainer extends Component {
   static propTypes = {
     children: PropTypes.any,
     dispatch: PropTypes.func.isRequired,
+    editing: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     members: PropTypes.array,
     params: PropTypes.shape({
@@ -50,6 +50,7 @@ export default class MeetingContainer extends Component {
       teamId: PropTypes.string.isRequired
     }).isRequired,
     presenceSub: PropTypes.object.isRequired,
+    projects: PropTypes.object.isRequired,
     router: PropTypes.object,
     team: PropTypes.object.isRequired,
     user: PropTypes.shape({
@@ -57,8 +58,16 @@ export default class MeetingContainer extends Component {
     }).isRequired
   };
 
+  constructor(props) {
+    super(props);
+    const {children, params, router, location: {pathname}, team} = props;
+    const localPhaseItem = Number(params.localPhaseItem);
+    handleRedirects(team, children, localPhaseItem, pathname, router);
+  }
+
   componentWillReceiveProps(nextProps) {
-    const {children, router, params: {localPhaseItem}, location: {pathname}, team} = nextProps;
+    const {children, router, params, location: {pathname}, team} = nextProps;
+    const localPhaseItem = Number(params.localPhaseItem);
     const {team: oldTeam} = this.props;
 
     // only needs to run when the url changes or the team subscription initializes
@@ -67,7 +76,8 @@ export default class MeetingContainer extends Component {
     // is the facilitator making moves?
     if (team.facilitatorPhaseItem !== oldTeam.facilitatorPhaseItem ||
       team.facilitatorPhase !== oldTeam.facilitatorPhase) {
-      const {teamId, localPhaseItem: oldLocalPhaseItem} = this.props.params;
+      const {teamId} = this.props.params;
+      const oldLocalPhaseItem = Number(this.props.params.localPhaseItem);
       const oldLocalPhase = getLocalPhase(pathname, teamId);
       // were we n'sync?
       const inSync = oldLocalPhase === oldTeam.facilitatorPhase && oldLocalPhaseItem === oldTeam.facilitatorPhaseItem;
@@ -79,8 +89,9 @@ export default class MeetingContainer extends Component {
   }
 
   render() {
-    const {children, dispatch, location, members, params, team} = this.props;
-    const {teamId, localPhaseItem} = params;
+    const {children, dispatch, editing, location, members, params, projects, team} = this.props;
+    const {teamId} = params;
+    const localPhaseItem = Number(params.localPhaseItem);
     const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem, name: teamName} = team;
 
     // if we have a team.name, we have an initial subscription success to the team object
@@ -106,13 +117,15 @@ export default class MeetingContainer extends Component {
           </MeetingSection>
           {children && React.cloneElement(children, {
             dispatch,
+            editing,
             isFacilitator,
-            localPhaseItem: Number(localPhaseItem),
+            localPhaseItem,
             facilitatorPhase,
             facilitatorPhaseItem,
             meetingPhase,
             meetingPhaseItem,
             members,
+            projects,
             teamName
           })}
         </MeetingMain>

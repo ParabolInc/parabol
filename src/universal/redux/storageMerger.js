@@ -11,7 +11,13 @@ export default function merger(initialState, persistedState) {
     const value = persistedState[reducerName];
     if (reducerName === 'auth' && value) {
       // Always perform a fresh decode for security's sake:
-      const authTokenObj = jwtDecode(value.token);
+      let authTokenObj = null;
+      try {
+        authTokenObj = jwtDecode(value.token);
+      } catch (e) {
+        console.warn(`unable to decode jwt: ${e}`);
+        continue;
+      }
       if (authTokenObj.exp < Date.now() / 1000) {
         continue;
       }

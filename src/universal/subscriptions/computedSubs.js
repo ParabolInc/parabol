@@ -6,6 +6,20 @@ import {cashay} from 'cashay';
 const teamSubString = subscriptions.find(sub => sub.channel === TEAM).string;
 const projectSubString = subscriptions.find(sub => sub.channel === PROJECTS).string;
 
+export const resolveProjectsByMember = (teamMembers) => {
+  const projectSubs = {};
+  for (let i = 0; i < teamMembers.length; i++) {
+    const teamMemberId = teamMembers[i].id;
+    projectSubs[teamMemberId] = cashay.subscribe(projectSubString, subscriber, {
+      op: 'projectSub',
+      key: teamMemberId,
+      variables: {teamMemberId},
+      dependency: 'projectSubs'
+    }).data.projects;
+  }
+  return projectSubs;
+};
+
 export const resolveProjectSubs = (teamMembers) => {
   const projectSubs = [];
   for (let i = 0; i < teamMembers.length; i++) {

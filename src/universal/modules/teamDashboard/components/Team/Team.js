@@ -43,7 +43,7 @@ const Team = (props) => {
       }
       <DashMain hasOverlay={hasOverlay}>
         <DashHeader>
-          <DashHeaderInfo title={team.name}>
+          <DashHeaderInfo title={team && team.name}>
             <Link
               to={`/meeting/${teamId}`}
               style={linkStyle}
