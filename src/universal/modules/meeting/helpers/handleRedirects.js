@@ -11,10 +11,8 @@ export default function handleRedirects(team, children, localPhaseItem, pathname
     const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
     router.replace(pushURL);
   }
-
   const localPhase = getLocalPhase(pathname, teamId);
-
-// add a localPhaseItem to the url
+  // add a localPhaseItem to the url
   if (localPhaseItem === undefined && localPhase !== LOBBY && localPhase !== SUMMARY) {
     if (facilitatorPhase === localPhase) {
       const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
@@ -34,6 +32,7 @@ export default function handleRedirects(team, children, localPhaseItem, pathname
   }
 
   // don't let anyone skip to the next phase
+  // TODO if the facilitator SOMEHOW skips ahead, it goes here we enter an infinite loop
   if (isSkippingAhead(localPhase, meetingPhase)) {
     const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
     router.replace(pushURL);

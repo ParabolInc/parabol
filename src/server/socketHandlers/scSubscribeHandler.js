@@ -35,7 +35,10 @@ export default function scSubscribeHandler(exchange, socket) {
         subbedChannelName
       };
       // swallow return value, it's a subscription
-      graphql(Schema, subscription.string, {}, context, variables);
+      const result = await graphql(Schema, subscription.string, {}, context, variables);
+      if (result.errors) {
+        console.log('DEBUG GraphQL Subscribe Error:', result.errors);
+      }
     } else {
       console.log(`GraphQL subscription for ${channel} not found`);
       // not a graphql subscription

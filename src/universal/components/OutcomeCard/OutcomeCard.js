@@ -39,7 +39,12 @@ export default class OutcomeCard extends Component {
   }
 
   componentWillMount() {
-    this.initializeValues(this.props.content);
+    const {content, dispatch, field, focus, form } = this.props;
+    if (content) {
+      this.initializeValues(content);
+    } else {
+      dispatch(focus(form, field));
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -58,14 +63,14 @@ export default class OutcomeCard extends Component {
   toggleStatusMenu(nextOpenMenu) {
     const {openMenu} = this.state;
     nextOpenMenu = nextOpenMenu ||
-      openMenu === OPEN_STATUS_MENU ? OPEN_CONTENT_MENU : OPEN_STATUS_MENU;
+    openMenu === OPEN_STATUS_MENU ? OPEN_CONTENT_MENU : OPEN_STATUS_MENU;
     this.setState({openMenu: nextOpenMenu});
   }
 
   toggleAssignMenu(nextOpenMenu) {
     const {openMenu} = this.state;
     nextOpenMenu = nextOpenMenu ||
-      openMenu === OPEN_ASSIGN_MENU ? OPEN_CONTENT_MENU : OPEN_ASSIGN_MENU;
+    openMenu === OPEN_ASSIGN_MENU ? OPEN_CONTENT_MENU : OPEN_ASSIGN_MENU;
     this.setState({openMenu: nextOpenMenu});
   }
 
@@ -101,7 +106,9 @@ export default class OutcomeCard extends Component {
     rootStyles = combineStyles.apply(null, rootStyleOptions);
 
     const handleCardActive = (activeState) => {
-      if (activeState === undefined) { return; }
+      if (activeState === undefined) {
+        return;
+      }
       if (activeState) {
         dispatch(editingAdd(teamId, normalizedProjectId));
       } else {
@@ -114,13 +121,13 @@ export default class OutcomeCard extends Component {
       if (submittedContent !== content) {
         const options = {
           variables: {
-            updatedTask: {
+            updatedProject: {
               id: projectId,
               content: submittedContent
             }
           }
         };
-        cashay.mutate('updateTask', options);
+        cashay.mutate('updateProject', options);
       }
     };
 
@@ -156,6 +163,7 @@ export default class OutcomeCard extends Component {
                 handleActive={handleCardActive}
                 handleSubmit={handleSubmit(handleCardUpdate)}
                 timestamp={fromNow(updatedAt)}
+                doFocus={!content}
               />
             </form>
           </div>
@@ -177,6 +185,8 @@ OutcomeCard.propTypes = {
   content: PropTypes.string,
   dispatch: PropTypes.func.isRequired,
   editing: PropTypes.object,
+  field: PropTypes.string,
+  focus: PropTypes.func,
   status: PropTypes.oneOf(labels.projectStatus.slugs),
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,

@@ -9,17 +9,14 @@ import MeetingMain from 'universal/modules/meeting/components/MeetingMain/Meetin
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingSectionHeading/MeetingSectionHeading';
 import {CHECKIN, UPDATES, phaseOrder} from 'universal/utils/constants';
-import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import {withRouter} from 'react-router';
-import withHotkey from 'react-hotkey-hoc';
-import {cashay} from 'cashay';
+import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
 
 let s = {};
 
-
-const MeetingCheckinLayout = (props) => {
+const MeetingCheckin = (props) => {
   const {
-    bindHotkey,
+    localPhaseItem,
     isFacilitator,
     facilitatorPhaseItem,
     meetingPhase,
@@ -28,49 +25,22 @@ const MeetingCheckinLayout = (props) => {
     params,
     router,
   } = props;
-  const localPhaseItem = Number(props.localPhaseItem);
   const {teamId} = params;
+  const phaseItemFactory = makePhaseItemFactory(isFacilitator, members.length, router, teamId, CHECKIN, UPDATES);
   const isLastMember = localPhaseItem === members.length - 1;
-  const onCheckinNextTeammateClick = () => {
-    let nextPhase;
-    let nextPhaseItem;
-    if (!isLastMember) {
-      nextPhase = CHECKIN;
-      nextPhaseItem = localPhaseItem + 1;
-    } else {
-      nextPhase = UPDATES;
-      nextPhaseItem = 0;
-    }
-    const pushURL = makePushURL(teamId, nextPhase, nextPhaseItem);
-    if (isFacilitator) {
-      const options = {variables: {nextPhase, nextPhaseItem, teamId}};
-      cashay.mutate('moveMeeting', options);
-    }
-    router.push(pushURL);
-  };
-  bindHotkey('enter', onCheckinNextTeammateClick);
+
   const currentName = members[localPhaseItem] && members[localPhaseItem].preferredName;
   const isComplete = phaseOrder(meetingPhase) > phaseOrder(CHECKIN);
-  const progressBarClickFactory = (nextPhaseItem) => {
-    return () => {
-      const nextPhase = CHECKIN;
-      if (isFacilitator) {
-        const options = {variables: {nextPhase, nextPhaseItem, teamId}};
-        cashay.mutate('moveMeeting', options);
-      }
-      const pushURL = makePushURL(teamId, nextPhase, nextPhaseItem);
-      router.push(pushURL);
-    };
-  };
+  const gotoNextItem = phaseItemFactory(localPhaseItem + 1);
   return (
     <MeetingMain>
       {/* */}
       <MeetingSection paddingBottom="2rem" paddingTop=".75rem">
         <ProgressBar
-          clickFactory={progressBarClickFactory}
+          clickFactory={phaseItemFactory}
           isComplete={isComplete}
-          facilitatorPhaseItem={Number(facilitatorPhaseItem)}
-          meetingPhaseItem={Number(meetingPhaseItem)}
+          facilitatorPhaseItem={facilitatorPhaseItem}
+          meetingPhaseItem={meetingPhaseItem}
           localPhaseItem={localPhaseItem}
           membersCount={members.length}
         />
@@ -93,7 +63,7 @@ const MeetingCheckinLayout = (props) => {
             label={isLastMember ? 'Move on to updates' : 'Next teammate (press enter)'}
             scale="large"
             theme="warm"
-            onClick={onCheckinNextTeammateClick}
+            onClick={gotoNextItem}
           />
         </MeetingSection>
         {/* */}
@@ -104,14 +74,13 @@ const MeetingCheckinLayout = (props) => {
   );
 };
 
-MeetingCheckinLayout.propTypes = {
-  bindHotkey: PropTypes.func.isRequired,
-  facilitatorPhaseItem: PropTypes.string,
+MeetingCheckin.propTypes = {
+  facilitatorPhaseItem: PropTypes.number.isRequired,
   isFacilitator: PropTypes.bool,
-  localPhaseItem: PropTypes.string,
+  localPhaseItem: PropTypes.number.isRequired,
   members: PropTypes.array,
   meetingPhase: PropTypes.string.isRequired,
-  meetingPhaseItem: PropTypes.string.isRequired,
+  meetingPhaseItem: PropTypes.number.isRequired,
   params: PropTypes.shape({
     teamId: PropTypes.string.isRequired
   }).isRequired,
@@ -124,4 +93,4 @@ s = StyleSheet.create({
   }
 });
 
-export default withHotkey(withRouter(look(MeetingCheckinLayout)));
+export default withRouter(look(MeetingCheckin));

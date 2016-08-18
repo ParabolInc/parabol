@@ -11,11 +11,10 @@ export default function wsGraphQLHandler(exchange, socket) {
       socket
     };
     // response = {errors, data}
-    const response = await graphql(Schema, query, {}, context, variables);
-    if (response.errors) {
-      // UNCOMMENT ME TO FOR DEBUGGING PURPOSES:
-      console.log('GQL RES: ', response);
+    const result = await graphql(Schema, query, {}, context, variables);
+    if (result.errors) {
+      console.log('DEBUG GraphQL Error:', result.errors);
     }
-    cb(null, response);
+    cb(null, result);
   };
 }

@@ -1,7 +1,8 @@
 exports.up = async (r) => {
   const meetingTables = [
     r.tableCreate('Meeting'),
-    r.tableCreate('Task'),
+    r.tableCreate('Project'),
+    r.tableCreate('Action'),
     r.tableCreate('AgendaItem'),
     r.tableCreate('Participant'),
     r.tableCreate('Outcome'),
@@ -10,8 +11,8 @@ exports.up = async (r) => {
   await Promise.all(meetingTables);
   const meetingIndices = [
     r.table('Meeting').indexCreate('teamId'),
-    r.table('Task').indexCreate('teamMemberId'),
-    r.table('Task').indexCreate('userId'),
+    r.table('Project').indexCreate('teamMemberId'),
+    r.table('Action').indexCreate('userId'),
     r.table('AgendaItem').indexCreate('teamId'),
     r.table('Participant').indexCreate('meetingId'),
     r.table('Participant').indexCreate('userId'),

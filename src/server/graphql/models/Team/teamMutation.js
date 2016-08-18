@@ -5,7 +5,8 @@ import {
   GraphQLNonNull,
   GraphQLBoolean,
   GraphQLID,
-  GraphQLString
+  GraphQLString,
+  GraphQLInt
 } from 'graphql';
 import {CreateTeamInput, UpdateTeamInput, Team} from './teamSchema';
 import shuffle from 'universal/utils/shuffle';
@@ -28,7 +29,7 @@ export default {
     async resolve(source, {teamId}, {authToken, socket}) {
       // TODO & remove above eslint pragma
       const teamMembers = await r.table('TeamMember').getAll(teamId, {index: 'teamId'}).pluck('id');
-    // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
       const dbPromises = teamMembers.map((member, idx) => {
         // TODO & remove above eslint pragma
         return r.table('TeamMember').get(member.id).update({
@@ -55,11 +56,11 @@ export default {
         description: 'The desired phase for the meeting'
       },
       nextPhaseItem: {
-        type: GraphQLString,
+        type: GraphQLInt,
         description: 'The item within the phase to set the meeting to'
       }
     },
-    async resolve(source, {teamId, nextPhase, nextPhaseItem = '0'}, {authToken, socket}) {
+    async resolve(source, {teamId, nextPhase, nextPhaseItem = 0}, {authToken, socket}) {
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
       const team = await r.table('Team').get(teamId);
@@ -74,7 +75,7 @@ export default {
       if (meetingPhase !== nextPhase) {
         incrementsProgress = true;
       } else if (nextPhase === CHECKIN || nextPhase === UPDATES) {
-        incrementsProgress = Number(nextPhaseItem) - Number(meetingPhaseItem) === 1;
+        incrementsProgress = nextPhaseItem - meetingPhaseItem === 1;
       } else if (nextPhase === AGENDA) {
         // TODO
         // incrementsProgress =

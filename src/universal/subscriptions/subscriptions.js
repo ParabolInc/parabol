@@ -10,11 +10,9 @@ export default [
       actions(userId: $userId) {
         content
         id
-        status
-        teamMemberId
-        type
+        isComplete
         updatedAt
-        userSort
+        sortOrder
       }
     }`,
     channelfy: variables => `actions/${variables.teamMemberId}`,
@@ -60,7 +58,6 @@ export default [
         id
         status
         teamMemberId
-        type
         updatedAt
         userSort
         teamSort

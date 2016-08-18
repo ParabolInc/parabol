@@ -6,13 +6,11 @@ const setMeetingImports = () =>
     ['component', System.import(
       'universal/modules/meeting/containers/MeetingContainer/MeetingContainer')],
     ['socket', System.import('redux-socket-cluster')],
-    ['meeting', System.import('universal/modules/meeting/ducks/meetingDuck')]
   ]);
 
 const getMeetingImports = importMap => ({
   component: importMap.get('component'),
   socket: importMap.get('socket').socketClusterReducer,
-  meeting: importMap.get('meeting').default
 });
 
 export default store => ({

@@ -6,7 +6,7 @@ import {
 GraphQLEnumType
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
-import {TaskStatus} from '../Task/taskSchema';
+import {ProjectStatus} from '../Project/projectSchema';
 import {USER_DASH, TEAM_DASH, MEETING} from 'universal/utils/constants';
 
 export const ChangeModule = new GraphQLEnumType({
@@ -29,8 +29,8 @@ export const ChangeModule = new GraphQLEnumType({
 // });
 //
 // const StatusDiff = new GraphQLObjectType({
-//   old: {type: TaskStatus, description: 'The status as it was in pre-meeting'},
-//   new: {type: TaskStatus, description: 'The status as it was in post-meeting'},
+//   old: {type: ProjectStatus, description: 'The status as it was in pre-meeting'},
+//   new: {type: ProjectStatus, description: 'The status as it was in post-meeting'},
 // });
 
 export const TaskHistory = new GraphQLObjectType({
@@ -51,7 +51,7 @@ export const TaskHistory = new GraphQLObjectType({
       type: GraphQLID,
       description: 'Owner of the task'
     },
-    status: {type: new GraphQLNonNull(TaskStatus), description: 'The status of the task'},
+    status: {type: new GraphQLNonNull(ProjectStatus), description: 'The status of the task'},
     updatedAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the task was changed'

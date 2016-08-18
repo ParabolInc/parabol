@@ -4,7 +4,7 @@ import theme from 'universal/styles/theme';
 import themeLabels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import TeamCard from 'universal/modules/teamDashboard/components/TeamCard/TeamCard';
-import {ACTIVE, STUCK, DONE, FUTURE, PROJECT} from 'universal/utils/constants';
+import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
 import FontAwesome from 'react-fontawesome';
 import {cashay} from 'cashay';
 import shortid from 'shortid';
@@ -28,16 +28,15 @@ const ProjectColumn = (props) => {
   const [, teamId] = teamMemberId.split('::');
   const statusUpperFirst = upperFirst(status);
   const handleAddProject = () => {
-    const newTask = {
+    const newProject = {
       id: `${teamId}::${shortid.generate()}`,
-      type: PROJECT,
       status,
       teamMemberId,
       teamSort: getNextSort(projects, 'teamSort'),
       // put it at the top of the list, make em sort it if they don't like it
       userSort: 0
     };
-    cashay.mutate('createTask', {variables: {newTask}});
+    cashay.mutate('createProject', {variables: {newProject}});
   };
   return (
     <div className={styles.column}>

@@ -36,7 +36,6 @@ const Team = (props) => {
       <DashSidebar
         activeArea="team"
         activeTeamId={teamId}
-        dispatch={dispatch}
         user={user}
       />
       {hasOverlay &&
@@ -44,7 +43,7 @@ const Team = (props) => {
       }
       <DashMain hasOverlay={hasOverlay}>
         <DashHeader>
-          <DashHeaderInfo title={team.name}>
+          <DashHeaderInfo title={team && team.name}>
             <Link
               to={`/meeting/${teamId}`}
               style={linkStyle}
@@ -79,7 +78,7 @@ const Team = (props) => {
 
 Team.propTypes = {
   activeMeetings: PropTypes.array,
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func,
   editing: PropTypes.object,
   projects: PropTypes.array,
   teamId: PropTypes.string.isRequired,

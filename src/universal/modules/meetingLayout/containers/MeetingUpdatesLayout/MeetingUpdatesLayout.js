@@ -1,9 +1,10 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
+import {CHECKIN, UPDATES} from 'universal/utils/constants';
 
 import Avatar from 'universal/components/Avatar/Avatar';
 import AvatarGroup from '../../../meeting/components/AvatarGroup/AvatarGroup';
-import Columns from 'universal/components/Columns/Columns';
+// import Columns from 'universal/components/Columns/Columns';
 import IconLink from 'universal/components/IconLink/IconLink';
 import ShortcutsMenu from 'universal/modules/team/components/ShortcutsMenu/ShortcutsMenu';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
@@ -65,13 +66,13 @@ const MeetingUpdatesLayout = (props) => {
   return (
     <MeetingLayout>
       {/* */}
-      <Sidebar facilitatorPhase="checkin" localPhase="updates" {...team} />
+      <Sidebar facilitatorPhase={CHECKIN} localPhase={UPDATES} {...team} />
       {/* */}
       <MeetingMain>
         {/* */}
         <MeetingSection paddingBottom="2rem" paddingTop="2rem">
           <div className={s.avatars}>
-            <AvatarGroup avatars={team.members} label="Updates given:" />
+            <AvatarGroup avatars={team.members} localPhase={UPDATES} />
           </div>
         </MeetingSection>
         {/* */}
@@ -97,7 +98,7 @@ const MeetingUpdatesLayout = (props) => {
                 <IconLink icon="arrow-circle-right" iconPlacement="right" label="Next team member" />
               </div>
             </div>
-            <Columns />
+            Outcome Columns
           </div>
           {/* */}
           {/* */}

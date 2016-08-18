@@ -17,13 +17,13 @@ const OutcomeCardAssignMenu = (props) => {
     }
     const options = {
       variables: {
-        updatedTask: {
+        updatedProject: {
           id: projectId,
           teamMemberId: newOwner
         }
       }
     };
-    cashay.mutate('updateTask', options);
+    cashay.mutate('updateProject', options);
     if (onComplete) {
       onComplete();
     }
