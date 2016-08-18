@@ -4,7 +4,7 @@ import theme from 'universal/styles/theme';
 import themeLabels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import TeamCard from 'universal/modules/teamDashboard/components/TeamCard/TeamCard';
-import {ACTIVE, STUCK, DONE, FUTURE, PROJECT} from 'universal/utils/constants';
+import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
 import FontAwesome from 'react-fontawesome';
 import {cashay} from 'cashay';
 import shortid from 'shortid';

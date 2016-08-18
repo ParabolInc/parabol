@@ -77,7 +77,6 @@ export default class OutcomeCard extends Component {
   render() {
     const {openMenu} = this.state;
     const {
-      focus,
       content,
       dispatch,
       editing,
@@ -136,38 +135,38 @@ export default class OutcomeCard extends Component {
       <div className={rootStyles}>
         {/* card main */}
         {hasOpenAssignMenu &&
-        <OutcomeCardAssignMenu
-          currentOwner={owner}
-          projectId={projectId}
-          teamMembers={teamMembers}
-          onComplete={() => this.toggleAssignMenu(OPEN_CONTENT_MENU)}
-        />
+          <OutcomeCardAssignMenu
+            currentOwner={owner}
+            projectId={projectId}
+            teamMembers={teamMembers}
+            onComplete={() => this.toggleAssignMenu(OPEN_CONTENT_MENU)}
+          />
         }
         {hasOpenStatusMenu &&
-        <OutcomeCardStatusMenu
-          isArchived={isArchived}
-          projectId={projectId}
-          status={status}
-        />
+          <OutcomeCardStatusMenu
+            isArchived={isArchived}
+            projectId={projectId}
+            status={status}
+          />
         }
         {!hasOpenAssignMenu && !hasOpenStatusMenu &&
-        <div className={styles.body}>
-          <form>
-            <Field
-              showByTeam={showByTeam}
-              name={projectId}
-              component={OutcomeCardTextarea}
-              editingMe={editingMe}
-              teamMemberId={teamMemberId}
-              teamMembers={teamMembers}
-              isProject={isProject}
-              handleActive={handleCardActive}
-              handleSubmit={handleSubmit(handleCardUpdate)}
-              timestamp={fromNow(updatedAt)}
-              doFocus={!content}
-            />
-          </form>
-        </div>
+          <div className={styles.body}>
+            <form>
+              <Field
+                showByTeam={showByTeam}
+                name={projectId}
+                component={OutcomeCardTextarea}
+                editingMe={editingMe}
+                teamMemberId={teamMemberId}
+                teamMembers={teamMembers}
+                isProject={isProject}
+                handleActive={handleCardActive}
+                handleSubmit={handleSubmit(handleCardUpdate)}
+                timestamp={fromNow(updatedAt)}
+                doFocus={!content}
+              />
+            </form>
+          </div>
         }
         {/* card footer */}
         <OutcomeCardFooter
@@ -186,6 +185,8 @@ OutcomeCard.propTypes = {
   content: PropTypes.string,
   dispatch: PropTypes.func.isRequired,
   editing: PropTypes.object,
+  field: PropTypes.string,
+  focus: PropTypes.func,
   status: PropTypes.oneOf(labels.projectStatus.slugs),
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,

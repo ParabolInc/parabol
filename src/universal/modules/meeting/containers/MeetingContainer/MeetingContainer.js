@@ -42,6 +42,7 @@ export default class MeetingContainer extends Component {
   static propTypes = {
     children: PropTypes.any,
     dispatch: PropTypes.func.isRequired,
+    editing: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     members: PropTypes.array,
     params: PropTypes.shape({
@@ -49,6 +50,7 @@ export default class MeetingContainer extends Component {
       teamId: PropTypes.string.isRequired
     }).isRequired,
     presenceSub: PropTypes.object.isRequired,
+    projects: PropTypes.array.isRequired,
     router: PropTypes.object,
     team: PropTypes.object.isRequired,
     user: PropTypes.shape({
