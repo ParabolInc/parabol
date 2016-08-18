@@ -50,13 +50,19 @@ export default class MeetingContainer extends Component {
       teamId: PropTypes.string.isRequired
     }).isRequired,
     presenceSub: PropTypes.object.isRequired,
-    projects: PropTypes.array.isRequired,
+    projects: PropTypes.object.isRequired,
     router: PropTypes.object,
     team: PropTypes.object.isRequired,
     user: PropTypes.shape({
       id: PropTypes.string.isRequired
     }).isRequired
   };
+
+  constructor(props) {
+    super(props);
+    const {children, router, params: {localPhaseItem}, location: {pathname}, team} = props;
+    handleRedirects(team, children, localPhaseItem, pathname, router);
+  }
 
   componentWillReceiveProps(nextProps) {
     const {children, router, params: {localPhaseItem}, location: {pathname}, team} = nextProps;
