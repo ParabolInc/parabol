@@ -4,9 +4,32 @@ import {
   GraphQLBoolean,
   GraphQLID
 } from 'graphql';
-import {SOUNDOFF, PRESENT} from 'universal/subscriptions/constants';
+import {EDIT, PRESENT, SOUNDOFF} from 'universal/subscriptions/constants';
 
 export default {
+  edit: {
+    description: 'Announce to a presence channel that you are present',
+    type: GraphQLBoolean,
+    args: {
+      teamId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The team id to announce presence in'
+      },
+      editing: {
+        type: GraphQLID,
+        description: 'A normalized object currently being edited by the user'
+      }
+    },
+    async resolve(source, {teamId, editing}, {authToken, exchange, socket}) {
+      requireSUOrTeamMember(authToken, teamId);
+      requireWebsocketExchange(exchange);
+      requireWebsocket(socket);
+      const channel = `presence/${teamId}`;
+      // tell targetId that user is in the team
+      const payload = {type: EDIT, editing, socketId: socket.id};
+      exchange.publish(channel, payload);
+    }
+  },
   present: {
     description: 'Announce to a presence channel that you are present',
     type: GraphQLBoolean,
@@ -21,7 +44,7 @@ export default {
       },
       editing: {
         type: GraphQLID,
-        description: 'A list of normalized objects being edited by the user'
+        description: 'A normalized object currently being edited by the user'
       }
     },
     async resolve(source, {teamId, targetId, editing}, {authToken, exchange, socket}) {

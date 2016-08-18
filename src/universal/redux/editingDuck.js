@@ -31,7 +31,7 @@ export function editingAdd(teamId, normalizedObjId) {
         editing
       }
     };
-    return cashay.mutate('present', options);
+    return cashay.mutate('edit', options);
   };
 }
 
@@ -49,6 +49,6 @@ export function editingRemove(teamId, normalizedObjId) {
         editing
       }
     };
-    return cashay.mutate('present', options);
+    return cashay.mutate('edit', options);
   };
 }

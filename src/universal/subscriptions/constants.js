@@ -1,7 +1,8 @@
 // EVENTS
-export const SOUNDOFF = 'SOUNDOFF';
-export const PRESENT = 'PRESENT';
+export const EDIT = 'EDIT';
 export const LEAVE = 'LEAVE';
+export const PRESENT = 'PRESENT';
+export const SOUNDOFF = 'SOUNDOFF';
 
 // CHANNELS
 export const ACTIONS = 'actions';
