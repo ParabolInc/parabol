@@ -162,6 +162,10 @@ be stuck and need something from somebody else.
 able to click and navigate away from their other TMs, so that they can get or
 update the information they seek.
 
+- [X] When a the meeting is advanced to the project updates phase, the team
+will want to see a list of projects by TM, so that each participant has a
+moment to update the team on their work.
+
 - [ ] When a TM is asked to give project updates, they will want to know
 what to say, so that they understand what is being asked of them.
 
