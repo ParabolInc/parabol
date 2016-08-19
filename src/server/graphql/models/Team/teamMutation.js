@@ -170,7 +170,15 @@ export default {
       }
       const teamMemberId = `${userId}::${newTeam.id}`;
 
-      const verifiedLeader = {id: teamMemberId, isActive: true, isLead: true, isFacilitator: true, checkInOrder: 0};
+      const verifiedLeader = {
+        id: teamMemberId,
+        isActive: true,
+        isLead: true,
+        isFacilitator: true,
+        checkInOrder: 0,
+        teamId: newTeam.id,
+        userId
+      };
       const verifiedTeam = {
         ...newTeam,
         facilitatorPhase: LOBBY,

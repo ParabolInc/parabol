@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react';
 import {cashay} from 'cashay';
-import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import {auth0} from 'universal/utils/clientOptions';
 import {setAuthToken} from 'universal/redux/authDuck';
 
@@ -17,7 +16,6 @@ export function showLock(dispatch) {
     if (error) throw error;
     // TODO: stuff this in a utility function:
     dispatch(setAuthToken(authToken));
-    cashay.create({httpTransport: new ActionHTTPTransport(authToken)});
     const options = {variables: {authToken}};
     cashay.mutate('updateUserWithAuthToken', options);
   });
