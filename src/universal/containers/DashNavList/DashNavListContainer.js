@@ -6,14 +6,14 @@ import subscriptions from 'universal/subscriptions/subscriptions';
 import {TEAM} from 'universal/subscriptions/constants';
 import subscriber from 'universal/subscriptions/subscriber';
 
-const teamSubString = subscriptions.find(sub => sub.channel === TEAM).string;
+const teamSubQuery = subscriptions.find(sub => sub.channel === TEAM).string;
 
 const resolveDashNavTeams = (tms) => {
   const teams = [];
   for (let i = 0; i < tms.length; i++) {
     const teamId = tms[i];
-    const {id, name} = cashay.subscribe(teamSubString, subscriber, {
-      op: 'teamSub',
+    const {id, name} = cashay.subscribe(teamSubQuery, subscriber, {
+      op: TEAM,
       key: teamId,
       variables: {teamId},
       dep: 'dashNavTeams'

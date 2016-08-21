@@ -8,21 +8,21 @@ import makeProjectsByStatus from 'universal/utils/makeProjectsByStatus';
 import {TEAM_DASH} from 'universal/utils/constants';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
 
-const projectSubString = subscriptions.find(sub => sub.channel === PROJECTS).string;
-const teamMembersSubString = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
+const projectSubQuery = subscriptions.find(sub => sub.channel === PROJECTS).string;
+const teamMembersSubQuery = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
 
 const resolveTeamProjects = (myTeamMemberId) => {
   const [, teamId] = myTeamMemberId.split('::');
-  const {teamMembers} = cashay.subscribe(teamMembersSubString, subscriber, {
-    op: 'teamMembers',
+  const {teamMembers} = cashay.subscribe(teamMembersSubQuery, subscriber, {
+    op: TEAM_MEMBERS,
     variables: {teamId},
     dep: 'teamColProjects'
   }).data;
   const projectSubs = [];
   for (let i = 0; i < teamMembers.length; i++) {
     const {id: teamMemberId} = teamMembers[i];
-    projectSubs[i] = cashay.subscribe(projectSubString, subscriber, {
-      op: 'projectSub',
+    projectSubs[i] = cashay.subscribe(projectSubQuery, subscriber, {
+      op: PROJECTS,
       key: teamMemberId,
       variables: {teamMemberId},
       dep: 'teamColProjects'

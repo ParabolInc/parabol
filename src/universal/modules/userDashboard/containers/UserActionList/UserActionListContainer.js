@@ -6,12 +6,12 @@ import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import UserActionList from 'universal/modules/userDashboard/components/UserActionList/UserActionList';
 
-const actionsSubString = subscriptions.find(sub => sub.channel === ACTIONS).string;
+const actionsSubQuery = subscriptions.find(sub => sub.channel === ACTIONS).string;
 
 const resolveUserActions = (userId) => {
-  const {actions} = cashay.subscribe(actionsSubString, subscriber, {
+  const {actions} = cashay.subscribe(actionsSubQuery, subscriber, {
     dep: 'userActions',
-    op: 'actionSub',
+    op: ACTIONS,
     variables: {userId},
   }).data;
   return actions.sort((a, b) => a.userSort > b.userSort);

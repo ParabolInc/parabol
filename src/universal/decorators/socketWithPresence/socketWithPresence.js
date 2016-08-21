@@ -10,15 +10,16 @@ import socketCluster from 'socketcluster-client';
 import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
 import resolveEditingByTeam from 'universal/subscriptions/computed/resolveEditingByTeam';
 
-const presenceSubscription = subscriptions.find(sub => sub.channel === PRESENCE);
+const presenceSub = subscriptions.find(sub => sub.channel === PRESENCE);
+const presenceSubQuery = presenceSub.string;
 
 const mapStateToProps = (state, props) => {
   const {params: {teamId}} = props;
   return {
     editing: cashay.computed('editingByTeam', [teamId], resolveEditingByTeam),
-    presence: cashay.subscribe(presenceSubscription.string, presenceSubscriber, {
-      variables: {teamId},
-      op: 'presenceByTeam'
+    presence: cashay.subscribe(presenceSubQuery, presenceSubscriber, {
+      op: PRESENCE,
+      variables: {teamId}
     })
   }
 };
@@ -41,8 +42,8 @@ export default ComposedComponent => {
       const socket = socketCluster.connect();
       socket.on('subscribe', channelName => {
         const {teamId} = props.params;
-        const presenceSub = presenceSubscription.channelfy({teamId});
-        const canPublish = presenceSub === channelName;
+        const presenceChannel = presenceSub.channelfy({teamId});
+        const canPublish = presenceChannel === channelName;
         if (canPublish) {
           const options = {variables: {teamId}};
           cashay.mutate('soundOff', options);

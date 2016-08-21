@@ -4,14 +4,14 @@ import subscriptions from 'universal/subscriptions/subscriptions';
 import presenceEditingHelper from 'universal/subscriptions/presenceEditingHelper';
 import {PRESENCE} from 'universal/subscriptions/constants';
 
-const presenceSubscription = subscriptions.find(sub => sub.channel === PRESENCE);
+const presenceSubQuery = subscriptions.find(sub => sub.channel === PRESENCE).string;
 
 export default function resolveEditingByTeam(teamId) {
   const presenceSubOptions = {
     variables: {teamId},
-    op: 'presenceByTeam',
+    op: PRESENCE,
     dep: 'editingByTeam'
   };
-  const {presence} = cashay.subscribe(presenceSubscription.string, presenceSubscriber, presenceSubOptions).data;
+  const {presence} = cashay.subscribe(presenceSubQuery, presenceSubscriber, presenceSubOptions).data;
   return presenceEditingHelper(presence);
 };

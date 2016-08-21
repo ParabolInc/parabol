@@ -3,25 +3,15 @@ import {PROJECTS, TEAM} from 'universal/subscriptions/constants';
 import subscriber from 'universal/subscriptions/subscriber';
 import {cashay} from 'cashay';
 
-const teamSubString = subscriptions.find(sub => sub.channel === TEAM).string;
-const projectSubString = subscriptions.find(sub => sub.channel === PROJECTS).string;
-
-export const resolveEditingByTeam = (teamId) => {
-  const presenceSubOptions = {
-    variables: {teamId},
-    op: 'presenceByTeam',
-    dep: 'editingByTeam'
-  };
-  const {presence} = cashay.subscribe(presenceSubscription.string, presenceSubscriber, presenceSubOptions).data;
-  return presenceEditingHelper(presence);
-};
+const teamSubQuery = subscriptions.find(sub => sub.channel === TEAM).string;
+const projectSubQuery = subscriptions.find(sub => sub.channel === PROJECTS).string;
 
 export const resolveActiveMeetings = (tms) => {
   const activeMeetings = [];
   for (let i = 0; i < tms.length; i++) {
     const teamId = tms[i];
-    const {team} = cashay.subscribe(teamSubString, subscriber, {
-      op: 'teamSub',
+    const {team} = cashay.subscribe(teamSubQuery, subscriber, {
+      op: TEAM,
       key: teamId,
       variables: {teamId},
       dep: 'teamSubs'
@@ -40,8 +30,8 @@ export const resolveProjectsByMember = (teamMembers) => {
   const projectSubs = {};
   for (let i = 0; i < teamMembers.length; i++) {
     const teamMemberId = teamMembers[i].id;
-    projectSubs[teamMemberId] = cashay.subscribe(projectSubString, subscriber, {
-      op: 'projectSub',
+    projectSubs[teamMemberId] = cashay.subscribe(projectSubQuery, subscriber, {
+      op: PROJECTS,
       key: teamMemberId,
       variables: {teamMemberId},
       dep: 'projectSubs'
@@ -54,8 +44,8 @@ export const resolveProjectSubs = (teamMembers) => {
   const projectSubs = [];
   for (let i = 0; i < teamMembers.length; i++) {
     const teamMemberId = teamMembers[i].id;
-    projectSubs[i] = cashay.subscribe(projectSubString, subscriber, {
-      op: 'projectSub',
+    projectSubs[i] = cashay.subscribe(projectSubQuery, subscriber, {
+      op: PROJECTS,
       key: teamMemberId,
       variables: {teamMemberId},
       dep: 'projectSubs'

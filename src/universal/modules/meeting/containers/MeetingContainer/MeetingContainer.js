@@ -17,23 +17,23 @@ import subscriptions from 'universal/subscriptions/subscriptions';
 import {TEAM, TEAM_MEMBERS, AGENDA} from 'universal/subscriptions/constants';
 import {resolveMembers, resolveProjectsByMember} from 'universal/subscriptions/computedSubs';
 
-const teamSubString = subscriptions.find(sub => sub.channel === TEAM).string;
-const teamMembersSubString = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
-const agendaSubString = subscriptions.find(sub => sub.channel === AGENDA).string;
+const teamSubQuery = subscriptions.find(sub => sub.channel === TEAM).string;
+const teamMembersSubQuery = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
+const agendaSubQuery = subscriptions.find(sub => sub.channel === AGENDA).string;
 
 const mapStateToProps = (state, props) => {
   const {params: {teamId}, presenceSub} = props;
   const {sub: userId} = state.auth.obj;
   const variables = {teamId};
-  const {teamMembers} = cashay.subscribe(teamMembersSubString, subscriber, {
-    dep: 'members',
-    op: 'memberSub',
+  const {teamMembers} = cashay.subscribe(teamMembersSubQuery, subscriber, {
+    dep: 'meetingMembers',
+    op: TEAM_MEMBERS,
     variables,
   }).data;
-  const {team} = cashay.subscribe(teamSubString, subscriber, {dep: 'members', op: 'teamSub', variables}).data;
-  const members = cashay.computed('members', [teamId, presenceSub, userId, teamMembers, team], resolveMembers);
+  const {team} = cashay.subscribe(teamSubQuery, subscriber, {dep: 'meetingMembers', op: TEAM, variables}).data;
+  const members = cashay.computed('meetingMembers', [teamId, presenceSub, userId, teamMembers, team], resolveMembers);
   const projects = cashay.computed('projectSubs', [teamMembers], resolveProjectsByMember);
-  const {agenda} = cashay.subscribe(agendaSubString, subscriber, {op: 'agendaSub', variables}).data;
+  const {agenda} = cashay.subscribe(agendaSubQuery, subscriber, {op: AGENDA, variables}).data;
   return {
     agenda,
     members,

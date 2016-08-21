@@ -9,13 +9,13 @@ import shortid from 'shortid';
 import {resolveSortedAgenda} from 'universal/modules/teamDashboard/helpers/computedValues';
 import {SORT_STEP} from 'universal/utils/constants';
 
-const teamMembersSubString = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
+const teamMembersSubQuery = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
 
 const mapStateToProps = (state, props) => {
   const variables = {teamId: props.teamId};
   return {
     agenda: cashay.computed('sortedAgenda', [props.teamId], resolveSortedAgenda),
-    teamMembers: cashay.subscribe(teamMembersSubString, subscriber, {op: 'memberSub', variables}).data.teamMembers,
+    teamMembers: cashay.subscribe(teamMembersSubQuery, subscriber, {op: TEAM_MEMBERS, variables}).data.teamMembers,
     userId: state.auth.obj.sub
   };
 };

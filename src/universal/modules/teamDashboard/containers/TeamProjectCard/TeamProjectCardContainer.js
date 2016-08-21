@@ -7,16 +7,23 @@ import subscriber from 'universal/subscriptions/subscriber';
 import resolveEditors from 'universal/subscriptions/computed/resolveEditors';
 import TeamProjectCard from 'universal/modules/teamDashboard/components/TeamProjectCard/TeamProjectCard';
 
-const teamMembersSubString = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
+const teamMembersSubQuery = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
 
 const mapStateToProps = (state, props) => {
   const {project, preferredName} = props;
   const taskId = project.id;
   const [teamId] = taskId.split('::');
+  // debugger
+  const tm = cashay.subscribe(teamMembersSubQuery, subscriber, {
+    op: TEAM_MEMBERS,
+    variables: {teamId},
+  }).data.teamMembers;
+
+  console.log('tm', tm);
   return {
     editors: cashay.computed('editingByTeam', [preferredName, taskId], resolveEditors),
-    teamMembers: cashay.subscribe(teamMembersSubString, subscriber, {
-      op: 'memberSub',
+    teamMembers: cashay.subscribe(teamMembersSubQuery, subscriber, {
+      op: TEAM_MEMBERS,
       variables: {teamId},
     }).data.teamMembers
   };
@@ -26,6 +33,7 @@ const TeamProjectCardContainer = (props) => {
   const {project, editors, teamMembers, dispatch} = props;
   const {id, status} = project;
   const form = `${status}::${id}`;
+  // console.log('teamMembers', teamMembers)
   return (
     <TeamProjectCard
       form={form}

@@ -5,19 +5,19 @@ import presenceEditingHelper from 'universal/subscriptions/presenceEditingHelper
 import subscriptions from 'universal/subscriptions/subscriptions';
 import {PRESENCE, TEAM_MEMBERS} from 'universal/subscriptions/constants';
 
-const presenceSubscription = subscriptions.find(sub => sub.channel === PRESENCE);
-const teamMembersSubString = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
+const presenceSubQuery = subscriptions.find(sub => sub.channel === PRESENCE).string;
+const teamMembersSubQuery = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
 
 export default function resolveEditors(myPreferredName, task) {
   const [teamId] = task.split('::');
   const variables = {teamId};
-  const {presence} = cashay.subscribe(presenceSubscription.string, presenceSubscriber, {
+  const {presence} = cashay.subscribe(presenceSubQuery, presenceSubscriber, {
     variables,
-    op: 'presenceByTeam',
+    op: PRESENCE,
     dep: 'editingByTeam'
   }).data;
-  const {teamMembers} = cashay.subscribe(teamMembersSubString, subscriber, {
-    op: 'memberSub',
+  const {teamMembers} = cashay.subscribe(teamMembersSubQuery, subscriber, {
+    op: TEAM_MEMBERS,
     variables,
     dep: 'editingByTeam'
   }).data;

@@ -9,18 +9,18 @@ import {connect} from 'react-redux';
 import {TEAM, TEAM_MEMBERS} from 'universal/subscriptions/constants';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 
-const teamSubString = subscriptions.find(sub => sub.channel === TEAM).string;
-const teamMembersSubString = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
+const teamSubQuery = subscriptions.find(sub => sub.channel === TEAM).string;
+const teamMembersSubQuery = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
 
 const mapStateToProps = (state, props) => {
   const {teamId} = props.params;
   const {sub: userId} = state.auth.obj;
-  const {teamMembers} = cashay.subscribe(teamMembersSubString, subscriber, {
-    op: 'teamMembers',
+  const {teamMembers} = cashay.subscribe(teamMembersSubQuery, subscriber, {
+    op: TEAM_MEMBERS,
     variables: {teamId}
   }).data;
-  const {team} = cashay.subscribe(teamSubString, subscriber, {
-    op: 'teamSub',
+  const {team} = cashay.subscribe(teamSubQuery, subscriber, {
+    op: TEAM,
     key: teamId,
     variables: {teamId},
   }).data;

@@ -3,10 +3,10 @@ import look, {StyleSheet} from 'react-look';
 import {cashay} from 'cashay';
 import {Field, reduxForm, initialize} from 'redux-form';
 import theme from 'universal/styles/theme';
-import labels from '../../../../styles/theme/labels';
-import projectStatusStyles from '../../../../styles/helpers/projectStatusStyles';
-import TayaAvatar from '../../../../styles/theme/images/avatars/taya-mueller-avatar.jpg';
-import fromNow from '../../../../utils/fromNow';
+import labels from 'universal/styles/theme/labels';
+import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
+import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
+import fromNow from 'universal/utils/fromNow';
 
 import OutcomeCardTextarea from './OutcomeCardTextarea';
 import OutcomeCardFooter from './OutcomeCardFooter';
@@ -49,17 +49,16 @@ export default class TeamProjectCard extends Component {
     dispatch(initialize(form, {[id]: content}));
   }
 
-  toggleStatusMenu = (nextOpenMenu) => {
+  toggleStatusMenu = () => {
     const {openMenu} = this.state;
-    nextOpenMenu = nextOpenMenu ||
-    openMenu === OPEN_STATUS_MENU ? OPEN_CONTENT_MENU : OPEN_STATUS_MENU;
+    const nextOpenMenu = openMenu === OPEN_STATUS_MENU ? OPEN_CONTENT_MENU : OPEN_STATUS_MENU;
     this.setState({openMenu: nextOpenMenu});
   };
 
-  toggleAssignMenu = (nextOpenMenu) => {
+  toggleAssignMenu = () => {
+    debugger
     const {openMenu} = this.state;
-    nextOpenMenu = nextOpenMenu ||
-    openMenu === OPEN_ASSIGN_MENU ? OPEN_CONTENT_MENU : OPEN_ASSIGN_MENU;
+    const nextOpenMenu = openMenu === OPEN_ASSIGN_MENU ? OPEN_CONTENT_MENU : OPEN_ASSIGN_MENU;
     this.setState({openMenu: nextOpenMenu});
   };
 
@@ -79,6 +78,7 @@ export default class TeamProjectCard extends Component {
     const hasOpenStatusMenu = openMenu === OPEN_STATUS_MENU;
     const hasOpenAssignMenu = openMenu === OPEN_ASSIGN_MENU;
     const rootStyles = combineStyles(styles.root, styles.cardBlock, styles[status]);
+    console.log('owner', teamMembers, project.teamMemberId);
     const owner = teamMembers.find(m => m.id === project.teamMemberId) || {};
     const handleCardUpdate = (submittedData) => {
       const submittedContent = submittedData[projectId];
