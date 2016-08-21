@@ -14,7 +14,7 @@ const TeamAgenda = (props) => {
 };
 
 TeamAgenda.propTypes = {
-  teamId: PropTypes.string.isRequired,
+  teamId: PropTypes.string,
   children: PropTypes.any
 };
 

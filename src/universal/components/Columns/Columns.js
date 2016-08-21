@@ -1,7 +1,7 @@
 import React from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
-import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
+import OutcomeCard from '../../modules/teamDashboard/components/TeamProjectCard/TeamProjectCard';
 
 const borderColor = 'rgba(0, 0, 0, .1)';
 let styles = {};

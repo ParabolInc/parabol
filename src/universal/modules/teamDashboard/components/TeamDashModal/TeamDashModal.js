@@ -32,7 +32,7 @@ const TeamDashModal = (props) => {
 
 TeamDashModal.propTypes = {
   router: PropTypes.object,
-  teamId: PropTypes.string.isRequired,
+  teamId: PropTypes.string,
   teamName: PropTypes.string
 };
 

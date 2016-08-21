@@ -16,7 +16,7 @@ const AgendaListContainer = (props) => {
 };
 
 AgendaListContainer.propTypes = {
-  teamId: PropTypes.string.isRequired,
+  teamId: PropTypes.string,
   agenda: PropTypes.array,
 };
 

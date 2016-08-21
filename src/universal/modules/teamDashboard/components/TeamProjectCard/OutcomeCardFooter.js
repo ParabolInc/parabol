@@ -2,9 +2,9 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import FontAwesome from 'react-fontawesome';
 import theme from 'universal/styles/theme';
-import labels from 'universal/styles/theme/labels';
-import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
-import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
+import labels from '../../../../styles/theme/labels';
+import TayaAvatar from '../../../../styles/theme/images/avatars/taya-mueller-avatar.jpg';
+import projectStatusStyles from '../../../../styles/helpers/projectStatusStyles';
 
 const combineStyles = StyleSheet.combineStyles;
 const avatarSize = '1.5rem';
@@ -26,37 +26,18 @@ let styles = {};
 
 const OutcomeCardFooter = (props) => {
   const {
-    status,
-    // hasOpenAssignMenu,
     hasOpenStatusMenu,
+    owner,
+    status,
     toggleAssignMenu,
     toggleStatusMenu,
     isArchived,
-    isProject,
-    owner,
-    showByTeam,
-    team
   } = props;
 
-  const makeStatusButton = () => {
-    const buttonStyles = combineStyles(styles.statusButton, styles[status]);
-    return (
-      <button
-        className={buttonStyles}
-        onClick={toggleStatusMenu}
-      >
-        <FontAwesome
-          name={labels.projectStatus[status].icon}
-          style={{lineHeight: avatarSize}}
-        />
-      </button>
-    );
-  };
-
-  const avatarImage = showByTeam ? team.picture : owner.picture;
-  const avatarName = showByTeam ? team.preferredName : owner.preferredName;
-  const avatarTeamStyles = combineStyles(styles.avatar, styles.avatarTeam);
-  const avatarStyles = showByTeam ? avatarTeamStyles : styles.avatar;
+  const statusButtonStyles = hasOpenStatusMenu ? styles.statusButton : combineStyles(styles.statusButton, styles[status]);
+  const avatarImage = owner.picture;
+  const avatarName = owner.preferredName;
+  const avatarStyles = combineStyles(styles.avatar, styles.avatarTeam);
 
   return (
     <div className={styles.root}>
@@ -70,28 +51,12 @@ const OutcomeCardFooter = (props) => {
         <div className={styles.name}>{avatarName}</div>
       </div>
       <div className={styles.statusBlock}>
-        {/* ugly, refactor */}
-        {hasOpenStatusMenu ?
-          <button className={styles.statusButton}>
-            <FontAwesome
-              name="times"
-              style={{lineHeight: avatarSize}}
-            />
-          </button> :
-          <div>
-            {isProject ?
-              <div className={styles.statusButton}>
-              {makeStatusButton()}
-              </div> :
-              <button className={styles.actionButton}>
-                <FontAwesome
-                  name="calendar-check-o"
-                  style={{lineHeight: avatarSize}}
-                />
-              </button>
-            }
-          </div>
-        }
+        <button className={statusButtonStyles} onClick={toggleStatusMenu}>
+          {hasOpenStatusMenu ?
+            <FontAwesome name="times" style={{lineHeight: avatarSize}}/> :
+            <FontAwesome name={labels.projectStatus[status].icon} style={{lineHeight: avatarSize}}/>
+          }
+        </button>
         {isArchived && <div style={{display: 'none'}}>TODO: Style archived</div>}
       </div>
     </div>
@@ -102,13 +67,11 @@ OutcomeCardFooter.propTypes = {
   status: PropTypes.oneOf(labels.projectStatus.slugs),
   toggleAssignMenu: PropTypes.func,
   toggleStatusMenu: PropTypes.func,
-  hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,
   isArchived: PropTypes.bool,
   isProject: PropTypes.bool,
   owner: PropTypes.object,
   team: PropTypes.object,
-  showByTeam: PropTypes.bool
 };
 
 OutcomeCardFooter.defaultProps = {
@@ -119,19 +82,12 @@ OutcomeCardFooter.defaultProps = {
   toggleStatusMenu() {
     console.log('toggleStatusMenu');
   },
-  hasOpenAssignMenu: false,
   hasOpenStatusMenu: false,
   isArchived: false,
-  isProject: true,
   owner: {
     preferredName: 'Taya Mueller',
     picture: TayaAvatar
   },
-  team: {
-    preferredName: 'Engineering',
-    picture: 'https://placekitten.com/g/24/24'
-  },
-  showByTeam: false
 };
 
 styles = StyleSheet.create({
@@ -199,3 +155,12 @@ styles = StyleSheet.create({
 });
 
 export default look(OutcomeCardFooter);
+
+
+// FOR ACTIONS
+// {/*<button className={styles.actionButton}>*/}
+//   {/*<FontAwesome*/}
+//     {/*name="calendar-check-o"*/}
+//     {/*style={{lineHeight: avatarSize}}*/}
+//   {/*/>*/}
+// {/*</button>*/}

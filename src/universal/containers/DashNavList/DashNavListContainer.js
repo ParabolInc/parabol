@@ -16,7 +16,7 @@ const resolveDashNavTeams = (tms) => {
       op: 'teamSub',
       key: teamId,
       variables: {teamId},
-      dependency: 'dashNavTeams'
+      dep: 'dashNavTeams'
     }).data.team;
     teams[i] = {
       href: `/team/${id}`,

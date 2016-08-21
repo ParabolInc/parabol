@@ -31,7 +31,7 @@ const ProjectColumns = (props) => {
 ProjectColumns.propTypes = {
   area: PropTypes.string,
   myTeamMemberId: PropTypes.string,
-  projects: PropTypes.array
+  projects: PropTypes.object
 };
 
 const columnStyles = {

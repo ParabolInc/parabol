@@ -26,11 +26,11 @@ const mapStateToProps = (state, props) => {
   const {sub: userId} = state.auth.obj;
   const variables = {teamId};
   const {teamMembers} = cashay.subscribe(teamMembersSubString, subscriber, {
-    dependency: 'members',
+    dep: 'members',
     op: 'memberSub',
     variables,
   }).data;
-  const {team} = cashay.subscribe(teamSubString, subscriber, {dependency: 'members', op: 'teamSub', variables}).data;
+  const {team} = cashay.subscribe(teamSubString, subscriber, {dep: 'members', op: 'teamSub', variables}).data;
   const members = cashay.computed('members', [teamId, presenceSub, userId, teamMembers, team], resolveMembers);
   const projects = cashay.computed('projectSubs', [teamMembers], resolveProjectsByMember);
   const {agenda} = cashay.subscribe(agendaSubString, subscriber, {op: 'agendaSub', variables}).data;

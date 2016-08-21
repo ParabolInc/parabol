@@ -2,9 +2,9 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import {cashay} from 'cashay';
 import theme from 'universal/styles/theme';
-import labels from 'universal/styles/theme/labels';
-import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
-import upperFirst from 'universal/utils/upperFirst';
+import labels from '../../../../styles/theme/labels';
+import projectStatusStyles from '../../../../styles/helpers/projectStatusStyles';
+import upperFirst from '../../../../utils/upperFirst';
 import OutcomeCardMenuButton from './OutcomeCardMenuButton';
 
 const buttonHF = {
@@ -14,11 +14,7 @@ const buttonHF = {
 let styles = {};
 
 const OutcomeCardStatusMenu = (props) => {
-  const {
-    isArchived,
-    projectId,
-    status
-  } = props;
+  const {project: {isArchived, id: projectId, status}} = props;
 
   const isArchivedLabel = <span>Take out of Ar<u>c</u>hive</span>;
   const notArchivedLabel = <span>Move to Ar<u>c</u>hive</span>;
@@ -68,8 +64,7 @@ const OutcomeCardStatusMenu = (props) => {
             {makeButton(btnStatus.slug, btnStatus.icon, btnStatus.shortcutLabel, idx)}
           </div>
         );
-      }
-      )}
+      })}
       <div className={styles.archivedBtnBlock}>
         {makeButton('archive', 'archive', archivedLabel)}
       </div>
@@ -78,14 +73,11 @@ const OutcomeCardStatusMenu = (props) => {
 };
 
 OutcomeCardStatusMenu.propTypes = {
-  isArchived: PropTypes.bool,
-  projectId: PropTypes.string,
-  status: PropTypes.oneOf(labels.projectStatus.slugs)
-};
-
-OutcomeCardStatusMenu.defaultProps = {
-  isArchived: false,
-  status: labels.projectStatus.active.slug
+  project: PropTypes.shape({
+    isArchived: PropTypes.bool,
+    projectId: PropTypes.string,
+    status: PropTypes.oneOf(labels.projectStatus.slugs)
+  })
 };
 
 styles = StyleSheet.create({

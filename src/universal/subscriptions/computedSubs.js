@@ -10,7 +10,7 @@ export const resolveEditingByTeam = (teamId) => {
   const presenceSubOptions = {
     variables: {teamId},
     op: 'presenceByTeam',
-    dependency: 'editingByTeam'
+    dep: 'editingByTeam'
   };
   const {presence} = cashay.subscribe(presenceSubscription.string, presenceSubscriber, presenceSubOptions).data;
   return presenceEditingHelper(presence);
@@ -24,7 +24,7 @@ export const resolveActiveMeetings = (tms) => {
       op: 'teamSub',
       key: teamId,
       variables: {teamId},
-      dependency: 'teamSubs'
+      dep: 'teamSubs'
     }).data;
     if (team.meetingId) {
       activeMeetings.push({
@@ -44,7 +44,7 @@ export const resolveProjectsByMember = (teamMembers) => {
       op: 'projectSub',
       key: teamMemberId,
       variables: {teamMemberId},
-      dependency: 'projectSubs'
+      dep: 'projectSubs'
     }).data.projects;
   }
   return projectSubs;
@@ -58,7 +58,7 @@ export const resolveProjectSubs = (teamMembers) => {
       op: 'projectSub',
       key: teamMemberId,
       variables: {teamMemberId},
-      dependency: 'projectSubs'
+      dep: 'projectSubs'
     }).data.projects;
   }
   return [].concat(...projectSubs);

@@ -25,7 +25,7 @@ export default store => ({
   },
   getIndexRoute: async(location, cb) => {
     const component =
-      await System.import('universal/modules/userDashboard/components/Outcomes/Outcomes');
+      await System.import('universal/modules/userDashboard/components/UserDashboard/UserDashboard');
     cb(null, {component});
   },
   getChildRoutes: (childLocation, cbChild) => {

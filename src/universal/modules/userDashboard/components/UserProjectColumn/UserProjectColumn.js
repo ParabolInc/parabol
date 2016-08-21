@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
-import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
+import OutcomeCard from '../../../teamDashboard/components/TeamProjectCard/TeamProjectCard';
 import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
 
 

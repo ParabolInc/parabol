@@ -8,18 +8,24 @@ import {PRESENCE, TEAM_MEMBERS} from 'universal/subscriptions/constants';
 const presenceSubscription = subscriptions.find(sub => sub.channel === PRESENCE);
 const teamMembersSubString = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
 
-export default function resolveEditors(task) {
+export default function resolveEditors(myPreferredName, task) {
   const [teamId] = task.split('::');
   const variables = {teamId};
-  const presenceSubOptions = {
+  const {presence} = cashay.subscribe(presenceSubscription.string, presenceSubscriber, {
     variables,
     op: 'presenceByTeam',
-    dependency: 'editingByTeam'
-  };
-  const {presence} = cashay.subscribe(presenceSubscription.string, presenceSubscriber, presenceSubOptions).data;
-  const {teamMembers} = cashay.subscribe(teamMembersSubString, subscriber, {op: 'memberSub', variables}).data;
+    dep: 'editingByTeam'
+  }).data;
+  const {teamMembers} = cashay.subscribe(teamMembersSubString, subscriber, {
+    op: 'memberSub',
+    variables,
+    dep: 'editingByTeam'
+  }).data;
   const editsByObj = presenceEditingHelper(presence);
   const userIdSet = editsByObj[`Task::${task}`];
   const userIdArr = userIdSet ? [...userIdSet] : [];
-  return userIdArr.map(userId => teamMembers.find(m => m.id.startsWith(userId)).preferredName);
+  return userIdArr.map(userId => {
+    const teamMember = teamMembers.find(m => m.id.startsWith(userId)) || {};
+    return teamMember.preferredName === myPreferredName ? 'You (other device)' : teamMember.preferredName;
+  });
 };

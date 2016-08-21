@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react';
-import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
+import OutcomeCard from '../TeamProjectCard/TeamProjectCard';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
 
 const TeamCard = (props) => {

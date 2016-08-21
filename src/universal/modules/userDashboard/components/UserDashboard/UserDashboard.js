@@ -10,8 +10,8 @@ import look, {StyleSheet} from 'react-look';
 import UserActions from 'universal/modules/userDashboard/components/UserActions/UserActions';
 import UserColumnsContainer from 'universal/modules/userDashboard/containers/UserColumns/UserColumnsContainer';
 
-const Outcomes = () => {
-  const {styles} = Outcomes;
+const UserDashboard = () => {
+  const {styles} = UserDashboard;
   return (
     <DashMain>
       <DashHeader>
@@ -33,11 +33,11 @@ const Outcomes = () => {
   );
 };
 
-Outcomes.propTypes = {
+UserDashboard.propTypes = {
   projects: PropTypes.array
 };
 
-Outcomes.styles = StyleSheet.create({
+UserDashboard.styles = StyleSheet.create({
   root: {
     display: 'flex',
     flex: 1,
@@ -54,4 +54,4 @@ Outcomes.styles = StyleSheet.create({
   }
 });
 
-export default look(Outcomes);
+export default look(UserDashboard);

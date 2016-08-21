@@ -4,9 +4,7 @@ import {
   DashContent,
   DashHeader,
   DashHeaderInfo,
-  DashLayout,
   DashMain,
-  DashSidebar
 } from 'universal/components/Dashboard';
 import {Link} from 'react-router';
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
@@ -59,7 +57,6 @@ const Team = (props) => {
           <AgendaAndProjects
             myTeamMemberId={myTeamMemberId}
             teamId={teamId}
-            teamMembers={teamMembers}
           />
         </DashContent>
       </DashMain>

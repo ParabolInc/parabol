@@ -19,7 +19,7 @@ const resolveUserProjects = (userId, tms) => {
       op: 'projectSub',
       key: teamMemberId,
       variables: {teamMemberId},
-      dependency: 'projectSubs'
+      dep: 'userColProjects'
     }).data.projects;
   }
   const allProjects = [].concat(...projectSubs);
@@ -29,7 +29,7 @@ const resolveUserProjects = (userId, tms) => {
 const mapStateToProps = (state) => {
   const {sub: userId, tms} = state.auth.obj;
   return {
-    projects: cashay.computed('projectSubs', [userId, tms], resolveUserProjects)
+    projects: cashay.computed('userColProjects', [userId, tms], resolveUserProjects)
   };
 };
 

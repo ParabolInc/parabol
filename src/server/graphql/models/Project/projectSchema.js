@@ -4,7 +4,8 @@ import {
   GraphQLID,
   GraphQLString,
   GraphQLEnumType,
-  GraphQLFloat
+  GraphQLFloat,
+  GraphQLBoolean
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
@@ -27,6 +28,10 @@ export const Project = new GraphQLObjectType({
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique project id, teamId::shortid'},
     content: {type: GraphQLString, description: 'The body of the project. If null, it is a new project.'},
+    isArchived: {
+      type: GraphQLBoolean,
+      description: 'true if the project has been archived and will not show up in the main area'
+    },
     teamMemberId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The id of the team member assigned to this project, or the creator if content is null'

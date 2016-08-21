@@ -7,6 +7,7 @@ import subscriber from 'universal/subscriptions/subscriber';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import {TEAM, TEAM_MEMBERS} from 'universal/subscriptions/constants';
+import LoadingView from 'universal/components/LoadingView/LoadingView';
 
 const teamSubString = subscriptions.find(sub => sub.channel === TEAM).string;
 const teamMembersSubString = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
@@ -32,6 +33,10 @@ const mapStateToProps = (state, props) => {
 
 const TeamContainer = (props) => {
   const {team, myTeamMemberId, teamMembers} = props;
+  const readyEnough = team.id && teamMembers.length > 0;
+  if (!readyEnough) {
+    return <LoadingView/>;
+  }
   return (
     <Team
       team={team}

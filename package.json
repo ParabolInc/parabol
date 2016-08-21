@@ -125,7 +125,7 @@
     "rethinkdbdash": "2.3.19",
     "serve-favicon": "^2.3.0",
     "shortid": "^2.2.6",
-    "socketcluster": "^5.0.9",
+    "socketcluster": "^5.0.10",
     "socketcluster-client": "^4.3.19",
     "tinycolor2": "^1.4.1"
   },

@@ -1,15 +1,16 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import {cashay} from 'cashay';
-import Avatar from 'universal/components/Avatar/Avatar';
-import exampleTeam from 'universal/modules/patterns/helpers/exampleTeam';
+import Avatar from '../../../../components/Avatar/Avatar';
+import exampleTeam from '../../../patterns/helpers/exampleTeam';
 
 let s = {};
 const defaultExampleTeam = exampleTeam.teamMembers.slice(0);
 const combineStyles = StyleSheet.combineStyles;
 
 const OutcomeCardAssignMenu = (props) => {
-  const {currentOwner, onComplete, projectId, teamMembers} = props;
+  const {onComplete, project, teamMembers} = props;
+  const {teamMemberId: currentOwner, id: projectId} = project;
 
   const handleProjectUpdate = (newOwner) => {
     if (newOwner === currentOwner) {

@@ -1,9 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
-import Ellipsis from 'universal/components/Ellipsis/Ellipsis';
+import Ellipsis from '../../../../components/Ellipsis/Ellipsis';
 
-const {combineStyles} = StyleSheet;
 const descriptionFA = {
   backgroundColor: theme.palette.cool10l,
   borderTopColor: 'currentColor',
@@ -16,34 +15,25 @@ const descriptionActionFA = {
   color: theme.palette.mid10d
 };
 
-function editingStatus(iAmActive, myTeamMemberId, editingUserIds, teamMembers, timestamp) {
-  const [userId, teamId] = myTeamMemberId.split('::');
-  const everybodyElse = editingUserIds
-                          .filter((id) => id !== userId)
-                          .map(id => [id, teamId].join('::'));
-
-  if (iAmActive && everybodyElse.length === 0) {
-    // we're editing all by ourselves
-    return <span>editing<Ellipsis/></span>;
-  } else if (everybodyElse.length === 1) {
-    const otherEditor = teamMembers.find((m) => m.id === everybodyElse[0]);
-    if (iAmActive) {
-      // we're editing with one other
-      return <span>{otherEditor.preferredName} editing too<Ellipsis/></span>;
-    }
-    // one other person is editing alone
-    return <span>{otherEditor.preferredName} editing<Ellipsis/></span>;
-  } else if (everybodyElse.length > 1) {
-    if (iAmActive || everybodyElse.length > 2) {
-      // busy!
-      return <span>several are editing<Ellipsis/></span>;
-    }
-    // two folks are editing
-    const editorA = teamMembers.find((m) => m.id === everybodyElse[0]);
-    const editorB = teamMembers.find((m) => m.id === everybodyElse[1]);
-    return <span>{editorA.preferredName} &amp;{editorB.preferredName} editing<Ellipsis/></span>;
+function editingStatus(iAmActive, editors, timestamp) {
+  // TODO cache a string instead of array of editors
+  // no one else is editing
+  if (editors.length === 0) {
+    return iAmActive ? <span>editing<Ellipsis/></span> : timestamp;
   }
-  return timestamp;
+  // one other is editing
+  if (editors.length === 1) {
+    const editor = editors[0];
+    return iAmActive ?
+      <span>{editor} editing too<Ellipsis/></span> :
+      <span>{editor} editing<Ellipsis/></span>;
+  }
+  if (editors.length === 2) {
+    return iAmActive ?
+      <span>several are editing<Ellipsis/></span> :
+      <span>{`${editors[0]} and ${editors[1]} editing`}<Ellipsis/></span>;
+  }
+  return <span>several are editing<Ellipsis/></span>;
 }
 
 let styles = {};
@@ -52,7 +42,7 @@ let styles = {};
 export default class OutcomeCardTextAreaField extends Component {
   static propTypes = {
     doFocus: PropTypes.bool,
-    editingMe: PropTypes.array.isRequired,
+    editors: PropTypes.array,
     handleActive: PropTypes.func,
     handleSubmit: PropTypes.func,
     input: PropTypes.object,
@@ -63,7 +53,6 @@ export default class OutcomeCardTextAreaField extends Component {
     meta: PropTypes.shape({
       active: PropTypes.bool
     }),
-    showByTeam: PropTypes.bool
   };
 
   componentWillReceiveProps(nextProps) {
@@ -76,25 +65,22 @@ export default class OutcomeCardTextAreaField extends Component {
 
   render() {
     const {
-      editingMe,
+      editors,
       handleSubmit,
       input,
-      isProject,
       meta: {active},
-      showByTeam,
-      teamMemberId,
-      teamMembers,
       timestamp,
       doFocus
     } = this.props;
-    const descStyles = isProject ? styles.content : combineStyles(styles.content, styles.descriptionAction);
-    const allClassNames = combineStyles(descStyles, 'mousetrap');
+    const descStyles = styles.content;
     const handleBlur = () => {
       handleSubmit();
       input.onBlur();
     };
     let textAreaRef;
-    const setRef = (c) => { textAreaRef = c; };
+    const setRef = (c) => {
+      textAreaRef = c;
+    };
     const handleKeyUp = (e) => {
       if (e.keyCode === 13 && !e.shiftKey) {
         handleBlur();
@@ -105,12 +91,12 @@ export default class OutcomeCardTextAreaField extends Component {
     return (
       <div>
         <div className={styles.timestamp}>
-          {!showByTeam && editingStatus(active, teamMemberId, editingMe, teamMembers, timestamp)}
+          {editingStatus(active, editors, timestamp)}
         </div>
         <textarea
           {...input}
           ref={setRef}
-          className={allClassNames}
+          className={descStyles}
           placeholder="Type your project outcome here"
           onBlur={handleBlur}
           onKeyDown={handleKeyUp}

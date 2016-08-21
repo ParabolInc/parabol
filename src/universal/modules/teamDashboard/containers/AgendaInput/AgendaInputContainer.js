@@ -52,7 +52,7 @@ const AgendaInputContainer = (props) => {
 AgendaInputContainer.propTypes = {
   agenda: PropTypes.array,
   teamMembers: PropTypes.array,
-  teamId: PropTypes.string.isRequired,
+  teamId: PropTypes.string,
   userId: PropTypes.string
 };
 

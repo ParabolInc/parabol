@@ -8,7 +8,7 @@ const agendaSubString = subscriptions.find(sub => sub.channel === AGENDA).string
 export const resolveSortedAgenda = (teamId) => {
   const variables = {teamId};
   const {agenda} = cashay.subscribe(agendaSubString, subscriber, {
-    dependency: 'sortedAgenda',
+    dep: 'sortedAgenda',
     op: 'agendaSub',
     variables
   }).data;

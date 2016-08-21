@@ -3,7 +3,7 @@ import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import themeLabels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
-import TeamCard from 'universal/modules/teamDashboard/components/TeamCard/TeamCard';
+import ProjectCardContainer from 'universal/containers/ProjectCard/ProjectCardContainer';
 import {ACTIVE, STUCK, DONE, FUTURE, SORT_STEP, USER_DASH, TEAM_DASH, MEETING} from 'universal/utils/constants';
 import FontAwesome from 'react-fontawesome';
 import {cashay} from 'cashay';
@@ -43,7 +43,7 @@ const ProjectColumn = (props) => {
     // TODO pop a menu of all the teams & create a card based on the team selection
   }
 
-  const CardContainer = area === MEETING ? MeetingCardContainer : ProjectCard;
+  const CardContainer = area === MEETING ? MeetingCardContainer : ProjectCardContainer;
 
   return (
     <div className={styles.column}>
@@ -75,12 +75,10 @@ const ProjectColumn = (props) => {
 };
 
 ProjectColumn.propTypes = {
-  dispatch: PropTypes.func,
-  editing: PropTypes.object,
+  area: PropTypes.string,
+  myTeamMemberId: PropTypes.string,
   projects: PropTypes.array,
   status: PropTypes.string,
-  teamMembers: PropTypes.array,
-  teamMemberId: PropTypes.string
 };
 
 const columnStyles = {

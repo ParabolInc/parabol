@@ -10,7 +10,7 @@ export default function resolveEditingByTeam(teamId) {
   const presenceSubOptions = {
     variables: {teamId},
     op: 'presenceByTeam',
-    dependency: 'editingByTeam'
+    dep: 'editingByTeam'
   };
   const {presence} = cashay.subscribe(presenceSubscription.string, presenceSubscriber, presenceSubOptions).data;
   return presenceEditingHelper(presence);
