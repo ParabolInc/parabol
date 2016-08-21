@@ -50,7 +50,7 @@ styles = StyleSheet.create({
     backgroundColor: theme.palette.mid,
     color: textColor,
     paddingBottom: '1.25rem',
-    width: layoutStyle.dashSidebarWidth,
+    minWidth: layoutStyle.dashSidebarWidth,
   },
 
   nav: {

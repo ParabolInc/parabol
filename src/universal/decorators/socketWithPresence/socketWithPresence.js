@@ -18,8 +18,9 @@ const mapStateToProps = (state, props) => {
   return {
     editing: cashay.computed('editingByTeam', [teamId], resolveEditingByTeam),
     presence: cashay.subscribe(presenceSubQuery, presenceSubscriber, {
+      key: teamId,
       op: PRESENCE,
-      variables: {teamId}
+      variables: {teamId},
     })
   }
 };

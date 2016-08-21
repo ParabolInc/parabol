@@ -16,12 +16,13 @@ const mapStateToProps = (state, props) => {
   const {teamId} = props.params;
   const {sub: userId} = state.auth.obj;
   const {teamMembers} = cashay.subscribe(teamMembersSubQuery, subscriber, {
+    key: teamId,
     op: TEAM_MEMBERS,
     variables: {teamId}
   }).data;
   const {team} = cashay.subscribe(teamSubQuery, subscriber, {
-    op: TEAM,
     key: teamId,
+    op: TEAM,
     variables: {teamId},
   }).data;
   return {

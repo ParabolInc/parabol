@@ -26,14 +26,20 @@ const mapStateToProps = (state, props) => {
   const {sub: userId} = state.auth.obj;
   const variables = {teamId};
   const {teamMembers} = cashay.subscribe(teamMembersSubQuery, subscriber, {
+    key: teamId,
     dep: 'meetingMembers',
     op: TEAM_MEMBERS,
     variables,
   }).data;
-  const {team} = cashay.subscribe(teamSubQuery, subscriber, {dep: 'meetingMembers', op: TEAM, variables}).data;
+  const {team} = cashay.subscribe(teamSubQuery, subscriber, {
+    key: teamId,
+    dep: 'meetingMembers',
+    op: TEAM,
+    variables
+  }).data;
   const members = cashay.computed('meetingMembers', [teamId, presenceSub, userId, teamMembers, team], resolveMembers);
   const projects = cashay.computed('projectSubs', [teamMembers], resolveProjectsByMember);
-  const {agenda} = cashay.subscribe(agendaSubQuery, subscriber, {op: AGENDA, variables}).data;
+  const {agenda} = cashay.subscribe(agendaSubQuery, subscriber, {key: teamId, op: AGENDA, variables}).data;
   return {
     agenda,
     members,

@@ -12,10 +12,11 @@ import {SORT_STEP} from 'universal/utils/constants';
 const teamMembersSubQuery = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
 
 const mapStateToProps = (state, props) => {
-  const variables = {teamId: props.teamId};
+  const {teamId} = props;
+  const variables = {teamId};
   return {
     agenda: cashay.computed('sortedAgenda', [props.teamId], resolveSortedAgenda),
-    teamMembers: cashay.subscribe(teamMembersSubQuery, subscriber, {op: TEAM_MEMBERS, variables}).data.teamMembers,
+    teamMembers: cashay.subscribe(teamMembersSubQuery, subscriber, {key: teamId, op: TEAM_MEMBERS, variables}).data.teamMembers,
     userId: state.auth.obj.sub
   };
 };

@@ -51,7 +51,6 @@ const Step3InviteTeam = (props) => {
 
   const onInviteTeamSubmit = async(submissionData) => {
     const {dispatch, router, welcome: {teamId}} = props;
-    debugger
     const serverInvitees = submissionData.invitees.map(invitee => {
       // Remove label field:
       const {label, ...inviteeForServer} = invitee; // eslint-disable-line no-unused-vars

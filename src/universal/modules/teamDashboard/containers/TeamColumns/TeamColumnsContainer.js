@@ -14,6 +14,7 @@ const teamMembersSubQuery = subscriptions.find(sub => sub.channel === TEAM_MEMBE
 const resolveTeamProjects = (myTeamMemberId) => {
   const [, teamId] = myTeamMemberId.split('::');
   const {teamMembers} = cashay.subscribe(teamMembersSubQuery, subscriber, {
+    key: teamId,
     op: TEAM_MEMBERS,
     variables: {teamId},
     dep: 'teamColProjects'
@@ -22,13 +23,12 @@ const resolveTeamProjects = (myTeamMemberId) => {
   for (let i = 0; i < teamMembers.length; i++) {
     const {id: teamMemberId} = teamMembers[i];
     projectSubs[i] = cashay.subscribe(projectSubQuery, subscriber, {
-      op: PROJECTS,
       key: teamMemberId,
+      op: PROJECTS,
       variables: {teamMemberId},
       dep: 'teamColProjects'
     }).data.projects;
   }
-  // debugger
   const allProjects = [].concat(...projectSubs);
   return makeProjectsByStatus(allProjects, 'teamSort');
 };

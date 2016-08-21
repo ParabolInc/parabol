@@ -12,14 +12,16 @@ export default function resolveEditors(myPreferredName, task) {
   const [teamId] = task.split('::');
   const variables = {teamId};
   const {presence} = cashay.subscribe(presenceSubQuery, presenceSubscriber, {
-    variables,
+    key: teamId,
+    dep: 'editingByTeam',
     op: PRESENCE,
-    dep: 'editingByTeam'
+    variables
   }).data;
   const {teamMembers} = cashay.subscribe(teamMembersSubQuery, subscriber, {
+    key: teamId,
+    dep: 'editingByTeam',
     op: TEAM_MEMBERS,
     variables,
-    dep: 'editingByTeam'
   }).data;
   const editsByObj = presenceEditingHelper(presence);
   const userIdSet = editsByObj[`Task::${task}`];

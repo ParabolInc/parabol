@@ -16,8 +16,8 @@ const resolveUserProjects = (userId, tms) => {
     const teamId = tms[i];
     const teamMemberId = `${userId}::${teamId}`;
     projectSubs[i] = cashay.subscribe(projectSubQuery, subscriber, {
-      op: PROJECTS,
       key: teamMemberId,
+      op: PROJECTS,
       variables: {teamMemberId},
       dep: 'userColProjects'
     }).data.projects;
@@ -41,7 +41,7 @@ const UserColumnsContainer = (props) => {
 };
 
 UserColumnsContainer.propTypes = {
-  projects: PropTypes.array
+  projects: PropTypes.object
 };
 
 export default connect(mapStateToProps)(UserColumnsContainer);

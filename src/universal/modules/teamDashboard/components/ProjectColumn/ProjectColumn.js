@@ -21,7 +21,7 @@ const labels = {
 let styles = {};
 
 const handleAddProjectFactory = (status, teamMemberId, teamSort, userSort) => () => {
-  const [teamId] = teamMemberId.split('::');
+  const [, teamId] = teamMemberId.split('::');
   const newProject = {
     id: `${teamId}::${shortid.generate()}`,
     status,

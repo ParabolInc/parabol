@@ -11,8 +11,8 @@ export const resolveActiveMeetings = (tms) => {
   for (let i = 0; i < tms.length; i++) {
     const teamId = tms[i];
     const {team} = cashay.subscribe(teamSubQuery, subscriber, {
-      op: TEAM,
       key: teamId,
+      op: TEAM,
       variables: {teamId},
       dep: 'teamSubs'
     }).data;
@@ -31,8 +31,8 @@ export const resolveProjectsByMember = (teamMembers) => {
   for (let i = 0; i < teamMembers.length; i++) {
     const teamMemberId = teamMembers[i].id;
     projectSubs[teamMemberId] = cashay.subscribe(projectSubQuery, subscriber, {
-      op: PROJECTS,
       key: teamMemberId,
+      op: PROJECTS,
       variables: {teamMemberId},
       dep: 'projectSubs'
     }).data.projects;
@@ -45,8 +45,8 @@ export const resolveProjectSubs = (teamMembers) => {
   for (let i = 0; i < teamMembers.length; i++) {
     const teamMemberId = teamMembers[i].id;
     projectSubs[i] = cashay.subscribe(projectSubQuery, subscriber, {
-      op: PROJECTS,
       key: teamMemberId,
+      op: PROJECTS,
       variables: {teamMemberId},
       dep: 'projectSubs'
     }).data.projects;

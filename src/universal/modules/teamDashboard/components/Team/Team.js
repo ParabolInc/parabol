@@ -31,36 +31,34 @@ const Team = (props) => {
   const teamName = team.name;
   const hasOverlay = Boolean(team && team.meetingId);
   return (
-    <div>
+    <DashMain hasOverlay={hasOverlay}>
       {hasOverlay && <TeamDashModal teamId={teamId} teamName={teamName}/>}
-      <DashMain hasOverlay={hasOverlay}>
-        <DashHeader>
-          <DashHeaderInfo title={teamName}>
-            <Link
-              to={`/meeting/${teamId}`}
-              style={linkStyle}
-              title="Meeting Lobby"
-            >
-              <FontAwesome name="arrow-circle-right" style={faIconStyle}/> Meeting Lobby
-            </Link>
-            <Link
-              to={`/meeting/${teamId}/settings`}
-              style={linkStyle}
-              title="Team Settings"
-            >
-              <FontAwesome name="cog" style={faIconStyle}/> Team Settings
-            </Link>
-          </DashHeaderInfo>
-          <DashboardAvatars teamMembers={teamMembers}/>
-        </DashHeader>
-        <DashContent>
-          <AgendaAndProjects
-            myTeamMemberId={myTeamMemberId}
-            teamId={teamId}
-          />
-        </DashContent>
-      </DashMain>
-    </div>
+      <DashHeader>
+        <DashHeaderInfo title={teamName}>
+          <Link
+            to={`/meeting/${teamId}`}
+            style={linkStyle}
+            title="Meeting Lobby"
+          >
+            <FontAwesome name="arrow-circle-right" style={faIconStyle}/> Meeting Lobby
+          </Link>
+          <Link
+            to={`/meeting/${teamId}/settings`}
+            style={linkStyle}
+            title="Team Settings"
+          >
+            <FontAwesome name="cog" style={faIconStyle}/> Team Settings
+          </Link>
+        </DashHeaderInfo>
+        <DashboardAvatars teamMembers={teamMembers}/>
+      </DashHeader>
+      <DashContent>
+        <AgendaAndProjects
+          myTeamMemberId={myTeamMemberId}
+          teamId={teamId}
+        />
+      </DashContent>
+    </DashMain>
   );
 };
 

@@ -8,6 +8,7 @@ const presenceSubQuery = subscriptions.find(sub => sub.channel === PRESENCE).str
 
 export default function resolveEditingByTeam(teamId) {
   const presenceSubOptions = {
+    key: teamId,
     variables: {teamId},
     op: PRESENCE,
     dep: 'editingByTeam'

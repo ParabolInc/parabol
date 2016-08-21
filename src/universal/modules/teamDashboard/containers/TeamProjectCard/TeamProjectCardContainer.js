@@ -13,16 +13,10 @@ const mapStateToProps = (state, props) => {
   const {project, preferredName} = props;
   const taskId = project.id;
   const [teamId] = taskId.split('::');
-  // debugger
-  const tm = cashay.subscribe(teamMembersSubQuery, subscriber, {
-    op: TEAM_MEMBERS,
-    variables: {teamId},
-  }).data.teamMembers;
-
-  console.log('tm', tm);
   return {
     editors: cashay.computed('editingByTeam', [preferredName, taskId], resolveEditors),
     teamMembers: cashay.subscribe(teamMembersSubQuery, subscriber, {
+      key: teamId,
       op: TEAM_MEMBERS,
       variables: {teamId},
     }).data.teamMembers
@@ -33,7 +27,6 @@ const TeamProjectCardContainer = (props) => {
   const {project, editors, teamMembers, dispatch} = props;
   const {id, status} = project;
   const form = `${status}::${id}`;
-  // console.log('teamMembers', teamMembers)
   return (
     <TeamProjectCard
       form={form}

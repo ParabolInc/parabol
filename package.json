@@ -112,7 +112,7 @@
     "react-look": "file:./.mod_bin/react-look-1.0.1-parabol-patch2.tgz",
     "react-look-core": "file:./.mod_bin/react-look-core-1.0.1-parabol-patch2.tgz",
     "react-notification-system": "^0.2.7",
-    "react-redux": "4.4.5",
+    "react-redux": "^4.4.5",
     "react-router": "2.6.1",
     "react-textarea-autosize": "^4.0.4",
     "redux": "3.5.2",

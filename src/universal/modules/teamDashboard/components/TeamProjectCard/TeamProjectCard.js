@@ -56,7 +56,6 @@ export default class TeamProjectCard extends Component {
   };
 
   toggleAssignMenu = () => {
-    debugger
     const {openMenu} = this.state;
     const nextOpenMenu = openMenu === OPEN_ASSIGN_MENU ? OPEN_CONTENT_MENU : OPEN_ASSIGN_MENU;
     this.setState({openMenu: nextOpenMenu});
@@ -78,7 +77,6 @@ export default class TeamProjectCard extends Component {
     const hasOpenStatusMenu = openMenu === OPEN_STATUS_MENU;
     const hasOpenAssignMenu = openMenu === OPEN_ASSIGN_MENU;
     const rootStyles = combineStyles(styles.root, styles.cardBlock, styles[status]);
-    console.log('owner', teamMembers, project.teamMemberId);
     const owner = teamMembers.find(m => m.id === project.teamMemberId) || {};
     const handleCardUpdate = (submittedData) => {
       const submittedContent = submittedData[projectId];

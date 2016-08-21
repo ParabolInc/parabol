@@ -12,14 +12,14 @@ const resolveDashNavTeams = (tms) => {
   const teams = [];
   for (let i = 0; i < tms.length; i++) {
     const teamId = tms[i];
-    const {id, name} = cashay.subscribe(teamSubQuery, subscriber, {
+    const {name} = cashay.subscribe(teamSubQuery, subscriber, {
       op: TEAM,
       key: teamId,
       variables: {teamId},
       dep: 'dashNavTeams'
     }).data.team;
     teams[i] = {
-      href: `/team/${id}`,
+      href: `/team/${teamId}`,
       label: name
     };
   }
@@ -41,4 +41,5 @@ DashNavListContainer.propTypes = {
   teams: PropTypes.array
 };
 
-export default connect(mapStateToProps)(DashNavListContainer);
+// needs to be false since this is the last container before we use Link to detect an active route
+export default connect(mapStateToProps, undefined, undefined, {pure: false})(DashNavListContainer);

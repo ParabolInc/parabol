@@ -4,7 +4,11 @@ import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
 import {connect} from 'react-redux';
 import StandardHub from 'universal/components/StandardHub/StandardHub';
 
-const mapStateToProps = () => ({user: cashay.query(getAuthQueryString, authedOptions).data.user});
+const mapStateToProps = () => {
+  return {
+    user: cashay.query(getAuthQueryString, authedOptions).data.user
+  };
+};
 
 const StandardHubContainer = (props) => {
   const {picture, preferredName, email} = props.user;

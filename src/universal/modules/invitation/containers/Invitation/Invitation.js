@@ -102,7 +102,6 @@ export default class Invitation extends Component {
           router.push('/welcome');
         } else if (res) {
           console.log('res from acceptInvitation', res);
-          debugger
           const authToken = res.data.acceptInvitation;
           // dispatch(setWelcomeActivity(`/team/${teamId}`)); Not sure why?
           dispatch(showSuccess(successfulJoin));

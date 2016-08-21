@@ -10,6 +10,7 @@ const actionsSubQuery = subscriptions.find(sub => sub.channel === ACTIONS).strin
 
 const resolveUserActions = (userId) => {
   const {actions} = cashay.subscribe(actionsSubQuery, subscriber, {
+    key: userId,
     dep: 'userActions',
     op: ACTIONS,
     variables: {userId},
