@@ -7,12 +7,11 @@ import {PRESENCE} from 'universal/subscriptions/constants';
 const presenceSubQuery = subscriptions.find(sub => sub.channel === PRESENCE).string;
 
 export default function resolveEditingByTeam(teamId) {
-  const presenceSubOptions = {
+  const {presence} = cashay.subscribe(presenceSubQuery, presenceSubscriber, {
     key: teamId,
     variables: {teamId},
     op: PRESENCE,
     dep: 'editingByTeam'
-  };
-  const {presence} = cashay.subscribe(presenceSubQuery, presenceSubscriber, presenceSubOptions).data;
+  }).data;
   return presenceEditingHelper(presence);
 };

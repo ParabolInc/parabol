@@ -15,29 +15,28 @@ import LoadingView from 'universal/components/LoadingView/LoadingView';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import subscriptions from 'universal/subscriptions/subscriptions';
 import {TEAM, TEAM_MEMBERS, AGENDA} from 'universal/subscriptions/constants';
-import {resolveMembers, resolveProjectsByMember} from 'universal/subscriptions/computedSubs';
+import {resolveProjectsByMember} from 'universal/subscriptions/computedSubs';
+import resolveMeetingMembers from 'universal/subscriptions/computed/resolveMeetingMembers';
 
 const teamSubQuery = subscriptions.find(sub => sub.channel === TEAM).string;
 const teamMembersSubQuery = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
 const agendaSubQuery = subscriptions.find(sub => sub.channel === AGENDA).string;
 
 const mapStateToProps = (state, props) => {
-  const {params: {teamId}, presenceSub} = props;
+  const {params: {teamId}} = props;
   const {sub: userId} = state.auth.obj;
   const variables = {teamId};
   const {teamMembers} = cashay.subscribe(teamMembersSubQuery, subscriber, {
     key: teamId,
-    dep: 'meetingMembers',
     op: TEAM_MEMBERS,
     variables,
   }).data;
   const {team} = cashay.subscribe(teamSubQuery, subscriber, {
     key: teamId,
-    dep: 'meetingMembers',
     op: TEAM,
     variables
   }).data;
-  const members = cashay.computed('meetingMembers', [teamId, presenceSub, userId, teamMembers, team], resolveMembers);
+  const members = cashay.computed('meetingMembers', [teamId, userId], resolveMeetingMembers);
   const projects = cashay.computed('projectSubs', [teamMembers], resolveProjectsByMember);
   const {agenda} = cashay.subscribe(agendaSubQuery, subscriber, {key: teamId, op: AGENDA, variables}).data;
   return {
@@ -117,7 +116,6 @@ export default class MeetingContainer extends Component {
 
     const self = members.find(m => m.isSelf);
     const isFacilitator = self && self.isFacilitator;
-    console.log('agenda', agenda);
     return (
       <MeetingLayout>
         <Sidebar

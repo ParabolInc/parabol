@@ -5,7 +5,6 @@ import theme from 'universal/styles/theme';
 import layoutStyle from 'universal/styles/layout';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import AgendaList from 'universal/modules/meeting/components/AgendaList/AgendaList';
-import PlaceholderAddLink from '../PlaceholderAddLink/PlaceholderAddLink';
 import PlaceholderInput from '../PlaceholderInput/PlaceholderInput';
 import {cashay} from 'cashay';
 import {CHECKIN, UPDATES, AGENDA, SUMMARY, phaseArray} from 'universal/utils/constants';

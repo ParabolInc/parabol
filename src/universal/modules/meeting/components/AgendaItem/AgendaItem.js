@@ -9,7 +9,7 @@ const warmLinkHover = tinycolor(theme.palette.warm).darken(15).toHexString();
 let s = {};
 
 const AgendaItem = props => {
-  const { desc, index, onClick, teamMemberId, status } = props;
+  const { desc, index, onClick, status, owner } = props;
   const rootStyles = combineStyles(s.root, s[status]);
   let descStyles;
   if (status === 'processed') descStyles = s.strikethrough;

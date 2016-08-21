@@ -53,20 +53,3 @@ export const resolveProjectSubs = (teamMembers) => {
   }
   return [].concat(...projectSubs);
 };
-
-export const resolveMembers = (teamId, presenceSub, myId, teamMembers, team) => {
-  const {presence} = presenceSub.data;
-  const members = [];
-  for (let i = 0; i < teamMembers.length; i++) {
-    const member = teamMembers[i];
-    // member.id is of format 'userId::teamId'
-    const [userId] = member.id.split('::');
-    members[i] = {
-      ...member,
-      isConnected: Boolean(presence.find(connection => connection.userId === userId)),
-      isFacilitator: team.activeFacilitator === member.id,
-      isSelf: myId === userId
-    };
-  }
-  return members.sort((a, b) => b.checkInOrder <= a.checkInOrder);
-};

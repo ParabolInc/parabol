@@ -8,7 +8,6 @@ import reduxSocketOptions from 'universal/redux/reduxSocketOptions';
 import {PRESENCE} from 'universal/subscriptions/constants';
 import socketCluster from 'socketcluster-client';
 import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
-import resolveEditingByTeam from 'universal/subscriptions/computed/resolveEditingByTeam';
 
 const presenceSub = subscriptions.find(sub => sub.channel === PRESENCE);
 const presenceSubQuery = presenceSub.string;
@@ -16,7 +15,6 @@ const presenceSubQuery = presenceSub.string;
 const mapStateToProps = (state, props) => {
   const {params: {teamId}} = props;
   return {
-    editing: cashay.computed('editingByTeam', [teamId], resolveEditingByTeam),
     presence: cashay.subscribe(presenceSubQuery, presenceSubscriber, {
       key: teamId,
       op: PRESENCE,
