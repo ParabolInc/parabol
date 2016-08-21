@@ -8,8 +8,8 @@ const combineStyles = StyleSheet.combineStyles;
 const warmLinkHover = tinycolor(theme.palette.warm).darken(15).toHexString();
 let s = {};
 
-const PlaceholderItem = props => {
-  const { desc, index, onClick, owner, status } = props;
+const AgendaItem = props => {
+  const { desc, index, onClick, teamMemberId, status } = props;
   const rootStyles = combineStyles(s.root, s[status]);
   let descStyles;
   if (status === 'processed') descStyles = s.strikethrough;
@@ -138,7 +138,7 @@ s = StyleSheet.create({
   }
 });
 
-PlaceholderItem.propTypes = {
+AgendaItem.propTypes = {
   desc: PropTypes.string,
   index: PropTypes.number,
   onClick: PropTypes.func,
@@ -152,14 +152,14 @@ PlaceholderItem.propTypes = {
   ])
 };
 
-PlaceholderItem.defaultProps = {
+AgendaItem.defaultProps = {
   desc: 'pull request',
   index: 1,
   onClick() {
-    console.log('PlaceholderItem.onClick (default)');
+    console.log('AgendaItem.onClick (default)');
   },
   owner: 'MK',
   status: 'waiting'
 };
 
-export default look(PlaceholderItem);
+export default look(AgendaItem);

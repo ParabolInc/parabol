@@ -6,15 +6,20 @@ import socketWithPresence from 'universal/decorators/socketWithPresence/socketWi
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import Sidebar from 'universal/modules/team/components/Sidebar/Sidebar';
+import Sidebar from '../../components/Sidebar/Sidebar';
 import {withRouter} from 'react-router';
 import getLocalPhase from 'universal/modules/meeting/helpers/getLocalPhase';
 import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
 import AvatarGroup from 'universal/modules/meeting/components/AvatarGroup/AvatarGroup';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
-import {teamSubString, teamMembersSubString} from './cashayHelpers';
+import subscriptions from 'universal/subscriptions/subscriptions';
+import {TEAM, TEAM_MEMBERS, AGENDA} from 'universal/subscriptions/constants';
 import {resolveMembers, resolveProjectsByMember} from 'universal/subscriptions/computedSubs';
+
+const teamSubString = subscriptions.find(sub => sub.channel === TEAM).string;
+const teamMembersSubString = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
+const agendaSubString = subscriptions.find(sub => sub.channel === AGENDA).string;
 
 const mapStateToProps = (state, props) => {
   const {params: {teamId}, presenceSub} = props;
@@ -28,7 +33,9 @@ const mapStateToProps = (state, props) => {
   const {team} = cashay.subscribe(teamSubString, subscriber, {dependency: 'members', op: 'teamSub', variables}).data;
   const members = cashay.computed('members', [teamId, presenceSub, userId, teamMembers, team], resolveMembers);
   const projects = cashay.computed('projectSubs', [teamMembers], resolveProjectsByMember);
+  const {agenda} = cashay.subscribe(agendaSubString, subscriber, {op: 'agendaSub', variables}).data;
   return {
+    agenda,
     members,
     projects,
     team
@@ -40,6 +47,7 @@ const mapStateToProps = (state, props) => {
 @withRouter
 export default class MeetingContainer extends Component {
   static propTypes = {
+    agenda: PropTypes.array.isRequired,
     children: PropTypes.any,
     dispatch: PropTypes.func.isRequired,
     editing: PropTypes.object.isRequired,
@@ -89,7 +97,7 @@ export default class MeetingContainer extends Component {
   }
 
   render() {
-    const {children, dispatch, editing, location, members, params, projects, team} = this.props;
+    const {agenda, children, dispatch, editing, location, members, params, projects, team} = this.props;
     const {teamId} = params;
     const localPhaseItem = Number(params.localPhaseItem);
     const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem, name: teamName} = team;
@@ -103,9 +111,11 @@ export default class MeetingContainer extends Component {
 
     const self = members.find(m => m.isSelf);
     const isFacilitator = self && self.isFacilitator;
+    console.log('agenda', agenda);
     return (
       <MeetingLayout>
         <Sidebar
+          agenda={agenda}
           facilitatorPhase={facilitatorPhase}
           localPhase={localPhase}
           teamName={teamName}

@@ -13,7 +13,7 @@ export default function handleRedirects(team, children, localPhaseItem, pathname
   }
   const localPhase = getLocalPhase(pathname, teamId);
   // add a localPhaseItem to the url
-  if (localPhaseItem === undefined && localPhase !== LOBBY && localPhase !== SUMMARY) {
+  if (isNaN(localPhaseItem) && localPhase !== LOBBY && localPhase !== SUMMARY) {
     if (facilitatorPhase === localPhase) {
       const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
       router.replace(pushURL);

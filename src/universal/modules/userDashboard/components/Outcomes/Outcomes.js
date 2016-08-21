@@ -8,10 +8,9 @@ import {
 } from 'universal/components/Dashboard';
 import look, {StyleSheet} from 'react-look';
 import UserActions from 'universal/modules/userDashboard/components/UserActions/UserActions';
-import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
+import UserColumnsContainer from 'universal/modules/userDashboard/containers/UserColumns/UserColumnsContainer';
 
-const Outcomes = (props) => {
-  const {projects} = props;
+const Outcomes = () => {
   const {styles} = Outcomes;
   return (
     <DashMain>
@@ -26,9 +25,7 @@ const Outcomes = (props) => {
             <UserActions />
           </div>
           <div className={styles.projectsLayout}>
-            <ProjectColumns
-              projects={projects}
-            />
+            <UserColumnsContainer/>
           </div>
         </div>
       </DashContent>
@@ -37,7 +34,6 @@ const Outcomes = (props) => {
 };
 
 Outcomes.propTypes = {
-  preferredName: PropTypes.string,
   projects: PropTypes.array
 };
 

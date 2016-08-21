@@ -1,32 +1,14 @@
 import r from 'server/database/rethinkDriver';
-import {TeamMember} from './teamMemberSchema';
 import {
   GraphQLNonNull,
   GraphQLID,
   GraphQLBoolean,
-  GraphQLObjectType
 } from 'graphql';
 import {errorObj} from '../utils';
-import {getUserId, requireWebsocket, requireSUOrTeamMember} from '../authorization';
+import {requireWebsocket, requireSUOrTeamMember, requireAuth} from '../authorization';
 import acceptInviteDB from './helpers';
 import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
-
-
-const acceptInvitationPayload = new GraphQLObjectType({
-  name: 'acceptInvitationPayload',
-  description: 'a payload including a new JWT and a team member',
-  fields: () => ({
-    teamMember: {
-      type: TeamMember,
-      description: 'The new team member'
-    },
-    jwt: {
-      type: GraphQLID,
-      description: 'A new JWT including an updated tms field'
-    }
-  })
-});
 
 export default {
   checkin: {
@@ -51,10 +33,9 @@ export default {
     }
   },
   acceptInvitation: {
-    type: acceptInvitationPayload,
+    type: GraphQLID,
     description: `Add a user to a Team given an invitationToken.
-    If the invitationToken is valid, returns the Team objective they've been
-    added to. Returns null otherwise.
+    If the invitationToken is valid, returns the auth token with the new team added to tms.
 
     Side effect: deletes all other outstanding invitations for user.`,
     args: {
@@ -64,6 +45,7 @@ export default {
       }
     },
     async resolve(source, {inviteToken}, {authToken}) {
+      const userId = requireAuth(authToken);
       const now = new Date();
       const {id: inviteId, key: tokenKey} = parseInviteToken(inviteToken);
 
@@ -112,9 +94,7 @@ export default {
         .getAll(teamId, {index: 'teamId'})
         .filter({isActive: true})
         .count();
-      const userId = getUserId(authToken);
       const user = await r.table('User').get(userId);
-
       // team members cannot change users or teams, so let's make the ID meaningful and reduce DB hits
       const teamMemberId = `${userId}::${teamId}`;
 
@@ -147,11 +127,7 @@ export default {
       }
 
       const tms = oldtms.concat(teamId);
-      const newJWT = tmsSignToken(authToken, tms);
-      return {
-        teamMember: newTeamMember,
-        jwt: newJWT
-      };
+      return tmsSignToken(authToken, tms);
     }
   }
 };

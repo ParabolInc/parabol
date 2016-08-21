@@ -4,12 +4,13 @@ import {textOverflow} from 'universal/styles/helpers';
 import theme from 'universal/styles/theme';
 import layoutStyle from 'universal/styles/layout';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
-import PlaceholderList from 'universal/modules/meeting/components/PlaceholderList/PlaceholderList';
-import PlaceholderAddLink from 'universal/modules/meeting/components/PlaceholderAddLink/PlaceholderAddLink';
-import PlaceholderInput from 'universal/modules/meeting/components/PlaceholderInput/PlaceholderInput';
+import AgendaList from 'universal/modules/meeting/components/AgendaList/AgendaList';
+import PlaceholderAddLink from '../PlaceholderAddLink/PlaceholderAddLink';
+import PlaceholderInput from '../PlaceholderInput/PlaceholderInput';
 import {cashay} from 'cashay';
 import {CHECKIN, UPDATES, AGENDA, SUMMARY, phaseArray} from 'universal/utils/constants';
 import makeMeetingUrl from 'universal/utils/makeMeetingUrl';
+import {Link} from 'react-router';
 
 const combineStyles = StyleSheet.combineStyles;
 const labels = {
@@ -24,6 +25,7 @@ let s = {};
 
 const Sidebar = (props) => {
   const {
+    agenda,
     facilitatorPhase,
     localPhase,
     teamName,
@@ -63,55 +65,54 @@ const Sidebar = (props) => {
       <nav className={s.nav}>
         <ul className={s.navList}>
           <li className={checkinNavItemStyles}>
-            <a
+            <Link
+              to={`/meeting/${teamId}/checkin`}
               className={checkinLinkStyles}
-              href={`/meeting/${teamId}/checkin`}
               title={labels.checkin}
             >
               <span className={s.bullet}>i.</span>
               <span className={s.label}>{labels.checkin}</span>
-            </a>
+            </Link>
           </li>
           <li className={updatesNavItemStyles}>
-            <a
+            <Link
               className={updatesLinkStyles}
-              href={`/meeting/${teamId}/updates`}
+              to={`/meeting/${teamId}/updates`}
               title={labels.updates}
             >
               <span className={s.bullet}>ii.</span>
               <span className={s.label}>{labels.updates}</span>
-            </a>
+            </Link>
           </li>
           <li className={requestsNavItemStyles}>
-            <a
+            <Link
               className={requestsLinkStyles}
-              href={`/meeting/${teamId}/agenda`}
+              to={`/meeting/${teamId}/agenda`}
               title={labels.agenda}
             >
               <span className={s.bullet}>iii.</span>
               <span className={s.label}>{labels.agenda}</span>
-            </a>
+            </Link>
           </li>
           {localPhase === SUMMARY &&
-            <li className={combineStyles(s.navListItem, s.navListItemLinkActive)}>
-              <a
-                className={combineStyles(s.navListItemLink, s.navListItemLinkActive)}
-                href={`/meeting/${teamId}/summary`}
-                title={labels.summary}
-              >
-                <span className={s.bullet}>{' '}</span>
-                <span className={s.label}>{labels.summary}</span>
-              </a>
-            </li>
+          <li className={combineStyles(s.navListItem, s.navListItemLinkActive)}>
+            <a
+              className={combineStyles(s.navListItemLink, s.navListItemLinkActive)}
+              href={`/meeting/${teamId}/summary`}
+              title={labels.summary}
+            >
+              <span className={s.bullet}>{' '}</span>
+              <span className={s.label}>{labels.summary}</span>
+            </a>
+          </li>
           }
         </ul>
         {localPhase !== CHECKIN && localPhase !== SUMMARY &&
-          <div>{/* div for JSX */}
-            <PlaceholderList />
-            {/* TODO: Toggle PlaceholderAddLink and PlaceholderInput (TA) */}
-            <PlaceholderAddLink />
-            <PlaceholderInput />
-          </div>
+        <div>{/* div for JSX */}
+          <AgendaList agenda={agenda}/>
+          {/* TODO: Toggle PlaceholderAddLink and PlaceholderInput (TA) */}
+          <PlaceholderInput />
+        </div>
         }
       </nav>
     </div>

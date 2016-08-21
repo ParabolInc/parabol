@@ -12,10 +12,7 @@ const UserActionList = (props) => {
 };
 
 UserActionList.propTypes = {
-  actions: PropTypes.arrayOf({
-    id: PropTypes.string,
-    content: PropTypes.string
-  })
+  actions: PropTypes.array
 };
 
 UserActionList.styles = StyleSheet.create({

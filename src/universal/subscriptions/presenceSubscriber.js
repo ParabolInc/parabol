@@ -1,6 +1,6 @@
-import subscriptions from 'universal/subscriptions/subscriptions';
+import subscriptions from './subscriptions';
 import socketCluster from 'socketcluster-client';
-import {EDIT, PRESENT, LEAVE, SOUNDOFF} from 'universal/subscriptions/constants';
+import {EDIT, PRESENT, LEAVE, SOUNDOFF} from './constants';
 import {cashay} from 'cashay';
 
 export default function presenceSubscriber(subscriptionString, variables, handlers) {

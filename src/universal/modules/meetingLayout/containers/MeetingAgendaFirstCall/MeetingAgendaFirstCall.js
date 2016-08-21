@@ -11,7 +11,7 @@ import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/Me
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
-import Sidebar from 'universal/modules/team/components/Sidebar/Sidebar';
+import Sidebar from '../../../meeting/components/Sidebar/Sidebar';
 
 // NOTE: This is a throw-away layout component for prototyping.
 //       The real deal is being coded up in /meeting/components

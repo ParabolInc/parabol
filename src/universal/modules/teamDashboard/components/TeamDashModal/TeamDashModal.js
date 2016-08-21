@@ -5,7 +5,7 @@ import Type from 'universal/components/Type/Type';
 import {withRouter} from 'react-router';
 
 const TeamDashModal = (props) => {
-  const {teamId, router} = props;
+  const {teamId, teamName, router} = props;
   const handleClick = () => router.push(`/meeting/${teamId}`);
   return (
     <DashModal>
@@ -13,7 +13,7 @@ const TeamDashModal = (props) => {
         Oh, hi there!
       </Type>
       <Type align="center" bold scale="s4">
-        The dashboard for Engineering is disabled <br />
+        The dashboard for ${teamName} is disabled <br />
         as we are actively meeting to review <br />
         Projects and Agenda Items.
       </Type>
@@ -31,8 +31,9 @@ const TeamDashModal = (props) => {
 };
 
 TeamDashModal.propTypes = {
-  router: PropTypes.object.isRequired,
-  teamId: PropTypes.string.isRequired
+  router: PropTypes.object,
+  teamId: PropTypes.string.isRequired,
+  teamName: PropTypes.string
 };
 
 TeamDashModal.defaultProps = {

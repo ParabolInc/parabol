@@ -8,22 +8,28 @@ import UserActionList from 'universal/modules/userDashboard/components/UserActio
 
 const actionsSubString = subscriptions.find(sub => sub.channel === ACTIONS).string;
 
-const mapStateToProps = (state, props) => {
-  const variables = {teamId: props.teamId};
+const resolveUserActions = (userId) => {
+  const {actions} = cashay.subscribe(actionsSubString, subscriber, {
+    dependency: 'userActions',
+    op: 'actionSub',
+    variables: {userId},
+  }).data;
+  return actions.sort((a, b) => a.userSort > b.userSort);
+};
+
+const mapStateToProps = (state) => {
   return {
-    actionSub: cashay.subscribe(actionsSubString, subscriber, {op: 'actionSub', variables})
+    actions: cashay.computed('userActions', [state.auth.obj.sub], resolveUserActions)
   };
 };
 
 const UserActionListContainer = (props) => {
-  const {actionSub} = props;
-  const {actions} = actionSub.data;
-  const sortedActions = actions.sort((a, b) => a.userSort > b.userSort);
-  return <UserActionList actions={sortedActions}/>;
+  const {actions} = props;
+  return <UserActionList actions={actions}/>;
 };
 
 UserActionListContainer.propTypes = {
-  actionSub: PropTypes.object,
+  actions: PropTypes.array,
 };
 
 export default connect(mapStateToProps)(UserActionListContainer);

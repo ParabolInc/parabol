@@ -6,22 +6,18 @@ import {head} from 'universal/utils/clientOptions';
 
 import NotificationBar from 'universal/components/NotificationBar/NotificationBar';
 
-let styles = {};
-
 const DashLayout = (props) => {
+  const {styles} = DashLayout;
   const {
     activeMeetings,
     children,
-    notification,
     title
   } = props;
   const hasNotification = activeMeetings.length > 0;
   return (
     <div className={styles.root}>
       <Helmet title={title} {...head} />
-      {hasNotification &&
-        <NotificationBar activeMeetings={activeMeetings} notification={notification} />
-      }
+      {hasNotification && <NotificationBar activeMeetings={activeMeetings} />}
       <div className={styles.main}>
         {children}
       </div>
@@ -32,7 +28,6 @@ const DashLayout = (props) => {
 DashLayout.propTypes = {
   activeMeetings: PropTypes.array.isRequired,
   children: PropTypes.any,
-  notification: PropTypes.object,
   title: PropTypes.string
 };
 
@@ -46,7 +41,7 @@ DashLayout.defaultProps = {
   title: 'Action Dashboard'
 };
 
-styles = StyleSheet.create({
+DashLayout.styles = StyleSheet.create({
   root: {
     backgroundColor: '#fff',
     display: 'flex !important',

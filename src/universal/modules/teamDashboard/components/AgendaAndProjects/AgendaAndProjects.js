@@ -5,7 +5,7 @@ import TeamProjects from 'universal/modules/teamDashboard/components/TeamProject
 
 const AgendaAndProjects = (props) => {
   const {styles} = AgendaAndProjects;
-  const {dispatch, editing, projects, teamId, teamMembers, teamMemberId} = props;
+  const {myTeamMemberId, teamId, teamMembers} = props;
   return (
     <div className={styles.root}>
       <div className={styles.agendaLayout}>
@@ -13,11 +13,8 @@ const AgendaAndProjects = (props) => {
       </div>
       <div className={styles.projectsLayout}>
         <TeamProjects
-          dispatch={dispatch}
-          editing={editing}
-          projects={projects}
+          myTeamMemberId={myTeamMemberId}
           teamMembers={teamMembers}
-          teamMemberId={teamMemberId}
         />
       </div>
     </div>
@@ -25,12 +22,9 @@ const AgendaAndProjects = (props) => {
 };
 
 AgendaAndProjects.propTypes = {
-  dispatch: PropTypes.func.required,
-  editing: PropTypes.object,
-  projects: PropTypes.array,
+  myTeamMemberId: PropTypes.string,
   teamId: PropTypes.string.isRequired,
-  teamMembers: PropTypes.array,
-  teamMemberId: PropTypes.string
+  teamMembers: PropTypes.array
 };
 
 AgendaAndProjects.styles = StyleSheet.create({

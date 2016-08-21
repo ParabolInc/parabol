@@ -11,6 +11,7 @@ import {nextPage, previousPage, updateCompleted, setWelcomeTeam} from 'universal
 import shortid from 'shortid';
 import {cashay} from 'cashay';
 import {setAuthToken} from 'universal/redux/authDuck';
+import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 
 const Step2TeamName = (props) => {
   const {dispatch, handleSubmit, preferredName, teamName, completed} = props;
@@ -28,7 +29,11 @@ const Step2TeamName = (props) => {
       }
     };
     // createTeam returns a new JWT with a new tms field
-    cashay.mutate('createTeam', createTeamOptions).then((res) => dispatch(setAuthToken(res.data.createTeam)));
+    cashay.mutate('createTeam', createTeamOptions).then((res) => {
+      const authToken = res.data.createTeam;
+      dispatch(setAuthToken(authToken));
+      cashay.create({httpTransport: new ActionHTTPTransport(authToken)});
+    });
     dispatch(updateCompleted(3));
     dispatch(nextPage());
   };

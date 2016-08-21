@@ -4,17 +4,13 @@ import theme from 'universal/styles/theme';
 import themeLabels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import TeamCard from 'universal/modules/teamDashboard/components/TeamCard/TeamCard';
-import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
+import {ACTIVE, STUCK, DONE, FUTURE, SORT_STEP, USER_DASH, TEAM_DASH, MEETING} from 'universal/utils/constants';
 import FontAwesome from 'react-fontawesome';
 import {cashay} from 'cashay';
 import shortid from 'shortid';
-import getNextSort from 'universal/utils/getNextSort';
-import upperFirst from 'universal/utils/upperFirst';
 
 const combineStyles = StyleSheet.combineStyles;
 const borderColor = 'rgba(0, 0, 0, .1)';
-let styles = {};
-
 const labels = {
   [ACTIVE]: 'Active',
   [STUCK]: 'Stuck',
@@ -22,50 +18,55 @@ const labels = {
   [FUTURE]: 'Future'
 };
 
-const ProjectColumn = (props) => {
-  const {dispatch, editing, status, projects, teamMembers, teamMemberId} = props;
-  // teamMemberId format is 'userId::teamId'
-  const [, teamId] = teamMemberId.split('::');
-  const statusUpperFirst = upperFirst(status);
-  const handleAddProject = () => {
-    const newProject = {
-      id: `${teamId}::${shortid.generate()}`,
-      status,
-      teamMemberId,
-      teamSort: getNextSort(projects, 'teamSort'),
-      // put it at the top of the list, make em sort it if they don't like it
-      userSort: 0
-    };
-    cashay.mutate('createProject', {variables: {newProject}});
+let styles = {};
+
+const handleAddProjectFactory = (status, teamMemberId, teamSort, userSort) => () => {
+  const [teamId] = teamMemberId.split('::');
+  const newProject = {
+    id: `${teamId}::${shortid.generate()}`,
+    status,
+    teamMemberId,
+    teamSort,
+    userSort
   };
+  cashay.mutate('createProject', {variables: {newProject}});
+};
+
+const ProjectColumn = (props) => {
+  const {area, status, projects, myTeamMemberId} = props;
+  const label = labels[status];
+  let handleAddProject;
+  if (area === TEAM_DASH) {
+    const teamSort = projects[projects.length - 1] ? projects[projects.length - 1].teamSort + SORT_STEP : 0;
+    handleAddProject = handleAddProjectFactory(status, myTeamMemberId, teamSort, 0);
+  } else if (area === USER_DASH) {
+    // TODO pop a menu of all the teams & create a card based on the team selection
+  }
+
+  const CardContainer = area === MEETING ? MeetingCardContainer : ProjectCard;
+
   return (
     <div className={styles.column}>
       <div className={styles.columnHeader}>
-        <span
-          className={combineStyles(styles.statusBadge, styles[`${status}Bg`])}
-        >
+        <span className={combineStyles(styles.statusBadge, styles[`${status}Bg`])}>
           <FontAwesome className={styles.statusBadgeIcon} name={themeLabels.projectStatus[status].icon}/>
         </span>
-        <span
-          className={combineStyles(styles.statusLabel, styles[status])}
-        >
-          {labels[status]}
+        <span className={combineStyles(styles.statusLabel, styles[status])}>
+          {label}
         </span>
-        <FontAwesome
-          className={combineStyles(styles.addIcon, styles[status])}
-          name="plus-square-o"
-          onClick={handleAddProject}
-          title={`Add a Project set to ${statusUpperFirst}`}
-        />
+        {handleAddProject &&
+          <FontAwesome
+            className={combineStyles(styles.addIcon, styles[status])}
+            name="plus-square-o"
+            onClick={handleAddProject}
+            title={`Add a Project set to ${label}`}
+          />
+        }
       </div>
       {projects.map(project =>
-        <TeamCard
+        <CardContainer
           key={`teamCard${project.id}`}
-          dispatch={dispatch}
-          editing={editing}
-          teamId={teamId}
-          teamMemberId={teamMemberId}
-          teamMembers={teamMembers}
+          area={area}
           project={project}
         />)
       }
@@ -74,7 +75,7 @@ const ProjectColumn = (props) => {
 };
 
 ProjectColumn.propTypes = {
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func,
   editing: PropTypes.object,
   projects: PropTypes.array,
   status: PropTypes.string,

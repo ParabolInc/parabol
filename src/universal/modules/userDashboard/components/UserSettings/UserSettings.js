@@ -25,21 +25,16 @@ let styles = {};
 @look
 @reduxForm({form: 'userSettings'})
 @withRouter
-export default class Settings extends Component {
+export default class UserSettings extends Component {
   static propTypes = {
     activity: PropTypes.string,          // from settingsDuck
-    dispatch: PropTypes.func.isRequired,
+    dispatch: PropTypes.func,
     handleSubmit: PropTypes.func,
     nextPage: PropTypes.string,          // from settingsDuck
-    router: PropTypes.object.isRequired,
+    router: PropTypes.object,
+    userId: PropTypes.string,
     /* User for form defaults: */
-    user: PropTypes.shape({
-      preferredName: PropTypes.string
-    }),
-    /* Data from form for mutation: */
-    userSettings: PropTypes.shape({
-      preferredName: PropTypes.string
-    })
+    preferredName: PropTypes.string
   };
 
   componentWillMount() {
@@ -47,12 +42,12 @@ export default class Settings extends Component {
   }
 
   onSubmit = async(submissionData) => {
-    const {activity, dispatch, nextPage, user, router} = this.props;
+    const {activity, dispatch, nextPage, userId, router} = this.props;
     const {preferredName} = submissionData;
     const options = {
       variables: {
         updatedUser: {
-          id: user.id,
+          id: userId,
           preferredName
         }
       }
@@ -68,7 +63,7 @@ export default class Settings extends Component {
   }
 
   initializeForm() {
-    const {dispatch, user: {preferredName}} = this.props;
+    const {dispatch, preferredName} = this.props;
     return dispatch(initialize('userSettings', {preferredName}));
   }
 

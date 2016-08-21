@@ -28,66 +28,49 @@ const linkStyle = {
 };
 
 const Team = (props) => {
-  const {activeMeetings, editing, dispatch, projects, team, teamId, teamMembers, user} = props;
+  const {team, myTeamMemberId, teamMembers} = props;
+  const teamId = team.id;
+  const teamName = team.name;
   const hasOverlay = Boolean(team && team.meetingId);
-  const teamMemberId = `${user.id}::${teamId}`;
   return (
-    <DashLayout activeMeetings={activeMeetings} title="Team Dashboard">
-      <DashSidebar
-        activeArea="team"
-        activeTeamId={teamId}
-        user={user}
-      />
-      {hasOverlay &&
-        <TeamDashModal teamId={teamId} />
-      }
+    <div>
+      {hasOverlay && <TeamDashModal teamId={teamId} teamName={teamName}/>}
       <DashMain hasOverlay={hasOverlay}>
         <DashHeader>
-          <DashHeaderInfo title={team && team.name}>
+          <DashHeaderInfo title={teamName}>
             <Link
               to={`/meeting/${teamId}`}
               style={linkStyle}
               title="Meeting Lobby"
             >
-              <FontAwesome name="arrow-circle-right" style={faIconStyle} /> Meeting Lobby
+              <FontAwesome name="arrow-circle-right" style={faIconStyle}/> Meeting Lobby
             </Link>
             <Link
               to={`/meeting/${teamId}/settings`}
               style={linkStyle}
               title="Team Settings"
             >
-              <FontAwesome name="cog" style={faIconStyle} /> Team Settings
+              <FontAwesome name="cog" style={faIconStyle}/> Team Settings
             </Link>
           </DashHeaderInfo>
           <DashboardAvatars teamMembers={teamMembers}/>
         </DashHeader>
         <DashContent>
           <AgendaAndProjects
-            dispatch={dispatch}
-            editing={editing}
-            projects={projects}
+            myTeamMemberId={myTeamMemberId}
             teamId={teamId}
             teamMembers={teamMembers}
-            teamMemberId={teamMemberId}
           />
         </DashContent>
       </DashMain>
-    </DashLayout>
+    </div>
   );
 };
 
 Team.propTypes = {
-  activeMeetings: PropTypes.array,
-  dispatch: PropTypes.func,
-  editing: PropTypes.object,
-  projects: PropTypes.array,
-  teamId: PropTypes.string.isRequired,
+  myTeamMemberId: PropTypes.string,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired,
-  user: PropTypes.shape({
-    name: PropTypes.string,
-    preferredName: PropTypes.string,
-  })
 };
 
 export default Team;

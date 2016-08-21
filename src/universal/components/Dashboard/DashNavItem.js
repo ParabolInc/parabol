@@ -33,7 +33,7 @@ const DashNavItem = (props) => {
 
 DashNavItem.propTypes = {
   href: PropTypes.string,
-  label: PropTypes.string.isRequired,
+  label: PropTypes.string,
 };
 
 styles = StyleSheet.create({
