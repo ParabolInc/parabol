@@ -1,7 +1,7 @@
 import mailcomposer from 'mailcomposer';
 import templates from './templates';
 import mailgun from './mailgunDriver';
-import {getMailgunOptions} from './getMailgunConfig';
+import {getMailgunApiConfig, getMailgunOptions} from './getMailgunConfig';
 import createEmbeddedImages from './createEmbeddedImages';
 
 const buildMail = (options) => new Promise((resolve, reject) => {
@@ -54,5 +54,15 @@ export default async function sendEmailPromise(to, template, props) {
     to,
     message: message.toString('ascii')
   };
+  if (!getMailgunApiConfig().apiKey) {
+    console.warn(`mailgun: no API key, so not sending the following:
+   From: ${from}
+     To: ${to}
+Subject: ${renderedEmail.subject}
+   Body:
+${renderedEmail.body}
+`);
+    return true;
+  }
   return maybeSendMail(mimeData);
 }
