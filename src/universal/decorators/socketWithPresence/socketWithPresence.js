@@ -20,7 +20,7 @@ const mapStateToProps = (state, props) => {
       op: PRESENCE,
       variables: {teamId},
     })
-  }
+  };
 };
 
 export default ComposedComponent => {

@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import subscriptions from 'universal/subscriptions/subscriptions';
-import {AGENDA, TEAM_MEMBERS} from 'universal/subscriptions/constants';
+import {TEAM_MEMBERS} from 'universal/subscriptions/constants';
 import subscriber from 'universal/subscriptions/subscriber';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
@@ -16,7 +16,11 @@ const mapStateToProps = (state, props) => {
   const variables = {teamId};
   return {
     agenda: cashay.computed('sortedAgenda', [props.teamId], resolveSortedAgenda),
-    teamMembers: cashay.subscribe(teamMembersSubQuery, subscriber, {key: teamId, op: TEAM_MEMBERS, variables}).data.teamMembers,
+    teamMembers: cashay.subscribe(teamMembersSubQuery, subscriber, {
+      key: teamId,
+      op: TEAM_MEMBERS,
+      variables
+    }).data.teamMembers,
     userId: state.auth.obj.sub
   };
 };

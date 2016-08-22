@@ -68,16 +68,15 @@ export default class UserSettings extends Component {
   }
 
   renderActivity(activity) {
-    return (
-      <div>
-        {
-          activity === ACTIVITY_WELCOME && `
+    if (activity === ACTIVITY_WELCOME) {
+      return (
+        <div>
           Hey, welcome aboard! In order for your team to recognize who you
           are, do you mind telling us your name?
-        `
-        }
-      </div>
-    );
+        </div>
+      );
+    }
+    return null;
   }
 
   render() {

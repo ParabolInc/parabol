@@ -2,10 +2,8 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import {cashay} from 'cashay';
 import Avatar from '../../../../components/Avatar/Avatar';
-import exampleTeam from '../../../patterns/helpers/exampleTeam';
 
 let s = {};
-const defaultExampleTeam = exampleTeam.teamMembers.slice(0);
 const combineStyles = StyleSheet.combineStyles;
 
 const OutcomeCardAssignMenu = (props) => {
@@ -54,15 +52,9 @@ const OutcomeCardAssignMenu = (props) => {
 };
 
 OutcomeCardAssignMenu.propTypes = {
-  currentOwner: PropTypes.string,
   onComplete: PropTypes.func,
-  projectId: PropTypes.string,
+  project: PropTypes.string,
   teamMembers: PropTypes.array
-};
-
-OutcomeCardAssignMenu.defaultProps = {
-  currentOwner: 'Marimar',
-  teamMembers: defaultExampleTeam
 };
 
 s = StyleSheet.create({

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import AgendaItem from 'universal/modules/meeting/components/AgendaItem/AgendaItem';
@@ -24,6 +24,10 @@ const AgendaList = (props) => {
       )}
     </div>
   );
+};
+
+AgendaList.propTypes = {
+  agenda: PropTypes.array
 };
 
 AgendaList.styles = StyleSheet.create({

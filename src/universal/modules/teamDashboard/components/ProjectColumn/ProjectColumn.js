@@ -42,7 +42,8 @@ const ProjectColumn = (props) => {
   } else if (area === USER_DASH) {
     // TODO pop a menu of all the teams & create a card based on the team selection
   }
-
+  // TODO do it fur real
+  const MeetingCardContainer = ProjectCardContainer;
   const CardContainer = area === MEETING ? MeetingCardContainer : ProjectCardContainer;
 
   return (

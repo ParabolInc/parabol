@@ -73,7 +73,7 @@ export default class TeamProjectCard extends Component {
       project,
       teamMembers,
     } = this.props;
-    const {content, status, id: projectId, isArchived, updatedAt} = project;
+    const {content, status, id: projectId, updatedAt} = project;
     const hasOpenStatusMenu = openMenu === OPEN_STATUS_MENU;
     const hasOpenAssignMenu = openMenu === OPEN_ASSIGN_MENU;
     const rootStyles = combineStyles(styles.root, styles.cardBlock, styles[status]);
@@ -97,26 +97,26 @@ export default class TeamProjectCard extends Component {
       <div className={rootStyles}>
         {/* card main */}
         {hasOpenAssignMenu &&
-        <OutcomeCardAssignMenu
-          onComplete={this.closeMenu}
-          project={project}
-          teamMembers={teamMembers}
-        />
+          <OutcomeCardAssignMenu
+            onComplete={this.closeMenu}
+            project={project}
+            teamMembers={teamMembers}
+          />
         }
         {hasOpenStatusMenu && <OutcomeCardStatusMenu project={project}/>}
         {!hasOpenAssignMenu && !hasOpenStatusMenu &&
-        <div className={styles.body}>
-          <form>
-            <Field
-              name={projectId}
-              component={OutcomeCardTextarea}
-              editors={editors}
-              handleSubmit={handleSubmit(handleCardUpdate)}
-              timestamp={fromNow(updatedAt)}
-              doFocus={!content}
-            />
-          </form>
-        </div>
+          <div className={styles.body}>
+            <form>
+              <Field
+                name={projectId}
+                component={OutcomeCardTextarea}
+                editors={editors}
+                handleSubmit={handleSubmit(handleCardUpdate)}
+                timestamp={fromNow(updatedAt)}
+                doFocus={!content}
+              />
+            </form>
+          </div>
         }
         {/* card footer */}
         <OutcomeCardFooter

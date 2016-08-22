@@ -42,4 +42,4 @@ export default function resolveMeetingMembers(teamId, myId) {
     };
   }
   return members.sort((a, b) => b.checkInOrder <= a.checkInOrder);
-};
+}

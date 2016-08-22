@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
-import {TEAM_DASH, USER_DASH} from 'universal/utils/constants';
+// import {TEAM_DASH, USER_DASH} from 'universal/utils/constants';
 import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
 import TeamProjectCardContainer from
   'universal/modules/teamDashboard/containers/TeamProjectCard/TeamProjectCardContainer';
@@ -20,10 +20,10 @@ const mapStateToProps = (state, props) => {
 };
 
 const ProjectCardContainer = (props) => {
-  const {area, myTeamMemberId, preferredName, project, username} = props;
+  const {myTeamMemberId, preferredName, project, username} = props;
   const {content, id, status, teamMemberId} = project;
   if (!content && myTeamMemberId !== teamMemberId) {
-    return <NullCard username={username}/>
+    return <NullCard username={username}/>;
   }
   // if (area === USER_DASH) {
   //   return (
@@ -39,7 +39,7 @@ const ProjectCardContainer = (props) => {
       project={project}
       preferredName={preferredName}
     />
-  )
+  );
 };
 
 

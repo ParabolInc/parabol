@@ -94,24 +94,24 @@ const Sidebar = (props) => {
             </Link>
           </li>
           {localPhase === SUMMARY &&
-          <li className={combineStyles(s.navListItem, s.navListItemLinkActive)}>
-            <a
-              className={combineStyles(s.navListItemLink, s.navListItemLinkActive)}
-              href={`/meeting/${teamId}/summary`}
-              title={labels.summary}
-            >
-              <span className={s.bullet}>{' '}</span>
-              <span className={s.label}>{labels.summary}</span>
-            </a>
-          </li>
+            <li className={combineStyles(s.navListItem, s.navListItemLinkActive)}>
+              <a
+                className={combineStyles(s.navListItemLink, s.navListItemLinkActive)}
+                href={`/meeting/${teamId}/summary`}
+                title={labels.summary}
+              >
+                <span className={s.bullet}>{' '}</span>
+                <span className={s.label}>{labels.summary}</span>
+              </a>
+            </li>
           }
         </ul>
         {localPhase !== CHECKIN && localPhase !== SUMMARY &&
-        <div>{/* div for JSX */}
-          <AgendaList agenda={agenda}/>
-          {/* TODO: Toggle PlaceholderAddLink and PlaceholderInput (TA) */}
-          <PlaceholderInput />
-        </div>
+          <div>{/* div for JSX */}
+            <AgendaList agenda={agenda}/>
+            {/* TODO: Toggle PlaceholderAddLink and PlaceholderInput (TA) */}
+            <PlaceholderInput />
+          </div>
         }
       </nav>
     </div>
@@ -119,6 +119,7 @@ const Sidebar = (props) => {
 };
 
 Sidebar.propTypes = {
+  agenda: PropTypes.array,
   facilitatorPhase: PropTypes.oneOf(phaseArray),
   localPhase: PropTypes.oneOf(phaseArray),
   teamName: PropTypes.string,

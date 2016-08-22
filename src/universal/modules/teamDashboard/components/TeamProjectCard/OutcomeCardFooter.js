@@ -2,9 +2,9 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import FontAwesome from 'react-fontawesome';
 import theme from 'universal/styles/theme';
-import labels from '../../../../styles/theme/labels';
-import TayaAvatar from '../../../../styles/theme/images/avatars/taya-mueller-avatar.jpg';
-import projectStatusStyles from '../../../../styles/helpers/projectStatusStyles';
+import labels from 'universal/styles/theme/labels';
+import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
+import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 
 const combineStyles = StyleSheet.combineStyles;
 const avatarSize = '1.5rem';
@@ -34,7 +34,9 @@ const OutcomeCardFooter = (props) => {
     isArchived,
   } = props;
 
-  const statusButtonStyles = hasOpenStatusMenu ? styles.statusButton : combineStyles(styles.statusButton, styles[status]);
+  const statusButtonStyles = hasOpenStatusMenu ?
+    styles.statusButton :
+    combineStyles(styles.statusButton, styles[status]);
   const avatarImage = owner.picture;
   const avatarName = owner.preferredName;
   const avatarStyles = combineStyles(styles.avatar, styles.avatarTeam);

@@ -1,13 +1,14 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
-import Auth0ShowLock from 'universal/components/Auth0ShowLock/Auth0ShowLock';
+import {showLock} from 'universal/components/Auth0ShowLock/Auth0ShowLock';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import {withRouter} from 'react-router';
 import {showError, showSuccess, showWarning} from 'universal/modules/notifications/ducks/notifications';
 import {setAuthToken} from 'universal/redux/authDuck';
-import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
-
+import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
+import {setWelcomeActivity} from 'universal/modules/userDashboard/ducks/settingsDuck';
+import jwtDecode from 'jwt-decode';
 import {
   invalidInvitation,
   inviteNotFound,
@@ -19,7 +20,8 @@ const mapStateToProps = (state, props) => {
   const {params: {id}} = props;
   return {
     auth: state.auth.obj,
-    inviteToken: id
+    inviteToken: id,
+    user: cashay.query(getAuthQueryString, authedOptions).data.user
   };
 };
 
@@ -34,22 +36,24 @@ export default class Invitation extends Component {
     withRouter: PropTypes.object
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      processedInvitation: false
-    };
-    this.stateMachine(this.props);
+  componentWillMount() {
+    const {auth, dispatch} = this.props;
+    this.state = {processedInvitation: false};
+    if (!auth.sub) {
+      if (__CLIENT__) showLock(dispatch);
+    } else {
+      this.stateMachine(this.props);
+    }
   }
-
   componentWillReceiveProps(nextProps) {
     this.stateMachine(nextProps);
   }
 
   stateMachine = (props) => {
-    const {auth, router} = props;
+    const {auth} = props;
     const {processedInvitation} = this.state;
-    if (auth.sub) {
+    if (auth.sub && !processedInvitation) {
+      this.setState({processedInvitation: true});
       /*
       const isNew = !auth.hasOwnProperty('tms');
       if (isNew) {
@@ -64,12 +68,11 @@ export default class Invitation extends Component {
       // NOTE: temporarily process all invitations, even for existing users:
       // TODO: remove below after team invitation acceptance added to dashboards
       // TODO scratch that, just wrap this with loginWithToken. MK
-      if (!processedInvitation) {
-        this.setState({processedInvitation: true});
-        this.processInvitation();
-      } else {
-        router.push('/me');
-      }
+      // if (!processedInvitation) {
+      this.processInvitation();
+      // } else {
+      //   router.push('/me');
+      // }
     }
   };
 
@@ -81,14 +84,14 @@ export default class Invitation extends Component {
       }
     };
     cashay.mutate('acceptInvitation', options)
-      .then(({res, error}) => {
+      .then(({data, error}) => {
         if (error) {
           if (error.subtype === 'alreadyJoined') {
             /*
              * This should be *very* difficult to have occur:
              */
             dispatch(showError(teamAlreadyJoined));
-            router.push('/settings/me');
+            router.push('/me/settings');
             return;
           } else if (error.subtype === 'invalidToken') {
             dispatch(showError(invalidInvitation));
@@ -100,13 +103,13 @@ export default class Invitation extends Component {
           }
           // TODO: pop them a toast and tell them what happened?
           router.push('/welcome');
-        } else if (res) {
-          console.log('res from acceptInvitation', res);
-          const authToken = res.data.acceptInvitation;
-          // dispatch(setWelcomeActivity(`/team/${teamId}`)); Not sure why?
+        } else if (data) {
+          const authToken = data.acceptInvitation;
+          const decodedToken = jwtDecode(authToken);
+          console.log(authToken);
           dispatch(showSuccess(successfulJoin));
-          cashay.create({httpTransport: new ActionHTTPTransport(authToken)});
           dispatch(setAuthToken(authToken));
+          dispatch(setWelcomeActivity(`/team/${decodedToken.tms[0]}`));
           router.push('/me/settings');
         }
       })
@@ -114,11 +117,9 @@ export default class Invitation extends Component {
   };
 
   render() {
-    const {auth} = this.props;
     return (
       <div>
         <LoadingView />
-        {!auth.sub && <Auth0ShowLock {...this.props} />}
       </div>
     );
   }

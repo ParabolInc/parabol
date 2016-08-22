@@ -30,4 +30,4 @@ export default function resolveEditors(myPreferredName, task) {
     const teamMember = teamMembers.find(m => m.id.startsWith(userId)) || {};
     return teamMember.preferredName === myPreferredName ? 'You (other device)' : teamMember.preferredName;
   });
-};
+}

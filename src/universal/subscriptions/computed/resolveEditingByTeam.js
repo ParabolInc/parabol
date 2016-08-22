@@ -14,4 +14,4 @@ export default function resolveEditingByTeam(teamId) {
     dep: 'editingByTeam'
   }).data;
   return presenceEditingHelper(presence);
-};
+}

@@ -17,4 +17,4 @@ export default function makeProjectsByStatus(projects, sortOrder) {
     projectsByStatus[status].sort((a, b) => a[sortOrder] > b[sortOrder]);
   }
   return projectsByStatus;
-};
+}
