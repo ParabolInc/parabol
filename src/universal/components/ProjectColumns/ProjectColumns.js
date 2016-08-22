@@ -14,15 +14,16 @@ const ProjectColumns = (props) => {
   return (
     <div className={styles.root}>
       <div className={styles.columns}>
-        {columnArray.map((status) =>
-          <ProjectColumn
+        {columnArray.map((status) => {
+          const projectsByStatus = projects.filter((p) => p.status === status);
+          return (<ProjectColumn
             key={`projectCol${status}`}
             area={area}
             myTeamMemberId={myTeamMemberId}
-            projects={projects[status]}
+            projects={projectsByStatus}
             status={status}
-          />
-        )}
+          />);
+        })}
       </div>
     </div>
   );
@@ -31,7 +32,7 @@ const ProjectColumns = (props) => {
 ProjectColumns.propTypes = {
   area: PropTypes.string,
   myTeamMemberId: PropTypes.string,
-  projects: PropTypes.object
+  projects: PropTypes.array.isRequired
 };
 
 const columnStyles = {
