@@ -2,50 +2,44 @@ import React, {PropTypes} from 'react';
 import DashNavList from 'universal/components/DashNavList/DashNavList';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
+import subscriptions from 'universal/subscriptions/subscriptions';
+import {TEAM} from 'universal/subscriptions/constants';
+import subscriber from 'universal/subscriptions/subscriber';
 
-const getMemberships = `
-query {
-  currentUser: getCurrentUser {
-    id,
-    memberships {
-      id,
-      team {
-        id,
-        name
-      }
-    }
-  }
-}`;
+const teamSubQuery = subscriptions.find(sub => sub.channel === TEAM).string;
 
-const mutationHandlers = {
-  acceptInvitation(optimisticVariables, queryResponse, currentResponse) {
-    if (queryResponse) {
-      currentResponse.user.memberships.push(queryResponse.teamMember);
-    }
-    return undefined;
-  }
-};
-
-const queryOptions = {
-  op: 'DashNavList',
-  mutationHandlers
-};
-
-const mapStateToProps = () => ({membershipQuery: cashay.query(getMemberships, queryOptions)});
-
-const DashNavListContainer = (props) => {
-  const teams = props.membershipQuery.data.currentUser.memberships.map(m => {
-    const {id, name} = m.team;
-    return {
-      href: `/team/${id}`,
+const resolveDashNavTeams = (tms) => {
+  const teams = [];
+  for (let i = 0; i < tms.length; i++) {
+    const teamId = tms[i];
+    const {name} = cashay.subscribe(teamSubQuery, subscriber, {
+      op: TEAM,
+      key: teamId,
+      variables: {teamId},
+      dep: 'dashNavTeams'
+    }).data.team;
+    teams[i] = {
+      href: `/team/${teamId}`,
       label: name
     };
-  });
+  }
+  return teams;
+};
+
+const mapStateToProps = (state) => {
+  return {
+    teams: cashay.computed('dashNavTeams', [state.auth.obj.tms], resolveDashNavTeams)
+  };
+};
+
+const DashNavListContainer = (props) => {
+  const {teams} = props;
   return <DashNavList teams={teams}/>;
 };
 
 DashNavListContainer.propTypes = {
-  membershipQuery: PropTypes.object
+  teams: PropTypes.array
 };
 
-export default connect(mapStateToProps)(DashNavListContainer);
+// needs to be false since this is the last container before we use Link to detect an active route
+export default connect(mapStateToProps, undefined, undefined, {pure: false})(DashNavListContainer);

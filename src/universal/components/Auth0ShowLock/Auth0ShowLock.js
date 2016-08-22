@@ -14,10 +14,12 @@ export function showLock(dispatch) {
     }
   }, async(error, profile, authToken) => {
     if (error) throw error;
-    // TODO: stuff this in a utility function:
-    dispatch(setAuthToken(authToken));
+    // TODO: stuff this in a utility function
+    cashay.create({httpTransport: new ActionHTTPTransport(authToken)});
     const options = {variables: {authToken}};
-    cashay.mutate('updateUserWithAuthToken', options);
+    await cashay.mutate('updateUserWithAuthToken', options);
+    // setting this must come last, otherwise the invite token will start going off too early
+    dispatch(setAuthToken(authToken));
   });
 }
 

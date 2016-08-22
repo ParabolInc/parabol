@@ -13,11 +13,10 @@ const textColor = tinycolor.mix(theme.palette.mid10l, '#fff', 50).toHexString();
 let styles = {};
 
 const DashSidebar = (props) => {
-  const {activeArea} = props;
-  const isSettings = activeArea === 'settings';
+  const {isUserSettings} = props;
   return (
     <div className={styles.root}>
-      {isSettings ? <SettingsHub/> : <StandardHubContainer/>}
+      {isUserSettings ? <SettingsHub/> : <StandardHubContainer/>}
       <nav className={styles.nav}>
         <div className={styles.singleNavItem}>
           <DashNavItem
@@ -43,11 +42,7 @@ const DashSidebar = (props) => {
 };
 
 DashSidebar.propTypes = {
-  activeArea: PropTypes.oneOf([
-    'outcomes',
-    'settings',
-    'team'
-  ]).isRequired,
+  isUserSettings: PropTypes.bool
 };
 
 styles = StyleSheet.create({
@@ -55,7 +50,7 @@ styles = StyleSheet.create({
     backgroundColor: theme.palette.mid,
     color: textColor,
     paddingBottom: '1.25rem',
-    width: layoutStyle.dashSidebarWidth,
+    minWidth: layoutStyle.dashSidebarWidth,
   },
 
   nav: {

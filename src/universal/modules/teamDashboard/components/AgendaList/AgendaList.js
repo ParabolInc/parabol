@@ -12,10 +12,10 @@ const AgendaList = (props) => {
 };
 
 AgendaList.propTypes = {
-  agenda: PropTypes.arrayOf({
+  agenda: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string,
     content: PropTypes.string
-  })
+  }))
 };
 
 AgendaList.styles = StyleSheet.create({

@@ -3,13 +3,10 @@ import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import Auth0ShowLock from 'universal/components/Auth0ShowLock/Auth0ShowLock';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
-import {setWelcomeActivity} from 'universal/modules/userDashboard/ducks/settingsDuck';
 import {withRouter} from 'react-router';
-import {
-  showError,
-  showSuccess,
-  showWarning
-} from 'universal/modules/notifications/ducks/notifications';
+import {showError, showSuccess, showWarning} from 'universal/modules/notifications/ducks/notifications';
+import {setAuthToken} from 'universal/redux/authDuck';
+import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 
 import {
   invalidInvitation,
@@ -18,59 +15,11 @@ import {
   successfulJoin
 } from 'universal/modules/invitation/helpers/notifications';
 
-const getUserWithMemberships = `
-query {
-  user: getCurrentUser {
-    email,
-    id,
-    picture,
-    preferredName
-    memberships {
-      id,
-      team {
-        id,
-        name
-      },
-      isLead,
-      isActive,
-      isFacilitator
-    }
-  }
-}`;
-
-const mutationHandlers = {
-  acceptInvitation(optimisticVariables, queryResponse, currentResponse) {
-    if (queryResponse) {
-      // we can't be optimistic, server must process our invite token:
-      currentResponse.user.memberships.push(queryResponse);
-      return currentResponse;
-    }
-    return undefined;
-  },
-  updateUserWithAuthToken(optimisticVariables, queryResponse, currentResponse) {
-    if (queryResponse) {
-      currentResponse.user = {
-        ...currentResponse.user,
-        ...queryResponse
-      };
-      return currentResponse;
-    }
-    return undefined;
-  }
-};
-
-const cashayOptions = {
-  component: 'invitation',
-  mutationHandlers,
-  localOnly: true
-};
-
 const mapStateToProps = (state, props) => {
   const {params: {id}} = props;
   return {
     auth: state.auth.obj,
-    inviteToken: id,
-    user: cashay.query(getUserWithMemberships, cashayOptions).data.user,
+    inviteToken: id
   };
 };
 
@@ -82,7 +31,6 @@ export default class Invitation extends Component {
     dispatch: PropTypes.func.isRequired,
     inviteToken: PropTypes.string.isRequired,
     router: PropTypes.object.isRequired,
-    user: PropTypes.object,
     withRouter: PropTypes.object
   };
 
@@ -91,9 +39,6 @@ export default class Invitation extends Component {
     this.state = {
       processedInvitation: false
     };
-  }
-
-  componentDidMount() {
     this.stateMachine(this.props);
   }
 
@@ -104,7 +49,6 @@ export default class Invitation extends Component {
   stateMachine = (props) => {
     const {auth, router} = props;
     const {processedInvitation} = this.state;
-
     if (auth.sub) {
       /*
       const isNew = !auth.hasOwnProperty('tms');
@@ -119,6 +63,7 @@ export default class Invitation extends Component {
 
       // NOTE: temporarily process all invitations, even for existing users:
       // TODO: remove below after team invitation acceptance added to dashboards
+      // TODO scratch that, just wrap this with loginWithToken. MK
       if (!processedInvitation) {
         this.setState({processedInvitation: true});
         this.processInvitation();
@@ -136,7 +81,7 @@ export default class Invitation extends Component {
       }
     };
     cashay.mutate('acceptInvitation', options)
-      .then(({data, error}) => {
+      .then(({res, error}) => {
         if (error) {
           if (error.subtype === 'alreadyJoined') {
             /*
@@ -155,34 +100,25 @@ export default class Invitation extends Component {
           }
           // TODO: pop them a toast and tell them what happened?
           router.push('/welcome');
-        } else if (data) {
-          const {id} = data.acceptInvitation.team;
-          dispatch(setWelcomeActivity(`/team/${id}`));
+        } else if (res) {
+          console.log('res from acceptInvitation', res);
+          const authToken = res.data.acceptInvitation;
+          // dispatch(setWelcomeActivity(`/team/${teamId}`)); Not sure why?
           dispatch(showSuccess(successfulJoin));
+          cashay.create({httpTransport: new ActionHTTPTransport(authToken)});
+          dispatch(setAuthToken(authToken));
           router.push('/me/settings');
         }
       })
       .catch(console.warn.bind(console));
   };
 
-  renderLogin = () => (
-    <div>
-      <LoadingView />
-      <Auth0ShowLock {...this.props} />
-    </div>
-  );
-
   render() {
     const {auth} = this.props;
-
-    if (!auth) {
-      // Authenticate the user, then let's find out what else to do:
-      return this.renderLogin();
-    }
-
     return (
       <div>
         <LoadingView />
+        {!auth.sub && <Auth0ShowLock {...this.props} />}
       </div>
     );
   }

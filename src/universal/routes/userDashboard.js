@@ -4,7 +4,7 @@ import makeReducer from 'universal/redux/makeReducer';
 
 const setImports = () =>
   new Map([
-    ['component', System.import('universal/modules/userDashboard/containers/Me/MeContainer')],
+    ['component', System.import('universal/containers/Dashboard/DashboardContainer')],
     ['socket', System.import('redux-socket-cluster')],
   ]);
 
@@ -15,12 +15,17 @@ const getImports = importMap => ({
 
 export default store => ({
   path: 'me',
-  getIndexRoute: async(location, cb) => {
+  getComponent: async(location, cb) => {
     const promiseMap = setImports();
     const importMap = await resolvePromiseMap(promiseMap);
     const {component, ...asyncReducers} = getImports(importMap);
     const newReducer = makeReducer(asyncReducers);
     store.replaceReducer(newReducer);
+    cb(null, component);
+  },
+  getIndexRoute: async(location, cb) => {
+    const component =
+      await System.import('universal/modules/userDashboard/components/UserDashboard/UserDashboard');
     cb(null, {component});
   },
   getChildRoutes: (childLocation, cbChild) => {

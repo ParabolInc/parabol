@@ -29,7 +29,7 @@ export default [
         id
         content
         isComplete
-        sort
+        sortOrder
         teamMemberId
       }
     }`,

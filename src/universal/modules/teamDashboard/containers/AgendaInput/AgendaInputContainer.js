@@ -6,27 +6,26 @@ import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import AgendaInput from 'universal/modules/teamDashboard/components/AgendaInput/AgendaInput';
 import shortid from 'shortid';
-import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
-import getNextSort from 'universal/utils/getNextSort';
+import {resolveSortedAgenda} from 'universal/modules/teamDashboard/helpers/computedValues';
+import {SORT_STEP} from 'universal/utils/constants';
 
-const teamMembersSubString = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
-const agendaSubString = subscriptions.find(sub => sub.channel === AGENDA).string;
+const teamMembersSubQuery = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
 
 const mapStateToProps = (state, props) => {
-  const variables = {teamId: props.teamId};
+  const {teamId} = props;
+  const variables = {teamId};
   return {
-    agendaSub: cashay.subscribe(agendaSubString, subscriber, {op: 'agendaSub', variables}),
-    memberSub: cashay.subscribe(teamMembersSubString, subscriber, {op: 'memberSub', variables}),
-    user: cashay.query(getAuthQueryString, authedOptions).data.user
+    agenda: cashay.computed('sortedAgenda', [props.teamId], resolveSortedAgenda),
+    teamMembers: cashay.subscribe(teamMembersSubQuery, subscriber, {key: teamId, op: TEAM_MEMBERS, variables}).data.teamMembers,
+    userId: state.auth.obj.sub
   };
 };
 
 const AgendaInputContainer = (props) => {
-  const {agendaSub, memberSub, teamId, user} = props;
-  const {teamMembers} = memberSub.data;
-  const {agenda} = agendaSub.data;
-  const teamMemberId = `${user.id}::${teamId}`;
-  const nextSort = getNextSort(agenda, 'sort');
+  const {agenda, teamMembers, teamId, userId} = props;
+  const teamMemberId = `${userId}::${teamId}`;
+  const lastAgendaItem = agenda[agenda.length - 1];
+  const nextSort = lastAgendaItem ? lastAgendaItem.sortOrder + SORT_STEP : 0;
   const handleAgendaItemSubmit = (submittedData) => {
     const content = submittedData.agendaItem;
     const options = {
@@ -34,7 +33,7 @@ const AgendaInputContainer = (props) => {
         newAgendaItem: {
           id: `${teamId}::${shortid.generate()}`,
           content,
-          sort: nextSort,
+          sortOrder: nextSort,
           teamMemberId
         }
       }
@@ -52,12 +51,10 @@ const AgendaInputContainer = (props) => {
 };
 
 AgendaInputContainer.propTypes = {
-  agendaSub: PropTypes.object,
-  memberSub: PropTypes.object,
-  teamId: PropTypes.string.isRequired,
-  user: PropTypes.shape({
-    id: PropTypes.string
-  })
+  agenda: PropTypes.array,
+  teamMembers: PropTypes.array,
+  teamId: PropTypes.string,
+  userId: PropTypes.string
 };
 
 export default connect(mapStateToProps)(AgendaInputContainer);

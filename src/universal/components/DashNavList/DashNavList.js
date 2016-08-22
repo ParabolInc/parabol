@@ -5,35 +5,19 @@ import theme from 'universal/styles/theme';
 
 let styles = {};
 
-const DashNavItems = (props) => {
-  const {teams} = props;
-  return (
-    <div>
-      {teams.map((team) =>
-        <div className={styles.team} key={`teamNav${team.href}`}>
-          <DashNavItem {...team} />
-        </div>
-      )}
-    </div>
-  );
-};
-
-DashNavItems.propTypes = {
-  teams: PropTypes.arrayOf(
-    PropTypes.shape({
-      href: PropTypes.string,
-      label: PropTypes.string.isRequired
-    })
-  ).isRequired
-};
-
 const DashNavList = (props) => {
   const {teams} = props;
   const hasTeams = teams.length > 0;
   return (
     <div className={styles.root}>
       {hasTeams ?
-        <DashNavItems teams={teams}/> :
+        <div>
+          {teams.map((team) =>
+            <div className={styles.team} key={`teamNav${team.href}`}>
+              <DashNavItem {...team} />
+            </div>
+          )}
+        </div> :
         <div className={styles.emptyTeams}>It appears you are not a member of any team!</div>
       }
     </div>
@@ -44,9 +28,9 @@ DashNavList.propTypes = {
   teams: PropTypes.arrayOf(
     PropTypes.shape({
       href: PropTypes.string,
-      label: PropTypes.string.isRequired
+      label: PropTypes.string
     })
-  ).isRequired
+  )
 };
 
 styles = StyleSheet.create({
