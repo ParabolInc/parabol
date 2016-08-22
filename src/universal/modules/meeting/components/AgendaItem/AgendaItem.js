@@ -3,13 +3,14 @@ import look, {StyleSheet} from 'react-look';
 import tinycolor from 'tinycolor2';
 import FontAwesome from 'react-fontawesome';
 import theme from 'universal/styles/theme';
+import Avatar from 'universal/components/Avatar/Avatar';
 
 const combineStyles = StyleSheet.combineStyles;
 const warmLinkHover = tinycolor(theme.palette.warm).darken(15).toHexString();
 let s = {};
 
 const AgendaItem = props => {
-  const { desc, index, onClick, status, owner } = props;
+  const {desc, index, onClick, status, teamMember = {}} = props;
   const rootStyles = combineStyles(s.root, s[status]);
   let descStyles;
   if (status === 'processed') descStyles = s.strikethrough;
@@ -19,12 +20,12 @@ const AgendaItem = props => {
 
   return (
     <div className={rootStyles} onClick={onClick} title={desc}>
-      <div className={s.del}><FontAwesome name="times-circle" /></div>
+      <div className={s.del}><FontAwesome name="times-circle"/></div>
       <div className={s.index}>{index + 1}.</div>
       <div className={s.desc}>
         <a className={descStyles} href={hash}>{desc}</a>”
       </div>
-      <div className={s.owner}>{owner}</div>
+      <Avatar hasBadge={false} picture={teamMember.picture} size="smallest"/>
     </div>
   );
 };

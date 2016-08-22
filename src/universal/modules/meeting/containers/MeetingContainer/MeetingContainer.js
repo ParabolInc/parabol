@@ -119,7 +119,6 @@ export default class MeetingContainer extends Component {
     return (
       <MeetingLayout>
         <Sidebar
-          agenda={agenda}
           facilitatorPhase={facilitatorPhase}
           localPhase={localPhase}
           teamName={teamName}

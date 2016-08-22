@@ -4,12 +4,12 @@ import {textOverflow} from 'universal/styles/helpers';
 import theme from 'universal/styles/theme';
 import layoutStyle from 'universal/styles/layout';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
-import AgendaList from 'universal/modules/meeting/components/AgendaList/AgendaList';
-import PlaceholderInput from '../PlaceholderInput/PlaceholderInput';
 import {cashay} from 'cashay';
 import {CHECKIN, UPDATES, AGENDA, SUMMARY, phaseArray} from 'universal/utils/constants';
 import makeMeetingUrl from 'universal/utils/makeMeetingUrl';
 import {Link} from 'react-router';
+import AgendaInputContainer from 'universal/modules/teamDashboard/containers/AgendaInput/AgendaInputContainer';
+import AgendaListContainer from 'universal/modules/teamDashboard/containers/AgendaList/AgendaListContainer';
 
 const combineStyles = StyleSheet.combineStyles;
 const labels = {
@@ -107,10 +107,9 @@ const Sidebar = (props) => {
           }
         </ul>
         {localPhase !== CHECKIN && localPhase !== SUMMARY &&
-          <div>{/* div for JSX */}
-            <AgendaList agenda={agenda}/>
-            {/* TODO: Toggle PlaceholderAddLink and PlaceholderInput (TA) */}
-            <PlaceholderInput />
+          <div>
+            <AgendaListContainer teamId={teamId}/>
+            <AgendaInputContainer teamId={teamId}/>
           </div>
         }
       </nav>
