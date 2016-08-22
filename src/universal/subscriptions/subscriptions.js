@@ -15,7 +15,7 @@ export default [
         sortOrder
       }
     }`,
-    channelfy: variables => `actions/${variables.teamMemberId}`,
+    channelfy: variables => `actions/${variables.userId}`,
     rehydrate: fields => {
       fields.updatedAt = new Date(fields.updatedAt);
       return fields;
