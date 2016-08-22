@@ -78,6 +78,18 @@ export default class TeamProjectCard extends Component {
     const hasOpenAssignMenu = openMenu === OPEN_ASSIGN_MENU;
     const rootStyles = combineStyles(styles.root, styles.cardBlock, styles[status]);
     const owner = teamMembers.find(m => m.id === project.teamMemberId) || {};
+    const handleCardActive = (isActive) => {
+      if (isActive === undefined) { return; }
+      const [teamId] = projectId.split('::');
+      const editing = isActive ? `Task::${projectId}` : null;
+      const options = {
+        variables: {
+          teamId,
+          editing
+        }
+      };
+      cashay.mutate('edit', options);
+    };
     const handleCardUpdate = (submittedData) => {
       const submittedContent = submittedData[projectId];
       if (submittedContent !== content) {
@@ -111,6 +123,7 @@ export default class TeamProjectCard extends Component {
                 name={projectId}
                 component={OutcomeCardTextarea}
                 editors={editors}
+                handleActive={handleCardActive}
                 handleSubmit={handleSubmit(handleCardUpdate)}
                 timestamp={fromNow(updatedAt)}
                 doFocus={!content}

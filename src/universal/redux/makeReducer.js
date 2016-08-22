@@ -3,7 +3,6 @@ import {cashayReducer} from 'cashay';
 import notifications from 'universal/modules/notifications/ducks/notifications';
 import {reducer as formReducer, actionTypes} from 'redux-form';
 import auth from './authDuck';
-import editing from './editingDuck';
 import {reducer as storageReducer} from 'redux-storage-whitelist-fn';
 import storageMerger from 'universal/redux/storageMerger';
 import makeRootReducer from 'universal/redux/rootDuck';
@@ -20,7 +19,6 @@ const formPlugin = {
 const appReducers = {
   auth,
   cashay: cashayReducer,
-  editing,
   form: formReducer.plugin(formPlugin),
   notifications
 };
