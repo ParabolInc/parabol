@@ -37,6 +37,7 @@ const MeetingUpdates = (props) => {
   const isComplete = phaseOrder(meetingPhase) > phaseOrder(UPDATES);
   const gotoNextItem = phaseItemFactory(localPhaseItem + 1);
   const teamMemberProjects = currentTeamMember ? projects[currentTeamMember.id] : [];
+
   return (
     <MeetingMain>
       <MeetingSection paddingBottom="2rem" paddingTop=".75rem">
@@ -128,9 +129,8 @@ MeetingUpdates.propTypes = {
   params: PropTypes.shape({
     teamId: PropTypes.string.isRequired
   }).isRequired,
-  projects: PropTypes.array,
+  projects: PropTypes.array.isRequired,
   router: PropTypes.object.isRequired,
 };
 
 export default withRouter(look(MeetingUpdates));
-

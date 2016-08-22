@@ -1,4 +1,6 @@
+import {cashay} from 'cashay';
 import jwtDecode from 'jwt-decode';
+import ActionHTTPTransport from '../utils/ActionHTTPTransport';
 
 const SET_AUTH_TOKEN = '@@authToken/SET_AUTH_TOKEN';
 const REMOVE_AUTH_TOKEN = '@@authToken/REMOVE_AUTH_TOKEN';
@@ -38,6 +40,7 @@ export function setAuthToken(authToken) {
   } catch (e) {
     throw new Error(`unable to decode jwt: ${e}`);
   }
+  cashay.create({httpTransport: new ActionHTTPTransport(authToken)});
   return {
     type: SET_AUTH_TOKEN,
     payload: {

@@ -13,7 +13,7 @@ import MeetingSection from 'universal/modules/meeting/components/MeetingSection/
 import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingSectionHeading/MeetingSectionHeading';
 // eslint-disable-next-line max-len
 import MeetingSectionSubheading from 'universal/modules/meeting/components/MeetingSectionSubheading/MeetingSectionSubheading';
-import Sidebar from 'universal/modules/team/components/Sidebar/Sidebar';
+import Sidebar from '../../../meeting/components/Sidebar/Sidebar';
 
 import Jordan from 'universal/styles/theme/images/avatars/jordan-husney-avatar.jpg';
 import Matt from 'universal/styles/theme/images/avatars/matt-krick-avatar.jpg';

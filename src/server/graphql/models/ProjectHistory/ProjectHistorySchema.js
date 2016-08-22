@@ -57,7 +57,7 @@ export const TaskHistory = new GraphQLObjectType({
       description: 'The timestamp the task was changed'
     },
     /* meta data */
-    changedIn: {
+    area: {
       type: ChangeModule,
       description: 'The module where the user was to change the item'
     },

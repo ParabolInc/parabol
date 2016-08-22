@@ -2,49 +2,27 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import {columnArray} from 'universal/utils/constants';
+
 import ProjectColumn from 'universal/modules/teamDashboard/components/ProjectColumn/ProjectColumn';
-import UserProjectColumn from 'universal/modules/userDashboard/components/UserProjectColumn/UserProjectColumn';
 
 const borderColor = 'rgba(0, 0, 0, .1)';
 let styles = {};
 
-const makeProjectsByStatus = (projects) => {
-  const projectsByStatus = columnArray.reduce((reduction, entity) => {
-    reduction[entity] = [];
-    return reduction;
-  }, {});
-  projects.forEach(project => {
-    projectsByStatus[project.status].push(project);
-  });
-  columnArray.forEach(status => projectsByStatus[status].sort((a, b) => a.teamSort > b.teamSort));
-  return projectsByStatus;
-};
-
 const ProjectColumns = (props) => {
-  const {dispatch, editing, projects, teamMembers, teamMemberId} = props;
-  const projectsByStatus = makeProjectsByStatus(projects);
-  const isUserDash = !Boolean(teamMemberId);
+  // myTeamMemberId is undefined if this is coming from USER_DASH
+  const {area, myTeamMemberId, projects} = props;
   return (
     <div className={styles.root}>
       <div className={styles.columns}>
         {columnArray.map((status) => {
-          return isUserDash ?
-            <UserProjectColumn
-              key={`projectCol${status}`}
-              dispatch={dispatch}
-              editing={editing}
-              status={status}
-              projects={projectsByStatus[status]}
-            /> :
-            <ProjectColumn
-              key={`projectCol${status}`}
-              dispatch={dispatch}
-              editing={editing}
-              teamMembers={teamMembers}
-              teamMemberId={teamMemberId}
-              status={status}
-              projects={projectsByStatus[status]}
-            />;
+          const projectsByStatus = projects.filter((p) => p.status === status);
+          return (<ProjectColumn
+            key={`projectCol${status}`}
+            area={area}
+            myTeamMemberId={myTeamMemberId}
+            projects={projectsByStatus}
+            status={status}
+          />);
         })}
       </div>
     </div>
@@ -52,11 +30,9 @@ const ProjectColumns = (props) => {
 };
 
 ProjectColumns.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  editing: PropTypes.object,
-  projects: PropTypes.array,
-  teamMembers: PropTypes.array,
-  teamMemberId: PropTypes.string
+  area: PropTypes.string,
+  myTeamMemberId: PropTypes.string,
+  projects: PropTypes.array.isRequired
 };
 
 const columnStyles = {

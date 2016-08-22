@@ -28,9 +28,11 @@ const Step2TeamName = (props) => {
       }
     };
     // createTeam returns a new JWT with a new tms field
-    cashay.mutate('createTeam', createTeamOptions).then((res) => dispatch(setAuthToken(res.data.createTeam)));
-    dispatch(updateCompleted(3));
-    dispatch(nextPage());
+    cashay.mutate('createTeam', createTeamOptions).then((res) => {
+      dispatch(setAuthToken(res.data.createTeam));
+      dispatch(updateCompleted(3));
+      dispatch(nextPage());
+    });
   };
   const progressDotClick = (dot) => {
     if (dot === 1) {

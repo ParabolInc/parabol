@@ -49,8 +49,5 @@ export const setWelcomeActivity = (nextPage) => {
 };
 
 export const clearActivity = () => {
-  return {
-    type: CLEAR_ACTIVITY,
-    payload: {}
-  };
+  return {type: CLEAR_ACTIVITY};
 };

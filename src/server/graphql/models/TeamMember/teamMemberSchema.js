@@ -38,6 +38,15 @@ export const TeamMember = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'true if present, false if absent, null before check-in'
     },
+    /* Foreign keys */
+    teamId: {
+      type: GraphQLID,
+      description: 'foreign key to Team table'
+    },
+    userId: {
+      type: GraphQLID,
+      description: 'foreign key to User table'
+    },
     /* GraphQL sugar */
     team: {
       type: Team,

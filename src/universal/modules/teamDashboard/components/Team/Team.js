@@ -4,9 +4,7 @@ import {
   DashContent,
   DashHeader,
   DashHeaderInfo,
-  DashLayout,
   DashMain,
-  DashSidebar
 } from 'universal/components/Dashboard';
 import {Link} from 'react-router';
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
@@ -28,66 +26,46 @@ const linkStyle = {
 };
 
 const Team = (props) => {
-  const {activeMeetings, editing, dispatch, projects, team, teamId, teamMembers, user} = props;
+  const {team, myTeamMemberId, teamMembers} = props;
+  const teamId = team.id;
+  const teamName = team.name;
   const hasOverlay = Boolean(team && team.meetingId);
-  const teamMemberId = `${user.id}::${teamId}`;
   return (
-    <DashLayout activeMeetings={activeMeetings} title="Team Dashboard">
-      <DashSidebar
-        activeArea="team"
-        activeTeamId={teamId}
-        user={user}
-      />
-      {hasOverlay &&
-        <TeamDashModal teamId={teamId} />
-      }
-      <DashMain hasOverlay={hasOverlay}>
-        <DashHeader>
-          <DashHeaderInfo title={team && team.name}>
-            <Link
-              to={`/meeting/${teamId}`}
-              style={linkStyle}
-              title="Meeting Lobby"
-            >
-              <FontAwesome name="arrow-circle-right" style={faIconStyle} /> Meeting Lobby
-            </Link>
-            <Link
-              to={`/meeting/${teamId}/settings`}
-              style={linkStyle}
-              title="Team Settings"
-            >
-              <FontAwesome name="cog" style={faIconStyle} /> Team Settings
-            </Link>
-          </DashHeaderInfo>
-          <DashboardAvatars teamMembers={teamMembers}/>
-        </DashHeader>
-        <DashContent>
-          <AgendaAndProjects
-            dispatch={dispatch}
-            editing={editing}
-            projects={projects}
-            teamId={teamId}
-            teamMembers={teamMembers}
-            teamMemberId={teamMemberId}
-          />
-        </DashContent>
-      </DashMain>
-    </DashLayout>
+    <DashMain hasOverlay={hasOverlay}>
+      {hasOverlay && <TeamDashModal teamId={teamId} teamName={teamName}/>}
+      <DashHeader>
+        <DashHeaderInfo title={teamName}>
+          <Link
+            to={`/meeting/${teamId}`}
+            style={linkStyle}
+            title="Meeting Lobby"
+          >
+            <FontAwesome name="arrow-circle-right" style={faIconStyle}/> Meeting Lobby
+          </Link>
+          <Link
+            to={`/meeting/${teamId}/settings`}
+            style={linkStyle}
+            title="Team Settings"
+          >
+            <FontAwesome name="cog" style={faIconStyle}/> Team Settings
+          </Link>
+        </DashHeaderInfo>
+        <DashboardAvatars teamMembers={teamMembers}/>
+      </DashHeader>
+      <DashContent>
+        <AgendaAndProjects
+          myTeamMemberId={myTeamMemberId}
+          teamId={teamId}
+        />
+      </DashContent>
+    </DashMain>
   );
 };
 
 Team.propTypes = {
-  activeMeetings: PropTypes.array,
-  dispatch: PropTypes.func,
-  editing: PropTypes.object,
-  projects: PropTypes.array,
-  teamId: PropTypes.string.isRequired,
+  myTeamMemberId: PropTypes.string,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired,
-  user: PropTypes.shape({
-    name: PropTypes.string,
-    preferredName: PropTypes.string,
-  })
 };
 
 export default Team;

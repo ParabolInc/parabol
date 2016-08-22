@@ -21,7 +21,7 @@ export const PROJECT = 'project';
 /* Sorting */
 export const SORT_STEP = 1;
 
-/* Change Modules */
+/* Areas */
 export const MEETING = 'meeting';
 export const TEAM_DASH = 'teamDash';
 export const USER_DASH = 'userDash';

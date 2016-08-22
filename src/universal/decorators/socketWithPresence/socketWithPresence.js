@@ -7,24 +7,20 @@ import subscriptions from 'universal/subscriptions/subscriptions';
 import reduxSocketOptions from 'universal/redux/reduxSocketOptions';
 import {PRESENCE} from 'universal/subscriptions/constants';
 import socketCluster from 'socketcluster-client';
-import presenceSubscriber from './presenceSubscriber';
-import presenceEditingHelper from './presenceEditingHelper';
+import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
 
-const presenceSubscription = subscriptions.find(sub => sub.channel === PRESENCE);
-
-const resolve = (teamId) => {
-  const presenceSubOptions = {
-    variables: {teamId},
-    op: 'socketWithPresence',
-    dependency: 'editingPresence'
-  };
-  const presenceSub = cashay.subscribe(presenceSubscription.string, presenceSubscriber, presenceSubOptions);
-  const editing = presenceEditingHelper(presenceSub.data.presence);
-  return {presenceSub, editing};
-};
+const presenceSub = subscriptions.find(sub => sub.channel === PRESENCE);
+const presenceSubQuery = presenceSub.string;
 
 const mapStateToProps = (state, props) => {
-  return cashay.computed('editingPresence', [props.params.teamId], resolve);
+  const {params: {teamId}} = props;
+  return {
+    presence: cashay.subscribe(presenceSubQuery, presenceSubscriber, {
+      key: teamId,
+      op: PRESENCE,
+      variables: {teamId},
+    })
+  };
 };
 
 export default ComposedComponent => {
@@ -45,8 +41,8 @@ export default ComposedComponent => {
       const socket = socketCluster.connect();
       socket.on('subscribe', channelName => {
         const {teamId} = props.params;
-        const presenceSub = presenceSubscription.channelfy({teamId});
-        const canPublish = presenceSub === channelName;
+        const presenceChannel = presenceSub.channelfy({teamId});
+        const canPublish = presenceChannel === channelName;
         if (canPublish) {
           const options = {variables: {teamId}};
           cashay.mutate('soundOff', options);
