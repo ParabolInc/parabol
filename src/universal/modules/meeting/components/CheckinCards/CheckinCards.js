@@ -27,7 +27,7 @@ const makeCheckinPressFactory = (teamMemberId) => {
 // eslint-disable-next-line react/prefer-stateless-function
 export default class CheckinCards extends Component {
   static propTypes = {
-    isFacilitator: PropTypes.bool,
+    isFacilitating: PropTypes.bool,
     members: PropTypes.array,
     localPhaseItem: PropTypes.number,
     router: PropTypes.object,
@@ -35,10 +35,10 @@ export default class CheckinCards extends Component {
   };
 
   handleCardClickFactory = (nextPhaseItem) => {
-    const {isFacilitator, router, teamId} = this.props;
+    const {isFacilitating, router, teamId} = this.props;
     const nextPhase = CHECKIN;
     return () => {
-      if (isFacilitator) {
+      if (isFacilitating) {
         const options = {variables: {nextPhase, nextPhaseItem, teamId}};
         cashay.mutate('moveMeeting', options);
       }
@@ -49,21 +49,21 @@ export default class CheckinCards extends Component {
 
   render() {
     const {members, localPhaseItem} = this.props;
-    const memberNumber = Number(localPhaseItem);
-    const leftCard = memberNumber > 0 && members[memberNumber - 1];
-    const rightCard = memberNumber < members.length - 1 && members[memberNumber + 1];
-    const activeCard = members[memberNumber];
+    const memberIdx = localPhaseItem - 1;
+    const leftCard = memberIdx > 0 && members[memberIdx - 1];
+    const rightCard = memberIdx < members.length && members[memberIdx + 1];
+    const activeCard = members[memberIdx];
 
     return (
       <div className={styles.base}>
         {leftCard &&
-          <CheckinCard handleCardClick={this.handleCardClickFactory(memberNumber - 1)} member={leftCard}/>
+        <CheckinCard handleCardClick={this.handleCardClickFactory(memberIdx - 1)} member={leftCard}/>
         }
         {activeCard &&
-          <CheckinCard checkinPressFactory={makeCheckinPressFactory(activeCard.id)} member={activeCard} isActive/>
+        <CheckinCard checkinPressFactory={makeCheckinPressFactory(activeCard.id)} member={activeCard} isActive/>
         }
         {rightCard &&
-          <CheckinCard handleCardClick={this.handleCardClickFactory(memberNumber + 1)} member={rightCard}/>
+        <CheckinCard handleCardClick={this.handleCardClickFactory(memberIdx + 1)} member={rightCard}/>
         }
       </div>
     );

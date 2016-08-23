@@ -4,7 +4,7 @@ import MeetingUpdatesLayout from 'universal/modules/meetingLayout/containers/Mee
 // eslint-disable-next-line max-len
 import MeetingRequestsLayout from 'universal/modules/meetingLayout/containers/MeetingRequestsLayout/MeetingRequestsLayout';
 // eslint-disable-next-line max-len
-import MeetingAgendaFirstCall from 'universal/modules/meetingLayout/containers/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
+import MeetingAgendaFirstCall from '../modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
 // eslint-disable-next-line max-len
 import MeetingAgendaLastCall from 'universal/modules/meetingLayout/containers/MeetingAgendaLastCall/MeetingAgendaLastCall';
 import MeetingSummaryLayout from 'universal/modules/meetingLayout/containers/MeetingSummaryLayout/MeetingSummaryLayout';

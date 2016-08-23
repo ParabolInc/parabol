@@ -10,7 +10,7 @@ import NullCard from 'universal/components/NullCard/NullCard';
 const mapStateToProps = (state, props) => {
   const {id, preferredName} = cashay.query(getAuthQueryString, authedOptions).data.user;
   const [teamId] = props.project.id.split('::');
-  const username = preferredName.replace(/\s+/g, '');
+  const username = preferredName && preferredName.replace(/\s+/g, '');
   const myTeamMemberId = `${id}::${teamId}`;
   return {
     preferredName,

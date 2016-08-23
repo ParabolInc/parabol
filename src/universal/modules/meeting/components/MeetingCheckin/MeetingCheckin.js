@@ -11,27 +11,31 @@ import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingS
 import {CHECKIN, UPDATES, phaseOrder} from 'universal/utils/constants';
 import {withRouter} from 'react-router';
 import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
+import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 
 let s = {};
 
 const MeetingCheckin = (props) => {
   const {
+    isFacilitating,
     localPhaseItem,
-    isFacilitator,
-    facilitatorPhaseItem,
-    meetingPhase,
-    meetingPhaseItem,
     members,
-    params,
     router,
+    team
   } = props;
-  const {teamId} = params;
-  const phaseItemFactory = makePhaseItemFactory(isFacilitator, members.length, router, teamId, CHECKIN, UPDATES);
-  const isLastMember = localPhaseItem === members.length - 1;
 
-  const currentName = members[localPhaseItem] && members[localPhaseItem].preferredName;
+  const {id: teamId, facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem} = team;
+  if (localPhaseItem === 0 || localPhaseItem > members.length) {
+    const pushURL = makePushURL(team.id, facilitatorPhase, facilitatorPhaseItem);
+    router.replace(pushURL);
+  }
+  const phaseItemFactory = makePhaseItemFactory(isFacilitating, members.length, router, teamId, CHECKIN);
+  // 1-indexed
+  const isLastMember = localPhaseItem === members.length;
+  const currentName = members[localPhaseItem - 1] && members[localPhaseItem - 1].preferredName;
   const isComplete = phaseOrder(meetingPhase) > phaseOrder(CHECKIN);
   const gotoNextItem = phaseItemFactory(localPhaseItem + 1);
+
   return (
     <MeetingMain>
       {/* */}
@@ -45,17 +49,19 @@ const MeetingCheckin = (props) => {
           membersCount={members.length}
         />
       </MeetingSection>
-      {/* */}
-      {/* */}
       <MeetingSection flexToFill paddingBottom="2rem">
-        {/* */}
         <MeetingSection paddingBottom="2rem">
           <MeetingSectionHeading>
             Hola <span className={s.name}>{currentName}</span>, ¿por qué no puedes estar completamente enfocado hoy?
           </MeetingSectionHeading>
         </MeetingSection>
         {/* */}
-        <CheckinCards members={members} localPhaseItem={localPhaseItem} teamId={teamId} isFacilitator={isFacilitator}/>
+        <CheckinCards
+          isFacilitating={isFacilitating}
+          localPhaseItem={localPhaseItem}
+          members={members}
+          teamId={teamId}
+        />
         <MeetingSection paddingBottom="2rem">
           <IconLink
             icon="arrow-circle-right"
@@ -75,16 +81,10 @@ const MeetingCheckin = (props) => {
 };
 
 MeetingCheckin.propTypes = {
-  facilitatorPhaseItem: PropTypes.number.isRequired,
-  isFacilitator: PropTypes.bool,
-  localPhaseItem: PropTypes.number.isRequired,
+  localPhaseItem: PropTypes.number,
   members: PropTypes.array,
-  meetingPhase: PropTypes.string.isRequired,
-  meetingPhaseItem: PropTypes.number.isRequired,
-  params: PropTypes.shape({
-    teamId: PropTypes.string.isRequired
-  }).isRequired,
   router: PropTypes.object.isRequired,
+  team: PropTypes.object
 };
 
 s = StyleSheet.create({

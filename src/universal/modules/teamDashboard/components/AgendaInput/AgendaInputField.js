@@ -1,12 +1,19 @@
 import React, {PropTypes} from 'react';
-import appTheme from 'universal/styles/theme';
+import theme from 'universal/styles/theme';
 import look, {StyleSheet} from 'react-look';
 
 const AgendaInputField = (field) => {
   const {styles} = AgendaInputField;
   return (
     <div>
-      <input className={styles.input} {...field.input} type="text"/>
+      <input
+        {...field.input}
+        className={styles.input}
+        type="text"
+        placeholder="Add an item"
+        title="Add agenda items here"
+      />
+      <div className={styles.author}>Author name</div>
     </div>
   );
 };
@@ -17,30 +24,36 @@ AgendaInputField.propTypes = {
 
 AgendaInputField.styles = StyleSheet.create({
   input: {
+    backgroundColor: 'transparent',
     border: 0,
-    borderBottom: `1px dashed ${appTheme.palette.dark50l}`,
     boxShadow: 'none',
-    fontSize: appTheme.typography.s4,
+    color: theme.palette.dark10d,
+    display: 'block',
+    fontFamily: theme.typography.serif,
+    fontSize: theme.typography.s3,
+    fontStyle: 'italic',
     fontWeight: 700,
-    lineHeight: 1.5,
-    margin: '0 0 .5rem',
-    padding: '.125rem .5rem',
+    margin: 0,
+    outline: 'none',
+    padding: 0,
     width: '100%',
 
     '::placeholder': {
-      color: appTheme.palette.dark50l
+      color: theme.palette.dark50l
     },
-
-    // NOTE: :focus, :active have same styles
-    ':focus': {
-      borderStyle: 'solid',
-      outline: 'none'
-    },
-    ':active': {
-      borderStyle: 'solid',
-      outline: 'none'
-    }
   },
+
+  author: {
+    display: 'none', // TODO: Show on focus/active
+    fontWeight: 700,
+    right: '.75rem',
+    lineHeight: `${34 / 16}rem`,
+    paddingTop: '1px',
+    position: 'absolute',
+    textAlign: 'right',
+    top: 0
+  }
 });
+
 
 export default look(AgendaInputField);

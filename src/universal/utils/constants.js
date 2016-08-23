@@ -2,9 +2,11 @@
 export const LOBBY = 'lobby';
 export const CHECKIN = 'checkin';
 export const UPDATES = 'updates';
-export const AGENDA = 'agenda';
+export const FIRST_CALL = 'firstCall';
+export const AGENDA_ITEMS = 'agendaItems';
+export const LAST_CALL = 'lastCall';
 export const SUMMARY = 'summary';
-export const phaseArray = [LOBBY, CHECKIN, UPDATES, AGENDA, SUMMARY];
+export const phaseArray = [LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY];
 export const phaseOrder = phase => phaseArray.indexOf(phase);
 
 /* Columns */
