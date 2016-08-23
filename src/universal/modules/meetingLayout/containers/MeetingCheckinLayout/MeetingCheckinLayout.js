@@ -14,6 +14,7 @@ import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingS
 import MeetingSectionSubheading
   from 'universal/modules/meeting/components/MeetingSectionSubheading/MeetingSectionSubheading';
 import Sidebar from '../../../meeting/components/Sidebar/Sidebar';
+import makeRandomCheckInQuestion from 'universal/modules/meeting/helpers/makeRandomCheckInQuestion';
 
 import Jordan from 'universal/styles/theme/images/avatars/jordan-husney-avatar.jpg';
 import Matt from 'universal/styles/theme/images/avatars/matt-krick-avatar.jpg';
@@ -105,45 +106,10 @@ const MeetingCheckinLayout = (props) => {
   return (
     <MeetingLayout>
       {/* */}
-      <Sidebar facilitatorPhase="checkin" localPhase="checkin" {...team} />
+
       {/* */}
       <MeetingMain>
-        {/* */}
-        <MeetingSection paddingBottom="2rem" paddingTop="2rem">
-          <div className={s.avatars}>
-            <AvatarGroup avatars={team.members} />
-            <div className={s.progress}>
-              <ProgressBar />
-            </div>
-          </div>
-        </MeetingSection>
-        {/* */}
-        {/* */}
-        <MeetingSection flexToFill paddingBottom="2rem">
-          {/* */}
-          <MeetingSection paddingBottom="2rem">
-            <MeetingSectionHeading>
-              Hola <span className={s.name}>Kitty</span>, why is this prototype layout broken?
-            </MeetingSectionHeading>
-            <MeetingSectionSubheading>
-              A: Because the component is being updated to do real thangs.
-            </MeetingSectionSubheading>
-          </MeetingSection>
-          {/* */}
-          <CheckinCards cards={demoCards} />
-          <MeetingSection paddingBottom="2rem">
-            <IconLink
-              icon="arrow-circle-right"
-              iconPlacement="right"
-              label="Next teammate (press enter)"
-              scale="large"
-              theme="warm"
-            />
-          </MeetingSection>
-          {/* */}
-          {/* */}
-        </MeetingSection>
-        {/* */}
+        {makeRandomCheckInQuestion('Marimar')}
       </MeetingMain>
       {/* */}
       <ShortcutsMenu />
