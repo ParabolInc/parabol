@@ -23,13 +23,15 @@ export default function merger(initialState, persistedState) {
       }
     }
     if (reducerName === 'cashay') {
-      value.result.presence = undefined;
-      value.result.teamMembers = undefined;
-      value.result.team = undefined;
-      value.result.projects = undefined;
-      // remove items with unbounded growth in production
-      value.entities.Presence = undefined;
-      value.entities.Task = undefined;
+      if (value && value.result) {
+        value.result.presence = undefined;
+        value.result.teamMembers = undefined;
+        value.result.team = undefined;
+        value.result.projects = undefined;
+        // remove items with unbounded growth in production
+        value.entities.Presence = undefined;
+        value.entities.Task = undefined;
+      }
     }
     result[reducerName] = value;
   }

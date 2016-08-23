@@ -118,7 +118,7 @@
     "redux": "3.5.2",
     "redux-form": "^6.0.0-rc.4",
     "redux-logger": "2.6.1",
-    "redux-socket-cluster": "^0.8.2",
+    "redux-socket-cluster": "^0.9.0",
     "redux-storage-engine-localstorage": "^1.1.1",
     "redux-storage-whitelist-fn": "^4.0.1",
     "redux-thunk": "2.1.0",

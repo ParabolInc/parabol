@@ -6,9 +6,9 @@ import {
 } from 'graphql';
 import {errorObj} from '../utils';
 import {requireWebsocket, requireSUOrTeamMember, requireAuth} from '../authorization';
-import acceptInviteDB from './helpers';
 import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
+import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 
 export default {
   checkin: {
@@ -78,7 +78,6 @@ export default {
           subtype: 'invalidToken'
         });
       }
-
       const oldtms = authToken.tms || [];
       // Check if TeamMember already exists (i.e. user invited themselves):
       const teamMemberExists = oldtms.includes(teamId);
@@ -89,45 +88,46 @@ export default {
           subtype: 'alreadyJoined'
         });
       }
-
-      const usersOnTeam = await r.table('TeamMember')
+      const dbWork = r.table('TeamMember')
+      // get number of users
         .getAll(teamId, {index: 'teamId'})
         .filter({isActive: true})
-        .count();
-      const user = await r.table('User').get(userId);
-      // team members cannot change users or teams, so let's make the ID meaningful and reduce DB hits
-      const teamMemberId = `${userId}::${teamId}`;
-
-      // add user to TeamMembers
-
-      const newTeamMember = {
-        checkInOrder: usersOnTeam + 1,
-        id: teamMemberId,
-        teamId,
-        userId,
-        isActive: true,
-        isLead: false,
-        isFacilitator: false,
-        picture: user.picture,
-        preferredName: user.preferredName,
-      };
-      await r.table('TeamMember').insert(newTeamMember);
-
-      /*
-       * TODO: if other outstanding invitations, create actionable
-       *       notifications in users notification center.
-       */
-
-      // mark invitation as accepted
-      await acceptInviteDB(email, now);
-
-      // if user created an account with a different email, flag those oustanding invites, too
-      if (user.email !== email) {
-        await acceptInviteDB(user.email, now);
-      }
-
+        .count()
+        // get the user
+        .do((usersOnTeam) => ({
+          usersOnTeam,
+          user: r.table('User').get(userId)
+        }))
+        // insert team member
+        .do((teamCountAndUser) => {
+          r.table('TeamMember').insert({
+            checkInOrder: teamCountAndUser('usersOnTeam').add(1),
+            id: teamCountAndUser('user').add('::', teamId),
+            teamId,
+            userId,
+            isActive: true,
+            isLead: false,
+            isFacilitator: false,
+            picture: teamCountAndUser('user')('picture'),
+            preferredName: teamCountAndUser('user')('preferredName'),
+          });
+          return teamCountAndUser('user')('email');
+        })
+        // find all possible emails linked to this person and mark them as accepted
+        .do((userEmail) =>
+          r.table('Invitation').getAll(userEmail, email, {index: 'email'}).update({
+            acceptedAt: now,
+            isAccepted: true
+          })
+        );
       const tms = oldtms.concat(teamId);
+      const asyncPromises = [
+        dbWork,
+        auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
+      ];
+      await Promise.all(asyncPromises);
       return tmsSignToken(authToken, tms);
     }
   }
-};
+}
+;
