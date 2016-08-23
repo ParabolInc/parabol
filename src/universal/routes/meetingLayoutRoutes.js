@@ -4,8 +4,6 @@ import MeetingUpdatesLayout from 'universal/modules/meetingLayout/containers/Mee
 // eslint-disable-next-line max-len
 import MeetingRequestsLayout from 'universal/modules/meetingLayout/containers/MeetingRequestsLayout/MeetingRequestsLayout';
 // eslint-disable-next-line max-len
-import MeetingAgendaFirstCall from '../modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
-// eslint-disable-next-line max-len
 import MeetingAgendaLastCall from 'universal/modules/meetingLayout/containers/MeetingAgendaLastCall/MeetingAgendaLastCall';
 import MeetingSummaryLayout from 'universal/modules/meetingLayout/containers/MeetingSummaryLayout/MeetingSummaryLayout';
 
@@ -29,10 +27,6 @@ export default ([
   {
     path: '/meetingLayout/requests',
     component: MeetingRequestsLayout
-  },
-  {
-    path: '/meetingLayout/firstCall',
-    component: MeetingAgendaFirstCall
   },
   {
     path: '/meetingLayout/lastCall',
