@@ -84,7 +84,7 @@ const MeetingUpdatesLayout = (props) => {
               What’s changed since last week?
             </MeetingSectionHeading>
             <MeetingSectionSubheading>
-              Keep ‘em quick—discussion is coming up!
+              Keep ‘em quick—discussion time is next!
             </MeetingSectionSubheading>
           </MeetingSection>
           {/* */}

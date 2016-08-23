@@ -14,7 +14,7 @@ export const ACTIVE = 'active';
 export const STUCK = 'stuck';
 export const DONE = 'done';
 export const FUTURE = 'future';
-export const columnArray = [ACTIVE, STUCK, DONE, FUTURE];
+export const columnArray = [DONE, ACTIVE, STUCK, FUTURE];
 
 /* Task Type */
 export const ACTION = 'action';
