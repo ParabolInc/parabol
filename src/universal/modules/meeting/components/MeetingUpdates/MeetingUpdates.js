@@ -13,6 +13,7 @@ import {UPDATES, AGENDA, phaseOrder} from 'universal/utils/constants';
 import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
 import {withRouter} from 'react-router';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
+import makeProjectsByStatus from 'universal/utils/makeProjectsByStatus';
 
 let s = {};
 
@@ -36,7 +37,9 @@ const MeetingUpdates = (props) => {
   const self = members.find(m => m.isSelf);
   const isComplete = phaseOrder(meetingPhase) > phaseOrder(UPDATES);
   const gotoNextItem = phaseItemFactory(localPhaseItem + 1);
-  const teamMemberProjects = currentTeamMember ? projects[currentTeamMember.id] : [];
+  const teamMemberProjects = makeProjectsByStatus(
+    currentTeamMember ? projects[currentTeamMember.id] : []
+  );
 
   return (
     <MeetingMain>

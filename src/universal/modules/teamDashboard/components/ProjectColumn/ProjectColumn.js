@@ -78,7 +78,7 @@ const ProjectColumn = (props) => {
 ProjectColumn.propTypes = {
   area: PropTypes.string,
   myTeamMemberId: PropTypes.string,
-  projects: PropTypes.array.isRequired,
+  projects: PropTypes.object.isRequired,
   status: PropTypes.string,
 };
 
