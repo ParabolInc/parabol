@@ -3,6 +3,7 @@ import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import {phaseArray, phaseOrder} from 'universal/utils/constants';
 
 export default (isFacilitating, totalPhaseItems, router, teamId, thisPhase) => (nextPhaseItem) => () => {
+  console.log( 'next');
   if (nextPhaseItem < 1) return;
   const gotoNextPhase = nextPhaseItem > totalPhaseItems;
   const nextPhase = gotoNextPhase ? phaseArray[phaseOrder(thisPhase) + 1] : thisPhase;

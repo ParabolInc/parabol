@@ -1,4 +1,4 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import t from 'universal/styles/theme';
 import {srOnly} from 'universal/styles/helpers';
@@ -16,21 +16,30 @@ const avatarGutter = 24; // see AvatarGroup
 const outerPadding = (avatarWidth - pointWidth) / 2;
 const blockWidth = avatarWidth + avatarGutter;
 
-const ProgressBar = (props) => {
-  const {
-    bindHotkey,
-    isComplete,
-    facilitatorPhaseItem,
-    localPhaseItem,
-    meetingPhaseItem,
-    clickFactory,
-    membersCount
-  } = props;
-  // eslint-disable-next-line max-len
-  const barWidth = ((meetingPhaseItem) * blockWidth) - (blockWidth - pointWidth - outerPadding);
-  const barStyle = isComplete ? {width: '100%'} : {width: `${barWidth}px`};
+@withHotkey
+@withRouter
+@look
+export default class ProgressBar extends Component {
+  static propTypes = {
+    bindHotkey: PropTypes.func.isRequired,
+    clickFactory: PropTypes.func,
+    isComplete: PropTypes.bool,
+    facilitatorPhaseItem: PropTypes.number, // index of 1
+    localPhaseItem: PropTypes.number,       // index of 1
+    meetingPhaseItem: PropTypes.number,     // index of 1
+    membersCount: PropTypes.number          // members.length
+  };
 
-  const renderPoint = (idx) => {
+  renderPoints = () => {
+    const {membersCount} = this.props;
+    const points = [];
+    for (let i = 1; i <= membersCount; i++) {
+      points.push(this.renderPoint(i));
+    }
+    return points;
+  };
+  renderPoint = (idx) => {
+    const {clickFactory, membersCount, facilitatorPhaseItem, localPhaseItem, meetingPhaseItem, isComplete} = this.props;
     let pointStyles;
     const pointStyleVariant = [s.point];
 
@@ -61,47 +70,30 @@ const ProgressBar = (props) => {
       </div>
     );
   };
-  const renderPoints = () => {
-    const points = [];
-    for (let i = 1; i <= membersCount; i++) {
-      points.push(renderPoint(i));
-    }
-    return points;
-  };
-  const gotoNextItem = clickFactory(localPhaseItem + 1);
-  const gotoPrevItem = clickFactory(localPhaseItem - 1);
-  bindHotkey(['enter', 'right'], gotoNextItem);
-  bindHotkey('left', gotoPrevItem);
-  return (
-    <div className={s.root}>
-      <div className={s.points}>
-        {renderPoints()}
+
+  render() {
+    const {
+      isComplete,
+      meetingPhaseItem,
+    } = this.props;
+    const {bindHotkey, localPhaseItem, clickFactory} = this.props;
+    // TODO move to parent component so it doesn't unmount between switches
+    const gotoNextItem = clickFactory(localPhaseItem + 1);
+    const gotoPrevItem = clickFactory(localPhaseItem - 1);
+    bindHotkey(['enter', 'right'], gotoNextItem);
+    bindHotkey('left', gotoPrevItem);
+    // eslint-disable-next-line max-len
+    const barWidth = ((meetingPhaseItem) * blockWidth) - (blockWidth - pointWidth - outerPadding);
+    const barStyle = isComplete ? {width: '100%'} : {width: `${barWidth}px`};
+    return (
+      <div className={s.root}>
+        <div className={s.points}>
+          {this.renderPoints()}
+        </div>
+        <div className={s.bar} style={barStyle}></div>
       </div>
-      <div className={s.bar} style={barStyle}></div>
-    </div>
-  );
-};
-
-ProgressBar.propTypes = {
-  bindHotkey: PropTypes.func.isRequired,
-  clickFactory: PropTypes.func,
-  isComplete: PropTypes.bool,
-  facilitatorPhaseItem: PropTypes.number, // index of 1
-  localPhaseItem: PropTypes.number,       // index of 1
-  meetingPhaseItem: PropTypes.number,     // index of 1
-  membersCount: PropTypes.number          // members.length
-};
-
-ProgressBar.defaultProps = {
-  clickFactory() {
-    return () =>
-      console.log('ProgressBar');
-  },
-  isComplete: false, // state for 100% progress
-  facilitatorPhaseItem: 4,
-  localPhaseItem: 2,
-  meetingPhaseItem: 1,
-  membersCount: 5
+    );
+  }
 };
 
 s = StyleSheet.create({
@@ -165,5 +157,3 @@ s = StyleSheet.create({
     ...srOnly
   }
 });
-
-export default withHotkey(withRouter(look(ProgressBar)));

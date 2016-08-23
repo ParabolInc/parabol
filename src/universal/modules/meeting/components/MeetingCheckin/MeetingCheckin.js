@@ -33,7 +33,6 @@ const MeetingCheckin = (props) => {
   // 1-indexed
   const isLastMember = localPhaseItem === members.length;
   const currentName = members[localPhaseItem - 1] && members[localPhaseItem - 1].preferredName;
-  console.log('localPhase', localPhaseItem, members);
   const isComplete = phaseOrder(meetingPhase) > phaseOrder(CHECKIN);
   const gotoNextItem = phaseItemFactory(localPhaseItem + 1);
 
@@ -50,10 +49,7 @@ const MeetingCheckin = (props) => {
           membersCount={members.length}
         />
       </MeetingSection>
-      {/* */}
-      {/* */}
       <MeetingSection flexToFill paddingBottom="2rem">
-        {/* */}
         <MeetingSection paddingBottom="2rem">
           <MeetingSectionHeading>
             Hola <span className={s.name}>{currentName}</span>, ¿por qué no puedes estar completamente enfocado hoy?

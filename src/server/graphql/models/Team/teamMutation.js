@@ -11,7 +11,7 @@ import {
 import {CreateTeamInput, UpdateTeamInput, Team} from './teamSchema';
 import shuffle from 'universal/utils/shuffle';
 import shortid from 'shortid';
-import {CHECKIN, LOBBY, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL} from 'universal/utils/constants';
+import {CHECKIN, LOBBY, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, phaseOrder} from 'universal/utils/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
 
@@ -72,7 +72,7 @@ export default {
       }
       const isSynced = facilitatorPhase === meetingPhase && facilitatorPhaseItem === meetingPhaseItem;
       let incrementsProgress;
-      if (meetingPhase !== nextPhase) {
+      if (phaseOrder(nextPhase) - phaseOrder(meetingPhase) === 1) {
         incrementsProgress = true;
       } else if (nextPhase === CHECKIN || nextPhase === UPDATES || nextPhase === AGENDA_ITEMS) {
         incrementsProgress = nextPhaseItem - meetingPhaseItem === 1;
@@ -140,8 +140,8 @@ export default {
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
       await r.table('Team').get(teamId).update({
-        facilitatorPhase: LOBBY,
-        meetingPhase: LOBBY,
+        facilitatorPhase: 'lobby',
+        meetingPhase: 'lobby',
         meetingId: null,
         facilitatorPhaseItem: null,
         meetingPhaseItem: null,

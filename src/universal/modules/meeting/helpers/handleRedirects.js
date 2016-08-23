@@ -1,17 +1,18 @@
-import {LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY} from 'universal/utils/constants';
+import {LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY, phaseOrder} from 'universal/utils/constants';
 import makePushURL from './makePushURL';
-import getLocalPhase from './getLocalPhase';
 import isSkippingAhead from './isSkippingAhead';
 import hasPhaseItem from './hasPhaseItem';
-
 export default function handleRedirects(team, localPhase, localPhaseItem, router) {
   const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, id: teamId, meetingId} = team;
   // bail out fast while we're waiting for the team sub
   if (!teamId) return;
+  debugger
+  // DEBUGGING
   // if no phase given, goto the facilitator
   if (!localPhase) {
     const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
     router.replace(pushURL);
+    return
   }
   if (hasPhaseItem(localPhase)) {
     // the url should have a phase item
@@ -20,22 +21,26 @@ export default function handleRedirects(team, localPhase, localPhaseItem, router
       if (facilitatorPhase === localPhase) {
         const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
         router.replace(pushURL);
+        return
       } else {
         // if they wanna go somewhere that the facilitator isn't take them to the beginning (url is 1-indexed)
         const pushURL = makePushURL(teamId, localPhase, 1);
         router.replace(pushURL);
+        return
       }
     }
   } else if (localPhaseItem !== undefined && isNaN(localPhaseItem)) {
     // if the url has a phase item that it shouldn't
     const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
     router.replace(pushURL);
+    return
   }
 
   // don't let anyone in the lobby after the meeting has started
   if (localPhase === LOBBY && meetingId) {
     const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
     router.replace(pushURL);
+    return
   }
 
   // don't let anyone skip to the next phase
@@ -43,13 +48,17 @@ export default function handleRedirects(team, localPhase, localPhaseItem, router
   if (isSkippingAhead(localPhase, meetingPhase)) {
     const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
     router.replace(pushURL);
+    return
   }
 
   // don't let users go back to an agenda soundoff, take them to the agenda processing
   if (localPhase === FIRST_CALL || localPhase === LAST_CALL) {
-    const agendaItem = facilitatorPhase === AGENDA_ITEMS ? facilitatorPhaseItem : 1;
-    const pushURL = makePushURL(teamId, AGENDA_ITEMS, agendaItem);
-    router.replace(pushURL);
+    if (phaseOrder(meetingPhase) > phaseOrder(localPhase)) {
+      const agendaItem = facilitatorPhase === AGENDA_ITEMS ? facilitatorPhaseItem : 1;
+      const pushURL = makePushURL(teamId, AGENDA_ITEMS, agendaItem);
+      router.replace(pushURL);
+      return
+    }
   }
 
   /*

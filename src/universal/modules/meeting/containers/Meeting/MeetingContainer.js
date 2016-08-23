@@ -19,6 +19,7 @@ import MeetingCheckin from 'universal/modules/meeting/components/MeetingCheckin/
 import MeetingUpdatesContainer from 'universal/modules/meeting/containers/MeetingUpdates/MeetingUpdatesContainer';
 import AvatarGroup from 'universal/modules/meeting/components/AvatarGroup/AvatarGroup';
 import {LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY} from 'universal/utils/constants';
+import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
 
 const teamSubQuery = subscriptions.find(sub => sub.channel === TEAM).string;
 
@@ -123,6 +124,7 @@ export default class MeetingContainer extends Component {
             team={team}
           />
           }
+          {localPhase === FIRST_CALL && <MeetingAgendaFirstCall/>}
         </MeetingMain>
       </MeetingLayout>
     );
