@@ -154,10 +154,6 @@ const MeetingCheckinLayout = (props) => {
 };
 
 s = StyleSheet.create({
-  name: {
-    color: theme.palette.warm
-  },
-
   avatars: {
     // Define
   },
