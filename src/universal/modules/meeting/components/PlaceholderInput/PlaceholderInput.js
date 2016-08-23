@@ -1,10 +1,11 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
+import {reduxForm} from 'redux-form';
 
 let s = {};
 
-const PlaceholderInput = (props) => {
+const MeetingAgendaInput = (props) => {
   const {author, onChange, placeholder, value} = props;
   return (
     <div className={s.root}>
@@ -63,20 +64,21 @@ s = StyleSheet.create({
   }
 });
 
-PlaceholderInput.propTypes = {
+MeetingAgendaInput.propTypes = {
   author: PropTypes.string,
   onChange: PropTypes.func,
   placeholder: PropTypes.string,
   value: PropTypes.string
 };
 
-PlaceholderInput.defaultProps = {
+MeetingAgendaInput.defaultProps = {
   author: 'MK',
   onChange() {
-    console.log('PlaceholderInput onChange');
+    console.log('MeetingAgendaInput onChange');
   },
   placeholder: 'kittens (press enter)',
   value: ''
 };
 
-export default look(PlaceholderInput);
+const reduxFormOptions = {form: 'meetingAgendaInput'};
+export default reduxForm(reduxFormOptions)(look(MeetingAgendaInput));

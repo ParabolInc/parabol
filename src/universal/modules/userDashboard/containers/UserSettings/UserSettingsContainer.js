@@ -14,7 +14,7 @@ const mapStateToProps = (state) => {
 };
 
 const UserSettingsContainer = (props) => {
-  const {activity, dispatch, nextPage, user: {preferredName, id: {userId}}} = props;
+  const {activity, dispatch, nextPage, user: {preferredName, id: userId}} = props;
   return (
     <UserSettings
       activity={activity}

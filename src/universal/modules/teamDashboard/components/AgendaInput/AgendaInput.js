@@ -3,6 +3,7 @@ import look, {StyleSheet} from 'react-look';
 import {reduxForm, Field} from 'redux-form';
 import AgendaInputField from './AgendaInputField';
 import Avatar from 'universal/components/Avatar/Avatar';
+import theme from 'universal/styles/theme';
 
 const AgendaInput = (props) => {
   const {styles} = AgendaInput;
@@ -14,7 +15,7 @@ const AgendaInput = (props) => {
         name="agendaItem"
         component={AgendaInputField}
       />
-      <Avatar picture={membership.picture}/>
+      <Avatar hasBadge={false} picture={membership.picture} size="smallest"/>
     </form>
   );
 };
@@ -27,12 +28,14 @@ AgendaInput.propTypes = {
 };
 AgendaInput.styles = StyleSheet.create({
   root: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 1,
-    padding: '1rem',
-    width: '100%'
-  }
+    backgroundColor: theme.palette.light,
+    color: theme.palette.cool,
+    fontSize: theme.typography.s3,
+    padding: '.5rem .75rem .5rem 4rem',
+    position: 'relative',
+    width: '100%',
+    display: 'flex'
+  },
 });
 const reduxFormOptions = {form: 'agendaInput'};
 export default reduxForm(reduxFormOptions)(look(AgendaInput));

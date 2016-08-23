@@ -31,8 +31,8 @@ const createStartMeetingHandler = (members) => {
 };
 
 const MeetingLobby = (props) => {
-  const {members, params, teamName} = props;
-  const {teamId} = params;
+  const {members, team} = props;
+  const {id: teamId, name: teamName} = team;
 
   const onStartMeetingClick = createStartMeetingHandler(members);
   const shortUrl = makeMeetingUrl(teamId);
@@ -80,6 +80,10 @@ MeetingLobby.propTypes = {
   members: PropTypes.array,
   params: PropTypes.shape({
     teamId: PropTypes.string
+  }),
+  team: PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string
   }),
   teamId: PropTypes.string,
   teamName: PropTypes.string,

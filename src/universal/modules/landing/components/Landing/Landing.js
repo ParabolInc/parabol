@@ -1,6 +1,9 @@
 import React, {PropTypes, Component} from 'react';
 import look, {StyleSheet} from 'react-look';
+import withHotkey from 'react-hotkey-hoc';
 import theme from 'universal/styles/theme';
+
+// SVG images
 import parabolLogoMark from './images/parabol-logo-mark.svg';
 import actionLogo from './images/action-logo.svg';
 import teamCheckIcon from './images/team-check-icon.svg';
@@ -9,14 +12,11 @@ import megaphoneIcon from './images/megaphone-icon.svg';
 import github from './images/github.svg';
 import parabolLogoColor from 'universal/styles/theme/images/brand/mark-color@4x.png';
 
-// SVG images
-// NOTE: The 4x PNG seems to hold up better as a background-image, opposed to the SVG
-
 let styles = null;
 const combineStyles = StyleSheet.combineStyles;
 
 // TODO break apart into 1 component per section
-
+@withHotkey
 @look
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Landing extends Component {
@@ -26,9 +26,9 @@ export default class Landing extends Component {
     handleLoginClick: PropTypes.func.isRequired
   };
 
+
   render() {
     const {handleLoginClick} = this.props;
-
     return (
       <div className={styles.layout}>
         {/* Header */}

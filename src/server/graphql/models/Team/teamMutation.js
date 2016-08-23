@@ -11,7 +11,14 @@ import {
 import {CreateTeamInput, UpdateTeamInput, Team} from './teamSchema';
 import shuffle from 'universal/utils/shuffle';
 import shortid from 'shortid';
-import {CHECKIN, LOBBY, UPDATES, AGENDA} from 'universal/utils/constants';
+import {
+  CHECKIN,
+  LOBBY,
+  UPDATES,
+//  FIRST_CALL,
+  AGENDA_ITEMS,
+//  LAST_CALL,
+  phaseOrder} from 'universal/utils/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
 
@@ -60,7 +67,7 @@ export default {
         description: 'The item within the phase to set the meeting to'
       }
     },
-    async resolve(source, {teamId, nextPhase, nextPhaseItem = 0}, {authToken, socket}) {
+    async resolve(source, {teamId, nextPhase, nextPhaseItem = 1}, {authToken, socket}) {
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
       const team = await r.table('Team').get(teamId);
@@ -72,13 +79,10 @@ export default {
       }
       const isSynced = facilitatorPhase === meetingPhase && facilitatorPhaseItem === meetingPhaseItem;
       let incrementsProgress;
-      if (meetingPhase !== nextPhase) {
+      if (phaseOrder(nextPhase) - phaseOrder(meetingPhase) === 1) {
         incrementsProgress = true;
-      } else if (nextPhase === CHECKIN || nextPhase === UPDATES) {
+      } else if (nextPhase === CHECKIN || nextPhase === UPDATES || nextPhase === AGENDA_ITEMS) {
         incrementsProgress = nextPhaseItem - meetingPhaseItem === 1;
-      } else if (nextPhase === AGENDA) {
-        // TODO
-        // incrementsProgress =
       }
       const moveMeeting = isSynced && incrementsProgress;
 
@@ -122,9 +126,9 @@ export default {
         meetingId,
         activeFacilitator: facilitatorId,
         facilitatorPhase: CHECKIN,
-        facilitatorPhaseItem: 0,
+        facilitatorPhaseItem: 1,
         meetingPhase: CHECKIN,
-        meetingPhaseItem: 0
+        meetingPhaseItem: 1
       };
       await r.table('Team').get(teamId).update(updatedTeam);
       return true;
@@ -143,8 +147,8 @@ export default {
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
       await r.table('Team').get(teamId).update({
-        facilitatorPhase: LOBBY,
-        meetingPhase: LOBBY,
+        facilitatorPhase: 'lobby',
+        meetingPhase: 'lobby',
         meetingId: null,
         facilitatorPhaseItem: null,
         meetingPhaseItem: null,

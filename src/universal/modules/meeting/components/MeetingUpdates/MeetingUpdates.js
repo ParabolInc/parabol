@@ -9,7 +9,7 @@ import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingS
 // eslint-disable-next-line max-len
 import MeetingSectionSubheading from 'universal/modules/meeting/components/MeetingSectionSubheading/MeetingSectionSubheading';
 import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
-import {UPDATES, AGENDA, phaseOrder} from 'universal/utils/constants';
+import {UPDATES, phaseOrder, MEETING} from 'universal/utils/constants';
 import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
 import {withRouter} from 'react-router';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
@@ -18,25 +18,19 @@ let s = {};
 
 const MeetingUpdates = (props) => {
   const {
-    dispatch,
-    editing,
     localPhaseItem,
-    isFacilitator,
-    facilitatorPhaseItem,
-    meetingPhase,
-    meetingPhaseItem,
+    isFacilitating,
     members,
-    params,
     projects,
     router,
+    team
   } = props;
-  const {teamId} = params;
-  const currentTeamMember = members[localPhaseItem];
-  const phaseItemFactory = makePhaseItemFactory(isFacilitator, members.length, router, teamId, UPDATES, AGENDA);
+  const {id: teamId, meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = team;
+  const currentTeamMember = members[localPhaseItem - 1];
+  const phaseItemFactory = makePhaseItemFactory(isFacilitating, members.length, router, teamId, UPDATES);
   const self = members.find(m => m.isSelf);
   const isComplete = phaseOrder(meetingPhase) > phaseOrder(UPDATES);
   const gotoNextItem = phaseItemFactory(localPhaseItem + 1);
-  const teamMemberProjects = currentTeamMember ? projects[currentTeamMember.id] : [];
 
   return (
     <MeetingMain>
@@ -78,13 +72,7 @@ const MeetingUpdates = (props) => {
             </div>
           </div>
         </div>
-        <ProjectColumns
-          dispatch={dispatch}
-          editing={editing}
-          teamMemberId={self && self.id}
-          teamMembers={members}
-          projects={teamMemberProjects}
-        />
+        <ProjectColumns myTeamMemberId={self && self.id} projects={projects} area={MEETING}/>
         {/* */}
         {/* */}
       </MeetingSection>
@@ -118,10 +106,7 @@ s = StyleSheet.create({
 });
 
 MeetingUpdates.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  editing: PropTypes.array,
-  facilitatorPhaseItem: PropTypes.number.isRequired,
-  isFacilitator: PropTypes.bool,
+  isFacilitating: PropTypes.bool,
   localPhaseItem: PropTypes.number.isRequired,
   members: PropTypes.array,
   meetingPhase: PropTypes.string.isRequired,
@@ -129,7 +114,8 @@ MeetingUpdates.propTypes = {
   params: PropTypes.shape({
     teamId: PropTypes.string.isRequired
   }).isRequired,
-  projects: PropTypes.array.isRequired,
+  projects: PropTypes.object.isRequired,
+  team: PropTypes.object.isRequired,
   router: PropTypes.object.isRequired,
 };
 
