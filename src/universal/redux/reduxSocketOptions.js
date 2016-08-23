@@ -13,5 +13,7 @@ const onConnect = (options, hocOptions, socket) => {
   const priorityTransport = new Transport(sendToServer);
   cashay.create({priorityTransport});
 };
-const onDisconnect = () => cashay.create({priorityTransport: null});
-export default ({AuthEngine, socketCluster, onConnect, onDisconnect, keepAlive: 0});
+const onDisconnect = () => {
+  cashay.create({priorityTransport: null});
+}
+export default ({AuthEngine, socketCluster, onConnect, onDisconnect, keepAlive: Infinity});
