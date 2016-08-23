@@ -8,43 +8,32 @@ import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/Me
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import {withRouter} from 'react-router';
-import getLocalPhase from 'universal/modules/meeting/helpers/getLocalPhase';
 import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import subscriptions from 'universal/subscriptions/subscriptions';
 import {TEAM, TEAM_MEMBERS, AGENDA} from 'universal/subscriptions/constants';
-import {resolveProjectsByMember} from 'universal/subscriptions/computedSubs';
 import resolveMeetingMembers from 'universal/subscriptions/computed/resolveMeetingMembers';
 import MeetingLobby from 'universal/modules/meeting/components/MeetingLobby/MeetingLobby';
 import MeetingCheckin from 'universal/modules/meeting/components/MeetingCheckin/MeetingCheckin';
-import MeetingUpdates from 'universal/modules/meeting/components/MeetingUpdates/MeetingUpdates';
+import MeetingUpdatesContainer from 'universal/modules/meeting/containers/MeetingUpdates/MeetingUpdatesContainer';
 import AvatarGroup from 'universal/modules/meeting/components/AvatarGroup/AvatarGroup';
 import {LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY} from 'universal/utils/constants';
 
 const teamSubQuery = subscriptions.find(sub => sub.channel === TEAM).string;
-const teamMembersSubQuery = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
-const agendaSubQuery = subscriptions.find(sub => sub.channel === AGENDA).string;
 
 const mapStateToProps = (state, props) => {
   const {params: {localPhaseItem, teamId}} = props;
   const {sub: userId} = state.auth.obj;
   const variables = {teamId};
-  const {teamMembers} = cashay.subscribe(teamMembersSubQuery, subscriber, {
-    key: teamId,
-    op: TEAM_MEMBERS,
-    variables,
-  }).data;
   const {team} = cashay.subscribe(teamSubQuery, subscriber, {
     key: teamId,
     op: TEAM,
     variables
   }).data;
-  const projects = cashay.computed('projectSubs', [teamMembers], resolveProjectsByMember);
   const members = cashay.computed('meetingMembers', [teamId, userId], resolveMeetingMembers);
   return {
     members,
-    projects,
     team,
     localPhaseItem: localPhaseItem && Number(localPhaseItem),
     isFacilitating: `${userId}::${teamId}` === team.activeFacilitator
@@ -63,7 +52,6 @@ export default class MeetingContainer extends Component {
       localPhase: PropTypes.string,
       teamId: PropTypes.string.isRequired
     }).isRequired,
-    projects: PropTypes.object.isRequired,
     router: PropTypes.object,
     team: PropTypes.object.isRequired,
   };
@@ -97,7 +85,7 @@ export default class MeetingContainer extends Component {
   }
 
   render() {
-    const {isFacilitating, localPhaseItem, dispatch, members, params, projects, team} = this.props;
+    const {isFacilitating, localPhaseItem, dispatch, members, params, team} = this.props;
     const {teamId, localPhase} = params;
     const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem, name: teamName} = team;
 
@@ -126,6 +114,14 @@ export default class MeetingContainer extends Component {
               members={members}
               team={team}
             />
+          }
+          {localPhase === UPDATES &&
+          <MeetingUpdatesContainer
+            isFacilitating={isFacilitating}
+            localPhaseItem={localPhaseItem}
+            members={members}
+            team={team}
+          />
           }
         </MeetingMain>
       </MeetingLayout>
