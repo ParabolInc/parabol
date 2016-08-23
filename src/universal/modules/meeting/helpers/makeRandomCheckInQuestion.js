@@ -21,8 +21,8 @@ const greetings = [
 
 const questions = [
   'what’s your spirit animal today',
-  'what’s the next thing you’re looking forward to',
-  'what’s the next thing you’re worried about',
+  'what’s something you’re looking forward to',
+  'what’s something you’re worried about'
 ];
 
 const style = {
