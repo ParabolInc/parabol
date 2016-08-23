@@ -106,10 +106,45 @@ const MeetingCheckinLayout = (props) => {
   return (
     <MeetingLayout>
       {/* */}
-
+      <Sidebar facilitatorPhase="checkin" localPhase="checkin" {...team} />
       {/* */}
       <MeetingMain>
-        {makeRandomCheckInQuestion('Marimar')}
+        {/* */}
+        <MeetingSection paddingBottom="2rem" paddingTop="2rem">
+          <div className={s.avatars}>
+            <AvatarGroup avatars={team.members} />
+            <div className={s.progress}>
+              <ProgressBar />
+            </div>
+          </div>
+        </MeetingSection>
+        {/* */}
+        {/* */}
+        <MeetingSection flexToFill paddingBottom="2rem">
+          {/* */}
+          <MeetingSection paddingBottom="2rem">
+            <MeetingSectionHeading>
+              {makeRandomCheckInQuestion('Marimar')}
+            </MeetingSectionHeading>
+            <MeetingSectionSubheading>
+              A: Because the component is being updated to do real thangs.
+            </MeetingSectionSubheading>
+          </MeetingSection>
+          {/* */}
+          <CheckinCards cards={demoCards} />
+          <MeetingSection paddingBottom="2rem">
+            <IconLink
+              icon="arrow-circle-right"
+              iconPlacement="right"
+              label="Next teammate (press enter)"
+              scale="large"
+              theme="warm"
+            />
+          </MeetingSection>
+          {/* */}
+          {/* */}
+        </MeetingSection>
+        {/* */}
       </MeetingMain>
       {/* */}
       <ShortcutsMenu />

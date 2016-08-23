@@ -15,6 +15,7 @@ import {
 import {withRouter} from 'react-router';
 import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
+import makeRandomCheckInQuestion from 'universal/modules/meeting/helpers/makeRandomCheckInQuestion';
 
 let s = {};
 
@@ -55,7 +56,7 @@ const MeetingCheckin = (props) => {
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="2rem">
           <MeetingSectionHeading>
-            Hola <span className={s.name}>{currentName}</span>, ¿por qué no puedes estar completamente enfocado hoy?
+            {makeRandomCheckInQuestion(currentName)}
           </MeetingSectionHeading>
         </MeetingSection>
         {/* */}
