@@ -30,7 +30,9 @@ const style = {
 };
 
 export default function makeRandomCheckInQuestion(preferredName) {
-  const greeting = greetings[Math.floor(Math.random() * greetings.length)];
-  const question = questions[Math.floor(Math.random() * questions.length)];
+  const greeting = greetings[1];
+  const question = questions[0];
+  // const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+  // const question = questions[Math.floor(Math.random() * questions.length)];
   return <span>{greeting}, <span style={style}>{preferredName}</span>—{question}?</span>;
 }
