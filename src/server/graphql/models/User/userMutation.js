@@ -52,7 +52,6 @@ export default {
         createdAt: new Date(userInfo.created_at),
         tms: userInfo.tms
       };
-      console.log(auth0User);
       const {id: userId, picture} = auth0User;
       const currentUser = await r.table('User').get(userId);
       let returnedUser;
