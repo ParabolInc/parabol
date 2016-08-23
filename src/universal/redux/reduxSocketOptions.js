@@ -15,5 +15,5 @@ const onConnect = (options, hocOptions, socket) => {
 };
 const onDisconnect = () => {
   cashay.create({priorityTransport: null});
-}
+};
 export default ({AuthEngine, socketCluster, onConnect, onDisconnect, keepAlive: Infinity});

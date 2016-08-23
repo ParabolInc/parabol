@@ -6,7 +6,6 @@ import {
 } from 'graphql';
 import {errorObj} from '../utils';
 import {requireWebsocket, requireSUOrTeamMember, requireAuth} from '../authorization';
-import acceptInviteDB from './helpers';
 import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
@@ -121,12 +120,12 @@ export default {
             isAccepted: true
           })
         );
+      const tms = oldtms.concat(teamId);
       const asyncPromises = [
         dbWork,
         auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
       ];
       await Promise.all(asyncPromises);
-      const tms = oldtms.concat(teamId);
       return tmsSignToken(authToken, tms);
     }
   }
