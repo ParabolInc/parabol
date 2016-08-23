@@ -9,6 +9,7 @@ import {requireWebsocket, requireSUOrTeamMember, requireAuth} from '../authoriza
 import acceptInviteDB from './helpers';
 import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
+import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 
 export default {
   checkin: {
@@ -78,7 +79,6 @@ export default {
           subtype: 'invalidToken'
         });
       }
-
       const oldtms = authToken.tms || [];
       // Check if TeamMember already exists (i.e. user invited themselves):
       const teamMemberExists = oldtms.includes(teamId);
@@ -125,8 +125,8 @@ export default {
       if (user.email !== email) {
         await acceptInviteDB(user.email, now);
       }
-
       const tms = oldtms.concat(teamId);
+      await auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms});
       return tmsSignToken(authToken, tms);
     }
   }
