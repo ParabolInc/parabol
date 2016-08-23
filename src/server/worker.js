@@ -14,13 +14,11 @@ import scConnectionHandler from './socketHandlers/scConnectionHandler';
 import httpGraphQLHandler from './graphql/httpGraphQLHandler';
 import mwPresencePublishOut from './socketHandlers/mwPresencePublishOut';
 import mwPresenceSubscribe from './socketHandlers/mwPresenceSubscribe';
-import tmsSignToken from 'server/graphql/models/tmsSignToken';
 
 const PROD = process.env.NODE_ENV === 'production';
 
 export function run(worker) {
   console.log('   >> Worker PID:', process.pid);
-  console.log('toke', tmsSignToken({sub: 'auth0|5797eb9712664ba4675745c3'}, ['team123', 'team456']));
   const app = express();
   const scServer = worker.scServer;
   const httpServer = worker.httpServer;

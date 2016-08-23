@@ -106,7 +106,6 @@ export default class Invitation extends Component {
         } else if (data) {
           const authToken = data.acceptInvitation;
           const decodedToken = jwtDecode(authToken);
-          console.log(authToken);
           dispatch(showSuccess(successfulJoin));
           dispatch(setAuthToken(authToken));
           dispatch(setWelcomeActivity(`/team/${decodedToken.tms[0]}`));
