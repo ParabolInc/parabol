@@ -29,8 +29,8 @@ const style = {
   color: theme.palette.warm
 };
 
-export default function makeRandomCheckInQuestion(preferredName) {
+export default function makeRandomCheckInQuestion(preferredName, hasStyle = false) {
   const greeting = greetings[Math.floor(Math.random() * greetings.length)];
   const question = questions[Math.floor(Math.random() * questions.length)];
-  return <span>{greeting}, <span style={style}>{preferredName}</span>—{question}?</span>;
+  return <span>{greeting}, <span style={hasStyle ? style : null}>{preferredName}</span>—{question}?</span>;
 }
