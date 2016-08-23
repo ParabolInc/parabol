@@ -12,13 +12,25 @@ import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import subscriptions from 'universal/subscriptions/subscriptions';
-import {TEAM, TEAM_MEMBERS, AGENDA} from 'universal/subscriptions/constants';
+import {
+  TEAM,
+//  TEAM_MEMBERS,
+//  AGENDA
+} from 'universal/subscriptions/constants';
 import resolveMeetingMembers from 'universal/subscriptions/computed/resolveMeetingMembers';
 import MeetingLobby from 'universal/modules/meeting/components/MeetingLobby/MeetingLobby';
 import MeetingCheckin from 'universal/modules/meeting/components/MeetingCheckin/MeetingCheckin';
 import MeetingUpdatesContainer from 'universal/modules/meeting/containers/MeetingUpdates/MeetingUpdatesContainer';
 import AvatarGroup from 'universal/modules/meeting/components/AvatarGroup/AvatarGroup';
-import {LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY} from 'universal/utils/constants';
+import {
+  LOBBY,
+  CHECKIN,
+  UPDATES,
+  FIRST_CALL,
+//  AGENDA_ITEMS,
+//  LAST_CALL,
+//  SUMMARY
+} from 'universal/utils/constants';
 import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
 
 const teamSubQuery = subscriptions.find(sub => sub.channel === TEAM).string;
@@ -47,6 +59,7 @@ const mapStateToProps = (state, props) => {
 export default class MeetingContainer extends Component {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
+    isFacilitating: PropTypes.bool,
     localPhaseItem: PropTypes.number,
     members: PropTypes.array,
     params: PropTypes.shape({
@@ -86,9 +99,9 @@ export default class MeetingContainer extends Component {
   }
 
   render() {
-    const {isFacilitating, localPhaseItem, dispatch, members, params, team} = this.props;
+    const {isFacilitating, localPhaseItem, members, params, team} = this.props;
     const {teamId, localPhase} = params;
-    const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem, name: teamName} = team;
+    const { facilitatorPhase, name: teamName} = team;
 
     // if we have a team.name, we have an initial subscription success to the team object
     if (!teamName || members.length === 0) {
@@ -117,12 +130,12 @@ export default class MeetingContainer extends Component {
             />
           }
           {localPhase === UPDATES &&
-          <MeetingUpdatesContainer
-            isFacilitating={isFacilitating}
-            localPhaseItem={localPhaseItem}
-            members={members}
-            team={team}
-          />
+            <MeetingUpdatesContainer
+              isFacilitating={isFacilitating}
+              localPhaseItem={localPhaseItem}
+              members={members}
+              team={team}
+            />
           }
           {localPhase === FIRST_CALL && <MeetingAgendaFirstCall/>}
         </MeetingMain>

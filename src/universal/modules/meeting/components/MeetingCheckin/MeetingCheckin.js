@@ -8,7 +8,10 @@ import CheckinCards from 'universal/modules/meeting/components/CheckinCards/Chec
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingSectionHeading/MeetingSectionHeading';
-import {CHECKIN, UPDATES, phaseOrder} from 'universal/utils/constants';
+import {
+  CHECKIN,
+//  UPDATES,
+  phaseOrder} from 'universal/utils/constants';
 import {withRouter} from 'react-router';
 import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
@@ -82,6 +85,7 @@ const MeetingCheckin = (props) => {
 
 MeetingCheckin.propTypes = {
   localPhaseItem: PropTypes.number,
+  isFacilitating: PropTypes.bool,
   members: PropTypes.array,
   router: PropTypes.object.isRequired,
   team: PropTypes.object

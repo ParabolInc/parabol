@@ -57,13 +57,13 @@ export default class CheckinCards extends Component {
     return (
       <div className={styles.base}>
         {leftCard &&
-        <CheckinCard handleCardClick={this.handleCardClickFactory(memberIdx - 1)} member={leftCard}/>
+          <CheckinCard handleCardClick={this.handleCardClickFactory(memberIdx - 1)} member={leftCard}/>
         }
         {activeCard &&
-        <CheckinCard checkinPressFactory={makeCheckinPressFactory(activeCard.id)} member={activeCard} isActive/>
+          <CheckinCard checkinPressFactory={makeCheckinPressFactory(activeCard.id)} member={activeCard} isActive/>
         }
         {rightCard &&
-        <CheckinCard handleCardClick={this.handleCardClickFactory(memberIdx + 1)} member={rightCard}/>
+          <CheckinCard handleCardClick={this.handleCardClickFactory(memberIdx + 1)} member={rightCard}/>
         }
       </div>
     );

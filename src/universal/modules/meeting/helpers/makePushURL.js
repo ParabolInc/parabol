@@ -11,5 +11,5 @@ const safePhaseItem = phaseItem => {
 export default function makePushURL(teamId, phase = LOBBY, maybePhaseItem) {
   const phaseItem = hasPhaseItem(phase) ? safePhaseItem(maybePhaseItem) : '';
 
-  return`/meeting/${teamId}/${phase}/${phaseItem}`;
+  return `/meeting/${teamId}/${phase}/${phaseItem}`;
 }

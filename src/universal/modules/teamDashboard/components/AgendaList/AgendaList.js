@@ -28,7 +28,8 @@ AgendaList.propTypes = {
   agenda: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string,
     content: PropTypes.string
-  }))
+  })),
+  teamMembers: PropTypes.array
 };
 
 AgendaList.styles = StyleSheet.create({

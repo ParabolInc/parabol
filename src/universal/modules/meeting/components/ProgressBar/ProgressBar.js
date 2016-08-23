@@ -94,7 +94,7 @@ export default class ProgressBar extends Component {
       </div>
     );
   }
-};
+}
 
 s = StyleSheet.create({
   root: {

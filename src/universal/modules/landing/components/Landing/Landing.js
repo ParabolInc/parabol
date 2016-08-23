@@ -1,6 +1,9 @@
 import React, {PropTypes, Component} from 'react';
 import look, {StyleSheet} from 'react-look';
+import withHotkey from 'react-hotkey-hoc';
 import theme from 'universal/styles/theme';
+
+// SVG images
 import parabolLogoMark from './images/parabol-logo-mark.svg';
 import actionLogo from './images/action-logo.svg';
 import teamCheckIcon from './images/team-check-icon.svg';
@@ -8,12 +11,6 @@ import mapIcon from './images/map-icon.svg';
 import megaphoneIcon from './images/megaphone-icon.svg';
 import github from './images/github.svg';
 import parabolLogoColor from 'universal/styles/theme/images/brand/mark-color@4x.png';
-import withHotkey from 'react-hotkey-hoc';
-import {cashay} from 'cashay';
-import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
-import {setAuthToken} from 'universal/redux/authDuck';
-// SVG images
-// NOTE: The 4x PNG seems to hold up better as a background-image, opposed to the SVG
 
 let styles = null;
 const combineStyles = StyleSheet.combineStyles;
@@ -31,16 +28,7 @@ export default class Landing extends Component {
 
 
   render() {
-    const {bindHotkey, dispatch, handleLoginClick} = this.props;
-    const login = () => {
-      console.log('loggin in');
-      const authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhdXRoMHw1Nzk3ZWI5NzEyNjY0YmE0Njc1NzQ1YzMiLCJleHAiOjE0NzQ0NjczODAsImlhdCI6MTQ3MTg3NTM4MCwidG1zIjpbInRlYW0xMjMiLCJ0ZWFtNDU2Il19.c2Ufw6rX3dsmWE0RosP40WuM_h7l-7ZK6iqf96BjRBY'
-      cashay.create({httpTransport: new ActionHTTPTransport(authToken)});
-      const options = {variables: {authToken}};
-      cashay.mutate('updateUserWithAuthToken', options);
-      dispatch(setAuthToken(authToken));
-    }
-    bindHotkey('d e b u g', login);
+    const {handleLoginClick} = this.props;
     return (
       <div className={styles.layout}>
         {/* Header */}

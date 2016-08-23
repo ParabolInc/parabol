@@ -81,6 +81,10 @@ MeetingLobby.propTypes = {
   params: PropTypes.shape({
     teamId: PropTypes.string
   }),
+  team: PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string
+  }),
   teamId: PropTypes.string,
   teamName: PropTypes.string,
 };

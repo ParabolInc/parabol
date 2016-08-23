@@ -1,4 +1,4 @@
-import React, {PropTypes} from 'react';
+import React from 'react';
 import IconLink from 'universal/components/IconLink/IconLink';
 import Type from 'universal/components/Type/Type';
 
@@ -8,7 +8,7 @@ import MeetingMain from 'universal/modules/meeting/components/MeetingMain/Meetin
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
 
-const MeetingAgendaFirstCall = (props) => {
+const MeetingAgendaFirstCall = () => {
   return (
     <MeetingLayout>
       <MeetingMain>

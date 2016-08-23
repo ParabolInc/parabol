@@ -36,21 +36,24 @@ export default store => ({
   //     {
   //       path: 'checkin(/:localPhaseItem)',
   //       getComponent: async(location, cb) => {
-  //         const component = await System.import('universal/modules/meeting/components/MeetingCheckin/MeetingCheckin');
+  //         const component = await System.import(
+  //           'universal/modules/meeting/components/MeetingCheckin/MeetingCheckin');
   //         cb(null, component);
   //       }
   //     },
   //     {
   //       path: 'updates(/:localPhaseItem)',
   //       getComponent: async(location, cb) => {
-  //         const component = await System.import('universal/modules/meeting/components/MeetingUpdates/MeetingUpdates');
+  //         const component = await System.import(
+  //           'universal/modules/meeting/components/MeetingUpdates/MeetingUpdates');
   //         cb(null, component);
   //       }
   //     },
   //     {
   //       path: 'agenda(/:localPhaseItem)',
   //       getComponent: async(location, cb) => {
-  //         const component = await System.import('universal/modules/meeting/components/MeetingUpdates/MeetingUpdates');
+  //         const component = await System.import(
+  //           'universal/modules/meeting/components/MeetingUpdates/MeetingUpdates');
   //         cb(null, component);
   //       }
   //     }

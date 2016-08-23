@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
-import {reduxForm, Field} from 'redux-form';
+import {reduxForm} from 'redux-form';
 
 let s = {};
 

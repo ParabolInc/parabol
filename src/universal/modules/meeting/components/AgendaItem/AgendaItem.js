@@ -150,7 +150,8 @@ AgendaItem.propTypes = {
     'onHover',
     'processed',
     'waiting'
-  ])
+  ]),
+  teamMember: PropTypes.object
 };
 
 AgendaItem.defaultProps = {
