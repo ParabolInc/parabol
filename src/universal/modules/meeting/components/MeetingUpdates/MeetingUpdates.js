@@ -9,7 +9,7 @@ import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingS
 // eslint-disable-next-line max-len
 import MeetingSectionSubheading from 'universal/modules/meeting/components/MeetingSectionSubheading/MeetingSectionSubheading';
 import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
-import {UPDATES, AGENDA, phaseOrder} from 'universal/utils/constants';
+import {UPDATES, AGENDA_ITEMS, phaseOrder} from 'universal/utils/constants';
 import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
 import {withRouter} from 'react-router';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
@@ -32,7 +32,7 @@ const MeetingUpdates = (props) => {
   } = props;
   const {teamId} = params;
   const currentTeamMember = members[localPhaseItem];
-  const phaseItemFactory = makePhaseItemFactory(isFacilitator, members.length, router, teamId, UPDATES, AGENDA);
+  const phaseItemFactory = makePhaseItemFactory(isFacilitator, members.length, router, teamId, UPDATES, AGENDA_ITEMS);
   const self = members.find(m => m.isSelf);
   const isComplete = phaseOrder(meetingPhase) > phaseOrder(UPDATES);
   const gotoNextItem = phaseItemFactory(localPhaseItem + 1);

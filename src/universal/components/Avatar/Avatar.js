@@ -32,12 +32,12 @@ const renderBadge = (isCheckedIn, isConnected, size) => {
   }
   const largeBadgeClass = size === 'large' || size === 'larger' || size === 'largest';
   const badgeStyles = largeBadgeClass ? combineStyles(s.badge, s.badgeLarge) : s.badge;
-
+  const description = `${connection}, ${checkin}`;
   return (
     <div className={badgeStyles}>
       <FontAwesome className={iconStyles} name={icon}/>
       <span className={s.srOnly}>
-        {`${connection}, `}{checkin}
+        {description}
       </span>
     </div>
   );

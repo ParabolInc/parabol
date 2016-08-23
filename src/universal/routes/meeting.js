@@ -4,7 +4,7 @@ import makeReducer from 'universal/redux/makeReducer';
 const setMeetingImports = () =>
   new Map([
     ['component', System.import(
-      'universal/modules/meeting/containers/MeetingContainer/MeetingContainer')],
+      'universal/modules/meeting/containers/Meeting/MeetingContainer')],
     ['socket', System.import('redux-socket-cluster')],
   ]);
 
@@ -14,7 +14,7 @@ const getMeetingImports = importMap => ({
 });
 
 export default store => ({
-  path: 'meeting/:teamId',
+  path: 'meeting/:teamId(/:localPhase)(/:localPhaseItem)',
   getComponent: async(location, cb) => {
     const promiseMap = setMeetingImports();
     const importMap = await resolvePromiseMap(promiseMap);
@@ -24,36 +24,36 @@ export default store => ({
 
     cb(null, component);
   },
-  getChildRoutes: (childLocation, cbChild) => {
-    cbChild(null, [
-      {
-        path: 'lobby',
-        getComponent: async(location, cb) => {
-          const component = await System.import('universal/modules/meeting/components/MeetingLobby/MeetingLobby');
-          cb(null, component);
-        }
-      },
-      {
-        path: 'checkin(/:localPhaseItem)',
-        getComponent: async(location, cb) => {
-          const component = await System.import('universal/modules/meeting/components/MeetingCheckin/MeetingCheckin');
-          cb(null, component);
-        }
-      },
-      {
-        path: 'updates(/:localPhaseItem)',
-        getComponent: async(location, cb) => {
-          const component = await System.import('universal/modules/meeting/components/MeetingUpdates/MeetingUpdates');
-          cb(null, component);
-        }
-      },
-      {
-        path: 'agenda(/:localPhaseItem)',
-        getComponent: async(location, cb) => {
-          const component = await System.import('universal/modules/meeting/components/MeetingUpdates/MeetingUpdates');
-          cb(null, component);
-        }
-      }
-    ]);
-  }
+  // getChildRoutes: (childLocation, cbChild) => {
+  //   cbChild(null, [
+  //     {
+  //       path: 'lobby',
+  //       getComponent: async(location, cb) => {
+  //         const component = await System.import('universal/modules/meeting/components/MeetingLobby/MeetingLobby');
+  //         cb(null, component);
+  //       }
+  //     },
+  //     {
+  //       path: 'checkin(/:localPhaseItem)',
+  //       getComponent: async(location, cb) => {
+  //         const component = await System.import('universal/modules/meeting/components/MeetingCheckin/MeetingCheckin');
+  //         cb(null, component);
+  //       }
+  //     },
+  //     {
+  //       path: 'updates(/:localPhaseItem)',
+  //       getComponent: async(location, cb) => {
+  //         const component = await System.import('universal/modules/meeting/components/MeetingUpdates/MeetingUpdates');
+  //         cb(null, component);
+  //       }
+  //     },
+  //     {
+  //       path: 'agenda(/:localPhaseItem)',
+  //       getComponent: async(location, cb) => {
+  //         const component = await System.import('universal/modules/meeting/components/MeetingUpdates/MeetingUpdates');
+  //         cb(null, component);
+  //       }
+  //     }
+  //   ]);
+  // }
 });

@@ -12,7 +12,7 @@ import {nonnullifyInputThunk} from '../utils';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {TeamMember} from '../TeamMember/teamMemberSchema';
 import {AgendaItem} from '../AgendaItem/agendaItemSchema';
-import {LOBBY, CHECKIN, UPDATES, AGENDA, SUMMARY} from 'universal/utils/constants';
+import {LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY} from 'universal/utils/constants';
 
 export const Phase = new GraphQLEnumType({
   name: 'Phase',
@@ -21,7 +21,9 @@ export const Phase = new GraphQLEnumType({
     LOBBY: {value: LOBBY},
     CHECKIN: {value: CHECKIN},
     UPDATES: {value: UPDATES},
-    AGENDA: {value: AGENDA},
+    FIRST_CALL: {value: FIRST_CALL},
+    AGENDA_ITEMS: {value: AGENDA_ITEMS},
+    LAST_CALL: {value: LAST_CALL},
     SUMMARY: {value: SUMMARY}
   }
 });
@@ -51,7 +53,7 @@ export const Team = new GraphQLObjectType({
     },
     activeFacilitator: {
       type: GraphQLID,
-      description: 'The current facilitator for this meeting'
+      description: 'The current facilitator teamMemberId for this meeting'
     },
     facilitatorPhase: {
       type: Phase,
@@ -59,7 +61,7 @@ export const Team = new GraphQLObjectType({
     },
     facilitatorPhaseItem: {
       type: GraphQLInt,
-      description: 'The current item number for the current phase for the facilitator'
+      description: 'The current item number for the current phase for the facilitator, 1-indexed'
     },
     meetingPhase: {
       type: Phase,
@@ -67,7 +69,7 @@ export const Team = new GraphQLObjectType({
     },
     meetingPhaseItem: {
       type: GraphQLInt,
-      description: 'The current item number for the current phase for the meeting'
+      description: 'The current item number for the current phase for the meeting, 1-indexed'
     },
     /* GraphQL sugar */
     teamMembers: {

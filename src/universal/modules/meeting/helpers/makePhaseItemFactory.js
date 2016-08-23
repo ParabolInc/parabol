@@ -1,11 +1,13 @@
 import {cashay} from 'cashay';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
+import {phaseArray, phaseOrder} from 'universal/utils/constants';
 
-export default (isFacilitator, memberLength, router, teamId, thisPhase, maybeNextPhase) => (nextPhaseItem) => () => {
-  if (nextPhaseItem < 0) return;
-  const nextPhase = nextPhaseItem < memberLength ? thisPhase : maybeNextPhase;
-  nextPhaseItem = nextPhase === thisPhase ? nextPhaseItem : 0;
-  if (isFacilitator) {
+export default (isFacilitating, totalPhaseItems, router, teamId, thisPhase) => (nextPhaseItem) => () => {
+  if (nextPhaseItem < 1) return;
+  const gotoNextPhase = nextPhaseItem > totalPhaseItems;
+  const nextPhase = gotoNextPhase ? phaseArray[phaseOrder(thisPhase) + 1] : thisPhase;
+  nextPhaseItem = gotoNextPhase ? 1 : nextPhaseItem;
+  if (isFacilitating) {
     const options = {variables: {nextPhase, nextPhaseItem, teamId}};
     cashay.mutate('moveMeeting', options);
   }

@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
-import {AGENDA} from 'universal/utils/constants';
+import {AGENDA_ITEMS} from 'universal/utils/constants';
 import exampleTeam from 'universal/modules/patterns/helpers/exampleTeam';
 
 import Button from 'universal/components/Button/Button';
@@ -25,12 +25,12 @@ const MeetingAgendaLastCall = (props) => {
   return (
     <MeetingLayout>
       {/* */}
-      <Sidebar facilitatorPhase={AGENDA} localPhase={AGENDA} {...team} />
+      <Sidebar facilitatorPhase={AGENDA_ITEMS} localPhase={AGENDA_ITEMS} {...team} />
       {/* */}
       <MeetingMain>
         {/* */}
         <MeetingSection paddingBottom="2rem" paddingTop="2rem">
-          <AvatarGroup avatars={team.teamMembers} localPhase={AGENDA} />
+          <AvatarGroup avatars={team.teamMembers} localPhase={AGENDA_ITEMS} />
         </MeetingSection>
         {/* */}
         {/* */}

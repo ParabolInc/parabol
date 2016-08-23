@@ -5,11 +5,12 @@ import theme from 'universal/styles/theme';
 import layoutStyle from 'universal/styles/layout';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import {cashay} from 'cashay';
-import {CHECKIN, UPDATES, AGENDA, SUMMARY, phaseArray} from 'universal/utils/constants';
+import {CHECKIN, UPDATES, SUMMARY, phaseArray} from 'universal/utils/constants';
 import makeMeetingUrl from 'universal/utils/makeMeetingUrl';
 import {Link} from 'react-router';
 import AgendaInputContainer from 'universal/modules/teamDashboard/containers/AgendaInput/AgendaInputContainer';
 import AgendaListContainer from 'universal/modules/teamDashboard/containers/AgendaList/AgendaListContainer';
+import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
 
 const combineStyles = StyleSheet.combineStyles;
 const labels = {
@@ -24,24 +25,23 @@ let s = {};
 
 const Sidebar = (props) => {
   const {
-    agenda,
     facilitatorPhase,
     localPhase,
     teamName,
-    timerValue,
     teamId
   } = props;
+
   const shortUrl = makeMeetingUrl(teamId);
   const facilitatorPhaseItemStyles = combineStyles(s.navListItem, s.navListItemMeetingMarker);
   const activeNavAnchor = combineStyles(s.navListItemLink, s.navListItemLinkActive);
 
   const checkinLinkStyles = localPhase === CHECKIN ? activeNavAnchor : s.navListItemLink;
   const updatesLinkStyles = localPhase === UPDATES ? activeNavAnchor : s.navListItemLink;
-  const requestsLinkStyles = localPhase === AGENDA ? activeNavAnchor : s.navListItemLink;
+  const requestsLinkStyles = inAgendaGroup(localPhase) ? activeNavAnchor : s.navListItemLink;
 
   const checkinNavItemStyles = facilitatorPhase === CHECKIN ? facilitatorPhaseItemStyles : s.navListItem;
   const updatesNavItemStyles = facilitatorPhase === UPDATES ? facilitatorPhaseItemStyles : s.navListItem;
-  const requestsNavItemStyles = facilitatorPhase === AGENDA ? facilitatorPhaseItemStyles : s.navListItem;
+  const requestsNavItemStyles = inAgendaGroup(facilitatorPhase) ? facilitatorPhaseItemStyles : s.navListItem;
 
   const handleLogoClick = (e) => {
     // TODO remove in production, but great for debugging. Just click the logo & it removes the ephemeral meeting state
@@ -57,7 +57,6 @@ const Sidebar = (props) => {
         <div className={s.teamName}>{teamName}</div>
         <a className={s.shortUrl} href="/meetingLayout/lobby">{shortUrl}</a>
         {/* TODO: make me respond to props */}
-        <div className={s.timer}>{timerValue}</div>
       </div>
 
       {/* TODO: make me respond to props */}
@@ -123,7 +122,6 @@ Sidebar.propTypes = {
   localPhase: PropTypes.oneOf(phaseArray),
   teamName: PropTypes.string,
   teamId: PropTypes.string,
-  timerValue: PropTypes.string
 };
 
 s = StyleSheet.create({

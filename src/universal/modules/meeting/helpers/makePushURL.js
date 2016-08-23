@@ -1,6 +1,15 @@
-import {LOBBY, SUMMARY} from 'universal/utils/constants';
+import {LOBBY} from 'universal/utils/constants';
+import hasPhaseItem from './hasPhaseItem';
 
-export default function makePushURL(teamId, phase = LOBBY, phaseItem) {
-  const base = `/meeting/${teamId}/${phase}`;
-  return (phase === LOBBY || phase === SUMMARY) ? base : `${base}/${phaseItem}`;
+const safePhaseItem = phaseItem => {
+  if (phaseItem <= 0 || isNaN(phaseItem)) {
+    return 1;
+  }
+  return phaseItem;
+};
+
+export default function makePushURL(teamId, phase = LOBBY, maybePhaseItem) {
+  const phaseItem = hasPhaseItem(phase) ? safePhaseItem(maybePhaseItem) : '';
+
+  return`/meeting/${teamId}/${phase}/${phaseItem}`;
 }

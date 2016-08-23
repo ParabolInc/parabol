@@ -27,7 +27,7 @@ const ProgressBar = (props) => {
     membersCount
   } = props;
   // eslint-disable-next-line max-len
-  const barWidth = ((meetingPhaseItem + 1) * blockWidth) - (blockWidth - pointWidth - outerPadding);
+  const barWidth = ((meetingPhaseItem) * blockWidth) - (blockWidth - pointWidth - outerPadding);
   const barStyle = isComplete ? {width: '100%'} : {width: `${barWidth}px`};
 
   const renderPoint = (idx) => {
@@ -46,7 +46,7 @@ const ProgressBar = (props) => {
       pointStyleVariant.push(s.pointCompleted);
     }
 
-    if (idx === membersCount - 1) {
+    if (idx === membersCount) {
       marginRight = {
         marginRight: 0
       };
@@ -61,10 +61,9 @@ const ProgressBar = (props) => {
       </div>
     );
   };
-
   const renderPoints = () => {
     const points = [];
-    for (let i = 0; i < membersCount; i++) {
+    for (let i = 1; i <= membersCount; i++) {
       points.push(renderPoint(i));
     }
     return points;
@@ -87,10 +86,10 @@ ProgressBar.propTypes = {
   bindHotkey: PropTypes.func.isRequired,
   clickFactory: PropTypes.func,
   isComplete: PropTypes.bool,
-  facilitatorPhaseItem: PropTypes.number, // index of 0
-  localPhaseItem: PropTypes.number,       // index of 0
-  meetingPhaseItem: PropTypes.number,     // index of 0
-  membersCount: PropTypes.number          // not 0 indexed
+  facilitatorPhaseItem: PropTypes.number, // index of 1
+  localPhaseItem: PropTypes.number,       // index of 1
+  meetingPhaseItem: PropTypes.number,     // index of 1
+  membersCount: PropTypes.number          // members.length
 };
 
 ProgressBar.defaultProps = {
@@ -101,7 +100,7 @@ ProgressBar.defaultProps = {
   isComplete: false, // state for 100% progress
   facilitatorPhaseItem: 4,
   localPhaseItem: 2,
-  meetingPhaseItem: 0,
+  meetingPhaseItem: 1,
   membersCount: 5
 };
 
