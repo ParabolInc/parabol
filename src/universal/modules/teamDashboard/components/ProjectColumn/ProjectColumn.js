@@ -12,9 +12,9 @@ import shortid from 'shortid';
 const combineStyles = StyleSheet.combineStyles;
 const borderColor = 'rgba(0, 0, 0, .1)';
 const labels = {
+  [DONE]: 'Done',
   [ACTIVE]: 'Active',
   [STUCK]: 'Stuck',
-  [DONE]: 'Done',
   [FUTURE]: 'Future'
 };
 

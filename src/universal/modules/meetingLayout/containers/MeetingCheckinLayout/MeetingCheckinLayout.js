@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
 
 import AvatarGroup from 'universal/modules/meeting/components/AvatarGroup/AvatarGroup';
 import IconLink from 'universal/components/IconLink/IconLink';
@@ -14,6 +13,7 @@ import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingS
 import MeetingSectionSubheading
   from 'universal/modules/meeting/components/MeetingSectionSubheading/MeetingSectionSubheading';
 import Sidebar from '../../../meeting/components/Sidebar/Sidebar';
+import makeRandomCheckInQuestion from 'universal/modules/meeting/helpers/makeRandomCheckInQuestion';
 
 import Jordan from 'universal/styles/theme/images/avatars/jordan-husney-avatar.jpg';
 import Matt from 'universal/styles/theme/images/avatars/matt-krick-avatar.jpg';
@@ -123,7 +123,7 @@ const MeetingCheckinLayout = (props) => {
           {/* */}
           <MeetingSection paddingBottom="2rem">
             <MeetingSectionHeading>
-              Hola <span className={s.name}>Kitty</span>, why is this prototype layout broken?
+              {makeRandomCheckInQuestion('Marimar')}
             </MeetingSectionHeading>
             <MeetingSectionSubheading>
               A: Because the component is being updated to do real thangs.
@@ -153,10 +153,6 @@ const MeetingCheckinLayout = (props) => {
 };
 
 s = StyleSheet.create({
-  name: {
-    color: theme.palette.warm
-  },
-
   avatars: {
     // Define
   },

@@ -1,6 +1,4 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
 
 import IconLink from 'universal/components/IconLink/IconLink';
 import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
@@ -15,8 +13,7 @@ import {
 import {withRouter} from 'react-router';
 import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
-
-let s = {};
+import makeRandomCheckInQuestion from 'universal/modules/meeting/helpers/makeRandomCheckInQuestion';
 
 const MeetingCheckin = (props) => {
   const {
@@ -55,7 +52,7 @@ const MeetingCheckin = (props) => {
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="2rem">
           <MeetingSectionHeading>
-            Hola <span className={s.name}>{currentName}</span>, ¿por qué no puedes estar completamente enfocado hoy?
+            {makeRandomCheckInQuestion(currentName)}
           </MeetingSectionHeading>
         </MeetingSection>
         {/* */}
@@ -91,10 +88,4 @@ MeetingCheckin.propTypes = {
   team: PropTypes.object
 };
 
-s = StyleSheet.create({
-  name: {
-    color: theme.palette.warm
-  }
-});
-
-export default withRouter(look(MeetingCheckin));
+export default withRouter(MeetingCheckin);
