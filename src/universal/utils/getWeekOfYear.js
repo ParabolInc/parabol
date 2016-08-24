@@ -24,6 +24,6 @@ export default function getWeekNumber(datetime) {
   // Get first day of year
   const yearStart = new Date(d.getFullYear(), 0, 1);
   // Calculate full weeks to nearest Thursday
-  return Math.ceil(( ( (d - yearStart) / 86400000) + 1) / 7);
+  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
   // Return array of year and week number
 }
