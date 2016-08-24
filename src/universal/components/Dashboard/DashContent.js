@@ -6,20 +6,29 @@ import tinycolor from 'tinycolor2';
 const backgroundColor = tinycolor.mix(theme.palette.mid10l, '#fff', 50).toHexString();
 let styles = {};
 
-const DashContent = (props) =>
-  <div className={styles.root}>
-    {props.children}
-  </div>;
+const DashContent = (props) => {
+  const {children, padding} = props;
+  const style = {padding};
+  return (
+    <div className={styles.root} style={style}>
+      {children}
+    </div>
+  );
+};
 
 DashContent.propTypes = {
-  children: PropTypes.any
+  children: PropTypes.any,
+  padding: PropTypes.string
+};
+
+DashContent.defaultProps = {
+  padding: '1rem'
 };
 
 styles = StyleSheet.create({
   root: {
     backgroundColor,
     flex: 1,
-    padding: '1rem',
     width: '100%'
   }
 });

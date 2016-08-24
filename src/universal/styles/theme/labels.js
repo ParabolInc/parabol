@@ -27,9 +27,9 @@ const labels = {
   },
   projectStatus: {
     slugs: [
+      DONE,
       ACTIVE,
       STUCK,
-      DONE,
       FUTURE
     ],
     [ACTIVE]: {

@@ -48,7 +48,8 @@ const MeetingCheckin = (props) => {
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="2rem">
           <MeetingSectionHeading>
-            {makeRandomCheckInQuestion(currentName)}
+            /* args: preferredName, hasStyle (highlights name) = true */
+            {makeRandomCheckInQuestion(currentName, true)}
           </MeetingSectionHeading>
         </MeetingSection>
         {/* */}
