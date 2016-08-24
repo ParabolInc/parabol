@@ -9,6 +9,7 @@ import {
 import look, {StyleSheet} from 'react-look';
 import UserActions from 'universal/modules/userDashboard/components/UserActions/UserActions';
 import UserColumnsContainer from 'universal/modules/userDashboard/containers/UserColumns/UserColumnsContainer';
+import makeRandomCheckInQuestion from 'universal/modules/meeting/helpers/makeRandomCheckInQuestion';
 
 const UserDashboard = () => {
   const {styles} = UserDashboard;
@@ -16,7 +17,7 @@ const UserDashboard = () => {
     <DashMain>
       <DashHeader>
         <DashHeaderInfo title="My Dashboard">
-          {dashTimestamp} • Carpe diem!
+          {dashTimestamp} • Carpe diem! • {makeRandomCheckInQuestion('Terry')}
         </DashHeaderInfo>
       </DashHeader>
       <DashContent>
