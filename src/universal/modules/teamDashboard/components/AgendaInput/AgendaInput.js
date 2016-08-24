@@ -31,7 +31,7 @@ AgendaInput.styles = StyleSheet.create({
     backgroundColor: theme.palette.light,
     color: theme.palette.cool,
     fontSize: theme.typography.s3,
-    padding: '.5rem .75rem .5rem 4rem',
+    padding: '.5rem .5rem .5rem 0',
     position: 'relative',
     width: '100%',
     display: 'flex'

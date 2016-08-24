@@ -49,8 +49,8 @@ styles = StyleSheet.create({
   root: {
     backgroundColor: theme.palette.mid,
     color: textColor,
-    paddingBottom: '1.25rem',
     minWidth: layoutStyle.dashSidebarWidth,
+    paddingBottom: '1.25rem'
   },
 
   nav: {

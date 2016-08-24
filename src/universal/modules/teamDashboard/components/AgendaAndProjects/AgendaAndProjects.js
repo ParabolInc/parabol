@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
+import layoutStyle from 'universal/styles/layout';
 import TeamAgenda from 'universal/modules/teamDashboard/components/TeamAgenda/TeamAgenda';
 import TeamColumnsContainer from 'universal/modules/teamDashboard/containers/TeamColumns/TeamColumnsContainer';
 import TeamProjectsHeader from 'universal/modules/teamDashboard/components/TeamProjectsHeader/TeamProjectsHeader';
@@ -12,8 +13,7 @@ const AgendaAndProjects = (props) => {
   return (
     <div className={styles.root}>
       <div className={styles.agendaLayout}>
-        <TeamAgenda teamId={teamId}/>
-      </div>
+        <TeamAgenda teamId={teamId}/> </div>
       <div className={styles.projectsLayout}>
         <div className={combineStyles(styles.root, styles.projects)}>
           <TeamProjectsHeader/>
@@ -36,7 +36,7 @@ AgendaAndProjects.styles = StyleSheet.create({
   root: {
     display: 'flex',
     flex: 1,
-    padding: '1rem',
+    padding: '1rem 1rem 1rem 0',
     width: '100%'
   },
 
@@ -45,7 +45,7 @@ AgendaAndProjects.styles = StyleSheet.create({
   },
 
   agendaLayout: {
-    width: '20%'
+    width: layoutStyle.dashAgendaWidth
   },
 
   projectsLayout: {
