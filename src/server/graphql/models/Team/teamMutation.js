@@ -73,11 +73,11 @@ export default {
       if (!phaseArray.includes(nextPhase)) {
         throw errorObj({_error: 'That is not a valid phase'});
       }
-      r.table('Team').get(teamId)
-        .do((team) => ({
-          team,
-
-        }))
+      // r.table('Team').get(teamId)
+      //   .do((team) => ({
+      //     team,
+      //
+      //   }))
 
       const team = await r.table('Team').get(teamId);
       const userId = getUserId(authToken);
