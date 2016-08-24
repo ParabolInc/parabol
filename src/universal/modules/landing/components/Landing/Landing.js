@@ -110,7 +110,7 @@ export default class Landing extends Component {
                   work meaningful for agile business teams.
                 </p>
                 <p className={styles.copyParagraph}>
-                  To get involved,
+                  To get involved,{' '}
                   <a
                     href="https://github.com/ParabolInc/action/blob/master/CONTRIBUTING.md"
                     title="Guidelines for contributing"
@@ -130,18 +130,18 @@ export default class Landing extends Component {
               <img className={styles.footerBrand} src={parabolLogoMark}/>
             </a>
             <div className={styles.footerCopy}>
-              ©2016
+              ©2016{' '}
               <a
                 className={styles.footerLink}
                 href="http://www.parabol.co/"
                 title="Parabol, Inc."
               >
                 Parabol, Inc.
-              </a>
+              </a>{' '}
               <br className={styles.footerBreak}/>
-              Made with care by friendly folks.
+              Made with care by friendly folks.{' '}
               <br className={styles.footerBreak}/>
-              Say hello:
+              Say hello:{' '}
               <a
                 className={styles.footerLink}
                 href="mailto:love@parabol.co"
