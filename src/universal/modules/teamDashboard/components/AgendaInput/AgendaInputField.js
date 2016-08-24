@@ -35,7 +35,8 @@ AgendaInputField.styles = StyleSheet.create({
     fontWeight: 700,
     margin: 0,
     outline: 'none',
-    padding: 0,
+    padding: '0 1rem 0 3rem',
+    textIndent: '1rem',
     width: '100%',
 
     '::placeholder': {

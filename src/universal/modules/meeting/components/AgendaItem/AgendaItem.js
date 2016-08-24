@@ -20,7 +20,9 @@ const AgendaItem = props => {
 
   return (
     <div className={rootStyles} onClick={onClick} title={desc}>
-      <div className={s.del}><FontAwesome name="times-circle"/></div>
+      <div className={s.del}>
+        <FontAwesome name="times-circle" style={{lineHeight: 'inherit'}}/>
+      </div>
       <div className={s.index}>{index + 1}.</div>
       <div className={s.desc}>
         <a className={descStyles} href={hash}>{desc}</a>”
@@ -30,7 +32,13 @@ const AgendaItem = props => {
   );
 };
 
+const block = {
+  height: '1.5rem',
+  lineHeight: '1.5rem'
+};
+
 const inlineBlock = {
+  ...block,
   display: 'inline-block',
   verticalAlign: 'middle'
 };
@@ -41,7 +49,7 @@ s = StyleSheet.create({
     color: theme.palette.cool,
     display: 'flex !important',
     fontSize: theme.typography.s3,
-    padding: '.5rem .75rem .5rem 0',
+    padding: '.5rem .5rem .5rem 0',
     position: 'relative',
     width: '100%',
 
@@ -58,10 +66,12 @@ s = StyleSheet.create({
   },
 
   del: {
+    ...block,
     color: theme.palette.dark,
     left: '1.25rem',
-    paddingTop: '1px',
-    position: 'absolute'
+    // paddingTop: '1px',
+    position: 'absolute',
+    top: '.5rem'
   },
 
   desc: {

@@ -53,7 +53,7 @@ const Team = (props) => {
         </DashHeaderInfo>
         <DashboardAvatars teamMembers={teamMembers}/>
       </DashHeader>
-      <DashContent>
+      <DashContent padding="1rem 1rem 1rem 0">
         <AgendaAndProjects
           myTeamMemberId={myTeamMemberId}
           teamId={teamId}
