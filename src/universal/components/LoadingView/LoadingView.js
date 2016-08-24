@@ -53,7 +53,7 @@ LoadingDuck.propTypes = {
   className: PropTypes.string.isRequired,
 };
 
-const LoadingView = () => {
+const LoadingView = (children) => {
   const {pato1, pato2, pato3} = styles;
   const duckStyles = [pato1, pato2, pato3];
   return (
@@ -62,10 +62,12 @@ const LoadingView = () => {
       {duckStyles.map((className, idx) =>
         <LoadingDuck className={className} key={idx}/>)}
       <h2 className={styles.message}>Just putting our ducks in a row…</h2>
+      {children && Object.keys(children).length > 0 && children}
     </div>
   );
 };
 
+// TODO FIX CHILDREN WHEN WE KILL LOOK
 styles = StyleSheet.create({
   root: {
     minHeight: '100vh',

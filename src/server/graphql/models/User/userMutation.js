@@ -91,14 +91,11 @@ export default {
        * If we really want to be jocky, we can optmize this into a single
        * ReQL query at the expense of readability:
        */
-      const hasTeam = authToken.tms && authToken.tms.length > 0;
-      const dbProfile = await r.table('User').get(id).update(updatedObj, {returnChanges: true});
-      if (hasTeam) {
-        // propagate denormalized changes to TeamMember
-        await r.table('TeamMember')
-          .getAll(id, {index: 'userId'})
-          .update({preferredName: updatedUser.preferredName});
-      }
+      // propagate denormalized changes to TeamMember
+      const dbProfile = await r.table('TeamMember')
+        .getAll(id, {index: 'userId'})
+        .update({preferredName: updatedUser.preferredName})
+        .do(() => r.table('User').get(id).update(updatedObj, {returnChanges: true}));
       return updatedOrOriginal(dbProfile, updatedUser);
     }
   }

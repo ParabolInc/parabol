@@ -1,6 +1,6 @@
 /* Phases */
 export const LOBBY = 'lobby';
-export const CHECKIN = 'checkin';
+export const CHECKIN = 'checkIn';
 export const UPDATES = 'updates';
 export const FIRST_CALL = 'firstCall';
 export const AGENDA_ITEMS = 'agendaItems';

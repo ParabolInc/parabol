@@ -32,7 +32,7 @@ export const TeamMember = new GraphQLObjectType({
     /* Ephemeral meeting state */
     checkInOrder: {
       type: GraphQLInt,
-      description: 'The place in line for checkin, regenerated every meeting'
+      description: 'The place in line for checkIn, regenerated every meeting'
     },
     isCheckedIn: {
       type: GraphQLBoolean,

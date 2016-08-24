@@ -12,9 +12,9 @@ const combineStyles = StyleSheet.combineStyles;
 let styles = {};
 
 const CardButtons = withHotkey((props) => {
-  const {bindHotkey, checkinPressFactory, isCheckedIn} = props;
-  const handleOnClickPresent = isCheckedIn ? voidClick : checkinPressFactory(true);
-  const handleOnClickAbsent = isCheckedIn !== false ? checkinPressFactory(false) : voidClick;
+  const {bindHotkey, checkInPressFactory, isCheckedIn} = props;
+  const handleOnClickPresent = isCheckedIn ? voidClick : checkInPressFactory(true);
+  const handleOnClickAbsent = isCheckedIn !== false ? checkInPressFactory(false) : voidClick;
   bindHotkey('c', handleOnClickPresent);
   bindHotkey('x', handleOnClickAbsent);
   return (
@@ -38,12 +38,12 @@ const CardButtons = withHotkey((props) => {
 });
 
 CardButtons.propTypes = {
-  checkinPressFactory: PropTypes.func.isRequired,
+  checkInPressFactory: PropTypes.func.isRequired,
   isCheckedIn: PropTypes.bool,
 };
 
 const Card = (props) => {
-  const {handleCardClick, isActive, checkinPressFactory, member} = props;
+  const {handleCardClick, isActive, checkInPressFactory, member} = props;
   const {isCheckedIn, preferredName} = member;
   const cardActiveStyles = combineStyles(styles.card, styles.cardIsActive);
   const cardBlurredStyles = combineStyles(styles.card, styles.cardIsBlurred);
@@ -59,13 +59,13 @@ const Card = (props) => {
       <Avatar {...member} size="largest"/>
       <div className={nameStyles}>{preferredName}</div>
       <div className={labelStyles}>Checking in...</div>
-      {isActive && <CardButtons checkinPressFactory={checkinPressFactory} isCheckedIn={isCheckedIn}/>}
+      {isActive && <CardButtons checkInPressFactory={checkInPressFactory} isCheckedIn={isCheckedIn}/>}
     </div>
   );
 };
 
 Card.propTypes = {
-  checkinPressFactory: PropTypes.func,
+  checkInPressFactory: PropTypes.func,
   handleCardClick: PropTypes.func,
   isActive: PropTypes.bool,
   member: PropTypes.object

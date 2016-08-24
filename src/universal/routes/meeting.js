@@ -34,7 +34,7 @@ export default store => ({
   //       }
   //     },
   //     {
-  //       path: 'checkin(/:localPhaseItem)',
+  //       path: 'checkIn(/:localPhaseItem)',
   //       getComponent: async(location, cb) => {
   //         const component = await System.import(
   //           'universal/modules/meeting/components/MeetingCheckin/MeetingCheckin');

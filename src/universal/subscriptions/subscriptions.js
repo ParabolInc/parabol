@@ -74,6 +74,8 @@ export default [
     string: `
     subscription($teamId: ID!) {
        team(teamId: $teamId) {
+         checkInGreeting,
+         checkInQuestion, 
          id,
          name,
          meetingId,

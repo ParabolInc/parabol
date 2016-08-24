@@ -11,7 +11,7 @@ import tmsSignToken from 'server/graphql/models/tmsSignToken';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 
 export default {
-  checkin: {
+  checkIn: {
     type: GraphQLBoolean,
     description: 'Check a member in as present or absent',
     args: {

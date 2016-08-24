@@ -47,6 +47,14 @@ export const Team = new GraphQLObjectType({
       description: 'The datetime the team was last updated'
     },
     /* Ephemeral meeting state */
+    checkInGreeting: {
+      type: GraphQLString,
+      description: 'The checkIn greeting (fun language)'
+    },
+    checkInQuestion: {
+      type: GraphQLString,
+      description: 'The checkIn question of the week'
+    },
     meetingId: {
       type: GraphQLID,
       description: 'The unique Id of the active meeting'

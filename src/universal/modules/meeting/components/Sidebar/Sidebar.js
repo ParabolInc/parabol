@@ -15,7 +15,7 @@ import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
 const combineStyles = StyleSheet.combineStyles;
 const labels = {
   lobby: 'Lobby',
-  checkin: 'Check-In',
+  checkIn: 'Check-In',
   updates: 'Updates',
   agenda: 'Agenda',
   summary: 'Summary',
@@ -35,11 +35,11 @@ const Sidebar = (props) => {
   const facilitatorPhaseItemStyles = combineStyles(s.navListItem, s.navListItemMeetingMarker);
   const activeNavAnchor = combineStyles(s.navListItemLink, s.navListItemLinkActive);
 
-  const checkinLinkStyles = localPhase === CHECKIN ? activeNavAnchor : s.navListItemLink;
+  const checkInLinkStyles = localPhase === CHECKIN ? activeNavAnchor : s.navListItemLink;
   const updatesLinkStyles = localPhase === UPDATES ? activeNavAnchor : s.navListItemLink;
   const requestsLinkStyles = inAgendaGroup(localPhase) ? activeNavAnchor : s.navListItemLink;
 
-  const checkinNavItemStyles = facilitatorPhase === CHECKIN ? facilitatorPhaseItemStyles : s.navListItem;
+  const checkInNavItemStyles = facilitatorPhase === CHECKIN ? facilitatorPhaseItemStyles : s.navListItem;
   const updatesNavItemStyles = facilitatorPhase === UPDATES ? facilitatorPhaseItemStyles : s.navListItem;
   const requestsNavItemStyles = inAgendaGroup(facilitatorPhase) ? facilitatorPhaseItemStyles : s.navListItem;
 
@@ -62,14 +62,14 @@ const Sidebar = (props) => {
       {/* TODO: make me respond to props */}
       <nav className={s.nav}>
         <ul className={s.navList}>
-          <li className={checkinNavItemStyles}>
+          <li className={checkInNavItemStyles}>
             <Link
               to={`/meeting/${teamId}/checkin`}
-              className={checkinLinkStyles}
-              title={labels.checkin}
+              className={checkInLinkStyles}
+              title={labels.checkIn}
             >
               <span className={s.bullet}>i.</span>
-              <span className={s.label}>{labels.checkin}</span>
+              <span className={s.label}>{labels.checkIn}</span>
             </Link>
           </li>
           <li className={updatesNavItemStyles}>

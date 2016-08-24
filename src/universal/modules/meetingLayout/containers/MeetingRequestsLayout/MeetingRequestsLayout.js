@@ -33,35 +33,35 @@ const exampleTeam = {
   timerValue: '30:00',
   members: [
     {
-      checkin: 'present',
+      checkIn: 'present',
       connection: 'online',
       hasBadge: true,
       picture: Jordan,
       size: 'small'
     },
     {
-      checkin: 'present',
+      checkIn: 'present',
       connection: 'online',
       hasBadge: true,
       picture: Matt,
       size: 'small'
     },
     {
-      checkin: 'present',
+      checkIn: 'present',
       connection: 'offline',
       hasBadge: true,
       picture: Miramar,
       size: 'small'
     },
     {
-      checkin: 'present',
+      checkIn: 'present',
       connection: 'offline',
       hasBadge: true,
       picture: Taya,
       size: 'small'
     },
     {
-      checkin: 'absent',
+      checkIn: 'absent',
       connection: 'offline',
       hasBadge: true,
       picture: Terry,

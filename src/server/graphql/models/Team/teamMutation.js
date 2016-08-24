@@ -15,12 +15,15 @@ import {
   CHECKIN,
   LOBBY,
   UPDATES,
-//  FIRST_CALL,
+  FIRST_CALL,
   AGENDA_ITEMS,
-//  LAST_CALL,
-  phaseArray, phaseOrder} from 'universal/utils/constants';
+  LAST_CALL,
+  phaseArray, phaseOrder
+} from 'universal/utils/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
+import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
+import getWeekOfYear from 'universal/utils/getWeekOfYear';
 
 export default {
   endMeeting: {
@@ -67,19 +70,44 @@ export default {
         description: 'The item within the phase to set the meeting to'
       }
     },
-    async resolve(source, {teamId, nextPhase, nextPhaseItem = 1}, {authToken, socket}) {
+    async resolve(source, {teamId, nextPhase, nextPhaseItem}, {authToken, socket}) {
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
       if (!phaseArray.includes(nextPhase)) {
         throw errorObj({_error: 'That is not a valid phase'});
       }
-      // r.table('Team').get(teamId)
-      //   .do((team) => ({
-      //     team,
-      //
-      //   }))
 
-      const team = await r.table('Team').get(teamId);
+      let team;
+      // make sure nextPhaseItem has a good value
+      if (nextPhase === CHECKIN || nextPhase === UPDATES) {
+        const teamAndCount = await r.table('Team').get(teamId)
+          .do((reqlTeam) => ({
+            team: reqlTeam,
+            teamMembersCount: r.table('TeamMembers')
+              .getAll(teamId, {index: 'teamId'})
+              .filter({isActive: true})
+              .count()
+          }));
+        if (nextPhaseItem < 1 || nextPhaseItem > teamAndCount.teamMembersCount) {
+          throw errorObj({_error: 'We don\'t have that many team members!'});
+        }
+        team = teamAndCount.team;
+      } else if (nextPhase === AGENDA_ITEMS) {
+        const teamAndItemCount = await r.table('Team').get(teamId)
+          .do((reqlTeam) => ({
+            team: reqlTeam,
+            agendaItemCount: r.table('AgendaItems')
+              .getAll(teamId, {index: 'teamId'})
+              .count()
+          }));
+        if (nextPhaseItem < 1 || nextPhaseItem > teamAndItemCount.agendaItemCount) {
+          throw errorObj({_error: 'We don\'t have that many agenda items!'});
+        }
+        team = teamAndItemCount.team;
+      } else if (nextPhaseItem) {
+        throw errorObj({_error: `${nextPhase} does not have phase items`});
+      }
+
       const userId = getUserId(authToken);
       const teamMemberId = `${userId}::${teamId}`;
       const {activeFacilitator, facilitatorPhase, meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = team;
@@ -131,7 +159,12 @@ export default {
       }
 
       const meetingId = `${teamId}::${shortid.generate()}`;
+      const now = new Date();
+      const week = getWeekOfYear(now);
+
       const updatedTeam = {
+        checkInGreeting: makeCheckinGreeting(week),
+        checkInQuestion: makeCheckinQuestion(week),
         meetingId,
         activeFacilitator: facilitatorId,
         facilitatorPhase: CHECKIN,

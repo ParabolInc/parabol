@@ -17,7 +17,7 @@ const boxShadowWarm = `0 0 1px 1px ${theme.palette.warm}`;
 
 const renderBadge = (isCheckedIn, isConnected, size) => {
   const connection = isConnected ? 'online' : 'offline';
-  const checkin = isCheckedIn ? 'present' : 'absent';
+  const checkIn = isCheckedIn ? 'present' : 'absent';
   const iconStyles = combineStyles(
     s.badgeIcon,
     s[connection]
@@ -32,7 +32,7 @@ const renderBadge = (isCheckedIn, isConnected, size) => {
   }
   const largeBadgeClass = size === 'large' || size === 'larger' || size === 'largest';
   const badgeStyles = largeBadgeClass ? combineStyles(s.badge, s.badgeLarge) : s.badge;
-  const description = `${connection}, ${checkin}`;
+  const description = `${connection}, ${checkIn}`;
   return (
     <div className={badgeStyles}>
       <FontAwesome className={iconStyles} name={icon}/>

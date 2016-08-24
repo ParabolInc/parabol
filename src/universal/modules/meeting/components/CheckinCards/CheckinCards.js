@@ -17,7 +17,7 @@ const makeCheckinPressFactory = (teamMemberId) => {
           teamMemberId
         }
       };
-      cashay.mutate('checkin', options);
+      cashay.mutate('checkIn', options);
     };
   };
 };
@@ -60,7 +60,7 @@ export default class CheckinCards extends Component {
           <CheckinCard handleCardClick={this.handleCardClickFactory(memberIdx - 1)} member={leftCard}/>
         }
         {activeCard &&
-          <CheckinCard checkinPressFactory={makeCheckinPressFactory(activeCard.id)} member={activeCard} isActive/>
+          <CheckinCard checkInPressFactory={makeCheckinPressFactory(activeCard.id)} member={activeCard} isActive/>
         }
         {rightCard &&
           <CheckinCard handleCardClick={this.handleCardClickFactory(memberIdx + 1)} member={rightCard}/>
