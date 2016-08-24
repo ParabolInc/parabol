@@ -25,10 +25,6 @@ const MeetingCheckin = (props) => {
   } = props;
 
   const {id: teamId, facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem} = team;
-  if (localPhaseItem === 0 || localPhaseItem > members.length) {
-    const pushURL = makePushURL(team.id, facilitatorPhase, facilitatorPhaseItem);
-    router.replace(pushURL);
-  }
   const phaseItemFactory = makePhaseItemFactory(isFacilitating, members.length, router, teamId, CHECKIN);
   // 1-indexed
   const isLastMember = localPhaseItem === members.length;

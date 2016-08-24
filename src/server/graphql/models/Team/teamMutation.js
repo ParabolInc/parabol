@@ -18,7 +18,7 @@ import {
 //  FIRST_CALL,
   AGENDA_ITEMS,
 //  LAST_CALL,
-  phaseOrder} from 'universal/utils/constants';
+  phaseArray, phaseOrder} from 'universal/utils/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
 
@@ -70,6 +70,15 @@ export default {
     async resolve(source, {teamId, nextPhase, nextPhaseItem = 1}, {authToken, socket}) {
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
+      if (!phaseArray.includes(nextPhase)) {
+        throw errorObj({_error: 'That is not a valid phase'});
+      }
+      r.table('Team').get(teamId)
+        .do((team) => ({
+          team,
+
+        }))
+
       const team = await r.table('Team').get(teamId);
       const userId = getUserId(authToken);
       const teamMemberId = `${userId}::${teamId}`;
