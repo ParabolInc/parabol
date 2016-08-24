@@ -30,7 +30,6 @@ const Team = (props) => {
   const teamId = team.id;
   const teamName = team.name;
   const hasOverlay = Boolean(team && team.meetingId);
-  debugger
   return (
     <DashMain hasOverlay={hasOverlay}>
       {hasOverlay && <TeamDashModal teamId={teamId} teamName={teamName}/>}

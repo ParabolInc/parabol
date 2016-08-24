@@ -1,10 +1,11 @@
 /* Phases */
 export const LOBBY = 'lobby';
-export const CHECKIN = 'checkIn';
+// lowercase here to match url
+export const CHECKIN = 'checkin';
 export const UPDATES = 'updates';
-export const FIRST_CALL = 'firstCall';
-export const AGENDA_ITEMS = 'agendaItems';
-export const LAST_CALL = 'lastCall';
+export const FIRST_CALL = 'firstcall';
+export const AGENDA_ITEMS = 'agendaitems';
+export const LAST_CALL = 'lastcall';
 export const SUMMARY = 'summary';
 export const phaseArray = [LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY];
 export const phaseOrder = phase => phaseArray.indexOf(phase);

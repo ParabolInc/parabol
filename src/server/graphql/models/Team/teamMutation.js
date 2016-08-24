@@ -83,7 +83,7 @@ export default {
         const teamAndCount = await r.table('Team').get(teamId)
           .do((reqlTeam) => ({
             team: reqlTeam,
-            teamMembersCount: r.table('TeamMembers')
+            teamMembersCount: r.table('TeamMember')
               .getAll(teamId, {index: 'teamId'})
               .filter({isActive: true})
               .count()
@@ -196,6 +196,10 @@ export default {
         meetingPhaseItem: null,
         activeFacilitator: null
       });
+      await r.table('TeamMember').getAll(teamId, {index: 'teamId'})
+        .update({
+          isCheckedIn: null
+        });
       return true;
     }
   },
