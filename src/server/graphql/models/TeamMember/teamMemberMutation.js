@@ -88,6 +88,7 @@ export default {
           subtype: 'alreadyJoined'
         });
       }
+
       const dbWork = r.table('TeamMember')
       // get number of users
         .getAll(teamId, {index: 'teamId'})
@@ -99,20 +100,22 @@ export default {
           user: r.table('User').get(userId)
         }))
         // insert team member
-        .do((teamCountAndUser) => {
+        .do((teamCountAndUser) =>
           r.table('TeamMember').insert({
             checkInOrder: teamCountAndUser('usersOnTeam').add(1),
-            id: teamCountAndUser('user').add('::', teamId),
+            id: teamCountAndUser('user')('id').add('::', teamId),
             teamId,
             userId,
             isActive: true,
             isLead: false,
             isFacilitator: false,
-            picture: teamCountAndUser('user')('picture'),
-            preferredName: teamCountAndUser('user')('preferredName'),
-          });
-          return teamCountAndUser('user')('email');
-        })
+            picture: teamCountAndUser('user')('picture').default(''),
+            preferredName: teamCountAndUser('user')('preferredName').default(''),
+          }).do(() =>
+            // ...but return the user's email
+            teamCountAndUser('user')('email')
+          )
+        )
         // find all possible emails linked to this person and mark them as accepted
         .do((userEmail) =>
           r.table('Invitation').getAll(userEmail, email, {index: 'email'}).update({
@@ -129,5 +132,4 @@ export default {
       return tmsSignToken(authToken, tms);
     }
   }
-}
-;
+};
