@@ -7,7 +7,7 @@ import TeamProjectCardContainer from
   'universal/modules/teamDashboard/containers/TeamProjectCard/TeamProjectCardContainer';
 import NullCard from 'universal/components/NullCard/NullCard';
 import subscriptions from 'universal/subscriptions/subscriptions';
-import {TEAM_MEMBERS} from 'universal/utils/constants';
+import {TEAM_MEMBERS} from 'universal/subscriptions/constants';
 import subscriber from 'universal/subscriptions/subscriber';
 
 const teamMembersSubQuery = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
@@ -21,7 +21,7 @@ const mapStateToProps = (state, props) => {
     op: TEAM_MEMBERS,
     variables: {teamId},
   }).data;
-  const projectOwner = teamMembers.find(m => m.id === project.teamMemberId);
+  const projectOwner = teamMembers.find(m => m.id === project.teamMemberId) || {};
   const {preferredName} = projectOwner;
   const username = preferredName && preferredName.replace(/\s+/g, '');
   const myTeamMemberId = `${userId}::${teamId}`;
