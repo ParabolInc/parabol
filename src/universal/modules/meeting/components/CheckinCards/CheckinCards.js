@@ -56,14 +56,16 @@ export default class CheckinCards extends Component {
 
     return (
       <div className={styles.base}>
-        {leftCard &&
-          <CheckinCard handleCardClick={this.handleCardClickFactory(memberIdx - 1)} member={leftCard}/>
+        {leftCard ?
+          <CheckinCard handleCardClick={this.handleCardClickFactory(memberIdx - 1)} member={leftCard}/> :
+          <div className={styles.placeholder}></div>
         }
         {activeCard &&
           <CheckinCard checkInPressFactory={makeCheckinPressFactory(activeCard.id)} member={activeCard} isActive/>
         }
-        {rightCard &&
-          <CheckinCard handleCardClick={this.handleCardClickFactory(memberIdx + 1)} member={rightCard}/>
+        {rightCard ?
+          <CheckinCard handleCardClick={this.handleCardClickFactory(memberIdx + 1)} member={rightCard}/> :
+          <div className={styles.placeholder}></div>
         }
       </div>
     );
@@ -75,5 +77,14 @@ styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     width: '100%'
+  },
+
+  placeholder: {
+    // NOTE: This box model matches CheckinCard for exact sizing (TA)
+    border: '1px solid transparent',
+    borderRadius: '.5rem',
+    margin: '0 .5rem',
+    padding: '3rem 1rem 1.5rem',
+    width: '18.75rem'
   }
 });
