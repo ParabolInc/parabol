@@ -82,7 +82,7 @@ styles = StyleSheet.create({
   },
 
   cardIsActive: {
-    borderColor: theme.palette.cool70l
+    borderColor: theme.palette.warm70l
   },
 
   cardIsBlurred: {
