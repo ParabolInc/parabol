@@ -1,5 +1,5 @@
 import React from 'react';
-import theme from 'universal/styles/theme';
+// import theme from 'universal/styles/theme';
 
 const rallyList = [
   {
@@ -145,7 +145,8 @@ const rally = rallyList[Math.floor(Math.random() * rallyList.length)];
 const rallyPhrase = `${rally.phrase}!`;
 
 const style = {
-  color: theme.palette.dark70l
+  // color: theme.palette.dark70l
+  color: 'inherit'
 };
 
 export default function getRallyLink(hasStyle = true) {
@@ -156,7 +157,7 @@ export default function getRallyLink(hasStyle = true) {
       target="_blank"
       title={rallyPhrase}
     >
-      {rallyPhrase}
+      {rally.phrase}
     </a>
   );
 }

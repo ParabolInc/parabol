@@ -7,6 +7,7 @@ import {
   dashTimestamp
 } from 'universal/components/Dashboard';
 import look, {StyleSheet} from 'react-look';
+// import theme from 'universal/styles/theme';
 import UserActions from 'universal/modules/userDashboard/components/UserActions/UserActions';
 import UserColumnsContainer from 'universal/modules/userDashboard/containers/UserColumns/UserColumnsContainer';
 import getRallyLink from '../../helpers/getRallyLink';
@@ -17,7 +18,7 @@ const UserDashboard = () => {
     <DashMain>
       <DashHeader>
         <DashHeaderInfo title="My Dashboard">
-          {dashTimestamp} • {getRallyLink()}
+          {dashTimestamp} • <span className={styles.crayCrayHover}>{getRallyLink()}!</span>
         </DashHeaderInfo>
       </DashHeader>
       <DashContent>
@@ -52,6 +53,22 @@ UserDashboard.styles = StyleSheet.create({
 
   projectsLayout: {
     width: '80%'
+  },
+
+  crayCrayHover: {
+    color: 'inherit',
+
+    // TODO: Play with cray cray hover some more (TA)
+    // ':hover': {
+    //   color: theme.palette.warm,
+    //   position: 'fixed',
+    //   transform: 'scale(10)'
+    // },
+    // ':focus': {
+    //   color: theme.palette.warm,
+    //   position: 'fixed',
+    //   transform: 'scale(10)'
+    // }
   }
 });
 
