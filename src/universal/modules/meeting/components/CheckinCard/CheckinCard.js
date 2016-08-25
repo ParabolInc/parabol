@@ -116,7 +116,8 @@ styles = StyleSheet.create({
   },
 
   buttonsBlock: {
-    display: 'inline-block'
+    display: 'inline-block',
+    textAlign: 'left'
   }
 });
 
