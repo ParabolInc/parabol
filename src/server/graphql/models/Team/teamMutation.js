@@ -15,9 +15,9 @@ import {
   CHECKIN,
   LOBBY,
   UPDATES,
-  FIRST_CALL,
+//  FIRST_CALL,
   AGENDA_ITEMS,
-  LAST_CALL,
+//  LAST_CALL,
   phaseArray, phaseOrder
 } from 'universal/utils/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
@@ -229,6 +229,7 @@ export default {
         teamId: newTeam.id,
         userId
       };
+
       const verifiedTeam = {
         ...newTeam,
         facilitatorPhase: LOBBY,
@@ -238,11 +239,25 @@ export default {
         meetingPhaseItem: null,
         activeFacilitator: null
       };
+
+      const dbTransaction = r.table('User')
+        .get(userId)
+        .do((user) =>
+          r.table('TeamMember').insert({
+            ...verifiedLeader,
+            // pull in picture and preferredName from user profile:
+            picture: user('picture').default(''),
+            preferredName: user('preferredName').default('')
+          })
+        )
+        .do(() =>
+          r.table('Team').insert(verifiedTeam)
+        );
+
       const oldtms = authToken.tms || [];
       const tms = oldtms.concat(newTeam.id);
       const dbPromises = [
-        r.table('TeamMember').insert(verifiedLeader),
-        r.table('Team').insert(verifiedTeam),
+        dbTransaction,
         auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
       ];
       await Promise.all(dbPromises);
