@@ -15,9 +15,9 @@ import {
   CHECKIN,
   LOBBY,
   UPDATES,
-  FIRST_CALL,
+//  FIRST_CALL,
   AGENDA_ITEMS,
-  LAST_CALL,
+//  LAST_CALL,
   phaseArray, phaseOrder
 } from 'universal/utils/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
