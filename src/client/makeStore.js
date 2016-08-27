@@ -2,7 +2,6 @@ import {createStore, applyMiddleware, compose} from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import {createMiddleware, createLoader} from 'redux-storage-whitelist-fn';
 import createEngine from 'redux-storage-engine-localstorage';
-import semver from 'semver';
 import makeReducer from 'universal/redux/makeReducer';
 import {APP_REDUX_KEY, APP_VERSION, APP_VERSION_KEY} from 'universal/utils/constants';
 
@@ -50,7 +49,7 @@ export default async initialState => {
     ));
   }
   const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY) || '0.0.0';
-  if (semver.gt(APP_VERSION, versionInStorage)) {
+  if (APP_VERSION !== versionInStorage) {
     window.localStorage.setItem(APP_VERSION_KEY, APP_VERSION);
     return store;
   }
