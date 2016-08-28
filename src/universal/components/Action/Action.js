@@ -15,6 +15,13 @@ export default class Action extends Component {
     children: PropTypes.any
   };
 
+  componentDidUpdate() {
+    if (window) {
+      // update segment with our possibly new location:
+      window.analytics.page();
+    }
+  }
+
   render() {
     return (
       <div className={styles.app}>

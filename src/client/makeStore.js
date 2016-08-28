@@ -4,6 +4,7 @@ import makeReducer from 'universal/redux/makeReducer';
 import createEngine from 'redux-storage-engine-localstorage';
 import {APP_NAME} from 'universal/utils/clientOptions';
 import {createMiddleware, createLoader} from 'redux-storage-whitelist-fn';
+import {createTracker} from 'redux-segment';
 
 const storageWhitelist = type => {
   const whitelistPrefixes = ['@@auth', '@@cashay', '@@root'];
@@ -20,13 +21,15 @@ export default async initialState => {
   const reducer = makeReducer();
   const engine = createEngine(APP_NAME);
   const storageMiddleware = createMiddleware(engine, [], storageWhitelist);
+  const segmentMiddleware = createTracker();
   /*
    * Special action types, such as thunks, must be placed before
    * storageMiddleware so they can be properly interpreted:
    */
   const middlewares = [
     thunkMiddleware,
-    storageMiddleware,
+    segmentMiddleware,
+    storageMiddleware
   ];
 
   if (__PRODUCTION__) {
