@@ -16,7 +16,7 @@ export default class Action extends Component {
   };
 
   componentDidUpdate() {
-    if (window) {
+    if (typeof window !== 'undefined') {
       // update segment with our possibly new location:
       window.analytics.page();
     }
