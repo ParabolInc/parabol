@@ -1,9 +1,9 @@
 import {createStore, applyMiddleware, compose} from 'redux';
 import thunkMiddleware from 'redux-thunk';
-import makeReducer from 'universal/redux/makeReducer';
-import createEngine from 'redux-storage-engine-localstorage';
-import {APP_NAME} from 'universal/utils/clientOptions';
 import {createMiddleware, createLoader} from 'redux-storage-whitelist-fn';
+import createEngine from 'redux-storage-engine-localstorage';
+import makeReducer from 'universal/redux/makeReducer';
+import {APP_REDUX_KEY, APP_VERSION, APP_VERSION_KEY} from 'universal/utils/constants';
 
 const storageWhitelist = type => {
   const whitelistPrefixes = ['@@auth', '@@cashay', '@@root'];
@@ -15,10 +15,11 @@ const storageWhitelist = type => {
   }
   return false;
 };
+
 export default async initialState => {
   let store;
   const reducer = makeReducer();
-  const engine = createEngine(APP_NAME);
+  const engine = createEngine(APP_REDUX_KEY);
   const storageMiddleware = createMiddleware(engine, [], storageWhitelist);
   /*
    * Special action types, such as thunks, must be placed before
@@ -26,7 +27,7 @@ export default async initialState => {
    */
   const middlewares = [
     thunkMiddleware,
-    storageMiddleware,
+    storageMiddleware
   ];
 
   if (__PRODUCTION__) {
@@ -46,6 +47,11 @@ export default async initialState => {
       applyMiddleware(...middlewares),
       devtoolsExt || (f => f),
     ));
+  }
+  const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY) || '0.0.0';
+  if (APP_VERSION !== versionInStorage) {
+    window.localStorage.setItem(APP_VERSION_KEY, APP_VERSION);
+    return store;
   }
   const load = createLoader(engine);
   await load(store);
