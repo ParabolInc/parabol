@@ -5,7 +5,7 @@ let theme = {};
 if (typeof __PRODUCTION__ !== 'undefined' && __PRODUCTION__) {
   /*
    * Production optimization, built by npm run build:server
-   * and /src/universal/utils/buildThemeJS.js:
+   * and /webpack/utilsJS.js:
    */
   theme = require('theme.json');
 } else {

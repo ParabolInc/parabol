@@ -80,7 +80,8 @@ export default {
     new WebpackShellPlugin({
       onBuildStart: [
         // eslint-disable-next-line max-len
-        'NODE_ENV=development mkdir -p ./build && node_modules/.bin/babel-node ./src/universal/utils/buildThemeJSON.js > ./build/theme.json'
+        'NODE_ENV=development mkdir -p ./build && node_modules/.bin/babel-node ./webpack/utils/buildThemeJSON.js > ./build/theme.json',
+        'node_modules/.bin/babel-node ./webpack/utils/buildSegmentSnippet.js > ./build/segmentSnippet.json'
       ]
     }),
     new HappyPack({
@@ -92,7 +93,6 @@ export default {
   module: {
     loaders: [
       {test: /\.json$/, loader: 'json-loader'},
-      {test: /\.txt$/, loader: 'raw-loader'},
       {test: /\.(png|jpg|jpeg|gif|svg|woff|woff2)(\?\S*)?$/, loader: 'url-loader?limit=10000'},
       {test: /\.(eot|ttf|wav|mp3)(\?\S*)?$/, loader: 'file-loader'},
       {

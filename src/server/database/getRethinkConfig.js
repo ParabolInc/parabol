@@ -1,7 +1,7 @@
 import url from 'url';
-import { readCert } from './readCert';
+import {readCert} from './readCert';
 import flag from 'node-env-flag';
-import { getDotenv } from 'universal/utils/dotenv';
+import {getDotenv} from 'universal/utils/dotenv';
 
 // Import .env and expand variables:
 getDotenv();

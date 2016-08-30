@@ -1,3 +1,3 @@
-import theme from '../styles/theme/index';
+import theme from '../../src/universal/styles/theme/index';
 
 console.log(JSON.stringify(theme));
