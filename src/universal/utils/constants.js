@@ -1,3 +1,12 @@
+/**
+ * Big stuff:
+ */
+export const APP_NAME = 'Action';
+export const APP_REDUX_KEY = `${APP_NAME}:redux`;
+// eslint-disable-next-line global-require
+export const APP_VERSION = require('../../../package.json').version;
+export const APP_VERSION_KEY = `${APP_NAME}:version`;
+
 /* Phases */
 export const LOBBY = 'lobby';
 // lowercase here to match url

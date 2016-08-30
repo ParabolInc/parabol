@@ -40,7 +40,7 @@ export default class Landing extends Component {
             <img className={styles.actionLogo} src={actionLogo}/>
             <h1 className={styles.mainHeading}>Action</h1>
             <h2 className={styles.mainSubheading}>
-              The rhythm of meaningful work.
+              An open-source tool for adaptive teams.
             </h2>
             <button
               className={styles.ctaButton}

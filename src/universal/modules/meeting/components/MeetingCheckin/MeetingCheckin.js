@@ -5,7 +5,6 @@ import ProgressBar from 'universal/modules/meeting/components/ProgressBar/Progre
 import CheckinCards from 'universal/modules/meeting/components/CheckinCards/CheckinCards';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingSectionHeading/MeetingSectionHeading';
 import {
   CHECKIN,
 //  UPDATES,
@@ -15,11 +14,7 @@ import {withRouter} from 'react-router';
 import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
-import theme from 'universal/styles/theme';
-
-const style = {
-  color: theme.palette.warm
-};
+import Type from 'universal/components/Type/Type';
 
 const MeetingCheckin = (props) => {
   const {
@@ -76,9 +71,9 @@ const MeetingCheckin = (props) => {
       </MeetingSection>
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="2rem">
-          <MeetingSectionHeading>
-            <span>{checkInGreeting}, <span style={style}>{currentName}</span>—{checkInQuestion}?</span>
-          </MeetingSectionHeading>
+          <Type align="center" bold family="serif" scale="s6" theme="warm">
+            {checkInGreeting}, {currentName}—{checkInQuestion}?
+          </Type>
         </MeetingSection>
         {/* */}
         <CheckinCards
@@ -93,7 +88,7 @@ const MeetingCheckin = (props) => {
             iconPlacement="right"
             label={isLastMember ? 'Move on to updates' : 'Next teammate (press enter)'}
             scale="large"
-            theme="warm"
+            theme="cool"
             onClick={gotoNextItem}
           />
         </MeetingSection>

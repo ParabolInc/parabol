@@ -73,6 +73,7 @@ Card.propTypes = {
 
 styles = StyleSheet.create({
   card: {
+    // NOTE: This needs to match CheckinCards placeholder styles (TA)
     border: `1px solid ${theme.palette.mid50l}`,
     borderRadius: '.5rem',
     margin: '0 .5rem',
@@ -82,7 +83,7 @@ styles = StyleSheet.create({
   },
 
   cardIsActive: {
-    borderColor: theme.palette.cool70l
+    borderColor: theme.palette.warm70l
   },
 
   cardIsBlurred: {
@@ -93,17 +94,21 @@ styles = StyleSheet.create({
   },
 
   cardName: {
+    color: theme.palette.dark,
     fontSize: theme.typography.s6,
     fontWeight: 400,
-    margin: '1rem 0 .5rem'
+    // margin: '1rem 0 .5rem' // when with cardLabel (TA)
+    margin: '1rem 0 2rem'
   },
 
   cardNameActive: {
-    color: theme.palette.cool
+    // color: theme.palette.cool
+    color: theme.palette.dark
   },
 
   cardLabel: {
     color: theme.palette.dark50l,
+    display: 'none',
     fontFamily: theme.typography.serif,
     fontSize: theme.typography.s4,
     fontStyle: 'italic',
@@ -116,7 +121,8 @@ styles = StyleSheet.create({
   },
 
   buttonsBlock: {
-    display: 'inline-block'
+    display: 'inline-block',
+    textAlign: 'left'
   }
 });
 

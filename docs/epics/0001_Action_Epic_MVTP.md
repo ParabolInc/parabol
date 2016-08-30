@@ -111,9 +111,8 @@ their next step is (inputting projects, then waiting for their first action
 meeting from their TL), so they feel like their are working toward some kind
 of a tangible goal.
 
-- [ ] When a TM clicks on an invitation link and they _already_ have an
-active account, they'll want to accept the invitation from their dashboard,
-so that they don't have to walk through the new account wizard.
+- [X] When a TM clicks on an invitation link and they _already_ have an
+active account, the system should still process the invitation.
 
 ## Team Action Meeting
 
@@ -166,18 +165,18 @@ update the information they seek.
 will want to see a list of projects by TM, so that each participant has a
 moment to update the team on their work.
 
-- [ ] When a TM is asked to give project updates, they will want to know
+- [X] When a TM is asked to give project updates, they will want to know
 what to say, so that they understand what is being asked of them.
 
-- [ ] When a TM is asked to give project updates, they will want to be able
+- [X] When a TM is asked to give project updates, they will want to be able
 to make small updates to their projects (such as status, description, or
 ownership), so that they can make adjustment to their workload or update
 their team with the latest information.
 
-- [ ] When all project updates are complete, the F will want to advance the
+- [X] When all project updates are complete, the F will want to advance the
 meeting to "Agenda Building", so that they keep things moving forward.
 
-- [ ] When the TMs enter the agenda building phase, they will want to be
+- [X] When the TMs enter the agenda building phase, they will want to be
 able to add items to the agenda, so that they get a slot in the meeting to
 ask for what they need.
 
@@ -188,9 +187,17 @@ able to remove items, so they can spend their time on what they want.
 advance the meeting to the "Process Agenda" phase, so that new actions and
 projects can be created and TMs can request what they need of each other.
 
-- [ ] If a project update or agenda item should trigger a new agenda item
+- [X] If a project update or agenda item should trigger a new agenda item
 for a TM, they want to add it to the agenda, so that they have an opportunity
 to get what they need.
+
+- [ ] When the meeting advances from agenda item to agenda item, the F will
+want to know what to say ("what do you need?") and the TM will want to be
+able to process the agenda item into new projects or actions.
+
+- [ ] When the TM has created a project or action by mistake, the TM will
+want a control for deleting or canceling it, so that they don't add to the
+noise of the team.
 
 - [ ] When all agenda items have been processed, the TMs will want one more
 opportunity to add new items, so that they have one last chance to process
@@ -231,7 +238,7 @@ and going.
 
 ## Personal Dashboard
 
-- [ ] When a user receives an invitation to a new team, they will want to
+- [X] When a user receives an invitation to a new team, they will want to
 be able to accept it, so that they can join their teammates.
 
 - [X] When a TM navigates to their own personal dashboard, they will
