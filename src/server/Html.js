@@ -4,9 +4,12 @@ import {LookRoot} from 'react-look';
 import {Provider} from 'react-redux';
 import {RouterContext} from 'react-router';
 import {renderToString} from 'react-dom/server';
+import makeSegmentSnippet from 'segmentio-snippet-lite';
 
-// Use a pre-generated Segment IO JS snippet:
-const segmentSnippet = require('../../build/segmentSnippet.json');
+const segmentSnippet = makeSegmentSnippet.max({
+  host: 'cdn.segment.com',
+  apiKey: process.env.SEGMENT_WRITE_KEY
+});
 
 // Injects the server rendered state and app into a basic html template
 export default function Html({
@@ -37,7 +40,7 @@ export default function Html({
         <meta property="description" content="Team transparency, made easy." />
         <style dangerouslySetInnerHTML={{__html: lookCSSToken}} id={lookConfig.styleElementId} />
         <title>{title}</title>
-        {/* Include segment.io analytics */}
+        {/* segment.io analytics */}
         {process.env.SEGMENT_WRITE_KEY &&
           <script
             type="text/javascript"

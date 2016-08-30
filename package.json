@@ -123,7 +123,7 @@
     "redux-storage-whitelist-fn": "^4.0.1",
     "redux-thunk": "2.1.0",
     "rethinkdbdash": "2.3.19",
-    "segmentio-snippet": "^3.1.0",
+    "segmentio-snippet-lite": "^3.1.0",
     "serve-favicon": "^2.3.0",
     "shortid": "^2.2.6",
     "socketcluster": "^5.0.10",

@@ -28,7 +28,7 @@ export default class LogoutContainer extends Component {
     dispatch(resetAppState());
     dispatch(showSuccess(logoutSuccess));
     dispatch(segmentEvent('User Logout'));
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && typeof window.analytics !== 'undefined') {
       // inform segment of the logout, wipe state:
       window.analytics.reset();
     }

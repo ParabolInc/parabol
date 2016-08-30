@@ -1,6 +1,5 @@
 import path from 'path';
 import webpack from 'webpack';
-import WebpackShellPlugin from 'webpack-shell-plugin';
 import HappyPack from 'happypack';
 import { getDotenv } from '../src/universal/utils/dotenv';
 
@@ -74,11 +73,6 @@ export default {
       'HOST',
       'PORT'
     ]),
-    new WebpackShellPlugin({
-      onBuildStart: [
-        'node_modules/.bin/babel-node ./webpack/utils/buildSegmentSnippet.js > ./build/segmentSnippet.json'
-      ]
-    }),
     new HappyPack({
       loaders: ['babel'],
       threads: 4,

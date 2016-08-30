@@ -31,7 +31,8 @@ export default class Action extends Component {
 
   updateAnalyticsPage(lastPage, nextPage) {
     if (lastPage !== nextPage &&
-      typeof window !== 'undefined') {
+      typeof window !== 'undefined' &&
+      typeof window.analytics !== 'undefined') {
       window.analytics.page('', nextPage, {
         title: document && document.title || '',
         referrer: lastPage,
