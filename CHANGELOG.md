@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v0.5.0 - 30-Aug-2016
+## v0.5.1 - 30-Aug-2016
 ### Added
 - Project updates section
 - Rally easter eggs
