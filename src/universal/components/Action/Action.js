@@ -12,13 +12,31 @@ let styles = {};
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Action extends Component {
   static propTypes = {
-    children: PropTypes.any
+    children: PropTypes.any,
+    location: PropTypes.shape({
+      pathname: PropTypes.string.isRequired
+    }).isRequired
   };
 
-  componentDidUpdate() {
-    if (typeof window !== 'undefined') {
-      // update segment with our possibly new location:
-      window.analytics.page();
+  componentWillMount() {
+    const {location: {pathname: nextPage}} = this.props;
+    this.updateAnalyticsPage('', nextPage);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const {location: {pathname: lastPage}} = this.props;
+    const {location: {pathname: nextPage}} = nextProps;
+    this.updateAnalyticsPage(lastPage, nextPage);
+  }
+
+  updateAnalyticsPage(lastPage, nextPage) {
+    if (lastPage !== nextPage &&
+      typeof window !== 'undefined') {
+      window.analytics.page('', nextPage, {
+        title: document && document.title || '',
+        referrer: lastPage,
+        path: nextPage
+      });
     }
   }
 
