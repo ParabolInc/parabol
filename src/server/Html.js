@@ -5,6 +5,7 @@ import {Provider} from 'react-redux';
 import {RouterContext} from 'react-router';
 import {renderToString} from 'react-dom/server';
 
+// Use a pre-generated Segment IO JS snippet:
 const segmentSnippet = require('../../build/segmentSnippet.json');
 
 // Injects the server rendered state and app into a basic html template
@@ -36,11 +37,13 @@ export default function Html({
         <meta property="description" content="Team transparency, made easy." />
         <style dangerouslySetInnerHTML={{__html: lookCSSToken}} id={lookConfig.styleElementId} />
         <title>{title}</title>
-        {/* segment.io analytics */}
-        <script
-          type="text/javascript"
-          dangerouslySetInnerHTML={{__html: segmentSnippet}}
-        />
+        {/* Include segment.io analytics */}
+        {process.env.SEGMENT_WRITE_KEY &&
+          <script
+            type="text/javascript"
+            dangerouslySetInnerHTML={{__html: segmentSnippet}}
+          />
+        }
       </head>
       <body>
         <script dangerouslySetInnerHTML={{__html: initialState}} />
