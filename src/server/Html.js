@@ -4,12 +4,9 @@ import {LookRoot} from 'react-look';
 import {Provider} from 'react-redux';
 import {RouterContext} from 'react-router';
 import {renderToString} from 'react-dom/server';
-import makeSegmentSnippet from 'segmentio-snippet-lite';
+import makeSegmentCdnSrc from 'server/utils/makeSegmentCdnSrc';
 
-const segmentSnippet = makeSegmentSnippet.max({
-  host: 'cdn.segment.com',
-  apiKey: process.env.SEGMENT_WRITE_KEY
-});
+const segmentCdnSrc = makeSegmentCdnSrc(process.env.SEGMENT_WRITE_KEY);
 
 // Injects the server rendered state and app into a basic html template
 export default function Html({
@@ -41,12 +38,7 @@ export default function Html({
         <style dangerouslySetInnerHTML={{__html: lookCSSToken}} id={lookConfig.styleElementId} />
         <title>{title}</title>
         {/* segment.io analytics */}
-        {process.env.SEGMENT_WRITE_KEY &&
-          <script
-            type="text/javascript"
-            dangerouslySetInnerHTML={{__html: segmentSnippet}}
-          />
-        }
+        {process.env.SEGMENT_WRITE_KEY && <script type="text/javascript" async src={segmentCdnSrc} />}
       </head>
       <body>
         <script dangerouslySetInnerHTML={{__html: initialState}} />
