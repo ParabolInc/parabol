@@ -4,6 +4,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.5.0 - 30-Aug-2016
+### Added
+- Project updates section
+- Rally easter eggs
+- Segment.io metrics tracking
+- Randomized check-in questions
+
+### Removed
+- editingDuck in favor of Cashay computed props
+
+### Fixed
+- Invitations and team membership + rethinkdb query optimization
+- Simplified check-in cards design
+- Landing page spacing
+- Lots of copy updates
+- redux-socket-cluster disconnect timeout
+- Refactored dashboard components into many clearer containers
+
 ## v0.4.1 - 16-Aug-2016
 ### Added
 - Added partial `/me` dashboard implementation
