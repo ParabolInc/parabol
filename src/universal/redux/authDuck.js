@@ -1,5 +1,6 @@
 import {cashay} from 'cashay';
 import jwtDecode from 'jwt-decode';
+import {EventTypes} from 'redux-segment';
 import ActionHTTPTransport from '../utils/ActionHTTPTransport';
 
 const SET_AUTH_TOKEN = '@@authToken/SET_AUTH_TOKEN';
@@ -30,7 +31,8 @@ export default function reducer(state = initialState, action = {}) {
   }
 }
 
-export function setAuthToken(authToken) {
+export function setAuthToken(authToken, metaProfile = {}) {
+  const profile = metaProfile || {};
   if (!authToken) {
     throw new Error('setAuthToken action created with undefined authToken');
   }
@@ -46,10 +48,24 @@ export function setAuthToken(authToken) {
     payload: {
       obj,
       token: authToken
+    },
+    meta: {
+      analytics: {
+        eventType: EventTypes.identify,
+        eventPayload: {
+          userId: obj.sub,
+          traits: {
+            avatar: profile.picture,
+            createdAt: profile.created_at,
+            email: profile.email,
+            name: profile.name
+          }
+        }
+      }
     }
   };
 }
 
 export function removeAuthToken() {
-  return {type: REMOVE_AUTH_TOKEN};
+  return { type: REMOVE_AUTH_TOKEN };
 }

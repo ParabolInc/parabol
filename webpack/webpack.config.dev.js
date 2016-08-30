@@ -86,7 +86,6 @@ export default {
   module: {
     loaders: [
       {test: /\.json$/, loader: 'json-loader'},
-      {test: /\.txt$/, loader: 'raw-loader'},
       {test: /\.(png|jpg|jpeg|gif|svg|woff|woff2)(\?\S*)?$/, loader: 'url-loader?limit=10000'},
       {test: /\.(eot|ttf|wav|mp3)(\?\S*)?$/, loader: 'file-loader'},
       {

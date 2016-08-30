@@ -3,6 +3,7 @@ import {cashay} from 'cashay';
 import {auth0} from 'universal/utils/clientOptions';
 import {setAuthToken} from 'universal/redux/authDuck';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
+import {segmentEvent} from 'universal/redux/segmentActions';
 
 export function showLock(dispatch) {
   // eslint-disable-next-line global-require
@@ -22,7 +23,8 @@ export function showLock(dispatch) {
     // the Invitation script starts processing the token when auth.sub is truthy
     // That doesn't necessarily mean that the DB has created the new user's account though. Auth0 could take awhile.
     // So, to avoid the race condition, wait for the account be get created, then set the token to accept the token
-    dispatch(setAuthToken(authToken));
+    dispatch(setAuthToken(authToken, profile));
+    dispatch(segmentEvent('User Login'));
   });
 }
 

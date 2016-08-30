@@ -4,6 +4,7 @@ import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
 import {removeAuthToken} from 'universal/redux/authDuck';
 import {reset as resetAppState} from 'universal/redux/rootDuck';
 import {withRouter} from 'react-router';
+import {segmentEvent} from 'universal/redux/segmentActions';
 
 const logoutSuccess = {
   title: 'Tootles!',
@@ -26,6 +27,11 @@ export default class LogoutContainer extends Component {
     router.replace('/');
     dispatch(resetAppState());
     dispatch(showSuccess(logoutSuccess));
+    dispatch(segmentEvent('User Logout'));
+    if (typeof window !== 'undefined') {
+      // inform segment of the logout, wipe state:
+      window.analytics.reset();
+    }
   }
 
   render() { return null; }

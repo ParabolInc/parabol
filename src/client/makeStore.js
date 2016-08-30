@@ -1,6 +1,7 @@
 import {createStore, applyMiddleware, compose} from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import {createMiddleware, createLoader} from 'redux-storage-whitelist-fn';
+import {createTracker} from 'redux-segment';
 import createEngine from 'redux-storage-engine-localstorage';
 import makeReducer from 'universal/redux/makeReducer';
 import {APP_REDUX_KEY, APP_VERSION, APP_VERSION_KEY} from 'universal/utils/constants';
@@ -21,12 +22,14 @@ export default async initialState => {
   const reducer = makeReducer();
   const engine = createEngine(APP_REDUX_KEY);
   const storageMiddleware = createMiddleware(engine, [], storageWhitelist);
+  const segmentMiddleware = createTracker();
   /*
    * Special action types, such as thunks, must be placed before
    * storageMiddleware so they can be properly interpreted:
    */
   const middlewares = [
     thunkMiddleware,
+    segmentMiddleware,
     storageMiddleware
   ];
 
