@@ -46,8 +46,7 @@ export default {
     new WebpackShellPlugin({
       onBuildStart: [
         // eslint-disable-next-line max-len
-        'NODE_ENV=development mkdir -p ./build && node_modules/.bin/babel-node ./webpack/utils/buildThemeJSON.js > ./build/theme.json',
-        'node_modules/.bin/babel-node ./webpack/utils/buildSegmentSnippet.js > ./build/segmentSnippet.json'
+        'NODE_ENV=development mkdir -p ./build && node_modules/.bin/babel-node ./webpack/utils/buildThemeJSON.js > ./build/theme.json'
       ]
     }),
     new HappyPack({
