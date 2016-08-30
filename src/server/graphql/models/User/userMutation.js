@@ -86,10 +86,6 @@ export default {
     async resolve(source, {updatedUser}, {authToken}) {
       const {id, ...updatedObj} = updatedUser;
       requireSUOrSelf(authToken, id);
-      /*
-       * If we really want to be jocky, we can optmize this into a single
-       * ReQL query at the expense of readability:
-       */
       // propagate denormalized changes to TeamMember
       const dbProfile = await r.table('TeamMember')
         .getAll(id, {index: 'userId'})
