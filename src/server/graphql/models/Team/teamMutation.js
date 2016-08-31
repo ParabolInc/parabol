@@ -73,39 +73,29 @@ export default {
     async resolve(source, {teamId, nextPhase, nextPhaseItem}, {authToken, socket}) {
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
-      if (!phaseArray.includes(nextPhase)) {
-        throw errorObj({_error: 'That is not a valid phase'});
+      if (nextPhase && !phaseArray.includes(nextPhase)) {
+        throw errorObj({_error: `${nextPhase} is not a valid phase`});
       }
 
-      let team;
-      // make sure nextPhaseItem has a good value
+      const team = await r.table('Team').get(teamId);
+      const phase = nextPhase || team.facilitatorPhase;
       if (nextPhase === CHECKIN || nextPhase === UPDATES) {
-        const teamAndCount = await r.table('Team').get(teamId)
-          .do((reqlTeam) => ({
-            team: reqlTeam,
-            teamMembersCount: r.table('TeamMember')
-              .getAll(teamId, {index: 'teamId'})
-              .filter({isActive: true})
-              .count()
-          }));
-        if (nextPhaseItem < 1 || nextPhaseItem > teamAndCount.teamMembersCount) {
+        const teamMembersCount = await r.table('TeamMember')
+          .getAll(teamId, {index: 'teamId'})
+          .filter({isActive: true})
+          .count()
+        if (nextPhaseItem < 1 || nextPhaseItem > teamMembersCount) {
           throw errorObj({_error: 'We don\'t have that many team members!'});
         }
-        team = teamAndCount.team;
       } else if (nextPhase === AGENDA_ITEMS) {
-        const teamAndItemCount = await r.table('Team').get(teamId)
-          .do((reqlTeam) => ({
-            team: reqlTeam,
-            agendaItemCount: r.table('AgendaItems')
-              .getAll(teamId, {index: 'teamId'})
-              .count()
-          }));
-        if (nextPhaseItem < 1 || nextPhaseItem > teamAndItemCount.agendaItemCount) {
+        const agendaItemCount = await r.table('AgendaItems')
+          .getAll(teamId, {index: 'teamId'})
+          .count()
+        if (nextPhaseItem < 1 || nextPhaseItem > agendaItemCount) {
           throw errorObj({_error: 'We don\'t have that many agenda items!'});
         }
-        team = teamAndItemCount.team;
-      } else if (nextPhaseItem) {
-        throw errorObj({_error: `${nextPhase} does not have phase items`});
+      } else if (nextPhase && nextPhaseItem) {
+        throw errorObj({_error: `${nextPhase} does not have phase items, but you said ${nextPhaseItem}`});
       }
 
       const userId = getUserId(authToken);
