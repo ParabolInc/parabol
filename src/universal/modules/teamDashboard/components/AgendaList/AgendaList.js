@@ -1,8 +1,12 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import AgendaItem from 'universal/modules/meeting/components/AgendaItem/AgendaItem';
+import {cashay} from 'cashay';
+import AgendaItem from 'universal/modules/teamDashboard/components/AgendaItem/AgendaItem';
 
-const handleItemClick = (idx) => console.log(`handleItemClick: ${idx}`);
+const handleRemoveItem = (itemId) => {
+  const options = {variables: {id: itemId}};
+  cashay.mutate('removeAgendaItem', options);
+};
 
 const AgendaList = (props) => {
   const {styles} = AgendaList;
@@ -14,7 +18,7 @@ const AgendaList = (props) => {
           desc={item.content}
           index={idx}
           key={`agendaItem${idx}`}
-          onClick={() => handleItemClick(idx)}
+          onClick={() => handleRemoveItem(item.id)}
           teamMember={teamMembers.find(m => m.id === item.teamMemberId)}
           isComplete={item.isComplete}
           sortOrder={item.sortOrder}

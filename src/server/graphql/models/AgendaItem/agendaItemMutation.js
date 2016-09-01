@@ -2,7 +2,8 @@ import r from 'server/database/rethinkDriver';
 import {CreateAgendaItemInput} from './agendaItemSchema';
 import {
   GraphQLNonNull,
-  GraphQLBoolean
+  GraphQLBoolean,
+  GraphQLID
 } from 'graphql';
 import {requireSUOrTeamMember} from '../authorization';
 
@@ -31,5 +32,27 @@ export default {
       };
       await r.table('AgendaItem').insert(agendaItem);
     }
-  }
+  },
+  removeAgendaItem: {
+    type: GraphQLBoolean,
+    description: 'Remove an agenda item',
+    args: {
+      id: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The agenda item unique id'
+      }
+    },
+    async resolve(source, {id}, {authToken}) {
+      // id is of format 'teamId::restOfAgendaItemId'
+      const [teamId] = id.split('::');
+      requireSUOrTeamMember(authToken, teamId);
+      try {
+        await r.table('AgendaItem').get(id).delete();
+      } catch (e) {
+        console.warning(`removeAgendaItem: exception removing item (${e})`);
+        return false;
+      }
+      return true;
+    }
+  },
 };
