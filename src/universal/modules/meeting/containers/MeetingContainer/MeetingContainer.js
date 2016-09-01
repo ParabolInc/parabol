@@ -20,7 +20,8 @@ import {
 import resolveMeetingMembers from 'universal/subscriptions/computed/resolveMeetingMembers';
 import MeetingLobby from 'universal/modules/meeting/components/MeetingLobby/MeetingLobby';
 import MeetingCheckin from 'universal/modules/meeting/components/MeetingCheckin/MeetingCheckin';
-import MeetingUpdatesContainer from 'universal/modules/meeting/containers/MeetingUpdates/MeetingUpdatesContainer';
+import MeetingUpdatesContainer
+  from 'universal/modules/meeting/containers/MeetingUpdatesContainer/MeetingUpdatesContainer';
 import AvatarGroup from 'universal/modules/meeting/components/AvatarGroup/AvatarGroup';
 import {
   LOBBY,
