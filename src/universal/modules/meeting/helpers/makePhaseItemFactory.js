@@ -13,7 +13,7 @@ export default (isFacilitating, totalPhaseItems, router, teamId, thisPhase) => (
     if (gotoNextPhase) {
       variables.nextPhase = nextPhase;
     }
-    if (gotoNextPhase || hasPhaseItem(nextPhase)) {
+    if (hasPhaseItem(nextPhase)) {
       variables.nextPhaseItem = nextPhaseItem;
     }
     cashay.mutate('moveMeeting', {variables});
