@@ -4,7 +4,7 @@ import {phaseArray, phaseOrder} from 'universal/utils/constants';
 import hasPhaseItem from './hasPhaseItem';
 
 export default (isFacilitating, totalPhaseItems, router, teamId, thisPhase) => (nextPhaseItem) => () => {
-  if (nextPhaseItem < 1) return;
+  if (isNaN(nextPhaseItem) || nextPhaseItem < 1) return;
   const gotoNextPhase = nextPhaseItem > totalPhaseItems;
   const nextPhase = gotoNextPhase ? phaseArray[phaseOrder(thisPhase) + 1] : thisPhase;
   nextPhaseItem = gotoNextPhase ? 1 : nextPhaseItem;

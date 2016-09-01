@@ -97,7 +97,7 @@ export default {
           throw errorObj({_error: 'We don\'t have that many team members!'});
         }
       } else if (nextPhase === AGENDA_ITEMS) {
-        const agendaItemCount = await r.table('AgendaItems')
+        const agendaItemCount = await r.table('AgendaItem')
           .getAll(teamId, {index: 'teamId'})
           .count();
         if (nextPhaseItem < 1 || nextPhaseItem > agendaItemCount) {

@@ -22,13 +22,15 @@ import MeetingLobby from 'universal/modules/meeting/components/MeetingLobby/Meet
 import MeetingCheckin from 'universal/modules/meeting/components/MeetingCheckin/MeetingCheckin';
 import MeetingUpdatesContainer
   from 'universal/modules/meeting/containers/MeetingUpdatesContainer/MeetingUpdatesContainer';
+import MeetingAgendaItemsContainer
+  from 'universal/modules/meeting/containers/MeetingAgendaItemsContainer/MeetingAgendaItemsContainer';
 import AvatarGroup from 'universal/modules/meeting/components/AvatarGroup/AvatarGroup';
 import {
   LOBBY,
   CHECKIN,
   UPDATES,
   FIRST_CALL,
-//  AGENDA_ITEMS,
+  AGENDA_ITEMS,
 //  LAST_CALL,
 //  SUMMARY
 } from 'universal/utils/constants';
@@ -102,13 +104,18 @@ export default class MeetingContainer extends Component {
   render() {
     const {isFacilitating, localPhaseItem, members, params, team} = this.props;
     const {teamId, localPhase} = params;
-    const { facilitatorPhase, name: teamName} = team;
+    const {facilitatorPhase, name: teamName} = team;
 
     // if we have a team.name, we have an initial subscription success to the team object
     if (!teamName || members.length === 0) {
       return <LoadingView />;
     }
-    // declare if this user is the facilitator
+    const phaseStateProps = { // DRY
+      isFacilitating,
+      localPhaseItem,
+      members,
+      team
+    };
     return (
       <MeetingLayout>
         <Sidebar
@@ -121,24 +128,11 @@ export default class MeetingContainer extends Component {
           <MeetingSection paddingTop="2rem">
             <AvatarGroup avatars={members} localPhase={localPhase}/>
           </MeetingSection>
-          {localPhase === LOBBY && <MeetingLobby isFacilitating={isFacilitating} members={members} team={team}/>}
-          {localPhase === CHECKIN &&
-            <MeetingCheckin
-              isFacilitating={isFacilitating}
-              localPhaseItem={localPhaseItem}
-              members={members}
-              team={team}
-            />
-          }
-          {localPhase === UPDATES &&
-            <MeetingUpdatesContainer
-              isFacilitating={isFacilitating}
-              localPhaseItem={localPhaseItem}
-              members={members}
-              team={team}
-            />
-          }
-          {localPhase === FIRST_CALL && <MeetingAgendaFirstCall/>}
+          {localPhase === LOBBY && <MeetingLobby {...phaseStateProps} />}
+          {localPhase === CHECKIN && <MeetingCheckin {...phaseStateProps} />}
+          {localPhase === UPDATES && <MeetingUpdatesContainer {...phaseStateProps} />}
+          {localPhase === FIRST_CALL && <MeetingAgendaFirstCall {...phaseStateProps} />}
+          {localPhase === AGENDA_ITEMS && <MeetingAgendaItemsContainer {...phaseStateProps} />}
         </MeetingMain>
       </MeetingLayout>
     );

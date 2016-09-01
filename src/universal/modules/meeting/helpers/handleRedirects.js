@@ -68,11 +68,11 @@ export default function handleRedirects(team, localPhase, localPhaseItem, router
     }
   }
 
-  /*
+  /**
    * For agenda items, the localPhase should point to the sortOrder
    * This works great for all cases, except when someone skipped to a future agenda item & then its sort order changes
-   * In that event, the url should change, but the content shouldnt
+   * In that event, the url should change, but the content shouldn't
    * so, when we get new props we should have logic that sees if the underlying ID has changed
    * or conversely, if the person is not in sync, then redirect them to the sortOrder of where they were
-   * */
+   */
 }
