@@ -10,6 +10,7 @@ import MeetingSection from 'universal/modules/meeting/components/MeetingSection/
 import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingSectionHeading/MeetingSectionHeading';
 // eslint-disable-next-line max-len
 import MeetingSectionSubheading from 'universal/modules/meeting/components/MeetingSectionSubheading/MeetingSectionSubheading';
+import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards';
 import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
 import {LAST_CALL, phaseOrder} from 'universal/utils/constants';
 
@@ -58,11 +59,12 @@ const MeetingAgendaItems = (props) => {
               <IconLink
                 icon="arrow-circle-right"
                 iconPlacement="right"
-                label="Next agenda item"
+                label="Next Agenda Item"
                 onClick={gotoNextItem}
               />
             </div>
           </div>
+          <MeetingAgendaCards />
         </div>
         {/* */}
       </MeetingSection>
