@@ -1,15 +1,22 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 
+const combineStyles = StyleSheet.combineStyles;
 let styles = {};
 
-const DashHeader = (props) =>
-  <div className={styles.root}>
-    {props.children}
-  </div>;
+const DashHeader = (props) => {
+  const {hasOverlay} = props;
+  const rootStyles = hasOverlay ? combineStyles(styles.root, styles.hasOverlay) : styles.root;
+  return (
+    <div className={rootStyles}>
+      {props.children}
+    </div>
+  );
+};
 
 DashHeader.propTypes = {
-  children: PropTypes.any
+  children: PropTypes.any,
+  hasOverlay: PropTypes.bool
 };
 
 styles = StyleSheet.create({
@@ -21,6 +28,10 @@ styles = StyleSheet.create({
     minHeight: '4.875rem',
     padding: '1rem',
     width: '100%'
+  },
+
+  hasOverlay: {
+    filter: 'blur(1.5px)'
   }
 });
 

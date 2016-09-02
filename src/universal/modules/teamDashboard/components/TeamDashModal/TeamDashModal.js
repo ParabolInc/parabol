@@ -13,7 +13,7 @@ const TeamDashModal = (props) => {
         Oh, hi there!
       </Type>
       <Type align="center" bold scale="s4">
-        The dashboard for ${teamName} is disabled <br />
+        The dashboard for {teamName} is disabled <br />
         as we are actively meeting to review <br />
         Projects and Agenda Items.
       </Type>
