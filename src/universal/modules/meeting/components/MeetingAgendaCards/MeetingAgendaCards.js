@@ -2,7 +2,6 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import {withRouter} from 'react-router';
 import labels from 'universal/styles/theme/labels';
-import {srOnly} from 'universal/styles/helpers';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
 
 let s = {};
@@ -103,10 +102,6 @@ s = StyleSheet.create({
     borderRadius: '.5rem',
     minHeight: '126px',
     padding: '.5rem'
-  },
-
-  srOnly: {
-    ...srOnly
   }
 });
 
