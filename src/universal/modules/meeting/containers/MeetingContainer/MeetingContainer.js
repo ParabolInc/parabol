@@ -31,10 +31,11 @@ import {
   UPDATES,
   FIRST_CALL,
   AGENDA_ITEMS,
-//  LAST_CALL,
+  LAST_CALL,
 //  SUMMARY
 } from 'universal/utils/constants';
 import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
+import MeetingAgendaLastCall from 'universal/modules/meeting/components/MeetingAgendaLastCall/MeetingAgendaLastCall';
 
 const teamSubQuery = subscriptions.find(sub => sub.channel === TEAM).string;
 
@@ -133,6 +134,7 @@ export default class MeetingContainer extends Component {
           {localPhase === UPDATES && <MeetingUpdatesContainer {...phaseStateProps} />}
           {localPhase === FIRST_CALL && <MeetingAgendaFirstCall {...phaseStateProps} />}
           {localPhase === AGENDA_ITEMS && <MeetingAgendaItemsContainer {...phaseStateProps} />}
+          {localPhase === LAST_CALL && <MeetingAgendaLastCall {...phaseStateProps} />}
         </MeetingMain>
       </MeetingLayout>
     );
