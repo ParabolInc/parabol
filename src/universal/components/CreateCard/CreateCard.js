@@ -18,7 +18,10 @@ let s = {};
 
 const CreateCard = props => {
   let cardStyles = s.root;
-  const {createdBy, hasControls, isCreating, isProject} = props;
+  const {
+    createdBy, handleAddAction, handleAddProject, hasControls,
+    isCreating, isProject
+  } = props;
   const cardBorderVariantStyles = combineStyles(s.root, s.rootBorderVariant);
 
   const actionLabel = () =>
@@ -54,9 +57,23 @@ const CreateCard = props => {
     <div className={cardStyles}>
       {hasControls &&
         <div className={s.controls}>
-          <PushButton keystroke="a" label={actionLabel()} size="default" />
-          <PushButton keystroke="p" label={projectLabel()} size="default" />
-          <PushButton keystroke="n" label={nextRequestLabel()} size="default" />
+          <PushButton
+            handleOnClick={handleAddAction}
+            keystroke="a"
+            label={actionLabel()}
+            size="default"
+          />
+          <PushButton
+            handleOnClick={handleAddProject}
+            keystroke="p"
+            label={projectLabel()}
+            size="default"
+          />
+          <PushButton
+            keystroke="n"
+            label={nextRequestLabel()}
+            size="default"
+          />
         </div>
       }
       {isCreating &&
@@ -70,6 +87,8 @@ const CreateCard = props => {
 
 CreateCard.propTypes = {
   createdBy: PropTypes.string,
+  handleAddAction: PropTypes.func,
+  handleAddProject: PropTypes.func,
   hasControls: PropTypes.bool,
   isCreating: PropTypes.bool,
   isProject: PropTypes.bool

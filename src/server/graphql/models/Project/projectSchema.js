@@ -52,6 +52,10 @@ export const Project = new GraphQLObjectType({
     userSort: {
       type: GraphQLFloat,
       description: 'the per-status sort order for the user dashboard'
+    },
+    agendaId: {
+      type: GraphQLID,
+      description: 'the agenda item that created this project, if any'
     }
   })
 });
@@ -72,6 +76,10 @@ const projectInputThunk = () => ({
   userSort: {
     type: GraphQLFloat,
     description: 'the per-status sort order for the user dashboard'
+  },
+  agendaId: {
+    type: GraphQLID,
+    description: 'the agenda item that created this project, if any'
   }
 });
 

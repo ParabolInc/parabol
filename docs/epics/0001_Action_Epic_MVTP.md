@@ -180,10 +180,10 @@ meeting to "Agenda Building", so that they keep things moving forward.
 able to add items to the agenda, so that they get a slot in the meeting to
 ask for what they need.
 
-- [ ] When the TMs want to reprioritize their agenda, they will want to be
+- [X] When the TMs want to reprioritize their agenda, they will want to be
 able to remove items, so they can spend their time on what they want.
 
-- [ ] When enough agenda items have been collected, the F will want to
+- [X] When enough agenda items have been collected, the F will want to
 advance the meeting to the "Process Agenda" phase, so that new actions and
 projects can be created and TMs can request what they need of each other.
 

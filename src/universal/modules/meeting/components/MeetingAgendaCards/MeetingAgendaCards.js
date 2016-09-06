@@ -1,56 +1,57 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import {withRouter} from 'react-router';
+import {cashay} from 'cashay';
+import shortid from 'shortid';
 import labels from 'universal/styles/theme/labels';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
+import {ACTIVE, SORT_STEP} from 'universal/utils/constants';
+
+const handleAddActionFactory = (teamMemberId, agendaId) => () => {
+  const [, teamId] = teamMemberId.split('::');
+  const newAction = {
+    id: `${teamId}::${shortid.generate()}`,
+    teamMemberId,
+    sortOrder: SORT_STEP, // TODO: consider some other value for sort values?
+    agendaId
+  };
+  cashay.mutate('createAction', {variables: {newAction}});
+};
+
+const handleAddProjectFactory = (teamMemberId, agendaId) => () => {
+  const [, teamId] = teamMemberId.split('::');
+  const newProject = {
+    id: `${teamId}::${shortid.generate()}`,
+    status: ACTIVE,
+    teamMemberId,
+    teamSort: SORT_STEP, // TODO: consider some other value for sort values?
+    userSort: SORT_STEP,
+    agendaId
+  };
+  cashay.mutate('createProject', {variables: {newProject}});
+};
 
 let s = {};
 
-const sampleCardContent = [
-  {
-    id: 'sample1',
-    content: 'Outcome sample written',
-    status: labels.projectStatus.slugs[1]
-  },
-  {
-    id: 'sample2',
-    content: 'Outcome sample written',
-    status: labels.projectStatus.slugs[1]
-  },
-  {
-    id: 'sample3',
-    content: 'Outcome sample written',
-    status: labels.projectStatus.slugs[1]
-  },
-  {
-    id: 'sample4',
-    content: 'Outcome sample written',
-    status: labels.projectStatus.slugs[1]
-  },
-  {
-    id: 'sample5',
-    content: 'Outcome sample written',
-    status: labels.projectStatus.slugs[1]
-  }
-];
-
-const sampleSubset = sampleCardContent.slice(3, sampleCardContent.length);
-
 const makeCards = (array) => {
-  const cards = [];
-  array.map((card, idx) =>
-    cards.push(
-      <div className={s.item} key={idx}>
+  const cards = array.map((card) => {
+    const key = `${card.type}OutcomeCard${card.id}`;
+    return (
+      <div className={s.item} key={key}>
         {/* TODO: Outcome Card component goes here */}
         {/* TODO: We need to revisit Action type as a card */}
-        <div className={s.sample}>
+        <div
+          className={s.sample}
+          key={`OutcomeCard${card.id}`}
+        >
           id: {card.id}<br />
           content: {card.content}<br />
-          status: {card.status}
+          status: {card.status}<br />
+          type: {card.type}
         </div>
       </div>
-    )
-  );
+    );
+  });
   return cards;
 };
 
@@ -61,14 +62,21 @@ const makePlaceholders = (length) => {
   const placeholdersTotal = itemsTotal - (length + 1);
   const placeholders = [];
   for (let i = 0; i < placeholdersTotal; i++) {
-    placeholders.push(<div className={s.item}><CreateCard /></div>);
+    placeholders.push(
+      <div
+        className={s.item}
+        key={`CreateCardPlaceholder${i}`}
+      >
+        <CreateCard />
+      </div>);
   }
   return placeholders;
 };
 
 const MeetingAgendaCards = (props) => {
-  const {outcomes} = props;
-  const outcomesLength = outcomes.length;
+  const {currentAgendaItemId, myTeamMemberId, outcomes} = props;
+  const handleAddAction = handleAddActionFactory(myTeamMemberId, currentAgendaItemId);
+  const handleAddProject = handleAddProjectFactory(myTeamMemberId, currentAgendaItemId);
   return (
     <div className={s.root}>
       {/* Get Cards */}
@@ -77,10 +85,14 @@ const MeetingAgendaCards = (props) => {
       }
       {/* Input Card */}
       <div className={s.item}>
-        <CreateCard hasControls />
+        <CreateCard
+          handleAddAction={handleAddAction}
+          handleAddProject={handleAddProject}
+          hasControls
+        />
       </div>
       {/* Placeholder Cards */}
-      {makePlaceholders(outcomesLength)}
+      {makePlaceholders(outcomes.length)}
     </div>
   );
 };
@@ -106,11 +118,9 @@ s = StyleSheet.create({
 });
 
 MeetingAgendaCards.propTypes = {
-  outcomes: PropTypes.array
-};
-
-MeetingAgendaCards.defaultProps = {
-  outcomes: sampleSubset
+  currentAgendaItemId: PropTypes.string.isRequired,
+  myTeamMemberId: PropTypes.string,
+  outcomes: PropTypes.array.isRequired
 };
 
 export default withRouter(look(MeetingAgendaCards));

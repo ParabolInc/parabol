@@ -19,6 +19,7 @@ export const Action = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The id of the user (first part of teamMemberId). Stored so action items are a single subscription'
     },
+    teamMemberId: {type: GraphQLID, description: 'The team member ID of the person creating the action (optional)'},
     isComplete: {
       type: GraphQLBoolean,
       description: 'Marks the item as checked off'
@@ -38,16 +39,25 @@ export const Action = new GraphQLObjectType({
     sortOrder: {
       type: GraphQLFloat,
       description: 'the per-status sort order for the user dashboard'
+    },
+    agendaId: {
+      type: GraphQLID,
+      description: 'the agenda item that created this project, if any'
     }
   })
 });
 
 const actionInputThunk = () => ({
   id: {type: GraphQLID, description: 'The unique action ID'},
+  teamMemberId: {type: GraphQLID, description: 'The team member ID of the person creating the action (optional)'},
   content: {type: GraphQLString, description: 'The body of the action. If null, it is a new action.'},
   sortOrder: {
     type: GraphQLFloat,
     description: 'the per-status sort order for the user dashboard'
+  },
+  agendaId: {
+    type: GraphQLID,
+    description: 'the agenda item that created this project, if any'
   }
 });
 

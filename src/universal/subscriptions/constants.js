@@ -6,6 +6,7 @@ export const SOUNDOFF = 'SOUNDOFF';
 
 // CHANNELS
 export const ACTIONS = 'actions';
+export const ACTIONS_BY_TEAMMEMBER = 'actionsByTeamMember';
 export const AGENDA = 'agenda';
 export const PRESENCE = 'presence';
 export const PROJECTS = 'projects';

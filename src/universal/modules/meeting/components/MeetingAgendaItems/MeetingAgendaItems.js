@@ -12,7 +12,7 @@ import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingS
 import MeetingSectionSubheading from 'universal/modules/meeting/components/MeetingSectionSubheading/MeetingSectionSubheading';
 import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards';
 import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
-import {LAST_CALL, phaseOrder} from 'universal/utils/constants';
+import {AGENDA_ITEMS} from 'universal/utils/constants';
 
 let s = {};
 
@@ -22,15 +22,16 @@ const MeetingAgendaItems = (props) => {
     isFacilitating,
     localPhaseItem,
     members,
+    outcomesByAgendaItem,
     router,
     team
   } = props;
-  const {id: teamId, meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = team;
+  const {id: teamId} = team;
   const currentAgendaItem = agenda[localPhaseItem - 1];
+  const outcomes = outcomesByAgendaItem[currentAgendaItem.id] || [];
   const currentTeamMember = members.find((m) => m.id === currentAgendaItem.teamMemberId);
-  const phaseItemFactory = makePhaseItemFactory(isFacilitating, agenda.length, router, teamId, LAST_CALL);
-  // const self = members.find(m => m.isSelf);
-  // const isComplete = phaseOrder(meetingPhase) > phaseOrder(UPDATES);
+  const phaseItemFactory = makePhaseItemFactory(isFacilitating, agenda.length, router, teamId, AGENDA_ITEMS);
+  const self = members.find(m => m.isSelf);
   const gotoNextItem = phaseItemFactory(localPhaseItem + 1);
 
   return (
@@ -39,7 +40,7 @@ const MeetingAgendaItems = (props) => {
         {/* */}
         <MeetingSection paddingBottom="2rem">
           <MeetingSectionHeading>
-            What do you need?
+            What do you help?
           </MeetingSectionHeading>
           <MeetingSectionSubheading>
             Request new Projects and Actions
@@ -64,7 +65,11 @@ const MeetingAgendaItems = (props) => {
               />
             </div>
           </div>
-          <MeetingAgendaCards />
+          <MeetingAgendaCards
+            currentAgendaItemId={currentAgendaItem.id}
+            myTeamMemberId={self && self.id}
+            outcomes={outcomes}
+          />
         </div>
         {/* */}
       </MeetingSection>
@@ -118,6 +123,7 @@ MeetingAgendaItems.propTypes = {
   params: PropTypes.shape({
     teamId: PropTypes.string.isRequired
   }).isRequired,
+  outcomesByAgendaItem: PropTypes.object.isRequired,
   team: PropTypes.object.isRequired,
   router: PropTypes.object.isRequired,
 };

@@ -1,4 +1,12 @@
-import {ACTIONS, AGENDA, TEAM, TEAM_MEMBERS, PRESENCE, PROJECTS} from 'universal/subscriptions/constants';
+import {
+  ACTIONS,
+  ACTIONS_BY_TEAMMEMBER,
+  AGENDA,
+  TEAM,
+  TEAM_MEMBERS,
+  PRESENCE,
+  PROJECTS
+} from 'universal/subscriptions/constants';
 
 // For now, use an array. In the future, we can make one exclusively for the server that doesn't need to reparse the AST
 const defaultRehydrate = fields => fields;
@@ -8,14 +16,36 @@ export default [
     string: `
     subscription($userId: ID!) {
       actions(userId: $userId) {
-        content
         id
+        content
         isComplete
         updatedAt
         sortOrder
+        agendaId
       }
     }`,
     channelfy: variables => `actions/${variables.userId}`,
+    rehydrate: fields => {
+      fields.updatedAt = new Date(fields.updatedAt);
+      return fields;
+    }
+  },
+  {
+    channel: ACTIONS_BY_TEAMMEMBER,
+    string: `
+    subscription($teamMemberId: ID!) {
+      actionsByTeamMember(teamMemberId: $teamMemberId) {
+        id
+        teamMemberId
+        content
+        isComplete
+        createdAt
+        updatedAt
+        sortOrder
+        agendaId
+      }
+    }`,
+    channelfy: variables => `actionsByTeamMember/${variables.teamMemberId}`,
     rehydrate: fields => {
       fields.updatedAt = new Date(fields.updatedAt);
       return fields;
@@ -54,13 +84,15 @@ export default [
     string: `
     subscription($teamMemberId: ID!) {
       projects(teamMemberId: $teamMemberId) {
-        content
         id
+        content
         status
         teamMemberId
+        createdAt
         updatedAt
         userSort
         teamSort
+        agendaId
       }
     }`,
     channelfy: variables => `projects/${variables.teamMemberId}`,
@@ -75,7 +107,7 @@ export default [
     subscription($teamId: ID!) {
        team(teamId: $teamId) {
          checkInGreeting,
-         checkInQuestion, 
+         checkInQuestion,
          id,
          name,
          meetingId,
