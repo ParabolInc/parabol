@@ -5,6 +5,7 @@ import PushButton from '../PushButton/PushButton';
 import Ellipsis from '../Ellipsis/Ellipsis';
 import Type from '../Type/Type';
 import theme from 'universal/styles/theme';
+import CreateCardRootStyles from './CreateCardRootStyles';
 
 const combineStyles = StyleSheet.combineStyles;
 const labelStyles = {
@@ -16,7 +17,7 @@ const labelStyles = {
 };
 let s = {};
 
-const CreateCard = props => {
+const CreateCard = (props) => {
   let cardStyles = s.root;
   const {
     createdBy, handleAddAction, handleAddProject, hasControls,
@@ -103,17 +104,7 @@ CreateCard.defaultProps = {
 
 s = StyleSheet.create({
   root: {
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    border: `1px solid ${theme.palette.mid40l}`,
-    borderRadius: '.5rem',
-    borderTop: `.25rem solid ${theme.palette.mid40l}`,
-    display: 'flex !important',
-    justifyContent: 'center',
-    maxWidth: '20rem',
-    minHeight: '126px',
-    padding: '.5rem 1.25rem',
-    width: '100%'
+    ...CreateCardRootStyles
   },
 
   rootBorderVariant: {

@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
-import Ellipsis from '../../../../components/Ellipsis/Ellipsis';
+import Ellipsis from 'universal/components/Ellipsis/Ellipsis';
 
 const descriptionFA = {
   backgroundColor: theme.palette.cool10l,

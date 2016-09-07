@@ -3,7 +3,6 @@ import look, {StyleSheet} from 'react-look';
 import {withRouter} from 'react-router';
 import {cashay} from 'cashay';
 import shortid from 'shortid';
-import labels from 'universal/styles/theme/labels';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
 import {ACTIVE, SORT_STEP} from 'universal/utils/constants';
 
