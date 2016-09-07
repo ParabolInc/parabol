@@ -4,7 +4,9 @@ import {withRouter} from 'react-router';
 import {cashay} from 'cashay';
 import shortid from 'shortid';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
+// import OutcomeCard from 'universal/modules/teamDashboard/components/TeamProjectCard/TeamProjectCard';
 import {ACTIVE, SORT_STEP} from 'universal/utils/constants';
+import MeetingAgendaOutcomeCard from '../MeetingAgendaOutcomeCard/MeetingAgendaOutcomeCard';
 
 const handleAddActionFactory = (teamMemberId, agendaId) => () => {
   const [, teamId] = teamMemberId.split('::');
@@ -37,17 +39,12 @@ const makeCards = (array) => {
     const key = `${card.type}OutcomeCard${card.id}`;
     return (
       <div className={s.item} key={key}>
-        {/* TODO: Outcome Card component goes here */}
-        {/* TODO: We need to revisit Action type as a card */}
-        <div
-          className={s.sample}
-          key={`OutcomeCard${card.id}`}
-        >
-          id: {card.id}<br />
-          content: {card.content}<br />
-          status: {card.status}<br />
-          type: {card.type}
-        </div>
+        <MeetingAgendaOutcomeCard
+          content={card.content}
+          id={card.id}
+          status={card.status}
+          type={card.type}
+        />
       </div>
     );
   });
@@ -106,13 +103,6 @@ s = StyleSheet.create({
     marginTop: '2rem',
     padding: '0 1rem',
     width: '25%'
-  },
-
-  sample: {
-    border: '1px solid #eee',
-    borderRadius: '.5rem',
-    minHeight: '126px',
-    padding: '.5rem'
   }
 });
 

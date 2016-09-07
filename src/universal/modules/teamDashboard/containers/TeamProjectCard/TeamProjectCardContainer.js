@@ -27,6 +27,12 @@ const TeamProjectCardContainer = (props) => {
   const {project, editors, teamMembers, dispatch} = props;
   const {id, status} = project;
   const form = `${status}::${id}`;
+  console.log('============ card stuffs ============');
+  console.dir(form);
+  console.dir(project);
+  console.dir(dispatch);
+  console.dir(editors);
+  console.dir(teamMembers);
   return (
     <TeamProjectCard
       form={form}
