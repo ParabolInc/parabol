@@ -1,31 +1,27 @@
-import r from '../../../database/rethinkDriver';
-import {GraphQLNonNull, GraphQLID} from 'graphql';
+import r from 'server/database/rethinkDriver';
+import {GraphQLList} from 'graphql';
 import {getRequestedFields} from '../utils';
 import {Team} from './teamSchema';
-import {requireSUOrTeamMember} from '../authorization';
+import {requireAuth} from '../authorization';
 import makeChangefeedHandler from '../makeChangefeedHandler';
+import {errorObj} from '../utils';
 
 export default {
-  team: {
-    type: Team,
-    args: {
-      teamId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The unique team ID'
+  teams: {
+    type: new GraphQLList(Team),
+    async resolve(source, args, {authToken, socket, subbedChannelName}, refs) {
+      requireAuth(authToken);
+      const {tms} = authToken;
+      if (!tms || tms.length === 0) {
+        throw errorObj({_error: 'You are not a part of any teams'});
       }
-    },
-    async resolve(source, {teamId}, {authToken, socket, subbedChannelName}, refs) {
-      requireSUOrTeamMember(authToken, teamId);
+      // TODO update subscription on the client when a new team gets added. So rare, it's OK to resend all 3-4 docs
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
       r.table('Team')
-        .get(teamId)
-        // point changefeeds don't support pluck yet https://github.com/rethinkdb/rethinkdb/issues/3623
+        .getAll(...tms)
+        .pluck(requestedFields)
         .changes({includeInitial: true})
-        .map(row => ({
-          new_val: row('new_val').default({}).pluck(requestedFields),
-          old_val: row('old_val').default({}).pluck(requestedFields)
-        }))
         .run({cursor: true}, changefeedHandler);
     }
   }

@@ -10,26 +10,42 @@ import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
 
 const projectSubQuery = subscriptions.find(sub => sub.channel === PROJECTS).string;
 
-const resolveUserProjects = (userId, tms) => {
-  const projectSubs = [];
-  for (let i = 0; i < tms.length; i++) {
-    const teamId = tms[i];
-    const teamMemberId = `${userId}::${teamId}`;
-    projectSubs[i] = cashay.subscribe(projectSubQuery, subscriber, {
-      key: teamMemberId,
-      op: PROJECTS,
-      variables: {teamMemberId},
-      dep: 'userColProjects'
-    }).data.projects;
+// TODO this is a sign that cashay is missing something. how do we request a LIST of just projects?
+const userColumnsQuery = `
+query {
+  teams @live {
+    id
+    projects @live {
+      content
+      id
+      status
+      teamMemberId
+      updatedAt
+      userSort
+      teamSort
+    }
   }
-  const allProjects = [].concat(...projectSubs);
+}
+`;
+
+const resolveUserProjects = (teams) => {
+  const allProjects = teams.map(team => team.projects).reduce((arr, projects) => {
+    arr.push(...projects);
+    return arr;
+  },[]);
   return makeProjectsByStatus(allProjects, 'userSort');
 };
 
 const mapStateToProps = (state) => {
-  const {sub: userId, tms} = state.auth.obj;
+  const {sub: userId} = state.auth.obj;
+  const teamsWithProjects = cashay.query(userColumnsQuery, {
+    op: 'userColumnsContainer',
+    resolveChannelKey: {
+      projects: (source) => `${userId}::${source.id}`
+    }
+  }).data.teams;
   return {
-    projects: cashay.computed('userColProjects', [userId, tms], resolveUserProjects)
+    projects: resolveUserProjects(teamsWithProjects)
   };
 };
 

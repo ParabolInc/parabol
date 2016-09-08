@@ -2,38 +2,41 @@ import React, {PropTypes} from 'react';
 import Team from 'universal/modules/teamDashboard/components/Team/Team';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
-import subscriptions from 'universal/subscriptions/subscriptions';
-import subscriber from 'universal/subscriptions/subscriber';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
-import {TEAM, TEAM_MEMBERS} from 'universal/subscriptions/constants';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 
-const teamSubQuery = subscriptions.find(sub => sub.channel === TEAM).string;
-const teamMembersSubQuery = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
+const teamContainerSub = `
+query {
+  team @cached(id: $teamId, type: "Team") {
+    id
+    name
+    meetingId
+  },
+  teamMembers(teamId: $teamId) @live {
+    id
+    picture
+    preferredName
+  }  
+}`;
+
 
 const mapStateToProps = (state, props) => {
   const {teamId} = props.params;
-  const {sub: userId} = state.auth.obj;
-  const {teamMembers} = cashay.subscribe(teamMembersSubQuery, subscriber, {
+  const teamContainer = cashay.query(teamContainerSub, {
+    op: 'teamContainer',
     key: teamId,
-    op: TEAM_MEMBERS,
     variables: {teamId}
-  }).data;
-  const {team} = cashay.subscribe(teamSubQuery, subscriber, {
-    key: teamId,
-    op: TEAM,
-    variables: {teamId},
-  }).data;
+  });
+  const {team, teamMembers} = teamContainer.data;
   return {
     team,
-    myTeamMemberId: `${userId}::${teamId}`,
-    teamMembers,
+    teamMembers
   };
 };
 
 const TeamContainer = (props) => {
-  const {team, myTeamMemberId, teamMembers} = props;
+  const {team, teamMembers} = props;
   const readyEnough = team.id && teamMembers.length > 0;
   if (!readyEnough) {
     return <LoadingView/>;
@@ -41,7 +44,6 @@ const TeamContainer = (props) => {
   return (
     <Team
       team={team}
-      myTeamMemberId={myTeamMemberId}
       teamMembers={teamMembers}
     />
   );
@@ -49,7 +51,6 @@ const TeamContainer = (props) => {
 
 TeamContainer.propTypes = {
   team: PropTypes.object.isRequired,
-  myTeamMemberId: PropTypes.string.isRequired,
   teamMembers: PropTypes.array.isRequired,
 };
 

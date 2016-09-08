@@ -2,33 +2,23 @@ import React, {PropTypes} from 'react';
 import DashNavList from 'universal/components/DashNavList/DashNavList';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
-import subscriptions from 'universal/subscriptions/subscriptions';
-import {TEAM} from 'universal/subscriptions/constants';
-import subscriber from 'universal/subscriptions/subscriber';
 
-const teamSubQuery = subscriptions.find(sub => sub.channel === TEAM).string;
-
-const resolveDashNavTeams = (tms) => {
-  const teams = [];
-  for (let i = 0; i < tms.length; i++) {
-    const teamId = tms[i];
-    const {name} = cashay.subscribe(teamSubQuery, subscriber, {
-      op: TEAM,
-      key: teamId,
-      variables: {teamId},
-      dep: 'dashNavTeams'
-    }).data.team;
-    teams[i] = {
-      href: `/team/${teamId}`,
-      label: name
-    };
+const dashNavListQuery = `
+query {
+  teams @live {
+    id
+    name
+    meetingId
   }
-  return teams;
-};
+}
+`;
 
-const mapStateToProps = (state) => {
+const mapStateToProps = () => {
+  const {teams} = cashay.query(dashNavListQuery, {
+    op: 'dashNavListContainer'
+  }).data;
   return {
-    teams: cashay.computed('dashNavTeams', [state.auth.obj.tms], resolveDashNavTeams)
+    teams
   };
 };
 

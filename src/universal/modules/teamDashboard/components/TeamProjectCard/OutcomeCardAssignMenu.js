@@ -53,7 +53,7 @@ const OutcomeCardAssignMenu = (props) => {
 
 OutcomeCardAssignMenu.propTypes = {
   onComplete: PropTypes.func,
-  project: PropTypes.string,
+  project: PropTypes.object,
   teamMembers: PropTypes.array
 };
 
