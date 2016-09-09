@@ -22,7 +22,7 @@ const mapStateToProps = (state) => {
     variables: {id: state.auth.obj.sub},
     directives: {
       actions: {
-        sort: (a,b) => a.sortOrder > b.sortOrder
+        sort: (a, b) => a.sortOrder > b.sortOrder
       }
     }
   }).data;

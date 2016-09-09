@@ -1,10 +1,9 @@
 import r from 'server/database/rethinkDriver';
 import {GraphQLList} from 'graphql';
-import {getRequestedFields} from '../utils';
+import {errorObj, getRequestedFields} from '../utils';
 import {Team} from './teamSchema';
 import {requireAuth} from '../authorization';
 import makeChangefeedHandler from '../makeChangefeedHandler';
-import {errorObj} from '../utils';
 
 export default {
   teams: {

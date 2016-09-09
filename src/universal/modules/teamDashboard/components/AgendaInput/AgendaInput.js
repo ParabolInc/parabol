@@ -10,7 +10,8 @@ import {cashay} from 'cashay';
 
 const AgendaInput = (props) => {
   const {styles} = AgendaInput;
-  const {agenda, handleSubmit, teamId, myTeamMember, userId} = props;
+  const {agenda, handleSubmit, teamId, myTeamMember} = props;
+  const [userId] = myTeamMember.id.split('::');
   const myTeamMemberId = `${userId}::${teamId}`;
   const lastAgendaItem = agenda[agenda.length - 1];
   const nextSort = lastAgendaItem ? lastAgendaItem.sortOrder + SORT_STEP : 0;

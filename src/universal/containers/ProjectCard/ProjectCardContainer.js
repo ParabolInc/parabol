@@ -71,6 +71,7 @@ const ProjectCardContainer = (props) => {
 
 ProjectCardContainer.propTypes = {
   area: PropTypes.string,
+  dispatch: PropTypes.func,
   myTeamMemberId: PropTypes.string,
   preferredName: PropTypes.string,
   username: PropTypes.string,

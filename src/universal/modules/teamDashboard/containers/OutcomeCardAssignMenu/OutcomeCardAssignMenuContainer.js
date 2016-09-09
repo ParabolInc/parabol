@@ -34,4 +34,8 @@ const OutcomeCardAssignMenuContainer = (props) => {
   );
 };
 
+OutcomeCardAssignMenuContainer.propTypes = {
+  teamMembers: PropTypes.object
+};
+
 export default connect(mapStateToProps)(OutcomeCardAssignMenuContainer);

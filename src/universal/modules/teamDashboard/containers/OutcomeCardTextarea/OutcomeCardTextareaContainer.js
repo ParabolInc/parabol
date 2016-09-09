@@ -76,4 +76,8 @@ const OutcomeCardTextareaContainer = (props) => {
   );
 };
 
+OutcomeCardTextareaContainer.propTypes = {
+  editingStatus: PropTypes.any
+};
+
 export default connect(mapStateToProps)(OutcomeCardTextareaContainer);

@@ -37,10 +37,10 @@ const resolveMeetingMembers = (queryData, userId) => {
         isConnected: teamMember.presence.length > 0,
         isFacilitator: team.activeFacilitator === teamMember.id,
         isSelf: teamMember.id.startsWith(userId)
-      }
+      };
     }
   }
-  return resolveMeetingMembers.cache
+  return resolveMeetingMembers.cache;
 };
 
 const meetingContainerQuery = `
