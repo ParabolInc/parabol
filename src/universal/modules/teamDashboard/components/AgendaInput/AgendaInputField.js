@@ -1,13 +1,25 @@
 import React, {PropTypes} from 'react';
 import theme from 'universal/styles/theme';
 import look, {StyleSheet} from 'react-look';
+import withHotkey from 'react-hotkey-hoc';
 
-const AgendaInputField = (field) => {
+const AgendaInputField = (props) => {
   const {styles} = AgendaInputField;
+  const {bindHotkey} = props;
+  let inputRef;
+  const setRef = (c) => {
+    inputRef = c;
+  };
+  const focusOnInput = (e) => {
+    e.preventDefault();
+    inputRef.focus();
+  };
+  bindHotkey('+', focusOnInput);
   return (
     <div>
       <input
-        {...field.input}
+        {...props.input}
+        ref={setRef}
         className={styles.input}
         type="text"
         placeholder="Add an item"
@@ -19,6 +31,7 @@ const AgendaInputField = (field) => {
 };
 
 AgendaInputField.propTypes = {
+  bindHotkey: PropTypes.func,
   input: PropTypes.object
 };
 
@@ -57,4 +70,4 @@ AgendaInputField.styles = StyleSheet.create({
 });
 
 
-export default look(AgendaInputField);
+export default withHotkey(look(AgendaInputField));

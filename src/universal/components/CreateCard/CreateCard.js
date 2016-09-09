@@ -5,6 +5,7 @@ import PushButton from '../PushButton/PushButton';
 import Ellipsis from '../Ellipsis/Ellipsis';
 import Type from '../Type/Type';
 import theme from 'universal/styles/theme';
+import withHotkey from 'react-hotkey-hoc';
 
 const combineStyles = StyleSheet.combineStyles;
 const labelStyles = {
@@ -19,11 +20,12 @@ let s = {};
 const CreateCard = props => {
   let cardStyles = s.root;
   const {
-    createdBy, handleAddAction, handleAddProject, hasControls,
+    bindHotkey, createdBy, handleAddAction, handleAddProject, hasControls,
     isCreating, isProject
   } = props;
   const cardBorderVariantStyles = combineStyles(s.root, s.rootBorderVariant);
-
+  bindHotkey('a', handleAddAction);
+  bindHotkey('p', handleAddProject);
   const actionLabel = () =>
     <span className={s.label}>
       <span className={s.labelStyles}>Add an{' '}</span>
@@ -86,6 +88,7 @@ const CreateCard = props => {
 };
 
 CreateCard.propTypes = {
+  bindHotkey: PropTypes.func,
   createdBy: PropTypes.string,
   handleAddAction: PropTypes.func,
   handleAddProject: PropTypes.func,
@@ -153,4 +156,4 @@ s = StyleSheet.create({
   }
 });
 
-export default look(CreateCard);
+export default withHotkey(look(CreateCard));
