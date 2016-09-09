@@ -6,11 +6,9 @@ import theme from 'universal/styles/theme';
 import labels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
-import fromNow from 'universal/utils/fromNow';
-
-import OutcomeCardTextarea from './OutcomeCardTextarea';
+import OutcomeCardAssignMenuContainer from 'universal/modules/teamDashboard/containers/OutcomeCardAssignMenu/OutcomeCardAssignMenuContainer';
+import OutcomeCardTextareaContainer from 'universal/modules/teamDashboard/containers/OutcomeCardTextarea/OutcomeCardTextareaContainer';
 import OutcomeCardFooter from './OutcomeCardFooter';
-import OutcomeCardAssignMenu from './OutcomeCardAssignMenu';
 import OutcomeCardStatusMenu from './OutcomeCardStatusMenu';
 
 const OPEN_CONTENT_MENU = 'TeamProjectCard/openContentMenu';
@@ -68,16 +66,13 @@ export default class TeamProjectCard extends Component {
   render() {
     const {openMenu} = this.state;
     const {
-      editors,
       handleSubmit,
       project,
-      teamMembers,
     } = this.props;
-    const {content, status, id: projectId, updatedAt} = project;
+    const {content, status, id: projectId} = project;
     const hasOpenStatusMenu = openMenu === OPEN_STATUS_MENU;
     const hasOpenAssignMenu = openMenu === OPEN_ASSIGN_MENU;
     const rootStyles = combineStyles(styles.root, styles.cardBlock, styles[status]);
-    const owner = teamMembers.find(m => m.id === project.teamMemberId) || {};
     const handleCardActive = (isActive) => {
       if (isActive === undefined) { return; }
       const [teamId] = projectId.split('::');
@@ -109,10 +104,9 @@ export default class TeamProjectCard extends Component {
       <div className={rootStyles}>
         {/* card main */}
         {hasOpenAssignMenu &&
-          <OutcomeCardAssignMenu
+          <OutcomeCardAssignMenuContainer
             onComplete={this.closeMenu}
             project={project}
-            teamMembers={teamMembers}
           />
         }
         {hasOpenStatusMenu && <OutcomeCardStatusMenu project={project}/>}
@@ -121,11 +115,10 @@ export default class TeamProjectCard extends Component {
             <form>
               <Field
                 name={projectId}
-                component={OutcomeCardTextarea}
-                editors={editors}
+                component={OutcomeCardTextareaContainer}
                 handleActive={handleCardActive}
                 handleSubmit={handleSubmit(handleCardUpdate)}
-                timestamp={fromNow(updatedAt)}
+                project={project}
                 doFocus={!content}
               />
             </form>
@@ -134,7 +127,7 @@ export default class TeamProjectCard extends Component {
         {/* card footer */}
         <OutcomeCardFooter
           hasOpenStatusMenu={hasOpenStatusMenu}
-          owner={owner}
+          owner={project.teamMember}
           status={status}
           toggleAssignMenu={this.toggleAssignMenu}
           toggleStatusMenu={this.toggleStatusMenu}

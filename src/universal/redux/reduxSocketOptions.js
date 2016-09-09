@@ -1,6 +1,7 @@
 import {cashay, Transport} from 'cashay';
 import AuthEngine from './AuthEngine';
 import socketCluster from 'socketcluster-client';
+import subscriber from 'universal/subscriptions/subscriber';
 
 const onConnect = (options, hocOptions, socket) => {
   const sendToServer = request => {
@@ -11,7 +12,7 @@ const onConnect = (options, hocOptions, socket) => {
     });
   };
   const priorityTransport = new Transport(sendToServer);
-  cashay.create({priorityTransport});
+  cashay.create({priorityTransport, subscriber});
 };
 const onDisconnect = () => {
   cashay.create({priorityTransport: null});

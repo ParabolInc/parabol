@@ -2,14 +2,13 @@ import {
   ACTIONS,
   ACTIONS_BY_TEAMMEMBER,
   AGENDA,
-  TEAM,
+  TEAMS,
   TEAM_MEMBERS,
   PRESENCE,
   PROJECTS
 } from 'universal/subscriptions/constants';
 
 // For now, use an array. In the future, we can make one exclusively for the server that doesn't need to reparse the AST
-const defaultRehydrate = fields => fields;
 export default [
   {
     channel: ACTIONS,
@@ -23,12 +22,7 @@ export default [
         sortOrder
         agendaId
       }
-    }`,
-    channelfy: variables => `actions/${variables.userId}`,
-    rehydrate: fields => {
-      fields.updatedAt = new Date(fields.updatedAt);
-      return fields;
-    }
+    }`
   },
   {
     channel: ACTIONS_BY_TEAMMEMBER,
@@ -62,9 +56,7 @@ export default [
         sortOrder
         teamMemberId
       }
-    }`,
-    channelfy: variables => `agenda/${variables.teamId}`,
-    rehydrate: defaultRehydrate
+    }`
   },
   {
     channel: PRESENCE,
@@ -75,9 +67,7 @@ export default [
         userId
         editing
       }
-    }`,
-    channelfy: variables => `presence/${variables.teamId}`,
-    rehydrate: defaultRehydrate
+    }`
   },
   {
     channel: PROJECTS,
@@ -94,18 +84,13 @@ export default [
         teamSort
         agendaId
       }
-    }`,
-    channelfy: variables => `projects/${variables.teamMemberId}`,
-    rehydrate: fields => {
-      fields.updatedAt = new Date(fields.updatedAt);
-      return fields;
-    }
+    }`
   },
   {
-    channel: TEAM,
+    channel: TEAMS,
     string: `
-    subscription($teamId: ID!) {
-       team(teamId: $teamId) {
+    subscription {
+       teams {
          checkInGreeting,
          checkInQuestion,
          id,
@@ -117,9 +102,7 @@ export default [
          meetingPhase,
          meetingPhaseItem
        }
-    }`,
-    channelfy: variables => `team/${variables.teamId}`,
-    rehydrate: defaultRehydrate
+    }`
   },
   {
     channel: TEAM_MEMBERS,
@@ -135,17 +118,13 @@ export default [
          picture,
          preferredName
        }
-    }`,
-    channelfy: variables => `teamMembers/${variables.teamId}`,
-    rehydrate: defaultRehydrate
+    }`
   },
   {
     channel: 'user',
     string: `
     subscription($userId: ID!) {
       user(userId: $userId)
-    }`,
-    channelfy: variables => `user/${variables.userId}`,
-    rehydrate: defaultRehydrate
+    }`
   }
 ];

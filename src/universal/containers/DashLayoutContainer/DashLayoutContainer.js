@@ -1,12 +1,42 @@
 import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {resolveActiveMeetings} from 'universal/subscriptions/computedSubs';
 import {cashay} from 'cashay';
 import DashLayout from 'universal/components/Dashboard/DashLayout';
 
-const mapStateToProps = (state) => {
+const resolveActiveMeetings = (teams) => {
+  if (teams !== resolveActiveMeetings.teams) {
+    resolveActiveMeetings.teams = teams;
+    resolveActiveMeetings.cache = [];
+    for (let i = 0; i < teams.length; i++) {
+      const team = teams[i];
+      if (team.meetingId) {
+        resolveActiveMeetings.cache.push({
+          link: `/meeting/${team.id}`,
+          name: team.name
+        });
+      }
+    }
+  }
+  return resolveActiveMeetings.cache;
+};
+
+const dashNavListQuery = `
+query {
+  teams @live {
+    id
+    name
+    meetingId
+  }
+}
+`;
+
+
+const mapStateToProps = () => {
+  const {teams} = cashay.query(dashNavListQuery, {
+    op: 'dashLayoutContainer'
+  }).data;
   return {
-    activeMeetings: cashay.computed('teamSubs', [state.auth.obj.tms], resolveActiveMeetings)
+    activeMeetings: resolveActiveMeetings(teams)
   };
 };
 

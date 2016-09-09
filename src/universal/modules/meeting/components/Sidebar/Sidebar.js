@@ -8,8 +8,7 @@ import {cashay} from 'cashay';
 import {CHECKIN, UPDATES, SUMMARY, phaseArray} from 'universal/utils/constants';
 import makeMeetingUrl from 'universal/utils/makeMeetingUrl';
 import {Link} from 'react-router';
-import AgendaInputContainer from 'universal/modules/teamDashboard/containers/AgendaInput/AgendaInputContainer';
-import AgendaListContainer from 'universal/modules/teamDashboard/containers/AgendaList/AgendaListContainer';
+import AgendaListAndInputContainer from 'universal/modules/teamDashboard/containers/AgendaListAndInput/AgendaListAndInputContainer';
 import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
 
 const combineStyles = StyleSheet.combineStyles;
@@ -107,8 +106,7 @@ const Sidebar = (props) => {
         </ul>
         {localPhase !== CHECKIN && localPhase !== SUMMARY &&
           <div>
-            <AgendaListContainer teamId={teamId}/>
-            <AgendaInputContainer teamId={teamId}/>
+            <AgendaListAndInputContainer teamId={teamId}/>
           </div>
         }
       </nav>

@@ -9,6 +9,7 @@ import {
 import {GraphQLURLType} from '../types';
 import {Team} from '../Team/teamSchema';
 import {User} from '../User/userSchema';
+import {Project} from '../Project/projectSchema';
 import {nonnullifyInputThunk} from '../utils';
 import r from 'server/database/rethinkDriver';
 
@@ -58,8 +59,15 @@ export const TeamMember = new GraphQLObjectType({
     user: {
       type: User,
       description: 'The user for the team member',
-      async resolve({userId}) {
-        return await r.table('User').get(userId);
+      async resolve(source) {
+        return await r.table('User').get(source.userId);
+      }
+    },
+    projects: {
+      type: Project,
+      description: 'Projects owned by the team member',
+      async resolve(source) {
+        return await r.table('Project').getAll(source.id, {index: 'teamMemberId'});
       }
     }
   })

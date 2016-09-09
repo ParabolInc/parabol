@@ -1,7 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
-import subscriber from 'universal/subscriptions/subscriber';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
@@ -11,13 +10,6 @@ import {withRouter} from 'react-router';
 import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
-import subscriptions from 'universal/subscriptions/subscriptions';
-import {
-  TEAM,
-//  TEAM_MEMBERS,
-//  AGENDA
-} from 'universal/subscriptions/constants';
-import resolveMeetingMembers from 'universal/subscriptions/computed/resolveMeetingMembers';
 import MeetingLobby from 'universal/modules/meeting/components/MeetingLobby/MeetingLobby';
 import MeetingCheckin from 'universal/modules/meeting/components/MeetingCheckin/MeetingCheckin';
 import MeetingUpdatesContainer
@@ -37,21 +29,66 @@ import {
 import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
 import MeetingAgendaLastCall from 'universal/modules/meeting/components/MeetingAgendaLastCall/MeetingAgendaLastCall';
 
-const teamSubQuery = subscriptions.find(sub => sub.channel === TEAM).string;
+const resolveMeetingMembers = (queryData, userId) => {
+  if (queryData !== resolveMeetingMembers.queryData) {
+    resolveMeetingMembers.queryData = queryData;
+    const {teamMembers, team} = queryData;
+    resolveMeetingMembers.cache = [];
+    for (let i = 0; i < teamMembers.length; i++) {
+      const teamMember = teamMembers[i];
+      resolveMeetingMembers.cache[i] = {
+        ...teamMember,
+        isConnected: teamMember.presence.length > 0,
+        isFacilitator: team.activeFacilitator === teamMember.id,
+        isSelf: teamMember.id.startsWith(userId)
+      };
+    }
+  }
+  return resolveMeetingMembers.cache;
+};
+
+const meetingContainerQuery = `
+query{
+  team @cached(id: $teamId, type: "Team") {
+    checkInGreeting,
+    checkInQuestion, 
+    id,
+    name,
+    meetingId,
+    activeFacilitator,
+    facilitatorPhase,
+    facilitatorPhaseItem,
+    meetingPhase,
+    meetingPhaseItem
+  }
+  teamMembers(teamId: $teamId) @live {
+    id
+    preferredName
+    picture
+    checkInOrder
+    isCheckedIn
+    isFacilitator,
+    isLead,
+    presence @cached(type: "[Presence]") {
+      userId
+    }
+  }
+}`;
 
 const mapStateToProps = (state, props) => {
   const {params: {localPhaseItem, teamId}} = props;
   const {sub: userId} = state.auth.obj;
-  const variables = {teamId};
-  const {team} = cashay.subscribe(teamSubQuery, subscriber, {
+  const queryResult = cashay.query(meetingContainerQuery, {
+    op: 'meetingContainerQuery',
     key: teamId,
-    op: TEAM,
-    variables
-  }).data;
-  const members = cashay.computed('meetingMembers', [teamId, userId], resolveMeetingMembers);
+    variables: {teamId},
+    sort: {teamMembers: (a, b) => a.checkInOrder > b.checkInOrder},
+    resolveCached: {presence: (source) => (doc) => source.id.startsWith(doc.userId)}
+  });
+  const {team} = queryResult.data;
   return {
-    members,
-    team,
+    members: resolveMeetingMembers(queryResult.data, userId),
+    team: queryResult.data.team,
     localPhaseItem: localPhaseItem && Number(localPhaseItem),
     isFacilitating: `${userId}::${teamId}` === team.activeFacilitator
   };
@@ -78,6 +115,8 @@ export default class MeetingContainer extends Component {
     super(props);
     const {localPhaseItem, params, router, team} = props;
     const {localPhase} = params;
+    // subscribe to all teams, but don't do anything with that open subscription
+    cashay.subscribe('teams');
     handleRedirects(team, localPhase, localPhaseItem, router);
   }
 

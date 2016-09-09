@@ -8,7 +8,7 @@ import {
   AGENDA,
   PROJECTS,
   PRESENCE,
-  TEAM,
+  TEAMS,
   TEAM_MEMBERS
 } from 'universal/subscriptions/constants';
 
@@ -23,7 +23,7 @@ const dechannelfy = {
   [AGENDA]: (variableString) => ({teamId: variableString}),
   [PRESENCE]: (variableString) => ({teamId: variableString}),
   [PROJECTS]: (variableString) => ({teamMemberId: variableString}),
-  [TEAM]: (variableString) => ({teamId: variableString}),
+  [TEAMS]: () => undefined,
   [TEAM_MEMBERS]: (variableString) => ({teamId: variableString})
 };
 

@@ -23,12 +23,10 @@ export default function merger(initialState, persistedState) {
       }
     }
     if (reducerName === 'cashay') {
-      if (value && value.result) {
-        value.result.presence = undefined;
-        value.result.teamMembers = undefined;
-        value.result.team = undefined;
-        value.result.projects = undefined;
+      if (value && value.entities) {
+        // cashay now supports rehydrating sub data
         // remove items with unbounded growth in production
+        value.result.presence = undefined;
         value.entities.Presence = undefined;
         value.entities.Task = undefined;
       }
