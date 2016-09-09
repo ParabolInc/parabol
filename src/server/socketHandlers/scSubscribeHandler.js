@@ -5,6 +5,7 @@ import parseChannel from './parseChannel';
 import {
   ACTIONS,
   ACTIONS_BY_TEAMMEMBER,
+  ACTIONS_BY_AGENDA,
   AGENDA,
   PROJECTS,
   PRESENCE,
@@ -20,6 +21,7 @@ import {
 const dechannelfy = {
   [ACTIONS]: (variableString) => ({userId: variableString}),
   [ACTIONS_BY_TEAMMEMBER]: (variableString) => ({teamMemberId: variableString}),
+  [ACTIONS_BY_AGENDA]: (variableString) => ({agendaId: variableString}),
   [AGENDA]: (variableString) => ({teamId: variableString}),
   [PRESENCE]: (variableString) => ({teamId: variableString}),
   [PROJECTS]: (variableString) => ({teamMemberId: variableString}),

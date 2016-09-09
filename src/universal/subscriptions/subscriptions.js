@@ -1,6 +1,7 @@
 import {
   ACTIONS,
   ACTIONS_BY_TEAMMEMBER,
+  ACTIONS_BY_AGENDA,
   AGENDA,
   TEAMS,
   TEAM_MEMBERS,
@@ -38,12 +39,23 @@ export default [
         sortOrder
         agendaId
       }
-    }`,
-    channelfy: variables => `actionsByTeamMember/${variables.teamMemberId}`,
-    rehydrate: fields => {
-      fields.updatedAt = new Date(fields.updatedAt);
-      return fields;
-    }
+    }`
+  },
+  {
+    channel: ACTIONS_BY_AGENDA,
+    string: `
+    subscription($agendaId: ID!) {
+      actionsByAgenda(agendaId: $agendaId) {
+        id
+        teamMemberId
+        content
+        isComplete
+        createdAt
+        updatedAt
+        sortOrder
+        agendaId
+      }
+    }`
   },
   {
     channel: AGENDA,

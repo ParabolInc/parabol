@@ -8,6 +8,7 @@ exports.up = async(r) => {
   const queries = [
     r.table('Action').update(withAgendaId),
     r.table('Action').indexCreate('teamMemberId'),
+    r.table('Action').indexCreate('agendaId'),
     r.table('Project').update(withAgendaId),
   ];
   await Promise.all(queries);
@@ -18,6 +19,7 @@ exports.down = async(r) => {
   const queries = [
     r.table('Action').replace(withoutAgendaId),
     r.table('Action').indexDrop('teamMemberId'),
+    r.table('Action').indexCreate('agendaId'),
     r.table('Project').replace(withoutAgendaId),
   ];
   return await Promise.all(queries);

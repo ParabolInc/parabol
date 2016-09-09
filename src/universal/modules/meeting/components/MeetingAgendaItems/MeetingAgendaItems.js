@@ -10,7 +10,7 @@ import MeetingSection from 'universal/modules/meeting/components/MeetingSection/
 import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingSectionHeading/MeetingSectionHeading';
 // eslint-disable-next-line max-len
 import MeetingSectionSubheading from 'universal/modules/meeting/components/MeetingSectionSubheading/MeetingSectionSubheading';
-import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards';
+import MeetingAgendaCardsContainer from 'universal/modules/meeting/containers/MeetingAgendaCards/MeetingAgendaCardsContainer';
 import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
 import {AGENDA_ITEMS} from 'universal/utils/constants';
 
@@ -22,14 +22,12 @@ const MeetingAgendaItems = (props) => {
     isFacilitating,
     localPhaseItem,
     members,
-    outcomesByAgendaItem,
     router,
     team
   } = props;
   const {id: teamId} = team;
-  const currentAgendaItem = agenda[localPhaseItem - 1];
-  const outcomes = outcomesByAgendaItem[currentAgendaItem.id] || [];
-  const currentTeamMember = members.find((m) => m.id === currentAgendaItem.teamMemberId);
+  const agendaItem = agenda[localPhaseItem - 1];
+  const currentTeamMember = members.find((m) => m.id === agendaItem.teamMemberId);
   const phaseItemFactory = makePhaseItemFactory(isFacilitating, agenda.length, router, teamId, AGENDA_ITEMS);
   const self = members.find(m => m.isSelf);
   const gotoNextItem = phaseItemFactory(localPhaseItem + 1);
@@ -53,7 +51,7 @@ const MeetingAgendaItems = (props) => {
             <div className={s.avatar}>
               <Avatar {...currentTeamMember} hasLabel labelRight size="large"/>
               <div className={s.requestLabel}>
-                “{currentAgendaItem.content}”
+                “{agendaItem.content}”
               </div>
             </div>
             <div className={s.linkSpacer}>
@@ -65,10 +63,9 @@ const MeetingAgendaItems = (props) => {
               />
             </div>
           </div>
-          <MeetingAgendaCards
-            currentAgendaItemId={currentAgendaItem.id}
+          <MeetingAgendaCardsContainer
+            agendaId={agendaItem.id}
             myTeamMemberId={self && self.id}
-            outcomes={outcomes}
           />
         </div>
         {/* */}
@@ -123,7 +120,6 @@ MeetingAgendaItems.propTypes = {
   params: PropTypes.shape({
     teamId: PropTypes.string.isRequired
   }).isRequired,
-  outcomesByAgendaItem: PropTypes.object.isRequired,
   team: PropTypes.object.isRequired,
   router: PropTypes.object.isRequired,
 };

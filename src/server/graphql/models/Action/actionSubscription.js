@@ -44,5 +44,25 @@ export default {
         .changes({includeInitial: true})
         .run({cursor: true}, changefeedHandler);
     }
+  },
+  actionsByAgenda: {
+    type: new GraphQLList(Action),
+    args: {
+      agendaId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The ID of the agenda that caused this action to be created'
+      }
+    },
+    async resolve(source, {agendaId}, {authToken, socket, subbedChannelName}, refs) {
+      const [teamId] = agendaId.split('::');
+      requireSUOrTeamMember(authToken, teamId);
+      const requestedFields = getRequestedFields(refs);
+      const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
+      r.table('Action')
+        .getAll(agendaId, {index: 'agendaId'})
+        .pluck(requestedFields)
+        .changes({includeInitial: true})
+        .run({cursor: true}, changefeedHandler);
+    }
   }
 };

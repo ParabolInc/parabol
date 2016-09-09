@@ -74,9 +74,9 @@ const makePlaceholders = (length) => {
 };
 
 const MeetingAgendaCards = (props) => {
-  const {currentAgendaItemId, myTeamMemberId, outcomes} = props;
-  const handleAddAction = handleAddActionFactory(myTeamMemberId, currentAgendaItemId);
-  const handleAddProject = handleAddProjectFactory(myTeamMemberId, currentAgendaItemId);
+  const {agendaId, myTeamMemberId, outcomes} = props;
+  const handleAddAction = handleAddActionFactory(myTeamMemberId, agendaId);
+  const handleAddProject = handleAddProjectFactory(myTeamMemberId, agendaId);
   return (
     <div className={s.root}>
       {/* Get Cards */}
@@ -118,7 +118,7 @@ s = StyleSheet.create({
 });
 
 MeetingAgendaCards.propTypes = {
-  currentAgendaItemId: PropTypes.string.isRequired,
+  agendaId: PropTypes.string.isRequired,
   myTeamMemberId: PropTypes.string,
   outcomes: PropTypes.array.isRequired
 };

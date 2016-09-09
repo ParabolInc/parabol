@@ -4,61 +4,42 @@ import {cashay} from 'cashay';
 import MeetingAgendaItems
   from 'universal/modules/meeting/components/MeetingAgendaItems/MeetingAgendaItems';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
-import {resolveSortedAgenda} from 'universal/modules/teamDashboard/helpers/computedValues';
-import subscriptions from 'universal/subscriptions/subscriptions';
-import {ACTIONS_BY_TEAMMEMBER, PROJECTS} from 'universal/subscriptions/constants';
-import subscriber from 'universal/subscriptions/subscriber';
-import makeOutcomesByAgendaItem from './makeOutcomesByAgendaItem';
 
-const actionSubQuery = subscriptions.find(sub => sub.channel === ACTIONS_BY_TEAMMEMBER).string;
-const projectSubQuery = subscriptions.find(sub => sub.channel === PROJECTS).string;
-
-const resolveTeamActionsByAgendaItem = (teamMembers) => {
-  const actionSubs = [];
-  for (let i = 0; i < teamMembers.length; i++) {
-    const {id: teamMemberId} = teamMembers[i];
-    actionSubs[i] = cashay.subscribe(actionSubQuery, subscriber, {
-      key: teamMemberId,
-      op: ACTIONS_BY_TEAMMEMBER,
-      variables: {teamMemberId},
-      dep: 'actionsByAgendaItem'
-    }).data.actionsByTeamMember;
+const meetingAgendaItemsQuery = `
+query {
+  agenda(teamId: $teamId) @live {
+    id
+    content
+    isComplete
+    sortOrder
+    teamMemberId
+    actionsByAgenda @live {
+      id
+    }
   }
-  const allActions = [].concat(...actionSubs);
-  return allActions;
-};
-
-const resolveTeamProjectsByAgendaItem = (teamMembers) => {
-  const projectSubs = [];
-  for (let i = 0; i < teamMembers.length; i++) {
-    const {id: teamMemberId} = teamMembers[i];
-    projectSubs[i] = cashay.subscribe(projectSubQuery, subscriber, {
-      key: teamMemberId,
-      op: PROJECTS,
-      variables: {teamMemberId},
-      dep: 'projectsByAgendaItem'
-    }).data.projects;
+  teamMembers(teamId: $teamId) @live {
+    id
+    projects @live {
+        id
+      }
   }
-  const allProjects = [].concat(...projectSubs);
-  return allProjects;
-};
+}`;
 
 const mapStateToProps = (state, props) => {
-  const {team: {id: teamId}, members: teamMembers} = props;
-  const agenda = cashay.computed('sortedAgenda', [teamId], resolveSortedAgenda);
-  const actions = cashay.computed('actionsByAgendaItem',
-    [teamMembers, agenda], resolveTeamActionsByAgendaItem);
-  const projects = cashay.computed('projectsByAgendaItem',
-    [teamMembers, agenda], resolveTeamProjectsByAgendaItem);
-  const outcomesByAgendaItem = makeOutcomesByAgendaItem(actions, projects, agenda, 'createdAt');
+  const {team: {id: teamId}} = props;
+  const {agenda} = cashay.query(meetingAgendaItemsQuery, {
+    op: 'meetingAgendaItemsContainer',
+    key: teamId,
+    variables: {teamId}
+  }).data;
   return {
-    agenda,
-    outcomesByAgendaItem
+    agenda
   };
 };
 
 const MeetingAgendaItemsContainer = (props) => {
   // TODO: handle when there are no agenda items? Or, perhaps first call
+  // It's possible that the agenda items just haven't loaded yet -_- MK
   //       just skips to last call...
   if (!props.agenda || props.agenda.length < 1) {
     return <LoadingView />;
@@ -67,8 +48,7 @@ const MeetingAgendaItemsContainer = (props) => {
 };
 
 MeetingAgendaItemsContainer.propTypes = {
-  agenda: PropTypes.array.isRequired,
-  outcomesByAgendaItem: PropTypes.object.isRequired,
+  agenda: PropTypes.array.isRequired
 };
 
 export default connect(mapStateToProps)(MeetingAgendaItemsContainer);
