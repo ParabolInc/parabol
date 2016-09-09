@@ -1,39 +1,51 @@
 import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
-// import {TEAM_DASH, USER_DASH} from 'universal/utils/constants';
-// import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
-import TeamProjectCardContainer from
-  'universal/modules/teamDashboard/containers/TeamProjectCard/TeamProjectCardContainer';
 import NullCard from 'universal/components/NullCard/NullCard';
-import subscriptions from 'universal/subscriptions/subscriptions';
-import {TEAM_MEMBERS} from 'universal/subscriptions/constants';
-import subscriber from 'universal/subscriptions/subscriber';
+import TeamProjectCard from 'universal/modules/teamDashboard/components/TeamProjectCard/TeamProjectCard';
 
-const teamMembersSubQuery = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
+const projectCardSubQuery = `
+query {
+  project @cached(id: $projectId type: "Project") {
+    content
+    id
+    status
+    teamMemberId
+    updatedAt
+    teamMember @cached(type: "TeamMember") {
+      id
+      picture
+      preferredName
+    }
+  }
+}
+`;
 
 const mapStateToProps = (state, props) => {
   const userId = state.auth.obj.sub;
   const [teamId] = props.project.id.split('::');
-  const {project} = props;
-  const {teamMembers} = cashay.subscribe(teamMembersSubQuery, subscriber, {
-    key: teamId,
-    op: TEAM_MEMBERS,
-    variables: {teamId},
+  const projectId = props.project.id;
+  const {project} = cashay.query(projectCardSubQuery, {
+    op: 'projectCardContainer',
+    key: projectId,
+    variables: {projectId},
+    // example of returning a string instead of a function so it runs in O(1)
+    resolveCached: {teamMember: (source) => source.teamMemberId},
   }).data;
-  const projectOwner = teamMembers.find(m => m.id === project.teamMemberId) || {};
-  const {preferredName} = projectOwner;
+// const projectOwner = teamMembers.find(m => m.id === project.teamMemberId) || {};
+  const {preferredName} = project.teamMember;
   const username = preferredName && preferredName.replace(/\s+/g, '');
   const myTeamMemberId = `${userId}::${teamId}`;
   return {
     preferredName,
+    project,
     username,
     myTeamMemberId
   };
 };
 
 const ProjectCardContainer = (props) => {
-  const {myTeamMemberId, preferredName, project, username} = props;
+  const {dispatch, myTeamMemberId, preferredName, project, username} = props;
   const {content, id, status, teamMemberId} = project;
   if (!content && myTeamMemberId !== teamMemberId) {
     return <NullCard username={username}/>;
@@ -47,7 +59,8 @@ const ProjectCardContainer = (props) => {
   // area === TEAM_DASH
   const form = `${status}::${id}`;
   return (
-    <TeamProjectCardContainer
+    <TeamProjectCard
+      dispatch={dispatch}
       form={form}
       project={project}
       preferredName={preferredName}
@@ -58,6 +71,7 @@ const ProjectCardContainer = (props) => {
 
 ProjectCardContainer.propTypes = {
   area: PropTypes.string,
+  dispatch: PropTypes.func,
   myTeamMemberId: PropTypes.string,
   preferredName: PropTypes.string,
   username: PropTypes.string,

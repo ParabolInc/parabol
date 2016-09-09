@@ -1,20 +1,28 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import AgendaListContainer from 'universal/modules/teamDashboard/containers/AgendaList/AgendaListContainer';
-import AgendaInputContainer from 'universal/modules/teamDashboard/containers/AgendaInput/AgendaInputContainer';
+import AgendaList from 'universal/modules/teamDashboard/components/AgendaList/AgendaList';
+import AgendaInput from 'universal/modules/teamDashboard/components/AgendaInput/AgendaInput';
 
 const AgendaListAndInput = (props) => {
   const {styles} = AgendaListAndInput;
-  const {teamId} = props;
+  const {agenda, myTeamMember, teamId} = props;
   return (
     <div className={styles.root}>
-      <AgendaListContainer teamId={teamId}/>
-      <AgendaInputContainer teamId={teamId}/>
+      <AgendaList
+        agenda={agenda}
+      />
+      <AgendaInput
+        agenda={agenda}
+        teamId={teamId}
+        myTeamMember={myTeamMember}
+      />
     </div>
   );
 };
 
 AgendaListAndInput.propTypes = {
+  agenda: PropTypes.array,
+  myTeamMember: PropTypes.object,
   teamId: PropTypes.string
 };
 

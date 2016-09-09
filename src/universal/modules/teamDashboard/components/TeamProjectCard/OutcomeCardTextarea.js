@@ -1,7 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
-import Ellipsis from '../../../../components/Ellipsis/Ellipsis';
 
 const descriptionFA = {
   backgroundColor: theme.palette.cool10l,
@@ -15,34 +14,13 @@ const descriptionActionFA = {
   color: theme.palette.mid10d
 };
 
-function editingStatus(iAmActive, editors, timestamp) {
-  // TODO cache a string instead of array of editors
-  // no one else is editing
-  if (editors.length === 0) {
-    return iAmActive ? <span>editing<Ellipsis/></span> : timestamp;
-  }
-  // one other is editing
-  if (editors.length === 1) {
-    const editor = editors[0];
-    return iAmActive ?
-      <span>{editor} editing too<Ellipsis/></span> :
-      <span>{editor} editing<Ellipsis/></span>;
-  }
-  if (editors.length === 2) {
-    return iAmActive ?
-      <span>several are editing<Ellipsis/></span> :
-      <span>{`${editors[0]} and ${editors[1]} editing`}<Ellipsis/></span>;
-  }
-  return <span>several are editing<Ellipsis/></span>;
-}
-
 let styles = {};
 
 @look
-export default class OutcomeCardTextAreaField extends Component {
+export default class OutcomeCardTextArea extends Component {
   static propTypes = {
     doFocus: PropTypes.bool,
-    editors: PropTypes.array,
+    editingStatus: PropTypes.string,
     handleActive: PropTypes.func,
     handleSubmit: PropTypes.func,
     input: PropTypes.object,
@@ -65,11 +43,9 @@ export default class OutcomeCardTextAreaField extends Component {
 
   render() {
     const {
-      editors,
+      editingStatus,
       handleSubmit,
       input,
-      meta: {active},
-      timestamp,
       doFocus
     } = this.props;
     const descStyles = styles.content;
@@ -91,7 +67,7 @@ export default class OutcomeCardTextAreaField extends Component {
     return (
       <div>
         <div className={styles.timestamp}>
-          {editingStatus(active, editors, timestamp)}
+          {editingStatus}
         </div>
         <textarea
           {...input}

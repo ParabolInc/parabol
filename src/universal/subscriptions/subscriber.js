@@ -1,21 +1,17 @@
 import socketCluster from 'socketcluster-client';
-import subscriptions from './subscriptions';
 
-export default function subscriber(subscriptionString, variables, handlers) {
-  const {channelfy, rehydrate} = subscriptions.find(sub => sub.string === subscriptionString);
-  const channelName = channelfy(variables);
+export default function subscriber(channel, key, handlers) {
   const socket = socketCluster.connect();
   const {upsert, update, remove} = handlers;
+  const channelName = key ? `${channel}/${key}` : channel;
   socket.subscribe(channelName, {waitForAuth: true});
   socket.on(channelName, data => {
     if (data.type === 'add') {
-      const fields = rehydrate(data.fields);
-      upsert(fields);
+      upsert(data.fields);
     } else if (data.type === 'remove') {
       remove(data.id);
     } else {
-      const fields = rehydrate(data.fields);
-      update(fields, {path: data.path, removeKeys: data.removeKeys});
+      update(data.fields, {removeKeys: data.removeKeys});
     }
   });
   socket.on('unsubscribe', unsubChannel => {

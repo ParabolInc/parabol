@@ -28,7 +28,7 @@ export const requireSUOrTeamMember = (authToken, teamId) => {
   if (!isSuperUser(authToken)) {
     const teams = authToken.tms || [];
     if (!teams.includes(teamId)) {
-      throw errorObj({_error: 'Unauthorized to view team details.'});
+      throw errorObj({_error: `Unauthorized to view details for team ${teamId} with token ${JSON.stringify(authToken)}`});
     }
   }
 };

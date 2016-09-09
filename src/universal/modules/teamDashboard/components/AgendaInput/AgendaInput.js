@@ -4,27 +4,44 @@ import {reduxForm, Field} from 'redux-form';
 import AgendaInputField from './AgendaInputField';
 import Avatar from 'universal/components/Avatar/Avatar';
 import theme from 'universal/styles/theme';
+import shortid from 'shortid';
+import {SORT_STEP} from 'universal/utils/constants';
+import {cashay} from 'cashay';
 
 const AgendaInput = (props) => {
   const {styles} = AgendaInput;
-  const {handleAgendaItemSubmit, handleSubmit, teamMemberId, teamMembers} = props;
-  const membership = teamMembers.find(m => m.id === teamMemberId) || {};
+  const {agenda, handleSubmit, teamId, myTeamMember} = props;
+  const lastAgendaItem = agenda[agenda.length - 1];
+  const nextSort = lastAgendaItem ? lastAgendaItem.sortOrder + SORT_STEP : 0;
+  const handleAgendaItemSubmit = (submittedData) => {
+    const options = {
+      variables: {
+        newAgendaItem: {
+          id: `${teamId}::${shortid.generate()}`,
+          content: submittedData.agendaItem,
+          sortOrder: nextSort,
+          teamMemberId: myTeamMember.id
+        }
+      }
+    };
+    cashay.mutate('createAgendaItem', options);
+  };
   return (
     <form className={styles.root} onSubmit={handleSubmit(handleAgendaItemSubmit)}>
       <Field
         name="agendaItem"
         component={AgendaInputField}
       />
-      <Avatar hasBadge={false} picture={membership.picture} size="smallest"/>
+      <Avatar hasBadge={false} picture={myTeamMember.picture} size="smallest"/>
     </form>
   );
 };
 
 AgendaInput.propTypes = {
-  handleAgendaItemSubmit: PropTypes.func,
+  agenda: PropTypes.array,
   handleSubmit: PropTypes.func,
-  teamMemberId: PropTypes.string,
-  teamMembers: PropTypes.array
+  teamId: PropTypes.string,
+  myTeamMember: PropTypes.object,
 };
 AgendaInput.styles = StyleSheet.create({
   root: {

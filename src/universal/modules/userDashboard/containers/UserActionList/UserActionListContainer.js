@@ -1,26 +1,33 @@
 import React, {PropTypes} from 'react';
-import subscriptions from 'universal/subscriptions/subscriptions';
-import {ACTIONS} from 'universal/subscriptions/constants';
-import subscriber from 'universal/subscriptions/subscriber';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import UserActionList from 'universal/modules/userDashboard/components/UserActionList/UserActionList';
 
-const actionsSubQuery = subscriptions.find(sub => sub.channel === ACTIONS).string;
 
-const resolveUserActions = (userId) => {
-  const {actions} = cashay.subscribe(actionsSubQuery, subscriber, {
-    key: userId,
-    dep: 'userActions',
-    op: ACTIONS,
-    variables: {userId},
-  }).data;
-  return actions.sort((a, b) => a.userSort > b.userSort);
-};
+const userActionListQuery = `
+query {
+  actions(userId: $id) @live {
+    content
+    id
+    isComplete
+    updatedAt
+    sortOrder
+  }
+}
+`;
 
 const mapStateToProps = (state) => {
+  const {actions} = cashay.query(userActionListQuery, {
+    op: 'userActions',
+    variables: {id: state.auth.obj.sub},
+    directives: {
+      actions: {
+        sort: (a, b) => a.sortOrder > b.sortOrder
+      }
+    }
+  }).data;
   return {
-    actions: cashay.computed('userActions', [state.auth.obj.sub], resolveUserActions)
+    actions
   };
 };
 

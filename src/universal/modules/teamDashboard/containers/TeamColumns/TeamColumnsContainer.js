@@ -1,42 +1,55 @@
 import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
-import subscriptions from 'universal/subscriptions/subscriptions';
-import {TEAM_MEMBERS, PROJECTS} from 'universal/subscriptions/constants';
-import subscriber from 'universal/subscriptions/subscriber';
 import makeProjectsByStatus from 'universal/utils/makeProjectsByStatus';
 import {TEAM_DASH} from 'universal/utils/constants';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
 
-const projectSubQuery = subscriptions.find(sub => sub.channel === PROJECTS).string;
-const teamMembersSubQuery = subscriptions.find(sub => sub.channel === TEAM_MEMBERS).string;
+const teamColumnsSubQuery = `
+query {
+  teamMembers (teamId: $teamId) @live {
+    id
+    picture
+    preferredName,
+    projects @live {
+      content
+      id
+      status
+      teamMemberId
+      updatedAt
+      userSort
+      teamSort
+    }
+  }  
+}
+`;
 
-const resolveTeamProjects = (myTeamMemberId) => {
-  const [, teamId] = myTeamMemberId.split('::');
-  const {teamMembers} = cashay.subscribe(teamMembersSubQuery, subscriber, {
-    key: teamId,
-    op: TEAM_MEMBERS,
-    variables: {teamId},
-    dep: 'teamColProjects'
-  }).data;
-  const projectSubs = [];
-  for (let i = 0; i < teamMembers.length; i++) {
-    const {id: teamMemberId} = teamMembers[i];
-    projectSubs[i] = cashay.subscribe(projectSubQuery, subscriber, {
-      key: teamMemberId,
-      op: PROJECTS,
-      variables: {teamMemberId},
-      dep: 'teamColProjects'
-    }).data.projects;
+// memoized
+const resolveTeamProjects = (teamMembers) => {
+  if (teamMembers !== resolveTeamProjects.teamMembers) {
+    resolveTeamProjects.teamMembers = teamMembers;
+    const allProjects = [];
+    for (let i = 0; i < teamMembers.length; i++) {
+      const teamMember = teamMembers[i];
+      allProjects.push(...teamMember.projects);
+    }
+    resolveTeamProjects.cache = makeProjectsByStatus(allProjects, 'teamSort');
   }
-  const allProjects = [].concat(...projectSubs);
-  return makeProjectsByStatus(allProjects, 'teamSort');
+  return resolveTeamProjects.cache;
 };
 
 const mapStateToProps = (state, props) => {
-  const {myTeamMemberId} = props;
+  const {teamId} = props;
+  const teamColumnsSub = cashay.query(teamColumnsSubQuery, {
+    op: 'teamColumnsContainer',
+    variables: {teamId},
+  });
+  const {teamMembers} = teamColumnsSub.data;
+  const projects = resolveTeamProjects(teamMembers);
   return {
-    projects: cashay.computed('teamColProjects', [myTeamMemberId], resolveTeamProjects)
+    projects,
+    teamMembers,
+    myTeamMemberId: `${state.auth.obj.sub}::${teamId}`
   };
 };
 
