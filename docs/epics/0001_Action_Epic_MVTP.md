@@ -199,7 +199,7 @@ able to process the agenda item into new projects or actions.
 want a control for deleting or canceling it, so that they don't add to the
 noise of the team.
 
-- [ ] When all agenda items have been processed, the TMs will want one more
+- [X] When all agenda items have been processed, the TMs will want one more
 opportunity to add new items, so that they have one last chance to process
 something before the meeting ends.
 
