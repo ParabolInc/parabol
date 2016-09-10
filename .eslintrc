@@ -25,6 +25,7 @@
     "no-alert": 0,
     "no-console": 0,
     "no-param-reassign": 0,
+    "no-confusing-arrow": 0,
     "max-len": [1, 120],
     "object-curly-spacing": 0,
     "react/jsx-space-before-closing": 0

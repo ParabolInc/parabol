@@ -144,8 +144,8 @@ export default class MeetingContainer extends Component {
   render() {
     const {isFacilitating, localPhaseItem, members, params, team} = this.props;
     const {teamId, localPhase} = params;
-    const {facilitatorPhase, name: teamName} = team;
-
+    const {facilitatorPhase, meetingPhase, meetingPhaseItem, name: teamName} = team;
+    const agendaPhaseItem = meetingPhase === AGENDA_ITEMS && meetingPhaseItem || 0;
     // if we have a team.name, we have an initial subscription success to the team object
     if (!teamName || members.length === 0) {
       return <LoadingView />;
@@ -163,6 +163,8 @@ export default class MeetingContainer extends Component {
           localPhase={localPhase}
           teamName={teamName}
           teamId={teamId}
+          agendaPhaseItem={agendaPhaseItem}
+          isFacilitating={isFacilitating}
         />
         <MeetingMain>
           <MeetingSection paddingTop="2rem">

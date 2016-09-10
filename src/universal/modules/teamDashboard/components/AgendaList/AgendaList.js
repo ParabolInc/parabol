@@ -10,17 +10,19 @@ const handleRemoveItem = (itemId) => {
 
 const AgendaList = (props) => {
   const {styles} = AgendaList;
-  const {agenda} = props;
+  const {agenda, agendaPhaseItem, phaseItemFactory} = props;
   return (
     <div className={styles.root}>
       {agenda.map((item, idx) =>
         <AgendaItem
           desc={item.content}
-          index={idx}
+          idx={idx}
           key={`agendaItem${idx}`}
-          onClick={() => handleRemoveItem(item.id)}
+          handleRemove={() => handleRemoveItem(item.id)}
+          handleGoto={phaseItemFactory(idx + 1)}
           teamMember={item.teamMember}
           isComplete={item.isComplete}
+          agendaPhaseItem={agendaPhaseItem}
           sortOrder={item.sortOrder}
         />
       )}
@@ -32,7 +34,9 @@ AgendaList.propTypes = {
   agenda: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string,
     content: PropTypes.string
-  }))
+  })),
+  agendaPhaseItem: PropTypes.number,
+  phaseItemFactory: PropTypes.func
 };
 
 AgendaList.styles = StyleSheet.create({

@@ -13,7 +13,8 @@ import MeetingSectionSubheading from 'universal/modules/meeting/components/Meeti
 import MeetingAgendaCardsContainer from 'universal/modules/meeting/containers/MeetingAgendaCards/MeetingAgendaCardsContainer';
 import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
 import {AGENDA_ITEMS} from 'universal/utils/constants';
-
+import LoadingView from 'universal/components/LoadingView/LoadingView';
+import {cashay} from 'cashay';
 let s = {};
 
 const MeetingAgendaItems = (props) => {
@@ -27,10 +28,20 @@ const MeetingAgendaItems = (props) => {
   } = props;
   const {id: teamId} = team;
   const agendaItem = agenda[localPhaseItem - 1];
+  if (!agendaItem) {
+    return <LoadingView />;
+  }
   const currentTeamMember = members.find((m) => m.id === agendaItem.teamMemberId);
   const phaseItemFactory = makePhaseItemFactory(isFacilitating, agenda.length, router, teamId, AGENDA_ITEMS);
   const self = members.find(m => m.isSelf);
-  const gotoNextItem = phaseItemFactory(localPhaseItem + 1);
+  const gotoNextItem = () => {
+    const updatedAgendaItem = {
+      id: agendaItem.id,
+      isComplete: true
+    };
+    cashay.mutate('updateAgendaItem', {variables: {updatedAgendaItem}});
+    phaseItemFactory(localPhaseItem + 1)();
+  };
 
   return (
     <MeetingMain>

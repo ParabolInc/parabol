@@ -19,7 +19,11 @@ export const AgendaItem = new GraphQLObjectType({
     teamMemberId: {type: new GraphQLNonNull(GraphQLID), description: 'The teamMemberId that created this agenda item'},
     createdAt: {
       type: GraphQLISO8601Type,
-      description: 'The timestamp the placeholder was created'
+      description: 'The timestamp the agenda item was created'
+    },
+    updatedAt: {
+      type: GraphQLISO8601Type,
+      description: 'The timestamp the agenda item was updated'
     },
     isComplete: {
       type: GraphQLBoolean,

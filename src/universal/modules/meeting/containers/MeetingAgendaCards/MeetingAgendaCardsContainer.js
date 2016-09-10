@@ -25,6 +25,7 @@ query {
 
 const mapStateToProps = (state, props) => {
   const {agendaId} = props;
+  console.log('agendaId', agendaId);
   const {outcomes} = cashay.query(meetingAgendaCardsQuery, {
     op: 'meetingAgendaCardsContainer',
     key: agendaId,
@@ -33,7 +34,7 @@ const mapStateToProps = (state, props) => {
       outcomes: (source, args) => (doc) => doc.agendaId === args.id
     },
     sort: {
-      outcomes: (a,b) => a.createdAt > b.createdAt
+      outcomes: (a, b) => a.createdAt > b.createdAt
     }
   }).data;
   return {

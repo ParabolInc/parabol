@@ -15,13 +15,13 @@ let s = {};
 
 // TODO: wire me up with real counts and phase facilitation
 
-const MeetingAgendaLastCall = (props) => {
-  const {
+const MeetingAgendaLastCall = () => {
+  // const {
     // isFacilitating,
     // router,
-    team
-  } = props;
-  const {id: teamId} = team;
+    // team
+  // } = props;
+  // const {id: teamId} = team;
   // const phaseItemFactory = makePhaseItemFactory(isFacilitating, 0, router, teamId, FIRST_CALL);
   // const gotoNextItem = phaseItemFactory(1);
 

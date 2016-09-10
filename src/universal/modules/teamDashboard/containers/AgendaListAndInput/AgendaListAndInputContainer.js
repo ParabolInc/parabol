@@ -48,18 +48,22 @@ const mapStateToProps = (state, props) => {
 };
 
 const AgendaListAndInputContainer = (props) => {
-  const {agenda, myTeamMember, teamId} = props;
+  const {agendaPhaseItem, agenda, isFacilitating, myTeamMember, teamId} = props;
   return (
     <AgendaListAndInput
       agenda={agenda}
-      teamId={teamId}
+      agendaPhaseItem={agendaPhaseItem}
+      isFacilitating={isFacilitating}
       myTeamMember={myTeamMember}
+      teamId={teamId}
     />
   );
 };
 
 AgendaListAndInputContainer.propTypes = {
   agenda: PropTypes.array,
+  agendaPhaseItem: PropTypes.number,
+  isFacilitating: PropTypes.bool,
   myTeamMember: PropTypes.object,
   teamId: PropTypes.string
 };

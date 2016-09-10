@@ -10,22 +10,26 @@ const warmLinkHover = tinycolor(theme.palette.warm).darken(15).toHexString();
 let s = {};
 
 const AgendaItem = props => {
-  const {desc, index, onClick, status, teamMember = {}} = props;
+  const {desc, idx, handleRemove, isComplete, agendaPhaseItem, handleGoto, teamMember = {}} = props;
+  const isCurrent = idx + 1 === agendaPhaseItem;
+  const canDelete = !isComplete && !isCurrent;
+  // const isMeeting = agendaPhaseItem !== undefined;
   const rootStyles = combineStyles(s.root, s[status]);
   let descStyles;
-  if (status === 'processed') descStyles = s.strikethrough;
-  if (status === 'active') descStyles = s.descActive;
-  const descTrim = desc.replace(/\s+/g, '');
-  const hash = `#${descTrim}`;
+  if (isComplete) descStyles = s.strikethrough;
+  if (isCurrent) descStyles = combineStyles(descStyles, s.descActive);
+  // const descTrim = desc.replace(/\s+/g, '');
 
   return (
-    <div className={rootStyles} onClick={onClick} title={desc}>
-      <div className={s.del}>
-        <FontAwesome name="times-circle" style={{lineHeight: 'inherit'}}/>
-      </div>
-      <div className={s.index}>{index + 1}.</div>
-      <div className={s.desc}>
-        <a className={descStyles} href={hash}>{desc}</a>”
+    <div className={rootStyles} title={desc}>
+      {canDelete &&
+        <div className={s.del} onClick={handleRemove}>
+          <FontAwesome name="times-circle" style={{lineHeight: 'inherit'}}/>
+        </div>
+      }
+      <div className={s.index}>{idx + 1}.</div>
+      <div className={s.desc} onClick={handleGoto}>
+        <a className={descStyles} >{desc}</a>”
       </div>
       <Avatar hasBadge={false} picture={teamMember.picture} size="smallest"/>
     </div>
@@ -68,6 +72,7 @@ s = StyleSheet.create({
   del: {
     ...block,
     color: theme.palette.dark,
+    cursor: 'pointer',
     left: '1.25rem',
     // paddingTop: '1px',
     position: 'absolute',
@@ -82,6 +87,7 @@ s = StyleSheet.create({
     fontStyle: 'italic',
     fontWeight: 700,
     position: 'relative',
+    cursor: 'pointer',
 
     '::before': {
       content: '"“"',
@@ -95,8 +101,6 @@ s = StyleSheet.create({
 
   descActive: {
     color: theme.palette.warm,
-    cursor: 'pointer',
-
     ':hover': {
       color: warmLinkHover
     },
@@ -150,9 +154,13 @@ s = StyleSheet.create({
 });
 
 AgendaItem.propTypes = {
+  agendaPhaseItem: PropTypes.number,
   desc: PropTypes.string,
-  index: PropTypes.number,
-  onClick: PropTypes.func,
+  idx: PropTypes.number,
+  isCurrent: PropTypes.bool,
+  isComplete: PropTypes.bool,
+  handleGoto: PropTypes.func,
+  handleRemove: PropTypes.func,
   owner: PropTypes.string,
   status: PropTypes.oneOf([
     'active',
@@ -167,9 +175,6 @@ AgendaItem.propTypes = {
 AgendaItem.defaultProps = {
   desc: 'pull request',
   index: 1,
-  onClick() {
-    console.log('AgendaItem.onClick (default)');
-  },
   owner: 'MK',
   status: 'waiting'
 };

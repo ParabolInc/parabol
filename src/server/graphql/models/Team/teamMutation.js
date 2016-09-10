@@ -202,9 +202,8 @@ export default {
         description: 'The team that will be having the meeting'
       }
     },
-    async resolve(source, {teamId}, {authToken, socket}) {
+    async resolve(source, {teamId}, {authToken}) {
       requireSUOrTeamMember(authToken, teamId);
-//      requireWebsocket(socket);
       await r.table('Team').get(teamId).update({
         facilitatorPhase: 'lobby',
         meetingPhase: 'lobby',
