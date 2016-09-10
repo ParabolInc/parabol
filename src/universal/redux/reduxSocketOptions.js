@@ -4,15 +4,17 @@ import socketCluster from 'socketcluster-client';
 import subscriber from 'universal/subscriptions/subscriber';
 
 const onConnect = (options, hocOptions, socket) => {
-  const sendToServer = request => {
-    return new Promise((resolve) => {
-      socket.emit('graphql', request, (error, response) => {
-        resolve(response);
+  if (!cashay.priorityTransport) {
+    const sendToServer = request => {
+      return new Promise((resolve) => {
+        socket.emit('graphql', request, (error, response) => {
+          resolve(response);
+        });
       });
-    });
-  };
-  const priorityTransport = new Transport(sendToServer);
-  cashay.create({priorityTransport, subscriber});
+    };
+    const priorityTransport = new Transport(sendToServer);
+    cashay.create({priorityTransport, subscriber});
+  }
 };
 const onDisconnect = () => {
   cashay.create({priorityTransport: null});

@@ -1,7 +1,5 @@
 import React, {PropTypes} from 'react';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
-import reduxSocketOptions from 'universal/redux/reduxSocketOptions';
-import {reduxSocket} from 'redux-socket-cluster';
 import UserSettings from 'universal/modules/userDashboard/components/UserSettings/UserSettings';
 import {connect} from 'react-redux';
 
@@ -40,9 +38,7 @@ UserSettingsContainer.propTypes = {
 };
 
 export default requireAuth(
-  reduxSocket({}, reduxSocketOptions)(
-    connect(mapStateToProps)(
-      UserSettingsContainer
-    )
+  connect(mapStateToProps)(
+    UserSettingsContainer
   )
 );

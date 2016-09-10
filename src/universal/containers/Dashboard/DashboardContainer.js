@@ -1,9 +1,8 @@
 import React, {PropTypes} from 'react';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
-import reduxSocketOptions from 'universal/redux/reduxSocketOptions';
-import {reduxSocket} from 'redux-socket-cluster';
 import {DashSidebar} from 'universal/components/Dashboard';
 import DashLayoutContainer from 'universal/containers/DashLayoutContainer/DashLayoutContainer';
+import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 
 const DashboardContainer = (props) => {
   const {children, location: {pathname}} = props;
@@ -25,7 +24,7 @@ DashboardContainer.propTypes = {
 
 export default
 requireAuth(
-  reduxSocket({}, reduxSocketOptions)(
+  socketWithPresence(
     DashboardContainer
   )
 );
