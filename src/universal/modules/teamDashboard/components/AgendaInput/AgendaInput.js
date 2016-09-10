@@ -14,11 +14,14 @@ const AgendaInput = (props) => {
   const lastAgendaItem = agenda[agenda.length - 1];
   const nextSort = lastAgendaItem ? lastAgendaItem.sortOrder + SORT_STEP : 0;
   const handleAgendaItemSubmit = (submittedData) => {
+    // TODO replace this with redux-form synchronous validation
+    const content = submittedData.agendaItem;
+    if (!content) return;
     const options = {
       variables: {
         newAgendaItem: {
           id: `${teamId}::${shortid.generate()}`,
-          content: submittedData.agendaItem,
+          content,
           sortOrder: nextSort,
           teamMemberId: myTeamMember.id
         }

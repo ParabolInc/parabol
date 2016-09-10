@@ -15,11 +15,14 @@ import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseIte
 import {AGENDA_ITEMS} from 'universal/utils/constants';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import {cashay} from 'cashay';
+import withHotkey from 'react-hotkey-hoc';
+
 let s = {};
 
 const MeetingAgendaItems = (props) => {
   const {
     agenda,
+    bindHotkey,
     isFacilitating,
     localPhaseItem,
     members,
@@ -42,7 +45,9 @@ const MeetingAgendaItems = (props) => {
     cashay.mutate('updateAgendaItem', {variables: {updatedAgendaItem}});
     phaseItemFactory(localPhaseItem + 1)();
   };
-
+  const gotoPrevItem = phaseItemFactory(localPhaseItem - 1);
+  bindHotkey(['enter', 'right'], gotoNextItem);
+  bindHotkey('left', gotoPrevItem);
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="2rem">
@@ -123,6 +128,7 @@ s = StyleSheet.create({
 
 MeetingAgendaItems.propTypes = {
   agenda: PropTypes.array.isRequired,
+  bindHotkey: PropTypes.func,
   isFacilitating: PropTypes.bool,
   localPhaseItem: PropTypes.number.isRequired,
   members: PropTypes.array,
@@ -135,4 +141,4 @@ MeetingAgendaItems.propTypes = {
   router: PropTypes.object.isRequired,
 };
 
-export default withRouter(look(MeetingAgendaItems));
+export default withHotkey(withRouter(look(MeetingAgendaItems)));

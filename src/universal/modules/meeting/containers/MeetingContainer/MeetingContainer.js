@@ -13,9 +13,9 @@ import MeetingMain from 'universal/modules/meeting/components/MeetingMain/Meetin
 import MeetingLobby from 'universal/modules/meeting/components/MeetingLobby/MeetingLobby';
 import MeetingCheckin from 'universal/modules/meeting/components/MeetingCheckin/MeetingCheckin';
 import MeetingUpdatesContainer
-  from 'universal/modules/meeting/containers/MeetingUpdatesContainer/MeetingUpdatesContainer';
+  from '../MeetingUpdates/MeetingUpdatesContainer';
 import MeetingAgendaItemsContainer
-  from 'universal/modules/meeting/containers/MeetingAgendaItemsContainer/MeetingAgendaItemsContainer';
+  from '../MeetingAgendaItems/MeetingAgendaItemsContainer';
 import AvatarGroup from 'universal/modules/meeting/components/AvatarGroup/AvatarGroup';
 import {
   LOBBY,
@@ -27,7 +27,7 @@ import {
 //  SUMMARY
 } from 'universal/utils/constants';
 import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
-import MeetingAgendaLastCall from 'universal/modules/meeting/components/MeetingAgendaLastCall/MeetingAgendaLastCall';
+import MeetingAgendaLastCallContainer from 'universal/modules/meeting/containers/MeetingAgendaLastCall/MeetingAgendaLastCallContainer';
 
 const resolveMeetingMembers = (queryData, userId) => {
   if (queryData !== resolveMeetingMembers.queryData) {
@@ -175,7 +175,7 @@ export default class MeetingContainer extends Component {
           {localPhase === UPDATES && <MeetingUpdatesContainer {...phaseStateProps} />}
           {localPhase === FIRST_CALL && <MeetingAgendaFirstCall {...phaseStateProps} />}
           {localPhase === AGENDA_ITEMS && <MeetingAgendaItemsContainer {...phaseStateProps} />}
-          {localPhase === LAST_CALL && <MeetingAgendaLastCall {...phaseStateProps} />}
+          {localPhase === LAST_CALL && <MeetingAgendaLastCallContainer {...phaseStateProps} />}
         </MeetingMain>
       </MeetingLayout>
     );

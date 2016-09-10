@@ -13,14 +13,14 @@ import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPha
 
 let s = {};
 
-// TODO: wire me up with real counts and phase facilitation
-
-const MeetingAgendaLastCall = () => {
-  // const {
-    // isFacilitating,
+const MeetingAgendaLastCall = (props) => {
+  const {
+    agendaItemCount,
+    actionCount,
+    projectCount
     // router,
     // team
-  // } = props;
+  } = props;
   // const {id: teamId} = team;
   // const phaseItemFactory = makePhaseItemFactory(isFacilitating, 0, router, teamId, FIRST_CALL);
   // const gotoNextItem = phaseItemFactory(1);
@@ -32,9 +32,9 @@ const MeetingAgendaLastCall = () => {
           <MeetingSection paddingBottom="2rem">
             <MeetingPhaseHeading>Boom!</MeetingPhaseHeading>
             <Type align="center" bold family="serif" marginBottom="2.25rem" marginTop="2rem" scale="s5" theme="black">
-              We worked on <span className={s.highlight}>TODO Agenda Items </span>
-              resulting in <span className={s.highlight}>TODO Actions </span>
-              and <span className={s.highlight}>TODO projects</span>.
+              We worked on <span className={s.highlight}>{agendaItemCount} Agenda Items </span>
+              resulting in <span className={s.highlight}>{actionCount} Actions </span>
+              and <span className={s.highlight}>{projectCount} projects</span>.
             </Type>
             <Type align="center" marginBottom="2.75rem" scale="s4" theme="black">
               Anybody have <b><i>additional Agenda Items</i></b>?<br />
@@ -57,6 +57,9 @@ const MeetingAgendaLastCall = () => {
 };
 
 MeetingAgendaLastCall.propTypes = {
+  agendaItemCount: PropTypes.number,
+  actionCount: PropTypes.number,
+  projectCount: PropTypes.number,
   localPhaseItem: PropTypes.number,
   isFacilitating: PropTypes.bool,
   router: PropTypes.object.isRequired,

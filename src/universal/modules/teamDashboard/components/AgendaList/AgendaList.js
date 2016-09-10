@@ -19,7 +19,7 @@ const AgendaList = (props) => {
           idx={idx}
           key={`agendaItem${idx}`}
           handleRemove={() => handleRemoveItem(item.id)}
-          handleGoto={phaseItemFactory(idx + 1)}
+          gotoAgendaItem={phaseItemFactory(idx + 1)}
           teamMember={item.teamMember}
           isComplete={item.isComplete}
           agendaPhaseItem={agendaPhaseItem}

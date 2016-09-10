@@ -4,16 +4,18 @@ import tinycolor from 'tinycolor2';
 import FontAwesome from 'react-fontawesome';
 import theme from 'universal/styles/theme';
 import Avatar from 'universal/components/Avatar/Avatar';
+import voidClick from 'universal/utils/voidClick';
 
 const combineStyles = StyleSheet.combineStyles;
 const warmLinkHover = tinycolor(theme.palette.warm).darken(15).toHexString();
 let s = {};
 
 const AgendaItem = props => {
-  const {desc, idx, handleRemove, isComplete, agendaPhaseItem, handleGoto, teamMember = {}} = props;
+  const {desc, idx, handleRemove, isComplete, agendaPhaseItem, gotoAgendaItem, teamMember = {}} = props;
   const isCurrent = idx + 1 === agendaPhaseItem;
   const canDelete = !isComplete && !isCurrent;
-  // const isMeeting = agendaPhaseItem !== undefined;
+  const isMeeting = agendaPhaseItem !== undefined;
+  const handleGoto = isMeeting ? gotoAgendaItem : voidClick;
   const rootStyles = combineStyles(s.root, s[status]);
   let descStyles;
   if (isComplete) descStyles = s.strikethrough;
@@ -159,7 +161,7 @@ AgendaItem.propTypes = {
   idx: PropTypes.number,
   isCurrent: PropTypes.bool,
   isComplete: PropTypes.bool,
-  handleGoto: PropTypes.func,
+  gotoAgendaItem: PropTypes.func,
   handleRemove: PropTypes.func,
   owner: PropTypes.string,
   status: PropTypes.oneOf([
