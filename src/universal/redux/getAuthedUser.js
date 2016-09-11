@@ -3,6 +3,7 @@ query {
   user @cached(type: "User") {
     email,
     id,
+    nickname,
     picture,
     preferredName
   }

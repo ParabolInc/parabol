@@ -64,6 +64,7 @@ styles = StyleSheet.create({
 
   navLabel: {
     borderTop: '1px solid rgba(255, 255, 255, .5)',
+    cursor: 'default',
     fontSize: theme.typography.s2,
     fontWeight: 700,
     marginLeft: '1rem',

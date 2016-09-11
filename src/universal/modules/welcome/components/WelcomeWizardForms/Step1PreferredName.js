@@ -1,5 +1,5 @@
-import React, {PropTypes} from 'react';
-import {reduxForm} from 'redux-form';
+import React, {Component, PropTypes} from 'react';
+import {reduxForm, initialize} from 'redux-form';
 import Field from 'universal/components/Field/Field';
 import ProgressDots from '../ProgressDots/ProgressDots';
 import WelcomeContent from '../WelcomeContent/WelcomeContent';
@@ -9,9 +9,30 @@ import WelcomeLayout from '../WelcomeLayout/WelcomeLayout';
 import {cashay} from 'cashay';
 import {nextPage, goToPage, updateCompleted} from 'universal/modules/welcome/ducks/welcomeDuck';
 
-const Step1PreferredName = (props) => {
-  const {handleSubmit, preferredName, dispatch, user, completed} = props;
-  const onPreferredNameSubmit = submissionData => {
+const reduxFormOptions = {
+  form: 'welcomeWizard',
+  destroyOnUnmount: false
+  // TODO: add validations
+};
+
+@reduxForm(reduxFormOptions)
+export default class Step1PreferredName extends Component {
+  static propTypes = {
+    dispatch: PropTypes.func.isRequired,
+    handleSubmit: PropTypes.func,
+    preferredName: PropTypes.string,
+    onSubmit: PropTypes.func,
+    user: PropTypes.object,
+    completed: PropTypes.number
+  };
+
+  componentWillMount() {
+    const {dispatch, user: {nickname}} = this.props;
+    return dispatch(initialize('welcomeWizard', {preferredName: nickname}));
+  }
+
+  onPreferredNameSubmit = (submissionData) => {
+    const {dispatch, user, completed} = this.props;
     const {preferredName: newPrefferedName} = submissionData;
     const options = {
       variables: {
@@ -27,56 +48,47 @@ const Step1PreferredName = (props) => {
     }
     dispatch(nextPage());
   };
-  const progressDotClick = (dot) => {
+
+  progressDotClick = (dot) => {
+    const {completed, dispatch, preferredName} = this.props;
     if (dot === 2 && preferredName) {
       dispatch(goToPage(2));
     } else if (dot === 3 && completed === 3) {
       dispatch(goToPage(3));
     }
   };
-  return (
-    <WelcomeLayout>
-      <WelcomeHeader heading={<span>Hello!</span>} />
-      <WelcomeContent>
-        <ProgressDots
-          numDots={3}
-          numCompleted={completed}
-          currentDot={1}
-          onClick={progressDotClick}
-        />
-        <div>{/* Div for that flexy flex */}
-          <WelcomeHeading copy={<span>Please type in your name:</span>} />
-          <form onSubmit={handleSubmit(onPreferredNameSubmit)}>
-            <Field
-              autoFocus
-              buttonDisabled={!preferredName}
-              buttonIcon="check-circle"
-              hasButton
-              hasShortcutHint
-              isLarger
-              name="preferredName"
-              placeholder="Albert Einstein"
-              shortcutHint="Press enter"
-              type="text"
-            />
-          </form>
-        </div>
-      </WelcomeContent>
-    </WelcomeLayout>
-  );
-};
 
-Step1PreferredName.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  handleSubmit: PropTypes.func,
-  preferredName: PropTypes.string,
-  onSubmit: PropTypes.func,
-  user: PropTypes.object,
-  completed: PropTypes.number
+  render() {
+    const {handleSubmit, preferredName, completed} = this.props;
+    return (
+      <WelcomeLayout>
+        <WelcomeHeader heading={<span>Hello!</span>}/>
+        <WelcomeContent>
+          <ProgressDots
+            numDots={3}
+            numCompleted={completed}
+            currentDot={1}
+            onClick={this.progressDotClick}
+          />
+          <div>{/* Div for that flexy flex */}
+            <WelcomeHeading copy={<span>Please type in your name:</span>}/>
+            <form onSubmit={handleSubmit(this.onPreferredNameSubmit)}>
+              <Field
+                autoFocus
+                buttonDisabled={!preferredName}
+                buttonIcon="check-circle"
+                hasButton
+                hasShortcutHint
+                isLarger
+                name="preferredName"
+                placeholder="Albert Einstein"
+                shortcutHint="Press enter"
+                type="text"
+              />
+            </form>
+          </div>
+        </WelcomeContent>
+      </WelcomeLayout>
+    );
+  }
 };
-
-export default reduxForm({
-  form: 'welcomeWizard',
-  destroyOnUnmount: false
-  // TODO: add validations
-})(Step1PreferredName);
