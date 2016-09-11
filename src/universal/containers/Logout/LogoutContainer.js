@@ -5,6 +5,7 @@ import {removeAuthToken} from 'universal/redux/authDuck';
 import {reset as resetAppState} from 'universal/redux/rootDuck';
 import {withRouter} from 'react-router';
 import {segmentEvent} from 'universal/redux/segmentActions';
+import {cashay} from 'cashay';
 
 const logoutSuccess = {
   title: 'Tootles!',
@@ -28,6 +29,7 @@ export default class LogoutContainer extends Component {
     dispatch(resetAppState());
     dispatch(showSuccess(logoutSuccess));
     dispatch(segmentEvent('User Logout'));
+    cashay.clear();
     if (typeof window !== 'undefined' && typeof window.analytics !== 'undefined') {
       // inform segment of the logout, wipe state:
       window.analytics.reset();

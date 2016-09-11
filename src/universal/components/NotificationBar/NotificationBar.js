@@ -48,10 +48,7 @@ const NotificationBar = (props) => {
 
 
 NotificationBar.propTypes = {
-  activeMeetings: PropTypes.arrayOf({
-    link: PropTypes.string,
-    name: PropTypes.string
-  })
+  activeMeetings: PropTypes.array
 };
 
 styles = StyleSheet.create({

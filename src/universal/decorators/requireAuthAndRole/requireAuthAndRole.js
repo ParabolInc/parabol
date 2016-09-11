@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {showError} from 'universal/modules/notifications/ducks/notifications';
-import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
+import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router';
@@ -16,10 +16,10 @@ const unauthenticated = {
 };
 
 const mapStateToProps = state => {
-  const user = cashay.query(getAuthQueryString, authedOptions).data.user;
+  const userId = state.auth.obj.sub;
   return {
     auth: state.auth.obj,
-    user
+    user: cashay.query(getAuthQueryString, getAuthedOptions(userId)).data.user
   };
 };
 

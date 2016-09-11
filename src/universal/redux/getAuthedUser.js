@@ -1,6 +1,6 @@
 export const getAuthQueryString = `
 query {
-  user: getCurrentUser {
+  user @cached(type: "User") {
     email,
     id,
     picture,
@@ -37,9 +37,9 @@ const updateTokenMutationHandlers = {
   },
 };
 
-export const authedOptions = {
+export const getAuthedOptions = (userId) => ({
   op: 'getAuthedUser',
+  resolveCached: {user: () => userId},
   mutationHandlers: updateTokenMutationHandlers,
-  customMutations,
-  localOnly: true
-};
+  customMutations
+});

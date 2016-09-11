@@ -45,14 +45,18 @@ export default ComposedComponent => {
 
     constructor(props) {
       super(props);
-      const socket = socketCluster.connect();
-      socket.on('subscribe', channelName => {
-        const {teamId} = props.params;
-        if (channelName === `${PRESENCE}/${teamId}`) {
-          const options = {variables: {teamId}};
-          cashay.mutate('soundOff', options);
-        }
-      });
+      const {teamId} = props.params;
+      if (teamId) {
+        const socket = socketCluster.connect();
+        socket.on('subscribe', channelName => {
+          if (channelName === `${PRESENCE}/${teamId}`) {
+            const options = {variables: {teamId}};
+            cashay.mutate('soundOff', options);
+          }
+        });
+      } else {
+        // TODO add a presence listener for the /me route
+      }
     }
 
     render() {
