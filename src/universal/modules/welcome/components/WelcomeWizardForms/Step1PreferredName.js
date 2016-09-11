@@ -91,4 +91,4 @@ export default class Step1PreferredName extends Component {
       </WelcomeLayout>
     );
   }
-};
+}
