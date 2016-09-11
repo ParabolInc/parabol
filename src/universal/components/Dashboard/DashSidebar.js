@@ -50,6 +50,7 @@ styles = StyleSheet.create({
     backgroundColor: theme.palette.mid,
     color: textColor,
     minWidth: layoutStyle.dashSidebarWidth,
+    maxWidth: layoutStyle.dashSidebarWidth,
     paddingBottom: '1.25rem'
   },
 
