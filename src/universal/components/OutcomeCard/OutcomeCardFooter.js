@@ -6,7 +6,7 @@ import labels from 'universal/styles/theme/labels';
 import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 
-// const combineStyles = StyleSheet.combineStyles;
+const combineStyles = StyleSheet.combineStyles;
 const avatarSize = '1.5rem';
 const buttonBase = {
   border: 0,
@@ -33,23 +33,21 @@ const OutcomeCardFooter = (props) => {
   const {
     hasOpenStatusMenu,
     owner,
-    // status,
+    status,
     toggleAssignMenu,
     toggleStatusMenu,
     isArchived,
   } = props;
 
-  // const statusButtonStyles = hasOpenStatusMenu ?
-  //   styles.statusButton :
-  //   combineStyles(styles.statusButton, styles[status]);
-  const statusButtonStyles = styles.statusButton;
+  const statusButtonStyles = hasOpenStatusMenu ?
+    styles.statusButton :
+    combineStyles(styles.statusButton, styles[status]);
   const avatarImage = owner.picture;
   const avatarName = owner.preferredName;
   // const avatarStyles = combineStyles(styles.avatar, styles.avatarTeam);
   // TODO: Set avatarTeam style when showing team instead of owner (on UserDashboard)
   const avatarStyles = styles.avatar;
-  // const buttonIcon = labels.projectStatus[status].icon;
-  const buttonIcon = 'cog';
+  const buttonIcon = labels.projectStatus[status].icon;
 
   return (
     <div className={styles.root}>

@@ -82,6 +82,7 @@ const OutcomeCardStatusMenu = (props) => {
         })}
         </div>
       }
+      {/* TODO: Move this to “AgendaCard”s only (TA) */}
       {isProjectAndNotArchived &&
         <div className={styles.buttonBlock}>
           {makeButton('action', 'calendar-check-o', moveToActionsLabel)}

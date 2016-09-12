@@ -13,7 +13,8 @@ const labelStyles = {
   display: 'inline-block',
   border: '1px solid transparent',
   borderRadius: '.25rem',
-  padding: '1px 4px',
+  borderWidth: '2px 1px 1px',
+  padding: '1px 4px 2px',
   verticalAlign: 'middle'
 };
 let s = {};
@@ -31,7 +32,7 @@ const CreateCard = (props) => {
     <span className={s.label}>
       <span className={s.labelStyles}>Add an{' '}</span>
       <span className={s.actionLabel}>
-        <span className={s.underline}>A</span>ction
+        <u>A</u>ction
       </span>
     </span>;
 
@@ -39,14 +40,7 @@ const CreateCard = (props) => {
     <span className={s.label}>
       <span className={s.labelStyles}>Add a{' '}</span>
       <span className={s.projectLabel}>
-        <span className={s.underline}>P</span>roject
-      </span>
-    </span>;
-
-  const nextRequestLabel = () =>
-    <span className={s.label}>
-      <span className={s.labelStyles}>
-        <span className={s.underline}>N</span>ext Request
+        <u>P</u>roject
       </span>
     </span>;
 
@@ -59,7 +53,7 @@ const CreateCard = (props) => {
   return (
     <div className={cardStyles}>
       {hasControls &&
-        <div className={s.controls}>
+        <div className={s.controlsBlock}>
           <PushButton
             handleOnClick={handleAddAction}
             keystroke="a"
@@ -70,11 +64,6 @@ const CreateCard = (props) => {
             handleOnClick={handleAddProject}
             keystroke="p"
             label={projectLabel()}
-            size="default"
-          />
-          <PushButton
-            keystroke="n"
-            label={nextRequestLabel()}
             size="default"
           />
         </div>
@@ -114,7 +103,7 @@ s = StyleSheet.create({
     borderTopColor: theme.palette.mid
   },
 
-  controls: {
+  controlsBlock: {
     // Define
   },
 
@@ -132,18 +121,16 @@ s = StyleSheet.create({
   actionLabel: {
     ...labelStyles,
     backgroundColor: theme.palette.light50l,
-    borderColor: theme.palette.light50g
+    borderColor: theme.palette.light50g,
+    borderTopColor: theme.palette.dark,
+    color: theme.palette.dark
   },
 
   projectLabel: {
     ...labelStyles,
-    backgroundColor: theme.palette.cool10l,
-    borderColor: theme.palette.cool,
+    borderColor: theme.palette.dark30l,
+    borderTopColor: theme.palette.cool,
     color: theme.palette.cool
-  },
-
-  underline: {
-    textDecoration: 'underline'
   }
 });
 

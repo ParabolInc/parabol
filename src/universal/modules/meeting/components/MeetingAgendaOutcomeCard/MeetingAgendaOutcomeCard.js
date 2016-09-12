@@ -15,7 +15,7 @@ import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
 const MeetingAgendaOutcomeCard = (props) => {
   const {content, id, status, type} = props;
   return (
-    <OutcomeCard status={props.status} isProject={props.type === 'project'}>
+    <OutcomeCard status={status} isProject={type === 'Project'}>
       <div style={{padding: '1rem'}}>
         content: {content}<br />
         id: {id}<br />

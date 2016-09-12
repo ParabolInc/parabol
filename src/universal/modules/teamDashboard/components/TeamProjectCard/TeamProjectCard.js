@@ -8,13 +8,14 @@ import OutcomeCardAssignMenuContainer from 'universal/modules/teamDashboard/cont
 
 import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
 import OutcomeCardTextareaContainer from 'universal/modules/teamDashboard/containers/OutcomeCardTextarea/OutcomeCardTextareaContainer';
-import OutcomeCardFooter from './OutcomeCardFooter';
+import OutcomeCardFooter from 'universal/components/OutcomeCard/OutcomeCardFooter';
 import OutcomeCardStatusMenu from 'universal/components/OutcomeCard/OutcomeCardStatusMenu';
 
 const OPEN_CONTENT_MENU = 'TeamProjectCard/openContentMenu';
 const OPEN_ASSIGN_MENU = 'TeamProjectCard/openAssignMenu';
 const OPEN_STATUS_MENU = 'TeamProjectCard/openStatusMenu';
 
+const {combineStyles} = StyleSheet;
 let styles = {};
 
 @reduxForm()
@@ -128,7 +129,7 @@ export default class TeamProjectCard extends Component {
         <OutcomeCardFooter
           hasOpenStatusMenu={hasOpenStatusMenu}
           isProject={isProject}
-          owner={owner}
+          owner={project.teamMember}
           status={status}
           toggleAssignMenu={this.toggleAssignMenu}
           toggleStatusMenu={this.toggleStatusMenu}
