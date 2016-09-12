@@ -1,12 +1,14 @@
 import React, {PropTypes} from 'react';
 import {cashay} from 'cashay';
-import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
+import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
 import {connect} from 'react-redux';
 import StandardHub from 'universal/components/StandardHub/StandardHub';
 
-const mapStateToProps = () => {
+const mapStateToProps = (state) => {
+  const userId = state.auth.obj.sub;
+  const {user} = cashay.query(getAuthQueryString, getAuthedOptions(userId)).data;
   return {
-    user: cashay.query(getAuthQueryString, authedOptions).data.user
+    user
   };
 };
 

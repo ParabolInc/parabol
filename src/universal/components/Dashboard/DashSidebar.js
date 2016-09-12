@@ -50,6 +50,7 @@ styles = StyleSheet.create({
     backgroundColor: theme.palette.mid,
     color: textColor,
     minWidth: layoutStyle.dashSidebarWidth,
+    maxWidth: layoutStyle.dashSidebarWidth,
     paddingBottom: '1.25rem'
   },
 
@@ -64,6 +65,7 @@ styles = StyleSheet.create({
 
   navLabel: {
     borderTop: '1px solid rgba(255, 255, 255, .5)',
+    cursor: 'default',
     fontSize: theme.typography.s2,
     fontWeight: 700,
     marginLeft: '1rem',

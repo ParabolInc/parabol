@@ -6,7 +6,7 @@ import LoadingView from 'universal/components/LoadingView/LoadingView';
 import {withRouter} from 'react-router';
 import {showError, showSuccess, showWarning} from 'universal/modules/notifications/ducks/notifications';
 import {setAuthToken} from 'universal/redux/authDuck';
-import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
+import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
 import {setWelcomeActivity} from 'universal/modules/userDashboard/ducks/settingsDuck';
 import jwtDecode from 'jwt-decode';
 import {
@@ -18,10 +18,11 @@ import {
 
 const mapStateToProps = (state, props) => {
   const {params: {id}} = props;
+  const auth = state.auth.obj;
   return {
-    auth: state.auth.obj,
+    auth,
     inviteToken: id,
-    user: cashay.query(getAuthQueryString, authedOptions).data.user
+    user: cashay.query(getAuthQueryString, getAuthedOptions(auth.sub))
   };
 };
 

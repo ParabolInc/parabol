@@ -55,7 +55,7 @@ const Sidebar = (props) => {
         <a className={s.brandLink} onClick={handleLogoClick}>
           <img className={s.brandLogo} src={actionUIMark}/>
         </a>
-        <div className={s.teamName}>{teamName}</div>
+        <Link className={s.teamName} to={`/team/${teamId}`}>{teamName}</Link>
         <a className={s.shortUrl} href="/meetingLayout/lobby">{shortUrl}</a>
         {/* TODO: make me respond to props */}
       </div>
@@ -233,6 +233,7 @@ s = StyleSheet.create({
 
   teamName: {
     color: theme.palette.cool,
+    cursor: 'pointer',
     fontFamily: theme.typography.serif,
     fontSize: theme.typography.s5,
     fontStyle: 'italic',

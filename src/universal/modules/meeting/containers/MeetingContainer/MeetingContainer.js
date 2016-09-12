@@ -28,6 +28,8 @@ import {
 } from 'universal/utils/constants';
 import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
 import MeetingAgendaLastCallContainer from 'universal/modules/meeting/containers/MeetingAgendaLastCall/MeetingAgendaLastCallContainer';
+import {TEAMS} from 'universal/subscriptions/constants';
+
 
 const resolveMeetingMembers = (queryData, userId) => {
   if (queryData !== resolveMeetingMembers.queryData) {
@@ -116,7 +118,7 @@ export default class MeetingContainer extends Component {
     const {localPhaseItem, params, router, team} = props;
     const {localPhase} = params;
     // subscribe to all teams, but don't do anything with that open subscription
-    cashay.subscribe('teams');
+    cashay.subscribe(TEAMS);
     handleRedirects(team, localPhase, localPhaseItem, router);
   }
 

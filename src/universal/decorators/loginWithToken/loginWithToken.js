@@ -1,20 +1,21 @@
 import React, {PropTypes} from 'react';
-import {getAuthQueryString, authedOptions} from 'universal/redux/getAuthedUser';
+import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router';
 
 const mapStateToProps = state => {
+  const auth = state.auth.obj;
   return {
     auth: state.auth.obj,
-    user: cashay.query(getAuthQueryString, authedOptions).data.user
+    user: cashay.query(getAuthQueryString, getAuthedOptions(auth.sub)).data.user
   };
 };
 
 export default ComposedComponent => {
   const TokenizedComp = (props) => {
-    const {auth, user, router} = props;
-    if (auth.sub && user) {
+    const {auth, router} = props;
+    if (auth.sub) {
       // note if you join a team & leave it, tms will be an empty array
       const isNew = !auth.hasOwnProperty('tms');
       if (isNew) {
@@ -28,12 +29,6 @@ export default ComposedComponent => {
 
   TokenizedComp.propTypes = {
     auth: PropTypes.object,
-    user: PropTypes.shape({
-      email: PropTypes.string,
-      id: PropTypes.string,
-      picture: PropTypes.string,
-      preferredName: PropTypes.string
-    }),
     router: PropTypes.object.isRequired
   };
 

@@ -64,6 +64,9 @@ s = StyleSheet.create({
     },
     ':focus': {
       backgroundColor: theme.palette.dark20l
+    },
+    ':hover > div': {
+      opacity: 1
     }
   },
 
@@ -77,8 +80,10 @@ s = StyleSheet.create({
     cursor: 'pointer',
     left: '1.25rem',
     // paddingTop: '1px',
+    opacity: 0,
     position: 'absolute',
-    top: '.5rem'
+    top: '.5rem',
+    transition: 'opacity .1s ease-in'
   },
 
   desc: {

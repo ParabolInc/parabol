@@ -6,7 +6,7 @@ const UserActionList = (props) => {
   const {actions} = props;
   return (
     <div className={styles.root}>
-      {actions.map(item => <div key={`action${item.id}`}>{item.content}</div>)}
+      {actions.map(item => <div key={`action${item.id}`}>{item.content} - {item.updatedAt.toString()}</div>)}
     </div>
   );
 };
