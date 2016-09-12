@@ -24,7 +24,8 @@ export default ComposedComponent => {
       dispatch: PropTypes.func,
       params: PropTypes.shape({
         teamId: PropTypes.string
-      })
+      }),
+      tms: PropTypes.array
     };
 
     constructor(props) {
