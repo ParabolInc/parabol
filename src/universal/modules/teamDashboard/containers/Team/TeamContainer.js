@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react';
 import Team from 'universal/modules/teamDashboard/components/Team/Team';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
-import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
@@ -56,6 +55,6 @@ TeamContainer.propTypes = {
 
 export default requireAuth(
   connect(mapStateToProps)(
-    socketWithPresence(TeamContainer)
+    TeamContainer
   )
 );

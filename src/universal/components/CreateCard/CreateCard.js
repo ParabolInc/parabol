@@ -5,6 +5,7 @@ import PushButton from '../PushButton/PushButton';
 import Ellipsis from '../Ellipsis/Ellipsis';
 import Type from '../Type/Type';
 import theme from 'universal/styles/theme';
+import withHotkey from 'react-hotkey-hoc';
 
 const combineStyles = StyleSheet.combineStyles;
 const labelStyles = {
@@ -18,9 +19,13 @@ let s = {};
 
 const CreateCard = props => {
   let cardStyles = s.root;
-  const {createdBy, hasControls, isCreating, isProject} = props;
+  const {
+    bindHotkey, createdBy, handleAddAction, handleAddProject, hasControls,
+    isCreating, isProject
+  } = props;
   const cardBorderVariantStyles = combineStyles(s.root, s.rootBorderVariant);
-
+  bindHotkey('a', handleAddAction);
+  bindHotkey('p', handleAddProject);
   const actionLabel = () =>
     <span className={s.label}>
       <span className={s.labelStyles}>Add an{' '}</span>
@@ -54,9 +59,23 @@ const CreateCard = props => {
     <div className={cardStyles}>
       {hasControls &&
         <div className={s.controls}>
-          <PushButton keystroke="a" label={actionLabel()} size="default" />
-          <PushButton keystroke="p" label={projectLabel()} size="default" />
-          <PushButton keystroke="n" label={nextRequestLabel()} size="default" />
+          <PushButton
+            handleOnClick={handleAddAction}
+            keystroke="a"
+            label={actionLabel()}
+            size="default"
+          />
+          <PushButton
+            handleOnClick={handleAddProject}
+            keystroke="p"
+            label={projectLabel()}
+            size="default"
+          />
+          <PushButton
+            keystroke="n"
+            label={nextRequestLabel()}
+            size="default"
+          />
         </div>
       }
       {isCreating &&
@@ -69,7 +88,10 @@ const CreateCard = props => {
 };
 
 CreateCard.propTypes = {
+  bindHotkey: PropTypes.func,
   createdBy: PropTypes.string,
+  handleAddAction: PropTypes.func,
+  handleAddProject: PropTypes.func,
   hasControls: PropTypes.bool,
   isCreating: PropTypes.bool,
   isProject: PropTypes.bool
@@ -134,4 +156,4 @@ s = StyleSheet.create({
   }
 });
 
-export default look(CreateCard);
+export default withHotkey(look(CreateCard));

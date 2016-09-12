@@ -1,22 +1,28 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import AgendaItem from 'universal/modules/meeting/components/AgendaItem/AgendaItem';
+import {cashay} from 'cashay';
+import AgendaItem from 'universal/modules/teamDashboard/components/AgendaItem/AgendaItem';
 
-const handleItemClick = (idx) => console.log(`handleItemClick: ${idx}`);
+const handleRemoveItem = (itemId) => {
+  const options = {variables: {id: itemId}};
+  cashay.mutate('removeAgendaItem', options);
+};
 
 const AgendaList = (props) => {
   const {styles} = AgendaList;
-  const {agenda} = props;
+  const {agenda, agendaPhaseItem, phaseItemFactory} = props;
   return (
     <div className={styles.root}>
       {agenda.map((item, idx) =>
         <AgendaItem
           desc={item.content}
-          index={idx}
+          idx={idx}
           key={`agendaItem${idx}`}
-          onClick={() => handleItemClick(idx)}
+          handleRemove={() => handleRemoveItem(item.id)}
+          gotoAgendaItem={phaseItemFactory(idx + 1)}
           teamMember={item.teamMember}
           isComplete={item.isComplete}
+          agendaPhaseItem={agendaPhaseItem}
           sortOrder={item.sortOrder}
         />
       )}
@@ -28,7 +34,9 @@ AgendaList.propTypes = {
   agenda: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string,
     content: PropTypes.string
-  }))
+  })),
+  agendaPhaseItem: PropTypes.number,
+  phaseItemFactory: PropTypes.func
 };
 
 AgendaList.styles = StyleSheet.create({

@@ -13,13 +13,17 @@ export const AgendaItem = new GraphQLObjectType({
   name: 'AgendaItem',
   description: 'A request placeholder that will likely turn into 1 or more tasks',
   fields: () => ({
-    id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique agenda item id'},
+    id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique agenda item id teamId::shortid'},
     content: {type: new GraphQLNonNull(GraphQLString), description: 'The body of the agenda item'},
     teamId: {type: new GraphQLNonNull(GraphQLID), description: 'The team for this agenda item'},
     teamMemberId: {type: new GraphQLNonNull(GraphQLID), description: 'The teamMemberId that created this agenda item'},
     createdAt: {
       type: GraphQLISO8601Type,
-      description: 'The timestamp the placeholder was created'
+      description: 'The timestamp the agenda item was created'
+    },
+    updatedAt: {
+      type: GraphQLISO8601Type,
+      description: 'The timestamp the agenda item was updated'
     },
     isComplete: {
       type: GraphQLBoolean,
@@ -39,7 +43,7 @@ export const AgendaItem = new GraphQLObjectType({
 export const CreateAgendaItemInput = new GraphQLInputObjectType({
   name: 'CreateAgendaItemInput',
   fields: () => ({
-    id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique agenda item ID'},
+    id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique agenda item ID teamId::shortid'},
     content: {type: new GraphQLNonNull(GraphQLString), description: 'The content of the agenda item'},
     teamMemberId: {
       type: new GraphQLNonNull(GraphQLID),

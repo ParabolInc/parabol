@@ -24,7 +24,9 @@ let s = {};
 
 const Sidebar = (props) => {
   const {
+    agendaPhaseItem,
     facilitatorPhase,
+    isFacilitating,
     localPhase,
     teamName,
     teamId
@@ -106,7 +108,7 @@ const Sidebar = (props) => {
         </ul>
         {localPhase !== CHECKIN && localPhase !== SUMMARY &&
           <div>
-            <AgendaListAndInputContainer teamId={teamId}/>
+            <AgendaListAndInputContainer agendaPhaseItem={agendaPhaseItem} isFacilitating={isFacilitating} teamId={teamId}/>
           </div>
         }
       </nav>
@@ -116,7 +118,9 @@ const Sidebar = (props) => {
 
 Sidebar.propTypes = {
   agenda: PropTypes.array,
+  agendaPhaseItem: PropTypes.number,
   facilitatorPhase: PropTypes.oneOf(phaseArray),
+  isFacilitating: PropTypes.bool,
   localPhase: PropTypes.oneOf(phaseArray),
   teamName: PropTypes.string,
   teamId: PropTypes.string,

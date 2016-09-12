@@ -40,7 +40,6 @@ export default class ProgressBar extends Component {
   };
   renderPoint = (idx) => {
     const {clickFactory, membersCount, facilitatorPhaseItem, localPhaseItem, meetingPhaseItem, isComplete} = this.props;
-    let pointStyles;
     const pointStyleVariant = [s.point];
 
     let marginRight = {
@@ -61,7 +60,7 @@ export default class ProgressBar extends Component {
       };
     }
 
-    pointStyles = combineStyles.apply(null, pointStyleVariant);
+    const pointStyles = combineStyles.apply(null, pointStyleVariant);
 
     const handleOnClick = clickFactory(idx);
     return (

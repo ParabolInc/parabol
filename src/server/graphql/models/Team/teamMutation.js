@@ -71,57 +71,69 @@ export default {
       }
     },
     async resolve(source, {teamId, nextPhase, nextPhaseItem}, {authToken, socket}) {
+      // TODO: transform these console statements into configurable logger statements:
+      /*
+      console.log('moveMeeting()');
+      console.log('teamId');
+      console.log(teamId);
+      console.log('nextPhase');
+      console.log(nextPhase);
+      console.log('nextPhaseItem');
+      console.log(nextPhaseItem);
+      */
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
-      if (!phaseArray.includes(nextPhase)) {
-        throw errorObj({_error: 'That is not a valid phase'});
+      if (nextPhase && !phaseArray.includes(nextPhase)) {
+        throw errorObj({_error: `${nextPhase} is not a valid phase`});
       }
 
-      let team;
-      // make sure nextPhaseItem has a good value
+      const team = await r.table('Team').get(teamId);
       if (nextPhase === CHECKIN || nextPhase === UPDATES) {
-        const teamAndCount = await r.table('Team').get(teamId)
-          .do((reqlTeam) => ({
-            team: reqlTeam,
-            teamMembersCount: r.table('TeamMember')
-              .getAll(teamId, {index: 'teamId'})
-              .filter({isActive: true})
-              .count()
-          }));
-        if (nextPhaseItem < 1 || nextPhaseItem > teamAndCount.teamMembersCount) {
+        const teamMembersCount = await r.table('TeamMember')
+          .getAll(teamId, {index: 'teamId'})
+          .filter({isActive: true})
+          .count();
+        if (nextPhaseItem < 1 || nextPhaseItem > teamMembersCount) {
           throw errorObj({_error: 'We don\'t have that many team members!'});
         }
-        team = teamAndCount.team;
       } else if (nextPhase === AGENDA_ITEMS) {
-        const teamAndItemCount = await r.table('Team').get(teamId)
-          .do((reqlTeam) => ({
-            team: reqlTeam,
-            agendaItemCount: r.table('AgendaItems')
-              .getAll(teamId, {index: 'teamId'})
-              .count()
-          }));
-        if (nextPhaseItem < 1 || nextPhaseItem > teamAndItemCount.agendaItemCount) {
+        const agendaItemCount = await r.table('AgendaItem')
+          .getAll(teamId, {index: 'teamId'})
+          .count();
+        if (nextPhaseItem < 1 || nextPhaseItem > agendaItemCount) {
           throw errorObj({_error: 'We don\'t have that many agenda items!'});
         }
-        team = teamAndItemCount.team;
-      } else if (nextPhaseItem) {
-        throw errorObj({_error: `${nextPhase} does not have phase items`});
+      } else if (nextPhase && nextPhaseItem) {
+        throw errorObj({_error: `${nextPhase} does not have phase items, but you said ${nextPhaseItem}`});
       }
 
       const userId = getUserId(authToken);
       const teamMemberId = `${userId}::${teamId}`;
       const {activeFacilitator, facilitatorPhase, meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = team;
+      /*
+      console.log('team');
+      console.log(JSON.stringify(team));
+      */
       if (activeFacilitator !== teamMemberId) {
         throw errorObj({_error: 'Only the facilitator can advance the meeting'});
       }
       const isSynced = facilitatorPhase === meetingPhase && facilitatorPhaseItem === meetingPhaseItem;
       let incrementsProgress;
       if (phaseOrder(nextPhase) - phaseOrder(meetingPhase) === 1) {
+        // console.log('phaseOrder increments progress');
+        // meeting phase has progressed forward:
         incrementsProgress = true;
-      } else if (nextPhase === CHECKIN || nextPhase === UPDATES || nextPhase === AGENDA_ITEMS) {
+      } else if (typeof nextPhase === 'undefined' &&
+          meetingPhase === CHECKIN || meetingPhase === UPDATES || meetingPhase === AGENDA_ITEMS) {
+        // console.log('phaseItem increments progress');
+        // same phase, and meeting phase item has incremented forward:
         incrementsProgress = nextPhaseItem - meetingPhaseItem === 1;
       }
       const moveMeeting = isSynced && incrementsProgress;
+      /*
+      console.log('moveMeeting');
+      console.log(moveMeeting);
+      */
 
       const updatedState = {
         facilitatorPhaseItem: nextPhaseItem,
@@ -136,6 +148,11 @@ export default {
         }
       }
       await r.table('Team').get(teamId).update(updatedState);
+      /*
+      console.log('updatedState');
+      console.log(updatedState);
+      console.log('------------');
+      */
       return true;
     }
   },
@@ -185,9 +202,8 @@ export default {
         description: 'The team that will be having the meeting'
       }
     },
-    async resolve(source, {teamId}, {authToken, socket}) {
+    async resolve(source, {teamId}, {authToken}) {
       requireSUOrTeamMember(authToken, teamId);
-      requireWebsocket(socket);
       await r.table('Team').get(teamId).update({
         facilitatorPhase: 'lobby',
         meetingPhase: 'lobby',

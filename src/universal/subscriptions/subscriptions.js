@@ -1,4 +1,13 @@
-import {ACTIONS, AGENDA, TEAMS, TEAM_MEMBERS, PRESENCE, PROJECTS} from 'universal/subscriptions/constants';
+import {
+  ACTIONS,
+  ACTIONS_BY_TEAMMEMBER,
+  ACTIONS_BY_AGENDA,
+  AGENDA,
+  TEAMS,
+  TEAM_MEMBERS,
+  PRESENCE,
+  PROJECTS
+} from 'universal/subscriptions/constants';
 
 // For now, use an array. In the future, we can make one exclusively for the server that doesn't need to reparse the AST
 export default [
@@ -7,11 +16,44 @@ export default [
     string: `
     subscription($userId: ID!) {
       actions(userId: $userId) {
-        content
         id
+        content
         isComplete
         updatedAt
         sortOrder
+        agendaId
+      }
+    }`
+  },
+  {
+    channel: ACTIONS_BY_TEAMMEMBER,
+    string: `
+    subscription($teamMemberId: ID!) {
+      actionsByTeamMember(teamMemberId: $teamMemberId) {
+        id
+        teamMemberId
+        content
+        isComplete
+        createdAt
+        updatedAt
+        sortOrder
+        agendaId
+      }
+    }`
+  },
+  {
+    channel: ACTIONS_BY_AGENDA,
+    string: `
+    subscription($agendaId: ID!) {
+      actionsByAgenda(agendaId: $agendaId) {
+        id
+        teamMemberId
+        content
+        isComplete
+        createdAt
+        updatedAt
+        sortOrder
+        agendaId
       }
     }`
   },
@@ -44,13 +86,15 @@ export default [
     string: `
     subscription($teamMemberId: ID!) {
       projects(teamMemberId: $teamMemberId) {
-        content
         id
+        content
         status
         teamMemberId
+        createdAt
         updatedAt
         userSort
         teamSort
+        agendaId
       }
     }`
   },
@@ -60,7 +104,7 @@ export default [
     subscription {
        teams {
          checkInGreeting,
-         checkInQuestion, 
+         checkInQuestion,
          id,
          name,
          meetingId,

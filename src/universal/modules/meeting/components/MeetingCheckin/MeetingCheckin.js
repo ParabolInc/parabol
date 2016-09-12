@@ -1,4 +1,5 @@
 import React, {PropTypes} from 'react';
+import {withRouter} from 'react-router';
 
 import IconLink from 'universal/components/IconLink/IconLink';
 import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
@@ -10,7 +11,6 @@ import {
 //  UPDATES,
   phaseOrder
 } from 'universal/utils/constants';
-import {withRouter} from 'react-router';
 import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import LoadingView from 'universal/components/LoadingView/LoadingView';

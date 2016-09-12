@@ -4,13 +4,15 @@ import theme from 'universal/styles/theme';
 import tinycolor from 'tinycolor2';
 
 const backgroundColor = tinycolor.mix(theme.palette.mid10l, '#fff', 50).toHexString();
+const combineStyles = StyleSheet.combineStyles;
 let styles = {};
 
 const DashContent = (props) => {
-  const {children, padding} = props;
+  const {children, hasOverlay, padding} = props;
   const style = {padding};
+  const rootStyles = hasOverlay ? combineStyles(styles.root, styles.hasOverlay) : styles.root;
   return (
-    <div className={styles.root} style={style}>
+    <div className={rootStyles} style={style}>
       {children}
     </div>
   );
@@ -18,6 +20,7 @@ const DashContent = (props) => {
 
 DashContent.propTypes = {
   children: PropTypes.any,
+  hasOverlay: PropTypes.bool,
   padding: PropTypes.string
 };
 
@@ -30,6 +33,10 @@ styles = StyleSheet.create({
     backgroundColor,
     flex: 1,
     width: '100%'
+  },
+
+  hasOverlay: {
+    filter: 'blur(1.5px)'
   }
 });
 

@@ -1,8 +1,9 @@
 import r from 'server/database/rethinkDriver';
-import {CreateAgendaItemInput} from './agendaItemSchema';
+import {CreateAgendaItemInput, UpdateAgendaItemInput} from './agendaItemSchema';
 import {
   GraphQLNonNull,
-  GraphQLBoolean
+  GraphQLBoolean,
+  GraphQLID
 } from 'graphql';
 import {requireSUOrTeamMember} from '../authorization';
 
@@ -17,19 +18,62 @@ export default {
       }
     },
     async resolve(source, {newAgendaItem}, {authToken}) {
-      const {teamMemberId} = newAgendaItem;
-      // teamMemberId is of format 'userId::teamId'
-      const [, teamId] = teamMemberId.split('::');
+      const [teamId] = newAgendaItem.id.split('::');
       requireSUOrTeamMember(authToken, teamId);
       const now = new Date();
       const agendaItem = {
         ...newAgendaItem,
         createdAt: now,
+        updatedAt: now,
         isActive: true,
         isCompleted: false,
         teamId
       };
       await r.table('AgendaItem').insert(agendaItem);
+      return true;
     }
-  }
+  },
+  removeAgendaItem: {
+    type: GraphQLBoolean,
+    description: 'Remove an agenda item',
+    args: {
+      id: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The agenda item unique id'
+      }
+    },
+    async resolve(source, {id}, {authToken}) {
+      // id is of format 'teamId::restOfAgendaItemId'
+      const [teamId] = id.split('::');
+      requireSUOrTeamMember(authToken, teamId);
+      try {
+        await r.table('AgendaItem').get(id).delete();
+      } catch (e) {
+        console.warning(`removeAgendaItem: exception removing item (${e})`);
+        return false;
+      }
+      return true;
+    }
+  },
+  updateAgendaItem: {
+    type: GraphQLBoolean,
+    description: 'Update an agenda item',
+    args: {
+      updatedAgendaItem: {
+        type: new GraphQLNonNull(UpdateAgendaItemInput),
+        description: 'The updated item including an id, content, status, sortOrder'
+      }
+    },
+    async resolve(source, {updatedAgendaItem}, {authToken}) {
+      const [teamId] = updatedAgendaItem.id.split('::');
+      requireSUOrTeamMember(authToken, teamId);
+      const now = new Date();
+      const agendaItem = {
+        ...updatedAgendaItem,
+        updatedAt: now,
+      };
+      await r.table('AgendaItem').update(agendaItem);
+      return true;
+    }
+  },
 };

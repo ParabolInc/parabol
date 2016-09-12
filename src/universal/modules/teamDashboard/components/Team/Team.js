@@ -31,9 +31,9 @@ const Team = (props) => {
   const teamName = team.name;
   const hasOverlay = Boolean(team && team.meetingId);
   return (
-    <DashMain hasOverlay={hasOverlay}>
+    <DashMain>
       {hasOverlay && <TeamDashModal teamId={teamId} teamName={teamName}/>}
-      <DashHeader>
+      <DashHeader hasOverlay={hasOverlay}>
         <DashHeaderInfo title={teamName}>
           <Link
             to={`/meeting/${teamId}`}
@@ -52,7 +52,7 @@ const Team = (props) => {
         </DashHeaderInfo>
         <DashboardAvatars teamMembers={teamMembers}/>
       </DashHeader>
-      <DashContent padding="1rem 1rem 1rem 0">
+      <DashContent hasOverlay={hasOverlay} padding="1rem 1rem 1rem 0">
         <AgendaAndProjects
           teamId={teamId}
         />

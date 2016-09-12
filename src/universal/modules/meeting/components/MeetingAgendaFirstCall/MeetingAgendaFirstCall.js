@@ -1,14 +1,27 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
+import {withRouter} from 'react-router';
+import {
+  FIRST_CALL,
+} from 'universal/utils/constants';
+import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
 import IconLink from 'universal/components/IconLink/IconLink';
 import Type from 'universal/components/Type/Type';
-
 import ShortcutsToggle from 'universal/modules/team/components/ShortcutsToggle/ShortcutsToggle';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
 
-const MeetingAgendaFirstCall = () => {
+const MeetingAgendaFirstCall = (props) => {
+  const {
+    isFacilitating,
+    router,
+    team
+  } = props;
+  const {id: teamId} = team;
+  const phaseItemFactory = makePhaseItemFactory(isFacilitating, 0, router, teamId, FIRST_CALL);
+  const gotoNextItem = phaseItemFactory(1);
+
   return (
     <MeetingLayout>
       <MeetingMain>
@@ -23,6 +36,7 @@ const MeetingAgendaFirstCall = () => {
               iconPlacement="right"
               label="…great! Let’s take care of our Agenda Items"
               scale="large"
+              onClick={gotoNextItem}
             />
           </MeetingSection>
         </MeetingSection>
@@ -31,4 +45,11 @@ const MeetingAgendaFirstCall = () => {
     </MeetingLayout>
   );
 };
-export default MeetingAgendaFirstCall;
+
+MeetingAgendaFirstCall.propTypes = {
+  localPhaseItem: PropTypes.number,
+  isFacilitating: PropTypes.bool,
+  router: PropTypes.object.isRequired,
+  team: PropTypes.object
+};
+export default withRouter(MeetingAgendaFirstCall);
