@@ -68,8 +68,6 @@ const Button = props => {
   const styleThemeName = `${style}${themeName}`;
   const buttonOptions = [styles.base, styles[size], styles[styleThemeName]];
 
-  let buttonStyles;
-
   if (disabled) {
     buttonOptions.push(styles.disabled);
   }
@@ -78,7 +76,7 @@ const Button = props => {
     buttonOptions.push(styles.isBlock);
   }
 
-  buttonStyles = combineStyles.apply(null, buttonOptions);
+  const buttonStyles = combineStyles.apply(null, buttonOptions);
 
   return (
     <button
