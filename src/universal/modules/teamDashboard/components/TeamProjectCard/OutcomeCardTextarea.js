@@ -20,7 +20,7 @@ let styles = {};
 export default class OutcomeCardTextArea extends Component {
   static propTypes = {
     doFocus: PropTypes.bool,
-    editingStatus: PropTypes.string,
+    editingStatus: PropTypes.any,
     handleActive: PropTypes.func,
     handleSubmit: PropTypes.func,
     input: PropTypes.object,
