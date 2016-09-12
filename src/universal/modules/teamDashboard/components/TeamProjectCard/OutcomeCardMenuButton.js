@@ -23,12 +23,11 @@ const OutcomeCardMenuButton = (props) => {
     title
   } = props;
 
-  let buttonStyles;
   const buttonStyleOptions = [styles.button, styles[status]];
   if (disabled) {
     buttonStyleOptions.push(styles.disabled);
   }
-  buttonStyles = cs.apply('null', buttonStyleOptions);
+  const buttonStyles = cs.apply('null', buttonStyleOptions);
 
   return (
     <button
