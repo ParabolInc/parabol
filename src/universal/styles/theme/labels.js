@@ -80,6 +80,22 @@ const labels = {
     label: 'Archived',
     shortcutLabel: <span>Ar<u>c</u>hived</span>,
     slug: 'archived'
+  },
+  action: {
+    color: theme.palette.dark,
+    icon: 'calendar-check-o',
+    keystroke: 't',
+    label: 'Action',
+    shortcutLabel: <span>Ac<u>t</u>ion</span>,
+    slug: 'action'
+  },
+  project: {
+    color: theme.palette.dark,
+    icon: 'calendar',
+    keystroke: 'p',
+    label: 'Project',
+    shortcutLabel: <span><u>P</u>roject</span>,
+    slug: 'project'
   }
 };
 

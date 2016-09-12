@@ -2,8 +2,8 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import FontAwesome from 'react-fontawesome';
 import theme from 'universal/styles/theme';
-import labels from '../../../../styles/theme/labels';
-import projectStatusStyles from '../../../../styles/helpers/projectStatusStyles';
+import labels from 'universal/styles/theme/labels';
+import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 
 const cs = StyleSheet.combineStyles;
 const buttonHF = {
@@ -99,6 +99,9 @@ styles = StyleSheet.create({
   },
   archived: {
     color: labels.archived.color
+  },
+  action: {
+    color: labels.action.color
   },
 });
 
