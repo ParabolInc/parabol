@@ -4,7 +4,8 @@ import {cashay} from 'cashay';
 import {Field, reduxForm, initialize} from 'redux-form';
 import labels from 'universal/styles/theme/labels';
 import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
-import OutcomeCardAssignMenuContainer from 'universal/modules/teamDashboard/containers/OutcomeCardAssignMenu/OutcomeCardAssignMenuContainer';
+import OutcomeCardAssignMenuContainer
+  from 'universal/modules/teamDashboard/containers/OutcomeCardAssignMenu/OutcomeCardAssignMenuContainer';
 
 import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
 import OutcomeCardTextareaContainer from 'universal/modules/teamDashboard/containers/OutcomeCardTextarea/OutcomeCardTextareaContainer';
@@ -15,7 +16,6 @@ const OPEN_CONTENT_MENU = 'TeamProjectCard/openContentMenu';
 const OPEN_ASSIGN_MENU = 'TeamProjectCard/openAssignMenu';
 const OPEN_STATUS_MENU = 'TeamProjectCard/openStatusMenu';
 
-const {combineStyles} = StyleSheet;
 let styles = {};
 
 @reduxForm()
@@ -73,7 +73,6 @@ export default class TeamProjectCard extends Component {
     const {content, status, id: projectId} = project;
     const hasOpenStatusMenu = openMenu === OPEN_STATUS_MENU;
     const hasOpenAssignMenu = openMenu === OPEN_ASSIGN_MENU;
-    const rootStyles = combineStyles(styles.root, styles.cardBlock, styles[status]);
     const handleCardActive = (isActive) => {
       if (isActive === undefined) { return; }
       const [teamId] = projectId.split('::');
