@@ -13,7 +13,7 @@ const graphQLProtocol = getGraphQLProtocol();
 const graphiqlStylesheet = {
   rel: 'stylesheet',
   type: 'text/css',
-  href: __PRODUCTION__ ? 'https://cdnjs.cloudflare.com/ajax/libs/graphiql/0.7.3/graphiql.min.css' : '/static/css/graphiql.css'
+  href: __PRODUCTION__ ? 'https://cdnjs.cloudflare.com/ajax/libs/graphiql/0.7.8/graphiql.min.css' : '/static/css/graphiql.css'
 };
 
 const makeGraphQLFetcher = authToken => {
