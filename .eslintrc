@@ -12,7 +12,6 @@
     "mocha": true
   },
   "rules": {
-//    "generator-star-spacing": 0,
     "babel/generator-star-spacing": 0,
     "react/no-multi-comp": 0,
     "import/default": 0,

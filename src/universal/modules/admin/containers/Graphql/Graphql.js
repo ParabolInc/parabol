@@ -1,4 +1,3 @@
-// import './addCSS';
 import React, {Component, PropTypes} from 'react';
 import GraphiQL from 'graphiql';
 import fetch from 'isomorphic-fetch';
