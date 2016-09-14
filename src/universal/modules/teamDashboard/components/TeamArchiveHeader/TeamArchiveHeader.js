@@ -1,34 +1,33 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import {DashPanelHeading} from 'universal/components/Dashboard';
 import FontAwesome from 'react-fontawesome';
 import {Link} from 'react-router';
 
-const TeamProjectsHeader = (props) => {
+const TeamArchiveHeader = (props) => {
   const {teamId} = props;
-  const {styles} = TeamProjectsHeader;
+  const {styles} = TeamArchiveHeader;
   return (
     <div className={styles.root}>
       <div className={styles.heading}>
-        <DashPanelHeading icon="check" label="Team Projects" />
-      </div>
-      <div className={styles.controls}>
-        <Link to={`/team/${teamId}/archive`}>
-          See Archived Items
-          <FontAwesome name="archive" />
+        <div>
+          <FontAwesome name="calendar"/>
+          Archived Items
+        </div>
+        <Link to={`/team/${teamId}`}>
+          <FontAwesome name="arrow-circle-o-left"/>
+          Back to Team Projects
         </Link>
-        <span>Show by team member: ALL TEAM MEMBERS</span>
       </div>
     </div>
   );
 };
 
-TeamProjectsHeader.propTypes = {
+TeamArchiveHeader.propTypes = {
   // TODO
   children: PropTypes.any
 };
 
-TeamProjectsHeader.styles = StyleSheet.create({
+TeamArchiveHeader.styles = StyleSheet.create({
   root: {
     display: 'flex',
     flex: 1,
@@ -37,6 +36,7 @@ TeamProjectsHeader.styles = StyleSheet.create({
   },
 
   heading: {
+    display: 'flex'
     // display: 'none'
   },
 
@@ -46,4 +46,4 @@ TeamProjectsHeader.styles = StyleSheet.create({
   }
 });
 
-export default look(TeamProjectsHeader);
+export default look(TeamArchiveHeader);

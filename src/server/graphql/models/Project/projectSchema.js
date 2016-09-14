@@ -32,6 +32,10 @@ export const Project = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'true if the project has been archived and will not show up in the main area'
     },
+    teamId: {
+      type: GraphQLID,
+      description: 'The id of the team (indexed). Needed for subscribing to archived projects'
+    },
     teamMemberId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The id of the team member assigned to this project, or the creator if content is null'
@@ -56,6 +60,13 @@ export const Project = new GraphQLObjectType({
     agendaId: {
       type: GraphQLID,
       description: 'the agenda item that created this project, if any'
+    },
+    cursor: {
+      type: GraphQLISO8601Type,
+      description: 'the pagination cursor (createdAt)',
+      resolve({createdAt}) {
+        return createdAt;
+      }
     }
   })
 });

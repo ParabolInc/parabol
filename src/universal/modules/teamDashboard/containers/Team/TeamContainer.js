@@ -35,7 +35,7 @@ const mapStateToProps = (state, props) => {
 };
 
 const TeamContainer = (props) => {
-  const {team, teamMembers} = props;
+  const {children, team, teamMembers} = props;
   const readyEnough = team.id && teamMembers.length > 0;
   if (!readyEnough) {
     return <LoadingView/>;
@@ -44,6 +44,7 @@ const TeamContainer = (props) => {
     <Team
       team={team}
       teamMembers={teamMembers}
+      children={children}
     />
   );
 };

@@ -26,7 +26,7 @@ const linkStyle = {
 };
 
 const Team = (props) => {
-  const {team, teamMembers} = props;
+  const {children, team, teamMembers} = props;
   const teamId = team.id;
   const teamName = team.name;
   const hasOverlay = Boolean(team && team.meetingId);
@@ -53,15 +53,14 @@ const Team = (props) => {
         <DashboardAvatars teamMembers={teamMembers}/>
       </DashHeader>
       <DashContent hasOverlay={hasOverlay} padding="1rem 1rem 1rem 0">
-        <AgendaAndProjects
-          teamId={teamId}
-        />
+        {children}
       </DashContent>
     </DashMain>
   );
 };
 
 Team.propTypes = {
+  children: PropTypes.any,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired,
 };

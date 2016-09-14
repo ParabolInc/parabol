@@ -13,3 +13,4 @@ export const PRESENCE = 'presence';
 export const PROJECTS = 'projects';
 export const TEAMS = 'teams';
 export const TEAM_MEMBERS = 'teamMembers';
+export const ARCHIVED_PROJECTS_DIFF = 'archivedProjectsDiff';

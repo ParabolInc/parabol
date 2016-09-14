@@ -14,7 +14,7 @@ const getImports = importMap => ({
 });
 
 export default store => ({
-  path: '/team/:teamId',
+  path: 'team',
   getComponent: async(location, cb) => {
     const promiseMap = setImports();
     const importMap = await resolvePromiseMap(promiseMap);
@@ -23,9 +23,14 @@ export default store => ({
     store.replaceReducer(newReducer);
     cb(null, component);
   },
-  getIndexRoute: async(location, cb) => {
-    const component =
-      await System.import('universal/modules/teamDashboard/containers/Team/TeamContainer');
-    cb(null, {component});
-  },
+  // getIndexRoute: async(location, cb) => {
+  //   const component =
+  //     await System.import('universal/modules/teamDashboard/containers/Team/TeamContainer');
+  //   cb(null, {component});
+  // },
+  getChildRoutes: (childLocation, cbChild) => {
+    cbChild(null, [
+      require('./teamDashMain')
+    ]);
+  }
 });
