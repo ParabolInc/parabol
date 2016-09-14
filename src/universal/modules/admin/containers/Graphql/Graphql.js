@@ -1,13 +1,19 @@
-import './addCSS';
 import React, {Component, PropTypes} from 'react';
 import GraphiQL from 'graphiql';
 import fetch from 'isomorphic-fetch';
 import {getGraphQLHost, getGraphQLProtocol} from 'universal/utils/graphQLConfig';
 import {connect} from 'react-redux';
 import requireAuthAndRole from 'universal/decorators/requireAuthAndRole/requireAuthAndRole';
+import Helmet from 'react-helmet';
 
 const graphQLHost = getGraphQLHost();
 const graphQLProtocol = getGraphQLProtocol();
+
+const graphiqlStylesheet = {
+  rel: 'stylesheet',
+  type: 'text/css',
+  href: __PRODUCTION__ ? 'https://cdnjs.cloudflare.com/ajax/libs/graphiql/0.7.8/graphiql.min.css' : '/static/css/graphiql.css'
+};
 
 const makeGraphQLFetcher = authToken => {
   return async(graphQLParams) => {
@@ -46,7 +52,10 @@ export default class Graphiql extends Component {
     const {authToken} = this.props;
     const graphQLFetcher = makeGraphQLFetcher(authToken);
     return (
-      <GraphiQL fetcher={graphQLFetcher}/>
+      <div>
+        <Helmet link={[graphiqlStylesheet]}/>
+        <GraphiQL fetcher={graphQLFetcher}/>
+      </div>
     );
   }
 }
