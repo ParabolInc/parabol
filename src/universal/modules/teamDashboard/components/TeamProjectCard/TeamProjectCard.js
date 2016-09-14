@@ -1,12 +1,13 @@
 import React, {Component, PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import {cashay} from 'cashay';
-import {Field, reduxForm, initialize} from 'redux-form';
+import {Field, reduxForm, initialize, focus} from 'redux-form';
 import theme from 'universal/styles/theme';
 import labels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
-import OutcomeCardAssignMenuContainer from 'universal/modules/teamDashboard/containers/OutcomeCardAssignMenu/OutcomeCardAssignMenuContainer';
+import OutcomeCardAssignMenuContainer
+  from 'universal/modules/teamDashboard/containers/OutcomeCardAssignMenu/OutcomeCardAssignMenuContainer';
 import OutcomeCardTextareaContainer from 'universal/modules/teamDashboard/containers/OutcomeCardTextarea/OutcomeCardTextareaContainer';
 import OutcomeCardFooter from './OutcomeCardFooter';
 import OutcomeCardStatusMenu from './OutcomeCardStatusMenu';
@@ -22,7 +23,7 @@ let styles = {};
 @look
 export default class TeamProjectCard extends Component {
   componentWillMount() {
-    const {project: {content}, dispatch, field, focus, form} = this.props;
+    const {project: {content}, dispatch, field, form} = this.props;
     this.state = {
       openMenu: OPEN_CONTENT_MENU
     };
