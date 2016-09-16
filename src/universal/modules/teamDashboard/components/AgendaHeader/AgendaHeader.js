@@ -1,12 +1,12 @@
 import React from 'react';
 import look, {StyleSheet} from 'react-look';
-import {DashPanelHeading} from 'universal/components/Dashboard';
+import {DashSectionHeading} from 'universal/components/Dashboard';
 
 const AgendaHeader = () => {
   const {styles} = AgendaHeader;
   return (
     <div className={styles.root}>
-      <DashPanelHeading icon="calendar-check-o" label="Agenda Queue" />
+      <DashSectionHeading icon="calendar-check-o" label="Agenda Queue" />
     </div>
   );
 };

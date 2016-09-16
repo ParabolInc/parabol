@@ -1,11 +1,12 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
+import ui from 'universal/styles/ui';
 import {columnArray} from 'universal/utils/constants';
 
 import ProjectColumn from 'universal/modules/teamDashboard/components/ProjectColumn/ProjectColumn';
 
-const borderColor = theme.ui.dashBorderColor;
+const borderColor = ui.dashBorderColor;
 let styles = {};
 
 const ProjectColumns = (props) => {

@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
+import ui from 'universal/styles/ui';
 import themeLabels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import ProjectCardContainer from 'universal/containers/ProjectCard/ProjectCardContainer';
@@ -10,7 +11,7 @@ import {cashay} from 'cashay';
 import shortid from 'shortid';
 
 const combineStyles = StyleSheet.combineStyles;
-const borderColor = theme.ui.dashBorderColor;
+const borderColor = ui.dashBorderColor;
 const labels = {
   [DONE]: 'Done',
   [ACTIVE]: 'Active',

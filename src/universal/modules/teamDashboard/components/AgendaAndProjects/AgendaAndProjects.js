@@ -1,13 +1,12 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import layoutStyle from 'universal/styles/layout';
-import theme from 'universal/styles/theme';
-// import {DashSectionHeader} from 'universal/components/Dashboard';
+import ui from 'universal/styles/ui';
 import TeamAgenda from 'universal/modules/teamDashboard/components/TeamAgenda/TeamAgenda';
 import TeamColumnsContainer from 'universal/modules/teamDashboard/containers/TeamColumns/TeamColumnsContainer';
 import TeamProjectsHeader from 'universal/modules/teamDashboard/components/TeamProjectsHeader/TeamProjectsHeader';
 
-const borderColor = theme.ui.dashBorderColor;
+const borderColor = ui.dashBorderColor;
 const {combineStyles} = StyleSheet;
 
 const AgendaAndProjects = (props) => {
@@ -63,9 +62,9 @@ AgendaAndProjects.styles = StyleSheet.create({
 
   projectsLayout: {
     display: 'flex',
+    flex: 1,
     flexDirection: 'column',
-    paddingLeft: '1rem',
-    width: '80%'
+    paddingLeft: '1rem'
   }
 });
 
