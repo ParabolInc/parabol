@@ -1,16 +1,22 @@
 import React, {Component, PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
+// import tinycolor from 'tinycolor2';
+
+// const descBgColor = tinycolor.mix(theme.palette.mid, '#fff', 90).toHexString();
 
 const descriptionFA = {
-  backgroundColor: theme.palette.cool10l,
-  borderTopColor: 'currentColor',
-  color: theme.palette.cool,
+  // backgroundColor: theme.palette.cool10l,
+  // backgroundColor: descBgColor,
+  backgroundColor: theme.palette.mid10l,
+  borderBottomColor: theme.palette.mid,
+  // color: theme.palette.cool,
+  color: theme.palette.mid10d,
   outline: 'none'
 };
 const descriptionActionFA = {
   backgroundColor: 'rgba(255, 255, 255, .85)',
-  borderTopColor: theme.palette.mid,
+  borderBottomColor: theme.palette.mid,
   color: theme.palette.mid10d
 };
 
@@ -88,18 +94,14 @@ styles = StyleSheet.create({
   content: {
     backgroundColor: 'transparent',
     border: 0,
-    borderTop: '1px solid transparent',
+    borderBottom: '1px solid transparent',
     color: theme.palette.dark10d,
     display: 'block',
     fontFamily: theme.typography.sansSerif,
     fontSize: theme.typography.s3,
     lineHeight: theme.typography.s4,
-    // TODO: Clean up these comments (TA)
-    // minHeight: '2.6875rem', // A
-    // minHeight: '2.1875rem', // B
-    minHeight: '3.3125rem', // Oversizing for menu (TA)
-    padding: '.5rem .5rem 1rem', // A
-    // padding: '.5rem', // B
+    minHeight: '3.3125rem',
+    padding: '.5rem',
     resize: 'none',
     width: '100%',
 

@@ -9,7 +9,7 @@ const CreateCardRootStyles = {
   display: 'flex !important',
   justifyContent: 'center',
   // TODO: Cards need block containers, not margin (TA)
-  margin: '0 0 1rem',
+  margin: '0 0 .5rem',
   maxWidth: '20rem',
   minHeight: '137px',
   padding: '.5rem 1.25rem',

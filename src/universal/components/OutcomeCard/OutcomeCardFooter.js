@@ -101,7 +101,6 @@ OutcomeCardFooter.defaultProps = {
 
 styles = StyleSheet.create({
   root: {
-    borderTop: `1px solid ${theme.palette.mid30l}`,
     display: 'flex !important',
     padding: '.5rem'
   },
