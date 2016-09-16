@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
 import ui from 'universal/styles/ui';
 import {columnArray} from 'universal/utils/constants';
 
@@ -35,11 +34,6 @@ ProjectColumns.propTypes = {
   projects: PropTypes.object.isRequired
 };
 
-const columnStyles = {
-  flex: 1,
-  width: '25%'
-};
-
 styles = StyleSheet.create({
   root: {
     borderTop: `1px solid ${borderColor}`,
@@ -51,35 +45,6 @@ styles = StyleSheet.create({
   columns: {
     display: 'flex !important',
     maxWidth: '80rem',
-    width: '100%'
-  },
-
-  column: {
-    ...columnStyles,
-    borderLeft: `1px solid ${borderColor}`,
-    padding: '1rem 1rem 0'
-  },
-
-  columnFirst: {
-    ...columnStyles,
-    borderLeft: '0',
-    padding: '1rem 1rem 0 0'
-  },
-
-  columnLast: {
-    ...columnStyles,
-    borderLeft: `1px solid ${borderColor}`,
-    padding: '1rem 0 0 1rem',
-  },
-
-  columnHeading: {
-    color: theme.palette.dark,
-    fontWeight: 700,
-    margin: '0 0 1rem'
-  },
-
-  cardBlock: {
-    marginBottom: '1rem',
     width: '100%'
   }
 });

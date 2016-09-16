@@ -93,12 +93,6 @@ const columnStyles = {
 };
 
 styles = StyleSheet.create({
-  root: {
-    borderTop: `1px solid ${borderColor}`,
-    margin: '1rem 0',
-    width: '100%'
-  },
-
   columnFirst: {
     ...columnStyles,
     padding: '1rem 1rem 0 0'
