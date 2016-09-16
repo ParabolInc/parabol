@@ -7,5 +7,6 @@ export DashMain from './DashMain.js';
 export DashModal from './DashModal.js';
 export DashNavItem from './DashNavItem.js';
 export DashPanelHeading from './DashPanelHeading.js';
+export DashSectionHeader from './DashSectionHeader.js';
 export DashSidebar from './DashSidebar.js';
 export dashTimestamp from './dashTimestamp.js';

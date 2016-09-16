@@ -10,7 +10,7 @@ import {cashay} from 'cashay';
 import shortid from 'shortid';
 
 const combineStyles = StyleSheet.combineStyles;
-const borderColor = 'rgba(0, 0, 0, .1)';
+const borderColor = theme.ui.dashBorderColor;
 const labels = {
   [DONE]: 'Done',
   [ACTIVE]: 'Active',
@@ -64,13 +64,17 @@ const ProjectColumn = (props) => {
           />
         }
       </div>
-      {projects.map(project =>
-        <CardContainer
-          key={`teamCard${project.id}`}
-          area={area}
-          project={project}
-        />)
-      }
+      <div className={styles.columnBody}>
+        <div className={styles.columnInner}>
+          {projects.map(project =>
+            <CardContainer
+              key={`teamCard${project.id}`}
+              area={area}
+              project={project}
+            />)
+          }
+        </div>
+      </div>
     </div>
   );
 };
@@ -94,12 +98,6 @@ styles = StyleSheet.create({
     width: '100%'
   },
 
-  columns: {
-    display: 'flex !important',
-    maxWidth: '80rem',
-    width: '100%'
-  },
-
   columnFirst: {
     ...columnStyles,
     padding: '1rem 1rem 0 0'
@@ -108,7 +106,11 @@ styles = StyleSheet.create({
   column: {
     ...columnStyles,
     borderLeft: `1px solid ${borderColor}`,
-    padding: '1rem 1rem 0'
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    overflow: 'scroll',
+    position: 'relative'
   },
 
   columnLast: {
@@ -118,10 +120,24 @@ styles = StyleSheet.create({
   },
 
   columnHeader: {
+    borderBottom: '1px solid rgba(0, 0, 0, .05)',
     color: theme.palette.dark,
     display: 'flex !important',
     lineHeight: '1.5rem',
-    margin: '0 0 1rem'
+    padding: '.5rem 1rem',
+  },
+
+  columnBody: {
+    flex: 1,
+    position: 'relative'
+  },
+
+  columnInner: {
+    height: '100%',
+    padding: '.5rem 1rem 0',
+    position: 'absolute',
+    overflow: 'scroll',
+    width: '100%'
   },
 
   statusBadge: {
@@ -149,9 +165,10 @@ styles = StyleSheet.create({
   },
 
   addIcon: {
-    fontSize: '28px',
+    // #shame overriding FA
+    fontSize: '28px !important',
     height: '1.5rem',
-    lineHeight: '1.5rem',
+    lineHeight: '1.5rem !important',
     paddingTop: '1px',
 
     ':hover': {

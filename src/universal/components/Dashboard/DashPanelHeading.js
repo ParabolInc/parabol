@@ -1,5 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
+import theme from 'universal/styles/theme';
+import ib from 'universal/styles/helpers/ib';
 import FontAwesome from 'react-fontawesome';
 import Type from 'universal/components/Type/Type';
 
@@ -7,15 +9,10 @@ const DashPanelHeading = (props) => {
   const {styles} = DashPanelHeading;
   return (
     <div className={styles.root}>
-      <FontAwesome className={styles.icon} name={props.icon} style={{lineHeight: 'inherit'}} />
-      <Type display="inline-block" scale="s5" theme="dark">{props.label}</Type>
+      <FontAwesome className={styles.icon} name={props.icon} style={{...ib, lineHeight: 'inherit'}} />
+      <Type display="inlineBlock" scale="s4" theme="dark">{props.label}</Type>
     </div>
   );
-};
-
-const ib = {
-  display: 'inline-block',
-  verticalAlign: 'middle'
 };
 
 DashPanelHeading.propTypes = {
@@ -25,13 +22,14 @@ DashPanelHeading.propTypes = {
 
 DashPanelHeading.styles = StyleSheet.create({
   root: {
-    ...ib
+    ...ib,
+    whiteSpace: 'nowrap'
   },
 
   icon: {
-    ...ib,
-    display: 'none',
-    fontSize: '14px'
+    color: theme.palette.dark,
+    fontSize: '14px',
+    marginRight: '.5rem'
   }
 });
 

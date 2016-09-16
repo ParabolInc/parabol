@@ -12,7 +12,8 @@ if (typeof __PRODUCTION__ !== 'undefined' && __PRODUCTION__) {
   theme = {
     brand: require('./brand'),
     palette: require('./palette'),
-    typography: require('./typography')
+    typography: require('./typography'),
+    ui: require('./ui')
   };
 }
 /* eslint-enable */

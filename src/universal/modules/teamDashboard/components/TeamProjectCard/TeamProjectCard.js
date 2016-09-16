@@ -185,7 +185,7 @@ styles = StyleSheet.create({
   },
 
   cardBlock: {
-    marginBottom: '1rem',
+    marginBottom: '.5rem',
     width: '100%'
   },
 

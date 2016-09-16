@@ -6,7 +6,7 @@ const AgendaHeader = () => {
   const {styles} = AgendaHeader;
   return (
     <div className={styles.root}>
-      <DashPanelHeading icon="check" label="Agenda Queue" />
+      <DashPanelHeading icon="calendar-check-o" label="Agenda Queue" />
     </div>
   );
 };

@@ -5,7 +5,7 @@ import {columnArray} from 'universal/utils/constants';
 
 import ProjectColumn from 'universal/modules/teamDashboard/components/ProjectColumn/ProjectColumn';
 
-const borderColor = 'rgba(0, 0, 0, .1)';
+const borderColor = theme.ui.dashBorderColor;
 let styles = {};
 
 const ProjectColumns = (props) => {
@@ -42,7 +42,8 @@ const columnStyles = {
 styles = StyleSheet.create({
   root: {
     borderTop: `1px solid ${borderColor}`,
-    margin: '1rem 0',
+    display: 'flex',
+    flex: '1',
     width: '100%'
   },
 
@@ -52,15 +53,16 @@ styles = StyleSheet.create({
     width: '100%'
   },
 
-  columnFirst: {
-    ...columnStyles,
-    padding: '1rem 1rem 0 0'
-  },
-
   column: {
     ...columnStyles,
     borderLeft: `1px solid ${borderColor}`,
     padding: '1rem 1rem 0'
+  },
+
+  columnFirst: {
+    ...columnStyles,
+    borderLeft: '0',
+    padding: '1rem 1rem 0 0'
   },
 
   columnLast: {

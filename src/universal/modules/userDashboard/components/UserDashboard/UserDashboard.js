@@ -4,6 +4,7 @@ import {
   DashHeader,
   DashHeaderInfo,
   DashMain,
+  DashPanelHeading,
   dashTimestamp
 } from 'universal/components/Dashboard';
 import look, {StyleSheet} from 'react-look';
@@ -27,6 +28,7 @@ const UserDashboard = () => {
             <UserActions />
           </div>
           <div className={styles.projectsLayout}>
+            <DashPanelHeading icon="calendar" label="My Projects" />
             <UserColumnsContainer/>
           </div>
         </div>
@@ -52,6 +54,8 @@ UserDashboard.styles = StyleSheet.create({
   },
 
   projectsLayout: {
+    display: 'flex',
+    flexDirection: 'column',
     width: '80%'
   },
 

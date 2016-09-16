@@ -138,7 +138,8 @@ s = StyleSheet.create({
   },
 
   inlineBlock: {
-    display: 'inline-block'
+    display: 'inline-block',
+    verticalAlign: 'middle'
   },
 
   // family
