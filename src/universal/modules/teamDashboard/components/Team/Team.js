@@ -52,7 +52,7 @@ const Team = (props) => {
         </DashHeaderInfo>
         <DashboardAvatars teamMembers={teamMembers}/>
       </DashHeader>
-      <DashContent hasOverlay={hasOverlay} padding="1rem 1rem 1rem 0">
+      <DashContent hasOverlay={hasOverlay} padding="0">
         <AgendaAndProjects
           teamId={teamId}
         />

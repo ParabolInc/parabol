@@ -31,7 +31,9 @@ DashContent.defaultProps = {
 styles = StyleSheet.create({
   root: {
     backgroundColor,
+    display: 'flex !important',
     flex: 1,
+    flexDirection: 'column',
     width: '100%'
   },
 

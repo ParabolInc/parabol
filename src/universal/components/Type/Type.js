@@ -17,6 +17,7 @@ const Type = (props) => {
     display,
     family,
     italic,
+    lineHeight,
     marginBottom,
     marginTop,
     scale,
@@ -25,7 +26,6 @@ const Type = (props) => {
   } = props;
 
   const typeStyles = combineStyles(
-    s.root,
     s[align],
     s[bold],
     s[display],
@@ -37,6 +37,7 @@ const Type = (props) => {
   );
 
   const marginStyle = {
+    lineHeight,
     marginBottom,
     marginTop
   };
@@ -70,6 +71,7 @@ Type.propTypes = {
     'serif'
   ]),
   italic: PropTypes.bool,
+  lineHeight: PropTypes.string,
   marginBottom: PropTypes.string,
   marginTop: PropTypes.string,
   scale: PropTypes.oneOf([
@@ -92,6 +94,7 @@ Type.propTypes = {
     'black',
     'white'
   ]),
+  // TODO: refactor width + display props (TA)
   width: PropTypes.oneOf([
     'auto',
     'full'
@@ -102,6 +105,7 @@ Type.defaultProps = {
   align: 'left',
   display: 'block',
   family: 'sansSerif',
+  lineHeight: '1.5',
   marginBottom: '0px',
   marginTop: '0px',
   scale: 'sBase',
@@ -111,10 +115,6 @@ Type.defaultProps = {
 };
 
 s = StyleSheet.create({
-  root: {
-    lineHeight: '1.5'
-  },
-
   // align
   left: {
     textAlign: 'left'
@@ -138,7 +138,8 @@ s = StyleSheet.create({
   },
 
   inlineBlock: {
-    display: 'inline-block'
+    display: 'inline-block',
+    verticalAlign: 'middle'
   },
 
   // family

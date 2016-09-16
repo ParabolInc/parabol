@@ -45,7 +45,7 @@ const MeetingUpdates = (props) => {
         />
       </MeetingSection>
       {/* */}
-      <MeetingSection flexToFill paddingBottom="2rem">
+      <MeetingSection flexToFill>
         {/* */}
         <MeetingSection paddingBottom="2rem">
           <MeetingSectionHeading>
@@ -72,7 +72,9 @@ const MeetingUpdates = (props) => {
             </div>
           </div>
         </div>
-        <ProjectColumns myTeamMemberId={self && self.id} projects={projects} area={MEETING}/>
+        <div className={s.body}>
+          <ProjectColumns myTeamMemberId={self && self.id} projects={projects} area={MEETING}/>
+        </div>
         {/* */}
         {/* */}
       </MeetingSection>
@@ -91,6 +93,13 @@ s = StyleSheet.create({
 
   nav: {
     display: 'flex !important',
+    width: '100%'
+  },
+
+  body: {
+    display: 'flex',
+    flex: 1,
+    padding: '2rem 1rem 0',
     width: '100%'
   },
 

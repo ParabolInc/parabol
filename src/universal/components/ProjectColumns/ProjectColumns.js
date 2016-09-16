@@ -1,11 +1,11 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import ui from 'universal/styles/ui';
 import {columnArray} from 'universal/utils/constants';
 
 import ProjectColumn from 'universal/modules/teamDashboard/components/ProjectColumn/ProjectColumn';
 
-const borderColor = 'rgba(0, 0, 0, .1)';
+const borderColor = ui.dashBorderColor;
 let styles = {};
 
 const ProjectColumns = (props) => {
@@ -34,49 +34,17 @@ ProjectColumns.propTypes = {
   projects: PropTypes.object.isRequired
 };
 
-const columnStyles = {
-  flex: 1,
-  width: '25%'
-};
-
 styles = StyleSheet.create({
   root: {
     borderTop: `1px solid ${borderColor}`,
-    margin: '1rem 0',
+    display: 'flex',
+    flex: '1',
     width: '100%'
   },
 
   columns: {
     display: 'flex !important',
     maxWidth: '80rem',
-    width: '100%'
-  },
-
-  columnFirst: {
-    ...columnStyles,
-    padding: '1rem 1rem 0 0'
-  },
-
-  column: {
-    ...columnStyles,
-    borderLeft: `1px solid ${borderColor}`,
-    padding: '1rem 1rem 0'
-  },
-
-  columnLast: {
-    ...columnStyles,
-    borderLeft: `1px solid ${borderColor}`,
-    padding: '1rem 0 0 1rem',
-  },
-
-  columnHeading: {
-    color: theme.palette.dark,
-    fontWeight: 700,
-    margin: '0 0 1rem'
-  },
-
-  cardBlock: {
-    marginBottom: '1rem',
     width: '100%'
   }
 });
