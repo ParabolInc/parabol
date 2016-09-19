@@ -20,7 +20,13 @@ const questions = [
   'what’s your spirit animal today',
   'what’s something you’re looking forward to',
   'what’s something you’re worried about',
-  'what’s something you’ve learned recently'
+  'what’s something you’ve learned recently',
+  'anything inspire you recently',
+  'what’s the weirdest thing in your fridge right now',
+  'how are your hobbies doing',
+  'what are you cooking next',
+  'learn any new slang lately',
+  'heard any good advice lately'
 ];
 
 export const makeCheckinGreeting = (week) => {
