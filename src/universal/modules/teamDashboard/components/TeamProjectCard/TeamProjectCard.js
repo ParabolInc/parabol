@@ -57,12 +57,18 @@ export default class TeamProjectCard extends Component {
   }
 
   toggleStatusMenu = () => {
+    if (this.props.isArchived) {
+      return;
+    }
     const {openMenu} = this.state;
     const nextOpenMenu = openMenu === OPEN_STATUS_MENU ? OPEN_CONTENT_MENU : OPEN_STATUS_MENU;
     this.setState({openMenu: nextOpenMenu});
   };
 
   toggleAssignMenu = () => {
+    if (this.props.isArchived) {
+      return;
+    }
     const {openMenu} = this.state;
     const nextOpenMenu = openMenu === OPEN_ASSIGN_MENU ? OPEN_CONTENT_MENU : OPEN_ASSIGN_MENU;
     this.setState({openMenu: nextOpenMenu});
@@ -76,6 +82,7 @@ export default class TeamProjectCard extends Component {
     const {openMenu} = this.state;
     const {
       handleSubmit,
+      isArchived,
       isProject,
       project,
     } = this.props;
@@ -111,10 +118,11 @@ export default class TeamProjectCard extends Component {
 
     return (
       <OutcomeCard
-        status={status}
+        isArchived={isArchived}
+        isProject={isProject}
         onEnterCard={this.onEnterTeamProjectCard}
         onLeaveCard={this.onLeaveTeamProjectCard}
-        isProject={isProject}
+        status={status}
       >
         {/* card main */}
         {hasOpenAssignMenu &&
@@ -132,6 +140,8 @@ export default class TeamProjectCard extends Component {
                 component={OutcomeCardTextareaContainer}
                 handleActive={handleCardActive}
                 handleSubmit={handleSubmit(handleCardUpdate)}
+                isArchived={isArchived}
+                isProject={isProject}
                 project={project}
                 doFocus={!content}
                 cardHasHover={this.state.cardHasHover}
@@ -143,6 +153,7 @@ export default class TeamProjectCard extends Component {
         <OutcomeCardFooter
           cardHasHover={this.state.cardHasHover}
           hasOpenStatusMenu={hasOpenStatusMenu}
+          isArchived={isArchived}
           isProject={isProject}
           owner={project.teamMember}
           status={status}

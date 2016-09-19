@@ -16,6 +16,10 @@ const buttonShowFully = {
   backgroundColor: theme.palette.mid10l,
   color: theme.palette.dark
 };
+const actionButtonShowFully = {
+  backgroundColor: theme.palette.light90g,
+  color: theme.palette.dark
+};
 const buttonBase = {
   backgroundColor: 'transparent',
   border: 0,
@@ -45,15 +49,18 @@ const OutcomeCardFooter = (props) => {
   const {
     cardHasHover,
     hasOpenStatusMenu,
-    owner,
-    toggleAssignMenu,
-    toggleStatusMenu,
     isArchived,
+    isProject,
+    owner,
+    removeFromArchive,
+    toggleAssignMenu,
+    toggleStatusMenu
   } = props;
+
+  let avatarBlockStyle = {};
 
   // BUTTONS
   // --------
-  // TODO: update Action Card button styles (TA)
   let buttonStyles = styles.buttonBase;
   const buttonOptions = [styles.buttonBase];
 
@@ -61,43 +68,61 @@ const OutcomeCardFooter = (props) => {
   // -------
   const avatarImage = owner.picture;
   const avatarName = owner.preferredName;
-  // const avatarStyles = combineStyles(styles.avatar, styles.avatarTeam);
   // TODO: Set avatarTeam style when showing team instead of owner (on UserDashboard)
+  // const avatarStyles = combineStyles(styles.avatar, styles.avatarTeam);
   const avatarStyles = styles.avatar;
   const menuHintStyle = cardHasHover ? faStyle : {visibility: 'hidden', ...faStyle};
 
+  if (!isProject) { buttonOptions.push(styles.actionButton); }
+
   if (hasOpenStatusMenu || cardHasHover) {
+    if (isProject) {
+      buttonOptions.push(styles.projectButtonShowFully);
+    } else {
+      buttonOptions.push(styles.actionButtonShowFully);
+    }
+  }
+
+  if (isArchived) {
     buttonOptions.push(styles.projectButtonShowFully);
+    avatarBlockStyle = {
+      cursor: 'not-allowed',
+      opacity: 1
+    };
   }
 
   buttonStyles = combineStyles.apply(null, buttonOptions);
 
   return (
     <div className={styles.root}>
-      <div className={styles.avatarBlock} onClick={toggleAssignMenu}>
-        <img
-          alt={avatarName}
-          className={avatarStyles}
-          src={avatarImage}
-        />
-        <div className={styles.name}>{avatarName}</div>
-        <FontAwesome
-          className={styles.menuHint}
-          name="ellipsis-v"
-          style={menuHintStyle}
-        />
-      </div>
-      <div className={styles.statusBlock}>
-        <button className={buttonStyles} onClick={toggleStatusMenu}>
-          {hasOpenStatusMenu ?
-            <FontAwesome name="times" style={faStyle} /> :
-            <FontAwesome name="wrench" style={faStyle} />
+      <div className={styles.avatarLayout}>
+        <div className={styles.avatarBlock} onClick={toggleAssignMenu} style={avatarBlockStyle}>
+          <img
+            alt={avatarName}
+            className={avatarStyles}
+            src={avatarImage}
+          />
+          <div className={styles.name}>{avatarName}</div>
+          {!isArchived &&
+            <FontAwesome
+              className={styles.menuHint}
+              name="ellipsis-v"
+              style={menuHintStyle}
+            />
           }
-        </button>
-        {isArchived &&
-          <div style={styles.statusButton}>
+        </div>
+      </div>
+      <div className={styles.buttonBlock}>
+        {isArchived ?
+          <button className={buttonStyles} onClick={removeFromArchive}>
             <FontAwesome name="reply" style={faStyle} />
-          </div>
+          </button> :
+          <button className={buttonStyles} onClick={toggleStatusMenu}>
+            {hasOpenStatusMenu ?
+              <FontAwesome name="times" style={faStyle} /> :
+              <FontAwesome name="wrench" style={faStyle} />
+            }
+          </button>
         }
       </div>
     </div>
@@ -112,6 +137,7 @@ OutcomeCardFooter.propTypes = {
   isArchived: PropTypes.bool,
   isProject: PropTypes.bool,
   owner: PropTypes.object,
+  removeFromArchive: PropTypes.func,
   team: PropTypes.object,
 };
 
@@ -130,6 +156,9 @@ OutcomeCardFooter.defaultProps = {
     preferredName: 'Taya Mueller',
     picture: TayaAvatar
   },
+  removeFromArchive() {
+    console.log('removeFromArchive');
+  }
 };
 
 styles = StyleSheet.create({
@@ -138,10 +167,14 @@ styles = StyleSheet.create({
     padding: ui.cardPaddingBase
   },
 
-  avatarBlock: {
-    alignSelf: 'flex-start',
-    cursor: 'pointer',
+  avatarLayout: {
     flex: 1,
+    fontSize: 0,
+  },
+
+  avatarBlock: {
+    cursor: 'pointer',
+    display: 'inline-block',
     fontSize: 0,
 
     ':hover': {
@@ -182,8 +215,8 @@ styles = StyleSheet.create({
     verticalAlign: 'middle'
   },
 
-  statusBlock: {
-    alignSelf: 'flex-end'
+  buttonBlock: {
+    // Define
   },
 
   buttonBase: {
@@ -197,21 +230,15 @@ styles = StyleSheet.create({
 
   actionButton: {
     ...buttonBase,
-    backgroundColor: 'transparent',
-    boxShadow: `inset 0 0 0 1px ${theme.palette.mid30l}`,
 
     ':focus': {
-      boxShadow: `inset 0 0 0 1px ${theme.palette.mid30l}, 0 0 2px 2px rgba(103, 108, 138, .5)`
+      ...actionButtonShowFully
     }
+  },
+
+  actionButtonShowFully: {
+    ...actionButtonShowFully
   }
 });
 
 export default look(OutcomeCardFooter);
-
-// FOR ACTIONS
-// {/*<button className={styles.actionButton}>*/}
-//   {/*<FontAwesome*/}
-//     {/*name="calendar-check-o"*/}
-//     {/*style={{lineHeight: avatarSize}}*/}
-//   {/*/>*/}
-// {/*</button>*/}

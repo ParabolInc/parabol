@@ -5,11 +5,18 @@ import ui from 'universal/styles/ui';
 
 const combineStyles = StyleSheet.combineStyles;
 
+const descriptionBase = {
+  backgroundColor: 'transparent',
+  border: 0,
+  borderBottom: '1px solid transparent',
+  color: theme.palette.dark10d,
+  outline: 'none'
+};
+
 const descriptionFA = {
   backgroundColor: theme.palette.mid10l,
   borderBottomColor: theme.palette.mid,
-  color: theme.palette.mid10d,
-  outline: 'none'
+  color: theme.palette.mid10d
 };
 
 const descriptionActionFA = {
@@ -17,6 +24,8 @@ const descriptionActionFA = {
   borderBottomColor: theme.palette.mid,
   color: theme.palette.mid10d
 };
+
+const descriptionBreakpoint = '@media (min-width: 90rem)';
 
 let styles = {};
 
@@ -29,6 +38,7 @@ export default class OutcomeCardTextArea extends Component {
     handleActive: PropTypes.func,
     handleSubmit: PropTypes.func,
     input: PropTypes.object,
+    isArchived: PropTypes.bool,
     isProject: PropTypes.bool,
     teamMemberId: PropTypes.string,
     teamMembers: PropTypes.array,
@@ -52,15 +62,23 @@ export default class OutcomeCardTextArea extends Component {
       editingStatus,
       handleSubmit,
       input,
+      isArchived,
+      isProject,
       doFocus
     } = this.props;
+    let contentStyles = styles.content;
+    let textAreaRef;
+
     const contentStyleWhenCardHovered = combineStyles(styles.content, styles.contentWhenCardHovered);
-    const descStyles = cardHasHover ? contentStyleWhenCardHovered : styles.content;
+    const actionContentStyleWhenCardHovered = combineStyles(
+      styles.content,
+      styles.descriptionAction,
+      styles.actionContentWhenCardHovered
+    );
     const handleBlur = () => {
       handleSubmit();
       input.onBlur();
     };
-    let textAreaRef;
     const setRef = (c) => {
       textAreaRef = c;
     };
@@ -72,6 +90,18 @@ export default class OutcomeCardTextArea extends Component {
       }
     };
 
+    if (isProject) {
+      contentStyles = cardHasHover ? contentStyleWhenCardHovered : styles.content;
+    } else {
+      contentStyles = cardHasHover ?
+        actionContentStyleWhenCardHovered :
+        combineStyles(styles.content, styles.descriptionAction);
+    }
+
+    if (isArchived) {
+      contentStyles = combineStyles(styles.content, styles.isArchived);
+    }
+
     return (
       <div>
         <div className={styles.timestamp}>
@@ -80,7 +110,8 @@ export default class OutcomeCardTextArea extends Component {
         <textarea
           {...input}
           ref={setRef}
-          className={descStyles}
+          className={contentStyles}
+          disabled={isArchived}
           placeholder="Type your outcome here"
           onBlur={handleBlur}
           onKeyDown={handleKeyUp}
@@ -93,15 +124,11 @@ export default class OutcomeCardTextArea extends Component {
 
 styles = StyleSheet.create({
   content: {
-    backgroundColor: 'transparent',
-    border: 0,
-    borderBottom: '1px solid transparent',
-    color: theme.palette.dark10d,
+    ...descriptionBase,
     display: 'block',
     fontFamily: theme.typography.sansSerif,
-    fontSize: theme.typography.sBase,
-    lineHeight: theme.typography.s6,
-    // minHeight: '3.3125rem',
+    fontSize: theme.typography.s3,
+    lineHeight: theme.typography.s5,
     padding: `0 ${ui.cardPaddingBase} .25rem`,
     resize: 'none',
     width: '100%',
@@ -111,6 +138,11 @@ styles = StyleSheet.create({
     },
     ':active': {
       ...descriptionFA
+    },
+
+    [descriptionBreakpoint]: {
+      fontSize: theme.typography.sBase,
+      lineHeight: theme.typography.s6
     }
   },
 
@@ -127,6 +159,11 @@ styles = StyleSheet.create({
       ...descriptionActionFA
     }
   },
+
+  actionContentWhenCardHovered: {
+    ...descriptionActionFA
+  },
+
   timestamp: {
     color: theme.palette.dark,
     fontSize: theme.typography.s1,
@@ -134,5 +171,16 @@ styles = StyleSheet.create({
     lineHeight: theme.typography.s3,
     padding: `.25rem ${ui.cardPaddingBase}`,
     textAlign: 'right'
+  },
+
+  isArchived: {
+    cursor: 'not-allowed',
+
+    ':focus': {
+      ...descriptionBase
+    },
+    ':active': {
+      ...descriptionBase
+    }
   }
 });

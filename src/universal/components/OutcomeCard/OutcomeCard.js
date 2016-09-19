@@ -3,7 +3,8 @@ import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import ui from 'universal/styles/ui';
 import labels from 'universal/styles/theme/labels';
-import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
+import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
+import {cardBorderTop} from 'universal/styles/helpers';
 
 const combineStyles = StyleSheet.combineStyles;
 let styles = {};
@@ -11,6 +12,7 @@ let styles = {};
 const OutcomeCard = (props) => {
   const {
     children,
+    isArchived,
     isProject,
     onEnterCard,
     onLeaveCard,
@@ -28,6 +30,10 @@ const OutcomeCard = (props) => {
     rootStyleOptions.push(styles.isAction);
   }
 
+  if (isArchived) {
+    rootStyleOptions.push(styles.isArchived);
+  }
+
   rootStyles = combineStyles.apply(null, rootStyleOptions);
 
   return (
@@ -43,6 +49,7 @@ const OutcomeCard = (props) => {
 
 OutcomeCard.propTypes = {
   children: PropTypes.any,
+  isArchived: PropTypes.bool,
   isProject: PropTypes.bool,
   onEnterCard: PropTypes.func,
   onLeaveCard: PropTypes.func,
@@ -50,6 +57,7 @@ OutcomeCard.propTypes = {
 };
 
 OutcomeCard.defaultProps = {
+  isArchived: false,
   isProject: true,
   status: labels.projectStatus.active.slug
 };
@@ -59,9 +67,38 @@ styles = StyleSheet.create({
     backgroundColor: '#fff',
     border: `1px solid ${ui.cardBorderColor}`,
     borderRadius: ui.cardBorderRadius,
-    borderTop: `.25rem solid ${theme.palette.mid}`,
     maxWidth: '20rem',
-    width: '100%'
+    paddingTop: '.1875rem',
+    position: 'relative',
+    width: '100%',
+
+    '::after': {
+      ...cardBorderTop
+    }
+  },
+
+  [`${ACTIVE}`]: {
+    '::after': {
+      color: labels.projectStatus[ACTIVE].color
+    }
+  },
+
+  [`${STUCK}`]: {
+    '::after': {
+      color: labels.projectStatus[STUCK].color
+    }
+  },
+
+  [`${DONE}`]: {
+    '::after': {
+      color: labels.projectStatus[DONE].color
+    }
+  },
+
+  [`${FUTURE}`]: {
+    '::after': {
+      color: labels.projectStatus[FUTURE].color
+    }
   },
 
   // TODO: Cards need block containers, not margin (TA)
@@ -70,12 +107,18 @@ styles = StyleSheet.create({
   },
 
   isAction: {
-    backgroundColor: theme.palette.light50l
+    backgroundColor: theme.palette.light50l,
+
+    '::after': {
+      color: labels.action.color
+    }
   },
 
-  // Status theme colors
-  // --------------------
-  ...projectStatusStyles('borderTopColor')
+  isArchived: {
+    '::after': {
+      color: labels.archived.color
+    }
+  }
 });
 
 export default look(OutcomeCard);
