@@ -63,6 +63,7 @@ const Button = props => {
     type
   } = props;
 
+  let buttonStyles = styles.base;
   const buttonTitle = title || label;
   const themeName = upperFirst(theme);
   const styleThemeName = `${style}${themeName}`;
@@ -76,7 +77,7 @@ const Button = props => {
     buttonOptions.push(styles.isBlock);
   }
 
-  const buttonStyles = combineStyles.apply(null, buttonOptions);
+  buttonStyles = combineStyles.apply(null, buttonOptions);
 
   return (
     <button

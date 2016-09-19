@@ -1,4 +1,5 @@
 import theme from 'universal/styles/theme';
+import ui from 'universal/styles/ui';
 
 const CreateCardRootStyles = {
   alignItems: 'center',
@@ -11,7 +12,7 @@ const CreateCardRootStyles = {
   // TODO: Cards need block containers, not margin (TA)
   margin: '0 0 .5rem',
   maxWidth: '20rem',
-  minHeight: '137px',
+  minHeight: ui.cardMinHeight,
   padding: '.5rem 1.25rem',
   width: '100%'
 };

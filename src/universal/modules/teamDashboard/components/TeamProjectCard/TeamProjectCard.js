@@ -24,6 +24,7 @@ export default class TeamProjectCard extends Component {
   componentWillMount() {
     const {project: {content}, dispatch, field, form} = this.props;
     this.state = {
+      cardHasHover: false,
       openMenu: OPEN_CONTENT_MENU
     };
     if (content) {
@@ -40,6 +41,14 @@ export default class TeamProjectCard extends Component {
     if (nextContent !== content) {
       this.initializeValues(nextContent);
     }
+  }
+
+  onEnterTeamProjectCard = () => {
+    this.setState({cardHasHover: true});
+  }
+
+  onLeaveTeamProjectCard = () => {
+    this.setState({cardHasHover: false});
   }
 
   initializeValues(content) {
@@ -101,7 +110,12 @@ export default class TeamProjectCard extends Component {
     };
 
     return (
-      <OutcomeCard status={status} isProject={isProject}>
+      <OutcomeCard
+        status={status}
+        onEnterCard={this.onEnterTeamProjectCard}
+        onLeaveCard={this.onLeaveTeamProjectCard}
+        isProject={isProject}
+      >
         {/* card main */}
         {hasOpenAssignMenu &&
           <OutcomeCardAssignMenuContainer
@@ -120,12 +134,14 @@ export default class TeamProjectCard extends Component {
                 handleSubmit={handleSubmit(handleCardUpdate)}
                 project={project}
                 doFocus={!content}
+                cardHasHover={this.state.cardHasHover}
               />
             </form>
           </div>
         }
         {/* card footer */}
         <OutcomeCardFooter
+          cardHasHover={this.state.cardHasHover}
           hasOpenStatusMenu={hasOpenStatusMenu}
           isProject={isProject}
           owner={project.teamMember}

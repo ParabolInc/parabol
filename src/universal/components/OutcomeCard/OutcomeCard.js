@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-
 import theme from 'universal/styles/theme';
 import ui from 'universal/styles/ui';
 import labels from 'universal/styles/theme/labels';
@@ -10,7 +9,13 @@ const combineStyles = StyleSheet.combineStyles;
 let styles = {};
 
 const OutcomeCard = (props) => {
-  const {children, isProject, status} = props;
+  const {
+    children,
+    isProject,
+    onEnterCard,
+    onLeaveCard,
+    status
+  } = props;
   let rootStyles;
   const rootStyleOptions = [
     styles.root,
@@ -26,7 +31,11 @@ const OutcomeCard = (props) => {
   rootStyles = combineStyles.apply(null, rootStyleOptions);
 
   return (
-    <div className={rootStyles}>
+    <div
+      className={rootStyles}
+      onMouseEnter={() => onEnterCard()}
+      onMouseLeave={() => onLeaveCard()}
+    >
       {children}
     </div>
   );
@@ -35,6 +44,8 @@ const OutcomeCard = (props) => {
 OutcomeCard.propTypes = {
   children: PropTypes.any,
   isProject: PropTypes.bool,
+  onEnterCard: PropTypes.func,
+  onLeaveCard: PropTypes.func,
   status: PropTypes.oneOf(labels.projectStatus.slugs)
 };
 

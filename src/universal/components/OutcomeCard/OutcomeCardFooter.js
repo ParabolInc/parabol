@@ -2,16 +2,25 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import FontAwesome from 'react-fontawesome';
 import theme from 'universal/styles/theme';
+import ui from 'universal/styles/ui';
 import labels from 'universal/styles/theme/labels';
 import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
-import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 
 const combineStyles = StyleSheet.combineStyles;
 const avatarSize = '1.5rem';
+const faStyle = {
+  fontSize: ui.iconSize,
+  lineHeight: avatarSize
+};
+const buttonShowFully = {
+  backgroundColor: theme.palette.mid10l,
+  color: theme.palette.dark
+};
 const buttonBase = {
+  backgroundColor: 'transparent',
   border: 0,
   borderRadius: '.5rem',
-  color: theme.palette.mid,
+  color: theme.palette.dark50l,
   cursor: 'pointer',
   fontSize: theme.typography.s3,
   fontWeight: 700,
@@ -25,29 +34,43 @@ const buttonBase = {
 
   ':hover': {
     opacity: '.65'
+  },
+  ':focus': {
+    ...buttonShowFully
   }
 };
 let styles = {};
 
 const OutcomeCardFooter = (props) => {
   const {
+    cardHasHover,
     hasOpenStatusMenu,
     owner,
-    status,
     toggleAssignMenu,
     toggleStatusMenu,
     isArchived,
   } = props;
 
-  const statusButtonStyles = hasOpenStatusMenu ?
-    styles.statusButton :
-    combineStyles(styles.statusButton, styles[status]);
+  // BUTTONS
+  // --------
+  // TODO: update Action Card button styles (TA)
+  let buttonStyles = styles.buttonBase;
+  const buttonOptions = [styles.buttonBase];
+
+  // AVATAR
+  // -------
   const avatarImage = owner.picture;
   const avatarName = owner.preferredName;
   // const avatarStyles = combineStyles(styles.avatar, styles.avatarTeam);
   // TODO: Set avatarTeam style when showing team instead of owner (on UserDashboard)
   const avatarStyles = styles.avatar;
-  const buttonIcon = labels.projectStatus[status].icon;
+  const menuHintStyle = cardHasHover ? faStyle : {visibility: 'hidden', ...faStyle};
+
+  if (hasOpenStatusMenu || cardHasHover) {
+    buttonOptions.push(styles.projectButtonShowFully);
+  }
+
+  buttonStyles = combineStyles.apply(null, buttonOptions);
 
   return (
     <div className={styles.root}>
@@ -58,22 +81,31 @@ const OutcomeCardFooter = (props) => {
           src={avatarImage}
         />
         <div className={styles.name}>{avatarName}</div>
+        <FontAwesome
+          className={styles.menuHint}
+          name="ellipsis-v"
+          style={menuHintStyle}
+        />
       </div>
       <div className={styles.statusBlock}>
-        <button className={statusButtonStyles} onClick={toggleStatusMenu}>
+        <button className={buttonStyles} onClick={toggleStatusMenu}>
           {hasOpenStatusMenu ?
-            <FontAwesome name="times" style={{lineHeight: avatarSize}}/> :
-            <FontAwesome name={buttonIcon} style={{lineHeight: avatarSize}}/>
+            <FontAwesome name="times" style={faStyle} /> :
+            <FontAwesome name="wrench" style={faStyle} />
           }
         </button>
-        {isArchived && <div style={{display: 'none'}}>TODO: Style archived</div>}
+        {isArchived &&
+          <div style={styles.statusButton}>
+            <FontAwesome name="reply" style={faStyle} />
+          </div>
+        }
       </div>
     </div>
   );
 };
 
 OutcomeCardFooter.propTypes = {
-  status: PropTypes.oneOf(labels.projectStatus.slugs),
+  cardHasHover: PropTypes.bool,
   toggleAssignMenu: PropTypes.func,
   toggleStatusMenu: PropTypes.func,
   hasOpenStatusMenu: PropTypes.bool,
@@ -84,6 +116,7 @@ OutcomeCardFooter.propTypes = {
 };
 
 OutcomeCardFooter.defaultProps = {
+  cardHasHover: false,
   status: labels.projectStatus.active.slug,
   toggleAssignMenu() {
     console.log('toggleAssignMenu');
@@ -102,7 +135,7 @@ OutcomeCardFooter.defaultProps = {
 styles = StyleSheet.create({
   root: {
     display: 'flex !important',
-    padding: '.5rem'
+    padding: ui.cardPaddingBase
   },
 
   avatarBlock: {
@@ -139,20 +172,27 @@ styles = StyleSheet.create({
     fontSize: theme.typography.s2,
     fontWeight: 700,
     lineHeight: avatarSize,
-    verticalAlign: 'top'
+    verticalAlign: 'middle'
+  },
+
+  menuHint: {
+    color: theme.palette.dark,
+    display: 'inline-block',
+    marginLeft: '.375rem',
+    verticalAlign: 'middle'
   },
 
   statusBlock: {
     alignSelf: 'flex-end'
   },
 
-  statusButton: {
-    ...buttonBase,
-    backgroundColor: theme.palette.mid10l,
+  buttonBase: {
+    ...buttonBase
+  },
 
-    ':focus': {
-      boxShadow: '0 0 2px 2px rgba(9, 141, 143, .5)'
-    }
+  projectButtonShowFully: {
+    ...buttonBase,
+    ...buttonShowFully
   },
 
   actionButton: {
@@ -163,15 +203,10 @@ styles = StyleSheet.create({
     ':focus': {
       boxShadow: `inset 0 0 0 1px ${theme.palette.mid30l}, 0 0 2px 2px rgba(103, 108, 138, .5)`
     }
-  },
-
-  // Status theme colors
-
-  ...projectStatusStyles('color')
+  }
 });
 
 export default look(OutcomeCardFooter);
-
 
 // FOR ACTIONS
 // {/*<button className={styles.actionButton}>*/}
