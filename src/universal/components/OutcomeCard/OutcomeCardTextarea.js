@@ -134,5 +134,5 @@ styles = StyleSheet.create({
     lineHeight: theme.typography.s3,
     padding: `.25rem ${ui.cardPaddingBase}`,
     textAlign: 'right'
-  },
+  }
 });

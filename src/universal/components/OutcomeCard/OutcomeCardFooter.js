@@ -51,9 +51,6 @@ const OutcomeCardFooter = (props) => {
     isArchived,
   } = props;
 
-  let buttonStyles = styles.buttonBase;
-  const buttonOptions = [styles.buttonBase];
-
   // BUTTONS
   // --------
   // TODO: update Action Card button styles (TA)
