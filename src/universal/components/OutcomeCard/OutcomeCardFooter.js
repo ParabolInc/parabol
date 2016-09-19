@@ -91,7 +91,7 @@ const OutcomeCardFooter = (props) => {
     };
   }
 
-  buttonStyles = combineStyles.apply(null, buttonOptions);
+  buttonStyles = combineStyles(...buttonOptions);
 
   return (
     <div className={styles.root}>

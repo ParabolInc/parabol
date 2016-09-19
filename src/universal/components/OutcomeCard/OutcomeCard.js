@@ -34,7 +34,7 @@ const OutcomeCard = (props) => {
     rootStyleOptions.push(styles.isArchived);
   }
 
-  rootStyles = combineStyles.apply(null, rootStyleOptions);
+  rootStyles = combineStyles(...rootStyleOptions);
 
   return (
     <div

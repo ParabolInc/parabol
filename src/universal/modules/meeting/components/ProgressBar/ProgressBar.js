@@ -60,7 +60,7 @@ export default class ProgressBar extends Component {
       };
     }
 
-    const pointStyles = combineStyles.apply(null, pointStyleVariant);
+    const pointStyles = combineStyles(...pointStyleVariant);
 
     const handleOnClick = clickFactory(idx);
     return (
