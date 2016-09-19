@@ -1,19 +1,17 @@
 import React, {Component, PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
-// import tinycolor from 'tinycolor2';
+import ui from 'universal/styles/ui';
 
-// const descBgColor = tinycolor.mix(theme.palette.mid, '#fff', 90).toHexString();
+const combineStyles = StyleSheet.combineStyles;
 
 const descriptionFA = {
-  // backgroundColor: theme.palette.cool10l,
-  // backgroundColor: descBgColor,
   backgroundColor: theme.palette.mid10l,
   borderBottomColor: theme.palette.mid,
-  // color: theme.palette.cool,
   color: theme.palette.mid10d,
   outline: 'none'
 };
+
 const descriptionActionFA = {
   backgroundColor: 'rgba(255, 255, 255, .85)',
   borderBottomColor: theme.palette.mid,
@@ -25,6 +23,7 @@ let styles = {};
 @look
 export default class OutcomeCardTextArea extends Component {
   static propTypes = {
+    cardHasHover: PropTypes.bool,
     doFocus: PropTypes.bool,
     editingStatus: PropTypes.any,
     handleActive: PropTypes.func,
@@ -49,12 +48,14 @@ export default class OutcomeCardTextArea extends Component {
 
   render() {
     const {
+      cardHasHover,
       editingStatus,
       handleSubmit,
       input,
       doFocus
     } = this.props;
-    const descStyles = styles.content;
+    const contentStyleWhenCardHovered = combineStyles(styles.content, styles.contentWhenCardHovered);
+    const descStyles = cardHasHover ? contentStyleWhenCardHovered : styles.content;
     const handleBlur = () => {
       handleSubmit();
       input.onBlur();
@@ -80,7 +81,7 @@ export default class OutcomeCardTextArea extends Component {
           {...input}
           ref={setRef}
           className={descStyles}
-          placeholder="Type your project outcome here"
+          placeholder="Type your outcome here"
           onBlur={handleBlur}
           onKeyDown={handleKeyUp}
           autoFocus={doFocus}
@@ -98,10 +99,10 @@ styles = StyleSheet.create({
     color: theme.palette.dark10d,
     display: 'block',
     fontFamily: theme.typography.sansSerif,
-    fontSize: theme.typography.s3,
-    lineHeight: theme.typography.s4,
-    minHeight: '3.3125rem',
-    padding: '.5rem',
+    fontSize: theme.typography.sBase,
+    lineHeight: theme.typography.s6,
+    // minHeight: '3.3125rem',
+    padding: `0 ${ui.cardPaddingBase} .25rem`,
     resize: 'none',
     width: '100%',
 
@@ -112,6 +113,11 @@ styles = StyleSheet.create({
       ...descriptionFA
     }
   },
+
+  contentWhenCardHovered: {
+    ...descriptionFA
+  },
+
   descriptionAction: {
     // NOTE: modifies styles.content
     ':focus': {
@@ -126,7 +132,7 @@ styles = StyleSheet.create({
     fontSize: theme.typography.s1,
     fontWeight: 700,
     lineHeight: theme.typography.s3,
-    padding: '.5rem',
+    padding: `.25rem ${ui.cardPaddingBase}`,
     textAlign: 'right'
   },
 });
