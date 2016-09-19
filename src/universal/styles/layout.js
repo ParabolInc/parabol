@@ -3,6 +3,7 @@
 // Todo: organize better, perhaps by module? (TA)
 
 const layout = {
+  dashActionsWidth: '15rem',
   dashAgendaWidth: '15rem',
   dashSidebarWidth: '15rem',
   maxWidth: '100%',
