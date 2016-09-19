@@ -1,4 +1,6 @@
 import React, {PropTypes} from 'react';
+import look, {StyleSheet} from 'react-look';
+import layout from 'universal/styles/layout';
 import {
   DashContent,
   DashHeader,
@@ -6,7 +8,6 @@ import {
   DashMain,
   dashTimestamp
 } from 'universal/components/Dashboard';
-import look, {StyleSheet} from 'react-look';
 import UserActions from 'universal/modules/userDashboard/components/UserActions/UserActions';
 import UserColumnsContainer from 'universal/modules/userDashboard/containers/UserColumns/UserColumnsContainer';
 import UserProjectsHeader from '../UserProjectsHeader/UserProjectsHeader';
@@ -48,7 +49,7 @@ UserDashboard.styles = StyleSheet.create({
   },
 
   actionsLayout: {
-    width: '15rem'
+    width: layout.dashActionsWidth
   },
 
   projectsLayout: {

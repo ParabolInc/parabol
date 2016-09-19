@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
-import {ib} from 'universal/styles/helpers';
+import {cardBorderTop, ib} from 'universal/styles/helpers';
 import ui from 'universal/styles/ui';
 import {Type} from 'universal/components';
 import FontAwesome from 'react-fontawesome';
@@ -52,27 +52,17 @@ UserActionListEmpty.styles = StyleSheet.create({
     borderRadius: ui.cardBorderRadius,
     borderStyle: 'solid',
     borderWidth: '1px',
+    paddingTop: '.1875rem',
     position: 'relative',
 
-    // TODO: Use this to create card top border in agenda branch (TA)
     '::after': {
-      backgroundColor: 'currentColor',
-      border: '1px solid currentColor',
-      borderRadius: `${ui.cardBorderRadius} ${ui.cardBorderRadius} 0 0`,
-      display: 'block',
-      color: theme.palette.dark,
-      content: '""',
-      height: '.25rem',
-      left: 0,
-      position: 'absolute',
-      top: '-1px',
-      width: '100%'
+      ...cardBorderTop
     }
   },
 
   header: {
     borderBottom: `1px solid ${ui.cardBorderColor}`,
-    padding: `${padding} ${padding} .3125rem`
+    padding: `.25rem ${padding}`
   },
 
   body: {

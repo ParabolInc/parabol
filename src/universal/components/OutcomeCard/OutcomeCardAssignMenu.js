@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import {cashay} from 'cashay';
-import Avatar from '../../../../components/Avatar/Avatar';
+import Avatar from 'universal/components/Avatar/Avatar';
 
 let s = {};
 const combineStyles = StyleSheet.combineStyles;

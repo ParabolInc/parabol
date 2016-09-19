@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import fromNow from 'universal/utils/fromNow';
 import Ellipsis from 'universal/components/Ellipsis/Ellipsis';
-import OutcomeCardTextarea from 'universal/modules/teamDashboard/components/TeamProjectCard/OutcomeCardTextarea';
+import OutcomeCardTextarea from 'universal/components/OutcomeCard/OutcomeCardTextarea';
 
 const outcomeCardTextareaQuery = `
 query {
