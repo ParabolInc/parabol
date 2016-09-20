@@ -54,7 +54,9 @@ const OutcomeCardFooter = (props) => {
       </div>
       <div className={styles.statusBlock}>
         <button className={statusButtonStyles} onClick={toggleStatusMenu}>
-          {hasOpenStatusMenu ?
+          {isArchived ?
+            <FontAwesome name="undo" style={{lineHeight: avatarSize}}/> :
+            hasOpenStatusMenu ?
             <FontAwesome name="times" style={{lineHeight: avatarSize}}/> :
             <FontAwesome name={labels.projectStatus[status].icon} style={{lineHeight: avatarSize}}/>
           }

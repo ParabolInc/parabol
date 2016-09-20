@@ -56,6 +56,19 @@ export default class TeamProjectCard extends Component {
     this.setState({openMenu: nextOpenMenu});
   };
 
+  unarchiveProject = () => {
+    const {project} = this.props;
+    const options = {
+      variables: {
+        updatedProject: {
+          id: project.id,
+          isArchived: false
+        }
+      }
+    };
+    cashay.mutate('updateProject', options);
+  }
+
   closeMenu = () => {
     this.setState({openMenu: OPEN_CONTENT_MENU});
   };
@@ -98,6 +111,8 @@ export default class TeamProjectCard extends Component {
       }
     };
 
+    const handleStatusMenuClick = isArchived ? this.unarchiveProject : this.toggleStatusMenu;
+
     return (
       <div className={rootStyles}>
         {/* card main */}
@@ -128,7 +143,7 @@ export default class TeamProjectCard extends Component {
           owner={project.teamMember}
           status={status}
           toggleAssignMenu={this.toggleAssignMenu}
-          toggleStatusMenu={this.toggleStatusMenu}
+          toggleStatusMenu={handleStatusMenuClick}
           isArchived={isArchived}
         />
       </div>
