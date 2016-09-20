@@ -18,12 +18,13 @@ const AgendaItem = props => {
   const handleGoto = isMeeting ? gotoAgendaItem : voidClick;
   let rootStyles = combineStyles(styles.root, styles[status]);
   let descStyles;
-  if (isComplete) descStyles = styles.strikethrough;
-  if (isCurrent) descStyles = combineStyles(descStyles, styles.descActive);
-  if (isCurrent) rootStyles = combineStyles(rootStyles, styles.itemActive);
-  if (isComplete) rootStyles = combineStyles(rootStyles, styles.processed);
-  // const descTrim = desc.replace(/\s+/g, '');
-
+  if (isCurrent) {
+    rootStyles = combineStyles(rootStyles, styles.itemActive);
+    descStyles = combineStyles(descStyles, styles.descActive);
+  } else if (isComplete) {
+    rootStyles = combineStyles(rootStyles, styles.processed);
+    descStyles = styles.strikethrough;
+  }
   return (
     <div className={rootStyles} title={desc}>
       {canDelete &&
@@ -70,10 +71,6 @@ styles = StyleSheet.create({
     ':hover > div': {
       opacity: 1
     }
-  },
-
-  ib: {
-    ...inlineBlock
   },
 
   del: {
