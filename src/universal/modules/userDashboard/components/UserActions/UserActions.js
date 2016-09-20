@@ -1,7 +1,10 @@
 import React from 'react';
 import look, {StyleSheet} from 'react-look';
+import ui from 'universal/styles/ui';
 import UserActionHeader from 'universal/modules/userDashboard/components/UserActionHeader/UserActionHeader';
 import UserActionListContainer from 'universal/modules/userDashboard/containers/UserActionList/UserActionListContainer';
+
+const borderColor = ui.dashBorderColor;
 
 const UserActions = () => {
   const {styles} = UserActions;
@@ -15,10 +18,7 @@ const UserActions = () => {
 
 UserActions.styles = StyleSheet.create({
   root: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 1,
-    padding: '1rem',
+    borderRight: `2px solid ${borderColor}`,
     width: '100%'
   }
 });

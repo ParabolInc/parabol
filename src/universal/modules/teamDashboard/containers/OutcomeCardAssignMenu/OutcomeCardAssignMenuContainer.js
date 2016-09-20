@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
-import OutcomeCardAssignMenu from 'universal/modules/teamDashboard/components/TeamProjectCard/OutcomeCardAssignMenu';
+import OutcomeCardAssignMenu from 'universal/components/OutcomeCard/OutcomeCardAssignMenu';
 
 const outcomeCardAssignMenuQuery = `
 query {
@@ -9,7 +9,7 @@ query {
     id
     picture
     preferredName
-  }  
+  }
 }
 `;
 

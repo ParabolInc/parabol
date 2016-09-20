@@ -52,7 +52,7 @@ const Team = (props) => {
         </DashHeaderInfo>
         <DashboardAvatars teamMembers={teamMembers}/>
       </DashHeader>
-      <DashContent hasOverlay={hasOverlay} padding="1rem 1rem 1rem 0">
+      <DashContent hasOverlay={hasOverlay} padding="0">
         {children}
       </DashContent>
     </DashMain>
@@ -60,7 +60,6 @@ const Team = (props) => {
 };
 
 Team.propTypes = {
-  children: PropTypes.any,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired,
 };

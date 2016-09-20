@@ -1,29 +1,44 @@
 import React, {Component, PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
+import ui from 'universal/styles/ui';
 
-const descriptionFA = {
-  backgroundColor: theme.palette.cool10l,
-  borderTopColor: 'currentColor',
-  color: theme.palette.cool,
+const combineStyles = StyleSheet.combineStyles;
+
+const descriptionBase = {
+  backgroundColor: 'transparent',
+  border: 0,
+  borderBottom: '1px solid transparent',
+  color: theme.palette.dark10d,
   outline: 'none'
 };
-const descriptionActionFA = {
-  backgroundColor: 'rgba(255, 255, 255, .85)',
-  borderTopColor: theme.palette.mid,
+
+const descriptionFA = {
+  backgroundColor: theme.palette.mid10l,
+  borderBottomColor: theme.palette.mid,
   color: theme.palette.mid10d
 };
+
+const descriptionActionFA = {
+  backgroundColor: 'rgba(255, 255, 255, .85)',
+  borderBottomColor: theme.palette.mid,
+  color: theme.palette.mid10d
+};
+
+const descriptionBreakpoint = '@media (min-width: 90rem)';
 
 let styles = {};
 
 @look
 export default class OutcomeCardTextArea extends Component {
   static propTypes = {
+    cardHasHover: PropTypes.bool,
     doFocus: PropTypes.bool,
     editingStatus: PropTypes.any,
     handleActive: PropTypes.func,
     handleSubmit: PropTypes.func,
     input: PropTypes.object,
+    isArchived: PropTypes.bool,
     isProject: PropTypes.bool,
     teamMemberId: PropTypes.string,
     teamMembers: PropTypes.array,
@@ -43,17 +58,27 @@ export default class OutcomeCardTextArea extends Component {
 
   render() {
     const {
+      cardHasHover,
       editingStatus,
       handleSubmit,
       input,
+      isArchived,
+      isProject,
       doFocus
     } = this.props;
-    const descStyles = styles.content;
+    let contentStyles = styles.content;
+    let textAreaRef;
+
+    const contentStyleWhenCardHovered = combineStyles(styles.content, styles.contentWhenCardHovered);
+    const actionContentStyleWhenCardHovered = combineStyles(
+      styles.content,
+      styles.descriptionAction,
+      styles.actionContentWhenCardHovered
+    );
     const handleBlur = () => {
       handleSubmit();
       input.onBlur();
     };
-    let textAreaRef;
     const setRef = (c) => {
       textAreaRef = c;
     };
@@ -65,6 +90,18 @@ export default class OutcomeCardTextArea extends Component {
       }
     };
 
+    if (isProject) {
+      contentStyles = cardHasHover ? contentStyleWhenCardHovered : styles.content;
+    } else {
+      contentStyles = cardHasHover ?
+        actionContentStyleWhenCardHovered :
+        combineStyles(styles.content, styles.descriptionAction);
+    }
+
+    if (isArchived) {
+      contentStyles = combineStyles(styles.content, styles.isArchived);
+    }
+
     return (
       <div>
         <div className={styles.timestamp}>
@@ -73,8 +110,9 @@ export default class OutcomeCardTextArea extends Component {
         <textarea
           {...input}
           ref={setRef}
-          className={descStyles}
-          placeholder="Type your project outcome here"
+          className={contentStyles}
+          disabled={isArchived}
+          placeholder="Type your outcome here"
           onBlur={handleBlur}
           onKeyDown={handleKeyUp}
           autoFocus={doFocus}
@@ -86,20 +124,12 @@ export default class OutcomeCardTextArea extends Component {
 
 styles = StyleSheet.create({
   content: {
-    backgroundColor: 'transparent',
-    border: 0,
-    borderTop: '1px solid transparent',
-    color: theme.palette.dark10d,
+    ...descriptionBase,
     display: 'block',
     fontFamily: theme.typography.sansSerif,
     fontSize: theme.typography.s3,
-    lineHeight: theme.typography.s4,
-    // TODO: Clean up these comments (TA)
-    // minHeight: '2.6875rem', // A
-    // minHeight: '2.1875rem', // B
-    minHeight: '3.3125rem', // Oversizing for menu (TA)
-    padding: '.5rem .5rem 1rem', // A
-    // padding: '.5rem', // B
+    lineHeight: theme.typography.s5,
+    padding: `0 ${ui.cardPaddingBase} .25rem`,
     resize: 'none',
     width: '100%',
 
@@ -108,8 +138,18 @@ styles = StyleSheet.create({
     },
     ':active': {
       ...descriptionFA
+    },
+
+    [descriptionBreakpoint]: {
+      fontSize: theme.typography.sBase,
+      lineHeight: theme.typography.s6
     }
   },
+
+  contentWhenCardHovered: {
+    ...descriptionFA
+  },
+
   descriptionAction: {
     // NOTE: modifies styles.content
     ':focus': {
@@ -119,12 +159,28 @@ styles = StyleSheet.create({
       ...descriptionActionFA
     }
   },
+
+  actionContentWhenCardHovered: {
+    ...descriptionActionFA
+  },
+
   timestamp: {
     color: theme.palette.dark,
     fontSize: theme.typography.s1,
     fontWeight: 700,
     lineHeight: theme.typography.s3,
-    padding: '.5rem',
+    padding: `.25rem ${ui.cardPaddingBase}`,
     textAlign: 'right'
   },
+
+  isArchived: {
+    cursor: 'not-allowed',
+
+    ':focus': {
+      ...descriptionBase
+    },
+    ':active': {
+      ...descriptionBase
+    }
+  }
 });

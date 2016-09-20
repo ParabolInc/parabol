@@ -1,15 +1,15 @@
 import React, {Component, PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import {cashay} from 'cashay';
-import {Field, reduxForm, initialize} from 'redux-form';
-import theme from 'universal/styles/theme';
+import {Field, reduxForm, initialize, focus} from 'redux-form';
 import labels from 'universal/styles/theme/labels';
-import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
-import OutcomeCardAssignMenuContainer from 'universal/modules/teamDashboard/containers/OutcomeCardAssignMenu/OutcomeCardAssignMenuContainer';
+import OutcomeCardAssignMenuContainer
+  from 'universal/modules/teamDashboard/containers/OutcomeCardAssignMenu/OutcomeCardAssignMenuContainer';
+import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
 import OutcomeCardTextareaContainer from 'universal/modules/teamDashboard/containers/OutcomeCardTextarea/OutcomeCardTextareaContainer';
-import OutcomeCardFooter from './OutcomeCardFooter';
-import OutcomeCardStatusMenu from './OutcomeCardStatusMenu';
+import OutcomeCardFooter from 'universal/components/OutcomeCard/OutcomeCardFooter';
+import OutcomeCardStatusMenu from 'universal/components/OutcomeCard/OutcomeCardStatusMenu';
 
 const OPEN_CONTENT_MENU = 'TeamProjectCard/openContentMenu';
 const OPEN_ASSIGN_MENU = 'TeamProjectCard/openAssignMenu';
@@ -22,12 +22,16 @@ let styles = {};
 @look
 export default class TeamProjectCard extends Component {
   componentWillMount() {
-    const {project: {content}} = this.props;
+    const {project: {content}, dispatch, field, form} = this.props;
     this.state = {
+      cardHasHover: false,
       openMenu: OPEN_CONTENT_MENU
     };
     if (content) {
       this.initializeValues(content);
+    } else {
+      // manually align redux-state with DOM
+      dispatch(focus(form, field));
     }
   }
 
@@ -37,6 +41,14 @@ export default class TeamProjectCard extends Component {
     if (nextContent !== content) {
       this.initializeValues(nextContent);
     }
+  }
+
+  onEnterTeamProjectCard = () => {
+    this.setState({cardHasHover: true});
+  }
+
+  onLeaveTeamProjectCard = () => {
+    this.setState({cardHasHover: false});
   }
 
   initializeValues(content) {
@@ -56,19 +68,6 @@ export default class TeamProjectCard extends Component {
     this.setState({openMenu: nextOpenMenu});
   };
 
-  unarchiveProject = () => {
-    const {project} = this.props;
-    const options = {
-      variables: {
-        updatedProject: {
-          id: project.id,
-          isArchived: false
-        }
-      }
-    };
-    cashay.mutate('updateProject', options);
-  }
-
   closeMenu = () => {
     this.setState({openMenu: OPEN_CONTENT_MENU});
   };
@@ -78,12 +77,12 @@ export default class TeamProjectCard extends Component {
     const {
       handleSubmit,
       project,
-      isArchived
+      isArchived,
+      isProject,
     } = this.props;
     const {content, status, id: projectId} = project;
     const hasOpenStatusMenu = openMenu === OPEN_STATUS_MENU;
     const hasOpenAssignMenu = openMenu === OPEN_ASSIGN_MENU;
-    const rootStyles = combineStyles(styles.root, styles.cardBlock, styles[status]);
     const handleCardActive = (isActive) => {
       if (isActive === undefined) { return; }
       const [teamId] = projectId.split('::');
@@ -111,42 +110,51 @@ export default class TeamProjectCard extends Component {
       }
     };
 
-    const handleStatusMenuClick = isArchived ? this.unarchiveProject : this.toggleStatusMenu;
-
     return (
-      <div className={rootStyles}>
+      <OutcomeCard
+        isArchived={isArchived}
+        isProject={isProject}
+        onEnterCard={this.onEnterTeamProjectCard}
+        onLeaveCard={this.onLeaveTeamProjectCard}
+        status={status}
+      >
         {/* card main */}
         {hasOpenAssignMenu &&
-          <OutcomeCardAssignMenuContainer
-            onComplete={this.closeMenu}
-            project={project}
-          />
+        <OutcomeCardAssignMenuContainer
+          onComplete={this.closeMenu}
+          project={project}
+        />
         }
-        {hasOpenStatusMenu && <OutcomeCardStatusMenu project={project}/>}
+        {hasOpenStatusMenu && <OutcomeCardStatusMenu isProject={isProject} project={project}/>}
         {!hasOpenAssignMenu && !hasOpenStatusMenu &&
-          <div className={styles.body}>
-            <form>
-              <Field
-                name={projectId}
-                component={OutcomeCardTextareaContainer}
-                handleActive={handleCardActive}
-                handleSubmit={handleSubmit(handleCardUpdate)}
-                project={project}
-                doFocus={!content}
-              />
-            </form>
-          </div>
+        <div className={styles.body}>
+          <form>
+            <Field
+              name={projectId}
+              component={OutcomeCardTextareaContainer}
+              handleActive={handleCardActive}
+              handleSubmit={handleSubmit(handleCardUpdate)}
+              isArchived={isArchived}
+              isProject={isProject}
+              project={project}
+              doFocus={!content}
+              cardHasHover={this.state.cardHasHover}
+            />
+          </form>
+        </div>
         }
         {/* card footer */}
         <OutcomeCardFooter
+          cardHasHover={this.state.cardHasHover}
           hasOpenStatusMenu={hasOpenStatusMenu}
+          isArchived={isArchived}
+          isProject={isProject}
           owner={project.teamMember}
           status={status}
           toggleAssignMenu={this.toggleAssignMenu}
-          toggleStatusMenu={handleStatusMenuClick}
-          isArchived={isArchived}
+          toggleStatusMenu={this.toggleStatusMenu}
         />
-      </div>
+      </OutcomeCard>
     );
   }
 }
@@ -166,6 +174,7 @@ TeamProjectCard.propTypes = {
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,
   isArchived: PropTypes.bool,
+  isProject: PropTypes.bool,
   owner: PropTypes.object,
   teamMembers: PropTypes.array,
   updatedAt: PropTypes.instanceOf(Date),
@@ -177,6 +186,7 @@ TeamProjectCard.defaultProps = {
   hasOpenAssignMenu: false,
   hasOpenStatusMenu: false,
   isArchived: false,
+  isProject: true,
   owner: {
     preferredName: 'Taya Mueller',
     picture: TayaAvatar
@@ -188,30 +198,7 @@ TeamProjectCard.defaultProps = {
 };
 
 styles = StyleSheet.create({
-  root: {
-    backgroundColor: '#fff',
-    border: `1px solid ${theme.palette.mid30l}`,
-    borderRadius: '.5rem',
-    borderTop: `.25rem solid ${theme.palette.mid}`,
-    maxWidth: '20rem',
-    width: '100%'
-  },
-
-  cardBlock: {
-    marginBottom: '1rem',
-    width: '100%'
-  },
-
   body: {
-    // TODO: set minHeight? (TA)
     width: '100%'
-  },
-
-  // isAction: {
-  //   backgroundColor: theme.palette.light50l
-  // },
-
-  // Status theme colors
-
-  ...projectStatusStyles('borderTopColor')
+  }
 });

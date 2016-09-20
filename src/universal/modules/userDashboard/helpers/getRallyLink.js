@@ -137,6 +137,10 @@ const rallyList = [
   {
     phrase: 'Go Pro',
     link: 'https://youtu.be/9mSMTXYj7pQ'
+  },
+  {
+    phrase: 'An Invocation for Beginnings',
+    link: 'https://youtu.be/RYlCVwxoL_g'
   }
 ];
 

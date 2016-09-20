@@ -10,28 +10,18 @@ import {
 } from 'universal/components/Dashboard';
 import FontAwesome from 'react-fontawesome';
 
-const TeamProjectsHeader = (props) => {
-  const {teamId} = props;
-  const {styles} = TeamProjectsHeader;
+const UserProjectsHeader = () => {
+  const {styles} = UserProjectsHeader;
   return (
     <DashSectionHeader>
-      <DashSectionHeading icon="calendar" label="Team Projects" />
+      <DashSectionHeading icon="calendar" label="My Projects" />
       <DashSectionControls>
-        {/* TODO: needs link to archive */}
-        <DashSectionControl>
-          <FontAwesome name="archive" style={ib} />
-          {' '}
-          <Link to={`/team/${teamId}/archive`}>
-            See Archived Projects
-            <FontAwesome name="archive" />
-          </Link>
-        </DashSectionControl>
         {/* TODO: needs minimal, inline dropdown */}
         <DashSectionControl>
-          <b style={ib}>Show by Team Member</b>:
+          <b style={ib}>Show Actions & Projects for</b>:
           {' '}
-          <a className={styles.link} href="#" title="Filter by All Team Members">
-            All Team Members
+          <a className={styles.link} href="#" title="Filter by All Teams">
+            All Teams
           </a>
           {' '}
           <FontAwesome name="chevron-circle-down" style={ib} />
@@ -41,11 +31,11 @@ const TeamProjectsHeader = (props) => {
   );
 };
 
-TeamProjectsHeader.propTypes = {
+UserProjectsHeader.propTypes = {
   children: PropTypes.any
 };
 
-TeamProjectsHeader.styles = StyleSheet.create({
+UserProjectsHeader.styles = StyleSheet.create({
   link: {
     ...ib,
     color: theme.palette.mid,
@@ -59,4 +49,4 @@ TeamProjectsHeader.styles = StyleSheet.create({
   }
 });
 
-export default look(TeamProjectsHeader);
+export default look(UserProjectsHeader);

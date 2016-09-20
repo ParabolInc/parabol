@@ -1,4 +1,6 @@
 import React, {PropTypes} from 'react';
+import look, {StyleSheet} from 'react-look';
+import layout from 'universal/styles/layout';
 import {
   DashContent,
   DashHeader,
@@ -6,10 +8,9 @@ import {
   DashMain,
   dashTimestamp
 } from 'universal/components/Dashboard';
-import look, {StyleSheet} from 'react-look';
-// import theme from 'universal/styles/theme';
 import UserActions from 'universal/modules/userDashboard/components/UserActions/UserActions';
 import UserColumnsContainer from 'universal/modules/userDashboard/containers/UserColumns/UserColumnsContainer';
+import UserProjectsHeader from '../UserProjectsHeader/UserProjectsHeader';
 import getRallyLink from '../../helpers/getRallyLink';
 
 const UserDashboard = () => {
@@ -21,12 +22,13 @@ const UserDashboard = () => {
           {dashTimestamp} • <span className={styles.crayCrayHover}>{getRallyLink()}!</span>
         </DashHeaderInfo>
       </DashHeader>
-      <DashContent>
+      <DashContent padding="0">
         <div className={styles.root}>
           <div className={styles.actionsLayout}>
             <UserActions />
           </div>
           <div className={styles.projectsLayout}>
+            <UserProjectsHeader />
             <UserColumnsContainer/>
           </div>
         </div>
@@ -43,32 +45,22 @@ UserDashboard.styles = StyleSheet.create({
   root: {
     display: 'flex',
     flex: 1,
-    padding: '1rem',
     width: '100%'
   },
 
   actionsLayout: {
-    width: '20%'
+    width: layout.dashActionsWidth
   },
 
   projectsLayout: {
-    width: '80%'
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    paddingLeft: '1rem'
   },
 
   crayCrayHover: {
-    color: 'inherit',
-
-    // TODO: Play with cray cray hover some more (TA)
-    // ':hover': {
-    //   color: theme.palette.warm,
-    //   position: 'fixed',
-    //   transform: 'scale(10)'
-    // },
-    // ':focus': {
-    //   color: theme.palette.warm,
-    //   position: 'fixed',
-    //   transform: 'scale(10)'
-    // }
+    color: 'inherit'
   }
 });
 

@@ -44,7 +44,7 @@ const renderField = (field) => {
     styleOptions.push(styles.fieldWider);
   }
 
-  const fieldStyles = combineStyles.apply(null, styleOptions);
+  const fieldStyles = combineStyles(...styleOptions);
   // allow hotkeys to be triggered when inside a field input
   const allClassNames = [fieldStyles, 'mousetrap'].join(', ');
   return (
