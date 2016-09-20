@@ -16,8 +16,7 @@ exports.up = async (r) => {
     r.table('Participant').indexCreate('meetingId'),
     r.table('Participant').indexCreate('userId'),
     r.table('Project').indexCreate('teamMemberId'),
-    r.table('Project').indexCreate('teamId'),
-    r.table('Project').indexCreate('createdAt')
+    r.table('Project').indexCreate('teamIdCreatedAt', (row) => [row('teamId'), row('createdAt')])
   ];
   return await Promise.all(meetingIndices);
 };

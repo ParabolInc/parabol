@@ -22,15 +22,12 @@ let styles = {};
 @look
 export default class TeamProjectCard extends Component {
   componentWillMount() {
-    const {project: {content}, dispatch, field, focus, form} = this.props;
+    const {project: {content}} = this.props;
     this.state = {
       openMenu: OPEN_CONTENT_MENU
     };
     if (content) {
       this.initializeValues(content);
-    } else {
-      // manually align redux-state with DOM
-      dispatch(focus(form, field));
     }
   }
 
@@ -68,6 +65,7 @@ export default class TeamProjectCard extends Component {
     const {
       handleSubmit,
       project,
+      isArchived
     } = this.props;
     const {content, status, id: projectId} = project;
     const hasOpenStatusMenu = openMenu === OPEN_STATUS_MENU;
@@ -131,6 +129,7 @@ export default class TeamProjectCard extends Component {
           status={status}
           toggleAssignMenu={this.toggleAssignMenu}
           toggleStatusMenu={this.toggleStatusMenu}
+          isArchived={isArchived}
         />
       </div>
     );

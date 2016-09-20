@@ -15,10 +15,10 @@ export const ProjectStatus = new GraphQLEnumType({
   name: 'ProjectStatus',
   description: 'The status of the project',
   values: {
-    ACTIVE: {value: ACTIVE},
-    STUCK: {value: STUCK},
-    DONE: {value: DONE},
-    FUTURE: {value: FUTURE}
+    [ACTIVE]: {value: ACTIVE},
+    [STUCK]: {value: STUCK},
+    [DONE]: {value: DONE},
+    [FUTURE]: {value: FUTURE}
   }
 });
 
@@ -73,6 +73,7 @@ export const Project = new GraphQLObjectType({
 
 const projectInputThunk = () => ({
   id: {type: GraphQLID, description: 'The unique project ID'},
+  isArchived: {type: GraphQLBoolean, description: 'true if the project is archived'},
   content: {type: GraphQLString, description: 'The body of the project. If null, it is a new project.'},
   status: {type: GraphQLID, description: 'The status of the project created'},
   teamMemberId: {type: GraphQLID, description: 'The team member ID of the person creating the project'},

@@ -2,16 +2,26 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import layoutStyle from 'universal/styles/layout';
 import TeamArchiveHeader from 'universal/modules/teamDashboard/components/TeamArchiveHeader/TeamArchiveHeader';
+import TeamProjectCard from 'universal/modules/teamDashboard/components/TeamProjectCard/TeamProjectCard';
 
 const {combineStyles} = StyleSheet;
 
 const TeamArchive = (props) => {
   const {styles} = TeamArchive;
-  const {teamId} = props;
+  const {archivedProjects, teamId} = props;
   return (
     <div className={styles.root}>
       <div className={combineStyles(styles.root, styles.projects)}>
         <TeamArchiveHeader teamId={teamId}/>
+        {archivedProjects.map(project =>
+          <TeamProjectCard
+            key={project.id}
+            dispatch={()=>{}}
+            form={`archived::${project.id}`}
+            project={project}
+            isArchived
+          />
+        )}
       </div>
     </div>
   );

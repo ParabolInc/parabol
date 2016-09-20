@@ -5,7 +5,7 @@ import TeamArchive from 'universal/modules/teamDashboard/components/TeamArchive/
 
 const teamArchiveQuery = `
 query {
-  archivedProjects: getArchivedProjects(teamId: $teamId, first: $count) {
+  archivedProjects: getArchivedProjects(teamId: $teamId, first: $first) {
     id
     content
     status
@@ -22,15 +22,15 @@ query {
 
 const mapStateToProps = (state, props) => {
   const {teamId} = props.params;
-  const teamContainer = cashay.query(teamArchiveQuery, {
+  const teamArchiveContainer = cashay.query(teamArchiveQuery, {
     op: 'teamArchiveContainer',
     key: teamId,
-    variables: {teamId},
+    variables: {teamId, first: 10},
     resolveCached: {
       teamMember: (source) => source.teamMemberId
     }
   });
-  const {archivedProjects} = teamContainer.data;
+  const {archivedProjects} = teamArchiveContainer.data;
   return {
     archivedProjects
   };

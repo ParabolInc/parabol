@@ -14,12 +14,21 @@ const buttonHF = {
 let styles = {};
 
 const OutcomeCardStatusMenu = (props) => {
-  const {project: {isArchived, id: projectId, status}} = props;
+  const {project: {id: projectId, status}} = props;
 
-  const isArchivedLabel = <span>Take out of Ar<u>c</u>hive</span>;
   const notArchivedLabel = <span>Move to Ar<u>c</u>hive</span>;
   const buttonArray = labels.projectStatus.slugs.slice(0);
-
+  const archiveProject = () => {
+    const options = {
+      variables: {
+        updatedProject: {
+          id: projectId,
+          isArchived: true
+        }
+      }
+    };
+    cashay.mutate('updateProject', options);
+  };
   const handleProjectUpdate = (newStatus) => {
     if (newStatus === status) {
       return;
@@ -53,8 +62,6 @@ const OutcomeCardStatusMenu = (props) => {
     );
   };
 
-  const archivedLabel = isArchived ? isArchivedLabel : notArchivedLabel;
-
   return (
     <div className={styles.root}>
       {buttonArray.map((btn, idx) => {
@@ -66,7 +73,13 @@ const OutcomeCardStatusMenu = (props) => {
         );
       })}
       <div className={styles.archivedBtnBlock}>
-        {makeButton('archive', 'archive', archivedLabel)}
+        <OutcomeCardMenuButton
+          icon="archive"
+          label={notArchivedLabel}
+          onClick={archiveProject}
+          status="archive"
+          title="Move to archive"
+        />
       </div>
     </div>
   );

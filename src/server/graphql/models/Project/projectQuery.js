@@ -1,12 +1,12 @@
 import r from 'server/database/rethinkDriver';
-import {GraphQLNonNull, GraphQLID, GraphQLInt} from 'graphql';
+import {GraphQLList, GraphQLNonNull, GraphQLID, GraphQLInt} from 'graphql';
 import {Project} from './projectSchema';
 import {errorObj} from '../utils';
 import {requireAuth, requireSUOrTeamMember} from '../authorization';
 
 export default {
   getArchivedProjects: {
-    type: Project,
+    type: new GraphQLList(Project),
     description: 'A paginated query for all the archived projects for a team',
     args: {
       teamId: {
@@ -25,11 +25,11 @@ export default {
     async resolve(source, {teamId, first, after}, {authToken}) {
       requireSUOrTeamMember(authToken, teamId);
       const cursor = after || r.minval;
-      return await r.table('Project')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({isActive: false})
-        .between(cursor, r.maxval, {index: 'createdAt', leftBound: 'open'})
+      const result = await r.table('Project')
+        .between([teamId, cursor], [teamId, r.maxval], {index: 'teamIdCreatedAt', leftBound: 'open'})
+        .filter({isArchived: true})
         .limit(first);
+      return result;
     }
   },
   getCurrentProject: {

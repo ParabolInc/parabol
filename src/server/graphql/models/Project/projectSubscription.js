@@ -22,7 +22,7 @@ export default {
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
       r.table('Project')
         .getAll(teamMemberId, {index: 'teamMemberId'})
-        .filter({isActive: true})
+        .filter({isActive: true, isArchived: false})
         .pluck(requestedFields)
         .changes({includeInitial: true})
         .run({cursor: true}, changefeedHandler);

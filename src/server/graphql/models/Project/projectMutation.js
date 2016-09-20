@@ -64,6 +64,7 @@ export default {
       const project = {
         ...newProject,
         isActive: true,
+        isArchived: false,
         userId,
         createdAt: now,
         teamId,
