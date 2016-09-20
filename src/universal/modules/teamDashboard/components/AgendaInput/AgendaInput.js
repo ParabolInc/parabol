@@ -35,7 +35,9 @@ const AgendaInput = (props) => {
         name="agendaItem"
         component={AgendaInputField}
       />
-      <Avatar hasBadge={false} picture={myTeamMember.picture} size="smallest"/>
+      <div className={styles.author}>
+        <Avatar hasBadge={false} picture={myTeamMember.picture} size="smallest"/>
+      </div>
     </form>
   );
 };
@@ -46,16 +48,28 @@ AgendaInput.propTypes = {
   teamId: PropTypes.string,
   myTeamMember: PropTypes.object,
 };
+
 AgendaInput.styles = StyleSheet.create({
   root: {
-    backgroundColor: theme.palette.light,
+    backgroundColor: 'transparent',
     color: theme.palette.cool,
     fontSize: theme.typography.s3,
-    padding: '.5rem .5rem .5rem 0',
     position: 'relative',
     width: '100%',
-    display: 'flex'
+    zIndex: 100,
+
+    ':hover': {
+      backgroundColor: theme.palette.dark20l
+    }
   },
+
+  author: {
+    position: 'absolute',
+    right: '.5rem',
+    top: '.5rem',
+    zIndex: 200
+  }
 });
+
 const reduxFormOptions = {form: 'agendaInput'};
 export default reduxForm(reduxFormOptions)(look(AgendaInput));

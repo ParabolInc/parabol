@@ -57,6 +57,7 @@ AgendaAndProjects.styles = StyleSheet.create({
 
   agendaLayout: {
     borderRight: `2px solid ${borderColor}`,
+    boxSizing: 'content-box',
     width: layout.dashAgendaWidth
   },
 
