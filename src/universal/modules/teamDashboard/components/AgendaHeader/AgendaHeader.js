@@ -13,7 +13,7 @@ const AgendaHeader = () => {
 
 AgendaHeader.styles = StyleSheet.create({
   root: {
-    padding: '1rem 1rem 1rem 4rem',
+    padding: '1rem 1rem 1rem 2.375rem',
     width: '100%'
   }
 });

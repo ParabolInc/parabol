@@ -1,6 +1,7 @@
 import React, {PropTypes, Component} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
+import {makePlaceholderStyles} from 'universal/styles/helpers';
 import tinycolor from 'tinycolor2';
 import layoutStyle from 'universal/styles/layout';
 import Notifications from 'universal/modules/notifications/containers/Notifications/Notifications';
@@ -50,6 +51,8 @@ export default class Action extends Component {
   }
 }
 
+const basePlaceholderStyles = makePlaceholderStyles(theme.palette.dark50l);
+
 styles = StyleSheet.create({
   app: {
     height: '100vh',
@@ -98,5 +101,7 @@ StyleSheet.addCSS({
     fontFamily: theme.typography.sansSerif,
     '-moz-osx-font-smoothing': 'grayscale',
     '-webkit-font-smoothing': 'antialiased'
-  }
+  },
+
+  ...basePlaceholderStyles
 });
