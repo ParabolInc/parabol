@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import layout from 'universal/styles/layout';
+import ui from 'universal/styles/ui';
 import {
   DashContent,
   DashHeader,
@@ -49,6 +50,8 @@ UserDashboard.styles = StyleSheet.create({
   },
 
   actionsLayout: {
+    boxSizing: 'content-box',
+    borderRight: `2px solid ${ui.dashBorderColor}`,
     width: layout.dashActionsWidth
   },
 

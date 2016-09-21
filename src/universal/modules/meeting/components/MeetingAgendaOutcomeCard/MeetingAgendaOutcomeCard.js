@@ -14,8 +14,19 @@ import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
 
 const MeetingAgendaOutcomeCard = (props) => {
   const {content, id, status, type} = props;
+  const onEnterMeetingAgendaCard = () => {
+    console.log('onEnterMeetingAgendaCard');
+  };
+  const onLeaveMeetingAgendaCard = () => {
+    console.log('onLeaveMeetingAgendaCard');
+  };
   return (
-    <OutcomeCard status={status} isProject={type === 'Project'}>
+    <OutcomeCard
+      isProject={type === 'Project'}
+      onEnterCard={onEnterMeetingAgendaCard}
+      onLeaveCard={onLeaveMeetingAgendaCard}
+      status={status}
+    >
       <div style={{padding: '1rem'}}>
         content: {content}<br />
         id: {id}<br />
@@ -46,8 +57,8 @@ MeetingAgendaOutcomeCard.propTypes = {
   id: PropTypes.string,
   status: PropTypes.oneOf(labels.projectStatus.slugs),
   type: PropTypes.oneOf([
-    'action',
-    'project'
+    'Action',
+    'Project'
   ])
 };
 

@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
+import {overflowTouch} from 'universal/styles/helpers';
 import {cashay} from 'cashay';
 import AgendaItem from 'universal/modules/teamDashboard/components/AgendaItem/AgendaItem';
 
@@ -13,19 +14,21 @@ const AgendaList = (props) => {
   const {agenda, agendaPhaseItem, phaseItemFactory} = props;
   return (
     <div className={styles.root}>
-      {agenda.map((item, idx) =>
-        <AgendaItem
-          desc={item.content}
-          idx={idx}
-          key={`agendaItem${idx}`}
-          handleRemove={() => handleRemoveItem(item.id)}
-          gotoAgendaItem={phaseItemFactory(idx + 1)}
-          teamMember={item.teamMember}
-          isComplete={item.isComplete}
-          agendaPhaseItem={agendaPhaseItem}
-          sortOrder={item.sortOrder}
-        />
-      )}
+      <div className={styles.inner}>
+        {agenda.map((item, idx) =>
+          <AgendaItem
+            desc={item.content}
+            idx={idx}
+            key={`agendaItem${idx}`}
+            handleRemove={() => handleRemoveItem(item.id)}
+            gotoAgendaItem={phaseItemFactory(idx + 1)}
+            teamMember={item.teamMember}
+            isComplete={item.isComplete}
+            agendaPhaseItem={agendaPhaseItem}
+            sortOrder={item.sortOrder}
+          />
+        )}
+      </div>
     </div>
   );
 };
@@ -44,7 +47,15 @@ AgendaList.styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
-    // padding: '1rem',
+    position: 'relative',
+    width: '100%'
+  },
+
+  inner: {
+    ...overflowTouch,
+    bottom: 0,
+    position: 'absolute',
+    top: 0,
     width: '100%'
   }
 });
