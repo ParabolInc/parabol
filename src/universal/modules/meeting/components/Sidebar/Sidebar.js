@@ -107,7 +107,7 @@ const Sidebar = (props) => {
           }
         </ul>
         {localPhase !== CHECKIN && localPhase !== SUMMARY &&
-          <div>
+          <div className={s.agendaListBlock}>
             <AgendaListAndInputContainer agendaPhaseItem={agendaPhaseItem} isFacilitating={isFacilitating} teamId={teamId}/>
           </div>
         }
@@ -157,7 +157,11 @@ s = StyleSheet.create({
   },
 
   nav: {
-    margin: '2rem 0',
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    margin: '2rem 0 0',
+    width: '100%'
   },
 
   navList: {
@@ -202,9 +206,18 @@ s = StyleSheet.create({
     color: theme.palette.dark
   },
 
+  agendaListBlock: {
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    width: '100%'
+  },
+
   sidebar: {
     backgroundColor: theme.palette.dark10l,
-    padding: '2rem 0',
+    display: 'flex',
+    flexDirection: 'column',
+    padding: '2rem 0 0',
     width: layoutStyle.meetingSidebarWidth
   },
 

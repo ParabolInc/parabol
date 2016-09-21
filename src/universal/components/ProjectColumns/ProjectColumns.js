@@ -4,15 +4,16 @@ import ui from 'universal/styles/ui';
 import {columnArray} from 'universal/utils/constants';
 
 import ProjectColumn from 'universal/modules/teamDashboard/components/ProjectColumn/ProjectColumn';
-
+const combineStyles = StyleSheet.combineStyles;
 const borderColor = ui.dashBorderColor;
 let styles = {};
 
 const ProjectColumns = (props) => {
   // myTeamMemberId is undefined if this is coming from USER_DASH
-  const {area, myTeamMemberId, projects} = props;
+  const {alignColumns, area, myTeamMemberId, projects} = props;
+  const rootStyles = combineStyles(styles.root, styles[alignColumns]);
   return (
-    <div className={styles.root}>
+    <div className={rootStyles}>
       <div className={styles.columns}>
         {columnArray.map((status) =>
           <ProjectColumn
@@ -29,9 +30,18 @@ const ProjectColumns = (props) => {
 };
 
 ProjectColumns.propTypes = {
+  alignColumns: PropTypes.oneOf([
+    'center',
+    'left',
+    'right'
+  ]),
   area: PropTypes.string,
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.object.isRequired
+};
+
+ProjectColumns.defaultProps = {
+  alignColumns: 'left'
 };
 
 styles = StyleSheet.create({
@@ -42,9 +52,22 @@ styles = StyleSheet.create({
     width: '100%'
   },
 
+  center: {
+    justifyContent: 'center',
+  },
+
+  left: {
+    justifyContent: 'flex-start',
+  },
+
+  right: {
+    justifyContent: 'flex-end',
+  },
+
   columns: {
     display: 'flex !important',
-    maxWidth: '80rem',
+    maxWidth: ui.projectColumnsMaxWidth,
+    minWidth: ui.projectColumnsMinWidth,
     width: '100%'
   }
 });

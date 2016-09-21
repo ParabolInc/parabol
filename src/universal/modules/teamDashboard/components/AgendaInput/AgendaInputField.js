@@ -1,7 +1,24 @@
 import React, {PropTypes} from 'react';
 import theme from 'universal/styles/theme';
 import look, {StyleSheet} from 'react-look';
+import {makePlaceholderStyles} from 'universal/styles/helpers';
+import ui from 'universal/styles/ui';
 import withHotkey from 'react-hotkey-hoc';
+import FontAwesome from 'react-fontawesome';
+
+const defaultColor = theme.palette.dark;
+
+const iconStyle = {
+  color: defaultColor,
+  display: 'block',
+  height: ui.fontSize,
+  left: '2.5rem',
+  lineHeight: ui.fontSize,
+  position: 'absolute',
+  top: '.8125rem',
+  width: ui.fontSize,
+  zIndex: 100
+};
 
 const AgendaInputField = (props) => {
   const {styles} = AgendaInputField;
@@ -16,18 +33,28 @@ const AgendaInputField = (props) => {
   };
   bindHotkey('+', focusOnInput);
   return (
-    <div>
+    <div className={styles.root}>
       <input
         {...props.input}
-        ref={setRef}
+        autoCapitalize="off"
+        autoComplete="off"
         className={styles.input}
+        placeholder="Add Agenda Item"
+        ref={setRef}
+        title="Add Agenda Item"
         type="text"
-        placeholder="Add an item"
-        title="Add agenda items here"
       />
-      <div className={styles.author}>Author name</div>
+      <FontAwesome name="plus-circle" style={iconStyle} />
     </div>
   );
+};
+
+const inputPlaceholderStyles = makePlaceholderStyles(defaultColor);
+const inputFocusActivePlaceholderStyles = makePlaceholderStyles(theme.palette.dark50l);
+
+const inputFocusActive = {
+  backgroundColor: theme.palette.light,
+  ...inputFocusActivePlaceholderStyles
 };
 
 AgendaInputField.propTypes = {
@@ -36,6 +63,10 @@ AgendaInputField.propTypes = {
 };
 
 AgendaInputField.styles = StyleSheet.create({
+  root: {
+    position: 'relative'
+  },
+
   input: {
     backgroundColor: 'transparent',
     border: 0,
@@ -46,28 +77,24 @@ AgendaInputField.styles = StyleSheet.create({
     fontSize: theme.typography.s3,
     fontStyle: 'italic',
     fontWeight: 700,
+    lineHeight: '1.5rem',
     margin: 0,
     outline: 'none',
-    padding: '0 1rem 0 3rem',
+    padding: '.5rem 2.5rem .5rem 3rem',
+    position: 'relative',
     textIndent: '1rem',
     width: '100%',
+    zIndex: 200,
 
-    '::placeholder': {
-      color: theme.palette.dark50l
+    ...inputPlaceholderStyles,
+
+    ':focus': {
+      ...inputFocusActive
     },
-  },
-
-  author: {
-    display: 'none', // TODO: Show on focus/active
-    fontWeight: 700,
-    right: '.75rem',
-    lineHeight: `${34 / 16}rem`,
-    paddingTop: '1px',
-    position: 'absolute',
-    textAlign: 'right',
-    top: 0
+    ':active': {
+      ...inputFocusActive
+    }
   }
 });
-
 
 export default withHotkey(look(AgendaInputField));

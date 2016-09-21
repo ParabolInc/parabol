@@ -8,6 +8,7 @@ import DashNavListContainer from 'universal/containers/DashNavList/DashNavListCo
 import DashNavItem from './DashNavItem';
 import SettingsHub from 'universal/components/SettingsHub/SettingsHub';
 import StandardHubContainer from 'universal/containers/StandardHub/StandardHubContainer';
+import Logo from 'universal/styles/theme/images/brand/parabol-lockup-h.svg';
 
 const textColor = tinycolor.mix(theme.palette.mid10l, '#fff', 50).toHexString();
 let styles = {};
@@ -37,6 +38,11 @@ const DashSidebar = (props) => {
           </div>
         </div>
       </nav>
+      <div className={styles.brand}>
+        <a href="http://www.parabol.co/" title="Action by Parabol, Inc." target="_blank">
+          <img alt="Action by Parabol, Inc." className={styles.logo} src={Logo} />
+        </a>
+      </div>
     </div>
   );
 };
@@ -49,12 +55,15 @@ styles = StyleSheet.create({
   root: {
     backgroundColor: theme.palette.mid,
     color: textColor,
-    minWidth: layoutStyle.dashSidebarWidth,
+    display: 'flex',
+    flexDirection: 'column',
     maxWidth: layoutStyle.dashSidebarWidth,
-    paddingBottom: '1.25rem'
+    minWidth: layoutStyle.dashSidebarWidth
   },
 
   nav: {
+    flex: 1,
+    paddingBottom: '1.25rem',
     paddingLeft: '3.75rem',
     width: '100%'
   },
@@ -102,6 +111,19 @@ styles = StyleSheet.create({
     lineHeight: theme.typography.s4,
     padding: '.4375rem .5rem .4375rem 1rem',
     textTransform: 'uppercase'
+  },
+
+  brand: {
+    borderTop: '1px solid rgba(255, 255, 255, .2)',
+    fontSize: 0,
+    padding: '.75rem',
+    textAlign: 'center'
+  },
+
+  logo: {
+    display: 'inline-block',
+    opacity: '.5',
+    verticalAlign: 'top'
   }
 });
 

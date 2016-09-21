@@ -67,6 +67,7 @@ styles = StyleSheet.create({
     border: `1px solid ${ui.cardBorderColor}`,
     borderRadius: ui.cardBorderRadius,
     maxWidth: '20rem',
+    minHeight: ui.cardMinHeight,
     paddingTop: '.1875rem',
     position: 'relative',
     width: '100%',
