@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import layoutStyle from 'universal/styles/layout';
+import layout from 'universal/styles/layout';
 import ui from 'universal/styles/ui';
 import TeamAgenda from 'universal/modules/teamDashboard/components/TeamAgenda/TeamAgenda';
 import TeamColumnsContainer from 'universal/modules/teamDashboard/containers/TeamColumns/TeamColumnsContainer';
@@ -57,7 +57,8 @@ AgendaAndProjects.styles = StyleSheet.create({
 
   agendaLayout: {
     borderRight: `2px solid ${borderColor}`,
-    width: layoutStyle.dashAgendaWidth
+    boxSizing: 'content-box',
+    width: layout.dashAgendaWidth
   },
 
   projectsLayout: {

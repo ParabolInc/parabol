@@ -8,7 +8,7 @@ import voidClick from 'universal/utils/voidClick';
 
 const combineStyles = StyleSheet.combineStyles;
 const warmLinkHover = tinycolor(theme.palette.warm).darken(15).toHexString();
-let s = {};
+let styles = {};
 
 const AgendaItem = props => {
   const {desc, idx, handleRemove, isComplete, agendaPhaseItem, gotoAgendaItem, teamMember = {}} = props;
@@ -16,44 +16,47 @@ const AgendaItem = props => {
   const canDelete = !isComplete && !isCurrent;
   const isMeeting = agendaPhaseItem !== undefined;
   const handleGoto = isMeeting ? gotoAgendaItem : voidClick;
-  const rootStyles = combineStyles(s.root, s[status]);
+  let rootStyles = combineStyles(styles.root, styles[status]);
   let descStyles;
-  if (isComplete) descStyles = s.strikethrough;
-  if (isCurrent) descStyles = combineStyles(descStyles, s.descActive);
-  // const descTrim = desc.replace(/\s+/g, '');
-
+  if (isCurrent) {
+    rootStyles = combineStyles(rootStyles, styles.itemActive);
+    descStyles = combineStyles(descStyles, styles.descActive);
+  } else if (isComplete) {
+    rootStyles = combineStyles(rootStyles, styles.processed);
+    descStyles = styles.strikethrough;
+  }
   return (
     <div className={rootStyles} title={desc}>
       {canDelete &&
-        <div className={s.del} onClick={handleRemove}>
+        <div className={styles.del} onClick={handleRemove}>
           <FontAwesome name="times-circle" style={{lineHeight: 'inherit'}}/>
         </div>
       }
-      <div className={s.index}>{idx + 1}.</div>
-      <div className={s.desc} onClick={handleGoto}>
+      <div className={styles.index}>{idx + 1}.</div>
+      <div className={styles.desc} onClick={handleGoto}>
         <a className={descStyles} >{desc}</a>”
       </div>
-      <Avatar hasBadge={false} picture={teamMember.picture} size="smallest"/>
+      <div className={styles.author}>
+        <Avatar hasBadge={false} picture={teamMember.picture} size="smallest"/>
+      </div>
     </div>
   );
 };
 
 const block = {
-  height: '1.5rem',
   lineHeight: '1.5rem'
 };
 
 const inlineBlock = {
   ...block,
   display: 'inline-block',
-  verticalAlign: 'middle'
+  verticalAlign: 'top'
 };
 
-s = StyleSheet.create({
+styles = StyleSheet.create({
   root: {
     backgroundColor: 'transparent',
     color: theme.palette.cool,
-    display: 'flex !important',
     fontSize: theme.typography.s3,
     padding: '.5rem .5rem .5rem 0',
     position: 'relative',
@@ -70,16 +73,12 @@ s = StyleSheet.create({
     }
   },
 
-  ib: {
-    ...inlineBlock
-  },
-
   del: {
     ...block,
     color: theme.palette.dark,
     cursor: 'pointer',
-    left: '1.25rem',
-    // paddingTop: '1px',
+    left: '1.125rem',
+    height: '1.5rem',
     opacity: 0,
     position: 'absolute',
     top: '.5rem',
@@ -88,13 +87,14 @@ s = StyleSheet.create({
 
   desc: {
     ...inlineBlock,
-    flex: 1,
     fontFamily: theme.typography.serif,
     fontSize: theme.typography.s3,
     fontStyle: 'italic',
     fontWeight: 700,
+    padding: '0 40px 0 0',
     position: 'relative',
     cursor: 'pointer',
+    width: '168px',
 
     '::before': {
       content: '"“"',
@@ -104,6 +104,10 @@ s = StyleSheet.create({
       textAlign: 'right',
       width: '1rem'
     }
+  },
+
+  itemActive: {
+    color: theme.palette.warm
   },
 
   descActive: {
@@ -119,18 +123,17 @@ s = StyleSheet.create({
   index: {
     ...inlineBlock,
     fontWeight: 700,
+    height: '1.5rem',
     paddingRight: '.75rem',
     paddingTop: '1px',
     textAlign: 'right',
     width: '4rem'
   },
 
-  owner: {
-    ...inlineBlock,
-    fontWeight: 700,
-    paddingTop: '1px',
-    textAlign: 'right',
-    width: '2rem'
+  author: {
+    position: 'absolute',
+    right: '.5rem',
+    top: '.5rem'
   },
 
   active: {
@@ -168,7 +171,6 @@ AgendaItem.propTypes = {
   isComplete: PropTypes.bool,
   gotoAgendaItem: PropTypes.func,
   handleRemove: PropTypes.func,
-  owner: PropTypes.string,
   status: PropTypes.oneOf([
     'active',
     'onDrag',
@@ -182,7 +184,6 @@ AgendaItem.propTypes = {
 AgendaItem.defaultProps = {
   desc: 'pull request',
   index: 1,
-  owner: 'MK',
   status: 'waiting'
 };
 
