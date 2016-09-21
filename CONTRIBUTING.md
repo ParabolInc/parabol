@@ -11,7 +11,10 @@ as free open-source from its inception.
 Shortly after we began, we announced a program we called “Equity for
 Effort” to entice developers outside of our organization to contribute to
 the creation of our application in exchange for the possibility of
-equity in our company.  
+equity in our company.
+
+You can read our latest blog post on our
+[Equity for Effort program here](https://medium.com/parabol-focus/equity-for-effort-v2-0-7ca93e0a3968#.y9upisjz4).
 
 To get started, simply follow these steps:
 
