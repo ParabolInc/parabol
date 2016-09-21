@@ -13,15 +13,18 @@ const TeamArchive = (props) => {
     <div className={styles.root}>
       <div className={combineStyles(styles.root, styles.projects)}>
         <TeamArchiveHeader teamId={teamId}/>
-        {archivedProjects.map(project =>
-          <TeamProjectCard
-            key={project.id}
-            dispatch={()=>{}}
-            form={`archived::${project.id}`}
-            project={project}
-            isArchived
-          />
-        )}
+        <div className={styles.archivedProjects}>
+          {archivedProjects.map(project =>
+            <TeamProjectCard
+              key={project.id}
+              dispatch={()=> {
+              }}
+              form={`archived::${project.id}`}
+              project={project}
+              isArchived
+            />
+          )}
+        </div>
       </div>
     </div>
   );
@@ -42,6 +45,11 @@ TeamArchive.styles = StyleSheet.create({
 
   projects: {
     flexDirection: 'column',
+  },
+
+  archivedProjects: {
+    display: 'flex',
+    flexWrap: 'wrap'
   },
 
   agendaLayout: {
