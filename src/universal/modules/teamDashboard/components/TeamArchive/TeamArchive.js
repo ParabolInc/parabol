@@ -8,7 +8,7 @@ const {combineStyles} = StyleSheet;
 
 const TeamArchive = (props) => {
   const {styles} = TeamArchive;
-  const {archivedProjects, teamId} = props;
+  const {archivedProjects, dispatch, teamId} = props;
   return (
     <div className={styles.root}>
       <div className={combineStyles(styles.root, styles.projects)}>
@@ -17,8 +17,7 @@ const TeamArchive = (props) => {
           {archivedProjects.map(project =>
             <TeamProjectCard
               key={project.id}
-              dispatch={()=> {
-              }}
+              dispatch={dispatch}
               form={`archived::${project.id}`}
               project={project}
               isArchived

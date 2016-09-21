@@ -50,11 +50,12 @@ const mapStateToProps = (state, props) => {
 };
 
 const TeamArchiveContainer = (props) => {
-  const {archivedProjects, params: {teamId}} = props;
+  const {archivedProjects, dispatch, params: {teamId}} = props;
   return (
     <TeamArchive
       archivedProjects={archivedProjects}
       teamId={teamId}
+      dispatch={dispatch}
     />
   );
 };
