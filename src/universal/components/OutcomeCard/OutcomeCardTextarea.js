@@ -129,6 +129,7 @@ styles = StyleSheet.create({
     fontFamily: theme.typography.sansSerif,
     fontSize: theme.typography.s3,
     lineHeight: theme.typography.s5,
+    minHeight: '3.3125rem',
     padding: `0 ${ui.cardPaddingBase} .25rem`,
     resize: 'none',
     width: '100%',

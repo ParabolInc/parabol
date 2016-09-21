@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
+import {overflowTouch} from 'universal/styles/helpers';
 import ui from 'universal/styles/ui';
 import themeLabels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
@@ -128,10 +129,10 @@ styles = StyleSheet.create({
   },
 
   columnInner: {
+    ...overflowTouch,
     height: '100%',
     padding: '.5rem 1rem 0',
     position: 'absolute',
-    overflow: 'scroll',
     width: '100%'
   },
 
