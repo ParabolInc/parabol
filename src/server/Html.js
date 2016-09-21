@@ -4,7 +4,12 @@ import {LookRoot} from 'react-look';
 import {Provider} from 'react-redux';
 import {RouterContext} from 'react-router';
 import {renderToString} from 'react-dom/server';
-import segmentSnippet from '@segment/snippet';
+import makeSegmentSnippet from '@segment/snippet';
+
+const segmentSnippet = makeSegmentSnippet.min({
+  host: 'cdn.segment.com',
+  apiKey: process.env.SEGMENT_WRITE_KEY
+});
 
 // Injects the server rendered state and app into a basic html template
 export default function Html({
@@ -46,12 +51,7 @@ export default function Html({
         {process.env.SEGMENT_WRITE_KEY &&
           <script
             type="text/javascript"
-            dangerouslySetInnerHTML={{
-              __html: segmentSnippet.min({
-                host: 'cdn.segment.com',
-                apiKey: process.env.SEGMENT_WRITE_KEY
-              })
-            }}
+            dangerouslySetInnerHTML={{__html: segmentSnippet}}
           />
         }
       </head>
