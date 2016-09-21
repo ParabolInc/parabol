@@ -54,10 +54,11 @@ const MeetingAgendaItems = (props) => {
         {/* */}
         <MeetingSection paddingBottom="2rem">
           <MeetingSectionHeading>
-            What do you help?
+            Whatcha need?
           </MeetingSectionHeading>
           <MeetingSectionSubheading>
-            Request new Projects and Actions
+            <b>Actions</b>: quick tasks<br />
+            <b>Projects</b>: tracked outcomes<br />
           </MeetingSectionSubheading>
         </MeetingSection>
         {/* */}
@@ -65,7 +66,7 @@ const MeetingAgendaItems = (props) => {
           <div className={s.nav}>
             <div className={s.linkSpacer}>{' '}</div>
             <div className={s.avatar}>
-              <Avatar {...currentTeamMember} hasLabel labelRight size="large"/>
+              <Avatar {...currentTeamMember} size="large"/>
               <div className={s.requestLabel}>
                 “{agendaItem.content}”
               </div>
@@ -110,6 +111,7 @@ s = StyleSheet.create({
   },
 
   linkSpacer: {
+    paddingTop: '2px',
     textAlign: 'right',
     width: '9.25rem'
   },

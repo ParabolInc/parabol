@@ -17,6 +17,7 @@ MeetingLayout.propTypes = {
 styles = StyleSheet.create({
   root: {
     backgroundColor: '#fff',
+    content: '"MeetingLayout"',
     display: 'flex !important',
     minHeight: '100vh'
   }

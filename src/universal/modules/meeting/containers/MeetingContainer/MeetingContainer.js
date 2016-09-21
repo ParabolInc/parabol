@@ -53,7 +53,7 @@ const meetingContainerQuery = `
 query{
   team @cached(id: $teamId, type: "Team") {
     checkInGreeting,
-    checkInQuestion, 
+    checkInQuestion,
     id,
     name,
     meetingId,

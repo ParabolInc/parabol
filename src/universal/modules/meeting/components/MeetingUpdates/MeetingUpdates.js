@@ -73,7 +73,7 @@ const MeetingUpdates = (props) => {
           </div>
         </div>
         <div className={s.body}>
-          <ProjectColumns myTeamMemberId={self && self.id} projects={projects} area={MEETING}/>
+          <ProjectColumns alignColumns="center" myTeamMemberId={self && self.id} projects={projects} area={MEETING}/>
         </div>
         {/* */}
         {/* */}

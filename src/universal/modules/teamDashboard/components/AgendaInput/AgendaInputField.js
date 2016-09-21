@@ -6,8 +6,10 @@ import ui from 'universal/styles/ui';
 import withHotkey from 'react-hotkey-hoc';
 import FontAwesome from 'react-fontawesome';
 
+const defaultColor = theme.palette.dark;
+
 const iconStyle = {
-  color: theme.palette.warm,
+  color: defaultColor,
   display: 'block',
   height: ui.fontSize,
   left: '2.5rem',
@@ -37,9 +39,9 @@ const AgendaInputField = (props) => {
         autoCapitalize="off"
         autoComplete="off"
         className={styles.input}
-        placeholder="Add an item"
+        placeholder="Add Agenda Item"
         ref={setRef}
-        title="Add agenda items here"
+        title="Add Agenda Item"
         type="text"
       />
       <FontAwesome name="plus-circle" style={iconStyle} />
@@ -47,7 +49,7 @@ const AgendaInputField = (props) => {
   );
 };
 
-const inputPlaceholderStyles = makePlaceholderStyles(theme.palette.warm);
+const inputPlaceholderStyles = makePlaceholderStyles(defaultColor);
 const inputFocusActivePlaceholderStyles = makePlaceholderStyles(theme.palette.dark50l);
 
 const inputFocusActive = {

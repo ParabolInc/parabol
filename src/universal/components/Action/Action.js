@@ -55,9 +55,9 @@ const basePlaceholderStyles = makePlaceholderStyles(theme.palette.dark50l);
 
 styles = StyleSheet.create({
   app: {
-    height: '100vh',
     margin: 0,
     maxWidth: layoutStyle.maxWidth,
+    minHeight: '100vh',
     padding: 0
   }
 });

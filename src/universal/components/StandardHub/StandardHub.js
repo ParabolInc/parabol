@@ -27,7 +27,6 @@ function StandardHub(props) {
           <Link to="/me/settings">
             <FontAwesome name="cog" style={faStyle} />
           </Link>
-
         </div>
       </div>
     </div>

@@ -12,15 +12,15 @@ const AgendaListAndInput = (props) => {
   const phaseItemFactory = makePhaseItemFactory(isFacilitating, agenda.length, router, teamId, AGENDA_ITEMS);
   return (
     <div className={styles.root}>
-      <AgendaList
-        agenda={agenda}
-        agendaPhaseItem={agendaPhaseItem}
-        phaseItemFactory={phaseItemFactory}
-      />
       <AgendaInput
         agenda={agenda}
         teamId={teamId}
         myTeamMember={myTeamMember}
+      />
+      <AgendaList
+        agenda={agenda}
+        agendaPhaseItem={agendaPhaseItem}
+        phaseItemFactory={phaseItemFactory}
       />
     </div>
   );
