@@ -5,15 +5,13 @@
 
 ## Overview
 
-An open-source tool for meaningful meetings to build smarter, more
-agile teams.
+An open-source SaaS application for operating Agile business teams.
 
 ![Action Screencap Image](./docs/images/20160813_Action_Snapshot.gif)
-
-From [Parabol, Inc](http://parabol.co).
+by [Parabol, Inc](http://parabol.co)
 
 Curious what this is all about? Each week we publish a distillation of our
-progress, news, and information in
+progress, philosophy, and more in
 [Parabol Focus](https://medium.com/parabol-focus).
 
 Live demo: http://action-staging.parabol.co/
@@ -40,8 +38,12 @@ Action is a Node.js application based upon the
 | Data Transport     | [GraphQL](https://github.com/graphql/graphql-js)          |
 | Sockets            | [socketcluster](http://socketcluster.io/)                 |
 | Client State       | [Redux](http://redux.js.org/)                             |
-| Front-end          | [React](https://facebook.github.io/react/)                |
+| Client Data Cache  | [Cashay](https://github.com/mattkrick/cashay)             |
+| Front-end Views    | [React](https://facebook.github.io/react/)                |
 | Styling            | [react-look](https://github.com/rofrischmann/react-look/) |
+
+Action is programmed in ECMAscript ES6/7 (including async/await).
+Transpilation is provided by [babel](https://github.com/babel/babel).
 
 ## Setup
 
@@ -72,7 +74,8 @@ _Remember: if RethinkDB is running locally, you can reach its dashboard at
 ### Client-side development
 
 In this mode, webpack will hot swap your updated client modules without
-restarting the server.
+needing to restarting the development server.
+
 ```bash
 $ npm run dev
 ```
@@ -82,15 +85,17 @@ $ npm run dev
 
 In this mode, the server will build client bundle and start a production
 server with the fresh code.
+
 ```bash
 $ npm run bs
 ```
 [http://localhost:3000/](http://localhost:3000/)
 
 ### Database development
-Database schema version is managed by
-[rethink-migrate](https://github.com/JohanObrink/rethink-migrate). These
-migrations are stored in `./src/server/database/migrations`.
+
+The database schema version is managed by
+[rethink-migrate](https://github.com/JohanObrink/rethink-migrate). Migrations
+scripts are stored in `./src/server/database/migrations`.
 
 If you make changes to the Action schema, make certain to create a new
 migration.
@@ -126,11 +131,6 @@ for the app. Too see them, navigate to http://localhost:3000/patterns
 Action is software built with the community for the community. We can't do
 it without your help!
 
-Our [Action waffle.io Board](https://waffle.io/ParabolInc/action) organizes
-available design and development missions. Check it out, grab a mission
-(or contribute your own) and we'll gladly (and thankfully!) merge your pull
-request.
-
 You're contribution won't go unrewarded: Parabol offers equity in our
 young company for qualified contributions to Action.
 
@@ -141,12 +141,16 @@ get involved and how to get compensated.
 
 | Release | Summary                                    |
 |---------|--------------------------------------------|
+| v0.5.3  | Add Project Updates, rallies, segment.io   |
 | v0.4.1  | Added Me Dash., multiplayer editing states |
 | v0.4.0  | Add Lobby, Check-in, start of Team Dash.   |
 | v0.3.0  | Add Welcome journey, redux-storage         |
 | v0.2.0  | Add first pass at team creation/invitation |
 | v0.1.0  | Things got a whole lot meatier             |
 | v0.0.1  | Developer preview and archtecture demo     |
+
+See [CHANGELOG.md](./CHANGELOG.md) for greater detail on changes between
+releases.
 
 ## About
 
