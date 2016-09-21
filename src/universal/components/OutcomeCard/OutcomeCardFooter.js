@@ -54,7 +54,7 @@ const OutcomeCardFooter = (props) => {
     owner,
     removeFromArchive,
     toggleAssignMenu,
-    toggleStatusMenu
+    handleStatusClick
   } = props;
 
   let avatarBlockStyle = {};
@@ -113,17 +113,14 @@ const OutcomeCardFooter = (props) => {
         </div>
       </div>
       <div className={styles.buttonBlock}>
-        {isArchived ?
-          <button className={buttonStyles} onClick={removeFromArchive}>
-            <FontAwesome name="reply" style={faStyle} />
-          </button> :
-          <button className={buttonStyles} onClick={toggleStatusMenu}>
-            {hasOpenStatusMenu ?
+          <button className={buttonStyles} onClick={handleStatusClick}>
+            {isArchived ?
+              <FontAwesome name="reply" style={faStyle} /> :
+            hasOpenStatusMenu ?
               <FontAwesome name="times" style={faStyle} /> :
               <FontAwesome name="wrench" style={faStyle} />
             }
           </button>
-        }
       </div>
     </div>
   );
@@ -132,7 +129,7 @@ const OutcomeCardFooter = (props) => {
 OutcomeCardFooter.propTypes = {
   cardHasHover: PropTypes.bool,
   toggleAssignMenu: PropTypes.func,
-  toggleStatusMenu: PropTypes.func,
+  handleStatusClick: PropTypes.func,
   hasOpenStatusMenu: PropTypes.bool,
   isArchived: PropTypes.bool,
   isProject: PropTypes.bool,
@@ -147,8 +144,8 @@ OutcomeCardFooter.defaultProps = {
   toggleAssignMenu() {
     console.log('toggleAssignMenu');
   },
-  toggleStatusMenu() {
-    console.log('toggleStatusMenu');
+  handleStatusClick() {
+    console.log('handleStatusClick');
   },
   hasOpenStatusMenu: false,
   isArchived: false,

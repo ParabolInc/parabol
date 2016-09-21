@@ -5,13 +5,12 @@ import TeamArchive from 'universal/modules/teamDashboard/components/TeamArchive/
 
 const teamArchiveQuery = `
 query {
-  archivedProjects: getArchivedProjects(teamId: $teamId, first: $first) {
+  archivedProjects(teamId: $teamId) @live {
     id
     content
     status
-    teamMemberId
+    teamMemberId 
     updatedAt
-    cursor
     teamMember @cached(type: "TeamMember") {
       picture
       preferredName
@@ -19,27 +18,27 @@ query {
   }
 }`;
 
-const mutationHandlers = {
-  updateProject(optimisticVariables, queryResponse, currentResponse) {
-    if (optimisticVariables) {
-      const projectId = optimisticVariables.updatedProject.id;
-      const projectIdx = currentResponse.archivedProjects.findIndex(p => p.id === projectId);
-      if (projectIdx !== -1) {
-        currentResponse.splice(projectIdx, 1);
-        return currentResponse;
-      }
-    }
-    return undefined;
-  }
-};
+// const mutationHandlers = {
+//   updateProject(optimisticVariables, queryResponse, currentResponse) {
+//     if (optimisticVariables && optimisticVariables.updatedProject.isArchived === false) {
+//       const projectId = optimisticVariables.updatedProject.id;
+//       const projectIdx = currentResponse.archivedProjects.findIndex(p => p.id === projectId);
+//       if (projectIdx !== -1) {
+//         currentResponse.archivedProjects.splice(projectIdx, 1);
+//         debugger
+//         return currentResponse;
+//       }
+//     }
+//     return undefined;
+//   }
+// };
 
 const mapStateToProps = (state, props) => {
   const {teamId} = props.params;
   const teamArchiveContainer = cashay.query(teamArchiveQuery, {
     op: 'teamArchiveContainer',
     key: teamId,
-    variables: {teamId, first: 10},
-    mutationHandlers,
+    variables: {teamId},
     resolveCached: {
       teamMember: (source) => source.teamMemberId
     }

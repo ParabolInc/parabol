@@ -18,7 +18,6 @@ const OutcomeCard = (props) => {
     onLeaveCard,
     status
   } = props;
-  let rootStyles;
   const rootStyleOptions = [
     styles.root,
     styles.cardBlock
@@ -34,7 +33,7 @@ const OutcomeCard = (props) => {
     rootStyleOptions.push(styles.isArchived);
   }
 
-  rootStyles = combineStyles(...rootStyleOptions);
+  const rootStyles = combineStyles(...rootStyleOptions);
 
   return (
     <div
@@ -77,25 +76,25 @@ styles = StyleSheet.create({
     }
   },
 
-  [`${ACTIVE}`]: {
+  [ACTIVE]: {
     '::after': {
       color: labels.projectStatus[ACTIVE].color
     }
   },
 
-  [`${STUCK}`]: {
+  [STUCK]: {
     '::after': {
       color: labels.projectStatus[STUCK].color
     }
   },
 
-  [`${DONE}`]: {
+  [DONE]: {
     '::after': {
       color: labels.projectStatus[DONE].color
     }
   },
 
-  [`${FUTURE}`]: {
+  [FUTURE]: {
     '::after': {
       color: labels.projectStatus[FUTURE].color
     }

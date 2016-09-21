@@ -9,6 +9,7 @@ import {
   DashSectionHeading
 } from 'universal/components/Dashboard';
 import FontAwesome from 'react-fontawesome';
+import {Link} from 'react-router';
 
 const TeamProjectsHeader = (props) => {
   const {teamId} = props;
@@ -23,7 +24,6 @@ const TeamProjectsHeader = (props) => {
           {' '}
           <Link to={`/team/${teamId}/archive`}>
             See Archived Projects
-            <FontAwesome name="archive" />
           </Link>
         </DashSectionControl>
         {/* TODO: needs minimal, inline dropdown */}

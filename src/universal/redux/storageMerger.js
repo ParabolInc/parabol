@@ -14,15 +14,11 @@ export default function merger(initialState, persistedState) {
     }
     if (reducerName === 'cashay') {
       if (value) {
+        // nuke everything except the User
         const {User} = value.entities || {};
         value.entities = User ? {User} : {};
         value.result = {};
-
-        // cashay now supports rehydrating sub data, but this can't account for removed items
-        // remove items with unbounded growth in production
-        // value.result.presence = undefined;
-        // value.entities.Presence = undefined;
-        // value.entities.Task = undefined;
+        value.ops = {};
       }
     }
     result[reducerName] = value;

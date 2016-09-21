@@ -15,7 +15,6 @@ const OPEN_CONTENT_MENU = 'TeamProjectCard/openContentMenu';
 const OPEN_ASSIGN_MENU = 'TeamProjectCard/openAssignMenu';
 const OPEN_STATUS_MENU = 'TeamProjectCard/openStatusMenu';
 
-const combineStyles = StyleSheet.combineStyles;
 let styles = {};
 
 @reduxForm()
@@ -68,6 +67,19 @@ export default class TeamProjectCard extends Component {
     this.setState({openMenu: nextOpenMenu});
   };
 
+  unarchiveCard = () => {
+    const {project} = this.props;
+    const options = {
+      variables: {
+        updatedProject: {
+          id: project.id,
+          isArchived: false
+        }
+      }
+    };
+    cashay.mutate('updateProject', options);
+  };
+
   closeMenu = () => {
     this.setState({openMenu: OPEN_CONTENT_MENU});
   };
@@ -84,7 +96,9 @@ export default class TeamProjectCard extends Component {
     const hasOpenStatusMenu = openMenu === OPEN_STATUS_MENU;
     const hasOpenAssignMenu = openMenu === OPEN_ASSIGN_MENU;
     const handleCardActive = (isActive) => {
-      if (isActive === undefined) { return; }
+      if (isActive === undefined) {
+        return;
+      }
       const [teamId] = projectId.split('::');
       const editing = isActive ? `Task::${projectId}` : null;
       const options = {
@@ -109,7 +123,7 @@ export default class TeamProjectCard extends Component {
         cashay.mutate('updateProject', options);
       }
     };
-
+    const handleStatusClick = isArchived ? this.unarchiveCard : this.toggleStatusMenu;
     return (
       <OutcomeCard
         isArchived={isArchived}
@@ -152,7 +166,7 @@ export default class TeamProjectCard extends Component {
           owner={project.teamMember}
           status={status}
           toggleAssignMenu={this.toggleAssignMenu}
-          toggleStatusMenu={this.toggleStatusMenu}
+          handleStatusClick={handleStatusClick}
         />
       </OutcomeCard>
     );

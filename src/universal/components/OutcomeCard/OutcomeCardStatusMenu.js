@@ -66,7 +66,6 @@ const OutcomeCardStatusMenu = (props) => {
     );
   };
 
-  const archivedLabel = isArchived ? isArchivedLabel : notArchivedLabel;
   const isProjectAndNotArchived = isProject && !isArchived;
   return (
     <div className={styles.root}>
@@ -83,31 +82,10 @@ const OutcomeCardStatusMenu = (props) => {
           icon="archive"
           label={notArchivedLabel}
           onClick={archiveProject}
-          status="archive"
+          status={status}
           title="Move to archive"
         />
       </div>
-      {/* TODO: Move this to “AgendaCard”s only (TA) */}
-      {isProjectAndNotArchived &&
-      <div className={styles.buttonBlock}>
-        {makeButton('action', 'calendar-check-o', moveToActionsLabel)}
-      </div>
-      }
-      {!isProject &&
-      <div className={styles.buttonBlock}>
-        {makeButton('project', 'calendar', moveToProjectsLabel)}
-      </div>
-      }
-      {!isProject &&
-      <div className={styles.buttonBlock}>
-        {makeButton('deleted', 'times', deleteActionLabel)}
-      </div>
-      }
-      {isProject &&
-      <div className={styles.buttonBlock}>
-        {makeButton('archive', 'archive', archivedLabel)}
-      </div>
-      }
     </div>
   );
 };
@@ -193,3 +171,20 @@ styles = StyleSheet.create({
 });
 
 export default look(OutcomeCardStatusMenu);
+
+// {/* TODO: Move this to “AgendaCard”s only (TA) */}
+// {isProjectAndNotArchived &&
+// <div className={styles.buttonBlock}>
+//   {makeButton('action', 'calendar-check-o', moveToActionsLabel)}
+// </div>
+// }
+// {!isProject &&
+// <div className={styles.buttonBlock}>
+//   {makeButton('project', 'calendar', moveToProjectsLabel)}
+// </div>
+// }
+// {!isProject &&
+// <div className={styles.buttonBlock}>
+//   {makeButton('deleted', 'times', deleteActionLabel)}
+// </div>
+// }

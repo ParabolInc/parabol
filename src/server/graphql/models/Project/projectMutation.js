@@ -63,7 +63,6 @@ export default {
       const [userId] = newProject.teamMemberId.split('::');
       const project = {
         ...newProject,
-        isActive: true,
         isArchived: false,
         userId,
         createdAt: now,
