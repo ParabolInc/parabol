@@ -100,7 +100,9 @@ s = StyleSheet.create({
   },
 
   rootBorderVariant: {
-    borderTopColor: theme.palette.mid
+    '::after': {
+      color: theme.palette.mid
+    }
   },
 
   controlsBlock: {
