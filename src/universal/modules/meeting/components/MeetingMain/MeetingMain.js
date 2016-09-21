@@ -15,7 +15,6 @@ MeetingMain.propTypes = {
 styles = StyleSheet.create({
   root: {
     backgroundColor: '#fff',
-    content: '"MeetingMain"',
     display: 'flex !important',
     flex: 1,
     flexDirection: 'column',
