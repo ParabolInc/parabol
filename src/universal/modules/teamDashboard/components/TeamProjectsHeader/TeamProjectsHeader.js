@@ -10,7 +10,6 @@ import {
   DashSectionHeading
 } from 'universal/components/Dashboard';
 import FontAwesome from 'react-fontawesome';
-import {Link} from 'react-router';
 
 const iconStyle = {
   ...ib,

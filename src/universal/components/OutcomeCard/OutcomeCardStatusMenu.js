@@ -14,12 +14,12 @@ const buttonHF = {
 let styles = {};
 
 const OutcomeCardStatusMenu = (props) => {
-  const {project: {isArchived, id: projectId, status}, isProject} = props;
+  const {project: {id: projectId, status}, isProject} = props;
 
   const notArchivedLabel = <span>Move to Ar<u>c</u>hive</span>;
-  const deleteActionLabel = <span>De<u>l</u>ete this Action</span>;
-  const moveToActionsLabel = <span>Move to Ac<u>t</u>ions</span>;
-  const moveToProjectsLabel = <span>Move to <u>P</u>rojects</span>;
+  // const deleteActionLabel = <span>De<u>l</u>ete this Action</span>;
+  // const moveToActionsLabel = <span>Move to Ac<u>t</u>ions</span>;
+  // const moveToProjectsLabel = <span>Move to <u>P</u>rojects</span>;
   const buttonArray = labels.projectStatus.slugs.slice(0);
 
   const archiveProject = () => {
@@ -70,7 +70,6 @@ const OutcomeCardStatusMenu = (props) => {
     );
   };
 
-  const isProjectAndNotArchived = isProject && !isArchived;
   return (
     <div className={styles.root}>
       {buttonArray.map((btn, idx) => {
@@ -83,14 +82,15 @@ const OutcomeCardStatusMenu = (props) => {
       })}
       {isProject &&
         <div className={styles.buttonBlock}>
-        <OutcomeCardMenuButton
-          icon="archive"
-          label={notArchivedLabel}
-          onClick={archiveProject}
-          status={status}
-          title="Move to archive"
-        />
-      </div>
+          <OutcomeCardMenuButton
+            icon="archive"
+            label={notArchivedLabel}
+            onClick={archiveProject}
+            status="archive"
+            title="Move to archive"
+          />
+        </div>
+      }
     </div>
   );
 };

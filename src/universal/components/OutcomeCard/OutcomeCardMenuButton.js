@@ -41,6 +41,8 @@ const OutcomeCardMenuButton = (props) => {
   );
 };
 
+statusValues.push('archive');
+
 OutcomeCardMenuButton.propTypes = {
   disabled: PropTypes.bool,
   icon: PropTypes.string,
