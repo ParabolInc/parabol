@@ -121,6 +121,7 @@ IconLink.defaultProps = {
 export default look(IconLink);
 
 s = StyleSheet.create({
+  // TODO: remove functions from styles (TA)
   root: {
     color: (props) => t.palette[props.theme],
     cursor: 'pointer',

@@ -16,12 +16,12 @@ let styles = {};
 const OutcomeCardStatusMenu = (props) => {
   const {project: {isArchived, id: projectId, status}, isProject} = props;
 
-  const isArchivedLabel = <span>Take out of Ar<u>c</u>hive</span>;
   const notArchivedLabel = <span>Move to Ar<u>c</u>hive</span>;
   const deleteActionLabel = <span>De<u>l</u>ete this Action</span>;
   const moveToActionsLabel = <span>Move to Ac<u>t</u>ions</span>;
   const moveToProjectsLabel = <span>Move to <u>P</u>rojects</span>;
   const buttonArray = labels.projectStatus.slugs.slice(0);
+
   const archiveProject = () => {
     const options = {
       variables: {
@@ -33,8 +33,12 @@ const OutcomeCardStatusMenu = (props) => {
     };
     cashay.mutate('updateProject', options);
   };
+
   const handleProjectUpdate = (newStatus) => {
     if (newStatus === status) {
+      return;
+    } else if (newStatus === 'deleted' || newStatus === 'project' || newStatus === 'action') {
+      console.log(`handle inset menu action for updated status: ${newStatus}`);
       return;
     }
     const options = {
@@ -72,12 +76,13 @@ const OutcomeCardStatusMenu = (props) => {
       {buttonArray.map((btn, idx) => {
         const btnStatus = labels.projectStatus[btn];
         return (
-          <div className={styles.col} key={idx}>
+          <div className={styles.column} key={idx}>
             {makeButton(btnStatus.slug, btnStatus.icon, btnStatus.shortcutLabel, idx)}
           </div>
         );
       })}
-      <div className={styles.archivedBtnBlock}>
+      {isProject &&
+        <div className={styles.buttonBlock}>
         <OutcomeCardMenuButton
           icon="archive"
           label={notArchivedLabel}
@@ -102,8 +107,6 @@ OutcomeCardStatusMenu.propTypes = {
 styles = StyleSheet.create({
   root: {
     alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'column',
     fontSize: 0,
     justifyContent: 'center',
     margin: '0 auto',
@@ -111,10 +114,6 @@ styles = StyleSheet.create({
     minHeight: '5.1875rem',
     padding: '.125rem',
     textAlign: 'center',
-    width: '100%'
-  },
-
-  columns: {
     width: '100%'
   },
 

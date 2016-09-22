@@ -62,6 +62,9 @@ export default class TeamProjectCard extends Component {
   };
 
   toggleAssignMenu = () => {
+    // REVIEW: next line a bad way to disable assign menu for archived cards? (TA)
+    if (this.props.isArchived) return;
+
     const {openMenu} = this.state;
     const nextOpenMenu = openMenu === OPEN_ASSIGN_MENU ? OPEN_CONTENT_MENU : OPEN_ASSIGN_MENU;
     this.setState({openMenu: nextOpenMenu});
@@ -134,28 +137,28 @@ export default class TeamProjectCard extends Component {
       >
         {/* card main */}
         {hasOpenAssignMenu &&
-        <OutcomeCardAssignMenuContainer
-          onComplete={this.closeMenu}
-          project={project}
-        />
+          <OutcomeCardAssignMenuContainer
+            onComplete={this.closeMenu}
+            project={project}
+          />
         }
         {hasOpenStatusMenu && <OutcomeCardStatusMenu isProject={isProject} project={project}/>}
         {!hasOpenAssignMenu && !hasOpenStatusMenu &&
-        <div className={styles.body}>
-          <form>
-            <Field
-              name={projectId}
-              component={OutcomeCardTextareaContainer}
-              handleActive={handleCardActive}
-              handleSubmit={handleSubmit(handleCardUpdate)}
-              isArchived={isArchived}
-              isProject={isProject}
-              project={project}
-              doFocus={!content}
-              cardHasHover={this.state.cardHasHover}
-            />
-          </form>
-        </div>
+          <div className={styles.body}>
+            <form>
+              <Field
+                name={projectId}
+                component={OutcomeCardTextareaContainer}
+                handleActive={handleCardActive}
+                handleSubmit={handleSubmit(handleCardUpdate)}
+                isArchived={isArchived}
+                isProject={isProject}
+                project={project}
+                doFocus={!content}
+                cardHasHover={this.state.cardHasHover}
+              />
+            </form>
+          </div>
         }
         {/* card footer */}
         <OutcomeCardFooter
@@ -164,6 +167,7 @@ export default class TeamProjectCard extends Component {
           isArchived={isArchived}
           isProject={isProject}
           owner={project.teamMember}
+          // project={project}
           status={status}
           toggleAssignMenu={this.toggleAssignMenu}
           handleStatusClick={handleStatusClick}

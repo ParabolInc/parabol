@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
+// import {cashay} from 'cashay';
 import FontAwesome from 'react-fontawesome';
 import theme from 'universal/styles/theme';
 import ui from 'universal/styles/ui';
@@ -52,7 +53,7 @@ const OutcomeCardFooter = (props) => {
     isArchived,
     isProject,
     owner,
-    removeFromArchive,
+    // project: {id: projectId},
     toggleAssignMenu,
     handleStatusClick
   } = props;
@@ -72,6 +73,19 @@ const OutcomeCardFooter = (props) => {
   // const avatarStyles = combineStyles(styles.avatar, styles.avatarTeam);
   const avatarStyles = styles.avatar;
   const menuHintStyle = cardHasHover ? faStyle : {visibility: 'hidden', ...faStyle};
+
+  const removeFromArchive = () => {
+    return console.log('removeFromArchive not working');
+    // const options = {
+    //   variables: {
+    //     updatedProject: {
+    //       id: projectId,
+    //       isArchived: false
+    //     }
+    //   }
+    // };
+    // cashay.mutate('updateProject', options);
+  };
 
   if (!isProject) { buttonOptions.push(styles.actionButton); }
 
@@ -134,8 +148,10 @@ OutcomeCardFooter.propTypes = {
   isArchived: PropTypes.bool,
   isProject: PropTypes.bool,
   owner: PropTypes.object,
-  removeFromArchive: PropTypes.func,
-  team: PropTypes.object,
+  // project: PropTypes.shape({
+  //   projectId: PropTypes.string
+  // }),
+  team: PropTypes.object
 };
 
 OutcomeCardFooter.defaultProps = {
@@ -152,9 +168,6 @@ OutcomeCardFooter.defaultProps = {
   owner: {
     preferredName: 'Taya Mueller',
     picture: TayaAvatar
-  },
-  removeFromArchive() {
-    console.log('removeFromArchive');
   }
 };
 

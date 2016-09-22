@@ -16,7 +16,7 @@ query {
     id
     picture
     preferredName
-  }  
+  }
 }`;
 
 
@@ -50,6 +50,7 @@ const TeamContainer = (props) => {
 };
 
 TeamContainer.propTypes = {
+  children: PropTypes.any.isRequired,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired,
 };

@@ -46,6 +46,7 @@ const renderBadge = (isCheckedIn, isConnected, size) => {
 const Avatar = (props) => {
   const {
     hasBadge,
+    hasBorder,
     hasLabel,
     labelRight,
     hasTooltip,
@@ -79,6 +80,9 @@ const Avatar = (props) => {
   const sizeStyles = `avatar${sizeName}`;
   const imageSizeStyles = `avatarImageBlock${sizeName}`;
   const rootInlineStyle = isClickable ? {cursor: 'pointer'} : {cursor: 'default'};
+  const avatarImageDefault = combineStyles(s.avatarImage, s.boxShadow);
+  const avatarImageHasBorder = combineStyles(s.avatarImage, s.hasBorder);
+  const avatarImagesStyles = hasBorder ? avatarImageHasBorder : avatarImageDefault;
 
   avatarStyles = combineStyles(s.avatar, s[sizeStyles]);
   imageBlockStyles = combineStyles(s.avatarImageBlock, s[imageSizeStyles]);
@@ -105,7 +109,7 @@ const Avatar = (props) => {
     >
       <div className={imagePositionStyles}>
         <div className={imageBlockStyles}>
-          <img className={s.avatarImage} src={picture} />
+          <img className={avatarImagesStyles} src={picture} />
           {hasBadge &&
             renderBadge(isCheckedIn, isConnected, size)
           }
@@ -123,6 +127,7 @@ const Avatar = (props) => {
 
 Avatar.propTypes = {
   hasBadge: PropTypes.bool,
+  hasBorder: PropTypes.bool,
   hasLabel: PropTypes.bool,
   hasTooltip: PropTypes.bool,
   isCheckedIn: PropTypes.bool,
@@ -145,6 +150,7 @@ Avatar.propTypes = {
 
 Avatar.defaultProps = {
   hasBadge: true,
+  hasBorder: false,
   isCheckedIn: false,
   isClickable: false,
   isConnected: false,
@@ -234,12 +240,17 @@ s = StyleSheet.create({
 
   avatarImage: {
     borderRadius: '100%',
-    // NOTE: Causes warning in console:
-    //       Unknown props `_lookShouldUpdate`, `_hasFriendlyClassNames` on <img> tag.
-    boxShadow: (props) => (props.hasBorder ? boxShadowWarm : boxShadowDefault),
     display: 'block',
     height: 'auto',
     width: '100%'
+  },
+
+  boxShadow: {
+    boxShadow: boxShadowDefault
+  },
+
+  hasBorder: {
+    boxShadow: boxShadowWarm
   },
 
   badge: {

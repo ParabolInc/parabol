@@ -20,7 +20,9 @@ const AgendaAndProjects = (props) => {
         </div>
         <div className={styles.projectsLayout}>
           <div className={combineStyles(styles.root, styles.projects)}>
-            <TeamProjectsHeader teamId={teamId}/>
+            <TeamProjectsHeader
+              teamId={teamId}
+            />
             <TeamColumnsContainer
               teamId={teamId}
             />
