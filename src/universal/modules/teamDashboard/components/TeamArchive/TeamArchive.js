@@ -10,21 +10,21 @@ const TeamArchive = (props) => {
   const {archivedProjects, dispatch, teamId} = props;
   return (
     <div className={styles.root}>
-        <TeamArchiveHeader teamId={teamId}/>
+      <TeamArchiveHeader teamId={teamId}/>
       <div className={styles.body}>
         <div className={styles.scrollable}>
           <div className={styles.cardGrid}>
-          {archivedProjects.map(project =>
+            {archivedProjects.map(project =>
               <div className={styles.cardBlock} key={`cardBlockFor${project.id}`}>
-            <TeamProjectCard
-              key={project.id}
-              dispatch={dispatch}
-              form={`archived::${project.id}`}
-              project={project}
-              isArchived
-            />
+                <TeamProjectCard
+                  key={project.id}
+                  dispatch={dispatch}
+                  form={`archived::${project.id}`}
+                  project={project}
+                  isArchived
+                />
               </div>
-          )}
+            )}
           </div>
         </div>
       </div>
@@ -34,6 +34,7 @@ const TeamArchive = (props) => {
 
 TeamArchive.propTypes = {
   archivedProjects: PropTypes.array,
+  dispatch: PropTypes.func,
   teamId: PropTypes.string,
   teamMembers: PropTypes.array
 };
@@ -80,11 +81,11 @@ TeamArchive.styles = StyleSheet.create({
 
     '@media (min-width: 60rem)': {
       flex: '0 0 33.3333%'
-  },
+    },
 
     '@media (min-width: 80rem)': {
       flex: '0 0 25%'
-  },
+    },
 
     '@media (min-width: 100rem)': {
       flex: '0 0 20%'

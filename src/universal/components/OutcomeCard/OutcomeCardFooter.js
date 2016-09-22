@@ -73,19 +73,8 @@ const OutcomeCardFooter = (props) => {
   // const avatarStyles = combineStyles(styles.avatar, styles.avatarTeam);
   const avatarStyles = styles.avatar;
   const menuHintStyle = cardHasHover ? faStyle : {visibility: 'hidden', ...faStyle};
-
-  const removeFromArchive = () => {
-    return console.log('removeFromArchive not working');
-    // const options = {
-    //   variables: {
-    //     updatedProject: {
-    //       id: projectId,
-    //       isArchived: false
-    //     }
-    //   }
-    // };
-    // cashay.mutate('updateProject', options);
-  };
+  let buttonIcon = hasOpenStatusMenu ? 'times' : 'wrench';
+  if (isArchived) buttonIcon = 'reply';
 
   if (!isProject) { buttonOptions.push(styles.actionButton); }
 
@@ -127,14 +116,9 @@ const OutcomeCardFooter = (props) => {
         </div>
       </div>
       <div className={styles.buttonBlock}>
-          <button className={buttonStyles} onClick={handleStatusClick}>
-            {isArchived ?
-              <FontAwesome name="reply" style={faStyle} /> :
-            hasOpenStatusMenu ?
-              <FontAwesome name="times" style={faStyle} /> :
-              <FontAwesome name="wrench" style={faStyle} />
-            }
-          </button>
+        <button className={buttonStyles} onClick={handleStatusClick}>
+          <FontAwesome name={buttonIcon} style={faStyle} />
+        </button>
       </div>
     </div>
   );

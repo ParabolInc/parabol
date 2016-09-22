@@ -9,7 +9,7 @@ query {
     id
     content
     status
-    teamMemberId 
+    teamMemberId
     updatedAt
     teamMember @cached(type: "TeamMember") {
       picture
@@ -61,7 +61,9 @@ const TeamArchiveContainer = (props) => {
 };
 
 TeamArchiveContainer.propTypes = {
-  archivedProjects: PropTypes.array.isRequired
+  archivedProjects: PropTypes.array.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  params: PropTypes.object.isRequired
 };
 
 export default connect(mapStateToProps)(TeamArchiveContainer);
