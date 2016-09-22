@@ -13,7 +13,8 @@ import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
 // let styles = {};
 
 const MeetingAgendaOutcomeCard = (props) => {
-  const {content, id, status, type} = props;
+  const {outcome} = props;
+  const {type, content} = outcome;
   const onEnterMeetingAgendaCard = () => {
     console.log('onEnterMeetingAgendaCard');
   };
@@ -22,7 +23,7 @@ const MeetingAgendaOutcomeCard = (props) => {
   };
   return (
     <OutcomeCard
-      isProject={type === 'Project'}
+      isProject={type === 'project'}
       onEnterCard={onEnterMeetingAgendaCard}
       onLeaveCard={onLeaveMeetingAgendaCard}
       status={status}

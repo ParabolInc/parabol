@@ -27,15 +27,20 @@ const mapStateToProps = (state, props) => {
 };
 
 const OutcomeCardAssignMenuContainer = (props) => {
+  const {onComplete, outcome, teamMembers} = props;
   return (
     <OutcomeCardAssignMenu
-      {...props}
+      onComplete={onComplete}
+      outcome={outcome}
+      teamMembers={teamMembers}
     />
   );
 };
 
 OutcomeCardAssignMenuContainer.propTypes = {
-  teamMembers: PropTypes.object
+  onComplete: PropTypes.func,
+  outcome: PropTypes.object,
+  teamMembers: PropTypes.array
 };
 
 export default connect(mapStateToProps)(OutcomeCardAssignMenuContainer);

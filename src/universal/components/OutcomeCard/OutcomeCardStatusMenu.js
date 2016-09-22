@@ -27,13 +27,8 @@ const OutcomeCardStatusMenu = (props) => {
 
   const buttonArray = labels.projectStatus.slugs.slice(0);
 
-  const unhandledStates = ['archive', 'action', 'project', 'deleted'];
-
-  const handleProjectUpdate = (newStatus) => {
+  const handleProjectUpdateFactory = (newStatus) => {
     if (newStatus === status) {
-      return;
-    } else if (unhandledStates.indexOf(newStatus) > -1) {
-      console.log(`TODO: Handle change: ${newStatus}`);
       return;
     }
     const options = {
@@ -48,17 +43,14 @@ const OutcomeCardStatusMenu = (props) => {
   };
 
   const makeButton = (newStatus, icon, label) => {
-    let isDisabled = false;
     const title = `Set status to ${upperFirst(newStatus)}`;
-    if (status === newStatus) {
-      isDisabled = true;
-    }
+    const handleProjectUpdate = handleProjectUpdateFactory(newStatus);
     return (
       <OutcomeCardMenuButton
-        disabled={isDisabled}
+        disabled={status === newStatus}
         icon={icon}
         label={label}
-        onClick={() => handleProjectUpdate(newStatus)}
+        onClick={handleProjectUpdate}
         status={newStatus}
         title={title}
       />
@@ -76,7 +68,7 @@ const OutcomeCardStatusMenu = (props) => {
           const btnStatus = labels.projectStatus[btn];
           return (
             <div className={styles.column} key={idx}>
-              {makeButton(btnStatus.slug, btnStatus.icon, btnStatus.shortcutLabel, idx)}
+              {makeButton(btnStatus.slug, btnStatus.icon, btnStatus.shortcutLabel)}
             </div>
           );
         })}

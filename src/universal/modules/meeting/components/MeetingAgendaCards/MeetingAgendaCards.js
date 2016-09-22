@@ -1,19 +1,17 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import {withRouter} from 'react-router';
 import {cashay} from 'cashay';
 import shortid from 'shortid';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
-// import OutcomeCard from 'universal/modules/teamDashboard/components/TeamProjectCard/TeamProjectCard';
-import {ACTIVE, SORT_STEP} from 'universal/utils/constants';
-import MeetingAgendaOutcomeCard from '../MeetingAgendaOutcomeCard/MeetingAgendaOutcomeCard';
+import {ACTIVE} from 'universal/utils/constants';
+import AgendaCard from 'universal/modules/meeting/components/AgendaCard/AgendaCard';
 
 const handleAddActionFactory = (teamMemberId, agendaId) => () => {
   const [, teamId] = teamMemberId.split('::');
   const newAction = {
     id: `${teamId}::${shortid.generate()}`,
     teamMemberId,
-    sortOrder: SORT_STEP, // TODO: consider some other value for sort values?
+    sortOrder: 0,
     agendaId
   };
   cashay.mutate('createAction', {variables: {newAction}});
@@ -25,8 +23,8 @@ const handleAddProjectFactory = (teamMemberId, agendaId) => () => {
     id: `${teamId}::${shortid.generate()}`,
     status: ACTIVE,
     teamMemberId,
-    teamSort: SORT_STEP, // TODO: consider some other value for sort values?
-    userSort: SORT_STEP,
+    teamSort: 0,
+    userSort: 0,
     agendaId
   };
   cashay.mutate('createProject', {variables: {newProject}});
@@ -34,21 +32,15 @@ const handleAddProjectFactory = (teamMemberId, agendaId) => () => {
 
 let s = {};
 
-const makeCards = (array) => {
-  const cards = array.map((card) => {
-    const key = `${card.type}OutcomeCard${card.id}`;
+const makeCards = (array, dispatch) => {
+  return array.map((outcome) => {
+    const key = `${outcome.type}OutcomeCard${outcome.id}`;
     return (
       <div className={s.item} key={key}>
-        <MeetingAgendaOutcomeCard
-          content={card.content}
-          id={card.id}
-          status={card.status}
-          type={card.type}
-        />
+        <AgendaCard dispatch={dispatch} outcome={outcome}/>
       </div>
     );
   });
-  return cards;
 };
 
 const makePlaceholders = (length) => {
@@ -70,14 +62,14 @@ const makePlaceholders = (length) => {
 };
 
 const MeetingAgendaCards = (props) => {
-  const {agendaId, myTeamMemberId, outcomes} = props;
+  const {agendaId, dispatch, myTeamMemberId, outcomes} = props;
   const handleAddAction = handleAddActionFactory(myTeamMemberId, agendaId);
   const handleAddProject = handleAddProjectFactory(myTeamMemberId, agendaId);
   return (
     <div className={s.root}>
       {/* Get Cards */}
       {outcomes.length !== 0 &&
-        makeCards(outcomes)
+      makeCards(outcomes, dispatch)
       }
       {/* Input Card */}
       <div className={s.item}>
@@ -108,8 +100,9 @@ s = StyleSheet.create({
 
 MeetingAgendaCards.propTypes = {
   agendaId: PropTypes.string.isRequired,
+  dispatch: PropTypes.func,
   myTeamMemberId: PropTypes.string,
   outcomes: PropTypes.array.isRequired
 };
 
-export default withRouter(look(MeetingAgendaCards));
+export default look(MeetingAgendaCards);

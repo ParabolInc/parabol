@@ -2,27 +2,29 @@ import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import {cashay} from 'cashay';
 import Avatar from 'universal/components/Avatar/Avatar';
+import getOutcomeNames from 'universal/utils/getOutcomeNames';
 
 let s = {};
 const combineStyles = StyleSheet.combineStyles;
 
 const OutcomeCardAssignMenu = (props) => {
-  const {onComplete, project, teamMembers} = props;
-  const {teamMemberId: currentOwner, id: projectId} = project;
+  const {onComplete, outcome, teamMembers} = props;
+  const {teamMemberId: currentOwner, id: outcomeId} = outcome;
 
   const handleProjectUpdate = (newOwner) => {
     if (newOwner === currentOwner) {
       return;
     }
+    const {argName, mutationName} = getOutcomeNames(outcome);
     const options = {
       variables: {
-        updatedProject: {
-          id: projectId,
+        [argName]: {
+          id: outcomeId,
           teamMemberId: newOwner
         }
       }
     };
-    cashay.mutate('updateProject', options);
+    cashay.mutate(mutationName, options);
     if (onComplete) {
       onComplete();
     }
@@ -53,7 +55,7 @@ const OutcomeCardAssignMenu = (props) => {
 
 OutcomeCardAssignMenu.propTypes = {
   onComplete: PropTypes.func,
-  project: PropTypes.object,
+  outcome: PropTypes.object,
   teamMembers: PropTypes.array
 };
 

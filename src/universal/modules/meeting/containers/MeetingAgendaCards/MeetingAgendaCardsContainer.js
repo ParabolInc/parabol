@@ -43,11 +43,22 @@ const mapStateToProps = (state, props) => {
 };
 
 const MeetingAgendaCardsContainer = (props) => {
-  return <MeetingAgendaCards {...props}/>;
+  const {agendaId, dispatch, myTeamMemberId, outcomes} = props;
+  return (
+    <MeetingAgendaCards
+      agendaId={agendaId}
+      myTeamMemberId={myTeamMemberId}
+      outcomes={outcomes}
+      dispatch={dispatch}
+    />
+  );
 };
 
 MeetingAgendaCardsContainer.propTypes = {
-  outcomes: PropTypes.array.isRequired,
+  agendaId: PropTypes.string,
+  dispatch: PropTypes.func,
+  myTeamMemberId: PropTypes.string,
+  outcomes: PropTypes.array.isRequired
 };
 
 export default connect(mapStateToProps)(MeetingAgendaCardsContainer);
