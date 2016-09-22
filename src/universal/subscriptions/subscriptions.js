@@ -3,6 +3,7 @@ import {
   ACTIONS_BY_TEAMMEMBER,
   ACTIONS_BY_AGENDA,
   AGENDA,
+  ARCHIVED_PROJECTS,
   TEAMS,
   TEAM_MEMBERS,
   PRESENCE,
@@ -11,6 +12,19 @@ import {
 
 // For now, use an array. In the future, we can make one exclusively for the server that doesn't need to reparse the AST
 export default [
+  {
+    channel: ARCHIVED_PROJECTS,
+    string: `
+    subscription($teamId: ID!) {
+      archivedProjects(teamId: $teamId) {
+        id
+        content
+        status
+        teamMemberId
+        updatedAt
+      }
+    }`
+  },
   {
     channel: ACTIONS,
     string: `

@@ -14,21 +14,31 @@ const buttonHF = {
 let styles = {};
 
 const OutcomeCardStatusMenu = (props) => {
-  const {project: {isArchived, id: projectId, status}, isProject} = props;
-  // const {project: {id: projectId, status}, isProject} = props;
+  const {project: {id: projectId, status}, isProject} = props;
 
-  // const isArchived = true;
-
-  const isArchivedLabel = <span>Take out of Ar<u>c</u>hive</span>;
   const notArchivedLabel = <span>Move to Ar<u>c</u>hive</span>;
-  const deleteActionLabel = <span>De<u>l</u>ete this Action</span>;
-  const moveToActionsLabel = <span>Move to Ac<u>t</u>ions</span>;
-  const moveToProjectsLabel = <span>Move to <u>P</u>rojects</span>;
-
+  // const deleteActionLabel = <span>De<u>l</u>ete this Action</span>;
+  // const moveToActionsLabel = <span>Move to Ac<u>t</u>ions</span>;
+  // const moveToProjectsLabel = <span>Move to <u>P</u>rojects</span>;
   const buttonArray = labels.projectStatus.slugs.slice(0);
 
-  const handleProjectUpdateFactory = (newStatus) => {
+  const archiveProject = () => {
+    const options = {
+      variables: {
+        updatedProject: {
+          id: projectId,
+          isArchived: true
+        }
+      }
+    };
+    cashay.mutate('updateProject', options);
+  };
+
+  const handleProjectUpdate = (newStatus) => {
     if (newStatus === status) {
+      return;
+    } else if (newStatus === 'deleted' || newStatus === 'project' || newStatus === 'action') {
+      console.log(`handle inset menu action for updated status: ${newStatus}`);
       return;
     }
     const options = {
@@ -43,56 +53,42 @@ const OutcomeCardStatusMenu = (props) => {
   };
 
   const makeButton = (newStatus, icon, label) => {
+    let isDisabled = false;
     const title = `Set status to ${upperFirst(newStatus)}`;
-    const handleProjectUpdate = handleProjectUpdateFactory(newStatus);
+    if (status === newStatus) {
+      isDisabled = true;
+    }
     return (
       <OutcomeCardMenuButton
-        disabled={status === newStatus}
+        disabled={isDisabled}
         icon={icon}
         label={label}
-        onClick={handleProjectUpdate}
+        onClick={() => handleProjectUpdate(newStatus)}
         status={newStatus}
         title={title}
       />
     );
   };
 
-  const archivedLabel = isArchived ? isArchivedLabel : notArchivedLabel;
-  const isProjectAndNotArchived = isProject && !isArchived;
-
   return (
     <div className={styles.root}>
-      {isProjectAndNotArchived &&
-        <div className={styles.columns}>
-        {buttonArray.map((btn, idx) => {
-          const btnStatus = labels.projectStatus[btn];
-          return (
-            <div className={styles.column} key={idx}>
-              {makeButton(btnStatus.slug, btnStatus.icon, btnStatus.shortcutLabel)}
-            </div>
-          );
-        })}
-        </div>
-      }
-      {/* TODO: Move this to “AgendaCard”s only (TA) */}
-      {isProjectAndNotArchived &&
-        <div className={styles.buttonBlock}>
-          {makeButton('action', 'calendar-check-o', moveToActionsLabel)}
-        </div>
-      }
-      {!isProject &&
-        <div className={styles.buttonBlock}>
-          {makeButton('project', 'calendar', moveToProjectsLabel)}
-        </div>
-      }
-      {!isProject &&
-        <div className={styles.buttonBlock}>
-          {makeButton('deleted', 'times', deleteActionLabel)}
-        </div>
-      }
+      {buttonArray.map((btn, idx) => {
+        const btnStatus = labels.projectStatus[btn];
+        return (
+          <div className={styles.column} key={idx}>
+            {makeButton(btnStatus.slug, btnStatus.icon, btnStatus.shortcutLabel, idx)}
+          </div>
+        );
+      })}
       {isProject &&
         <div className={styles.buttonBlock}>
-          {makeButton('archive', 'archive', archivedLabel)}
+          <OutcomeCardMenuButton
+            icon="archive"
+            label={notArchivedLabel}
+            onClick={archiveProject}
+            status="archive"
+            title="Move to archive"
+          />
         </div>
       }
     </div>
@@ -111,8 +107,6 @@ OutcomeCardStatusMenu.propTypes = {
 styles = StyleSheet.create({
   root: {
     alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'column',
     fontSize: 0,
     justifyContent: 'center',
     margin: '0 auto',
@@ -120,10 +114,6 @@ styles = StyleSheet.create({
     minHeight: '5.1875rem',
     padding: '.125rem',
     textAlign: 'center',
-    width: '100%'
-  },
-
-  columns: {
     width: '100%'
   },
 
@@ -180,3 +170,20 @@ styles = StyleSheet.create({
 });
 
 export default look(OutcomeCardStatusMenu);
+
+// {/* TODO: Move this to “AgendaCard”s only (TA) */}
+// {isProjectAndNotArchived &&
+// <div className={styles.buttonBlock}>
+//   {makeButton('action', 'calendar-check-o', moveToActionsLabel)}
+// </div>
+// }
+// {!isProject &&
+// <div className={styles.buttonBlock}>
+//   {makeButton('project', 'calendar', moveToProjectsLabel)}
+// </div>
+// }
+// {!isProject &&
+// <div className={styles.buttonBlock}>
+//   {makeButton('deleted', 'times', deleteActionLabel)}
+// </div>
+// }

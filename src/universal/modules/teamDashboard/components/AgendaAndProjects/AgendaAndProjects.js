@@ -11,7 +11,7 @@ const {combineStyles} = StyleSheet;
 
 const AgendaAndProjects = (props) => {
   const {styles} = AgendaAndProjects;
-  const {teamId} = props;
+  const {teamId} = props.params;
   return (
     <div className={styles.root}>
       <div className={styles.inner}>
@@ -20,7 +20,9 @@ const AgendaAndProjects = (props) => {
         </div>
         <div className={styles.projectsLayout}>
           <div className={combineStyles(styles.root, styles.projects)}>
-            <TeamProjectsHeader/>
+            <TeamProjectsHeader
+              teamId={teamId}
+            />
             <TeamColumnsContainer
               teamId={teamId}
             />
@@ -32,6 +34,7 @@ const AgendaAndProjects = (props) => {
 };
 
 AgendaAndProjects.propTypes = {
+  params: PropTypes.object,
   teamId: PropTypes.string,
   teamMembers: PropTypes.array
 };

@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
+// import {cashay} from 'cashay';
 import FontAwesome from 'react-fontawesome';
 import theme from 'universal/styles/theme';
 import ui from 'universal/styles/ui';
@@ -52,9 +53,9 @@ const OutcomeCardFooter = (props) => {
     isArchived,
     isProject,
     owner,
-    removeFromArchive,
+    // project: {id: projectId},
     toggleAssignMenu,
-    toggleStatusMenu
+    handleStatusClick
   } = props;
 
   let avatarBlockStyle = {};
@@ -72,6 +73,8 @@ const OutcomeCardFooter = (props) => {
   // const avatarStyles = combineStyles(styles.avatar, styles.avatarTeam);
   const avatarStyles = styles.avatar;
   const menuHintStyle = cardHasHover ? faStyle : {visibility: 'hidden', ...faStyle};
+  let buttonIcon = hasOpenStatusMenu ? 'times' : 'wrench';
+  if (isArchived) buttonIcon = 'reply';
 
   if (!isProject) { buttonOptions.push(styles.actionButton); }
 
@@ -113,17 +116,9 @@ const OutcomeCardFooter = (props) => {
         </div>
       </div>
       <div className={styles.buttonBlock}>
-        {isArchived ?
-          <button className={buttonStyles} onClick={removeFromArchive}>
-            <FontAwesome name="reply" style={faStyle} />
-          </button> :
-          <button className={buttonStyles} onClick={toggleStatusMenu}>
-            {hasOpenStatusMenu ?
-              <FontAwesome name="times" style={faStyle} /> :
-              <FontAwesome name="wrench" style={faStyle} />
-            }
-          </button>
-        }
+        <button className={buttonStyles} onClick={handleStatusClick}>
+          <FontAwesome name={buttonIcon} style={faStyle} />
+        </button>
       </div>
     </div>
   );
@@ -132,13 +127,15 @@ const OutcomeCardFooter = (props) => {
 OutcomeCardFooter.propTypes = {
   cardHasHover: PropTypes.bool,
   toggleAssignMenu: PropTypes.func,
-  toggleStatusMenu: PropTypes.func,
+  handleStatusClick: PropTypes.func,
   hasOpenStatusMenu: PropTypes.bool,
   isArchived: PropTypes.bool,
   isProject: PropTypes.bool,
   owner: PropTypes.object,
-  removeFromArchive: PropTypes.func,
-  team: PropTypes.object,
+  // project: PropTypes.shape({
+  //   projectId: PropTypes.string
+  // }),
+  team: PropTypes.object
 };
 
 OutcomeCardFooter.defaultProps = {
@@ -147,17 +144,14 @@ OutcomeCardFooter.defaultProps = {
   toggleAssignMenu() {
     console.log('toggleAssignMenu');
   },
-  toggleStatusMenu() {
-    console.log('toggleStatusMenu');
+  handleStatusClick() {
+    console.log('handleStatusClick');
   },
   hasOpenStatusMenu: false,
   isArchived: false,
   owner: {
     preferredName: 'Taya Mueller',
     picture: TayaAvatar
-  },
-  removeFromArchive() {
-    console.log('removeFromArchive');
   }
 };
 

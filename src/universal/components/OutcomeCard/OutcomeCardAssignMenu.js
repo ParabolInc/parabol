@@ -61,8 +61,9 @@ OutcomeCardAssignMenu.propTypes = {
 
 s = StyleSheet.create({
   root: {
-    padding: '.5rem',
     fontSize: 0,
+    minHeight: '75px', // based on 120px
+    padding: '.5rem',
     textAlign: 'center',
     width: '100%'
   },
