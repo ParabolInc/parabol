@@ -4,6 +4,30 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.6.1 - 23-Sep-2016
+### Added
+- Now supports removal of agenda items
+- Stubbed in meeting last call for agenda items
+- Now uses Cashay @live directive in subscriptions
+- Added agenda hotkeys
+- Partial implementation of agenda processing
+- Extraction of 3rd party CSS files into their own static assets
+   - Decouples Graphiql from `react-look`
+- Many, many aesthetic dashboard and card improvements
+- Agenda list updates
+- Archiving and un-archiving of project cards
+- Equity for Effort documentation updates
+
+## Removed
+- Switched back to official segment snippet generation function
+
+## Fixed
+- First call for agenda items causing infinite loop
+- Fixes for `moveMeeting` mutation & `makePhaseItemFactory`
+- Fixes #202, adds correct auth0 management token
+- Fixes for #119, #188, #225, #231, #241, #233, and #260
+- Merged #267 autofocus fix
+
 ## v0.5.3 - 30-Aug-2016
 ### Added
 - Project updates section

@@ -236,6 +236,13 @@ can join their pals.
 near their other teams to make a new team, so they can get their new group up
 and going.
 
+- [X] When a project is finished, a team member will want a control to archive
+it, so that it can un-clutter the dashboard.
+
+- [X] When a project is archived by mistake, a team member will want to
+be able to find the project in the archive and restore it, so that they
+can resume where they left off.
+
 ## Personal Dashboard
 
 - [X] When a user receives an invitation to a new team, they will want to
