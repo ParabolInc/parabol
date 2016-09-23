@@ -95,7 +95,7 @@ TeamArchive.styles = StyleSheet.create({
     padding: '0 1rem .5rem 0',
 
     '@media (min-width: 40rem)': {
-      flex: '0 0 50%',
+      flex: '0 0 50%'
     },
 
     '@media (min-width: 60rem)': {
