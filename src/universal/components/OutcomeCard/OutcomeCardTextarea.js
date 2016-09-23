@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import ui from 'universal/styles/ui';
+import Textarea from 'react-textarea-autosize';
 
 const combineStyles = StyleSheet.combineStyles;
 
@@ -9,19 +10,22 @@ const descriptionBase = {
   backgroundColor: 'transparent',
   border: 0,
   borderBottom: '1px solid transparent',
+  borderTop: '1px solid transparent',
   color: theme.palette.dark10d,
   outline: 'none'
 };
 
 const descriptionFA = {
   backgroundColor: theme.palette.mid10l,
-  borderBottomColor: theme.palette.mid,
+  borderBottomColor: ui.cardBorderColor,
+  borderTopColor: ui.cardBorderColor,
   color: theme.palette.mid10d
 };
 
 const descriptionActionFA = {
   backgroundColor: 'rgba(255, 255, 255, .85)',
-  borderBottomColor: theme.palette.mid,
+  borderBottomColor: ui.cardBorderColor,
+  borderTopColor: ui.cardBorderColor,
   color: theme.palette.mid10d
 };
 
@@ -107,7 +111,7 @@ export default class OutcomeCardTextArea extends Component {
         <div className={styles.timestamp}>
           {editingStatus}
         </div>
-        <textarea
+        <Textarea
           {...input}
           ref={setRef}
           className={contentStyles}
