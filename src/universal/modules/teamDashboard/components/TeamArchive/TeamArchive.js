@@ -63,7 +63,7 @@ TeamArchive.styles = StyleSheet.create({
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
-    padding: '0 0 0 1.5rem',
+    padding: '0 0 0 1rem',
     width: '100%'
   },
 
@@ -77,7 +77,7 @@ TeamArchive.styles = StyleSheet.create({
     ...overflowTouch,
     bottom: 0,
     left: 0,
-    padding: '1.5rem 0 0',
+    padding: '1rem 0 0',
     position: 'absolute',
     right: 0,
     top: 0,
@@ -92,10 +92,10 @@ TeamArchive.styles = StyleSheet.create({
 
   cardBlock: {
     flex: '0 0 100%',
-    padding: '0 1.5rem 1rem 0',
+    padding: '0 1rem .5rem 0',
 
     '@media (min-width: 40rem)': {
-      flex: '0 0 50%'
+      flex: '0 0 50%',
     },
 
     '@media (min-width: 60rem)': {
