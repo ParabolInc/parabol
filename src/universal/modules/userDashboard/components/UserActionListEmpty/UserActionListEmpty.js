@@ -9,6 +9,7 @@ import FontAwesome from 'react-fontawesome';
 const iconStyle = {
   ...ib,
   color: theme.palette.mid,
+  fontSize: ui.iconSize,
   marginRight: '.25rem',
   textAlign: 'center',
   width: '1rem'
@@ -42,7 +43,7 @@ const UserActionListEmpty = (props) => {
 };
 
 UserActionListEmpty.propTypes = {
-  onCreateNewAction: PropTypes.function
+  onCreateNewAction: PropTypes.func
 };
 
 UserActionListEmpty.styles = StyleSheet.create({

@@ -15,10 +15,10 @@ export const ProjectStatus = new GraphQLEnumType({
   name: 'ProjectStatus',
   description: 'The status of the project',
   values: {
-    ACTIVE: {value: ACTIVE},
-    STUCK: {value: STUCK},
-    DONE: {value: DONE},
-    FUTURE: {value: FUTURE}
+    [ACTIVE]: {value: ACTIVE},
+    [STUCK]: {value: STUCK},
+    [DONE]: {value: DONE},
+    [FUTURE]: {value: FUTURE}
   }
 });
 
@@ -31,6 +31,10 @@ export const Project = new GraphQLObjectType({
     isArchived: {
       type: GraphQLBoolean,
       description: 'true if the project has been archived and will not show up in the main area'
+    },
+    teamId: {
+      type: GraphQLID,
+      description: 'The id of the team (indexed). Needed for subscribing to archived projects'
     },
     teamMemberId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -56,12 +60,20 @@ export const Project = new GraphQLObjectType({
     agendaId: {
       type: GraphQLID,
       description: 'the agenda item that created this project, if any'
+    },
+    cursor: {
+      type: GraphQLISO8601Type,
+      description: 'the pagination cursor (createdAt)',
+      resolve({createdAt}) {
+        return createdAt;
+      }
     }
   })
 });
 
 const projectInputThunk = () => ({
   id: {type: GraphQLID, description: 'The unique project ID'},
+  isArchived: {type: GraphQLBoolean, description: 'true if the project is archived'},
   content: {type: GraphQLString, description: 'The body of the project. If null, it is a new project.'},
   status: {type: GraphQLID, description: 'The status of the project created'},
   teamMemberId: {type: GraphQLID, description: 'The team member ID of the person creating the project'},

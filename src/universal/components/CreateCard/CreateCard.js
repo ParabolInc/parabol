@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-// import FontAwesome from 'react-fontawesome';
 import PushButton from '../PushButton/PushButton';
 import Ellipsis from '../Ellipsis/Ellipsis';
 import Type from '../Type/Type';

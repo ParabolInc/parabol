@@ -22,6 +22,28 @@ export default {
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
       r.table('Project')
         .getAll(teamMemberId, {index: 'teamMemberId'})
+        .filter({isArchived: false})
+        .pluck(requestedFields)
+        .changes({includeInitial: true})
+        .run({cursor: true}, changefeedHandler);
+    }
+  },
+  archivedProjects: {
+    type: new GraphQLList(Project),
+    args: {
+      teamId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The unique team ID'
+      }
+    },
+    async resolve(source, {teamId}, {authToken, socket, subbedChannelName}, refs) {
+      requireSUOrTeamMember(authToken, teamId);
+      const requestedFields = getRequestedFields(refs);
+      const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
+      r.table('Project')
+        // use a compound index so we can easily paginate later
+        .between([teamId, r.minval], [teamId, r.maxval], {index: 'teamIdCreatedAt'})
+        .filter({isArchived: true})
         .pluck(requestedFields)
         .changes({includeInitial: true})
         .run({cursor: true}, changefeedHandler);

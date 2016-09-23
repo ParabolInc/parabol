@@ -8,7 +8,7 @@ import {
 } from 'universal/components/Dashboard';
 import {Link} from 'react-router';
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
-import AgendaAndProjects from 'universal/modules/teamDashboard/components/AgendaAndProjects/AgendaAndProjects';
+// import AgendaAndProjects from 'universal/modules/teamDashboard/components/AgendaAndProjects/AgendaAndProjects';
 import TeamDashModal from '../TeamDashModal/TeamDashModal';
 
 const faIconStyle = {
@@ -26,7 +26,7 @@ const linkStyle = {
 };
 
 const Team = (props) => {
-  const {team, teamMembers} = props;
+  const {children, team, teamMembers} = props;
   const teamId = team.id;
   const teamName = team.name;
   const hasOverlay = Boolean(team && team.meetingId);
@@ -53,15 +53,14 @@ const Team = (props) => {
         <DashboardAvatars teamMembers={teamMembers}/>
       </DashHeader>
       <DashContent hasOverlay={hasOverlay} padding="0">
-        <AgendaAndProjects
-          teamId={teamId}
-        />
+        {children}
       </DashContent>
     </DashMain>
   );
 };
 
 Team.propTypes = {
+  children: PropTypes.any,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired,
 };

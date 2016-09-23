@@ -63,8 +63,10 @@ export default {
       const [userId] = newProject.teamMemberId.split('::');
       const project = {
         ...newProject,
+        isArchived: false,
         userId,
         createdAt: now,
+        teamId,
         updatedAt: now
       };
       await r.table('Project').insert(project);

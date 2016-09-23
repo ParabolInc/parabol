@@ -12,6 +12,11 @@ import {cashay} from 'cashay';
 import shortid from 'shortid';
 
 const combineStyles = StyleSheet.combineStyles;
+const badgeIconStyle = {
+  height: '1.5rem',
+  lineHeight: '1.5rem',
+  width: '1.5rem'
+};
 const borderColor = ui.dashBorderColor;
 const labels = {
   [DONE]: 'Done',
@@ -52,7 +57,7 @@ const ProjectColumn = (props) => {
     <div className={styles.column}>
       <div className={styles.columnHeader}>
         <span className={combineStyles(styles.statusBadge, styles[`${status}Bg`])}>
-          <FontAwesome className={styles.statusBadgeIcon} name={themeLabels.projectStatus[status].icon}/>
+          <FontAwesome className={styles.statusBadgeIcon} name={themeLabels.projectStatus[status].icon} style={badgeIconStyle} />
         </span>
         <span className={combineStyles(styles.statusLabel, styles[status])}>
           {label}

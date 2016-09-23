@@ -6,7 +6,6 @@ import labels from 'universal/styles/theme/labels';
 import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
 import OutcomeCardAssignMenuContainer
   from 'universal/modules/teamDashboard/containers/OutcomeCardAssignMenu/OutcomeCardAssignMenuContainer';
-
 import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
 import OutcomeCardTextareaContainer from 'universal/modules/teamDashboard/containers/OutcomeCardTextarea/OutcomeCardTextareaContainer';
 import OutcomeCardFooter from 'universal/components/OutcomeCard/OutcomeCardFooter';
@@ -57,21 +56,31 @@ export default class TeamProjectCard extends Component {
   }
 
   toggleStatusMenu = () => {
-    if (this.props.isArchived) {
-      return;
-    }
     const {openMenu} = this.state;
     const nextOpenMenu = openMenu === OPEN_STATUS_MENU ? OPEN_CONTENT_MENU : OPEN_STATUS_MENU;
     this.setState({openMenu: nextOpenMenu});
   };
 
   toggleAssignMenu = () => {
-    if (this.props.isArchived) {
-      return;
-    }
+    // REVIEW: next line a bad way to disable assign menu for archived cards? (TA)
+    if (this.props.isArchived) return;
+
     const {openMenu} = this.state;
     const nextOpenMenu = openMenu === OPEN_ASSIGN_MENU ? OPEN_CONTENT_MENU : OPEN_ASSIGN_MENU;
     this.setState({openMenu: nextOpenMenu});
+  };
+
+  unarchiveCard = () => {
+    const {project} = this.props;
+    const options = {
+      variables: {
+        updatedProject: {
+          id: project.id,
+          isArchived: false
+        }
+      }
+    };
+    cashay.mutate('updateProject', options);
   };
 
   closeMenu = () => {
@@ -82,15 +91,17 @@ export default class TeamProjectCard extends Component {
     const {openMenu} = this.state;
     const {
       handleSubmit,
+      project,
       isArchived,
       isProject,
-      project,
     } = this.props;
     const {content, status, id: projectId} = project;
     const hasOpenStatusMenu = openMenu === OPEN_STATUS_MENU;
     const hasOpenAssignMenu = openMenu === OPEN_ASSIGN_MENU;
     const handleCardActive = (isActive) => {
-      if (isActive === undefined) { return; }
+      if (isActive === undefined) {
+        return;
+      }
       const [teamId] = projectId.split('::');
       const editing = isActive ? `Task::${projectId}` : null;
       const options = {
@@ -115,7 +126,7 @@ export default class TeamProjectCard extends Component {
         cashay.mutate('updateProject', options);
       }
     };
-
+    const handleStatusClick = isArchived ? this.unarchiveCard : this.toggleStatusMenu;
     return (
       <OutcomeCard
         isArchived={isArchived}
@@ -156,9 +167,10 @@ export default class TeamProjectCard extends Component {
           isArchived={isArchived}
           isProject={isProject}
           owner={project.teamMember}
+          // project={project}
           status={status}
           toggleAssignMenu={this.toggleAssignMenu}
-          toggleStatusMenu={this.toggleStatusMenu}
+          handleStatusClick={handleStatusClick}
         />
       </OutcomeCard>
     );
