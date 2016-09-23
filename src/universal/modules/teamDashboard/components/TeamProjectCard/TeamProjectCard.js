@@ -115,15 +115,20 @@ export default class TeamProjectCard extends Component {
     const handleCardUpdate = (submittedData) => {
       const submittedContent = submittedData[projectId];
       if (submittedContent !== content) {
-        const options = {
-          variables: {
-            updatedProject: {
-              id: projectId,
-              content: submittedContent
+        if (!submittedContent) {
+          // delete blank cards
+          cashay.mutate('deleteProject', {variables: {projectId}})
+        } else {
+          const options = {
+            variables: {
+              updatedProject: {
+                id: projectId,
+                content: submittedContent
+              }
             }
-          }
-        };
-        cashay.mutate('updateProject', options);
+          };
+          cashay.mutate('updateProject', options);
+        }
       }
     };
     const handleStatusClick = isArchived ? this.unarchiveCard : this.toggleStatusMenu;
