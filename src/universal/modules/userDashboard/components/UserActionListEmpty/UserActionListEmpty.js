@@ -43,7 +43,7 @@ const UserActionListEmpty = (props) => {
 };
 
 UserActionListEmpty.propTypes = {
-  onCreateNewAction: PropTypes.function
+  onCreateNewAction: PropTypes.func
 };
 
 UserActionListEmpty.styles = StyleSheet.create({
