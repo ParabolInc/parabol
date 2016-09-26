@@ -37,8 +37,8 @@ export default class AgendaCard extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {content} = this.props.project;
-    const nextContent = nextProps.project.content;
+    const {content} = this.props.outcome;
+    const nextContent = nextProps.outcome.content;
     if (nextContent !== content) {
       this.initializeValues(nextContent);
     }
@@ -53,7 +53,7 @@ export default class AgendaCard extends Component {
   }
 
   initializeValues(content) {
-    const {dispatch, form, project: {id}} = this.props;
+    const {dispatch, form, outcome: {id}} = this.props;
     dispatch(initialize(form, {[id]: content}));
   }
 
@@ -80,13 +80,13 @@ export default class AgendaCard extends Component {
       outcome,
     } = this.props;
     const {type, content, id: outcomeId} = outcome;
-    const isProject = type === 'project';
+    const isProject = type === 'Project';
     const status = outcome.status || 'active';
     const hasOpenStatusMenu = openMenu === OPEN_STATUS_MENU;
     const hasOpenAssignMenu = openMenu === OPEN_ASSIGN_MENU;
     const handleCardActive = (isActive) => {
       if (isActive === undefined) { return; }
-      const [teamId] = projectId.split('::');
+      const [teamId] = outcomeId.split('::');
       const editing = isActive ? `Task::${outcomeId}` : null;
       const options = {
         variables: {
@@ -97,7 +97,7 @@ export default class AgendaCard extends Component {
       cashay.mutate('edit', options);
     };
     const handleCardUpdate = (submittedData) => {
-      const {argName, mutationName} = getOutcomeNames(outcome);
+      const {argName, mutationName} = getOutcomeNames(outcome, 'update');
       const submittedContent = submittedData[outcomeId];
       if (submittedContent !== content) {
         const options = {
@@ -126,18 +126,25 @@ export default class AgendaCard extends Component {
             outcome={outcome}
           />
         }
-        {hasOpenStatusMenu && <OutcomeCardStatusMenu isProject={isProject} outcome={outcome}/>}
+        {hasOpenStatusMenu &&
+          <OutcomeCardStatusMenu
+            isAgenda
+            isProject={isProject}
+            onComplete={this.closeMenu}
+            outcome={outcome}
+          />
+        }
         {!hasOpenAssignMenu && !hasOpenStatusMenu &&
           <div className={styles.body}>
             <form>
               <Field
-                name={outcomeId}
+                cardHasHover={this.state.cardHasHover}
                 component={OutcomeCardTextareaContainer}
                 handleActive={handleCardActive}
                 handleSubmit={handleSubmit(handleCardUpdate)}
                 isProject={isProject}
-                project={project}
-                cardHasHover={this.state.cardHasHover}
+                name={outcomeId}
+                outcome={outcome}
               />
             </form>
           </div>
@@ -147,10 +154,10 @@ export default class AgendaCard extends Component {
           cardHasHover={this.state.cardHasHover}
           hasOpenStatusMenu={hasOpenStatusMenu}
           isProject={isProject}
-          owner={project.teamMember}
+          owner={outcome.teamMember}
           status={status}
           toggleAssignMenu={this.toggleAssignMenu}
-          toggleStatusMenu={this.toggleStatusMenu}
+          handleStatusClick={this.toggleStatusMenu}
         />
       </OutcomeCard>
     );
@@ -158,7 +165,7 @@ export default class AgendaCard extends Component {
 }
 
 AgendaCard.propTypes = {
-  project: PropTypes.shape({
+  outcome: PropTypes.shape({
     id: PropTypes.string,
     content: PropTypes.string,
     status: PropTypes.oneOf(labels.projectStatus.slugs),

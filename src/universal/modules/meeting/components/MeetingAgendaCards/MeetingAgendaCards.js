@@ -37,7 +37,7 @@ const makeCards = (array, dispatch) => {
     const key = `${outcome.type}OutcomeCard${outcome.id}`;
     return (
       <div className={s.item} key={key}>
-        <AgendaCard dispatch={dispatch} outcome={outcome}/>
+        <AgendaCard form={key} dispatch={dispatch} outcome={outcome}/>
       </div>
     );
   });

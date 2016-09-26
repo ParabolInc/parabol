@@ -45,11 +45,11 @@ const makeEditingStatus = (editors, active, updatedAt) => {
 
 const mapStateToProps = (state, props) => {
   const {active} = props.meta;
-  const {updatedAt, id: projectId} = props.project;
+  const {updatedAt, id: outcomeId} = props.outcome;
   const {editors} = cashay.query(outcomeCardTextareaQuery, {
     op: 'outcomeCardTextareaContainer',
-    variables: {projectId},
-    key: projectId,
+    variables: {outcomeId},
+    key: outcomeId,
     resolveCached: {
       editors: (source, args) => (doc) => doc.editing === `Task::${args.id}`,
       teamMember: (source) => {

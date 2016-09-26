@@ -144,10 +144,10 @@ export default class TeamProjectCard extends Component {
         {hasOpenAssignMenu &&
           <OutcomeCardAssignMenuContainer
             onComplete={this.closeMenu}
-            project={project}
+            outcome={project}
           />
         }
-        {hasOpenStatusMenu && <OutcomeCardStatusMenu isProject={isProject} project={project}/>}
+        {hasOpenStatusMenu && <OutcomeCardStatusMenu isProject={isProject} outcome={project}/>}
         {!hasOpenAssignMenu && !hasOpenStatusMenu &&
           <div className={styles.body}>
             <form>
@@ -158,7 +158,7 @@ export default class TeamProjectCard extends Component {
                 handleSubmit={handleSubmit(handleCardUpdate)}
                 isArchived={isArchived}
                 isProject={isProject}
-                project={project}
+                outcome={project}
                 doFocus={!content}
                 cardHasHover={this.state.cardHasHover}
               />
@@ -172,7 +172,7 @@ export default class TeamProjectCard extends Component {
           isArchived={isArchived}
           isProject={isProject}
           owner={project.teamMember}
-          // project={project}
+          outcome={project}
           status={status}
           toggleAssignMenu={this.toggleAssignMenu}
           handleStatusClick={handleStatusClick}

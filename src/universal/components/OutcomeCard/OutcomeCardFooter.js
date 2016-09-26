@@ -53,7 +53,6 @@ const OutcomeCardFooter = (props) => {
     isArchived,
     isProject,
     owner,
-    // project: {id: projectId},
     toggleAssignMenu,
     handleStatusClick
   } = props;

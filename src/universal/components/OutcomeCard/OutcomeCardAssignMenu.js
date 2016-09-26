@@ -15,7 +15,7 @@ const OutcomeCardAssignMenu = (props) => {
     if (newOwner === currentOwner) {
       return;
     }
-    const {argName, mutationName} = getOutcomeNames(outcome);
+    const {argName, mutationName} = getOutcomeNames(outcome, 'update');
     const options = {
       variables: {
         [argName]: {

@@ -14,8 +14,8 @@ query {
 `;
 
 const mapStateToProps = (state, props) => {
-  const {id: projectId} = props.project;
-  const [teamId] = projectId.split('::');
+  const {id: outcomeId} = props.outcome;
+  const [teamId] = outcomeId.split('::');
   const {teamMembers} = cashay.query(outcomeCardAssignMenuQuery, {
     op: 'outcomeCardAssignMenuContainer',
     key: teamId,

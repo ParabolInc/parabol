@@ -6,6 +6,7 @@ import labels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import upperFirst from 'universal/utils/upperFirst';
 import OutcomeCardMenuButton from './OutcomeCardMenuButton';
+import getOutcomeNames from 'universal/utils/getOutcomeNames';
 
 const buttonHF = {
   backgroundColor: 'transparent',
@@ -14,19 +15,21 @@ const buttonHF = {
 let styles = {};
 
 const OutcomeCardStatusMenu = (props) => {
-  const {project: {id: projectId, status}, isProject} = props;
+  const {onComplete, outcome, isAgenda, isProject} = props;
+  const {id: outcomeId, status} = outcome;
+  const outcomeName = isProject ? 'Project' : 'Action';
 
   const notArchivedLabel = <span>Move to Ar<u>c</u>hive</span>;
-  // const deleteActionLabel = <span>De<u>l</u>ete this Action</span>;
-  // const moveToActionsLabel = <span>Move to Ac<u>t</u>ions</span>;
-  // const moveToProjectsLabel = <span>Move to <u>P</u>rojects</span>;
+  const deleteOutcomeLabel = <span>De<u>l</u>ete this {outcomeName}</span>;
+  const moveToActionsLabel = <span>Move to Ac<u>t</u>ions</span>;
+  const moveToProjectsLabel = <span>Move to <u>P</u>rojects</span>;
   const buttonArray = labels.projectStatus.slugs.slice(0);
 
   const archiveProject = () => {
     const options = {
       variables: {
         updatedProject: {
-          id: projectId,
+          id: outcomeId,
           isArchived: true
         }
       }
@@ -34,36 +37,59 @@ const OutcomeCardStatusMenu = (props) => {
     cashay.mutate('updateProject', options);
   };
 
-  const handleProjectUpdate = (newStatus) => {
+  const deleteOutcome = () => {
+    const {argName, mutationName} = getOutcomeNames(outcome, 'delete');
+    const options = {
+      variables: {
+        [argName]: outcomeId
+      }
+    };
+    cashay.mutate(mutationName, options);
+    if (onComplete) {
+      onComplete();
+    }
+  };
+
+  const toggleOutcomeType = () => {
+    const {argName, mutationName} = getOutcomeNames(outcome, 'toggleType');
+    const options = {
+      variables: {
+        [argName]: outcomeId
+      }
+    };
+    cashay.mutate(mutationName, options);
+    if (onComplete) {
+      onComplete();
+    }
+  };
+
+  const handleProjectUpdateFactory = (newStatus) => () => {
     if (newStatus === status) {
-      return;
-    } else if (newStatus === 'deleted' || newStatus === 'project' || newStatus === 'action') {
-      console.log(`handle inset menu action for updated status: ${newStatus}`);
       return;
     }
     const options = {
       variables: {
         updatedProject: {
-          id: projectId,
+          id: outcomeId,
           status: newStatus
         }
       }
     };
     cashay.mutate('updateProject', options);
+    if (onComplete) {
+      onComplete();
+    }
   };
 
   const makeButton = (newStatus, icon, label) => {
-    let isDisabled = false;
     const title = `Set status to ${upperFirst(newStatus)}`;
-    if (status === newStatus) {
-      isDisabled = true;
-    }
+    const handleProjectUpdate = handleProjectUpdateFactory(newStatus);
     return (
       <OutcomeCardMenuButton
-        disabled={isDisabled}
+        disabled={status === newStatus}
         icon={icon}
         label={label}
-        onClick={() => handleProjectUpdate(newStatus)}
+        onClick={handleProjectUpdate}
         status={newStatus}
         title={title}
       />
@@ -80,7 +106,7 @@ const OutcomeCardStatusMenu = (props) => {
           </div>
         );
       })}
-      {isProject &&
+      {isProject && !isAgenda &&
         <div className={styles.buttonBlock}>
           <OutcomeCardMenuButton
             icon="archive"
@@ -91,16 +117,44 @@ const OutcomeCardStatusMenu = (props) => {
           />
         </div>
       }
+      {isAgenda &&
+        <div className={styles.buttonBlock}>
+          <OutcomeCardMenuButton
+            icon="times"
+            label={deleteOutcomeLabel}
+            onClick={deleteOutcome}
+            status="archive"
+            title={`Delete this ${outcomeName}`}
+          />
+        </div>
+      }
+      {isAgenda &&
+        (isProject ?
+        <div className={styles.buttonBlock}>
+          <OutcomeCardMenuButton
+            icon="calendar-check-o"
+            label={moveToActionsLabel}
+            onClick={toggleOutcomeType}
+            status="active"
+            title="Move to Actions"
+          />
+        </div> :
+        <div className={styles.buttonBlock}>
+          <OutcomeCardMenuButton
+            icon="calendar"
+            label={moveToProjectsLabel}
+            onClick={toggleOutcomeType}
+            status="active"
+            title="Move to Projects"
+          />
+        </div>)
+      }
     </div>
   );
 };
 
 OutcomeCardStatusMenu.propTypes = {
-  project: PropTypes.shape({
-    isArchived: PropTypes.bool,
-    projectId: PropTypes.string,
-    status: PropTypes.oneOf(labels.projectStatus.slugs)
-  }),
+  outcome: PropTypes.object,
   isProject: PropTypes.bool,
 };
 
@@ -170,20 +224,3 @@ styles = StyleSheet.create({
 });
 
 export default look(OutcomeCardStatusMenu);
-
-// {/* TODO: Move this to “AgendaCard”s only (TA) */}
-// {isProjectAndNotArchived &&
-// <div className={styles.buttonBlock}>
-//   {makeButton('action', 'calendar-check-o', moveToActionsLabel)}
-// </div>
-// }
-// {!isProject &&
-// <div className={styles.buttonBlock}>
-//   {makeButton('project', 'calendar', moveToProjectsLabel)}
-// </div>
-// }
-// {!isProject &&
-// <div className={styles.buttonBlock}>
-//   {makeButton('deleted', 'times', deleteActionLabel)}
-// </div>
-// }
