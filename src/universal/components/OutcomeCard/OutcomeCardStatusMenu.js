@@ -98,7 +98,7 @@ const OutcomeCardStatusMenu = (props) => {
 
   return (
     <div className={styles.root}>
-      {buttonArray.map((btn, idx) => {
+      {isProject && buttonArray.map((btn, idx) => {
         const btnStatus = labels.projectStatus[btn];
         return (
           <div className={styles.column} key={idx}>

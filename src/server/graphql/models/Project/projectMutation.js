@@ -4,7 +4,7 @@ import {
   GraphQLNonNull,
   GraphQLBoolean,
   GraphQLString,
-GraphQLID
+  GraphQLID
 } from 'graphql';
 import {requireSUOrTeamMember} from '../authorization';
 import rebalanceProject from './rebalanceProject';
@@ -117,7 +117,10 @@ export default {
         sortOrder: 0,
         agendaId: project.agendaId
       };
-      await r.table('Action').insert(newAction);
+      await r.table('Action').insert(newAction)
+        .do(() => {
+          return r.table('Project').delete(projectId);
+        });
     }
   }
 };

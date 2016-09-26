@@ -115,8 +115,8 @@ export default {
         agendaId: action.agendaId
       };
       await r.table('Project').insert(newProject)
-        .do((project) => {
-          return r.table('Action').delete(actionId)
+        .do(() => {
+          return r.table('Action').delete(actionId);
         });
     }
   }

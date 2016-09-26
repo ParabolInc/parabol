@@ -12,6 +12,10 @@ query {
     createdAt
     updatedAt
     teamMemberId
+    teamMember @cached(type: "TeamMember") {
+      picture
+      preferredName
+    }
     agendaId
     ... on Project {
       status
@@ -25,13 +29,13 @@ query {
 
 const mapStateToProps = (state, props) => {
   const {agendaId} = props;
-  console.log('agendaId', agendaId);
   const {outcomes} = cashay.query(meetingAgendaCardsQuery, {
     op: 'meetingAgendaCardsContainer',
     key: agendaId,
     variables: {agendaId},
     resolveCached: {
-      outcomes: (source, args) => (doc) => doc.agendaId === args.id
+      outcomes: (source, args) => (doc) => doc.agendaId === args.id,
+      teamMember: (source) => source.teamMemberId
     },
     sort: {
       outcomes: (a, b) => a.createdAt > b.createdAt
