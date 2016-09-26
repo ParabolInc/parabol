@@ -10,6 +10,7 @@ import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
 import OutcomeCardTextareaContainer from 'universal/modules/teamDashboard/containers/OutcomeCardTextarea/OutcomeCardTextareaContainer';
 import OutcomeCardFooter from 'universal/components/OutcomeCard/OutcomeCardFooter';
 import OutcomeCardStatusMenu from 'universal/components/OutcomeCard/OutcomeCardStatusMenu';
+import throttle from 'lodash.throttle';
 
 const OPEN_CONTENT_MENU = 'TeamProjectCard/openContentMenu';
 const OPEN_ASSIGN_MENU = 'TeamProjectCard/openAssignMenu';
@@ -87,6 +88,28 @@ export default class TeamProjectCard extends Component {
     this.setState({openMenu: OPEN_CONTENT_MENU});
   };
 
+  handleCardUpdate = throttle((submittedData) => {
+    const {id: projectId, content} = this.props.project;
+    const submittedContent = submittedData[projectId];
+    if (submittedContent !== content) {
+      // strictly for undefined to delete a card if & only if it never had a value in it
+      if (submittedContent === undefined) {
+        // delete blank cards
+        cashay.mutate('deleteProject', {variables: {projectId}});
+      } else {
+        const options = {
+          variables: {
+            updatedProject: {
+              id: projectId,
+              content: submittedContent
+            }
+          }
+        };
+        cashay.mutate('updateProject', options);
+      }
+    }
+  }, 300);
+
   render() {
     const {openMenu} = this.state;
     const {
@@ -112,26 +135,8 @@ export default class TeamProjectCard extends Component {
       };
       cashay.mutate('edit', options);
     };
-    const handleCardUpdate = (submittedData) => {
-      const submittedContent = submittedData[projectId];
-      if (submittedContent !== content) {
-        // strictly for undefined to delete a card if & only if it never had a value in it
-        if (submittedContent === undefined) {
-          // delete blank cards
-          cashay.mutate('deleteProject', {variables: {projectId}});
-        } else {
-          const options = {
-            variables: {
-              updatedProject: {
-                id: projectId,
-                content: submittedContent
-              }
-            }
-          };
-          cashay.mutate('updateProject', options);
-        }
-      }
-    };
+
+
     const handleStatusClick = isArchived ? this.unarchiveCard : this.toggleStatusMenu;
     return (
       <OutcomeCard
@@ -156,7 +161,7 @@ export default class TeamProjectCard extends Component {
                 name={projectId}
                 component={OutcomeCardTextareaContainer}
                 handleActive={handleCardActive}
-                handleSubmit={handleSubmit(handleCardUpdate)}
+                handleSubmit={handleSubmit(this.handleCardUpdate)}
                 isArchived={isArchived}
                 isProject={isProject}
                 outcome={project}

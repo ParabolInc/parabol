@@ -130,24 +130,24 @@ const OutcomeCardStatusMenu = (props) => {
       }
       {isAgenda &&
         (isProject ?
-        <div className={styles.buttonBlock}>
-          <OutcomeCardMenuButton
-            icon="calendar-check-o"
-            label={moveToActionsLabel}
-            onClick={toggleOutcomeType}
-            status="active"
-            title="Move to Actions"
-          />
-        </div> :
-        <div className={styles.buttonBlock}>
-          <OutcomeCardMenuButton
-            icon="calendar"
-            label={moveToProjectsLabel}
-            onClick={toggleOutcomeType}
-            status="active"
-            title="Move to Projects"
-          />
-        </div>)
+          <div className={styles.buttonBlock}>
+            <OutcomeCardMenuButton
+              icon="calendar-check-o"
+              label={moveToActionsLabel}
+              onClick={toggleOutcomeType}
+              status="active"
+              title="Move to Actions"
+            />
+          </div> :
+          <div className={styles.buttonBlock}>
+            <OutcomeCardMenuButton
+              icon="calendar"
+              label={moveToProjectsLabel}
+              onClick={toggleOutcomeType}
+              status="active"
+              title="Move to Projects"
+            />
+          </div>)
       }
     </div>
   );
@@ -155,7 +155,9 @@ const OutcomeCardStatusMenu = (props) => {
 
 OutcomeCardStatusMenu.propTypes = {
   outcome: PropTypes.object,
+  isAgenda: PropTypes.bool,
   isProject: PropTypes.bool,
+  onComplete: PropTypes.func
 };
 
 styles = StyleSheet.create({

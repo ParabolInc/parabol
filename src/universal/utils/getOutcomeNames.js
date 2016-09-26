@@ -12,5 +12,6 @@ export default function getOutcomeNames(outcome, mutation) {
     {argName: 'projectId', mutationName: 'makeAction'} :
     {argName: 'actionId', mutationName: 'makeProject'};
   }
+  return undefined;
 }
 

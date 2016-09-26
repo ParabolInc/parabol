@@ -97,6 +97,7 @@
     "isomorphic-fetch": "2.2.1",
     "jsonwebtoken": "^7.1.9",
     "jwt-decode": "^2.1.0",
+    "lodash.throttle": "^4.1.1",
     "mailcomposer": "^3.12.0",
     "mailgun-js": "^0.7.12",
     "ms": "^0.7.1",

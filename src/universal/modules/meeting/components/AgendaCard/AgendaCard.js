@@ -79,7 +79,7 @@ export default class AgendaCard extends Component {
       handleSubmit,
       outcome,
     } = this.props;
-    const {type, content, id: outcomeId} = outcome;
+    const {type, id: outcomeId} = outcome;
     const isProject = type === 'Project';
     const status = outcome.status || 'active';
     const hasOpenStatusMenu = openMenu === OPEN_STATUS_MENU;
@@ -103,7 +103,7 @@ export default class AgendaCard extends Component {
       if (!submittedContent) {
         const {argName, mutationName} = getOutcomeNames(outcome, 'delete');
         // delete blank cards
-        cashay.mutate(mutationName, {variables: {[argName]: outcomeId}})
+        cashay.mutate(mutationName, {variables: {[argName]: outcomeId}});
       } else {
         // TODO debounce for useless things like ctrl, shift, etc
         const {argName, mutationName} = getOutcomeNames(outcome, 'update');
@@ -117,7 +117,7 @@ export default class AgendaCard extends Component {
         };
         cashay.mutate(mutationName, options);
       }
-    }
+    };
 
     return (
       <OutcomeCard
@@ -128,33 +128,33 @@ export default class AgendaCard extends Component {
       >
         {/* card main */}
         {hasOpenAssignMenu &&
-        <OutcomeCardAssignMenuContainer
-          onComplete={this.closeMenu}
-          outcome={outcome}
-        />
+          <OutcomeCardAssignMenuContainer
+            onComplete={this.closeMenu}
+            outcome={outcome}
+          />
         }
         {hasOpenStatusMenu &&
-        <OutcomeCardStatusMenu
-          isAgenda
-          isProject={isProject}
-          onComplete={this.closeMenu}
-          outcome={outcome}
-        />
+          <OutcomeCardStatusMenu
+            isAgenda
+            isProject={isProject}
+            onComplete={this.closeMenu}
+            outcome={outcome}
+          />
         }
         {!hasOpenAssignMenu && !hasOpenStatusMenu &&
-        <div className={styles.body}>
-          <form>
-            <Field
-              cardHasHover={this.state.cardHasHover}
-              component={OutcomeCardTextareaContainer}
-              handleActive={handleCardActive}
-              handleSubmit={handleSubmit(handleAgendaCardUpdate)}
-              isProject={isProject}
-              name={outcomeId}
-              outcome={outcome}
-            />
-          </form>
-        </div>
+          <div className={styles.body}>
+            <form>
+              <Field
+                cardHasHover={this.state.cardHasHover}
+                component={OutcomeCardTextareaContainer}
+                handleActive={handleCardActive}
+                handleSubmit={handleSubmit(handleAgendaCardUpdate)}
+                isProject={isProject}
+                name={outcomeId}
+                outcome={outcome}
+              />
+            </form>
+          </div>
         }
         {/* card footer */}
         <OutcomeCardFooter
