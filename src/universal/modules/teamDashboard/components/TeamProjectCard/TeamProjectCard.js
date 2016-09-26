@@ -115,9 +115,10 @@ export default class TeamProjectCard extends Component {
     const handleCardUpdate = (submittedData) => {
       const submittedContent = submittedData[projectId];
       if (submittedContent !== content) {
-        if (!submittedContent) {
+        // strictly for undefined to delete a card if & only if it never had a value in it
+        if (submittedContent === undefined) {
           // delete blank cards
-          cashay.mutate('deleteProject', {variables: {projectId}})
+          cashay.mutate('deleteProject', {variables: {projectId}});
         } else {
           const options = {
             variables: {

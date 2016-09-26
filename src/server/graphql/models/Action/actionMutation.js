@@ -83,7 +83,7 @@ export default {
       // format of id is teamId::taskIdPart
       const [teamId] = actionId.split('::');
       requireSUOrTeamMember(authToken, teamId);
-      await r.table('Action').delete(actionId);
+      await r.table('Action').get(actionId).delete();
     }
   },
   makeProject: {
@@ -116,7 +116,7 @@ export default {
       };
       await r.table('Project').insert(newProject)
         .do(() => {
-          return r.table('Action').delete(actionId);
+          return r.table('Action').get(actionId).delete();
         });
     }
   }

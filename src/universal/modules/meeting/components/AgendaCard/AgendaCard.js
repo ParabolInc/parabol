@@ -85,7 +85,9 @@ export default class AgendaCard extends Component {
     const hasOpenStatusMenu = openMenu === OPEN_STATUS_MENU;
     const hasOpenAssignMenu = openMenu === OPEN_ASSIGN_MENU;
     const handleCardActive = (isActive) => {
-      if (isActive === undefined) { return; }
+      if (isActive === undefined) {
+        return;
+      }
       const [teamId] = outcomeId.split('::');
       const editing = isActive ? `Task::${outcomeId}` : null;
       const options = {
@@ -96,10 +98,15 @@ export default class AgendaCard extends Component {
       };
       cashay.mutate('edit', options);
     };
-    const handleCardUpdate = (submittedData) => {
-      const {argName, mutationName} = getOutcomeNames(outcome, 'update');
+    const handleAgendaCardUpdate = (submittedData) => {
       const submittedContent = submittedData[outcomeId];
-      if (submittedContent !== content) {
+      if (!submittedContent) {
+        const {argName, mutationName} = getOutcomeNames(outcome, 'delete');
+        // delete blank cards
+        cashay.mutate(mutationName, {variables: {[argName]: outcomeId}})
+      } else {
+        // TODO debounce for useless things like ctrl, shift, etc
+        const {argName, mutationName} = getOutcomeNames(outcome, 'update');
         const options = {
           variables: {
             [argName]: {
@@ -110,7 +117,7 @@ export default class AgendaCard extends Component {
         };
         cashay.mutate(mutationName, options);
       }
-    };
+    }
 
     return (
       <OutcomeCard
@@ -121,33 +128,33 @@ export default class AgendaCard extends Component {
       >
         {/* card main */}
         {hasOpenAssignMenu &&
-          <OutcomeCardAssignMenuContainer
-            onComplete={this.closeMenu}
-            outcome={outcome}
-          />
+        <OutcomeCardAssignMenuContainer
+          onComplete={this.closeMenu}
+          outcome={outcome}
+        />
         }
         {hasOpenStatusMenu &&
-          <OutcomeCardStatusMenu
-            isAgenda
-            isProject={isProject}
-            onComplete={this.closeMenu}
-            outcome={outcome}
-          />
+        <OutcomeCardStatusMenu
+          isAgenda
+          isProject={isProject}
+          onComplete={this.closeMenu}
+          outcome={outcome}
+        />
         }
         {!hasOpenAssignMenu && !hasOpenStatusMenu &&
-          <div className={styles.body}>
-            <form>
-              <Field
-                cardHasHover={this.state.cardHasHover}
-                component={OutcomeCardTextareaContainer}
-                handleActive={handleCardActive}
-                handleSubmit={handleSubmit(handleCardUpdate)}
-                isProject={isProject}
-                name={outcomeId}
-                outcome={outcome}
-              />
-            </form>
-          </div>
+        <div className={styles.body}>
+          <form>
+            <Field
+              cardHasHover={this.state.cardHasHover}
+              component={OutcomeCardTextareaContainer}
+              handleActive={handleCardActive}
+              handleSubmit={handleSubmit(handleAgendaCardUpdate)}
+              isProject={isProject}
+              name={outcomeId}
+              outcome={outcome}
+            />
+          </form>
+        </div>
         }
         {/* card footer */}
         <OutcomeCardFooter

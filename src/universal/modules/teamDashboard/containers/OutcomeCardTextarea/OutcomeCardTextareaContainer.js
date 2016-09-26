@@ -7,7 +7,7 @@ import OutcomeCardTextarea from 'universal/components/OutcomeCard/OutcomeCardTex
 
 const outcomeCardTextareaQuery = `
 query {
-  editors @cached(id: $projectId, type: "[Presence]") {
+  editors @cached(id: $outcomeId, type: "[Presence]") {
     id
     userId
     editing
