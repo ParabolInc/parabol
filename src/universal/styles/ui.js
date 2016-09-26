@@ -12,6 +12,7 @@ const ui = {
   dashBorderColor: 'rgba(0, 0, 0, .1)',
   dashGutter: '1rem',
   dashSectionHeaderLineHeight: '1.875rem',
+  emailBackgroundColor: '#F9FAFB',
   iconSize: '14px', // FontAwesome base
   iconSize2x: '28px', // FontAwesome 2x
   projectColumnsMaxWidth: '80rem',

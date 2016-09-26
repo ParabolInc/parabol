@@ -1,10 +1,11 @@
 import React from 'react';
 import EmptySpace from '../EmptySpace/EmptySpace';
 import theme from 'universal/styles/theme';
+import ui from 'universal/styles/ui';
 
 const Footer = (props) => {
   const style = {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: ui.emailBackgroundColor,
     color: props.color
   };
 
