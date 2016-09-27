@@ -4,6 +4,7 @@ import {cashay} from 'cashay';
 import makeProjectsByStatus from 'universal/utils/makeProjectsByStatus';
 import {USER_DASH} from 'universal/utils/constants';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
+import makeAllProjects from 'universal/utils/makeAllProjects';
 
 // TODO this is a sign that cashay is missing something. how do we request a LIST of just projects?
 const userColumnsQuery = `
@@ -23,12 +24,14 @@ query {
 }
 `;
 
+// memoized
 const resolveUserProjects = (teams) => {
-  const allProjects = teams.map(team => team.projects).reduce((arr, projects) => {
-    arr.push(...projects);
-    return arr;
-  }, []);
-  return makeProjectsByStatus(allProjects, 'userSort');
+  if (teams !== resolveUserProjects.teams) {
+    resolveUserProjects.teams = teams;
+    const allProjects = makeAllProjects(teams);
+    resolveUserProjects.cache = makeProjectsByStatus(allProjects, 'userSort');
+  }
+  return resolveUserProjects.cache;
 };
 
 const mapStateToProps = (state) => {

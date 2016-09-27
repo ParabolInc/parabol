@@ -7,14 +7,19 @@ const handleRethinkAdd = newVal => {
   };
 };
 
-const handleRethinkRemove = id => {
+const handleRethinkRemove = (doc, removalFields = ['id']) => {
+  const fields = {};
+  for (let i = 0; i < removalFields.length; i++) {
+    const removalField = removalFields[i];
+    fields[removalField] = doc[removalField];
+  }
   return {
     type: 'remove',
-    id
+    fields
   };
 };
 
-const handleRethinkUpdate = (doc, path) => {
+const handleRethinkUpdate = (doc) => {
   const oldVals = doc.old_val;
   const newVals = doc.new_val;
   const oldFields = Object.keys(oldVals);
@@ -44,29 +49,26 @@ const handleRethinkUpdate = (doc, path) => {
   if (removeKeys.length) {
     payload.removeKeys = removeKeys;
   }
-  if (path) {
-    payload.path = `${path}[${oldVals.id}]`;
-  }
   return payload;
 };
 
-const handleRethinkChangefeed = (doc, path) => {
+const handleRethinkChangefeed = (doc, removalFields) => {
   if (!doc.old_val || Object.keys(doc.old_val).length === 0) {
     return handleRethinkAdd(doc.new_val);
   } else if (!doc.new_val || Object.keys(doc.new_val).length === 0) {
-    return handleRethinkRemove(doc.old_val.id);
+    return handleRethinkRemove(doc.old_val, removalFields);
   }
-  return handleRethinkUpdate(doc, path);
+  return handleRethinkUpdate(doc);
 };
 
 
 export default function makeChangefeedHandler(socket, subbedChannelName, options = {}) {
-  const {path} = options;
+  const {removalFields} = options;
   return (err, cursor) => {
     if (err) throw err;
     cursor.each((error, data) => {
       if (error) throw error;
-      const payload = handleRethinkChangefeed(data, path);
+      const payload = handleRethinkChangefeed(data, removalFields);
       socket.emit(subbedChannelName, payload);
     });
     socket.on('unsubscribe', channelName => {

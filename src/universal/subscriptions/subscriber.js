@@ -9,7 +9,7 @@ export default function subscriber(channel, key, handlers) {
     if (data.type === 'add') {
       upsert(data.fields);
     } else if (data.type === 'remove') {
-      remove(data.id);
+      remove(data.fields);
     } else {
       update(data.fields, {removeKeys: data.removeKeys});
     }

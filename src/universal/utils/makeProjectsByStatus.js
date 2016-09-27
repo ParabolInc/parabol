@@ -12,6 +12,7 @@ export default function makeProjectsByStatus(projects, sortOrder) {
     const project = projects[i];
     projectsByStatus[project.status].push(project);
   }
+
   for (let i = 0; i < columnArray.length; i++) {
     const status = columnArray[i];
     projectsByStatus[status].sort((a, b) => a[sortOrder] > b[sortOrder]);

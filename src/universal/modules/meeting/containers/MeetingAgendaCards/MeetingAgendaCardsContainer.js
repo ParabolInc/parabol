@@ -12,6 +12,10 @@ query {
     createdAt
     updatedAt
     teamMemberId
+    teamMember @cached(type: "TeamMember") {
+      picture
+      preferredName
+    }
     agendaId
     ... on Project {
       status
@@ -25,13 +29,13 @@ query {
 
 const mapStateToProps = (state, props) => {
   const {agendaId} = props;
-  console.log('agendaId', agendaId);
   const {outcomes} = cashay.query(meetingAgendaCardsQuery, {
     op: 'meetingAgendaCardsContainer',
     key: agendaId,
     variables: {agendaId},
     resolveCached: {
-      outcomes: (source, args) => (doc) => doc.agendaId === args.id
+      outcomes: (source, args) => (doc) => doc.agendaId === args.id,
+      teamMember: (source) => source.teamMemberId
     },
     sort: {
       outcomes: (a, b) => a.createdAt > b.createdAt
@@ -43,11 +47,22 @@ const mapStateToProps = (state, props) => {
 };
 
 const MeetingAgendaCardsContainer = (props) => {
-  return <MeetingAgendaCards {...props}/>;
+  const {agendaId, dispatch, myTeamMemberId, outcomes} = props;
+  return (
+    <MeetingAgendaCards
+      agendaId={agendaId}
+      myTeamMemberId={myTeamMemberId}
+      outcomes={outcomes}
+      dispatch={dispatch}
+    />
+  );
 };
 
 MeetingAgendaCardsContainer.propTypes = {
-  outcomes: PropTypes.array.isRequired,
+  agendaId: PropTypes.string,
+  dispatch: PropTypes.func,
+  myTeamMemberId: PropTypes.string,
+  outcomes: PropTypes.array.isRequired
 };
 
 export default connect(mapStateToProps)(MeetingAgendaCardsContainer);

@@ -6,23 +6,24 @@ import labels from 'universal/styles/theme/labels';
 import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
 import OutcomeCardAssignMenuContainer
   from 'universal/modules/teamDashboard/containers/OutcomeCardAssignMenu/OutcomeCardAssignMenuContainer';
+
 import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
 import OutcomeCardTextareaContainer from 'universal/modules/teamDashboard/containers/OutcomeCardTextarea/OutcomeCardTextareaContainer';
 import OutcomeCardFooter from 'universal/components/OutcomeCard/OutcomeCardFooter';
 import OutcomeCardStatusMenu from 'universal/components/OutcomeCard/OutcomeCardStatusMenu';
-import throttle from 'lodash.throttle';
+import getOutcomeNames from 'universal/utils/getOutcomeNames';
 
-const OPEN_CONTENT_MENU = 'TeamProjectCard/openContentMenu';
-const OPEN_ASSIGN_MENU = 'TeamProjectCard/openAssignMenu';
-const OPEN_STATUS_MENU = 'TeamProjectCard/openStatusMenu';
+const OPEN_CONTENT_MENU = 'AgendaCard/openContentMenu';
+const OPEN_ASSIGN_MENU = 'AgendaCard/openAssignMenu';
+const OPEN_STATUS_MENU = 'AgendaCard/openStatusMenu';
 
 let styles = {};
 
 @reduxForm()
 @look
-export default class TeamProjectCard extends Component {
+export default class AgendaCard extends Component {
   componentWillMount() {
-    const {project: {content}, dispatch, field, form} = this.props;
+    const {outcome: {content}, dispatch, field, form} = this.props;
     this.state = {
       cardHasHover: false,
       openMenu: OPEN_CONTENT_MENU
@@ -36,8 +37,8 @@ export default class TeamProjectCard extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {content} = this.props.project;
-    const nextContent = nextProps.project.content;
+    const {content} = this.props.outcome;
+    const nextContent = nextProps.outcome.content;
     if (nextContent !== content) {
       this.initializeValues(nextContent);
     }
@@ -52,7 +53,7 @@ export default class TeamProjectCard extends Component {
   }
 
   initializeValues(content) {
-    const {dispatch, form, project: {id}} = this.props;
+    const {dispatch, form, outcome: {id}} = this.props;
     dispatch(initialize(form, {[id]: content}));
   }
 
@@ -63,70 +64,32 @@ export default class TeamProjectCard extends Component {
   };
 
   toggleAssignMenu = () => {
-    // REVIEW: next line a bad way to disable assign menu for archived cards? (TA)
-    if (this.props.isArchived) return;
-
     const {openMenu} = this.state;
     const nextOpenMenu = openMenu === OPEN_ASSIGN_MENU ? OPEN_CONTENT_MENU : OPEN_ASSIGN_MENU;
     this.setState({openMenu: nextOpenMenu});
-  };
-
-  unarchiveCard = () => {
-    const {project} = this.props;
-    const options = {
-      variables: {
-        updatedProject: {
-          id: project.id,
-          isArchived: false
-        }
-      }
-    };
-    cashay.mutate('updateProject', options);
   };
 
   closeMenu = () => {
     this.setState({openMenu: OPEN_CONTENT_MENU});
   };
 
-  handleCardUpdate = throttle((submittedData) => {
-    const {id: projectId, content} = this.props.project;
-    const submittedContent = submittedData[projectId];
-    if (submittedContent !== content) {
-      // strictly for undefined to delete a card if & only if it never had a value in it
-      if (submittedContent === undefined) {
-        // delete blank cards
-        cashay.mutate('deleteProject', {variables: {projectId}});
-      } else {
-        const options = {
-          variables: {
-            updatedProject: {
-              id: projectId,
-              content: submittedContent
-            }
-          }
-        };
-        cashay.mutate('updateProject', options);
-      }
-    }
-  }, 300);
-
   render() {
     const {openMenu} = this.state;
     const {
       handleSubmit,
-      project,
-      isArchived,
-      isProject,
+      outcome,
     } = this.props;
-    const {content, status, id: projectId} = project;
+    const {type, id: outcomeId} = outcome;
+    const isProject = type === 'Project';
+    const status = outcome.status || 'active';
     const hasOpenStatusMenu = openMenu === OPEN_STATUS_MENU;
     const hasOpenAssignMenu = openMenu === OPEN_ASSIGN_MENU;
     const handleCardActive = (isActive) => {
       if (isActive === undefined) {
         return;
       }
-      const [teamId] = projectId.split('::');
-      const editing = isActive ? `Task::${projectId}` : null;
+      const [teamId] = outcomeId.split('::');
+      const editing = isActive ? `Task::${outcomeId}` : null;
       const options = {
         variables: {
           teamId,
@@ -135,12 +98,29 @@ export default class TeamProjectCard extends Component {
       };
       cashay.mutate('edit', options);
     };
+    const handleAgendaCardUpdate = (submittedData) => {
+      const submittedContent = submittedData[outcomeId];
+      if (!submittedContent) {
+        const {argName, mutationName} = getOutcomeNames(outcome, 'delete');
+        // delete blank cards
+        cashay.mutate(mutationName, {variables: {[argName]: outcomeId}});
+      } else {
+        // TODO debounce for useless things like ctrl, shift, etc
+        const {argName, mutationName} = getOutcomeNames(outcome, 'update');
+        const options = {
+          variables: {
+            [argName]: {
+              id: outcomeId,
+              content: submittedContent
+            }
+          }
+        };
+        cashay.mutate(mutationName, options);
+      }
+    };
 
-
-    const handleStatusClick = isArchived ? this.unarchiveCard : this.toggleStatusMenu;
     return (
       <OutcomeCard
-        isArchived={isArchived}
         isProject={isProject}
         onEnterCard={this.onEnterTeamProjectCard}
         onLeaveCard={this.onLeaveTeamProjectCard}
@@ -150,23 +130,28 @@ export default class TeamProjectCard extends Component {
         {hasOpenAssignMenu &&
           <OutcomeCardAssignMenuContainer
             onComplete={this.closeMenu}
-            outcome={project}
+            outcome={outcome}
           />
         }
-        {hasOpenStatusMenu && <OutcomeCardStatusMenu isProject={isProject} outcome={project}/>}
+        {hasOpenStatusMenu &&
+          <OutcomeCardStatusMenu
+            isAgenda
+            isProject={isProject}
+            onComplete={this.closeMenu}
+            outcome={outcome}
+          />
+        }
         {!hasOpenAssignMenu && !hasOpenStatusMenu &&
           <div className={styles.body}>
             <form>
               <Field
-                name={projectId}
+                cardHasHover={this.state.cardHasHover}
                 component={OutcomeCardTextareaContainer}
                 handleActive={handleCardActive}
-                handleSubmit={handleSubmit(this.handleCardUpdate)}
-                isArchived={isArchived}
+                handleSubmit={handleSubmit(handleAgendaCardUpdate)}
                 isProject={isProject}
-                outcome={project}
-                doFocus={!content}
-                cardHasHover={this.state.cardHasHover}
+                name={outcomeId}
+                outcome={outcome}
               />
             </form>
           </div>
@@ -175,21 +160,19 @@ export default class TeamProjectCard extends Component {
         <OutcomeCardFooter
           cardHasHover={this.state.cardHasHover}
           hasOpenStatusMenu={hasOpenStatusMenu}
-          isArchived={isArchived}
           isProject={isProject}
-          owner={project.teamMember}
-          outcome={project}
+          owner={outcome.teamMember}
           status={status}
           toggleAssignMenu={this.toggleAssignMenu}
-          handleStatusClick={handleStatusClick}
+          handleStatusClick={this.toggleStatusMenu}
         />
       </OutcomeCard>
     );
   }
 }
 
-TeamProjectCard.propTypes = {
-  project: PropTypes.shape({
+AgendaCard.propTypes = {
+  outcome: PropTypes.shape({
     id: PropTypes.string,
     content: PropTypes.string,
     status: PropTypes.oneOf(labels.projectStatus.slugs),
@@ -202,7 +185,6 @@ TeamProjectCard.propTypes = {
   focus: PropTypes.func,
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,
-  isArchived: PropTypes.bool,
   isProject: PropTypes.bool,
   owner: PropTypes.object,
   teamMembers: PropTypes.array,
@@ -210,11 +192,10 @@ TeamProjectCard.propTypes = {
   handleSubmit: PropTypes.func,
 };
 
-TeamProjectCard.defaultProps = {
+AgendaCard.defaultProps = {
   status: labels.projectStatus.active.slug,
   hasOpenAssignMenu: false,
   hasOpenStatusMenu: false,
-  isArchived: false,
   isProject: true,
   owner: {
     preferredName: 'Taya Mueller',

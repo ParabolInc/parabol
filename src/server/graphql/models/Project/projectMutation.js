@@ -3,7 +3,8 @@ import {CreateProjectInput, UpdateProjectInput} from './projectSchema';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
-  GraphQLString
+  GraphQLString,
+  GraphQLID
 } from 'graphql';
 import {requireSUOrTeamMember} from '../authorization';
 import rebalanceProject from './rebalanceProject';
@@ -70,6 +71,56 @@ export default {
         updatedAt: now
       };
       await r.table('Project').insert(project);
+    }
+  },
+  deleteProject: {
+    type: GraphQLBoolean,
+    description: 'Delete (not archive!) a project',
+    args: {
+      projectId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The projectId (teamId::shortid) to delete'
+      }
+    },
+    async resolve(source, {projectId}, {authToken}) {
+      // format of id is teamId::taskIdPart
+      const [teamId] = projectId.split('::');
+      requireSUOrTeamMember(authToken, teamId);
+      await r.table('Project').get(projectId).delete();
+    }
+  },
+  makeAction: {
+    type: GraphQLBoolean,
+    description: 'Turn a project into an action',
+    args: {
+      projectId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The projectId (teamId::shortid) to delete'
+      }
+    },
+    async resolve(source, {projectId}, {authToken}) {
+      // format of id is teamId::taskIdPart
+      const [teamId] = projectId.split('::');
+      requireSUOrTeamMember(authToken, teamId);
+      const project = await r.table('Project').get(projectId);
+      const now = new Date();
+      const [userId] = project.teamMemberId.split('::');
+      const newAction = {
+        id: projectId,
+        content: project.content,
+        userId,
+        teamMemberId: project.teamMemberId,
+        isComplete: false,
+        isActive: true,
+        createdAt: project.createdAt,
+        updatedAt: now,
+        sortOrder: 0,
+        agendaId: project.agendaId
+      };
+      await r.table('Action').insert(newAction)
+        .do(() => {
+          return r.table('Project').get(projectId).delete();
+        });
     }
   }
 };

@@ -25,7 +25,6 @@ query {
 //       const projectIdx = currentResponse.archivedProjects.findIndex(p => p.id === projectId);
 //       if (projectIdx !== -1) {
 //         currentResponse.archivedProjects.splice(projectIdx, 1);
-//         debugger
 //         return currentResponse;
 //       }
 //     }

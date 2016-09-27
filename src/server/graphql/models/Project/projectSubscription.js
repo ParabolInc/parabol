@@ -19,7 +19,8 @@ export default {
       const [, teamId] = teamMemberId.split('::');
       requireSUOrTeamMember(authToken, teamId);
       const requestedFields = getRequestedFields(refs);
-      const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
+      const removalFields = ['id', 'teamMemberId'];
+      const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName, {removalFields});
       r.table('Project')
         .getAll(teamMemberId, {index: 'teamMemberId'})
         .filter({isArchived: false})
