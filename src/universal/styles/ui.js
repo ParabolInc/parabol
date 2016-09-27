@@ -5,6 +5,7 @@ import theme from 'universal/styles/theme';
 
 const ui = {
   actionCardBgColor: theme.palette.light60l,
+  actionCardBgActive: 'rgba(255, 255, 255, .85)',
   cardBorderColor: theme.palette.mid30l,
   cardBorderRadius: '.25rem',
   cardMinHeight: '7.5rem',

@@ -23,7 +23,7 @@ const descriptionFA = {
 };
 
 const descriptionActionFA = {
-  backgroundColor: 'rgba(255, 255, 255, .85)',
+  backgroundColor: ui.actionCardBgActive,
   borderBottomColor: ui.cardBorderColor,
   borderTopColor: ui.cardBorderColor,
   color: theme.palette.mid10d
