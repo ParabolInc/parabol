@@ -191,11 +191,11 @@ projects can be created and TMs can request what they need of each other.
 for a TM, they want to add it to the agenda, so that they have an opportunity
 to get what they need.
 
-- [ ] When the meeting advances from agenda item to agenda item, the F will
+- [X] When the meeting advances from agenda item to agenda item, the F will
 want to know what to say ("what do you need?") and the TM will want to be
 able to process the agenda item into new projects or actions.
 
-- [ ] When the TM has created a project or action by mistake, the TM will
+- [X] When the TM has created a project or action by mistake, the TM will
 want a control for deleting or canceling it, so that they don't add to the
 noise of the team.
 

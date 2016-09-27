@@ -4,6 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.6.2 - 27-Sep-2016
+### Added
+- Processing of agenda items during meeting into new projects and actions
+
+### Fixed
+- Add/remove rethinkdb entity from cache problem, see: https://github.com/mattkrick/cashay/issues/125
+- Editors multiplayer field regression
+
 ## v0.6.1 - 23-Sep-2016
 ### Added
 - Now supports removal of agenda items
