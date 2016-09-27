@@ -11,7 +11,7 @@ import OutcomeCardTextareaContainer from 'universal/modules/teamDashboard/contai
 import OutcomeCardFooter from 'universal/components/OutcomeCard/OutcomeCardFooter';
 import OutcomeCardStatusMenu from 'universal/components/OutcomeCard/OutcomeCardStatusMenu';
 import throttle from 'lodash.throttle';
-
+import {USER_DASH} from 'universal/utils/constants'
 const OPEN_CONTENT_MENU = 'TeamProjectCard/openContentMenu';
 const OPEN_ASSIGN_MENU = 'TeamProjectCard/openAssignMenu';
 const OPEN_STATUS_MENU = 'TeamProjectCard/openStatusMenu';
@@ -113,6 +113,7 @@ export default class TeamProjectCard extends Component {
   render() {
     const {openMenu} = this.state;
     const {
+      area,
       handleSubmit,
       project,
       isArchived,
@@ -179,6 +180,7 @@ export default class TeamProjectCard extends Component {
           isProject={isProject}
           owner={project.teamMember}
           outcome={project}
+          showTeam={area === USER_DASH}
           status={status}
           toggleAssignMenu={this.toggleAssignMenu}
           handleStatusClick={handleStatusClick}
