@@ -15,7 +15,7 @@ const iconStyle = {
   fontSize: ui.iconSize,
   height,
   lineHeight,
-  marginRight: '.25rem',
+  marginRight: '.3125rem',
   textAlign: 'center',
   verticalAlign: 'middle',
   width: '1rem'
@@ -23,11 +23,11 @@ const iconStyle = {
 
 const UserActionListEmpty = (props) => {
   const {styles} = UserActionListEmpty;
-  const {onCreateNewAction} = props;
+  const {onAddNewAction} = props;
   return (
     <div className={styles.root}>
-      <FontAwesome name="plus-circle" onClick={onCreateNewAction} style={iconStyle} />
-      <Type bold display="inlineBlock" lineHeight={lineHeight} onClick={onCreateNewAction} scale="s3" width="auto">
+      <FontAwesome name="plus-circle" onClick={onAddNewAction} style={iconStyle} />
+      <Type bold display="inlineBlock" lineHeight={lineHeight} onClick={onAddNewAction} scale="s3" width="auto">
         Add New Action
       </Type>
     </div>
@@ -35,7 +35,7 @@ const UserActionListEmpty = (props) => {
 };
 
 UserActionListEmpty.propTypes = {
-  onCreateNewAction: PropTypes.func
+  onAddNewAction: PropTypes.func
 };
 
 UserActionListEmpty.styles = StyleSheet.create({

@@ -5,13 +5,24 @@ import {cardBorderTop} from 'universal/styles/helpers';
 import UserActionListEmpty from './UserActionListEmpty';
 import UserActionListHeader from './UserActionListHeader';
 import UserActionListItem from './UserActionListItem';
+import UserActionListTeamSelect from './UserActionListTeamSelect';
 
 const UserActionList = (props) => {
   const {styles} = UserActionList;
-  // const {actions} = props;
 
-  // Sample actions for dev hackery
+  // TODO: get the real actions array here:
+  // const {actions, isAdding} = props;
+  const {isAdding} = props;
+
+  // Sample actions array for dev hackery
   const actions = [
+    // {
+    //   content: 'New action added on top of previous actions, after selecting a team if more than one team',
+    //   id: '000',
+    //   isEditing: true,
+    //   team: 'Parabol',
+    //   updatedAt: 'Just Now'
+    // },
     {
       content: 'PR merged',
       id: '001',
@@ -22,7 +33,7 @@ const UserActionList = (props) => {
     {
       content: 'UI iterated',
       id: '002',
-      isEditing: true,
+      isEditing: false,
       team: 'Parabol',
       updatedAt: 'Yesterday'
     },
@@ -42,16 +53,29 @@ const UserActionList = (props) => {
     }
   ];
 
+  const createNewAction = () =>
+    // TODO: if user is on many teams, show team select
+    //       otherwise autoFocus a brand new item at the top of the list
+    //       isAdding is now false and the Add New Control is showing.
+    //       Why? As soon as they are done editing they can click the control again
+    //       to add another action. (TA)
+
+    // TODO: if it is the first action then the empty message dissappears,
+    //       only showing the focused new action item. (TA)
+
+    // TODO: if user blurs an empty textarea, delete the action (TA)
+    console.log('UserActionList.createNewAction()');
+
   const handleCheck = () =>
+    // TODO: item is set to [hidden for data insights?] —pop a toast to undo? (TA)
     console.log('UserActionList.handleCheck()');
 
   return (
     <div className={styles.root}>
       <div className={styles.block}>
-        <UserActionListHeader />
-        {actions.length === 0 ?
-          <UserActionListEmpty /> :
-          <div>
+        {isAdding ? <UserActionListTeamSelect /> : <UserActionListHeader onAddNewAction={createNewAction} />}
+        {actions.length ?
+          <div className={styles.actions}>
             {actions.map(item =>
               <UserActionListItem
                 content={item.content}
@@ -63,7 +87,8 @@ const UserActionList = (props) => {
               />
             )}
             <div className={styles.hr}></div>
-          </div>
+          </div> :
+          <div>{!isAdding && <UserActionListEmpty />}</div>
         }
       </div>
     </div>
@@ -71,7 +96,12 @@ const UserActionList = (props) => {
 };
 
 UserActionList.propTypes = {
-  actions: PropTypes.array
+  actions: PropTypes.array,
+  isAdding: PropTypes.bool
+};
+
+UserActionList.defaultProps = {
+  isAdding: true
 };
 
 UserActionList.styles = StyleSheet.create({
@@ -93,6 +123,10 @@ UserActionList.styles = StyleSheet.create({
     '::after': {
       ...cardBorderTop
     }
+  },
+
+  actions: {
+    width: '100%'
   },
 
   hr: {

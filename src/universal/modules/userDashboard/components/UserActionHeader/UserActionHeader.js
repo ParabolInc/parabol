@@ -1,19 +1,19 @@
 import React from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
-import ib from 'universal/styles/helpers/ib';
-import FontAwesome from 'react-fontawesome';
+// import ib from 'universal/styles/helpers/ib';
+// import FontAwesome from 'react-fontawesome';
 import {
-  DashSectionControls,
+  // DashSectionControls,
   DashSectionHeader,
   DashSectionHeading
 } from 'universal/components/Dashboard';
 
-const buttonStyle = {
-  ...ib,
-  fontSize: '28px',
-  lineHeight: 'inherit'
-};
+// const buttonStyle = {
+//   ...ib,
+//   fontSize: '28px',
+//   lineHeight: 'inherit'
+// };
 
 const buttonFH = {
   color: theme.palette.dark,
@@ -21,15 +21,15 @@ const buttonFH = {
 };
 
 const UserActionHeader = () => {
-  const {styles} = UserActionHeader;
+  // const {styles} = UserActionHeader;
   return (
     <DashSectionHeader>
       <DashSectionHeading icon="calendar-check-o" label="My Actions" />
-      <DashSectionControls>
+      {/* <DashSectionControls>
         <div className={styles.addButton}>
           <FontAwesome name="plus-square-o" style={buttonStyle} />
         </div>
-      </DashSectionControls>
+      </DashSectionControls> */}
     </DashSectionHeader>
   );
 };
