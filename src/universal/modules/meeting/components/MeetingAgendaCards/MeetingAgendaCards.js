@@ -53,11 +53,10 @@ const makeCards = (array, dispatch, myTeamMemberId) => {
 const makePlaceholders = (length) => {
   const rowLength = 4;
   const emptyCardCount = rowLength - (length % rowLength + 1);
-  const arr = new Array(emptyCardCount);
-  return arr.map(() =>
+  return new Array(emptyCardCount).fill(undefined).map((item, idx) =>
     <div
       className={s.item}
-      key={`CreateCardPlaceholder${i}`}
+      key={`CreateCardPlaceholder${idx}`}
     >
       <CreateCard />
     </div>);
