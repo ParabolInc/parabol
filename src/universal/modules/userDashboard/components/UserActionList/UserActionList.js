@@ -83,7 +83,6 @@ const UserActionList = (props) => {
                 isEditing={item.isEditing}
                 onChecked={handleCheck}
                 team={item.team}
-                updatedAt={item.updatedAt.toString()}
               />
             )}
             <div className={styles.hr}></div>

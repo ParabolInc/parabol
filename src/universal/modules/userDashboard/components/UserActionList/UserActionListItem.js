@@ -11,13 +11,13 @@ const labelHeight = '1.5rem';
 
 const UserActionListItem = (props) => {
   const {styles} = UserActionListItem;
-  const {content, id, isEditing, onChecked, team, updatedAt} = props;
+  const {content, id, isEditing, onChecked, team} = props;
   const checkboxStyles = isEditing ? combineStyles(styles.checkbox, styles.checkboxDisabled) : styles.checkbox;
   return (
     <div className={styles.root} key={`action${id}`}>
       <input className={checkboxStyles} disabled={isEditing} onClick={onChecked} type="checkbox" />
       <Textarea className={styles.content} value={content} autoFocus={isEditing} />
-      <div className={styles.team}>{team} • {updatedAt}</div>
+      <div className={styles.team}>{team}</div>
     </div>
   );
 };
@@ -27,8 +27,7 @@ UserActionListItem.propTypes = {
   id: PropTypes.string,
   isEditing: PropTypes.bool,
   onChecked: PropTypes.func,
-  team: PropTypes.string,
-  updatedAt: PropTypes.string
+  team: PropTypes.string
 };
 
 UserActionListItem.defaultProps = {
