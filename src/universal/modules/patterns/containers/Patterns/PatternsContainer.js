@@ -1,7 +1,8 @@
 import React from 'react';
 import Helmet from 'react-helmet';
 import {head} from 'universal/utils/clientOptions';
-import Type from 'universal/components/Type/Type';
+import {Menu, MenuToggle, Type} from 'universal/components';
+import FontAwesome from 'react-fontawesome';
 
 const makeLabel = (string) =>
   <Type bold family="monospace" marginBottom="1rem" scale="s2">{'<'}{string}{' />'}</Type>;
@@ -12,13 +13,28 @@ const style = {
   padding: '2rem'
 };
 
+const demoIconSize = '28px';
+
+const demoToggleStyle = {
+  display: 'block',
+  fontSize: demoIconSize,
+  height: demoIconSize,
+  lineHeight: demoIconSize
+};
+
+const demoToggle = (<FontAwesome name="plus-square-o" style={demoToggleStyle} />);
+
 const PatternsContainer = () =>
   <div style={style}>
     <Helmet title="Welcome to the Action Pattern Library" {...head} />
 
     <h1>Pattern Library</h1>
 
-    {makeLabel('Component Label')}
+    {makeLabel('MenuToggle')}
+    {makeLabel('Menu')}
+    <MenuToggle menuPosition="right" toggle={demoToggle}>
+      <Menu />
+    </MenuToggle>
 
   </div>;
 
