@@ -3,7 +3,8 @@ import {CreateActionInput, UpdateActionInput} from './actionSchema';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
-  GraphQLString
+  GraphQLString,
+  GraphQLID
 } from 'graphql';
 import {requireSUOrTeamMember} from '../authorization';
 import rebalanceAction from './rebalanceAction';
@@ -67,6 +68,56 @@ export default {
         updatedAt: now
       };
       await r.table('Action').insert(action);
+    }
+  },
+  deleteAction: {
+    type: GraphQLBoolean,
+    description: 'Delete an action',
+    args: {
+      actionId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The actionId (teamId::shortid) to delete'
+      }
+    },
+    async resolve(source, {actionId}, {authToken}) {
+      // format of id is teamId::taskIdPart
+      const [teamId] = actionId.split('::');
+      requireSUOrTeamMember(authToken, teamId);
+      await r.table('Action').get(actionId).delete();
+    }
+  },
+  makeProject: {
+    type: GraphQLBoolean,
+    description: 'Turn an action into a project',
+    args: {
+      actionId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The actionId (teamId::shortid) to delete'
+      }
+    },
+    async resolve(source, {actionId}, {authToken}) {
+      // format of id is teamId::taskIdPart
+      const [teamId] = actionId.split('::');
+      requireSUOrTeamMember(authToken, teamId);
+      const action = await r.table('Action').get(actionId);
+      const now = new Date();
+      const newProject = {
+        id: actionId,
+        content: action.content,
+        isArchived: false,
+        teamId,
+        teamMemberId: action.teamMemberId,
+        createdAt: action.createdAt,
+        updatedAt: now,
+        status: 'active',
+        teamSort: 0,
+        userSort: 0,
+        agendaId: action.agendaId
+      };
+      await r.table('Project').insert(newProject)
+        .do(() => {
+          return r.table('Action').get(actionId).delete();
+        });
     }
   }
 };

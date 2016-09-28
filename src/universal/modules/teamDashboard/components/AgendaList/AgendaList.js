@@ -4,7 +4,7 @@ import {overflowTouch} from 'universal/styles/helpers';
 import {cashay} from 'cashay';
 import AgendaItem from 'universal/modules/teamDashboard/components/AgendaItem/AgendaItem';
 
-const handleRemoveItem = (itemId) => {
+const removeItemFactory = (itemId) => () => {
   const options = {variables: {id: itemId}};
   cashay.mutate('removeAgendaItem', options);
 };
@@ -20,7 +20,7 @@ const AgendaList = (props) => {
             desc={item.content}
             idx={idx}
             key={`agendaItem${idx}`}
-            handleRemove={() => handleRemoveItem(item.id)}
+            handleRemove={removeItemFactory(item.id)}
             gotoAgendaItem={phaseItemFactory(idx + 1)}
             teamMember={item.teamMember}
             isComplete={item.isComplete}

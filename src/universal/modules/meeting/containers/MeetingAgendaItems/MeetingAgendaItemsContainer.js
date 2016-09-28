@@ -30,7 +30,10 @@ const mapStateToProps = (state, props) => {
   const {agenda} = cashay.query(meetingAgendaItemsQuery, {
     op: 'meetingAgendaItemsContainer',
     key: teamId,
-    variables: {teamId}
+    variables: {teamId},
+    sort: {
+      agenda: (a, b) => a.sortOrder > b.sortOrder
+    }
   }).data;
   return {
     agenda
@@ -48,7 +51,11 @@ const MeetingAgendaItemsContainer = (props) => {
 };
 
 MeetingAgendaItemsContainer.propTypes = {
-  agenda: PropTypes.array.isRequired
+  agenda: PropTypes.array.isRequired,
+  isFacilitating: PropTypes.bool,
+  localPhaseItem: PropTypes.number,
+  members: PropTypes.array,
+  team: PropTypes.object
 };
 
 export default connect(mapStateToProps)(MeetingAgendaItemsContainer);

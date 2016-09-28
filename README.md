@@ -141,7 +141,9 @@ get involved and how to get compensated.
 
 | Release | Summary                                    |
 |---------|--------------------------------------------|
-| v0.6.1  | Add Project Updates, rallies, segment.io   |
+| v0.6.3  | Agenda processing order fix for issue #294 |
+| v0.6.2  | Processing of meeting agenda to projects   |
+| v0.6.1  | Agenda items, @live directive, bug fixes   |
 | v0.5.3  | Add Project Updates, rallies, segment.io   |
 | v0.4.1  | Added Me Dash., multiplayer editing states |
 | v0.4.0  | Add Lobby, Check-in, start of Team Dash.   |

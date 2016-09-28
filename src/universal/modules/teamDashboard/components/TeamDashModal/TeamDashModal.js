@@ -36,10 +36,4 @@ TeamDashModal.propTypes = {
   teamName: PropTypes.string
 };
 
-TeamDashModal.defaultProps = {
-  onClick() {
-    console.log('Go to meeting');
-  }
-};
-
 export default withRouter(TeamDashModal);

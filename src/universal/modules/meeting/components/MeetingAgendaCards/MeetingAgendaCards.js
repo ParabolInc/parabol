@@ -1,19 +1,19 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import {withRouter} from 'react-router';
 import {cashay} from 'cashay';
 import shortid from 'shortid';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
-// import OutcomeCard from 'universal/modules/teamDashboard/components/TeamProjectCard/TeamProjectCard';
-import {ACTIVE, SORT_STEP} from 'universal/utils/constants';
-import MeetingAgendaOutcomeCard from '../MeetingAgendaOutcomeCard/MeetingAgendaOutcomeCard';
+import {ACTIVE} from 'universal/utils/constants';
+import AgendaCard from 'universal/modules/meeting/components/AgendaCard/AgendaCard';
+import withHotkey from 'react-hotkey-hoc';
+import NullCard from 'universal/components/NullCard/NullCard';
 
 const handleAddActionFactory = (teamMemberId, agendaId) => () => {
   const [, teamId] = teamMemberId.split('::');
   const newAction = {
     id: `${teamId}::${shortid.generate()}`,
     teamMemberId,
-    sortOrder: SORT_STEP, // TODO: consider some other value for sort values?
+    sortOrder: 0,
     agendaId
   };
   cashay.mutate('createAction', {variables: {newAction}});
@@ -25,8 +25,8 @@ const handleAddProjectFactory = (teamMemberId, agendaId) => () => {
     id: `${teamId}::${shortid.generate()}`,
     status: ACTIVE,
     teamMemberId,
-    teamSort: SORT_STEP, // TODO: consider some other value for sort values?
-    userSort: SORT_STEP,
+    teamSort: 0,
+    userSort: 0,
     agendaId
   };
   cashay.mutate('createProject', {variables: {newProject}});
@@ -34,50 +34,45 @@ const handleAddProjectFactory = (teamMemberId, agendaId) => () => {
 
 let s = {};
 
-const makeCards = (array) => {
-  const cards = array.map((card) => {
-    const key = `${card.type}OutcomeCard${card.id}`;
+const makeCards = (array, dispatch, myTeamMemberId) => {
+  return array.map((outcome) => {
+    const {type, id, teamMember: {preferredName}, content, teamMemberId} = outcome;
+    const key = `${type}OutcomeCard${id}`;
+    const username = preferredName && preferredName.replace(/\s+/g, '');
     return (
       <div className={s.item} key={key}>
-        <MeetingAgendaOutcomeCard
-          content={card.content}
-          id={card.id}
-          status={card.status}
-          type={card.type}
-        />
+        {(!content && myTeamMemberId !== teamMemberId) ?
+          <NullCard username={username}/> :
+          <AgendaCard form={key} dispatch={dispatch} outcome={outcome}/>
+        }
       </div>
     );
   });
-  return cards;
 };
 
 const makePlaceholders = (length) => {
   const rowLength = 4;
-  const fullRows = Math.floor(length / rowLength);
-  const itemsTotal = (fullRows * 4) + rowLength;
-  const placeholdersTotal = itemsTotal - (length + 1);
-  const placeholders = [];
-  for (let i = 0; i < placeholdersTotal; i++) {
-    placeholders.push(
-      <div
-        className={s.item}
-        key={`CreateCardPlaceholder${i}`}
-      >
-        <CreateCard />
-      </div>);
-  }
-  return placeholders;
+  const emptyCardCount = rowLength - (length % rowLength + 1);
+  return new Array(emptyCardCount).fill(undefined).map((item, idx) =>
+    <div
+      className={s.item}
+      key={`CreateCardPlaceholder${idx}`}
+    >
+      <CreateCard />
+    </div>);
 };
 
 const MeetingAgendaCards = (props) => {
-  const {agendaId, myTeamMemberId, outcomes} = props;
+  const {agendaId, bindHotkey, dispatch, myTeamMemberId, outcomes} = props;
   const handleAddAction = handleAddActionFactory(myTeamMemberId, agendaId);
   const handleAddProject = handleAddProjectFactory(myTeamMemberId, agendaId);
+  bindHotkey('a', handleAddAction);
+  bindHotkey('p', handleAddProject);
   return (
     <div className={s.root}>
       {/* Get Cards */}
       {outcomes.length !== 0 &&
-        makeCards(outcomes)
+      makeCards(outcomes, dispatch, myTeamMemberId)
       }
       {/* Input Card */}
       <div className={s.item}>
@@ -108,8 +103,10 @@ s = StyleSheet.create({
 
 MeetingAgendaCards.propTypes = {
   agendaId: PropTypes.string.isRequired,
+  bindHotkey: PropTypes.func,
+  dispatch: PropTypes.func,
   myTeamMemberId: PropTypes.string,
   outcomes: PropTypes.array.isRequired
 };
 
-export default withRouter(look(MeetingAgendaCards));
+export default withHotkey(look(MeetingAgendaCards));

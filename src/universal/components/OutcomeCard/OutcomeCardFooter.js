@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-// import {cashay} from 'cashay';
 import FontAwesome from 'react-fontawesome';
 import theme from 'universal/styles/theme';
 import ui from 'universal/styles/ui';
@@ -53,11 +52,9 @@ const OutcomeCardFooter = (props) => {
     isArchived,
     isProject,
     owner,
-    // project: {id: projectId},
     toggleAssignMenu,
     handleStatusClick
   } = props;
-
   let avatarBlockStyle = {};
 
   // BUTTONS

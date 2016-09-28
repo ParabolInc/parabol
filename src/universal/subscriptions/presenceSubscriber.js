@@ -33,7 +33,7 @@ export default function presenceSubscriber(channel, key, handlers) {
       });
     }
     if (data.type === LEAVE) {
-      remove(data.socketId);
+      remove({id: data.socketId});
     }
   });
 }

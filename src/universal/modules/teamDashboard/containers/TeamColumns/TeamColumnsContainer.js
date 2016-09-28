@@ -4,6 +4,7 @@ import {cashay} from 'cashay';
 import makeProjectsByStatus from 'universal/utils/makeProjectsByStatus';
 import {TEAM_DASH} from 'universal/utils/constants';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
+import makeAllProjects from 'universal/utils/makeAllProjects';
 
 const teamColumnsSubQuery = `
 query {
@@ -28,11 +29,7 @@ query {
 const resolveTeamProjects = (teamMembers) => {
   if (teamMembers !== resolveTeamProjects.teamMembers) {
     resolveTeamProjects.teamMembers = teamMembers;
-    const allProjects = [];
-    for (let i = 0; i < teamMembers.length; i++) {
-      const teamMember = teamMembers[i];
-      allProjects.push(...teamMember.projects);
-    }
+    const allProjects = makeAllProjects(teamMembers);
     resolveTeamProjects.cache = makeProjectsByStatus(allProjects, 'teamSort');
   }
   return resolveTeamProjects.cache;

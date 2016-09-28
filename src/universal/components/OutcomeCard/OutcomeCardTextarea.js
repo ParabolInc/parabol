@@ -83,10 +83,14 @@ export default class OutcomeCardTextArea extends Component {
       handleSubmit();
       input.onBlur();
     };
+    const handleKeyPress = () => {
+      // TODO fix me there's a little lag here
+      // handleSubmit();
+    };
     const setRef = (c) => {
       textAreaRef = c;
     };
-    const handleKeyUp = (e) => {
+    const submitOnEnter = (e) => {
       // hitting enter (not shift+enter) submits the textarea
       if (e.keyCode === 13 && !e.shiftKey) {
         handleBlur();
@@ -118,7 +122,8 @@ export default class OutcomeCardTextArea extends Component {
           disabled={isArchived}
           placeholder="Type your outcome here"
           onBlur={handleBlur}
-          onKeyDown={handleKeyUp}
+          onKeyDown={submitOnEnter}
+          onKeyUp={handleKeyPress}
           autoFocus={doFocus}
         />
       </div>
