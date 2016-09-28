@@ -4,7 +4,7 @@ import ui from 'universal/styles/ui';
 import {cardBorderTop} from 'universal/styles/helpers';
 import UserActionListEmpty from './UserActionListEmpty';
 import UserActionListHeader from './UserActionListHeader';
-import UserActionListItem from './UserActionListItem';
+import UserActionListItemContainer from 'universal/modules/userDashboard/containers/UserActionListItem/UserActionListItemContainer';
 import UserActionListTeamSelect from './UserActionListTeamSelect';
 
 const UserActionList = (props) => {
@@ -12,45 +12,45 @@ const UserActionList = (props) => {
 
   // TODO: get the real actions array here:
   // const {actions, isAdding} = props;
-  const {actions, dispatch, isAdding, teams, userId} = props;
+  const {actions, isAdding, teams, userId} = props;
 
   // Sample actions array for dev hackery
   // const actions = [
-    // {
-    //   content: 'New action added on top of previous actions, after selecting a team if more than one team',
-    //   id: '000',
-    //   isEditing: true,
-    //   team: 'Parabol',
-    //   updatedAt: 'Just Now'
-    // },
-    // {
-    //   content: 'PR merged',
-    //   id: '001',
-    //   isEditing: false,
-    //   team: 'Parabol',
-    //   updatedAt: 'Today'
-    // },
-    // {
-    //   content: 'UI iterated',
-    //   id: '002',
-    //   isEditing: false,
-    //   team: 'Parabol',
-    //   updatedAt: 'Yesterday'
-    // },
-    // {
-    //   content: 'Pivot completed',
-    //   id: '003',
-    //   isEditing: false,
-    //   team: 'Parabol',
-    //   updatedAt: 'Last Week'
-    // },
-    // {
-    //   content: 'Pitch deck updated',
-    //   id: '004',
-    //   isEditing: false,
-    //   team: 'Parabol',
-    //   updatedAt: '5 Mins Ago'
-    // }
+  // {
+  //   content: 'New action added on top of previous actions, after selecting a team if more than one team',
+  //   id: '000',
+  //   isEditing: true,
+  //   team: 'Parabol',
+  //   updatedAt: 'Just Now'
+  // },
+  // {
+  //   content: 'PR merged',
+  //   id: '001',
+  //   isEditing: false,
+  //   team: 'Parabol',
+  //   updatedAt: 'Today'
+  // },
+  // {
+  //   content: 'UI iterated',
+  //   id: '002',
+  //   isEditing: false,
+  //   team: 'Parabol',
+  //   updatedAt: 'Yesterday'
+  // },
+  // {
+  //   content: 'Pivot completed',
+  //   id: '003',
+  //   isEditing: false,
+  //   team: 'Parabol',
+  //   updatedAt: 'Last Week'
+  // },
+  // {
+  //   content: 'Pitch deck updated',
+  //   id: '004',
+  //   isEditing: false,
+  //   team: 'Parabol',
+  //   updatedAt: '5 Mins Ago'
+  // }
   // ];
   const actionCount = actions.length;
   const createNewAction = () =>
@@ -70,25 +70,23 @@ const UserActionList = (props) => {
   const handleCheck = () =>
     // TODO: item is set to [hidden for data insights?] —pop a toast to undo? (TA)
     console.log('UserActionList.handleCheck()');
-
   return (
     <div className={styles.root}>
       <div className={styles.block}>
         {isAdding ?
           <UserActionListTeamSelect teams={teams} actionCount={actionCount} userId={userId}/> :
-          <UserActionListHeader onAddNewAction={createNewAction} />
+          <UserActionListHeader onAddNewAction={createNewAction}/>
         }
         {actionCount ?
           <div className={styles.actions}>
             {actions.map(item =>
-              <UserActionListItem
+              <UserActionListItemContainer
+                key={`actionItem::${item.id}`}
                 content={item.content}
-                dispatch={dispatch}
                 form={`actionItem::${item.id}`}
                 actionId={item.id}
-                isEditing={item.isEditing}
                 onChecked={handleCheck}
-                team={item.team}
+                team={item.team.name}
               />
             )}
             <div className={styles.hr}></div>
