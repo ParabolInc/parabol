@@ -29,39 +29,7 @@ const backgroundColor = tinycolor.mix(theme.palette.mid, '#fff', 95).toHexString
 
 Menu.propTypes = {
   items: PropTypes.array,
-  label: PropTypes.string,
-  width: PropTypes.string
-};
-
-Menu.defaultProps = {
-  items: [
-    {
-      label: 'Core',
-      isActive: false,
-      onClick: () => console.log('You selected Core')
-    },
-    {
-      label: 'Design',
-      isActive: false,
-      onClick: () => console.log('You selected Design')
-    },
-    {
-      label: 'Engineering',
-      isActive: true,
-      onClick: () => console.log('You selected Engineering')
-    },
-    {
-      label: 'Product',
-      isActive: false,
-      onClick: () => console.log('You selected Product')
-    },
-    {
-      label: 'Talent',
-      isActive: false,
-      onClick: () => console.log('You selected Talent')
-    }
-  ],
-  label: 'Select Team:'
+  label: PropTypes.string
 };
 
 Menu.styles = StyleSheet.create({
@@ -69,7 +37,8 @@ Menu.styles = StyleSheet.create({
     backgroundColor,
     border: `1px solid ${theme.palette.mid30l}`,
     borderRadius: '.25rem',
-    padding: '0 0 .5rem'
+    padding: '0 0 .5rem',
+    width: '100%'
   },
 
   label: {

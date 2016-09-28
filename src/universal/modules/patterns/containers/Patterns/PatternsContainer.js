@@ -24,6 +24,34 @@ const demoToggleStyle = {
 
 const demoToggle = (<FontAwesome name="plus-square-o" style={demoToggleStyle} />);
 
+const demoMenuItems = [
+  {
+    label: 'Core',
+    isActive: false,
+    onClick: () => console.log('You selected Core')
+  },
+  {
+    label: 'Design',
+    isActive: false,
+    onClick: () => console.log('You selected Design')
+  },
+  {
+    label: 'Engineering',
+    isActive: true,
+    onClick: () => console.log('You selected Engineering')
+  },
+  {
+    label: 'Product',
+    isActive: false,
+    onClick: () => console.log('You selected Product')
+  },
+  {
+    label: 'Talent',
+    isActive: false,
+    onClick: () => console.log('You selected Talent')
+  }
+];
+
 const PatternsContainer = () =>
   <div style={style}>
     <Helmet title="Welcome to the Action Pattern Library" {...head} />
@@ -33,7 +61,7 @@ const PatternsContainer = () =>
     {makeLabel('MenuToggle')}
     {makeLabel('Menu')}
     <MenuToggle menuPosition="right" toggle={demoToggle}>
-      <Menu />
+      <Menu items={demoMenuItems} label="Select Team:" />
     </MenuToggle>
 
   </div>;
