@@ -14,7 +14,7 @@ const iconStyle = {
   color: theme.palette.mid,
   float: 'left',
   fontSize: ui.iconSize,
-  marginRight: '.25rem',
+  marginRight: '.3125rem',
   textAlign: 'center',
   verticalAlign: 'middle',
   width: '1rem'

@@ -27,8 +27,7 @@ UserActionListItem.propTypes = {
   id: PropTypes.string,
   isEditing: PropTypes.bool,
   onChecked: PropTypes.func,
-  team: PropTypes.string,
-  updatedAt: PropTypes.string
+  team: PropTypes.string
 };
 
 UserActionListItem.defaultProps = {
