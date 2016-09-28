@@ -9,6 +9,8 @@ const basePadding = '.375rem';
 const labelHeight = '1.5rem';
 
 const baseStyles = {
+  backgroundColor: 'transparent',
+  border: 0,
   boxShadow: 'none',
   display: 'block',
   fontFamily: theme.typography.sansSerif,
@@ -21,8 +23,6 @@ const baseStyles = {
 
 const descriptionBase = {
   ...baseStyles,
-  backgroundColor: 'transparent',
-  border: 0,
   borderBottom: '1px solid transparent',
   borderTop: '1px solid transparent',
   color: theme.palette.dark10d
@@ -134,9 +134,6 @@ export default class OutcomeCardTextArea extends Component {
 styles = StyleSheet.create({
   actionListContent: {
     ...baseStyles,
-    backgroundColor: 'transparent',
-    border: 0,
-    overflow: 'hidden',
     padding: `${basePadding} ${basePadding} ${labelHeight} 1.75rem`,
 
     ':hover': {
@@ -148,7 +145,6 @@ styles = StyleSheet.create({
   },
   content: {
     ...descriptionBase,
-    lineHeight: theme.typography.s5,
     minHeight: '3.3125rem',
     padding: `0 ${ui.cardPaddingBase} .1875rem`,
 

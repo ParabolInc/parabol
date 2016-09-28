@@ -12,12 +12,8 @@ import {SORT_STEP} from 'universal/utils/constants';
 import {cashay} from 'cashay';
 const UserActionList = (props) => {
   const {styles} = UserActionList;
-
-  // TODO: get the real actions array here:
-  // const {actions, isAdding} = props;
   const {actions, dispatch, selectingNewActionTeam, teams, userId} = props;
   const actionCount = actions.length;
-  // const actionCount = 0;
   const createNewAction = () => {
     if (teams.length > 1) {
       dispatch(selectNewActionTeam(true));
@@ -100,13 +96,14 @@ UserActionList.styles = StyleSheet.create({
     borderStyle: 'solid',
     borderWidth: '0 1px',
     borderRadius: `${ui.cardBorderRadius} ${ui.cardBorderRadius} 0 0`,
-    paddingTop: '.1875rem',
+    paddingTop: '.25rem',
     width: '100%',
 
     '::after': {
       ...cardBorderTop,
       left: '0',
-      right: '0'
+      right: '0',
+      top: '0'
     },
   },
 
