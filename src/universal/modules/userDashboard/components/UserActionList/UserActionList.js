@@ -8,13 +8,11 @@ import UserActionListItemContainer from 'universal/modules/userDashboard/contain
 import UserActionListTeamSelect from './UserActionListTeamSelect';
 import {selectNewActionTeam} from 'universal/modules/userDashboard/ducks/userDashDuck';
 import shortid from 'shortid';
-import {SORT_STEP} from 'universal/utils/constants';
 import {cashay} from 'cashay';
+import getNextSortOrder from 'universal/utils/getNextSortOrder';
+
 const UserActionList = (props) => {
   const {styles} = UserActionList;
-
-  // TODO: get the real actions array here:
-  // const {actions, isAdding} = props;
   const {actions, dispatch, selectingNewActionTeam, teams, userId} = props;
   const actionCount = actions.length;
   const createNewAction = () => {
@@ -27,7 +25,7 @@ const UserActionList = (props) => {
           newAction: {
             id: `${teamId}::${shortid.generate()}`,
             teamMemberId: `${userId}::${teamId}`,
-            sortOrder: actionCount + SORT_STEP
+            sortOrder: getNextSortOrder(actions, 'sortOrder')
           }
         }
       };
@@ -35,14 +33,11 @@ const UserActionList = (props) => {
     }
   };
 
-  const handleCheck = () =>
-    // TODO: item is set to [hidden for data insights?] —pop a toast to undo? (TA)
-    console.log('UserActionList.handleCheck()');
   return (
     <div className={styles.root}>
       <div className={styles.block}>
         {selectingNewActionTeam ?
-          <UserActionListTeamSelect dispatch={dispatch} teams={teams} actionCount={actionCount} userId={userId}/> :
+          <UserActionListTeamSelect dispatch={dispatch} teams={teams} actions={actions} userId={userId}/> :
           <UserActionListHeader onAddNewAction={createNewAction}/>
         }
         {actionCount ?
@@ -53,7 +48,6 @@ const UserActionList = (props) => {
                 content={item.content}
                 form={`actionItem::${item.id}`}
                 actionId={item.id}
-                onChecked={handleCheck}
                 team={item.team.name}
               />
             )}

@@ -65,7 +65,8 @@ export default {
         ...newAction,
         userId,
         createdAt: now,
-        updatedAt: now
+        updatedAt: now,
+        isComplete: false
       };
       await r.table('Action').insert(action);
     }

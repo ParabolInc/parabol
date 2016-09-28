@@ -7,8 +7,8 @@ import FontAwesome from 'react-fontawesome';
 import Type from 'universal/components/Type/Type';
 import shortid from 'shortid';
 import {cashay} from 'cashay';
-import {SORT_STEP} from 'universal/utils/constants';
 import {selectNewActionTeam} from 'universal/modules/userDashboard/ducks/userDashDuck';
+import getNextSortOrder from 'universal/utils/getNextSortOrder';
 
 const height = '1.25rem';
 const lineHeight = height;
@@ -26,7 +26,7 @@ const iconStyle = {
 
 const UserActionListTeamSelect = (props) => {
   const {styles} = UserActionListTeamSelect;
-  const {actionCount, teams, userId} = props;
+  const {actions, teams, userId} = props;
 
   const cancelAddAction = () => {
     props.dispatch(selectNewActionTeam(false));
@@ -38,13 +38,13 @@ const UserActionListTeamSelect = (props) => {
         newAction: {
           id: `${teamId}::${shortid.generate()}`,
           teamMemberId: `${userId}::${teamId}`,
-          sortOrder: actionCount + SORT_STEP
+          sortOrder: getNextSortOrder(actions, 'sortOrder')
         }
       }
     };
     cashay.mutate('createAction', options);
     props.dispatch(selectNewActionTeam(false));
-  }
+  };
   return (
     <div className={styles.root}>
       <div className={styles.header}>

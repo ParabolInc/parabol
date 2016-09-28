@@ -5,7 +5,7 @@ import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
 import OutcomeCardTextarea from 'universal/components/OutcomeCard/OutcomeCardTextarea';
 import {cashay} from 'cashay';
-import {Field, reduxForm, initialize, focus} from 'redux-form';
+import {Field, reduxForm, initialize} from 'redux-form';
 
 const combineStyles = StyleSheet.combineStyles;
 const basePadding = '.375rem';
@@ -30,6 +30,7 @@ export default class UserActionListItem extends Component {
       this.initializeValues(content);
     }
   }
+
   componentWillReceiveProps(nextProps) {
     const {content} = this.props;
     const nextContent = nextProps.content;
@@ -37,10 +38,12 @@ export default class UserActionListItem extends Component {
       this.initializeValues(nextContent);
     }
   }
+
   initializeValues(content) {
     const {dispatch, form, actionId} = this.props;
     dispatch(initialize(form, {[actionId]: content}));
   }
+
   handleActionUpdate = (submittedData) => {
     const {actionId} = this.props;
     const submittedContent = submittedData[actionId];
@@ -60,13 +63,33 @@ export default class UserActionListItem extends Component {
       cashay.mutate('updateAction', options);
     }
   };
+  handleChecked = () => {
+    const {actionId} = this.props;
+    const options = {
+      variables: {
+        updatedAction: {
+          id: actionId,
+          isComplete: true
+        }
+      }
+    };
+    cashay.mutate('updateAction', options);
+  };
+
   render() {
-    const {content, handleSubmit, actionId, isActive, onChecked, team} = this.props;
+    const {content, handleSubmit, actionId, isActive, team} = this.props;
     const checkboxStyles = isActive ? combineStyles(styles.checkbox, styles.checkboxDisabled) : styles.checkbox;
     return (
       <div className={styles.root} key={`action${actionId}`}>
-        <input className={checkboxStyles} disabled={isActive} onClick={onChecked} type="checkbox"/>
         <form>
+          <Field
+            className={checkboxStyles}
+            component="input"
+            disabled={isActive}
+            name={`complete${actionId}`}
+            onClick={this.handleChecked}
+            type="checkbox"
+          />
           <Field
             name={actionId}
             component={OutcomeCardTextarea}
@@ -80,12 +103,6 @@ export default class UserActionListItem extends Component {
     );
   }
 };
-
-// UserActionListItem.defaultProps = {
-//   isActive: false,
-//   onChecked: () => console.log('UserActionListItem.checkbox.onChecked()'),
-//   team: 'Parabol'
-// };
 
 styles = StyleSheet.create({
   root: {
@@ -105,8 +122,6 @@ styles = StyleSheet.create({
   checkboxDisabled: {
     cursor: 'not-allowed'
   },
-
-  // TODO: @terry can you merge this into OutcomeCardTextarea as a condition? MK
 
   team: {
     ...textOverflow,

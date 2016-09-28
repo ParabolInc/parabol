@@ -20,6 +20,7 @@ export default {
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
       r.table('Action')
         .getAll(userId, {index: 'userId'})
+        .filter({isComplete: false})
         .pluck(requestedFields)
         .changes({includeInitial: true})
         .run({cursor: true}, changefeedHandler);

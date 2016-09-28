@@ -5,14 +5,12 @@ import AgendaInputField from './AgendaInputField';
 import Avatar from 'universal/components/Avatar/Avatar';
 import theme from 'universal/styles/theme';
 import shortid from 'shortid';
-import {SORT_STEP} from 'universal/utils/constants';
+import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import {cashay} from 'cashay';
 
 const AgendaInput = (props) => {
   const {styles} = AgendaInput;
   const {agenda, handleSubmit, teamId, myTeamMember} = props;
-  const lastAgendaItem = agenda[agenda.length - 1];
-  const nextSort = lastAgendaItem ? lastAgendaItem.sortOrder + SORT_STEP : 0;
   const handleAgendaItemSubmit = (submittedData) => {
     // TODO replace this with redux-form synchronous validation
     const content = submittedData.agendaItem;
@@ -22,7 +20,7 @@ const AgendaInput = (props) => {
         newAgendaItem: {
           id: `${teamId}::${shortid.generate()}`,
           content,
-          sortOrder: nextSort,
+          sortOrder: getNextSortOrder(agenda, 'sortOrder'),
           teamMemberId: myTeamMember.id
         }
       }

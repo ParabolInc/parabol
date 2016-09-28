@@ -6,10 +6,11 @@ import ui from 'universal/styles/ui';
 import themeLabels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import ProjectCardContainer from 'universal/containers/ProjectCard/ProjectCardContainer';
-import {ACTIVE, STUCK, DONE, FUTURE, SORT_STEP, USER_DASH, TEAM_DASH, MEETING} from 'universal/utils/constants';
+import {ACTIVE, STUCK, DONE, FUTURE, USER_DASH, TEAM_DASH, MEETING} from 'universal/utils/constants';
 import FontAwesome from 'react-fontawesome';
 import {cashay} from 'cashay';
 import shortid from 'shortid';
+import getNextSortOrder from 'universal/utils/getNextSortOrder';
 
 const combineStyles = StyleSheet.combineStyles;
 const badgeIconStyle = {
@@ -44,7 +45,7 @@ const ProjectColumn = (props) => {
   const label = labels[status];
   let handleAddProject;
   if (area === TEAM_DASH) {
-    const teamSort = projects[projects.length - 1] ? projects[projects.length - 1].teamSort + SORT_STEP : 0;
+    const teamSort = getNextSortOrder(projects, 'teamSort');
     handleAddProject = handleAddProjectFactory(status, myTeamMemberId, teamSort, 0);
   } else if (area === USER_DASH) {
     // TODO pop a menu of all the teams & create a card based on the team selection
