@@ -53,20 +53,33 @@ const UserActionListTeamSelect = (props) => {
     //       the list isAdding is false and the Add New control is visible so that the user
     //       can add an action again as soon as they blur the content they wrote for the new action (TA)
   }
-
   return (
     <div className={styles.root}>
       <div className={styles.header}>
-        <FontAwesome className={styles.cancel} name="times-circle" onClick={cancelAddAction} style={iconStyle}
-                     title="Cancel"/>
+        <FontAwesome
+          className={styles.cancel}
+          name="times-circle"
+          onClick={cancelAddAction}
+          style={iconStyle}
+          title="Cancel"
+        />
         <Type bold display="inlineBlock" lineHeight={lineHeight} scale="s3" width="auto">
           Select a Team:
         </Type>
       </div>
       <div className={styles.controls}>
-        {teams.map(({name, id}) => <div className={styles.control} onClick={selectTeamFactory(id)}
-                                        title={`Select team: ${name}`}>{name}</div>
-        )}
+        {teams.map(({name, id}) => {
+          return (
+            <div
+              key={`teamSelect${id}`}
+              className={styles.control}
+              onClick={selectTeamFactory(id)}
+              title={`Select team: ${name}`}
+            >
+              {name}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

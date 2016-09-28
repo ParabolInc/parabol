@@ -19,18 +19,15 @@ export default class UserActionListItem extends Component {
   static propTypes = {
     content: PropTypes.string,
     id: PropTypes.string,
-    isEditing: PropTypes.bool,
+    isActive: PropTypes.bool,
     onChecked: PropTypes.func,
     team: PropTypes.string
   };
 
   componentWillMount() {
-    const {content, dispatch, field, form} = this.props;
+    const {content} = this.props;
     if (content) {
       this.initializeValues(content);
-    } else {
-      // manually align redux-state with DOM
-      dispatch(focus(form, field));
     }
   }
   componentWillReceiveProps(nextProps) {
@@ -64,12 +61,11 @@ export default class UserActionListItem extends Component {
     }
   };
   render() {
-    const {content, handleSubmit, actionId, isEditing, onChecked, team} = this.props;
-    console.log('this.pr', this.props)
-    const checkboxStyles = isEditing ? combineStyles(styles.checkbox, styles.checkboxDisabled) : styles.checkbox;
+    const {content, handleSubmit, actionId, isActive, onChecked, team} = this.props;
+    const checkboxStyles = isActive ? combineStyles(styles.checkbox, styles.checkboxDisabled) : styles.checkbox;
     return (
       <div className={styles.root} key={`action${actionId}`}>
-        <input className={checkboxStyles} disabled={isEditing} onClick={onChecked} type="checkbox"/>
+        <input className={checkboxStyles} disabled={isActive} onClick={onChecked} type="checkbox"/>
         <form>
           <Field
             name={actionId}
@@ -86,7 +82,7 @@ export default class UserActionListItem extends Component {
 };
 
 // UserActionListItem.defaultProps = {
-//   isEditing: false,
+//   isActive: false,
 //   onChecked: () => console.log('UserActionListItem.checkbox.onChecked()'),
 //   team: 'Parabol'
 // };
