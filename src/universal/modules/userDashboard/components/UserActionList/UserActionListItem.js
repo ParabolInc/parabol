@@ -106,7 +106,7 @@ styles = StyleSheet.create({
     cursor: 'not-allowed'
   },
 
-  // TODO: @terry can you merge this into OutcomeCardTextarea as a condition? MK
+  // TODO: @terry can you merge this into OutcomeCardTextarea as a condition? MK —which part??? (TA)
 
   team: {
     ...textOverflow,

@@ -52,6 +52,8 @@ UserDashboard.styles = StyleSheet.create({
   actionsLayout: {
     boxSizing: 'content-box',
     borderRight: `2px solid ${ui.dashBorderColor}`,
+    display: 'flex',
+    flexDirection: 'column',
     width: layout.dashActionsWidth
   },
 
