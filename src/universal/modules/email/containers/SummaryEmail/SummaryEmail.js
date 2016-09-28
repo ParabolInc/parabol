@@ -37,9 +37,18 @@ const teamNameStyle = {
   fontSize: '36px'
 };
 
+const textCenter = {
+  textAlign: 'center'
+};
+
 const projectNameStyle = {
   ...merryAndBold,
   fontSize: '24px'
+};
+
+const iconStyle = {
+  height: '14px',
+  width: '13px'
 };
 
 const SummaryEmail = props => {
@@ -73,12 +82,15 @@ const SummaryEmail = props => {
         <table align="center" width="100%">
           <tbody>
             <tr>
-              <td width="64">
+              <td style={textCenter}>
                 <img src={inviterAvatar} height="64" width="64" />
+                {inviterName}
               </td>
-              <td style={{paddingLeft: '16px'}}>
-                {inviterName}<br />
-                <span style={{...colorCool, fontSize: '14px'}}>{inviterEmail}</span>
+            </tr>
+            <tr>
+              <td style={textCenter}>
+                <img src="/static/images/email/email-icon-project@3x.png" style={iconStyle} /> 3 New Projects<br />
+                <img src="/static/images/email/email-icon-action@3x.png" style={iconStyle} /> 4 New Actions
               </td>
             </tr>
           </tbody>
@@ -86,9 +98,9 @@ const SummaryEmail = props => {
 
         <table align="center">
           <tr>
-            <td style={cardRowCell}><Card status="active" type="project">Outcome description printed</Card></td>
-            <td style={cardRowCell}><Card status="future" type="project">Outcome description printed</Card></td>
-            <td style={cardRowCell}><Card>Outcome description printed</Card></td>
+            <td style={cardRowCell}><Card content="Outcome description printed" status="active" team="Parabol" type="project" /></td>
+            <td style={cardRowCell}><Card content="Outcome description printed" status="future" team="Parabol" type="project" /></td>
+            <td style={cardRowCell}><Card content="Outcome description printed" team="Parabol" type="action" /></td>
           </tr>
         </table>
 

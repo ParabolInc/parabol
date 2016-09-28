@@ -1,11 +1,12 @@
 import React, {PropTypes} from 'react';
 import EmptySpace from '../EmptySpace/EmptySpace';
 import theme from 'universal/styles/theme';
+import ui from 'universal/styles/ui';
 
 const ContactUs = (props) => {
   const textStyle = {
     color: theme.palette.dark,
-    fontFamily: '"Karla", "Helvetica Neue", serif',
+    fontFamily: ui.emailFontFamily,
     fontSize: `${props.fontSize}px`,
     lineHeight: `${props.lineHeight}`
   };

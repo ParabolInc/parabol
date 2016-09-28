@@ -13,6 +13,7 @@ const ui = {
   dashGutter: '1rem',
   dashSectionHeaderLineHeight: '1.875rem',
   emailBackgroundColor: '#F9FAFB',
+  emailFontFamily: '"Karla", "Helvetica Neue", serif',
   iconSize: '14px', // FontAwesome base
   iconSize2x: '28px', // FontAwesome 2x
   projectColumnsMaxWidth: '80rem',

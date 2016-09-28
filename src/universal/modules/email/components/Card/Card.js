@@ -5,7 +5,7 @@ import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
 
 const Card = (props) => {
-  const {children, status, type} = props;
+  const {content, status, team, type} = props;
 
   let backgroundColor;
 
@@ -15,10 +15,13 @@ const Card = (props) => {
     backgroundColor = ui.actionCardBgColor;
   }
 
-  const textStyle = {
+  const cardBodyStyle = {
     color: theme.palette.dark,
     backgroundColor,
-    fontFamily: '"Karla", "Helvetica Neue", serif'
+    fontSize: '16px',
+    fontFamily: ui.emailFontFamily,
+    lineHeight: '20px',
+    padding: '0 .25rem'
   };
 
   const borderStyle = {
@@ -40,6 +43,12 @@ const Card = (props) => {
   const imageStyle = {
     border: 0,
     display: 'block'
+  };
+
+  const teamStyle = {
+    color: theme.palette.dark,
+    fontSize: '12px',
+    fontWeight: 700
   };
 
   const borderImageBottomLeftAction = '/static/images/email/email-card-action-border-bottom-left@3x.png';
@@ -131,12 +140,14 @@ const Card = (props) => {
         <tr>
           <td style={borderLeftStyle}></td>
           <td
-            align="center"
-            style={textStyle}
+            align="left"
+            style={cardBodyStyle}
           >
-            <EmptySpace height={48} />
-              {children}
-            <EmptySpace height={48} />
+            <EmptySpace height={8} />
+            {content}
+            <EmptySpace height={4} />
+            <span style={teamStyle}>{team}</span>
+            <EmptySpace height={4} />
           </td>
           <td style={borderRightStyle}></td>
         </tr>
@@ -172,13 +183,14 @@ const Card = (props) => {
 };
 
 Card.propTypes = {
-  children: PropTypes.any,
+  content: PropTypes.string,
   status: PropTypes.oneOf([
     'active',
     'done',
     'future',
     'stuck'
   ]),
+  team: PropTypes.string,
   type: PropTypes.oneOf([
     'project',
     'action'
@@ -186,8 +198,7 @@ Card.propTypes = {
 };
 
 Card.defaultProps = {
-  fontSize: 18,
-  lineHeight: 1.25,
+  team: 'Parabol',
   type: 'action'
 };
 

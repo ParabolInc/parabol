@@ -43,7 +43,7 @@ const Footer = (props) => {
                   <td
                     align="center"
                     bgColor="#F9FAFB"
-                    style={{color: props.color, fontFamily: '"Karla", "Helvetica Neue", serif'}}
+                    style={{color: props.color, fontFamily: ui.emailFontFamily}}
                   >
 
                     <EmptySpace height="10" />

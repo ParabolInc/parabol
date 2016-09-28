@@ -7,7 +7,7 @@ const Body = (props) => {
   const textStyle = {
     color: theme.palette.dark,
     backgroundColor: ui.emailBackgroundColor,
-    fontFamily: '"Karla", "Helvetica Neue", serif',
+    fontFamily: ui.emailFontFamily,
     fontSize: `${props.fontSize}px`,
     lineHeight: `${props.lineHeight}`
   };
