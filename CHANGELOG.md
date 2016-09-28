@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.6.3 - 28-Sep-2016
+### Fixed
+- Agenda processing order fix for issue #294
+
 ## v0.6.2 - 27-Sep-2016
 ### Added
 - Processing of agenda items during meeting into new projects and actions
