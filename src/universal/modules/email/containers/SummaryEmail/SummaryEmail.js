@@ -1,67 +1,195 @@
 import React, {PropTypes} from 'react';
 import Layout from '../../components/Layout/Layout';
-import Button from '../../components/Button/Button';
 import EmptySpace from '../../components/EmptySpace/EmptySpace';
 import Body from '../../components/Body/Body';
-import Card from '../../components/Card/Card';
+import UserOutcomes from '../../components/UserOutcomes/UserOutcomes';
 import Footer from '../../components/Footer/Footer';
 import theme from 'universal/styles/theme';
 
-const cardRowCell = {
-  padding: '10px'
+const sampleAvatar = '/static/images/avatars/jh-linkedin-avatar.jpg';
+
+const Jordan = {
+  avatar: sampleAvatar,
+  name: 'Jordan Husney',
+  outcomes: [
+    {
+      content: 'Summary email designed',
+      status: 'done',
+      team: 'Parabol',
+      type: 'project'
+    },
+    {
+      content: 'Summary email implemented',
+      status: 'active',
+      team: 'Parabol',
+      type: 'project'
+    },
+    {
+      content: 'Summary view designed',
+      status: 'active',
+      team: 'Parabol',
+      type: 'project'
+    },
+    {
+      content: 'Summary view implemented',
+      status: 'stuck',
+      team: 'Parabol',
+      type: 'project'
+    },
+    {
+      content: 'Project column empty states implemented with great skill',
+      status: 'stuck',
+      team: 'Parabol',
+      type: 'project'
+    },
+    {
+      content: 'Summary updates shared',
+      status: null,
+      team: 'Parabol',
+      type: 'action'
+    },
+    {
+      content: 'User dashboard updates shared',
+      status: null,
+      team: 'Parabol',
+      type: 'action'
+    },
+    {
+      content: 'Project column empty states shared',
+      status: null,
+      team: 'Parabol',
+      type: 'action'
+    }
+  ]
 };
 
-const colorCool = {
-  color: theme.palette.cool
+const Matt = {
+  avatar: sampleAvatar,
+  name: 'Matt Krick',
+  outcomes: [
+    {
+      content: 'Me dashboard part 2 sprint merged',
+      status: 'active',
+      team: 'Parabol',
+      type: 'project'
+    },
+    {
+      content: 'Summary view implemented',
+      status: 'stuck',
+      team: 'Parabol',
+      type: 'project'
+    },
+    {
+      content: 'Project column empty states implemented with great skill',
+      status: 'stuck',
+      team: 'Parabol',
+      type: 'project'
+    },
+    {
+      content: 'Add beta signup link to readme',
+      status: null,
+      team: 'Parabol',
+      type: 'action'
+    },
+    {
+      content: 'User dashboard updates shared',
+      status: null,
+      team: 'Parabol',
+      type: 'action'
+    },
+    {
+      content: 'Project column empty states shared',
+      status: null,
+      team: 'Parabol',
+      type: 'action'
+    }
+  ]
 };
 
-const colorWarm = {
-  color: theme.palette.warm
+const Taya = {
+  avatar: sampleAvatar,
+  name: 'Taya Mueller',
+  outcomes: [
+    {
+      content: 'First consultant client signed',
+      status: 'active',
+      team: 'Parabol',
+      type: 'project'
+    },
+    {
+      content: 'Accelerator acceptance received',
+      status: 'active',
+      team: 'Parabol',
+      type: 'project'
+    },
+    {
+      content: 'Adjust copy for beta signup page',
+      status: null,
+      team: 'Parabol',
+      type: 'action'
+    }
+  ]
 };
 
-const boldLinkStyle = {
-  color: theme.palette.warm,
-  fontWeight: 'bold',
-  textDecoration: 'none'
+const Terry = {
+  avatar: sampleAvatar,
+  name: 'Terry Acker',
+  outcomes: [
+    {
+      content: 'Summary email designed',
+      status: 'done',
+      team: 'Parabol',
+      type: 'project'
+    },
+    {
+      content: 'Summary email implemented',
+      status: 'active',
+      team: 'Parabol',
+      type: 'project'
+    },
+    {
+      content: 'Summary view designed',
+      status: 'active',
+      team: 'Parabol',
+      type: 'project'
+    },
+    {
+      content: 'Summary view implemented',
+      status: 'stuck',
+      team: 'Parabol',
+      type: 'project'
+    },
+    {
+      content: 'Project column empty states implemented with great skill',
+      status: 'stuck',
+      team: 'Parabol',
+      type: 'project'
+    },
+    {
+      content: 'Summary updates shared',
+      status: null,
+      team: 'Parabol',
+      type: 'action'
+    },
+    {
+      content: 'User dashboard updates shared',
+      status: null,
+      team: 'Parabol',
+      type: 'action'
+    },
+    {
+      content: 'Project column empty states shared',
+      status: null,
+      team: 'Parabol',
+      type: 'action'
+    }
+  ]
 };
 
-const merryAndBold = {
-  color: theme.palette.cool,
-  fontFamily: '"Merriweather", "Georgia", serif',
-  fontStyle: 'italic',
-  fontWeight: 'bold'
-};
+const sampleTeamMembers = [];
 
-const teamNameStyle = {
-  ...merryAndBold,
-  fontSize: '36px'
-};
-
-const textCenter = {
-  textAlign: 'center'
-};
-
-const projectNameStyle = {
-  ...merryAndBold,
-  fontSize: '24px'
-};
-
-const iconStyle = {
-  height: '14px',
-  width: '13px'
-};
-
-const SummaryEmail = props => {
-  const {
-    inviterAvatar,
-    inviterName,
-    inviterEmail,
-    inviteeEmail,
-    firstProject,
-    teamName,
-    inviteLink
-  } = props;
-
+const SummaryEmail = (props) => {
+  const {teamMembers, teamName} = props;
   return (
     <Layout>
 
@@ -79,80 +207,37 @@ const SummaryEmail = props => {
       </table>
 
       <Body>
-        <table align="center" width="100%">
-          <tbody>
-            <tr>
-              <td style={textCenter}>
-                <img src={inviterAvatar} height="64" width="64" />
-                {inviterName}
-              </td>
-            </tr>
-            <tr>
-              <td style={textCenter}>
-                <img src="/static/images/email/email-icon-project@3x.png" style={iconStyle} /> 3 New Projects<br />
-                <img src="/static/images/email/email-icon-action@3x.png" style={iconStyle} /> 4 New Actions
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <table align="center">
+        <table>
           <tr>
-            <td style={cardRowCell}><Card content="Outcome description printed" status="active" team="Parabol" type="project" /></td>
-            <td style={cardRowCell}><Card content="Outcome description printed" status="future" team="Parabol" type="project" /></td>
-            <td style={cardRowCell}><Card content="Outcome description printed" team="Parabol" type="action" /></td>
+            <td>
+              <span>Summary email for {teamName}:</span>
+              <EmptySpace height={24} />
+            </td>
           </tr>
         </table>
-
-        <EmptySpace height={40} />
-        <b>Hi <span style={colorWarm}>{inviteeEmail}</span>!<br />
-        {inviterName} has invited you to join a team on Action:</b>
-        <EmptySpace height={40} />
-        <span style={teamNameStyle}>{teamName}</span>
-        <EmptySpace height={40} />
-        <a href="https://action-staging.parabol.co/" style={boldLinkStyle}>Action</a>
-        &nbsp;is a place where you and your team <br />will develop your <b><i>weekly rhythm</i></b>.<br />
-        <EmptySpace height={40} />
-        {firstProject &&
-          <div>
-            <b>{inviterName} added one of your projects to Action</b>:
-            <EmptySpace height={32} />
-            <span style={projectNameStyle}>“{firstProject}”</span>
-            <EmptySpace height={32} />
-          </div>
-        }
-        <Button backgroundColor={theme.palette.warm} url={inviteLink}>
-          Join Team
-        </Button>
-        <EmptySpace height={16} />
-        Or go to: <a href={inviteLink} style={colorWarm}>{inviteLink}</a>
+        {teamMembers.map(member =>
+          <UserOutcomes avatar={member.avatar} name={member.name} outcomes={member.outcomes} />
+        )}
       </Body>
       <Footer color={theme.palette.dark} />
     </Layout>
   );
 };
 
+sampleTeamMembers.push(Jordan, Matt, Taya, Terry);
+
 SummaryEmail.propTypes = {
-  inviterAvatar: PropTypes.string.isRequired,
-  inviterName: PropTypes.string.isRequired,
-  inviterEmail: PropTypes.string.isRequired,
-  inviteeEmail: PropTypes.string.isRequired,
-  firstProject: PropTypes.string,
-  teamName: PropTypes.string.isRequired,
-  inviteLink: PropTypes.string.isRequired
+  teamName: PropTypes.string,
+  teamMembers: PropTypes.array,
+};
+
+SummaryEmail.defaultProps = {
+  teamName: 'Parabol',
+  teamMembers: sampleTeamMembers
 };
 
 export const summaryEmailText = (props) => `
-Hello ${props.inviteeEmail},
-
-${props.inviterName} has invited you to join the ${props.teamName} on Action.
-
-Action is a place where your team will develop a weekly rhythm.
-
-Get started here: ${props.inviteLink}
-
-Your friends,
-The Parabol Crew
+Summary email text here for ${props.teamName}
 `;
 
 export default SummaryEmail;
