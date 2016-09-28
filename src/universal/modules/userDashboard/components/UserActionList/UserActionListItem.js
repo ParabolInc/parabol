@@ -30,7 +30,6 @@ export default class UserActionListItem extends Component {
       this.initializeValues(content);
     }
   }
-
   componentWillReceiveProps(nextProps) {
     const {content} = this.props;
     const nextContent = nextProps.content;
@@ -38,12 +37,10 @@ export default class UserActionListItem extends Component {
       this.initializeValues(nextContent);
     }
   }
-
   initializeValues(content) {
     const {dispatch, form, actionId} = this.props;
     dispatch(initialize(form, {[actionId]: content}));
   }
-
   handleActionUpdate = (submittedData) => {
     const {actionId} = this.props;
     const submittedContent = submittedData[actionId];

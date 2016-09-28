@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
-import {ib} from 'universal/styles/helpers';
+import {cardBorderTop, ib} from 'universal/styles/helpers';
 import ui from 'universal/styles/ui';
 import {Type} from 'universal/components';
 import FontAwesome from 'react-fontawesome';
@@ -40,13 +40,12 @@ UserActionListEmpty.propTypes = {
 
 UserActionListEmpty.styles = StyleSheet.create({
   root: {
-    backgroundColor: ui.actionCardBgColor,
     boxSizing: 'content-box',
     cursor: 'pointer',
     fontSize: 0,
     height,
     lineHeight,
-    padding: '.25rem .4375rem',
+    padding: '.25rem .4375rem .25rem',
 
     ':hover': {
       backgroundColor: ui.actionCardBgActive

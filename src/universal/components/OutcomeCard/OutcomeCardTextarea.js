@@ -8,13 +8,24 @@ const combineStyles = StyleSheet.combineStyles;
 const basePadding = '.375rem';
 const labelHeight = '1.5rem';
 
-const descriptionBase = {
+const baseStyles = {
   backgroundColor: 'transparent',
   border: 0,
+  boxShadow: 'none',
+  display: 'block',
+  fontFamily: theme.typography.sansSerif,
+  fontSize: theme.typography.s3,
+  lineHeight: theme.typography.s5,
+  outline: 'none',
+  resize: 'none',
+  width: '100%'
+};
+
+const descriptionBase = {
+  ...baseStyles,
   borderBottom: '1px solid transparent',
   borderTop: '1px solid transparent',
-  color: theme.palette.dark10d,
-  outline: 'none'
+  color: theme.palette.dark10d
 };
 
 const descriptionFA = {
@@ -122,17 +133,8 @@ export default class OutcomeCardTextArea extends Component {
 
 styles = StyleSheet.create({
   actionListContent: {
-    backgroundColor: 'transparent',
-    border: 0,
-    boxShadow: 'none',
-    display: 'block',
-    fontSize: theme.typography.s3,
-    lineHeight: theme.typography.s5,
-    outline: 'none',
-    overflow: 'hidden',
+    ...baseStyles,
     padding: `${basePadding} ${basePadding} ${labelHeight} 1.75rem`,
-    resize: 'none',
-    width: '100%',
 
     ':hover': {
       backgroundColor: ui.actionCardBgActive
@@ -143,14 +145,8 @@ styles = StyleSheet.create({
   },
   content: {
     ...descriptionBase,
-    display: 'block',
-    fontFamily: theme.typography.sansSerif,
-    fontSize: theme.typography.s3,
-    lineHeight: theme.typography.s5,
     minHeight: '3.3125rem',
     padding: `0 ${ui.cardPaddingBase} .1875rem`,
-    resize: 'none',
-    width: '100%',
 
     ':focus': {
       ...descriptionFA
