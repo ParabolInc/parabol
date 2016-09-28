@@ -5,6 +5,8 @@ import ui from 'universal/styles/ui';
 import Textarea from 'react-textarea-autosize';
 
 const combineStyles = StyleSheet.combineStyles;
+const basePadding = '.375rem';
+const labelHeight = '1.5rem';
 
 const descriptionBase = {
   backgroundColor: 'transparent',
@@ -65,19 +67,24 @@ export default class OutcomeCardTextArea extends Component {
       cardHasHover,
       handleSubmit,
       input,
+      isActionListItem,
       isArchived,
       isProject,
       doFocus
     } = this.props;
-    let contentStyles = styles.content;
+
+    const contentStylesObj = {
+      [styles.content]: !isActionListItem,
+      [styles.actionListContent]: isActionListItem,
+      [styles.contentWhenCardHovered]: isProject && cardHasHover,
+      [styles.isArchived]: isArchived,
+      [styles.actionContentWhenCardHovered]: !isProject && cardHasHover,
+      [styles.descriptionAction]: !isProject
+    };
+    const contentStylesArr = Object.keys(contentStylesObj).filter(style => contentStylesObj[style]);
+    const contentStyles = combineStyles(...contentStylesArr);
     let textAreaRef;
 
-    const contentStyleWhenCardHovered = combineStyles(styles.content, styles.contentWhenCardHovered);
-    const actionContentStyleWhenCardHovered = combineStyles(
-      styles.content,
-      styles.descriptionAction,
-      styles.actionContentWhenCardHovered
-    );
     const handleBlur = () => {
       handleSubmit();
       input.onBlur();
@@ -97,18 +104,6 @@ export default class OutcomeCardTextArea extends Component {
       }
     };
 
-    if (isProject) {
-      contentStyles = cardHasHover ? contentStyleWhenCardHovered : styles.content;
-    } else {
-      contentStyles = cardHasHover ?
-        actionContentStyleWhenCardHovered :
-        combineStyles(styles.content, styles.descriptionAction);
-    }
-
-    if (isArchived) {
-      contentStyles = combineStyles(styles.content, styles.isArchived);
-    }
-
     return (
       <Textarea
         {...input}
@@ -126,6 +121,26 @@ export default class OutcomeCardTextArea extends Component {
 }
 
 styles = StyleSheet.create({
+  actionListContent: {
+    backgroundColor: 'transparent',
+    border: 0,
+    boxShadow: 'none',
+    display: 'block',
+    fontSize: theme.typography.s3,
+    lineHeight: theme.typography.s5,
+    outline: 'none',
+    overflow: 'hidden',
+    padding: `${basePadding} ${basePadding} ${labelHeight} 1.75rem`,
+    resize: 'none',
+    width: '100%',
+
+    ':hover': {
+      backgroundColor: ui.actionCardBgActive
+    },
+    ':focus': {
+      backgroundColor: ui.actionCardBgActive
+    }
+  },
   content: {
     ...descriptionBase,
     display: 'block',

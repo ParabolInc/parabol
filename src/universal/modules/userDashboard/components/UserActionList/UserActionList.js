@@ -12,7 +12,7 @@ const UserActionList = (props) => {
 
   // TODO: get the real actions array here:
   // const {actions, isAdding} = props;
-  const {actions, isAdding, teams, userId} = props;
+  const {actions, dispatch, isAdding, teams, userId} = props;
 
   // Sample actions array for dev hackery
   // const actions = [
@@ -83,6 +83,7 @@ const UserActionList = (props) => {
             {actions.map(item =>
               <UserActionListItem
                 content={item.content}
+                dispatch={dispatch}
                 form={`actionItem::${item.id}`}
                 actionId={item.id}
                 isEditing={item.isEditing}

@@ -1,20 +1,51 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
-import {reduxForm, Field} from 'redux-form';
 import OutcomeCardTextarea from 'universal/components/OutcomeCard/OutcomeCardTextarea';
 import {cashay} from 'cashay';
+import {Field, reduxForm, initialize, focus} from 'redux-form';
 
 const combineStyles = StyleSheet.combineStyles;
 const basePadding = '.375rem';
 const labelHeight = '1.5rem';
 
-const UserActionListItem = (props) => {
-  const {styles} = UserActionListItem;
-  const {content, form, handleSubmit, actionId, isEditing, onChecked, team} = props;
-  const handleActionUpdate = (submittedData) => {
+let styles = {};
+
+@reduxForm()
+@look
+export default class UserActionListItem extends Component {
+  static propTypes = {
+    content: PropTypes.string,
+    id: PropTypes.string,
+    isEditing: PropTypes.bool,
+    onChecked: PropTypes.func,
+    team: PropTypes.string
+  };
+
+  componentWillMount() {
+    const {content, dispatch, field, form} = this.props;
+    if (content) {
+      this.initializeValues(content);
+    } else {
+      // manually align redux-state with DOM
+      dispatch(focus(form, field));
+    }
+  }
+  componentWillReceiveProps(nextProps) {
+    const {content} = this.props;
+    const nextContent = nextProps.content;
+    if (nextContent !== content) {
+      this.initializeValues(nextContent);
+    }
+  }
+  initializeValues(content) {
+    const {dispatch, form, actionId} = this.props;
+    dispatch(initialize(form, {[actionId]: content}));
+  }
+  handleActionUpdate = (submittedData) => {
+    const {actionId} = this.props;
     const submittedContent = submittedData[actionId];
     if (!submittedContent) {
       // delete blank cards
@@ -32,38 +63,35 @@ const UserActionListItem = (props) => {
       cashay.mutate('updateAction', options);
     }
   };
-  const checkboxStyles = isEditing ? combineStyles(styles.checkbox, styles.checkboxDisabled) : styles.checkbox;
-  return (
-    <div className={styles.root} key={`action${actionId}`}>
-      <input className={checkboxStyles} disabled={isEditing} onClick={onChecked} type="checkbox" />
-      <form>
-        <Field
-          name={actionId}
-          component={OutcomeCardTextarea}
-          handleSubmit={handleSubmit(handleActionUpdate)}
-          doFocus={!content}
-        />
-      </form>
-      <div className={styles.team}>{team}</div>
-    </div>
-  );
+  render() {
+    const {content, handleSubmit, actionId, isEditing, onChecked, team} = this.props;
+    console.log('this.pr', this.props)
+    const checkboxStyles = isEditing ? combineStyles(styles.checkbox, styles.checkboxDisabled) : styles.checkbox;
+    return (
+      <div className={styles.root} key={`action${actionId}`}>
+        <input className={checkboxStyles} disabled={isEditing} onClick={onChecked} type="checkbox"/>
+        <form>
+          <Field
+            name={actionId}
+            component={OutcomeCardTextarea}
+            doFocus={!content}
+            handleSubmit={handleSubmit(this.handleActionUpdate)}
+            isActionListItem
+          />
+        </form>
+        <div className={styles.team}>{team}</div>
+      </div>
+    );
+  }
 };
 
-UserActionListItem.propTypes = {
-  content: PropTypes.string,
-  id: PropTypes.string,
-  isEditing: PropTypes.bool,
-  onChecked: PropTypes.func,
-  team: PropTypes.string
-};
+// UserActionListItem.defaultProps = {
+//   isEditing: false,
+//   onChecked: () => console.log('UserActionListItem.checkbox.onChecked()'),
+//   team: 'Parabol'
+// };
 
-UserActionListItem.defaultProps = {
-  isEditing: false,
-  onChecked: () => console.log('UserActionListItem.checkbox.onChecked()'),
-  team: 'Parabol'
-};
-
-UserActionListItem.styles = StyleSheet.create({
+styles = StyleSheet.create({
   root: {
     borderTop: `1px solid ${ui.cardBorderColor}`,
     position: 'relative',
@@ -83,26 +111,6 @@ UserActionListItem.styles = StyleSheet.create({
   },
 
   // TODO: @terry can you merge this into OutcomeCardTextarea as a condition? MK
-  content: {
-    backgroundColor: 'transparent',
-    border: 0,
-    boxShadow: 'none',
-    display: 'block',
-    fontSize: theme.typography.s3,
-    lineHeight: theme.typography.s5,
-    outline: 'none',
-    overflow: 'hidden',
-    padding: `${basePadding} ${basePadding} ${labelHeight} 1.75rem`,
-    resize: 'none',
-    width: '100%',
-
-    ':hover': {
-      backgroundColor: ui.actionCardBgActive
-    },
-    ':focus': {
-      backgroundColor: ui.actionCardBgActive
-    }
-  },
 
   team: {
     ...textOverflow,
@@ -120,5 +128,3 @@ UserActionListItem.styles = StyleSheet.create({
     zIndex: 200
   }
 });
-
-export default reduxForm()(look(UserActionListItem));

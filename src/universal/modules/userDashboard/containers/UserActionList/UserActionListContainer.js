@@ -38,8 +38,8 @@ const mapStateToProps = (state) => {
 };
 
 const UserActionListContainer = (props) => {
-  const {actions, teams, userId} = props;
-  return <UserActionList actions={actions} teams={teams} userId={userId}/>;
+  const {actions, dispatch, teams, userId} = props;
+  return <UserActionList actions={actions} dispatch={dispatch} teams={teams} userId={userId}/>;
 };
 
 UserActionListContainer.propTypes = {
