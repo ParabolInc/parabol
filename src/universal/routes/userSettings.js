@@ -5,8 +5,7 @@ const setImports = () =>
   new Map([
     ['component', System.import(
       'universal/modules/userDashboard/containers/UserSettings/UserSettingsContainer')],
-    ['userDashboardSettings', System.import(
-      'universal/modules/userDashboard/ducks/settingsDuck')]
+    ['userDashboardSettings', System.import('universal/modules/userDashboard/ducks/settingsDuck')]
   ]);
 
 const getImports = importMap => ({

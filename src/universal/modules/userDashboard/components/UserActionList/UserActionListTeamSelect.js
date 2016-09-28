@@ -8,6 +8,7 @@ import Type from 'universal/components/Type/Type';
 import shortid from 'shortid';
 import {cashay} from 'cashay';
 import {SORT_STEP} from 'universal/utils/constants';
+import {selectNewActionTeam} from 'universal/modules/userDashboard/ducks/userDashDuck';
 
 const height = '1.25rem';
 const lineHeight = height;
@@ -26,17 +27,10 @@ const iconStyle = {
 const UserActionListTeamSelect = (props) => {
   const {styles} = UserActionListTeamSelect;
   const {actionCount, teams, userId} = props;
-  // const teams = [
-  //   'Parabol',
-  //   'Engineering',
-  //   'Core',
-  //   'Product',
-  //   'Design'
-  // ];
 
-  const cancelAddAction = () =>
-    // TODO: if a user clicks the cancel icon, or anywhere else in the DOM, then cancel (TA)
-    console.log('cancelAddAction()');
+  const cancelAddAction = () => {
+    props.dispatch(selectNewActionTeam(false));
+  };
 
   const selectTeamFactory = (teamId) => () => {
     const options = {
@@ -49,9 +43,7 @@ const UserActionListTeamSelect = (props) => {
       }
     };
     cashay.mutate('createAction', options);
-    // TODO: when a user selects a team, a new action is autoFocused at the top of the list.
-    //       the list isAdding is false and the Add New control is visible so that the user
-    //       can add an action again as soon as they blur the content they wrote for the new action (TA)
+    props.dispatch(selectNewActionTeam(false));
   }
   return (
     <div className={styles.root}>

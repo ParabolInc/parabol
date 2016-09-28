@@ -6,66 +6,34 @@ import UserActionListEmpty from './UserActionListEmpty';
 import UserActionListHeader from './UserActionListHeader';
 import UserActionListItemContainer from 'universal/modules/userDashboard/containers/UserActionListItem/UserActionListItemContainer';
 import UserActionListTeamSelect from './UserActionListTeamSelect';
-
+import {selectNewActionTeam} from 'universal/modules/userDashboard/ducks/userDashDuck';
+import shortid from 'shortid';
+import {SORT_STEP} from 'universal/utils/constants';
+import {cashay} from 'cashay';
 const UserActionList = (props) => {
   const {styles} = UserActionList;
 
   // TODO: get the real actions array here:
   // const {actions, isAdding} = props;
-  const {actions, isAdding, teams, userId} = props;
-
-  // Sample actions array for dev hackery
-  // const actions = [
-  // {
-  //   content: 'New action added on top of previous actions, after selecting a team if more than one team',
-  //   id: '000',
-  //   isEditing: true,
-  //   team: 'Parabol',
-  //   updatedAt: 'Just Now'
-  // },
-  // {
-  //   content: 'PR merged',
-  //   id: '001',
-  //   isEditing: false,
-  //   team: 'Parabol',
-  //   updatedAt: 'Today'
-  // },
-  // {
-  //   content: 'UI iterated',
-  //   id: '002',
-  //   isEditing: false,
-  //   team: 'Parabol',
-  //   updatedAt: 'Yesterday'
-  // },
-  // {
-  //   content: 'Pivot completed',
-  //   id: '003',
-  //   isEditing: false,
-  //   team: 'Parabol',
-  //   updatedAt: 'Last Week'
-  // },
-  // {
-  //   content: 'Pitch deck updated',
-  //   id: '004',
-  //   isEditing: false,
-  //   team: 'Parabol',
-  //   updatedAt: '5 Mins Ago'
-  // }
-  // ];
+  const {actions, dispatch, selectingNewActionTeam, teams, userId} = props;
   const actionCount = actions.length;
-  const createNewAction = () =>
-
-    // TODO: if user is on many teams, show team select
-    //       otherwise autoFocus a brand new item at the top of the list
-    //       isAdding is now false and the Add New Control is showing.
-    //       Why? As soon as they are done editing they can click the control again
-    //       to add another action. (TA)
-
-    // TODO: if it is the first action then the empty message dissappears,
-    //       only showing the focused new action item. (TA)
-
-    // TODO: if user blurs an empty textarea, delete the action (TA)
-    console.log('UserActionList.createNewAction()');
+  const createNewAction = () => {
+    if (teams.length > 1) {
+      dispatch(selectNewActionTeam(true));
+    } else {
+      const teamId = teams[0] && teams[0].id;
+      const options = {
+        variables: {
+          newAction: {
+            id: `${teamId}::${shortid.generate()}`,
+            teamMemberId: `${userId}::${teamId}`,
+            sortOrder: actionCount + SORT_STEP
+          }
+        }
+      };
+      cashay.mutate('createAction', options);
+    }
+  };
 
   const handleCheck = () =>
     // TODO: item is set to [hidden for data insights?] —pop a toast to undo? (TA)
@@ -73,8 +41,8 @@ const UserActionList = (props) => {
   return (
     <div className={styles.root}>
       <div className={styles.block}>
-        {isAdding ?
-          <UserActionListTeamSelect teams={teams} actionCount={actionCount} userId={userId}/> :
+        {selectingNewActionTeam ?
+          <UserActionListTeamSelect dispatch={dispatch} teams={teams} actionCount={actionCount} userId={userId}/> :
           <UserActionListHeader onAddNewAction={createNewAction}/>
         }
         {actionCount ?
@@ -91,7 +59,7 @@ const UserActionList = (props) => {
             )}
             <div className={styles.hr}></div>
           </div> :
-          <div>{!isAdding && <UserActionListEmpty />}</div>
+          <div>{!selectingNewActionTeam && <UserActionListEmpty />}</div>
         }
       </div>
     </div>
@@ -100,11 +68,7 @@ const UserActionList = (props) => {
 
 UserActionList.propTypes = {
   actions: PropTypes.array,
-  isAdding: PropTypes.bool
-};
-
-UserActionList.defaultProps = {
-  isAdding: true
+  selectingNewActionTeam: PropTypes.bool
 };
 
 UserActionList.styles = StyleSheet.create({
@@ -140,5 +104,3 @@ UserActionList.styles = StyleSheet.create({
 });
 
 export default look(UserActionList);
-
-// {actions.map(item => <div key={`action${item.id}`}>{item.content} - {item.updatedAt.toString()}</div>)}

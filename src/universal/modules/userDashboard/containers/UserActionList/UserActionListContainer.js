@@ -39,13 +39,22 @@ const mapStateToProps = (state) => {
   return {
     actions,
     teams,
-    userId: state.auth.obj.sub
+    userId: state.auth.obj.sub,
+    selectingNewActionTeam: state.userDashboard.selectingNewActionTeam
   };
 };
 
 const UserActionListContainer = (props) => {
-  const {actions, teams, userId} = props;
-  return <UserActionList actions={actions} teams={teams} userId={userId}/>;
+  const {actions, dispatch, selectingNewActionTeam, teams, userId} = props;
+  return (
+    <UserActionList
+      actions={actions}
+      dispatch={dispatch}
+      teams={teams}
+      userId={userId}
+      selectingNewActionTeam={selectingNewActionTeam}
+    />
+  );
 };
 
 UserActionListContainer.propTypes = {

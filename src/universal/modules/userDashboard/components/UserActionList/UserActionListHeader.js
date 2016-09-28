@@ -25,9 +25,9 @@ const UserActionListEmpty = (props) => {
   const {styles} = UserActionListEmpty;
   const {onAddNewAction} = props;
   return (
-    <div className={styles.root}>
-      <FontAwesome name="plus-circle" onClick={onAddNewAction} style={iconStyle} />
-      <Type bold display="inlineBlock" lineHeight={lineHeight} onClick={onAddNewAction} scale="s3" width="auto">
+    <div className={styles.root} onClick={onAddNewAction}>
+      <FontAwesome name="plus-circle" style={iconStyle} />
+      <Type bold display="inlineBlock" lineHeight={lineHeight} scale="s3" width="auto">
         Add New Action
       </Type>
     </div>
