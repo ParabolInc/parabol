@@ -12,10 +12,10 @@ const UserActionList = (props) => {
 
   // TODO: get the real actions array here:
   // const {actions, isAdding} = props;
-  const {isAdding} = props;
+  const {actions, isAdding, teams, userId} = props;
 
   // Sample actions array for dev hackery
-  const actions = [
+  // const actions = [
     // {
     //   content: 'New action added on top of previous actions, after selecting a team if more than one team',
     //   id: '000',
@@ -23,37 +23,38 @@ const UserActionList = (props) => {
     //   team: 'Parabol',
     //   updatedAt: 'Just Now'
     // },
-    {
-      content: 'PR merged',
-      id: '001',
-      isEditing: false,
-      team: 'Parabol',
-      updatedAt: 'Today'
-    },
-    {
-      content: 'UI iterated',
-      id: '002',
-      isEditing: false,
-      team: 'Parabol',
-      updatedAt: 'Yesterday'
-    },
-    {
-      content: 'Pivot completed',
-      id: '003',
-      isEditing: false,
-      team: 'Parabol',
-      updatedAt: 'Last Week'
-    },
-    {
-      content: 'Pitch deck updated',
-      id: '004',
-      isEditing: false,
-      team: 'Parabol',
-      updatedAt: '5 Mins Ago'
-    }
-  ];
-
+    // {
+    //   content: 'PR merged',
+    //   id: '001',
+    //   isEditing: false,
+    //   team: 'Parabol',
+    //   updatedAt: 'Today'
+    // },
+    // {
+    //   content: 'UI iterated',
+    //   id: '002',
+    //   isEditing: false,
+    //   team: 'Parabol',
+    //   updatedAt: 'Yesterday'
+    // },
+    // {
+    //   content: 'Pivot completed',
+    //   id: '003',
+    //   isEditing: false,
+    //   team: 'Parabol',
+    //   updatedAt: 'Last Week'
+    // },
+    // {
+    //   content: 'Pitch deck updated',
+    //   id: '004',
+    //   isEditing: false,
+    //   team: 'Parabol',
+    //   updatedAt: '5 Mins Ago'
+    // }
+  // ];
+  const actionCount = actions.length;
   const createNewAction = () =>
+
     // TODO: if user is on many teams, show team select
     //       otherwise autoFocus a brand new item at the top of the list
     //       isAdding is now false and the Add New Control is showing.
@@ -73,8 +74,11 @@ const UserActionList = (props) => {
   return (
     <div className={styles.root}>
       <div className={styles.block}>
-        {isAdding ? <UserActionListTeamSelect /> : <UserActionListHeader onAddNewAction={createNewAction} />}
-        {actions.length ?
+        {isAdding ?
+          <UserActionListTeamSelect teams={teams} actionCount={actionCount} userId={userId}/> :
+          <UserActionListHeader onAddNewAction={createNewAction} />
+        }
+        {actionCount ?
           <div className={styles.actions}>
             {actions.map(item =>
               <UserActionListItem
@@ -83,7 +87,6 @@ const UserActionList = (props) => {
                 isEditing={item.isEditing}
                 onChecked={handleCheck}
                 team={item.team}
-                updatedAt={item.updatedAt.toString()}
               />
             )}
             <div className={styles.hr}></div>

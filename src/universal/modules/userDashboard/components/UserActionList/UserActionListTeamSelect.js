@@ -5,6 +5,9 @@ import {ib} from 'universal/styles/helpers';
 import ui from 'universal/styles/ui';
 import FontAwesome from 'react-fontawesome';
 import Type from 'universal/components/Type/Type';
+import shortid from 'shortid';
+import {cashay} from 'cashay';
+import {SORT_STEP} from 'universal/utils/constants';
 
 const height = '1.25rem';
 const lineHeight = height;
@@ -20,37 +23,49 @@ const iconStyle = {
   width: '1rem'
 };
 
-const UserActionListTeamSelect = () => {
+const UserActionListTeamSelect = (props) => {
   const {styles} = UserActionListTeamSelect;
-  const teams = [
-    'Parabol',
-    'Engineering',
-    'Core',
-    'Product',
-    'Design'
-  ];
+  const {actionCount, teams, userId} = props;
+  // const teams = [
+  //   'Parabol',
+  //   'Engineering',
+  //   'Core',
+  //   'Product',
+  //   'Design'
+  // ];
 
   const cancelAddAction = () =>
     // TODO: if a user clicks the cancel icon, or anywhere else in the DOM, then cancel (TA)
     console.log('cancelAddAction()');
 
-  const selectTeam = () =>
+  const selectTeamFactory = (teamId) => () => {
+    const options = {
+      variables: {
+        newAction: {
+          id: `${teamId}::${shortid.generate()}`,
+          teamMemberId: `${userId}::${teamId}`,
+          sortOrder: actionCount + SORT_STEP
+        }
+      }
+    };
+    cashay.mutate('createAction', options);
     // TODO: when a user selects a team, a new action is autoFocused at the top of the list.
     //       the list isAdding is false and the Add New control is visible so that the user
     //       can add an action again as soon as they blur the content they wrote for the new action (TA)
-    console.log('selectTeam()');
+  }
 
   return (
     <div className={styles.root}>
       <div className={styles.header}>
-        <FontAwesome className={styles.cancel} name="times-circle" onClick={cancelAddAction} style={iconStyle} title="Cancel" />
+        <FontAwesome className={styles.cancel} name="times-circle" onClick={cancelAddAction} style={iconStyle}
+                     title="Cancel"/>
         <Type bold display="inlineBlock" lineHeight={lineHeight} scale="s3" width="auto">
           Select a Team:
         </Type>
       </div>
       <div className={styles.controls}>
-        {teams.map(team =>
-          <div className={styles.control} onClick={selectTeam} title={`Select team: ${team}`}>{team}</div>
+        {teams.map(({name, id}) => <div className={styles.control} onClick={selectTeamFactory(id)}
+                                        title={`Select team: ${name}`}>{name}</div>
         )}
       </div>
     </div>
