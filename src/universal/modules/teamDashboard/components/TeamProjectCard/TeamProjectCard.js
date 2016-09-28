@@ -4,10 +4,11 @@ import {cashay} from 'cashay';
 import {Field, reduxForm, initialize, focus} from 'redux-form';
 import labels from 'universal/styles/theme/labels';
 import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
+import EditingStatusContainer from 'universal/containers/EditingStatus/EditingStatusContainer';
 import OutcomeCardAssignMenuContainer
   from 'universal/modules/teamDashboard/containers/OutcomeCardAssignMenu/OutcomeCardAssignMenuContainer';
 import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
-import OutcomeCardTextareaContainer from 'universal/modules/teamDashboard/containers/OutcomeCardTextarea/OutcomeCardTextareaContainer';
+import OutcomeCardTextarea from 'universal/components/OutcomeCard/OutcomeCardTextarea';
 import OutcomeCardFooter from 'universal/components/OutcomeCard/OutcomeCardFooter';
 import OutcomeCardStatusMenu from 'universal/components/OutcomeCard/OutcomeCardStatusMenu';
 import throttle from 'lodash.throttle';
@@ -114,6 +115,7 @@ export default class TeamProjectCard extends Component {
     const {openMenu} = this.state;
     const {
       area,
+      form,
       handleSubmit,
       project,
       isArchived,
@@ -158,14 +160,18 @@ export default class TeamProjectCard extends Component {
         {!hasOpenAssignMenu && !hasOpenStatusMenu &&
           <div className={styles.body}>
             <form>
+              <EditingStatusContainer
+                form={form}
+                outcomeId={project.id}
+                updatedAt={project.updatedAt}
+              />
               <Field
                 name={projectId}
-                component={OutcomeCardTextareaContainer}
+                component={OutcomeCardTextarea}
                 handleActive={handleCardActive}
                 handleSubmit={handleSubmit(this.handleCardUpdate)}
                 isArchived={isArchived}
                 isProject={isProject}
-                outcome={project}
                 doFocus={!content}
                 cardHasHover={this.state.cardHasHover}
               />

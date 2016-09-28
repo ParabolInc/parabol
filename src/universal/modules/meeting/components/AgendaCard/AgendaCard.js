@@ -8,7 +8,8 @@ import OutcomeCardAssignMenuContainer
   from 'universal/modules/teamDashboard/containers/OutcomeCardAssignMenu/OutcomeCardAssignMenuContainer';
 
 import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
-import OutcomeCardTextareaContainer from 'universal/modules/teamDashboard/containers/OutcomeCardTextarea/OutcomeCardTextareaContainer';
+import OutcomeCardTextarea from 'universal/components/OutcomeCard/OutcomeCardTextarea';
+import EditingStatusContainer from 'universal/containers/EditingStatus/EditingStatusContainer';
 import OutcomeCardFooter from 'universal/components/OutcomeCard/OutcomeCardFooter';
 import OutcomeCardStatusMenu from 'universal/components/OutcomeCard/OutcomeCardStatusMenu';
 import getOutcomeNames from 'universal/utils/getOutcomeNames';
@@ -76,6 +77,7 @@ export default class AgendaCard extends Component {
   render() {
     const {openMenu} = this.state;
     const {
+      form,
       handleSubmit,
       outcome,
     } = this.props;
@@ -144,14 +146,18 @@ export default class AgendaCard extends Component {
         {!hasOpenAssignMenu && !hasOpenStatusMenu &&
           <div className={styles.body}>
             <form>
+              <EditingStatusContainer
+                form={form}
+                outcomeId={outcome.id}
+                updatedAt={outcome.updatedAt}
+              />
               <Field
                 cardHasHover={this.state.cardHasHover}
-                component={OutcomeCardTextareaContainer}
+                component={OutcomeCardTextarea}
                 handleActive={handleCardActive}
                 handleSubmit={handleSubmit(handleAgendaCardUpdate)}
                 isProject={isProject}
                 name={outcomeId}
-                outcome={outcome}
               />
             </form>
           </div>

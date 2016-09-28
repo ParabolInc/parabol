@@ -63,7 +63,6 @@ export default class OutcomeCardTextArea extends Component {
   render() {
     const {
       cardHasHover,
-      editingStatus,
       handleSubmit,
       input,
       isArchived,
@@ -111,22 +110,17 @@ export default class OutcomeCardTextArea extends Component {
     }
 
     return (
-      <div>
-        <div className={styles.timestamp}>
-          {editingStatus}
-        </div>
-        <Textarea
-          {...input}
-          ref={setRef}
-          className={contentStyles}
-          disabled={isArchived}
-          placeholder="Type your outcome here"
-          onBlur={handleBlur}
-          onKeyDown={submitOnEnter}
-          onKeyUp={handleKeyPress}
-          autoFocus={doFocus}
-        />
-      </div>
+      <Textarea
+        {...input}
+        ref={setRef}
+        className={contentStyles}
+        disabled={isArchived}
+        placeholder="Type your outcome here"
+        onBlur={handleBlur}
+        onKeyDown={submitOnEnter}
+        onKeyUp={handleKeyPress}
+        autoFocus={doFocus}
+      />
     );
   }
 }
@@ -172,15 +166,6 @@ styles = StyleSheet.create({
 
   actionContentWhenCardHovered: {
     ...descriptionActionFA
-  },
-
-  timestamp: {
-    color: theme.palette.dark,
-    fontSize: theme.typography.s1,
-    fontWeight: 700,
-    lineHeight: theme.typography.s3,
-    padding: `.25rem ${ui.cardPaddingBase}`,
-    textAlign: 'right'
   },
 
   isArchived: {

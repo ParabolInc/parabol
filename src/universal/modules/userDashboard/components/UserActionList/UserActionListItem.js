@@ -3,7 +3,9 @@ import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
-import Textarea from 'react-textarea-autosize';
+import {reduxForm, Field} from 'redux-form';
+import OutcomeCardTextarea from 'universal/components/OutcomeCard/OutcomeCardTextarea';
+import {cashay} from 'cashay';
 
 const combineStyles = StyleSheet.combineStyles;
 const basePadding = '.375rem';
@@ -11,12 +13,37 @@ const labelHeight = '1.5rem';
 
 const UserActionListItem = (props) => {
   const {styles} = UserActionListItem;
-  const {content, id, isEditing, onChecked, team} = props;
+  const {content, form, handleSubmit, actionId, isEditing, onChecked, team} = props;
+  const handleActionUpdate = (submittedData) => {
+    const submittedContent = submittedData[actionId];
+    if (!submittedContent) {
+      // delete blank cards
+      cashay.mutate('deleteAction', {variables: {actionId}});
+    } else {
+      // TODO debounce for useless things like ctrl, shift, etc
+      const options = {
+        variables: {
+          updatedAction: {
+            id: actionId,
+            content: submittedContent
+          }
+        }
+      };
+      cashay.mutate('updateAction', options);
+    }
+  };
   const checkboxStyles = isEditing ? combineStyles(styles.checkbox, styles.checkboxDisabled) : styles.checkbox;
   return (
-    <div className={styles.root} key={`action${id}`}>
+    <div className={styles.root} key={`action${actionId}`}>
       <input className={checkboxStyles} disabled={isEditing} onClick={onChecked} type="checkbox" />
-      <Textarea className={styles.content} value={content} autoFocus={isEditing} />
+      <form>
+        <Field
+          name={actionId}
+          component={OutcomeCardTextarea}
+          handleSubmit={handleSubmit(handleActionUpdate)}
+          doFocus={!content}
+        />
+      </form>
       <div className={styles.team}>{team}</div>
     </div>
   );
@@ -55,6 +82,7 @@ UserActionListItem.styles = StyleSheet.create({
     cursor: 'not-allowed'
   },
 
+  // TODO: @terry can you merge this into OutcomeCardTextarea as a condition? MK
   content: {
     backgroundColor: 'transparent',
     border: 0,
@@ -93,4 +121,4 @@ UserActionListItem.styles = StyleSheet.create({
   }
 });
 
-export default look(UserActionListItem);
+export default reduxForm()(look(UserActionListItem));

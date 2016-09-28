@@ -32,9 +32,9 @@ const mapStateToProps = (state, props) => {
     op: 'projectCardContainer',
     key: projectId,
     variables: {projectId},
-    // example of returning a string instead of a function so it runs in O(1)
     resolveCached: {
       team: (source) => (doc) => source.id.startsWith(doc.id),
+      // example of returning a string instead of a function so it runs in O(1)
       teamMember: (source) => source.teamMemberId
     },
   }).data;

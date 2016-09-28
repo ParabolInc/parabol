@@ -1,11 +1,11 @@
 import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
-import fromNow from 'universal/utils/fromNow';
-import Ellipsis from 'universal/components/Ellipsis/Ellipsis';
-import OutcomeCardTextarea from 'universal/components/OutcomeCard/OutcomeCardTextarea';
+import fromNow from '../../utils/fromNow';
+import Ellipsis from '../../components/Ellipsis/Ellipsis';
+import EditingStatus from 'universal/components/EditingStatus/EditingStatus';
 
-const outcomeCardTextareaQuery = `
+const editingStatusContainer = `
 query {
   editors @cached(id: $outcomeId, type: "[Presence]") {
     id
@@ -44,10 +44,9 @@ const makeEditingStatus = (editors, active, updatedAt) => {
 };
 
 const mapStateToProps = (state, props) => {
-  const {active} = props.meta;
-  const {updatedAt, id: outcomeId} = props.outcome;
-  const {editors} = cashay.query(outcomeCardTextareaQuery, {
-    op: 'outcomeCardTextareaContainer',
+  const {form, updatedAt, outcomeId} = props;
+  const {editors} = cashay.query(editingStatusContainer, {
+    op: 'editingStatusContainer',
     variables: {outcomeId},
     key: outcomeId,
     resolveCached: {
@@ -62,22 +61,24 @@ const mapStateToProps = (state, props) => {
       }
     }
   }).data;
+  const active = state.form[form].active === outcomeId;
   const editingStatus = makeEditingStatus(editors, active, updatedAt);
   return {
     editingStatus
   };
 };
 
-const OutcomeCardTextareaContainer = (props) => {
-  return (
-    <OutcomeCardTextarea
-      {...props}
-    />
-  );
+const EditingStatusContainer = (props) => {
+  const {editingStatus} = props;
+  return <EditingStatus status={editingStatus}/>
 };
 
-OutcomeCardTextareaContainer.propTypes = {
-  editingStatus: PropTypes.any
+EditingStatusContainer.propTypes = {
+  active: PropTypes.bool,
+  className: PropTypes.object,
+  editingStatus: PropTypes.any,
+  outcomeId: PropTypes.string,
+  updatedAt: PropTypes.instanceOf(Date)
 };
 
-export default connect(mapStateToProps)(OutcomeCardTextareaContainer);
+export default connect(mapStateToProps)(EditingStatusContainer);

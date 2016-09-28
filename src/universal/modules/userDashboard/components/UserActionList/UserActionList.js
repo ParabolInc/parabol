@@ -83,7 +83,8 @@ const UserActionList = (props) => {
             {actions.map(item =>
               <UserActionListItem
                 content={item.content}
-                id={item.id}
+                form={`actionItem::${item.id}`}
+                actionId={item.id}
                 isEditing={item.isEditing}
                 onChecked={handleCheck}
                 team={item.team}
