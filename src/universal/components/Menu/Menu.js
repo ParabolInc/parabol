@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import tinycolor from 'tinycolor2';
 import theme from 'universal/styles/theme';
+import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
 import MenuItem from './MenuItem';
 // TODO: add option for labels with icons
@@ -9,9 +9,11 @@ import MenuItem from './MenuItem';
 
 const Menu = (props) => {
   const {styles} = Menu;
-  const {items, label} = props;
+  const {hasShadow, items, label} = props;
+  const boxShadow = '0 1px 1px rgba(0, 0, 0, .15)';
+  const rootStyle = hasShadow ? {boxShadow} : null;
   return (
-    <div className={styles.root}>
+    <div className={styles.root} style={rootStyle}>
       <div className={styles.label}>{label}</div>
       {items.map((item, idx) =>
         <MenuItem
@@ -25,16 +27,19 @@ const Menu = (props) => {
   );
 };
 
-const backgroundColor = tinycolor.mix(theme.palette.mid, '#fff', 95).toHexString();
-
 Menu.propTypes = {
+  hasShadow: PropTypes.bool,
   items: PropTypes.array,
   label: PropTypes.string
 };
 
+Menu.defaultProps = {
+  hasShadow: true
+};
+
 Menu.styles = StyleSheet.create({
   root: {
-    backgroundColor,
+    backgroundColor: ui.menuBackgroundColor,
     border: `1px solid ${theme.palette.mid30l}`,
     borderRadius: '.25rem',
     padding: '0 0 .5rem',
@@ -48,6 +53,7 @@ Menu.styles = StyleSheet.create({
     color: theme.palette.mid,
     fontSize: theme.typography.s2,
     fontWeight: 700,
+    lineHeight: 1,
     padding: '.5rem'
   }
 });

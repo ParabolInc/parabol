@@ -85,7 +85,7 @@ const ProjectColumn = (props) => {
       const userSort = getNextSortOrder(projects, 'userSort');
       const menuItems = makeTeamMenuItems(userSort);
       return (
-        <MenuToggle menuPosition="right" toggle={toggle}>
+        <MenuToggle menuOrientation="right" menuWidth="10rem" toggle={toggle} toggleHeight="1.5rem">
           <Menu items={menuItems} label="Select Team:" />
         </MenuToggle>
       );
@@ -160,11 +160,14 @@ styles = StyleSheet.create({
     display: 'flex !important',
     lineHeight: '1.5rem',
     padding: '.5rem 1rem',
+    position: 'relative',
+    zIndex: '400'
   },
 
   columnBody: {
     flex: 1,
-    position: 'relative'
+    position: 'relative',
+    zIndex: '200'
   },
 
   columnInner: {
