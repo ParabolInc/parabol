@@ -18,7 +18,9 @@ styles = StyleSheet.create({
     display: 'flex',
     maxWidth: ui.projectColumnsMaxWidth,
     padding: '1rem',
-    width: '100%'
+    position: 'relative',
+    width: '100%',
+    zIndex: 400
   }
 });
 

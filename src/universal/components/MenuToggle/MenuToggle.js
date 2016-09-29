@@ -13,13 +13,18 @@ export default class MenuToggle extends Component {
     ]),
     menuWidth: PropTypes.string,
     toggle: PropTypes.any,
-    toggleHeight: PropTypes.string
+    toggleHeight: PropTypes.string,
+    verticalAlign: PropTypes.oneOf([
+      'middle',
+      'top'
+    ]),
   }
 
   static defaultProps = {
     menuOrientation: 'left',
     menuWidth: '12rem',
-    toggle: 'Toggle Menu'
+    toggle: 'Toggle Menu',
+    verticalAlign: 'middle'
   }
 
   constructor(props) {
@@ -35,7 +40,8 @@ export default class MenuToggle extends Component {
       menuOrientation,
       menuWidth,
       toggle,
-      toggleHeight
+      toggleHeight,
+      verticalAlign
     } = this.props;
 
     const toggleMenu = () => {
@@ -48,7 +54,8 @@ export default class MenuToggle extends Component {
 
     const toggleHeightStyle = {
       height: toggleHeight,
-      lineHeight: toggleHeight
+      lineHeight: toggleHeight,
+      verticalAlign
     };
 
     const menuBlockStyle = {
@@ -58,11 +65,11 @@ export default class MenuToggle extends Component {
 
     const toggleStyle = this.state.open ? {opacity: '.5'} : null;
 
-    const rootStyle = toggleHeight ? toggleHeightStyle : null;
+    const rootStyle = toggleHeight ? toggleHeightStyle : {verticalAlign};
 
     return (
       <div className={styles.root} style={rootStyle}>
-        <div className={styles.toggle} onClick={toggleMenu} style={toggleStyle}>{toggle}</div>
+        <div className={styles.toggle} onClick={toggleMenu} style={{...rootStyle, ...toggleStyle}}>{toggle}</div>
         {this.state.open &&
           <div className={styles.menuBlock} style={menuBlockStyle}>
             {React.cloneElement(children, {closeMenu})}
@@ -76,8 +83,7 @@ export default class MenuToggle extends Component {
 styles = StyleSheet.create({
   root: {
     display: 'inline-block',
-    position: 'relative',
-    verticalAlign: 'middle'
+    position: 'relative'
   },
 
   toggle: {

@@ -11,8 +11,7 @@ import FontAwesome from 'react-fontawesome';
 import {cashay} from 'cashay';
 import shortid from 'shortid';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
-import MenuToggle from 'universal/components/MenuToggle/MenuToggle';
-import Menu from 'universal/components/Menu/Menu';
+import {Menu, MenuToggle} from 'universal/components';
 
 const combineStyles = StyleSheet.combineStyles;
 const badgeIconStyle = {
