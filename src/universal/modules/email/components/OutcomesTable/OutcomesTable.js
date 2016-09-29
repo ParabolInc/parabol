@@ -37,16 +37,11 @@ const OutcomesTable = (props) => {
 
   return (
     <table align="center">
-      {
-        outcomeRows.map(row => {
-          console.log(row);
-          return (
-            <tr>
-              {makeOutcomeCards(row)}
-            </tr>
-          );
-        })
-      }
+      {outcomeRows.map(row =>
+        <tr>
+          {makeOutcomeCards(row)}
+        </tr>
+      )}
     </table>
   );
 };

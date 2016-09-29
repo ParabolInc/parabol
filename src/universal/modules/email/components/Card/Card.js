@@ -20,6 +20,7 @@ const Card = (props) => {
     backgroundColor,
     fontSize: '16px',
     fontFamily: ui.emailFontFamily,
+    height: '76px',
     lineHeight: '20px',
     padding: '0 .25rem'
   };
@@ -76,6 +77,17 @@ const Card = (props) => {
   let borderImageBottomRight;
   let borderImageTopLeft;
   let borderImageTopRight;
+
+  const formatContent = (string, maxLength) => {
+    const length = string.length;
+    let formatted = string;
+    if (length > maxLength) {
+      formatted = formatted.slice(0, maxLength);
+      formatted = formatted.trim();
+      formatted += '...';
+    }
+    return formatted;
+  };
 
   if (type === 'action') {
     borderImageBottomLeft = borderImageBottomLeftAction;
@@ -142,12 +154,13 @@ const Card = (props) => {
           <td
             align="left"
             style={cardBodyStyle}
+            vAlign="top"
           >
             <EmptySpace height={8} />
-            {content}
-            <EmptySpace height={4} />
-            <span style={teamStyle}>{team}</span>
-            <EmptySpace height={4} />
+            {formatContent(content, 56)}
+            {/* <EmptySpace height={4} />
+            <span style={teamStyle}>{team}</span> */}
+            <EmptySpace height={8} />
           </td>
           <td style={borderRightStyle}></td>
         </tr>

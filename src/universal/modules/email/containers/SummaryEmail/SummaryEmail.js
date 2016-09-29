@@ -160,7 +160,7 @@ const Terry = {
       type: 'project'
     },
     {
-      content: 'Project column empty states implemented with great skill',
+      content: 'Project column empty states implemented with great skill and it is almost novel length but if it is longer than a tweet it will be trimmed and that is cool.',
       status: 'stuck',
       team: 'Parabol',
       type: 'project'
