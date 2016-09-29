@@ -1,7 +1,5 @@
-import {validOutcomes} from 'universal/utils/constants';
-
 const SELECT_NEW_ACTION_TEAM = 'action/userDashboard/SELECT_NEW_ACTION_TEAM';
-// const SET_PROJECT_TEAM = 'action/userDashboard/SET_PROJECT_TEAM';
+// const SELECT_NEW_PROJECT_TEAM = 'action/userDashboard/SELECT_NEW_PROJECT_TEAM';
 
 const initialState = {
   selectingNewActionTeam: false,
@@ -29,3 +27,12 @@ export const selectNewActionTeam = (bool) => {
     }
   };
 };
+
+// export const selectNewProjectTeam = (bool) => {
+//   return {
+//     type: SELECT_NEW_PROJECT_TEAM,
+//     payload: {
+//       selectingNewProjectTeam: bool
+//     }
+//   };
+// };

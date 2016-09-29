@@ -11,6 +11,7 @@ const userColumnsQuery = `
 query {
   teams @live {
     id
+    name
     projects @live {
       content
       id
@@ -36,21 +37,26 @@ const resolveUserProjects = (teams) => {
 
 const mapStateToProps = (state) => {
   const {sub: userId} = state.auth.obj;
-  const teamsWithProjects = cashay.query(userColumnsQuery, {
+  const {teams} = cashay.query(userColumnsQuery, {
     op: 'userColumnsContainer',
     resolveChannelKey: {
       projects: (source) => `${userId}::${source.id}`
+    },
+    sort: {
+      teams: (a,b) => a.name > b.name
     }
-  }).data.teams;
+  }).data;
   return {
-    projects: resolveUserProjects(teamsWithProjects)
+    projects: resolveUserProjects(teams),
+    teams,
+    userId: state.auth.obj.sub
   };
 };
 
 const UserColumnsContainer = (props) => {
-  const {projects} = props;
+  const {projects, teams, userId} = props;
   return (
-    <ProjectColumns projects={projects} area={USER_DASH}/>
+    <ProjectColumns projects={projects} area={USER_DASH} teams={teams} userId={userId}/>
   );
 };
 

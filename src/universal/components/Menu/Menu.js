@@ -18,7 +18,7 @@ const Menu = (props) => {
           isActive={item.isActive}
           key={`MenuItem${idx}`}
           label={item.label}
-          onClick={item.onClick}
+          onClick={item.handleClick}
         />
       )}
     </div>

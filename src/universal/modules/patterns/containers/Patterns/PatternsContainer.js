@@ -28,27 +28,27 @@ const demoMenuItems = [
   {
     label: 'Core',
     isActive: false,
-    onClick: () => console.log('You selected Core')
+    handleClick: () => console.log('You selected Core')
   },
   {
     label: 'Design',
     isActive: false,
-    onClick: () => console.log('You selected Design')
+    handleClick: () => console.log('You selected Design')
   },
   {
     label: 'Engineering',
     isActive: true,
-    onClick: () => console.log('You selected Engineering')
+    handleClick: () => console.log('You selected Engineering')
   },
   {
     label: 'Product',
     isActive: false,
-    onClick: () => console.log('You selected Product')
+    handleClick: () => console.log('You selected Product')
   },
   {
     label: 'Talent',
     isActive: false,
-    onClick: () => console.log('You selected Talent')
+    handleClick: () => console.log('You selected Talent')
   }
 ];
 
@@ -60,7 +60,7 @@ const PatternsContainer = () =>
 
     {makeLabel('MenuToggle')}
     {makeLabel('Menu')}
-    <MenuToggle menuPosition="right" toggle={demoToggle}>
+    <MenuToggle menuPosition="left" toggle={demoToggle}>
       <Menu items={demoMenuItems} label="Select Team:" />
     </MenuToggle>
 

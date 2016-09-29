@@ -10,7 +10,8 @@ let styles = {};
 
 const ProjectColumns = (props) => {
   // myTeamMemberId is undefined if this is coming from USER_DASH
-  const {alignColumns, area, myTeamMemberId, projects} = props;
+  // TODO we only need userId, we can compute myTeamMemberId
+  const {alignColumns, area, myTeamMemberId, projects, teams, userId} = props;
   const rootStyles = combineStyles(styles.root, styles[alignColumns]);
   return (
     <div className={rootStyles}>
@@ -22,6 +23,8 @@ const ProjectColumns = (props) => {
             myTeamMemberId={myTeamMemberId}
             projects={projects[status]}
             status={status}
+            teams={teams}
+            userId={userId}
           />
         )}
       </div>

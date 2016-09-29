@@ -11,6 +11,8 @@ import FontAwesome from 'react-fontawesome';
 import {cashay} from 'cashay';
 import shortid from 'shortid';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
+import MenuToggle from 'universal/components/MenuToggle/MenuToggle';
+import Menu from 'universal/components/Menu/Menu';
 
 const combineStyles = StyleSheet.combineStyles;
 const badgeIconStyle = {
@@ -41,36 +43,67 @@ const handleAddProjectFactory = (status, teamMemberId, teamSort, userSort) => ()
 };
 
 const ProjectColumn = (props) => {
-  const {area, status, projects, myTeamMemberId} = props;
+  const {area, status, projects, myTeamMemberId, teams, userId} = props;
   const label = labels[status];
   let handleAddProject;
-  if (area === TEAM_DASH) {
-    const teamSort = getNextSortOrder(projects, 'teamSort');
-    handleAddProject = handleAddProjectFactory(status, myTeamMemberId, teamSort, 0);
-  } else if (area === USER_DASH) {
-    // TODO pop a menu of all the teams & create a card based on the team selection
-  }
+
   // TODO do it fur real
   const MeetingCardContainer = ProjectCardContainer;
   const CardContainer = area === MEETING ? MeetingCardContainer : ProjectCardContainer;
+  const makeAddProjectButton = (clickHandler) => {
+    return <FontAwesome
+      className={combineStyles(styles.addIcon, styles[status])}
+      name="plus-square-o"
+      onClick={clickHandler}
+      title={`Add a Project set to ${label}`}
+    />
+  };
+  const makeTeamMenuItems = (userSort) => {
+    return teams.map(team => ({
+      label: team.name,
+      isActive: false,
+      handleClick: () => cashay.mutate('createProject', {
+        variables: {
+          newProject: {
+            id: `${team.id}::${shortid.generate()}`,
+            status,
+            teamMemberId: `${userId}::${team.id}`,
+            teamSort: 0,
+            userSort
+          }
+        }
+      })
+    }))
+  };
+  const makeAddProject = () => {
+    if (area === TEAM_DASH) {
+      const teamSort = getNextSortOrder(projects, 'teamSort');
+      handleAddProject = handleAddProjectFactory(status, myTeamMemberId, teamSort, 0);
+      return makeAddProjectButton(handleAddProject);
+    } else if (area === USER_DASH) {
+      const toggle = makeAddProjectButton();
+      const userSort = getNextSortOrder(projects, 'userSort');
+      const menuItems = makeTeamMenuItems(userSort);
+      return (
+        <MenuToggle menuPosition="left" toggle={toggle}>
+          <Menu items={menuItems} label="Select Team:" />
+        </MenuToggle>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className={styles.column}>
       <div className={styles.columnHeader}>
         <span className={combineStyles(styles.statusBadge, styles[`${status}Bg`])}>
-          <FontAwesome className={styles.statusBadgeIcon} name={themeLabels.projectStatus[status].icon} style={badgeIconStyle} />
+          <FontAwesome className={styles.statusBadgeIcon} name={themeLabels.projectStatus[status].icon}
+                       style={badgeIconStyle}/>
         </span>
         <span className={combineStyles(styles.statusLabel, styles[status])}>
           {label}
         </span>
-        {handleAddProject &&
-          <FontAwesome
-            className={combineStyles(styles.addIcon, styles[status])}
-            name="plus-square-o"
-            onClick={handleAddProject}
-            title={`Add a Project set to ${label}`}
-          />
-        }
+        {makeAddProject()}
       </div>
       <div className={styles.columnBody}>
         <div className={styles.columnInner}>

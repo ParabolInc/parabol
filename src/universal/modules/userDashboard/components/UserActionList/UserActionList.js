@@ -51,7 +51,6 @@ const UserActionList = (props) => {
                   content={item.content}
                   form={`actionItem::${item.id}`}
                   actionId={item.id}
-                  onChecked={handleCheck}
                   team={item.team.name}
                 />
               )}
@@ -70,7 +69,7 @@ UserActionList.propTypes = {
   selectingNewActionTeam: PropTypes.bool
 };
 
-serActionList.styles = StyleSheet.create({
+UserActionList.styles = StyleSheet.create({
   root: {
     display: 'flex',
     flex: 1,
