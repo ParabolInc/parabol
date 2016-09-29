@@ -73,13 +73,13 @@ const TeamInvite = props => {
               </td>
               <td style={{paddingLeft: '16px'}}>
                 {inviterName}<br />
-                <span style={{...colorCool, fontSize: '14px'}}>{inviterEmail}</span>
+                <a href={`mailto:${inviterEmail}`} style={{...colorCool, fontSize: '14px'}}>{inviterEmail}</a>
               </td>
             </tr>
           </tbody>
         </table>
         <EmptySpace height={40} />
-        <b>Hi <span style={colorWarm}>{inviteeEmail}</span>!<br />
+        <b>Hi <a href={`mailto:${inviteeEmail}`} style={colorWarm}>{inviteeEmail}</a>!<br />
         {inviterName} has invited you to join a team on Action:</b>
         <EmptySpace height={40} />
         <span style={teamNameStyle}>{teamName}</span>

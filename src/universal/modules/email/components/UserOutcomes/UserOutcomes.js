@@ -36,7 +36,12 @@ const UserOutcomes = (props) => {
   const nameStyle = {
     display: 'block',
     fontSize: '20px',
-    padding: '8px 0 16px'
+    padding: '4px 0 8px'
+  };
+
+  const userStats = {
+    ...textCenter,
+    padding: '0 0 8px'
   };
 
   const getNewOutcomeTypeCount = (arr, string) => {
@@ -59,7 +64,7 @@ const UserOutcomes = (props) => {
           </td>
         </tr>
         <tr>
-          <td style={textCenter}>
+          <td style={userStats}>
             <img src="/static/images/email/email-icon-project@3x.png" style={iconStyle} />
             <span style={{...labelStyle, marginRight: '20px'}}>
               {getNewOutcomeTypeCount(outcomes, 'project')} New Projects

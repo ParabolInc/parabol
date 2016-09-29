@@ -5,7 +5,7 @@ import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
 
 const Card = (props) => {
-  const {content, status, team, type} = props;
+  const {content, status, type} = props;
 
   let backgroundColor;
 
@@ -20,9 +20,9 @@ const Card = (props) => {
     backgroundColor,
     fontSize: '16px',
     fontFamily: ui.emailFontFamily,
-    height: '76px',
+    height: '62px',
     lineHeight: '20px',
-    padding: '0 .25rem'
+    padding: '.5rem .25rem'
   };
 
   const borderStyle = {
@@ -44,12 +44,6 @@ const Card = (props) => {
   const imageStyle = {
     border: 0,
     display: 'block'
-  };
-
-  const teamStyle = {
-    color: theme.palette.dark,
-    fontSize: '12px',
-    fontWeight: 700
   };
 
   const borderImageBottomLeftAction = '/static/images/email/email-card-action-border-bottom-left@3x.png';
@@ -78,15 +72,12 @@ const Card = (props) => {
   let borderImageTopLeft;
   let borderImageTopRight;
 
-  const formatContent = (string, maxLength) => {
-    const length = string.length;
-    let formatted = string;
-    if (length > maxLength) {
-      formatted = formatted.slice(0, maxLength);
-      formatted = formatted.trim();
-      formatted += '...';
+  const trimContent = (str, maxLen) => {
+    let trimmed = str;
+    if (str.length > maxLen) {
+      trimmed = `${trimmed.slice(0, maxLen).trim()}...`;
     }
-    return formatted;
+    return trimmed;
   };
 
   if (type === 'action') {
@@ -151,16 +142,8 @@ const Card = (props) => {
         {/* card body */}
         <tr>
           <td style={borderLeftStyle}></td>
-          <td
-            align="left"
-            style={cardBodyStyle}
-            vAlign="top"
-          >
-            <EmptySpace height={8} />
-            {formatContent(content, 56)}
-            {/* <EmptySpace height={4} />
-            <span style={teamStyle}>{team}</span> */}
-            <EmptySpace height={8} />
+          <td align="left" style={cardBodyStyle} vAlign="top">
+            {trimContent(content, 52)}
           </td>
           <td style={borderRightStyle}></td>
         </tr>
@@ -203,7 +186,6 @@ Card.propTypes = {
     'future',
     'stuck'
   ]),
-  team: PropTypes.string,
   type: PropTypes.oneOf([
     'project',
     'action'
@@ -211,7 +193,6 @@ Card.propTypes = {
 };
 
 Card.defaultProps = {
-  team: 'Parabol',
   type: 'action'
 };
 
