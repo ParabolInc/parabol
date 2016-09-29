@@ -38,8 +38,13 @@ export default class MenuToggle extends Component {
       toggleHeight
     } = this.props;
 
-    const toggleMenu = () =>
+    const toggleMenu = () => {
       this.setState({open: !this.state.open});
+    };
+
+    const closeMenu = () => {
+      this.setState({open: false});
+    };
 
     const toggleHeightStyle = {
       height: toggleHeight,
@@ -60,7 +65,7 @@ export default class MenuToggle extends Component {
         <div className={styles.toggle} onClick={toggleMenu} style={toggleStyle}>{toggle}</div>
         {this.state.open &&
           <div className={styles.menuBlock} style={menuBlockStyle}>
-            {children}
+            {React.cloneElement(children, {closeMenu})}
           </div>
         }
       </div>

@@ -9,11 +9,15 @@ import MenuItem from './MenuItem';
 
 const Menu = (props) => {
   const {styles} = Menu;
-  const {hasShadow, items, label} = props;
+  const {closeMenu, hasShadow, items, label} = props;
   const boxShadow = '0 1px 1px rgba(0, 0, 0, .15)';
   const rootStyle = hasShadow ? {boxShadow} : null;
   return (
-    <div className={styles.root} style={rootStyle}>
+    <div ref={(div) => {
+      if (div) {
+        div.focus();
+      }
+    }} className={styles.root} style={rootStyle} tabIndex="0" onBlur={closeMenu} >
       <div className={styles.label}>{label}</div>
       {items.map((item, idx) =>
         <MenuItem
@@ -43,8 +47,7 @@ Menu.styles = StyleSheet.create({
     border: `1px solid ${theme.palette.mid30l}`,
     borderRadius: '.25rem',
     padding: '0 0 .5rem',
-    width: '100%',
-    zIndex: 200
+    width: '100%'
   },
 
   label: {
