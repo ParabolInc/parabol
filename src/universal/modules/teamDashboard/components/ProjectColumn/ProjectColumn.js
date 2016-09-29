@@ -73,7 +73,7 @@ const ProjectColumn = (props) => {
           }
         }
       })
-    }))
+    }));
   };
   const makeAddProject = () => {
     if (area === TEAM_DASH) {
@@ -85,7 +85,7 @@ const ProjectColumn = (props) => {
       const userSort = getNextSortOrder(projects, 'userSort');
       const menuItems = makeTeamMenuItems(userSort);
       return (
-        <MenuToggle menuPosition="left" toggle={toggle}>
+        <MenuToggle menuPosition="right" toggle={toggle}>
           <Menu items={menuItems} label="Select Team:" />
         </MenuToggle>
       );

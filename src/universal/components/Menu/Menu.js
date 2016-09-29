@@ -38,7 +38,8 @@ Menu.styles = StyleSheet.create({
     border: `1px solid ${theme.palette.mid30l}`,
     borderRadius: '.25rem',
     padding: '0 0 .5rem',
-    width: '100%'
+    width: '100%',
+    zIndex: 200
   },
 
   label: {

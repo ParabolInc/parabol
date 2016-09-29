@@ -61,7 +61,8 @@ const mapStateToProps = (state, props) => {
       }
     }
   }).data;
-  const active = state.form[form].active === outcomeId;
+  const formState = state.form[form];
+  const active = formState && formState.active === outcomeId;
   const editingStatus = makeEditingStatus(editors, active, updatedAt);
   return {
     editingStatus
