@@ -85,7 +85,7 @@ const ProjectColumn = (props) => {
       const userSort = getNextSortOrder(projects, 'userSort');
       const menuItems = makeTeamMenuItems(userSort);
       return (
-        <MenuToggle menuOrientation="right" toggle={toggle} toggleHeight="1.5rem">
+        <MenuToggle menuOrientation="right" menuWidth="10rem" toggle={toggle} toggleHeight="1.5rem">
           <Menu items={menuItems} label="Select Team:" />
         </MenuToggle>
       );
