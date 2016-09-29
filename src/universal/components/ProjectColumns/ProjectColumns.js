@@ -11,10 +11,14 @@ let styles = {};
 const ProjectColumns = (props) => {
   // myTeamMemberId is undefined if this is coming from USER_DASH
   // TODO we only need userId, we can compute myTeamMemberId
-  const {alignColumns, area, myTeamMemberId, projects, teams, userId} = props;
+  const {alignColumns, area, myTeamMemberId, projects, teams, userId, zIndex} = props;
   const rootStyles = combineStyles(styles.root, styles[alignColumns]);
+  const positionStyle = {
+    position: 'relative'
+  };
+  const rootStyle = zIndex ? {...positionStyle, zIndex} : null;
   return (
-    <div className={rootStyles}>
+    <div className={rootStyles} style={rootStyle}>
       <div className={styles.columns}>
         {columnArray.map((status) =>
           <ProjectColumn
@@ -40,7 +44,8 @@ ProjectColumns.propTypes = {
   ]),
   area: PropTypes.string,
   myTeamMemberId: PropTypes.string,
-  projects: PropTypes.object.isRequired
+  projects: PropTypes.object.isRequired,
+  zIndex: PropTypes.string
 };
 
 ProjectColumns.defaultProps = {

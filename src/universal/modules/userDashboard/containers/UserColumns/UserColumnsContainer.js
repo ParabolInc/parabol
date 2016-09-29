@@ -56,7 +56,7 @@ const mapStateToProps = (state) => {
 const UserColumnsContainer = (props) => {
   const {projects, teams, userId} = props;
   return (
-    <ProjectColumns projects={projects} area={USER_DASH} teams={teams} userId={userId}/>
+    <ProjectColumns projects={projects} area={USER_DASH} teams={teams} userId={userId} zIndex="200" />
   );
 };
 

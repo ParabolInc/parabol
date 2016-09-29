@@ -3,6 +3,7 @@ import Helmet from 'react-helmet';
 import {head} from 'universal/utils/clientOptions';
 import {Menu, MenuToggle, Type} from 'universal/components';
 import FontAwesome from 'react-fontawesome';
+import exampleMenu from 'universal/modules/patterns/helpers/exampleMenu';
 
 const makeLabel = (string) =>
   <Type bold family="monospace" marginBottom="1rem" scale="s2">{'<'}{string}{' />'}</Type>;
@@ -24,34 +25,6 @@ const demoToggleStyle = {
 
 const demoToggle = (<FontAwesome name="plus-square-o" style={demoToggleStyle} />);
 
-const demoMenuItems = [
-  {
-    label: 'Core',
-    isActive: false,
-    handleClick: () => console.log('You selected Core')
-  },
-  {
-    label: 'Design',
-    isActive: false,
-    handleClick: () => console.log('You selected Design')
-  },
-  {
-    label: 'Engineering',
-    isActive: true,
-    handleClick: () => console.log('You selected Engineering')
-  },
-  {
-    label: 'Product',
-    isActive: false,
-    handleClick: () => console.log('You selected Product')
-  },
-  {
-    label: 'Talent',
-    isActive: false,
-    handleClick: () => console.log('You selected Talent')
-  }
-];
-
 const PatternsContainer = () =>
   <div style={style}>
     <Helmet title="Welcome to the Action Pattern Library" {...head} />
@@ -61,7 +34,7 @@ const PatternsContainer = () =>
     {makeLabel('MenuToggle')}
     {makeLabel('Menu')}
     <MenuToggle menuOrientation="left" toggle={demoToggle}>
-      <Menu items={demoMenuItems} label="Select Team:" />
+      <Menu items={exampleMenu} label="Select Team:" />
     </MenuToggle>
 
   </div>;

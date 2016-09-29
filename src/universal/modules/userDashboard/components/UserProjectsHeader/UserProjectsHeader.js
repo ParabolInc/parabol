@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
-import ib from 'universal/styles/helpers/ib';
+import ui from 'universal/styles/ui';
 import {
   DashSectionControl,
   DashSectionControls,
@@ -9,22 +9,44 @@ import {
   DashSectionHeading
 } from 'universal/components/Dashboard';
 import FontAwesome from 'react-fontawesome';
+import {Menu, MenuToggle} from 'universal/components';
+
+import exampleMenu from 'universal/modules/patterns/helpers/exampleMenu';
+
+const inlineBlock = {
+  display: 'inline-block',
+  height: ui.dashSectionHeaderLineHeight,
+  lineHeight: ui.dashSectionHeaderLineHeight,
+  verticalAlign: 'middle'
+};
+
+const inlineBlockTop = {
+  ...inlineBlock,
+  verticalAlign: 'top'
+};
 
 const UserProjectsHeader = () => {
   const {styles} = UserProjectsHeader;
+  const toggle = (label) =>
+    <div className={styles.button} title={`Filter by ${label}`}>
+      <span style={inlineBlockTop}>{label}</span> <FontAwesome name="chevron-circle-down" style={inlineBlockTop} />
+    </div>;
   return (
     <DashSectionHeader>
       <DashSectionHeading icon="calendar" label="My Projects" />
       <DashSectionControls>
         {/* TODO: needs minimal, inline dropdown */}
         <DashSectionControl>
-          <b style={ib}>Show Actions & Projects for</b>:
+          <b style={inlineBlock}>Show Actions & Projects for</b><span style={inlineBlock}>:</span>
           {' '}
-          <a className={styles.link} href="#" title="Filter by All Teams">
-            All Teams
-          </a>
-          {' '}
-          <FontAwesome name="chevron-circle-down" style={ib} />
+          <MenuToggle
+            menuOrientation="right"
+            toggle={toggle('All Teams')}
+            toggleHeight={ui.dashSectionHeaderLineHeight}
+            verticalAlign="top"
+          >
+            <Menu items={exampleMenu} label="Filter by:" />
+          </MenuToggle>
         </DashSectionControl>
       </DashSectionControls>
     </DashSectionHeader>
@@ -36,8 +58,8 @@ UserProjectsHeader.propTypes = {
 };
 
 UserProjectsHeader.styles = StyleSheet.create({
-  link: {
-    ...ib,
+  button: {
+    ...inlineBlock,
     color: theme.palette.mid,
 
     ':hover': {
