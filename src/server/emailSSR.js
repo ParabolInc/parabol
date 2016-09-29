@@ -4,21 +4,21 @@ import SummaryEmail from 'universal/modules/email/containers/SummaryEmail/Summar
 // import TeamInvite from 'universal/modules/email/containers/TeamInvite/TeamInvite';
 // import WelcomeEmail from 'universal/modules/email/containers/WelcomeEmail/WelcomeEmail';
 
-const demoInviteProps = {
-  inviterAvatar: '/static/images/avatars/jh-linkedin-avatar.jpg',
-  inviterName: 'Jordan Husney',
-  inviterFirstName: 'Jordan',
-  inviterEmail: 'jordan@parabol.co',
-  inviteeEmail: 'terry@parabol.co',
-  firstProject: 'Meeting summary email designed',
-  teamName: 'Parabol',
-  teamLink: 'https://prbl.io/a/b7s8x9'
-};
+// const demoInviteProps = {
+//   inviterAvatar: '/static/images/avatars/jh-linkedin-avatar.jpg',
+//   inviterName: 'Jordan Husney',
+//   inviterFirstName: 'Jordan',
+//   inviterEmail: 'jordan@parabol.co',
+//   inviteeEmail: 'terry@parabol.co',
+//   firstProject: 'Meeting summary email designed',
+//   teamName: 'Parabol',
+//   teamLink: 'https://prbl.io/a/b7s8x9'
+// };
 
 export default function emailSSR(req, res) {
-  const html = Oy.renderTemplate(<SummaryEmail {...demoInviteProps} />, {
-    title: 'Welcome to Action by Parabol',
-    previewText: 'Welcome to Action by Parabol'
+  const html = Oy.renderTemplate(<SummaryEmail />, {
+    title: 'Action Meeting Summary from Parabol',
+    previewText: 'Action Meeting Summary from Parabol'
   });
 
   res.set('Cache-Control', 'no-cache, no-store, must-revalidate');

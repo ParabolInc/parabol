@@ -147,7 +147,7 @@ SummaryEmail.propTypes = {
 };
 
 SummaryEmail.defaultProps = {
-  forFirstMeeting: true,
+  forFirstMeeting: false,
   meetingDate: 'Tuesday, September 27th, 2016',
   teamName: 'Parabol',
   teamMembers: sampleTeamSummary,

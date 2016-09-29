@@ -2,7 +2,7 @@ import React from 'react';
 import Oy from 'oy-vey';
 import SummaryEmail, {summaryEmailText} from './SummaryEmail';
 
-const subject = 'You’ve been invited to Action by Parabol';
+const subject = 'Action Meeting Summary from Parabol';
 
 export default (props) => ({
   subject,
