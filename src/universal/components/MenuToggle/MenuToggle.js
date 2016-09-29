@@ -7,16 +7,17 @@ let styles = {};
 export default class MenuToggle extends Component {
   static propTypes = {
     children: PropTypes.any,
-    menuPosition: PropTypes.oneOf([
+    menuOrientation: PropTypes.oneOf([
       'left',
       'right'
     ]),
     menuWidth: PropTypes.string,
-    toggle: PropTypes.any
+    toggle: PropTypes.any,
+    toggleHeight: PropTypes.string
   }
 
   static defaultProps = {
-    menuPosition: 'left',
+    menuOrientation: 'left',
     menuWidth: '12rem',
     toggle: 'Toggle Menu'
   }
@@ -31,23 +32,31 @@ export default class MenuToggle extends Component {
   render() {
     const {
       children,
-      menuPosition,
+      menuOrientation,
       menuWidth,
-      toggle
+      toggle,
+      toggleHeight
     } = this.props;
 
     const toggleMenu = () =>
       this.setState({open: !this.state.open});
 
+    const toggleHeightStyle = {
+      height: toggleHeight,
+      lineHeight: toggleHeight
+    };
+
     const menuBlockStyle = {
-      [menuPosition]: 0,
+      [menuOrientation]: 0,
       width: menuWidth
     };
 
     const toggleStyle = this.state.open ? {opacity: '.5'} : null;
 
+    const rootStyle = toggleHeight ? toggleHeightStyle : null;
+
     return (
-      <div className={styles.root}>
+      <div className={styles.root} style={rootStyle}>
         <div className={styles.toggle} onClick={toggleMenu} style={toggleStyle}>{toggle}</div>
         {this.state.open &&
           <div className={styles.menuBlock} style={menuBlockStyle}>
@@ -68,7 +77,6 @@ styles = StyleSheet.create({
 
   toggle: {
     cursor: 'pointer',
-    lineHeight: '1.5',
     userSelect: 'none',
 
     ':hover': {

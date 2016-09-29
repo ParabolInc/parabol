@@ -60,7 +60,7 @@ const PatternsContainer = () =>
 
     {makeLabel('MenuToggle')}
     {makeLabel('Menu')}
-    <MenuToggle menuPosition="left" toggle={demoToggle}>
+    <MenuToggle menuOrientation="left" toggle={demoToggle}>
       <Menu items={demoMenuItems} label="Select Team:" />
     </MenuToggle>
 

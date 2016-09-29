@@ -1,9 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
-import tinycolor from 'tinycolor2';
+import ui from 'universal/styles/ui';
 
-const backgroundColor = tinycolor.mix(theme.palette.mid10l, '#fff', 50).toHexString();
 const combineStyles = StyleSheet.combineStyles;
 let styles = {};
 
@@ -30,7 +28,7 @@ DashContent.defaultProps = {
 
 styles = StyleSheet.create({
   root: {
-    backgroundColor,
+    backgroundColor: ui.dashBackgroundColor,
     display: 'flex !important',
     flex: 1,
     flexDirection: 'column',
