@@ -38,7 +38,7 @@ const UserActionList = (props) => {
       <div className={styles.block}>
         <div className={styles.headerBlock}>
           {selectingNewActionTeam ?
-            <UserActionListTeamSelect dispatch={dispatch} teams={teams} actionCount={actionCount} userId={userId}/> :
+            <UserActionListTeamSelect actions={actions} dispatch={dispatch} teams={teams} actionCount={actionCount} userId={userId}/> :
             <UserActionListHeader onAddNewAction={createNewAction}/>
           }
         </div>

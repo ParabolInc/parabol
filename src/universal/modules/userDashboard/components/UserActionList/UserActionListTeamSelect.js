@@ -27,7 +27,6 @@ const iconStyle = {
 const UserActionListTeamSelect = (props) => {
   const {styles} = UserActionListTeamSelect;
   const {actions, teams, userId} = props;
-
   const cancelAddAction = () => {
     props.dispatch(selectNewActionTeam(false));
   };
