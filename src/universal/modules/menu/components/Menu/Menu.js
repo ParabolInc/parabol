@@ -39,15 +39,15 @@ const Menu = (props) => {
     <div className={styles.root} style={rootStyle}>
       <div className={styles.toggle} onClick={toggleMenu} style={{...rootStyle, ...toggleStyle}}>{toggle}</div>
       {isOpen &&
-      <div className={styles.menuBlock} style={menuBlockStyle}>
-        <div
-          className={styles.menu}
-          style={menuStyle}
-        >
-          <div className={styles.label}>{label}</div>
-          {children}
+        <div className={styles.menuBlock} style={menuBlockStyle}>
+          <div
+            className={styles.menu}
+            style={menuStyle}
+          >
+            <div className={styles.label}>{label}</div>
+            {children}
+          </div>
         </div>
-      </div>
       }
     </div>
   );

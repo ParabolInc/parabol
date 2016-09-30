@@ -16,7 +16,7 @@ const MenuItem = (props) => {
   const handleClick = () => {
     closeMenu();
     onClick();
-  }
+  };
   return (
     // put a tabIndex on the div so the menu goes away if you click on a menu item
     <div className={rootStyles} onClick={handleClick} >
@@ -36,6 +36,7 @@ const activeHoverFocusStyles = {
 };
 
 MenuItem.propTypes = {
+  closeMenu: PropTypes.func,
   isActive: PropTypes.bool,
   label: PropTypes.string,
   onClick: PropTypes.func

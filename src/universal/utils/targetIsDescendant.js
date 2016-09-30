@@ -4,5 +4,5 @@ export default function targetIsDescendant(target, parent) {
     target = target.parentNode;
   }
   return false;
-};
+}
 

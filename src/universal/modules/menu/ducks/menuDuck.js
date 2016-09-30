@@ -8,9 +8,6 @@ const initialState = {
 };
 
 export default function reducer(state = initialState, action = {}) {
-  if (!action.type.startsWith('menu/')) {
-    return state;
-  }
   const {type, payload: {menuKey}} = action;
   if (type === OPEN_MENU) {
     return {
@@ -26,6 +23,7 @@ export default function reducer(state = initialState, action = {}) {
     delete cloneState[menuKey];
     return cloneState;
   }
+  return state;
 }
 
 export const setMenu = (menuKey, isOpen) => {

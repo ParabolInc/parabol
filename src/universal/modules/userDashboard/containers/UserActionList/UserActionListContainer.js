@@ -25,7 +25,8 @@ query {
 
 const mapStateToProps = (state) => {
   const {teamFilterId} = state.userDashboard;
-  const filterFn = teamFilterId ? (doc) => doc.id.startsWith(teamFilterId) : () => true;
+  const actionFilterFn = teamFilterId ? (doc) => doc.id.startsWith(teamFilterId) : () => true;
+  const teamsFilterFn = teamFilterId ? (doc) => doc.id === teamFilterId : () => true;
   const userId = state.auth.obj.sub;
   const {actions, teams} = cashay.query(userActionListQuery, {
     op: 'userActions',
@@ -40,7 +41,8 @@ const mapStateToProps = (state) => {
       teams: () => () => true
     },
     filter: {
-      actions: filterFn
+      actions: actionFilterFn,
+      teams: teamsFilterFn
     }
   }).data;
   return {

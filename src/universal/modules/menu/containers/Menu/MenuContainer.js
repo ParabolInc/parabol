@@ -10,7 +10,7 @@ const mapStateToProps = (state, props) => {
   const menuState = state.menu[menuKey];
   return {
     isOpen: menuState && menuState.isOpen
-  }
+  };
 };
 
 const bindChildren = (children, propsToAdd) => {
@@ -43,16 +43,6 @@ export default class MenuContainer extends Component {
     ]),
   };
 
-  closeMenu = () => {
-    const {dispatch, menuKey} = this.props;
-    dispatch(setMenu(menuKey, false));
-  };
-
-  toggleMenu = () => {
-    const {dispatch, isOpen, menuKey} = this.props;
-    dispatch(setMenu(menuKey, !isOpen));
-  };
-
   componentWillUpdate(nextProps) {
     if (!this.props.isOpen && nextProps.isOpen) {
       document.addEventListener('click', this.handleDocumentClick);
@@ -64,6 +54,16 @@ export default class MenuContainer extends Component {
   componentWillUnmount() {
     document.removeEventListener('click', this.handleDocumentClick);
   }
+
+  closeMenu = () => {
+    const {dispatch, menuKey} = this.props;
+    dispatch(setMenu(menuKey, false));
+  };
+
+  toggleMenu = () => {
+    const {dispatch, isOpen, menuKey} = this.props;
+    dispatch(setMenu(menuKey, !isOpen));
+  };
 
   handleDocumentClick = (e) => {
     // close as long as they didn't click the toggle
@@ -101,4 +101,4 @@ export default class MenuContainer extends Component {
       />
     );
   }
-};
+}
