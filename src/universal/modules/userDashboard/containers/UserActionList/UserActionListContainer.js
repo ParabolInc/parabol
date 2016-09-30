@@ -24,9 +24,13 @@ query {
 `;
 
 const mapStateToProps = (state) => {
+  const {teamFilterId} = state.userDashboard;
+  const filterFn = teamFilterId ? (doc) => doc.id.startsWith(teamFilterId): () => true;
+  const userId = state.auth.obj.sub;
   const {actions, teams} = cashay.query(userActionListQuery, {
     op: 'userActions',
-    variables: {id: state.auth.obj.sub},
+    variables: {id: userId},
+    key: teamFilterId || '',
     sort: {
       actions: (a, b) => a.sortOrder < b.sortOrder
     },
@@ -34,6 +38,9 @@ const mapStateToProps = (state) => {
       team: (source) => (doc) => source.id.startsWith(doc.id),
       // include every team that is cached. do this instead of the tms because otherwise we'll get null docs
       teams: () => () => true
+    },
+    filter: {
+      actions: filterFn
     }
   }).data;
   return {
