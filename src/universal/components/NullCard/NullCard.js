@@ -1,15 +1,15 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import Ellipsis from '../Ellipsis/Ellipsis';
-import Type from '../Type/Type';
+import theme from 'universal/styles/theme';
+import {Ellipsis, Type} from 'universal/components';
 import CreateCardRootStyles from '../CreateCard/CreateCardRootStyles';
-
-let s = {};
+import {cardBorderTop} from 'universal/styles/helpers';
 
 const NullCard = (props) => {
+  const {styles} = NullCard;
   const {username} = props;
   return (
-    <div className={s.root}>
+    <div className={styles.root}>
       <Type align="center" bold scale="s3" theme="mid">
         @{username}<br />is adding a project<Ellipsis />
       </Type>
@@ -25,9 +25,13 @@ NullCard.defaultProps = {
   username: 'TayaMueller',
 };
 
-s = StyleSheet.create({
+NullCard.styles = StyleSheet.create({
   root: {
-    ...CreateCardRootStyles
+    ...CreateCardRootStyles,
+    '::after': {
+      ...cardBorderTop,
+      color: theme.palette.mid40l
+    }
   }
 });
 

@@ -5,6 +5,7 @@ import Ellipsis from '../Ellipsis/Ellipsis';
 import Type from '../Type/Type';
 import theme from 'universal/styles/theme';
 import CreateCardRootStyles from './CreateCardRootStyles';
+import {cardBorderTop} from 'universal/styles/helpers';
 
 const combineStyles = StyleSheet.combineStyles;
 const labelStyles = {
@@ -15,26 +16,26 @@ const labelStyles = {
   padding: '1px 4px 2px',
   verticalAlign: 'middle'
 };
-let s = {};
 
 const CreateCard = (props) => {
-  let cardStyles = s.root;
+  const {styles} = CreateCard;
+  let cardStyles = styles.root;
   const {createdBy, handleAddAction, handleAddProject, hasControls,
     isCreating, isProject
   } = props;
-  const cardBorderVariantStyles = combineStyles(s.root, s.rootBorderVariant);
+  const cardBorderVariantStyles = combineStyles(styles.root, styles.rootBorderVariant);
   const actionLabel = () =>
-    <span className={s.label}>
-      <span className={s.labelStyles}>Add an{' '}</span>
-      <span className={s.actionLabel}>
+    <span className={styles.label}>
+      <span className={styles.labelStyles}>Add an{' '}</span>
+      <span className={styles.actionLabel}>
         <u>A</u>ction
       </span>
     </span>;
 
   const projectLabel = () =>
-    <span className={s.label}>
-      <span className={s.labelStyles}>Add a{' '}</span>
-      <span className={s.projectLabel}>
+    <span className={styles.label}>
+      <span className={styles.labelStyles}>Add a{' '}</span>
+      <span className={styles.projectLabel}>
         <u>P</u>roject
       </span>
     </span>;
@@ -48,7 +49,7 @@ const CreateCard = (props) => {
   return (
     <div className={cardStyles}>
       {hasControls &&
-        <div className={s.controlsBlock}>
+        <div className={styles.controlsBlock}>
           <PushButton
             handleOnClick={handleAddAction}
             keystroke="a"
@@ -88,9 +89,13 @@ CreateCard.defaultProps = {
   isProject: false
 };
 
-s = StyleSheet.create({
+CreateCard.styles = StyleSheet.create({
   root: {
-    ...CreateCardRootStyles
+    ...CreateCardRootStyles,
+    '::after': {
+      ...cardBorderTop,
+      color: theme.palette.mid40l
+    }
   },
 
   rootBorderVariant: {
