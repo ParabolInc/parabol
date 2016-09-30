@@ -55,6 +55,7 @@ export default class OutcomeCardTextArea extends Component {
     handleActive: PropTypes.func,
     handleSubmit: PropTypes.func,
     input: PropTypes.object,
+    isActionListItem: PropTypes.bool,
     isArchived: PropTypes.bool,
     isProject: PropTypes.bool,
     teamMemberId: PropTypes.string,

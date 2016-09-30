@@ -134,10 +134,9 @@ OutcomeCardFooter.propTypes = {
   hasOpenStatusMenu: PropTypes.bool,
   isArchived: PropTypes.bool,
   isProject: PropTypes.bool,
+  outcome: PropTypes.object,
   owner: PropTypes.object,
-  // project: PropTypes.shape({
-  //   projectId: PropTypes.string
-  // }),
+  showTeam: PropTypes.bool,
   team: PropTypes.object
 };
 

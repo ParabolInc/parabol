@@ -46,7 +46,7 @@ const mapStateToProps = (state) => {
       projects: (source) => `${userId}::${source.id}`
     },
     sort: {
-      teams: (a,b) => a.name > b.name
+      teams: (a, b) => a.name > b.name
     },
     filter: {
       teams: filterFn
@@ -67,7 +67,9 @@ const UserColumnsContainer = (props) => {
 };
 
 UserColumnsContainer.propTypes = {
-  projects: PropTypes.object
+  projects: PropTypes.object,
+  teams: PropTypes.array,
+  userId: PropTypes.string
 };
 
 export default connect(mapStateToProps)(UserColumnsContainer);

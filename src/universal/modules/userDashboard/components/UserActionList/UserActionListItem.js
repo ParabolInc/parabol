@@ -17,7 +17,11 @@ let styles = {};
 @look
 export default class UserActionListItem extends Component {
   static propTypes = {
+    actionId: PropTypes.string,
     content: PropTypes.string,
+    dispatch: PropTypes.func,
+    form: PropTypes.string,
+    handleSubmit: PropTypes.func,
     id: PropTypes.string,
     isActive: PropTypes.bool,
     onChecked: PropTypes.func,
@@ -99,7 +103,7 @@ export default class UserActionListItem extends Component {
       </div>
     );
   }
-};
+}
 
 styles = StyleSheet.create({
   root: {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import {ib} from 'universal/styles/helpers';
@@ -74,6 +74,12 @@ const UserActionListTeamSelect = (props) => {
       </div>
     </div>
   );
+};
+
+UserActionListTeamSelect.propTypes = {
+  actions: PropTypes.array,
+  teams: PropTypes.array,
+  userId: PropTypes.string
 };
 
 UserActionListTeamSelect.styles = StyleSheet.create({

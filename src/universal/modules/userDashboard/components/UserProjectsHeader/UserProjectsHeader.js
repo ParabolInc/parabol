@@ -10,7 +10,7 @@ import {
 } from 'universal/components/Dashboard';
 import FontAwesome from 'react-fontawesome';
 import {MenuToggle} from 'universal/components';
-import MenuItem from 'universal/components/Menu/MenuItem';
+import MenuItem from 'universal/components/MenuItem/MenuItem';
 import {filterTeam} from 'universal/modules/userDashboard/ducks/userDashDuck';
 
 
@@ -70,7 +70,11 @@ const UserProjectsHeader = (props) => {
 };
 
 UserProjectsHeader.propTypes = {
-  children: PropTypes.any
+  children: PropTypes.any,
+  dispatch: PropTypes.func,
+  teams: PropTypes.array,
+  teamFilterId: PropTypes.string,
+  teamFilterName: PropTypes.string
 };
 
 UserProjectsHeader.styles = StyleSheet.create({

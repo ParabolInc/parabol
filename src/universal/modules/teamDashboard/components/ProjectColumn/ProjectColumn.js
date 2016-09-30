@@ -12,7 +12,7 @@ import {cashay} from 'cashay';
 import shortid from 'shortid';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import {MenuToggle} from 'universal/components';
-import MenuItem from 'universal/components/Menu/MenuItem';
+import MenuItem from 'universal/components/MenuItem/MenuItem';
 
 const combineStyles = StyleSheet.combineStyles;
 const badgeIconStyle = {
@@ -50,12 +50,12 @@ const ProjectColumn = (props) => {
   const MeetingCardContainer = ProjectCardContainer;
   const CardContainer = area === MEETING ? MeetingCardContainer : ProjectCardContainer;
   const makeAddProjectButton = (clickHandler) => {
-    return <FontAwesome
+    return (<FontAwesome
       className={combineStyles(styles.addIcon, styles[status])}
       name="plus-square-o"
       onClick={clickHandler}
       title={`Add a Project set to ${label}`}
-    />
+    />);
   };
   const makeTeamMenuItems = (userSort) => {
     return teams.map(team => ({
@@ -109,8 +109,11 @@ const ProjectColumn = (props) => {
     <div className={styles.column}>
       <div className={styles.columnHeader}>
         <span className={combineStyles(styles.statusBadge, styles[`${status}Bg`])}>
-          <FontAwesome className={styles.statusBadgeIcon} name={themeLabels.projectStatus[status].icon}
-                       style={badgeIconStyle}/>
+          <FontAwesome
+            className={styles.statusBadgeIcon}
+            name={themeLabels.projectStatus[status].icon}
+            style={badgeIconStyle}
+          />
         </span>
         <span className={combineStyles(styles.statusLabel, styles[status])}>
           {label}
@@ -137,6 +140,8 @@ ProjectColumn.propTypes = {
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.array.isRequired,
   status: PropTypes.string,
+  teams: PropTypes.array,
+  userId: PropTypes.string
 };
 
 const columnStyles = {

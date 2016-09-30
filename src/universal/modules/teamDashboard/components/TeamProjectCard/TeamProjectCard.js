@@ -12,7 +12,7 @@ import OutcomeCardTextarea from 'universal/components/OutcomeCard/OutcomeCardTex
 import OutcomeCardFooter from 'universal/components/OutcomeCard/OutcomeCardFooter';
 import OutcomeCardStatusMenu from 'universal/components/OutcomeCard/OutcomeCardStatusMenu';
 import throttle from 'lodash.throttle';
-import {USER_DASH} from 'universal/utils/constants'
+import {USER_DASH} from 'universal/utils/constants';
 const OPEN_CONTENT_MENU = 'TeamProjectCard/openContentMenu';
 const OPEN_ASSIGN_MENU = 'TeamProjectCard/openAssignMenu';
 const OPEN_STATUS_MENU = 'TeamProjectCard/openStatusMenu';
@@ -194,6 +194,7 @@ export default class TeamProjectCard extends Component {
 }
 
 TeamProjectCard.propTypes = {
+  area: PropTypes.string,
   project: PropTypes.shape({
     id: PropTypes.string,
     content: PropTypes.string,

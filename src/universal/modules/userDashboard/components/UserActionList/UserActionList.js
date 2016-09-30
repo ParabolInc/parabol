@@ -66,7 +66,10 @@ const UserActionList = (props) => {
 
 UserActionList.propTypes = {
   actions: PropTypes.array,
-  selectingNewActionTeam: PropTypes.bool
+  dispatch: PropTypes.func,
+  selectingNewActionTeam: PropTypes.bool,
+  teams: PropTypes.array,
+  userId: PropTypes.string
 };
 
 UserActionList.styles = StyleSheet.create({

@@ -71,7 +71,7 @@ const mapStateToProps = (state, props) => {
 
 const EditingStatusContainer = (props) => {
   const {editingStatus} = props;
-  return <EditingStatus status={editingStatus}/>
+  return <EditingStatus status={editingStatus}/>;
 };
 
 EditingStatusContainer.propTypes = {

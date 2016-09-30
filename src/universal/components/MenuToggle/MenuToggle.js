@@ -14,6 +14,7 @@ export default class MenuToggle extends Component {
       'left',
       'right'
     ]),
+    label: PropTypes.string,
     menuWidth: PropTypes.string,
     toggle: PropTypes.any,
     toggleHeight: PropTypes.string,
@@ -79,18 +80,18 @@ export default class MenuToggle extends Component {
       <div className={styles.root} style={rootStyle}>
         <div className={styles.toggle} onClick={openMenu} style={{...rootStyle, ...toggleStyle}}>{toggle}</div>
         {this.state.open &&
-        <div className={styles.menuBlock} style={menuBlockStyle}>
-          <div
-            ref={(c) => c && c.focus()}
-            className={styles.menu}
-            style={menuStyle}
-            tabIndex="0"
-            onBlur={closeMenu}
-          >
-            <div className={styles.label}>{label}</div>
-            {children}
+          <div className={styles.menuBlock} style={menuBlockStyle}>
+            <div
+              ref={(c) => c && c.focus()}
+              className={styles.menu}
+              style={menuStyle}
+              tabIndex="0"
+              onBlur={closeMenu}
+            >
+              <div className={styles.label}>{label}</div>
+              {children}
+            </div>
           </div>
-        </div>
         }
       </div>
     );

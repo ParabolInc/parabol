@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
-import {cardBorderTop, ib} from 'universal/styles/helpers';
+import {ib} from 'universal/styles/helpers';
 import ui from 'universal/styles/ui';
 import {Type} from 'universal/components';
 import FontAwesome from 'react-fontawesome';

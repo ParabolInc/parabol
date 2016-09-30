@@ -6,7 +6,7 @@ const mapStateToProps = (state, props) => {
   const form = state.form[props.form];
   return {
     isActive: form && form.active === props.actionId
-  }
+  };
 };
 
 const UserActionListItemContainer = (props) => {

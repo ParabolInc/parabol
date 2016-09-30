@@ -5,7 +5,7 @@ import ui from 'universal/styles/ui';
 
 const EditingStatus = ({status}) => {
   const {styles} = EditingStatus;
-  return <div className={styles.timestamp}>{status}</div>
+  return <div className={styles.timestamp}>{status}</div>;
 };
 
 EditingStatus.propTypes = {

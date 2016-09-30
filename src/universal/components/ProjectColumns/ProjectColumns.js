@@ -45,6 +45,8 @@ ProjectColumns.propTypes = {
   area: PropTypes.string,
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.object.isRequired,
+  teams: PropTypes.array,
+  userId: PropTypes.string,
   zIndex: PropTypes.string
 };
 
