@@ -3,6 +3,18 @@ import look, {StyleSheet} from 'react-look';
 import theme from 'universal/styles/theme';
 import ui from 'universal/styles/ui';
 import UserSummary from 'universal/modules/meeting/components/UserSummary/UserSummary';
+import {Type} from 'universal/components';
+import FontAwesome from 'react-fontawesome';
+
+const iconStyle = {
+  color: theme.palette.dark,
+  display: 'block',
+  fontSize: ui.iconSize2x,
+  height: ui.iconSize2x,
+  lineHeight: ui.iconSize2x,
+  margin: '0 0 .5rem',
+  textAlign: 'center'
+};
 
 const SummaryEmailPreview = (props) => {
   const {styles} = SummaryEmailPreview;
@@ -10,6 +22,10 @@ const SummaryEmailPreview = (props) => {
 
   return (
     <div className={styles.root}>
+      <FontAwesome name="envelope-o" style={iconStyle} />
+      <Type align="center" bold family="serif" scale="sBase">
+        An email summary will be mailed to all team members:
+      </Type>
       {teamOutcomes.map((user, idx) =>
         <UserSummary
           avatar={user.avatar}

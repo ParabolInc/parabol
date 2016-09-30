@@ -1,20 +1,15 @@
 import React, {PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
-import FontAwesome from 'react-fontawesome';
-import CopyToClipboard from 'react-copy-to-clipboard';
 import theme from 'universal/styles/theme';
 import {cashay} from 'cashay';
-import voidClick from 'universal/utils/voidClick';
 import makeMeetingUrl from 'universal/utils/makeMeetingUrl';
 import Button from 'universal/components/Button/Button';
+import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
 
 let s = {};
-
-const faStyle = {lineHeight: 'inherit'};
-const faFontSize = `${14 * 2}px`; // FA based on 14px
 
 const createStartMeetingHandler = (members) => {
   return () => {
@@ -43,23 +38,10 @@ const MeetingLobby = (props) => {
         {/* */}
         <div className={s.root}>
           <MeetingPhaseHeading>Hi, {teamName} Team!</MeetingPhaseHeading>
-          <p className={s.label}>{'Copy & share this meeting:'}</p>
-          {/* */}
-          {/* TODO: prevent navigation and show a “Copied!” message inline or toast */}
-          {/* */}
-          <CopyToClipboard text={shortUrl}>
-            <a
-              className={s.link}
-              href={shortUrl}
-              onClick={voidClick}
-              title={`Copy link to meeting: ${shortUrl}`}
-            >
-              <span className={s.linkText}>{shortUrl}</span>
-              <span className={s.icon}>
-                <FontAwesome name="copy" style={faStyle}/>
-              </span>
-            </a>
-          </CopyToClipboard>
+          <p className={s.label}>Share this meeting:</p>
+          <div className={s.urlBlock}>
+            <CopyShortLink url={shortUrl} />
+          </div>
           <h2 className={s.prompt}>Team Facilitator: begin the Check-In round!</h2>
           <Button
             label="Start Meeting"
@@ -102,37 +84,13 @@ s = StyleSheet.create({
     textTransform: 'uppercase'
   },
 
-  link: {
-    borderRadius: '.25rem',
-    display: 'block',
-    fontSize: faFontSize,
-    margin: '.5rem 0 4rem',
-    padding: '.75rem 1.5rem',
-    textDecoration: 'none !important',
-
-    ':hover': {
-      backgroundColor: theme.palette.cool10l
-    },
-    ':focus': {
-      backgroundColor: theme.palette.cool10l
-    }
-  },
-
-  linkText: {
-    display: 'inline-block',
-    verticalAlign: 'middle'
-  },
-
-  icon: {
-    display: 'inline-block',
-    fontSize: faFontSize,
-    marginLeft: '.5rem',
-    verticalAlign: 'middle'
-  },
-
   prompt: {
     color: theme.palette.dark,
     margin: '0 0 2rem'
+  },
+
+  urlBlock: {
+    margin: '.5rem 0 4rem',
   }
 });
 
