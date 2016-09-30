@@ -56,7 +56,13 @@ export default class MenuContainer extends Component {
   componentWillUpdate(nextProps) {
     if (!this.props.isOpen && nextProps.isOpen) {
       document.addEventListener('click', this.handleDocumentClick);
+    } else if (this.props.isOpen && !nextProps.isOpen) {
+      document.removeEventListener('click', this.handleDocumentClick);
     }
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('click', this.handleDocumentClick);
   }
 
   handleDocumentClick = (e) => {
