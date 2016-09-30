@@ -37,13 +37,19 @@ const resolveUserProjects = (teams) => {
 
 const mapStateToProps = (state) => {
   const {sub: userId} = state.auth.obj;
+  const {teamFilterId} = state.userDashboard;
+  const filterFn = teamFilterId ? (doc) => doc.id === teamFilterId : () => true;
   const {teams} = cashay.query(userColumnsQuery, {
     op: 'userColumnsContainer',
+    key: teamFilterId || '',
     resolveChannelKey: {
       projects: (source) => `${userId}::${source.id}`
     },
     sort: {
       teams: (a,b) => a.name > b.name
+    },
+    filter: {
+      teams: filterFn
     }
   }).data;
   return {

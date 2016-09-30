@@ -11,7 +11,8 @@ import FontAwesome from 'react-fontawesome';
 import {cashay} from 'cashay';
 import shortid from 'shortid';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
-import {Menu, MenuToggle} from 'universal/components';
+import {MenuToggle} from 'universal/components';
+import MenuItem from 'universal/components/Menu/MenuItem';
 
 const combineStyles = StyleSheet.combineStyles;
 const badgeIconStyle = {
@@ -44,7 +45,6 @@ const handleAddProjectFactory = (status, teamMemberId, teamSort, userSort) => ()
 const ProjectColumn = (props) => {
   const {area, status, projects, myTeamMemberId, teams, userId} = props;
   const label = labels[status];
-  let handleAddProject;
 
   // TODO do it fur real
   const MeetingCardContainer = ProjectCardContainer;
@@ -77,15 +77,28 @@ const ProjectColumn = (props) => {
   const makeAddProject = () => {
     if (area === TEAM_DASH) {
       const teamSort = getNextSortOrder(projects, 'teamSort');
-      handleAddProject = handleAddProjectFactory(status, myTeamMemberId, teamSort, 0);
+      const handleAddProject = handleAddProjectFactory(status, myTeamMemberId, teamSort, 0);
       return makeAddProjectButton(handleAddProject);
     } else if (area === USER_DASH) {
-      const toggle = makeAddProjectButton();
       const userSort = getNextSortOrder(projects, 'userSort');
+      if (teams.length === 1) {
+        const {id: teamId} = teams[0];
+        const generatedMyTeamMemberId = `${userId}::${teamId}`;
+        const handleAddProject = handleAddProjectFactory(status, generatedMyTeamMemberId, 0, userSort);
+        return makeAddProjectButton(handleAddProject);
+      }
+      const toggle = makeAddProjectButton();
       const menuItems = makeTeamMenuItems(userSort);
       return (
-        <MenuToggle menuOrientation="right" menuWidth="10rem" toggle={toggle} toggleHeight="1.5rem">
-          <Menu items={menuItems} label="Select Team:" />
+        <MenuToggle menuOrientation="right" menuWidth="10rem" toggle={toggle} toggleHeight="1.5rem" label="Select Team:">
+          {menuItems.map((item, idx) =>
+            <MenuItem
+              isActive={item.isActive}
+              key={`MenuItem${idx}`}
+              label={item.label}
+              onClick={item.handleClick}
+            />
+          )}
         </MenuToggle>
       );
     }

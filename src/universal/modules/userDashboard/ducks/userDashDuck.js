@@ -1,9 +1,12 @@
 const SELECT_NEW_ACTION_TEAM = 'action/userDashboard/SELECT_NEW_ACTION_TEAM';
 // const SELECT_NEW_PROJECT_TEAM = 'action/userDashboard/SELECT_NEW_PROJECT_TEAM';
+const FILTER_TEAM = 'action/userDashboard/FILTER_TEAM';
 
 const initialState = {
   selectingNewActionTeam: false,
-  selectingNewProjectTeam: false
+  // selectingNewProjectTeam: false,
+  teamFilterId: null,
+  teamFilterName: 'All teams'
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -12,6 +15,13 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         selectingNewActionTeam: action.payload.selectingNewActionTeam
+      };
+    }
+    case FILTER_TEAM: {
+      return {
+        ...state,
+        teamFilterId: action.payload.teamFilterId,
+        teamFilterName: action.payload.teamFilterName
       };
     }
     default:
@@ -24,6 +34,16 @@ export const selectNewActionTeam = (bool) => {
     type: SELECT_NEW_ACTION_TEAM,
     payload: {
       selectingNewActionTeam: bool
+    }
+  };
+};
+
+export const filterTeam = (teamId, teamName) => {
+  return {
+    type: FILTER_TEAM,
+    payload: {
+      teamFilterId: teamId,
+      teamFilterName: teamName
     }
   };
 };

@@ -9,9 +9,10 @@ import {
   DashSectionHeading
 } from 'universal/components/Dashboard';
 import FontAwesome from 'react-fontawesome';
-import {Menu, MenuToggle} from 'universal/components';
+import {MenuToggle} from 'universal/components';
+import MenuItem from 'universal/components/Menu/MenuItem';
+import {filterTeam} from 'universal/modules/userDashboard/ducks/userDashDuck';
 
-import exampleMenu from 'universal/modules/patterns/helpers/exampleMenu';
 
 const inlineBlock = {
   display: 'inline-block',
@@ -25,7 +26,8 @@ const inlineBlockTop = {
   verticalAlign: 'top'
 };
 
-const UserProjectsHeader = () => {
+const UserProjectsHeader = (props) => {
+  const {dispatch, teams, teamFilterId, teamFilterName} = props;
   const {styles} = UserProjectsHeader;
   const toggle = (label) =>
     <div className={styles.button} title={`Filter by ${label}`}>
@@ -40,12 +42,26 @@ const UserProjectsHeader = () => {
           <b style={inlineBlock}>Show Actions & Projects for</b><span style={inlineBlock}>:</span>
           {' '}
           <MenuToggle
+            label="Filter by:"
             menuOrientation="right"
-            toggle={toggle('All Teams')}
+            toggle={toggle(teamFilterName)}
             toggleHeight={ui.dashSectionHeaderLineHeight}
             verticalAlign="top"
           >
-            <Menu items={exampleMenu} label="Filter by:" />
+            <MenuItem
+              isActive={teamFilterId === null}
+              key={'teamFilterNULL'}
+              label={'All teams'}
+              onClick={() => dispatch(filterTeam(null, 'All teams'))}
+            />
+            {teams.map((team) =>
+              <MenuItem
+                isActive={team.id === teamFilterId}
+                key={`teamFilter${team.id}`}
+                label={team.name}
+                onClick={() => dispatch(filterTeam(team.id, team.name))}
+              />
+            )}
           </MenuToggle>
         </DashSectionControl>
       </DashSectionControls>

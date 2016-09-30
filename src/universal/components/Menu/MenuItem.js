@@ -13,7 +13,8 @@ const MenuItem = (props) => {
   const {isActive, label, onClick} = props;
   const rootStyles = isActive ? combineStyles(styles.root, styles.active) : styles.root;
   return (
-    <div className={rootStyles} onClick={onClick}>
+    // put a tabIndex on the div so the menu goes away if you click on a menu item
+    <div className={rootStyles} tabIndex="0" onClick={onClick} >
       <div className={styles.label}>{label}</div>
     </div>
   );
@@ -21,7 +22,9 @@ const MenuItem = (props) => {
 
 const activeBackgroundColor = tinycolor.mix(theme.palette.mid, '#fff', 85).toHexString();
 const hoverFocusStyles = {
-  backgroundColor: theme.palette.mid10l
+  backgroundColor: theme.palette.mid10l,
+  // for the blue focus outline
+  outline: 0
 };
 const activeHoverFocusStyles = {
   backgroundColor: activeBackgroundColor
@@ -43,7 +46,6 @@ MenuItem.styles = StyleSheet.create({
   root: {
     backgroundColor: 'transparent',
     cursor: 'pointer',
-
     ':hover': {
       ...hoverFocusStyles
     },
