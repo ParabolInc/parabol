@@ -1,4 +1,5 @@
 const OPEN_MENU = 'menu/OPEN_MENU';
+const CLOSE_MENU = 'menu/CLOSE_MENU';
 
 const initialState = {
   // [menuKey]: {
@@ -10,32 +11,26 @@ export default function reducer(state = initialState, action = {}) {
   if (!action.type.startsWith('menu/')) {
     return state;
   }
-  const {type, payload: {menuKey, isOpen}} = action;
+  const {type, payload: {menuKey}} = action;
   if (type === OPEN_MENU) {
-    // closing a menu unmounts it from state
-    if (!isOpen) {
-      const cloneState = {...state};
-      delete cloneState[menuKey];
-      return cloneState;
-    } else {
-      return {
-        ...state,
-        [menuKey]: {
-          // for future things like active item, etc.
-          ...state[menuKey],
-          isOpen
-        }
-      };
-    }
+    return {
+      ...state,
+      [menuKey]: {
+        // for future things like active item, etc.
+        ...state[menuKey],
+        isOpen: true
+      }
+    };
+  } else if (type === CLOSE_MENU) {
+    const cloneState = {...state};
+    delete cloneState[menuKey];
+    return cloneState;
   }
 }
 
 export const setMenu = (menuKey, isOpen) => {
   return {
-    type: OPEN_MENU,
-    payload: {
-      menuKey,
-      isOpen
-    }
+    type: isOpen ? OPEN_MENU : CLOSE_MENU,
+    payload: {menuKey}
   };
 };
