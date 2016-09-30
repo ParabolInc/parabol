@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import EmptySpace from '../../components/EmptySpace/EmptySpace';
 import OutcomesTable from '../../components/OutcomesTable/OutcomesTable';
 import ui from 'universal/styles/ui';
+import reduceForKeyValCount from 'universal/utils/reduceForKeyValCount';
 
 const UserOutcomes = (props) => {
   const {avatar, name, outcomes} = props;
@@ -44,14 +45,14 @@ const UserOutcomes = (props) => {
     padding: '0 0 8px'
   };
 
-  const getNewOutcomeTypeCount = (arr, string) => {
-    return arr.reduce((p, c) => {
-      if (c.type === string) {
-        p++;
-      }
-      return p;
-    }, 0);
-  };
+  // const getNewOutcomeTypeCount = (arr, string) => {
+  //   return arr.reduce((p, c) => {
+  //     if (c.type === string) {
+  //       p++;
+  //     }
+  //     return p;
+  //   }, 0);
+  // };
 
   return (
     <table align="center" width="100%">
@@ -67,11 +68,11 @@ const UserOutcomes = (props) => {
           <td style={userStats}>
             <img src="/static/images/email/email-icon-project@3x.png" style={iconStyle} />
             <span style={{...labelStyle, marginRight: '20px'}}>
-              {getNewOutcomeTypeCount(outcomes, 'project')} New Projects
+              {reduceForKeyValCount(outcomes, 'type', 'project')} New Projects
             </span>
             <img src="/static/images/email/email-icon-action@3x.png" style={iconStyle} />
             <span style={labelStyle}>
-              {getNewOutcomeTypeCount(outcomes, 'action')} New Actions
+              {reduceForKeyValCount(outcomes, 'type', 'action')} New Actions
             </span>
           </td>
         </tr>

@@ -1,7 +1,10 @@
-const sampleAvatar = '/static/images/avatars/jh-linkedin-avatar.jpg';
+const avatarJordan = '/static/images/avatars/jh-linkedin-avatar.jpg';
+const avatarMatt = '/static/images/avatars/matt-krick-bw.png';
+const avatarTaya = '/static/images/avatars/taya-mueller-avatar.jpg';
+const avatarTerry = '/static/images/avatars/terry-acker-avatar.jpg';
 
 const Jordan = {
-  avatar: sampleAvatar,
+  avatar: avatarJordan,
   name: 'Jordan Husney',
   outcomes: [
     {
@@ -56,7 +59,7 @@ const Jordan = {
 };
 
 const Matt = {
-  avatar: sampleAvatar,
+  avatar: avatarMatt,
   name: 'Matt Krick',
   outcomes: [
     {
@@ -99,7 +102,7 @@ const Matt = {
 };
 
 const Taya = {
-  avatar: sampleAvatar,
+  avatar: avatarTaya,
   name: 'Taya Mueller',
   outcomes: [
     {
@@ -124,7 +127,7 @@ const Taya = {
 };
 
 const Terry = {
-  avatar: sampleAvatar,
+  avatar: avatarTerry,
   name: 'Terry Acker',
   outcomes: [
     {

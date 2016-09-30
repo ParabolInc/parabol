@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react';
 import theme from 'universal/styles/theme';
-import getWeekOfYear from 'universal/utils/getWeekOfYear';
 
 import Body from '../../components/Body/Body';
 import Callout from '../../components/Callout/Callout';
@@ -12,22 +11,7 @@ import Layout from '../../components/Layout/Layout';
 import UserOutcomes from '../../components/UserOutcomes/UserOutcomes';
 
 import sampleTeamSummary from '../../helpers/sampleTeamSummary';
-
-const expressions = [
-  'Great job',
-  'High five',
-  'Wowza',
-  'Boom',
-  'Woot, woot'
-];
-
-const statements = [
-  'You are on a roll!',
-  'One step closer to world domination!',
-  'Looks like things are moving along!',
-  'Making progress, little by little!',
-  'You are unstoppable!'
-];
+import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 
 const SummaryEmail = (props) => {
   const {
@@ -40,12 +24,6 @@ const SummaryEmail = (props) => {
     totalNewActions,
     totalNewProjects
   } = props;
-
-  const now = new Date();
-  const week = getWeekOfYear(now);
-
-  const getExpression = () => expressions[week % expressions.length];
-  const getStatement = () => statements[week % statements.length];
 
   const highlight = {
     color: theme.palette.warm,
@@ -97,8 +75,8 @@ const SummaryEmail = (props) => {
             <td align="center">
               <span style={meetingDateStyle}>Action Meeting Summary<br />{meetingDate}</span>
               <Callout vSpacing={32}>
-                {getExpression()}, <span style={teamNameStyle}>{teamName}</span>—<br />
-                {getStatement()}
+                {makeSuccessExpression()}, <span style={teamNameStyle}>{teamName}</span>—<br />
+                {makeSuccessStatement()}
               </Callout>
               <span style={statsMessage}>
                 As a team you discussed <span style={highlight}>{totalAgendaItems} Agenda Items</span><br />

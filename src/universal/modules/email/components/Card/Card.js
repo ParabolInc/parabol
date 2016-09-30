@@ -180,12 +180,7 @@ const Card = (props) => {
 
 Card.propTypes = {
   content: PropTypes.string,
-  status: PropTypes.oneOf([
-    'active',
-    'done',
-    'future',
-    'stuck'
-  ]),
+  status: PropTypes.oneOf(labels.projectStatus.slugs),
   type: PropTypes.oneOf([
     'project',
     'action'
