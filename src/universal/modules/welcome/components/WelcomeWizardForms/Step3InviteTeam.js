@@ -141,7 +141,7 @@ const Step3InviteTeam = (props) => {
             <div style={{margin: '2rem 0 0', textAlign: 'center'}}>
               <Button
                 disabled={submitting || !fieldArrayHasValue}
-                label="Look’s Good!"
+                label="Looks Good!"
                 theme="warm"
                 type="submit"
               />
