@@ -30,25 +30,30 @@ const SummaryQuickStats = (props) => {
 
   return (
     <div className={styles.root}>
-      <div className={projects}>
-        <div className={styles.count}>{countNewActions}</div>
-        <FontAwesome name="calendar" style={iconStyle} />
-        <div className={styles.label}>New Actions</div>
+      <div className={styles.heading}>
+        <span className={styles.headingLabel}>Quick Stats</span>
       </div>
-      <div className={actions}>
-        <div className={styles.count}>{countNewProjects}</div>
-        <FontAwesome name="calendar" style={iconStyle} />
-        <div className={styles.label}>New Projects</div>
-      </div>
-      <div className={updates}>
-        <div className={styles.count}>{countUpdates}</div>
-        <FontAwesome name="calendar" style={iconStyle} />
-        <div className={styles.label}>Updates</div>
-      </div>
-      <div className={done}>
-        <div className={styles.count}>{countDone}</div>
-        <FontAwesome name="calendar" style={iconStyle} />
-        <div className={styles.label}>Done</div>
+      <div className={styles.cardGroup}>
+        <div className={projects}>
+          <div className={styles.count}>{countNewProjects}</div>
+          <FontAwesome name={labels.project.icon} style={iconStyle} />
+          <div className={styles.label}>New Projects</div>
+        </div>
+        <div className={actions}>
+          <div className={styles.count}>{countNewActions}</div>
+          <FontAwesome name={labels.action.icon} style={iconStyle} />
+          <div className={styles.label}>New Actions</div>
+        </div>
+        <div className={updates}>
+          <div className={styles.count}>{countUpdates}</div>
+          <FontAwesome name="random" style={iconStyle} />
+          <div className={styles.label}>Updates</div>
+        </div>
+        <div className={done}>
+          <div className={styles.count}>{countDone}</div>
+          <FontAwesome name={labels.projectStatus.done.icon} style={iconStyle} />
+          <div className={styles.label}>Done</div>
+        </div>
       </div>
     </div>
   );
@@ -65,21 +70,77 @@ SummaryQuickStats.defaultProps = {
   countNewActions: 12,
   countNewProjects: 4,
   countUpdates: 9,
-  countDone: 4
+  countDone: 5
 };
-
-console.log(cardRootStyles);
 
 SummaryQuickStats.styles = StyleSheet.create({
   root: {
-    display: 'flex',
     maxWidth: '37.5rem',
     width: '100%'
+  },
+
+  heading: {
+    position: 'relative',
+    textAlign: 'center',
+    textTransform: 'uppercase',
+
+    '::before': {
+      backgroundColor: theme.palette.mid30l,
+      content: '""',
+      display: 'block',
+      height: '2px',
+      margin: '-1px auto auto',
+      position: 'absolute',
+      top: '50%',
+      width: '100%',
+      zIndex: 200
+    },
+    '::after': {
+      backgroundColor: '#fff',
+      content: '""',
+      display: 'none',
+      height: '1px',
+      margin: '-.5px auto auto',
+      position: 'absolute',
+      top: '50%',
+      width: '100%',
+      zIndex: 200
+    }
+  },
+
+  headingLabel: {
+    ...ib,
+    backgroundColor: '#fff',
+    color: theme.palette.dark,
+    fontSize: theme.typography.s4,
+    fontWeight: 700,
+    lineHeight: theme.typography.s5,
+    padding: '1.25rem .75rem',
+    position: 'relative',
+    zIndex: 400
+  },
+
+  cardGroup: {
+    display: 'flex',
+    margin: '0 -.625rem',
+    width: '38.75rem'
+  },
+
+  count: {
+    fontSize: theme.typography.s8
+  },
+
+  label: {
+    ...ib,
+    fontSize: theme.typography.s3,
+    fontWeight: 700,
+    marginLeft: '.25rem'
   },
 
   cardRootStyles: {
     ...cardRootStyles,
     margin: '0 .625rem',
+    padding: '.5rem',
     textAlign: 'center',
 
     '::after': {

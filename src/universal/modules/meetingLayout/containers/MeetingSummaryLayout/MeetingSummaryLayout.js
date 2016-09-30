@@ -10,6 +10,7 @@ import MeetingSection from 'universal/modules/meeting/components/MeetingSection/
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
 import Sidebar from 'universal/modules/meeting/components/Sidebar/Sidebar';
 import SummaryEmailPreview from 'universal/modules/meeting/components/SummaryEmailPreview/SummaryEmailPreview';
+import SummaryFirstTime from 'universal/modules/meeting/components/SummaryFirstTime/SummaryFirstTime';
 import SummaryQuickStats from 'universal/modules/meeting/components/SummaryQuickStats/SummaryQuickStats';
 
 import {makeSuccessExpression} from 'universal/utils/makeSuccessCopy';
@@ -46,24 +47,15 @@ const MeetingSummaryLayout = (props) => {
             </Type>
 
             {isFirstMeeting &&
-              <Type align="center" marginBottom="2rem" marginTop="2rem" scale="s4">
-                <b>Congrats on your first Action meeting!</b><br />
-                Now let’s make it a habit. If you haven’t already,<br />
-                schedule a 30:00 minute meeting, preferably<br />
-                on Mondays, using the following link:<br />
-                <a href="https://prbl.io/a/b7s8x9" title="https://prbl.io/a/b7s8x9">
-                {'https://prbl.io/a/b7s8x9'}
-                </a>
-              </Type>
+              <MeetingSection paddingBottom="2rem" paddingTop="2rem">
+                <SummaryFirstTime />
+              </MeetingSection>
             }
-
-            <Type align="center">
-              <b>Summary Specs:</b>
-            </Type>
 
             <MeetingSection paddingBottom="2rem" paddingTop="2rem">
               <SummaryQuickStats />
             </MeetingSection>
+
             <MeetingSection paddingBottom="2rem" paddingTop="2rem">
               <SummaryEmailPreview teamOutcomes={newOutcomes} />
             </MeetingSection>
