@@ -13,8 +13,14 @@ const MenuItem = (props) => {
   const {isActive, label, onClick} = props;
   const rootStyles = isActive ? combineStyles(styles.root, styles.active) : styles.root;
   return (
-    // put a tabIndex on the div so the menu goes away if you click on a menu item
-    <div className={rootStyles} tabIndex="0" onClick={onClick} >
+    /**
+     * Let's add role="button" on the below div so the menu will go away if
+     * you click on a menu item.
+     *
+     * Originally, this was tabIndex="0" – but we ran into a chrome
+     * bug that failed to call the onClick handler.
+     */
+    <div className={rootStyles} role="button" onClick={onClick} >
       <div className={styles.label}>{label}</div>
     </div>
   );
