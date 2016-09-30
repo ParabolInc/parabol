@@ -3,7 +3,6 @@ import look, {StyleSheet} from 'react-look';
 import {cashay} from 'cashay';
 import {Field, reduxForm, initialize, focus} from 'redux-form';
 import labels from 'universal/styles/theme/labels';
-import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
 import OutcomeCardAssignMenuContainer
   from 'universal/modules/teamDashboard/containers/OutcomeCardAssignMenu/OutcomeCardAssignMenuContainer';
 
@@ -81,7 +80,7 @@ export default class AgendaCard extends Component {
       handleSubmit,
       outcome,
     } = this.props;
-    const {type, id: outcomeId} = outcome;
+    const {type, content, id: outcomeId} = outcome;
     const isProject = type === 'Project';
     const status = outcome.status || 'active';
     const hasOpenStatusMenu = openMenu === OPEN_STATUS_MENU;
@@ -158,6 +157,8 @@ export default class AgendaCard extends Component {
                 handleSubmit={handleSubmit(handleAgendaCardUpdate)}
                 isProject={isProject}
                 name={outcomeId}
+                outcome={outcome}
+                doFocus={!content}
               />
             </form>
           </div>
@@ -196,21 +197,6 @@ AgendaCard.propTypes = {
   teamMembers: PropTypes.array,
   updatedAt: PropTypes.instanceOf(Date),
   handleSubmit: PropTypes.func,
-};
-
-AgendaCard.defaultProps = {
-  status: labels.projectStatus.active.slug,
-  hasOpenAssignMenu: false,
-  hasOpenStatusMenu: false,
-  isProject: true,
-  owner: {
-    preferredName: 'Taya Mueller',
-    picture: TayaAvatar
-  },
-  team: {
-    preferredName: 'Engineering',
-    picture: 'https://placekitten.com/g/24/24'
-  },
 };
 
 styles = StyleSheet.create({

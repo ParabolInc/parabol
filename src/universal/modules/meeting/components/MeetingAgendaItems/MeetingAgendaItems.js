@@ -132,14 +132,9 @@ MeetingAgendaItems.propTypes = {
   agenda: PropTypes.array.isRequired,
   bindHotkey: PropTypes.func,
   isFacilitating: PropTypes.bool,
-  localPhaseItem: PropTypes.number.isRequired,
+  localPhaseItem: PropTypes.number,
   members: PropTypes.array,
-  meetingPhase: PropTypes.string.isRequired,
-  meetingPhaseItem: PropTypes.number.isRequired,
-  params: PropTypes.shape({
-    teamId: PropTypes.string.isRequired
-  }).isRequired,
-  team: PropTypes.object.isRequired,
+  team: PropTypes.object,
   router: PropTypes.object.isRequired,
 };
 

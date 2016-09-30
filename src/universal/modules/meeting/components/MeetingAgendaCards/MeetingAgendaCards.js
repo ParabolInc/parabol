@@ -5,6 +5,8 @@ import shortid from 'shortid';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
 import {ACTIVE} from 'universal/utils/constants';
 import AgendaCard from 'universal/modules/meeting/components/AgendaCard/AgendaCard';
+import withHotkey from 'react-hotkey-hoc';
+import NullCard from 'universal/components/NullCard/NullCard';
 
 const handleAddActionFactory = (teamMemberId, agendaId) => () => {
   const [, teamId] = teamMemberId.split('::');
@@ -32,12 +34,17 @@ const handleAddProjectFactory = (teamMemberId, agendaId) => () => {
 
 let s = {};
 
-const makeCards = (array, dispatch) => {
+const makeCards = (array, dispatch, myTeamMemberId) => {
   return array.map((outcome) => {
-    const key = `${outcome.type}OutcomeCard${outcome.id}`;
+    const {type, id, teamMember: {preferredName}, content, teamMemberId} = outcome;
+    const key = `${type}OutcomeCard${id}`;
+    const username = preferredName && preferredName.replace(/\s+/g, '');
     return (
       <div className={s.item} key={key}>
-        <AgendaCard form={key} dispatch={dispatch} outcome={outcome}/>
+        {(!content && myTeamMemberId !== teamMemberId) ?
+          <NullCard username={username}/> :
+          <AgendaCard form={key} dispatch={dispatch} outcome={outcome}/>
+        }
       </div>
     );
   });
@@ -45,31 +52,27 @@ const makeCards = (array, dispatch) => {
 
 const makePlaceholders = (length) => {
   const rowLength = 4;
-  const fullRows = Math.floor(length / rowLength);
-  const itemsTotal = (fullRows * 4) + rowLength;
-  const placeholdersTotal = itemsTotal - (length + 1);
-  const placeholders = [];
-  for (let i = 0; i < placeholdersTotal; i++) {
-    placeholders.push(
-      <div
-        className={s.item}
-        key={`CreateCardPlaceholder${i}`}
-      >
-        <CreateCard />
-      </div>);
-  }
-  return placeholders;
+  const emptyCardCount = rowLength - (length % rowLength + 1);
+  return new Array(emptyCardCount).fill(undefined).map((item, idx) =>
+    <div
+      className={s.item}
+      key={`CreateCardPlaceholder${idx}`}
+    >
+      <CreateCard />
+    </div>);
 };
 
 const MeetingAgendaCards = (props) => {
-  const {agendaId, dispatch, myTeamMemberId, outcomes} = props;
+  const {agendaId, bindHotkey, dispatch, myTeamMemberId, outcomes} = props;
   const handleAddAction = handleAddActionFactory(myTeamMemberId, agendaId);
   const handleAddProject = handleAddProjectFactory(myTeamMemberId, agendaId);
+  bindHotkey('a', handleAddAction);
+  bindHotkey('p', handleAddProject);
   return (
     <div className={s.root}>
       {/* Get Cards */}
       {outcomes.length !== 0 &&
-      makeCards(outcomes, dispatch)
+      makeCards(outcomes, dispatch, myTeamMemberId)
       }
       {/* Input Card */}
       <div className={s.item}>
@@ -100,9 +103,10 @@ s = StyleSheet.create({
 
 MeetingAgendaCards.propTypes = {
   agendaId: PropTypes.string.isRequired,
+  bindHotkey: PropTypes.func,
   dispatch: PropTypes.func,
   myTeamMemberId: PropTypes.string,
   outcomes: PropTypes.array.isRequired
 };
 
-export default look(MeetingAgendaCards);
+export default withHotkey(look(MeetingAgendaCards));
