@@ -9,8 +9,7 @@ import {
   DashSectionHeading
 } from 'universal/components/Dashboard';
 import FontAwesome from 'react-fontawesome';
-import {MenuToggle} from 'universal/components';
-import MenuItem from 'universal/components/MenuItem/MenuItem';
+import {Menu, MenuItem} from 'universal/modules/menu';
 import {filterTeam} from 'universal/modules/userDashboard/ducks/userDashDuck';
 
 
@@ -41,8 +40,9 @@ const UserProjectsHeader = (props) => {
         <DashSectionControl>
           <b style={inlineBlock}>Show Actions & Projects for</b><span style={inlineBlock}>:</span>
           {' '}
-          <MenuToggle
+          <Menu
             label="Filter by:"
+            menuKey="UserDashFilterTeam"
             menuOrientation="right"
             toggle={toggle(teamFilterName)}
             toggleHeight={ui.dashSectionHeaderLineHeight}
@@ -62,7 +62,7 @@ const UserProjectsHeader = (props) => {
                 onClick={() => dispatch(filterTeam(team.id, team.name))}
               />
             )}
-          </MenuToggle>
+          </Menu>
         </DashSectionControl>
       </DashSectionControls>
     </DashSectionHeader>

@@ -3,6 +3,7 @@ import look, {StyleSheet} from 'react-look';
 import tinycolor from 'tinycolor2';
 import theme from 'universal/styles/theme';
 import {textOverflow} from 'universal/styles/helpers';
+
 // TODO: add option for labels with icons
 // import FontAwesome from 'react-fontawesome';
 
@@ -10,11 +11,15 @@ const combineStyles = StyleSheet.combineStyles;
 
 const MenuItem = (props) => {
   const {styles} = MenuItem;
-  const {isActive, label, onClick} = props;
+  const {isActive, label, onClick, closeMenu} = props;
   const rootStyles = isActive ? combineStyles(styles.root, styles.active) : styles.root;
+  const handleClick = () => {
+    closeMenu();
+    onClick();
+  }
   return (
     // put a tabIndex on the div so the menu goes away if you click on a menu item
-    <div className={rootStyles} tabIndex="0" onClick={onClick} >
+    <div className={rootStyles} onClick={handleClick} >
       <div className={styles.label}>{label}</div>
     </div>
   );

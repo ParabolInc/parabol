@@ -1,7 +1,6 @@
 import React from 'react';
 import Helmet from 'react-helmet';
 import {head} from 'universal/utils/clientOptions';
-import {Menu, MenuToggle, Type} from 'universal/components';
 import FontAwesome from 'react-fontawesome';
 import exampleMenu from 'universal/modules/patterns/helpers/exampleMenu';
 
@@ -33,9 +32,6 @@ const PatternsContainer = () =>
 
     {makeLabel('MenuToggle')}
     {makeLabel('Menu')}
-    <MenuToggle menuOrientation="left" toggle={demoToggle}>
-      <Menu items={exampleMenu} label="Select Team:" />
-    </MenuToggle>
 
   </div>;
 

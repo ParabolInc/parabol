@@ -11,8 +11,7 @@ import FontAwesome from 'react-fontawesome';
 import {cashay} from 'cashay';
 import shortid from 'shortid';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
-import {MenuToggle} from 'universal/components';
-import MenuItem from 'universal/components/MenuItem/MenuItem';
+import {Menu, MenuItem} from 'universal/modules/menu';
 
 const combineStyles = StyleSheet.combineStyles;
 const badgeIconStyle = {
@@ -90,7 +89,7 @@ const ProjectColumn = (props) => {
       const toggle = makeAddProjectButton();
       const menuItems = makeTeamMenuItems(userSort);
       return (
-        <MenuToggle menuOrientation="right" menuWidth="10rem" toggle={toggle} toggleHeight="1.5rem" label="Select Team:">
+        <Menu menuKey={`UserDashAdd${status}Project`} menuOrientation="right" menuWidth="10rem" toggle={toggle} toggleHeight="1.5rem" label="Select Team:">
           {menuItems.map((item, idx) =>
             <MenuItem
               isActive={item.isActive}
@@ -99,7 +98,7 @@ const ProjectColumn = (props) => {
               onClick={item.handleClick}
             />
           )}
-        </MenuToggle>
+        </Menu>
       );
     }
     return null;
