@@ -8,22 +8,27 @@ const initialState = {
 };
 
 export default function reducer(state = initialState, action = {}) {
-  const {type, payload: {menuKey}} = action;
-  if (type === OPEN_MENU) {
-    return {
-      ...state,
-      [menuKey]: {
-        // for future things like active item, etc.
-        ...state[menuKey],
-        isOpen: true
-      }
-    };
-  } else if (type === CLOSE_MENU) {
-    const cloneState = {...state};
-    delete cloneState[menuKey];
-    return cloneState;
+  switch (action.type) {
+    case OPEN_MENU: {
+      const {payload: {menuKey}} = action;
+      return {
+        ...state,
+        [menuKey]: {
+          // for future things like active item, etc.
+          ...state[menuKey],
+          isOpen: true
+        }
+      };
+    }
+    case CLOSE_MENU: {
+      const {payload: {menuKey}} = action;
+      const cloneState = {...state};
+      delete cloneState[menuKey];
+      return cloneState;
+    }
+    default:
+      return state;
   }
-  return state;
 }
 
 export const setMenu = (menuKey, isOpen) => {
