@@ -252,6 +252,9 @@ be able to accept it, so that they can join their teammates.
 want to see a list of their projects and actions, so that they can see what
 they are responsible for.
 
+- [X] When a TM creates a new project or action, they will want to be able
+to assign it to a specific team, so that they can organize their work.
+
 - [X] When a TM wants to update an item on their dashboard, they will want
 controls that feel similar to the controls on the team dashboard, so that
 they now how to keep an accurate account of work they are responsible for.

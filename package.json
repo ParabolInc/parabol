@@ -67,7 +67,7 @@
     "stats-webpack-plugin": "0.4.2",
     "transform-loader": "^0.2.3",
     "url-loader": "0.5.7",
-    "webpack": "^2.1.0-beta.18",
+    "webpack": "2.1.0-beta.22",
     "webpack-dev-middleware": "1.7.0",
     "webpack-hot-middleware": "^2.12.2",
     "webpack-shell-plugin": "^0.4.3",

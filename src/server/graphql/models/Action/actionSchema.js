@@ -24,10 +24,11 @@ export const Action = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'Marks the item as checked off'
     },
-    isActive: {
-      type: GraphQLBoolean,
-      description: 'Shows the item in subscriptions'
-    },
+    // could deprecate?
+    // isActive: {
+    //   type: GraphQLBoolean,
+    //   description: 'Shows the item in subscriptions'
+    // },
     createdAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the action was created'
@@ -58,8 +59,12 @@ const actionInputThunk = () => ({
   agendaId: {
     type: GraphQLID,
     description: 'the agenda item that created this project, if any'
+  },
+  isComplete: {
+    type: GraphQLBoolean,
+    description: 'Marks the item as checked off'
   }
 });
 
-export const CreateActionInput = nonnullifyInputThunk('CreateActionInput', actionInputThunk, ['id']);
+export const CreateActionInput = nonnullifyInputThunk('CreateActionInput', actionInputThunk, ['id', 'teamMemberId']);
 export const UpdateActionInput = nonnullifyInputThunk('UpdateActionInput', actionInputThunk, ['id']);

@@ -6,10 +6,12 @@ import ui from 'universal/styles/ui';
 import themeLabels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import ProjectCardContainer from 'universal/containers/ProjectCard/ProjectCardContainer';
-import {ACTIVE, STUCK, DONE, FUTURE, SORT_STEP, USER_DASH, TEAM_DASH, MEETING} from 'universal/utils/constants';
+import {ACTIVE, STUCK, DONE, FUTURE, USER_DASH, TEAM_DASH, MEETING} from 'universal/utils/constants';
 import FontAwesome from 'react-fontawesome';
 import {cashay} from 'cashay';
 import shortid from 'shortid';
+import getNextSortOrder from 'universal/utils/getNextSortOrder';
+import {Menu, MenuItem} from 'universal/modules/menu';
 
 const combineStyles = StyleSheet.combineStyles;
 const badgeIconStyle = {
@@ -40,36 +42,82 @@ const handleAddProjectFactory = (status, teamMemberId, teamSort, userSort) => ()
 };
 
 const ProjectColumn = (props) => {
-  const {area, status, projects, myTeamMemberId} = props;
+  const {area, status, projects, myTeamMemberId, teams, userId} = props;
   const label = labels[status];
-  let handleAddProject;
-  if (area === TEAM_DASH) {
-    const teamSort = projects[projects.length - 1] ? projects[projects.length - 1].teamSort + SORT_STEP : 0;
-    handleAddProject = handleAddProjectFactory(status, myTeamMemberId, teamSort, 0);
-  } else if (area === USER_DASH) {
-    // TODO pop a menu of all the teams & create a card based on the team selection
-  }
+
   // TODO do it fur real
   const MeetingCardContainer = ProjectCardContainer;
   const CardContainer = area === MEETING ? MeetingCardContainer : ProjectCardContainer;
+  const makeAddProjectButton = (clickHandler) => {
+    return (<FontAwesome
+      className={combineStyles(styles.addIcon, styles[status])}
+      name="plus-square-o"
+      onClick={clickHandler}
+      title={`Add a Project set to ${label}`}
+    />);
+  };
+  const makeTeamMenuItems = (userSort) => {
+    return teams.map(team => ({
+      label: team.name,
+      isActive: false,
+      handleClick: () => cashay.mutate('createProject', {
+        variables: {
+          newProject: {
+            id: `${team.id}::${shortid.generate()}`,
+            status,
+            teamMemberId: `${userId}::${team.id}`,
+            teamSort: 0,
+            userSort
+          }
+        }
+      })
+    }));
+  };
+  const makeAddProject = () => {
+    if (area === TEAM_DASH) {
+      const teamSort = getNextSortOrder(projects, 'teamSort');
+      const handleAddProject = handleAddProjectFactory(status, myTeamMemberId, teamSort, 0);
+      return makeAddProjectButton(handleAddProject);
+    } else if (area === USER_DASH) {
+      const userSort = getNextSortOrder(projects, 'userSort');
+      if (teams.length === 1) {
+        const {id: teamId} = teams[0];
+        const generatedMyTeamMemberId = `${userId}::${teamId}`;
+        const handleAddProject = handleAddProjectFactory(status, generatedMyTeamMemberId, 0, userSort);
+        return makeAddProjectButton(handleAddProject);
+      }
+      const toggle = makeAddProjectButton();
+      const menuItems = makeTeamMenuItems(userSort);
+      return (
+        <Menu menuKey={`UserDashAdd${status}Project`} menuOrientation="right" menuWidth="10rem" toggle={toggle} toggleHeight="1.5rem" label="Select Team:">
+          {menuItems.map((item, idx) =>
+            <MenuItem
+              isActive={item.isActive}
+              key={`MenuItem${idx}`}
+              label={item.label}
+              onClick={item.handleClick}
+            />
+          )}
+        </Menu>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className={styles.column}>
       <div className={styles.columnHeader}>
         <span className={combineStyles(styles.statusBadge, styles[`${status}Bg`])}>
-          <FontAwesome className={styles.statusBadgeIcon} name={themeLabels.projectStatus[status].icon} style={badgeIconStyle} />
+          <FontAwesome
+            className={styles.statusBadgeIcon}
+            name={themeLabels.projectStatus[status].icon}
+            style={badgeIconStyle}
+          />
         </span>
         <span className={combineStyles(styles.statusLabel, styles[status])}>
           {label}
         </span>
-        {handleAddProject &&
-          <FontAwesome
-            className={combineStyles(styles.addIcon, styles[status])}
-            name="plus-square-o"
-            onClick={handleAddProject}
-            title={`Add a Project set to ${label}`}
-          />
-        }
+        {makeAddProject()}
       </div>
       <div className={styles.columnBody}>
         <div className={styles.columnInner}>
@@ -91,6 +139,8 @@ ProjectColumn.propTypes = {
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.array.isRequired,
   status: PropTypes.string,
+  teams: PropTypes.array,
+  userId: PropTypes.string
 };
 
 const columnStyles = {
@@ -126,11 +176,14 @@ styles = StyleSheet.create({
     display: 'flex !important',
     lineHeight: '1.5rem',
     padding: '.5rem 1rem',
+    position: 'relative',
+    zIndex: '400'
   },
 
   columnBody: {
     flex: 1,
-    position: 'relative'
+    position: 'relative',
+    zIndex: '200'
   },
 
   columnInner: {

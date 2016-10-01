@@ -51,7 +51,9 @@ const OutcomeCardFooter = (props) => {
     hasOpenStatusMenu,
     isArchived,
     isProject,
+    outcome,
     owner,
+    showTeam,
     toggleAssignMenu,
     handleStatusClick
   } = props;
@@ -65,7 +67,7 @@ const OutcomeCardFooter = (props) => {
   // AVATAR
   // -------
   const avatarImage = owner.picture;
-  const avatarName = owner.preferredName;
+  const avatarName = showTeam ? outcome.team.name : owner.preferredName;
   // TODO: Set avatarTeam style when showing team instead of owner (on UserDashboard)
   // const avatarStyles = combineStyles(styles.avatar, styles.avatarTeam);
   const avatarStyles = styles.avatar;
@@ -73,7 +75,9 @@ const OutcomeCardFooter = (props) => {
   let buttonIcon = hasOpenStatusMenu ? 'times' : 'wrench';
   if (isArchived) buttonIcon = 'reply';
 
-  if (!isProject) { buttonOptions.push(styles.actionButton); }
+  if (!isProject) {
+    buttonOptions.push(styles.actionButton);
+  }
 
   if (hasOpenStatusMenu || cardHasHover) {
     if (isProject) {
@@ -97,11 +101,13 @@ const OutcomeCardFooter = (props) => {
     <div className={styles.root}>
       <div className={styles.avatarLayout}>
         <div className={styles.avatarBlock} onClick={toggleAssignMenu} style={avatarBlockStyle}>
-          <img
-            alt={avatarName}
-            className={avatarStyles}
-            src={avatarImage}
-          />
+          {!showTeam &&
+            <img
+              alt={avatarName}
+              className={avatarStyles}
+              src={avatarImage}
+            />
+          }
           <div className={styles.name}>{avatarName}</div>
           {!isArchived &&
             <FontAwesome
@@ -114,7 +120,7 @@ const OutcomeCardFooter = (props) => {
       </div>
       <div className={styles.buttonBlock}>
         <button className={buttonStyles} onClick={handleStatusClick}>
-          <FontAwesome name={buttonIcon} style={faStyle} />
+          <FontAwesome name={buttonIcon} style={faStyle}/>
         </button>
       </div>
     </div>
@@ -128,10 +134,9 @@ OutcomeCardFooter.propTypes = {
   hasOpenStatusMenu: PropTypes.bool,
   isArchived: PropTypes.bool,
   isProject: PropTypes.bool,
+  outcome: PropTypes.object,
   owner: PropTypes.object,
-  // project: PropTypes.shape({
-  //   projectId: PropTypes.string
-  // }),
+  showTeam: PropTypes.bool,
   team: PropTypes.object
 };
 

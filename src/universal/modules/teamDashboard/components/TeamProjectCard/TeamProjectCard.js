@@ -1,17 +1,18 @@
 import React, {Component, PropTypes} from 'react';
 import look, {StyleSheet} from 'react-look';
 import {cashay} from 'cashay';
-import {Field, reduxForm, initialize, focus} from 'redux-form';
+import {Field, reduxForm, initialize} from 'redux-form';
 import labels from 'universal/styles/theme/labels';
 import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
+import EditingStatusContainer from 'universal/containers/EditingStatus/EditingStatusContainer';
 import OutcomeCardAssignMenuContainer
   from 'universal/modules/teamDashboard/containers/OutcomeCardAssignMenu/OutcomeCardAssignMenuContainer';
 import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
-import OutcomeCardTextareaContainer from 'universal/modules/teamDashboard/containers/OutcomeCardTextarea/OutcomeCardTextareaContainer';
+import OutcomeCardTextarea from 'universal/components/OutcomeCard/OutcomeCardTextarea';
 import OutcomeCardFooter from 'universal/components/OutcomeCard/OutcomeCardFooter';
 import OutcomeCardStatusMenu from 'universal/components/OutcomeCard/OutcomeCardStatusMenu';
 import throttle from 'lodash.throttle';
-
+import {USER_DASH} from 'universal/utils/constants';
 const OPEN_CONTENT_MENU = 'TeamProjectCard/openContentMenu';
 const OPEN_ASSIGN_MENU = 'TeamProjectCard/openAssignMenu';
 const OPEN_STATUS_MENU = 'TeamProjectCard/openStatusMenu';
@@ -22,16 +23,13 @@ let styles = {};
 @look
 export default class TeamProjectCard extends Component {
   componentWillMount() {
-    const {project: {content}, dispatch, field, form} = this.props;
+    const {project: {content}} = this.props;
     this.state = {
       cardHasHover: false,
       openMenu: OPEN_CONTENT_MENU
     };
     if (content) {
       this.initializeValues(content);
-    } else {
-      // manually align redux-state with DOM
-      dispatch(focus(form, field));
     }
   }
 
@@ -113,6 +111,8 @@ export default class TeamProjectCard extends Component {
   render() {
     const {openMenu} = this.state;
     const {
+      area,
+      form,
       handleSubmit,
       project,
       isArchived,
@@ -157,14 +157,18 @@ export default class TeamProjectCard extends Component {
         {!hasOpenAssignMenu && !hasOpenStatusMenu &&
           <div className={styles.body}>
             <form>
+              <EditingStatusContainer
+                form={form}
+                outcomeId={project.id}
+                updatedAt={project.updatedAt}
+              />
               <Field
                 name={projectId}
-                component={OutcomeCardTextareaContainer}
+                component={OutcomeCardTextarea}
                 handleActive={handleCardActive}
                 handleSubmit={handleSubmit(this.handleCardUpdate)}
                 isArchived={isArchived}
                 isProject={isProject}
-                outcome={project}
                 doFocus={!content}
                 cardHasHover={this.state.cardHasHover}
               />
@@ -179,6 +183,7 @@ export default class TeamProjectCard extends Component {
           isProject={isProject}
           owner={project.teamMember}
           outcome={project}
+          showTeam={area === USER_DASH}
           status={status}
           toggleAssignMenu={this.toggleAssignMenu}
           handleStatusClick={handleStatusClick}
@@ -189,6 +194,7 @@ export default class TeamProjectCard extends Component {
 }
 
 TeamProjectCard.propTypes = {
+  area: PropTypes.string,
   project: PropTypes.shape({
     id: PropTypes.string,
     content: PropTypes.string,

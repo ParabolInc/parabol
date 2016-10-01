@@ -11,7 +11,8 @@ import {
 } from 'universal/components/Dashboard';
 import UserActions from 'universal/modules/userDashboard/components/UserActions/UserActions';
 import UserColumnsContainer from 'universal/modules/userDashboard/containers/UserColumns/UserColumnsContainer';
-import UserProjectsHeader from '../UserProjectsHeader/UserProjectsHeader';
+import UserProjectsHeaderContainer from 'universal/modules/userDashboard/containers/UserProjectsHeader/UserProjectsHeaderContainer';
+
 import getRallyLink from '../../helpers/getRallyLink';
 
 const UserDashboard = () => {
@@ -29,7 +30,7 @@ const UserDashboard = () => {
             <UserActions />
           </div>
           <div className={styles.projectsLayout}>
-            <UserProjectsHeader />
+            <UserProjectsHeaderContainer />
             <UserColumnsContainer/>
           </div>
         </div>
@@ -52,6 +53,8 @@ UserDashboard.styles = StyleSheet.create({
   actionsLayout: {
     boxSizing: 'content-box',
     borderRight: `2px solid ${ui.dashBorderColor}`,
+    display: 'flex',
+    flexDirection: 'column',
     width: layout.dashActionsWidth
   },
 

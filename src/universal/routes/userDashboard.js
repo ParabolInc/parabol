@@ -6,11 +6,13 @@ const setImports = () =>
   new Map([
     ['component', System.import('universal/containers/Dashboard/DashboardContainer')],
     ['socket', System.import('redux-socket-cluster')],
+    ['userDashboard', System.import('universal/modules/userDashboard/ducks/userDashDuck')]
   ]);
 
 const getImports = importMap => ({
   component: importMap.get('component'),
   socket: importMap.get('socket').socketClusterReducer,
+  userDashboard: importMap.get('userDashboard').default
 });
 
 export default store => ({
