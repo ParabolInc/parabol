@@ -3,7 +3,7 @@ import SectionHeader from 'universal/modules/patterns/components/SectionHeader/S
 import Example from 'universal/modules/patterns/components/Example/Example';
 import ExampleCode from 'universal/modules/patterns/components/ExampleCode/ExampleCode';
 import PropsTable from 'universal/modules/patterns/components/PropsTable/PropsTable';
-import Card from 'universal/modules/meeting/components/CheckinCard/CheckinCard';
+import Card from 'universal/modules/meeting/components/CheckInCard/CheckInCard';
 
 const demoUser = {
   name: '@KittyKitterson',

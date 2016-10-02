@@ -11,11 +11,10 @@ const removeItemFactory = (itemId) => () => {
 };
 
 const AgendaList = (props) => {
-  const {styles} = AgendaList;
-  const {agenda, agendaPhaseItem, phaseItemFactory} = props;
+  const {agenda, agendaPhaseItem, phaseItemFactory, styles} = props;
   return (
-    <div className={styles.root}>
-      <div className={styles.inner}>
+    <div className={css(styles.root)}>
+      <div className={css(styles.inner)}>
         {agenda.map((item, idx) =>
           <AgendaItem
             desc={item.content}
@@ -43,7 +42,7 @@ AgendaList.propTypes = {
   phaseItemFactory: PropTypes.func
 };
 
-AgendaList.const styleThunk = () => ({
+const styleThunk = () => ({
   root: {
     display: 'flex',
     flexDirection: 'column',

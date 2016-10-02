@@ -8,12 +8,10 @@ import {textOverflow} from 'universal/styles/helpers';
 // TODO: add option for labels with icons
 // import FontAwesome from 'react-fontawesome';
 
-const combineStyles = StyleSheet.combineStyles;
-
 const MenuItem = (props) => {
-  const {styles} = MenuItem;
+  const {styles} = props;
   const {isActive, label, onClick, closeMenu} = props;
-  const rootStyles = isActive ? combineStyles(styles.root, styles.active) : styles.root;
+  const rootStyles = css(styles.root, isActive && styles.active);
   const handleClick = () => {
     closeMenu();
     onClick();
@@ -26,6 +24,13 @@ const MenuItem = (props) => {
   );
 };
 
+MenuItem.propTypes = {
+  closeMenu: PropTypes.func,
+  isActive: PropTypes.bool,
+  label: PropTypes.string,
+  onClick: PropTypes.func
+};
+
 const activeBackgroundColor = tinycolor.mix(appTheme.palette.mid, '#fff', 85).toHexString();
 const hoverFocusStyles = {
   backgroundColor: appTheme.palette.mid10l,
@@ -36,20 +41,8 @@ const activeHoverFocusStyles = {
   backgroundColor: activeBackgroundColor
 };
 
-MenuItem.propTypes = {
-  closeMenu: PropTypes.func,
-  isActive: PropTypes.bool,
-  label: PropTypes.string,
-  onClick: PropTypes.func
-};
 
-MenuItem.defaultProps = {
-  isActive: false,
-  label: 'Menu Item',
-  onClick: () => console.log('MenuItem.onClick()')
-};
-
-MenuItem.const styleThunk = () => ({
+const styleThunk = () => ({
   root: {
     backgroundColor: 'transparent',
     cursor: 'pointer',

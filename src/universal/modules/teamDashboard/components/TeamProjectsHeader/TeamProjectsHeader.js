@@ -18,8 +18,7 @@ const iconStyle = {
 };
 
 const TeamProjectsHeader = (props) => {
-  const {teamId} = props;
-  const {styles} = TeamProjectsHeader;
+  const {styles, teamId} = props;
   return (
     <DashSectionHeader>
       <DashSectionHeading icon="calendar" label="Team Projects" />
@@ -27,7 +26,7 @@ const TeamProjectsHeader = (props) => {
         {/* TODO: needs link to archive */}
         <DashSectionControl>
           <FontAwesome name="archive" style={iconStyle} />
-          <Link className={styles.link} to={`/team/${teamId}/archive`}>
+          <Link className={css(styles.link)} to={`/team/${teamId}/archive`}>
             See Archived Projects
           </Link>
         </DashSectionControl>
@@ -35,7 +34,7 @@ const TeamProjectsHeader = (props) => {
         <DashSectionControl>
           <b style={ib}>Show by Team Member</b>:
           {' '}
-          <a className={styles.link} href="#" title="Filter by All Team Members">
+          <a className={css(styles.link)} href="#" title="Filter by All Team Members">
             All Team Members
           </a>
           {' '}
@@ -51,7 +50,7 @@ TeamProjectsHeader.propTypes = {
   teamId: PropTypes.string,
 };
 
-TeamProjectsHeader.const styleThunk = () => ({
+const styleThunk = () => ({
   link: {
     ...ib,
     color: appTheme.palette.mid,

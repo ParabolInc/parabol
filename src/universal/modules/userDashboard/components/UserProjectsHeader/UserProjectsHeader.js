@@ -13,7 +13,6 @@ import FontAwesome from 'react-fontawesome';
 import {Menu, MenuItem} from 'universal/modules/menu';
 import {filterTeam} from 'universal/modules/userDashboard/ducks/userDashDuck';
 
-
 const inlineBlock = {
   display: 'inline-block',
   height: ui.dashSectionHeaderLineHeight,
@@ -27,10 +26,9 @@ const inlineBlockTop = {
 };
 
 const UserProjectsHeader = (props) => {
-  const {dispatch, teams, teamFilterId, teamFilterName} = props;
-  const {styles} = UserProjectsHeader;
+  const {dispatch, styles, teams, teamFilterId, teamFilterName} = props;
   const toggle = (label) =>
-    <div className={styles.button} title={`Filter by ${label}`}>
+    <div className={css(styles.button)} title={`Filter by ${label}`}>
       <span style={inlineBlockTop}>{label}</span> <FontAwesome name="chevron-circle-down" style={inlineBlockTop} />
     </div>;
   return (
@@ -78,7 +76,7 @@ UserProjectsHeader.propTypes = {
   teamFilterName: PropTypes.string
 };
 
-UserProjectsHeader.const styleThunk = () => ({
+const styleThunk = () => ({
   button: {
     ...inlineBlock,
     color: appTheme.palette.mid,

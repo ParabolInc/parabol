@@ -1,23 +1,19 @@
 import React, {Component, PropTypes} from 'react';
-import look, { StyleSheet } from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 
-let styles = {};
+const WelcomeHeader = (props) => {
+  const {children, styles} = props;
+  return (
+    <div className={css(styles.root)}>
+      {children}
+    </div>
+  );
+};
 
-@look
-// eslint-disable-next-line react/prefer-stateless-function
-export default class WelcomeHeader extends Component {
-  static propTypes = {
-    children: PropTypes.any
-  }
-
-  render() {
-    return (
-      <div className={styles.root}>
-        {this.props.children}
-      </div>
-    );
-  }
-}
+WelcomeHeader.propTypes = {
+  children: PropTypes.any
+};
 
 const styleThunk = () => ({
   root: {
@@ -31,3 +27,5 @@ const styleThunk = () => ({
     position: 'relative'
   }
 });
+
+export default withStyles(styleThunk)(WelcomeHeader);

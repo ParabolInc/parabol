@@ -3,7 +3,7 @@ import {withRouter} from 'react-router';
 
 import IconLink from 'universal/components/IconLink/IconLink';
 import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
-import CheckinCards from 'universal/modules/meeting/components/CheckinCards/CheckinCards';
+import CheckInCards from 'universal/modules/meeting/components/CheckInCards/CheckInCards';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import {
@@ -76,7 +76,7 @@ const MeetingCheckin = (props) => {
           </Type>
         </MeetingSection>
         {/* */}
-        <CheckinCards
+        <CheckInCards
           isFacilitating={isFacilitating}
           localPhaseItem={localPhaseItem}
           members={members}

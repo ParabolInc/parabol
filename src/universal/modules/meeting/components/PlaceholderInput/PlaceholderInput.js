@@ -4,26 +4,40 @@ import {css} from 'aphrodite';
 import appTheme from 'universal/styles/theme/appTheme';
 import {reduxForm} from 'redux-form';
 
-let s = {};
-
 const MeetingAgendaInput = (props) => {
-  const {author, onChange, placeholder, value} = props;
+  const {author, onChange, placeholder, styles, value} = props;
   return (
-    <div className={s.root}>
+    <div className={css(styles.root)}>
       <input
-        className={s.input}
+        className={css(styles.input)}
         onChange={onChange}
         placeholder={placeholder}
         title="Add a Request"
         type="text"
         value={value}
       />
-      <div className={s.author}>{author}</div>
+      <div className={css(styles.author)}>{author}</div>
     </div>
   );
 };
 
-s = StyleSheet.create({
+MeetingAgendaInput.propTypes = {
+  author: PropTypes.string,
+  onChange: PropTypes.func,
+  placeholder: PropTypes.string,
+  value: PropTypes.string
+};
+
+MeetingAgendaInput.defaultProps = {
+  author: 'MK',
+  onChange() {
+    console.log('MeetingAgendaInput onChange');
+  },
+  placeholder: 'kittens (press enter)',
+  value: ''
+};
+
+const styleThunk = () => ({
   root: {
     backgroundColor: appTheme.palette.light,
     color: appTheme.palette.cool,
@@ -64,22 +78,6 @@ s = StyleSheet.create({
     top: 0
   }
 });
-
-MeetingAgendaInput.propTypes = {
-  author: PropTypes.string,
-  onChange: PropTypes.func,
-  placeholder: PropTypes.string,
-  value: PropTypes.string
-};
-
-MeetingAgendaInput.defaultProps = {
-  author: 'MK',
-  onChange() {
-    console.log('MeetingAgendaInput onChange');
-  },
-  placeholder: 'kittens (press enter)',
-  value: ''
-};
 
 const reduxFormOptions = {form: 'meetingAgendaInput'};
 export default reduxForm(reduxFormOptions)(withStyles(styleThunk)(MeetingAgendaInput));

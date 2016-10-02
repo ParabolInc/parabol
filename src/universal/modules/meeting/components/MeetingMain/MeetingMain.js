@@ -2,12 +2,15 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
 
-let styles = {};
+const MeetingMain = (props) => {
+  const {children, styles} = props;
+  return (
+    <div className={css(styles.root)}>
+      {children}
+    </div>
+  );
+};
 
-const MeetingMain = (props) =>
-  <div className={styles.root}>
-    {props.children}
-  </div>;
 
 MeetingMain.propTypes = {
   children: PropTypes.any

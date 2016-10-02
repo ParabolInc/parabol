@@ -1,9 +1,7 @@
 import React, { Component, PropTypes } from 'react';
-import look, { StyleSheet } from 'react-look';
 
 let styles = {};
 
-@look
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Example extends Component {
   static propTypes = {

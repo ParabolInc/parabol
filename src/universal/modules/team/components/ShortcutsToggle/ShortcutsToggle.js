@@ -30,7 +30,7 @@ ShortcutsToggle.propTypes = {
   handleOnClick: PropTypes.func
 };
 
-s = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     backgroundColor: t.palette.dark10l,
     borderRadius: '4em',

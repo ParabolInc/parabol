@@ -20,12 +20,11 @@ const iconStyle = {
 };
 
 const TeamArchiveHeader = (props) => {
-  const {teamId} = props;
-  const {styles} = TeamArchiveHeader;
+  const {styles, teamId} = props;
   return (
-    <div className={styles.root}>
+    <div className={css(styles.root)}>
       <DashSectionHeading icon="archive" label="Archived Projects" margin="0 2rem 0 0" />
-      <Link className={styles.link} to={`/team/${teamId}`} title="Back to Team Projects">
+      <Link className={css(styles.link)} to={`/team/${teamId}`} title="Back to Team Projects">
         <FontAwesome name="arrow-circle-left" style={iconStyle} />
         <div style={inlineBlockStyle}>Back to Team Projects</div>
       </Link>
@@ -38,7 +37,7 @@ TeamArchiveHeader.propTypes = {
   teamId: PropTypes.string
 };
 
-TeamArchiveHeader.const styleThunk = () => ({
+const styleThunk = () => ({
   root: {
     padding: '1rem 1rem 1rem 0',
     width: '100%'

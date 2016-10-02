@@ -1,27 +1,22 @@
 import React, {Component, PropTypes} from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite';
 import {cashay} from 'cashay';
 import {Field, reduxForm, initialize, focus} from 'redux-form';
-import labels from 'universal/styles/theme/labels';
+import labels from 'universal/modules/meeting/styles/theme/labels';
 import OutcomeCardAssignMenuContainer
   from 'universal/modules/teamDashboard/containers/OutcomeCardAssignMenu/OutcomeCardAssignMenuContainer';
 
-import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
-import OutcomeCardTextarea from 'universal/components/OutcomeCard/OutcomeCardTextarea';
-import EditingStatusContainer from 'universal/containers/EditingStatus/EditingStatusContainer';
-import OutcomeCardFooter from 'universal/components/OutcomeCard/OutcomeCardFooter';
-import OutcomeCardStatusMenu from 'universal/components/OutcomeCard/OutcomeCardStatusMenu';
-import getOutcomeNames from 'universal/utils/getOutcomeNames';
+import OutcomeCard from 'universal/modules/meeting/components/OutcomeCard/OutcomeCard';
+import OutcomeCardTextarea from 'universal/modules/meeting/components/OutcomeCard/OutcomeCardTextarea';
+import EditingStatusContainer from 'universal/modules/meeting/containers/EditingStatus/EditingStatusContainer';
+import OutcomeCardFooter from 'universal/modules/meeting/components/OutcomeCard/OutcomeCardFooter';
+import OutcomeCardStatusMenu from 'universal/modules/meeting/components/OutcomeCard/OutcomeCardStatusMenu';
+import getOutcomeNames from 'universal/modules/meeting/utils/getOutcomeNames';
 
 const OPEN_CONTENT_MENU = 'AgendaCard/openContentMenu';
 const OPEN_ASSIGN_MENU = 'AgendaCard/openAssignMenu';
 const OPEN_STATUS_MENU = 'AgendaCard/openStatusMenu';
 
-let styles = {};
-
 @reduxForm()
-@look
 export default class AgendaCard extends Component {
   componentWillMount() {
     const {outcome: {content}, dispatch, field, form} = this.props;
@@ -144,7 +139,7 @@ export default class AgendaCard extends Component {
           />
         }
         {!hasOpenAssignMenu && !hasOpenStatusMenu &&
-          <div className={styles.body}>
+          <div style={{width: '100%'}}>
             <form>
               <EditingStatusContainer
                 form={form}
@@ -199,9 +194,3 @@ AgendaCard.propTypes = {
   updatedAt: PropTypes.instanceOf(Date),
   handleSubmit: PropTypes.func,
 };
-
-const styleThunk = () => ({
-  body: {
-    width: '100%'
-  }
-});

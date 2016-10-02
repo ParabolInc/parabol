@@ -8,7 +8,6 @@ import {
 } from 'universal/components/Dashboard';
 import {Link} from 'react-router';
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
-// import AgendaAndProjects from 'universal/modules/teamDashboard/components/AgendaAndProjects/AgendaAndProjects';
 import TeamDashModal from '../TeamDashModal/TeamDashModal';
 
 const faIconStyle = {

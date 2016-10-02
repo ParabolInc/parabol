@@ -1,27 +1,24 @@
 import React, {Component, PropTypes} from 'react';
-import withStyles from 'universal/styles/withStyles';
+import withStyles from '../../../../styles/withStyles';
 import {css} from 'aphrodite';
 import {cashay} from 'cashay';
 import {Field, reduxForm, initialize} from 'redux-form';
-import labels from 'universal/styles/theme/labels';
-import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
-import EditingStatusContainer from 'universal/containers/EditingStatus/EditingStatusContainer';
+import labels from '../../../../styles/theme/labels';
+import TayaAvatar from '../../../../styles/theme/images/avatars/taya-mueller-avatar.jpg';
+import EditingStatusContainer from '../../../../containers/EditingStatus/EditingStatusContainer';
 import OutcomeCardAssignMenuContainer
-  from 'universal/modules/teamDashboard/containers/OutcomeCardAssignMenu/OutcomeCardAssignMenuContainer';
-import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
-import OutcomeCardTextarea from 'universal/components/OutcomeCard/OutcomeCardTextarea';
-import OutcomeCardFooter from 'universal/components/OutcomeCard/OutcomeCardFooter';
-import OutcomeCardStatusMenu from 'universal/components/OutcomeCard/OutcomeCardStatusMenu';
+  from '../OutcomeCardAssignMenu/OutcomeCardAssignMenuContainer';
+import OutcomeCard from '../../../../components/OutcomeCard/OutcomeCard';
+import OutcomeCardTextarea from '../../../../components/OutcomeCard/OutcomeCardTextarea';
+import OutcomeCardFooter from '../../../../components/OutcomeCard/OutcomeCardFooter';
+import OutcomeCardStatusMenu from '../../../../components/OutcomeCard/OutcomeCardStatusMenu';
 import throttle from 'lodash.throttle';
-import {USER_DASH} from 'universal/utils/constants';
+import {USER_DASH} from '../../../../utils/constants';
 const OPEN_CONTENT_MENU = 'TeamProjectCard/openContentMenu';
 const OPEN_ASSIGN_MENU = 'TeamProjectCard/openAssignMenu';
 const OPEN_STATUS_MENU = 'TeamProjectCard/openStatusMenu';
 
-let styles = {};
-
 @reduxForm()
-@look
 export default class TeamProjectCard extends Component {
   componentWillMount() {
     const {project: {content}} = this.props;
@@ -156,7 +153,7 @@ export default class TeamProjectCard extends Component {
         }
         {hasOpenStatusMenu && <OutcomeCardStatusMenu isProject={isProject} outcome={project}/>}
         {!hasOpenAssignMenu && !hasOpenStatusMenu &&
-          <div className={styles.body}>
+          <div style={{width: '100%'}}>
             <form>
               <EditingStatusContainer
                 form={form}
@@ -216,25 +213,3 @@ TeamProjectCard.propTypes = {
   updatedAt: PropTypes.instanceOf(Date),
   handleSubmit: PropTypes.func,
 };
-
-TeamProjectCard.defaultProps = {
-  status: labels.projectStatus.active.slug,
-  hasOpenAssignMenu: false,
-  hasOpenStatusMenu: false,
-  isArchived: false,
-  isProject: true,
-  owner: {
-    preferredName: 'Taya Mueller',
-    picture: TayaAvatar
-  },
-  team: {
-    preferredName: 'Engineering',
-    picture: 'https://placekitten.com/g/24/24'
-  },
-};
-
-const styleThunk = () => ({
-  body: {
-    width: '100%'
-  }
-});

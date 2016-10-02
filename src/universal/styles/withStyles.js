@@ -23,7 +23,7 @@ const withStyles = (mapThemeToStyles, invalidatingProps) => (WrappedComponent) =
 
     constructor(props, context) {
       super(props, context);
-      this.styles = StyleSheet.create(mapThemeToStyles(this.context.userTheme, props));
+      this.styleconst styleThunk = () => (mapThemeToStyles(this.context.userTheme, props));
       jones.set(mapThemeToStyles, {context: this.context.theme, cache: this.styles});
       console.log('foo', jones)
     }

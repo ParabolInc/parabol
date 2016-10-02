@@ -1,8 +1,6 @@
 import React, {PropTypes} from 'react';
 import {withRouter} from 'react-router';
-import {
-  FIRST_CALL,
-} from 'universal/utils/constants';
+import {FIRST_CALL} from 'universal/utils/constants';
 import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
 import IconLink from 'universal/components/IconLink/IconLink';
 import Type from 'universal/components/Type/Type';

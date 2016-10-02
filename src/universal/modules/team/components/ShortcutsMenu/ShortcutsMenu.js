@@ -85,7 +85,7 @@ ShortcutsMenu.defaultProps = {
   }
 };
 
-s = StyleSheet.create({
+const styleThunk = () => ({
   menu: {
     backgroundColor: 'rgba(255, 255, 255, .85)',
     bottom: '2rem',

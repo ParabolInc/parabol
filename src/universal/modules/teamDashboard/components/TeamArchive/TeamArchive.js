@@ -5,7 +5,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import {ib, overflowTouch} from 'universal/styles/helpers';
 import ui from 'universal/styles/ui';
 import TeamArchiveHeader from 'universal/modules/teamDashboard/components/TeamArchiveHeader/TeamArchiveHeader';
-import TeamProjectCard from 'universal/modules/teamDashboard/components/TeamProjectCard/TeamProjectCard';
+import TeamProjectCard from 'universal/modules/teamDashboard/containers/TeamProjectCard/TeamProjectCardContainer';
 import FontAwesome from 'react-fontawesome';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
 
@@ -16,17 +16,16 @@ const iconStyle = {
 };
 
 const TeamArchive = (props) => {
-  const {styles} = TeamArchive;
-  const {archivedProjects, dispatch, teamId} = props;
+  const {archivedProjects, dispatch, styles, teamId} = props;
   return (
-    <div className={styles.root}>
+    <div className={css(styles.root)}>
       <TeamArchiveHeader teamId={teamId}/>
-      <div className={styles.body}>
-        <div className={styles.scrollable}>
+      <div className={css(styles.body)}>
+        <div className={css(styles.scrollable)}>
           {archivedProjects.length ?
-            <div className={styles.cardGrid}>
+            <div className={css(styles.cardGrid)}>
               {archivedProjects.map(project =>
-                <div className={styles.cardBlock} key={`cardBlockFor${project.id}`}>
+                <div className={css(styles.cardBlock)} key={`cardBlockFor${project.id}`}>
                   <TeamProjectCard
                     key={project.id}
                     dispatch={dispatch}
@@ -37,12 +36,12 @@ const TeamArchive = (props) => {
                 </div>
               )}
             </div> :
-            <div className={styles.emptyMsg}>
+            <div className={css(styles.emptyMsg)}>
               <FontAwesome name="smile-o" style={iconStyle} />
               <span style={ib}>
                 Hi there! There are zero archived projects.
                 Nothing to see here. How about a fun rally video?
-                {' '}<span className={styles.link}>{getRallyLink()}!</span>
+                {' '}<span className={css(styles.link)}>{getRallyLink()}!</span>
               </span>
             </div>
           }
@@ -59,7 +58,7 @@ TeamArchive.propTypes = {
   teamMembers: PropTypes.array
 };
 
-TeamArchive.const styleThunk = () => ({
+const styleThunk = () => ({
   root: {
     display: 'flex',
     flex: 1,

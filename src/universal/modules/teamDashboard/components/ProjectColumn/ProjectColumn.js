@@ -13,22 +13,7 @@ import {cashay} from 'cashay';
 import shortid from 'shortid';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import {Menu, MenuItem} from 'universal/modules/menu';
-
-const combineStyles = StyleSheet.combineStyles;
-const badgeIconStyle = {
-  height: '1.5rem',
-  lineHeight: '1.5rem',
-  width: '1.5rem'
-};
-const borderColor = ui.dashBorderColor;
-const labels = {
-  [DONE]: 'Done',
-  [ACTIVE]: 'Active',
-  [STUCK]: 'Stuck',
-  [FUTURE]: 'Future'
-};
-
-let styles = {};
+import labels from 'universal/styles/theme/labels';
 
 const handleAddProjectFactory = (status, teamMemberId, teamSort, userSort) => () => {
   const [, teamId] = teamMemberId.split('::');
@@ -43,15 +28,15 @@ const handleAddProjectFactory = (status, teamMemberId, teamSort, userSort) => ()
 };
 
 const ProjectColumn = (props) => {
-  const {area, status, projects, myTeamMemberId, teams, userId} = props;
-  const label = labels[status];
+  const {area, status, projects, myTeamMemberId, styles, teams, userId} = props;
+  const label = labels.projectStatus[status].slug;
 
   // TODO do it fur real
   const MeetingCardContainer = ProjectCardContainer;
   const CardContainer = area === MEETING ? MeetingCardContainer : ProjectCardContainer;
   const makeAddProjectButton = (clickHandler) => {
     return (<FontAwesome
-      className={combineStyles(styles.addIcon, styles[status])}
+      className={css(styles.addIcon, styles[status])}
       name="plus-square-o"
       onClick={clickHandler}
       title={`Add a Project set to ${label}`}
@@ -90,7 +75,13 @@ const ProjectColumn = (props) => {
       const toggle = makeAddProjectButton();
       const menuItems = makeTeamMenuItems(userSort);
       return (
-        <Menu menuKey={`UserDashAdd${status}Project`} menuOrientation="right" menuWidth="10rem" toggle={toggle} toggleHeight="1.5rem" label="Select Team:">
+        <Menu
+          menuKey={`UserDashAdd${status}Project`}
+          menuOrientation="right"
+          menuWidth="10rem"
+          toggle={toggle}
+          toggleHeight="1.5rem" label="Select Team:"
+        >
           {menuItems.map((item, idx) =>
             <MenuItem
               isActive={item.isActive}
@@ -106,22 +97,22 @@ const ProjectColumn = (props) => {
   };
 
   return (
-    <div className={styles.column}>
-      <div className={styles.columnHeader}>
-        <span className={combineStyles(styles.statusBadge, styles[`${status}Bg`])}>
+    <div className={css(styles.column)}>
+      <div className={css(styles.columnHeader)}>
+        <span className={css(styles.statusBadge, styles[`${status}Bg`])}>
           <FontAwesome
-            className={styles.statusBadgeIcon}
+            className={css(styles.statusBadgeIcon)}
             name={themeLabels.projectStatus[status].icon}
             style={badgeIconStyle}
           />
         </span>
-        <span className={combineStyles(styles.statusLabel, styles[status])}>
+        <span className={css(styles.statusLabel, styles[status])}>
           {label}
         </span>
         {makeAddProject()}
       </div>
-      <div className={styles.columnBody}>
-        <div className={styles.columnInner}>
+      <div className={css(styles.columnBody)}>
+        <div className={css(styles.columnInner)}>
           {projects.map(project =>
             <CardContainer
               key={`teamCard${project.id}`}
@@ -143,6 +134,13 @@ ProjectColumn.propTypes = {
   teams: PropTypes.array,
   userId: PropTypes.string
 };
+
+const badgeIconStyle = {
+  height: '1.5rem',
+  lineHeight: '1.5rem',
+  width: '1.5rem'
+};
+const borderColor = ui.dashBorderColor;
 
 const columnStyles = {
   flex: 1,

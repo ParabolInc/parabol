@@ -187,7 +187,7 @@ const MeetingSummaryLayout = (props) => {
   );
 };
 
-s = StyleSheet.create({
+const styleThunk = () => ({
   summaryPreview: {
     backgroundColor: appTheme.palette.light30l,
     border: `1px solid ${appTheme.palette.light80d}`,

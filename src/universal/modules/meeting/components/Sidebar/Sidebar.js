@@ -11,17 +11,7 @@ import makeMeetingUrl from 'universal/utils/makeMeetingUrl';
 import {Link} from 'react-router';
 import AgendaListAndInputContainer from 'universal/modules/teamDashboard/containers/AgendaListAndInput/AgendaListAndInputContainer';
 import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
-
-const combineStyles = StyleSheet.combineStyles;
-const labels = {
-  lobby: 'Lobby',
-  checkIn: 'Check-In',
-  updates: 'Updates',
-  agenda: 'Agenda',
-  summary: 'Summary',
-};
-
-let s = {};
+import labels from 'universal/styles/theme/labels';
 
 const Sidebar = (props) => {
   const {
@@ -29,21 +19,18 @@ const Sidebar = (props) => {
     facilitatorPhase,
     isFacilitating,
     localPhase,
+    styles,
     teamName,
     teamId
   } = props;
 
   const shortUrl = makeMeetingUrl(teamId);
-  const facilitatorPhaseItemStyles = combineStyles(s.navListItem, s.navListItemMeetingMarker);
-  const activeNavAnchor = combineStyles(s.navListItemLink, s.navListItemLinkActive);
-
-  const checkInLinkStyles = localPhase === CHECKIN ? activeNavAnchor : s.navListItemLink;
-  const updatesLinkStyles = localPhase === UPDATES ? activeNavAnchor : s.navListItemLink;
-  const requestsLinkStyles = inAgendaGroup(localPhase) ? activeNavAnchor : s.navListItemLink;
-
-  const checkInNavItemStyles = facilitatorPhase === CHECKIN ? facilitatorPhaseItemStyles : s.navListItem;
-  const updatesNavItemStyles = facilitatorPhase === UPDATES ? facilitatorPhaseItemStyles : s.navListItem;
-  const requestsNavItemStyles = inAgendaGroup(facilitatorPhase) ? facilitatorPhaseItemStyles : s.navListItem;
+  const checkInLinkStyles = css(styles.navListItemLink, localPhase === CHECKIN && styles.navListItemLinkActive);
+  const updatesLinkStyles = css(styles.navListItemLink, localPhase === UPDATES && styles.navListItemLinkActive);
+  const requestsLinkStyles = css(styles.navListItemLink, inAgendaGroup(localPhase) && styles.navListItemLinkActive);
+  const checkInNavItemStyles = css(styles.navListItem, facilitatorPhase === CHECKIN && styles.navListItemMeetingMarker);
+  const updatesNavItemStyles = css(styles.navListItem, facilitatorPhase === UPDATES && styles.navListItemMeetingMarker);
+  const requestsNavItemStyles = css(styles.navListItem, inAgendaGroup(facilitatorPhase) && styles.navListItemMeetingMarker);
 
   const handleLogoClick = (e) => {
     // TODO remove in production, but great for debugging. Just click the logo & it removes the ephemeral meeting state
@@ -51,65 +38,69 @@ const Sidebar = (props) => {
     cashay.mutate('killMeeting', {variables: {teamId}});
   };
   return (
-    <div className={s.sidebar}>
-      <div className={s.sidebarHeader}>
-        <a className={s.brandLink} onClick={handleLogoClick}>
-          <img className={s.brandLogo} src={actionUIMark}/>
+    <div className={css(styles.sidebar)}>
+      <div className={css(styles.sidebarHeader)}>
+        <a className={css(styles.brandLink)} onClick={handleLogoClick}>
+          <img className={css(styles.brandLogo)} src={actionUIMark}/>
         </a>
-        <Link className={s.teamName} to={`/team/${teamId}`}>{teamName}</Link>
-        <a className={s.shortUrl} href="/meetingLayout/lobby">{shortUrl}</a>
+        <Link className={css(styles.teamName)} to={`/team/${teamId}`}>{teamName}</Link>
+        <a className={css(styles.shortUrl)} href="/meetingLayout/lobby">{shortUrl}</a>
         {/* TODO: make me respond to props */}
       </div>
 
       {/* TODO: make me respond to props */}
-      <nav className={s.nav}>
-        <ul className={s.navList}>
+      <nav className={css(styles.nav)}>
+        <ul className={css(styles.navList)}>
           <li className={checkInNavItemStyles}>
             <Link
               to={`/meeting/${teamId}/checkin`}
               className={checkInLinkStyles}
-              title={labels.checkIn}
+              title={labels.meetingPhase.checkIn.slug}
             >
-              <span className={s.bullet}>i.</span>
-              <span className={s.label}>{labels.checkIn}</span>
+              <span className={css(styles.bullet)}>i.</span>
+              <span className={css(styles.label)}>{labels.meetingPhase.checkIn.slug}</span>
             </Link>
           </li>
           <li className={updatesNavItemStyles}>
             <Link
               className={updatesLinkStyles}
               to={`/meeting/${teamId}/updates`}
-              title={labels.updates}
+              title={labels.meetingPhase.updates.slug}
             >
-              <span className={s.bullet}>ii.</span>
-              <span className={s.label}>{labels.updates}</span>
+              <span className={css(styles.bullet)}>ii.</span>
+              <span className={css(styles.label)}>{labels.meetingPhase.updates.slug}</span>
             </Link>
           </li>
           <li className={requestsNavItemStyles}>
             <Link
               className={requestsLinkStyles}
               to={`/meeting/${teamId}/agenda`}
-              title={labels.agenda}
+              title={labels.meetingPhase.agenda.slug}
             >
-              <span className={s.bullet}>iii.</span>
-              <span className={s.label}>{labels.agenda}</span>
+              <span className={css(styles.bullet)}>iii.</span>
+              <span className={css(styles.label)}>{labels.meetingPhase.agenda.slug}</span>
             </Link>
           </li>
           {localPhase === SUMMARY &&
-            <li className={combineStyles(s.navListItem, s.navListItemLinkActive)}>
+            <li className={css(s.navListItem, s.navListItemLinkActive)}>
               <a
-                className={combineStyles(s.navListItemLink, s.navListItemLinkActive)}
+                className={css(s.navListItemLink, s.navListItemLinkActive)}
                 href={`/meeting/${teamId}/summary`}
-                title={labels.summary}
+                title={labels.meetingPhase.summary.slug}
               >
-                <span className={s.bullet}>{' '}</span>
-                <span className={s.label}>{labels.summary}</span>
+                <span className={css(styles.bullet)}>{' '}</span>
+                <span className={css(styles.label)}>{labels.meetingPhase.summary.slug}</span>
               </a>
             </li>
           }
         </ul>
         {localPhase !== CHECKIN && localPhase !== SUMMARY &&
-          <div className={s.agendaListBlock}>
-            <AgendaListAndInputContainer agendaPhaseItem={agendaPhaseItem} isFacilitating={isFacilitating} teamId={teamId}/>
+          <div className={css(styles.agendaListBlock)}>
+            <AgendaListAndInputContainer
+              agendaPhaseItem={agendaPhaseItem}
+              isFacilitating={isFacilitating}
+              teamId={teamId}
+            />
           </div>
         }
       </nav>
@@ -127,7 +118,7 @@ Sidebar.propTypes = {
   teamId: PropTypes.string,
 };
 
-s = StyleSheet.create({
+const styleThunk = () => ({
   brandLogo: {
     display: 'block',
     height: 'auto',

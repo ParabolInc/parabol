@@ -7,7 +7,45 @@ import ui from 'universal/styles/ui';
 import withHotkey from 'react-hotkey-hoc';
 import FontAwesome from 'react-fontawesome';
 
+const AgendaInputField = (props) => {
+  const {bindHotkey, styles} = props;
+  let inputRef;
+  const setRef = (c) => {
+    inputRef = c;
+  };
+  const focusOnInput = (e) => {
+    e.preventDefault();
+    inputRef.focus();
+  };
+  bindHotkey('+', focusOnInput);
+  return (
+    <div className={css(styles.root)}>
+      <input
+        {...props.input}
+        autoCapitalize="off"
+        autoComplete="off"
+        className={css(styles.input)}
+        placeholder="Add Agenda Item"
+        ref={setRef}
+        title="Add Agenda Item"
+        type="text"
+      />
+      <FontAwesome name="plus-circle" style={iconStyle} />
+    </div>
+  );
+};
+
+AgendaInputField.propTypes = {
+  bindHotkey: PropTypes.func,
+  input: PropTypes.object
+};
 const defaultColor = appTheme.palette.dark;
+const inputPlaceholderStyles = makePlaceholderStyles(defaultColor);
+const inputFocusActivePlaceholderStyles = makePlaceholderStyles(appTheme.palette.dark50l);
+const inputFocusActive = {
+  backgroundColor: appTheme.palette.light,
+  ...inputFocusActivePlaceholderStyles
+};
 
 const iconStyle = {
   color: defaultColor,
@@ -21,49 +59,7 @@ const iconStyle = {
   zIndex: 100
 };
 
-const AgendaInputField = (props) => {
-  const {styles} = AgendaInputField;
-  const {bindHotkey} = props;
-  let inputRef;
-  const setRef = (c) => {
-    inputRef = c;
-  };
-  const focusOnInput = (e) => {
-    e.preventDefault();
-    inputRef.focus();
-  };
-  bindHotkey('+', focusOnInput);
-  return (
-    <div className={styles.root}>
-      <input
-        {...props.input}
-        autoCapitalize="off"
-        autoComplete="off"
-        className={styles.input}
-        placeholder="Add Agenda Item"
-        ref={setRef}
-        title="Add Agenda Item"
-        type="text"
-      />
-      <FontAwesome name="plus-circle" style={iconStyle} />
-    </div>
-  );
-};
-
-const inputPlaceholderStyles = makePlaceholderStyles(defaultColor);
-const inputFocusActivePlaceholderStyles = makePlaceholderStyles(appTheme.palette.dark50l);
-
-const inputFocusActive = {
-  backgroundColor: appTheme.palette.light,
-  ...inputFocusActivePlaceholderStyles
-};
-
-AgendaInputField.propTypes = {
-  bindHotkey: PropTypes.func,
-  input: PropTypes.object
-};
-
-AgendaInputField.const styleThunk = () => ({
+const styleThunk = () => ({
   root: {
     position: 'relative'
   },

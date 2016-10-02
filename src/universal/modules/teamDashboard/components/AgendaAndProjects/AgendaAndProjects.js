@@ -7,20 +7,16 @@ import TeamAgenda from 'universal/modules/teamDashboard/components/TeamAgenda/Te
 import TeamColumnsContainer from 'universal/modules/teamDashboard/containers/TeamColumns/TeamColumnsContainer';
 import TeamProjectsHeader from 'universal/modules/teamDashboard/components/TeamProjectsHeader/TeamProjectsHeader';
 
-const borderColor = ui.dashBorderColor;
-const {combineStyles} = StyleSheet;
-
 const AgendaAndProjects = (props) => {
-  const {styles} = AgendaAndProjects;
-  const {teamId} = props.params;
+  const {params: {teamId}, styles} = props;
   return (
-    <div className={styles.root}>
-      <div className={styles.inner}>
-        <div className={styles.agendaLayout}>
+    <div className={css(styles.root)}>
+      <div className={css(styles.inner)}>
+        <div className={css(styles.agendaLayout)}>
           <TeamAgenda teamId={teamId}/>
         </div>
-        <div className={styles.projectsLayout}>
-          <div className={combineStyles(styles.root, styles.projects)}>
+        <div className={css(styles.projectsLayout)}>
+          <div className={css(styles.root, styles.projects)}>
             <TeamProjectsHeader
               teamId={teamId}
             />
@@ -40,7 +36,8 @@ AgendaAndProjects.propTypes = {
   teamMembers: PropTypes.array
 };
 
-AgendaAndProjects.const styleThunk = () => ({
+const borderColor = ui.dashBorderColor;
+const styleThunk = () => ({
   root: {
     display: 'flex',
     flex: 1,

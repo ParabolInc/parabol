@@ -7,43 +7,59 @@ import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import voidClick from 'universal/utils/voidClick';
 
-const combineStyles = StyleSheet.combineStyles;
-const warmLinkHover = tinycolor(appTheme.palette.warm).darken(15).toHexString();
-let styles = {};
-
 const AgendaItem = props => {
-  const {desc, idx, handleRemove, isComplete, agendaPhaseItem, gotoAgendaItem, teamMember = {}} = props;
+  const {desc, idx, handleRemove, isComplete, agendaPhaseItem, gotoAgendaItem, styles, teamMember = {}} = props;
   const isCurrent = idx + 1 === agendaPhaseItem;
   const canDelete = !isComplete && !isCurrent;
   const isMeeting = agendaPhaseItem !== undefined;
   const handleGoto = isMeeting ? gotoAgendaItem : voidClick;
-  let rootStyles = combineStyles(styles.root, styles[status]);
-  let descStyles;
-  if (isCurrent) {
-    rootStyles = combineStyles(rootStyles, styles.itemActive);
-    descStyles = combineStyles(descStyles, styles.descActive);
-  } else if (isComplete) {
-    rootStyles = combineStyles(rootStyles, styles.processed);
-    descStyles = styles.strikethrough;
-  }
+  const rootStyles = css(
+    styles.root,
+    styles[status],
+    isCurrent && styles.itemActive,
+    isComplete && styles.processed
+  );
+  const descStyles = css(
+    isCurrent && styles.descActive,
+    isCompelte && styles.strikethrough
+  );
   return (
     <div className={rootStyles} title={desc}>
       {canDelete &&
-        <div className={styles.del} onClick={handleRemove}>
+        <div className={css(styles.del)} onClick={handleRemove}>
           <FontAwesome name="times-circle" style={{lineHeight: 'inherit'}}/>
         </div>
       }
-      <div className={styles.index}>{idx + 1}.</div>
-      <div className={styles.desc} onClick={handleGoto}>
+      <div className={css(styles.index)}>{idx + 1}.</div>
+      <div className={css(styles.desc)} onClick={handleGoto}>
         <a className={descStyles} >{desc}</a>”
       </div>
-      <div className={styles.author}>
+      <div className={css(styles.author)}>
         <Avatar hasBadge={false} picture={teamMember.picture} size="smallest"/>
       </div>
     </div>
   );
 };
 
+AgendaItem.propTypes = {
+  agendaPhaseItem: PropTypes.number,
+  desc: PropTypes.string,
+  idx: PropTypes.number,
+  isCurrent: PropTypes.bool,
+  isComplete: PropTypes.bool,
+  gotoAgendaItem: PropTypes.func,
+  handleRemove: PropTypes.func,
+  status: PropTypes.oneOf([
+    'active',
+    'onDrag',
+    'onHover',
+    'processed',
+    'waiting'
+  ]),
+  teamMember: PropTypes.object
+};
+
+const warmLinkHover = tinycolor(appTheme.palette.warm).darken(15).toHexString();
 const block = {
   lineHeight: '1.5rem'
 };
@@ -163,29 +179,5 @@ const styleThunk = () => ({
     }
   }
 });
-
-AgendaItem.propTypes = {
-  agendaPhaseItem: PropTypes.number,
-  desc: PropTypes.string,
-  idx: PropTypes.number,
-  isCurrent: PropTypes.bool,
-  isComplete: PropTypes.bool,
-  gotoAgendaItem: PropTypes.func,
-  handleRemove: PropTypes.func,
-  status: PropTypes.oneOf([
-    'active',
-    'onDrag',
-    'onHover',
-    'processed',
-    'waiting'
-  ]),
-  teamMember: PropTypes.object
-};
-
-AgendaItem.defaultProps = {
-  desc: 'pull request',
-  index: 1,
-  status: 'waiting'
-};
 
 export default withStyles(styleThunk)(AgendaItem);

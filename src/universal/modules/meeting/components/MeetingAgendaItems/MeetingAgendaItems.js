@@ -18,8 +18,6 @@ import LoadingView from 'universal/components/LoadingView/LoadingView';
 import {cashay} from 'cashay';
 import withHotkey from 'react-hotkey-hoc';
 
-let s = {};
-
 const MeetingAgendaItems = (props) => {
   const {
     agenda,
@@ -28,6 +26,7 @@ const MeetingAgendaItems = (props) => {
     localPhaseItem,
     members,
     router,
+    styles,
     team
   } = props;
   const {id: teamId} = team;
@@ -63,16 +62,16 @@ const MeetingAgendaItems = (props) => {
           </MeetingSectionSubheading>
         </MeetingSection>
         {/* */}
-        <div className={s.layout}>
-          <div className={s.nav}>
-            <div className={s.linkSpacer}>{' '}</div>
-            <div className={s.avatar}>
+        <div className={css(styles.layout)}>
+          <div className={css(styles.nav)}>
+            <div className={css(styles.linkSpacer)}>{' '}</div>
+            <div className={css(styles.avatar)}>
               <Avatar {...currentTeamMember} size="large"/>
-              <div className={s.requestLabel}>
+              <div className={css(styles.requestLabel)}>
                 “{agendaItem.content}”
               </div>
             </div>
-            <div className={s.linkSpacer}>
+            <div className={css(styles.linkSpacer)}>
               <IconLink
                 colorPalette="cool"
                 icon="arrow-circle-right"
@@ -95,7 +94,7 @@ const MeetingAgendaItems = (props) => {
   );
 };
 
-s = StyleSheet.create({
+const styleThunk = () => ({
   layout: {
     margin: '0 auto',
     maxWidth: '80rem',
@@ -131,14 +130,9 @@ s = StyleSheet.create({
   }
 });
 
-MeetingAgendaItems.propTypes = {
-  agenda: PropTypes.array.isRequired,
-  bindHotkey: PropTypes.func,
-  isFacilitating: PropTypes.bool,
-  localPhaseItem: PropTypes.number,
-  members: PropTypes.array,
-  team: PropTypes.object,
-  router: PropTypes.object.isRequired,
-};
-
-export default withHotkey(withRouter(withStyles(styleThunk)(MeetingAgendaItems)));
+export default withHotkey(
+  withRouter(
+    withStyles(styleThunk)(
+      MeetingAgendaItems)
+  )
+);

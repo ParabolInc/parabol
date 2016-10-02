@@ -8,11 +8,10 @@ import {withRouter} from 'react-router';
 import {AGENDA_ITEMS} from 'universal/utils/constants';
 
 const AgendaListAndInput = (props) => {
-  const {styles} = AgendaListAndInput;
-  const {agenda, agendaPhaseItem, isFacilitating, myTeamMember, router, teamId} = props;
+  const {agenda, agendaPhaseItem, isFacilitating, myTeamMember, styles, router, teamId} = props;
   const phaseItemFactory = makePhaseItemFactory(isFacilitating, agenda.length, router, teamId, AGENDA_ITEMS);
   return (
-    <div className={styles.root}>
+    <div className={css(styles.root)}>
       <AgendaInput
         agenda={agenda}
         teamId={teamId}
@@ -36,7 +35,7 @@ AgendaListAndInput.propTypes = {
   teamId: PropTypes.string
 };
 
-AgendaListAndInput.const styleThunk = () => ({
+const styleThunk = () => ({
   root: {
     display: 'flex',
     flexDirection: 'column',

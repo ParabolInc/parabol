@@ -10,8 +10,7 @@ import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import {cashay} from 'cashay';
 
 const AgendaInput = (props) => {
-  const {styles} = AgendaInput;
-  const {agenda, handleSubmit, teamId, myTeamMember} = props;
+  const {agenda, handleSubmit, teamId, myTeamMember, styles} = props;
   const handleAgendaItemSubmit = (submittedData) => {
     // TODO replace this with redux-form synchronous validation
     const content = submittedData.agendaItem;
@@ -29,12 +28,12 @@ const AgendaInput = (props) => {
     cashay.mutate('createAgendaItem', options);
   };
   return (
-    <form className={styles.root} onSubmit={handleSubmit(handleAgendaItemSubmit)}>
+    <form className={css(styles.root)} onSubmit={handleSubmit(handleAgendaItemSubmit)}>
       <Field
         name="agendaItem"
         component={AgendaInputField}
       />
-      <div className={styles.author}>
+      <div className={css(styles.author)}>
         <Avatar hasBadge={false} picture={myTeamMember.picture} size="smallest"/>
       </div>
     </form>
@@ -48,7 +47,7 @@ AgendaInput.propTypes = {
   myTeamMember: PropTypes.object,
 };
 
-AgendaInput.const styleThunk = () => ({
+const styleThunk = () => ({
   root: {
     backgroundColor: 'transparent',
     color: appTheme.palette.cool,
@@ -70,5 +69,6 @@ AgendaInput.const styleThunk = () => ({
   }
 });
 
-const reduxFormOptions = {form: 'agendaInput'};
-export default reduxForm(reduxFormOptions)(withStyles(styleThunk)(AgendaInput));
+export default reduxForm({form: 'agendaInput'})(
+  withStyles(styleThunk)(AgendaInput)
+);

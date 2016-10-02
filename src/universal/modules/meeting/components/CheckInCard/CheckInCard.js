@@ -3,64 +3,30 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
 import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
-import PushButton from 'universal/components/PushButton/PushButton';
+import CheckInCardButtons from 'universal/modules/meeting/components/CheckInCardButtons/CheckInCardButtons';
 import {withRouter} from 'react-router';
-import withHotkey from 'react-hotkey-hoc';
-import voidClick from 'universal/utils/voidClick';
-
-const combineStyles = StyleSheet.combineStyles;
-
-let styles = {};
-
-const CardButtons = withHotkey((props) => {
-  const {bindHotkey, checkInPressFactory, isCheckedIn} = props;
-  const handleOnClickPresent = isCheckedIn ? voidClick : checkInPressFactory(true);
-  const handleOnClickAbsent = isCheckedIn !== false ? checkInPressFactory(false) : voidClick;
-  bindHotkey('c', handleOnClickPresent);
-  bindHotkey('x', handleOnClickAbsent);
-  return (
-    <div className={styles.buttonsBlock}>
-      <PushButton
-        handleOnClick={handleOnClickPresent}
-        isPressed={isCheckedIn === true}
-        keystroke="c"
-        label="ok, let’s do this!"
-        size="large"
-      />
-      <PushButton
-        handleOnClick={handleOnClickAbsent}
-        isPressed={isCheckedIn === false}
-        keystroke="x"
-        label="can’t make this one"
-        size="large"
-      />
-    </div>
-  );
-});
-
-CardButtons.propTypes = {
-  checkInPressFactory: PropTypes.func.isRequired,
-  isCheckedIn: PropTypes.bool,
-};
 
 const Card = (props) => {
   const {handleCardClick, isActive, checkInPressFactory, member} = props;
   const {isCheckedIn, preferredName} = member;
-  const cardActiveStyles = combineStyles(styles.card, styles.cardIsActive);
-  const cardBlurredStyles = combineStyles(styles.card, styles.cardIsBlurred);
-  const cardStyles = isActive ? cardActiveStyles : cardBlurredStyles;
-  const nameActiveStyles = combineStyles(styles.cardName, styles.cardNameActive);
-  const nameStyles = isActive ? nameActiveStyles : styles.cardName;
-  let labelStyles = styles.cardLabel;
-  if (isCheckedIn) {
-    labelStyles = combineStyles(styles.cardLabel, styles.cardLabelPresent);
-  }
+  const cardStyles = css(
+    styles.card,
+    isActive ? styles.cardIsActive : styles.cardIsBlurred
+  );
+  const nameStyles = css(
+    styles.cardName,
+    isActive && styles.cardNameActive
+  );
+  const labelStyles = css(
+    styles.cardLabel,
+    isCheckedIn && styles.cardLabelPresent
+  );
   return (
     <div className={cardStyles} onClick={!isActive && handleCardClick}>
       <Avatar {...member} size="largest"/>
       <div className={nameStyles}>{preferredName}</div>
       <div className={labelStyles}>Checking in...</div>
-      {isActive && <CardButtons checkInPressFactory={checkInPressFactory} isCheckedIn={isCheckedIn}/>}
+      {isActive && <CheckInCardButtons checkInPressFactory={checkInPressFactory} isCheckedIn={isCheckedIn}/>}
     </div>
   );
 };
@@ -119,11 +85,6 @@ const styleThunk = () => ({
 
   cardLabelPresent: {
     color: appTheme.palette.cool
-  },
-
-  buttonsBlock: {
-    display: 'inline-block',
-    textAlign: 'left'
   }
 });
 

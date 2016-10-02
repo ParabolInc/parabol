@@ -5,17 +5,17 @@ import ui from 'universal/styles/ui';
 import UserActionHeader from 'universal/modules/userDashboard/components/UserActionHeader/UserActionHeader';
 import UserActionListContainer from 'universal/modules/userDashboard/containers/UserActionList/UserActionListContainer';
 
-const UserActions = () => {
-  const {styles} = UserActions;
+const UserActions = (props) => {
+  const {styles} = props;
   return (
-    <div className={styles.root}>
+    <div className={css(styles.root)}>
       <UserActionHeader/>
       <UserActionListContainer/>
     </div>
   );
 };
 
-UserActions.const styleThunk = () => ({
+const styleThunk = () => ({
   root: {
     display: 'flex',
     flex: 1,

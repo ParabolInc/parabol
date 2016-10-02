@@ -6,8 +6,61 @@ import {srOnly} from 'universal/styles/helpers';
 import {withRouter} from 'react-router';
 import withHotkey from 'react-hotkey-hoc';
 
-let s = {};
-const combineStyles = StyleSheet.combineStyles;
+const ProgressBar = (props) => {
+  const {bindHotkey, clickFactory, membersCount, facilitatorPhaseItem, localPhaseItem, meetingPhaseItem, isComplete, styles} = props;
+  const renderPoint = (idx) => {
+    const marginRight = {
+      marginRight: idx === membersCount ? 0 : `${blockWidth - pointWidth}px`
+    };
+    const pointStyles = css(
+      styles.point,
+      idx === facilitatorPhaseItem && styles.pointFacilitator,
+      idx === localPhaseItem && styles.pointLocal,
+      // TODO fix this one!
+      (idx <= meetingPhaseItem || isComplete) && styles.pointCompleted
+    );
+
+    const handleOnClick = clickFactory(idx);
+    return (
+      <div className={pointStyles} onClick={handleOnClick} style={marginRight} key={`pbPoint${idx}`}>
+        <div className={css(styles.srOnly)}>{idx}</div>
+      </div>
+    );
+  };
+  const renderPoints = () => {
+    const points = [];
+    for (let i = 1; i <= membersCount; i++) {
+      points.push(renderPoint(i));
+    }
+    return points;
+  };
+
+  // TODO move to parent component so it doesn't unmount between switches
+  const gotoNextItem = clickFactory(localPhaseItem + 1);
+  const gotoPrevItem = clickFactory(localPhaseItem - 1);
+  bindHotkey(['enter', 'right'], gotoNextItem);
+  bindHotkey('left', gotoPrevItem);
+  const barWidth = ((meetingPhaseItem) * blockWidth) - (blockWidth - pointWidth - outerPadding);
+  const barStyle = isComplete ? {width: '100%'} : {width: `${barWidth}px`};
+  return (
+    <div className={css(styles.root)}>
+      <div className={css(styles.points)}>
+        {renderPoints()}
+      </div>
+      <div className={css(styles.bar)} style={barStyle}></div>
+    </div>
+  );
+};
+
+ProgressBar.propTypes = {
+  bindHotkey: PropTypes.func.isRequired,
+  clickFactory: PropTypes.func,
+  isComplete: PropTypes.bool,
+  facilitatorPhaseItem: PropTypes.number, // index of 1
+  localPhaseItem: PropTypes.number,       // index of 1
+  meetingPhaseItem: PropTypes.number,     // index of 1
+  membersCount: PropTypes.number          // members.length
+};
 
 const barHeight = 6;
 const pointHeight = barHeight;
@@ -17,86 +70,7 @@ const avatarGutter = 24; // see AvatarGroup
 const outerPadding = (avatarWidth - pointWidth) / 2;
 const blockWidth = avatarWidth + avatarGutter;
 
-@withHotkey
-@withRouter
-@look
-export default class ProgressBar extends Component {
-  static propTypes = {
-    bindHotkey: PropTypes.func.isRequired,
-    clickFactory: PropTypes.func,
-    isComplete: PropTypes.bool,
-    facilitatorPhaseItem: PropTypes.number, // index of 1
-    localPhaseItem: PropTypes.number,       // index of 1
-    meetingPhaseItem: PropTypes.number,     // index of 1
-    membersCount: PropTypes.number          // members.length
-  };
-
-  renderPoints = () => {
-    const {membersCount} = this.props;
-    const points = [];
-    for (let i = 1; i <= membersCount; i++) {
-      points.push(this.renderPoint(i));
-    }
-    return points;
-  };
-  renderPoint = (idx) => {
-    const {clickFactory, membersCount, facilitatorPhaseItem, localPhaseItem, meetingPhaseItem, isComplete} = this.props;
-    const pointStyleVariant = [s.point];
-
-    let marginRight = {
-      marginRight: `${blockWidth - pointWidth}px`
-    };
-
-    if (idx === facilitatorPhaseItem) {
-      pointStyleVariant.push(s.pointFacilitator);
-    } else if (idx === localPhaseItem) {
-      pointStyleVariant.push(s.pointLocal);
-    } else if (idx <= meetingPhaseItem || isComplete) {
-      pointStyleVariant.push(s.pointCompleted);
-    }
-
-    if (idx === membersCount) {
-      marginRight = {
-        marginRight: 0
-      };
-    }
-
-    const pointStyles = combineStyles(...pointStyleVariant);
-
-    const handleOnClick = clickFactory(idx);
-    return (
-      <div className={pointStyles} onClick={handleOnClick} style={marginRight} key={`pbPoint${idx}`}>
-        <div className={s.srOnly}>{idx}</div>
-      </div>
-    );
-  };
-
-  render() {
-    const {
-      isComplete,
-      meetingPhaseItem,
-    } = this.props;
-    const {bindHotkey, localPhaseItem, clickFactory} = this.props;
-    // TODO move to parent component so it doesn't unmount between switches
-    const gotoNextItem = clickFactory(localPhaseItem + 1);
-    const gotoPrevItem = clickFactory(localPhaseItem - 1);
-    bindHotkey(['enter', 'right'], gotoNextItem);
-    bindHotkey('left', gotoPrevItem);
-    // eslint-disable-next-line max-len
-    const barWidth = ((meetingPhaseItem) * blockWidth) - (blockWidth - pointWidth - outerPadding);
-    const barStyle = isComplete ? {width: '100%'} : {width: `${barWidth}px`};
-    return (
-      <div className={s.root}>
-        <div className={s.points}>
-          {this.renderPoints()}
-        </div>
-        <div className={s.bar} style={barStyle}></div>
-      </div>
-    );
-  }
-}
-
-s = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     backgroundColor: t.palette.dark10l,
     borderRadius: `${barHeight}px`,
@@ -157,3 +131,9 @@ s = StyleSheet.create({
     ...srOnly
   }
 });
+
+export default withHotkey(
+  withRouter(
+    withStyles(styleThunk)(ProgressBar)
+  )
+);

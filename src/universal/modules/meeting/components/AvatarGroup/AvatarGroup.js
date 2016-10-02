@@ -5,27 +5,18 @@ import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import {UPDATES} from 'universal/utils/constants';
 
-let s = {};
-// NOTE: outer padding for positioned label and overall centering
-const outerPadding = '8rem';
-
 const AvatarGroup = (props) => {
-  const {localPhase, avatars} = props;
-  let label;
-  if (localPhase === UPDATES) {
-    label = 'Updates given:';
-  } else {
-    label = 'Team:';
-  }
+  const {localPhase, avatars, styles} = props;
+  const label = localPhase === UPDATES ? 'Updates given:': 'Team:';
 
   return (
-    <div className={s.root}>
-      <div className={s.label}>
+    <div className={css(styles.root)}>
+      <div className={css(styles.label)}>
         {label}
       </div>
       {
         avatars.map((avatar, index) =>
-          <div className={s.item} key={index}>
+          <div className={css(styles.item)} key={index}>
             <Avatar {...avatar} size="small" hasBorder={avatar.isFacilitator} />
           </div>
         )
@@ -39,7 +30,10 @@ AvatarGroup.propTypes = {
   avatars: PropTypes.array
 };
 
-s = StyleSheet.create({
+// NOTE: outer padding for positioned label and overall centering
+const outerPadding = '8rem';
+
+const styleThunk = () => ({
   root: {
     fontSize: 0,
     padding: `0 ${outerPadding}`,

@@ -1,10 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-import look, { StyleSheet } from 'react-look';
 import appTheme from 'universal/styles/theme/appTheme';
 
 let styles = {};
 
-@look
 // eslint-disable-next-line react/prefer-stateless-function
 export default class ExampleCode extends Component {
   static propTypes = {

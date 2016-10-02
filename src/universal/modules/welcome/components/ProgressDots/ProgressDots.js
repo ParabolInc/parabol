@@ -1,73 +1,57 @@
-import React, { Component, PropTypes } from 'react';
-import look, { StyleSheet } from 'react-look';
+import React, {Component, PropTypes} from 'react';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import appTheme from 'universal/styles/theme/appTheme';
 
-const combineStyles = StyleSheet.combineStyles;
-
-let styles = {};
-
-@look
-// eslint-disable-next-line react/prefer-stateless-function
-export default class ProgressDots extends Component {
-  static propTypes = {
-    numDots: PropTypes.number.isRequired, // how many total dots shall we draw?
-    numCompleted: PropTypes.number,       // how many of the dots are completed?
-    currentDot: PropTypes.number,         // which dot (1=first dot) is the user on now?
-    onClick: PropTypes.func
-  };
-
-  renderDot(idx) {
-    let { numCompleted, currentDot } = this.props;
+const ProgressDots = (props) => {
+  const renderDot = (idx) => {
+    // TODO mutative prop sinner!
+    let {numCompleted, currentDot} = props;
     numCompleted--;
     currentDot--;
-    let dotStyle = null;
 
     const handleClick = (e) => {
       e.preventDefault();
       this.props.onClick(idx + 1);
     };
 
-    if (idx === currentDot) {
-      /* we're the active dot */
-      dotStyle = combineStyles(styles.progressDot, styles.progressDotCurrent);
-    } else {
-      if (idx <= numCompleted) {
-        /* render a completed dot */
-        dotStyle = combineStyles(styles.progressDot, styles.progressDotCompleted);
-      } else {
-        /* a dot for the future! */
-        dotStyle = styles.progressDot;
-      }
-    }
+    const dotStyle = css(
+      styles.progressDot,
+      idx=== currentDot && styles.progressDotCurrent,
+      idx <= numCompleted && styles.progressDotCompleted
+    );
 
     return (
       <a
         className={dotStyle}
         href="#"
         key={idx}
-        onClick={(e) => handleClick(e)}
+        onClick={handleClick}
       >
         <span className={styles.progressDotLabel}>Step {idx + 1}</span>
       </a>
     );
-  }
+  };
+  const renderDots = () => {
+    const dots = [];
+    for (let i = 0; i < props.numDots; i++) {
+      dots[i] = renderDot(i);
+    }
+    return dots;
+  };
+  return (
+    <div className={css(styles.progressDotGroup)}>
+      {renderDots()}
+    </div>
+  );
+};
 
-  render() {
-    const {numDots} = this.props;
-
-    return (
-      <div className={styles.progressDotGroup}>
-        {(() => {
-          const dots = [];
-          for (let i = 0; i < numDots; i++) {
-            dots.push(this.renderDot(i));
-          }
-          return dots;
-        })()}
-      </div>
-    );
-  }
-}
+ProgressDots.propTypes = {
+  numDots: PropTypes.number.isRequired, // how many total dots shall we draw?
+  numCompleted: PropTypes.number,       // how many of the dots are completed?
+  currentDot: PropTypes.number,         // which dot (1=first dot) is the user on now?
+  onClick: PropTypes.func
+};
 
 const styleThunk = () => ({
   progressDotGroup: {
@@ -111,3 +95,5 @@ const styleThunk = () => ({
     width: '1px'
   }
 });
+
+export default withStyles(styleThunk)(ProgressDots);

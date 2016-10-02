@@ -26,8 +26,7 @@ const iconStyle = {
 };
 
 const UserActionListTeamSelect = (props) => {
-  const {styles} = UserActionListTeamSelect;
-  const {actions, teams, userId} = props;
+  const {actions, styles, teams, userId} = props;
   const cancelAddAction = () => {
     props.dispatch(selectNewActionTeam(false));
   };
@@ -46,10 +45,10 @@ const UserActionListTeamSelect = (props) => {
     props.dispatch(selectNewActionTeam(false));
   };
   return (
-    <div className={styles.root}>
-      <div className={styles.header}>
+    <div className={css(styles.root)}>
+      <div className={css(styles.header)}>
         <FontAwesome
-          className={styles.cancel}
+          className={css(styles.cancel)}
           name="times-circle"
           onClick={cancelAddAction}
           style={iconStyle}
@@ -59,12 +58,12 @@ const UserActionListTeamSelect = (props) => {
           Select a Team:
         </Type>
       </div>
-      <div className={styles.controls}>
+      <div className={css(styles.controls)}>
         {teams.map(({name, id}) => {
           return (
             <div
               key={`teamSelect${id}`}
-              className={styles.control}
+              className={css(styles.control)}
               onClick={selectTeamFactory(id)}
               title={`Select team: ${name}`}
             >

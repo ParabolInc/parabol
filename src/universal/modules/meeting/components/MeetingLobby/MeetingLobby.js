@@ -12,10 +12,7 @@ import MeetingMain from 'universal/modules/meeting/components/MeetingMain/Meetin
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
 
-let s = {};
-
 const faStyle = {lineHeight: 'inherit'};
-const faFontSize = `${14 * 2}px`; // FA based on 14px
 
 const createStartMeetingHandler = (members) => {
   return () => {
@@ -32,7 +29,7 @@ const createStartMeetingHandler = (members) => {
 };
 
 const MeetingLobby = (props) => {
-  const {members, team} = props;
+  const {members, team, styles} = props;
   const {id: teamId, name: teamName} = team;
 
   const onStartMeetingClick = createStartMeetingHandler(members);
@@ -42,26 +39,26 @@ const MeetingLobby = (props) => {
       {/* */}
       <MeetingSection flexToFill paddingBottom="2rem">
         {/* */}
-        <div className={s.root}>
+        <div className={css(styles.root)}>
           <MeetingPhaseHeading>Hi, {teamName} Team!</MeetingPhaseHeading>
-          <p className={s.label}>{'Copy & share this meeting:'}</p>
+          <p className={css(styles.label)}>{'Copy & share this meeting:'}</p>
           {/* */}
           {/* TODO: prevent navigation and show a “Copied!” message inline or toast */}
           {/* */}
           <CopyToClipboard text={shortUrl}>
             <a
-              className={s.link}
+              className={css(styles.link)}
               href={shortUrl}
               onClick={voidClick}
               title={`Copy link to meeting: ${shortUrl}`}
             >
-              <span className={s.linkText}>{shortUrl}</span>
-              <span className={s.icon}>
+              <span className={css(styles.linkText)}>{shortUrl}</span>
+              <span className={css(styles.icon)}>
                 <FontAwesome name="copy" style={faStyle}/>
               </span>
             </a>
           </CopyToClipboard>
-          <h2 className={s.prompt}>Team Facilitator: begin the Check-In round!</h2>
+          <h2 className={css(styles.prompt)}>Team Facilitator: begin the Check-In round!</h2>
           <Button
             label="Start Meeting"
             onClick={onStartMeetingClick}
@@ -90,7 +87,8 @@ MeetingLobby.propTypes = {
   teamName: PropTypes.string,
 };
 
-s = StyleSheet.create({
+const faFontSize = `${14 * 2}px`; // FA based on 14px
+const styleThunk = () => ({
   root: {
     textAlign: 'center'
   },

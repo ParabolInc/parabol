@@ -5,8 +5,6 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
 
-let styles = {};
-
 const Menu = (props) => {
   const {
     children,
@@ -14,6 +12,7 @@ const Menu = (props) => {
     label,
     menuOrientation,
     menuWidth,
+    styles,
     toggle,
     toggleHeight,
     toggleMenu,
@@ -37,15 +36,15 @@ const Menu = (props) => {
   const boxShadow = '0 1px 1px rgba(0, 0, 0, .15)';
   const menuStyle = {boxShadow};
   return (
-    <div className={styles.root} style={rootStyle}>
-      <div className={styles.toggle} onClick={toggleMenu} style={{...rootStyle, ...toggleStyle}}>{toggle}</div>
+    <div className={css(styles.root)} style={rootStyle}>
+      <div className={css(styles.toggle)} onClick={toggleMenu} style={{...rootStyle, ...toggleStyle}}>{toggle}</div>
       {isOpen &&
-        <div className={styles.menuBlock} style={menuBlockStyle}>
+        <div className={css(styles.menuBlock)} style={menuBlockStyle}>
           <div
-            className={styles.menu}
+            className={css(styles.menu)}
             style={menuStyle}
           >
-            <div className={styles.label}>{label}</div>
+            <div className={css(styles.label)}>{label}</div>
             {children}
           </div>
         </div>

@@ -13,8 +13,7 @@ import {cashay} from 'cashay';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
 
 const UserActionList = (props) => {
-  const {styles} = UserActionList;
-  const {actions, dispatch, selectingNewActionTeam, teams, userId} = props;
+  const {actions, dispatch, selectingNewActionTeam, styles, teams, userId} = props;
   const actionCount = actions.length;
   const createNewAction = () => {
     if (teams.length > 1) {
@@ -35,17 +34,17 @@ const UserActionList = (props) => {
   };
 
   return (
-    <div className={styles.root}>
-      <div className={styles.block}>
-        <div className={styles.headerBlock}>
+    <div className={css(styles.root)}>
+      <div className={css(styles.block)}>
+        <div className={css(styles.headerBlock)}>
           {selectingNewActionTeam ?
             <UserActionListTeamSelect actions={actions} dispatch={dispatch} teams={teams} actionCount={actionCount} userId={userId}/> :
             <UserActionListHeader onAddNewAction={createNewAction}/>
           }
         </div>
         {actionCount ?
-          <div className={styles.actionsBlock}>
-            <div className={styles.actions}>
+          <div className={css(styles.actionsBlock)}>
+            <div className={css(styles.actions)}>
               {actions.map(item =>
                 <UserActionListItemContainer
                   key={`actionItem::${item.id}`}
@@ -55,10 +54,10 @@ const UserActionList = (props) => {
                   team={item.team.name}
                 />
               )}
-              <div className={styles.hr}></div>
+              <div className={css(styles.hr)}></div>
             </div> :
           </div> :
-          <div className={styles.emptyBlock}>{!selectingNewActionTeam && <UserActionListEmpty />}</div>
+          <div className={css(styles.emptyBlock)}>{!selectingNewActionTeam && <UserActionListEmpty />}</div>
         }
       </div>
     </div>
@@ -73,7 +72,7 @@ UserActionList.propTypes = {
   userId: PropTypes.string
 };
 
-UserActionList.const styleThunk = () => ({
+const styleThunk = () => ({
   root: {
     display: 'flex',
     flex: 1,

@@ -1,24 +1,19 @@
 import React, {Component, PropTypes} from 'react';
-import look, { StyleSheet } from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import appTheme from 'universal/styles/theme/appTheme';
 
-let styles = {};
-
-@look
-// eslint-disable-next-line react/prefer-stateless-function
-export default class WelcomeHeader extends Component {
-  static propTypes = {
-    heading: PropTypes.object
-  }
-
-  render() {
-    return (
-      <div className={styles.root}>
-        <h1 className={styles.heading}>{this.props.heading}</h1>
-      </div>
-    );
-  }
-}
+const WelcomeHeader = (props) => {
+  const {heading, styles} = props;
+  return (
+    <div className={css(styles.root)}>
+      <h1 className={css(styles.heading)}>{heading}</h1>
+    </div>
+  );
+};
+WelcomeHeader.propTypes = {
+  heading: PropTypes.object
+};
 
 const styleThunk = () => ({
   root: {
@@ -42,3 +37,5 @@ const styleThunk = () => ({
     padding: 0
   }
 });
+
+export default withStyles(styleThunk)(WelcomeHeader);

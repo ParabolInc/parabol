@@ -1,24 +1,19 @@
 import React, {Component, PropTypes} from 'react';
-import look, { StyleSheet } from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import appTheme from 'universal/styles/theme/appTheme';
 
-let styles = {};
-
-@look
-// eslint-disable-next-line react/prefer-stateless-function
-export default class WelcomeHeading extends Component {
-  static propTypes = {
-    copy: PropTypes.object
-  }
-
-  render() {
-    return (
-      <h2 className={styles.root}>
-        {this.props.copy}
-      </h2>
-    );
-  }
-}
+const WelcomeHeading = (props) => {
+  const {copy, styles} = props;
+  return (
+    <h2 className={css(styles.root)}>
+      {copy}
+    </h2>
+  );
+};
+WelcomeHeading.propTypes = {
+  copy: PropTypes.object
+};
 
 const styleThunk = () => ({
   root: {
@@ -29,3 +24,5 @@ const styleThunk = () => ({
     textAlign: 'center'
   }
 });
+
+export default withStyles(styleThunk)(WelcomeHeading);

@@ -9,7 +9,6 @@ import FontAwesome from 'react-fontawesome';
 
 const height = '1.25rem';
 const lineHeight = height;
-
 const iconStyle = {
   ...ib,
   color: appTheme.palette.mid,
@@ -23,10 +22,9 @@ const iconStyle = {
 };
 
 const UserActionListEmpty = (props) => {
-  const {styles} = UserActionListEmpty;
-  const {onAddNewAction} = props;
+  const {onAddNewAction, styles} = props;
   return (
-    <div className={styles.root} onClick={onAddNewAction}>
+    <div className={css(styles.root)} onClick={onAddNewAction}>
       <FontAwesome name="plus-circle" style={iconStyle} />
       <Type bold display="inlineBlock" lineHeight={lineHeight} scale="s3" width="auto">
         Add New Action
@@ -39,7 +37,7 @@ UserActionListEmpty.propTypes = {
   onAddNewAction: PropTypes.func
 };
 
-UserActionListEmpty.const styleThunk = () => ({
+const styleThunk = () => ({
   root: {
     boxSizing: 'content-box',
     cursor: 'pointer',

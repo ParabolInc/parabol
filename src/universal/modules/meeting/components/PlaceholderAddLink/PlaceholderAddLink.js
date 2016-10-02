@@ -3,21 +3,30 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
 import appTheme from 'universal/styles/theme/appTheme';
 
-let s = {};
-
 const PlaceholderAddLink = (props) => {
+  const {styles} = props;
   const handleClick = (e) => {
     e.preventDefault();
     props.onClick();
   };
   return (
-    <a className={s.root} href="#add-placeholder" onClick={(e) => handleClick(e)}>
-      Press “+” to <br /><span className={s.underline}>Add a Request</span>
+    <a className={css(styles.root)} href="#add-placeholder" onClick={handleClick}>
+      Press “+” to <br /><span className={css(styles.underline)}>Add a Request</span>
     </a>
   );
 };
 
-s = StyleSheet.create({
+PlaceholderAddLink.propTypes = {
+  onClick: PropTypes.func
+};
+
+PlaceholderAddLink.defaultProps = {
+  onClick() {
+    console.log('PlaceholderAddLink onClick');
+  }
+};
+
+const styleThunk = () => ({
   root: {
     color: appTheme.palette.warm,
     display: 'block',
@@ -39,14 +48,5 @@ s = StyleSheet.create({
   }
 });
 
-PlaceholderAddLink.propTypes = {
-  onClick: PropTypes.func
-};
-
-PlaceholderAddLink.defaultProps = {
-  onClick() {
-    console.log('PlaceholderAddLink onClick');
-  }
-};
 
 export default withStyles(styleThunk)(PlaceholderAddLink);

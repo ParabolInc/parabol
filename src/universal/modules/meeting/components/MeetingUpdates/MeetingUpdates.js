@@ -4,20 +4,16 @@ import {css} from 'aphrodite';
 
 import Avatar from 'universal/components/Avatar/Avatar';
 import IconLink from 'universal/components/IconLink/IconLink';
-colorPalette="cool"
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingSectionHeading/MeetingSectionHeading';
 // eslint-disable-next-line max-len
-scale=small
 import MeetingSectionSubheading from 'universal/modules/meeting/components/MeetingSectionSubheading/MeetingSectionSubheading';
 import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
 import {UPDATES, phaseOrder, MEETING} from 'universal/utils/constants';
 import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
 import {withRouter} from 'react-router';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
-
-let s = {};
 
 const MeetingUpdates = (props) => {
   const {
@@ -26,6 +22,7 @@ const MeetingUpdates = (props) => {
     members,
     projects,
     router,
+    styles,
     team
   } = props;
   const {id: teamId, meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = team;
@@ -59,13 +56,13 @@ const MeetingUpdates = (props) => {
           </MeetingSectionSubheading>
         </MeetingSection>
         {/* */}
-        <div className={s.layout}>
-          <div className={s.nav}>
-            <div className={s.linkSpacer}>{' '}</div>
-            <div className={s.avatar}>
+        <div className={css(styles.layout)}>
+          <div className={css(styles.nav)}>
+            <div className={css(styles.linkSpacer)}>{' '}</div>
+            <div className={css(styles.avatar)}>
               <Avatar {...currentTeamMember} hasLabel labelRight size="large"/>
             </div>
-            <div className={s.linkSpacer}>
+            <div className={css(styles.linkSpacer)}>
               <IconLink
                 colorPalette="cool"
                 icon="arrow-circle-right"
@@ -77,7 +74,7 @@ const MeetingUpdates = (props) => {
             </div>
           </div>
         </div>
-        <div className={s.body}>
+        <div className={css(styles.body)}>
           <ProjectColumns alignColumns="center" myTeamMemberId={self && self.id} projects={projects} area={MEETING}/>
         </div>
         {/* */}
@@ -88,7 +85,21 @@ const MeetingUpdates = (props) => {
   );
 };
 
-s = StyleSheet.create({
+MeetingUpdates.propTypes = {
+  isFacilitating: PropTypes.bool,
+  localPhaseItem: PropTypes.number.isRequired,
+  members: PropTypes.array,
+  meetingPhase: PropTypes.string.isRequired,
+  meetingPhaseItem: PropTypes.number.isRequired,
+  params: PropTypes.shape({
+    teamId: PropTypes.string.isRequired
+  }).isRequired,
+  projects: PropTypes.object.isRequired,
+  team: PropTypes.object.isRequired,
+  router: PropTypes.object.isRequired,
+};
+
+const styleThunk = () => ({
   layout: {
     margin: '0 auto',
     maxWidth: '80rem',
@@ -119,18 +130,6 @@ s = StyleSheet.create({
   }
 });
 
-MeetingUpdates.propTypes = {
-  isFacilitating: PropTypes.bool,
-  localPhaseItem: PropTypes.number.isRequired,
-  members: PropTypes.array,
-  meetingPhase: PropTypes.string.isRequired,
-  meetingPhaseItem: PropTypes.number.isRequired,
-  params: PropTypes.shape({
-    teamId: PropTypes.string.isRequired
-  }).isRequired,
-  projects: PropTypes.object.isRequired,
-  team: PropTypes.object.isRequired,
-  router: PropTypes.object.isRequired,
-};
-
-export default withRouter(withStyles(styleThunk)(MeetingUpdates));
+export default withRouter(
+  withStyles(styleThunk)(MeetingUpdates)
+);

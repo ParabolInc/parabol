@@ -3,16 +3,16 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
 import {DashSectionHeading} from 'universal/components/Dashboard';
 
-const AgendaHeader = () => {
-  const {styles} = AgendaHeader;
+const AgendaHeader = (props) => {
+  const {styles} = props;
   return (
-    <div className={styles.root}>
+    <div className={css(styles.root)}>
       <DashSectionHeading icon="calendar-check-o" label="Agenda Queue" />
     </div>
   );
 };
 
-AgendaHeader.const styleThunk = () => ({
+const styleThunk = () => ({
   root: {
     padding: '1rem 1rem 1rem 2.375rem',
     width: '100%'

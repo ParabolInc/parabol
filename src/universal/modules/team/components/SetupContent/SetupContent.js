@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import look, { StyleSheet } from 'react-look';
+import withStyles from 'universal/styles/withStyles'; import {css} from 'aphrodite';
 
 let styles = {};
 

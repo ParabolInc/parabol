@@ -13,24 +13,23 @@ import {
 import UserActions from 'universal/modules/userDashboard/components/UserActions/UserActions';
 import UserColumnsContainer from 'universal/modules/userDashboard/containers/UserColumns/UserColumnsContainer';
 import UserProjectsHeaderContainer from 'universal/modules/userDashboard/containers/UserProjectsHeader/UserProjectsHeaderContainer';
-
 import getRallyLink from '../../helpers/getRallyLink';
 
-const UserDashboard = () => {
-  const {styles} = UserDashboard;
+const UserDashboard = (props) => {
+  const {styles} = props;
   return (
     <DashMain>
       <DashHeader>
         <DashHeaderInfo title="My Dashboard">
-          {dashTimestamp} • <span className={styles.crayCrayHover}>{getRallyLink()}!</span>
+          {dashTimestamp} • <span className={css(styles.crayCrayHover)}>{getRallyLink()}!</span>
         </DashHeaderInfo>
       </DashHeader>
       <DashContent padding="0">
-        <div className={styles.root}>
-          <div className={styles.actionsLayout}>
+        <div className={css(styles.root)}>
+          <div className={css(styles.actionsLayout)}>
             <UserActions />
           </div>
-          <div className={styles.projectsLayout}>
+          <div className={css(styles.projectsLayout)}>
             <UserProjectsHeaderContainer />
             <UserColumnsContainer/>
           </div>
@@ -44,7 +43,7 @@ UserDashboard.propTypes = {
   projects: PropTypes.array
 };
 
-UserDashboard.const styleThunk = () => ({
+const styleThunk = () => ({
   root: {
     display: 'flex',
     flex: 1,
