@@ -3,7 +3,7 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import NotificationSystem from 'react-notification-system';
 
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 import * as _notificationActions from '../../ducks/notifications';
 
 const mapStateToProps = state => ({
@@ -69,8 +69,7 @@ export default class Notifications extends React.Component {
 
   render() {
     /*
-     * NOTE: these are not react-look styles, but true inline
-     *       HTML.
+     * NOTE: these true inline styles
      */
     const styles = {
       NotificationItem: {
@@ -78,34 +77,34 @@ export default class Notifications extends React.Component {
         },
 
         success: { // Applied only to the success notification container
-          borderTop: `2px solid ${theme.palette.cool}`,
-          backgroundColor: theme.palette.cool20l,
-          color: theme.palette.cool,
-          WebkitBoxShadow: `0 0 1px ${theme.palette.cool90a}`,
-          MozBoxShadow: `0 0 1px ${theme.palette.cool90a}`,
-          boxShadow: `0 0 1px ${theme.palette.cool90a}`
+          borderTop: `2px solid ${appTheme.palette.cool}`,
+          backgroundColor: appTheme.palette.cool20l,
+          color: appTheme.palette.cool,
+          WebkitBoxShadow: `0 0 1px ${appTheme.palette.cool90a}`,
+          MozBoxShadow: `0 0 1px ${appTheme.palette.cool90a}`,
+          boxShadow: `0 0 1px ${appTheme.palette.cool90a}`
         }
       },
       Action: {
         DefaultStyle: {
         },
         success: {
-          backgroundColor: theme.palette.cool
+          backgroundColor: appTheme.palette.cool
         }
       },
       Dismiss: {
         DefaultStyle: {
         },
         success: {
-          color: theme.palette.cool20l,
-          backgroundColor: theme.palette.cool90l
+          color: appTheme.palette.cool20l,
+          backgroundColor: appTheme.palette.cool90l
         }
       },
       Title: {
         DefaultStyle: {
         },
         success: {
-          color: theme.palette.cool
+          color: appTheme.palette.cool
         }
       }
     };

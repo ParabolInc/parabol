@@ -1,10 +1,10 @@
 import React, {PropTypes} from 'react';
 import EmptySpace from '../EmptySpace/EmptySpace';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 
 const Body = (props) => {
   const textStyle = {
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     backgroundColor: '#F9FAFB',
     fontFamily: '"Karla", "Helvetica Neue", serif',
     fontSize: `${props.fontSize}px`,

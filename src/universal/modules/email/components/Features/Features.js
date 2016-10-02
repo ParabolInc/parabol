@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import EmptySpace from '../EmptySpace/EmptySpace';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 
 const Features = (props) => {
   const imageStyle = {
@@ -9,7 +9,7 @@ const Features = (props) => {
   };
 
   const copyStyle = {
-    color: theme.palette.cool,
+    color: appTheme.palette.cool,
     fontSize: `${props.fontSize}px`,
     fontWeight: 'bold',
     lineHeight: `${props.lineHeight}`,

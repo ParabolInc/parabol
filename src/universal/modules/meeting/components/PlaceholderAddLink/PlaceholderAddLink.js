@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 
 let s = {};
 
@@ -18,18 +19,18 @@ const PlaceholderAddLink = (props) => {
 
 s = StyleSheet.create({
   root: {
-    color: theme.palette.warm,
+    color: appTheme.palette.warm,
     display: 'block',
-    fontSize: theme.typography.s2,
+    fontSize: appTheme.typography.s2,
     fontWeight: 700,
     padding: '.5rem .75rem .5rem 4rem',
     width: '100%',
 
     ':hover': {
-      color: theme.palette.warm
+      color: appTheme.palette.warm
     },
     ':focus': {
-      color: theme.palette.warm
+      color: appTheme.palette.warm
     }
   },
 
@@ -48,4 +49,4 @@ PlaceholderAddLink.defaultProps = {
   }
 };
 
-export default look(PlaceholderAddLink);
+export default withStyles(styleThunk)(PlaceholderAddLink);

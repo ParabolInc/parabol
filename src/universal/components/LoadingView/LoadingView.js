@@ -1,11 +1,36 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import Pato from 'universal/styles/theme/images/graphics/pato.svg';
 
-let styles = {};
+const LoadingDuck = (props) =>
+  <img
+    alt={'Duck by Sergey Demushkin'}
+    className={props.className}
+    src={Pato}
+  />;
 
-const patoHop = StyleSheet.keyframes({
+LoadingDuck.propTypes = {
+  className: PropTypes.string.isRequired,
+};
+
+const LoadingView = (props) => {
+  const {children, styles} = props;
+  const {pato0, pato1, pato2} = styles;
+  const duckStyles = [pato0, pato1, pato2];
+  return (
+    <div className={styles.root}>
+      <h1 className={styles.heading}>Welcome to Action!</h1>
+      {duckStyles.map((baseClass, idx) =>
+        <LoadingDuck className={css(baseClass, styles[`pato${idx}`])} key={idx}/>)}
+      <h2 className={styles.message}>Just putting our ducks in a row…</h2>
+      {children && Object.keys(children).length > 0 && children}
+    </div>
+  );
+};
+
+const patoHop = {
   '0%': {
     transform: 'translate3d(0, 0, 0)'
   },
@@ -27,48 +52,11 @@ const patoHop = StyleSheet.keyframes({
   '100%': {
     transform: 'translate3d(0, 0, 0)'
   }
-});
+};
 
 const cbTiming = 'cubic-bezier(.37, 1.13, .58, 1.13)';
 
-const patoStyles = {
-  animationDuration: '1.5s',
-  animationIterationCount: 'infinite',
-  animationName: patoHop,
-  animationTimingFunction: cbTiming,
-  display: 'inline-block',
-  height: 'auto',
-  margin: '0 .5rem',
-  width: '2rem'
-};
-
-const LoadingDuck = (props) =>
-  <img
-    alt={'Duck by Sergey Demushkin'}
-    className={props.className}
-    src={Pato}
-  />;
-
-LoadingDuck.propTypes = {
-  className: PropTypes.string.isRequired,
-};
-
-const LoadingView = (children) => {
-  const {pato1, pato2, pato3} = styles;
-  const duckStyles = [pato1, pato2, pato3];
-  return (
-    <div className={styles.root}>
-      <h1 className={styles.heading}>Welcome to Action!</h1>
-      {duckStyles.map((className, idx) =>
-        <LoadingDuck className={className} key={idx}/>)}
-      <h2 className={styles.message}>Just putting our ducks in a row…</h2>
-      {children && Object.keys(children).length > 0 && children}
-    </div>
-  );
-};
-
-// TODO FIX CHILDREN WHEN WE KILL LOOK
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     minHeight: '100vh',
     padding: '3rem 0',
@@ -77,33 +65,41 @@ styles = StyleSheet.create({
   },
 
   heading: {
-    color: theme.palette.warm,
-    fontSize: theme.typography.s7,
+    color: appTheme.palette.warm,
+    fontSize: appTheme.typography.s7,
     fontWeight: 700,
     margin: '0 0 2rem'
   },
 
-  pato1: {
-    ...patoStyles,
+  patoStyles: {
+    animationDuration: '1.5s',
+    animationIterationCount: 'infinite',
+    animationName: patoHop,
+    animationTimingFunction: cbTiming,
+    display: 'inline-block',
+    height: 'auto',
+    margin: '0 .5rem',
+    width: '2rem'
+  },
+
+  pato0: {
     animationDelay: '200ms'
   },
 
-  pato2: {
-    ...patoStyles,
+  pato1: {
     animationDelay: '500ms'
   },
 
-  pato3: {
-    ...patoStyles,
+  pato2: {
     animationDelay: '800ms'
   },
 
   message: {
-    color: theme.palette.cool,
-    fontSize: theme.typography.s5,
+    color: appTheme.palette.cool,
+    fontSize: appTheme.typography.s5,
     fontWeight: 700,
     margin: '.5rem 0 0'
   }
 });
 
-export default look(LoadingView);
+export default withStyles(styleThunk)(LoadingView);

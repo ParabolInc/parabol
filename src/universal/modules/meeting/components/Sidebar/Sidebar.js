@@ -1,7 +1,8 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import {textOverflow} from 'universal/styles/helpers';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 import layoutStyle from 'universal/styles/layout';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import {cashay} from 'cashay';
@@ -143,7 +144,7 @@ s = StyleSheet.create({
 
   bullet: {
     display: 'inline-block',
-    fontSize: theme.typography.s4,
+    fontSize: appTheme.typography.s4,
     marginRight: '.75rem',
     textAlign: 'right',
     verticalAlign: 'middle',
@@ -152,7 +153,7 @@ s = StyleSheet.create({
 
   label: {
     display: 'inline-block',
-    fontSize: theme.typography.s4,
+    fontSize: appTheme.typography.s4,
     verticalAlign: 'middle'
   },
 
@@ -177,11 +178,11 @@ s = StyleSheet.create({
   },
 
   navListItemLink: {
-    color: theme.palette.dark60l,
+    color: appTheme.palette.dark60l,
     textDecoration: 'none',
 
     ':hover': {
-      color: theme.palette.dark
+      color: appTheme.palette.dark
     }
   },
 
@@ -189,7 +190,7 @@ s = StyleSheet.create({
     position: 'relative',
 
     '::after': {
-      backgroundColor: theme.palette.warm,
+      backgroundColor: appTheme.palette.warm,
       borderRadius: '100%',
       display: 'block',
       content: '""',
@@ -203,7 +204,7 @@ s = StyleSheet.create({
   },
 
   navListItemLinkActive: {
-    color: theme.palette.dark
+    color: appTheme.palette.dark
   },
 
   agendaListBlock: {
@@ -214,7 +215,7 @@ s = StyleSheet.create({
   },
 
   sidebar: {
-    backgroundColor: theme.palette.dark10l,
+    backgroundColor: appTheme.palette.dark10l,
     display: 'flex',
     flexDirection: 'column',
     padding: '2rem 0 0',
@@ -228,27 +229,27 @@ s = StyleSheet.create({
 
   shortUrl: {
     ...textOverflow,
-    color: theme.palette.dark10d,
+    color: appTheme.palette.dark10d,
     display: 'block',
-    fontSize: theme.typography.s2,
+    fontSize: appTheme.typography.s2,
     lineHeight: 'normal',
     marginBottom: '.625rem',
     paddingRight: '.5rem',
     textDecoration: 'none',
 
     ':hover': {
-      color: theme.palette.dark
+      color: appTheme.palette.dark
     },
     ':focus': {
-      color: theme.palette.dark
+      color: appTheme.palette.dark
     }
   },
 
   teamName: {
-    color: theme.palette.cool,
+    color: appTheme.palette.cool,
     cursor: 'pointer',
-    fontFamily: theme.typography.serif,
-    fontSize: theme.typography.s5,
+    fontFamily: appTheme.typography.serif,
+    fontSize: appTheme.typography.s5,
     fontStyle: 'italic',
     fontWeight: 700,
     lineHeight: 'normal',
@@ -256,10 +257,10 @@ s = StyleSheet.create({
   },
 
   timer: {
-    color: theme.palette.warm,
-    fontFamily: theme.typography.monospace,
-    fontSize: theme.typography.s4,
+    color: appTheme.palette.warm,
+    fontFamily: appTheme.typography.monospace,
+    fontSize: appTheme.typography.s4,
   }
 });
 
-export default look(Sidebar);
+export default withStyles(styleThunk)(Sidebar);

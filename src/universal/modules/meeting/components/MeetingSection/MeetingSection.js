@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 
 const combineStyles = StyleSheet.combineStyles;
 
@@ -53,4 +54,4 @@ s = StyleSheet.create({
   }
 });
 
-export default look(MeetingContent);
+export default withStyles(styleThunk)(MeetingContent);

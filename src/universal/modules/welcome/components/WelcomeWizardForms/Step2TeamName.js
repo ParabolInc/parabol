@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
-import {reduxForm} from 'redux-form';
-import Field from 'universal/components/Field/Field';
+import InputField from 'universal/components/InputField/InputField';
+import {Field, reduxForm} from 'redux-form';
 import Type from 'universal/components/Type/Type';
 import ProgressDots from '../ProgressDots/ProgressDots';
 import WelcomeContent from '../WelcomeContent/WelcomeContent';
@@ -63,6 +63,7 @@ const Step2TeamName = (props) => {
               autoFocus
               buttonDisabled={!teamName}
               buttonIcon="check-circle"
+              component={InputField}
               hasButton
               hasShortcutHint
               name="teamName"

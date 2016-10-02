@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import CheckinCard from 'universal/modules/meeting/components/CheckinCard/CheckinCard';
 import {CHECKIN} from 'universal/utils/constants';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
@@ -72,7 +73,7 @@ export default class CheckinCards extends Component {
   }
 }
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   base: {
     display: 'flex',
     justifyContent: 'center',

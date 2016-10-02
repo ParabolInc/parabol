@@ -1,13 +1,11 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import * as t from 'universal/styles/theme';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 
-const combineStyles = StyleSheet.combineStyles;
-const {cool, warm, dark, mid, light} = t.palette;
-const black = t.palette.dark10d;
+const {cool, warm, dark, mid, light} = appTheme.palette;
 const white = '#fff';
-
-let s = {};
+const black = appTheme.palette.dark10d;
+const palettePlus = {...appTheme.palette, white, black};
 
 const Type = (props) => {
   const {
@@ -21,32 +19,34 @@ const Type = (props) => {
     marginBottom,
     marginTop,
     scale,
-    theme,
+    colorPalette,
     width
   } = props;
 
-  const typeStyles = combineStyles(
-    s[align],
-    s[bold],
-    s[display],
-    s[family],
-    s[scale],
-    s[theme],
-    s[italic],
-    s[width]
-  );
-
-  const marginStyle = {
+  const styleTag = {
+    textAlign: align,
+    fontWeight: bold ? 700 : null,
+    display: display === 'inlineBlock' ? 'inline-block' : display,
+    verticalAlign: display === 'inlineBlock' ? 'middle' : null,
+    fontFamily: appTheme.typography[family].join(', '),
+    fontSize: appTheme.typography[scale],
+    color: palettePlus[colorPalette],
+    fontStyle: italic ? 'italic' : null,
+    width: width === 'full' ? '100%' : width,
     lineHeight,
     marginBottom,
     marginTop
   };
 
-  const boldStyles = bold ? s.bold : null;
-  const italicStyles = italic ? s.italic : null;
+  // mutates the above object, getting rid of nulls. not sure if react does this for us?
+  Object.keys(styleTag).forEach(tag => {
+    if (styleTag[tag] === null) {
+      delete styleTag[tag];
+    }
+  });
 
   return (
-    <div className={combineStyles(typeStyles, boldStyles, italicStyles)} style={marginStyle}>
+    <div style={styleTag}>
       {children}
     </div>
   );
@@ -85,7 +85,7 @@ Type.propTypes = {
     's7',    // 36px
     's8',    // 48px
   ]),
-  theme: PropTypes.oneOf([
+  colorPalette: PropTypes.oneOf([
     'cool',
     'warm',
     'dark',
@@ -94,7 +94,6 @@ Type.propTypes = {
     'black',
     'white'
   ]),
-  // TODO: refactor width + display props (TA)
   width: PropTypes.oneOf([
     'auto',
     'full'
@@ -110,135 +109,8 @@ Type.defaultProps = {
   marginTop: '0px',
   scale: 'sBase',
   style: 'normal',
-  theme: 'dark',
+  colorPalette: 'dark',
   width: 'full'
 };
 
-s = StyleSheet.create({
-  // align
-  left: {
-    textAlign: 'left'
-  },
-
-  center: {
-    textAlign: 'center'
-  },
-
-  right: {
-    textAlign: 'right'
-  },
-
-  // display
-  block: {
-    display: 'block'
-  },
-
-  inline: {
-    display: 'inline'
-  },
-
-  inlineBlock: {
-    display: 'inline-block',
-    verticalAlign: 'middle'
-  },
-
-  // family
-  monospace: {
-    fontFamily: t.typography.monospace
-  },
-
-  sansSerif: {
-    fontFamily: t.typography.sansSerif
-  },
-
-  serif: {
-    fontFamily: t.typography.serif
-  },
-
-  // scale
-  sBase: {
-    fontSize: t.typography.sBase
-  },
-
-  s1: {
-    fontSize: t.typography.s1
-  },
-
-  s2: {
-    fontSize: t.typography.s2
-  },
-
-  s3: {
-    fontSize: t.typography.s3
-  },
-
-  s4: {
-    fontSize: t.typography.s4
-  },
-
-  s5: {
-    fontSize: t.typography.s5
-  },
-
-  s6: {
-    fontSize: t.typography.s6
-  },
-
-  s7: {
-    fontSize: t.typography.s7
-  },
-
-  s8: {
-    fontSize: t.typography.s8
-  },
-
-  // style
-  italic: {
-    fontStyle: 'italic'
-  },
-
-  // theme
-  cool: {
-    color: cool
-  },
-
-  warm: {
-    color: warm
-  },
-
-  dark: {
-    color: dark
-  },
-
-  mid: {
-    color: mid
-  },
-
-  light: {
-    color: light
-  },
-
-  black: {
-    color: black
-  },
-
-  white: {
-    color: white
-  },
-
-  // weight
-  bold: {
-    fontWeight: 700
-  },
-
-  // width
-  auto: {
-    width: 'auto'
-  },
-
-  full: {
-    width: '100%'
-  }
-});
-
-export default look(Type);
+export default Type;

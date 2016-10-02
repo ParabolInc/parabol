@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import FontAwesome from 'react-fontawesome';
 import t from 'universal/styles/theme';
 import {srOnly} from 'universal/styles/helpers';
@@ -54,4 +55,4 @@ s = StyleSheet.create({
   }
 });
 
-export default look(ShortcutsToggle);
+export default withStyles(styleThunk)(ShortcutsToggle);

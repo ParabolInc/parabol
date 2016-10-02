@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import look, { StyleSheet } from 'react-look';
 import tinycolor from 'tinycolor2';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 
 const combineStyles = StyleSheet.combineStyles;
-const progressDotColor = tinycolor.mix(theme.palette.d, '#fff', 50).toHexString();
+const progressDotColor = tinycolor.mix(appTheme.palette.d, '#fff', 50).toHexString();
 
 const onClick = event => {
   event.preventDefault();
@@ -67,7 +67,7 @@ export default class ProgressDots extends Component {
   }
 }
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   progressDotGroup: {
     fontSize: 0,
     margin: '2rem 0 0',

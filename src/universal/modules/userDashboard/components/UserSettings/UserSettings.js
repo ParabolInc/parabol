@@ -2,11 +2,13 @@ import React, {Component, PropTypes} from 'react';
 import {reduxForm, initialize} from 'redux-form';
 import {withRouter} from 'react-router';
 import {cashay} from 'cashay';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import {DashContent, DashHeader, DashHeaderInfo} from 'universal/components/Dashboard';
 import Button from 'universal/components/Button/Button';
-import Field from 'universal/components/Field/Field';
+import InputField from 'universal/components/InputField/InputField';
+import {Field} from 'redux-form';
 import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
 
 import {
@@ -97,6 +99,7 @@ export default class UserSettings extends Component {
               </div>
               <Field
                 autoFocus
+                component={InputField}
                 hasShortcutHint
                 name="preferredName"
                 placeholder="Albert Einstein"
@@ -107,7 +110,7 @@ export default class UserSettings extends Component {
               isBlock
               label="Update"
               size="small"
-              theme="cool"
+              colorPalette="cool"
               type="submit"
             />
           </div>
@@ -117,7 +120,7 @@ export default class UserSettings extends Component {
   }
 }
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     display: 'flex !important',
     flex: 1,
@@ -133,8 +136,8 @@ styles = StyleSheet.create({
   },
 
   label: {
-    color: theme.palette.dark,
-    fontSize: theme.typography.s2,
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s2,
     fontWeight: 700,
     margin: '0 0 .5rem',
     padding: '0 0 0 .5rem',

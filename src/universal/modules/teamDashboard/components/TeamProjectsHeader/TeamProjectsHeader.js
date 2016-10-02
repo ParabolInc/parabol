@@ -1,7 +1,8 @@
 import React, {PropTypes} from 'react';
 import {Link} from 'react-router';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import ib from 'universal/styles/helpers/ib';
 import {
   DashSectionControl,
@@ -50,18 +51,18 @@ TeamProjectsHeader.propTypes = {
   teamId: PropTypes.string,
 };
 
-TeamProjectsHeader.styles = StyleSheet.create({
+TeamProjectsHeader.const styleThunk = () => ({
   link: {
     ...ib,
-    color: theme.palette.mid,
+    color: appTheme.palette.mid,
 
     ':hover': {
-      color: theme.palette.dark
+      color: appTheme.palette.dark
     },
     ':focus': {
-      color: theme.palette.dark
+      color: appTheme.palette.dark
     }
   }
 });
 
-export default look(TeamProjectsHeader);
+export default withStyles(styleThunk)(TeamProjectsHeader);

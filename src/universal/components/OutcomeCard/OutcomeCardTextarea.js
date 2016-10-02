@@ -1,53 +1,11 @@
 import React, {Component, PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import Textarea from 'react-textarea-autosize';
 
-const combineStyles = StyleSheet.combineStyles;
-const basePadding = '.375rem';
-const labelHeight = '1.5rem';
-
-const baseStyles = {
-  backgroundColor: 'transparent',
-  border: 0,
-  boxShadow: 'none',
-  display: 'block',
-  fontFamily: theme.typography.sansSerif,
-  fontSize: theme.typography.s3,
-  lineHeight: theme.typography.s5,
-  outline: 'none',
-  resize: 'none',
-  width: '100%'
-};
-
-const descriptionBase = {
-  ...baseStyles,
-  borderBottom: '1px solid transparent',
-  borderTop: '1px solid transparent',
-  color: theme.palette.dark10d
-};
-
-const descriptionFA = {
-  backgroundColor: theme.palette.mid10l,
-  borderBottomColor: ui.cardBorderColor,
-  borderTopColor: ui.cardBorderColor,
-  color: theme.palette.mid10d
-};
-
-const descriptionActionFA = {
-  backgroundColor: ui.actionCardBgActive,
-  borderBottomColor: ui.cardBorderColor,
-  borderTopColor: ui.cardBorderColor,
-  color: theme.palette.mid10d
-};
-
-const descriptionBreakpoint = '@media (min-width: 90rem)';
-
-let styles = {};
-
-@look
-export default class OutcomeCardTextArea extends Component {
+class OutcomeCardTextArea extends Component {
   static propTypes = {
     cardHasHover: PropTypes.bool,
     doFocus: PropTypes.bool,
@@ -82,21 +40,20 @@ export default class OutcomeCardTextArea extends Component {
       isActionListItem,
       isArchived,
       isProject,
-      doFocus
+      doFocus,
+      styles,
     } = this.props;
 
-    const contentStylesObj = {
-      [styles.content]: !isActionListItem,
-      [styles.actionListContent]: isActionListItem,
-      [styles.contentWhenCardHovered]: isProject && cardHasHover,
-      [styles.isArchived]: isArchived,
-      [styles.actionContentWhenCardHovered]: !isProject && cardHasHover,
-      [styles.descriptionAction]: !isProject
-    };
-    const contentStylesArr = Object.keys(contentStylesObj).filter(style => contentStylesObj[style]);
-    const contentStyles = combineStyles(...contentStylesArr);
-    let textAreaRef;
+    const contentStyles = css(
+      !isActionListItem && styles.content,
+      isActionListItem && styles.actionListContent,
+      isProject && cardHasHover && styles.contentWhenCardHovered,
+      isArchived && styles.isArchived,
+      !isProject && cardHasHover && styles.actionContentWhenCardHovered,
+      !isProject && styles.descriptionAction
+    );
 
+    let textAreaRef;
     const handleBlur = () => {
       handleSubmit();
       input.onBlur();
@@ -132,7 +89,46 @@ export default class OutcomeCardTextArea extends Component {
   }
 }
 
-styles = StyleSheet.create({
+const basePadding = '.375rem';
+const labelHeight = '1.5rem';
+
+const baseStyles = {
+  backgroundColor: 'transparent',
+  border: 0,
+  boxShadow: 'none',
+  display: 'block',
+  fontFamily: appTheme.typography.sansSerif,
+  fontSize: appTheme.typography.s3,
+  lineHeight: appTheme.typography.s5,
+  outline: 'none',
+  resize: 'none',
+  width: '100%'
+};
+
+const descriptionBase = {
+  ...baseStyles,
+  borderBottom: '1px solid transparent',
+  borderTop: '1px solid transparent',
+  color: appTheme.palette.dark10d
+};
+
+const descriptionFA = {
+  backgroundColor: appTheme.palette.mid10l,
+  borderBottomColor: ui.cardBorderColor,
+  borderTopColor: ui.cardBorderColor,
+  color: appTheme.palette.mid10d
+};
+
+const descriptionActionFA = {
+  backgroundColor: ui.actionCardBgActive,
+  borderBottomColor: ui.cardBorderColor,
+  borderTopColor: ui.cardBorderColor,
+  color: appTheme.palette.mid10d
+};
+
+const descriptionBreakpoint = '@media (min-width: 90rem)';
+
+const styleThunk = () => ({
   actionListContent: {
     ...baseStyles,
     padding: `${basePadding} ${basePadding} ${labelHeight} 1.75rem`,
@@ -157,8 +153,8 @@ styles = StyleSheet.create({
     },
 
     [descriptionBreakpoint]: {
-      fontSize: theme.typography.sBase,
-      lineHeight: theme.typography.s6
+      fontSize: appTheme.typography.sBase,
+      lineHeight: appTheme.typography.s6
     }
   },
 
@@ -191,3 +187,5 @@ styles = StyleSheet.create({
     }
   }
 });
+
+export default withStyles(styleThunk)(OutcomeCardTextArea);

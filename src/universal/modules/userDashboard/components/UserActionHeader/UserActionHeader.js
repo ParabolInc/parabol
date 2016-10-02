@@ -1,6 +1,7 @@
 import React from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 // import ib from 'universal/styles/helpers/ib';
 // import FontAwesome from 'react-fontawesome';
 import {
@@ -16,7 +17,7 @@ import {
 // };
 
 const buttonFH = {
-  color: theme.palette.dark,
+  color: appTheme.palette.dark,
   opacity: '.5'
 };
 
@@ -34,9 +35,9 @@ const UserActionHeader = () => {
   );
 };
 
-UserActionHeader.styles = StyleSheet.create({
+UserActionHeader.const styleThunk = () => ({
   addButton: {
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
 
     ':hover': {
       ...buttonFH
@@ -47,4 +48,4 @@ UserActionHeader.styles = StyleSheet.create({
   }
 });
 
-export default look(UserActionHeader);
+export default withStyles(styleThunk)(UserActionHeader);

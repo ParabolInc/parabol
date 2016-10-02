@@ -19,7 +19,7 @@ export default class SetupContent extends Component {
   }
 }
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   setupContent: {
     alignItems: 'center',
     // #shame forcing non-vendor prefix

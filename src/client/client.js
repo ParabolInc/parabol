@@ -4,10 +4,12 @@ import {cashay} from 'cashay';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import makeStore from './makeStore';
 import Root from './Root';
+import {StyleSheet} from 'aphrodite';
 
 // const {routing} = window.__INITIAL_STATE__; // eslint-disable-line no-underscore-dangle
 
 const initialState = {};
+
 
 const createCashay = (store, cashaySchema) => {
   const persistedToken = store.getState().auth.token;
@@ -28,6 +30,7 @@ const createCashay = (store, cashaySchema) => {
      * stopped.
      */
     // eslint-disable-next-line global-require
+    StyleSheet.rehydrate(window.__APHRODITE__);
     cashaySchema = require('cashay!../server/utils/getCashaySchema.js?stopRethink');
     createCashay(store, cashaySchema);
     render(
@@ -42,7 +45,6 @@ const createCashay = (store, cashaySchema) => {
     // eslint-disable-next-line global-require
     cashaySchema = require('cashay!../server/utils/getCashaySchema.js');
 
-    // Hot Module Replacement API
     // eslint-disable-next-line global-require
     const {AppContainer} = require('react-hot-loader');
     createCashay(store, cashaySchema);

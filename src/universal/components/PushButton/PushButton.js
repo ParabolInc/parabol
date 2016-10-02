@@ -1,29 +1,24 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
-
-const combineStyles = StyleSheet.combineStyles;
-
-let styles = {};
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 
 const PushButton = (props) => {
   // TODO replace focus CSS with isPushed
-  const {disabled, keystroke, label, handleOnClick, size, isPressed} = props;
+  const {disabled, keystroke, label, handleOnClick, size, isPressed, styles} = props;
   const buttonStylesArr = [styles.button];
-  if (isPressed) {
-    buttonStylesArr.push(styles.isPressed);
-  }
-  if (size === 'large') {
-    buttonStylesArr.push(styles.buttonLarge);
-  }
-  const buttonStyles = combineStyles(...buttonStylesArr);
+  const buttonStyles = css(
+    styles.button,
+    isPressed && styles.isPressed,
+    size === 'large' && styles.buttonLarge
+  );
 
   return (
-    <div className={styles.block}>
+    <div className={css(styles.block)}>
       <button disabled={disabled} className={buttonStyles} onClick={!isPressed && handleOnClick}>
         {keystroke}
       </button>
-      <div className={styles.label}>{label}</div>
+      <div className={css(styles.label)}>{label}</div>
     </div>
   );
 };
@@ -41,15 +36,10 @@ PushButton.propTypes = {
 };
 
 PushButton.defaultProps = {
-  keystroke: 'D',
-  label: 'Delete everything!',
-  onClick() {
-    console.log('PushButton onClick');
-  },
   size: 'default'
 };
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   pushButtonGroup: {
     textAlign: 'left'
   },
@@ -64,10 +54,10 @@ styles = StyleSheet.create({
     border: 0,
     borderBottom: '2px solid #c3c5d1',
     borderRadius: '.25rem',
-    color: theme.palette.warm,
+    color: appTheme.palette.warm,
     cursor: 'pointer',
     display: 'inline-block',
-    fontSize: theme.typography.s3,
+    fontSize: appTheme.typography.s3,
     fontWeight: 700,
     lineHeight: 1,
     marginRight: '.25rem',
@@ -84,19 +74,19 @@ styles = StyleSheet.create({
     outline: 'none'
   },
   buttonLarge: {
-    fontSize: theme.typography.s4,
+    fontSize: appTheme.typography.s4,
     padding: '.375rem',
     width: '1.75rem'
   },
 
   label: {
     display: 'inline-block',
-    fontFamily: theme.typography.serif,
-    fontSize: theme.typography.s3,
+    fontFamily: appTheme.typography.serif,
+    fontSize: appTheme.typography.s3,
     fontStyle: 'italic',
     fontWeight: 400,
     verticalAlign: 'middle'
   }
 });
 
-export default look(PushButton);
+export default withStyles(styleThunk)(PushButton);

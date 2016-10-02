@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import {cashay} from 'cashay';
 import shortid from 'shortid';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
@@ -109,4 +110,4 @@ MeetingAgendaCards.propTypes = {
   outcomes: PropTypes.array.isRequired
 };
 
-export default withHotkey(look(MeetingAgendaCards));
+export default withHotkey(withStyles(styleThunk)(MeetingAgendaCards));

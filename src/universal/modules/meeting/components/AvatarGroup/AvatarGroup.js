@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import {UPDATES} from 'universal/utils/constants';
 
@@ -47,10 +48,10 @@ s = StyleSheet.create({
   },
 
   label: {
-    color: theme.palette.mid,
+    color: appTheme.palette.mid,
     display: 'inline-block',
-    fontFamily: theme.typography.serif,
-    fontSize: theme.typography.s3,
+    fontFamily: appTheme.typography.serif,
+    fontSize: appTheme.typography.s3,
     fontStyle: 'italic',
     fontWeight: 700,
     height: '2.75rem',
@@ -72,4 +73,4 @@ s = StyleSheet.create({
   }
 });
 
-export default look(AvatarGroup);
+export default withStyles(styleThunk)(AvatarGroup);

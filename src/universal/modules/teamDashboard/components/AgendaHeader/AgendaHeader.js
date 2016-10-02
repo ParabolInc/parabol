@@ -1,5 +1,6 @@
 import React from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import {DashSectionHeading} from 'universal/components/Dashboard';
 
 const AgendaHeader = () => {
@@ -11,11 +12,11 @@ const AgendaHeader = () => {
   );
 };
 
-AgendaHeader.styles = StyleSheet.create({
+AgendaHeader.const styleThunk = () => ({
   root: {
     padding: '1rem 1rem 1rem 2.375rem',
     width: '100%'
   }
 });
 
-export default look(AgendaHeader);
+export default withStyles(styleThunk)(AgendaHeader);

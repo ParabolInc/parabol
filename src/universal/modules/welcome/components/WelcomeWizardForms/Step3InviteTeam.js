@@ -1,9 +1,9 @@
 import React, {PropTypes} from 'react';
-import {reduxForm, change, arrayPush, destroy} from 'redux-form';
+import {Field, reduxForm, change, arrayPush, destroy} from 'redux-form';
 import emailAddresses from 'email-addresses';
 import Button from 'universal/components/Button/Button';
-import Field from 'universal/components/Field/Field';
-import LabeledFieldArray from 'universal/components/LabeledFieldArray/LabeledFieldArray';
+import InputField from 'universal/components/InputField/InputField';
+import LabeledFieldArray from 'universal/containers/LabeledFieldArray/LabeledFieldArrayContainer.js';
 import Type from 'universal/components/Type/Type';
 import ProgressDots from '../ProgressDots/ProgressDots';
 import WelcomeContent from '../WelcomeContent/WelcomeContent';
@@ -114,6 +114,7 @@ const Step3InviteTeam = (props) => {
               autoFocus={!invitees || invitees.length === 0}
               buttonDisabled={!inviteesRaw}
               buttonIcon="check-circle"
+              component={InputField}
               hasButton
               hasErrorText={invitesFieldHasError}
               hasHelpText
@@ -142,7 +143,8 @@ const Step3InviteTeam = (props) => {
               <Button
                 disabled={submitting || !fieldArrayHasValue}
                 label="Look’s Good!"
-                theme="warm"
+                colorPalette="warm"
+                size="medium"
                 type="submit"
               />
             </div>

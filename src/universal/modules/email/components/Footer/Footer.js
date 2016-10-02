@@ -1,6 +1,6 @@
 import React from 'react';
 import EmptySpace from '../EmptySpace/EmptySpace';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 
 const Footer = (props) => {
   const style = {
@@ -50,7 +50,7 @@ const Footer = (props) => {
                     <EmptySpace height="10" />
 
                     Crafted with care by the folks at <a
-                      style={{color: theme.palette.warm, textDecoration: 'none'}}
+                      style={{color: appTheme.palette.warm, textDecoration: 'none'}}
                       href="http://www.parabol.co/"
                     > Parabol</a>.
 

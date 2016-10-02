@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import OutcomeCard from '../../../teamDashboard/components/TeamProjectCard/TeamProjectCard';
 import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
 
@@ -50,7 +51,7 @@ const columnStyles = {
   width: '25%'
 };
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     borderTop: `1px solid ${borderColor}`,
     margin: '1rem 0',
@@ -81,10 +82,10 @@ styles = StyleSheet.create({
   },
 
   columnHeading: {
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     fontWeight: 700,
     margin: '0 0 1rem'
   }
 });
 
-export default look(UserProjectColumn);
+export default withStyles(styleThunk)(UserProjectColumn);

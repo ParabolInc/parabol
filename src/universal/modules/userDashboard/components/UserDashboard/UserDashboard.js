@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import layout from 'universal/styles/layout';
 import ui from 'universal/styles/ui';
 import {
@@ -43,7 +44,7 @@ UserDashboard.propTypes = {
   projects: PropTypes.array
 };
 
-UserDashboard.styles = StyleSheet.create({
+UserDashboard.const styleThunk = () => ({
   root: {
     display: 'flex',
     flex: 1,
@@ -70,4 +71,4 @@ UserDashboard.styles = StyleSheet.create({
   }
 });
 
-export default look(UserDashboard);
+export default withStyles(styleThunk)(UserDashboard);

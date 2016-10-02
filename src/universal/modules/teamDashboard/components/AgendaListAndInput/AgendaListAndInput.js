@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import AgendaList from 'universal/modules/teamDashboard/components/AgendaList/AgendaList';
 import AgendaInput from 'universal/modules/teamDashboard/components/AgendaInput/AgendaInput';
 import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
@@ -35,7 +36,7 @@ AgendaListAndInput.propTypes = {
   teamId: PropTypes.string
 };
 
-AgendaListAndInput.styles = StyleSheet.create({
+AgendaListAndInput.const styleThunk = () => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
@@ -44,4 +45,4 @@ AgendaListAndInput.styles = StyleSheet.create({
   }
 });
 
-export default withRouter(look(AgendaListAndInput));
+export default withRouter(withStyles(styleThunk)(AgendaListAndInput));

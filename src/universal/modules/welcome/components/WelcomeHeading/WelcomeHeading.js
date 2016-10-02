@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import look, { StyleSheet } from 'react-look';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 
 let styles = {};
 
@@ -20,11 +20,11 @@ export default class WelcomeHeading extends Component {
   }
 }
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     display: 'block',
-    fontSize: theme.typography.s6,
+    fontSize: appTheme.typography.s6,
     fontWeight: 700,
     textAlign: 'center'
   }

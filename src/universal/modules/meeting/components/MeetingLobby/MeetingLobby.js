@@ -1,8 +1,9 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import FontAwesome from 'react-fontawesome';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 import {cashay} from 'cashay';
 import voidClick from 'universal/utils/voidClick';
 import makeMeetingUrl from 'universal/utils/makeMeetingUrl';
@@ -66,7 +67,7 @@ const MeetingLobby = (props) => {
             onClick={onStartMeetingClick}
             size="largest"
             style="outlined"
-            theme="cool"
+            colorPalette="cool"
           />
         </div>
         {/* */}
@@ -95,8 +96,8 @@ s = StyleSheet.create({
   },
 
   label: {
-    color: theme.palette.dark,
-    fontSize: theme.typography.s3,
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s3,
     fontWeight: 700,
     margin: '4rem 0 0',
     textTransform: 'uppercase'
@@ -111,10 +112,10 @@ s = StyleSheet.create({
     textDecoration: 'none !important',
 
     ':hover': {
-      backgroundColor: theme.palette.cool10l
+      backgroundColor: appTheme.palette.cool10l
     },
     ':focus': {
-      backgroundColor: theme.palette.cool10l
+      backgroundColor: appTheme.palette.cool10l
     }
   },
 
@@ -131,9 +132,9 @@ s = StyleSheet.create({
   },
 
   prompt: {
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     margin: '0 0 2rem'
   }
 });
 
-export default look(MeetingLobby);
+export default withStyles(styleThunk)(MeetingLobby);

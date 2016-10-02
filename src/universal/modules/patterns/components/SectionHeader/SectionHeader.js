@@ -23,7 +23,7 @@ export default class SectionHeader extends Component {
   }
 }
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   base: {
     margin: '8rem auto 2rem'
   },

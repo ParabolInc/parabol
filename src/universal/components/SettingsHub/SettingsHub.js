@@ -1,34 +1,35 @@
 import React from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import FontAwesome from 'react-fontawesome';
 import {Link} from 'react-router';
 
-let styles = {};
 const faStyle = {
   lineHeight: 'inherit',
   color: 'white'
 };
 
-function SettingsHub() {
+function SettingsHub(props) {
+  const {styles} = props;
   return (
-    <div className={styles.root}>
+    <div className={css(styles.root)}>
       <Link
-        className={styles.link}
+        className={css(styles.link)}
         title="Sign Out"
         to="/logout"
       >
-        <div className={styles.linkIcon}>
+        <div className={css(styles.linkIcon)}>
           <FontAwesome
             name="sign-out"
             style={faStyle}
           />
         </div>
-        <div className={styles.linkLabel}>
+        <div className={css(styles.linkLabel)}>
           Sign Out
         </div>
       </Link>
-      <div className={styles.closeIcon} title="My Settings">
+      <div className={css(styles.closeIcon)} title="My Settings">
         <Link to="/me">
           <FontAwesome
             name="times-circle"
@@ -41,7 +42,7 @@ function SettingsHub() {
   );
 }
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     borderBottom: '2px solid rgba(0, 0, 0, .10)',
     display: 'flex !important',
@@ -73,22 +74,22 @@ styles = StyleSheet.create({
 
   linkIcon: {
     display: 'inline-block',
-    fontSize: theme.typography.s3,
+    fontSize: appTheme.typography.s3,
     marginRight: '.5rem',
     verticalAlign: 'middle',
-    width: theme.typography.s3,
+    width: appTheme.typography.s3,
   },
 
   linkLabel: {
     display: 'inline-block',
-    fontSize: theme.typography.s3,
+    fontSize: appTheme.typography.s3,
     fontWeight: 700,
     verticalAlign: 'middle'
   },
 
   closeIcon: {
     cursor: 'pointer',
-    fontSize: theme.typography.s3,
+    fontSize: appTheme.typography.s3,
     height: '2.75rem',
     lineHeight: '2.75rem',
     textAlign: 'center',
@@ -103,4 +104,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default look(SettingsHub);
+export default withStyles(styleThunk)(SettingsHub);

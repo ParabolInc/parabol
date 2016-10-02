@@ -1,5 +1,6 @@
 // import React, {PropTypes} from 'react';
-// import look, {StyleSheet} from 'react-look';
+// import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 //
 // import Avatar from 'universal/components/Avatar/Avatar';
 // import IconLink from 'universal/components/IconLink/IconLink';
@@ -119,4 +120,4 @@
 //   router: PropTypes.object.isRequired,
 // };
 //
-// export default withRouter(look(MeetingUpdates));
+// export default withRouter(withStyles(styleThunk)(MeetingUpdates));

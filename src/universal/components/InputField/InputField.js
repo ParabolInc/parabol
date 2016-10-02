@@ -1,22 +1,17 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import {Field as ReduxFormField} from 'redux-form';
-import appTheme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import IconButton from 'universal/components/IconButton/IconButton';
 
-const combineStyles = StyleSheet.combineStyles;
-const fieldLightGray = appTheme.palette.dark50l;
-
-let styles = {};
-
-const renderField = (field) => {
+const InputField = (props) => {
   const {
     hasErrorText,
     hasHelpText,
     helpText,
     input,
     isWider,
-    theme,
+    theme: inputTheme,
     buttonDisabled,
     buttonIcon,
     hasButton,
@@ -24,34 +19,34 @@ const renderField = (field) => {
     isLarger,
     onButtonClick,
     shortcutHint,
-  } = field;
+  } = props;
 
-  const styleTheme = theme || 'cool';
-  const styleOptions = [styles.field, styles[styleTheme]];
-  const helpTextErrorStyles = combineStyles(styles.helpText, styles.helpTextError);
-  const helpTextStyles = hasErrorText ? helpTextErrorStyles : styles.helpText;
-  const shortcutHintDisabledStyles = combineStyles(
+  const styleTheme = inputTheme || 'cool';
+
+  const shortcutHintStyles = css(
     styles.shortcutHint,
-    styles.shortcutHintDisabled
+    buttonDisabled && styles.shortcutHintDisabled
   );
-  const shortcutHintStyles = buttonDisabled ?
-    shortcutHintDisabledStyles : styles.shortcutHint;
 
-  if (isLarger) {
-    styleOptions.push(styles.fieldLarger);
-  }
-  if (isWider) {
-    styleOptions.push(styles.fieldWider);
-  }
+  const helpTextStyles = css(
+    styles.helpText,
+    hasErrorText && styles.helpTextError
+  );
 
-  const fieldStyles = combineStyles(...styleOptions);
-  // allow hotkeys to be triggered when inside a field input
-  const allClassNames = [fieldStyles, 'mousetrap'].join(', ');
+  const inputStyles = css(
+    // allow hotkeys to be triggered when inside a field input
+    'mousetrap',
+    styles.field,
+    styles[styleTheme],
+    isLarger && styles.fieldLarger,
+    isWider && styles.fieldWider
+  );
+
   return (
-    <div className={styles.fieldBlock}>
-      <input className={allClassNames} {...input}/>
+    <div className={css(styles.fieldBlock)}>
+      <input className={inputStyles} {...input}/>
       {hasButton &&
-        <div className={styles.buttonBlock}>
+        <div className={css(styles.buttonBlock)}>
           <IconButton
             disabled={buttonDisabled}
             iconName={buttonIcon}
@@ -66,7 +61,7 @@ const renderField = (field) => {
   );
 };
 
-const propTypes = {
+InputField.propTypes = {
   name: PropTypes.string,
   hasErrorText: PropTypes.bool,
   hasHelpText: PropTypes.bool,
@@ -95,21 +90,9 @@ const propTypes = {
   ])
 };
 
-const Field = (props) => {
-  const {name} = props;
-  return (
-    <div className={styles.fieldBlock}>
-      <ReduxFormField
-        name={name}
-        component={renderField}
-        {...props}
-      />
-    </div>
-  );
-};
+const fieldLightGray = appTheme.palette.dark50l;
 
-Field.propTypes = propTypes;
-styles = StyleSheet.create({
+const styleThunk = () => ({
   fieldBlock: {
     margin: '0 auto',
     maxWidth: '100%',
@@ -220,4 +203,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default look(Field);
+export default withStyles(styleThunk)(InputField);

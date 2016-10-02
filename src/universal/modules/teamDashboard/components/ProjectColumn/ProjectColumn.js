@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import {overflowTouch} from 'universal/styles/helpers';
 import ui from 'universal/styles/ui';
 import themeLabels from 'universal/styles/theme/labels';
@@ -148,7 +149,7 @@ const columnStyles = {
   width: '25%'
 };
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   columnFirst: {
     ...columnStyles,
     padding: '1rem 1rem 0 0'
@@ -172,7 +173,7 @@ styles = StyleSheet.create({
 
   columnHeader: {
     borderBottom: '1px solid rgba(0, 0, 0, .05)',
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     display: 'flex !important',
     lineHeight: '1.5rem',
     padding: '.5rem 1rem',
@@ -213,7 +214,7 @@ styles = StyleSheet.create({
 
   statusLabel: {
     flex: 1,
-    fontSize: theme.typography.s3,
+    fontSize: appTheme.typography.s3,
     fontWeight: 700,
     textTransform: 'uppercase'
   },
@@ -239,4 +240,4 @@ styles = StyleSheet.create({
   ...projectStatusStyles('color'),
 });
 
-export default look(ProjectColumn);
+export default withStyles(styleThunk)(ProjectColumn);

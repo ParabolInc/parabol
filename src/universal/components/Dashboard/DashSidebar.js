@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import layoutStyle from 'universal/styles/layout';
 import tinycolor from 'tinycolor2';
 import FontAwesome from 'react-fontawesome';
@@ -10,37 +11,34 @@ import SettingsHub from 'universal/components/SettingsHub/SettingsHub';
 import StandardHubContainer from 'universal/containers/StandardHub/StandardHubContainer';
 import Logo from 'universal/styles/theme/images/brand/parabol-lockup-h.svg';
 
-const textColor = tinycolor.mix(theme.palette.mid10l, '#fff', 50).toHexString();
-let styles = {};
-
 const DashSidebar = (props) => {
-  const {isUserSettings} = props;
+  const {isUserSettings, styles} = props;
   return (
-    <div className={styles.root}>
+    <div className={css(styles.root)}>
       {isUserSettings ? <SettingsHub/> : <StandardHubContainer/>}
-      <nav className={styles.nav}>
-        <div className={styles.singleNavItem}>
+      <nav className={css(styles.nav)}>
+        <div className={css(styles.singleNavItem)}>
           <DashNavItem
             href="/me"
             label="My Dashboard"
           />
         </div>
-        <div className={styles.navLabel}>
+        <div className={css(styles.navLabel)}>
           My Teams
         </div>
         <DashNavListContainer/>
-        <div className={styles.addTeam} title="Add New Team">
-          <div className={styles.addTeamIcon}>
+        <div className={css(styles.addTeam)} title="Add New Team">
+          <div className={css(styles.addTeamIcon)}>
             <FontAwesome name="plus-square" />
           </div>
-          <div className={styles.addTeamLabel}>
+          <div className={css(styles.addTeamLabel)}>
             Add New Team
           </div>
         </div>
       </nav>
-      <div className={styles.brand}>
+      <div className={css(styles.brand)}>
         <a href="http://www.parabol.co/" title="Action by Parabol, Inc." target="_blank">
-          <img alt="Action by Parabol, Inc." className={styles.logo} src={Logo} />
+          <img alt="Action by Parabol, Inc." className={css(styles.logo)} src={Logo} />
         </a>
       </div>
     </div>
@@ -51,9 +49,11 @@ DashSidebar.propTypes = {
   isUserSettings: PropTypes.bool
 };
 
-styles = StyleSheet.create({
+const textColor = tinycolor.mix(appTheme.palette.mid10l, '#fff', 50).toHexString();
+
+const styleThunk = () => ({
   root: {
-    backgroundColor: theme.palette.mid,
+    backgroundColor: appTheme.palette.mid,
     color: textColor,
     display: 'flex',
     flexDirection: 'column',
@@ -75,7 +75,7 @@ styles = StyleSheet.create({
   navLabel: {
     borderTop: '1px solid rgba(255, 255, 255, .5)',
     cursor: 'default',
-    fontSize: theme.typography.s2,
+    fontSize: appTheme.typography.s2,
     fontWeight: 700,
     marginLeft: '1rem',
     padding: '1rem 0',
@@ -106,9 +106,9 @@ styles = StyleSheet.create({
   },
 
   addTeamLabel: {
-    fontSize: theme.typography.s2,
+    fontSize: appTheme.typography.s2,
     fontWeight: 700,
-    lineHeight: theme.typography.s4,
+    lineHeight: appTheme.typography.s4,
     padding: '.4375rem .5rem .4375rem 1rem',
     textTransform: 'uppercase'
   },
@@ -127,4 +127,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default look(DashSidebar);
+export default withStyles(styleThunk)(DashSidebar);

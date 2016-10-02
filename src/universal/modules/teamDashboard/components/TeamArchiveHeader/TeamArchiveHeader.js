@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import FontAwesome from 'react-fontawesome';
 import {Link} from 'react-router';
@@ -37,7 +38,7 @@ TeamArchiveHeader.propTypes = {
   teamId: PropTypes.string
 };
 
-TeamArchiveHeader.styles = StyleSheet.create({
+TeamArchiveHeader.const styleThunk = () => ({
   root: {
     padding: '1rem 1rem 1rem 0',
     width: '100%'
@@ -45,16 +46,16 @@ TeamArchiveHeader.styles = StyleSheet.create({
 
   link: {
     ...inlineBlockStyle,
-    color: theme.palette.mid,
-    fontSize: theme.typography.s3,
+    color: appTheme.palette.mid,
+    fontSize: appTheme.typography.s3,
     height: ui.dashSectionHeaderLineHeight,
     paddingTop: '1px',
 
     ':hover': {
-      color: theme.palette.dark,
+      color: appTheme.palette.dark,
     },
     ':focus': {
-      color: theme.palette.dark,
+      color: appTheme.palette.dark,
     },
     ':hover > div': {
       textDecoration: 'underline'
@@ -65,4 +66,4 @@ TeamArchiveHeader.styles = StyleSheet.create({
   }
 });
 
-export default look(TeamArchiveHeader);
+export default withStyles(styleThunk)(TeamArchiveHeader);

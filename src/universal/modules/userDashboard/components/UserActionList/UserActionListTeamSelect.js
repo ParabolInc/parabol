@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import {ib} from 'universal/styles/helpers';
 import ui from 'universal/styles/ui';
 import FontAwesome from 'react-fontawesome';
@@ -82,7 +83,7 @@ UserActionListTeamSelect.propTypes = {
   userId: PropTypes.string
 };
 
-UserActionListTeamSelect.styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     width: '100%'
   },
@@ -93,14 +94,14 @@ UserActionListTeamSelect.styles = StyleSheet.create({
   },
 
   cancel: {
-    color: theme.palette.mid,
+    color: appTheme.palette.mid,
     cursor: 'pointer',
 
     ':hover': {
-      color: theme.palette.dark
+      color: appTheme.palette.dark
     },
     ':focus': {
-      color: theme.palette.dark
+      color: appTheme.palette.dark
     }
   },
 
@@ -109,7 +110,7 @@ UserActionListTeamSelect.styles = StyleSheet.create({
   },
 
   control: {
-    color: theme.palette.warm,
+    color: appTheme.palette.warm,
     cursor: 'pointer',
     lineHeight: '1.5rem',
     padding: '.25rem 0',
@@ -123,4 +124,4 @@ UserActionListTeamSelect.styles = StyleSheet.create({
   }
 });
 
-export default look(UserActionListTeamSelect);
+export default withStyles(styleThunk)(UserActionListTeamSelect);

@@ -1,9 +1,10 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import {reduxForm, Field} from 'redux-form';
 import AgendaInputField from './AgendaInputField';
 import Avatar from 'universal/components/Avatar/Avatar';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 import shortid from 'shortid';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import {cashay} from 'cashay';
@@ -47,17 +48,17 @@ AgendaInput.propTypes = {
   myTeamMember: PropTypes.object,
 };
 
-AgendaInput.styles = StyleSheet.create({
+AgendaInput.const styleThunk = () => ({
   root: {
     backgroundColor: 'transparent',
-    color: theme.palette.cool,
-    fontSize: theme.typography.s3,
+    color: appTheme.palette.cool,
+    fontSize: appTheme.typography.s3,
     position: 'relative',
     width: '100%',
     zIndex: 100,
 
     ':hover': {
-      backgroundColor: theme.palette.dark20l
+      backgroundColor: appTheme.palette.dark20l
     }
   },
 
@@ -70,4 +71,4 @@ AgendaInput.styles = StyleSheet.create({
 });
 
 const reduxFormOptions = {form: 'agendaInput'};
-export default reduxForm(reduxFormOptions)(look(AgendaInput));
+export default reduxForm(reduxFormOptions)(withStyles(styleThunk)(AgendaInput));

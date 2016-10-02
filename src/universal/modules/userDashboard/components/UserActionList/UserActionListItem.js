@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
 import OutcomeCardTextarea from 'universal/components/OutcomeCard/OutcomeCardTextarea';
@@ -105,7 +106,7 @@ export default class UserActionListItem extends Component {
   }
 }
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     borderTop: `1px solid ${ui.cardBorderColor}`,
     position: 'relative',
@@ -127,8 +128,8 @@ styles = StyleSheet.create({
   team: {
     ...textOverflow,
     bottom: 0,
-    color: theme.palette.dark,
-    fontSize: theme.typography.s1,
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s1,
     fontWeight: 700,
     height: labelHeight,
     lineHeight: labelHeight,

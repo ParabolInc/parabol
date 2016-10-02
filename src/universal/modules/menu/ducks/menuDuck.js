@@ -8,6 +8,8 @@ const initialState = {
 };
 
 export default function reducer(state = initialState, action = {}) {
+  if (!action.type.startsWith('/menu')) return state;
+  console.log('action')
   const {type, payload: {menuKey}} = action;
   if (type === OPEN_MENU) {
     return {

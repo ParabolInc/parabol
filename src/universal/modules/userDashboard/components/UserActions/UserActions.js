@@ -1,5 +1,6 @@
 import React from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import ui from 'universal/styles/ui';
 import UserActionHeader from 'universal/modules/userDashboard/components/UserActionHeader/UserActionHeader';
 import UserActionListContainer from 'universal/modules/userDashboard/containers/UserActionList/UserActionListContainer';
@@ -14,7 +15,7 @@ const UserActions = () => {
   );
 };
 
-UserActions.styles = StyleSheet.create({
+UserActions.const styleThunk = () => ({
   root: {
     display: 'flex',
     flex: 1,
@@ -24,4 +25,4 @@ UserActions.styles = StyleSheet.create({
   }
 });
 
-export default look(UserActions);
+export default withStyles(styleThunk)(UserActions);

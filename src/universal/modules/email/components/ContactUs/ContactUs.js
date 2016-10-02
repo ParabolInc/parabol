@@ -1,22 +1,22 @@
 import React, {PropTypes} from 'react';
 import EmptySpace from '../EmptySpace/EmptySpace';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 
 const ContactUs = (props) => {
   const textStyle = {
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     fontFamily: '"Karla", "Helvetica Neue", serif',
     fontSize: `${props.fontSize}px`,
     lineHeight: `${props.lineHeight}`
   };
 
   const boldStyle = {
-    color: theme.palette.cool,
+    color: appTheme.palette.cool,
     fontWeight: 700
   };
 
   const emailStyle = {
-    color: theme.palette.warm,
+    color: appTheme.palette.warm,
     fontWeight: 700
   };
 

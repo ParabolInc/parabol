@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 
 let styles = {};
 
@@ -21,22 +22,22 @@ DashHeaderInfo.propTypes = {
   title: PropTypes.string
 };
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     width: '100%'
   },
 
   title: {
-    fontSize: theme.typography.s5,
-    lineHeight: theme.typography.s6,
+    fontSize: appTheme.typography.s5,
+    lineHeight: appTheme.typography.s6,
   },
 
   children: {
-    color: theme.palette.dark70l,
-    fontSize: theme.typography.s2,
-    lineHeight: theme.typography.sBase,
+    color: appTheme.palette.dark70l,
+    fontSize: appTheme.typography.s2,
+    lineHeight: appTheme.typography.sBase,
     marginTop: '.125rem'
   }
 });
 
-export default look(DashHeaderInfo);
+export default withStyles(styleThunk)(DashHeaderInfo);

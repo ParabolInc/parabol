@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import look, { StyleSheet } from 'react-look';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 
 let styles = {};
 
@@ -28,23 +28,23 @@ export default class SetupHeader extends Component {
   }
 }
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   setupHeader: {
     // Define container
   },
 
   setupHeading: {
-    color: theme.palette.warm,
+    color: appTheme.palette.warm,
     // TODO: Check font assets, font weight of Werrimeather (TA)
-    fontFamily: theme.typography.serif,
-    fontSize: theme.typography.s7,
+    fontFamily: appTheme.typography.serif,
+    fontSize: appTheme.typography.s7,
     margin: '2rem 0 1rem',
     textAlign: 'center'
   },
 
   setupSubHeading: {
-    color: theme.palette.dark10d,
-    fontSize: theme.typography.s6,
+    color: appTheme.palette.dark10d,
+    fontSize: appTheme.typography.s6,
     margin: '0 0 2rem',
     textAlign: 'center'
   }

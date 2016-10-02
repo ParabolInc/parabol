@@ -1,4 +1,3 @@
-export DashColumns from './DashColumns.js';
 export DashContent from './DashContent.js';
 export DashHeader from './DashHeader.js';
 export DashHeaderInfo from './DashHeaderInfo.js';

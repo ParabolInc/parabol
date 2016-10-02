@@ -3,17 +3,17 @@
 // NOTE: Just normalizing some UI style properties here. (TA)
 
 import tinycolor from 'tinycolor2';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 
-const backgroundColor = tinycolor.mix(theme.palette.mid, '#fff', 95).toHexString();
+const backgroundColor = tinycolor.mix(appTheme.palette.mid, '#fff', 95).toHexString();
 
 const ui = {
   // Action cards
-  actionCardBgColor: theme.palette.light60l,
+  actionCardBgColor: appTheme.palette.light60l,
   actionCardBgActive: 'rgba(255, 255, 255, .85)',
 
   // Cards
-  cardBorderColor: theme.palette.mid30l,
+  cardBorderColor: appTheme.palette.mid30l,
   cardBorderRadius: '.25rem',
   cardMinHeight: '7.5rem',
   cardPaddingBase: '.5rem',

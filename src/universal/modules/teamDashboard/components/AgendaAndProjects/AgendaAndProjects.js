@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import layout from 'universal/styles/layout';
 import ui from 'universal/styles/ui';
 import TeamAgenda from 'universal/modules/teamDashboard/components/TeamAgenda/TeamAgenda';
@@ -39,7 +40,7 @@ AgendaAndProjects.propTypes = {
   teamMembers: PropTypes.array
 };
 
-AgendaAndProjects.styles = StyleSheet.create({
+AgendaAndProjects.const styleThunk = () => ({
   root: {
     display: 'flex',
     flex: 1,
@@ -74,4 +75,4 @@ AgendaAndProjects.styles = StyleSheet.create({
   }
 });
 
-export default look(AgendaAndProjects);
+export default withStyles(styleThunk)(AgendaAndProjects);

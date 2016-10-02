@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 
 let styles = {};
 
@@ -12,7 +13,7 @@ MeetingLayout.propTypes = {
   children: PropTypes.any
 };
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     backgroundColor: '#fff',
     display: 'flex !important',
@@ -20,4 +21,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default look(MeetingLayout);
+export default withStyles(styleThunk)(MeetingLayout);

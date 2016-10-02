@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import look, { StyleSheet } from 'react-look';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 
 const combineStyles = StyleSheet.combineStyles;
 
@@ -69,7 +69,7 @@ export default class ProgressDots extends Component {
   }
 }
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   progressDotGroup: {
     fontSize: 0,
     left: '0',
@@ -81,7 +81,7 @@ styles = StyleSheet.create({
 
   progressDot: {
     backgroundColor: '#fff',
-    border: `2px solid ${theme.palette.mid50l}`,
+    border: `2px solid ${appTheme.palette.mid50l}`,
     borderRadius: '100%',
     cursor: 'default',
     display: 'inline-block',
@@ -91,13 +91,13 @@ styles = StyleSheet.create({
   },
 
   progressDotCompleted: {
-    backgroundColor: theme.palette.mid50l,
+    backgroundColor: appTheme.palette.mid50l,
     cursor: 'pointer'
   },
 
   progressDotCurrent: {
-    backgroundColor: theme.palette.warm,
-    borderColor: theme.palette.warm
+    backgroundColor: appTheme.palette.warm,
+    borderColor: appTheme.palette.warm
   },
 
   progressDotLabel: {

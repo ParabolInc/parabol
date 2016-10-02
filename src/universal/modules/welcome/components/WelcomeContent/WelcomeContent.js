@@ -19,7 +19,7 @@ export default class WelcomeHeader extends Component {
   }
 }
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     alignContent: 'center',
     display: 'flex !important',

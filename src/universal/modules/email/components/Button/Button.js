@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 
 const Button = (props) => {
   const style = {
@@ -42,7 +42,7 @@ const Button = (props) => {
 };
 
 Button.defaultProps = {
-  backgroundColor: theme.palette.cool,
+  backgroundColor: appTheme.palette.cool,
   vPadding: 12,
   width: 240
 };

@@ -1,18 +1,21 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 
-let styles = {};
-
-const DashSectionControls = (props) =>
-  <div className={styles.root}>
-    {props.children}
-  </div>;
+const DashSectionControls = (props) => {
+  const {children, styles} = props;
+  return (
+    <div className={css(styles.root)}>
+      {children}
+    </div>
+  );
+};
 
 DashSectionControls.propTypes = {
   children: PropTypes.any
 };
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     flex: 1,
     height: '1.875rem',
@@ -22,4 +25,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default look(DashSectionControls);
+export default withStyles(styleThunk)(DashSectionControls);

@@ -1,5 +1,5 @@
 import React from 'react';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import {Type} from 'universal/components';
 import FontAwesome from 'react-fontawesome';
@@ -11,7 +11,7 @@ const rootStyle = {
 
 const iconStyle = {
   display: 'inline-block',
-  color: theme.palette.mid,
+  color: appTheme.palette.mid,
   float: 'left',
   fontSize: ui.iconSize,
   marginRight: '.3125rem',

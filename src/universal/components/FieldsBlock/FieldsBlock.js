@@ -1,18 +1,13 @@
 import React, {PropTypes, Component} from 'react';
-import look, {StyleSheet} from 'react-look';
-import {FieldArray} from 'redux-form';
+import withStyles from 'universal/styles/withStyles';
+
+import {css} from 'aphrodite';
 import {textOverflow} from 'universal/styles/helpers';
-import theme from 'universal/styles/theme';
-import Field from 'universal/components/Field/Field';
+import {Field} from 'redux-form';
 import IconButton from 'universal/components/IconButton/IconButton';
+import InputField from 'universal/components/InputField/InputField';
+import appTheme from 'universal/styles/theme/appTheme';
 
-const combineStyles = StyleSheet.combineStyles;
-let styles = {};
-
-/*
- * Why are we defining this here?
- * See: https://github.com/erikras/redux-form/releases/tag/v6.0.0-alpha.14
- */
 const FieldsBlock = props => {
   const {
     labelGetter,
@@ -25,15 +20,15 @@ const FieldsBlock = props => {
     onLeaveRow
   } = props;
 
-  const columnLeftStyles = combineStyles(styles.fieldGroupColumn, styles.fieldGroupColumnLeft);
-  const columnRightStyles = combineStyles(styles.fieldGroupColumn, styles.fieldGroupColumnRight);
-  const fieldLabelStyles = combineStyles(styles.fieldGroupLabel, styles.fieldGroupLabelForFields);
+  const columnLeftStyles = css(styles.fieldGroupColumn, styles.fieldGroupColumnLeft);
+  const columnRightStyles = css(styles.fieldGroupColumn, styles.fieldGroupColumnRight);
+  const fieldLabelStyles = css(styles.fieldGroupLabel, styles.fieldGroupLabelForFields);
 
   return (
-    <div className={styles.fieldGroup}>
-      <div className={styles.fieldGroupRow}>
+    <div className={css(styles.fieldGroup)}>
+      <div className={css(styles.fieldGroupRow)}>
         <div className={columnLeftStyles}>
-          <div className={styles.fieldGroupLabel}>
+          <div className={css(styles.fieldGroupLabel)}>
             {labelHeader}
           </div>
         </div>
@@ -45,13 +40,13 @@ const FieldsBlock = props => {
       </div>
       {fields.map((item, index) =>
         <div
-          className={styles.fieldGroupRow}
+          className={css(styles.fieldGroupRow)}
           key={index}
           onMouseEnter={() => onHoverRow(index)}
           onMouseLeave={() => onLeaveRow()}
         >
           <div className={columnLeftStyles}>
-            <div className={styles.fieldRemovalBlock}>
+            <div className={css(styles.fieldRemovalBlock)}>
               {(hoverRow === index) && <IconButton
                 iconName="times-circle"
                 iconSize="2x"
@@ -59,13 +54,14 @@ const FieldsBlock = props => {
                 title="Remove"
               />}
             </div>
-            <div className={styles.fieldLabel}>
+            <div className={css(styles.fieldLabel)}>
               {labelGetter(index)}
             </div>
           </div>
           <div className={columnRightStyles}>
             <Field
               autoFocus={index === 0}
+              component={InputField}
               name={`${item}.${nestedFieldName}`}
               placeholder="What’s their priority this week?"
               type="text"
@@ -88,52 +84,7 @@ FieldsBlock.propTypes = {
   onLeaveRow: PropTypes.func.isRequired
 };
 
-
-@look
-export default class LabeledFieldArray extends Component {
-  static propTypes = {
-    labelGetter: PropTypes.func.isRequired,
-    labelHeader: PropTypes.string.isRequired,
-    labelSource: PropTypes.string.isRequired,
-    nestedFieldHeader: PropTypes.string.isRequired,
-    nestedFieldName: PropTypes.string.isRequired
-  };
-
-  constructor(props) {
-    super(props);
-    this.onHoverRow = this.onHoverRow.bind(this);
-    this.onLeaveRow = this.onLeaveRow.bind(this);
-    this.state = {
-      hoverRow: null
-    };
-  }
-
-  onHoverRow(index) { this.setState({ hoverRow: index }); }
-  onLeaveRow() { this.setState({ hoverRow: null }); }
-
-  render() {
-    const {
-      labelSource,
-    } = this.props;
-
-    const {hoverRow} = this.state;
-
-
-    return (
-      <FieldArray
-        name={labelSource}
-        component={FieldsBlock}
-        hoverRow={hoverRow}
-        onHoverRow={this.onHoverRow}
-        onLeaveRow={this.onLeaveRow}
-        {...this.props}
-      />
-    );
-  }
-}
-
-
-styles = StyleSheet.create({
+const styleThunk = () => ({
   fieldGroup: {
     alignItems: 'center',
     display: 'flex',
@@ -164,8 +115,8 @@ styles = StyleSheet.create({
   },
 
   fieldGroupLabel: {
-    color: theme.palette.dark,
-    fontSize: theme.typography.s2,
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s2,
     fontWeight: 700,
     margin: '0 0 .5rem',
     textTransform: 'uppercase'
@@ -178,8 +129,8 @@ styles = StyleSheet.create({
 
   fieldLabel: {
     ...textOverflow,
-    color: theme.palette.dark,
-    fontSize: theme.typography.s4,
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s4,
     lineHeight: 1.5,
     padding: '.125rem 1rem .125rem 0',
     width: '100%'
@@ -192,3 +143,5 @@ styles = StyleSheet.create({
     top: '.125rem'
   },
 });
+
+export default withStyles(styleThunk)(FieldsBlock);

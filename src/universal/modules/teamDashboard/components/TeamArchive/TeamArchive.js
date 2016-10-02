@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import {ib, overflowTouch} from 'universal/styles/helpers';
 import ui from 'universal/styles/ui';
 import TeamArchiveHeader from 'universal/modules/teamDashboard/components/TeamArchiveHeader/TeamArchiveHeader';
@@ -58,7 +59,7 @@ TeamArchive.propTypes = {
   teamMembers: PropTypes.array
 };
 
-TeamArchive.styles = StyleSheet.create({
+TeamArchive.const styleThunk = () => ({
   root: {
     display: 'flex',
     flex: 1,
@@ -113,18 +114,18 @@ TeamArchive.styles = StyleSheet.create({
 
   emptyMsg: {
     backgroundColor: '#fff',
-    border: `1px solid ${theme.palette.mid30l}`,
+    border: `1px solid ${appTheme.palette.mid30l}`,
     borderRadius: '.25rem',
-    fontFamily: theme.typography.serif,
-    fontSize: theme.typography.s2,
+    fontFamily: appTheme.typography.serif,
+    fontSize: appTheme.typography.s2,
     fontStyle: 'italic',
     display: 'inline-block',
     padding: '1rem'
   },
 
   link: {
-    color: theme.palette.cool
+    color: appTheme.palette.cool
   }
 });
 
-export default look(TeamArchive);
+export default withStyles(styleThunk)(TeamArchive);

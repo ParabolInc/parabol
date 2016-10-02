@@ -1,14 +1,12 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import {cashay} from 'cashay';
 import Avatar from 'universal/components/Avatar/Avatar';
 import getOutcomeNames from 'universal/utils/getOutcomeNames';
 
-let s = {};
-const combineStyles = StyleSheet.combineStyles;
-
 const OutcomeCardAssignMenu = (props) => {
-  const {onComplete, outcome, teamMembers} = props;
+  const {onComplete, outcome, styles, teamMembers} = props;
   const {teamMemberId: currentOwner, id: outcomeId} = outcome;
 
   const handleProjectUpdate = (newOwner) => {
@@ -31,11 +29,11 @@ const OutcomeCardAssignMenu = (props) => {
   };
 
   return (
-    <div className={s.root}>
+    <div className={css(styles.root)}>
       {
         teamMembers.map((teamMember, idx) => {
           const isClickable = currentOwner !== teamMember.preferredName;
-          const menuItemStyles = isClickable ? combineStyles(s.menuItem, s.menuItemClickable) : s.menuItem;
+          const menuItemStyles = css(styles.menuItem, isClickable && styles.menuItemClickable);
           return (
             <div className={menuItemStyles} key={`menuItem${idx}`}>
               <Avatar
@@ -59,7 +57,7 @@ OutcomeCardAssignMenu.propTypes = {
   teamMembers: PropTypes.array
 };
 
-s = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     fontSize: 0,
     minHeight: '75px', // based on 120px
@@ -87,4 +85,4 @@ s = StyleSheet.create({
   }
 });
 
-export default look(OutcomeCardAssignMenu);
+export default withStyles(styleThunk)(OutcomeCardAssignMenu);

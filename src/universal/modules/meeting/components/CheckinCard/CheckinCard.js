@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import PushButton from 'universal/components/PushButton/PushButton';
 import {withRouter} from 'react-router';
@@ -71,10 +72,10 @@ Card.propTypes = {
   member: PropTypes.object
 };
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   card: {
     // NOTE: This needs to match CheckinCards placeholder styles (TA)
-    border: `1px solid ${theme.palette.mid50l}`,
+    border: `1px solid ${appTheme.palette.mid50l}`,
     borderRadius: '.5rem',
     margin: '0 .5rem',
     padding: '3rem 1rem 1.5rem',
@@ -83,7 +84,7 @@ styles = StyleSheet.create({
   },
 
   cardIsActive: {
-    borderColor: theme.palette.warm70l
+    borderColor: appTheme.palette.warm70l
   },
 
   cardIsBlurred: {
@@ -94,30 +95,30 @@ styles = StyleSheet.create({
   },
 
   cardName: {
-    color: theme.palette.dark,
-    fontSize: theme.typography.s6,
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s6,
     fontWeight: 400,
     // margin: '1rem 0 .5rem' // when with cardLabel (TA)
     margin: '1rem 0 2rem'
   },
 
   cardNameActive: {
-    // color: theme.palette.cool
-    color: theme.palette.dark
+    // color: appTheme.palette.cool
+    color: appTheme.palette.dark
   },
 
   cardLabel: {
-    color: theme.palette.dark50l,
+    color: appTheme.palette.dark50l,
     display: 'none',
-    fontFamily: theme.typography.serif,
-    fontSize: theme.typography.s4,
+    fontFamily: appTheme.typography.serif,
+    fontSize: appTheme.typography.s4,
     fontStyle: 'italic',
     fontWeight: 400,
     margin: '.5rem 0 1rem'
   },
 
   cardLabelPresent: {
-    color: theme.palette.cool
+    color: appTheme.palette.cool
   },
 
   buttonsBlock: {
@@ -126,4 +127,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default withRouter(look(Card));
+export default withRouter(withStyles(styleThunk)(Card));

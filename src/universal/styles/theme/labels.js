@@ -1,5 +1,5 @@
 import React from 'react';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
 
 const labels = {
@@ -33,7 +33,7 @@ const labels = {
       FUTURE
     ],
     [ACTIVE]: {
-      color: theme.palette.cool,
+      color: appTheme.palette.cool,
       icon: 'arrow-right',
       keystroke: 'a',
       label: 'Active',
@@ -41,7 +41,7 @@ const labels = {
       slug: ACTIVE
     },
     [STUCK]: {
-      color: theme.palette.warm,
+      color: appTheme.palette.warm,
       icon: 'exclamation-triangle',
       keystroke: 's',
       label: 'Stuck',
@@ -49,7 +49,7 @@ const labels = {
       slug: STUCK
     },
     [DONE]: {
-      color: theme.palette.dark10d,
+      color: appTheme.palette.dark10d,
       icon: 'check',
       keystroke: 'd',
       label: 'Done',
@@ -57,7 +57,7 @@ const labels = {
       slug: DONE
     },
     [FUTURE]: {
-      color: theme.palette.mid,
+      color: appTheme.palette.mid,
       icon: 'clock-o',
       keystroke: 'f',
       label: 'Future',
@@ -66,7 +66,7 @@ const labels = {
     }
   },
   archive: {
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     icon: 'archive',
     keystroke: 'c',
     label: 'Archive',
@@ -74,7 +74,7 @@ const labels = {
     slug: 'archive'
   },
   archived: {
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     icon: 'archive',
     keystroke: 'c',
     label: 'Archived',
@@ -82,7 +82,7 @@ const labels = {
     slug: 'archived'
   },
   action: {
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     icon: 'calendar-check-o',
     keystroke: 't',
     label: 'Action',
@@ -90,7 +90,7 @@ const labels = {
     slug: 'action'
   },
   project: {
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     icon: 'calendar',
     keystroke: 'p',
     label: 'Project',

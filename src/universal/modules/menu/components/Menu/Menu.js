@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
 
@@ -78,7 +79,7 @@ Menu.propTypes = {
   ]),
 };
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     display: 'inline-block',
     position: 'relative'
@@ -103,7 +104,7 @@ styles = StyleSheet.create({
   },
   menu: {
     backgroundColor: ui.menuBackgroundColor,
-    border: `1px solid ${theme.palette.mid30l}`,
+    border: `1px solid ${appTheme.palette.mid30l}`,
     borderRadius: '.25rem',
     padding: '0 0 .5rem',
     textAlign: 'left',
@@ -113,13 +114,13 @@ styles = StyleSheet.create({
 
   label: {
     ...textOverflow,
-    borderBottom: `1px solid ${theme.palette.mid30l}`,
-    color: theme.palette.mid,
-    fontSize: theme.typography.s2,
+    borderBottom: `1px solid ${appTheme.palette.mid30l}`,
+    color: appTheme.palette.mid,
+    fontSize: appTheme.typography.s2,
     fontWeight: 700,
     lineHeight: 1,
     padding: '.5rem'
   }
 });
 
-export default look(Menu);
+export default withStyles(styleThunk)(Menu);

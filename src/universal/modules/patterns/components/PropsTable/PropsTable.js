@@ -34,7 +34,7 @@ export default class PropsTable extends Component {
   }
 }
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   base: {
     borderCollapse: 'collapse',
     borderSpacing: 0,

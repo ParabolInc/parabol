@@ -1,26 +1,16 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-
-const combineStyles = StyleSheet.combineStyles;
-
-let s = {};
-let keyframesOpacity = {};
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 
 const Ellipsis = (props) => {
   const {
-    isAnimated
+    isAnimated,
+    styles
   } = props;
-
-  let dotStyles1 = s.dot;
-  let dotStyles2 = s.dot;
-  let dotStyles3 = s.dot;
-
-  if (isAnimated) {
-    dotStyles1 = combineStyles(s.dotAnimated, s.dot1);
-    dotStyles2 = combineStyles(s.dotAnimated, s.dot2);
-    dotStyles3 = combineStyles(s.dotAnimated, s.dot3);
-  }
-
+  // TODO only use 1 style?
+  const dotStyles1 = css(styles.dot, isAnimated && styles.dotAnimated);
+  const dotStyles2 = css(styles.dot, isAnimated && styles.dotAnimated);
+  const dotStyles3 = css(styles.dot, isAnimated && styles.dotAnimated);
   return (
     <div className={s.root}>
       {isAnimated ?
@@ -43,16 +33,16 @@ Ellipsis.defaultProps = {
   isAnimated: true
 };
 
-keyframesOpacity = StyleSheet.keyframes({
+const keyframesOpacity = {
   '0%': {
     opacity: '1'
   },
   '100%': {
     opacity: '.25'
   }
-});
+};
 
-s = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     display: 'inline'
   },
@@ -85,4 +75,4 @@ s = StyleSheet.create({
   }
 });
 
-export default look(Ellipsis);
+export default withStyles(styleThunk)(Ellipsis);

@@ -1,13 +1,14 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import tinycolor from 'tinycolor2';
 import FontAwesome from 'react-fontawesome';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import voidClick from 'universal/utils/voidClick';
 
 const combineStyles = StyleSheet.combineStyles;
-const warmLinkHover = tinycolor(theme.palette.warm).darken(15).toHexString();
+const warmLinkHover = tinycolor(appTheme.palette.warm).darken(15).toHexString();
 let styles = {};
 
 const AgendaItem = props => {
@@ -53,20 +54,20 @@ const inlineBlock = {
   verticalAlign: 'top'
 };
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     backgroundColor: 'transparent',
-    color: theme.palette.cool,
-    fontSize: theme.typography.s3,
+    color: appTheme.palette.cool,
+    fontSize: appTheme.typography.s3,
     padding: '.5rem .5rem .5rem 0',
     position: 'relative',
     width: '100%',
 
     ':hover': {
-      backgroundColor: theme.palette.dark20l
+      backgroundColor: appTheme.palette.dark20l
     },
     ':focus': {
-      backgroundColor: theme.palette.dark20l
+      backgroundColor: appTheme.palette.dark20l
     },
     ':hover > div': {
       opacity: 1
@@ -75,7 +76,7 @@ styles = StyleSheet.create({
 
   del: {
     ...block,
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     cursor: 'pointer',
     left: '1.125rem',
     height: '1.5rem',
@@ -87,8 +88,8 @@ styles = StyleSheet.create({
 
   desc: {
     ...inlineBlock,
-    fontFamily: theme.typography.serif,
-    fontSize: theme.typography.s3,
+    fontFamily: appTheme.typography.serif,
+    fontSize: appTheme.typography.s3,
     fontStyle: 'italic',
     fontWeight: 700,
     padding: '0 40px 0 0',
@@ -107,11 +108,11 @@ styles = StyleSheet.create({
   },
 
   itemActive: {
-    color: theme.palette.warm
+    color: appTheme.palette.warm
   },
 
   descActive: {
-    color: theme.palette.warm,
+    color: appTheme.palette.warm,
     ':hover': {
       color: warmLinkHover
     },
@@ -137,7 +138,7 @@ styles = StyleSheet.create({
   },
 
   active: {
-    color: theme.palette.warm
+    color: appTheme.palette.warm
   },
 
   processed: {
@@ -187,4 +188,4 @@ AgendaItem.defaultProps = {
   status: 'waiting'
 };
 
-export default look(AgendaItem);
+export default withStyles(styleThunk)(AgendaItem);

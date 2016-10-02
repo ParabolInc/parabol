@@ -61,7 +61,7 @@ export default class Background extends Component {
   }
 }
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   // base
   base: {
     padding

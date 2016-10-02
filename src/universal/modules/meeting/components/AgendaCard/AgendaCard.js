@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import {cashay} from 'cashay';
 import {Field, reduxForm, initialize, focus} from 'redux-form';
 import labels from 'universal/styles/theme/labels';
@@ -199,7 +200,7 @@ AgendaCard.propTypes = {
   handleSubmit: PropTypes.func,
 };
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   body: {
     width: '100%'
   }

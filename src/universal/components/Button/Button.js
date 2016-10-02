@@ -1,20 +1,15 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import * as appTheme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import tinycolor from 'tinycolor2';
-import upperFirst from 'universal/utils/upperFirst';
 
-const combineStyles = StyleSheet.combineStyles;
 const { cool, warm, dark, mid, light } = appTheme.palette;
+const white = '#fff';
 
 const makeSolidTheme = (themeColor, textColor = '#fff', style = 'solid', opacity = '.65') => {
-  let buttonColor = themeColor;
-  let color = textColor;
-
-  if (style === 'inverted') {
-    buttonColor = tinycolor.mix(themeColor, '#fff', 90).toHexString();
-    color = tinycolor.mix(textColor, '#000', 10).toHexString();
-  }
+  const buttonColor = style === 'inverted' ? tinycolor.mix(themeColor, '#fff', 90).toHexString() : themeColor;
+  const color = style === 'inverted' ? tinycolor.mix(textColor, '#000', 10).toHexString() : textColor;
 
   return {
     backgroundColor: buttonColor,
@@ -47,37 +42,38 @@ const makeOutlinedTheme = (color, opacity = '.5') => ({
   }
 });
 
-let keyframesDip = {};
-let styles = {};
+const makePropColors = (style, colorPalette) => {
+  const color = appTheme.palette[colorPalette] || white;
+  if (style === 'inverted') {
+    return makeOutlinedTheme(color);
+  } else {
+    const baseTextColor = style === 'inverted' ? color : white;
+    const textColor = (colorPalette === 'white' || colorPalette === 'light') ? dark : baseTextColor;
+    return makeSolidTheme(color, textColor, style);
+  }
+};
 
-const Button = props => {
+const Button = (props) => {
   const {
     disabled,
     isBlock,
     label,
     onClick,
     size,
-    style,
-    theme,
+    styles,
     title,
     type
   } = props;
 
   const buttonTitle = title || label;
-  const themeName = upperFirst(theme);
-  const styleThemeName = `${style}${themeName}`;
 
-  const buttonOptions = [styles.base, styles[size], styles[styleThemeName]];
-
-  if (disabled) {
-    buttonOptions.push(styles.disabled);
-  }
-
-  if (isBlock) {
-    buttonOptions.push(styles.isBlock);
-  }
-
-  const buttonStyles = combineStyles(...buttonOptions);
+  const buttonStyles = css(
+    styles.base,
+    styles[size],
+    styles.propColors,
+    disabled && styles.disabled,
+    isBlock && styles.isBlock
+  );
 
   return (
     <button
@@ -126,16 +122,7 @@ Button.propTypes = {
   ])
 };
 
-Button.defaultProps = {
-  isBlock: false,
-  label: 'Label Me',
-  size: 'medium',
-  style: 'solid',
-  theme: 'dark',
-  type: 'button'
-};
-
-keyframesDip = StyleSheet.keyframes({
+const keyframesDip = {
   '0%': {
     transform: 'translate(0, 0)'
   },
@@ -145,9 +132,9 @@ keyframesDip = StyleSheet.keyframes({
   '100%': {
     transform: 'translate(0)'
   }
-});
+};
 
-styles = StyleSheet.create({
+const styleThunk = (customTheme, props) => ({
   // Button base
   base: {
     border: '1px solid transparent',
@@ -199,29 +186,8 @@ styles = StyleSheet.create({
     fontSize: '1.25rem'
   },
 
-  // Button solid themes
-  solidCool: makeSolidTheme(cool),
-  solidWarm: makeSolidTheme(warm),
-  solidDark: makeSolidTheme(dark),
-  solidMid: makeSolidTheme(mid),
-  solidLight: makeSolidTheme(light, dark),
-  solidWhite: makeSolidTheme('#fff', dark),
-
-  // Outlined button themes
-  outlinedCool: makeOutlinedTheme(cool),
-  outlinedWarm: makeOutlinedTheme(warm),
-  outlinedDark: makeOutlinedTheme(dark),
-  outlinedMid: makeOutlinedTheme(mid),
-  outlinedLight: makeOutlinedTheme(light),
-  outlinedWhite: makeOutlinedTheme('#fff'),
-
-  // Inverted button themes
-  invertedCool: makeSolidTheme(cool, cool, 'inverted'),
-  invertedWarm: makeSolidTheme(warm, warm, 'inverted'),
-  invertedDark: makeSolidTheme(dark, dark, 'inverted'),
-  invertedMid: makeSolidTheme(mid, mid, 'inverted'),
-  invertedLight: makeSolidTheme(light, dark, 'inverted'),
-  invertedWhite: makeSolidTheme('#fff', dark, 'inverted'),
+  // doing this saves us from creating 6*3 classes
+  propColors: makePropColors(props.style, props.colorPalette),
 
   // Disabled state
   disabled: {
@@ -241,4 +207,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default look(Button);
+export default withStyles(styleThunk)(Button);

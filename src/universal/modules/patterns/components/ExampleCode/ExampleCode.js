@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import look, { StyleSheet } from 'react-look';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 
 let styles = {};
 
@@ -22,7 +22,7 @@ export default class ExampleCode extends Component {
   }
 }
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   base: {
     backgroundColor: '#222',
     color: '#fff',
@@ -31,7 +31,7 @@ styles = StyleSheet.create({
   },
 
   pre: {
-    fontFamily: theme.typography.monospace,
+    fontFamily: appTheme.typography.monospace,
     fontSize: '1.125rem',
     fontWeight: 700
   }

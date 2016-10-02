@@ -1,21 +1,18 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import {cashay} from 'cashay';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 import labels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import upperFirst from 'universal/utils/upperFirst';
 import OutcomeCardMenuButton from './OutcomeCardMenuButton';
 import getOutcomeNames from 'universal/utils/getOutcomeNames';
 
-const buttonHF = {
-  backgroundColor: 'transparent',
-  borderColor: theme.palette.mid50l
-};
-let styles = {};
+const buttonArray = labels.projectStatus.slugs.slice(0);
 
 const OutcomeCardStatusMenu = (props) => {
-  const {onComplete, outcome, isAgenda, isProject} = props;
+  const {onComplete, outcome, isAgenda, isProject, styles} = props;
   const {id: outcomeId, status} = outcome;
   const outcomeName = isProject ? 'Project' : 'Action';
 
@@ -23,7 +20,6 @@ const OutcomeCardStatusMenu = (props) => {
   const deleteOutcomeLabel = <span>De<u>l</u>ete this {outcomeName}</span>;
   const moveToActionsLabel = <span>Move to Ac<u>t</u>ions</span>;
   const moveToProjectsLabel = <span>Move to <u>P</u>rojects</span>;
-  const buttonArray = labels.projectStatus.slugs.slice(0);
 
   const archiveProject = () => {
     const options = {
@@ -97,17 +93,17 @@ const OutcomeCardStatusMenu = (props) => {
   };
 
   return (
-    <div className={styles.root}>
+    <div className={css(styles.root)}>
       {isProject && buttonArray.map((btn, idx) => {
         const btnStatus = labels.projectStatus[btn];
         return (
-          <div className={styles.column} key={idx}>
+          <div className={css(styles.column)} key={idx}>
             {makeButton(btnStatus.slug, btnStatus.icon, btnStatus.shortcutLabel, idx)}
           </div>
         );
       })}
       {isProject && !isAgenda &&
-        <div className={styles.buttonBlock}>
+        <div className={css(styles.buttonBlock)}>
           <OutcomeCardMenuButton
             icon="archive"
             label={notArchivedLabel}
@@ -118,7 +114,7 @@ const OutcomeCardStatusMenu = (props) => {
         </div>
       }
       {isAgenda &&
-        <div className={styles.buttonBlock}>
+        <div className={css(styles.buttonBlock)}>
           <OutcomeCardMenuButton
             icon="times"
             label={deleteOutcomeLabel}
@@ -130,7 +126,7 @@ const OutcomeCardStatusMenu = (props) => {
       }
       {isAgenda &&
         (isProject ?
-          <div className={styles.buttonBlock}>
+          <div className={css(styles.buttonBlock)}>
             <OutcomeCardMenuButton
               icon="calendar-check-o"
               label={moveToActionsLabel}
@@ -139,7 +135,7 @@ const OutcomeCardStatusMenu = (props) => {
               title="Move to Actions"
             />
           </div> :
-          <div className={styles.buttonBlock}>
+          <div className={css(styles.buttonBlock)}>
             <OutcomeCardMenuButton
               icon="calendar"
               label={moveToProjectsLabel}
@@ -160,7 +156,12 @@ OutcomeCardStatusMenu.propTypes = {
   onComplete: PropTypes.func
 };
 
-styles = StyleSheet.create({
+const buttonHF = {
+  backgroundColor: 'transparent',
+  borderColor: appTheme.palette.mid50l
+};
+
+const styleThunk = () => ({
   root: {
     alignItems: 'center',
     fontSize: 0,
@@ -182,9 +183,9 @@ styles = StyleSheet.create({
 
   button: {
     backgroundColor: 'transparent',
-    border: `1px solid ${theme.palette.mid30l}`,
+    border: `1px solid ${appTheme.palette.mid30l}`,
     borderRadius: '.25rem',
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     cursor: 'pointer',
     margin: 0,
     outline: 'none',
@@ -196,7 +197,7 @@ styles = StyleSheet.create({
     },
     ':focus': {
       ...buttonHF,
-      borderColor: theme.palette.dark90d
+      borderColor: appTheme.palette.dark90d
     }
   },
 
@@ -225,4 +226,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default look(OutcomeCardStatusMenu);
+export default withStyles(styleThunk)(OutcomeCardStatusMenu);

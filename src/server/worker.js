@@ -59,7 +59,7 @@ export function run(worker) {
 
   // server-side rendering for emails
   app.get('/email', emailSSR);
-
+  console.log('dev6');
   // server-side rendering
   app.get('*', createSSR);
 

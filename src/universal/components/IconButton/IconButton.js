@@ -1,34 +1,33 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import FontAwesome from 'react-fontawesome';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 
-const combineStyles = StyleSheet.combineStyles;
-const { cool } = theme.palette;
-const baseButtonColor = theme.palette.cool40l;
-
-let styles = {};
-
-const IconButton = props => {
-  const { disabled, iconName, iconSize, onClick, title } = props;
-  const disabledStyles = combineStyles(styles.base, styles.disabled);
-  const buttonStyles = disabled ? disabledStyles : styles.base;
+const IconButton = (props) => {
+  const {disabled, iconName, iconSize, onClick, styles, title} = props;
+  const buttonStyles = css(
+    styles.base,
+    disabled && styles.disabled
+  );
 
   return (
     <button className={buttonStyles} disabled={disabled} onClick={onClick} title={title}>
-      <FontAwesome name={iconName} size={iconSize} />
+      <FontAwesome name={iconName} size={iconSize}/>
     </button>
   );
 };
 
-styles = StyleSheet.create({
+const {cool} = appTheme.palette;
+const baseButtonColor = appTheme.palette.cool40l;
+const styleThunk = () => ({
   base: {
     background: 'none',
     border: 0,
     borderRadius: 0,
     color: baseButtonColor,
     cursor: 'pointer',
-    fontSize: theme.typography.s3,
+    fontSize: appTheme.typography.s3,
     padding: 0,
 
     // NOTE: :hover, :focus, :active have the same styling
@@ -71,4 +70,4 @@ IconButton.propTypes = {
   title: PropTypes.string
 };
 
-export default look(IconButton);
+export default withStyles(styleThunk)(IconButton);

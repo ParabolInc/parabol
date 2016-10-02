@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import ui from 'universal/styles/ui';
 import {cardBorderTop, overflowTouch} from 'universal/styles/helpers';
 import UserActionListEmpty from './UserActionListEmpty';
@@ -72,7 +73,7 @@ UserActionList.propTypes = {
   userId: PropTypes.string
 };
 
-UserActionList.styles = StyleSheet.create({
+UserActionList.const styleThunk = () => ({
   root: {
     display: 'flex',
     flex: 1,
@@ -141,4 +142,4 @@ UserActionList.styles = StyleSheet.create({
   }
 });
 
-export default look(UserActionList);
+export default withStyles(styleThunk)(UserActionList);

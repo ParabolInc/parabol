@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import ib from 'universal/styles/helpers/ib';
 import ui from 'universal/styles/ui';
 
@@ -15,14 +16,14 @@ DashSectionControl.propTypes = {
   children: PropTypes.any
 };
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     ...ib,
-    color: theme.palette.mid,
-    fontSize: theme.typography.s3,
+    color: appTheme.palette.mid,
+    fontSize: appTheme.typography.s3,
     height: ui.dashSectionHeaderLineHeight,
     marginLeft: '2rem'
   }
 });
 
-export default look(DashSectionControl);
+export default withStyles(styleThunk)(DashSectionControl);

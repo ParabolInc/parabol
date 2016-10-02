@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import {overflowTouch} from 'universal/styles/helpers';
 import {cashay} from 'cashay';
 import AgendaItem from 'universal/modules/teamDashboard/components/AgendaItem/AgendaItem';
@@ -42,7 +43,7 @@ AgendaList.propTypes = {
   phaseItemFactory: PropTypes.func
 };
 
-AgendaList.styles = StyleSheet.create({
+AgendaList.const styleThunk = () => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
@@ -60,4 +61,4 @@ AgendaList.styles = StyleSheet.create({
   }
 });
 
-export default look(AgendaList);
+export default withStyles(styleThunk)(AgendaList);

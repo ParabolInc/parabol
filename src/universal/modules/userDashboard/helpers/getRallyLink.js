@@ -1,5 +1,5 @@
 import React from 'react';
-// import theme from 'universal/styles/theme';
+// import appTheme from 'universal/styles/theme/appTheme';
 
 const rallyList = [
   {
@@ -149,7 +149,7 @@ const rally = rallyList[Math.floor(Math.random() * rallyList.length)];
 const rallyPhrase = `${rally.phrase}!`;
 
 const style = {
-  // color: theme.palette.dark70l
+  // color: appTheme.palette.dark70l
   color: 'inherit'
 };
 

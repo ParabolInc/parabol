@@ -1,28 +1,15 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import {Link} from 'react-router';
 
-let styles = {};
-
-const linkHF = {
-  backgroundColor: theme.palette.dark50a,
-  color: 'inherit',
-  cursor: 'pointer',
-  textDecoration: 'none'
-};
-
-const activeHF = {
-  backgroundColor: theme.palette.dark,
-  cursor: 'default'
-};
-
 const DashNavItem = (props) => {
-  const {label, href} = props;
+  const {label, href, styles} = props;
   return (
     <Link
-      activeClassName={styles.active}
-      className={styles.link}
+      activeClassName={css(styles.active)}
+      className={css(styles.link)}
       title={label}
       to={href}
     >
@@ -36,15 +23,25 @@ DashNavItem.propTypes = {
   label: PropTypes.string,
 };
 
-styles = StyleSheet.create({
-  root: {},
+const linkHF = {
+  backgroundColor: appTheme.palette.dark50a,
+  color: 'inherit',
+  cursor: 'pointer',
+  textDecoration: 'none'
+};
 
+const activeHF = {
+  backgroundColor: appTheme.palette.dark,
+  cursor: 'default'
+};
+
+const styleThunk = () => ({
   link: {
     backgroundColor: 'transparent',
     borderRadius: '.25rem 0 0 .25rem',
     color: 'inherit',
     display: 'block',
-    fontSize: theme.typography.s4,
+    fontSize: appTheme.typography.s4,
     margin: '.5rem 0',
     padding: '.3125rem .5rem .3125rem 1rem',
     userSelect: 'none',
@@ -59,7 +56,7 @@ styles = StyleSheet.create({
   },
 
   active: {
-    backgroundColor: theme.palette.dark,
+    backgroundColor: appTheme.palette.dark,
 
     ':hover': {
       ...activeHF
@@ -70,4 +67,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default look(DashNavItem);
+export default withStyles(styleThunk)(DashNavItem);

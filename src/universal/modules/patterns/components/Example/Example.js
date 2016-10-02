@@ -22,7 +22,7 @@ export default class Example extends Component {
   }
 }
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   base: {
     margin: '2rem auto'
   },

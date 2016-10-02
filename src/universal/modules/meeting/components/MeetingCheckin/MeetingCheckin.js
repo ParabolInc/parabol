@@ -71,7 +71,7 @@ const MeetingCheckin = (props) => {
       </MeetingSection>
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="2rem">
-          <Type align="center" bold family="serif" scale="s6" theme="warm">
+          <Type align="center" bold family="serif" scale="s6" colorPalette="warm">
             {checkInGreeting}, {currentName}—{checkInQuestion}?
           </Type>
         </MeetingSection>
@@ -84,11 +84,11 @@ const MeetingCheckin = (props) => {
         />
         <MeetingSection paddingBottom="2rem">
           <IconLink
+            colorPalette="cool"
             icon="arrow-circle-right"
             iconPlacement="right"
             label={isLastMember ? 'Move on to updates' : 'Next teammate (press enter)'}
             scale="large"
-            theme="cool"
             onClick={gotoNextItem}
           />
         </MeetingSection>

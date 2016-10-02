@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 
 import Avatar from 'universal/components/Avatar/Avatar';
 import Type from 'universal/components/Type/Type';
@@ -188,8 +189,8 @@ const MeetingSummaryLayout = (props) => {
 
 s = StyleSheet.create({
   summaryPreview: {
-    backgroundColor: theme.palette.light30l,
-    border: `1px solid ${theme.palette.light80d}`,
+    backgroundColor: appTheme.palette.light30l,
+    border: `1px solid ${appTheme.palette.light80d}`,
     margin: '0 auto',
     maxWidth: '37.5rem',
     padding: '1rem 2rem',
@@ -221,4 +222,4 @@ MeetingSummaryLayout.defaultProps = {
   team: exampleTeam
 };
 
-export default look(MeetingSummaryLayout);
+export default withStyles(styleThunk)(MeetingSummaryLayout);

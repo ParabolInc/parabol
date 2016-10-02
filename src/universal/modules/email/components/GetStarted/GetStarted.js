@@ -1,9 +1,9 @@
 import React from 'react';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 
 const GetStarted = () => {
   const linkStyle = {
-    color: theme.palette.cool,
+    color: appTheme.palette.cool,
     fontWeight: 700
   };
 
@@ -14,7 +14,7 @@ const GetStarted = () => {
   };
 
   const headingStyle = {
-    color: theme.palette.warm,
+    color: appTheme.palette.warm,
     fontWeight: 700,
     textTransform: 'uppercase'
   };

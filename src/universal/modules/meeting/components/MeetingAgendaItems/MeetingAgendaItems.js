@@ -1,7 +1,8 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import {withRouter} from 'react-router';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 
 import Avatar from 'universal/components/Avatar/Avatar';
 import IconLink from 'universal/components/IconLink/IconLink';
@@ -73,10 +74,12 @@ const MeetingAgendaItems = (props) => {
             </div>
             <div className={s.linkSpacer}>
               <IconLink
+                colorPalette="cool"
                 icon="arrow-circle-right"
                 iconPlacement="right"
                 label="Next Agenda Item"
                 onClick={gotoNextItem}
+                scale="small"
               />
             </div>
           </div>
@@ -117,10 +120,10 @@ s = StyleSheet.create({
   },
 
   requestLabel: {
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     display: 'inline-block',
-    fontFamily: theme.typography.serif,
-    fontSize: theme.typography.s5,
+    fontFamily: appTheme.typography.serif,
+    fontSize: appTheme.typography.s5,
     fontStyle: 'italic',
     fontWeight: 700,
     marginLeft: '1.5rem',
@@ -138,4 +141,4 @@ MeetingAgendaItems.propTypes = {
   router: PropTypes.object.isRequired,
 };
 
-export default withHotkey(withRouter(look(MeetingAgendaItems)));
+export default withHotkey(withRouter(withStyles(styleThunk)(MeetingAgendaItems)));

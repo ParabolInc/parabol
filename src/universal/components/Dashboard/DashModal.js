@@ -1,21 +1,26 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import layoutStyle from 'universal/styles/layout';
 
 let styles = {};
 
-const DashModal = (props) =>
-  <div className={styles.root}>
-    <div className={styles.modal}>
-      {props.children}
+const DashModal = (props) => {
+  const {children, styles} = props;
+  return (
+    <div className={css(styles.root)}>
+      <div className={css(styles.modal)}>
+        {children}
+      </div>
     </div>
-  </div>;
+  );
+};
 
 DashModal.propTypes = {
   children: PropTypes.any
 };
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     alignItems: 'center',
     background: 'rgba(255, 255, 255, .5)',
@@ -40,4 +45,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default look(DashModal);
+export default withStyles(styleThunk)(DashModal);

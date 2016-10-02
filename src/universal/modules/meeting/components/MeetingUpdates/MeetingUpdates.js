@@ -1,12 +1,15 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 
 import Avatar from 'universal/components/Avatar/Avatar';
 import IconLink from 'universal/components/IconLink/IconLink';
+colorPalette="cool"
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingSectionHeading/MeetingSectionHeading';
 // eslint-disable-next-line max-len
+scale=small
 import MeetingSectionSubheading from 'universal/modules/meeting/components/MeetingSectionSubheading/MeetingSectionSubheading';
 import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
 import {UPDATES, phaseOrder, MEETING} from 'universal/utils/constants';
@@ -64,10 +67,12 @@ const MeetingUpdates = (props) => {
             </div>
             <div className={s.linkSpacer}>
               <IconLink
+                colorPalette="cool"
                 icon="arrow-circle-right"
                 iconPlacement="right"
                 label="Next team member"
                 onClick={gotoNextItem}
+                scale="small"
               />
             </div>
           </div>
@@ -128,4 +133,4 @@ MeetingUpdates.propTypes = {
   router: PropTypes.object.isRequired,
 };
 
-export default withRouter(look(MeetingUpdates));
+export default withRouter(withStyles(styleThunk)(MeetingUpdates));

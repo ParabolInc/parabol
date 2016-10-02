@@ -1,13 +1,13 @@
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import {cardBorderTop} from 'universal/styles/helpers';
 
 const CreateCardRootStyles = {
   alignItems: 'center',
   backgroundColor: '#fff',
-  border: `1px solid ${theme.palette.mid40l}`,
+  border: `1px solid ${appTheme.palette.mid40l}`,
   borderRadius: ui.cardBorderRadius,
-  borderTop: `1px solid ${theme.palette.mid40l}`,
+  borderTop: `1px solid ${appTheme.palette.mid40l}`,
   display: 'flex !important',
   justifyContent: 'center',
   // TODO: Cards need block containers, not margin (TA)
@@ -20,7 +20,7 @@ const CreateCardRootStyles = {
 
   '::after': {
     ...cardBorderTop,
-    color: theme.palette.mid40l
+    color: appTheme.palette.mid40l
   }
 };
 

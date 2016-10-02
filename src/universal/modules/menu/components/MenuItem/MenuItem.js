@@ -1,7 +1,8 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import tinycolor from 'tinycolor2';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 import {textOverflow} from 'universal/styles/helpers';
 
 // TODO: add option for labels with icons
@@ -25,9 +26,9 @@ const MenuItem = (props) => {
   );
 };
 
-const activeBackgroundColor = tinycolor.mix(theme.palette.mid, '#fff', 85).toHexString();
+const activeBackgroundColor = tinycolor.mix(appTheme.palette.mid, '#fff', 85).toHexString();
 const hoverFocusStyles = {
-  backgroundColor: theme.palette.mid10l,
+  backgroundColor: appTheme.palette.mid10l,
   // for the blue focus outline
   outline: 0
 };
@@ -48,7 +49,7 @@ MenuItem.defaultProps = {
   onClick: () => console.log('MenuItem.onClick()')
 };
 
-MenuItem.styles = StyleSheet.create({
+MenuItem.const styleThunk = () => ({
   root: {
     backgroundColor: 'transparent',
     cursor: 'pointer',
@@ -74,12 +75,12 @@ MenuItem.styles = StyleSheet.create({
 
   label: {
     ...textOverflow,
-    color: theme.palette.dark,
-    fontSize: theme.typography.s2,
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s2,
     fontWeight: 700,
     lineHeight: '1.5rem',
     padding: '.25rem .5rem'
   }
 });
 
-export default look(MenuItem);
+export default withStyles(styleThunk)(MenuItem);

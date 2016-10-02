@@ -1,26 +1,27 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
-const EditingStatus = ({status}) => {
-  const {styles} = EditingStatus;
-  return <div className={styles.timestamp}>{status}</div>;
+const EditingStatus = (props) => {
+  const {status, styles} = props;
+  return <div className={css(styles.timestamp)}>{status}</div>;
 };
 
 EditingStatus.propTypes = {
   status: PropTypes.any
 };
 
-EditingStatus.styles = StyleSheet.create({
+const styleThunk = () => ({
   timestamp: {
-    color: theme.palette.dark,
-    fontSize: theme.typography.s1,
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s1,
     fontWeight: 700,
-    lineHeight: theme.typography.s3,
+    lineHeight: appTheme.typography.s3,
     padding: `.25rem ${ui.cardPaddingBase}`,
     textAlign: 'right'
   }
 });
 
-export default look(EditingStatus);
+export default withStyles(styleThunk)(EditingStatus);

@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
-import {reduxForm, initialize} from 'redux-form';
-import Field from 'universal/components/Field/Field';
+import {Field, reduxForm, initialize} from 'redux-form';
+import InputField from 'universal/components/InputField/InputField';
 import ProgressDots from '../ProgressDots/ProgressDots';
 import WelcomeContent from '../WelcomeContent/WelcomeContent';
 import WelcomeHeader from '../WelcomeHeader/WelcomeHeader';
@@ -77,6 +77,7 @@ export default class Step1PreferredName extends Component {
                 autoFocus
                 buttonDisabled={!preferredName}
                 buttonIcon="check-circle"
+                component={InputField}
                 hasButton
                 hasShortcutHint
                 isLarger

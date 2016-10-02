@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 
 import Button from 'universal/components/Button/Button';
 import Type from 'universal/components/Type/Type';
@@ -29,7 +30,7 @@ const MeetingAgendaLastCall = (props) => {
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="2rem">
           <MeetingPhaseHeading>Boom!</MeetingPhaseHeading>
-          <Type align="center" bold family="serif" marginBottom="2.25rem" marginTop="2rem" scale="s5" theme="black">
+          <Type align="center" bold family="serif" marginBottom="2.25rem" marginTop="2rem" scale="s5" colorPalette="black">
             We worked on <span className={s.highlight}>{agendaItemCount} Agenda Items </span>
             resulting in <span className={s.highlight}>{actionCount} Actions </span>
             and <span className={s.highlight}>{projectCount} projects</span>.
@@ -44,7 +45,7 @@ const MeetingAgendaLastCall = (props) => {
             label="End Meeting"
             size="largest"
             style="outlined"
-            theme="cool"
+            colorPalette="cool"
           />
         </MeetingSection>
       </MeetingSection>
@@ -63,10 +64,10 @@ MeetingAgendaLastCall.propTypes = {
   team: PropTypes.object
 };
 
-s = StyleSheet.create({
+const styleThunk = () => ({
   highlight: {
-    color: theme.palette.warm
+    color: appTheme.palette.warm
   }
 });
 
-export default look(MeetingAgendaLastCall);
+export default withStyles(styleThunk)(MeetingAgendaLastCall);

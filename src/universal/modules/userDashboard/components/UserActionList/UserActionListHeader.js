@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import {ib} from 'universal/styles/helpers';
 import ui from 'universal/styles/ui';
 import {Type} from 'universal/components';
@@ -11,7 +12,7 @@ const lineHeight = height;
 
 const iconStyle = {
   ...ib,
-  color: theme.palette.mid,
+  color: appTheme.palette.mid,
   fontSize: ui.iconSize,
   height,
   lineHeight,
@@ -38,7 +39,7 @@ UserActionListEmpty.propTypes = {
   onAddNewAction: PropTypes.func
 };
 
-UserActionListEmpty.styles = StyleSheet.create({
+UserActionListEmpty.const styleThunk = () => ({
   root: {
     boxSizing: 'content-box',
     cursor: 'pointer',
@@ -56,4 +57,4 @@ UserActionListEmpty.styles = StyleSheet.create({
   }
 });
 
-export default look(UserActionListEmpty);
+export default withStyles(styleThunk)(UserActionListEmpty);

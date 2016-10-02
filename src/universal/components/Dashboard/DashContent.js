@@ -1,14 +1,15 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import ui from 'universal/styles/ui';
 
-const combineStyles = StyleSheet.combineStyles;
-let styles = {};
-
 const DashContent = (props) => {
-  const {children, hasOverlay, padding} = props;
+  const {children, hasOverlay, padding, styles} = props;
   const style = {padding};
-  const rootStyles = hasOverlay ? combineStyles(styles.root, styles.hasOverlay) : styles.root;
+  const rootStyles = css(
+    styles.root,
+    hasOverlay && styles.hasOverlay
+  );
   return (
     <div className={rootStyles} style={style}>
       {children}
@@ -26,7 +27,7 @@ DashContent.defaultProps = {
   padding: '1rem'
 };
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     backgroundColor: ui.dashBackgroundColor,
     display: 'flex !important',
@@ -40,4 +41,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default look(DashContent);
+export default withStyles(styleThunk)(DashContent);
