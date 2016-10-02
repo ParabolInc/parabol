@@ -8,6 +8,7 @@ import {ACTIVE} from 'universal/utils/constants';
 import AgendaCard from 'universal/modules/meeting/containers/AgendaCard/AgendaCard';
 import withHotkey from 'react-hotkey-hoc';
 import NullCard from 'universal/components/NullCard/NullCard';
+import makeUsername from 'universal/utils/makeUsername';
 
 const handleAddActionFactory = (teamMemberId, agendaId) => () => {
   const [, teamId] = teamMemberId.split('::');
@@ -37,7 +38,7 @@ const makeCards = (array, dispatch, myTeamMemberId, itemStyle) => {
   return array.map((outcome) => {
     const {type, id, teamMember: {preferredName}, content, teamMemberId} = outcome;
     const key = `${type}OutcomeCard${id}`;
-    const username = preferredName && preferredName.replace(/\s+/g, '');
+    const username = makeUsername(preferredName);
     return (
       <div className={css(itemStyle)} key={key}>
         {(!content && myTeamMemberId !== teamMemberId) ?

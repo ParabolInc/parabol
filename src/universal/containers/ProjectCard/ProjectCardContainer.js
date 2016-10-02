@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import NullCard from 'universal/components/NullCard/NullCard';
 import TeamProjectCard from 'universal/modules/teamDashboard/containers/TeamProjectCard/TeamProjectCardContainer';
+import makeUsername from 'universal/utils/makeUsername';
 
 const projectCardSubQuery = `
 query {
@@ -39,7 +40,7 @@ const mapStateToProps = (state, props) => {
     },
   }).data;
   const {preferredName} = project.teamMember;
-  const username = preferredName && preferredName.replace(/\s+/g, '');
+  const username = makeUsername(preferredName);
   const myTeamMemberId = `${userId}::${teamId}`;
   return {
     preferredName,

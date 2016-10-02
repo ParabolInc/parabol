@@ -38,7 +38,7 @@ const OutcomeCardFooter = (props) => {
 
   const buttonStyles = css(
     styles.buttonBase,
-    isProject || styles.actionButton,
+    !isProject && styles.actionButton,
     showFully && (isProject ? styles.projectButtonShowFully : styles.actionButtonShowFully)
   );
 

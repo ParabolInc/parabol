@@ -73,7 +73,7 @@ export default class UserActionListItemContainer extends Component {
   render() {
     return (
       <UserActionListItem
-        {...props}
+        {...this.props}
         handleChecked={this.handleChecked}
         handleActionUpdate={this.handleActionUpdate}
       />

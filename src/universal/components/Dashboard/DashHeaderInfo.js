@@ -3,19 +3,22 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
 import appTheme from 'universal/styles/theme/appTheme';
 
-let styles = {};
-
-const DashHeaderInfo = (props) =>
-  <div className={styles.root}>
-    <div className={styles.title}>
-      {props.title}
-    </div>
-    {props.children &&
-      <div className={styles.children}>
-        {props.children}
+const DashHeaderInfo = (props) => {
+  const {children, styles} = props;
+  return (
+    <div className={css(styles.root)}>
+      <div className={css(styles.title)}>
+        {props.title}
       </div>
-    }
-  </div>;
+      {children &&
+      <div className={css(styles.children)}>
+        {children}
+      </div>
+      }
+    </div>
+  );
+};
+
 
 DashHeaderInfo.propTypes = {
   children: PropTypes.any,

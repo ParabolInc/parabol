@@ -3,14 +3,14 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
 
 const DashHeader = (props) => {
-  const {hasOverlay, styles} = props;
+  const {children, hasOverlay, styles} = props;
   const rootStyles = css(
     styles.root,
     hasOverlay && styles.hasOverlay
   );
   return (
     <div className={rootStyles}>
-      {props.children}
+      {children}
     </div>
   );
 };

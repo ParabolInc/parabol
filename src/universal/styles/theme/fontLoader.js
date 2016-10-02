@@ -20,6 +20,5 @@ const karlaItalic = makeFont('Karla', karlaItalicWoff2, fontStylesItalic);
 const merriweather = makeFont('Merriweather', merriweatherWoff2, fontStylesRegular);
 const merriweatherBold = makeFont('Merriweather', merriweatherBoldWoff2, fontStylesBold);
 
-console.log([karla, karlaItalic]);
 export default [karla, karlaItalic, merriweather, merriweatherBold];
 

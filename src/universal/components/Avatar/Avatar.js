@@ -4,7 +4,7 @@ import {css} from 'aphrodite';
 import appTheme from 'universal/styles/theme/appTheme';
 import upperFirst from 'universal/utils/upperFirst';
 import AvatarBadge from 'universal/components/AvatarBadge/AvatarBadge';
-
+import makeUsername from 'universal/utils/makeUsername';
 // TODO: Add React Material UI tooltip (TA)
 
 const Avatar = (props) => {
@@ -24,7 +24,7 @@ const Avatar = (props) => {
     styles
   } = props;
 
-  const trimmedName = preferredName.replace(/\s+/g, '');
+  const username = makeUsername(preferredName);
   const handleMouseLeave = () => {
     console.log('Avatar.onMouseLeave.handleMouseLeave()');
     // TODO: Dispatch UI state for hover to show optional tooltip.
@@ -72,10 +72,10 @@ const Avatar = (props) => {
         </div>
       </div>
       {hasLabel &&
-        <div className={avatarLabelStyles}>@{trimmedName}</div>
+        <div className={avatarLabelStyles}>@{username}</div>
       }
       {hasTooltip &&
-        <div className={css(styles.avatarTooltip)}>@{trimmedName}</div>
+        <div className={css(styles.avatarTooltip)}>@{username}</div>
       }
     </div>
   );

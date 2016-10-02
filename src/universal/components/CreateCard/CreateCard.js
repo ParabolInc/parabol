@@ -7,6 +7,7 @@ import Ellipsis from '../Ellipsis/Ellipsis';
 import Type from '../Type/Type';
 import appTheme from 'universal/styles/theme/appTheme';
 import CreateCardRootStyles from './CreateCardRootStyles';
+import makeUsername from 'universal/utils/makeUsername';
 
 const CreateCard = (props) => {
   const {
@@ -35,7 +36,7 @@ const CreateCard = (props) => {
       </span>
     </span>;
 
-  const trimmedName = createdBy.replace(/\s+/g, '');
+  const username = makeUsername(createdBy);
 
   const cardStyles = css(
     styles.root,
@@ -63,7 +64,7 @@ const CreateCard = (props) => {
       {isCreating &&
         // TODO change theme to colorPalette
         <Type align="center" bold scale="s3" colorPalette="mid">
-          @{trimmedName}<br />is adding {isProject ? 'a Project' : 'an Action'}<Ellipsis />
+          @{username}<br />is adding {isProject ? 'a Project' : 'an Action'}<Ellipsis />
         </Type>
       }
     </div>

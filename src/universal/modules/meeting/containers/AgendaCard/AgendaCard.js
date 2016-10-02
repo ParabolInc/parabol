@@ -1,16 +1,16 @@
 import React, {Component, PropTypes} from 'react';
 import {cashay} from 'cashay';
 import {Field, reduxForm, initialize, focus} from 'redux-form';
-import labels from 'universal/modules/meeting/styles/theme/labels';
+import labels from 'universal/styles/theme/labels';
 import OutcomeCardAssignMenuContainer
   from 'universal/modules/teamDashboard/containers/OutcomeCardAssignMenu/OutcomeCardAssignMenuContainer';
 
-import OutcomeCard from 'universal/modules/meeting/components/OutcomeCard/OutcomeCard';
-import OutcomeCardTextarea from 'universal/modules/meeting/components/OutcomeCard/OutcomeCardTextarea';
-import EditingStatusContainer from 'universal/modules/meeting/containers/EditingStatus/EditingStatusContainer';
-import OutcomeCardFooter from 'universal/modules/meeting/components/OutcomeCard/OutcomeCardFooter';
-import OutcomeCardStatusMenu from 'universal/modules/meeting/components/OutcomeCard/OutcomeCardStatusMenu';
-import getOutcomeNames from 'universal/modules/meeting/utils/getOutcomeNames';
+import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
+import OutcomeCardTextarea from 'universal/components/OutcomeCard/OutcomeCardTextarea';
+import EditingStatusContainer from 'universal/containers/EditingStatus/EditingStatusContainer';
+import OutcomeCardFooter from 'universal/components/OutcomeCard/OutcomeCardFooter';
+import OutcomeCardStatusMenu from 'universal/components/OutcomeCard/OutcomeCardStatusMenu';
+import getOutcomeNames from 'universal/utils/getOutcomeNames';
 
 const OPEN_CONTENT_MENU = 'AgendaCard/openContentMenu';
 const OPEN_ASSIGN_MENU = 'AgendaCard/openAssignMenu';

@@ -15,7 +15,7 @@ const OutcomeCardStatusMenu = (props) => {
   const {onComplete, outcome, isAgenda, isProject, styles} = props;
   const {id: outcomeId, status} = outcome;
   const outcomeName = isProject ? 'Project' : 'Action';
-
+  console.log('status menu', props)
   const notArchivedLabel = <span>Move to Ar<u>c</u>hive</span>;
   const deleteOutcomeLabel = <span>De<u>l</u>ete this {outcomeName}</span>;
   const moveToActionsLabel = <span>Move to Ac<u>t</u>ions</span>;

@@ -19,6 +19,7 @@ const InputField = (props) => {
     isLarger,
     onButtonClick,
     shortcutHint,
+    styles,
   } = props;
 
   const styleTheme = inputTheme || 'cool';

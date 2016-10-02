@@ -12,7 +12,7 @@ const Ellipsis = (props) => {
   const dotStyles2 = css(styles.dot, isAnimated && styles.dotAnimated);
   const dotStyles3 = css(styles.dot, isAnimated && styles.dotAnimated);
   return (
-    <div className={s.root}>
+    <div className={css(styles.root)}>
       {isAnimated ?
         <span>
           <span className={dotStyles1}>.</span>

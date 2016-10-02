@@ -1,19 +1,18 @@
 import React, {Component, PropTypes} from 'react';
-import withStyles from '../../../../styles/withStyles';
+import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
 import {cashay} from 'cashay';
 import {Field, reduxForm, initialize} from 'redux-form';
-import labels from '../../../../styles/theme/labels';
-import TayaAvatar from '../../../../styles/theme/images/avatars/taya-mueller-avatar.jpg';
-import EditingStatusContainer from '../../../../containers/EditingStatus/EditingStatusContainer';
+import labels from 'universal/styles/theme/labels';
+import EditingStatusContainer from 'universal/containers/EditingStatus/EditingStatusContainer';
 import OutcomeCardAssignMenuContainer
   from '../OutcomeCardAssignMenu/OutcomeCardAssignMenuContainer';
-import OutcomeCard from '../../../../components/OutcomeCard/OutcomeCard';
-import OutcomeCardTextarea from '../../../../components/OutcomeCard/OutcomeCardTextarea';
-import OutcomeCardFooter from '../../../../components/OutcomeCard/OutcomeCardFooter';
-import OutcomeCardStatusMenu from '../../../../components/OutcomeCard/OutcomeCardStatusMenu';
+import OutcomeCard from 'universal/components/OutcomeCard/OutcomeCard';
+import OutcomeCardTextarea from 'universal/components/OutcomeCard/OutcomeCardTextarea';
+import OutcomeCardFooter from 'universal/components/OutcomeCard/OutcomeCardFooter';
+import OutcomeCardStatusMenu from 'universal/components/OutcomeCard/OutcomeCardStatusMenu';
 import throttle from 'lodash.throttle';
-import {USER_DASH} from '../../../../utils/constants';
+import {USER_DASH} from 'universal/utils/constants';
 const OPEN_CONTENT_MENU = 'TeamProjectCard/openContentMenu';
 const OPEN_ASSIGN_MENU = 'TeamProjectCard/openAssignMenu';
 const OPEN_STATUS_MENU = 'TeamProjectCard/openStatusMenu';
@@ -114,7 +113,6 @@ export default class TeamProjectCard extends Component {
       handleSubmit,
       project,
       isArchived,
-      isProject,
     } = this.props;
     const {content, status, id: projectId} = project;
     const hasOpenStatusMenu = openMenu === OPEN_STATUS_MENU;
@@ -139,7 +137,7 @@ export default class TeamProjectCard extends Component {
     return (
       <OutcomeCard
         isArchived={isArchived}
-        isProject={isProject}
+        isProject={true}
         onEnterCard={this.onEnterTeamProjectCard}
         onLeaveCard={this.onLeaveTeamProjectCard}
         status={status}
@@ -151,7 +149,7 @@ export default class TeamProjectCard extends Component {
             outcome={project}
           />
         }
-        {hasOpenStatusMenu && <OutcomeCardStatusMenu isProject={isProject} outcome={project}/>}
+        {hasOpenStatusMenu && <OutcomeCardStatusMenu isProject={true} outcome={project}/>}
         {!hasOpenAssignMenu && !hasOpenStatusMenu &&
           <div style={{width: '100%'}}>
             <form>
@@ -166,7 +164,7 @@ export default class TeamProjectCard extends Component {
                 handleActive={handleCardActive}
                 handleSubmit={handleSubmit(this.handleCardUpdate)}
                 isArchived={isArchived}
-                isProject={isProject}
+                isProject={true}
                 doFocus={!content}
                 cardHasHover={this.state.cardHasHover}
               />
@@ -178,7 +176,7 @@ export default class TeamProjectCard extends Component {
           cardHasHover={this.state.cardHasHover}
           hasOpenStatusMenu={hasOpenStatusMenu}
           isArchived={isArchived}
-          isProject={isProject}
+          isProject={true}
           owner={project.teamMember}
           outcome={project}
           showTeam={area === USER_DASH}

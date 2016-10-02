@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
-import t from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme.js';
 import {srOnly} from 'universal/styles/helpers';
 import {withRouter} from 'react-router';
 import withHotkey from 'react-hotkey-hoc';
@@ -72,7 +72,7 @@ const blockWidth = avatarWidth + avatarGutter;
 
 const styleThunk = () => ({
   root: {
-    backgroundColor: t.palette.dark10l,
+    backgroundColor: appTheme.palette.dark10l,
     borderRadius: `${barHeight}px`,
     display: 'inline-block',
     fontSize: 0,
@@ -82,7 +82,7 @@ const styleThunk = () => ({
   },
 
   bar: {
-    backgroundColor: t.palette.cool50l,
+    backgroundColor: appTheme.palette.cool50l,
     borderRadius: `${barHeight}px`,
     height: `${barHeight}px`,
     left: 0,
@@ -100,7 +100,7 @@ const styleThunk = () => ({
   },
 
   point: {
-    backgroundColor: t.palette.dark40l,
+    backgroundColor: appTheme.palette.dark40l,
     cursor: 'pointer',
     display: 'inline-block',
     height: `${pointHeight}px`,
@@ -116,15 +116,15 @@ const styleThunk = () => ({
   },
 
   pointLocal: {
-    backgroundColor: t.palette.dark10d
+    backgroundColor: appTheme.palette.dark10d
   },
 
   pointCompleted: {
-    backgroundColor: t.palette.cool
+    backgroundColor: appTheme.palette.cool
   },
 
   pointFacilitator: {
-    backgroundColor: t.palette.warm
+    backgroundColor: appTheme.palette.warm
   },
 
   srOnly: {

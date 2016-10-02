@@ -9,8 +9,7 @@ import {textOverflow} from 'universal/styles/helpers';
 // import FontAwesome from 'react-fontawesome';
 
 const MenuItem = (props) => {
-  const {styles} = props;
-  const {isActive, label, onClick, closeMenu} = props;
+  const {isActive, label, onClick, closeMenu, styles} = props;
   const rootStyles = css(styles.root, isActive && styles.active);
   const handleClick = () => {
     closeMenu();
@@ -19,7 +18,7 @@ const MenuItem = (props) => {
   return (
     // put a tabIndex on the div so the menu goes away if you click on a menu item
     <div className={rootStyles} onClick={handleClick} >
-      <div className={styles.label}>{label}</div>
+      <div className={css(styles.label)}>{label}</div>
     </div>
   );
 };

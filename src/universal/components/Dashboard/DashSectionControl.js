@@ -5,12 +5,14 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ib from 'universal/styles/helpers/ib';
 import ui from 'universal/styles/ui';
 
-let styles = {};
-
-const DashSectionControl = (props) =>
-  <div className={styles.root}>
-    {props.children}
-  </div>;
+const DashSectionControl = (props) => {
+  const {children, styles} = props;
+  return (
+    <div className={css(styles.root)}>
+      {children}
+    </div>
+  );
+};
 
 DashSectionControl.propTypes = {
   children: PropTypes.any

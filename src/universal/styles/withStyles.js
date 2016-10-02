@@ -23,9 +23,8 @@ const withStyles = (mapThemeToStyles, invalidatingProps) => (WrappedComponent) =
 
     constructor(props, context) {
       super(props, context);
-      this.styleconst styleThunk = () => (mapThemeToStyles(this.context.userTheme, props));
+      this.styles = StyleSheet.create(mapThemeToStyles(this.context.userTheme, props));
       jones.set(mapThemeToStyles, {context: this.context.theme, cache: this.styles});
-      console.log('foo', jones)
     }
 
     componentWillReceiveProps(nextProps) {
@@ -42,7 +41,6 @@ const withStyles = (mapThemeToStyles, invalidatingProps) => (WrappedComponent) =
       if (entry.context !== this.context.theme) {
         console.log('a diff!');
       }
-      console.log('props', this.props)
       return <WrappedComponent styles={this.styles} {...this.props}/>
     }
   }

@@ -21,7 +21,7 @@ const AgendaItem = props => {
   );
   const descStyles = css(
     isCurrent && styles.descActive,
-    isCompelte && styles.strikethrough
+    isComplete && styles.strikethrough
   );
   return (
     <div className={rootStyles} title={desc}>

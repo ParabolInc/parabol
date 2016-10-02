@@ -13,10 +13,8 @@ const metaAndTitle = `
 `;
 
 export default function createSSR(req, res) {
-  console.log('dev7');
   const finalCreateStore = applyMiddleware(thunkMiddleware)(createStore);
   const store = finalCreateStore(makeReducer(), {});
-  console.log('dev8');
   if (process.env.NODE_ENV === 'production') {
     // TURN ON IF WE EVER SEND DOMAIN STATE STATE TO CLIENT
     // eslint-disable-next-line global-require
@@ -48,7 +46,6 @@ export default function createSSR(req, res) {
       }
     });
   } else {
-    console.log('dev9');
     const devHtml = `
     <!DOCTYPE html>
     <html>

@@ -20,11 +20,11 @@ const LoadingView = (props) => {
   const {pato0, pato1, pato2} = styles;
   const duckStyles = [pato0, pato1, pato2];
   return (
-    <div className={styles.root}>
-      <h1 className={styles.heading}>Welcome to Action!</h1>
+    <div className={css(styles.root)}>
+      <h1 className={css(styles.heading)}>Welcome to Action!</h1>
       {duckStyles.map((baseClass, idx) =>
         <LoadingDuck className={css(baseClass, styles[`pato${idx}`])} key={idx}/>)}
-      <h2 className={styles.message}>Just putting our ducks in a row…</h2>
+      <h2 className={css(styles.message)}>Just putting our ducks in a row…</h2>
       {children && Object.keys(children).length > 0 && children}
     </div>
   );

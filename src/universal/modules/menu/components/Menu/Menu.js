@@ -31,7 +31,6 @@ const Menu = (props) => {
   };
 
   const toggleStyle = isOpen ? {opacity: '.5'} : null;
-
   const rootStyle = toggleHeight ? toggleHeightStyle : {verticalAlign};
   const boxShadow = '0 1px 1px rgba(0, 0, 0, .15)';
   const menuStyle = {boxShadow};

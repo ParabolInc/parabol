@@ -1,5 +1,5 @@
 import {findDOMNode} from 'react-dom';
-import React, {Component, PropTypes, cloneElement} from 'react';
+import React, {Children, Component, PropTypes, cloneElement} from 'react';
 import {connect} from 'react-redux';
 import Menu from 'universal/modules/menu/components/Menu/Menu';
 import targetIsDescendant from 'universal/utils/targetIsDescendant';
@@ -11,15 +11,6 @@ const mapStateToProps = (state, props) => {
   return {
     isOpen: menuState && menuState.isOpen
   };
-};
-
-const bindChildren = (children, propsToAdd) => {
-  const boundChildren = [];
-  for (let i = 0; i < children.length; i++) {
-    const child = children[i];
-    boundChildren[i] = cloneElement(child, propsToAdd);
-  }
-  return boundChildren;
 };
 
 @connect(mapStateToProps)
@@ -85,9 +76,10 @@ export default class MenuContainer extends Component {
       toggleHeight,
       verticalAlign
     } = this.props;
+    const properChildren = Children.map(children, child => cloneElement(child, {closeMenu: this.closeMenu}));
     return (
       <Menu
-        children={bindChildren(children, {closeMenu: this.closeMenu})}
+        children={properChildren}
         dispatch={dispatch}
         isOpen={isOpen}
         label={label}

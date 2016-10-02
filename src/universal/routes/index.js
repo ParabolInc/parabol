@@ -8,21 +8,21 @@ export default store => ({
    */
   component: ActionContainer,
   childRoutes: [
-    // require('./graphql'),
-    // require('./invitation')(store),
-    // require('./landing'),
-    // require('./logout'),
-    // require('./meeting')(store),
+    require('./graphql'),
+    require('./invitation')(store),
+    require('./landing'),
+    require('./logout'),
+    require('./meeting')(store),
     // ...require('./meetingLayoutRoutes'),
     // require('./patterns'),
-    // require('./teamDashboard')(store),
-    // require('./userDashboard')(store),
-    // require('./welcome')(store),
+    require('./teamDashboard')(store),
+    require('./userDashboard')(store),
+    require('./welcome')(store),
     // Catch-all:
     require('./notFound')
   ]
 });
 export {StyleSheetServer} from 'aphrodite';
 export {cashay} from 'cashay';
-export const cashaySchema = require('cashay!server/utils/getCashaySchema.js?stopRethink');
+export const cashaySchema = require('cashay!server/utils/getCashaySchema.js');
 /* eslint-enable */

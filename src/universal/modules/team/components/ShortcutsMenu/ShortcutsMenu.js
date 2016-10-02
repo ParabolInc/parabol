@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
 import FontAwesome from 'react-fontawesome';
-import t from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme.js';
 import {srOnly} from 'universal/styles/helpers';
 
 const cs = StyleSheet.combineStyles;
