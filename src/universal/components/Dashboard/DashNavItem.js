@@ -2,14 +2,18 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
 import appTheme from 'universal/styles/theme/appTheme';
-import {Link} from 'react-router';
+import {Link, withRouter} from 'react-router';
 
 const DashNavItem = (props) => {
-  const {label, href, styles} = props;
+  const {label, href, styles, router} = props;
+  const isActive = router.isActive(href, true);
+  const linkStyles = css(
+    styles.link,
+    isActive && styles.active
+  );
   return (
     <Link
-      activeClassName={css(styles.active)}
-      className={css(styles.link)}
+      className={linkStyles}
       title={label}
       to={href}
     >
@@ -68,4 +72,6 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(DashNavItem);
+export default withRouter(
+  withStyles(styleThunk)(DashNavItem)
+)
