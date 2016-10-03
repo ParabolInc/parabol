@@ -5,12 +5,7 @@ import Button from 'universal/components/Button/Button';
 import InputField from 'universal/components/InputField/InputField';
 import LabeledFieldArray from 'universal/containers/LabeledFieldArray/LabeledFieldArrayContainer.js';
 import Type from 'universal/components/Type/Type';
-import ProgressDots from '../ProgressDots/ProgressDots';
-import WelcomeContent from '../WelcomeContent/WelcomeContent';
-import WelcomeHeader from '../WelcomeHeader/WelcomeHeader';
 import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
-import WelcomeLayout from '../WelcomeLayout/WelcomeLayout';
-import {goToPage} from 'universal/modules/welcome/ducks/welcomeDuck';
 import {cashay} from 'cashay';
 import {showSuccess, showError} from 'universal/modules/notifications/ducks/notifications';
 import {withRouter} from 'react-router';
@@ -89,69 +84,53 @@ const Step3InviteTeam = (props) => {
     <span>Oops! Please make sure email addresses are valid <br />and separated by a single comma.</span> :
     <span>You can paste multiple emails separated by a comma.<br />&nbsp;</span>;
   const fieldArrayHasValue = invitees && invitees[0] != null;
-  const progressDotClick = (dot) => {
-    if (dot !== 3) {
-      props.dispatch(goToPage(dot));
-    }
-  };
   return (
-    <WelcomeLayout>
-      <WelcomeHeader heading={<span>Invite your team.</span>}/>
-      <WelcomeContent>
-        <ProgressDots
-          numDots={3}
-          numCompleted={3}
-          currentDot={3}
-          onClick={progressDotClick}
+    <div>{/* Div for that flexy flex */}
+      <Type align="center" italic scale="s6">
+        Sounds like a great team!
+      </Type>
+      <WelcomeHeading copy={<span>Let’s invite some folks to the <b>{teamName}</b> team.</span>}/>
+      <div style={{margin: '0 auto', width: '30rem'}}>
+        <Field
+          autoFocus={!invitees || invitees.length === 0}
+          buttonDisabled={!inviteesRaw}
+          buttonIcon="check-circle"
+          component={InputField}
+          hasButton
+          hasErrorText={invitesFieldHasError}
+          hasHelpText
+          helpText={helpText}
+          isLarger
+          isWider
+          name="inviteesRaw"
+          onButtonClick={onAddInviteesButtonClick}
+          placeholder="b.bunny@acme.co, d.duck@acme.co, e.fudd@acme.co"
+          type="text"
         />
-        <div>{/* Div for that flexy flex */}
-          <Type align="center" italic scale="s6">
-            Sounds like a great team!
-          </Type>
-          <WelcomeHeading copy={<span>Let’s invite some folks to the <b>{teamName}</b> team.</span>}/>
-          <div style={{margin: '0 auto', width: '30rem'}}>
-            <Field
-              autoFocus={!invitees || invitees.length === 0}
-              buttonDisabled={!inviteesRaw}
-              buttonIcon="check-circle"
-              component={InputField}
-              hasButton
-              hasErrorText={invitesFieldHasError}
-              hasHelpText
-              helpText={helpText}
-              isLarger
-              isWider
-              name="inviteesRaw"
-              onButtonClick={onAddInviteesButtonClick}
-              placeholder="b.bunny@acme.co, d.duck@acme.co, e.fudd@acme.co"
-              type="text"
-            />
-          </div>
-          <form onSubmit={handleSubmit(onInviteTeamSubmit)}>
-            {fieldArrayHasValue &&
-              <div style={{margin: '2rem 0 0'}}>
-                <LabeledFieldArray
-                  labelGetter={(idx) => invitees[idx].label}
-                  labelHeader="Invitee"
-                  labelSource="invitees"
-                  nestedFieldHeader="This Week's Priority"
-                  nestedFieldName="task"
-                />
-              </div>
-            }
-            <div style={{margin: '2rem 0 0', textAlign: 'center'}}>
-              <Button
-                disabled={submitting || !fieldArrayHasValue}
-                label="Look’s Good!"
-                colorPalette="warm"
-                size="medium"
-                type="submit"
-              />
-            </div>
-          </form>
+      </div>
+      <form onSubmit={handleSubmit(onInviteTeamSubmit)}>
+        {fieldArrayHasValue &&
+        <div style={{margin: '2rem 0 0'}}>
+          <LabeledFieldArray
+            labelGetter={(idx) => invitees[idx].label}
+            labelHeader="Invitee"
+            labelSource="invitees"
+            nestedFieldHeader="This Week's Priority"
+            nestedFieldName="task"
+          />
         </div>
-      </WelcomeContent>
-    </WelcomeLayout>
+        }
+        <div style={{margin: '2rem 0 0', textAlign: 'center'}}>
+          <Button
+            disabled={submitting || !fieldArrayHasValue}
+            label="Look’s Good!"
+            colorPalette="warm"
+            size="medium"
+            type="submit"
+          />
+        </div>
+      </form>
+    </div>
   );
 };
 

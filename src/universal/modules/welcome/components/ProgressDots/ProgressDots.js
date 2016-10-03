@@ -3,39 +3,31 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
 import appTheme from 'universal/styles/theme/appTheme';
 
+
 const ProgressDots = (props) => {
-  const renderDot = (idx) => {
-    // TODO mutative prop sinner!
-    let {numCompleted, currentDot} = props;
-    numCompleted--;
-    currentDot--;
-
-    const handleClick = (e) => {
-      e.preventDefault();
-      this.props.onClick(idx + 1);
-    };
-
+  const {currentDot, clickFactory, numCompleted, styles} = props;
+  const renderDot = (dotNumber) => {
     const dotStyle = css(
       styles.progressDot,
-      idx=== currentDot && styles.progressDotCurrent,
-      idx <= numCompleted && styles.progressDotCompleted
+      numCompleted + 1 >= dotNumber && styles.canClick,
+      dotNumber === currentDot && styles.progressDotCurrent,
+      dotNumber <= numCompleted && styles.progressDotCompleted,
     );
-
     return (
       <a
         className={dotStyle}
         href="#"
-        key={idx}
-        onClick={handleClick}
+        key={dotNumber}
+        onClick={clickFactory(dotNumber)}
       >
-        <span className={styles.progressDotLabel}>Step {idx + 1}</span>
+        <span className={css(styles.progressDotLabel)}>Step {dotNumber}</span>
       </a>
     );
   };
   const renderDots = () => {
     const dots = [];
     for (let i = 0; i < props.numDots; i++) {
-      dots[i] = renderDot(i);
+      dots[i] = renderDot(i+1);
     }
     return dots;
   };
@@ -54,6 +46,10 @@ ProgressDots.propTypes = {
 };
 
 const styleThunk = () => ({
+  canClick: {
+    cursor: 'pointer'
+  },
+
   progressDotGroup: {
     fontSize: 0,
     left: '0',

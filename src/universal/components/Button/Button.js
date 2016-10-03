@@ -44,7 +44,7 @@ const makeOutlinedTheme = (color, opacity = '.5') => ({
 
 const makePropColors = (style, colorPalette) => {
   const color = appTheme.palette[colorPalette] || white;
-  if (style === 'inverted') {
+  if (style === 'outlined') {
     return makeOutlinedTheme(color);
   } else {
     const baseTextColor = style === 'inverted' ? color : white;

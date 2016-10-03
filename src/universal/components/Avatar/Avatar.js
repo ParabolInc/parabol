@@ -56,7 +56,6 @@ const Avatar = (props) => {
     styles.avatarImageDisplay,
     labelRight && styles.avatarImageDisplayInlineBlock
   );
-
   return (
     <div
       className={avatarStyles}

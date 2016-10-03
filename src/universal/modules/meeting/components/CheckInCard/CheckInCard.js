@@ -6,8 +6,8 @@ import Avatar from 'universal/components/Avatar/Avatar';
 import CheckInCardButtons from 'universal/modules/meeting/components/CheckInCardButtons/CheckInCardButtons';
 import {withRouter} from 'react-router';
 
-const Card = (props) => {
-  const {handleCardClick, isActive, checkInPressFactory, member} = props;
+const CheckInCard = (props) => {
+  const {handleCardClick, isActive, checkInPressFactory, member, styles} = props;
   const {isCheckedIn, preferredName} = member;
   const cardStyles = css(
     styles.card,
@@ -31,7 +31,7 @@ const Card = (props) => {
   );
 };
 
-Card.propTypes = {
+CheckInCard.propTypes = {
   checkInPressFactory: PropTypes.func,
   handleCardClick: PropTypes.func,
   isActive: PropTypes.bool,
@@ -88,4 +88,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withRouter(withStyles(styleThunk)(Card));
+export default withRouter(withStyles(styleThunk)(CheckInCard));

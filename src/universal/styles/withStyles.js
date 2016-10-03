@@ -38,7 +38,8 @@ const withStyles = (mapThemeToStyles, invalidatingProps) => (WrappedComponent) =
 
     render() {
       const entry = jones.get(mapThemeToStyles);
-      if (entry.context !== this.context.theme) {
+      const oldContext = entry && entry.context;
+      if (oldContext !== this.context.theme) {
         console.log('a diff!');
       }
       return <WrappedComponent styles={this.styles} {...this.props}/>

@@ -34,7 +34,7 @@ export default function reducer(state = initialState, action = {}) {
     case UPDATE_COMPLETED:
       return {
         ...state,
-        completed: action.payload
+        completed: Math.max(state.completed, action.payload)
       };
     case SET_WELCOME_TEAM:
       return Object.assign({}, state, action.payload);
@@ -62,16 +62,16 @@ export const previousPage = () => {
   };
 };
 
-export const goToPage = (idx) => {
+export const goToPage = (page) => {
   return {
     type: GO_TO_PAGE,
-    payload: idx
+    payload: page
   };
 };
 
-export const updateCompleted = (idx) => {
+export const updateCompleted = (page) => {
   return {
     type: UPDATE_COMPLETED,
-    payload: idx
+    payload: page
   };
 };

@@ -4,12 +4,15 @@ import {css} from 'aphrodite';
 import appTheme from 'universal/styles/theme/appTheme';
 import Pato from 'universal/styles/theme/images/graphics/pato.svg';
 
-const LoadingDuck = (props) =>
-  <img
-    alt={'Duck by Sergey Demushkin'}
-    className={props.className}
-    src={Pato}
-  />;
+const LoadingDuck = (props) => {
+  return (
+    <img
+      alt={'Duck by Sergey Demushkin'}
+      className={props.className}
+      src={Pato}
+    />
+  );
+};
 
 LoadingDuck.propTypes = {
   className: PropTypes.string.isRequired,
@@ -22,8 +25,8 @@ const LoadingView = (props) => {
   return (
     <div className={css(styles.root)}>
       <h1 className={css(styles.heading)}>Welcome to Action!</h1>
-      {duckStyles.map((baseClass, idx) =>
-        <LoadingDuck className={css(baseClass, styles[`pato${idx}`])} key={idx}/>)}
+      {duckStyles.map((delayClass, idx) =>
+        <LoadingDuck className={css(delayClass, styles.patoStyles)} key={idx}/>)}
       <h2 className={css(styles.message)}>Just putting our ducks in a row…</h2>
       {children && Object.keys(children).length > 0 && children}
     </div>

@@ -14,10 +14,10 @@ const ProgressBar = (props) => {
     };
     const pointStyles = css(
       styles.point,
-      idx === facilitatorPhaseItem && styles.pointFacilitator,
+      (idx <= meetingPhaseItem || isComplete) && styles.pointCompleted,
       idx === localPhaseItem && styles.pointLocal,
+      idx === facilitatorPhaseItem && styles.pointFacilitator,
       // TODO fix this one!
-      (idx <= meetingPhaseItem || isComplete) && styles.pointCompleted
     );
 
     const handleOnClick = clickFactory(idx);

@@ -16,8 +16,8 @@ const AvatarBadge = (props) => {
   const connection = isConnected ? 'online' : 'offline';
   const checkIn = isCheckedIn ? 'present' : 'absent';
   const iconStyles = css(
-    s.badgeIcon,
-    s[connection]
+    styles.badgeIcon,
+    styles[connection]
   );
   const icon = getCheckedInIcon(isCheckedIn);
   const largeBadgeClass = size === 'large' || size === 'larger' || size === 'largest';

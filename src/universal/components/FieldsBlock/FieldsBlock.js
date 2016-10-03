@@ -17,7 +17,8 @@ const FieldsBlock = props => {
     nestedFieldHeader,
     nestedFieldName,
     onHoverRow,
-    onLeaveRow
+    onLeaveRow,
+    styles
   } = props;
 
   const columnLeftStyles = css(styles.fieldGroupColumn, styles.fieldGroupColumnLeft);

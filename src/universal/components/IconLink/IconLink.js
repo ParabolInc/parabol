@@ -110,7 +110,7 @@ const styleThunk = (customTheme, {colorPalette, scale}) => {
       color: computeOnceColor,
       cursor: 'pointer',
       display: 'inline-block',
-      fontFamily: t.typography.serif,
+      fontFamily: appTheme.typography.serif,
       fontSize: scale === 'small' ? appTheme.typography.s3 : appTheme.typography.s5,
       fontStyle: 'italic',
       fontWeight: 700,
@@ -148,7 +148,7 @@ const styleThunk = (customTheme, {colorPalette, scale}) => {
     icon: {
       color: 'inherit',
       display: 'inline-block !important',
-      fontSize: `${props.scale === 'small' ? '14px' : '28px'} !important`,
+      fontSize: scale === 'small' ? '14px !important' : '28px !important',
       verticalAlign: 'middle'
     },
 

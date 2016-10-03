@@ -6,7 +6,7 @@ import withHotkey from 'react-hotkey-hoc';
 import voidClick from 'universal/utils/voidClick';
 
 const CheckInCardButtons = (props) => {
-  const {bindHotkey, checkInPressFactory, isCheckedIn} = props;
+  const {bindHotkey, checkInPressFactory, isCheckedIn, styles} = props;
   const handleOnClickPresent = isCheckedIn ? voidClick : checkInPressFactory(true);
   const handleOnClickAbsent = isCheckedIn !== false ? checkInPressFactory(false) : voidClick;
   bindHotkey('c', handleOnClickPresent);

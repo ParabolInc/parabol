@@ -6,6 +6,7 @@ import IconButton from 'universal/components/IconButton/IconButton';
 
 const InputField = (props) => {
   const {
+    autoFocus,
     hasErrorText,
     hasHelpText,
     helpText,
@@ -18,6 +19,7 @@ const InputField = (props) => {
     hasShortcutHint,
     isLarger,
     onButtonClick,
+    placeholder,
     shortcutHint,
     styles,
   } = props;
@@ -36,7 +38,6 @@ const InputField = (props) => {
 
   const inputStyles = css(
     // allow hotkeys to be triggered when inside a field input
-    'mousetrap',
     styles.field,
     styles[styleTheme],
     isLarger && styles.fieldLarger,
@@ -45,7 +46,12 @@ const InputField = (props) => {
 
   return (
     <div className={css(styles.fieldBlock)}>
-      <input className={inputStyles} {...input}/>
+      <input
+        {...input}
+        autoFocus={autoFocus}
+        className={`${inputStyles} mousetrap`}
+        placeholder={placeholder}
+      />
       {hasButton &&
         <div className={css(styles.buttonBlock)}>
           <IconButton

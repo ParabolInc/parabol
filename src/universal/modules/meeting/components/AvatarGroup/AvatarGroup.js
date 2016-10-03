@@ -8,7 +8,6 @@ import {UPDATES} from 'universal/utils/constants';
 const AvatarGroup = (props) => {
   const {localPhase, avatars, styles} = props;
   const label = localPhase === UPDATES ? 'Updates given:': 'Team:';
-
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.label)}>
@@ -17,7 +16,7 @@ const AvatarGroup = (props) => {
       {
         avatars.map((avatar, index) =>
           <div className={css(styles.item)} key={index}>
-            <Avatar {...avatar} size="small" hasBorder={avatar.isFacilitator} />
+            <Avatar {...avatar} size="small" hasBadge hasBorder={avatar.isFacilitator} />
           </div>
         )
       }
