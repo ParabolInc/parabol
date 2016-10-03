@@ -1,10 +1,8 @@
 const SELECT_NEW_ACTION_TEAM = 'action/userDashboard/SELECT_NEW_ACTION_TEAM';
-// const SELECT_NEW_PROJECT_TEAM = 'action/userDashboard/SELECT_NEW_PROJECT_TEAM';
 const FILTER_TEAM = 'action/userDashboard/FILTER_TEAM';
 
 const initialState = {
   selectingNewActionTeam: false,
-  // selectingNewProjectTeam: false,
   teamFilterId: null,
   teamFilterName: 'All teams'
 };
@@ -47,12 +45,3 @@ export const filterTeam = (teamId, teamName) => {
     }
   };
 };
-
-// export const selectNewProjectTeam = (bool) => {
-//   return {
-//     type: SELECT_NEW_PROJECT_TEAM,
-//     payload: {
-//       selectingNewProjectTeam: bool
-//     }
-//   };
-// };

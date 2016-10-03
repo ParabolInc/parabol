@@ -60,14 +60,9 @@ const Step3InviteTeam = (props) => {
 
     const {error, data} = await cashay.mutate('inviteTeamMembers', options);
     if (error) {
-      const {failedEmails, errors} = error;
+      const {errors} = error;
       if (errors) {
         console.warn('an error other than the 1 we expected occured. we need a pattern to fix this');
-      }
-      if (Array.isArray(failedEmails)) {
-        const emailsNotDelivered = failedEmails.map(invitee => invitee.email).join(', ');
-        dispatch(showError(emailInviteFail(emailsNotDelivered)));
-        // TODO I think we want to remove the failures from the array so they can click try again. thoughts?
       }
     } else if (data) {
       router.push(`/team/${teamId}`);  // redirect leader to their new team

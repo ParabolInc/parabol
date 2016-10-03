@@ -16,7 +16,6 @@ const MenuItem = (props) => {
     onClick();
   };
   return (
-    // put a tabIndex on the div so the menu goes away if you click on a menu item
     <div className={rootStyles} onClick={handleClick} >
       <div className={css(styles.label)}>{label}</div>
     </div>

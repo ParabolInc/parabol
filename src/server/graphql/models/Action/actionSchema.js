@@ -24,11 +24,6 @@ export const Action = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'Marks the item as checked off'
     },
-    // could deprecate?
-    // isActive: {
-    //   type: GraphQLBoolean,
-    //   description: 'Shows the item in subscriptions'
-    // },
     createdAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the action was created'
