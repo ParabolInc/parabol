@@ -31,7 +31,7 @@ const MeetingUpdates = (props) => {
   const self = members.find(m => m.isSelf);
   const isComplete = phaseOrder(meetingPhase) > phaseOrder(UPDATES);
   const gotoNextItem = phaseItemFactory(localPhaseItem + 1);
-
+  const isLastMember = localPhaseItem === members.length;
   return (
     <MeetingMain>
       <MeetingSection paddingBottom="2rem" paddingTop=".75rem">
@@ -67,7 +67,7 @@ const MeetingUpdates = (props) => {
                 colorPalette="cool"
                 icon="arrow-circle-right"
                 iconPlacement="right"
-                label="Next team member"
+                label={isLastMember ? 'Move on to agenda items' : 'Next team member '}
                 onClick={gotoNextItem}
                 scale="small"
               />

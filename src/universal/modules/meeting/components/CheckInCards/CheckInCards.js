@@ -44,14 +44,14 @@ const CheckInCards = (props) => {
   return (
     <div className={css(styles.base)}>
       {leftCard ?
-        <CheckInCard handleCardClick={handleCardClickFactory(memberIdx - 1)} member={leftCard}/> :
+        <CheckInCard handleCardClick={handleCardClickFactory(localPhaseItem - 1)} member={leftCard}/> :
         <div className={css(styles.placeholder)}></div>
       }
       {activeCard &&
         <CheckInCard checkInPressFactory={makeCheckinPressFactory(activeCard.id)} member={activeCard} isActive/>
       }
       {rightCard ?
-        <CheckInCard handleCardClick={handleCardClickFactory(memberIdx + 1)} member={rightCard}/> :
+        <CheckInCard handleCardClick={handleCardClickFactory(localPhaseItem + 1)} member={rightCard}/> :
         <div className={css(styles.placeholder)}></div>
       }
     </div>
