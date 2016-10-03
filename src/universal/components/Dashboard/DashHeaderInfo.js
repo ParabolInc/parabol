@@ -4,11 +4,11 @@ import {css} from 'aphrodite';
 import appTheme from 'universal/styles/theme/appTheme';
 
 const DashHeaderInfo = (props) => {
-  const {children, styles} = props;
+  const {children, styles, title} = props;
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.title)}>
-        {props.title}
+        {title}
       </div>
       {children &&
         <div className={css(styles.children)}>
@@ -33,7 +33,7 @@ const styleThunk = () => ({
 
   title: {
     fontSize: appTheme.typography.s5,
-    lineHeight: appTheme.typography.s6,
+    lineHeight: appTheme.typography.s6
   },
 
   children: {
