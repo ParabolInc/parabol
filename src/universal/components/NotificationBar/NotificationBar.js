@@ -33,7 +33,7 @@ const NotificationBar = (props) => {
   return (
     <div className={css(styles.bar)}>
       <div className={css(styles.inlineBlock, styles.message)}>
-        {'You\'ve got meeting:'}
+        You’ve got meeting:
       </div>
       <div className={css(styles.inlineBlock)}>
         {activeMeetings.map(meeting => {
@@ -90,4 +90,3 @@ const styleThunk = () => ({
 });
 
 export default withStyles(styleThunk)(NotificationBar);
-
