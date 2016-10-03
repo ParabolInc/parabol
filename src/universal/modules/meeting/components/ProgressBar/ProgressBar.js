@@ -4,7 +4,6 @@ import {css} from 'aphrodite';
 import appTheme from 'universal/styles/theme/appTheme.js';
 import {srOnly} from 'universal/styles/helpers';
 import {withRouter} from 'react-router';
-import withHotkey from 'react-hotkey-hoc';
 
 const barHeight = 6;
 const pointHeight = barHeight;
@@ -14,7 +13,7 @@ const avatarGutter = 24; // see AvatarGroup
 const outerPadding = (avatarWidth - pointWidth) / 2;
 const blockWidth = avatarWidth + avatarGutter;
 const ProgressBar = (props) => {
-  const {bindHotkey, clickFactory, membersCount, facilitatorPhaseItem, localPhaseItem, meetingPhaseItem, isComplete, styles} = props;
+  const {clickFactory, membersCount, facilitatorPhaseItem, localPhaseItem, meetingPhaseItem, isComplete, styles} = props;
   const renderPoint = (idx) => {
     const marginRight = {
       marginRight: idx === membersCount ? 0 : `${blockWidth - pointWidth}px`
@@ -42,11 +41,6 @@ const ProgressBar = (props) => {
     return points;
   };
 
-  // TODO move to parent component so it doesn't unmount between switches
-  const gotoNextItem = clickFactory(localPhaseItem + 1);
-  const gotoPrevItem = clickFactory(localPhaseItem - 1);
-  bindHotkey(['enter', 'right'], gotoNextItem);
-  bindHotkey('left', gotoPrevItem);
   const barWidth = ((meetingPhaseItem) * blockWidth) - (blockWidth - pointWidth - outerPadding);
   const barStyle = isComplete ? {width: '100%'} : {width: `${barWidth}px`};
   return (
@@ -61,7 +55,6 @@ const ProgressBar = (props) => {
 
 
 ProgressBar.propTypes = {
-  bindHotkey: PropTypes.func.isRequired,
   clickFactory: PropTypes.func,
   isComplete: PropTypes.bool,
   facilitatorPhaseItem: PropTypes.number, // index of 1
@@ -133,8 +126,6 @@ const styleThunk = () => ({
   }
 });
 
-export default withHotkey(
-  withRouter(
-    withStyles(styleThunk)(ProgressBar)
-  )
+export default withRouter(
+  withStyles(styleThunk)(ProgressBar)
 );

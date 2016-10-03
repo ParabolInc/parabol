@@ -70,7 +70,7 @@ IconLink.propTypes = {
     'large'
   ]),
   styles: PropTypes.object,
-  theme: PropTypes.oneOf([
+  colorPalette: PropTypes.oneOf([
     'cool',
     'dark',
     'mid',

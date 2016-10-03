@@ -7,10 +7,9 @@ const Ellipsis = (props) => {
     isAnimated,
     styles
   } = props;
-  // TODO only use 1 style?
-  const dotStyles1 = css(styles.dot, isAnimated && styles.dotAnimated);
-  const dotStyles2 = css(styles.dot, isAnimated && styles.dotAnimated);
-  const dotStyles3 = css(styles.dot, isAnimated && styles.dotAnimated);
+  const dotStyles1 = css(styles.dot, styles.dot1, isAnimated && styles.dotAnimated);
+  const dotStyles2 = css(styles.dot, styles.dot2, isAnimated && styles.dotAnimated);
+  const dotStyles3 = css(styles.dot, styles.dot3, isAnimated && styles.dotAnimated);
   return (
     <div className={css(styles.root)}>
       {isAnimated ?

@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
-
+import withHotkey from 'react-hotkey-hoc';
 import Avatar from 'universal/components/Avatar/Avatar';
 import IconLink from 'universal/components/IconLink/IconLink';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
@@ -17,6 +17,7 @@ import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
 
 const MeetingUpdates = (props) => {
   const {
+    bindHotkey,
     localPhaseItem,
     isFacilitating,
     members,
@@ -31,6 +32,9 @@ const MeetingUpdates = (props) => {
   const self = members.find(m => m.isSelf);
   const isComplete = phaseOrder(meetingPhase) > phaseOrder(UPDATES);
   const gotoNextItem = phaseItemFactory(localPhaseItem + 1);
+  const gotoPrevItem = phaseItemFactory(localPhaseItem - 1);
+  bindHotkey(['enter', 'right'], gotoNextItem);
+  bindHotkey('left', gotoPrevItem);
   const isLastMember = localPhaseItem === members.length;
   return (
     <MeetingMain>
@@ -86,6 +90,7 @@ const MeetingUpdates = (props) => {
 };
 
 MeetingUpdates.propTypes = {
+  bindHotkey: PropTypes.func.isRequired,
   isFacilitating: PropTypes.bool,
   localPhaseItem: PropTypes.number.isRequired,
   members: PropTypes.array,
@@ -131,6 +136,8 @@ const styleThunk = () => ({
   }
 });
 
-export default withRouter(
-  withStyles(styleThunk)(MeetingUpdates)
+export default withHotkey(
+  withRouter(
+    withStyles(styleThunk)(MeetingUpdates)
+  )
 );

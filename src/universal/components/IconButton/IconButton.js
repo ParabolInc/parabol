@@ -19,7 +19,12 @@ const IconButton = (props) => {
 };
 
 IconButton.propTypes = {
-  styles: PropTypes.object
+  disabled: PropTypes.bool,
+  iconName: PropTypes.string,
+  iconSize: PropTypes.string,
+  onClick: PropTypes.func,
+  styles: PropTypes.object,
+  title: PropTypes.string
 };
 
 const {cool} = appTheme.palette;
@@ -65,13 +70,5 @@ const styleThunk = () => ({
     }
   }
 });
-
-IconButton.propTypes = {
-  disabled: PropTypes.bool,
-  iconName: PropTypes.string,
-  iconSize: PropTypes.string,
-  onClick: PropTypes.func,
-  title: PropTypes.string
-};
 
 export default withStyles(styleThunk)(IconButton);

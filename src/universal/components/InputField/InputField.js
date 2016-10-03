@@ -12,7 +12,7 @@ const InputField = (props) => {
     helpText,
     input,
     isWider,
-    theme: inputTheme,
+    colorPalette,
     buttonDisabled,
     buttonIcon,
     hasButton,
@@ -23,8 +23,6 @@ const InputField = (props) => {
     shortcutHint,
     styles,
   } = props;
-
-  const styleTheme = inputTheme || 'cool';
 
   const shortcutHintStyles = css(
     styles.shortcutHint,
@@ -39,7 +37,7 @@ const InputField = (props) => {
   const inputStyles = css(
     // allow hotkeys to be triggered when inside a field input
     styles.field,
-    styles[styleTheme],
+    styles[colorPalette],
     isLarger && styles.fieldLarger,
     isWider && styles.fieldWider
   );
@@ -68,6 +66,10 @@ const InputField = (props) => {
   );
 };
 
+InputField.defaultProps = {
+  colorPalette: 'cool'
+};
+
 InputField.propTypes = {
   name: PropTypes.string,
   hasErrorText: PropTypes.bool,
@@ -92,7 +94,7 @@ InputField.propTypes = {
   }),
   isWider: PropTypes.bool,
   styles: PropTypes.object,
-  theme: PropTypes.oneOf([
+  colorPalette: PropTypes.oneOf([
     'cool',
     'warm'
   ])

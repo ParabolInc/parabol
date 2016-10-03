@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
 import {withRouter} from 'react-router';
+import withHotkey from 'react-hotkey-hoc';
 
 import IconLink from 'universal/components/IconLink/IconLink';
 import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
@@ -18,6 +19,7 @@ import Type from 'universal/components/Type/Type';
 
 const MeetingCheckin = (props) => {
   const {
+    bindHotkey,
     isFacilitating,
     localPhaseItem,
     members,
@@ -56,6 +58,9 @@ const MeetingCheckin = (props) => {
   const currentName = members[localPhaseItem - 1] && members[localPhaseItem - 1].preferredName;
   const isComplete = phaseOrder(meetingPhase) > phaseOrder(CHECKIN);
   const gotoNextItem = phaseItemFactory(localPhaseItem + 1);
+  const gotoPrevItem = phaseItemFactory(localPhaseItem - 1);
+  bindHotkey(['enter', 'right'], gotoNextItem);
+  bindHotkey('left', gotoPrevItem);
   return (
     <MeetingMain>
       {/* */}
@@ -101,6 +106,7 @@ const MeetingCheckin = (props) => {
 };
 
 MeetingCheckin.propTypes = {
+  bindHotkey: PropTypes.func.isRequired,
   localPhaseItem: PropTypes.number,
   isFacilitating: PropTypes.bool,
   members: PropTypes.array,
@@ -108,4 +114,6 @@ MeetingCheckin.propTypes = {
   team: PropTypes.object
 };
 
-export default withRouter(MeetingCheckin);
+export default withHotkey(
+  withRouter(MeetingCheckin)
+);
