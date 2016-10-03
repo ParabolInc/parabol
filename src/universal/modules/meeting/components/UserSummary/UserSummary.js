@@ -2,7 +2,6 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
 import appTheme from 'universal/styles/theme/appTheme';
-// import ui from 'universal/styles/ui';
 import FontAwesome from 'react-fontawesome';
 import {Avatar, Type} from 'universal/components';
 import SummaryCard from 'universal/modules/meeting/components/SummaryCard/SummaryCard';
@@ -45,7 +44,8 @@ const UserSummary = (props) => {
 UserSummary.propTypes = {
   avatar: PropTypes.string,
   name: PropTypes.string,
-  outcomes: PropTypes.array
+  outcomes: PropTypes.array,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

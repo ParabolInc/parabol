@@ -71,6 +71,7 @@ const UserProjectsHeader = (props) => {
 UserProjectsHeader.propTypes = {
   children: PropTypes.any,
   dispatch: PropTypes.func,
+  styles: PropTypes.object,
   teams: PropTypes.array,
   teamFilterId: PropTypes.string,
   teamFilterName: PropTypes.string

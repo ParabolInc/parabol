@@ -17,6 +17,7 @@ const NullCard = (props) => {
 };
 
 NullCard.propTypes = {
+  styles: PropTypes.object,
   username: PropTypes.string,
 };
 

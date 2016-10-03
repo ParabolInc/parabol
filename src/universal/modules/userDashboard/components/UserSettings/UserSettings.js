@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -63,10 +63,12 @@ UserSettings.propTypes = {
   dispatch: PropTypes.func,
   handleSubmit: PropTypes.func,
   nextPage: PropTypes.string,          // from settingsDuck
+  onSubmit: PropTypes.func,
   router: PropTypes.object,
   userId: PropTypes.string,
   /* User for form defaults: */
-  preferredName: PropTypes.string
+  preferredName: PropTypes.string,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

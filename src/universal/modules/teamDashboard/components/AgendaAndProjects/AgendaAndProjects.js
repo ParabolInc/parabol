@@ -32,6 +32,7 @@ const AgendaAndProjects = (props) => {
 
 AgendaAndProjects.propTypes = {
   params: PropTypes.object,
+  styles: PropTypes.object,
   teamId: PropTypes.string,
   teamMembers: PropTypes.array
 };

@@ -9,10 +9,11 @@ const MeetingLayout = (props) => {
       {children}
     </div>
   );
-}
+};
 
 MeetingLayout.propTypes = {
-  children: PropTypes.any
+  children: PropTypes.any,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

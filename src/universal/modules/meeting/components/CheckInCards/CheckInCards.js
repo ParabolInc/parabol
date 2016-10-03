@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
 import CheckInCard from 'universal/modules/meeting/components/CheckInCard/CheckInCard';
@@ -48,7 +48,7 @@ const CheckInCards = (props) => {
         <div className={css(styles.placeholder)}></div>
       }
       {activeCard &&
-      <CheckInCard checkInPressFactory={makeCheckinPressFactory(activeCard.id)} member={activeCard} isActive/>
+        <CheckInCard checkInPressFactory={makeCheckinPressFactory(activeCard.id)} member={activeCard} isActive/>
       }
       {rightCard ?
         <CheckInCard handleCardClick={handleCardClickFactory(memberIdx + 1)} member={rightCard}/> :
@@ -63,6 +63,7 @@ CheckInCards.propTypes = {
   members: PropTypes.array,
   localPhaseItem: PropTypes.number,
   router: PropTypes.object,
+  styles: PropTypes.object,
   teamId: PropTypes.string
 };
 

@@ -68,6 +68,7 @@ Menu.propTypes = {
     'right'
   ]),
   menuWidth: PropTypes.string,
+  styles: PropTypes.object,
   toggle: PropTypes.any,
   toggleHeight: PropTypes.string,
   toggleMenu: PropTypes.func.isRequired,

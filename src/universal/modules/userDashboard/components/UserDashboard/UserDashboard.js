@@ -40,7 +40,8 @@ const UserDashboard = (props) => {
 };
 
 UserDashboard.propTypes = {
-  projects: PropTypes.array
+  projects: PropTypes.array,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

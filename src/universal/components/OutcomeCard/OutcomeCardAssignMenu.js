@@ -54,6 +54,7 @@ const OutcomeCardAssignMenu = (props) => {
 OutcomeCardAssignMenu.propTypes = {
   onComplete: PropTypes.func,
   outcome: PropTypes.object,
+  styles: PropTypes.object,
   teamMembers: PropTypes.array
 };
 

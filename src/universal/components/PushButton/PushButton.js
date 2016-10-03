@@ -6,7 +6,6 @@ import appTheme from 'universal/styles/theme/appTheme';
 const PushButton = (props) => {
   // TODO replace focus CSS with isPushed
   const {disabled, keystroke, label, handleOnClick, size, isPressed, styles} = props;
-  const buttonStylesArr = [styles.button];
   const buttonStyles = css(
     styles.button,
     isPressed && styles.isPressed,
@@ -32,7 +31,8 @@ PushButton.propTypes = {
   size: PropTypes.oneOf([
     'default',
     'large'
-  ])
+  ]),
+  styles: PropTypes.object
 };
 
 PushButton.defaultProps = {

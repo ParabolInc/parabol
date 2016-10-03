@@ -5,6 +5,11 @@ import FontAwesome from 'react-fontawesome';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
+const avatarSize = '1.5rem';
+const faStyle = {
+  fontSize: ui.iconSize,
+  lineHeight: avatarSize
+};
 const OutcomeCardFooter = (props) => {
   const {
     cardHasHover,
@@ -18,7 +23,6 @@ const OutcomeCardFooter = (props) => {
     styles,
     toggleAssignMenu,
   } = props;
-
   // AVATAR
   // -------
   const avatarImage = owner.picture;
@@ -28,20 +32,17 @@ const OutcomeCardFooter = (props) => {
   const menuHintStyle = cardHasHover ? faStyle : {visibility: 'hidden', ...faStyle};
   let buttonIcon = hasOpenStatusMenu ? 'times' : 'wrench';
   if (isArchived) buttonIcon = 'reply';
-
   const showFully = (hasOpenStatusMenu || cardHasHover || isArchived);
 
   const avatarBlockStyle = css(
     styles.avatarBlock,
     isArchived && styles.avatarBlockArchived
   );
-
   const buttonStyles = css(
     styles.buttonBase,
     !isProject && styles.actionButton,
     showFully && (isProject ? styles.projectButtonShowFully : styles.actionButtonShowFully)
   );
-
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.avatarLayout)}>
@@ -72,6 +73,7 @@ const OutcomeCardFooter = (props) => {
   );
 };
 
+
 OutcomeCardFooter.propTypes = {
   cardHasHover: PropTypes.bool,
   toggleAssignMenu: PropTypes.func,
@@ -82,13 +84,8 @@ OutcomeCardFooter.propTypes = {
   outcome: PropTypes.object,
   owner: PropTypes.object,
   showTeam: PropTypes.bool,
+  styles: PropTypes.object,
   team: PropTypes.object
-};
-
-const avatarSize = '1.5rem';
-const faStyle = {
-  fontSize: ui.iconSize,
-  lineHeight: avatarSize
 };
 const buttonShowFully = {
   backgroundColor: appTheme.palette.mid10l,

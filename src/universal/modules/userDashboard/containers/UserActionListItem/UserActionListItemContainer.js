@@ -15,6 +15,10 @@ const mapStateToProps = (state, props) => {
 @connect(mapStateToProps)
 export default class UserActionListItemContainer extends Component {
   static propTypes = {
+    actionId: PropTypes.string,
+    content: PropTypes.string,
+    dispatch: PropTypes.func,
+    form: PropTypes.string,
     isActive: PropTypes.bool
   };
 
@@ -79,6 +83,4 @@ export default class UserActionListItemContainer extends Component {
       />
     );
   }
-};
-
-export default connect(mapStateToProps)(UserActionListItemContainer);
+}

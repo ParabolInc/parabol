@@ -28,6 +28,7 @@ const DashLayout = (props) => {
 DashLayout.propTypes = {
   activeMeetings: PropTypes.array.isRequired,
   children: PropTypes.any,
+  styles: PropTypes.object,
   title: PropTypes.string
 };
 

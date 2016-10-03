@@ -11,9 +11,9 @@ const ProjectColumns = (props) => {
   const {alignColumns, area, myTeamMemberId, projects, styles, teams, userId, zIndex} = props;
   const rootStyles = css(styles.root, styles[alignColumns]);
   const positionStyle = zIndex && {
-      position: 'relative',
-      zIndex
-    };
+    position: 'relative',
+    zIndex
+  };
   return (
     <div className={rootStyles} style={positionStyle}>
       <div className={css(styles.columns)}>
@@ -42,6 +42,7 @@ ProjectColumns.propTypes = {
   area: PropTypes.string,
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.object.isRequired,
+  styles: PropTypes.object,
   teams: PropTypes.array,
   userId: PropTypes.string,
   zIndex: PropTypes.string

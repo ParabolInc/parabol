@@ -20,7 +20,8 @@ const DashContent = (props) => {
 DashContent.propTypes = {
   children: PropTypes.any,
   hasOverlay: PropTypes.bool,
-  padding: PropTypes.string
+  padding: PropTypes.string,
+  styles: PropTypes.object,
 };
 
 DashContent.defaultProps = {

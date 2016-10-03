@@ -1,6 +1,5 @@
-import React, {PropTypes, Component} from 'react';
+import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
-
 import {css} from 'aphrodite';
 import {textOverflow} from 'universal/styles/helpers';
 import {Field} from 'redux-form';
@@ -82,7 +81,8 @@ FieldsBlock.propTypes = {
   nestedFieldHeader: PropTypes.string.isRequired,
   nestedFieldName: PropTypes.string.isRequired,
   onHoverRow: PropTypes.func.isRequired,
-  onLeaveRow: PropTypes.func.isRequired
+  onLeaveRow: PropTypes.func.isRequired,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

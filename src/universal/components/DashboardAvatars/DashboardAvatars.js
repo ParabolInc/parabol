@@ -19,6 +19,7 @@ const DashboardAvatars = (props) => {
 };
 
 DashboardAvatars.propTypes = {
+  styles: PropTypes.object,
   teamMembers: PropTypes.array
 };
 

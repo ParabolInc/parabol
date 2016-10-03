@@ -36,4 +36,4 @@ export default class ActionContainer extends Component {
   render() {
     return <Action {...this.props} />;
   }
-};
+}

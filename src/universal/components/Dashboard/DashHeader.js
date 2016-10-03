@@ -17,7 +17,8 @@ const DashHeader = (props) => {
 
 DashHeader.propTypes = {
   children: PropTypes.any,
-  hasOverlay: PropTypes.bool
+  hasOverlay: PropTypes.bool,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

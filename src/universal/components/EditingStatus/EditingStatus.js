@@ -10,7 +10,8 @@ const EditingStatus = (props) => {
 };
 
 EditingStatus.propTypes = {
-  status: PropTypes.any
+  status: PropTypes.any,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

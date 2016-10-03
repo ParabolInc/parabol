@@ -7,7 +7,7 @@ import LabeledFieldArray from 'universal/containers/LabeledFieldArray/LabeledFie
 import Type from 'universal/components/Type/Type';
 import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import {cashay} from 'cashay';
-import {showSuccess, showError} from 'universal/modules/notifications/ducks/notifications';
+import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
 import {withRouter} from 'react-router';
 import withHotkey from 'react-hotkey-hoc';
 
@@ -16,13 +16,6 @@ const emailInviteSuccess = {
   message: 'Your team members will get their invite via email',
   level: 'success'
 };
-
-// TODO why is this showing up green like success?
-const emailInviteFail = emailsNotDelivered => ({
-  title: 'Invitations not sent!',
-  message: `The following emails were not sent: ${emailsNotDelivered}`,
-  level: 'error'
-});
 
 const Step3InviteTeam = (props) => {
   const onAddInviteesButtonClick = event => {
@@ -105,15 +98,15 @@ const Step3InviteTeam = (props) => {
       </div>
       <form onSubmit={handleSubmit(onInviteTeamSubmit)}>
         {fieldArrayHasValue &&
-        <div style={{margin: '2rem 0 0'}}>
-          <LabeledFieldArray
-            labelGetter={(idx) => invitees[idx].label}
-            labelHeader="Invitee"
-            labelSource="invitees"
-            nestedFieldHeader="This Week's Priority"
-            nestedFieldName="task"
-          />
-        </div>
+          <div style={{margin: '2rem 0 0'}}>
+            <LabeledFieldArray
+              labelGetter={(idx) => invitees[idx].label}
+              labelHeader="Invitee"
+              labelSource="invitees"
+              nestedFieldHeader="This Week's Priority"
+              nestedFieldName="task"
+            />
+          </div>
         }
         <div style={{margin: '2rem 0 0', textAlign: 'center'}}>
           <Button

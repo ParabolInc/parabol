@@ -34,7 +34,8 @@ const UserActionListEmpty = (props) => {
 };
 
 UserActionListEmpty.propTypes = {
-  onAddNewAction: PropTypes.func
+  onAddNewAction: PropTypes.func,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

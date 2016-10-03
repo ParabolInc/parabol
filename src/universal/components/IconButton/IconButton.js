@@ -18,6 +18,10 @@ const IconButton = (props) => {
   );
 };
 
+IconButton.propTypes = {
+  styles: PropTypes.object
+};
+
 const {cool} = appTheme.palette;
 const baseButtonColor = appTheme.palette.cool40l;
 const styleThunk = () => ({

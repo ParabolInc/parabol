@@ -7,14 +7,18 @@ import ui from 'universal/styles/ui';
 import themeLabels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import ProjectCardContainer from 'universal/containers/ProjectCard/ProjectCardContainer';
-import {ACTIVE, STUCK, DONE, FUTURE, USER_DASH, TEAM_DASH, MEETING} from 'universal/utils/constants';
+import {USER_DASH, TEAM_DASH, MEETING} from 'universal/utils/constants';
 import FontAwesome from 'react-fontawesome';
 import {cashay} from 'cashay';
 import shortid from 'shortid';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import {Menu, MenuItem} from 'universal/modules/menu';
-import labels from 'universal/styles/theme/labels';
 
+const badgeIconStyle = {
+  height: '1.5rem',
+  lineHeight: '1.5rem',
+  width: '1.5rem'
+};
 const handleAddProjectFactory = (status, teamMemberId, teamSort, userSort) => () => {
   const [, teamId] = teamMemberId.split('::');
   const newProject = {
@@ -29,8 +33,8 @@ const handleAddProjectFactory = (status, teamMemberId, teamSort, userSort) => ()
 
 const ProjectColumn = (props) => {
   const {area, status, projects, myTeamMemberId, styles, teams, userId} = props;
-  const label = labels.projectStatus[status].slug;
 
+  const label = themeLabels.projectStatus[status].slug;
   // TODO do it fur real
   const MeetingCardContainer = ProjectCardContainer;
   const CardContainer = area === MEETING ? MeetingCardContainer : ProjectCardContainer;
@@ -131,15 +135,11 @@ ProjectColumn.propTypes = {
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.array.isRequired,
   status: PropTypes.string,
+  styles: PropTypes.object,
   teams: PropTypes.array,
   userId: PropTypes.string
 };
 
-const badgeIconStyle = {
-  height: '1.5rem',
-  lineHeight: '1.5rem',
-  width: '1.5rem'
-};
 const borderColor = ui.dashBorderColor;
 
 const columnStyles = {

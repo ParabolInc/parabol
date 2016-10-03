@@ -7,6 +7,18 @@ import ui from 'universal/styles/ui';
 import withHotkey from 'react-hotkey-hoc';
 import FontAwesome from 'react-fontawesome';
 
+const defaultColor = appTheme.palette.dark;
+const iconStyle = {
+  color: defaultColor,
+  display: 'block',
+  height: ui.fontSize,
+  left: '2.5rem',
+  lineHeight: ui.fontSize,
+  position: 'absolute',
+  top: '.8125rem',
+  width: ui.fontSize,
+  zIndex: 100
+};
 const AgendaInputField = (props) => {
   const {bindHotkey, styles} = props;
   let inputRef;
@@ -37,9 +49,10 @@ const AgendaInputField = (props) => {
 
 AgendaInputField.propTypes = {
   bindHotkey: PropTypes.func,
-  input: PropTypes.object
+  input: PropTypes.object,
+  styles: PropTypes.object
 };
-const defaultColor = appTheme.palette.dark;
+
 const inputPlaceholderStyles = makePlaceholderStyles(defaultColor);
 const inputFocusActivePlaceholderStyles = makePlaceholderStyles(appTheme.palette.dark50l);
 const inputFocusActive = {
@@ -47,17 +60,6 @@ const inputFocusActive = {
   ...inputFocusActivePlaceholderStyles
 };
 
-const iconStyle = {
-  color: defaultColor,
-  display: 'block',
-  height: ui.fontSize,
-  left: '2.5rem',
-  lineHeight: ui.fontSize,
-  position: 'absolute',
-  top: '.8125rem',
-  width: ui.fontSize,
-  zIndex: 100
-};
 
 const styleThunk = () => ({
   root: {

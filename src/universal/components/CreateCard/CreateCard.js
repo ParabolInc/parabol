@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
-
 import {css} from 'aphrodite';
 import PushButton from '../PushButton/PushButton';
 import Ellipsis from '../Ellipsis/Ellipsis';
@@ -77,7 +76,8 @@ CreateCard.propTypes = {
   handleAddProject: PropTypes.func,
   hasControls: PropTypes.bool,
   isCreating: PropTypes.bool,
-  isProject: PropTypes.bool
+  isProject: PropTypes.bool,
+  styles: PropTypes.object
 };
 
 const labelStyles = {

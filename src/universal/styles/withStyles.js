@@ -1,7 +1,7 @@
-import React, {Component, PropTypes} from 'react'
+import React, {Component, PropTypes} from 'react';
 import {StyleSheet} from 'aphrodite';
 
-let jones = new WeakMap();
+const jones = new WeakMap();
 
 const propsTriggeredInvalidation = (invalidatingProps, props, nextProps) => {
   for (let i = 0; i < invalidatingProps.length; i++) {
@@ -42,9 +42,9 @@ const withStyles = (mapThemeToStyles, invalidatingProps) => (WrappedComponent) =
       if (oldContext !== this.context.theme) {
         console.log('a diff!');
       }
-      return <WrappedComponent styles={this.styles} {...this.props}/>
+      return <WrappedComponent styles={this.styles} {...this.props}/>;
     }
-  }
+  };
 };
 
 export default withStyles;

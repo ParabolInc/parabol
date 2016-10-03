@@ -16,12 +16,13 @@ class OutcomeCardTextArea extends Component {
     isActionListItem: PropTypes.bool,
     isArchived: PropTypes.bool,
     isProject: PropTypes.bool,
-    teamMemberId: PropTypes.string,
-    teamMembers: PropTypes.array,
-    timestamp: PropTypes.string,
     meta: PropTypes.shape({
       active: PropTypes.bool
     }),
+    styles: PropTypes.object,
+    teamMemberId: PropTypes.string,
+    teamMembers: PropTypes.array,
+    timestamp: PropTypes.string,
   };
 
   componentWillReceiveProps(nextProps) {

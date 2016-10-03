@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
 
@@ -12,7 +12,8 @@ const WelcomeHeader = (props) => {
 };
 
 WelcomeHeader.propTypes = {
-  children: PropTypes.any
+  children: PropTypes.any,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

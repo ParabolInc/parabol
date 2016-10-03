@@ -60,6 +60,7 @@ MeetingAgendaLastCall.propTypes = {
   localPhaseItem: PropTypes.number,
   isFacilitating: PropTypes.bool,
   router: PropTypes.object.isRequired,
+  styles: PropTypes.object,
   team: PropTypes.object
 };
 

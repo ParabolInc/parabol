@@ -107,12 +107,12 @@ export const createEmailPromises = (inviterInfoAndTeamName, inviteesWithTokens) 
   });
 };
 
-export const asyncInviteTeam = async (teamId, invitees) => {
+export const asyncInviteTeam = async (authToken, teamId, invitees) => {
   const userId = getUserId(authToken);
   const inviteesWithTokens = invitees.map(invitee => ({...invitee, inviteToken: makeInviteToken()}));
   const inviterInfoAndTeamName = await getInviterInfoAndTeamName(teamId, userId);
   const sendEmailPromises = createEmailPromises(inviterInfoAndTeamName, inviteesWithTokens);
-  const {inviteeErrors, inviteesToStore} = await resolveSentEmails(sendEmailPromises, inviteesWithTokens);
+  const {inviteesToStore} = await resolveSentEmails(sendEmailPromises, inviteesWithTokens);
   const invitationsForDB = await makeInvitationsForDB(inviteesToStore, teamId);
   // Bulk insert, wait in case something queries the invitation table
   await r.table('Invitation').insert(invitationsForDB);
@@ -121,4 +121,4 @@ export const asyncInviteTeam = async (teamId, invitees) => {
   // if (inviteeErrors.length > 0) {
   // throw errorObj({_error: 'Some invitations were not sent', type: 'inviteSendFail', failedEmails: inviteeErrors});
   // }
-}
+};

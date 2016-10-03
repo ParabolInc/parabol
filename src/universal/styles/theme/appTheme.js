@@ -13,4 +13,5 @@ if (typeof __PRODUCTION__ !== 'undefined' && __PRODUCTION__) {
 }
 /* eslint-enable */
 
-export default appTheme;
+const exportTheme = appTheme;
+export default exportTheme;

@@ -42,6 +42,7 @@ OutcomeCardMenuButton.propTypes = {
   label: PropTypes.any,
   onClick: PropTypes.func,
   status: PropTypes.oneOf(statusValues),
+  styles: PropTypes.object,
   title: PropTypes.string
 };
 

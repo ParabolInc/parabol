@@ -47,6 +47,7 @@ const TeamProjectsHeader = (props) => {
 
 TeamProjectsHeader.propTypes = {
   children: PropTypes.any,
+  styles: PropTypes.object,
   teamId: PropTypes.string,
 };
 

@@ -15,8 +15,9 @@ const TeamAgenda = (props) => {
 };
 
 TeamAgenda.propTypes = {
+  children: PropTypes.any,
+  styles: PropTypes.object,
   teamId: PropTypes.string,
-  children: PropTypes.any
 };
 
 const styleThunk = () => ({

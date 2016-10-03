@@ -15,7 +15,7 @@ const LoadingDuck = (props) => {
 };
 
 LoadingDuck.propTypes = {
-  className: PropTypes.string.isRequired,
+  className: PropTypes.string.isRequired
 };
 
 const LoadingView = (props) => {
@@ -31,6 +31,10 @@ const LoadingView = (props) => {
       {children && Object.keys(children).length > 0 && children}
     </div>
   );
+};
+LoadingView.propTypes = {
+  children: PropTypes.any,
+  styles: PropTypes.object
 };
 
 const patoHop = {

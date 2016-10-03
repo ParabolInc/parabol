@@ -35,7 +35,8 @@ const StandardHub = (props) => {
 StandardHub.propTypes = {
   email: PropTypes.string,
   picture: PropTypes.string,
-  preferredName: PropTypes.string
+  preferredName: PropTypes.string,
+  styles: PropTypes.object
 };
 
 const maxWidth = '8.25rem';

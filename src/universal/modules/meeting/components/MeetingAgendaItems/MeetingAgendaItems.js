@@ -94,6 +94,17 @@ const MeetingAgendaItems = (props) => {
   );
 };
 
+MeetingAgendaItems.propTypes = {
+  agenda: PropTypes.object,
+  bindHotkey: PropTypes.func,
+  isFacilitating: PropTypes.bool,
+  localPhaseItem: PropTypes.number,
+  members: PropTypes.array,
+  router: PropTypes.object,
+  styles: PropTypes.object,
+  team: PropTypes.object
+};
+
 const styleThunk = () => ({
   layout: {
     margin: '0 auto',

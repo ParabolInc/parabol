@@ -82,9 +82,9 @@ const Sidebar = (props) => {
             </Link>
           </li>
           {localPhase === SUMMARY &&
-            <li className={css(s.navListItem, s.navListItemLinkActive)}>
+            <li className={css(styles.navListItem, styles.navListItemLinkActive)}>
               <a
-                className={css(s.navListItemLink, s.navListItemLinkActive)}
+                className={css(styles.navListItemLink, styles.navListItemLinkActive)}
                 href={`/meeting/${teamId}/summary`}
                 title={labels.meetingPhase.summary.slug}
               >
@@ -114,6 +114,7 @@ Sidebar.propTypes = {
   facilitatorPhase: PropTypes.oneOf(phaseArray),
   isFacilitating: PropTypes.bool,
   localPhase: PropTypes.oneOf(phaseArray),
+  styles: PropTypes.object,
   teamName: PropTypes.string,
   teamId: PropTypes.string,
 };

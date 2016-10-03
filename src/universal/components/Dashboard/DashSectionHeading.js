@@ -10,7 +10,7 @@ import Type from 'universal/components/Type/Type';
 const DashSectionHeading = (props) => {
   const {icon, label, margin, styles} = props;
   return (
-    <div className={css(styles.root)} style={{margin: margin}}>
+    <div className={css(styles.root)} style={{margin}}>
       <FontAwesome className={css(styles.icon)} name={icon} style={{...ib, lineHeight: 'inherit'}} />
       <Type display="inlineBlock" lineHeight={ui.dashSectionHeaderLineHeight} scale="s4" colorPalette="dark">{label}</Type>
     </div>
@@ -20,7 +20,8 @@ const DashSectionHeading = (props) => {
 DashSectionHeading.propTypes = {
   icon: PropTypes.string,
   label: PropTypes.string,
-  margin: PropTypes.string
+  margin: PropTypes.string,
+  styles: PropTypes.object,
 };
 
 DashSectionHeading.defaultProps = {

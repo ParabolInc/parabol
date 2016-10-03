@@ -29,8 +29,9 @@ const createCashay = (store, cashaySchema) => {
      * During the production client bundle build, the server will need to be
      * stopped.
      */
-    // eslint-disable-next-line global-require
+    // eslint-disable-next-line no-underscore-dangle
     StyleSheet.rehydrate(window.__APHRODITE__);
+    // eslint-disable-next-line global-require
     cashaySchema = require('cashay!../server/utils/getCashaySchema.js?stopRethink');
     createCashay(store, cashaySchema);
     render(

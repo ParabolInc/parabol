@@ -68,6 +68,7 @@ UserActionList.propTypes = {
   actions: PropTypes.array,
   dispatch: PropTypes.func,
   selectingNewActionTeam: PropTypes.bool,
+  styles: PropTypes.object,
   teams: PropTypes.array,
   userId: PropTypes.string
 };

@@ -17,7 +17,8 @@ const PlaceholderAddLink = (props) => {
 };
 
 PlaceholderAddLink.propTypes = {
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
+  styles: PropTypes.object
 };
 
 PlaceholderAddLink.defaultProps = {

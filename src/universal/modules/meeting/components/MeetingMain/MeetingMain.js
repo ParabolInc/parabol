@@ -13,7 +13,8 @@ const MeetingMain = (props) => {
 
 
 MeetingMain.propTypes = {
-  children: PropTypes.any
+  children: PropTypes.any,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

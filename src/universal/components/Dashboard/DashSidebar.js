@@ -46,6 +46,7 @@ const DashSidebar = (props) => {
 };
 
 DashSidebar.propTypes = {
+  styles: PropTypes.object,
   isUserSettings: PropTypes.bool
 };
 

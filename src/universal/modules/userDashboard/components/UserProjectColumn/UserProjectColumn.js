@@ -32,6 +32,7 @@ const UserProjectColumn = (props) => {
 UserProjectColumn.propTypes = {
   projects: PropTypes.array,
   status: PropTypes.string,
+  styles: PropTypes.object,
   teamMembers: PropTypes.array,
   teamMemberId: PropTypes.string
 };

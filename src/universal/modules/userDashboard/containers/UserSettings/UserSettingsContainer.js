@@ -40,6 +40,7 @@ export default class UserSettingsContainer extends Component {
       picture: PropTypes.string,
       preferredName: PropTypes.string,
     }),
+    router: PropTypes.object,
     userId: PropTypes.string
   };
 
@@ -69,7 +70,7 @@ export default class UserSettingsContainer extends Component {
   };
 
   initializeForm() {
-    const {dispatch, preferredName} = this.props;
+    const {dispatch, user: {preferredName}} = this.props;
     return dispatch(initialize('userSettings', {preferredName}));
   }
 
@@ -81,4 +82,4 @@ export default class UserSettingsContainer extends Component {
       />
     );
   }
-};
+}

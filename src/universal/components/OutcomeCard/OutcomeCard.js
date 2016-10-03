@@ -42,7 +42,8 @@ OutcomeCard.propTypes = {
   isProject: PropTypes.bool,
   onEnterCard: PropTypes.func,
   onLeaveCard: PropTypes.func,
-  status: PropTypes.oneOf(labels.projectStatus.slugs)
+  status: PropTypes.oneOf(labels.projectStatus.slugs),
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

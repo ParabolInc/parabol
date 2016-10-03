@@ -21,6 +21,7 @@ const DashNavItem = (props) => {
 DashNavItem.propTypes = {
   href: PropTypes.string,
   label: PropTypes.string,
+  styles: PropTypes.object
 };
 
 const linkHF = {

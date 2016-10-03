@@ -32,8 +32,10 @@ const CheckInCardButtons = (props) => {
 };
 
 CheckInCardButtons.propTypes = {
+  bindHotkey: PropTypes.func,
   checkInPressFactory: PropTypes.func.isRequired,
   isCheckedIn: PropTypes.bool,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

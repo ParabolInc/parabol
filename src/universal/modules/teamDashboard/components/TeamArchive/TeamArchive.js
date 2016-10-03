@@ -54,6 +54,7 @@ const TeamArchive = (props) => {
 TeamArchive.propTypes = {
   archivedProjects: PropTypes.array,
   dispatch: PropTypes.func,
+  styles: PropTypes.object,
   teamId: PropTypes.string,
   teamMembers: PropTypes.array
 };

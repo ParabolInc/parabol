@@ -39,7 +39,8 @@ AgendaList.propTypes = {
     content: PropTypes.string
   })),
   agendaPhaseItem: PropTypes.number,
-  phaseItemFactory: PropTypes.func
+  phaseItemFactory: PropTypes.func,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

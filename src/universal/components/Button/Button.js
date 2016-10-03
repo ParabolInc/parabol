@@ -4,7 +4,7 @@ import {css} from 'aphrodite';
 import appTheme from 'universal/styles/theme/appTheme';
 import tinycolor from 'tinycolor2';
 
-const { cool, warm, dark, mid, light } = appTheme.palette;
+const {dark} = appTheme.palette;
 const white = '#fff';
 
 const makeSolidTheme = (themeColor, textColor = '#fff', style = 'solid', opacity = '.65') => {
@@ -46,11 +46,10 @@ const makePropColors = (style, colorPalette) => {
   const color = appTheme.palette[colorPalette] || white;
   if (style === 'outlined') {
     return makeOutlinedTheme(color);
-  } else {
-    const baseTextColor = style === 'inverted' ? color : white;
-    const textColor = (colorPalette === 'white' || colorPalette === 'light') ? dark : baseTextColor;
-    return makeSolidTheme(color, textColor, style);
   }
+  const baseTextColor = style === 'inverted' ? color : white;
+  const textColor = (colorPalette === 'white' || colorPalette === 'light') ? dark : baseTextColor;
+  return makeSolidTheme(color, textColor, style);
 };
 
 const Button = (props) => {
@@ -105,6 +104,7 @@ Button.propTypes = {
     'outlined',
     'inverted'
   ]),
+  styles: PropTypes.object,
   theme: PropTypes.oneOf([
     'cool',
     'warm',

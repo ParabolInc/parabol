@@ -1,4 +1,4 @@
-import React, {PropTypes, Component} from 'react';
+import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
 import {injectStyleOnce} from 'aphrodite/lib/inject';
@@ -147,7 +147,8 @@ const Landing = (props) => {
 Landing.propTypes = {
   // children included here for multi-part landing pages (FAQs, pricing, cha la la)
   // children: PropTypes.element,
-  handleLoginClick: PropTypes.func.isRequired
+  handleLoginClick: PropTypes.func.isRequired,
+  styles: PropTypes.object,
 };
 
 // Breakpoint constants

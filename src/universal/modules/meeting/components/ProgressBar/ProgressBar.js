@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
 import appTheme from 'universal/styles/theme/appTheme.js';
@@ -6,12 +6,20 @@ import {srOnly} from 'universal/styles/helpers';
 import {withRouter} from 'react-router';
 import withHotkey from 'react-hotkey-hoc';
 
+const barHeight = 6;
+const pointHeight = barHeight;
+const pointWidth = 8;
+const avatarWidth = 44; // 'small' Avatar size
+const avatarGutter = 24; // see AvatarGroup
+const outerPadding = (avatarWidth - pointWidth) / 2;
+const blockWidth = avatarWidth + avatarGutter;
 const ProgressBar = (props) => {
   const {bindHotkey, clickFactory, membersCount, facilitatorPhaseItem, localPhaseItem, meetingPhaseItem, isComplete, styles} = props;
   const renderPoint = (idx) => {
     const marginRight = {
       marginRight: idx === membersCount ? 0 : `${blockWidth - pointWidth}px`
     };
+
     const pointStyles = css(
       styles.point,
       (idx <= meetingPhaseItem || isComplete) && styles.pointCompleted,
@@ -19,7 +27,6 @@ const ProgressBar = (props) => {
       idx === facilitatorPhaseItem && styles.pointFacilitator,
       // TODO fix this one!
     );
-
     const handleOnClick = clickFactory(idx);
     return (
       <div className={pointStyles} onClick={handleOnClick} style={marginRight} key={`pbPoint${idx}`}>
@@ -52,6 +59,7 @@ const ProgressBar = (props) => {
   );
 };
 
+
 ProgressBar.propTypes = {
   bindHotkey: PropTypes.func.isRequired,
   clickFactory: PropTypes.func,
@@ -59,16 +67,9 @@ ProgressBar.propTypes = {
   facilitatorPhaseItem: PropTypes.number, // index of 1
   localPhaseItem: PropTypes.number,       // index of 1
   meetingPhaseItem: PropTypes.number,     // index of 1
-  membersCount: PropTypes.number          // members.length
+  membersCount: PropTypes.number,          // members.length
+  styles: PropTypes.object
 };
-
-const barHeight = 6;
-const pointHeight = barHeight;
-const pointWidth = 8;
-const avatarWidth = 44; // 'small' Avatar size
-const avatarGutter = 24; // see AvatarGroup
-const outerPadding = (avatarWidth - pointWidth) / 2;
-const blockWidth = avatarWidth + avatarGutter;
 
 const styleThunk = () => ({
   root: {

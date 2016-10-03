@@ -56,6 +56,7 @@ AgendaItem.propTypes = {
     'processed',
     'waiting'
   ]),
+  styles: PropTypes.object,
   teamMember: PropTypes.object
 };
 

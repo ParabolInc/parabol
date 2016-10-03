@@ -16,14 +16,12 @@ export default function createSSR(req, res) {
   const finalCreateStore = applyMiddleware(thunkMiddleware)(createStore);
   const store = finalCreateStore(makeReducer(), {});
   if (process.env.NODE_ENV === 'production') {
-    // TURN ON IF WE EVER SEND DOMAIN STATE STATE TO CLIENT
-    // eslint-disable-next-line global-require
+    /* eslint-disable global-require */
     const makeRoutes = require('../../build/prerender').default;
-    // eslint-disable-next-line global-require
     // get the same StyleSheetServer that the universal uses
     const {cashay, cashaySchema, StyleSheetServer} = require('../../build/prerender');
-    // eslint-disable-next-line global-require
     const assets = require('../../build/assets.json');
+    /* eslint-enable */
     cashay.create({
       store,
       schema: cashaySchema,

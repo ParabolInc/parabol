@@ -93,7 +93,8 @@ MeetingAgendaCards.propTypes = {
   bindHotkey: PropTypes.func,
   dispatch: PropTypes.func,
   myTeamMemberId: PropTypes.string,
-  outcomes: PropTypes.array.isRequired
+  outcomes: PropTypes.array.isRequired,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

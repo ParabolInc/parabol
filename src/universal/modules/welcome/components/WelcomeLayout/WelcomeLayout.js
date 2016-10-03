@@ -4,14 +4,15 @@ import {css} from 'aphrodite';
 
 const WelcomeLayout = (props) => {
   const {children, styles} = props;
-    return (
-      <div className={css(styles.root)}>
-        {children}
-      </div>
-    );
+  return (
+    <div className={css(styles.root)}>
+      {children}
+    </div>
+  );
 };
 WelcomeLayout.propTypes = {
-  children: PropTypes.any
+  children: PropTypes.any,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

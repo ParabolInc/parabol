@@ -1,6 +1,4 @@
 import React, {Component, PropTypes} from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite';
 import {cashay} from 'cashay';
 import {Field, reduxForm, initialize} from 'redux-form';
 import labels from 'universal/styles/theme/labels';
@@ -137,7 +135,7 @@ export default class TeamProjectCard extends Component {
     return (
       <OutcomeCard
         isArchived={isArchived}
-        isProject={true}
+        isProject
         onEnterCard={this.onEnterTeamProjectCard}
         onLeaveCard={this.onLeaveTeamProjectCard}
         status={status}
@@ -149,7 +147,7 @@ export default class TeamProjectCard extends Component {
             outcome={project}
           />
         }
-        {hasOpenStatusMenu && <OutcomeCardStatusMenu isProject={true} outcome={project}/>}
+        {hasOpenStatusMenu && <OutcomeCardStatusMenu isProject outcome={project}/>}
         {!hasOpenAssignMenu && !hasOpenStatusMenu &&
           <div style={{width: '100%'}}>
             <form>
@@ -164,7 +162,7 @@ export default class TeamProjectCard extends Component {
                 handleActive={handleCardActive}
                 handleSubmit={handleSubmit(this.handleCardUpdate)}
                 isArchived={isArchived}
-                isProject={true}
+                isProject
                 doFocus={!content}
                 cardHasHover={this.state.cardHasHover}
               />
@@ -176,7 +174,7 @@ export default class TeamProjectCard extends Component {
           cardHasHover={this.state.cardHasHover}
           hasOpenStatusMenu={hasOpenStatusMenu}
           isArchived={isArchived}
-          isProject={true}
+          isProject
           owner={project.teamMember}
           outcome={project}
           showTeam={area === USER_DASH}

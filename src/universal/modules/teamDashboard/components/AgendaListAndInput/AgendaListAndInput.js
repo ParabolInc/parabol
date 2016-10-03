@@ -32,6 +32,7 @@ AgendaListAndInput.propTypes = {
   isFacilitating: PropTypes.bool,
   myTeamMember: PropTypes.object,
   router: PropTypes.object,
+  styles: PropTypes.object,
   teamId: PropTypes.string
 };
 

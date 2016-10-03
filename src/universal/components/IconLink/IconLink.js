@@ -69,6 +69,7 @@ IconLink.propTypes = {
     'small',
     'large'
   ]),
+  styles: PropTypes.object,
   theme: PropTypes.oneOf([
     'cool',
     'dark',
@@ -159,7 +160,7 @@ const styleThunk = (customTheme, {colorPalette, scale}) => {
     placeLeft: {
       margin: '-.125rem .5rem 0 0'
     }
-  }
+  };
 };
 
 export default withStyles(styleThunk)(IconLink);

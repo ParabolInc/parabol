@@ -26,7 +26,8 @@ const Ellipsis = (props) => {
 };
 
 Ellipsis.propTypes = {
-  isAnimated: PropTypes.bool
+  isAnimated: PropTypes.bool,
+  styles: PropTypes.object,
 };
 
 Ellipsis.defaultProps = {

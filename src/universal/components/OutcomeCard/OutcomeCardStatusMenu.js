@@ -152,7 +152,8 @@ OutcomeCardStatusMenu.propTypes = {
   outcome: PropTypes.object,
   isAgenda: PropTypes.bool,
   isProject: PropTypes.bool,
-  onComplete: PropTypes.func
+  onComplete: PropTypes.func,
+  styles: PropTypes.object
 };
 
 const buttonHF = {

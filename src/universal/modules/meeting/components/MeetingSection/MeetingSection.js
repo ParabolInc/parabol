@@ -29,7 +29,8 @@ MeetingContent.propTypes = {
   children: PropTypes.any,
   flexToFill: PropTypes.bool,
   paddingBottom: PropTypes.string,
-  paddingTop: PropTypes.string
+  paddingTop: PropTypes.string,
+  styles: PropTypes.object
 };
 
 MeetingContent.defaultProps = {

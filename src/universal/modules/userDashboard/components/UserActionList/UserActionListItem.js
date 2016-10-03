@@ -45,6 +45,7 @@ UserActionListItem.propTypes = {
   id: PropTypes.string,
   isActive: PropTypes.bool,
   onChecked: PropTypes.func,
+  styles: PropTypes.object,
   team: PropTypes.string
 };
 

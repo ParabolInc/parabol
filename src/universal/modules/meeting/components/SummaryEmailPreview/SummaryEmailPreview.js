@@ -24,6 +24,7 @@ const SummaryEmailPreview = (props) => {
 };
 
 SummaryEmailPreview.propTypes = {
+  styles: PropTypes.object,
   teamOutcomes: PropTypes.array
 };
 

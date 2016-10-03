@@ -1,8 +1,6 @@
 import React, {PropTypes} from 'react';
-import {css} from 'aphrodite';
 import appTheme from 'universal/styles/theme/appTheme';
 
-const {cool, warm, dark, mid, light} = appTheme.palette;
 const white = '#fff';
 const black = appTheme.palette.dark10d;
 const palettePlus = {...appTheme.palette, white, black};

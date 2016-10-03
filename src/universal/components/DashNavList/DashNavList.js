@@ -27,6 +27,7 @@ const DashNavList = (props) => {
 };
 
 DashNavList.propTypes = {
+  styles: PropTypes.object,
   teams: PropTypes.arrayOf(
     PropTypes.shape({
       href: PropTypes.string,

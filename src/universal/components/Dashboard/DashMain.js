@@ -9,10 +9,11 @@ const DashMain = (props) => {
       {children}
     </div>
   );
-}
+};
 
 DashMain.propTypes = {
-  children: PropTypes.any
+  children: PropTypes.any,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

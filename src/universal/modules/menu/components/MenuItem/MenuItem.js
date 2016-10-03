@@ -26,7 +26,8 @@ MenuItem.propTypes = {
   closeMenu: PropTypes.func,
   isActive: PropTypes.bool,
   label: PropTypes.string,
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
+  styles: PropTypes.object
 };
 
 const activeBackgroundColor = tinycolor.mix(appTheme.palette.mid, '#fff', 85).toHexString();
@@ -36,7 +37,8 @@ const hoverFocusStyles = {
   outline: 0
 };
 const activeHoverFocusStyles = {
-  backgroundColor: activeBackgroundColor
+  backgroundColor: activeBackgroundColor,
+  styles: PropTypes.object
 };
 
 

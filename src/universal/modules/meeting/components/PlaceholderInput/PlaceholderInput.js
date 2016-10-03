@@ -25,6 +25,7 @@ MeetingAgendaInput.propTypes = {
   author: PropTypes.string,
   onChange: PropTypes.func,
   placeholder: PropTypes.string,
+  styles: PropTypes.object,
   value: PropTypes.string
 };
 

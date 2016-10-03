@@ -3,8 +3,6 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
 import layoutStyle from 'universal/styles/layout';
 
-let styles = {};
-
 const DashModal = (props) => {
   const {children, styles} = props;
   return (
@@ -17,7 +15,8 @@ const DashModal = (props) => {
 };
 
 DashModal.propTypes = {
-  children: PropTypes.any
+  children: PropTypes.any,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
 import {DashSectionHeading} from 'universal/components/Dashboard';
@@ -10,6 +10,10 @@ const AgendaHeader = (props) => {
       <DashSectionHeading icon="calendar-check-o" label="Agenda Queue" />
     </div>
   );
+};
+
+AgendaHeader.propTypes = {
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

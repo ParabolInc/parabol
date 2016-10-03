@@ -36,6 +36,12 @@ const AvatarBadge = (props) => {
   );
 };
 
+AvatarBadge.propTypes = {
+  isCheckedIn: PropTypes.bool,
+  isConnected: PropTypes.bool,
+  size: PropTypes.string,
+  styles: PropTypes.object,
+};
 const styleThunk = () => ({
   badge: {
     display: 'block',

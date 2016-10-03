@@ -7,8 +7,6 @@ import labels from 'universal/styles/theme/labels';
 import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
 import {cardBorderTop} from 'universal/styles/helpers';
 
-const combineStyles = StyleSheet.combineStyles;
-
 const SummaryCard = (props) => {
   const {
     content,
@@ -33,6 +31,7 @@ const SummaryCard = (props) => {
 SummaryCard.propTypes = {
   content: PropTypes.string,
   status: PropTypes.oneOf(labels.projectStatus.slugs),
+  styles: PropTypes.object,
   type: PropTypes.oneOf([
     'project',
     'action'

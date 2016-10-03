@@ -32,7 +32,7 @@ const NotificationBar = (props) => {
   const {activeMeetings, styles} = props;
   return (
     <div className={css(styles.bar)}>
-      <div className={css(styles.inlineBlock,styles.message)}>
+      <div className={css(styles.inlineBlock, styles.message)}>
         {'You\'ve got meeting:'}
       </div>
       <div className={css(styles.inlineBlock)}>
@@ -50,7 +50,8 @@ const NotificationBar = (props) => {
 
 
 NotificationBar.propTypes = {
-  activeMeetings: PropTypes.array
+  activeMeetings: PropTypes.array,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

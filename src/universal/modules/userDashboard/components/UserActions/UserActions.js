@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
 import ui from 'universal/styles/ui';
@@ -13,6 +13,10 @@ const UserActions = (props) => {
       <UserActionListContainer/>
     </div>
   );
+};
+
+UserActions.propTypes = {
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

@@ -78,6 +78,7 @@ const UserActionListTeamSelect = (props) => {
 
 UserActionListTeamSelect.propTypes = {
   actions: PropTypes.array,
+  styles: PropTypes.object,
   teams: PropTypes.array,
   userId: PropTypes.string
 };

@@ -24,7 +24,7 @@ export default {
     },
     async resolve(source, {invitees, teamId}, {authToken}) {
       requireSUOrTeamMember(authToken, teamId);
-      asyncInviteTeam(teamId, invitees);
+      asyncInviteTeam(authToken, teamId, invitees);
       return true;
     }
   }

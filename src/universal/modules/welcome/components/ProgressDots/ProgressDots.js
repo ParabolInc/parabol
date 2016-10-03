@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -27,7 +27,7 @@ const ProgressDots = (props) => {
   const renderDots = () => {
     const dots = [];
     for (let i = 0; i < props.numDots; i++) {
-      dots[i] = renderDot(i+1);
+      dots[i] = renderDot(i + 1);
     }
     return dots;
   };
@@ -39,10 +39,11 @@ const ProgressDots = (props) => {
 };
 
 ProgressDots.propTypes = {
+  clickFactory: PropTypes.func,
   numDots: PropTypes.number.isRequired, // how many total dots shall we draw?
   numCompleted: PropTypes.number,       // how many of the dots are completed?
   currentDot: PropTypes.number,         // which dot (1=first dot) is the user on now?
-  onClick: PropTypes.func
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

@@ -95,6 +95,7 @@ MeetingUpdates.propTypes = {
     teamId: PropTypes.string.isRequired
   }).isRequired,
   projects: PropTypes.object.isRequired,
+  styles: PropTypes.object,
   team: PropTypes.object.isRequired,
   router: PropTypes.object.isRequired,
 };

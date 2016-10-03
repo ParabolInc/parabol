@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -10,7 +10,7 @@ const faStyle = {
   color: 'white'
 };
 
-function SettingsHub(props) {
+const SettingsHub = (props) => {
   const {styles} = props;
   return (
     <div className={css(styles.root)}>
@@ -40,7 +40,11 @@ function SettingsHub(props) {
       </div>
     </div>
   );
-}
+};
+
+SettingsHub.propTypes = {
+  styles: PropTypes.object
+};
 
 const styleThunk = () => ({
   root: {

@@ -6,7 +6,8 @@ import ui from 'universal/styles/ui';
 import labels from 'universal/styles/theme/labels';
 import {ACTIVE, DONE} from 'universal/utils/constants';
 import FontAwesome from 'react-fontawesome';
-import {ib, cardBorderTop, cardRootStyles} from 'universal/styles/helpers';
+import {ib, cardBorderTop} from 'universal/styles/helpers';
+import cardRootStyles from 'universal/styles/helpers/cardRootStyles';
 
 const iconStyle = {
   ...ib,
@@ -57,7 +58,8 @@ SummaryQuickStats.propTypes = {
   countNewActions: PropTypes.number,
   countNewProjects: PropTypes.number,
   countUpdates: PropTypes.number,
-  countDone: PropTypes.number
+  countDone: PropTypes.number,
+  styles: PropTypes.object
 };
 
 SummaryQuickStats.defaultProps = {

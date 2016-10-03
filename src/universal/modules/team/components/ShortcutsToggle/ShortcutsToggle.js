@@ -18,7 +18,8 @@ const ShortcutsToggle = (props) => {
 };
 
 ShortcutsToggle.propTypes = {
-  handleOnClick: PropTypes.func
+  handleOnClick: PropTypes.func,
+  styles: PropTypes.object
 };
 const hoverFocus = {
   backgroundColor: appTheme.palette.dark30l,

@@ -34,6 +34,7 @@ const TeamArchiveHeader = (props) => {
 
 TeamArchiveHeader.propTypes = {
   children: PropTypes.any,
+  styles: PropTypes.object,
   teamId: PropTypes.string
 };
 

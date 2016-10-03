@@ -7,7 +7,7 @@ import {UPDATES} from 'universal/utils/constants';
 
 const AvatarGroup = (props) => {
   const {localPhase, avatars, styles} = props;
-  const label = localPhase === UPDATES ? 'Updates given:': 'Team:';
+  const label = localPhase === UPDATES ? 'Updates given:' : 'Team:';
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.label)}>
@@ -26,7 +26,8 @@ const AvatarGroup = (props) => {
 
 AvatarGroup.propTypes = {
   localPhase: PropTypes.string,
-  avatars: PropTypes.array
+  avatars: PropTypes.array,
+  styles: PropTypes.object
 };
 
 // NOTE: outer padding for positioned label and overall centering

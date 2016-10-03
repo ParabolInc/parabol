@@ -35,7 +35,8 @@ CheckInCard.propTypes = {
   checkInPressFactory: PropTypes.func,
   handleCardClick: PropTypes.func,
   isActive: PropTypes.bool,
-  member: PropTypes.object
+  member: PropTypes.object,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({
