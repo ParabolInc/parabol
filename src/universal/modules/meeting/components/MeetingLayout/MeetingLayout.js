@@ -1,18 +1,22 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 
-let styles = {};
-
-const MeetingLayout = (props) =>
-  <div className={styles.root}>
-    {props.children}
-  </div>;
-
-MeetingLayout.propTypes = {
-  children: PropTypes.any
+const MeetingLayout = (props) => {
+  const {children, styles} = props;
+  return (
+    <div className={css(styles.root)}>
+      {children}
+    </div>
+  );
 };
 
-styles = StyleSheet.create({
+MeetingLayout.propTypes = {
+  children: PropTypes.any,
+  styles: PropTypes.object
+};
+
+const styleThunk = () => ({
   root: {
     backgroundColor: '#fff',
     display: 'flex !important',
@@ -20,4 +24,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default look(MeetingLayout);
+export default withStyles(styleThunk)(MeetingLayout);

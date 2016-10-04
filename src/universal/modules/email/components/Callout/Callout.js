@@ -1,13 +1,14 @@
 import React, {PropTypes} from 'react';
 import EmptySpace from '../EmptySpace/EmptySpace';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 
 const Callout = (props) => {
   const textStyle = {
     backgroundColor: '#fff',
     border: '2px solid #D2D3DC',
-    color: theme.palette.dark,
-    fontFamily: '"Karla", "Helvetica Neue", serif',
+    color: appTheme.palette.dark,
+    fontFamily: ui.emailFontFamily,
     fontSize: `${props.fontSize}px`,
     fontWeight: props.fontWeight,
     lineHeight: `${props.lineHeight}`,

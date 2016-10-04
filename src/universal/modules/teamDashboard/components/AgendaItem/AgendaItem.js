@@ -1,48 +1,66 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import tinycolor from 'tinycolor2';
 import FontAwesome from 'react-fontawesome';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import voidClick from 'universal/utils/voidClick';
 
-const combineStyles = StyleSheet.combineStyles;
-const warmLinkHover = tinycolor(theme.palette.warm).darken(15).toHexString();
-let styles = {};
-
 const AgendaItem = props => {
-  const {desc, idx, handleRemove, isComplete, agendaPhaseItem, gotoAgendaItem, teamMember = {}} = props;
+  const {desc, idx, handleRemove, isComplete, agendaPhaseItem, gotoAgendaItem, styles, teamMember = {}} = props;
   const isCurrent = idx + 1 === agendaPhaseItem;
   const canDelete = !isComplete && !isCurrent;
   const isMeeting = agendaPhaseItem !== undefined;
   const handleGoto = isMeeting ? gotoAgendaItem : voidClick;
-  let rootStyles = combineStyles(styles.root, styles[status]);
-  let descStyles;
-  if (isCurrent) {
-    rootStyles = combineStyles(rootStyles, styles.itemActive);
-    descStyles = combineStyles(descStyles, styles.descActive);
-  } else if (isComplete) {
-    rootStyles = combineStyles(rootStyles, styles.processed);
-    descStyles = styles.strikethrough;
-  }
+  const rootStyles = css(
+    styles.root,
+    styles[status],
+    isCurrent && styles.itemActive,
+    isComplete && styles.processed
+  );
+  const descStyles = css(
+    isCurrent && styles.descActive,
+    isComplete && styles.strikethrough
+  );
   return (
     <div className={rootStyles} title={desc}>
       {canDelete &&
-        <div className={styles.del} onClick={handleRemove}>
+        <div className={css(styles.del)} onClick={handleRemove}>
           <FontAwesome name="times-circle" style={{lineHeight: 'inherit'}}/>
         </div>
       }
-      <div className={styles.index}>{idx + 1}.</div>
-      <div className={styles.desc} onClick={handleGoto}>
+      <div className={css(styles.index)}>{idx + 1}.</div>
+      <div className={css(styles.desc)} onClick={handleGoto}>
         <a className={descStyles} >{desc}</a>”
       </div>
-      <div className={styles.author}>
+      <div className={css(styles.author)}>
         <Avatar hasBadge={false} picture={teamMember.picture} size="smallest"/>
       </div>
     </div>
   );
 };
 
+AgendaItem.propTypes = {
+  agendaPhaseItem: PropTypes.number,
+  desc: PropTypes.string,
+  idx: PropTypes.number,
+  isCurrent: PropTypes.bool,
+  isComplete: PropTypes.bool,
+  gotoAgendaItem: PropTypes.func,
+  handleRemove: PropTypes.func,
+  status: PropTypes.oneOf([
+    'active',
+    'onDrag',
+    'onHover',
+    'processed',
+    'waiting'
+  ]),
+  styles: PropTypes.object,
+  teamMember: PropTypes.object
+};
+
+const warmLinkHover = tinycolor(appTheme.palette.warm).darken(15).toHexString();
 const block = {
   lineHeight: '1.5rem'
 };
@@ -53,20 +71,20 @@ const inlineBlock = {
   verticalAlign: 'top'
 };
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     backgroundColor: 'transparent',
-    color: theme.palette.cool,
-    fontSize: theme.typography.s3,
+    color: appTheme.palette.cool,
+    fontSize: appTheme.typography.s3,
     padding: '.5rem .5rem .5rem 0',
     position: 'relative',
     width: '100%',
 
     ':hover': {
-      backgroundColor: theme.palette.dark20l
+      backgroundColor: appTheme.palette.dark20l
     },
     ':focus': {
-      backgroundColor: theme.palette.dark20l
+      backgroundColor: appTheme.palette.dark20l
     },
     ':hover > div': {
       opacity: 1
@@ -75,7 +93,7 @@ styles = StyleSheet.create({
 
   del: {
     ...block,
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     cursor: 'pointer',
     left: '1.125rem',
     height: '1.5rem',
@@ -87,8 +105,8 @@ styles = StyleSheet.create({
 
   desc: {
     ...inlineBlock,
-    fontFamily: theme.typography.serif,
-    fontSize: theme.typography.s3,
+    fontFamily: appTheme.typography.serif,
+    fontSize: appTheme.typography.s3,
     fontStyle: 'italic',
     fontWeight: 700,
     padding: '0 40px 0 0',
@@ -107,11 +125,11 @@ styles = StyleSheet.create({
   },
 
   itemActive: {
-    color: theme.palette.warm
+    color: appTheme.palette.warm
   },
 
   descActive: {
-    color: theme.palette.warm,
+    color: appTheme.palette.warm,
     ':hover': {
       color: warmLinkHover
     },
@@ -137,7 +155,7 @@ styles = StyleSheet.create({
   },
 
   active: {
-    color: theme.palette.warm
+    color: appTheme.palette.warm
   },
 
   processed: {
@@ -163,28 +181,4 @@ styles = StyleSheet.create({
   }
 });
 
-AgendaItem.propTypes = {
-  agendaPhaseItem: PropTypes.number,
-  desc: PropTypes.string,
-  idx: PropTypes.number,
-  isCurrent: PropTypes.bool,
-  isComplete: PropTypes.bool,
-  gotoAgendaItem: PropTypes.func,
-  handleRemove: PropTypes.func,
-  status: PropTypes.oneOf([
-    'active',
-    'onDrag',
-    'onHover',
-    'processed',
-    'waiting'
-  ]),
-  teamMember: PropTypes.object
-};
-
-AgendaItem.defaultProps = {
-  desc: 'pull request',
-  index: 1,
-  status: 'waiting'
-};
-
-export default look(AgendaItem);
+export default withStyles(styleThunk)(AgendaItem);

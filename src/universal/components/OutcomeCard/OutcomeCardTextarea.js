@@ -1,40 +1,11 @@
 import React, {Component, PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import Textarea from 'react-textarea-autosize';
 
-const combineStyles = StyleSheet.combineStyles;
-
-const descriptionBase = {
-  backgroundColor: 'transparent',
-  border: 0,
-  borderBottom: '1px solid transparent',
-  borderTop: '1px solid transparent',
-  color: theme.palette.dark10d,
-  outline: 'none'
-};
-
-const descriptionFA = {
-  backgroundColor: theme.palette.mid10l,
-  borderBottomColor: ui.cardBorderColor,
-  borderTopColor: ui.cardBorderColor,
-  color: theme.palette.mid10d
-};
-
-const descriptionActionFA = {
-  backgroundColor: 'rgba(255, 255, 255, .85)',
-  borderBottomColor: ui.cardBorderColor,
-  borderTopColor: ui.cardBorderColor,
-  color: theme.palette.mid10d
-};
-
-const descriptionBreakpoint = '@media (min-width: 90rem)';
-
-let styles = {};
-
-@look
-export default class OutcomeCardTextArea extends Component {
+class OutcomeCardTextArea extends Component {
   static propTypes = {
     cardHasHover: PropTypes.bool,
     doFocus: PropTypes.bool,
@@ -42,14 +13,16 @@ export default class OutcomeCardTextArea extends Component {
     handleActive: PropTypes.func,
     handleSubmit: PropTypes.func,
     input: PropTypes.object,
+    isActionListItem: PropTypes.bool,
     isArchived: PropTypes.bool,
     isProject: PropTypes.bool,
-    teamMemberId: PropTypes.string,
-    teamMembers: PropTypes.array,
-    timestamp: PropTypes.string,
     meta: PropTypes.shape({
       active: PropTypes.bool
     }),
+    styles: PropTypes.object,
+    teamMemberId: PropTypes.string,
+    teamMembers: PropTypes.array,
+    timestamp: PropTypes.string,
   };
 
   componentWillReceiveProps(nextProps) {
@@ -63,22 +36,25 @@ export default class OutcomeCardTextArea extends Component {
   render() {
     const {
       cardHasHover,
-      editingStatus,
       handleSubmit,
       input,
+      isActionListItem,
       isArchived,
       isProject,
-      doFocus
+      doFocus,
+      styles,
     } = this.props;
-    let contentStyles = styles.content;
-    let textAreaRef;
 
-    const contentStyleWhenCardHovered = combineStyles(styles.content, styles.contentWhenCardHovered);
-    const actionContentStyleWhenCardHovered = combineStyles(
-      styles.content,
-      styles.descriptionAction,
-      styles.actionContentWhenCardHovered
+    const contentStyles = css(
+      !isActionListItem && styles.content,
+      isActionListItem && styles.actionListContent,
+      isProject && cardHasHover && styles.contentWhenCardHovered,
+      isArchived && styles.isArchived,
+      !isProject && cardHasHover && styles.actionContentWhenCardHovered,
+      !isProject && styles.descriptionAction
     );
+
+    let textAreaRef;
     const handleBlur = () => {
       handleSubmit();
       input.onBlur();
@@ -98,50 +74,77 @@ export default class OutcomeCardTextArea extends Component {
       }
     };
 
-    if (isProject) {
-      contentStyles = cardHasHover ? contentStyleWhenCardHovered : styles.content;
-    } else {
-      contentStyles = cardHasHover ?
-        actionContentStyleWhenCardHovered :
-        combineStyles(styles.content, styles.descriptionAction);
-    }
-
-    if (isArchived) {
-      contentStyles = combineStyles(styles.content, styles.isArchived);
-    }
-
     return (
-      <div>
-        <div className={styles.timestamp}>
-          {editingStatus}
-        </div>
-        <Textarea
-          {...input}
-          ref={setRef}
-          className={contentStyles}
-          disabled={isArchived}
-          placeholder="Type your outcome here"
-          onBlur={handleBlur}
-          onKeyDown={submitOnEnter}
-          onKeyUp={handleKeyPress}
-          autoFocus={doFocus}
-        />
-      </div>
+      <Textarea
+        {...input}
+        ref={setRef}
+        className={contentStyles}
+        disabled={isArchived}
+        placeholder="Type your outcome here"
+        onBlur={handleBlur}
+        onKeyDown={submitOnEnter}
+        onKeyUp={handleKeyPress}
+        autoFocus={doFocus}
+      />
     );
   }
 }
 
-styles = StyleSheet.create({
+const basePadding = '.375rem';
+const labelHeight = '1.5rem';
+
+const baseStyles = {
+  backgroundColor: 'transparent',
+  border: 0,
+  boxShadow: 'none',
+  display: 'block',
+  fontFamily: appTheme.typography.sansSerif,
+  fontSize: appTheme.typography.s3,
+  lineHeight: appTheme.typography.s5,
+  outline: 'none',
+  resize: 'none',
+  width: '100%'
+};
+
+const descriptionBase = {
+  ...baseStyles,
+  borderBottom: '1px solid transparent',
+  borderTop: '1px solid transparent',
+  color: appTheme.palette.dark10d
+};
+
+const descriptionFA = {
+  backgroundColor: appTheme.palette.mid10l,
+  borderBottomColor: ui.cardBorderColor,
+  borderTopColor: ui.cardBorderColor,
+  color: appTheme.palette.mid10d
+};
+
+const descriptionActionFA = {
+  backgroundColor: ui.actionCardBgActive,
+  borderBottomColor: ui.cardBorderColor,
+  borderTopColor: ui.cardBorderColor,
+  color: appTheme.palette.mid10d
+};
+
+const descriptionBreakpoint = '@media (min-width: 90rem)';
+
+const styleThunk = () => ({
+  actionListContent: {
+    ...baseStyles,
+    padding: `${basePadding} ${basePadding} ${labelHeight} 1.75rem`,
+
+    ':hover': {
+      backgroundColor: ui.actionCardBgActive
+    },
+    ':focus': {
+      backgroundColor: ui.actionCardBgActive
+    }
+  },
   content: {
     ...descriptionBase,
-    display: 'block',
-    fontFamily: theme.typography.sansSerif,
-    fontSize: theme.typography.s3,
-    lineHeight: theme.typography.s5,
     minHeight: '3.3125rem',
     padding: `0 ${ui.cardPaddingBase} .1875rem`,
-    resize: 'none',
-    width: '100%',
 
     ':focus': {
       ...descriptionFA
@@ -151,8 +154,8 @@ styles = StyleSheet.create({
     },
 
     [descriptionBreakpoint]: {
-      fontSize: theme.typography.sBase,
-      lineHeight: theme.typography.s6
+      fontSize: appTheme.typography.sBase,
+      lineHeight: appTheme.typography.s6
     }
   },
 
@@ -174,15 +177,6 @@ styles = StyleSheet.create({
     ...descriptionActionFA
   },
 
-  timestamp: {
-    color: theme.palette.dark,
-    fontSize: theme.typography.s1,
-    fontWeight: 700,
-    lineHeight: theme.typography.s3,
-    padding: `.25rem ${ui.cardPaddingBase}`,
-    textAlign: 'right'
-  },
-
   isArchived: {
     cursor: 'not-allowed',
 
@@ -194,3 +188,5 @@ styles = StyleSheet.create({
     }
   }
 });
+
+export default withStyles(styleThunk)(OutcomeCardTextArea);

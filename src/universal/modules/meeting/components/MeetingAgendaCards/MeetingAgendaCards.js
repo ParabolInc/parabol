@@ -1,12 +1,14 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import {cashay} from 'cashay';
 import shortid from 'shortid';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
 import {ACTIVE} from 'universal/utils/constants';
-import AgendaCard from 'universal/modules/meeting/components/AgendaCard/AgendaCard';
+import AgendaCard from 'universal/modules/meeting/containers/AgendaCard/AgendaCard';
 import withHotkey from 'react-hotkey-hoc';
 import NullCard from 'universal/components/NullCard/NullCard';
+import makeUsername from 'universal/utils/makeUsername';
 
 const handleAddActionFactory = (teamMemberId, agendaId) => () => {
   const [, teamId] = teamMemberId.split('::');
@@ -32,15 +34,13 @@ const handleAddProjectFactory = (teamMemberId, agendaId) => () => {
   cashay.mutate('createProject', {variables: {newProject}});
 };
 
-let s = {};
-
-const makeCards = (array, dispatch, myTeamMemberId) => {
+const makeCards = (array, dispatch, myTeamMemberId, itemStyle) => {
   return array.map((outcome) => {
     const {type, id, teamMember: {preferredName}, content, teamMemberId} = outcome;
     const key = `${type}OutcomeCard${id}`;
-    const username = preferredName && preferredName.replace(/\s+/g, '');
+    const username = makeUsername(preferredName);
     return (
-      <div className={s.item} key={key}>
+      <div className={css(itemStyle)} key={key}>
         {(!content && myTeamMemberId !== teamMemberId) ?
           <NullCard username={username}/> :
           <AgendaCard form={key} dispatch={dispatch} outcome={outcome}/>
@@ -50,12 +50,12 @@ const makeCards = (array, dispatch, myTeamMemberId) => {
   });
 };
 
-const makePlaceholders = (length) => {
+const makePlaceholders = (length, itemStyle) => {
   const rowLength = 4;
   const emptyCardCount = rowLength - (length % rowLength + 1);
   return new Array(emptyCardCount).fill(undefined).map((item, idx) =>
     <div
-      className={s.item}
+      className={css(itemStyle)}
       key={`CreateCardPlaceholder${idx}`}
     >
       <CreateCard />
@@ -63,19 +63,19 @@ const makePlaceholders = (length) => {
 };
 
 const MeetingAgendaCards = (props) => {
-  const {agendaId, bindHotkey, dispatch, myTeamMemberId, outcomes} = props;
+  const {agendaId, bindHotkey, dispatch, myTeamMemberId, outcomes, styles} = props;
   const handleAddAction = handleAddActionFactory(myTeamMemberId, agendaId);
   const handleAddProject = handleAddProjectFactory(myTeamMemberId, agendaId);
   bindHotkey('a', handleAddAction);
   bindHotkey('p', handleAddProject);
   return (
-    <div className={s.root}>
+    <div className={css(styles.root)}>
       {/* Get Cards */}
       {outcomes.length !== 0 &&
-      makeCards(outcomes, dispatch, myTeamMemberId)
+      makeCards(outcomes, dispatch, myTeamMemberId, styles.item)
       }
       {/* Input Card */}
-      <div className={s.item}>
+      <div className={css(styles.item)}>
         <CreateCard
           handleAddAction={handleAddAction}
           handleAddProject={handleAddProject}
@@ -83,12 +83,21 @@ const MeetingAgendaCards = (props) => {
         />
       </div>
       {/* Placeholder Cards */}
-      {makePlaceholders(outcomes.length)}
+      {makePlaceholders(outcomes.length, styles.item)}
     </div>
   );
 };
 
-s = StyleSheet.create({
+MeetingAgendaCards.propTypes = {
+  agendaId: PropTypes.string.isRequired,
+  bindHotkey: PropTypes.func,
+  dispatch: PropTypes.func,
+  myTeamMemberId: PropTypes.string,
+  outcomes: PropTypes.array.isRequired,
+  styles: PropTypes.object
+};
+
+const styleThunk = () => ({
   root: {
     display: 'flex !important',
     flexWrap: 'wrap'
@@ -101,12 +110,4 @@ s = StyleSheet.create({
   }
 });
 
-MeetingAgendaCards.propTypes = {
-  agendaId: PropTypes.string.isRequired,
-  bindHotkey: PropTypes.func,
-  dispatch: PropTypes.func,
-  myTeamMemberId: PropTypes.string,
-  outcomes: PropTypes.array.isRequired
-};
-
-export default withHotkey(look(MeetingAgendaCards));
+export default withHotkey(withStyles(styleThunk)(MeetingAgendaCards));

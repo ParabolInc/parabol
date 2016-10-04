@@ -1,16 +1,16 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import Ellipsis from '../Ellipsis/Ellipsis';
-import Type from '../Type/Type';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
+import {Ellipsis, Type} from 'universal/components';
 import CreateCardRootStyles from '../CreateCard/CreateCardRootStyles';
-
-let s = {};
+import {cardBorderTop} from 'universal/styles/helpers';
 
 const NullCard = (props) => {
-  const {username} = props;
+  const {styles, username} = props;
   return (
-    <div className={s.root}>
-      <Type align="center" bold scale="s3" theme="mid">
+    <div className={css(styles.root)}>
+      <Type align="center" bold scale="s3" colorPalette="mid">
         @{username}<br />is adding a project<Ellipsis />
       </Type>
     </div>
@@ -18,17 +18,19 @@ const NullCard = (props) => {
 };
 
 NullCard.propTypes = {
+  styles: PropTypes.object,
   username: PropTypes.string,
 };
 
-NullCard.defaultProps = {
-  username: 'TayaMueller',
-};
-
-s = StyleSheet.create({
+const styleThunk = () => ({
   root: {
-    ...CreateCardRootStyles
+    ...CreateCardRootStyles,
+
+    '::after': {
+      ...cardBorderTop,
+      color: appTheme.palette.mid40l
+    }
   }
 });
 
-export default look(NullCard);
+export default withStyles(styleThunk)(NullCard);

@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import FontAwesome from 'react-fontawesome';
 import {Link} from 'react-router';
@@ -19,12 +20,11 @@ const iconStyle = {
 };
 
 const TeamArchiveHeader = (props) => {
-  const {teamId} = props;
-  const {styles} = TeamArchiveHeader;
+  const {styles, teamId} = props;
   return (
-    <div className={styles.root}>
+    <div className={css(styles.root)}>
       <DashSectionHeading icon="archive" label="Archived Projects" margin="0 2rem 0 0" />
-      <Link className={styles.link} to={`/team/${teamId}`} title="Back to Team Projects">
+      <Link className={css(styles.link)} to={`/team/${teamId}`} title="Back to Team Projects">
         <FontAwesome name="arrow-circle-left" style={iconStyle} />
         <div style={inlineBlockStyle}>Back to Team Projects</div>
       </Link>
@@ -34,10 +34,11 @@ const TeamArchiveHeader = (props) => {
 
 TeamArchiveHeader.propTypes = {
   children: PropTypes.any,
+  styles: PropTypes.object,
   teamId: PropTypes.string
 };
 
-TeamArchiveHeader.styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     padding: '1rem 1rem 1rem 0',
     width: '100%'
@@ -45,16 +46,16 @@ TeamArchiveHeader.styles = StyleSheet.create({
 
   link: {
     ...inlineBlockStyle,
-    color: theme.palette.mid,
-    fontSize: theme.typography.s3,
+    color: appTheme.palette.mid,
+    fontSize: appTheme.typography.s3,
     height: ui.dashSectionHeaderLineHeight,
     paddingTop: '1px',
 
     ':hover': {
-      color: theme.palette.dark,
+      color: appTheme.palette.dark,
     },
     ':focus': {
-      color: theme.palette.dark,
+      color: appTheme.palette.dark,
     },
     ':hover > div': {
       textDecoration: 'underline'
@@ -65,4 +66,4 @@ TeamArchiveHeader.styles = StyleSheet.create({
   }
 });
 
-export default look(TeamArchiveHeader);
+export default withStyles(styleThunk)(TeamArchiveHeader);

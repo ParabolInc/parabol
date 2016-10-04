@@ -1,23 +1,23 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-
-const combineStyles = StyleSheet.combineStyles;
-
-let s = {};
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 
 const MeetingContent = (props) => {
   const {
     children,
     flexToFill,
     paddingBottom,
-    paddingTop
+    paddingTop,
+    styles
   } = props;
   const stylePadding = {
     paddingBottom,
     paddingTop
   };
-  const flexStyles = combineStyles(s.root, s.flex);
-  const rootStyles = flexToFill ? flexStyles : s.root;
+  const rootStyles = css(
+    styles.root,
+    flexToFill && styles.flex
+  );
   return (
     <div className={rootStyles} style={stylePadding}>
       {children}
@@ -29,7 +29,8 @@ MeetingContent.propTypes = {
   children: PropTypes.any,
   flexToFill: PropTypes.bool,
   paddingBottom: PropTypes.string,
-  paddingTop: PropTypes.string
+  paddingTop: PropTypes.string,
+  styles: PropTypes.object
 };
 
 MeetingContent.defaultProps = {
@@ -37,7 +38,7 @@ MeetingContent.defaultProps = {
   paddingTop: '0px'
 };
 
-s = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     alignItems: 'center',
     backgroundColor: '#fff',
@@ -53,4 +54,4 @@ s = StyleSheet.create({
   }
 });
 
-export default look(MeetingContent);
+export default withStyles(styleThunk)(MeetingContent);

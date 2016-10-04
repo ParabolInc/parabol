@@ -1,17 +1,15 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import Avatar from 'universal/components/Avatar/Avatar';
 
-let s = {};
-
 const DashboardAvatars = (props) => {
-  const {teamMembers} = props;
-
+  const {teamMembers, styles} = props;
   return (
-    <div className={s.root}>
+    <div className={css(styles.root)}>
       {
         teamMembers.map((avatar, index) =>
-          <div className={s.item} key={`dbAvatar${index}`}>
+          <div className={css(styles.item)} key={`dbAvatar${index}`}>
             <Avatar {...avatar} hasBadge={false} size="smaller" />
           </div>
         )
@@ -21,10 +19,11 @@ const DashboardAvatars = (props) => {
 };
 
 DashboardAvatars.propTypes = {
+  styles: PropTypes.object,
   teamMembers: PropTypes.array
 };
 
-s = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     fontSize: 0,
     position: 'relative',
@@ -40,4 +39,4 @@ s = StyleSheet.create({
   }
 });
 
-export default look(DashboardAvatars);
+export default withStyles(styleThunk)(DashboardAvatars);

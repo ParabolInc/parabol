@@ -1,7 +1,8 @@
 import React, {PropTypes} from 'react';
 import {Link} from 'react-router';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import ib from 'universal/styles/helpers/ib';
 import {
   DashSectionControl,
@@ -17,8 +18,7 @@ const iconStyle = {
 };
 
 const TeamProjectsHeader = (props) => {
-  const {teamId} = props;
-  const {styles} = TeamProjectsHeader;
+  const {styles, teamId} = props;
   return (
     <DashSectionHeader>
       <DashSectionHeading icon="calendar" label="Team Projects" />
@@ -26,7 +26,7 @@ const TeamProjectsHeader = (props) => {
         {/* TODO: needs link to archive */}
         <DashSectionControl>
           <FontAwesome name="archive" style={iconStyle} />
-          <Link className={styles.link} to={`/team/${teamId}/archive`}>
+          <Link className={css(styles.link)} to={`/team/${teamId}/archive`}>
             See Archived Projects
           </Link>
         </DashSectionControl>
@@ -34,7 +34,7 @@ const TeamProjectsHeader = (props) => {
         <DashSectionControl>
           <b style={ib}>Show by Team Member</b>:
           {' '}
-          <a className={styles.link} href="#" title="Filter by All Team Members">
+          <a className={css(styles.link)} href="#" title="Filter by All Team Members">
             All Team Members
           </a>
           {' '}
@@ -47,21 +47,22 @@ const TeamProjectsHeader = (props) => {
 
 TeamProjectsHeader.propTypes = {
   children: PropTypes.any,
+  styles: PropTypes.object,
   teamId: PropTypes.string,
 };
 
-TeamProjectsHeader.styles = StyleSheet.create({
+const styleThunk = () => ({
   link: {
     ...ib,
-    color: theme.palette.mid,
+    color: appTheme.palette.mid,
 
     ':hover': {
-      color: theme.palette.dark
+      color: appTheme.palette.dark
     },
     ':focus': {
-      color: theme.palette.dark
+      color: appTheme.palette.dark
     }
   }
 });
 
-export default look(TeamProjectsHeader);
+export default withStyles(styleThunk)(TeamProjectsHeader);

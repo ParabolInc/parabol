@@ -1,6 +1,5 @@
 import path from 'path';
 import webpack from 'webpack';
-import WebpackShellPlugin from 'webpack-shell-plugin';
 import HappyPack from 'happypack';
 
 const root = process.cwd();
@@ -15,7 +14,7 @@ const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(s
 
 export default {
   context: path.join(root, 'src'),
-  entry: {prerender: '../src/server/routesOrPrerender.js'},
+  entry: {prerender: '../src/universal/routes/index.js'},
   target: 'node',
   output: {
     path: path.join(root, 'build'),
@@ -42,12 +41,6 @@ export default {
       __PRODUCTION__: true,
       __WEBPACK__: true,
       'process.env.NODE_ENV': JSON.stringify('production')
-    }),
-    new WebpackShellPlugin({
-      onBuildStart: [
-        // eslint-disable-next-line max-len
-        'NODE_ENV=development mkdir -p ./build && node_modules/.bin/babel-node ./webpack/utils/buildThemeJSON.js > ./build/theme.json'
-      ]
     }),
     new HappyPack({
       loaders: ['babel'],

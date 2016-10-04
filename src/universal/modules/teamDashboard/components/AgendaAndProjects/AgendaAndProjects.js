@@ -1,25 +1,22 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import layout from 'universal/styles/layout';
 import ui from 'universal/styles/ui';
 import TeamAgenda from 'universal/modules/teamDashboard/components/TeamAgenda/TeamAgenda';
 import TeamColumnsContainer from 'universal/modules/teamDashboard/containers/TeamColumns/TeamColumnsContainer';
 import TeamProjectsHeader from 'universal/modules/teamDashboard/components/TeamProjectsHeader/TeamProjectsHeader';
 
-const borderColor = ui.dashBorderColor;
-const {combineStyles} = StyleSheet;
-
 const AgendaAndProjects = (props) => {
-  const {styles} = AgendaAndProjects;
-  const {teamId} = props.params;
+  const {params: {teamId}, styles} = props;
   return (
-    <div className={styles.root}>
-      <div className={styles.inner}>
-        <div className={styles.agendaLayout}>
+    <div className={css(styles.root)}>
+      <div className={css(styles.inner)}>
+        <div className={css(styles.agendaLayout)}>
           <TeamAgenda teamId={teamId}/>
         </div>
-        <div className={styles.projectsLayout}>
-          <div className={combineStyles(styles.root, styles.projects)}>
+        <div className={css(styles.projectsLayout)}>
+          <div className={css(styles.root, styles.projects)}>
             <TeamProjectsHeader
               teamId={teamId}
             />
@@ -35,11 +32,13 @@ const AgendaAndProjects = (props) => {
 
 AgendaAndProjects.propTypes = {
   params: PropTypes.object,
+  styles: PropTypes.object,
   teamId: PropTypes.string,
   teamMembers: PropTypes.array
 };
 
-AgendaAndProjects.styles = StyleSheet.create({
+const borderColor = ui.dashBorderColor;
+const styleThunk = () => ({
   root: {
     display: 'flex',
     flex: 1,
@@ -74,4 +73,4 @@ AgendaAndProjects.styles = StyleSheet.create({
   }
 });
 
-export default look(AgendaAndProjects);
+export default withStyles(styleThunk)(AgendaAndProjects);

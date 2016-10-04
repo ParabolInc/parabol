@@ -1,25 +1,27 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-
-const combineStyles = StyleSheet.combineStyles;
-let styles = {};
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 
 const DashHeader = (props) => {
-  const {hasOverlay} = props;
-  const rootStyles = hasOverlay ? combineStyles(styles.root, styles.hasOverlay) : styles.root;
+  const {children, hasOverlay, styles} = props;
+  const rootStyles = css(
+    styles.root,
+    hasOverlay && styles.hasOverlay
+  );
   return (
     <div className={rootStyles}>
-      {props.children}
+      {children}
     </div>
   );
 };
 
 DashHeader.propTypes = {
   children: PropTypes.any,
-  hasOverlay: PropTypes.bool
+  hasOverlay: PropTypes.bool,
+  styles: PropTypes.object
 };
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     alignItems: 'center',
     backgroundColor: '#fff',
@@ -35,4 +37,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default look(DashHeader);
+export default withStyles(styleThunk)(DashHeader);

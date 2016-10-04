@@ -1,26 +1,32 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import ib from 'universal/styles/helpers/ib';
+import ui from 'universal/styles/ui';
 
-let styles = {};
-
-const DashSectionControl = (props) =>
-  <div className={styles.root}>
-    {props.children}
-  </div>;
-
-DashSectionControl.propTypes = {
-  children: PropTypes.any
+const DashSectionControl = (props) => {
+  const {children, styles} = props;
+  return (
+    <div className={css(styles.root)}>
+      {children}
+    </div>
+  );
 };
 
-styles = StyleSheet.create({
+DashSectionControl.propTypes = {
+  children: PropTypes.any,
+  styles: PropTypes.object,
+};
+
+const styleThunk = () => ({
   root: {
     ...ib,
-    color: theme.palette.mid,
-    fontSize: theme.typography.s3,
+    color: appTheme.palette.mid,
+    fontSize: appTheme.typography.s3,
+    height: ui.dashSectionHeaderLineHeight,
     marginLeft: '2rem'
   }
 });
 
-export default look(DashSectionControl);
+export default withStyles(styleThunk)(DashSectionControl);

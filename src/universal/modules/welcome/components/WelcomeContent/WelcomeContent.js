@@ -1,25 +1,22 @@
-import React, {Component, PropTypes} from 'react';
-import look, { StyleSheet } from 'react-look';
+import React, {PropTypes} from 'react';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 
-let styles = {};
+const WelcomeHeader = (props) => {
+  const {children, styles} = props;
+  return (
+    <div className={css(styles.root)}>
+      {children}
+    </div>
+  );
+};
 
-@look
-// eslint-disable-next-line react/prefer-stateless-function
-export default class WelcomeHeader extends Component {
-  static propTypes = {
-    children: PropTypes.any
-  }
+WelcomeHeader.propTypes = {
+  children: PropTypes.any,
+  styles: PropTypes.object
+};
 
-  render() {
-    return (
-      <div className={styles.root}>
-        {this.props.children}
-      </div>
-    );
-  }
-}
-
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     alignContent: 'center',
     display: 'flex !important',
@@ -31,3 +28,5 @@ styles = StyleSheet.create({
     position: 'relative'
   }
 });
+
+export default withStyles(styleThunk)(WelcomeHeader);

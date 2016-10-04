@@ -1,4 +1,3 @@
-import r from 'server/database/rethinkDriver';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
@@ -6,16 +5,9 @@ import {
   GraphQLList,
 } from 'graphql';
 import {Invitee} from './invitationSchema';
-import {errorObj} from '../utils';
-import {requireSUOrTeamMember, getUserId} from '../authorization';
+import {requireSUOrTeamMember} from '../authorization';
 
-import {
-  makeInviteToken,
-  resolveSentEmails,
-  makeInvitationsForDB,
-  getInviterInfoAndTeamName,
-  createEmailPromises,
-} from './helpers';
+import {asyncInviteTeam} from './helpers';
 
 export default {
   inviteTeamMembers: {
@@ -32,17 +24,7 @@ export default {
     },
     async resolve(source, {invitees, teamId}, {authToken}) {
       requireSUOrTeamMember(authToken, teamId);
-      const userId = getUserId(authToken);
-      const inviteesWithTokens = invitees.map(invitee => ({...invitee, inviteToken: makeInviteToken()}));
-      const inviterInfoAndTeamName = await getInviterInfoAndTeamName(teamId, userId);
-      const sendEmailPromises = createEmailPromises(inviterInfoAndTeamName, inviteesWithTokens);
-      const {inviteeErrors, inviteesToStore} = await resolveSentEmails(sendEmailPromises, inviteesWithTokens);
-      const invitationsForDB = await makeInvitationsForDB(inviteesToStore, teamId);
-      // Bulk insert, wait in case something queries the invitation table
-      await r.table('Invitation').insert(invitationsForDB);
-      if (inviteeErrors.length > 0) {
-        throw errorObj({_error: 'Some invitations were not sent', type: 'inviteSendFail', failedEmails: inviteeErrors});
-      }
+      asyncInviteTeam(authToken, teamId, invitees);
       return true;
     }
   }

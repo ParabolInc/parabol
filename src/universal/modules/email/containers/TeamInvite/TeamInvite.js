@@ -4,24 +4,24 @@ import Button from '../../components/Button/Button';
 import EmptySpace from '../../components/EmptySpace/EmptySpace';
 import Body from '../../components/Body/Body';
 import Footer from '../../components/Footer/Footer';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 
 const colorCool = {
-  color: theme.palette.cool
+  color: appTheme.palette.cool
 };
 
 const colorWarm = {
-  color: theme.palette.warm
+  color: appTheme.palette.warm
 };
 
 const boldLinkStyle = {
-  color: theme.palette.warm,
+  color: appTheme.palette.warm,
   fontWeight: 'bold',
   textDecoration: 'none'
 };
 
 const merryAndBold = {
-  color: theme.palette.cool,
+  color: appTheme.palette.cool,
   fontFamily: '"Merriweather", "Georgia", serif',
   fontStyle: 'italic',
   fontWeight: 'bold'
@@ -56,7 +56,7 @@ const TeamInvite = props => {
           <tr>
             <td
               align="center"
-              style={{backgroundColor: theme.palette.warm}}
+              style={{backgroundColor: appTheme.palette.warm}}
             >
               <EmptySpace height={16} />
             </td>
@@ -73,13 +73,13 @@ const TeamInvite = props => {
               </td>
               <td style={{paddingLeft: '16px'}}>
                 {inviterName}<br />
-                <span style={{...colorCool, fontSize: '14px'}}>{inviterEmail}</span>
+                <a href={`mailto:${inviterEmail}`} style={{...colorCool, fontSize: '14px'}}>{inviterEmail}</a>
               </td>
             </tr>
           </tbody>
         </table>
         <EmptySpace height={40} />
-        <b>Hi <span style={colorWarm}>{inviteeEmail}</span>!<br />
+        <b>Hi <a href={`mailto:${inviteeEmail}`} style={colorWarm}>{inviteeEmail}</a>!<br />
         {inviterName} has invited you to join a team on Action:</b>
         <EmptySpace height={40} />
         <span style={teamNameStyle}>{teamName}</span>
@@ -95,13 +95,13 @@ const TeamInvite = props => {
             <EmptySpace height={32} />
           </div>
         }
-        <Button backgroundColor={theme.palette.warm} url={inviteLink}>
+        <Button backgroundColor={appTheme.palette.warm} url={inviteLink}>
           Join Team
         </Button>
         <EmptySpace height={16} />
         Or go to: <a href={inviteLink} style={colorWarm}>{inviteLink}</a>
       </Body>
-      <Footer color={theme.palette.dark} />
+      <Footer color={appTheme.palette.dark} />
     </Layout>
   );
 };

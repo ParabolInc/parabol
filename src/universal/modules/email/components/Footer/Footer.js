@@ -1,10 +1,11 @@
 import React from 'react';
 import EmptySpace from '../EmptySpace/EmptySpace';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 
 const Footer = (props) => {
   const style = {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: ui.emailBackgroundColor,
     color: props.color
   };
 
@@ -42,7 +43,7 @@ const Footer = (props) => {
                   <td
                     align="center"
                     bgColor="#F9FAFB"
-                    style={{color: props.color, fontFamily: '"Karla", "Helvetica Neue", serif'}}
+                    style={{color: props.color, fontFamily: ui.emailFontFamily}}
                   >
 
                     <EmptySpace height="10" />
@@ -50,7 +51,7 @@ const Footer = (props) => {
                     <EmptySpace height="10" />
 
                     Crafted with care by the folks at <a
-                      style={{color: theme.palette.warm, textDecoration: 'none'}}
+                      style={{color: appTheme.palette.warm, textDecoration: 'none'}}
                       href="http://www.parabol.co/"
                     > Parabol</a>.
 

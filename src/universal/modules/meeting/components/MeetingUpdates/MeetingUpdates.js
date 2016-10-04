@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import withHotkey from 'react-hotkey-hoc';
 import Avatar from 'universal/components/Avatar/Avatar';
 import IconLink from 'universal/components/IconLink/IconLink';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
@@ -14,15 +15,15 @@ import ProgressBar from 'universal/modules/meeting/components/ProgressBar/Progre
 import {withRouter} from 'react-router';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
 
-let s = {};
-
 const MeetingUpdates = (props) => {
   const {
+    bindHotkey,
     localPhaseItem,
     isFacilitating,
     members,
     projects,
     router,
+    styles,
     team
   } = props;
   const {id: teamId, meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = team;
@@ -31,7 +32,10 @@ const MeetingUpdates = (props) => {
   const self = members.find(m => m.isSelf);
   const isComplete = phaseOrder(meetingPhase) > phaseOrder(UPDATES);
   const gotoNextItem = phaseItemFactory(localPhaseItem + 1);
-
+  const gotoPrevItem = phaseItemFactory(localPhaseItem - 1);
+  bindHotkey(['enter', 'right'], gotoNextItem);
+  bindHotkey('left', gotoPrevItem);
+  const isLastMember = localPhaseItem === members.length;
   return (
     <MeetingMain>
       <MeetingSection paddingBottom="2rem" paddingTop=".75rem">
@@ -56,23 +60,25 @@ const MeetingUpdates = (props) => {
           </MeetingSectionSubheading>
         </MeetingSection>
         {/* */}
-        <div className={s.layout}>
-          <div className={s.nav}>
-            <div className={s.linkSpacer}>{' '}</div>
-            <div className={s.avatar}>
+        <div className={css(styles.layout)}>
+          <div className={css(styles.nav)}>
+            <div className={css(styles.linkSpacer)}>{' '}</div>
+            <div className={css(styles.avatar)}>
               <Avatar {...currentTeamMember} hasLabel labelRight size="large"/>
             </div>
-            <div className={s.linkSpacer}>
+            <div className={css(styles.linkSpacer)}>
               <IconLink
+                colorPalette="cool"
                 icon="arrow-circle-right"
                 iconPlacement="right"
-                label="Next team member"
+                label={isLastMember ? 'Move on to agenda items' : 'Next team member '}
                 onClick={gotoNextItem}
+                scale="small"
               />
             </div>
           </div>
         </div>
-        <div className={s.body}>
+        <div className={css(styles.body)}>
           <ProjectColumns alignColumns="center" myTeamMemberId={self && self.id} projects={projects} area={MEETING}/>
         </div>
         {/* */}
@@ -83,7 +89,23 @@ const MeetingUpdates = (props) => {
   );
 };
 
-s = StyleSheet.create({
+MeetingUpdates.propTypes = {
+  bindHotkey: PropTypes.func.isRequired,
+  isFacilitating: PropTypes.bool,
+  localPhaseItem: PropTypes.number.isRequired,
+  members: PropTypes.array,
+  meetingPhase: PropTypes.string.isRequired,
+  meetingPhaseItem: PropTypes.number.isRequired,
+  params: PropTypes.shape({
+    teamId: PropTypes.string.isRequired
+  }).isRequired,
+  projects: PropTypes.object.isRequired,
+  styles: PropTypes.object,
+  team: PropTypes.object.isRequired,
+  router: PropTypes.object.isRequired,
+};
+
+const styleThunk = () => ({
   layout: {
     margin: '0 auto',
     maxWidth: '80rem',
@@ -114,18 +136,8 @@ s = StyleSheet.create({
   }
 });
 
-MeetingUpdates.propTypes = {
-  isFacilitating: PropTypes.bool,
-  localPhaseItem: PropTypes.number.isRequired,
-  members: PropTypes.array,
-  meetingPhase: PropTypes.string.isRequired,
-  meetingPhaseItem: PropTypes.number.isRequired,
-  params: PropTypes.shape({
-    teamId: PropTypes.string.isRequired
-  }).isRequired,
-  projects: PropTypes.object.isRequired,
-  team: PropTypes.object.isRequired,
-  router: PropTypes.object.isRequired,
-};
-
-export default withRouter(look(MeetingUpdates));
+export default withHotkey(
+  withRouter(
+    withStyles(styleThunk)(MeetingUpdates)
+  )
+);

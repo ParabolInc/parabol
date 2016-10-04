@@ -1,19 +1,18 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import DashNavItem from '../Dashboard/DashNavItem';
-import theme from 'universal/styles/theme';
-
-let styles = {};
+import appTheme from 'universal/styles/theme/appTheme';
 
 const DashNavList = (props) => {
-  const {teams} = props;
+  const {teams, styles} = props;
   const hasTeams = teams.length > 0;
   return (
-    <div className={styles.root}>
+    <div className={css(styles.root)}>
       {hasTeams ?
         <div>
           {teams.map((team) =>
-            <div className={styles.team} key={`teamNav${team.id}`}>
+            <div key={`teamNav${team.id}`}>
               <DashNavItem
                 href={`/team/${team.id}`}
                 label={team.name}
@@ -21,13 +20,14 @@ const DashNavList = (props) => {
             </div>
           )}
         </div> :
-        <div className={styles.emptyTeams}>It appears you are not a member of any team!</div>
+        <div className={css(styles.emptyTeams)}>It appears you are not a member of any team!</div>
       }
     </div>
   );
 };
 
 DashNavList.propTypes = {
+  styles: PropTypes.object,
   teams: PropTypes.arrayOf(
     PropTypes.shape({
       href: PropTypes.string,
@@ -36,16 +36,16 @@ DashNavList.propTypes = {
   )
 };
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     width: '100%'
   },
 
   emptyTeams: {
-    fontSize: theme.typography.f3,
+    fontSize: appTheme.typography.f3,
     fontStyle: 'italic',
     padding: '0 0 1rem 1rem'
   }
 });
 
-export default look(DashNavList);
+export default withStyles(styleThunk)(DashNavList);

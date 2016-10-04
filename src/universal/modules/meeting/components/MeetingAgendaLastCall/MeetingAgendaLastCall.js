@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 
 import Button from 'universal/components/Button/Button';
 import Type from 'universal/components/Type/Type';
@@ -10,13 +11,12 @@ import MeetingMain from 'universal/modules/meeting/components/MeetingMain/Meetin
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
 
-let s = {};
-
 const MeetingAgendaLastCall = (props) => {
   const {
     agendaItemCount,
     actionCount,
-    projectCount
+    projectCount,
+    styles
     // router,
     // team
   } = props;
@@ -29,22 +29,22 @@ const MeetingAgendaLastCall = (props) => {
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="2rem">
           <MeetingPhaseHeading>Boom!</MeetingPhaseHeading>
-          <Type align="center" bold family="serif" marginBottom="2.25rem" marginTop="2rem" scale="s5" theme="black">
-            We worked on <span className={s.highlight}>{agendaItemCount} Agenda Items </span>
-            resulting in <span className={s.highlight}>{actionCount} Actions </span>
-            and <span className={s.highlight}>{projectCount} projects</span>.
+          <Type align="center" bold family="serif" marginBottom="2.25rem" marginTop="2rem" scale="s5" colorPalette="black">
+            We worked on <span className={css(styles.highlight)}>{agendaItemCount} Agenda Items </span>
+            resulting in <span className={css(styles.highlight)}>{actionCount} Actions </span>
+            and <span className={css(styles.highlight)}>{projectCount} projects</span>.
           </Type>
-          <Type align="center" marginBottom="2.75rem" scale="s4" theme="black">
+          <Type align="center" marginBottom="2.75rem" scale="s4" colorPalette="black">
             Anybody have <b><i>additional Agenda Items</i></b>?<br />
-            If so, just press “<span className={s.highlight}><b>+</b></span>” or{' '}
-            <span className={s.highlight}>add another Agenda Item</span>.<br />
+            If so, just press “<span className={css(styles.highlight)}><b>+</b></span>” or{' '}
+            <span className={css(styles.highlight)}>add another Agenda Item</span>.<br />
             If not, you can end the meeting to see a summary.
           </Type>
           <Button
             label="End Meeting"
             size="largest"
             style="outlined"
-            theme="cool"
+            colorPalette="cool"
           />
         </MeetingSection>
       </MeetingSection>
@@ -60,13 +60,14 @@ MeetingAgendaLastCall.propTypes = {
   localPhaseItem: PropTypes.number,
   isFacilitating: PropTypes.bool,
   router: PropTypes.object.isRequired,
+  styles: PropTypes.object,
   team: PropTypes.object
 };
 
-s = StyleSheet.create({
+const styleThunk = () => ({
   highlight: {
-    color: theme.palette.warm
+    color: appTheme.palette.warm
   }
 });
 
-export default look(MeetingAgendaLastCall);
+export default withStyles(styleThunk)(MeetingAgendaLastCall);

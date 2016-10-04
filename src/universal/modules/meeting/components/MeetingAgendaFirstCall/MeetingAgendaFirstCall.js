@@ -1,8 +1,6 @@
 import React, {PropTypes} from 'react';
 import {withRouter} from 'react-router';
-import {
-  FIRST_CALL,
-} from 'universal/utils/constants';
+import {FIRST_CALL} from 'universal/utils/constants';
 import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
 import IconLink from 'universal/components/IconLink/IconLink';
 import Type from 'universal/components/Type/Type';
@@ -26,7 +24,7 @@ const MeetingAgendaFirstCall = (props) => {
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="2rem">
           <MeetingPhaseHeading>Whatcha need?</MeetingPhaseHeading>
-          <Type align="center" bold marginTop="2rem" scale="s5" theme="black">
+          <Type align="center" bold marginTop="2rem" scale="s5" colorPalette="black">
             Add your Agenda Items to the queue now…
           </Type>
           <IconLink
@@ -34,6 +32,7 @@ const MeetingAgendaFirstCall = (props) => {
             iconPlacement="right"
             label="…great! Let’s take care of our Agenda Items"
             scale="large"
+            colorPalette="cool"
             onClick={gotoNextItem}
           />
         </MeetingSection>

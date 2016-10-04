@@ -1,16 +1,9 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 // import FontAwesome from 'react-fontawesome';
 import {Link} from 'react-router';
-
-let styles = {};
-
-const inlineBlock = {
-  display: 'inline-block',
-  margin: '0 1rem',
-  verticalAlign: 'top'
-};
 
 // const faHourglassStyle = {
 //   fontSize: '14px',
@@ -18,29 +11,38 @@ const inlineBlock = {
 //   marginRight: '.25rem'
 // };
 //
-// <div className={styles.timestamp}>
+// <div className={css(styles.timestamp)}>
 //   <FontAwesome
 //     name="hourglass-end"
 //     style={faHourglassStyle}
 //   /> {"12:32"} remaining
 // </div>
+//
+// timestamp: {
+// ...inlineBlock,
+//     backgroundColor: '#fff',
+//     borderRadius: '4rem',
+//     color: appTheme.palette.warm,
+//     fontSize: appTheme.typography.s2,
+//     fontWeight: 700,
+//     padding: '0 1em'
+// }
 
 const NotificationBar = (props) => {
-  const {activeMeetings} = props;
+  const {activeMeetings, styles} = props;
   return (
-    <div className={styles.bar}>
-      <div className={styles.message}>
-        {'You\'ve got meeting:'}
+    <div className={css(styles.bar)}>
+      <div className={css(styles.inlineBlock, styles.message)}>
+        You’ve got a meeting:
       </div>
-      <div className={styles.inlineBlock}>
+      <div className={css(styles.inlineBlock)}>
         {activeMeetings.map(meeting => {
           return (
-            <Link key={meeting.link} className={styles.link} title="Join Active Meeting" to={meeting.link}>
+            <Link key={meeting.link} className={css(styles.link)} title="Join Active Meeting" to={meeting.link}>
               {meeting.name}
             </Link>
           );
         })}
-
       </div>
     </div>
   );
@@ -48,20 +50,25 @@ const NotificationBar = (props) => {
 
 
 NotificationBar.propTypes = {
-  activeMeetings: PropTypes.array
+  activeMeetings: PropTypes.array,
+  styles: PropTypes.object
 };
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   bar: {
-    backgroundColor: theme.palette.warm,
+    backgroundColor: appTheme.palette.warm,
     color: '#fff',
-    fontSize: theme.typography.s4,
+    fontSize: appTheme.typography.s4,
     lineHeight: '1.375rem',
     padding: '.625rem 1rem',
     textAlign: 'center'
   },
 
-  inlineBlock,
+  inlineBlock: {
+    display: 'inline-block',
+    margin: '0 1rem',
+    verticalAlign: 'top'
+  },
 
   link: {
     color: 'inherit',
@@ -78,20 +85,8 @@ styles = StyleSheet.create({
   },
 
   message: {
-    ...inlineBlock,
     fontWeight: 700
-  },
-
-  timestamp: {
-    ...inlineBlock,
-    backgroundColor: '#fff',
-    borderRadius: '4rem',
-    color: theme.palette.warm,
-    fontSize: theme.typography.s2,
-    fontWeight: 700,
-    padding: '0 1em'
   }
 });
 
-export default look(NotificationBar);
-
+export default withStyles(styleThunk)(NotificationBar);

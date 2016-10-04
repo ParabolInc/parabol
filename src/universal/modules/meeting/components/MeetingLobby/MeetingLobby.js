@@ -1,20 +1,17 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import FontAwesome from 'react-fontawesome';
-import CopyToClipboard from 'react-copy-to-clipboard';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+
+import appTheme from 'universal/styles/theme/appTheme';
 import {cashay} from 'cashay';
-import voidClick from 'universal/utils/voidClick';
 import makeMeetingUrl from 'universal/utils/makeMeetingUrl';
 import Button from 'universal/components/Button/Button';
+import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
 
-let s = {};
-
-const faStyle = {lineHeight: 'inherit'};
-const faFontSize = `${14 * 2}px`; // FA based on 14px
+//
 
 const createStartMeetingHandler = (members) => {
   return () => {
@@ -31,7 +28,7 @@ const createStartMeetingHandler = (members) => {
 };
 
 const MeetingLobby = (props) => {
-  const {members, team} = props;
+  const {members, team, styles} = props;
   const {id: teamId, name: teamName} = team;
 
   const onStartMeetingClick = createStartMeetingHandler(members);
@@ -41,32 +38,19 @@ const MeetingLobby = (props) => {
       {/* */}
       <MeetingSection flexToFill paddingBottom="2rem">
         {/* */}
-        <div className={s.root}>
+        <div className={css(styles.root)}>
           <MeetingPhaseHeading>Hi, {teamName} Team!</MeetingPhaseHeading>
-          <p className={s.label}>{'Copy & share this meeting:'}</p>
-          {/* */}
-          {/* TODO: prevent navigation and show a “Copied!” message inline or toast */}
-          {/* */}
-          <CopyToClipboard text={shortUrl}>
-            <a
-              className={s.link}
-              href={shortUrl}
-              onClick={voidClick}
-              title={`Copy link to meeting: ${shortUrl}`}
-            >
-              <span className={s.linkText}>{shortUrl}</span>
-              <span className={s.icon}>
-                <FontAwesome name="copy" style={faStyle}/>
-              </span>
-            </a>
-          </CopyToClipboard>
-          <h2 className={s.prompt}>Team Facilitator: begin the Check-In round!</h2>
+          <p className={css(styles.label)}>Share this meeting:</p>
+          <div className={css(styles.urlBlock)}>
+            <CopyShortLink url={shortUrl} />
+          </div>
+          <h2 className={css(styles.prompt)}>Team Facilitator: begin the Check-In round!</h2>
           <Button
             label="Start Meeting"
             onClick={onStartMeetingClick}
             size="largest"
             style="outlined"
-            theme="cool"
+            colorPalette="cool"
           />
         </div>
         {/* */}
@@ -81,6 +65,7 @@ MeetingLobby.propTypes = {
   params: PropTypes.shape({
     teamId: PropTypes.string
   }),
+  styles: PropTypes.object,
   team: PropTypes.shape({
     id: PropTypes.string,
     name: PropTypes.string
@@ -89,51 +74,28 @@ MeetingLobby.propTypes = {
   teamName: PropTypes.string,
 };
 
-s = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     textAlign: 'center'
   },
 
   label: {
-    color: theme.palette.dark,
-    fontSize: theme.typography.s3,
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s3,
     fontWeight: 700,
     margin: '4rem 0 0',
     textTransform: 'uppercase'
   },
 
-  link: {
-    borderRadius: '.25rem',
-    display: 'block',
-    fontSize: faFontSize,
+  urlBlock: {
     margin: '.5rem 0 4rem',
-    padding: '.75rem 1.5rem',
-    textDecoration: 'none !important',
-
-    ':hover': {
-      backgroundColor: theme.palette.cool10l
-    },
-    ':focus': {
-      backgroundColor: theme.palette.cool10l
-    }
-  },
-
-  linkText: {
-    display: 'inline-block',
-    verticalAlign: 'middle'
-  },
-
-  icon: {
-    display: 'inline-block',
-    fontSize: faFontSize,
-    marginLeft: '.5rem',
     verticalAlign: 'middle'
   },
 
   prompt: {
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     margin: '0 0 2rem'
   }
 });
 
-export default look(MeetingLobby);
+export default withStyles(styleThunk)(MeetingLobby);

@@ -2,7 +2,8 @@ import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import NullCard from 'universal/components/NullCard/NullCard';
-import TeamProjectCard from 'universal/modules/teamDashboard/components/TeamProjectCard/TeamProjectCard';
+import TeamProjectCard from 'universal/modules/teamDashboard/containers/TeamProjectCard/TeamProjectCardContainer';
+import makeUsername from 'universal/utils/makeUsername';
 
 const projectCardSubQuery = `
 query {
@@ -17,6 +18,9 @@ query {
       picture
       preferredName
     }
+    team @cached(type: "Team") {
+      name
+    }
   }
 }
 `;
@@ -29,12 +33,14 @@ const mapStateToProps = (state, props) => {
     op: 'projectCardContainer',
     key: projectId,
     variables: {projectId},
-    // example of returning a string instead of a function so it runs in O(1)
-    resolveCached: {teamMember: (source) => source.teamMemberId},
+    resolveCached: {
+      team: (source) => (doc) => source.id.startsWith(doc.id),
+      // example of returning a string instead of a function so it runs in O(1)
+      teamMember: (source) => source.teamMemberId
+    },
   }).data;
-// const projectOwner = teamMembers.find(m => m.id === project.teamMemberId) || {};
   const {preferredName} = project.teamMember;
-  const username = preferredName && preferredName.replace(/\s+/g, '');
+  const username = makeUsername(preferredName);
   const myTeamMemberId = `${userId}::${teamId}`;
   return {
     preferredName,
@@ -45,7 +51,7 @@ const mapStateToProps = (state, props) => {
 };
 
 const ProjectCardContainer = (props) => {
-  const {dispatch, myTeamMemberId, preferredName, project, username} = props;
+  const {area, dispatch, myTeamMemberId, preferredName, project, username} = props;
   const {content, id, status, teamMemberId} = project;
   if (!content && myTeamMemberId !== teamMemberId) {
     return <NullCard username={username}/>;
@@ -60,6 +66,7 @@ const ProjectCardContainer = (props) => {
   const form = `${status}::${id}`;
   return (
     <TeamProjectCard
+      area={area}
       dispatch={dispatch}
       form={form}
       project={project}

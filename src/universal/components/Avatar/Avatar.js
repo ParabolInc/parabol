@@ -1,47 +1,11 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import FontAwesome from 'react-fontawesome';
-import theme from 'universal/styles/theme';
-import {srOnly} from 'universal/styles/helpers';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import upperFirst from 'universal/utils/upperFirst';
-
-
+import AvatarBadge from 'universal/components/AvatarBadge/AvatarBadge';
+import makeUsername from 'universal/utils/makeUsername';
 // TODO: Add React Material UI tooltip (TA)
-
-
-let s = {};
-
-const combineStyles = StyleSheet.combineStyles;
-const boxShadowDefault = '0 0 1px 1px rgba(0, 0, 0, .2)';
-const boxShadowWarm = `0 0 1px 1px ${theme.palette.warm}`;
-
-const renderBadge = (isCheckedIn, isConnected, size) => {
-  const connection = isConnected ? 'online' : 'offline';
-  const checkIn = isCheckedIn ? 'present' : 'absent';
-  const iconStyles = combineStyles(
-    s.badgeIcon,
-    s[connection]
-  );
-  let icon;
-  if (isCheckedIn) {
-    icon = 'check-circle';
-  } else if (isCheckedIn === false) {
-    icon = 'times-circle';
-  } else {
-    icon = 'circle';
-  }
-  const largeBadgeClass = size === 'large' || size === 'larger' || size === 'largest';
-  const badgeStyles = largeBadgeClass ? combineStyles(s.badge, s.badgeLarge) : s.badge;
-  const description = `${connection}, ${checkIn}`;
-  return (
-    <div className={badgeStyles}>
-      <FontAwesome className={iconStyles} name={icon}/>
-      <span className={s.srOnly}>
-        {description}
-      </span>
-    </div>
-  );
-};
 
 const Avatar = (props) => {
   const {
@@ -56,10 +20,11 @@ const Avatar = (props) => {
     picture,
     preferredName,
     onClick,
-    size
+    size,
+    styles
   } = props;
 
-  const trimmedName = preferredName.replace(/\s+/g, '');
+  const username = makeUsername(preferredName);
   const handleMouseLeave = () => {
     console.log('Avatar.onMouseLeave.handleMouseLeave()');
     // TODO: Dispatch UI state for hover to show optional tooltip.
@@ -71,34 +36,26 @@ const Avatar = (props) => {
     // TODO: Dispatch UI state for hover to show optional tooltip.
   };
 
-  let avatarStyles = s.avatar;
-  let avatarLabelStyles = s.avatarLabel;
-  let imagePositionStyles = s.avatarImageDisplay;
-  let imageBlockStyles = s.avatarImageBlock;
 
   const sizeName = upperFirst(size);
   const sizeStyles = `avatar${sizeName}`;
   const imageSizeStyles = `avatarImageBlock${sizeName}`;
   const rootInlineStyle = isClickable ? {cursor: 'pointer'} : {cursor: 'default'};
-  const avatarImageDefault = combineStyles(s.avatarImage, s.boxShadow);
-  const avatarImageHasBorder = combineStyles(s.avatarImage, s.hasBorder);
-  const avatarImagesStyles = hasBorder ? avatarImageHasBorder : avatarImageDefault;
-
-  avatarStyles = combineStyles(s.avatar, s[sizeStyles]);
-  imageBlockStyles = combineStyles(s.avatarImageBlock, s[imageSizeStyles]);
-
+  const avatarImagesStyles = css(
+    styles.avatarImage,
+    hasBorder ? styles.hasBorder : styles.boxShadow
+  );
+  const avatarStyles = css(styles.avatar, styles[sizeStyles]);
+  const imageBlockStyles = css(styles.avatarImageBlock, styles[imageSizeStyles]);
   // Position label to the right of avatar image
-  if (labelRight) {
-    imagePositionStyles = combineStyles(
-      s.avatarImageDisplay,
-      s.avatarImageDisplayInlineBlock
-    );
-    avatarLabelStyles = combineStyles(
-      s.avatarLabel,
-      s.avatarLabelInlineBlock
-    );
-  }
-
+  const avatarLabelStyles = css(
+    styles.avatarLabel,
+    labelRight && styles.avatarLabelInlineBlock
+  );
+  const imagePositionStyles = css(
+    styles.avatarImageDisplay,
+    labelRight && styles.avatarImageDisplayInlineBlock
+  );
   return (
     <div
       className={avatarStyles}
@@ -109,17 +66,15 @@ const Avatar = (props) => {
     >
       <div className={imagePositionStyles}>
         <div className={imageBlockStyles}>
-          <img className={avatarImagesStyles} src={picture} />
-          {hasBadge &&
-            renderBadge(isCheckedIn, isConnected, size)
-          }
+          <img className={avatarImagesStyles} src={picture}/>
+          {hasBadge && <AvatarBadge isCheckedIn={isCheckedIn} isConnected={isConnected} size={size}/>}
         </div>
       </div>
       {hasLabel &&
-        <div className={avatarLabelStyles}>@{trimmedName}</div>
+        <div className={avatarLabelStyles}>@{username}</div>
       }
       {hasTooltip &&
-        <div className={s.avatarTooltip}>@{trimmedName}</div>
+        <div className={css(styles.avatarTooltip)}>@{username}</div>
       }
     </div>
   );
@@ -145,27 +100,16 @@ Avatar.propTypes = {
     'large',
     'larger',
     'largest'
-  ])
+  ]),
+  styles: PropTypes.object
 };
 
-Avatar.defaultProps = {
-  hasBadge: true,
-  hasBorder: false,
-  isCheckedIn: false,
-  isClickable: false,
-  isConnected: false,
-  onClick() {
-    console.log('Avatar.defaultProps.onClick()');
-  },
-  picture: 'https://placekitten.com/g/600/600',
-  preferredName: 'Elizabeth Robertson',
-  size: 'small'
-};
-
-s = StyleSheet.create({
+const boxShadowDefault = '0 0 1px 1px rgba(0, 0, 0, .2)';
+const boxShadowWarm = `0 0 1px 1px ${appTheme.palette.warm}`;
+const styleThunk = () => ({
   avatar: {
     display: 'inline-block',
-    fontSize: theme.typography.s2,
+    fontSize: appTheme.typography.s2,
     margin: '0',
     position: 'relative',
     textAlign: 'center',
@@ -176,25 +120,25 @@ s = StyleSheet.create({
 
   // NOTE: Size modifies for avatar
   avatarSmallest: {
-    fontSize: theme.typography.s1
+    fontSize: appTheme.typography.s1
   },
   avatarSmaller: {
-    fontSize: theme.typography.s1
+    fontSize: appTheme.typography.s1
   },
   avatarSmall: {
-    fontSize: theme.typography.s2
+    fontSize: appTheme.typography.s2
   },
   avatarMedium: {
-    fontSize: theme.typography.s3
+    fontSize: appTheme.typography.s3
   },
   avatarLarge: {
-    fontSize: theme.typography.s4
+    fontSize: appTheme.typography.s4
   },
   avatarLarger: {
-    fontSize: theme.typography.s4
+    fontSize: appTheme.typography.s4
   },
   avatarLargest: {
-    fontSize: theme.typography.s6
+    fontSize: appTheme.typography.s6
   },
 
   avatarImageDisplay: {
@@ -253,69 +197,8 @@ s = StyleSheet.create({
     boxShadow: boxShadowWarm
   },
 
-  badge: {
-    display: 'block',
-    fontSize: '.875rem',
-    height: '.875rem',
-    lineHeight: '.875rem',
-    position: 'absolute',
-    right: 0,
-    textAlign: 'center',
-    top: 0,
-
-    '::before': {
-      backgroundColor: '#fff',
-      borderRadius: '100%',
-      content: '""',
-      height: '.75rem',
-      position: 'absolute',
-      right: '1px',
-      top: '1px',
-      width: '.75rem',
-      zIndex: 300
-    },
-
-    '::after': {
-      backgroundColor: 'rgba(255, 255, 255, .65)',
-      borderRadius: '100%',
-      content: '""',
-      height: '1em',
-      position: 'absolute',
-      right: 0,
-      top: 0,
-      width: '1em',
-      zIndex: 200
-    }
-  },
-
-  // NOTE: Modifies badge
-  badgeLarge: {
-    fontSize: '1.75rem',
-    height: '1.75rem',
-    lineHeight: '1.75rem',
-
-    '::before': {
-      height: '1.5rem',
-      right: '2px',
-      top: '2px',
-      width: '1.5rem'
-    }
-  },
-
-  srOnly: {
-    ...srOnly
-  },
-
-  badgeIcon: {
-    height: '1em',
-    lineHeight: '1em',
-    position: 'relative',
-    width: '1em',
-    zIndex: 400
-  },
-
   avatarLabel: {
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     fontSize: 'inherit',
     margin: '1em 0'
   },
@@ -328,15 +211,7 @@ s = StyleSheet.create({
 
   avatarTooltip: {
     // TODO: Style this sub-component
-  },
-
-  offline: {
-    color: theme.palette.cool10g
-  },
-
-  online: {
-    color: theme.palette.cool
-  },
+  }
 });
 
-export default look(Avatar);
+export default withStyles(styleThunk)(Avatar);

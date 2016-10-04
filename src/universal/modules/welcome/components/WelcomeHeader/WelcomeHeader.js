@@ -1,30 +1,26 @@
-import React, {Component, PropTypes} from 'react';
-import look, { StyleSheet } from 'react-look';
-import theme from 'universal/styles/theme';
+import React, {PropTypes} from 'react';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 
-let styles = {};
+const WelcomeHeader = (props) => {
+  const {heading, styles} = props;
+  return (
+    <div className={css(styles.root)}>
+      <h1 className={css(styles.heading)}>{heading}</h1>
+    </div>
+  );
+};
+WelcomeHeader.propTypes = {
+  heading: PropTypes.object,
+  styles: PropTypes.object
+};
 
-@look
-// eslint-disable-next-line react/prefer-stateless-function
-export default class WelcomeHeader extends Component {
-  static propTypes = {
-    heading: PropTypes.object
-  }
-
-  render() {
-    return (
-      <div className={styles.root}>
-        <h1 className={styles.heading}>{this.props.heading}</h1>
-      </div>
-    );
-  }
-}
-
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     alignContent: 'center',
-    backgroundColor: theme.palette.mid10l,
-    borderBottom: `2px solid ${theme.palette.mid50l}`,
+    backgroundColor: appTheme.palette.mid10l,
+    borderBottom: `2px solid ${appTheme.palette.mid50l}`,
     display: 'flex !important',
     flexDirection: 'column',
     justifyContent: 'center',
@@ -34,11 +30,13 @@ styles = StyleSheet.create({
   },
 
   heading: {
-    color: theme.palette.warm,
-    fontFamily: theme.typography.serif,
+    color: appTheme.palette.warm,
+    fontFamily: appTheme.typography.serif,
     fontSize: '2rem',
     fontWeight: 700,
     margin: 0,
     padding: 0
   }
 });
+
+export default withStyles(styleThunk)(WelcomeHeader);

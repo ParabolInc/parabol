@@ -1,31 +1,22 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import {UPDATES} from 'universal/utils/constants';
 
-let s = {};
-// NOTE: outer padding for positioned label and overall centering
-const outerPadding = '8rem';
-
 const AvatarGroup = (props) => {
-  const {localPhase, avatars} = props;
-  let label;
-  if (localPhase === UPDATES) {
-    label = 'Updates given:';
-  } else {
-    label = 'Team:';
-  }
-
+  const {localPhase, avatars, styles} = props;
+  const label = localPhase === UPDATES ? 'Updates given:' : 'Team:';
   return (
-    <div className={s.root}>
-      <div className={s.label}>
+    <div className={css(styles.root)}>
+      <div className={css(styles.label)}>
         {label}
       </div>
       {
         avatars.map((avatar, index) =>
-          <div className={s.item} key={index}>
-            <Avatar {...avatar} size="small" hasBorder={avatar.isFacilitator} />
+          <div className={css(styles.item)} key={index}>
+            <Avatar {...avatar} size="small" hasBadge hasBorder={avatar.isFacilitator} />
           </div>
         )
       }
@@ -35,10 +26,14 @@ const AvatarGroup = (props) => {
 
 AvatarGroup.propTypes = {
   localPhase: PropTypes.string,
-  avatars: PropTypes.array
+  avatars: PropTypes.array,
+  styles: PropTypes.object
 };
 
-s = StyleSheet.create({
+// NOTE: outer padding for positioned label and overall centering
+const outerPadding = '8rem';
+
+const styleThunk = () => ({
   root: {
     fontSize: 0,
     padding: `0 ${outerPadding}`,
@@ -47,10 +42,10 @@ s = StyleSheet.create({
   },
 
   label: {
-    color: theme.palette.mid,
+    color: appTheme.palette.mid,
     display: 'inline-block',
-    fontFamily: theme.typography.serif,
-    fontSize: theme.typography.s3,
+    fontFamily: appTheme.typography.serif,
+    fontSize: appTheme.typography.s3,
     fontStyle: 'italic',
     fontWeight: 700,
     height: '2.75rem',
@@ -72,4 +67,4 @@ s = StyleSheet.create({
   }
 });
 
-export default look(AvatarGroup);
+export default withStyles(styleThunk)(AvatarGroup);

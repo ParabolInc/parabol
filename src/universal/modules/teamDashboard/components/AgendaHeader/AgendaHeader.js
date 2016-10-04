@@ -1,21 +1,26 @@
-import React from 'react';
-import look, {StyleSheet} from 'react-look';
+import React, {PropTypes} from 'react';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import {DashSectionHeading} from 'universal/components/Dashboard';
 
-const AgendaHeader = () => {
-  const {styles} = AgendaHeader;
+const AgendaHeader = (props) => {
+  const {styles} = props;
   return (
-    <div className={styles.root}>
+    <div className={css(styles.root)}>
       <DashSectionHeading icon="calendar-check-o" label="Agenda Queue" />
     </div>
   );
 };
 
-AgendaHeader.styles = StyleSheet.create({
+AgendaHeader.propTypes = {
+  styles: PropTypes.object
+};
+
+const styleThunk = () => ({
   root: {
     padding: '1rem 1rem 1rem 2.375rem',
     width: '100%'
   }
 });
 
-export default look(AgendaHeader);
+export default withStyles(styleThunk)(AgendaHeader);

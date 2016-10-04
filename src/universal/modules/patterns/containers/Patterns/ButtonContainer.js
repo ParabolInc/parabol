@@ -6,8 +6,8 @@ import PropsTable from '../../components/PropsTable/PropsTable';
 import Background from 'universal/modules/team/components/Background/Background';
 import Button from 'universal/components/Button/Button';
 
-const button = <Button size="large" style="solid" theme="warm" />;
-const buttonString = '<Button size="large" style="solid" theme="warm" />';
+const button = <Button size="large" style="solid" colorPalette="warm" />;
+const buttonString = '<Button size="large" style="solid" colorPalette="warm" />';
 const buttonPropsList = [
   { name: 'disabled', type: 'bool',
     description: <span>Sets the boolean HTML attribute and causes disabled styling</span>

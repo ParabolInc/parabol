@@ -1,16 +1,15 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
-import tinycolor from 'tinycolor2';
-
-const backgroundColor = tinycolor.mix(theme.palette.mid10l, '#fff', 50).toHexString();
-const combineStyles = StyleSheet.combineStyles;
-let styles = {};
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import ui from 'universal/styles/ui';
 
 const DashContent = (props) => {
-  const {children, hasOverlay, padding} = props;
+  const {children, hasOverlay, padding, styles} = props;
   const style = {padding};
-  const rootStyles = hasOverlay ? combineStyles(styles.root, styles.hasOverlay) : styles.root;
+  const rootStyles = css(
+    styles.root,
+    hasOverlay && styles.hasOverlay
+  );
   return (
     <div className={rootStyles} style={style}>
       {children}
@@ -21,16 +20,17 @@ const DashContent = (props) => {
 DashContent.propTypes = {
   children: PropTypes.any,
   hasOverlay: PropTypes.bool,
-  padding: PropTypes.string
+  padding: PropTypes.string,
+  styles: PropTypes.object,
 };
 
 DashContent.defaultProps = {
   padding: '1rem'
 };
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
-    backgroundColor,
+    backgroundColor: ui.dashBackgroundColor,
     display: 'flex !important',
     flex: 1,
     flexDirection: 'column',
@@ -42,4 +42,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default look(DashContent);
+export default withStyles(styleThunk)(DashContent);

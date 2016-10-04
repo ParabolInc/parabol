@@ -1,10 +1,15 @@
 import React, {PropTypes} from 'react';
-import Type from 'universal/components/Type/Type';
+import {Type} from 'universal/components';
 
-const MeetingPhaseHeading = (props) =>
-  <Type align="center" bold family="serif" scale="s7" theme="warm">
-    {props.children}
-  </Type>;
+const MeetingPhaseHeading = (props) => {
+  const {children} = props;
+  return (
+    <Type align="center" bold family="serif" scale="s7" colorPalette="warm">
+      {children}
+    </Type>
+  );
+};
+
 
 MeetingPhaseHeading.propTypes = {
   children: PropTypes.any

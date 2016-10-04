@@ -1,7 +1,10 @@
-import React, {PropTypes, Component} from 'react';
-import look, {StyleSheet} from 'react-look';
-import withHotkey from 'react-hotkey-hoc';
-import theme from 'universal/styles/theme';
+import React, {PropTypes} from 'react';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import {injectStyleOnce} from 'aphrodite/lib/inject';
+import {injectGlobals} from 'hepha';
+import auth0Overrides from 'universal/styles/theme/auth0Overrides';
+import appTheme from 'universal/styles/theme/appTheme';
 
 // SVG images
 import parabolLogoMark from './images/parabol-logo-mark.svg';
@@ -10,159 +13,150 @@ import teamCheckIcon from './images/team-check-icon.svg';
 import mapIcon from './images/map-icon.svg';
 import megaphoneIcon from './images/megaphone-icon.svg';
 import github from './images/github.svg';
-import parabolLogoColor from 'universal/styles/theme/images/brand/mark-color@4x.png';
 
-let styles = null;
-const combineStyles = StyleSheet.combineStyles;
+const Landing = (props) => {
+  const {handleLoginClick, styles} = props;
+  injectGlobals(injectStyleOnce, auth0Overrides);
+  return (
+    <div className={css(styles.layout)}>
+      {/* Header */}
+      <div className={css(styles.header)}>
+        <div className={css(styles.container)}>
+          <a href="http://www.parabol.co/" title="Parabol, Inc.">
+            <img className={css(styles.headerBrand)} src={parabolLogoMark}/>
+          </a>
+          <img className={css(styles.actionLogo)} src={actionLogo}/>
+          <h1 className={css(styles.mainHeading)}>Action</h1>
+          <h2 className={css(styles.mainSubheading)}>
+            An open-source tool for adaptive teams.
+          </h2>
+          <button
+            className={css(styles.ctaButton)}
+            onClick={handleLoginClick}
+            title="Get Started"
+          >
+            Get Started
+          </button>
+          <br />
+          {/* TODO: Add click handler for logging in */}
+          <a
+            className={css(styles.headerLink)}
+            href="#"
+            title="Log In"
+            onClick={handleLoginClick}
+          >
+            Or, log in
+          </a>
+        </div>
+      </div>
 
-// TODO break apart into 1 component per section
-@withHotkey
-@look
-// eslint-disable-next-line react/prefer-stateless-function
-export default class Landing extends Component {
-  static propTypes = {
-    // children included here for multi-part landing pages (FAQs, pricing, cha la la)
-    // children: PropTypes.element,
-    handleLoginClick: PropTypes.func.isRequired
-  };
+      {/* Content */}
+      <div className={css(styles.content)}>
+        {/* How It Works */}
+        <div className={css(styles.section)}>
+          <div className={css(styles.container)}>
+            <h2 className={css(styles.sectionHeading)}>How It Works</h2>
+            <div className={css(styles.cardGroup)}>
 
+              <div className={css(styles.card)}>
+                <div className={css(styles.cardBadge)}>1</div>
+                <div className={css(styles.cardIconGroup)}>
+                  <img className={css(styles.cardIcon)} src={teamCheckIcon}/>
+                </div>
+                <div className={css(styles.cardCopy)}>Check in with your team.</div>
+              </div>
 
-  render() {
-    const {handleLoginClick} = this.props;
-    return (
-      <div className={styles.layout}>
-        {/* Header */}
-        <div className={styles.header}>
-          <div className={styles.container}>
-            <a href="http://www.parabol.co/" title="Parabol, Inc.">
-              <img className={styles.headerBrand} src={parabolLogoMark}/>
-            </a>
-            <img className={styles.actionLogo} src={actionLogo}/>
-            <h1 className={styles.mainHeading}>Action</h1>
-            <h2 className={styles.mainSubheading}>
-              An open-source tool for adaptive teams.
-            </h2>
-            <button
-              className={styles.ctaButton}
-              onClick={handleLoginClick}
-              title="Get Started"
-            >
-              Get Started
-            </button>
+              <div className={css(styles.card)}>
+                <div className={css(styles.cardBadge)}>2</div>
+                <div className={css(styles.cardIconGroup)}>
+                  <img className={css(styles.cardIcon)} src={mapIcon}/>
+                </div>
+                <div className={css(styles.cardCopy)}>Journey toward your next goals.</div>
+              </div>
+
+              <div className={css(styles.card, styles.cardIsLast)}>
+                <div className={css(styles.cardBadge)}>3</div>
+                <div className={css(styles.cardIconGroup)}>
+                  <img className={css(styles.cardIcon)} src={megaphoneIcon}/>
+                </div>
+                <div className={css(styles.cardCopy)}>Share your progress!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Get Involved */}
+        <div className={css(styles.section, styles.sectionHasBorder)}>
+          <div className={css(styles.container)}>
+            <h2 className={css(styles.sectionHeading)}>Get Involved</h2>
+            <img className={css(styles.githubIcon)} src={github}/>
             <br />
-            {/* TODO: Add click handler for logging in */}
-            <a
-              className={styles.headerLink}
-              href="#"
-              title="Log In"
-              onClick={handleLoginClick}
-            >
-              Or, log in
-            </a>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className={styles.content}>
-          {/* How It Works */}
-          <div className={styles.section}>
-            <div className={styles.container}>
-              <h2 className={styles.sectionHeading}>How It Works</h2>
-              <div className={styles.cardGroup}>
-
-                <div className={styles.card}>
-                  <div className={styles.cardBadge}>1</div>
-                  <div className={styles.cardIconGroup}>
-                    <img className={styles.cardIcon} src={teamCheckIcon}/>
-                  </div>
-                  <div className={styles.cardCopy}>Check in with your team.</div>
-                </div>
-
-                <div className={styles.card}>
-                  <div className={styles.cardBadge}>2</div>
-                  <div className={styles.cardIconGroup}>
-                    <img className={styles.cardIcon} src={mapIcon}/>
-                  </div>
-                  <div className={styles.cardCopy}>Journey toward your next goals.</div>
-                </div>
-
-                <div className={combineStyles(styles.card, styles.cardIsLast)}>
-                  <div className={styles.cardBadge}>3</div>
-                  <div className={styles.cardIconGroup}>
-                    <img className={styles.cardIcon} src={megaphoneIcon}/>
-                  </div>
-                  <div className={styles.cardCopy}>Share your progress!</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Get Involved */}
-          <div className={combineStyles(styles.section, styles.sectionHasBorder)}>
-            <div className={styles.container}>
-              <h2 className={styles.sectionHeading}>Get Involved</h2>
-              <img className={styles.githubIcon} src={github}/>
-              <br />
-              <div className={styles.copyGroup}>
-                <p className={styles.copyParagraph}>
-                  Action is an open-source software solution crafted with
-                  care by the folks at Parabol. We created this tool to make
-                  work meaningful for agile business teams.
-                </p>
-                <p className={styles.copyParagraph}>
-                  To get involved,{' '}
-                  <a
-                    href="https://github.com/ParabolInc/action/blob/master/CONTRIBUTING.md"
-                    title="Guidelines for contributing"
-                  >
-                    see our guidelines for contributing on GitHub
-                  </a>.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className={styles.footer}>
-          <div className={styles.container}>
-            <a href="http://www.parabol.co/" title="Parabol, Inc.">
-              <img className={styles.footerBrand} src={parabolLogoMark}/>
-            </a>
-            <div className={styles.footerCopy}>
-              ©2016{' '}
-              <a
-                className={styles.footerLink}
-                href="http://www.parabol.co/"
-                title="Parabol, Inc."
-              >
-                Parabol, Inc.
-              </a>{' '}
-              <br className={styles.footerBreak}/>
-              Made with care by friendly folks.{' '}
-              <br className={styles.footerBreak}/>
-              Say hello:{' '}
-              <a
-                className={styles.footerLink}
-                href="mailto:love@parabol.co"
-                title="Say hello!"
-              >
-                love@parabol.co
-              </a>
+            <div className={css(styles.copyGroup)}>
+              <p className={css(styles.copyParagraph)}>
+                Action is an open-source software solution crafted with
+                care by the folks at Parabol. We created this tool to make
+                work meaningful for agile business teams.
+              </p>
+              <p className={css(styles.copyParagraph)}>
+                To get involved,{' '}
+                <a
+                  href="https://github.com/ParabolInc/action/blob/master/CONTRIBUTING.md"
+                  title="Guidelines for contributing"
+                >
+                  see our guidelines for contributing on GitHub
+                </a>.
+              </p>
             </div>
           </div>
         </div>
       </div>
-    );
-  }
-}
+
+      {/* Footer */}
+      <div className={css(styles.footer)}>
+        <div className={css(styles.container)}>
+          <a href="http://www.parabol.co/" title="Parabol, Inc.">
+            <img className={css(styles.footerBrand)} src={parabolLogoMark}/>
+          </a>
+          <div className={css(styles.footerCopy)}>
+            ©2016{' '}
+            <a
+              className={css(styles.footerLink)}
+              href="http://www.parabol.co/"
+              title="Parabol, Inc."
+            >
+              Parabol, Inc.
+            </a>{' '}
+            <br className={css(styles.footerBreak)}/>
+            Made with care by friendly folks.{' '}
+            <br className={css(styles.footerBreak)}/>
+            Say hello:{' '}
+            <a
+              className={css(styles.footerLink)}
+              href="mailto:love@parabol.co"
+              title="Say hello!"
+            >
+              love@parabol.co
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+Landing.propTypes = {
+  // children included here for multi-part landing pages (FAQs, pricing, cha la la)
+  // children: PropTypes.element,
+  handleLoginClick: PropTypes.func.isRequired,
+  styles: PropTypes.object,
+};
 
 // Breakpoint constants
 const layoutBreakpoint = '@media (min-width: 64rem)';
 const headerBreakpoint = '@media (min-width: 48rem)';
 const cardBreakpoint = '@media (min-width: 75rem)';
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   // Layout
   // -------
 
@@ -177,7 +171,7 @@ styles = StyleSheet.create({
   },
 
   header: {
-    backgroundColor: theme.palette.warm,
+    backgroundColor: appTheme.palette.warm,
     color: '#fff',
     textAlign: 'center',
 
@@ -245,7 +239,7 @@ styles = StyleSheet.create({
     margin: '0 0 1rem',
 
     [headerBreakpoint]: {
-      fontSize: theme.typography.s6,
+      fontSize: appTheme.typography.s6,
       fontWeight: 400,
       margin: '0 0 1.5rem'
     }
@@ -306,14 +300,14 @@ styles = StyleSheet.create({
 
   // Combine styles with section
   sectionHasBorder: {
-    borderColor: theme.palette.cool30a,
+    borderColor: appTheme.palette.cool30a,
     borderTopStyle: 'solid',
     borderTopWidth: '2px'
   },
 
   sectionHeading: {
-    color: theme.palette.cool,
-    fontSize: theme.typography.s6,
+    color: appTheme.palette.cool,
+    fontSize: appTheme.typography.s6,
     fontWeight: 700,
     margin: '0 0 2rem',
     textTransform: 'uppercase',
@@ -346,7 +340,7 @@ styles = StyleSheet.create({
   // --------
 
   card: {
-    borderColor: theme.palette.warm30a,
+    borderColor: appTheme.palette.warm30a,
     borderRadius: '1rem',
     borderStyle: 'solid',
     borderWidth: '2px',
@@ -369,10 +363,10 @@ styles = StyleSheet.create({
   },
 
   cardBadge: {
-    backgroundColor: theme.palette.warm,
+    backgroundColor: appTheme.palette.warm,
     borderRadius: '100%',
     color: '#fff',
-    fontSize: theme.typography.s6,
+    fontSize: appTheme.typography.s6,
     fontWeight: 700,
     height: '2rem',
     left: '50%',
@@ -406,12 +400,12 @@ styles = StyleSheet.create({
   },
 
   cardCopy: {
-    color: theme.palette.dark,
-    fontSize: theme.typography.sBase,
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.sBase,
     fontWeight: 700,
 
     [cardBreakpoint]: {
-      fontSize: theme.typography.s5
+      fontSize: appTheme.typography.s5
     }
   },
 
@@ -429,13 +423,13 @@ styles = StyleSheet.create({
 
   copyGroup: {
     display: 'inline-block',
-    fontSize: theme.typography.sBase,
+    fontSize: appTheme.typography.sBase,
     margin: '0 auto',
     maxWidth: '30rem',
     textAlign: 'left',
 
     [layoutBreakpoint]: {
-      fontSize: theme.typography.s5,
+      fontSize: appTheme.typography.s5,
       maxWidth: '40rem'
     }
   },
@@ -448,16 +442,16 @@ styles = StyleSheet.create({
   // -------
 
   footer: {
-    backgroundColor: theme.palette.dark,
+    backgroundColor: appTheme.palette.dark,
     color: '#fff',
-    fontSize: theme.typography.s2,
+    fontSize: appTheme.typography.s2,
     fontWeight: 700,
     lineHeight: '1.5',
     paddingBottom: '1rem',
     textAlign: 'center',
 
     [layoutBreakpoint]: {
-      fontSize: theme.typography.sBase,
+      fontSize: appTheme.typography.sBase,
       fontWeight: '400'
     }
   },
@@ -494,59 +488,5 @@ styles = StyleSheet.create({
   }
 });
 
-StyleSheet.addCSS({
-  // auth0 lock customization
-  // -------------------------
-  // NOTE: https://auth0.com/docs/libraries/lock/ui-customization
-  // NOTE: Beware what lies ahead, oh brave soul! #shame (TA)
-
-  'body #a0-lock.a0-theme-default .a0-panel *': {
-    fontFamily: theme.typography.sansSerif
-  },
-
-  'body #a0-lock.a0-theme-default .a0-panel .a0-bg-gradient': {
-    backgroundColor: theme.palette.dark10l,
-    backgroundImage: 'none'
-  },
-
-  'body #a0-lock.a0-theme-default .a0-panel .a0-icon-container .a0-image': {
-    backgroundImage: `url("${parabolLogoColor}")`,
-    backgroundPosition: '0 14px',
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: '62px 56px',
-    display: 'block',
-    margin: '0 auto 12px',
-    padding: 0,
-    height: '70px',
-    width: '62px'
-  },
-
-  'body #a0-lock.a0-theme-default .a0-panel .a0-icon-container .a0-image img': {
-    display: 'none'
-  },
-
-  'body #a0-lock.a0-theme-default .a0-switch': {
-    borderColor: theme.palette.dark
-  },
-
-  'body #a0-lock.a0-theme-default .a0-switch .a0-active': {
-    backgroundColor: theme.palette.dark
-  },
-
-  'body #a0-lock.a0-theme-default .a0-switch span': {
-    color: theme.palette.dark,
-    fontWeight: 700
-  },
-
-  // eslint-disable-next-line max-len
-  'body #a0-lock.a0-theme-default .a0-panel .a0-email .a0-input-box, body #a0-lock.a0-theme-default .a0-panel .a0-password .a0-input-box, body #a0-lock.a0-theme-default .a0-panel .a0-repeatPassword .a0-input-box, body #a0-lock.a0-theme-default .a0-panel .a0-username .a0-input-box': {
-    backgroundColor: '#fff',
-    borderColor: `transparent transparent ${theme.palette.dark50l}`,
-    borderStyle: 'dashed',
-    borderWidth: '1px 0'
-  },
-
-  'body #a0-lock.a0-theme-default .a0-panel button.a0-primary': {
-    backgroundColor: `${theme.palette.warm} !important`
-  }
-});
+// injectGlobals(auth0Overrides);
+export default withStyles(styleThunk)(Landing);

@@ -1,12 +1,39 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import Action from 'universal/components/Action/Action';
 
-const ActionContainer = props => {
-  return <Action {...props} />;
+const updateAnalyticsPage = (lastPage, nextPage) => {
+  if (typeof window !== 'undefined' &&
+    typeof window.analytics !== 'undefined') {
+    window.analytics.page('', nextPage, {
+      title: document && document.title || '',
+      referrer: lastPage,
+      path: nextPage
+    });
+  }
 };
 
-ActionContainer.propTypes = {
-  children: PropTypes.element.isRequired
-};
+export default class ActionContainer extends Component {
+  static propTypes = {
+    children: PropTypes.element.isRequired,
+    location: PropTypes.shape({
+      pathname: PropTypes.string.isRequired
+    }).isRequired
+  };
 
-export default ActionContainer;
+  componentWillMount() {
+    const {location: {pathname: nextPage}} = this.props;
+    updateAnalyticsPage('', nextPage);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const {location: {pathname: lastPage}} = this.props;
+    const {location: {pathname: nextPage}} = nextProps;
+    if (lastPage !== nextPage) {
+      updateAnalyticsPage(lastPage, nextPage);
+    }
+  }
+
+  render() {
+    return <Action {...this.props} />;
+  }
+}

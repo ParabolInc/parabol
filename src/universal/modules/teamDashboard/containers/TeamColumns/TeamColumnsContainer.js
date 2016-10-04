@@ -39,6 +39,7 @@ const mapStateToProps = (state, props) => {
   const {teamId} = props;
   const teamColumnsSub = cashay.query(teamColumnsSubQuery, {
     op: 'teamColumnsContainer',
+    key: teamId,
     variables: {teamId},
   });
   const {teamMembers} = teamColumnsSub.data;

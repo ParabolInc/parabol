@@ -51,7 +51,7 @@ export default {
     args: {
       newAction: {
         type: new GraphQLNonNull(CreateActionInput),
-        description: 'The new action including an id, status, and type, and teamMemberId'
+        description: 'The new action including an id, teamMemberId, [agendaId], and sortOrder '
       }
     },
     async resolve(source, {newAction}, {authToken}) {
@@ -65,7 +65,8 @@ export default {
         ...newAction,
         userId,
         createdAt: now,
-        updatedAt: now
+        updatedAt: now,
+        isComplete: false
       };
       await r.table('Action').insert(action);
     }

@@ -1,46 +1,36 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import FontAwesome from 'react-fontawesome';
-import t from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme.js';
 import {srOnly} from 'universal/styles/helpers';
 
-const cs = StyleSheet.combineStyles;
-const keystrokeHeight = '1.5rem';
-
-let s = {};
-
 const ShortcutsMenu = (props) => {
+  const {shortcutsList, onCloseClick, styles} = props;
   const renderMenuItem = (shortcut, index, array) => {
-    let keystrokeStyle = null;
-
-    if (index === 0) {
-      keystrokeStyle = cs(s.keystroke, s.keystrokeIsFirst);
-    } else if (index === array.length - 1) {
-      keystrokeStyle = cs(s.keystroke, s.keystrokeIsLast);
-    } else {
-      keystrokeStyle = s.keystroke;
-    }
-
+    const keystrokeStyle = css(
+      styles.keystroke,
+      index === 0 && styles.keystrokeIsFirst,
+      index === array.length - 1 && styles.keystrokeIsLast
+    );
     return (
-      <li className={s.shortcutsItem} key={index}>
+      <li className={css(styles.shortcutsItem)} key={index}>
         <span className={keystrokeStyle}>{shortcut.keystroke}</span>
-        <span className={s.definition}>{shortcut.definition}</span>
+        <span className={css(styles.definition)}>{shortcut.definition}</span>
       </li>
     );
   };
 
-  const {shortcutsList, onCloseClick} = props;
-
   return (
-    <div className={s.menu}>
-      <div className={s.label}>
+    <div className={css(styles.menu)}>
+      <div className={css(styles.label)}>
         Keyboard Shortcuts
       </div>
-      <a className={s.close} href="#" onClick={onCloseClick} title="Close menu">
+      <a className={css(styles.close)} href="#" onClick={onCloseClick} title="Close menu">
         <FontAwesome name="times-circle" />
-        <span className={s.srOnly}>Close menu</span>
+        <span className={css(styles.srOnly)}>Close menu</span>
       </a>
-      <ul className={s.shortcutsList}>
+      <ul className={css(styles.shortcutsList)}>
         {
           shortcutsList.map((shortcut, index, array) =>
             renderMenuItem(shortcut, index, array)
@@ -52,8 +42,9 @@ const ShortcutsMenu = (props) => {
 };
 
 ShortcutsMenu.propTypes = {
+  onCloseClick: PropTypes.func,
   shortcutsList: PropTypes.array,
-  onCloseClick: PropTypes.func
+  styles: PropTypes.object
 };
 
 // TODO: Allow for children with text formatting
@@ -84,17 +75,18 @@ ShortcutsMenu.defaultProps = {
   }
 };
 
-s = StyleSheet.create({
+const keystrokeHeight = '1.5rem';
+const styleThunk = () => ({
   menu: {
     backgroundColor: 'rgba(255, 255, 255, .85)',
     bottom: '2rem',
-    color: t.palette.dark,
+    color: appTheme.palette.dark,
     position: 'fixed',
     right: '2rem'
   },
 
   label: {
-    fontSize: t.typography.s2,
+    fontSize: appTheme.typography.s2,
     fontWeight: 700,
     margin: '0 0 .75rem',
     paddingLeft: '2.5rem',
@@ -103,19 +95,19 @@ s = StyleSheet.create({
   },
 
   close: {
-    color: t.palette.dark,
-    fontSize: t.typography.s3,
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s3,
     position: 'absolute',
     right: 0,
     top: 0,
 
     // NOTE: ':hover' y ':focus' son igualitos
     ':hover': {
-      color: t.palette.dark,
+      color: appTheme.palette.dark,
       opacity: 0.5
     },
     ':focus': {
-      color: t.palette.dark,
+      color: appTheme.palette.dark,
       opacity: 0.5
     }
   },
@@ -136,13 +128,13 @@ s = StyleSheet.create({
   },
 
   keystroke: {
-    backgroundColor: t.palette.mid10l,
-    borderColor: t.palette.mid40l,
+    backgroundColor: appTheme.palette.mid10l,
+    borderColor: appTheme.palette.mid40l,
     borderStyle: 'solid',
     borderWidth: '1px 1px 0',
-    color: t.palette.warm,
+    color: appTheme.palette.warm,
     display: 'inline-block',
-    fontSize: t.typography.s3,
+    fontSize: appTheme.typography.s3,
     fontWeight: 700,
     lineHeight: keystrokeHeight,
     marginRight: '1rem',
@@ -163,10 +155,10 @@ s = StyleSheet.create({
   definition: {
     borderTop: '1px solid transparent',
     display: 'inline-block',
-    fontSize: t.typography.s3,
+    fontSize: appTheme.typography.s3,
     lineHeight: keystrokeHeight,
     verticalAlign: 'middle'
   }
 });
 
-export default look(ShortcutsMenu);
+export default withStyles(styleThunk)(ShortcutsMenu);

@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import {overflowTouch} from 'universal/styles/helpers';
 import {cashay} from 'cashay';
 import AgendaItem from 'universal/modules/teamDashboard/components/AgendaItem/AgendaItem';
@@ -10,11 +11,10 @@ const removeItemFactory = (itemId) => () => {
 };
 
 const AgendaList = (props) => {
-  const {styles} = AgendaList;
-  const {agenda, agendaPhaseItem, phaseItemFactory} = props;
+  const {agenda, agendaPhaseItem, phaseItemFactory, styles} = props;
   return (
-    <div className={styles.root}>
-      <div className={styles.inner}>
+    <div className={css(styles.root)}>
+      <div className={css(styles.inner)}>
         {agenda.map((item, idx) =>
           <AgendaItem
             desc={item.content}
@@ -39,10 +39,11 @@ AgendaList.propTypes = {
     content: PropTypes.string
   })),
   agendaPhaseItem: PropTypes.number,
-  phaseItemFactory: PropTypes.func
+  phaseItemFactory: PropTypes.func,
+  styles: PropTypes.object
 };
 
-AgendaList.styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
@@ -60,4 +61,4 @@ AgendaList.styles = StyleSheet.create({
   }
 });
 
-export default look(AgendaList);
+export default withStyles(styleThunk)(AgendaList);

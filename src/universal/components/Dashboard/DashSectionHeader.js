@@ -1,25 +1,31 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import ui from 'universal/styles/ui';
 
-let styles = {};
-
-const DashSectionHeader = (props) =>
-  <div className={styles.root}>
-    {props.children}
-  </div>;
-
-DashSectionHeader.propTypes = {
-  children: PropTypes.any
+const DashSectionHeader = (props) => {
+  const {children, styles} = props;
+  return (
+    <div className={css(styles.root)}>
+      {children}
+    </div>
+  );
 };
 
-styles = StyleSheet.create({
+DashSectionHeader.propTypes = {
+  children: PropTypes.any,
+  styles: PropTypes.object
+};
+
+const styleThunk = () => ({
   root: {
     display: 'flex',
     maxWidth: ui.projectColumnsMaxWidth,
     padding: '1rem',
-    width: '100%'
+    position: 'relative',
+    width: '100%',
+    zIndex: 400
   }
 });
 
-export default look(DashSectionHeader);
+export default withStyles(styleThunk)(DashSectionHeader);

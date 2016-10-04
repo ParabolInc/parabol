@@ -1,20 +1,22 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import ui from 'universal/styles/ui';
 import {columnArray} from 'universal/utils/constants';
-
 import ProjectColumn from 'universal/modules/teamDashboard/components/ProjectColumn/ProjectColumn';
-const combineStyles = StyleSheet.combineStyles;
-const borderColor = ui.dashBorderColor;
-let styles = {};
 
 const ProjectColumns = (props) => {
   // myTeamMemberId is undefined if this is coming from USER_DASH
-  const {alignColumns, area, myTeamMemberId, projects} = props;
-  const rootStyles = combineStyles(styles.root, styles[alignColumns]);
+  // TODO we only need userId, we can compute myTeamMemberId
+  const {alignColumns, area, myTeamMemberId, projects, styles, teams, userId, zIndex} = props;
+  const rootStyles = css(styles.root, styles[alignColumns]);
+  const positionStyle = zIndex && {
+    position: 'relative',
+    zIndex
+  };
   return (
-    <div className={rootStyles}>
-      <div className={styles.columns}>
+    <div className={rootStyles} style={positionStyle}>
+      <div className={css(styles.columns)}>
         {columnArray.map((status) =>
           <ProjectColumn
             key={`projectCol${status}`}
@@ -22,6 +24,8 @@ const ProjectColumns = (props) => {
             myTeamMemberId={myTeamMemberId}
             projects={projects[status]}
             status={status}
+            teams={teams}
+            userId={userId}
           />
         )}
       </div>
@@ -37,16 +41,20 @@ ProjectColumns.propTypes = {
   ]),
   area: PropTypes.string,
   myTeamMemberId: PropTypes.string,
-  projects: PropTypes.object.isRequired
+  projects: PropTypes.object.isRequired,
+  styles: PropTypes.object,
+  teams: PropTypes.array,
+  userId: PropTypes.string,
+  zIndex: PropTypes.string
 };
 
 ProjectColumns.defaultProps = {
   alignColumns: 'left'
 };
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
-    borderTop: `1px solid ${borderColor}`,
+    borderTop: `1px solid ${ui.dashBorderColor}`,
     display: 'flex',
     flex: '1',
     width: '100%'
@@ -72,4 +80,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default look(ProjectColumns);
+export default withStyles(styleThunk)(ProjectColumns);

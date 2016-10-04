@@ -5,6 +5,7 @@ import makeAppLink from 'server/utils/makeAppLink';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import promisify from 'es6-promisify';
+import {getUserId} from '../authorization';
 
 const INVITE_TOKEN_INVITE_ID_LEN = 6;
 const INVITE_TOKEN_KEY_LEN = 8;
@@ -104,4 +105,20 @@ export const createEmailPromises = (inviterInfoAndTeamName, inviteesWithTokens) 
     };
     return sendEmailPromise(emailProps.inviteeEmail, 'teamInvite', emailProps);
   });
+};
+
+export const asyncInviteTeam = async (authToken, teamId, invitees) => {
+  const userId = getUserId(authToken);
+  const inviteesWithTokens = invitees.map(invitee => ({...invitee, inviteToken: makeInviteToken()}));
+  const inviterInfoAndTeamName = await getInviterInfoAndTeamName(teamId, userId);
+  const sendEmailPromises = createEmailPromises(inviterInfoAndTeamName, inviteesWithTokens);
+  const {inviteesToStore} = await resolveSentEmails(sendEmailPromises, inviteesWithTokens);
+  const invitationsForDB = await makeInvitationsForDB(inviteesToStore, teamId);
+  // Bulk insert, wait in case something queries the invitation table
+  await r.table('Invitation').insert(invitationsForDB);
+  return true;
+  // TODO generate email to inviter including folks that we couldn't reach
+  // if (inviteeErrors.length > 0) {
+  // throw errorObj({_error: 'Some invitations were not sent', type: 'inviteSendFail', failedEmails: inviteeErrors});
+  // }
 };

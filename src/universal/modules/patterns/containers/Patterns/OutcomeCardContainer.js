@@ -3,7 +3,7 @@ import SectionHeader from '../../components/SectionHeader/SectionHeader';
 import Example from '../../components/Example/Example';
 import ExampleCode from '../../components/ExampleCode/ExampleCode';
 import PropsTable from '../../components/PropsTable/PropsTable';
-import OutcomeCard from '../../../teamDashboard/components/TeamProjectCard/TeamProjectCard';
+import OutcomeCard from 'universal/modules/teamDashboard/containers/TeamProjectCard/TeamProjectCardContainer';
 
 const projectCard = <OutcomeCard showByTeam />;
 const projectCardString = '<OutcomeCard showByTeam />';

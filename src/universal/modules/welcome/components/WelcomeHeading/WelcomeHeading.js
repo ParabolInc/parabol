@@ -1,31 +1,29 @@
-import React, {Component, PropTypes} from 'react';
-import look, { StyleSheet } from 'react-look';
-import theme from 'universal/styles/theme';
+import React, {PropTypes} from 'react';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 
-let styles = {};
+const WelcomeHeading = (props) => {
+  const {copy, styles} = props;
+  return (
+    <h2 className={css(styles.root)}>
+      {copy}
+    </h2>
+  );
+};
+WelcomeHeading.propTypes = {
+  copy: PropTypes.object,
+  styles: PropTypes.object
+};
 
-@look
-// eslint-disable-next-line react/prefer-stateless-function
-export default class WelcomeHeading extends Component {
-  static propTypes = {
-    copy: PropTypes.object
-  }
-
-  render() {
-    return (
-      <h2 className={styles.root}>
-        {this.props.copy}
-      </h2>
-    );
-  }
-}
-
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     display: 'block',
-    fontSize: theme.typography.s6,
+    fontSize: appTheme.typography.s6,
     fontWeight: 700,
     textAlign: 'center'
   }
 });
+
+export default withStyles(styleThunk)(WelcomeHeading);

@@ -1,24 +1,24 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import Helmet from 'react-helmet';
 import {head} from 'universal/utils/clientOptions';
 
 import NotificationBar from 'universal/components/NotificationBar/NotificationBar';
 
 const DashLayout = (props) => {
-  const {styles} = DashLayout;
   const {
     activeMeetings,
     children,
-    title
+    title,
+    styles
   } = props;
   const hasNotification = activeMeetings.length > 0;
   return (
-    <div className={styles.root}>
+    <div className={css(styles.root)}>
       <Helmet title={title} {...head} />
       {hasNotification && <NotificationBar activeMeetings={activeMeetings} />}
-      <div className={styles.main}>
+      <div className={css(styles.main)}>
         {children}
       </div>
     </div>
@@ -28,20 +28,12 @@ const DashLayout = (props) => {
 DashLayout.propTypes = {
   activeMeetings: PropTypes.array.isRequired,
   children: PropTypes.any,
+  styles: PropTypes.object,
   title: PropTypes.string
 };
 
-DashLayout.defaultProps = {
-  notification: {
-    link: '/meeting/team123',
-    linkLabel: 'Join Active Meeting',
-    message: 'Product',
-    timestamp: '12:32'
-  },
-  title: 'Action Dashboard'
-};
 
-DashLayout.styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     backgroundColor: '#fff',
     display: 'flex !important',
@@ -56,4 +48,4 @@ DashLayout.styles = StyleSheet.create({
   },
 });
 
-export default look(DashLayout);
+export default withStyles(styleThunk)(DashLayout);

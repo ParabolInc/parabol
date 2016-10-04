@@ -9,7 +9,7 @@ const TeamDashModal = (props) => {
   const handleClick = () => router.push(`/meeting/${teamId}`);
   return (
     <DashModal>
-      <Type align="center" bold marginBottom="1.5rem" scale="s7" theme="cool">
+      <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
         Oh, hi there!
       </Type>
       <Type align="center" bold scale="s4">
@@ -18,13 +18,13 @@ const TeamDashModal = (props) => {
         Projects and Agenda Items.
       </Type>
       <IconLink
+        colorPalette="warm"
         icon="arrow-circle-right"
         iconPlacement="right"
         label="Join Meeting"
         marginTop="1.5rem"
         onClick={handleClick}
         scale="large"
-        theme="warm"
       />
     </DashModal>
   );

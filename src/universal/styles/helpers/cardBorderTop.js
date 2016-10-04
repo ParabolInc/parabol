@@ -1,11 +1,11 @@
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
 const cardBorderTop = {
   backgroundColor: 'currentColor',
   borderRadius: `${ui.cardBorderRadius} ${ui.cardBorderRadius} 0 0`,
   display: 'block',
-  color: theme.palette.dark,
+  color: appTheme.palette.dark,
   content: '""',
   height: ui.cardBorderRadius,
   left: '-1px',

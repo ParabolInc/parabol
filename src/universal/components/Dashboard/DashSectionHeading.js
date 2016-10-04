@@ -1,17 +1,18 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import ib from 'universal/styles/helpers/ib';
 import FontAwesome from 'react-fontawesome';
 import Type from 'universal/components/Type/Type';
 
 const DashSectionHeading = (props) => {
-  const {styles} = DashSectionHeading;
+  const {icon, label, margin, styles} = props;
   return (
-    <div className={styles.root} style={{margin: props.margin}}>
-      <FontAwesome className={styles.icon} name={props.icon} style={{...ib, lineHeight: 'inherit'}} />
-      <Type display="inlineBlock" lineHeight={ui.dashSectionHeaderLineHeight} scale="s4" theme="dark">{props.label}</Type>
+    <div className={css(styles.root)} style={{margin}}>
+      <FontAwesome className={css(styles.icon)} name={icon} style={{...ib, lineHeight: 'inherit'}} />
+      <Type display="inlineBlock" lineHeight={ui.dashSectionHeaderLineHeight} scale="s4" colorPalette="dark">{label}</Type>
     </div>
   );
 };
@@ -19,24 +20,25 @@ const DashSectionHeading = (props) => {
 DashSectionHeading.propTypes = {
   icon: PropTypes.string,
   label: PropTypes.string,
-  margin: PropTypes.string
+  margin: PropTypes.string,
+  styles: PropTypes.object,
 };
 
 DashSectionHeading.defaultProps = {
   margin: '0px'
 };
 
-DashSectionHeading.styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     ...ib,
     whiteSpace: 'nowrap'
   },
 
   icon: {
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     fontSize: '14px',
     marginRight: '.5rem'
   }
 });
 
-export default look(DashSectionHeading);
+export default withStyles(styleThunk)(DashSectionHeading);

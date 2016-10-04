@@ -14,7 +14,7 @@ export default store => ({
     require('./logout'),
     require('./meeting')(store),
     // ...require('./meetingLayoutRoutes'),
-    require('./patterns'),
+    // require('./patterns'),
     require('./teamDashboard')(store),
     require('./userDashboard')(store),
     require('./welcome')(store),
@@ -22,4 +22,7 @@ export default store => ({
     require('./notFound')
   ]
 });
+export {StyleSheetServer} from 'aphrodite';
+export {cashay} from 'cashay';
+export const cashaySchema = require('cashay!server/utils/getCashaySchema.js');
 /* eslint-enable */

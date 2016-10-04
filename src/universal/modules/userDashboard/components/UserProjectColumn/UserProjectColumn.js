@@ -1,29 +1,20 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
-import OutcomeCard from '../../../teamDashboard/components/TeamProjectCard/TeamProjectCard';
-import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
+import TeamProjectCard from 'universal/modules/teamDashboard/containers/TeamProjectCard/TeamProjectCardContainer';
+import labels from 'universal/styles/theme/labels';
 
-
-const borderColor = 'rgba(0, 0, 0, .1)';
-let styles = {};
-
-const labels = {
-  [ACTIVE]: 'Active',
-  [STUCK]: 'Stuck',
-  [DONE]: 'Done',
-  [FUTURE]: 'Future'
-};
 
 const UserProjectColumn = (props) => {
-  const {status, projects} = props;
+  const {projects, status, styles} = props;
   return (
-    <div className={styles.column}>
-      <div className={styles.columnHeading}>
-        <span>{labels[status]}</span>
+    <div className={css(styles.column)}>
+      <div className={css(styles.columnHeading)}>
+        <span>{labels.meetingPhase[status].slug}</span>
       </div>
       {projects.map(project =>
-        <OutcomeCard
+        <TeamProjectCard
           key={`userCard${project.id}`}
           isProject
           showByTeam
@@ -41,6 +32,7 @@ const UserProjectColumn = (props) => {
 UserProjectColumn.propTypes = {
   projects: PropTypes.array,
   status: PropTypes.string,
+  styles: PropTypes.object,
   teamMembers: PropTypes.array,
   teamMemberId: PropTypes.string
 };
@@ -49,8 +41,8 @@ const columnStyles = {
   flex: 1,
   width: '25%'
 };
-
-styles = StyleSheet.create({
+const borderColor = 'rgba(0, 0, 0, .1)';
+const styleThunk = () => ({
   root: {
     borderTop: `1px solid ${borderColor}`,
     margin: '1rem 0',
@@ -81,10 +73,10 @@ styles = StyleSheet.create({
   },
 
   columnHeading: {
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     fontWeight: 700,
     margin: '0 0 1rem'
   }
 });
 
-export default look(UserProjectColumn);
+export default withStyles(styleThunk)(UserProjectColumn);

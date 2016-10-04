@@ -1,12 +1,12 @@
 import Jordan from 'universal/styles/theme/images/avatars/jordan-husney-avatar.jpg';
 import Matt from 'universal/styles/theme/images/avatars/matt-krick-bw.png';
-import Marimar from 'universal/styles/theme/images/avatars/miramar-suarez-penalva.jpg';
+import Marimar from 'universal/styles/theme/images/avatars/marimar-suarez-penalva.jpg';
 import Taya from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
 import Terry from 'universal/styles/theme/images/avatars/terry-acker-avatar.jpg';
 
 const exampleTeam = {
   teamId: 'exampleTeam',
-  teamName: 'Play',
+  teamName: 'Parabol',
   timerValue: '30:00',
   teamMembers: [
     {

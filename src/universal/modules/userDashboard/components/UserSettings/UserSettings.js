@@ -1,123 +1,77 @@
-import React, {Component, PropTypes} from 'react';
-import {reduxForm, initialize} from 'redux-form';
-import {withRouter} from 'react-router';
-import {cashay} from 'cashay';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import React, {PropTypes} from 'react';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import {DashContent, DashHeader, DashHeaderInfo} from 'universal/components/Dashboard';
 import Button from 'universal/components/Button/Button';
-import Field from 'universal/components/Field/Field';
-import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
+import InputField from 'universal/components/InputField/InputField';
+import {Field} from 'redux-form';
+import {ACTIVITY_WELCOME} from 'universal/modules/userDashboard/ducks/settingsDuck';
 
-import {
-  ACTIVITY_WELCOME,
-  clearActivity
-} from 'universal/modules/userDashboard/ducks/settingsDuck';
-
-const updateSuccess = {
-  title: 'Settings saved!',
-  message: 'We won\'t forget who you are.',
-  level: 'success'
-};
-
-let styles = {};
-
-@look
-@reduxForm({form: 'userSettings'})
-@withRouter
-export default class UserSettings extends Component {
-  static propTypes = {
-    activity: PropTypes.string,          // from settingsDuck
-    dispatch: PropTypes.func,
-    handleSubmit: PropTypes.func,
-    nextPage: PropTypes.string,          // from settingsDuck
-    router: PropTypes.object,
-    userId: PropTypes.string,
-    /* User for form defaults: */
-    preferredName: PropTypes.string
-  };
-
-  componentWillMount() {
-    this.initializeForm();
-  }
-
-  onSubmit = async(submissionData) => {
-    const {activity, dispatch, nextPage, userId, router} = this.props;
-    const {preferredName} = submissionData;
-    const options = {
-      variables: {
-        updatedUser: {
-          id: userId,
-          preferredName
-        }
-      }
-    };
-    await cashay.mutate('updateUserProfile', options);
-    dispatch(showSuccess(updateSuccess));
-    if (activity === ACTIVITY_WELCOME) {
-      dispatch(clearActivity());
-    }
-    if (nextPage) {
-      router.push(nextPage);
-    }
-  }
-
-  initializeForm() {
-    const {dispatch, preferredName} = this.props;
-    return dispatch(initialize('userSettings', {preferredName}));
-  }
-
-  renderActivity(activity) {
-    if (activity === ACTIVITY_WELCOME) {
-      return (
-        <div>
-          Hey, welcome aboard! In order for your team to recognize who you
-          are, do you mind telling us your name?
-        </div>
-      );
-    }
-    return null;
-  }
-
-  render() {
-    const {activity, handleSubmit} = this.props;
+const renderActivity = (activity) => {
+  if (activity === ACTIVITY_WELCOME) {
     return (
-      <form className={styles.root} onSubmit={handleSubmit(this.onSubmit)}>
-        <DashHeader>
-          <DashHeaderInfo title="My Settings"/>
-        </DashHeader>
-        <DashContent>
-          <div className={styles.body}>
-            <div className={styles.row}>
-              {this.renderActivity(activity)}
-            </div>
-            <div className={styles.row}>
-              <div className={styles.label}>
-                Name
-              </div>
-              <Field
-                autoFocus
-                hasShortcutHint
-                name="preferredName"
-                placeholder="Albert Einstein"
-                type="text"
-              />
-            </div>
-            <Button
-              isBlock
-              label="Update"
-              size="small"
-              theme="cool"
-              type="submit"
-            />
-          </div>
-        </DashContent>
-      </form>
+      <div>
+        Hey, welcome aboard! In order for your team to recognize who you
+        are, do you mind telling us your name?
+      </div>
     );
   }
-}
+  return null;
+};
 
-styles = StyleSheet.create({
+const UserSettings = (props) => {
+  const {activity, handleSubmit, onSubmit, styles} = props;
+  return (
+    <form className={css(styles.root)} onSubmit={handleSubmit(onSubmit)}>
+      <DashHeader>
+        <DashHeaderInfo title="My Settings"/>
+      </DashHeader>
+      <DashContent>
+        <div className={css(styles.body)}>
+          <div className={css(styles.row)}>
+            {renderActivity(activity)}
+          </div>
+          <div className={css(styles.row)}>
+            <div className={css(styles.label)}>
+              Name
+            </div>
+            <Field
+              autoFocus
+              component={InputField}
+              hasShortcutHint
+              name="preferredName"
+              placeholder="Albert Einstein"
+              type="text"
+            />
+          </div>
+          <Button
+            isBlock
+            label="Update"
+            size="small"
+            colorPalette="cool"
+            type="submit"
+          />
+        </div>
+      </DashContent>
+    </form>
+  );
+};
+
+UserSettings.propTypes = {
+  activity: PropTypes.string,          // from settingsDuck
+  dispatch: PropTypes.func,
+  handleSubmit: PropTypes.func,
+  nextPage: PropTypes.string,          // from settingsDuck
+  onSubmit: PropTypes.func,
+  router: PropTypes.object,
+  userId: PropTypes.string,
+  /* User for form defaults: */
+  preferredName: PropTypes.string,
+  styles: PropTypes.object
+};
+
+const styleThunk = () => ({
   root: {
     display: 'flex !important',
     flex: 1,
@@ -133,11 +87,13 @@ styles = StyleSheet.create({
   },
 
   label: {
-    color: theme.palette.dark,
-    fontSize: theme.typography.s2,
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s2,
     fontWeight: 700,
     margin: '0 0 .5rem',
     padding: '0 0 0 .5rem',
     textTransform: 'uppercase'
   }
 });
+
+export default withStyles(styleThunk)(UserSettings);

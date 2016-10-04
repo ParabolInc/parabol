@@ -1,10 +1,11 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import {ib, overflowTouch} from 'universal/styles/helpers';
 import ui from 'universal/styles/ui';
 import TeamArchiveHeader from 'universal/modules/teamDashboard/components/TeamArchiveHeader/TeamArchiveHeader';
-import TeamProjectCard from 'universal/modules/teamDashboard/components/TeamProjectCard/TeamProjectCard';
+import TeamProjectCard from 'universal/modules/teamDashboard/containers/TeamProjectCard/TeamProjectCardContainer';
 import FontAwesome from 'react-fontawesome';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
 
@@ -15,17 +16,16 @@ const iconStyle = {
 };
 
 const TeamArchive = (props) => {
-  const {styles} = TeamArchive;
-  const {archivedProjects, dispatch, teamId} = props;
+  const {archivedProjects, dispatch, styles, teamId} = props;
   return (
-    <div className={styles.root}>
+    <div className={css(styles.root)}>
       <TeamArchiveHeader teamId={teamId}/>
-      <div className={styles.body}>
-        <div className={styles.scrollable}>
+      <div className={css(styles.body)}>
+        <div className={css(styles.scrollable)}>
           {archivedProjects.length ?
-            <div className={styles.cardGrid}>
+            <div className={css(styles.cardGrid)}>
               {archivedProjects.map(project =>
-                <div className={styles.cardBlock} key={`cardBlockFor${project.id}`}>
+                <div className={css(styles.cardBlock)} key={`cardBlockFor${project.id}`}>
                   <TeamProjectCard
                     key={project.id}
                     dispatch={dispatch}
@@ -36,12 +36,12 @@ const TeamArchive = (props) => {
                 </div>
               )}
             </div> :
-            <div className={styles.emptyMsg}>
+            <div className={css(styles.emptyMsg)}>
               <FontAwesome name="smile-o" style={iconStyle} />
               <span style={ib}>
                 Hi there! There are zero archived projects.
                 Nothing to see here. How about a fun rally video?
-                {' '}<span className={styles.link}>{getRallyLink()}!</span>
+                {' '}<span className={css(styles.link)}>{getRallyLink()}!</span>
               </span>
             </div>
           }
@@ -54,11 +54,12 @@ const TeamArchive = (props) => {
 TeamArchive.propTypes = {
   archivedProjects: PropTypes.array,
   dispatch: PropTypes.func,
+  styles: PropTypes.object,
   teamId: PropTypes.string,
   teamMembers: PropTypes.array
 };
 
-TeamArchive.styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     display: 'flex',
     flex: 1,
@@ -113,18 +114,18 @@ TeamArchive.styles = StyleSheet.create({
 
   emptyMsg: {
     backgroundColor: '#fff',
-    border: `1px solid ${theme.palette.mid30l}`,
+    border: `1px solid ${appTheme.palette.mid30l}`,
     borderRadius: '.25rem',
-    fontFamily: theme.typography.serif,
-    fontSize: theme.typography.s2,
+    fontFamily: appTheme.typography.serif,
+    fontSize: appTheme.typography.s2,
     fontStyle: 'italic',
     display: 'inline-block',
     padding: '1rem'
   },
 
   link: {
-    color: theme.palette.cool
+    color: appTheme.palette.cool
   }
 });
 
-export default look(TeamArchive);
+export default withStyles(styleThunk)(TeamArchive);

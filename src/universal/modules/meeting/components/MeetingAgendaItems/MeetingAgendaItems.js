@@ -1,7 +1,8 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import {withRouter} from 'react-router';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 
 import Avatar from 'universal/components/Avatar/Avatar';
 import IconLink from 'universal/components/IconLink/IconLink';
@@ -17,8 +18,6 @@ import LoadingView from 'universal/components/LoadingView/LoadingView';
 import {cashay} from 'cashay';
 import withHotkey from 'react-hotkey-hoc';
 
-let s = {};
-
 const MeetingAgendaItems = (props) => {
   const {
     agenda,
@@ -27,6 +26,7 @@ const MeetingAgendaItems = (props) => {
     localPhaseItem,
     members,
     router,
+    styles,
     team
   } = props;
   const {id: teamId} = team;
@@ -62,21 +62,23 @@ const MeetingAgendaItems = (props) => {
           </MeetingSectionSubheading>
         </MeetingSection>
         {/* */}
-        <div className={s.layout}>
-          <div className={s.nav}>
-            <div className={s.linkSpacer}>{' '}</div>
-            <div className={s.avatar}>
+        <div className={css(styles.layout)}>
+          <div className={css(styles.nav)}>
+            <div className={css(styles.linkSpacer)}>{' '}</div>
+            <div className={css(styles.avatar)}>
               <Avatar {...currentTeamMember} size="large"/>
-              <div className={s.requestLabel}>
+              <div className={css(styles.requestLabel)}>
                 “{agendaItem.content}”
               </div>
             </div>
-            <div className={s.linkSpacer}>
+            <div className={css(styles.linkSpacer)}>
               <IconLink
+                colorPalette="cool"
                 icon="arrow-circle-right"
                 iconPlacement="right"
                 label="Next Agenda Item"
                 onClick={gotoNextItem}
+                scale="small"
               />
             </div>
           </div>
@@ -92,7 +94,18 @@ const MeetingAgendaItems = (props) => {
   );
 };
 
-s = StyleSheet.create({
+MeetingAgendaItems.propTypes = {
+  agenda: PropTypes.object,
+  bindHotkey: PropTypes.func,
+  isFacilitating: PropTypes.bool,
+  localPhaseItem: PropTypes.number,
+  members: PropTypes.array,
+  router: PropTypes.object,
+  styles: PropTypes.object,
+  team: PropTypes.object
+};
+
+const styleThunk = () => ({
   layout: {
     margin: '0 auto',
     maxWidth: '80rem',
@@ -117,10 +130,10 @@ s = StyleSheet.create({
   },
 
   requestLabel: {
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     display: 'inline-block',
-    fontFamily: theme.typography.serif,
-    fontSize: theme.typography.s5,
+    fontFamily: appTheme.typography.serif,
+    fontSize: appTheme.typography.s5,
     fontStyle: 'italic',
     fontWeight: 700,
     marginLeft: '1.5rem',
@@ -128,14 +141,9 @@ s = StyleSheet.create({
   }
 });
 
-MeetingAgendaItems.propTypes = {
-  agenda: PropTypes.array.isRequired,
-  bindHotkey: PropTypes.func,
-  isFacilitating: PropTypes.bool,
-  localPhaseItem: PropTypes.number,
-  members: PropTypes.array,
-  team: PropTypes.object,
-  router: PropTypes.object.isRequired,
-};
-
-export default withHotkey(withRouter(look(MeetingAgendaItems)));
+export default withHotkey(
+  withRouter(
+    withStyles(styleThunk)(
+      MeetingAgendaItems)
+  )
+);

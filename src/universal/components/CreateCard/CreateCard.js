@@ -1,54 +1,52 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import PushButton from '../PushButton/PushButton';
 import Ellipsis from '../Ellipsis/Ellipsis';
 import Type from '../Type/Type';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 import CreateCardRootStyles from './CreateCardRootStyles';
-
-const combineStyles = StyleSheet.combineStyles;
-const labelStyles = {
-  display: 'inline-block',
-  border: '1px solid transparent',
-  borderRadius: '.25rem',
-  borderWidth: '2px 1px 1px',
-  padding: '1px 4px 2px',
-  verticalAlign: 'middle'
-};
-let s = {};
+import {cardBorderTop} from 'universal/styles/helpers';
+import makeUsername from 'universal/utils/makeUsername';
 
 const CreateCard = (props) => {
-  let cardStyles = s.root;
-  const {createdBy, handleAddAction, handleAddProject, hasControls,
-    isCreating, isProject
+  const {
+    createdBy,
+    handleAddAction,
+    handleAddProject,
+    hasControls,
+    isCreating,
+    isProject,
+    styles
   } = props;
-  const cardBorderVariantStyles = combineStyles(s.root, s.rootBorderVariant);
+
   const actionLabel = () =>
-    <span className={s.label}>
-      <span className={s.labelStyles}>Add an{' '}</span>
-      <span className={s.actionLabel}>
+    <span className={css(styles.label)}>
+      <span className={css(styles.labelStyles)}>Add an{' '}</span>
+      <span className={css(styles.actionLabel)}>
         <u>A</u>ction
       </span>
     </span>;
 
   const projectLabel = () =>
-    <span className={s.label}>
-      <span className={s.labelStyles}>Add a{' '}</span>
-      <span className={s.projectLabel}>
+    <span className={css(styles.label)}>
+      <span className={css(styles.labelStyles)}>Add a{' '}</span>
+      <span className={css(styles.projectLabel)}>
         <u>P</u>roject
       </span>
     </span>;
 
-  const trimmedName = createdBy.replace(/\s+/g, '');
+  const username = makeUsername(createdBy);
 
-  if (hasControls || isCreating) {
-    cardStyles = cardBorderVariantStyles;
-  }
+  const cardStyles = css(
+    styles.root,
+    (hasControls || isCreating) && styles.rootBorderVariant
+  );
 
   return (
     <div className={cardStyles}>
       {hasControls &&
-        <div className={s.controlsBlock}>
+        <div className={css(styles.controlsBlock)}>
           <PushButton
             handleOnClick={handleAddAction}
             keystroke="a"
@@ -64,8 +62,8 @@ const CreateCard = (props) => {
         </div>
       }
       {isCreating &&
-        <Type align="center" bold scale="s3" theme="mid">
-          @{trimmedName}<br />is adding {isProject ? 'a Project' : 'an Action'}<Ellipsis />
+        <Type align="center" bold scale="s3" colorPalette="mid">
+          @{username}<br />is adding {isProject ? 'a Project' : 'an Action'}<Ellipsis />
         </Type>
       }
     </div>
@@ -78,24 +76,32 @@ CreateCard.propTypes = {
   handleAddProject: PropTypes.func,
   hasControls: PropTypes.bool,
   isCreating: PropTypes.bool,
-  isProject: PropTypes.bool
+  isProject: PropTypes.bool,
+  styles: PropTypes.object
 };
 
-CreateCard.defaultProps = {
-  createdBy: 'Taya Mueller',
-  hasControls: false,
-  isCreating: false,
-  isProject: false
+const labelStyles = {
+  display: 'inline-block',
+  border: '1px solid transparent',
+  borderRadius: '.25rem',
+  borderWidth: '2px 1px 1px',
+  padding: '1px 4px 2px',
+  verticalAlign: 'middle'
 };
 
-s = StyleSheet.create({
+const styleThunk = () => ({
   root: {
-    ...CreateCardRootStyles
+    ...CreateCardRootStyles,
+
+    '::after': {
+      ...cardBorderTop,
+      color: appTheme.palette.mid40l
+    }
   },
 
   rootBorderVariant: {
     '::after': {
-      color: theme.palette.mid
+      color: appTheme.palette.mid
     }
   },
 
@@ -104,8 +110,8 @@ s = StyleSheet.create({
   },
 
   label: {
-    color: theme.palette.mid,
-    fontFamily: theme.typography.sansSerif,
+    color: appTheme.palette.mid,
+    fontFamily: appTheme.typography.sansSerif,
     fontStyle: 'normal',
     fontWeight: 700
   },
@@ -116,18 +122,18 @@ s = StyleSheet.create({
 
   actionLabel: {
     ...labelStyles,
-    backgroundColor: theme.palette.light50l,
-    borderColor: theme.palette.light50g,
-    borderTopColor: theme.palette.dark,
-    color: theme.palette.dark
+    backgroundColor: appTheme.palette.light50l,
+    borderColor: appTheme.palette.light50g,
+    borderTopColor: appTheme.palette.dark,
+    color: appTheme.palette.dark
   },
 
   projectLabel: {
     ...labelStyles,
-    borderColor: theme.palette.dark30l,
-    borderTopColor: theme.palette.cool,
-    color: theme.palette.cool
+    borderColor: appTheme.palette.dark30l,
+    borderTopColor: appTheme.palette.cool,
+    color: appTheme.palette.cool
   }
 });
 
-export default look(CreateCard);
+export default withStyles(styleThunk)(CreateCard);

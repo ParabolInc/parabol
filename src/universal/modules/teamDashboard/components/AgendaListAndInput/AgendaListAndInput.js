@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import AgendaList from 'universal/modules/teamDashboard/components/AgendaList/AgendaList';
 import AgendaInput from 'universal/modules/teamDashboard/components/AgendaInput/AgendaInput';
 import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
@@ -7,11 +8,10 @@ import {withRouter} from 'react-router';
 import {AGENDA_ITEMS} from 'universal/utils/constants';
 
 const AgendaListAndInput = (props) => {
-  const {styles} = AgendaListAndInput;
-  const {agenda, agendaPhaseItem, isFacilitating, myTeamMember, router, teamId} = props;
+  const {agenda, agendaPhaseItem, isFacilitating, myTeamMember, styles, router, teamId} = props;
   const phaseItemFactory = makePhaseItemFactory(isFacilitating, agenda.length, router, teamId, AGENDA_ITEMS);
   return (
-    <div className={styles.root}>
+    <div className={css(styles.root)}>
       <AgendaInput
         agenda={agenda}
         teamId={teamId}
@@ -32,10 +32,11 @@ AgendaListAndInput.propTypes = {
   isFacilitating: PropTypes.bool,
   myTeamMember: PropTypes.object,
   router: PropTypes.object,
+  styles: PropTypes.object,
   teamId: PropTypes.string
 };
 
-AgendaListAndInput.styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
@@ -44,4 +45,4 @@ AgendaListAndInput.styles = StyleSheet.create({
   }
 });
 
-export default withRouter(look(AgendaListAndInput));
+export default withRouter(withStyles(styleThunk)(AgendaListAndInput));

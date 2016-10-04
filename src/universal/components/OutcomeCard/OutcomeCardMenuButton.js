@@ -1,17 +1,10 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import FontAwesome from 'react-fontawesome';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 import labels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
-
-const cs = StyleSheet.combineStyles;
-const buttonHF = {
-  backgroundColor: 'transparent',
-  borderColor: theme.palette.mid50l
-};
-let styles = {};
-const statusValues = labels.projectStatus.slugs.slice(0);
 
 const OutcomeCardMenuButton = (props) => {
   const {
@@ -20,14 +13,15 @@ const OutcomeCardMenuButton = (props) => {
     label,
     onClick,
     status,
+    styles,
     title
   } = props;
 
-  const buttonStyleOptions = [styles.button, styles[status]];
-  if (disabled) {
-    buttonStyleOptions.push(styles.disabled);
-  }
-  const buttonStyles = cs(...buttonStyleOptions);
+  const buttonStyles = css(
+    styles.button,
+    styles[status],
+    disabled && styles.disabled
+  );
 
   return (
     <button
@@ -36,35 +30,31 @@ const OutcomeCardMenuButton = (props) => {
       onClick={onClick}
       title={title}
     >
-      <FontAwesome name={icon} /> <span className={styles.label}>{label}</span>
+      <FontAwesome name={icon} /> <span className={css(styles.label)}>{label}</span>
     </button>
   );
 };
 
-statusValues.push('archive');
-
+const statusValues = labels.projectStatus.slugs.concat('archive');
 OutcomeCardMenuButton.propTypes = {
   disabled: PropTypes.bool,
   icon: PropTypes.string,
   label: PropTypes.any,
   onClick: PropTypes.func,
   status: PropTypes.oneOf(statusValues),
+  styles: PropTypes.object,
   title: PropTypes.string
 };
 
-OutcomeCardMenuButton.defaultProps = {
-  disabled: false,
-  icon: labels.projectStatus.active.icon,
-  onClick() {
-    return console.log('OutcomeCardMenuButton.onClick()');
-  },
-  status: labels.projectStatus.active.slug
+const buttonHF = {
+  backgroundColor: 'transparent',
+  borderColor: appTheme.palette.mid50l
 };
 
-styles = StyleSheet.create({
+const styleThunk = () => ({
   button: {
     backgroundColor: 'transparent',
-    border: `1px solid ${theme.palette.mid30l}`,
+    border: `1px solid ${appTheme.palette.mid30l}`,
     borderRadius: '.25rem',
     cursor: 'pointer',
     margin: 0,
@@ -77,7 +67,7 @@ styles = StyleSheet.create({
     },
     ':focus': {
       ...buttonHF,
-      borderColor: theme.palette.dark90d
+      borderColor: appTheme.palette.dark90d
     }
   },
 
@@ -104,4 +94,4 @@ styles = StyleSheet.create({
   },
 });
 
-export default look(OutcomeCardMenuButton);
+export default withStyles(styleThunk)(OutcomeCardMenuButton);

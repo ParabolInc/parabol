@@ -59,7 +59,6 @@ export function run(worker) {
 
   // server-side rendering for emails
   app.get('/email', emailSSR);
-
   // server-side rendering
   app.get('*', createSSR);
 

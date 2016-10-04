@@ -1,19 +1,15 @@
 import React, {PropTypes} from 'react';
-import {reduxForm} from 'redux-form';
-import Field from 'universal/components/Field/Field';
+import InputField from 'universal/components/InputField/InputField';
+import {Field, reduxForm} from 'redux-form';
 import Type from 'universal/components/Type/Type';
-import ProgressDots from '../ProgressDots/ProgressDots';
-import WelcomeContent from '../WelcomeContent/WelcomeContent';
-import WelcomeHeader from '../WelcomeHeader/WelcomeHeader';
 import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
-import WelcomeLayout from '../WelcomeLayout/WelcomeLayout';
-import {nextPage, previousPage, updateCompleted, setWelcomeTeam} from 'universal/modules/welcome/ducks/welcomeDuck';
+import {nextPage, updateCompleted, setWelcomeTeam} from 'universal/modules/welcome/ducks/welcomeDuck';
 import shortid from 'shortid';
 import {cashay} from 'cashay';
 import {setAuthToken} from 'universal/redux/authDuck';
 
 const Step2TeamName = (props) => {
-  const {dispatch, handleSubmit, preferredName, teamName, completed} = props;
+  const {dispatch, handleSubmit, preferredName, teamName} = props;
   const onTeamNameSubmit = data => {
     const myTeamName = data.teamName;
     const teamId = shortid.generate();
@@ -30,50 +26,31 @@ const Step2TeamName = (props) => {
     // createTeam returns a new JWT with a new tms field
     cashay.mutate('createTeam', createTeamOptions).then((res) => {
       dispatch(setAuthToken(res.data.createTeam));
-      dispatch(updateCompleted(3));
+      dispatch(updateCompleted(2));
       dispatch(nextPage());
     });
   };
-  const progressDotClick = (dot) => {
-    if (dot === 1) {
-      dispatch(previousPage());
-    } else if (dot === 3) {
-      if (teamName) {
-        dispatch(nextPage());
-      }
-    }
-  };
   return (
-    <WelcomeLayout>
-      <WelcomeHeader heading={<span>Invite your team.</span>} />
-      <WelcomeContent>
-        <ProgressDots
-          numDots={3}
-          numCompleted={completed}
-          currentDot={2}
-          onClick={progressDotClick}
+    <div>{/* Div for that flexy flex */}
+      <Type align="center" italic scale="s6">
+        Nice to meet you, {preferredName}!
+      </Type>
+      <WelcomeHeading copy={<span>Please type in your team name:</span>}/>
+      <form onSubmit={handleSubmit(onTeamNameSubmit)}>
+        <Field
+          autoFocus
+          buttonDisabled={!teamName}
+          buttonIcon="check-circle"
+          component={InputField}
+          hasButton
+          hasShortcutHint
+          name="teamName"
+          type="text"
+          placeholder="The Beatles"
+          shortcutHint="Press enter"
         />
-        <div>{/* Div for that flexy flex */}
-          <Type align="center" italic scale="s6">
-            Nice to meet you, {preferredName}!
-          </Type>
-          <WelcomeHeading copy={<span>Please type in your team name:</span>} />
-          <form onSubmit={handleSubmit(onTeamNameSubmit)}>
-            <Field
-              autoFocus
-              buttonDisabled={!teamName}
-              buttonIcon="check-circle"
-              hasButton
-              hasShortcutHint
-              name="teamName"
-              type="text"
-              placeholder="The Beatles"
-              shortcutHint="Press enter"
-            />
-          </form>
-        </div>
-      </WelcomeContent>
-    </WelcomeLayout>
+      </form>
+    </div>
   );
 };
 

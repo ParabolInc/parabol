@@ -1,9 +1,10 @@
 import React, {PropTypes} from 'react';
 import {withRouter} from 'react-router';
+import withHotkey from 'react-hotkey-hoc';
 
 import IconLink from 'universal/components/IconLink/IconLink';
 import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
-import CheckinCards from 'universal/modules/meeting/components/CheckinCards/CheckinCards';
+import CheckInCards from 'universal/modules/meeting/components/CheckInCards/CheckInCards';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import {
@@ -18,6 +19,7 @@ import Type from 'universal/components/Type/Type';
 
 const MeetingCheckin = (props) => {
   const {
+    bindHotkey,
     isFacilitating,
     localPhaseItem,
     members,
@@ -56,6 +58,9 @@ const MeetingCheckin = (props) => {
   const currentName = members[localPhaseItem - 1] && members[localPhaseItem - 1].preferredName;
   const isComplete = phaseOrder(meetingPhase) > phaseOrder(CHECKIN);
   const gotoNextItem = phaseItemFactory(localPhaseItem + 1);
+  const gotoPrevItem = phaseItemFactory(localPhaseItem - 1);
+  bindHotkey(['enter', 'right'], gotoNextItem);
+  bindHotkey('left', gotoPrevItem);
   return (
     <MeetingMain>
       {/* */}
@@ -71,12 +76,12 @@ const MeetingCheckin = (props) => {
       </MeetingSection>
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="2rem">
-          <Type align="center" bold family="serif" scale="s6" theme="warm">
+          <Type align="center" bold family="serif" scale="s6" colorPalette="warm">
             {checkInGreeting}, {currentName}—{checkInQuestion}?
           </Type>
         </MeetingSection>
         {/* */}
-        <CheckinCards
+        <CheckInCards
           isFacilitating={isFacilitating}
           localPhaseItem={localPhaseItem}
           members={members}
@@ -84,11 +89,11 @@ const MeetingCheckin = (props) => {
         />
         <MeetingSection paddingBottom="2rem">
           <IconLink
+            colorPalette="cool"
             icon="arrow-circle-right"
             iconPlacement="right"
             label={isLastMember ? 'Move on to updates' : 'Next teammate (press enter)'}
             scale="large"
-            theme="cool"
             onClick={gotoNextItem}
           />
         </MeetingSection>
@@ -101,6 +106,7 @@ const MeetingCheckin = (props) => {
 };
 
 MeetingCheckin.propTypes = {
+  bindHotkey: PropTypes.func.isRequired,
   localPhaseItem: PropTypes.number,
   isFacilitating: PropTypes.bool,
   members: PropTypes.array,
@@ -108,4 +114,6 @@ MeetingCheckin.propTypes = {
   team: PropTypes.object
 };
 
-export default withRouter(MeetingCheckin);
+export default withHotkey(
+  withRouter(MeetingCheckin)
+);

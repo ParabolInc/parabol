@@ -1,32 +1,107 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import FontAwesome from 'react-fontawesome';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
-import labels from 'universal/styles/theme/labels';
-import TayaAvatar from 'universal/styles/theme/images/avatars/taya-mueller-avatar.jpg';
 
-const combineStyles = StyleSheet.combineStyles;
 const avatarSize = '1.5rem';
 const faStyle = {
   fontSize: ui.iconSize,
   lineHeight: avatarSize
 };
+const OutcomeCardFooter = (props) => {
+  const {
+    cardHasHover,
+    hasOpenStatusMenu,
+    isArchived,
+    isProject,
+    outcome,
+    owner,
+    showTeam,
+    handleStatusClick,
+    styles,
+    toggleAssignMenu,
+  } = props;
+  // AVATAR
+  // -------
+  const avatarImage = owner.picture;
+  const avatarName = showTeam ? outcome.team.name : owner.preferredName;
+  // TODO: Set avatarTeam style when showing team instead of owner (on UserDashboard)
+  // const avatarStyles = combineStyles(styles.avatar, styles.avatarTeam);
+  const menuHintStyle = cardHasHover ? faStyle : {visibility: 'hidden', ...faStyle};
+  let buttonIcon = hasOpenStatusMenu ? 'times' : 'wrench';
+  if (isArchived) buttonIcon = 'reply';
+  const showFully = (hasOpenStatusMenu || cardHasHover || isArchived);
+
+  const avatarBlockStyle = css(
+    styles.avatarBlock,
+    isArchived && styles.avatarBlockArchived
+  );
+  const buttonStyles = css(
+    styles.buttonBase,
+    !isProject && styles.actionButton,
+    showFully && (isProject ? styles.projectButtonShowFully : styles.actionButtonShowFully)
+  );
+  return (
+    <div className={css(styles.root)}>
+      <div className={css(styles.avatarLayout)}>
+        <div className={avatarBlockStyle} onClick={toggleAssignMenu}>
+          {!showTeam &&
+            <img
+              alt={avatarName}
+              className={css(styles.avatar)}
+              src={avatarImage}
+            />
+          }
+          <div className={css(styles.name)}>{avatarName}</div>
+          {!isArchived &&
+            <FontAwesome
+              className={css(styles.menuHint)}
+              name="ellipsis-v"
+              style={menuHintStyle}
+            />
+          }
+        </div>
+      </div>
+      <div className={css(styles.buttonBlock)}>
+        <button className={buttonStyles} onClick={handleStatusClick}>
+          <FontAwesome name={buttonIcon} style={faStyle}/>
+        </button>
+      </div>
+    </div>
+  );
+};
+
+
+OutcomeCardFooter.propTypes = {
+  cardHasHover: PropTypes.bool,
+  toggleAssignMenu: PropTypes.func,
+  handleStatusClick: PropTypes.func,
+  hasOpenStatusMenu: PropTypes.bool,
+  isArchived: PropTypes.bool,
+  isProject: PropTypes.bool,
+  outcome: PropTypes.object,
+  owner: PropTypes.object,
+  showTeam: PropTypes.bool,
+  styles: PropTypes.object,
+  team: PropTypes.object
+};
 const buttonShowFully = {
-  backgroundColor: theme.palette.mid10l,
-  color: theme.palette.dark
+  backgroundColor: appTheme.palette.mid10l,
+  color: appTheme.palette.dark
 };
 const actionButtonShowFully = {
-  backgroundColor: theme.palette.light90g,
-  color: theme.palette.dark
+  backgroundColor: appTheme.palette.light90g,
+  color: appTheme.palette.dark
 };
 const buttonBase = {
   backgroundColor: 'transparent',
   border: 0,
   borderRadius: '.5rem',
-  color: theme.palette.dark50l,
+  color: appTheme.palette.dark50l,
   cursor: 'pointer',
-  fontSize: theme.typography.s3,
+  fontSize: appTheme.typography.s3,
   fontWeight: 700,
   height: avatarSize,
   lineHeight: avatarSize,
@@ -43,116 +118,8 @@ const buttonBase = {
     ...buttonShowFully
   }
 };
-let styles = {};
 
-const OutcomeCardFooter = (props) => {
-  const {
-    cardHasHover,
-    hasOpenStatusMenu,
-    isArchived,
-    isProject,
-    owner,
-    toggleAssignMenu,
-    handleStatusClick
-  } = props;
-  let avatarBlockStyle = {};
-
-  // BUTTONS
-  // --------
-  let buttonStyles = styles.buttonBase;
-  const buttonOptions = [styles.buttonBase];
-
-  // AVATAR
-  // -------
-  const avatarImage = owner.picture;
-  const avatarName = owner.preferredName;
-  // TODO: Set avatarTeam style when showing team instead of owner (on UserDashboard)
-  // const avatarStyles = combineStyles(styles.avatar, styles.avatarTeam);
-  const avatarStyles = styles.avatar;
-  const menuHintStyle = cardHasHover ? faStyle : {visibility: 'hidden', ...faStyle};
-  let buttonIcon = hasOpenStatusMenu ? 'times' : 'wrench';
-  if (isArchived) buttonIcon = 'reply';
-
-  if (!isProject) { buttonOptions.push(styles.actionButton); }
-
-  if (hasOpenStatusMenu || cardHasHover) {
-    if (isProject) {
-      buttonOptions.push(styles.projectButtonShowFully);
-    } else {
-      buttonOptions.push(styles.actionButtonShowFully);
-    }
-  }
-
-  if (isArchived) {
-    buttonOptions.push(styles.projectButtonShowFully);
-    avatarBlockStyle = {
-      cursor: 'not-allowed',
-      opacity: 1
-    };
-  }
-
-  buttonStyles = combineStyles(...buttonOptions);
-
-  return (
-    <div className={styles.root}>
-      <div className={styles.avatarLayout}>
-        <div className={styles.avatarBlock} onClick={toggleAssignMenu} style={avatarBlockStyle}>
-          <img
-            alt={avatarName}
-            className={avatarStyles}
-            src={avatarImage}
-          />
-          <div className={styles.name}>{avatarName}</div>
-          {!isArchived &&
-            <FontAwesome
-              className={styles.menuHint}
-              name="ellipsis-v"
-              style={menuHintStyle}
-            />
-          }
-        </div>
-      </div>
-      <div className={styles.buttonBlock}>
-        <button className={buttonStyles} onClick={handleStatusClick}>
-          <FontAwesome name={buttonIcon} style={faStyle} />
-        </button>
-      </div>
-    </div>
-  );
-};
-
-OutcomeCardFooter.propTypes = {
-  cardHasHover: PropTypes.bool,
-  toggleAssignMenu: PropTypes.func,
-  handleStatusClick: PropTypes.func,
-  hasOpenStatusMenu: PropTypes.bool,
-  isArchived: PropTypes.bool,
-  isProject: PropTypes.bool,
-  owner: PropTypes.object,
-  // project: PropTypes.shape({
-  //   projectId: PropTypes.string
-  // }),
-  team: PropTypes.object
-};
-
-OutcomeCardFooter.defaultProps = {
-  cardHasHover: false,
-  status: labels.projectStatus.active.slug,
-  toggleAssignMenu() {
-    console.log('toggleAssignMenu');
-  },
-  handleStatusClick() {
-    console.log('handleStatusClick');
-  },
-  hasOpenStatusMenu: false,
-  isArchived: false,
-  owner: {
-    preferredName: 'Taya Mueller',
-    picture: TayaAvatar
-  }
-};
-
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     display: 'flex !important',
     padding: ui.cardPaddingBase
@@ -176,6 +143,11 @@ styles = StyleSheet.create({
     }
   },
 
+  avatarBlockArchived: {
+    cursor: 'not-allowed',
+    opacity: 1
+  },
+
   avatar: {
     borderRadius: avatarSize,
     boxShadow: '0 0 1px 1px rgba(0, 0, 0, .2)',
@@ -191,16 +163,16 @@ styles = StyleSheet.create({
   },
 
   name: {
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     display: 'inline-block',
-    fontSize: theme.typography.s2,
+    fontSize: appTheme.typography.s2,
     fontWeight: 700,
     lineHeight: avatarSize,
     verticalAlign: 'middle'
   },
 
   menuHint: {
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     display: 'inline-block',
     marginLeft: '.375rem',
     verticalAlign: 'middle'
@@ -232,4 +204,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default look(OutcomeCardFooter);
+export default withStyles(styleThunk)(OutcomeCardFooter);

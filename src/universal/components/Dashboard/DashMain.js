@@ -1,18 +1,22 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 
-let styles = {};
-
-const DashMain = (props) =>
-  <div className={styles.root}>
-    {props.children}
-  </div>;
-
-DashMain.propTypes = {
-  children: PropTypes.any
+const DashMain = (props) => {
+  const {children, styles} = props;
+  return (
+    <div className={css(styles.root)}>
+      {children}
+    </div>
+  );
 };
 
-styles = StyleSheet.create({
+DashMain.propTypes = {
+  children: PropTypes.any,
+  styles: PropTypes.object
+};
+
+const styleThunk = () => ({
   root: {
     display: 'flex !important',
     flex: 1,
@@ -20,4 +24,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default look(DashMain);
+export default withStyles(styleThunk)(DashMain);

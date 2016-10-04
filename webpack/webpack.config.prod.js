@@ -1,7 +1,6 @@
 import path from 'path';
 import webpack from 'webpack';
 import AssetsPlugin from 'assets-webpack-plugin';
-import WebpackShellPlugin from 'webpack-shell-plugin';
 import HappyPack from 'happypack';
 import {getDotenv} from '../src/universal/utils/dotenv';
 
@@ -77,12 +76,6 @@ export default {
       'HOST',
       'PORT'
     ]),
-    new WebpackShellPlugin({
-      onBuildStart: [
-        // eslint-disable-next-line max-len
-        'NODE_ENV=development mkdir -p ./build && node_modules/.bin/babel-node ./webpack/utils/buildThemeJSON.js > ./build/theme.json'
-      ]
-    }),
     new HappyPack({
       loaders: ['babel'],
       threads: 2,

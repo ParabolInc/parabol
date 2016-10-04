@@ -1,13 +1,9 @@
 import React, {Component, PropTypes} from 'react';
-import {reduxForm, initialize} from 'redux-form';
-import Field from 'universal/components/Field/Field';
-import ProgressDots from '../ProgressDots/ProgressDots';
-import WelcomeContent from '../WelcomeContent/WelcomeContent';
-import WelcomeHeader from '../WelcomeHeader/WelcomeHeader';
+import {Field, reduxForm, initialize} from 'redux-form';
+import InputField from 'universal/components/InputField/InputField';
 import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
-import WelcomeLayout from '../WelcomeLayout/WelcomeLayout';
 import {cashay} from 'cashay';
-import {nextPage, goToPage, updateCompleted} from 'universal/modules/welcome/ducks/welcomeDuck';
+import {nextPage, updateCompleted} from 'universal/modules/welcome/ducks/welcomeDuck';
 
 const reduxFormOptions = {
   form: 'welcomeWizard',
@@ -32,7 +28,7 @@ export default class Step1PreferredName extends Component {
   }
 
   onPreferredNameSubmit = (submissionData) => {
-    const {dispatch, user, completed} = this.props;
+    const {dispatch, user} = this.props;
     const {preferredName: newPrefferedName} = submissionData;
     const options = {
       variables: {
@@ -43,52 +39,31 @@ export default class Step1PreferredName extends Component {
       }
     };
     cashay.mutate('updateUserProfile', options);
-    if (completed !== 3) {
-      dispatch(updateCompleted(2));
-    }
+    dispatch(updateCompleted(1));
     dispatch(nextPage());
   };
 
-  progressDotClick = (dot) => {
-    const {completed, dispatch, preferredName} = this.props;
-    if (dot === 2 && preferredName) {
-      dispatch(goToPage(2));
-    } else if (dot === 3 && completed === 3) {
-      dispatch(goToPage(3));
-    }
-  };
-
   render() {
-    const {handleSubmit, preferredName, completed} = this.props;
+    const {handleSubmit, preferredName} = this.props;
     return (
-      <WelcomeLayout>
-        <WelcomeHeader heading={<span>Hello!</span>}/>
-        <WelcomeContent>
-          <ProgressDots
-            numDots={3}
-            numCompleted={completed}
-            currentDot={1}
-            onClick={this.progressDotClick}
+      <div>{/* Div for that flexy flex */}
+        <WelcomeHeading copy={<span>Please type in your name:</span>}/>
+        <form onSubmit={handleSubmit(this.onPreferredNameSubmit)}>
+          <Field
+            autoFocus
+            buttonDisabled={!preferredName}
+            buttonIcon="check-circle"
+            component={InputField}
+            hasButton
+            hasShortcutHint
+            isLarger
+            name="preferredName"
+            placeholder="Albert Einstein"
+            shortcutHint="Press enter"
+            type="text"
           />
-          <div>{/* Div for that flexy flex */}
-            <WelcomeHeading copy={<span>Please type in your name:</span>}/>
-            <form onSubmit={handleSubmit(this.onPreferredNameSubmit)}>
-              <Field
-                autoFocus
-                buttonDisabled={!preferredName}
-                buttonIcon="check-circle"
-                hasButton
-                hasShortcutHint
-                isLarger
-                name="preferredName"
-                placeholder="Albert Einstein"
-                shortcutHint="Press enter"
-                type="text"
-              />
-            </form>
-          </div>
-        </WelcomeContent>
-      </WelcomeLayout>
+        </form>
+      </div>
     );
   }
 }

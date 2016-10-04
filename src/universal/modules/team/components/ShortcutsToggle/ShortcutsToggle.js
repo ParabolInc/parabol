@@ -1,41 +1,39 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import FontAwesome from 'react-fontawesome';
-import t from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme.js';
 import {srOnly} from 'universal/styles/helpers';
 
-let s = {};
-
 const ShortcutsToggle = (props) => {
-  const {handleOnClick} = props;
-
+  const {handleOnClick, styles} = props;
   return (
-    <a className={s.root} href="#" onClick={handleOnClick} title="Show shortcuts">
-      <FontAwesome name="keyboard-o" />
+    <a className={css(styles.root)} href="#" onClick={handleOnClick} title="Show shortcuts">
+      <FontAwesome name="keyboard-o"/>
       &nbsp;
-      <FontAwesome name="question-circle" />
-      <span className={s.srOnly}>Show shortcuts</span>
+      <FontAwesome name="question-circle"/>
+      <span className={css(styles.srOnly)}>Show shortcuts</span>
     </a>
   );
 };
 
+ShortcutsToggle.propTypes = {
+  handleOnClick: PropTypes.func,
+  styles: PropTypes.object
+};
 const hoverFocus = {
-  backgroundColor: t.palette.dark30l,
-  color: t.palette.dark10d,
+  backgroundColor: appTheme.palette.dark30l,
+  color: appTheme.palette.dark10d,
   textDecoration: 'none'
 };
 
-ShortcutsToggle.propTypes = {
-  handleOnClick: PropTypes.func
-};
-
-s = StyleSheet.create({
+const styleThunk = () => ({
   root: {
-    backgroundColor: t.palette.dark10l,
+    backgroundColor: appTheme.palette.dark10l,
     borderRadius: '4em',
     bottom: '2rem',
-    color: t.palette.dark50d,
-    fontSize: t.typography.s3,
+    color: appTheme.palette.dark50d,
+    fontSize: appTheme.typography.s3,
     display: 'inline-block',
     padding: '.25rem .75rem',
     position: 'fixed',
@@ -54,4 +52,4 @@ s = StyleSheet.create({
   }
 });
 
-export default look(ShortcutsToggle);
+export default withStyles(styleThunk)(ShortcutsToggle);

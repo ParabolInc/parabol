@@ -7,7 +7,7 @@ import Features from '../../components/Features/Features';
 import GetStarted from '../../components/GetStarted/GetStarted';
 import Body from '../../components/Body/Body';
 import Footer from '../../components/Footer/Footer';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 
 const imageStyle = {
   border: 0,
@@ -33,7 +33,7 @@ const WelcomeEmail = props => {
           <tr>
             <td
               align="center"
-              style={{backgroundColor: theme.palette.warm}}
+              style={{backgroundColor: appTheme.palette.warm}}
             >
               <img
                 style={imageStyle}
@@ -48,7 +48,7 @@ const WelcomeEmail = props => {
 
       <Body lineHeight={1.5}>
         <Callout vSpacing={0}>
-          Hi <span style={{color: theme.palette.warm}}>{email}</span>,<br />
+          Hi <a href={`mailto:${email}`} style={{color: appTheme.palette.warm}}>{email}</a>,<br />
           We’re <i>so glad</i> you’re here!!
         </Callout>
         <EmptySpace height={48} />
@@ -62,7 +62,7 @@ const WelcomeEmail = props => {
         <EmptySpace height={32} />
         <ContactUs fontSize={18} lineHeight={1.5} vSpacing={0} />
       </Body>
-      <Footer color={theme.palette.dark} />
+      <Footer color={appTheme.palette.dark} />
     </Layout>
   );
 };

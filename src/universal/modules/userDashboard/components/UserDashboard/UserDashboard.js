@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import layout from 'universal/styles/layout';
 import ui from 'universal/styles/ui';
 import {
@@ -11,25 +12,25 @@ import {
 } from 'universal/components/Dashboard';
 import UserActions from 'universal/modules/userDashboard/components/UserActions/UserActions';
 import UserColumnsContainer from 'universal/modules/userDashboard/containers/UserColumns/UserColumnsContainer';
-import UserProjectsHeader from '../UserProjectsHeader/UserProjectsHeader';
+import UserProjectsHeaderContainer from 'universal/modules/userDashboard/containers/UserProjectsHeader/UserProjectsHeaderContainer';
 import getRallyLink from '../../helpers/getRallyLink';
 
-const UserDashboard = () => {
-  const {styles} = UserDashboard;
+const UserDashboard = (props) => {
+  const {styles} = props;
   return (
     <DashMain>
       <DashHeader>
         <DashHeaderInfo title="My Dashboard">
-          {dashTimestamp} • <span className={styles.crayCrayHover}>{getRallyLink()}!</span>
+          {dashTimestamp} • <span className={css(styles.crayCrayHover)}>{getRallyLink()}!</span>
         </DashHeaderInfo>
       </DashHeader>
       <DashContent padding="0">
-        <div className={styles.root}>
-          <div className={styles.actionsLayout}>
+        <div className={css(styles.root)}>
+          <div className={css(styles.actionsLayout)}>
             <UserActions />
           </div>
-          <div className={styles.projectsLayout}>
-            <UserProjectsHeader />
+          <div className={css(styles.projectsLayout)}>
+            <UserProjectsHeaderContainer />
             <UserColumnsContainer/>
           </div>
         </div>
@@ -39,10 +40,11 @@ const UserDashboard = () => {
 };
 
 UserDashboard.propTypes = {
-  projects: PropTypes.array
+  projects: PropTypes.array,
+  styles: PropTypes.object
 };
 
-UserDashboard.styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     display: 'flex',
     flex: 1,
@@ -52,6 +54,8 @@ UserDashboard.styles = StyleSheet.create({
   actionsLayout: {
     boxSizing: 'content-box',
     borderRight: `2px solid ${ui.dashBorderColor}`,
+    display: 'flex',
+    flexDirection: 'column',
     width: layout.dashActionsWidth
   },
 
@@ -67,4 +71,4 @@ UserDashboard.styles = StyleSheet.create({
   }
 });
 
-export default look(UserDashboard);
+export default withStyles(styleThunk)(UserDashboard);

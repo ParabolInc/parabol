@@ -111,7 +111,6 @@ export default {
         userId,
         teamMemberId: project.teamMemberId,
         isComplete: false,
-        isActive: true,
         createdAt: project.createdAt,
         updatedAt: now,
         sortOrder: 0,

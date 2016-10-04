@@ -1,32 +1,48 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import {reduxForm} from 'redux-form';
 
-let s = {};
-
 const MeetingAgendaInput = (props) => {
-  const {author, onChange, placeholder, value} = props;
+  const {author, onChange, placeholder, styles, value} = props;
   return (
-    <div className={s.root}>
+    <div className={css(styles.root)}>
       <input
-        className={s.input}
+        className={css(styles.input)}
         onChange={onChange}
         placeholder={placeholder}
         title="Add a Request"
         type="text"
         value={value}
       />
-      <div className={s.author}>{author}</div>
+      <div className={css(styles.author)}>{author}</div>
     </div>
   );
 };
 
-s = StyleSheet.create({
+MeetingAgendaInput.propTypes = {
+  author: PropTypes.string,
+  onChange: PropTypes.func,
+  placeholder: PropTypes.string,
+  styles: PropTypes.object,
+  value: PropTypes.string
+};
+
+MeetingAgendaInput.defaultProps = {
+  author: 'MK',
+  onChange() {
+    console.log('MeetingAgendaInput onChange');
+  },
+  placeholder: 'kittens (press enter)',
+  value: ''
+};
+
+const styleThunk = () => ({
   root: {
-    backgroundColor: theme.palette.light,
-    color: theme.palette.cool,
-    fontSize: theme.typography.s3,
+    backgroundColor: appTheme.palette.light,
+    color: appTheme.palette.cool,
+    fontSize: appTheme.typography.s3,
     padding: '.5rem .75rem .5rem 4rem',
     position: 'relative',
     width: '100%',
@@ -36,10 +52,10 @@ s = StyleSheet.create({
     backgroundColor: 'transparent',
     border: 0,
     boxShadow: 'none',
-    color: theme.palette.dark10d,
+    color: appTheme.palette.dark10d,
     display: 'block',
-    fontFamily: theme.typography.serif,
-    fontSize: theme.typography.s3,
+    fontFamily: appTheme.typography.serif,
+    fontSize: appTheme.typography.s3,
     fontStyle: 'italic',
     fontWeight: 700,
     margin: 0,
@@ -48,7 +64,7 @@ s = StyleSheet.create({
     width: '100%',
 
     '::placeholder': {
-      color: theme.palette.dark50l
+      color: appTheme.palette.dark50l
     },
   },
 
@@ -64,21 +80,5 @@ s = StyleSheet.create({
   }
 });
 
-MeetingAgendaInput.propTypes = {
-  author: PropTypes.string,
-  onChange: PropTypes.func,
-  placeholder: PropTypes.string,
-  value: PropTypes.string
-};
-
-MeetingAgendaInput.defaultProps = {
-  author: 'MK',
-  onChange() {
-    console.log('MeetingAgendaInput onChange');
-  },
-  placeholder: 'kittens (press enter)',
-  value: ''
-};
-
 const reduxFormOptions = {form: 'meetingAgendaInput'};
-export default reduxForm(reduxFormOptions)(look(MeetingAgendaInput));
+export default reduxForm(reduxFormOptions)(withStyles(styleThunk)(MeetingAgendaInput));

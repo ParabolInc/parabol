@@ -1,13 +1,11 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import labels from 'universal/styles/theme/labels';
 import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
 import {cardBorderTop} from 'universal/styles/helpers';
-
-const combineStyles = StyleSheet.combineStyles;
-let styles = {};
 
 const OutcomeCard = (props) => {
   const {
@@ -16,30 +14,22 @@ const OutcomeCard = (props) => {
     isProject,
     onEnterCard,
     onLeaveCard,
-    status
+    status,
+    styles
   } = props;
-  const rootStyleOptions = [
+
+  const rootStyles = css(
     styles.root,
-    styles.cardBlock
-  ];
-
-  if (isProject) {
-    rootStyleOptions.push(styles[status]);
-  } else {
-    rootStyleOptions.push(styles.isAction);
-  }
-
-  if (isArchived) {
-    rootStyleOptions.push(styles.isArchived);
-  }
-
-  const rootStyles = combineStyles(...rootStyleOptions);
+    styles.cardBlock,
+    isProject ? styles[status] : styles.isAction,
+    isArchived && styles.isArchived
+  );
 
   return (
     <div
       className={rootStyles}
-      onMouseEnter={() => onEnterCard()}
-      onMouseLeave={() => onLeaveCard()}
+      onMouseEnter={onEnterCard}
+      onMouseLeave={onLeaveCard}
     >
       {children}
     </div>
@@ -52,16 +42,11 @@ OutcomeCard.propTypes = {
   isProject: PropTypes.bool,
   onEnterCard: PropTypes.func,
   onLeaveCard: PropTypes.func,
-  status: PropTypes.oneOf(labels.projectStatus.slugs)
+  status: PropTypes.oneOf(labels.projectStatus.slugs),
+  styles: PropTypes.object
 };
 
-OutcomeCard.defaultProps = {
-  isArchived: false,
-  isProject: true,
-  status: labels.projectStatus.active.slug
-};
-
-styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     backgroundColor: '#fff',
     border: `1px solid ${ui.cardBorderColor}`,
@@ -107,7 +92,7 @@ styles = StyleSheet.create({
   },
 
   isAction: {
-    backgroundColor: theme.palette.light50l,
+    backgroundColor: appTheme.palette.light50l,
 
     '::after': {
       color: labels.action.color
@@ -121,4 +106,4 @@ styles = StyleSheet.create({
   }
 });
 
-export default look(OutcomeCard);
+export default withStyles(styleThunk)(OutcomeCard);
