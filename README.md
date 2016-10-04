@@ -3,6 +3,10 @@
 [![Slack Status](http://slackin.parabol.co/badge.svg)](http://slackin.parabol.co/)
 [![CircleCI](https://circleci.com/gh/ParabolInc/action.svg?style=svg)](https://circleci.com/gh/ParabolInc/action)
 
+## New Beta!
+
+[Sign up for Action Beta](http://www.parabol.co/beta) & be first in line to try it out!
+
 ## Overview
 
 An open-source SaaS application for operating Agile business teams.
