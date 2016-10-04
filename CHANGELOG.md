@@ -4,6 +4,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.7.0 - 28-Sep-2016
+### Added
+- Now using [aphrodite](https://github.com/khan/aphrodite) for styling
+- Me dashboard now has buttons to add new outcomes for Actions and Projects
+- Me dashboard now has a filter option to see Projects by a specific team
+
+### Removed
+- Removed [react-look](https://github.com/rofrischmann/react-look)
+
+### Fixed
+- Fixed: #124, #190, #221, #227, #252, #276, #282, #290, #295, #302, #305,
+  #307, #313
+
 ## v0.6.3 - 28-Sep-2016
 ### Fixed
 - Agenda processing order fix for issue #294
