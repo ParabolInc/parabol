@@ -1,7 +1,7 @@
 import path from 'path';
 import webpack from 'webpack';
 import HappyPack from 'happypack';
-
+import WebpackShellPlugin from 'webpack-shell-plugin';
 const root = process.cwd();
 const serverInclude = [
   path.join(root, 'src', 'server'),
@@ -46,6 +46,11 @@ export default {
       loaders: ['babel'],
       threads: 2,
       verbose: false
+    }),
+    new WebpackShellPlugin({
+      onBuildStart: [
+        'node_modules/.bin/babel-node ./webpack/utils/buildThemeJSON.js'
+      ]
     })
   ],
   module: {
