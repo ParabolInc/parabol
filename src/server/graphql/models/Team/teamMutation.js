@@ -1,4 +1,4 @@
-import r from 'server/database/rethinkDriver';
+import getRethink from 'server/database/rethinkDriver';
 import {getUserId, requireAuth, requireSUOrTeamMember, requireWebsocket} from '../authorization';
 import {updatedOrOriginal, errorObj} from '../utils';
 import {
@@ -37,6 +37,7 @@ export default {
     },
     // eslint-disable-next-line no-unused-vars
     async resolve(source, {teamId}, {authToken, socket}) {
+      const r = getRethink();
       // TODO & remove above eslint pragma
       const teamMembers = await r.table('TeamMember').getAll(teamId, {index: 'teamId'}).pluck('id');
       // eslint-disable-next-line no-unused-vars
@@ -71,6 +72,7 @@ export default {
       }
     },
     async resolve(source, {teamId, nextPhase, nextPhaseItem}, {authToken, socket}) {
+      const r = getRethink();
       // TODO: transform these console statements into configurable logger statements:
       /*
       console.log('moveMeeting()');
@@ -166,6 +168,7 @@ export default {
       }
     },
     async resolve(source, {facilitatorId}, {authToken, socket}) {
+      const r = getRethink();
       // facilitatorId is of format 'userId::teamId'
       const [, teamId] = facilitatorId.split('::');
       requireSUOrTeamMember(authToken, teamId);
@@ -203,6 +206,7 @@ export default {
       }
     },
     async resolve(source, {teamId}, {authToken}) {
+      const r = getRethink();
       requireSUOrTeamMember(authToken, teamId);
       await r.table('Team').get(teamId).update({
         facilitatorPhase: 'lobby',
@@ -230,6 +234,7 @@ export default {
       }
     },
     async resolve(source, {newTeam}, {authToken}) {
+      const r = getRethink();
       const userId = requireAuth(authToken);
       if (newTeam.id.length > 10 || newTeam.id.indexOf('::') !== -1) {
         throw errorObj({_error: 'Bad id'});
@@ -290,6 +295,7 @@ export default {
       }
     },
     async resolve(source, {updatedTeam}, {authToken}) {
+      const r = getRethink();
       const {id, name} = updatedTeam;
       requireSUOrTeamMember(authToken, id);
       const teamFromDB = await r.table('Team').get(id).update({name}, {returnChanges: true});

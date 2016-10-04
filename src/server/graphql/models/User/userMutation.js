@@ -1,4 +1,4 @@
-import r from 'server/database/rethinkDriver';
+import getRethink from 'server/database/rethinkDriver';
 import {GraphQLString, GraphQLNonNull} from 'graphql';
 import {User, UpdateUserInput} from './userSchema';
 import {AuthenticationClient} from 'auth0';
@@ -26,6 +26,7 @@ export default {
       }
     },
     async resolve(source, {authToken}) {
+      const r = getRethink();
       // This is the only resolve function where authToken refers to a base64 string and not an object
       const now = new Date();
       const userInfo = await auth0Client.tokens.getInfo(authToken);
@@ -84,6 +85,7 @@ export default {
       }
     },
     async resolve(source, {updatedUser}, {authToken}) {
+      const r = getRethink();
       const {id, ...updatedObj} = updatedUser;
       requireSUOrSelf(authToken, id);
       // propagate denormalized changes to TeamMember

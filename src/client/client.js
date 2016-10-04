@@ -5,9 +5,9 @@ import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import makeStore from './makeStore';
 import Root from './Root';
 import {StyleSheet} from 'aphrodite';
+import cashaySchema from 'cashay!../server/utils/getCashaySchema.js';
 
 // const {routing} = window.__INITIAL_STATE__; // eslint-disable-line no-underscore-dangle
-
 const initialState = {};
 
 
@@ -23,17 +23,13 @@ const createCashay = (store, cashaySchema) => {
 (async() => {
   const store = await makeStore(initialState);
   // Create the Cashay singleton:
-  let cashaySchema = null;
+  createCashay(store, cashaySchema);
   if (__PRODUCTION__) {
     /*
      * During the production client bundle build, the server will need to be
      * stopped.
      */
-    // eslint-disable-next-line no-underscore-dangle
     StyleSheet.rehydrate(window.__APHRODITE__);
-    // eslint-disable-next-line global-require
-    cashaySchema = require('cashay!../server/utils/getCashaySchema.js?stopRethink');
-    createCashay(store, cashaySchema);
     render(
       <Root store={store}/>,
       document.getElementById('root')
@@ -44,11 +40,7 @@ const createCashay = (store, cashaySchema) => {
      * take care of that when it wants to exit.
      */
     // eslint-disable-next-line global-require
-    cashaySchema = require('cashay!../server/utils/getCashaySchema.js');
-
-    // eslint-disable-next-line global-require
     const {AppContainer} = require('react-hot-loader');
-    createCashay(store, cashaySchema);
     // ENABLE THIS FOR EXPLORING FRONT END PERFORMANCE
     // const {whyDidYouUpdate} = require('why-did-you-update');
     // whyDidYouUpdate(React);

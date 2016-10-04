@@ -10,7 +10,7 @@ import {
 import {GraphQLEmailType, GraphQLURLType} from '../types';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {TeamMember} from '../TeamMember/teamMemberSchema';
-import r from 'server/database/rethinkDriver';
+import getRethink from 'server/database/rethinkDriver';
 import {nonnullifyInputThunk} from '../utils';
 
 const IdentityType = new GraphQLObjectType({
@@ -123,6 +123,7 @@ export const User = new GraphQLObjectType({
       type: new GraphQLList(TeamMember),
       description: 'The memberships to different teams that the user has',
       async resolve({id}) {
+        const r = getRethink();
         return await r.table('TeamMember').getAll(id, {index: 'userId'});
       }
     },
