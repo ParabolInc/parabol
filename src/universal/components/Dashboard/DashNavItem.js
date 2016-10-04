@@ -25,6 +25,7 @@ const DashNavItem = (props) => {
 DashNavItem.propTypes = {
   href: PropTypes.string,
   label: PropTypes.string,
+  router: PropTypes.object,
   styles: PropTypes.object
 };
 
@@ -74,4 +75,4 @@ const styleThunk = () => ({
 
 export default withRouter(
   withStyles(styleThunk)(DashNavItem)
-)
+);

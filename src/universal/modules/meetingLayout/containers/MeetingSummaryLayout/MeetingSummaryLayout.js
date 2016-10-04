@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
-// import ui from 'universal/styles/ui';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 
 import Type from 'universal/components/Type/Type';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
@@ -22,9 +22,7 @@ import exampleTeam from 'universal/modules/patterns/helpers/exampleTeam';
 //       The real deal is being coded up in /meeting/components
 
 const MeetingSummaryLayout = (props) => {
-  const {styles} = MeetingSummaryLayout;
-  const {isFirstMeeting, newOutcomes, team} = props;
-
+  const {isFirstMeeting, newOutcomes, styles, team} = props;
   return (
     <MeetingLayout>
 
@@ -40,10 +38,10 @@ const MeetingSummaryLayout = (props) => {
 
             <Type align="center" marginBottom="2rem" marginTop="2rem" scale="s5">
               <b>{makeSuccessExpression()}</b>! We worked on{' '}
-              <span className={styles.highlight}>7 Agenda Items</span><br />
-              resulting in <span className={styles.highlight}>4 New Projects</span>{' '}
-              and <span className={styles.highlight}>12 New Actions</span>.<br />
-              <span className={styles.highlight}>5 Projects</span> marked as “<b>Done</b>” were archived.
+              <span className={css(styles.highlight)}>7 Agenda Items</span><br />
+              resulting in <span className={css(styles.highlight)}>4 New Projects</span>{' '}
+              and <span className={css(styles.highlight)}>12 New Actions</span>.<br />
+              <span className={css(styles.highlight)}>5 Projects</span> marked as “<b>Done</b>” were archived.
             </Type>
 
             {isFirstMeeting &&
@@ -70,6 +68,7 @@ const MeetingSummaryLayout = (props) => {
 MeetingSummaryLayout.propTypes = {
   isFirstMeeting: PropTypes.bool,
   newOutcomes: PropTypes.array.isRequired,
+  styles: PropTypes.object,
   team: PropTypes.object.isRequired
 };
 
@@ -79,15 +78,15 @@ MeetingSummaryLayout.defaultProps = {
   team: exampleTeam
 };
 
-MeetingSummaryLayout.styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
     width: '100%'
   },
 
   highlight: {
-    color: theme.palette.warm,
+    color: appTheme.palette.warm,
     fontWeight: 700
   }
 });
 
-export default look(MeetingSummaryLayout);
+export default withStyles(styleThunk)(MeetingSummaryLayout);

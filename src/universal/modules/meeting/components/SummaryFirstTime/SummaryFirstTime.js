@@ -1,23 +1,24 @@
-import React from 'react';
-import look, {StyleSheet} from 'react-look';
-import theme from 'universal/styles/theme';
+import React, {PropTypes} from 'react';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
+import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import {Type} from 'universal/components';
 import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
 import FontAwesome from 'react-fontawesome';
 
-const SummaryFirstTime = () => {
-  const {styles} = SummaryFirstTime;
+const SummaryFirstTime = (props) => {
+  const {styles} = props;
   const iconStyle = {
-    color: theme.palette.dark,
+    color: appTheme.palette.dark,
     float: 'left',
     fontSize: ui.iconSize,
     lineHeight: '1.3125rem',
     marginRight: '.375rem'
   };
   return (
-    <div className={styles.root}>
-      <Type align="center" bold family="serif" marginBottom="1rem" marginTop="1rem" scale="s6" theme="cool">
+    <div className={css(styles.root)}>
+      <Type align="center" bold family="serif" marginBottom="1rem" marginTop="1rem" scale="s6" colorPalette="cool">
         Congratulations!
       </Type>
       <Type align="center" marginBottom="1rem" marginTop="1rem" scale="s4">
@@ -26,7 +27,7 @@ const SummaryFirstTime = () => {
         schedule a 30 minute meeting, preferably<br />
         recurring on Mondays or Tuesdays.
       </Type>
-      <Type display="inlineBlock" marginBottom="1rem" marginTop="0px" scale="s3" theme="dark" width="auto">
+      <Type display="inlineBlock" marginBottom="1rem" marginTop="0px" scale="s3" colorPalette="dark" width="auto">
         <FontAwesome name="lightbulb-o" style={iconStyle} />
         <div style={{overflow: 'hidden'}}>
           <b>Pro tip</b>:<br />
@@ -40,16 +41,12 @@ const SummaryFirstTime = () => {
 };
 
 SummaryFirstTime.propTypes = {
-  // Define
+  styles: PropTypes.object
 };
 
-SummaryFirstTime.defaultProps = {
-  // Define
-};
-
-SummaryFirstTime.styles = StyleSheet.create({
+const styleThunk = () => ({
   root: {
-    border: `2px solid ${theme.palette.cool50l}`,
+    border: `2px solid ${appTheme.palette.cool50l}`,
     maxWidth: '37.5rem',
     padding: '1rem 0 2rem',
     textAlign: 'center',
@@ -57,4 +54,4 @@ SummaryFirstTime.styles = StyleSheet.create({
   }
 });
 
-export default look(SummaryFirstTime);
+export default withStyles(styleThunk)(SummaryFirstTime);

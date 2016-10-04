@@ -8,7 +8,6 @@ import SummaryCard from 'universal/modules/meeting/components/SummaryCard/Summar
 import reduceForKeyValCount from 'universal/utils/reduceForKeyValCount';
 
 const UserSummary = (props) => {
-  const {styles} = UserSummary;
   const {avatar, name, outcomes, styles} = props;
 
   return (

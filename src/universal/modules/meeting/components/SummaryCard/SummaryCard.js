@@ -7,10 +7,7 @@ import labels from 'universal/styles/theme/labels';
 import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
 import {cardBorderTop} from 'universal/styles/helpers';
 
-const combineStyles = StyleSheet.combineStyles;
-
 const SummaryCard = (props) => {
-  const {styles} = SummaryCard;
   const {
     content,
     status,

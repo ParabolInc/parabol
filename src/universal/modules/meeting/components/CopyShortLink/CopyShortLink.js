@@ -1,8 +1,9 @@
 import React, {PropTypes} from 'react';
-import look, {StyleSheet} from 'react-look';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite';
 import FontAwesome from 'react-fontawesome';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import theme from 'universal/styles/theme';
+import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
 import voidClick from 'universal/utils/voidClick';
@@ -15,19 +16,18 @@ const inlineBlock = {
 };
 
 const CopyShortLink = (props) => {
-  const {styles} = CopyShortLink;
-  const {url} = props;
+  const {styles, url} = props;
   return (
     <CopyToClipboard text={url}>
       {/* TODO: prevent navigation and show a “Copied!” message inline or toast */}
       <a
-        className={styles.link}
+        className={css(styles.link)}
         href={url}
         onClick={voidClick}
         title={`Copy link to meeting: ${url}`}
       >
-        <span className={styles.linkText}>{url}</span>
-        <span className={styles.icon}>
+        <span className={css(styles.linkText)}>{url}</span>
+        <span className={css(styles.icon)}>
           <FontAwesome
             name="copy"
             style={inlineBlock}
@@ -39,12 +39,13 @@ const CopyShortLink = (props) => {
 };
 
 CopyShortLink.propTypes = {
+  styles: PropTypes.object,
   url: PropTypes.string
 };
 
-CopyShortLink.styles = StyleSheet.create({
+const styleThunk = () => ({
   link: {
-    backgroundColor: theme.palette.cool10l,
+    backgroundColor: appTheme.palette.cool10l,
     borderRadius: '.375rem',
     display: 'block',
     fontSize: 0,
@@ -56,17 +57,17 @@ CopyShortLink.styles = StyleSheet.create({
     textDecoration: 'none !important',
 
     ':hover': {
-      backgroundColor: theme.palette.cool20l
+      backgroundColor: appTheme.palette.cool20l
     },
     ':focus': {
-      backgroundColor: theme.palette.cool20l
+      backgroundColor: appTheme.palette.cool20l
     }
   },
 
   linkText: {
     ...inlineBlock,
     ...textOverflow,
-    fontSize: theme.typography.s6,
+    fontSize: appTheme.typography.s6,
     maxWidth: '20rem'
   },
 
@@ -77,4 +78,4 @@ CopyShortLink.styles = StyleSheet.create({
   }
 });
 
-export default look(CopyShortLink);
+export default withStyles(styleThunk)(CopyShortLink);

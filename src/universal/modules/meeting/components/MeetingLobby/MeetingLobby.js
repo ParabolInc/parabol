@@ -74,7 +74,6 @@ MeetingLobby.propTypes = {
   teamName: PropTypes.string,
 };
 
-const faFontSize = `${14 * 2}px`; // FA based on 14px
 const styleThunk = () => ({
   root: {
     textAlign: 'center'
@@ -86,20 +85,6 @@ const styleThunk = () => ({
     fontWeight: 700,
     margin: '4rem 0 0',
     textTransform: 'uppercase'
-  },
-
-  prompt: {
-    color: theme.palette.dark,
-    margin: '0 0 2rem'
-    padding: '.75rem 1.5rem',
-    textDecoration: 'none !important',
-
-    ':hover': {
-      backgroundColor: appTheme.palette.cool10l
-    },
-    ':focus': {
-      backgroundColor: appTheme.palette.cool10l
-    }
   },
 
   urlBlock: {

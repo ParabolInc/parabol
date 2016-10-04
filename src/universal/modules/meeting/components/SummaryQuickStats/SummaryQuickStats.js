@@ -8,15 +8,12 @@ import {ACTIVE, DONE} from 'universal/utils/constants';
 import FontAwesome from 'react-fontawesome';
 import {ib, cardBorderTop, cardRootStyles} from 'universal/styles/helpers';
 
-import cardRootStyles from 'universal/styles/helpers/cardRootStyles';
-
 const iconStyle = {
   ...ib,
   fontSize: ui.iconSize
 };
 
 const SummaryQuickStats = (props) => {
-  const {styles} = SummaryQuickStats;
   const {
     countNewActions,
     countNewProjects,
@@ -36,25 +33,25 @@ const SummaryQuickStats = (props) => {
         <span className={styles.headingLabel}>Quick Stats</span>
       </div>
       <div className={styles.cardGroup}>
-      <div className={projects}>
-        <div className={css(styles.count)}>{countNewProjects}</div>
-        <FontAwesome name={labels.project.icon} style={iconStyle} />
-        <div className={css(styles.label)}>New Projects</div>
-      </div>
-      <div className={actions}>
-        <div className={css(styles.count)}>{countNewActions}</div>
-        <FontAwesome name={labels.actions.icon} style={iconStyle} />
-        <div className={css(styles.label)}>New Actions</div>
-      </div>
-      <div className={updates}>
-        <div className={css(styles.count)}>{countUpdates}</div>
-        <FontAwesome name="random" style={iconStyle} />
-        <div className={css(styles.label)}>Updates</div>
-      </div>
-      <div className={done}>
-        <div className={css(styles.count)}>{countDone}</div>
-        <FontAwesome name={labels.projectStatus.done.icon} style={iconStyle} />
-        <div className={css(styles.label)}>Done</div>
+        <div className={projects}>
+          <div className={css(styles.count)}>{countNewProjects}</div>
+          <FontAwesome name={labels.project.icon} style={iconStyle} />
+          <div className={css(styles.label)}>New Projects</div>
+        </div>
+        <div className={actions}>
+          <div className={css(styles.count)}>{countNewActions}</div>
+          <FontAwesome name={labels.actions.icon} style={iconStyle} />
+          <div className={css(styles.label)}>New Actions</div>
+        </div>
+        <div className={updates}>
+          <div className={css(styles.count)}>{countUpdates}</div>
+          <FontAwesome name="random" style={iconStyle} />
+          <div className={css(styles.label)}>Updates</div>
+        </div>
+        <div className={done}>
+          <div className={css(styles.count)}>{countDone}</div>
+          <FontAwesome name={labels.projectStatus.done.icon} style={iconStyle} />
+          <div className={css(styles.label)}>Done</div>
         </div>
       </div>
     </div>
@@ -89,7 +86,7 @@ const styleThunk = () => ({
     textTransform: 'uppercase',
 
     '::before': {
-      backgroundColor: theme.palette.mid30l,
+      backgroundColor: appTheme.palette.mid30l,
       content: '""',
       display: 'block',
       height: '2px',
@@ -98,7 +95,7 @@ const styleThunk = () => ({
       top: '50%',
       width: '100%',
       zIndex: 200
-  },
+    },
     '::after': {
       backgroundColor: '#fff',
       content: '""',
@@ -115,10 +112,10 @@ const styleThunk = () => ({
   headingLabel: {
     ...ib,
     backgroundColor: '#fff',
-    color: theme.palette.dark,
-    fontSize: theme.typography.s4,
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s4,
     fontWeight: 700,
-    lineHeight: theme.typography.s5,
+    lineHeight: appTheme.typography.s5,
     padding: '1.25rem .75rem',
     position: 'relative',
     zIndex: 400
@@ -131,12 +128,12 @@ const styleThunk = () => ({
   },
 
   count: {
-    fontSize: theme.typography.s8
+    fontSize: appTheme.typography.s8
   },
 
   label: {
     ...ib,
-    fontSize: theme.typography.s3,
+    fontSize: appTheme.typography.s3,
     fontWeight: 700,
     marginLeft: '.25rem'
   },

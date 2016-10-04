@@ -34,7 +34,7 @@ const MeetingAgendaLastCall = (props) => {
             resulting in <span className={css(styles.highlight)}>{actionCount} Actions </span>
             and <span className={css(styles.highlight)}>{projectCount} projects</span>.
           </Type>
-          <Type align="center" marginBottom="2.75rem" scale="s4" theme="black">
+          <Type align="center" marginBottom="2.75rem" scale="s4" colorPalette="black">
             Anybody have <b><i>additional Agenda Items</i></b>?<br />
             If so, just press “<span className={css(styles.highlight)}><b>+</b></span>” or{' '}
             <span className={css(styles.highlight)}>add another Agenda Item</span>.<br />

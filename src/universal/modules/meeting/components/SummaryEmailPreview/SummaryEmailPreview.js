@@ -8,7 +8,7 @@ import {Type} from 'universal/components';
 import FontAwesome from 'react-fontawesome';
 
 const iconStyle = {
-  color: theme.palette.dark,
+  color: appTheme.palette.dark,
   display: 'block',
   fontSize: ui.iconSize2x,
   height: ui.iconSize2x,
@@ -18,7 +18,6 @@ const iconStyle = {
 };
 
 const SummaryEmailPreview = (props) => {
-  const {styles} = SummaryEmailPreview;
   const {styles, teamOutcomes} = props;
 
   return (

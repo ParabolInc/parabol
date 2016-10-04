@@ -7,7 +7,6 @@ import CreateCardRootStyles from '../CreateCard/CreateCardRootStyles';
 import {cardBorderTop} from 'universal/styles/helpers';
 
 const NullCard = (props) => {
-  const {styles} = NullCard;
   const {styles, username} = props;
   return (
     <div className={css(styles.root)}>
@@ -26,6 +25,7 @@ NullCard.propTypes = {
 const styleThunk = () => ({
   root: {
     ...CreateCardRootStyles,
+
     '::after': {
       ...cardBorderTop,
       color: appTheme.palette.mid40l
