@@ -29,7 +29,7 @@ const r = require('../database/rethinkDriver');
 module.exports = params => {
   if (params === '?stopRethink') {
     // optional pool draining if your schema starts a DB connection pool
-    r.getPoolMaster().drain();
+    r().getPoolMaster().drain();
   }
   return transformSchema(rootSchema, graphql);
 };

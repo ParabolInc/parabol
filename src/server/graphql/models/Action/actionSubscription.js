@@ -18,7 +18,7 @@ export default {
       requireSUOrSelf(authToken, userId);
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
-      r.table('Action')
+      r().table('Action')
         .getAll(userId, {index: 'userId'})
         .filter({isComplete: false})
         .pluck(requestedFields)
@@ -39,7 +39,7 @@ export default {
       requireSUOrTeamMember(authToken, teamId);
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
-      r.table('Action')
+      r().table('Action')
         .getAll(teamMemberId, {index: 'teamMemberId'})
         .pluck(requestedFields)
         .changes({includeInitial: true})
@@ -59,7 +59,7 @@ export default {
       requireSUOrTeamMember(authToken, teamId);
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
-      r.table('Action')
+      r().table('Action')
         .getAll(agendaId, {index: 'agendaId'})
         .pluck(requestedFields)
         .changes({includeInitial: true})

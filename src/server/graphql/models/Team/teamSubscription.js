@@ -17,7 +17,7 @@ export default {
       // TODO update subscription on the client when a new team gets added. So rare, it's OK to resend all 3-4 docs
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
-      r.table('Team')
+      r().table('Team')
         .getAll(...tms)
         .pluck(requestedFields)
         .changes({includeInitial: true})

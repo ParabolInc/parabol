@@ -48,13 +48,13 @@ export const getInviterInfoAndTeamName = async(teamId, userId) => {
    * (2) Rename fields to match TeamInvite email props
    * (3) Join Team.name by using teamId as teamName
    */
-  return await r.table('User').get(userId)
+  return await r().table('User').get(userId)
     .pluck('id', 'email', 'picture', 'preferredName')
     .merge((doc) => ({
       inviterAvatar: doc('picture'),
       inviterEmail: doc('email'),
       inviterName: doc('preferredName'),
-      teamName: r.table('Team').get(teamId)
+      teamName: r().table('Team').get(teamId)
         .pluck('name')('name'),
     }));
 };
@@ -115,7 +115,7 @@ export const asyncInviteTeam = async (authToken, teamId, invitees) => {
   const {inviteesToStore} = await resolveSentEmails(sendEmailPromises, inviteesWithTokens);
   const invitationsForDB = await makeInvitationsForDB(inviteesToStore, teamId);
   // Bulk insert, wait in case something queries the invitation table
-  await r.table('Invitation').insert(invitationsForDB);
+  await r().table('Invitation').insert(invitationsForDB);
   return true;
   // TODO generate email to inviter including folks that we couldn't reach
   // if (inviteeErrors.length > 0) {

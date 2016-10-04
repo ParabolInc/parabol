@@ -29,7 +29,7 @@ export default {
       const [, teamId] = teamMemberId.split('::');
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
-      await r.table('TeamMember').get(teamMemberId).update({isCheckedIn});
+      await r().table('TeamMember').get(teamMemberId).update({isCheckedIn});
     }
   },
   acceptInvitation: {
@@ -50,7 +50,7 @@ export default {
       const {id: inviteId, key: tokenKey} = parseInviteToken(inviteToken);
 
       // see if the invitation exists
-      const invitation = await r.table('Invitation').get(inviteId);
+      const invitation = await r().table('Invitation').get(inviteId);
       if (!invitation) {
         throw errorObj({
           _error: 'unable to find invitation',
@@ -89,7 +89,7 @@ export default {
         });
       }
 
-      const dbWork = r.table('TeamMember')
+      const dbWork = r().table('TeamMember')
       // get number of users
         .getAll(teamId, {index: 'teamId'})
         .filter({isActive: true})
@@ -97,11 +97,11 @@ export default {
         // get the user
         .do((usersOnTeam) => ({
           usersOnTeam,
-          user: r.table('User').get(userId)
+          user: r().table('User').get(userId)
         }))
         // insert team member
         .do((teamCountAndUser) =>
-          r.table('TeamMember').insert({
+          r().table('TeamMember').insert({
             checkInOrder: teamCountAndUser('usersOnTeam').add(1),
             id: teamCountAndUser('user')('id').add('::', teamId),
             teamId,
@@ -118,7 +118,7 @@ export default {
         )
         // find all possible emails linked to this person and mark them as accepted
         .do((userEmail) =>
-          r.table('Invitation').getAll(userEmail, email, {index: 'email'}).update({
+          r().table('Invitation').getAll(userEmail, email, {index: 'email'}).update({
             acceptedAt: now,
             isAccepted: true
           })

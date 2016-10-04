@@ -25,7 +25,7 @@ export default {
     async resolve(source, {teamId, first, after}, {authToken}) {
       requireSUOrTeamMember(authToken, teamId);
       const cursor = after || r.minval;
-      const result = await r.table('Project')
+      const result = await r().table('Project')
         .between([teamId, cursor], [teamId, r.maxval], {index: 'teamIdCreatedAt', leftBound: 'open'})
         .filter({isArchived: true})
         .limit(first);
@@ -37,7 +37,7 @@ export default {
     description: 'Given an auth token, return the user and auth token',
     async resolve(source, args, {authToken}) {
       const userId = requireAuth(authToken);
-      const user = await r.table('Project').get(userId);
+      const user = await r().table('Project').get(userId);
       if (!user) {
         throw errorObj({_error: 'Project ID not found'});
       }

@@ -38,17 +38,17 @@ export default {
     // eslint-disable-next-line no-unused-vars
     async resolve(source, {teamId}, {authToken, socket}) {
       // TODO & remove above eslint pragma
-      const teamMembers = await r.table('TeamMember').getAll(teamId, {index: 'teamId'}).pluck('id');
+      const teamMembers = await r().table('TeamMember').getAll(teamId, {index: 'teamId'}).pluck('id');
       // eslint-disable-next-line no-unused-vars
       const dbPromises = teamMembers.map((member, idx) => {
         // TODO & remove above eslint pragma
-        return r.table('TeamMember').get(member.id).update({
+        return r().table('TeamMember').get(member.id).update({
           checkInOrder: idx,
           isCheckedIn: null
         });
       });
 
-      const FOO = await r.table('TeamMember').getAll(teamId, {index: 'teamId'}).pluck('id');
+      const FOO = await r().table('TeamMember').getAll(teamId, {index: 'teamId'}).pluck('id');
       shuffle(FOO);
     }
   },
@@ -87,9 +87,9 @@ export default {
         throw errorObj({_error: `${nextPhase} is not a valid phase`});
       }
 
-      const team = await r.table('Team').get(teamId);
+      const team = await r().table('Team').get(teamId);
       if (nextPhase === CHECKIN || nextPhase === UPDATES) {
-        const teamMembersCount = await r.table('TeamMember')
+        const teamMembersCount = await r().table('TeamMember')
           .getAll(teamId, {index: 'teamId'})
           .filter({isActive: true})
           .count();
@@ -97,7 +97,7 @@ export default {
           throw errorObj({_error: 'We don\'t have that many team members!'});
         }
       } else if (nextPhase === AGENDA_ITEMS) {
-        const agendaItemCount = await r.table('AgendaItem')
+        const agendaItemCount = await r().table('AgendaItem')
           .getAll(teamId, {index: 'teamId'})
           .count();
         if (nextPhaseItem < 1 || nextPhaseItem > agendaItemCount) {
@@ -147,7 +147,7 @@ export default {
           updatedState.meetingPhase = nextPhase;
         }
       }
-      await r.table('Team').get(teamId).update(updatedState);
+      await r().table('Team').get(teamId).update(updatedState);
       /*
       console.log('updatedState');
       console.log(updatedState);
@@ -170,7 +170,7 @@ export default {
       const [, teamId] = facilitatorId.split('::');
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
-      const facilitatorMembership = await r.table('TeamMember').get(facilitatorId);
+      const facilitatorMembership = await r().table('TeamMember').get(facilitatorId);
       if (!facilitatorMembership || !facilitatorMembership.isActive) {
         throw errorObj({_error: 'facilitator is not active on that team'});
       }
@@ -189,7 +189,7 @@ export default {
         meetingPhase: CHECKIN,
         meetingPhaseItem: 1
       };
-      await r.table('Team').get(teamId).update(updatedTeam);
+      await r().table('Team').get(teamId).update(updatedTeam);
       return true;
     }
   },
@@ -204,7 +204,7 @@ export default {
     },
     async resolve(source, {teamId}, {authToken}) {
       requireSUOrTeamMember(authToken, teamId);
-      await r.table('Team').get(teamId).update({
+      await r().table('Team').get(teamId).update({
         facilitatorPhase: 'lobby',
         meetingPhase: 'lobby',
         meetingId: null,
@@ -212,7 +212,7 @@ export default {
         meetingPhaseItem: null,
         activeFacilitator: null
       });
-      await r.table('TeamMember').getAll(teamId, {index: 'teamId'})
+      await r().table('TeamMember').getAll(teamId, {index: 'teamId'})
         .update({
           isCheckedIn: null
         });
@@ -256,10 +256,10 @@ export default {
         activeFacilitator: null
       };
 
-      const dbTransaction = r.table('User')
+      const dbTransaction = r().table('User')
         .get(userId)
         .do((user) =>
-          r.table('TeamMember').insert({
+          r().table('TeamMember').insert({
             ...verifiedLeader,
             // pull in picture and preferredName from user profile:
             picture: user('picture').default(''),
@@ -267,7 +267,7 @@ export default {
           })
         )
         .do(() =>
-          r.table('Team').insert(verifiedTeam)
+          r().table('Team').insert(verifiedTeam)
         );
 
       const oldtms = authToken.tms || [];
@@ -292,7 +292,7 @@ export default {
     async resolve(source, {updatedTeam}, {authToken}) {
       const {id, name} = updatedTeam;
       requireSUOrTeamMember(authToken, id);
-      const teamFromDB = await r.table('Team').get(id).update({name}, {returnChanges: true});
+      const teamFromDB = await r().table('Team').get(id).update({name}, {returnChanges: true});
       // TODO think hard about if we can pluck only the changed values (in this case, name)
       return updatedOrOriginal(teamFromDB, updatedTeam);
     }

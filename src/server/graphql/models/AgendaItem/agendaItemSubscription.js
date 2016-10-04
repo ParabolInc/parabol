@@ -18,7 +18,7 @@ export default {
       requireSUOrTeamMember(authToken, teamId);
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
-      r.table('AgendaItem')
+      r().table('AgendaItem')
         .getAll(teamId, {index: 'teamId'})
         .filter({isActive: true})
         .pluck(requestedFields)
