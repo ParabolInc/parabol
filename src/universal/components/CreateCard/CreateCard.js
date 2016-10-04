@@ -62,7 +62,6 @@ const CreateCard = (props) => {
         </div>
       }
       {isCreating &&
-        // TODO change theme to colorPalette
         <Type align="center" bold scale="s3" colorPalette="mid">
           @{username}<br />is adding {isProject ? 'a Project' : 'an Action'}<Ellipsis />
         </Type>
@@ -93,6 +92,7 @@ const labelStyles = {
 const styleThunk = () => ({
   root: {
     ...CreateCardRootStyles,
+
     '::after': {
       ...cardBorderTop,
       color: appTheme.palette.mid40l

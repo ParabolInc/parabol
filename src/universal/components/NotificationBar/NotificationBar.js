@@ -11,7 +11,7 @@ import {Link} from 'react-router';
 //   marginRight: '.25rem'
 // };
 //
-// <div className={styles.timestamp}>
+// <div className={css(styles.timestamp)}>
 //   <FontAwesome
 //     name="hourglass-end"
 //     style={faHourglassStyle}
@@ -33,7 +33,7 @@ const NotificationBar = (props) => {
   return (
     <div className={css(styles.bar)}>
       <div className={css(styles.inlineBlock, styles.message)}>
-        You’ve got meeting:
+        You’ve got a meeting:
       </div>
       <div className={css(styles.inlineBlock)}>
         {activeMeetings.map(meeting => {

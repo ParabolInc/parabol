@@ -12,7 +12,7 @@ const DashNavList = (props) => {
       {hasTeams ?
         <div>
           {teams.map((team) =>
-            <div className={css(styles.team)} key={`teamNav${team.id}`}>
+            <div key={`teamNav${team.id}`}>
               <DashNavItem
                 href={`/team/${team.id}`}
                 label={team.name}

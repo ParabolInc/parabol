@@ -29,10 +29,10 @@ const SummaryQuickStats = (props) => {
 
   return (
     <div className={css(styles.root)}>
-      <div className={styles.heading}>
-        <span className={styles.headingLabel}>Quick Stats</span>
+      <div className={css(styles.heading)}>
+        <span className={css(styles.headingLabel)}>Quick Stats</span>
       </div>
-      <div className={styles.cardGroup}>
+      <div className={css(styles.cardGroup)}>
         <div className={projects}>
           <div className={css(styles.count)}>{countNewProjects}</div>
           <FontAwesome name={labels.project.icon} style={iconStyle} />
@@ -40,7 +40,7 @@ const SummaryQuickStats = (props) => {
         </div>
         <div className={actions}>
           <div className={css(styles.count)}>{countNewActions}</div>
-          <FontAwesome name={labels.actions.icon} style={iconStyle} />
+          <FontAwesome name={labels.action.icon} style={iconStyle} />
           <div className={css(styles.label)}>New Actions</div>
         </div>
         <div className={updates}>
@@ -50,7 +50,7 @@ const SummaryQuickStats = (props) => {
         </div>
         <div className={done}>
           <div className={css(styles.count)}>{countDone}</div>
-          <FontAwesome name={labels.projectStatus.done.icon} style={iconStyle} />
+          <FontAwesome name={labels.projectStatus[DONE].icon} style={iconStyle} />
           <div className={css(styles.label)}>Done</div>
         </div>
       </div>
@@ -75,7 +75,6 @@ SummaryQuickStats.defaultProps = {
 
 const styleThunk = () => ({
   root: {
-    display: 'flex',
     maxWidth: '37.5rem',
     width: '100%'
   },
