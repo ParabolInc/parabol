@@ -9,7 +9,7 @@ import {requireSUOrSelf} from '../authorization';
 import {updatedOrOriginal} from '../utils';
 
 const auth0Client = new AuthenticationClient({
-  domain: auth0.account,
+  domain: auth0.domain,
   clientId: auth0.clientId
 });
 
@@ -32,7 +32,7 @@ export default {
       // const params = {id: userInfo.user_id};
       // const metadata = {foo: 1};
       // const auth0ManagementClient = new ManagementClient({
-      //   domain: auth0.account,
+      //   domain: auth0.domain,
       //   token: process.env.AUTH0_CLIENT_SECRET
       // });
 

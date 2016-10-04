@@ -4,6 +4,7 @@ import {Provider} from 'react-redux';
 import {RouterContext} from 'react-router';
 import {renderToString} from 'react-dom/server';
 import makeSegmentSnippet from '@segment/snippet';
+import {auth0} from 'universal/utils/clientOptions';
 
 const segKey = process.env.SEGMENT_WRITE_KEY;
 const segmentSnippet = segKey && makeSegmentSnippet.min({
@@ -26,6 +27,7 @@ export default function Html({store, entries, StyleSheetServer, renderProps}) {
     );
   });
   const dehydratedStyles = `window.__APHRODITE__ = ${JSON.stringify(css.renderedClassNames)}`;
+  const auth0ClientOptions = `window.__AUTH0__ = ${JSON.stringify(auth0)}`;
   const fontAwesomeUrl = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css';
   return (
     <html>
@@ -37,6 +39,7 @@ export default function Html({store, entries, StyleSheetServer, renderProps}) {
       </head>
       <body>
         <script dangerouslySetInnerHTML={{__html: dehydratedStyles}}/>
+        <script dangerouslySetInnerHTML={{__html: auth0ClientOptions}}/>
         <div id="root" dangerouslySetInnerHTML={{__html: html}}></div>
         <script dangerouslySetInnerHTML={{__html: manifest.text}}/>
         <script src={vendor.js}/>
