@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {StyleSheet} from 'aphrodite';
+import {StyleSheet} from 'aphrodite/no-important';
 
 const jones = new WeakMap();
 

@@ -1,5 +1,5 @@
 // import React, { Component, PropTypes } from 'react';
-// import withStyles from 'universal/styles/withStyles'; import {css} from 'aphrodite';
+// import withStyles from 'universal/styles/withStyles'; import {css} from 'aphrodite/no-important';
 //
 // const styles = {};
 //

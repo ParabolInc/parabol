@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite';
+import {css} from 'aphrodite/no-important';
 import {textOverflow} from 'universal/styles/helpers';
 import {Field} from 'redux-form';
 import IconButton from 'universal/components/IconButton/IconButton';

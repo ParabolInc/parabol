@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite';
+import {css} from 'aphrodite/no-important';
 import {withRouter} from 'react-router';
 import appTheme from 'universal/styles/theme/appTheme';
 

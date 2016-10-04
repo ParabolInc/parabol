@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite';
+import {css} from 'aphrodite/no-important';
 import CheckInCard from 'universal/modules/meeting/components/CheckInCard/CheckInCard';
 import {CHECKIN} from 'universal/utils/constants';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';

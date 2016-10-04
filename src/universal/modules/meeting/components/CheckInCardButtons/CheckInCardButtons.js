@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite';
+import {css} from 'aphrodite/no-important';
 import PushButton from 'universal/components/PushButton/PushButton';
 import withHotkey from 'react-hotkey-hoc';
 import voidClick from 'universal/utils/voidClick';

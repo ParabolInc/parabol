@@ -26,7 +26,7 @@ export default store => ({
 
 // the server needs these things for SSR.
 // In the future, we might combine routes + clients to do away with this
-export {StyleSheetServer} from 'aphrodite';
+export {StyleSheetServer} from 'aphrodite/no-important';
 export const cashaySchema = _cashaySchema;
 export {cashay} from 'cashay';
 /* eslint-enable */

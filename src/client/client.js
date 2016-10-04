@@ -4,7 +4,7 @@ import {cashay} from 'cashay';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import makeStore from './makeStore';
 import Root from './Root';
-import {StyleSheet} from 'aphrodite';
+import {StyleSheet} from 'aphrodite/no-important';
 import cashaySchema from 'cashay!../server/utils/getCashaySchema.js';
 
 // const {routing} = window.__INITIAL_STATE__; // eslint-disable-line no-underscore-dangle
