@@ -38,17 +38,23 @@ export default {
     // eslint-disable-next-line no-unused-vars
     async resolve(source, {teamId}, {authToken, socket}) {
       // TODO & remove above eslint pragma
-      const teamMembers = await r().table('TeamMember').getAll(teamId, {index: 'teamId'}).pluck('id');
+      const teamMembers = await r().table('TeamMember')
+        .getAll(teamId, {index: 'teamId'})
+        .pluck('id');
       // eslint-disable-next-line no-unused-vars
       const dbPromises = teamMembers.map((member, idx) => {
         // TODO & remove above eslint pragma
-        return r().table('TeamMember').get(member.id).update({
-          checkInOrder: idx,
-          isCheckedIn: null
-        });
+        return r().table('TeamMember')
+          .get(member.id)
+          .update({
+            checkInOrder: idx,
+            isCheckedIn: null
+          });
       });
 
-      const FOO = await r().table('TeamMember').getAll(teamId, {index: 'teamId'}).pluck('id');
+      const FOO = await r().table('TeamMember')
+        .getAll(teamId, {index: 'teamId'})
+        .pluck('id');
       shuffle(FOO);
     }
   },
@@ -147,7 +153,9 @@ export default {
           updatedState.meetingPhase = nextPhase;
         }
       }
-      await r().table('Team').get(teamId).update(updatedState);
+      await r().table('Team')
+        .get(teamId)
+        .update(updatedState);
       /*
       console.log('updatedState');
       console.log(updatedState);
@@ -189,7 +197,9 @@ export default {
         meetingPhase: CHECKIN,
         meetingPhaseItem: 1
       };
-      await r().table('Team').get(teamId).update(updatedTeam);
+      await r().table('Team')
+        .get(teamId)
+        .update(updatedTeam);
       return true;
     }
   },
@@ -204,7 +214,9 @@ export default {
     },
     async resolve(source, {teamId}, {authToken}) {
       requireSUOrTeamMember(authToken, teamId);
-      await r().table('Team').get(teamId).update({
+      await r().table('Team')
+      .get(teamId)
+      .update({
         facilitatorPhase: 'lobby',
         meetingPhase: 'lobby',
         meetingId: null,
@@ -292,7 +304,9 @@ export default {
     async resolve(source, {updatedTeam}, {authToken}) {
       const {id, name} = updatedTeam;
       requireSUOrTeamMember(authToken, id);
-      const teamFromDB = await r().table('Team').get(id).update({name}, {returnChanges: true});
+      const teamFromDB = await r().table('Team')
+        .get(id)
+        .update({name}, {returnChanges: true});
       // TODO think hard about if we can pluck only the changed values (in this case, name)
       return updatedOrOriginal(teamFromDB, updatedTeam);
     }

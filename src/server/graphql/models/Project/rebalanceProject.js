@@ -7,7 +7,9 @@ export default async function rebalanceProject(status, teamId) {
     .orderBy('sort')
     .pluck(['id', 'sort']);
   const updatedProjects = tasks.map((task, idx) => {
-    return r().table('Task').get(task.id).update({sort: idx * SORT_STEP});
+    return r().table('Task')
+      .get(task.id)
+      .update({sort: idx * SORT_STEP});
   });
   await Promise.all(updatedProjects);
   return true;

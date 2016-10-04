@@ -29,7 +29,9 @@ export default {
       const [, teamId] = teamMemberId.split('::');
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
-      await r().table('TeamMember').get(teamMemberId).update({isCheckedIn});
+      await r().table('TeamMember')
+        .get(teamMemberId)
+        .update({isCheckedIn});
     }
   },
   acceptInvitation: {
@@ -111,17 +113,20 @@ export default {
             isFacilitator: false,
             picture: teamCountAndUser('user')('picture').default(''),
             preferredName: teamCountAndUser('user')('preferredName').default(''),
-          }).do(() =>
+          })
+          .do(() =>
             // ...but return the user's email
             teamCountAndUser('user')('email')
           )
         )
         // find all possible emails linked to this person and mark them as accepted
         .do((userEmail) =>
-          r().table('Invitation').getAll(userEmail, email, {index: 'email'}).update({
-            acceptedAt: now,
-            isAccepted: true
-          })
+          r().table('Invitation')
+            .getAll(userEmail, email, {index: 'email'})
+            .update({
+              acceptedAt: now,
+              isAccepted: true
+            })
         );
       const tms = oldtms.concat(teamId);
       const asyncPromises = [
