@@ -3,6 +3,7 @@ import {cashay} from 'cashay';
 import {setAuthToken} from 'universal/redux/authDuck';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import {segmentEvent} from 'universal/redux/segmentActions';
+import {auth0 as defaultClientOptions} from 'universal/utils/clientOptions';
 
 
 async function updateToken(dispatch, profile, authToken) {
@@ -19,26 +20,20 @@ async function updateToken(dispatch, profile, authToken) {
 export function showLock(dispatch) {
   // eslint-disable-next-line global-require
   const Auth0Lock = require('auth0-lock');
-  const auth0ClientOptionsQuery = `
-query {
-  auth0GetClientOptions {
-    clientId,
-    domain
+  let clientOptions = defaultClientOptions;
+  if (__PRODUCTION__) {
+  // See server/Html.js for how this is initialized:
+    clientOptions = window.__AUTH0__; // eslint-disable-line no-underscore-dangle
   }
-}`;
-  cashay.query(auth0ClientOptionsQuery, {
-    op: 'Auth0ShowLock'
-  }).then((result) => {
-    const {clientId, domain} = result.data;
-    const lock = new Auth0Lock(clientId, domain);
-    lock.show({
-      authParams: {
-        scope: 'openid rol tms'
-      }
-    }, (error, profile, authToken) => {
-      if (error) throw error;
-      updateToken(dispatch, profile, authToken);
-    });
+  const {clientId, domain} = clientOptions;
+  const lock = new Auth0Lock(clientId, domain);
+  lock.show({
+    authParams: {
+      scope: 'openid rol tms'
+    }
+  }, (error, profile, authToken) => {
+    if (error) throw error;
+    updateToken(dispatch, profile, authToken);
   });
 }
 
