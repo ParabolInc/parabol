@@ -43,7 +43,7 @@ const Sidebar = (props) => {
         <a className={css(styles.brandLink)} onClick={handleLogoClick}>
           <img className={css(styles.brandLogo)} src={actionUIMark}/>
         </a>
-        <Link className={css(styles.teamName)} to={`/team/${teamId}`}>{teamName}</Link>
+        <Link className={css(styles.teamName)} to={`/team/${teamId}`} title={`Go to the ${teamName} Team Dashboard`}>{teamName}</Link>
         <a className={css(styles.shortUrl)} href="/meetingLayout/lobby">{shortUrl}</a>
         {/* TODO: make me respond to props */}
       </div>
@@ -55,30 +55,30 @@ const Sidebar = (props) => {
             <Link
               to={`/meeting/${teamId}/checkin`}
               className={checkInLinkStyles}
-              title={labels.meetingPhase.checkIn.slug}
+              title={labels.meetingPhase.checkIn.label}
             >
               <span className={css(styles.bullet)}>i.</span>
-              <span className={css(styles.label)}>{labels.meetingPhase.checkIn.slug}</span>
+              <span className={css(styles.label)}>{labels.meetingPhase.checkIn.label}</span>
             </Link>
           </li>
           <li className={updatesNavItemStyles}>
             <Link
               className={updatesLinkStyles}
               to={`/meeting/${teamId}/updates`}
-              title={labels.meetingPhase.updates.slug}
+              title={labels.meetingPhase.updates.label}
             >
               <span className={css(styles.bullet)}>ii.</span>
-              <span className={css(styles.label)}>{labels.meetingPhase.updates.slug}</span>
+              <span className={css(styles.label)}>{labels.meetingPhase.updates.label}</span>
             </Link>
           </li>
           <li className={requestsNavItemStyles}>
             <Link
               className={requestsLinkStyles}
               to={`/meeting/${teamId}/agenda`}
-              title={labels.meetingPhase.agenda.slug}
+              title={labels.meetingPhase.agenda.label}
             >
               <span className={css(styles.bullet)}>iii.</span>
-              <span className={css(styles.label)}>{labels.meetingPhase.agenda.slug}</span>
+              <span className={css(styles.label)}>{labels.meetingPhase.agenda.label}</span>
             </Link>
           </li>
           {localPhase === SUMMARY &&
@@ -86,10 +86,10 @@ const Sidebar = (props) => {
               <a
                 className={css(styles.navListItemLink, styles.navListItemLinkActive)}
                 href={`/meeting/${teamId}/summary`}
-                title={labels.meetingPhase.summary.slug}
+                title={labels.meetingPhase.summary.label}
               >
                 <span className={css(styles.bullet)}>{' '}</span>
-                <span className={css(styles.label)}>{labels.meetingPhase.summary.slug}</span>
+                <span className={css(styles.label)}>{labels.meetingPhase.summary.label}</span>
               </a>
             </li>
           }

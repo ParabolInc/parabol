@@ -47,7 +47,7 @@ const IconLink = (props) => {
       title={label}
     >
       {iconPlacement === 'left' && <FontAwesome className={iconStyles} name={icon}/>}
-      {label}
+      <span className={css(styles.label)}>{label}</span>
       {iconPlacement === 'right' && <FontAwesome className={iconStyles} name={icon}/>}
     </a>
   );
@@ -115,8 +115,13 @@ const styleThunk = (customTheme, {colorPalette, scale}) => {
       fontSize: scale === 'small' ? appTheme.typography.s3 : appTheme.typography.s5,
       fontStyle: 'italic',
       fontWeight: 700,
+      height: scale === 'small' ? '20px' : '28px',
+      lineHeight: scale === 'small' ? '20px' : '28px',
       textDecoration: 'none',
       userSelect: 'none',
+      verticalAlign: 'middle',
+      whiteSpace: 'nowrap',
+
       ':hover': {
         color: darkenedComputedColor,
         textDecoration: 'none'
@@ -131,6 +136,13 @@ const styleThunk = (customTheme, {colorPalette, scale}) => {
         animationName: keyframesDip,
         animationTimingFunction: 'ease-in'
       }
+    },
+
+    label: {
+      display: 'inline-block',
+      height: scale === 'small' ? '20px' : '28px',
+      lineHeight: scale === 'small' ? '20px' : '28px',
+      verticalAlign: 'middle'
     },
 
     disabled: {
@@ -150,15 +162,17 @@ const styleThunk = (customTheme, {colorPalette, scale}) => {
       color: 'inherit',
       display: 'inline-block !important',
       fontSize: scale === 'small' ? '14px !important' : '28px !important',
-      verticalAlign: 'middle'
+      height: scale === 'small' ? '14px !important' : '28px !important',
+      lineHeight: scale === 'small' ? '14px !important' : '28px !important',
+      verticalAlign: 'middle !important'
     },
 
     placeRight: {
-      margin: '-.125rem 0 0 .5rem'
+      margin: '0 0 0 .5rem'
     },
 
     placeLeft: {
-      margin: '-.125rem .5rem 0 0'
+      margin: '0 .5rem 0 0'
     }
   };
 };
