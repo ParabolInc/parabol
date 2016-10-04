@@ -26,7 +26,7 @@ export default {
         createdAt: now,
         updatedAt: now,
         isActive: true,
-        isCompleted: false,
+        isComplete: false,
         teamId
       };
       await r.table('AgendaItem').insert(agendaItem);
