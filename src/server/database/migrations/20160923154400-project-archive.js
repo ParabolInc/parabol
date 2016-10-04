@@ -5,9 +5,7 @@ exports.up = async(r) => {
       isArchived: false,
       teamId: doc('id').split('::')(0)
     })),
-    r.table('Project').indexCreate('teamId'),
-    r.table('Project').indexCreate('teamIdCreatedAt',
-      [r.row('teamId'), r.row('createdAt')])
+    r.table('Project').indexCreate('teamId')
   ];
   await Promise.all(queries);
 };
@@ -15,7 +13,6 @@ exports.up = async(r) => {
 exports.down = async(r) => {
   const queries = [
     r.table('Project').indexDrop('teamId'),
-    r.table('Project').indexDrop('teamIdCreatedAt'),
     r.table('Project').replace(r.row.without('teamId', 'isArchived'))
   ];
   return await Promise.all(queries);
