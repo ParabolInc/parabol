@@ -17,6 +17,12 @@ async function updateToken(dispatch, profile, authToken) {
   dispatch(segmentEvent('User Login'));
 }
 
+/*
+ * NOTE: showLock is, and may only ever be called from the client:
+ *
+ * We require auth0-lock from within this function because it cannot be
+ * rendered within the SSR.
+ */
 export function showLock(dispatch) {
   // eslint-disable-next-line global-require
   const Auth0Lock = require('auth0-lock');
