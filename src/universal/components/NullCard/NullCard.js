@@ -1,11 +1,13 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
-import Ellipsis from '../Ellipsis/Ellipsis';
-import Type from '../Type/Type';
+import appTheme from 'universal/styles/theme/appTheme';
+import {Ellipsis, Type} from 'universal/components';
 import CreateCardRootStyles from '../CreateCard/CreateCardRootStyles';
+import {cardBorderTop} from 'universal/styles/helpers';
 
 const NullCard = (props) => {
+  const {styles} = NullCard;
   const {styles, username} = props;
   return (
     <div className={css(styles.root)}>
@@ -23,7 +25,11 @@ NullCard.propTypes = {
 
 const styleThunk = () => ({
   root: {
-    ...CreateCardRootStyles
+    ...CreateCardRootStyles,
+    '::after': {
+      ...cardBorderTop,
+      color: appTheme.palette.mid40l
+    }
   }
 });
 

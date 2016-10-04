@@ -1,18 +1,17 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite';
-import FontAwesome from 'react-fontawesome';
-import CopyToClipboard from 'react-copy-to-clipboard';
+
 import appTheme from 'universal/styles/theme/appTheme';
 import {cashay} from 'cashay';
-import voidClick from 'universal/utils/voidClick';
 import makeMeetingUrl from 'universal/utils/makeMeetingUrl';
 import Button from 'universal/components/Button/Button';
+import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
 
-const faStyle = {lineHeight: 'inherit'};
+//
 
 const createStartMeetingHandler = (members) => {
   return () => {
@@ -41,23 +40,10 @@ const MeetingLobby = (props) => {
         {/* */}
         <div className={css(styles.root)}>
           <MeetingPhaseHeading>Hi, {teamName} Team!</MeetingPhaseHeading>
-          <p className={css(styles.label)}>{'Copy & share this meeting:'}</p>
-          {/* */}
-          {/* TODO: prevent navigation and show a “Copied!” message inline or toast */}
-          {/* */}
-          <CopyToClipboard text={shortUrl}>
-            <a
-              className={css(styles.link)}
-              href={shortUrl}
-              onClick={voidClick}
-              title={`Copy link to meeting: ${shortUrl}`}
-            >
-              <span className={css(styles.linkText)}>{shortUrl}</span>
-              <span className={css(styles.icon)}>
-                <FontAwesome name="copy" style={faStyle}/>
-              </span>
-            </a>
-          </CopyToClipboard>
+          <p className={css(styles.label)}>Share this meeting:</p>
+          <div className={css(styles.urlBlock)}>
+            <CopyShortLink url={shortUrl} />
+          </div>
           <h2 className={css(styles.prompt)}>Team Facilitator: begin the Check-In round!</h2>
           <Button
             label="Start Meeting"
@@ -102,11 +88,9 @@ const styleThunk = () => ({
     textTransform: 'uppercase'
   },
 
-  link: {
-    borderRadius: '.25rem',
-    display: 'block',
-    fontSize: faFontSize,
-    margin: '.5rem 0 4rem',
+  prompt: {
+    color: theme.palette.dark,
+    margin: '0 0 2rem'
     padding: '.75rem 1.5rem',
     textDecoration: 'none !important',
 
@@ -118,15 +102,8 @@ const styleThunk = () => ({
     }
   },
 
-  linkText: {
-    display: 'inline-block',
-    verticalAlign: 'middle'
-  },
-
-  icon: {
-    display: 'inline-block',
-    fontSize: faFontSize,
-    marginLeft: '.5rem',
+  urlBlock: {
+    margin: '.5rem 0 4rem',
     verticalAlign: 'middle'
   },
 

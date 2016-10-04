@@ -1,5 +1,6 @@
 import React from 'react';
 import EmptySpace from '../EmptySpace/EmptySpace';
+import ui from 'universal/styles/ui';
 
 const Header = (props) =>
   <table
@@ -17,7 +18,7 @@ const Header = (props) =>
               <tr>
                 <td
                   align="center"
-                  style={{color: props.color, fontFamily: '"Karla", "Helvetica Neue", serif'}}
+                  style={{color: props.color, fontFamily: ui.emailFontFamily}}
                 >
                   Action by Parabol
                 </td>

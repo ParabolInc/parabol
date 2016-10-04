@@ -6,6 +6,7 @@ import Ellipsis from '../Ellipsis/Ellipsis';
 import Type from '../Type/Type';
 import appTheme from 'universal/styles/theme/appTheme';
 import CreateCardRootStyles from './CreateCardRootStyles';
+import {cardBorderTop} from 'universal/styles/helpers';
 import makeUsername from 'universal/utils/makeUsername';
 
 const CreateCard = (props) => {
@@ -91,7 +92,11 @@ const labelStyles = {
 
 const styleThunk = () => ({
   root: {
-    ...CreateCardRootStyles
+    ...CreateCardRootStyles,
+    '::after': {
+      ...cardBorderTop,
+      color: appTheme.palette.mid40l
+    }
   },
 
   rootBorderVariant: {

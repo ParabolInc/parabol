@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react';
-import Type from 'universal/components/Type/Type';
+import {Type} from 'universal/components';
 
 const MeetingPhaseHeading = (props) => {
   const {children} = props;

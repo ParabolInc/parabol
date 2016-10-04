@@ -7,13 +7,24 @@ import labels from 'universal/styles/theme/labels';
 import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
 import {cardBorderTop} from 'universal/styles/helpers';
 
+const combineStyles = StyleSheet.combineStyles;
+
 const SummaryCard = (props) => {
+  const {styles} = SummaryCard;
   const {
     content,
     status,
     styles,
     type,
   } = props;
+
+  const rootStyleOptions = [styles.root];
+
+  if (type === 'project') {
+    rootStyleOptions.push(styles[status]);
+  } else {
+    rootStyleOptions.push(styles.isAction);
+  }
 
   const rootStyles = css(
     styles.root,
@@ -36,6 +47,10 @@ SummaryCard.propTypes = {
     'project',
     'action'
   ])
+};
+
+SummaryCard.defaultProps = {
+  type: 'action'
 };
 
 const styleThunk = () => ({

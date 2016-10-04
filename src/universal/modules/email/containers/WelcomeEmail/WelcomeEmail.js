@@ -48,7 +48,7 @@ const WelcomeEmail = props => {
 
       <Body lineHeight={1.5}>
         <Callout vSpacing={0}>
-          Hi <span style={{color: appTheme.palette.warm}}>{email}</span>,<br />
+          Hi <a href={`mailto:${email}`} style={{color: appTheme.palette.warm}}>{email}</a>,<br />
           We’re <i>so glad</i> you’re here!!
         </Callout>
         <EmptySpace height={48} />

@@ -6,7 +6,8 @@ import ui from 'universal/styles/ui';
 import labels from 'universal/styles/theme/labels';
 import {ACTIVE, DONE} from 'universal/utils/constants';
 import FontAwesome from 'react-fontawesome';
-import {ib, cardBorderTop} from 'universal/styles/helpers';
+import {ib, cardBorderTop, cardRootStyles} from 'universal/styles/helpers';
+
 import cardRootStyles from 'universal/styles/helpers/cardRootStyles';
 
 const iconStyle = {
@@ -15,6 +16,7 @@ const iconStyle = {
 };
 
 const SummaryQuickStats = (props) => {
+  const {styles} = SummaryQuickStats;
   const {
     countNewActions,
     countNewProjects,
@@ -30,25 +32,30 @@ const SummaryQuickStats = (props) => {
 
   return (
     <div className={css(styles.root)}>
+      <div className={styles.heading}>
+        <span className={styles.headingLabel}>Quick Stats</span>
+      </div>
+      <div className={styles.cardGroup}>
       <div className={projects}>
-        <div className={css(styles.count)}>{countNewActions}</div>
-        <FontAwesome name="calendar" style={iconStyle} />
-        <div className={css(styles.label)}>New Actions</div>
+        <div className={css(styles.count)}>{countNewProjects}</div>
+        <FontAwesome name={labels.project.icon} style={iconStyle} />
+        <div className={css(styles.label)}>New Projects</div>
       </div>
       <div className={actions}>
-        <div className={css(styles.count)}>{countNewProjects}</div>
-        <FontAwesome name="calendar" style={iconStyle} />
-        <div className={css(styles.label)}>New Projects</div>
+        <div className={css(styles.count)}>{countNewActions}</div>
+        <FontAwesome name={labels.actions.icon} style={iconStyle} />
+        <div className={css(styles.label)}>New Actions</div>
       </div>
       <div className={updates}>
         <div className={css(styles.count)}>{countUpdates}</div>
-        <FontAwesome name="calendar" style={iconStyle} />
+        <FontAwesome name="random" style={iconStyle} />
         <div className={css(styles.label)}>Updates</div>
       </div>
       <div className={done}>
         <div className={css(styles.count)}>{countDone}</div>
-        <FontAwesome name="calendar" style={iconStyle} />
+        <FontAwesome name={labels.projectStatus.done.icon} style={iconStyle} />
         <div className={css(styles.label)}>Done</div>
+        </div>
       </div>
     </div>
   );
@@ -66,10 +73,8 @@ SummaryQuickStats.defaultProps = {
   countNewActions: 12,
   countNewProjects: 4,
   countUpdates: 9,
-  countDone: 4
+  countDone: 5
 };
-
-console.log(cardRootStyles);
 
 const styleThunk = () => ({
   root: {
@@ -78,9 +83,68 @@ const styleThunk = () => ({
     width: '100%'
   },
 
+  heading: {
+    position: 'relative',
+    textAlign: 'center',
+    textTransform: 'uppercase',
+
+    '::before': {
+      backgroundColor: theme.palette.mid30l,
+      content: '""',
+      display: 'block',
+      height: '2px',
+      margin: '-1px auto auto',
+      position: 'absolute',
+      top: '50%',
+      width: '100%',
+      zIndex: 200
+  },
+    '::after': {
+      backgroundColor: '#fff',
+      content: '""',
+      display: 'none',
+      height: '1px',
+      margin: '-.5px auto auto',
+      position: 'absolute',
+      top: '50%',
+      width: '100%',
+      zIndex: 200
+    }
+  },
+
+  headingLabel: {
+    ...ib,
+    backgroundColor: '#fff',
+    color: theme.palette.dark,
+    fontSize: theme.typography.s4,
+    fontWeight: 700,
+    lineHeight: theme.typography.s5,
+    padding: '1.25rem .75rem',
+    position: 'relative',
+    zIndex: 400
+  },
+
+  cardGroup: {
+    display: 'flex',
+    margin: '0 -.625rem',
+    width: '38.75rem'
+  },
+
+  count: {
+    fontSize: theme.typography.s8
+  },
+
+  label: {
+    ...ib,
+    fontSize: theme.typography.s3,
+    fontWeight: 700,
+    marginLeft: '.25rem'
+  },
+
   cardRootStyles: {
     ...cardRootStyles,
     margin: '0 .625rem',
+    padding: '.5rem',
     textAlign: 'center',
 
     '::after': {

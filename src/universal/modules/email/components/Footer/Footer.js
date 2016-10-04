@@ -1,10 +1,11 @@
 import React from 'react';
 import EmptySpace from '../EmptySpace/EmptySpace';
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 
 const Footer = (props) => {
   const style = {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: ui.emailBackgroundColor,
     color: props.color
   };
 
@@ -42,7 +43,7 @@ const Footer = (props) => {
                   <td
                     align="center"
                     bgColor="#F9FAFB"
-                    style={{color: props.color, fontFamily: '"Karla", "Helvetica Neue", serif'}}
+                    style={{color: props.color, fontFamily: ui.emailFontFamily}}
                   >
 
                     <EmptySpace height="10" />

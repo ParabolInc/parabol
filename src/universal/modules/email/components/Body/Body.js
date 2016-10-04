@@ -1,12 +1,13 @@
 import React, {PropTypes} from 'react';
 import EmptySpace from '../EmptySpace/EmptySpace';
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 
 const Body = (props) => {
   const textStyle = {
     color: appTheme.palette.dark,
-    backgroundColor: '#F9FAFB',
-    fontFamily: '"Karla", "Helvetica Neue", serif',
+    backgroundColor: ui.emailBackgroundColor,
+    fontFamily: ui.emailFontFamily,
     fontSize: `${props.fontSize}px`,
     lineHeight: `${props.lineHeight}`
   };
@@ -19,9 +20,9 @@ const Body = (props) => {
             align="center"
             style={textStyle}
           >
-            <EmptySpace height={48} />
+            <EmptySpace height={props.verticalGutter} />
               {props.children}
-            <EmptySpace height={48} />
+            <EmptySpace height={props.verticalGutter} />
           </td>
         </tr>
       </tbody>
@@ -32,12 +33,14 @@ const Body = (props) => {
 Body.propTypes = {
   children: PropTypes.any,
   fontSize: PropTypes.number,
-  lineHeight: PropTypes.number
+  lineHeight: PropTypes.number,
+  verticalGutter: PropTypes.number
 };
 
 Body.defaultProps = {
   fontSize: 18,
-  lineHeight: 1.25
+  lineHeight: 1.25,
+  verticalGutter: 48
 };
 
 export default Body;

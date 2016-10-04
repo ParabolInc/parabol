@@ -1,4 +1,5 @@
 export cardBorderTop from './cardBorderTop.js';
+export cardRootStyles from './cardRootStyles.js';
 export ib from './ib.js';
 export makePlaceholderStyles from './makePlaceholderStyles.js';
 export overflowTouch from './overflowTouch.js';
