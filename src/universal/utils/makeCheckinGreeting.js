@@ -26,7 +26,8 @@ const questions = [
   'how are your hobbies doing',
   'what are you cooking next',
   'learn any new slang lately',
-  'heard any good advice lately'
+  'heard any good advice lately',
+  'if you could have one superpower today, what would it be'
 ];
 
 export const makeCheckinGreeting = (week) => {
