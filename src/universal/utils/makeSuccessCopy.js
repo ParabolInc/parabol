@@ -8,7 +8,8 @@ const expressions = [
   'High five',
   'Wowza',
   'Boom',
-  'Woot, woot'
+  'Woot, woot',
+  'Yaaasss'
 ];
 
 const statements = [

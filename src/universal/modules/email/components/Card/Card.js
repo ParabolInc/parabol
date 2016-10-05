@@ -3,6 +3,7 @@ import EmptySpace from '../EmptySpace/EmptySpace';
 import appTheme from 'universal/styles/theme/appTheme';
 import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
+import {trimString} from 'universal/utils';
 
 const Card = (props) => {
   const {content, status, type} = props;
@@ -72,14 +73,6 @@ const Card = (props) => {
   let borderImageTopLeft;
   let borderImageTopRight;
 
-  const trimContent = (str, maxLen) => {
-    let trimmed = str;
-    if (str.length > maxLen) {
-      trimmed = `${trimmed.slice(0, maxLen).trim()}...`;
-    }
-    return trimmed;
-  };
-
   if (type === 'action') {
     borderImageBottomLeft = borderImageBottomLeftAction;
     borderImageBottomRight = borderImageBottomRightAction;
@@ -143,7 +136,7 @@ const Card = (props) => {
         <tr>
           <td style={borderLeftStyle}></td>
           <td align="left" style={cardBodyStyle} vAlign="top">
-            {trimContent(content, 52)}
+            {trimString(content, 52)}
           </td>
           <td style={borderRightStyle}></td>
         </tr>
