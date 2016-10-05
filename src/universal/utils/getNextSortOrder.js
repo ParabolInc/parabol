@@ -1,7 +1,7 @@
 import {SORT_STEP} from './constants';
 
 export default function getNextSortOrder(arr, sortField) {
-  // we always do a decremental sort
-  const lastEntity = arr[0];
-  return lastEntity ? lastEntity[sortField] + SORT_STEP : 0;
+  const maxVal = Math.max(...arr.map(val => val[sortField]));
+  // if it is an empty array, maxVal === -Infinity
+  return Math.max(0, maxVal + SORT_STEP);
 }
