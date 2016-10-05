@@ -145,6 +145,7 @@ get involved and how to get compensated.
 
 | Release | Summary                                    |
 |---------|--------------------------------------------|
+| v0.7.1  | Fixes #322, #323, #334, #335, #336         |
 | v0.7.0  | Switch to aphrodite, me dashboard updates  |
 | v0.6.3  | Agenda processing order fix for issue #294 |
 | v0.6.2  | Processing of meeting agenda to projects   |

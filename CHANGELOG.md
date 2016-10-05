@@ -4,7 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v0.7.0 - 28-Sep-2016
+## v0.7.1 - 05-Oct-2016
+### Fixed
+- Fixed: #322, #323, #334, #335, #336
+
+## v0.7.0 - 04-Oct-2016
 ### Added
 - Now using [aphrodite](https://github.com/khan/aphrodite) for styling
 - Me dashboard now has buttons to add new outcomes for Actions and Projects
