@@ -1,0 +1,1 @@
+export trimString from './trimString';

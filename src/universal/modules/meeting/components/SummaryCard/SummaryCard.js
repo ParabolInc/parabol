@@ -6,6 +6,7 @@ import ui from 'universal/styles/ui';
 import labels from 'universal/styles/theme/labels';
 import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
 import {cardBorderTop} from 'universal/styles/helpers';
+import {trimString} from 'universal/utils';
 
 const SummaryCard = (props) => {
   const {
@@ -29,9 +30,13 @@ const SummaryCard = (props) => {
     type === 'project' ? styles[status] : styles.isAction
   );
 
+  const trimmedContent = trimString(content, 40);
+
   return (
     <div className={rootStyles}>
-      <div className={css(styles.content)}>{content}</div>
+      <div className={css(styles.content)}>
+        {trimmedContent}
+      </div>
     </div>
   );
 };
@@ -56,7 +61,7 @@ const styleThunk = () => ({
     border: `1px solid ${ui.cardBorderColor}`,
     borderRadius: ui.cardBorderRadius,
     maxWidth: '20rem',
-    minHeight: ui.cardMinHeight,
+    minHeight: '5rem',
     paddingTop: '.1875rem',
     position: 'relative',
     width: '100%',
