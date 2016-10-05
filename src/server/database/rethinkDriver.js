@@ -8,4 +8,4 @@ export default () => {
     driver = rethinkdbdash(config);
   }
   return driver;
-}
+};

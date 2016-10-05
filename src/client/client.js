@@ -11,24 +11,21 @@ import cashaySchema from 'cashay!../server/utils/getCashaySchema.js';
 const initialState = {};
 
 
-const createCashay = (store, cashaySchema) => {
+(async() => {
+  const store = await makeStore(initialState);
+  // Create the Cashay singleton:
   const persistedToken = store.getState().auth.token;
   cashay.create({
     store,
     schema: cashaySchema,
     httpTransport: new ActionHTTPTransport(persistedToken)
   });
-};
-
-(async() => {
-  const store = await makeStore(initialState);
-  // Create the Cashay singleton:
-  createCashay(store, cashaySchema);
   if (__PRODUCTION__) {
     /*
      * During the production client bundle build, the server will need to be
      * stopped.
      */
+    // eslint-disable-next-line no-underscore-dangle
     StyleSheet.rehydrate(window.__APHRODITE__);
     render(
       <Root store={store}/>,

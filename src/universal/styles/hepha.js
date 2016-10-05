@@ -5,4 +5,4 @@ export default function injectGlobals(injectStyleOnce, globalStyles) {
     const value = globalStyles[name];
     injectStyleOnce(name, name, [value], false);
   }
-};
+}

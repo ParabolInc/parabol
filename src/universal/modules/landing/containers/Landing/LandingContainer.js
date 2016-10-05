@@ -8,6 +8,7 @@ import {injectStyleOnce} from 'aphrodite/lib/inject';
 import injectGlobals from 'universal/styles/hepha';
 import auth0Overrides from 'universal/styles/theme/auth0Overrides';
 
+@loginWithToken
 export default class LandingContainer extends Component {
   static propTypes = {
     auth: PropTypes.object,
@@ -34,6 +35,4 @@ export default class LandingContainer extends Component {
       </div>
     );
   }
-};
-
-export default loginWithToken(LandingContainer);
+}
