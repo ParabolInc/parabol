@@ -1,4 +1,4 @@
-import r from 'server/database/rethinkDriver';
+import getRethink from 'server/database/rethinkDriver';
 import ms from 'ms';
 import sendEmailPromise from 'server/email/sendEmail';
 import makeAppLink from 'server/utils/makeAppLink';
@@ -43,6 +43,7 @@ export const validateInviteTokenKey = async(key, hashStringToCompare) =>
   await compare(key, hashStringToCompare);
 
 export const getInviterInfoAndTeamName = async(teamId, userId) => {
+  const r = getRethink();
   /**
    * (1) Fetch user email and picture link from User.
    * (2) Rename fields to match TeamInvite email props
@@ -108,6 +109,7 @@ export const createEmailPromises = (inviterInfoAndTeamName, inviteesWithTokens) 
 };
 
 export const asyncInviteTeam = async (authToken, teamId, invitees) => {
+  const r = getRethink();
   const userId = getUserId(authToken);
   const inviteesWithTokens = invitees.map(invitee => ({...invitee, inviteToken: makeInviteToken()}));
   const inviterInfoAndTeamName = await getInviterInfoAndTeamName(teamId, userId);

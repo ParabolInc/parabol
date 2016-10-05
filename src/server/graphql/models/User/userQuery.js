@@ -1,7 +1,7 @@
 import {GraphQLNonNull, GraphQLID} from 'graphql';
 import {User} from './userSchema';
 import {errorObj} from '../utils';
-import r from 'server/database/rethinkDriver';
+import getRethink from 'server/database/rethinkDriver';
 import {requireAuth, requireSU} from '../authorization';
 
 export default {
@@ -15,6 +15,7 @@ export default {
       }
     },
     async resolve(source, {userId}, {authToken}) {
+      const r = getRethink();
       requireSU(authToken);
       const user = await r.table('User').get(userId);
       if (user) {
@@ -27,6 +28,7 @@ export default {
     type: User,
     description: 'Given an auth token, return the user and auth token',
     async resolve(source, args, {authToken}) {
+      const r = getRethink();
       const userId = requireAuth(authToken);
       const user = await r.table('User').get(userId);
       if (!user) {

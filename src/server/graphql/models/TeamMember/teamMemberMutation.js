@@ -1,4 +1,4 @@
-import r from 'server/database/rethinkDriver';
+import getRethink from 'server/database/rethinkDriver';
 import {
   GraphQLNonNull,
   GraphQLID,
@@ -25,6 +25,7 @@ export default {
       }
     },
     async resolve(source, {teamMemberId, isCheckedIn}, {authToken, socket}) {
+      const r = getRethink();
       // teamMemberId is of format 'userId::teamId'
       const [, teamId] = teamMemberId.split('::');
       requireSUOrTeamMember(authToken, teamId);
@@ -45,6 +46,7 @@ export default {
       }
     },
     async resolve(source, {inviteToken}, {authToken}) {
+      const r = getRethink();
       const userId = requireAuth(authToken);
       const now = new Date();
       const {id: inviteId, key: tokenKey} = parseInviteToken(inviteToken);

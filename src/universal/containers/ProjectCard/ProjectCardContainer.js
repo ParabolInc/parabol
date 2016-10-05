@@ -7,7 +7,7 @@ import makeUsername from 'universal/utils/makeUsername';
 
 const projectCardSubQuery = `
 query {
-  project @cached(id: $projectId type: "Project") {
+  project @cached(type: "Project") {
     content
     id
     status
@@ -19,6 +19,7 @@ query {
       preferredName
     }
     team @cached(type: "Team") {
+      id
       name
     }
   }
@@ -34,6 +35,7 @@ const mapStateToProps = (state, props) => {
     key: projectId,
     variables: {projectId},
     resolveCached: {
+      project: () => projectId,
       team: (source) => (doc) => source.id.startsWith(doc.id),
       // example of returning a string instead of a function so it runs in O(1)
       teamMember: (source) => source.teamMemberId

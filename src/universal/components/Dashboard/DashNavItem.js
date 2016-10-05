@@ -1,12 +1,12 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite';
+import {css} from 'aphrodite/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import {Link, withRouter} from 'react-router';
 
 const DashNavItem = (props) => {
   const {label, href, styles, router} = props;
-  const isActive = router.isActive(href, true);
+  const isActive = router.isActive(href, false);
   const linkStyles = css(
     styles.link,
     isActive && styles.active

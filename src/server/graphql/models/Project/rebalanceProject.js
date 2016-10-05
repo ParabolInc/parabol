@@ -1,7 +1,8 @@
-import r from 'server/database/rethinkDriver';
+import getRethink from 'server/database/rethinkDriver';
 import {SORT_STEP} from 'universal/utils/constants';
 
 export default async function rebalanceProject(status, teamId) {
+  const r = getRethink();
   const tasks = await r.table('Project')
     .getAll(teamId, {index: 'teamId'})
     .orderBy('sort')

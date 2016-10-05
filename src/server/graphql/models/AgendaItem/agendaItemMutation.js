@@ -1,4 +1,4 @@
-import r from 'server/database/rethinkDriver';
+import getRethink from 'server/database/rethinkDriver';
 import {CreateAgendaItemInput, UpdateAgendaItemInput} from './agendaItemSchema';
 import {
   GraphQLNonNull,
@@ -18,6 +18,7 @@ export default {
       }
     },
     async resolve(source, {newAgendaItem}, {authToken}) {
+      const r = getRethink();
       const [teamId] = newAgendaItem.id.split('::');
       requireSUOrTeamMember(authToken, teamId);
       const now = new Date();
@@ -26,7 +27,7 @@ export default {
         createdAt: now,
         updatedAt: now,
         isActive: true,
-        isCompleted: false,
+        isComplete: false,
         teamId
       };
       await r.table('AgendaItem').insert(agendaItem);
@@ -43,6 +44,7 @@ export default {
       }
     },
     async resolve(source, {id}, {authToken}) {
+      const r = getRethink();
       // id is of format 'teamId::restOfAgendaItemId'
       const [teamId] = id.split('::');
       requireSUOrTeamMember(authToken, teamId);
@@ -65,6 +67,7 @@ export default {
       }
     },
     async resolve(source, {updatedAgendaItem}, {authToken}) {
+      const r = getRethink();
       const [teamId] = updatedAgendaItem.id.split('::');
       requireSUOrTeamMember(authToken, teamId);
       const now = new Date();

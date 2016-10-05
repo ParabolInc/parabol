@@ -1,6 +1,6 @@
 // import React, { Component, PropTypes } from 'react';
 // import withStyles from 'universal/styles/withStyles';
-// import {css} from 'aphrodite';
+// import {css} from 'aphrodite/no-important';
 // import * as appTheme from 'universal/styles/theme';
 //
 // const { cool, warm, dark, mid, light } = appTheme.palette;

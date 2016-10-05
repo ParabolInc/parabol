@@ -1,4 +1,4 @@
-import r from 'server/database/rethinkDriver';
+import getRethink from 'server/database/rethinkDriver';
 import {CreateActionInput, UpdateActionInput} from './actionSchema';
 import {
   GraphQLNonNull,
@@ -24,6 +24,7 @@ export default {
       }
     },
     async resolve(source, {updatedAction, rebalance}, {authToken}) {
+      const r = getRethink();
       const {id, ...action} = updatedAction;
       const [teamId] = id.split('::');
       requireSUOrTeamMember(authToken, teamId);
@@ -55,6 +56,7 @@ export default {
       }
     },
     async resolve(source, {newAction}, {authToken}) {
+      const r = getRethink();
       const {id} = newAction;
       // format of id is teamId::taskIdPart
       const [teamId] = id.split('::');
@@ -81,6 +83,7 @@ export default {
       }
     },
     async resolve(source, {actionId}, {authToken}) {
+      const r = getRethink();
       // format of id is teamId::taskIdPart
       const [teamId] = actionId.split('::');
       requireSUOrTeamMember(authToken, teamId);
@@ -97,6 +100,7 @@ export default {
       }
     },
     async resolve(source, {actionId}, {authToken}) {
+      const r = getRethink();
       // format of id is teamId::taskIdPart
       const [teamId] = actionId.split('::');
       requireSUOrTeamMember(authToken, teamId);

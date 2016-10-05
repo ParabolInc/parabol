@@ -18,6 +18,7 @@ export default [
     subscription($teamId: ID!) {
       archivedProjects(teamId: $teamId) {
         id
+        isArchived
         content
         status
         teamMemberId
@@ -101,6 +102,7 @@ export default [
     subscription($teamMemberId: ID!) {
       projects(teamMemberId: $teamMemberId) {
         id
+        isArchived
         content
         status
         teamMemberId

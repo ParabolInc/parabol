@@ -1,4 +1,4 @@
-import r from 'server/database/rethinkDriver';
+import getRethink from 'server/database/rethinkDriver';
 import {GraphQLNonNull, GraphQLString, GraphQLID} from 'graphql';
 import {Outcome} from './outcomeSchema';
 import {requireSU} from '../authorization';
@@ -18,6 +18,7 @@ export default {
       }
     },
     async resolve(source, {id, type}, {authToken}) {
+      const r = getRethink();
       requireSU(authToken);
       const outcome = await r.table(type).get(id);
       if (outcome) {

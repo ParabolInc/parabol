@@ -1,4 +1,4 @@
-import r from 'server/database/rethinkDriver';
+import getRethink from 'server/database/rethinkDriver';
 import {GraphQLList} from 'graphql';
 import {errorObj, getRequestedFields} from '../utils';
 import {Team} from './teamSchema';
@@ -9,6 +9,7 @@ export default {
   teams: {
     type: new GraphQLList(Team),
     async resolve(source, args, {authToken, socket, subbedChannelName}, refs) {
+      const r = getRethink();
       requireAuth(authToken);
       const {tms} = authToken;
       if (!tms || tms.length === 0) {

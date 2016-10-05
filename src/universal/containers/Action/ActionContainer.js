@@ -1,5 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import Action from 'universal/components/Action/Action';
+import {injectStyleOnce} from 'aphrodite/lib/inject';
+import injectGlobals from 'universal/styles/hepha';
+import globalStyles from 'universal/styles/theme/globalStyles';
 
 const updateAnalyticsPage = (lastPage, nextPage) => {
   if (typeof window !== 'undefined' &&
@@ -23,6 +26,7 @@ export default class ActionContainer extends Component {
   componentWillMount() {
     const {location: {pathname: nextPage}} = this.props;
     updateAnalyticsPage('', nextPage);
+    injectGlobals(injectStyleOnce, globalStyles);
   }
 
   componentWillReceiveProps(nextProps) {

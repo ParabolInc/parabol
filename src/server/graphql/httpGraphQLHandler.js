@@ -1,9 +1,7 @@
-// import Schema from './rootSchema';
+import Schema from './rootSchema';
 import {graphql} from 'graphql';
 
 export default async(req, res) => {
-  // eslint-disable-next-line global-require
-  const Schema = require('./rootSchema');
   const {query, variables} = req.body;
   const authToken = req.user || {};
   const context = {authToken};

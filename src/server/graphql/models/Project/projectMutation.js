@@ -1,4 +1,4 @@
-import r from 'server/database/rethinkDriver';
+import getRethink from 'server/database/rethinkDriver';
 import {CreateProjectInput, UpdateProjectInput} from './projectSchema';
 import {
   GraphQLNonNull,
@@ -24,6 +24,7 @@ export default {
       }
     },
     async resolve(source, {updatedProject, rebalance}, {authToken}) {
+      const r = getRethink();
       const {id, ...project} = updatedProject;
       // id is of format 'teamId::taskId'
       const [teamId] = id.split('::');
@@ -56,6 +57,7 @@ export default {
       }
     },
     async resolve(source, {newProject}, {authToken}) {
+      const r = getRethink();
       const {id} = newProject;
       // format of id is teamId::taskIdPart
       const [teamId] = id.split('::');
@@ -83,6 +85,7 @@ export default {
       }
     },
     async resolve(source, {projectId}, {authToken}) {
+      const r = getRethink();
       // format of id is teamId::taskIdPart
       const [teamId] = projectId.split('::');
       requireSUOrTeamMember(authToken, teamId);
@@ -99,6 +102,7 @@ export default {
       }
     },
     async resolve(source, {projectId}, {authToken}) {
+      const r = getRethink();
       // format of id is teamId::taskIdPart
       const [teamId] = projectId.split('::');
       requireSUOrTeamMember(authToken, teamId);

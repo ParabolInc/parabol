@@ -1,4 +1,4 @@
-import r from 'server/database/rethinkDriver';
+import getRethink from 'server/database/rethinkDriver';
 import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
 import {getRequestedFields} from '../utils';
 import {Action} from './actionSchema';
@@ -15,6 +15,7 @@ export default {
       }
     },
     async resolve(source, {userId}, {authToken, socket, subbedChannelName}, refs) {
+      const r = getRethink();
       requireSUOrSelf(authToken, userId);
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
@@ -35,6 +36,7 @@ export default {
       }
     },
     async resolve(source, {teamMemberId}, {authToken, socket, subbedChannelName}, refs) {
+      const r = getRethink();
       const [, teamId] = teamMemberId.split('::');
       requireSUOrTeamMember(authToken, teamId);
       const requestedFields = getRequestedFields(refs);
@@ -55,6 +57,7 @@ export default {
       }
     },
     async resolve(source, {agendaId}, {authToken, socket, subbedChannelName}, refs) {
+      const r = getRethink();
       const [teamId] = agendaId.split('::');
       requireSUOrTeamMember(authToken, teamId);
       const requestedFields = getRequestedFields(refs);

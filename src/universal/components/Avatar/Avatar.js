@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite';
+import {css} from 'aphrodite/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import upperFirst from 'universal/utils/upperFirst';
 import AvatarBadge from 'universal/components/AvatarBadge/AvatarBadge';

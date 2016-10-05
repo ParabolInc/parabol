@@ -1,4 +1,5 @@
 import ActionContainer from '../containers/Action/ActionContainer';
+import _cashaySchema from 'cashay!server/utils/getCashaySchema.js';
 
 /* eslint-disable global-require */
 export default store => ({
@@ -22,7 +23,10 @@ export default store => ({
     require('./notFound')
   ]
 });
-export {StyleSheetServer} from 'aphrodite';
+
+// the server needs these things for SSR.
+// In the future, we might combine routes + clients to do away with this
+export {StyleSheetServer} from 'aphrodite/no-important';
+export const cashaySchema = _cashaySchema;
 export {cashay} from 'cashay';
-export const cashaySchema = require('cashay!server/utils/getCashaySchema.js');
 /* eslint-enable */

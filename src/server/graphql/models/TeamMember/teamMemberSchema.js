@@ -11,7 +11,7 @@ import {Team} from '../Team/teamSchema';
 import {User} from '../User/userSchema';
 import {Project} from '../Project/projectSchema';
 import {nonnullifyInputThunk} from '../utils';
-import r from 'server/database/rethinkDriver';
+import getRethink from 'server/database/rethinkDriver';
 
 export const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',
@@ -53,6 +53,7 @@ export const TeamMember = new GraphQLObjectType({
       type: Team,
       description: 'The team this team member belongs to',
       async resolve({teamId}) {
+        const r = getRethink();
         return await r.table('Team').get(teamId);
       }
     },
@@ -60,6 +61,7 @@ export const TeamMember = new GraphQLObjectType({
       type: User,
       description: 'The user for the team member',
       async resolve(source) {
+        const r = getRethink();
         return await r.table('User').get(source.userId);
       }
     },
@@ -67,6 +69,7 @@ export const TeamMember = new GraphQLObjectType({
       type: Project,
       description: 'Projects owned by the team member',
       async resolve(source) {
+        const r = getRethink();
         return await r.table('Project').getAll(source.id, {index: 'teamMemberId'});
       }
     }
