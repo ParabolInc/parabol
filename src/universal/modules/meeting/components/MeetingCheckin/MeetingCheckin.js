@@ -92,7 +92,7 @@ const MeetingCheckin = (props) => {
             colorPalette="cool"
             icon="arrow-circle-right"
             iconPlacement="right"
-            label={isLastMember ? 'Move on to updates' : 'Next teammate (press enter)'}
+            label={isLastMember ? 'Move on to Updates' : 'Next teammate (press enter)'}
             scale="large"
             onClick={gotoNextItem}
           />

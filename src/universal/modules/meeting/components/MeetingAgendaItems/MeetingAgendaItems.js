@@ -109,7 +109,7 @@ const styleThunk = () => ({
   layout: {
     margin: '0 auto',
     maxWidth: '80rem',
-    padding: '0 2rem',
+    padding: '0 1rem',
     width: '100%'
   },
 
@@ -124,9 +124,9 @@ const styleThunk = () => ({
   },
 
   linkSpacer: {
-    paddingTop: '2px',
+    padding: '2px 1rem 0',
     textAlign: 'right',
-    width: '9.25rem'
+    width: '12rem'
   },
 
   requestLabel: {

@@ -71,7 +71,7 @@ const MeetingUpdates = (props) => {
                 colorPalette="cool"
                 icon="arrow-circle-right"
                 iconPlacement="right"
-                label={isLastMember ? 'Move on to agenda items' : 'Next team member '}
+                label={isLastMember ? 'Move on to the Agenda' : 'Next team member '}
                 onClick={gotoNextItem}
                 scale="small"
               />
@@ -109,7 +109,7 @@ const styleThunk = () => ({
   layout: {
     margin: '0 auto',
     maxWidth: '80rem',
-    padding: '0 2rem',
+    padding: '0 1rem',
     width: '100%'
   },
 
@@ -132,7 +132,7 @@ const styleThunk = () => ({
 
   linkSpacer: {
     textAlign: 'right',
-    width: '9.25rem'
+    width: '12rem'
   }
 });
 
