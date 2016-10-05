@@ -5,7 +5,8 @@ import appTheme from 'universal/styles/theme/appTheme';
 import upperFirst from 'universal/utils/upperFirst';
 import AvatarBadge from 'universal/components/AvatarBadge/AvatarBadge';
 import makeUsername from 'universal/utils/makeUsername';
-// TODO: Add React Material UI tooltip (TA)
+
+// TODO: Add tooltip module (TA)
 
 const Avatar = (props) => {
   const {
@@ -13,7 +14,6 @@ const Avatar = (props) => {
     hasBorder,
     hasLabel,
     labelRight,
-    hasTooltip,
     isCheckedIn,
     isClickable,
     isConnected,
@@ -25,18 +25,6 @@ const Avatar = (props) => {
   } = props;
 
   const username = makeUsername(preferredName);
-  const handleMouseLeave = () => {
-    console.log('Avatar.onMouseLeave.handleMouseLeave()');
-    // TODO: Dispatch UI state for hover to show optional tooltip.
-  };
-
-  const handleMouseEnter = () => {
-    console.log('Avatar.onMouseEnter.handleMouseEnter()');
-    console.log(`Peep is ${props.isConnected}`);
-    // TODO: Dispatch UI state for hover to show optional tooltip.
-  };
-
-
   const sizeName = upperFirst(size);
   const sizeStyles = `avatar${sizeName}`;
   const imageSizeStyles = `avatarImageBlock${sizeName}`;
@@ -60,8 +48,6 @@ const Avatar = (props) => {
     <div
       className={avatarStyles}
       onClick={onClick}
-      onMouseLeave={handleMouseLeave}
-      onMouseEnter={handleMouseEnter}
       style={rootInlineStyle}
     >
       <div className={imagePositionStyles}>
@@ -73,9 +59,6 @@ const Avatar = (props) => {
       {hasLabel &&
         <div className={avatarLabelStyles}>@{username}</div>
       }
-      {hasTooltip &&
-        <div className={css(styles.avatarTooltip)}>@{username}</div>
-      }
     </div>
   );
 };
@@ -84,7 +67,6 @@ Avatar.propTypes = {
   hasBadge: PropTypes.bool,
   hasBorder: PropTypes.bool,
   hasLabel: PropTypes.bool,
-  hasTooltip: PropTypes.bool,
   isCheckedIn: PropTypes.bool,
   isClickable: PropTypes.bool,
   isConnected: PropTypes.bool,
@@ -116,9 +98,7 @@ const styleThunk = () => ({
     verticalAlign: 'middle'
   },
 
-  // TODO: Add ':hover' s for onClick handler
-
-  // NOTE: Size modifies for avatar
+  // NOTE: Size modifies avatar
   avatarSmallest: {
     fontSize: appTheme.typography.s1
   },
@@ -159,7 +139,7 @@ const styleThunk = () => ({
     width: '2.75rem'
   },
 
-  // NOTE: Size modifies for avatarImageBlock
+  // NOTE: Size modifies avatarImageBlock
   avatarImageBlockSmallest: {
     width: '1.5rem'
   },
@@ -207,10 +187,6 @@ const styleThunk = () => ({
     display: 'inline-block',
     marginLeft: '1em',
     verticalAlign: 'middle'
-  },
-
-  avatarTooltip: {
-    // TODO: Style this sub-component
   }
 });
 
