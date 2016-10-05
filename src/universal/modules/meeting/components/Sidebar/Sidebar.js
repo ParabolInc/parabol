@@ -207,7 +207,7 @@ const styleThunk = () => ({
   },
 
   sidebar: {
-    backgroundColor: appTheme.palette.dark10l,
+    backgroundColor: appTheme.palette.mid10l,
     display: 'flex',
     flexDirection: 'column',
     padding: '2rem 0 0',

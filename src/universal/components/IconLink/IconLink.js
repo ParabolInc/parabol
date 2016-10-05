@@ -12,8 +12,7 @@ const IconLink = (props) => {
     icon,
     iconPlacement,
     label,
-    marginBottom,
-    marginTop,
+    margin,
     onClick,
     styles
   } = props;
@@ -24,10 +23,7 @@ const IconLink = (props) => {
     onClick(disabled);
   };
 
-  const inlineStyle = {
-    marginBottom,
-    marginTop
-  };
+  const inlineStyle = {margin};
 
   const rootStyles = css(
     styles.root,
@@ -62,8 +58,7 @@ IconLink.propTypes = {
     'right'
   ]),
   label: PropTypes.string,
-  marginBottom: PropTypes.string,
-  marginTop: PropTypes.string,
+  margin: PropTypes.string,
   onClick: PropTypes.func,
   scale: PropTypes.oneOf([
     'small',
@@ -83,8 +78,7 @@ IconLink.defaultProps = {
   icon: 'check',
   iconPlacement: 'left',
   label: 'prop.label',
-  marginBottom: '0px',
-  marginTop: '2rem',
+  margin: '0px',
   onClick(disabled) {
     console.log(`IconLink onClick, disabled? ${disabled}`);
   }
