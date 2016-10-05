@@ -20,7 +20,7 @@ export default {
       const [, teamId] = teamMemberId.split('::');
       requireSUOrTeamMember(authToken, teamId);
       const requestedFields = getRequestedFields(refs);
-      const removalFields = ['id', 'teamMemberId'];
+      const removalFields = ['id', 'isArchived', 'teamMemberId'];
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName, {removalFields});
       r.table('Project')
         .getAll(teamMemberId, {index: 'teamMemberId'})
@@ -42,7 +42,8 @@ export default {
       const r = getRethink();
       requireSUOrTeamMember(authToken, teamId);
       const requestedFields = getRequestedFields(refs);
-      const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
+      const removalFields = ['id', 'isArchived'];
+      const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName, {removalFields});
       r.table('Project')
         // use a compound index so we can easily paginate later
         .between([teamId, r.minval], [teamId, r.maxval], {index: 'teamIdCreatedAt'})
