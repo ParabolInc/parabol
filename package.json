@@ -17,7 +17,7 @@
     "start": "NODE_ENV=production node ./src/server/server.babel.js",
     "dev": "NODE_ENV=development node ./src/server/server.babel.js",
     "build": "rimraf build && concurrently \"npm run build:client\" \"npm run build:server\"",
-    "bs": "rimraf build && npm run build && npm start",
+    "bs": "npm run build && npm start",
     "quickstart": "npm run db:migrate && npm run build && npm run start",
     "build:client": "NODE_ENV=production webpack --config ./webpack/prod.babel.js",
     "build:client-min": "NODE_ENV=production DEPLOY=true webpack --config ./webpack/prod.babel.js",
