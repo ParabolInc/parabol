@@ -58,14 +58,10 @@ export default {
       if (currentUser) {
         if (currentUser.picture !== picture) {
           // if the picture we have is not the same as the one that auth0 has, then invalidate what we have
-          await r().table('TeamMember')
-            .getAll(userId, {index: 'userId'})
-            .update({picture});
+          await r().table('TeamMember').getAll(userId, {index: 'userId'}).update({picture});
         }
         returnedUser = Object.assign({}, currentUser, auth0User);
-        await r().table('User')
-          .get(userId)
-          .update(auth0User);
+        await r().table('User').get(userId).update(auth0User);
       } else {
         // new user activate!
         const emailWelcomed = await sendEmail(auth0User.email, 'welcomeEmail', auth0User);
@@ -94,11 +90,7 @@ export default {
       const dbProfile = await r().table('TeamMember')
         .getAll(id, {index: 'userId'})
         .update({preferredName: updatedUser.preferredName})
-        .do(() =>
-          r().table('User')
-            .get(id)
-            .update(updatedObj, {returnChanges: true})
-        );
+        .do(() => r().table('User').get(id).update(updatedObj, {returnChanges: true}));
       return updatedOrOriginal(dbProfile, updatedUser);
     }
   }

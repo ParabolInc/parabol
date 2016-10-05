@@ -47,9 +47,7 @@ export default {
       const [teamId] = id.split('::');
       requireSUOrTeamMember(authToken, teamId);
       try {
-        await r().table('AgendaItem')
-          .get(id)
-          .delete();
+        await r().table('AgendaItem').get(id).delete();
       } catch (e) {
         console.warning(`removeAgendaItem: exception removing item (${e})`);
         return false;

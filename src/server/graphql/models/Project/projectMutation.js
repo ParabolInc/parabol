@@ -39,9 +39,7 @@ export default {
         newProject.userId = userId;
       }
       // we could possibly combine this into the rebalance if we did a resort on the server, but separate logic is nice
-      await r().table('Project')
-        .get(id)
-        .update(newProject);
+      await r().table('Project').get(id).update(newProject);
       if (rebalance) {
         await rebalanceProject(rebalance, teamId);
       }
@@ -88,9 +86,7 @@ export default {
       // format of id is teamId::taskIdPart
       const [teamId] = projectId.split('::');
       requireSUOrTeamMember(authToken, teamId);
-      await r().table('Project')
-        .get(projectId)
-        .delete();
+      await r().table('Project').get(projectId).delete();
     }
   },
   makeAction: {
@@ -122,9 +118,7 @@ export default {
       };
       await r().table('Action').insert(newAction)
         .do(() => {
-          return r().table('Project')
-            .get(projectId)
-            .delete();
+          return r().table('Project').get(projectId).delete();
         });
     }
   }
