@@ -3,13 +3,9 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite/no-important';
 import layoutStyle from 'universal/styles/layout';
 import Notifications from 'universal/modules/notifications/containers/Notifications/Notifications';
-import {injectStyleOnce} from 'aphrodite/lib/inject';
-import {injectGlobals} from 'hepha';
-import globalStyles from 'universal/styles/theme/globalStyles';
 
 const Action = (props) => {
   const {children, styles} = props;
-  injectGlobals(injectStyleOnce, globalStyles);
   return (
     <div className={css(styles.app)}>
       <Notifications />

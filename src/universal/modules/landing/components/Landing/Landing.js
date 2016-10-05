@@ -1,9 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite/no-important';
-import {injectStyleOnce} from 'aphrodite/lib/inject';
-import {injectGlobals} from 'hepha';
-import auth0Overrides from 'universal/styles/theme/auth0Overrides';
 import appTheme from 'universal/styles/theme/appTheme';
 
 // SVG images
@@ -16,7 +13,6 @@ import github from './images/github.svg';
 
 const Landing = (props) => {
   const {handleLoginClick, styles} = props;
-  injectGlobals(injectStyleOnce, auth0Overrides);
   return (
     <div className={css(styles.layout)}>
       {/* Header */}
