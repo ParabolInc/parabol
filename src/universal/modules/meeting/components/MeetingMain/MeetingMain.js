@@ -23,7 +23,7 @@ const styleThunk = () => ({
     display: 'flex !important',
     flex: 1,
     flexDirection: 'column',
-    minWidth: '65rem',
+    minWidth: '60rem',
     width: '100%'
   }
 });

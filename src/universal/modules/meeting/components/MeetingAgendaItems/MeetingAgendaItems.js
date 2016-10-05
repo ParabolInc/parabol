@@ -111,11 +111,11 @@ const styleThunk = () => ({
   layout: {
     margin: '0 auto',
     maxWidth: '80rem',
-    padding: '0 1rem 4rem',
+    padding: '0 .5rem 4rem',
     width: '100%',
 
     [ui.breakpoint.wide]: {
-      paddingBottom: '6rem'
+      paddingBottom: '0 1rem 6rem'
     },
 
     [ui.breakpoint.wider]: {
