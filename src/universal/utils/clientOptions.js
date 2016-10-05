@@ -2,7 +2,7 @@ import {APP_NAME} from './constants';
 
 export const auth0 = {
   clientId: process.env.AUTH0_CLIENT_ID || 'w3mBrhiXGsE3DsrSMgpAz2bS6VzLhOyJ',
-  account: process.env.AUTH0_DOMAIN || 'parabol.auth0.com'
+  domain: process.env.AUTH0_DOMAIN || 'parabol.auth0.com'
 };
 
 export const head = {

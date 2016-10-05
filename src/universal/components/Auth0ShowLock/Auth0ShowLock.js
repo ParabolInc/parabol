@@ -1,30 +1,45 @@
 import React, {PropTypes} from 'react';
 import {cashay} from 'cashay';
-import {auth0} from 'universal/utils/clientOptions';
 import {setAuthToken} from 'universal/redux/authDuck';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import {segmentEvent} from 'universal/redux/segmentActions';
+import {auth0 as defaultClientOptions} from 'universal/utils/clientOptions';
 
+
+async function updateToken(dispatch, profile, authToken) {
+  cashay.create({httpTransport: new ActionHTTPTransport(authToken)});
+  const options = {variables: {authToken}};
+  await cashay.mutate('updateUserWithAuthToken', options);
+  // the Invitation script starts processing the token when auth.sub is truthy
+  // That doesn't necessarily mean that the DB has created the new user's account though. Auth0 could take awhile.
+  // So, to avoid the race condition, wait for the account be get created, then set the token to accept the token
+  dispatch(setAuthToken(authToken, profile));
+  dispatch(segmentEvent('User Login'));
+}
+
+/*
+ * NOTE: showLock is, and may only ever be called from the client:
+ *
+ * We require auth0-lock from within this function because it cannot be
+ * rendered within the SSR.
+ */
 export function showLock(dispatch) {
   // eslint-disable-next-line global-require
   const Auth0Lock = require('auth0-lock');
-  const {clientId, account} = auth0;
-  const lock = new Auth0Lock(clientId, account);
+  let clientOptions = defaultClientOptions;
+  if (__PRODUCTION__) {
+  // See server/Html.js for how this is initialized:
+    clientOptions = window.__AUTH0__; // eslint-disable-line no-underscore-dangle
+  }
+  const {clientId, domain} = clientOptions;
+  const lock = new Auth0Lock(clientId, domain);
   lock.show({
     authParams: {
       scope: 'openid rol tms'
     }
-  }, async(error, profile, authToken) => {
+  }, (error, profile, authToken) => {
     if (error) throw error;
-    // TODO: stuff this in a utility function
-    cashay.create({httpTransport: new ActionHTTPTransport(authToken)});
-    const options = {variables: {authToken}};
-    await cashay.mutate('updateUserWithAuthToken', options);
-    // the Invitation script starts processing the token when auth.sub is truthy
-    // That doesn't necessarily mean that the DB has created the new user's account though. Auth0 could take awhile.
-    // So, to avoid the race condition, wait for the account be get created, then set the token to accept the token
-    dispatch(setAuthToken(authToken, profile));
-    dispatch(segmentEvent('User Login'));
+    updateToken(dispatch, profile, authToken);
   });
 }
 
