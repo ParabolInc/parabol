@@ -16,7 +16,7 @@ export default {
     },
     async resolve(source, {userId}, {authToken}) {
       requireSU(authToken);
-      const user = await r().table('User').get(userId);
+      const user = await r.table('User').get(userId);
       if (user) {
         return user;
       }
@@ -28,7 +28,7 @@ export default {
     description: 'Given an auth token, return the user and auth token',
     async resolve(source, args, {authToken}) {
       const userId = requireAuth(authToken);
-      const user = await r().table('User').get(userId);
+      const user = await r.table('User').get(userId);
       if (!user) {
         throw errorObj({_error: 'User ID not found'});
       }

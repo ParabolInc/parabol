@@ -84,14 +84,14 @@ export const Team = new GraphQLObjectType({
       type: new GraphQLList(TeamMember),
       description: 'All the team members associated who can join this team',
       async resolve({id}) {
-        return await r().table('TeamMember').getAll(id, {index: 'teamId'});
+        return await r.table('TeamMember').getAll(id, {index: 'teamId'});
       }
     },
     agendaItems: {
       type: new GraphQLList(AgendaItem),
       description: 'The agenda items for the upcoming or current meeting',
       async resolve({id}) {
-        return await r().table('AgendaItem').getAll(id, {index: 'teamId'});
+        return await r.table('AgendaItem').getAll(id, {index: 'teamId'});
       }
     }
   })

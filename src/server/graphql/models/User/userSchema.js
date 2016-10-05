@@ -123,7 +123,7 @@ export const User = new GraphQLObjectType({
       type: new GraphQLList(TeamMember),
       description: 'The memberships to different teams that the user has',
       async resolve({id}) {
-        return await r().table('TeamMember').getAll(id, {index: 'userId'});
+        return await r.table('TeamMember').getAll(id, {index: 'userId'});
       }
     },
     jwt: {

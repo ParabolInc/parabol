@@ -29,7 +29,7 @@ export default {
         isCompleted: false,
         teamId
       };
-      await r().table('AgendaItem').insert(agendaItem);
+      await r.table('AgendaItem').insert(agendaItem);
       return true;
     }
   },
@@ -47,7 +47,7 @@ export default {
       const [teamId] = id.split('::');
       requireSUOrTeamMember(authToken, teamId);
       try {
-        await r().table('AgendaItem').get(id).delete();
+        await r.table('AgendaItem').get(id).delete();
       } catch (e) {
         console.warning(`removeAgendaItem: exception removing item (${e})`);
         return false;
@@ -72,7 +72,7 @@ export default {
         ...updatedAgendaItem,
         updatedAt: now,
       };
-      await r().table('AgendaItem').update(agendaItem);
+      await r.table('AgendaItem').update(agendaItem);
       return true;
     }
   },

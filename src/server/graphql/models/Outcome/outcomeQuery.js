@@ -19,7 +19,7 @@ export default {
     },
     async resolve(source, {id, type}, {authToken}) {
       requireSU(authToken);
-      const outcome = await r().table(type).get(id);
+      const outcome = await r.table(type).get(id);
       if (outcome) {
         return outcome;
       }

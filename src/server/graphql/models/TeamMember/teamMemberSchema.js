@@ -53,21 +53,21 @@ export const TeamMember = new GraphQLObjectType({
       type: Team,
       description: 'The team this team member belongs to',
       async resolve({teamId}) {
-        return await r().table('Team').get(teamId);
+        return await r.table('Team').get(teamId);
       }
     },
     user: {
       type: User,
       description: 'The user for the team member',
       async resolve(source) {
-        return await r().table('User').get(source.userId);
+        return await r.table('User').get(source.userId);
       }
     },
     projects: {
       type: Project,
       description: 'Projects owned by the team member',
       async resolve(source) {
-        return await r().table('Project').getAll(source.id, {index: 'teamMemberId'});
+        return await r.table('Project').getAll(source.id, {index: 'teamMemberId'});
       }
     }
   })
