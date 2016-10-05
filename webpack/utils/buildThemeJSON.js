@@ -20,11 +20,13 @@ lockfile.lock(outputLockFile, {wait: LOCK_WAIT_MS}, (err) => {
     console.error(`unable to acquire ${outputLockFile}: ${err}`);
     process.exit(1);
   }
+  console.log(`acquired ${outputLockFile}, creating ${OUTPUT_FILE}...`);
   fs.writeFileSync(OUTPUT_FILE, JSON.stringify(theme));
   lockfile.unlock(outputLockFile, (unlockErr) => {
     if (unlockErr) {
       console.error(`unable to unlock ${outputLockFile}: ${unlockErr}`);
       process.exit(1);
     }
+    console.log(`released ${outputLockFile}.`);
   });
 });
