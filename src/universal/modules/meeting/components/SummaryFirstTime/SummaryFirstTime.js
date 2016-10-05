@@ -39,11 +39,13 @@ const SummaryFirstTime = (props) => {
         <div className={css(styles.headingLabel)}>Congratulations!</div>
         {makeStarGroup()}
       </div>
-      <Type align="center" marginBottom="1rem" marginTop="1rem" scale="s4">
+      <Type align="center" marginBottom="1.25rem" marginTop="1.25rem" scale="s4">
+
         You totally rocked your first meeting!<br />
-        Now let’s make it a habit. If you haven’t already,<br />
-        schedule a 30 minute meeting, preferably<br />
-        recurring on Mondays or Tuesdays.
+        Now let’s make it a habit: schedule a<br />
+        recurring 30 minute meeting starting next<br />
+        week, preferably on Mondays or Tuesdays.
+
       </Type>
       <Type display="inlineBlock" marginBottom="1rem" marginTop="0px" scale="s3" colorPalette="dark" width="auto">
         <FontAwesome name="lightbulb-o" style={iconStyle} />
