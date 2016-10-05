@@ -2,6 +2,7 @@ import path from 'path';
 import webpack from 'webpack';
 import AssetsPlugin from 'assets-webpack-plugin';
 import HappyPack from 'happypack';
+import WebpackShellPlugin from 'webpack-shell-plugin';
 import {getDotenv} from '../src/universal/utils/dotenv';
 
 // Import .env and expand variables:
@@ -80,6 +81,11 @@ export default {
       loaders: ['babel'],
       threads: 2,
       verbose: false
+    }),
+    new WebpackShellPlugin({
+      onBuildStart: [
+        'node_modules/.bin/babel-node ./webpack/utils/buildThemeJSON.js'
+      ]
     })
   ],
   module: {
