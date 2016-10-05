@@ -4,7 +4,6 @@ import {FIRST_CALL} from 'universal/utils/constants';
 import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
 import IconLink from 'universal/components/IconLink/IconLink';
 import Type from 'universal/components/Type/Type';
-import ShortcutsToggle from 'universal/modules/team/components/ShortcutsToggle/ShortcutsToggle';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
@@ -38,7 +37,6 @@ const MeetingAgendaFirstCall = (props) => {
           />
         </MeetingSection>
       </MeetingSection>
-      <ShortcutsToggle />
     </MeetingMain>
   );
 };

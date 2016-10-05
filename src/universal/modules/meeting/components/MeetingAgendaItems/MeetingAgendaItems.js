@@ -4,6 +4,7 @@ import {css} from 'aphrodite/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import {withRouter} from 'react-router';
 import ui from 'universal/styles/ui';
+import {textOverflow} from 'universal/styles/helpers';
 
 import Avatar from 'universal/components/Avatar/Avatar';
 import IconLink from 'universal/components/IconLink/IconLink';
@@ -150,13 +151,18 @@ const styleThunk = () => ({
   linkSpacer: {
     display: 'flex',
     flexDirection: 'column',
-    padding: '0 1rem 0 2rem',
+    padding: '4px 1rem 0 2rem',
     justifyContent: 'center',
     textAlign: 'right',
-    width: '12rem'
+    width: '12rem',
+
+    [ui.breakpoint.wider]: {
+      paddingTop: '6px'
+    }
   },
 
   agendaItemLabel: {
+    ...textOverflow,
     color: appTheme.palette.dark,
     display: 'inline-block',
     fontFamily: appTheme.typography.serif,
@@ -164,6 +170,7 @@ const styleThunk = () => ({
     fontStyle: 'italic',
     fontWeight: 700,
     marginLeft: '1.5rem',
+    maxWidth: '40rem',
     verticalAlign: 'middle',
 
     [ui.breakpoint.wider]: {
