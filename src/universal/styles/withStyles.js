@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {StyleSheet} from 'aphrodite/no-important';
 
-const jones = new WeakMap();
+const contextMap = new WeakMap();
 
 const propsTriggeredInvalidation = (invalidatingProps, props, nextProps) => {
   for (let i = 0; i < invalidatingProps.length; i++) {
@@ -24,7 +24,7 @@ const withStyles = (mapThemeToStyles, invalidatingProps) => (WrappedComponent) =
     constructor(props, context) {
       super(props, context);
       this.styles = StyleSheet.create(mapThemeToStyles(this.context.userTheme, props));
-      jones.set(mapThemeToStyles, {context: this.context.theme, cache: this.styles});
+      contextMap.set(mapThemeToStyles, {context: this.context.theme, cache: this.styles});
     }
 
     componentWillReceiveProps(nextProps) {
@@ -37,7 +37,7 @@ const withStyles = (mapThemeToStyles, invalidatingProps) => (WrappedComponent) =
     }
 
     render() {
-      const entry = jones.get(mapThemeToStyles);
+      const entry = contextMap.get(mapThemeToStyles);
       const oldContext = entry && entry.context;
       if (oldContext !== this.context.theme) {
         console.log('a diff!');

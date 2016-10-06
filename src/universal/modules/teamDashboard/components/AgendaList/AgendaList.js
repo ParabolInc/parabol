@@ -4,6 +4,7 @@ import {css} from 'aphrodite/no-important';
 import {overflowTouch} from 'universal/styles/helpers';
 import {cashay} from 'cashay';
 import AgendaItem from 'universal/modules/teamDashboard/components/AgendaItem/AgendaItem';
+import {AGENDA_ITEMS} from 'universal/utils/constants';
 
 const removeItemFactory = (itemId) => () => {
   const options = {variables: {id: itemId}};
@@ -11,7 +12,7 @@ const removeItemFactory = (itemId) => () => {
 };
 
 const AgendaList = (props) => {
-  const {agenda, agendaPhaseItem, phaseItemFactory, styles} = props;
+  const {agenda, agendaPhaseItem, gotoItem, styles} = props;
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.inner)}>
@@ -21,7 +22,7 @@ const AgendaList = (props) => {
             idx={idx}
             key={`agendaItem${idx}`}
             handleRemove={removeItemFactory(item.id)}
-            gotoAgendaItem={phaseItemFactory(idx + 1)}
+            gotoAgendaItem={() => gotoItem(idx + 1, AGENDA_ITEMS)}
             teamMember={item.teamMember}
             isComplete={item.isComplete}
             agendaPhaseItem={agendaPhaseItem}
@@ -39,7 +40,7 @@ AgendaList.propTypes = {
     content: PropTypes.string
   })),
   agendaPhaseItem: PropTypes.number,
-  phaseItemFactory: PropTypes.func,
+  gotoItem: PropTypes.func.isRequired,
   styles: PropTypes.object
 };
 

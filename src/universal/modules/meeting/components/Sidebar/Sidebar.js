@@ -17,7 +17,7 @@ const Sidebar = (props) => {
   const {
     agendaPhaseItem,
     facilitatorPhase,
-    isFacilitating,
+    gotoItem,
     localPhase,
     styles,
     teamName,
@@ -74,7 +74,7 @@ const Sidebar = (props) => {
           <li className={requestsNavItemStyles}>
             <Link
               className={requestsLinkStyles}
-              to={`/meeting/${teamId}/agenda`}
+              to={`/meeting/${teamId}/agendaitems`}
               title={labels.meetingPhase.agenda.label}
             >
               <span className={css(styles.bullet)}>iii.</span>
@@ -83,14 +83,14 @@ const Sidebar = (props) => {
           </li>
           {localPhase === SUMMARY &&
             <li className={css(styles.navListItem, styles.navListItemLinkActive)}>
-              <a
+              <Link
                 className={css(styles.navListItemLink, styles.navListItemLinkActive)}
                 href={`/meeting/${teamId}/summary`}
                 title={labels.meetingPhase.summary.label}
               >
                 <span className={css(styles.bullet)}>{' '}</span>
                 <span className={css(styles.label)}>{labels.meetingPhase.summary.label}</span>
-              </a>
+              </Link>
             </li>
           }
         </ul>
@@ -98,7 +98,7 @@ const Sidebar = (props) => {
           <div className={css(styles.agendaListBlock)}>
             <AgendaListAndInputContainer
               agendaPhaseItem={agendaPhaseItem}
-              isFacilitating={isFacilitating}
+              gotoItem={gotoItem}
               teamId={teamId}
             />
           </div>
@@ -112,7 +112,7 @@ Sidebar.propTypes = {
   agenda: PropTypes.array,
   agendaPhaseItem: PropTypes.number,
   facilitatorPhase: PropTypes.oneOf(phaseArray),
-  isFacilitating: PropTypes.bool,
+  gotoItem: PropTypes.func.isRequired,
   localPhase: PropTypes.oneOf(phaseArray),
   styles: PropTypes.object,
   teamName: PropTypes.string,

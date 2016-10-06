@@ -14,10 +14,10 @@ import MeetingLobby from 'universal/modules/meeting/components/MeetingLobby/Meet
 import MeetingCheckin from 'universal/modules/meeting/components/MeetingCheckin/MeetingCheckin';
 import MeetingUpdatesContainer
   from '../MeetingUpdates/MeetingUpdatesContainer';
-import MeetingAgendaItemsContainer
-  from '../MeetingAgendaItems/MeetingAgendaItemsContainer';
 import AvatarGroup from 'universal/modules/meeting/components/AvatarGroup/AvatarGroup';
 import {
+  phaseArray,
+  phaseOrder,
   LOBBY,
   CHECKIN,
   UPDATES,
@@ -26,10 +26,12 @@ import {
   LAST_CALL,
 //  SUMMARY
 } from 'universal/utils/constants';
+import MeetingAgendaItems from 'universal/modules/meeting/components/MeetingAgendaItems/MeetingAgendaItems';
 import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
 import MeetingAgendaLastCallContainer from 'universal/modules/meeting/containers/MeetingAgendaLastCall/MeetingAgendaLastCallContainer';
 import {TEAMS} from 'universal/subscriptions/constants';
-
+import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
+import withHotkey from 'react-hotkey-hoc';
 
 const resolveMeetingMembers = (queryData, userId) => {
   if (queryData !== resolveMeetingMembers.queryData) {
@@ -75,6 +77,16 @@ query{
       userId
     }
   }
+  agenda(teamId: $teamId) @live {
+    id
+    content
+    isComplete
+    sortOrder
+    teamMemberId
+    actionsByAgenda @live {
+      id
+    }
+  }
 }`;
 
 const mapStateToProps = (state, props) => {
@@ -87,10 +99,11 @@ const mapStateToProps = (state, props) => {
     sort: {teamMembers: (a, b) => a.checkInOrder > b.checkInOrder},
     resolveCached: {presence: (source) => (doc) => source.id.startsWith(doc.userId)}
   });
-  const {team} = queryResult.data;
+  const {agenda, team} = queryResult.data;
   return {
+    agenda,
     members: resolveMeetingMembers(queryResult.data, userId),
-    team: queryResult.data.team,
+    team,
     localPhaseItem: localPhaseItem && Number(localPhaseItem),
     isFacilitating: `${userId}::${teamId}` === team.activeFacilitator
   };
@@ -99,6 +112,7 @@ const mapStateToProps = (state, props) => {
 @socketWithPresence
 @connect(mapStateToProps)
 @withRouter
+@withHotkey
 export default class MeetingContainer extends Component {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
@@ -115,36 +129,83 @@ export default class MeetingContainer extends Component {
 
   constructor(props) {
     super(props);
-    const {localPhaseItem, params, router, team} = props;
+    const {bindHotkey, localPhaseItem, params, router, team} = props;
     const {localPhase} = params;
     // subscribe to all teams, but don't do anything with that open subscription
     cashay.subscribe(TEAMS);
-    handleRedirects(team, localPhase, localPhaseItem, router);
+    handleRedirects(team, localPhase, localPhaseItem, {}, router);
+    bindHotkey(['enter', 'right'], this.gotoNext);
+    bindHotkey('left', this.gotoPrev);
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {localPhaseItem, router, params, team} = nextProps;
-    const {localPhase, teamId} = params;
+  shouldComponentUpdate(nextProps) {
+    const {localPhaseItem, router, params: {localPhase}, team} = nextProps;
     const {team: oldTeam} = this.props;
 
     // only needs to run when the url changes or the team subscription initializes
     // make sure the url is legit, but only run once (when the initial team subscription comes back)
-    handleRedirects(team, localPhase, localPhaseItem, router);
-
-    // is the facilitator making moves?
-    if (team.facilitatorPhaseItem !== oldTeam.facilitatorPhaseItem ||
-      team.facilitatorPhase !== oldTeam.facilitatorPhase) {
-      // were we n'sync?
-      const inSync = localPhase === oldTeam.facilitatorPhase && localPhaseItem === oldTeam.facilitatorPhaseItem;
-      if (inSync) {
-        const pushURL = makePushURL(teamId, team.facilitatorPhase, team.facilitatorPhaseItem);
-        router.replace(pushURL);
-      }
-    }
+    return handleRedirects(team, localPhase, localPhaseItem, oldTeam, router);
   }
 
+  gotoItem = (maybeNextPhaseItem, maybeNextPhase) => {
+    const {
+      agenda,
+      isFacilitating,
+      members,
+      params: {localPhase, teamId},
+      router,
+      team: {meetingPhase}
+    } = this.props;
+
+    let nextPhase;
+    let nextPhaseItem;
+    if (maybeNextPhase) {
+      nextPhase = maybeNextPhase;
+      nextPhaseItem = maybeNextPhaseItem;
+    } else {
+      const localPhaseOrder = phaseOrder(localPhase);
+      if (hasPhaseItem(localPhase)) {
+        const totalPhaseItems = localPhase === AGENDA_ITEMS ? agenda.length : members.length;
+        nextPhase = maybeNextPhaseItem > totalPhaseItems ? phaseArray[localPhaseOrder + 1] : localPhase;
+      } else {
+        nextPhase = (localPhase === FIRST_CALL && !agenda.length) ? LAST_CALL : phaseArray[localPhaseOrder + 1];
+      }
+
+      // Never return to the FIRST_CALL after it's been visited
+      if (nextPhase === FIRST_CALL && phaseOrder(meetingPhase) > phaseOrder(FIRST_CALL)) {
+        nextPhase = agenda.length ? AGENDA_ITEMS : LAST_CALL;
+      }
+      if (nextPhase === localPhase) {
+        nextPhaseItem = Math.max(1, maybeNextPhaseItem);
+      } else {
+        nextPhaseItem = hasPhaseItem(nextPhase) ? 1 : '';
+      }
+    }
+    // nextPhase is undefined if we're at the summary
+    if (nextPhase) {
+      if (isFacilitating) {
+        const variables = {teamId};
+        if (nextPhase !== localPhase) {
+          variables.nextPhase = nextPhase;
+        }
+        if (nextPhaseItem !== '') {
+          variables.nextPhaseItem = nextPhaseItem;
+        }
+        cashay.mutate('moveMeeting', {variables});
+      }
+      if (phaseOrder(nextPhase) <= phaseOrder(meetingPhase)) {
+        const pushURL = makePushURL(teamId, nextPhase, nextPhaseItem);
+        router.push(pushURL);
+      }
+
+    }
+  };
+
+  gotoNext = () => this.gotoItem(this.props.localPhaseItem + 1);
+  gotoPrev = () => this.gotoItem(this.props.localPhaseItem - 1);
+
   render() {
-    const {isFacilitating, localPhaseItem, members, params, team} = this.props;
+    const {agenda, localPhaseItem, members, params, team} = this.props;
     const {teamId, localPhase} = params;
     const {facilitatorPhase, meetingPhase, meetingPhaseItem, name: teamName} = team;
     const agendaPhaseItem = meetingPhase === AGENDA_ITEMS && meetingPhaseItem || 0;
@@ -153,7 +214,6 @@ export default class MeetingContainer extends Component {
       return <LoadingView />;
     }
     const phaseStateProps = { // DRY
-      isFacilitating,
       localPhaseItem,
       members,
       team
@@ -161,22 +221,28 @@ export default class MeetingContainer extends Component {
     return (
       <MeetingLayout>
         <Sidebar
+          agendaPhaseItem={agendaPhaseItem}
           facilitatorPhase={facilitatorPhase}
+          gotoItem={this.gotoItem}
           localPhase={localPhase}
           teamName={teamName}
           teamId={teamId}
-          agendaPhaseItem={agendaPhaseItem}
-          isFacilitating={isFacilitating}
         />
         <MeetingMain>
           <MeetingSection paddingTop="2rem">
             <AvatarGroup avatars={members} localPhase={localPhase}/>
           </MeetingSection>
-          {localPhase === LOBBY && <MeetingLobby {...phaseStateProps} />}
-          {localPhase === CHECKIN && <MeetingCheckin {...phaseStateProps} />}
-          {localPhase === UPDATES && <MeetingUpdatesContainer {...phaseStateProps} />}
-          {localPhase === FIRST_CALL && <MeetingAgendaFirstCall {...phaseStateProps} />}
-          {localPhase === AGENDA_ITEMS && <MeetingAgendaItemsContainer {...phaseStateProps} />}
+          {localPhase === LOBBY && <MeetingLobby members={members} team={team}/>}
+          {localPhase === CHECKIN &&
+            <MeetingCheckin gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
+          }
+          {localPhase === UPDATES &&
+            <MeetingUpdatesContainer gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
+          }
+          {localPhase === FIRST_CALL && <MeetingAgendaFirstCall gotoNext={this.gotoNext}/>}
+          {localPhase === AGENDA_ITEMS &&
+          < MeetingAgendaItems agendaItem={agenda[localPhaseItem - 1]} gotoNext={this.gotoNext} members={members}/>
+          }
           {localPhase === LAST_CALL && <MeetingAgendaLastCallContainer {...phaseStateProps} />}
         </MeetingMain>
       </MeetingLayout>

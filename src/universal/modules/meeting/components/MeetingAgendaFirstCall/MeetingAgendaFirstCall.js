@@ -1,7 +1,4 @@
 import React, {PropTypes} from 'react';
-import {withRouter} from 'react-router';
-import {FIRST_CALL} from 'universal/utils/constants';
-import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
 import IconLink from 'universal/components/IconLink/IconLink';
 import Type from 'universal/components/Type/Type';
 import ShortcutsToggle from 'universal/modules/team/components/ShortcutsToggle/ShortcutsToggle';
@@ -10,15 +7,7 @@ import MeetingSection from 'universal/modules/meeting/components/MeetingSection/
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
 
 const MeetingAgendaFirstCall = (props) => {
-  const {
-    isFacilitating,
-    router,
-    team
-  } = props;
-  const {id: teamId} = team;
-  const phaseItemFactory = makePhaseItemFactory(isFacilitating, 0, router, teamId, FIRST_CALL);
-  const gotoNextItem = phaseItemFactory(1);
-
+  const {gotoNext} = props;
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="2rem">
@@ -33,7 +22,7 @@ const MeetingAgendaFirstCall = (props) => {
             label="…great! Let’s take care of our Agenda Items"
             scale="large"
             colorPalette="cool"
-            onClick={gotoNextItem}
+            onClick={gotoNext}
           />
         </MeetingSection>
       </MeetingSection>
@@ -43,9 +32,7 @@ const MeetingAgendaFirstCall = (props) => {
 };
 
 MeetingAgendaFirstCall.propTypes = {
-  localPhaseItem: PropTypes.number,
-  isFacilitating: PropTypes.bool,
-  router: PropTypes.object.isRequired,
-  team: PropTypes.object
+  gotoNext: PropTypes.func
 };
-export default withRouter(MeetingAgendaFirstCall);
+
+export default MeetingAgendaFirstCall;

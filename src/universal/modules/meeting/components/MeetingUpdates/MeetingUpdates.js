@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite/no-important';
-import withHotkey from 'react-hotkey-hoc';
 import Avatar from 'universal/components/Avatar/Avatar';
 import IconLink from 'universal/components/IconLink/IconLink';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
@@ -9,38 +8,30 @@ import MeetingSection from 'universal/modules/meeting/components/MeetingSection/
 import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingSectionHeading/MeetingSectionHeading';
 // eslint-disable-next-line max-len
 import MeetingSectionSubheading from 'universal/modules/meeting/components/MeetingSectionSubheading/MeetingSectionSubheading';
-import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
 import {UPDATES, phaseOrder, MEETING} from 'universal/utils/constants';
 import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
-import {withRouter} from 'react-router';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
 
 const MeetingUpdates = (props) => {
   const {
-    bindHotkey,
+    gotoItem,
+    gotoNext,
     localPhaseItem,
-    isFacilitating,
     members,
     projects,
-    router,
     styles,
     team
   } = props;
-  const {id: teamId, meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = team;
+  const {meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = team;
   const currentTeamMember = members[localPhaseItem - 1];
-  const phaseItemFactory = makePhaseItemFactory(isFacilitating, members.length, router, teamId, UPDATES);
   const self = members.find(m => m.isSelf);
   const isComplete = phaseOrder(meetingPhase) > phaseOrder(UPDATES);
-  const gotoNextItem = phaseItemFactory(localPhaseItem + 1);
-  const gotoPrevItem = phaseItemFactory(localPhaseItem - 1);
-  bindHotkey(['enter', 'right'], gotoNextItem);
-  bindHotkey('left', gotoPrevItem);
   const isLastMember = localPhaseItem === members.length;
   return (
     <MeetingMain>
       <MeetingSection paddingBottom="2rem" paddingTop=".75rem">
         <ProgressBar
-          clickFactory={phaseItemFactory}
+          gotoItem={gotoItem}
           isComplete={isComplete}
           facilitatorPhaseItem={facilitatorPhaseItem}
           meetingPhaseItem={meetingPhaseItem}
@@ -72,7 +63,7 @@ const MeetingUpdates = (props) => {
                 icon="arrow-circle-right"
                 iconPlacement="right"
                 label={isLastMember ? 'Move on to the Agenda' : 'Next team member '}
-                onClick={gotoNextItem}
+                onClick={gotoNext}
                 scale="small"
               />
             </div>
@@ -90,7 +81,8 @@ const MeetingUpdates = (props) => {
 };
 
 MeetingUpdates.propTypes = {
-  bindHotkey: PropTypes.func.isRequired,
+  gotoItem: PropTypes.func.isRequired,
+  gotoNext: PropTypes.func.isRequired,
   isFacilitating: PropTypes.bool,
   localPhaseItem: PropTypes.number.isRequired,
   members: PropTypes.array,
@@ -102,7 +94,6 @@ MeetingUpdates.propTypes = {
   projects: PropTypes.object.isRequired,
   styles: PropTypes.object,
   team: PropTypes.object.isRequired,
-  router: PropTypes.object.isRequired,
 };
 
 const styleThunk = () => ({
@@ -136,8 +127,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withHotkey(
-  withRouter(
-    withStyles(styleThunk)(MeetingUpdates)
-  )
-);
+export default withStyles(styleThunk)(MeetingUpdates);
