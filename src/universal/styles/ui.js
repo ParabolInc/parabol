@@ -12,6 +12,13 @@ const ui = {
   actionCardBgColor: appTheme.palette.light60l,
   actionCardBgActive: 'rgba(255, 255, 255, .85)',
 
+  // Breakpoints
+  breakpoint: {
+    wide: '@media (min-width: 90rem)',
+    wider: '@media (min-width: 100rem)',
+    widest: '@media (min-width: 120rem)'
+  },
+
   // Cards
   cardBorderColor: appTheme.palette.mid30l,
   cardBorderRadius: '.25rem',

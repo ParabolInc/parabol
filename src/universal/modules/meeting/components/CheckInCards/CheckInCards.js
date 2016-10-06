@@ -1,7 +1,9 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite/no-important';
+import ui from 'universal/styles/ui';
 import CheckInCard from 'universal/modules/meeting/components/CheckInCard/CheckInCard';
+import checkInCardBaseStyles from '../CheckInCard/checkInCardBaseStyles';
 import {CHECKIN} from 'universal/utils/constants';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import {cashay} from 'cashay';
@@ -71,16 +73,24 @@ const styleThunk = () => ({
   base: {
     display: 'flex',
     justifyContent: 'center',
-    width: '100%'
+    padding: '1rem 0',
+    width: '100%',
+
+    [ui.breakpoint.wide]: {
+      padding: '2rem 0'
+    },
+
+    [ui.breakpoint.wider]: {
+      padding: '3rem 0'
+    },
+
+    [ui.breakpoint.widest]: {
+      padding: '4rem 0'
+    }
   },
 
   placeholder: {
-    // NOTE: This box model matches CheckInCard for exact sizing (TA)
-    border: '1px solid transparent',
-    borderRadius: '.5rem',
-    margin: '0 .5rem',
-    padding: '3rem 1rem 1.5rem',
-    width: '18.75rem'
+    ...checkInCardBaseStyles
   }
 });
 

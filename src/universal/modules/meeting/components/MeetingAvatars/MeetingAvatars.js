@@ -1,8 +1,9 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite/no-important';
+import ui from 'universal/styles/ui';
 
-const MeetingMain = (props) => {
+const MeetingAvatars = (props) => {
   const {children, styles} = props;
   return (
     <div className={css(styles.root)}>
@@ -11,21 +12,25 @@ const MeetingMain = (props) => {
   );
 };
 
-
-MeetingMain.propTypes = {
+MeetingAvatars.propTypes = {
   children: PropTypes.any,
   styles: PropTypes.object
 };
 
 const styleThunk = () => ({
   root: {
+    alignItems: 'center',
     backgroundColor: '#fff',
-    display: 'flex !important',
-    flex: 1,
+    display: 'flex',
     flexDirection: 'column',
-    minWidth: '60rem',
-    width: '100%'
+    justifyContent: 'center',
+    padding: '1.25rem 0 0',
+    width: '100%',
+
+    [ui.breakpoint.wide]: {
+      padding: '2rem 0 0'
+    }
   }
 });
 
-export default withStyles(styleThunk)(MeetingMain);
+export default withStyles(styleThunk)(MeetingAvatars);

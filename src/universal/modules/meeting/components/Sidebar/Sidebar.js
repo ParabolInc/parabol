@@ -175,6 +175,23 @@ const styleThunk = () => ({
 
     ':hover': {
       color: appTheme.palette.dark
+    },
+    ':focus': {
+      color: appTheme.palette.dark
+    }
+  },
+
+  // TODO: implement disabled state to phases that should not be navigated to
+  navListItemLinkDisabled: {
+    color: appTheme.palette.dark60l,
+    cursor: 'not-allowed',
+    opacity: '.65',
+
+    ':hover': {
+      color: appTheme.palette.dark60l
+    },
+    ':focus': {
+      color: appTheme.palette.dark60l
     }
   },
 
@@ -207,7 +224,7 @@ const styleThunk = () => ({
   },
 
   sidebar: {
-    backgroundColor: appTheme.palette.dark10l,
+    backgroundColor: appTheme.palette.mid10l,
     display: 'flex',
     flexDirection: 'column',
     padding: '2rem 0 0',
