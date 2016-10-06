@@ -6,7 +6,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import layoutStyle from 'universal/styles/layout';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import {cashay} from 'cashay';
-import {CHECKIN, UPDATES, SUMMARY, phaseArray} from 'universal/utils/constants';
+import {CHECKIN, UPDATES, FIRST_CALL, SUMMARY, phaseArray} from 'universal/utils/constants';
 import makeMeetingUrl from 'universal/utils/makeMeetingUrl';
 import {Link} from 'react-router';
 import AgendaListAndInputContainer from 'universal/modules/teamDashboard/containers/AgendaListAndInput/AgendaListAndInputContainer';
@@ -52,45 +52,45 @@ const Sidebar = (props) => {
       <nav className={css(styles.nav)}>
         <ul className={css(styles.navList)}>
           <li className={checkInNavItemStyles}>
-            <Link
-              to={`/meeting/${teamId}/checkin`}
+            <div
               className={checkInLinkStyles}
+              onClick={() => gotoItem(null, CHECKIN)}
               title={labels.meetingPhase.checkIn.label}
             >
               <span className={css(styles.bullet)}>i.</span>
               <span className={css(styles.label)}>{labels.meetingPhase.checkIn.label}</span>
-            </Link>
+            </div>
           </li>
           <li className={updatesNavItemStyles}>
-            <Link
+            <div
               className={updatesLinkStyles}
-              to={`/meeting/${teamId}/updates`}
+              onClick={() => gotoItem(null, UPDATES)}
               title={labels.meetingPhase.updates.label}
             >
               <span className={css(styles.bullet)}>ii.</span>
               <span className={css(styles.label)}>{labels.meetingPhase.updates.label}</span>
-            </Link>
+            </div>
           </li>
           <li className={requestsNavItemStyles}>
-            <Link
+            <div
               className={requestsLinkStyles}
-              to={`/meeting/${teamId}/agendaitems`}
+              onClick={() => gotoItem(null, FIRST_CALL)}
               title={labels.meetingPhase.agenda.label}
             >
               <span className={css(styles.bullet)}>iii.</span>
               <span className={css(styles.label)}>{labels.meetingPhase.agenda.label}</span>
-            </Link>
+            </div>
           </li>
           {localPhase === SUMMARY &&
             <li className={css(styles.navListItem, styles.navListItemLinkActive)}>
-              <Link
+              <div
                 className={css(styles.navListItemLink, styles.navListItemLinkActive)}
-                href={`/meeting/${teamId}/summary`}
+                onClick={() => gotoItem(null, SUMMARY)}
                 title={labels.meetingPhase.summary.label}
               >
                 <span className={css(styles.bullet)}>{' '}</span>
                 <span className={css(styles.label)}>{labels.meetingPhase.summary.label}</span>
-              </Link>
+              </div>
             </li>
           }
         </ul>
@@ -171,6 +171,7 @@ const styleThunk = () => ({
 
   navListItemLink: {
     color: appTheme.palette.dark60l,
+    cursor: 'pointer',
     textDecoration: 'none',
 
     ':hover': {

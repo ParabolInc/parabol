@@ -17,13 +17,11 @@ const ProgressBar = (props) => {
     const marginRight = {
       marginRight: idx === membersCount ? 0 : `${blockWidth - pointWidth}px`
     };
-
     const pointStyles = css(
       styles.point,
       (idx <= meetingPhaseItem || isComplete) && styles.pointCompleted,
       idx === localPhaseItem && styles.pointLocal,
       idx === facilitatorPhaseItem && styles.pointFacilitator,
-      // TODO fix this one!
     );
     return (
       <div className={pointStyles} onClick={() => gotoItem(idx)} style={marginRight} key={`pbPoint${idx}`}>

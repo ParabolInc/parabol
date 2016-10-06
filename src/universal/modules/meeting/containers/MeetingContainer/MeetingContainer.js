@@ -154,14 +154,16 @@ export default class MeetingContainer extends Component {
       members,
       params: {localPhase, teamId},
       router,
-      team: {meetingPhase}
+      team: {facilitatorPhase, facilitatorPhaseItem, meetingPhase}
     } = this.props;
 
     let nextPhase;
     let nextPhaseItem;
     if (maybeNextPhase) {
       nextPhase = maybeNextPhase;
-      nextPhaseItem = maybeNextPhaseItem;
+      if (hasPhaseItem(nextPhase)) {
+        nextPhaseItem = maybeNextPhaseItem || (facilitatorPhase === maybeNextPhase) ? facilitatorPhaseItem : 1;
+      }
     } else {
       const localPhaseOrder = phaseOrder(localPhase);
       if (hasPhaseItem(localPhase)) {
