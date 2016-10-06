@@ -1,11 +1,6 @@
 import {
   LOBBY,
-  // CHECKIN,
-  // UPDATES,
   FIRST_CALL,
-  AGENDA_ITEMS,
-  LAST_CALL,
-  // SUMMARY
   phaseOrder
 } from 'universal/utils/constants';
 import makePushURL from './makePushURL';
@@ -20,7 +15,7 @@ export default function handleRedirects(team, localPhase, localPhaseItem, oldTea
   if (Date.now() - infiniteLoopTimer < 1000) {
     if (++infiniteloopCounter >= 25) {
       // TODO SEND BUG REPORT TO SERVER
-      debugger
+      // debugger;
     }
   } else {
     infiniteloopCounter = 0;

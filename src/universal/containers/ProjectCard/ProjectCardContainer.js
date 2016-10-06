@@ -56,7 +56,7 @@ const ProjectCardContainer = (props) => {
   const {area, dispatch, myTeamMemberId, preferredName, project, username} = props;
   const {content, id, status, teamMemberId} = project;
   if (!content && myTeamMemberId !== teamMemberId) {
-    return <NullCard username={username}/>;
+    return <NullCard type="Project" username={username}/>;
   }
   // if (area === USER_DASH) {
   //   return (

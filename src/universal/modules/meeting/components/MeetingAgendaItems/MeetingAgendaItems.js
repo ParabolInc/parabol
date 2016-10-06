@@ -12,7 +12,6 @@ import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingS
 import MeetingSectionSubheading from 'universal/modules/meeting/components/MeetingSectionSubheading/MeetingSectionSubheading';
 import MeetingAgendaCardsContainer from 'universal/modules/meeting/containers/MeetingAgendaCards/MeetingAgendaCardsContainer';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
-import {cashay} from 'cashay';
 
 const MeetingAgendaItems = (props) => {
   const {
@@ -73,7 +72,8 @@ const MeetingAgendaItems = (props) => {
 };
 
 MeetingAgendaItems.propTypes = {
-  agenda: PropTypes.object,
+  agendaItem: PropTypes.object,
+  gotoNext: PropTypes.func.isRequred,
   isFacilitating: PropTypes.bool,
   localPhaseItem: PropTypes.number,
   members: PropTypes.array,

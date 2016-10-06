@@ -25,18 +25,16 @@ const MeetingCheckin = (props) => {
     meetingPhaseItem
   } = team;
   if (localPhaseItem > members.length) {
-    if (localPhaseItem <= facilitatorPhaseItem) {
-      return <LoadingView/>;
-    } else {
-      return (
-        <LoadingView>
+    return (
+      <LoadingView>
+        {(localPhaseItem > facilitatorPhaseItem) &&
           <div>(Are you sure you have there are that many team members?)</div>
-        </LoadingView>
-      );
-    }
+        }
+      </LoadingView>
+    );
   }
 
-  // 1-indexed
+// 1-indexed
   const isLastMember = localPhaseItem === members.length;
   const currentName = members[localPhaseItem - 1] && members[localPhaseItem - 1].preferredName;
   const isComplete = phaseOrder(meetingPhase) > phaseOrder(CHECKIN);

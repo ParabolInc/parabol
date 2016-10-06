@@ -108,8 +108,8 @@ export default {
           throw errorObj({_error: 'We don\'t have that many agenda items!'});
         }
       } else if (nextPhase === FIRST_CALL && phaseOrder(meetingPhase) > phaseOrder(FIRST_CALL)) {
-        console.log('no FC', meetingPhase, phaseOrder(meetingPhase))
-        throw errorObj({_error: 'You can\'t visit first call twice!'})
+        console.log('no FC', meetingPhase, phaseOrder(meetingPhase));
+        throw errorObj({_error: 'You can\'t visit first call twice!'});
       } else if (nextPhase && nextPhaseItem) {
         throw errorObj({_error: `${nextPhase} does not have phase items, but you said ${nextPhaseItem}`});
       }

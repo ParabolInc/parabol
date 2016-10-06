@@ -26,7 +26,7 @@ const Type = (props) => {
     fontWeight: bold ? 700 : null,
     display: display === 'inlineBlock' ? 'inline-block' : display,
     verticalAlign: display === 'inlineBlock' ? 'middle' : null,
-    fontFamily: appTheme.typography[family].join(', '),
+    fontFamily: appTheme.typography[family],
     fontSize: appTheme.typography[scale],
     color: palettePlus[colorPalette],
     fontStyle: italic ? 'italic' : null,

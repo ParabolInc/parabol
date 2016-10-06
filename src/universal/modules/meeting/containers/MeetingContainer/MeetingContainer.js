@@ -115,6 +115,7 @@ const mapStateToProps = (state, props) => {
 @withHotkey
 export default class MeetingContainer extends Component {
   static propTypes = {
+    agenda: PropTypes.array.isRequired,
     dispatch: PropTypes.func.isRequired,
     isFacilitating: PropTypes.bool,
     localPhaseItem: PropTypes.number,
@@ -199,7 +200,6 @@ export default class MeetingContainer extends Component {
         const pushURL = makePushURL(teamId, nextPhase, nextPhaseItem);
         router.push(pushURL);
       }
-
     }
   };
 
@@ -243,7 +243,7 @@ export default class MeetingContainer extends Component {
           }
           {localPhase === FIRST_CALL && <MeetingAgendaFirstCall gotoNext={this.gotoNext}/>}
           {localPhase === AGENDA_ITEMS &&
-          < MeetingAgendaItems agendaItem={agenda[localPhaseItem - 1]} gotoNext={this.gotoNext} members={members}/>
+            < MeetingAgendaItems agendaItem={agenda[localPhaseItem - 1]} gotoNext={this.gotoNext} members={members}/>
           }
           {localPhase === LAST_CALL && <MeetingAgendaLastCallContainer {...phaseStateProps} />}
         </MeetingMain>

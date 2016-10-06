@@ -7,11 +7,11 @@ import CreateCardRootStyles from '../CreateCard/CreateCardRootStyles';
 import {cardBorderTop} from 'universal/styles/helpers';
 
 const NullCard = (props) => {
-  const {styles, username} = props;
+  const {styles, type, username} = props;
   return (
     <div className={css(styles.root)}>
       <Type align="center" bold scale="s3" colorPalette="mid">
-        @{username}<br />is adding a project<Ellipsis />
+        @{username}<br />is adding a ${type}<Ellipsis />
       </Type>
     </div>
   );
@@ -19,6 +19,7 @@ const NullCard = (props) => {
 
 NullCard.propTypes = {
   styles: PropTypes.object,
+  type: PropTypes.oneOf(['Action', 'Project']),
   username: PropTypes.string,
 };
 
