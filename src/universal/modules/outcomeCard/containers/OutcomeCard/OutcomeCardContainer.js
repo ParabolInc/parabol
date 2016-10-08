@@ -49,15 +49,10 @@ class OutcomeCardContainer extends Component {
     const nextContent = nextProps.outcome.content;
     const {content} = this.props.outcome;
     if (nextContent !== content) {
+      document.removeEventListener('click', this.handleDocumentClick);
       this.initializeValues(nextContent);
-    }
-  }
-
-  componentWillUpdate(nextProps) {
-    if (!this.props.active && nextProps.active) {
+    } else if (!content) {
       document.addEventListener('click', this.handleDocumentClick);
-    } else if (this.props.active && !nextProps.active) {
-      setTimeout(() => document.removeEventListener('click', this.handleDocumentClick), 0);
     }
   }
 
@@ -65,6 +60,8 @@ class OutcomeCardContainer extends Component {
     const {outcome: {content}} = this.props;
     if (content) {
       this.initializeValues(content);
+    } else {
+      document.addEventListener('click', this.handleDocumentClick);
     }
   }
 
@@ -118,8 +115,9 @@ class OutcomeCardContainer extends Component {
   handleDocumentClick = (e) => {
     // try to delete empty card unless they click inside the card
     if (!targetIsDescendant(e.target, findDOMNode(this))) {
-      document.removeEventListener('click', this.handleDocumentClick);
       this.props.handleSubmit(this.handleCardUpdate)();
+    } else {
+      document.removeEventListener('click', this.handleDocumentClick);
     }
   };
 
