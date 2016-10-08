@@ -49,19 +49,17 @@ const mapStateToProps = (state, props) => {
 };
 
 const TeamArchiveContainer = (props) => {
-  const {archivedProjects, dispatch, params: {teamId}} = props;
+  const {archivedProjects, params: {teamId}} = props;
   return (
     <TeamArchive
       archivedProjects={archivedProjects}
       teamId={teamId}
-      dispatch={dispatch}
     />
   );
 };
 
 TeamArchiveContainer.propTypes = {
   archivedProjects: PropTypes.array.isRequired,
-  dispatch: PropTypes.func.isRequired,
   params: PropTypes.object.isRequired
 };
 

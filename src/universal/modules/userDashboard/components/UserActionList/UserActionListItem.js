@@ -4,7 +4,7 @@ import {css} from 'aphrodite/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
-import OutcomeCardTextarea from 'universal/components/OutcomeCard/OutcomeCardTextarea';
+import OutcomeCardTextarea from 'universal/modules/outcomeCard/components/OutcomeCardTextarea/OutcomeCardTextarea';
 import {Field} from 'redux-form';
 
 const UserActionListItem = (props) => {

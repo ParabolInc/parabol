@@ -2,9 +2,10 @@ import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import NullCard from 'universal/components/NullCard/NullCard';
-import TeamProjectCard from 'universal/modules/teamDashboard/containers/TeamProjectCard/TeamProjectCardContainer';
+import OutcomeCardContainer from 'universal/modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer';
 import makeUsername from 'universal/utils/makeUsername';
 
+// TODO merge this into OutcomeCardContainer
 const projectCardSubQuery = `
 query {
   project @cached(type: "Project") {
@@ -55,9 +56,8 @@ const mapStateToProps = (state, props) => {
 const ProjectCardContainer = (props) => {
   const {area, dispatch, myTeamMemberId, preferredName, project, username} = props;
   const {content, id, status, teamMemberId} = project;
-  if (!content && myTeamMemberId !== teamMemberId) {
-    return <NullCard type="Project" username={username}/>;
-  }
+  // if (!content && myTeamMemberId !== teamMemberId) {
+  // }
   // if (area === USER_DASH) {
   //   return (
   //     <UserProjectCardContainer
@@ -67,12 +67,10 @@ const ProjectCardContainer = (props) => {
   // area === TEAM_DASH
   const form = `${status}::${id}`;
   return (
-    <TeamProjectCard
+    <OutcomeCardContainer
       area={area}
-      dispatch={dispatch}
       form={form}
-      project={project}
-      preferredName={preferredName}
+      outcome={project}
     />
   );
 };

@@ -5,7 +5,7 @@ import {cashay} from 'cashay';
 import shortid from 'shortid';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
 import {ACTIVE} from 'universal/utils/constants';
-import AgendaCard from 'universal/modules/meeting/containers/AgendaCard/AgendaCard';
+import OutcomeCardContainer from 'universal/modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer';
 import withHotkey from 'react-hotkey-hoc';
 import NullCard from 'universal/components/NullCard/NullCard';
 import makeUsername from 'universal/utils/makeUsername';
@@ -43,7 +43,7 @@ const makeCards = (array, dispatch, myTeamMemberId, itemStyle) => {
       <div className={css(itemStyle)} key={key}>
         {(!content && myTeamMemberId !== teamMemberId) ?
           <NullCard username={username}/> :
-          <AgendaCard form={key} dispatch={dispatch} outcome={outcome}/>
+          <OutcomeCardContainer form={key} outcome={outcome}/>
         }
       </div>
     );

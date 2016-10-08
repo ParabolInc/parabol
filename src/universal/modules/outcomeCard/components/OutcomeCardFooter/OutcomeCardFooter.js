@@ -14,21 +14,19 @@ const OutcomeCardFooter = (props) => {
   const {
     cardHasHover,
     hasOpenStatusMenu,
-    isArchived,
-    isProject,
     outcome,
-    owner,
     showTeam,
-    handleStatusClick,
     styles,
     toggleAssignMenu,
+    toggleStatusMenu,
   } = props;
+  const {isArchived, teamMember: owner} = outcome;
+  const isProject = Boolean(outcome.status);
   // AVATAR
   // -------
   const avatarImage = owner.picture;
   const avatarName = showTeam ? outcome.team.name : owner.preferredName;
   // TODO: Set avatarTeam style when showing team instead of owner (on UserDashboard)
-  // const avatarStyles = combineStyles(styles.avatar, styles.avatarTeam);
   const menuHintStyle = cardHasHover ? faStyle : {visibility: 'hidden', ...faStyle};
   let buttonIcon = hasOpenStatusMenu ? 'times' : 'wrench';
   if (isArchived) buttonIcon = 'reply';
@@ -46,7 +44,7 @@ const OutcomeCardFooter = (props) => {
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.avatarLayout)}>
-        <div className={avatarBlockStyle} onClick={toggleAssignMenu}>
+        <button className={avatarBlockStyle} onClick={toggleAssignMenu}>
           {!showTeam &&
             <img
               alt={avatarName}
@@ -62,10 +60,10 @@ const OutcomeCardFooter = (props) => {
               style={menuHintStyle}
             />
           }
-        </div>
+        </button>
       </div>
       <div className={css(styles.buttonBlock)}>
-        <button className={buttonStyles} onClick={handleStatusClick}>
+        <button className={buttonStyles} onClick={toggleStatusMenu}>
           <FontAwesome name={buttonIcon} style={faStyle}/>
         </button>
       </div>
@@ -77,7 +75,7 @@ const OutcomeCardFooter = (props) => {
 OutcomeCardFooter.propTypes = {
   cardHasHover: PropTypes.bool,
   toggleAssignMenu: PropTypes.func,
-  handleStatusClick: PropTypes.func,
+  toggleStatusMenu: PropTypes.func,
   hasOpenStatusMenu: PropTypes.bool,
   isArchived: PropTypes.bool,
   isProject: PropTypes.bool,
@@ -134,6 +132,10 @@ const styleThunk = () => ({
     cursor: 'pointer',
     display: 'inline-block',
     fontSize: 0,
+    border: 0,
+    background: 'transparent',
+    padding: 0,
+    fontFamily: appTheme.typography.sansSerif,
 
     ':hover': {
       opacity: '.65'

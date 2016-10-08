@@ -6,7 +6,8 @@ import appTheme from 'universal/styles/theme/appTheme';
 import labels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import upperFirst from 'universal/utils/upperFirst';
-import OutcomeCardMenuButton from './OutcomeCardMenuButton';
+import OutcomeCardMenuButton from 'universal/modules/outcomeCard/components/OutcomeCardMenuButton/OutcomeCardMenuButton';
+
 import getOutcomeNames from 'universal/utils/getOutcomeNames';
 
 const buttonArray = labels.projectStatus.slugs.slice(0);

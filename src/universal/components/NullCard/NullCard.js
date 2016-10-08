@@ -11,7 +11,7 @@ const NullCard = (props) => {
   return (
     <div className={css(styles.root)}>
       <Type align="center" bold scale="s3" colorPalette="mid">
-        @{username}<br />is adding a ${type}<Ellipsis />
+        @{username}<br />is adding a {type}<Ellipsis />
       </Type>
     </div>
   );

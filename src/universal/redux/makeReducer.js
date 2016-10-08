@@ -7,6 +7,7 @@ import {reducer as storageReducer} from 'redux-storage-whitelist-fn';
 import storageMerger from 'universal/redux/storageMerger';
 import makeRootReducer from 'universal/redux/rootDuck';
 import menuReducer from 'universal/modules/menu/ducks/menuDuck';
+import outcomeCardReducer from 'universal/modules/outcomeCard/ducks/outcomeCardDuck';
 
 const {SET_SUBMIT_SUCCEEDED} = actionTypes;
 
@@ -22,7 +23,8 @@ const appReducers = {
   cashay: cashayReducer,
   form: formReducer.plugin(formPlugin),
   menu: menuReducer,
-  notifications
+  notifications,
+  outcomeCard: outcomeCardReducer
 };
 
 
