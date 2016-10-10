@@ -17,7 +17,6 @@ export default {
   html: {
     fontSize: '16px',
     fontFamily: fontLoader
-
   },
 
   body: {

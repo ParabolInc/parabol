@@ -2,6 +2,7 @@ import path from 'path';
 import webpack from 'webpack';
 import HappyPack from 'happypack';
 import { getDotenv } from '../src/universal/utils/dotenv';
+// import UnusedFilesWebpackPlugin from "unused-files-webpack-plugin";
 
 /*
  * Configuration invoked from ./src/server/worker.js, et al.
@@ -76,7 +77,8 @@ export default {
       loaders: ['babel'],
       threads: 4,
       verbose: false
-    })
+    }),
+    // new UnusedFilesWebpackPlugin()
   ],
   resolve: {
     extensions: ['.js'],
@@ -85,7 +87,7 @@ export default {
   module: {
     loaders: [
       {test: /\.json$/, loader: 'json-loader'},
-      {test: /\.(png|jpg|jpeg|gif|svg)(\?\S*)?$/, loader: 'url-loader?limit=10000'},
+      {test: /\.(png|jpg|jpeg|gif|svg)(\?\S*)?$/, loader: 'url-loader?limit=1000'},
       {test: /\.(eot|ttf|wav|mp3|woff|woff2)(\?\S*)?$/, loader: 'file-loader'},
       {
         test: /\.js$/,

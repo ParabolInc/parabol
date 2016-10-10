@@ -67,6 +67,7 @@
     "rimraf": "2.5.4",
     "stats-webpack-plugin": "0.4.2",
     "transform-loader": "^0.2.3",
+    "unused-files-webpack-plugin": "^3.0.0",
     "url-loader": "0.5.7",
     "webpack": "2.1.0-beta.22",
     "webpack-dev-middleware": "1.7.0",

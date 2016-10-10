@@ -45,6 +45,15 @@ const mapDispatchToProps = (dispatch, props) => binder(dispatch, actionFactories
 
 
 class OutcomeCardContainer extends Component {
+  componentWillMount() {
+    const {outcome: {content}} = this.props;
+    if (content) {
+      this.initializeValues(content);
+    } else {
+      document.addEventListener('click', this.handleDocumentClick);
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     const nextContent = nextProps.outcome.content;
     const {content} = this.props.outcome;
@@ -52,15 +61,6 @@ class OutcomeCardContainer extends Component {
       document.removeEventListener('click', this.handleDocumentClick);
       this.initializeValues(nextContent);
     } else if (!content) {
-      document.addEventListener('click', this.handleDocumentClick);
-    }
-  }
-
-  componentWillMount() {
-    const {outcome: {content}} = this.props;
-    if (content) {
-      this.initializeValues(content);
-    } else {
       document.addEventListener('click', this.handleDocumentClick);
     }
   }
@@ -116,8 +116,6 @@ class OutcomeCardContainer extends Component {
     // try to delete empty card unless they click inside the card
     if (!targetIsDescendant(e.target, findDOMNode(this))) {
       this.props.handleSubmit(this.handleCardUpdate)();
-    } else {
-      document.removeEventListener('click', this.handleDocumentClick);
     }
   };
 
