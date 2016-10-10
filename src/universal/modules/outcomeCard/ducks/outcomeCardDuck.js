@@ -1,7 +1,8 @@
 const OPEN_CONTENT_MENU = 'outcomeCard/OPEN_CONTENT_MENU';
 const OPEN_ASSIGN_MENU = 'outcomeCard/OPEN_ASSIGN_MENU';
 const OPEN_STATUS_MENU = 'outcomeCard/OPEN_STATUS_MENU';
-const TOGGLE_HOVER = 'outcomeCard/TOGGLE_HOVER';
+const HOVER_ON = 'outcomeCard/HOVER_ON';
+const HOVER_OFF = 'outcomeCard/HOVER_OFF';
 const MOUNT = 'outcomeCard/MOUNT';
 const UNMOUNT = 'outcomeCard/UNMOUNT';
 
@@ -37,13 +38,23 @@ export default function reducer(state = emptyState, action = {}) {
     delete cloneState[component];
     return cloneState;
   }
-  if (type === TOGGLE_HOVER) {
+  if (type === HOVER_ON) {
     // handle hover change
     return {
       ...state,
       [component]: {
         ...state[component],
-        hasHover: !state[component].hasHover
+        hasHover: true
+      }
+    }
+  }
+  if (type === HOVER_OFF) {
+    // handle hover change
+    return {
+      ...state,
+      [component]: {
+        ...state[component],
+        hasHover: false
       }
     }
   }
@@ -85,6 +96,7 @@ export const actionFactories = {
   openContentMenu: actionFactory(OPEN_CONTENT_MENU),
   toggleAssignMenu: actionFactory(OPEN_ASSIGN_MENU),
   toggleStatusMenu: actionFactory(OPEN_STATUS_MENU),
-  toggleHover: actionFactory(TOGGLE_HOVER)
+  hoverOn: actionFactory(HOVER_ON),
+  hoverOff: actionFactory(HOVER_OFF),
 };
 

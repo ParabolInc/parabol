@@ -23,6 +23,8 @@ const OutcomeCard = (props) => {
     handleCardUpdate,
     handleSubmit,
     hasHover,
+    hoverOn,
+    hoverOff,
     openArea,
     toggleAssignMenu,
     openContentMenu,
@@ -30,7 +32,6 @@ const OutcomeCard = (props) => {
     outcome,
     styles,
     teamMembers,
-    toggleHover
   } = props;
 
   const isProject = Boolean(outcome.status);
@@ -43,7 +44,7 @@ const OutcomeCard = (props) => {
   );
 
   return (
-    <div className={rootStyles} onMouseEnter={toggleHover} onMouseLeave={toggleHover} >
+    <div className={rootStyles} onMouseEnter={hoverOn} onMouseLeave={hoverOff} >
       {openArea === 'assign' &&
         <OutcomeCardAssignMenu
           onComplete={openContentMenu}
