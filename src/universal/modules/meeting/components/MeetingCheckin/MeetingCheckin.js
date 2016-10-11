@@ -7,6 +7,7 @@ import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/Me
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import {CHECKIN, phaseOrder} from 'universal/utils/constants';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
+import appTheme from 'universal/styles/theme/appTheme';
 
 const MeetingCheckin = (props) => {
   const {

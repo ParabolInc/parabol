@@ -8,9 +8,6 @@ import IconLink from 'universal/components/IconLink/IconLink';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import MeetingSectionHeading from 'universal/modules/meeting/components/MeetingSectionHeading/MeetingSectionHeading';
-// eslint-disable-next-line max-len
-import MeetingSectionSubheading from 'universal/modules/meeting/components/MeetingSectionSubheading/MeetingSectionSubheading';
 import {UPDATES, phaseOrder, MEETING} from 'universal/utils/constants';
 import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
