@@ -34,7 +34,8 @@ const OutcomeCardFooter = (props) => {
 
   const avatarBlockStyle = css(
     styles.avatarBlock,
-    isArchived && styles.avatarBlockArchived
+    isArchived && styles.avatarBlockArchived,
+    showTeam && styles.avatarBlockShowTeam
   );
   const buttonStyles = css(
     styles.buttonBase,
@@ -44,7 +45,7 @@ const OutcomeCardFooter = (props) => {
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.avatarLayout)}>
-        <button className={avatarBlockStyle} onClick={toggleAssignMenu}>
+        <button className={avatarBlockStyle} onClick={!showTeam && toggleAssignMenu}>
           {!showTeam &&
             <img
               alt={avatarName}
@@ -53,7 +54,7 @@ const OutcomeCardFooter = (props) => {
             />
           }
           <div className={css(styles.name)}>{avatarName}</div>
-          {!isArchived &&
+          {!isArchived && !showTeam &&
             <FontAwesome
               className={css(styles.menuHint)}
               name="ellipsis-v"
@@ -147,6 +148,11 @@ const styleThunk = () => ({
 
   avatarBlockArchived: {
     cursor: 'not-allowed',
+    opacity: '1 !important'
+  },
+
+  avatarBlockShowTeam: {
+    cursor: 'default',
     opacity: '1 !important'
   },
 
