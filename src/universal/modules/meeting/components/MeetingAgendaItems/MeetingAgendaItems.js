@@ -2,7 +2,6 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
-import {withRouter} from 'react-router';
 import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
 
@@ -12,42 +11,20 @@ import MeetingMain from 'universal/modules/meeting/components/MeetingMain/Meetin
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingAgendaCardsContainer from 'universal/modules/meeting/containers/MeetingAgendaCards/MeetingAgendaCardsContainer';
-import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
-import {AGENDA_ITEMS} from 'universal/utils/constants';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
-import {cashay} from 'cashay';
-import withHotkey from 'react-hotkey-hoc';
 
 const MeetingAgendaItems = (props) => {
   const {
-    agenda,
-    bindHotkey,
-    isFacilitating,
-    localPhaseItem,
+    agendaItem,
+    gotoNext,
     members,
-    router,
     styles,
-    team
   } = props;
-  const {id: teamId} = team;
-  const agendaItem = agenda[localPhaseItem - 1];
   if (!agendaItem) {
     return <LoadingView />;
   }
   const currentTeamMember = members.find((m) => m.id === agendaItem.teamMemberId);
-  const phaseItemFactory = makePhaseItemFactory(isFacilitating, agenda.length, router, teamId, AGENDA_ITEMS);
   const self = members.find(m => m.isSelf);
-  const gotoNextItem = () => {
-    const updatedAgendaItem = {
-      id: agendaItem.id,
-      isComplete: true
-    };
-    cashay.mutate('updateAgendaItem', {variables: {updatedAgendaItem}});
-    phaseItemFactory(localPhaseItem + 1)();
-  };
-  const gotoPrevItem = phaseItemFactory(localPhaseItem - 1);
-  bindHotkey(['enter', 'right'], gotoNextItem);
-  bindHotkey('left', gotoPrevItem);
   const hasFirstSpacer = true;
   return (
     <MeetingMain>
@@ -78,7 +55,7 @@ const MeetingAgendaItems = (props) => {
                   icon="arrow-circle-right"
                   iconPlacement="right"
                   label="Next Agenda Item"
-                  onClick={gotoNextItem}
+                  onClick={gotoNext}
                   scale="small"
                 />
               </div>
@@ -97,12 +74,11 @@ const MeetingAgendaItems = (props) => {
 };
 
 MeetingAgendaItems.propTypes = {
-  agenda: PropTypes.object,
-  bindHotkey: PropTypes.func,
+  agendaItem: PropTypes.object,
+  gotoNext: PropTypes.func.isRequred,
   isFacilitating: PropTypes.bool,
   localPhaseItem: PropTypes.number,
   members: PropTypes.array,
-  router: PropTypes.object,
   styles: PropTypes.object,
   team: PropTypes.object
 };
@@ -179,9 +155,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withHotkey(
-  withRouter(
-    withStyles(styleThunk)(
-      MeetingAgendaItems)
-  )
-);
+export default withStyles(styleThunk)(MeetingAgendaItems);

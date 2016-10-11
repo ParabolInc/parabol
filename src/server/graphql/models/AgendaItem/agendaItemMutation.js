@@ -68,14 +68,15 @@ export default {
     },
     async resolve(source, {updatedAgendaItem}, {authToken}) {
       const r = getRethink();
-      const [teamId] = updatedAgendaItem.id.split('::');
+      const {id, ...doc} = updatedAgendaItem;
+      const [teamId] = id.split('::');
       requireSUOrTeamMember(authToken, teamId);
       const now = new Date();
       const agendaItem = {
-        ...updatedAgendaItem,
+        ...doc,
         updatedAt: now,
       };
-      await r.table('AgendaItem').update(agendaItem);
+      await r.table('AgendaItem').get(updatedAgendaItem.id).update(agendaItem);
       return true;
     }
   },

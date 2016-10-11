@@ -11,7 +11,7 @@ dependencies:
     - sudo /etc/init.d/rethinkdb restart
     - npm i -g npm@3.9.3
   override:
-    - npm install --only=prod && npm install --only=dev
+    - npm prune && npm install --only=prod && npm install --only=dev
   post:
     - npm run db:migrate
 test:

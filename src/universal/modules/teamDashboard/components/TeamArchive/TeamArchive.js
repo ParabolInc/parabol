@@ -5,7 +5,8 @@ import appTheme from 'universal/styles/theme/appTheme';
 import {ib, overflowTouch} from 'universal/styles/helpers';
 import ui from 'universal/styles/ui';
 import TeamArchiveHeader from 'universal/modules/teamDashboard/components/TeamArchiveHeader/TeamArchiveHeader';
-import TeamProjectCard from 'universal/modules/teamDashboard/containers/TeamProjectCard/TeamProjectCardContainer';
+import OutcomeCardContainer from 'universal/modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer';
+
 import FontAwesome from 'react-fontawesome';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
 
@@ -16,7 +17,7 @@ const iconStyle = {
 };
 
 const TeamArchive = (props) => {
-  const {archivedProjects, dispatch, styles, teamId} = props;
+  const {archivedProjects, styles, teamId} = props;
   return (
     <div className={css(styles.root)}>
       <TeamArchiveHeader teamId={teamId}/>
@@ -26,12 +27,10 @@ const TeamArchive = (props) => {
             <div className={css(styles.cardGrid)}>
               {archivedProjects.map(project =>
                 <div className={css(styles.cardBlock)} key={`cardBlockFor${project.id}`}>
-                  <TeamProjectCard
+                  <OutcomeCardContainer
                     key={project.id}
-                    dispatch={dispatch}
                     form={`archived::${project.id}`}
-                    project={project}
-                    isArchived
+                    outcome={project}
                   />
                 </div>
               )}
@@ -53,7 +52,6 @@ const TeamArchive = (props) => {
 
 TeamArchive.propTypes = {
   archivedProjects: PropTypes.array,
-  dispatch: PropTypes.func,
   styles: PropTypes.object,
   teamId: PropTypes.string,
   teamMembers: PropTypes.array

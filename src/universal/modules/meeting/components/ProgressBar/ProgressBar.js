@@ -3,7 +3,6 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite/no-important';
 import appTheme from 'universal/styles/theme/appTheme.js';
 import {srOnly} from 'universal/styles/helpers';
-import {withRouter} from 'react-router';
 
 const barHeight = 6;
 const pointHeight = barHeight;
@@ -13,22 +12,19 @@ const avatarGutter = 24; // see AvatarGroup
 const outerPadding = (avatarWidth - pointWidth) / 2;
 const blockWidth = avatarWidth + avatarGutter;
 const ProgressBar = (props) => {
-  const {clickFactory, membersCount, facilitatorPhaseItem, localPhaseItem, meetingPhaseItem, isComplete, styles} = props;
+  const {gotoItem, membersCount, facilitatorPhaseItem, localPhaseItem, meetingPhaseItem, isComplete, styles} = props;
   const renderPoint = (idx) => {
     const marginRight = {
       marginRight: idx === membersCount ? 0 : `${blockWidth - pointWidth}px`
     };
-
     const pointStyles = css(
       styles.point,
       (idx <= meetingPhaseItem || isComplete) && styles.pointCompleted,
       idx === localPhaseItem && styles.pointLocal,
       idx === facilitatorPhaseItem && styles.pointFacilitator,
-      // TODO fix this one!
     );
-    const handleOnClick = clickFactory(idx);
     return (
-      <div className={pointStyles} onClick={handleOnClick} style={marginRight} key={`pbPoint${idx}`}>
+      <div className={pointStyles} onClick={() => gotoItem(idx)} style={marginRight} key={`pbPoint${idx}`}>
         <div className={css(styles.srOnly)}>{idx}</div>
       </div>
     );
@@ -55,7 +51,7 @@ const ProgressBar = (props) => {
 
 
 ProgressBar.propTypes = {
-  clickFactory: PropTypes.func,
+  gotoItem: PropTypes.func.isRequired,
   isComplete: PropTypes.bool,
   facilitatorPhaseItem: PropTypes.number, // index of 1
   localPhaseItem: PropTypes.number,       // index of 1
@@ -126,6 +122,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withRouter(
-  withStyles(styleThunk)(ProgressBar)
-);
+export default withStyles(styleThunk)(ProgressBar);

@@ -3,6 +3,6 @@ export default function injectGlobals(injectStyleOnce, globalStyles) {
   for (let i = 0; i < selectors.length; i++) {
     const name = selectors[i];
     const value = globalStyles[name];
-    injectStyleOnce(name, name, [value], false);
+    injectStyleOnce(name, name, [value], false, true);
   }
 }

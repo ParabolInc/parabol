@@ -3,13 +3,9 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite/no-important';
 import AgendaList from 'universal/modules/teamDashboard/components/AgendaList/AgendaList';
 import AgendaInput from 'universal/modules/teamDashboard/components/AgendaInput/AgendaInput';
-import makePhaseItemFactory from 'universal/modules/meeting/helpers/makePhaseItemFactory';
-import {withRouter} from 'react-router';
-import {AGENDA_ITEMS} from 'universal/utils/constants';
 
 const AgendaListAndInput = (props) => {
-  const {agenda, agendaPhaseItem, isFacilitating, myTeamMember, styles, router, teamId} = props;
-  const phaseItemFactory = makePhaseItemFactory(isFacilitating, agenda.length, router, teamId, AGENDA_ITEMS);
+  const {agenda, agendaPhaseItem, gotoItem, myTeamMember, styles, teamId} = props;
   return (
     <div className={css(styles.root)}>
       <AgendaInput
@@ -20,7 +16,7 @@ const AgendaListAndInput = (props) => {
       <AgendaList
         agenda={agenda}
         agendaPhaseItem={agendaPhaseItem}
-        phaseItemFactory={phaseItemFactory}
+        gotoItem={gotoItem}
       />
     </div>
   );
@@ -29,9 +25,8 @@ const AgendaListAndInput = (props) => {
 AgendaListAndInput.propTypes = {
   agenda: PropTypes.array,
   agendaPhaseItem: PropTypes.number,
-  isFacilitating: PropTypes.bool,
+  gotoItem: PropTypes.func.isRequired,
   myTeamMember: PropTypes.object,
-  router: PropTypes.object,
   styles: PropTypes.object,
   teamId: PropTypes.string
 };
@@ -45,4 +40,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withRouter(withStyles(styleThunk)(AgendaListAndInput));
+export default withStyles(styleThunk)(AgendaListAndInput);

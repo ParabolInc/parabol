@@ -11,20 +11,16 @@ import MeetingMain from 'universal/modules/meeting/components/MeetingMain/Meetin
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
 
-//
-
-const createStartMeetingHandler = (members) => {
-  return () => {
-    const self = members.find(member => member.isSelf);
-    if (!self) {
-      throw new Error('You are not a member! How can that be?');
-    }
-    const firstFacilitator = members.find(member => member.isFacilitator);
-    const safeFirstFacilitator = firstFacilitator || self;
-    const facilitatorId = self.isFacilitator ? self.id : safeFirstFacilitator.id;
-    const options = {variables: {facilitatorId}};
-    cashay.mutate('startMeeting', options);
-  };
+const createStartMeetingHandler = (members) => () => {
+  const self = members.find(member => member.isSelf);
+  if (!self) {
+    throw new Error('You are not a member! How can that be?');
+  }
+  const firstFacilitator = members.find(member => member.isFacilitator);
+  const safeFirstFacilitator = firstFacilitator || self;
+  const facilitatorId = self.isFacilitator ? self.id : safeFirstFacilitator.id;
+  const options = {variables: {facilitatorId}};
+  cashay.mutate('startMeeting', options);
 };
 
 const MeetingLobby = (props) => {
@@ -42,7 +38,7 @@ const MeetingLobby = (props) => {
           <MeetingPhaseHeading>Hi, {teamName} Team!</MeetingPhaseHeading>
           <p className={css(styles.label)}>Share this meeting:</p>
           <div className={css(styles.urlBlock)}>
-            <CopyShortLink url={shortUrl} />
+            <CopyShortLink url={shortUrl}/>
           </div>
           <h2 className={css(styles.prompt)}>Team Facilitator: begin the Check-In round!</h2>
           <Button

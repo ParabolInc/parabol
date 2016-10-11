@@ -15,9 +15,9 @@ import {
   CHECKIN,
   LOBBY,
   UPDATES,
-//  FIRST_CALL,
+  FIRST_CALL,
   AGENDA_ITEMS,
-//  LAST_CALL,
+  LAST_CALL,
   phaseArray, phaseOrder
 } from 'universal/utils/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
@@ -75,14 +75,14 @@ export default {
       const r = getRethink();
       // TODO: transform these console statements into configurable logger statements:
       /*
-      console.log('moveMeeting()');
-      console.log('teamId');
-      console.log(teamId);
-      console.log('nextPhase');
-      console.log(nextPhase);
-      console.log('nextPhaseItem');
-      console.log(nextPhaseItem);
-      */
+       console.log('moveMeeting()');
+       console.log('teamId');
+       console.log(teamId);
+       console.log('nextPhase');
+       console.log(nextPhase);
+       console.log('nextPhaseItem');
+       console.log(nextPhaseItem);
+       */
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
       if (nextPhase && !phaseArray.includes(nextPhase)) {
@@ -90,6 +90,7 @@ export default {
       }
 
       const team = await r.table('Team').get(teamId);
+      const {activeFacilitator, facilitatorPhase, meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = team;
       if (nextPhase === CHECKIN || nextPhase === UPDATES) {
         const teamMembersCount = await r.table('TeamMember')
           .getAll(teamId, {index: 'teamId'})
@@ -101,21 +102,24 @@ export default {
       } else if (nextPhase === AGENDA_ITEMS) {
         const agendaItemCount = await r.table('AgendaItem')
           .getAll(teamId, {index: 'teamId'})
+          .filter({isActive: true})
           .count();
         if (nextPhaseItem < 1 || nextPhaseItem > agendaItemCount) {
           throw errorObj({_error: 'We don\'t have that many agenda items!'});
         }
+      } else if (nextPhase === FIRST_CALL && phaseOrder(meetingPhase) > phaseOrder(FIRST_CALL)) {
+        console.log('no FC', meetingPhase, phaseOrder(meetingPhase));
+        throw errorObj({_error: 'You can\'t visit first call twice!'});
       } else if (nextPhase && nextPhaseItem) {
         throw errorObj({_error: `${nextPhase} does not have phase items, but you said ${nextPhaseItem}`});
       }
 
       const userId = getUserId(authToken);
       const teamMemberId = `${userId}::${teamId}`;
-      const {activeFacilitator, facilitatorPhase, meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = team;
       /*
-      console.log('team');
-      console.log(JSON.stringify(team));
-      */
+       console.log('team');
+       console.log(JSON.stringify(team));
+       */
       if (activeFacilitator !== teamMemberId) {
         throw errorObj({_error: 'Only the facilitator can advance the meeting'});
       }
@@ -126,16 +130,31 @@ export default {
         // meeting phase has progressed forward:
         incrementsProgress = true;
       } else if (typeof nextPhase === 'undefined' &&
-          meetingPhase === CHECKIN || meetingPhase === UPDATES || meetingPhase === AGENDA_ITEMS) {
+        meetingPhase === CHECKIN || meetingPhase === UPDATES || meetingPhase === AGENDA_ITEMS) {
         // console.log('phaseItem increments progress');
         // same phase, and meeting phase item has incremented forward:
         incrementsProgress = nextPhaseItem - meetingPhaseItem === 1;
+      } else if (meetingPhase === FIRST_CALL && nextPhase === LAST_CALL) {
+        const agendaItemCount = await r.table('AgendaItem')
+          .getAll(teamId, {index: 'teamId'})
+          .filter({isActive: true})
+          .count();
+        incrementsProgress = agendaItemCount === 0;
       }
       const moveMeeting = isSynced && incrementsProgress;
+
+      if (moveMeeting && meetingPhase === AGENDA_ITEMS && nextPhaseItem > 1) {
+        await r.table('AgendaItem')
+          .getAll(teamId, {index: 'teamId'})
+          .filter({isActive: true})
+          .orderBy('sortOrder')
+          .nth(nextPhaseItem - 2)
+          .update({isComplete: true});
+      }
       /*
-      console.log('moveMeeting');
-      console.log(moveMeeting);
-      */
+       console.log('moveMeeting');
+       console.log(moveMeeting);
+       */
 
       const updatedState = {
         facilitatorPhaseItem: nextPhaseItem,
@@ -151,10 +170,10 @@ export default {
       }
       await r.table('Team').get(teamId).update(updatedState);
       /*
-      console.log('updatedState');
-      console.log(updatedState);
-      console.log('------------');
-      */
+       console.log('updatedState');
+       console.log(updatedState);
+       console.log('------------');
+       */
       return true;
     }
   },
