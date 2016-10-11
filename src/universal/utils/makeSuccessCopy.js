@@ -20,10 +20,10 @@ const statements = [
   'You are unstoppable!'
 ];
 
-export const makeSuccessExpression = () => {
-  return expressions[week % expressions.length];
+export const makeSuccessExpression = (number = week) => {
+  return expressions[number % expressions.length];
 };
 
-export const makeSuccessStatement = () => {
-  return statements[week % statements.length];
+export const makeSuccessStatement = (number = week) => {
+  return statements[number % statements.length];
 };

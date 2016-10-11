@@ -4,7 +4,7 @@ import {cashay} from 'cashay';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
-import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
+import MeetingAvatars from 'universal/modules/meeting/components/MeetingAvatars/MeetingAvatars';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import {withRouter} from 'react-router';
 import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
@@ -234,9 +234,9 @@ export default class MeetingContainer extends Component {
           teamId={teamId}
         />
         <MeetingMain>
-          <MeetingSection paddingTop="2rem">
+          <MeetingAvatars>
             <AvatarGroup avatars={members} localPhase={localPhase}/>
-          </MeetingSection>
+          </MeetingAvatars>
           {localPhase === LOBBY && <MeetingLobby members={members} team={team}/>}
           {localPhase === CHECKIN &&
             <MeetingCheckin gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />

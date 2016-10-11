@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite/no-important';
+import ui from 'universal/styles/ui';
 import {cashay} from 'cashay';
 import shortid from 'shortid';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
@@ -99,8 +100,16 @@ const styleThunk = () => ({
 
   item: {
     marginTop: '2rem',
-    padding: '0 1rem',
-    width: '25%'
+    padding: '0 .5rem',
+    width: '25%',
+
+    [ui.breakpoint.wide]: {
+      padding: '0 .75rem'
+    },
+
+    [ui.breakpoint.wider]: {
+      padding: '0 1rem'
+    }
   }
 });
 

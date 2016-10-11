@@ -88,10 +88,6 @@ and create their first team, so that they can see how the product works.
 invite one other team mate, so that they can see how the product works with
 another person.
 
-- [ ] When a TL is unwilling to invite a teammate without understanding the
-product, they want to skip this step, so that they don't involve others
-into their process of exploration too prematurely.
-
 - [X] When the TL invites their TMs, they want Action to send their TMs an
 email with a simple CTA to get on-boarded, so they can begin working as a
 team as quickly as possible.
@@ -106,19 +102,10 @@ task from their leader off their list.
 account creation tasks to occur as quickly as possible, so that they can
 understand what they are being asked to do with a minimum of hassle.
 
-- [ ] When a TM completes account creation, they want to understand what
-their next step is (inputting projects, then waiting for their first action
-meeting from their TL), so they feel like their are working toward some kind
-of a tangible goal.
-
 - [X] When a TM clicks on an invitation link and they _already_ have an
 active account, the system should still process the invitation.
 
 ## Team Action Meeting
-
-- [ ] **(Assumption)** After a TL has invited their team, they want to be
-directed on the next step – scheduling their first action meeting with their
-team, so that they can try working in a new way.
 
 - [X] When it's time for the first Action meeting, the TL will want a clear
 control to "Start The Meeting" from their team dashboard and an easy link to
@@ -252,7 +239,7 @@ be able to accept it, so that they can join their teammates.
 want to see a list of their projects and actions, so that they can see what
 they are responsible for.
 
-- [ ] When a TM creates a new project or action, they will want to be able
+- [X] When a TM creates a new project or action, they will want to be able
 to assign it to a specific team, so that they can organize their work.
 
 - [X] When a TM wants to update an item on their dashboard, they will want

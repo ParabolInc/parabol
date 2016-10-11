@@ -22,7 +22,7 @@ const TeamDashModal = (props) => {
         icon="arrow-circle-right"
         iconPlacement="right"
         label="Join Meeting"
-        marginTop="1.5rem"
+        margin="1.5rem 0 0"
         onClick={handleClick}
         scale="large"
       />

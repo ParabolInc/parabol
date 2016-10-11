@@ -6,7 +6,6 @@ import appTheme from 'universal/styles/theme/appTheme';
 import Button from 'universal/components/Button/Button';
 import Type from 'universal/components/Type/Type';
 
-import ShortcutsToggle from 'universal/modules/team/components/ShortcutsToggle/ShortcutsToggle';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
@@ -48,7 +47,6 @@ const MeetingAgendaLastCall = (props) => {
           />
         </MeetingSection>
       </MeetingSection>
-      <ShortcutsToggle />
     </MeetingMain>
   );
 };

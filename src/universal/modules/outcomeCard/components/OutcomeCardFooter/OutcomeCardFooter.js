@@ -147,7 +147,7 @@ const styleThunk = () => ({
 
   avatarBlockArchived: {
     cursor: 'not-allowed',
-    opacity: 1
+    opacity: '1 !important'
   },
 
   avatar: {

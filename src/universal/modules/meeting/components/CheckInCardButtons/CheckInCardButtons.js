@@ -1,30 +1,46 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite/no-important';
+import appTheme from 'universal/styles/theme/appTheme';
 import PushButton from 'universal/components/PushButton/PushButton';
 import withHotkey from 'react-hotkey-hoc';
 import voidClick from 'universal/utils/voidClick';
 
 const CheckInCardButtons = (props) => {
   const {bindHotkey, checkInPressFactory, isCheckedIn, styles} = props;
+
   const handleOnClickPresent = isCheckedIn ? voidClick : checkInPressFactory(true);
   const handleOnClickAbsent = isCheckedIn !== false ? checkInPressFactory(false) : voidClick;
-  bindHotkey('c', handleOnClickPresent);
-  bindHotkey('x', handleOnClickAbsent);
+
+  const presentLabel = () =>
+    <div className={css(styles.buttonLabel)}>
+      <span className={css(styles.preLabel)}>mark as</span>
+      <span className={css(styles.label)}><u>p</u>resent</span>
+    </div>;
+
+  const notPresentLabel = () =>
+    <div className={css(styles.buttonLabel)}>
+      <span className={css(styles.preLabel)}>mark as</span>
+      <span className={css(styles.label)}><u>n</u>ot present</span>
+    </div>;
+
+  bindHotkey('p', handleOnClickPresent);
+  bindHotkey('n', handleOnClickAbsent);
+
   return (
     <div className={css(styles.buttonsBlock)}>
       <PushButton
         handleOnClick={handleOnClickPresent}
         isPressed={isCheckedIn === true}
-        keystroke="c"
-        label="ok, let’s do this!"
+        keystroke="p"
+        label={presentLabel()}
         size="large"
       />
       <PushButton
         handleOnClick={handleOnClickAbsent}
         isPressed={isCheckedIn === false}
-        keystroke="x"
-        label="can’t make this one"
+        keystroke="n"
+        label={notPresentLabel()}
         size="large"
       />
     </div>
@@ -42,6 +58,31 @@ const styleThunk = () => ({
   buttonsBlock: {
     display: 'inline-block',
     textAlign: 'left'
+  },
+
+  buttonLabel: {
+    color: appTheme.palette.dark,
+    display: 'inline-block',
+    paddingLeft: '.25rem',
+    verticalAlign: 'middle'
+  },
+
+  preLabel: {
+    display: 'inline-block',
+    fontFamily: appTheme.typography.serif,
+    fontSize: appTheme.typography.s2,
+    fontStyle: 'italic',
+    verticalAlign: 'baseline'
+  },
+
+  label: {
+    display: 'inline-block',
+    fontFamily: appTheme.typography.sansSerif,
+    fontStyle: 'normal',
+    fontWeight: 700,
+    paddingLeft: '.25rem',
+    textTransform: 'uppercase',
+    verticalAlign: 'baseline'
   }
 });
 

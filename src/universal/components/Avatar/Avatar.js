@@ -75,6 +75,7 @@ Avatar.propTypes = {
   preferredName: PropTypes.string,
   onClick: PropTypes.func,
   size: PropTypes.oneOf([
+    'fill',
     'smallest',
     'smaller',
     'small',
@@ -140,6 +141,9 @@ const styleThunk = () => ({
   },
 
   // NOTE: Size modifies avatarImageBlock
+  avatarImageBlockFill: {
+    width: '100%'
+  },
   avatarImageBlockSmallest: {
     width: '1.5rem'
   },

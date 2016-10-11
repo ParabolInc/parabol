@@ -48,7 +48,7 @@ class OutcomeCardTextArea extends Component {
     const contentStyles = css(
       !isActionListItem && styles.content,
       isActionListItem && styles.actionListContent,
-      isProject && cardHasHover && styles.contentWhenCardHovered,
+      isProject && !isArchived && cardHasHover && styles.contentWhenCardHovered,
       isArchived && styles.isArchived,
       !isProject && cardHasHover && styles.actionContentWhenCardHovered,
       !isProject && styles.descriptionAction
@@ -181,10 +181,12 @@ const styleThunk = () => ({
     cursor: 'not-allowed',
 
     ':focus': {
-      ...descriptionBase
+      backgroundColor: 'transparent',
+      borderColor: 'transparent'
     },
     ':active': {
-      ...descriptionBase
+      backgroundColor: 'transparent',
+      borderColor: 'transparent'
     }
   }
 });

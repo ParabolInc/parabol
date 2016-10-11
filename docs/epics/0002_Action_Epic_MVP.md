@@ -1,5 +1,5 @@
 
-# Epic: Minumum Viable Product ("MVP")
+# Epic: Minimum Viable Product ("MVP")
 
 This epic follows the development of our Minimum Viable Testable Product,
 and is focused on creating the minimum viable product organizational leaders

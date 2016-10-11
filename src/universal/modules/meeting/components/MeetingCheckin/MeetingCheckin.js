@@ -3,10 +3,10 @@ import IconLink from 'universal/components/IconLink/IconLink';
 import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
 import CheckInCards from 'universal/modules/meeting/components/CheckInCards/CheckInCards';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
+import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import {CHECKIN, phaseOrder} from 'universal/utils/constants';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
-import Type from 'universal/components/Type/Type';
 
 const MeetingCheckin = (props) => {
   const {
@@ -41,7 +41,7 @@ const MeetingCheckin = (props) => {
   return (
     <MeetingMain>
       {/* */}
-      <MeetingSection paddingBottom="2rem" paddingTop=".75rem">
+      <MeetingSection paddingBottom="1.25rem" paddingTop=".75rem">
         <ProgressBar
           gotoItem={gotoItem}
           isComplete={isComplete}
@@ -51,11 +51,11 @@ const MeetingCheckin = (props) => {
           membersCount={members.length}
         />
       </MeetingSection>
-      <MeetingSection flexToFill paddingBottom="2rem">
-        <MeetingSection paddingBottom="2rem">
-          <Type align="center" bold family="serif" scale="s6" colorPalette="warm">
-            {checkInGreeting}, {currentName}—{checkInQuestion}?
-          </Type>
+      <MeetingSection flexToFill paddingBottom="1rem">
+        <MeetingSection paddingBottom=".5rem">
+          <MeetingPrompt
+            heading={<span><span style={{color: appTheme.palette.warm}}>{checkInGreeting}, {currentName}</span>—{checkInQuestion}?</span>}
+          />
         </MeetingSection>
         {/* */}
         <CheckInCards
@@ -63,7 +63,7 @@ const MeetingCheckin = (props) => {
           localPhaseItem={localPhaseItem}
           members={members}
         />
-        <MeetingSection paddingBottom="2rem">
+        <MeetingSection paddingTop=".75rem">
           <IconLink
             colorPalette="cool"
             icon="arrow-circle-right"
