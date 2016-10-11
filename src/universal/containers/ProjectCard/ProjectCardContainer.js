@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
-import NullCard from 'universal/components/NullCard/NullCard';
 import OutcomeCardContainer from 'universal/modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer';
 import makeUsername from 'universal/utils/makeUsername';
 

@@ -75,6 +75,9 @@ query{
     isLead,
     presence @cached(type: "[Presence]") {
       userId
+    },
+    projects(teamMemberId: $teamMemberId) @live {
+      id
     }
   }
   agenda(teamId: $teamId) @live {
