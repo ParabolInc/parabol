@@ -64,7 +64,7 @@ export default function reducer(state = emptyState, action = {}) {
     ...state,
     [component]: {
       ...state[component],
-      openArea: state[component].openArea === 'content' ? areaLookup[type] : 'content',
+      openArea: state[component].openArea === areaLookup[type] ? 'content' : areaLookup[type],
     }
   };
 }

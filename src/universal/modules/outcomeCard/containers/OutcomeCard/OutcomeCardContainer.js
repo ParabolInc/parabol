@@ -50,6 +50,7 @@ class OutcomeCardContainer extends Component {
     if (content) {
       this.initializeValues(content);
     } else {
+      // if there is no content, delete it if the user clicks away from the card
       document.addEventListener('click', this.handleDocumentClick);
     }
   }
@@ -58,6 +59,7 @@ class OutcomeCardContainer extends Component {
     const nextContent = nextProps.outcome.content;
     const {content} = this.props.outcome;
     if (nextContent !== content) {
+      // if content changes, don't try to remove it anymore
       document.removeEventListener('click', this.handleDocumentClick);
       this.initializeValues(nextContent);
     } else if (!content) {
