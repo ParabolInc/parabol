@@ -77,7 +77,7 @@
   },
   "dependencies": {
     "@segment/snippet": "^4.0.0",
-    "aphrodite": "https://github.com/mattkrick/aphrodite/tarball/4acd6c1db60120fadf26270161f1996adcee6a43",
+    "aphrodite": "https://github.com/mattkrick/aphrodite/tarball/e4a7a485ead34eb3682bf9be7deed51f9f5a2993",
     "auth0": "^2.3.1",
     "auth0-lock": "^9.2.2",
     "babel-polyfill": "6.13.0",
