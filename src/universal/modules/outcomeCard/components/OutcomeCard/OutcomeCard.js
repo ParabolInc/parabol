@@ -4,7 +4,7 @@ import {css} from 'aphrodite/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import labels from 'universal/styles/theme/labels';
-import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
+import {ACTIVE, STUCK, DONE, FUTURE, USER_DASH} from 'universal/utils/constants';
 import {cardBorderTop} from 'universal/styles/helpers';
 import OutcomeCardTextarea from 'universal/modules/outcomeCard/components/OutcomeCardTextarea/OutcomeCardTextarea';
 import EditingStatusContainer from 'universal/containers/EditingStatus/EditingStatusContainer';
@@ -12,7 +12,6 @@ import OutcomeCardFooter from 'universal/modules/outcomeCard/components/OutcomeC
 import OutcomeCardAssignMenu from 'universal/modules/outcomeCard/components/OutcomeCardAssignMenu/OutcomeCardAssignMenu';
 import OutcomeCardStatusMenu from 'universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu';
 import {Field} from 'redux-form';
-import {USER_DASH} from 'universal/utils/constants';
 
 const OutcomeCard = (props) => {
   const {
@@ -94,10 +93,38 @@ const OutcomeCard = (props) => {
 };
 
 OutcomeCard.propTypes = {
+  area: PropTypes.string,
   children: PropTypes.any,
   isArchived: PropTypes.bool,
+  isAgenda: PropTypes.bool,
+  handleCardActive: PropTypes.func,
+  handleCardUpdate: PropTypes.func,
+  hasHover: PropTypes.bool,
+  hoverOn: PropTypes.func,
+  hoverOff: PropTypes.func,
+  openArea: PropTypes.string,
+  toggleAssignMenu: PropTypes.func,
+  toggleStatusMenu: PropTypes.func,
+  openContentMenu: PropTypes.func,
+  styles: PropTypes.object,
+  outcome: PropTypes.shape({
+    id: PropTypes.string,
+    content: PropTypes.string,
+    status: PropTypes.oneOf(labels.projectStatus.slugs),
+    teamMemberId: PropTypes.string,
+  }),
+  dispatch: PropTypes.func.isRequired,
+  form: PropTypes.string,
+  editors: PropTypes.array,
+  field: PropTypes.string,
+  focus: PropTypes.func,
+  hasOpenAssignMenu: PropTypes.bool,
+  hasOpenStatusMenu: PropTypes.bool,
   isProject: PropTypes.bool,
-  styles: PropTypes.object
+  owner: PropTypes.object,
+  teamMembers: PropTypes.array,
+  updatedAt: PropTypes.instanceOf(Date),
+  handleSubmit: PropTypes.func,
 };
 
 const styleThunk = () => ({

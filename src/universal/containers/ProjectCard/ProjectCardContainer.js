@@ -2,7 +2,6 @@ import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import OutcomeCardContainer from 'universal/modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer';
-import makeUsername from 'universal/utils/makeUsername';
 
 // TODO merge this into OutcomeCardContainer
 const projectCardSubQuery = `
@@ -27,8 +26,6 @@ query {
 `;
 
 const mapStateToProps = (state, props) => {
-  const userId = state.auth.obj.sub;
-  const [teamId] = props.project.id.split('::');
   const projectId = props.project.id;
   const {project} = cashay.query(projectCardSubQuery, {
     op: 'projectCardContainer',
@@ -41,29 +38,14 @@ const mapStateToProps = (state, props) => {
       teamMember: (source) => source.teamMemberId
     },
   }).data;
-  const {preferredName} = project.teamMember;
-  const username = makeUsername(preferredName);
-  const myTeamMemberId = `${userId}::${teamId}`;
   return {
-    preferredName,
-    project,
-    username,
-    myTeamMemberId
+    project
   };
 };
 
 const ProjectCardContainer = (props) => {
-  const {area, dispatch, myTeamMemberId, preferredName, project, username} = props;
-  const {content, id, status, teamMemberId} = project;
-  // if (!content && myTeamMemberId !== teamMemberId) {
-  // }
-  // if (area === USER_DASH) {
-  //   return (
-  //     <UserProjectCardContainer
-  //     />
-  //   )
-  // }
-  // area === TEAM_DASH
+  const {area, project} = props;
+  const {id, status} = project;
   const form = `${status}::${id}`;
   return (
     <OutcomeCardContainer

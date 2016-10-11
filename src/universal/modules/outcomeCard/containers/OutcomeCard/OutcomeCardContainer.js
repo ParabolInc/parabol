@@ -4,10 +4,9 @@ import {cashay} from 'cashay';
 import {reduxForm, initialize} from 'redux-form';
 import labels from 'universal/styles/theme/labels';
 import getOutcomeNames from 'universal/utils/getOutcomeNames';
-import {actionFactories, binder} from 'universal/modules/outcomeCard/ducks/outcomeCardDuck';
+import {actionFactories, binder, initializer} from 'universal/modules/outcomeCard/ducks/outcomeCardDuck';
 import {connect} from 'react-redux';
 import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/OutcomeCard';
-import {initializer} from 'universal/modules/outcomeCard/ducks/outcomeCardDuck';
 import initializeComponent from 'universal/modules/outcomeCard/ducks/initializeComponent';
 import targetIsDescendant from 'universal/utils/targetIsDescendant';
 
@@ -23,7 +22,7 @@ query {
 
 const mapStateToProps = (state, props) => {
   const {form, outcome} = props;
-  const {openArea, hasHover} = state.outcomeCard[form] || initialState;
+  const {openArea, hasHover} = state.outcomeCard[form];
   const formState = state.form[form];
   const active = formState && formState.active && form.endsWith(formState.active);
   const {id: outcomeId} = outcome;
@@ -159,4 +158,4 @@ export default initializeComponent(initializer, 'form')(
   connect(mapStateToProps, mapDispatchToProps)(
     reduxForm()(OutcomeCardContainer)
   )
-)
+);

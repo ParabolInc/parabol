@@ -6,10 +6,6 @@ const initializeComponent = (initializer, componentId) => (WrappedComponent) => 
       store: PropTypes.object
     };
 
-    constructor(props, context) {
-      super(props, context);
-    }
-
     componentWillMount() {
       const component = this.props[componentId];
       const {mount} = initializer;

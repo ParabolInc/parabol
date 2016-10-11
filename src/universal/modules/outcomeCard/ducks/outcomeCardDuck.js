@@ -31,7 +31,7 @@ export default function reducer(state = emptyState, action = {}) {
     return {
       ...state,
       [component]: initialState
-    }
+    };
   }
   if (type === UNMOUNT) {
     const cloneState = {...state};
@@ -46,7 +46,7 @@ export default function reducer(state = emptyState, action = {}) {
         ...state[component],
         hasHover: true
       }
-    }
+    };
   }
   if (type === HOVER_OFF) {
     // handle hover change
@@ -56,7 +56,7 @@ export default function reducer(state = emptyState, action = {}) {
         ...state[component],
         hasHover: false
       }
-    }
+    };
   }
 
   // handle open area change
@@ -73,7 +73,7 @@ const actionFactory = (type) => (component) => {
   return {
     type,
     payload: {component}
-  }
+  };
 };
 
 export const binder = (dispatch, actionFactories, component) => {
@@ -82,7 +82,7 @@ export const binder = (dispatch, actionFactories, component) => {
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i];
     const factory = actionFactories[key];
-    actionCreators[key] = () => dispatch(factory(component))
+    actionCreators[key] = () => dispatch(factory(component));
   }
   return actionCreators;
 };
