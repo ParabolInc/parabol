@@ -260,7 +260,7 @@ export default {
         .do(() => {
             return r.table('TeamMember')
             .getAll(teamId, {index: "teamId"})
-            .sample(Number.MAX_SAFE_INTEGER)
+            .sample(100000)
             .coerceTo('array')
             .do((arr) => arr.forEach((doc) => {
                 return r.table('TeamMember').get(doc('id'))
