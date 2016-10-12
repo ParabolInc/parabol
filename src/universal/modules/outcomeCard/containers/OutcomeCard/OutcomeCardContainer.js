@@ -75,7 +75,7 @@ class OutcomeCardContainer extends Component {
     dispatch(initialize(form, {[id]: content}));
   }
 
-  handleCardActive = () => (isActive) => {
+  handleCardActive = (isActive) => {
     const outcomeId = this.props.outcome.id;
     if (isActive === undefined) {
       return;

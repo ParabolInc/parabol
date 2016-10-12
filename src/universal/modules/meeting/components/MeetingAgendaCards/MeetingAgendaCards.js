@@ -6,8 +6,8 @@ import {cashay} from 'cashay';
 import shortid from 'shortid';
 import CreateCard from 'universal/components/CreateCard/CreateCard';
 import {ACTIVE} from 'universal/utils/constants';
-import OutcomeCardContainer from 'universal/modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer';
 import withHotkey from 'react-hotkey-hoc';
+import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
 
 const handleAddActionFactory = (teamMemberId, agendaId) => () => {
   const [, teamId] = teamMemberId.split('::');
@@ -37,9 +37,10 @@ const makeCards = (array, dispatch, myTeamMemberId, itemStyle) => {
   return array.map((outcome) => {
     const {type, id} = outcome;
     const key = `${type}OutcomeCard${id}`;
+    const [myUserId] = myTeamMemberId.split('::');
     return (
       <div className={css(itemStyle)} key={key}>
-        <OutcomeCardContainer form={key} isAgenda outcome={outcome}/>
+        <OutcomeOrNullCard form={key} isAgenda myUserId={myUserId} outcome={outcome}/>
       </div>
     );
   });

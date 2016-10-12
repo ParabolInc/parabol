@@ -16,7 +16,7 @@ const mapStateToProps = (state) => {
   const {teams} = cashay.query(userColumnsQuery, {
     op: 'userProjectsHeaderContainer',
     sort: {
-      teams: (a, b) => a.name > b.name
+      teams: (a, b) => a.name > b.name ? 1 : -1
     }
   }).data;
   return {

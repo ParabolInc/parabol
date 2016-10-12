@@ -6,17 +6,18 @@ import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgen
 const meetingAgendaCardsQuery = `
 query {
   outcomes @cached(id: $agendaId, type: "[Outcome]") {
+    agendaId
     id
     type: __typename
     content
     createdAt
-    updatedAt
-    teamMemberId
+    createdBy
     teamMember @cached(type: "TeamMember") {
       picture
       preferredName
     }
-    agendaId
+    teamMemberId
+    updatedAt
     ... on Project {
       status
     }
@@ -38,7 +39,7 @@ const mapStateToProps = (state, props) => {
       teamMember: (source) => source.teamMemberId
     },
     sort: {
-      outcomes: (a, b) => a.createdAt > b.createdAt
+      outcomes: (a, b) => a.createdAt - b.createdAt
     }
   }).data;
   return {

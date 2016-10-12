@@ -36,7 +36,7 @@ const mapStateToProps = (state, props) => {
       myTeamMember: () => `${userId}::${teamId}`
     },
     sort: {
-      agenda: (a, b) => a.sortOrder > b.sortOrder
+      agenda: (a, b) => a.sortOrder - b.sortOrder
     }
   });
   const {agenda, myTeamMember} = agendaAndTeamMembers.data;

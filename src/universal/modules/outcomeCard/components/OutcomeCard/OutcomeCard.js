@@ -34,7 +34,7 @@ const OutcomeCard = (props) => {
   } = props;
 
   const isProject = Boolean(outcome.status);
-  const {isArchived} = outcome;
+  const {isArchived, status} = outcome;
   const rootStyles = css(
     styles.root,
     styles.cardBlock,

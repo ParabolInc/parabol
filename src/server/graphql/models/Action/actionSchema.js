@@ -28,6 +28,10 @@ export const Action = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The timestamp the action was created'
     },
+    createdBy: {
+      type: GraphQLID,
+      description: 'The userId that created the action'
+    },
     updatedAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the action was updated'
