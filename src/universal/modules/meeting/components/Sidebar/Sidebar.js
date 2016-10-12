@@ -35,7 +35,7 @@ const Sidebar = (props) => {
   const handleLogoClick = (e) => {
     // TODO remove in production, but great for debugging. Just click the logo & it removes the ephemeral meeting state
     e.preventDefault();
-    cashay.mutate('killMeeting', {variables: {teamId}});
+    cashay.mutate('endMeeting', {variables: {teamId}});
   };
   return (
     <div className={css(styles.sidebar)}>

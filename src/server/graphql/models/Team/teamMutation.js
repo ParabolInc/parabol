@@ -13,6 +13,7 @@ import shuffle from 'universal/utils/shuffle';
 import shortid from 'shortid';
 import {
   CHECKIN,
+  DONE,
   LOBBY,
   UPDATES,
   FIRST_CALL,
@@ -50,7 +51,6 @@ export default {
       });
 
       const FOO = await r.table('TeamMember').getAll(teamId, {index: 'teamId'}).pluck('id');
-      shuffle(FOO);
     }
   },
   moveMeeting: {
@@ -212,6 +212,62 @@ export default {
         meetingPhaseItem: 1
       };
       await r.table('Team').get(teamId).update(updatedTeam);
+      return true;
+    }
+  },
+  endMeeting: {
+    type: GraphQLBoolean,
+    description: 'Finish a meeting abruptly',
+    args: {
+      teamId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The team that will be having the meeting'
+      }
+    },
+    async resolve(source, {teamId}, {authToken}) {
+      const r = getRethink();
+      requireSUOrTeamMember(authToken, teamId);
+
+      await r.table('Team').get(teamId)
+        .update({
+          facilitatorPhase: 'lobby',
+          meetingPhase: 'lobby',
+          meetingId: null,
+          facilitatorPhaseItem: null,
+          meetingPhaseItem: null,
+          activeFacilitator: null
+        })
+        .do(() => {
+          return r.table('TeamMember').getAll(teamId, {index: 'teamId'})
+            .filter({isActive: true})
+            .update({
+              isCheckedIn: null
+            });
+        })
+        .do(() => {
+          return r.table('AgendaItem').getAll(teamId, {index: 'teamId'})
+            .update({
+              isActive: false
+            });
+        })
+        .do(() => {
+          return r.table('Project').getAll(teamId, {index: 'teamId'})
+            .filter({status: DONE})
+            .update({
+              isArchived: true
+            });
+        })
+        .do(() => {
+            return r.table('TeamMember')
+            .getAll(teamId, {index: "teamId"})
+            .sample(Number.MAX_SAFE_INTEGER)
+            .coerceTo('array')
+            .do((arr) => arr.forEach((doc) => {
+                return r.table('TeamMember').get(doc('id'))
+                  .update({checkInOrder: arr.offsetsOf(doc).nth(0)})
+              })
+            )
+        });
       return true;
     }
   },
