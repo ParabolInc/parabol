@@ -15,7 +15,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #326 Unable to make initial assignment of Action/Project to user other than
   self
 - #327 Agenda order processing broken
-- #328 Adding new agenda item causes other user's to navigate away
+- #328 Adding new agenda item causes other users to navigate away
 - #331 Enhance design of "Whatcha need?" prompt of agenda processing
 - #338 Font variants not loading
 - #346 Error during meeting crashes browser
