@@ -49,10 +49,10 @@ const MeetingAgendaLastCall = (props) => {
 MeetingAgendaLastCall.propTypes = {
   agendaItemCount: PropTypes.number,
   actionCount: PropTypes.number,
-  projectCount: PropTypes.number,
+  endMeeting: PropTypes.func,
   localPhaseItem: PropTypes.number,
   isFacilitating: PropTypes.bool,
-  router: PropTypes.object.isRequired,
+  projectCount: PropTypes.number,
   styles: PropTypes.object,
   team: PropTypes.object
 };

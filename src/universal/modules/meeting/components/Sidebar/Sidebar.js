@@ -5,7 +5,6 @@ import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
 import layoutStyle from 'universal/styles/layout';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
-import {cashay} from 'cashay';
 import {CHECKIN, UPDATES, FIRST_CALL, SUMMARY, phaseArray} from 'universal/utils/constants';
 import makeMeetingUrl from 'universal/utils/makeMeetingUrl';
 import {Link} from 'react-router';
