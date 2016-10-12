@@ -16,7 +16,6 @@ const MeetingAgendaFirstCall = (props) => {
             Add your Agenda Items to the queue now…
           </Type>
           <IconLink
-            colorPalette="cool"
             icon="arrow-circle-right"
             iconPlacement="right"
             label="…great! Let’s take care of our Agenda Items"

@@ -100,8 +100,8 @@ const mapStateToProps = (state, props) => {
     key: teamId,
     variables: {teamId},
     sort: {
-      agenda: (a,b) => a.sortOrder > b.sortOrder,
-      teamMembers: (a, b) => a.checkInOrder > b.checkInOrder
+      agenda: (a,b) => a.sortOrder - b.sortOrder,
+      teamMembers: (a, b) => a.checkInOrder - b.checkInOrder
     },
     resolveCached: {presence: (source) => (doc) => source.id.startsWith(doc.userId)}
   });

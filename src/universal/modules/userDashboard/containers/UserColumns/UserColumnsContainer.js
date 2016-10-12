@@ -46,7 +46,7 @@ const mapStateToProps = (state) => {
       projects: (source) => `${userId}::${source.id}`
     },
     sort: {
-      teams: (a, b) => a.name > b.name
+      teams: (a, b) => a.name > b.name ? 1 : -1
     },
     filter: {
       teams: filterFn
