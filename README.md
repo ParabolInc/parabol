@@ -75,6 +75,15 @@ $ npm run quickstart
 _Remember: if RethinkDB is running locally, you can reach its dashboard at
 [http://localhost:8080](http://localhost:8080) by default._
 
+The majority of Action's Javascript files are written using the emerging
+ECMAScript ES6 and ES7 standards. If you open a source file and see
+syntax errors, you may have to configure your editor differently.
+Our team's editors ([Atom](https://atom.io/) and
+[Webstorm](https://www.jetbrains.com/webstorm/)) have plugins which parse
+our project's Javascript transpilation options directly from
+[.babelrc](./.babelrc). If your editor has this option, it's the best way
+to go.
+
 ### Client-side development
 
 In this mode, webpack will hot swap your updated client modules without
@@ -145,6 +154,7 @@ get involved and how to get compensated.
 
 | Release | Summary                                    |
 |---------|--------------------------------------------|
+| v0.7.4  | Auth0 production options, numerous fixes   |
 | v0.7.1  | Fixes #322, #323, #334, #335, #336         |
 | v0.7.0  | Switch to aphrodite, me dashboard updates  |
 | v0.6.3  | Agenda processing order fix for issue #294 |

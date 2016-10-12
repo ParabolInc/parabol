@@ -4,6 +4,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.7.4 - 12-Oct-2016
+### Added
+- #333 Distribute auth0 clientId and domain via SSR, allows configurability
+  of differing auth0 domains
+
+### Fixed
+- #325 Adding new action during action meeting shows others that
+  new project is being created
+- #326 Unable to make initial assignment of Action/Project to user other than
+  self
+- #327 Agenda order processing broken
+- #328 Adding new agenda item causes other user's to navigate away
+- #331 Enhance design of "Whatcha need?" prompt of agenda processing
+- #338 Font variants not loading
+- #346 Error during meeting crashes browser
+- #347 Archive Card textarea disabled state
+- #349 Cannot start meeting
+- #351 Font loads twice error
+- #373 Read-only team name outline/focus
+
 ## v0.7.1 - 05-Oct-2016
 ### Fixed
 - Fixed: #322, #323, #334, #335, #336
