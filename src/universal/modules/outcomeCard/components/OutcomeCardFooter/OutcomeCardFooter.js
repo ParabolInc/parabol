@@ -130,13 +130,14 @@ const styleThunk = () => ({
   },
 
   avatarBlock: {
+    background: 'transparent',
+    border: 0,
     cursor: 'pointer',
     display: 'inline-block',
-    fontSize: 0,
-    border: 0,
-    background: 'transparent',
-    padding: 0,
     fontFamily: appTheme.typography.sansSerif,
+    fontSize: 0,
+    outline: 'none',
+    padding: 0,
 
     ':hover': {
       opacity: '.65'
