@@ -1,5 +1,4 @@
 import {
-  ACTIONS,
   ACTIONS_BY_TEAMMEMBER,
   ACTIONS_BY_AGENDA,
   AGENDA,
@@ -17,42 +16,44 @@ export default [
     string: `
     subscription($teamId: ID!) {
       archivedProjects(teamId: $teamId) {
+        content
         id
         isArchived
-        content
         status
         teamMemberId
         updatedAt
       }
     }`
   },
-  {
-    channel: ACTIONS,
-    string: `
-    subscription($userId: ID!) {
-      actions(userId: $userId) {
-        id
-        content
-        isComplete
-        updatedAt
-        sortOrder
-        agendaId
-      }
-    }`
-  },
+  // {
+  //   channel: ACTIONS,
+  //   string: `
+  //   subscription($userId: ID!) {
+  //     actions(userId: $userId) {
+  //       id
+  //       content
+  //       createdBy
+  //       isComplete
+  //       updatedAt
+  //       sortOrder
+  //       agendaId
+  //     }
+  //   }`
+  // },
   {
     channel: ACTIONS_BY_TEAMMEMBER,
     string: `
     subscription($teamMemberId: ID!) {
       actionsByTeamMember(teamMemberId: $teamMemberId) {
-        id
-        teamMemberId
-        content
-        isComplete
-        createdAt
-        updatedAt
-        sortOrder
         agendaId
+        createdAt
+        createdBy
+        content
+        id
+        isComplete
+        sortOrder
+        teamMemberId
+        updatedAt
       }
     }`
   },
@@ -61,14 +62,15 @@ export default [
     string: `
     subscription($agendaId: ID!) {
       actionsByAgenda(agendaId: $agendaId) {
-        id
-        teamMemberId
-        content
-        isComplete
-        createdAt
-        updatedAt
-        sortOrder
         agendaId
+        createdAt
+        createdBy
+        content
+        id
+        isComplete
+        sortOrder
+        teamMemberId
+        updatedAt
       }
     }`
   },
@@ -101,16 +103,17 @@ export default [
     string: `
     subscription($teamMemberId: ID!) {
       projects(teamMemberId: $teamMemberId) {
+        agendaId
+        content
+        createdAt
+        createdBy
         id
         isArchived
-        content
         status
         teamMemberId
-        createdAt
+        teamSort
         updatedAt
         userSort
-        teamSort
-        agendaId
       }
     }`
   },

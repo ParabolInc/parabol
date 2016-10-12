@@ -1,13 +1,14 @@
 import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
-import OutcomeCardContainer from 'universal/modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer';
+import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
 
 // TODO merge this into OutcomeCardContainer
 const projectCardSubQuery = `
 query {
   project @cached(type: "Project") {
     content
+    createdBy
     id
     status
     teamMemberId
@@ -16,18 +17,21 @@ query {
       id
       picture
       preferredName
-    }
+    } 
     team @cached(type: "Team") {
       id
       name
     }
+  }
+  user @cached(type: "User") {
+    id
   }
 }
 `;
 
 const mapStateToProps = (state, props) => {
   const projectId = props.project.id;
-  const {project} = cashay.query(projectCardSubQuery, {
+  const {project, user} = cashay.query(projectCardSubQuery, {
     op: 'projectCardContainer',
     key: projectId,
     variables: {projectId},
@@ -35,23 +39,26 @@ const mapStateToProps = (state, props) => {
       project: () => projectId,
       team: (source) => (doc) => source.id.startsWith(doc.id),
       // example of returning a string instead of a function so it runs in O(1)
-      teamMember: (source) => source.teamMemberId
+      teamMember: (source) => source.teamMemberId,
+      user: () => () => true
     },
   }).data;
   return {
-    project
+    project,
+    myUserId: user.id
   };
 };
 
 const ProjectCardContainer = (props) => {
-  const {area, project} = props;
+  const {area, myUserId, project} = props;
   const {id, status} = project;
   const form = `${status}::${id}`;
   return (
-    <OutcomeCardContainer
+    <OutcomeOrNullCard
       area={area}
       form={form}
       outcome={project}
+      myUserId={myUserId}
     />
   );
 };
@@ -60,7 +67,7 @@ const ProjectCardContainer = (props) => {
 ProjectCardContainer.propTypes = {
   area: PropTypes.string,
   dispatch: PropTypes.func,
-  myTeamMemberId: PropTypes.string,
+  myUserId: PropTypes.string,
   preferredName: PropTypes.string,
   username: PropTypes.string,
   project: PropTypes.shape({

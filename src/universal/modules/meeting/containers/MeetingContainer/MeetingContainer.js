@@ -99,7 +99,10 @@ const mapStateToProps = (state, props) => {
     op: 'meetingContainerQuery',
     key: teamId,
     variables: {teamId},
-    sort: {teamMembers: (a, b) => a.checkInOrder > b.checkInOrder},
+    sort: {
+      agenda: (a, b) => a.sortOrder - b.sortOrder,
+      teamMembers: (a, b) => a.checkInOrder - b.checkInOrder
+    },
     resolveCached: {presence: (source) => (doc) => source.id.startsWith(doc.userId)}
   });
   const {agenda, team} = queryResult.data;
@@ -166,7 +169,7 @@ export default class MeetingContainer extends Component {
     if (maybeNextPhase) {
       nextPhase = maybeNextPhase;
       if (hasPhaseItem(nextPhase)) {
-        nextPhaseItem = maybeNextPhaseItem || (facilitatorPhase === maybeNextPhase) ? facilitatorPhaseItem : 1;
+        nextPhaseItem = maybeNextPhaseItem || (facilitatorPhase === maybeNextPhase ? facilitatorPhaseItem : 1);
       }
     } else {
       const localPhaseOrder = phaseOrder(localPhase);

@@ -33,7 +33,7 @@ const mapStateToProps = (state) => {
     variables: {id: userId},
     key: teamFilterId || '',
     sort: {
-      actions: (a, b) => a.sortOrder < b.sortOrder
+      actions: (a, b) => b.sortOrder - a.sortOrder
     },
     resolveCached: {
       team: (source) => (doc) => source.id.startsWith(doc.id),

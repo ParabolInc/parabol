@@ -69,6 +69,7 @@ export default {
         isArchived: false,
         userId,
         createdAt: now,
+        createdBy: authToken.sub,
         teamId,
         updatedAt: now
       };

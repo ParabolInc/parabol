@@ -67,6 +67,7 @@ export default {
         ...newAction,
         userId,
         createdAt: now,
+        createdBy: authToken.sub,
         updatedAt: now,
         isComplete: false
       };
