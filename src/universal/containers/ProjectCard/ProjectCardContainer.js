@@ -40,7 +40,7 @@ const mapStateToProps = (state, props) => {
       team: (source) => (doc) => source.id.startsWith(doc.id),
       // example of returning a string instead of a function so it runs in O(1)
       teamMember: (source) => source.teamMemberId,
-      user: (source) => (doc) => true
+      user: () => () => true
     },
   }).data;
   return {
@@ -67,7 +67,7 @@ const ProjectCardContainer = (props) => {
 ProjectCardContainer.propTypes = {
   area: PropTypes.string,
   dispatch: PropTypes.func,
-  myTeamMemberId: PropTypes.string,
+  myUserId: PropTypes.string,
   preferredName: PropTypes.string,
   username: PropTypes.string,
   project: PropTypes.shape({

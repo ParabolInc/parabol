@@ -22,7 +22,7 @@ const NullCard = (props) => {
 NullCard.propTypes = {
   styles: PropTypes.object,
   type: PropTypes.oneOf(['Action', 'Project']),
-  username: PropTypes.string,
+  preferredName: PropTypes.string,
 };
 
 const styleThunk = () => ({

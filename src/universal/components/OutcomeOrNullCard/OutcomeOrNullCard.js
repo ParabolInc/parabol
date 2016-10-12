@@ -12,17 +12,8 @@ const OutcomeOrNullCard = (props) => {
 
 
 OutcomeOrNullCard.propTypes = {
-  area: PropTypes.string,
-  dispatch: PropTypes.func,
-  myTeamMemberId: PropTypes.string,
-  preferredName: PropTypes.string,
-  username: PropTypes.string,
-  project: PropTypes.shape({
-    id: PropTypes.string,
-    content: PropTypes.string,
-    status: PropTypes.string,
-    teamMemberId: PropTypes.string
-  })
+  myUserId: PropTypes.string,
+  outcome: PropTypes.object
 };
 
 export default OutcomeOrNullCard;
