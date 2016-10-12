@@ -5,7 +5,6 @@ import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
 import layoutStyle from 'universal/styles/layout';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
-import {cashay} from 'cashay';
 import {CHECKIN, UPDATES, FIRST_CALL, SUMMARY, phaseArray} from 'universal/utils/constants';
 import makeMeetingUrl from 'universal/utils/makeMeetingUrl';
 import {Link} from 'react-router';
@@ -32,15 +31,10 @@ const Sidebar = (props) => {
   const updatesNavItemStyles = css(styles.navListItem, facilitatorPhase === UPDATES && styles.navListItemMeetingMarker);
   const requestsNavItemStyles = css(styles.navListItem, inAgendaGroup(facilitatorPhase) && styles.navListItemMeetingMarker);
 
-  const handleLogoClick = (e) => {
-    // TODO remove in production, but great for debugging. Just click the logo & it removes the ephemeral meeting state
-    e.preventDefault();
-    cashay.mutate('killMeeting', {variables: {teamId}});
-  };
   return (
     <div className={css(styles.sidebar)}>
       <div className={css(styles.sidebarHeader)}>
-        <a className={css(styles.brandLink)} onClick={handleLogoClick}>
+        <a className={css(styles.brandLink)}>
           <img className={css(styles.brandLogo)} src={actionUIMark}/>
         </a>
         <Link className={css(styles.teamName)} to={`/team/${teamId}`} title={`Go to the ${teamName} Team Dashboard`}>{teamName}</Link>

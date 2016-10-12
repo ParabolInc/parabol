@@ -2,7 +2,6 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
-
 import Button from 'universal/components/Button/Button';
 import Type from 'universal/components/Type/Type';
 
@@ -14,15 +13,10 @@ const MeetingAgendaLastCall = (props) => {
   const {
     agendaItemCount,
     actionCount,
+    endMeeting,
     projectCount,
     styles
-    // router,
-    // team
   } = props;
-  // const {id: teamId} = team;
-  // const phaseItemFactory = makePhaseItemFactory(isFacilitating, 0, router, teamId, FIRST_CALL);
-  // const gotoNextItem = phaseItemFactory(1);
-
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="2rem">
@@ -40,10 +34,11 @@ const MeetingAgendaLastCall = (props) => {
             If not, you can end the meeting to see a summary.
           </Type>
           <Button
+            colorPalette="cool"
             label="End Meeting"
+            onClick={endMeeting}
             size="largest"
             style="outlined"
-            colorPalette="cool"
           />
         </MeetingSection>
       </MeetingSection>
@@ -54,10 +49,10 @@ const MeetingAgendaLastCall = (props) => {
 MeetingAgendaLastCall.propTypes = {
   agendaItemCount: PropTypes.number,
   actionCount: PropTypes.number,
-  projectCount: PropTypes.number,
+  endMeeting: PropTypes.func,
   localPhaseItem: PropTypes.number,
   isFacilitating: PropTypes.bool,
-  router: PropTypes.object.isRequired,
+  projectCount: PropTypes.number,
   styles: PropTypes.object,
   team: PropTypes.object
 };

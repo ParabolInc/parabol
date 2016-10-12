@@ -50,11 +50,12 @@ const mapStateToProps = (state, props) => {
 };
 
 const MeetingAgendaLastCallContainer = (props) => {
-  const {agendaItemCount, actionCount, projectCount} = props;
+  const {agendaItemCount, actionCount, endMeeting, projectCount} = props;
   return (
     <MeetingAgendaLastCall
       agendaItemCount={agendaItemCount}
       actionCount={actionCount}
+      endMeeting={endMeeting}
       projectCount={projectCount}
     />
   );
@@ -63,6 +64,7 @@ const MeetingAgendaLastCallContainer = (props) => {
 MeetingAgendaLastCallContainer.propTypes = {
   agendaItemCount: PropTypes.number,
   actionCount: PropTypes.number,
+  endMeeting: PropTypes.func,
   projectCount: PropTypes.number,
 };
 

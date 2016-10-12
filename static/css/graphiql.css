@@ -157,6 +157,7 @@
   -webkit-flex: 1;
   flex: 1;
   position: relative;
+  height: 300px;
 }
 
 .graphiql-container .variable-editor {

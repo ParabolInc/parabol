@@ -143,6 +143,7 @@ export default class MeetingContainer extends Component {
     handleRedirects(team, localPhase, localPhaseItem, {}, router);
     bindHotkey(['enter', 'right'], this.gotoNext);
     bindHotkey('left', this.gotoPrev);
+    bindHotkey('i c a n t h a c k i t', this.endMeeting);
   }
 
   shouldComponentUpdate(nextProps) {
@@ -153,6 +154,12 @@ export default class MeetingContainer extends Component {
     // make sure the url is legit, but only run once (when the initial team subscription comes back)
     return handleRedirects(team, localPhase, localPhaseItem, oldTeam, router);
   }
+
+  endMeeting = () => {
+    const {params: {teamId}, router} = this.props;
+    cashay.mutate('endMeeting', {variables: {teamId}});
+    router.push(`/team/${teamId}`);
+  };
 
   gotoItem = (maybeNextPhaseItem, maybeNextPhase) => {
     const {
@@ -251,7 +258,7 @@ export default class MeetingContainer extends Component {
           {localPhase === AGENDA_ITEMS &&
             < MeetingAgendaItems agendaItem={agenda[localPhaseItem - 1]} gotoNext={this.gotoNext} members={members}/>
           }
-          {localPhase === LAST_CALL && <MeetingAgendaLastCallContainer {...phaseStateProps} />}
+          {localPhase === LAST_CALL && <MeetingAgendaLastCallContainer {...phaseStateProps} endMeeting={this.endMeeting} />}
         </MeetingMain>
       </MeetingLayout>
     );

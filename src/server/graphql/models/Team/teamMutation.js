@@ -9,10 +9,10 @@ import {
   GraphQLInt
 } from 'graphql';
 import {CreateTeamInput, UpdateTeamInput, Team} from './teamSchema';
-import shuffle from 'universal/utils/shuffle';
 import shortid from 'shortid';
 import {
   CHECKIN,
+  DONE,
   LOBBY,
   UPDATES,
   FIRST_CALL,
@@ -26,33 +26,6 @@ import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeChec
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 
 export default {
-  endMeeting: {
-    type: GraphQLBoolean,
-    description: 'Successfully end the meeting',
-    args: {
-      teamId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The teamId to make sure the socket calling has permission'
-      }
-    },
-    // eslint-disable-next-line no-unused-vars
-    async resolve(source, {teamId}, {authToken, socket}) {
-      const r = getRethink();
-      // TODO & remove above eslint pragma
-      const teamMembers = await r.table('TeamMember').getAll(teamId, {index: 'teamId'}).pluck('id');
-      // eslint-disable-next-line no-unused-vars
-      const dbPromises = teamMembers.map((member, idx) => {
-        // TODO & remove above eslint pragma
-        return r.table('TeamMember').get(member.id).update({
-          checkInOrder: idx,
-          isCheckedIn: null
-        });
-      });
-
-      const FOO = await r.table('TeamMember').getAll(teamId, {index: 'teamId'}).pluck('id');
-      shuffle(FOO);
-    }
-  },
   moveMeeting: {
     type: GraphQLBoolean,
     description: 'Update the facilitator. If this is new territory for the meetingPhaseItem, advance that, too.',
@@ -215,7 +188,7 @@ export default {
       return true;
     }
   },
-  killMeeting: {
+  endMeeting: {
     type: GraphQLBoolean,
     description: 'Finish a meeting abruptly',
     args: {
@@ -227,17 +200,46 @@ export default {
     async resolve(source, {teamId}, {authToken}) {
       const r = getRethink();
       requireSUOrTeamMember(authToken, teamId);
-      await r.table('Team').get(teamId).update({
-        facilitatorPhase: 'lobby',
-        meetingPhase: 'lobby',
-        meetingId: null,
-        facilitatorPhaseItem: null,
-        meetingPhaseItem: null,
-        activeFacilitator: null
-      });
-      await r.table('TeamMember').getAll(teamId, {index: 'teamId'})
+
+      // reset the meeting
+      await r.table('Team').get(teamId)
         .update({
-          isCheckedIn: null
+          facilitatorPhase: 'lobby',
+          meetingPhase: 'lobby',
+          meetingId: null,
+          facilitatorPhaseItem: null,
+          meetingPhaseItem: null,
+          activeFacilitator: null
+        })
+        .do(() => {
+          // flag agenda items as inactive (more or less deleted)
+          return r.table('AgendaItem').getAll(teamId, {index: 'teamId'})
+            .update({
+              isActive: false
+            });
+        })
+        .do(() => {
+          // archive projects that are DONE
+          return r.table('Project').getAll(teamId, {index: 'teamId'})
+            .filter({status: DONE})
+            .update({
+              isArchived: true
+            });
+        })
+        .do(() => {
+          // shuffle the teamMember check in order, uncheck them in
+          return r.table('TeamMember')
+            .getAll(teamId, {index: 'teamId'})
+            .sample(100000)
+            .coerceTo('array')
+            .do((arr) => arr.forEach((doc) => {
+              return r.table('TeamMember').get(doc('id'))
+                  .update({
+                    checkInOrder: arr.offsetsOf(doc).nth(0),
+                    isCheckedIn: null
+                  });
+            })
+            );
         });
       return true;
     }
