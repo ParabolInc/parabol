@@ -170,7 +170,7 @@ export default {
         throw errorObj({_error: 'facilitator is not active on that team'});
       }
 
-      const meetingId = `${teamId}::${shortid.generate()}`;
+      const meetingId = `${teamId}::${now}`;
       const now = new Date();
       const week = getWeekOfYear(now);
 
@@ -182,9 +182,16 @@ export default {
         facilitatorPhase: CHECKIN,
         facilitatorPhaseItem: 1,
         meetingPhase: CHECKIN,
-        meetingPhaseItem: 1
+        meetingPhaseItem: 1,
       };
-      await r.table('Team').get(teamId).update(updatedTeam);
+      await r.table('Team').get(teamId).update(updatedTeam
+        .do(() => {
+          return r.table('Meeting').insert({
+            id: meetingId,
+            createdAt: now,
+            teamId
+          })
+        }));
       return true;
     }
   },
