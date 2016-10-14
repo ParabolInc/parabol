@@ -170,8 +170,8 @@ export default {
         throw errorObj({_error: 'facilitator is not active on that team'});
       }
 
-      const meetingId = `${teamId}::${now}`;
       const now = new Date();
+      const meetingId = `${teamId}::${shortid.generate()}`;
       const week = getWeekOfYear(now);
 
       const updatedTeam = {
@@ -192,7 +192,7 @@ export default {
           return r.table('Meeting').insert({
             id: meetingId,
             createdAt: now,
-            meetingNumber: meetingCount + 1,
+            meetingNumber: meetingCount.add(1),
             teamId
           })
         });
@@ -213,24 +213,70 @@ export default {
       requireSUOrTeamMember(authToken, teamId);
       const now = new Date();
 
-      // create actions
-      const createdActions = await r.table('AgendaItem')
+      // min start time
+      const updatedMeeting = await r.table('Meeting')
         .getAll(teamId, {index: 'teamId'})
-        .filter({isActive: true})
-        .map((doc) => doc('id'))
-        .coerceTo('array')
-        .do((agendaItemIds) => {
-          return r.table('Action').getAll(r.args(agendaItemIds('id')), {index: 'agendaId'})
+        .orderBy(r.desc('createdAt'))
+        .do((meetings) => {
+          // determine the oldVal baseline
+          return r.branch(
+            meetings.count().eq(1),
+            // if this is the first meeting, diff from beginning of meeting
+            meetings.nth(0)('createdAt'),
+            // else, diff from the end of the last meeting
+            meetings.nth(1)('endedAt')
+          )
+        })
+        .do((sinceTime) => {
+          // create project diffs
+          return r.table('Project')
+            .getAll('team123', {index: 'teamId'})
+            .filter({isArchived: false})
+            .map((project) => {
+              // for each team project, get the old val and new val
+              return r.table('ProjectHistory')
+                .between([project('id'), sinceTime], [project('id'), r.maxval], {index: 'projectIdUpdatedAt'})
+                .orderBy('projectIdUpdatedAt')
+                .coerceTo('array')
+                .do((histories) => {
+                  // for the wide range of changes, pluck out the oldest and the newest
+                  return {
+                    id: project('id'),
+                    newVal: histories.nth(0).without('id', 'projectId', 'updatedAt'),
+                    oldVal: r.branch(
+                      histories.count().eq(1),
+                      // if this is a new project, set oldVal to null
+                      null,
+                      histories.nth(-1).without('id', 'projectId', 'updatedAt')
+                    )
+                  }
+                })
+            })
+        })
+        .do((projectDiffs) => {
+          // incorporate the newly created actions and endedAt
+          return {
+            actions: r.table('AgendaItem')
+              .getAll(teamId, {index: 'teamId'})
+              .filter({isActive: true})
+              .map((doc) => doc('id'))
+              .coerceTo('array')
+              .do((agendaItemIds) => {
+                return r.table('Action').getAll(r.args(agendaItemIds('id')), {index: 'agendaId'})
+              }),
+            endedAt: now,
+            projects: projectDiffs
+          }
+        })
+        .do((meetingUpdates) => {
+          // add the updates to the meeting history
+          return r.table('Meeting')
+            .getAll(teamId, {index: 'teamId'})
+            .orderBy(r.desc('createdAt'))
+            .nth(0)
+            .update(meetingUpdates)
         });
 
-      // const createdProjects = await r.table('ProjectHistory')
-      //   .getAll()
-      console.log('createdActions', createdActions)
-      // await r.table('Meeting').getAll(teamId,{index: 'teamId'}).nth(0).update({
-      //   endedAt: now,
-      //   projects: makeProjectDiff(),
-      //   actions: makeHistoricalActions()
-      // })
       // reset the meeting
       await r.table('Team').get(teamId)
         .update({

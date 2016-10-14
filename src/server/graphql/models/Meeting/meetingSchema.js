@@ -39,10 +39,10 @@ const HistoricalProject = new GraphQLObjectType({
       type: GraphQLString,
       description: 'The description of the action created during the meeting'
     },
-    id: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The project id, matches the ID in the project table'
-    },
+    // id: {
+    //   type: new GraphQLNonNull(GraphQLID),
+    //   description: 'The project id, matches the ID in the project table'
+    // },
     status: {
       type: ProjectStatus,
       description: 'The description of the action created during the meeting'
@@ -63,7 +63,7 @@ const ProjectDiff = new GraphQLObjectType({
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The action id, matches the ID in Project table'
+      description: 'The project id, matches the ID in Project table'
     },
     oldVal: {
       type: HistoricalProject,
