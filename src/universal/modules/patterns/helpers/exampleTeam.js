@@ -8,6 +8,7 @@ const exampleTeam = {
   teamId: 'exampleTeam',
   teamName: 'Parabol',
   timerValue: '30:00',
+  meetingNumber: 1,
   teamMembers: [
     {
       isCheckedIn: true,

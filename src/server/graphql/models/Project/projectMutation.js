@@ -8,6 +8,10 @@ import {
 } from 'graphql';
 import {requireSUOrTeamMember} from '../authorization';
 import rebalanceProject from './rebalanceProject';
+import shortid from 'shortid';
+import ms from 'ms';
+
+const DEBOUNCE_TIME = ms('5m');
 
 export default {
   updateProject: {
@@ -25,23 +29,46 @@ export default {
     },
     async resolve(source, {updatedProject, rebalance}, {authToken}) {
       const r = getRethink();
-      const {id, ...project} = updatedProject;
+      const {id, teamSort, userSort, agendaId, isArchived, ...historicalProject} = updatedProject;
       // id is of format 'teamId::taskId'
       const [teamId] = id.split('::');
       requireSUOrTeamMember(authToken, teamId);
       const now = new Date();
-      const newProject = {
-        ...project,
-        updatedAt: now
+      const mergeDoc = {
+        ...historicalProject,
+        updatedAt: now,
+        projectId: id
       };
-      const {teamMemberId} = project;
+      const newProject = {
+        ...historicalProject,
+        agendaId,
+        isArchived,
+        teamSort,
+        updatedAt: now,
+        userSort
+      };
+      const {teamMemberId} = historicalProject;
       if (teamMemberId) {
         const [userId] = teamMemberId.split('::');
         newProject.userId = userId;
       }
-      // we could possibly combine this into the rebalance if we did a resort on the server, but separate logic is nice
-      await r.table('Project').get(id).update(newProject);
+      await r.table('Project').get(id).update(newProject)
+        .do(() => {
+          return r.table('ProjectHistory')
+            .between([id, r.minval], [id, r.maxval], {index: 'projectIdUpdatedAt'})
+            .orderBy({index: 'projectIdUpdatedAt'})
+            .nth(-1)
+            .default({updatedAt: 0})
+            .do((lastDoc) => {
+              return r.branch(
+                lastDoc('updatedAt').gt(r.epochTime((now - DEBOUNCE_TIME) / 1000)),
+                r.table('ProjectHistory').get(lastDoc('id')).update(mergeDoc),
+                r.table('ProjectHistory').insert(lastDoc.merge(mergeDoc, {id: shortid.generate()}))
+              )
+            })
+        });
       if (rebalance) {
+        // we could possibly combine this into the rebalance if we did a resort on the server, but separate logic is nice
         await rebalanceProject(rebalance, teamId);
       }
       return true;
@@ -73,7 +100,17 @@ export default {
         teamId,
         updatedAt: now
       };
-      await r.table('Project').insert(project);
+      await r.table('Project').insert(project)
+        .do(() => {
+          return r.table('ProjectHistory').insert({
+            id: shortid.generate(),
+            content: project.content,
+            projectId: project.id,
+            status: project.status,
+            teamMemberId: project.teamMemberId,
+            updatedAt: project.updatedAt
+          })
+        })
     }
   },
   deleteProject: {
@@ -90,7 +127,12 @@ export default {
       // format of id is teamId::taskIdPart
       const [teamId] = projectId.split('::');
       requireSUOrTeamMember(authToken, teamId);
-      await r.table('Project').get(projectId).delete();
+      await r.table('Project').get(projectId).delete()
+        .do(() => {
+          return r.table('ProjectHistory')
+            .between([projectId, r.minval], [projectId, r.maxval], {index: 'projectIdUpdatedAt'})
+            .delete()
+        })
     }
   },
   makeAction: {

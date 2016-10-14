@@ -184,14 +184,18 @@ export default {
         meetingPhase: CHECKIN,
         meetingPhaseItem: 1,
       };
-      await r.table('Team').get(teamId).update(updatedTeam
+      await r.table('Team').get(teamId).update(updatedTeam)
         .do(() => {
+          return r.table('Meeting').getAll(teamId, {index: 'teamId'}).count()
+        })
+        .do((meetingCount) => {
           return r.table('Meeting').insert({
             id: meetingId,
             createdAt: now,
+            meetingNumber: meetingCount + 1,
             teamId
           })
-        }));
+        });
       return true;
     }
   },
@@ -207,7 +211,26 @@ export default {
     async resolve(source, {teamId}, {authToken}) {
       const r = getRethink();
       requireSUOrTeamMember(authToken, teamId);
+      const now = new Date();
 
+      // create actions
+      const createdActions = await r.table('AgendaItem')
+        .getAll(teamId, {index: 'teamId'})
+        .filter({isActive: true})
+        .map((doc) => doc('id'))
+        .coerceTo('array')
+        .do((agendaItemIds) => {
+          return r.table('Action').getAll(r.args(agendaItemIds('id')), {index: 'agendaId'})
+        });
+
+      // const createdProjects = await r.table('ProjectHistory')
+      //   .getAll()
+      console.log('createdActions', createdActions)
+      // await r.table('Meeting').getAll(teamId,{index: 'teamId'}).nth(0).update({
+      //   endedAt: now,
+      //   projects: makeProjectDiff(),
+      //   actions: makeHistoricalActions()
+      // })
       // reset the meeting
       await r.table('Team').get(teamId)
         .update({
@@ -240,12 +263,12 @@ export default {
             .sample(100000)
             .coerceTo('array')
             .do((arr) => arr.forEach((doc) => {
-              return r.table('TeamMember').get(doc('id'))
+                return r.table('TeamMember').get(doc('id'))
                   .update({
                     checkInOrder: arr.offsetsOf(doc).nth(0),
                     isCheckedIn: null
                   });
-            })
+              })
             );
         });
       return true;

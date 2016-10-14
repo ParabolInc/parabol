@@ -1,24 +1,35 @@
 import React, {PropTypes} from 'react';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
-
+import MeetingSummary from 'universal/modules/summary/components/MeetingSummary/MeetingSummary';
 const meetingSummaryQuery = `
 query{
-  team: getTeamById(teamId: $teamId) {
+  meeting: getMeetingById(id: $id) {
     id
     name
+    meetingNumber
     teamMembers {
       id
       picture
       preferredName
-      
+    }
+    actions {
+      id
+      content
+      teamMemberId
+    }
+    projects {
+      id
+      content
+      status
+      teamMemberId
     }
   }
 }`;
 
 const mapStateToProps = (state, props) => {
   const {params: {teamId}} = props;
-  const {team} = cashay.query(meetingSummaryQuery, {
+  const {meeting} = cashay.query(meetingSummaryQuery, {
     op: 'meetingSummaryContainer',
     key: teamId,
     variables: {teamId},
@@ -27,13 +38,13 @@ const mapStateToProps = (state, props) => {
     },
   }).data;
   return {
-    team
+    meeting
   };
 };
 
 const MeetingSummaryContainer = (props) => {
-  const {team} = props;
-  return <MeetingSummary team={team}/>
+  const {meeting} = props;
+  return <MeetingSummary meeting={meeting}/>
 };
 
 export default connect(mapStateToProps)(MeetingSummaryContainer);

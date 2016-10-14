@@ -17,8 +17,8 @@ import sampleTeamSummary from 'universal/modules/email/helpers/sampleTeamSummary
 import exampleTeam from 'universal/modules/patterns/helpers/exampleTeam';
 
 const MeetingSummary = (props) => {
-  const {isFirstMeeting, newOutcomes, styles, team} = props;
-  const {teamMembers} = team;
+  const {styles, meeting} = props;
+  const {meetingNumber} = meeting;
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="2rem">
@@ -37,10 +37,10 @@ const MeetingSummary = (props) => {
             <span className={css(styles.highlight)}>5 Projects</span> marked as “<b>Done</b>” were archived.
           </Type>
 
-          {isFirstMeeting &&
-          <MeetingSection paddingBottom="2rem" paddingTop="2rem">
-            <SummaryFirstTime />
-          </MeetingSection>
+          {meetingNumber === 1 &&
+            <MeetingSection paddingBottom="2rem" paddingTop="2rem">
+              <SummaryFirstTime />
+            </MeetingSection>
           }
 
           <MeetingSection paddingBottom="2rem" paddingTop="2rem">
@@ -58,16 +58,12 @@ const MeetingSummary = (props) => {
 };
 
 MeetingSummary.propTypes = {
-  isFirstMeeting: PropTypes.bool,
-  newOutcomes: PropTypes.array.isRequired,
+  meeting: PropTypes.object.isRequired,
   styles: PropTypes.object,
-  team: PropTypes.object.isRequired
 };
 
 MeetingSummary.defaultProps = {
-  isFirstMeeting: true,
-  newOutcomes: sampleTeamSummary,
-  team: exampleTeam
+  meeting: exampleTeam
 };
 
 const styleThunk = () => ({
