@@ -217,40 +217,64 @@ export default {
       const updatedMeeting = await r.table('Meeting')
         .getAll(teamId, {index: 'teamId'})
         .orderBy(r.desc('createdAt'))
+        .limit(2)
+        .coerceTo('array')
         .do((meetings) => {
           // determine the oldVal baseline
-          return r.branch(
-            meetings.count().eq(1),
-            // if this is the first meeting, diff from beginning of meeting
-            meetings.nth(0)('createdAt'),
-            // else, diff from the end of the last meeting
-            meetings.nth(1)('endedAt')
-          )
+          // if this is the first meeting, diff from beginning of meeting
+          // else, diff from the end of the last meeting
+          return meetings.nth(1)('endedAt').default(meetings.nth(0)('createdAt'));
         })
         .do((sinceTime) => {
           // create project diffs
           return r.table('Project')
+            // TODO set to dynamic
             .getAll('team123', {index: 'teamId'})
             .filter({isArchived: false})
+            .coerceTo('array')
             .map((project) => {
               // for each team project, get the old val and new val
-              return r.table('ProjectHistory')
-                .between([project('id'), sinceTime], [project('id'), r.maxval], {index: 'projectIdUpdatedAt'})
-                .orderBy('projectIdUpdatedAt')
-                .coerceTo('array')
-                .do((histories) => {
-                  // for the wide range of changes, pluck out the oldest and the newest
-                  return {
-                    id: project('id'),
-                    newVal: histories.nth(0).without('id', 'projectId', 'updatedAt'),
-                    oldVal: r.branch(
-                      histories.count().eq(1),
-                      // if this is a new project, set oldVal to null
-                      null,
-                      histories.nth(-1).without('id', 'projectId', 'updatedAt')
+              return {
+                oldVal: r.table('ProjectHistory')
+                  .between([project('id'), r.minval], [project('id'), sinceTime], {index: 'projectIdUpdatedAt'})
+                  .orderBy('projectIdUpdatedAt')
+                  .coerceTo('array')
+                  .nth(-1)
+                  .without('id', 'projectId', 'updatedAt')
+                  .default(null),
+                newVal: r.table('ProjectHistory')
+                  .between([project('id'), sinceTime], [project('id'), r.maxval], {index: 'projectIdUpdatedAt'})
+                  .orderBy('projectIdUpdatedAt')
+                  .coerceTo('array')
+                  .nth(-1)
+                  .without('id', 'projectId', 'updatedAt')
+                  .default(null)
+              }
+            })
+            .do((fullDiffs) => {
+              // only grab the rows that have changed
+              return fullDiffs.filter((row) => row('newVal').ne(null))
+            })
+            .map((fullDiff) => {
+              return {
+                oldVal: fullDiff('oldVal'),
+                // remove values that haven't changed
+                newVal: r.expr(fullDiff('newVal')
+                  .keys()
+                  .map(k => {
+                    return r.branch(
+                      fullDiff('oldVal').eq(null).or(fullDiff('oldVal')(k)).eq(fullDiff('newVal')(k)),
+                      ['__REMOVE__', null],
+                      [k, fullDiff('newVal')(k)]
                     )
-                  }
-                })
+                  })
+                  .distinct()
+                ).coerceTo('object').without('__REMOVE__')
+              }
+            })
+            .do((partialDiffs) => {
+              // if a project switch from 'active' to 'done' to 'active', remove it, too
+              return partialDiffs.filter((row) => row('newVal').ne({}))
             })
         })
         .do((projectDiffs) => {
@@ -259,10 +283,12 @@ export default {
             actions: r.table('AgendaItem')
               .getAll(teamId, {index: 'teamId'})
               .filter({isActive: true})
-              .map((doc) => doc('id'))
               .coerceTo('array')
+              .map((doc) => doc('id'))
               .do((agendaItemIds) => {
-                return r.table('Action').getAll(r.args(agendaItemIds('id')), {index: 'agendaId'})
+                return r.table('Action')
+                  .getAll(r.args(agendaItemIds), {index: 'agendaId'})
+                  .coerceTo('array')
               }),
             endedAt: now,
             projects: projectDiffs
