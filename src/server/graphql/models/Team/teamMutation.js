@@ -116,12 +116,12 @@ export default {
       }
       const moveMeeting = isSynced && incrementsProgress;
 
-      if (moveMeeting && meetingPhase === AGENDA_ITEMS && nextPhaseItem > 1) {
+      if (moveMeeting && meetingPhase === AGENDA_ITEMS) {
         await r.table('AgendaItem')
           .getAll(teamId, {index: 'teamId'})
           .filter({isActive: true})
           .orderBy('sortOrder')
-          .nth(nextPhaseItem - 2)
+          .nth(meetingPhaseItem - 1)
           .update({isComplete: true});
       }
       /*
