@@ -56,9 +56,12 @@ class OutcomeCardTextArea extends Component {
 
     let textAreaRef;
     const handleBlur = () => {
-      input.onBlur();
-
-      handleSubmit();
+      const {input: {value}} = this.props;
+      if (value) {
+        // if there's no value, then the document event listener will handle this
+        input.onBlur();
+        handleSubmit();
+      }
     };
     const handleKeyPress = () => {
       // TODO fix me there's a little lag here
@@ -82,6 +85,7 @@ class OutcomeCardTextArea extends Component {
         className={contentStyles}
         disabled={isArchived}
         placeholder="Type your outcome here"
+        onBlur={handleBlur}
         onKeyDown={submitOnEnter}
         onKeyUp={handleKeyPress}
         autoFocus={doFocus}
