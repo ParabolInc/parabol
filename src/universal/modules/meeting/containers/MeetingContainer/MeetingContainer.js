@@ -32,6 +32,7 @@ import MeetingAgendaLastCallContainer from 'universal/modules/meeting/containers
 import {TEAMS} from 'universal/subscriptions/constants';
 import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 import withHotkey from 'react-hotkey-hoc';
+import getBestPhaseItem from 'universal/modules/meeting/helpers/getBestPhaseItem';
 
 const resolveMeetingMembers = (queryData, userId) => {
   if (queryData !== resolveMeetingMembers.queryData) {
@@ -168,15 +169,25 @@ export default class MeetingContainer extends Component {
       members,
       params: {localPhase, teamId},
       router,
-      team: {facilitatorPhase, facilitatorPhaseItem, meetingPhase}
+      team
     } = this.props;
-
+    const {meetingPhase} = team;
     let nextPhase;
     let nextPhaseItem;
+
+    // if it's a link on the sidebar
     if (maybeNextPhase) {
-      nextPhase = maybeNextPhase;
+      // if we click the Agenda link on the sidebar and we're already past that, goto the next reasonable area
+      if (maybeNextPhase === FIRST_CALL && phaseOrder(meetingPhase) > phaseOrder(FIRST_CALL)) {
+        nextPhase = agenda.length ? AGENDA_ITEMS : LAST_CALL;
+      } else {
+        const maxPhaseOrder = isFacilitating ? phaseOrder(meetingPhase) + 1 : phaseOrder(meetingPhase);
+        if (phaseOrder(maybeNextPhase) > maxPhaseOrder) return;
+        nextPhase = maybeNextPhase;
+      }
+      // if we're going to an area that has items, try going to the facilitator item, or the meeting item, or just 1
       if (hasPhaseItem(nextPhase)) {
-        nextPhaseItem = maybeNextPhaseItem || (facilitatorPhase === maybeNextPhase ? facilitatorPhaseItem : 1);
+        nextPhaseItem = maybeNextPhaseItem || getBestPhaseItem(AGENDA_ITEMS, team);
       }
     } else {
       const localPhaseOrder = phaseOrder(localPhase);
@@ -249,16 +260,17 @@ export default class MeetingContainer extends Component {
           </MeetingAvatars>
           {localPhase === LOBBY && <MeetingLobby members={members} team={team}/>}
           {localPhase === CHECKIN &&
-            <MeetingCheckin gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
+          <MeetingCheckin gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
           }
           {localPhase === UPDATES &&
-            <MeetingUpdatesContainer gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
+          <MeetingUpdatesContainer gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
           }
           {localPhase === FIRST_CALL && <MeetingAgendaFirstCall gotoNext={this.gotoNext}/>}
           {localPhase === AGENDA_ITEMS &&
-            < MeetingAgendaItems agendaItem={agenda[localPhaseItem - 1]} gotoNext={this.gotoNext} members={members}/>
+          < MeetingAgendaItems agendaItem={agenda[localPhaseItem - 1]} gotoNext={this.gotoNext} members={members}/>
           }
-          {localPhase === LAST_CALL && <MeetingAgendaLastCallContainer {...phaseStateProps} endMeeting={this.endMeeting} />}
+          {localPhase === LAST_CALL &&
+          <MeetingAgendaLastCallContainer {...phaseStateProps} endMeeting={this.endMeeting}/>}
         </MeetingMain>
       </MeetingLayout>
     );
