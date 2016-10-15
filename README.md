@@ -154,6 +154,7 @@ get involved and how to get compensated.
 
 | Release | Summary                                    |
 |---------|--------------------------------------------|
+| v0.7.5  | Added temporary end meeting logic, fixes   |
 | v0.7.4  | Auth0 production options, numerous fixes   |
 | v0.7.1  | Fixes #322, #323, #334, #335, #336         |
 | v0.7.0  | Switch to aphrodite, me dashboard updates  |
