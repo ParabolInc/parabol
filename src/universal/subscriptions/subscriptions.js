@@ -1,4 +1,5 @@
 import {
+  ACTIONS,
   ACTIONS_BY_TEAMMEMBER,
   ACTIONS_BY_AGENDA,
   AGENDA,
@@ -25,21 +26,21 @@ export default [
       }
     }`
   },
-  // {
-  //   channel: ACTIONS,
-  //   string: `
-  //   subscription($userId: ID!) {
-  //     actions(userId: $userId) {
-  //       id
-  //       content
-  //       createdBy
-  //       isComplete
-  //       updatedAt
-  //       sortOrder
-  //       agendaId
-  //     }
-  //   }`
-  // },
+  {
+    channel: ACTIONS,
+    string: `
+    subscription($userId: ID!) {
+      actions(userId: $userId) {
+        id
+        content
+        createdBy
+        isComplete
+        updatedAt
+        sortOrder
+        agendaId
+      }
+    }`
+  },
   {
     channel: ACTIONS_BY_TEAMMEMBER,
     string: `
