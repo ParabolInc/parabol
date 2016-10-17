@@ -6,7 +6,8 @@ import {Link, withRouter} from 'react-router';
 
 const DashNavItem = (props) => {
   const {label, href, styles, router} = props;
-  const isActive = router.isActive(href, false);
+  const flagChildren = href === '/me';
+  const isActive = router.isActive(href, flagChildren);
   const linkStyles = css(
     styles.link,
     isActive && styles.active

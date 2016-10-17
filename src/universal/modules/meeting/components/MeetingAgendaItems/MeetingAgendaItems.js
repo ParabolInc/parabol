@@ -74,13 +74,10 @@ const MeetingAgendaItems = (props) => {
 };
 
 MeetingAgendaItems.propTypes = {
-  agendaItem: PropTypes.object,
-  gotoNext: PropTypes.func.isRequred,
-  isFacilitating: PropTypes.bool,
-  localPhaseItem: PropTypes.number,
-  members: PropTypes.array,
-  styles: PropTypes.object,
-  team: PropTypes.object
+  agendaItem: PropTypes.object.isRequired,
+  gotoNext: PropTypes.func.isRequired,
+  members: PropTypes.array.isRequired,
+  styles: PropTypes.object.isRequired
 };
 
 const styleThunk = () => ({

@@ -156,9 +156,11 @@ export default class MeetingContainer extends Component {
     return handleRedirects(team, localPhase, localPhaseItem, oldTeam, router);
   }
 
-  endMeeting = () => {
+  endMeeting = (redirOrEvent) => {
     const {params: {teamId}} = this.props;
-    this.gotoItem(null, SUMMARY);
+    if (redirOrEvent === true) {
+      this.gotoItem(null, SUMMARY);
+    }
     cashay.mutate('endMeeting', {variables: {teamId}});
   };
 
@@ -267,7 +269,7 @@ export default class MeetingContainer extends Component {
           }
           {localPhase === FIRST_CALL && <MeetingAgendaFirstCall gotoNext={this.gotoNext}/>}
           {localPhase === AGENDA_ITEMS &&
-            < MeetingAgendaItems agendaItem={agenda[localPhaseItem - 1]} gotoNext={this.gotoNext} members={members}/>
+            <MeetingAgendaItems agendaItem={agenda[localPhaseItem - 1]} gotoNext={this.gotoNext} members={members}/>
           }
           {localPhase === LAST_CALL &&
             <MeetingAgendaLastCallContainer {...phaseStateProps} endMeeting={this.endMeeting}/>

@@ -86,16 +86,10 @@ const MeetingUpdates = (props) => {
 MeetingUpdates.propTypes = {
   gotoItem: PropTypes.func.isRequired,
   gotoNext: PropTypes.func.isRequired,
-  isFacilitating: PropTypes.bool,
   localPhaseItem: PropTypes.number.isRequired,
-  members: PropTypes.array,
-  meetingPhase: PropTypes.string.isRequired,
-  meetingPhaseItem: PropTypes.number.isRequired,
-  params: PropTypes.shape({
-    teamId: PropTypes.string.isRequired
-  }).isRequired,
+  members: PropTypes.array.isRequired,
   projects: PropTypes.object.isRequired,
-  styles: PropTypes.object,
+  styles: PropTypes.object.isRequired,
   team: PropTypes.object.isRequired,
 };
 
