@@ -24,7 +24,7 @@ import {
   FIRST_CALL,
   AGENDA_ITEMS,
   LAST_CALL,
-//  SUMMARY
+  SUMMARY
 } from 'universal/utils/constants';
 import MeetingAgendaItems from 'universal/modules/meeting/components/MeetingAgendaItems/MeetingAgendaItems';
 import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
@@ -157,9 +157,9 @@ export default class MeetingContainer extends Component {
   }
 
   endMeeting = () => {
-    const {params: {teamId}, router, team: {meetingId}} = this.props;
+    const {params: {teamId}} = this.props;
+    this.gotoItem(null, SUMMARY);
     cashay.mutate('endMeeting', {variables: {teamId}});
-    router.push(`/summary/${meetingId}`);
   };
 
   gotoItem = (maybeNextPhaseItem, maybeNextPhase) => {
