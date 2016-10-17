@@ -53,7 +53,7 @@ const groupOutcomesByTeamMember = (actions, projects, teamMembers) => {
     const idx = teamMemberIndices[project.teamMemberId];
     enhancedTeamMembers[idx].projects.push(project);
   }
-  return enhancedTeamMembers
+  return enhancedTeamMembers;
 };
 
 const mapStateToProps = (state, props) => {
@@ -78,7 +78,15 @@ const mapStateToProps = (state, props) => {
 };
 
 const MeetingSummaryContainer = (props) => {
-  return <MeetingSummary {...props} />
+  return <MeetingSummary {...props} />;
+};
+
+MeetingSummaryContainer.propTypes = {
+  actionCount: PropTypes.number,
+  agendaItemsCompleted: PropTypes.number,
+  meetingNumber: PropTypes.number,
+  projectCount: PropTypes.number,
+  teamMembers: PropTypes.array,
 };
 
 export default requireAuth(

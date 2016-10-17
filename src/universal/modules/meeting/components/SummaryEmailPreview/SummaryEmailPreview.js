@@ -41,7 +41,7 @@ const SummaryEmailPreview = (props) => {
 
 SummaryEmailPreview.propTypes = {
   styles: PropTypes.object,
-  teamOutcomes: PropTypes.array
+  teamMembers: PropTypes.array
 };
 
 const styleThunk = () => ({

@@ -186,7 +186,7 @@ export default {
       };
       await r.table('Team').get(teamId).update(updatedTeam)
         .do(() => {
-          return r.table('Meeting').getAll(teamId, {index: 'teamId'}).count()
+          return r.table('Meeting').getAll(teamId, {index: 'teamId'}).count();
         })
         .do((meetingCount) => {
           return r.table('Meeting').insert({
@@ -194,7 +194,7 @@ export default {
             createdAt: now,
             meetingNumber: meetingCount.add(1),
             teamId
-          })
+          });
         });
       return true;
     }
@@ -212,7 +212,7 @@ export default {
       const r = getRethink();
       requireSUOrTeamMember(authToken, teamId);
       const now = new Date();
-      const updatedMeeting = await r.table('Meeting')
+      await r.table('Meeting')
         .getAll(teamId, {index: 'teamId'})
         .orderBy(r.desc('createdAt'))
         .nth(0)('id')
@@ -238,8 +238,8 @@ export default {
                     .pluck('id', 'content', 'status', 'teamMemberId')
                     .coerceTo('array'),
                   teamName: r.table('Team').get(teamId)('name'),
-                }, {nonAtomic: true})
-            })
+                }, {nonAtomic: true});
+            });
         });
 
       // reset the meeting
@@ -274,12 +274,12 @@ export default {
             .sample(100000)
             .coerceTo('array')
             .do((arr) => arr.forEach((doc) => {
-                return r.table('TeamMember').get(doc('id'))
+              return r.table('TeamMember').get(doc('id'))
                   .update({
                     checkInOrder: arr.offsetsOf(doc).nth(0),
                     isCheckedIn: null
                   });
-              })
+            })
             );
         });
       return true;

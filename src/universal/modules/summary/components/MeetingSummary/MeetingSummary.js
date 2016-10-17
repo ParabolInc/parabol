@@ -41,9 +41,9 @@ const MeetingSummary = (props) => {
           </Type>
 
           {meetingNumber === 1 &&
-          <MeetingSection paddingBottom="2rem" paddingTop="2rem">
-            <SummaryFirstTime />
-          </MeetingSection>
+            <MeetingSection paddingBottom="2rem" paddingTop="2rem">
+              <SummaryFirstTime />
+            </MeetingSection>
           }
 
           <MeetingSection paddingBottom="2rem" paddingTop="2rem">
@@ -78,4 +78,12 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(MeetingSummary)
+MeetingSummary.propTypes = {
+  actionCount: PropTypes.number,
+  agendaItemsCompleted: PropTypes.number,
+  meetingNumber: PropTypes.number,
+  projectCount: PropTypes.number,
+  teamMembers: PropTypes.array,
+};
+
+export default withStyles(styleThunk)(MeetingSummary);

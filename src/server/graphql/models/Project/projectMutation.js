@@ -64,8 +64,8 @@ export default {
                 lastDoc('updatedAt').gt(r.epochTime((now - DEBOUNCE_TIME) / 1000)),
                 r.table('ProjectHistory').get(lastDoc('id')).update(mergeDoc),
                 r.table('ProjectHistory').insert(lastDoc.merge(mergeDoc, {id: shortid.generate()}))
-              )
-            })
+              );
+            });
         });
       if (rebalance) {
         // we could possibly combine this into the rebalance if we did a resort on the server, but separate logic is nice
@@ -109,8 +109,8 @@ export default {
             status: project.status,
             teamMemberId: project.teamMemberId,
             updatedAt: project.updatedAt
-          })
-        })
+          });
+        });
     }
   },
   deleteProject: {
@@ -131,8 +131,8 @@ export default {
         .do(() => {
           return r.table('ProjectHistory')
             .between([projectId, r.minval], [projectId, r.maxval], {index: 'projectIdUpdatedAt'})
-            .delete()
-        })
+            .delete();
+        });
     }
   },
   makeAction: {
