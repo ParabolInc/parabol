@@ -4,7 +4,7 @@ import Helmet from 'react-helmet';
 import {showLock} from 'universal/components/Auth0ShowLock/Auth0ShowLock';
 import {head} from 'universal/utils/clientOptions';
 import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
-import {injectStyleOnce} from 'aphrodite/lib/inject';
+import {injectStyleOnce} from 'aphrodite-local-styles/lib/inject';
 import injectGlobals from 'universal/styles/hepha';
 import auth0Overrides from 'universal/styles/theme/auth0Overrides';
 

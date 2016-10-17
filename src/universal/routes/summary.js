@@ -4,7 +4,7 @@ import makeReducer from 'universal/redux/makeReducer';
 const setMeetingImports = () =>
   new Map([
     ['component', System.import(
-      'universal/modules/summary/components/MeetingSummary/MeetingSummary')]
+      'universal/modules/summary/containers/MeetingSummary/MeetingSummaryContainer')]
   ]);
 
 const getMeetingImports = importMap => ({
@@ -12,7 +12,7 @@ const getMeetingImports = importMap => ({
 });
 
 export default store => ({
-  path: 'summary/:teamId/:meetingId',
+  path: '/summary/:meetingId',
   getComponent: async(location, cb) => {
     const promiseMap = setMeetingImports();
     const importMap = await resolvePromiseMap(promiseMap);

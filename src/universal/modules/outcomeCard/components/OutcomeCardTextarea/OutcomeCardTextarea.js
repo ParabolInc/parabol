@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite/no-important';
+import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import Textarea from 'react-textarea-autosize';

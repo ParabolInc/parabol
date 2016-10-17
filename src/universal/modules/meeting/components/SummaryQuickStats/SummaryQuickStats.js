@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite/no-important';
+import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import labels from 'universal/styles/theme/labels';
@@ -15,17 +15,13 @@ const iconStyle = {
 
 const SummaryQuickStats = (props) => {
   const {
-    countNewActions,
-    countNewProjects,
-    countUpdates,
-    countDone,
+    actionCount,
+    projectCount,
     styles
   } = props;
 
   const actions = css(styles.cardRootStyles, styles.actions);
-  const done = css(styles.cardRootStyles, styles.done);
   const projects = css(styles.cardRootStyles, styles.projects);
-  const updates = css(styles.cardRootStyles, styles.updates);
 
   return (
     <div className={css(styles.root)}>
@@ -34,24 +30,14 @@ const SummaryQuickStats = (props) => {
       </div>
       <div className={css(styles.cardGroup)}>
         <div className={projects}>
-          <div className={css(styles.count)}>{countNewProjects}</div>
-          <FontAwesome name={labels.project.icon} style={iconStyle} />
+          <div className={css(styles.count)}>{projectCount}</div>
+          <FontAwesome name={labels.project.icon} style={iconStyle}/>
           <div className={css(styles.label)}>New Projects</div>
         </div>
         <div className={actions}>
-          <div className={css(styles.count)}>{countNewActions}</div>
-          <FontAwesome name={labels.action.icon} style={iconStyle} />
+          <div className={css(styles.count)}>{actionCount}</div>
+          <FontAwesome name={labels.action.icon} style={iconStyle}/>
           <div className={css(styles.label)}>New Actions</div>
-        </div>
-        <div className={updates}>
-          <div className={css(styles.count)}>{countUpdates}</div>
-          <FontAwesome name="random" style={iconStyle} />
-          <div className={css(styles.label)}>Updates</div>
-        </div>
-        <div className={done}>
-          <div className={css(styles.count)}>{countDone}</div>
-          <FontAwesome name={labels.projectStatus[DONE].icon} style={iconStyle} />
-          <div className={css(styles.label)}>Done</div>
         </div>
       </div>
     </div>
@@ -59,18 +45,14 @@ const SummaryQuickStats = (props) => {
 };
 
 SummaryQuickStats.propTypes = {
-  countNewActions: PropTypes.number,
-  countNewProjects: PropTypes.number,
-  countUpdates: PropTypes.number,
-  countDone: PropTypes.number,
+  actionCount: PropTypes.number,
+  projectCount: PropTypes.number,
   styles: PropTypes.object
 };
 
 SummaryQuickStats.defaultProps = {
-  countNewActions: 12,
-  countNewProjects: 4,
-  countUpdates: 9,
-  countDone: 5
+  actionCount: 12,
+  projectCount: 4
 };
 
 const styleThunk = () => ({

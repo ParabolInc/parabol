@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import Action from 'universal/components/Action/Action';
-import {injectStyleOnce} from 'aphrodite/lib/inject';
+import {injectStyleOnce} from 'aphrodite-local-styles/lib/inject';
 import injectGlobals from 'universal/styles/hepha';
 import globalStyles from 'universal/styles/theme/globalStyles';
 

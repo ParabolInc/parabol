@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {StyleSheet} from 'aphrodite/no-important';
+import {StyleSheet} from 'aphrodite-local-styles/no-important';
 
 const contextMap = new WeakMap();
 

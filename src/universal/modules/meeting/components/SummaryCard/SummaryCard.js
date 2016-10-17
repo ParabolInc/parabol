@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite/no-important';
+import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import labels from 'universal/styles/theme/labels';
@@ -13,21 +13,11 @@ const SummaryCard = (props) => {
     content,
     status,
     styles,
-    type,
   } = props;
-
-  const rootStyleOptions = [styles.root];
-
-  if (type === 'project') {
-    rootStyleOptions.push(styles[status]);
-  } else {
-    rootStyleOptions.push(styles.isAction);
-  }
 
   const rootStyles = css(
     styles.root,
-    // TODO sure this shouldn't be Project, not project?
-    type === 'project' ? styles[status] : styles.isAction
+    status ? styles[status] : styles.isAction
   );
 
   const trimmedContent = trimString(content, 40);
@@ -44,15 +34,7 @@ const SummaryCard = (props) => {
 SummaryCard.propTypes = {
   content: PropTypes.string,
   status: PropTypes.oneOf(labels.projectStatus.slugs),
-  styles: PropTypes.object,
-  type: PropTypes.oneOf([
-    'project',
-    'action'
-  ])
-};
-
-SummaryCard.defaultProps = {
-  type: 'action'
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

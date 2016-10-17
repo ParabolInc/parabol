@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite/no-important';
+import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 
 import Type from 'universal/components/Type/Type';
@@ -10,15 +10,17 @@ import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPha
 import SummaryEmailPreview from 'universal/modules/meeting/components/SummaryEmailPreview/SummaryEmailPreview';
 import SummaryFirstTime from 'universal/modules/meeting/components/SummaryFirstTime/SummaryFirstTime';
 import SummaryQuickStats from 'universal/modules/meeting/components/SummaryQuickStats/SummaryQuickStats';
-
 import {makeSuccessExpression} from 'universal/utils/makeSuccessCopy';
 
-import sampleTeamSummary from 'universal/modules/email/helpers/sampleTeamSummary';
-import exampleTeam from 'universal/modules/patterns/helpers/exampleTeam';
-
 const MeetingSummary = (props) => {
-  const {styles, meeting} = props;
-  const {meetingNumber} = meeting;
+  const {
+    actionCount,
+    agendaItemsCompleted,
+    meetingNumber,
+    projectCount,
+    styles,
+    teamMembers,
+  } = props;
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="2rem">
@@ -30,25 +32,29 @@ const MeetingSummary = (props) => {
 
           <Type align="center" marginBottom="2rem" marginTop="2rem" scale="s5">
             <b>{makeSuccessExpression()}</b>! We worked on{' '}
-            <span className={css(styles.highlight)}>7 Agenda Items</span><br />
-                                            resulting in <span
-            className={css(styles.highlight)}>4 New Projects</span>{' '}
-                                            and <span className={css(styles.highlight)}>12 New Actions</span>.<br />
-            <span className={css(styles.highlight)}>5 Projects</span> marked as “<b>Done</b>” were archived.
+            <span className={css(styles.highlight)}>{agendaItemsCompleted} Agenda Items</span><br />
+            <span>resulting in </span>
+            <span className={css(styles.highlight)}>{projectCount} New Projects </span>
+            <span>and </span>
+            <span className={css(styles.highlight)}>{actionCount} New Actions</span>
+            <span>.</span>
           </Type>
 
           {meetingNumber === 1 &&
-            <MeetingSection paddingBottom="2rem" paddingTop="2rem">
-              <SummaryFirstTime />
-            </MeetingSection>
+          <MeetingSection paddingBottom="2rem" paddingTop="2rem">
+            <SummaryFirstTime />
+          </MeetingSection>
           }
 
           <MeetingSection paddingBottom="2rem" paddingTop="2rem">
-            <SummaryQuickStats />
+            <SummaryQuickStats
+              actionCount={actionCount}
+              projectCount={projectCount}
+            />
           </MeetingSection>
 
           <MeetingSection paddingBottom="2rem" paddingTop="2rem">
-            <SummaryEmailPreview teamOutcomes={newOutcomes}/>
+            <SummaryEmailPreview teamMembers={teamMembers}/>
           </MeetingSection>
 
         </MeetingSection>
@@ -58,12 +64,7 @@ const MeetingSummary = (props) => {
 };
 
 MeetingSummary.propTypes = {
-  meeting: PropTypes.object.isRequired,
   styles: PropTypes.object,
-};
-
-MeetingSummary.defaultProps = {
-  meeting: exampleTeam
 };
 
 const styleThunk = () => ({
@@ -77,4 +78,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(MeetingSummary);
+export default withStyles(styleThunk)(MeetingSummary)

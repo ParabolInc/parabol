@@ -34,6 +34,7 @@ export default role => ComposedComponent => {
       router: PropTypes.object
     };
 
+
     render() {
       const {auth, dispatch, router} = this.props;
       if (auth === undefined) {

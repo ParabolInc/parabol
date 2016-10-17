@@ -2,12 +2,15 @@ import React, {PropTypes} from 'react';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import MeetingSummary from 'universal/modules/summary/components/MeetingSummary/MeetingSummary';
+import requireAuth from 'universal/decorators/requireAuth/requireAuth';
+
 const meetingSummaryQuery = `
 query{
   meeting: getMeetingById(id: $id) {
     id
-    name
+    teamName
     meetingNumber
+    agendaItemsCompleted
     teamMembers {
       id
       picture
@@ -28,53 +31,49 @@ query{
 }`;
 
 const objectifyTeamMembers = (teamMembers) => {
-  const teamMembersObj = {};
+  const enhancedTeamMembers = [];
+  const teamMemberIndices = {};
   for (let i = 0; i < teamMembers.length; i++) {
     const teamMember = teamMembers[i];
-    teamMembersObj[teamMember.id] = {...teamMember, actions: [], projects: []};
+    enhancedTeamMembers[i] = {...teamMember, actions: [], projects: []};
+    teamMemberIndices[teamMember.id] = i;
   }
-  return teamMembersObj;
+  return {enhancedTeamMembers, teamMemberIndices};
 };
 
 const groupOutcomesByTeamMember = (actions, projects, teamMembers) => {
-  const teamMembersObj = objectifyTeamMembers(teamMembers);
-  let updatedProjectCount = 0;
+  const {enhancedTeamMembers, teamMemberIndices} = objectifyTeamMembers(teamMembers);
   for (let i = 0; i < actions.length; i++) {
     const action = actions[i];
-    teamMembersObj[action.teamMemberId].actions.push(action);
+    const idx = teamMemberIndices[action.teamMemberId];
+    enhancedTeamMembers[idx].actions.push(action);
   }
   for (let i = 0; i < projects.length; i++) {
-    const {newVal, oldVal} = projects[i];
-    if (!oldVal) {
-      teamMembersObj[newVal.teamMemberId].projects.push(newVal);
-    } else {
-      updatedProjectCount++;
-    }
+    const project = projects[i];
+    const idx = teamMemberIndices[project.teamMemberId];
+    enhancedTeamMembers[idx].projects.push(project);
   }
-  return {
-    teamMembersObj,
-    updatedProjectCount
-  };
+  return enhancedTeamMembers
 };
 
 const mapStateToProps = (state, props) => {
-  const {params: {teamId}} = props;
+  const {params: {meetingId}} = props;
   const {meeting} = cashay.query(meetingSummaryQuery, {
     op: 'meetingSummaryContainer',
-    key: teamId,
-    variables: {teamId},
+    key: meetingId,
+    variables: {id: meetingId},
     sort: {
       teamMembers: (a, b) => a.preferredName > b.preferredName ? 1 : -1
     },
   }).data;
-  const {meetingNumber, teamMembers, actions, projects} = meeting;
-  const {teamMembersObj, updatedProjectCount} = groupOutcomesByTeamMember(actions, projects, teamMembers);
+  const {agendaItemsCompleted, meetingNumber, teamMembers, actions, projects} = meeting;
+  const enhancedTeamMembers = groupOutcomesByTeamMember(actions, projects, teamMembers);
   return {
     actionCount: actions.length,
+    agendaItemsCompleted,
     meetingNumber,
-    newProjectCount: projects.length - updatedProjectCount,
-    teamMembers: teamMembersObj,
-    updatedProjectCount,
+    projectCount: projects.length,
+    teamMembers: enhancedTeamMembers,
   };
 };
 
@@ -82,4 +81,6 @@ const MeetingSummaryContainer = (props) => {
   return <MeetingSummary {...props} />
 };
 
-export default connect(mapStateToProps)(MeetingSummaryContainer);
+export default requireAuth(
+  connect(mapStateToProps)(MeetingSummaryContainer)
+);
