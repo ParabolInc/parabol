@@ -157,9 +157,9 @@ export default class MeetingContainer extends Component {
   }
 
   endMeeting = () => {
-    const {params: {teamId}, router} = this.props;
+    const {params: {teamId}, router, team:{meetingId}} = this.props;
     cashay.mutate('endMeeting', {variables: {teamId}});
-    router.push(`/team/${teamId}`);
+    router.push(`/summary/${meetingId}`);
   };
 
   gotoItem = (maybeNextPhaseItem, maybeNextPhase) => {
