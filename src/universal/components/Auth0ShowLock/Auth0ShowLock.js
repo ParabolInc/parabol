@@ -27,7 +27,7 @@ export function showLock(dispatch) {
   // eslint-disable-next-line global-require
   const Auth0Lock = require('auth0-lock');
   let clientOptions = defaultClientOptions;
-  if (__PRODUCTION__) {
+  if (typeof __PRODUCTION__ !== 'undefined' && __PRODUCTION__) {
   // See server/Html.js for how this is initialized:
     clientOptions = window.__ACTION__.auth0; // eslint-disable-line no-underscore-dangle
   }

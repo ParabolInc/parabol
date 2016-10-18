@@ -25,14 +25,17 @@ const initialState = {};
      * During the production client bundle build, the server will need to be
      * stopped.
      */
-    // eslint-disable-next-line no-underscore-dangle
+    /* eslint-disable no-underscore-dangle */
     StyleSheet.rehydrate(window.__APHRODITE__);
-    /*
-     * Enable Sentry.io bug reporting. The Raven client is included during
-     * the SSR.
-     */
-    // eslint-disable-next-line no-undef, no-underscore-dangle
-    Raven.config(window.__ACTION__.sentry).install();
+    if (window.__ACTION__.sentry) {
+      /*
+       * Enable Sentry.io bug reporting. The Raven client is included during
+       * the SSR.
+       */
+      // eslint-disable-next-line no-undef
+      Raven.config(window.__ACTION__.sentry).install();
+    }
+    /* eslint-enable */
     render(
       <Root store={store}/>,
       document.getElementById('root')
