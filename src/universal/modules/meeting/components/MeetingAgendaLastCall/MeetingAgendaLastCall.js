@@ -36,7 +36,7 @@ const MeetingAgendaLastCall = (props) => {
           <Button
             colorPalette="cool"
             label="End Meeting"
-            onClick={endMeeting}
+            onClick={() => endMeeting(true)}
             size="largest"
             style="outlined"
           />

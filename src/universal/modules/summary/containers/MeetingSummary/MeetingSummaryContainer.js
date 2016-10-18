@@ -8,6 +8,7 @@ const meetingSummaryQuery = `
 query{
   meeting: getMeetingById(id: $id) {
     id
+    teamId
     teamName
     meetingNumber
     agendaItemsCompleted
@@ -66,14 +67,24 @@ const mapStateToProps = (state, props) => {
       teamMembers: (a, b) => a.preferredName > b.preferredName ? 1 : -1
     },
   }).data;
-  const {agendaItemsCompleted, meetingNumber, teamMembers, actions, projects} = meeting;
+  const {
+    agendaItemsCompleted,
+    meetingNumber,
+    teamId,
+    teamMembers,
+    teamName,
+    actions,
+    projects
+  } = meeting;
   const enhancedTeamMembers = groupOutcomesByTeamMember(actions, projects, teamMembers);
   return {
     actionCount: actions.length,
     agendaItemsCompleted,
     meetingNumber,
     projectCount: projects.length,
+    teamId,
     teamMembers: enhancedTeamMembers,
+    teamName,
   };
 };
 
@@ -86,7 +97,9 @@ MeetingSummaryContainer.propTypes = {
   agendaItemsCompleted: PropTypes.number,
   meetingNumber: PropTypes.number,
   projectCount: PropTypes.number,
+  teamId: PropTypes.string,
   teamMembers: PropTypes.array,
+  teamName: PropTypes.string
 };
 
 export default requireAuth(

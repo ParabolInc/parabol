@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import {Link} from 'react-router';
 import appTheme from 'universal/styles/theme/appTheme';
 
 import Type from 'universal/components/Type/Type';
@@ -19,7 +20,9 @@ const MeetingSummary = (props) => {
     meetingNumber,
     projectCount,
     styles,
+    teamId,
     teamMembers,
+    teamName
   } = props;
   return (
     <MeetingMain>
@@ -38,6 +41,11 @@ const MeetingSummary = (props) => {
             <span>and </span>
             <span className={css(styles.highlight)}>{actionCount} New Actions</span>
             <span>.</span>
+          </Type>
+
+          <Type align="center" marginBottom="1rem" marginTop="1rem" scale="s5">
+            Read below for a meeting details or return
+            to <Link to={`/team/${teamId}`}>{teamName}</Link>.
           </Type>
 
           {meetingNumber === 1 &&
@@ -83,7 +91,9 @@ MeetingSummary.propTypes = {
   agendaItemsCompleted: PropTypes.number,
   meetingNumber: PropTypes.number,
   projectCount: PropTypes.number,
+  teamId: PropTypes.string,
   teamMembers: PropTypes.array,
+  teamName: PropTypes.string
 };
 
 export default withStyles(styleThunk)(MeetingSummary);
