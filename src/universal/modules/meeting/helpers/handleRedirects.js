@@ -12,6 +12,8 @@ let infiniteloopCounter = 0;
 let infiniteLoopTimer = Date.now();
 
 export default function handleRedirects(team, localPhase, localPhaseItem, oldTeam, router) {
+  /* DEBUG: uncomment below */
+  // console.log(`handleRedirects(${JSON.stringify(team)}, ${localPhase}, ${localPhaseItem}, ...)`);
   const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, id: teamId, meetingId} = team;
   if (Date.now() - infiniteLoopTimer < 1000) {
     if (++infiniteloopCounter >= 25) {
