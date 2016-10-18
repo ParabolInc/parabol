@@ -4,6 +4,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.7.5 - 15-Oct-2016
+### Added
+- Temporarily wired meeting last call button to endMeeting mutation to enable
+  more user testing
+- Re-added piping to reload server code when running `npm run dev`
+
+### Removed
+- Double dependency in `package.json` on `react-hot-loader`
+
+### Fixed
+- Re-added actions subscription channel, was still being used by user dashboard
+
 ## v0.7.4 - 12-Oct-2016
 ### Added
 - #333 Distribute auth0 clientId and domain via SSR, allows configurability
