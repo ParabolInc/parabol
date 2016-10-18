@@ -43,6 +43,16 @@ export function setAuthToken(authToken, metaProfile = {}) {
     throw new Error(`unable to decode jwt: ${e}`);
   }
   cashay.create({httpTransport: new ActionHTTPTransport(authToken)});
+  if (__PRODUCTION__) {
+    /*
+     * Sentry error reporting meta-information. Raven object is set via SSR.
+     * See server/Html.js for how this is initialized
+     */
+    Raven.setUserContext({ // eslint-disable-line no-undef
+      id: obj.sub,
+      email: profile.email
+    });
+  }
   return {
     type: SET_AUTH_TOKEN,
     payload: {
@@ -67,5 +77,12 @@ export function setAuthToken(authToken, metaProfile = {}) {
 }
 
 export function removeAuthToken() {
+  if (__PRODUCTION__) {
+    /*
+     * Sentry error reporting meta-information. Raven object is set via SSR.
+     * See server/Html.js for how this is initialized
+     */
+    Raven.setUserContext({}); // eslint-disable-line no-undef
+  }
   return { type: REMOVE_AUTH_TOKEN };
 }

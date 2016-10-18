@@ -29,7 +29,7 @@ export function showLock(dispatch) {
   let clientOptions = defaultClientOptions;
   if (__PRODUCTION__) {
   // See server/Html.js for how this is initialized:
-    clientOptions = window.__AUTH0__; // eslint-disable-line no-underscore-dangle
+    clientOptions = window.__ACTION__.auth0; // eslint-disable-line no-underscore-dangle
   }
   const {clientId, domain} = clientOptions;
   const lock = new Auth0Lock(clientId, domain);

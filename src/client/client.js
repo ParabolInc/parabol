@@ -27,6 +27,12 @@ const initialState = {};
      */
     // eslint-disable-next-line no-underscore-dangle
     StyleSheet.rehydrate(window.__APHRODITE__);
+    /*
+     * Enable Sentry.io bug reporting. The Raven client is included during
+     * the SSR.
+     */
+    // eslint-disable-next-line no-undef, no-underscore-dangle
+    Raven.config(window.__ACTION__.sentry).install();
     render(
       <Root store={store}/>,
       document.getElementById('root')
