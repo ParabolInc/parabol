@@ -42,7 +42,12 @@ const MeetingUpdatesContainer = (props) => {
 };
 
 MeetingUpdatesContainer.propTypes = {
+  gotoItem: PropTypes.func.isRequired,
+  gotoNext: PropTypes.func.isRequired,
+  localPhaseItem: PropTypes.number.isRequired,
+  members: PropTypes.array.isRequired,
   projects: PropTypes.object.isRequired,
+  team: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(MeetingUpdatesContainer);

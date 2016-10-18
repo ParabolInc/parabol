@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite/no-important';
+import {css} from 'aphrodite-local-styles/no-important';
 import {DashSectionHeading} from 'universal/components/Dashboard';
 
 const AgendaHeader = (props) => {

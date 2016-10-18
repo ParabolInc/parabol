@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite/no-important';
+import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
@@ -74,13 +74,10 @@ const MeetingAgendaItems = (props) => {
 };
 
 MeetingAgendaItems.propTypes = {
-  agendaItem: PropTypes.object,
-  gotoNext: PropTypes.func.isRequred,
-  isFacilitating: PropTypes.bool,
-  localPhaseItem: PropTypes.number,
-  members: PropTypes.array,
-  styles: PropTypes.object,
-  team: PropTypes.object
+  agendaItem: PropTypes.object.isRequired,
+  gotoNext: PropTypes.func.isRequired,
+  members: PropTypes.array.isRequired,
+  styles: PropTypes.object.isRequired
 };
 
 const styleThunk = () => ({

@@ -33,16 +33,16 @@ export const ChangeModule = new GraphQLEnumType({
 //   new: {type: ProjectStatus, description: 'The status as it was in post-meeting'},
 // });
 
-export const TaskHistory = new GraphQLObjectType({
-  name: 'TaskHistory',
-  description: 'An up-to-date history of every change to content, ownership, and status for every task.',
+export const ProjectHistory = new GraphQLObjectType({
+  name: 'ProjectHistory',
+  description: 'An up-to-date history of every change to content, ownership, and status for every project.',
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The unique historyID, taskId = teamId::shortId. historyId = taskId::shortid'
+      description: 'A unique projectHistoryId: shortid'
     },
-    taskId: {type: new GraphQLNonNull(GraphQLID), description: 'The underlying taskId that was changed'},
-    /* duplicate data from the task itself */
+    projectId: {type: new GraphQLNonNull(GraphQLID), description: 'The underlying projectId that was changed teamId::shortid'},
+    /* duplicate data from the project itself */
     content: {
       type: GraphQLString,
       description: 'Content, or description of the task'
@@ -59,8 +59,9 @@ export const TaskHistory = new GraphQLObjectType({
     /* meta data */
     area: {
       type: ChangeModule,
-      description: 'The module where the user was to change the item'
+      description: 'The area where the user changed the item'
     },
+    /* not sure we need this still? */
     meetingId: {
       type: GraphQLID,
       description: 'if changedIn is a meeting, the id of the meeting where it occured'

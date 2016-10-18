@@ -23,40 +23,5 @@ export default store => ({
     store.replaceReducer(newReducer);
 
     cb(null, component);
-  },
-  // getChildRoutes: (childLocation, cbChild) => {
-  //   cbChild(null, [
-  //     {
-  //       path: 'lobby',
-  //       getComponent: async(location, cb) => {
-  //         const component = await System.import('universal/modules/meeting/components/MeetingLobby/MeetingLobby');
-  //         cb(null, component);
-  //       }
-  //     },
-  //     {
-  //       path: 'checkIn(/:localPhaseItem)',
-  //       getComponent: async(location, cb) => {
-  //         const component = await System.import(
-  //           'universal/modules/meeting/components/MeetingCheckin/MeetingCheckin');
-  //         cb(null, component);
-  //       }
-  //     },
-  //     {
-  //       path: 'updates(/:localPhaseItem)',
-  //       getComponent: async(location, cb) => {
-  //         const component = await System.import(
-  //           'universal/modules/meeting/components/MeetingUpdates/MeetingUpdates');
-  //         cb(null, component);
-  //       }
-  //     },
-  //     {
-  //       path: 'agenda(/:localPhaseItem)',
-  //       getComponent: async(location, cb) => {
-  //         const component = await System.import(
-  //           'universal/modules/meeting/components/MeetingUpdates/MeetingUpdates');
-  //         cb(null, component);
-  //       }
-  //     }
-  //   ]);
-  // }
+  }
 });

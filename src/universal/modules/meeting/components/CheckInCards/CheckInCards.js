@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite/no-important';
+import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import CheckInCard from 'universal/modules/meeting/components/CheckInCard/CheckInCard';
 import checkInCardBaseStyles from '../CheckInCard/checkInCardBaseStyles';

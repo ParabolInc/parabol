@@ -1,3 +1,4 @@
+import getRethink from 'server/database/rethinkDriver';
 import {
   GraphQLObjectType,
   GraphQLNonNull,
@@ -8,77 +9,128 @@ import {
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {ProjectStatus} from '../Project/projectSchema';
+import {TeamMember} from '../TeamMember/teamMemberSchema';
 
-const HistoricalAction = new GraphQLObjectType({
-  name: 'HistoricalAction',
+const MeetingAction = new GraphQLObjectType({
+  name: 'MeetingAction',
   description: 'The action that was created in a meeting',
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The action id, matches the ID in the action table'
-    },
-    teamMemberId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the team member the action was assigned to during the meeting'
+      description: 'The unique action id, meetingId::actionId'
     },
     content: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The description of the action created during the meeting'
+    },
+    teamMemberId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The id of the team member the action was assigned to during the meeting'
     }
   }),
 });
 
-const HistoricalProject = new GraphQLObjectType({
-  name: 'HistoricalProject',
-  description: 'The old or new version of a project that changed during a meeting',
+const MeetingProject = new GraphQLObjectType({
+  name: 'MeetingProject',
+  description: 'The project that was created in a meeting',
   fields: () => ({
-    teamMemberId: {
-      type: GraphQLID,
-      description: 'The id of the team member the action was assigned to during the meeting'
+    id: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The unique action id, meetingId::projectId'
     },
     content: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The description of the action created during the meeting'
     },
     status: {
       type: ProjectStatus,
       description: 'The description of the action created during the meeting'
+    },
+    teamMemberId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The id of the team member the action was assigned to during the meeting'
     }
   }),
 });
 
-const ProjectDiff = new GraphQLObjectType({
-  name: 'ProjectDiff',
-  description: `The previous and post state of a project before and after a meeting.
-  If oldVal is null, then the project was created during the meeting.
-  Otherwise, oldVal should contain the oldVal of any field that was changed.
-  Unchanged fields do not need to be present.`,
-  fields: () => ({
-    id: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The action id, matches the ID in Project table'
-    },
-    oldVal: {
-      type: HistoricalProject,
-      description: 'The previous state of the changed fields'
-    },
-    newVal: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'A snapshot of the current state of the project at taken at the conclusion of the meeting'
-    }
-  }),
-});
+// const HistoricalAction = new GraphQLObjectType({
+//   name: 'HistoricalAction',
+//   description: 'The action that was created in a meeting',
+//   fields: () => ({
+//     content: {
+//       type: new GraphQLNonNull(GraphQLString),
+//       description: 'The description of the action created during the meeting'
+//     },
+//     id: {
+//       type: new GraphQLNonNull(GraphQLID),
+//       description: 'The unique action id, actionId::meetingId'
+//     },
+//     teamMemberId: {
+//       type: new GraphQLNonNull(GraphQLID),
+//       description: 'The id of the team member the action was assigned to during the meeting'
+//     }
+//   }),
+// });
+//
+// const HistoricalProject = new GraphQLObjectType({
+//   name: 'HistoricalProject',
+//   description: 'The old or new version of a project that changed during a meeting',
+//   fields: () => ({
+//     content: {
+//       type: GraphQLString,
+//       description: 'The description of the action created during the meeting'
+//     },
+//     // id: {
+//     //   type: new GraphQLNonNull(GraphQLID),
+//     //   description: 'The project id, matches the ID in the project table'
+//     // },
+//     status: {
+//       type: ProjectStatus,
+//       description: 'The description of the action created during the meeting'
+//     },
+//     teamMemberId: {
+//       type: GraphQLID,
+//       description: 'The id of the team member the action was assigned to during the meeting'
+//     }
+//   }),
+// });
+//
+// const ProjectDiff = new GraphQLObjectType({
+//   name: 'ProjectDiff',
+//   description: `The previous and post state of a project before and after a meeting.
+//   If oldVal is null, then the project was created during the meeting.
+//   Otherwise, oldVal should contain the oldVal of any field that was changed.
+//   Unchanged fields do not need to be present.`,
+//   fields: () => ({
+//     id: {
+//       type: new GraphQLNonNull(GraphQLID),
+//       description: 'The unique diff id: projectId::meetingId'
+//     },
+//     oldVal: {
+//       type: HistoricalProject,
+//       description: 'The previous state of the changed fields'
+//     },
+//     newVal: {
+//       type: HistoricalProject,
+//       description: 'A snapshot of the current state of the project at taken at the conclusion of the meeting'
+//     }
+//   }),
+// });
 
 export const Meeting = new GraphQLObjectType({
   name: 'Meeting',
   description: 'A team meeting history for all previous meetings',
   fields: () => ({
-    id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique meeting id'},
-    meetingNumber: {
-      type: new GraphQLNonNull(GraphQLInt),
-      description: 'The auto-incrementing meeting number for the team'
+    id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique meeting id. shortid.'},
+    actions: {
+      type: new GraphQLList(MeetingAction),
+      description: `A list of actions that were created in the meeting. 
+      These details never change, even if the underlying action does`
     },
-    teamId: {type: new GraphQLNonNull(GraphQLID), description: 'The team associated with this meeting'},
+    agendaItemsCompleted: {
+      type: GraphQLInt,
+      description: 'The number of agenda items completed during the meeting'
+    },
     // isActive: {type: GraphQLBoolean, description: 'true if a meeting is currently in progress'},
     createdAt: {
       type: GraphQLISO8601Type,
@@ -88,13 +140,28 @@ export const Meeting = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The timestamp the meeting officially ended'
     },
-    actions: {
-      type: new GraphQLList(HistoricalAction),
-      description: `A list of actions that were created in the meeting. 
-      These details never change, even if the underlying action does`
+    meetingNumber: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: 'The auto-incrementing meeting number for the team'
     },
     projects: {
-      type: new GraphQLList(ProjectDiff)
-    }
+      type: new GraphQLList(MeetingProject),
+      description: 'A list of immutable projects, as they were created in the meeting'
+    },
+    sinceTime: {
+      type: GraphQLISO8601Type,
+      description: 'The start time used to create the diff (all projectDiffs occurred between this time and the endTime'
+    },
+    teamId: {type: new GraphQLNonNull(GraphQLID), description: 'The team associated with this meeting'},
+    teamName: {type: GraphQLString, description: 'The name as it was when the meeting occurred'},
+    /* GraphQL Sugar */
+    teamMembers: {
+      type: new GraphQLList(TeamMember),
+      description: 'All the team members associated who can join this team',
+      async resolve({teamId}) {
+        const r = getRethink();
+        return await r.table('TeamMember').getAll(teamId, {index: 'teamId'});
+      }
+    },
   })
 });

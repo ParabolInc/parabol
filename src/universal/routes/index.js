@@ -14,6 +14,7 @@ export default store => ({
     require('./landing'),
     require('./logout'),
     require('./meeting')(store),
+    require('./summary')(store),
     // ...require('./meetingLayoutRoutes'),
     // require('./patterns'),
     require('./teamDashboard')(store),
@@ -26,7 +27,7 @@ export default store => ({
 
 // the server needs these things for SSR.
 // In the future, we might combine routes + clients to do away with this
-export {StyleSheetServer} from 'aphrodite/no-important';
+export {StyleSheetServer} from 'aphrodite-local-styles/no-important';
 export const cashaySchema = _cashaySchema;
 export {cashay} from 'cashay';
 /* eslint-enable */

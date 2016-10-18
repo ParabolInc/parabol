@@ -1,6 +1,7 @@
 import {
   LOBBY,
   FIRST_CALL,
+  SUMMARY,
   phaseOrder
 } from 'universal/utils/constants';
 import makePushURL from './makePushURL';
@@ -11,6 +12,8 @@ let infiniteloopCounter = 0;
 let infiniteLoopTimer = Date.now();
 
 export default function handleRedirects(team, localPhase, localPhaseItem, oldTeam, router) {
+  /* DEBUG: uncomment below */
+  // console.log(`handleRedirects(${JSON.stringify(team)}, ${localPhase}, ${localPhaseItem}, ...)`);
   const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, id: teamId, meetingId} = team;
   if (Date.now() - infiniteLoopTimer < 1000) {
     if (++infiniteloopCounter >= 25) {
@@ -85,6 +88,9 @@ export default function handleRedirects(team, localPhase, localPhaseItem, oldTea
       router.replace(pushURL);
       return false;
     }
+  }
+  if (team.facilitatorPhase === SUMMARY) {
+    router.replace(`/summary/${team.meetingId}`);
   }
   return true;
 

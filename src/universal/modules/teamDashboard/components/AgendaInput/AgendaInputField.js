@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import appTheme from 'universal/styles/theme/appTheme';
 import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite/no-important';
+import {css} from 'aphrodite-local-styles/no-important';
 import {makePlaceholderStyles} from 'universal/styles/helpers';
 import ui from 'universal/styles/ui';
 import withHotkey from 'react-hotkey-hoc';

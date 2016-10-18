@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite/no-important';
+import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import UserSummary from 'universal/modules/meeting/components/UserSummary/UserSummary';
@@ -18,20 +18,20 @@ const iconStyle = {
 };
 
 const SummaryEmailPreview = (props) => {
-  const {styles, teamOutcomes} = props;
-
+  const {styles, teamMembers} = props;
   return (
     <div className={css(styles.root)}>
       <FontAwesome name="envelope-o" style={iconStyle} />
       <Type align="center" bold family="serif" scale="sBase">
         An email summary will be mailed to all team members:
       </Type>
-      {teamOutcomes.map((user, idx) =>
+      {teamMembers.map((teamMember) =>
         <UserSummary
-          avatar={user.avatar}
-          key={`user-summary-${idx}`}
-          name={user.name}
-          outcomes={user.outcomes}
+          actions={teamMember.actions}
+          key={`teamMember-summary-${teamMember.id}`}
+          picture={teamMember.picture}
+          preferredName={teamMember.preferredName}
+          projects={teamMember.projects}
         />
       )}
       <div className={css(styles.fin)}>fin</div>
@@ -41,7 +41,7 @@ const SummaryEmailPreview = (props) => {
 
 SummaryEmailPreview.propTypes = {
   styles: PropTypes.object,
-  teamOutcomes: PropTypes.array
+  teamMembers: PropTypes.array
 };
 
 const styleThunk = () => ({

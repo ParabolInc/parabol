@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite/no-important';
+import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import {DashContent, DashHeader, DashHeaderInfo} from 'universal/components/Dashboard';
 import Button from 'universal/components/Button/Button';

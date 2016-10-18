@@ -1,4 +1,4 @@
-import r from 'server/database/rethinkDriver';
+import getRethink from 'server/database/rethinkDriver';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -84,6 +84,7 @@ export const Team = new GraphQLObjectType({
       type: new GraphQLList(TeamMember),
       description: 'All the team members associated who can join this team',
       async resolve({id}) {
+        const r = getRethink();
         return await r.table('TeamMember').getAll(id, {index: 'teamId'});
       }
     },
@@ -91,6 +92,7 @@ export const Team = new GraphQLObjectType({
       type: new GraphQLList(AgendaItem),
       description: 'The agenda items for the upcoming or current meeting',
       async resolve({id}) {
+        const r = getRethink();
         return await r.table('AgendaItem').getAll(id, {index: 'teamId'});
       }
     }

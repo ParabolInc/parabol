@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite/no-important';
+import {css} from 'aphrodite-local-styles/no-important';
 import AgendaList from 'universal/modules/teamDashboard/components/AgendaList/AgendaList';
 import AgendaInput from 'universal/modules/teamDashboard/components/AgendaInput/AgendaInput';
 

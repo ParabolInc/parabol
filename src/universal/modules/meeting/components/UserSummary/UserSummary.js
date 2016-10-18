@@ -1,38 +1,36 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite/no-important';
+import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import FontAwesome from 'react-fontawesome';
 import {Avatar, Type} from 'universal/components';
 import SummaryCard from 'universal/modules/meeting/components/SummaryCard/SummaryCard';
-import reduceForKeyValCount from 'universal/utils/reduceForKeyValCount';
 
 const UserSummary = (props) => {
-  const {avatar, name, outcomes, styles} = props;
+  const {actions, picture, preferredName, projects, styles} = props;
 
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.userDetails)}>
-        <Avatar hasBadge={false} picture={avatar} size="large" />
+        <Avatar hasBadge={false} picture={picture} size="large" />
         <Type align="center" marginBottom=".75rem" marginTop=".5rem" scale="s5">
-          {name}
+          {preferredName}
         </Type>
         <span className={css(styles.userStat)}>
           <FontAwesome name="calendar" />{' '}
-          {reduceForKeyValCount(outcomes, 'type', 'project')} New Projects
+          {projects.length} New Projects
         </span>
         <span className={css(styles.userStat)}>
           <FontAwesome name="calendar-check-o" />{' '}
-          {reduceForKeyValCount(outcomes, 'type', 'action')} New Actions
+          {actions.length} New Actions
         </span>
       </div>
       <div className={css(styles.cardGroup)}>
-        {outcomes.map((outcome, idx) =>
+        {[...projects, ...actions].map((outcome, idx) =>
           <div className={css(styles.cardBlock)} key={`summary-card-${idx}`}>
             <SummaryCard
               content={outcome.content}
               status={outcome.status}
-              type={outcome.type}
             />
           </div>
         )}
@@ -42,9 +40,10 @@ const UserSummary = (props) => {
 };
 
 UserSummary.propTypes = {
-  avatar: PropTypes.string,
-  name: PropTypes.string,
-  outcomes: PropTypes.array,
+  actions: PropTypes.array,
+  picture: PropTypes.string,
+  preferredName: PropTypes.string,
+  projects: PropTypes.array,
   styles: PropTypes.object
 };
 
