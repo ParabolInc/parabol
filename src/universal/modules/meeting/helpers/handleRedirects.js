@@ -16,9 +16,8 @@ export default function handleRedirects(team, localPhase, localPhaseItem, oldTea
   // console.log(`handleRedirects(${JSON.stringify(team)}, ${localPhase}, ${localPhaseItem}, ...)`);
   const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, id: teamId, meetingId} = team;
   if (Date.now() - infiniteLoopTimer < 1000) {
-    if (++infiniteloopCounter >= 25) {
-      // TODO SEND BUG REPORT TO SERVER
-      // debugger;
+    if (++infiniteloopCounter >= 10) {
+      return null;
     }
   } else {
     infiniteloopCounter = 0;

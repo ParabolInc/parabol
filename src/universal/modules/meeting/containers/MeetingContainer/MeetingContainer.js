@@ -33,6 +33,7 @@ import {TEAMS} from 'universal/subscriptions/constants';
 import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 import withHotkey from 'react-hotkey-hoc';
 import getBestPhaseItem from 'universal/modules/meeting/helpers/getBestPhaseItem';
+import {showError} from 'universal/modules/notifications/ducks/notifications';
 
 const resolveMeetingMembers = (queryData, userId) => {
   if (queryData !== resolveMeetingMembers.queryData) {
@@ -149,11 +150,30 @@ export default class MeetingContainer extends Component {
 
   shouldComponentUpdate(nextProps) {
     const {localPhaseItem, router, params: {localPhase}, team} = nextProps;
-    const {team: oldTeam} = this.props;
+    const {dispatch, isFacilitating, team: oldTeam} = this.props;
 
     // only needs to run when the url changes or the team subscription initializes
     // make sure the url is legit, but only run once (when the initial team subscription comes back)
-    return handleRedirects(team, localPhase, localPhaseItem, oldTeam, router);
+    const toRedirect = handleRedirects(team, localPhase, localPhaseItem, oldTeam, router);
+    if (toRedirect === null) {
+      // null means error!
+      if (isFacilitating) {
+        cashay.mutate('moveMeeting', {
+          teamId: team.id,
+          nextPhase: CHECKIN,
+          nextPhaseItem: 1,
+          force: true
+        });
+      }
+      this.gotoItem(1, CHECKIN);
+      dispatch(showError({
+        title: 'Awh shoot',
+        message: 'You found a glitch! We saved your work, but forgot where you were. We sent the bug to our team.'
+      }))
+      // TODO send to server
+    } else {
+      return toRedirect;
+    }
   }
 
   endMeeting = (redirOrEvent) => {
@@ -262,17 +282,17 @@ export default class MeetingContainer extends Component {
           </MeetingAvatars>
           {localPhase === LOBBY && <MeetingLobby members={members} team={team}/>}
           {localPhase === CHECKIN &&
-            <MeetingCheckin gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
+          <MeetingCheckin gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
           }
           {localPhase === UPDATES &&
-            <MeetingUpdatesContainer gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
+          <MeetingUpdatesContainer gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
           }
           {localPhase === FIRST_CALL && <MeetingAgendaFirstCall gotoNext={this.gotoNext}/>}
           {localPhase === AGENDA_ITEMS &&
-            <MeetingAgendaItems agendaItem={agenda[localPhaseItem - 1]} gotoNext={this.gotoNext} members={members}/>
+          <MeetingAgendaItems agendaItem={agenda[localPhaseItem - 1]} gotoNext={this.gotoNext} members={members}/>
           }
           {localPhase === LAST_CALL &&
-            <MeetingAgendaLastCallContainer {...phaseStateProps} endMeeting={this.endMeeting}/>
+          <MeetingAgendaLastCallContainer {...phaseStateProps} endMeeting={this.endMeeting}/>
           }
         </MeetingMain>
       </MeetingLayout>

@@ -42,9 +42,13 @@ export default {
       nextPhaseItem: {
         type: GraphQLInt,
         description: 'The item within the phase to set the meeting to'
+      },
+      force: {
+        type: GraphQLBoolean,
+        description: 'If true, execute the mutation without regard for meeting flow'
       }
     },
-    async resolve(source, {teamId, nextPhase, nextPhaseItem}, {authToken, socket}) {
+    async resolve(source, {force, teamId, nextPhase, nextPhaseItem}, {authToken, socket}) {
       const r = getRethink();
       // TODO: transform these console statements into configurable logger statements:
       /*
@@ -60,6 +64,17 @@ export default {
       requireWebsocket(socket);
       if (nextPhase && !phaseArray.includes(nextPhase)) {
         throw errorObj({_error: `${nextPhase} is not a valid phase`});
+      }
+
+      if (force) {
+        // use this if the meeting hit an infinite redirect loop. should never occur
+        await r.table('Team').get(teamId).update({
+          facilitatorPhase: nextPhase,
+          facilitatorPhaseItem: nextPhaseItem,
+          meetingPhase: nextPhase,
+          meetingPhaseItem: nextPhaseItem,
+        });
+        return true;
       }
 
       const team = await r.table('Team').get(teamId);
