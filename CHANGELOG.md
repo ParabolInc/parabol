@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.8.0 - 18-Oct-2016
+### Added
+- End of meeting summary
+
 ## v0.7.5 - 15-Oct-2016
 ### Added
 - Temporarily wired meeting last call button to endMeeting mutation to enable
