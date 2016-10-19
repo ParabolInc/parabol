@@ -218,7 +218,7 @@ export default class MeetingContainer extends Component {
       }
       // if we're going to an area that has items, try going to the facilitator item, or the meeting item, or just 1
       if (hasPhaseItem(nextPhase)) {
-        nextPhaseItem = maybeNextPhaseItem || getBestPhaseItem(AGENDA_ITEMS, team);
+        nextPhaseItem = maybeNextPhaseItem || getBestPhaseItem(nextPhase, team);
       }
     } else {
       const localPhaseOrder = phaseOrder(localPhase);
