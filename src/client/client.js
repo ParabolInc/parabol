@@ -27,14 +27,11 @@ const initialState = {};
      */
     /* eslint-disable no-underscore-dangle */
     StyleSheet.rehydrate(window.__APHRODITE__);
-    if (window.__ACTION__.sentry) {
-      /*
-       * Enable Sentry.io bug reporting. The Raven client is included during
-       * the SSR.
-       */
-      // eslint-disable-next-line no-undef
-      Raven.config(window.__ACTION__.sentry).install();
-    }
+    /*
+     * Enable Sentry.io bug reporting. The Raven client is included during
+     * the SSR. See server/Html.js for how this is initialized.
+     */
+    Raven.config(window.__ACTION__.sentry).install(); // eslint-disable-line no-undef
     /* eslint-enable */
     render(
       <Root store={store}/>,
