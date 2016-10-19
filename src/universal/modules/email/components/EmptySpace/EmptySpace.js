@@ -1,7 +1,7 @@
 // EmptySpace:
 // Table-based way to add vertical space. Uses line-height.
 
-import React from 'react';
+import React, {PropTypes} from 'react';
 
 const EmptySpace = (props) => {
   const style = {
@@ -26,6 +26,10 @@ const EmptySpace = (props) => {
       </tbody>
     </table>
   );
+};
+
+EmptySpace.propTypes = {
+  height: PropTypes.number
 };
 
 EmptySpace.defaultProps = {

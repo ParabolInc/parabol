@@ -2,21 +2,21 @@ import React, {PropTypes} from 'react';
 import appTheme from 'universal/styles/theme/appTheme';
 
 import Body from '../../components/Body/Body';
-import Callout from '../../components/Callout/Callout';
 import ContactUs from '../../components/ContactUs/ContactUs';
 import EmptySpace from '../../components/EmptySpace/EmptySpace';
-import GetStarted from '../../components/GetStarted/GetStarted';
 import Footer from '../../components/Footer/Footer';
 import Layout from '../../components/Layout/Layout';
+import QuickStats from '../../components/QuickStats/QuickStats';
+import SummaryHeader from '../../components/SummaryHeader/SummaryHeader';
 import UserOutcomes from '../../components/UserOutcomes/UserOutcomes';
 
 import sampleTeamSummary from '../../helpers/sampleTeamSummary';
-import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 
 const SummaryEmail = (props) => {
   const {
-    forFirstMeeting,
+    // forFirstMeeting,
     meetingDate,
+    teamDashLink,
     teamMembers,
     teamName,
     totalAgendaItems,
@@ -27,12 +27,6 @@ const SummaryEmail = (props) => {
 
   const highlight = {
     color: appTheme.palette.warm,
-    fontWeight: 700
-  };
-
-  const meetingDateStyle = {
-    color: appTheme.palette.dark,
-    fontSize: '16px',
     fontWeight: 700
   };
 
@@ -47,10 +41,6 @@ const SummaryEmail = (props) => {
   const statsMessage = {
     fontSize: '18px',
     lineHeight: '28px',
-  };
-
-  const teamNameStyle = {
-    color: appTheme.palette.warm
   };
 
   return (
@@ -73,11 +63,7 @@ const SummaryEmail = (props) => {
         <table align="center" width="100%">
           <tr>
             <td align="center">
-              <span style={meetingDateStyle}>Action Meeting Summary<br />{meetingDate}</span>
-              <Callout vSpacing={32}>
-                {makeSuccessExpression()}, <span style={teamNameStyle}>{teamName}</span>—<br />
-                {makeSuccessStatement()}
-              </Callout>
+              <SummaryHeader meetingDate={meetingDate} teamDashLink={teamDashLink} teamName={teamName} />
               <span style={statsMessage}>
                 As a team you discussed <span style={highlight}>{totalAgendaItems} Agenda Items</span><br />
                 resulting in <span style={highlight}>{totalNewProjects} New Projects</span>{' '}
@@ -89,24 +75,22 @@ const SummaryEmail = (props) => {
           </tr>
         </table>
 
+        <table align="center" width="100%">
+          <tr>
+            <td align="center" style={{padding: '0 8px'}}>
+              <QuickStats />
+            </td>
+          </tr>
+        </table>
+
         {teamMembers.map(member =>
           <UserOutcomes avatar={member.avatar} name={member.name} outcomes={member.outcomes} />
         )}
 
         <EmptySpace height={32} />
-        {forFirstMeeting &&
-          <table align="center" width="100%">
-            <tr>
-              <td align="center">
-                <GetStarted />
-                <EmptySpace height={32} />
-                <hr style={ruleStyle} />
-              </td>
-            </tr>
-          </table>
-        }
+        <hr style={ruleStyle} />
         <EmptySpace height={32} />
-        <ContactUs fontSize={18} lineHeight={1.5} vSpacing={0} />
+        <ContactUs fontSize={18} lineHeight={1.5} prompt="How’d your meeting go?" vSpacing={0} />
       </Body>
       <Footer color={appTheme.palette.dark} />
     </Layout>
@@ -116,6 +100,7 @@ const SummaryEmail = (props) => {
 SummaryEmail.propTypes = {
   forFirstMeeting: PropTypes.bool,
   meetingDate: PropTypes.string,
+  teamDashLink: PropTypes.string,
   teamName: PropTypes.string,
   teamMembers: PropTypes.array,
   totalAgendaItems: PropTypes.number,
@@ -125,9 +110,10 @@ SummaryEmail.propTypes = {
 };
 
 SummaryEmail.defaultProps = {
-  forFirstMeeting: false,
-  meetingDate: 'Tuesday, September 27th, 2016',
-  teamName: 'Parabol',
+  forFirstMeeting: true,
+  meetingDate: 'Tuesday, October 18th, 2016',
+  teamDashLink: '/team/team123/',
+  teamName: 'Parabol Product',
   teamMembers: sampleTeamSummary,
   totalAgendaItems: 7,
   totalArchivedProjects: 5,

@@ -14,12 +14,8 @@ const UserOutcomes = (props) => {
     textAlign: 'center'
   };
 
-  const iconStyle = {
-    display: 'inline-block',
-    height: '14px',
-    marginRight: '8px',
-    verticalAlign: 'middle',
-    width: '13px'
+  const avatarStyles = {
+    borderRadius: '100%'
   };
 
   const labelStyle = {
@@ -49,17 +45,11 @@ const UserOutcomes = (props) => {
     ...textCenter,
     backgroundColor: '#ffffff',
     border: `1px solid ${ui.cardBorderColor}`,
+    borderRadius: '4px',
+    fontSize: '16px',
+    fontStyle: 'italic',
     padding: '16px'
   };
-
-  // const getNewOutcomeTypeCount = (arr, string) => {
-  //   return arr.reduce((p, c) => {
-  //     if (c.type === string) {
-  //       p++;
-  //     }
-  //     return p;
-  //   }, 0);
-  // };
 
   return (
     <table align="center" width="100%">
@@ -67,18 +57,17 @@ const UserOutcomes = (props) => {
         <tr>
           <td style={topBorderStyle}>
             <EmptySpace height={24} />
-            <img src={avatar} height="64" width="64" />
+            <img height="80" src={avatar} style={avatarStyles} width="80" />
             <span style={nameStyle}>{name}</span>
           </td>
         </tr>
         {outcomes.length &&
           <tr>
             <td style={userStats}>
-              <img src="/static/images/email/email-icon-project@3x.png" style={iconStyle} />
-              <span style={{...labelStyle, marginRight: '20px'}}>
+              <span style={labelStyle}>
                 {reduceForKeyValCount(outcomes, 'type', 'project')} New Projects
               </span>
-              <img src="/static/images/email/email-icon-action@3x.png" style={iconStyle} />
+              <span style={{...labelStyle, padding: '0 8px'}}>{'•'}</span>
               <span style={labelStyle}>
                 {reduceForKeyValCount(outcomes, 'type', 'action')} New Actions
               </span>
@@ -89,7 +78,11 @@ const UserOutcomes = (props) => {
           <td style={cardsCell}>
             {outcomes.length ?
               <OutcomesTable outcomes={outcomes} /> :
-              <div style={emptyOutcomesMessage}>No new Projects or Actions this week…</div>
+              <div style={{padding: '0 8px'}}>
+                <div style={emptyOutcomesMessage}>
+                  {'No new Projects or Actions this week…'}
+                </div>
+              </div>
             }
             <EmptySpace height={24} />
           </td>

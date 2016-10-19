@@ -31,7 +31,7 @@ const ContactUs = (props) => {
           >
             <EmptySpace height={props.vSpacing} />
             <span style={boldStyle}>
-              Any feedback or questions?
+              {props.prompt}
             </span><br />
             We want to hear from you!<br />
             Email us:&nbsp;
@@ -49,12 +49,14 @@ const ContactUs = (props) => {
 ContactUs.propTypes = {
   fontSize: PropTypes.number,
   lineHeight: PropTypes.number,
+  prompt: PropTypes.string,
   vSpacing: PropTypes.number
 };
 
 ContactUs.defaultProps = {
   fontSize: 16,
   lineHeight: 1.25,
+  prompt: 'Any feedback or questions?',
   vSpacing: 32
 };
 

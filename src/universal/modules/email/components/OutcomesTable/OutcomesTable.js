@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react';
-import Card from '../../components/Card/Card';
+import Card from '../Card/Card';
 
 const OutcomesTable = (props) => {
   const cardRowCell = {
@@ -27,7 +27,6 @@ const OutcomesTable = (props) => {
           <Card
             content={card.content}
             status={card.status}
-            team={card.team}
             type={card.type}
           />
         </td>

@@ -65,6 +65,12 @@ const Marimar = {
   outcomes: []
 };
 
+const Jerry = {
+  avatar: avatarTerry,
+  name: 'Jerry Seabass',
+  outcomes: []
+};
+
 const Matt = {
   avatar: avatarMatt,
   name: 'Matt Krick',
@@ -192,6 +198,6 @@ const Terry = {
 
 const sampleTeamSummary = [];
 
-sampleTeamSummary.push(Jordan, Marimar, Matt, Taya, Terry);
+sampleTeamSummary.push(Jordan, Marimar, Matt, Jerry, Taya, Terry);
 
 export default sampleTeamSummary;

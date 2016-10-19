@@ -1,9 +1,9 @@
 import React, {PropTypes} from 'react';
-import EmptySpace from '../EmptySpace/EmptySpace';
 import appTheme from 'universal/styles/theme/appTheme';
 import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
 import {trimString} from 'universal/utils';
+import EmptySpace from '../EmptySpace/EmptySpace';
 
 const Card = (props) => {
   const {content, status, type} = props;
@@ -16,154 +16,47 @@ const Card = (props) => {
     backgroundColor = ui.actionCardBgColor;
   }
 
-  const cardBodyStyle = {
-    color: appTheme.palette.dark,
+  const contentStyle = {
     backgroundColor,
+    borderColor: ui.cardBorderColor,
+    borderStyle: 'solid',
+    borderRadius: '0 0 4px 4px',
+    borderWidth: '0 1px 1px',
+    color: appTheme.palette.dark,
     fontSize: '16px',
     fontFamily: ui.emailFontFamily,
     height: '62px',
     lineHeight: '20px',
-    padding: '.5rem .25rem'
+    padding: '4px 8px'
   };
-
-  const borderStyle = {
-    backgroundColor: ui.cardBorderColor
-  };
-
-  const borderLeftStyle = {
-    backgroundColor,
-    borderLeft: `1px solid ${ui.cardBorderColor}`,
-    width: '3px'
-  };
-
-  const borderRightStyle = {
-    backgroundColor,
-    borderRight: `1px solid ${ui.cardBorderColor}`,
-    width: '3px'
-  };
-
-  const imageStyle = {
-    border: 0,
-    display: 'block'
-  };
-
-  const borderImageBottomLeftAction = '/static/images/email/email-card-action-border-bottom-left@3x.png';
-  const borderImageBottomRightAction = '/static/images/email/email-card-action-border-bottom-right@3x.png';
-
-  const borderImageBottomLeftProject = '/static/images/email/email-card-border-bottom-left@3x.png';
-  const borderImageBottomRightProject = '/static/images/email/email-card-border-bottom-right@3x.png';
-
-  const borderImageTopLeftAction = '/static/images/email/email-card-action-border-top-left@3x.png';
-  const borderImageTopRightAction = '/static/images/email/email-card-action-border-top-right@3x.png';
-
-  const borderImageTopLeftActive = '/static/images/email/email-card-active-border-top-left@3x.png';
-  const borderImageTopRightActive = '/static/images/email/email-card-active-border-top-right@3x.png';
-
-  const borderImageTopLeftDone = '/static/images/email/email-card-done-border-top-left@3x.png';
-  const borderImageTopRightDone = '/static/images/email/email-card-done-border-top-right@3x.png';
-
-  const borderImageTopLeftFuture = '/static/images/email/email-card-future-border-top-left@3x.png';
-  const borderImageTopRightFuture = '/static/images/email/email-card-future-border-top-right@3x.png';
-
-  const borderImageTopLeftStuck = '/static/images/email/email-card-stuck-border-top-left@3x.png';
-  const borderImageTopRightStuck = '/static/images/email/email-card-stuck-border-top-right@3x.png';
-
-  let borderImageBottomLeft;
-  let borderImageBottomRight;
-  let borderImageTopLeft;
-  let borderImageTopRight;
-
-  if (type === 'action') {
-    borderImageBottomLeft = borderImageBottomLeftAction;
-    borderImageBottomRight = borderImageBottomRightAction;
-    borderImageTopLeft = borderImageTopLeftAction;
-    borderImageTopRight = borderImageTopRightAction;
-  } else if (type === 'project') {
-    borderImageBottomLeft = borderImageBottomLeftProject;
-    borderImageBottomRight = borderImageBottomRightProject;
-
-    if (status === 'active') {
-      borderImageTopLeft = borderImageTopLeftActive;
-      borderImageTopRight = borderImageTopRightActive;
-    } else if (status === 'done') {
-      borderImageTopLeft = borderImageTopLeftDone;
-      borderImageTopRight = borderImageTopRightDone;
-    } else if (status === 'future') {
-      borderImageTopLeft = borderImageTopLeftFuture;
-      borderImageTopRight = borderImageTopRightFuture;
-    } else if (status === 'stuck') {
-      borderImageTopLeft = borderImageTopLeftStuck;
-      borderImageTopRight = borderImageTopRightStuck;
-    }
-  }
 
   let borderTopStyle;
 
   if (type === 'project') {
     borderTopStyle = {
-      backgroundColor: labels.projectStatus[status].color
+      backgroundColor: labels.projectStatus[status].color,
+      borderRadius: '4px 4px 0 0'
     };
   } else {
     borderTopStyle = {
-      backgroundColor: labels.action.color
+      backgroundColor: labels.action.color,
+      borderRadius: '4px 4px 0 0'
     };
   }
 
   return (
-    <table>
+    <table width="100%">
       <tbody>
         {/* card styled top border */}
         <tr>
           <td style={borderTopStyle}>
-            <img
-              style={imageStyle}
-              src={`${borderImageTopLeft}`}
-              height="4"
-              width="4"
-            />
-          </td>
-          <td style={borderTopStyle}><EmptySpace height={4} /></td>
-          <td style={borderTopStyle}>
-            <img
-              style={imageStyle}
-              src={`${borderImageTopRight}`}
-              height="4"
-              width="4"
-            />
+            <EmptySpace height={4} />
           </td>
         </tr>
         {/* card body */}
         <tr>
-          <td style={borderLeftStyle}></td>
-          <td align="left" style={cardBodyStyle} vAlign="top">
+          <td align="left" style={contentStyle} vAlign="top">
             {trimString(content, 52)}
-          </td>
-          <td style={borderRightStyle}></td>
-        </tr>
-        {/* card footer */}
-        <tr>
-          <td>
-            <img
-              style={imageStyle}
-              src={borderImageBottomLeft}
-              height="4"
-              width="4"
-            />
-          </td>
-          <td style={borderStyle}>
-            <table width="100%">
-              <tr>
-                <td style={{backgroundColor, borderBottom: `1px solid ${ui.cardBorderColor}`}}><EmptySpace height={3} /></td>
-              </tr>
-            </table>
-          </td>
-          <td>
-            <img
-              style={imageStyle}
-              src={borderImageBottomRight}
-              height="4"
-              width="4"
-            />
           </td>
         </tr>
       </tbody>
