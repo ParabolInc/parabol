@@ -228,7 +228,7 @@ export default {
       const r = getRethink();
       requireSUOrTeamMember(authToken, teamId);
       const now = new Date();
-      const foo = await r.table('Meeting')
+      await r.table('Meeting')
         .getAll(teamId, {index: 'teamId'})
         .orderBy(r.desc('createdAt'))
         .nth(0)('id')
@@ -273,7 +273,6 @@ export default {
 
             }, {nonAtomic: true});
         });
-      console.log(foo);
       // reset the meeting
       await r.table('Team').get(teamId)
         .update({
