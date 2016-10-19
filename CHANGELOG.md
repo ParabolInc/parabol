@@ -9,6 +9,8 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Sentry.io automated error reporting for server and client
 
 ### Fixed
+- #68 use auth0 refreshToken to keep a user logged in during a meeting
+- #393 do not require enter key to advance check-in during a meeting
 - #394 end meeting button copy should differ depending on user context
 - #395 going back one meeting phase doesn't update phaseItem
 - #396 creating agenda items from last call doesn't register them in the
