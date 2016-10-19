@@ -291,17 +291,21 @@ export default class MeetingContainer extends Component {
           </MeetingAvatars>
           {localPhase === LOBBY && <MeetingLobby members={members} team={team}/>}
           {localPhase === CHECKIN &&
-          <MeetingCheckin gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
+            <MeetingCheckin gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
           }
           {localPhase === UPDATES &&
-          <MeetingUpdatesContainer gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
+            <MeetingUpdatesContainer gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
           }
           {localPhase === FIRST_CALL && <MeetingAgendaFirstCall gotoNext={this.gotoNext}/>}
           {localPhase === AGENDA_ITEMS &&
-          <MeetingAgendaItems agendaItem={agenda[localPhaseItem - 1]} gotoNext={this.gotoNext} members={members}/>
+            <MeetingAgendaItems agendaItem={agenda[localPhaseItem - 1]} gotoNext={this.gotoNext} members={members}/>
           }
           {localPhase === LAST_CALL &&
-          <MeetingAgendaLastCallContainer {...phaseStateProps} endMeeting={this.endMeeting} isFacilitating={isFacilitating}/>
+            <MeetingAgendaLastCallContainer
+              {...phaseStateProps}
+              endMeeting={this.endMeeting}
+              isFacilitating={isFacilitating}
+            />
           }
         </MeetingMain>
       </MeetingLayout>

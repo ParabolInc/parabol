@@ -25,8 +25,15 @@ const MeetingAgendaLastCall = (props) => {
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="2rem">
           <MeetingPhaseHeading>Boom!</MeetingPhaseHeading>
-          <Type align="center" bold family="serif" marginBottom="2.25rem" marginTop="2rem" scale="s5"
-                colorPalette="black">
+          <Type
+            align="center"
+            bold
+            family="serif"
+            marginBottom="2.25rem"
+            marginTop="2rem"
+            scale="s5"
+            colorPalette="black"
+          >
             We worked on <span className={css(styles.highlight)}>{agendaItemCount} Agenda Items </span>
             resulting in <span className={css(styles.highlight)}>{actionCount} Actions </span>
             and <span className={css(styles.highlight)}>{projectCount} projects</span>.
@@ -59,6 +66,7 @@ MeetingAgendaLastCall.propTypes = {
   agendaItemCount: PropTypes.number,
   actionCount: PropTypes.number,
   endMeeting: PropTypes.func,
+  facilitatorName: PropTypes.string,
   localPhaseItem: PropTypes.number,
   isFacilitating: PropTypes.bool,
   projectCount: PropTypes.number,

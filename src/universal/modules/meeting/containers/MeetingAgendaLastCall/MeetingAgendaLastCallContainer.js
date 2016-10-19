@@ -69,7 +69,10 @@ MeetingAgendaLastCallContainer.propTypes = {
   agendaItemCount: PropTypes.number,
   actionCount: PropTypes.number,
   endMeeting: PropTypes.func,
+  isFacilitating: PropTypes.bool,
+  members: PropTypes.array,
   projectCount: PropTypes.number,
+  team: PropTypes.object
 };
 
 export default connect(mapStateToProps)(MeetingAgendaLastCallContainer);
