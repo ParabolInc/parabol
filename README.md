@@ -154,6 +154,7 @@ get involved and how to get compensated.
 
 | Release | Summary                                    |
 |---------|--------------------------------------------|
+| v0.8.1  | Added sentry.io. Fixed #394, #395, #396    |
 | v0.8.0  | Added end of meeting summary               |
 | v0.7.5  | Added temporary end meeting logic, fixes   |
 | v0.7.4  | Auth0 production options, numerous fixes   |
