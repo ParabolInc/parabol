@@ -129,14 +129,15 @@ export default {
         incrementsProgress = agendaItemCount === 0;
       }
       const moveMeeting = isSynced && incrementsProgress;
-
-      if (moveMeeting && meetingPhase === AGENDA_ITEMS) {
-        await r.table('AgendaItem')
-          .getAll(teamId, {index: 'teamId'})
-          .filter({isActive: true})
-          .orderBy('sortOrder')
-          .nth(meetingPhaseItem - 1)
-          .update({isComplete: true});
+      if (facilitatorPhase === AGENDA_ITEMS) {
+        if (moveMeeting || phaseOrder(meetingPhase) > phaseOrder(AGENDA_ITEMS)) {
+          await r.table('AgendaItem')
+            .getAll(teamId, {index: 'teamId'})
+            .filter({isActive: true})
+            .orderBy('sortOrder')
+            .nth(facilitatorPhaseItem - 1)
+            .update({isComplete: true});
+        }
       }
       /*
        console.log('moveMeeting');
@@ -288,12 +289,12 @@ export default {
             .sample(100000)
             .coerceTo('array')
             .do((arr) => arr.forEach((doc) => {
-              return r.table('TeamMember').get(doc('id'))
+                return r.table('TeamMember').get(doc('id'))
                   .update({
                     checkInOrder: arr.offsetsOf(doc).nth(0),
                     isCheckedIn: null
                   });
-            })
+              })
             );
         });
       return true;
