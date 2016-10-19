@@ -20,7 +20,7 @@
     "bs": "npm run build && npm start",
     "quickstart": "npm run db:migrate && npm run build && npm run start",
     "build:client": "NODE_ENV=production webpack --config ./webpack/prod.babel.js",
-    "build:client-min": "NODE_ENV=production DEPLOY=true webpack --config ./webpack/prod.babel.js",
+    "build:client-min": "NODE_ENV=production DEPLOY=true webpack -p --config ./webpack/prod.babel.js",
     "build:server": "NODE_ENV=production webpack --config ./webpack/server.babel.js",
     "db:migrate": "./src/server/database/migrate.sh up-all",
     "test": "NODE_ENV=testing ava ./src/**/__tests__/**/*-tests.js --verbose",
