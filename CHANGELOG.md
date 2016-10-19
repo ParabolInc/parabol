@@ -13,6 +13,8 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #395 going back one meeting phase doesn't update phaseItem
 - #396 creating agenda items from last call doesn't register them in the
   total or summary
+- #397 breaks on react-router infinite loop redirect
+- #400 Doesn't submit twice when using Enter to submit outcome changes
 
 ## v0.8.0 - 18-Oct-2016
 ### Added
