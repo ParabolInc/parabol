@@ -50,12 +50,16 @@ const mapStateToProps = (state, props) => {
 };
 
 const MeetingAgendaLastCallContainer = (props) => {
-  const {agendaItemCount, actionCount, endMeeting, projectCount} = props;
+  const {agendaItemCount, actionCount, endMeeting, isFacilitating, members, projectCount, team} = props;
+  const facilitator = members.find(member => member.id === team.activeFacilitator);
+  const facilitatorName = facilitator && facilitator.preferredName || 'Facilitator';
   return (
     <MeetingAgendaLastCall
       agendaItemCount={agendaItemCount}
       actionCount={actionCount}
       endMeeting={endMeeting}
+      facilitatorName={facilitatorName}
+      isFacilitating={isFacilitating}
       projectCount={projectCount}
     />
   );

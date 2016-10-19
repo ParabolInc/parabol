@@ -262,7 +262,7 @@ export default class MeetingContainer extends Component {
   gotoPrev = () => this.gotoItem(this.props.localPhaseItem - 1);
 
   render() {
-    const {agenda, localPhaseItem, members, params, team} = this.props;
+    const {agenda, isFacilitating, localPhaseItem, members, params, team} = this.props;
     const {teamId, localPhase} = params;
     const {facilitatorPhase, meetingPhase, meetingPhaseItem, name: teamName} = team;
     const agendaPhaseItem = meetingPhase === AGENDA_ITEMS && meetingPhaseItem || 0;
@@ -301,7 +301,7 @@ export default class MeetingContainer extends Component {
           <MeetingAgendaItems agendaItem={agenda[localPhaseItem - 1]} gotoNext={this.gotoNext} members={members}/>
           }
           {localPhase === LAST_CALL &&
-          <MeetingAgendaLastCallContainer {...phaseStateProps} endMeeting={this.endMeeting}/>
+          <MeetingAgendaLastCallContainer {...phaseStateProps} endMeeting={this.endMeeting} isFacilitating={isFacilitating}/>
           }
         </MeetingMain>
       </MeetingLayout>
