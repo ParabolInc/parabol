@@ -1,5 +1,6 @@
 const avatarJordan = '/static/images/avatars/jh-linkedin-avatar.jpg';
 const avatarMatt = '/static/images/avatars/matt-krick-bw.png';
+const avatarMarimar = '/static/images/avatars/marimar-suarez-penalva.jpg';
 const avatarTaya = '/static/images/avatars/taya-mueller-avatar.jpg';
 const avatarTerry = '/static/images/avatars/terry-acker-avatar.jpg';
 
@@ -56,6 +57,12 @@ const Jordan = {
       type: 'action'
     }
   ]
+};
+
+const Marimar = {
+  avatar: avatarMarimar,
+  name: 'Marimar Suárez Peñalva',
+  outcomes: []
 };
 
 const Matt = {
@@ -185,6 +192,6 @@ const Terry = {
 
 const sampleTeamSummary = [];
 
-sampleTeamSummary.push(Jordan, Matt, Taya, Terry);
+sampleTeamSummary.push(Jordan, Marimar, Matt, Taya, Terry);
 
 export default sampleTeamSummary;

@@ -45,6 +45,13 @@ const UserOutcomes = (props) => {
     padding: '0 0 8px'
   };
 
+  const emptyOutcomesMessage = {
+    ...textCenter,
+    backgroundColor: '#ffffff',
+    border: `1px solid ${ui.cardBorderColor}`,
+    padding: '16px'
+  };
+
   // const getNewOutcomeTypeCount = (arr, string) => {
   //   return arr.reduce((p, c) => {
   //     if (c.type === string) {
@@ -64,21 +71,26 @@ const UserOutcomes = (props) => {
             <span style={nameStyle}>{name}</span>
           </td>
         </tr>
-        <tr>
-          <td style={userStats}>
-            <img src="/static/images/email/email-icon-project@3x.png" style={iconStyle} />
-            <span style={{...labelStyle, marginRight: '20px'}}>
-              {reduceForKeyValCount(outcomes, 'type', 'project')} New Projects
-            </span>
-            <img src="/static/images/email/email-icon-action@3x.png" style={iconStyle} />
-            <span style={labelStyle}>
-              {reduceForKeyValCount(outcomes, 'type', 'action')} New Actions
-            </span>
-          </td>
-        </tr>
+        {outcomes.length &&
+          <tr>
+            <td style={userStats}>
+              <img src="/static/images/email/email-icon-project@3x.png" style={iconStyle} />
+              <span style={{...labelStyle, marginRight: '20px'}}>
+                {reduceForKeyValCount(outcomes, 'type', 'project')} New Projects
+              </span>
+              <img src="/static/images/email/email-icon-action@3x.png" style={iconStyle} />
+              <span style={labelStyle}>
+                {reduceForKeyValCount(outcomes, 'type', 'action')} New Actions
+              </span>
+            </td>
+          </tr>
+        }
         <tr>
           <td style={cardsCell}>
-            <OutcomesTable outcomes={outcomes} />
+            {outcomes.length ?
+              <OutcomesTable outcomes={outcomes} /> :
+              <div style={emptyOutcomesMessage}>No new Projects or Actions this week…</div>
+            }
             <EmptySpace height={24} />
           </td>
         </tr>
