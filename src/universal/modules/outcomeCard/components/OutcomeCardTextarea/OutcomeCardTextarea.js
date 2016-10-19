@@ -73,7 +73,6 @@ class OutcomeCardTextArea extends Component {
     const submitOnEnter = (e) => {
       // hitting enter (not shift+enter) submits the textarea
       if (e.keyCode === 13 && !e.shiftKey) {
-        handleBlur();
         textAreaRef.blur();
       }
     };

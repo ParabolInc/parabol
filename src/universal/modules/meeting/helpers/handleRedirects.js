@@ -8,21 +8,10 @@ import makePushURL from './makePushURL';
 import isSkippingAhead from './isSkippingAhead';
 import hasPhaseItem from './hasPhaseItem';
 
-let infiniteloopCounter = 0;
-let infiniteLoopTimer = Date.now();
-
 export default function handleRedirects(team, localPhase, localPhaseItem, oldTeam, router) {
   /* DEBUG: uncomment below */
   // console.log(`handleRedirects(${JSON.stringify(team)}, ${localPhase}, ${localPhaseItem}, ...)`);
   const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, id: teamId, meetingId} = team;
-  if (Date.now() - infiniteLoopTimer < 1000) {
-    if (++infiniteloopCounter >= 10) {
-      return null;
-    }
-  } else {
-    infiniteloopCounter = 0;
-    infiniteLoopTimer = Date.now();
-  }
 
   // bail out fast while we're waiting for the team sub
   if (!teamId) return false;

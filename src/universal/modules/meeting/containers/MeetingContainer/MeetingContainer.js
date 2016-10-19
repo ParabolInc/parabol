@@ -117,6 +117,9 @@ const mapStateToProps = (state, props) => {
   };
 };
 
+let infiniteloopCounter = 0;
+let infiniteLoopTimer = Date.now();
+
 @socketWithPresence
 @connect(mapStateToProps)
 @withRouter
@@ -151,29 +154,35 @@ export default class MeetingContainer extends Component {
   shouldComponentUpdate(nextProps) {
     const {localPhaseItem, router, params: {localPhase}, team} = nextProps;
     const {dispatch, isFacilitating, team: oldTeam} = this.props;
-
-    // only needs to run when the url changes or the team subscription initializes
-    // make sure the url is legit, but only run once (when the initial team subscription comes back)
-    const toRedirect = handleRedirects(team, localPhase, localPhaseItem, oldTeam, router);
-    if (toRedirect === null) {
-      // null means error!
-      if (isFacilitating) {
-        cashay.mutate('moveMeeting', {
-          teamId: team.id,
-          nextPhase: CHECKIN,
-          nextPhaseItem: 1,
-          force: true
-        });
-      }
-      this.gotoItem(1, CHECKIN);
-      dispatch(showError({
-        title: 'Awh shoot',
-        message: 'You found a glitch! We saved your work, but forgot where you were. We sent the bug to our team.'
-      }))
-      // TODO send to server
-    } else {
-      return toRedirect;
+    const safeRoute = handleRedirects(team, localPhase, localPhaseItem, oldTeam, router);
+    if (safeRoute) {
+      return true;
     }
+    // if we call router.push
+    if (Date.now() - infiniteLoopTimer < 1000) {
+      if (++infiniteloopCounter >= 10) {
+        // if we're changing locations 10 times in a second, it's probably infinite
+        if (isFacilitating) {
+          const variables = {
+            teamId: team.id,
+            nextPhase: CHECKIN,
+            nextPhaseItem: 1,
+            force: true
+          };
+          cashay.mutate('moveMeeting', {variables});
+        }
+        this.gotoItem(1, CHECKIN);
+        dispatch(showError({
+          title: 'Awh shoot',
+          message: 'You found a glitch! We saved your work, but forgot where you were. We sent the bug to our team.'
+        }));
+        // TODO send to server
+      }
+    } else {
+      infiniteloopCounter = 0;
+      infiniteLoopTimer = Date.now();
+    }
+    return false;
   }
 
   endMeeting = (redirOrEvent) => {
