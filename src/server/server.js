@@ -1,7 +1,7 @@
 import {SocketCluster} from 'socketcluster';
 import path from 'path'; // path must stay relative since this is before all babelfication
 import {clientSecret as secretKey} from './utils/auth0Helpers';
-import {JWT_LIFESPAN} from 'server/utils/serverConstants';
+import {JWT_LIFESPAN} from './utils/serverConstants';
 
 // const numCpus = os.cpus().length;
 export const options = {
