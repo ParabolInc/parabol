@@ -61,6 +61,7 @@ const MeetingCheckin = (props) => {
         {/* */}
         <CheckInCards
           gotoItem={gotoItem}
+          gotoNext={gotoNext}
           localPhaseItem={localPhaseItem}
           members={members}
         />
