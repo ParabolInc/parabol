@@ -1,11 +1,11 @@
 import getRethink from 'server/database/rethinkDriver';
-import ms from 'ms';
 import sendEmailPromise from 'server/email/sendEmail';
 import makeAppLink from 'server/utils/makeAppLink';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import promisify from 'es6-promisify';
 import {getUserId} from '../authorization';
+import {INVITATION_LIFESPAN} from 'server/utils/serverConstants';
 
 const INVITE_TOKEN_INVITE_ID_LEN = 6;
 const INVITE_TOKEN_KEY_LEN = 8;
@@ -76,7 +76,7 @@ export const resolveSentEmails = async(sendEmailPromises, inviteesWithTokens) =>
 
 export const makeInvitationsForDB = async(invitees, teamId) => {
   const now = new Date();
-  const tokenExpiration = now.valueOf() + ms('30d');
+  const tokenExpiration = now.valueOf() + INVITATION_LIFESPAN;
   const hashPromises = invitees.map(invitee => hashInviteTokenKey(invitee.inviteToken));
   const hashedTokens = await Promise.all(hashPromises);
   return invitees.map((invitee, idx) => {

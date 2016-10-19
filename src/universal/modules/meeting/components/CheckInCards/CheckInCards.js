@@ -6,7 +6,7 @@ import CheckInCard from 'universal/modules/meeting/components/CheckInCard/CheckI
 import checkInCardBaseStyles from '../CheckInCard/checkInCardBaseStyles';
 import {cashay} from 'cashay';
 
-const makeCheckinPressFactory = (teamMemberId) => (isCheckedIn) => () => {
+const makeCheckinPressFactory = (teamMemberId, gotoNext) => (isCheckedIn) => () => {
   const options = {
     variables: {
       isCheckedIn,
@@ -14,15 +14,15 @@ const makeCheckinPressFactory = (teamMemberId) => (isCheckedIn) => () => {
     }
   };
   cashay.mutate('checkIn', options);
+  gotoNext();
 };
 
 const CheckInCards = (props) => {
-  const {gotoItem, members, localPhaseItem, styles} = props;
+  const {gotoItem, gotoNext, members, localPhaseItem, styles} = props;
   const memberIdx = localPhaseItem - 1;
   const leftCard = memberIdx > 0 && members[memberIdx - 1];
   const rightCard = memberIdx < members.length && members[memberIdx + 1];
   const activeCard = members[memberIdx];
-
   return (
     <div className={css(styles.base)}>
       {leftCard ?
@@ -30,10 +30,14 @@ const CheckInCards = (props) => {
         <div className={css(styles.placeholder)}></div>
       }
       {activeCard &&
-        <CheckInCard checkInPressFactory={makeCheckinPressFactory(activeCard.id)} member={activeCard} isActive/>
+        <CheckInCard
+          checkInPressFactory={makeCheckinPressFactory(activeCard.id, gotoNext)}
+          member={activeCard}
+          isActive
+        />
       }
       {rightCard ?
-        <CheckInCard handleCardClick={() => gotoItem(localPhaseItem + 1)} member={rightCard}/> :
+        <CheckInCard handleCardClick={gotoNext} member={rightCard}/> :
         <div className={css(styles.placeholder)}></div>
       }
     </div>
@@ -42,6 +46,7 @@ const CheckInCards = (props) => {
 
 CheckInCards.propTypes = {
   gotoItem: PropTypes.func.isRequired,
+  gotoNext: PropTypes.func.isRequired,
   members: PropTypes.array,
   localPhaseItem: PropTypes.number,
   styles: PropTypes.object,

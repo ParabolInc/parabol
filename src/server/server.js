@@ -1,9 +1,11 @@
 import {SocketCluster} from 'socketcluster';
 import path from 'path'; // path must stay relative since this is before all babelfication
 import {clientSecret as secretKey} from './utils/auth0Helpers';
+import {JWT_LIFESPAN} from './utils/serverConstants';
 
 // const numCpus = os.cpus().length;
 export const options = {
+  authDefaultExpiry: JWT_LIFESPAN,
   authKey: new Buffer(secretKey, 'base64'),
   logLevel: 1,
   // socket engine written in C++? don't mind if i do!

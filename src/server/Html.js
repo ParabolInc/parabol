@@ -18,7 +18,6 @@ export default function Html({store, entries, StyleSheetServer, renderProps}) {
   // TURN ON WHEN WE SEND STATE TO CLIENT
   // const initialState = `window.__INITIAL_STATE__ = ${JSON.stringify(store.getState())}`;
   // <script dangerouslySetInnerHTML={{__html: initialState}}/>
-
   const {html, css} = StyleSheetServer.renderStatic(() => {
     return renderToString(
       <Provider store={store}>
@@ -42,9 +41,7 @@ export default function Html({store, entries, StyleSheetServer, renderProps}) {
         {/* segment.io analytics */}
         <script type="text/javascript" dangerouslySetInnerHTML={{__html: segmentSnippet}}/>
         {/* sentry.io error reporting */}
-        {process.env.SENTRY_DSN_PUBLIC &&
-          <script src="https://cdn.ravenjs.com/3.7.0/raven.min.js" crossOrigin="anonymous"/>
-        }
+        <script src="https://cdn.ravenjs.com/3.7.0/raven.min.js" crossOrigin="anonymous"/>
       </head>
       <body>
         <script dangerouslySetInnerHTML={{__html: dehydratedStyles}}/>
