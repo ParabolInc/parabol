@@ -27,7 +27,12 @@ export default function Html({store, entries, StyleSheetServer, renderProps}) {
     );
   });
   const dehydratedStyles = `window.__APHRODITE__ = ${JSON.stringify(css.renderedClassNames)}`;
-  const auth0ClientOptions = `window.__AUTH0__ = ${JSON.stringify(auth0)}`;
+  const clientOptions = `
+    window.__ACTION__ = {
+      auth0: ${JSON.stringify(auth0)},
+      sentry: ${JSON.stringify(process.env.SENTRY_DSN_PUBLIC)}
+    };
+`;
   const fontAwesomeUrl = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css';
   return (
     <html>
@@ -36,10 +41,14 @@ export default function Html({store, entries, StyleSheetServer, renderProps}) {
         <link rel="stylesheet" type="text/css" href={fontAwesomeUrl}/>
         {/* segment.io analytics */}
         <script type="text/javascript" dangerouslySetInnerHTML={{__html: segmentSnippet}}/>
+        {/* sentry.io error reporting */}
+        {process.env.SENTRY_DSN_PUBLIC &&
+          <script src="https://cdn.ravenjs.com/3.7.0/raven.min.js" crossOrigin="anonymous"/>
+        }
       </head>
       <body>
         <script dangerouslySetInnerHTML={{__html: dehydratedStyles}}/>
-        <script dangerouslySetInnerHTML={{__html: auth0ClientOptions}}/>
+        <script dangerouslySetInnerHTML={{__html: clientOptions}}/>
         <div id="root" dangerouslySetInnerHTML={{__html: html}}></div>
         <script dangerouslySetInnerHTML={{__html: manifest.text}}/>
         <script src={vendor.js}/>
