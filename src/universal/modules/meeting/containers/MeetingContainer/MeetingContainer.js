@@ -33,6 +33,7 @@ import {TEAMS} from 'universal/subscriptions/constants';
 import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 import withHotkey from 'react-hotkey-hoc';
 import getBestPhaseItem from 'universal/modules/meeting/helpers/getBestPhaseItem';
+import {showError} from 'universal/modules/notifications/ducks/notifications';
 
 const resolveMeetingMembers = (queryData, userId) => {
   if (queryData !== resolveMeetingMembers.queryData) {
@@ -116,6 +117,9 @@ const mapStateToProps = (state, props) => {
   };
 };
 
+let infiniteloopCounter = 0;
+let infiniteLoopTimer = Date.now();
+
 @socketWithPresence
 @connect(mapStateToProps)
 @withRouter
@@ -149,11 +153,36 @@ export default class MeetingContainer extends Component {
 
   shouldComponentUpdate(nextProps) {
     const {localPhaseItem, router, params: {localPhase}, team} = nextProps;
-    const {team: oldTeam} = this.props;
-
-    // only needs to run when the url changes or the team subscription initializes
-    // make sure the url is legit, but only run once (when the initial team subscription comes back)
-    return handleRedirects(team, localPhase, localPhaseItem, oldTeam, router);
+    const {dispatch, isFacilitating, team: oldTeam} = this.props;
+    const safeRoute = handleRedirects(team, localPhase, localPhaseItem, oldTeam, router);
+    if (safeRoute) {
+      return true;
+    }
+    // if we call router.push
+    if (Date.now() - infiniteLoopTimer < 1000) {
+      if (++infiniteloopCounter >= 10) {
+        // if we're changing locations 10 times in a second, it's probably infinite
+        if (isFacilitating) {
+          const variables = {
+            teamId: team.id,
+            nextPhase: CHECKIN,
+            nextPhaseItem: 1,
+            force: true
+          };
+          cashay.mutate('moveMeeting', {variables});
+        }
+        this.gotoItem(1, CHECKIN);
+        dispatch(showError({
+          title: 'Awh shoot',
+          message: 'You found a glitch! We saved your work, but forgot where you were. We sent the bug to our team.'
+        }));
+        // TODO send to server
+      }
+    } else {
+      infiniteloopCounter = 0;
+      infiniteLoopTimer = Date.now();
+    }
+    return false;
   }
 
   endMeeting = (redirOrEvent) => {
@@ -189,7 +218,7 @@ export default class MeetingContainer extends Component {
       }
       // if we're going to an area that has items, try going to the facilitator item, or the meeting item, or just 1
       if (hasPhaseItem(nextPhase)) {
-        nextPhaseItem = maybeNextPhaseItem || getBestPhaseItem(AGENDA_ITEMS, team);
+        nextPhaseItem = maybeNextPhaseItem || getBestPhaseItem(nextPhase, team);
       }
     } else {
       const localPhaseOrder = phaseOrder(localPhase);
@@ -233,7 +262,7 @@ export default class MeetingContainer extends Component {
   gotoPrev = () => this.gotoItem(this.props.localPhaseItem - 1);
 
   render() {
-    const {agenda, localPhaseItem, members, params, team} = this.props;
+    const {agenda, isFacilitating, localPhaseItem, members, params, team} = this.props;
     const {teamId, localPhase} = params;
     const {facilitatorPhase, meetingPhase, meetingPhaseItem, name: teamName} = team;
     const agendaPhaseItem = meetingPhase === AGENDA_ITEMS && meetingPhaseItem || 0;
@@ -272,7 +301,11 @@ export default class MeetingContainer extends Component {
             <MeetingAgendaItems agendaItem={agenda[localPhaseItem - 1]} gotoNext={this.gotoNext} members={members}/>
           }
           {localPhase === LAST_CALL &&
-            <MeetingAgendaLastCallContainer {...phaseStateProps} endMeeting={this.endMeeting}/>
+            <MeetingAgendaLastCallContainer
+              {...phaseStateProps}
+              endMeeting={this.endMeeting}
+              isFacilitating={isFacilitating}
+            />
           }
         </MeetingMain>
       </MeetingLayout>

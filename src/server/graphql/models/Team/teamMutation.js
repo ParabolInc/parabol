@@ -42,9 +42,13 @@ export default {
       nextPhaseItem: {
         type: GraphQLInt,
         description: 'The item within the phase to set the meeting to'
+      },
+      force: {
+        type: GraphQLBoolean,
+        description: 'If true, execute the mutation without regard for meeting flow'
       }
     },
-    async resolve(source, {teamId, nextPhase, nextPhaseItem}, {authToken, socket}) {
+    async resolve(source, {force, teamId, nextPhase, nextPhaseItem}, {authToken, socket}) {
       const r = getRethink();
       // TODO: transform these console statements into configurable logger statements:
       /*
@@ -60,6 +64,17 @@ export default {
       requireWebsocket(socket);
       if (nextPhase && !phaseArray.includes(nextPhase)) {
         throw errorObj({_error: `${nextPhase} is not a valid phase`});
+      }
+
+      if (force) {
+        // use this if the meeting hit an infinite redirect loop. should never occur
+        await r.table('Team').get(teamId).update({
+          facilitatorPhase: nextPhase,
+          facilitatorPhaseItem: nextPhaseItem,
+          meetingPhase: nextPhase,
+          meetingPhaseItem: nextPhaseItem,
+        });
+        return true;
       }
 
       const team = await r.table('Team').get(teamId);
@@ -81,7 +96,6 @@ export default {
           throw errorObj({_error: 'We don\'t have that many agenda items!'});
         }
       } else if (nextPhase === FIRST_CALL && phaseOrder(meetingPhase) > phaseOrder(FIRST_CALL)) {
-        console.log('no FC', meetingPhase, phaseOrder(meetingPhase));
         throw errorObj({_error: 'You can\'t visit first call twice!'});
       } else if (nextPhase && nextPhaseItem) {
         throw errorObj({_error: `${nextPhase} does not have phase items, but you said ${nextPhaseItem}`});
@@ -115,14 +129,15 @@ export default {
         incrementsProgress = agendaItemCount === 0;
       }
       const moveMeeting = isSynced && incrementsProgress;
-
-      if (moveMeeting && meetingPhase === AGENDA_ITEMS) {
-        await r.table('AgendaItem')
-          .getAll(teamId, {index: 'teamId'})
-          .filter({isActive: true})
-          .orderBy('sortOrder')
-          .nth(meetingPhaseItem - 1)
-          .update({isComplete: true});
+      if (facilitatorPhase === AGENDA_ITEMS) {
+        if (moveMeeting || phaseOrder(meetingPhase) > phaseOrder(AGENDA_ITEMS)) {
+          await r.table('AgendaItem')
+            .getAll(teamId, {index: 'teamId'})
+            .filter({isActive: true})
+            .orderBy('sortOrder')
+            .nth(facilitatorPhaseItem - 1)
+            .update({isComplete: true});
+        }
       }
       /*
        console.log('moveMeeting');

@@ -13,16 +13,27 @@ const MeetingAgendaLastCall = (props) => {
   const {
     agendaItemCount,
     actionCount,
+    isFacilitating,
     endMeeting,
+    facilitatorName,
     projectCount,
     styles
   } = props;
+
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="2rem">
           <MeetingPhaseHeading>Boom!</MeetingPhaseHeading>
-          <Type align="center" bold family="serif" marginBottom="2.25rem" marginTop="2rem" scale="s5" colorPalette="black">
+          <Type
+            align="center"
+            bold
+            family="serif"
+            marginBottom="2.25rem"
+            marginTop="2rem"
+            scale="s5"
+            colorPalette="black"
+          >
             We worked on <span className={css(styles.highlight)}>{agendaItemCount} Agenda Items </span>
             resulting in <span className={css(styles.highlight)}>{actionCount} Actions </span>
             and <span className={css(styles.highlight)}>{projectCount} projects</span>.
@@ -33,13 +44,18 @@ const MeetingAgendaLastCall = (props) => {
             <span className={css(styles.highlight)}>add another Agenda Item</span>.<br />
             If not, you can end the meeting to see a summary.
           </Type>
-          <Button
-            colorPalette="cool"
-            label="End Meeting"
-            onClick={() => endMeeting(true)}
-            size="largest"
-            style="outlined"
-          />
+          {isFacilitating ?
+            <Button
+              colorPalette="cool"
+              label="End Meeting"
+              onClick={() => endMeeting(true)}
+              size="largest"
+              style="outlined"
+            /> :
+            <Type align="center" marginBottom="2.75rem" scale="s4" colorPalette="black">
+              <span className={css(styles.highlight)}>Waiting for {facilitatorName} to end the meeting...</span>
+            </Type>
+          }
         </MeetingSection>
       </MeetingSection>
     </MeetingMain>
@@ -50,6 +66,7 @@ MeetingAgendaLastCall.propTypes = {
   agendaItemCount: PropTypes.number,
   actionCount: PropTypes.number,
   endMeeting: PropTypes.func,
+  facilitatorName: PropTypes.string,
   localPhaseItem: PropTypes.number,
   isFacilitating: PropTypes.bool,
   projectCount: PropTypes.number,
