@@ -4,6 +4,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.8.1 - 19-Oct-2016
+### Added
+- Sentry.io automated error reporting for server and client
+
+### Fixed
+- #394 end meeting button copy should differ depending on user context
+- #395 going back one meeting phase doesn't update phaseItem
+- #396 creating agenda items from last call doesn't register them in the
+  total or summary
+- #397 breaks on react-router infinite loop redirect
+- #400 Doesn't submit twice when using Enter to submit outcome changes
+
 ## v0.8.0 - 18-Oct-2016
 ### Added
 - End of meeting summary

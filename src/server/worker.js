@@ -5,6 +5,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import jwt from 'express-jwt';
 import favicon from 'serve-favicon';
+import raven from 'raven';
 import config from '../../webpack/webpack.config.dev';
 import createSSR from './createSSR';
 import emailSSR from './emailSSR';
@@ -41,6 +42,10 @@ export function run(worker) {
   }
 
   // setup middleware
+  app.use(
+    // sentry.io request handler capture middleware:
+    raven.middleware.express.requestHandler(process.env.SENTRY_DSN)
+  );
   app.use(bodyParser.json());
   app.use(cors({origin: true, credentials: true}));
   app.use('/static', express.static('static'));
@@ -61,6 +66,12 @@ export function run(worker) {
   app.get('/email', emailSSR);
   // server-side rendering
   app.get('*', createSSR);
+
+  // error handling middleware:
+  app.use(
+    // sentry.io:
+    raven.middleware.express.errorHandler(process.env.SENTRY_DSN)
+  );
 
   // handle sockets
   const {MIDDLEWARE_PUBLISH_OUT, MIDDLEWARE_SUBSCRIBE} = scServer;
