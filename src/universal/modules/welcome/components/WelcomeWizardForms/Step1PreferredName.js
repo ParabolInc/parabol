@@ -23,8 +23,8 @@ export default class Step1PreferredName extends Component {
   };
 
   componentWillMount() {
-    const {dispatch, user: {nickname}} = this.props;
-    return dispatch(initialize('welcomeWizard', {preferredName: nickname}));
+    const {dispatch, user: {preferredName}} = this.props;
+    return dispatch(initialize('welcomeWizard', {preferredName}));
   }
 
   onPreferredNameSubmit = (submissionData) => {
