@@ -34,9 +34,9 @@ const MeetingAgendaLastCall = (props) => {
             scale="s5"
             colorPalette="black"
           >
-            We worked on <span className={css(styles.highlight)}>{agendaItemCount} Agenda Items </span>
-            resulting in <span className={css(styles.highlight)}>{actionCount} Actions </span>
-            and <span className={css(styles.highlight)}>{projectCount} projects</span>.
+            We worked on <span className={css(styles.highlight)}>{agendaItemCount} Agenda Item{agendaItemCount !== 1 && 's'} </span>
+            resulting in <span className={css(styles.highlight)}>{actionCount} Action{actionCount !== 1 && 's'} </span>
+            and <span className={css(styles.highlight)}>{projectCount} Project{projectCount !== 1 && 's'}</span>.
           </Type>
           <Type align="center" marginBottom="2.75rem" scale="s4" colorPalette="black">
             Anybody have <b><i>additional Agenda Items</i></b>?<br />
