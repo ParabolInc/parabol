@@ -44,19 +44,7 @@ const UserOutcomes = (props) => {
     padding: '0 0 8px'
   };
 
-  const emptyOutcomesMessage = {
-    ...textCenter,
-    backgroundColor: '#ffffff',
-    border: `1px solid ${ui.cardBorderColor}`,
-    borderRadius: '4px',
-    fontFamily: ui.emailFontFamily,
-    fontSize: '16px',
-    fontStyle: 'italic',
-    padding: '16px'
-  };
-
   const presentLabelStyles = {
-    // color: present ? appTheme.palette.cool : appTheme.palette.mid80l,
     color: present ? appTheme.palette.cool : appTheme.palette.cool10g,
     fontFamily: ui.emailFontFamily,
     fontSize: '14px',
@@ -112,14 +100,7 @@ const UserOutcomes = (props) => {
         }
         <tr>
           <td align="center" style={cardsCell}>
-            {outcomes.length > 0 ?
-              <OutcomesTable outcomes={outcomes} /> :
-              <div style={{padding: '0 8px'}}>
-                <div style={emptyOutcomesMessage}>
-                  {'No new Projects or Actions this week…'}
-                </div>
-              </div>
-            }
+            <OutcomesTable outcomes={outcomes} />
             <EmptySpace height={24} />
           </td>
         </tr>

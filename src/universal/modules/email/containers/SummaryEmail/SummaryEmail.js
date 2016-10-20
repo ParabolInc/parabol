@@ -112,7 +112,9 @@ const SummaryEmail = (props) => {
         <table align="center" width="100%">
           <tr>
             <td align="center">
+              {/* Summary Header */}
               <SummaryHeader meetingDate={meetingDate} teamDashLink={teamDashLink} teamName={teamName} />
+              {/* Message */}
               {meetingCount === 0 ?
                 <div>
                   <div style={message}>
