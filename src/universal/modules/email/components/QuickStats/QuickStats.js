@@ -34,7 +34,7 @@ const QuickStats = (props) => {
     backgroundColor: '#ffffff',
     border: `1px solid ${ui.cardBorderColor}`,
     borderRadius: '4px',
-    padding: '8px 8px 12px',
+    padding: '8px 0 12px',
     textAlign: 'center'
   };
 
@@ -63,48 +63,45 @@ const QuickStats = (props) => {
               style={cellStyles}
               vAlign="top"
             >
-
               <div style={statStyles}>
                 <div style={statValue}>{agendaItems}</div>
-                <div style={statLabel}>Agenda Items</div>
+                <div style={statLabel}>Agenda Item{agendaItems !== 1 && 's'}</div>
               </div>
-
             </td>
             <td
               align="center"
               style={cellStyles}
               vAlign="top"
             >
-
               <div style={statStyles}>
                 <div style={statValue}>{newProjects}</div>
-                <div style={statLabel}>New Projects</div>
+                <div style={statLabel}>New Project{newProjects !== 1 && 's'}</div>
               </div>
-
             </td>
             <td
               align="center"
               style={cellStyles}
               vAlign="top"
             >
-
               <div style={statStyles}>
                 <div style={statValue}>{newActions}</div>
-                <div style={statLabel}>New Actions</div>
+                <div style={statLabel}>New Action{newActions !== 1 && 's'}</div>
               </div>
-
             </td>
             <td
               align="center"
               style={cellStyles}
               vAlign="top"
             >
-
               <div style={statStyles}>
-                <div style={statValue}>{teamMembersPresent}/{teamMembers}</div>
+                <div style={statValue}>
+                  {teamMembersPresent >= 10 ?
+                    <span>{teamMembersPresent}</span> :
+                    <span>{teamMembersPresent}/{teamMembers}</span>
+                  }
+                </div>
                 <div style={statLabel}>Present</div>
               </div>
-
             </td>
           </tr>
         </tbody>

@@ -7,6 +7,8 @@ const avatarTerry = '/static/images/avatars/terry-acker-avatar.jpg';
 const Jordan = {
   avatar: avatarJordan,
   name: 'Jordan Husney',
+  present: true,
+  outcomesX: [],
   outcomes: [
     {
       content: 'Summary email designed',
@@ -62,18 +64,43 @@ const Jordan = {
 const Marimar = {
   avatar: avatarMarimar,
   name: 'Marimar Suárez Peñalva',
+  // name: 'Marimar Peñalva',
+  present: true,
   outcomes: []
 };
 
 const Jerry = {
   avatar: avatarTerry,
   name: 'Jerry Seabass',
-  outcomes: []
+  present: false,
+  outcomesX: [],
+  outcomes: [
+    {
+      content: 'First consultant client signed',
+      status: 'active',
+      team: 'Parabol',
+      type: 'project'
+    },
+    {
+      content: 'Accelerator acceptance received',
+      status: 'active',
+      team: 'Parabol',
+      type: 'project'
+    },
+    {
+      content: 'Adjust copy for beta signup page',
+      status: null,
+      team: 'Parabol',
+      type: 'action'
+    }
+  ]
 };
 
 const Matt = {
   avatar: avatarMatt,
   name: 'Matt Krick',
+  present: true,
+  outcomesX: [],
   outcomes: [
     {
       content: 'Me dashboard part 2 sprint merged',
@@ -117,6 +144,8 @@ const Matt = {
 const Taya = {
   avatar: avatarTaya,
   name: 'Taya Mueller',
+  present: true,
+  outcomesX: [],
   outcomes: [
     {
       content: 'First consultant client signed',
@@ -142,6 +171,8 @@ const Taya = {
 const Terry = {
   avatar: avatarTerry,
   name: 'Terry Acker',
+  present: true,
+  outcomesX: [],
   outcomes: [
     {
       content: 'Summary email designed',
@@ -198,6 +229,7 @@ const Terry = {
 
 const sampleTeamSummary = [];
 
-sampleTeamSummary.push(Jordan, Marimar, Matt, Jerry, Taya, Terry);
+console.log(Jerry);
+sampleTeamSummary.push(Jordan, Marimar, Matt, Taya, Terry);
 
 export default sampleTeamSummary;
