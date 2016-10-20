@@ -212,7 +212,7 @@ SummaryEmail.propTypes = {
 };
 
 SummaryEmail.defaultProps = {
-  // bannerMessage: <span>All team members will receive this summary in their inbox.</span>,
+  bannerMessage: <span>All team members will receive this summary in their inbox.</span>,
   meetingCount: 0,
   meetingDate: 'Tuesday, October 18th, 2016',
   meetingLobbyLink: '/meeting/team123/',
