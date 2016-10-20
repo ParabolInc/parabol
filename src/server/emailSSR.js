@@ -1,7 +1,10 @@
 import sendEmail from 'server/email/sendEmail';
 import templates from 'server/email/templates';
 
-const EMAIL_DESTINATION = 'jordan@parabol.co';
+// erica.seldin.contractor@pepsico.com
+// jordan@parabol.co
+
+const EMAIL_DESTINATION = 'terry@parabol.co, terry_acker@yahoo.com';
 const EMAIL_TEMPLATE = 'summaryEmail';
 const EMAIL_ALL_PROPS = {
   summaryEmail: {

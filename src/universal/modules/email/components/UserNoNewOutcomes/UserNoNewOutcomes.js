@@ -26,6 +26,7 @@ const UserNoNewOutcomes = (props) => {
   };
 
   const nameStyle = {
+    color: appTheme.palette.dark,
     display: 'block',
     fontSize: members.length === 1 ? '20px' : '14px',
     padding: '4px 0'

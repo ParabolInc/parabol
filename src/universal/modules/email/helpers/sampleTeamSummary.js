@@ -64,7 +64,6 @@ const Jordan = {
 const Marimar = {
   avatar: avatarMarimar,
   name: 'Marimar Suárez Peñalva',
-  // name: 'Marimar Peñalva',
   present: true,
   outcomes: []
 };
@@ -144,7 +143,7 @@ const Matt = {
 const Taya = {
   avatar: avatarTaya,
   name: 'Taya Mueller',
-  present: true,
+  present: false,
   outcomesX: [],
   outcomes: [
     {
@@ -172,8 +171,8 @@ const Terry = {
   avatar: avatarTerry,
   name: 'Terry Acker',
   present: true,
-  outcomesX: [],
-  outcomes: [
+  outcomes: [],
+  outcomesX: [
     {
       content: 'Summary email designed',
       status: 'done',

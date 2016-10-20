@@ -16,12 +16,15 @@ const Card = (props) => {
     backgroundColor = ui.actionCardBgColor;
   }
 
-  const contentStyle = {
+  const cellStyle = {
     backgroundColor,
     borderColor: ui.cardBorderColor,
     borderStyle: 'solid',
     borderRadius: '0 0 4px 4px',
     borderWidth: '0 1px 1px',
+  };
+
+  const contentStyle = {
     color: appTheme.palette.dark,
     fontSize: '16px',
     fontFamily: ui.emailFontFamily,
@@ -55,8 +58,10 @@ const Card = (props) => {
         </tr>
         {/* card body */}
         <tr>
-          <td align="left" style={contentStyle} vAlign="top">
-            {trimString(content, 52)}
+          <td align="left" style={cellStyle} vAlign="top">
+            <div style={contentStyle}>
+              {trimString(content, 52)}
+            </div>
           </td>
         </tr>
       </tbody>

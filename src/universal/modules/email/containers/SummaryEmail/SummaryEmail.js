@@ -38,6 +38,7 @@ const SummaryEmail = (props) => {
   };
 
   const message = {
+    color: appTheme.palette.dark,
     fontFamily: ui.emailFontFamily,
     fontSize: '18px',
     lineHeight: '28px',
@@ -56,6 +57,7 @@ const SummaryEmail = (props) => {
   const bannerMessageStyles = {
     color: '#ffffff',
     fontFamily: ui.emailFontFamily,
+    fontSize: '16px',
     fontWeight: 700,
     textAlign: 'center'
   };
@@ -140,8 +142,7 @@ const SummaryEmail = (props) => {
                     <div style={message}>
                       <b style={greetingStyles}>{'Hey there!'}</b><br />
                       {'It looks like there weren’t any agenda items.'}<br />
-                      {'Are things running that smoothly for you,'}<br />
-                      {'or did our software give you trouble?'}<br />
+                      {'Did our software give you trouble?'}<br />
                       {'Let us know: '}
                       <a href="mailto:love@parabol.co" style={linkStyles} title="Email us at: love@parabol.co">love@parabol.co</a>
                     </div> :
@@ -213,15 +214,15 @@ SummaryEmail.propTypes = {
 
 SummaryEmail.defaultProps = {
   bannerMessage: <span>All team members will receive this summary in their inbox.</span>,
-  meetingCount: 0,
+  meetingCount: 1,
   meetingDate: 'Tuesday, October 18th, 2016',
   meetingLobbyLink: '/meeting/team123/',
   teamDashLink: '/team/team123/',
   teamName: 'Parabol Product',
   teamMembers: sampleTeamSummary,
   totalAgendaItems: 21,
-  totalNewActions: 15,
-  totalNewProjects: 10
+  totalNewActions: 12,
+  totalNewProjects: 5
 };
 
 export const summaryEmailText = (props) =>

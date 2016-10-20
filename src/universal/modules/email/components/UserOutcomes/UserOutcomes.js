@@ -33,6 +33,7 @@ const UserOutcomes = (props) => {
   };
 
   const nameStyle = {
+    color: appTheme.palette.dark,
     display: 'block',
     fontSize: '20px',
     padding: '4px 0'
