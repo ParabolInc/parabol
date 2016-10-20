@@ -128,12 +128,12 @@ const MeetingInvitee = new GraphQLObjectType({
     },
     present: {
       type: GraphQLBoolean,
-      description: 'true of the invitee was present'
+      description: 'true if the invitee was present in the meeting'
     },
     /* GraphQL Sugar */
     membership: {
       type: TeamMember,
-      description: 'All the fields from the team member table',
+      description: 'All of the fields from the team member table',
       async resolve({id}) {
         const r = getRethink();
         return await r.table('TeamMember').get(id);

@@ -1,6 +1,6 @@
 import path from 'path';
 import webpack from 'webpack';
-import AssetsPlugin from 'assets-webpack-plugin';
+import AssetsPlugin from 'manifest-assets-webpack-plugin';
 import HappyPack from 'happypack';
 import WebpackShellPlugin from 'webpack-shell-plugin';
 import {getDotenv} from '../src/universal/utils/dotenv';
