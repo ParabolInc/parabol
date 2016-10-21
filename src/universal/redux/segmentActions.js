@@ -10,8 +10,6 @@ export function segmentEvent(event, properties, options) {
   // always expose user traits:
   const traits = window.analytics && window.analytics.user().traits();
   const propertiesOut = Object.assign({}, traits, properties);
-  console.log('propertiesOut');
-  console.log(propertiesOut);
   const optionsOut = Object.assign({}, { context: { traits } }, options);
 
   return {

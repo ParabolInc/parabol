@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react';
 import {cashay} from 'cashay';
 import {setAuthToken} from 'universal/redux/authDuck';
-import {setProfile} from 'universal/redux/profileDuck';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import {segmentEvent} from 'universal/redux/segmentActions';
 import {auth0 as defaultClientOptions} from 'universal/utils/clientOptions';
@@ -18,7 +17,6 @@ async function updateToken(dispatch, profile, authToken) {
    * wait for the account be get created, then set the token to accept the
    * token.
    */
-  dispatch(setProfile(profile));
   dispatch(setAuthToken(authToken, profile));
   dispatch(segmentEvent('User Login'));
 }

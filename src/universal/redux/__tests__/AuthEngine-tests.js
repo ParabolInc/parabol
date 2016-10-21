@@ -1,12 +1,14 @@
 import test from 'ava';
-import {createStore, combineReducers} from 'redux';
+import {applyMiddleware, createStore, combineReducers} from 'redux';
+import thunk from 'redux-thunk';
 import auth from '../authDuck';
+import profile from '../profileDuck';
 import ReduxAuthEngine from '../AuthEngine';
 import {testToken, testTokenData} from './testTokens';
 
 const REDUCER_NAME = 'marvin'; // use a different key than default for testing
-const reducers = combineReducers({[REDUCER_NAME]: auth});
-const store = createStore(reducers, {});
+const reducers = combineReducers({[REDUCER_NAME]: auth, profile});
+const store = createStore(reducers, {}, applyMiddleware(thunk));
 
 test('constructor stores store', t => {
   const rae = new ReduxAuthEngine(store, REDUCER_NAME);
@@ -23,8 +25,10 @@ test('saveToken saves token', t => {
 
   const rae = new ReduxAuthEngine(store, REDUCER_NAME);
   rae.saveToken('aName', testToken, null, cb);
+  // eslint-disable-next-line no-unused-vars
+  const {profile: withoutProfile, ...testState} = rae.store.getState();
   t.deepEqual(
-    rae.store.getState(),
+    testState,
     {
       [REDUCER_NAME]: {
         obj: testTokenData,
@@ -45,8 +49,10 @@ test('removeToken removes token', t => {
   const rae = new ReduxAuthEngine(store, REDUCER_NAME);
   rae.saveToken('aName', testToken);
   rae.removeToken('aName', cb);
+  // eslint-disable-next-line no-unused-vars
+  const {profile: withoutProfile, ...testState} = rae.store.getState();
   t.deepEqual(
-    rae.store.getState(),
+    testState,
     {
       [REDUCER_NAME]: {
         token: null,

@@ -7,11 +7,15 @@ import globalStyles from 'universal/styles/theme/globalStyles';
 const updateAnalyticsPage = (lastPage, nextPage) => {
   if (typeof window !== 'undefined' &&
     typeof window.analytics !== 'undefined') {
-    window.analytics.page('', nextPage, {
+    const traits = window.analytics && window.analytics.user().traits();
+    const props = Object.assign({}, traits, {
       title: document && document.title || '',
       referrer: lastPage,
       path: nextPage
     });
+    const options = Object.assign({}, { context: { traits } });
+    // track the page view for the user:
+    window.analytics.page('', nextPage, props, options);
   }
 };
 

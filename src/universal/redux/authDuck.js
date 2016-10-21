@@ -2,6 +2,7 @@ import {cashay} from 'cashay';
 import jwtDecode from 'jwt-decode';
 import {EventTypes} from 'redux-segment';
 import ActionHTTPTransport from '../utils/ActionHTTPTransport';
+import {setProfile} from './profileDuck';
 
 const SET_AUTH_TOKEN = '@@authToken/SET_AUTH_TOKEN';
 const REMOVE_AUTH_TOKEN = '@@authToken/REMOVE_AUTH_TOKEN';
@@ -31,21 +32,28 @@ export default function reducer(state = initialState, action = {}) {
   }
 }
 
-export function setAuthToken(authToken, metaProfile) {
-  if (!authToken) {
-    throw new Error('setAuthToken action created with undefined authToken');
-  }
-  let obj = null;
-  try {
-    obj = jwtDecode(authToken);
-  } catch (e) {
-    throw new Error(`unable to decode jwt: ${e}`);
-  }
-  cashay.create({httpTransport: new ActionHTTPTransport(authToken)});
-
+export function setAuthToken(authToken, newProfile) {
   return (dispatch, getState) => {
     const {profile: cachedProfile} = getState();
-    const profile = metaProfile || cachedProfile;
+    const profile = newProfile || cachedProfile;
+
+    if (newProfile) {
+      // update cached profile for everybody:
+      dispatch(setProfile(newProfile));
+    }
+
+    if (!authToken) {
+      throw new Error('setAuthToken action created with undefined authToken');
+    }
+    let obj = null;
+    try {
+      obj = jwtDecode(authToken);
+    } catch (e) {
+      throw new Error(`unable to decode jwt: ${e}`);
+    }
+
+    cashay.create({httpTransport: new ActionHTTPTransport(authToken)});
+
     if (typeof __PRODUCTION__ !== 'undefined' && __PRODUCTION__) {
       /*
        * Sentry error reporting meta-information. Raven object is set via SSR.
