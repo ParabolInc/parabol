@@ -9,3 +9,5 @@ rethinkdb_data/
 rethinkdb_dump_*
 stats.json
 webpack-assets.json
+yarn.lock
+
