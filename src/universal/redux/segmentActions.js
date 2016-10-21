@@ -6,7 +6,14 @@ import {EventTypes} from 'redux-segment';
 
 const SEGMENT_EVENT = '@@segment/EVENT';
 
-export function segmentEvent(event, properties) {
+export function segmentEvent(event, properties, options) {
+  // always expose user traits:
+  const traits = window.analytics && window.analytics.user().traits();
+  const propertiesOut = Object.assign({}, traits, properties);
+  console.log('propertiesOut');
+  console.log(propertiesOut);
+  const optionsOut = Object.assign({}, { context: { traits } }, options);
+
   return {
     type: SEGMENT_EVENT,
     meta: {
@@ -14,7 +21,8 @@ export function segmentEvent(event, properties) {
         eventType: EventTypes.track,
         eventPayload: {
           event,
-          properties
+          properties: propertiesOut,
+          options: optionsOut
         }
       }
     }

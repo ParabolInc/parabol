@@ -23,12 +23,13 @@ export default class LogoutContainer extends Component {
 
   componentWillMount() {
     const {dispatch, router} = this.props;
+
+    dispatch(segmentEvent('User Logout'));
     dispatch(removeAuthToken());
     /* reset the app state, but preserve any pending notifications: */
     router.replace('/');
     dispatch(resetAppState());
     dispatch(showSuccess(logoutSuccess));
-    dispatch(segmentEvent('User Logout'));
     cashay.clear();
     if (typeof window !== 'undefined' && typeof window.analytics !== 'undefined') {
       // inform segment of the logout, wipe state:

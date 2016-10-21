@@ -31,8 +31,7 @@ export default function reducer(state = initialState, action = {}) {
   }
 }
 
-export function setAuthToken(authToken, metaProfile = {}) {
-  const profile = metaProfile || {};
+export function setAuthToken(authToken, metaProfile) {
   if (!authToken) {
     throw new Error('setAuthToken action created with undefined authToken');
   }
@@ -43,36 +42,41 @@ export function setAuthToken(authToken, metaProfile = {}) {
     throw new Error(`unable to decode jwt: ${e}`);
   }
   cashay.create({httpTransport: new ActionHTTPTransport(authToken)});
-  if (typeof __PRODUCTION__ !== 'undefined' && __PRODUCTION__) {
-    /*
-     * Sentry error reporting meta-information. Raven object is set via SSR.
-     * See server/Html.js for how this is initialized
-     */
-    Raven.setUserContext({ // eslint-disable-line no-undef
-      id: obj.sub,
-      email: profile.email
-    });
-  }
-  return {
-    type: SET_AUTH_TOKEN,
-    payload: {
-      obj,
-      token: authToken
-    },
-    meta: {
-      analytics: {
-        eventType: EventTypes.identify,
-        eventPayload: {
-          userId: obj.sub,
-          traits: {
-            avatar: profile.picture,
-            createdAt: profile.created_at,
-            email: profile.email,
-            name: profile.name
+
+  return (dispatch, getState) => {
+    const {profile: cachedProfile} = getState();
+    const profile = metaProfile || cachedProfile;
+    if (typeof __PRODUCTION__ !== 'undefined' && __PRODUCTION__) {
+      /*
+       * Sentry error reporting meta-information. Raven object is set via SSR.
+       * See server/Html.js for how this is initialized
+       */
+      Raven.setUserContext({ // eslint-disable-line no-undef
+        id: obj.sub,
+        email: profile.email
+      });
+    }
+    dispatch({
+      type: SET_AUTH_TOKEN,
+      payload: {
+        obj,
+        token: authToken
+      },
+      meta: {
+        analytics: {
+          eventType: EventTypes.identify,
+          eventPayload: {
+            userId: obj.sub,
+            traits: {
+              avatar: profile.picture,
+              createdAt: profile.created_at,
+              email: profile.email,
+              name: profile.name
+            }
           }
         }
       }
-    }
+    });
   };
 }
 
