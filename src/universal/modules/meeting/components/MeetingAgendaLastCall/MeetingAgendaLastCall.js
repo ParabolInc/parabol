@@ -2,9 +2,9 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
+import plural from 'universal/utils/plural';
 import Button from 'universal/components/Button/Button';
 import Type from 'universal/components/Type/Type';
-
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
@@ -34,9 +34,9 @@ const MeetingAgendaLastCall = (props) => {
             scale="s5"
             colorPalette="black"
           >
-            We worked on <span className={css(styles.highlight)}>{agendaItemCount} Agenda Items </span>
-            resulting in <span className={css(styles.highlight)}>{actionCount} Actions </span>
-            and <span className={css(styles.highlight)}>{projectCount} projects</span>.
+            We worked on <span className={css(styles.highlight)}>{`${agendaItemCount} ${plural(agendaItemCount, 'Agenda Item')} `}</span>
+            resulting in <span className={css(styles.highlight)}>{`${actionCount} ${plural(actionCount, 'Action')} `}</span>
+            and <span className={css(styles.highlight)}>{`${projectCount} ${plural(projectCount, 'Project')}`}</span>.
           </Type>
           <Type align="center" marginBottom="2.75rem" scale="s4" colorPalette="black">
             Anybody have <b><i>additional Agenda Items</i></b>?<br />
