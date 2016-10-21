@@ -7,15 +7,19 @@ import globalStyles from 'universal/styles/theme/globalStyles';
 const updateAnalyticsPage = (lastPage, nextPage) => {
   if (typeof window !== 'undefined' &&
     typeof window.analytics !== 'undefined') {
-    const traits = window.analytics && window.analytics.user().traits();
-    const props = Object.assign({}, traits, {
-      title: document && document.title || '',
-      referrer: lastPage,
-      path: nextPage
-    });
-    const options = Object.assign({}, { context: { traits } });
-    // track the page view for the user:
-    window.analytics.page('', nextPage, props, options);
+    try {
+      const traits = window.analytics && window.analytics.user().traits();
+      const props = Object.assign({}, traits, {
+        title: document && document.title || '',
+        referrer: lastPage,
+        path: nextPage
+      });
+      const options = Object.assign({}, { context: { traits } });
+      // track the page view for the user:
+      window.analytics.page('', nextPage, props, options);
+    } catch (e) {
+      console.warning(`call to analytics.js failed: ${e}`);
+    }
   }
 };
 

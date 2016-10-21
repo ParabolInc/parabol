@@ -1,8 +1,9 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import MeetingSummary from 'universal/modules/summary/components/MeetingSummary/MeetingSummary';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
+import {segmentEvent} from 'universal/redux/segmentActions';
 
 const meetingSummaryQuery = `
 query{
@@ -18,7 +19,7 @@ query{
       membership {
         id
         picture
-        preferredName  
+        preferredName
       }
     }
     actions {
@@ -99,20 +100,56 @@ const mapStateToProps = (state, props) => {
   };
 };
 
-const MeetingSummaryContainer = (props) => {
-  return <MeetingSummary {...props} />;
-};
+@requireAuth
+@connect(mapStateToProps)
+export default class MeetingSummaryContainer extends Component {
+  static propTypes = {
+    actionCount: PropTypes.number,
+    agendaItemsCompleted: PropTypes.number,
+    dispatch: PropTypes.func,
+    meetingNumber: PropTypes.number,
+    projectCount: PropTypes.number,
+    teamId: PropTypes.string,
+    teamMembers: PropTypes.array,
+    teamName: PropTypes.string
+  };
+
+  componentWillMount() {
+    this.state = {segmentEventsSent: false};
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const {segmentEventsSent} = this.state;
+    const {dispatch, meetingNumber} = nextProps;
+    if (!meetingNumber || segmentEventsSent) return;
+    /*
+     * Events to track:
+     *
+     * (1) team has concluded their first meeting
+     * (2) team has concluded their second meeting
+     *
+     * N.B. it is ok if these are sent as dupes when viewed from meeting history
+     */
+    if (meetingNumber === 1) {
+      dispatch(segmentEvent('Meeting 1 Completed'));
+    } else if (meetingNumber === 2) {
+      dispatch(segmentEvent('Meeting 2 Completed'));
+    }
+    this.setState({segmentEventsSent: true});
+  }
+
+  render() {
+    return <MeetingSummary {...this.props} />;
+  }
+}
 
 MeetingSummaryContainer.propTypes = {
   actionCount: PropTypes.number,
   agendaItemsCompleted: PropTypes.number,
+  dispatch: PropTypes.func,
   meetingNumber: PropTypes.number,
   projectCount: PropTypes.number,
   teamId: PropTypes.string,
   teamMembers: PropTypes.array,
   teamName: PropTypes.string
 };
-
-export default requireAuth(
-  connect(mapStateToProps)(MeetingSummaryContainer)
-);

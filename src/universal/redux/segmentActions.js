@@ -8,7 +8,12 @@ const SEGMENT_EVENT = '@@segment/EVENT';
 
 export function segmentEvent(event, properties, options) {
   // always expose user traits:
-  const traits = window.analytics && window.analytics.user().traits();
+  let traits = {};
+  try {
+    traits = window.analytics ? window.analytics.user().traits() : {};
+  } catch (e) {
+    console.warn(`call to analytics.js failed: ${e}`);
+  }
   const propertiesOut = Object.assign({}, traits, properties);
   const optionsOut = Object.assign({}, { context: { traits } }, options);
 
