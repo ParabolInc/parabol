@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
-import layoutStyle from 'universal/styles/layout';
+import ui from 'universal/styles/ui';
 import tinycolor from 'tinycolor2';
 import FontAwesome from 'react-fontawesome';
 import DashNavListContainer from 'universal/containers/DashNavList/DashNavListContainer';
@@ -58,8 +58,8 @@ const styleThunk = () => ({
     color: textColor,
     display: 'flex',
     flexDirection: 'column',
-    maxWidth: layoutStyle.dashSidebarWidth,
-    minWidth: layoutStyle.dashSidebarWidth
+    maxWidth: ui.dashSidebarWidth,
+    minWidth: ui.dashSidebarWidth
   },
 
   nav: {

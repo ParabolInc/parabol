@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import layout from 'universal/styles/layout';
 import ui from 'universal/styles/ui';
 import TeamAgenda from 'universal/modules/teamDashboard/components/TeamAgenda/TeamAgenda';
 import TeamColumnsContainer from 'universal/modules/teamDashboard/containers/TeamColumns/TeamColumnsContainer';
@@ -62,7 +61,7 @@ const styleThunk = () => ({
     boxSizing: 'content-box',
     display: 'flex',
     flexDirection: 'column',
-    width: layout.dashAgendaWidth
+    width: ui.dashAgendaWidth
   },
 
   projectsLayout: {

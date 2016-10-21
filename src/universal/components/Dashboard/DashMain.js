@@ -20,7 +20,8 @@ const styleThunk = () => ({
   root: {
     display: 'flex !important',
     flex: 1,
-    flexDirection: 'column'
+    flexDirection: 'column',
+    minWidth: '64rem'
   }
 });
 

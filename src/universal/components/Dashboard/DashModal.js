@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import layoutStyle from 'universal/styles/layout';
+import ui from 'universal/styles/ui';
 
 const DashModal = (props) => {
   const {children, styles} = props;
@@ -28,7 +28,7 @@ const styleThunk = () => ({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
-    left: layoutStyle.dashSidebarWidth,
+    left: ui.dashSidebarWidth,
     position: 'absolute',
     right: 0,
     textAlign: 'center',

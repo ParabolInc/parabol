@@ -3,7 +3,7 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
-import layoutStyle from 'universal/styles/layout';
+import ui from 'universal/styles/ui';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import {CHECKIN, UPDATES, FIRST_CALL, SUMMARY, phaseArray} from 'universal/utils/constants';
 import makeMeetingUrl from 'universal/utils/makeMeetingUrl';
@@ -223,7 +223,8 @@ const styleThunk = () => ({
     display: 'flex',
     flexDirection: 'column',
     padding: '2rem 0 0',
-    width: layoutStyle.meetingSidebarWidth
+    maxWidth: ui.meetingSidebarWidth,
+    minWidth: ui.meetingSidebarWidth
   },
 
   sidebarHeader: {
