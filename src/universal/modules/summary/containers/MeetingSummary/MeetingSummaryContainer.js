@@ -1,4 +1,4 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import MeetingSummary from 'universal/modules/summary/components/MeetingSummary/MeetingSummary';
@@ -6,7 +6,7 @@ import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 
 const meetingSummaryQuery = `
 query{
-  meeting: getMeetingById(id: $id) {
+  meeting: getMeetingById(id: $id) @cached(type: "Meeting") {
     id
     teamId
     teamName
@@ -63,6 +63,9 @@ const mapStateToProps = (state, props) => {
     op: 'meetingSummaryContainer',
     key: meetingId,
     variables: {id: meetingId},
+    resolveCached: {
+      meeting: () => meetingId
+    },
     sort: {
       teamMembers: (a, b) => a.preferredName > b.preferredName ? 1 : -1
     },
@@ -88,20 +91,26 @@ const mapStateToProps = (state, props) => {
   };
 };
 
-const MeetingSummaryContainer = (props) => {
-  return <MeetingSummary {...props} />;
-};
+@requireAuth
+@connect(mapStateToProps)
+export default class MeetingSummaryContainer extends Component {
+  static propTypes = {
+    actionCount: PropTypes.number,
+    agendaItemsCompleted: PropTypes.number,
+    meetingNumber: PropTypes.number,
+    projectCount: PropTypes.number,
+    teamId: PropTypes.string,
+    teamMembers: PropTypes.array,
+    teamName: PropTypes.string
+  };
 
-MeetingSummaryContainer.propTypes = {
-  actionCount: PropTypes.number,
-  agendaItemsCompleted: PropTypes.number,
-  meetingNumber: PropTypes.number,
-  projectCount: PropTypes.number,
-  teamId: PropTypes.string,
-  teamMembers: PropTypes.array,
-  teamName: PropTypes.string
-};
+  componentWillMount() {
+    const {params: {meetingId}} = this.props;
+    const variables = {meetingId};
+    cashay.mutate('summarizeMeeting', {variables})
+  }
 
-export default requireAuth(
-  connect(mapStateToProps)(MeetingSummaryContainer)
-);
+  render() {
+    return <MeetingSummary {...props} />;
+  }
+};

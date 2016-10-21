@@ -152,6 +152,10 @@ export const Meeting = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The start time used to create the diff (all projectDiffs occurred between this time and the endTime'
     },
+    summarySentAt: {
+      type: GraphQLISO8601Type,
+      description: 'The time the meeting summary was emailed to the team'
+    },
     teamId: {type: new GraphQLNonNull(GraphQLID), description: 'The team associated with this meeting'},
     teamName: {type: GraphQLString, description: 'The name as it was when the meeting occurred'},
     /* GraphQL Sugar */
