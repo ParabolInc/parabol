@@ -1,5 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
 import {
+  GraphQLBoolean,
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLID,
@@ -117,6 +118,30 @@ const MeetingProject = new GraphQLObjectType({
 //   }),
 // });
 
+const MeetingInvitee = new GraphQLObjectType({
+  name: 'MeetingInvitee',
+  description: 'The user invited to the meeting',
+  fields: () => ({
+    id: {
+      type: GraphQLID,
+      description: 'The teamMemberId of the user invited to the meeting'
+    },
+    present: {
+      type: GraphQLBoolean,
+      description: 'true if the invitee was present in the meeting'
+    },
+    /* GraphQL Sugar */
+    membership: {
+      type: TeamMember,
+      description: 'All of the fields from the team member table',
+      async resolve({id}) {
+        const r = getRethink();
+        return await r.table('TeamMember').get(id);
+      }
+    }
+  })
+});
+
 export const Meeting = new GraphQLObjectType({
   name: 'Meeting',
   description: 'A team meeting history for all previous meetings',
@@ -139,6 +164,9 @@ export const Meeting = new GraphQLObjectType({
     endedAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the meeting officially ended'
+    },
+    invitees: {
+      type: new GraphQLList(MeetingInvitee)
     },
     meetingNumber: {
       type: new GraphQLNonNull(GraphQLInt),

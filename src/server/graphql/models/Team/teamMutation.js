@@ -208,7 +208,8 @@ export default {
             id: meetingId,
             createdAt: now,
             meetingNumber: meetingCount.add(1),
-            teamId
+            teamId,
+            teamName: r.table('Team').get(teamId)('name')
           });
         });
       return true;
@@ -231,32 +232,47 @@ export default {
         .getAll(teamId, {index: 'teamId'})
         .orderBy(r.desc('createdAt'))
         .nth(0)('id')
-        .do((meetingId) => {
-          return r.table('AgendaItem')
+        .do((meetingId) => ({
+          meetingId,
+          meetingUpdates: r.table('AgendaItem')
             .getAll(teamId, {index: 'teamId'})
             .filter({isActive: true, isComplete: true})
             .map((doc) => doc('id'))
             .coerceTo('array')
             .do((agendaItemIds) => {
-              return r.table('Meeting').get(meetingId)
-                .update({
-                  actions: r.table('Action')
-                    .getAll(r.args(agendaItemIds), {index: 'agendaId'})
-                    .map(row => row.merge({id: meetingId.add('::').add(row('id'))}))
-                    .pluck('id', 'content', 'teamMemberId')
-                    .coerceTo('array'),
-                  agendaItemsCompleted: agendaItemIds.count(),
-                  endedAt: now,
-                  projects: r.table('Project')
-                    .getAll(r.args(agendaItemIds), {index: 'agendaId'})
-                    .map(row => row.merge({id: meetingId.add('::').add(row('id'))}))
-                    .pluck('id', 'content', 'status', 'teamMemberId')
-                    .coerceTo('array'),
-                  teamName: r.table('Team').get(teamId)('name'),
-                }, {nonAtomic: true});
-            });
-        });
+              return {
+                actions: r.table('Action')
+                  .getAll(r.args(agendaItemIds), {index: 'agendaId'})
+                  .map(row => row.merge({id: meetingId.add('::').add(row('id'))}))
+                  .pluck('id', 'content', 'teamMemberId')
+                  .coerceTo('array'),
+                agendaItemsCompleted: agendaItemIds.count(),
+                projects: r.table('Project')
+                  .getAll(r.args(agendaItemIds), {index: 'agendaId'})
+                  .map(row => row.merge({id: meetingId.add('::').add(row('id'))}))
+                  .pluck('id', 'content', 'status', 'teamMemberId')
+                  .coerceTo('array')
+              };
+            })
+        }))
+        .do((res) => {
+          return r.table('Meeting').get(res('meetingId'))
+            .update({
+              actions: res('meetingUpdates')('actions').default([]),
+              agendaItemsCompleted: res('meetingUpdates')('agendaItemsCompleted').default(0),
+              endedAt: now,
+              invitees: r.table('TeamMember')
+                .getAll(teamId, {index: 'teamId'})
+                .filter({isActive: true})
+                .coerceTo('array')
+                .map((teamMember) => ({
+                  id: teamMember('id'),
+                  present: r.branch(teamMember('isCheckedIn').eq(true), true, false)
+                })),
+              projects: res('meetingUpdates')('projects').default([]),
 
+            }, {nonAtomic: true});
+        });
       // reset the meeting
       await r.table('Team').get(teamId)
         .update({

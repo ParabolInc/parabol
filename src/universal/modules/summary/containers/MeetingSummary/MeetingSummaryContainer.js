@@ -12,10 +12,14 @@ query{
     teamName
     meetingNumber
     agendaItemsCompleted
-    teamMembers {
+    invitees {
       id
-      picture
-      preferredName
+      present
+      membership {
+        id
+        picture
+        preferredName  
+      }
     }
     actions {
       id
@@ -36,7 +40,14 @@ const objectifyTeamMembers = (teamMembers) => {
   const teamMemberIndices = {};
   for (let i = 0; i < teamMembers.length; i++) {
     const teamMember = teamMembers[i];
-    enhancedTeamMembers[i] = {...teamMember, actions: [], projects: []};
+    enhancedTeamMembers[i] = {
+      id: teamMember.id,
+      present: teamMember.present,
+      picture: teamMember.membership.picture,
+      preferredName: teamMember.membership.preferredName,
+      actions: [],
+      projects: []
+    };
     teamMemberIndices[teamMember.id] = i;
   }
   return {enhancedTeamMembers, teamMemberIndices};
@@ -67,19 +78,19 @@ const mapStateToProps = (state, props) => {
       meeting: () => meetingId
     },
     sort: {
-      teamMembers: (a, b) => a.preferredName > b.preferredName ? 1 : -1
+      invitees: (a, b) => a.preferredName > b.preferredName ? 1 : -1
     },
   }).data;
   const {
     agendaItemsCompleted,
     meetingNumber,
     teamId,
-    teamMembers,
+    invitees,
     teamName,
     actions,
     projects
   } = meeting;
-  const enhancedTeamMembers = groupOutcomesByTeamMember(actions, projects, teamMembers);
+  const enhancedTeamMembers = groupOutcomesByTeamMember(actions, projects, invitees);
   return {
     actionCount: actions.length,
     agendaItemsCompleted,
