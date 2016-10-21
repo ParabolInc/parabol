@@ -87,7 +87,8 @@ const styleThunk = () => ({
   },
 
   message: {
-    fontWeight: 700
+    fontWeight: 700,
+    paddingLeft: '1rem'
   }
 });
 
