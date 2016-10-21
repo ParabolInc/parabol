@@ -31,6 +31,8 @@ const ui = {
   dashBackgroundColor: backgroundColor,
   dashBorderColor: 'rgba(0, 0, 0, .1)',
   dashGutter: '1rem',
+  // Note: property 'dashMinWidth' prevents layout from collapsing in Safari
+  //       in a better future we may be more adaptive/responsive (TA)
   dashMinWidth: '79rem',
   dashSectionHeaderLineHeight: '1.875rem',
   dashSidebarWidth: '15rem',
