@@ -1,6 +1,6 @@
 machine:
   node:
-    version: 6.2.0
+    version: 6.9.1
 dependencies:
   pre:
     - source /etc/lsb-release && echo "deb http://download.rethinkdb.com/apt $DISTRIB_CODENAME main" | sudo tee /etc/apt/sources.list.d/rethinkdb.list
@@ -9,9 +9,9 @@ dependencies:
     - sudo apt-get install rethinkdb
     - sudo cp /etc/rethinkdb/default.conf.sample /etc/rethinkdb/instances.d/instance1.conf
     - sudo /etc/init.d/rethinkdb restart
-    - npm i -g npm@3.9.3
+    - npm i -g yarn
   override:
-    - npm prune && npm install --only=prod && npm install --only=dev
+    - yarn
   post:
     - npm run db:migrate
 test:
