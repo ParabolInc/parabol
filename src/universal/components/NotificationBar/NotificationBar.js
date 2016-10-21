@@ -4,6 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 // import FontAwesome from 'react-fontawesome';
 import {Link} from 'react-router';
+import plural from 'universal/utils/plural';
 
 // const faHourglassStyle = {
 //   fontSize: '14px',
@@ -33,7 +34,7 @@ const NotificationBar = (props) => {
   return (
     <div className={css(styles.bar)}>
       <div className={css(styles.inlineBlock, styles.message)}>
-        You’ve got a meeting:
+        {`${plural(activeMeetings.length, 'Meeting')} in progress:`}
       </div>
       <div className={css(styles.inlineBlock)}>
         {activeMeetings.map(meeting => {
@@ -81,11 +82,13 @@ const styleThunk = () => ({
     ':focus': {
       color: 'inherit',
       opacity: '.5'
-    }
+    },
+    paddingRight: '1rem'
   },
 
   message: {
-    fontWeight: 700
+    fontWeight: 700,
+    paddingLeft: '1rem'
   }
 });
 
