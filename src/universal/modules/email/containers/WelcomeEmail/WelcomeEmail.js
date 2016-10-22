@@ -11,6 +11,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 
 const imageStyle = {
   border: 0,
+  borderRadius: '100%',
   display: 'block'
 };
 

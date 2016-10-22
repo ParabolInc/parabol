@@ -14,6 +14,8 @@ const QuickStats = (props) => {
 
   const cellStyles = {
     padding: '0 8px',
+    textAlign: 'center',
+    verticalAlign: 'top',
     width: '25%'
   };
 
@@ -59,41 +61,25 @@ const QuickStats = (props) => {
       <table width="100%">
         <tbody>
           <tr>
-            <td
-              align="center"
-              style={cellStyles}
-              vAlign="top"
-            >
+            <td style={cellStyles}>
               <div style={statStyles}>
                 <div style={statValue}>{agendaItems}</div>
                 <div style={statLabel}>Agenda Item{agendaItems !== 1 && 's'}</div>
               </div>
             </td>
-            <td
-              align="center"
-              style={cellStyles}
-              vAlign="top"
-            >
+            <td style={cellStyles}>
               <div style={statStyles}>
                 <div style={statValue}>{newProjects}</div>
                 <div style={statLabel}>New Project{newProjects !== 1 && 's'}</div>
               </div>
             </td>
-            <td
-              align="center"
-              style={cellStyles}
-              vAlign="top"
-            >
+            <td style={cellStyles}>
               <div style={statStyles}>
                 <div style={statValue}>{newActions}</div>
                 <div style={statLabel}>New Action{newActions !== 1 && 's'}</div>
               </div>
             </td>
-            <td
-              align="center"
-              style={cellStyles}
-              vAlign="top"
-            >
+            <td style={cellStyles}>
               <div style={statStyles}>
                 <div style={statValue}>
                   {teamMembersPresent >= 10 ?

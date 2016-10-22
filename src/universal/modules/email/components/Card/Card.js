@@ -22,6 +22,8 @@ const Card = (props) => {
     borderStyle: 'solid',
     borderRadius: '0 0 4px 4px',
     borderWidth: '0 1px 1px',
+    textAlign: 'left',
+    verticalAlign: 'top'
   };
 
   const contentStyle = {
@@ -58,7 +60,7 @@ const Card = (props) => {
         </tr>
         {/* card body */}
         <tr>
-          <td align="left" style={cellStyle} vAlign="top">
+          <td style={cellStyle}>
             <div style={contentStyle}>
               {trimString(content, 52)}
             </div>

@@ -4,6 +4,7 @@ import Card from '../Card/Card';
 const OutcomesTable = (props) => {
   const cardRowCell = {
     padding: '8px',
+    verticalAlign: 'top',
     width: '188px'
   };
 
@@ -23,7 +24,7 @@ const OutcomesTable = (props) => {
   const makeOutcomeCards = (arr) => {
     const cards = () =>
       arr.map(card =>
-        <td style={cardRowCell} vAlign="top">
+        <td style={cardRowCell}>
           <Card
             content={card.content}
             status={card.status}

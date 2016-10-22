@@ -81,7 +81,9 @@ const UserNoNewOutcomes = (props) => {
   const memberCells = getMemberRows(members);
 
   const cellStyle = {
-    padding: members.length === 1 ? '0px' : '8px 0 0'
+    padding: members.length === 1 ? '0px' : '8px 0 0',
+    textAlign: 'center',
+    verticalAlign: 'top'
   };
 
   const cellWidth = members.length === 1 ? 320 : 132;
@@ -89,7 +91,7 @@ const UserNoNewOutcomes = (props) => {
   const makeMemberCells = (arr) => {
     const cells = () =>
       arr.map(member =>
-        <td align="center" style={cellStyle} vAlign="top" width={cellWidth}>
+        <td style={cellStyle} width={cellWidth}>
           <img height={avatarSize} src={member.avatar} style={avatarStyles} width={avatarSize} />
           <div style={nameStyle}>{member.name}</div>
           {member.present ?
