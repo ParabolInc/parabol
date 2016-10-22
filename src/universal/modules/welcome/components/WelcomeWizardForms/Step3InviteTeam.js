@@ -10,7 +10,7 @@ import {cashay} from 'cashay';
 import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
 import {withRouter} from 'react-router';
 import withHotkey from 'react-hotkey-hoc';
-import {segmentEvent} from 'universal/redux/segmentActions';
+import {segmentEventTrack} from 'universal/redux/segmentActions';
 
 const emailInviteSuccess = {
   title: 'Invitation sent!',
@@ -60,7 +60,7 @@ const Step3InviteTeam = (props) => {
       }
     } else if (data) {
       router.push(`/team/${teamId}`);  // redirect leader to their new team
-      dispatch(segmentEvent('Welcome Step3 Completed',
+      dispatch(segmentEventTrack('Welcome Step3 Completed',
         { inviteeCount: serverInvitees.length }
       ));
       dispatch(showSuccess(emailInviteSuccess)); // trumpet our leader's brilliance!

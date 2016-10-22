@@ -4,7 +4,7 @@ import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
 import {removeAuthToken} from 'universal/redux/authDuck';
 import {reset as resetAppState} from 'universal/redux/rootDuck';
 import {withRouter} from 'react-router';
-import {segmentEvent} from 'universal/redux/segmentActions';
+import {segmentEventTrack} from 'universal/redux/segmentActions';
 import {cashay} from 'cashay';
 
 const logoutSuccess = {
@@ -24,7 +24,7 @@ export default class LogoutContainer extends Component {
   componentWillMount() {
     const {dispatch, router} = this.props;
 
-    dispatch(segmentEvent('User Logout'));
+    dispatch(segmentEventTrack('User Logout'));
     dispatch(removeAuthToken());
     /* reset the app state, but preserve any pending notifications: */
     router.replace('/');

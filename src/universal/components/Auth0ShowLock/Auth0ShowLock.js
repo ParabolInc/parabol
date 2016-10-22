@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import {cashay} from 'cashay';
 import {setAuthToken} from 'universal/redux/authDuck';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
-import {segmentEvent} from 'universal/redux/segmentActions';
+import {segmentEventTrack} from 'universal/redux/segmentActions';
 import {auth0 as defaultClientOptions} from 'universal/utils/clientOptions';
 
 
@@ -18,7 +18,7 @@ async function updateToken(dispatch, profile, authToken) {
    * token.
    */
   dispatch(setAuthToken(authToken, profile));
-  dispatch(segmentEvent('User Login'));
+  dispatch(segmentEventTrack('User Login'));
 }
 
 /*

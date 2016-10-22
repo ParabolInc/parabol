@@ -7,11 +7,11 @@ import {selectProfile} from './profileDuck';
 
 const SEGMENT_EVENT = '@@segment/EVENT';
 
-export function segmentEvent(event, properties, options) {
+export function segmentEventTrack(event, properties, options) {
   return (dispatch, getState) => {
     const profile = selectProfile(getState());
     const propertiesOut = Object.assign({}, profile, properties);
-    const optionsOut = Object.assign({}, { context: { profile } }, options);
+    const optionsOut = Object.assign({}, { context: { traits: profile } }, options);
 
     dispatch({
       type: SEGMENT_EVENT,
@@ -20,6 +20,29 @@ export function segmentEvent(event, properties, options) {
           eventType: EventTypes.track,
           eventPayload: {
             event,
+            properties: propertiesOut,
+            options: optionsOut
+          }
+        }
+      }
+    });
+  };
+}
+
+export function segmentEventPage(name, category, properties, options) {
+  return (dispatch, getState) => {
+    const profile = selectProfile(getState());
+    const propertiesOut = Object.assign({}, profile, properties);
+    const optionsOut = Object.assign({}, { context: { traits: profile } }, options);
+
+    dispatch({
+      type: SEGMENT_EVENT,
+      meta: {
+        analytics: {
+          eventType: EventTypes.page,
+          eventPayload: {
+            name,
+            category,
             properties: propertiesOut,
             options: optionsOut
           }

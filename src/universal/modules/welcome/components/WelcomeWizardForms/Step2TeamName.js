@@ -7,7 +7,7 @@ import {nextPage, updateCompleted, setWelcomeTeam} from 'universal/modules/welco
 import shortid from 'shortid';
 import {cashay} from 'cashay';
 import {setAuthToken} from 'universal/redux/authDuck';
-import {segmentEvent} from 'universal/redux/segmentActions';
+import {segmentEventTrack} from 'universal/redux/segmentActions';
 
 const Step2TeamName = (props) => {
   const {dispatch, handleSubmit, preferredName, teamName} = props;
@@ -27,7 +27,7 @@ const Step2TeamName = (props) => {
     // createTeam returns a new JWT with a new tms field
     cashay.mutate('createTeam', createTeamOptions).then((res) => {
       dispatch(setAuthToken(res.data.createTeam));
-      dispatch(segmentEvent('Welcome Step2 Completed'));
+      dispatch(segmentEventTrack('Welcome Step2 Completed'));
       dispatch(updateCompleted(2));
       dispatch(nextPage());
     });

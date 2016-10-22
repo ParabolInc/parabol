@@ -3,7 +3,7 @@ import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import MeetingSummary from 'universal/modules/summary/components/MeetingSummary/MeetingSummary';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
-import {segmentEvent} from 'universal/redux/segmentActions';
+import {segmentEventTrack} from 'universal/redux/segmentActions';
 
 const meetingSummaryQuery = `
 query{
@@ -115,13 +115,13 @@ export default class MeetingSummaryContainer extends Component {
   };
 
   componentWillMount() {
-    this.state = {segmentEventsSent: false};
+    this.state = {segmentEventTracksSent: false};
   }
 
   componentWillReceiveProps(nextProps) {
-    const {segmentEventsSent} = this.state;
+    const {segmentEventTracksSent} = this.state;
     const {dispatch, meetingNumber} = nextProps;
-    if (!meetingNumber || segmentEventsSent) return;
+    if (!meetingNumber || segmentEventTracksSent) return;
     /*
      * Events to track:
      *
@@ -131,11 +131,11 @@ export default class MeetingSummaryContainer extends Component {
      * N.B. it is ok if these are sent as dupes when viewed from meeting history
      */
     if (meetingNumber === 1) {
-      dispatch(segmentEvent('Meeting 1 Completed'));
+      dispatch(segmentEventTrack('Meeting 1 Completed'));
     } else if (meetingNumber === 2) {
-      dispatch(segmentEvent('Meeting 2 Completed'));
+      dispatch(segmentEventTrack('Meeting 2 Completed'));
     }
-    this.setState({segmentEventsSent: true});
+    this.setState({segmentEventTracksSent: true});
   }
 
   render() {
