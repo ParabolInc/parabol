@@ -18,7 +18,7 @@ const updateAnalyticsPage = (lastPage, nextPage) => {
       // track the page view for the user:
       window.analytics.page('', nextPage, props, options);
     } catch (e) {
-      console.warning(`call to analytics.js failed: ${e}`);
+      console.warn(`call to analytics.js failed: ${e}`);
     }
   }
 };

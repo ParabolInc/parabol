@@ -2,7 +2,7 @@ import {cashay} from 'cashay';
 import jwtDecode from 'jwt-decode';
 import {EventTypes} from 'redux-segment';
 import ActionHTTPTransport from '../utils/ActionHTTPTransport';
-import {setProfile, clearProfile} from './profileDuck';
+import {setProfile, clearProfile, selectProfile} from './profileDuck';
 
 const SET_AUTH_TOKEN = '@@authToken/SET_AUTH_TOKEN';
 const REMOVE_AUTH_TOKEN = '@@authToken/REMOVE_AUTH_TOKEN';
@@ -34,7 +34,7 @@ export default function reducer(state = initialState, action = {}) {
 
 export function setAuthToken(authToken, newProfile) {
   return (dispatch, getState) => {
-    const {profile: cachedProfile} = getState();
+    const cachedProfile = selectProfile(getState());
     const profile = newProfile || cachedProfile;
 
     if (newProfile) {
