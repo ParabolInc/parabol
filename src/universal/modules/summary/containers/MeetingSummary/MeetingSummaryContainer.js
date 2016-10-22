@@ -123,18 +123,12 @@ export default class MeetingSummaryContainer extends Component {
     const {dispatch, meetingNumber} = nextProps;
     if (!meetingNumber || segmentEventTracksSent) return;
     /*
-     * Events to track:
+     * Track meeting completitions by idenity.
      *
-     * (1) team has concluded their first meeting
-     * (2) team has concluded their second meeting
-     *
-     * N.B. it is ok if these are sent as dupes when viewed from meeting history
+     * N.B. it is ok if these are sent as dupes, i.e. when viewed from
+     * meeting history.
      */
-    if (meetingNumber === 1) {
-      dispatch(segmentEventTrack('Meeting 1 Completed'));
-    } else if (meetingNumber === 2) {
-      dispatch(segmentEventTrack('Meeting 2 Completed'));
-    }
+    dispatch(segmentEventTrack('Meeting Completed', { meetingNumber }));
     this.setState({segmentEventTracksSent: true});
   }
 
