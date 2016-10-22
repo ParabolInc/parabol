@@ -4,11 +4,12 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
 const ContactUs = (props) => {
-  const textStyle = {
+  const cellStyle = {
     color: appTheme.palette.dark,
     fontFamily: ui.emailFontFamily,
     fontSize: `${props.fontSize}px`,
-    lineHeight: `${props.lineHeight}`
+    lineHeight: `${props.lineHeight}`,
+    textAlign: 'center'
   };
 
   const headingStyle = {
@@ -26,10 +27,7 @@ const ContactUs = (props) => {
     <table width="100%">
       <tbody>
         <tr>
-          <td
-            align="center"
-            style={textStyle}
-          >
+          <td style={cellStyle}>
             <EmptySpace height={props.vSpacing} />
             <span style={headingStyle}>
               {props.prompt}

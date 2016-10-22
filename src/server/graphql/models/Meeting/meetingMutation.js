@@ -38,16 +38,17 @@ export default {
       const {invitees, teamId, summarySentAt} = meeting;
       // perform the query before the check because 99.9% of attempts will be honest & that will save us a query
       requireSUOrTeamMember(authToken, teamId);
-      if (!summarySentAt) {
+      // if (!summarySentAt) {
         // send the summary email
         const userIds = invitees.map((doc) => doc.id.substr(0, doc.id.indexOf('::')));
         const emails = await r.table('User')
           .getAll(r.args(userIds))
           .map((user) => user('email'));
-        const emailString = emails.join(', ');
+        // const emailString = emails.join(', ');
+        const emailString = 'terry@parabol.co, terry_acker@yahoo.com';
         console.log('emailString', emailString);
         sendEmailPromise(emailString, 'summaryEmail', {meeting});
-      }
+      // }
       return meeting;
     }
   }

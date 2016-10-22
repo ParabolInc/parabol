@@ -27,6 +27,8 @@ const message = {
   fontFamily: ui.emailFontFamily,
   fontSize: '18px',
   lineHeight: '28px',
+  padding: '0 16px',
+  textAlign: 'center'
 };
 
 const linkStyles = {
@@ -57,15 +59,20 @@ const meetingLink = {
   textAlign: 'center'
 };
 
+const bannerLink = {
+  color: '#FFFFFF',
+  textDecoration: 'underline'
+};
+
 const makeBannerMessage = (referrer, url) => {
   if (referrer === 'meeting') {
     return <span>All team members will receive this summary in their inbox.</span>;
   }
   if (referrer === 'email') {
-    return <span>View this in your <a href={url} style={meetingLink}>web browser</a></span>
+    return <span><a href={url} style={bannerLink}>View this in your web browser</a></span>
   }
   if (referrer === 'history') {
-    return <span>See all meeting summaries <a href={url} style={meetingLink}>here</a></span>
+    return <span><a href={url} style={bannerLink}>See all meeting summaries here</a></span>
   }
   return null;
 };

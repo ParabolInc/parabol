@@ -17,6 +17,7 @@ const SummaryHeader = (props) => {
     fontWeight: props.fontWeight,
     lineHeight: `${props.lineHeight}`,
     padding: `${props.padding}px`,
+    textAlign: 'center'
   };
 
   const textStyle = {
@@ -41,15 +42,12 @@ const SummaryHeader = (props) => {
   };
   const meetingDate = makeDateString(createdAt);
   return (
-    <div>
+    <div style={{padding: '0 16px'}}>
       <EmptySpace height={props.vSpacing}/>
       <table width={props.width}>
         <tbody>
           <tr>
-            <td
-              align="center"
-              style={blockStyle}
-            >
+            <td style={blockStyle}>
               <div style={teamNameStyle}>{teamName}</div>
               <div style={meetingDateStyle}>Meeting Summary • {meetingDate}</div>
               {referrer === 'email' ?
@@ -89,7 +87,7 @@ SummaryHeader.defaultProps = {
   lineHeight: 1.5,
   padding: 24,
   vSpacing: 32,
-  width: '80%'
+  width: '100%'
 };
 
 export default SummaryHeader;
