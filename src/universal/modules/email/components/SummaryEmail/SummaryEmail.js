@@ -76,7 +76,7 @@ const SummaryEmail = (props) => {
     referrer,
     referrerUrl,
   } = props;
-  const {invitees} = meeting;
+  const {agendaItemsCompleted, invitees, createdAt, meetingNumber, teamId, teamName} = meeting;
   const membersSansOutcomes = [];
   const membersWithOutcomes = [];
   let presentMemberCount = 0;
@@ -96,7 +96,6 @@ const SummaryEmail = (props) => {
     arr.push(invitee);
   }
 
-  const {createdAt, meetingNumber, teamId, teamName} = meeting;
   const bannerMessage = makeBannerMessage(referrer, referrerUrl);
   const memberCount = membersSansOutcomes.length + membersWithOutcomes.length;
   const meetingLobbyLink = `https://action.parabol.co/meeting/${teamId}`;
@@ -120,7 +119,7 @@ const SummaryEmail = (props) => {
         </tr>
         </tbody>
       </table>
-      <Body verticalGutter="0">
+      <Body verticalGutter={0}>
       <table align="center" width="100%">
         <tr>
           <td align="center">
@@ -220,7 +219,6 @@ SummaryEmail.propTypes = {
     'email',
     'history'
   ]),
-  agendaItemsCompleted: PropTypes.number,
   actionCount: PropTypes.number,
   projectCount: PropTypes.number
 };
@@ -233,8 +231,10 @@ SummaryEmail.defaultProps = {
 };
 
 export const summaryEmailText = (props) => {
-  const {actionCount, meeting, projectCount} = props;
-  const {teamName, agendaItemsCompleted} = meeting;
+  const {meeting} = props;
+  const {teamName, agendaItemsCompleted, invitees} = meeting;
+  const projectCount = invitees.reduce((sum, member) => sum + member.projects.length, 0);
+  const actionCount = invitees.reduce((sum, member) => sum + member.actions.length, 0);
   return `Hello ${teamName}! As a team you discussed ${agendaItemsCompleted} Agenda Items${' '}
 resulting in ${projectCount} New Projects${' '}
 and ${actionCount} New Actions.${' '}`;

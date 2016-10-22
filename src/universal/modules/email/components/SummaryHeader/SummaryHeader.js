@@ -3,6 +3,7 @@ import EmptySpace from '../EmptySpace/EmptySpace';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import makeDateString from 'universal/utils/makeDateString';
+import {Link} from 'react-router';
 
 const SummaryHeader = (props) => {
   const {createdAt, referrer, referrerUrl, teamName} = props;

@@ -20,10 +20,10 @@ export default {
     },
     async resolve(source, {meetingId}, {authToken}) {
       const r = getRethink();
-      const meeting = await r.table('Meeting').get(meetingId)
+      const meeting = await r.table('Meeting').get(meetingId).default({})
         .do((meeting) => {
           return meeting.merge({
-            invitees: meeting('invitees')
+            invitees: meeting('invitees').default([])
               .map((invitee) => {
                 const teamMember = r.table('TeamMember').get(invitee('id'));
                 return invitee.merge({
@@ -43,9 +43,10 @@ export default {
         const userIds = invitees.map((doc) => doc.id.substr(0, doc.id.indexOf('::')));
         const emails = await r.table('User')
           .getAll(r.args(userIds))
-          .map((user) => user('email'))
-          .join(', ');
-        sendEmailPromise(emails, 'summaryEmail', {meeting});
+          .map((user) => user('email'));
+        const emailString = emails.join(', ');
+        console.log('emailString', emailString);
+        sendEmailPromise(emailString, 'summaryEmail', {meeting});
       }
       return meeting;
     }

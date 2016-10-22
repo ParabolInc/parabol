@@ -1,5 +1,4 @@
 import getRethink from 'server/database/rethinkDriver';
-import resolveInvitees from './helpers/resolveInvitees';
 import {
   GraphQLBoolean,
   GraphQLObjectType,

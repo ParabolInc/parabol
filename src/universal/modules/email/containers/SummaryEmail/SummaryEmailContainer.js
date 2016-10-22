@@ -1,4 +1,5 @@
 import React, {PropTypes} from 'react';
+import SummaryEmail from 'universal/modules/email/components/SummaryEmail/SummaryEmail';
 
 const SummaryEmailContainer = (props) => {
   const {meeting} = props;

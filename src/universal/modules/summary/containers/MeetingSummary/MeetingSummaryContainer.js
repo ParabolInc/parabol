@@ -1,9 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
-import MeetingSummary from 'universal/modules/summary/components/MeetingSummary/MeetingSummary';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
-
+import SummaryEmail from 'universal/modules/email/components/SummaryEmail/SummaryEmail';
 const meetingSummaryQuery = `
 query{
   meeting: getMeetingById(id: $id) @cached(type: "Meeting") {
@@ -34,11 +33,21 @@ query{
   }
 }`;
 
+const mutationHandlers = {
+  summarizeMeeting(optimisticVariables, queryResponse, currentResponse) {
+    if (queryResponse) {
+      Object.assign(currentResponse.meeting, queryResponse);
+    }
+    return currentResponse;
+  }
+};
+
 const mapStateToProps = (state, props) => {
   const {params: {meetingId}} = props;
   const {meeting} = cashay.query(meetingSummaryQuery, {
     op: 'meetingSummaryContainer',
     key: meetingId,
+    mutationHandlers,
     variables: {id: meetingId},
     resolveCached: {
       meeting: () => meetingId
@@ -69,7 +78,7 @@ export default class MeetingSummaryContainer extends Component {
   render() {
     const {meeting} = this.props;
     return (
-      <MeetingSummary
+      <SummaryEmail
         meeting={meeting}
         referrer="meeting"
       />

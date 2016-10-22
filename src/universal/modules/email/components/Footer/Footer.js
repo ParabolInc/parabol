@@ -22,9 +22,9 @@ const Footer = (props) => {
       <tbody>
 
         <tr>
-          <td><EmptySpace height="20" /></td>
-          <td><EmptySpace height="20" /></td>
-          <td><EmptySpace height="20" /></td>
+          <td><EmptySpace height={20} /></td>
+          <td><EmptySpace height={20} /></td>
+          <td><EmptySpace height={20} /></td>
         </tr>
 
         <tr>
@@ -46,16 +46,16 @@ const Footer = (props) => {
                     style={{color: props.color, fontFamily: ui.emailFontFamily}}
                   >
 
-                    <EmptySpace height="10" />
+                    <EmptySpace height={10} />
                     <img src="/static/images/brand/mark-color@3x.png" height="28" width="31" />
-                    <EmptySpace height="10" />
+                    <EmptySpace height={10} />
 
                     Crafted with care by the folks at <a
                       style={{color: appTheme.palette.warm, textDecoration: 'none'}}
                       href="http://www.parabol.co/"
                     > Parabol</a>.
 
-                    <EmptySpace height="10" />
+                    <EmptySpace height={10} />
                   </td>
                 </tr>
               </tbody>
@@ -72,9 +72,9 @@ const Footer = (props) => {
         </tr>
 
         <tr>
-          <td><EmptySpace height="48" /></td>
-          <td><EmptySpace height="48" /></td>
-          <td><EmptySpace height="48" /></td>
+          <td><EmptySpace height={48} /></td>
+          <td><EmptySpace height={48} /></td>
+          <td><EmptySpace height={48} /></td>
         </tr>
       </tbody>
     </table>
