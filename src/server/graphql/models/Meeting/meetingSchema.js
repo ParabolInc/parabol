@@ -1,4 +1,5 @@
 import getRethink from 'server/database/rethinkDriver';
+import resolveInvitees from './helpers/resolveInvitees';
 import {
   GraphQLBoolean,
   GraphQLObjectType,
@@ -8,6 +9,7 @@ import {
   GraphQLString,
   GraphQLList
 } from 'graphql';
+import {GraphQLURLType} from '../types';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {ProjectStatus} from '../Project/projectSchema';
 import {TeamMember} from '../TeamMember/teamMemberSchema';
@@ -130,6 +132,24 @@ const MeetingInvitee = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'true if the invitee was present in the meeting'
     },
+    /* RethinkDB sugar */
+    actions: {
+      type: new GraphQLList(MeetingAction),
+      description: `A list of actions that were created in the meeting. 
+      These details never change, even if the underlying action does`
+    },
+    projects: {
+      type: new GraphQLList(MeetingProject),
+      description: 'A list of immutable projects, as they were created in the meeting'
+    },
+    picture: {
+      type: GraphQLURLType,
+      description: 'url of user\'s profile picture'
+    },
+    preferredName: {
+      type: GraphQLString,
+      description: 'The name, as confirmed by the user'
+    },
     /* GraphQL Sugar */
     membership: {
       type: TeamMember,
@@ -166,7 +186,10 @@ export const Meeting = new GraphQLObjectType({
       description: 'The timestamp the meeting officially ended'
     },
     invitees: {
-      type: new GraphQLList(MeetingInvitee)
+      type: new GraphQLList(MeetingInvitee),
+      // async resolve({invitees, actions, projects}) {
+      //   return resolveInvitees(invitees, actions, projects);
+      // }
     },
     meetingNumber: {
       type: new GraphQLNonNull(GraphQLInt),
@@ -179,6 +202,14 @@ export const Meeting = new GraphQLObjectType({
     sinceTime: {
       type: GraphQLISO8601Type,
       description: 'The start time used to create the diff (all projectDiffs occurred between this time and the endTime'
+    },
+    successExpression: {
+      type: GraphQLString,
+      description: 'The happy introductory clause to the summary'
+    },
+    successStatement: {
+      type: GraphQLString,
+      description: 'The happy body statement for the summary'
     },
     summarySentAt: {
       type: GraphQLISO8601Type,

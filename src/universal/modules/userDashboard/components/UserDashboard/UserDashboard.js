@@ -8,7 +8,7 @@ import {
   DashHeader,
   DashHeaderInfo,
   DashMain,
-  dashTimestamp
+  makeDateString
 } from 'universal/components/Dashboard';
 import UserActions from 'universal/modules/userDashboard/components/UserActions/UserActions';
 import UserColumnsContainer from 'universal/modules/userDashboard/containers/UserColumns/UserColumnsContainer';
@@ -21,7 +21,7 @@ const UserDashboard = (props) => {
     <DashMain>
       <DashHeader>
         <DashHeaderInfo title="My Dashboard">
-          {dashTimestamp} • <span className={css(styles.crayCrayHover)}>{getRallyLink()}!</span>
+          {makeDateString()} • <span className={css(styles.crayCrayHover)}>{getRallyLink()}!</span>
         </DashHeaderInfo>
       </DashHeader>
       <DashContent padding="0">

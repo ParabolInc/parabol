@@ -24,6 +24,7 @@ import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
+import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 
 export default {
   moveMeeting: {
@@ -261,6 +262,8 @@ export default {
               actions: res('meetingUpdates')('actions').default([]),
               agendaItemsCompleted: res('meetingUpdates')('agendaItemsCompleted').default(0),
               endedAt: now,
+              successExpression: makeSuccessExpression(),
+              successStatement: makeSuccessStatement(),
               invitees: r.table('TeamMember')
                 .getAll(teamId, {index: 'teamId'})
                 .filter({isActive: true})

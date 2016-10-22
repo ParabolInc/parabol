@@ -37,12 +37,18 @@ export default async function sendEmailPromise(to, template, props) {
   if (!emailFactory) {
     throw new Error(`Email template for ${template} does not exist!`);
   }
-  const renderedEmail = emailFactory(props);
-  const emailWithAttachments = createEmbeddedImages(renderedEmail);
+  if (typeof to !== 'string') {
+    throw new Error('Expected `to` to be a string of comma-seperated emails')
+  }
+  const {subject, body, html: htmlWithoutImages} = emailFactory(props);
+  const {html, attachments} = createEmbeddedImages(htmlWithoutImages);
   const {from} = getMailgunOptions();
   const mailOptions = {
-    ...emailWithAttachments,
+    attachments,
+    body,
     from,
+    html,
+    subject,
     to
   };
 
@@ -56,12 +62,11 @@ export default async function sendEmailPromise(to, template, props) {
   };
   if (!getMailgunApiConfig().apiKey) {
     console.warn(`mailgun: no API key, so not sending the following:
-   From: ${from}
-     To: ${to}
-Subject: ${renderedEmail.subject}
-   Body:
-${renderedEmail.body}
-`);
+    From: ${from}
+    To: ${to}
+    Subject: ${subject}
+    Body: ${body}
+    `);
     return true;
   }
   return maybeSendMail(mimeData);

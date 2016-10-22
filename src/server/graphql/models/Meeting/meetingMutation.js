@@ -1,14 +1,11 @@
 import getRethink from 'server/database/rethinkDriver';
-import {getUserId, requireAuth, requireSUOrTeamMember, requireWebsocket} from '../authorization';
-import {updatedOrOriginal, errorObj} from '../utils';
+import {requireSUOrTeamMember} from '../authorization';
 import {Meeting} from './meetingSchema';
+import sendEmailPromise from 'server/email/sendEmail';
 
 import {
   GraphQLNonNull,
-  GraphQLBoolean,
   GraphQLID,
-  GraphQLString,
-  GraphQLInt
 } from 'graphql';
 
 export default {
@@ -21,17 +18,36 @@ export default {
         description: 'The unique meeting ID that we want to summarize'
       }
     },
-    async resolve(source, {meetingId}, {authToken, socket}) {
+    async resolve(source, {meetingId}, {authToken}) {
       const r = getRethink();
-
-      const meeting = await r.table('Meeting').get(meetingId);
-      const {teamId, summarySentAt} = meeting;
+      const meeting = await r.table('Meeting').get(meetingId)
+        .do((meeting) => {
+          return meeting.merge({
+            invitees: meeting('invitees')
+              .map((invitee) => {
+                const teamMember = r.table('TeamMember').get(invitee('id'));
+                return invitee.merge({
+                  picture: teamMember('picture'),
+                  preferredName: teamMember('preferredName'),
+                  actions: meeting('actions').filter({teamMemberId: invitee('id')}),
+                  projects: meeting('projects').filter({teamMemberId: invitee('id')})
+                })
+              })
+          })
+        });
+      const {invitees, teamId, summarySentAt} = meeting;
+      // perform the query before the check because 99.9% of attempts will be honest & that will save us a query
       requireSUOrTeamMember(authToken, teamId);
-
       if (!summarySentAt) {
         // send the summary email
-
+        const userIds = invitees.map((doc) => doc.id.substr(0, doc.id.indexOf('::')));
+        const emails = await r.table('User')
+          .getAll(r.args(userIds))
+          .map((user) => user('email'))
+          .join(', ');
+        sendEmailPromise(emails, 'summaryEmail', {meeting});
       }
+      return meeting;
     }
   }
 }

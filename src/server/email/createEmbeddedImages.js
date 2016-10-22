@@ -22,15 +22,14 @@ const fileExists = (filePath) => {
  * and exists within fsPath, it will replace the src with an embedded cid
  * and add the path to the list of returned attachments.
  *
- * @param {Object} email contains subject, body, html
+ * @param {Object} html contains rendered email html
  * @param {String} urnPrefix
  * @param {String} fsPath
  * @return {Object} replaced html key and attachments key
  */
-export default function createEmbeddedImages(email, urnPrefix = '/static', fsPath = STATIC_ASSETS) {
-  const {html} = email;
+export default function createEmbeddedImages(html, urnPrefix = '/static', fsPath = STATIC_ASSETS) {
   if (!html) {
-    return email;
+    throw new Error('No html provided for email');
   }
   const attachments = [];
 
@@ -61,7 +60,6 @@ export default function createEmbeddedImages(email, urnPrefix = '/static', fsPat
   });
 
   return {
-    ...email,
     html: $.html(),
     attachments
   };

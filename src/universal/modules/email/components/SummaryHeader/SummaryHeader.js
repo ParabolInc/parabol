@@ -2,10 +2,10 @@ import React, {PropTypes} from 'react';
 import EmptySpace from '../EmptySpace/EmptySpace';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import makeDateString from 'universal/utils/makeDateString';
 
-const Callout = (props) => {
-  const {meetingDate, teamName, teamDashLink} = props;
-
+const SummaryHeader = (props) => {
+  const {createdAt, referrer, referrerUrl, teamName} = props;
   const blockStyle = {
     backgroundColor: '#fff',
     border: '2px solid #D2D3DC',
@@ -38,10 +38,10 @@ const Callout = (props) => {
     ...textStyle,
     fontSize: '36px'
   };
-
+  const meetingDate = makeDateString(createdAt);
   return (
     <div>
-      <EmptySpace height={props.vSpacing} />
+      <EmptySpace height={props.vSpacing}/>
       <table width={props.width}>
         <tbody>
           <tr>
@@ -51,17 +51,22 @@ const Callout = (props) => {
             >
               <div style={teamNameStyle}>{teamName}</div>
               <div style={meetingDateStyle}>Meeting Summary • {meetingDate}</div>
-              <a href={teamDashLink} style={teamDashLinkStyle} title="Go to Team Dashboard">Go to Team Dashboard</a>
+              {referrer === 'email' ?
+                <a href={referrerUrl} style={teamDashLinkStyle} title="Go to Team Dashboard">Go to Team Dashboard</a> :
+                <Link to={referrerUrl} style={teamDashLinkStyle} title="Go to Team Dashboard">
+                  Go to Team Dashboard
+                </Link>
+              }
             </td>
           </tr>
         </tbody>
       </table>
-      <EmptySpace height={props.vSpacing} />
+      <EmptySpace height={props.vSpacing}/>
     </div>
   );
 };
 
-Callout.propTypes = {
+SummaryHeader.propTypes = {
   children: PropTypes.any,
   fontSize: PropTypes.number,
   fontWeight: PropTypes.oneOf([
@@ -77,7 +82,7 @@ Callout.propTypes = {
   width: PropTypes.string
 };
 
-Callout.defaultProps = {
+SummaryHeader.defaultProps = {
   fontSize: 24,
   fontWeight: 700,
   lineHeight: 1.5,
@@ -86,4 +91,4 @@ Callout.defaultProps = {
   width: '80%'
 };
 
-export default Callout;
+export default SummaryHeader;

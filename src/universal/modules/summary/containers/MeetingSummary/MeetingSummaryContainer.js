@@ -15,23 +15,21 @@ query{
     invitees {
       id
       present
-      membership {
+      actions {
         id
-        picture
-        preferredName  
+        content
+        teamMemberId
       }
+      projects {
+        id
+        content
+        status
+        teamMemberId
+      }
+      picture
+      preferredName
     }
-    actions {
-      id
-      content
-      teamMemberId
-    }
-    projects {
-      id
-      content
-      status
-      teamMemberId
-    }
+    
   }
 }`;
 
