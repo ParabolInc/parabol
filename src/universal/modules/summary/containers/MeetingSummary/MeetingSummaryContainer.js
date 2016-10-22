@@ -114,22 +114,17 @@ export default class MeetingSummaryContainer extends Component {
     teamName: PropTypes.string
   };
 
-  componentWillMount() {
-    this.state = {segmentEventTracksSent: false};
-  }
-
   componentWillReceiveProps(nextProps) {
-    const {segmentEventTracksSent} = this.state;
     const {dispatch, meetingNumber} = nextProps;
-    if (!meetingNumber || segmentEventTracksSent) return;
     /*
      * Track meeting completitions by idenity.
      *
      * N.B. it is ok if these are sent as dupes, i.e. when viewed from
      * meeting history.
      */
-    dispatch(segmentEventTrack('Meeting Completed', { meetingNumber }));
-    this.setState({segmentEventTracksSent: true});
+    if (!this.props.meetingNumber && meetingNumber) {
+      dispatch(segmentEventTrack('Meeting Completed', { meetingNumber }));
+    }
   }
 
   render() {
