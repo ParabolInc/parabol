@@ -2,7 +2,7 @@ import {cashay} from 'cashay';
 import jwtDecode from 'jwt-decode';
 import {EventTypes} from 'redux-segment';
 import ActionHTTPTransport from '../utils/ActionHTTPTransport';
-import {setProfile} from './profileDuck';
+import {setProfile, clearProfile} from './profileDuck';
 
 const SET_AUTH_TOKEN = '@@authToken/SET_AUTH_TOKEN';
 const REMOVE_AUTH_TOKEN = '@@authToken/REMOVE_AUTH_TOKEN';
@@ -89,12 +89,15 @@ export function setAuthToken(authToken, newProfile) {
 }
 
 export function removeAuthToken() {
-  if (typeof __PRODUCTION__ !== 'undefined' && __PRODUCTION__) {
-    /*
-     * Sentry error reporting meta-information. Raven object is set via SSR.
-     * See server/Html.js for how this is initialized
-     */
-    Raven.setUserContext({}); // eslint-disable-line no-undef
-  }
-  return { type: REMOVE_AUTH_TOKEN };
+  return (dispatch) => {
+    if (typeof __PRODUCTION__ !== 'undefined' && __PRODUCTION__) {
+      /*
+       * Sentry error reporting meta-information. Raven object is set via SSR.
+       * See server/Html.js for how this is initialized
+       */
+      Raven.setUserContext({}); // eslint-disable-line no-undef
+    }
+    dispatch(clearProfile());
+    dispatch({ type: REMOVE_AUTH_TOKEN });
+  };
 }

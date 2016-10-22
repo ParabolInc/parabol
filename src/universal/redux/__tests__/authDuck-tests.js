@@ -31,6 +31,13 @@ const initialStateAssertion = {
   }
 };
 
+const aProfile = {
+  avatar: 'moe.jpg',
+  createdAt: new Date(),
+  email: 'moe@stooges.org',
+  name: 'Moe'
+};
+
 test('initial state', t => {
   t.deepEqual(t.context.initialState, initialStateAssertion);
 });
@@ -69,24 +76,26 @@ test('can removeAuthToken', t => {
   );
 });
 
-// TODO: add profile test
-test('does set profile as thunk side-effect', t => {
-  const newProfile = {
-    avatar: 'moe.jpg',
-    createdAt: new Date(),
-    email: 'moe@stooges.org',
-    name: 'Moe'
-  };
+test('does set profile as side-effect', t => {
   const expectedState = {
     auth: {
       obj: testTokenData,
       token: testToken,
     },
-    profile: { ...newProfile }
+    profile: { ...aProfile }
   };
-  t.context.store.dispatch(setAuthToken(testToken, newProfile));
+  t.context.store.dispatch(setAuthToken(testToken, aProfile));
   t.deepEqual(
     expectedState,
+    t.context.store.getState()
+  );
+});
+
+test('removeAuthToken also clears profile', t => {
+  t.context.store.dispatch(setAuthToken(testToken, aProfile));
+  t.context.store.dispatch(removeAuthToken());
+  t.deepEqual(
+    t.context.initialState,
     t.context.store.getState()
   );
 });
