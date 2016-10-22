@@ -2,11 +2,10 @@ import test from 'ava';
 import {applyMiddleware, combineReducers, createStore} from 'redux';
 import thunk from 'redux-thunk';
 import auth, {setAuthToken, removeAuthToken} from '../authDuck';
-import profile from '../profileDuck';
 import {testToken, testTokenData} from './testTokens';
 
 test.beforeEach(t => {
-  const appReducers = { auth, profile };
+  const appReducers = {auth};
   t.context.appReducer = combineReducers({...appReducers});
   t.context.store = createStore(t.context.appReducer, {}, applyMiddleware(thunk));
   t.context.initialState = t.context.store.getState();
@@ -22,20 +21,7 @@ const initialStateAssertion = {
       iss: null,
       sub: null
     }
-  },
-  profile: {
-    avatar: null,
-    createdAt: null,
-    email: null,
-    name: null
   }
-};
-
-const aProfile = {
-  avatar: 'moe.jpg',
-  createdAt: new Date(),
-  email: 'moe@stooges.org',
-  name: 'Moe'
 };
 
 test('initial state', t => {
@@ -69,30 +55,6 @@ test('throws when token invalid', t => {
 
 test('can removeAuthToken', t => {
   t.context.store.dispatch(setAuthToken(testToken));
-  t.context.store.dispatch(removeAuthToken());
-  t.deepEqual(
-    t.context.initialState,
-    t.context.store.getState()
-  );
-});
-
-test('does set profile as side-effect', t => {
-  const expectedState = {
-    auth: {
-      obj: testTokenData,
-      token: testToken,
-    },
-    profile: { ...aProfile }
-  };
-  t.context.store.dispatch(setAuthToken(testToken, aProfile));
-  t.deepEqual(
-    expectedState,
-    t.context.store.getState()
-  );
-});
-
-test('removeAuthToken also clears profile', t => {
-  t.context.store.dispatch(setAuthToken(testToken, aProfile));
   t.context.store.dispatch(removeAuthToken());
   t.deepEqual(
     t.context.initialState,

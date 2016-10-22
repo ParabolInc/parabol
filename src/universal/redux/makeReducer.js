@@ -3,7 +3,6 @@ import {cashayReducer} from 'cashay';
 import notifications from 'universal/modules/notifications/ducks/notifications';
 import {reducer as formReducer, actionTypes} from 'redux-form';
 import auth from './authDuck';
-import profileReducer, {PROFILE_REDUCER_NAME} from './profileDuck';
 import {reducer as storageReducer} from 'redux-storage-whitelist-fn';
 import storageMerger from 'universal/redux/storageMerger';
 import makeRootReducer from 'universal/redux/rootDuck';
@@ -25,8 +24,7 @@ const appReducers = {
   form: formReducer.plugin(formPlugin),
   menu: menuReducer,
   notifications,
-  outcomeCard: outcomeCardReducer,
-  [PROFILE_REDUCER_NAME]: profileReducer
+  outcomeCard: outcomeCardReducer
 };
 
 

@@ -2,7 +2,7 @@ import {cashay} from 'cashay';
 import jwtDecode from 'jwt-decode';
 import {EventTypes} from 'redux-segment';
 import ActionHTTPTransport from '../utils/ActionHTTPTransport';
-import {setProfile, clearProfile, selectProfile} from './profileDuck';
+import {selectSegmentProfile} from './segmentActions';
 
 const SET_AUTH_TOKEN = '@@authToken/SET_AUTH_TOKEN';
 const REMOVE_AUTH_TOKEN = '@@authToken/REMOVE_AUTH_TOKEN';
@@ -34,13 +34,8 @@ export default function reducer(state = initialState, action = {}) {
 
 export function setAuthToken(authToken, newProfile) {
   return (dispatch, getState) => {
-    const cachedProfile = selectProfile(getState());
+    const cachedProfile = selectSegmentProfile(getState());
     const profile = newProfile || cachedProfile;
-
-    if (newProfile) {
-      // update cached profile for everybody:
-      dispatch(setProfile(newProfile));
-    }
 
     if (!authToken) {
       throw new Error('setAuthToken action created with undefined authToken');
@@ -97,7 +92,6 @@ export function removeAuthToken() {
        */
       Raven.setUserContext({}); // eslint-disable-line no-undef
     }
-    dispatch(clearProfile());
     dispatch({ type: REMOVE_AUTH_TOKEN });
   };
 }

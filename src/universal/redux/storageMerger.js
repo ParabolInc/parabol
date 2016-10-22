@@ -1,6 +1,6 @@
 export default function merger(initialState, persistedState) {
   // Update this list for each new duck written
-  const whitelist = new Set(['auth', 'cashay', 'profile']);
+  const whitelist = new Set(['auth', 'cashay']);
   const result = {};
   const persistedStateKeys = Object.keys(persistedState);
   for (let i = 0; i < persistedStateKeys.length; i++) {

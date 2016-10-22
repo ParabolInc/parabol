@@ -1,5 +1,6 @@
 import {EventTypes} from 'redux-segment';
-import {selectProfile} from './profileDuck';
+import {cashay} from 'cashay';
+import {getAuthQueryString, getAuthedOptions} from './getAuthedUser';
 
 /**
  * Sometimes, we just want to track events in segment.
@@ -7,9 +8,30 @@ import {selectProfile} from './profileDuck';
 
 const SEGMENT_EVENT = '@@segment/EVENT';
 
+const defaultProfile = {
+  avatar: null,
+  email: null,
+  id: null,
+  name: null
+};
+
+export function selectSegmentProfile(state) {
+  if (!state.auth || !cashay.store) { return defaultProfile; }
+  const userId = state.auth.obj.sub;
+  const {user} = cashay.query(getAuthQueryString, getAuthedOptions(userId)).data;
+  if (!user) { return defaultProfile; }
+
+  return ({
+    avatar: user.picture || null,
+    email: user.email || null,
+    id: user.id || null,
+    name: user.preferredName || null
+  });
+}
+
 export function segmentEventTrack(event, properties, options) {
   return (dispatch, getState) => {
-    const profile = selectProfile(getState());
+    const profile = selectSegmentProfile(getState());
     const propertiesOut = Object.assign({}, profile, properties);
     const optionsOut = Object.assign({}, { context: { traits: profile } }, options);
 
@@ -31,7 +53,7 @@ export function segmentEventTrack(event, properties, options) {
 
 export function segmentEventPage(name, category, properties, options) {
   return (dispatch, getState) => {
-    const profile = selectProfile(getState());
+    const profile = selectSegmentProfile(getState());
     const propertiesOut = Object.assign({}, profile, properties);
     const optionsOut = Object.assign({}, { context: { traits: profile } }, options);
 

@@ -3,11 +3,10 @@ import {applyMiddleware, combineReducers, createStore} from 'redux';
 import thunk from 'redux-thunk';
 import makeRootReducer, {reset} from '../rootDuck';
 import authReducer, {setAuthToken} from '../authDuck';
-import profile from '../profileDuck';
 import {testToken} from './testTokens';
 
 test.beforeEach(t => {
-  const appReducers = { auth: authReducer, profile };
+  const appReducers = {auth: authReducer};
   t.context.appReducer = combineReducers({...appReducers});
   t.context.rootReducer = makeRootReducer(t.context.appReducer);
   t.context.store = createStore(t.context.rootReducer, {}, applyMiddleware(thunk));
@@ -25,12 +24,6 @@ test('initial state', t => {
         iss: null,
         sub: null
       }
-    },
-    profile: {
-      avatar: null,
-      createdAt: null,
-      email: null,
-      name: null
     }
   };
   t.deepEqual(t.context.initialState, stateTemplate);
