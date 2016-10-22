@@ -91,7 +91,7 @@ const UserNoNewOutcomes = (props) => {
   const makeMemberCells = (arr) => {
     const cells = () =>
       arr.map((member) =>
-        <td align="center" style={cellStyle} vAlign="top" width={cellWidth} key={member.id}>
+        <td style={cellStyle} width={cellWidth} key={member.id}>
           <img height={avatarSize} src={member.picture} style={avatarStyles} width={avatarSize} />
           <div style={nameStyle}>{member.preferredName}</div>
           {member.present ?
