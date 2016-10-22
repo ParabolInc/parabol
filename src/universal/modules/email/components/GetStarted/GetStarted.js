@@ -28,8 +28,13 @@ const GetStarted = () => {
         width="48"
       />
       <span style={headingStyle}>Getting Started</span><br />
-      Read our <a href="https://www.parabol.co/action/101/" style={linkStyle}>Action 101</a>
-      &nbsp;so your team<br />
+      Read <a
+        href="https://focus.parabol.co/how-to-navigate-uncertainty-fc0dfaaf3830"
+        style={linkStyle}
+        target="_blank"
+        title="How to Navigate Uncertainty using the Action Rhythm"
+      >How to Navigate Uncertainty</a>{' '}
+      so you<br />
       can get into the swing of things.
     </div>
   );

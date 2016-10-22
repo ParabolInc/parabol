@@ -14,6 +14,13 @@ const Footer = (props) => {
     fontSize: '1px'
   };
 
+  const cellStyles = {
+    backgroundColor: '#F9FAFB',
+    color: props.color,
+    fontFamily: ui.emailFontFamily,
+    textAlign: 'center'
+  };
+
   return (
     <table
       width="100%"
@@ -40,21 +47,14 @@ const Footer = (props) => {
             <table width="560">
               <tbody>
                 <tr>
-                  <td
-                    align="center"
-                    bgColor="#F9FAFB"
-                    style={{color: props.color, fontFamily: ui.emailFontFamily}}
-                  >
-
+                  <td style={cellStyles}>
                     <EmptySpace height={10} />
                     <img src="/static/images/brand/mark-color@3x.png" height="28" width="31" />
                     <EmptySpace height={10} />
-
                     Crafted with care by the folks at <a
                       style={{color: appTheme.palette.warm, textDecoration: 'none'}}
                       href="http://www.parabol.co/"
                     > Parabol</a>.
-
                     <EmptySpace height={10} />
                   </td>
                 </tr>

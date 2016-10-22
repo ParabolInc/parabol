@@ -22,6 +22,11 @@ const ruleStyle = {
   width: '80%'
 };
 
+const emailLink = {
+  color: appTheme.palette.warm,
+  textDecoration: 'none'
+};
+
 const WelcomeEmail = props => {
   const {email} = props;
 
@@ -48,7 +53,7 @@ const WelcomeEmail = props => {
 
       <Body lineHeight={1.5}>
         <Callout vSpacing={0}>
-          Hi <a href={`mailto:${email}`} style={{color: appTheme.palette.warm}}>{email}</a>,<br />
+          Hi <a href={`mailto:${email}`} style={emailLink}>{email}</a>,<br />
           We’re <i>so glad</i> you’re here!!
         </Callout>
         <EmptySpace height={48} />
