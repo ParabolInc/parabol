@@ -7,6 +7,8 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import {Link} from 'react-router';
 import FontAwesome from 'react-fontawesome';
+import Helmet from 'react-helmet';
+import {head} from 'universal/utils/clientOptions';
 
 import {
   Step1PreferredName,
@@ -15,10 +17,11 @@ import {
 } from '../../components/WelcomeWizardForms';
 
 const Welcome = (props) => {
-  const {progressDotClickFactory, styles, welcome: {page, completed}} = props;
+  const {progressDotClickFactory, styles, title, welcome: {page, completed}} = props;
   const headingText = page === 1 ? 'Hello!' : 'Invite your team';
   return (
     <WelcomeLayout>
+      <Helmet title={title} {...head} />
       <WelcomeHeader heading={<span>{headingText}</span>}/>
       <WelcomeContent>
         <ProgressDots
@@ -52,6 +55,7 @@ Welcome.propTypes = {
   progressDotClickFactory: PropTypes.func,
   styles: PropTypes.object.isRequired,
   teamName: PropTypes.string,
+  title: PropTypes.string,
   welcome: PropTypes.shape({
     completed: PropTypes.number,
     page: PropTypes.number,

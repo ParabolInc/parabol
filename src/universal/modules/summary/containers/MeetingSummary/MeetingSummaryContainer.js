@@ -133,7 +133,9 @@ export default class MeetingSummaryContainer extends Component {
   }
 
   render() {
-    return <MeetingSummary {...this.props} />;
+    const {meetingNumber, teamName} = this.props;
+    const title = `Action Meeting #${meetingNumber} Summary for ${teamName}`;
+    return <MeetingSummary {...this.props} title={title} />;
   }
 }
 

@@ -1,8 +1,10 @@
 import React, {PropTypes} from 'react';
+import Helmet from 'react-helmet';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import {Link} from 'react-router';
 import appTheme from 'universal/styles/theme/appTheme';
+import {head} from 'universal/utils/clientOptions';
 
 import Type from 'universal/components/Type/Type';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
@@ -22,10 +24,12 @@ const MeetingSummary = (props) => {
     styles,
     teamId,
     teamMembers,
-    teamName
+    teamName,
+    title
   } = props;
   return (
     <MeetingMain>
+      <Helmet title={title} {...head} />
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="4rem" paddingTop="4rem">
 
@@ -93,7 +97,8 @@ MeetingSummary.propTypes = {
   projectCount: PropTypes.number,
   teamId: PropTypes.string,
   teamMembers: PropTypes.array,
-  teamName: PropTypes.string
+  teamName: PropTypes.string,
+  title: PropTypes.string
 };
 
 export default withStyles(styleThunk)(MeetingSummary);
