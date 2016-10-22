@@ -13,7 +13,6 @@ import UserOutcomes from '../../components/UserOutcomes/UserOutcomes';
 import UserNoNewOutcomes from '../../components/UserNoNewOutcomes/UserNoNewOutcomes';
 
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
-import sampleTeamSummary from '../../helpers/sampleTeamSummary';
 
 const ruleStyle = {
   backgroundColor: '#E1E2E8',
@@ -73,16 +72,29 @@ const makeBannerMessage = (referrer, url) => {
 
 const SummaryEmail = (props) => {
   const {
-    actionCount,
-    agendaItemsCompleted,
     meeting,
-    membersSansOutcomes,
-    membersWithOutcomes,
-    presentMemberCount,
-    projectCount,
     referrer,
     referrerUrl,
   } = props;
+  const {invitees} = meeting;
+  const membersSansOutcomes = [];
+  const membersWithOutcomes = [];
+  let presentMemberCount = 0;
+  let actionCount = 0;
+  let projectCount = 0;
+
+  for (let i = 0; i < invitees.length; i++) {
+    const invitee = invitees[i];
+    if (invitee.present) {
+      presentMemberCount++;
+    }
+    const projLen = invitee.projects.length;
+    const actionLen = invitee.actions.length;
+    actionCount += actionLen;
+    projectCount += projLen;
+    const arr = (!projLen && !actionLen) ? membersSansOutcomes : membersWithOutcomes;
+    arr.push(invitee);
+  }
 
   const {createdAt, meetingNumber, teamId, teamName} = meeting;
   const bannerMessage = makeBannerMessage(referrer, referrerUrl);
@@ -226,6 +238,6 @@ export const summaryEmailText = (props) => {
   return `Hello ${teamName}! As a team you discussed ${agendaItemsCompleted} Agenda Items${' '}
 resulting in ${projectCount} New Projects${' '}
 and ${actionCount} New Actions.${' '}`;
-}
+};
 
 export default SummaryEmail;

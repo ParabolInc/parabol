@@ -29,42 +29,10 @@ query{
       picture
       preferredName
     }
-    
+    successExpression
+    successStatement
   }
 }`;
-
-const objectifyTeamMembers = (teamMembers) => {
-  const enhancedTeamMembers = [];
-  const teamMemberIndices = {};
-  for (let i = 0; i < teamMembers.length; i++) {
-    const teamMember = teamMembers[i];
-    enhancedTeamMembers[i] = {
-      id: teamMember.id,
-      present: teamMember.present,
-      picture: teamMember.membership.picture,
-      preferredName: teamMember.membership.preferredName,
-      actions: [],
-      projects: []
-    };
-    teamMemberIndices[teamMember.id] = i;
-  }
-  return {enhancedTeamMembers, teamMemberIndices};
-};
-
-const groupOutcomesByTeamMember = (actions, projects, teamMembers) => {
-  const {enhancedTeamMembers, teamMemberIndices} = objectifyTeamMembers(teamMembers);
-  for (let i = 0; i < actions.length; i++) {
-    const action = actions[i];
-    const idx = teamMemberIndices[action.teamMemberId];
-    enhancedTeamMembers[idx].actions.push(action);
-  }
-  for (let i = 0; i < projects.length; i++) {
-    const project = projects[i];
-    const idx = teamMemberIndices[project.teamMemberId];
-    enhancedTeamMembers[idx].projects.push(project);
-  }
-  return enhancedTeamMembers;
-};
 
 const mapStateToProps = (state, props) => {
   const {params: {meetingId}} = props;
@@ -79,24 +47,8 @@ const mapStateToProps = (state, props) => {
       invitees: (a, b) => a.preferredName > b.preferredName ? 1 : -1
     },
   }).data;
-  const {
-    agendaItemsCompleted,
-    meetingNumber,
-    teamId,
-    invitees,
-    teamName,
-    actions,
-    projects
-  } = meeting;
-  const enhancedTeamMembers = groupOutcomesByTeamMember(actions, projects, invitees);
   return {
-    actionCount: actions.length,
-    agendaItemsCompleted,
-    meetingNumber,
-    projectCount: projects.length,
-    teamId,
-    teamMembers: enhancedTeamMembers,
-    teamName,
+    meeting
   };
 };
 
@@ -104,13 +56,8 @@ const mapStateToProps = (state, props) => {
 @connect(mapStateToProps)
 export default class MeetingSummaryContainer extends Component {
   static propTypes = {
-    actionCount: PropTypes.number,
-    agendaItemsCompleted: PropTypes.number,
-    meetingNumber: PropTypes.number,
-    projectCount: PropTypes.number,
-    teamId: PropTypes.string,
-    teamMembers: PropTypes.array,
-    teamName: PropTypes.string
+    meeting: PropTypes.object.isRequired,
+    params: PropTypes.object.isRequired
   };
 
   componentWillMount() {
@@ -120,6 +67,12 @@ export default class MeetingSummaryContainer extends Component {
   }
 
   render() {
-    return <MeetingSummary {...props} />;
+    const {meeting} = this.props;
+    return (
+      <MeetingSummary
+        meeting={meeting}
+        referrer="meeting"
+      />
+    );
   }
 };
