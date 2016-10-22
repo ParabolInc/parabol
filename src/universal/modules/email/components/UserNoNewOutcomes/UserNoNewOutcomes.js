@@ -90,10 +90,10 @@ const UserNoNewOutcomes = (props) => {
 
   const makeMemberCells = (arr) => {
     const cells = () =>
-      arr.map(member =>
-        <td style={cellStyle} width={cellWidth}>
-          <img height={avatarSize} src={member.avatar} style={avatarStyles} width={avatarSize} />
-          <div style={nameStyle}>{member.name}</div>
+      arr.map((member) =>
+        <td align="center" style={cellStyle} vAlign="top" width={cellWidth} key={member.id}>
+          <img height={avatarSize} src={member.picture} style={avatarStyles} width={avatarSize} />
+          <div style={nameStyle}>{member.preferredName}</div>
           {member.present ?
             <div style={presentStyles}>Present</div> :
             <div style={absentStyles}>Absent</div>
@@ -115,11 +115,13 @@ const UserNoNewOutcomes = (props) => {
           <tr>
             <td align="center">
               <table align="center">
-                {memberCells.map(row =>
-                  <tr>
+                <tbody>
+                  {memberCells.map((row,idx) =>
+                    <tr key={`memberCell${idx}`}>
                     {makeMemberCells(row)}
                   </tr>
                 )}
+                </tbody>
               </table>
             </td>
           </tr>
@@ -140,7 +142,11 @@ const UserNoNewOutcomes = (props) => {
 };
 
 UserNoNewOutcomes.propTypes = {
-  members: PropTypes.array
+  members: PropTypes.arrayOf(PropTypes.shape({
+    present: PropTypes.bool.isRequired,
+    picture: PropTypes.string.isRequired,
+    preferredName: PropTypes.string.isRequired
+  }))
 };
 
 export default UserNoNewOutcomes;
