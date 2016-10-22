@@ -31,18 +31,18 @@ export default class Step1PreferredName extends Component {
 
   onPreferredNameSubmit = (submissionData) => {
     const {dispatch, user} = this.props;
-    const {preferredName: newPrefferedName} = submissionData;
+    const {preferredName: newPreferredName} = submissionData;
     const options = {
       variables: {
         updatedUser: {
           id: user.id,
-          preferredName: newPrefferedName
+          preferredName: newPreferredName
         }
       }
     };
     cashay.mutate('updateUserProfile', options);
     dispatch(segmentEventTrack('Welcome Step1 Completed',
-      { preferredName: newPrefferedName }
+      { preferredName: newPreferredName }
     ));
     dispatch(updateCompleted(1));
     dispatch(nextPage());
