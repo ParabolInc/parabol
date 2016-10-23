@@ -61,6 +61,7 @@ const meetingLink = {
 
 const bannerLink = {
   color: '#FFFFFF',
+  cursor: 'pointer',
   textDecoration: 'underline'
 };
 

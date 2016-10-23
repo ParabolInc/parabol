@@ -3,9 +3,12 @@ import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import SummaryEmail from 'universal/modules/email/components/SummaryEmail/SummaryEmail';
+import LoadingView from 'universal/components/LoadingView/LoadingView';
+
 const meetingSummaryQuery = `
 query{
   meeting: getMeetingById(id: $id) @cached(type: "Meeting") {
+    createdAt
     id
     teamId
     teamName
@@ -36,7 +39,8 @@ query{
 const mutationHandlers = {
   summarizeMeeting(optimisticVariables, queryResponse, currentResponse) {
     if (queryResponse) {
-      Object.assign(currentResponse.meeting, queryResponse);
+      // TODO do this in cashay
+      Object.assign(currentResponse.meeting, queryResponse, {createdAt: new Date(queryResponse.createdAt)});
     }
     return currentResponse;
   }
@@ -77,6 +81,9 @@ export default class MeetingSummaryContainer extends Component {
 
   render() {
     const {meeting} = this.props;
+    if (!meeting.createdAt) {
+      return <LoadingView/>
+    }
     return (
       <SummaryEmail
         meeting={meeting}

@@ -33,6 +33,7 @@ const SummaryHeader = (props) => {
   const teamDashLinkStyle = {
     ...textStyle,
     color: appTheme.palette.cool,
+    cursor: 'pointer',
     fontSize: '14px'
   };
 
