@@ -4,6 +4,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.9.3 - 24-Oct-2016
+### Added
+- New meeting summary web view and email
+- Segment.io adoption funnel and usage tracking:
+   - Welcome wizard events, 'Meeting Completed' events
+   - Added segmentEventPage, renamed segmentEvent -> segmentEventTrack
+   - Added Helmet components to update title on key routes
+- Simple singular, plural for Last Call (#419)
+
+### Fixed
+- Segment page events now report correct document title
+- #413 fixes build minification
+
 ## v0.8.1 - 19-Oct-2016
 ### Added
 - Sentry.io automated error reporting for server and client
