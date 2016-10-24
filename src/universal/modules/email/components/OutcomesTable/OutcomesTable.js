@@ -35,11 +35,13 @@ const OutcomesTable = (props) => {
   const outcomeRows = getOutcomeRows(props.outcomes);
   return (
     <table style={{textAlign: 'center'}}>
-      {outcomeRows.map((row,idx) =>
-        <tr key={`outcomeRow${idx}`}>
-          {makeOutcomeCards(row)}
-        </tr>
-      )}
+      <tbody>
+        {outcomeRows.map((row,idx) =>
+          <tr key={`outcomeRow${idx}`}>
+            {makeOutcomeCards(row)}
+          </tr>
+        )}
+      </tbody>
     </table>
   );
 };

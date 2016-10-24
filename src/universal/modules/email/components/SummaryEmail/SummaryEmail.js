@@ -56,7 +56,8 @@ const bannerMessageStyles = {
 
 const meetingLinkBlock = {
   backgroundColor: appTheme.palette.cool10l,
-  padding: '10px 8px'
+  padding: '10px 8px',
+  textAlign: 'center'
 };
 
 const meetingLink = {
@@ -68,6 +69,11 @@ const bannerLink = {
   color: '#FFFFFF',
   cursor: 'pointer',
   textDecoration: 'underline'
+};
+
+const quickStatsBlock = {
+  padding: '0 8px',
+  textAlign: 'center'
 };
 
 const centerStyle = {
@@ -157,7 +163,7 @@ const SummaryEmail = (props) => {
                       <table style={centerStyle} width="80%">
                         <tbody>
                           <tr>
-                            <td style={centerStyle} style={meetingLinkBlock}>
+                            <td style={meetingLinkBlock}>
                               <a href={meetingLobbyLink} style={meetingLink}>
                                 {meetingLobbyLink}
                               </a>
@@ -191,7 +197,7 @@ const SummaryEmail = (props) => {
         <table style={centerStyle} width="100%">
           <tbody>
             <tr>
-              <td style={centerStyle} style={{padding: '0 8px'}}>
+              <td style={quickStatsBlock}>
                 <QuickStats
                   agendaItems={agendaItemsCompleted}
                   newProjects={projectCount}
@@ -204,7 +210,7 @@ const SummaryEmail = (props) => {
           </tbody>
         </table>
         {membersWithOutcomes.map(member =>
-          <UserOutcomes member={member}/>
+          <UserOutcomes member={member} key={`memberOutcomes'${member.id}`}/>
         )}
         {membersSansOutcomes.length &&
           <UserNoNewOutcomes members={membersSansOutcomes}/>

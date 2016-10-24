@@ -34,7 +34,8 @@ const SummaryHeader = (props) => {
     ...textStyle,
     color: appTheme.palette.cool,
     cursor: 'pointer',
-    fontSize: '14px'
+    fontSize: '14px',
+    textDecoration: 'none'
   };
 
   const teamNameStyle = {

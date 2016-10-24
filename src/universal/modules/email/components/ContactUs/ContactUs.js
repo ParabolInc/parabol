@@ -20,7 +20,8 @@ const ContactUs = (props) => {
 
   const linkStyle = {
     color: appTheme.palette.warm,
-    fontWeight: 700
+    fontWeight: 700,
+    textDecoration: 'none'
   };
 
   return (
