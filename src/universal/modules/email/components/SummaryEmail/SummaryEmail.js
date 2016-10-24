@@ -133,7 +133,7 @@ const SummaryEmail = (props) => {
           <tr>
             <td align="center">
               {/* Summary Header */}
-              <SummaryHeader createdAt={createdAt} referrer={referrer} referrerUrl={referrerUrl} teamName={teamName}/>
+              <SummaryHeader createdAt={createdAt} referrer={referrer} teamDashUrl={`/team/${teamId}`} teamName={teamName}/>
               {/* Message */}
               {meetingNumber === 0 ?
                 <div>

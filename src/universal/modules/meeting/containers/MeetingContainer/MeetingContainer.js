@@ -119,6 +119,7 @@ const mapStateToProps = (state, props) => {
 
 let infiniteloopCounter = 0;
 let infiniteLoopTimer = Date.now();
+let infiniteTrigger = false;
 
 @socketWithPresence
 @connect(mapStateToProps)
@@ -169,7 +170,11 @@ export default class MeetingContainer extends Component {
             nextPhaseItem: 1,
             force: true
           };
-          cashay.mutate('moveMeeting', {variables});
+          if (!infiniteTrigger) {
+            cashay.mutate('moveMeeting', {variables});
+            infiniteTrigger = true;
+          }
+          return false;
         }
         this.gotoItem(1, CHECKIN);
         dispatch(showError({
@@ -185,11 +190,8 @@ export default class MeetingContainer extends Component {
     return false;
   }
 
-  endMeeting = (redirOrEvent) => {
+  endMeeting = () => {
     const {params: {teamId}} = this.props;
-    if (redirOrEvent === true) {
-      this.gotoItem(null, SUMMARY);
-    }
     cashay.mutate('endMeeting', {variables: {teamId}});
   };
 

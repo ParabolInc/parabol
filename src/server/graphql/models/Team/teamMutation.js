@@ -18,7 +18,9 @@ import {
   FIRST_CALL,
   AGENDA_ITEMS,
   LAST_CALL,
-  phaseArray, phaseOrder
+  SUMMARY,
+  phaseArray,
+  phaseOrder
 } from 'universal/utils/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
@@ -276,11 +278,21 @@ export default {
 
             }, {nonAtomic: true});
         });
+
+      // send to summary
+      await r.table('Team').get(teamId)
+        .update({
+          facilitatorPhase: SUMMARY,
+          meetingPhase: SUMMARY,
+          facilitatorPhaseItem: null,
+          meetingPhaseItem: null,
+        });
+
       // reset the meeting
       await r.table('Team').get(teamId)
         .update({
-          facilitatorPhase: 'lobby',
-          meetingPhase: 'lobby',
+          facilitatorPhase: LOBBY,
+          meetingPhase: LOBBY,
           meetingId: null,
           facilitatorPhaseItem: null,
           meetingPhaseItem: null,
@@ -308,12 +320,12 @@ export default {
             .sample(100000)
             .coerceTo('array')
             .do((arr) => arr.forEach((doc) => {
-              return r.table('TeamMember').get(doc('id'))
+                return r.table('TeamMember').get(doc('id'))
                   .update({
                     checkInOrder: arr.offsetsOf(doc).nth(0),
                     isCheckedIn: null
                   });
-            })
+              })
             );
         });
       return true;

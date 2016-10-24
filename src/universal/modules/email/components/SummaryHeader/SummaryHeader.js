@@ -6,7 +6,7 @@ import makeDateString from 'universal/utils/makeDateString';
 import {Link} from 'react-router';
 
 const SummaryHeader = (props) => {
-  const {createdAt, referrer, referrerUrl, teamName} = props;
+  const {createdAt, referrer, teamDashUrl, teamName} = props;
   const blockStyle = {
     backgroundColor: '#fff',
     border: '2px solid #D2D3DC',
@@ -52,8 +52,8 @@ const SummaryHeader = (props) => {
               <div style={teamNameStyle}>{teamName}</div>
               <div style={meetingDateStyle}>Meeting Summary • {meetingDate}</div>
               {referrer === 'email' ?
-                <a href={referrerUrl} style={teamDashLinkStyle} title="Go to Team Dashboard">Go to Team Dashboard</a> :
-                <Link to={referrerUrl} style={teamDashLinkStyle} title="Go to Team Dashboard">
+                <a href={teamDashUrl} style={teamDashLinkStyle} title="Go to Team Dashboard">Go to Team Dashboard</a> :
+                <Link to={teamDashUrl} style={teamDashLinkStyle} title="Go to Team Dashboard">
                   Go to Team Dashboard
                 </Link>
               }

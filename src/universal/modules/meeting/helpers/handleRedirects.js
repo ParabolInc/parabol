@@ -79,6 +79,7 @@ export default function handleRedirects(team, localPhase, localPhaseItem, oldTea
   }
   if (team.facilitatorPhase === SUMMARY) {
     router.replace(`/summary/${team.meetingId}`);
+    return false;
   }
   return true;
 
