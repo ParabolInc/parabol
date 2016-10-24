@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import layoutStyle from 'universal/styles/layout';
 import Notifications from 'universal/modules/notifications/containers/Notifications/Notifications';
 
 const Action = (props) => {
@@ -22,9 +21,9 @@ Action.propTypes = {
 const styleThunk = () => ({
   app: {
     margin: 0,
-    maxWidth: layoutStyle.maxWidth,
     minHeight: '100vh',
-    padding: 0
+    padding: 0,
+    width: '100%'
   }
 });
 

@@ -26,10 +26,16 @@ const ui = {
   cardPaddingBase: '.5rem',
 
   // Dashboards
+  dashActionsWidth: '15rem',
+  dashAgendaWidth: '15rem',
   dashBackgroundColor: backgroundColor,
   dashBorderColor: 'rgba(0, 0, 0, .1)',
   dashGutter: '1rem',
+  // Note: property 'dashMinWidth' prevents layout from collapsing in Safari
+  //       in a better future we may be more adaptive/responsive (TA)
+  dashMinWidth: '79rem',
   dashSectionHeaderLineHeight: '1.875rem',
+  dashSidebarWidth: '15rem',
 
   // Email
   emailBackgroundColor: '#F9FAFB',
@@ -38,6 +44,9 @@ const ui = {
   // Icons
   iconSize: '14px', // FontAwesome base
   iconSize2x: '28px', // FontAwesome 2x
+
+  // Meeting
+  meetingSidebarWidth: '15rem',
 
   // Menus
   menuBackgroundColor: backgroundColor,

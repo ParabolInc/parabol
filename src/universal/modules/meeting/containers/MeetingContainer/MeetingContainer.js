@@ -277,7 +277,7 @@ export default class MeetingContainer extends Component {
       team
     };
     return (
-      <MeetingLayout>
+      <MeetingLayout title={`Action Meeting for ${teamName}`}>
         <Sidebar
           agendaPhaseItem={agendaPhaseItem}
           facilitatorPhase={facilitatorPhase}

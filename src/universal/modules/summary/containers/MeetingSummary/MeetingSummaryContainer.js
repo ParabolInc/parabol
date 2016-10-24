@@ -1,9 +1,11 @@
 import React, {Component, PropTypes} from 'react';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
+import Helmet from 'react-helmet';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import SummaryEmail from 'universal/modules/email/components/SummaryEmail/SummaryEmail';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
+import {segmentEventTrack} from 'universal/redux/segmentActions';
 
 const meetingSummaryQuery = `
 query{
@@ -69,6 +71,7 @@ const mapStateToProps = (state, props) => {
 @connect(mapStateToProps)
 export default class MeetingSummaryContainer extends Component {
   static propTypes = {
+    dispatch: PropTypes.func,
     meeting: PropTypes.object.isRequired,
     params: PropTypes.object.isRequired
   };
@@ -79,16 +82,34 @@ export default class MeetingSummaryContainer extends Component {
     cashay.mutate('summarizeMeeting', {variables});
   }
 
+  componentWillReceiveProps(nextProps) {
+    const {dispatch, meeting: {meetingNumber: oldMeetingNumber}} = this.props;
+    const {meeting: {meetingNumber: newMeetingNumber}} = nextProps;
+    /*
+     * Track meeting completitions by idenity.
+     *
+     * N.B. it is ok if these are sent as dupes, i.e. when viewed from
+     * meeting history.
+     */
+    if (!oldMeetingNumber && newMeetingNumber) {
+      dispatch(segmentEventTrack('Meeting Completed', {meetingNumber: newMeetingNumber }));
+    }
+  }
+
   render() {
     const {meeting} = this.props;
     if (!meeting.createdAt) {
       return <LoadingView/>;
     }
+    const title = `Action Meeting #${meeting.meetingNumber} Summary for ${meeting.teamName}`;
     return (
-      <SummaryEmail
-        meeting={meeting}
-        referrer="meeting"
-      />
+      <div>
+        <Helmet title={title} />
+        <SummaryEmail
+          meeting={meeting}
+          referrer="meeting"
+        />
+      </div>
     );
   }
 }

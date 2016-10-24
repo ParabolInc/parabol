@@ -1,54 +1,63 @@
 import test from 'ava';
-import reducer, {setAuthToken, removeAuthToken} from '../authDuck';
+import {applyMiddleware, combineReducers, createStore} from 'redux';
+import thunk from 'redux-thunk';
+import auth, {setAuthToken, removeAuthToken} from '../authDuck';
 import {testToken, testTokenData} from './testTokens';
 
-const stateTemplate = {
-  token: null,
-  obj: {
-    aud: null,
-    exp: null,
-    iat: null,
-    iss: null,
-    sub: null
+test.beforeEach(t => {
+  const appReducers = {auth};
+  t.context.appReducer = combineReducers({...appReducers});
+  t.context.store = createStore(t.context.appReducer, {}, applyMiddleware(thunk));
+  t.context.initialState = t.context.store.getState();
+});
+
+const initialStateAssertion = {
+  auth: {
+    token: null,
+    obj: {
+      aud: null,
+      exp: null,
+      iat: null,
+      iss: null,
+      sub: null
+    }
   }
 };
 
 test('initial state', t => {
-  const initialState = reducer();
-  t.deepEqual(initialState, stateTemplate);
+  t.deepEqual(t.context.initialState, initialStateAssertion);
 });
 
 test('can setAuthToken w/token decode', t => {
-  const initialState = reducer();
   const expectedState = {
-    obj: testTokenData,
-    token: testToken
+    ...initialStateAssertion,
+    auth: {
+      obj: testTokenData,
+      token: testToken,
+    }
   };
-  t.deepEqual(
-    expectedState,
-    reducer(initialState, setAuthToken(testToken))
-  );
+  t.context.store.dispatch(setAuthToken(testToken));
+  const nextState = t.context.store.getState();
+  t.deepEqual(expectedState, nextState);
 });
 
 test('throws when token undefined', t => {
-  const initialState = reducer();
   t.throws(() =>
-    reducer(initialState, setAuthToken(undefined))
+    t.context.store.dispatch(setAuthToken(undefined))
   );
 });
 
 test('throws when token invalid', t => {
-  const initialState = reducer();
   t.throws(() =>
-    reducer(initialState, setAuthToken(42))
+    t.context.store.dispatch(setAuthToken(42))
   );
 });
 
 test('can removeAuthToken', t => {
-  const initialState = reducer();
-  const nextState = reducer(initialState, setAuthToken(testToken));
+  t.context.store.dispatch(setAuthToken(testToken));
+  t.context.store.dispatch(removeAuthToken());
   t.deepEqual(
-    initialState,
-    reducer(nextState, removeAuthToken())
+    t.context.initialState,
+    t.context.store.getState()
   );
 });

@@ -116,7 +116,7 @@ export const User = new GraphQLObjectType({
     },
     preferredName: {
       type: GraphQLString,
-      description: 'The name, as confirmed by the user'
+      description: 'The application-specific name, defaults to nickname'
     },
     /* GraphQL Sugar */
     memberships: {

@@ -21,7 +21,7 @@ const mapStateToProps = (state) => {
   return {
     activity: state.userDashboardSettings.activity,
     nextPage: state.userDashboardSettings.nextPage,
-    userId: state.auth.obj.sub
+    userId: state.auth.obj.sub,
   };
 };
 
@@ -48,9 +48,10 @@ export default class UserSettingsContainer extends Component {
     this.initializeForm();
   }
 
-  onSubmit = async(submissionData) => {
-    const {activity, dispatch, nextPage, userId, router} = this.props;
+  onSubmit = (submissionData) => {
+    const {activity, dispatch, nextPage, user, userId, router} = this.props;
     const {preferredName} = submissionData;
+    if (preferredName === user.preferredName) return;
     const options = {
       variables: {
         updatedUser: {
@@ -59,7 +60,7 @@ export default class UserSettingsContainer extends Component {
         }
       }
     };
-    await cashay.mutate('updateUserProfile', options);
+    cashay.mutate('updateUserProfile', options);
     dispatch(showSuccess(updateSuccess));
     if (activity === ACTIVITY_WELCOME) {
       dispatch(clearActivity());

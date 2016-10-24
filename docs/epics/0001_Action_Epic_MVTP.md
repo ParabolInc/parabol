@@ -190,7 +190,7 @@ noise of the team.
 opportunity to add new items, so that they have one last chance to process
 something before the meeting ends.
 
-- [ ] When the meeting ends, TMs will want a summary of the meeting, so that
+- [X] When the meeting ends, TMs will want a summary of the meeting, so that
 folks who weren't able to attend can see what happened.
 
 ## Team Dashboard

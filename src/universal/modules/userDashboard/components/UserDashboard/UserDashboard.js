@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import layout from 'universal/styles/layout';
 import ui from 'universal/styles/ui';
 import {
   DashContent,
@@ -56,7 +55,7 @@ const styleThunk = () => ({
     borderRight: `2px solid ${ui.dashBorderColor}`,
     display: 'flex',
     flexDirection: 'column',
-    width: layout.dashActionsWidth
+    width: ui.dashActionsWidth
   },
 
   projectsLayout: {
