@@ -15,13 +15,20 @@ const Features = (props) => {
     lineHeight: `${props.lineHeight}`,
     paddingBottom: '16px',
     paddingLeft: '16px',
-    paddingTop: '16px'
+    paddingTop: '16px',
+    textAlign: 'left'
+  };
+
+  const tableStyle = {
+    borderCollapse: 'collapse',
+    marginLeft: 'auto',
+    marginRight: 'auto'
   };
 
   return (
     <div>
       <EmptySpace height={props.vSpacing} />
-      <table>
+      <table style={tableStyle}>
         <tbody>
           <tr>
             <td width="64">

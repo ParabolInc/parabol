@@ -19,7 +19,7 @@ const ruleStyle = {
   backgroundColor: '#E1E2E8',
   border: 0,
   height: '2px',
-  margin: 0,
+  margin: '0 auto',
   width: '80%'
 };
 

@@ -77,6 +77,12 @@ const quickStatsBlock = {
   textAlign: 'center'
 };
 
+const tableStyle = {
+  borderCollapse: 'collapse',
+  marginLeft: 'auto',
+  marginRight: 'auto'
+};
+
 const makeBannerMessage = (referrer, url) => {
   if (referrer === 'meeting') {
     return <span>All team members will receive this summary in their inbox.</span>;
@@ -121,7 +127,7 @@ const SummaryEmail = (props) => {
   const meetingLobbyLink = `https://action.parabol.co/meeting/${teamId}`;
   return (
     <Layout>
-      <table width="100%">
+      <table style={tableStyle} width="100%">
         <tbody>
           <tr>
             <td style={bannerStyle}>
@@ -137,10 +143,10 @@ const SummaryEmail = (props) => {
         </tbody>
       </table>
       <Body verticalGutter={0}>
-        <table align="center" width="100%">
+        <table align="center" tableStyle width="100%">
           <tbody>
             <tr>
-              <td align="center">
+              <td align="center" style={{padding: 0}}>
                 {/* Summary Header */}
                 <SummaryHeader createdAt={createdAt} referrer={referrer} teamDashUrl={`/team/${teamId}`} teamName={teamName}/>
                 {/* Message */}
@@ -191,7 +197,7 @@ const SummaryEmail = (props) => {
             </tr>
           </tbody>
         </table>
-        <table align="center" width="100%">
+        <table align="center" style={tableStyle} width="100%">
           <tbody>
             <tr>
               <td align="center" style={quickStatsBlock}>

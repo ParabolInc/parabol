@@ -17,22 +17,28 @@ const Card = (props) => {
   }
 
   const cellStyle = {
+    padding: 0,
+    verticalAlign: 'top'
+  };
+
+  const contentStyle = {
     backgroundColor,
     borderColor: ui.cardBorderColor,
     borderStyle: 'solid',
     borderRadius: '0 0 4px 4px',
     borderWidth: '0 1px 1px',
     textAlign: 'left',
-    verticalAlign: 'top'
-  };
 
-  const contentStyle = {
     color: appTheme.palette.dark,
     fontSize: '16px',
     fontFamily: ui.emailFontFamily,
-    height: '62px',
+    height: '76px',
     lineHeight: '20px',
     padding: '4px 8px'
+  };
+
+  const tableStyle = {
+    borderCollapse: 'collapse'
   };
 
   let borderTopStyle;
@@ -40,17 +46,19 @@ const Card = (props) => {
   if (type === 'project') {
     borderTopStyle = {
       backgroundColor: labels.projectStatus[status].color,
-      borderRadius: '4px 4px 0 0'
+      borderRadius: '4px 4px 0 0',
+      padding: 0
     };
   } else {
     borderTopStyle = {
       backgroundColor: labels.action.color,
-      borderRadius: '4px 4px 0 0'
+      borderRadius: '4px 4px 0 0',
+      padding: 0
     };
   }
 
   return (
-    <table width="100%">
+    <table style={tableStyle} width="100%">
       <tbody>
         {/* card styled top border */}
         <tr>

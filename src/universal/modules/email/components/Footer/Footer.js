@@ -4,8 +4,9 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
 const Footer = (props) => {
-  const style = {
+  const tableStyle = {
     backgroundColor: ui.emailBackgroundColor,
+    borderCollapse: 'collapse',
     color: props.color
   };
 
@@ -24,7 +25,7 @@ const Footer = (props) => {
   return (
     <table
       width="100%"
-      style={style}
+      style={tableStyle}
     >
       <tbody>
 

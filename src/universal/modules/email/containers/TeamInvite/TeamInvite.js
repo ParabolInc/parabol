@@ -37,6 +37,12 @@ const projectNameStyle = {
   fontSize: '24px'
 };
 
+const tableStyle = {
+  borderCollapse: 'collapse',
+  marginLeft: 'auto',
+  marginRight: 'auto'
+};
+
 const TeamInvite = props => {
   const {
     inviterAvatar,
@@ -51,7 +57,7 @@ const TeamInvite = props => {
   return (
     <Layout>
 
-      <table width="100%">
+      <table style={tableStyle} width="100%">
         <tbody>
           <tr>
             <td style={{backgroundColor: appTheme.palette.warm}}>
@@ -62,7 +68,7 @@ const TeamInvite = props => {
       </table>
 
       <Body>
-        <table align="center">
+        <table style={tableStyle} align="center">
           <tbody>
             <tr>
               <td width="64">

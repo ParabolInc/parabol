@@ -7,6 +7,11 @@ const cardRowCell = {
   width: '188px'
 };
 
+const tableStyle = {
+  marginLeft: 'auto',
+  marginRight: 'auto',
+};
+
 const getOutcomeRows = (arr) => {
   const rows = [];
   const length = arr.length;
@@ -34,7 +39,7 @@ const makeOutcomeCards = (arr) => {
 const OutcomesTable = (props) => {
   const outcomeRows = getOutcomeRows(props.outcomes);
   return (
-    <table align="center">
+    <table align="center" style={tableStyle}>
       <tbody>
         {outcomeRows.map((row, idx) =>
           <tr key={`outcomeRow${idx}`}>

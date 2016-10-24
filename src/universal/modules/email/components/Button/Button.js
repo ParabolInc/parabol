@@ -6,6 +6,7 @@ const Button = (props) => {
     backgroundColor: `${props.backgroundColor}`,
     color: '#FFFFFF',
     fontWeight: 'bold',
+    padding: 0,
     textAlign: 'center',
     textTransform: 'uppercase'
   };
@@ -22,8 +23,14 @@ const Button = (props) => {
     width: '100%'
   };
 
+  const tableStyle = {
+    borderCollapse: 'collapse',
+    marginLeft: 'auto',
+    marginRight: 'auto'
+  };
+
   return (
-    <table width={`${props.width}px`}>
+    <table style={tableStyle} width={`${props.width}px`}>
       <tbody>
         <tr>
           <td align="center" style={cellStyle}>

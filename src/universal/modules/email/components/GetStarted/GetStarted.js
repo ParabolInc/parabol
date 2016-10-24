@@ -1,5 +1,6 @@
 import React from 'react';
 import appTheme from 'universal/styles/theme/appTheme';
+import EmptySpace from '../EmptySpace/EmptySpace';
 
 const GetStarted = () => {
   const linkStyle = {
@@ -8,9 +9,7 @@ const GetStarted = () => {
   };
 
   const imageStyle = {
-    border: 0,
-    display: 'block',
-    marginBottom: '8px'
+    border: 0
   };
 
   const headingStyle = {
@@ -19,24 +18,42 @@ const GetStarted = () => {
     textTransform: 'uppercase'
   };
 
+  const cellStyle = {
+    padding: 0,
+    textAlign: 'center'
+  };
+
+  const tableStyle = {
+    borderCollapse: 'collapse',
+    marginLeft: 'auto',
+    marginRight: 'auto'
+  };
+
   return (
-    <div style={{textAlign: 'center'}}>
-      <img
-        height="48"
-        src="/static/images/email/email-icon-star@2x.png"
-        style={imageStyle}
-        width="48"
-      />
-      <span style={headingStyle}>Getting Started</span><br />
-      Read <a
-        href="https://focus.parabol.co/how-to-navigate-uncertainty-fc0dfaaf3830"
-        style={linkStyle}
-        target="_blank"
-        title="How to Navigate Uncertainty using the Action Rhythm"
-      >How to Navigate Uncertainty</a>{' '}
-      so you<br />
-      can get into the swing of things.
-    </div>
+    <table style={tableStyle}>
+      <tbody>
+        <tr>
+          <td style={cellStyle}>
+            <img
+              height="48"
+              src="/static/images/email/email-icon-star@2x.png"
+              style={imageStyle}
+              width="48"
+            />
+            <EmptySpace height={8} />
+            <span style={headingStyle}>Getting Started</span><br />
+            Read <a
+              href="https://focus.parabol.co/how-to-navigate-uncertainty-fc0dfaaf3830"
+              style={linkStyle}
+              target="_blank"
+              title="How to Navigate Uncertainty using the Action Rhythm"
+            >How to Navigate Uncertainty</a>{' '}
+            so you<br />
+            can get into the swing of things.
+          </td>
+        </tr>
+      </tbody>
+    </table>
   );
 };
 
