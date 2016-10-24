@@ -33,7 +33,8 @@ const message = {
 
 const linkStyles = {
   color: appTheme.palette.warm,
-  fontWeight: 700
+  fontWeight: 700,
+  textDecoration: 'none'
 };
 
 const greetingStyles = {

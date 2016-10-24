@@ -81,7 +81,7 @@ const TeamInvite = props => {
         <EmptySpace height={40} />
         <span style={teamNameStyle}>{teamName}</span>
         <EmptySpace height={40} />
-        <a href="https://action-staging.parabol.co/" style={boldLinkStyle}>Action</a>
+        <a href="https://action.parabol.co/" style={boldLinkStyle}>Action</a>
         &nbsp;is a place where you and your team <br />will develop your <b><i>weekly rhythm</i></b>.<br />
         <EmptySpace height={40} />
         {firstProject &&

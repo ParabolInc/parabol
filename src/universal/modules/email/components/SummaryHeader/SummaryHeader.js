@@ -53,7 +53,12 @@ const SummaryHeader = (props) => {
               <div style={teamNameStyle}>{teamName}</div>
               <div style={meetingDateStyle}>Meeting Summary • {meetingDate}</div>
               {referrer === 'email' ?
-                <a href={`https://action.parabol.co${teamDashUrl}`} style={teamDashLinkStyle} title="Go to Team Dashboard">Go to Team Dashboard</a> :
+                <a
+                  href={`https://action.parabol.co${teamDashUrl}`}
+                  style={teamDashLinkStyle}
+                  title="Go to Team Dashboard"
+                >Go to Team Dashboard
+                </a> :
                 <Link to={teamDashUrl} style={teamDashLinkStyle} title="Go to Team Dashboard">
                   Go to Team Dashboard
                 </Link>
