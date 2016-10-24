@@ -191,6 +191,8 @@ export default class MeetingContainer extends Component {
   }
 
   gotoItem = (maybeNextPhaseItem, maybeNextPhase) => {
+    // if we try to go backwards on a place that doesn't have items
+    if (!maybeNextPhaseItem && !maybeNextPhase) return;
     const {
       agenda,
       isFacilitating,
@@ -223,7 +225,7 @@ export default class MeetingContainer extends Component {
         const totalPhaseItems = localPhase === AGENDA_ITEMS ? agenda.length : members.length;
         nextPhase = maybeNextPhaseItem > totalPhaseItems ? phaseArray[localPhaseOrder + 1] : localPhase;
       } else {
-        nextPhase = (localPhase === FIRST_CALL && !agenda.length) ? LAST_CALL : phaseArray[localPhaseOrder + 1];
+        nextPhase = phaseArray[localPhaseOrder + 1];
       }
 
       // Never return to the FIRST_CALL after it's been visited
@@ -235,6 +237,11 @@ export default class MeetingContainer extends Component {
       } else {
         nextPhaseItem = hasPhaseItem(nextPhase) ? 1 : '';
       }
+    }
+
+    if (nextPhase === AGENDA_ITEMS && agenda.length === 0) {
+      nextPhaseItem = undefined;
+      nextPhase = LAST_CALL;
     }
     // nextPhase is undefined if we're at the summary
     if (nextPhase) {
@@ -259,7 +266,11 @@ export default class MeetingContainer extends Component {
     }
   };
 
-  gotoNext = () => this.gotoItem(this.props.localPhaseItem + 1);
+  gotoNext = () => {
+    const nextPhaseItem = this.props.localPhaseItem + 1;
+    const nextPhase = nextPhaseItem ? undefined : phaseArray[phaseOrder(this.props.params.localPhase) + 1];
+    return this.gotoItem(nextPhaseItem, nextPhase);
+  }
   gotoPrev = () => this.gotoItem(this.props.localPhaseItem - 1);
 
   render() {
