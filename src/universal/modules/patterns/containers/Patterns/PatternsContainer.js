@@ -1,6 +1,5 @@
 import React from 'react';
 import Helmet from 'react-helmet';
-import {head} from 'universal/utils/clientOptions';
 
 const style = {
   margin: '0 auto',
@@ -10,7 +9,7 @@ const style = {
 
 const PatternsContainer = () =>
   <div style={style}>
-    <Helmet title="Welcome to the Action Pattern Library" {...head} />
+    <Helmet title="Welcome to the Action Pattern Library" />
 
     <h1>Pattern Library</h1>
 

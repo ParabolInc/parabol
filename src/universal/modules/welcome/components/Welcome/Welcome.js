@@ -21,7 +21,7 @@ const Welcome = (props) => {
   const headingText = page === 1 ? 'Hello!' : 'Invite your team';
   return (
     <WelcomeLayout>
-      <Helmet title={title} {...head} />
+      <Helmet title={title} />
       <WelcomeHeader heading={<span>{headingText}</span>}/>
       <WelcomeContent>
         <ProgressDots
