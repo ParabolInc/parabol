@@ -41,10 +41,12 @@ query{
 const mutationHandlers = {
   summarizeMeeting(optimisticVariables, queryResponse, currentResponse) {
     if (queryResponse) {
-      // TODO do this in cashay
-      Object.assign(currentResponse.meeting, queryResponse, {createdAt: new Date(queryResponse.createdAt)});
+      // TODO figure out why I can't use Object.assign. I think Chrome@latest creates a new object!
+      currentResponse.meeting = queryResponse;
+      currentResponse.meeting.createdAt = new Date(queryResponse.createdAt);
+      return currentResponse;
     }
-    return currentResponse;
+    return undefined;
   }
 };
 
