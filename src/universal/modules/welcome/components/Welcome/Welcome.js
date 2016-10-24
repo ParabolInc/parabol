@@ -8,7 +8,6 @@ import {css} from 'aphrodite-local-styles/no-important';
 import {Link} from 'react-router';
 import FontAwesome from 'react-fontawesome';
 import Helmet from 'react-helmet';
-import {head} from 'universal/utils/clientOptions';
 
 import {
   Step1PreferredName,

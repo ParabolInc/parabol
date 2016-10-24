@@ -12,7 +12,7 @@ const REDUCER_NAME = 'marvin'; // use a different key than default for testing
 const reducers = combineReducers({[REDUCER_NAME]: auth});
 const store = createStore(reducers, {}, applyMiddleware(thunk));
 
-test.before(t => {
+test.before(() => {
   // stub cashay.query to return mocked data:
   const cashayQueryUserStub = () => {
     return ({
