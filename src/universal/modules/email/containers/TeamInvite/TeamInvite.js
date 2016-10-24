@@ -5,6 +5,7 @@ import EmptySpace from '../../components/EmptySpace/EmptySpace';
 import Body from '../../components/Body/Body';
 import Footer from '../../components/Footer/Footer';
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 
 const colorCool = {
   color: appTheme.palette.cool
@@ -37,12 +38,6 @@ const projectNameStyle = {
   fontSize: '24px'
 };
 
-const tableStyle = {
-  borderCollapse: 'collapse',
-  marginLeft: 'auto',
-  marginRight: 'auto'
-};
-
 const TeamInvite = props => {
   const {
     inviterAvatar,
@@ -57,7 +52,7 @@ const TeamInvite = props => {
   return (
     <Layout>
 
-      <table style={tableStyle} width="100%">
+      <table style={ui.emailTableBase} width="100%">
         <tbody>
           <tr>
             <td style={{backgroundColor: appTheme.palette.warm}}>
@@ -68,7 +63,7 @@ const TeamInvite = props => {
       </table>
 
       <Body>
-        <table style={tableStyle} align="center">
+        <table style={ui.emailTableBase} align="center">
           <tbody>
             <tr>
               <td width="64">
@@ -82,7 +77,7 @@ const TeamInvite = props => {
           </tbody>
         </table>
         <EmptySpace height={40} />
-        <b>Hi <a href={`mailto:${inviteeEmail}`} style={colorWarm}>{inviteeEmail}</a>!<br />
+        <b>Hi <a href={`mailto:${inviteeEmail}`} style={{...colorWarm, textDecoration: 'none'}}>{inviteeEmail}</a>!<br />
         {inviterName} has invited you to join a team on Action:</b>
         <EmptySpace height={40} />
         <span style={teamNameStyle}>{teamName}</span>

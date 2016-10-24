@@ -17,16 +17,10 @@ const Callout = (props) => {
     textAlign: 'center'
   };
 
-  const tableStyle = {
-    borderCollapse: 'collapse',
-    marginLeft: 'auto',
-    marginRight: 'auto'
-  };
-
   return (
     <div style={{width: '100%'}}>
       <EmptySpace height={props.vSpacing} />
-      <table align="center" style={tableStyle} width={props.width}>
+      <table align="center" style={ui.emailTableBase} width={props.width}>
         <tbody>
           <tr>
             <td align="center" style={cellStyle}>

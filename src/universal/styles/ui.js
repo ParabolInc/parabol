@@ -40,6 +40,11 @@ const ui = {
   // Email
   emailBackgroundColor: '#F9FAFB',
   emailFontFamily: '"Karla", "Helvetica Neue", serif',
+  emailTableBase: {
+    borderCollapse: 'collapse',
+    marginLeft: 'auto',
+    marginRight: 'auto'
+  },
 
   // Icons
   iconSize: '14px', // FontAwesome base
