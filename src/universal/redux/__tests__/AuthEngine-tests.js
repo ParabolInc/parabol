@@ -1,13 +1,37 @@
 import test from 'ava';
+import sinon from 'sinon';
 import {applyMiddleware, createStore, combineReducers} from 'redux';
 import thunk from 'redux-thunk';
 import auth from '../authDuck';
 import ReduxAuthEngine from '../AuthEngine';
 import {testToken, testTokenData} from './testTokens';
 
+import {cashay} from 'cashay';
+
 const REDUCER_NAME = 'marvin'; // use a different key than default for testing
 const reducers = combineReducers({[REDUCER_NAME]: auth});
 const store = createStore(reducers, {}, applyMiddleware(thunk));
+
+test.before(t => {
+  // stub cashay.query to return mocked data:
+  const cashayQueryUserStub = () => {
+    return ({
+      data: {
+        user: {
+          avatar: null,
+          email: null,
+          id: null,
+          name: null
+        }
+      }
+    });
+  };
+  sinon.stub(cashay, 'query', cashayQueryUserStub);
+});
+
+test.after.always('cleanup', () => {
+  cashay.query.restore();
+});
 
 test('constructor stores store', t => {
   const rae = new ReduxAuthEngine(store, REDUCER_NAME);

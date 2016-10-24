@@ -7,6 +7,8 @@ import {selectSegmentProfile} from './segmentActions';
 const SET_AUTH_TOKEN = '@@authToken/SET_AUTH_TOKEN';
 const REMOVE_AUTH_TOKEN = '@@authToken/REMOVE_AUTH_TOKEN';
 
+export const DEFAULT_AUTH_REDUCER_NAME = 'auth';
+
 const initialState = {
   token: null,
   obj: {
@@ -32,9 +34,9 @@ export default function reducer(state = initialState, action = {}) {
   }
 }
 
-export function setAuthToken(authToken, newProfile) {
+export function setAuthToken(authToken, newProfile, reducerName = DEFAULT_AUTH_REDUCER_NAME) {
   return (dispatch, getState) => {
-    const cachedProfile = selectSegmentProfile(getState());
+    const cachedProfile = selectSegmentProfile(getState(), reducerName);
     const profile = newProfile || cachedProfile;
 
     if (!authToken) {

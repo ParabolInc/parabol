@@ -1,5 +1,6 @@
 import {EventTypes} from 'redux-segment';
 import {cashay} from 'cashay';
+import {DEFAULT_AUTH_REDUCER_NAME} from './authDuck';
 import {getAuthQueryString, getAuthedOptions} from './getAuthedUser';
 
 /**
@@ -15,17 +16,16 @@ const defaultProfile = {
   name: null
 };
 
-export function selectSegmentProfile(state) {
-  if (!state.auth || !cashay.store) { return defaultProfile; }
-  const userId = state.auth.obj.sub;
+export function selectSegmentProfile(state, authReducer = DEFAULT_AUTH_REDUCER_NAME) {
+  const userId = state[authReducer].obj.sub;
+  if (!userId) { return defaultProfile; }
   const {user} = cashay.query(getAuthQueryString, getAuthedOptions(userId)).data;
-  if (!user) { return defaultProfile; }
 
   return ({
-    avatar: user.picture || null,
-    email: user.email || null,
-    id: user.id || null,
-    name: user.preferredName || null
+    avatar: user.picture,
+    email: user.email,
+    id: user.id,
+    name: user.preferredName,
   });
 }
 
