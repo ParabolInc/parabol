@@ -4,6 +4,7 @@ import InputField from 'universal/components/InputField/InputField';
 import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import {cashay} from 'cashay';
 import {nextPage, updateCompleted} from 'universal/modules/welcome/ducks/welcomeDuck';
+import {segmentEventTrack} from 'universal/redux/segmentActions';
 
 const reduxFormOptions = {
   form: 'welcomeWizard',
@@ -24,21 +25,25 @@ export default class Step1PreferredName extends Component {
 
   componentWillMount() {
     const {dispatch, user: {preferredName}} = this.props;
+    dispatch(segmentEventTrack('Welcome Step1 Reached'));
     return dispatch(initialize('welcomeWizard', {preferredName}));
   }
 
   onPreferredNameSubmit = (submissionData) => {
     const {dispatch, user} = this.props;
-    const {preferredName: newPrefferedName} = submissionData;
+    const {preferredName: newPreferredName} = submissionData;
     const options = {
       variables: {
         updatedUser: {
           id: user.id,
-          preferredName: newPrefferedName
+          preferredName: newPreferredName
         }
       }
     };
     cashay.mutate('updateUserProfile', options);
+    dispatch(segmentEventTrack('Welcome Step1 Completed',
+      { preferredName: newPreferredName }
+    ));
     dispatch(updateCompleted(1));
     dispatch(nextPage());
   };

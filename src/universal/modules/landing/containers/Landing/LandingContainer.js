@@ -2,7 +2,6 @@ import React, {Component, PropTypes} from 'react';
 import Landing from 'universal/modules/landing/components/Landing/Landing';
 import Helmet from 'react-helmet';
 import {showLock} from 'universal/components/Auth0ShowLock/Auth0ShowLock';
-import {head} from 'universal/utils/clientOptions';
 import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
 import {injectStyleOnce} from 'aphrodite-local-styles/lib/inject';
 import injectGlobals from 'universal/styles/hepha';
@@ -30,7 +29,7 @@ export default class LandingContainer extends Component {
     const showLockThunk = () => showLock(dispatch);
     return (
       <div>
-        <Helmet title="Welcome to Action" {...head} />
+        <Helmet title="Welcome to Action" />
         <Landing handleLoginClick={showLockThunk} {...this.props} />
       </div>
     );

@@ -3,7 +3,6 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import Helmet from 'react-helmet';
-import {head} from 'universal/utils/clientOptions';
 
 import NotificationBar from 'universal/components/NotificationBar/NotificationBar';
 
@@ -17,7 +16,7 @@ const DashLayout = (props) => {
   const hasNotification = activeMeetings.length > 0;
   return (
     <div className={css(styles.root)}>
-      <Helmet title={title} {...head} />
+      <Helmet title={title} />
       {hasNotification && <NotificationBar activeMeetings={activeMeetings} />}
       <div className={css(styles.main)}>
         {children}

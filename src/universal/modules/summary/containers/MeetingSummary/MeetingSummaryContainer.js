@@ -1,8 +1,9 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import MeetingSummary from 'universal/modules/summary/components/MeetingSummary/MeetingSummary';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
+import {segmentEventTrack} from 'universal/redux/segmentActions';
 
 const meetingSummaryQuery = `
 query{
@@ -18,7 +19,7 @@ query{
       membership {
         id
         picture
-        preferredName  
+        preferredName
       }
     }
     actions {
@@ -99,20 +100,47 @@ const mapStateToProps = (state, props) => {
   };
 };
 
-const MeetingSummaryContainer = (props) => {
-  return <MeetingSummary {...props} />;
-};
+@requireAuth
+@connect(mapStateToProps)
+export default class MeetingSummaryContainer extends Component {
+  static propTypes = {
+    actionCount: PropTypes.number,
+    agendaItemsCompleted: PropTypes.number,
+    dispatch: PropTypes.func,
+    meetingNumber: PropTypes.number,
+    projectCount: PropTypes.number,
+    teamId: PropTypes.string,
+    teamMembers: PropTypes.array,
+    teamName: PropTypes.string
+  };
+
+  componentWillReceiveProps(nextProps) {
+    const {dispatch, meetingNumber} = nextProps;
+    /*
+     * Track meeting completitions by idenity.
+     *
+     * N.B. it is ok if these are sent as dupes, i.e. when viewed from
+     * meeting history.
+     */
+    if (!this.props.meetingNumber && meetingNumber) {
+      dispatch(segmentEventTrack('Meeting Completed', { meetingNumber }));
+    }
+  }
+
+  render() {
+    const {meetingNumber, teamName} = this.props;
+    const title = `Action Meeting #${meetingNumber} Summary for ${teamName}`;
+    return <MeetingSummary {...this.props} title={title} />;
+  }
+}
 
 MeetingSummaryContainer.propTypes = {
   actionCount: PropTypes.number,
   agendaItemsCompleted: PropTypes.number,
+  dispatch: PropTypes.func,
   meetingNumber: PropTypes.number,
   projectCount: PropTypes.number,
   teamId: PropTypes.string,
   teamMembers: PropTypes.array,
   teamName: PropTypes.string
 };
-
-export default requireAuth(
-  connect(mapStateToProps)(MeetingSummaryContainer)
-);
