@@ -37,7 +37,7 @@ export default async function sendEmailPromise(to, template, props) {
   if (!emailFactory) {
     throw new Error(`Email template for ${template} does not exist!`);
   }
-  if (typeof to !== 'string') {
+  if (!to || typeof to !== 'string') {
     throw new Error('Expected `to` to be a string of comma-seperated emails');
   }
   const {subject, body, html: htmlWithoutImages} = emailFactory(props);

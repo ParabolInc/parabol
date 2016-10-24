@@ -5,7 +5,7 @@ import sendEmailPromise from 'server/email/sendEmail';
 
 import {
   GraphQLNonNull,
-  GraphQLID,
+  GraphQLID
 } from 'graphql';
 
 export default {
@@ -35,20 +35,22 @@ export default {
               })
           });
         });
-      const {invitees, teamId, summarySentAt} = meeting;
+      const {facilitator, invitees, teamId, summarySentAt} = meeting;
       // perform the query before the check because 99.9% of attempts will be honest & that will save us a query
       requireSUOrTeamMember(authToken, teamId);
-      if (!summarySentAt) {
+      const teamMemberId = `${authToken.sub}::${teamId}`;
+      if (facilitator === teamMemberId && !summarySentAt) {
         // send the summary email
         const userIds = invitees.map((doc) => doc.id.substr(0, doc.id.indexOf('::')));
         const emails = await r.table('User')
           .getAll(r.args(userIds))
           .map((user) => user('email'));
         const emailString = emails.join(', ');
-        if (!emailString) {
-          console.log('NULL STR', meeting, userIds, emails);
+        const emailSuccess = await sendEmailPromise(emailString, 'summaryEmail', {meeting});
+        if (emailSuccess) {
+          const now = new Date();
+          await r.table('Meeting').get(meetingId).update({summarySentAt: now})
         }
-        sendEmailPromise(emailString, 'summaryEmail', {meeting});
       }
       return meeting;
     }

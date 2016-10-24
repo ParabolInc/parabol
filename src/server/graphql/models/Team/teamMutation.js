@@ -264,6 +264,7 @@ export default {
               actions: res('meetingUpdates')('actions').default([]),
               agendaItemsCompleted: res('meetingUpdates')('agendaItemsCompleted').default(0),
               endedAt: now,
+              facilitator: `${authToken.sub}::${teamId}`,
               successExpression: makeSuccessExpression(),
               successStatement: makeSuccessStatement(),
               invitees: r.table('TeamMember')
