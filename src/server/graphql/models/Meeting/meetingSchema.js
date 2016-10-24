@@ -186,9 +186,6 @@ export const Meeting = new GraphQLObjectType({
     },
     invitees: {
       type: new GraphQLList(MeetingInvitee),
-      // async resolve({invitees, actions, projects}) {
-      //   return resolveInvitees(invitees, actions, projects);
-      // }
     },
     meetingNumber: {
       type: new GraphQLNonNull(GraphQLInt),

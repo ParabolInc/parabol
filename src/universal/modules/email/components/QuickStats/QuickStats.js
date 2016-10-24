@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import EmptySpace from '../EmptySpace/EmptySpace';
+import plural from 'universal/utils/plural';
 
 const QuickStats = (props) => {
   const {
@@ -64,19 +65,19 @@ const QuickStats = (props) => {
             <td style={cellStyles}>
               <div style={statStyles}>
                 <div style={statValue}>{agendaItems}</div>
-                <div style={statLabel}>Agenda Item{agendaItems !== 1 && 's'}</div>
+                <div style={statLabel}>Agenda {plural(agendaItems, 'Item')}</div>
               </div>
             </td>
             <td style={cellStyles}>
               <div style={statStyles}>
                 <div style={statValue}>{newProjects}</div>
-                <div style={statLabel}>New Project{newProjects !== 1 && 's'}</div>
+                <div style={statLabel}>New {plural(newProjects, 'Project')}</div>
               </div>
             </td>
             <td style={cellStyles}>
               <div style={statStyles}>
                 <div style={statValue}>{newActions}</div>
-                <div style={statLabel}>New Action{newActions !== 1 && 's'}</div>
+                <div style={statLabel}>New {plural(newActions, 'Action')}</div>
               </div>
             </td>
             <td style={cellStyles}>
@@ -104,14 +105,6 @@ QuickStats.propTypes = {
   newActions: PropTypes.number,
   teamMembers: PropTypes.number,
   teamMembersPresent: PropTypes.number
-};
-
-QuickStats.defaultProps = {
-  agendaItems: 10,
-  newProjects: 8,
-  newActions: 12,
-  teamMembers: 7,
-  teamMembersPresent: 6
 };
 
 export default QuickStats;
