@@ -18,3 +18,5 @@ test:
   post:
     - npm run lint
     - npm run test
+    - npm run build:server
+    - npm run build:client-min
