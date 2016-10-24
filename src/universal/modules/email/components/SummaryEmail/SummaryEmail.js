@@ -70,10 +70,10 @@ const makeBannerMessage = (referrer, url) => {
     return <span>All team members will receive this summary in their inbox.</span>;
   }
   if (referrer === 'email') {
-    return <span><a href={url} style={bannerLink}>View this in your web browser</a></span>
+    return <span><a href={url} style={bannerLink}>View this in your web browser</a></span>;
   }
   if (referrer === 'history') {
-    return <span><a href={url} style={bannerLink}>See all meeting summaries here</a></span>
+    return <span><a href={url} style={bannerLink}>See all meeting summaries here</a></span>;
   }
   return null;
 };
@@ -111,70 +111,15 @@ const SummaryEmail = (props) => {
     <Layout>
       <table width="100%">
         <tbody>
-        <tr>
-          <td
-            align="center"
-            style={{backgroundColor: appTheme.palette.warm}}
-          >
-            <EmptySpace height={8}/>
-            {bannerMessage &&
-            <div style={bannerMessageStyles}>
-              {bannerMessage}
-            </div>
-            }
-            <EmptySpace height={8}/>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-      <Body verticalGutter={0}>
-      <table align="center" width="100%">
-        <tbody>
           <tr>
-            <td align="center">
-              {/* Summary Header */}
-              <SummaryHeader createdAt={createdAt} referrer={referrer} teamDashUrl={`/team/${teamId}`} teamName={teamName}/>
-              {/* Message */}
-              {meetingNumber === 0 ?
-                <div>
-                  <div style={message}>
-                    <b style={greetingStyles}>{makeSuccessExpression()}!</b><br />
-                    {'Way to go on your first Action Meeting!'}<br />
-                    {'You are unlocking new superpowers.'}<br />
-                    <br />
-                    <b style={greetingStyles}>{'Make it a habit:'}</b><br />
-                    {'If you haven’t already, schedule a 30 minute meeting,'}<br />
-                    {'preferably recurring on Mondays or Tuesdays.'}<br />
-                    {'Include the following link to the meeting lobby'}<br />
-                    {'in your recurring calendar event:'}
-                    <EmptySpace height={8}/>
-                    <table align="center" width="80%">
-                      <tbody>
-                        <tr>
-                          <td align="center" style={meetingLinkBlock}>
-                            <a href={meetingLobbyLink} style={meetingLink}>
-                              {meetingLobbyLink}
-                            </a>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div> :
-                <div>
-                  {agendaItemsCompleted === 0 ?
-                    <div style={message}>
-                      <b style={greetingStyles}>{'Hey there!'}</b><br />
-                      {'It looks like there weren’t any agenda items.'}<br />
-                      {'Did our software give you trouble?'}<br />
-                      {'Let us know: '}
-                      <a href="mailto:love@parabol.co" style={linkStyles} title="Email us at: love@parabol.co">love@parabol.co</a>
-                    </div> :
-                    <div style={message}>
-                      <b style={greetingStyles}>{makeSuccessExpression()}!</b><br />
-                      {makeSuccessStatement()}
-                    </div>
-                  }
+            <td
+              align="center"
+              style={{backgroundColor: appTheme.palette.warm}}
+            >
+              <EmptySpace height={8}/>
+              {bannerMessage &&
+                <div style={bannerMessageStyles}>
+                  {bannerMessage}
                 </div>
               }
               <EmptySpace height={8}/>
@@ -182,44 +127,99 @@ const SummaryEmail = (props) => {
           </tr>
         </tbody>
       </table>
-      <table align="center" width="100%">
-        <tbody>
-          <tr>
-            <td align="center" style={{padding: '0 8px'}}>
-              <QuickStats
-                agendaItems={agendaItemsCompleted}
-                newProjects={projectCount}
-                newActions={actionCount}
-                teamMembers={memberCount}
-                teamMembersPresent={presentMemberCount}
-              />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      {membersWithOutcomes.map(member =>
-        <UserOutcomes
-          avatar={member.avatar}
-          name={member.name}
-          outcomes={member.outcomes}
-          present={member.present}
+      <Body verticalGutter={0}>
+        <table align="center" width="100%">
+          <tbody>
+            <tr>
+              <td align="center">
+                {/* Summary Header */}
+                <SummaryHeader createdAt={createdAt} referrer={referrer} teamDashUrl={`/team/${teamId}`} teamName={teamName}/>
+                {/* Message */}
+                {meetingNumber === 0 ?
+                  <div>
+                    <div style={message}>
+                      <b style={greetingStyles}>{makeSuccessExpression()}!</b><br />
+                      {'Way to go on your first Action Meeting!'}<br />
+                      {'You are unlocking new superpowers.'}<br />
+                      <br />
+                      <b style={greetingStyles}>{'Make it a habit:'}</b><br />
+                      {'If you haven’t already, schedule a 30 minute meeting,'}<br />
+                      {'preferably recurring on Mondays or Tuesdays.'}<br />
+                      {'Include the following link to the meeting lobby'}<br />
+                      {'in your recurring calendar event:'}
+                      <EmptySpace height={8}/>
+                      <table align="center" width="80%">
+                        <tbody>
+                          <tr>
+                            <td align="center" style={meetingLinkBlock}>
+                              <a href={meetingLobbyLink} style={meetingLink}>
+                                {meetingLobbyLink}
+                              </a>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div> :
+                  <div>
+                    {agendaItemsCompleted === 0 ?
+                      <div style={message}>
+                        <b style={greetingStyles}>{'Hey there!'}</b><br />
+                        {'It looks like there weren’t any agenda items.'}<br />
+                        {'Did our software give you trouble?'}<br />
+                        {'Let us know: '}
+                        <a href="mailto:love@parabol.co" style={linkStyles} title="Email us at: love@parabol.co">love@parabol.co</a>
+                      </div> :
+                      <div style={message}>
+                        <b style={greetingStyles}>{makeSuccessExpression()}!</b><br />
+                        {makeSuccessStatement()}
+                      </div>
+                    }
+                  </div>
+                }
+                <EmptySpace height={8}/>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table align="center" width="100%">
+          <tbody>
+            <tr>
+              <td align="center" style={{padding: '0 8px'}}>
+                <QuickStats
+                  agendaItems={agendaItemsCompleted}
+                  newProjects={projectCount}
+                  newActions={actionCount}
+                  teamMembers={memberCount}
+                  teamMembersPresent={presentMemberCount}
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        {membersWithOutcomes.map(member =>
+          <UserOutcomes
+            avatar={member.avatar}
+            name={member.name}
+            outcomes={member.outcomes}
+            present={member.present}
+          />
+        )}
+        {membersSansOutcomes.length &&
+          <UserNoNewOutcomes members={membersSansOutcomes}/>
+        }
+        <EmptySpace height={0}/>
+        <hr style={ruleStyle}/>
+        <EmptySpace height={48}/>
+        <ContactUs
+          fontSize={18}
+          hasLearningLink
+          lineHeight={1.5}
+          prompt="How’d your meeting go?"
+          tagline="We’re eager for your feedback!"
+          vSpacing={0}
         />
-      )}
-      {membersSansOutcomes.length &&
-      <UserNoNewOutcomes members={membersSansOutcomes}/>
-      }
-      <EmptySpace height={0}/>
-      <hr style={ruleStyle}/>
-      <EmptySpace height={48}/>
-      <ContactUs
-        fontSize={18}
-        hasLearningLink
-        lineHeight={1.5}
-        prompt="How’d your meeting go?"
-        tagline="We’re eager for your feedback!"
-        vSpacing={0}
-      />
-      <EmptySpace height={32}/>
+        <EmptySpace height={32}/>
       </Body>
       <Footer color={appTheme.palette.dark}/>
     </Layout>
@@ -227,12 +227,14 @@ const SummaryEmail = (props) => {
 };
 
 SummaryEmail.propTypes = {
+  meeting: PropTypes.object.isRequired,
   meetingLobbyLink: PropTypes.string,
   referrer: PropTypes.oneOf([
     'meeting',
     'email',
     'history'
-  ]),
+  ]).isRequired,
+  referrerUrl: PropTypes.string,
   actionCount: PropTypes.number,
   projectCount: PropTypes.number
 };

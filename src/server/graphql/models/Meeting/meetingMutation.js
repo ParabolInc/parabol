@@ -21,35 +21,33 @@ export default {
     async resolve(source, {meetingId}, {authToken}) {
       const r = getRethink();
       const meeting = await r.table('Meeting').get(meetingId).default({})
-        .do((meeting) => {
-          return meeting.merge({
-            invitees: meeting('invitees').default([])
+        .do((res) => {
+          return res.merge({
+            invitees: res('invitees').default([])
               .map((invitee) => {
                 const teamMember = r.table('TeamMember').get(invitee('id'));
                 return invitee.merge({
                   picture: teamMember('picture'),
                   preferredName: teamMember('preferredName'),
-                  actions: meeting('actions').filter({teamMemberId: invitee('id')}),
-                  projects: meeting('projects').filter({teamMemberId: invitee('id')})
-                })
+                  actions: res('actions').filter({teamMemberId: invitee('id')}),
+                  projects: res('projects').filter({teamMemberId: invitee('id')})
+                });
               })
-          })
+          });
         });
       const {invitees, teamId, summarySentAt} = meeting;
       // perform the query before the check because 99.9% of attempts will be honest & that will save us a query
       requireSUOrTeamMember(authToken, teamId);
-      // if (!summarySentAt) {
+      if (!summarySentAt) {
         // send the summary email
         const userIds = invitees.map((doc) => doc.id.substr(0, doc.id.indexOf('::')));
         const emails = await r.table('User')
           .getAll(r.args(userIds))
           .map((user) => user('email'));
-        // const emailString = emails.join(', ');
-        const emailString = 'terry@parabol.co, terry_acker@yahoo.com';
-        console.log('emailString', emailString);
+        const emailString = emails.join(', ');
         sendEmailPromise(emailString, 'summaryEmail', {meeting});
-      // }
+      }
       return meeting;
     }
   }
-}
+};

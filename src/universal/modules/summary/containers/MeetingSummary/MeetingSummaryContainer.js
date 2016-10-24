@@ -76,13 +76,13 @@ export default class MeetingSummaryContainer extends Component {
   componentWillMount() {
     const {params: {meetingId}} = this.props;
     const variables = {meetingId};
-    cashay.mutate('summarizeMeeting', {variables})
+    cashay.mutate('summarizeMeeting', {variables});
   }
 
   render() {
     const {meeting} = this.props;
     if (!meeting.createdAt) {
-      return <LoadingView/>
+      return <LoadingView/>;
     }
     return (
       <SummaryEmail
@@ -91,4 +91,4 @@ export default class MeetingSummaryContainer extends Component {
       />
     );
   }
-};
+}

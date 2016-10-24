@@ -23,8 +23,7 @@ import {
   UPDATES,
   FIRST_CALL,
   AGENDA_ITEMS,
-  LAST_CALL,
-  SUMMARY
+  LAST_CALL
 } from 'universal/utils/constants';
 import MeetingAgendaItems from 'universal/modules/meeting/components/MeetingAgendaItems/MeetingAgendaItems';
 import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';

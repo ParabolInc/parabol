@@ -68,15 +68,20 @@ const SummaryHeader = (props) => {
 
 SummaryHeader.propTypes = {
   children: PropTypes.any,
+  createdAt: PropTypes.instanceOf(Date).isRequired,
   fontSize: PropTypes.number,
   fontWeight: PropTypes.oneOf([
     400,
     700
   ]),
   lineHeight: PropTypes.number,
-  meetingDate: PropTypes.string,
   padding: PropTypes.number,
-  teamDashLink: PropTypes.string,
+  referrer: PropTypes.oneOf([
+    'meeting',
+    'email',
+    'history'
+  ]).isRequired,
+  teamDashUrl: PropTypes.string.isRequired,
   teamName: PropTypes.string,
   vSpacing: PropTypes.number,
   width: PropTypes.string

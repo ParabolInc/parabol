@@ -116,10 +116,10 @@ const UserNoNewOutcomes = (props) => {
             <td align="center">
               <table align="center">
                 <tbody>
-                  {memberCells.map((row,idx) =>
+                  {memberCells.map((row, idx) =>
                     <tr key={`memberCell${idx}`}>
-                    {makeMemberCells(row)}
-                  </tr>
+                      {makeMemberCells(row)}
+                    </tr>
                 )}
                 </tbody>
               </table>
