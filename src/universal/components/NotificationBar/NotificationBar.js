@@ -62,7 +62,8 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.s4,
     lineHeight: '1.375rem',
     padding: '.625rem 1rem',
-    textAlign: 'center'
+    textAlign: 'center',
+    width: '100%'
   },
 
   inlineBlock: {
@@ -87,7 +88,8 @@ const styleThunk = () => ({
   },
 
   message: {
-    fontWeight: 700
+    fontWeight: 700,
+    paddingLeft: '1rem'
   }
 });
 

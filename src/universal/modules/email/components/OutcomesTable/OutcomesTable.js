@@ -34,7 +34,7 @@ const makeOutcomeCards = (arr) => {
 const OutcomesTable = (props) => {
   const outcomeRows = getOutcomeRows(props.outcomes);
   return (
-    <table align="center">
+    <table style={{textAlign: 'center'}}>
       {outcomeRows.map((row,idx) =>
         <tr key={`outcomeRow${idx}`}>
           {makeOutcomeCards(row)}

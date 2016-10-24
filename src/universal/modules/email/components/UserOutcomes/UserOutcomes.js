@@ -9,7 +9,8 @@ const UserOutcomes = (props) => {
   const {member} = props;
   const {actions, projects, picture, preferredName, present} = member;
   const cardsCell = {
-    padding: '8px'
+    padding: '8px',
+    textAlign: 'center'
   };
 
   const textCenter = {
@@ -55,10 +56,14 @@ const UserOutcomes = (props) => {
     padding: '0 0 8px'
   };
 
+  const centerStyle = {
+    textAlign: 'center'
+  };
+
   const presentLabel = present ? 'Present' : 'Absent';
 
   return (
-    <table align="center" width="100%">
+    <table style={centerStyle} width="100%">
       <tbody>
       <tr>
         <td style={topBorderStyle}>
@@ -87,7 +92,7 @@ const UserOutcomes = (props) => {
         </td>
       </tr>
       <tr>
-        <td align="center" style={cardsCell}>
+        <td style={cardsCell}>
           <OutcomesTable outcomes={projects.concat(actions)}/>
           <EmptySpace height={24}/>
         </td>

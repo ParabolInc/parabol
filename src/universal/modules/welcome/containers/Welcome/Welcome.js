@@ -24,7 +24,13 @@ const WelcomeContainer = (props) => {
       dispatch(goToPage(dot));
     }
   };
-  return <Welcome {...props} progressDotClickFactory={progressDotClickFactory}/>;
+  return (
+    <Welcome
+      {...props}
+      progressDotClickFactory={progressDotClickFactory}
+      title="Welcome"
+    />
+  );
 };
 
 WelcomeContainer.propTypes = {

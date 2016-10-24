@@ -1,39 +1,48 @@
 import React, {Component, PropTypes} from 'react';
+import {connect} from 'react-redux';
 import Action from 'universal/components/Action/Action';
 import {injectStyleOnce} from 'aphrodite-local-styles/lib/inject';
 import injectGlobals from 'universal/styles/hepha';
 import globalStyles from 'universal/styles/theme/globalStyles';
+import {segmentEventPage} from 'universal/redux/segmentActions';
 
-const updateAnalyticsPage = (lastPage, nextPage) => {
-  if (typeof window !== 'undefined' &&
-    typeof window.analytics !== 'undefined') {
-    window.analytics.page('', nextPage, {
-      title: document && document.title || '',
-      referrer: lastPage,
-      path: nextPage
-    });
-  }
+const updateAnalyticsPage = (dispatch, lastPage, nextPage) => {
+  if (typeof document === 'undefined') return;
+  const name = document && document.title || '';
+  const properties = {
+    title: name,
+    referrer: lastPage,
+    path: nextPage
+  };
+  dispatch(segmentEventPage(name, null, properties));
 };
 
+@connect()
 export default class ActionContainer extends Component {
   static propTypes = {
     children: PropTypes.element.isRequired,
+    dispatch: PropTypes.func,
     location: PropTypes.shape({
       pathname: PropTypes.string.isRequired
     }).isRequired
   };
 
   componentWillMount() {
-    const {location: {pathname: nextPage}} = this.props;
-    updateAnalyticsPage('', nextPage);
+    const {dispatch, location: {pathname: nextPage}} = this.props;
+    updateAnalyticsPage(dispatch, '', nextPage);
     injectGlobals(injectStyleOnce, globalStyles);
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {location: {pathname: lastPage}} = this.props;
-    const {location: {pathname: nextPage}} = nextProps;
+  componentDidUpdate(prevProps) {
+    const {location: {pathname: lastPage}} = prevProps;
+    const {dispatch, location: {pathname: nextPage}} = this.props;
     if (lastPage !== nextPage) {
-      updateAnalyticsPage(lastPage, nextPage);
+      /*
+       * Perform page update after component renders. That way,
+       * document.title will be current after any child <Helmet />
+       * element(s) are rendered.
+       */
+      updateAnalyticsPage(dispatch, lastPage, nextPage);
     }
   }
 

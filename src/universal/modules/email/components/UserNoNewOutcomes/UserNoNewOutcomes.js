@@ -20,6 +20,10 @@ const UserNoNewOutcomes = (props) => {
     borderRadius: '100%'
   };
 
+  const centerStyle = {
+    textAlign: 'center'
+  };
+
   const topBorderStyle = {
     ...textCenter,
     borderTop: `1px solid ${ui.cardBorderColor}`
@@ -104,7 +108,7 @@ const UserNoNewOutcomes = (props) => {
   };
 
   return (
-    <table align="center" width="100%">
+    <table style={centerStyle} width="100%">
       <tbody>
         <tr>
           <td style={topBorderStyle}>
@@ -113,8 +117,8 @@ const UserNoNewOutcomes = (props) => {
         </tr>
         {members.length &&
           <tr>
-            <td align="center">
-              <table align="center">
+            <td style={centerStyle}>
+              <table style={centerStyle}>
                 <tbody>
                   {memberCells.map((row, idx) =>
                     <tr key={`memberCell${idx}`}>
