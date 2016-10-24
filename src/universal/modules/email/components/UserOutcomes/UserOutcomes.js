@@ -56,47 +56,43 @@ const UserOutcomes = (props) => {
     padding: '0 0 8px'
   };
 
-  const centerStyle = {
-    textAlign: 'center'
-  };
-
   const presentLabel = present ? 'Present' : 'Absent';
 
   return (
-    <table style={centerStyle} width="100%">
+    <table align="center" width="100%">
       <tbody>
-      <tr>
-        <td style={topBorderStyle}>
-          <EmptySpace height={24}/>
-          <img height="80" src={picture} style={avatarStyles} width="80"/>
-          <div style={nameStyle}>{preferredName}</div>
-          <div style={presentLabelStyles}>{presentLabel}</div>
-        </td>
-      </tr>
-      <tr>
-        <td style={userStats}>
-          {/* For some reason HTML prints 0 unless using length > 0 */}
-          {projects.length > 0 &&
-            <span style={labelStyle}>
-              {`${projects.length} New ${plural(projects.length, 'Project')}`}
-            </span>
-          }
-          {projects.length > 0 && actions.length > 0 &&
-            <span style={{...labelStyle, padding: '0 8px'}}>{'•'}</span>
-          }
-          {actions.length > 0 &&
-            <span style={labelStyle}>
-              {`${actions.length} New ${plural(actions.length, 'Action')}`}
-            </span>
-          }
-        </td>
-      </tr>
-      <tr>
-        <td style={cardsCell}>
-          <OutcomesTable outcomes={projects.concat(actions)}/>
-          <EmptySpace height={24}/>
-        </td>
-      </tr>
+        <tr>
+          <td style={topBorderStyle}>
+            <EmptySpace height={24}/>
+            <img height="80" src={picture} style={avatarStyles} width="80"/>
+            <div style={nameStyle}>{preferredName}</div>
+            <div style={presentLabelStyles}>{presentLabel}</div>
+          </td>
+        </tr>
+        <tr>
+          <td style={userStats}>
+            {/* For some reason HTML prints 0 unless using length > 0 */}
+            {projects.length > 0 &&
+              <span style={labelStyle}>
+                {`${projects.length} New ${plural(projects.length, 'Project')}`}
+              </span>
+            }
+            {projects.length > 0 && actions.length > 0 &&
+              <span style={{...labelStyle, padding: '0 8px'}}>{'•'}</span>
+            }
+            {actions.length > 0 &&
+              <span style={labelStyle}>
+                {`${actions.length} New ${plural(actions.length, 'Action')}`}
+              </span>
+            }
+          </td>
+        </tr>
+        <tr>
+          <td align="center" style={cardsCell}>
+            <OutcomesTable outcomes={projects.concat(actions)}/>
+            <EmptySpace height={24}/>
+          </td>
+        </tr>
       </tbody>
     </table>
   );

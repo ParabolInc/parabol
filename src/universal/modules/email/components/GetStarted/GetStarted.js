@@ -20,11 +20,11 @@ const GetStarted = () => {
   };
 
   return (
-    <div>
+    <div style={{textAlign: 'center'}}>
       <img
-        style={imageStyle}
-        src="/static/images/email/email-icon-star@2x.png"
         height="48"
+        src="/static/images/email/email-icon-star@2x.png"
+        style={imageStyle}
         width="48"
       />
       <span style={headingStyle}>Getting Started</span><br />

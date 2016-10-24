@@ -37,7 +37,7 @@ const WelcomeEmail = props => {
       <table width="100%">
         <tbody>
           <tr>
-            <td style={{backgroundColor: appTheme.palette.warm, textAlign: 'center'}}>
+            <td align="center" style={{backgroundColor: appTheme.palette.warm}}>
               <img
                 style={imageStyle}
                 src="/static/images/email/action-email-header@2x.png"

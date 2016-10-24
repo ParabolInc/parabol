@@ -23,7 +23,7 @@ const Callout = (props) => {
       <table width={props.width}>
         <tbody>
           <tr>
-            <td style={cellStyle}>
+            <td align="center" style={cellStyle}>
               {props.children}
             </td>
           </tr>

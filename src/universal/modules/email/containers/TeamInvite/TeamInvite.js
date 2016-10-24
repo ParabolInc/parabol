@@ -37,10 +37,6 @@ const projectNameStyle = {
   fontSize: '24px'
 };
 
-const centerStyle = {
-  textAlign: 'center'
-};
-
 const TeamInvite = props => {
   const {
     inviterAvatar,
@@ -58,7 +54,7 @@ const TeamInvite = props => {
       <table width="100%">
         <tbody>
           <tr>
-            <td style={{...centerStyle, backgroundColor: appTheme.palette.warm}}>
+            <td style={{backgroundColor: appTheme.palette.warm}}>
               <EmptySpace height={16} />
             </td>
           </tr>
@@ -66,7 +62,7 @@ const TeamInvite = props => {
       </table>
 
       <Body>
-        <table style={centerStyle}>
+        <table align="center">
           <tbody>
             <tr>
               <td width="64">

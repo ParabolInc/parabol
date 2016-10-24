@@ -17,7 +17,7 @@ const Body = (props) => {
     <table width="100%">
       <tbody>
         <tr>
-          <td style={cellStyle}>
+          <td align="center" style={cellStyle}>
             <EmptySpace height={props.verticalGutter} />
               {props.children}
             <EmptySpace height={props.verticalGutter} />
