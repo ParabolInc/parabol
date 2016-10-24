@@ -2,10 +2,11 @@ import React, {PropTypes} from 'react';
 import appTheme from 'universal/styles/theme/appTheme';
 
 const Button = (props) => {
-  const style = {
+  const cellStyle = {
     backgroundColor: `${props.backgroundColor}`,
     color: '#FFFFFF',
     fontWeight: 'bold',
+    textAlign: 'center',
     textTransform: 'uppercase'
   };
 
@@ -22,15 +23,10 @@ const Button = (props) => {
   };
 
   return (
-    <table
-      width={`${props.width}px`}
-    >
+    <table width={`${props.width}px`}>
       <tbody>
         <tr>
-          <td
-            align="center"
-            style={style}
-          >
+          <td style={cellStyle}>
             <a href={props.url} style={linkStyle}>
               {props.children}
             </a>

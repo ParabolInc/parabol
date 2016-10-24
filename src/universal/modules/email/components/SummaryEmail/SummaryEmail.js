@@ -41,6 +41,11 @@ const greetingStyles = {
   lineHeight: '40px',
 };
 
+const bannerStyle = {
+  backgroundColor: appTheme.palette.warm,
+  textAlign: 'center'
+};
+
 const bannerMessageStyles = {
   color: '#ffffff',
   fontFamily: ui.emailFontFamily,
@@ -63,6 +68,10 @@ const bannerLink = {
   color: '#FFFFFF',
   cursor: 'pointer',
   textDecoration: 'underline'
+};
+
+const centerStyle = {
+  textAlign: 'center'
 };
 
 const makeBannerMessage = (referrer, url) => {
@@ -112,10 +121,7 @@ const SummaryEmail = (props) => {
       <table width="100%">
         <tbody>
           <tr>
-            <td
-              align="center"
-              style={{backgroundColor: appTheme.palette.warm}}
-            >
+            <td style={bannerStyle}>
               <EmptySpace height={8}/>
               {bannerMessage &&
                 <div style={bannerMessageStyles}>
@@ -128,10 +134,10 @@ const SummaryEmail = (props) => {
         </tbody>
       </table>
       <Body verticalGutter={0}>
-        <table align="center" width="100%">
+        <table style={centerStyle} width="100%">
           <tbody>
             <tr>
-              <td align="center">
+              <td style={centerStyle}>
                 {/* Summary Header */}
                 <SummaryHeader createdAt={createdAt} referrer={referrer} teamDashUrl={`/team/${teamId}`} teamName={teamName}/>
                 {/* Message */}
@@ -148,10 +154,10 @@ const SummaryEmail = (props) => {
                       {'Include the following link to the meeting lobby'}<br />
                       {'in your recurring calendar event:'}
                       <EmptySpace height={8}/>
-                      <table align="center" width="80%">
+                      <table style={centerStyle} width="80%">
                         <tbody>
                           <tr>
-                            <td align="center" style={meetingLinkBlock}>
+                            <td style={centerStyle} style={meetingLinkBlock}>
                               <a href={meetingLobbyLink} style={meetingLink}>
                                 {meetingLobbyLink}
                               </a>
@@ -182,10 +188,10 @@ const SummaryEmail = (props) => {
             </tr>
           </tbody>
         </table>
-        <table align="center" width="100%">
+        <table style={centerStyle} width="100%">
           <tbody>
             <tr>
-              <td align="center" style={{padding: '0 8px'}}>
+              <td style={centerStyle} style={{padding: '0 8px'}}>
                 <QuickStats
                   agendaItems={agendaItemsCompleted}
                   newProjects={projectCount}

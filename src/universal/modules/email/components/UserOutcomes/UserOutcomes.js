@@ -7,7 +7,8 @@ import ui from 'universal/styles/ui';
 const UserOutcomes = (props) => {
   const {avatar, name, outcomes, present} = props;
   const cardsCell = {
-    padding: '8px'
+    padding: '8px',
+    textAlign: 'center'
   };
 
   const textCenter = {
@@ -53,6 +54,10 @@ const UserOutcomes = (props) => {
     padding: '0 0 8px'
   };
 
+  const centerStyle = {
+    textAlign: 'center'
+  };
+
   const presentLabel = present ? 'Present' : 'Absent';
 
   const totalActions = [];
@@ -68,7 +73,7 @@ const UserOutcomes = (props) => {
   });
 
   return (
-    <table align="center" width="100%">
+    <table style={centerStyle} width="100%">
       <tbody>
         <tr>
           <td style={topBorderStyle}>
@@ -99,7 +104,7 @@ const UserOutcomes = (props) => {
           </tr>
         }
         <tr>
-          <td align="center" style={cardsCell}>
+          <td style={cardsCell}>
             <OutcomesTable outcomes={outcomes} />
             <EmptySpace height={24} />
           </td>
