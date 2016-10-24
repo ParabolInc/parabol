@@ -4,7 +4,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
 const Callout = (props) => {
-  const textStyle = {
+  const cellStyle = {
     backgroundColor: '#fff',
     border: '2px solid #D2D3DC',
     borderRadius: '8px',
@@ -14,6 +14,7 @@ const Callout = (props) => {
     fontWeight: props.fontWeight,
     lineHeight: `${props.lineHeight}`,
     padding: `${props.padding}px`,
+    textAlign: 'center'
   };
 
   return (
@@ -22,10 +23,7 @@ const Callout = (props) => {
       <table width={props.width}>
         <tbody>
           <tr>
-            <td
-              align="center"
-              style={textStyle}
-            >
+            <td style={cellStyle}>
               {props.children}
             </td>
           </tr>

@@ -36,7 +36,7 @@ const OutcomesTable = (props) => {
   };
 
   return (
-    <table align="center">
+    <table style={{textAlign: 'center'}}>
       {outcomeRows.map(row =>
         <tr>
           {makeOutcomeCards(row)}
