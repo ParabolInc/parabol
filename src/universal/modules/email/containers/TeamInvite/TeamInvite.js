@@ -5,6 +5,7 @@ import EmptySpace from '../../components/EmptySpace/EmptySpace';
 import Body from '../../components/Body/Body';
 import Footer from '../../components/Footer/Footer';
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 
 const colorCool = {
   color: appTheme.palette.cool
@@ -51,13 +52,10 @@ const TeamInvite = props => {
   return (
     <Layout>
 
-      <table width="100%">
+      <table style={ui.emailTableBase} width="100%">
         <tbody>
           <tr>
-            <td
-              align="center"
-              style={{backgroundColor: appTheme.palette.warm}}
-            >
+            <td style={{backgroundColor: appTheme.palette.warm}}>
               <EmptySpace height={16} />
             </td>
           </tr>
@@ -65,7 +63,7 @@ const TeamInvite = props => {
       </table>
 
       <Body>
-        <table align="center">
+        <table style={ui.emailTableBase} align="center">
           <tbody>
             <tr>
               <td width="64">
@@ -79,12 +77,12 @@ const TeamInvite = props => {
           </tbody>
         </table>
         <EmptySpace height={40} />
-        <b>Hi <a href={`mailto:${inviteeEmail}`} style={colorWarm}>{inviteeEmail}</a>!<br />
+        <b>Hi <a href={`mailto:${inviteeEmail}`} style={{...colorWarm, textDecoration: 'none'}}>{inviteeEmail}</a>!<br />
         {inviterName} has invited you to join a team on Action:</b>
         <EmptySpace height={40} />
         <span style={teamNameStyle}>{teamName}</span>
         <EmptySpace height={40} />
-        <a href="https://action-staging.parabol.co/" style={boldLinkStyle}>Action</a>
+        <a href="https://action.parabol.co/" style={boldLinkStyle}>Action</a>
         &nbsp;is a place where you and your team <br />will develop your <b><i>weekly rhythm</i></b>.<br />
         <EmptySpace height={40} />
         {firstProject &&

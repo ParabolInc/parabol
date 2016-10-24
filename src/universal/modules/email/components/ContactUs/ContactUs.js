@@ -4,40 +4,53 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
 const ContactUs = (props) => {
-  const textStyle = {
+  const cellStyle = {
     color: appTheme.palette.dark,
     fontFamily: ui.emailFontFamily,
     fontSize: `${props.fontSize}px`,
-    lineHeight: `${props.lineHeight}`
+    lineHeight: `${props.lineHeight}`,
+    textAlign: 'center'
   };
 
-  const boldStyle = {
+  const headingStyle = {
     color: appTheme.palette.cool,
+    fontSize: `${props.fontSize * 1.5}px`,
     fontWeight: 700
   };
 
-  const emailStyle = {
+  const linkStyle = {
     color: appTheme.palette.warm,
-    fontWeight: 700
+    fontWeight: 700,
+    textDecoration: 'none'
   };
 
   return (
     <table width="100%">
       <tbody>
         <tr>
-          <td
-            align="center"
-            style={textStyle}
-          >
+          <td style={cellStyle}>
             <EmptySpace height={props.vSpacing} />
-            <span style={boldStyle}>
-              Any feedback or questions?
+            <span style={headingStyle}>
+              {props.prompt}
             </span><br />
-            We want to hear from you!<br />
+            {props.tagline}<br />
             Email us:&nbsp;
-            <a href="mailto:love@parabol.co" style={emailStyle} title="Email us: love@parabol.co">
+            <a href="mailto:love@parabol.co" style={linkStyle} title="Email us: love@parabol.co">
               love@parabol.co
             </a>
+            {props.hasLearningLink &&
+              <span>
+                <br />
+                <a
+                  href="https://focus.parabol.co/how-to-navigate-uncertainty-fc0dfaaf3830"
+                  style={linkStyle}
+                  target="_blank"
+                  title="How to Navigate Uncertainty using the Action Rhythm"
+                >
+                  Learn More
+                </a> about the Action Meeting Process.
+              </span>
+            }
             <EmptySpace height={props.vSpacing} />
           </td>
         </tr>
@@ -48,13 +61,19 @@ const ContactUs = (props) => {
 
 ContactUs.propTypes = {
   fontSize: PropTypes.number,
+  hasLearningLink: PropTypes.bool,
   lineHeight: PropTypes.number,
+  prompt: PropTypes.string,
+  tagline: PropTypes.string,
   vSpacing: PropTypes.number
 };
 
 ContactUs.defaultProps = {
   fontSize: 16,
+  hasLearningLink: false,
   lineHeight: 1.25,
+  prompt: 'Any feedback or questions?',
+  tagline: 'We want to hear from you!',
   vSpacing: 32
 };
 

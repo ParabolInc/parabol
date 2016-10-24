@@ -1,11 +1,14 @@
 import React, {PropTypes} from 'react';
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 
 const Button = (props) => {
-  const style = {
+  const cellStyle = {
     backgroundColor: `${props.backgroundColor}`,
     color: '#FFFFFF',
     fontWeight: 'bold',
+    padding: 0,
+    textAlign: 'center',
     textTransform: 'uppercase'
   };
 
@@ -22,15 +25,10 @@ const Button = (props) => {
   };
 
   return (
-    <table
-      width={`${props.width}px`}
-    >
+    <table style={ui.emailTableBase} width={`${props.width}px`}>
       <tbody>
         <tr>
-          <td
-            align="center"
-            style={style}
-          >
+          <td align="center" style={cellStyle}>
             <a href={props.url} style={linkStyle}>
               {props.children}
             </a>
