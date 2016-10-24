@@ -1,21 +1,10 @@
 import test from 'ava';
 import createEmbeddedImages from '../createEmbeddedImages';
 
-test('returns identity if no html key', t => {
-  const inputObj = { text: 'hello', to: 'mom@mom.com' };
-  const result = createEmbeddedImages(inputObj);
-
-  t.deepEqual(inputObj, result);
-});
-
-test('preserves keys', t => {
-  t.plan(3);
-
-  const result = createEmbeddedImages({html: '<html/>', other: 42});
-
-  t.true('html' in result);
-  t.true('other' in result);
-  t.is(result.other, 42);
+test('throws if no html is provided', t => {
+  t.throws(() => {
+    return createEmbeddedImages();
+  });
 });
 
 const HTML_DOC = `
@@ -36,7 +25,7 @@ const HTML_DOC = `
 test('returns html with embedded attachments', t => {
   t.plan(8);
 
-  const result = createEmbeddedImages({html: HTML_DOC});
+  const result = createEmbeddedImages(HTML_DOC);
 
   t.true('html' in result);
   t.true('attachments' in result);
@@ -70,7 +59,7 @@ const HTML_DOC_ONE_IMG_NOT_EXIST = `
 test('omits non-existing files ', t => {
   t.plan(3);
 
-  const result = createEmbeddedImages({html: HTML_DOC_ONE_IMG_NOT_EXIST});
+  const result = createEmbeddedImages(HTML_DOC_ONE_IMG_NOT_EXIST);
 
   t.true('html' in result);
   t.true('attachments' in result);
@@ -95,7 +84,7 @@ const HTML_DOC_EXTERNAL_ASSETS = `
 test('omits external assets', t => {
   t.plan(3);
 
-  const result = createEmbeddedImages({html: HTML_DOC_EXTERNAL_ASSETS});
+  const result = createEmbeddedImages(HTML_DOC_EXTERNAL_ASSETS);
 
   t.true('html' in result);
   t.true('attachments' in result);
