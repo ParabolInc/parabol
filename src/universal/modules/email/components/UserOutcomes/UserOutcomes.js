@@ -3,9 +3,11 @@ import EmptySpace from '../../components/EmptySpace/EmptySpace';
 import OutcomesTable from '../../components/OutcomesTable/OutcomesTable';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import plural from 'universal/utils/plural';
 
 const UserOutcomes = (props) => {
-  const {avatar, name, outcomes, present} = props;
+  const {member} = props;
+  const {actions, projects, picture, preferredName, present} = member;
   const cardsCell = {
     padding: '8px'
   };
@@ -55,65 +57,48 @@ const UserOutcomes = (props) => {
 
   const presentLabel = present ? 'Present' : 'Absent';
 
-  const totalActions = [];
-  const totalProjects = [];
-
-  outcomes.map(outcome => {
-    if (outcome.type === 'action') {
-      totalActions.push(outcome);
-    } else {
-      totalProjects.push(outcome);
-    }
-    return 'hola';
-  });
-
   return (
     <table align="center" width="100%">
       <tbody>
-        <tr>
-          <td style={topBorderStyle}>
-            <EmptySpace height={24} />
-            <img height="80" src={avatar} style={avatarStyles} width="80" />
-            <div style={nameStyle}>{name}</div>
-            <div style={presentLabelStyles}>{presentLabel}</div>
-          </td>
-        </tr>
-        {outcomes.length &&
-          <tr>
-            <td style={userStats}>
-              {/* For some reason HTML prints 0 unless using length > 0 */}
-              {totalProjects.length > 0 &&
-                <span style={labelStyle}>
-                {totalProjects.length} New Project{totalProjects.length > 1 && 's'}
-                </span>
-              }
-              {totalProjects.length > 0 && totalActions.length > 0 &&
-                <span style={{...labelStyle, padding: '0 8px'}}>{'•'}</span>
-              }
-              {totalActions.length > 0 &&
-                <span style={labelStyle}>
-                  {totalActions.length} New Action{totalActions.length > 1 && 's'}
-                </span>
-              }
-            </td>
-          </tr>
-        }
-        <tr>
-          <td align="center" style={cardsCell}>
-            <OutcomesTable outcomes={outcomes} />
-            <EmptySpace height={24} />
-          </td>
-        </tr>
+      <tr>
+        <td style={topBorderStyle}>
+          <EmptySpace height={24}/>
+          <img height="80" src={picture} style={avatarStyles} width="80"/>
+          <div style={nameStyle}>{preferredName}</div>
+          <div style={presentLabelStyles}>{presentLabel}</div>
+        </td>
+      </tr>
+      <tr>
+        <td style={userStats}>
+          {/* For some reason HTML prints 0 unless using length > 0 */}
+          {projects.length > 0 &&
+            <span style={labelStyle}>
+              {`${projects.length} New ${plural(projects.length, 'Project')}`}
+            </span>
+          }
+          {projects.length > 0 && actions.length > 0 &&
+            <span style={{...labelStyle, padding: '0 8px'}}>{'•'}</span>
+          }
+          {actions.length > 0 &&
+            <span style={labelStyle}>
+              {`${actions.length} New ${plural(actions.length, 'Action')}`}
+            </span>
+          }
+        </td>
+      </tr>
+      <tr>
+        <td align="center" style={cardsCell}>
+          <OutcomesTable outcomes={projects.concat(actions)}/>
+          <EmptySpace height={24}/>
+        </td>
+      </tr>
       </tbody>
     </table>
   );
 };
 
 UserOutcomes.propTypes = {
-  avatar: PropTypes.string,
-  name: PropTypes.string,
-  outcomes: PropTypes.array,
-  present: PropTypes.bool
+  member: PropTypes.object.isRequired
 };
 
 export default UserOutcomes;

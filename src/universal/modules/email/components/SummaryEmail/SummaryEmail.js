@@ -198,12 +198,7 @@ const SummaryEmail = (props) => {
           </tbody>
         </table>
         {membersWithOutcomes.map(member =>
-          <UserOutcomes
-            avatar={member.avatar}
-            name={member.name}
-            outcomes={member.outcomes}
-            present={member.present}
-          />
+          <UserOutcomes member={member}/>
         )}
         {membersSansOutcomes.length &&
           <UserNoNewOutcomes members={membersSansOutcomes}/>

@@ -45,6 +45,9 @@ export default {
           .getAll(r.args(userIds))
           .map((user) => user('email'));
         const emailString = emails.join(', ');
+        if (!emailString) {
+          console.log('NULL STR', meeting, userIds, emails);
+        }
         sendEmailPromise(emailString, 'summaryEmail', {meeting});
       }
       return meeting;

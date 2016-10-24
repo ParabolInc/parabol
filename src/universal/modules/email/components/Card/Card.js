@@ -6,8 +6,8 @@ import {trimString} from 'universal/utils';
 import EmptySpace from '../EmptySpace/EmptySpace';
 
 const Card = (props) => {
-  const {content, status, type} = props;
-
+  const {content, status} = props;
+  const type = Boolean(status) ? 'project' : 'action';
   let backgroundColor;
 
   if (type === 'project') {
@@ -74,14 +74,6 @@ const Card = (props) => {
 Card.propTypes = {
   content: PropTypes.string,
   status: PropTypes.oneOf(labels.projectStatus.slugs),
-  type: PropTypes.oneOf([
-    'project',
-    'action'
-  ])
-};
-
-Card.defaultProps = {
-  type: 'action'
 };
 
 export default Card;
