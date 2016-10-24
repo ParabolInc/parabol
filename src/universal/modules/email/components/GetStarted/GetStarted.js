@@ -1,5 +1,6 @@
 import React from 'react';
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 import EmptySpace from '../EmptySpace/EmptySpace';
 
 const GetStarted = () => {
@@ -23,14 +24,8 @@ const GetStarted = () => {
     textAlign: 'center'
   };
 
-  const tableStyle = {
-    borderCollapse: 'collapse',
-    marginLeft: 'auto',
-    marginRight: 'auto'
-  };
-
   return (
-    <table style={tableStyle}>
+    <table style={ui.emailTableBase}>
       <tbody>
         <tr>
           <td style={cellStyle}>

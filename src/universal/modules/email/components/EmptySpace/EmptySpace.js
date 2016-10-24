@@ -2,6 +2,7 @@
 // Table-based way to add vertical space. Uses line-height.
 
 import React, {PropTypes} from 'react';
+import ui from 'universal/styles/ui';
 
 const EmptySpace = (props) => {
   const cellStyle = {
@@ -11,14 +12,8 @@ const EmptySpace = (props) => {
     padding: 0
   };
 
-  const tableStyle = {
-    borderCollapse: 'collapse',
-    marginLeft: 'auto',
-    marginRight: 'auto'
-  };
-
   return (
-    <table style={tableStyle} width="100%">
+    <table style={ui.emailTableBase} width="100%">
       <tbody>
         <tr>
           <td

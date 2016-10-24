@@ -37,10 +37,6 @@ const Card = (props) => {
     padding: '4px 8px'
   };
 
-  const tableStyle = {
-    borderCollapse: 'collapse'
-  };
-
   let borderTopStyle;
 
   if (type === 'project') {
@@ -58,7 +54,7 @@ const Card = (props) => {
   }
 
   return (
-    <table style={tableStyle} width="100%">
+    <table style={ui.emailTableBase} width="100%">
       <tbody>
         {/* card styled top border */}
         <tr>

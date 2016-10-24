@@ -4,12 +4,6 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
 const Body = (props) => {
-  const tableStyle = {
-    borderCollapse: 'collapse',
-    marginLeft: 'auto',
-    marginRight: 'auto'
-  };
-
   const cellStyle = {
     color: appTheme.palette.dark,
     backgroundColor: ui.emailBackgroundColor,
@@ -21,7 +15,7 @@ const Body = (props) => {
   };
 
   return (
-    <table align="center" style={tableStyle} width="100%">
+    <table align="center" style={ui.emailTableBase} width="100%">
       <tbody>
         <tr>
           <td align="center" style={cellStyle}>

@@ -1,15 +1,11 @@
 import React, {PropTypes} from 'react';
 import Card from '../Card/Card';
+import ui from 'universal/styles/ui';
 
 const cardRowCell = {
   padding: '8px',
   verticalAlign: 'top',
   width: '188px'
-};
-
-const tableStyle = {
-  marginLeft: 'auto',
-  marginRight: 'auto',
 };
 
 const getOutcomeRows = (arr) => {
@@ -39,7 +35,7 @@ const makeOutcomeCards = (arr) => {
 const OutcomesTable = (props) => {
   const outcomeRows = getOutcomeRows(props.outcomes);
   return (
-    <table align="center" style={tableStyle}>
+    <table align="center" style={ui.emailTableBase}>
       <tbody>
         {outcomeRows.map((row, idx) =>
           <tr key={`outcomeRow${idx}`}>

@@ -5,8 +5,8 @@ import ui from 'universal/styles/ui';
 
 const Footer = (props) => {
   const tableStyle = {
+    ...ui.emailTableBase,
     backgroundColor: ui.emailBackgroundColor,
-    borderCollapse: 'collapse',
     color: props.color
   };
 

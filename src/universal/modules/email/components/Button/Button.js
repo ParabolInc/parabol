@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 
 const Button = (props) => {
   const cellStyle = {
@@ -23,14 +24,8 @@ const Button = (props) => {
     width: '100%'
   };
 
-  const tableStyle = {
-    borderCollapse: 'collapse',
-    marginLeft: 'auto',
-    marginRight: 'auto'
-  };
-
   return (
-    <table style={tableStyle} width={`${props.width}px`}>
+    <table style={ui.emailTableBase} width={`${props.width}px`}>
       <tbody>
         <tr>
           <td align="center" style={cellStyle}>

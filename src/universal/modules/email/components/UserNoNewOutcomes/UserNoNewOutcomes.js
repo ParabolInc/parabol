@@ -61,12 +61,6 @@ const UserNoNewOutcomes = (props) => {
     color: appTheme.palette.cool10g
   };
 
-  const tableStyle = {
-    borderCollapse: 'collapse',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  };
-
   const getMemberRows = (arr) => {
     const rows = [];
     const length = arr.length;
@@ -110,7 +104,7 @@ const UserNoNewOutcomes = (props) => {
   };
 
   return (
-    <table align="center" style={tableStyle} width="100%">
+    <table align="center" style={ui.emailTableBase} width="100%">
       <tbody>
         <tr>
           <td style={topBorderStyle}>
@@ -120,7 +114,7 @@ const UserNoNewOutcomes = (props) => {
         {members.length &&
           <tr>
             <td align="center">
-              <table align="center" style={tableStyle}>
+              <table align="center" style={ui.emailTableBase}>
                 <tbody>
                   {memberCells.map((row, idx) =>
                     <tr key={`memberCell${idx}`}>
