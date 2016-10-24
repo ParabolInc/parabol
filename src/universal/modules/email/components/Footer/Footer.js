@@ -4,7 +4,8 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
 const Footer = (props) => {
-  const style = {
+  const tableStyle = {
+    ...ui.emailTableBase,
     backgroundColor: ui.emailBackgroundColor,
     color: props.color
   };
@@ -14,17 +15,24 @@ const Footer = (props) => {
     fontSize: '1px'
   };
 
+  const cellStyles = {
+    backgroundColor: '#F9FAFB',
+    color: props.color,
+    fontFamily: ui.emailFontFamily,
+    textAlign: 'center'
+  };
+
   return (
     <table
       width="100%"
-      style={style}
+      style={tableStyle}
     >
       <tbody>
 
         <tr>
-          <td><EmptySpace height="20" /></td>
-          <td><EmptySpace height="20" /></td>
-          <td><EmptySpace height="20" /></td>
+          <td><EmptySpace height={20} /></td>
+          <td><EmptySpace height={20} /></td>
+          <td><EmptySpace height={20} /></td>
         </tr>
 
         <tr>
@@ -40,22 +48,15 @@ const Footer = (props) => {
             <table width="560">
               <tbody>
                 <tr>
-                  <td
-                    align="center"
-                    bgColor="#F9FAFB"
-                    style={{color: props.color, fontFamily: ui.emailFontFamily}}
-                  >
-
-                    <EmptySpace height="10" />
+                  <td style={cellStyles}>
+                    <EmptySpace height={10} />
                     <img src="/static/images/brand/mark-color@3x.png" height="28" width="31" />
-                    <EmptySpace height="10" />
-
+                    <EmptySpace height={10} />
                     Crafted with care by the folks at <a
                       style={{color: appTheme.palette.warm, textDecoration: 'none'}}
                       href="http://www.parabol.co/"
                     > Parabol</a>.
-
-                    <EmptySpace height="10" />
+                    <EmptySpace height={10} />
                   </td>
                 </tr>
               </tbody>
@@ -72,9 +73,9 @@ const Footer = (props) => {
         </tr>
 
         <tr>
-          <td><EmptySpace height="48" /></td>
-          <td><EmptySpace height="48" /></td>
-          <td><EmptySpace height="48" /></td>
+          <td><EmptySpace height={48} /></td>
+          <td><EmptySpace height={48} /></td>
+          <td><EmptySpace height={48} /></td>
         </tr>
       </tbody>
     </table>

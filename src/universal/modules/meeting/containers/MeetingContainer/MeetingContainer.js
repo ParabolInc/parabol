@@ -119,6 +119,7 @@ const mapStateToProps = (state, props) => {
 
 let infiniteloopCounter = 0;
 let infiniteLoopTimer = Date.now();
+let infiniteTrigger = false;
 
 @socketWithPresence
 @connect(mapStateToProps)
@@ -148,7 +149,7 @@ export default class MeetingContainer extends Component {
     handleRedirects(team, localPhase, localPhaseItem, {}, router);
     bindHotkey(['enter', 'right'], this.gotoNext);
     bindHotkey('left', this.gotoPrev);
-    bindHotkey('i c a n t h a c k i t', this.endMeeting);
+    bindHotkey('i c a n t h a c k i t', () => this.gotoItem(null, SUMMARY));
   }
 
   shouldComponentUpdate(nextProps) {
@@ -169,7 +170,11 @@ export default class MeetingContainer extends Component {
             nextPhaseItem: 1,
             force: true
           };
-          cashay.mutate('moveMeeting', {variables});
+          if (!infiniteTrigger) {
+            cashay.mutate('moveMeeting', {variables});
+            infiniteTrigger = true;
+          }
+          return false;
         }
         this.gotoItem(1, CHECKIN);
         dispatch(showError({
@@ -185,15 +190,9 @@ export default class MeetingContainer extends Component {
     return false;
   }
 
-  endMeeting = (redirOrEvent) => {
-    const {params: {teamId}} = this.props;
-    if (redirOrEvent === true) {
-      this.gotoItem(null, SUMMARY);
-    }
-    cashay.mutate('endMeeting', {variables: {teamId}});
-  };
-
   gotoItem = (maybeNextPhaseItem, maybeNextPhase) => {
+    // if we try to go backwards on a place that doesn't have items
+    if (!maybeNextPhaseItem && !maybeNextPhase) return;
     const {
       agenda,
       isFacilitating,
@@ -226,7 +225,7 @@ export default class MeetingContainer extends Component {
         const totalPhaseItems = localPhase === AGENDA_ITEMS ? agenda.length : members.length;
         nextPhase = maybeNextPhaseItem > totalPhaseItems ? phaseArray[localPhaseOrder + 1] : localPhase;
       } else {
-        nextPhase = (localPhase === FIRST_CALL && !agenda.length) ? LAST_CALL : phaseArray[localPhaseOrder + 1];
+        nextPhase = phaseArray[localPhaseOrder + 1];
       }
 
       // Never return to the FIRST_CALL after it's been visited
@@ -239,10 +238,19 @@ export default class MeetingContainer extends Component {
         nextPhaseItem = hasPhaseItem(nextPhase) ? 1 : '';
       }
     }
+
+    if (nextPhase === AGENDA_ITEMS && agenda.length === 0) {
+      nextPhaseItem = undefined;
+      nextPhase = LAST_CALL;
+    }
     // nextPhase is undefined if we're at the summary
     if (nextPhase) {
       if (isFacilitating) {
         const variables = {teamId};
+        if (nextPhase === SUMMARY) {
+          cashay.mutate('endMeeting', {variables: {teamId}});
+          return;
+        }
         if (nextPhase !== localPhase) {
           variables.nextPhase = nextPhase;
         }
@@ -258,7 +266,11 @@ export default class MeetingContainer extends Component {
     }
   };
 
-  gotoNext = () => this.gotoItem(this.props.localPhaseItem + 1);
+  gotoNext = () => {
+    const nextPhaseItem = this.props.localPhaseItem + 1;
+    const nextPhase = nextPhaseItem ? undefined : phaseArray[phaseOrder(this.props.params.localPhase) + 1];
+    return this.gotoItem(nextPhaseItem, nextPhase);
+  }
   gotoPrev = () => this.gotoItem(this.props.localPhaseItem - 1);
 
   render() {
@@ -303,7 +315,7 @@ export default class MeetingContainer extends Component {
           {localPhase === LAST_CALL &&
             <MeetingAgendaLastCallContainer
               {...phaseStateProps}
-              endMeeting={this.endMeeting}
+              gotoNext={this.gotoNext}
               isFacilitating={isFacilitating}
             />
           }

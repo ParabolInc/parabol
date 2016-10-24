@@ -1,13 +1,16 @@
 import React, {Component, PropTypes} from 'react';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
-import MeetingSummary from 'universal/modules/summary/components/MeetingSummary/MeetingSummary';
+import Helmet from 'react-helmet';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
+import SummaryEmail from 'universal/modules/email/components/SummaryEmail/SummaryEmail';
+import LoadingView from 'universal/components/LoadingView/LoadingView';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
 
 const meetingSummaryQuery = `
 query{
-  meeting: getMeetingById(id: $id) {
+  meeting: getMeetingById(id: $id) @cached(type: "Meeting") {
+    createdAt
     id
     teamId
     teamName
@@ -16,87 +19,53 @@ query{
     invitees {
       id
       present
-      membership {
+      actions {
         id
-        picture
-        preferredName
+        content
+        teamMemberId
       }
+      projects {
+        id
+        content
+        status
+        teamMemberId
+      }
+      picture
+      preferredName
     }
-    actions {
-      id
-      content
-      teamMemberId
-    }
-    projects {
-      id
-      content
-      status
-      teamMemberId
-    }
+    successExpression
+    successStatement
   }
 }`;
 
-const objectifyTeamMembers = (teamMembers) => {
-  const enhancedTeamMembers = [];
-  const teamMemberIndices = {};
-  for (let i = 0; i < teamMembers.length; i++) {
-    const teamMember = teamMembers[i];
-    enhancedTeamMembers[i] = {
-      id: teamMember.id,
-      present: teamMember.present,
-      picture: teamMember.membership.picture,
-      preferredName: teamMember.membership.preferredName,
-      actions: [],
-      projects: []
-    };
-    teamMemberIndices[teamMember.id] = i;
+const mutationHandlers = {
+  summarizeMeeting(optimisticVariables, queryResponse, currentResponse) {
+    if (queryResponse) {
+      // TODO figure out why I can't use Object.assign. I think Chrome@latest creates a new object!
+      currentResponse.meeting = queryResponse;
+      currentResponse.meeting.createdAt = new Date(queryResponse.createdAt);
+      return currentResponse;
+    }
+    return undefined;
   }
-  return {enhancedTeamMembers, teamMemberIndices};
-};
-
-const groupOutcomesByTeamMember = (actions, projects, teamMembers) => {
-  const {enhancedTeamMembers, teamMemberIndices} = objectifyTeamMembers(teamMembers);
-  for (let i = 0; i < actions.length; i++) {
-    const action = actions[i];
-    const idx = teamMemberIndices[action.teamMemberId];
-    enhancedTeamMembers[idx].actions.push(action);
-  }
-  for (let i = 0; i < projects.length; i++) {
-    const project = projects[i];
-    const idx = teamMemberIndices[project.teamMemberId];
-    enhancedTeamMembers[idx].projects.push(project);
-  }
-  return enhancedTeamMembers;
 };
 
 const mapStateToProps = (state, props) => {
   const {params: {meetingId}} = props;
   const {meeting} = cashay.query(meetingSummaryQuery, {
     op: 'meetingSummaryContainer',
-    key: meetingId,
+    key: '',
+    mutationHandlers,
     variables: {id: meetingId},
+    resolveCached: {
+      meeting: () => meetingId
+    },
     sort: {
       invitees: (a, b) => a.preferredName > b.preferredName ? 1 : -1
     },
   }).data;
-  const {
-    agendaItemsCompleted,
-    meetingNumber,
-    teamId,
-    invitees,
-    teamName,
-    actions,
-    projects
-  } = meeting;
-  const enhancedTeamMembers = groupOutcomesByTeamMember(actions, projects, invitees);
   return {
-    actionCount: actions.length,
-    agendaItemsCompleted,
-    meetingNumber,
-    projectCount: projects.length,
-    teamId,
-    teamMembers: enhancedTeamMembers,
-    teamName,
+    meeting
   };
 };
 
@@ -104,43 +73,45 @@ const mapStateToProps = (state, props) => {
 @connect(mapStateToProps)
 export default class MeetingSummaryContainer extends Component {
   static propTypes = {
-    actionCount: PropTypes.number,
-    agendaItemsCompleted: PropTypes.number,
     dispatch: PropTypes.func,
-    meetingNumber: PropTypes.number,
-    projectCount: PropTypes.number,
-    teamId: PropTypes.string,
-    teamMembers: PropTypes.array,
-    teamName: PropTypes.string
+    meeting: PropTypes.object.isRequired,
+    params: PropTypes.object.isRequired
   };
 
+  componentWillMount() {
+    const {params: {meetingId}} = this.props;
+    const variables = {meetingId};
+    cashay.mutate('summarizeMeeting', {variables});
+  }
+
   componentWillReceiveProps(nextProps) {
-    const {dispatch, meetingNumber} = nextProps;
+    const {dispatch, meeting: {meetingNumber: oldMeetingNumber}} = this.props;
+    const {meeting: {meetingNumber: newMeetingNumber}} = nextProps;
     /*
      * Track meeting completitions by idenity.
      *
      * N.B. it is ok if these are sent as dupes, i.e. when viewed from
      * meeting history.
      */
-    if (!this.props.meetingNumber && meetingNumber) {
-      dispatch(segmentEventTrack('Meeting Completed', { meetingNumber }));
+    if (!oldMeetingNumber && newMeetingNumber) {
+      dispatch(segmentEventTrack('Meeting Completed', {meetingNumber: newMeetingNumber }));
     }
   }
 
   render() {
-    const {meetingNumber, teamName} = this.props;
-    const title = `Action Meeting #${meetingNumber} Summary for ${teamName}`;
-    return <MeetingSummary {...this.props} title={title} />;
+    const {meeting} = this.props;
+    if (!meeting.createdAt) {
+      return <LoadingView/>;
+    }
+    const title = `Action Meeting #${meeting.meetingNumber} Summary for ${meeting.teamName}`;
+    return (
+      <div>
+        <Helmet title={title} />
+        <SummaryEmail
+          meeting={meeting}
+          referrer="meeting"
+        />
+      </div>
+    );
   }
 }
-
-MeetingSummaryContainer.propTypes = {
-  actionCount: PropTypes.number,
-  agendaItemsCompleted: PropTypes.number,
-  dispatch: PropTypes.func,
-  meetingNumber: PropTypes.number,
-  projectCount: PropTypes.number,
-  teamId: PropTypes.string,
-  teamMembers: PropTypes.array,
-  teamName: PropTypes.string
-};

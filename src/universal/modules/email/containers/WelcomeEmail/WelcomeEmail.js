@@ -11,6 +11,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 
 const imageStyle = {
   border: 0,
+  borderRadius: '100%',
   display: 'block'
 };
 
@@ -18,8 +19,13 @@ const ruleStyle = {
   backgroundColor: '#E1E2E8',
   border: 0,
   height: '2px',
-  margin: 0,
+  margin: '0 auto',
   width: '80%'
+};
+
+const emailLink = {
+  color: appTheme.palette.warm,
+  textDecoration: 'none'
 };
 
 const WelcomeEmail = props => {
@@ -31,10 +37,7 @@ const WelcomeEmail = props => {
       <table width="100%">
         <tbody>
           <tr>
-            <td
-              align="center"
-              style={{backgroundColor: appTheme.palette.warm}}
-            >
+            <td align="center" style={{backgroundColor: appTheme.palette.warm}}>
               <img
                 style={imageStyle}
                 src="/static/images/email/action-email-header@2x.png"
@@ -48,7 +51,7 @@ const WelcomeEmail = props => {
 
       <Body lineHeight={1.5}>
         <Callout vSpacing={0}>
-          Hi <a href={`mailto:${email}`} style={{color: appTheme.palette.warm}}>{email}</a>,<br />
+          Hi <a href={`mailto:${email}`} style={emailLink}>{email}</a>,<br />
           We’re <i>so glad</i> you’re here!!
         </Callout>
         <EmptySpace height={48} />

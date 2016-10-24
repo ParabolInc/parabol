@@ -10,4 +10,4 @@ export DashSectionControl from './DashSectionControl.js';
 export DashSectionControls from './DashSectionControls.js';
 export DashSectionHeader from './DashSectionHeader.js';
 export DashSidebar from './DashSidebar.js';
-export dashTimestamp from './dashTimestamp.js';
+export makeDateString from 'universal/utils/makeDateString.js';

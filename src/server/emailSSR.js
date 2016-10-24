@@ -1,28 +1,33 @@
-import React from 'react';
-import Oy from 'oy-vey';
-import SummaryEmail from 'universal/modules/email/containers/SummaryEmail/SummaryEmail';
-// import TeamInvite from 'universal/modules/email/containers/TeamInvite/TeamInvite';
-// import WelcomeEmail from 'universal/modules/email/containers/WelcomeEmail/WelcomeEmail';
+import sendEmail from 'server/email/sendEmail';
+import templates from 'server/email/templates';
 
-// const demoInviteProps = {
-//   inviterAvatar: '/static/images/avatars/jh-linkedin-avatar.jpg',
-//   inviterName: 'Jordan Husney',
-//   inviterFirstName: 'Jordan',
-//   inviterEmail: 'jordan@parabol.co',
-//   inviteeEmail: 'terry@parabol.co',
-//   firstProject: 'Meeting summary email designed',
-//   teamName: 'Parabol',
-//   teamLink: 'https://prbl.io/a/b7s8x9'
-// };
+// erica.seldin.contractor@pepsico.com
+// jordan@parabol.co
 
-export default function emailSSR(req, res) {
-  const html = Oy.renderTemplate(<SummaryEmail />, {
+const EMAIL_DESTINATION = 'terry@parabol.co, terry_acker@yahoo.com';
+const EMAIL_TEMPLATE = 'summaryEmail';
+const EMAIL_ALL_PROPS = {
+  summaryEmail: {
     title: 'Action Meeting Summary from Parabol',
     previewText: 'Action Meeting Summary from Parabol'
-  });
+  }
+};
 
+export default async function emailSSR(req, res) {
+  const emailFactory = templates[EMAIL_TEMPLATE];
+  const props = EMAIL_ALL_PROPS[EMAIL_TEMPLATE];
+
+  /*
+   * Render and send email
+   *
+   * Don't forget to set the MAILGUN_API_KEY, MAILGUN_DOMAIN, and MAILGUN_FROM
+   * environment variables if you want to send the email for reals.
+   */
+  await sendEmail(EMAIL_DESTINATION, 'summaryEmail', props);
+
+  // Render and show container:
   res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.set('Pragma', 'no-cache');
   res.set('Expires', '0');
-  res.send(html);
+  res.send(emailFactory(props).html);
 }

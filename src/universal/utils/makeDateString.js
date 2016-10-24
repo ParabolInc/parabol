@@ -23,11 +23,10 @@ const months = [
   'December'
 ];
 
-const now = new Date();
-const day = now.getDay();
-const month = now.getMonth();
-const date = now.getDate();
-const year = now.getFullYear();
-const dashTimestamp = `${days[day]}, ${months[month]} ${date}, ${year}`;
-
-export default dashTimestamp;
+export default function makeDateString(timestamp = new Date()) {
+  const day = timestamp.getDay();
+  const month = timestamp.getMonth();
+  const date = timestamp.getDate();
+  const year = timestamp.getFullYear();
+  return `${days[day]}, ${months[month]} ${date}, ${year}`;
+}

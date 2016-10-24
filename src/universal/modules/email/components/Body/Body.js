@@ -4,22 +4,21 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
 const Body = (props) => {
-  const textStyle = {
+  const cellStyle = {
     color: appTheme.palette.dark,
     backgroundColor: ui.emailBackgroundColor,
     fontFamily: ui.emailFontFamily,
     fontSize: `${props.fontSize}px`,
-    lineHeight: `${props.lineHeight}`
+    lineHeight: `${props.lineHeight}`,
+    padding: 0,
+    textAlign: 'center'
   };
 
   return (
-    <table width="100%">
+    <table align="center" style={ui.emailTableBase} width="100%">
       <tbody>
         <tr>
-          <td
-            align="center"
-            style={textStyle}
-          >
+          <td align="center" style={cellStyle}>
             <EmptySpace height={props.verticalGutter} />
               {props.children}
             <EmptySpace height={props.verticalGutter} />

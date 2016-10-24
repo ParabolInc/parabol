@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 import EmptySpace from '../EmptySpace/EmptySpace';
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 
 const Features = (props) => {
   const imageStyle = {
@@ -15,13 +16,14 @@ const Features = (props) => {
     lineHeight: `${props.lineHeight}`,
     paddingBottom: '16px',
     paddingLeft: '16px',
-    paddingTop: '16px'
+    paddingTop: '16px',
+    textAlign: 'left'
   };
 
   return (
     <div>
       <EmptySpace height={props.vSpacing} />
-      <table>
+      <table style={ui.emailTableBase}>
         <tbody>
           <tr>
             <td width="64">
