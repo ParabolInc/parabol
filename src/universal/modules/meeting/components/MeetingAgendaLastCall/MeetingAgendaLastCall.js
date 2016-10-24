@@ -14,7 +14,7 @@ const MeetingAgendaLastCall = (props) => {
     agendaItemCount,
     actionCount,
     isFacilitating,
-    endMeeting,
+    gotoNext,
     facilitatorName,
     projectCount,
     styles
@@ -48,7 +48,7 @@ const MeetingAgendaLastCall = (props) => {
             <Button
               colorPalette="cool"
               label="End Meeting"
-              onClick={() => endMeeting(true)}
+              onClick={gotoNext}
               size="largest"
               style="outlined"
             /> :
@@ -65,7 +65,7 @@ const MeetingAgendaLastCall = (props) => {
 MeetingAgendaLastCall.propTypes = {
   agendaItemCount: PropTypes.number,
   actionCount: PropTypes.number,
-  endMeeting: PropTypes.func,
+  gotoNext: PropTypes.func,
   facilitatorName: PropTypes.string,
   localPhaseItem: PropTypes.number,
   isFacilitating: PropTypes.bool,

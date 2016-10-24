@@ -54,7 +54,7 @@ const mapStateToProps = (state, props) => {
   const {params: {meetingId}} = props;
   const {meeting} = cashay.query(meetingSummaryQuery, {
     op: 'meetingSummaryContainer',
-    key: meetingId,
+    key: '',
     mutationHandlers,
     variables: {id: meetingId},
     resolveCached: {
