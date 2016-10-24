@@ -20,10 +20,6 @@ const UserNoNewOutcomes = (props) => {
     borderRadius: '100%'
   };
 
-  const centerStyle = {
-    textAlign: 'center'
-  };
-
   const topBorderStyle = {
     ...textCenter,
     borderTop: `1px solid ${ui.cardBorderColor}`
@@ -95,7 +91,7 @@ const UserNoNewOutcomes = (props) => {
   const makeMemberCells = (arr) => {
     const cells = () =>
       arr.map((member) =>
-        <td style={cellStyle} width={cellWidth} key={member.id}>
+        <td align="center" style={cellStyle} width={cellWidth} key={member.id}>
           <img height={avatarSize} src={member.picture} style={avatarStyles} width={avatarSize} />
           <div style={nameStyle}>{member.preferredName}</div>
           {member.present ?
@@ -108,7 +104,7 @@ const UserNoNewOutcomes = (props) => {
   };
 
   return (
-    <table style={centerStyle} width="100%">
+    <table align="center" width="100%">
       <tbody>
         <tr>
           <td style={topBorderStyle}>
@@ -117,8 +113,8 @@ const UserNoNewOutcomes = (props) => {
         </tr>
         {members.length &&
           <tr>
-            <td style={centerStyle}>
-              <table style={centerStyle}>
+            <td align="center">
+              <table align="center">
                 <tbody>
                   {memberCells.map((row, idx) =>
                     <tr key={`memberCell${idx}`}>

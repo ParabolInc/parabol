@@ -26,7 +26,7 @@ const Button = (props) => {
     <table width={`${props.width}px`}>
       <tbody>
         <tr>
-          <td style={cellStyle}>
+          <td align="center" style={cellStyle}>
             <a href={props.url} style={linkStyle}>
               {props.children}
             </a>

@@ -23,11 +23,11 @@ const Layout = (props) => {
   };
 
   return (
-    <table style={containerStyle} width="100%">
+    <table align="center" style={containerStyle} width="100%">
       <tbody>
         <tr>
-          <td style={{textAlign: 'center'}}>
-            <table style={innerStyle} width="600">
+          <td align="center" style={{textAlign: 'center'}}>
+            <table align="center" style={innerStyle} width="600">
               <tbody>
                 <tr>
                   <td>

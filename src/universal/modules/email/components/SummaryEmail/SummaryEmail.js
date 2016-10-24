@@ -76,10 +76,6 @@ const quickStatsBlock = {
   textAlign: 'center'
 };
 
-const centerStyle = {
-  textAlign: 'center'
-};
-
 const makeBannerMessage = (referrer, url) => {
   if (referrer === 'meeting') {
     return <span>All team members will receive this summary in their inbox.</span>;
@@ -140,10 +136,10 @@ const SummaryEmail = (props) => {
         </tbody>
       </table>
       <Body verticalGutter={0}>
-        <table style={centerStyle} width="100%">
+        <table align="center" width="100%">
           <tbody>
             <tr>
-              <td style={centerStyle}>
+              <td align="center">
                 {/* Summary Header */}
                 <SummaryHeader createdAt={createdAt} referrer={referrer} teamDashUrl={`/team/${teamId}`} teamName={teamName}/>
                 {/* Message */}
@@ -160,10 +156,10 @@ const SummaryEmail = (props) => {
                       {'Include the following link to the meeting lobby'}<br />
                       {'in your recurring calendar event:'}
                       <EmptySpace height={8}/>
-                      <table style={centerStyle} width="80%">
+                      <table align="center" width="80%">
                         <tbody>
                           <tr>
-                            <td style={meetingLinkBlock}>
+                            <td align="center" style={meetingLinkBlock}>
                               <a href={meetingLobbyLink} style={meetingLink}>
                                 {meetingLobbyLink}
                               </a>
@@ -194,10 +190,10 @@ const SummaryEmail = (props) => {
             </tr>
           </tbody>
         </table>
-        <table style={centerStyle} width="100%">
+        <table align="center" width="100%">
           <tbody>
             <tr>
-              <td style={quickStatsBlock}>
+              <td align="center" style={quickStatsBlock}>
                 <QuickStats
                   agendaItems={agendaItemsCompleted}
                   newProjects={projectCount}
