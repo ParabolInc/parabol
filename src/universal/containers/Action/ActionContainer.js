@@ -33,10 +33,15 @@ export default class ActionContainer extends Component {
     injectGlobals(injectStyleOnce, globalStyles);
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {dispatch, location: {pathname: lastPage}} = this.props;
-    const {location: {pathname: nextPage}} = nextProps;
+  componentDidUpdate(prevProps) {
+    const {location: {pathname: lastPage}} = prevProps;
+    const {dispatch, location: {pathname: nextPage}} = this.props;
     if (lastPage !== nextPage) {
+      /*
+       * Perform page update after component renders. That way,
+       * document.title will be current after any child <Helmet />
+       * element(s) are rendered.
+       */
       updateAnalyticsPage(dispatch, lastPage, nextPage);
     }
   }
