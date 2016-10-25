@@ -144,13 +144,13 @@ export default class MeetingContainer extends Component {
   constructor(props) {
     super(props);
     const {bindHotkey, localPhaseItem, params, router, team} = props;
-    const {localPhase} = params;
+    const {localPhase, teamId} = params;
     // subscribe to all teams, but don't do anything with that open subscription
     cashay.subscribe(TEAMS);
     handleRedirects(team, localPhase, localPhaseItem, {}, router);
     bindHotkey(['enter', 'right'], this.gotoNext);
     bindHotkey('left', this.gotoPrev);
-    bindHotkey('i c a n t h a c k i t', () => this.gotoItem(null, SUMMARY));
+    bindHotkey('i c a n t h a c k i t', () => cashay.mutate('killMeeting', {variables: {teamId}}));
   }
 
   componentWillReceiveProps(nextProps) {

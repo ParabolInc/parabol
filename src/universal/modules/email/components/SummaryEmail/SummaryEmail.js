@@ -93,10 +93,12 @@ const makeBannerMessage = (referrer, url) => {
 const SummaryEmail = (props) => {
   const {
     meeting,
+    meetingUrl,
     referrer,
     referrerUrl,
+    teamDashUrl
   } = props;
-  const {agendaItemsCompleted, invitees, createdAt, meetingNumber, teamId, teamName} = meeting;
+  const {agendaItemsCompleted, invitees, createdAt, meetingNumber, teamName} = meeting;
   const membersSansOutcomes = [];
   const membersWithOutcomes = [];
   let presentMemberCount = 0;
@@ -118,7 +120,7 @@ const SummaryEmail = (props) => {
 
   const bannerMessage = makeBannerMessage(referrer, referrerUrl);
   const memberCount = membersSansOutcomes.length + membersWithOutcomes.length;
-  const meetingLobbyLink = `https://action.parabol.co/meeting/${teamId}`;
+  const hasUsersWithoutOutcomes = membersSansOutcomes.length !== 0;
   return (
     <Layout>
       <table style={ui.emailTableBase} width="100%">
@@ -142,7 +144,7 @@ const SummaryEmail = (props) => {
             <tr>
               <td align="center" style={{padding: 0}}>
                 {/* Summary Header */}
-                <SummaryHeader createdAt={createdAt} referrer={referrer} teamDashUrl={`/team/${teamId}`} teamName={teamName}/>
+                <SummaryHeader createdAt={createdAt} referrer={referrer} teamDashUrl={teamDashUrl} teamName={teamName}/>
                 {/* Message */}
                 {meetingNumber === 0 ?
                   <div>
@@ -161,8 +163,8 @@ const SummaryEmail = (props) => {
                         <tbody>
                           <tr>
                             <td align="center" style={meetingLinkBlock}>
-                              <a href={meetingLobbyLink} style={meetingLink}>
-                                {meetingLobbyLink}
+                              <a href={meetingUrl} style={meetingLink}>
+                                {meetingUrl}
                               </a>
                             </td>
                           </tr>
@@ -209,7 +211,7 @@ const SummaryEmail = (props) => {
         {membersWithOutcomes.map(member =>
           <UserOutcomes member={member} key={`memberOutcomes'${member.id}`}/>
         )}
-        {membersSansOutcomes.length &&
+        {hasUsersWithoutOutcomes &&
           <UserNoNewOutcomes members={membersSansOutcomes}/>
         }
         <EmptySpace height={0}/>
@@ -232,22 +234,16 @@ const SummaryEmail = (props) => {
 
 SummaryEmail.propTypes = {
   meeting: PropTypes.object.isRequired,
-  meetingLobbyLink: PropTypes.string,
+  meetingUrl: PropTypes.string,
   referrer: PropTypes.oneOf([
     'meeting',
     'email',
     'history'
   ]).isRequired,
   referrerUrl: PropTypes.string,
+  teamDashUrl: PropTypes.string,
   actionCount: PropTypes.number,
   projectCount: PropTypes.number
-};
-
-SummaryEmail.defaultProps = {
-  meetingLobbyLink: '/meeting/team123/',
-  agendaItemsCompleted: 21,
-  actionCount: 12,
-  projectCount: 5
 };
 
 export const summaryEmailText = (props) => {

@@ -81,7 +81,9 @@ export default function handleRedirects(team, localPhase, localPhaseItem, oldTea
     router.replace(`/summary/${team.meetingId}`);
     return false;
   }
-  return true;
+
+  // if we finished the meeting & then got a message to go to the lobby, ignore it
+  return !(team.facilitatorPhase === LOBBY && oldTeam.facilitatorPhase === SUMMARY);
 
   /**
    * For agenda items, the localPhase should point to the sortOrder

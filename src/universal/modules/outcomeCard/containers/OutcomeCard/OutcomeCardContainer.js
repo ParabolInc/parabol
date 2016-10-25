@@ -120,12 +120,25 @@ class OutcomeCardContainer extends Component {
     }
   };
 
+  unarchiveProject = () => {
+    const options = {
+      variables: {
+        updatedProject: {
+          id: this.props.outcome.id,
+          isArchived: false
+        }
+      }
+    };
+    cashay.mutate('updateProject', options);
+  };
+
   render() {
     return (
       <OutcomeCard
         {...this.props}
         handleCardActive={this.handleCardActive}
         handleCardUpdate={this.handleCardUpdate}
+        unarchiveProject={this.unarchiveProject}
       />
 
     );

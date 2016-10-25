@@ -54,7 +54,7 @@ const SummaryHeader = (props) => {
               <div style={meetingDateStyle}>Meeting Summary • {meetingDate}</div>
               {referrer === 'email' ?
                 <a
-                  href={`https://action.parabol.co${teamDashUrl}`}
+                  href={teamDashUrl}
                   style={teamDashLinkStyle}
                   title="Go to Team Dashboard"
                 >Go to Team Dashboard

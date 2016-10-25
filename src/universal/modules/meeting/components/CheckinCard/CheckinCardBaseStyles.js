@@ -1,4 +1,4 @@
-const checkInCardBaseStyles = {
+const CheckinCardBaseStyles = {
   border: '1px solid transparent',
   borderRadius: '.5rem',
   margin: '0 .5rem',
@@ -7,4 +7,4 @@ const checkInCardBaseStyles = {
   width: '18.75rem'
 };
 
-export default checkInCardBaseStyles;
+export default CheckinCardBaseStyles;

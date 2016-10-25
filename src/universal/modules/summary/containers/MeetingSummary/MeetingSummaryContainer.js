@@ -103,13 +103,20 @@ export default class MeetingSummaryContainer extends Component {
     if (!meeting.createdAt) {
       return <LoadingView/>;
     }
+    const {teamId} = meeting;
     const title = `Action Meeting #${meeting.meetingNumber} Summary for ${meeting.teamName}`;
+    const origin = typeof window !== 'undefined' && window.location.origin || '';
+    const meetingUrl = `${origin}/meeting/${teamId}`;
+    const teamDashUrl = `/team/${teamId}`;
+
     return (
       <div>
         <Helmet title={title} />
         <SummaryEmail
           meeting={meeting}
           referrer="meeting"
+          meetingUrl={meetingUrl}
+          teamDashUrl={teamDashUrl}
         />
       </div>
     );
