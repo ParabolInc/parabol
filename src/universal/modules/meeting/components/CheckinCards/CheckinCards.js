@@ -2,8 +2,8 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
-import CheckInCard from 'universal/modules/meeting/components/CheckInCard/CheckInCard';
-import checkInCardBaseStyles from '../CheckInCard/checkInCardBaseStyles';
+import CheckinCard from 'universal/modules/meeting/components/CheckinCard/CheckinCard';
+import checkInCardBaseStyles from '../CheckinCard/checkInCardBaseStyles';
 import {cashay} from 'cashay';
 
 const makeCheckinPressFactory = (teamMemberId, gotoNext) => (isCheckedIn) => () => {
@@ -17,7 +17,7 @@ const makeCheckinPressFactory = (teamMemberId, gotoNext) => (isCheckedIn) => () 
   gotoNext();
 };
 
-const CheckInCards = (props) => {
+const CheckinCards = (props) => {
   const {gotoItem, gotoNext, members, localPhaseItem, styles} = props;
   const memberIdx = localPhaseItem - 1;
   const leftCard = memberIdx > 0 && members[memberIdx - 1];
@@ -26,25 +26,25 @@ const CheckInCards = (props) => {
   return (
     <div className={css(styles.base)}>
       {leftCard ?
-        <CheckInCard handleCardClick={() => gotoItem(localPhaseItem - 1)} member={leftCard}/> :
+        <CheckinCard handleCardClick={() => gotoItem(localPhaseItem - 1)} member={leftCard}/> :
         <div className={css(styles.placeholder)}></div>
       }
       {activeCard &&
-        <CheckInCard
+        <CheckinCard
           checkInPressFactory={makeCheckinPressFactory(activeCard.id, gotoNext)}
           member={activeCard}
           isActive
         />
       }
       {rightCard ?
-        <CheckInCard handleCardClick={gotoNext} member={rightCard}/> :
+        <CheckinCard handleCardClick={gotoNext} member={rightCard}/> :
         <div className={css(styles.placeholder)}></div>
       }
     </div>
   );
 };
 
-CheckInCards.propTypes = {
+CheckinCards.propTypes = {
   gotoItem: PropTypes.func.isRequired,
   gotoNext: PropTypes.func.isRequired,
   members: PropTypes.array,
@@ -77,4 +77,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(CheckInCards);
+export default withStyles(styleThunk)(CheckinCards);
