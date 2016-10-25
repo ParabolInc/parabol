@@ -4,10 +4,10 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import checkInCardBaseStyles from './checkInCardBaseStyles';
-import CheckinCardButtons from 'universal/modules/meeting/components/CheckinCardButtons/CheckinCardButtons';
+import CheckInCardButtons from 'universal/modules/meeting/components/CheckInCardButtons/CheckInCardButtons';
 import {withRouter} from 'react-router';
 
-const CheckinCard = (props) => {
+const CheckInCard = (props) => {
   const {
     checkInPressFactory,
     handleCardClick,
@@ -27,12 +27,12 @@ const CheckinCard = (props) => {
     <div className={cardStyles} onClick={!isActive && handleCardClick}>
       <Avatar {...member} size="largest"/>
       <div className={css(styles.cardName)}>{preferredName}</div>
-      {isActive && <CheckinCardButtons checkInPressFactory={checkInPressFactory} isCheckedIn={isCheckedIn}/>}
+      {isActive && <CheckInCardButtons checkInPressFactory={checkInPressFactory} isCheckedIn={isCheckedIn}/>}
     </div>
   );
 };
 
-CheckinCard.propTypes = {
+CheckInCard.propTypes = {
   checkInPressFactory: PropTypes.func,
   handleCardClick: PropTypes.func,
   isActive: PropTypes.bool,
@@ -65,4 +65,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withRouter(withStyles(styleThunk)(CheckinCard));
+export default withRouter(withStyles(styleThunk)(CheckInCard));

@@ -6,7 +6,7 @@ import PushButton from 'universal/components/PushButton/PushButton';
 import withHotkey from 'react-hotkey-hoc';
 import voidClick from 'universal/utils/voidClick';
 
-const CheckinCardButtons = (props) => {
+const CheckInCardButtons = (props) => {
   const {bindHotkey, checkInPressFactory, isCheckedIn, styles} = props;
 
   const handleOnClickPresent = isCheckedIn ? voidClick : checkInPressFactory(true);
@@ -47,7 +47,7 @@ const CheckinCardButtons = (props) => {
   );
 };
 
-CheckinCardButtons.propTypes = {
+CheckInCardButtons.propTypes = {
   bindHotkey: PropTypes.func,
   checkInPressFactory: PropTypes.func.isRequired,
   isCheckedIn: PropTypes.bool,
@@ -86,4 +86,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(withHotkey(CheckinCardButtons));
+export default withStyles(styleThunk)(withHotkey(CheckInCardButtons));
