@@ -31,6 +31,7 @@ const OutcomeCard = (props) => {
     outcome,
     styles,
     teamMembers,
+    unarchiveProject
   } = props;
 
   const isProject = Boolean(outcome.status);
@@ -87,6 +88,7 @@ const OutcomeCard = (props) => {
         showTeam={area === USER_DASH}
         toggleAssignMenu={toggleAssignMenu}
         toggleStatusMenu={toggleStatusMenu}
+        unarchiveProject={unarchiveProject}
       />
     </div>
   );
@@ -125,6 +127,7 @@ OutcomeCard.propTypes = {
   teamMembers: PropTypes.array,
   updatedAt: PropTypes.instanceOf(Date),
   handleSubmit: PropTypes.func,
+  unarchiveProject: PropTypes.func.isRequired
 };
 
 const styleThunk = () => ({

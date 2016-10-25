@@ -1,15 +1,21 @@
 import React, {PropTypes} from 'react';
 import SummaryEmail from 'universal/modules/email/components/SummaryEmail/SummaryEmail';
+import makeAppLink from 'server/utils/makeAppLink';
 
 const SummaryEmailContainer = (props) => {
   const {meeting} = props;
-  const {id} = meeting;
-  const referrerUrl = `https://action.parabol.co/summary/${id}`;
+  const {id, teamId} = meeting;
+  const referrerUrl = makeAppLink(`summary/${id}`);
+  const meetingUrl = makeAppLink(`meeting/${teamId}`);
+  const teamDashUrl = makeAppLink(`team/${teamId}`);
   return (
     <SummaryEmail
       meeting={meeting}
+      meetingUrl={meetingUrl}
       referrer="email"
       referrerUrl={referrerUrl}
+      teamDashUrl={teamDashUrl}
+
     />
   );
 };

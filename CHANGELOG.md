@@ -4,6 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.9.4 - 24-Oct-2016
+### Fixed
+- #428 makeAppLink
+- #429 race to meeting summary and lobby
+- #430 generate only 1 email
+- #431 killMeeting
+
 ## v0.9.3 - 24-Oct-2016
 ### Added
 - New meeting summary web view and email

@@ -11,6 +11,7 @@ query {
     status
     teamMemberId
     updatedAt
+    isArchived
     teamMember @cached(type: "TeamMember") {
       picture
       preferredName

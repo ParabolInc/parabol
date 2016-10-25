@@ -184,6 +184,10 @@ export const Meeting = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The timestamp the meeting officially ended'
     },
+    facilitator: {
+      type: GraphQLID,
+      description: 'The teamMemberId of the person who ended the meeting'
+    },
     invitees: {
       type: new GraphQLList(MeetingInvitee),
     },
