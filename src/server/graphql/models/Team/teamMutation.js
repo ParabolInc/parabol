@@ -220,7 +220,7 @@ export default {
   },
   endMeeting: {
     type: GraphQLBoolean,
-    description: 'Finish a meeting abruptly',
+    description: 'Finish a meeting and go to the summary',
     args: {
       teamId: {
         type: new GraphQLNonNull(GraphQLID),
@@ -328,6 +328,31 @@ export default {
                   });
             })
             );
+        });
+      return true;
+    }
+  },
+  killMeeting: {
+    type: GraphQLBoolean,
+    description: 'Finish a meeting abruptly',
+    args: {
+      teamId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The team that will be having the meeting'
+      }
+    },
+    async resolve(source, {teamId}, {authToken}) {
+      const r = getRethink();
+      requireSUOrTeamMember(authToken, teamId);
+      // reset the meeting
+      await r.table('Team').get(teamId)
+        .update({
+          facilitatorPhase: LOBBY,
+          meetingPhase: LOBBY,
+          meetingId: null,
+          facilitatorPhaseItem: null,
+          meetingPhaseItem: null,
+          activeFacilitator: null
         });
       return true;
     }
