@@ -120,6 +120,7 @@ const SummaryEmail = (props) => {
 
   const bannerMessage = makeBannerMessage(referrer, referrerUrl);
   const memberCount = membersSansOutcomes.length + membersWithOutcomes.length;
+  const hasUsersWithoutOutcomes = membersSansOutcomes.length !== 0;
   return (
     <Layout>
       <table style={ui.emailTableBase} width="100%">
@@ -210,7 +211,7 @@ const SummaryEmail = (props) => {
         {membersWithOutcomes.map(member =>
           <UserOutcomes member={member} key={`memberOutcomes'${member.id}`}/>
         )}
-        {membersSansOutcomes.length &&
+        {hasUsersWithoutOutcomes &&
           <UserNoNewOutcomes members={membersSansOutcomes}/>
         }
         <EmptySpace height={0}/>
