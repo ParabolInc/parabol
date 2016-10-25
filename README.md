@@ -154,6 +154,7 @@ get involved and how to get compensated.
 
 | Release | Summary                                    |
 |---------|--------------------------------------------|
+| v0.9.4  | Fixes #428, #429, #430, and #431           |
 | v0.9.3  | Emails meeting summary, add Segment events |
 | v0.8.1  | Added sentry.io. Many bug fixes            |
 | v0.8.0  | Added end of meeting summary               |
