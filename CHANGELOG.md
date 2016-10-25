@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.9.5 - 25-Oct-2016
+### Fixed
+- #433 server crashing on localhost
+- #440 sentry.io bug on `id` field
+- #445 summary rendering “0” when there aren’t members without new outcomes
+
 ## v0.9.4 - 24-Oct-2016
 ### Fixed
 - #428 makeAppLink
