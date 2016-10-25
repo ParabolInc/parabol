@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import IconLink from 'universal/components/IconLink/IconLink';
 import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
-import CheckInCards from 'universal/modules/meeting/components/CheckInCards/CheckInCards';
+import CheckinCards from 'universal/modules/meeting/components/CheckinCards/CheckinCards';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
@@ -59,7 +59,7 @@ const MeetingCheckin = (props) => {
           />
         </MeetingSection>
         {/* */}
-        <CheckInCards
+        <CheckinCards
           gotoItem={gotoItem}
           gotoNext={gotoNext}
           localPhaseItem={localPhaseItem}
