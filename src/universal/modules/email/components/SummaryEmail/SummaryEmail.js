@@ -211,7 +211,7 @@ const SummaryEmail = (props) => {
         {membersWithOutcomes.map(member =>
           <UserOutcomes member={member} key={`memberOutcomes'${member.id}`}/>
         )}
-        {membersSansOutcomes &&
+        {hasUsersWithoutOutcomes &&
           <UserNoNewOutcomes members={membersSansOutcomes}/>
         }
         <EmptySpace height={0}/>
