@@ -49,7 +49,7 @@ export default {
         const emailSuccess = await sendEmailPromise(emailString, 'summaryEmail', {meeting});
         if (emailSuccess) {
           const now = new Date();
-          await r.table('Meeting').get(meetingId).update({summarySentAt: now})
+          await r.table('Meeting').get(meetingId).update({summarySentAt: now});
         }
       }
       return meeting;

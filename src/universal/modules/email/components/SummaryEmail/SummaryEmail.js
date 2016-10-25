@@ -98,7 +98,7 @@ const SummaryEmail = (props) => {
     referrerUrl,
     teamDashUrl
   } = props;
-  const {agendaItemsCompleted, invitees, createdAt, meetingNumber, teamId, teamName} = meeting;
+  const {agendaItemsCompleted, invitees, createdAt, meetingNumber, teamName} = meeting;
   const membersSansOutcomes = [];
   const membersWithOutcomes = [];
   let presentMemberCount = 0;
