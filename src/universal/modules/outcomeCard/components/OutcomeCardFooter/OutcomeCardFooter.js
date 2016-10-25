@@ -19,6 +19,7 @@ const OutcomeCardFooter = (props) => {
     styles,
     toggleAssignMenu,
     toggleStatusMenu,
+    unarchiveProject
   } = props;
   const {isArchived, teamMember: owner} = outcome;
   const isProject = Boolean(outcome.status);
@@ -45,7 +46,7 @@ const OutcomeCardFooter = (props) => {
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.avatarLayout)}>
-        <button className={avatarBlockStyle} onClick={!showTeam && toggleAssignMenu}>
+        <button disabled={isArchived} className={avatarBlockStyle} onClick={!showTeam && toggleAssignMenu}>
           {!showTeam &&
             <img
               alt={avatarName}
@@ -64,7 +65,7 @@ const OutcomeCardFooter = (props) => {
         </button>
       </div>
       <div className={css(styles.buttonBlock)}>
-        <button className={buttonStyles} onClick={toggleStatusMenu}>
+        <button className={buttonStyles} onClick={isArchived ? unarchiveProject : toggleStatusMenu}>
           <FontAwesome name={buttonIcon} style={faStyle}/>
         </button>
       </div>
@@ -84,7 +85,8 @@ OutcomeCardFooter.propTypes = {
   owner: PropTypes.object,
   showTeam: PropTypes.bool,
   styles: PropTypes.object,
-  team: PropTypes.object
+  team: PropTypes.object,
+  unarchiveProject: PropTypes.func.isRequired
 };
 const buttonShowFully = {
   backgroundColor: appTheme.palette.mid10l,
