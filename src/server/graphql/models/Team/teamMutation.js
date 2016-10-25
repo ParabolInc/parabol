@@ -394,6 +394,29 @@ export default {
       // TODO: trigger welcome email
     }
   },
+  changeFacilitator: {
+    type: GraphQLBoolean,
+    description: 'Change a facilitator while the meeting is in progress',
+    args: {
+      facilitatorId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The facilitator teamMemberId for this meeting'
+      }
+    },
+    async resolve(source, {facilitatorId}, {authToken, socket}) {
+      const r = getRethink();
+      // facilitatorId is of format 'userId::teamId'
+      const [, teamId] = facilitatorId.split('::');
+      requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
+      const facilitatorMembership = await r.table('TeamMember').get(facilitatorId);
+      if (!facilitatorMembership || !facilitatorMembership.isActive) {
+        throw errorObj({_error: 'facilitator is not active on that team'});
+      }
+      await r.table('Team').get(teamId).update({activeFacilitator: facilitatorId});
+      return true;
+    }
+  },
   updateTeamName: {
     type: Team,
     args: {

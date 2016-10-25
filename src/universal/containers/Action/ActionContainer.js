@@ -1,7 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import Action from 'universal/components/Action/Action';
-import {injectStyleOnce} from 'aphrodite-local-styles/lib/inject';
 import injectGlobals from 'universal/styles/hepha';
 import globalStyles from 'universal/styles/theme/globalStyles';
 import {segmentEventPage} from 'universal/redux/segmentActions';
@@ -30,7 +29,7 @@ export default class ActionContainer extends Component {
   componentWillMount() {
     const {dispatch, location: {pathname: nextPage}} = this.props;
     updateAnalyticsPage(dispatch, '', nextPage);
-    injectGlobals(injectStyleOnce, globalStyles);
+    injectGlobals(globalStyles);
   }
 
   componentDidUpdate(prevProps) {
