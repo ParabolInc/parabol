@@ -24,17 +24,17 @@ const Card = (props) => {
   const contentStyle = {
     backgroundColor,
     borderColor: ui.cardBorderColor,
-    borderStyle: 'solid',
     borderRadius: '0 0 4px 4px',
+    borderStyle: 'solid',
     borderWidth: '0 1px 1px',
-    textAlign: 'left',
-
+    boxSizing: 'content-box',
     color: appTheme.palette.dark,
-    fontSize: '16px',
     fontFamily: ui.emailFontFamily,
-    height: '76px',
+    fontSize: '16px',
+    minHeight: '80px',
     lineHeight: '20px',
-    padding: '4px 8px'
+    padding: '4px 8px',
+    textAlign: 'left'
   };
 
   let borderTopStyle;
