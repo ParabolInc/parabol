@@ -60,7 +60,6 @@ export default class Step1PreferredName extends Component {
             buttonIcon="check-circle"
             component={InputField}
             hasButton
-            hasShortcutHint
             isLarger
             name="preferredName"
             placeholder="Albert Einstein"

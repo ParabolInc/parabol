@@ -90,7 +90,6 @@ const Step3InviteTeam = (props) => {
           component={InputField}
           hasButton
           hasErrorText={invitesFieldHasError}
-          hasHelpText
           helpText={helpText}
           isLarger
           isWider

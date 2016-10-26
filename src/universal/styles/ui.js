@@ -46,6 +46,9 @@ const ui = {
     marginRight: 'auto'
   },
 
+  // Fields
+  fieldPaddingHorizontal: '.5rem',
+
   // Icons
   iconSize: '14px', // FontAwesome base
   iconSize2x: '28px', // FontAwesome 2x

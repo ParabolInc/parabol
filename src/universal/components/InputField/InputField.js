@@ -2,13 +2,18 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
+import Textarea from 'react-textarea-autosize';
+import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
+import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText';
+import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
+import FieldShortcutHint from 'universal/components/FieldShortcutHint/FieldShortcutHint';
 import IconButton from 'universal/components/IconButton/IconButton';
 
 const InputField = (props) => {
   const {
     autoFocus,
     hasErrorText,
-    hasHelpText,
     helpText,
     input,
     isWider,
@@ -16,53 +21,66 @@ const InputField = (props) => {
     buttonDisabled,
     buttonIcon,
     hasButton,
-    hasShortcutHint,
     isLarger,
+    label,
     onButtonClick,
     placeholder,
     shortcutHint,
     styles,
+    useTextarea
   } = props;
-
-  const shortcutHintStyles = css(
-    styles.shortcutHint,
-    buttonDisabled && styles.shortcutHintDisabled
-  );
-
-  const helpTextStyles = css(
-    styles.helpText,
-    hasErrorText && styles.helpTextError
-  );
 
   const inputStyles = css(
     // allow hotkeys to be triggered when inside a field input
     styles.field,
     styles[colorPalette],
     isLarger && styles.fieldLarger,
-    isWider && styles.fieldWider
+    isWider && styles.fieldWider,
+    useTextarea && styles.textarea
   );
 
+  const makeLabelNameForInput = () => {
+    let labelForName = null;
+    if (input && input.name) {
+      labelForName = input.name;
+    }
+    return labelForName;
+  };
+
   return (
-    <div className={css(styles.fieldBlock)}>
-      <input
-        {...input}
-        autoFocus={autoFocus}
-        className={`${inputStyles} mousetrap`}
-        placeholder={placeholder}
-      />
-      {hasButton &&
-        <div className={css(styles.buttonBlock)}>
-          <IconButton
-            disabled={buttonDisabled}
-            iconName={buttonIcon}
-            iconSize="2x"
-            onClick={onButtonClick}
-          />
-        </div>
+    <FieldBlock>
+      {label &&
+        <FieldLabel label={label} htmlFor={makeLabelNameForInput()} />
       }
-      {hasHelpText && <div className={helpTextStyles}>{helpText}</div>}
-      {hasShortcutHint && <div className={shortcutHintStyles}>{shortcutHint}</div>}
-    </div>
+      <div className={css(styles.inputBlock)}>
+        {useTextarea ?
+          <Textarea
+            {...input}
+            autoFocus={autoFocus}
+            className={`${inputStyles} mousetrap`}
+            placeholder={placeholder}
+          /> :
+          <input
+            {...input}
+            autoFocus={autoFocus}
+            className={`${inputStyles} mousetrap`}
+            placeholder={placeholder}
+          />
+        }
+        {hasButton &&
+          <div className={css(styles.buttonBlock)}>
+            <IconButton
+              disabled={buttonDisabled}
+              iconName={buttonIcon}
+              iconSize="2x"
+              onClick={onButtonClick}
+            />
+          </div>
+        }
+      </div>
+      {helpText && <FieldHelpText hasErrorText={hasErrorText} helpText={helpText} />}
+      {shortcutHint && <FieldShortcutHint disabled={buttonDisabled} hint={shortcutHint} />}
+    </FieldBlock>
   );
 };
 
@@ -71,16 +89,14 @@ InputField.defaultProps = {
 };
 
 InputField.propTypes = {
-  name: PropTypes.string,
   hasErrorText: PropTypes.bool,
-  hasHelpText: PropTypes.bool,
-  helpText: PropTypes.object,
+  helpText: PropTypes.any,
   autoFocus: PropTypes.bool,
   buttonDisabled: PropTypes.bool,
   buttonIcon: PropTypes.string,
   hasButton: PropTypes.bool,
-  hasShortcutHint: PropTypes.bool,
   isLarger: PropTypes.bool,
+  label: PropTypes.string,
   onButtonClick: PropTypes.func,
   placeholder: PropTypes.string,
   shortcutHint: PropTypes.string,
@@ -97,19 +113,13 @@ InputField.propTypes = {
   colorPalette: PropTypes.oneOf([
     'cool',
     'warm'
-  ])
+  ]),
+  useTextarea: PropTypes.bool
 };
 
 const fieldLightGray = appTheme.palette.dark50l;
 
 const styleThunk = () => ({
-  fieldBlock: {
-    margin: '0 auto',
-    maxWidth: '100%',
-    minWidth: '20rem',
-    position: 'relative'
-  },
-
   field: {
     border: 0,
     borderBottom: `1px dashed ${fieldLightGray}`,
@@ -118,7 +128,7 @@ const styleThunk = () => ({
     fontWeight: 700,
     lineHeight: 1.5,
     margin: '0 0 .5rem',
-    padding: '.125rem .5rem',
+    padding: `.125rem ${ui.fieldPaddingHorizontal}`,
     width: '100%',
 
     '::placeholder': {
@@ -180,6 +190,10 @@ const styleThunk = () => ({
     minWidth: '30rem'
   },
 
+  inputBlock: {
+    position: 'relative'
+  },
+
   buttonBlock: {
     left: '100%',
     padding: '0 0 0 1rem',
@@ -187,29 +201,8 @@ const styleThunk = () => ({
     top: '.375rem'
   },
 
-  helpText: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s3,
-    fontStyle: 'italic',
-    fontWeight: 700
-  },
-
-  // NOTE: Modifies helpText
-  helpTextError: {
-    color: appTheme.palette.warm
-  },
-
-  shortcutHint: {
-    color: appTheme.palette.warm,
-    fontSize: appTheme.typography.s3,
-    fontStyle: 'italic',
-    fontWeight: 700,
-    textAlign: 'right'
-  },
-
-  // NOTE: Modifies shortcutHint
-  shortcutHintDisabled: {
-    opacity: '.5'
+  textarea: {
+    minHeight: '6rem'
   }
 });
 

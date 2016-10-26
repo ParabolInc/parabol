@@ -39,7 +39,6 @@ const UserSettings = (props) => {
             <Field
               autoFocus
               component={InputField}
-              hasShortcutHint
               name="preferredName"
               placeholder="Albert Einstein"
               type="text"

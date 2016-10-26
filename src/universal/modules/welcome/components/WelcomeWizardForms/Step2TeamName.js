@@ -45,11 +45,10 @@ const Step2TeamName = (props) => {
           buttonIcon="check-circle"
           component={InputField}
           hasButton
-          hasShortcutHint
           name="teamName"
-          type="text"
           placeholder="The Beatles"
           shortcutHint="Press enter"
+          type="text"
         />
       </form>
     </div>

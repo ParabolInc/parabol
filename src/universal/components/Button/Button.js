@@ -105,7 +105,7 @@ Button.propTypes = {
     'inverted'
   ]),
   styles: PropTypes.object,
-  theme: PropTypes.oneOf([
+  colorPalette: PropTypes.oneOf([
     'cool',
     'warm',
     'dark',
@@ -166,6 +166,8 @@ const styleThunk = (customTheme, props) => ({
 
   isBlock: {
     display: 'block',
+    paddingLeft: '.25rem',
+    paddingRight: '.25rem',
     width: '100%'
   },
 

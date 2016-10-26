@@ -7,7 +7,7 @@ import IconButton from 'universal/components/IconButton/IconButton';
 import InputField from 'universal/components/InputField/InputField';
 import appTheme from 'universal/styles/theme/appTheme';
 
-const FieldsBlock = props => {
+const FieldArrayRow = props => {
   const {
     labelGetter,
     labelHeader,
@@ -73,7 +73,7 @@ const FieldsBlock = props => {
   );
 };
 
-FieldsBlock.propTypes = {
+FieldArrayRow.propTypes = {
   labelGetter: PropTypes.func.isRequired,
   labelHeader: PropTypes.string.isRequired,
   fields: PropTypes.object.isRequired,
@@ -145,4 +145,4 @@ const styleThunk = () => ({
   },
 });
 
-export default withStyles(styleThunk)(FieldsBlock);
+export default withStyles(styleThunk)(FieldArrayRow);

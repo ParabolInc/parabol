@@ -16,7 +16,7 @@ export default store => ({
     require('./meeting')(store),
     require('./summary')(store),
     // ...require('./meetingLayoutRoutes'),
-    // require('./patterns'),
+    require('./patterns'),
     require('./teamDashboard')(store),
     require('./userDashboard')(store),
     require('./welcome')(store),
