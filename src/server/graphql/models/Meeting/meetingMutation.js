@@ -1,7 +1,7 @@
 import getRethink from 'server/database/rethinkDriver';
 import {requireSUOrTeamMember} from '../authorization';
 import {Meeting} from './meetingSchema';
-import sendEmailPromise from 'server/email/sendEmail';
+import sendEmailSummary from './helpers/sendEmailSummary';
 
 import {
   GraphQLNonNull,
@@ -35,23 +35,12 @@ export default {
               })
           });
         });
-      const {facilitator, invitees, teamId, summarySentAt} = meeting;
+      const {teamId} = meeting;
       // perform the query before the check because 99.9% of attempts will be honest & that will save us a query
       requireSUOrTeamMember(authToken, teamId);
       const teamMemberId = `${authToken.sub}::${teamId}`;
-      if (facilitator === teamMemberId && !summarySentAt) {
-        // send the summary email
-        const userIds = invitees.map((doc) => doc.id.substr(0, doc.id.indexOf('::')));
-        const emails = await r.table('User')
-          .getAll(r.args(userIds))
-          .map((user) => user('email'));
-        const emailString = emails.join(', ');
-        const emailSuccess = await sendEmailPromise(emailString, 'summaryEmail', {meeting});
-        if (emailSuccess) {
-          const now = new Date();
-          await r.table('Meeting').get(meetingId).update({summarySentAt: now});
-        }
-      }
+      // call async function and don't worry about waiting
+      sendEmailSummary(meeting, teamMemberId);
       return meeting;
     }
   }

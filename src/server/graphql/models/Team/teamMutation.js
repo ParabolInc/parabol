@@ -290,7 +290,8 @@ export default {
         });
 
       // reset the meeting
-      await r.table('Team').get(teamId)
+      setTimeout(() => {
+        r.table('Team').get(teamId)
         .update({
           facilitatorPhase: LOBBY,
           meetingPhase: LOBBY,
@@ -328,7 +329,8 @@ export default {
                   });
             })
             );
-        });
+        }).run();
+      }, 5000);
       return true;
     }
   },
