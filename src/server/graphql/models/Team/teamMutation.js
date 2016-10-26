@@ -329,7 +329,8 @@ export default {
                   });
             })
             );
-        }).run();
+        })
+        .run();
       }, 5000);
       return true;
     }
