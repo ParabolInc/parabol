@@ -4,7 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 
 import appTheme from 'universal/styles/theme/appTheme';
 import {cashay} from 'cashay';
-import makeMeetingUrl from 'universal/utils/makeMeetingUrl';
+import makeHref from 'universal/utils/makeHref';
 import Button from 'universal/components/Button/Button';
 import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
@@ -28,7 +28,7 @@ const MeetingLobby = (props) => {
   const {id: teamId, name: teamName} = team;
 
   const onStartMeetingClick = createStartMeetingHandler(members);
-  const shortUrl = makeMeetingUrl(teamId);
+  const shortUrl = makeHref(`/team/${teamId}`);
   return (
     <MeetingMain>
       {/* */}

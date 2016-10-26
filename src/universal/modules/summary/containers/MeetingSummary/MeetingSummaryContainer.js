@@ -6,6 +6,7 @@ import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import SummaryEmail from 'universal/modules/email/components/SummaryEmail/SummaryEmail';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
+import makeHref from 'universal/utils/makeHref';
 
 const meetingSummaryQuery = `
 query{
@@ -105,8 +106,7 @@ export default class MeetingSummaryContainer extends Component {
     }
     const {teamId} = meeting;
     const title = `Action Meeting #${meeting.meetingNumber} Summary for ${meeting.teamName}`;
-    const origin = typeof window !== 'undefined' && window.location.origin || '';
-    const meetingUrl = `${origin}/meeting/${teamId}`;
+    const meetingUrl = makeHref(`/meeting/${teamId}`);
     const teamDashUrl = `/team/${teamId}`;
 
     return (
