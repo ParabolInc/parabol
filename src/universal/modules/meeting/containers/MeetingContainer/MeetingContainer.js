@@ -33,7 +33,7 @@ import {TEAMS} from 'universal/subscriptions/constants';
 import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 import withHotkey from 'react-hotkey-hoc';
 import getBestPhaseItem from 'universal/modules/meeting/helpers/getBestPhaseItem';
-import {showError} from 'universal/modules/notifications/ducks/notifications';
+import {showError, showInfo} from 'universal/modules/notifications/ducks/notifications';
 
 const resolveMeetingMembers = (queryData, userId) => {
   if (queryData !== resolveMeetingMembers.queryData) {
@@ -155,18 +155,24 @@ export default class MeetingContainer extends Component {
 
   componentWillReceiveProps(nextProps) {
     // make sure we still have a facilitator. if we don't elect a new one
-    const {team: {activeFacilitator}, members} = nextProps;
+    const {dispatch, team: {activeFacilitator}, members} = nextProps;
     if (activeFacilitator) {
       // if the meeting has started, find the facilitator
       const facilitatingMember = members.find((m) => m.isFacilitating);
       if (facilitatingMember && facilitatingMember.isConnected === false) {
         // if the facilitator isn't connected, then make the first connected guy elect a new one
         const onlineMembers = members.filter((m) => m.isConnected);
-        if (onlineMembers[0].isSelf) {
-          const firstFacilitator = members.find((m) => m.isFacilitator && m.isConnected) || onlineMembers[0];
-          const options = {variables: {facilitatorId: firstFacilitator.id}};
-          cashay.mutate('startMeeting', options);
+        const callingMember = onlineMembers[0];
+        const nextFacilitator = members.find((m) => m.isFacilitator && m.isConnected) || callingMember;
+        if (callingMember.isSelf) {
+          const options = {variables: {facilitatorId: nextFacilitator.id}};
+          cashay.mutate('changeFacilitator', options);
         }
+        const facilitatorIntro = nextFacilitator.isSelf ? 'You are' : `${nextFacilitator} is`;
+        dispatch(showInfo({
+          title: `${facilitatingMember.preferredName} Disconnected!`,
+          message: `${facilitatorIntro} the new facilitator`
+        }));
       }
     }
   }
