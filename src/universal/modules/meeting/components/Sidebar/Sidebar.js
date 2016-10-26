@@ -38,11 +38,8 @@ const Sidebar = (props) => {
           <img className={css(styles.brandLogo)} src={actionUIMark}/>
         </a>
         <Link className={css(styles.teamName)} to={`/team/${teamId}`} title={`Go to the ${teamName} Team Dashboard`}>{teamName}</Link>
-        <a className={css(styles.shortUrl)} href="/meetingLayout/lobby">{shortUrl}</a>
-        {/* TODO: make me respond to props */}
+        <a className={css(styles.shortUrl)} href={`/meeting/${teamId}`}>{shortUrl}</a>
       </div>
-
-      {/* TODO: make me respond to props */}
       <nav className={css(styles.nav)}>
         <ul className={css(styles.navList)}>
           <li className={checkInNavItemStyles}>
