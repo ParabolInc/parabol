@@ -4,7 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 
 import appTheme from 'universal/styles/theme/appTheme';
 import {cashay} from 'cashay';
-import makeMeetingUrl from 'universal/utils/makeMeetingUrl';
+import makeHref from 'universal/utils/makeHref';
 import Button from 'universal/components/Button/Button';
 import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
@@ -16,7 +16,7 @@ const createStartMeetingHandler = (members) => () => {
   if (!self) {
     throw new Error('You are not a member! How can that be?');
   }
-  const firstFacilitator = members.find(member => member.isFacilitator);
+  const firstFacilitator = members.find((m) => m.isFacilitator && m.isConnected);
   const safeFirstFacilitator = firstFacilitator || self;
   const facilitatorId = self.isFacilitator ? self.id : safeFirstFacilitator.id;
   const options = {variables: {facilitatorId}};
@@ -28,7 +28,7 @@ const MeetingLobby = (props) => {
   const {id: teamId, name: teamName} = team;
 
   const onStartMeetingClick = createStartMeetingHandler(members);
-  const shortUrl = makeMeetingUrl(teamId);
+  const shortUrl = makeHref(`/team/${teamId}`);
   return (
     <MeetingMain>
       {/* */}

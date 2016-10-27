@@ -6,6 +6,8 @@ import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import SummaryEmail from 'universal/modules/email/components/SummaryEmail/SummaryEmail';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
+import makeHref from 'universal/utils/makeHref';
+import {maintainSocket} from 'redux-socket-cluster';
 
 const meetingSummaryQuery = `
 query{
@@ -71,6 +73,7 @@ const mapStateToProps = (state, props) => {
 
 @requireAuth
 @connect(mapStateToProps)
+@maintainSocket
 export default class MeetingSummaryContainer extends Component {
   static propTypes = {
     dispatch: PropTypes.func,
@@ -105,8 +108,7 @@ export default class MeetingSummaryContainer extends Component {
     }
     const {teamId} = meeting;
     const title = `Action Meeting #${meeting.meetingNumber} Summary for ${meeting.teamName}`;
-    const origin = typeof window !== 'undefined' && window.location.origin || '';
-    const meetingUrl = `${origin}/meeting/${teamId}`;
+    const meetingUrl = makeHref(`/meeting/${teamId}`);
     const teamDashUrl = `/team/${teamId}`;
 
     return (
