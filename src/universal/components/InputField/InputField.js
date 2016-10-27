@@ -61,11 +61,15 @@ const InputField = (props) => {
         <FieldLabel label={label} htmlFor={makeLabelNameForInput()} />
       }
       <div className={css(styles.inputBlock)}>
+        // TODO: input and textarea should be broken out into separate components
+        //       this component 'InputField' can be renamed to wrap form components of any type
+        //       select, input, textarea, etc. that can use a label, help text, shortcut hints, etc.
         {useTextarea ?
           <Textarea
             {...input}
             autoFocus={autoFocus}
             className={`${inputStyles} mousetrap`}
+            disabled={disabled || readyOnly}
             placeholder={placeholder}
           /> :
           <input
