@@ -5,7 +5,9 @@
  */
 import * as querystring from 'querystring';
 
-export default function makeAppLink(location = '', qsMap) {
+export default function makeAppLink(_location, qsMap) {
+  // ugly workaround for uglify v2.7.4 https://github.com/mishoo/UglifyJS2/issues/1349
+  const location = _location || '';
   const proto = process.env.PROTO || 'http';
   const host = process.env.HOST || 'localhost';
   const port = process.env.PORT || '3000';
