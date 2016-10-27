@@ -11,6 +11,7 @@ import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
 import {withRouter} from 'react-router';
 import withHotkey from 'react-hotkey-hoc';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
+import {randomMultiEmails} from 'universal/utils/makeRandomPlaceholder';
 
 const emailInviteSuccess = {
   title: 'Invitation sent!',
@@ -95,7 +96,7 @@ const Step3InviteTeam = (props) => {
           isWider
           name="inviteesRaw"
           onButtonClick={onAddInviteesButtonClick}
-          placeholder="b.bunny@acme.co, d.duck@acme.co, e.fudd@acme.co"
+          placeholder={randomMultiEmails}
           type="text"
         />
       </div>

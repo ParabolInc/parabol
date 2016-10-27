@@ -6,6 +6,7 @@ import Button from 'universal/components/Button/Button';
 import InputField from 'universal/components/InputField/InputField';
 import {Field} from 'redux-form';
 import {ACTIVITY_WELCOME} from 'universal/modules/userDashboard/ducks/settingsDuck';
+import {randomPreferredName} from 'universal/utils/makeRandomPlaceholder';
 
 const renderActivity = (activity) => {
   if (activity === ACTIVITY_WELCOME) {
@@ -37,7 +38,7 @@ const UserSettings = (props) => {
               component={InputField}
               label="Name"
               name="preferredName"
-              placeholder="Albert Einstein"
+              placeholder={randomPreferredName}
               type="text"
             />
           </div>

@@ -6,6 +6,7 @@ import ui from 'universal/styles/ui';
 import Button from 'universal/components/Button/Button';
 import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText';
 import InputField from 'universal/components/InputField/InputField';
+import {randomTeamName} from 'universal/utils/makeRandomPlaceholder';
 
 const NewTeamForm = (props) => {
   const {formName, styles} = props;
@@ -23,7 +24,7 @@ const NewTeamForm = (props) => {
             colorPalette="gray"
             input={{name: 'TeamName'}}
             label="Team Name (required)"
-            placeholder="Random Team Name"
+            placeholder={randomTeamName}
           />
         </div>
         <div className={css(styles.formBlock)}>

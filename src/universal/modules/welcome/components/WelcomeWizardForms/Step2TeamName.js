@@ -8,6 +8,7 @@ import shortid from 'shortid';
 import {cashay} from 'cashay';
 import {setAuthToken} from 'universal/redux/authDuck';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
+import {randomTeamName} from 'universal/utils/makeRandomPlaceholder';
 
 const Step2TeamName = (props) => {
   const {dispatch, handleSubmit, preferredName, teamName} = props;
@@ -47,7 +48,7 @@ const Step2TeamName = (props) => {
           hasButton
           isLarger
           name="teamName"
-          placeholder="The Beatles"
+          placeholder={randomTeamName}
           shortcutHint="Press enter"
           type="text"
         />

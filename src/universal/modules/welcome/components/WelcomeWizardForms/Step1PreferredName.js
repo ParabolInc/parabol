@@ -5,6 +5,7 @@ import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import {cashay} from 'cashay';
 import {nextPage, updateCompleted} from 'universal/modules/welcome/ducks/welcomeDuck';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
+import {randomPreferredName} from 'universal/utils/makeRandomPlaceholder';
 
 const reduxFormOptions = {
   form: 'welcomeWizard',
@@ -62,7 +63,7 @@ export default class Step1PreferredName extends Component {
             hasButton
             isLarger
             name="preferredName"
-            placeholder="Albert Einstein"
+            placeholder={randomPreferredName}
             shortcutHint="Press enter"
             type="text"
           />
