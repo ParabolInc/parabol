@@ -67,12 +67,6 @@ export default {
       __WEBPACK__: true,
       'process.env.NODE_ENV': JSON.stringify('development')
     }),
-    new webpack.EnvironmentPlugin([
-      'AUTH0_CLIENT_ID',
-      'AUTH0_DOMAIN',
-      'HOST',
-      'PORT'
-    ]),
     new HappyPack({
       loaders: ['babel'],
       threads: 4,
