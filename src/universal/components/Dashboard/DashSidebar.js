@@ -12,7 +12,11 @@ import StandardHubContainer from 'universal/containers/StandardHub/StandardHubCo
 import Logo from 'universal/styles/theme/images/brand/parabol-lockup-h.svg';
 
 const DashSidebar = (props) => {
-  const {isUserSettings, styles} = props;
+  const {isNewTeam, isUserSettings, styles} = props;
+  const addNewStyles = css(
+    styles.addTeam,
+    isNewTeam && styles.addTeamDisabled
+  );
   return (
     <div className={css(styles.root)}>
       {isUserSettings ? <SettingsHub/> : <StandardHubContainer/>}
@@ -26,8 +30,8 @@ const DashSidebar = (props) => {
         <div className={css(styles.navLabel)}>
           My Teams
         </div>
-        <DashNavListContainer/>
-        <div className={css(styles.addTeam)} title="Add New Team">
+        <DashNavListContainer isNewTeam={isNewTeam}/>
+        <div className={addNewStyles} title="Add New Team">
           <div className={css(styles.addTeamIcon)}>
             <FontAwesome name="plus-square" />
           </div>
@@ -47,6 +51,7 @@ const DashSidebar = (props) => {
 
 DashSidebar.propTypes = {
   styles: PropTypes.object,
+  isNewTeam: PropTypes.bool,
   isUserSettings: PropTypes.bool
 };
 
@@ -94,6 +99,11 @@ const styleThunk = () => ({
     ':focus': {
       opacity: '.5'
     }
+  },
+
+  addTeamDisabled: {
+    cursor: 'default',
+    opacity: '.5'
   },
 
   addTeamIcon: {
