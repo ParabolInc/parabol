@@ -55,11 +55,6 @@ const InputField = (props) => {
     return labelForName;
   };
 
-  console.dir(styles.cool);
-  console.dir(styles.gray);
-  console.dir(styles.warm);
-  console.dir(styles.white);
-
   return (
     <FieldBlock>
       {label &&

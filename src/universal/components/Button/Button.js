@@ -53,7 +53,7 @@ const makeOutlinedTheme = (color, opacity = '.5') => ({
 });
 
 const makePropColors = (style, colorPalette) => {
-  const color = buttonPalette[colorPalette] || white;
+  const color = buttonPalette[colorPalette];
   if (style === 'outlined') {
     return makeOutlinedTheme(color);
   }
