@@ -107,7 +107,7 @@ const Step3InviteTeam = (props) => {
               labelGetter={(idx) => invitees[idx].label}
               labelHeader="Invitee"
               labelSource="invitees"
-              nestedFieldHeader="This Week's Priority"
+              nestedFieldHeader="This Week’s Priority (optional)"
               nestedFieldName="task"
             />
           </div>
