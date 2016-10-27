@@ -45,6 +45,7 @@ const Step2TeamName = (props) => {
           buttonIcon="check-circle"
           component={InputField}
           hasButton
+          isLarger
           name="teamName"
           placeholder="The Beatles"
           shortcutHint="Press enter"

@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
 import {DashContent, DashHeader, DashHeaderInfo} from 'universal/components/Dashboard';
 import Button from 'universal/components/Button/Button';
 import InputField from 'universal/components/InputField/InputField';
@@ -33,12 +32,10 @@ const UserSettings = (props) => {
             {renderActivity(activity)}
           </div>
           <div className={css(styles.row)}>
-            <div className={css(styles.label)}>
-              Name
-            </div>
             <Field
               autoFocus
               component={InputField}
+              label="Name"
               name="preferredName"
               placeholder="Albert Einstein"
               type="text"
@@ -83,15 +80,6 @@ const styleThunk = () => ({
 
   row: {
     margin: '0 0 1.5rem'
-  },
-
-  label: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s2,
-    fontWeight: 700,
-    margin: '0 0 .5rem',
-    padding: '0 0 0 .5rem',
-    textTransform: 'uppercase'
   }
 });
 

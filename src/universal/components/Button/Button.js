@@ -4,8 +4,18 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import tinycolor from 'tinycolor2';
 
-const {dark} = appTheme.palette;
+const {cool, warm, dark, mid, light} = appTheme.palette;
 const white = '#fff';
+const gray = appTheme.palette.mid20l;
+const buttonPalette = {
+  cool,
+  warm,
+  dark,
+  mid,
+  light,
+  gray,
+  white
+};
 
 const makeSolidTheme = (themeColor, textColor = '#fff', style = 'solid', opacity = '.65') => {
   const buttonColor = style === 'inverted' ? tinycolor.mix(themeColor, '#fff', 90).toHexString() : themeColor;
@@ -43,12 +53,12 @@ const makeOutlinedTheme = (color, opacity = '.5') => ({
 });
 
 const makePropColors = (style, colorPalette) => {
-  const color = appTheme.palette[colorPalette] || white;
+  const color = buttonPalette[colorPalette] || white;
   if (style === 'outlined') {
     return makeOutlinedTheme(color);
   }
   const baseTextColor = style === 'inverted' ? color : white;
-  const textColor = (colorPalette === 'white' || colorPalette === 'light') ? dark : baseTextColor;
+  const textColor = (colorPalette === 'white' || colorPalette === 'light' || colorPalette === 'gray') ? dark : baseTextColor;
   return makeSolidTheme(color, textColor, style);
 };
 
@@ -88,6 +98,7 @@ const Button = (props) => {
 };
 
 Button.propTypes = {
+  borderRadius: PropTypes.string,
   disabled: PropTypes.bool,
   isBlock: PropTypes.bool,
   label: PropTypes.string,
@@ -111,15 +122,24 @@ Button.propTypes = {
     'dark',
     'mid',
     'light',
-    'white'
+    'white',
+    'gray'
+  ]),
+  textTransform: PropTypes.oneOf([
+    'none',
+    'uppercase'
   ]),
   title: PropTypes.string,
   type: PropTypes.oneOf([
     'button',
     'menu',
-    'submit',
-    'reset'
+    'reset',
+    'submit'
   ])
+};
+
+Button.defaultProps = {
+  type: 'button'
 };
 
 const keyframesDip = {
@@ -138,6 +158,7 @@ const styleThunk = (customTheme, props) => ({
   // Button base
   base: {
     border: '1px solid transparent',
+    borderRadius: props.borderRadius || 0,
     cursor: 'pointer',
     display: 'inline-block',
     fontSize: '1rem',
@@ -147,7 +168,7 @@ const styleThunk = (customTheme, props) => ({
     padding: '1em 2em',
     textAlign: 'center',
     textDecoration: 'none',
-    textTransform: 'uppercase',
+    textTransform: props.textTransform || 'none',
     userSelect: 'none',
 
     ':hover': {

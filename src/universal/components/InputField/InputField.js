@@ -3,6 +3,8 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
+
 import Textarea from 'react-textarea-autosize';
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
 import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText';
@@ -14,14 +16,17 @@ const InputField = (props) => {
   const {
     autoFocus,
     hasErrorText,
+    hasTransparentBackground,
     helpText,
-    input,
-    isWider,
     colorPalette,
     buttonDisabled,
     buttonIcon,
     hasButton,
+    input,
+    disabled,
     isLarger,
+    readyOnly,
+    isWider,
     label,
     onButtonClick,
     placeholder,
@@ -33,8 +38,11 @@ const InputField = (props) => {
   const inputStyles = css(
     // allow hotkeys to be triggered when inside a field input
     styles.field,
-    styles[colorPalette],
+    colorPalette ? styles[colorPalette] : styles.white,
+    hasTransparentBackground && styles.transparentBackground,
+    disabled && styles.disabled,
     isLarger && styles.fieldLarger,
+    readyOnly && styles.readyOnly,
     isWider && styles.fieldWider,
     useTextarea && styles.textarea
   );
@@ -46,6 +54,11 @@ const InputField = (props) => {
     }
     return labelForName;
   };
+
+  console.dir(styles.cool);
+  console.dir(styles.gray);
+  console.dir(styles.warm);
+  console.dir(styles.white);
 
   return (
     <FieldBlock>
@@ -64,6 +77,7 @@ const InputField = (props) => {
             {...input}
             autoFocus={autoFocus}
             className={`${inputStyles} mousetrap`}
+            disabled={disabled || readyOnly}
             placeholder={placeholder}
           />
         }
@@ -84,18 +98,17 @@ const InputField = (props) => {
   );
 };
 
-InputField.defaultProps = {
-  colorPalette: 'cool'
-};
-
 InputField.propTypes = {
+  hasTransparentBackground: PropTypes.bool,
   hasErrorText: PropTypes.bool,
   helpText: PropTypes.any,
   autoFocus: PropTypes.bool,
   buttonDisabled: PropTypes.bool,
   buttonIcon: PropTypes.string,
   hasButton: PropTypes.bool,
+  disabled: PropTypes.bool,
   isLarger: PropTypes.bool,
+  readyOnly: PropTypes.bool,
   label: PropTypes.string,
   onButtonClick: PropTypes.func,
   placeholder: PropTypes.string,
@@ -112,80 +125,119 @@ InputField.propTypes = {
   styles: PropTypes.object,
   colorPalette: PropTypes.oneOf([
     'cool',
-    'warm'
+    'gray',
+    'warm',
+    'white'
   ]),
   useTextarea: PropTypes.bool
 };
 
-const fieldLightGray = appTheme.palette.dark50l;
+const palettes = {
+  cool: {
+    backgroundColor: appTheme.palette.cool10l,
+    borderColor: appTheme.palette.cool40l,
+    color: appTheme.palette.cool,
+    focusBorderColor: appTheme.palette.cool,
+    placeholder: makePlaceholderStyles(appTheme.palette.cool70l),
+    selection: appTheme.palette.cool20l
+  },
+  gray: {
+    backgroundColor: appTheme.palette.mid10l,
+    borderColor: appTheme.palette.mid40l,
+    color: appTheme.palette.dark,
+    focusBorderColor: appTheme.palette.dark,
+    placeholder: makePlaceholderStyles(appTheme.palette.mid70l),
+    selection: appTheme.palette.mid20l
+  },
+  warm: {
+    backgroundColor: appTheme.palette.warm10l,
+    borderColor: appTheme.palette.warm40l,
+    color: appTheme.palette.warm,
+    focusBorderColor: appTheme.palette.warm,
+    placeholder: makePlaceholderStyles(appTheme.palette.warm70l),
+    selection: appTheme.palette.warm20l
+  },
+  white: {
+    backgroundColor: '#fff',
+    borderColor: appTheme.palette.mid40l,
+    color: appTheme.palette.dark,
+    focusBorderColor: appTheme.palette.dark,
+    placeholder: makePlaceholderStyles(appTheme.palette.mid70l),
+    selection: appTheme.palette.mid20l
+  }
+};
+
+const makeColorPalette = (theme) => {
+  return {
+    backgroundColor: palettes[theme].backgroundColor,
+    borderColor: palettes[theme].borderColor,
+    color: palettes[theme].color,
+    ...palettes[theme].placeholder,
+    '::selection': {
+      backgroundColor: palettes[theme].selection
+    },
+    ':focus': {
+      borderColor: palettes[theme].focusBorderColor,
+      outline: 'none'
+    },
+    ':active': {
+      borderColor: palettes[theme].focusBorderColor,
+      outline: 'none'
+    }
+  };
+};
+
+const readOnlyStyles = {
+  borderColor: 'transparent',
+  ':focus': {
+    borderColor: 'transparent'
+  },
+  ':active': {
+    borderColor: 'transparent'
+  }
+};
 
 const styleThunk = () => ({
   field: {
+    appearance: 'none',
     border: 0,
-    borderBottom: `1px dashed ${fieldLightGray}`,
+    borderBottom: '1px solid transparent',
+    borderRadius: 0,
     boxShadow: 'none',
+    display: 'block', // Todo: make inlineBlock wrapper (TA)
+    fontFamily: appTheme.typography.sansSerif,
     fontSize: appTheme.typography.s4,
-    fontWeight: 700,
-    lineHeight: 1.5,
-    margin: '0 0 .5rem',
+    lineHeight: '1.75rem',
+    margin: '0',
     padding: `.125rem ${ui.fieldPaddingHorizontal}`,
     width: '100%',
-
-    '::placeholder': {
-      color: fieldLightGray
-    },
-
-    // NOTE: :focus, :active have same styles
-    ':focus': {
-      borderStyle: 'solid',
-      outline: 'none'
-    },
-    ':active': {
-      borderStyle: 'solid',
-      outline: 'none'
-    }
   },
 
-  cool: {
-    '::selection': {
-      backgroundColor: appTheme.palette.cool10l
-    },
+  cool: makeColorPalette('cool'),
+  gray: makeColorPalette('gray'),
+  warm: makeColorPalette('warm'),
+  white: makeColorPalette('white'),
 
-    // NOTE: :focus, :active have same styles
-    ':focus': {
-      borderColor: appTheme.palette.cool50l,
-      color: appTheme.palette.cool,
-    },
-    ':active': {
-      borderColor: appTheme.palette.cool50l,
-      color: appTheme.palette.cool,
-    }
+  disabled: {
+    ...readOnlyStyles,
+    cursor: 'not-allowed'
   },
 
-  warm: {
-    '::selection': {
-      backgroundColor: appTheme.palette.warm10l
-    },
-
-    // NOTE: :focus, :active have same styles
-    ':focus': {
-      borderColor: appTheme.palette.warm50l,
-      color: appTheme.palette.warm,
-    },
-    ':active': {
-      borderColor: appTheme.palette.warm50l,
-      color: appTheme.palette.warm,
-    }
+  readyOnly: {
+    ...readOnlyStyles,
+    cursor: 'default'
   },
 
-  // NOTE: Modifies field
+  transparentBackground: {
+    backgroundColor: 'transparent'
+  },
+
   fieldLarger: {
-    borderBottomWidth: '2px',
     fontSize: appTheme.typography.s6,
-    fontWeight: 400
+    fontWeight: 400,
+    lineHeight: '2.625rem',
   },
 
-  // NOTE: Modifies field
   fieldWider: {
     minWidth: '30rem'
   },

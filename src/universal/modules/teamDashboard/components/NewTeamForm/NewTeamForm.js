@@ -2,7 +2,9 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 import Button from 'universal/components/Button/Button';
+import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText';
 import InputField from 'universal/components/InputField/InputField';
 
 const NewTeamForm = (props) => {
@@ -10,46 +12,55 @@ const NewTeamForm = (props) => {
   const handleSubmit = () => {
     console.log();
   };
+  const buttonDisabled = true;
+  const buttonLabel = buttonDisabled ? 'Create Team*' : 'Create Team';
   return (
-    <form className={css(styles.root)} onSubmit={handleSubmit}>
-      <h1 className={css(styles.heading)}>{formName}</h1>
-      <div className={css(styles.formBlock)}>
-        <InputField
-          input={{name: 'TeamName'}}
-          label="Team Name (required)"
-          placeholder="Random Team Name"
-        />
-      </div>
-      <div className={css(styles.formBlock)}>
-        <InputField
-          helpText={'Separate multiple emails with a comma.'}
-          input={{name: 'TeamName'}}
-          label="Invite Team Members (optional)"
-          placeholder="Email addresses*"
-          useTextarea
-        />
-      </div>
-      <div className={css(styles.buttonGroup)}>
-        <div className={css(styles.buttonGroupLeft)}>
-          <Button
-            colorPalette="light"
-            isBlock
-            label="Cancel"
-            size="small"
-            type="button"
+    <div className={css(styles.root)}>
+      <form className={css(styles.form)} onSubmit={handleSubmit}>
+        <h1 className={css(styles.heading)}>{formName}</h1>
+        <div className={css(styles.formBlock)}>
+          <InputField
+            colorPalette="gray"
+            input={{name: 'TeamName'}}
+            label="Team Name (required)"
+            placeholder="Random Team Name"
           />
         </div>
-        <div className={css(styles.buttonGroupRight)}>
-          <Button
-            colorPalette="warm"
-            isBlock
-            label="Create Team"
-            size="small"
-            type="submit"
+        <div className={css(styles.formBlock)}>
+          <InputField
+            colorPalette="gray"
+            helpText={'*Separate multiple emails with a comma.'}
+            input={{name: 'InviteTeamMembers'}}
+            label="Invite Team Members (optional)"
+            placeholder="Email addresses*"
+            useTextarea
           />
         </div>
-      </div>
-    </form>
+        <div className={css(styles.buttonGroup)}>
+          <div className={css(styles.buttonGroupLeft)}>
+            <Button
+              colorPalette="gray"
+              isBlock
+              label="Cancel"
+              size="small"
+            />
+          </div>
+          <div className={css(styles.buttonGroupRight)}>
+            <Button
+              colorPalette="warm"
+              isBlock
+              disabled={buttonDisabled}
+              label={buttonLabel}
+              size="small"
+              type="submit"
+            />
+            {buttonDisabled &&
+              <FieldHelpText align="center" helpText="*Disabled (add Team Name)" resetPadding />
+            }
+          </div>
+        </div>
+      </form>
+    </div>
   );
 };
 
@@ -69,17 +80,30 @@ const inlineBlock = {
 
 const styleThunk = () => ({
   root: {
-    maxWidth: '20rem'
+    '@media screen and (min-width: 48rem)': {
+      borderLeft: `.25rem solid ${appTheme.palette.mid50l}`,
+      margin: '2rem 0',
+      padding: '0 2rem'
+    }
+  },
+
+  form: {
+    margin: 0,
+    maxWidth: '20rem',
+    padding: 0
   },
 
   heading: {
     color: appTheme.palette.mid,
-    fontSize: '2rem',
-    fontWeight: 400
+    fontSize: appTheme.typography.s6,
+    fontWeight: 400,
+    lineHeight: '2rem',
+    margin: '0 auto 1.5rem',
+    padding: `0 ${ui.fieldPaddingHorizontal}`
   },
 
   formBlock: {
-    margin: '2rem auto'
+    margin: '0 auto 2rem'
   },
 
   buttonGroup: {

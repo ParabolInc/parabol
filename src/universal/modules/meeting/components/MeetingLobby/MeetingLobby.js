@@ -47,6 +47,7 @@ const MeetingLobby = (props) => {
             size="largest"
             style="outlined"
             colorPalette="cool"
+            textTransform="uppercase"
           />
         </div>
         {/* */}

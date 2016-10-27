@@ -47,7 +47,8 @@ const ui = {
   },
 
   // Fields
-  fieldPaddingHorizontal: '.5rem',
+  fieldLabelGutter: '.5rem',
+  fieldPaddingHorizontal: '.75rem',
 
   // Icons
   iconSize: '14px', // FontAwesome base
