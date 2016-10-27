@@ -3,7 +3,7 @@ import React, {Component, PropTypes} from 'react';
 const initializeComponent = (initializer, componentId) => (WrappedComponent) => {
   return class InitializedRedux extends Component {
     static contextTypes = {
-      store: PropTypes.object
+      store: PropTypes.object.isRequired
     };
 
     componentWillMount() {

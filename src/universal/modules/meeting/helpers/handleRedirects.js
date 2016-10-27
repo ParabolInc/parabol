@@ -82,8 +82,7 @@ export default function handleRedirects(team, localPhase, localPhaseItem, oldTea
     return false;
   }
 
-  // if we finished the meeting & then got a message to go to the lobby, ignore it
-  return !(team.facilitatorPhase === LOBBY && oldTeam.facilitatorPhase === SUMMARY);
+  return true;
 
   /**
    * For agenda items, the localPhase should point to the sortOrder

@@ -1659,7 +1659,7 @@ caseless@~0.11.0:
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.11.0.tgz#715b96ea9841593cc33067923f5ec60ebda4f7d7"
 
-cashay@^0.20.12:
+cashay@^0.20.13:
   version "0.20.13"
   resolved "https://registry.yarnpkg.com/cashay/-/cashay-0.20.13.tgz#0f975215c84a350b0de3856273b2d8df08a57109"
   dependencies:
@@ -5604,9 +5604,9 @@ redux-segment@^1.4.2:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/redux-segment/-/redux-segment-1.4.2.tgz#79a2a4878f15ea56b855e5adfae9af5a46ed7bec"
 
-redux-socket-cluster@^0.9.2:
-  version "0.9.2"
-  resolved "https://registry.yarnpkg.com/redux-socket-cluster/-/redux-socket-cluster-0.9.2.tgz#36cf51f18720e72dd05c6277b406fe40d785d1df"
+redux-socket-cluster@^0.10.1:
+  version "0.10.1"
+  resolved "https://registry.yarnpkg.com/redux-socket-cluster/-/redux-socket-cluster-0.10.1.tgz#76c1917f2b621d826e52b532235d04aa62485759"
   dependencies:
     es6-promisify "^4.1.0"
     react "^15.3.0"
