@@ -1,7 +1,9 @@
+/*
+ * This function can be imported from universal as a fallback
+ * for making links during SSR. Be careful what you import
+ * here.
+ */
 import * as querystring from 'querystring';
-import {getDotenv} from 'universal/utils/dotenv';
-
-getDotenv();
 
 export default function makeAppLink(location = '', qsMap) {
   const proto = process.env.PROTO || 'http';
