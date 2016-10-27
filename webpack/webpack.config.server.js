@@ -1,6 +1,5 @@
 import path from 'path';
 import webpack from 'webpack';
-import HappyPack from 'happypack';
 import WebpackShellPlugin from 'webpack-shell-plugin';
 const root = process.cwd();
 const serverInclude = [
@@ -42,11 +41,6 @@ export default {
       __WEBPACK__: true,
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
-    new HappyPack({
-      loaders: ['babel'],
-      threads: 2,
-      verbose: false
-    }),
     new WebpackShellPlugin({
       onBuildStart: [
         'node_modules/.bin/babel-node ./webpack/utils/buildThemeJSON.js'
@@ -63,7 +57,7 @@ export default {
       {test: /\.(eot|ttf|wav|mp3)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file-loader'},
       {
         test: /\.js$/,
-        loader: 'happypack/loader',
+        loader: 'babel',
         include: serverInclude
       },
       {

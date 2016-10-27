@@ -1,7 +1,6 @@
 import path from 'path';
 import webpack from 'webpack';
 import AssetsPlugin from 'manifest-assets-webpack-plugin';
-import HappyPack from 'happypack';
 import WebpackShellPlugin from 'webpack-shell-plugin';
 import {getDotenv} from '../src/universal/utils/dotenv';
 
@@ -71,11 +70,6 @@ export default {
       __WEBPACK__: true,
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
-    new HappyPack({
-      loaders: ['babel'],
-      threads: 2,
-      verbose: false
-    }),
     new WebpackShellPlugin({
       onBuildStart: [
         'node_modules/.bin/babel-node ./webpack/utils/buildThemeJSON.js'
@@ -89,7 +83,7 @@ export default {
       {test: /\.(eot|ttf|wav|mp3)(\?\S*)?$/, loader: 'file-loader'},
       {
         test: /\.js$/,
-        loader: 'happypack/loader',
+        loader: 'babel',
         include: clientInclude
       },
       {
