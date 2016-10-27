@@ -7,6 +7,7 @@ import SummaryEmail from 'universal/modules/email/components/SummaryEmail/Summar
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
 import makeHref from 'universal/utils/makeHref';
+import {maintainSocket} from 'redux-socket-cluster';
 
 const meetingSummaryQuery = `
 query{
@@ -72,6 +73,7 @@ const mapStateToProps = (state, props) => {
 
 @requireAuth
 @connect(mapStateToProps)
+@maintainSocket
 export default class MeetingSummaryContainer extends Component {
   static propTypes = {
     dispatch: PropTypes.func,

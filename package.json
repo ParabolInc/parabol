@@ -123,7 +123,7 @@
     "redux-form": "^6.0.5",
     "redux-logger": "2.6.1",
     "redux-segment": "^1.4.2",
-    "redux-socket-cluster": "^0.9.2",
+    "redux-socket-cluster": "^0.10.0",
     "redux-storage-engine-localstorage": "^1.1.2",
     "redux-storage-whitelist-fn": "^4.0.1",
     "redux-thunk": "2.1.0",
