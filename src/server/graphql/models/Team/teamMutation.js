@@ -295,45 +295,45 @@ export default {
       // reset the meeting
       setTimeout(() => {
         r.table('Team').get(teamId)
-        .update({
-          facilitatorPhase: LOBBY,
-          meetingPhase: LOBBY,
-          meetingId: null,
-          facilitatorPhaseItem: null,
-          meetingPhaseItem: null,
-          activeFacilitator: null
-        })
-        .do(() => {
-          // flag agenda items as inactive (more or less deleted)
-          return r.table('AgendaItem').getAll(teamId, {index: 'teamId'})
-            .update({
-              isActive: false
-            });
-        })
-        .do(() => {
-          // archive projects that are DONE
-          return r.table('Project').getAll(teamId, {index: 'teamId'})
-            .filter({status: DONE})
-            .update({
-              isArchived: true
-            });
-        })
-        .do(() => {
-          // shuffle the teamMember check in order, uncheck them in
-          return r.table('TeamMember')
-            .getAll(teamId, {index: 'teamId'})
-            .sample(100000)
-            .coerceTo('array')
-            .do((arr) => arr.forEach((doc) => {
-              return r.table('TeamMember').get(doc('id'))
-                  .update({
-                    checkInOrder: arr.offsetsOf(doc).nth(0),
-                    isCheckedIn: null
-                  });
-            })
-            );
-        })
-        .run();
+          .update({
+            facilitatorPhase: LOBBY,
+            meetingPhase: LOBBY,
+            meetingId: null,
+            facilitatorPhaseItem: null,
+            meetingPhaseItem: null,
+            activeFacilitator: null
+          })
+          .do(() => {
+            // flag agenda items as inactive (more or less deleted)
+            return r.table('AgendaItem').getAll(teamId, {index: 'teamId'})
+              .update({
+                isActive: false
+              });
+          })
+          .do(() => {
+            // archive projects that are DONE
+            return r.table('Project').getAll(teamId, {index: 'teamId'})
+              .filter({status: DONE})
+              .update({
+                isArchived: true
+              });
+          })
+          .do(() => {
+            // shuffle the teamMember check in order, uncheck them in
+            return r.table('TeamMember')
+              .getAll(teamId, {index: 'teamId'})
+              .sample(100000)
+              .coerceTo('array')
+              .do((arr) => arr.forEach((doc) => {
+                  return r.table('TeamMember').get(doc('id'))
+                    .update({
+                      checkInOrder: arr.offsetsOf(doc).nth(0),
+                      isCheckedIn: null
+                    });
+                })
+              );
+          })
+          .run();
       }, 5000);
       return true;
     }
@@ -381,11 +381,8 @@ export default {
       const authTokenObj = socket.getAuthToken();
       authTokenObj.tms = Array.isArray(authTokenObj.tms) ? authTokenObj.tms.concat(teamId) : [teamId];
       socket.setAuthToken(authTokenObj);
-      const dbPromises = [
-        createTeamAndLeader(authToken, newTeam),
-        asyncInviteTeam(authToken, teamId, invitees)
-      ];
-      await Promise.all(dbPromises);
+      await createTeamAndLeader(authToken, newTeam);
+      await asyncInviteTeam(authToken, teamId, invitees);
       return true;
     }
   },

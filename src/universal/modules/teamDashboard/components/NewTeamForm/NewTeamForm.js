@@ -72,7 +72,6 @@ const NewTeamForm = (props) => {
             <Button
               colorPalette="warm"
               isBlock
-              disabled={buttonDisabled}
               label={buttonLabel}
               size="small"
               type="submit"
