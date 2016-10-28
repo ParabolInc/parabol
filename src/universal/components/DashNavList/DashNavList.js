@@ -4,6 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import DashNavItem from '../Dashboard/DashNavItem';
 import appTheme from 'universal/styles/theme/appTheme';
 import DashNavItemBaseStyles from '../Dashboard/DashNavItemBaseStyles';
+import Ellipsis from '../Ellipsis/Ellipsis';
 
 const DashNavList = (props) => {
   const {isNewTeam, teams, styles} = props;
@@ -22,7 +23,7 @@ const DashNavList = (props) => {
           )}
           {isNewTeam &&
             <div className={css(styles.newTeamPlaceholder)}>
-              {'New Team…'}
+              {'New Team'}<Ellipsis fontSize="1em" />
             </div>
           }
         </div> :
