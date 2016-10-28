@@ -1,6 +1,5 @@
 import path from 'path';
 import webpack from 'webpack';
-import HappyPack from 'happypack';
 import { getDotenv } from '../src/universal/utils/dotenv';
 // import UnusedFilesWebpackPlugin from "unused-files-webpack-plugin";
 
@@ -67,17 +66,6 @@ export default {
       __WEBPACK__: true,
       'process.env.NODE_ENV': JSON.stringify('development')
     }),
-    new webpack.EnvironmentPlugin([
-      'AUTH0_CLIENT_ID',
-      'AUTH0_DOMAIN',
-      'HOST',
-      'PORT'
-    ]),
-    new HappyPack({
-      loaders: ['babel'],
-      threads: 4,
-      verbose: false
-    }),
     // new UnusedFilesWebpackPlugin()
   ],
   resolve: {
@@ -91,7 +79,7 @@ export default {
       {test: /\.(eot|ttf|wav|mp3|woff|woff2)(\?\S*)?$/, loader: 'file-loader'},
       {
         test: /\.js$/,
-        loader: 'happypack/loader',
+        loader: 'babel',
         query: babelQuery,
         include: clientInclude
       },

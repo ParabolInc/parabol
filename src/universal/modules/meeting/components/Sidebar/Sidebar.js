@@ -6,7 +6,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import {CHECKIN, UPDATES, FIRST_CALL, SUMMARY, phaseArray} from 'universal/utils/constants';
-import makeMeetingUrl from 'universal/utils/makeMeetingUrl';
+import makeHref from 'universal/utils/makeHref';
 import {Link} from 'react-router';
 import AgendaListAndInputContainer from 'universal/modules/teamDashboard/containers/AgendaListAndInput/AgendaListAndInputContainer';
 import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
@@ -23,7 +23,8 @@ const Sidebar = (props) => {
     teamId
   } = props;
 
-  const shortUrl = makeMeetingUrl(teamId);
+  const relativeLink = `/meeting/${teamId}`;
+  const shortUrl = makeHref(relativeLink);
   const checkInLinkStyles = css(styles.navListItemLink, localPhase === CHECKIN && styles.navListItemLinkActive);
   const updatesLinkStyles = css(styles.navListItemLink, localPhase === UPDATES && styles.navListItemLinkActive);
   const requestsLinkStyles = css(styles.navListItemLink, inAgendaGroup(localPhase) && styles.navListItemLinkActive);
@@ -38,11 +39,8 @@ const Sidebar = (props) => {
           <img className={css(styles.brandLogo)} src={actionUIMark}/>
         </a>
         <Link className={css(styles.teamName)} to={`/team/${teamId}`} title={`Go to the ${teamName} Team Dashboard`}>{teamName}</Link>
-        <a className={css(styles.shortUrl)} href="/meetingLayout/lobby">{shortUrl}</a>
-        {/* TODO: make me respond to props */}
+        <a className={css(styles.shortUrl)} href={relativeLink}>{shortUrl}</a>
       </div>
-
-      {/* TODO: make me respond to props */}
       <nav className={css(styles.nav)}>
         <ul className={css(styles.navList)}>
           <li className={checkInNavItemStyles}>

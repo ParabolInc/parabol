@@ -3,7 +3,6 @@ import Landing from 'universal/modules/landing/components/Landing/Landing';
 import Helmet from 'react-helmet';
 import {showLock} from 'universal/components/Auth0ShowLock/Auth0ShowLock';
 import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
-import {injectStyleOnce} from 'aphrodite-local-styles/lib/inject';
 import injectGlobals from 'universal/styles/hepha';
 import auth0Overrides from 'universal/styles/theme/auth0Overrides';
 
@@ -21,7 +20,7 @@ export default class LandingContainer extends Component {
   };
 
   componentWillMount() {
-    injectGlobals(injectStyleOnce, auth0Overrides);
+    injectGlobals(auth0Overrides);
   }
 
   render() {

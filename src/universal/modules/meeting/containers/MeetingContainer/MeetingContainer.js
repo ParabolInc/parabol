@@ -33,7 +33,7 @@ import {TEAMS} from 'universal/subscriptions/constants';
 import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 import withHotkey from 'react-hotkey-hoc';
 import getBestPhaseItem from 'universal/modules/meeting/helpers/getBestPhaseItem';
-import {showError} from 'universal/modules/notifications/ducks/notifications';
+import {showError, showInfo} from 'universal/modules/notifications/ducks/notifications';
 
 const resolveMeetingMembers = (queryData, userId) => {
   if (queryData !== resolveMeetingMembers.queryData) {
@@ -45,7 +45,7 @@ const resolveMeetingMembers = (queryData, userId) => {
       resolveMeetingMembers.cache[i] = {
         ...teamMember,
         isConnected: teamMember.presence.length > 0,
-        isFacilitator: team.activeFacilitator === teamMember.id,
+        isFacilitating: team.activeFacilitator === teamMember.id,
         isSelf: teamMember.id.startsWith(userId)
       };
     }
@@ -108,12 +108,13 @@ const mapStateToProps = (state, props) => {
     resolveCached: {presence: (source) => (doc) => source.id.startsWith(doc.userId)}
   });
   const {agenda, team} = queryResult.data;
+  const myTeamMemberId = `${userId}::${teamId}`;
   return {
     agenda,
-    members: resolveMeetingMembers(queryResult.data, userId),
-    team,
+    isFacilitating: myTeamMemberId === team.activeFacilitator,
     localPhaseItem: localPhaseItem && Number(localPhaseItem),
-    isFacilitating: `${userId}::${teamId}` === team.activeFacilitator
+    members: resolveMeetingMembers(queryResult.data, userId),
+    team
   };
 };
 
@@ -152,6 +153,29 @@ export default class MeetingContainer extends Component {
     bindHotkey('i c a n t h a c k i t', () => cashay.mutate('killMeeting', {variables: {teamId}}));
   }
 
+  componentWillReceiveProps(nextProps) {
+    // make sure we still have a facilitator. if we don't elect a new one
+    const {dispatch, team: {activeFacilitator}, members} = nextProps;
+    if (activeFacilitator) {
+      // if the meeting has started, find the facilitator
+      const facilitatingMember = members.find((m) => m.isFacilitating);
+      if (facilitatingMember && facilitatingMember.isConnected === false) {
+        // if the facilitator isn't connected, then make the first connected guy elect a new one
+        const onlineMembers = members.filter((m) => m.isConnected);
+        const callingMember = onlineMembers[0];
+        const nextFacilitator = members.find((m) => m.isFacilitator && m.isConnected) || callingMember;
+        if (callingMember.isSelf) {
+          const options = {variables: {facilitatorId: nextFacilitator.id}};
+          cashay.mutate('changeFacilitator', options);
+        }
+        const facilitatorIntro = nextFacilitator.isSelf ? 'You are' : `${nextFacilitator} is`;
+        dispatch(showInfo({
+          title: `${facilitatingMember.preferredName} Disconnected!`,
+          message: `${facilitatorIntro} the new facilitator`
+        }));
+      }
+    }
+  }
   shouldComponentUpdate(nextProps) {
     const {localPhaseItem, router, params: {localPhase}, team} = nextProps;
     const {dispatch, isFacilitating, team: oldTeam} = this.props;
