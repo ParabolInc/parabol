@@ -1,7 +1,7 @@
 import getRethink from 'server/database/rethinkDriver';
 import {getUserId, requireSUOrTeamMember, requireWebsocket} from '../authorization';
 import {updatedOrOriginal, errorObj} from '../utils';
-import {Invitee} from 'server/graphql/models/Invitation/InvitationSchema';
+import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
@@ -364,7 +364,7 @@ export default {
     }
   },
   addTeam: {
-    type: GraphQLID,
+    type: GraphQLBoolean,
     description: 'Create a new team and add the first team member',
     args: {
       newTeam: {
@@ -377,15 +377,16 @@ export default {
     },
     async resolve(source, {invitees, newTeam}, {authToken, socket}) {
       requireWebsocket(socket);
-      const authToken = socket.getAuthToken();
-      authToken.tms = Array.isArray(authToken.tms) ? authToken.tms.concat(newTeam.id) : [newTeam.id];
-      socket.setAuthToken(authToken);
-      const dbWork = [
+      const teamId = newTeam.id;
+      const authTokenObj = socket.getAuthToken();
+      authTokenObj.tms = Array.isArray(authTokenObj.tms) ? authTokenObj.tms.concat(teamId) : [teamId];
+      socket.setAuthToken(authTokenObj);
+      const dbPromises = [
         createTeamAndLeader(authToken, newTeam),
-        asyncInviteTeam(authToken, newTeam.id, invitees)
+        asyncInviteTeam(authToken, teamId, invitees)
       ];
-      await Promise.all(dbWork);
-      return tmsSignToken(authToken, tms);
+      await Promise.all(dbPromises);
+      return true;
     }
   },
   createTeam: {
