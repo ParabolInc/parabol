@@ -1,14 +1,17 @@
 import getRethink from 'server/database/rethinkDriver';
-import {getUserId, requireAuth, requireSUOrTeamMember, requireWebsocket} from '../authorization';
+import {getUserId, requireSUOrTeamMember, requireWebsocket} from '../authorization';
 import {updatedOrOriginal, errorObj} from '../utils';
+import {Invitee} from 'server/graphql/models/Invitation/InvitationSchema';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
   GraphQLID,
   GraphQLString,
-  GraphQLInt
+  GraphQLInt,
+  GraphQLList
 } from 'graphql';
 import {CreateTeamInput, UpdateTeamInput, Team} from './teamSchema';
+import {asyncInviteTeam} from 'server/graphql/models/Invitation/helpers';
 import shortid from 'shortid';
 import {
   CHECKIN,
@@ -22,7 +25,7 @@ import {
   phaseArray,
   phaseOrder
 } from 'universal/utils/constants';
-import {auth0ManagementClient} from 'server/utils/auth0Helpers';
+import createTeamAndLeader from './createTeamAndLeader';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
@@ -360,6 +363,31 @@ export default {
       return true;
     }
   },
+  addTeam: {
+    type: GraphQLID,
+    description: 'Create a new team and add the first team member',
+    args: {
+      newTeam: {
+        type: new GraphQLNonNull(CreateTeamInput),
+        description: 'The new team object with exactly 1 team member'
+      },
+      invitees: {
+        type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Invitee)))
+      }
+    },
+    async resolve(source, {invitees, newTeam}, {authToken, socket}) {
+      requireWebsocket(socket);
+      const authToken = socket.getAuthToken();
+      authToken.tms = Array.isArray(authToken.tms) ? authToken.tms.concat(newTeam.id) : [newTeam.id];
+      socket.setAuthToken(authToken);
+      const dbWork = [
+        createTeamAndLeader(authToken, newTeam),
+        asyncInviteTeam(authToken, newTeam.id, invitees)
+      ];
+      await Promise.all(dbWork);
+      return tmsSignToken(authToken, tms);
+    }
+  },
   createTeam: {
     // return the new JWT that has the new tms field
     type: GraphQLID,
@@ -371,54 +399,7 @@ export default {
       }
     },
     async resolve(source, {newTeam}, {authToken}) {
-      const r = getRethink();
-      const userId = requireAuth(authToken);
-      if (newTeam.id.length > 10 || newTeam.id.indexOf('::') !== -1) {
-        throw errorObj({_error: 'Bad id'});
-      }
-      const teamMemberId = `${userId}::${newTeam.id}`;
-
-      const verifiedLeader = {
-        id: teamMemberId,
-        isActive: true,
-        isLead: true,
-        isFacilitator: true,
-        checkInOrder: 0,
-        teamId: newTeam.id,
-        userId
-      };
-
-      const verifiedTeam = {
-        ...newTeam,
-        facilitatorPhase: LOBBY,
-        meetingPhase: LOBBY,
-        meetingId: null,
-        facilitatorPhaseItem: null,
-        meetingPhaseItem: null,
-        activeFacilitator: null
-      };
-
-      const dbTransaction = r.table('User')
-        .get(userId)
-        .do((user) =>
-          r.table('TeamMember').insert({
-            ...verifiedLeader,
-            // pull in picture and preferredName from user profile:
-            picture: user('picture').default(''),
-            preferredName: user('preferredName').default('')
-          })
-        )
-        .do(() =>
-          r.table('Team').insert(verifiedTeam)
-        );
-
-      const oldtms = authToken.tms || [];
-      const tms = oldtms.concat(newTeam.id);
-      const dbPromises = [
-        dbTransaction,
-        auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
-      ];
-      await Promise.all(dbPromises);
+      const tms = await createTeamAndLeader(authToken, newTeam);
       return tmsSignToken(authToken, tms);
       // TODO: trigger welcome email
     }

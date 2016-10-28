@@ -8,24 +8,43 @@ import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText';
 import InputField from 'universal/components/InputField/InputField';
 import {randomTeamName} from 'universal/utils/makeRandomPlaceholder';
 import {Field, reduxForm} from 'redux-form';
+import {cashay} from 'cashay';
+import emailAddresses from 'email-addresses';
+import shortid from 'shortid';
 
 const NewTeamForm = (props) => {
-  const {formName, styles} = props;
-  const handleSubmit = () => {
-    console.log();
+  const {formName, handleSubmit, styles} = props;
+  const onSubmit = (submittedData) => {
+    const {teamName, invitedTeamMembers} = submittedData;
+    const invitees = emailAddresses
+      .parseAddressList(invitedTeamMembers)
+      .map(email => ({
+        email: email.address,
+        fullName: email.fullName
+      }));
+    const options = {
+      variables: {
+        newTeam: {
+          id: shortid.generate(),
+          name: teamName
+        },
+        invitees
+      }
+    };
+    cashay.mutate('addTeam', options);
   };
   const buttonDisabled = true;
   const buttonLabel = buttonDisabled ? 'Create Team*' : 'Create Team';
   return (
     <div className={css(styles.root)}>
-      <form className={css(styles.form)} onSubmit={handleSubmit}>
+      <form className={css(styles.form)} onSubmit={handleSubmit(onSubmit)}>
         <h1 className={css(styles.heading)}>{formName}</h1>
         <div className={css(styles.formBlock)}>
           <Field
             colorPalette="gray"
             component={InputField}
             label="Team Name (required)"
-            name="TeamName"
+            name="teamName"
             placeholder={randomTeamName}
           />
         </div>
@@ -34,7 +53,7 @@ const NewTeamForm = (props) => {
             colorPalette="gray"
             component={InputField}
             helpText={'*Separate multiple emails with a comma.'}
-            name="InviteTeamMembers"
+            name="invitedTeamMembers"
             label="Invite Team Members (optional)"
             placeholder="Email addresses*"
             useTextarea
@@ -59,7 +78,7 @@ const NewTeamForm = (props) => {
               type="submit"
             />
             {buttonDisabled &&
-              <FieldHelpText align="center" helpText="*Disabled (add Team Name)" resetPadding />
+            <FieldHelpText align="center" helpText="*Disabled (add Team Name)" resetPadding/>
             }
           </div>
         </div>
