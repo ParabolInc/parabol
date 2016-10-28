@@ -14,10 +14,10 @@ import {Link, withRouter} from 'react-router';
 
 const DashSidebar = (props) => {
   const {isNewTeam, isUserSettings, router, styles} = props;
-  const isActive = router.isActive('/newteam', true);
+  const newTeamIsActive = router.isActive('/newteam', true);
   const addNewStyles = css(
     styles.addTeam,
-    !isActive && styles.addTeamDisabled
+    newTeamIsActive && styles.addTeamDisabled
   );
   return (
     <div className={css(styles.root)}>
@@ -58,6 +58,10 @@ DashSidebar.propTypes = {
 };
 
 const textColor = tinycolor.mix(appTheme.palette.mid10l, '#fff', 50).toHexString();
+const linkBaseStyles = {
+  color: textColor,
+  textDecoration: 'none'
+};
 
 const styleThunk = () => ({
   root: {
@@ -91,14 +95,19 @@ const styleThunk = () => ({
   },
 
   addTeam: {
+    ...linkBaseStyles,
     cursor: 'pointer',
+    display: 'block',
     marginTop: '.5rem',
     position: 'relative',
+    userSelect: 'none',
 
     ':hover': {
+      ...linkBaseStyles,
       opacity: '.5'
     },
     ':focus': {
+      ...linkBaseStyles,
       opacity: '.5'
     }
   },

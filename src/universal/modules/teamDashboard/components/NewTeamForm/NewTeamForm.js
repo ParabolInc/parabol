@@ -33,8 +33,6 @@ const NewTeamForm = (props) => {
     };
     cashay.mutate('addTeam', options);
   };
-  const buttonDisabled = true;
-  const buttonLabel = buttonDisabled ? 'Create Team*' : 'Create Team';
   return (
     <div className={css(styles.root)}>
       <form className={css(styles.form)} onSubmit={handleSubmit(onSubmit)}>
@@ -72,13 +70,10 @@ const NewTeamForm = (props) => {
             <Button
               colorPalette="warm"
               isBlock
-              label={buttonLabel}
+              label="Create Team"
               size="small"
               type="submit"
             />
-            {buttonDisabled &&
-            <FieldHelpText align="center" helpText="*Disabled (add Team Name)" resetPadding/>
-            }
           </div>
         </div>
       </form>
@@ -102,11 +97,7 @@ const inlineBlock = {
 
 const styleThunk = () => ({
   root: {
-    '@media screen and (min-width: 48rem)': {
-      borderLeft: `.25rem solid ${appTheme.palette.mid50l}`,
-      margin: '2rem 0',
-      padding: '0 2rem'
-    }
+    padding: '2rem'
   },
 
   form: {
