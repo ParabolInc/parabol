@@ -29,7 +29,7 @@ const DashSidebar = (props) => {
             label="My Dashboard"
           />
         </div>
-        <div className={css(styles.navLabel)}>
+        <div className={css(styles.navLabel, styles.navLabelForList)}>
           My Teams
         </div>
         <DashNavListContainer isNewTeam={newTeamIsActive}/>
@@ -81,7 +81,7 @@ const styleThunk = () => ({
   },
 
   singleNavItem: {
-    padding: '1.25rem 0'
+    padding: '.5rem 0'
   },
 
   navLabel: {
@@ -92,6 +92,10 @@ const styleThunk = () => ({
     marginLeft: '1rem',
     padding: '1rem 0',
     textTransform: 'uppercase'
+  },
+
+  navLabelForList: {
+    paddingBottom: '.5rem'
   },
 
   addTeam: {
