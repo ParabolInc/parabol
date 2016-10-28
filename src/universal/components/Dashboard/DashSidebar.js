@@ -10,12 +10,14 @@ import DashNavItem from './DashNavItem';
 import SettingsHub from 'universal/components/SettingsHub/SettingsHub';
 import StandardHubContainer from 'universal/containers/StandardHub/StandardHubContainer';
 import Logo from 'universal/styles/theme/images/brand/parabol-lockup-h.svg';
+import {Link, withRouter} from 'react-router';
 
 const DashSidebar = (props) => {
-  const {isNewTeam, isUserSettings, styles} = props;
+  const {isNewTeam, isUserSettings, router, styles} = props;
+  const isActive = router.isActive('/newteam', true);
   const addNewStyles = css(
     styles.addTeam,
-    isNewTeam && styles.addTeamDisabled
+    !isActive && styles.addTeamDisabled
   );
   return (
     <div className={css(styles.root)}>
@@ -31,14 +33,14 @@ const DashSidebar = (props) => {
           My Teams
         </div>
         <DashNavListContainer isNewTeam={isNewTeam}/>
-        <div className={addNewStyles} title="Add New Team">
+        <Link className={addNewStyles} title="Add New Team" to="/newteam">
           <div className={css(styles.addTeamIcon)}>
             <FontAwesome name="plus-square" />
           </div>
           <div className={css(styles.addTeamLabel)}>
             Add New Team
           </div>
-        </div>
+        </Link>
       </nav>
       <div className={css(styles.brand)}>
         <a href="http://www.parabol.co/" title="Action by Parabol, Inc." target="_blank">
@@ -138,4 +140,6 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(DashSidebar);
+export default withRouter(
+  withStyles(styleThunk)(DashSidebar)
+);
