@@ -120,7 +120,7 @@ and who's missing and that the meeting doesn't begin without anybody.
 are the Facilitator ("F") and what this means, so that they know how to advance the
 phases of the meeting.
 
-- [ ] If the facilitator disconnects, the other TMs will want a new facilitator
+- [X] If the facilitator disconnects, the other TMs will want a new facilitator
 chosen quickly, so the meeting can continue without interruption.
 
 - [X] When a critical mass of TMs join the Lobby, the F wants to advance to
