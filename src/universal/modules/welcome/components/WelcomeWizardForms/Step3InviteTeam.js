@@ -11,7 +11,6 @@ import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
 import {withRouter} from 'react-router';
 import withHotkey from 'react-hotkey-hoc';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
-import {randomMultiEmails} from 'universal/utils/makeRandomPlaceholder';
 
 const emailInviteSuccess = {
   title: 'Invitation sent!',
@@ -69,7 +68,7 @@ const Step3InviteTeam = (props) => {
     }
   };
 
-  const {handleSubmit, invitees, inviteesRaw, submitting, teamName} = props;
+  const {handleSubmit, invitees, inviteesRaw, submitting, teamName, placeholderTheme} = props;
 
   const invitesFieldHasError = false; // TODO: wire this up for real
   const helpText = invitesFieldHasError ?
@@ -96,7 +95,7 @@ const Step3InviteTeam = (props) => {
           isWider
           name="inviteesRaw"
           onButtonClick={onAddInviteesButtonClick}
-          placeholder={randomMultiEmails}
+          placeholder={placeholderTheme.emailMulti}
           type="text"
         />
       </div>
@@ -133,6 +132,7 @@ Step3InviteTeam.propTypes = {
   invitees: PropTypes.array,
   inviteesRaw: PropTypes.string,
   onSubmit: PropTypes.func,
+  placeholderTheme: PropTypes.object,
   router: PropTypes.object,
   submitting: PropTypes.bool,
   teamName: PropTypes.string,

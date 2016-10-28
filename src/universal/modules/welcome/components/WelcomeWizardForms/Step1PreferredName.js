@@ -5,7 +5,6 @@ import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import {cashay} from 'cashay';
 import {nextPage, updateCompleted} from 'universal/modules/welcome/ducks/welcomeDuck';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
-import {randomPreferredName} from 'universal/utils/makeRandomPlaceholder';
 
 const reduxFormOptions = {
   form: 'welcomeWizard',
@@ -18,6 +17,7 @@ export default class Step1PreferredName extends Component {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
     handleSubmit: PropTypes.func,
+    placeholderTheme: PropTypes.object,
     preferredName: PropTypes.string,
     onSubmit: PropTypes.func,
     user: PropTypes.object,
@@ -50,7 +50,7 @@ export default class Step1PreferredName extends Component {
   };
 
   render() {
-    const {handleSubmit, preferredName} = this.props;
+    const {handleSubmit, preferredName, placeholderTheme} = this.props;
     return (
       <div>{/* Div for that flexy flex */}
         <WelcomeHeading copy={<span>Please type in your name:</span>}/>
@@ -63,7 +63,7 @@ export default class Step1PreferredName extends Component {
             hasButton
             isLarger
             name="preferredName"
-            placeholder={randomPreferredName}
+            placeholder={placeholderTheme.preferredName}
             shortcutHint="Press enter"
             type="text"
           />

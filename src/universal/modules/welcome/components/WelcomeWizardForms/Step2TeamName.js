@@ -8,10 +8,9 @@ import shortid from 'shortid';
 import {cashay} from 'cashay';
 import {setAuthToken} from 'universal/redux/authDuck';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
-import {randomTeamName} from 'universal/utils/makeRandomPlaceholder';
 
 const Step2TeamName = (props) => {
-  const {dispatch, handleSubmit, preferredName, teamName} = props;
+  const {dispatch, handleSubmit, placeholderTheme, preferredName, teamName} = props;
   const onTeamNameSubmit = data => {
     const myTeamName = data.teamName;
     const teamId = shortid.generate();
@@ -48,7 +47,7 @@ const Step2TeamName = (props) => {
           hasButton
           isLarger
           name="teamName"
-          placeholder={randomTeamName}
+          placeholder={placeholderTheme.teamName}
           shortcutHint="Press enter"
           type="text"
         />
@@ -61,6 +60,7 @@ Step2TeamName.propTypes = {
   dispatch: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func,
   onSubmit: PropTypes.func,
+  placeholderTheme: PropTypes.object,
   preferredName: PropTypes.string.isRequired,
   teamName: PropTypes.string,
   user: PropTypes.object,
