@@ -7,12 +7,11 @@ import socketWithPresence from 'universal/decorators/socketWithPresence/socketWi
 const DashboardContainer = (props) => {
   const {children, location: {pathname}} = props;
   const [, dashType, dashChild] = pathname.split('/');
-  const isNewTeam = true;
   const isUserSettings = dashType === 'me' && dashChild === 'settings';
   const title = dashType === 'me' ? 'My Dashboard' : 'Team Dashboard';
   return (
     <DashLayoutContainer title={title}>
-      <DashSidebar isNewTeam={isNewTeam} isUserSettings={isUserSettings}/>
+      <DashSidebar isUserSettings={isUserSettings}/>
       {children}
     </DashLayoutContainer>
   );

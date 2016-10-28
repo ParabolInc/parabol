@@ -6,7 +6,7 @@ import NewTeamForm from 'universal/modules/teamDashboard/components/NewTeamForm/
 const NewTeam = (props) => {
   const {styles} = props;
   return (
-    <div>
+    <div className={css(styles.newTeamView)}>
       <NewTeamForm/>
     </div>
   );
@@ -17,18 +17,8 @@ NewTeam.propTypes = {
 };
 
 const styleThunk = () => ({
-  root: {
-    display: 'flex !important',
-    flex: 1,
-    flexDirection: 'column'
-  },
-
-  body: {
-    maxWidth: '20rem'
-  },
-
-  row: {
-    margin: '0 0 1.5rem'
+  newTeamView: {
+    padding: '2rem'
   }
 });
 

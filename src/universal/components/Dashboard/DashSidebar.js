@@ -13,7 +13,7 @@ import Logo from 'universal/styles/theme/images/brand/parabol-lockup-h.svg';
 import {Link, withRouter} from 'react-router';
 
 const DashSidebar = (props) => {
-  const {isNewTeam, isUserSettings, router, styles} = props;
+  const {isUserSettings, router, styles} = props;
   const newTeamIsActive = router.isActive('/newteam', true);
   const addNewStyles = css(
     styles.addTeam,
@@ -32,7 +32,7 @@ const DashSidebar = (props) => {
         <div className={css(styles.navLabel)}>
           My Teams
         </div>
-        <DashNavListContainer isNewTeam={isNewTeam}/>
+        <DashNavListContainer isNewTeam={newTeamIsActive}/>
         <Link className={addNewStyles} title="Add New Team" to="/newteam">
           <div className={css(styles.addTeamIcon)}>
             <FontAwesome name="plus-square" />
@@ -52,9 +52,9 @@ const DashSidebar = (props) => {
 };
 
 DashSidebar.propTypes = {
-  styles: PropTypes.object,
-  isNewTeam: PropTypes.bool,
-  isUserSettings: PropTypes.bool
+  isUserSettings: PropTypes.bool,
+  router: PropTypes.object,
+  styles: PropTypes.object
 };
 
 const textColor = tinycolor.mix(appTheme.palette.mid10l, '#fff', 50).toHexString();

@@ -34,50 +34,48 @@ const NewTeamForm = (props) => {
     cashay.mutate('addTeam', options);
   };
   return (
-    <div className={css(styles.root)}>
-      <form className={css(styles.form)} onSubmit={handleSubmit(onSubmit)}>
-        <h1 className={css(styles.heading)}>{formName}</h1>
-        <div className={css(styles.formBlock)}>
-          <Field
+    <form className={css(styles.form)} onSubmit={handleSubmit(onSubmit)}>
+      <h1 className={css(styles.heading)}>{formName}</h1>
+      <div className={css(styles.formBlock)}>
+        <Field
+          colorPalette="gray"
+          component={InputField}
+          label="Team Name (required)"
+          name="teamName"
+          placeholder={randomTeamName}
+        />
+      </div>
+      <div className={css(styles.formBlock)}>
+        <Field
+          colorPalette="gray"
+          component={InputField}
+          helpText={'*Separate multiple emails with a comma.'}
+          name="invitedTeamMembers"
+          label="Invite Team Members (optional)"
+          placeholder="Email addresses*"
+          useTextarea
+        />
+      </div>
+      <div className={css(styles.buttonGroup)}>
+        <div className={css(styles.buttonGroupLeft)}>
+          <Button
             colorPalette="gray"
-            component={InputField}
-            label="Team Name (required)"
-            name="teamName"
-            placeholder={randomTeamName}
+            isBlock
+            label="Cancel"
+            size="small"
           />
         </div>
-        <div className={css(styles.formBlock)}>
-          <Field
-            colorPalette="gray"
-            component={InputField}
-            helpText={'*Separate multiple emails with a comma.'}
-            name="invitedTeamMembers"
-            label="Invite Team Members (optional)"
-            placeholder="Email addresses*"
-            useTextarea
+        <div className={css(styles.buttonGroupRight)}>
+          <Button
+            colorPalette="warm"
+            isBlock
+            label="Create Team"
+            size="small"
+            type="submit"
           />
         </div>
-        <div className={css(styles.buttonGroup)}>
-          <div className={css(styles.buttonGroupLeft)}>
-            <Button
-              colorPalette="gray"
-              isBlock
-              label="Cancel"
-              size="small"
-            />
-          </div>
-          <div className={css(styles.buttonGroupRight)}>
-            <Button
-              colorPalette="warm"
-              isBlock
-              label="Create Team"
-              size="small"
-              type="submit"
-            />
-          </div>
-        </div>
-      </form>
-    </div>
+      </div>
+    </form>
   );
 };
 
@@ -96,10 +94,6 @@ const inlineBlock = {
 };
 
 const styleThunk = () => ({
-  root: {
-    padding: '2rem'
-  },
-
   form: {
     margin: 0,
     maxWidth: '20rem',
