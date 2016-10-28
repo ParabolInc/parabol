@@ -1,12 +1,13 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import NewTeamForm from 'universal/modules/teamDashboard/components/NewTeamForm/NewTeamForm';
 
 const NewTeam = (props) => {
   const {styles} = props;
   return (
     <div>
-      New Team!
+      <NewTeamForm/>
     </div>
   );
 };

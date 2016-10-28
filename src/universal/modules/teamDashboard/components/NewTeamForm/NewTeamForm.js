@@ -7,6 +7,7 @@ import Button from 'universal/components/Button/Button';
 import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText';
 import InputField from 'universal/components/InputField/InputField';
 import {randomTeamName} from 'universal/utils/makeRandomPlaceholder';
+import {Field, reduxForm} from 'redux-form';
 
 const NewTeamForm = (props) => {
   const {formName, styles} = props;
@@ -20,18 +21,20 @@ const NewTeamForm = (props) => {
       <form className={css(styles.form)} onSubmit={handleSubmit}>
         <h1 className={css(styles.heading)}>{formName}</h1>
         <div className={css(styles.formBlock)}>
-          <InputField
+          <Field
             colorPalette="gray"
-            input={{name: 'TeamName'}}
+            component={InputField}
             label="Team Name (required)"
+            name="TeamName"
             placeholder={randomTeamName}
           />
         </div>
         <div className={css(styles.formBlock)}>
-          <InputField
+          <Field
             colorPalette="gray"
+            component={InputField}
             helpText={'*Separate multiple emails with a comma.'}
-            input={{name: 'InviteTeamMembers'}}
+            name="InviteTeamMembers"
             label="Invite Team Members (optional)"
             placeholder="Email addresses*"
             useTextarea
@@ -124,4 +127,6 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(NewTeamForm);
+export default reduxForm({form: 'newTeam'})(
+  withStyles(styleThunk)(NewTeamForm)
+);
