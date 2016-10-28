@@ -32,6 +32,7 @@ FieldHelpText.propTypes = {
 const styleThunk = (customTheme, props) => ({
   fieldHelpText: {
     color: appTheme.palette.dark,
+    cursor: 'default',
     fontSize: appTheme.typography.s3,
     lineHeight: appTheme.typography.s5,
     padding: `${ui.fieldLabelGutter} ${ui.fieldPaddingHorizontal} 0`,

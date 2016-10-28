@@ -4,9 +4,8 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import Button from 'universal/components/Button/Button';
-import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText';
 import InputField from 'universal/components/InputField/InputField';
-import {randomTeamName} from 'universal/utils/makeRandomPlaceholder';
+import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 import {Field, reduxForm} from 'redux-form';
 import {cashay} from 'cashay';
 import emailAddresses from 'email-addresses';
@@ -33,6 +32,8 @@ const NewTeamForm = (props) => {
     };
     cashay.mutate('addTeam', options);
   };
+  const emailErrorText = 'Oops! Please check for valid email addresses.';
+  const teamNameErrorText = 'Oops! Please add a team name.';
   return (
     <form className={css(styles.form)} onSubmit={handleSubmit(onSubmit)}>
       <h1 className={css(styles.heading)}>{formName}</h1>
@@ -40,41 +41,32 @@ const NewTeamForm = (props) => {
         <Field
           colorPalette="gray"
           component={InputField}
+          hasErrorText
+          helpText={teamNameErrorText}
           label="Team Name (required)"
           name="teamName"
-          placeholder={randomTeamName}
+          placeholder={randomPlaceholderTheme.teamName}
         />
       </div>
       <div className={css(styles.formBlock)}>
         <Field
           colorPalette="gray"
           component={InputField}
-          helpText={'*Separate multiple emails with a comma.'}
+          hasErrorText
+          helpText={emailErrorText}
           name="invitedTeamMembers"
           label="Invite Team Members (optional)"
-          placeholder="Email addresses*"
+          placeholder={randomPlaceholderTheme.emailMulti}
           useTextarea
         />
       </div>
-      <div className={css(styles.buttonGroup)}>
-        <div className={css(styles.buttonGroupLeft)}>
-          <Button
-            colorPalette="gray"
-            isBlock
-            label="Cancel"
-            size="small"
-          />
-        </div>
-        <div className={css(styles.buttonGroupRight)}>
-          <Button
-            colorPalette="warm"
-            isBlock
-            label="Create Team"
-            size="small"
-            type="submit"
-          />
-        </div>
-      </div>
+      <Button
+        colorPalette="warm"
+        isBlock
+        label="Create Team"
+        size="small"
+        type="submit"
+      />
     </form>
   );
 };
@@ -111,22 +103,6 @@ const styleThunk = () => ({
 
   formBlock: {
     margin: '0 auto 2rem'
-  },
-
-  buttonGroup: {
-    fontSize: 0
-  },
-
-  buttonGroupLeft: {
-    ...inlineBlock,
-    paddingRight: '.75rem',
-    width: '35%'
-  },
-
-  buttonGroupRight: {
-    ...inlineBlock,
-    paddingLeft: '.75rem',
-    width: '65%'
   }
 });
 

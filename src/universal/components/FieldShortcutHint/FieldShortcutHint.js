@@ -26,6 +26,7 @@ FieldShortcutHint.propTypes = {
 const styleThunk = () => ({
   shortcutHint: {
     color: appTheme.palette.warm,
+    cursor: 'default',
     fontSize: appTheme.typography.s3,
     fontStyle: 'italic',
     fontWeight: 700,

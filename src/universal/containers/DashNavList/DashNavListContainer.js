@@ -23,12 +23,11 @@ const mapStateToProps = () => {
 };
 
 const DashNavListContainer = (props) => {
-  const {isNewTeam, teams} = props;
-  return <DashNavList isNewTeam={isNewTeam} teams={teams}/>;
+  const {teams} = props;
+  return <DashNavList teams={teams}/>;
 };
 
 DashNavListContainer.propTypes = {
-  isNewTeam: PropTypes.bool,
   teams: PropTypes.array
 };
 

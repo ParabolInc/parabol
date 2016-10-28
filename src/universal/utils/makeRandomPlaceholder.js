@@ -8,17 +8,6 @@ const preferredNames = [
   'Optimus Prime'
 ];
 
-const teamNames = [
-  'The Beatles',
-  'Looney Tunes',
-  'The A-Team',
-  'The Lone Rangers',
-  'ThunderCats',
-  'The Three Amigos',
-  'The Mighty Ducks',
-  'The Goonies'
-];
-
 const getRandomValue = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 const themes = [
@@ -32,7 +21,7 @@ const themes = [
     preferredName: 'Bugs Bunny',
     teamName: 'Looney Tunes',
     email: 'b.bunney@acme.co',
-    emailMulti: 'b.bunny@acme.co, d.duck@acme.co, e.fudd@acme.co, t.bird@acme.co, m.martian@acme.co'
+    emailMulti: 'b.bunny@acme.co, d.duck@acme.co, m.martian@acme.co, t.bird@acme.co, e.fudd@acme.co'
   },
   {
     preferredName: 'Michelangelo',
@@ -45,9 +34,20 @@ const themes = [
     teamName: 'Order of the Phoenix',
     email: 'harry@hogwarts.edu',
     emailMulti: 'harry@hogwarts.edu, hermione@hogwarts.edu, ron@hogwarts.edu'
+  },
+  {
+    preferredName: 'John Lennon',
+    teamName: 'The Beatles',
+    email: 'john@splhcb.co',
+    emailMulti: 'john@splhcb.co, paul@splhcb.co, ringo@splhcb.co, george@splhcb.co'
+  },
+  {
+    preferredName: 'Lucky Day',
+    teamName: 'The Three Amigos',
+    email: 'lucky@ami.go',
+    emailMulti: 'lucky@ami.go, dusty@ami.go, ned@ami.go'
   }
 ];
 
 export const randomPreferredName = getRandomValue(preferredNames);
-export const randomTeamName = getRandomValue(teamNames);
 export const randomPlaceholderTheme = getRandomValue(themes);
