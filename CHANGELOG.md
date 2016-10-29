@@ -4,6 +4,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.9.6 - 29-Oct-2016
+### Added
+- Automatic election of new facilitator when old facilitator disconnects
+- Refactor of socket management; added container decorator to maintain
+  socket connection
+
+### Fixed
+- #438 fixed TypeError: Cannot read property 'id' of undefined
+- #447 unable to logout and login properly
+- Fixed race condition landing on meeting summary route at end of meeting
+- Fixed short urls
+
 ## v0.9.5 - 25-Oct-2016
 ### Fixed
 - #433 server crashing on localhost
