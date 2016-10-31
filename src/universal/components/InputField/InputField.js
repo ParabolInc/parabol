@@ -129,6 +129,7 @@ InputField.propTypes = {
     'warm',
     'white'
   ]),
+  meta: PropTypes.object.isRequired,
   useTextarea: PropTypes.bool
 };
 

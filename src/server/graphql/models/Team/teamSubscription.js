@@ -27,7 +27,7 @@ export default {
           return {
             new_val: row('new_val').pluck(requestedFields).default(null),
             old_val: row('old_val').pluck(requestedFields).default(null)
-          }
+          };
         })
         .run({cursor: true}, changefeedHandler);
     }

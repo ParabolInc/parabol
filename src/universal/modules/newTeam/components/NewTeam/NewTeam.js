@@ -14,6 +14,7 @@ const NewTeam = (props) => {
 };
 
 NewTeam.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   styles: PropTypes.object,
 };
 

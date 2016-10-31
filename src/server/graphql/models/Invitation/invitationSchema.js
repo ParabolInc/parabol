@@ -4,7 +4,6 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLID,
-  GraphQLList,
   GraphQLInputObjectType
 } from 'graphql';
 import {GraphQLEmailType} from '../types';

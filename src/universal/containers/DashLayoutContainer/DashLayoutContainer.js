@@ -61,7 +61,8 @@ export default class DashLayoutContainer extends Component {
   static propTypes = {
     activeMeetings: PropTypes.array,
     children: PropTypes.any,
-    title: PropTypes.string
+    title: PropTypes.string,
+    tms: PropTypes.array.isRequired
   };
 
   componentDidMount() {

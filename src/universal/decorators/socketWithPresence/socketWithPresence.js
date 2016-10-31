@@ -31,7 +31,7 @@ export default ComposedComponent => {
     };
 
     componentDidMount() {
-      this.subscribeToPresence({}, this.props)
+      this.subscribeToPresence({}, this.props);
     }
     componentWillReceiveProps(nextProps) {
       this.subscribeToPresence(this.props, nextProps);

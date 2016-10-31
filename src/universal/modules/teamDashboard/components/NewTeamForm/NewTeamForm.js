@@ -20,7 +20,7 @@ const quickValidation = (values) => {
     errors.teamName = 'Oops! Please add a team name.';
   }
   if (!invitedTeamMembers) {
-    errors.invitedTeamMembers = 'Oops! Please check for valid email addresses.'
+    errors.invitedTeamMembers = 'Oops! Please check for valid email addresses.';
   }
   return errors;
 };
@@ -49,8 +49,8 @@ const NewTeamForm = (props) => {
     router.push(`/team/${id}`);
     dispatch(showSuccess({
       title: 'Team successfully created!',
-      message: `Here\'s your new team dashboard for ${teamName}`
-    }))
+      message: `Here's your new team dashboard for ${teamName}`
+    }));
   };
   return (
     <form className={css(styles.form)} onSubmit={handleSubmit(onSubmit)}>
@@ -86,7 +86,10 @@ const NewTeamForm = (props) => {
 };
 
 NewTeamForm.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   formName: PropTypes.string,
+  handleSubmit: PropTypes.func.isRequired,
+  router: PropTypes.object.isRequired,
   styles: PropTypes.object
 };
 
@@ -94,10 +97,10 @@ NewTeamForm.defaultProps = {
   formName: 'Create a New Team'
 };
 
-const inlineBlock = {
-  display: 'inline-block',
-  verticalAlign: 'top'
-};
+// const inlineBlock = {
+//   display: 'inline-block',
+//   verticalAlign: 'top'
+// };
 
 const styleThunk = () => ({
   form: {
