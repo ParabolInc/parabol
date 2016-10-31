@@ -5275,6 +5275,12 @@ range-parser@^1.0.3, range-parser@~1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.0.tgz#f49be6b487894ddc40dcc94a322f611092e00d5e"
 
+raven-js@^3.1.1:
+  version "3.7.0"
+  resolved "https://registry.yarnpkg.com/raven-js/-/raven-js-3.7.0.tgz#1b848cd5043255af674af5260e48bc63d2c4edbb"
+  dependencies:
+    json-stringify-safe "^5.0.1"
+
 raven@^0.12.1:
   version "0.12.1"
   resolved "https://registry.yarnpkg.com/raven/-/raven-0.12.1.tgz#dad6b485e85bfac8f9af5fbb4c7a0d7c8350fbc7"
@@ -5599,6 +5605,12 @@ redux-form@^6.0.5:
 redux-logger@2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/redux-logger/-/redux-logger-2.6.1.tgz#f558a40e3abd03feaf4e69ace4d71fec09803c74"
+
+redux-raven-middleware:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/redux-raven-middleware/-/redux-raven-middleware-1.1.0.tgz#0d35fd2b58a5e55c38cb225a6c52ff0eecfed421"
+  dependencies:
+    raven-js "^3.1.1"
 
 redux-segment@^1.4.2:
   version "1.4.2"
