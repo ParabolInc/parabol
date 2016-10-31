@@ -10,9 +10,10 @@ import {Field, reduxForm} from 'redux-form';
 import {cashay} from 'cashay';
 import emailAddresses from 'email-addresses';
 import shortid from 'shortid';
+import {withRouter} from 'react-router';
 
 const NewTeamForm = (props) => {
-  const {formName, handleSubmit, styles} = props;
+  const {formName, handleSubmit, router, styles} = props;
   const onSubmit = (submittedData) => {
     const {teamName, invitedTeamMembers} = submittedData;
     const invitees = emailAddresses
@@ -21,16 +22,19 @@ const NewTeamForm = (props) => {
         email: email.address,
         fullName: email.fullName
       }));
+    const id = shortid.generate();
     const options = {
       variables: {
         newTeam: {
-          id: shortid.generate(),
+          id,
           name: teamName
         },
         invitees
       }
     };
     cashay.mutate('addTeam', options);
+    router.push(`/team/${id}`);
+
   };
   const emailErrorText = 'Oops! Please check for valid email addresses.';
   const teamNameErrorText = 'Oops! Please add a team name.';
@@ -41,8 +45,6 @@ const NewTeamForm = (props) => {
         <Field
           colorPalette="gray"
           component={InputField}
-          hasErrorText
-          helpText={teamNameErrorText}
           label="Team Name (required)"
           name="teamName"
           placeholder={randomPlaceholderTheme.teamName}
@@ -52,8 +54,6 @@ const NewTeamForm = (props) => {
         <Field
           colorPalette="gray"
           component={InputField}
-          hasErrorText
-          helpText={emailErrorText}
           name="invitedTeamMembers"
           label="Invite Team Members (optional)"
           placeholder={randomPlaceholderTheme.emailMulti}
@@ -106,6 +106,8 @@ const styleThunk = () => ({
   }
 });
 
-export default reduxForm({form: 'newTeam'})(
-  withStyles(styleThunk)(NewTeamForm)
+export default withRouter(
+  reduxForm({form: 'newTeam'})(
+    withStyles(styleThunk)(NewTeamForm)
+  )
 );

@@ -69,7 +69,11 @@ export default function makeChangefeedHandler(socket, subbedChannelName, options
     cursor.each((error, data) => {
       if (error) throw error;
       const payload = handleRethinkChangefeed(data, removalFields);
-      socket.emit(subbedChannelName, payload);
+      if (payload.fields) {
+        socket.emit(subbedChannelName, payload);
+      } else {
+        // TODO send to segment! This will only happen if it is a team sub & the tms doc has a teamId that isn't in the DB
+      }
     });
     socket.on('unsubscribe', channelName => {
       if (channelName === subbedChannelName) {

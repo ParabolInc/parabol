@@ -29,7 +29,6 @@ import {
 import MeetingAgendaItems from 'universal/modules/meeting/components/MeetingAgendaItems/MeetingAgendaItems';
 import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
 import MeetingAgendaLastCallContainer from 'universal/modules/meeting/containers/MeetingAgendaLastCall/MeetingAgendaLastCallContainer';
-import {TEAMS} from 'universal/subscriptions/constants';
 import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 import withHotkey from 'react-hotkey-hoc';
 import getBestPhaseItem from 'universal/modules/meeting/helpers/getBestPhaseItem';
@@ -55,7 +54,7 @@ const resolveMeetingMembers = (queryData, userId) => {
 
 const meetingContainerQuery = `
 query{
-  team @cached(id: $teamId, type: "Team") {
+  team @live {
     checkInGreeting,
     checkInQuestion,
     id,
@@ -105,7 +104,10 @@ const mapStateToProps = (state, props) => {
       agenda: (a, b) => a.sortOrder - b.sortOrder,
       teamMembers: (a, b) => a.checkInOrder - b.checkInOrder
     },
-    resolveCached: {presence: (source) => (doc) => source.id.startsWith(doc.userId)}
+    resolveCached: {presence: (source) => (doc) => source.id.startsWith(doc.userId)},
+    resolveChannelKey: {
+      team: () => teamId
+    }
   });
   const {agenda, team} = queryResult.data;
   const myTeamMemberId = `${userId}::${teamId}`;
@@ -146,7 +148,6 @@ export default class MeetingContainer extends Component {
     const {bindHotkey, localPhaseItem, params, router, team} = props;
     const {localPhase, teamId} = params;
     // subscribe to all teams, but don't do anything with that open subscription
-    cashay.subscribe(TEAMS);
     handleRedirects(team, localPhase, localPhaseItem, {}, router);
     bindHotkey(['enter', 'right'], this.gotoNext);
     bindHotkey('left', this.gotoPrev);

@@ -1,5 +1,6 @@
 /* eslint-disable global-require */
 import {resolvePromiseMap} from 'universal/utils/promises';
+import makeReducer from 'universal/redux/makeReducer';
 
 const setImports = () =>
   new Map([
@@ -17,7 +18,9 @@ export default store => ({
   getComponent: async(location, cb) => {
     const promiseMap = setImports();
     const importMap = await resolvePromiseMap(promiseMap);
-    const {component} = getImports(importMap);
+    const {component, ...asyncReducers} = getImports(importMap);
+    const newReducer = makeReducer(asyncReducers);
+    store.replaceReducer(newReducer);
     cb(null, component);
   },
   getIndexRoute: async(location, cb) => {
