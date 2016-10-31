@@ -48,6 +48,11 @@ const MeetingLobby = (props) => {
             style="outlined"
             colorPalette="cool"
           />
+          <div className={css(styles.helpText)}>
+            Press “Start Meeting” to navigate for the group.<br/>
+            Others will follow along automatically<br/>
+            unless they navigate independently.
+          </div>
         </div>
         {/* */}
       </MeetingSection>
@@ -90,7 +95,15 @@ const styleThunk = () => ({
 
   prompt: {
     color: appTheme.palette.dark,
-    margin: '0 0 2rem'
+    margin: '0 0 2.25rem'
+  },
+
+  helpText: {
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s4,
+    fontWeight: 400,
+    lineHeight: 1.5,
+    margin: '2rem 0 0'
   }
 });
 
