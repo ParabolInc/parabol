@@ -2,6 +2,7 @@ import path from 'path';
 import webpack from 'webpack';
 import AssetsPlugin from 'manifest-assets-webpack-plugin';
 import WebpackShellPlugin from 'webpack-shell-plugin';
+import S3Plugin from 'webpack-s3-plugin';
 import {getDotenv} from '../src/universal/utils/dotenv';
 
 // Import .env and expand variables:
@@ -31,6 +32,17 @@ const deployPlugins = [];
 if (process.env.DEPLOY) {
   deployPlugins.push(new webpack.optimize.UglifyJsPlugin({compressor: {warnings: false}, comments: /(?:)/}));
   deployPlugins.push(new webpack.LoaderOptionsPlugin({comments: false}));
+  deployPlugins.push(new S3Plugin({
+    s3Options: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      region: process.env.AWS_REGION
+    },
+    s3UploadOptions: {
+      Bucket: process.env.AWS_S3_BUCKET
+    }
+    // TODO: cdnizerOptions
+  }));
 }
 
 export default {

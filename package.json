@@ -132,7 +132,8 @@
     "sinon": "^1.17.6",
     "socketcluster": "^5.0.11",
     "socketcluster-client": "^5.0.10",
-    "tinycolor2": "^1.4.1"
+    "tinycolor2": "^1.4.1",
+    "webpack-s3-plugin": "^0.9.0"
   },
   "ava": {
     "babel": "inherit",
