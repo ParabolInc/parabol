@@ -15,7 +15,6 @@ export default {
       }
     },
     async resolve(source, {teamId}, {authToken, socket, subbedChannelName}, refs) {
-      console.log('teamId', teamId);
       const r = getRethink();
       requireSUOrTeamMember(authToken, teamId);
       // TODO update subscription on the client when a new team gets added. So rare, it's OK to resend all 3-4 docs

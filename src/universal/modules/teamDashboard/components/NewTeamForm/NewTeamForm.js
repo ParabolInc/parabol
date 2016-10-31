@@ -11,9 +11,22 @@ import {cashay} from 'cashay';
 import emailAddresses from 'email-addresses';
 import shortid from 'shortid';
 import {withRouter} from 'react-router';
+import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
+
+const quickValidation = (values) => {
+  const errors = {};
+  const {teamName, invitedTeamMembers} = values;
+  if (!teamName) {
+    errors.teamName = 'Oops! Please add a team name.';
+  }
+  if (!invitedTeamMembers) {
+    errors.invitedTeamMembers = 'Oops! Please check for valid email addresses.'
+  }
+  return errors;
+};
 
 const NewTeamForm = (props) => {
-  const {formName, handleSubmit, router, styles} = props;
+  const {dispatch, formName, handleSubmit, router, styles} = props;
   const onSubmit = (submittedData) => {
     const {teamName, invitedTeamMembers} = submittedData;
     const invitees = emailAddresses
@@ -34,10 +47,11 @@ const NewTeamForm = (props) => {
     };
     cashay.mutate('addTeam', options);
     router.push(`/team/${id}`);
-
+    dispatch(showSuccess({
+      title: 'Team successfully created!',
+      message: `Here\'s your new team dashboard for ${teamName}`
+    }))
   };
-  const emailErrorText = 'Oops! Please check for valid email addresses.';
-  const teamNameErrorText = 'Oops! Please add a team name.';
   return (
     <form className={css(styles.form)} onSubmit={handleSubmit(onSubmit)}>
       <h1 className={css(styles.heading)}>{formName}</h1>
@@ -107,7 +121,7 @@ const styleThunk = () => ({
 });
 
 export default withRouter(
-  reduxForm({form: 'newTeam'})(
+  reduxForm({form: 'newTeam', validate: quickValidation})(
     withStyles(styleThunk)(NewTeamForm)
   )
 );

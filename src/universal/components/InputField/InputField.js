@@ -15,21 +15,20 @@ import IconButton from 'universal/components/IconButton/IconButton';
 const InputField = (props) => {
   const {
     autoFocus,
-    hasErrorText,
-    hasTransparentBackground,
-    helpText,
-    colorPalette,
     buttonDisabled,
     buttonIcon,
+    colorPalette,
+    disabled,
+    hasTransparentBackground,
     hasButton,
     input,
-    disabled,
     isLarger,
-    readyOnly,
     isWider,
     label,
+    meta: {touched, error},
     onButtonClick,
     placeholder,
+    readyOnly,
     shortcutHint,
     styles,
     useTextarea
@@ -93,7 +92,7 @@ const InputField = (props) => {
           </div>
         }
       </div>
-      {helpText && <FieldHelpText hasErrorText={hasErrorText} helpText={helpText} />}
+      {touched && error && <FieldHelpText hasErrorText helpText={error} />}
       {shortcutHint && <FieldShortcutHint disabled={buttonDisabled} hint={shortcutHint} />}
     </FieldBlock>
   );
