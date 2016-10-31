@@ -82,7 +82,7 @@ const makeBannerMessage = (referrer, url) => {
     return <span>All team members will receive this summary in their inbox.</span>;
   }
   if (referrer === 'email') {
-    return <span><a href={url} style={bannerLink}>View this in your web browser</a></span>;
+    return <span><a href={url} style={bannerLink}>View this summary in your web browser</a></span>;
   }
   if (referrer === 'history') {
     return <span><a href={url} style={bannerLink}>See all meeting summaries here</a></span>;
