@@ -3,6 +3,7 @@ import Layout from '../../components/Layout/Layout';
 import Button from '../../components/Button/Button';
 import EmptySpace from '../../components/EmptySpace/EmptySpace';
 import Body from '../../components/Body/Body';
+import Callout from '../../components/Callout/Callout';
 import Footer from '../../components/Footer/Footer';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
@@ -33,10 +34,22 @@ const teamNameStyle = {
   fontSize: '36px'
 };
 
-const projectNameStyle = {
-  ...merryAndBold,
-  fontSize: '24px'
+const ruleStyle = {
+  backgroundColor: '#E1E2E8',
+  border: 0,
+  height: '2px',
+  margin: '0 auto',
+  width: '80%'
 };
+
+const calloutTextStyle = {
+  color: appTheme.palette.dark
+};
+
+// const projectNameStyle = {
+//   ...merryAndBold,
+//   fontSize: '24px'
+// };
 
 const TeamInvite = props => {
   const {
@@ -44,7 +57,7 @@ const TeamInvite = props => {
     inviterName,
     inviterEmail,
     inviteeEmail,
-    firstProject,
+    // firstProject,
     teamName,
     inviteLink
   } = props;
@@ -62,7 +75,7 @@ const TeamInvite = props => {
         </tbody>
       </table>
 
-      <Body>
+      <Body verticalGutter={32}>
         <table style={ui.emailTableBase} align="center">
           <tbody>
             <tr>
@@ -76,33 +89,54 @@ const TeamInvite = props => {
             </tr>
           </tbody>
         </table>
-        <EmptySpace height={40} />
-        <b>Hi <a href={`mailto:${inviteeEmail}`} style={{...colorWarm, textDecoration: 'none'}}>{inviteeEmail}</a>!<br />
-        {inviterName} has invited you to join a team on Action:</b>
-        <EmptySpace height={40} />
-        <span style={teamNameStyle}>{teamName}</span>
-        <EmptySpace height={40} />
-        <a href="https://action.parabol.co/" style={boldLinkStyle}>Action</a>
-        &nbsp;is a place where you and your team <br />will develop your <b><i>weekly rhythm</i></b>.<br />
-        <EmptySpace height={40} />
-        {firstProject &&
-          <div>
-            <b>{inviterName} added one of your projects to Action</b>:
-            <EmptySpace height={32} />
-            <span style={projectNameStyle}>“{firstProject}”</span>
-            <EmptySpace height={32} />
-          </div>
-        }
+        <table style={ui.emailTableBase} width="100%">
+          <tbody>
+            <tr>
+              <td style={{paddingLeft: '16px', paddingRight: '16px'}}>
+                <Callout fontSize={18} width="100%">
+                  <b style={calloutTextStyle}>
+                    Hi <a href={`mailto:${inviteeEmail}`} style={{...colorWarm, textDecoration: 'none'}}>{inviteeEmail}</a>!<br />
+                    {inviterName} has invited you to join a team on Action:
+                  </b>
+                  <EmptySpace height={12} />
+                  <span style={teamNameStyle}>{teamName}</span>
+                </Callout>
+              </td>
+            </tr>
+          </tbody>
+        </table>
         <Button backgroundColor={appTheme.palette.warm} url={inviteLink}>
           Join Team
         </Button>
         <EmptySpace height={16} />
         Or go to: <a href={inviteLink} style={colorWarm}>{inviteLink}</a>
+        <EmptySpace height={32} />
+        <div style={ruleStyle} />
+        <EmptySpace height={32} />
+        Action helps teams{' '}
+        <a
+          href="https://focus.parabol.co/how-to-navigate-uncertainty-fc0dfaaf3830"
+          style={boldLinkStyle}
+          title="How to Navigate Uncertainty using the Action Rhythm"
+        >
+          develop a weekly rhythm
+        </a>.<br/>
+        <a href={inviteLink} style={boldLinkStyle}>Add a project to the board</a> to get started.<br />
+        <EmptySpace height={32} />
       </Body>
       <Footer color={appTheme.palette.dark} />
     </Layout>
   );
 };
+
+// {firstProject &&
+//   <div>
+//     <b>{inviterName} added one of your projects to Action</b>:
+//     <EmptySpace height={32} />
+//     <span style={projectNameStyle}>“{firstProject}”</span>
+//     <EmptySpace height={32} />
+//   </div>
+// }
 
 TeamInvite.propTypes = {
   inviterAvatar: PropTypes.string.isRequired,
