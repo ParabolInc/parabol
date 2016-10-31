@@ -30,7 +30,7 @@ const NewTeamForm = (props) => {
   const onSubmit = (submittedData) => {
     const {teamName, invitedTeamMembers} = submittedData;
     const invitees = emailAddresses
-      .parseAddressList(invitedTeamMembers)
+      .parseAddressList(invitedTeamMembers.trim())
       .map(email => ({
         email: email.address,
         fullName: email.fullName
@@ -40,7 +40,7 @@ const NewTeamForm = (props) => {
       variables: {
         newTeam: {
           id,
-          name: teamName
+          name: teamName.trim()
         },
         invitees
       }
