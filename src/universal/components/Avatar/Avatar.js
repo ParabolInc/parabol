@@ -33,8 +33,14 @@ const Avatar = (props) => {
     styles.avatarImage,
     hasBorder ? styles.hasBorder : styles.boxShadow
   );
-  const avatarStyles = css(styles.avatar, styles[sizeStyles]);
-  const imageBlockStyles = css(styles.avatarImageBlock, styles[imageSizeStyles]);
+  const avatarStyles = css(
+    styles.avatar,
+    styles[sizeStyles]
+  );
+  const imageBlockStyles = css(
+    styles.avatarImageBlock,
+    styles[imageSizeStyles]
+  );
   // Position label to the right of avatar image
   const avatarLabelStyles = css(
     styles.avatarLabel,
@@ -87,8 +93,15 @@ Avatar.propTypes = {
   styles: PropTypes.object
 };
 
-const boxShadowDefault = '0 0 1px 1px rgba(0, 0, 0, .2)';
-const boxShadowWarm = `0 0 1px 1px ${appTheme.palette.warm}`;
+// const boxShadowDefault = '0 0 1px 1px rgba(0, 0, 0, .2)';
+// const boxShadowWarm = `0 0 1px 1px ${appTheme.palette.warm}`;
+
+const backgroundDefault = appTheme.palette.mid20a;
+const backgroundWarm = appTheme.palette.warm80a;
+const boxShadowBase = '0 0 0 2px #fff, 0 0 0 4px';
+const boxShadowDefault = `${boxShadowBase} ${backgroundDefault}`;
+const boxShadowWarm = `${boxShadowBase} ${backgroundWarm}`;
+
 const styleThunk = () => ({
   avatar: {
     display: 'inline-block',
@@ -134,6 +147,7 @@ const styleThunk = () => ({
   },
 
   avatarImageBlock: {
+    borderRadius: '100%',
     display: 'block',
     margin: '0 auto',
     position: 'relative',
