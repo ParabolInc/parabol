@@ -8,6 +8,8 @@ import {getDotenv} from '../src/universal/utils/dotenv';
 // Import .env and expand variables:
 getDotenv();
 
+const CDN_URL = `${process.env.CDN_URL}${process.env.CDN_URL.endsWith('/') ? '' : '/'}`;
+
 const root = process.cwd();
 const clientInclude = [
   path.join(root, 'src', 'client'),
@@ -40,8 +42,10 @@ if (process.env.DEPLOY) {
     },
     s3UploadOptions: {
       Bucket: process.env.AWS_S3_BUCKET
+    },
+    cdnizerOptions: {
+      defaultCDNBase: CDN_URL
     }
-    // TODO: cdnizerOptions
   }));
 }
 
@@ -58,7 +62,7 @@ export default {
     filename: '[name]_[chunkhash].js',
     chunkFilename: '[name]_[chunkhash].js',
     path: path.join(root, 'build'),
-    publicPath: '/static/'
+    publicPath: process.env.DEPLOY ? CDN_URL : '/static/'
   },
   resolve: {
     extensions: ['.js'],
@@ -74,7 +78,11 @@ export default {
     }),
     new webpack.optimize.AggressiveMergingPlugin(),
     new webpack.optimize.MinChunkSizePlugin({minChunkSize: 50000}),
-    new AssetsPlugin({path: path.join(root, 'build'), filename: 'assets.json', includeManifest: true}),
+    new AssetsPlugin({
+      path: path.join(root, 'build'),
+      filename: 'assets.json',
+      includeManifest: true
+    }),
     new webpack.NoErrorsPlugin(),
     new webpack.DefinePlugin({
       __CLIENT__: true,
