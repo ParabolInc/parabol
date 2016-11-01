@@ -121,6 +121,7 @@
     "redux": "3.6.0",
     "redux-form": "^6.0.5",
     "redux-logger": "2.6.1",
+    "redux-raven-middleware": "^1.1.0",
     "redux-segment": "^1.4.2",
     "redux-socket-cluster": "^0.10.1",
     "redux-storage-engine-localstorage": "^1.1.2",

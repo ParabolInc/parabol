@@ -68,7 +68,7 @@ const Step3InviteTeam = (props) => {
     }
   };
 
-  const {handleSubmit, invitees, inviteesRaw, submitting, teamName} = props;
+  const {handleSubmit, invitees, inviteesRaw, submitting, teamName, placeholderTheme} = props;
 
   const invitesFieldHasError = false; // TODO: wire this up for real
   const helpText = invitesFieldHasError ?
@@ -90,13 +90,12 @@ const Step3InviteTeam = (props) => {
           component={InputField}
           hasButton
           hasErrorText={invitesFieldHasError}
-          hasHelpText
           helpText={helpText}
           isLarger
           isWider
           name="inviteesRaw"
           onButtonClick={onAddInviteesButtonClick}
-          placeholder="b.bunny@acme.co, d.duck@acme.co, e.fudd@acme.co"
+          placeholder={placeholderTheme.emailMulti}
           type="text"
         />
       </div>
@@ -107,7 +106,7 @@ const Step3InviteTeam = (props) => {
               labelGetter={(idx) => invitees[idx].label}
               labelHeader="Invitee"
               labelSource="invitees"
-              nestedFieldHeader="This Week's Priority"
+              nestedFieldHeader="This Week’s Priority (optional)"
               nestedFieldName="task"
             />
           </div>
@@ -133,6 +132,7 @@ Step3InviteTeam.propTypes = {
   invitees: PropTypes.array,
   inviteesRaw: PropTypes.string,
   onSubmit: PropTypes.func,
+  placeholderTheme: PropTypes.object,
   router: PropTypes.object,
   submitting: PropTypes.bool,
   teamName: PropTypes.string,

@@ -5,7 +5,7 @@ import {cashay} from 'cashay';
 
 const dashNavListQuery = `
 query {
-  teams @live {
+  teams @cached(type: "[Team]") {
     id
     name
     meetingId
@@ -15,7 +15,13 @@ query {
 
 const mapStateToProps = () => {
   const {teams} = cashay.query(dashNavListQuery, {
-    op: 'dashNavListContainer'
+    op: 'dashNavListContainer',
+    resolveCached: {
+      teams: () => () => true
+    },
+    sort: {
+      teams: (a, b) => a.name > b.name ? 1 : -1
+    }
   }).data;
   return {
     teams

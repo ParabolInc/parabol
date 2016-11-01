@@ -51,6 +51,7 @@ const MeetingAgendaLastCall = (props) => {
               onClick={gotoNext}
               size="largest"
               style="outlined"
+              textTransform="uppercase"
             /> :
             <Type align="center" marginBottom="2.75rem" scale="s4" colorPalette="black">
               <span className={css(styles.highlight)}>Waiting for {facilitatorName} to end the meeting...</span>

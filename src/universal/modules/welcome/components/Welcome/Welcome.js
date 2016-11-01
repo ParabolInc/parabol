@@ -50,6 +50,7 @@ Welcome.propTypes = {
   dispatch: PropTypes.func,
   invitees: PropTypes.array,
   inviteesRaw: PropTypes.string,
+  placeholderTheme: PropTypes.object,
   preferredName: PropTypes.string,
   progressDotClickFactory: PropTypes.func,
   styles: PropTypes.object.isRequired,

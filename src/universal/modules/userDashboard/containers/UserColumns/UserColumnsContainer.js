@@ -9,7 +9,7 @@ import makeAllProjects from 'universal/utils/makeAllProjects';
 // TODO this is a sign that cashay is missing something. how do we request a LIST of just projects?
 const userColumnsQuery = `
 query {
-  teams @live {
+  teams @cached(type: "[Team]") {
     id
     name
     projects @live {
@@ -42,6 +42,9 @@ const mapStateToProps = (state) => {
   const {teams} = cashay.query(userColumnsQuery, {
     op: 'userColumnsContainer',
     key: teamFilterId || '',
+    resolveCached: {
+      teams: () => () => true
+    },
     resolveChannelKey: {
       projects: (source) => `${userId}::${source.id}`
     },
