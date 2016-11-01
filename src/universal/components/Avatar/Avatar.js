@@ -96,8 +96,8 @@ Avatar.propTypes = {
 // const boxShadowDefault = '0 0 1px 1px rgba(0, 0, 0, .2)';
 // const boxShadowWarm = `0 0 1px 1px ${appTheme.palette.warm}`;
 
-const backgroundDefault = appTheme.palette.mid30a;
-const backgroundWarm = appTheme.palette.warm70a;
+const backgroundDefault = appTheme.palette.mid20a;
+const backgroundWarm = appTheme.palette.warm80a;
 const boxShadowBase = '0 0 0 2px #fff, 0 0 0 4px';
 const boxShadowDefault = `${boxShadowBase} ${backgroundDefault}`;
 const boxShadowWarm = `${boxShadowBase} ${backgroundWarm}`;
