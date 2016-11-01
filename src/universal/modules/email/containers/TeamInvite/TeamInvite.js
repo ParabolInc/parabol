@@ -88,7 +88,7 @@ const TeamInvite = props => {
               <td width="64">
                 <img src={inviterAvatar} height="64" width="64" />
               </td>
-              <td style={{paddingLeft: '16px'}}>
+              <td style={{paddingLeft: '16px', textAlign: 'left'}}>
                 {inviterName}<br />
                 <a href={`mailto:${inviterEmail}`} style={{...colorCool, fontSize: '14px'}}>{inviterEmail}</a>
               </td>
