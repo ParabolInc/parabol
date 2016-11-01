@@ -1,4 +1,5 @@
 import {createStore, applyMiddleware, compose} from 'redux';
+import ravenMiddleware from 'redux-raven-middleware';
 import thunkMiddleware from 'redux-thunk';
 import {createMiddleware, createLoader} from 'redux-storage-whitelist-fn';
 import {createTracker} from 'redux-segment';
@@ -34,6 +35,8 @@ export default async initialState => {
   ];
 
   if (__PRODUCTION__) {
+    // add Sentry error reporting:
+    middlewares.unshift(ravenMiddleware(window.__ACTION__.sentry)); // eslint-disable-line no-underscore-dangle
     store = createStore(reducer, initialState, compose(applyMiddleware(...middlewares)));
   } else {
     // eslint-disable-next-line no-underscore-dangle
