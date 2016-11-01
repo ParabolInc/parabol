@@ -46,6 +46,12 @@ const calloutTextStyle = {
   color: appTheme.palette.dark
 };
 
+const secondaryMessage = {
+  color: appTheme.palette.dark,
+  fontSize: '20px',
+  lineHeight: '30px'
+};
+
 // const projectNameStyle = {
 //   ...merryAndBold,
 //   fontSize: '24px'
@@ -113,15 +119,17 @@ const TeamInvite = props => {
         <EmptySpace height={32} />
         <div style={ruleStyle} />
         <EmptySpace height={32} />
-        Action helps teams{' '}
-        <a
-          href="https://focus.parabol.co/how-to-navigate-uncertainty-fc0dfaaf3830"
-          style={boldLinkStyle}
-          title="How to Navigate Uncertainty using the Action Rhythm"
-        >
-          develop a weekly rhythm
-        </a>.<br/>
-        <a href={inviteLink} style={boldLinkStyle}>Add a project to the board</a> to get started.<br />
+        <div className={secondaryMessage}>
+          Action helps teams{' '}
+          <a
+            href="https://focus.parabol.co/how-to-navigate-uncertainty-fc0dfaaf3830"
+            style={boldLinkStyle}
+            title="How to Navigate Uncertainty using the Action Rhythm"
+          >
+            develop a weekly rhythm
+          </a>.<br/>
+          <a href={inviteLink} style={boldLinkStyle}>Add a project to the board</a> to get started.
+        </div>
         <EmptySpace height={32} />
       </Body>
       <Footer color={appTheme.palette.dark} />
@@ -129,6 +137,7 @@ const TeamInvite = props => {
   );
 };
 
+// TODO: Don’t show this until we actually transfer it to the dashboard as a project? (TA)
 // {firstProject &&
 //   <div>
 //     <b>{inviterName} added one of your projects to Action</b>:
