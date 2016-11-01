@@ -2,85 +2,114 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
+import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
+
+import Textarea from 'react-textarea-autosize';
+import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
+import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText';
+import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
+import FieldShortcutHint from 'universal/components/FieldShortcutHint/FieldShortcutHint';
 import IconButton from 'universal/components/IconButton/IconButton';
 
 const InputField = (props) => {
   const {
     autoFocus,
-    hasErrorText,
-    hasHelpText,
-    helpText,
-    input,
-    isWider,
-    colorPalette,
     buttonDisabled,
     buttonIcon,
+    colorPalette,
+    disabled,
+    hasTransparentBackground,
     hasButton,
-    hasShortcutHint,
+    input,
     isLarger,
+    isWider,
+    label,
+    meta: {touched, error},
     onButtonClick,
     placeholder,
+    readyOnly,
     shortcutHint,
     styles,
+    useTextarea
   } = props;
-
-  const shortcutHintStyles = css(
-    styles.shortcutHint,
-    buttonDisabled && styles.shortcutHintDisabled
-  );
-
-  const helpTextStyles = css(
-    styles.helpText,
-    hasErrorText && styles.helpTextError
-  );
 
   const inputStyles = css(
     // allow hotkeys to be triggered when inside a field input
     styles.field,
-    styles[colorPalette],
+    colorPalette ? styles[colorPalette] : styles.white,
+    hasTransparentBackground && styles.transparentBackground,
+    disabled && styles.disabled,
     isLarger && styles.fieldLarger,
-    isWider && styles.fieldWider
+    readyOnly && styles.readyOnly,
+    isWider && styles.fieldWider,
+    useTextarea && styles.textarea
   );
+
+  const makeLabelNameForInput = () => {
+    let labelForName = null;
+    if (input && input.name) {
+      labelForName = input.name;
+    }
+    return labelForName;
+  };
 
   return (
-    <div className={css(styles.fieldBlock)}>
-      <input
-        {...input}
-        autoFocus={autoFocus}
-        className={`${inputStyles} mousetrap`}
-        placeholder={placeholder}
-      />
-      {hasButton &&
-        <div className={css(styles.buttonBlock)}>
-          <IconButton
-            disabled={buttonDisabled}
-            iconName={buttonIcon}
-            iconSize="2x"
-            onClick={onButtonClick}
-          />
-        </div>
+    <FieldBlock>
+      {label &&
+        <FieldLabel label={label} htmlFor={makeLabelNameForInput()} />
       }
-      {hasHelpText && <div className={helpTextStyles}>{helpText}</div>}
-      {hasShortcutHint && <div className={shortcutHintStyles}>{shortcutHint}</div>}
-    </div>
+      <div className={css(styles.inputBlock)}>
+        {/*
+          // TODO: input and textarea should be broken out into separate components
+          //       this component 'InputField' can be renamed to wrap form components of any type
+          //       select, input, textarea, etc. that can use a label, help text, shortcut hints, etc.
+        */}
+        {useTextarea ?
+          <Textarea
+            {...input}
+            autoFocus={autoFocus}
+            className={`${inputStyles} mousetrap`}
+            disabled={disabled || readyOnly}
+            placeholder={placeholder}
+          /> :
+          <input
+            {...input}
+            autoFocus={autoFocus}
+            className={`${inputStyles} mousetrap`}
+            disabled={disabled || readyOnly}
+            placeholder={placeholder}
+          />
+        }
+        {hasButton &&
+          <div className={css(styles.buttonBlock)}>
+            <IconButton
+              disabled={buttonDisabled}
+              iconName={buttonIcon}
+              iconSize="2x"
+              onClick={onButtonClick}
+            />
+          </div>
+        }
+      </div>
+      {touched && error && <FieldHelpText hasErrorText helpText={error} />}
+      {shortcutHint && <FieldShortcutHint disabled={buttonDisabled} hint={shortcutHint} />}
+    </FieldBlock>
   );
-};
-
-InputField.defaultProps = {
-  colorPalette: 'cool'
 };
 
 InputField.propTypes = {
-  name: PropTypes.string,
+  hasTransparentBackground: PropTypes.bool,
   hasErrorText: PropTypes.bool,
-  hasHelpText: PropTypes.bool,
-  helpText: PropTypes.object,
+  helpText: PropTypes.any,
   autoFocus: PropTypes.bool,
   buttonDisabled: PropTypes.bool,
   buttonIcon: PropTypes.string,
   hasButton: PropTypes.bool,
-  hasShortcutHint: PropTypes.bool,
+  disabled: PropTypes.bool,
   isLarger: PropTypes.bool,
+  readyOnly: PropTypes.bool,
+  label: PropTypes.string,
   onButtonClick: PropTypes.func,
   placeholder: PropTypes.string,
   shortcutHint: PropTypes.string,
@@ -96,88 +125,126 @@ InputField.propTypes = {
   styles: PropTypes.object,
   colorPalette: PropTypes.oneOf([
     'cool',
-    'warm'
-  ])
+    'gray',
+    'warm',
+    'white'
+  ]),
+  meta: PropTypes.object.isRequired,
+  useTextarea: PropTypes.bool
 };
 
-const fieldLightGray = appTheme.palette.dark50l;
+const palettes = {
+  cool: {
+    backgroundColor: appTheme.palette.cool10l,
+    borderColor: appTheme.palette.cool40l,
+    color: appTheme.palette.cool,
+    focusBorderColor: appTheme.palette.cool,
+    placeholder: makePlaceholderStyles(appTheme.palette.cool70l),
+    selection: appTheme.palette.cool20l
+  },
+  gray: {
+    backgroundColor: appTheme.palette.mid10l,
+    borderColor: appTheme.palette.mid40l,
+    color: appTheme.palette.dark,
+    focusBorderColor: appTheme.palette.dark,
+    placeholder: makePlaceholderStyles(appTheme.palette.mid70l),
+    selection: appTheme.palette.mid20l
+  },
+  warm: {
+    backgroundColor: appTheme.palette.warm10l,
+    borderColor: appTheme.palette.warm40l,
+    color: appTheme.palette.warm,
+    focusBorderColor: appTheme.palette.warm,
+    placeholder: makePlaceholderStyles(appTheme.palette.warm70l),
+    selection: appTheme.palette.warm20l
+  },
+  white: {
+    backgroundColor: '#fff',
+    borderColor: appTheme.palette.mid40l,
+    color: appTheme.palette.dark,
+    focusBorderColor: appTheme.palette.dark,
+    placeholder: makePlaceholderStyles(appTheme.palette.mid70l),
+    selection: appTheme.palette.mid20l
+  }
+};
+
+const makeColorPalette = (theme) => {
+  return {
+    backgroundColor: palettes[theme].backgroundColor,
+    borderColor: palettes[theme].borderColor,
+    color: palettes[theme].color,
+    ...palettes[theme].placeholder,
+    '::selection': {
+      backgroundColor: palettes[theme].selection
+    },
+    ':focus': {
+      borderColor: palettes[theme].focusBorderColor,
+      outline: 'none'
+    },
+    ':active': {
+      borderColor: palettes[theme].focusBorderColor,
+      outline: 'none'
+    }
+  };
+};
+
+const readOnlyStyles = {
+  borderColor: 'transparent',
+  ':focus': {
+    borderColor: 'transparent'
+  },
+  ':active': {
+    borderColor: 'transparent'
+  }
+};
 
 const styleThunk = () => ({
-  fieldBlock: {
-    margin: '0 auto',
-    maxWidth: '100%',
-    minWidth: '20rem',
-    position: 'relative'
-  },
-
   field: {
+    appearance: 'none',
     border: 0,
-    borderBottom: `1px dashed ${fieldLightGray}`,
+    borderBottom: '1px solid transparent',
+    borderRadius: 0,
     boxShadow: 'none',
+    display: 'block', // Todo: make inlineBlock wrapper (TA)
+    fontFamily: appTheme.typography.sansSerif,
     fontSize: appTheme.typography.s4,
-    fontWeight: 700,
-    lineHeight: 1.5,
-    margin: '0 0 .5rem',
-    padding: '.125rem .5rem',
+    lineHeight: '1.75rem',
+    margin: '0',
+    padding: `.125rem ${ui.fieldPaddingHorizontal}`,
     width: '100%',
-
-    '::placeholder': {
-      color: fieldLightGray
-    },
-
-    // NOTE: :focus, :active have same styles
-    ':focus': {
-      borderStyle: 'solid',
-      outline: 'none'
-    },
-    ':active': {
-      borderStyle: 'solid',
-      outline: 'none'
-    }
   },
 
-  cool: {
-    '::selection': {
-      backgroundColor: appTheme.palette.cool10l
-    },
+  cool: makeColorPalette('cool'),
+  gray: makeColorPalette('gray'),
+  warm: makeColorPalette('warm'),
+  white: makeColorPalette('white'),
 
-    // NOTE: :focus, :active have same styles
-    ':focus': {
-      borderColor: appTheme.palette.cool50l,
-      color: appTheme.palette.cool,
-    },
-    ':active': {
-      borderColor: appTheme.palette.cool50l,
-      color: appTheme.palette.cool,
-    }
+  disabled: {
+    ...readOnlyStyles,
+    cursor: 'not-allowed'
   },
 
-  warm: {
-    '::selection': {
-      backgroundColor: appTheme.palette.warm10l
-    },
-
-    // NOTE: :focus, :active have same styles
-    ':focus': {
-      borderColor: appTheme.palette.warm50l,
-      color: appTheme.palette.warm,
-    },
-    ':active': {
-      borderColor: appTheme.palette.warm50l,
-      color: appTheme.palette.warm,
-    }
+  readyOnly: {
+    ...readOnlyStyles,
+    cursor: 'default'
   },
 
-  // NOTE: Modifies field
+  transparentBackground: {
+    backgroundColor: 'transparent'
+  },
+
   fieldLarger: {
-    borderBottomWidth: '2px',
     fontSize: appTheme.typography.s6,
-    fontWeight: 400
+    fontWeight: 400,
+    lineHeight: '2.625rem',
   },
 
-  // NOTE: Modifies field
   fieldWider: {
     minWidth: '30rem'
+  },
+
+  inputBlock: {
+    position: 'relative'
   },
 
   buttonBlock: {
@@ -187,29 +254,8 @@ const styleThunk = () => ({
     top: '.375rem'
   },
 
-  helpText: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s3,
-    fontStyle: 'italic',
-    fontWeight: 700
-  },
-
-  // NOTE: Modifies helpText
-  helpTextError: {
-    color: appTheme.palette.warm
-  },
-
-  shortcutHint: {
-    color: appTheme.palette.warm,
-    fontSize: appTheme.typography.s3,
-    fontStyle: 'italic',
-    fontWeight: 700,
-    textAlign: 'right'
-  },
-
-  // NOTE: Modifies shortcutHint
-  shortcutHintDisabled: {
-    opacity: '.5'
+  textarea: {
+    minHeight: '6rem'
   }
 });
 

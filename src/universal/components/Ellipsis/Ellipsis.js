@@ -4,6 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 
 const Ellipsis = (props) => {
   const {
+    fontSize,
     isAnimated,
     styles
   } = props;
@@ -11,7 +12,7 @@ const Ellipsis = (props) => {
   const dotStyles2 = css(styles.dot, styles.dot2, isAnimated && styles.dotAnimated);
   const dotStyles3 = css(styles.dot, styles.dot3, isAnimated && styles.dotAnimated);
   return (
-    <div className={css(styles.root)}>
+    <div className={css(styles.root)} style={{fontSize}}>
       {isAnimated ?
         <span>
           <span className={dotStyles1}>.</span>
@@ -25,11 +26,13 @@ const Ellipsis = (props) => {
 };
 
 Ellipsis.propTypes = {
+  fontSize: PropTypes.string,
   isAnimated: PropTypes.bool,
   styles: PropTypes.object,
 };
 
 Ellipsis.defaultProps = {
+  fontSize: '1.2em',
   isAnimated: true
 };
 
@@ -56,7 +59,6 @@ const styleThunk = () => ({
     animationIterationCount: 'infinite',
     animationName: keyframesOpacity,
     display: 'inline-block',
-    fontSize: '1.2em',
     fontWeight: 700,
     lineHeight: 'inherit',
     verticalAlign: 'baseline'

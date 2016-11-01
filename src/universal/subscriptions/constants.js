@@ -13,4 +13,5 @@ export const AGENDA = 'agenda';
 export const PRESENCE = 'presence';
 export const PROJECTS = 'projects';
 export const TEAMS = 'teams';
+export const TEAM = 'team';
 export const TEAM_MEMBERS = 'teamMembers';

@@ -9,8 +9,7 @@ import {cashay} from 'cashay';
 
 const logoutSuccess = {
   title: 'Tootles!',
-  message: 'You\'ve been logged out successfully.',
-  level: 'success'
+  message: 'You\'ve been logged out successfully.'
 };
 
 @connect()

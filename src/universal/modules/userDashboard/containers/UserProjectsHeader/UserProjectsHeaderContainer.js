@@ -5,7 +5,7 @@ import {cashay} from 'cashay';
 
 const userColumnsQuery = `
 query {
-  teams @live {
+  teams @cached(type: "[Team]") {
     id
     name
   }
@@ -15,6 +15,9 @@ query {
 const mapStateToProps = (state) => {
   const {teams} = cashay.query(userColumnsQuery, {
     op: 'userProjectsHeaderContainer',
+    resolveCached: {
+      teams: () => () => true
+    },
     sort: {
       teams: (a, b) => a.name > b.name ? 1 : -1
     }

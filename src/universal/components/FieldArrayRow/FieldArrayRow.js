@@ -3,11 +3,12 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import {textOverflow} from 'universal/styles/helpers';
 import {Field} from 'redux-form';
+import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
 import IconButton from 'universal/components/IconButton/IconButton';
 import InputField from 'universal/components/InputField/InputField';
 import appTheme from 'universal/styles/theme/appTheme';
 
-const FieldsBlock = props => {
+const FieldArrayRow = props => {
   const {
     labelGetter,
     labelHeader,
@@ -22,20 +23,15 @@ const FieldsBlock = props => {
 
   const columnLeftStyles = css(styles.fieldGroupColumn, styles.fieldGroupColumnLeft);
   const columnRightStyles = css(styles.fieldGroupColumn, styles.fieldGroupColumnRight);
-  const fieldLabelStyles = css(styles.fieldGroupLabel, styles.fieldGroupLabelForFields);
 
   return (
     <div className={css(styles.fieldGroup)}>
       <div className={css(styles.fieldGroupRow)}>
         <div className={columnLeftStyles}>
-          <div className={css(styles.fieldGroupLabel)}>
-            {labelHeader}
-          </div>
+          <FieldLabel label={labelHeader} resetPadding />
         </div>
         <div className={columnRightStyles}>
-          <div className={fieldLabelStyles}>
-            {nestedFieldHeader}
-          </div>
+          <FieldLabel label={nestedFieldHeader} />
         </div>
       </div>
       {fields.map((item, index) =>
@@ -73,7 +69,7 @@ const FieldsBlock = props => {
   );
 };
 
-FieldsBlock.propTypes = {
+FieldArrayRow.propTypes = {
   labelGetter: PropTypes.func.isRequired,
   labelHeader: PropTypes.string.isRequired,
   fields: PropTypes.object.isRequired,
@@ -115,19 +111,6 @@ const styleThunk = () => ({
     width: '60%'
   },
 
-  fieldGroupLabel: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s2,
-    fontWeight: 700,
-    margin: '0 0 .5rem',
-    textTransform: 'uppercase'
-  },
-
-  // NOTE: Modifies fieldGroupLabel
-  fieldGroupLabelForFields: {
-    paddingLeft: '.5rem'
-  },
-
   fieldLabel: {
     ...textOverflow,
     color: appTheme.palette.dark,
@@ -145,4 +128,4 @@ const styleThunk = () => ({
   },
 });
 
-export default withStyles(styleThunk)(FieldsBlock);
+export default withStyles(styleThunk)(FieldArrayRow);

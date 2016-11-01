@@ -10,9 +10,15 @@ import DashNavItem from './DashNavItem';
 import SettingsHub from 'universal/components/SettingsHub/SettingsHub';
 import StandardHubContainer from 'universal/containers/StandardHub/StandardHubContainer';
 import Logo from 'universal/styles/theme/images/brand/parabol-lockup-h.svg';
+import {Link, withRouter} from 'react-router';
 
 const DashSidebar = (props) => {
-  const {isUserSettings, styles} = props;
+  const {isUserSettings, router, styles} = props;
+  const newTeamIsActive = router.isActive('/newteam', true);
+  const addNewStyles = css(
+    styles.addTeam,
+    newTeamIsActive && styles.addTeamDisabled
+  );
   return (
     <div className={css(styles.root)}>
       {isUserSettings ? <SettingsHub/> : <StandardHubContainer/>}
@@ -23,18 +29,18 @@ const DashSidebar = (props) => {
             label="My Dashboard"
           />
         </div>
-        <div className={css(styles.navLabel)}>
+        <div className={css(styles.navLabel, styles.navLabelForList)}>
           My Teams
         </div>
         <DashNavListContainer/>
-        <div className={css(styles.addTeam)} title="Add New Team">
+        <Link className={addNewStyles} title="Add New Team" to="/newteam">
           <div className={css(styles.addTeamIcon)}>
-            <FontAwesome name="plus-square" />
+            <FontAwesome name="plus-square"/>
           </div>
           <div className={css(styles.addTeamLabel)}>
             Add New Team
           </div>
-        </div>
+        </Link>
       </nav>
       <div className={css(styles.brand)}>
         <a href="http://www.parabol.co/" title="Action by Parabol, Inc." target="_blank">
@@ -46,11 +52,16 @@ const DashSidebar = (props) => {
 };
 
 DashSidebar.propTypes = {
-  styles: PropTypes.object,
-  isUserSettings: PropTypes.bool
+  isUserSettings: PropTypes.bool,
+  router: PropTypes.object,
+  styles: PropTypes.object
 };
 
 const textColor = tinycolor.mix(appTheme.palette.mid10l, '#fff', 50).toHexString();
+const linkBaseStyles = {
+  color: textColor,
+  textDecoration: 'none'
+};
 
 const styleThunk = () => ({
   root: {
@@ -70,7 +81,7 @@ const styleThunk = () => ({
   },
 
   singleNavItem: {
-    padding: '1.25rem 0'
+    padding: '.5rem 0'
   },
 
   navLabel: {
@@ -83,17 +94,31 @@ const styleThunk = () => ({
     textTransform: 'uppercase'
   },
 
+  navLabelForList: {
+    paddingBottom: '.5rem'
+  },
+
   addTeam: {
+    ...linkBaseStyles,
     cursor: 'pointer',
+    display: 'block',
     marginTop: '.5rem',
     position: 'relative',
+    userSelect: 'none',
 
     ':hover': {
+      ...linkBaseStyles,
       opacity: '.5'
     },
     ':focus': {
+      ...linkBaseStyles,
       opacity: '.5'
     }
+  },
+
+  addTeamDisabled: {
+    cursor: 'default',
+    opacity: '.5'
   },
 
   addTeamIcon: {
@@ -128,4 +153,6 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(DashSidebar);
+export default withRouter(
+  withStyles(styleThunk)(DashSidebar)
+);
