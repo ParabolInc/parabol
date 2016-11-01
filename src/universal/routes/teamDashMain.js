@@ -16,6 +16,13 @@ export default {
           const component = await System.import('universal/modules/teamDashboard/containers/TeamArchive/TeamArchiveContainer');
           cb(null, component);
         }
+      },
+      {
+        path: 'settings',
+        getComponent: async (location, cb) => {
+          const component = await System.import('universal/modules/teamDashboard/containers/TeamSettings/TeamSettingsContainer');
+          cb(null, component);
+        }
       }
     ]);
   }
