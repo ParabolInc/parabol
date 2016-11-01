@@ -4,6 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import plural from 'universal/utils/plural';
 import Button from 'universal/components/Button/Button';
+import Ellipsis from 'universal/components/Ellipsis/Ellipsis';
 import Type from 'universal/components/Type/Type';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
@@ -52,9 +53,11 @@ const MeetingAgendaLastCall = (props) => {
               size="largest"
               style="outlined"
             /> :
-            <Type align="center" marginBottom="2.75rem" scale="s4" colorPalette="black">
-              <span className={css(styles.highlight)}>Waiting for {facilitatorName} to end the meeting...</span>
-            </Type>
+            <div className={css(styles.warmHighlight)}>
+              <Type align="center" scale="s4" colorPalette="black">
+                <span className={css(styles.highlight)}>Waiting for <b>{facilitatorName}</b> to end the meeting<Ellipsis/></span>
+              </Type>
+            </div>
           }
         </MeetingSection>
       </MeetingSection>
@@ -77,6 +80,12 @@ MeetingAgendaLastCall.propTypes = {
 const styleThunk = () => ({
   highlight: {
     color: appTheme.palette.warm
+  },
+
+  warmHighlight: {
+    backgroundColor: appTheme.palette.warm10l,
+    borderRadius: '.25rem',
+    padding: '.25rem 1rem'
   }
 });
 
