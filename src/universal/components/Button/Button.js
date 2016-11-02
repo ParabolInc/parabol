@@ -165,7 +165,7 @@ const styleThunk = (customTheme, props) => ({
     fontWeight: 700,
     lineHeight: 'normal',
     outline: 'none',
-    padding: '1em 2em',
+    padding: '.75em 1.5em',
     textAlign: 'center',
     textDecoration: 'none',
     textTransform: props.textTransform || 'none',
@@ -194,19 +194,19 @@ const styleThunk = (customTheme, props) => ({
 
   // Button sizes
   smallest: {
-    fontSize: '.75rem'
+    fontSize: appTheme.typography.s1
   },
   small: {
-    fontSize: '.875rem'
+    fontSize: appTheme.typography.s3
   },
   medium: {
-    fontSize: '1rem'
+    fontSize: appTheme.typography.sBase
   },
   large: {
-    fontSize: '1.125rem'
+    fontSize: appTheme.typography.s4
   },
   largest: {
-    fontSize: '1.25rem'
+    fontSize: appTheme.typography.s5
   },
 
   // doing this saves us from creating 6*3 classes

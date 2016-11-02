@@ -5,15 +5,39 @@ import appTheme from 'universal/styles/theme/appTheme';
 import {overflowTouch} from 'universal/styles/helpers';
 import ui from 'universal/styles/ui';
 import {reduxForm} from 'redux-form';
-import DashSectionHeading from 'universal/components/Dashboard/DashSectionHeading';
+import Button from 'universal/components/Button/Button';
+import InviteUser from 'universal/components/InviteUser/InviteUser';
+import UserRow from 'universal/components/UserRow/UserRow';
 
 const TeamSettings = (props) => {
-  const {styles} = props;
+  const {teamMembers, styles} = props;
+
+  const userRowActions = (user) => {
+    const removeUser = () =>
+      console.log(`remove ${user.preferredName}: ${user.id}`);
+    return (
+      <div>
+        <Button
+          borderRadius=".25rem"
+          colorPalette="gray"
+          label="Remove" size="smallest"
+          onClick={removeUser}
+        />
+      </div>
+    );
+  };
+
   return (
     <div className={css(styles.root)}>
-      <DashSectionHeading icon="cog" label="Team Settings" margin="0 2rem 0 0"/>
       <div className={css(styles.body)}>
-        Sexy body
+        <InviteUser/>
+        {
+          teamMembers.map((teamMember, idx) => {
+            return (
+              <UserRow key={`teamMemberKey${idx}`} {...teamMember} actions={userRowActions(teamMember)}/>
+            );
+          })
+        }
       </div>
     </div>
   );
@@ -27,70 +51,16 @@ TeamSettings.propTypes = {
 
 const styleThunk = () => ({
   root: {
+    backgroundColor: '#fff',
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
-    padding: '0 0 0 1rem',
+    padding: '1rem',
     width: '100%'
   },
 
   body: {
-    borderTop: `1px solid ${ui.dashBorderColor}`,
-    flex: 1,
-    position: 'relative'
-  },
-
-  scrollable: {
-    ...overflowTouch,
-    bottom: 0,
-    left: 0,
-    padding: '1rem 0 0',
-    position: 'absolute',
-    right: 0,
-    top: 0,
-  },
-
-  cardGrid: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    maxWidth: ui.projectColumnsMaxWidth,
-    width: '100%'
-  },
-
-  cardBlock: {
-    flex: '0 0 100%',
-    padding: '0 1rem .5rem 0',
-
-    '@media (min-width: 40rem)': {
-      flex: '0 0 50%'
-    },
-
-    '@media (min-width: 60rem)': {
-      flex: '0 0 33.3333%'
-    },
-
-    '@media (min-width: 80rem)': {
-      flex: '0 0 25%'
-    },
-
-    '@media (min-width: 100rem)': {
-      flex: '0 0 20%'
-    }
-  },
-
-  emptyMsg: {
-    backgroundColor: '#fff',
-    border: `1px solid ${appTheme.palette.mid30l}`,
-    borderRadius: '.25rem',
-    fontFamily: appTheme.typography.serif,
-    fontSize: appTheme.typography.s2,
-    fontStyle: 'italic',
-    display: 'inline-block',
-    padding: '1rem'
-  },
-
-  link: {
-    color: appTheme.palette.cool
+    maxWidth: '40rem'
   }
 });
 
