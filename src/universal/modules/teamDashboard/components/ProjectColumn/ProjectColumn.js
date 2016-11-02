@@ -7,7 +7,7 @@ import ui from 'universal/styles/ui';
 import themeLabels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import ProjectCardContainer from 'universal/containers/ProjectCard/ProjectCardContainer';
-import {USER_DASH, TEAM_DASH, MEETING} from 'universal/utils/constants';
+import {USER_DASH, TEAM_DASH} from 'universal/utils/constants';
 import FontAwesome from 'react-fontawesome';
 import {cashay} from 'cashay';
 import shortid from 'shortid';
@@ -35,9 +35,6 @@ const ProjectColumn = (props) => {
   const {area, status, projects, myTeamMemberId, styles, teams, userId} = props;
 
   const label = themeLabels.projectStatus[status].slug;
-  // TODO do it fur real
-  const MeetingCardContainer = ProjectCardContainer;
-  const CardContainer = area === MEETING ? MeetingCardContainer : ProjectCardContainer;
   const makeAddProjectButton = (clickHandler) => {
     return (<FontAwesome
       className={css(styles.addIcon, styles[status])}
@@ -118,7 +115,7 @@ const ProjectColumn = (props) => {
       <div className={css(styles.columnBody)}>
         <div className={css(styles.columnInner)}>
           {projects.map(project =>
-            <CardContainer
+            <ProjectCardContainer
               key={`teamCard${project.id}`}
               area={area}
               project={project}
