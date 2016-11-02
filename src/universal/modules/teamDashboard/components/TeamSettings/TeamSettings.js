@@ -13,7 +13,7 @@ const TeamSettings = (props) => {
     <div className={css(styles.root)}>
       <DashSectionHeading icon="cog" label="Team Settings" margin="0 2rem 0 0"/>
       <div className={css(styles.body)}>
-        Sexy body
+        Coming soon!
       </div>
     </div>
   );
