@@ -55,12 +55,12 @@ const ProjectCardContainer = (props) => {
   const form = `${status}::${id}`;
   return (
     id ?
-    <OutcomeOrNullCard
-      area={area}
-      form={form}
-      outcome={project}
-      myUserId={myUserId}
-    /> : null
+      <OutcomeOrNullCard
+        area={area}
+        form={form}
+        outcome={project}
+        myUserId={myUserId}
+      /> : null
   );
 };
 

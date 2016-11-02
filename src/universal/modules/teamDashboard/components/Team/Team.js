@@ -6,10 +6,9 @@ import {
   DashHeaderInfo,
   DashMain,
 } from 'universal/components/Dashboard';
-import {Link} from 'react-router';
+import {Link, withRouter} from 'react-router';
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
 import TeamDashModal from '../TeamDashModal/TeamDashModal';
-import {withRouter} from 'react-router';
 
 const faIconStyle = {
   fontSize: '14px',
@@ -84,6 +83,7 @@ const Team = (props) => {
 
 Team.propTypes = {
   children: PropTypes.any,
+  router: PropTypes.object.isRequired,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired,
 };

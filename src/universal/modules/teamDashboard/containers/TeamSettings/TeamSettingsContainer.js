@@ -32,6 +32,7 @@ const mapStateToProps = (state, props) => {
 };
 
 @connect(mapStateToProps)
+// eslint-disable-next-line react/prefer-stateless-function
 export default class TeamSettingsContainer extends Component {
   static propTypes = {
     params: PropTypes.object.isRequired,
@@ -42,8 +43,8 @@ export default class TeamSettingsContainer extends Component {
   render() {
     const {team, teamMembers} = this.props;
     if (teamMembers.length === 0) {
-      return <LoadingView/>
+      return <LoadingView/>;
     }
     return <TeamSettings team={team} teamMembers={teamMembers}/>;
   }
-};
+}
