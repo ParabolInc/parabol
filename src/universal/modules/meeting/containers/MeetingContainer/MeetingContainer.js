@@ -157,26 +157,30 @@ export default class MeetingContainer extends Component {
   componentWillReceiveProps(nextProps) {
     // make sure we still have a facilitator. if we don't elect a new one
     const {dispatch, team: {activeFacilitator}, members} = nextProps;
-    if (activeFacilitator) {
-      // if the meeting has started, find the facilitator
-      const facilitatingMember = members.find((m) => m.isFacilitating);
-      if (facilitatingMember && facilitatingMember.isConnected === false) {
-        // if the facilitator isn't connected, then make the first connected guy elect a new one
-        const onlineMembers = members.filter((m) => m.isConnected);
-        const callingMember = onlineMembers[0];
-        const nextFacilitator = members.find((m) => m.isFacilitator && m.isConnected) || callingMember;
-        if (callingMember.isSelf) {
-          const options = {variables: {facilitatorId: nextFacilitator.id}};
-          cashay.mutate('changeFacilitator', options);
-        }
-        const facilitatorIntro = nextFacilitator.isSelf ? 'You are' : `${nextFacilitator} is`;
-        dispatch(showInfo({
-          title: `${facilitatingMember.preferredName} Disconnected!`,
-          message: `${facilitatorIntro} the new facilitator`
-        }));
-      }
+    if (!activeFacilitator) return;
+    // if the meeting has started, find the facilitator
+    const facilitatingMemberIdx = members.findIndex((m) => m.isFacilitating);
+    const facilitatingMember = members[facilitatingMemberIdx];
+    if (!facilitatingMember || facilitatingMember.isConnected === true) return;
+    // check the old value because it's possible that we're trying before the message from the Presence sub comes in
+    const {members: oldMembers} = this.props;
+    const oldFacilitatingMember = oldMembers[facilitatingMemberIdx];
+    if (!oldFacilitatingMember || oldFacilitatingMember.isConnected === false) return;
+    // if the facilitator isn't connected, then make the first connected guy elect a new one
+    const onlineMembers = members.filter((m) => m.isConnected);
+    const callingMember = onlineMembers[0];
+    const nextFacilitator = members.find((m) => m.isFacilitator && m.isConnected) || callingMember;
+    if (callingMember.isSelf) {
+      const options = {variables: {facilitatorId: nextFacilitator.id}};
+      cashay.mutate('changeFacilitator', options);
     }
+    const facilitatorIntro = nextFacilitator.isSelf ? 'You are' : `${nextFacilitator} is`;
+    dispatch(showInfo({
+      title: `${facilitatingMember.preferredName} Disconnected!`,
+      message: `${facilitatorIntro} the new facilitator`
+    }));
   }
+
   shouldComponentUpdate(nextProps) {
     const {localPhaseItem, router, params: {localPhase}, team} = nextProps;
     const {dispatch, isFacilitating, team: oldTeam} = this.props;
