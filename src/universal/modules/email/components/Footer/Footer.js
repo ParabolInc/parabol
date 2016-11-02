@@ -16,7 +16,7 @@ const Footer = (props) => {
   };
 
   const cellStyles = {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: ui.emailBackgroundColor,
     color: props.color,
     fontFamily: ui.emailFontFamily,
     textAlign: 'center'

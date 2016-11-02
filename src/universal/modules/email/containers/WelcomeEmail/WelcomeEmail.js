@@ -8,6 +8,7 @@ import GetStarted from '../../components/GetStarted/GetStarted';
 import Body from '../../components/Body/Body';
 import Footer from '../../components/Footer/Footer';
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 
 const imageStyle = {
   border: 0,
@@ -16,7 +17,7 @@ const imageStyle = {
 };
 
 const ruleStyle = {
-  backgroundColor: '#E1E2E8',
+  backgroundColor: ui.emailRuleColor,
   border: 0,
   height: '2px',
   margin: '0 auto',
