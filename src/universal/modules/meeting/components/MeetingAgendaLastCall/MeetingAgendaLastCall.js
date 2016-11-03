@@ -51,7 +51,7 @@ const MeetingAgendaLastCall = (props) => {
               label="End Meeting"
               onClick={gotoNext}
               size="largest"
-              style="outlined"
+              style="solid"
               textTransform="uppercase"
             /> :
             <div className={css(styles.warmHighlight)}>

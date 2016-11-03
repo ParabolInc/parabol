@@ -14,6 +14,7 @@ const Avatar = (props) => {
     hasBorder,
     hasLabel,
     labelRight,
+    isActive,
     isCheckedIn,
     isClickable,
     isConnected,
@@ -31,7 +32,8 @@ const Avatar = (props) => {
   const rootInlineStyle = isClickable ? {cursor: 'pointer'} : {cursor: 'default'};
   const avatarImagesStyles = css(
     styles.avatarImage,
-    hasBorder ? styles.hasBorder : styles.boxShadow
+    hasBorder ? styles.hasBorder : styles.boxShadow,
+    isActive && styles.isActive
   );
   const avatarStyles = css(
     styles.avatar,
@@ -73,6 +75,7 @@ Avatar.propTypes = {
   hasBadge: PropTypes.bool,
   hasBorder: PropTypes.bool,
   hasLabel: PropTypes.bool,
+  isActive: PropTypes.bool,
   isCheckedIn: PropTypes.bool,
   isClickable: PropTypes.bool,
   isConnected: PropTypes.bool,
@@ -93,13 +96,11 @@ Avatar.propTypes = {
   styles: PropTypes.object
 };
 
-// const boxShadowDefault = '0 0 1px 1px rgba(0, 0, 0, .2)';
-// const boxShadowWarm = `0 0 1px 1px ${appTheme.palette.warm}`;
-
 const backgroundDefault = appTheme.palette.mid20a;
 const backgroundWarm = appTheme.palette.warm80a;
 const boxShadowBase = '0 0 0 2px #fff, 0 0 0 4px';
-const boxShadowDefault = `${boxShadowBase} ${backgroundDefault}`;
+const boxShadowBorder = `${boxShadowBase} ${backgroundDefault}`;
+const boxShadowDefault = '0 0 1px 1px rgba(0, 0, 0, .2)';
 const boxShadowWarm = `${boxShadowBase} ${backgroundWarm}`;
 
 const styleThunk = () => ({
@@ -192,6 +193,10 @@ const styleThunk = () => ({
   },
 
   hasBorder: {
+    boxShadow: boxShadowBorder
+  },
+
+  isActive: {
     boxShadow: boxShadowWarm
   },
 
