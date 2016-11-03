@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
 import FontAwesome from 'react-fontawesome';
+import appTheme from 'universal/styles/theme/appTheme';
 import {
   DashContent,
   DashHeader,
@@ -9,6 +10,7 @@ import {
 import {Link, withRouter} from 'react-router';
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
 import TeamDashModal from '../TeamDashModal/TeamDashModal';
+import Editable from 'universal/components/Editable/Editable';
 
 const faIconStyle = {
   fontSize: '14px',
@@ -59,17 +61,36 @@ const settingsLinks = (teamId) => {
   );
 };
 
+const renderEditableTeamName = (name) => {
+  const fieldStyles = {
+    color: appTheme.palette.dark10d,
+    fontSize: appTheme.typography.s5,
+    lineHeight: appTheme.typography.s6,
+    placeholderColor: appTheme.palette.mid70l
+  };
+  const isEditingTeamName = false;
+  return (
+    <Editable
+      input={{value: name}}
+      isEditing={isEditingTeamName}
+      placeholder="Team Name"
+      typeStyles={fieldStyles}
+    />
+  );
+};
+
 const Team = (props) => {
   const {children, router, team, teamMembers} = props;
   const teamId = team.id;
   const teamName = team.name;
   const hasOverlay = Boolean(team && team.meetingId);
   const isSettings = router.isActive(`/team/${teamId}/settings`, false);
+  const DashHeaderInfoTitle = isSettings ? renderEditableTeamName(teamName) : teamName;
   return (
     <DashMain>
       {hasOverlay && <TeamDashModal teamId={teamId} teamName={teamName}/>}
       <DashHeader hasOverlay={hasOverlay}>
-        <DashHeaderInfo title={teamName}>
+        <DashHeaderInfo title={DashHeaderInfoTitle}>
           {isSettings ? settingsLinks(teamId) : standardLinks(teamId)}
         </DashHeaderInfo>
         <DashboardAvatars teamMembers={teamMembers}/>

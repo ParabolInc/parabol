@@ -34,23 +34,11 @@ const TeamSettings = (props) => {
           {
             teamMembers.map((teamMember, idx) => {
               return (
-                <div key={`teamMemberKey${idx}`}>
-                  <UserRow
-                    {...teamMember}
-                    actions={userRowActions(teamMember)}
-                    key={`teamMemberKey${idx + 100}`}
-                  />
-                  <UserRow
-                    {...teamMember}
-                    actions={userRowActions(teamMember)}
-                    key={`teamMemberKey${idx + 200}`}
-                  />
-                  <UserRow
-                    {...teamMember}
-                    actions={userRowActions(teamMember)}
-                    key={`teamMemberKey${idx + 300}`}
-                  />
-                </div>
+                <UserRow
+                  {...teamMember}
+                  actions={userRowActions(teamMember)}
+                  key={`teamMemberKey${idx}`}
+                />
               );
             })
           }

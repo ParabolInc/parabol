@@ -25,7 +25,7 @@ const Editable = (props) => {
     return (
       <input
         className={inputStyles}
-        placeholder="email@domain.co"
+        placeholder={placeholder}
         type="text"
         value={input.value}
       />
@@ -89,12 +89,15 @@ Editable.propTypes = {
 const styleThunk = (customTheme, props) => ({
   editableRoot: {
     display: 'block',
+    height: props.typeStyles.lineHeight,
     width: '100%'
   },
 
   staticBlock: {
     display: 'inline-block',
     fontSize: 0,
+    height: props.typeStyles.lineHeight,
+    verticalAlign: 'top',
 
     ':hover': {
       cursor: 'pointer',
@@ -130,7 +133,7 @@ const styleThunk = (customTheme, props) => ({
     display: 'inline-block',
     outline: 'none',
     padding: 0,
-    verticalAlign: 'middle',
+    verticalAlign: 'top',
     width: '100%',
 
     ...makePlaceholderStyles(props.typeStyles.placeholderColor)
