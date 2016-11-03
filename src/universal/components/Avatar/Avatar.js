@@ -96,12 +96,12 @@ Avatar.propTypes = {
   styles: PropTypes.object
 };
 
-const backgroundDefault = appTheme.palette.mid20a;
-const backgroundWarm = appTheme.palette.warm80a;
-const boxShadowBase = '0 0 0 2px #fff, 0 0 0 4px';
-const boxShadowBorder = `${boxShadowBase} ${backgroundDefault}`;
+const borderDefault = appTheme.palette.mid20a;
+const borderWarm = appTheme.palette.warm80a;
 const boxShadowDefault = '0 0 1px 1px rgba(0, 0, 0, .2)';
-const boxShadowWarm = `${boxShadowBase} ${backgroundWarm}`;
+const boxShadowBase = '0 0 0 2px #fff, 0 0 0 4px';
+const boxShadowBorder = `${boxShadowBase} ${borderDefault}`;
+const boxShadowWarm = `${boxShadowBase} ${borderWarm}`;
 
 const styleThunk = () => ({
   avatar: {
