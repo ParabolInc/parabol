@@ -28,6 +28,10 @@ const InviteUser = (props) => {
           placeholder="email@domain.co"
           type="text"
         />
+        <FontAwesome
+          name="pencil"
+          style={{color: appTheme.palette.dark, display: 'none', fontSize: ui.iconSize, verticalAlign: 'middle'}}
+        />
       </div>
       <div className={css(styles.buttonBlock)}>
         <Button
@@ -101,6 +105,7 @@ const styleThunk = () => ({
 
   fieldBlock: {
     flex: 1,
+    fontSize: 0,
     padding: '0 1rem'
   },
 
@@ -114,11 +119,12 @@ const styleThunk = () => ({
     border: 0,
     borderRadius: 0,
     color: appTheme.palette.dark,
-    display: 'block',
+    display: 'inline-block',
     fontSize: appTheme.typography.s4,
     lineHeight: '1.625rem',
     outline: 'none',
     padding: 0,
+    verticalAlign: 'middle',
     width: '100%'
   },
 

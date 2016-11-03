@@ -3,11 +3,14 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
+import UserTag from 'universal/components/UserTag/UserTag';
 
 const UserRow = (props) => {
   const {
     actions,
     email,
+    isAdmin,
+    isLead,
     picture,
     preferredName,
     styles
@@ -19,10 +22,22 @@ const UserRow = (props) => {
       </div>
       <div className={css(styles.userInfo)}>
         {preferredName &&
-          <div className={css(styles.preferredName)}>{preferredName}</div>
+          <div className={css(styles.nameAndTags)}>
+            <div className={css(styles.preferredName)}>
+              {preferredName}
+            </div>
+            {isLead &&
+              <UserTag colorPalette="light" label="Team Lead" />
+            }
+            {isAdmin &&
+              <UserTag colorPalette="gray" label="Org Admin" />
+            }
+          </div>
         }
         {email &&
-          <a className={css(styles.infoLink)} href={`mailto:${email}`} title="Send an email">{email}</a>
+          <a className={css(styles.infoLink)} href={`mailto:${email}`} title="Send an email">
+            {email}
+          </a>
         }
       </div>
       {actions &&
@@ -37,6 +52,8 @@ const UserRow = (props) => {
 UserRow.propTypes = {
   actions: PropTypes.any,
   email: PropTypes.string,
+  isAdmin: PropTypes.bool,
+  isLead: PropTypes.bool,
   picture: PropTypes.string,
   preferredName: PropTypes.string,
   styles: PropTypes.object
@@ -68,10 +85,16 @@ const styleThunk = () => ({
     textAlign: 'right'
   },
 
+  nameAndTags: {
+    // Define
+  },
+
   preferredName: {
     color: appTheme.palette.dark,
+    display: 'inline-block',
     fontSize: appTheme.typography.s4,
-    lineHeight: '1.625rem'
+    lineHeight: '1.625rem',
+    verticalAlign: 'middle'
   },
 
   infoLink: {

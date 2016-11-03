@@ -11,7 +11,7 @@ import UserRow from 'universal/components/UserRow/UserRow';
 
 const TeamSettings = (props) => {
   const {teamMembers, styles} = props;
-
+  console.dir(teamMembers);
   const userRowActions = (user) => {
     const removeUser = () =>
       console.log(`remove ${user.preferredName}: ${user.id}`);
@@ -34,7 +34,11 @@ const TeamSettings = (props) => {
         {
           teamMembers.map((teamMember, idx) => {
             return (
-              <UserRow key={`teamMemberKey${idx}`} {...teamMember} actions={userRowActions(teamMember)}/>
+              <UserRow
+                {...teamMember}
+                actions={userRowActions(teamMember)}
+                key={`teamMemberKey${idx}`}
+              />
             );
           })
         }
