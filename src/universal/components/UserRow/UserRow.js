@@ -27,10 +27,10 @@ const UserRow = (props) => {
               {preferredName}
             </div>
             {isLead &&
-              <UserTag colorPalette="light" label="Team Lead" />
+              <UserTag colorPalette="light" label="Lead" />
             }
             {isAdmin &&
-              <UserTag colorPalette="gray" label="Org Admin" />
+              <UserTag colorPalette="gray" label="Admin" />
             }
           </div>
         }

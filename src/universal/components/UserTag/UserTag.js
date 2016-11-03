@@ -28,8 +28,6 @@ UserTag.propTypes = {
     'light',
     'white'
   ]),
-  isAdmin: PropTypes.bool,
-  isLead: PropTypes.bool,
   label: PropTypes.string,
   styles: PropTypes.object
 };

@@ -4,14 +4,24 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import Button from 'universal/components/Button/Button';
+import Editable from 'universal/components/Editable/Editable';
 import FontAwesome from 'react-fontawesome';
-import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
 
 const InviteUser = (props) => {
   const {
     onInviteSubmitted,
     styles
   } = props;
+
+  const fieldStyles = {
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s4,
+    lineHeight: '1.625rem',
+    placeholderColor: appTheme.palette.mid70l
+  };
+
+  // TODO: Make me respond to props (TA)
+  const isEditingField = false;
 
   return (
     <div className={css(styles.inviteUser)}>
@@ -23,14 +33,12 @@ const InviteUser = (props) => {
         </div>
       </div>
       <div className={css(styles.fieldBlock)}>
-        <input
-          className={css(styles.emailField)}
+        <Editable
+          hideIconOnValue
+          input={{value: ''}}
+          isEditing={isEditingField}
           placeholder="email@domain.co"
-          type="text"
-        />
-        <FontAwesome
-          name="pencil"
-          style={{color: appTheme.palette.dark, display: 'none', fontSize: ui.iconSize, verticalAlign: 'middle'}}
+          typeStyles={fieldStyles}
         />
       </div>
       <div className={css(styles.buttonBlock)}>
@@ -53,7 +61,6 @@ InviteUser.propTypes = {
 };
 
 const avatarPlaceholderSize = '2.75rem';
-const placeholderStyles = makePlaceholderStyles(appTheme.palette.mid70l);
 
 const styleThunk = () => ({
   inviteUser: {
@@ -111,24 +118,7 @@ const styleThunk = () => ({
 
   buttonBlock: {
     textAlign: 'right'
-  },
-
-  emailField: {
-    appearance: 'none',
-    backgroundColor: 'transparent',
-    border: 0,
-    borderRadius: 0,
-    color: appTheme.palette.dark,
-    display: 'inline-block',
-    fontSize: appTheme.typography.s4,
-    lineHeight: '1.625rem',
-    outline: 'none',
-    padding: 0,
-    verticalAlign: 'middle',
-    width: '100%'
-  },
-
-  ...placeholderStyles
+  }
 });
 
 export default withStyles(styleThunk)(InviteUser);

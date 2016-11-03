@@ -1,9 +1,7 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
 import {overflowTouch} from 'universal/styles/helpers';
-import ui from 'universal/styles/ui';
 import {reduxForm} from 'redux-form';
 import Button from 'universal/components/Button/Button';
 import InviteUser from 'universal/components/InviteUser/InviteUser';
@@ -11,7 +9,6 @@ import UserRow from 'universal/components/UserRow/UserRow';
 
 const TeamSettings = (props) => {
   const {teamMembers, styles} = props;
-  console.dir(teamMembers);
   const userRowActions = (user) => {
     const removeUser = () =>
       console.log(`remove ${user.preferredName}: ${user.id}`);
@@ -29,19 +26,35 @@ const TeamSettings = (props) => {
 
   return (
     <div className={css(styles.root)}>
-      <div className={css(styles.body)}>
+      <div className={css(styles.inviteBlock)}>
         <InviteUser/>
-        {
-          teamMembers.map((teamMember, idx) => {
-            return (
-              <UserRow
-                {...teamMember}
-                actions={userRowActions(teamMember)}
-                key={`teamMemberKey${idx}`}
-              />
-            );
-          })
-        }
+      </div>
+      <div className={css(styles.body)}>
+        <div className={css(styles.scrollable)}>
+          {
+            teamMembers.map((teamMember, idx) => {
+              return (
+                <div key={`teamMemberKey${idx}`}>
+                  <UserRow
+                    {...teamMember}
+                    actions={userRowActions(teamMember)}
+                    key={`teamMemberKey${idx + 100}`}
+                  />
+                  <UserRow
+                    {...teamMember}
+                    actions={userRowActions(teamMember)}
+                    key={`teamMemberKey${idx + 200}`}
+                  />
+                  <UserRow
+                    {...teamMember}
+                    actions={userRowActions(teamMember)}
+                    key={`teamMemberKey${idx + 300}`}
+                  />
+                </div>
+              );
+            })
+          }
+        </div>
       </div>
     </div>
   );
@@ -59,12 +72,29 @@ const styleThunk = () => ({
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
-    padding: '1rem',
     width: '100%'
   },
 
+  inviteBlock: {
+    maxWidth: '42rem',
+    padding: '0 1rem'
+  },
+
   body: {
-    maxWidth: '40rem'
+    flex: 1,
+    position: 'relative',
+    width: '100%'
+  },
+
+  scrollable: {
+    ...overflowTouch,
+    bottom: 0,
+    left: 0,
+    maxWidth: '42rem',
+    padding: '0 1rem 1rem',
+    position: 'absolute',
+    right: 0,
+    top: 0,
   }
 });
 
