@@ -9,7 +9,7 @@ import MeetingMain from 'universal/modules/meeting/components/MeetingMain/Meetin
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import {UPDATES, phaseOrder, MEETING} from 'universal/utils/constants';
-import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
+import ProgressBarArea from 'universal/modules/meeting/components/ProgressBar/ProgressBarArea';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
 import makeUsername from 'universal/utils/makeUsername';
 
@@ -31,13 +31,13 @@ const MeetingUpdates = (props) => {
   const username = makeUsername(currentTeamMember.preferredName);
   return (
     <MeetingMain>
-      <MeetingSection paddingBottom="2rem" paddingTop=".75rem">
-        <ProgressBar
+      <MeetingSection paddingBottom="2rem" paddingTop="0">
+        <ProgressBarArea
           gotoItem={gotoItem}
           isComplete={isComplete}
           facilitatorPhaseItem={facilitatorPhaseItem}
-          meetingPhaseItem={meetingPhaseItem}
           localPhaseItem={localPhaseItem}
+          meetingPhaseItem={meetingPhaseItem}
           membersCount={members.length}
         />
       </MeetingSection>

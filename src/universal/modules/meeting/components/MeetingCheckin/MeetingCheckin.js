@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import IconLink from 'universal/components/IconLink/IconLink';
-import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
+import ProgressBarArea from 'universal/modules/meeting/components/ProgressBar/ProgressBarArea';
 import CheckinCards from 'universal/modules/meeting/components/CheckinCards/CheckinCards';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
@@ -42,13 +42,13 @@ const MeetingCheckin = (props) => {
   return (
     <MeetingMain>
       {/* */}
-      <MeetingSection paddingBottom="1.25rem" paddingTop=".75rem">
-        <ProgressBar
+      <MeetingSection paddingBottom="1.25rem" paddingTop="0">
+        <ProgressBarArea
           gotoItem={gotoItem}
           isComplete={isComplete}
           facilitatorPhaseItem={facilitatorPhaseItem}
-          meetingPhaseItem={meetingPhaseItem}
           localPhaseItem={localPhaseItem}
+          meetingPhaseItem={meetingPhaseItem}
           membersCount={members.length}
         />
       </MeetingSection>
