@@ -11,11 +11,12 @@ import outcomeCardReducer from 'universal/modules/outcomeCard/ducks/outcomeCardD
 
 const {SET_SUBMIT_SUCCEEDED} = actionTypes;
 
+// wipe the value clean when submitted
+const wipeAfterSucces = (state, action) => (action.type === SET_SUBMIT_SUCCEEDED) ? undefined : state;
+
 const formPlugin = {
-  agendaInput: (state, action) => {
-    // wipe the value clean when submitted
-    return (action.type === SET_SUBMIT_SUCCEEDED) ? undefined : state;
-  }
+  agendaInput: wipeAfterSucces,
+  inviteTeamMember: wipeAfterSucces
 };
 
 const appReducers = {
