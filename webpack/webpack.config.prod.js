@@ -62,7 +62,6 @@ export default {
     filename: '[name]_[chunkhash].js',
     chunkFilename: '[name]_[chunkhash].js',
     path: path.join(root, 'build'),
-    publicPath: process.env.DEPLOY ? CDN_URL : '/static/'
   },
   resolve: {
     extensions: ['.js'],

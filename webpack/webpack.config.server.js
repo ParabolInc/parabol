@@ -20,7 +20,6 @@ export default {
     chunkFilename: '[name]_[chunkhash].js',
     filename: '[name].js',
     libraryTarget: 'commonjs2',
-    publicPath: '/static/'
   },
   // ignore anything that throws warnings & doesn't affect the view
   externals: [

@@ -1,3 +1,10 @@
+/*
+ * Setup webpack runtime public path loading, used for configuring
+ * asset loading from our CDN:
+ */
+import getWebpackPublicPath from 'universal/utils/getWebpackPublicPath';
+__webpack_public_path__ = getWebpackPublicPath(); // eslint-disable-line
+
 import {render} from 'react-dom';
 import React from 'react';
 import {cashay} from 'cashay';
