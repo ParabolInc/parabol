@@ -5,15 +5,37 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
 import FontAwesome from 'react-fontawesome';
+import {reduxForm, Field} from 'redux-form';
+
+const editableInput = (props) => {
+  const {autoFocus, handleSubmit, input, inputStyles} = props;
+  const handleBlur = (e) => {
+    handleSubmit(e);
+    input.onBlur();
+  };
+  return (
+    <input
+      {...input}
+      autoFocus={autoFocus}
+      className={inputStyles}
+      onBlur={handleBlur}
+    />
+  );
+};
 
 const Editable = (props) => {
   const {
+    form,
+    handleSubmit,
     hideIconOnValue,
     icon,
-    input,
+    initialValue,
     isEditing,
     placeholder,
-    styles
+    styles,
+    setEditing,
+    unsetEditing,
+    updateEditable
   } = props;
 
   const renderEditing = () => {
@@ -22,28 +44,38 @@ const Editable = (props) => {
       styles.input
     );
 
+    const submitAndSet = (e) => {
+      e.preventDefault();
+      unsetEditing();
+      handleSubmit(updateEditable)()
+    };
     return (
-      <input
-        className={inputStyles}
+    <form onSubmit={submitAndSet}>
+      <Field
+        autoFocus
+        component={editableInput}
+        handleSubmit={submitAndSet}
+        inputStyles={inputStyles}
+        name={form}
         placeholder={placeholder}
         type="text"
-        value={input.value}
+        unsetEditing={unsetEditing}
       />
+    </form>
     );
   };
 
   const renderStatic = () => {
     const staticStyles = css(
       styles.static,
-      !input.value && styles.placeholder
+      !initialValue && styles.placeholder
     );
 
-    const hideIcon = input.value && hideIconOnValue;
-
+    const hideIcon = initialValue && hideIconOnValue;
     return (
-      <div className={css(styles.staticBlock)}>
+      <div className={css(styles.staticBlock)} onClick={setEditing}>
         <div className={staticStyles}>
-          {input.value || placeholder}
+          {initialValue || placeholder}
         </div>
         {!hideIcon &&
           <FontAwesome
@@ -140,4 +172,6 @@ const styleThunk = (customTheme, props) => ({
   }
 });
 
-export default withStyles(styleThunk)(Editable);
+export default reduxForm()(
+  withStyles(styleThunk)(Editable)
+);

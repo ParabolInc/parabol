@@ -4,13 +4,15 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import Button from 'universal/components/Button/Button';
-import Editable from 'universal/components/Editable/Editable';
+import EditableContainer from 'universal/containers/Editable/EditableContainer.js';
 import FontAwesome from 'react-fontawesome';
+import {cashay} from 'cashay';
 
 const InviteUser = (props) => {
   const {
     onInviteSubmitted,
-    styles
+    styles,
+    teamId
   } = props;
 
   const fieldStyles = {
@@ -19,10 +21,16 @@ const InviteUser = (props) => {
     lineHeight: '1.625rem',
     placeholderColor: appTheme.palette.mid70l
   };
+  const updateEditable = (submissionData) => {
+    const variables = {
+      teamId,
+      invitees: [{
+        email: submissionData.inviteTeamMember
+      }]
+    };
+    cashay.mutate('inviteTeamMembers', {variables})
 
-  // TODO: Make me respond to props (TA)
-  const isEditingField = false;
-
+  }
   return (
     <div className={css(styles.inviteUser)}>
       <div className={css(styles.avatarBlock)}>
@@ -33,12 +41,12 @@ const InviteUser = (props) => {
         </div>
       </div>
       <div className={css(styles.fieldBlock)}>
-        <Editable
+        <EditableContainer
+          form="inviteTeamMember"
           hideIconOnValue
-          input={{value: ''}}
-          isEditing={isEditingField}
           placeholder="email@domain.co"
           typeStyles={fieldStyles}
+          updateEditable={updateEditable}
         />
       </div>
       <div className={css(styles.buttonBlock)}>

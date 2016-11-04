@@ -10,7 +10,8 @@ import {
 import {Link, withRouter} from 'react-router';
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
 import TeamDashModal from '../TeamDashModal/TeamDashModal';
-import Editable from 'universal/components/Editable/Editable';
+import EditableContainer from 'universal/containers/Editable/EditableContainer.js'
+import {cashay} from 'cashay';
 
 const faIconStyle = {
   fontSize: '14px',
@@ -61,20 +62,29 @@ const settingsLinks = (teamId) => {
   );
 };
 
-const renderEditableTeamName = (name) => {
+const renderEditableTeamName = (name, id) => {
   const fieldStyles = {
     color: appTheme.palette.dark10d,
     fontSize: appTheme.typography.s5,
     lineHeight: appTheme.typography.s6,
     placeholderColor: appTheme.palette.mid70l
   };
-  const isEditingTeamName = false;
+  const updateEditable = (submissionData) => {
+    const variables = {
+      updatedTeam: {
+        id,
+        name: submissionData.teamName
+      }
+    };
+    cashay.mutate('updateTeamName', {variables})
+  };
   return (
-    <Editable
-      input={{value: name}}
-      isEditing={isEditingTeamName}
+    <EditableContainer
+      form="teamName"
+      initialValue={name}
       placeholder="Team Name"
       typeStyles={fieldStyles}
+      updateEditable={updateEditable}
     />
   );
 };
@@ -85,7 +95,7 @@ const Team = (props) => {
   const teamName = team.name;
   const hasOverlay = Boolean(team && team.meetingId);
   const isSettings = router.isActive(`/team/${teamId}/settings`, false);
-  const DashHeaderInfoTitle = isSettings ? renderEditableTeamName(teamName) : teamName;
+  const DashHeaderInfoTitle = isSettings ? renderEditableTeamName(teamName, teamId) : teamName;
   return (
     <DashMain>
       {hasOverlay && <TeamDashModal teamId={teamId} teamName={teamName}/>}

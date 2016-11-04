@@ -8,7 +8,7 @@ import InviteUser from 'universal/components/InviteUser/InviteUser';
 import UserRow from 'universal/components/UserRow/UserRow';
 
 const TeamSettings = (props) => {
-  const {teamMembers, styles} = props;
+  const {team, teamMembers, styles} = props;
   const userRowActions = (user) => {
     return (
       <div className={css(styles.actionLinkBlock)}>
@@ -28,7 +28,7 @@ const TeamSettings = (props) => {
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.inviteBlock)}>
-        <InviteUser/>
+        <InviteUser teamId={team.id}/>
       </div>
       <div className={css(styles.body)}>
         <div className={css(styles.scrollable)}>

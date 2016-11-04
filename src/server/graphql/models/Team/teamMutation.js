@@ -426,7 +426,7 @@ export default {
     }
   },
   updateTeamName: {
-    type: Team,
+    type: GraphQLBoolean,
     args: {
       updatedTeam: {
         type: new GraphQLNonNull(UpdateTeamInput),
@@ -437,9 +437,10 @@ export default {
       const r = getRethink();
       const {id, name} = updatedTeam;
       requireSUOrTeamMember(authToken, id);
-      const teamFromDB = await r.table('Team').get(id).update({name}, {returnChanges: true});
+      const teamFromDB = await r.table('Team').get(id).update({name});
+      return true;
       // TODO think hard about if we can pluck only the changed values (in this case, name)
-      return updatedOrOriginal(teamFromDB, updatedTeam);
+      // return updatedOrOriginal(teamFromDB, updatedTeam);
     }
   }
 };
