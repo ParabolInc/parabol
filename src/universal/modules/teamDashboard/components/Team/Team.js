@@ -6,7 +6,7 @@ import {
   DashHeaderInfo,
   DashMain,
 } from 'universal/components/Dashboard';
-import {Link} from 'react-router';
+import {Link, withRouter} from 'react-router';
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
 import TeamDashModal from '../TeamDashModal/TeamDashModal';
 
@@ -24,30 +24,53 @@ const linkStyle = {
   textDecoration: 'none'
 };
 
+const standardLinks = (teamId) => {
+  return (
+    <div>
+      <Link
+        to={`/meeting/${teamId}`}
+        style={linkStyle}
+        title="Meeting Lobby"
+      >
+        <FontAwesome name="arrow-circle-right" style={faIconStyle}/> Meeting Lobby
+      </Link>
+      <Link
+        to={`/team/${teamId}/settings`}
+        style={linkStyle}
+        title="Team Settings"
+      >
+        <FontAwesome name="cog" style={faIconStyle}/> Team Settings
+      </Link>
+    </div>
+  );
+};
+
+const settingsLinks = (teamId) => {
+  return (
+    <div>
+      <Link
+        to={`/team/${teamId}`}
+        style={linkStyle}
+        title="Back to Team Dashboard"
+      >
+        <FontAwesome name="arrow-circle-left" style={faIconStyle}/> Back to Team Dashboard
+      </Link>
+    </div>
+  );
+};
+
 const Team = (props) => {
-  const {children, team, teamMembers} = props;
+  const {children, router, team, teamMembers} = props;
   const teamId = team.id;
   const teamName = team.name;
   const hasOverlay = Boolean(team && team.meetingId);
+  const isSettings = router.isActive(`/team/${teamId}/settings`, false);
   return (
     <DashMain>
       {hasOverlay && <TeamDashModal teamId={teamId} teamName={teamName}/>}
       <DashHeader hasOverlay={hasOverlay}>
         <DashHeaderInfo title={teamName}>
-          <Link
-            to={`/meeting/${teamId}`}
-            style={linkStyle}
-            title="Meeting Lobby"
-          >
-            <FontAwesome name="arrow-circle-right" style={faIconStyle}/> Meeting Lobby
-          </Link>
-          <Link
-            to={`/meeting/${teamId}/settings`}
-            style={linkStyle}
-            title="Team Settings"
-          >
-            <FontAwesome name="cog" style={faIconStyle}/> Team Settings
-          </Link>
+          {isSettings ? settingsLinks(teamId) : standardLinks(teamId)}
         </DashHeaderInfo>
         <DashboardAvatars teamMembers={teamMembers}/>
       </DashHeader>
@@ -60,8 +83,9 @@ const Team = (props) => {
 
 Team.propTypes = {
   children: PropTypes.any,
+  router: PropTypes.object.isRequired,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired,
 };
 
-export default Team;
+export default withRouter(Team);

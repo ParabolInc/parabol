@@ -32,14 +32,8 @@ const initialState = {};
      * During the production client bundle build, the server will need to be
      * stopped.
      */
-    /* eslint-disable no-underscore-dangle */
+    // eslint-disable-next-line no-underscore-dangle
     StyleSheet.rehydrate(window.__APHRODITE__);
-    /*
-     * Enable Sentry.io bug reporting. The Raven client is included during
-     * the SSR. See server/Html.js for how this is initialized.
-     */
-    Raven.config(window.__ACTION__.sentry).install(); // eslint-disable-line no-undef
-    /* eslint-enable */
     render(
       <Root store={store}/>,
       document.getElementById('root')

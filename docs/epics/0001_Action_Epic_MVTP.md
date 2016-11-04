@@ -215,11 +215,11 @@ can join the meeting.
 or team projects, so that they join their teammates in the meeting and
 participate in the process.
 
-- [ ] When a TM wants to invite a new team member, they'll want an obvious
+- [X] When a TM wants to invite a new team member, they'll want an obvious
 control that allows them to input one or more email addresses, so that they
 can join their pals.
 
-- [ ] When a TL wants to create a new team, they'll want an obvious control
+- [X] When a TL wants to create a new team, they'll want an obvious control
 near their other teams to make a new team, so they can get their new group up
 and going.
 
@@ -229,6 +229,10 @@ it, so that it can un-clutter the dashboard.
 - [X] When a project is archived by mistake, a team member will want to
 be able to find the project in the archive and restore it, so that they
 can resume where they left off.
+
+- [X] When a Team Leader wants to change team membership, they'll want an
+interface to add and remove team members, so that they can control who
+they're working with.
 
 ## Personal Dashboard
 

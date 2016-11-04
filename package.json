@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "0.9.6",
+  "version": "0.10.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -121,6 +121,7 @@
     "redux": "3.6.0",
     "redux-form": "^6.0.5",
     "redux-logger": "2.6.1",
+    "redux-raven-middleware": "^1.1.0",
     "redux-segment": "^1.4.2",
     "redux-socket-cluster": "^0.10.1",
     "redux-storage-engine-localstorage": "^1.1.2",

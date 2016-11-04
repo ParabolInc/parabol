@@ -1,6 +1,6 @@
 import React, {PropTypes, Component} from 'react';
 import {FieldArray} from 'redux-form';
-import FieldsBlock from '../../components/FieldsBlock/FieldsBlock';
+import FieldArrayRow from '../../components/FieldArrayRow/FieldArrayRow';
 
 export default class LabeledFieldArray extends Component {
   static propTypes = {
@@ -28,7 +28,7 @@ export default class LabeledFieldArray extends Component {
       <FieldArray
         {...this.props}
         name={labelSource}
-        component={FieldsBlock}
+        component={FieldArrayRow}
         hoverRow={hoverRow}
         onHoverRow={this.onHoverRow}
         onLeaveRow={this.onLeaveRow}

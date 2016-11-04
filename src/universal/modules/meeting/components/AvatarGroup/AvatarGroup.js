@@ -16,7 +16,7 @@ const AvatarGroup = (props) => {
       {
         avatars.map((avatar, index) =>
           <div className={css(styles.item)} key={index}>
-            <Avatar {...avatar} size="small" hasBadge hasBorder={avatar.isFacilitating} />
+            <Avatar {...avatar} forGroup hasBadge hasBorder={avatar.isFacilitating} size="small" />
           </div>
         )
       }

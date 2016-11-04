@@ -13,6 +13,8 @@ dependencies:
     - npm i -g yarn
   override:
     - yarn
+  cache_directories:
+    - "node_modules"
   post:
     - npm run db:migrate
 test:

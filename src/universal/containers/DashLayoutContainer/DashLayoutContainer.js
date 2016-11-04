@@ -1,7 +1,8 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import DashLayout from 'universal/components/Dashboard/DashLayout';
+import {TEAM} from 'universal/subscriptions/constants';
 
 const resolveActiveMeetings = (teams) => {
   if (teams !== resolveActiveMeetings.teams) {
@@ -22,7 +23,7 @@ const resolveActiveMeetings = (teams) => {
 
 const dashNavListQuery = `
 query {
-  teams @live {
+  teams @cached(type: "[Team]") {
     id
     name
     meetingId
@@ -31,26 +32,53 @@ query {
 `;
 
 
-const mapStateToProps = () => {
+const mapStateToProps = (state) => {
   const {teams} = cashay.query(dashNavListQuery, {
-    op: 'dashLayoutContainer'
+    // currently same as dashNavListContainer, could combine ops
+    op: 'dashLayoutContainer',
+    resolveCached: {
+      teams: () => () => true
+    },
+    sort: {
+      teams: (a, b) => a.name > b.name ? 1 : -1
+    }
   }).data;
   return {
-    activeMeetings: resolveActiveMeetings(teams)
+    activeMeetings: resolveActiveMeetings(teams),
+    tms: state.auth.obj.tms
   };
 };
 
-const DashLayoutContainer = (props) => {
-  const {activeMeetings, children, title} = props;
-  return (
-    <DashLayout activeMeetings={activeMeetings} children={children} title={title}/>
-  );
+const subToAllTeams = (tms) => {
+  for (let i = 0; i < tms.length; i++) {
+    const teamId = tms[i];
+    cashay.subscribe(TEAM, teamId);
+  }
 };
 
-DashLayoutContainer.propTypes = {
-  activeMeetings: PropTypes.array,
-  children: PropTypes.any,
-  title: PropTypes.string
-};
+@connect(mapStateToProps)
+export default class DashLayoutContainer extends Component {
+  static propTypes = {
+    activeMeetings: PropTypes.array,
+    children: PropTypes.any,
+    title: PropTypes.string,
+    tms: PropTypes.array.isRequired
+  };
 
-export default connect(mapStateToProps)(DashLayoutContainer);
+  componentDidMount() {
+    subToAllTeams(this.props.tms);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.tms !== nextProps.tms) {
+      subToAllTeams(nextProps.tms);
+    }
+  }
+
+  render() {
+    const {activeMeetings, children, title} = this.props;
+    return (
+      <DashLayout activeMeetings={activeMeetings} children={children} title={title}/>
+    );
+  }
+}

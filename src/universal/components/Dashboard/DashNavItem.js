@@ -3,6 +3,7 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import {Link, withRouter} from 'react-router';
+import DashNavItemBaseStyles from './DashNavItemBaseStyles';
 
 const DashNavItem = (props) => {
   const {label, href, styles, router} = props;
@@ -44,15 +45,7 @@ const activeHF = {
 
 const styleThunk = () => ({
   link: {
-    backgroundColor: 'transparent',
-    borderRadius: '.25rem 0 0 .25rem',
-    color: 'inherit',
-    display: 'block',
-    fontSize: appTheme.typography.s4,
-    margin: '.5rem 0',
-    padding: '.3125rem .5rem .3125rem 1rem',
-    userSelect: 'none',
-    width: '100%',
+    ...DashNavItemBaseStyles,
 
     ':hover': {
       ...linkHF

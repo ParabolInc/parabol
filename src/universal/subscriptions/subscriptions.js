@@ -4,7 +4,7 @@ import {
   ACTIONS_BY_AGENDA,
   AGENDA,
   ARCHIVED_PROJECTS,
-  TEAMS,
+  TEAM,
   TEAM_MEMBERS,
   PRESENCE,
   PROJECTS
@@ -119,10 +119,10 @@ export default [
     }`
   },
   {
-    channel: TEAMS,
+    channel: TEAM,
     string: `
-    subscription {
-       teams {
+    subscription($teamId: ID!) {
+       team(teamId: $teamId) {
          checkInGreeting,
          checkInQuestion,
          id,

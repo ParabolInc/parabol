@@ -47,7 +47,12 @@ const MeetingLobby = (props) => {
             size="largest"
             style="outlined"
             colorPalette="cool"
+            textTransform="uppercase"
           />
+          <div className={css(styles.helpText)}>
+            The person who presses “Start Meeting” will lead the meeting.<br/>
+            Everyone else's display will follow the leader automatically.
+          </div>
         </div>
         {/* */}
       </MeetingSection>
@@ -90,7 +95,15 @@ const styleThunk = () => ({
 
   prompt: {
     color: appTheme.palette.dark,
-    margin: '0 0 2rem'
+    margin: '0 0 2.25rem'
+  },
+
+  helpText: {
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s4,
+    fontWeight: 400,
+    lineHeight: 1.5,
+    margin: '2rem 0 0'
   }
 });
 
