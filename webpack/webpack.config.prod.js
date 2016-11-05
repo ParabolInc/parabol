@@ -43,6 +43,7 @@ if (process.env.DEPLOY) {
       s3UploadOptions: {
         Bucket: process.env.AWS_S3_BUCKET
       },
+      basePath: 'static'
     }));
   }
 }
