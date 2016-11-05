@@ -32,10 +32,18 @@ const SummaryHeader = (props) => {
 
   const teamDashLinkStyle = {
     ...textStyle,
-    color: appTheme.palette.cool,
+    backgroundColor: appTheme.palette.cool,
+    borderRadius: '4px',
+    color: '#ffffff',
     cursor: 'pointer',
+    display: 'block',
     fontSize: '14px',
-    textDecoration: 'none'
+    lineHeight: '20px',
+    margin: '16px auto 0',
+    padding: '6px 0',
+    textAlign: 'center',
+    textDecoration: 'none',
+    width: '186px'
   };
 
   const teamNameStyle = {
