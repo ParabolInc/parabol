@@ -76,7 +76,7 @@ export const resolveSentEmails = async(sendEmailPromises, inviteesWithTokens) =>
 
 export const makeInvitationsForDB = async(invitees, teamId) => {
   const now = new Date();
-  const tokenExpiration = now.valueOf() + INVITATION_LIFESPAN;
+  const tokenExpiration = new Date(now.valueOf() + INVITATION_LIFESPAN);
   const hashPromises = invitees.map(invitee => hashInviteTokenKey(invitee.inviteToken));
   const hashedTokens = await Promise.all(hashPromises);
   return invitees.map((invitee, idx) => {

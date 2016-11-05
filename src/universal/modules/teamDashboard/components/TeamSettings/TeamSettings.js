@@ -6,13 +6,26 @@ import {overflowTouch} from 'universal/styles/helpers';
 import {reduxForm} from 'redux-form';
 import InviteUser from 'universal/components/InviteUser/InviteUser';
 import UserRow from 'universal/components/UserRow/UserRow';
+import fromNow from 'universal/utils/fromNow';
 
 const TeamSettings = (props) => {
-  const {team, teamMembers, styles} = props;
-  const userRowActions = (user) => {
+  const {invitations,removeTeamMemberModal, team, teamMembers, styles} = props;
+  const invitationRowActions = (user) => {
     return (
       <div className={css(styles.actionLinkBlock)}>
         <div className={css(styles.actionLink)}>
+          Resend Invitation
+        </div>
+        <div className={css(styles.actionLink)}>
+          Cancel Invitation
+        </div>
+      </div>
+    );
+  };
+  const teamMemberRowActions = (user) => {
+    return (
+      <div className={css(styles.actionLinkBlock)}>
+        <div className={css(styles.actionLink)} onClick={removeTeamMemberModal}>
           Promote {user.preferredName} to Team Lead
         </div>
         <div className={css(styles.actionLink)}>
@@ -24,7 +37,6 @@ const TeamSettings = (props) => {
       </div>
     );
   };
-
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.inviteBlock)}>
@@ -37,11 +49,21 @@ const TeamSettings = (props) => {
               return (
                 <UserRow
                   {...teamMember}
-                  actions={userRowActions(teamMember)}
+                  actions={teamMemberRowActions(teamMember)}
                   key={`teamMemberKey${idx}`}
                 />
               );
-            })
+            }).concat(invitations.map((invitation, idx) => {
+              return (
+                <UserRow
+                  {...invitation}
+                  preferredName={invitation.email}
+                  email={fromNow(invitation.createdAt)}
+                  actions={invitationRowActions(invitation)}
+                  key={`invitationKey${idx}`}
+                />
+              )
+            }))
           }
         </div>
       </div>
@@ -50,6 +72,7 @@ const TeamSettings = (props) => {
 };
 
 TeamSettings.propTypes = {
+  invitations: PropTypes.array.isRequired,
   styles: PropTypes.object,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired

@@ -10,6 +10,7 @@ export const ACTIONS_BY_TEAMMEMBER = 'actionsByTeamMember';
 export const ACTIONS_BY_AGENDA = 'actionsByAgenda';
 export const ARCHIVED_PROJECTS = 'archivedProjects';
 export const AGENDA = 'agenda';
+export const INVITATIONS = 'invitations';
 export const PRESENCE = 'presence';
 export const PROJECTS = 'projects';
 export const TEAMS = 'teams';

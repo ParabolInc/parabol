@@ -14,41 +14,45 @@ export const Invitation = new GraphQLObjectType({
   description: 'An invitation to become a team member',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique invitation Id'},
-    teamId: {type: new GraphQLNonNull(GraphQLID), description: 'The team invited to'},
-    invitedBy: {type: GraphQLID, description: 'The CachedUserId of the person that sent the invitation'},
-    createdAt: {
-      type: new GraphQLNonNull(GraphQLISO8601Type),
-      description: 'The datetime the invitation was created'
-    },
-    updatedAt: {
-      type: GraphQLISO8601Type,
-      description: 'The datetime the invitation was last updated'
-    },
     acceptedAt: {
       type: GraphQLISO8601Type,
       description: 'The datetime the invitation was accepted was created'
-    },
-    isAccepted: {
-      type: GraphQLBoolean,
-      description: 'Has the invitation been accepted yet? Storing this as a boolean means no required indexing.'
-    },
-    inviteToken: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'Secret token used when inviting a user',
-      // lock it down
-      resolve: () => null
     },
     computedName: {
       type: GraphQLString,
       description: 'The name of the invitee, derived from the email address'
     },
+    createdAt: {
+      type: new GraphQLNonNull(GraphQLISO8601Type),
+      description: 'The datetime the invitation was created'
+    },
     email: {
       type: new GraphQLNonNull(GraphQLEmailType),
       description: 'The email of the invitee'
     },
+    hashedToken: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'Secret token used when inviting a user',
+      // lock it down
+      resolve: () => null
+    },
+    invitedBy: {type: GraphQLID, description: 'The CachedUserId of the person that sent the invitation'},
+    isAccepted: {
+      type: GraphQLBoolean,
+      description: 'Has the invitation been accepted yet? Storing this as a boolean means no required indexing.'
+    },
     task: {
       type: GraphQLString,
       description: 'The task that the invitee is currently working on'
+    },
+    teamId: {type: new GraphQLNonNull(GraphQLID), description: 'The team invited to'},
+    tokenExpiration: {
+      type: GraphQLISO8601Type,
+      description: 'The datestamp of when the invitation will expire'
+    },
+    updatedAt: {
+      type: GraphQLISO8601Type,
+      description: 'The datetime the invitation was last updated'
     }
   })
 });

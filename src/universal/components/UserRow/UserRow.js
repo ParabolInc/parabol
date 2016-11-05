@@ -4,6 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import UserTag from 'universal/components/UserTag/UserTag';
+import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 
 const UserRow = (props) => {
   const {
@@ -18,7 +19,10 @@ const UserRow = (props) => {
   return (
     <div className={css(styles.userRow)}>
       <div className={css(styles.userAvatar)}>
-        <Avatar hasBadge={false} picture={picture} size="small"/>
+        {picture ?
+          <Avatar hasBadge={false} picture={picture} size="small"/> :
+          <AvatarPlaceholder/>
+        }
       </div>
       <div className={css(styles.userInfo)}>
         {preferredName &&

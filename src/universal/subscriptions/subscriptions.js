@@ -4,6 +4,7 @@ import {
   ACTIONS_BY_AGENDA,
   AGENDA,
   ARCHIVED_PROJECTS,
+  INVITATIONS,
   TEAM,
   TEAM_MEMBERS,
   PRESENCE,
@@ -85,6 +86,18 @@ export default [
         isComplete
         sortOrder
         teamMemberId
+      }
+    }`
+  },
+  {
+    channel: INVITATIONS,
+    string: `
+    subscription($teamId: ID!) {
+      invitations(teamId: $teamId) {
+        id
+        createdAt
+        email
+        tokenExpiration
       }
     }`
   },
