@@ -1,10 +1,3 @@
-/*
- * Setup webpack runtime public path loading, used for configuring
- * asset loading from our CDN:
- */
-import getWebpackPublicPath from '../utils/getWebpackPublicPath';
-__webpack_public_path__ = getWebpackPublicPath(); // eslint-disable-line
-
 import ActionContainer from '../containers/Action/ActionContainer';
 import _cashaySchema from 'cashay!server/utils/getCashaySchema.js';
 

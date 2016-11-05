@@ -8,8 +8,6 @@ import {getDotenv} from '../src/universal/utils/dotenv';
 // Import .env and expand variables:
 getDotenv();
 
-const CDN_URL = `${process.env.CDN_URL}${process.env.CDN_URL.endsWith('/') ? '' : '/'}`;
-
 const root = process.cwd();
 const clientInclude = [
   path.join(root, 'src', 'client'),
@@ -43,9 +41,6 @@ if (process.env.DEPLOY) {
     s3UploadOptions: {
       Bucket: process.env.AWS_S3_BUCKET
     },
-    cdnizerOptions: {
-      defaultCDNBase: CDN_URL
-    }
   }));
 }
 
@@ -54,7 +49,7 @@ export default {
   entry: {
     app: [
       'babel-polyfill',
-      'client/client.js'
+      'client/webpackEntry.js'
     ],
     vendor
   },
