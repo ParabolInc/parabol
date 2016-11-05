@@ -4,6 +4,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.10.0 - 02-Nov-2016
+### Added
+- #458 Added ability to create and invite new teams
+- #466 Can now press escape to blur agenda list input
+- `redux-raven-middleware` to include redux events in error reporting
+
+### Fixed
+- #161, #162 Changed lobby copy to better illustrate when check-in round begins
+- #379 Uncaught TypeError: Cannot read property 'openArea' of undefined
+- #411 Fix `isFacilitating` box shadow
+- #474 Can steal facilitator role with refresh
+- Updated styles for waiting message on last call
+- Increased contrast of avatar outlines, misc. styling improvements
+- Updated email link copy to summary
+
+
 ## v0.9.6 - 29-Oct-2016
 ### Added
 - Automatic election of new facilitator when old facilitator disconnects

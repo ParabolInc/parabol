@@ -50,9 +50,8 @@ const MeetingLobby = (props) => {
             textTransform="uppercase"
           />
           <div className={css(styles.helpText)}>
-            Press “Start Meeting” to navigate for the group.<br/>
-            Others will follow along automatically<br/>
-            unless they navigate independently.
+            The person who presses “Start Meeting” will lead the meeting.<br/>
+            Everyone else's display will follow the leader automatically.
           </div>
         </div>
         {/* */}

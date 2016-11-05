@@ -12,6 +12,7 @@ import emailAddresses from 'email-addresses';
 import shortid from 'shortid';
 import {withRouter} from 'react-router';
 import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
+import trim from 'universal/utils/formFieldTrimmer';
 
 const quickValidation = (values) => {
   const errors = {};
@@ -28,9 +29,9 @@ const quickValidation = (values) => {
 const NewTeamForm = (props) => {
   const {dispatch, formName, handleSubmit, router, styles} = props;
   const onSubmit = (submittedData) => {
-    const {teamName, invitedTeamMembers} = submittedData;
+    const {teamName, invitedTeamMembers} = trim(submittedData);
     const invitees = emailAddresses
-      .parseAddressList(invitedTeamMembers.trim())
+      .parseAddressList(invitedTeamMembers)
       .map(email => ({
         email: email.address,
         fullName: email.fullName
@@ -40,7 +41,7 @@ const NewTeamForm = (props) => {
       variables: {
         newTeam: {
           id,
-          name: teamName.trim()
+          name: teamName
         },
         invitees
       }
