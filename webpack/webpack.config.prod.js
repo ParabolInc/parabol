@@ -32,16 +32,19 @@ const deployPlugins = [];
 if (process.env.DEPLOY) {
   deployPlugins.push(new webpack.optimize.UglifyJsPlugin({compressor: {warnings: false}, comments: /(?:)/}));
   deployPlugins.push(new webpack.LoaderOptionsPlugin({comments: false}));
-  deployPlugins.push(new S3Plugin({
-    s3Options: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      region: process.env.AWS_REGION
-    },
-    s3UploadOptions: {
-      Bucket: process.env.AWS_S3_BUCKET
-    },
-  }));
+  if (!process.env.CI) {
+    // do not deploy to S3 if running in continuous integration environment:
+    deployPlugins.push(new S3Plugin({
+      s3Options: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        region: process.env.AWS_REGION
+      },
+      s3UploadOptions: {
+        Bucket: process.env.AWS_S3_BUCKET
+      },
+    }));
+  }
 }
 
 export default {
