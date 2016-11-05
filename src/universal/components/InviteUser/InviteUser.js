@@ -9,6 +9,7 @@ import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlac
 
 const InviteUser = (props) => {
   const {
+    invitations,
     onInviteSubmitted,
     styles,
     teamId
@@ -28,8 +29,15 @@ const InviteUser = (props) => {
       }]
     };
     cashay.mutate('inviteTeamMembers', {variables})
-
-  }
+  };
+  const validate = ({inviteTeamMember}) => {
+    const errors = {};
+    const outstandingInvitationEmails = invitations.map((i) => i.email);
+    if (outstandingInvitationEmails.includes(inviteTeamMember)) {
+      errors.inviteTeamMember = 'That person has already been invited!'
+    }
+    return errors;
+  };
   return (
     <div className={css(styles.inviteUser)}>
       <AvatarPlaceholder/>
@@ -40,6 +48,7 @@ const InviteUser = (props) => {
           placeholder="email@domain.co"
           typeStyles={fieldStyles}
           updateEditable={updateEditable}
+          validate={validate}
         />
       </div>
       <div className={css(styles.buttonBlock)}>

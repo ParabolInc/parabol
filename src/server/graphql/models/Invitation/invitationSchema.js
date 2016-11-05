@@ -18,7 +18,7 @@ export const Invitation = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The datetime the invitation was accepted was created'
     },
-    computedName: {
+    fullName: {
       type: GraphQLString,
       description: 'The name of the invitee, derived from the email address'
     },
@@ -36,7 +36,7 @@ export const Invitation = new GraphQLObjectType({
       // lock it down
       resolve: () => null
     },
-    invitedBy: {type: GraphQLID, description: 'The CachedUserId of the person that sent the invitation'},
+    invitedBy: {type: GraphQLID, description: 'The teamMemberId of the person that sent the invitation'},
     isAccepted: {
       type: GraphQLBoolean,
       description: 'Has the invitation been accepted yet? Storing this as a boolean means no required indexing.'

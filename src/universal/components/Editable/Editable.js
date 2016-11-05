@@ -6,22 +6,7 @@ import ui from 'universal/styles/ui';
 import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
 import FontAwesome from 'react-fontawesome';
 import {reduxForm, Field} from 'redux-form';
-
-const editableInput = (props) => {
-  const {autoFocus, handleSubmit, input, inputStyles} = props;
-  const handleBlur = (e) => {
-    handleSubmit(e);
-    input.onBlur();
-  };
-  return (
-    <input
-      {...input}
-      autoFocus={autoFocus}
-      className={inputStyles}
-      onBlur={handleBlur}
-    />
-  );
-};
+import EditableInput from './EditableInput';
 
 const Editable = (props) => {
   const {
@@ -34,6 +19,7 @@ const Editable = (props) => {
     placeholder,
     styles,
     setEditing,
+    submitOnBlur,
     unsetEditing,
     updateEditable
   } = props;
@@ -46,22 +32,25 @@ const Editable = (props) => {
 
     const submitAndSet = (e) => {
       e.preventDefault();
-      unsetEditing();
-      handleSubmit(updateEditable)()
+      const errors = handleSubmit(updateEditable)();
+      if (!errors) {
+        unsetEditing();
+      }
     };
     return (
-    <form onSubmit={submitAndSet}>
-      <Field
-        autoFocus
-        component={editableInput}
-        handleSubmit={submitAndSet}
-        inputStyles={inputStyles}
-        name={form}
-        placeholder={placeholder}
-        type="text"
-        unsetEditing={unsetEditing}
-      />
-    </form>
+      <form onSubmit={submitAndSet}>
+        <Field
+          autoFocus
+          component={EditableInput}
+          handleSubmit={submitAndSet}
+          inputStyles={inputStyles}
+          name={form}
+          placeholder={placeholder}
+          submitOnBlur={submitOnBlur}
+          type="text"
+          unsetEditing={unsetEditing}
+        />
+      </form>
     );
   };
 
@@ -78,15 +67,14 @@ const Editable = (props) => {
           {initialValue || placeholder}
         </div>
         {!hideIcon &&
-          <FontAwesome
-            className={css(styles.icon)}
-            name={icon || 'pencil'}
-          />
+        <FontAwesome
+          className={css(styles.icon)}
+          name={icon || 'pencil'}
+        />
         }
       </div>
     );
   };
-
   return (
     <div className={css(styles.editableRoot)}>
       {isEditing ? renderEditing() : renderStatic()}

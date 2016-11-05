@@ -40,7 +40,7 @@ const TeamSettings = (props) => {
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.inviteBlock)}>
-        <InviteUser teamId={team.id}/>
+        <InviteUser teamId={team.id} invitations={invitations}/>
       </div>
       <div className={css(styles.body)}>
         <div className={css(styles.scrollable)}>

@@ -83,6 +83,7 @@ const renderEditableTeamName = (name, id) => {
       form="teamName"
       initialValue={name}
       placeholder="Team Name"
+      submitOnBlur
       typeStyles={fieldStyles}
       updateEditable={updateEditable}
     />

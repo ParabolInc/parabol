@@ -1,3 +1,4 @@
+import getRethink from 'server/database/rethinkDriver';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
@@ -23,8 +24,14 @@ export default {
       }
     },
     async resolve(source, {invitees, teamId}, {authToken}) {
+      const r = getRethink();
       requireSUOrTeamMember(authToken, teamId);
-      asyncInviteTeam(authToken, teamId, invitees);
+      // don't let them invite the same person twice
+      const emails = invitees.map(invitee => invitee.email);
+      const existingInvitations = await r.table('Invitation').getAll(r.args(emails), {index: 'email'})('email');
+      const uniqueInvitees = invitees.filter((i) => !existingInvitations.includes(i.email));
+      if (uniqueInvitees.length === 0) return false;
+      asyncInviteTeam(authToken, teamId, uniqueInvitees);
       return true;
     }
   }

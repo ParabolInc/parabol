@@ -74,8 +74,9 @@ export const resolveSentEmails = async(sendEmailPromises, inviteesWithTokens) =>
   return {inviteeErrors, inviteesToStore};
 };
 
-export const makeInvitationsForDB = async(invitees, teamId) => {
+export const makeInvitationsForDB = async(invitees, teamId, userId) => {
   const now = new Date();
+  const invitedBy = `${userId}::${teamId}`
   const tokenExpiration = new Date(now.valueOf() + INVITATION_LIFESPAN);
   const hashPromises = invitees.map(invitee => hashInviteTokenKey(invitee.inviteToken));
   const hashedTokens = await Promise.all(hashPromises);
@@ -84,14 +85,15 @@ export const makeInvitationsForDB = async(invitees, teamId) => {
     const {id} = parseInviteToken(inviteToken);
     return {
       id,
-      teamId,
+      invitedBy,
       createdAt: now,
-      isAccepted: false,
-      fullName,
       email,
+      fullName,
+      hashedToken: hashedTokens[idx],
+      isAccepted: false,
       task,
+      teamId,
       tokenExpiration,
-      hashedToken: hashedTokens[idx]
     };
   });
 };
@@ -115,7 +117,7 @@ export const asyncInviteTeam = async (authToken, teamId, invitees) => {
   const inviterInfoAndTeamName = await getInviterInfoAndTeamName(teamId, userId);
   const sendEmailPromises = createEmailPromises(inviterInfoAndTeamName, inviteesWithTokens);
   const {inviteesToStore} = await resolveSentEmails(sendEmailPromises, inviteesWithTokens);
-  const invitationsForDB = await makeInvitationsForDB(inviteesToStore, teamId);
+  const invitationsForDB = await makeInvitationsForDB(inviteesToStore, teamId, userId);
   // Bulk insert, wait in case something queries the invitation table
   await r.table('Invitation').insert(invitationsForDB);
   return true;
