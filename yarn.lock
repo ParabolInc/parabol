@@ -5446,9 +5446,9 @@ react-hot-loader@^3.0.0-beta.5:
     redbox-react "^1.2.5"
     source-map "^0.4.4"
 
-react-hotkey-hoc@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/react-hotkey-hoc/-/react-hotkey-hoc-0.2.1.tgz#b863f626f75c4bef4c7eeee6fe3c84fbd9802c65"
+"react-hotkey-hoc@https://github.com/jordanh/react-hotkey-hoc/tarball/2bcee0cd529ddca3d49ae2560aea827464656212":
+  version "0.3.1"
+  resolved "https://github.com/jordanh/react-hotkey-hoc/tarball/2bcee0cd529ddca3d49ae2560aea827464656212#8a2f2d90716e4b9959d0e426571d679f98d925a7"
   dependencies:
     mousetrap "^1.6.0"
 

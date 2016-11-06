@@ -19,8 +19,20 @@ const iconStyle = {
   width: ui.fontSize,
   zIndex: 100
 };
+
+const stopHotKeyCallbackMw = (e, event, combo, next) => {
+  if (!(e.key === 'Escape' || e.key === '+')) {
+    /*
+     * Don't allow any other hotkey events to process
+     * *except* for Escape and '+'.
+     */
+    return true;
+  }
+  return next();
+};
+
 const AgendaInputField = (props) => {
-  const {bindHotkey, styles} = props;
+  const {addHotkeyStopMw, removeHotkeyStopMw, bindHotkey, styles} = props;
   let inputRef;
   const setRef = (c) => {
     inputRef = c;
@@ -42,6 +54,8 @@ const AgendaInputField = (props) => {
         autoCapitalize="off"
         autoComplete="off"
         className={`${css(styles.input)} mousetrap`}
+        onBlur={removeHotkeyStopMw(stopHotKeyCallbackMw)}
+        onFocus={addHotkeyStopMw(stopHotKeyCallbackMw)}
         placeholder="Add Agenda Item"
         ref={setRef}
         title="Add Agenda Item"
@@ -54,6 +68,8 @@ const AgendaInputField = (props) => {
 
 AgendaInputField.propTypes = {
   bindHotkey: PropTypes.func,
+  addHotkeyStopMw: PropTypes.func,
+  removeHotkeyStopMw: PropTypes.func,
   input: PropTypes.object,
   styles: PropTypes.object
 };
