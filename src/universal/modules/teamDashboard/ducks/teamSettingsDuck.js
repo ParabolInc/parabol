@@ -16,7 +16,7 @@ export default function reducer(state = initialState, action = {}) {
   return state;
 };
 
-export const removeTeamMemberModal = () => ({
+export const toggleTeamMemberModal = () => ({
   type: TOGGLE_REMOVE_TEAM_MEMBER
 });
 
