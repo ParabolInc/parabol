@@ -1,30 +1,43 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
 import FontAwesome from 'react-fontawesome';
-import {reduxForm, Field} from 'redux-form';
-import EditableInput from './EditableInput';
 
-const Editable = (props) => {
-  const {
-    form,
-    handleSubmit,
-    hideIconOnValue,
-    icon,
-    initialValue,
-    isEditing,
-    placeholder,
-    styles,
-    setEditing,
-    submitOnBlur,
-    unsetEditing,
-    updateEditable
-  } = props;
+class Editable extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isEditing: false
+    }
+  }
 
-  const renderEditing = () => {
+  setEditing = () => {
+    this.setState({
+      isEditing: true
+    });
+  };
+
+  unsetEditing = () => {
+    const {input} = this.props;
+    this.setState({
+      isEditing: false
+    });
+    input.onBlur();
+  };
+
+  renderEditing = () => {
+    const {
+      handleSubmit,
+      input,
+      meta: {error},
+      placeholder,
+      styles,
+      submitOnBlur,
+      type
+    } = this.props;
     const inputStyles = css(
       styles.static,
       styles.input
@@ -32,29 +45,39 @@ const Editable = (props) => {
 
     const submitAndSet = (e) => {
       e.preventDefault();
-      const errors = handleSubmit(updateEditable)();
-      if (!errors) {
-        unsetEditing();
+      if (!handleSubmit()) {
+        this.unsetEditing();
+      }
+    };
+    const maybeSubmitOnBlur = (e) => {
+      if (submitOnBlur) {
+        submitAndSet(e);
+      } else if (!error) {
+        this.unsetEditing();
       }
     };
     return (
       <form onSubmit={submitAndSet}>
-        <Field
+        <input
+          {...input}
           autoFocus
-          component={EditableInput}
-          handleSubmit={submitAndSet}
-          inputStyles={inputStyles}
-          name={form}
+          className={inputStyles}
+          onBlur={maybeSubmitOnBlur}
           placeholder={placeholder}
-          submitOnBlur={submitOnBlur}
-          type="text"
-          unsetEditing={unsetEditing}
         />
+        <div className={css(styles.error)}>{error}</div>
       </form>
     );
   };
 
-  const renderStatic = () => {
+  renderStatic = () => {
+    const {
+      hideIconOnValue,
+      icon,
+      initialValue,
+      placeholder,
+      styles,
+    } = this.props;
     const staticStyles = css(
       styles.static,
       !initialValue && styles.placeholder
@@ -62,7 +85,7 @@ const Editable = (props) => {
 
     const hideIcon = initialValue && hideIconOnValue;
     return (
-      <div className={css(styles.staticBlock)} onClick={setEditing}>
+      <div className={css(styles.staticBlock)} onClick={this.setEditing}>
         <div className={staticStyles}>
           {initialValue || placeholder}
         </div>
@@ -75,12 +98,16 @@ const Editable = (props) => {
       </div>
     );
   };
-  return (
-    <div className={css(styles.editableRoot)}>
-      {isEditing ? renderEditing() : renderStatic()}
-    </div>
-  );
-};
+
+  render() {
+    const {styles} = this.props;
+    return (
+      <div className={css(styles.editableRoot)}>
+        {this.state.isEditing ? this.renderEditing() : this.renderStatic()}
+      </div>
+    );
+  }
+}
 
 Editable.propTypes = {
   // NOTE: Use 'hideIconOnValue' when you want to hide
@@ -111,6 +138,11 @@ const styleThunk = (customTheme, props) => ({
     display: 'block',
     height: props.typeStyles.lineHeight,
     width: '100%'
+  },
+
+  error: {
+    color: appTheme.palette.warm,
+    fontSize: '.85rem'
   },
 
   staticBlock: {
@@ -160,6 +192,4 @@ const styleThunk = (customTheme, props) => ({
   }
 });
 
-export default reduxForm()(
-  withStyles(styleThunk)(Editable)
-);
+export default withStyles(styleThunk)(Editable);

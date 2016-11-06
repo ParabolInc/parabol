@@ -3,14 +3,23 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import Button from 'universal/components/Button/Button';
-import EditableContainer from 'universal/containers/Editable/EditableContainer.js';
+import Editable from 'universal/components/Editable/Editable';
 import {cashay} from 'cashay';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
+import {reduxForm, Field} from 'redux-form';
+
+const validate = ({inviteTeamMember}, {invitations}) => {
+  const errors = {};
+  const outstandingInvitationEmails = invitations.map((i) => i.email);
+  if (outstandingInvitationEmails.includes(inviteTeamMember)) {
+    errors.inviteTeamMember = 'That person has already been invited!'
+  }
+  return errors;
+};
 
 const InviteUser = (props) => {
   const {
-    invitations,
-    onInviteSubmitted,
+    handleSubmit,
     styles,
     teamId
   } = props;
@@ -19,7 +28,7 @@ const InviteUser = (props) => {
     color: appTheme.palette.dark,
     fontSize: appTheme.typography.s4,
     lineHeight: '1.625rem',
-    placeholderColor: appTheme.palette.mid70l
+    placeholderColor: appTheme.palette.mid70l,
   };
   const updateEditable = (submissionData) => {
     const variables = {
@@ -30,25 +39,18 @@ const InviteUser = (props) => {
     };
     cashay.mutate('inviteTeamMembers', {variables})
   };
-  const validate = ({inviteTeamMember}) => {
-    const errors = {};
-    const outstandingInvitationEmails = invitations.map((i) => i.email);
-    if (outstandingInvitationEmails.includes(inviteTeamMember)) {
-      errors.inviteTeamMember = 'That person has already been invited!'
-    }
-    return errors;
-  };
+
   return (
     <div className={css(styles.inviteUser)}>
       <AvatarPlaceholder/>
       <div className={css(styles.fieldBlock)}>
-        <EditableContainer
-          form="inviteTeamMember"
+        <Field
+          component={Editable}
+          handleSubmit={handleSubmit(updateEditable)}
           hideIconOnValue
+          name="inviteTeamMember"
           placeholder="email@domain.co"
           typeStyles={fieldStyles}
-          updateEditable={updateEditable}
-          validate={validate}
         />
       </div>
       <div className={css(styles.buttonBlock)}>
@@ -56,7 +58,7 @@ const InviteUser = (props) => {
           borderRadius=".25rem"
           colorPalette="mid"
           label="Send Invite" size="smallest"
-          onClick={onInviteSubmitted}
+          onClick={handleSubmit(updateEditable)}
         />
       </div>
     </div>
@@ -90,4 +92,6 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(InviteUser);
+export default reduxForm({form:'inviteTeamMember', validate})(
+  withStyles(styleThunk)(InviteUser)
+);

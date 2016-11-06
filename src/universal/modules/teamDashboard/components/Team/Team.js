@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import FontAwesome from 'react-fontawesome';
-import appTheme from 'universal/styles/theme/appTheme';
+import EditTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditTeamName';
 import {
   DashContent,
   DashHeader,
@@ -10,8 +10,7 @@ import {
 import {Link, withRouter} from 'react-router';
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
 import TeamDashModal from '../TeamDashModal/TeamDashModal';
-import EditableContainer from 'universal/containers/Editable/EditableContainer.js'
-import {cashay} from 'cashay';
+
 
 const faIconStyle = {
   fontSize: '14px',
@@ -62,33 +61,8 @@ const settingsLinks = (teamId) => {
   );
 };
 
-const renderEditableTeamName = (name, id) => {
-  const fieldStyles = {
-    color: appTheme.palette.dark10d,
-    fontSize: appTheme.typography.s5,
-    lineHeight: appTheme.typography.s6,
-    placeholderColor: appTheme.palette.mid70l
-  };
-  const updateEditable = (submissionData) => {
-    const variables = {
-      updatedTeam: {
-        id,
-        name: submissionData.teamName
-      }
-    };
-    cashay.mutate('updateTeamName', {variables})
-  };
-  return (
-    <EditableContainer
-      form="teamName"
-      initialValue={name}
-      placeholder="Team Name"
-      submitOnBlur
-      typeStyles={fieldStyles}
-      updateEditable={updateEditable}
-    />
-  );
-};
+// use the same object so the EditTeamName doesn't rerender so gosh darn always
+const initialValues = {teamName: ''};
 
 const Team = (props) => {
   const {children, router, team, teamMembers} = props;
@@ -96,7 +70,8 @@ const Team = (props) => {
   const teamName = team.name;
   const hasOverlay = Boolean(team && team.meetingId);
   const isSettings = router.isActive(`/team/${teamId}/settings`, false);
-  const DashHeaderInfoTitle = isSettings ? renderEditableTeamName(teamName, teamId) : teamName;
+  initialValues.teamName = teamName;
+  const DashHeaderInfoTitle = isSettings ? <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId}/> : teamName;
   return (
     <DashMain>
       {hasOverlay && <TeamDashModal teamId={teamId} teamName={teamName}/>}
