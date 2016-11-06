@@ -7,18 +7,24 @@ import Editable from 'universal/components/Editable/Editable';
 import {cashay} from 'cashay';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 import {reduxForm, Field} from 'redux-form';
+import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
 
-const validate = ({inviteTeamMember}, {invitations}) => {
+const validate = ({inviteTeamMember}, {invitations, teamMembers}) => {
   const errors = {};
   const outstandingInvitationEmails = invitations.map((i) => i.email);
   if (outstandingInvitationEmails.includes(inviteTeamMember)) {
     errors.inviteTeamMember = 'That person has already been invited!'
+  }
+  const teamMemberEmails = teamMembers.map((i) => i.email);
+  if (teamMemberEmails.includes(inviteTeamMember)) {
+    errors.inviteTeamMember = 'That person is already on your team!'
   }
   return errors;
 };
 
 const InviteUser = (props) => {
   const {
+    dispatch,
     handleSubmit,
     styles,
     teamId
@@ -37,7 +43,11 @@ const InviteUser = (props) => {
         email: submissionData.inviteTeamMember
       }]
     };
-    cashay.mutate('inviteTeamMembers', {variables})
+    cashay.mutate('inviteTeamMembers', {variables});
+    dispatch(showSuccess({
+      title: 'Invitation sent!',
+      message: `An invitation has been sent to ${submissionData.inviteTeamMember}`
+    }))
   };
 
   return (

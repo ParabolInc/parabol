@@ -48,13 +48,14 @@ export default {
         createdAt: new Date(userInfo.created_at),
         tms: userInfo.tms
       };
-      const {id: userId, picture, preferredName} = auth0User;
+      const {email, id: userId, picture, preferredName} = auth0User;
       const currentUser = await r.table('User').get(userId);
       if (currentUser) {
-        // invalidate the picture/preferredName where it is denormalized
+        // invalidate the email/picture/preferredName where it is denormalized
         const dbWork = r.table('User').get(userId).update(auth0User)
           .do(() => {
             return r.table('TeamMember').getAll(userId, {index: 'userId'}).update({
+              email,
               picture,
               preferredName
             });

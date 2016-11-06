@@ -7,16 +7,29 @@ import {reduxForm} from 'redux-form';
 import InviteUser from 'universal/components/InviteUser/InviteUser';
 import UserRow from 'universal/components/UserRow/UserRow';
 import fromNow from 'universal/utils/fromNow';
+import {cashay} from 'cashay';
 
 const TeamSettings = (props) => {
-  const {invitations,removeTeamMemberModal, team, teamMembers, styles} = props;
-  const invitationRowActions = (user) => {
+  const {dispatch, invitations,removeTeamMemberModal, team, teamMembers, styles} = props;
+
+  const invitationRowActions = (invitation) => {
+    const cashayOptions = {
+      variables: {
+        inviteId: invitation.id
+      }
+    };
+    const resend = () => {
+      cashay.mutate('resendInvite', cashayOptions)
+    };
+    const cancel = () => {
+      cashay.mutate('cancelInvite', cashayOptions)
+    };
     return (
       <div className={css(styles.actionLinkBlock)}>
-        <div className={css(styles.actionLink)}>
+        <div className={css(styles.actionLink)} onClick={resend}>
           Resend Invitation
         </div>
-        <div className={css(styles.actionLink)}>
+        <div className={css(styles.actionLink)} onClick={cancel}>
           Cancel Invitation
         </div>
       </div>
@@ -40,7 +53,7 @@ const TeamSettings = (props) => {
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.inviteBlock)}>
-        <InviteUser teamId={team.id} invitations={invitations}/>
+        <InviteUser dispatch={dispatch} teamId={team.id} invitations={invitations} teamMembers={teamMembers}/>
       </div>
       <div className={css(styles.body)}>
         <div className={css(styles.scrollable)}>
@@ -58,7 +71,7 @@ const TeamSettings = (props) => {
                 <UserRow
                   {...invitation}
                   preferredName={invitation.email}
-                  email={fromNow(invitation.createdAt)}
+                  email={`invited ${fromNow(invitation.createdAt)}`}
                   actions={invitationRowActions(invitation)}
                   key={`invitationKey${idx}`}
                 />

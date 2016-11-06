@@ -7,8 +7,9 @@ import {
 } from 'graphql';
 import {Invitee} from './invitationSchema';
 import {requireSUOrTeamMember} from '../authorization';
+import {errorObj} from '../utils';
 
-import {asyncInviteTeam} from './helpers';
+import {asyncInviteTeam, cancelInvitation} from './helpers';
 
 export default {
   inviteTeamMembers: {
@@ -26,13 +27,73 @@ export default {
     async resolve(source, {invitees, teamId}, {authToken}) {
       const r = getRethink();
       requireSUOrTeamMember(authToken, teamId);
+      const now = Date.now();
       // don't let them invite the same person twice
       const emails = invitees.map(invitee => invitee.email);
-      const existingInvitations = await r.table('Invitation').getAll(r.args(emails), {index: 'email'})('email');
-      const uniqueInvitees = invitees.filter((i) => !existingInvitations.includes(i.email));
-      if (uniqueInvitees.length === 0) return false;
-      asyncInviteTeam(authToken, teamId, uniqueInvitees);
+      const usedEmails = await r.table('Invitation')
+        .getAll(r.args(emails), {index: 'email'})
+        .filter(r.row('tokenExpiration').ge(r.epochTime(now)))('email')
+        .coerceTo('array')
+        .do((inviteEmails) => {
+          return {
+            invites: inviteEmails,
+            teamMembers: r.table('TeamMember')
+              .getAll(teamId, {index: 'teamId'})('email')
+              .coerceTo('array')
+          }
+        });
+      const alreadyInvited = invitees
+        .map((i) => i.email)
+        .filter((email) => usedEmails.invites.includes(email))
+        .join(', ');
+      if (alreadyInvited) {
+        throw errorObj({
+          _error: `${alreadyInvited.join(', ')} already invited`,
+          type: 'alreadyInvited'
+        })
+      }
+      const alreadyTeamMember = invitees
+        .map((i) => i.email)
+        .filter((email) => usedEmails.teamMembers.includes(email))
+        .join(', ');
+      if (alreadyTeamMember) {
+        throw errorObj({
+          _error: `${alreadyTeamMember.join(', ')} already on the team`,
+          type: 'alreadyTeamMember'
+        })
+      }
+      asyncInviteTeam(authToken, teamId, invitees);
       return true;
+    }
+  },
+  cancelInvite: {
+    type: GraphQLBoolean,
+    description: 'Cancel an invitation',
+    args: {
+      inviteId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The id of the invitation'
+      },
+    },
+    async resolve(source, {inviteId}, {authToken}) {
+      await cancelInvitation(authToken, inviteId);
+      return true;
+    }
+  },
+  resendInvite: {
+    type: GraphQLBoolean,
+    description: 'Cancel an invitation',
+    args: {
+      inviteId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The id of the invitation'
+      },
+    },
+    async resolve(source, {inviteId}, {authToken}) {
+      const oldInvite = await cancelInvitation(authToken, inviteId);
+      const {teamId, email, fullName} = oldInvite;
+      const invitees = [{email, fullName}];
+      asyncInviteTeam(authToken, teamId, invitees);
     }
   }
 };

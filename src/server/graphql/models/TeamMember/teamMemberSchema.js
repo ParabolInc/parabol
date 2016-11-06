@@ -6,7 +6,7 @@ import {
   GraphQLString,
   GraphQLInt
 } from 'graphql';
-import {GraphQLURLType} from '../types';
+import {GraphQLEmailType, GraphQLURLType} from '../types';
 import {Team} from '../Team/teamSchema';
 import {User} from '../User/userSchema';
 import {Project} from '../Project/projectSchema';
@@ -22,6 +22,10 @@ export const TeamMember = new GraphQLObjectType({
     isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
     isFacilitator: {type: GraphQLBoolean, description: 'Is user a team facilitator?'},
     /* denormalized from User */
+    email: {
+      type: GraphQLEmailType,
+      description: 'The user email'
+    },
     picture: {
       type: GraphQLURLType,
       description: 'url of user\'s profile picture'

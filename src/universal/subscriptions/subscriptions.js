@@ -154,8 +154,9 @@ export default [
     string: `
     subscription($teamId: ID!) {
        teamMembers(teamId: $teamId) {
-         checkInOrder,
          id,
+         checkInOrder,
+         email,
          isActive,
          isCheckedIn,
          isFacilitator,

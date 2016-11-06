@@ -37,10 +37,6 @@ export const Invitation = new GraphQLObjectType({
       resolve: () => null
     },
     invitedBy: {type: GraphQLID, description: 'The teamMemberId of the person that sent the invitation'},
-    isAccepted: {
-      type: GraphQLBoolean,
-      description: 'Has the invitation been accepted yet? Storing this as a boolean means no required indexing.'
-    },
     task: {
       type: GraphQLString,
       description: 'The task that the invitee is currently working on'

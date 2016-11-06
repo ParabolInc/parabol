@@ -19,9 +19,10 @@ export default {
       requireSUOrTeamMember(authToken, teamId);
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
+      const now = Date.now();
       r.table('Invitation')
         .getAll(teamId, {index: 'teamId'})
-        .filter({isAccepted: false})
+        .filter(r.row('tokenExpiration').ge(r.epochTime(now / 1000)))
         .pluck(requestedFields)
         .changes({includeInitial: true})
         .run({cursor: true}, changefeedHandler);

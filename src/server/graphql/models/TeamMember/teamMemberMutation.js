@@ -122,7 +122,8 @@ export default {
         .do((userEmail) =>
           r.table('Invitation').getAll(userEmail, email, {index: 'email'}).update({
             acceptedAt: now,
-            isAccepted: true
+            tokenExpiration: now,
+            updatedAt: now
           })
         );
       const tms = oldtms.concat(teamId);

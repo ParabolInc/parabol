@@ -12,6 +12,7 @@ query {
   },
   teamMembers(teamId: $teamId) @live {
     id
+    email
     isLead
     picture
     preferredName
@@ -50,12 +51,13 @@ export default class TeamSettingsContainer extends Component {
 
 
   render() {
-    const {invitations,removeTeamMemberModal, team, teamMembers} = this.props;
+    const {dispatch, invitations,removeTeamMemberModal, team, teamMembers} = this.props;
     if (teamMembers.length === 0) {
       return <LoadingView/>
     }
     return (
       <TeamSettings
+        dispatch={dispatch}
         invitations={invitations}
         removeTeamMemberModal={removeTeamMemberModal}
         team={team}
