@@ -3864,6 +3864,13 @@ joi@^6.10.1, joi@~6.10.1:
     moment "2.x.x"
     topo "1.x.x"
 
+jordanh/react-hotkey-hoc#v0.3.2:
+  name react-hotkey-hoc
+  version "0.3.2"
+  resolved "https://codeload.github.com/jordanh/react-hotkey-hoc/tar.gz/58508fd0c1fb3f50a9ecb5ea862dbb99930850c3"
+  dependencies:
+    mousetrap "^1.6.0"
+
 js-tokens@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-2.0.0.tgz#79903f5563ee778cc1162e6dcf1a0027c97f9cb5"

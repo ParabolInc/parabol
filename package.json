@@ -113,7 +113,7 @@
     "react-dom": "15.3.1",
     "react-fontawesome": "^1.1.0",
     "react-helmet": "^3.1.0",
-    "react-hotkey-hoc": "https://github.com/jordanh/react-hotkey-hoc/tarball/2bcee0cd529ddca3d49ae2560aea827464656212",
+    "react-hotkey-hoc": "jordanh/react-hotkey-hoc#v0.3.2",
     "react-notification-system": "^0.2.10",
     "react-redux": "^4.4.5",
     "react-router": "2.8.0",
