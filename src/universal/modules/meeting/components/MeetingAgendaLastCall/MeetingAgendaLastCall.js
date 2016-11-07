@@ -9,6 +9,8 @@ import Type from 'universal/components/Type/Type';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
+import getWeekOfYear from 'universal/utils/getWeekOfYear';
+import {makeSuccessExpression} from 'universal/utils/makeSuccessCopy';
 
 const MeetingAgendaLastCall = (props) => {
   const {
@@ -21,11 +23,17 @@ const MeetingAgendaLastCall = (props) => {
     styles
   } = props;
 
+  const now = new Date();
+  const week = getWeekOfYear(now);
+
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="2rem">
-          <MeetingPhaseHeading>Boom!</MeetingPhaseHeading>
+          <MeetingPhaseHeading>
+            {/* Add 2 to week number to make expression different from Summary */}
+            {makeSuccessExpression(week + 2)}!
+          </MeetingPhaseHeading>
           <Type
             align="center"
             bold
@@ -51,7 +59,7 @@ const MeetingAgendaLastCall = (props) => {
               label="End Meeting"
               onClick={gotoNext}
               size="largest"
-              style="outlined"
+              style="solid"
               textTransform="uppercase"
             /> :
             <div className={css(styles.warmHighlight)}>

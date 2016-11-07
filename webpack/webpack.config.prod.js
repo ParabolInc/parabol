@@ -2,6 +2,7 @@ import path from 'path';
 import webpack from 'webpack';
 import AssetsPlugin from 'manifest-assets-webpack-plugin';
 import WebpackShellPlugin from 'webpack-shell-plugin';
+import S3Plugin from 'webpack-s3-plugin';
 import {getDotenv} from '../src/universal/utils/dotenv';
 
 // Import .env and expand variables:
@@ -31,6 +32,20 @@ const deployPlugins = [];
 if (process.env.DEPLOY) {
   deployPlugins.push(new webpack.optimize.UglifyJsPlugin({compressor: {warnings: false}, comments: /(?:)/}));
   deployPlugins.push(new webpack.LoaderOptionsPlugin({comments: false}));
+  if (!process.env.CI) {
+    // do not deploy to S3 if running in continuous integration environment:
+    deployPlugins.push(new S3Plugin({
+      s3Options: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        region: process.env.AWS_REGION
+      },
+      s3UploadOptions: {
+        Bucket: process.env.AWS_S3_BUCKET
+      },
+      basePath: 'static'
+    }));
+  }
 }
 
 export default {
@@ -38,7 +53,7 @@ export default {
   entry: {
     app: [
       'babel-polyfill',
-      'client/client.js'
+      'client/webpackEntry.js'
     ],
     vendor
   },
@@ -46,7 +61,6 @@ export default {
     filename: '[name]_[chunkhash].js',
     chunkFilename: '[name]_[chunkhash].js',
     path: path.join(root, 'build'),
-    publicPath: '/static/'
   },
   resolve: {
     extensions: ['.js'],
@@ -62,7 +76,11 @@ export default {
     }),
     new webpack.optimize.AggressiveMergingPlugin(),
     new webpack.optimize.MinChunkSizePlugin({minChunkSize: 50000}),
-    new AssetsPlugin({path: path.join(root, 'build'), filename: 'assets.json', includeManifest: true}),
+    new AssetsPlugin({
+      path: path.join(root, 'build'),
+      filename: 'assets.json',
+      includeManifest: true
+    }),
     new webpack.NoErrorsPlugin(),
     new webpack.DefinePlugin({
       __CLIENT__: true,

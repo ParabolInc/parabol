@@ -4,6 +4,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.11.0 - 05-Nov-2016
+### Added
+- Added S3 deployment to `npm run build:client-min` and application
+
+### Fixed
+- #482 Avatar style improvements
+   - Restores a default box shadow, with the option for border styling
+   - Makes lobby and last call primary buttons more prominent
+- #492 minor UI updates
+   - DashModal has updated border styling
+   - SummaryHeader has button-styled link to team dashboard
+   - LastCall pulls success expression from array
+- CircleCI build cache fixes
+
 ## v0.10.0 - 02-Nov-2016
 ### Added
 - #458 Added ability to create and invite new teams
