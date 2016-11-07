@@ -69,14 +69,14 @@ const InputField = (props) => {
           <Textarea
             {...input}
             autoFocus={autoFocus}
-            className={`${inputStyles} mousetrap`}
+            className={`${inputStyles}`}
             disabled={disabled || readyOnly}
             placeholder={placeholder}
           /> :
           <input
             {...input}
             autoFocus={autoFocus}
-            className={`${inputStyles} mousetrap`}
+            className={`${inputStyles}`}
             disabled={disabled || readyOnly}
             placeholder={placeholder}
           />

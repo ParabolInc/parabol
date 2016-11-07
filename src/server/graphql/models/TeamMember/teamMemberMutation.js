@@ -5,7 +5,7 @@ import {
   GraphQLBoolean,
 } from 'graphql';
 import {errorObj} from '../utils';
-import {requireWebsocket, requireSUOrTeamMember, requireAuth} from '../authorization';
+import {requireWebsocket, requireSUOrTeamMember, requireSUOrSelfOrLead, requireAuth} from '../authorization';
 import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
@@ -134,5 +134,27 @@ export default {
       await Promise.all(asyncPromises);
       return tmsSignToken(authToken, tms);
     }
-  }
+  },
+  removeTeamMember: {
+    type: GraphQLBoolean,
+    description: 'Remove a team member from the team',
+    args: {
+      teamMemberId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The teamMemberId of the person who is being checked in'
+      }
+    },
+    async resolve(source, {teamMemberId}, {authToken, socket}) {
+      const r = getRethink();
+      const [userId, teamId] = teamMemberId.split('::');
+      await requireSUOrSelfOrLead(authToken, userId, teamId);
+      requireWebsocket(socket);
+      await r.table('TeamMember')
+        .get(teamMemberId)
+        .update({
+          isActive: false
+        })
+        .do
+    }
+  },
 };
