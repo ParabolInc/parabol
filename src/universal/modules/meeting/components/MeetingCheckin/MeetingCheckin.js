@@ -42,7 +42,7 @@ const MeetingCheckin = (props) => {
   return (
     <MeetingMain>
       {/* */}
-      <MeetingSection paddingBottom="1.25rem" paddingTop="0">
+      <MeetingSection>
         <ProgressBarContainer
           gotoItem={gotoItem}
           isComplete={isComplete}

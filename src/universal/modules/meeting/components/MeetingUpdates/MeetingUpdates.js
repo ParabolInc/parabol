@@ -31,7 +31,7 @@ const MeetingUpdates = (props) => {
   const username = makeUsername(currentTeamMember.preferredName);
   return (
     <MeetingMain>
-      <MeetingSection paddingBottom="2rem" paddingTop="0">
+      <MeetingSection>
         <ProgressBarContainer
           gotoItem={gotoItem}
           isComplete={isComplete}
