@@ -54,8 +54,8 @@ const AgendaInputField = (props) => {
         autoCapitalize="off"
         autoComplete="off"
         className={`${css(styles.input)} mousetrap`}
-        onBlur={removeHotkeyStopMw(stopHotKeyCallbackMw)}
-        onFocus={addHotkeyStopMw(stopHotKeyCallbackMw)}
+        onBlur={() => removeHotkeyStopMw(stopHotKeyCallbackMw)}
+        onFocus={() => addHotkeyStopMw(stopHotKeyCallbackMw)}
         placeholder="Add Agenda Item"
         ref={setRef}
         title="Add Agenda Item"
