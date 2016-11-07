@@ -29,19 +29,20 @@ const AgendaInputField = (props) => {
     e.preventDefault();
     inputRef.focus();
   };
-  const blurInput = (e) => {
-    e.preventDefault();
-    inputRef.blur();
+  const maybeBlur = (e) => {
+    if (e.key === 'Escape') {
+      inputRef.blur();
+    }
   };
   bindHotkey('+', focusOnInput);
-  bindHotkey('esc', blurInput);
   return (
     <div className={css(styles.root)}>
       <input
         {...props.input}
         autoCapitalize="off"
         autoComplete="off"
-        className={`${css(styles.input)} mousetrap`}
+        className={`${css(styles.input)}`}
+        onKeyDown={maybeBlur}
         placeholder="Add Agenda Item"
         ref={setRef}
         title="Add Agenda Item"
