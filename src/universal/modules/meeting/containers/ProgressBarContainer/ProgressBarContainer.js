@@ -1,7 +1,7 @@
 import React, {PropTypes, Component} from 'react';
 import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
 
-export default class ProgressBarArea extends Component {
+export default class ProgressBarContainer extends Component {
   static propTypes = {
     gotoItem: PropTypes.func.isRequired,
     isComplete: PropTypes.bool,
@@ -18,15 +18,16 @@ export default class ProgressBarArea extends Component {
     };
   }
 
-  onHover = () => { this.setState({ hasHover: true }); };
-  onLeave = () => { this.setState({ hasHover: false }); };
+  handleHover = (hoverState) => {
+    this.setState({ hasHover: !hoverState });
+  };
 
   render() {
     const {hasHover} = this.state;
     return (
       <div
-        onMouseEnter={() => this.onHover()}
-        onMouseLeave={() => this.onLeave()}
+        onMouseEnter={() => this.handleHover(hasHover)}
+        onMouseLeave={() => this.handleHover(hasHover)}
       >
         <ProgressBar {...this.props} hasHover={hasHover} />
       </div>

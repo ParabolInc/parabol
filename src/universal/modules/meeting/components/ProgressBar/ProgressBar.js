@@ -41,8 +41,8 @@ const ProgressBar = (props) => {
   const barWidth = ((meetingPhaseItem) * blockWidth) - (blockWidth - pointWidth - outerPadding);
   const barStyle = isComplete ? {width: '100%'} : {width: `${barWidth}px`};
   return (
-    <div className={css(styles.hoverArea)}>
-      <div className={css(styles.root)}>
+    <div className={css(styles.progressBar)}>
+      <div className={css(styles.barBlock)}>
         <div className={css(styles.points)}>
           {renderPoints()}
         </div>
@@ -52,24 +52,24 @@ const ProgressBar = (props) => {
   );
 };
 
-
 ProgressBar.propTypes = {
   gotoItem: PropTypes.func.isRequired,
   hasHover: PropTypes.bool,
   isComplete: PropTypes.bool,
-  facilitatorPhaseItem: PropTypes.number, // index of 1
-  localPhaseItem: PropTypes.number,       // index of 1
-  meetingPhaseItem: PropTypes.number,     // index of 1
-  membersCount: PropTypes.number,         // members.length
+  facilitatorPhaseItem: PropTypes.number,
+  localPhaseItem: PropTypes.number,
+  meetingPhaseItem: PropTypes.number,
+  membersCount: PropTypes.number,
   styles: PropTypes.object
 };
 
 const styleThunk = () => ({
-  hoverArea: {
+  progressBar: {
+    // NOTE: Padding creates larger area for hover states
     padding: '1rem 8rem'
   },
 
-  root: {
+  barBlock: {
     backgroundColor: appTheme.palette.dark10l,
     borderRadius: `${barHeight}px`,
     display: 'inline-block',
