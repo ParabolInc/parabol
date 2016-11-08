@@ -37,7 +37,8 @@ const mapStateToProps = (state, props) => {
     team,
     teamMembers,
     promoteTeamMemberModal: state.teamSettings.promoteTeamMemberModal,
-    removeTeamMemberModal: state.teamSettings.removeTeamMemberModal
+    removeTeamMemberModal: state.teamSettings.removeTeamMemberModal,
+    myTeamMemberId: `${state.auth.obj.sub}::${teamId}`
   };
 };
 
@@ -52,14 +53,16 @@ export default class TeamSettingsContainer extends Component {
 
 
   render() {
-    const {dispatch, invitations, promoteTeamMemberModal, removeTeamMemberModal, team, teamMembers} = this.props;
-    if (teamMembers.length === 0) {
+    const {dispatch, invitations, myTeamMemberId, promoteTeamMemberModal, removeTeamMemberModal, team, teamMembers} = this.props;
+    const myTeamMember = teamMembers.find((member) => member.id === myTeamMemberId);
+    if (!myTeamMember) {
       return <LoadingView/>
     }
     return (
       <TeamSettings
         dispatch={dispatch}
         invitations={invitations}
+        myTeamMember={myTeamMember}
         promoteTeamMemberModal={promoteTeamMemberModal}
         removeTeamMemberModal={removeTeamMemberModal}
         team={team}

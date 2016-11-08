@@ -12,8 +12,7 @@ import {toggleRemoveModal, togglePromoteModal} from 'universal/modules/teamDashb
 import RemoveTeamMemberModal from 'universal/modules/teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal';
 
 const TeamSettings = (props) => {
-  const {dispatch, invitations,promoteTeamMemberModal, removeTeamMemberModal, team, teamMembers, styles} = props;
-
+  const {dispatch, invitations, myTeamMember, promoteTeamMemberModal, removeTeamMemberModal, team, teamMembers, styles} = props;
   const invitationRowActions = (invitation) => {
     const cashayOptions = {
       variables: {
@@ -37,31 +36,37 @@ const TeamSettings = (props) => {
       </div>
     );
   };
-  const teamMemberRowActions = (user) => {
+  const teamMemberRowActions = (teamMember) => {
     const openRemoveModal = (e) => {
       dispatch(toggleRemoveModal())
     };
     const openPromoteModal = (e) => {
       dispatch(togglePromoteModal())
     };
-    const {id, preferredName} = user;
+    const {id, preferredName} = teamMember;
     return (
       <div className={css(styles.actionLinkBlock)}>
         {removeTeamMemberModal &&
-          <RemoveTeamMemberModal onBlur={openRemoveModal} preferredName={preferredName} teamMemberId={id}/>
+        <RemoveTeamMemberModal onBlur={openRemoveModal} preferredName={preferredName} teamMemberId={id}/>
         }
         {promoteTeamMemberModal &&
         <PromoteTeamMemberModal onBlur={openPromoteModal} preferredName={preferredName} teamMemberId={id}/>
         }
-        <div className={css(styles.actionLink)} onClick={openPromoteModal}>
-          Promote {user.preferredName} to Team Lead
-        </div>
-        <div className={css(styles.actionLink)} onClick={openRemoveModal}>
-          Remove
-        </div>
-        <div className={css(styles.actionLink)}>
-          Leave Team
-        </div>
+        {myTeamMember.isLead && myTeamMember.id !== teamMember.id &&
+          <div className={css(styles.actionLink)} onClick={openPromoteModal}>
+            Promote {teamMember.preferredName} to Team Lead
+          </div>
+        }
+        {myTeamMember.isLead && myTeamMember.id !== teamMember.id &&
+          <div className={css(styles.actionLink)} onClick={openRemoveModal}>
+            Remove
+          </div>
+        }
+        {!myTeamMember.isLead && myTeamMember.id === teamMember.id &&
+          <div className={css(styles.actionLink)}>
+            Leave Team
+          </div>
+        }
       </div>
     );
   };
