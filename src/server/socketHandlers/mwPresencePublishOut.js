@@ -1,8 +1,8 @@
 import parseChannel from './parseChannel';
-import {EDIT, PRESENT, SOUNDOFF, PRESENCE} from 'universal/subscriptions/constants';
+import {EDIT, PRESENT, SOUNDOFF, PRESENCE, TEAM, KICK_OUT} from 'universal/subscriptions/constants';
 
 export default function mwPresencePublishOut(req, next) {
-  const {channel} = parseChannel(req.channel);
+  const {channel, variableString: channelKey} = parseChannel(req.channel);
   if (channel === PRESENCE) {
     const {type, targetId} = req.data;
     if (type === SOUNDOFF) {
@@ -24,6 +24,27 @@ export default function mwPresencePublishOut(req, next) {
       if (senderSocketId && senderSocketId === req.socket.id) {
         next(true);
         return;
+      }
+    }
+  } else if (channel === TEAM) {
+    const {type, userId} = req.data;
+    if (type === KICK_OUT) {
+      const authToken = req.socket.getAuthToken();
+      if (authToken.sub === userId) {
+        const subs = req.socket.subscriptions();
+        subs.forEach((sub) => {
+          if (sub.indexOf(channelKey) !== -1) {
+            req.socket.kickOut(sub, 'Removed from team');
+          }
+        });
+        req.data = {
+          type: 'remove',
+          fields: {
+            id: channelKey
+          }
+        };
+        authToken.tms.splice(authToken.tms.indexOf(channelKey),1);
+        req.socket.setAuthToken(authToken);
       }
     }
   }

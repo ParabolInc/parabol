@@ -46,6 +46,7 @@ export default ComposedComponent => {
       }
       if (oldProps.tms !== props.tms) {
         const socket = socketCluster.connect();
+        window.socket = socket;
         for (let i = 0; i < teamIds.length; i++) {
           const teamId = teamIds[i];
           if (tmsSubs.includes(teamId)) continue;

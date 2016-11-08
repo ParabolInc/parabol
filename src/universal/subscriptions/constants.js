@@ -3,6 +3,7 @@ export const EDIT = 'EDIT';
 export const LEAVE = 'LEAVE';
 export const PRESENT = 'PRESENT';
 export const SOUNDOFF = 'SOUNDOFF';
+export const KICK_OUT = 'KICK_OUT';
 
 // CHANNELS
 export const ACTIONS = 'actions';
@@ -13,6 +14,5 @@ export const AGENDA = 'agenda';
 export const INVITATIONS = 'invitations';
 export const PRESENCE = 'presence';
 export const PROJECTS = 'projects';
-export const TEAMS = 'teams';
 export const TEAM = 'team';
 export const TEAM_MEMBERS = 'teamMembers';

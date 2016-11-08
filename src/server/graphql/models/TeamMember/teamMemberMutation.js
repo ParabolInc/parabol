@@ -9,6 +9,7 @@ import {requireWebsocket, requireSUOrTeamMember, requireSUOrSelfOrLead, requireA
 import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
+import {KICK_OUT} from 'universal/subscriptions/constants';
 
 export default {
   checkIn: {
@@ -144,17 +145,50 @@ export default {
         description: 'The teamMemberId of the person who is being checked in'
       }
     },
-    async resolve(source, {teamMemberId}, {authToken, socket}) {
+    async resolve(source, {teamMemberId}, {authToken, exchange, socket}) {
       const r = getRethink();
       const [userId, teamId] = teamMemberId.split('::');
       await requireSUOrSelfOrLead(authToken, userId, teamId);
       requireWebsocket(socket);
       await r.table('TeamMember')
+        // set inactive
         .get(teamMemberId)
         .update({
           isActive: false
         })
-        .do
+        // assign active projects to the team lead
+        .do(() => {
+          return r.table('Projects')
+            .getAll(teamMemberId, {index: 'teamMemberId'})
+            .filter({isArchived: false})
+            .update({
+              teamMemberId: r.table('TeamMember')
+                .getAll(teamId, {index: 'teamId'})
+                .filter({isLead: true})
+                .nth(0)('id')
+            })
+        })
+        // remove the teamId from the user tms array
+        .do(() => {
+          return r.table('User')
+            .get(userId).update((user) => {
+              return user.merge({
+                tms: user('tms').without(teamId)
+              })
+            })
+        });
+      const channel = `TEAM/${teamId}`;
+      exchange.publish(channel, {type: KICK_OUT, userId});
+
+
+      // const authToken = socket.getAuthToken();
+      // const {tms} = authToken;
+      // const teamIdIdx = tms.indexOf(teamId);
+      // if (teamIdIdx !== -1) {
+      //   tms.splice(teamIdIdx,1);
+      //   socket.setAuthToken(authToken);
+      // }
+      // kick out of
     }
   },
 };
