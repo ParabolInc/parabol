@@ -36,7 +36,6 @@ const Step3InviteTeam = (props) => {
       }));
     });
   };
-  props.bindHotkey('enter', onAddInviteesButtonClick);
 
   const onInviteTeamSubmit = async(submissionData) => {
     const {dispatch, router, welcome: {teamId}} = props;
