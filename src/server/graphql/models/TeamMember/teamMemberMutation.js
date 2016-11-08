@@ -5,7 +5,7 @@ import {
   GraphQLBoolean,
 } from 'graphql';
 import {errorObj} from '../utils';
-import {requireWebsocket, requireSUOrTeamMember, requireSUOrSelfOrLead, requireAuth} from '../authorization';
+import {requireWebsocket, requireSUOrTeamMember, requireSUOrSelfOrLead, requireSUOrLead, requireAuth} from '../authorization';
 import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
@@ -179,16 +179,43 @@ export default {
         });
       const channel = `TEAM/${teamId}`;
       exchange.publish(channel, {type: KICK_OUT, userId});
-
-
-      // const authToken = socket.getAuthToken();
-      // const {tms} = authToken;
-      // const teamIdIdx = tms.indexOf(teamId);
-      // if (teamIdIdx !== -1) {
-      //   tms.splice(teamIdIdx,1);
-      //   socket.setAuthToken(authToken);
-      // }
-      // kick out of
+      return true;
+    }
+  },
+  promoteToLead: {
+    type: GraphQLBoolean,
+    description: 'Promote another team member to be the leader',
+    args: {
+      teamMemberId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'the new team member that will be the leader'
+      }
+    },
+    async resolve(source, {teamMemberId}, {authToken, socket}) {
+      const r = getRethink();
+      requireWebsocket(socket);
+      const [, teamId] = teamMemberId;
+      const myTeamMemberId = `${authToken.sub}::${teamId}`;
+      await requireSUOrLead(authToken, myTeamMemberId);
+      const promoteeOnTeam = await r.table('TeamMember').get(teamMemberId);
+      if (!promoteeOnTeam) {
+        throw errorObj({_error: `Member ${teamMemberId} is not on the team`});
+      }
+      await r.table('TeamMember')
+        // remove leadership from the caller
+        .get(myTeamMemberId)
+        .update({
+          isLead: false
+        })
+        // give leadership to the new guy
+        .do(() => {
+          return r.table('TeamMember')
+            .get(teamMemberId)
+            .update({
+              isLead: true
+            })
+        });
+      return true;
     }
   },
 };
