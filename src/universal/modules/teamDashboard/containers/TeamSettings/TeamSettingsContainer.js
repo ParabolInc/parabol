@@ -36,6 +36,7 @@ const mapStateToProps = (state, props) => {
     invitations,
     team,
     teamMembers,
+    promoteTeamMemberModal: state.teamSettings.promoteTeamMemberModal,
     removeTeamMemberModal: state.teamSettings.removeTeamMemberModal
   };
 };
@@ -51,7 +52,7 @@ export default class TeamSettingsContainer extends Component {
 
 
   render() {
-    const {dispatch, invitations,removeTeamMemberModal, team, teamMembers} = this.props;
+    const {dispatch, invitations, promoteTeamMemberModal, removeTeamMemberModal, team, teamMembers} = this.props;
     if (teamMembers.length === 0) {
       return <LoadingView/>
     }
@@ -59,6 +60,7 @@ export default class TeamSettingsContainer extends Component {
       <TeamSettings
         dispatch={dispatch}
         invitations={invitations}
+        promoteTeamMemberModal={promoteTeamMemberModal}
         removeTeamMemberModal={removeTeamMemberModal}
         team={team}
         teamMembers={teamMembers}

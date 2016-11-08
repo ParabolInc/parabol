@@ -8,11 +8,11 @@ import InviteUser from 'universal/components/InviteUser/InviteUser';
 import UserRow from 'universal/components/UserRow/UserRow';
 import fromNow from 'universal/utils/fromNow';
 import {cashay} from 'cashay';
-import {toggleTeamMemberModal} from 'universal/modules/teamDashboard/ducks/teamSettingsDuck';
+import {toggleRemoveModal, togglePromoteModal} from 'universal/modules/teamDashboard/ducks/teamSettingsDuck';
 import RemoveTeamMemberModal from 'universal/modules/teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal';
 
 const TeamSettings = (props) => {
-  const {dispatch, invitations,removeTeamMemberModal, team, teamMembers, styles} = props;
+  const {dispatch, invitations,promoteTeamMemberModal, removeTeamMemberModal, team, teamMembers, styles} = props;
 
   const invitationRowActions = (invitation) => {
     const cashayOptions = {
@@ -39,7 +39,10 @@ const TeamSettings = (props) => {
   };
   const teamMemberRowActions = (user) => {
     const openRemoveModal = (e) => {
-      dispatch(toggleTeamMemberModal())
+      dispatch(toggleRemoveModal())
+    };
+    const openPromoteModal = (e) => {
+      dispatch(togglePromoteModal())
     };
     const {id, preferredName} = user;
     return (
@@ -47,7 +50,10 @@ const TeamSettings = (props) => {
         {removeTeamMemberModal &&
           <RemoveTeamMemberModal onBlur={openRemoveModal} preferredName={preferredName} teamMemberId={id}/>
         }
-        <div className={css(styles.actionLink)}>
+        {promoteTeamMemberModal &&
+        <PromoteTeamMemberModal onBlur={openPromoteModal} preferredName={preferredName} teamMemberId={id}/>
+        }
+        <div className={css(styles.actionLink)} onClick={openPromoteModal}>
           Promote {user.preferredName} to Team Lead
         </div>
         <div className={css(styles.actionLink)} onClick={openRemoveModal}>

@@ -32,7 +32,7 @@ class Editable extends Component {
     const {
       handleSubmit,
       input,
-      meta: {error},
+      meta: {dirty, error},
       placeholder,
       styles,
       submitOnBlur,
@@ -52,7 +52,7 @@ class Editable extends Component {
     const maybeSubmitOnBlur = (e) => {
       if (submitOnBlur) {
         submitAndSet(e);
-      } else if (!error) {
+      } else if (!error && !dirty) {
         this.unsetEditing();
       }
     };

@@ -31,10 +31,10 @@ export default function scConnectionHandler(exchange) {
     const subscribeHandler = scSubscribeHandler(exchange, socket);
     const unsubscribeHandler = scUnsubscribeHandler(exchange, socket);
     const graphQLHandler = scGraphQLHandler(exchange, socket);
-    socket.on('message', message => {
-      if (message === '#2') return;
-      console.log('SOCKET SAYS:', message);
-    });
+    // socket.on('message', message => {
+    //   if (message === '#2') return;
+    //   console.log('SOCKET SAYS:', message);
+    // });
     // if someone tries to replace their server-provided token with an older one that gives access to more teams, exit
     socket.on('message', (message) => {
       if (isObject(message) && message.event === '#authenticate') {

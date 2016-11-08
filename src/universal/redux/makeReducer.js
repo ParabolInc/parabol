@@ -12,12 +12,25 @@ import outcomeCardReducer from 'universal/modules/outcomeCard/ducks/outcomeCardD
 const {SET_SUBMIT_SUCCEEDED} = actionTypes;
 
 // wipe the value clean when submitted
-const wipeAfterSucces = (state, action) => (action.type === SET_SUBMIT_SUCCEEDED) ? undefined : state;
-
-const formPlugin = {
-  agendaInput: wipeAfterSucces,
-  inviteTeamMember: wipeAfterSucces
+const wipeAfterSuccess = (formToClear) => (state, action) => {
+  if (action.type === SET_SUBMIT_SUCCEEDED) {
+    if (action.meta.form === formToClear) {
+      return undefined;
+    }
+  }
+  return state;
 };
+
+const clearMeAfterSubmit = ['agendaInput', 'inviteTeamMember'];
+
+const formPluginFactory = (clearMeAfterSubmit) => {
+ return clearMeAfterSubmit.reduce((formPlugin, name) => {
+   formPlugin[name] = wipeAfterSuccess(name);
+   return formPlugin;
+ }, {})
+};
+
+const formPlugin = formPluginFactory(clearMeAfterSubmit);
 
 const appReducers = {
   [DEFAULT_AUTH_REDUCER_NAME]: auth,

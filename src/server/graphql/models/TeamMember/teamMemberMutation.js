@@ -8,8 +8,8 @@ import {errorObj} from '../utils';
 import {requireWebsocket, requireSUOrTeamMember, requireSUOrSelfOrLead, requireSUOrLead, requireAuth} from '../authorization';
 import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
-import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {KICK_OUT} from 'universal/subscriptions/constants';
+import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 
 export default {
   checkIn: {
@@ -150,7 +150,7 @@ export default {
       const [userId, teamId] = teamMemberId.split('::');
       await requireSUOrSelfOrLead(authToken, userId, teamId);
       requireWebsocket(socket);
-      await r.table('TeamMember')
+      const changes = await r.table('TeamMember')
         // set inactive
         .get(teamMemberId)
         .update({
@@ -175,8 +175,13 @@ export default {
               return user.merge({
                 tms: user('tms').without(teamId)
               })
-            })
+            }, {returnChanges: true})
         });
+      // update the tms on auth0
+      const newtms = changes.changes.new_val.tms;
+      await auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: newtms});
+
+      // update the server socket, if they're logged in
       const channel = `TEAM/${teamId}`;
       exchange.publish(channel, {type: KICK_OUT, userId});
       return true;
