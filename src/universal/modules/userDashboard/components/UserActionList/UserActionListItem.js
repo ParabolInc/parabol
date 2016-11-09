@@ -17,25 +17,7 @@ const actionSource = {
       sortOrder: props.sortOrder,
       dragAction: props.dragAction
     };
-  },
-  isDragging(props, monitor) {
-    // monitor.isDragging();
-  },
-  // endDrag(props, monitor) {
-  //   if (!monitor.didDrop()) {
-  //     return;
-  //   }
-  //   const {action, updateNote} = props;
-  //   const item = monitor.getItem();
-  //   const updates = {};
-  //   // if (item.index !== item.startingIndex) {
-  //   //   updates.index = item.index;
-  //   // }
-  //   if (Object.keys(updates).length) {
-  //     updates.id = item.id;
-  //     updateNote(updates);
-  //   }
-  // }
+  }
 };
 
 const actionTarget = {
@@ -62,8 +44,12 @@ const actionTarget = {
 const UserActionListItem = (props) => {
   const {connectDragSource, connectDropTarget, isDragging, content, handleActionUpdate, handleChecked, handleSubmit, actionId, isActive, styles, team} = props;
   const checkboxStyles = css(styles.checkbox, isActive && styles.checkboxDisabled);
+  const rootStyles = css(
+    styles.root,
+    isDragging && styles.dragging
+  );
   return connectDropTarget(connectDragSource(
-    <div className={css(styles.root)} key={`action${actionId}`} style={{opacity: isDragging ? 0 : 1}}>
+    <div className={rootStyles} key={`action${actionId}`}>
       <form>
         <Field
           className={checkboxStyles}
@@ -116,6 +102,10 @@ const styleThunk = () => ({
     position: 'absolute',
     top: '.4375rem',
     zIndex: 200
+  },
+
+  dragging: {
+    opacity: 0,
   },
 
   checkboxDisabled: {
