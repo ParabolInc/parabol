@@ -6,12 +6,64 @@ import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
 import OutcomeCardTextarea from 'universal/modules/outcomeCard/components/OutcomeCardTextarea/OutcomeCardTextarea';
 import {Field} from 'redux-form';
+import {ACTION} from 'universal/utils/constants';
+import {DragSource, DropTarget} from 'react-dnd';
+import {findDOMNode} from 'react-dom';
+
+const actionSource = {
+  beginDrag(props) {
+    return {
+      id: props.actionId,
+      sortOrder: props.sortOrder,
+      dragAction: props.dragAction
+    };
+  },
+  isDragging(props, monitor) {
+    // monitor.isDragging();
+  },
+  // endDrag(props, monitor) {
+  //   if (!monitor.didDrop()) {
+  //     return;
+  //   }
+  //   const {action, updateNote} = props;
+  //   const item = monitor.getItem();
+  //   const updates = {};
+  //   // if (item.index !== item.startingIndex) {
+  //   //   updates.index = item.index;
+  //   // }
+  //   if (Object.keys(updates).length) {
+  //     updates.id = item.id;
+  //     updateNote(updates);
+  //   }
+  // }
+};
+
+const actionTarget = {
+  hover(targetProps, monitor, component) {
+    const {sortOrder: targetSortOrder, actionId: targetId} = targetProps;
+    const sourceProps = monitor.getItem();
+    const {dragAction, id: sourceId, sortOrder: sourceSortOrder} = sourceProps;
+    if (sourceId === targetId) return;
+    // make dragging a little nicer
+    const targetBoundingRect = findDOMNode(component).getBoundingClientRect();
+    const targetMiddleY = targetBoundingRect.top + targetBoundingRect.height / 2;
+    const clientOffsetY = monitor.getClientOffset().y;
+    if (sourceSortOrder > targetSortOrder && clientOffsetY > targetMiddleY) {
+      return;
+    }
+    if (sourceSortOrder < targetSortOrder && clientOffsetY < targetMiddleY) {
+      return;
+    }
+    dragAction(sourceId, sourceSortOrder, targetSortOrder, sourceProps);
+  }
+};
+
 
 const UserActionListItem = (props) => {
-  const {content, handleActionUpdate, handleChecked, handleSubmit, actionId, isActive, styles, team} = props;
+  const {connectDragSource, connectDropTarget, isDragging, content, handleActionUpdate, handleChecked, handleSubmit, actionId, isActive, styles, team} = props;
   const checkboxStyles = css(styles.checkbox, isActive && styles.checkboxDisabled);
-  return (
-    <div className={css(styles.root)} key={`action${actionId}`}>
+  return connectDropTarget(connectDragSource(
+    <div className={css(styles.root)} key={`action${actionId}`} style={{opacity: isDragging ? 0 : 1}}>
       <form>
         <Field
           className={checkboxStyles}
@@ -31,7 +83,7 @@ const UserActionListItem = (props) => {
       </form>
       <div className={css(styles.team)}>{team}</div>
     </div>
-  );
+  ));
 };
 
 UserActionListItem.propTypes = {
@@ -87,4 +139,20 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(UserActionListItem);
+const dragSourceCb = (connect, monitor) => ({
+  connectDragSource: connect.dragSource(),
+  isDragging: monitor.isDragging()
+});
+
+const dropTargetCb = (connect) => ({
+  connectDropTarget: connect.dropTarget()
+});
+
+export default DragSource(ACTION, actionSource, dragSourceCb)(
+  DropTarget(ACTION, actionTarget, dropTargetCb)(
+    withStyles(styleThunk)(
+      UserActionListItem
+    )
+  )
+);
+
