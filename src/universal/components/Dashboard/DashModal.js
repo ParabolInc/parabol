@@ -4,14 +4,20 @@ import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 
 const DashModal = (props) => {
-  const {children, position, showsOver, styles} = props;
+  const {
+    children,
+    onBackdropClick,
+    position,
+    showsOver,
+    styles
+  } = props;
   const backdropStyles = css(
     styles.backdrop,
     position && styles[position],
     showsOver && styles[showsOver],
   );
   return (
-    <div className={backdropStyles}>
+    <div className={backdropStyles} onClick={onBackdropClick}>
       <div className={css(styles.modal)}>
         {children}
       </div>
@@ -21,6 +27,7 @@ const DashModal = (props) => {
 
 DashModal.propTypes = {
   children: PropTypes.any,
+  onBackdropClick: PropTypes.func,
   position: PropTypes.oneOf([
     'absolute',
     'fixed'
