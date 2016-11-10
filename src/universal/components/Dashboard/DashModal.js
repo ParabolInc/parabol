@@ -4,9 +4,14 @@ import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 
 const DashModal = (props) => {
-  const {children, styles} = props;
+  const {children, position, showsOver, styles} = props;
+  const backdropStyles = css(
+    styles.backdrop,
+    position && styles[position],
+    showsOver && styles[showsOver],
+  );
   return (
-    <div className={css(styles.root)}>
+    <div className={backdropStyles}>
       <div className={css(styles.modal)}>
         {children}
       </div>
@@ -16,11 +21,19 @@ const DashModal = (props) => {
 
 DashModal.propTypes = {
   children: PropTypes.any,
+  position: PropTypes.oneOf([
+    'absolute',
+    'fixed'
+  ]),
+  showsOver: PropTypes.oneOf([
+    'main',
+    'viewport'
+  ]),
   styles: PropTypes.object
 };
 
 const styleThunk = () => ({
-  root: {
+  backdrop: {
     alignItems: 'center',
     background: 'rgba(255, 255, 255, .5)',
     bottom: 0,
@@ -28,12 +41,28 @@ const styleThunk = () => ({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
-    left: ui.dashSidebarWidth,
-    position: 'absolute',
+    left: 0,
+    position: 'fixed',
     right: 0,
     textAlign: 'center',
     top: 0,
     zIndex: 400
+  },
+
+  viewport: {
+    left: 0
+  },
+
+  main: {
+    left: ui.dashSidebarWidth
+  },
+
+  absolute: {
+    position: 'absolute'
+  },
+
+  fixed: {
+    position: 'fixed'
   },
 
   modal: {
