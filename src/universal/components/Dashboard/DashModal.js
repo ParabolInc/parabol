@@ -28,6 +28,11 @@ const DashModal = (props) => {
 DashModal.propTypes = {
   children: PropTypes.any,
   onBackdropClick: PropTypes.func,
+
+  // NOTE: Use 'fixed' to show over 'viewport'.
+  //       Default styles use 'fixed' and 'viewport' values.
+  //       Use 'absolute' to show over 'main'.
+
   position: PropTypes.oneOf([
     'absolute',
     'fixed'
