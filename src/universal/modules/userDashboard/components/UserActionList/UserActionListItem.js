@@ -1,4 +1,4 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -6,71 +6,53 @@ import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
 import OutcomeCardTextarea from 'universal/modules/outcomeCard/components/OutcomeCardTextarea/OutcomeCardTextarea';
 import {Field} from 'redux-form';
-import {ACTION} from 'universal/utils/constants';
-import {DragSource, DropTarget} from 'react-dnd';
-import {findDOMNode} from 'react-dom';
 
-const actionSource = {
-  beginDrag(props) {
-    return {
-      id: props.actionId,
-      sortOrder: props.sortOrder,
-      dragAction: props.dragAction
-    };
+class UserActionListItem extends Component {
+  shouldComponentUpdate(nextProps) {
+    return Boolean(!nextProps.isPreview);
   }
-};
-
-const actionTarget = {
-  hover(targetProps, monitor, component) {
-    const {sortOrder: targetSortOrder, actionId: targetId} = targetProps;
-    const sourceProps = monitor.getItem();
-    const {dragAction, id: sourceId, sortOrder: sourceSortOrder} = sourceProps;
-    if (sourceId === targetId) return;
-    // make dragging a little nicer
-    const targetBoundingRect = findDOMNode(component).getBoundingClientRect();
-    const targetMiddleY = targetBoundingRect.top + targetBoundingRect.height / 2;
-    const clientOffsetY = monitor.getClientOffset().y;
-    if (sourceSortOrder > targetSortOrder && clientOffsetY > targetMiddleY) {
-      return;
-    }
-    if (sourceSortOrder < targetSortOrder && clientOffsetY < targetMiddleY) {
-      return;
-    }
-    dragAction(sourceId, sourceSortOrder, targetSortOrder, sourceProps);
+  render() {
+    const {
+      actionId,
+      content,
+      handleActionUpdate,
+      handleChecked,
+      handleSubmit,
+      isActive,
+      isDragging,
+      isPreview,
+      styles,
+      team
+    } = this.props;
+    const checkboxStyles = css(styles.checkbox, isActive && styles.checkboxDisabled);
+    const rootStyles = css(
+      styles.root,
+      isDragging && styles.dragging
+    );
+    return (
+      <div className={rootStyles} key={`action${actionId}`}>
+        <form>
+          <Field
+            className={checkboxStyles}
+            component="input"
+            disabled={isActive}
+            name={`complete${actionId}`}
+            onClick={handleChecked}
+            type="checkbox"
+          />
+          <Field
+            name={actionId}
+            component={OutcomeCardTextarea}
+            doFocus={!content}
+            handleSubmit={!isPreview && handleSubmit(handleActionUpdate)}
+            isActionListItem
+          />
+        </form>
+        <div className={css(styles.team)}>{team}</div>
+      </div>
+    );
   }
-};
-
-
-const UserActionListItem = (props) => {
-  const {connectDragSource, connectDropTarget, isDragging, content, handleActionUpdate, handleChecked, handleSubmit, actionId, isActive, styles, team} = props;
-  const checkboxStyles = css(styles.checkbox, isActive && styles.checkboxDisabled);
-  const rootStyles = css(
-    styles.root,
-    isDragging && styles.dragging
-  );
-  return connectDropTarget(connectDragSource(
-    <div className={rootStyles} key={`action${actionId}`}>
-      <form>
-        <Field
-          className={checkboxStyles}
-          component="input"
-          disabled={isActive}
-          name={`complete${actionId}`}
-          onClick={handleChecked}
-          type="checkbox"
-        />
-        <Field
-          name={actionId}
-          component={OutcomeCardTextarea}
-          doFocus={!content}
-          handleSubmit={handleSubmit(handleActionUpdate)}
-          isActionListItem
-        />
-      </form>
-      <div className={css(styles.team)}>{team}</div>
-    </div>
-  ));
-};
+}
 
 UserActionListItem.propTypes = {
   actionId: PropTypes.string,
@@ -129,20 +111,8 @@ const styleThunk = () => ({
   }
 });
 
-const dragSourceCb = (connect, monitor) => ({
-  connectDragSource: connect.dragSource(),
-  isDragging: monitor.isDragging()
-});
-
-const dropTargetCb = (connect) => ({
-  connectDropTarget: connect.dropTarget()
-});
-
-export default DragSource(ACTION, actionSource, dragSourceCb)(
-  DropTarget(ACTION, actionTarget, dropTargetCb)(
+export default
     withStyles(styleThunk)(
       UserActionListItem
-    )
-  )
 );
 

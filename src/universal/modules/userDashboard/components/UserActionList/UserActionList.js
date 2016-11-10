@@ -104,7 +104,12 @@ const UserActionList = (props) => {
       cashay.mutate('createAction', options);
     }
   };
-
+  const parentStyles = css(
+    styles.root,
+    styles.block,
+    styles.actionsBlock,
+    styles.actions
+  )
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.block)}>
@@ -124,6 +129,7 @@ const UserActionList = (props) => {
                   content={action.content}
                   dragAction={dragAction}
                   form={`actionItem::${action.id}`}
+                  parentStyles={parentStyles}
                   sortOrder={action.sortOrder}
                   team={action.team.name}
                 />
@@ -154,7 +160,7 @@ const styleThunk = () => ({
     flexDirection: 'column',
     padding: `0 ${ui.dashGutter}`,
     position: 'relative',
-    width: '100%'
+    width: ui.dashActionsWidth
   },
 
   block: {
@@ -196,6 +202,8 @@ const styleThunk = () => ({
     borderWidth: '0 1px 1px',
     boxShadow: `inset 0 1px 0 ${ui.cardBorderColor}`,
     maxHeight: '100%',
+    // @terry this is required for no scroll bars, but conflicts with overflowTouch
+    overflow: 'hidden',
     padding: '0 0 .5rem',
     position: 'absolute',
     width: '100%'
@@ -214,10 +222,6 @@ const styleThunk = () => ({
     borderStyle: 'solid',
     borderWidth: '0 1px 1px'
   }
-});
-
-const connectCb = (connect) => ({
-  connectDropTarget: connect.dropTarget()
 });
 
 export default
