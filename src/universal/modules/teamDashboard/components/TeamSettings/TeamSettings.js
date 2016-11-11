@@ -10,6 +10,7 @@ import fromNow from 'universal/utils/fromNow';
 import {cashay} from 'cashay';
 import {toggleRemoveModal, togglePromoteModal} from 'universal/modules/teamDashboard/ducks/teamSettingsDuck';
 import RemoveTeamMemberModal from 'universal/modules/teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal';
+import PromoteTeamMemberModal from 'universal/modules/teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal';
 
 const TeamSettings = (props) => {
   const {
@@ -60,15 +61,13 @@ const TeamSettings = (props) => {
         {removeTeamMemberModal &&
           <RemoveTeamMemberModal
             onBackdropClick={openRemoveModal}
-            onBlur={openRemoveModal}
             preferredName={modalPreferredName}
             teamMemberId={modalTeamMemberId}
           />
         }
         {promoteTeamMemberModal &&
           <PromoteTeamMemberModal
-            onBackdropClick={openRemoveModal}
-            onBlur={openPromoteModal}
+            onBackdropClick={openPromoteModal}
             preferredName={modalPreferredName}
             teamMemberId={modalTeamMemberId}
           />

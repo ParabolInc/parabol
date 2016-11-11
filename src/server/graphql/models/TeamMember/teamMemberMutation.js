@@ -204,7 +204,7 @@ export default {
     async resolve(source, {teamMemberId}, {authToken, socket}) {
       const r = getRethink();
       requireWebsocket(socket);
-      const [, teamId] = teamMemberId;
+      const [, teamId] = teamMemberId.split('::');
       const myTeamMemberId = `${authToken.sub}::${teamId}`;
       await requireSUOrLead(authToken, myTeamMemberId);
       const promoteeOnTeam = await r.table('TeamMember').get(teamMemberId);
