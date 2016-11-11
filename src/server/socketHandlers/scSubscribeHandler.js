@@ -1,7 +1,7 @@
 import {graphql} from 'graphql';
 import Schema from 'server/graphql/rootSchema';
 import subscriptions from 'universal/subscriptions/subscriptions';
-import parseChannel from './parseChannel';
+import parseChannel from 'universal/utils/parseChannel';
 import {
   ACTIONS,
   ACTIONS_BY_TEAMMEMBER,

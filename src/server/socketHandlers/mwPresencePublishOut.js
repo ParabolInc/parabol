@@ -1,10 +1,10 @@
-import parseChannel from './parseChannel';
-import {EDIT, PRESENT, SOUNDOFF, PRESENCE, TEAM, KICK_OUT} from 'universal/subscriptions/constants';
+import parseChannel from 'universal/utils/parseChannel';
+import {EDIT, PRESENT, SOUNDOFF, PRESENCE, KICK_OUT} from 'universal/subscriptions/constants';
 
 export default function mwPresencePublishOut(req, next) {
   const {channel, variableString: channelKey} = parseChannel(req.channel);
   if (channel === PRESENCE) {
-    const {type, targetId} = req.data;
+    const {type, targetId, userId} = req.data;
     if (type === SOUNDOFF) {
       // don't ping yourself
       if (targetId === req.socket.id) {
@@ -25,10 +25,7 @@ export default function mwPresencePublishOut(req, next) {
         next(true);
         return;
       }
-    }
-  } else if (channel === TEAM) {
-    const {type, userId} = req.data;
-    if (type === KICK_OUT) {
+    } else if (type === KICK_OUT) {
       const authToken = req.socket.getAuthToken();
       if (authToken.sub === userId) {
         const subs = req.socket.subscriptions();
@@ -43,7 +40,10 @@ export default function mwPresencePublishOut(req, next) {
             id: channelKey
           }
         };
-        authToken.tms.splice(authToken.tms.indexOf(channelKey),1);
+        const idxToRemove = authToken.tms.indexOf(channelKey);
+        if (idxToRemove !== -1) {
+          authToken.tms.splice(idxToRemove,1);
+        }
         req.socket.setAuthToken(authToken);
       }
     }

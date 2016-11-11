@@ -1,4 +1,4 @@
-import parseChannel from './parseChannel';
+import parseChannel from 'universal/utils/parseChannel';
 import {PRESENCE} from 'universal/subscriptions/constants';
 
 export default function mwPresenceSubscribe(req, next) {

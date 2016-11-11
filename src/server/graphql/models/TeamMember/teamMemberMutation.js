@@ -8,7 +8,7 @@ import {errorObj} from '../utils';
 import {requireWebsocket, requireSUOrTeamMember, requireSUOrSelfOrLead, requireSUOrLead, requireAuth} from '../authorization';
 import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
-import {KICK_OUT} from 'universal/subscriptions/constants';
+import {KICK_OUT, PRESENCE} from 'universal/subscriptions/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 
 export default {
@@ -187,7 +187,7 @@ export default {
 
 
       // update the server socket, if they're logged in
-      const channel = `TEAM/${teamId}`;
+      const channel = `${PRESENCE}/${teamId}`;
       exchange.publish(channel, {type: KICK_OUT, userId});
       return true;
     }
