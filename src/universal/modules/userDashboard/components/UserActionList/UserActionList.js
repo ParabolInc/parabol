@@ -132,7 +132,8 @@ const styleThunk = () => ({
     boxShadow: `inset 0 1px 0 ${ui.cardBorderColor}`,
     maxHeight: '100%',
     // @terry this is required for no scroll bars, but conflicts with overflowTouch
-    overflow: 'hidden',
+    // @matt this block is scrollable when it reaches the maxHeight of the container (based on viewport height)
+    // overflow: 'hidden',
     padding: '0 0 .5rem',
     position: 'absolute',
     width: '100%'
