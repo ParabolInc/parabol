@@ -8,6 +8,23 @@ import OutcomeCardTextarea from 'universal/modules/outcomeCard/components/Outcom
 import {Field} from 'redux-form';
 
 class UserActionListItem extends Component {
+  static propTypes = {
+    actionId: PropTypes.string,
+    content: PropTypes.string,
+    dispatch: PropTypes.func,
+    form: PropTypes.string,
+    handleSubmit: PropTypes.func,
+    handleActionUpdate: PropTypes.func,
+    handleChecked: PropTypes.func,
+    id: PropTypes.string,
+    isActive: PropTypes.bool,
+    isDragging: PropTypes.bool,
+    isPreview: PropTypes.bool,
+    onChecked: PropTypes.func,
+    styles: PropTypes.object,
+    team: PropTypes.string
+  };
+
   shouldComponentUpdate(nextProps) {
     return Boolean(!nextProps.isPreview);
   }
@@ -53,21 +70,6 @@ class UserActionListItem extends Component {
     );
   }
 }
-
-UserActionListItem.propTypes = {
-  actionId: PropTypes.string,
-  content: PropTypes.string,
-  dispatch: PropTypes.func,
-  form: PropTypes.string,
-  handleSubmit: PropTypes.func,
-  handleActionUpdate: PropTypes.func,
-  handleChecked: PropTypes.func,
-  id: PropTypes.string,
-  isActive: PropTypes.bool,
-  onChecked: PropTypes.func,
-  styles: PropTypes.object,
-  team: PropTypes.string
-};
 
 const basePadding = '.375rem';
 const labelHeight = '1.5rem';

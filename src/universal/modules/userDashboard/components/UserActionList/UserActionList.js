@@ -12,78 +12,6 @@ import shortid from 'shortid';
 import {cashay} from 'cashay';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
 
-// const actionSource = {
-//   beginDrag(props) {
-//     return {
-//       id: props.id,
-//       index: props.index
-//     };
-//   }
-// };
-//
-// const actionTarget = {
-//   hover(props, monitor) {
-//     return;
-//     const {id: sourceId, index: sourceIndex, dragAction} = monitor.getItem();
-//     // if (inTargetProps.notes.length > 0 || targetLaneId === sourceLaneId) {
-//     //   return;
-//     // }
-//     dragAction({
-//       sourceIndex,
-//       targetIndex: props.index,
-//     });
-//   }
-// };
-
-
-// const actionTarget = {
-//   hover(props, monitor, component) {
-//     const {index: dragIdx} = monitor.getItem();
-//     const {index: hoverIdx} = props;
-//     if (dragIdx === hoverIdx) return;
-//     // Determine rectangle on screen
-//     const hoverBoundingRect = findDOMNode(component).getBoundingClientRect();
-//
-//     // Get vertical middle
-//     const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-//
-//     // Determine mouse position
-//     const clientOffset = monitor.getClientOffset();
-//
-//     // Get pixels to the top
-//     const hoverClientY = clientOffset.y - hoverBoundingRect.top;
-//
-//     // Only perform the move when the mouse has crossed half of the items height
-//     // When dragging downwards, only move when the cursor is below 50%
-//     // When dragging upwards, only move when the cursor is above 50%
-//
-//     // Dragging downwards
-//     if (dragIdx < hoverIdx && hoverClientY < hoverMiddleY) {
-//       return;
-//     }
-//
-//     // Dragging upwards
-//     if (dragIdx > hoverIdx && hoverClientY > hoverMiddleY) {
-//       return;
-//     }
-//
-//     // Time to actually perform the action
-//     props.moveCard(dragIdx, hoverIdx);
-//
-//     // Note: we're mutating the monitor item here!
-//     // Generally it's better to avoid mutations,
-//     // but it's good here for the sake of performance
-//     // to avoid expensive index searches.
-//     monitor.getItem().index = hoverIdx;
-//     // onMove({
-//     //   sourceId,
-//     //   sourceIndex,
-//     //   targetIndex: 0,
-//     //   monitor
-//     // });
-//   }
-// };
-
 const UserActionList = (props) => {
   const {actions, dispatch, dragAction, selectingNewActionTeam, styles, teams, userId} = props;
   const actionCount = actions.length;
@@ -109,7 +37,7 @@ const UserActionList = (props) => {
     styles.block,
     styles.actionsBlock,
     styles.actions
-  )
+  );
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.block)}>
@@ -147,6 +75,7 @@ const UserActionList = (props) => {
 UserActionList.propTypes = {
   actions: PropTypes.array,
   dispatch: PropTypes.func,
+  dragAction: PropTypes.func,
   selectingNewActionTeam: PropTypes.bool,
   styles: PropTypes.object,
   teams: PropTypes.array,
@@ -224,7 +153,4 @@ const styleThunk = () => ({
   }
 });
 
-export default
-  withStyles(styleThunk)(
-    UserActionList
-);
+export default withStyles(styleThunk)(UserActionList);

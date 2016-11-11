@@ -40,7 +40,7 @@ const mutationHandlers = {
 
       const fromAction = currentResponse.actions.find((action) => action.id === id);
       fromAction.sortOrder = sortOrder;
-      currentResponse.actions.sort((a, b,) => b.sortOrder - a.sortOrder);
+      currentResponse.actions.sort((a, b) => b.sortOrder - a.sortOrder);
       return currentResponse;
     }
     return undefined;
@@ -128,23 +128,10 @@ const UserActionListContainer = (props) => {
 UserActionListContainer.propTypes = {
   actions: PropTypes.array,
   dispatch: PropTypes.func,
+  queryKey: PropTypes.string,
+  selectingNewActionTeam: PropTypes.bool,
   teams: PropTypes.array,
   userId: PropTypes.string,
-  selectingNewActionTeam: PropTypes.bool
 };
 
 export default connect(mapStateToProps)(UserActionListContainer);
-
-
-// 2 1 0
-//
-// source -> target => afterTarget = (desc ? targetn1 ? (target + targetn1) / 2 : target + (desc ? -STEP : STEP)
-// 2 -> 1 => 1 + 0 / 2 = .5
-// 2 -> 0 => 0 - 1 = -1
-// 1 -> 2 => 2 + 1 = 3
-// 1 -> 0 => 0 - 1 = -1
-// 0 -> 2 => 2 + 1 = 3
-//
-// 0 1 2
-// 0 -> 1 => (1 + 2) / 2 = 1.5
-// 2 -> 0 => 0 - 1 = -1

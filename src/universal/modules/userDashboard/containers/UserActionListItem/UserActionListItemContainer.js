@@ -4,7 +4,7 @@ import UserActionListItem from 'universal/modules/userDashboard/components/UserA
 import {cashay} from 'cashay';
 import {reduxForm, initialize} from 'redux-form';
 import {ACTION} from 'universal/utils/constants';
-import {DragSource, DropTarget} from 'react-dnd';
+import {DragSource as dragSource, DropTarget as dropTarget} from 'react-dnd';
 import {getEmptyImage} from 'react-dnd-html5-backend';
 import {findDOMNode} from 'react-dom';
 import ActionDragLayer from 'universal/modules/userDashboard/components/UserActionList/ActionDragLayer';
@@ -46,27 +46,32 @@ const mapStateToProps = (state, props) => {
   };
 };
 
-const dragSourceCb = (connect, monitor) => ({
-  connectDragSource: connect.dragSource(),
-  connectDragPreview: connect.dragPreview(),
+const dragSourceCb = (connectSource, monitor) => ({
+  connectDragSource: connectSource.dragSource(),
+  connectDragPreview: connectSource.dragPreview(),
   isDragging: monitor.isDragging()
 });
 
-const dropTargetCb = (connect) => ({
-  connectDropTarget: connect.dropTarget()
+const dropTargetCb = (connectTarget) => ({
+  connectDropTarget: connectTarget.dropTarget()
 });
 
 @reduxForm()
 @connect(mapStateToProps)
-@DragSource(ACTION, actionSource, dragSourceCb)
-@DropTarget(ACTION, actionTarget, dropTargetCb)
+@dragSource(ACTION, actionSource, dragSourceCb)
+@dropTarget(ACTION, actionTarget, dropTargetCb)
 export default class UserActionListItemContainer extends Component {
   static propTypes = {
     actionId: PropTypes.string,
     content: PropTypes.string,
     dispatch: PropTypes.func,
     form: PropTypes.string,
-    isActive: PropTypes.bool
+    isActive: PropTypes.bool,
+    isDragging: PropTypes.bool.isRequired,
+    isPreview: PropTypes.bool.isRequired,
+    connectDragSource: PropTypes.func.isRequired,
+    connectDragPreview: PropTypes.func.isRequired,
+    connectDropTarget: PropTypes.func.isRequired,
   };
 
   componentWillMount() {

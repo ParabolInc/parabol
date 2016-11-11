@@ -1,8 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import UserActionListItem from './UserActionListItem';
-import {DragLayer} from 'react-dnd';
+import {DragLayer as dragLayer} from 'react-dnd';
 import ui from 'universal/styles/ui';
-import {css} from 'aphrodite-local-styles/no-important';
 
 const layerStyles = {
   position: 'fixed',
@@ -22,22 +21,23 @@ function getItemStyles(props) {
     };
   }
 
-  let {x, y} = currentOffset;
+  const {x, y} = currentOffset;
   const transform = `translate3d(${x}px, ${y}px, 0px) rotate(-7deg)`;
   return {
     ...layerStyles,
-    transform: transform,
+    transform,
     WebkitTransform: transform
   };
 }
 
-@DragLayer(monitor => ({
+@dragLayer(monitor => ({
   initialOffset: monitor.getInitialSourceClientOffset(),
   currentOffset: monitor.getSourceClientOffset(),
 }))
 export default class ActionDragLayer extends Component {
   static propTypes = {
     isDragging: PropTypes.bool.isRequired,
+    parentStyles: PropTypes.string
   };
 
   render() {
