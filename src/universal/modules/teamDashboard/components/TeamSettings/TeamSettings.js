@@ -145,7 +145,6 @@ TeamSettings.propTypes = {
   modalPreferredName: PropTypes.string,
   modalTeamMemberId: PropTypes.string,
   myTeamMember: PropTypes.object.isRequired,
-  params: PropTypes.object.isRequired,
   promoteTeamMemberModal: PropTypes.bool.isRequired,
   removeTeamMemberModal: PropTypes.bool.isRequired,
   styles: PropTypes.object,
