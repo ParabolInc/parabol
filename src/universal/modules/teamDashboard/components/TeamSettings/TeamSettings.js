@@ -8,14 +8,16 @@ import InviteUser from 'universal/components/InviteUser/InviteUser';
 import UserRow from 'universal/components/UserRow/UserRow';
 import fromNow from 'universal/utils/fromNow';
 import {cashay} from 'cashay';
-import {toggleRemoveModal, togglePromoteModal} from 'universal/modules/teamDashboard/ducks/teamSettingsDuck';
+import {toggleLeaveModal, toggleRemoveModal, togglePromoteModal} from 'universal/modules/teamDashboard/ducks/teamSettingsDuck';
 import RemoveTeamMemberModal from 'universal/modules/teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal';
 import PromoteTeamMemberModal from 'universal/modules/teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal';
+import LeaveTeamModal from 'universal/modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal';
 
 const TeamSettings = (props) => {
   const {
     dispatch,
     invitations,
+    leaveTeamModal,
     modalPreferredName,
     modalTeamMemberId,
     myTeamMember,
@@ -25,6 +27,8 @@ const TeamSettings = (props) => {
     teamMembers,
     styles
   } = props;
+  const teamLeadObj = teamMembers.find((m) => m.isLead === true);
+  const teamLead = teamLeadObj && teamLeadObj.preferredName;
   const invitationRowActions = (invitation) => {
     const cashayOptions = {
       variables: {
@@ -56,6 +60,9 @@ const TeamSettings = (props) => {
     const openPromoteModal = (e) => {
       dispatch(togglePromoteModal(id, preferredName))
     };
+    const openLeaveModal = (e) => {
+      dispatch(toggleLeaveModal(id))
+    };
     return (
       <div className={css(styles.actionLinkBlock)}>
         {removeTeamMemberModal &&
@@ -72,6 +79,13 @@ const TeamSettings = (props) => {
             teamMemberId={modalTeamMemberId}
           />
         }
+        {leaveTeamModal &&
+        <LeaveTeamModal
+          onBackdropClick={openLeaveModal}
+          teamLead={teamLead}
+          teamMemberId={modalTeamMemberId}
+        />
+        }
         {myTeamMember.isLead && myTeamMember.id !== teamMember.id &&
           <div className={css(styles.actionLink)} onClick={openPromoteModal}>
             Promote {teamMember.preferredName} to Team Lead
@@ -83,7 +97,7 @@ const TeamSettings = (props) => {
           </div>
         }
         {!myTeamMember.isLead && myTeamMember.id === teamMember.id &&
-          <div className={css(styles.actionLink)}>
+          <div className={css(styles.actionLink)} onClick={openLeaveModal}>
             Leave Team
           </div>
         }

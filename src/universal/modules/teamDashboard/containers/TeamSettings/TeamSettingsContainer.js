@@ -40,6 +40,7 @@ const mapStateToProps = (state, props) => {
     invitations,
     team,
     teamMembers,
+    leaveTeamModal: state.teamSettings.leaveTeamModal,
     promoteTeamMemberModal: state.teamSettings.promoteTeamMemberModal,
     removeTeamMemberModal: state.teamSettings.removeTeamMemberModal,
     modalTeamMemberId: state.teamSettings.teamMemberId,
@@ -62,6 +63,7 @@ export default class TeamSettingsContainer extends Component {
     const {
       dispatch,
       invitations,
+      leaveTeamModal,
       modalPreferredName,
       modalTeamMemberId,
       myTeamMemberId,
@@ -78,6 +80,7 @@ export default class TeamSettingsContainer extends Component {
       <TeamSettings
         dispatch={dispatch}
         invitations={invitations}
+        leaveTeamModal={leaveTeamModal}
         myTeamMember={myTeamMember}
         modalTeamMemberId={modalTeamMemberId}
         modalPreferredName={modalPreferredName}
