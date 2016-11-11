@@ -40,7 +40,7 @@ export default {
             teamMembers: r.table('TeamMember')
               .getAll(teamId, {index: 'teamId'})('email')
               .coerceTo('array')
-          }
+          };
         });
       const alreadyInvited = invitees
         .map((i) => i.email)
@@ -50,7 +50,7 @@ export default {
         throw errorObj({
           _error: `${alreadyInvited.join(', ')} already invited`,
           type: 'alreadyInvited'
-        })
+        });
       }
       const alreadyTeamMember = invitees
         .map((i) => i.email)
@@ -60,7 +60,7 @@ export default {
         throw errorObj({
           _error: `${alreadyTeamMember.join(', ')} already on the team`,
           type: 'alreadyTeamMember'
-        })
+        });
       }
       asyncInviteTeam(authToken, teamId, invitees);
       return true;

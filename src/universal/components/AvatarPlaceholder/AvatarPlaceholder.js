@@ -15,7 +15,11 @@ const AvatarPlaceholder = (props) => {
         </div>
       </div>
     </div>
-  )
+  );
+};
+
+AvatarPlaceholder.propTypes = {
+  styles: PropTypes.object
 };
 
 const avatarPlaceholderSize = '2.75rem';
@@ -26,37 +30,37 @@ const styleThunk = () => ({
 
   avatarPlaceholder: {
     backgroundColor: appTheme.palette.mid50l,
-      borderRadius: '100%',
+    borderRadius: '100%',
       // boxShadow: `0 0 0 2px #fff, 0 0 0 4px ${appTheme.palette.mid10a}`,
-      color: appTheme.palette.mid50l,
-      fontSize: ui.iconSize3x,
-      height: avatarPlaceholderSize,
-      lineHeight: avatarPlaceholderSize,
-      padding: '1px',
-      position: 'relative',
-      textAlign: 'center',
-      width: avatarPlaceholderSize,
+    color: appTheme.palette.mid50l,
+    fontSize: ui.iconSize3x,
+    height: avatarPlaceholderSize,
+    lineHeight: avatarPlaceholderSize,
+    padding: '1px',
+    position: 'relative',
+    textAlign: 'center',
+    width: avatarPlaceholderSize,
 
-      ':after': {
+    ':after': {
       border: '2px solid currentColor',
-        borderRadius: '100%',
-        content: '""',
-        display: 'block',
-        height: avatarPlaceholderSize,
-        left: 0,
-        position: 'absolute',
-        top: 0,
-        width: avatarPlaceholderSize
+      borderRadius: '100%',
+      content: '""',
+      display: 'block',
+      height: avatarPlaceholderSize,
+      left: 0,
+      position: 'absolute',
+      top: 0,
+      width: avatarPlaceholderSize
     }
   },
 
   avatarPlaceholderInner: {
     backgroundColor: '#fff',
-      borderRadius: '100%',
-      height: '2.625rem',
-      lineHeight: '2.625rem',
-      overflow: 'hidden',
-      width: '2.625rem'
+    borderRadius: '100%',
+    height: '2.625rem',
+    lineHeight: '2.625rem',
+    overflow: 'hidden',
+    width: '2.625rem'
   }
 });
 

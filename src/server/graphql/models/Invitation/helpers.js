@@ -4,9 +4,8 @@ import makeAppLink from 'server/utils/makeAppLink';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import promisify from 'es6-promisify';
-import {getUserId} from '../authorization';
+import {getUserId, requireSUOrTeamMember} from '../authorization';
 import {INVITATION_LIFESPAN} from 'server/utils/serverConstants';
-import {requireSUOrTeamMember} from '../authorization';
 import {errorObj} from '../utils';
 
 const INVITE_TOKEN_INVITE_ID_LEN = 6;
@@ -78,7 +77,7 @@ export const resolveSentEmails = async(sendEmailPromises, inviteesWithTokens) =>
 
 export const makeInvitationsForDB = async(invitees, teamId, userId) => {
   const now = new Date();
-  const invitedBy = `${userId}::${teamId}`
+  const invitedBy = `${userId}::${teamId}`;
   const tokenExpiration = new Date(now.valueOf() + INVITATION_LIFESPAN);
   const hashPromises = invitees.map(invitee => hashInviteTokenKey(invitee.inviteToken));
   const hashedTokens = await Promise.all(hashPromises);
@@ -138,9 +137,10 @@ export const cancelInvitation = async (authToken, inviteId) => {
   if (acceptedAt) {
     error.type = 'alreadyAccepted';
   } else if (tokenExpiration < now) {
-    error.type = 'alreadyExpired'
+    error.type = 'alreadyExpired';
   }
   if (error.type) {
+    // eslint-disable-next-line no-underscore-dangle
     error._error = 'Cannot cancel invitation';
     throw errorObj(error);
   }
@@ -149,4 +149,4 @@ export const cancelInvitation = async (authToken, inviteId) => {
     updatedAt: now
   });
   return invite;
-}
+};

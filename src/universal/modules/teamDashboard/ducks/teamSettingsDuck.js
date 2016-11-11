@@ -29,17 +29,17 @@ export default function reducer(state = initialState, action = {}) {
       promoteTeamMemberModal: !state.promoteTeamMemberModal,
       teamMemberId,
       preferredName
-    }
+    };
   } else if (type === TOGGLE_LEAVE_TEAM) {
-  return {
-    ...state,
-    leaveTeamModal: !state.leaveTeamModal,
-    teamMemberId
+    return {
+      ...state,
+      leaveTeamModal: !state.leaveTeamModal,
+      teamMemberId
+    };
   }
-}
 
   return state;
-};
+}
 
 export const toggleRemoveModal = (teamMemberId, preferredName) => ({
   type: TOGGLE_REMOVE_TEAM_MEMBER,

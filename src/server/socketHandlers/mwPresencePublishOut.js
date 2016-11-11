@@ -42,7 +42,7 @@ export default function mwPresencePublishOut(req, next) {
         };
         const idxToRemove = authToken.tms.indexOf(channelKey);
         if (idxToRemove !== -1) {
-          authToken.tms.splice(idxToRemove,1);
+          authToken.tms.splice(idxToRemove, 1);
         }
         req.socket.setAuthToken(authToken);
       }

@@ -21,16 +21,16 @@ const wipeAfterSuccess = (formToClear) => (state, action) => {
   return state;
 };
 
-const clearMeAfterSubmit = ['agendaInput', 'inviteTeamMember'];
-
-const formPluginFactory = (clearMeAfterSubmit) => {
- return clearMeAfterSubmit.reduce((formPlugin, name) => {
-   formPlugin[name] = wipeAfterSuccess(name);
-   return formPlugin;
- }, {})
+const formPluginFactory = () => {
+  // add new fields to this array if you want em cleared
+  const clearMeAfterSubmit = ['agendaInput', 'inviteTeamMember'];
+  return clearMeAfterSubmit.reduce((formPlugin, name) => {
+    formPlugin[name] = wipeAfterSuccess(name);
+    return formPlugin;
+  }, {});
 };
 
-const formPlugin = formPluginFactory(clearMeAfterSubmit);
+const formPlugin = formPluginFactory();
 
 const appReducers = {
   [DEFAULT_AUTH_REDUCER_NAME]: auth,

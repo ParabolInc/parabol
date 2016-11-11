@@ -65,6 +65,7 @@ export const requireSUOrLead = async (authToken, teamMemberId) => {
   if (!teamMember || !teamMember.isLead) {
     throw errorObj({_error: 'Unauthorized. Only the team leader promote someone to lead'});
   }
+  return teamMember;
 };
 
 

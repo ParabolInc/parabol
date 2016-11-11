@@ -36,10 +36,10 @@ const TeamSettings = (props) => {
       }
     };
     const resend = () => {
-      cashay.mutate('resendInvite', cashayOptions)
+      cashay.mutate('resendInvite', cashayOptions);
     };
     const cancel = () => {
-      cashay.mutate('cancelInvite', cashayOptions)
+      cashay.mutate('cancelInvite', cashayOptions);
     };
     return (
       <div className={css(styles.actionLinkBlock)}>
@@ -54,14 +54,14 @@ const TeamSettings = (props) => {
   };
   const teamMemberRowActions = (teamMember) => {
     const {id, preferredName} = teamMember;
-    const openRemoveModal = (e) => {
-      dispatch(toggleRemoveModal(id, preferredName))
+    const openRemoveModal = () => {
+      dispatch(toggleRemoveModal(id, preferredName));
     };
-    const openPromoteModal = (e) => {
-      dispatch(togglePromoteModal(id, preferredName))
+    const openPromoteModal = () => {
+      dispatch(togglePromoteModal(id, preferredName));
     };
-    const openLeaveModal = (e) => {
-      dispatch(toggleLeaveModal(id))
+    const openLeaveModal = () => {
+      dispatch(toggleLeaveModal(id));
     };
     return (
       <div className={css(styles.actionLinkBlock)}>
@@ -80,11 +80,11 @@ const TeamSettings = (props) => {
           />
         }
         {leaveTeamModal &&
-        <LeaveTeamModal
-          onBackdropClick={openLeaveModal}
-          teamLead={teamLead}
-          teamMemberId={modalTeamMemberId}
-        />
+          <LeaveTeamModal
+            onBackdropClick={openLeaveModal}
+            teamLead={teamLead}
+            teamMemberId={modalTeamMemberId}
+          />
         }
         {myTeamMember.isLead && myTeamMember.id !== teamMember.id &&
           <div className={css(styles.actionLink)} onClick={openPromoteModal}>
@@ -129,7 +129,7 @@ const TeamSettings = (props) => {
                   actions={invitationRowActions(invitation)}
                   key={`invitationKey${idx}`}
                 />
-              )
+              );
             }))
           }
         </div>
@@ -139,7 +139,15 @@ const TeamSettings = (props) => {
 };
 
 TeamSettings.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   invitations: PropTypes.array.isRequired,
+  leaveTeamModal: PropTypes.bool.isRequired,
+  modalPreferredName: PropTypes.string,
+  modalTeamMemberId: PropTypes.string,
+  myTeamMember: PropTypes.object.isRequired,
+  params: PropTypes.object.isRequired,
+  promoteTeamMemberModal: PropTypes.bool.isRequired,
+  removeTeamMemberModal: PropTypes.bool.isRequired,
   styles: PropTypes.object,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired

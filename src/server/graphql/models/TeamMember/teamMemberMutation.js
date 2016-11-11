@@ -167,7 +167,7 @@ export default {
                 .getAll(teamId, {index: 'teamId'})
                 .filter({isLead: true})
                 .nth(0)('id')
-            }, {nonAtomic: true})
+            }, {nonAtomic: true});
         })
         // remove the teamId from the user tms array
         .do(() => {
@@ -176,8 +176,8 @@ export default {
             .update((user) => {
               return user.merge({
                 tms: user('tms').filter((id) => id.ne(teamId))
-              })
-            }, {returnChanges: true})
+              });
+            }, {returnChanges: true});
         });
       // update the tms on auth0
       const newtms = res.changes[0] && res.changes[0].new_val.tms;
@@ -223,7 +223,7 @@ export default {
             .get(teamMemberId)
             .update({
               isLead: true
-            })
+            });
         });
       return true;
     }

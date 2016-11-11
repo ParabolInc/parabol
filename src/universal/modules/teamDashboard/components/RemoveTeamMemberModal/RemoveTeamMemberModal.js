@@ -2,7 +2,6 @@ import React, {PropTypes} from 'react';
 import {DashModal} from 'universal/components/Dashboard';
 import IconLink from 'universal/components/IconLink/IconLink';
 import Type from 'universal/components/Type/Type';
-import {withRouter} from 'react-router';
 import {cashay} from 'cashay';
 
 const RemoveTeamMemberModal = (props) => {
@@ -34,9 +33,9 @@ const RemoveTeamMemberModal = (props) => {
 };
 
 RemoveTeamMemberModal.propTypes = {
-  router: PropTypes.object,
-  teamId: PropTypes.string,
-  teamName: PropTypes.string
+  onBackdropClick: PropTypes.func,
+  preferredName: PropTypes.string.isRequired,
+  teamMemberId: PropTypes.string.isRequired
 };
 
-export default withRouter(RemoveTeamMemberModal);
+export default RemoveTeamMemberModal;

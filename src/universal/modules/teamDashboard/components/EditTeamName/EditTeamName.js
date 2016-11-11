@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react';
-import Editable from 'universal/components/Editable/Editable.js'
+import Editable from 'universal/components/Editable/Editable.js';
 import {cashay} from 'cashay';
 import {reduxForm, Field} from 'redux-form';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -23,16 +23,22 @@ const EditTeamName = (props) => {
     cashay.mutate('updateTeamName', {variables});
   };
   return (
-      <Field
-        component={Editable}
-        initialValue={teamName}
-        name="teamName"
-        placeholder="Team Name"
-        submitOnBlur
-        typeStyles={fieldStyles}
-        handleSubmit={handleSubmit(updateEditable)}
-      />
+    <Field
+      component={Editable}
+      initialValue={teamName}
+      name="teamName"
+      placeholder="Team Name"
+      submitOnBlur
+      typeStyles={fieldStyles}
+      handleSubmit={handleSubmit(updateEditable)}
+    />
   );
+};
+
+EditTeamName.propTypes = {
+  teamName: PropTypes.string,
+  teamId: PropTypes.string,
+  handleSubmit: PropTypes.func.isRequired
 };
 
 export default reduxForm({form: 'teamName', enableReinitialize: true})(EditTeamName);

@@ -13,11 +13,11 @@ const validate = ({inviteTeamMember}, {invitations, teamMembers}) => {
   const errors = {};
   const outstandingInvitationEmails = invitations.map((i) => i.email);
   if (outstandingInvitationEmails.includes(inviteTeamMember)) {
-    errors.inviteTeamMember = 'That person has already been invited!'
+    errors.inviteTeamMember = 'That person has already been invited!';
   }
   const teamMemberEmails = teamMembers.map((i) => i.email);
   if (teamMemberEmails.includes(inviteTeamMember)) {
-    errors.inviteTeamMember = 'That person is already on your team!'
+    errors.inviteTeamMember = 'That person is already on your team!';
   }
   return errors;
 };
@@ -47,7 +47,7 @@ const InviteUser = (props) => {
     dispatch(showSuccess({
       title: 'Invitation sent!',
       message: `An invitation has been sent to ${submissionData.inviteTeamMember}`
-    }))
+    }));
   };
 
   return (
@@ -77,9 +77,12 @@ const InviteUser = (props) => {
 
 InviteUser.propTypes = {
   actions: PropTypes.any,
+  dispatch: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
   onInviteSubmitted: PropTypes.func,
   picture: PropTypes.string,
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  teamId: PropTypes.string
 };
 
 const styleThunk = () => ({
@@ -102,6 +105,6 @@ const styleThunk = () => ({
   }
 });
 
-export default reduxForm({form:'inviteTeamMember', validate})(
+export default reduxForm({form: 'inviteTeamMember', validate})(
   withStyles(styleThunk)(InviteUser)
 );

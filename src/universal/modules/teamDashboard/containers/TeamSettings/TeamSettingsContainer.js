@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 import TeamSettings from 'universal/modules/teamDashboard/components/TeamSettings/TeamSettings';
 import {cashay} from 'cashay';
@@ -49,46 +49,51 @@ const mapStateToProps = (state, props) => {
   };
 };
 
-@connect(mapStateToProps)
-export default class TeamSettingsContainer extends Component {
-  static propTypes = {
-    invitations: PropTypes.array.isRequired,
-    params: PropTypes.object.isRequired,
-    team: PropTypes.object.isRequired,
-    teamMembers: PropTypes.array.isRequired
-  };
-
-
-  render() {
-    const {
-      dispatch,
-      invitations,
-      leaveTeamModal,
-      modalPreferredName,
-      modalTeamMemberId,
-      myTeamMemberId,
-      promoteTeamMemberModal,
-      removeTeamMemberModal,
-      team,
-      teamMembers
-    } = this.props;
-    const myTeamMember = teamMembers.find((member) => member.id === myTeamMemberId);
-    if (!myTeamMember) {
-      return <LoadingView/>
-    }
-    return (
-      <TeamSettings
-        dispatch={dispatch}
-        invitations={invitations}
-        leaveTeamModal={leaveTeamModal}
-        myTeamMember={myTeamMember}
-        modalTeamMemberId={modalTeamMemberId}
-        modalPreferredName={modalPreferredName}
-        promoteTeamMemberModal={promoteTeamMemberModal}
-        removeTeamMemberModal={removeTeamMemberModal}
-        team={team}
-        teamMembers={teamMembers}
-      />
-    );
+const TeamSettingsContainer = (props) => {
+  const {
+    dispatch,
+    invitations,
+    leaveTeamModal,
+    modalPreferredName,
+    modalTeamMemberId,
+    myTeamMemberId,
+    promoteTeamMemberModal,
+    removeTeamMemberModal,
+    team,
+    teamMembers
+  } = props;
+  const myTeamMember = teamMembers.find((member) => member.id === myTeamMemberId);
+  if (!myTeamMember) {
+    return <LoadingView/>;
   }
+  return (
+    <TeamSettings
+      dispatch={dispatch}
+      invitations={invitations}
+      leaveTeamModal={leaveTeamModal}
+      myTeamMember={myTeamMember}
+      modalTeamMemberId={modalTeamMemberId}
+      modalPreferredName={modalPreferredName}
+      promoteTeamMemberModal={promoteTeamMemberModal}
+      removeTeamMemberModal={removeTeamMemberModal}
+      team={team}
+      teamMembers={teamMembers}
+    />
+  );
 };
+
+TeamSettingsContainer.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  invitations: PropTypes.array.isRequired,
+  leaveTeamModal: PropTypes.bool.isRequired,
+  modalPreferredName: PropTypes.string,
+  modalTeamMemberId: PropTypes.string,
+  myTeamMemberId: PropTypes.string.isRequired,
+  params: PropTypes.object.isRequired,
+  promoteTeamMemberModal: PropTypes.bool.isRequired,
+  removeTeamMemberModal: PropTypes.bool.isRequired,
+  team: PropTypes.object.isRequired,
+  teamMembers: PropTypes.array.isRequired
+};
+
+export default connect(mapStateToProps)(TeamSettingsContainer);

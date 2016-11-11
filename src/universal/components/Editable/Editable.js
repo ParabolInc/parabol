@@ -11,7 +11,7 @@ class Editable extends Component {
     super(props);
     this.state = {
       isEditing: false
-    }
+    };
   }
 
   setEditing = () => {
@@ -35,8 +35,7 @@ class Editable extends Component {
       meta: {dirty, error},
       placeholder,
       styles,
-      submitOnBlur,
-      type
+      submitOnBlur
     } = this.props;
     const inputStyles = css(
       styles.static,
@@ -90,10 +89,10 @@ class Editable extends Component {
           {initialValue || placeholder}
         </div>
         {!hideIcon &&
-        <FontAwesome
-          className={css(styles.icon)}
-          name={icon || 'pencil'}
-        />
+          <FontAwesome
+            className={css(styles.icon)}
+            name={icon || 'pencil'}
+          />
         }
       </div>
     );
@@ -110,6 +109,7 @@ class Editable extends Component {
 }
 
 Editable.propTypes = {
+  handleSubmit: PropTypes.func.isRequired,
   // NOTE: Use 'hideIconOnValue' when you want to hide
   //       the pencil icon when there is a value. (TA)
   hideIconOnValue: PropTypes.bool,
@@ -122,9 +122,12 @@ Editable.propTypes = {
     type: PropTypes.string,
     value: PropTypes.string
   }),
+  initialValue: PropTypes.string,
   isEditing: PropTypes.bool,
+  meta: PropTypes.object,
   placeholder: PropTypes.string,
   styles: PropTypes.object,
+  submitOnBlur: PropTypes.bool,
   typeStyles: PropTypes.shape({
     color: PropTypes.string,
     fontSize: PropTypes.string,

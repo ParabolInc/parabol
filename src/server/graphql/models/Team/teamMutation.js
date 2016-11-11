@@ -1,6 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
 import {getUserId, requireSUOrTeamMember, requireWebsocket} from '../authorization';
-import {updatedOrOriginal, errorObj} from '../utils';
+import {errorObj} from '../utils';
 import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
 import {
   GraphQLNonNull,
@@ -10,7 +10,7 @@ import {
   GraphQLInt,
   GraphQLList
 } from 'graphql';
-import {CreateTeamInput, UpdateTeamInput, Team} from './teamSchema';
+import {CreateTeamInput, UpdateTeamInput} from './teamSchema';
 import {asyncInviteTeam} from 'server/graphql/models/Invitation/helpers';
 import shortid from 'shortid';
 import {
@@ -437,7 +437,7 @@ export default {
       const r = getRethink();
       const {id, name} = updatedTeam;
       requireSUOrTeamMember(authToken, id);
-      const teamFromDB = await r.table('Team').get(id).update({name});
+      await r.table('Team').get(id).update({name});
       return true;
       // TODO think hard about if we can pluck only the changed values (in this case, name)
       // return updatedOrOriginal(teamFromDB, updatedTeam);

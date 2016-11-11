@@ -10,8 +10,10 @@ export default (store) => ({
   },
   getChildRoutes: (childLocation, cbChild) => {
     cbChild(null, [
+      /* eslint-disable global-require */
       require('./teamArchive')(store),
       require('./teamSettings')(store)
+      /* eslint-enable */
     ]);
   }
 });

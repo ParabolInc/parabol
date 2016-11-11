@@ -2,7 +2,6 @@ import React, {PropTypes} from 'react';
 import {DashModal} from 'universal/components/Dashboard';
 import IconLink from 'universal/components/IconLink/IconLink';
 import Type from 'universal/components/Type/Type';
-import {withRouter} from 'react-router';
 import {cashay} from 'cashay';
 
 const LeaveTeamModal = (props) => {
@@ -25,7 +24,7 @@ const LeaveTeamModal = (props) => {
         colorPalette="warm"
         icon="arrow-circle-right"
         iconPlacement="right"
-        label={`Leave the team`}
+        label={'Leave the team'}
         margin="1.5rem 0 0"
         onClick={handleClick}
         scale="large"
@@ -35,9 +34,9 @@ const LeaveTeamModal = (props) => {
 };
 
 LeaveTeamModal.propTypes = {
-  router: PropTypes.object,
-  teamId: PropTypes.string,
-  teamName: PropTypes.string
+  onBackdropClick: PropTypes.func,
+  teamLead: PropTypes.string.isRequired,
+  teamMemberId: PropTypes.string.isRequired
 };
 
-export default withRouter(LeaveTeamModal);
+export default LeaveTeamModal;
