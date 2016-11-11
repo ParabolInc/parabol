@@ -30,6 +30,10 @@ const mapStateToProps = (state, props) => {
   const {invitations, team, teamMembers} = cashay.query(teamSettingsQuery, {
     op: 'teamSettingsContainer',
     key: teamId,
+    sort: {
+      teamMembers: (a, b) => a.preferredName > b.preferredName ? 1 : -1,
+      invitations: (a, b) => a.createdAt > b.createdAt ? 1 : -1
+    },
     variables: {teamId}
   }).data;
   return {
@@ -38,6 +42,8 @@ const mapStateToProps = (state, props) => {
     teamMembers,
     promoteTeamMemberModal: state.teamSettings.promoteTeamMemberModal,
     removeTeamMemberModal: state.teamSettings.removeTeamMemberModal,
+    modalTeamMemberId: state.teamSettings.teamMemberId,
+    modalPreferredName: state.teamSettings.preferredName,
     myTeamMemberId: `${state.auth.obj.sub}::${teamId}`
   };
 };
@@ -53,7 +59,17 @@ export default class TeamSettingsContainer extends Component {
 
 
   render() {
-    const {dispatch, invitations, myTeamMemberId, promoteTeamMemberModal, removeTeamMemberModal, team, teamMembers} = this.props;
+    const {
+      dispatch,
+      invitations,
+      modalPreferredName,
+      modalTeamMemberId,
+      myTeamMemberId,
+      promoteTeamMemberModal,
+      removeTeamMemberModal,
+      team,
+      teamMembers
+    } = this.props;
     const myTeamMember = teamMembers.find((member) => member.id === myTeamMemberId);
     if (!myTeamMember) {
       return <LoadingView/>
@@ -63,6 +79,8 @@ export default class TeamSettingsContainer extends Component {
         dispatch={dispatch}
         invitations={invitations}
         myTeamMember={myTeamMember}
+        modalTeamMemberId={modalTeamMemberId}
+        modalPreferredName={modalPreferredName}
         promoteTeamMemberModal={promoteTeamMemberModal}
         removeTeamMemberModal={removeTeamMemberModal}
         team={team}

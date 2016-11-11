@@ -150,7 +150,8 @@ export default {
       const [userId, teamId] = teamMemberId.split('::');
       await requireSUOrSelfOrLead(authToken, userId, teamId);
       requireWebsocket(socket);
-      const changes = await r.table('TeamMember')
+
+      const res = await r.table('TeamMember')
         // set inactive
         .get(teamMemberId)
         .update({
@@ -158,7 +159,7 @@ export default {
         })
         // assign active projects to the team lead
         .do(() => {
-          return r.table('Projects')
+          return r.table('Project')
             .getAll(teamMemberId, {index: 'teamMemberId'})
             .filter({isArchived: false})
             .update({
@@ -166,20 +167,24 @@ export default {
                 .getAll(teamId, {index: 'teamId'})
                 .filter({isLead: true})
                 .nth(0)('id')
-            })
+            }, {nonAtomic: true})
         })
         // remove the teamId from the user tms array
         .do(() => {
           return r.table('User')
-            .get(userId).update((user) => {
+            .get(userId)
+            .update((user) => {
               return user.merge({
-                tms: user('tms').without(teamId)
+                tms: user('tms').filter((id) => id.ne(teamId))
               })
             }, {returnChanges: true})
         });
       // update the tms on auth0
-      const newtms = changes.changes.new_val.tms;
-      await auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: newtms});
+      const newtms = res.changes[0] && res.changes[0].new_val.tms;
+      if (newtms) {
+        await auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: newtms});
+      }
+
 
       // update the server socket, if they're logged in
       const channel = `TEAM/${teamId}`;

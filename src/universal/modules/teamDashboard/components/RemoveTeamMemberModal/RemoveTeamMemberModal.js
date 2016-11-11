@@ -6,13 +6,13 @@ import {withRouter} from 'react-router';
 import {cashay} from 'cashay';
 
 const RemoveTeamMemberModal = (props) => {
-  const {preferredName, teamMemberId} = props;
+  const {onBackdropClick, preferredName, teamMemberId} = props;
   const handleClick = () => {
     const variables = {teamMemberId};
     cashay.mutate('removeTeamMember', {variables});
   };
   return (
-    <DashModal>
+    <DashModal onBackdropClick={onBackdropClick}>
       <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
         Are you sure?
       </Type>
