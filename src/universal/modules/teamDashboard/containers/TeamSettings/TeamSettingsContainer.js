@@ -19,9 +19,9 @@ query {
   },
   invitations(teamId: $teamId) @live {
     id
-    createdAt
     email
     tokenExpiration
+    updatedAt
   }
 }`;
 

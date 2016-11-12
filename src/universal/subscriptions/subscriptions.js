@@ -95,9 +95,9 @@ export default [
     subscription($teamId: ID!) {
       invitations(teamId: $teamId) {
         id
-        createdAt
         email
         tokenExpiration
+        updatedAt
       }
     }`
   },

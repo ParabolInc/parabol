@@ -9,7 +9,7 @@ import {Invitee} from './invitationSchema';
 import {requireSUOrTeamMember} from '../authorization';
 import {errorObj} from '../utils';
 
-import {asyncInviteTeam, cancelInvitation} from './helpers';
+import {asyncInviteTeam, cancelInvitation, resendInvite} from './helpers';
 
 export default {
   inviteTeamMembers: {
@@ -90,10 +90,8 @@ export default {
       },
     },
     async resolve(source, {inviteId}, {authToken}) {
-      const oldInvite = await cancelInvitation(authToken, inviteId);
-      const {teamId, email, fullName} = oldInvite;
-      const invitees = [{email, fullName}];
-      asyncInviteTeam(authToken, teamId, invitees);
+      await resendInvite(authToken, inviteId);
+      return true;
     }
   }
 };

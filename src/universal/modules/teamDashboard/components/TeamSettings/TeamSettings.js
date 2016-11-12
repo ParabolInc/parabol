@@ -12,6 +12,7 @@ import {toggleLeaveModal, toggleRemoveModal, togglePromoteModal} from 'universal
 import RemoveTeamMemberModal from 'universal/modules/teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal';
 import PromoteTeamMemberModal from 'universal/modules/teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal';
 import LeaveTeamModal from 'universal/modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal';
+import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
 
 const TeamSettings = (props) => {
   const {
@@ -37,6 +38,10 @@ const TeamSettings = (props) => {
     };
     const resend = () => {
       cashay.mutate('resendInvite', cashayOptions);
+      dispatch(showSuccess({
+        title: 'Invitation sent!',
+        message: 'We sent your friend a nice little reminder'
+      }));
     };
     const cancel = () => {
       cashay.mutate('cancelInvite', cashayOptions);
@@ -124,8 +129,8 @@ const TeamSettings = (props) => {
               return (
                 <UserRow
                   {...invitation}
-                  preferredName={invitation.email}
-                  email={`invited ${fromNow(invitation.createdAt)}`}
+                  email={invitation.email}
+                  invitedAt={`invited ${fromNow(invitation.updatedAt)}`}
                   actions={invitationRowActions(invitation)}
                   key={`invitationKey${idx}`}
                 />

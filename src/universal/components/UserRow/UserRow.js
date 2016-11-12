@@ -10,6 +10,7 @@ const UserRow = (props) => {
   const {
     actions,
     email,
+    invitedAt,
     isAdmin,
     isLead,
     picture,
@@ -25,7 +26,7 @@ const UserRow = (props) => {
         }
       </div>
       <div className={css(styles.userInfo)}>
-        {preferredName &&
+        {preferredName ?
           <div className={css(styles.nameAndTags)}>
             <div className={css(styles.preferredName)}>
               {preferredName}
@@ -36,9 +37,17 @@ const UserRow = (props) => {
             {isAdmin &&
               <UserTag colorPalette="gray" label="Admin" />
             }
+          </div> :
+          <div className={css(styles.nameAndTags)}>
+            <div className={css(styles.preferredName)}>
+              {email}
+            </div>
           </div>
         }
-        {email &&
+        {invitedAt ?
+          <div className={css(styles.invitedAt)}>
+            {invitedAt}
+          </div> :
           <a className={css(styles.infoLink)} href={`mailto:${email}`} title="Send an email">
             {email}
           </a>
@@ -56,6 +65,7 @@ const UserRow = (props) => {
 UserRow.propTypes = {
   actions: PropTypes.any,
   email: PropTypes.string,
+  invitedAt: PropTypes.string,
   isAdmin: PropTypes.bool,
   isLead: PropTypes.bool,
   picture: PropTypes.string,
@@ -99,6 +109,13 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.s4,
     lineHeight: '1.625rem',
     verticalAlign: 'middle'
+  },
+
+  invitedAt: {
+    color: appTheme.palette.mid,
+    fontSize: appTheme.typography.s2,
+    fontWeight: 700,
+    lineHeight: appTheme.typography.s4,
   },
 
   infoLink: {

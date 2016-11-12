@@ -3,6 +3,7 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLID,
+  GraphQLInt,
   GraphQLInputObjectType
 } from 'graphql';
 import {GraphQLEmailType} from '../types';
@@ -36,6 +37,10 @@ export const Invitation = new GraphQLObjectType({
       resolve: () => null
     },
     invitedBy: {type: GraphQLID, description: 'The teamMemberId of the person that sent the invitation'},
+    invitationNumber: {
+      type: GraphQLInt,
+      description: 'How many invites have been sent to this email address?'
+    },
     task: {
       type: GraphQLString,
       description: 'The task that the invitee is currently working on'

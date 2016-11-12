@@ -87,6 +87,7 @@ export const makeInvitationsForDB = async(invitees, teamId, userId) => {
     return {
       id,
       invitedBy,
+      inviteCount: 1,
       createdAt: now,
       email,
       fullName,
@@ -94,6 +95,7 @@ export const makeInvitationsForDB = async(invitees, teamId, userId) => {
       task,
       teamId,
       tokenExpiration,
+      updatedAt: now
     };
   });
 };
@@ -149,4 +151,33 @@ export const cancelInvitation = async (authToken, inviteId) => {
     updatedAt: now
   });
   return invite;
+};
+
+export const resendInvite = async (authToken, inviteId) => {
+  const r = getRethink();
+  const invitation = await r.table('Invitation').get(inviteId);
+  const {email, fullName, teamId} = invitation;
+  requireSUOrTeamMember(authToken, teamId);
+  const inviteToken = makeInviteToken();
+  const inviteeWithToken = {
+    email,
+    fullName,
+    inviteToken
+  };
+  const userId = getUserId(authToken);
+  const inviterInfoAndTeamName = await getInviterInfoAndTeamName(teamId, userId);
+  const sendEmailPromises = createEmailPromises(inviterInfoAndTeamName, [inviteeWithToken]);
+  await resolveSentEmails(sendEmailPromises, [inviteeWithToken]);
+  const now = new Date();
+  const hashedToken = await hashInviteTokenKey(inviteToken);
+  const invitedBy = `${userId}::${teamId}`;
+  const tokenExpiration = new Date(now.valueOf() + INVITATION_LIFESPAN);
+  await r.table('Invitation').get(inviteId).update({
+    hashedToken,
+    invitedBy,
+    inviteToken,
+    inviteCount: r.row('inviteCount').add(1),
+    tokenExpiration,
+    updatedAt: now
+  });
 };
