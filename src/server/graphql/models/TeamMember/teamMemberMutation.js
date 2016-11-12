@@ -217,7 +217,7 @@ export default {
         .update({
           isLead: false
         })
-        // give leadership to the new guy
+        // give leadership to the new person
         .do(() => {
           return r.table('TeamMember')
             .get(teamMemberId)

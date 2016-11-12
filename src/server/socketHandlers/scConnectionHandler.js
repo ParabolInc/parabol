@@ -7,7 +7,7 @@ import isObject from 'universal/utils/isObject';
 import jwtDecode from 'jwt-decode';
 
 // we do this otherwise we'd have to blacklist every token that ever got replaced & query that table for each query
-const istmsValid = (tmsFromDB, tmsFromToken) => {
+const isTmsValid = (tmsFromDB, tmsFromToken) => {
   if (tmsFromDB.length !== tmsFromToken.length) return false;
   for (let i = 0; i < tmsFromDB.length; i++) {
     if (tmsFromDB[i] !== tmsFromToken[i]) return false;
@@ -23,7 +23,7 @@ export default function scConnectionHandler(exchange) {
     const timeLeftOnToken = tokenExpiration - now;
     // if the user was booted from the team, give them a new token
     const tms = await r.table('User').get(authToken.sub)('tms');
-    const tmsIsValid = istmsValid(tms, authToken.tms);
+    const tmsIsValid = isTmsValid(tms, authToken.tms);
     if (timeLeftOnToken < REFRESH_JWT_AFTER || !tmsIsValid) {
       authToken.tms = tms;
       socket.setAuthToken(authToken);
