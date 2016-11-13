@@ -131,7 +131,7 @@ export const asyncInviteTeam = async (authToken, teamId, invitees) => {
 
 export const cancelInvitation = async (authToken, inviteId) => {
   const r = getRethink();
-  const invite = r.table('Invitation').get(inviteId);
+  const invite = await r.table('Invitation').get(inviteId);
   const {acceptedAt, teamId, tokenExpiration} = invite;
   requireSUOrTeamMember(authToken, teamId);
   const now = new Date();
