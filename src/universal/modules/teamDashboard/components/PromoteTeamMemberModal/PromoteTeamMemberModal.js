@@ -16,15 +16,17 @@ const PromoteTeamMemberModal = (props) => {
         Are you sure?
       </Type>
       <Type align="center" bold scale="s4">
-        This will remove you as the team leader <br />
-        and promote {preferredName}. <br />
+        You will be removed as the team leader <br />
+        and promote {preferredName}. You will no<br />
+        longer be able to change team membership.<br />
+        <br />
         This cannot be undone!<br />
       </Type>
       <IconLink
         colorPalette="warm"
         icon="arrow-circle-right"
         iconPlacement="right"
-        label={`Promote ${preferredName}`}
+        label={`Yes, promote ${preferredName}`}
         margin="1.5rem 0 0"
         onClick={handleClick}
         scale="large"
