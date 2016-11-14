@@ -2,7 +2,6 @@ import React, {Component, PropTypes} from 'react';
 import UserActionListItem from './UserActionListItem';
 import {DragLayer as dragLayer} from 'react-dnd';
 import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
 
 const layerStyles = {
   left: 0,
@@ -10,7 +9,7 @@ const layerStyles = {
   pointerEvents: 'none',
   position: 'fixed',
   top: 0,
-  width: ui.dashActionsWidth,
+  width: '12.875rem',
   zIndex: 500,
 };
 
@@ -23,8 +22,7 @@ function getItemStyles(props) {
   }
 
   const {x, y} = currentOffset;
-  // const transform = `translate3d(${x}px, ${y}px, 0px) rotate(-7deg)`;
-  const transform = `translate3d(${x}px, ${y}px, 0px) scale(1.05)`;
+  const transform = `translate3d(${x}px, ${y}px, 0px) scale(1.03)`;
   return {
     ...layerStyles,
     transform,
@@ -48,7 +46,7 @@ export default class ActionDragLayer extends Component {
       return null;
     }
     const dragStyle = {
-      borderColor: appTheme.palette.mid50l,
+      borderColor: appTheme.palette.mid70l,
       borderRadius: '.25rem',
       boxShadow: '0 1px 2px rgba(0, 0, 0, .15)'
     };
