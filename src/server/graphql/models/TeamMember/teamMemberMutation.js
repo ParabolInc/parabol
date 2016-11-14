@@ -123,7 +123,7 @@ export default {
         .do((userEmail) =>
           r.table('Invitation').getAll(userEmail, email, {index: 'email'}).update({
             acceptedAt: now,
-            tokenExpiration: now,
+            tokenExpiration: new Date(0),
             updatedAt: now
           })
         );
