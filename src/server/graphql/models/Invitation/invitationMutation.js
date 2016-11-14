@@ -38,8 +38,7 @@ export default {
           return {
             invites: inviteEmails,
             teamMembers: r.table('TeamMember')
-              .getAll(teamId, {index: 'teamId'})('email')
-              .coerceTo('array')
+              .getAll(teamId, {index: 'teamId'})
           };
         });
       const alreadyInvited = invitees
@@ -48,21 +47,36 @@ export default {
         .join(', ');
       if (alreadyInvited) {
         throw errorObj({
-          _error: `${alreadyInvited.join(', ')} already invited`,
+          _error: `${alreadyInvited} already invited`,
           type: 'alreadyInvited'
         });
       }
-      const alreadyTeamMember = invitees
+      const activeTeamMembers = usedEmails.teamMembers.filter((m) => m.isActive === true).map((m) => m.email);
+      const alreadyActiveTeamMember = invitees
         .map((i) => i.email)
-        .filter((email) => usedEmails.teamMembers.includes(email))
+        .filter((email) => activeTeamMembers.includes(email))
         .join(', ');
-      if (alreadyTeamMember) {
+      if (alreadyActiveTeamMember) {
         throw errorObj({
-          _error: `${alreadyTeamMember.join(', ')} already on the team`,
+          _error: `${alreadyActiveTeamMember} already on the team`,
           type: 'alreadyTeamMember'
         });
       }
-      asyncInviteTeam(authToken, teamId, invitees);
+
+      // if they used to be on the team, simply reactivate them
+      const inactiveTeamMembers = usedEmails.teamMembers.filter((m) => m.isActive === false);
+      if (inactiveTeamMembers.length > 0) {
+        const inactiveTeamMemberIds = inactiveTeamMembers.map((m) => m.id);
+        await r.table('TeamMember')
+          .getAll(r.args(inactiveTeamMemberIds), {index: 'id'})
+          .update({isActive: true});
+        const inactiveTeamMemberEmails = inactiveTeamMembers.map((m) => m.email);
+        const newInvitees = invitees.filter((i) => !inactiveTeamMemberEmails.includes(i.email));
+        // TODO send email & maybe pop toast saying that we're only reactiving
+        asyncInviteTeam(authToken, teamId, newInvitees);
+      } else {
+        asyncInviteTeam(authToken, teamId, invitees);
+      }
       return true;
     }
   },
