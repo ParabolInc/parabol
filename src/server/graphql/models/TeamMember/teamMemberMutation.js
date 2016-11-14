@@ -5,7 +5,13 @@ import {
   GraphQLBoolean,
 } from 'graphql';
 import {errorObj} from '../utils';
-import {requireWebsocket, requireSUOrTeamMember, requireSUOrSelfOrLead, requireSUOrLead, requireAuth} from '../authorization';
+import {
+  requireWebsocket,
+  requireSUOrTeamMember,
+  requireSUOrSelfOrLead,
+  requireSUOrLead,
+  requireAuth
+} from '../authorization';
 import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
 import {KICK_OUT, PRESENCE} from 'universal/subscriptions/constants';
@@ -92,15 +98,24 @@ export default {
         });
       }
 
-      const dbWork = r.table('TeamMember')
-      // get number of users
-        .getAll(teamId, {index: 'teamId'})
-        .filter({isActive: true})
-        .count()
+      const dbWork = r.table('User')
+        // add the team to the user doc
+        .get(userId)
+        .update({
+            tms: r.row('tms').append(teamId).default([teamId])
+        })
+        // get number of users
+        .do(() => {
+          return r.table('TeamMember')
+            .getAll(teamId, {index: 'teamId'})
+            .filter({isActive: true})
+            .count()
+        })
         // get the user
         .do((usersOnTeam) => ({
           usersOnTeam,
           user: r.table('User').get(userId)
+
         }))
         // insert team member
         .do((teamCountAndUser) =>
@@ -152,7 +167,7 @@ export default {
       requireWebsocket(socket);
 
       const res = await r.table('TeamMember')
-        // set inactive
+      // set inactive
         .get(teamMemberId)
         .update({
           isActive: false
@@ -212,7 +227,7 @@ export default {
         throw errorObj({_error: `Member ${teamMemberId} is not on the team`});
       }
       await r.table('TeamMember')
-        // remove leadership from the caller
+      // remove leadership from the caller
         .get(myTeamMemberId)
         .update({
           isLead: false
