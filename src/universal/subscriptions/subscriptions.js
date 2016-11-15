@@ -157,7 +157,7 @@ export default [
          id,
          checkInOrder,
          email,
-         isActive,
+         isNotRemoved,
          isCheckedIn,
          isFacilitator,
          isLead,

@@ -108,7 +108,7 @@ export default {
         .do(() => {
           return r.table('TeamMember')
             .getAll(teamId, {index: 'teamId'})
-            .filter({isActive: true})
+            .filter({isNotRemoved: true})
             .count()
         })
         // get the user
@@ -124,7 +124,7 @@ export default {
             id: teamCountAndUser('user')('id').add('::', teamId),
             teamId,
             userId,
-            isActive: true,
+            isNotRemoved: true,
             isLead: false,
             isFacilitator: true,
             picture: teamCountAndUser('user')('picture').default(''),
@@ -170,7 +170,7 @@ export default {
       // set inactive
         .get(teamMemberId)
         .update({
-          isActive: false
+          isNotRemoved: false
         })
         // assign active projects to the team lead
         .do(() => {

@@ -88,7 +88,7 @@ export default {
       if (nextPhase === CHECKIN || nextPhase === UPDATES) {
         const teamMembersCount = await r.table('TeamMember')
           .getAll(teamId, {index: 'teamId'})
-          .filter({isActive: true})
+          .filter({isNotRemoved: true})
           .count();
         if (nextPhaseItem < 1 || nextPhaseItem > teamMembersCount) {
           throw errorObj({_error: 'We don\'t have that many team members!'});
@@ -187,7 +187,7 @@ export default {
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
       const facilitatorMembership = await r.table('TeamMember').get(facilitatorId);
-      if (!facilitatorMembership || !facilitatorMembership.isActive) {
+      if (!facilitatorMembership || !facilitatorMembership.isNotRemoved) {
         throw errorObj({_error: 'facilitator is not active on that team'});
       }
 
@@ -272,7 +272,7 @@ export default {
               successStatement: makeSuccessStatement(),
               invitees: r.table('TeamMember')
                 .getAll(teamId, {index: 'teamId'})
-                .filter({isActive: true})
+                .filter({isNotRemoved: true})
                 .coerceTo('array')
                 .map((teamMember) => ({
                   id: teamMember('id'),
@@ -418,7 +418,7 @@ export default {
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
       const facilitatorMembership = await r.table('TeamMember').get(facilitatorId);
-      if (!facilitatorMembership || !facilitatorMembership.isActive) {
+      if (!facilitatorMembership || !facilitatorMembership.isNotRemoved) {
         throw errorObj({_error: 'facilitator is not active on that team'});
       }
       await r.table('Team').get(teamId).update({activeFacilitator: facilitatorId});

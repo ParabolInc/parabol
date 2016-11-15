@@ -51,7 +51,7 @@ export default {
           type: 'alreadyInvited'
         });
       }
-      const activeTeamMembers = usedEmails.teamMembers.filter((m) => m.isActive === true).map((m) => m.email);
+      const activeTeamMembers = usedEmails.teamMembers.filter((m) => m.isNotRemoved === true).map((m) => m.email);
       const alreadyActiveTeamMember = invitees
         .map((i) => i.email)
         .filter((email) => activeTeamMembers.includes(email))
@@ -64,12 +64,12 @@ export default {
       }
 
       // if they used to be on the team, simply reactivate them
-      const inactiveTeamMembers = usedEmails.teamMembers.filter((m) => m.isActive === false);
+      const inactiveTeamMembers = usedEmails.teamMembers.filter((m) => m.isNotRemoved === false);
       if (inactiveTeamMembers.length > 0) {
         const inactiveTeamMemberIds = inactiveTeamMembers.map((m) => m.id);
         await r.table('TeamMember')
           .getAll(r.args(inactiveTeamMemberIds), {index: 'id'})
-          .update({isActive: true});
+          .update({isNotRemoved: true});
         const inactiveTeamMemberEmails = inactiveTeamMembers.map((m) => m.email);
         const newInvitees = invitees.filter((i) => !inactiveTeamMemberEmails.includes(i.email));
         // TODO send email & maybe pop toast saying that we're only reactiving
