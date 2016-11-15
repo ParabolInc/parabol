@@ -70,6 +70,12 @@ const styleThunk = () => ({
   }
 });
 
+/*
+ * This form's redux data is automatically cleared after it is
+ * submitted.
+ *
+ * See: universal/redux/makeReducer.js
+ */
 export default reduxForm({form: 'agendaInput'})(
   withStyles(styleThunk)(AgendaInput)
 );

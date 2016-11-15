@@ -15,6 +15,7 @@ export const options = {
   brokers: 1,
   port: process.env.PORT || 3000,
   appName: 'Action',
+  // keep this false so peers can't send a KICK_OUT message
   allowClientPublish: false,
   initController: path.join(__dirname, '/init.js'),
   workerController: path.join(__dirname, '/worker.js'),

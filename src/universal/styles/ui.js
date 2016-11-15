@@ -54,6 +54,7 @@ const ui = {
   // Icons
   iconSize: '14px', // FontAwesome base
   iconSize2x: '28px', // FontAwesome 2x
+  iconSize3x: '42px', // FontAwesome 3x
 
   // Meeting
   meetingSidebarWidth: '15rem',

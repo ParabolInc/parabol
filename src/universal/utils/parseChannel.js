@@ -3,7 +3,8 @@ export default function parseChannel(channelName) {
   if (firstSlashLoc === -1) {
     return {channel: channelName};
   }
-  const channel = channelName.substr(0, firstSlashLoc);
-  const variableString = channelName.substr(firstSlashLoc + 1);
-  return {channel, variableString};
+  return {
+    channel: channelName.substr(0, firstSlashLoc),
+    variableString: channelName.substr(firstSlashLoc + 1)
+  };
 }

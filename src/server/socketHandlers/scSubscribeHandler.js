@@ -1,13 +1,14 @@
 import {graphql} from 'graphql';
 import Schema from 'server/graphql/rootSchema';
 import subscriptions from 'universal/subscriptions/subscriptions';
-import parseChannel from './parseChannel';
+import parseChannel from 'universal/utils/parseChannel';
 import {
   ACTIONS,
   ACTIONS_BY_TEAMMEMBER,
   ACTIONS_BY_AGENDA,
   AGENDA,
   ARCHIVED_PROJECTS,
+  INVITATIONS,
   PROJECTS,
   PRESENCE,
   TEAM,
@@ -25,6 +26,7 @@ const dechannelfy = {
   [ACTIONS_BY_AGENDA]: (variableString) => ({agendaId: variableString}),
   [AGENDA]: (variableString) => ({teamId: variableString}),
   [ARCHIVED_PROJECTS]: (variableString) => ({teamId: variableString}),
+  [INVITATIONS]: (variableString) => ({teamId: variableString}),
   [PRESENCE]: (variableString) => ({teamId: variableString}),
   [PROJECTS]: (variableString) => ({teamMemberId: variableString}),
   [TEAM]: (variableString) => ({teamId: variableString}),

@@ -23,7 +23,7 @@ const DashHeaderInfo = (props) => {
 DashHeaderInfo.propTypes = {
   children: PropTypes.any,
   styles: PropTypes.object,
-  title: PropTypes.string
+  title: PropTypes.any
 };
 
 const styleThunk = () => ({
@@ -32,7 +32,9 @@ const styleThunk = () => ({
   },
 
   title: {
+    color: appTheme.palette.dark10d,
     fontSize: appTheme.typography.s5,
+    height: appTheme.typography.s6,
     lineHeight: appTheme.typography.s6
   },
 

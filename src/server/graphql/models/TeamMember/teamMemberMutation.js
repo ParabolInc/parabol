@@ -5,9 +5,16 @@ import {
   GraphQLBoolean,
 } from 'graphql';
 import {errorObj} from '../utils';
-import {requireWebsocket, requireSUOrTeamMember, requireAuth} from '../authorization';
+import {
+  requireWebsocket,
+  requireSUOrTeamMember,
+  requireSUOrSelfOrLead,
+  requireSUOrLead,
+  requireAuth
+} from '../authorization';
 import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
+import {KICK_OUT, PRESENCE} from 'universal/subscriptions/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 
 export default {
@@ -91,15 +98,24 @@ export default {
         });
       }
 
-      const dbWork = r.table('TeamMember')
-      // get number of users
-        .getAll(teamId, {index: 'teamId'})
-        .filter({isActive: true})
-        .count()
+      const dbWork = r.table('User')
+        // add the team to the user doc
+        .get(userId)
+        .update({
+          tms: r.row('tms').append(teamId).default([teamId])
+        })
+        // get number of users
+        .do(() => {
+          return r.table('TeamMember')
+            .getAll(teamId, {index: 'teamId'})
+            .filter({isNotRemoved: true})
+            .count();
+        })
         // get the user
         .do((usersOnTeam) => ({
           usersOnTeam,
           user: r.table('User').get(userId)
+
         }))
         // insert team member
         .do((teamCountAndUser) =>
@@ -108,9 +124,9 @@ export default {
             id: teamCountAndUser('user')('id').add('::', teamId),
             teamId,
             userId,
-            isActive: true,
+            isNotRemoved: true,
             isLead: false,
-            isFacilitator: false,
+            isFacilitator: true,
             picture: teamCountAndUser('user')('picture').default(''),
             preferredName: teamCountAndUser('user')('preferredName').default(''),
           }).do(() =>
@@ -122,7 +138,8 @@ export default {
         .do((userEmail) =>
           r.table('Invitation').getAll(userEmail, email, {index: 'email'}).update({
             acceptedAt: now,
-            isAccepted: true
+            tokenExpiration: new Date(0),
+            updatedAt: now
           })
         );
       const tms = oldtms.concat(teamId);
@@ -133,5 +150,105 @@ export default {
       await Promise.all(asyncPromises);
       return tmsSignToken(authToken, tms);
     }
-  }
+  },
+  removeTeamMember: {
+    type: GraphQLBoolean,
+    description: 'Remove a team member from the team',
+    args: {
+      teamMemberId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The teamMemberId of the person who is being checked in'
+      }
+    },
+    async resolve(source, {teamMemberId}, {authToken, exchange, socket}) {
+      const r = getRethink();
+      const [userId, teamId] = teamMemberId.split('::');
+      await requireSUOrSelfOrLead(authToken, userId, teamId);
+      requireWebsocket(socket);
+
+      const res = await r.table('TeamMember')
+      // set inactive
+        .get(teamMemberId)
+        .update({
+          isNotRemoved: false
+        })
+        // assign active projects to the team lead
+        .do(() => {
+          return r.table('Project')
+            .getAll(teamMemberId, {index: 'teamMemberId'})
+            .filter({isArchived: false})
+            .update({
+              teamMemberId: r.table('TeamMember')
+                .getAll(teamId, {index: 'teamId'})
+                .filter({isLead: true})
+                .nth(0)('id')
+            }, {nonAtomic: true});
+        })
+        // flag all actions as complete since the user can't edit them now, anyways
+        .do(() => {
+          return r.table('Action')
+            .getAll(teamMemberId, {index: 'teamMemberId'})
+            .update({
+              isComplete: true
+            });
+        })
+        // remove the teamId from the user tms array
+        .do(() => {
+          return r.table('User')
+            .get(userId)
+            .update((user) => {
+              return user.merge({
+                tms: user('tms').filter((id) => id.ne(teamId))
+              });
+            }, {returnChanges: true});
+        });
+      // update the tms on auth0
+      const newtms = res.changes[0] && res.changes[0].new_val.tms;
+      if (newtms) {
+        await auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: newtms});
+      }
+
+
+      // update the server socket, if they're logged in
+      const channel = `${PRESENCE}/${teamId}`;
+      exchange.publish(channel, {type: KICK_OUT, userId});
+      return true;
+    }
+  },
+  promoteToLead: {
+    type: GraphQLBoolean,
+    description: 'Promote another team member to be the leader',
+    args: {
+      teamMemberId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'the new team member that will be the leader'
+      }
+    },
+    async resolve(source, {teamMemberId}, {authToken, socket}) {
+      const r = getRethink();
+      requireWebsocket(socket);
+      const [, teamId] = teamMemberId.split('::');
+      const myTeamMemberId = `${authToken.sub}::${teamId}`;
+      await requireSUOrLead(authToken, myTeamMemberId);
+      const promoteeOnTeam = await r.table('TeamMember').get(teamMemberId);
+      if (!promoteeOnTeam) {
+        throw errorObj({_error: `Member ${teamMemberId} is not on the team`});
+      }
+      await r.table('TeamMember')
+      // remove leadership from the caller
+        .get(myTeamMemberId)
+        .update({
+          isLead: false
+        })
+        // give leadership to the new person
+        .do(() => {
+          return r.table('TeamMember')
+            .get(teamMemberId)
+            .update({
+              isLead: true
+            });
+        });
+      return true;
+    }
+  },
 };

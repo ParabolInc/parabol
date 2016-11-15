@@ -6,7 +6,7 @@ import {
   GraphQLString,
   GraphQLInt
 } from 'graphql';
-import {GraphQLURLType} from '../types';
+import {GraphQLEmailType, GraphQLURLType} from '../types';
 import {Team} from '../Team/teamSchema';
 import {User} from '../User/userSchema';
 import {Project} from '../Project/projectSchema';
@@ -18,10 +18,14 @@ export const TeamMember = new GraphQLObjectType({
   description: 'A member of a team team',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique team member ID'},
-    isActive: {type: GraphQLBoolean, description: 'Is user active?'},
+    isNotRemoved: {type: GraphQLBoolean, description: 'Is user a part of the team? False if they were removed'},
     isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
     isFacilitator: {type: GraphQLBoolean, description: 'Is user a team facilitator?'},
     /* denormalized from User */
+    email: {
+      type: GraphQLEmailType,
+      description: 'The user email'
+    },
     picture: {
       type: GraphQLURLType,
       description: 'url of user\'s profile picture'
@@ -78,7 +82,7 @@ export const TeamMember = new GraphQLObjectType({
 
 const teamMemberInputThunk = () => ({
   id: {type: GraphQLID, description: 'The unique team member ID, composed of the userId::teamId'},
-  isActive: {type: GraphQLBoolean, description: 'Is user active?'},
+  isNotRemoved: {type: GraphQLBoolean, description: 'Is user a part of the team?'},
   isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
   isFacilitator: {type: GraphQLBoolean, description: 'Is user a team facilitator?'}
 });

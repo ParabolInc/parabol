@@ -1,4 +1,5 @@
 import {errorObj} from './utils';
+import getRethink from 'server/database/rethinkDriver';
 
 export const getUserId = authToken => {
   return authToken && typeof authToken === 'object' && authToken.sub;
@@ -41,6 +42,32 @@ export const requireSUOrSelf = (authToken, userId) => {
   }
   throw errorObj({_error: 'Unauthorized. You cannot modify another user.'});
 };
+
+export const requireSUOrSelfOrLead = async (authToken, userId, teamId) => {
+  if (isSuperUser(authToken)) return undefined;
+  const authTokenUserId = getUserId(authToken);
+  if (authTokenUserId === userId) {
+    return 'self';
+  }
+  const teamMemberId = `${authTokenUserId}::${teamId}`;
+  const r = getRethink();
+  const teamMember = await r.table('TeamMember').get(teamMemberId);
+  if (teamMember && teamMember.isLead) {
+    return 'lead';
+  }
+  throw errorObj({_error: 'Unauthorized. Only the team member or the leader can remove someone'});
+};
+
+export const requireSUOrLead = async (authToken, teamMemberId) => {
+  if (isSuperUser(authToken)) return undefined;
+  const r = getRethink();
+  const teamMember = await r.table('TeamMember').get(teamMemberId);
+  if (!teamMember || !teamMember.isLead) {
+    throw errorObj({_error: 'Unauthorized. Only the team leader promote someone to lead'});
+  }
+  return teamMember;
+};
+
 
 export const requireWebsocket = (socket) => {
   if (!socket) {

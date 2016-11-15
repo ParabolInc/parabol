@@ -4,8 +4,9 @@ import makeAppLink from 'server/utils/makeAppLink';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import promisify from 'es6-promisify';
-import {getUserId} from '../authorization';
+import {getUserId, requireSUOrTeamMember} from '../authorization';
 import {INVITATION_LIFESPAN} from 'server/utils/serverConstants';
+import {errorObj} from '../utils';
 
 const INVITE_TOKEN_INVITE_ID_LEN = 6;
 const INVITE_TOKEN_KEY_LEN = 8;
@@ -74,9 +75,10 @@ export const resolveSentEmails = async(sendEmailPromises, inviteesWithTokens) =>
   return {inviteeErrors, inviteesToStore};
 };
 
-export const makeInvitationsForDB = async(invitees, teamId) => {
+export const makeInvitationsForDB = async(invitees, teamId, userId) => {
   const now = new Date();
-  const tokenExpiration = now.valueOf() + INVITATION_LIFESPAN;
+  const invitedBy = `${userId}::${teamId}`;
+  const tokenExpiration = new Date(now.valueOf() + INVITATION_LIFESPAN);
   const hashPromises = invitees.map(invitee => hashInviteTokenKey(invitee.inviteToken));
   const hashedTokens = await Promise.all(hashPromises);
   return invitees.map((invitee, idx) => {
@@ -84,14 +86,16 @@ export const makeInvitationsForDB = async(invitees, teamId) => {
     const {id} = parseInviteToken(inviteToken);
     return {
       id,
-      teamId,
+      invitedBy,
+      inviteCount: 1,
       createdAt: now,
-      isAccepted: false,
-      fullName,
       email,
+      fullName,
+      hashedToken: hashedTokens[idx],
       task,
+      teamId,
       tokenExpiration,
-      hashedToken: hashedTokens[idx]
+      updatedAt: now
     };
   });
 };
@@ -115,7 +119,7 @@ export const asyncInviteTeam = async (authToken, teamId, invitees) => {
   const inviterInfoAndTeamName = await getInviterInfoAndTeamName(teamId, userId);
   const sendEmailPromises = createEmailPromises(inviterInfoAndTeamName, inviteesWithTokens);
   const {inviteesToStore} = await resolveSentEmails(sendEmailPromises, inviteesWithTokens);
-  const invitationsForDB = await makeInvitationsForDB(inviteesToStore, teamId);
+  const invitationsForDB = await makeInvitationsForDB(inviteesToStore, teamId, userId);
   // Bulk insert, wait in case something queries the invitation table
   await r.table('Invitation').insert(invitationsForDB);
   return true;
@@ -123,4 +127,57 @@ export const asyncInviteTeam = async (authToken, teamId, invitees) => {
   // if (inviteeErrors.length > 0) {
   // throw errorObj({_error: 'Some invitations were not sent', type: 'inviteSendFail', failedEmails: inviteeErrors});
   // }
+};
+
+export const cancelInvitation = async (authToken, inviteId) => {
+  const r = getRethink();
+  const invite = await r.table('Invitation').get(inviteId);
+  const {acceptedAt, teamId, tokenExpiration} = invite;
+  requireSUOrTeamMember(authToken, teamId);
+  const now = new Date();
+  const error = {};
+  if (acceptedAt) {
+    error.type = 'alreadyAccepted';
+  } else if (tokenExpiration < now) {
+    error.type = 'alreadyExpired';
+  }
+  if (error.type) {
+    // eslint-disable-next-line no-underscore-dangle
+    error._error = 'Cannot cancel invitation';
+    throw errorObj(error);
+  }
+  await r.table('Invitation').get(inviteId).update({
+    tokenExpiration: new Date(0),
+    updatedAt: now
+  });
+  return invite;
+};
+
+export const resendInvite = async (authToken, inviteId) => {
+  const r = getRethink();
+  const invitation = await r.table('Invitation').get(inviteId);
+  const {email, fullName, teamId} = invitation;
+  requireSUOrTeamMember(authToken, teamId);
+  const inviteToken = makeInviteToken();
+  const inviteeWithToken = {
+    email,
+    fullName,
+    inviteToken
+  };
+  const userId = getUserId(authToken);
+  const inviterInfoAndTeamName = await getInviterInfoAndTeamName(teamId, userId);
+  const sendEmailPromises = createEmailPromises(inviterInfoAndTeamName, [inviteeWithToken]);
+  await resolveSentEmails(sendEmailPromises, [inviteeWithToken]);
+  const now = new Date();
+  const hashedToken = await hashInviteTokenKey(inviteToken);
+  const invitedBy = `${userId}::${teamId}`;
+  const tokenExpiration = new Date(now.valueOf() + INVITATION_LIFESPAN);
+  await r.table('Invitation').get(inviteId).update({
+    hashedToken,
+    invitedBy,
+    inviteToken,
+    inviteCount: r.row('inviteCount').add(1),
+    tokenExpiration,
+    updatedAt: now
+  });
 };

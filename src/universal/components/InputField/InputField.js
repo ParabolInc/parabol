@@ -54,6 +54,12 @@ const InputField = (props) => {
     return labelForName;
   };
 
+  const submitOnEnter = (e) => {
+    if (e.key === 'Enter') {
+      onButtonClick(e);
+    }
+  };
+
   return (
     <FieldBlock>
       {label &&
@@ -69,16 +75,17 @@ const InputField = (props) => {
           <Textarea
             {...input}
             autoFocus={autoFocus}
-            className={`${inputStyles} mousetrap`}
+            className={`${inputStyles}`}
             disabled={disabled || readyOnly}
             placeholder={placeholder}
           /> :
           <input
             {...input}
             autoFocus={autoFocus}
-            className={`${inputStyles} mousetrap`}
+            className={`${inputStyles}`}
             disabled={disabled || readyOnly}
             placeholder={placeholder}
+            onKeyDown={onButtonClick && submitOnEnter}
           />
         }
         {hasButton &&

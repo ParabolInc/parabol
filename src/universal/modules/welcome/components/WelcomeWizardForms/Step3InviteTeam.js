@@ -14,8 +14,7 @@ import {segmentEventTrack} from 'universal/redux/segmentActions';
 
 const emailInviteSuccess = {
   title: 'Invitation sent!',
-  message: 'Your team members will get their invite via email',
-  level: 'success'
+  message: 'Your team members will get their invite via email'
 };
 
 const Step3InviteTeam = (props) => {
@@ -36,7 +35,6 @@ const Step3InviteTeam = (props) => {
       }));
     });
   };
-  props.bindHotkey('enter', onAddInviteesButtonClick);
 
   const onInviteTeamSubmit = async(submissionData) => {
     const {dispatch, router, welcome: {teamId}} = props;

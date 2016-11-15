@@ -30,7 +30,7 @@ export default store => ({
   // },
   getChildRoutes: (childLocation, cbChild) => {
     cbChild(null, [
-      require('./teamDashMain')
+      require('./teamDashMain')(store)
     ]);
   }
 });

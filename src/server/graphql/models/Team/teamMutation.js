@@ -1,6 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
 import {getUserId, requireSUOrTeamMember, requireWebsocket} from '../authorization';
-import {updatedOrOriginal, errorObj} from '../utils';
+import {errorObj} from '../utils';
 import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
 import {
   GraphQLNonNull,
@@ -10,7 +10,7 @@ import {
   GraphQLInt,
   GraphQLList
 } from 'graphql';
-import {CreateTeamInput, UpdateTeamInput, Team} from './teamSchema';
+import {CreateTeamInput, UpdateTeamInput} from './teamSchema';
 import {asyncInviteTeam} from 'server/graphql/models/Invitation/helpers';
 import shortid from 'shortid';
 import {
@@ -89,7 +89,7 @@ export default {
       if (nextPhase === CHECKIN || nextPhase === UPDATES) {
         const teamMembersCount = await r.table('TeamMember')
           .getAll(teamId, {index: 'teamId'})
-          .filter({isActive: true})
+          .filter({isNotRemoved: true})
           .count();
         if (nextPhaseItem < 1 || nextPhaseItem > teamMembersCount) {
           throw errorObj({_error: 'We don\'t have that many team members!'});
@@ -183,7 +183,7 @@ export default {
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
       const facilitatorMembership = await r.table('TeamMember').get(facilitatorId);
-      if (!facilitatorMembership || !facilitatorMembership.isActive) {
+      if (!facilitatorMembership || !facilitatorMembership.isNotRemoved) {
         throw errorObj({_error: 'facilitator is not active on that team'});
       }
 
@@ -268,7 +268,7 @@ export default {
               successStatement: makeSuccessStatement(),
               invitees: r.table('TeamMember')
                 .getAll(teamId, {index: 'teamId'})
-                .filter({isActive: true})
+                .filter({isNotRemoved: true})
                 .coerceTo('array')
                 .map((teamMember) => ({
                   id: teamMember('id'),
@@ -414,7 +414,7 @@ export default {
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
       const facilitatorMembership = await r.table('TeamMember').get(facilitatorId);
-      if (!facilitatorMembership || !facilitatorMembership.isActive) {
+      if (!facilitatorMembership || !facilitatorMembership.isNotRemoved) {
         throw errorObj({_error: 'facilitator is not active on that team'});
       }
       await r.table('Team').get(teamId).update({activeFacilitator: facilitatorId});
@@ -422,7 +422,7 @@ export default {
     }
   },
   updateTeamName: {
-    type: Team,
+    type: GraphQLBoolean,
     args: {
       updatedTeam: {
         type: new GraphQLNonNull(UpdateTeamInput),
@@ -433,9 +433,10 @@ export default {
       const r = getRethink();
       const {id, name} = updatedTeam;
       requireSUOrTeamMember(authToken, id);
-      const teamFromDB = await r.table('Team').get(id).update({name}, {returnChanges: true});
+      await r.table('Team').get(id).update({name});
+      return true;
       // TODO think hard about if we can pluck only the changed values (in this case, name)
-      return updatedOrOriginal(teamFromDB, updatedTeam);
+      // return updatedOrOriginal(teamFromDB, updatedTeam);
     }
   }
 };

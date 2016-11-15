@@ -4,9 +4,12 @@ import {reduxSocket} from 'redux-socket-cluster';
 import {cashay} from 'cashay';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import reduxSocketOptions from 'universal/redux/reduxSocketOptions';
-import {PRESENCE, TEAM_MEMBERS} from 'universal/subscriptions/constants';
+import {PRESENCE, TEAM_MEMBERS, TEAM} from 'universal/subscriptions/constants';
 import socketCluster from 'socketcluster-client';
 import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
+import parseChannel from 'universal/utils/parseChannel';
+import {showWarning} from 'universal/modules/notifications/ducks/notifications';
+import {withRouter} from 'react-router';
 
 const mapStateToProps = (state) => {
   return {
@@ -20,6 +23,7 @@ export default ComposedComponent => {
   @requireAuth
   @reduxSocket({}, reduxSocketOptions)
   @connect(mapStateToProps)
+  @withRouter
   class SocketWithPresence extends Component {
     static propTypes = {
       user: PropTypes.object,
@@ -27,27 +31,49 @@ export default ComposedComponent => {
       params: PropTypes.shape({
         teamId: PropTypes.string
       }),
+      router: PropTypes.object,
       tms: PropTypes.array
     };
 
     componentDidMount() {
       this.subscribeToPresence({}, this.props);
+      this.watchForKickout();
     }
     componentWillReceiveProps(nextProps) {
       this.subscribeToPresence(this.props, nextProps);
     }
 
+    watchForKickout() {
+      const socket = socketCluster.connect();
+      socket.on('kickOut', (error, channelName) => {
+        const {channel, variableString: teamId} = parseChannel(channelName);
+        if (channel === TEAM) {
+          const cashayState = cashay.store.getState().cashay;
+          const team = cashayState.entities.Team && cashayState.entities.Team[teamId];
+          const teamName = team && team.name || teamId;
+          cashay.store.dispatch(showWarning({
+            title: 'So long!',
+            message: `You have been removed from ${teamName}`
+          }));
+          const {router} = this.props;
+          const onExTeamRoute = router.isActive(`/team/${teamId}`) || router.isActive(`/meeting/${teamId}`);
+          if (onExTeamRoute) {
+            router.push('/me');
+          }
+        }
+      });
+    }
     subscribeToPresence(oldProps, props) {
-      const {params, tms} = props;
-      const teamIds = params.teamId ? [params.teamId] : tms;
-      if (!teamIds) {
-        throw new Error(`Did not finish the welcome wizard! ${params} ${tms}`);
+      const {tms} = props;
+      if (!tms) {
+        throw new Error('Did not finish the welcome wizard! How did you get here?');
         // TODO redirect?
       }
       if (oldProps.tms !== props.tms) {
         const socket = socketCluster.connect();
-        for (let i = 0; i < teamIds.length; i++) {
-          const teamId = teamIds[i];
+        window.socket = socket;
+        for (let i = 0; i < tms.length; i++) {
+          const teamId = tms[i];
           if (tmsSubs.includes(teamId)) continue;
           tmsSubs.push(teamId);
           cashay.subscribe(PRESENCE, teamId, presenceSubscriber);

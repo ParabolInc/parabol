@@ -166,7 +166,7 @@ export default class MeetingContainer extends Component {
     const {members: oldMembers} = this.props;
     const oldFacilitatingMember = oldMembers[facilitatingMemberIdx];
     if (!oldFacilitatingMember || oldFacilitatingMember.isConnected === false) return;
-    // if the facilitator isn't connected, then make the first connected guy elect a new one
+    // if the facilitator isn't connected, then make the first connected user elect a new one
     const onlineMembers = members.filter((m) => m.isConnected);
     const callingMember = onlineMembers[0];
     const nextFacilitator = members.find((m) => m.isFacilitator && m.isConnected) || callingMember;
