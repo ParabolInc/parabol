@@ -102,14 +102,14 @@ export default {
         // add the team to the user doc
         .get(userId)
         .update({
-            tms: r.row('tms').append(teamId).default([teamId])
+          tms: r.row('tms').append(teamId).default([teamId])
         })
         // get number of users
         .do(() => {
           return r.table('TeamMember')
             .getAll(teamId, {index: 'teamId'})
             .filter({isNotRemoved: true})
-            .count()
+            .count();
         })
         // get the user
         .do((usersOnTeam) => ({
@@ -183,6 +183,14 @@ export default {
                 .filter({isLead: true})
                 .nth(0)('id')
             }, {nonAtomic: true});
+        })
+        // flag all actions as complete since the user can't edit them now, anyways
+        .do(() => {
+          return r.table('Action')
+            .getAll(teamMemberId, {index: 'teamMemberId'})
+            .update({
+              isComplete: true
+            })
         })
         // remove the teamId from the user tms array
         .do(() => {

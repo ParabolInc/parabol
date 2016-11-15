@@ -7,7 +7,7 @@ exports.up = async(r) => {
         .merge({
           isFacilitator: true,
           isNotRemoved: row('isActive')
-        })
+        });
     })
   ];
   await Promise.all(fields);
@@ -20,7 +20,7 @@ exports.down = async(r) => {
         .without('isNotRemoved')
         .merge({
           isActive: row('isNotRemoved')
-        })
+        });
     })
   ];
   await Promise.all(fields);
