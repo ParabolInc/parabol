@@ -62,7 +62,7 @@ exports.up = async(r) => {
     {
       id: 'auth0|5797eb5d12664ba4675745b9::team123',
       isActive: true,
-      isFacilitator: false,
+      isFacilitator: true,
       isLead: false,
       picture: 'http://static1.squarespace.com/static/5654d81ce4b0e1e5861165b7/565e0e3ce4b0f01662c88e7c/565e0e75e4b0e38c74d38ed3/1468511235959/tm-linkedin-avatar-baw.jpg',
       preferredName: 'taya',
@@ -94,7 +94,7 @@ exports.up = async(r) => {
     {
       id: 'auth0|57a8fb6cab6c18473e47f518::team456',
       isActive: true,
-      isFacilitator: false,
+      isFacilitator: true,
       isLead: false,
       picture: 'http://static1.squarespace.com/static/5654d81ce4b0e1e5861165b7/565e0e3ce4b0f01662c88e7c/565e0e75e4b0e38c74d38ecd/1468511229451/jh-linkedin-avatar.jpg',
       preferredName: 'jordan',
@@ -104,7 +104,7 @@ exports.up = async(r) => {
     {
       id: 'auth0|5797e83170dddc395d8d1675::team456',
       isActive: false,
-      isFacilitator: false,
+      isFacilitator: true,
       isLead: false,
       picture: 'http://static1.squarespace.com/static/5654d81ce4b0e1e5861165b7/565e0e3ce4b0f01662c88e7c/565e0e75e4b0a880d2eda25f/1468510094892/ta-linkedin-avatar.jpg',
       preferredName: 'terry',

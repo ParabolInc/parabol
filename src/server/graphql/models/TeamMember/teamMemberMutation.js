@@ -126,7 +126,7 @@ export default {
             userId,
             isActive: true,
             isLead: false,
-            isFacilitator: false,
+            isFacilitator: true,
             picture: teamCountAndUser('user')('picture').default(''),
             preferredName: teamCountAndUser('user')('preferredName').default(''),
           }).do(() =>

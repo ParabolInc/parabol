@@ -16,10 +16,7 @@ const createStartMeetingHandler = (members) => () => {
   if (!self) {
     throw new Error('You are not a member! How can that be?');
   }
-  const firstFacilitator = members.find((m) => m.isFacilitator && m.isConnected);
-  const safeFirstFacilitator = firstFacilitator || self;
-  const facilitatorId = self.isFacilitator ? self.id : safeFirstFacilitator.id;
-  const options = {variables: {facilitatorId}};
+  const options = {variables: {facilitatorId: self.id}};
   cashay.mutate('startMeeting', options);
 };
 
