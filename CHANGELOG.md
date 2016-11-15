@@ -4,6 +4,32 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.12.0 - 15-Nov-2016
+### Added
+- Added Team Settings implementation
+  - Can now rename teams
+  - Can promote a new team leader
+  - Can invite new team members
+    - Can resend invitations
+    - Can revoke invitations
+  - Can remove team members (even if they are in a meeting)
+
+### Fixed
+- #512 Grant facilitation permission to every team member
+
+## v0.11.0 - 05-Nov-2016
+### Added
+- Added S3 deployment to `npm run build:client-min` and application
+
+### Fixed
+- #482 Avatar style improvements
+   - Restores a default box shadow, with the option for border styling
+   - Makes lobby and last call primary buttons more prominent
+- #492 minor UI updates
+   - DashModal has updated border styling
+   - SummaryHeader has button-styled link to team dashboard
+   - LastCall pulls success expression from array
+
 ## v0.10.0 - 02-Nov-2016
 ### Added
 - #458 Added ability to create and invite new teams

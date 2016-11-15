@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "0.10.0",
+  "version": "0.12.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -133,7 +133,8 @@
     "sinon": "^1.17.6",
     "socketcluster": "^5.0.11",
     "socketcluster-client": "^5.0.10",
-    "tinycolor2": "^1.4.1"
+    "tinycolor2": "^1.4.1",
+    "webpack-s3-plugin": "^0.9.0"
   },
   "ava": {
     "babel": "inherit",

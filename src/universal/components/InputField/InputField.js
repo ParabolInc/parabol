@@ -54,6 +54,12 @@ const InputField = (props) => {
     return labelForName;
   };
 
+  const submitOnEnter = (e) => {
+    if (e.key === 'Enter') {
+      onButtonClick(e);
+    }
+  };
+
   return (
     <FieldBlock>
       {label &&
@@ -79,6 +85,7 @@ const InputField = (props) => {
             className={`${inputStyles}`}
             disabled={disabled || readyOnly}
             placeholder={placeholder}
+            onKeyDown={onButtonClick && submitOnEnter}
           />
         }
         {hasButton &&

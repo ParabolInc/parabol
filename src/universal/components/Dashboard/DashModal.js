@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
 const DashModal = (props) => {
@@ -79,7 +80,8 @@ const styleThunk = () => ({
 
   modal: {
     background: '#fff',
-    boxShadow: '0 0 0 .75rem rgba(9, 141, 143, .5)',
+    boxShadow: `0 0 0 .25rem ${appTheme.palette.mid30a}`,
+    borderRadius: '.5rem',
     padding: '2rem',
     width: '30rem'
   }

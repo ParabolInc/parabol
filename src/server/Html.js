@@ -5,7 +5,9 @@ import {RouterContext} from 'react-router';
 import {renderToString} from 'react-dom/server';
 import makeSegmentSnippet from '@segment/snippet';
 import {auth0} from 'universal/utils/clientOptions';
+import getWebpackPublicPath from 'universal/utils/getWebpackPublicPath';
 
+const webpackPublicPath = getWebpackPublicPath();
 const segKey = process.env.SEGMENT_WRITE_KEY;
 const segmentSnippet = segKey && makeSegmentSnippet.min({
   host: 'cdn.segment.com',
@@ -29,6 +31,7 @@ export default function Html({store, entries, StyleSheetServer, renderProps}) {
   const clientOptions = `
     window.__ACTION__ = {
       auth0: ${JSON.stringify(auth0)},
+      cdn: ${JSON.stringify(webpackPublicPath)},
       sentry: ${JSON.stringify(process.env.SENTRY_DSN_PUBLIC)}
     };
 `;
@@ -48,8 +51,8 @@ export default function Html({store, entries, StyleSheetServer, renderProps}) {
         <script dangerouslySetInnerHTML={{__html: clientOptions}}/>
         <div id="root" dangerouslySetInnerHTML={{__html: html}}></div>
         <script dangerouslySetInnerHTML={{__html: manifest.text}}/>
-        <script src={vendor.js}/>
-        <script src={app.js}/>
+        <script src={`${webpackPublicPath}${vendor.js}`}/>
+        <script src={`${webpackPublicPath}${app.js}`}/>
       </body>
     </html>
   );

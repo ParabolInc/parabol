@@ -38,8 +38,9 @@ const ui = {
   dashSidebarWidth: '15rem',
 
   // Email
-  emailBackgroundColor: '#F9FAFB',
+  emailBackgroundColor: backgroundColor,
   emailFontFamily: '"Karla", "Helvetica Neue", serif',
+  emailRuleColor: appTheme.palette.mid20l,
   emailTableBase: {
     borderCollapse: 'collapse',
     marginLeft: 'auto',

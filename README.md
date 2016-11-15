@@ -154,6 +154,8 @@ get involved and how to get compensated.
 
 | Release | Summary                                    |
 |---------|--------------------------------------------|
+| v0.12.0 | Added team settings, modal components      |
+| v0.11.0 | Added S3 deployment, minor UI improvements |
 | v0.10.0 | Can add new teams, many fixes              |
 | v0.9.6  | Auto-elect new facilitator, fixes          |
 | v0.9.5  | Fixes #433, #440, #445                     |

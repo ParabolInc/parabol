@@ -42,13 +42,13 @@ const MeetingLobby = (props) => {
             label="Start Meeting"
             onClick={onStartMeetingClick}
             size="largest"
-            style="outlined"
+            style="solid"
             colorPalette="cool"
             textTransform="uppercase"
           />
           <div className={css(styles.helpText)}>
             The person who presses “Start Meeting” will lead the meeting.<br/>
-            Everyone else's display will follow the leader automatically.
+            Everyone else’s display will follow the leader automatically.
           </div>
         </div>
         {/* */}
