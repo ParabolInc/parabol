@@ -190,7 +190,7 @@ export default {
             .getAll(teamMemberId, {index: 'teamMemberId'})
             .update({
               isComplete: true
-            })
+            });
         })
         // remove the teamId from the user tms array
         .do(() => {
