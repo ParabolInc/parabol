@@ -1,13 +1,13 @@
 import getRethink from 'server/database/rethinkDriver';
 import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
 import {getRequestedFields} from '../utils';
-import {TeamMember} from './teamMemberSchema';
+import {Invitation} from './invitationSchema';
 import {requireSUOrTeamMember} from '../authorization';
 import makeChangefeedHandler from '../makeChangefeedHandler';
 
 export default {
-  teamMembers: {
-    type: new GraphQLList(TeamMember),
+  invitations: {
+    type: new GraphQLList(Invitation),
     args: {
       teamId: {
         type: new GraphQLNonNull(GraphQLID),
@@ -19,9 +19,10 @@ export default {
       requireSUOrTeamMember(authToken, teamId);
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
-      r.table('TeamMember')
+      const now = Date.now();
+      r.table('Invitation')
         .getAll(teamId, {index: 'teamId'})
-        .filter({isNotRemoved: true})
+        .filter(r.row('tokenExpiration').ge(r.epochTime(now / 1000)))
         .pluck(requestedFields)
         .changes({includeInitial: true})
         .run({cursor: true}, changefeedHandler);

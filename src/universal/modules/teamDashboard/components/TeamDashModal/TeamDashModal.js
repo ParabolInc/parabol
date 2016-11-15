@@ -8,7 +8,7 @@ const TeamDashModal = (props) => {
   const {teamId, teamName, router} = props;
   const handleClick = () => router.push(`/meeting/${teamId}`);
   return (
-    <DashModal>
+    <DashModal position="absolute" showsOver="main">
       <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
         Oh, hi there!
       </Type>

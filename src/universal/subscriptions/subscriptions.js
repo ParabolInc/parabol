@@ -4,6 +4,7 @@ import {
   ACTIONS_BY_AGENDA,
   AGENDA,
   ARCHIVED_PROJECTS,
+  INVITATIONS,
   TEAM,
   TEAM_MEMBERS,
   PRESENCE,
@@ -89,6 +90,18 @@ export default [
     }`
   },
   {
+    channel: INVITATIONS,
+    string: `
+    subscription($teamId: ID!) {
+      invitations(teamId: $teamId) {
+        id
+        email
+        tokenExpiration
+        updatedAt
+      }
+    }`
+  },
+  {
     channel: PRESENCE,
     string: `
     subscription($teamId: ID!) {
@@ -141,9 +154,10 @@ export default [
     string: `
     subscription($teamId: ID!) {
        teamMembers(teamId: $teamId) {
-         checkInOrder,
          id,
-         isActive,
+         checkInOrder,
+         email,
+         isNotRemoved,
          isCheckedIn,
          isFacilitator,
          isLead,

@@ -3,15 +3,18 @@ import {resolvePromiseMap} from 'universal/utils/promises';
 
 const setImports = () =>
   new Map([
-    ['component', System.import('universal/modules/teamDashboard/containers/TeamArchive/TeamArchiveContainer')],
+    ['component', System.import(
+      'universal/modules/teamDashboard/containers/TeamSettings/TeamSettingsContainer')],
+    ['teamSettings', System.import('universal/modules/teamDashboard/ducks/teamSettingsDuck')]
   ]);
 
 const getImports = importMap => ({
-  component: importMap.get('component')
+  component: importMap.get('component'),
+  teamSettings: importMap.get('teamSettings').default
 });
 
 export default (store) => ({
-  path: 'archive',
+  path: 'settings',
   getComponent: async(location, cb) => {
     const promiseMap = setImports();
     const importMap = await resolvePromiseMap(promiseMap);

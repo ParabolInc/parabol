@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
 import FontAwesome from 'react-fontawesome';
+import EditTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditTeamName';
 import {
   DashContent,
   DashHeader,
@@ -9,6 +10,7 @@ import {
 import {Link, withRouter} from 'react-router';
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
 import TeamDashModal from '../TeamDashModal/TeamDashModal';
+
 
 const faIconStyle = {
   fontSize: '14px',
@@ -59,17 +61,22 @@ const settingsLinks = (teamId) => {
   );
 };
 
+// use the same object so the EditTeamName doesn't rerender so gosh darn always
+const initialValues = {teamName: ''};
+
 const Team = (props) => {
   const {children, router, team, teamMembers} = props;
   const teamId = team.id;
   const teamName = team.name;
   const hasOverlay = Boolean(team && team.meetingId);
   const isSettings = router.isActive(`/team/${teamId}/settings`, false);
+  initialValues.teamName = teamName;
+  const DashHeaderInfoTitle = isSettings ? <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId}/> : teamName;
   return (
     <DashMain>
       {hasOverlay && <TeamDashModal teamId={teamId} teamName={teamName}/>}
       <DashHeader hasOverlay={hasOverlay}>
-        <DashHeaderInfo title={teamName}>
+        <DashHeaderInfo title={DashHeaderInfoTitle}>
           {isSettings ? settingsLinks(teamId) : standardLinks(teamId)}
         </DashHeaderInfo>
         <DashboardAvatars teamMembers={teamMembers}/>
@@ -83,7 +90,7 @@ const Team = (props) => {
 
 Team.propTypes = {
   children: PropTypes.any,
-  router: PropTypes.object.isRequired,
+  router: PropTypes.object,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired,
 };
