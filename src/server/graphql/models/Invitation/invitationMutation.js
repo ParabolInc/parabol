@@ -39,6 +39,7 @@ export default {
             invites: inviteEmails,
             teamMembers: r.table('TeamMember')
               .getAll(teamId, {index: 'teamId'})
+              .coerceTo('array')
           };
         });
       const alreadyInvited = invitees
