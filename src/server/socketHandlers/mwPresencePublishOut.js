@@ -31,20 +31,25 @@ export default function mwPresencePublishOut(req, next) {
         const subs = req.socket.subscriptions();
         subs.forEach((sub) => {
           if (sub.indexOf(channelKey) !== -1) {
+            // remove from client cache
+            req.socket.emit(sub, {
+              type: 'remove',
+              fields: {
+                id: channelKey
+              }
+            });
+            // stop listening
             req.socket.kickOut(sub, 'Removed from team');
           }
         });
-        req.data = {
-          type: 'remove',
-          fields: {
-            id: channelKey
-          }
-        };
         const idxToRemove = authToken.tms.indexOf(channelKey);
         if (idxToRemove !== -1) {
           authToken.tms.splice(idxToRemove, 1);
         }
+        // replace token with one that doesn't include the teamId in tms
         req.socket.setAuthToken(authToken);
+        next(true);
+        return;
       }
     }
   }
