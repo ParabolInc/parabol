@@ -1262,7 +1262,7 @@ babel-register@6.14.0:
     path-exists "^1.0.0"
     source-map-support "^0.2.10"
 
-babel-runtime@^6.0.0, babel-runtime@^6.11.6, babel-runtime@^6.2.0, babel-runtime@^6.3.19, babel-runtime@^6.9.0, babel-runtime@^6.9.1, babel-runtime@>=6.0.0:
+babel-runtime@^6.0.0, babel-runtime@^6.11.6, babel-runtime@^6.2.0, babel-runtime@^6.3.19, babel-runtime@^6.9.0, babel-runtime@^6.9.1:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babel-runtime/-/babel-runtime-6.18.0.tgz#0f4177ffd98492ef13b9f823e9994a02584c9078"
   dependencies:
@@ -1675,11 +1675,11 @@ caseless@~0.11.0:
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.11.0.tgz#715b96ea9841593cc33067923f5ec60ebda4f7d7"
 
-cashay@^0.20.13:
-  version "0.20.13"
-  resolved "https://registry.yarnpkg.com/cashay/-/cashay-0.20.13.tgz#0f975215c84a350b0de3856273b2d8df08a57109"
+cashay@^0.20.14:
+  version "0.20.14"
+  resolved "https://registry.yarnpkg.com/cashay/-/cashay-0.20.14.tgz#c998dc75df6baecf21efa09c1e8054a3bee99909"
   dependencies:
-    graphql "0.6.0"
+    graphql "0.7.1"
     isomorphic-fetch "^2.2.1"
     minimist "^1.2.0"
 
@@ -3334,15 +3334,15 @@ graphql-custom-datetype@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/graphql-custom-datetype/-/graphql-custom-datetype-0.3.0.tgz#6849d8fa6f3d685110b93bec753e7561c7fc720f"
 
-graphql@0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-0.6.0.tgz#6a0e04284e759bd1d4cb87257ec1a670b749cf4a"
-  dependencies:
-    babel-runtime ">=6.0.0"
-
 graphql@0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-0.7.0.tgz#5701492838edc6c673c184075eb8f06b11a7e451"
+  dependencies:
+    iterall "1.0.2"
+
+graphql@0.7.1:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/graphql/-/graphql-0.7.1.tgz#3918e6b8a1f93c0e174573e51f705165294c43c6"
   dependencies:
     iterall "1.0.2"
 
