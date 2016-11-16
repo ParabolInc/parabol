@@ -73,7 +73,7 @@ const TeamColumnsContainer = (props) => {
   const {myTeamMemberId, projects, teamId} = props;
   const dragProject = (sourceProps, targetProps) => {
     const {id, teamSort: sourceTeamSort, status: sourceStatus} = sourceProps;
-    const {project: {teamSort: targetTeamSort, status: targetStatus}} = targetProps;
+    const {teamSort: targetTeamSort, status: targetStatus} = targetProps;
     const safeSortOrder = sourceStatus === targetStatus ? sourceTeamSort : -Infinity;
     // TODO handle case where both are equal
     const updatedTeamSort = getNewSortOrder(projects[targetStatus], safeSortOrder, targetTeamSort, true, 'teamSort');
@@ -89,6 +89,7 @@ const TeamColumnsContainer = (props) => {
     };
     // mutative!
     sourceProps.teamSort = updatedTeamSort;
+    sourceProps.status = targetStatus;
     cashay.mutate('updateProject', options);
   };
   return (

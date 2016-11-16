@@ -18,8 +18,8 @@ const projectSource = {
 };
 
 const projectTarget = {
-  hover(targetProps, monitor, component) {
-    const {project: {teamSort: targetTeamSort, id: targetId}} = targetProps;
+  hover({project: targetProps}, monitor, component) {
+    const {teamSort: targetTeamSort, id: targetId} = targetProps;
     const sourceProps = monitor.getItem();
     const {dragProject, id: sourceId, teamSort: sourceTeamSort} = sourceProps;
     if (sourceId === targetId) return;
