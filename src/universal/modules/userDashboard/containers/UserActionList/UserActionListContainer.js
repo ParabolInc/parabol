@@ -2,17 +2,7 @@ import React, {PropTypes} from 'react';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import UserActionList from 'universal/modules/userDashboard/components/UserActionList/UserActionList';
-
-const getNewSortOrder = (actions, sourceSortOrder, targetSortOrder) => {
-  const isDesc = actions[0].sortOrder > actions[1].sortOrder;
-  const isMovingLeft = isDesc ? sourceSortOrder < targetSortOrder : sourceSortOrder > targetSortOrder;
-  const targetIdx = actions.findIndex((action) => action.sortOrder === targetSortOrder);
-  const afterTarget = isMovingLeft ? actions[targetIdx - 1] : actions[targetIdx + 1];
-  if (afterTarget) {
-    return (afterTarget.sortOrder + targetSortOrder) / 2;
-  }
-  return (isDesc === isMovingLeft) ? targetSortOrder + 1 : targetSortOrder - 1;
-};
+import getNewSortOrder from 'universal/utils/getNewSortOrder';
 
 const userActionListQuery = `
 query {
@@ -104,7 +94,7 @@ const mapStateToProps = (state) => {
 const UserActionListContainer = (props) => {
   const {actions, dispatch, queryKey, selectingNewActionTeam, teams, userId} = props;
   const dragAction = (sourceId, sourceSortOrder, targetSortOrder, monitorItems) => {
-    const updatedSortOrder = getNewSortOrder(actions, sourceSortOrder, targetSortOrder);
+    const updatedSortOrder = getNewSortOrder(actions, sourceSortOrder, targetSortOrder, true, 'sortOrder');
     const options = {
       ops: {userActions: queryKey},
       variables: {updatedAction: {id: sourceId, sortOrder: updatedSortOrder}}

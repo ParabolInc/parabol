@@ -32,7 +32,7 @@ const handleAddProjectFactory = (status, teamMemberId, teamSort, userSort) => ()
 };
 
 const ProjectColumn = (props) => {
-  const {area, status, projects, myTeamMemberId, styles, teams, userId} = props;
+  const {area, dragProject, status, projects, myTeamMemberId, styles, teams, userId} = props;
 
   const label = themeLabels.projectStatus[status].slug;
   const makeAddProjectButton = (clickHandler) => {
@@ -118,6 +118,7 @@ const ProjectColumn = (props) => {
             <ProjectCardContainer
               key={`teamCard${project.id}`}
               area={area}
+              dragProject={dragProject}
               project={project}
             />)
           }
@@ -131,6 +132,7 @@ ProjectColumn.propTypes = {
   area: PropTypes.string,
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.array.isRequired,
+  queryKey: PropTypes.string,
   status: PropTypes.string,
   styles: PropTypes.object,
   teams: PropTypes.array,

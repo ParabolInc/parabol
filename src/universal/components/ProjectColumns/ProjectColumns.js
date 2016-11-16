@@ -8,12 +8,13 @@ import ProjectColumn from 'universal/modules/teamDashboard/components/ProjectCol
 const ProjectColumns = (props) => {
   // myTeamMemberId is undefined if this is coming from USER_DASH
   // TODO we only need userId, we can compute myTeamMemberId
-  const {alignColumns, area, myTeamMemberId, projects, styles, teams, userId, zIndex} = props;
+  const {alignColumns, area, dragProject, myTeamMemberId, projects, queryKey, styles, teams, userId, zIndex} = props;
   const rootStyles = css(styles.root, styles[alignColumns]);
   const positionStyle = zIndex && {
     position: 'relative',
     zIndex
   };
+
   return (
     <div className={rootStyles} style={positionStyle}>
       <div className={css(styles.columns)}>
@@ -21,8 +22,10 @@ const ProjectColumns = (props) => {
           <ProjectColumn
             key={`projectCol${status}`}
             area={area}
+            dragProject={dragProject}
             myTeamMemberId={myTeamMemberId}
             projects={projects[status]}
+            queryKey={queryKey}
             status={status}
             teams={teams}
             userId={userId}
@@ -42,6 +45,7 @@ ProjectColumns.propTypes = {
   area: PropTypes.string,
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.object.isRequired,
+  queryKey: PropTypes.string,
   styles: PropTypes.object,
   teams: PropTypes.array,
   userId: PropTypes.string,
