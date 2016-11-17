@@ -13,7 +13,7 @@ import {cashay} from 'cashay';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
 
 const UserActionList = (props) => {
-  const {actions, dispatch, selectingNewActionTeam, styles, teams, userId} = props;
+  const {actions, dispatch, dragAction, selectingNewActionTeam, styles, teams, userId} = props;
   const actionCount = actions.length;
   const createNewAction = () => {
     if (teams.length > 1) {
@@ -32,7 +32,12 @@ const UserActionList = (props) => {
       cashay.mutate('createAction', options);
     }
   };
-
+  const parentStyles = css(
+    styles.root,
+    styles.block,
+    styles.actionsBlock,
+    styles.actions
+  );
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.block)}>
@@ -45,13 +50,16 @@ const UserActionList = (props) => {
         {actionCount ?
           <div className={css(styles.actionsBlock)}>
             <div className={css(styles.actions)}>
-              {actions.map(item =>
+              {actions.map(action =>
                 <UserActionListItemContainer
-                  key={`actionItem::${item.id}`}
-                  content={item.content}
-                  form={`actionItem::${item.id}`}
-                  actionId={item.id}
-                  team={item.team.name}
+                  key={`actionItem::${action.id}`}
+                  actionId={action.id}
+                  content={action.content}
+                  dragAction={dragAction}
+                  form={`actionItem::${action.id}`}
+                  parentStyles={parentStyles}
+                  sortOrder={action.sortOrder}
+                  team={action.team.name}
                 />
               )}
               <div className={css(styles.hr)}></div>
@@ -67,6 +75,7 @@ const UserActionList = (props) => {
 UserActionList.propTypes = {
   actions: PropTypes.array,
   dispatch: PropTypes.func,
+  dragAction: PropTypes.func,
   selectingNewActionTeam: PropTypes.bool,
   styles: PropTypes.object,
   teams: PropTypes.array,
@@ -80,7 +89,7 @@ const styleThunk = () => ({
     flexDirection: 'column',
     padding: `0 ${ui.dashGutter}`,
     position: 'relative',
-    width: '100%'
+    width: ui.dashActionsWidth
   },
 
   block: {
@@ -122,6 +131,9 @@ const styleThunk = () => ({
     borderWidth: '0 1px 1px',
     boxShadow: `inset 0 1px 0 ${ui.cardBorderColor}`,
     maxHeight: '100%',
+    // @terry this is required for no scroll bars, but conflicts with overflowTouch
+    // @matt this block is scrollable when it reaches the maxHeight of the container (based on viewport height)
+    // overflow: 'hidden',
     padding: '0 0 .5rem',
     position: 'absolute',
     width: '100%'

@@ -19,6 +19,7 @@ const MeetingUpdates = (props) => {
     gotoNext,
     localPhaseItem,
     members,
+    queryKey,
     projects,
     styles,
     team
@@ -73,7 +74,7 @@ const MeetingUpdates = (props) => {
           </div>
         </div>
         <div className={css(styles.body)}>
-          <ProjectColumns alignColumns="center" myTeamMemberId={self && self.id} projects={projects} area={MEETING}/>
+          <ProjectColumns alignColumns="center" myTeamMemberId={self && self.id} projects={projects} queryKey={queryKey} area={MEETING}/>
         </div>
         {/* */}
         {/* */}

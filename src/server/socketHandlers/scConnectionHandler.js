@@ -16,26 +16,14 @@ const isTmsValid = (tmsFromDB, tmsFromToken) => {
 };
 export default function scConnectionHandler(exchange) {
   return async function connectionHandler(socket) {
-    const r = getRetink();
-    const authToken = socket.getAuthToken();
-    const now = new Date();
-    const tokenExpiration = new Date(authToken.exp * 1000);
-    const timeLeftOnToken = tokenExpiration - now;
-    // if the user was booted from the team, give them a new token
-    const tms = await r.table('User').get(authToken.sub)('tms');
-    const tmsIsValid = isTmsValid(tms, authToken.tms);
-    if (timeLeftOnToken < REFRESH_JWT_AFTER || !tmsIsValid) {
-      authToken.tms = tms;
-      socket.setAuthToken(authToken);
-    }
-    const subscribeHandler = scSubscribeHandler(exchange, socket);
-    const unsubscribeHandler = scUnsubscribeHandler(exchange, socket);
-    const graphQLHandler = scGraphQLHandler(exchange, socket);
     // socket.on('message', message => {
     //   if (message === '#2') return;
     //   console.log('SOCKET SAYS:', message);
     // });
     // if someone tries to replace their server-provided token with an older one that gives access to more teams, exit
+    const subscribeHandler = scSubscribeHandler(exchange, socket);
+    const unsubscribeHandler = scUnsubscribeHandler(exchange, socket);
+    const graphQLHandler = scGraphQLHandler(exchange, socket);
     socket.on('message', (message) => {
       if (isObject(message) && message.event === '#authenticate') {
         const decodedToken = jwtDecode(message.data);
@@ -51,5 +39,19 @@ export default function scConnectionHandler(exchange) {
     socket.on('disconnect', () => {
       console.log('Client disconnected:', socket.id);
     });
+
+    // the async part should come last so there isn't a race
+    const r = getRetink();
+    const authToken = socket.getAuthToken();
+    const now = new Date();
+    const tokenExpiration = new Date(authToken.exp * 1000);
+    const timeLeftOnToken = tokenExpiration - now;
+    // if the user was booted from the team, give them a new token
+    const tms = await r.table('User').get(authToken.sub)('tms');
+    const tmsIsValid = isTmsValid(tms, authToken.tms);
+    if (timeLeftOnToken < REFRESH_JWT_AFTER || !tmsIsValid) {
+      authToken.tms = tms;
+      socket.setAuthToken(authToken);
+    }
   };
 }

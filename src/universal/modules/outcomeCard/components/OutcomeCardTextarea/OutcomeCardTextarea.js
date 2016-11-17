@@ -85,6 +85,7 @@ class OutcomeCardTextArea extends Component {
         disabled={isArchived}
         placeholder="Type your outcome here"
         onBlur={handleBlur}
+        onDrop={null}
         onKeyDown={submitOnEnter}
         onKeyUp={handleKeyPress}
         autoFocus={doFocus}

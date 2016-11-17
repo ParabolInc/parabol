@@ -39,9 +39,10 @@ const mapStateToProps = (state) => {
   const {sub: userId} = state.auth.obj;
   const {teamFilterId} = state.userDashboard;
   const filterFn = teamFilterId ? (doc) => doc.id === teamFilterId : () => true;
+  const queryKey = teamFilterId || '';
   const {teams} = cashay.query(userColumnsQuery, {
     op: 'userColumnsContainer',
-    key: teamFilterId || '',
+    key: queryKey,
     resolveCached: {
       teams: () => () => true
     },
@@ -57,20 +58,22 @@ const mapStateToProps = (state) => {
   }).data;
   return {
     projects: resolveUserProjects(teams),
+    queryKey,
     teams,
     userId: state.auth.obj.sub
   };
 };
 
 const UserColumnsContainer = (props) => {
-  const {projects, teams, userId} = props;
+  const {queryKey, projects, teams, userId} = props;
   return (
-    <ProjectColumns projects={projects} area={USER_DASH} teams={teams} userId={userId} zIndex="200" />
+    <ProjectColumns queryKey={queryKey} projects={projects} area={USER_DASH} teams={teams} userId={userId} zIndex="200" />
   );
 };
 
 UserColumnsContainer.propTypes = {
   projects: PropTypes.object,
+  queryKey: PropTypes.string,
   teams: PropTypes.array,
   userId: PropTypes.string
 };

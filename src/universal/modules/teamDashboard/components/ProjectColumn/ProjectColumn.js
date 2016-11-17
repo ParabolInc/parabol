@@ -13,6 +13,20 @@ import {cashay} from 'cashay';
 import shortid from 'shortid';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import {Menu, MenuItem} from 'universal/modules/menu';
+import {DropTarget as dropTarget} from 'react-dnd';
+import {PROJECT} from 'universal/utils/constants';
+
+const columnTarget = {
+  hover(targetProps, monitor) {
+    const {dragProject, projects, status: targetStatus} = targetProps;
+    const sourceProps = monitor.getItem();
+    const {status: sourceStatus} = sourceProps;
+    if (projects.length > 0 || targetStatus === sourceStatus) {
+      return;
+    }
+    dragProject(sourceProps, {teamSort: 0, status: targetStatus});
+  }
+};
 
 const badgeIconStyle = {
   height: '1.5rem',
@@ -32,7 +46,7 @@ const handleAddProjectFactory = (status, teamMemberId, teamSort, userSort) => ()
 };
 
 const ProjectColumn = (props) => {
-  const {area, status, projects, myTeamMemberId, styles, teams, userId} = props;
+  const {area, connectDropTarget, dragProject, status, projects, myTeamMemberId, styles, teams, userId} = props;
 
   const label = themeLabels.projectStatus[status].slug;
   const makeAddProjectButton = (clickHandler) => {
@@ -97,7 +111,7 @@ const ProjectColumn = (props) => {
     return null;
   };
 
-  return (
+  return connectDropTarget(
     <div className={css(styles.column)}>
       <div className={css(styles.columnHeader)}>
         <span className={css(styles.statusBadge, styles[`${status}Bg`])}>
@@ -118,6 +132,7 @@ const ProjectColumn = (props) => {
             <ProjectCardContainer
               key={`teamCard${project.id}`}
               area={area}
+              dragProject={dragProject}
               project={project}
             />)
           }
@@ -131,6 +146,7 @@ ProjectColumn.propTypes = {
   area: PropTypes.string,
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.array.isRequired,
+  queryKey: PropTypes.string,
   status: PropTypes.string,
   styles: PropTypes.object,
   teams: PropTypes.array,
@@ -235,4 +251,10 @@ const styleThunk = () => ({
   ...projectStatusStyles('color'),
 });
 
-export default withStyles(styleThunk)(ProjectColumn);
+const dropTargetCb = (connectTarget) => ({
+  connectDropTarget: connectTarget.dropTarget()
+});
+
+export default dropTarget(PROJECT, columnTarget, dropTargetCb)(
+  withStyles(styleThunk)(ProjectColumn)
+);

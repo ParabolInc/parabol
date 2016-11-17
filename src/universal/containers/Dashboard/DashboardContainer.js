@@ -3,6 +3,8 @@ import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {DashSidebar} from 'universal/components/Dashboard';
 import DashLayoutContainer from 'universal/containers/DashLayoutContainer/DashLayoutContainer';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
+import {DragDropContext as dragDropContext} from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 
 const DashboardContainer = (props) => {
   const {children, location: {pathname}} = props;
@@ -25,6 +27,8 @@ DashboardContainer.propTypes = {
 export default
 requireAuth(
   socketWithPresence(
-    DashboardContainer
+    dragDropContext(HTML5Backend)(
+      DashboardContainer
+    )
   )
 );
