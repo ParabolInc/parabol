@@ -20,9 +20,8 @@ function getItemStyles(props) {
       display: 'none'
     };
   }
-
   const {x, y} = currentOffset;
-  const transform = `translate3d(${x}px, ${y}px, 0px) scale(1.03)`;
+  const transform = `translate3d(${x}px, ${y}px, 0px)`;
   return {
     ...layerStyles,
     transform,
@@ -46,6 +45,7 @@ export default class ActionDragLayer extends Component {
       return null;
     }
     const dragStyle = {
+      backgroundColor: appTheme.palette.light10l,
       borderColor: appTheme.palette.mid70l,
       borderRadius: '.25rem',
       boxShadow: '0 1px 2px rgba(0, 0, 0, .15)'
