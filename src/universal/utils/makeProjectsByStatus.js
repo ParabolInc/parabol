@@ -13,6 +13,7 @@ export default function makeProjectsByStatus(projects, sortOrder) {
     projectsByStatus[project.status].push(project);
   }
 
+  // sort after for performance
   for (let i = 0; i < columnArray.length; i++) {
     const status = columnArray[i];
     projectsByStatus[status].sort((a, b) => b[sortOrder] - a[sortOrder]);

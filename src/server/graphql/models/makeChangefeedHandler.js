@@ -63,11 +63,11 @@ const handleRethinkChangefeed = (doc, removalFields) => {
 
 
 export default function makeChangefeedHandler(socket, subbedChannelName, options = {}) {
-  const {removalFields} = options;
   return (err, cursor) => {
     if (err) throw err;
     cursor.each((error, data) => {
       if (error) throw error;
+      const {removalFields} = options;
       const payload = handleRethinkChangefeed(data, removalFields);
       if (payload.fields) {
         socket.emit(subbedChannelName, payload);

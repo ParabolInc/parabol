@@ -14,7 +14,10 @@ const projectSource = {
       teamSort: props.project.teamSort,
       dragProject: props.dragProject
     };
-  }
+  },
+  isDragging(props, monitor) {
+    return props.project.id === monitor.getItem().id;
+  },
 };
 
 const projectTarget = {
@@ -84,17 +87,16 @@ const mapStateToProps = (state, props) => {
 
 const ProjectCardContainer = (props) => {
   const {area, connectDragSource, connectDropTarget, isDragging, myUserId, project} = props;
-  const {id, status} = project;
-  const form = `${status}::${id}`;
   return connectDropTarget(connectDragSource(
-    <div>
+    <div style={{opacity: isDragging ? 0 : 1}}>
       <OutcomeOrNullCard
         area={area}
-        form={form}
+        form={project.id}
         outcome={project}
         myUserId={myUserId}
       />
     </div>
+
   ));
 };
 

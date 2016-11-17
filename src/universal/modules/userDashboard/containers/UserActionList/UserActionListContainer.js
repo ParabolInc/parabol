@@ -24,14 +24,19 @@ query {
 `;
 
 const mutationHandlers = {
-  updateAction(optimisticVariables, queryResponse, currentResponse) {
-    if (optimisticVariables && optimisticVariables.hasOwnProperty('sortOrder')) {
-      const {id, sortOrder} = optimisticVariables;
-
-      const fromAction = currentResponse.actions.find((action) => action.id === id);
-      fromAction.sortOrder = sortOrder;
-      currentResponse.actions.sort((a, b) => b.sortOrder - a.sortOrder);
-      return currentResponse;
+  updateAction(optimisticUpdates, queryResponse, currentResponse) {
+    if (optimisticUpdates) {
+      const {updatedAction} = optimisticUpdates;
+      if (updatedAction && updatedAction.hasOwnProperty('sortOrder')) {
+        const {id, sortOrder} = updatedAction;
+        const {actions} = currentResponse;
+        const fromAction = actions.find((action) => action.id === id);
+        if (fromAction && sortOrder !== undefined) {
+          fromAction.sortOrder = sortOrder;
+          actions.sort((a, b) => b.sortOrder - a.sortOrder);
+          return currentResponse;
+        }
+      }
     }
     return undefined;
   }

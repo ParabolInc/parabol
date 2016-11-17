@@ -37,14 +37,27 @@ const resolveTeamProjects = (teamMembers) => {
 };
 
 const mutationHandlers = {
-  updateProject(optimisticVariables, queryResponse, currentResponse) {
-    if (optimisticVariables && optimisticVariables.hasOwnProperty('teamSort')) {
-      const {id, teamSort, status} = optimisticVariables;
-      const fromAction = currentResponse.projects.find((action) => action.id === id);
-      fromAction.teamSort = teamSort;
-      fromAction.status = status;
-      // no need to sort since the resolveTeamProjects function will do that next
-      return currentResponse;
+  updateProject(optimisticUpdates, queryResponse, currentResponse) {
+    if (optimisticUpdates) {
+      const {updatedProject} = optimisticUpdates;
+      if (updatedProject && updatedProject.hasOwnProperty('teamSort')) {
+        const {id, teamSort, status} = updatedProject;
+        const {teamMembers} = currentResponse;
+        for (let i = 0; i < teamMembers.length; i++) {
+          const teamMember = teamMembers[i];
+          const fromProject = teamMember.projects.find((action) => action.id === id);
+          if (fromProject) {
+            if (teamSort) {
+              fromProject.teamSort = teamSort;
+            }
+            if (status) {
+              fromProject.status = status;
+            }
+            // no need to sort since the resolveTeamProjects function will do that next
+            return currentResponse;
+          }
+        }
+      }
     }
     return undefined;
   }
@@ -72,28 +85,35 @@ const mapStateToProps = (state, props) => {
 const TeamColumnsContainer = (props) => {
   const {myTeamMemberId, projects, teamId} = props;
   const dragProject = (sourceProps, targetProps) => {
-    const {id, teamSort: sourceTeamSort, status: sourceStatus} = sourceProps;
-    const {teamSort: targetTeamSort, status: targetStatus} = targetProps;
-    const safeSortOrder = sourceStatus === targetStatus ? sourceTeamSort : -Infinity;
+    const safeSortOrder = sourceProps.status === targetProps.status ? sourceProps.teamSort : -Infinity;
     // TODO handle case where both are equal
-    const updatedTeamSort = getNewSortOrder(projects[targetStatus], safeSortOrder, targetTeamSort, true, 'teamSort');
-    const updatedProject = {id, teamSort: updatedTeamSort};
-    if (sourceStatus !== targetStatus) {
-      updatedProject.status = targetStatus;
+    const updatedTeamSort = getNewSortOrder(projects[targetProps.status], safeSortOrder, targetProps.teamSort, true, 'teamSort');
+    const updatedProject = {};
+    if (sourceProps.status !== targetProps.status) {
+      updatedProject.status = targetProps.status;
+      // mutative!
+      sourceProps.status = targetProps.status;
     }
-    const options = {
-      ops: {
-        teamColumnsContainer: teamId,
-      },
-      variables: {updatedProject}
-    };
-    // mutative!
-    sourceProps.teamSort = updatedTeamSort;
-    sourceProps.status = targetStatus;
-    cashay.mutate('updateProject', options);
+    if (sourceProps.teamSort !== updatedTeamSort) {
+      updatedProject.teamSort = updatedTeamSort;
+      // mutative!
+      sourceProps.teamSort = updatedTeamSort;
+    }
+    // make sure we tell the server something useful
+    if (Object.keys(updatedProject).length > 0) {
+      updatedProject.id = sourceProps.id;
+      const options = {
+        ops: {
+          teamColumnsContainer: teamId,
+        },
+        variables: {updatedProject}
+      };
+      cashay.mutate('updateProject', options);
+    }
   };
   return (
-    <ProjectColumns dragProject={dragProject} myTeamMemberId={myTeamMemberId} projects={projects} queryKey={teamId} area={TEAM_DASH}/>
+    <ProjectColumns dragProject={dragProject} myTeamMemberId={myTeamMemberId} projects={projects} queryKey={teamId}
+                    area={TEAM_DASH}/>
   );
 };
 
