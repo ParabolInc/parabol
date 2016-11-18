@@ -1,5 +1,5 @@
 export default function getNewSortOrder(actions, sourceSortOrder, targetSortOrder, isDesc, sortField) {
-  const isMovingLeft = isDesc ? sourceSortOrder < targetSortOrder : sourceSortOrder > targetSortOrder;
+  const isMovingLeft = isDesc ? sourceSortOrder <= targetSortOrder : sourceSortOrder >= targetSortOrder;
   const targetIdx = actions.findIndex((action) => action[sortField] === targetSortOrder);
   const afterTarget = isMovingLeft ? actions[targetIdx - 1] : actions[targetIdx + 1];
   if (afterTarget) {
