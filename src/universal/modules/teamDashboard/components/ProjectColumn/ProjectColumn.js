@@ -70,7 +70,7 @@ const columnTarget = {
         dragState[targetStatus].maxY = thresholds.length > 1 ? thresholds[1] + 1 : 10e6;
         return;
       }
-      console.log('setting to first in the column behind', projectToReplace);
+      console.log('setting', id,  'to first in the column behind', projectToReplace);
       updatedProject.teamSort = projectToReplace.teamSort + SORT_STEP;
     } else if (i === thresholds.length) {
         console.log('putting card at the end')
@@ -118,7 +118,7 @@ const columnTarget = {
     };
     // reset the drag state now that we've moved the card
     // console.log('why bad', sourceProps, targetProps, dragState.toString());
-    console.log('clearing drag state and sending to cashay');
+    console.log('clearing drag state and sending to cashay', id, updatedProject.teamSort);
     dragState.clear();
     cashay.mutate('updateProject', options);
   }

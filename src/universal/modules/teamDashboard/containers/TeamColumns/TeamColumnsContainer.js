@@ -47,7 +47,7 @@ const mutationHandlers = {
           const teamMember = teamMembers[i];
           const fromProject = teamMember.projects.find((action) => action.id === id);
           if (fromProject) {
-            if (teamSort) {
+            if (teamSort !== undefined) {
               fromProject.teamSort = teamSort;
             }
             if (status) {
@@ -84,36 +84,13 @@ const mapStateToProps = (state, props) => {
 
 const TeamColumnsContainer = (props) => {
   const {myTeamMemberId, projects, teamId} = props;
-  const dragProject = (sourceProps, targetProps) => {
-    const safeSortOrder = sourceProps.status === targetProps.status ? sourceProps.teamSort : -Infinity;
-    // TODO handle case where both are equal
-    const updatedTeamSort = getNewSortOrder(projects[targetProps.status], safeSortOrder, targetProps.teamSort, true, 'teamSort');
-    const updatedProject = {};
-    if (sourceProps.status !== targetProps.status) {
-      updatedProject.status = targetProps.status;
-      // mutative!
-      sourceProps.status = targetProps.status;
-    }
-    if (sourceProps.teamSort !== updatedTeamSort) {
-      updatedProject.teamSort = updatedTeamSort;
-      // mutative!
-      sourceProps.teamSort = updatedTeamSort;
-    }
-    // make sure we tell the server something useful
-    if (Object.keys(updatedProject).length > 0) {
-      updatedProject.id = sourceProps.id;
-      const options = {
-        ops: {
-          teamColumnsContainer: teamId,
-        },
-        variables: {updatedProject}
-      };
-      cashay.mutate('updateProject', options);
-    }
-  };
   return (
-    <ProjectColumns dragProject={dragProject} myTeamMemberId={myTeamMemberId} projects={projects} queryKey={teamId}
-                    area={TEAM_DASH}/>
+    <ProjectColumns
+      myTeamMemberId={myTeamMemberId}
+      projects={projects}
+      queryKey={teamId}
+      area={TEAM_DASH}
+    />
   );
 };
 
