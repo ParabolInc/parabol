@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.12.1 - 15-Nov-2016
+### Fixed
+- #518 Removed team member does not redirect away while on team dashboard
+
 ## v0.12.0 - 15-Nov-2016
 ### Added
 - Added Team Settings implementation

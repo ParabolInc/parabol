@@ -154,6 +154,7 @@ get involved and how to get compensated.
 
 | Release | Summary                                    |
 |---------|--------------------------------------------|
+| v0.12.1 | Fix for #518; redirect removed user        |
 | v0.12.0 | Added team settings, modal components      |
 | v0.11.0 | Added S3 deployment, minor UI improvements |
 | v0.10.0 | Can add new teams, many fixes              |
