@@ -1,10 +1,12 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
 import {PROJECT} from 'universal/utils/constants';
 import {DragSource as dragSource} from 'react-dnd';
 import {findDOMNode} from 'react-dom';
+import {getEmptyImage} from 'react-dnd-html5-backend';
+import ProjectDragLayer from './ProjectDragLayer';
 
 const projectSource = {
   beginDrag(props) {
@@ -68,20 +70,41 @@ const mapStateToProps = (state, props) => {
   };
 };
 
-const ProjectCardContainer = (props) => {
-  const {area, connectDragSource, isDragging, myUserId, project} = props;
-  return connectDragSource(
-    <div style={{opacity: isDragging ? 0 : 1}}>
-      <OutcomeOrNullCard
-        area={area}
-        form={project.id}
-        outcome={project}
-        myUserId={myUserId}
-      />
-    </div>
+class ProjectCardContainer extends Component {
+  componentDidMount() {
+    const {connectDragPreview, isPreview} = this.props;
+    if (!isPreview) {
+      connectDragPreview(getEmptyImage());
+    }
+  }
 
-  );
-};
+  render() {
+    const {area, connectDragSource, isDragging, myUserId, project} = this.props;
+    return connectDragSource(
+      <div>
+        {isDragging &&
+        <ProjectDragLayer
+          area={area}
+          form={project.id}
+          isDragging
+          outcome={project}
+          myUserId={myUserId}
+        />
+        }
+        <div style={{opacity: isDragging ? 0.5 : 1}}>
+          <OutcomeOrNullCard
+            area={area}
+            form={project.id}
+            outcome={project}
+            myUserId={myUserId}
+          />
+        </div>
+
+      </div>
+    );
+  }
+}
+;
 
 
 ProjectCardContainer.propTypes = {
@@ -105,5 +128,5 @@ const dragSourceCb = (connectSource, monitor) => ({
 });
 
 export default dragSource(PROJECT, projectSource, dragSourceCb)(
-    connect(mapStateToProps)(ProjectCardContainer)
+  connect(mapStateToProps)(ProjectCardContainer)
 );
