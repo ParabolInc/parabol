@@ -5,7 +5,6 @@ import makeProjectsByStatus from 'universal/utils/makeProjectsByStatus';
 import {TEAM_DASH} from 'universal/utils/constants';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
 import makeAllProjects from 'universal/utils/makeAllProjects';
-import getNewSortOrder from 'universal/utils/getNewSortOrder';
 
 const teamColumnsSubQuery = `
 query {

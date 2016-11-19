@@ -19,7 +19,7 @@ const projectSource = {
     return props.project.id === monitor.getItem().id;
   },
   endDrag(props, monitor) {
-    props.privateDragState.clear();
+    props.privateDragState.handleEndDrag();
   }
 };
 
