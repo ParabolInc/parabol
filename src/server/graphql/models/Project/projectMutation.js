@@ -28,7 +28,7 @@ export default {
     },
     async resolve(source, {updatedProject, rebalance}, {authToken}) {
       const r = getRethink();
-      const {projectId: projectId, teamSort, userSort, agendaId, isArchived, ...historicalProject} = updatedProject;
+      const {id: projectId, teamSort, userSort, agendaId, isArchived, ...historicalProject} = updatedProject;
       // projectId is of format 'teamId::taskId'
       const [teamId] = projectId.split('::');
       requireSUOrTeamMember(authToken, teamId);
