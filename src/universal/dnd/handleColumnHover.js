@@ -1,7 +1,6 @@
 import {cashay} from 'cashay';
-import {SORT_STEP, MIN_SORT_RESOLUTION} from 'universal/utils/constants';
+import {MIN_SORT_RESOLUTION, SORT_STEP, USER_DASH} from 'universal/utils/constants';
 import {findDOMNode} from 'react-dom';
-
 /**
  * Assuming the whole column is a single drop target, we need to figure out where the drag source should go.
  * To do that, the monitor provides an array of components which are all the cards
@@ -11,12 +10,13 @@ import {findDOMNode} from 'react-dom';
  * if it exceeds that zone, we update
  *
 */
-const handleColumnHoverFactory = (sortField) => (targetProps, monitor) => {
-  const {projects, status: targetStatus} = targetProps;
+export default function handleColumnHoverFactory(targetProps, monitor) {
+  const {area, projects, queryKey, status: targetStatus} = targetProps;
   const sourceProps = monitor.getItem();
   const {dragState, id, status: sourceStatus} = sourceProps;
   const {components, minY, maxY, thresholds} = dragState[targetStatus];
   const {y: sourceOffsetY} = monitor.getClientOffset();
+  const sortField = area === USER_DASH ? 'userSort' : 'teamSort';
   // keep it cheap by only doing work when we know it will result in a change
   if (minY !== null && sourceOffsetY >= minY && sourceOffsetY <= maxY) {
     // console.log('will not update until outside bounds of', minY, maxY, 'at', sourceOffsetY);
@@ -88,7 +88,6 @@ const handleColumnHoverFactory = (sortField) => (targetProps, monitor) => {
     }
     // console.log('setting', id,  'in between', prevProject.id, projectToReplace.id);
     updatedProject[sortField] = (prevProject[sortField] + projectToReplace[sortField]) / 2;
-    console.log('diff', prevProject[sortField] - updatedProject[sortField]);
     // console.log('new sort', updatedProject[sortField], 'in between', prevProject[sortField], projectToReplace[sortField])
   }
   // mutative for fast response
@@ -104,6 +103,7 @@ const handleColumnHoverFactory = (sortField) => (targetProps, monitor) => {
   const options = {
     ops: {
       teamColumnsContainer: teamId,
+      userColumnsContainer: queryKey
     },
     variables: {updatedProject}
   };
@@ -115,6 +115,4 @@ const handleColumnHoverFactory = (sortField) => (targetProps, monitor) => {
   // console.log('clearing drag state and sending to cashay', id, updatedProject[sortField]);
   dragState.clear();
   cashay.mutate('updateProject', options);
-};
-
-export default handleColumnHoverFactory;
+}
