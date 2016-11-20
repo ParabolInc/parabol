@@ -3,7 +3,6 @@ import {CreateActionInput, UpdateActionInput} from './actionSchema';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
-  GraphQLString,
   GraphQLID
 } from 'graphql';
 import {requireSUOrTeamMember} from '../authorization';
