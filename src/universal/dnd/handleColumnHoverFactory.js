@@ -11,7 +11,7 @@ import {findDOMNode} from 'react-dom';
  * if it exceeds that zone, we update
  *
 */
-export default function handleColumnHover(targetProps, monitor) {
+const handleColumnHoverFactory = (sortField) => (targetProps, monitor) => {
   const {projects, status: targetStatus} = targetProps;
   const sourceProps = monitor.getItem();
   const {dragState, id, status: sourceStatus} = sourceProps;
@@ -46,11 +46,11 @@ export default function handleColumnHover(targetProps, monitor) {
   const updatedProject = {id};
   const projectToReplace = projects[i];
   const prevProject = projects[i-1];
-
+  let rebalance;
   // for DESCENDING ONLY
   if (thresholds.length === 0) {
     // console.log('no thresholds, setting to first in the column');
-    updatedProject.teamSort = 0;
+    updatedProject[sortField] = 0;
   } else if (i === 0) {
     // if we're trying to put it at the top, make sure it's not already at the top
     if (projectToReplace.id === id) {
@@ -62,7 +62,7 @@ export default function handleColumnHover(targetProps, monitor) {
       return;
     }
     // console.log('setting', id,  'to first in the column behind', projectToReplace);
-    updatedProject.teamSort = projectToReplace.teamSort + SORT_STEP;
+    updatedProject[sortField] = projectToReplace[sortField] + SORT_STEP;
   } else if (i === thresholds.length) {
     // console.log('putting card at the end')
     // if we wanna put it at the end, make sure it's not already at the end
@@ -75,7 +75,7 @@ export default function handleColumnHover(targetProps, monitor) {
       return;
     }
     // console.log('setting to last in the column after', prevProject);
-    updatedProject.teamSort = prevProject.teamSort - SORT_STEP;
+    updatedProject[sortField] = prevProject[sortField] - SORT_STEP;
   } else {
     // console.log('putting card in the middle')
     // if we're somewhere in the middle, make sure we're actually gonna move
@@ -88,11 +88,12 @@ export default function handleColumnHover(targetProps, monitor) {
       return;
     }
     // console.log('setting', id,  'in between', prevProject.id, projectToReplace.id);
-    updatedProject.teamSort = (prevProject.teamSort + projectToReplace.teamSort) / 2;
-    // console.log('new sort', updatedProject.teamSort, 'in between', prevProject.teamSort, projectToReplace.teamSort)
+    updatedProject[sortField] = (prevProject[sortField] + projectToReplace[sortField]) / 2;
+    console.log('diff', prevProject[sortField] - updatedProject[sortField])
+    // console.log('new sort', updatedProject[sortField], 'in between', prevProject[sortField], projectToReplace[sortField])
   }
   // mutative for fast response
-  sourceProps.teamSort = updatedProject.teamSort;
+  sourceProps[sortField] = updatedProject[sortField];
 
   if (targetStatus !== sourceStatus) {
     // console.log('changing status', sourceStatus, targetStatus);
@@ -107,9 +108,14 @@ export default function handleColumnHover(targetProps, monitor) {
     },
     variables: {updatedProject}
   };
+  if (prevProject && prevProject[sortField] - updatedProject[sortField] < 1e-2) {
+    options.variables.rebalance = prevProject.status;
+  }
   // reset the drag state now that we've moved the card
   // // console.log('why bad', sourceProps, targetProps, dragState.toString());
-  // console.log('clearing drag state and sending to cashay', id, updatedProject.teamSort);
+  // console.log('clearing drag state and sending to cashay', id, updatedProject[sortField]);
   dragState.clear();
   cashay.mutate('updateProject', options);
-}
+};
+
+export default handleColumnHoverFactory;

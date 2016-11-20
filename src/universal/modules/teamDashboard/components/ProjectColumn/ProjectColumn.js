@@ -15,10 +15,10 @@ import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import {Menu, MenuItem} from 'universal/modules/menu';
 import {DropTarget as dropTarget} from 'react-dnd';
 import {PROJECT} from 'universal/utils/constants';
-import handleColumnHover from 'universal/dnd/handleColumnHover';
+import handleColumnHoverFactory from 'universal/dnd/handleColumnHoverFactory';
 
 const columnTarget = {
-  hover: handleColumnHover
+  hover: handleColumnHoverFactory('teamSort')
 };
 
 const badgeIconStyle = {
