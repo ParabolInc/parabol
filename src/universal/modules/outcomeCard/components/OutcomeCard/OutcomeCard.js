@@ -102,7 +102,7 @@ OutcomeCard.propTypes = {
   hoverOn: PropTypes.func,
   hoverOff: PropTypes.func,
   openArea: PropTypes.string,
-  openContentMenu: PropTypes.func,
+  openMenu: PropTypes.func,
   styles: PropTypes.object,
   outcome: PropTypes.shape({
     id: PropTypes.string,

@@ -96,7 +96,7 @@ const TeamColumnsContainer = (props) => {
 TeamColumnsContainer.propTypes = {
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.object,
-  querykey: PropTypes.string
+  teamId: PropTypes.string.isRequired
 };
 
 export default connect(mapStateToProps)(TeamColumnsContainer);

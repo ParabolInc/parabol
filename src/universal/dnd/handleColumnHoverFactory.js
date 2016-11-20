@@ -45,8 +45,7 @@ const handleColumnHoverFactory = (sortField) => (targetProps, monitor) => {
   }
   const updatedProject = {id};
   const projectToReplace = projects[i];
-  const prevProject = projects[i-1];
-  let rebalance;
+  const prevProject = projects[i - 1];
   // for DESCENDING ONLY
   if (thresholds.length === 0) {
     // console.log('no thresholds, setting to first in the column');
@@ -69,9 +68,9 @@ const handleColumnHoverFactory = (sortField) => (targetProps, monitor) => {
     if (prevProject.id === id) {
       // console.log('best place is where it is (at the bottom), setting min and max Y')
       // only listen to upward movement starting halfway up the card above it
-      dragState[targetStatus].minY = thresholds[i-1] - 1;
+      dragState[targetStatus].minY = thresholds[i - 1] - 1;
       // don't listen to downward movement. we're on the bottom & that ain't changing
-      dragState[targetStatus].maxY = thresholds.length > i + 1  ? thresholds[i+1] + 1 : 10e6;
+      dragState[targetStatus].maxY = thresholds.length > i + 1 ? thresholds[i + 1] + 1 : 10e6;
       return;
     }
     // console.log('setting to last in the column after', prevProject);
@@ -89,7 +88,7 @@ const handleColumnHoverFactory = (sortField) => (targetProps, monitor) => {
     }
     // console.log('setting', id,  'in between', prevProject.id, projectToReplace.id);
     updatedProject[sortField] = (prevProject[sortField] + projectToReplace[sortField]) / 2;
-    console.log('diff', prevProject[sortField] - updatedProject[sortField])
+    console.log('diff', prevProject[sortField] - updatedProject[sortField]);
     // console.log('new sort', updatedProject[sortField], 'in between', prevProject[sortField], projectToReplace[sortField])
   }
   // mutative for fast response
@@ -108,7 +107,7 @@ const handleColumnHoverFactory = (sortField) => (targetProps, monitor) => {
     },
     variables: {updatedProject}
   };
-  if (prevProject && prevProject[sortField] - updatedProject[sortField] < 1e-2) {
+  if (prevProject && prevProject[sortField] - updatedProject[sortField] < 1e-20) {
     options.variables.rebalance = prevProject.status;
   }
   // reset the drag state now that we've moved the card

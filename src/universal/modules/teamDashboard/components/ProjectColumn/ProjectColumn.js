@@ -7,14 +7,13 @@ import ui from 'universal/styles/ui';
 import themeLabels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import ProjectCardContainer from 'universal/containers/ProjectCard/ProjectCardContainer';
-import {USER_DASH, TEAM_DASH} from 'universal/utils/constants';
+import {USER_DASH, TEAM_DASH, PROJECT} from 'universal/utils/constants';
 import FontAwesome from 'react-fontawesome';
 import {cashay} from 'cashay';
 import shortid from 'shortid';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import {Menu, MenuItem} from 'universal/modules/menu';
 import {DropTarget as dropTarget} from 'react-dnd';
-import {PROJECT} from 'universal/utils/constants';
 import handleColumnHoverFactory from 'universal/dnd/handleColumnHoverFactory';
 
 const columnTarget = {
@@ -39,7 +38,7 @@ const handleAddProjectFactory = (status, teamMemberId, teamSort, userSort) => ()
 };
 
 const ProjectColumn = (props) => {
-  const {area, connectDropTarget, dragProject, status, privateDragState, projects, myTeamMemberId, styles, teams, userId} = props;
+  const {area, connectDropTarget, status, privateDragState, projects, myTeamMemberId, styles, teams, userId} = props;
 
   const label = themeLabels.projectStatus[status].slug;
   const makeAddProjectButton = (clickHandler) => {
@@ -127,12 +126,11 @@ const ProjectColumn = (props) => {
             <ProjectCardContainer
               key={`teamCard${project.id}`}
               area={area}
-              dragProject={dragProject}
               project={project}
               privateDragState={privateDragState}
               ref={(c) => {
                 if (c) {
-                  privateDragState[status].components.push(c)
+                  privateDragState[status].components.push(c);
                 }
               }}
             />)

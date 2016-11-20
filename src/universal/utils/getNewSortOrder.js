@@ -6,4 +6,4 @@ export default function getNewSortOrder(actions, sourceSortOrder, targetSortOrde
     return (afterTarget[sortField] + targetSortOrder) / 2;
   }
   return (isDesc === isMovingLeft) ? targetSortOrder + 1 : targetSortOrder - 1;
-};
+}

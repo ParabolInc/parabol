@@ -4,7 +4,6 @@ import {cashay} from 'cashay';
 import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
 import {PROJECT} from 'universal/utils/constants';
 import {DragSource as dragSource} from 'react-dnd';
-import {findDOMNode} from 'react-dom';
 import {getEmptyImage} from 'react-dnd-html5-backend';
 import ProjectDragLayer from './ProjectDragLayer';
 
@@ -20,7 +19,7 @@ const projectSource = {
   isDragging(props, monitor) {
     return props.project.id === monitor.getItem().id;
   },
-  endDrag(props, monitor) {
+  endDrag(props) {
     props.privateDragState.handleEndDrag();
   }
 };
@@ -83,11 +82,11 @@ class ProjectCardContainer extends Component {
     return connectDragSource(
       <div>
         {isDragging &&
-        <ProjectDragLayer
-          area={area}
-          form={project.id}
-          outcome={project}
-        />
+          <ProjectDragLayer
+            area={area}
+            form={project.id}
+            outcome={project}
+          />
         }
         <div style={{opacity: isDragging ? 0.2 : 1}}>
           <OutcomeOrNullCard
@@ -101,12 +100,15 @@ class ProjectCardContainer extends Component {
     );
   }
 }
-;
 
 
 ProjectCardContainer.propTypes = {
   area: PropTypes.string,
+  connectDragSource: PropTypes.func.isRequired,
+  connectDragPreview: PropTypes.func.isRequired,
   dispatch: PropTypes.func,
+  isDragging: PropTypes.bool,
+  isPreview: PropTypes.bool,
   myUserId: PropTypes.string,
   preferredName: PropTypes.string,
   username: PropTypes.string,

@@ -39,10 +39,16 @@ function getItemStyles(props) {
 const collect = (monitor) => ({
   currentOffset: monitor.getSourceClientOffset(),
 });
-const arePropsEqual = (a) => true;
+const arePropsEqual = () => true;
 
 @dragLayer(collect, {arePropsEqual})
 export default class ProjectDragLayer extends Component {
+  static propTypes = {
+    currentOffset: PropTypes.shape({
+      x: PropTypes.number,
+      y: PropTypes.number
+    })
+  };
   shouldComponentUpdate(nextProps) {
     const {x, y} = this.props.currentOffset;
     const {currentOffset} = nextProps;

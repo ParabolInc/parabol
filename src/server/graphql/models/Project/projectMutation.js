@@ -7,7 +7,6 @@ import {
   GraphQLID
 } from 'graphql';
 import {requireSUOrTeamMember} from '../authorization';
-import rebalanceProject from './rebalanceProject';
 import shortid from 'shortid';
 import ms from 'ms';
 
@@ -29,15 +28,15 @@ export default {
     },
     async resolve(source, {updatedProject, rebalance}, {authToken}) {
       const r = getRethink();
-      const {id, teamSort, userSort, agendaId, isArchived, ...historicalProject} = updatedProject;
-      // id is of format 'teamId::taskId'
-      const [teamId] = id.split('::');
+      const {projectId: projectId, teamSort, userSort, agendaId, isArchived, ...historicalProject} = updatedProject;
+      // projectId is of format 'teamId::taskId'
+      const [teamId] = projectId.split('::');
       requireSUOrTeamMember(authToken, teamId);
       const now = new Date();
       const mergeDoc = {
         ...historicalProject,
         updatedAt: now,
-        projectId: id
+        projectId
       };
       const newProject = {
         ...historicalProject,
@@ -52,12 +51,12 @@ export default {
         const [userId] = teamMemberId.split('::');
         newProject.userId = userId;
       }
-      const projectUpdatePromise = r.table('Project').get(id).update(newProject);
+      const projectUpdatePromise = r.table('Project').get(projectId).update(newProject);
       const dbWork = [projectUpdatePromise];
       // if this is just a sort update, don't bother writing to the history
       if (Object.keys(updatedProject).length === 2 && (teamSort !== undefined || userSort !== undefined)) {
         const projectHistoryPromise = r.table('ProjectHistory')
-          .between([id, r.minval], [id, r.maxval], {index: 'projectIdUpdatedAt'})
+          .between([projectId, r.minval], [projectId, r.maxval], {index: 'projectIdUpdatedAt'})
           .orderBy({index: 'projectIdUpdatedAt'})
           .nth(-1)
           .default({updatedAt: r.epochTime(0)})
@@ -81,7 +80,7 @@ export default {
           .forEach((update) => {
             return r.table('Project')
               .get(update('id'))
-              .update({[rebalanceField]: update('idx')})
+              .update({[rebalanceField]: update('idx')});
           });
         dbWork.push(rebalanceUpdatePromise);
       }

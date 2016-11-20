@@ -18,4 +18,4 @@ export default class OutcomeOrNullCard extends Component {
     return showOutcome ? <OutcomeCardContainer {...this.props}/> :
       <NullCard preferredName={preferredName} type={type || 'Project'}/>;
   }
-};
+}
