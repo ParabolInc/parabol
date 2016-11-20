@@ -7,6 +7,8 @@ import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/Me
 import MeetingAvatars from 'universal/modules/meeting/components/MeetingAvatars/MeetingAvatars';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import {withRouter} from 'react-router';
+import {DragDropContext as dragDropContext} from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
@@ -126,6 +128,7 @@ let infiniteTrigger = false;
 
 @socketWithPresence
 @connect(mapStateToProps)
+@dragDropContext(HTML5Backend)
 @withRouter
 @withHotkey
 export default class MeetingContainer extends Component {
@@ -308,9 +311,12 @@ export default class MeetingContainer extends Component {
     const {facilitatorPhase, meetingPhase, meetingPhaseItem, name: teamName} = team;
     const agendaPhaseItem = meetingPhase === AGENDA_ITEMS && meetingPhaseItem || 0;
     // if we have a team.name, we have an initial subscription success to the team object
-    if (!teamName || members.length === 0) {
+    if (!teamName ||
+      members.length === 0
+      || ((localPhase === CHECKIN || localPhase === UPDATES) && members.length < localPhaseItem)) {
       return <LoadingView />;
     }
+
     const phaseStateProps = { // DRY
       localPhaseItem,
       members,

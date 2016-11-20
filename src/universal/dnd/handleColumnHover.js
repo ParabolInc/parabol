@@ -1,5 +1,5 @@
 import {cashay} from 'cashay';
-import {MIN_SORT_RESOLUTION, SORT_STEP, USER_DASH} from 'universal/utils/constants';
+import {MEETING, MIN_SORT_RESOLUTION, SORT_STEP, TEAM_DASH, USER_DASH} from 'universal/utils/constants';
 import {findDOMNode} from 'react-dom';
 /**
  * Assuming the whole column is a single drop target, we need to figure out where the drag source should go.
@@ -10,6 +10,13 @@ import {findDOMNode} from 'react-dom';
  * if it exceeds that zone, we update
  *
 */
+
+const areaOpLookup = {
+  [MEETING]: 'meetingUpdatesContainer',
+  [USER_DASH]: 'userColumnsContainer',
+  [TEAM_DASH]: 'teamColumnsContainer'
+};
+
 export default function handleColumnHoverFactory(targetProps, monitor) {
   const {area, projects, queryKey, status: targetStatus} = targetProps;
   const sourceProps = monitor.getItem();
@@ -99,11 +106,10 @@ export default function handleColumnHoverFactory(targetProps, monitor) {
     // mutative
     sourceProps.status = targetStatus;
   }
-  const [teamId] = id.split('::');
+  const op = areaOpLookup[area];
   const options = {
     ops: {
-      teamColumnsContainer: teamId,
-      userColumnsContainer: queryKey
+      [op]: queryKey
     },
     variables: {updatedProject}
   };
