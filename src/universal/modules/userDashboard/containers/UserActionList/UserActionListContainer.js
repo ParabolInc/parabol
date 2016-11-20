@@ -3,6 +3,7 @@ import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import UserActionList from 'universal/modules/userDashboard/components/UserActionList/UserActionList';
 import getNewSortOrder from 'universal/utils/getNewSortOrder';
+import {MIN_SORT_RESOLUTION} from 'universal/utils/constants';
 
 const userActionListQuery = `
 query {
@@ -83,6 +84,9 @@ const UserActionListContainer = (props) => {
       ops: {userActions: queryKey},
       variables: {updatedAction: {id: sourceId, sortOrder: updatedSortOrder}}
     };
+    if (Math.abs(targetSortOrder - updatedSortOrder) < MIN_SORT_RESOLUTION) {
+      options.variables.rebalance = true;
+    }
     // mutative!
     monitorItems.sortOrder = updatedSortOrder;
     cashay.mutate('updateAction', options);

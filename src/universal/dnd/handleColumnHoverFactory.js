@@ -1,5 +1,5 @@
 import {cashay} from 'cashay';
-import {SORT_STEP} from 'universal/utils/constants';
+import {SORT_STEP, MIN_SORT_RESOLUTION} from 'universal/utils/constants';
 import {findDOMNode} from 'react-dom';
 
 /**
@@ -107,7 +107,7 @@ const handleColumnHoverFactory = (sortField) => (targetProps, monitor) => {
     },
     variables: {updatedProject}
   };
-  if (prevProject && prevProject[sortField] - updatedProject[sortField] < 1e-20) {
+  if (prevProject && prevProject[sortField] - updatedProject[sortField] < MIN_SORT_RESOLUTION) {
     options.variables.rebalance = prevProject.status;
   }
   // reset the drag state now that we've moved the card

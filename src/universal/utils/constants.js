@@ -32,6 +32,7 @@ export const PROJECT = 'project';
 
 /* Sorting */
 export const SORT_STEP = 1;
+export const MIN_SORT_RESOLUTION = 1e-20;
 
 /* Areas */
 export const MEETING = 'meeting';
