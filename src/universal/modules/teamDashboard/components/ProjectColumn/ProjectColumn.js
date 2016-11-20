@@ -105,7 +105,6 @@ const ProjectColumn = (props) => {
   };
 
   // reset every rerender so we make sure we got the freshest info
-  console.log('clearing prviate drag state components', status)
   privateDragState.handleRender(status);
   return connectDropTarget(
     <div className={css(styles.column)}>
@@ -133,7 +132,6 @@ const ProjectColumn = (props) => {
               privateDragState={privateDragState}
               ref={(c) => {
                 if (c) {
-                  console.log('adding', c, 'to private drag state', status)
                   privateDragState[status].components.push(c)
                 }
               }}

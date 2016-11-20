@@ -86,12 +86,10 @@ class ProjectCardContainer extends Component {
         <ProjectDragLayer
           area={area}
           form={project.id}
-          isDragging
           outcome={project}
-          myUserId={myUserId}
         />
         }
-        <div style={{opacity: isDragging ? 0.5 : 1}}>
+        <div style={{opacity: isDragging ? 0.2 : 1}}>
           <OutcomeOrNullCard
             area={area}
             form={project.id}
@@ -99,7 +97,6 @@ class ProjectCardContainer extends Component {
             myUserId={myUserId}
           />
         </div>
-
       </div>
     );
   }

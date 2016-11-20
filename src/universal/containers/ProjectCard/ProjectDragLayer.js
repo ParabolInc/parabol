@@ -3,6 +3,13 @@ import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrN
 import {DragLayer as dragLayer} from 'react-dnd';
 import appTheme from 'universal/styles/theme/appTheme';
 
+const dragStyle = {
+  backgroundColor: appTheme.palette.light10l,
+  borderColor: appTheme.palette.mid70l,
+  borderRadius: '.25rem',
+  boxShadow: '0 1px 2px rgba(0, 0, 0, .15)'
+};
+
 const layerStyles = {
   left: 0,
   minHeight: '15rem',
@@ -14,8 +21,8 @@ const layerStyles = {
 };
 
 function getItemStyles(props) {
-  const {initialOffset, currentOffset} = props;
-  if (!initialOffset || !currentOffset) {
+  const {currentOffset} = props;
+  if (!currentOffset) {
     return {
       display: 'none'
     };
@@ -29,31 +36,23 @@ function getItemStyles(props) {
   };
 }
 
-@dragLayer(monitor => ({
-  initialOffset: monitor.getInitialSourceClientOffset(),
+const collect = (monitor) => ({
   currentOffset: monitor.getSourceClientOffset(),
-}))
-export default class ProjectDragLayer extends Component {
-  static propTypes = {
-    isDragging: PropTypes.bool.isRequired,
-    parentStyles: PropTypes.string
-  };
+});
+const arePropsEqual = (a) => true;
 
+@dragLayer(collect, {arePropsEqual})
+export default class ProjectDragLayer extends Component {
+  shouldComponentUpdate(nextProps) {
+    const {x, y} = this.props.currentOffset;
+    const {currentOffset} = nextProps;
+    return !currentOffset || x !== currentOffset.x || y !== currentOffset.y;
+  }
   render() {
-    const {isDragging} = this.props;
-    if (!isDragging) {
-      // return null;
-    }
-    const dragStyle = {
-      backgroundColor: appTheme.palette.light10l,
-      borderColor: appTheme.palette.mid70l,
-      borderRadius: '.25rem',
-      boxShadow: '0 1px 2px rgba(0, 0, 0, .15)'
-    };
     return (
       <div style={getItemStyles(this.props)}>
-        <div className={this.props.parentStyles} style={dragStyle}>
-          <OutcomeOrNullCard {...this.props} isPreview isDragging={false}/>
+        <div style={dragStyle}>
+          <OutcomeOrNullCard {...this.props} isPreview/>
         </div>
       </div>
     );

@@ -3,6 +3,11 @@ import OutcomeCardContainer from 'universal/modules/outcomeCard/containers/Outco
 import NullCard from 'universal/components/NullCard/NullCard';
 
 export default class OutcomeOrNullCard extends Component {
+  static propTypes = {
+    myUserId: PropTypes.string,
+    outcome: PropTypes.object
+  };
+
   shouldComponentUpdate(nextProps) {
     return Boolean(!nextProps.isPreview || nextProps.outcome.status !== this.props.outcome.status);
   }
@@ -14,11 +19,3 @@ export default class OutcomeOrNullCard extends Component {
       <NullCard preferredName={preferredName} type={type || 'Project'}/>;
   }
 };
-
-
-OutcomeOrNullCard.propTypes = {
-  myUserId: PropTypes.string,
-  outcome: PropTypes.object
-};
-
-// export default OutcomeOrNullCard;
