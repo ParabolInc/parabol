@@ -17,6 +17,7 @@ const AgendaListAndInput = (props) => {
         agenda={agenda}
         agendaPhaseItem={agendaPhaseItem}
         gotoItem={gotoItem}
+        teamId={teamId}
       />
     </div>
   );

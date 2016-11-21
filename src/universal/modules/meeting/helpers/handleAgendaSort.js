@@ -8,6 +8,7 @@ export default function handleAgendaSort(optimisticUpdates, queryResponse, curre
       if (fromItem) {
         if (sortOrder !== undefined) {
           fromItem.sortOrder = sortOrder;
+          agenda.sort((a, b) => a.sortOrder - b.sortOrder);
         }
         return currentResponse;
       }

@@ -4,7 +4,14 @@ import {css} from 'aphrodite-local-styles/no-important';
 import {overflowTouch} from 'universal/styles/helpers';
 import {cashay} from 'cashay';
 import AgendaItem from 'universal/modules/teamDashboard/components/AgendaItem/AgendaItem';
-import {AGENDA_ITEMS} from 'universal/utils/constants';
+import {AGENDA_ITEM, AGENDA_ITEMS} from 'universal/utils/constants';
+import agendaDragState from 'universal/dnd/AgendaDragState';
+import handleAgendaHover from 'universal/dnd/handleAgendaHover';
+import {DropTarget as dropTarget} from 'react-dnd';
+
+const columnTarget = {
+  hover: handleAgendaHover
+};
 
 const removeItemFactory = (itemId) => () => {
   const options = {variables: {id: itemId}};
@@ -12,21 +19,25 @@ const removeItemFactory = (itemId) => () => {
 };
 
 const AgendaList = (props) => {
-  const {agenda, agendaPhaseItem, gotoItem, styles} = props;
-  return (
+  const {agenda, agendaPhaseItem, connectDropTarget, gotoItem, styles, teamId} = props;
+  agendaDragState.clear();
+  return connectDropTarget(
     <div className={css(styles.root)}>
       <div className={css(styles.inner)}>
         {agenda.map((item, idx) =>
           <AgendaItem
-            desc={item.content}
-            idx={idx}
             key={`agendaItem${idx}`}
-            handleRemove={removeItemFactory(item.id)}
-            gotoAgendaItem={() => gotoItem(idx + 1, AGENDA_ITEMS)}
-            teamMember={item.teamMember}
-            isComplete={item.isComplete}
+            agendaItem={item}
+            agendaDragState={agendaDragState}
             agendaPhaseItem={agendaPhaseItem}
-            sortOrder={item.sortOrder}
+            gotoAgendaItem={() => gotoItem(idx + 1, AGENDA_ITEMS)}
+            handleRemove={removeItemFactory(item.id)}
+            idx={idx}
+            ref={(c) => {
+              if (c) {
+                agendaDragState.components.push(c);
+              }
+            }}
           />
         )}
       </div>
@@ -40,8 +51,10 @@ AgendaList.propTypes = {
     content: PropTypes.string
   })),
   agendaPhaseItem: PropTypes.number,
+  connectDropTarget: PropTypes.func.isRequired,
   gotoItem: PropTypes.func.isRequired,
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  teamId: PropTypes.string.isRequired
 };
 
 const styleThunk = () => ({
@@ -62,4 +75,9 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(AgendaList);
+const dropTargetCb = (connectTarget) => ({
+  connectDropTarget: connectTarget.dropTarget()
+});
+export default dropTarget(AGENDA_ITEM, columnTarget, dropTargetCb)(
+  withStyles(styleThunk)(AgendaList)
+);

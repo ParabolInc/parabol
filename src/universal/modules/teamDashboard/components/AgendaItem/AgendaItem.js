@@ -6,33 +6,51 @@ import FontAwesome from 'react-fontawesome';
 import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import voidClick from 'universal/utils/voidClick';
+import {DragSource as dragSource} from 'react-dnd';
+import {AGENDA_ITEM} from 'universal/utils/constants'
+
+const projectSource = {
+  beginDrag(props) {
+    return {
+      id: props.agendaItem.id,
+      dragState: props.agendaDragState
+    };
+  },
+  // isDragging(props, monitor) {
+  //   return props.project.id === monitor.getItem().id;
+  // },
+  endDrag(props) {
+    props.agendaDragState.handleEndDrag();
+  }
+};
 
 const AgendaItem = props => {
-  const {desc, idx, handleRemove, isComplete, agendaPhaseItem, gotoAgendaItem, styles, teamMember = {}} = props;
+  const {agendaItem, connectDragSource, idx, handleRemove, agendaPhaseItem, gotoAgendaItem, styles} = props;
+  const {content, isComplete, teamMember = {}} = agendaItem;
   const isCurrent = idx + 1 === agendaPhaseItem;
   const canDelete = !isComplete && !isCurrent;
   const isMeeting = agendaPhaseItem !== undefined;
   const handleGoto = isMeeting ? gotoAgendaItem : voidClick;
   const rootStyles = css(
     styles.root,
-    styles[status],
+    // styles[status],
     isCurrent && styles.itemActive,
     isComplete && styles.processed
   );
-  const descStyles = css(
+  const contentStyles= css(
     isCurrent && styles.descActive,
     isComplete && styles.strikethrough
   );
-  return (
-    <div className={rootStyles} title={desc}>
+  return connectDragSource(
+    <div className={rootStyles} title={content}>
       {canDelete &&
         <div className={css(styles.del)} onClick={handleRemove}>
           <FontAwesome name="times-circle" style={{lineHeight: 'inherit'}}/>
         </div>
       }
       <div className={css(styles.index)}>{idx + 1}.</div>
-      <div className={css(styles.desc)} onClick={handleGoto}>
-        <a className={descStyles} >{desc}</a>”
+      <div className={css(styles.content)} onClick={handleGoto}>
+        <a className={contentStyles} >{content}</a>”
       </div>
       <div className={css(styles.author)}>
         <Avatar hasBadge={false} picture={teamMember.picture} size="smallest"/>
@@ -42,20 +60,22 @@ const AgendaItem = props => {
 };
 
 AgendaItem.propTypes = {
+  agendaDragState: PropTypes.object,
   agendaPhaseItem: PropTypes.number,
-  desc: PropTypes.string,
+  connectDragSource: PropTypes.func.isRequired,
+  content: PropTypes.string,
   idx: PropTypes.number,
   isCurrent: PropTypes.bool,
   isComplete: PropTypes.bool,
   gotoAgendaItem: PropTypes.func,
   handleRemove: PropTypes.func,
-  status: PropTypes.oneOf([
-    'active',
-    'onDrag',
-    'onHover',
-    'processed',
-    'waiting'
-  ]),
+  // status: PropTypes.oneOf([
+  //   'active',
+  //   'onDrag',
+  //   'onHover',
+  //   'processed',
+  //   'waiting'
+  // ]),
   styles: PropTypes.object,
   teamMember: PropTypes.object
 };
@@ -103,7 +123,7 @@ const styleThunk = () => ({
     transition: 'opacity .1s ease-in'
   },
 
-  desc: {
+  content: {
     ...inlineBlock,
     fontFamily: appTheme.typography.serif,
     fontSize: appTheme.typography.s3,
@@ -181,4 +201,12 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(AgendaItem);
+const dragSourceCb = (connectSource, monitor) => ({
+  connectDragSource: connectSource.dragSource(),
+  connectDragPreview: connectSource.dragPreview(),
+  isDragging: monitor.isDragging()
+});
+
+export default dragSource(AGENDA_ITEM, projectSource, dragSourceCb)(
+  withStyles(styleThunk)(AgendaItem)
+);

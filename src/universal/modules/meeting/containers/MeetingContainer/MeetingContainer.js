@@ -200,6 +200,9 @@ export default class MeetingContainer extends Component {
     // check sort order for agenda items
     if (localPhase === AGENDA_ITEMS) {
       const oldAgendaItem = oldAgenda[localPhaseItem - 1];
+      if (!oldAgendaItem) {
+        return false;
+      }
       const newAgendaItem = agenda[localPhaseItem - 1];
       if (!newAgendaItem || newAgendaItem.id !== oldAgendaItem.id) {
         const updatedAgendaItemIdx = agenda.findIndex((a) => a.id === oldAgendaItem.id);
