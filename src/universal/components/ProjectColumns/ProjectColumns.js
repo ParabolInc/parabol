@@ -4,11 +4,12 @@ import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import {columnArray} from 'universal/utils/constants';
 import ProjectColumn from 'universal/modules/teamDashboard/components/ProjectColumn/ProjectColumn';
+import privateDragState from 'universal/dnd/PrivateDragState';
 
 const ProjectColumns = (props) => {
   // myTeamMemberId is undefined if this is coming from USER_DASH
   // TODO we only need userId, we can compute myTeamMemberId
-  const {alignColumns, area, dragProject, myTeamMemberId, projects, queryKey, styles, teams, userId, zIndex} = props;
+  const {alignColumns, area, myTeamMemberId, projects, queryKey, styles, teams, userId, zIndex} = props;
   const rootStyles = css(styles.root, styles[alignColumns]);
   const positionStyle = zIndex && {
     position: 'relative',
@@ -22,8 +23,8 @@ const ProjectColumns = (props) => {
           <ProjectColumn
             key={`projectCol${status}`}
             area={area}
-            dragProject={dragProject}
             myTeamMemberId={myTeamMemberId}
+            privateDragState={privateDragState}
             projects={projects[status]}
             queryKey={queryKey}
             status={status}

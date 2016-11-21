@@ -25,6 +25,32 @@ query {
 }
 `;
 
+const mutationHandlers = {
+  updateProject(optimisticUpdates, queryResponse, currentResponse) {
+    if (optimisticUpdates) {
+      const {updatedProject} = optimisticUpdates;
+      if (updatedProject && updatedProject.hasOwnProperty('userSort')) {
+        const {id, userSort, status} = updatedProject;
+        const {teams} = currentResponse;
+        for (let i = 0; i < teams.length; i++) {
+          const team = teams[i];
+          const fromProject = team.projects.find((action) => action.id === id);
+          if (fromProject) {
+            if (userSort !== undefined) {
+              fromProject.userSort = userSort;
+            }
+            if (status) {
+              fromProject.status = status;
+            }
+            return currentResponse;
+          }
+        }
+      }
+    }
+    return undefined;
+  }
+};
+
 // memoized
 const resolveUserProjects = (teams) => {
   if (teams !== resolveUserProjects.teams) {
@@ -43,6 +69,7 @@ const mapStateToProps = (state) => {
   const {teams} = cashay.query(userColumnsQuery, {
     op: 'userColumnsContainer',
     key: queryKey,
+    mutationHandlers,
     resolveCached: {
       teams: () => () => true
     },

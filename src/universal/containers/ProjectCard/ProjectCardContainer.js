@@ -1,10 +1,11 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
 import {PROJECT} from 'universal/utils/constants';
-import {DragSource as dragSource, DropTarget as dropTarget} from 'react-dnd';
-import {findDOMNode} from 'react-dom';
+import {DragSource as dragSource} from 'react-dnd';
+import {getEmptyImage} from 'react-dnd-html5-backend';
+import ProjectDragLayer from './ProjectDragLayer';
 
 const projectSource = {
   beginDrag(props) {
@@ -12,31 +13,14 @@ const projectSource = {
       id: props.project.id,
       status: props.project.status,
       teamSort: props.project.teamSort,
-      dragProject: props.dragProject
+      dragState: props.privateDragState
     };
   },
   isDragging(props, monitor) {
     return props.project.id === monitor.getItem().id;
   },
-};
-
-const projectTarget = {
-  hover({project: targetProps}, monitor, component) {
-    const {teamSort: targetTeamSort, id: targetId} = targetProps;
-    const sourceProps = monitor.getItem();
-    const {dragProject, id: sourceId, teamSort: sourceTeamSort} = sourceProps;
-    if (sourceId === targetId) return;
-    // make dragging a little nicer
-    const targetBoundingRect = findDOMNode(component).getBoundingClientRect();
-    const targetMiddleY = targetBoundingRect.top + targetBoundingRect.height / 2;
-    const sourceOffsetY = monitor.getClientOffset().y;
-    if (sourceTeamSort > targetTeamSort && sourceOffsetY < targetMiddleY) {
-      return;
-    }
-    if (sourceTeamSort < targetTeamSort && sourceOffsetY > targetMiddleY) {
-      return;
-    }
-    dragProject(sourceProps, targetProps);
+  endDrag(props) {
+    props.privateDragState.handleEndDrag();
   }
 };
 
@@ -85,25 +69,46 @@ const mapStateToProps = (state, props) => {
   };
 };
 
-const ProjectCardContainer = (props) => {
-  const {area, connectDragSource, connectDropTarget, isDragging, myUserId, project} = props;
-  return connectDropTarget(connectDragSource(
-    <div style={{opacity: isDragging ? 0 : 1}}>
-      <OutcomeOrNullCard
-        area={area}
-        form={project.id}
-        outcome={project}
-        myUserId={myUserId}
-      />
-    </div>
+class ProjectCardContainer extends Component {
+  componentDidMount() {
+    const {connectDragPreview, isPreview} = this.props;
+    if (!isPreview) {
+      connectDragPreview(getEmptyImage());
+    }
+  }
 
-  ));
-};
+  render() {
+    const {area, connectDragSource, isDragging, myUserId, project} = this.props;
+    return connectDragSource(
+      <div>
+        {isDragging &&
+          <ProjectDragLayer
+            area={area}
+            form={project.id}
+            outcome={project}
+          />
+        }
+        <div style={{opacity: isDragging ? 0.2 : 1}}>
+          <OutcomeOrNullCard
+            area={area}
+            form={project.id}
+            outcome={project}
+            myUserId={myUserId}
+          />
+        </div>
+      </div>
+    );
+  }
+}
 
 
 ProjectCardContainer.propTypes = {
   area: PropTypes.string,
+  connectDragSource: PropTypes.func.isRequired,
+  connectDragPreview: PropTypes.func.isRequired,
   dispatch: PropTypes.func,
+  isDragging: PropTypes.bool,
+  isPreview: PropTypes.bool,
   myUserId: PropTypes.string,
   preferredName: PropTypes.string,
   username: PropTypes.string,
@@ -121,12 +126,6 @@ const dragSourceCb = (connectSource, monitor) => ({
   isDragging: monitor.isDragging()
 });
 
-const dropTargetCb = (connectTarget) => ({
-  connectDropTarget: connectTarget.dropTarget()
-});
-
 export default dragSource(PROJECT, projectSource, dragSourceCb)(
-  dropTarget(PROJECT, projectTarget, dropTargetCb)(
-    connect(mapStateToProps)(ProjectCardContainer)
-  )
+  connect(mapStateToProps)(ProjectCardContainer)
 );

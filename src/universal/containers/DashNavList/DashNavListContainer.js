@@ -37,5 +37,4 @@ DashNavListContainer.propTypes = {
   teams: PropTypes.array
 };
 
-// needs to be false since this is the last container before we use Link to detect an active route
-export default connect(mapStateToProps, undefined, undefined, {pure: false})(DashNavListContainer);
+export default connect(mapStateToProps)(DashNavListContainer);

@@ -7,25 +7,17 @@ import ui from 'universal/styles/ui';
 import themeLabels from 'universal/styles/theme/labels';
 import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import ProjectCardContainer from 'universal/containers/ProjectCard/ProjectCardContainer';
-import {USER_DASH, TEAM_DASH} from 'universal/utils/constants';
+import {USER_DASH, TEAM_DASH, PROJECT} from 'universal/utils/constants';
 import FontAwesome from 'react-fontawesome';
 import {cashay} from 'cashay';
 import shortid from 'shortid';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import {Menu, MenuItem} from 'universal/modules/menu';
 import {DropTarget as dropTarget} from 'react-dnd';
-import {PROJECT} from 'universal/utils/constants';
+import handleColumnHover from 'universal/dnd/handleColumnHover';
 
 const columnTarget = {
-  hover(targetProps, monitor) {
-    const {dragProject, projects, status: targetStatus} = targetProps;
-    const sourceProps = monitor.getItem();
-    const {status: sourceStatus} = sourceProps;
-    if (projects.length > 0 || targetStatus === sourceStatus) {
-      return;
-    }
-    dragProject(sourceProps, {teamSort: 0, status: targetStatus});
-  }
+  hover: handleColumnHover
 };
 
 const badgeIconStyle = {
@@ -46,7 +38,7 @@ const handleAddProjectFactory = (status, teamMemberId, teamSort, userSort) => ()
 };
 
 const ProjectColumn = (props) => {
-  const {area, connectDropTarget, dragProject, status, projects, myTeamMemberId, styles, teams, userId} = props;
+  const {area, connectDropTarget, status, privateDragState, projects, myTeamMemberId, styles, teams, userId} = props;
 
   const label = themeLabels.projectStatus[status].slug;
   const makeAddProjectButton = (clickHandler) => {
@@ -111,6 +103,8 @@ const ProjectColumn = (props) => {
     return null;
   };
 
+  // reset every rerender so we make sure we got the freshest info
+  privateDragState.handleRender(status);
   return connectDropTarget(
     <div className={css(styles.column)}>
       <div className={css(styles.columnHeader)}>
@@ -132,8 +126,13 @@ const ProjectColumn = (props) => {
             <ProjectCardContainer
               key={`teamCard${project.id}`}
               area={area}
-              dragProject={dragProject}
               project={project}
+              privateDragState={privateDragState}
+              ref={(c) => {
+                if (c) {
+                  privateDragState[status].components.push(c);
+                }
+              }}
             />)
           }
         </div>

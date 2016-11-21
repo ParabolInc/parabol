@@ -3,7 +3,6 @@ import {CreateActionInput, UpdateActionInput} from './actionSchema';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
-  GraphQLString,
   GraphQLID
 } from 'graphql';
 import {requireSUOrTeamMember} from '../authorization';
@@ -19,8 +18,8 @@ export default {
         description: 'the updated action including the id, and at least one other field'
       },
       rebalance: {
-        type: GraphQLString,
-        description: 'the name of a status if the sort order got so out of whack that we need to reset the btree'
+        type: GraphQLBoolean,
+        description: 'true if we should resort the action list because the float resolution has gotten too small'
       }
     },
     async resolve(source, {updatedAction, rebalance}, {authToken}) {

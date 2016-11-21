@@ -68,7 +68,7 @@ export default class UserActionListItemContainer extends Component {
     form: PropTypes.string,
     isActive: PropTypes.bool,
     isDragging: PropTypes.bool.isRequired,
-    isPreview: PropTypes.bool.isRequired,
+    isPreview: PropTypes.bool,
     connectDragSource: PropTypes.func.isRequired,
     connectDragPreview: PropTypes.func.isRequired,
     connectDropTarget: PropTypes.func.isRequired,

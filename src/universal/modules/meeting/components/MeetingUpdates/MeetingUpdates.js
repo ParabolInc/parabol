@@ -90,6 +90,7 @@ MeetingUpdates.propTypes = {
   localPhaseItem: PropTypes.number.isRequired,
   members: PropTypes.array.isRequired,
   projects: PropTypes.object.isRequired,
+  queryKey: PropTypes.string.isRequired,
   styles: PropTypes.object.isRequired,
   team: PropTypes.object.isRequired,
 };

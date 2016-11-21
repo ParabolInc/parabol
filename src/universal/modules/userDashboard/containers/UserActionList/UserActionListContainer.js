@@ -3,6 +3,7 @@ import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import UserActionList from 'universal/modules/userDashboard/components/UserActionList/UserActionList';
 import getNewSortOrder from 'universal/utils/getNewSortOrder';
+import {MIN_SORT_RESOLUTION} from 'universal/utils/constants';
 
 const userActionListQuery = `
 query {
@@ -75,27 +76,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-// function getNewIndex(actions, sourceSortOrder, targetSortOrder) {
-//   // if the source is above the target, put it below, otherwise, put it above
-//   let xfactor = 1;
-//   if (sourceSortOrder > targetSortOrder) {
-//     // we're moving it up (if sort by ascending) or down (if desc)
-//     xfactor = -1;
-//   }
-//   let minIndex = Infinity * xfactor;
-//   for (let i = 0; i < actions.length; i++) {
-//     const curAction = actions[i];
-//     if (curAction.sortOrder === sourceSortOrder) {
-//       continue;
-//     }
-//
-//     if (xfactor * curAction.sortOrder > xfactor * targetSortOrder && xfactor * curAction.sortOrder < xfactor * minIndex) {
-//       minIndex = curAction.sortOrder;
-//     }
-//   }
-//   return (minIndex === Infinity * xfactor) ? targetSortOrder + xfactor : (targetSortOrder + minIndex) / 2;
-// }
-
 const UserActionListContainer = (props) => {
   const {actions, dispatch, queryKey, selectingNewActionTeam, teams, userId} = props;
   const dragAction = (sourceId, sourceSortOrder, targetSortOrder, monitorItems) => {
@@ -104,6 +84,9 @@ const UserActionListContainer = (props) => {
       ops: {userActions: queryKey},
       variables: {updatedAction: {id: sourceId, sortOrder: updatedSortOrder}}
     };
+    if (Math.abs(targetSortOrder - updatedSortOrder) < MIN_SORT_RESOLUTION) {
+      options.variables.rebalance = true;
+    }
     // mutative!
     monitorItems.sortOrder = updatedSortOrder;
     cashay.mutate('updateAction', options);

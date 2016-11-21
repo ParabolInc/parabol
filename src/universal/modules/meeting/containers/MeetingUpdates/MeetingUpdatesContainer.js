@@ -19,14 +19,37 @@ query {
 }
 `;
 
+const mutationHandlers = {
+  updateProject(optimisticUpdates, queryResponse, currentResponse) {
+    if (optimisticUpdates) {
+      const {updatedProject} = optimisticUpdates;
+      if (updatedProject && updatedProject.hasOwnProperty('teamSort')) {
+        const {id, teamSort, status} = updatedProject;
+        const {projects} = currentResponse;
+        const fromProject = projects.find((project) => project.id === id);
+        if (teamSort !== undefined) {
+          fromProject.teamSort = teamSort;
+        }
+        if (status) {
+          fromProject.status = status;
+        }
+        // no need to sort since the resolveTeamProjects function will do that next
+        return currentResponse;
+      }
+    }
+    return undefined;
+  }
+};
+
 const mapStateToProps = (state, props) => {
   const {members, localPhaseItem} = props;
   const currentTeamMember = members[localPhaseItem - 1];
   const teamMemberId = currentTeamMember && currentTeamMember.id;
   const memberProjects = cashay.query(meetingUpdatesQuery, {
     op: 'meetingUpdatesContainer',
-    variables: {teamMemberId},
     key: teamMemberId,
+    mutationHandlers,
+    variables: {teamMemberId},
   }).data.projects;
   const projects = makeProjectsByStatus(memberProjects, 'teamSort');
   return {

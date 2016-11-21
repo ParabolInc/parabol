@@ -41,7 +41,7 @@ class OutcomeCardContainer extends Component {
     this.state = {
       hasHover: false,
       openArea: 'content'
-    }
+    };
   }
 
   componentWillMount() {
@@ -129,9 +129,9 @@ class OutcomeCardContainer extends Component {
     }
   };
 
-  hoverOn = (e) => this.setState({hasHover: true});
+  hoverOn = () => this.setState({hasHover: true});
 
-  hoverOff = (e) => this.setState({hasHover: false});
+  hoverOff = () => this.setState({hasHover: false});
 
   unarchiveProject = () => {
     const options = {
