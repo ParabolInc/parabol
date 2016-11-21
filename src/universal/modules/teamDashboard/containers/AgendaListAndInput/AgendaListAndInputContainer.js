@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput';
+import handleAgendaSort from 'universal/modules/meeting/helpers/handleAgendaSort';
 
 const agendaSubQuery = `
 query {
@@ -24,12 +25,17 @@ query {
   }  
 }`;
 
+const mutationHandlers = {
+  updateAgendaItem: handleAgendaSort
+};
+
 const mapStateToProps = (state, props) => {
   const {teamId} = props;
   const userId = state.auth.obj.sub;
   const agendaAndTeamMembers = cashay.query(agendaSubQuery, {
     variables: {teamId},
     op: 'agendaListAndInputContainer',
+    mutationHandlers,
     key: teamId,
     resolveCached: {
       teamMember: (source) => source.teamMemberId,

@@ -1,4 +1,5 @@
 import {
+  AGENDA_ITEMS,
   LOBBY,
   FIRST_CALL,
   SUMMARY,
@@ -80,6 +81,10 @@ export default function handleRedirects(team, localPhase, localPhaseItem, oldTea
   if (team.facilitatorPhase === SUMMARY) {
     router.replace(`/summary/${team.meetingId}`);
     return false;
+  }
+
+  if (localPhase === AGENDA_ITEMS) {
+
   }
 
   return true;

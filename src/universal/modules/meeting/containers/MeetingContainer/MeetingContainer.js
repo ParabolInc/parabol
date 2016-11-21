@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
+import handleAgendaSort from 'universal/modules/meeting/helpers/handleAgendaSort';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
 import MeetingAvatars from 'universal/modules/meeting/components/MeetingAvatars/MeetingAvatars';
 import Sidebar from '../../components/Sidebar/Sidebar';
@@ -95,12 +96,17 @@ query{
   }
 }`;
 
+const mutationHandlers = {
+  updateAgendaItem: handleAgendaSort
+};
+
 const mapStateToProps = (state, props) => {
   const {params: {localPhaseItem, teamId}} = props;
   const {sub: userId} = state.auth.obj;
   const queryResult = cashay.query(meetingContainerQuery, {
     op: 'meetingContainerQuery',
     key: teamId,
+    mutationHandlers,
     variables: {teamId},
     sort: {
       agenda: (a, b) => a.sortOrder - b.sortOrder,
@@ -185,11 +191,24 @@ export default class MeetingContainer extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    const {localPhaseItem, router, params: {localPhase}, team} = nextProps;
-    const {dispatch, isFacilitating, team: oldTeam} = this.props;
+    const {agenda, localPhaseItem, router, params: {localPhase}, team} = nextProps;
+    const {agenda: oldAgenda, dispatch, isFacilitating, team: oldTeam} = this.props;
     const safeRoute = handleRedirects(team, localPhase, localPhaseItem, oldTeam, router);
     if (safeRoute) {
       return true;
+    }
+    // check sort order for agenda items
+    if (localPhase === AGENDA_ITEMS) {
+      const oldAgendaItem = oldAgenda[localPhaseItem - 1];
+      const newAgendaItem = agenda[localPhaseItem - 1];
+      if (!newAgendaItem || newAgendaItem.id !== oldAgendaItem.id) {
+        const updatedAgendaItemIdx = agenda.findIndex((a) => a.id === oldAgendaItem.id);
+        if (updatedAgendaItemIdx !== -1) {
+          const pushURL = makePushURL(team.id, AGENDA_ITEMS, updatedAgendaItemIdx + 1);
+          router.replace(pushURL);
+          return false;
+        }
+      }
     }
     // if we call router.push
     if (Date.now() - infiniteLoopTimer < 1000) {
