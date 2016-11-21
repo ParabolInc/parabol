@@ -7,7 +7,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import voidClick from 'universal/utils/voidClick';
 import {DragSource as dragSource} from 'react-dnd';
-import {AGENDA_ITEM} from 'universal/utils/constants'
+import {AGENDA_ITEM} from 'universal/utils/constants';
 
 const projectSource = {
   beginDrag(props) {
@@ -37,7 +37,7 @@ const AgendaItem = props => {
     isCurrent && styles.itemActive,
     isComplete && styles.processed
   );
-  const contentStyles= css(
+  const contentStyles = css(
     isCurrent && styles.descActive,
     isComplete && styles.strikethrough
   );

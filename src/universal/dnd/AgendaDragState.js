@@ -9,7 +9,7 @@ class AgendaDragState {
   }
   handleEndDrag() {
     this.minY = null;
-      this.maxY = null;
+    this.maxY = null;
   }
 }
 

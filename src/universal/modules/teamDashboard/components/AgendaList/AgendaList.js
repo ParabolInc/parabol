@@ -19,7 +19,7 @@ const removeItemFactory = (itemId) => () => {
 };
 
 const AgendaList = (props) => {
-  const {agenda, agendaPhaseItem, connectDropTarget, gotoItem, styles, teamId} = props;
+  const {agenda, agendaPhaseItem, connectDropTarget, gotoItem, styles} = props;
   agendaDragState.clear();
   return connectDropTarget(
     <div className={css(styles.root)}>
