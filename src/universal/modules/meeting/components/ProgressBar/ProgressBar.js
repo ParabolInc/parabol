@@ -4,7 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme.js';
 import {srOnly} from 'universal/styles/helpers';
 
-const barHeight = 6;
+const barHeight = 8;
 const pointHeight = barHeight;
 const pointWidth = 8;
 const avatarWidth = 44; // 'small' Avatar size
@@ -12,7 +12,7 @@ const avatarGutter = 24; // see AvatarGroup
 const outerPadding = (avatarWidth - pointWidth) / 2;
 const blockWidth = avatarWidth + avatarGutter;
 const ProgressBar = (props) => {
-  const {gotoItem, membersCount, facilitatorPhaseItem, localPhaseItem, meetingPhaseItem, isComplete, styles} = props;
+  const {gotoItem, membersCount, hasHover, facilitatorPhaseItem, localPhaseItem, meetingPhaseItem, isComplete, styles} = props;
   const renderPoint = (idx) => {
     const marginRight = {
       marginRight: idx === membersCount ? 0 : `${blockWidth - pointWidth}px`
@@ -22,6 +22,7 @@ const ProgressBar = (props) => {
       (idx <= meetingPhaseItem || isComplete) && styles.pointCompleted,
       idx === localPhaseItem && styles.pointLocal,
       idx === facilitatorPhaseItem && styles.pointFacilitator,
+      hasHover && styles.pointWithAreaHover
     );
     return (
       <div className={pointStyles} onClick={() => gotoItem(idx)} style={marginRight} key={`pbPoint${idx}`}>
@@ -40,28 +41,35 @@ const ProgressBar = (props) => {
   const barWidth = ((meetingPhaseItem) * blockWidth) - (blockWidth - pointWidth - outerPadding);
   const barStyle = isComplete ? {width: '100%'} : {width: `${barWidth}px`};
   return (
-    <div className={css(styles.root)}>
-      <div className={css(styles.points)}>
-        {renderPoints()}
+    <div className={css(styles.progressBar)}>
+      <div className={css(styles.barBlock)}>
+        <div className={css(styles.points)}>
+          {renderPoints()}
+        </div>
+        <div className={css(styles.bar)} style={barStyle}></div>
       </div>
-      <div className={css(styles.bar)} style={barStyle}></div>
     </div>
   );
 };
 
-
 ProgressBar.propTypes = {
   gotoItem: PropTypes.func.isRequired,
+  hasHover: PropTypes.bool,
   isComplete: PropTypes.bool,
-  facilitatorPhaseItem: PropTypes.number, // index of 1
-  localPhaseItem: PropTypes.number,       // index of 1
-  meetingPhaseItem: PropTypes.number,     // index of 1
-  membersCount: PropTypes.number,          // members.length
+  facilitatorPhaseItem: PropTypes.number,
+  localPhaseItem: PropTypes.number,
+  meetingPhaseItem: PropTypes.number,
+  membersCount: PropTypes.number,
   styles: PropTypes.object
 };
 
 const styleThunk = () => ({
-  root: {
+  progressBar: {
+    // NOTE: Padding creates larger area for hover states
+    padding: '1rem 8rem'
+  },
+
+  barBlock: {
     backgroundColor: appTheme.palette.dark10l,
     borderRadius: `${barHeight}px`,
     display: 'inline-block',
@@ -91,6 +99,7 @@ const styleThunk = () => ({
 
   point: {
     backgroundColor: appTheme.palette.dark40l,
+    border: '1px solid transparent',
     cursor: 'pointer',
     display: 'inline-block',
     height: `${pointHeight}px`,
@@ -98,11 +107,17 @@ const styleThunk = () => ({
     width: `${pointWidth}px`,
 
     ':hover': {
-      transform: 'scale(2)'
+      transform: 'scale(3)'
     },
     ':focus': {
-      transform: 'scale(2)'
+      transform: 'scale(3)'
     }
+  },
+
+  pointWithAreaHover: {
+    borderColor: '#fff',
+    borderRadius: '100%',
+    transform: 'scale(2)'
   },
 
   pointLocal: {
