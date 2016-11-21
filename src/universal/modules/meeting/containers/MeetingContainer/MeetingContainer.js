@@ -349,7 +349,12 @@ export default class MeetingContainer extends Component {
           }
           {localPhase === FIRST_CALL && <MeetingAgendaFirstCall gotoNext={this.gotoNext}/>}
           {localPhase === AGENDA_ITEMS &&
-            <MeetingAgendaItems agendaItem={agenda[localPhaseItem - 1]} gotoNext={this.gotoNext} members={members}/>
+            <MeetingAgendaItems
+              agendaItem={agenda[localPhaseItem - 1]}
+              isLast={localPhaseItem === agenda.length}
+              gotoNext={this.gotoNext}
+              members={members}
+            />
           }
           {localPhase === LAST_CALL &&
             <MeetingAgendaLastCallContainer
