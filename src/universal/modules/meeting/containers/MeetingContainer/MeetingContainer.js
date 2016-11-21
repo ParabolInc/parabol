@@ -154,10 +154,9 @@ export default class MeetingContainer extends Component {
 
   constructor(props) {
     super(props);
-    const {bindHotkey, localPhaseItem, params, router, team} = props;
-    const {localPhase, teamId} = params;
+    const {bindHotkey, params: {teamId}} = props;
     // subscribe to all teams, but don't do anything with that open subscription
-    handleRedirects(team, localPhase, localPhaseItem, {}, router);
+    handleRedirects({}, this.props);
     bindHotkey(['enter', 'right'], this.gotoNext);
     bindHotkey('left', this.gotoPrev);
     bindHotkey('i c a n t h a c k i t', () => cashay.mutate('killMeeting', {variables: {teamId}}));
@@ -191,35 +190,18 @@ export default class MeetingContainer extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    const {agenda, localPhaseItem, router, params: {localPhase}, team} = nextProps;
-    const {agenda: oldAgenda, dispatch, isFacilitating, team: oldTeam} = this.props;
-    const safeRoute = handleRedirects(team, localPhase, localPhaseItem, oldTeam, router);
+    const safeRoute = handleRedirects(this.props, nextProps);
     if (safeRoute) {
       return true;
     }
-    // check sort order for agenda items
-    if (localPhase === AGENDA_ITEMS) {
-      const oldAgendaItem = oldAgenda[localPhaseItem - 1];
-      if (!oldAgendaItem) {
-        return false;
-      }
-      const newAgendaItem = agenda[localPhaseItem - 1];
-      if (!newAgendaItem || newAgendaItem.id !== oldAgendaItem.id) {
-        const updatedAgendaItemIdx = agenda.findIndex((a) => a.id === oldAgendaItem.id);
-        if (updatedAgendaItemIdx !== -1) {
-          const pushURL = makePushURL(team.id, AGENDA_ITEMS, updatedAgendaItemIdx + 1);
-          router.replace(pushURL);
-          return false;
-        }
-      }
-    }
+    const {dispatch, isFacilitating, team: {id: teamId}} = this.props;
     // if we call router.push
     if (Date.now() - infiniteLoopTimer < 1000) {
       if (++infiniteloopCounter >= 10) {
         // if we're changing locations 10 times in a second, it's probably infinite
         if (isFacilitating) {
           const variables = {
-            teamId: team.id,
+            teamId,
             nextPhase: CHECKIN,
             nextPhaseItem: 1,
             force: true
