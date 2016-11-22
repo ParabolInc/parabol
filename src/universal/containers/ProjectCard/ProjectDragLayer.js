@@ -10,7 +10,7 @@ const layerStyles = {
   pointerEvents: 'none',
   position: 'fixed',
   top: 0,
-  width: 'calc((100vw - 40rem) / 4)',
+  width: 'calc((100vw - 40.125rem) / 4)',
   zIndex: ui.zCard
 };
 
