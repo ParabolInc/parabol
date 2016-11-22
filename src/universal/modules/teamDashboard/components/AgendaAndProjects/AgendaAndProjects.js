@@ -58,10 +58,10 @@ const styleThunk = () => ({
 
   agendaLayout: {
     borderRight: `2px solid ${borderColor}`,
-    boxSizing: 'content-box',
     display: 'flex',
     flexDirection: 'column',
-    width: ui.dashAgendaWidth
+    maxWidth: ui.dashAgendaWidth,
+    minWidth: ui.dashAgendaWidth
   },
 
   projectsLayout: {

@@ -24,7 +24,7 @@ const ui = {
   // Cards
   cardBorderColor: appTheme.palette.mid30l,
   cardBorderRadius: '.25rem',
-  cardMaxWidth: '17.9375rem',
+  cardMaxWidth: '17.5rem',
   cardMinHeight: '7.5rem',
   cardPaddingBase: '.5rem',
   cardDragStyle: {
@@ -37,7 +37,7 @@ const ui = {
 
   // Dashboards
   dashActionsWidth: '15rem',
-  dashAgendaWidth: '15rem',
+  dashAgendaWidth: '15.125rem',
   dashBackgroundColor: backgroundColor,
   dashBorderColor: 'rgba(0, 0, 0, .1)',
   dashGutter: '1rem',
@@ -74,7 +74,7 @@ const ui = {
   zMenu: zIndexScale(4),
 
   // Project columns
-  projectColumnsMaxWidth: '80rem',
+  projectColumnsMaxWidth: '78.25rem',
   projectColumnsMinWidth: '48rem',
 
   // Generic zIndex scale
