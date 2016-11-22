@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import UserActionListItem from './UserActionListItem';
 import {DragLayer as dragLayer} from 'react-dnd';
-import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 
 const layerStyles = {
   left: 0,
@@ -10,7 +10,7 @@ const layerStyles = {
   position: 'fixed',
   top: 0,
   width: '12.875rem',
-  zIndex: 500,
+  zIndex: ui.zActionItem,
 };
 
 function getItemStyles(props) {
@@ -44,15 +44,9 @@ export default class ActionDragLayer extends Component {
     if (!isDragging) {
       return null;
     }
-    const dragStyle = {
-      backgroundColor: appTheme.palette.light10l,
-      borderColor: appTheme.palette.mid70l,
-      borderRadius: '.25rem',
-      boxShadow: '0 1px 2px rgba(0, 0, 0, .15)'
-    };
     return (
       <div style={getItemStyles(this.props)}>
-        <div className={this.props.parentStyles} style={dragStyle}>
+        <div className={this.props.parentStyles} style={ui.cardDragStyle}>
           <UserActionListItem {...this.props} isPreview isDragging={false}/>
         </div>
       </div>

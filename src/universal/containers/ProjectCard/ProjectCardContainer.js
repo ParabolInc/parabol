@@ -32,7 +32,7 @@ query {
       id
       picture
       preferredName
-    } 
+    }
     team @cached(type: "Team") {
       id
       name
@@ -83,7 +83,7 @@ class ProjectCardContainer extends Component {
             outcome={project}
           />
         }
-        <div style={{opacity: isDragging ? 0.2 : 1}}>
+        <div style={{opacity: isDragging ? 0.5 : 1}}>
           <OutcomeOrNullCard
             area={area}
             form={project.id}

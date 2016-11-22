@@ -1,23 +1,17 @@
 import React, {Component, PropTypes} from 'react';
 import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
 import {DragLayer as dragLayer} from 'react-dnd';
-import appTheme from 'universal/styles/theme/appTheme';
-
-const dragStyle = {
-  backgroundColor: appTheme.palette.light10l,
-  borderColor: appTheme.palette.mid70l,
-  borderRadius: '.25rem',
-  boxShadow: '0 1px 2px rgba(0, 0, 0, .15)'
-};
+import ui from 'universal/styles/ui';
 
 const layerStyles = {
   left: 0,
+  maxWidth: ui.cardMaxWidth,
   minHeight: '15rem',
   pointerEvents: 'none',
   position: 'fixed',
   top: 0,
-  width: '12.875rem',
-  zIndex: 1000000,
+  width: 'calc((100vw - 40rem) / 4)',
+  zIndex: ui.zCard
 };
 
 function getItemStyles(props) {
@@ -57,7 +51,7 @@ export default class ProjectDragLayer extends Component {
   render() {
     return (
       <div style={getItemStyles(this.props)}>
-        <div style={dragStyle}>
+        <div style={ui.cardDragStyle}>
           <OutcomeOrNullCard {...this.props} isPreview/>
         </div>
       </div>
