@@ -11,7 +11,7 @@
 
 An open-source SaaS application for operating Agile business teams.
 
-![Action Screencap Image](./docs/images/20160813_Action_Snapshot.gif)
+![Action Screencap Image](./docs/images/20161121_Action_Snapshot.gif)
 by [Parabol, Inc](http://parabol.co)
 
 Curious what this is all about? Each week we publish a distillation of our
