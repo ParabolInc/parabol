@@ -23,8 +23,8 @@ export default {
     },
     async resolve(source, {updatedAction, rebalance}, {authToken}) {
       const r = getRethink();
-      const {id, ...action} = updatedAction;
-      const [teamId] = id.split('::');
+      const {id: actionId, ...action} = updatedAction;
+      const [teamId] = actionId.split('::');
       requireSUOrTeamMember(authToken, teamId);
       const now = new Date();
       const newAction = {
@@ -33,11 +33,11 @@ export default {
       };
       const {teamMemberId} = action;
       if (teamMemberId) {
-      const [userId] = teamMemberId.split('::');
+        const [userId] = teamMemberId.split('::');
         newAction.userId = userId;
       }
       // we could possibly combine this into the rebalance if we did a resort on the server, but separate logic is nice
-      await r.table('Action').get(id).update(newAction);
+      await r.table('Action').get(actionId).update(newAction);
       if (rebalance) {
         const rebalanceCountPromise = await r.table('Action')
           .getAll(authToken.sub, {index: 'userId'})

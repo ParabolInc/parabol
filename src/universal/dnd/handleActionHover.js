@@ -1,5 +1,4 @@
 import {cashay} from 'cashay';
-import {findDOMNode} from 'react-dom';
 import checkDragForUpdate from 'universal/dnd/checkDragForUpdate';
 import {MIN_SORT_RESOLUTION} from 'universal/utils/constants';
 

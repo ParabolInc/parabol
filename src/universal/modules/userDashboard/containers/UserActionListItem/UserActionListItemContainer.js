@@ -6,7 +6,6 @@ import {reduxForm, initialize} from 'redux-form';
 import {ACTION} from 'universal/utils/constants';
 import {DragSource as dragSource} from 'react-dnd';
 import {getEmptyImage} from 'react-dnd-html5-backend';
-import {findDOMNode} from 'react-dom';
 import ActionDragLayer from 'universal/modules/userDashboard/components/UserActionList/ActionDragLayer';
 
 const actionSource = {

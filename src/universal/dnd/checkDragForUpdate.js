@@ -83,5 +83,5 @@ export default function checkDragForUpdate(monitor, dragState, itemArray, sortFi
   return {
     prevItem,
     updatedDoc
-  }
+  };
 }

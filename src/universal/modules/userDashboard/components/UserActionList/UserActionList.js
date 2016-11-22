@@ -52,8 +52,13 @@ const UserActionList = (props) => {
       <div className={css(styles.block)}>
         <div className={css(styles.headerBlock)}>
           {selectingNewActionTeam ?
-            <UserActionListTeamSelect actions={actions} dispatch={dispatch} teams={teams} actionCount={actionCount}
-                                      userId={userId}/> :
+            <UserActionListTeamSelect
+              actions={actions}
+              dispatch={dispatch}
+              teams={teams}
+              actionCount={actionCount}
+              userId={userId}
+            /> :
             <UserActionListHeader onAddNewAction={createNewAction}/>
           }
         </div>

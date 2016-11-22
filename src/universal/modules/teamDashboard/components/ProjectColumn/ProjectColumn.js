@@ -104,14 +104,10 @@ const ProjectColumn = (props) => {
     return null;
   };
 
-  console.log(status);
-
   const columnStyles = css(
     styles.column,
     styles[status]
   );
-
-  console.log(columnStyles);
 
   // reset every rerender so we make sure we got the freshest info
   dragState.clear();

@@ -81,4 +81,4 @@ export default withDragState(
   dropTarget(AGENDA_ITEM, columnTarget, dropTargetCb)(
     withStyles(styleThunk)(AgendaList)
   )
-)
+);
