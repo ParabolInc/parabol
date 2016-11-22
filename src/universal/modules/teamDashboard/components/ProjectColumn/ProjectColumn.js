@@ -15,6 +15,7 @@ import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import {Menu, MenuItem} from 'universal/modules/menu';
 import {DropTarget as dropTarget} from 'react-dnd';
 import handleColumnHover from 'universal/dnd/handleColumnHover';
+import withDragState from 'universal/dnd/withDragState';
 
 const columnTarget = {
   hover: handleColumnHover
@@ -38,7 +39,7 @@ const handleAddProjectFactory = (status, teamMemberId, teamSort, userSort) => ()
 };
 
 const ProjectColumn = (props) => {
-  const {area, connectDropTarget, status, privateDragState, projects, myTeamMemberId, styles, teams, userId} = props;
+  const {area, connectDropTarget, dragState, status, projects, myTeamMemberId, styles, teams, userId} = props;
 
   const label = themeLabels.projectStatus[status].slug;
   const makeAddProjectButton = (clickHandler) => {
@@ -104,7 +105,7 @@ const ProjectColumn = (props) => {
   };
 
   // reset every rerender so we make sure we got the freshest info
-  privateDragState.handleRender(status);
+  dragState.clear();
   return connectDropTarget(
     <div className={css(styles.column)}>
       <div className={css(styles.columnHeader)}>
@@ -127,10 +128,10 @@ const ProjectColumn = (props) => {
               key={`teamCard${project.id}`}
               area={area}
               project={project}
-              privateDragState={privateDragState}
+              dragState={dragState}
               ref={(c) => {
                 if (c) {
-                  privateDragState[status].components.push(c);
+                  dragState.components.push(c);
                 }
               }}
             />)
@@ -254,6 +255,9 @@ const dropTargetCb = (connectTarget) => ({
   connectDropTarget: connectTarget.dropTarget()
 });
 
-export default dropTarget(PROJECT, columnTarget, dropTargetCb)(
-  withStyles(styleThunk)(ProjectColumn)
+export default
+  withDragState(
+dropTarget(PROJECT, columnTarget, dropTargetCb)(
+    withStyles(styleThunk)(ProjectColumn)
+  )
 );

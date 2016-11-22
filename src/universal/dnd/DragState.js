@@ -1,4 +1,4 @@
-class AgendaDragState {
+export default class DragState {
   constructor() {
     this.clear();
   }
@@ -12,5 +12,3 @@ class AgendaDragState {
     this.maxY = null;
   }
 }
-
-export default new AgendaDragState();

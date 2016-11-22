@@ -28,7 +28,7 @@ query {
 const mutationHandlers = {
   updateProject(optimisticUpdates, queryResponse, currentResponse) {
     if (optimisticUpdates) {
-      const {updatedProject} = optimisticUpdates;
+      const {updatedProject, rebalance} = optimisticUpdates;
       if (updatedProject && updatedProject.hasOwnProperty('userSort')) {
         const {id, userSort, status} = updatedProject;
         const {teams} = currentResponse;

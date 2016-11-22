@@ -13,14 +13,7 @@ const projectSource = {
   beginDrag(props) {
     return {
       id: props.agendaItem.id,
-      dragState: props.agendaDragState
     };
-  },
-  // isDragging(props, monitor) {
-  //   return props.project.id === monitor.getItem().id;
-  // },
-  endDrag(props) {
-    props.agendaDragState.handleEndDrag();
   }
 };
 
@@ -60,7 +53,6 @@ const AgendaItem = props => {
 };
 
 AgendaItem.propTypes = {
-  agendaDragState: PropTypes.object,
   agendaPhaseItem: PropTypes.number,
   connectDragSource: PropTypes.func.isRequired,
   content: PropTypes.string,

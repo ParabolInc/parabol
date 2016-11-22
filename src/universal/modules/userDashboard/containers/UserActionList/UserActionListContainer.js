@@ -2,8 +2,6 @@ import React, {PropTypes} from 'react';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import UserActionList from 'universal/modules/userDashboard/components/UserActionList/UserActionList';
-import getNewSortOrder from 'universal/utils/getNewSortOrder';
-import {MIN_SORT_RESOLUTION} from 'universal/utils/constants';
 
 const userActionListQuery = `
 query {
@@ -78,24 +76,11 @@ const mapStateToProps = (state) => {
 
 const UserActionListContainer = (props) => {
   const {actions, dispatch, queryKey, selectingNewActionTeam, teams, userId} = props;
-  const dragAction = (sourceId, sourceSortOrder, targetSortOrder, monitorItems) => {
-    const updatedSortOrder = getNewSortOrder(actions, sourceSortOrder, targetSortOrder, true, 'sortOrder');
-    const options = {
-      ops: {userActions: queryKey},
-      variables: {updatedAction: {id: sourceId, sortOrder: updatedSortOrder}}
-    };
-    if (Math.abs(targetSortOrder - updatedSortOrder) < MIN_SORT_RESOLUTION) {
-      options.variables.rebalance = true;
-    }
-    // mutative!
-    monitorItems.sortOrder = updatedSortOrder;
-    cashay.mutate('updateAction', options);
-  };
   return (
     <UserActionList
       actions={actions}
       dispatch={dispatch}
-      dragAction={dragAction}
+      queryKey={queryKey}
       selectingNewActionTeam={selectingNewActionTeam}
       teams={teams}
       userId={userId}

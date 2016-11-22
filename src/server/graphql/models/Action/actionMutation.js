@@ -6,7 +6,6 @@ import {
   GraphQLID
 } from 'graphql';
 import {requireSUOrTeamMember} from '../authorization';
-import rebalanceAction from './rebalanceAction';
 
 export default {
   updateAction: {
@@ -34,13 +33,22 @@ export default {
       };
       const {teamMemberId} = action;
       if (teamMemberId) {
-        const [userId] = teamMemberId.split('::');
+      const [userId] = teamMemberId.split('::');
         newAction.userId = userId;
       }
       // we could possibly combine this into the rebalance if we did a resort on the server, but separate logic is nice
       await r.table('Action').get(id).update(newAction);
       if (rebalance) {
-        await rebalanceAction(rebalance, teamId);
+        const rebalanceCountPromise = await r.table('Action')
+          .getAll(authToken.sub, {index: 'userId'})
+          .orderBy('sortOrder')('id');
+        const updates = rebalanceCountPromise.map((id, idx) => ({id, idx}));
+        await r.expr(updates)
+          .forEach((update) => {
+            return r.table('Action')
+              .get(update('id'))
+              .update({sortOrder: update('idx')});
+          });
       }
       return true;
     }

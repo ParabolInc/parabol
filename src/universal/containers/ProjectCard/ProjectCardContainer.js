@@ -11,16 +11,11 @@ const projectSource = {
   beginDrag(props) {
     return {
       id: props.project.id,
-      status: props.project.status,
-      teamSort: props.project.teamSort,
-      dragState: props.privateDragState
+      status: props.project.status
     };
   },
   isDragging(props, monitor) {
     return props.project.id === monitor.getItem().id;
-  },
-  endDrag(props) {
-    props.privateDragState.handleEndDrag();
   }
 };
 

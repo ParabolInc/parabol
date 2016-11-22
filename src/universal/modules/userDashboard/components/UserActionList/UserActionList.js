@@ -11,9 +11,17 @@ import {selectNewActionTeam} from 'universal/modules/userDashboard/ducks/userDas
 import shortid from 'shortid';
 import {cashay} from 'cashay';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
+import {DropTarget as dropTarget} from 'react-dnd';
+import {ACTION} from 'universal/utils/constants';
+import handleActionHover from 'universal/dnd/handleActionHover';
+import withDragState from 'universal/dnd/withDragState';
+
+const columnTarget = {
+  hover: handleActionHover
+};
 
 const UserActionList = (props) => {
-  const {actions, dispatch, dragAction, selectingNewActionTeam, styles, teams, userId} = props;
+  const {actions, connectDropTarget, dispatch, dragState, selectingNewActionTeam, styles, teams, userId} = props;
   const actionCount = actions.length;
   const createNewAction = () => {
     if (teams.length > 1) {
@@ -38,12 +46,14 @@ const UserActionList = (props) => {
     styles.actionsBlock,
     styles.actions
   );
-  return (
+  dragState.clear();
+  return connectDropTarget(
     <div className={css(styles.root)}>
       <div className={css(styles.block)}>
         <div className={css(styles.headerBlock)}>
           {selectingNewActionTeam ?
-            <UserActionListTeamSelect actions={actions} dispatch={dispatch} teams={teams} actionCount={actionCount} userId={userId}/> :
+            <UserActionListTeamSelect actions={actions} dispatch={dispatch} teams={teams} actionCount={actionCount}
+                                      userId={userId}/> :
             <UserActionListHeader onAddNewAction={createNewAction}/>
           }
         </div>
@@ -55,15 +65,20 @@ const UserActionList = (props) => {
                   key={`actionItem::${action.id}`}
                   actionId={action.id}
                   content={action.content}
-                  dragAction={dragAction}
                   form={`actionItem::${action.id}`}
                   parentStyles={parentStyles}
                   sortOrder={action.sortOrder}
+                  ref={(c) => {
+                    if (c) {
+                      dragState.components.push(c);
+                    }
+                  }}
                   team={action.team.name}
                 />
               )}
               <div className={css(styles.hr)}></div>
-            </div> :
+            </div>
+            :
           </div> :
           <div className={css(styles.emptyBlock)}>{!selectingNewActionTeam && <UserActionListEmpty />}</div>
         }
@@ -154,4 +169,12 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(UserActionList);
+const dropTargetCb = (connectTarget) => ({
+  connectDropTarget: connectTarget.dropTarget()
+});
+
+export default withDragState(
+  dropTarget(ACTION, columnTarget, dropTargetCb)(
+    withStyles(styleThunk)(UserActionList)
+  )
+);

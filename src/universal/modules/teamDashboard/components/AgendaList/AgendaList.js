@@ -5,9 +5,9 @@ import {overflowTouch} from 'universal/styles/helpers';
 import {cashay} from 'cashay';
 import AgendaItem from 'universal/modules/teamDashboard/components/AgendaItem/AgendaItem';
 import {AGENDA_ITEM, AGENDA_ITEMS} from 'universal/utils/constants';
-import agendaDragState from 'universal/dnd/AgendaDragState';
 import handleAgendaHover from 'universal/dnd/handleAgendaHover';
 import {DropTarget as dropTarget} from 'react-dnd';
+import withDragState from 'universal/dnd/withDragState';
 
 const columnTarget = {
   hover: handleAgendaHover
@@ -19,8 +19,8 @@ const removeItemFactory = (itemId) => () => {
 };
 
 const AgendaList = (props) => {
-  const {agenda, agendaPhaseItem, connectDropTarget, gotoItem, styles} = props;
-  agendaDragState.clear();
+  const {agenda, agendaPhaseItem, connectDropTarget, dragState, gotoItem, styles} = props;
+  dragState.clear();
   return connectDropTarget(
     <div className={css(styles.root)}>
       <div className={css(styles.inner)}>
@@ -28,14 +28,13 @@ const AgendaList = (props) => {
           <AgendaItem
             key={`agendaItem${idx}`}
             agendaItem={item}
-            agendaDragState={agendaDragState}
             agendaPhaseItem={agendaPhaseItem}
             gotoAgendaItem={() => gotoItem(idx + 1, AGENDA_ITEMS)}
             handleRemove={removeItemFactory(item.id)}
             idx={idx}
             ref={(c) => {
               if (c) {
-                agendaDragState.components.push(c);
+                dragState.components.push(c);
               }
             }}
           />
@@ -78,6 +77,8 @@ const styleThunk = () => ({
 const dropTargetCb = (connectTarget) => ({
   connectDropTarget: connectTarget.dropTarget()
 });
-export default dropTarget(AGENDA_ITEM, columnTarget, dropTargetCb)(
-  withStyles(styleThunk)(AgendaList)
-);
+export default withDragState(
+  dropTarget(AGENDA_ITEM, columnTarget, dropTargetCb)(
+    withStyles(styleThunk)(AgendaList)
+  )
+)
