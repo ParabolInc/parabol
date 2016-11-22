@@ -10,12 +10,11 @@ const layerStyles = {
   pointerEvents: 'none',
   position: 'fixed',
   top: 0,
-  width: 'calc((100vw - 40.125rem) / 4)',
   zIndex: ui.zCard
 };
 
 function getItemStyles(props) {
-  const {currentOffset} = props;
+  const {area, currentOffset} = props;
   if (!currentOffset) {
     return {
       display: 'none'
@@ -23,10 +22,15 @@ function getItemStyles(props) {
   }
   const {x, y} = currentOffset;
   const transform = `translate3d(${x}px, ${y}px, 0px)`;
+  // NOTE: Widths are calculated based on the results of UI constants, but yeah, manual (TA)
+  const dashWidth = 'calc((100vw - 39.375rem) / 4)';
+  const meetingWidth = 'calc((100vw - 25.25rem) / 4)';
+  const width = area === 'meeting' ? meetingWidth : dashWidth;
   return {
     ...layerStyles,
     transform,
-    WebkitTransform: transform
+    WebkitTransform: transform,
+    width
   };
 }
 

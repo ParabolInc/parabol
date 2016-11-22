@@ -23,8 +23,7 @@ const styleThunk = () => ({
     maxWidth: ui.projectColumnsMaxWidth,
     padding: '1rem',
     position: 'relative',
-    width: '100%',
-    zIndex: 400
+    width: '100%'
   }
 });
 

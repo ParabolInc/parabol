@@ -94,7 +94,7 @@ const mapStateToProps = (state) => {
 const UserColumnsContainer = (props) => {
   const {queryKey, projects, teams, userId} = props;
   return (
-    <ProjectColumns queryKey={queryKey} projects={projects} area={USER_DASH} teams={teams} userId={userId} zIndex="200" />
+    <ProjectColumns queryKey={queryKey} projects={projects} area={USER_DASH} teams={teams} userId={userId} />
   );
 };
 

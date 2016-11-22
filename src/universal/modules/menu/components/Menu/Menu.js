@@ -16,13 +16,17 @@ const Menu = (props) => {
     toggle,
     toggleHeight,
     toggleMenu,
-    verticalAlign
+    verticalAlign,
+    zIndex
   } = props;
+
+  console.log(zIndex);
 
   const toggleHeightStyle = {
     height: toggleHeight,
     lineHeight: toggleHeight,
-    verticalAlign
+    verticalAlign,
+    zIndex
   };
 
   const menuBlockStyle = {
@@ -31,7 +35,7 @@ const Menu = (props) => {
   };
 
   const toggleStyle = isOpen ? {opacity: '.5'} : null;
-  const rootStyle = toggleHeight ? toggleHeightStyle : {verticalAlign};
+  const rootStyle = toggleHeight ? toggleHeightStyle : {verticalAlign, zIndex};
   const boxShadow = '0 1px 1px rgba(0, 0, 0, .15)';
   const menuStyle = {boxShadow};
   return (
@@ -76,13 +80,14 @@ Menu.propTypes = {
     'middle',
     'top'
   ]),
+  zIndex: PropTypes.string
 };
 
 const styleThunk = () => ({
   root: {
     display: 'inline-block',
     position: 'relative',
-    zIndex: 200
+    zIndex: ui.zMenu
   },
 
   toggle: {
