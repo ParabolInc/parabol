@@ -103,10 +103,19 @@ const ProjectColumn = (props) => {
     return null;
   };
 
+  console.log(status);
+
+  const columnStyles = css(
+    styles.column,
+    styles[status]
+  );
+
+  console.log(columnStyles);
+
   // reset every rerender so we make sure we got the freshest info
   privateDragState.handleRender(status);
   return connectDropTarget(
-    <div className={css(styles.column)}>
+    <div className={columnStyles}>
       <div className={css(styles.columnHeader)}>
         <span className={css(styles.statusBadge, styles[`${status}Bg`])}>
           <FontAwesome
@@ -172,8 +181,25 @@ const styleThunk = () => ({
     flex: 1,
     flexDirection: 'column',
     overflow: 'scroll',
-    position: 'relative'
+    position: 'relative',
+    // zIndex: 200
   },
+
+  // done: {
+  //   zIndex: 200
+  // },
+  //
+  // active: {
+  //   zIndex: 400
+  // },
+  //
+  // stuck: {
+  //   zIndex: 600
+  // },
+  //
+  // future: {
+  //   zIndex: 800
+  // },
 
   columnLast: {
     ...columnStyles,
@@ -188,13 +214,13 @@ const styleThunk = () => ({
     lineHeight: '1.5rem',
     padding: '.5rem 1rem',
     position: 'relative',
-    zIndex: '400'
+    // zIndex: '400'
   },
 
   columnBody: {
     flex: 1,
     position: 'relative',
-    zIndex: '200'
+    // zIndex: '200'
   },
 
   columnInner: {

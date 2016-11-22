@@ -81,7 +81,8 @@ Menu.propTypes = {
 const styleThunk = () => ({
   root: {
     display: 'inline-block',
-    position: 'relative'
+    position: 'relative',
+    zIndex: 200
   },
 
   toggle: {
