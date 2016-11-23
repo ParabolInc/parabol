@@ -76,7 +76,7 @@ const labelBaseStyles = {
   borderRadius,
   cursor: 'pointer',
   fontWeight: 700,
-  margin: '1rem 0',
+  margin: '.875rem 0',
   minWidth: '10.375rem',
   padding: `${borderRadius} .375rem .125rem .25rem`,
   position: 'relative',
