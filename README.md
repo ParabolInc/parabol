@@ -154,7 +154,7 @@ get involved and how to get compensated.
 
 | Release | Summary                                    |
 |---------|--------------------------------------------|
-| v0.13.0 | Drag-and-drop added everywhere. Fix #508   |
+| v0.13.0 | Drag-and-drop added everywhere, bug fixes  |
 | v0.12.1 | Fix for #518; redirect removed user        |
 | v0.12.0 | Added team settings, modal components      |
 | v0.11.0 | Added S3 deployment, minor UI improvements |

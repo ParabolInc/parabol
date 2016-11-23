@@ -12,7 +12,8 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
   and meeting agenda items
 
 ### Fixed
-- #508 agenda items collapse around 1265px
+- #508 Agenda items collapse around 1265px
+- #517 Server exception encountered when generating meeting summary
 
 ## v0.12.1 - 15-Nov-2016
 ### Fixed
