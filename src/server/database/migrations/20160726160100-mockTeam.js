@@ -6,25 +6,25 @@ exports.up = async(r) => {
     {
       id: 'auth0|5797eb5d12664ba4675745b9',
       email: 'taya@prbl.co',
-      picture: 'http://static1.squarespace.com/static/5654d81ce4b0e1e5861165b7/565e0e3ce4b0f01662c88e7c/565e0e75e4b0e38c74d38ed3/1468511235959/tm-linkedin-avatar-baw.jpg',
+      picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/58264149ff7c5065482011ce/1478902205921/2016+Taya+Mueller.jpg?format=300w',
       preferredName: 'taya'
     },
     {
       id: 'auth0|57a8fb6cab6c18473e47f518',
       email: 'jordan@prbl.co',
-      picture: 'http://static1.squarespace.com/static/5654d81ce4b0e1e5861165b7/565e0e3ce4b0f01662c88e7c/565e0e75e4b0e38c74d38ecd/1468511229451/jh-linkedin-avatar.jpg',
+      picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/5826412fff7c506548200d81/1478902214166/2016+Jordan+Husney.jpg?format=300w',
       preferredName: 'jordan'
     },
     {
       id: 'auth0|5797e83170dddc395d8d1675',
       email: 'terry@prbl.co',
-      picture: 'http://static1.squarespace.com/static/5654d81ce4b0e1e5861165b7/565e0e3ce4b0f01662c88e7c/565e0e75e4b0a880d2eda25f/1468510094892/ta-linkedin-avatar.jpg',
+      picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/58264194ff7c506548201522/1478902180686/2016+Terry+Acker.png?format=300w',
       preferredName: 'terry'
     },
     {
       id: 'auth0|5797eb9712664ba4675745c3',
       email: 'matt@prbl.co',
-      picture: 'http://static1.squarespace.com/static/5654d81ce4b0e1e5861165b7/565e0e3ce4b0f01662c88e7c/565e0e75e4b0e38c74d38ed1/1468510141040/_DSC4863.png',
+      picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/5826415aff7c506548201290/1478902195409/2016+Matt+Krick.png?format=300w',
       preferredName: 'matt'
     }
   ];
@@ -44,7 +44,7 @@ exports.up = async(r) => {
       isActive: true,
       isFacilitator: true,
       isLead: true,
-      picture: 'http://static1.squarespace.com/static/5654d81ce4b0e1e5861165b7/565e0e3ce4b0f01662c88e7c/565e0e75e4b0e38c74d38ecd/1468511229451/jh-linkedin-avatar.jpg',
+      picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/5826412fff7c506548200d81/1478902214166/2016+Jordan+Husney.jpg?format=300w',
       preferredName: 'jordan',
       teamId: 'team123',
       userId: 'auth0|57a8fb6cab6c18473e47f518'
@@ -54,7 +54,7 @@ exports.up = async(r) => {
       isActive: true,
       isFacilitator: true,
       isLead: false,
-      picture: 'http://static1.squarespace.com/static/5654d81ce4b0e1e5861165b7/565e0e3ce4b0f01662c88e7c/565e0e75e4b0a880d2eda25f/1468510094892/ta-linkedin-avatar.jpg',
+      picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/58264194ff7c506548201522/1478902180686/2016+Terry+Acker.png?format=300w',
       preferredName: 'terry',
       teamId: 'team123',
       userId: 'auth0|5797e83170dddc395d8d1675'
@@ -64,7 +64,7 @@ exports.up = async(r) => {
       isActive: true,
       isFacilitator: true,
       isLead: false,
-      picture: 'http://static1.squarespace.com/static/5654d81ce4b0e1e5861165b7/565e0e3ce4b0f01662c88e7c/565e0e75e4b0e38c74d38ed3/1468511235959/tm-linkedin-avatar-baw.jpg',
+      picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/58264149ff7c5065482011ce/1478902205921/2016+Taya+Mueller.jpg?format=300w',
       preferredName: 'taya',
       teamId: 'team123',
       userId: 'auth0|5797eb5d12664ba4675745b9'
@@ -74,7 +74,7 @@ exports.up = async(r) => {
       isActive: true,
       isFacilitator: true,
       isLead: true,
-      picture: 'http://static1.squarespace.com/static/5654d81ce4b0e1e5861165b7/565e0e3ce4b0f01662c88e7c/565e0e75e4b0e38c74d38ed1/1468510141040/_DSC4863.png',
+      picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/5826415aff7c506548201290/1478902195409/2016+Matt+Krick.png?format=300w',
       preferredName: 'matt',
       teamId: 'team123',
       userId: 'auth0|5797eb9712664ba4675745c3'
@@ -96,7 +96,7 @@ exports.up = async(r) => {
       isActive: true,
       isFacilitator: true,
       isLead: false,
-      picture: 'http://static1.squarespace.com/static/5654d81ce4b0e1e5861165b7/565e0e3ce4b0f01662c88e7c/565e0e75e4b0e38c74d38ecd/1468511229451/jh-linkedin-avatar.jpg',
+      picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/5826412fff7c506548200d81/1478902214166/2016+Jordan+Husney.jpg?format=300w',
       preferredName: 'jordan',
       teamId: 'team456',
       userId: 'auth0|57a8fb6cab6c18473e47f518'
@@ -106,7 +106,7 @@ exports.up = async(r) => {
       isActive: false,
       isFacilitator: true,
       isLead: false,
-      picture: 'http://static1.squarespace.com/static/5654d81ce4b0e1e5861165b7/565e0e3ce4b0f01662c88e7c/565e0e75e4b0a880d2eda25f/1468510094892/ta-linkedin-avatar.jpg',
+      picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/58264194ff7c506548201522/1478902180686/2016+Terry+Acker.png?format=300w',
       preferredName: 'terry',
       teamId: 'team456',
       userId: 'auth0|5797e83170dddc395d8d1675'
@@ -116,7 +116,7 @@ exports.up = async(r) => {
       isActive: true,
       isFacilitator: true,
       isLead: true,
-      picture: 'http://static1.squarespace.com/static/5654d81ce4b0e1e5861165b7/565e0e3ce4b0f01662c88e7c/565e0e75e4b0e38c74d38ed1/1468510141040/_DSC4863.png',
+      picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/5826415aff7c506548201290/1478902195409/2016+Matt+Krick.png?format=300w',
       preferredName: 'matt',
       teamId: 'team456',
       userId: 'auth0|5797eb9712664ba4675745c3'
