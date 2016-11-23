@@ -4,6 +4,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.13.0 - 22-Nov-2016
+We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
+### Added
+- Drag-and-drop everywhere: My Dashboard (actions, projects),
+  Team Dashboards (meeting agenda queue, projects), meeting project updates,
+  and meeting agenda items
+
+### Fixed
+- #508 agenda items collapse around 1265px
+
 ## v0.12.1 - 15-Nov-2016
 ### Fixed
 - #518 Removed team member does not redirect away while on team dashboard
