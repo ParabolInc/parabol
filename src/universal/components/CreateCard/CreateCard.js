@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import PushButton from '../PushButton/PushButton';
 import Ellipsis from '../Ellipsis/Ellipsis';
 import Type from '../Type/Type';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -21,20 +20,19 @@ const CreateCard = (props) => {
   } = props;
 
   const actionLabel = () =>
-    <span className={css(styles.label)}>
-      <span className={css(styles.labelStyles)}>Add an{' '}</span>
-      <span className={css(styles.actionLabel)}>
-        <u>A</u>ction
-      </span>
+    <span className={css(styles.actionLabel)}>
+      + New Private <u>A</u>ction
     </span>;
 
   const projectLabel = () =>
-    <span className={css(styles.label)}>
-      <span className={css(styles.labelStyles)}>Add a{' '}</span>
-      <span className={css(styles.projectLabel)}>
-        <u>P</u>roject
-      </span>
+    <span className={css(styles.projectLabel)}>
+      + New Team <u>P</u>roject
     </span>;
+
+  const addNewOutcome = (label, handler) =>
+    <a className={css(styles.label)} onClick={handler}>
+      {label()}
+    </a>;
 
   const username = makeUsername(createdBy);
 
@@ -47,18 +45,8 @@ const CreateCard = (props) => {
     <div className={cardStyles}>
       {hasControls &&
         <div className={css(styles.controlsBlock)}>
-          <PushButton
-            handleOnClick={handleAddAction}
-            keystroke="a"
-            label={actionLabel()}
-            size="default"
-          />
-          <PushButton
-            handleOnClick={handleAddProject}
-            keystroke="p"
-            label={projectLabel()}
-            size="default"
-          />
+          {addNewOutcome(actionLabel, handleAddAction)}
+          {addNewOutcome(projectLabel, handleAddProject)}
         </div>
       }
       {isCreating &&
@@ -85,6 +73,7 @@ const labelStyles = {
   border: '1px solid transparent',
   borderRadius: '.25rem',
   borderWidth: '2px 1px 1px',
+  minWidth: '10.375rem',
   padding: '1px 4px 2px',
   verticalAlign: 'middle'
 };
@@ -92,6 +81,8 @@ const labelStyles = {
 const styleThunk = () => ({
   root: {
     ...CreateCardRootStyles,
+    paddingLeft: 0,
+    paddingRight: 0,
 
     '::after': {
       ...cardBorderTop,
@@ -111,13 +102,16 @@ const styleThunk = () => ({
 
   label: {
     color: appTheme.palette.mid,
+    cursor: 'pointer',
+    display: 'block',
     fontFamily: appTheme.typography.sansSerif,
     fontStyle: 'normal',
-    fontWeight: 700
-  },
+    fontWeight: 700,
+    margin: '1rem 0',
 
-  labelStyles: {
-    ...labelStyles
+    ':hover': {
+      opacity: '.65'
+    }
   },
 
   actionLabel: {
