@@ -250,14 +250,14 @@ export default {
               return r.table('Action')
                 .getAll(r.args(agendaItemIds), {index: 'agendaId'})
                 .filter((row) => row('content').eq(null))
-                .delete()
+                .delete();
             })
             .do((agendaItemIds) => {
               // delete any null projects
               return r.table('Project')
                 .getAll(r.args(agendaItemIds), {index: 'agendaId'})
                 .filter((row) => row('content').eq(null))
-                .delete()
+                .delete();
             })
             .do((agendaItemIds) => {
               return {
