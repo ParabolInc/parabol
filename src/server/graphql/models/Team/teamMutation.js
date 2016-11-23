@@ -242,15 +242,32 @@ export default {
             .map((doc) => doc('id'))
             .coerceTo('array')
             .do((agendaItemIds) => {
+              // delete any null actions
+              return r.table('Action')
+                .getAll(r.args(agendaItemIds), {index: 'agendaId'})
+                .filter((row) => row('content').eq(null))
+                .delete();
+            })
+            .do((agendaItemIds) => {
+              // delete any null projects
+              return r.table('Project')
+                .getAll(r.args(agendaItemIds), {index: 'agendaId'})
+                .filter((row) => row('content').eq(null))
+                .delete();
+            })
+            .do((agendaItemIds) => {
               return {
                 actions: r.table('Action')
                   .getAll(r.args(agendaItemIds), {index: 'agendaId'})
+                  // we still need to filter because this may occur before we delete them above (not guaranteed in sync)
+                  .filter((row) => row('content').ne(null))
                   .map(row => row.merge({id: meetingId.add('::').add(row('id'))}))
                   .pluck('id', 'content', 'teamMemberId')
                   .coerceTo('array'),
                 agendaItemsCompleted: agendaItemIds.count(),
                 projects: r.table('Project')
                   .getAll(r.args(agendaItemIds), {index: 'agendaId'})
+                  .filter((row) => row('content').ne(null))
                   .map(row => row.merge({id: meetingId.add('::').add(row('id'))}))
                   .pluck('id', 'content', 'status', 'teamMemberId')
                   .coerceTo('array')
