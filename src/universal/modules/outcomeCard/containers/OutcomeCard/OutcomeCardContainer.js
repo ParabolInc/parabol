@@ -102,6 +102,7 @@ class OutcomeCardContainer extends Component {
       // TODO debounce for useless things like ctrl, shift, etc
       const {argName, mutationName} = getOutcomeNames(outcome, 'update');
       const options = {
+        ops: {},
         variables: {
           [argName]: {
             id: outcome.id,
@@ -135,6 +136,7 @@ class OutcomeCardContainer extends Component {
 
   unarchiveProject = () => {
     const options = {
+      ops: {},
       variables: {
         updatedProject: {
           id: this.props.outcome.id,

@@ -15,6 +15,7 @@ const OutcomeCardAssignMenu = (props) => {
     }
     const {argName, mutationName} = getOutcomeNames(outcome, 'update');
     const options = {
+      ops: {},
       variables: {
         [argName]: {
           id: outcomeId,

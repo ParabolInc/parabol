@@ -81,6 +81,7 @@ export default class UserActionListItemContainer extends Component {
     } else {
       // TODO debounce for useless things like ctrl, shift, etc
       const options = {
+        ops: {},
         variables: {
           updatedAction: {
             id: actionId,
@@ -94,6 +95,7 @@ export default class UserActionListItemContainer extends Component {
   handleChecked = () => {
     const {actionId} = this.props;
     const options = {
+      ops: {},
       variables: {
         updatedAction: {
           id: actionId,
