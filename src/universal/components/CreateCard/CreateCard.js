@@ -4,6 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import Ellipsis from '../Ellipsis/Ellipsis';
 import Type from '../Type/Type';
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 import CreateCardRootStyles from './CreateCardRootStyles';
 import {cardBorderTop} from 'universal/styles/helpers';
 import makeUsername from 'universal/utils/makeUsername';
@@ -20,19 +21,19 @@ const CreateCard = (props) => {
   } = props;
 
   const actionLabel = () =>
-    <span className={css(styles.actionLabel)}>
+    <span title="Press “a” to add a new Action">
       + New Private <u>A</u>ction
     </span>;
 
   const projectLabel = () =>
-    <span className={css(styles.projectLabel)}>
+    <span title="Press “p” to add a new Project">
       + New Team <u>P</u>roject
     </span>;
 
-  const addNewOutcome = (label, handler) =>
-    <a className={css(styles.label)} onClick={handler}>
+  const addNewOutcome = (labelStyles, label, handler) =>
+    <div className={css(labelStyles)} onClick={handler}>
       {label()}
-    </a>;
+    </div>;
 
   const username = makeUsername(createdBy);
 
@@ -45,8 +46,8 @@ const CreateCard = (props) => {
     <div className={cardStyles}>
       {hasControls &&
         <div className={css(styles.controlsBlock)}>
-          {addNewOutcome(actionLabel, handleAddAction)}
-          {addNewOutcome(projectLabel, handleAddProject)}
+          {addNewOutcome(styles.actionStyles, actionLabel, handleAddAction)}
+          {addNewOutcome(styles.projectStyles, projectLabel, handleAddProject)}
         </div>
       }
       {isCreating &&
@@ -68,14 +69,34 @@ CreateCard.propTypes = {
   styles: PropTypes.object
 };
 
-const labelStyles = {
-  display: 'inline-block',
+const borderRadius = '.1875rem';
+
+const labelBaseStyles = {
   border: '1px solid transparent',
-  borderRadius: '.25rem',
-  borderWidth: '2px 1px 1px',
+  borderRadius,
+  cursor: 'pointer',
+  fontWeight: 700,
+  margin: '1rem 0',
   minWidth: '10.375rem',
-  padding: '1px 4px 2px',
-  verticalAlign: 'middle'
+  padding: `${borderRadius} .375rem .125rem .25rem`,
+  position: 'relative',
+  verticalAlign: 'middle',
+
+  ':hover': {
+    opacity: '.65'
+  },
+
+  ':after': {
+    backgroundColor: 'currentColor',
+    borderRadius: `${borderRadius} ${borderRadius} 0 0`,
+    content: '""',
+    display: 'block',
+    height: borderRadius,
+    left: '-1px',
+    position: 'absolute',
+    right: '-1px',
+    top: '-1px'
+  }
 };
 
 const styleThunk = () => ({
@@ -100,32 +121,16 @@ const styleThunk = () => ({
     // Define
   },
 
-  label: {
-    color: appTheme.palette.mid,
-    cursor: 'pointer',
-    display: 'block',
-    fontFamily: appTheme.typography.sansSerif,
-    fontStyle: 'normal',
-    fontWeight: 700,
-    margin: '1rem 0',
-
-    ':hover': {
-      opacity: '.65'
-    }
-  },
-
-  actionLabel: {
-    ...labelStyles,
-    backgroundColor: appTheme.palette.light50l,
+  actionStyles: {
+    ...labelBaseStyles,
+    backgroundColor: ui.actionCardBgColor,
     borderColor: appTheme.palette.light50g,
-    borderTopColor: appTheme.palette.dark,
     color: appTheme.palette.dark
   },
 
-  projectLabel: {
-    ...labelStyles,
+  projectStyles: {
+    ...labelBaseStyles,
     borderColor: appTheme.palette.dark30l,
-    borderTopColor: appTheme.palette.cool,
     color: appTheme.palette.cool
   }
 });
