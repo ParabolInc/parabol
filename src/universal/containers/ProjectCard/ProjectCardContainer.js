@@ -1,9 +1,24 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
+import {PROJECT} from 'universal/utils/constants';
+import {DragSource as dragSource} from 'react-dnd';
+import {getEmptyImage} from 'react-dnd-html5-backend';
+import ProjectDragLayer from './ProjectDragLayer';
 
-// TODO merge this into OutcomeCardContainer
+const projectSource = {
+  beginDrag(props) {
+    return {
+      id: props.project.id,
+      status: props.project.status
+    };
+  },
+  isDragging(props, monitor) {
+    return props.project.id === monitor.getItem().id;
+  }
+};
+
 const projectCardSubQuery = `
 query {
   project @cached(type: "Project") {
@@ -17,7 +32,7 @@ query {
       id
       picture
       preferredName
-    } 
+    }
     team @cached(type: "Team") {
       id
       name
@@ -49,25 +64,46 @@ const mapStateToProps = (state, props) => {
   };
 };
 
-const ProjectCardContainer = (props) => {
-  const {area, myUserId, project} = props;
-  const {id, status} = project;
-  const form = `${status}::${id}`;
-  return (
-    id ?
-      <OutcomeOrNullCard
-        area={area}
-        form={form}
-        outcome={project}
-        myUserId={myUserId}
-      /> : null
-  );
-};
+class ProjectCardContainer extends Component {
+  componentDidMount() {
+    const {connectDragPreview, isPreview} = this.props;
+    if (!isPreview) {
+      connectDragPreview(getEmptyImage());
+    }
+  }
+
+  render() {
+    const {area, connectDragSource, isDragging, myUserId, project} = this.props;
+    return connectDragSource(
+      <div>
+        {isDragging &&
+          <ProjectDragLayer
+            area={area}
+            form={project.id}
+            outcome={project}
+          />
+        }
+        <div style={{opacity: isDragging ? 0.5 : 1}}>
+          <OutcomeOrNullCard
+            area={area}
+            form={project.id}
+            outcome={project}
+            myUserId={myUserId}
+          />
+        </div>
+      </div>
+    );
+  }
+}
 
 
 ProjectCardContainer.propTypes = {
   area: PropTypes.string,
+  connectDragSource: PropTypes.func.isRequired,
+  connectDragPreview: PropTypes.func.isRequired,
   dispatch: PropTypes.func,
+  isDragging: PropTypes.bool,
+  isPreview: PropTypes.bool,
   myUserId: PropTypes.string,
   preferredName: PropTypes.string,
   username: PropTypes.string,
@@ -79,4 +115,12 @@ ProjectCardContainer.propTypes = {
   })
 };
 
-export default connect(mapStateToProps)(ProjectCardContainer);
+const dragSourceCb = (connectSource, monitor) => ({
+  connectDragSource: connectSource.dragSource(),
+  connectDragPreview: connectSource.dragPreview(),
+  isDragging: monitor.isDragging()
+});
+
+export default dragSource(PROJECT, projectSource, dragSourceCb)(
+  connect(mapStateToProps)(ProjectCardContainer)
+);

@@ -14,7 +14,7 @@
  * e.g. 2014/12/29 is Monday in week  1 of 2015
  *      2012/1/1   is Sunday in week 52 of 2011
  */
-export default function getWeekNumber(datetime) {
+export default function getWeekNumber(datetime = new Date()) {
   // Copy date so don't modify original
   const d = new Date(+datetime);
   d.setHours(0, 0, 0);

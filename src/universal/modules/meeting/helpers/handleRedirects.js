@@ -1,4 +1,5 @@
 import {
+  AGENDA_ITEMS,
   LOBBY,
   FIRST_CALL,
   SUMMARY,
@@ -8,7 +9,9 @@ import makePushURL from './makePushURL';
 import isSkippingAhead from './isSkippingAhead';
 import hasPhaseItem from './hasPhaseItem';
 
-export default function handleRedirects(team, localPhase, localPhaseItem, oldTeam, router) {
+export default function handleRedirects(oldProps, nextProps) {
+  const {agenda, localPhaseItem, router, params: {localPhase}, team} = nextProps;
+  const {agenda: oldAgenda, team: oldTeam} = oldProps;
   /* DEBUG: uncomment below */
   // console.log(`handleRedirects(${JSON.stringify(team)}, ${localPhase}, ${localPhaseItem}, ...)`);
   const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, id: teamId, meetingId} = team;
@@ -80,6 +83,23 @@ export default function handleRedirects(team, localPhase, localPhaseItem, oldTea
   if (team.facilitatorPhase === SUMMARY) {
     router.replace(`/summary/${team.meetingId}`);
     return false;
+  }
+
+  // check sort order for agenda items
+  if (localPhase === AGENDA_ITEMS) {
+    const oldAgendaItem = oldAgenda[localPhaseItem - 1];
+    if (!oldAgendaItem) {
+      return false;
+    }
+    const newAgendaItem = agenda[localPhaseItem - 1];
+    if (!newAgendaItem || newAgendaItem.id !== oldAgendaItem.id) {
+      const updatedAgendaItemIdx = agenda.findIndex((a) => a.id === oldAgendaItem.id);
+      if (updatedAgendaItemIdx !== -1) {
+        const pushURL = makePushURL(team.id, AGENDA_ITEMS, updatedAgendaItemIdx + 1);
+        router.replace(pushURL);
+        return false;
+      }
+    }
   }
 
   return true;

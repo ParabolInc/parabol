@@ -1,8 +1,5 @@
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 
-const now = new Date();
-const week = getWeekOfYear(now);
-
 const expressions = [
   'Great job',
   'High five',
@@ -20,10 +17,10 @@ const statements = [
   'You are unstoppable!'
 ];
 
-export const makeSuccessExpression = (number = week) => {
+export const makeSuccessExpression = (number = getWeekOfYear()) => {
   return expressions[number % expressions.length];
 };
 
-export const makeSuccessStatement = (number = week) => {
+export const makeSuccessStatement = (number = getWeekOfYear()) => {
   return statements[number % statements.length];
 };

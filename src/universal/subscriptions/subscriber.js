@@ -11,6 +11,7 @@ export default function subscriber(channel, key, handlers) {
     } else if (data.type === 'remove') {
       remove(data.fields);
     } else {
+      // if (data.fields.teamSort !== undefined) return;
       update(data.fields, {removeKeys: data.removeKeys});
     }
   });

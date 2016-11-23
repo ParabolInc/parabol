@@ -4,10 +4,8 @@ import {cashay} from 'cashay';
 import {reduxForm, initialize} from 'redux-form';
 import labels from 'universal/styles/theme/labels';
 import getOutcomeNames from 'universal/utils/getOutcomeNames';
-import {actionFactories, binder, initializer} from 'universal/modules/outcomeCard/ducks/outcomeCardDuck';
 import {connect} from 'react-redux';
 import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/OutcomeCard';
-import initializeComponent from 'universal/modules/outcomeCard/ducks/initializeComponent';
 import targetIsDescendant from 'universal/utils/targetIsDescendant';
 
 const outcomeCardAssignMenuQuery = `
@@ -22,7 +20,6 @@ query {
 
 const mapStateToProps = (state, props) => {
   const {form, outcome} = props;
-  const {openArea, hasHover} = state.outcomeCard[form];
   const formState = state.form[form];
   const active = formState && formState.active && form.endsWith(formState.active);
   const {id: outcomeId} = outcome;
@@ -34,16 +31,19 @@ const mapStateToProps = (state, props) => {
   }).data;
   return {
     active,
-    openArea,
-    hasHover,
     teamMembers
   };
 };
 
-const mapDispatchToProps = (dispatch, props) => binder(dispatch, actionFactories, props.form);
-
-
 class OutcomeCardContainer extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hasHover: false,
+      openArea: 'content'
+    };
+  }
+
   componentWillMount() {
     const {outcome: {content}} = this.props;
     if (content) {
@@ -120,6 +120,19 @@ class OutcomeCardContainer extends Component {
     }
   };
 
+  openMenu = (nextArea) => () => {
+    const {openArea} = this.state;
+    if (nextArea === openArea) {
+      this.setState({openArea: 'content'});
+    } else {
+      this.setState({openArea: nextArea});
+    }
+  };
+
+  hoverOn = () => this.setState({hasHover: true});
+
+  hoverOff = () => this.setState({hasHover: false});
+
   unarchiveProject = () => {
     const options = {
       variables: {
@@ -133,11 +146,17 @@ class OutcomeCardContainer extends Component {
   };
 
   render() {
+    const {hasHover, openArea} = this.state;
     return (
       <OutcomeCard
         {...this.props}
         handleCardActive={this.handleCardActive}
         handleCardUpdate={this.handleCardUpdate}
+        hasHover={hasHover}
+        hoverOn={this.hoverOn}
+        hoverOff={this.hoverOff}
+        openArea={openArea}
+        openMenu={this.openMenu}
         unarchiveProject={this.unarchiveProject}
       />
 
@@ -167,8 +186,7 @@ OutcomeCardContainer.propTypes = {
 };
 
 // Using decorators causes a fun bug where reduxForm can't find dispatch, so we do it the boring way
-export default initializeComponent(initializer, 'form')(
-  connect(mapStateToProps, mapDispatchToProps)(
-    reduxForm()(OutcomeCardContainer)
-  )
+export default
+connect(mapStateToProps)(
+  reduxForm({destroyOnUnmount: false})(OutcomeCardContainer)
 );

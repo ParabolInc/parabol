@@ -46,6 +46,7 @@ const UserProjectsHeader = (props) => {
             toggle={toggle(teamFilterName)}
             toggleHeight={ui.dashSectionHeaderLineHeight}
             verticalAlign="top"
+            zIndex="500"
           >
             <MenuItem
               isActive={teamFilterId === null}

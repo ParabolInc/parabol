@@ -30,6 +30,7 @@ import tmsSignToken from 'server/graphql/models/tmsSignToken';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
+import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 
 export default {
   moveMeeting: {
@@ -75,10 +76,10 @@ export default {
       if (force) {
         // use this if the meeting hit an infinite redirect loop. should never occur
         await r.table('Team').get(teamId).update({
-          facilitatorPhase: nextPhase,
-          facilitatorPhaseItem: nextPhaseItem,
-          meetingPhase: nextPhase,
-          meetingPhaseItem: nextPhaseItem,
+          facilitatorPhase: CHECKIN,
+          facilitatorPhaseItem: 1,
+          meetingPhase: CHECKIN,
+          meetingPhaseItem: 1,
         });
         return true;
       }
@@ -109,21 +110,16 @@ export default {
 
       const userId = getUserId(authToken);
       const teamMemberId = `${userId}::${teamId}`;
-      /*
-       console.log('team');
-       console.log(JSON.stringify(team));
-       */
       if (activeFacilitator !== teamMemberId) {
         throw errorObj({_error: 'Only the facilitator can advance the meeting'});
       }
       const isSynced = facilitatorPhase === meetingPhase && facilitatorPhaseItem === meetingPhaseItem;
       let incrementsProgress;
-      if (phaseOrder(nextPhase) - phaseOrder(meetingPhase) === 1) {
+      if (nextPhase && (phaseOrder(nextPhase) - phaseOrder(meetingPhase) === 1)) {
         // console.log('phaseOrder increments progress');
         // meeting phase has progressed forward:
         incrementsProgress = true;
-      } else if (typeof nextPhase === 'undefined' &&
-        meetingPhase === CHECKIN || meetingPhase === UPDATES || meetingPhase === AGENDA_ITEMS) {
+      } else if (!nextPhase && hasPhaseItem(meetingPhase)) {
         // console.log('phaseItem increments progress');
         // same phase, and meeting phase item has incremented forward:
         incrementsProgress = nextPhaseItem - meetingPhaseItem === 1;

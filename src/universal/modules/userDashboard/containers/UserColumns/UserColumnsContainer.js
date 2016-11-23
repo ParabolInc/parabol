@@ -25,6 +25,32 @@ query {
 }
 `;
 
+const mutationHandlers = {
+  updateProject(optimisticUpdates, queryResponse, currentResponse) {
+    if (optimisticUpdates) {
+      const {updatedProject} = optimisticUpdates;
+      if (updatedProject && updatedProject.hasOwnProperty('userSort')) {
+        const {id, userSort, status} = updatedProject;
+        const {teams} = currentResponse;
+        for (let i = 0; i < teams.length; i++) {
+          const team = teams[i];
+          const fromProject = team.projects.find((action) => action.id === id);
+          if (fromProject) {
+            if (userSort !== undefined) {
+              fromProject.userSort = userSort;
+            }
+            if (status) {
+              fromProject.status = status;
+            }
+            return currentResponse;
+          }
+        }
+      }
+    }
+    return undefined;
+  }
+};
+
 // memoized
 const resolveUserProjects = (teams) => {
   if (teams !== resolveUserProjects.teams) {
@@ -39,9 +65,11 @@ const mapStateToProps = (state) => {
   const {sub: userId} = state.auth.obj;
   const {teamFilterId} = state.userDashboard;
   const filterFn = teamFilterId ? (doc) => doc.id === teamFilterId : () => true;
+  const queryKey = teamFilterId || '';
   const {teams} = cashay.query(userColumnsQuery, {
     op: 'userColumnsContainer',
-    key: teamFilterId || '',
+    key: queryKey,
+    mutationHandlers,
     resolveCached: {
       teams: () => () => true
     },
@@ -57,20 +85,22 @@ const mapStateToProps = (state) => {
   }).data;
   return {
     projects: resolveUserProjects(teams),
+    queryKey,
     teams,
     userId: state.auth.obj.sub
   };
 };
 
 const UserColumnsContainer = (props) => {
-  const {projects, teams, userId} = props;
+  const {queryKey, projects, teams, userId} = props;
   return (
-    <ProjectColumns projects={projects} area={USER_DASH} teams={teams} userId={userId} zIndex="200" />
+    <ProjectColumns queryKey={queryKey} projects={projects} area={USER_DASH} teams={teams} userId={userId} />
   );
 };
 
 UserColumnsContainer.propTypes = {
   projects: PropTypes.object,
+  queryKey: PropTypes.string,
   teams: PropTypes.array,
   userId: PropTypes.string
 };

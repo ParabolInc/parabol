@@ -32,6 +32,7 @@ export default class MenuContainer extends Component {
       'middle',
       'top'
     ]),
+    zIndex: PropTypes.string
   };
 
   componentWillUpdate(nextProps) {
@@ -74,7 +75,8 @@ export default class MenuContainer extends Component {
       menuWidth,
       toggle,
       toggleHeight,
-      verticalAlign
+      verticalAlign,
+      zIndex
     } = this.props;
     const properChildren = Children.map(children, child => cloneElement(child, {closeMenu: this.closeMenu}));
     return (
@@ -90,6 +92,7 @@ export default class MenuContainer extends Component {
         toggleHeight={toggleHeight}
         toggleMenu={this.toggleMenu}
         verticalAlign={verticalAlign}
+        zIndex={zIndex}
       />
     );
   }

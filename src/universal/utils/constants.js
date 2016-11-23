@@ -26,12 +26,14 @@ export const DONE = 'done';
 export const FUTURE = 'future';
 export const columnArray = [DONE, ACTIVE, STUCK, FUTURE];
 
-/* Outcome Type */
+/* Drag-n-Drop Items*/
 export const ACTION = 'action';
 export const PROJECT = 'project';
+export const AGENDA_ITEM = 'agendaItem';
 
 /* Sorting */
 export const SORT_STEP = 1;
+export const MIN_SORT_RESOLUTION = 1e-20;
 
 /* Areas */
 export const MEETING = 'meeting';
