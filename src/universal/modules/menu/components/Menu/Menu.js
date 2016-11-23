@@ -20,8 +20,6 @@ const Menu = (props) => {
     zIndex
   } = props;
 
-  console.log(zIndex);
-
   const toggleHeightStyle = {
     height: toggleHeight,
     lineHeight: toggleHeight,
