@@ -35,7 +35,7 @@ export default function Html({store, entries, StyleSheetServer, renderProps}) {
       sentry: ${JSON.stringify(process.env.SENTRY_DSN_PUBLIC)}
     };
 `;
-  const fontAwesomeUrl = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css';
+  const fontAwesomeUrl = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css';
   return (
     <html>
       <head>
