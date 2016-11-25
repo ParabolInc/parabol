@@ -4,7 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import TeamAgenda from 'universal/modules/teamDashboard/components/TeamAgenda/TeamAgenda';
 import TeamColumnsContainer from 'universal/modules/teamDashboard/containers/TeamColumns/TeamColumnsContainer';
-import TeamProjectsHeader from 'universal/modules/teamDashboard/components/TeamProjectsHeader/TeamProjectsHeader';
+import TeamProjectsHeaderContainer from 'universal/modules/teamDashboard/containers/TeamProjectsHeader/TeamProjectsHeaderContainer';
 
 const AgendaAndProjects = (props) => {
   const {params: {teamId}, styles} = props;
@@ -16,7 +16,7 @@ const AgendaAndProjects = (props) => {
         </div>
         <div className={css(styles.projectsLayout)}>
           <div className={css(styles.root, styles.projects)}>
-            <TeamProjectsHeader
+            <TeamProjectsHeaderContainer
               teamId={teamId}
             />
             <TeamColumnsContainer

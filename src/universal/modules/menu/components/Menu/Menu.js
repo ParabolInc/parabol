@@ -13,7 +13,7 @@ const Menu = (props) => {
     menuOrientation,
     menuWidth,
     styles,
-    toggle,
+    toggle: Toggle,
     toggleHeight,
     toggleMenu,
     verticalAlign,
@@ -31,14 +31,15 @@ const Menu = (props) => {
     [menuOrientation]: 0,
     width: menuWidth
   };
-
   const toggleStyle = isOpen ? {opacity: '.5'} : null;
   const rootStyle = toggleHeight ? toggleHeightStyle : {verticalAlign, zIndex};
   const boxShadow = '0 1px 1px rgba(0, 0, 0, .15)';
   const menuStyle = {boxShadow};
   return (
     <div className={css(styles.root)} style={rootStyle}>
-      <div className={css(styles.toggle)} onClick={toggleMenu} style={{...rootStyle, ...toggleStyle}}>{toggle}</div>
+      <div className={css(styles.toggle)} onClick={toggleMenu} style={{...rootStyle, ...toggleStyle}}>
+        <Toggle {...props}/>
+      </div>
       {isOpen &&
         <div className={css(styles.menuBlock)} style={menuBlockStyle}>
           <div
