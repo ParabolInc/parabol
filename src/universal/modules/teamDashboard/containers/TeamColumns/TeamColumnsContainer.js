@@ -64,13 +64,18 @@ const mutationHandlers = {
 
 const mapStateToProps = (state, props) => {
   const {teamId} = props;
-  const teamColumnsSub = cashay.query(teamColumnsSubQuery, {
+  const {teamMemberFilterId} = state.teamDashboard;
+  const key = teamMemberFilterId || teamId;
+  const filterFn = teamMemberFilterId ? (doc) => doc.id === teamMemberFilterId : () => true;
+  const {teamMembers} = cashay.query(teamColumnsSubQuery, {
     op: 'teamColumnsContainer',
-    key: teamId,
+    filter: {
+      teamMembers: filterFn
+    },
+    key,
     mutationHandlers,
     variables: {teamId},
-  });
-  const {teamMembers} = teamColumnsSub.data;
+  }).data;
   const projects = resolveTeamProjects(teamMembers);
   return {
     projects,
