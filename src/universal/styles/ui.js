@@ -44,7 +44,7 @@ const ui = {
   // Note: property 'dashMinWidth' prevents layout from collapsing in Safari
   //       in a better future we may be more adaptive/responsive (TA)
   dashMinWidth: '79rem',
-  dashSectionHeaderLineHeight: '1.875rem',
+  dashSectionHeaderLineHeight: '2rem',
   dashSidebarWidth: '15rem',
 
   // Email
