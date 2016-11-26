@@ -18,7 +18,7 @@ export const TeamMember = new GraphQLObjectType({
   description: 'A member of a team team',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique team member ID'},
-    isNotRemoved: {type: GraphQLBoolean, description: 'Is user a part of the team? False if they were removed'},
+    isNotRemoved: {type: GraphQLBoolean, description: 'true if the user is a part of the team, false if they no longer are'},
     isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
     isFacilitator: {type: GraphQLBoolean, description: 'Is user a team facilitator?'},
     /* denormalized from User */
