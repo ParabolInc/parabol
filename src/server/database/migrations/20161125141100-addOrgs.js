@@ -17,10 +17,10 @@ exports.up = async(r) => {
     r.tableCreate('OrgMember')
   ];
   await Promise.all(tables);
-  // const indices = [
-  //   r.table('Organization').indexCreate()
-  // ];
-  // await Promise.all(indices);
+  const indices = [
+    r.table('Team').indexCreate('orgId')
+  ];
+  await Promise.all(indices);
 
   // const fields = [
   //   r.table('User')

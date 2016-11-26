@@ -59,6 +59,10 @@ export const Team = new GraphQLObjectType({
       type: GraphQLID,
       description: 'The unique Id of the active meeting'
     },
+    orgId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The organization to which the team belongs'
+    },
     activeFacilitator: {
       type: GraphQLID,
       description: 'The current facilitator teamMemberId for this meeting'
