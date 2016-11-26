@@ -4,6 +4,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.13.1 - 25-Nov-2016
+### Added
+- Can now filter by team member on team dashboard Views
+- Updated FontAwesome to v4.7.0
+
+### Fixed
+- #514 Relabeling Actions and Projects during agenda processing
+  - Copy now reads "New private action" and "New team project"
+- #536 Cashay warning while proceeding through check-in round
+
 ## v0.13.0 - 22-Nov-2016
 We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 ### Added
