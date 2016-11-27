@@ -1,10 +1,10 @@
 import Schema from './rootSchema';
 import {graphql} from 'graphql';
 
-export default async(req, res) => {
+export default (exchange) => async(req, res) => {
   const {query, variables} = req.body;
   const authToken = req.user || {};
-  const context = {authToken};
+  const context = {authToken, exchange};
   const result = await graphql(Schema, query, {}, context, variables);
   if (result.errors) {
     console.log('DEBUG GraphQL Error:', result.errors);

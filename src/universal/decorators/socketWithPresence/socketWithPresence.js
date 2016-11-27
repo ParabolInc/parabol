@@ -4,12 +4,18 @@ import {reduxSocket} from 'redux-socket-cluster';
 import {cashay} from 'cashay';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import reduxSocketOptions from 'universal/redux/reduxSocketOptions';
-import {PRESENCE, TEAM_MEMBERS, TEAM} from 'universal/subscriptions/constants';
+import {JOIN_TEAM, PRESENCE, TEAM_MEMBERS, TEAM} from 'universal/subscriptions/constants';
 import socketCluster from 'socketcluster-client';
 import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
 import parseChannel from 'universal/utils/parseChannel';
-import {showWarning} from 'universal/modules/notifications/ducks/notifications';
+import {showInfo, showWarning} from 'universal/modules/notifications/ducks/notifications';
 import {withRouter} from 'react-router';
+
+const getTeamName = (teamId) => {
+  const cashayState = cashay.store.getState().cashay;
+  const team = cashayState.entities.Team && cashayState.entities.Team[teamId];
+  return team && team.name || teamId;
+};
 
 const mapStateToProps = (state) => {
   return {
@@ -38,20 +44,35 @@ export default ComposedComponent => {
     componentDidMount() {
       this.subscribeToPresence({}, this.props);
       this.watchForKickout();
+      this.watchForJoin();
     }
     componentWillReceiveProps(nextProps) {
       this.subscribeToPresence(this.props, nextProps);
     }
 
+    watchForJoin(teamId) {
+      const socket = socketCluster.connect();
+      const channelName = `${PRESENCE}/${teamId}`;
+      const {dispatch} = this.props;
+      socket.watch(channelName, (data) => {
+        if (data.type === JOIN_TEAM) {
+          const {name} = data;
+          const teamName = getTeamName(teamId);
+          dispatch(showInfo({
+            title: 'The fun has arrived!',
+            message: `${name} just joined ${teamName}`
+          }));
+        }
+      })
+    }
     watchForKickout() {
       const socket = socketCluster.connect();
+      const {dispatch} = this.props;
       socket.on('kickOut', (error, channelName) => {
         const {channel, variableString: teamId} = parseChannel(channelName);
         if (channel === TEAM) {
-          const cashayState = cashay.store.getState().cashay;
-          const team = cashayState.entities.Team && cashayState.entities.Team[teamId];
-          const teamName = team && team.name || teamId;
-          cashay.store.dispatch(showWarning({
+          const teamName = getTeamName(teamId);
+          dispatch(showWarning({
             title: 'So long!',
             message: `You have been removed from ${teamName}`
           }));
@@ -84,6 +105,7 @@ export default ComposedComponent => {
               cashay.mutate('soundOff', options);
             }
           });
+          this.watchForJoin(teamId)
         }
       }
     }
