@@ -63,7 +63,7 @@ export default ComposedComponent => {
             message: `${name} just joined ${teamName}`
           }));
         }
-      })
+      });
     }
     watchForKickout() {
       const socket = socketCluster.connect();
@@ -105,7 +105,7 @@ export default ComposedComponent => {
               cashay.mutate('soundOff', options);
             }
           });
-          this.watchForJoin(teamId)
+          this.watchForJoin(teamId);
         }
       }
     }
