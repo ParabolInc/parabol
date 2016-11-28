@@ -8,18 +8,27 @@ import {cashay} from 'cashay';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 import {reduxForm, Field} from 'redux-form';
 import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
+import legitify from 'universal/validation/legitify';
+import inviteTeamMemberSchema from 'universal/validation/inviteTeamMemberSchema';
 
-const validate = ({inviteTeamMember}, {invitations, teamMembers}) => {
-  const errors = {};
-  const outstandingInvitationEmails = invitations.map((i) => i.email);
-  if (outstandingInvitationEmails.includes(inviteTeamMember)) {
-    errors.inviteTeamMember = 'That person has already been invited!';
-  }
+const makeSchemaProps = (props) => {
+  const {invitations, teamMembers} = props;
+  const inviteEmails = invitations.map((i) => i.email);
   const teamMemberEmails = teamMembers.map((i) => i.email);
-  if (teamMemberEmails.includes(inviteTeamMember)) {
-    errors.inviteTeamMember = 'That person is already on your team!';
-  }
-  return errors;
+  return {inviteEmails, teamMemberEmails};
+};
+
+const validate = (values, props) => {
+  const schemaProps = makeSchemaProps(props);
+  const schema = inviteTeamMemberSchema(schemaProps, 'inviteTeamMember');
+  return legitify(values, schema).errors;
+};
+
+const fieldStyles = {
+  color: appTheme.palette.dark,
+  fontSize: appTheme.typography.s4,
+  lineHeight: '1.625rem',
+  placeholderColor: appTheme.palette.mid70l,
 };
 
 const InviteUser = (props) => {
@@ -27,26 +36,25 @@ const InviteUser = (props) => {
     dispatch,
     handleSubmit,
     styles,
-    teamId
+    teamId,
+    touch,
+    untouch
   } = props;
 
-  const fieldStyles = {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s4,
-    lineHeight: '1.625rem',
-    placeholderColor: appTheme.palette.mid70l,
-  };
   const updateEditable = (submissionData) => {
+    const schemaProps = makeSchemaProps(props);
+    const schema = inviteTeamMemberSchema(schemaProps, 'inviteTeamMember');
+    const {data: {inviteTeamMember}} = legitify(submissionData, schema);
     const variables = {
       teamId,
       invitees: [{
-        email: submissionData.inviteTeamMember
+        email: inviteTeamMember
       }]
     };
     cashay.mutate('inviteTeamMembers', {variables});
     dispatch(showSuccess({
       title: 'Invitation sent!',
-      message: `An invitation has been sent to ${submissionData.inviteTeamMember}`
+      message: `An invitation has been sent to ${inviteTeamMember}`
     }));
   };
 
@@ -60,7 +68,9 @@ const InviteUser = (props) => {
           hideIconOnValue
           name="inviteTeamMember"
           placeholder="email@domain.co"
+          touch={touch}
           typeStyles={fieldStyles}
+          untouch={untouch}
         />
       </div>
       <div className={css(styles.buttonBlock)}>

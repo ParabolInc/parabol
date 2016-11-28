@@ -12,6 +12,10 @@ import {withRouter} from 'react-router';
 import withHotkey from 'react-hotkey-hoc';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
 
+const validate = (values, props) => {
+
+};
+
 const emailInviteSuccess = {
   title: 'Invitation sent!',
   message: 'Your team members will get their invite via email'
@@ -142,6 +146,7 @@ Step3InviteTeam.propTypes = {
 export default
 reduxForm({
   form: 'welcomeWizard',
-  destroyOnUnmount: false
+  destroyOnUnmount: false,
+  // validate
   // TODO: add sync + mailgun async validations
 })(withRouter(withHotkey(Step3InviteTeam)));

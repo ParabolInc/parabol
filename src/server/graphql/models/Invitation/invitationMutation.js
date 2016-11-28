@@ -8,8 +8,9 @@ import {
 import {Invitee} from './invitationSchema';
 import {requireSUOrTeamMember} from '../authorization';
 import {errorObj} from '../utils';
-
 import {asyncInviteTeam, cancelInvitation, resendInvite} from './helpers';
+import inviteTeamMemberSchema from 'universal/validation/inviteTeamMemberSchema';
+import legitify from 'universal/validation/legitify';
 
 export default {
   inviteTeamMembers: {
@@ -36,32 +37,25 @@ export default {
         .coerceTo('array')
         .do((inviteEmails) => {
           return {
-            invites: inviteEmails,
+            inviteEmails: inviteEmails,
             teamMembers: r.table('TeamMember')
               .getAll(teamId, {index: 'teamId'})
+              // .filter({isNotRemoved: true})('email')
               .coerceTo('array')
           };
         });
-      const alreadyInvited = invitees
-        .map((i) => i.email)
-        .filter((email) => usedEmails.invites.includes(email))
-        .join(', ');
-      if (alreadyInvited) {
-        throw errorObj({
-          _error: `${alreadyInvited} already invited`,
-          type: 'alreadyInvited'
-        });
-      }
-      const activeTeamMembers = usedEmails.teamMembers.filter((m) => m.isNotRemoved === true).map((m) => m.email);
-      const alreadyActiveTeamMember = invitees
-        .map((i) => i.email)
-        .filter((email) => activeTeamMembers.includes(email))
-        .join(', ');
-      if (alreadyActiveTeamMember) {
-        throw errorObj({
-          _error: `${alreadyActiveTeamMember} already on the team`,
-          type: 'alreadyTeamMember'
-        });
+      const schemaProps = {
+        inviteEmails: usedEmails.inviteEmails,
+        teamMemberEmails: usedEmails.teamMembers.filter((m) => m.isNotRemoved === true).map((m) => m.email)
+      };
+
+      const schema = inviteTeamMemberSchema(schemaProps, 'email');
+      for (let i = 0; i < invitees.length; i++) {
+        const invitee = invitees[i];
+        const {errors} = legitify(invitee, schema);
+        if (Object.keys(errors).length > 0) {
+          throw errorObj(errors);
+        }
       }
 
       // if they used to be on the team, simply reactivate them
@@ -73,7 +67,7 @@ export default {
           .update({isNotRemoved: true});
         const inactiveTeamMemberEmails = inactiveTeamMembers.map((m) => m.email);
         const newInvitees = invitees.filter((i) => !inactiveTeamMemberEmails.includes(i.email));
-        // TODO send email & maybe pop toast saying that we're only reactiving
+        // TODO send email & maybe pop toast saying that we're only reactivating
         asyncInviteTeam(authToken, teamId, newInvitees);
       } else {
         asyncInviteTeam(authToken, teamId, invitees);

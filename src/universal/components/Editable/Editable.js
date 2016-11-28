@@ -21,21 +21,25 @@ class Editable extends Component {
   };
 
   unsetEditing = () => {
-    const {input} = this.props;
+    const {input, untouch} = this.props;
     this.setState({
       isEditing: false
     });
     input.onBlur();
+    if (untouch) {
+      untouch(input.name);
+    }
   };
 
   renderEditing = () => {
     const {
       handleSubmit,
       input,
-      meta: {dirty, error},
+      meta: {dirty, error, touched},
       placeholder,
       styles,
-      submitOnBlur
+      submitOnBlur,
+      touch
     } = this.props;
     const inputStyles = css(
       styles.static,
@@ -49,9 +53,12 @@ class Editable extends Component {
       }
     };
     const maybeSubmitOnBlur = (e) => {
+      if (touch) {
+        touch(input.name);
+      }
       if (submitOnBlur) {
         submitAndSet(e);
-      } else if (!error && !dirty) {
+      } else if (!input.value || (!error && !dirty)) {
         this.unsetEditing();
       }
     };
@@ -64,7 +71,7 @@ class Editable extends Component {
           onBlur={maybeSubmitOnBlur}
           placeholder={placeholder}
         />
-        <div className={css(styles.error)}>{error}</div>
+        {touched && error && <div className={css(styles.error)}>{error}</div>}
       </form>
     );
   };
