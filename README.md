@@ -154,6 +154,7 @@ get involved and how to get compensated.
 
 | Release | Summary                                    |
 |---------|--------------------------------------------|
+| v0.13.2 | Add 'player joined' message. Fixed #543    |
 | v0.13.1 | Filter by member on team dashboard, fixes  |
 | v0.13.0 | Drag-and-drop added everywhere, bug fixes  |
 | v0.12.1 | Fix for #518; redirect removed user        |

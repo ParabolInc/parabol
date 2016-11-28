@@ -4,6 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.13.2 - 27-Nov-2016
+### Added
+- 'Player joined' message when teammate accepts invitation
+
+### Fixed
+- #543 unable to end action meeting
+
 ## v0.13.1 - 25-Nov-2016
 ### Added
 - Can now filter by team member on team dashboard Views
