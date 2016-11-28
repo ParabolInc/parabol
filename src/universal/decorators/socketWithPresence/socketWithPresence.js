@@ -59,8 +59,8 @@ export default ComposedComponent => {
           const {name} = data;
           const teamName = getTeamName(teamId);
           dispatch(showInfo({
-            title: 'The fun has arrived!',
-            message: `${name} just joined ${teamName}`
+            title: 'Ahoy, a new crewmate!',
+            message: `${name} just joined team ${teamName}`
           }));
         }
       });
