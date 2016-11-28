@@ -14,7 +14,7 @@ import {
 } from '../authorization';
 import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
-import {KICK_OUT, PRESENCE} from 'universal/subscriptions/constants';
+import {JOIN_TEAM, KICK_OUT, PRESENCE} from 'universal/subscriptions/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 
 export default {
@@ -52,7 +52,7 @@ export default {
         description: 'The invitation token (first 6 bytes are the id, next 8 are the pre-hash)'
       }
     },
-    async resolve(source, {inviteToken}, {authToken}) {
+    async resolve(source, {inviteToken}, {authToken, exchange}) {
       const r = getRethink();
       const userId = requireAuth(authToken);
       const now = new Date();
@@ -99,7 +99,7 @@ export default {
       }
 
       const dbWork = r.table('User')
-        // add the team to the user doc
+      // add the team to the user doc
         .get(userId)
         .update({
           tms: r.row('tms').append(teamId).default([teamId])
@@ -121,6 +121,7 @@ export default {
         .do((teamCountAndUser) =>
           r.table('TeamMember').insert({
             checkInOrder: teamCountAndUser('usersOnTeam').add(1),
+            email: teamCountAndUser('user')('email').default(''),
             id: teamCountAndUser('user')('id').add('::', teamId),
             teamId,
             userId,
@@ -136,18 +137,23 @@ export default {
         )
         // find all possible emails linked to this person and mark them as accepted
         .do((userEmail) =>
-          r.table('Invitation').getAll(userEmail, email, {index: 'email'}).update({
-            acceptedAt: now,
-            tokenExpiration: new Date(0),
-            updatedAt: now
-          })
+          r.table('Invitation')
+            .getAll(userEmail, email, {index: 'email'})
+            .update({
+              acceptedAt: now,
+              tokenExpiration: new Date(0),
+              updatedAt: now
+            })
+            .do(() => userEmail)
         );
       const tms = oldtms.concat(teamId);
       const asyncPromises = [
         dbWork,
         auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
       ];
-      await Promise.all(asyncPromises);
+      const [userEmail] = await Promise.all(asyncPromises);
+      const payload = {type: JOIN_TEAM, name: userEmail};
+      exchange.publish(`${PRESENCE}/${teamId}`, payload);
       return tmsSignToken(authToken, tms);
     }
   },

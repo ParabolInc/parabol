@@ -4,6 +4,7 @@ export const LEAVE = 'LEAVE';
 export const PRESENT = 'PRESENT';
 export const SOUNDOFF = 'SOUNDOFF';
 export const KICK_OUT = 'KICK_OUT';
+export const JOIN_TEAM = 'JOIN_TEAM';
 
 // CHANNELS
 export const ACTIONS = 'actions';
