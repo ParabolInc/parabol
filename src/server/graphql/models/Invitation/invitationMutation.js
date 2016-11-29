@@ -9,8 +9,7 @@ import {Invitee} from './invitationSchema';
 import {requireSUOrTeamMember} from '../authorization';
 import {errorObj} from '../utils';
 import {asyncInviteTeam, cancelInvitation, resendInvite} from './helpers';
-import inviteTeamMemberSchema from 'universal/validation/inviteTeamMemberSchema';
-import legitify from 'universal/validation/legitify';
+import inviteTeamMemberSchema from 'universal/validation/makeInviteTeamMemberSchema';
 
 export default {
   inviteTeamMembers: {
@@ -52,7 +51,7 @@ export default {
       const schema = inviteTeamMemberSchema(schemaProps, 'email');
       for (let i = 0; i < invitees.length; i++) {
         const invitee = invitees[i];
-        const {errors} = legitify(invitee, schema);
+        const {errors} = schema(invitee);
         if (Object.keys(errors).length > 0) {
           throw errorObj(errors);
         }

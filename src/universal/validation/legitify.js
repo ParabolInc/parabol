@@ -12,21 +12,21 @@ class Legitity {
   }
 
   max(len, msg) {
-    if (!this.error && this.value.length > len) {
+    if (!this.error && this.value && this.value.length > len) {
       this.error = msg || 'max';
     }
     return this;
   }
 
   min(len, msg) {
-    if (!this.error && this.value.length < len) {
+    if (!this.error && this.value && this.value.length < len) {
       this.error = msg || 'min';
     }
     return this;
   }
 
   required(msg) {
-    if (!this.error && this.value === undefined) {
+    if (!this.error && !this.value) {
       this.error = msg || 'required'
     }
     return this;
@@ -37,15 +37,15 @@ class Legitity {
     return this;
   }
 
-  true(check, msg) {
-    if (!this.error && !check(this.value)) {
-      this.error = msg || 'true'
+  test(check) {
+    if (!this.error) {
+      this.error = check(this.value);
     }
     return this;
   }
 }
 
-export default function legitify(actual, expected) {
+const legitify = (expected) => (actual) => {
   const data = {};
   const errors = {};
   const expectedKeys = Object.keys(expected);
@@ -61,3 +61,5 @@ export default function legitify(actual, expected) {
   }
   return {errors, data};
 };
+
+export default legitify;

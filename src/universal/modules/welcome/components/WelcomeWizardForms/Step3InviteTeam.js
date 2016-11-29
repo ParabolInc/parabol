@@ -1,20 +1,14 @@
 import React, {PropTypes} from 'react';
 import {Field, reduxForm, change, arrayPush, destroy} from 'redux-form';
-import emailAddresses from 'email-addresses';
 import Button from 'universal/components/Button/Button';
-import InputField from 'universal/components/InputField/InputField';
 import LabeledFieldArray from 'universal/containers/LabeledFieldArray/LabeledFieldArrayContainer.js';
 import Type from 'universal/components/Type/Type';
 import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import {cashay} from 'cashay';
 import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
 import {withRouter} from 'react-router';
-import withHotkey from 'react-hotkey-hoc';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
-
-const validate = (values, props) => {
-
-};
+import Step3RawInvitees from 'universal/modules/welcome/components/Step3RawInvitees/Step3RawInvitees';
 
 const emailInviteSuccess = {
   title: 'Invitation sent!',
@@ -22,24 +16,6 @@ const emailInviteSuccess = {
 };
 
 const Step3InviteTeam = (props) => {
-  const onAddInviteesButtonClick = event => {
-    const {dispatch, inviteesRaw} = props;
-    const parsedAddresses = emailAddresses.parseAddressList(inviteesRaw);
-    event.preventDefault();
-    // clear the inviteesRaw form component:
-    dispatch(change('welcomeWizard', 'inviteesRaw', ''));
-    if (!parsedAddresses) {
-      return;
-    }
-    parsedAddresses.forEach(email => {
-      dispatch(arrayPush('welcomeWizard', 'invitees', {
-        email: email.address,
-        fullName: email.name,
-        label: email.name ? `"${email.name}" <${email.address}>` : email.address
-      }));
-    });
-  };
-
   const onInviteTeamSubmit = async(submissionData) => {
     const {dispatch, router, welcome: {teamId}} = props;
     const serverInvitees = submissionData.invitees.map(invitee => {
@@ -70,13 +46,8 @@ const Step3InviteTeam = (props) => {
     }
   };
 
-  const {handleSubmit, invitees, inviteesRaw, submitting, teamName, placeholderTheme} = props;
+  const {handleSubmit, invitees, inviteesRaw, submitting, teamName} = props;
 
-  const invitesFieldHasError = false; // TODO: wire this up for real
-  const helpText = invitesFieldHasError ?
-    // eslint-disable-next-line max-len
-    <span>Oops! Please make sure email addresses are valid <br />and separated by a single comma.</span> :
-    <span>You can paste multiple emails separated by a comma.<br />&nbsp;</span>;
   const fieldArrayHasValue = invitees && invitees[0] != null;
   return (
     <div>{/* Div for that flexy flex */}
@@ -84,23 +55,7 @@ const Step3InviteTeam = (props) => {
         Sounds like a great team!
       </Type>
       <WelcomeHeading copy={<span>Let’s invite some folks to the <b>{teamName}</b> team.</span>}/>
-      <div style={{margin: '0 auto', width: '30rem'}}>
-        <Field
-          autoFocus={!invitees || invitees.length === 0}
-          buttonDisabled={!inviteesRaw}
-          buttonIcon="check-circle"
-          component={InputField}
-          hasButton
-          hasErrorText={invitesFieldHasError}
-          helpText={helpText}
-          isLarger
-          isWider
-          name="inviteesRaw"
-          onButtonClick={onAddInviteesButtonClick}
-          placeholder={placeholderTheme.emailMulti}
-          type="text"
-        />
-      </div>
+      <Step3RawInvitees doFocus={!invitees || invitees.length === 0} inviteesRaw={inviteesRaw}/>
       <form onSubmit={handleSubmit(onInviteTeamSubmit)}>
         {fieldArrayHasValue &&
           <div style={{margin: '2rem 0 0'}}>
@@ -134,7 +89,6 @@ Step3InviteTeam.propTypes = {
   invitees: PropTypes.array,
   inviteesRaw: PropTypes.string,
   onSubmit: PropTypes.func,
-  placeholderTheme: PropTypes.object,
   router: PropTypes.object,
   submitting: PropTypes.bool,
   teamName: PropTypes.string,
@@ -149,4 +103,4 @@ reduxForm({
   destroyOnUnmount: false,
   // validate
   // TODO: add sync + mailgun async validations
-})(withRouter(withHotkey(Step3InviteTeam)));
+})(withRouter(Step3InviteTeam));

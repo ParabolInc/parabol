@@ -4,7 +4,6 @@ import {formValueSelector} from 'redux-form';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {goToPage} from 'universal/modules/welcome/ducks/welcomeDuck';
 import Welcome from 'universal/modules/welcome/components/Welcome/Welcome';
-import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 
 const selector = formValueSelector('welcomeWizard');
 
@@ -28,7 +27,6 @@ const WelcomeContainer = (props) => {
   return (
     <Welcome
       {...props}
-      placeholderTheme={randomPlaceholderTheme}
       progressDotClickFactory={progressDotClickFactory}
       title="Welcome"
     />
