@@ -4,7 +4,7 @@
  */
 
 /* eslint-disable camelcase, no-undef */
-const getWebpackBuildPath = require('universal/utils/getWebpackBuildPath');
+const getWebpackBuildPath = require('universal/utils/getWebpackBuildPath').default;
 __webpack_public_path__ = getWebpackBuildPath();
 module.exports = require('universal/routes/index.js');
 /* eslint-enable */
