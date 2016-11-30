@@ -5,9 +5,9 @@ import {RouterContext} from 'react-router';
 import {renderToString} from 'react-dom/server';
 import makeSegmentSnippet from '@segment/snippet';
 import {auth0} from 'universal/utils/clientOptions';
-import getWebpackPublicPath from 'universal/utils/getWebpackPublicPath';
+import getWebpackBuildPath from 'universal/utils/getWebpackBuildPath';
 
-const webpackPublicPath = getWebpackPublicPath();
+const webpackPublicPath = getWebpackBuildPath();
 const segKey = process.env.SEGMENT_WRITE_KEY;
 const segmentSnippet = segKey && makeSegmentSnippet.min({
   host: 'cdn.segment.com',

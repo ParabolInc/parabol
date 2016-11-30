@@ -4,7 +4,7 @@ import AssetsPlugin from 'manifest-assets-webpack-plugin';
 import WebpackShellPlugin from 'webpack-shell-plugin';
 import S3Plugin from 'webpack-s3-plugin';
 import {getDotenv} from '../src/universal/utils/dotenv';
-import {getS3BasePath} from '../src/universal/utils/getWebpackPublicPath';
+import {getS3BuildBasePath} from '../src/universal/utils/getWebpackBuildPath';
 
 // Import .env and expand variables:
 getDotenv();
@@ -44,7 +44,7 @@ if (process.env.DEPLOY) {
       s3UploadOptions: {
         Bucket: process.env.AWS_S3_BUCKET
       },
-      basePath: getS3BasePath()
+      basePath: getS3BuildBasePath()
     }));
   }
 }
