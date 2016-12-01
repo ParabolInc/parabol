@@ -65,7 +65,7 @@ Step3RawInvitees.propTypes = {
   dispatch: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   invitees: PropTypes.array,
-  inviteesRaw: PropTypes.string.isRequired,
+  inviteesRaw: PropTypes.string,
   untouch: PropTypes.func.isRequired
 };
 
