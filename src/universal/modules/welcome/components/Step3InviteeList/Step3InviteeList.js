@@ -86,7 +86,6 @@ const Step3InviteeList = (props) => {
       to={`/team/${teamId}`}
       className={css(styles.noThanks)}
       onMouseEnter={() => {
-        console.log('mouse enter');
         System.import('universal/containers/Dashboard/DashboardContainer');
       }}
       title="I'll invite them later"

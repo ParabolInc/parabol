@@ -21,10 +21,17 @@ const Step3RawInvitees = (props) => {
     if (!parsedAddresses) {
       return;
     }
+    const uniqueEmails = new Set();
+    const distinctParsedAddresses = parsedAddresses.reduce((set, email) => {
+      if (!uniqueEmails.has(email.address)) {
+        uniqueEmails.add(email.address);
+        set.push(email);
+      }
+      return set;
+    }, []);
     const inviteeEmails = invitees.map((i) => i.email);
     const existingInvites = [];
-    parsedAddresses
-    // .filter((email) => !inviteeEmails.includes(email.address))
+    distinctParsedAddresses
       .forEach((email, idx) => {
         if (inviteeEmails.includes(email.address)) {
           // highlight that email then fade
