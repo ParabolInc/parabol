@@ -79,7 +79,7 @@ We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
 
 ### Fixed
 - #438 fixed TypeError: Cannot read property 'id' of undefined
-- #447 unable to logout and login properly
+- #447 unable to signout and login properly
 - Fixed race condition landing on meeting summary route at end of meeting
 - Fixed short urls
 

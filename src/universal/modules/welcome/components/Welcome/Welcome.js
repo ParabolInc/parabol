@@ -34,9 +34,9 @@ const Welcome = (props) => {
         {page === 3 && <Step3InviteTeam {...props} />}
       </WelcomeContent>
       <Link
-        className={css(styles.logout)}
+        className={css(styles.signout)}
         title="Sign Out"
-        to="/logout"
+        to="/signout"
       >
         <FontAwesome
           name="sign-out"
@@ -64,7 +64,7 @@ Welcome.propTypes = {
 };
 
 const styleThunk = () => ({
-  logout: {
+  signout: {
     alignSelf: 'flex-end'
   }
 });
