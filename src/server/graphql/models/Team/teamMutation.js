@@ -1,6 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
-import {getUserId, requireSUOrTeamMember, requireWebsocket} from '../authorization';
-import {errorObj} from '../utils';
+import {getUserId, requireAuth, requireSUOrTeamMember, requireWebsocket} from '../authorization';
+import {ensureUniqueId, errorObj, handleSchemaErrors} from '../utils';
 import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
 import {
   GraphQLNonNull,
@@ -31,6 +31,7 @@ import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeChec
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
+import makeStep2Schema from 'universal/validation/makeStep2Schema';
 
 export default {
   moveMeeting: {
@@ -402,7 +403,7 @@ export default {
   createTeam: {
     // return the new JWT that has the new tms field
     type: GraphQLID,
-    description: 'Create a new team and add the first team member',
+    description: 'Create a new team and add the first team member. Called from the welcome wizard',
     args: {
       newTeam: {
         type: new GraphQLNonNull(CreateTeamInput),
@@ -410,9 +411,17 @@ export default {
       }
     },
     async resolve(source, {newTeam}, {authToken}) {
-      const tms = await createTeamAndLeader(authToken, newTeam);
+      // AUTH
+      requireAuth(authToken);
+
+      // VALIDATION
+      const schema = makeStep2Schema();
+      const {data: validNewTeam, errors} = schema(newTeam);
+      handleSchemaErrors(errors);
+      await ensureUniqueId('Team', newTeam.id);
+
+      const tms = await createTeamAndLeader(authToken, validNewTeam);
       return tmsSignToken(authToken, tms);
-      // TODO: trigger welcome email
     }
   },
   changeFacilitator: {

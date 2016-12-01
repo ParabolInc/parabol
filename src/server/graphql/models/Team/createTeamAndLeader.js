@@ -1,15 +1,11 @@
 import getRethink from 'server/database/rethinkDriver';
-import {requireAuth} from '../authorization';
-import {errorObj} from '../utils';
+import {getUserId} from '../authorization';
 import {LOBBY} from 'universal/utils/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 
 export default async function createTeamAndLeader(authToken, newTeam) {
   const r = getRethink();
-  const userId = requireAuth(authToken);
-  if (newTeam.id.length > 10 || newTeam.id.indexOf('::') !== -1) {
-    throw errorObj({_error: 'Bad id'});
-  }
+  const userId = getUserId(authToken);
   const teamMemberId = `${userId}::${newTeam.id}`;
 
   const verifiedLeader = {
@@ -32,22 +28,37 @@ export default async function createTeamAndLeader(authToken, newTeam) {
     activeFacilitator: null
   };
 
-  const dbTransaction = r.table('User')
-    .get(userId)
-    .do((user) =>
-      r.table('TeamMember').insert({
+  // rethinkDB do method doesn't guarantee order, so we have to separate this one
+  // grabbing it from the client isn't 100% safe since they could have been removed & then call this function to renew it
+  const currentUser = await r.table('User').get(userId);
+  const tms = currentUser.tms ? currentUser.tms.concat(newTeam.id) : [newTeam.id];
+
+  const dbTransaction = r.table('Team')
+    // insert team
+    .insert(verifiedTeam)
+    // denormalize common fields to team member
+    .do(() => {
+      return r.table('User')
+        .get(userId)
+        .pluck('email', 'picture', 'preferredName')
+    })
+    .do((user) => {
+      return r.table('TeamMember').insert({
         ...verifiedLeader,
-        // pull in picture and preferredName from user profile:
+        email: user('email').default(''),
         picture: user('picture').default(''),
         preferredName: user('preferredName').default('')
       })
-    )
-    .do(() =>
-      r.table('Team').insert(verifiedTeam)
-    );
+    })
+    // add teamId to user tms array
+    .do(() => {
+      return r.table('User')
+        .get(userId)
+        .update({
+          tms
+        })
+    });
 
-  const oldtms = authToken.tms || [];
-  const tms = oldtms.concat(newTeam.id);
   const dbPromises = [
     dbTransaction,
     auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})

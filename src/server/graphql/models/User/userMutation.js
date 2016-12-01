@@ -6,10 +6,11 @@ import {auth0} from 'universal/utils/clientOptions';
 import sendEmail from 'server/email/sendEmail';
 import ms from 'ms';
 import {requireSUOrSelf} from '../authorization';
-import {errorObj, updatedOrOriginal} from '../utils';
+import {errorObj, handleSchemaErrors, updatedOrOriginal} from '../utils';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {verify} from 'jsonwebtoken';
 import {clientSecret} from 'server/utils/auth0Helpers';
+import makeStep1Schema from 'universal/validation/makeStep1Schema';
 
 const auth0Client = new AuthenticationClient({
   domain: auth0.domain,
@@ -101,17 +102,20 @@ export default {
       const r = getRethink();
       const {id, ...updatedObj} = updatedUser;
       requireSUOrSelf(authToken, id);
+      const schema = makeStep1Schema();
+      const {data: validUpdatedUser, errors} = schema(updatedObj);
+      handleSchemaErrors(errors);
       // propagate denormalized changes to TeamMember
       const dbWork = r.table('TeamMember')
         .getAll(id, {index: 'userId'})
-        .update({preferredName: updatedUser.preferredName})
+        .update({preferredName: validUpdatedUser.preferredName})
         .do(() => r.table('User').get(id).update(updatedObj, {returnChanges: true}));
       const asyncPromises = [
         dbWork,
-        auth0ManagementClient.users.updateAppMetadata({id}, {preferredName: updatedUser.preferredName})
+        auth0ManagementClient.users.updateAppMetadata({id}, {preferredName: validUpdatedUser.preferredName})
       ];
       const [dbProfile] = await Promise.all(asyncPromises);
-      return updatedOrOriginal(dbProfile, updatedUser);
+      return updatedOrOriginal(dbProfile, validUpdatedUser);
     }
   }
 };

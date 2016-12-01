@@ -3,7 +3,6 @@ class Legitity {
     this.value = value;
     this.error = undefined;
   }
-
   matches(regex, msg) {
     if (!this.error && !regex.test(this.value)) {
       this.error = msg || 'regex'
@@ -33,7 +32,7 @@ class Legitity {
   }
 
   trim() {
-    this.value = this.value.trim();
+    this.value = this.value && this.value.trim();
     return this;
   }
 
@@ -51,12 +50,35 @@ const legitify = (expected) => (actual) => {
   const expectedKeys = Object.keys(expected);
   for (let i = 0; i < expectedKeys.length; i++) {
     const key = expectedKeys[i];
-    const monadicVal = new Legitity(actual[key]);
-    const validator = expected[key];
-    const {error, value} = validator(monadicVal);
-    data[key] = value;
-    if (error) {
-      errors[key] = error;
+    const maybeValidator = expected[key];
+    if (Array.isArray(maybeValidator)) {
+      const actualValue = actual[key] || [];
+      for (let j = 0; j < actualValue.length; j++) {
+        const schema = legitify(maybeValidator[0]);
+        const res = schema(actualValue[j]);
+        data[key] = data[key] || [];
+        data[key][j] = res.data;
+        if (res.errors && Object.keys(res.errors).length > 0) {
+          errors[key] = errors[key] || [];
+          errors[key][j] = res.errors
+        }
+      }
+    } else if (typeof maybeValidator === 'object') {
+      const schema = legitify(maybeValidator);
+      const res = schema(actual[key]);
+      data[key] = res.data;
+      if (res.errors) {
+        errors[key] = res.errors;
+      }
+    } else {
+      const monadicVal = new Legitity(actual[key]);
+      const {error, value} = maybeValidator(monadicVal);
+      if (actual.hasOwnProperty(key)) {
+        data[key] = value;
+      }
+      if (error) {
+        errors[key] = error;
+      }
     }
   }
   return {errors, data};

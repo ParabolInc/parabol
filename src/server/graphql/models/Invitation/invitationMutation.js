@@ -6,10 +6,19 @@ import {
   GraphQLList,
 } from 'graphql';
 import {Invitee} from './invitationSchema';
-import {requireSUOrTeamMember} from '../authorization';
-import {errorObj} from '../utils';
-import {asyncInviteTeam, cancelInvitation, resendInvite} from './helpers';
-import inviteTeamMemberSchema from 'universal/validation/makeInviteTeamMemberSchema';
+import {getUserId, requireSUOrTeamMember} from '../authorization';
+import {errorObj, handleSchemaErrors} from '../utils';
+import {
+  asyncInviteTeam,
+  makeInviteToken,
+  getInviterInfoAndTeamName,
+  createEmailPromises,
+  resolveSentEmails,
+  hashInviteTokenKey,
+  resendInvite
+} from './helpers';
+import makeInviteTeamMembersSchema from 'universal/validation/makeInviteTeamMembersSchema';
+import {INVITATION_LIFESPAN} from 'server/utils/serverConstants';
 
 export default {
   inviteTeamMembers: {
@@ -26,7 +35,11 @@ export default {
     },
     async resolve(source, {invitees, teamId}, {authToken}) {
       const r = getRethink();
+
+      // AUTH
       requireSUOrTeamMember(authToken, teamId);
+
+      // VALIDATION
       const now = Date.now();
       // don't let them invite the same person twice
       const emails = invitees.map(invitee => invitee.email);
@@ -47,29 +60,24 @@ export default {
         inviteEmails: usedEmails.inviteEmails,
         teamMemberEmails: usedEmails.teamMembers.filter((m) => m.isNotRemoved === true).map((m) => m.email)
       };
+      const schema = makeInviteTeamMembersSchema(schemaProps);
+      const {errors, data: {invitees: validInvitees}} = schema({invitees});
+      handleSchemaErrors(errors);
 
-      const schema = inviteTeamMemberSchema(schemaProps, 'email');
-      for (let i = 0; i < invitees.length; i++) {
-        const invitee = invitees[i];
-        const {errors} = schema(invitee);
-        if (Object.keys(errors).length > 0) {
-          throw errorObj(errors);
-        }
-      }
-
-      // if they used to be on the team, simply reactivate them
+      // RESOLUTION
       const inactiveTeamMembers = usedEmails.teamMembers.filter((m) => m.isNotRemoved === false);
+      // if they used to be on the team, simply reactivate them
       if (inactiveTeamMembers.length > 0) {
         const inactiveTeamMemberIds = inactiveTeamMembers.map((m) => m.id);
         await r.table('TeamMember')
           .getAll(r.args(inactiveTeamMemberIds), {index: 'id'})
           .update({isNotRemoved: true});
         const inactiveTeamMemberEmails = inactiveTeamMembers.map((m) => m.email);
-        const newInvitees = invitees.filter((i) => !inactiveTeamMemberEmails.includes(i.email));
+        const newInvitees = validInvitees.filter((i) => !inactiveTeamMemberEmails.includes(i.email));
         // TODO send email & maybe pop toast saying that we're only reactivating
         asyncInviteTeam(authToken, teamId, newInvitees);
       } else {
-        asyncInviteTeam(authToken, teamId, invitees);
+        asyncInviteTeam(authToken, teamId, validInvitees);
       }
       return true;
     }
@@ -84,7 +92,27 @@ export default {
       },
     },
     async resolve(source, {inviteId}, {authToken}) {
-      await cancelInvitation(authToken, inviteId);
+      const r = getRethink();
+
+      // AUTH
+      const invite = await r.table('Invitation').get(inviteId);
+      const {acceptedAt, teamId, tokenExpiration} = invite;
+      requireSUOrTeamMember(authToken, teamId);
+
+      // VALIDATION
+      const now = new Date();
+      if (acceptedAt) {
+        throw errorObj({type: 'alreadyAccepted'});
+      } else if (tokenExpiration < now) {
+        throw errorObj({type: 'alreadyExpired'});
+      }
+
+      // RESOLUTION
+      await r.table('Invitation').get(inviteId).update({
+        // set expiration to epoch so it gets removed from the changefeed
+        tokenExpiration: new Date(0),
+        updatedAt: now
+      });
       return true;
     }
   },
@@ -98,6 +126,36 @@ export default {
       },
     },
     async resolve(source, {inviteId}, {authToken}) {
+      const r = getRethink();
+
+      // AUTH
+      const invitation = await r.table('Invitation').get(inviteId);
+      const {email, fullName, teamId} = invitation;
+      requireSUOrTeamMember(authToken, teamId);
+
+      // RESOLUTION
+      const inviteToken = makeInviteToken();
+      const inviteeWithToken = {
+        email,
+        fullName,
+        inviteToken
+      };
+      const userId = getUserId(authToken);
+      const inviterInfoAndTeamName = await getInviterInfoAndTeamName(teamId, userId);
+      const sendEmailPromises = createEmailPromises(inviterInfoAndTeamName, [inviteeWithToken]);
+      await resolveSentEmails(sendEmailPromises, [inviteeWithToken]);
+      const now = new Date();
+      const hashedToken = await hashInviteTokenKey(inviteToken);
+      const invitedBy = `${userId}::${teamId}`;
+      const tokenExpiration = new Date(now.valueOf() + INVITATION_LIFESPAN);
+      await r.table('Invitation').get(inviteId).update({
+        hashedToken,
+        invitedBy,
+        inviteToken,
+        inviteCount: r.row('inviteCount').add(1),
+        tokenExpiration,
+        updatedAt: now
+      });
       await resendInvite(authToken, inviteId);
       return true;
     }

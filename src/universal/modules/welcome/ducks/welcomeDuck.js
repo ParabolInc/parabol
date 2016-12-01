@@ -3,6 +3,7 @@ const NEXT_PAGE = 'action/welcome/NEXT_PAGE';
 const PREVIOUS_PAGE = 'action/welcome/PREVIOUS_PAGE';
 const GO_TO_PAGE = 'action/welcome/GO_TO_PAGE';
 const UPDATE_COMPLETED = 'action/welcome/UPDATE_COMPLETED';
+const UPDATE_EXISTING_INVITES = 'action/welcome/UPDATE_EXISTING_INVITES';
 
 const MIN_PAGE = 1;
 const MAX_PAGE = 3;
@@ -11,7 +12,8 @@ const initialState = {
   page: 1,
   completed: 0,
   teamId: null,
-  teamMemberId: null
+  teamMemberId: null,
+  existingInvites: []
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -35,6 +37,11 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         completed: Math.max(state.completed, action.payload)
+      };
+    case UPDATE_EXISTING_INVITES:
+      return {
+        ...state,
+        existingInvites: action.payload
       };
     case SET_WELCOME_TEAM:
       return Object.assign({}, state, action.payload);
@@ -74,4 +81,21 @@ export const updateCompleted = (page) => {
     type: UPDATE_COMPLETED,
     payload: page
   };
+};
+
+export const updateExistingInvites = (list) => {
+  // each idx in the list is an email address that has already been entered and should get highlighted for a second
+  // creates an array and then removes it, giving enough time for a class-based animation to occur
+  return (dispatch) => {
+    dispatch({
+      type: UPDATE_EXISTING_INVITES,
+        payload: list
+    });
+    setTimeout(() => {
+      dispatch({
+        type: UPDATE_EXISTING_INVITES,
+        payload: []
+      })
+    }, 1500)
+  }
 };

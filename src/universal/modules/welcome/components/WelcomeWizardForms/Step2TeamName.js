@@ -12,14 +12,13 @@ import makeStep2Schema from 'universal/validation/makeStep2Schema';
 import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 
 const validate = (values) => {
-  const welcomeSchema = makeStep2Schema();
+  const welcomeSchema = makeStep2Schema('teamName');
   return welcomeSchema(values).errors;
 };
 
 const Step2TeamName = (props) => {
   const {dispatch, handleSubmit, preferredName, teamName} = props;
-  const onTeamNameSubmit = data => {
-    const myTeamName = data.teamName;
+  const onTeamNameSubmit = (data) => {
     const teamId = shortid.generate();
     const teamMemberId = shortid.generate();
     dispatch(setWelcomeTeam({teamId, teamMemberId}));
@@ -27,7 +26,7 @@ const Step2TeamName = (props) => {
       variables: {
         newTeam: {
           id: teamId,
-          name: myTeamName
+          name: data.teamName.trim()
         }
       }
     };

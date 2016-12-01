@@ -68,6 +68,7 @@ const Button = (props) => {
     isBlock,
     label,
     onClick,
+    onMouseEnter,
     size,
     styles,
     title,
@@ -89,6 +90,7 @@ const Button = (props) => {
       className={buttonStyles}
       disabled={disabled}
       onClick={onClick}
+      onMouseEnter={onMouseEnter}
       title={buttonTitle}
       type={type}
     >

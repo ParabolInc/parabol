@@ -39,7 +39,7 @@ export default class Step1PreferredName extends Component {
 
   onPreferredNameSubmit = (submissionData) => {
     const {dispatch, user} = this.props;
-    const {preferredName: newPreferredName} = submissionData;
+    const newPreferredName = submissionData.preferredName.trim();
     const options = {
       variables: {
         updatedUser: {

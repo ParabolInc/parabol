@@ -8,7 +8,7 @@ import {cashay} from 'cashay';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 import {reduxForm, Field} from 'redux-form';
 import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
-import inviteTeamMemberSchema from 'universal/validation/makeInviteTeamMemberSchema';
+import makeInviteOneTeamMemberSchema from 'universal/validation/makeInviteOneTeamMemberSchema';
 
 const makeSchemaProps = (props) => {
   const {invitations, teamMembers} = props;
@@ -19,7 +19,7 @@ const makeSchemaProps = (props) => {
 
 const validate = (values, props) => {
   const schemaProps = makeSchemaProps(props);
-  const schema = inviteTeamMemberSchema(schemaProps, 'inviteTeamMember');
+  const schema = makeInviteOneTeamMemberSchema(schemaProps);
   return schema(values).errors;
 };
 
@@ -42,7 +42,7 @@ const InviteUser = (props) => {
 
   const updateEditable = (submissionData) => {
     const schemaProps = makeSchemaProps(props);
-    const schema = inviteTeamMemberSchema(schemaProps, 'inviteTeamMember');
+    const schema = makeInviteOneTeamMemberSchema(schemaProps);
     const {data: {inviteTeamMember}} = schema(submissionData);
     const variables = {
       teamId,
