@@ -40,7 +40,7 @@ export default async function createTeamAndLeader(authToken, newTeam) {
     .do(() => {
       return r.table('User')
         .get(userId)
-        .pluck('email', 'picture', 'preferredName')
+        .pluck('email', 'picture', 'preferredName');
     })
     .do((user) => {
       return r.table('TeamMember').insert({
@@ -48,7 +48,7 @@ export default async function createTeamAndLeader(authToken, newTeam) {
         email: user('email').default(''),
         picture: user('picture').default(''),
         preferredName: user('preferredName').default('')
-      })
+      });
     })
     // add teamId to user tms array
     .do(() => {
@@ -56,7 +56,7 @@ export default async function createTeamAndLeader(authToken, newTeam) {
         .get(userId)
         .update({
           tms
-        })
+        });
     });
 
   const dbPromises = [

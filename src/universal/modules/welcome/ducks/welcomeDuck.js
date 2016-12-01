@@ -89,13 +89,13 @@ export const updateExistingInvites = (list) => {
   return (dispatch) => {
     dispatch({
       type: UPDATE_EXISTING_INVITES,
-        payload: list
+      payload: list
     });
     setTimeout(() => {
       dispatch({
         type: UPDATE_EXISTING_INVITES,
         payload: []
-      })
-    }, 1500)
-  }
+      });
+    }, 1500);
+  };
 };

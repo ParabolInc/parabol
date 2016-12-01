@@ -13,11 +13,11 @@ export default function makeInviteTeamMembersSchema(props) {
         .min(2, 'That name is too short!')
         .max(10, 'That name is too long!')
         .test((inviteTeamMember) => {
-          return inviteEmails.includes(inviteTeamMember) && 'That person has already been invited!'
+          return inviteEmails.includes(inviteTeamMember) && 'That person has already been invited!';
         })
         .test((inviteTeamMember) => teamMemberEmails.includes(inviteTeamMember) && 'That person is already on your team!'),
       fullName,
       task
     }]
-  })
-};
+  });
+}

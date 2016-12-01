@@ -23,6 +23,7 @@ Step3InviteTeam.propTypes = {
   invitees: PropTypes.array,
   inviteesRaw: PropTypes.string,
   teamName: PropTypes.string,
+  welcome: PropTypes.object
 };
 
 export default

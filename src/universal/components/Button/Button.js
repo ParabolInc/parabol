@@ -105,6 +105,7 @@ Button.propTypes = {
   isBlock: PropTypes.bool,
   label: PropTypes.string,
   onClick: PropTypes.func,
+  onMouseEnter: PropTypes.func,
   size: PropTypes.oneOf([
     'smallest',
     'small',

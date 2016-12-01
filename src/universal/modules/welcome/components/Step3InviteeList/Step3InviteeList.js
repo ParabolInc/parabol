@@ -21,7 +21,7 @@ const emailInviteSuccess = {
 };
 
 const Step3InviteeList = (props) => {
-  const {dispatch, existingInvites, handleSubmit, invitees, router, submitting, styles, teamId} = props;
+  const {dispatch, existingInvites, handleSubmit, invitees, router, styles, teamId} = props;
   const onInviteTeamSubmit = () => {
     if (invitees && invitees.length > 0) {
       const serverInvitees = invitees.map(invitee => {
@@ -49,7 +49,7 @@ const Step3InviteeList = (props) => {
       ));
       dispatch(showSuccess(emailInviteSuccess)); // trumpet our leader's brilliance!
       dispatch(destroy('welcomeWizard')); // bye bye form data!
-    }, 1000)
+    }, 1000);
   };
 
   const fieldArrayHasValue = invitees && invitees.length > 0;
@@ -69,27 +69,42 @@ const Step3InviteeList = (props) => {
         <div style={{margin: '2rem 0 0', textAlign: 'center'}}>
           <Button
             colorPalette="warm"
-            disabled={submitting || !fieldArrayHasValue}
             label="Looks Good!"
             onMouseEnter={() => {
               // optimistically fetch the big ol payload
-              System.import('universal/containers/Dashboard/DashboardContainer')
+              System.import('universal/containers/Dashboard/DashboardContainer');
             }}
             size="medium"
             type="submit"
           />
         </div>
       </form>
-    )
-  } else {
-    return (
-      <Link to={`/team/${teamId}`} className={css(styles.noThanks)} title="I'll invite them later">
-        Not yet, I just want to kick the tires
-      </Link>
-    )
+    );
   }
+  return (
+    <Link
+      to={`/team/${teamId}`}
+      className={css(styles.noThanks)}
+      onMouseEnter={() => {
+        console.log('mouse enter');
+        System.import('universal/containers/Dashboard/DashboardContainer');
+      }}
+      title="I'll invite them later"
+    >
+      Not yet, I just want to kick the tires
+    </Link>
+  );
 };
 
+Step3InviteeList.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  existingInvites: PropTypes.array,
+  handleSubmit: PropTypes.func.isRequired,
+  invitees: PropTypes.array,
+  router: PropTypes.object.isRequired,
+  styles: PropTypes.object,
+  teamId: PropTypes.string.isRequired
+};
 const styleThunk = () => ({
   noThanks: {
     display: 'inline-block',
@@ -105,5 +120,4 @@ export default reduxForm({
   destroyOnUnmount: false,
   validate
 })(withRouter(withStyles(styleThunk)(Step3InviteeList)));
-
 

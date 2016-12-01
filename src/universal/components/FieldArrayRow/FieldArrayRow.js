@@ -71,6 +71,8 @@ const FieldArrayRow = props => {
 };
 
 FieldArrayRow.propTypes = {
+  invitees: PropTypes.array,
+  existingInvites: PropTypes.array,
   labelHeader: PropTypes.string.isRequired,
   fields: PropTypes.object.isRequired,
   hoverRow: PropTypes.number,

@@ -12,10 +12,9 @@ const validate = (values) => {
 };
 
 const Step3RawInvitees = (props) => {
-  const {handleSubmit, invitees = [], inviteesRaw, untouch} = props;
+  const {dispatch, handleSubmit, invitees = [], inviteesRaw, untouch} = props;
 
   const onAddInviteesButtonClick = () => {
-    const {dispatch, inviteesRaw} = props;
     const parsedAddresses = emailAddresses.parseAddressList(inviteesRaw);
     // clear the inviteesRaw form component:
     dispatch(change('welcomeWizardRawInvitees', 'inviteesRaw', ''));
@@ -60,7 +59,15 @@ const Step3RawInvitees = (props) => {
       />
     </div>
   );
-}
+};
+
+Step3RawInvitees.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
+  invitees: PropTypes.array,
+  inviteesRaw: PropTypes.string.isRequired,
+  untouch: PropTypes.func.isRequired
+};
 
 export default reduxForm({
   form: 'welcomeWizardRawInvitees',

@@ -5,7 +5,7 @@ class Legitity {
   }
   matches(regex, msg) {
     if (!this.error && !regex.test(this.value)) {
-      this.error = msg || 'regex'
+      this.error = msg || 'regex';
     }
     return this;
   }
@@ -26,7 +26,7 @@ class Legitity {
 
   required(msg) {
     if (!this.error && !this.value) {
-      this.error = msg || 'required'
+      this.error = msg || 'required';
     }
     return this;
   }
@@ -60,7 +60,7 @@ const legitify = (expected) => (actual) => {
         data[key][j] = res.data;
         if (res.errors && Object.keys(res.errors).length > 0) {
           errors[key] = errors[key] || [];
-          errors[key][j] = res.errors
+          errors[key][j] = res.errors;
         }
       }
     } else if (typeof maybeValidator === 'object') {

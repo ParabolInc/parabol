@@ -10,5 +10,5 @@ export default function makeStep3RawSchema() {
       fullName,
       task
     }]
-  })
-};
+  });
+}

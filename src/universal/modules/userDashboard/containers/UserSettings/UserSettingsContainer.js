@@ -47,6 +47,7 @@ export default class UserSettingsContainer extends Component {
       preferredName: PropTypes.string,
     }),
     router: PropTypes.object,
+    untouch: PropTypes.func.isRequired,
     userId: PropTypes.string
   };
 

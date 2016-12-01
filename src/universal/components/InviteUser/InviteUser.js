@@ -91,7 +91,9 @@ InviteUser.propTypes = {
   onInviteSubmitted: PropTypes.func,
   picture: PropTypes.string,
   styles: PropTypes.object,
-  teamId: PropTypes.string
+  teamId: PropTypes.string,
+  touch: PropTypes.func.isRequired,
+  untouch: PropTypes.func.isRequired
 };
 
 const styleThunk = () => ({

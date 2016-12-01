@@ -18,9 +18,9 @@ export default function makeStep3RawSchema() {
             }
             i = lastGoodString.lastIndexOf(',');
           }
-          return `That first email doesn\'t look right`;
+          return 'That first email doesn\'t look right';
         }
         return undefined;
       })
-  })
-};
+  });
+}

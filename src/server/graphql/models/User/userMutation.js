@@ -7,9 +7,8 @@ import sendEmail from 'server/email/sendEmail';
 import ms from 'ms';
 import {requireSUOrSelf} from '../authorization';
 import {errorObj, handleSchemaErrors, updatedOrOriginal} from '../utils';
-import {auth0ManagementClient} from 'server/utils/auth0Helpers';
+import {auth0ManagementClient, clientSecret} from 'server/utils/auth0Helpers';
 import {verify} from 'jsonwebtoken';
-import {clientSecret} from 'server/utils/auth0Helpers';
 import makeStep1Schema from 'universal/validation/makeStep1Schema';
 
 const auth0Client = new AuthenticationClient({
@@ -35,7 +34,7 @@ export default {
       const now = new Date();
       const isValid = verify(authToken, Buffer.from(clientSecret, 'base64'), {audience: auth0.clientId});
       if (!isValid) {
-        throw errorObj({_error: 'The provided token is not valid'})
+        throw errorObj({_error: 'The provided token is not valid'});
       }
       const userInfo = await auth0Client.tokens.getInfo(authToken);
       // TODO loginsCount and blockedFor are not a part of this API response

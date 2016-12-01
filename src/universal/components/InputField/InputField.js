@@ -89,7 +89,7 @@ const InputField = (props) => {
             disabled={disabled || readyOnly}
             placeholder={placeholder}
             onKeyDown={onButtonClick && submitOnEnter}
-            ref={(c) => ref = c}
+            ref={(c) => { ref = c; }}
           />
         }
         {hasButton &&

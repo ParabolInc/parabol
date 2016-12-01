@@ -49,7 +49,7 @@ export default {
         .coerceTo('array')
         .do((inviteEmails) => {
           return {
-            inviteEmails: inviteEmails,
+            inviteEmails,
             teamMembers: r.table('TeamMember')
               .getAll(teamId, {index: 'teamId'})
               // .filter({isNotRemoved: true})('email')

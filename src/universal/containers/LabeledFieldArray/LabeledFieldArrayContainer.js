@@ -4,6 +4,7 @@ import FieldArrayRow from '../../components/FieldArrayRow/FieldArrayRow';
 
 export default class LabeledFieldArray extends Component {
   static propTypes = {
+    existingInvites: PropTypes.array.isRequired,
     labelHeader: PropTypes.string.isRequired,
     labelSource: PropTypes.string.isRequired,
     nestedFieldHeader: PropTypes.string.isRequired,

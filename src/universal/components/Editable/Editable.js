@@ -140,7 +140,10 @@ Editable.propTypes = {
     fontSize: PropTypes.string,
     lineHeight: PropTypes.string,
     placeholderColor: PropTypes.string
-  })
+  }),
+  touch: PropTypes.func.isRequired,
+  untouch: PropTypes.func.isRequired
+
 };
 
 const styleThunk = (customTheme, props) => ({
