@@ -5,8 +5,10 @@ import LabeledFieldArray from 'universal/containers/LabeledFieldArray/LabeledFie
 import {cashay} from 'cashay';
 import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
-import {withRouter} from 'react-router';
+import {Link, withRouter} from 'react-router';
 import makeStep3Schema from 'universal/validation/makeStep3Schema';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite-local-styles/no-important';
 
 const validate = (values) => {
   const schema = makeStep3Schema();
@@ -19,71 +21,89 @@ const emailInviteSuccess = {
 };
 
 const Step3InviteeList = (props) => {
-  const {dispatch, existingInvites, handleSubmit, invitees, router, submitting, teamId} = props;
+  const {dispatch, existingInvites, handleSubmit, invitees, router, submitting, styles, teamId} = props;
   const onInviteTeamSubmit = () => {
-    const serverInvitees = invitees.map(invitee => {
-      const {email, fullName, task} = invitee;
-      return {
-        email,
-        fullName,
-        task
+    if (invitees && invitees.length > 0) {
+      const serverInvitees = invitees.map(invitee => {
+        const {email, fullName, task} = invitee;
+        return {
+          email,
+          fullName,
+          task
+        };
+      });
+      const options = {
+        variables: {
+          teamId,
+          invitees: serverInvitees
+        }
       };
-    });
-    const options = {
-      variables: {
-        teamId,
-        invitees: serverInvitees
-      }
-    };
-    cashay.mutate('inviteTeamMembers', options);
+      cashay.mutate('inviteTeamMembers', options);
+    }
     router.push(`/team/${teamId}`);  // redirect leader to their new team
 
     // loading that user dashboard is really expensive and causes dropped frames, so let's lighten the load
     setTimeout(() => {
       dispatch(segmentEventTrack('Welcome Step3 Completed',
-        {inviteeCount: serverInvitees.length}
+        {inviteeCount: invitees && invitees.length || 0}
       ));
       dispatch(showSuccess(emailInviteSuccess)); // trumpet our leader's brilliance!
       dispatch(destroy('welcomeWizard')); // bye bye form data!
     }, 1000)
   };
 
-  const fieldArrayHasValue = Array.isArray(invitees);
-  return (
-    <form onSubmit={handleSubmit(onInviteTeamSubmit)}>
-      {fieldArrayHasValue &&
-      <div style={{margin: '2rem 0 0'}}>
-        <LabeledFieldArray
-          existingInvites={existingInvites}
-          invitees={invitees}
-          labelHeader="Invitee"
-          labelSource="invitees"
-          nestedFieldHeader="This Week’s Priority (optional)"
-          nestedFieldName="task"
-        />
-      </div>
-      }
-      <div style={{margin: '2rem 0 0', textAlign: 'center'}}>
-        <Button
-          colorPalette="warm"
-          disabled={submitting || !fieldArrayHasValue}
-          label="Looks Good!"
-          onMouseEnter={() => {
-            // optimistically fetch the big ol payload
-            System.import('universal/containers/Dashboard/DashboardContainer')
-          }}
-          size="medium"
-          type="submit"
-        />
-      </div>
-    </form>
-  );
+  const fieldArrayHasValue = invitees && invitees.length > 0;
+  if (fieldArrayHasValue) {
+    return (
+      <form onSubmit={handleSubmit(onInviteTeamSubmit)}>
+        <div style={{margin: '2rem 0 0'}}>
+          <LabeledFieldArray
+            existingInvites={existingInvites}
+            invitees={invitees}
+            labelHeader="Invitee"
+            labelSource="invitees"
+            nestedFieldHeader="This Week’s Priority (optional)"
+            nestedFieldName="task"
+          />
+        </div>
+        <div style={{margin: '2rem 0 0', textAlign: 'center'}}>
+          <Button
+            colorPalette="warm"
+            disabled={submitting || !fieldArrayHasValue}
+            label="Looks Good!"
+            onMouseEnter={() => {
+              // optimistically fetch the big ol payload
+              System.import('universal/containers/Dashboard/DashboardContainer')
+            }}
+            size="medium"
+            type="submit"
+          />
+        </div>
+      </form>
+    )
+  } else {
+    return (
+      <Link to={`/team/${teamId}`} className={css(styles.noThanks)} title="I'll invite them later">
+        Not yet, I just want to kick the tires
+      </Link>
+    )
+  }
 };
+
+const styleThunk = () => ({
+  noThanks: {
+    display: 'inline-block',
+    margin: '2rem 0',
+    textAlign: 'right',
+    textDecoration: 'none',
+    width: '100%',
+  }
+});
 
 export default reduxForm({
   form: 'welcomeWizard',
   destroyOnUnmount: false,
   validate
-})(withRouter(Step3InviteeList));
+})(withRouter(withStyles(styleThunk)(Step3InviteeList)));
 
 

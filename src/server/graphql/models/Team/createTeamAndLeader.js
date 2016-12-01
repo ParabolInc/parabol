@@ -63,6 +63,8 @@ export default async function createTeamAndLeader(authToken, newTeam) {
     dbTransaction,
     auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
   ];
-  await Promise.all(dbPromises);
+
+  // don't use await here because pinging auth0 could be slow. better that the user doesn't feel the lag
+  Promise.all(dbPromises);
   return tms;
 };
