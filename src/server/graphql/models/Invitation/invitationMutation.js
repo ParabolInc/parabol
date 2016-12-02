@@ -61,7 +61,7 @@ export default {
         teamMemberEmails: usedEmails.teamMembers.filter((m) => m.isNotRemoved === true).map((m) => m.email)
       };
       const schema = makeInviteTeamMembersSchema(schemaProps);
-      const {errors, data: {invitees: validInvitees}} = schema({invitees});
+      const {errors, data: validInvitees} = schema(invitees);
       handleSchemaErrors(errors);
 
       // RESOLUTION

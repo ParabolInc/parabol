@@ -3,6 +3,7 @@ class Legitity {
     this.value = value;
     this.error = undefined;
   }
+
   matches(regex, msg) {
     if (!this.error && !regex.test(this.value)) {
       this.error = msg || 'regex';
@@ -45,33 +46,30 @@ class Legitity {
 }
 
 const legitify = (expected) => (actual) => {
+  if (Array.isArray(expected)) {
+    const schema = legitify(expected[0]);
+    const data = [];
+    const errors = [];
+    for (let i = 0; i < actual.length; i++) {
+      const actualValue = actual[i];
+      const res = schema(actualValue);
+      data[i] = res.data;
+      // maybe we have to send in empties too
+      if (Object.keys(res.errors).length > 0) {
+        errors[i] = res.errors;
+      }
+    }
+    return {errors, data};
+  }
   const data = {};
   const errors = {};
   const expectedKeys = Object.keys(expected);
   for (let i = 0; i < expectedKeys.length; i++) {
     const key = expectedKeys[i];
     const maybeValidator = expected[key];
-    if (Array.isArray(maybeValidator)) {
-      const actualValue = actual[key] || [];
-      for (let j = 0; j < actualValue.length; j++) {
-        const schema = legitify(maybeValidator[0]);
-        const res = schema(actualValue[j]);
-        data[key] = data[key] || [];
-        data[key][j] = res.data;
-        if (res.errors && Object.keys(res.errors).length > 0) {
-          errors[key] = errors[key] || [];
-          errors[key][j] = res.errors;
-        }
-      }
-    } else if (typeof maybeValidator === 'object') {
-      const schema = legitify(maybeValidator);
-      const res = schema(actual[key]);
-      data[key] = res.data;
-      if (res.errors) {
-        errors[key] = res.errors;
-      }
-    } else {
-      const monadicVal = new Legitity(actual[key]);
+    const actualValue = actual[key];
+    if (typeof maybeValidator === 'function') {
+      const monadicVal = new Legitity(actualValue);
       const {error, value} = maybeValidator(monadicVal);
       if (actual.hasOwnProperty(key)) {
         data[key] = value;
@@ -79,6 +77,11 @@ const legitify = (expected) => (actual) => {
       if (error) {
         errors[key] = error;
       }
+    } else if (actualValue) {
+      const schema = legitify(maybeValidator);
+      const res = schema(actualValue);
+      data[key] = res.data;
+      errors[key] = res.errors;
     }
   }
   return {errors, data};
