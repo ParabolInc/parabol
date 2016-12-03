@@ -63,25 +63,27 @@ const legitify = (expected) => (actual) => {
   }
   const data = {};
   const errors = {};
-  const expectedKeys = Object.keys(expected);
-  for (let i = 0; i < expectedKeys.length; i++) {
-    const key = expectedKeys[i];
-    const maybeValidator = expected[key];
-    const actualValue = actual[key];
-    if (typeof maybeValidator === 'function') {
-      const monadicVal = new Legitity(actualValue);
-      const {error, value} = maybeValidator(monadicVal);
-      if (actual.hasOwnProperty(key)) {
-        data[key] = value;
+  if (typeof actual === 'object') {
+    const expectedKeys = Object.keys(expected);
+    for (let i = 0; i < expectedKeys.length; i++) {
+      const key = expectedKeys[i];
+      const maybeValidator = expected[key];
+      const actualValue = actual[key];
+      if (typeof maybeValidator === 'function') {
+        const monadicVal = new Legitity(actualValue);
+        const {error, value} = maybeValidator(monadicVal);
+        if (actual.hasOwnProperty(key)) {
+          data[key] = value;
+        }
+        if (error) {
+          errors[key] = error;
+        }
+      } else if (actualValue) {
+        const schema = legitify(maybeValidator);
+        const res = schema(actualValue);
+        data[key] = res.data;
+        errors[key] = res.errors;
       }
-      if (error) {
-        errors[key] = error;
-      }
-    } else if (actualValue) {
-      const schema = legitify(maybeValidator);
-      const res = schema(actualValue);
-      data[key] = res.data;
-      errors[key] = res.errors;
     }
   }
   return {errors, data};

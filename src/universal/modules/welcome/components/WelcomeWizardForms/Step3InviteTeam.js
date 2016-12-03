@@ -1,5 +1,4 @@
 import React, {PropTypes} from 'react';
-import {reduxForm} from 'redux-form';
 import Type from 'universal/components/Type/Type';
 import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import Step3RawInvitees from 'universal/modules/welcome/components/Step3RawInvitees/Step3RawInvitees';
@@ -26,9 +25,4 @@ Step3InviteTeam.propTypes = {
   welcome: PropTypes.object
 };
 
-export default
-reduxForm({
-  form: 'welcomeWizard',
-  destroyOnUnmount: false,
-  // validate
-})(Step3InviteTeam);
+export default Step3InviteTeam;

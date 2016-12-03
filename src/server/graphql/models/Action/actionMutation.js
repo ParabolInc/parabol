@@ -6,7 +6,8 @@ import {
   GraphQLID
 } from 'graphql';
 import {requireSUOrTeamMember} from '../authorization';
-
+import makeActionSchema from 'universal/validation/makeActionSchema';
+import {handleSchemaErrors} from '../utils'
 export default {
   updateAction: {
     type: GraphQLBoolean,
@@ -23,9 +24,17 @@ export default {
     },
     async resolve(source, {updatedAction, rebalance}, {authToken}) {
       const r = getRethink();
-      const {id: actionId, ...action} = updatedAction;
-      const [teamId] = actionId.split('::');
+
+      // AUTH
+      const [teamId] = updatedAction.id.split('::');
       requireSUOrTeamMember(authToken, teamId);
+
+      // VALIDATION
+      const schema = makeActionSchema();
+      const {errors, data: {id: actionId, ...action}} = schema(updatedAction);
+      handleSchemaErrors(errors);
+
+      // RESOLUTION
       const now = new Date();
       const newAction = {
         ...action,
@@ -63,15 +72,23 @@ export default {
       }
     },
     async resolve(source, {newAction}, {authToken}) {
+      // AUTH
       const r = getRethink();
       const {id} = newAction;
       // format of id is teamId::taskIdPart
       const [teamId] = id.split('::');
       requireSUOrTeamMember(authToken, teamId);
+
+      // VALIDATION
+      const schema = makeActionSchema();
+      const {errors, data: validNewAction} = schema(newAction);
+      handleSchemaErrors(errors);
+
+      // RESOLUTION
       const now = new Date();
-      const [userId] = newAction.teamMemberId.split('::');
+      const [userId] = validNewAction.teamMemberId.split('::');
       const action = {
-        ...newAction,
+        ...validNewAction,
         userId,
         createdAt: now,
         createdBy: authToken.sub,
@@ -92,9 +109,12 @@ export default {
     },
     async resolve(source, {actionId}, {authToken}) {
       const r = getRethink();
-      // format of id is teamId::taskIdPart
+
+      // AUTH
       const [teamId] = actionId.split('::');
       requireSUOrTeamMember(authToken, teamId);
+
+      // RESOLUTION
       await r.table('Action').get(actionId).delete();
     }
   },
@@ -109,9 +129,12 @@ export default {
     },
     async resolve(source, {actionId}, {authToken}) {
       const r = getRethink();
-      // format of id is teamId::taskIdPart
+
+      // AUTH
       const [teamId] = actionId.split('::');
       requireSUOrTeamMember(authToken, teamId);
+
+      // RESOLUTION
       const action = await r.table('Action').get(actionId);
       const now = new Date();
       const newProject = {

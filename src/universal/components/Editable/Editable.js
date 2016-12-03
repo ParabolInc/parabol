@@ -35,6 +35,7 @@ class Editable extends Component {
     const {
       handleSubmit,
       input,
+      maxLength,
       meta: {dirty, error, touched},
       placeholder,
       styles,
@@ -68,6 +69,7 @@ class Editable extends Component {
           {...input}
           autoFocus
           className={inputStyles}
+          maxLength={maxLength}
           onBlur={maybeSubmitOnBlur}
           placeholder={placeholder}
         />
@@ -141,8 +143,8 @@ Editable.propTypes = {
     lineHeight: PropTypes.string,
     placeholderColor: PropTypes.string
   }),
-  touch: PropTypes.func.isRequired,
-  untouch: PropTypes.func.isRequired
+  touch: PropTypes.func,
+  untouch: PropTypes.func
 
 };
 

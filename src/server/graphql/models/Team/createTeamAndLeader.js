@@ -63,8 +63,7 @@ export default async function createTeamAndLeader(authToken, newTeam) {
     dbTransaction,
     auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
   ];
-
-  // don't use await here because pinging auth0 could be slow. better that the user doesn't feel the lag
-  Promise.all(dbPromises);
+  // we need to await the db transaction because adding a team requires waiting for the team to be created
+  await Promise.all(dbPromises);
   return tms;
 };

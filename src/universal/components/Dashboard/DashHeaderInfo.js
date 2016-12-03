@@ -33,6 +33,8 @@ const styleThunk = () => ({
 
   title: {
     color: appTheme.palette.dark10d,
+    // @terry, had to do this to bump down the children for the error message when it comes
+    display: 'inline',
     fontSize: appTheme.typography.s5,
     height: appTheme.typography.s6,
     lineHeight: appTheme.typography.s6

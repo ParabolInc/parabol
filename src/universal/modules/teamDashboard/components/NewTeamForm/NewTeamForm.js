@@ -12,26 +12,20 @@ import emailAddresses from 'email-addresses';
 import shortid from 'shortid';
 import {withRouter} from 'react-router';
 import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
-import trim from 'universal/utils/formFieldTrimmer';
+import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
 
-const quickValidation = (values) => {
-  const errors = {};
-  const {teamName, invitedTeamMembers} = values;
-  if (!teamName) {
-    errors.teamName = 'Oops! Please add a team name.';
-  }
-  if (!invitedTeamMembers) {
-    errors.invitedTeamMembers = 'Oops! Please check for valid email addresses.';
-  }
-  return errors;
+const validate = (values) => {
+  const schema = makeAddTeamSchema();
+  return schema(values).errors;
 };
 
 const NewTeamForm = (props) => {
   const {dispatch, formName, handleSubmit, router, styles} = props;
   const onSubmit = (submittedData) => {
-    const {teamName, invitedTeamMembers} = trim(submittedData);
+    const schema = makeAddTeamSchema();
+    const {data: {teamName, inviteesRaw}} = schema(submittedData);
     const invitees = emailAddresses
-      .parseAddressList(invitedTeamMembers)
+      .parseAddressList(inviteesRaw)
       .map(email => ({
         email: email.address,
         fullName: email.fullName
@@ -69,7 +63,7 @@ const NewTeamForm = (props) => {
         <Field
           colorPalette="gray"
           component={InputField}
-          name="invitedTeamMembers"
+          name="inviteesRaw"
           label="Invite Team Members (optional)"
           placeholder={randomPlaceholderTheme.emailMulti}
           useTextarea
@@ -125,7 +119,7 @@ const styleThunk = () => ({
 });
 
 export default withRouter(
-  reduxForm({form: 'newTeam', validate: quickValidation})(
+  reduxForm({form: 'newTeam', validate})(
     withStyles(styleThunk)(NewTeamForm)
   )
 );
