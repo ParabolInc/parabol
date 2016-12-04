@@ -33,10 +33,14 @@ export default {
     },
     async resolve(source, {teamMemberId, isCheckedIn}, {authToken, socket}) {
       const r = getRethink();
+
+      // AUTH
       // teamMemberId is of format 'userId::teamId'
       const [, teamId] = teamMemberId.split('::');
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
+
+      // RESOLUTION
       await r.table('TeamMember').get(teamMemberId).update({isCheckedIn});
     }
   },
@@ -54,7 +58,11 @@ export default {
     },
     async resolve(source, {inviteToken}, {authToken}) {
       const r = getRethink();
+
+      // AUTH
       const userId = requireAuth(authToken);
+
+      // VALIDATION
       const now = new Date();
       const {id: inviteId, key: tokenKey} = parseInviteToken(inviteToken);
 
@@ -98,6 +106,7 @@ export default {
         });
       }
 
+      // RESOLUTION
       const dbWork = r.table('User')
         // add the team to the user doc
         .get(userId)
@@ -162,10 +171,13 @@ export default {
     },
     async resolve(source, {teamMemberId}, {authToken, exchange, socket}) {
       const r = getRethink();
+
+      // AUTH
       const [userId, teamId] = teamMemberId.split('::');
       await requireSUOrSelfOrLead(authToken, userId, teamId);
       requireWebsocket(socket);
 
+      // RESOLUTION
       const res = await r.table('TeamMember')
       // set inactive
         .get(teamMemberId)
@@ -208,7 +220,6 @@ export default {
         await auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: newtms});
       }
 
-
       // update the server socket, if they're logged in
       const channel = `${PRESENCE}/${teamId}`;
       exchange.publish(channel, {type: KICK_OUT, userId});
@@ -226,14 +237,20 @@ export default {
     },
     async resolve(source, {teamMemberId}, {authToken, socket}) {
       const r = getRethink();
+
+      // AUTH
       requireWebsocket(socket);
       const [, teamId] = teamMemberId.split('::');
       const myTeamMemberId = `${authToken.sub}::${teamId}`;
       await requireSUOrLead(authToken, myTeamMemberId);
+
+      // VALIDATION
       const promoteeOnTeam = await r.table('TeamMember').get(teamMemberId);
       if (!promoteeOnTeam) {
         throw errorObj({_error: `Member ${teamMemberId} is not on the team`});
       }
+
+      // RESOLUTION
       await r.table('TeamMember')
       // remove leadership from the caller
         .get(myTeamMemberId)

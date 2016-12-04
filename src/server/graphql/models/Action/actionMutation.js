@@ -72,8 +72,9 @@ export default {
       }
     },
     async resolve(source, {newAction}, {authToken}) {
-      // AUTH
       const r = getRethink();
+
+      // AUTH
       const {id} = newAction;
       // format of id is teamId::taskIdPart
       const [teamId] = id.split('::');

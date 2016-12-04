@@ -20,6 +20,8 @@ export default {
     },
     async resolve(source, {meetingId}, {authToken}) {
       const r = getRethink();
+
+      // AUTH
       const meeting = await r.table('Meeting').get(meetingId).default({})
         .do((res) => {
           return res.merge({
@@ -38,6 +40,8 @@ export default {
       const {teamId} = meeting;
       // perform the query before the check because 99.9% of attempts will be honest & that will save us a query
       requireSUOrTeamMember(authToken, teamId);
+
+      // RESOLUTION
       const teamMemberId = `${authToken.sub}::${teamId}`;
       // call async function and don't worry about waiting
       sendEmailSummary(meeting, teamMemberId);

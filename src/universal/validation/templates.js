@@ -1,4 +1,4 @@
-import {compositeIdRegex, idRegex} from 'universal/validation/regex';
+import {compositeIdRegex, emailRegex, idRegex} from 'universal/validation/regex';
 import emailAddresses from 'email-addresses';
 
 export const compositeId = (value) => value.matches(compositeIdRegex);
@@ -30,9 +30,22 @@ export const inviteesRaw = (value) => value
     }
     return undefined;
   });
+
 export const teamName = (value) => value
   .trim()
   .required('"The nameless wonder" is better than nothing')
   .min(2, 'The "A Team" had a longer name than that')
   .max(50, 'That isn\'t very memorable. Maybe shorten it up?');
 
+export const makeInviteeTemplate = (inviteEmails,teamMemberEmails) => {
+  return (value) => value
+    .trim()
+    .required('You should enter an email here')
+    .matches(emailRegex, 'That doesn\'t look like an email address')
+    .min(2, 'That name is too short!')
+    .max(10, 'That name is too long!')
+    .test((inviteTeamMember) => {
+      return inviteEmails.includes(inviteTeamMember) && 'That person has already been invited!';
+    })
+    .test((inviteTeamMember) => teamMemberEmails.includes(inviteTeamMember) && 'That person is already on your team!')
+}

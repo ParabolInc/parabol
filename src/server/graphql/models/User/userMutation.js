@@ -30,12 +30,16 @@ export default {
     },
     async resolve(source, {authToken}) {
       const r = getRethink();
+
+      // VALIDATION
       // This is the only resolve function where authToken refers to a base64 string and not an object
       const now = new Date();
       const isValid = verify(authToken, Buffer.from(clientSecret, 'base64'), {audience: auth0.clientId});
       if (!isValid) {
         throw errorObj({_error: 'The provided token is not valid'});
       }
+
+      // RESOLUTION
       const userInfo = await auth0Client.tokens.getInfo(authToken);
       // TODO loginsCount and blockedFor are not a part of this API response
       const auth0User = {
@@ -99,16 +103,20 @@ export default {
     },
     async resolve(source, {updatedUser}, {authToken}) {
       const r = getRethink();
-      const {id, ...updatedObj} = updatedUser;
-      requireSUOrSelf(authToken, id);
+
+      // AUTH
+      requireSUOrSelf(authToken, updatedUser.id);
+      // const {id, ...updatedObj} = updatedUser;
+
+      // VALIDATION
       const schema = makeStep1Schema();
-      const {data: validUpdatedUser, errors} = schema(updatedObj);
+      const {data: {id, ...validUpdatedUser}, errors} = schema(updatedUser);
       handleSchemaErrors(errors);
       // propagate denormalized changes to TeamMember
       const dbWork = r.table('TeamMember')
         .getAll(id, {index: 'userId'})
         .update({preferredName: validUpdatedUser.preferredName})
-        .do(() => r.table('User').get(id).update(updatedObj, {returnChanges: true}));
+        .do(() => r.table('User').get(id).update(validUpdatedUser, {returnChanges: true}));
       const asyncPromises = [
         dbWork,
         auth0ManagementClient.users.updateAppMetadata({id}, {preferredName: validUpdatedUser.preferredName})
