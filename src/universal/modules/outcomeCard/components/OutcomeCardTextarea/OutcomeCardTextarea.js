@@ -83,7 +83,7 @@ class OutcomeCardTextArea extends Component {
         ref={setRef}
         className={contentStyles}
         disabled={isArchived}
-        maxLength="200"
+        maxLength="255"
         placeholder="Type your outcome here"
         onBlur={handleBlur}
         onDrop={null}

@@ -42,7 +42,7 @@ const AgendaInputField = (props) => {
         autoCapitalize="off"
         autoComplete="off"
         className={`${css(styles.input)}`}
-        maxLength="50"
+        maxLength="63"
         onKeyDown={maybeBlur}
         placeholder="Add Agenda Item"
         ref={setRef}
