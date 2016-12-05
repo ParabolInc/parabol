@@ -14,7 +14,7 @@ const fieldStyles = {
 
 const validate = (values) => {
   const schema = makeStep2Schema('teamName');
-  console.log(schema(values).errors)
+  console.log(schema(values).errors);
   return schema(values).errors;
 };
 

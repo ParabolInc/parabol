@@ -6,21 +6,21 @@ class Legitity {
 
   boolean(msg) {
     if (!this.error && this.value !== undefined && this.value !== true && this.value !== false) {
-      this.error = msg || 'boolean'
+      this.error = msg || 'boolean';
     }
     return this;
   }
 
   float(msg) {
     if (!this.error && this.value && !Number.isFinite(this.value)) {
-      this.error = msg || 'float'
+      this.error = msg || 'float';
     }
     return this;
   }
 
   int(msg) {
-    if (!this.error && this.value !== parseInt(this.value)) {
-      this.error = msg || 'int'
+    if (!this.error && this.value !== parseInt(this.value, 10)) {
+      this.error = msg || 'int';
     }
     return this;
   }

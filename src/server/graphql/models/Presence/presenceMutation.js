@@ -21,7 +21,6 @@ export default {
       }
     },
     async resolve(source, {teamId, editing}, {authToken, exchange, socket}) {
-
       // AUTH
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocketExchange(exchange);
@@ -52,7 +51,6 @@ export default {
       }
     },
     async resolve(source, {teamId, targetId, editing}, {authToken, exchange, socket}) {
-
       // AUTH
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocketExchange(exchange);
@@ -81,7 +79,6 @@ export default {
       }
     },
     async resolve(source, {teamId}, {authToken, exchange, socket}) {
-
       // AUTH
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocketExchange(exchange);

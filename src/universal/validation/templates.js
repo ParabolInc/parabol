@@ -12,13 +12,13 @@ export const task = (value) => value
   .min(2, 'That doesn\'t seem like much of a task')
   .max(100, 'Try shortening down the task name');
 export const inviteesRaw = (value) => value
-  .test((inviteesRaw) => {
-    if (!inviteesRaw) return undefined;
-    const parsedAddresses = emailAddresses.parseAddressList(inviteesRaw);
+  .test((raw) => {
+    if (!raw) return undefined;
+    const parsedAddresses = emailAddresses.parseAddressList(raw);
     if (!parsedAddresses) {
-      let i = inviteesRaw.lastIndexOf(',');
+      let i = raw.lastIndexOf(',');
       while (i > 0) {
-        const lastGoodString = inviteesRaw.substr(0, i);
+        const lastGoodString = raw.substr(0, i);
         const parseable = emailAddresses.parseAddressList(lastGoodString);
         if (parseable) {
           const startingIdx = lastGoodString.lastIndexOf(',') + 1;
@@ -37,7 +37,7 @@ export const teamName = (value) => value
   .min(2, 'The "A Team" had a longer name than that')
   .max(50, 'That isn\'t very memorable. Maybe shorten it up?');
 
-export const makeInviteeTemplate = (inviteEmails,teamMemberEmails) => {
+export const makeInviteeTemplate = (inviteEmails, teamMemberEmails) => {
   return (value) => value
     .trim()
     .required('You should enter an email here')
@@ -47,5 +47,5 @@ export const makeInviteeTemplate = (inviteEmails,teamMemberEmails) => {
     .test((inviteTeamMember) => {
       return inviteEmails.includes(inviteTeamMember) && 'That person has already been invited!';
     })
-    .test((inviteTeamMember) => teamMemberEmails.includes(inviteTeamMember) && 'That person is already on your team!')
-}
+    .test((inviteTeamMember) => teamMemberEmails.includes(inviteTeamMember) && 'That person is already on your team!');
+};

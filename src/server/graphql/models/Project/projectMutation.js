@@ -10,7 +10,7 @@ import {requireSUOrTeamMember} from '../authorization';
 import shortid from 'shortid';
 import ms from 'ms';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
-import {handleSchemaErrors} from '../utils'
+import {handleSchemaErrors} from '../utils';
 const DEBOUNCE_TIME = ms('5m');
 
 export default {

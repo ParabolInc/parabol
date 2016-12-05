@@ -26,9 +26,9 @@ const NewTeamForm = (props) => {
     const {data: {teamName, inviteesRaw}} = schema(submittedData);
     const invitees = emailAddresses.parseAddressList(inviteesRaw);
     const serverInvitees = invitees ? invitees.map(email => ({
-        email: email.address,
-        fullName: email.fullName
-      })) : [];
+      email: email.address,
+      fullName: email.fullName
+    })) : [];
     const id = shortid.generate();
     const options = {
       variables: {

@@ -133,6 +133,7 @@ Editable.propTypes = {
   }),
   initialValue: PropTypes.string,
   isEditing: PropTypes.bool,
+  maxLength: PropTypes.number,
   meta: PropTypes.object,
   placeholder: PropTypes.string,
   styles: PropTypes.object,

@@ -7,7 +7,7 @@ import {
 } from 'graphql';
 import {requireSUOrTeamMember} from '../authorization';
 import makeActionSchema from 'universal/validation/makeActionSchema';
-import {handleSchemaErrors} from '../utils'
+import {handleSchemaErrors} from '../utils';
 export default {
   updateAction: {
     type: GraphQLBoolean,
