@@ -256,32 +256,30 @@ export default {
             .filter({isActive: true, isComplete: true})
             .map((doc) => doc('id'))
             .coerceTo('array')
-            .do((agendaItemIds) => {
+            .do((agendaItemIds) => ({
               // delete any null actions
-              return r.table('Action')
+              deletedActions: r.table('Action')
                 .getAll(r.args(agendaItemIds), {index: 'agendaId'})
                 .filter((row) => row('content').eq(null))
-                .delete();
-            })
-            .do((agendaItemIds) => {
-              // delete any null projects
-              return r.table('Project')
+                .delete(),
+              deletedProjects: r.table('Project')
                 .getAll(r.args(agendaItemIds), {index: 'agendaId'})
                 .filter((row) => row('content').eq(null))
-                .delete();
-            })
-            .do((agendaItemIds) => {
+                .delete(),
+              agendaItemIds
+            }))
+            .do((res) => {
               return {
                 actions: r.table('Action')
-                  .getAll(r.args(agendaItemIds), {index: 'agendaId'})
+                  .getAll(r.args(res('agendaItemIds')), {index: 'agendaId'})
                   // we still need to filter because this may occur before we delete them above (not guaranteed in sync)
                   .filter((row) => row('content').ne(null))
                   .map(row => row.merge({id: meetingId.add('::').add(row('id'))}))
                   .pluck('id', 'content', 'teamMemberId')
                   .coerceTo('array'),
-                agendaItemsCompleted: agendaItemIds.count(),
+                agendaItemsCompleted: res('agendaItemIds').count(),
                 projects: r.table('Project')
-                  .getAll(r.args(agendaItemIds), {index: 'agendaId'})
+                  .getAll(r.args(res('agendaItemIds')), {index: 'agendaId'})
                   .filter((row) => row('content').ne(null))
                   .map(row => row.merge({id: meetingId.add('::').add(row('id'))}))
                   .pluck('id', 'content', 'status', 'teamMemberId')
