@@ -6,6 +6,7 @@ export const APP_REDUX_KEY = `${APP_NAME}:redux`;
 // eslint-disable-next-line global-require
 export const APP_VERSION = require('../../../package.json').version;
 export const APP_VERSION_KEY = `${APP_NAME}:version`;
+export const APP_WEBPACK_PUBLIC_PATH_DEFAULT = '/static/';
 
 /* Phases */
 export const LOBBY = 'lobby';
