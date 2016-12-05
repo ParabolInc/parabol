@@ -32,7 +32,7 @@ import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 import makeStep2Schema from 'universal/validation/makeStep2Schema';
-import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
+import makeAddTeamServerSchema from 'universal/validation/makeAddTeamServerSchema';
 
 export default {
   moveMeeting: {
@@ -408,12 +408,11 @@ export default {
       }
     },
     async resolve(source, args, {authToken, socket}) {
-
       // AUTH
       requireWebsocket(socket);
 
       // VALIDATION
-      const schema = makeAddTeamSchema('name');
+      const schema = makeAddTeamServerSchema({inviteEmails: [], teamMemberEmails: []});
       const {data: {invitees, newTeam}, errors} = schema(args);
       const teamId = newTeam.id;
       handleSchemaErrors(errors);

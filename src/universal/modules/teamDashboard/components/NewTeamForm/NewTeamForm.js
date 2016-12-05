@@ -24,12 +24,11 @@ const NewTeamForm = (props) => {
   const onSubmit = (submittedData) => {
     const schema = makeAddTeamSchema();
     const {data: {teamName, inviteesRaw}} = schema(submittedData);
-    const invitees = emailAddresses
-      .parseAddressList(inviteesRaw)
-      .map(email => ({
+    const invitees = emailAddresses.parseAddressList(inviteesRaw);
+    const serverInvitees = invitees ? invitees.map(email => ({
         email: email.address,
         fullName: email.fullName
-      }));
+      })) : [];
     const id = shortid.generate();
     const options = {
       variables: {
@@ -37,7 +36,7 @@ const NewTeamForm = (props) => {
           id,
           name: teamName
         },
-        invitees
+        invitees: serverInvitees
       }
     };
     cashay.mutate('addTeam', options);

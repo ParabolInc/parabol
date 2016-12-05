@@ -4,8 +4,29 @@ class Legitity {
     this.error = undefined;
   }
 
+  boolean(msg) {
+    if (!this.error && this.value !== undefined && this.value !== true && this.value !== false) {
+      this.error = msg || 'boolean'
+    }
+    return this;
+  }
+
+  float(msg) {
+    if (!this.error && this.value && !Number.isFinite(this.value)) {
+      this.error = msg || 'float'
+    }
+    return this;
+  }
+
+  int(msg) {
+    if (!this.error && this.value !== parseInt(this.value)) {
+      this.error = msg || 'int'
+    }
+    return this;
+  }
+
   matches(regex, msg) {
-    if (!this.error && !regex.test(this.value)) {
+    if (!this.error && this.value && !regex.test(this.value)) {
       this.error = msg || 'regex';
     }
     return this;
@@ -50,6 +71,7 @@ const legitify = (expected) => (actual) => {
     const schema = legitify(expected[0]);
     const data = [];
     const errors = [];
+    let hasErrors = false;
     for (let i = 0; i < actual.length; i++) {
       const actualValue = actual[i];
       const res = schema(actualValue);
@@ -57,9 +79,10 @@ const legitify = (expected) => (actual) => {
       // maybe we have to send in empties too
       if (Object.keys(res.errors).length > 0) {
         errors[i] = res.errors;
+        hasErrors = true;
       }
     }
-    return {errors, data};
+    return {errors: hasErrors && errors, data};
   }
   const data = {};
   const errors = {};
@@ -82,7 +105,9 @@ const legitify = (expected) => (actual) => {
         const schema = legitify(maybeValidator);
         const res = schema(actualValue);
         data[key] = res.data;
-        errors[key] = res.errors;
+        if (Object.keys(res.errors).length > 0) {
+          errors[key] = res.errors;
+        }
       }
     }
   }

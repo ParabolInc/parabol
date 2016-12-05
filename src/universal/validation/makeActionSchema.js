@@ -4,10 +4,12 @@ import legitify from './legitify';
 export default function makeActionSchema() {
   return legitify({
     id: compositeId,
-    teamMemberId: compositeId,
+    agendaId: compositeId,
     content: (value) => value
       .trim()
       .max(200, 'Whoa! That looks like 2 actions'),
-    agendaId: compositeId,
+    isComplete: (value) => value.boolean(),
+    sortOrder: (value) => value.float(),
+    teamMemberId: compositeId
   });
 }
