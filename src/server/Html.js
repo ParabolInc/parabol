@@ -5,7 +5,7 @@ import {RouterContext} from 'react-router';
 import {renderToString} from 'react-dom/server';
 import makeSegmentSnippet from '@segment/snippet';
 import {auth0} from 'universal/utils/clientOptions';
-import getWebpackPublicPath from 'universal/utils/getWebpackPublicPath';
+import getWebpackPublicPath from 'server/utils/getWebpackPublicPath';
 
 const webpackPublicPath = getWebpackPublicPath();
 const segKey = process.env.SEGMENT_WRITE_KEY;
