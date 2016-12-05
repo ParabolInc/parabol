@@ -10,7 +10,8 @@ const stateTemplate = {
   completed: 0,
   page: 1,
   teamId: null,
-  teamMemberId: null
+  teamMemberId: null,
+  existingInvites: []
 };
 
 test('initial state', t => {
