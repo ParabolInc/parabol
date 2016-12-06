@@ -9,7 +9,8 @@ import {
 import {requireSUOrTeamMember} from '../authorization';
 import shortid from 'shortid';
 import ms from 'ms';
-
+import makeProjectSchema from 'universal/validation/makeProjectSchema';
+import {handleSchemaErrors} from '../utils';
 const DEBOUNCE_TIME = ms('5m');
 
 export default {
@@ -28,22 +29,27 @@ export default {
     },
     async resolve(source, {updatedProject, rebalance}, {authToken}) {
       const r = getRethink();
-      const {id: projectId, teamSort, userSort, agendaId, isArchived, ...historicalProject} = updatedProject;
+
+      // AUTH
       // projectId is of format 'teamId::taskId'
-      const [teamId] = projectId.split('::');
+      const [teamId] = updatedProject.id.split('::');
       requireSUOrTeamMember(authToken, teamId);
+
+      // VALIDATION
+      const schema = makeProjectSchema();
+      const {errors, data: validUpdatedProject} = schema(updatedProject);
+      handleSchemaErrors(errors);
+
+      // RESOLUTION
+      const {id: projectId, teamSort, userSort, agendaId, isArchived, ...historicalProject} = validUpdatedProject;
+
       const now = new Date();
-      const mergeDoc = {
-        ...historicalProject,
-        updatedAt: now,
-        projectId
-      };
+
       const newProject = {
         ...historicalProject,
         agendaId,
         isArchived,
         teamSort,
-        updatedAt: now,
         userSort
       };
       const {teamMemberId} = historicalProject;
@@ -51,10 +57,14 @@ export default {
         const [userId] = teamMemberId.split('::');
         newProject.userId = userId;
       }
-      const projectUpdatePromise = r.table('Project').get(projectId).update(newProject);
-      const dbWork = [projectUpdatePromise];
+      const dbWork = [];
       // if this is just a sort update, don't bother writing to the history
       if (Object.keys(updatedProject).length === 2 && (teamSort !== undefined || userSort !== undefined)) {
+        const mergeDoc = {
+          ...historicalProject,
+          updatedAt: now,
+          projectId
+        };
         const projectHistoryPromise = r.table('ProjectHistory')
           .between([projectId, r.minval], [projectId, r.maxval], {index: 'projectIdUpdatedAt'})
           .orderBy({index: 'projectIdUpdatedAt'})
@@ -68,6 +78,9 @@ export default {
             );
           });
         dbWork.push(projectHistoryPromise);
+      } else {
+        // if we just change the sort, don't change the updatedAt
+        newProject.updatedAt = now;
       }
       if (rebalance) {
         const rebalanceField = teamSort !== undefined ? 'teamSort' : 'userSort';
@@ -84,6 +97,7 @@ export default {
           });
         dbWork.push(rebalanceUpdatePromise);
       }
+      dbWork.push(r.table('Project').get(projectId).update(newProject));
       await Promise.all(dbWork);
       return true;
     }
@@ -99,14 +113,22 @@ export default {
     },
     async resolve(source, {newProject}, {authToken}) {
       const r = getRethink();
-      const {id} = newProject;
+
+      // AUTH
       // format of id is teamId::taskIdPart
-      const [teamId] = id.split('::');
+      const [teamId] = newProject.id.split('::');
       requireSUOrTeamMember(authToken, teamId);
+
+      // VALIDATION
+      const schema = makeProjectSchema();
+      const {errors, data: validNewProject} = schema(newProject);
+      handleSchemaErrors(errors);
+
+      // RESOLUTION
       const now = new Date();
-      const [userId] = newProject.teamMemberId.split('::');
+      const [userId] = validNewProject.teamMemberId.split('::');
       const project = {
-        ...newProject,
+        ...validNewProject,
         isArchived: false,
         userId,
         createdAt: now,
@@ -138,9 +160,13 @@ export default {
     },
     async resolve(source, {projectId}, {authToken}) {
       const r = getRethink();
+
+      // AUTH
       // format of id is teamId::taskIdPart
       const [teamId] = projectId.split('::');
       requireSUOrTeamMember(authToken, teamId);
+
+      // RESOLUTION
       await r.table('Project').get(projectId).delete()
         .do(() => {
           return r.table('ProjectHistory')
@@ -160,9 +186,13 @@ export default {
     },
     async resolve(source, {projectId}, {authToken}) {
       const r = getRethink();
+
+      // AUTH
       // format of id is teamId::taskIdPart
       const [teamId] = projectId.split('::');
       requireSUOrTeamMember(authToken, teamId);
+
+      // RESOLUTION
       const project = await r.table('Project').get(projectId);
       const now = new Date();
       const [userId] = project.teamMemberId.split('::');

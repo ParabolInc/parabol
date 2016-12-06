@@ -10,7 +10,8 @@ import appTheme from 'universal/styles/theme/appTheme';
 
 const FieldArrayRow = props => {
   const {
-    labelGetter,
+    existingInvites,
+    invitees,
     labelHeader,
     fields,
     hoverRow,
@@ -37,7 +38,7 @@ const FieldArrayRow = props => {
       {fields.map((item, index) =>
         <div
           className={css(styles.fieldGroupRow)}
-          key={index}
+          key={`inviteeRow${index}`}
           onMouseEnter={() => onHoverRow(index)}
           onMouseLeave={() => onLeaveRow()}
         >
@@ -50,8 +51,8 @@ const FieldArrayRow = props => {
                 title="Remove"
               />}
             </div>
-            <div className={css(styles.fieldLabel)}>
-              {labelGetter(index)}
+            <div className={css(styles.fieldLabel, existingInvites.includes(index) && styles.highlighted)}>
+              {invitees[index].label}
             </div>
           </div>
           <div className={columnRightStyles}>
@@ -70,7 +71,8 @@ const FieldArrayRow = props => {
 };
 
 FieldArrayRow.propTypes = {
-  labelGetter: PropTypes.func.isRequired,
+  invitees: PropTypes.array,
+  existingInvites: PropTypes.array,
   labelHeader: PropTypes.string.isRequired,
   fields: PropTypes.object.isRequired,
   hoverRow: PropTypes.number,
@@ -79,6 +81,18 @@ FieldArrayRow.propTypes = {
   onHoverRow: PropTypes.func.isRequired,
   onLeaveRow: PropTypes.func.isRequired,
   styles: PropTypes.object
+};
+
+const highlightEmail = {
+  '20%': {
+    color: appTheme.palette.warm,
+    fontSize: appTheme.typography.s4,
+    fontWeight: 800
+  },
+  '100%': {
+    color: appTheme.palette.dark,
+    fontWeight: 'normal'
+  }
 };
 
 const styleThunk = () => ({
@@ -125,6 +139,11 @@ const styleThunk = () => ({
     position: 'absolute',
     right: '100%',
     top: '.125rem'
+  },
+
+  highlighted: {
+    animationDuration: '1s',
+    animationName: highlightEmail,
   },
 });
 

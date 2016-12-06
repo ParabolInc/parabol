@@ -1,8 +1,23 @@
 import {GraphQLNonNull, GraphQLInputObjectType} from 'graphql';
-
+import getRethink from 'server/database/rethinkDriver';
 // Stringify an object to handle multiple errors
 // Wrap it in a new Error type to avoid sending it twice via the originalError field
 export const errorObj = obj => new Error(JSON.stringify(obj));
+
+export const handleSchemaErrors = (errors) => {
+  if (Object.keys(errors).length > 0) {
+    throw errorObj(errors);
+  }
+};
+
+// VERY important, otherwise eg a user could "create" a new team with an existing teamId & force join that team
+export const ensureUniqueId = async (table, id) => {
+  const r = getRethink();
+  const res = await r.table(table).get(id);
+  if (res) {
+    throw errorObj({type: 'unique id collision'});
+  }
+};
 
 // if the add & update schemas have different required fields, use this
 export const nonnullifyInputThunk = (name, inputThunk, requiredFieldNames) => {

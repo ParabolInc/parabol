@@ -4,7 +4,7 @@ import FieldArrayRow from '../../components/FieldArrayRow/FieldArrayRow';
 
 export default class LabeledFieldArray extends Component {
   static propTypes = {
-    labelGetter: PropTypes.func.isRequired,
+    existingInvites: PropTypes.array.isRequired,
     labelHeader: PropTypes.string.isRequired,
     labelSource: PropTypes.string.isRequired,
     nestedFieldHeader: PropTypes.string.isRequired,
@@ -22,13 +22,14 @@ export default class LabeledFieldArray extends Component {
   onLeaveRow = () => { this.setState({ hoverRow: null }); };
 
   render() {
-    const {labelSource} = this.props;
+    const {existingInvites, labelSource} = this.props;
     const {hoverRow} = this.state;
     return (
       <FieldArray
         {...this.props}
-        name={labelSource}
         component={FieldArrayRow}
+        existingInvites={existingInvites}
+        name={labelSource}
         hoverRow={hoverRow}
         onHoverRow={this.onHoverRow}
         onLeaveRow={this.onLeaveRow}
