@@ -16,6 +16,7 @@ import {Menu, MenuItem} from 'universal/modules/menu';
 import {DropTarget as dropTarget} from 'react-dnd';
 import handleColumnHover from 'universal/dnd/handleColumnHover';
 import withDragState from 'universal/dnd/withDragState';
+import AddProjectButton from 'universal/components/AddProjectButton/AddProjectButton';
 
 const columnTarget = {
   hover: handleColumnHover
@@ -42,14 +43,6 @@ const ProjectColumn = (props) => {
   const {area, connectDropTarget, dragState, status, projects, myTeamMemberId, styles, teams, userId} = props;
 
   const label = themeLabels.projectStatus[status].slug;
-  const makeAddProjectButton = (clickHandler) => {
-    return (<FontAwesome
-      className={css(styles.addIcon, styles[status])}
-      name="plus-square-o"
-      onClick={clickHandler}
-      title={`Add a Project set to ${label}`}
-    />);
-  };
   const makeTeamMenuItems = (userSort) => {
     return teams.map(team => ({
       label: team.name,
@@ -71,23 +64,24 @@ const ProjectColumn = (props) => {
     if (area === TEAM_DASH) {
       const teamSort = getNextSortOrder(projects, 'teamSort');
       const handleAddProject = handleAddProjectFactory(status, myTeamMemberId, teamSort, 0);
-      return makeAddProjectButton(handleAddProject);
+      return <AddProjectButton toggleClickHandler={handleAddProject} toggleLabel={label}/>;
     } else if (area === USER_DASH) {
       const userSort = getNextSortOrder(projects, 'userSort');
       if (teams.length === 1) {
         const {id: teamId} = teams[0];
         const generatedMyTeamMemberId = `${userId}::${teamId}`;
         const handleAddProject = handleAddProjectFactory(status, generatedMyTeamMemberId, 0, userSort);
-        return makeAddProjectButton(handleAddProject);
+        return <AddProjectButton toggleClickHandler={handleAddProject} toggleLabel={label}/>;
       }
-      const toggle = makeAddProjectButton();
       const menuItems = makeTeamMenuItems(userSort);
       return (
         <Menu
           menuKey={`UserDashAdd${status}Project`}
           menuOrientation="right"
           menuWidth="10rem"
-          toggle={toggle}
+          toggle={AddProjectButton}
+          toggleLabel={label}
+          toggleClassName={css(styles.addIcon, styles[status])}
           toggleHeight="1.5rem" label="Select Team:"
         >
           {menuItems.map((item, idx) =>

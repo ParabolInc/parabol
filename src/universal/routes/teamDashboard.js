@@ -6,11 +6,13 @@ const setImports = () =>
   new Map([
     ['component', System.import('universal/containers/Dashboard/DashboardContainer')],
     ['socket', System.import('redux-socket-cluster')],
+    ['teamDashboard', System.import('universal/modules/teamDashboard/ducks/teamDashDuck')]
   ]);
 
 const getImports = importMap => ({
   component: importMap.get('component'),
   socket: importMap.get('socket').socketClusterReducer,
+  teamDashboard: importMap.get('teamDashboard').default
 });
 
 export default store => ({
@@ -23,11 +25,6 @@ export default store => ({
     store.replaceReducer(newReducer);
     cb(null, component);
   },
-  // getIndexRoute: async(location, cb) => {
-  //   const component =
-  //     await System.import('universal/modules/teamDashboard/containers/Team/TeamContainer');
-  //   cb(null, {component});
-  // },
   getChildRoutes: (childLocation, cbChild) => {
     cbChild(null, [
       require('./teamDashMain')(store)

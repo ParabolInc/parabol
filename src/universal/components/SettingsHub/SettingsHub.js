@@ -17,7 +17,7 @@ const SettingsHub = (props) => {
       <Link
         className={css(styles.link)}
         title="Sign Out"
-        to="/logout"
+        to="/signout"
       >
         <div className={css(styles.linkIcon)}>
           <FontAwesome

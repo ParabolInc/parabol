@@ -14,7 +14,7 @@ import {
 } from '../authorization';
 import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
-import {KICK_OUT, PRESENCE} from 'universal/subscriptions/constants';
+import {JOIN_TEAM, KICK_OUT, PRESENCE} from 'universal/subscriptions/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 
 export default {
@@ -33,10 +33,14 @@ export default {
     },
     async resolve(source, {teamMemberId, isCheckedIn}, {authToken, socket}) {
       const r = getRethink();
+
+      // AUTH
       // teamMemberId is of format 'userId::teamId'
       const [, teamId] = teamMemberId.split('::');
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
+
+      // RESOLUTION
       await r.table('TeamMember').get(teamMemberId).update({isCheckedIn});
     }
   },
@@ -52,9 +56,13 @@ export default {
         description: 'The invitation token (first 6 bytes are the id, next 8 are the pre-hash)'
       }
     },
-    async resolve(source, {inviteToken}, {authToken}) {
+    async resolve(source, {inviteToken}, {authToken, exchange}) {
       const r = getRethink();
+
+      // AUTH
       const userId = requireAuth(authToken);
+
+      // VALIDATION
       const now = new Date();
       const {id: inviteId, key: tokenKey} = parseInviteToken(inviteToken);
 
@@ -98,8 +106,9 @@ export default {
         });
       }
 
+      // RESOLUTION
       const dbWork = r.table('User')
-        // add the team to the user doc
+      // add the team to the user doc
         .get(userId)
         .update({
           tms: r.row('tms').append(teamId).default([teamId])
@@ -121,6 +130,7 @@ export default {
         .do((teamCountAndUser) =>
           r.table('TeamMember').insert({
             checkInOrder: teamCountAndUser('usersOnTeam').add(1),
+            email: teamCountAndUser('user')('email').default(''),
             id: teamCountAndUser('user')('id').add('::', teamId),
             teamId,
             userId,
@@ -136,18 +146,23 @@ export default {
         )
         // find all possible emails linked to this person and mark them as accepted
         .do((userEmail) =>
-          r.table('Invitation').getAll(userEmail, email, {index: 'email'}).update({
-            acceptedAt: now,
-            tokenExpiration: new Date(0),
-            updatedAt: now
-          })
+          r.table('Invitation')
+            .getAll(userEmail, email, {index: 'email'})
+            .update({
+              acceptedAt: now,
+              tokenExpiration: new Date(0),
+              updatedAt: now
+            })
+            .do(() => userEmail)
         );
       const tms = oldtms.concat(teamId);
       const asyncPromises = [
         dbWork,
         auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
       ];
-      await Promise.all(asyncPromises);
+      const [userEmail] = await Promise.all(asyncPromises);
+      const payload = {type: JOIN_TEAM, name: userEmail};
+      exchange.publish(`${PRESENCE}/${teamId}`, payload);
       return tmsSignToken(authToken, tms);
     }
   },
@@ -162,10 +177,13 @@ export default {
     },
     async resolve(source, {teamMemberId}, {authToken, exchange, socket}) {
       const r = getRethink();
+
+      // AUTH
       const [userId, teamId] = teamMemberId.split('::');
       await requireSUOrSelfOrLead(authToken, userId, teamId);
       requireWebsocket(socket);
 
+      // RESOLUTION
       const res = await r.table('TeamMember')
       // set inactive
         .get(teamMemberId)
@@ -208,7 +226,6 @@ export default {
         await auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: newtms});
       }
 
-
       // update the server socket, if they're logged in
       const channel = `${PRESENCE}/${teamId}`;
       exchange.publish(channel, {type: KICK_OUT, userId});
@@ -226,14 +243,20 @@ export default {
     },
     async resolve(source, {teamMemberId}, {authToken, socket}) {
       const r = getRethink();
+
+      // AUTH
       requireWebsocket(socket);
       const [, teamId] = teamMemberId.split('::');
       const myTeamMemberId = `${authToken.sub}::${teamId}`;
       await requireSUOrLead(authToken, myTeamMemberId);
+
+      // VALIDATION
       const promoteeOnTeam = await r.table('TeamMember').get(teamMemberId);
       if (!promoteeOnTeam) {
         throw errorObj({_error: `Member ${teamMemberId} is not on the team`});
       }
+
+      // RESOLUTION
       await r.table('TeamMember')
       // remove leadership from the caller
         .get(myTeamMemberId)

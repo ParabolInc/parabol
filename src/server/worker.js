@@ -56,11 +56,12 @@ export function run(worker) {
   }
 
   // HTTP GraphQL endpoint
+  const graphQLHandler = httpGraphQLHandler(scServer.exchange);
   app.post('/graphql', jwt({
     secret: new Buffer(secretKey, 'base64'),
     audience: auth0.clientId,
     credentialsRequired: false
-  }), httpGraphQLHandler);
+  }), graphQLHandler);
 
   // server-side rendering for emails
   app.get('/email', emailSSR);

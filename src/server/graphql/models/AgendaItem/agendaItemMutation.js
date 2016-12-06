@@ -6,6 +6,8 @@ import {
   GraphQLID
 } from 'graphql';
 import {requireSUOrTeamMember} from '../authorization';
+import makeAgendaItemSchema from 'universal/validation/makeAgendaItemSchema';
+import {handleSchemaErrors} from '../utils';
 
 export default {
   createAgendaItem: {
@@ -19,11 +21,20 @@ export default {
     },
     async resolve(source, {newAgendaItem}, {authToken}) {
       const r = getRethink();
+
+      // AUTH
       const [teamId] = newAgendaItem.id.split('::');
       requireSUOrTeamMember(authToken, teamId);
+
+      // VALIDATION
+      const schema = makeAgendaItemSchema();
+      const {errors, data: validNewAgendaItem} = schema(newAgendaItem);
+      handleSchemaErrors(errors);
+
+      // RESOLUTION
       const now = new Date();
       const agendaItem = {
-        ...newAgendaItem,
+        ...validNewAgendaItem,
         createdAt: now,
         updatedAt: now,
         isActive: true,
@@ -45,15 +56,14 @@ export default {
     },
     async resolve(source, {id}, {authToken}) {
       const r = getRethink();
+
+      // AUTH
       // id is of format 'teamId::restOfAgendaItemId'
       const [teamId] = id.split('::');
       requireSUOrTeamMember(authToken, teamId);
-      try {
-        await r.table('AgendaItem').get(id).delete();
-      } catch (e) {
-        console.warning(`removeAgendaItem: exception removing item (${e})`);
-        return false;
-      }
+
+      // RESOLUTION
+      await r.table('AgendaItem').get(id).delete();
       return true;
     }
   },
@@ -68,15 +78,23 @@ export default {
     },
     async resolve(source, {updatedAgendaItem}, {authToken}) {
       const r = getRethink();
-      const {id, ...doc} = updatedAgendaItem;
-      const [teamId] = id.split('::');
+
+      // AUTH
+      const [teamId] = updatedAgendaItem.id.split('::');
       requireSUOrTeamMember(authToken, teamId);
+
+      // VALIDATION
+      const schema = makeAgendaItemSchema();
+      const {errors, data: {id, ...doc}} = schema(updatedAgendaItem);
+      handleSchemaErrors(errors);
+
+      // RESOLUTION
       const now = new Date();
       const agendaItem = {
         ...doc,
         updatedAt: now,
       };
-      await r.table('AgendaItem').get(updatedAgendaItem.id).update(agendaItem);
+      await r.table('AgendaItem').get(id).update(agendaItem);
       return true;
     }
   },

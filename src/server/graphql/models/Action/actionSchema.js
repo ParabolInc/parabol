@@ -14,16 +14,11 @@ export const Action = new GraphQLObjectType({
   description: 'A short-term project for a team member',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique action id, teamId::shortid'},
+    agendaId: {
+      type: GraphQLID,
+      description: 'the agenda item that created this project, if any (indexed)'
+    },
     content: {type: GraphQLString, description: 'The body of the action. If null, it is a new action.'},
-    userId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the user (first part of teamMemberId). Stored so action items are a single subscription'
-    },
-    teamMemberId: {type: GraphQLID, description: 'The team member ID of the person creating the action (optional)'},
-    isComplete: {
-      type: GraphQLBoolean,
-      description: 'Marks the item as checked off'
-    },
     createdAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the action was created'
@@ -32,37 +27,42 @@ export const Action = new GraphQLObjectType({
       type: GraphQLID,
       description: 'The userId that created the action'
     },
-    updatedAt: {
-      type: GraphQLISO8601Type,
-      description: 'The timestamp the action was updated'
+    isComplete: {
+      type: GraphQLBoolean,
+      description: 'Marks the item as checked off'
     },
     sortOrder: {
       type: GraphQLFloat,
       description: 'the per-status sort order for the user dashboard'
     },
-    agendaId: {
-      type: GraphQLID,
-      description: 'the agenda item that created this project, if any'
+    teamMemberId: {type: GraphQLID, description: 'The team member ID of the person creating the action (optional)'},
+    updatedAt: {
+      type: GraphQLISO8601Type,
+      description: 'The timestamp the action was updated'
+    },
+    userId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The id of the user (first part of teamMemberId). Stored so action items are a single subscription'
     }
   })
 });
 
 const actionInputThunk = () => ({
   id: {type: GraphQLID, description: 'The unique action ID'},
-  teamMemberId: {type: GraphQLID, description: 'The team member ID of the person creating the action (optional)'},
-  content: {type: GraphQLString, description: 'The body of the action. If null, it is a new action.'},
-  sortOrder: {
-    type: GraphQLFloat,
-    description: 'the per-status sort order for the user dashboard'
-  },
   agendaId: {
     type: GraphQLID,
     description: 'the agenda item that created this project, if any'
   },
+  content: {type: GraphQLString, description: 'The body of the action. If null, it is a new action.'},
   isComplete: {
     type: GraphQLBoolean,
     description: 'Marks the item as checked off'
-  }
+  },
+  sortOrder: {
+    type: GraphQLFloat,
+    description: 'the per-status sort order for the user dashboard'
+  },
+  teamMemberId: {type: GraphQLID, description: 'The team member ID of the person creating the action (optional)'}
 });
 
 export const CreateActionInput = nonnullifyInputThunk('CreateActionInput', actionInputThunk, ['id', 'teamMemberId']);

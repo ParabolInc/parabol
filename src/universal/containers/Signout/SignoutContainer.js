@@ -7,14 +7,14 @@ import {withRouter} from 'react-router';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
 import {cashay} from 'cashay';
 
-const logoutSuccess = {
+const signoutSuccess = {
   title: 'Tootles!',
   message: 'You\'ve been logged out successfully.'
 };
 
 @connect()
 @withRouter
-export default class LogoutContainer extends Component {
+export default class SignoutContainer extends Component {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
     router: PropTypes.object.isRequired
@@ -28,10 +28,10 @@ export default class LogoutContainer extends Component {
     /* reset the app state, but preserve any pending notifications: */
     router.replace('/');
     dispatch(resetAppState());
-    dispatch(showSuccess(logoutSuccess));
+    dispatch(showSuccess(signoutSuccess));
     cashay.clear();
     if (typeof window !== 'undefined' && typeof window.analytics !== 'undefined') {
-      // inform segment of the logout, wipe state:
+      // inform segment of the signout, wipe state:
       window.analytics.reset();
     }
   }

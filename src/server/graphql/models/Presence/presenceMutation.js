@@ -4,7 +4,7 @@ import {
   GraphQLBoolean,
   GraphQLID
 } from 'graphql';
-import {EDIT, PRESENT, SOUNDOFF} from 'universal/subscriptions/constants';
+import {EDIT, PRESENCE, PRESENT, SOUNDOFF} from 'universal/subscriptions/constants';
 
 export default {
   edit: {
@@ -21,10 +21,13 @@ export default {
       }
     },
     async resolve(source, {teamId, editing}, {authToken, exchange, socket}) {
+      // AUTH
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocketExchange(exchange);
       requireWebsocket(socket);
-      const channel = `presence/${teamId}`;
+
+      // RESOLUTION
+      const channel = `${PRESENCE}/${teamId}`;
       // tell targetId that user is in the team
       const payload = {type: EDIT, editing, socketId: socket.id};
       exchange.publish(channel, payload);
@@ -48,10 +51,13 @@ export default {
       }
     },
     async resolve(source, {teamId, targetId, editing}, {authToken, exchange, socket}) {
+      // AUTH
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocketExchange(exchange);
       requireWebsocket(socket);
-      const channel = `presence/${teamId}`;
+
+      // RESOLUTION
+      const channel = `${PRESENCE}/${teamId}`;
       // tell targetId that user is in the team
       const payload = {type: PRESENT, userId: authToken.sub, socketId: socket.id};
       if (targetId) {
@@ -73,10 +79,13 @@ export default {
       }
     },
     async resolve(source, {teamId}, {authToken, exchange, socket}) {
+      // AUTH
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocketExchange(exchange);
       requireWebsocket(socket);
-      const channel = `presence/${teamId}`;
+
+      // RESOLUTION
+      const channel = `${PRESENCE}/${teamId}`;
       const soundoff = {type: SOUNDOFF, targetId: socket.id};
       const present = {type: PRESENT, userId: authToken.sub, socketId: socket.id};
       exchange.publish(channel, soundoff);

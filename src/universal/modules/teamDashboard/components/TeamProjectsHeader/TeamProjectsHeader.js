@@ -11,14 +11,25 @@ import {
   DashSectionHeading
 } from 'universal/components/Dashboard';
 import FontAwesome from 'react-fontawesome';
+import ui from 'universal/styles/ui';
+import DashFilterToggle from 'universal/components/DashFilterToggle/DashFilterToggle';
+import {filterTeamMember} from 'universal/modules/teamDashboard/ducks/teamDashDuck';
+import {Menu, MenuItem} from 'universal/modules/menu';
 
 const iconStyle = {
   ...ib,
   margin: '0 .5rem 0 0'
 };
 
+const inlineBlock = {
+  display: 'inline-block',
+  height: ui.dashSectionHeaderLineHeight,
+  lineHeight: ui.dashSectionHeaderLineHeight,
+  verticalAlign: 'middle'
+};
+
 const TeamProjectsHeader = (props) => {
-  const {styles, teamId} = props;
+  const {dispatch, styles, teamId, teamMemberFilterId, teamMemberFilterName, teamMembers} = props;
   return (
     <DashSectionHeader>
       <DashSectionHeading icon="calendar" label="Team Projects" />
@@ -32,13 +43,33 @@ const TeamProjectsHeader = (props) => {
         </DashSectionControl>
         {/* TODO: needs minimal, inline dropdown */}
         <DashSectionControl>
-          <b style={ib}>Show by Team Member</b>:
+          <b style={inlineBlock}>Show Actions & Projects for</b><span style={inlineBlock}>:</span>
           {' '}
-          <a className={css(styles.link)} href="#" title="Filter by All Team Members">
-            All Team Members
-          </a>
-          {' '}
-          <FontAwesome name="chevron-circle-down" style={ib} />
+          <Menu
+            label="Filter by:"
+            menuKey="TeamDashFilterUser"
+            menuOrientation="right"
+            toggle={DashFilterToggle}
+            toggleLabel={teamMemberFilterName}
+            toggleHeight={ui.dashSectionHeaderLineHeight}
+            verticalAlign="top"
+            zIndex="500"
+          >
+            <MenuItem
+              isActive={teamMemberFilterId === null}
+              key={'teamMemberFilterNULL'}
+              label={'All members'}
+              onClick={() => dispatch(filterTeamMember(null))}
+            />
+            {teamMembers.map((teamMember) =>
+              <MenuItem
+                isActive={teamMember.id === teamMemberFilterId}
+                key={`teamMemberFilter${teamMember.id}`}
+                label={teamMember.preferredName}
+                onClick={() => dispatch(filterTeamMember(teamMember.id, teamMember.preferredName))}
+              />
+            )}
+          </Menu>
         </DashSectionControl>
       </DashSectionControls>
     </DashSectionHeader>
@@ -47,11 +78,27 @@ const TeamProjectsHeader = (props) => {
 
 TeamProjectsHeader.propTypes = {
   children: PropTypes.any,
+  dispatch: PropTypes.func.isRequired,
   styles: PropTypes.object,
   teamId: PropTypes.string,
+  teamMemberFilterId: PropTypes.string,
+  teamMemberFilterName: PropTypes.string,
+  teamMembers: PropTypes.array.isRequired
 };
 
 const styleThunk = () => ({
+  button: {
+    ...inlineBlock,
+    color: appTheme.palette.mid,
+
+    ':hover': {
+      color: appTheme.palette.dark
+    },
+    ':focus': {
+      color: appTheme.palette.dark
+    }
+  },
+
   link: {
     ...ib,
     color: appTheme.palette.mid,

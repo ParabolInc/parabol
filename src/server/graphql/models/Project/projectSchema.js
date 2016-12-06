@@ -77,8 +77,12 @@ export const Project = new GraphQLObjectType({
 
 const projectInputThunk = () => ({
   id: {type: GraphQLID, description: 'The unique project ID'},
-  isArchived: {type: GraphQLBoolean, description: 'true if the project is archived'},
+  agendaId: {
+    type: GraphQLID,
+    description: 'the agenda item that created this project, if any'
+  },
   content: {type: GraphQLString, description: 'The body of the project. If null, it is a new project.'},
+  isArchived: {type: GraphQLBoolean, description: 'true if the project is archived'},
   status: {type: GraphQLID, description: 'The status of the project created'},
   teamMemberId: {type: GraphQLID, description: 'The team member ID of the person creating the project'},
   /*
@@ -92,10 +96,6 @@ const projectInputThunk = () => ({
   userSort: {
     type: GraphQLFloat,
     description: 'the per-status sort order for the user dashboard'
-  },
-  agendaId: {
-    type: GraphQLID,
-    description: 'the agenda item that created this project, if any'
   }
 });
 

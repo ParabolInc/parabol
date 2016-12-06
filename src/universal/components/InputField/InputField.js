@@ -53,9 +53,12 @@ const InputField = (props) => {
     }
     return labelForName;
   };
-
+  let ref;
   const submitOnEnter = (e) => {
     if (e.key === 'Enter') {
+      // let's manually blur here so if a parent calls untouch it occur after the blur (which calls touch by default)
+      ref.blur();
+      input.onBlur();
       onButtonClick(e);
     }
   };
@@ -86,6 +89,7 @@ const InputField = (props) => {
             disabled={disabled || readyOnly}
             placeholder={placeholder}
             onKeyDown={onButtonClick && submitOnEnter}
+            ref={(c) => { ref = c; }}
           />
         }
         {hasButton &&
