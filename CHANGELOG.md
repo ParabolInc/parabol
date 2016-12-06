@@ -4,6 +4,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.13.3 - 05-Dec-2016
+### Added
+- Validations system (see: `src/universal/validations/legitify.js`)
+  - Added client and server validations for all mutations
+- Allow team leaders to skip step 3 of the welcome wizard (see #354)
+- S3 deploys into versioned directories within bucket (see #493)
+
+### Fixed
+- #547 welcome wizard step 3 cleanup
+- #549 welcome wizard step 3: removing email calls submit
+
 ## v0.13.2 - 27-Nov-2016
 ### Added
 - 'Player joined' message when teammate accepts invitation
