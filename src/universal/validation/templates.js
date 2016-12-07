@@ -22,7 +22,7 @@ export const inviteesRaw = (value) => value
         const parseable = emailAddresses.parseAddressList(lastGoodString);
         if (parseable) {
           const startingIdx = lastGoodString.lastIndexOf(',') + 1;
-          return `Problem parsing email after ${lastGoodString.substr(startingIdx)}`;
+          return `The email after ${lastGoodString.substr(startingIdx)} doesn't look quite right`;
         }
         i = lastGoodString.lastIndexOf(',');
       }
