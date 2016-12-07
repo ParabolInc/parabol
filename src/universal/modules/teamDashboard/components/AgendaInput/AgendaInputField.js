@@ -63,6 +63,7 @@ const AgendaInputField = (props) => {
         autoComplete="off"
         className={`${css(styles.input)}`}
         maxLength="63"
+        onKeyDown={maybeBlur}
         placeholder="Add Agenda Item"
         ref={setRef}
         title="Add Agenda Item"
@@ -74,9 +75,13 @@ const AgendaInputField = (props) => {
 };
 
 AgendaInputField.propTypes = {
+  agenda: PropTypes.array,
   bindHotkey: PropTypes.func,
+  handleSubmit: PropTypes.func,
   input: PropTypes.object,
-  styles: PropTypes.object
+  myTeamMemberId: PropTypes.string.isRequired,
+  styles: PropTypes.object,
+  teamId: PropTypes.string
 };
 
 const inputPlaceholderStyles = makePlaceholderStyles(defaultColor);

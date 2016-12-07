@@ -73,7 +73,8 @@ export default function handleRedirects(oldProps, nextProps) {
   if (team.facilitatorPhaseItem !== oldTeam.facilitatorPhaseItem ||
     team.facilitatorPhase !== oldTeam.facilitatorPhase) {
     // were we n'sync?
-    const inSync = localPhase === oldTeam.facilitatorPhase && (localPhaseItem === undefined || localPhaseItem === oldTeam.facilitatorPhaseItem);
+    const inSync = localPhase === oldTeam.facilitatorPhase &&
+      (localPhaseItem === undefined || localPhaseItem === oldTeam.facilitatorPhaseItem);
     if (inSync) {
       const pushURL = makePushURL(team.id, team.facilitatorPhase, team.facilitatorPhaseItem);
       router.replace(pushURL);
