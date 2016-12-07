@@ -14,7 +14,7 @@
 exports.up = async(r) => {
   const tables = [
     r.tableCreate('Organization'),
-    r.tableCreate('OrgMember')
+    // r.tableCreate('OrgMember')
   ];
   await Promise.all(tables);
   const indices = [

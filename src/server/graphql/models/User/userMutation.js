@@ -48,6 +48,7 @@ export default {
         // from auth0
         email: userInfo.email,
         emailVerified: userInfo.email_verified,
+        lastLogin: now,
         updatedAt: new Date(userInfo.updated_at),
         picture: userInfo.picture,
         id: userInfo.user_id,

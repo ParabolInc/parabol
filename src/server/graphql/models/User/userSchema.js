@@ -118,6 +118,19 @@ export const User = new GraphQLObjectType({
       type: GraphQLString,
       description: 'The application-specific name, defaults to nickname'
     },
+    trialExpiresAt: {
+      type: GraphQLISO8601Type,
+      description: 'The datetime the users free trial ends'
+    },
+    lastLogin: {
+      type: GraphQLISO8601Type,
+      description: 'The last time the user logged in or used a websocket'
+    },
+    notificationFlags: {
+      type: GraphQLInt,
+      description: 'flag to determine which notifications to show'
+
+    },
     /* GraphQL Sugar */
     memberships: {
       type: new GraphQLList(TeamMember),

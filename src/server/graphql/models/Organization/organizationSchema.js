@@ -17,8 +17,8 @@ export const Organization = new GraphQLObjectType({
   description: 'An organization',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique organization ID'},
-    billingLeader: {
-      type: GraphQLID,
+    billingLeaders: {
+      type: new GraphQLList(GraphQLNonNull(GraphQLID)),
       description: 'The userId of the person who pays for the org'
     },
     createdAt: {
@@ -36,7 +36,7 @@ export const Organization = new GraphQLObjectType({
     },
     validUntil: {
       type: GraphQLISO8601Type,
-      description: 'The datetime the trial is up (if isTrial) or is money is due (if !isTrial)'
+      description: 'The datetime the trial is up (if isTrial) or money is due (if !isTrial)'
     }
     /* GraphQL sugar */
     // organizationMembers: {
@@ -50,10 +50,10 @@ export const Organization = new GraphQLObjectType({
   })
 });
 
-const organizationInputThunk = () => ({
-  id: {type: GraphQLID, description: 'The unique organization ID'},
-  name: {type: GraphQLString, description: 'The name of the organization'},
-});
-
-export const CreateTeamInput = nonnullifyInputThunk('CreateTeamInput', organizationInputThunk, ['id', 'name']);
-export const UpdateTeamInput = nonnullifyInputThunk('UpdateTeamInput', organizationInputThunk, ['id']);
+// const organizationInputThunk = () => ({
+//   id: {type: GraphQLID, description: 'The unique organization ID'},
+//   name: {type: GraphQLString, description: 'The name of the organization'},
+// });
+//
+// export const CreateTeamInput = nonnullifyInputThunk('CreateTeamInput', organizationInputThunk, ['id', 'name']);
+// export const UpdateTeamInput = nonnullifyInputThunk('UpdateTeamInput', organizationInputThunk, ['id']);
