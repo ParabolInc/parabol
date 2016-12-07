@@ -84,6 +84,8 @@ export default {
       const welcomeSentAt = emailWelcomed ? new Date() : null;
       const returnedUser = {
         ...auth0User,
+        lastLogin: now,
+        notificationFlags: 0,
         welcomeSentAt
       };
       const asyncPromises = [

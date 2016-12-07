@@ -19,6 +19,15 @@ export const ensureUniqueId = async (table, id) => {
   }
 };
 
+// could make this sync if we make teamId orgId::shortId, but we do this so rarely
+export const ensureUserInOrg = async (tms = [], orgId) => {
+  const r = getRethink();
+  const res = await r.table('Team').getAll(r.args(tms))('orgId');
+  if (!res.includes(orgId)) {
+    throw errorObj({type: `user does not belong to org ${orgId}`});
+  }
+};
+
 // if the add & update schemas have different required fields, use this
 export const nonnullifyInputThunk = (name, inputThunk, requiredFieldNames) => {
   return new GraphQLInputObjectType({

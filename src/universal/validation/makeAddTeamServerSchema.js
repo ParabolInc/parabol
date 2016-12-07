@@ -1,6 +1,7 @@
 // the server schema doesn't have raw invitees
 import legitify from './legitify';
 import {id, fullName, makeInviteeTemplate, teamName} from 'universal/validation/templates';
+import {idRegex} from 'universal/validation/regex';
 
 export default function makeAddTeamServerSchema({inviteEmails, teamMemberEmails}) {
   return legitify({
@@ -10,7 +11,8 @@ export default function makeAddTeamServerSchema({inviteEmails, teamMemberEmails}
     }],
     newTeam: {
       id,
-      name: teamName
+      name: teamName,
+      orgId: (value) => value.required().matches(idRegex)
     }
   });
 }

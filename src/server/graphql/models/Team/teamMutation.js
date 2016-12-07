@@ -1,6 +1,7 @@
 import getRethink from 'server/database/rethinkDriver';
 import {getUserId, requireAuth, requireSUOrTeamMember, requireWebsocket} from '../authorization';
-import {ensureUniqueId, errorObj, handleSchemaErrors} from '../utils';
+import {ensureUniqueId, ensureUserInOrg, errorObj, handleSchemaErrors} from '../utils';
+import {TRIAL_PERIOD} from 'server/utils/serverConstants';
 import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
 import {
   GraphQLNonNull,
@@ -351,12 +352,12 @@ export default {
               .sample(100000)
               .coerceTo('array')
               .do((arr) => arr.forEach((doc) => {
-                return r.table('TeamMember').get(doc('id'))
+                  return r.table('TeamMember').get(doc('id'))
                     .update({
                       checkInOrder: arr.offsetsOf(doc).nth(0),
                       isCheckedIn: null
                     });
-              })
+                })
               );
           })
           .run();
@@ -415,6 +416,7 @@ export default {
       const teamId = newTeam.id;
       handleSchemaErrors(errors);
       await ensureUniqueId('Team', teamId);
+      await ensureUserInOrg(authToken.tms, newTeam.orgId);
 
       // RESOLUTION
       const authTokenObj = socket.getAuthToken();
@@ -438,16 +440,42 @@ export default {
       }
     },
     async resolve(source, {newTeam}, {authToken}) {
+      const r = getRethink();
+
       // AUTH
-      requireAuth(authToken);
+      const userId = requireAuth(authToken);
 
       // VALIDATION
       const schema = makeStep2Schema();
-      const {data: validNewTeam, errors} = schema(newTeam);
+      const {data, errors} = schema(newTeam);
       handleSchemaErrors(errors);
       await ensureUniqueId('Team', newTeam.id);
+      const user = await r.table('User').get(userId)('trialExpiresAt');
+      if (user.trialExpiresAt) {
+        throw errorObj({_error: 'you have already created a team'})
+      }
 
       // RESOLUTION
+      const now = new Date();
+      const trialExpiresAt = now + TRIAL_PERIOD;
+      const orgId = shortid.generate();
+      const validNewTeam = {...data, orgId};
+      await r.table('Organization').insert({
+        id: orgId,
+        billingLeaders: [userId],
+        createdAt: now,
+        isTrial: true,
+        name: `${user.preferredName}'s Org`,
+        updatedAt: now,
+        validUntil: trialExpiresAt
+      })
+        .do(() => {
+          return r.table('User').update({
+            trialExpiresAt,
+            notificationFlags: r.js('(function (row) { return row.notificationsFlags | 1;})', {timeout: 1})
+          })
+        });
+
       const tms = await createTeamAndLeader(authToken, validNewTeam);
       return tmsSignToken(authToken, tms);
     }

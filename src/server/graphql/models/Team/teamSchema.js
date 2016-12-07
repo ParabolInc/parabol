@@ -106,6 +106,7 @@ export const Team = new GraphQLObjectType({
 const teamInputThunk = () => ({
   id: {type: GraphQLID, description: 'The unique team ID'},
   name: {type: GraphQLString, description: 'The name of the team'},
+  orgId: {type: GraphQLID, description: 'The unique orginization ID that pays for the team'},
 });
 
 export const CreateTeamInput = nonnullifyInputThunk('CreateTeamInput', teamInputThunk, ['id', 'name']);
