@@ -42,8 +42,6 @@ export const makeInviteeTemplate = (inviteEmails, teamMemberEmails) => {
     .trim()
     .required('You should enter an email here')
     .matches(emailRegex, 'That doesn\'t look like an email address')
-    .min(2, 'That name is too short!')
-    .max(10, 'That name is too long!')
     .test((inviteTeamMember) => {
       return inviteEmails.includes(inviteTeamMember) && 'That person has already been invited!';
     })
