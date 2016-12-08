@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react';
 import Team from 'universal/modules/teamDashboard/components/Team/Team';
-import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
@@ -55,8 +54,7 @@ TeamContainer.propTypes = {
   teamMembers: PropTypes.array.isRequired,
 };
 
-export default requireAuth(
-  connect(mapStateToProps)(
-    TeamContainer
-  )
+export default
+connect(mapStateToProps)(
+  TeamContainer
 );

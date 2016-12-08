@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import {DashContent, DashHeader, DashHeaderInfo} from 'universal/components/Dashboard';
 import Button from 'universal/components/Button/Button';
 import InputField from 'universal/components/InputField/InputField';
 import {Field} from 'redux-form';
@@ -23,35 +22,30 @@ const renderActivity = (activity) => {
 const UserSettings = (props) => {
   const {activity, handleSubmit, onSubmit, styles} = props;
   return (
-    <form className={css(styles.root)} onSubmit={handleSubmit(onSubmit)}>
-      <DashHeader>
-        <DashHeaderInfo title="My Settings"/>
-      </DashHeader>
-      <DashContent>
-        <div className={css(styles.body)}>
-          <div className={css(styles.row)}>
-            {renderActivity(activity)}
-          </div>
-          <div className={css(styles.row)}>
-            <Field
-              autoFocus
-              component={InputField}
-              label="Name"
-              name="preferredName"
-              placeholder={randomPreferredName}
-              type="text"
-            />
-          </div>
-          <Button
-            isBlock
-            label="Update"
-            size="small"
-            colorPalette="cool"
-            type="submit"
+    <div className={css(styles.body)}>
+      <div className={css(styles.row)}>
+        {renderActivity(activity)}
+      </div>
+      <form className={css(styles.root)} onSubmit={handleSubmit(onSubmit)}>
+        <div className={css(styles.row)}>
+          <Field
+            autoFocus
+            component={InputField}
+            label="Name"
+            name="preferredName"
+            placeholder={randomPreferredName}
+            type="text"
           />
         </div>
-      </DashContent>
-    </form>
+        <Button
+          isBlock
+          label="Update"
+          size="small"
+          colorPalette="cool"
+          type="submit"
+        />
+      </form>
+    </div>
   );
 };
 

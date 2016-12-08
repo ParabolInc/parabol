@@ -16,7 +16,7 @@ const getImports = importMap => ({
 });
 
 export default store => ({
-  path: 'team',
+  path: 'team/:teamId',
   getComponent: async(location, cb) => {
     const promiseMap = setImports();
     const importMap = await resolvePromiseMap(promiseMap);
@@ -25,9 +25,16 @@ export default store => ({
     store.replaceReducer(newReducer);
     cb(null, component);
   },
+  getIndexRoute: async(location, cb) => {
+    const component = await System.import('universal/modules/teamDashboard/components/AgendaAndProjects/AgendaAndProjects');
+    cb(null, {component});
+  },
   getChildRoutes: (childLocation, cbChild) => {
     cbChild(null, [
-      require('./teamDashMain')(store)
+      /* eslint-disable global-require */
+      require('./teamArchive')(store),
+      require('./teamSettings')(store)
+      /* eslint-enable */
     ]);
   }
 });

@@ -118,7 +118,7 @@
     "react-hotkey-hoc": "^0.2.1",
     "react-notification-system": "^0.2.10",
     "react-redux": "^4.4.6",
-    "react-router": "2.8.0",
+    "react-router": "2.8.1",
     "react-textarea-autosize": "^4.0.5",
     "redux": "3.6.0",
     "redux-form": "^6.2.0",

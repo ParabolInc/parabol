@@ -26,13 +26,13 @@ export default store => ({
     cb(null, component);
   },
   getIndexRoute: async(location, cb) => {
-    const component =
-      await System.import('universal/modules/userDashboard/components/UserDashboard/UserDashboard');
+    const component = await System.import('universal/modules/userDashboard/components/UserDashMain/UserDashMain');
     cb(null, {component});
   },
   getChildRoutes: (childLocation, cbChild) => {
     cbChild(null, [
-      require('./userSettings')(store)
+      require('./userSettings')(store),
+      require('./organizations')(store)
     ]);
   }
 });

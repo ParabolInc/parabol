@@ -31,6 +31,7 @@ const validate = (values) => {
   return schema(values).errors;
 };
 
+// use requireAuth to get the user doc
 @requireAuth
 @connect(mapStateToProps)
 @reduxForm({form: 'userSettings', validate})
