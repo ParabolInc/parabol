@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.13.4 - 08-Dec-2016
+### Fixed
+- #564 Fix email validation
+
 ## v0.13.3 - 05-Dec-2016
 ### Added
 - Validations system (see: `src/universal/validations/legitify.js`)
