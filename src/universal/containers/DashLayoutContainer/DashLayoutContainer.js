@@ -61,7 +61,6 @@ export default class DashLayoutContainer extends Component {
   static propTypes = {
     activeMeetings: PropTypes.array,
     children: PropTypes.any,
-    title: PropTypes.string,
     tms: PropTypes.array.isRequired
   };
 
@@ -76,9 +75,9 @@ export default class DashLayoutContainer extends Component {
   }
 
   render() {
-    const {activeMeetings, children, title} = this.props;
+    const {activeMeetings, children} = this.props;
     return (
-      <DashLayout activeMeetings={activeMeetings} children={children} title={title}/>
+      <DashLayout activeMeetings={activeMeetings} children={children}/>
     );
   }
 }

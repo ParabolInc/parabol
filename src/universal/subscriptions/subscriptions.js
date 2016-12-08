@@ -8,7 +8,8 @@ import {
   TEAM,
   TEAM_MEMBERS,
   PRESENCE,
-  PROJECTS
+  PROJECTS,
+  USER
 } from 'universal/subscriptions/constants';
 
 // For now, use an array. In the future, we can make one exclusively for the server that doesn't need to reparse the AST
@@ -170,7 +171,10 @@ export default [
     channel: 'user',
     string: `
     subscription($userId: ID!) {
-      user(userId: $userId)
+      user(userId: $userId) {
+        id
+        notificationFlags
+      }
     }`
   }
 ];

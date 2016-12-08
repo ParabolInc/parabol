@@ -6,6 +6,12 @@ import InputField from 'universal/components/InputField/InputField';
 import {Field} from 'redux-form';
 import {ACTIVITY_WELCOME} from 'universal/modules/userDashboard/ducks/settingsDuck';
 import {randomPreferredName} from 'universal/utils/makeRandomPlaceholder';
+import {
+  DashContent,
+  DashHeader,
+  DashHeaderInfo,
+  DashMain
+} from 'universal/components/Dashboard';
 
 const renderActivity = (activity) => {
   if (activity === ACTIVITY_WELCOME) {
@@ -22,30 +28,38 @@ const renderActivity = (activity) => {
 const UserSettings = (props) => {
   const {activity, handleSubmit, onSubmit, styles} = props;
   return (
-    <div className={css(styles.body)}>
-      <div className={css(styles.row)}>
-        {renderActivity(activity)}
-      </div>
-      <form className={css(styles.root)} onSubmit={handleSubmit(onSubmit)}>
-        <div className={css(styles.row)}>
-          <Field
-            autoFocus
-            component={InputField}
-            label="Name"
-            name="preferredName"
-            placeholder={randomPreferredName}
-            type="text"
-          />
+    <DashMain>
+      <DashHeader>
+        <DashHeaderInfo title="My Settings"/>
+      </DashHeader>
+      <DashContent padding="0">
+        <div className={css(styles.body)}>
+          <div className={css(styles.row)}>
+            {renderActivity(activity)}
+          </div>
+          <form className={css(styles.root)} onSubmit={handleSubmit(onSubmit)}>
+            <div className={css(styles.row)}>
+              <Field
+                autoFocus
+                component={InputField}
+                label="Name"
+                name="preferredName"
+                placeholder={randomPreferredName}
+                type="text"
+              />
+            </div>
+            <Button
+              isBlock
+              label="Update"
+              size="small"
+              colorPalette="cool"
+              type="submit"
+            />
+          </form>
         </div>
-        <Button
-          isBlock
-          label="Update"
-          size="small"
-          colorPalette="cool"
-          type="submit"
-        />
-      </form>
-    </div>
+      </DashContent>
+    </DashMain>
+
   );
 };
 

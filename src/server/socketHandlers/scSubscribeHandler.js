@@ -12,7 +12,8 @@ import {
   PROJECTS,
   PRESENCE,
   TEAM,
-  TEAM_MEMBERS
+  TEAM_MEMBERS,
+  USER
 } from 'universal/subscriptions/constants';
 
 /*
@@ -30,7 +31,8 @@ const dechannelfy = {
   [PRESENCE]: (variableString) => ({teamId: variableString}),
   [PROJECTS]: (variableString) => ({teamMemberId: variableString}),
   [TEAM]: (variableString) => ({teamId: variableString}),
-  [TEAM_MEMBERS]: (variableString) => ({teamId: variableString})
+  [TEAM_MEMBERS]: (variableString) => ({teamId: variableString}),
+  [USER]: () => ({})
 };
 
 export default function scSubscribeHandler(exchange, socket) {

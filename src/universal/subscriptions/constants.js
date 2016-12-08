@@ -17,3 +17,4 @@ export const PRESENCE = 'presence';
 export const PROJECTS = 'projects';
 export const TEAM = 'team';
 export const TEAM_MEMBERS = 'teamMembers';
+export const USER = 'user';

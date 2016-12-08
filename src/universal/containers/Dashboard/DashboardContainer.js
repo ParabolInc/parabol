@@ -6,6 +6,7 @@ import {DragDropContext as dragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import TeamDashboard from 'universal/modules/teamDashboard/containers/Team/TeamContainer';
 import UserDashboard from 'universal/modules/userDashboard/components/UserDashboard/UserDashboard';
+import Helmet from 'react-helmet';
 
 const DashboardContainer = (props) => {
   const {children, location: {pathname}, params} = props;
@@ -15,9 +16,10 @@ const DashboardContainer = (props) => {
   const isUserSettings = isMe && dashChild === 'settings';
   const Dashboard = isMe ? UserDashboard : TeamDashboard;
   return (
-    <DashLayoutContainer title={title}>
+    <DashLayoutContainer>
+      <Helmet title={title}/>
       <DashSidebar isUserSettings={isUserSettings}/>
-      <Dashboard children={children} params={params} />
+      <Dashboard children={children} params={params}/>
     </DashLayoutContainer>
   );
 };

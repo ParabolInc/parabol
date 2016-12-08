@@ -5,19 +5,37 @@ import ui from 'universal/styles/ui';
 import UserActions from 'universal/modules/userDashboard/components/UserActions/UserActions';
 import UserColumnsContainer from 'universal/modules/userDashboard/containers/UserColumns/UserColumnsContainer';
 import UserProjectsHeaderContainer from 'universal/modules/userDashboard/containers/UserProjectsHeader/UserProjectsHeaderContainer';
+import {
+  DashContent,
+  DashHeader,
+  DashHeaderInfo,
+  DashMain,
+  makeDateString
+} from 'universal/components/Dashboard';
+import getRallyLink from '../../helpers/getRallyLink';
 
 const UserDashMain = (props) => {
   const {styles} = props;
   return (
-    <div className={css(styles.root)}>
-      <div className={css(styles.actionsLayout)}>
-        <UserActions />
-      </div>
-      <div className={css(styles.projectsLayout)}>
-        <UserProjectsHeaderContainer />
-        <UserColumnsContainer/>
-      </div>
-    </div>
+    <DashMain>
+      <DashHeader>
+        <DashHeaderInfo title="My Dashboard">
+          {makeDateString()} • <span className={css(styles.crayCrayHover)}>{getRallyLink()}!</span>
+        </DashHeaderInfo>
+      </DashHeader>
+      <DashContent padding="0">
+        <div className={css(styles.root)}>
+          <div className={css(styles.actionsLayout)}>
+            <UserActions />
+          </div>
+          <div className={css(styles.projectsLayout)}>
+            <UserProjectsHeaderContainer />
+            <UserColumnsContainer/>
+          </div>
+        </div>
+      </DashContent>
+    </DashMain>
+
   );
 };
 
@@ -39,6 +57,10 @@ const styleThunk = () => ({
     display: 'flex',
     flexDirection: 'column',
     width: ui.dashActionsWidth
+  },
+
+  crayCrayHover: {
+    color: 'inherit'
   },
 
   projectsLayout: {
