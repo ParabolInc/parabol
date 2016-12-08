@@ -18,12 +18,26 @@ const mapStateToProps = (state) => {
   }
 };
 
+const notifications = [
+  {
+    type: 'trialExpiresSoon',
+    ranges: [
+
+    ]
+  }
+]
 export default class NotificationsContainer extends Component {
   render() {
     const {}
     return (
       <div>
-        Notifications: {user}
+        Notifications: {notifications.map((notification) =>
+          <Notification
+            key={`notification${notification}`}
+            type={notification.type}
+            ranges={notification.ranges}
+          />
+      )}
       </div>
     );
   }

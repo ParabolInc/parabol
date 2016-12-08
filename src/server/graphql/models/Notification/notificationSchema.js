@@ -21,7 +21,13 @@ export const NotificationType = new GraphQLEnumType({
 });
 
 // maybe just make notification a union of a bunch of things?
+export const Notification = new GraphQLObjectType({
+  name: 'Notification',
+  description: 'A short-term project for a team member',
+  fields: () => ({
 
+  })
+})
 export const Notification = new GraphQLObjectType({
   name: 'Notification',
   description: 'A short-term project for a team member',
@@ -29,7 +35,10 @@ export const Notification = new GraphQLObjectType({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique notification id (shortid)'},
     type: {
       type: new GraphQLNonNull(NotificationType),
-      description: ''
+      description: 'The type of notification this is. Text will be determined by the client'
+    },
+    ranges: {
+      type: new GraphQLList(NotificationEntity)
     },
     agendaId: {
       type: GraphQLID,
@@ -52,7 +61,10 @@ export const Notification = new GraphQLObjectType({
       type: GraphQLFloat,
       description: 'the per-status sort order for the user dashboard'
     },
-    teamMemberId: {type: GraphQLID, description: 'The team member ID of the person creating the notification (optional)'},
+    teamMemberId: {
+      type: GraphQLID,
+      description: 'The team member ID of the person creating the notification (optional)'
+    },
     updatedAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the notification was updated'
