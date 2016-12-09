@@ -28,7 +28,7 @@ const styleThunk = () => ({
     borderBottom: '2px solid rgba(0, 0, 0, .10)',
     display: 'flex',
     minHeight: '4.875rem',
-    padding: '1rem',
+    padding: '1rem 1rem 0',
     width: '100%'
   },
 

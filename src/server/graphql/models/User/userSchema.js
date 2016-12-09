@@ -126,9 +126,9 @@ export const User = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The last time the user logged in or used a websocket'
     },
-    notificationFlags: {
+    broadcastFlags: {
       type: GraphQLInt,
-      description: 'flag to determine which notifications to show'
+      description: 'flag to determine which broadcasts to show'
 
     },
     /* GraphQL Sugar */

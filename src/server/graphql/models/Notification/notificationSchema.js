@@ -5,7 +5,8 @@ import {
   GraphQLString,
   GraphQLFloat,
   GraphQLBoolean,
-  GraphQLEnumType
+  GraphQLEnumType,
+  GraphQLList
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {nonnullifyInputThunk} from '../utils';
@@ -21,13 +22,13 @@ export const NotificationType = new GraphQLEnumType({
 });
 
 // maybe just make notification a union of a bunch of things?
-export const Notification = new GraphQLObjectType({
-  name: 'Notification',
-  description: 'A short-term project for a team member',
-  fields: () => ({
-
-  })
-})
+// export const NotificationVar = new GraphQLObjectType({
+//   name: 'Notification',
+//   description: 'A short-term project for a team member',
+//   fields: () => ({
+//
+//   })
+// })
 export const Notification = new GraphQLObjectType({
   name: 'Notification',
   description: 'A short-term project for a team member',
@@ -37,41 +38,8 @@ export const Notification = new GraphQLObjectType({
       type: new GraphQLNonNull(NotificationType),
       description: 'The type of notification this is. Text will be determined by the client'
     },
-    ranges: {
-      type: new GraphQLList(NotificationEntity)
-    },
-    agendaId: {
-      type: GraphQLID,
-      description: 'the agenda item that created this project, if any (indexed)'
-    },
-    content: {type: GraphQLString, description: 'The body of the notification. If null, it is a new notification.'},
-    createdAt: {
-      type: GraphQLISO8601Type,
-      description: 'The timestamp the notification was created'
-    },
-    createdBy: {
-      type: GraphQLID,
-      description: 'The userId that created the notification'
-    },
-    isComplete: {
-      type: GraphQLBoolean,
-      description: 'Marks the item as checked off'
-    },
-    sortOrder: {
-      type: GraphQLFloat,
-      description: 'the per-status sort order for the user dashboard'
-    },
-    teamMemberId: {
-      type: GraphQLID,
-      description: 'The team member ID of the person creating the notification (optional)'
-    },
-    updatedAt: {
-      type: GraphQLISO8601Type,
-      description: 'The timestamp the notification was updated'
-    },
-    userId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the user (first part of teamMemberId). Stored so notification items are a single subscription'
+    varList: {
+      type: new GraphQLList(GraphQLString)
     }
   })
 });

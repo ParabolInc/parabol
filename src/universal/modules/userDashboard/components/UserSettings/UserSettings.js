@@ -9,9 +9,9 @@ import {randomPreferredName} from 'universal/utils/makeRandomPlaceholder';
 import {
   DashContent,
   DashHeader,
-  DashHeaderInfo,
   DashMain
 } from 'universal/components/Dashboard';
+import SettingsTabs from 'universal/modules/userDashboard/components/SettingsTabs/SettingsTabs';
 
 const renderActivity = (activity) => {
   if (activity === ACTIVITY_WELCOME) {
@@ -27,10 +27,11 @@ const renderActivity = (activity) => {
 
 const UserSettings = (props) => {
   const {activity, handleSubmit, onSubmit, styles} = props;
+
   return (
     <DashMain>
       <DashHeader>
-        <DashHeaderInfo title="My Settings"/>
+        <SettingsTabs activeIdx={0}/>
       </DashHeader>
       <DashContent padding="0">
         <div className={css(styles.body)}>
