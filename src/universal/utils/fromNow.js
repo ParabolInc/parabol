@@ -10,7 +10,9 @@ const thresholds = {
 };
 
 export default function fromNow(time) {
-  const distance = (Date.now() - time) || 0;
+  const now = Date.now();
+  const distance = Math.abs(now - time) || 0;
+  const ago = now > time ? ' ago' : '';
   if (distance < 1000) return 'just now';
   const threshKeys = Object.keys(thresholds);
   let prevThresh = 1000;
@@ -18,7 +20,7 @@ export default function fromNow(time) {
     const thresh = thresholds[threshKeys[i]];
     if (distance < thresh) {
       const roundDistance = Math.round(distance / prevThresh);
-      const units = `${threshKeys[i - 1]}${roundDistance === 1 ? '' : 's'} ago`;
+      const units = `${threshKeys[i - 1]}${roundDistance === 1 ? '' : 's'}${ago}`;
       return `${roundDistance} ${units}`;
     }
     prevThresh = thresh;

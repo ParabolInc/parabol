@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {cashay} from 'cashay';
+import {TRIAL_EXPIRES_SOON, APPROVE_TO_ORG} from 'universal/modules/notifications/notificationList';
 
 const notificationsQuery = `
 query {
@@ -21,11 +22,13 @@ const mapStateToProps = (state) => {
 const notifications = [
   {
     type: 'trialExpiresSoon',
-    ranges: [
-
+    varList: [
+      new Date(),
+      'org123'
     ]
   }
-]
+];
+
 export default class NotificationsContainer extends Component {
   render() {
     const {}
@@ -35,7 +38,7 @@ export default class NotificationsContainer extends Component {
           <Notification
             key={`notification${notification}`}
             type={notification.type}
-            ranges={notification.ranges}
+            varList={notification.varList}
           />
       )}
       </div>
