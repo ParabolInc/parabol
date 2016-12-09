@@ -13,7 +13,6 @@ const getImports = importMap => ({
 export default (store) => ({
   path: ':orgId',
   getComponent: async(location, cb) => {
-    console.log('single')
     const promiseMap = setImports();
     const importMap = await resolvePromiseMap(promiseMap);
     const {component} = getImports(importMap);

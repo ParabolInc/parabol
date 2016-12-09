@@ -32,7 +32,8 @@ export default store => ({
   getChildRoutes: (childLocation, cbChild) => {
     cbChild(null, [
       require('./userSettings')(store),
-      require('./organizations')(store)
+      require('./organizations')(store),
+      require('./notifications')(store),
     ]);
   }
 });

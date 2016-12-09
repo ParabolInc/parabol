@@ -5,6 +5,7 @@ import notificationPicker from 'universal/modules/userDashboard/NotificationButt
 
 const Notification = (props) => {
   const {type, styles, varList} = props;
+
   const {Buttons, makeContent} = notificationPicker[type];
 
   return (
