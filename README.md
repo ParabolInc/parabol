@@ -154,6 +154,7 @@ get involved and how to get compensated.
 
 | Release | Summary                                    |
 |---------|--------------------------------------------|
+| v0.13.5 | Various fixed                              |
 | v0.13.4 | Fix email validation                       |
 | v0.13.3 | Validations, S3 enhancements, fixes        |
 | v0.13.2 | Add 'player joined' message. Fixed #543    |
