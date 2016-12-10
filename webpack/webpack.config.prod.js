@@ -31,7 +31,11 @@ const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(s
 
 const deployPlugins = [];
 if (process.env.DEPLOY) {
-  deployPlugins.push(new webpack.optimize.UglifyJsPlugin({compressor: {warnings: false}, comments: /(?:)/}));
+  deployPlugins.push(new webpack.optimize.UglifyJsPlugin({
+    compressor: {warnings: false},
+    comments: /(?:)/,
+    sourceMap: true
+  }));
   deployPlugins.push(new webpack.LoaderOptionsPlugin({comments: false}));
   if (!process.env.CI) {
     // do not deploy to S3 if running in continuous integration environment:
@@ -95,6 +99,7 @@ export default {
       ]
     })
   ],
+  devtool: 'source-map',
   module: {
     loaders: [
       {test: /\.json$/, loader: 'json-loader'},
