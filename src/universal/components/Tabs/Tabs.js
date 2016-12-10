@@ -13,7 +13,9 @@ const Tabs = (props) => {
     background: appTheme.palette.cool,
     transform: `translate3d(${activeIdx * 100}%, 2px, 0)`
   };
-  const properChildren = Children.map(children, (child, idx) => cloneElement(child, {isActive: idx === activeIdx}));
+  const properChildren = Children.map(children, (child, idx) => cloneElement(child, {
+    isActive: idx === activeIdx
+  }));
   return (
     <div className={css(styles.tabsAndBar)}>
       <div className={css(styles.tabs)}>
@@ -36,9 +38,7 @@ const styleThunk = () => ({
     width: '100%'
 
   },
-  inkBar: {
-
-  }
+  inkBar: {}
 });
 export default withStyles(styleThunk)(Tabs);
 

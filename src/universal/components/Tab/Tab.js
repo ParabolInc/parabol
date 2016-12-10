@@ -7,7 +7,8 @@ const Tab = (props) => {
   const {icon, isActive, label, onClick, styles} = props;
   const activeStyles = css(
     styles.root,
-    isActive && styles.isActive
+    isActive && styles.isActive,
+    onClick && styles.canClick
   );
   return (
     <div className={activeStyles} onClick={onClick}>
@@ -29,6 +30,9 @@ const styleThunk = () => ({
     flexDirection: 'column',
     flexGrow: 1,
     padding: '.5rem',
+  },
+
+  canClick: {
     cursor: 'pointer'
   },
 
@@ -38,7 +42,6 @@ const styleThunk = () => ({
 
   isActive: {
     color: appTheme.palette.cool,
-    cursor: 'default'
   },
 
   label: {
