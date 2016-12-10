@@ -34,6 +34,8 @@ import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeS
 import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 import makeStep2Schema from 'universal/validation/makeStep2Schema';
 import makeAddTeamServerSchema from 'universal/validation/makeAddTeamServerSchema';
+import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
+import ms from 'ms';
 
 export default {
   moveMeeting: {
@@ -460,6 +462,8 @@ export default {
       const trialExpiresAt = now + TRIAL_PERIOD;
       const orgId = shortid.generate();
       const validNewTeam = {...data, orgId};
+      const expiresSoonId = shortid.generate();
+      const expiredId = shortid.generate();
       await r.table('Organization').insert({
         id: orgId,
         billingLeaders: [userId],
@@ -470,9 +474,33 @@ export default {
         validUntil: trialExpiresAt
       })
         .do(() => {
+          return r.table('Notifications').insert([
+            {
+              id: expiresSoonId,
+              parentId: expiresSoonId,
+              type: TRIAL_EXPIRES_SOON,
+              varList: [trialExpiresAt],
+              startAt: now + ms('14d'),
+              endAt: trialExpiresAt,
+              userId,
+              orgId,
+            },
+            {
+              id: expiredId,
+              parentId: expiredId,
+              type: TRIAL_EXPIRED,
+              varList: [trialExpiresAt],
+              startAt: trialExpiresAt,
+              endAt: trialExpiresAt + ms('10y'),
+              userId,
+              orgId,
+            }
+          ])
+        })
+        .do(() => {
           return r.table('User').update({
             trialExpiresAt,
-            notificationFlags: r.js('(function (row) { return row.notificationsFlags | 1;})', {timeout: 1})
+            // notificationFlags: r.js('(function (row) { return row.notificationsFlags | 1;})', {timeout: 1})
           })
         });
 

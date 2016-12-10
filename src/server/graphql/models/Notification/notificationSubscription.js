@@ -1,13 +1,13 @@
 import getRethink from 'server/database/rethinkDriver';
 import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
 import {getRequestedFields} from '../utils';
-import {Action} from './notificationSchema';
-import {requireSUOrSelf, requireSUOrTeamMember} from '../authorization';
+import {Notification} from './notificationSchema';
+import {requireSUOrSelf} from '../authorization';
 import makeChangefeedHandler from '../makeChangefeedHandler';
 
 export default {
-  actions: {
-    type: new GraphQLList(Action),
+  notifications: {
+    type: new GraphQLList(Notification),
     args: {
       userId: {
         type: new GraphQLNonNull(GraphQLID),
@@ -19,51 +19,10 @@ export default {
       requireSUOrSelf(authToken, userId);
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
-      r.table('Action')
+      const now = new Date();
+      r.table('Notifications')
         .getAll(userId, {index: 'userId'})
-        .filter({isComplete: false})
-        .pluck(requestedFields)
-        .changes({includeInitial: true})
-        .run({cursor: true}, changefeedHandler);
-    }
-  },
-  actionsByTeamMember: {
-    type: new GraphQLList(Action),
-    args: {
-      teamMemberId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The unique team member ID'
-      }
-    },
-    async resolve(source, {teamMemberId}, {authToken, socket, subbedChannelName}, refs) {
-      const r = getRethink();
-      const [, teamId] = teamMemberId.split('::');
-      requireSUOrTeamMember(authToken, teamId);
-      const requestedFields = getRequestedFields(refs);
-      const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
-      r.table('Action')
-        .getAll(teamMemberId, {index: 'teamMemberId'})
-        .pluck(requestedFields)
-        .changes({includeInitial: true})
-        .run({cursor: true}, changefeedHandler);
-    }
-  },
-  actionsByAgenda: {
-    type: new GraphQLList(Action),
-    args: {
-      agendaId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The ID of the agenda that caused this action to be created'
-      }
-    },
-    async resolve(source, {agendaId}, {authToken, socket, subbedChannelName}, refs) {
-      const r = getRethink();
-      const [teamId] = agendaId.split('::');
-      requireSUOrTeamMember(authToken, teamId);
-      const requestedFields = getRequestedFields(refs);
-      const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
-      r.table('Action')
-        .getAll(agendaId, {index: 'agendaId'})
+        .filter((row) => row('startAt').lt(r.epochTime(now / 1000)).and(row('endAt').gt(r.epochTime(now / 1000))))
         .pluck(requestedFields)
         .changes({includeInitial: true})
         .run({cursor: true}, changefeedHandler);

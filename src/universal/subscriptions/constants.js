@@ -13,6 +13,7 @@ export const ACTIONS_BY_AGENDA = 'actionsByAgenda';
 export const ARCHIVED_PROJECTS = 'archivedProjects';
 export const AGENDA = 'agenda';
 export const INVITATIONS = 'invitations';
+export const NOTIFICATIONS = 'notifications';
 export const PRESENCE = 'presence';
 export const PROJECTS = 'projects';
 export const TEAM = 'team';

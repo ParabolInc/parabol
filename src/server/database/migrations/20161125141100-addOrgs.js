@@ -14,11 +14,15 @@
 exports.up = async(r) => {
   const tables = [
     r.tableCreate('Organization'),
-    // r.tableCreate('OrgMember')
+    r.tableCreate('Notification')
   ];
   await Promise.all(tables);
   const indices = [
-    r.table('Team').indexCreate('orgId')
+    r.table('Team').indexCreate('orgId'),
+    r.table('Notification').indexCreate('orgId'),
+    r.table('Notification').indexCreate('parentId'),
+    r.table('Notification').indexCreate('userId'),
+
   ];
   await Promise.all(indices);
 

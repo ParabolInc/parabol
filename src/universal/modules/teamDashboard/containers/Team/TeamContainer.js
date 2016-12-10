@@ -40,16 +40,16 @@ const mapStateToProps = (state, props) => {
 const TeamContainer = (props) => {
   const {children, team, teamMembers} = props;
   const readyEnough = team.id && teamMembers.length > 0;
-  if (!readyEnough) {
-    return <LoadingView/>;
-  }
   return (
     <DashboardWrapper title="Team Dashboard">
-      <Team
-        team={team}
-        teamMembers={teamMembers}
-        children={children}
-      />
+      {readyEnough ?
+        <Team
+          team={team}
+          teamMembers={teamMembers}
+          children={children}
+        /> :
+        <LoadingView/>
+      }
     </DashboardWrapper>
   );
 };

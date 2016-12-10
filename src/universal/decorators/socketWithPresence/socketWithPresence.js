@@ -99,7 +99,6 @@ export default ComposedComponent => {
           tmsSubs.push(teamId);
           cashay.subscribe(PRESENCE, teamId, presenceSubscriber);
           cashay.subscribe(TEAM_MEMBERS, teamId);
-          cashay.subscribe(TEAM, teamId);
           socket.on('subscribe', channelName => {
             if (channelName === `${PRESENCE}/${teamId}`) {
               const options = {variables: {teamId}};
