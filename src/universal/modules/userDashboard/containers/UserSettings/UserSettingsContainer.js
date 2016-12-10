@@ -1,8 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
-import UserSettings from 'universal/modules/userDashboard/components/UserSettings/UserSettings';
+import SettingsMain from 'universal/modules/userDashboard/components/SettingsMain/SettingsMain';
 import {connect} from 'react-redux';
-import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
+import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import {
   ACTIVITY_WELCOME,
   clearActivity
@@ -86,10 +86,10 @@ export default class UserSettingsContainer extends Component {
 
   render() {
     return (
-      <UserSettings
-        {...this.props}
-        onSubmit={this.onSubmit}
-      />
+        <SettingsMain
+          {...this.props}
+          onSubmit={this.onSubmit}
+        />
     );
   }
 }

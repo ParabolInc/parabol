@@ -11,7 +11,7 @@ import {cashay} from 'cashay';
 import emailAddresses from 'email-addresses';
 import shortid from 'shortid';
 import {withRouter} from 'react-router';
-import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
+import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
 
 const validate = (values) => {

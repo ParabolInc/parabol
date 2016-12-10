@@ -7,7 +7,7 @@ import Editable from 'universal/components/Editable/Editable';
 import {cashay} from 'cashay';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 import {reduxForm, Field} from 'redux-form';
-import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
+import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import makeInviteOneTeamMemberSchema from 'universal/validation/makeInviteOneTeamMemberSchema';
 
 const makeSchemaProps = (props) => {

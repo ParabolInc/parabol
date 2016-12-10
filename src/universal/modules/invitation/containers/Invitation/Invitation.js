@@ -4,7 +4,7 @@ import {cashay} from 'cashay';
 import {showLock} from 'universal/components/Auth0ShowLock/Auth0ShowLock';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import {withRouter} from 'react-router';
-import {showError, showSuccess, showWarning} from 'universal/modules/notifications/ducks/notifications';
+import {showError, showSuccess, showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import {setAuthToken} from 'universal/redux/authDuck';
 import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
 import {setWelcomeActivity} from 'universal/modules/userDashboard/ducks/settingsDuck';

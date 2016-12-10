@@ -4,7 +4,7 @@ import Organizations from 'universal/modules/userDashboard/components/Organizati
 export default class OrganizationsContainer extends Component {
   render() {
     return (
-      <Organizations/>
+        <Organizations/>
     );
   }
 }

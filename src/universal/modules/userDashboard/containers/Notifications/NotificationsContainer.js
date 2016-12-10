@@ -1,6 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import {TRIAL_EXPIRES_SOON, APPROVE_TO_ORG} from 'universal/utils/constants';
 import Notification from 'universal/modules/userDashboard/components/Notification/Notification';
+import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
+import {NOTIFICATIONS} from 'universal/utils/constants';
 
 // const notificationsQuery = `
 // query {
@@ -32,15 +34,17 @@ const notifications = [
 export default class NotificationsContainer extends Component {
   render() {
     return (
-      <div>
-        Notifications: {notifications.map((notification) =>
+      <UserSettingsWrapper activeTab={NOTIFICATIONS}>
+        <div>
+          Notifications: {notifications.map((notification) =>
           <Notification
             key={`notification${notification}`}
             type={notification.type}
             varList={notification.varList}
           />
-      )}
-      </div>
+        )}
+        </div>
+      </UserSettingsWrapper>
     );
   }
 }

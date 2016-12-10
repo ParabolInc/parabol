@@ -4,7 +4,7 @@ import makeReducer from 'universal/redux/makeReducer';
 
 const setImports = () =>
   new Map([
-    ['component', System.import('universal/containers/Dashboard/DashboardContainer')],
+    ['component', System.import('universal/modules/userDashboard/components/UserDashboard/UserDashboard')],
     ['socket', System.import('redux-socket-cluster')],
     ['userDashboard', System.import('universal/modules/userDashboard/ducks/userDashDuck')]
   ]);

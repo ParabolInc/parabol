@@ -8,7 +8,7 @@ import {JOIN_TEAM, PRESENCE, TEAM_MEMBERS, TEAM} from 'universal/subscriptions/c
 import socketCluster from 'socketcluster-client';
 import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
 import parseChannel from 'universal/utils/parseChannel';
-import {showInfo, showWarning} from 'universal/modules/notifications/ducks/notifications';
+import {showInfo, showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import {withRouter} from 'react-router';
 
 const getTeamName = (teamId) => {
@@ -44,7 +44,7 @@ export default ComposedComponent => {
     componentDidMount() {
       this.subscribeToPresence({}, this.props);
       this.watchForKickout();
-      this.watchForJoin();
+      // this.watchForJoin();
     }
     componentWillReceiveProps(nextProps) {
       this.subscribeToPresence(this.props, nextProps);
@@ -92,13 +92,14 @@ export default ComposedComponent => {
       }
       if (oldProps.tms !== props.tms) {
         const socket = socketCluster.connect();
-        window.socket = socket;
+        // window.socket = socket;
         for (let i = 0; i < tms.length; i++) {
           const teamId = tms[i];
           if (tmsSubs.includes(teamId)) continue;
           tmsSubs.push(teamId);
           cashay.subscribe(PRESENCE, teamId, presenceSubscriber);
           cashay.subscribe(TEAM_MEMBERS, teamId);
+          cashay.subscribe(TEAM, teamId);
           socket.on('subscribe', channelName => {
             if (channelName === `${PRESENCE}/${teamId}`) {
               const options = {variables: {teamId}};

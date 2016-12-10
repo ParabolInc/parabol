@@ -1,22 +1,15 @@
 import React, {Component, PropTypes} from 'react';
-import {
-  DashContent,
-  DashHeader,
-  DashMain
-} from 'universal/components/Dashboard';
-import SettingsTabs from 'universal/modules/userDashboard/components/SettingsTabs/SettingsTabs';
+import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
+import {ORGANIZATIONS} from 'universal/utils/constants';
 
 export default class Organizations extends Component {
   render() {
     return (
-      <DashMain>
-        <DashHeader>
-          <SettingsTabs activeIdx={1}/>
-        </DashHeader>
-        <DashContent padding="0">
+      <UserSettingsWrapper activeTab={ORGANIZATIONS}>
+        <div>
           Welcome to orgs!
-        </DashContent>
-      </DashMain>
+        </div>
+      </UserSettingsWrapper>
     );
   }
 }

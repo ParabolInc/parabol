@@ -1,13 +1,13 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import Notifications from 'universal/modules/notifications/containers/Notifications/Notifications';
+import Toast from 'universal/modules/toast/containers/Toast/Toast';
 
 const Action = (props) => {
   const {children, styles} = props;
   return (
     <div className={css(styles.app)}>
-      <Notifications />
+      <Toast />
       {children}
     </div>
   );

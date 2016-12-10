@@ -1,12 +1,26 @@
 import React, {PropTypes} from 'react';
+import DashboardWrapper from 'universal/components/DashboardWrapper/DashboardWrapper';
+import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
+import {DragDropContext as dragDropContext} from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 
 const UserDashboard = (props) => {
-  // keep this route so we can treat /me/foo as a child of /me in the router
-  return props.children;
+  const {children, location: {pathname}} = props;
+  const title = pathname === '/me' ? 'User Dashboard' : 'User Settings';
+  return (
+    <DashboardWrapper title={title}>
+      {children}
+    </DashboardWrapper>
+  );
 };
 
 UserDashboard.propTypes = {
   children: PropTypes.any
 };
 
-export default UserDashboard;
+export default
+dragDropContext(HTML5Backend)(
+  socketWithPresence(
+    UserDashboard
+  )
+);

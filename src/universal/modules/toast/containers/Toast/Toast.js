@@ -1,25 +1,25 @@
 import React, {PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import NotificationSystem from 'react-notification-system';
+import ToastSystem from 'react-notification-system';
 
 import appTheme from 'universal/styles/theme/appTheme';
-import * as _notificationActions from '../../ducks/notifications';
+import * as _toastActions from '../../ducks/toastDuck';
 
 const mapStateToProps = state => ({
-  notifications: state.notifications
+  toasts: state.toasts
 });
 
 const mapDispatchToProps = dispatch => ({
-  notificationActions: bindActionCreators(_notificationActions, dispatch)
+  toastActions: bindActionCreators(_toastActions, dispatch)
 });
 
 @connect(mapStateToProps, mapDispatchToProps)
-export default class Notifications extends React.Component {
+export default class Toast extends React.Component {
   static propTypes = {
-    notifications: PropTypes.array,
-    notificationActions: PropTypes.object.isRequired,
-  }
+    toasts: PropTypes.array,
+    toastActions: PropTypes.object.isRequired,
+  };
 
   constructor(props) {
     super(props);
@@ -29,16 +29,16 @@ export default class Notifications extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {notifications, notificationActions} = nextProps;
+    const {toasts, toastActions} = nextProps;
     const {maxNid} = this.state;
 
-    notifications
+    toasts
       .filter(notification => notification.nid > maxNid)
       .forEach(notification => {
         this.system().addNotification({
           ...notification,
           onRemove: () => {
-            notificationActions.hide(notification.nid);
+            toastActions.hide(notification.nid);
           }
         });
         if (notification.nid > maxNid) {
@@ -48,13 +48,13 @@ export default class Notifications extends React.Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    const {notifications} = nextProps;
+    const {toasts} = nextProps;
 
-    if (notifications.length > 0) {
+    if (toasts.length > 0) {
       const {maxNid} = this.state;
       const nextNid = Math.max.apply(
         Math,
-        notifications.map(n => n.nid)
+        toasts.map(n => n.nid)
       );
 
       return nextNid > maxNid;
@@ -110,7 +110,7 @@ export default class Notifications extends React.Component {
     };
 
     return (
-      <NotificationSystem ref="notify" style={styles} />
+      <ToastSystem ref="notify" style={styles} />
     );
   }
 }

@@ -1,5 +1,5 @@
-const NOTIFICATIONS_SHOW = 'notifications/NOTIFICATIONS_SHOW';
-const NOTIFICATIONS_HIDE = 'notifications/NOTIFICATIONS_HIDE';
+const TOAST_SHOW = 'notifications/TOAST_SHOW';
+const TOAST_HIDE = 'notifications/TOAST_HIDE';
 
 const SUCCESS = 'success';
 const ERROR = 'error';
@@ -10,10 +10,10 @@ const initialState = [];
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
-    case NOTIFICATIONS_SHOW: {
+    case TOAST_SHOW: {
       return state.concat(action.payload);
     }
-    case NOTIFICATIONS_HIDE:
+    case TOAST_HIDE:
       return state.filter(notification => notification.nid !== action.payload.nid);
     default:
       return state;
@@ -23,7 +23,7 @@ export default function reducer(state = initialState, action = {}) {
 let nid = 0;
 export function show(opts, level = SUCCESS) {
   return {
-    type: NOTIFICATIONS_SHOW,
+    type: TOAST_SHOW,
     payload: {
       ...opts,
       level,
@@ -50,7 +50,7 @@ export function showInfo(opts) {
 
 export function hide(aNid) {
   return {
-    type: NOTIFICATIONS_HIDE,
+    type: TOAST_HIDE,
     payload: {
       nid: aNid
     }

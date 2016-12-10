@@ -1,35 +1,34 @@
-import React, {Children, cloneElement, Component, PropTypes} from 'react';
+import React from 'react';
 import {css} from 'aphrodite-local-styles/no-important';
 import Tabs from 'universal/components/Tabs/Tabs';
 import Tab from 'universal/components/Tab/Tab';
 import FontAwesome from 'react-fontawesome';
 import {withRouter} from 'react-router';
-
-const order = ['settings', 'organizations', 'notifications'];
+import {SETTINGS, ORGANIZATIONS, NOTIFICATIONS, settingsOrder} from 'universal/utils/constants';
 
 const SettingsTabs = (props) => {
-  const {activeIdx, router} = props;
+  const {activeTab, router} = props;
   const makeOnClick = (path) => () => {
-    if (order.indexOf(path) !== activeIdx) {
+    if (settingsOrder.indexOf(path) !== activeTab) {
       router.push(`/me/${path}`);
     }
   };
   return (
-    <Tabs activeIdx={activeIdx}>
+    <Tabs activeIdx={settingsOrder.indexOf(activeTab)}>
       <Tab
         icon={<FontAwesome name="address-card"/>}
         label="Settings"
-        onClick={makeOnClick('settings')}
+        onClick={makeOnClick(SETTINGS)}
       />
       <Tab
         icon={<FontAwesome name="users"/>}
         label="Organizations"
-        onClick={makeOnClick('organizations')}
+        onClick={makeOnClick(ORGANIZATIONS)}
       />
       <Tab
         icon={<FontAwesome name="bell"/>}
         label="Notifications"
-        onClick={makeOnClick('notifications')}
+        onClick={makeOnClick(NOTIFICATIONS)}
       />
     </Tabs>
   )

@@ -48,3 +48,11 @@ export const PAYMENT_REJECTED = 'PAYMENT_REJECTED';
 export const APPROVE_TO_ORG = 'APPROVE_TO_ORG';
 export const ACCEPT_TO_ORG = 'ACCEPT_TO_ORG';
 export const DENY_TO_ORG = 'DENY_TO_ORG';
+
+/* User Settings */
+export const SETTINGS = 'settings';
+export const ORGANIZATIONS = 'organizations';
+export const NOTIFICATIONS = 'notifications';
+export const settingsOrder = [SETTINGS, ORGANIZATIONS, NOTIFICATIONS];
+
+

@@ -4,7 +4,7 @@ import makeReducer from 'universal/redux/makeReducer';
 
 const setImports = () =>
   new Map([
-    ['component', System.import('universal/containers/Dashboard/DashboardContainer')],
+    ['component', System.import('universal/modules/newTeam/components/NewTeam/NewTeam')],
     ['socket', System.import('redux-socket-cluster')],
   ]);
 
@@ -22,10 +22,5 @@ export default store => ({
     const newReducer = makeReducer(asyncReducers);
     store.replaceReducer(newReducer);
     cb(null, component);
-  },
-  getIndexRoute: async(location, cb) => {
-    const component =
-      await System.import('universal/modules/newTeam/components/NewTeam/NewTeam');
-    cb(null, {component});
   }
 });

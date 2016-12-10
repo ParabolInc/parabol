@@ -35,7 +35,7 @@ import MeetingAgendaLastCallContainer from 'universal/modules/meeting/containers
 import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 import withHotkey from 'react-hotkey-hoc';
 import getBestPhaseItem from 'universal/modules/meeting/helpers/getBestPhaseItem';
-import {showError, showInfo} from 'universal/modules/notifications/ducks/notifications';
+import {showError, showInfo} from 'universal/modules/toast/ducks/toastDuck';
 
 const resolveMeetingMembers = (queryData, userId) => {
   if (queryData !== resolveMeetingMembers.queryData) {

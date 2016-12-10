@@ -17,19 +17,6 @@ const normalizingLookup = {
     const orgId = variableList[1];
     const daysLeft = fromNow(expiresAt);
     const content = `You're free trial will expire in ${daysLeft}. Want another free month? Just add your billing info`;
-    const addBilling = () => {
-      router.push('/me/organizations/${orgId}/')
-    }
-    const buttons = [
-      <Button
-        colorPalette="cool"
-        label="End Meeting"
-        onClick={gotoNext}
-        size="largest"
-        style="solid"
-        textTransform="uppercase"
-      />
-    ]
   },
   APPROVE_TO_ORG: (variableList) => ({
     inviterName: variableList[0],

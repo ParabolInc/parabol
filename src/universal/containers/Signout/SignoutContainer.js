@@ -1,6 +1,6 @@
 import React, {PropTypes, Component} from 'react'; // eslint-disable-line no-unused-vars
 import {connect} from 'react-redux';
-import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
+import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import {removeAuthToken} from 'universal/redux/authDuck';
 import {reset as resetAppState} from 'universal/redux/rootDuck';
 import {withRouter} from 'react-router';

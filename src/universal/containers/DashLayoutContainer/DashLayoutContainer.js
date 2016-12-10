@@ -2,7 +2,6 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import DashLayout from 'universal/components/Dashboard/DashLayout';
-import {TEAM} from 'universal/subscriptions/constants';
 
 const resolveActiveMeetings = (teams) => {
   if (teams !== resolveActiveMeetings.teams) {
@@ -49,13 +48,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-const subToAllTeams = (tms) => {
-  for (let i = 0; i < tms.length; i++) {
-    const teamId = tms[i];
-    cashay.subscribe(TEAM, teamId);
-  }
-};
-
 @connect(mapStateToProps)
 export default class DashLayoutContainer extends Component {
   static propTypes = {
@@ -63,16 +55,6 @@ export default class DashLayoutContainer extends Component {
     children: PropTypes.any,
     tms: PropTypes.array.isRequired
   };
-
-  componentDidMount() {
-    subToAllTeams(this.props.tms);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (this.props.tms !== nextProps.tms) {
-      subToAllTeams(nextProps.tms);
-    }
-  }
 
   render() {
     const {activeMeetings, children} = this.props;
