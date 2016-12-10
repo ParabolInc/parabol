@@ -11,6 +11,9 @@ import appTheme from 'universal/styles/theme/appTheme';
 import AdminUserRow from 'universal/modules/userDashboard/components/AdminUserRow/AdminUserRow';
 import InvoiceRow from 'universal/modules/userDashboard/components/InvoiceRow/InvoiceRow';
 import Button from 'universal/components/Button/Button';
+import brandMark from 'universal/styles/theme/images/brand/mark-color.svg';
+import makeDateString from 'universal/utils/makeDateString';
+import {cardBorderTop} from 'universal/styles/helpers';
 
 const inlineBlockStyle = {
   display: 'inline-block',
@@ -21,7 +24,8 @@ const inlineBlockStyle = {
 
 class OrganizationContainer extends Component {
   render() {
-    const {params: {orgId}, styles} = this.props;
+    const {params: {orgId}, styles, org} = this.props;
+    const {createdAt, name: orgName, picture: orgAvatar, activeUsers, totalUsers} = org;
     return (
       <UserSettingsWrapper activeTab={ORGANIZATIONS}>
         <div className={css(styles.wrapper)}>
@@ -30,19 +34,17 @@ class OrganizationContainer extends Component {
             <div style={inlineBlockStyle}>Back to Organizations</div>
           </Link>
           <div className={css(styles.avatarAndName)}>
-            <div className={css(styles.avatar)}></div>
+            <img className={css(styles.avatar)} height={100} width={100} src={orgAvatar}/>
             <div className={css(styles.orgNameAndDetails)}>
               <div className={css(styles.orgName)}>
-                Parabol
+                {orgName}
               </div>
               <div className={css(styles.orgDetails)}>
-                <span>12 Active Users * </span>
-                <span>14 Total Users * </span>
-                <span>Created October 10, 2016</span>
+                {activeUsers} Active Users • {totalUsers} Total Users • Created {makeDateString(createdAt, false)}
               </div>
             </div>
           </div>
-          <div className={css(styles.adminsBlock)}>
+          <div className={css(styles.orgBlock)}>
             <div className={css(styles.adminsHeader)}>
               <span>ADMINS</span>
               <span>+ New Admin</span>
@@ -85,6 +87,16 @@ class OrganizationContainer extends Component {
   }
 }
 
+OrganizationContainer.defaultProps = {
+  org: {
+    activeUsers: 12,
+    createdAt: new Date(),
+    name: 'Parabol',
+    picture: brandMark,
+    totalUsers: 14
+
+  }
+};
 const styleThunk = () => ({
   adminsBlock: {
     display: 'flex',
@@ -102,14 +114,32 @@ const styleThunk = () => ({
   },
 
   avatar: {
-    width: 100,
-    height: 100,
-    background: 'black',
     borderRadius: '10%'
   },
 
   infoAndUpdate: {
     display: 'flex'
+  },
+
+  orgBlock: {
+    display: 'flex',
+    margin: '1rem 0',
+    backgroundColor: '#fff',
+    border: `1px solid ${ui.cardBorderColor}`,
+    borderRadius: ui.cardBorderRadius,
+    maxWidth: ui.cardMaxWidth,
+    minHeight: ui.cardMinHeight,
+    paddingTop: '.1875rem',
+    position: 'relative',
+    width: '100%',
+
+    '::after': {
+      ...cardBorderTop
+    },
+  },
+  orgDetails: {
+    fontWeight: 700,
+    fontSize: appTheme.typography.s3
   },
 
   orgNameAndDetails: {
