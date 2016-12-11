@@ -1,3 +1,7 @@
+import shortid from 'shortid';
+import {TRIAL_PERIOD} from 'server/utils/serverConstants';
+import ms from 'ms';
+import {TRIAL_EXPIRED, TRIAL_EXPIRES_SOON} from 'universal/utils/constants'
 /* eslint-disable max-len */
 // taya, jordan, terry, matt
 // const productTeam = [
@@ -26,22 +30,79 @@ exports.up = async(r) => {
   ];
   await Promise.all(indices);
 
-  // const fields = [
-  //   r.table('User')
-  //     .getAll(r.args(engineeringTeam), {index: 'id'})
-  //     .update({tms: ['team123', 'team456']}),
-  //   r.table('User')
-  //     .get(productTeam[0])
-  //     .update({tms: ['team123']})
-  // ];
-  // await Promise.all(fields);
+  const leaders = await r.table('TeamMember')
+    .filter({isLead: true});
+  const orggedLeaders = leaders.map((leader) => {
+    return {
+      ...leader,
+      billingLeaders: [leader.userId],
+      orgId: shortid.generate(),
+      orgName: `${leader.preferredName}'s Org`,
+      expiresSoonId: shortid.generate(),
+      expiredId: shortid.generate(),
+      varList: [trialExpiresAt],
+    }
+  });
+  const now = new Date();
+  const trialExpiresAt = now + TRIAL_PERIOD;
+  await r.expr(orggedLeaders)
+    .forEach((leader) => {
+      return r.table('Organization')
+        .insert({
+          id: leader('orgId'),
+          billingLeaders: leader('billingLeaders'),
+          createdAt: now,
+          isTrial: true,
+          name: leader('orgName'),
+          updatedAt: now,
+          validUntil: trialExpiresAt
+        })
+        .do(() => {
+          return r.table('Team')
+            .get(leader('teamId')).
+            update({
+              orgId: leader('orgId')
+            })
+        })
+        .do(() => {
+          return r.table('Notification')
+            .insert([
+              {
+                id: leader('expiresSoonId'),
+                parentId: leader('expiresSoonId'),
+                type: TRIAL_EXPIRES_SOON,
+                varList: leader('varList'),
+                startAt: now + ms('14d'),
+                endAt: trialExpiresAt,
+                userId,
+                orgId: leader('orgId'),
+              },
+              {
+                id: leader('expiredId'),
+                parentId: leader('expiredId'),
+                type: TRIAL_EXPIRED,
+                varList: leader('varList'),
+                startAt: trialExpiresAt,
+                endAt: trialExpiresAt + ms('10y'),
+                userId,
+                orgId: leader('orgId'),
+              }
+            ])
+        })
+    })
+    .do(() => {
+      return r.table('User').update({
+        trialExpiresAt
+      });
+    });
 };
 
 exports.down = async(r) => {
-  // const fields = [
-  //   r.table('User')
-  //     .getAll(r.args(productTeam))
-  //     .update({tms: []})
-  // ];
-  // await Promise.all(fields);
+  const tables = [
+    r.tableDrop('Organization'),
+    r.tableDrop('Notification'),
+    r.table('Team').replace((row) => row.without('orgId')),
+    r.table('User').replace((row) => row.without('trialExpiresAt'))
+  ];
+  await Promise.all(tables);
 };

@@ -3,25 +3,13 @@ import Organization from 'universal/modules/userDashboard/components/Organizatio
 
 const organizationContainer = `
 query {
-  project @cached(type: "Project") {
-    content
-    createdBy
+  organization(orgId: $orgId) @live {
     id
-    status
-    teamMemberId
-    updatedAt
-    teamMember @cached(type: "TeamMember") {
-      id
-      picture
-      preferredName
-    }
-    team @cached(type: "Team") {
-      id
-      name
-    }
-  }
-  user @cached(type: "User") {
-    id
+    createdAt
+    name
+    picture
+    activeUsers
+    totalUsers
   }
 }
 `;

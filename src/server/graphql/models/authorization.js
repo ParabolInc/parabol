@@ -80,3 +80,12 @@ export const requireWebsocketExchange = (exchange) => {
     throw errorObj({_error: 'this requires a websocket channel exchange'});
   }
 };
+
+export const requireOrgLeader = async (authToken, orgId) => {
+  const r = getRethink();
+  const billingLeaders = await r.table('TeamMember').get(orgMemberId);
+  if (!orgMember || !orgMember.isLead) {
+    throw errorObj({_error: 'Unauthorized. Only the team leader promote someone to lead'});
+  }
+  return orgMember;
+}

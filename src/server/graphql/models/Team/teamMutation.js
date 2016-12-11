@@ -474,7 +474,7 @@ export default {
         validUntil: trialExpiresAt
       })
         .do(() => {
-          return r.table('Notifications').insert([
+          return r.table('Notification').insert([
             {
               id: expiresSoonId,
               parentId: expiresSoonId,
