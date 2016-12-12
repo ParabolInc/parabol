@@ -25,6 +25,7 @@ exports.up = async(r) => {
   } catch(e) {}
   const indices = [
     r.table('Team').indexCreate('orgId'),
+    r.table('Organization').indexCreate('billingLeaders', {multi: true}),
     r.table('Notification').indexCreate('orgId'),
     r.table('Notification').indexCreate('parentId'),
     r.table('Notification').indexCreate('userId'),
