@@ -81,7 +81,6 @@ const ProjectColumn = (props) => {
           menuWidth="10rem"
           toggle={AddProjectButton}
           toggleLabel={label}
-          toggleClassName={css(styles.addIcon, styles[status])}
           toggleHeight="1.5rem" label="Select Team:"
         >
           {menuItems.map((item, idx) =>
@@ -220,23 +219,6 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.s3,
     fontWeight: 700,
     textTransform: 'uppercase'
-  },
-
-  addIcon: {
-    // #shame overriding FA
-    fontSize: '28px !important',
-    height: '1.5rem',
-    lineHeight: '1.5rem !important',
-    paddingTop: '1px',
-
-    ':hover': {
-      cursor: 'pointer',
-      opacity: '.5'
-    },
-    ':focus': {
-      cursor: 'pointer',
-      opacity: '.5'
-    }
   },
 
   ...projectStatusStyles('backgroundColor', 'Bg'),
