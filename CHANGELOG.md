@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v0.13.5 - 08-Dec-2016
+## v0.13.5 - 12-Dec-2016
 ### Fixed
 - #556 archived cards no longer let you change the owner
 - #557 blur agenda item input after submit
