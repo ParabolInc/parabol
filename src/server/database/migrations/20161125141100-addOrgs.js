@@ -1,7 +1,7 @@
 import shortid from 'shortid';
-import {TRIAL_PERIOD} from 'server/utils/serverConstants';
+import {TRIAL_PERIOD} from '../../utils/serverConstants';
 import ms from 'ms';
-import {TRIAL_EXPIRED, TRIAL_EXPIRES_SOON} from 'universal/utils/constants'
+import {TRIAL_EXPIRED, TRIAL_EXPIRES_SOON} from '../../../universal/utils/constants'
 /* eslint-disable max-len */
 // taya, jordan, terry, matt
 // const productTeam = [
@@ -20,7 +20,9 @@ exports.up = async(r) => {
     r.tableCreate('Organization'),
     r.tableCreate('Notification')
   ];
-  await Promise.all(tables);
+  try {
+    await Promise.all(tables);
+  } catch(e) {}
   const indices = [
     r.table('Team').indexCreate('orgId'),
     r.table('Notification').indexCreate('orgId'),
@@ -28,8 +30,12 @@ exports.up = async(r) => {
     r.table('Notification').indexCreate('userId'),
 
   ];
-  await Promise.all(indices);
+  try {
+    await Promise.all(indices);
+  } catch(e) {}
 
+  const now = new Date();
+  const trialExpiresAt = new Date(now + TRIAL_PERIOD);
   const leaders = await r.table('TeamMember')
     .filter({isLead: true});
   const orggedLeaders = leaders.map((leader) => {
@@ -43,8 +49,6 @@ exports.up = async(r) => {
       varList: [trialExpiresAt],
     }
   });
-  const now = new Date();
-  const trialExpiresAt = now + TRIAL_PERIOD;
   await r.expr(orggedLeaders)
     .forEach((leader) => {
       return r.table('Organization')
@@ -72,9 +76,9 @@ exports.up = async(r) => {
                 parentId: leader('expiresSoonId'),
                 type: TRIAL_EXPIRES_SOON,
                 varList: leader('varList'),
-                startAt: now + ms('14d'),
+                startAt: new Date(now + ms('14d')),
                 endAt: trialExpiresAt,
-                userId,
+                userId: leader('userId'),
                 orgId: leader('orgId'),
               },
               {
@@ -83,8 +87,8 @@ exports.up = async(r) => {
                 type: TRIAL_EXPIRED,
                 varList: leader('varList'),
                 startAt: trialExpiresAt,
-                endAt: trialExpiresAt + ms('10y'),
-                userId,
+                endAt: new Date(trialExpiresAt + ms('10y')),
+                userId: leader('userId'),
                 orgId: leader('orgId'),
               }
             ])
@@ -101,6 +105,7 @@ exports.down = async(r) => {
   const tables = [
     r.tableDrop('Organization'),
     r.tableDrop('Notification'),
+    r.table('Team').indexDrop('orgId'),
     r.table('Team').replace((row) => row.without('orgId')),
     r.table('User').replace((row) => row.without('trialExpiresAt'))
   ];

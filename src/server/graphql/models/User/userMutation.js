@@ -44,7 +44,7 @@ export default {
       // TODO loginsCount and blockedFor are not a part of this API response
       const auth0User = {
         cachedAt: now,
-        cacheExpiresAt: new Date(now.valueOf() + ms('30d')),
+        cacheExpiresAt: new Date(now + ms('30d')),
         // from auth0
         email: userInfo.email,
         emailVerified: userInfo.email_verified,

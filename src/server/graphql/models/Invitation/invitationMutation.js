@@ -147,7 +147,7 @@ export default {
       const now = new Date();
       const hashedToken = await hashInviteTokenKey(inviteToken);
       const invitedBy = `${userId}::${teamId}`;
-      const tokenExpiration = new Date(now.valueOf() + INVITATION_LIFESPAN);
+      const tokenExpiration = new Date(now + INVITATION_LIFESPAN);
       await r.table('Invitation').get(inviteId).update({
         hashedToken,
         invitedBy,

@@ -459,7 +459,7 @@ export default {
 
       // RESOLUTION
       const now = new Date();
-      const trialExpiresAt = now + TRIAL_PERIOD;
+      const trialExpiresAt = new Date(now + TRIAL_PERIOD);
       const orgId = shortid.generate();
       const validNewTeam = {...data, orgId};
       const expiresSoonId = shortid.generate();
@@ -480,7 +480,7 @@ export default {
               parentId: expiresSoonId,
               type: TRIAL_EXPIRES_SOON,
               varList: [trialExpiresAt],
-              startAt: now + ms('14d'),
+              startAt: new Date(now + ms('14d')),
               endAt: trialExpiresAt,
               userId,
               orgId,
@@ -491,7 +491,7 @@ export default {
               type: TRIAL_EXPIRED,
               varList: [trialExpiresAt],
               startAt: trialExpiresAt,
-              endAt: trialExpiresAt + ms('10y'),
+              endAt: new Date(trialExpiresAt + ms('10y')),
               userId,
               orgId,
             }
