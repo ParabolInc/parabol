@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 
 const Tab = (props) => {
   const {icon, isActive, label, onClick, styles} = props;
@@ -25,11 +26,13 @@ const Tab = (props) => {
 const styleThunk = () => ({
   root: {
     alignItems: 'center',
+    color: appTheme.palette.dark,
     display: 'flex',
     flexBasis: 0,
     flexDirection: 'column',
     flexGrow: 1,
-    padding: '.5rem',
+    fontSize: appTheme.typography.s3,
+    padding: '0 0 .1875rem'
   },
 
   canClick: {
@@ -37,7 +40,8 @@ const styleThunk = () => ({
   },
 
   icon: {
-
+    fontSize: ui.iconSize2x,
+    opacity: '.5'
   },
 
   isActive: {

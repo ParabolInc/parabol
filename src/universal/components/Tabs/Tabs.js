@@ -9,9 +9,9 @@ const Tabs = (props) => {
   const tabWidth = 100 / Children.count(children);
   const inkBarStyles = {
     width: `${tabWidth}%`,
-    height: 4,
+    height: 2,
     background: appTheme.palette.cool,
-    transform: `translate3d(${activeIdx * 100}%, 2px, 0)`
+    transform: `translate3d(${activeIdx * 100}%, 4px, 0)`
   };
   const properChildren = Children.map(children, (child, idx) => cloneElement(child, {
     isActive: idx === activeIdx
@@ -30,7 +30,8 @@ const styleThunk = () => ({
   tabsAndBar: {
     display: 'flex',
     flexDirection: 'column',
-    width: '40%',
+    maxWidth: '24rem',
+    width: '100%',
   },
 
   tabs: {
@@ -41,4 +42,3 @@ const styleThunk = () => ({
   inkBar: {}
 });
 export default withStyles(styleThunk)(Tabs);
-
