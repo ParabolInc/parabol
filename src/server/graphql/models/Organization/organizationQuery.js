@@ -6,21 +6,20 @@ import {requireAuth} from '../authorization';
 export default {
   getOrgCount: {
     type: new GraphQLList(Organization),
-    args: {
-      orgId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The organization ID'
-      }
-    },
-    async resolve(source, {orgId}, {authToken}) {
+    async resolve(source, args, {authToken}) {
       const r = getRethink();
       const userId = requireAuth(authToken);
-      const users = await r.table('Team')
-        .getAll(orgId, {index: 'orgId'})('id')
+      const users = await r.table('Organization')
+        .getAll(userId, {index: 'billingLeaders'})('id')
         .coerceTo('array')
-        .do((teamId) => {
+        .do((orgIds) => {
+          return r.table('Team')
+            .getAll(r.args(orgIds), {index: 'orgId'})('id')
+            .coerceTo('array')
+        })
+        .do((teamIds) => {
           return r.table('TeamMember')
-            .getAll(teamId, {index: 'teamId'})('userId')
+            .getAll(r.args(teamIds), {index: 'teamId'})('userId')
             .coerceTo('array')
             .distinct()
         })
@@ -30,7 +29,7 @@ export default {
             .pluck('id', 'isActive')
         });
       const activeCount = users.filter((user) => user.isActive).length;
-      const inactiveCount= users.length - activeCount;
+      const inactiveCount = users.length - activeCount;
       return {
         activeCount,
         inactiveCount

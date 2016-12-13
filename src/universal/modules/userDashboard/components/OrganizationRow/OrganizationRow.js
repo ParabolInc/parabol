@@ -19,8 +19,8 @@ const OrganizationRow = (props) => {
     styles
   } = props;
   return (
-    <div className={css(styles.userRow)} onClick={onRowClick}>
-      <div className={css(styles.userAvatar)}>
+    <div className={css(styles.userRow)} >
+      <div className={css(styles.userAvatar)} onClick={onRowClick}>
         {picture ?
           <Avatar hasBadge={false} picture={picture} size="small"/> :
           <AvatarPlaceholder/>
@@ -28,7 +28,7 @@ const OrganizationRow = (props) => {
       </div>
       <div className={css(styles.userInfo)}>
         <div className={css(styles.nameAndTags)}>
-          <div className={css(styles.name)}>
+          <div className={css(styles.name)} onClick={onRowClick}>
             {name}
           </div>
           {isLead &&
@@ -69,7 +69,7 @@ const styleThunk = () => ({
   },
 
   userAvatar: {
-    // Define
+    cursor: 'pointer'
   },
 
   userInfo: {
@@ -87,6 +87,7 @@ const styleThunk = () => ({
 
   name: {
     color: appTheme.palette.dark,
+    cursor: 'pointer',
     display: 'inline-block',
     fontSize: appTheme.typography.s4,
     lineHeight: '1.625rem',

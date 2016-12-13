@@ -26,6 +26,10 @@ export const Organization = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'true if the org is still in the trial period'
     },
+    members: {
+      type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
+      description: 'a list of all members in the org, denormalized from org->team->teamMember->user'
+    },
     name: {type: GraphQLString, description: 'The name of the organization'},
     updatedAt: {
       type: GraphQLISO8601Type,

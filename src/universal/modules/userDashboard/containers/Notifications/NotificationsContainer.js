@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {TRIAL_EXPIRES_SOON, APPROVE_TO_ORG} from 'universal/utils/constants';
+import {TRIAL_EXPIRES_SOON, REQUEST_NEW_USER} from 'universal/utils/constants';
 import Notification from 'universal/modules/userDashboard/components/Notification/Notification';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
 import {NOTIFICATIONS} from 'universal/utils/constants';

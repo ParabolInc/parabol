@@ -6,9 +6,9 @@ import {cashay} from 'cashay';
 // export const TRIAL_EXPIRES_SOON = 'TRIAL_EXPIRES_SOON';
 // export const TRIAL_EXPIRED = 'TRIAL_EXPIRED';
 // export const PAYMENT_REJECTED = 'PAYMENT_REJECTED';
-// export const APPROVE_TO_ORG = 'APPROVE_TO_ORG';
-// export const ACCEPT_TO_ORG = 'ACCEPT_TO_ORG';
-// export const DENY_TO_ORG = 'DENY_TO_ORG';
+// export const REQUEST_NEW_USER = 'REQUEST_NEW_USER';
+// export const ACCEPT_NEW_USER = 'ACCEPT_NEW_USER';
+// export const DENY_NEW_USER = 'DENY_NEW_USER';
 
 
 const normalizingLookup = {
@@ -18,7 +18,7 @@ const normalizingLookup = {
     const daysLeft = fromNow(expiresAt);
     const content = `You're free trial will expire in ${daysLeft}. Want another free month? Just add your billing info`;
   },
-  APPROVE_TO_ORG: (variableList) => ({
+  REQUEST_NEW_USER: (variableList) => ({
     inviterName: variableList[0],
     inviterId: variableList[1],
     inviteeEmail: variableList[2],

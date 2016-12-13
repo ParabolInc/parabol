@@ -5,6 +5,7 @@ import {
   AGENDA,
   ARCHIVED_PROJECTS,
   INVITATIONS,
+  NOTIFICATIONS,
   ORGANIZATIONS,
   TEAM,
   TEAM_MEMBERS,
@@ -100,6 +101,19 @@ export default [
         email
         tokenExpiration
         updatedAt
+      }
+    }`
+  },
+  {
+    channel: NOTIFICATIONS,
+    string: `
+    subscription {
+      notifications {
+        id
+        orgId
+        parentId
+        type
+        varList
       }
     }`
   },

@@ -19,13 +19,22 @@ export const ensureUniqueId = async (table, id) => {
   }
 };
 
-// could make this sync if we make teamId orgId::shortId, but we do this so rarely
-export const ensureUserInOrg = async (tms = [], orgId) => {
+export const ensureUserInOrg = async (userId, orgId) => {
   const r = getRethink();
-  const res = await r.table('Team').getAll(r.args(tms))('orgId');
-  if (!res.includes(orgId)) {
-    throw errorObj({type: `user does not belong to org ${orgId}`});
+  const inOrg = await r.table('Organization').get(orgId)('members').contains(userId);
+  if (!inOrg) {
+    throw errorObj({type: `user ${userId} does not belong to org ${orgId}`});
   }
+  return true;
+};
+
+export const ensureUserIsBillingLeader = async (userId, orgId) => {
+  const r = getRethink();
+  const isBillingLeader = await r.table('Organization').get(orgId)('billingLeaders').contains(userId);
+  if (!isBillingLeader) {
+    throw errorObj({type: `user ${userId} is not a billing leader in org ${orgId}`});
+  }
+  return true;
 };
 
 // if the add & update schemas have different required fields, use this

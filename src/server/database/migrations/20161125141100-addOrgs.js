@@ -29,7 +29,7 @@ exports.up = async(r) => {
     r.table('Notification').indexCreate('orgId'),
     r.table('Notification').indexCreate('parentId'),
     r.table('Notification').indexCreate('userId'),
-
+    r.table('User').indexCreate('email')
   ];
   try {
     await Promise.all(indices);

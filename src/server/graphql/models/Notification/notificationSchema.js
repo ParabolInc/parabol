@@ -10,14 +10,14 @@ import {
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {nonnullifyInputThunk} from '../utils';
-import {TRIAL_EXPIRES_SOON, ACCEPT_TO_ORG} from 'universal/utils/constants';
+import {TRIAL_EXPIRES_SOON, ACCEPT_NEW_USER} from 'universal/utils/constants';
 
 export const NotificationType = new GraphQLEnumType({
   name: 'NotificationType',
   description: 'The kind of notification',
   values: {
     [TRIAL_EXPIRES_SOON]: {value: TRIAL_EXPIRES_SOON},
-    [ACCEPT_TO_ORG]: {value: ACCEPT_TO_ORG},
+    [ACCEPT_NEW_USER]: {value: ACCEPT_NEW_USER},
   }
 });
 

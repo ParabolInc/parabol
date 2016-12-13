@@ -42,12 +42,18 @@ export const TEAM_DASH = 'teamDash';
 export const USER_DASH = 'userDash';
 
 /* Notification Types */
+// Sent to billing leaders when their trial will expire in < 2 weeks [trialExpiresAt]
 export const TRIAL_EXPIRES_SOON = 'TRIAL_EXPIRES_SOON';
+// Sent to billing leaders when their trial has expired [trialExpiresAt]
 export const TRIAL_EXPIRED = 'TRIAL_EXPIRED';
 export const PAYMENT_REJECTED = 'PAYMENT_REJECTED';
-export const APPROVE_TO_ORG = 'APPROVE_TO_ORG';
-export const ACCEPT_TO_ORG = 'ACCEPT_TO_ORG';
-export const DENY_TO_ORG = 'DENY_TO_ORG';
+// Sent to billing leaders when an orgMember attempts to add a non-orgMember to a team
+// [inviterName, inviterId, inviteeEmail, invitedTeamName, invitedTeamId]
+export const REQUEST_NEW_USER = 'REQUEST_NEW_USER';
+// Sent to the orgMember that generated the new user request
+export const ACCEPT_NEW_USER = 'ACCEPT_NEW_USER';
+// Sent to the orgMember that generated the new user request
+export const DENY_NEW_USER = 'DENY_NEW_USER';
 
 /* User Settings */
 export const SETTINGS = 'settings';

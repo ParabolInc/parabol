@@ -1,7 +1,7 @@
 import {
-  APPROVE_TO_ORG,
-  ACCEPT_TO_ORG,
-  DENY_TO_ORG,
+  REQUEST_NEW_USER,
+  ACCEPT_NEW_USER,
+  DENY_NEW_USER,
   TRIAL_EXPIRES_SOON
 } from 'universal/utils/constants';
 import TrialExpiresSoon from './TrialExpiresSoon';

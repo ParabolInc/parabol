@@ -34,7 +34,7 @@ import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeS
 import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 import makeStep2Schema from 'universal/validation/makeStep2Schema';
 import makeAddTeamServerSchema from 'universal/validation/makeAddTeamServerSchema';
-import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
+import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED, REQUEST_NEW_USER} from 'universal/utils/constants';
 import ms from 'ms';
 
 export default {
@@ -409,8 +409,13 @@ export default {
       }
     },
     async resolve(source, args, {authToken, socket}) {
+      const r = getRethink();
+
       // AUTH
+      const {orgId} = args.newTeam;
+      const userId = authToken.sub;
       requireWebsocket(socket);
+      await ensureUserInOrg(userId, orgId);
 
       // VALIDATION
       const schema = makeAddTeamServerSchema({inviteEmails: [], teamMemberEmails: []});
@@ -418,7 +423,6 @@ export default {
       const teamId = newTeam.id;
       handleSchemaErrors(errors);
       await ensureUniqueId('Team', teamId);
-      await ensureUserInOrg(authToken.tms, newTeam.orgId);
 
       // RESOLUTION
       const authTokenObj = socket.getAuthToken();
@@ -426,7 +430,65 @@ export default {
       socket.setAuthToken(authTokenObj);
       await createTeamAndLeader(authToken, newTeam);
       if (invitees && invitees.length) {
-        await asyncInviteTeam(authToken, teamId, invitees);
+        const inviteeEmails = invitees.map((i) => i.email);
+        const orgMemberInvitees = await r.table('User')
+          .getAll(r.args(inviteeEmails), {index: 'email'})
+          .pluck('id', 'email')
+          // now that we know they exist in the system, see if they exist in the org
+          .filter((row) => {
+            // i wonder if this is inefficient in rethinkDB or if they cache the result?
+            return r.table('Organization').get(orgId)('members').contains(row('id'))
+          });
+        const inOrgMembers = [];
+        const outOfOrgEmails = [];
+        for (let i = 0; i < invitees.length; i++) {
+          const invitee = invitees[i];
+          const isMember = orgMemberInvitees.find((i) => i.email === invitee.email);
+          if (isMember) {
+            inOrgMembers.push(invitee)
+          } else {
+            outOfOrgEmails.push(invitee.email);
+          }
+        }
+        if (inOrgMembers.length > 0) {
+          await asyncInviteTeam(authToken, teamId, invitees);
+        }
+
+        if (outOfOrgEmails.length) {
+          // add a notification to the billing leaders
+          const {billingLeaders, inviter} = await r.table('Organization')
+            .get(orgId)('billingLeaders')
+            .do((billingLeaders) => {
+              return {
+                billingLeaders,
+                inviter: r.table('User').get(userId).pluck('preferredName', 'id')
+              }
+            });
+          const parentId = shortid.generate();
+          const notificationIds = billingLeaders.reduce((obj, billingLeaderId) => {
+            obj[billingLeaderId] = shortid.generate();
+            return obj;
+          }, {});
+          // send a new notification to each billing leader concerning each out-of-org invitee
+          await r.expr(outOfOrgEmails)
+            .forEach((invitee) => {
+              return r.expr(billingLeaders)
+                .forEach((billingLeader) => {
+                  return r.table('Notification')
+                    .insert({
+                      id: notificationIds[billingLeader],
+                      parentId,
+                      type: REQUEST_NEW_USER,
+                      varList: [inviter.name, inviter.id, invitee, newTeam.name, newTeam.id],
+                      startAt: new Date(),
+                      endAt: new Date(Date.now() + ms('10y')),
+                      userId: billingLeader,
+                      orgId,
+                    })
+                })
+            });
+          // TODO: send a toast???
+        }
       }
       return true;
     }
@@ -469,6 +531,7 @@ export default {
         billingLeaders: [userId],
         createdAt: now,
         isTrial: true,
+        members: [userId],
         name: `${user.preferredName}'s Org`,
         updatedAt: now,
         validUntil: trialExpiresAt
