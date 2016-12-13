@@ -23,7 +23,7 @@ const inlineBlockStyle = {
 };
 
 const Organization = (props) => {
-  const {params: {orgId}, styles, org} = props;
+  const {styles, org} = props;
   const {createdAt, name: orgName, picture: orgAvatar, activeUsers, totalUsers} = org;
   return (
     <UserSettingsWrapper activeTab={ORGANIZATIONS}>

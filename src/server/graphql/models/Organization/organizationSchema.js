@@ -1,4 +1,3 @@
-import getRethink from 'server/database/rethinkDriver';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -6,10 +5,8 @@ import {
   GraphQLID,
   GraphQLBoolean,
   GraphQLInt,
-  GraphQLList,
-  GraphQLEnumType
+  GraphQLList
 } from 'graphql';
-import {nonnullifyInputThunk} from '../utils';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 
 export const Organization = new GraphQLObjectType({
@@ -18,7 +15,7 @@ export const Organization = new GraphQLObjectType({
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique organization ID'},
     billingLeaders: {
-      type: new GraphQLList(GraphQLNonNull(GraphQLID)),
+      type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
       description: 'The userId of the person who pays for the org'
     },
     createdAt: {
@@ -37,23 +34,15 @@ export const Organization = new GraphQLObjectType({
     validUntil: {
       type: GraphQLISO8601Type,
       description: 'The datetime the trial is up (if isTrial) or money is due (if !isTrial)'
-    }
+    },
     /* GraphQL sugar */
-    // organizationMembers: {
-    //   type: new GraphQLList(OrgMember),
-    //   description: 'All the organization members associated who can join this organization',
-    //   async resolve({id}) {
-    //     const r = getRethink();
-    //     return await r.table('OrgMember').getAll(id, {index: 'organizationId'});
-    //   }
-    // }
+    activeCount: {
+      type: GraphQLInt,
+      description: 'The count of active members that the org is charged for'
+    },
+    inactiveCount: {
+      type: GraphQLInt,
+      description: 'The count of inactive members that the org is not charged for'
+    }
   })
 });
-
-// const organizationInputThunk = () => ({
-//   id: {type: GraphQLID, description: 'The unique organization ID'},
-//   name: {type: GraphQLString, description: 'The name of the organization'},
-// });
-//
-// export const CreateTeamInput = nonnullifyInputThunk('CreateTeamInput', organizationInputThunk, ['id', 'name']);
-// export const UpdateTeamInput = nonnullifyInputThunk('UpdateTeamInput', organizationInputThunk, ['id']);

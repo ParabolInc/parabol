@@ -110,9 +110,18 @@ export const User = new GraphQLObjectType({
       description: 'Array of identifier + ip pairs'
     },
     /* User Profile */
-    welcomeSentAt: {
-      type: GraphQLISO8601Type,
-      description: 'The datetime that we sent them a welcome email'
+    broadcastFlags: {
+      type: GraphQLInt,
+      description: 'flag to determine which broadcasts to show'
+
+    },
+    // lastLogin: {
+    //   type: GraphQLISO8601Type,
+    //   description: 'The last time the user logged in or used a websocket'
+    // },
+    isActive: {
+      type: GraphQLBoolean,
+      description: 'true if the user is currently being billed for service. set to true for every websocket connection'
     },
     preferredName: {
       type: GraphQLString,
@@ -122,14 +131,9 @@ export const User = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The datetime the users free trial ends'
     },
-    lastLogin: {
+    welcomeSentAt: {
       type: GraphQLISO8601Type,
-      description: 'The last time the user logged in or used a websocket'
-    },
-    broadcastFlags: {
-      type: GraphQLInt,
-      description: 'flag to determine which broadcasts to show'
-
+      description: 'The datetime that we sent them a welcome email'
     },
     /* GraphQL Sugar */
     memberships: {

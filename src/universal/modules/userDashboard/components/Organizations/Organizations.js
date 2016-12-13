@@ -5,9 +5,11 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import FontAwesome from 'react-fontawesome';
+import OrganizationRow from 'universal/modules/userDashboard/components/OrganizationRow/OrganizationRow';
+import {withRouter} from 'react-router';
 
 const Organizations = (props) => {
-  const {organizations, styles} = props;
+  const {organizations, router, styles} = props;
   return (
     <UserSettingsWrapper activeTab={ORGANIZATIONS}>
       <div>
@@ -22,7 +24,11 @@ const Organizations = (props) => {
       </div>
       <div className={css(styles.orgList)}>
         {organizations.map((organization) =>
-          <OrganizationRow key={`orgRow${organization.id}`} organization={organization}/>
+          <OrganizationRow
+            key={`orgRow${organization.id}`}
+            name={organization.name}
+            onRowClick={() => router.push(`/me/organizations/${organization.id}`)}
+          />
         )}
       </div>
 
@@ -35,4 +41,4 @@ const styleThunk = () => ({
   orgList: {}
 });
 
-export default withStyles(styleThunk)(Organizations);
+export default withRouter(withStyles(styleThunk)(Organizations));

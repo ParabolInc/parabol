@@ -53,5 +53,9 @@ export default function scConnectionHandler(exchange) {
       authToken.tms = tms;
       socket.setAuthToken(authToken);
     }
+    // no need to wait for this, it's just for billing
+    r.table('User').get(authToken.sub).update({
+      isActive: true
+    })
   };
 }
