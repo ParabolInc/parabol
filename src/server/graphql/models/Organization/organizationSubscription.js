@@ -15,6 +15,9 @@ export default {
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
       r.table('Organization')
         .getAll(userId, {index: 'billingLeaders'})
+        .merge((row) => ({
+          memberCount: row('members').count()
+        }))
         .pluck(requestedFields)
         .changes({includeInitial: true})
         .run({cursor: true}, changefeedHandler);

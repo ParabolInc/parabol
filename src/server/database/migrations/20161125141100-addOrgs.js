@@ -22,18 +22,28 @@ exports.up = async(r) => {
   ];
   try {
     await Promise.all(tables);
-  } catch(e) {}
+  } catch (e) {
+  }
   const indices = [
     r.table('Team').indexCreate('orgId'),
     r.table('Organization').indexCreate('billingLeaders', {multi: true}),
     r.table('Notification').indexCreate('orgId'),
     r.table('Notification').indexCreate('parentId'),
     r.table('Notification').indexCreate('userId'),
-    r.table('User').indexCreate('email')
+    r.table('User').indexCreate('email'),
   ];
   try {
     await Promise.all(indices);
-  } catch(e) {}
+  } catch (e) {
+  }
+
+  const waitIndices = [
+    r.table('Team').indexWait('orgId'),
+    r.table('Organization').indexWait('billingLeaders'),
+    r.table('Notification').indexWait('orgId', 'parentId', 'userId'),
+    r.table('User').indexWait('email')
+  ];
+  await Promise.all(waitIndices);
 
   const now = new Date();
   const trialExpiresAt = new Date(now + TRIAL_PERIOD);
@@ -52,23 +62,30 @@ exports.up = async(r) => {
   });
   await r.expr(orggedLeaders)
     .forEach((leader) => {
-      return r.table('Organization')
-        .insert({
-          id: leader('orgId'),
-          billingLeaders: leader('billingLeaders'),
-          createdAt: now,
-          isTrial: true,
-          name: leader('orgName'),
-          updatedAt: now,
-          validUntil: trialExpiresAt
+      // add the org to the teams that the leader owns
+      return r.table('Team')
+        .get(leader('teamId')).update({
+          orgId: leader('orgId')
         })
+        // add the org itself
         .do(() => {
-          return r.table('Team')
-            .get(leader('teamId')).
-            update({
-              orgId: leader('orgId')
+          return r.table('Organization')
+            .insert({
+              id: leader('orgId'),
+              billingLeaders: leader('billingLeaders'),
+              createdAt: now,
+              isTrial: true,
+              // get all the teams the leader leads, and all distinct users on those teams
+              // don't get it from the table itself since the orgId doesn't exist yet
+              members: r.table('TeamMember')
+                    .getAll(leader('teamId'), {index: 'teamId'})('userId')
+                    .distinct(),
+              name: leader('orgName'),
+              updatedAt: now,
+              validUntil: trialExpiresAt
             })
         })
+        // add expiry notifications
         .do(() => {
           return r.table('Notification')
             .insert([
@@ -94,12 +111,13 @@ exports.up = async(r) => {
               }
             ])
         })
+        // set an expiry for every team leader
+        .do(() => {
+          return r.table('User').update({
+            trialExpiresAt
+          });
+        });
     })
-    .do(() => {
-      return r.table('User').update({
-        trialExpiresAt
-      });
-    });
 };
 
 exports.down = async(r) => {

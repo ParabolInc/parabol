@@ -12,21 +12,16 @@ query {
     name
     validUntil
   }
-  getOrgCount {
-    id
-    activeCount
-  }
 }
 `;
 
 const mapStateToProps = (state, props) => {
-  const {organizations, getOrgCount} = cashay.query(teamProjectsHeaderQuery, {
+  const {organizations} = cashay.query(teamProjectsHeaderQuery, {
     op: 'organizationsContainer',
     sort: {
       organizations: (a, b) => a.name > b.name ? 1 : -1
     }
   }).data;
-  console.log('ge', getOrgCount)
   return {
     organizations
   };

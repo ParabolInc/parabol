@@ -125,6 +125,7 @@ export default [
         id
         createdAt
         isTrial
+        memberCount
         name
         validUntil
       }

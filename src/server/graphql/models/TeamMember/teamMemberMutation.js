@@ -113,6 +113,13 @@ export default {
         .update({
           tms: r.row('tms').append(teamId).default([teamId])
         })
+        .do(() => {
+          return r.table('Organization')
+            .get(r.table('Team').get(teamId)('orgId'))
+            .update((row) => {
+              return row('members').append(userId).distinct()
+            })
+        })
         // get number of users
         .do(() => {
           return r.table('TeamMember')

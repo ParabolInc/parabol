@@ -30,6 +30,10 @@ export const Organization = new GraphQLObjectType({
       type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
       description: 'a list of all members in the org, denormalized from org->team->teamMember->user'
     },
+    memberCount: {
+      type: GraphQLInt,
+      description: 'The length of the members array'
+    },
     name: {type: GraphQLString, description: 'The name of the organization'},
     updatedAt: {
       type: GraphQLISO8601Type,
