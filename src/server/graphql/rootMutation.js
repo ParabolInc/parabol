@@ -3,6 +3,7 @@ import action from './models/Action/actionMutation';
 import agenda from './models/AgendaItem/agendaItemMutation';
 import invitation from './models/Invitation/invitationMutation';
 import meeting from './models/Meeting/meetingMutation';
+import organization from './models/Organization/organizationMutation';
 import presence from './models/Presence/presenceMutation';
 import project from './models/Project/projectMutation';
 import team from './models/Team/teamMutation';
@@ -13,6 +14,7 @@ const rootFields = Object.assign({},
   agenda,
   invitation,
   meeting,
+  organization,
   presence,
   project,
   team,

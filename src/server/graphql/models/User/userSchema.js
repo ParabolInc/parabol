@@ -127,6 +127,14 @@ export const User = new GraphQLObjectType({
       type: GraphQLString,
       description: 'The application-specific name, defaults to nickname'
     },
+    tms: {
+      type: new GraphQLList(GraphQLID),
+      description: 'all the teams the user is a part of'
+    },
+    orgs: {
+      type: new GraphQLList(GraphQLID),
+      description: 'all the orgs a user is a part of'
+    },
     trialExpiresAt: {
       type: GraphQLISO8601Type,
       description: 'The datetime the users free trial ends'

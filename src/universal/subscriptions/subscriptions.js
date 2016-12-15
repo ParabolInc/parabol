@@ -6,12 +6,14 @@ import {
   ARCHIVED_PROJECTS,
   INVITATIONS,
   NOTIFICATIONS,
+  ORGANIZATION,
   ORGANIZATIONS,
   TEAM,
   TEAM_MEMBERS,
   PRESENCE,
   PROJECTS,
-  USER
+  USER,
+  USERS_BY_IDS,
 } from 'universal/subscriptions/constants';
 
 // For now, use an array. In the future, we can make one exclusively for the server that doesn't need to reparse the AST
@@ -93,6 +95,17 @@ export default [
     }`
   },
   {
+    channel: USERS_BY_IDS,
+    string: `
+    subscription($userIds: [ID!]) {
+      usersByIds(userIds: $userIds) {
+        id
+        email
+        preferredName
+      }
+    }`
+  },
+  {
     channel: INVITATIONS,
     string: `
     subscription($teamId: ID!) {
@@ -118,16 +131,30 @@ export default [
     }`
   },
   {
-    channel: ORGANIZATIONS,
+    channel: ORGANIZATION,
     string: `
-    subscription {
-      organizations {
+    subscription($orgId: ID!) {
+      organization(orgId: $orgId) {
         id
         createdAt
         isTrial
         memberCount
         name
+        picture
         validUntil
+      }
+    }`
+  },
+  {
+    channel: ORGANIZATIONS,
+    string: `
+    subscription {
+      organizations {
+        id
+        isTrial
+        memberCount
+        name
+        picture
       }
     }`
   },

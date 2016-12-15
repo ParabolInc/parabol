@@ -14,6 +14,7 @@ import Button from 'universal/components/Button/Button';
 import brandMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import makeDateString from 'universal/utils/makeDateString';
 import {cardBorderTop} from 'universal/styles/helpers';
+import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/EditOrgName';
 
 const inlineBlockStyle = {
   display: 'inline-block',
@@ -22,9 +23,12 @@ const inlineBlockStyle = {
   verticalAlign: 'middle'
 };
 
+const initialValues = {orgName: ''};
+
 const Organization = (props) => {
   const {styles, org} = props;
-  const {createdAt, name: orgName, picture: orgAvatar, activeUsers, totalUsers} = org;
+  const {id: orgId, createdAt, name: orgName, picture: orgAvatar, activeUsers, totalUsers} = org;
+  initialValues.orgName = orgName;
   return (
     <UserSettingsWrapper activeTab={ORGANIZATIONS}>
       <div className={css(styles.wrapper)}>
@@ -35,9 +39,7 @@ const Organization = (props) => {
         <div className={css(styles.avatarAndName)}>
           <img className={css(styles.avatar)} height={100} width={100} src={orgAvatar}/>
           <div className={css(styles.orgNameAndDetails)}>
-            <div className={css(styles.orgName)}>
-              {orgName}
-            </div>
+            <EditOrgName initialValues={initialValues} orgName={orgName} orgId={orgId}/>
             <div className={css(styles.orgDetails)}>
               {activeUsers} Active Users • {totalUsers} Total Users • Created {makeDateString(createdAt, false)}
             </div>
@@ -45,11 +47,20 @@ const Organization = (props) => {
         </div>
         <div className={css(styles.orgBlock)}>
           <div className={css(styles.adminsHeader)}>
+            <div className={css(styles.headerTextBlock)}>
             <span>ADMINS</span>
-            <span>+ New Admin</span>
+            <span className={css(styles.addLeader)}>
+              <FontAwesome
+                className={css(styles.addLeaderIcon)}
+                name="plus-square-o"
+                title="Promote a member to billing leader"
+              />
+              New Admin
+            </span>
+            </div>
           </div>
           <div className={css(styles.listOfAdmins)}>
-            <AdminUserRow preferredName="Marimar Suárez Peñalva"/>
+            <AdminUserRow preferredName="Marimar Suárez Peñalva" email/>
             <AdminUserRow preferredName="Jordan Husney"/>
           </div>
         </div>
@@ -96,14 +107,22 @@ Organization.defaultProps = {
   }
 };
 const styleThunk = () => ({
+  addLeader: {
+    fontSize: appTheme.typography.s5,
+    color: appTheme.palette.cool
+  },
+
+  addLeaderIcon: {
+    marginRight: '.5rem'
+  },
+
   adminsBlock: {
     display: 'flex',
     flexDirection: 'column'
   },
 
   adminsHeader: {
-    display: 'flex',
-    justifyContent: 'space-between'
+    borderBottom: '1px solid #c3c5d1',
   },
 
   avatarAndName: {
@@ -115,17 +134,25 @@ const styleThunk = () => ({
     borderRadius: '10%'
   },
 
+  headerTextBlock: {
+    alignItems: 'center',
+    display: 'flex',
+    fontWeight: 700,
+    justifyContent: 'space-between',
+    margin: '1rem'
+  },
+
   infoAndUpdate: {
     display: 'flex'
   },
 
   orgBlock: {
     display: 'flex',
+    flexDirection: 'column',
     margin: '1rem 0',
     backgroundColor: '#fff',
     border: `1px solid ${ui.cardBorderColor}`,
     borderRadius: ui.cardBorderRadius,
-    maxWidth: ui.cardMaxWidth,
     minHeight: ui.cardMinHeight,
     paddingTop: '.1875rem',
     position: 'relative',
@@ -145,10 +172,6 @@ const styleThunk = () => ({
     display: 'flex',
     flexDirection: 'column',
     marginLeft: '1rem',
-  },
-
-  orgName: {
-    fontSize: appTheme.typography.s8,
   },
 
   goBackLabel: {...goBackLabel},

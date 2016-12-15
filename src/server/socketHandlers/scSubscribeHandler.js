@@ -10,12 +10,14 @@ import {
   ARCHIVED_PROJECTS,
   INVITATIONS,
   NOTIFICATIONS,
+  ORGANIZATION,
   ORGANIZATIONS,
   PROJECTS,
   PRESENCE,
   TEAM,
   TEAM_MEMBERS,
-  USER
+  USER,
+  USERS_BY_IDS
 } from 'universal/subscriptions/constants';
 
 /*
@@ -31,18 +33,21 @@ const dechannelfy = {
   [ARCHIVED_PROJECTS]: (variableString) => ({teamId: variableString}),
   [INVITATIONS]: (variableString) => ({teamId: variableString}),
   [NOTIFICATIONS]: (variableString) => ({userId: variableString}),
+  [ORGANIZATION]: (variableString) => ({orgId: variableString}),
   [ORGANIZATIONS]: (variableString) => ({}),
   [PRESENCE]: (variableString) => ({teamId: variableString}),
   [PROJECTS]: (variableString) => ({teamMemberId: variableString}),
   [TEAM]: (variableString) => ({teamId: variableString}),
   [TEAM_MEMBERS]: (variableString) => ({teamId: variableString}),
-  [USER]: () => ({})
+  [USER]: () => ({}),
+  [USERS_BY_IDS]: (variableString) => ({userIds: variableString})
 };
 
 export default function scSubscribeHandler(exchange, socket) {
   return async function subscribeHandler(subbedChannelName = '') {
     const {channel, variableString} = parseChannel(subbedChannelName);
     const subscription = subscriptions.find(sub => sub.channel === channel);
+
     if (subscription) {
       const dechannelfier = dechannelfy[channel];
       if (!dechannelfier) {

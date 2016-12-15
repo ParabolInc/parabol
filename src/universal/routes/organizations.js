@@ -20,7 +20,7 @@ export default (store) => ({
   },
   getChildRoutes: (childLocation, cbChild) => {
     cbChild(null, [
-      require('./organization')(store),
+      require('./organization')(store)
     ]);
   }
 });

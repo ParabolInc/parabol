@@ -7,10 +7,9 @@ const teamProjectsHeaderQuery = `
 query {
   organizations @live {
     id
-    createdAt
     isTrial
     name
-    validUntil
+    picture
   }
 }
 `;

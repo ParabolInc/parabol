@@ -6,6 +6,7 @@ import FontAwesome from 'react-fontawesome';
 
 const AddProjectButton = (props) => {
   const {styles, toggleLabel, toggleClickHandler} = props;
+  // TODO remove addIcon className?
   return (
     <FontAwesome
       className={css(styles.addIcon, styles[status])}

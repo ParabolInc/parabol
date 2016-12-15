@@ -1,32 +1,55 @@
 import React, {Component, PropTypes} from 'react';
 import Organization from 'universal/modules/userDashboard/components/Organization/Organization';
+import {cashay} from 'cashay';
+import {connect} from 'react-redux';
+import LoadingView from 'universal/components/LoadingView/LoadingView';
 
-const organizationContainer = `
+const organizationContainerQuery = `
 query {
   organization(orgId: $orgId) @live {
     id
+    billingLeaderUsers @live {
+      id
+      email
+      preferredName
+    }
     createdAt
+    isTrial
+    members
+    memberCount
     name
     picture
-    activeUsers
-    totalUsers
+    validUntil
   }
 }
 `;
 
 const mapStateToProps = (state, props) => {
   const {params: {orgId}} = props;
-
+  const {organization: org} = cashay.query(organizationContainerQuery, {
+    op: 'organizationContainer',
+    key: orgId,
+    resolveCached: {
+      organization: () => orgId
+    },
+    resolveChannelKey: {
+      billingLeaders: (source) => `${userId}::${source.id}`
+    },
+    variables: {orgId}
+  }).data;
   return {
-    // org
+    org
   }
 };
 
-export default class OrganizationContainer extends Component {
-  render() {
-    const {org} = this.props;
-    return (
-      <Organization org={org}/>
-    );
+const OrganizationContainer = (props) => {
+  const {org} = props;
+  if (!org.id) {
+    return <LoadingView/>;
   }
+  return (
+    <Organization org={org}/>
+  );
 };
+
+export default connect(mapStateToProps)(OrganizationContainer);

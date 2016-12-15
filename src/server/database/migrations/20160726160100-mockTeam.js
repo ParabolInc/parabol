@@ -73,7 +73,7 @@ exports.up = async(r) => {
       id: 'auth0|5797eb9712664ba4675745c3::team123',
       isActive: true,
       isFacilitator: true,
-      isLead: true,
+      isLead: false,
       picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/5826415aff7c506548201290/1478902195409/2016+Matt+Krick.png?format=300w',
       preferredName: 'matt',
       teamId: 'team123',

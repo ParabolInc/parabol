@@ -83,9 +83,11 @@ export const requireWebsocketExchange = (exchange) => {
 
 export const requireOrgLeader = async (authToken, orgId) => {
   const r = getRethink();
-  const billingLeaders = await r.table('Organization').getAll(authToken.sub, {index: 'billingLeaders'});
-  if (!orgMember || !orgMember.isLead) {
-    throw errorObj({_error: 'Unauthorized. Only the team leader promote someone to lead'});
+  const billingLeaders = await r.table('Organization').get(orgId)('billingLeaders');
+  if (!billingLeaders.includes(authToken.sub)) {
+    throw errorObj({_error: 'Unauthorized. Only an org billing Leader can do this'});
   }
-  return orgMember;
-}
+  return true;
+};
+
+
