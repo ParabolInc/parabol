@@ -17,11 +17,13 @@ export default {
       const userId = requireAuth(authToken);
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
+      const billingLeaderOrgs = await r.table('User').get(userId)('billingLeaderOrgs');
+      // Note: This is not reactive! If I am on this page & get added to a new org, I won't see it until I refresh
       r.table('Organization')
-        .getAll(userId, {index: 'billingLeaders'})
-        .merge((row) => ({
-          memberCount: row('members').count()
-        }))
+        .getAll(r.args(billingLeaderOrgs), {index: 'id'})
+        // .merge((row) => ({
+        //   memberCount: row('members').count()
+        // }))
         .pluck(requestedFields)
         .changes({includeInitial: true})
         .run({cursor: true}, changefeedHandler);
@@ -45,12 +47,8 @@ export default {
         .changes({includeInitial: true})
         .map((row) => {
           return {
-            new_val: row('new_val').merge((newVal) => ({
-              memberCount: newVal('members').count()
-            })).pluck(requestedFields).default(null),
-            old_val: row('old_val').merge((oldVal) => ({
-            memberCount: oldVal('members').count()
-          })).pluck(requestedFields).default(null)
+            new_val: row('new_val').pluck(requestedFields).default(null),
+            old_val: row('old_val').pluck(requestedFields).default(null)
           };
         })
         .run({cursor: true}, changefeedHandler);

@@ -456,8 +456,8 @@ export default {
 
         if (outOfOrgEmails.length) {
           // add a notification to the billing leaders
-          const {billingLeaders, inviter} = await r.table('Organization')
-            .get(orgId)('billingLeaders')
+          const {billingLeaders, inviter} = await r.table('User')
+            .getAll(orgId, {index: 'billingLeaderOrgs'})('id')
             .do((billingLeaders) => {
               return {
                 billingLeaders,
@@ -528,8 +528,9 @@ export default {
       const expiredId = shortid.generate();
       await r.table('Organization').insert({
         id: orgId,
-        billingLeaders: [userId],
+        activeUserCount: 1,
         createdAt: now,
+        inactiveUserCount: 0,
         isTrial: true,
         members: [userId],
         name: `${user.preferredName}'s Org`,
@@ -561,9 +562,10 @@ export default {
           ])
         })
         .do(() => {
-          return r.table('User').update({
-            trialExpiresAt,
-            // notificationFlags: r.js('(function (row) { return row.notificationsFlags | 1;})', {timeout: 1})
+          return r.table('User').get(userId).update({
+            billingLeaderOrgs: [orgId],
+            orgs: [orgId],
+            trialExpiresAt
           })
         });
 

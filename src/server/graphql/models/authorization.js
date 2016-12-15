@@ -83,8 +83,8 @@ export const requireWebsocketExchange = (exchange) => {
 
 export const requireOrgLeader = async (authToken, orgId) => {
   const r = getRethink();
-  const billingLeaders = await r.table('Organization').get(orgId)('billingLeaders');
-  if (!billingLeaders.includes(authToken.sub)) {
+  const billingLeaderOrgs = await r.table('User').get(authToken.sub)('billingLeaderOrgs');
+  if (!billingLeaderOrgs.includes(orgId)) {
     throw errorObj({_error: 'Unauthorized. Only an org billing Leader can do this'});
   }
   return true;

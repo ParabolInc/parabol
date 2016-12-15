@@ -28,15 +28,6 @@ export const ensureUserInOrg = async (userId, orgId) => {
   return true;
 };
 
-export const ensureUserIsBillingLeader = async (userId, orgId) => {
-  const r = getRethink();
-  const isBillingLeader = await r.table('Organization').get(orgId)('billingLeaders').contains(userId);
-  if (!isBillingLeader) {
-    throw errorObj({type: `user ${userId} is not a billing leader in org ${orgId}`});
-  }
-  return true;
-};
-
 // if the add & update schemas have different required fields, use this
 export const nonnullifyInputThunk = (name, inputThunk, requiredFieldNames) => {
   return new GraphQLInputObjectType({

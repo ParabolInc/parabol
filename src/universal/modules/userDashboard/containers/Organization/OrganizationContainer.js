@@ -8,12 +8,9 @@ const organizationContainerQuery = `
 query {
   organization(orgId: $orgId) @live {
     id
-    billingLeaderUsers @live {
-      id
-      email
-      preferredName
-    }
+    activeUserCount
     createdAt
+    inactiveUserCount
     isTrial
     members
     memberCount
