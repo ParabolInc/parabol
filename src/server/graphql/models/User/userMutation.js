@@ -17,6 +17,21 @@ const auth0Client = new AuthenticationClient({
 });
 
 export default {
+  createImposterToken: {
+    type: User,
+    description: 'Given an auth0 imposter code, yield an identity token',
+    args: {
+      code: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: 'the code field from Auth0\'s Imposter API'
+      }
+    },
+    async resolve(source, {code}) {
+      const user = {};
+      console.log(`createImposterToken: code ${code}`);
+      return user;
+    }
+  },
   updateUserWithAuthToken: {
     type: User,
     description: 'Given a new auth token, grab all the information we can from auth0 about the user',
