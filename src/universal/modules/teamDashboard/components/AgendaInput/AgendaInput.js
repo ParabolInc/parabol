@@ -34,14 +34,14 @@ AgendaInput.propTypes = {
 
 const styleThunk = () => ({
   author: {
-    position: 'relative',
+    position: 'absolute',
     right: '.5rem',
     top: '.5rem',
     zIndex: 200
   },
 
   fieldAndAvatar: {
-    display: 'flex'
+    position: 'relative'
   }
 });
 
