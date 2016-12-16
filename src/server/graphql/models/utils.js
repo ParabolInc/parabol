@@ -21,7 +21,7 @@ export const ensureUniqueId = async (table, id) => {
 
 export const ensureUserInOrg = async (userId, orgId) => {
   const r = getRethink();
-  const inOrg = await r.table('Organization').get(orgId)('members').contains(userId);
+  const inOrg = await r.table('User').get(userId)('orgs').contains(orgId);
   if (!inOrg) {
     throw errorObj({type: `user ${userId} does not belong to org ${orgId}`});
   }

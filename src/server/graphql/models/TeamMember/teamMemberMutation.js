@@ -107,17 +107,23 @@ export default {
       }
 
       // RESOLUTION
+      const orgId = await r.table('Team').get(teamId)('orgId');
       const dbWork = r.table('User')
       // add the team to the user doc
         .get(userId)
-        .update({
-          tms: r.row('tms').append(teamId).default([teamId])
+        .update((row) => {
+          return {
+            tms: row('tms').append(teamId).default([teamId]),
+            orgs: row('orgs').append(orgId).default([orgId])
+          }
         })
         .do(() => {
           return r.table('Organization')
-            .get(r.table('Team').get(teamId)('orgId'))
+            .get(orgId)
             .update((row) => {
-              return row('members').append(userId).distinct()
+              return {
+                activeUserCount: row('activeUserCount').add(1)
+              }
             })
         })
         // get number of users

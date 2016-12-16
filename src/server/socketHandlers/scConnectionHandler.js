@@ -54,8 +54,11 @@ export default function scConnectionHandler(exchange) {
       socket.setAuthToken(authToken);
     }
     // no need to wait for this, it's just for billing
-    r.table('User').get(authToken.sub).update({
-      isActive: true
-    })
+    r.branch(r.table('User').get(authToken.sub)('inactive'),
+      r.table('User')
+        .get(authToken.sub)
+        .replace((row) => row.without('inactive'))
+      // TODO log the time on an Inactivity table
+    )
   };
 }

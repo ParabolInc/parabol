@@ -119,9 +119,9 @@ export const User = new GraphQLObjectType({
     //   type: GraphQLISO8601Type,
     //   description: 'The last time the user logged in or used a websocket'
     // },
-    isActive: {
+    inactive: {
       type: GraphQLBoolean,
-      description: 'true if the user is currently being billed for service. set to true for every websocket connection'
+      description: 'true if the user is not currently being billed for service. removed on every websocket handshake'
     },
     preferredName: {
       type: GraphQLString,
