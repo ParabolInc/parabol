@@ -8,7 +8,7 @@ import Avatar from 'universal/components/Avatar/Avatar';
 const AgendaInput = (props) => {
   const {agenda, handleSubmit, teamId, myTeamMember, styles} = props;
   return (
-    <div>
+    <div className={css(styles.fieldAndAvatar)}>
       <Field
         agenda={agenda}
         name="agendaItem"
@@ -34,10 +34,14 @@ AgendaInput.propTypes = {
 
 const styleThunk = () => ({
   author: {
-    position: 'absolute',
+    position: 'relative',
     right: '.5rem',
     top: '.5rem',
     zIndex: 200
+  },
+
+  fieldAndAvatar: {
+    display: 'flex'
   }
 });
 
