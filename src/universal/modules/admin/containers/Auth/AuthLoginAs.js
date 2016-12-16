@@ -2,32 +2,25 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import Helmet from 'react-helmet';
-import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
-import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
+
+const imposterTokenQuery = `
+query {
+  user @cached(type: "User") {
+    id,
+    jwt
+  }
+}`;
 
 async function createImposterToken(code) {
-  cashay.create({httpTransport: new ActionHTTPTransport()});
+  // cashay.create({httpTransport: new ActionHTTPTransport()});
   const options = {variables: {code}};
   await cashay.mutate('createImposterToken', options);
 }
 
-const createImposterTokenMutation = {
-  createImposterToken: `
-  mutation {
-    createImposterToken(code: $code) {
-      id
-      jwt
-    }
-  }
-  `
-};
-
-const createImposterTokenMutationHandler = {
+const mutationHandlers = {
   createImposterToken(optimisticVariables, queryResponse, currentResponse) {
-    if (optimisticVariables) {
-      Object.assign(currentResponse.user, optimisticVariables.updatedProfile);
-    } else if (queryResponse) {
+    if (queryResponse) {
       Object.assign(currentResponse.user, queryResponse);
     }
     return currentResponse;
@@ -35,22 +28,23 @@ const createImposterTokenMutationHandler = {
 };
 
 const mapStateToProps = (state, props) => {
-  const {location: {query}} = props;
-  const auth = state.auth.obj;
-  const authedOptions = getAuthedOptions(auth.sub);
-  Object.assign(authedOptions.customMutations, createImposterTokenMutation);
-  Object.assign(authedOptions.mutationHandlers, createImposterTokenMutationHandler);
-  console.log(authedOptions);
+  const {location: {query: {code}}} = props;
+  const userId = state.auth.obj.sub;
+  const {user} = cashay.query(imposterTokenQuery, {
+    op: 'authLoginAs',
+    resolveCached: {user: () => userId},
+    mutationHandlers
+  }).data;
   return {
-    code: query.code,
-    user: cashay.query(getAuthQueryString, authedOptions)
+    code,
+    imposterToken: user.jwt
   };
 };
 
 const showDucks = () => {
   return (
     <div>
-      <Helmet title="Authenticating As..." />
+      <Helmet title="Authenticating As..."/>
       <LoadingView />
     </div>
   );
@@ -61,8 +55,15 @@ const AuthLoginAsContainer = (props) => {
   if (!__CLIENT__) {
     return showDucks();
   }
-  createImposterToken(code);
-  return showDucks();
+  if (code) {
+    createImposterToken(code);
+    return showDucks();
+  }
+  return (
+    <div>
+      No code provided!
+    </div>
+  )
 };
 
 export default connect(mapStateToProps)(AuthLoginAsContainer);
