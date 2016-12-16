@@ -57,7 +57,7 @@ export default function scConnectionHandler(exchange) {
     r.branch(
       r.table('User').get(authToken.sub)('inactive'),
       r.table('User')
-        .get(userId)
+        .get(authToken.sub)
         .replace((row) => {
           return row
             .without('inactive')
@@ -67,7 +67,7 @@ export default function scConnectionHandler(exchange) {
         })
         .do(() => {
           r.table('InactiveUser')
-            .between([userId, r.minval], [userId, r.maxval], {index: 'userIdStartAt'})
+            .between([userId, r.minval], [userI d, r.maxval], {index: 'userIdStartAt'})
             .filter((row) => row('endAt').not())
             .nth(0)
             .update({
