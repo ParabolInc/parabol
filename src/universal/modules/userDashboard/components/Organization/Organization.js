@@ -15,6 +15,9 @@ import brandMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import makeDateString from 'universal/utils/makeDateString';
 import {cardBorderTop} from 'universal/styles/helpers';
 import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/EditOrgName';
+import {toggleLeaveModal, toggleRemoveModal} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
+import RemoveBillingLeaderModal from 'universal/modules/userDashboard/components/RemoveBillingLeaderModal/RemoveBillingLeaderModal';
+import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal';
 
 const inlineBlockStyle = {
   display: 'inline-block',
@@ -26,9 +29,58 @@ const inlineBlockStyle = {
 const initialValues = {orgName: ''};
 
 const Organization = (props) => {
-  const {styles, org} = props;
-  const {id: orgId, createdAt, name: orgName, picture: orgAvatar, activeUsers, totalUsers} = org;
+  const {
+    leaveOrgModal,
+    removeBillingLeaderModal,
+    modalUserId,
+    modalPreferredName,
+    billingLeaders,
+    dispatch,
+    myUserId,
+    styles,
+    org
+  } = props;
+  const {id: orgId, createdAt, name: orgName, picture: orgAvatar, activeUserCount, inactiveUserCount} = org;
   initialValues.orgName = orgName;
+  const billingLeaderRowActions = (billingLeader) => {
+    const {id, preferredName} = billingLeader;
+    const openRemoveModal = () => {
+      dispatch(toggleRemoveModal(id, preferredName));
+    };
+    const openLeaveModal = () => {
+      dispatch(toggleLeaveModal(id));
+    };
+    console.log('making actions', billingLeader)
+    return (
+      <div className={css(styles.actionLinkBlock)}>
+        {removeBillingLeaderModal &&
+        <RemoveBillingLeaderModal
+          onBackdropClick={openRemoveModal}
+          orgId={orgId}
+          preferredName={modalPreferredName}
+          userId={modalUserId}
+        />
+        }
+        {leaveOrgModal &&
+        <LeaveOrgModal
+          onBackdropClick={openLeaveModal}
+          orgId={orgId}
+          userId={modalUserId}
+        />
+        }
+        {myUserId !== billingLeader.id &&
+        <div className={css(styles.actionLink)} onClick={openRemoveModal}>
+          Remove
+        </div>
+        }
+        {billingLeaders.length > 1 && myUserId === billingLeader.id &&
+        <div className={css(styles.actionLink)} onClick={openLeaveModal}>
+          Leave
+        </div>
+        }
+      </div>
+    );
+  };
   return (
     <UserSettingsWrapper activeTab={ORGANIZATIONS}>
       <div className={css(styles.wrapper)}>
@@ -37,11 +89,17 @@ const Organization = (props) => {
           <div style={inlineBlockStyle}>Back to Organizations</div>
         </Link>
         <div className={css(styles.avatarAndName)}>
-          <img className={css(styles.avatar)} height={100} width={100} src={orgAvatar}/>
+          <div className={css(styles.avatar)}>
+            <div className={css(styles.avatarEditOverlay)}>
+              <FontAwesome className={css(styles.icon)} name="pencil"/>
+              <span>EDIT</span>
+            </div>
+            <img className={css(styles.avatarImg)} height={100} width={100} src={orgAvatar || brandMark}/>
+          </div>
           <div className={css(styles.orgNameAndDetails)}>
             <EditOrgName initialValues={initialValues} orgName={orgName} orgId={orgId}/>
             <div className={css(styles.orgDetails)}>
-              {activeUsers} Active Users • {totalUsers} Total Users • Created {makeDateString(createdAt, false)}
+              {activeUserCount} Active Users • {inactiveUserCount} Inactive Users • Created {makeDateString(createdAt, false)}
             </div>
           </div>
         </div>
@@ -60,8 +118,15 @@ const Organization = (props) => {
             </div>
           </div>
           <div className={css(styles.listOfAdmins)}>
-            <AdminUserRow preferredName="Marimar Suárez Peñalva" email/>
-            <AdminUserRow preferredName="Jordan Husney"/>
+            {billingLeaders.map((billingLeader, idx) => {
+              return (
+                <AdminUserRow
+                  key={`billingLeader${idx}`}
+                  actions={billingLeaderRowActions(billingLeader)}
+                  billingLeader={billingLeader}
+                />
+              )
+            })}
           </div>
         </div>
         <div className={css(styles.billingBlock)}>
@@ -109,7 +174,8 @@ Organization.defaultProps = {
 const styleThunk = () => ({
   addLeader: {
     fontSize: appTheme.typography.s5,
-    color: appTheme.palette.cool
+    color: appTheme.palette.cool,
+    cursor: 'pointer'
   },
 
   addLeaderIcon: {
@@ -131,7 +197,31 @@ const styleThunk = () => ({
   },
 
   avatar: {
-    borderRadius: '10%'
+    height: 100,
+    width: 100
+  },
+
+  avatarEditOverlay: {
+    alignItems: 'center',
+    background: 'black',
+    borderRadius: '10%',
+    color: 'white',
+    cursor: 'pointer',
+    display: 'flex',
+    flexDirection: 'column',
+    fontWeight: 700,
+    height: 100,
+    justifyContent: 'center',
+    opacity: 0,
+    position: 'absolute',
+    width: 100,
+    ':hover': {
+      opacity: .75
+    },
+  },
+
+  avatarImg: {
+    borderRadius: '10%',
   },
 
   headerTextBlock: {

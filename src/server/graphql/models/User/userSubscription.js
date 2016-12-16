@@ -3,30 +3,26 @@ import {getRequestedFields} from '../utils';
 import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
 import {User} from './userSchema';
 import makeChangefeedHandler from '../makeChangefeedHandler';
+import {requireOrgLeader} from '../authorization';
 
 export default {
-  usersByIds: {
+  billingLeaders: {
     args: {
-      userIds: {
-        type: new GraphQLList(GraphQLNonNull(GraphQLID)),
-        description: 'the org to which the billing leaders operate'
+      orgId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'the org the billing leaders are in charge of'
       }
     },
-    type: User,
-    async resolve(source, {userIds}, {authToken, socket, subbedChannelName}, refs) {
+    type: new GraphQLList(User),
+    async resolve(source, {orgId}, {authToken, socket, subbedChannelName}, refs) {
       const r = getRethink();
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
-      const userId = authToken.sub;
+      requireOrgLeader(authToken, orgId);
       r.table('User')
-        .getAll(r.args(userIds), {index: 'id'})
+        .getAll(orgId, {index: 'billingLeaderOrgs'})
+        .pluck(requestedFields)
         .changes({includeInitial: true})
-        .map((row) => {
-          return {
-            new_val: row('new_val').pluck(requestedFields).default(null),
-            old_val: row('old_val').pluck(requestedFields).default(null)
-          };
-        })
         .run({cursor: true}, changefeedHandler);
     }
   },

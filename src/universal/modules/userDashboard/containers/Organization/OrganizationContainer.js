@@ -12,40 +12,69 @@ query {
     createdAt
     inactiveUserCount
     isTrial
-    members
-    memberCount
     name
     picture
     validUntil
+  }
+  billingLeaders(orgId: $orgId) @live {
+    id
+    email
+    inactive
+    picture
+    preferredName
   }
 }
 `;
 
 const mapStateToProps = (state, props) => {
   const {params: {orgId}} = props;
-  const {organization: org} = cashay.query(organizationContainerQuery, {
+  const {billingLeaders, organization: org} = cashay.query(organizationContainerQuery, {
     op: 'organizationContainer',
     key: orgId,
     resolveCached: {
       organization: () => orgId
     },
-    resolveChannelKey: {
-      billingLeaders: (source) => `${userId}::${source.id}`
+    sort: {
+      billingLeaders: (a, b) => a.preferredName > b.preferredName ? 1 : -1,
     },
     variables: {orgId}
   }).data;
   return {
-    org
+    billingLeaders,
+    myUserId: state.auth.obj.sub,
+    org,
+    leaveOrgModal: state.orgSettings.leaveOrgModal,
+    removeBillingLeaderModal: state.orgSettings.removeBillingLeaderModal,
+    modalUserId: state.orgSettings.userId,
+    modalPreferredName: state.orgSettings.preferredName,
   }
 };
 
 const OrganizationContainer = (props) => {
-  const {org} = props;
+  const {
+    leaveOrgModal,
+    removeBillingLeaderModal,
+    modalUserId,
+    modalPreferredName,
+    billingLeaders,
+    dispatch,
+    myUserId,
+    org
+  }= props;
   if (!org.id) {
     return <LoadingView/>;
   }
   return (
-    <Organization org={org}/>
+    <Organization
+      billingLeaders={billingLeaders}
+      dispatch={dispatch}
+      myUserId={myUserId}
+      org={org}
+      leaveOrgModal={leaveOrgModal}
+      removeBillingLeaderModal={removeBillingLeaderModal}
+      modalUserId={modalUserId}
+      modalPreferredName={modalPreferredName}
+    />
   );
 };
 

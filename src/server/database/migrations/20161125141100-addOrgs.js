@@ -72,7 +72,6 @@ exports.up = async(r) => {
       orgId: orgLeaders.find(leader => leader.id === teamLeader.userId).orgId
     }
   });
-  console.log('orgLeaders', orgLeaders)
   await r.expr(orggedTeamLeaders)
     .forEach((teamLeader) => {
       // add the org to the teams that the teamLeader owns
@@ -133,9 +132,21 @@ exports.up = async(r) => {
             });
         })
     });
+  // set org array on each user
   await r.table('User').update({
     orgs: r.table('Team').getAll(r.args(r.row('tms')), {index: 'id'})('orgId').distinct()
-  }, {nonAtomic: true})
+  }, {nonAtomic: true});
+  // set user count on each org
+  const orgIds = orgLeaders.map((leader) => leader.orgId);
+  await r.expr(orgIds)
+    .forEach((orgId) => {
+      return r.table('Organization')
+        .get(orgId)
+        .update({
+          activeUserCount: r.table('User').getAll(orgId, {index: 'orgs'}).count(),
+          inactiveUserCount: 0
+        }, {nonAtomic: true})
+    })
 };
 
 exports.down = async(r) => {

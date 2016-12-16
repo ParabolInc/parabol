@@ -8,6 +8,7 @@ import {
   ACTIONS_BY_AGENDA,
   AGENDA,
   ARCHIVED_PROJECTS,
+  BILLING_LEADERS,
   INVITATIONS,
   NOTIFICATIONS,
   ORGANIZATION,
@@ -16,8 +17,7 @@ import {
   PRESENCE,
   TEAM,
   TEAM_MEMBERS,
-  USER,
-  USERS_BY_IDS
+  USER
 } from 'universal/subscriptions/constants';
 
 /*
@@ -31,6 +31,7 @@ const dechannelfy = {
   [ACTIONS_BY_AGENDA]: (variableString) => ({agendaId: variableString}),
   [AGENDA]: (variableString) => ({teamId: variableString}),
   [ARCHIVED_PROJECTS]: (variableString) => ({teamId: variableString}),
+  [BILLING_LEADERS]: (variableString) => ({orgId: variableString}),
   [INVITATIONS]: (variableString) => ({teamId: variableString}),
   [NOTIFICATIONS]: (variableString) => ({userId: variableString}),
   [ORGANIZATION]: (variableString) => ({orgId: variableString}),
@@ -40,7 +41,7 @@ const dechannelfy = {
   [TEAM]: (variableString) => ({teamId: variableString}),
   [TEAM_MEMBERS]: (variableString) => ({teamId: variableString}),
   [USER]: () => ({}),
-  [USERS_BY_IDS]: (variableString) => ({userIds: variableString})
+  // [USERS_BY_IDS]: (variableString) => ({userIds: variableString})
 };
 
 export default function scSubscribeHandler(exchange, socket) {

@@ -6,15 +6,15 @@ import Avatar from 'universal/components/Avatar/Avatar';
 import UserTag from 'universal/components/UserTag/UserTag';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 
-const UserRow = (props) => {
+const AdminUserRow = (props) => {
   const {
     actions,
-    email,
-    invitedAt,
-    isAdmin,
-    isLead,
-    picture,
-    preferredName,
+    billingLeader: {
+      email,
+      inactive,
+      picture,
+      preferredName
+    },
     styles
   } = props;
   return (
@@ -26,55 +26,36 @@ const UserRow = (props) => {
         }
       </div>
       <div className={css(styles.userInfo)}>
-        {preferredName ?
-          <div className={css(styles.nameAndTags)}>
-            <div className={css(styles.preferredName)}>
-              {preferredName}
-            </div>
-            {isLead &&
-              <UserTag colorPalette="light" label="Lead" />
-            }
-            {isAdmin &&
-              <UserTag colorPalette="gray" label="Admin" />
-            }
-          </div> :
-          <div className={css(styles.nameAndTags)}>
-            <div className={css(styles.preferredName)}>
-              {email}
-            </div>
+        <div className={css(styles.nameAndTags)}>
+          <div className={css(styles.preferredName)}>
+            {preferredName}
           </div>
-        }
-        {invitedAt ?
-          <div className={css(styles.invitedAt)}>
-            {invitedAt}
-          </div> :
-          <a className={css(styles.infoLink)} href={`mailto:${email}`} title="Send an email">
-            {email}
-          </a>
-        }
+          {inactive &&
+          <UserTag colorPalette="light" label="Inactive"/>
+          }
+        </div>
+        <a className={css(styles.infoLink)} href={`mailto:${email}`} title="Send an email">
+          {email}
+        </a>
       </div>
       {actions &&
-        <div className={css(styles.userActions)}>
-          {actions}
-        </div>
+      <div className={css(styles.userActions)}>
+        {actions}
+      </div>
       }
     </div>
   );
 };
 
-UserRow.propTypes = {
+AdminUserRow.propTypes = {
   actions: PropTypes.any,
-  email: PropTypes.string,
-  invitedAt: PropTypes.string,
-  isAdmin: PropTypes.bool,
-  isLead: PropTypes.bool,
-  picture: PropTypes.string,
-  preferredName: PropTypes.string,
+  billingLeader: PropTypes.shape({
+    email: PropTypes.string,
+    inactive: PropTypes.bool,
+    picture: PropTypes.string,
+    preferredName: PropTypes.string,
+  }),
   styles: PropTypes.object
-};
-
-UserRow.defaultProps = {
-  email: 'email@domain.co'
 };
 
 const styleThunk = () => ({
@@ -135,4 +116,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(UserRow);
+export default withStyles(styleThunk)(AdminUserRow);

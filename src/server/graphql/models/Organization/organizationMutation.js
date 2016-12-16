@@ -39,5 +39,36 @@ export default {
       await r.table('Organization').get(orgId).update(newAction);
       return true;
     }
+  },
+  removeBillingLeader: {
+    type: GraphQLBoolean,
+    description: 'Remove a billing leader from an org',
+    args: {
+      orgId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'the org to remove the billing leader from'
+      },
+      userId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The billing leader userId to remove from the org'
+      }
+    },
+    async resolve(source, {orgId, userId}, {authToken}) {
+      const r = getRethink();
+
+      // AUTH
+      await requireOrgLeader(authToken, orgId);
+
+      // RESOLUTION
+      const now = new Date();
+      await r.table('User').get(orgId)
+        .update((user) => {
+          return user.merge({
+            billingLeaderOrgs: user('billingLeaderOrgs').filter((id) => id.ne(orgId)),
+            updatedAt: now
+          });
+        });
+      return true;
+    }
   }
 };

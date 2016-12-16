@@ -4,6 +4,7 @@ import {
   ACTIONS_BY_AGENDA,
   AGENDA,
   ARCHIVED_PROJECTS,
+  BILLING_LEADERS,
   INVITATIONS,
   NOTIFICATIONS,
   ORGANIZATION,
@@ -95,12 +96,14 @@ export default [
     }`
   },
   {
-    channel: USERS_BY_IDS,
+    channel: BILLING_LEADERS,
     string: `
-    subscription($userIds: [ID!]) {
-      usersByIds(userIds: $userIds) {
+    subscription($orgId: ID!) {
+      billingLeaders(orgId: $orgId) {
         id
         email
+        inactive
+        picture
         preferredName
       }
     }`
@@ -136,9 +139,10 @@ export default [
     subscription($orgId: ID!) {
       organization(orgId: $orgId) {
         id
+        activeUserCount
         createdAt
+        inactiveUserCount
         isTrial
-        memberCount
         name
         picture
         validUntil

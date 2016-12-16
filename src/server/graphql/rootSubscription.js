@@ -8,6 +8,7 @@ import presence from './models/Presence/presenceSubscription';
 import project from './models/Project/projectSubscription';
 import team from './models/Team/teamSubscription';
 import teamMember from './models/TeamMember/teamMemberSubscription';
+import user from './models/User/userSubscription';
 
 const rootFields = Object.assign({},
   action,
@@ -18,7 +19,8 @@ const rootFields = Object.assign({},
   presence,
   project,
   team,
-  teamMember
+  teamMember,
+  user
 );
 
 export default new GraphQLObjectType({
