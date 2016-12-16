@@ -238,7 +238,8 @@ const styleThunk = () => ({
     position: 'absolute',
     width: 100,
     ':hover': {
-      opacity: .75
+      opacity: .75,
+      transition: 'opacity .2s ease-in',
     },
   },
 

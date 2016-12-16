@@ -56,7 +56,7 @@ export default function scConnectionHandler(exchange) {
     }
     // no need to wait for this, it's just for billing
     r.branch(
-      r.table('User').get(userId)('inactive'),
+      r.table('User').get(userId)('inactive').ne(null),
       r.table('User')
         .get(userId)
         .replace((row) => {
@@ -67,7 +67,7 @@ export default function scConnectionHandler(exchange) {
             })
         })
         .do(() => {
-          r.table('InactiveUser')
+          return r.table('InactiveUser')
             .between([userId, r.minval], [userId, r.maxval], {index: 'userIdStartAt'})
             .filter((row) => row('endAt').not())
             .nth(0)
