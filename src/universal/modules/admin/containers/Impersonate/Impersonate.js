@@ -7,6 +7,7 @@ import LoadingView from 'universal/components/LoadingView/LoadingView';
 import {showError} from 'universal/modules/notifications/ducks/notifications';
 import {setAuthToken} from 'universal/redux/authDuck';
 import {reset as resetAppState} from 'universal/redux/rootDuck';
+import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
 
 const impersonateTokenQuery = `
 query {
@@ -37,9 +38,10 @@ function createImposter(userId, dispatch, router) {
       window.analytics.reset();
     }
     // Assume the identity of the new user:
-    const options = {variables: {authToken: jwt}};
-    await cashay.mutate('updateUserWithAuthToken', options);
     dispatch(setAuthToken(jwt, profile));
+    const options = {variables: {authToken: jwt}};
+    cashay.query(getAuthQueryString, getAuthedOptions(id));
+    await cashay.mutate('updateUserWithAuthToken', options);
     router.replace('/');
   });
 }

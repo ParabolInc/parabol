@@ -14,7 +14,6 @@ import {
 import {verify} from 'jsonwebtoken';
 import makeStep1Schema from 'universal/validation/makeStep1Schema';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
-import makeAppLink from 'server/utils/makeAppLink';
 
 
 const auth0Client = new AuthenticationClient({
@@ -41,7 +40,7 @@ export default {
       }
 
       const newToken = {
-        iss: makeAppLink(),
+        iss: authToken.iss,
         sub: user.id,
         aud: auth0.clientId
       };
