@@ -43,21 +43,22 @@ export default function scConnectionHandler(exchange) {
     // the async part should come last so there isn't a race
     const r = getRetink();
     const authToken = socket.getAuthToken();
+    const {exp, tms, sub: userId} = authToken;
     const now = new Date();
-    const tokenExpiration = new Date(authToken.exp * 1000);
+    const tokenExpiration = new Date(exp * 1000);
     const timeLeftOnToken = tokenExpiration - now;
     // if the user was booted from the team, give them a new token
-    const tms = await r.table('User').get(authToken.sub)('tms');
-    const tmsIsValid = isTmsValid(tms, authToken.tms);
+    const tmsDB = await r.table('User').get(userId)('tms');
+    const tmsIsValid = isTmsValid(tmsDB, tms);
     if (timeLeftOnToken < REFRESH_JWT_AFTER || !tmsIsValid) {
-      authToken.tms = tms;
+      authToken.tms = tmsDB;
       socket.setAuthToken(authToken);
     }
     // no need to wait for this, it's just for billing
     r.branch(
-      r.table('User').get(authToken.sub)('inactive'),
+      r.table('User').get(userId)('inactive'),
       r.table('User')
-        .get(authToken.sub)
+        .get(userId)
         .replace((row) => {
           return row
             .without('inactive')
@@ -67,7 +68,7 @@ export default function scConnectionHandler(exchange) {
         })
         .do(() => {
           r.table('InactiveUser')
-            .between([userId, r.minval], [userI d, r.maxval], {index: 'userIdStartAt'})
+            .between([userId, r.minval], [userId, r.maxval], {index: 'userIdStartAt'})
             .filter((row) => row('endAt').not())
             .nth(0)
             .update({
