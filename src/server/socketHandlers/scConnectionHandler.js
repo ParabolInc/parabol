@@ -57,10 +57,24 @@ export default function scConnectionHandler(exchange) {
     r.branch(
       r.table('User').get(authToken.sub)('inactive'),
       r.table('User')
-        .get(authToken.sub)
-        .replace((row) => row.without('inactive')),
+        .get(userId)
+        .replace((row) => {
+          return row
+            .without('inactive')
+            .merge({
+              updatedAt: now
+            })
+        })
+        .do(() => {
+          r.table('InactiveUser')
+            .between([userId, r.minval], [userId, r.maxval], {index: 'userIdStartAt'})
+            .filter((row) => row('endAt').not())
+            .nth(0)
+            .update({
+              endAt: now
+            })
+        }),
       null
-      // TODO log the time on an Inactivity table
     )
   };
 }

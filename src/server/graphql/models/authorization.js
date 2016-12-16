@@ -43,7 +43,7 @@ export const requireSUOrSelf = (authToken, userId) => {
   throw errorObj({_error: 'Unauthorized. You cannot modify another user.'});
 };
 
-export const requireSUOrSelfOrLead = async (authToken, userId, teamId) => {
+export const requireSUOrSelfOrLead = async(authToken, userId, teamId) => {
   if (isSuperUser(authToken)) return undefined;
   const authTokenUserId = getUserId(authToken);
   if (authTokenUserId === userId) {
@@ -58,7 +58,7 @@ export const requireSUOrSelfOrLead = async (authToken, userId, teamId) => {
   throw errorObj({_error: 'Unauthorized. Only the team member or the leader can remove someone'});
 };
 
-export const requireSUOrLead = async (authToken, teamMemberId) => {
+export const requireSUOrLead = async(authToken, teamMemberId) => {
   if (isSuperUser(authToken)) return undefined;
   const r = getRethink();
   const teamMember = await r.table('TeamMember').get(teamMemberId);
@@ -81,7 +81,7 @@ export const requireWebsocketExchange = (exchange) => {
   }
 };
 
-export const requireOrgLeader = async (authToken, orgId) => {
+export const requireOrgLeader = async(authToken, orgId) => {
   const r = getRethink();
   const billingLeaderOrgs = await r.table('User').get(authToken.sub)('billingLeaderOrgs');
   if (!billingLeaderOrgs.includes(orgId)) {
@@ -90,4 +90,25 @@ export const requireOrgLeader = async (authToken, orgId) => {
   return true;
 };
 
+export const requireOrgLeaderOfUser = async(authToken, userId) => {
+  const r = getRethink();
+  const isLeaderOfUser = await r.table('User')
+    .get(authToken.sub)('billingLeaderOrgs')
+    .do((billingLeaderOrgs) => {
+      return {
+        billingLeaderOrgs,
+        orgs: r.table('User')
+          .get(userId)('orgs')
+      }
+    })
+    .do((res) => {
+      return res('billingLeaderOrgs')
+        .union(res('orgs')).distinct().count()
+        .lt(res('billingLeaderOrgs').count().add(res('orgs').count()))
+    });
+  if (!isLeaderOfUser) {
+    throw errorObj({_error: 'Unauthorized. Only an billing leader of a user can set this'});
+  }
+  return true;
+}
 
