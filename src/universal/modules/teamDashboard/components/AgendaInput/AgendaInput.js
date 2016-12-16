@@ -4,39 +4,23 @@ import {css} from 'aphrodite-local-styles/no-important';
 import {reduxForm, Field} from 'redux-form';
 import AgendaInputField from './AgendaInputField';
 import Avatar from 'universal/components/Avatar/Avatar';
-import appTheme from 'universal/styles/theme/appTheme';
-import shortid from 'shortid';
-import getNextSortOrder from 'universal/utils/getNextSortOrder';
-import {cashay} from 'cashay';
 
 const AgendaInput = (props) => {
   const {agenda, handleSubmit, teamId, myTeamMember, styles} = props;
-  const handleAgendaItemSubmit = (submittedData) => {
-    // TODO replace this with redux-form synchronous validation
-    const content = submittedData.agendaItem;
-    if (!content) return;
-    const options = {
-      variables: {
-        newAgendaItem: {
-          id: `${teamId}::${shortid.generate()}`,
-          content,
-          sortOrder: getNextSortOrder(agenda, 'sortOrder'),
-          teamMemberId: myTeamMember.id
-        }
-      }
-    };
-    cashay.mutate('createAgendaItem', options);
-  };
   return (
-    <form className={css(styles.root)} onSubmit={handleSubmit(handleAgendaItemSubmit)}>
+    <div className={css(styles.fieldAndAvatar)}>
       <Field
+        agenda={agenda}
         name="agendaItem"
         component={AgendaInputField}
+        handleSubmit={handleSubmit}
+        myTeamMemberId={myTeamMember.id}
+        teamId={teamId}
       />
       <div className={css(styles.author)}>
         <Avatar hasBadge={false} picture={myTeamMember.picture} size="smallest"/>
       </div>
-    </form>
+    </div>
   );
 };
 
@@ -49,24 +33,15 @@ AgendaInput.propTypes = {
 };
 
 const styleThunk = () => ({
-  root: {
-    backgroundColor: 'transparent',
-    color: appTheme.palette.cool,
-    fontSize: appTheme.typography.s3,
-    position: 'relative',
-    width: '100%',
-    zIndex: 100,
-
-    ':hover': {
-      backgroundColor: appTheme.palette.dark20l
-    }
-  },
-
   author: {
-    position: 'absolute',
+    position: 'relative',
     right: '.5rem',
     top: '.5rem',
     zIndex: 200
+  },
+
+  fieldAndAvatar: {
+    display: 'flex'
   }
 });
 

@@ -46,7 +46,7 @@ const OutcomeCardFooter = (props) => {
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.avatarLayout)}>
-        <button disabled={isArchived} className={avatarBlockStyle} onClick={!showTeam && toggleAssignMenu}>
+        <button disabled={isArchived} className={avatarBlockStyle} onClick={!isArchived && !showTeam && toggleAssignMenu}>
           {!showTeam &&
             <img
               alt={avatarName}
