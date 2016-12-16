@@ -6,7 +6,7 @@ export default function makeAgendaItemSchema() {
     id: compositeId,
     content: (value) => value
       .trim()
-      .max(50, 'Try something a little shorter'),
+      .max(63, 'Try something a little shorter'),
     isActive: (value) => value.boolean(),
     isComplete: (value) => value.boolean(),
     sortOrder: (value) => value.float(),
