@@ -508,6 +508,10 @@ export default {
 
       // AUTH
       const userId = requireAuth(authToken);
+      const hasAnOrg = r.table('User').get(authToken.sub)('org');
+      if (hasAnOrg) {
+        throw errorObj({_error: 'cannot use createTeam when already part of an org'});
+      }
 
       // VALIDATION
       const schema = makeStep2Schema();
