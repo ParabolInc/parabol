@@ -4,14 +4,15 @@ import {css} from 'aphrodite-local-styles/no-important';
 import FontAwesome from 'react-fontawesome';
 import ui from 'universal/styles/ui';
 
+const iconStyle = {
+  fontSize: ui.iconSize2x,
+  height: '1.5rem',
+  lineHeight: '1.5rem',
+  paddingTop: '1px'
+};
+
 const AddProjectButton = (props) => {
   const {styles, toggleLabel, toggleClickHandler} = props;
-  const iconStyle = {
-    fontSize: ui.iconSize2x,
-    height: '1.5rem',
-    lineHeight: '1.5rem',
-    paddingTop: '1px'
-  };
   return (
     <FontAwesome
       className={css(styles.addIcon)}
