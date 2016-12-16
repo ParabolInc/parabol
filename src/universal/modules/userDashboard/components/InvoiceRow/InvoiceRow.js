@@ -2,91 +2,83 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
-import Avatar from 'universal/components/Avatar/Avatar';
 import UserTag from 'universal/components/UserTag/UserTag';
-import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 import FontAwesome from 'react-fontawesome';
+import makeDateString from 'universal/utils/makeDateString';
 
 const UserRow = (props) => {
   const {
-    actions,
-    email,
-    invitedAt,
-    isAdmin,
-    isLead,
-    picture,
-    preferredName,
+    invoice: {
+      invoiceDate,
+      isEstimate,
+      amount
+    },
     styles
   } = props;
   return (
-    <div className={css(styles.userRow)}>
-      <div className={css(styles.userAvatar)}>
-        {picture ?
-          <Avatar hasBadge={false} picture={picture} size="small"/> :
-          <div className={css(styles.iconBackground)}>
-            <FontAwesome name="file-text-o" style={{position: 'relative', top: '4px'}}/>
-          </div>
-        }
-      </div>
-      <div className={css(styles.userInfo)}>
-        {preferredName ?
-          <div className={css(styles.nameAndTags)}>
-            <div className={css(styles.preferredName)}>
-              {preferredName}
-            </div>
-            {isLead &&
-              <UserTag colorPalette="light" label="Lead" />
-            }
-            {isAdmin &&
-              <UserTag colorPalette="gray" label="Admin" />
-            }
-          </div> :
-          <div className={css(styles.nameAndTags)}>
-            <div className={css(styles.preferredName)}>
-              {email}
-            </div>
-          </div>
-        }
-        {invitedAt ?
-          <div className={css(styles.invitedAt)}>
-            {invitedAt}
-          </div> :
-          <a className={css(styles.infoLink)} href={`mailto:${email}`} title="Send an email">
-            {email}
-          </a>
-        }
-      </div>
-      {actions &&
-        <div className={css(styles.userActions)}>
-          {actions}
+    <div className={css(styles.invoiceRow)}>
+      <div className={css(styles.invoiceAvatar)}>
+        <div className={css(styles.icon)}>
+          <div className={css(styles.iconBackdrop)}></div>
+          <FontAwesome name="file-text-o" className={css(styles.fileIcon)}/>
         </div>
-      }
+      </div>
+      <div className={css(styles.invoiceInfo)}>
+        <div className={css(styles.nameAndTags)}>
+          <div className={css(styles.preferredName)}>
+            {makeDateString(invoiceDate, false)}
+          </div>
+          {isEstimate &&
+          <UserTag colorPalette="light" label="Current Estimate"/>
+          }
+        </div>
+        <div className={css(styles.subHeader)}>
+          See Details
+        </div>
+      </div>
+      <div className={css(styles.amountAndDueDate)}>
+        <span className={css(styles.invoiceAmount)}>
+          ${amount.toFixed(2)}
+        </span>
+        <span className={css(styles.dueDate)}>
+          {isEstimate ?
+            <span>
+              Your card will be charged on {makeDateString(invoiceDate, false)}
+            </span> :
+            <span className={css(styles.paid)}>
+              Paid on {makeDateString(invoiceDate, false)}
+            </span>
+          }
+        </span>
+      </div>
     </div>
   );
 };
 
 UserRow.propTypes = {
-  actions: PropTypes.any,
-  email: PropTypes.string,
-  invitedAt: PropTypes.string,
-  isAdmin: PropTypes.bool,
-  isLead: PropTypes.bool,
-  picture: PropTypes.string,
-  preferredName: PropTypes.string,
   styles: PropTypes.object
 };
 
-UserRow.defaultProps = {
-  email: 'email@domain.co'
-};
-
 const styleThunk = () => ({
-  iconBackground: {
-    background: 'black',
-    borderRadius: '10%'
+  iconBackdrop: {
+    background: appTheme.palette.dark,
+    borderRadius: '10%',
+    height: 50,
+    opacity: .5,
+    position: 'absolute',
+    width: 50
   },
 
-  userRow: {
+  fileIcon: {
+    alignItems: 'center',
+    display: 'flex',
+    fontSize: appTheme.typography.s7,
+    height: 50,
+    justifyContent: 'center',
+    width: 50
+  },
+
+  invoiceRow: {
     alignItems: 'center',
     borderBottom: `1px solid ${appTheme.palette.mid20l}`,
     display: 'flex',
@@ -94,21 +86,33 @@ const styleThunk = () => ({
     width: '100%'
   },
 
-  userAvatar: {
+  invoiceAmount: {
+    fontSize: appTheme.typography.s7,
+    color: appTheme.palette.cool,
+  },
+
+  invoiceAvatar: {
     // Define
   },
 
-  userInfo: {
+  invoiceInfo: {
     paddingLeft: '1rem'
   },
 
-  userActions: {
+  amountAndDueDate: {
+    display: 'flex',
+    flexDirection: 'column',
     flex: 1,
+    marginRight: '1rem',
     textAlign: 'right'
   },
 
   nameAndTags: {
     // Define
+  },
+
+  paid: {
+    color: appTheme.palette.cool
   },
 
   preferredName: {
@@ -119,7 +123,7 @@ const styleThunk = () => ({
     verticalAlign: 'middle'
   },
 
-  invitedAt: {
+  subHeader: {
     color: appTheme.palette.mid,
     fontSize: appTheme.typography.s2,
     fontWeight: 700,

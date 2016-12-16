@@ -30,6 +30,8 @@ const initialValues = {orgName: ''};
 
 const Organization = (props) => {
   const {
+    ccLast4Digits,
+    invoices,
     leaveOrgModal,
     removeBillingLeaderModal,
     modalUserId,
@@ -40,7 +42,7 @@ const Organization = (props) => {
     styles,
     org
   } = props;
-  const {id: orgId, createdAt, name: orgName, picture: orgAvatar, activeUserCount, inactiveUserCount} = org;
+  const {id: orgId, createdAt, name: orgName, picture: orgAvatar, activeUserCount, inactiveUserCount, isTrial} = org;
   initialValues.orgName = orgName;
   const billingLeaderRowActions = (billingLeader) => {
     const {id, preferredName} = billingLeader;
@@ -50,7 +52,6 @@ const Organization = (props) => {
     const openLeaveModal = () => {
       dispatch(toggleLeaveModal(id));
     };
-    console.log('making actions', billingLeader)
     return (
       <div className={css(styles.actionLinkBlock)}>
         {removeBillingLeaderModal &&
@@ -91,7 +92,7 @@ const Organization = (props) => {
         <div className={css(styles.avatarAndName)}>
           <div className={css(styles.avatar)}>
             <div className={css(styles.avatarEditOverlay)}>
-              <FontAwesome className={css(styles.icon)} name="pencil"/>
+              <FontAwesome name="pencil"/>
               <span>EDIT</span>
             </div>
             <img className={css(styles.avatarImg)} height={100} width={100} src={orgAvatar || brandMark}/>
@@ -99,15 +100,16 @@ const Organization = (props) => {
           <div className={css(styles.orgNameAndDetails)}>
             <EditOrgName initialValues={initialValues} orgName={orgName} orgId={orgId}/>
             <div className={css(styles.orgDetails)}>
-              {activeUserCount} Active Users • {inactiveUserCount} Inactive Users • Created {makeDateString(createdAt, false)}
+              {activeUserCount} Active Users • {inactiveUserCount} Inactive Users •
+                                Created {makeDateString(createdAt, false)}
             </div>
           </div>
         </div>
         <div className={css(styles.orgBlock)}>
-          <div className={css(styles.adminsHeader)}>
+          <div className={css(styles.headerWithBorder)}>
             <div className={css(styles.headerTextBlock)}>
-            <span>ADMINS</span>
-            <span className={css(styles.addLeader)}>
+              <span>ADMINS</span>
+              <span className={css(styles.addLeader)}>
               <FontAwesome
                 className={css(styles.addLeaderIcon)}
                 name="plus-square-o"
@@ -129,15 +131,17 @@ const Organization = (props) => {
             })}
           </div>
         </div>
-        <div className={css(styles.billingBlock)}>
+        <div className={css(styles.orgBlock)}>
           <div className={css(styles.billingHeader)}>
-            BILLING INFORMATION
+            <div className={css(styles.headerTextBlock)}>
+              BILLING INFORMATION
+            </div>
           </div>
           <div className={css(styles.infoAndUpdate)}>
             <div className={css(styles.creditCardInfo)}>
               <FontAwesome name="credit-card"/>
-              <span className={css(styles.creditCardCompany)}>Visa</span>
-              <span className={css(styles.creditCardNumber)}>**** **** **** 1234</span>
+              <span className={css(styles.creditCardProvider)}>Visa</span>
+              <span className={css(styles.creditCardNumber)}>•••• •••• •••• {ccLast4Digits}</span>
             </div>
             <Button
               colorPalette="cool"
@@ -146,14 +150,21 @@ const Organization = (props) => {
             />
           </div>
         </div>
-        <div className={css(styles.invoiceBlock)}>
-          <div className={css(styles.invoiceHeader)}>
-            INVOICES
+        <div className={css(styles.orgBlock)}>
+          <div className={css(styles.headerWithBorder)}>
+            <div className={css(styles.headerTextBlock)}>
+              INVOICES
+            </div>
           </div>
           <div className={css(styles.listOfInvoices)}>
-            <InvoiceRow preferredName="December 2016"/>
-            <InvoiceRow preferredName="November 2016"/>
-            <InvoiceRow preferredName="October 2016"/>
+            {!isTrial ?
+              <div className={css(styles.noInvoices)}>
+                No invoices yet! Can't beet free! Eat some beets! Betaine keeps you healthy!
+              </div> :
+              invoices.map((invoice) =>
+                <InvoiceRow invoice={invoice}/>
+              )
+            }
           </div>
         </div>
       </div>
@@ -162,14 +173,29 @@ const Organization = (props) => {
 }
 
 Organization.defaultProps = {
+  ccLast4Digits: '1234',
   org: {
     activeUsers: 12,
     createdAt: new Date(),
     name: 'Parabol',
     picture: brandMark,
     totalUsers: 14
-
-  }
+  },
+  invoices: [
+    {
+      invoiceDate: new Date(1484539569909),
+      amount: 22.5,
+      isEstimate: true
+    },
+    {
+      invoiceDate: new Date(1481861169909),
+      amount: 25
+    },
+    {
+      invoiceDate: new Date(1479269976347),
+      amount: 20
+    }
+  ]
 };
 const styleThunk = () => ({
   addLeader: {
@@ -187,7 +213,7 @@ const styleThunk = () => ({
     flexDirection: 'column'
   },
 
-  adminsHeader: {
+  headerWithBorder: {
     borderBottom: '1px solid #c3c5d1',
   },
 
@@ -224,6 +250,10 @@ const styleThunk = () => ({
     borderRadius: '10%',
   },
 
+  creditCardProvider: {
+    margin: '0 1rem'
+  },
+
   headerTextBlock: {
     alignItems: 'center',
     display: 'flex',
@@ -233,7 +263,16 @@ const styleThunk = () => ({
   },
 
   infoAndUpdate: {
-    display: 'flex'
+    alignItems: 'center',
+    display: 'flex',
+    justifyContent: 'space-between',
+    margin: '0 1rem',
+
+  },
+
+  noInvoices: {
+    textAlign: 'center',
+    margin: '1rem'
   },
 
   orgBlock: {

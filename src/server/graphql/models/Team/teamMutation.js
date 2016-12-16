@@ -532,7 +532,6 @@ export default {
         createdAt: now,
         inactiveUserCount: 0,
         isTrial: true,
-        members: [userId],
         name: `${user.preferredName}'s Org`,
         updatedAt: now,
         validUntil: trialExpiresAt

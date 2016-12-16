@@ -155,8 +155,9 @@ export default [
     subscription {
       organizations {
         id
+        activeUserCount
+        inactiveUserCount
         isTrial
-        memberCount
         name
         picture
       }

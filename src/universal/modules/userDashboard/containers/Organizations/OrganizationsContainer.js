@@ -8,6 +8,8 @@ query {
   organizations @live {
     id
     isTrial
+    activeUserCount
+    inactiveUserCount
     name
     picture
   }
