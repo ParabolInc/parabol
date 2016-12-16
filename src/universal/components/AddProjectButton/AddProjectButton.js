@@ -1,16 +1,24 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import FontAwesome from 'react-fontawesome';
+import ui from 'universal/styles/ui';
+
+const iconStyle = {
+  fontSize: ui.iconSize2x,
+  height: '1.5rem',
+  lineHeight: '1.5rem',
+  paddingTop: '1px'
+};
 
 const AddProjectButton = (props) => {
   const {styles, toggleLabel, toggleClickHandler} = props;
   return (
     <FontAwesome
-      className={css(styles.addIcon, styles[status])}
+      className={css(styles.addIcon)}
       name="plus-square-o"
       onClick={toggleClickHandler}
+      style={iconStyle}
       title={`Add a Project set to ${toggleLabel}`}
     />
   );
@@ -23,8 +31,16 @@ AddProjectButton.propTypes = {
 };
 
 const styleThunk = () => ({
-  ...projectStatusStyles('color'),
+  addIcon: {
+    ':hover': {
+      cursor: 'pointer',
+      opacity: '.5'
+    },
+    ':focus': {
+      cursor: 'pointer',
+      opacity: '.5'
+    }
+  }
 });
 
 export default withStyles(styleThunk)(AddProjectButton);
-
