@@ -5,9 +5,10 @@ import Helmet from 'react-helmet';
 import {withRouter} from 'react-router';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import {showError} from 'universal/modules/notifications/ducks/notifications';
-import {setAuthToken} from 'universal/redux/authDuck';
-import {reset as resetAppState} from 'universal/redux/rootDuck';
 import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
+import signout from 'universal/containers/Signout/signout';
+import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken';
+
 
 const impersonateTokenQuery = `
 query {
@@ -31,17 +32,12 @@ function createImposter(userId, dispatch, router) {
     const {email, id, jwt, name, picture} = data.createImposterToken;
     const profile = {avatar: picture, email, id, name};
     // Reset application state:
-    dispatch(resetAppState());
-    cashay.clear();
-    if (typeof window !== 'undefined' && typeof window.analytics !== 'undefined') {
-      // inform segment of the signout, wipe state:
-      window.analytics.reset();
-    }
-    // Assume the identity of the new user:
-    dispatch(setAuthToken(jwt, profile));
-    const options = {variables: {authToken: jwt}};
+    await signout(dispatch);
+    // Cashay User query needed to setup later mutation in signinAndUpdateToken:
     cashay.query(getAuthQueryString, getAuthedOptions(id));
-    await cashay.mutate('updateUserWithAuthToken', options);
+    // Assume the identity of the new user:
+    await signinAndUpdateToken(dispatch, profile, jwt);
+    // Navigate to a default location, the application root:
     router.replace('/');
   });
 }
