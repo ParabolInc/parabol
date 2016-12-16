@@ -13,7 +13,7 @@ import InvoiceRow from 'universal/modules/userDashboard/components/InvoiceRow/In
 import Button from 'universal/components/Button/Button';
 import brandMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import makeDateString from 'universal/utils/makeDateString';
-import {cardBorderTop} from 'universal/styles/helpers';
+import cardSection from 'universal/styles/helpers/cardSection';
 import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/EditOrgName';
 import {toggleLeaveModal, toggleRemoveModal} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
 import RemoveBillingLeaderModal from 'universal/modules/userDashboard/components/RemoveBillingLeaderModal/RemoveBillingLeaderModal';
@@ -110,13 +110,13 @@ const Organization = (props) => {
             <div className={css(styles.headerTextBlock)}>
               <span>ADMINS</span>
               <span className={css(styles.addLeader)}>
-              <FontAwesome
-                className={css(styles.addLeaderIcon)}
-                name="plus-square-o"
-                title="Promote a member to billing leader"
-              />
-              New Admin
-            </span>
+                <FontAwesome
+                  className={css(styles.addLeaderIcon)}
+                  name="plus-square-o"
+                  title="Promote a member to billing leader"
+                />
+                New Admin
+              </span>
             </div>
           </div>
           <div className={css(styles.listOfAdmins)}>
@@ -213,10 +213,6 @@ const styleThunk = () => ({
     flexDirection: 'column'
   },
 
-  headerWithBorder: {
-    borderBottom: '1px solid #c3c5d1',
-  },
-
   avatarAndName: {
     display: 'flex',
     margin: '1rem 0'
@@ -262,6 +258,10 @@ const styleThunk = () => ({
     margin: '1rem'
   },
 
+  headerWithBorder: {
+    borderBottom: '1px solid #c3c5d1',
+  },
+
   infoAndUpdate: {
     alignItems: 'center',
     display: 'flex',
@@ -276,20 +276,7 @@ const styleThunk = () => ({
   },
 
   orgBlock: {
-    display: 'flex',
-    flexDirection: 'column',
-    margin: '1rem 0',
-    backgroundColor: '#fff',
-    border: `1px solid ${ui.cardBorderColor}`,
-    borderRadius: ui.cardBorderRadius,
-    minHeight: ui.cardMinHeight,
-    paddingTop: '.1875rem',
-    position: 'relative',
-    width: '100%',
-
-    '::after': {
-      ...cardBorderTop
-    },
+    ...cardSection
   },
   orgDetails: {
     fontWeight: 700,
