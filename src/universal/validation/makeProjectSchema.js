@@ -8,7 +8,7 @@ export default function makeProjectSchema() {
     agendaId: compositeId,
     content: (value) => value
       .trim()
-      .max(200, 'Whoa! That looks like 2 projects'),
+      .max(255, 'Whoa! That looks like 2 projects'),
     isArchived: (value) => value.boolean(),
     status: (value) => value
       // status may be empty eg unarchive card
