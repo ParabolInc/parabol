@@ -28,7 +28,7 @@ const LoadingView = (props) => {
       {duckStyles.map((delayClass, idx) =>
         <LoadingDuck className={css(delayClass, styles.patoStyles)} key={idx}/>)}
       <h2 className={css(styles.message)}>Just putting our ducks in a row…</h2>
-      {children && Object.keys(children).length > 0 && children}
+      {children}
     </div>
   );
 };
