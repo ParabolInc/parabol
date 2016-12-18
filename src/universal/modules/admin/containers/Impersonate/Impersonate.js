@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import Helmet from 'react-helmet';
 import {withRouter} from 'react-router';
+import requireAuthAndRole from 'universal/decorators/requireAuthAndRole/requireAuthAndRole';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import {showError} from 'universal/modules/notifications/ducks/notifications';
 import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
@@ -76,6 +77,7 @@ const showDucks = () => {
 
 @connect(mapStateToProps)
 @withRouter
+@requireAuthAndRole('su')
 export default class Impersonate extends Component {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
@@ -86,9 +88,10 @@ export default class Impersonate extends Component {
   componentWillMount() {
     const {dispatch, newUserId, router} = this.props;
 
-    if (newUserId) {
-      createImposter(newUserId, dispatch, router);
+    if (!newUserId) {
+      return;
     }
+    createImposter(newUserId, dispatch, router);
   }
 
   render() {
