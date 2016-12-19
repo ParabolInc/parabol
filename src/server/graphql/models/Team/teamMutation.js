@@ -510,7 +510,7 @@ export default {
 
       // AUTH
       const userId = requireAuth(authToken);
-      const hasAnOrg = await r.table('User').get(authToken.sub)('org');
+      const hasAnOrg = await r.table('User').get(authToken.sub)('org').default(null);
       if (hasAnOrg) {
         throw errorObj({_error: 'cannot use createTeam when already part of an org'});
       }
@@ -520,7 +520,7 @@ export default {
       const {data, errors} = schema(newTeam);
       handleSchemaErrors(errors);
       await ensureUniqueId('Team', newTeam.id);
-      const user = await r.table('User').get(userId)('trialExpiresAt');
+      const user = await r.table('User').get(userId);
       if (user.trialExpiresAt) {
         throw errorObj({_error: 'you have already created a team'})
       }
