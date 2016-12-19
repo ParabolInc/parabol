@@ -1,15 +1,20 @@
 import getRethink from 'server/database/rethinkDriver';
-import {GraphQLString, GraphQLNonNull} from 'graphql';
+import {GraphQLID, GraphQLString, GraphQLNonNull} from 'graphql';
 import {User, UpdateUserInput} from './userSchema';
 import {AuthenticationClient} from 'auth0';
 import {auth0} from 'universal/utils/clientOptions';
 import sendEmail from 'server/email/sendEmail';
 import ms from 'ms';
-import {requireSUOrSelf} from '../authorization';
+import {requireSU, requireSUOrSelf} from '../authorization';
 import {errorObj, handleSchemaErrors, updatedOrOriginal} from '../utils';
-import {auth0ManagementClient, clientSecret} from 'server/utils/auth0Helpers';
+import {
+  auth0ManagementClient,
+  clientSecret as auth0ClientSecret
+} from 'server/utils/auth0Helpers';
 import {verify} from 'jsonwebtoken';
 import makeStep1Schema from 'universal/validation/makeStep1Schema';
+import tmsSignToken from 'server/graphql/models/tmsSignToken';
+
 
 const auth0Client = new AuthenticationClient({
   domain: auth0.domain,
@@ -17,6 +22,34 @@ const auth0Client = new AuthenticationClient({
 });
 
 export default {
+  createImposterToken: {
+    type: User,
+    description: 'for troubleshooting by admins, create a JWT for a given userId',
+    args: {
+      userId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The target userId to impersonate'
+      }
+    },
+    async resolve(source, {userId}, {authToken}) {
+      const r = getRethink();
+      requireSU(authToken);
+      const user = await r.table('User').get(userId).default({tms: null});
+      if (user.tms === null) {
+        throw errorObj({_error: `User ${userId} does not exist or has no teams`});
+      }
+
+      const newToken = {
+        iss: authToken.iss,
+        sub: user.id,
+        aud: auth0.clientId
+      };
+
+      user.jwt = tmsSignToken(newToken, user.tms);
+
+      return user;
+    }
+  },
   updateUserWithAuthToken: {
     type: User,
     description: 'Given a new auth token, grab all the information we can from auth0 about the user',
@@ -34,7 +67,7 @@ export default {
       // VALIDATION
       // This is the only resolve function where authToken refers to a base64 string and not an object
       const now = new Date();
-      const isValid = verify(authToken, Buffer.from(clientSecret, 'base64'), {audience: auth0.clientId});
+      const isValid = verify(authToken, Buffer.from(auth0ClientSecret, 'base64'), {audience: auth0.clientId});
       if (!isValid) {
         throw errorObj({_error: 'The provided token is not valid'});
       }

@@ -4,6 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.13.6 - 17-Dec-2016
+### Added
+- User impersonation, login as a user with knowing their credentials on route
+  `/admin/impersonate/:userid`
+
+### Fixed
+- #579 when too many characters where typed into an agenda field and enter
+  was pressed, everything was lost
+
 ## v0.13.5 - 12-Dec-2016
 ### Fixed
 - #556 archived cards no longer let you change the owner

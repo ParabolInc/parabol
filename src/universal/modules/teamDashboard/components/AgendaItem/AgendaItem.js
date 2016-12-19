@@ -121,10 +121,10 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.s3,
     fontStyle: 'italic',
     fontWeight: 700,
-    padding: '0 40px 0 0',
+    padding: '0 2rem 0 0',
     position: 'relative',
     cursor: 'pointer',
-    width: '168px',
+    width: '10.5rem',
 
     '::before': {
       content: '"“"',
@@ -155,7 +155,7 @@ const styleThunk = () => ({
     fontWeight: 700,
     height: '1.5rem',
     paddingRight: '.75rem',
-    paddingTop: '1px',
+    paddingTop: '.0625rem',
     textAlign: 'right',
     width: '4rem'
   },

@@ -9,7 +9,7 @@ export default store => ({
    */
   component: ActionContainer,
   childRoutes: [
-    require('./graphql'),
+    ...require('./admin'),
     require('./invitation')(store),
     require('./landing'),
     require('./signout'),
