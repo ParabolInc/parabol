@@ -5,12 +5,12 @@ import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router';
 
-const unauthorized = {
+const unauthorizedDefault = {
   title: 'Unauthorized',
   message: 'Hey! You\'re not supposed to be there. Bringing you someplace safe.'
 };
 
-const unauthenticated = {
+const unauthenticatedDefault = {
   title: 'Unauthenticated',
   message: 'Hey! You haven\'t signed in yet. Taking you to the sign in page.'
 };
@@ -23,7 +23,13 @@ const mapStateToProps = state => {
   };
 };
 
-export default role => ComposedComponent => {
+export default (role, {
+  /* optional named options: */
+  silent = false,
+  redirect = '/',
+  unauthorized = unauthorizedDefault,
+  unauthenticated = unauthenticatedDefault
+} = {}) => ComposedComponent => {
   @connect(mapStateToProps)
   @withRouter
   class RequiredAuthAndRole extends Component {
@@ -45,15 +51,17 @@ export default role => ComposedComponent => {
           // We had a role to check, and role checks out:
           return <ComposedComponent {...this.props} />;
         }
-        dispatch(showError(unauthorized));
+        if (!silent) {
+          dispatch(showError(unauthenticated));
+        }
       } else if (auth.sub) {
         // We were looking for any authenticated user only:
         return <ComposedComponent {...this.props} />;
-      } else {
-        // no legit authToken to be had
-        dispatch(showError(unauthenticated));
+      } else if (!silent) {
+        // no legit authToken to be had & squak about it:
+        dispatch(showError(unauthorized));
       }
-      router.push('/');
+      router.push(redirect);
       return null;
     }
   }
