@@ -240,11 +240,12 @@ export default {
         description: 'The team that will be having the meeting'
       }
     },
-    async resolve(source, {teamId}, {authToken}) {
+    async resolve(source, {teamId}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
       requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
 
       // RESOLUTION
       const now = new Date();
@@ -376,11 +377,12 @@ export default {
         description: 'The team that will be having the meeting'
       }
     },
-    async resolve(source, {teamId}, {authToken}) {
+    async resolve(source, {teamId}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
       requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
 
       // RESOLUTION
       // reset the meeting
@@ -508,7 +510,7 @@ export default {
 
       // AUTH
       const userId = requireAuth(authToken);
-      const hasAnOrg = r.table('User').get(authToken.sub)('org');
+      const hasAnOrg = await r.table('User').get(authToken.sub)('org');
       if (hasAnOrg) {
         throw errorObj({_error: 'cannot use createTeam when already part of an org'});
       }
@@ -613,11 +615,12 @@ export default {
         description: 'The input object containing the teamId and any modified fields'
       }
     },
-    async resolve(source, {updatedTeam}, {authToken}) {
+    async resolve(source, {updatedTeam}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
       requireSUOrTeamMember(authToken, updatedTeam.id);
+      requireWebsocket(socket);
 
       // VALIDATION
       const schema = makeStep2Schema();

@@ -6,7 +6,7 @@ import {
   GraphQLString,
   GraphQLID
 } from 'graphql';
-import {requireSUOrTeamMember} from '../authorization';
+import {requireSUOrTeamMember, requireWebsocket} from '../authorization';
 import shortid from 'shortid';
 import ms from 'ms';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
@@ -27,13 +27,14 @@ export default {
         description: 'the name of a status if the sort order got so out of whack that we need to reset the btree'
       }
     },
-    async resolve(source, {updatedProject, rebalance}, {authToken}) {
+    async resolve(source, {updatedProject, rebalance}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
       // projectId is of format 'teamId::taskId'
       const [teamId] = updatedProject.id.split('::');
       requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
 
       // VALIDATION
       const schema = makeProjectSchema();
@@ -111,13 +112,14 @@ export default {
         description: 'The new project including an id, status, and type, and teamMemberId'
       }
     },
-    async resolve(source, {newProject}, {authToken}) {
+    async resolve(source, {newProject}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
       // format of id is teamId::taskIdPart
       const [teamId] = newProject.id.split('::');
       requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
 
       // VALIDATION
       const schema = makeProjectSchema();
@@ -158,13 +160,14 @@ export default {
         description: 'The projectId (teamId::shortid) to delete'
       }
     },
-    async resolve(source, {projectId}, {authToken}) {
+    async resolve(source, {projectId}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
       // format of id is teamId::taskIdPart
       const [teamId] = projectId.split('::');
       requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
 
       // RESOLUTION
       await r.table('Project').get(projectId).delete()
@@ -184,13 +187,14 @@ export default {
         description: 'The projectId (teamId::shortid) to delete'
       }
     },
-    async resolve(source, {projectId}, {authToken}) {
+    async resolve(source, {projectId}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
       // format of id is teamId::taskIdPart
       const [teamId] = projectId.split('::');
       requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
 
       // RESOLUTION
       const project = await r.table('Project').get(projectId);

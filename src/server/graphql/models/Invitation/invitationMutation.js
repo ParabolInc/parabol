@@ -6,7 +6,7 @@ import {
   GraphQLList,
 } from 'graphql';
 import {Invitee} from './invitationSchema';
-import {getUserId, requireSUOrTeamMember} from '../authorization';
+import {getUserId, requireSUOrTeamMember, requireWebsocket} from '../authorization';
 import {errorObj, handleSchemaErrors} from '../utils';
 import {
   asyncInviteTeam,
@@ -91,13 +91,14 @@ export default {
         description: 'The id of the invitation'
       },
     },
-    async resolve(source, {inviteId}, {authToken}) {
+    async resolve(source, {inviteId}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
       const invite = await r.table('Invitation').get(inviteId);
       const {acceptedAt, teamId, tokenExpiration} = invite;
       requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
 
       // VALIDATION
       const now = new Date();
@@ -125,13 +126,14 @@ export default {
         description: 'The id of the invitation'
       },
     },
-    async resolve(source, {inviteId}, {authToken}) {
+    async resolve(source, {inviteId}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
       const invitation = await r.table('Invitation').get(inviteId);
       const {email, fullName, teamId} = invitation;
       requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
 
       // RESOLUTION
       const inviteToken = makeInviteToken();

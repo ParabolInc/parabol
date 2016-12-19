@@ -22,9 +22,11 @@ export default {
         description: 'The pagination cursor'
       }
     },
-    async resolve(source, {teamId, first, after}, {authToken}) {
+    async resolve(source, {teamId, first, after}, {authToken, socket}) {
       const r = getRethink();
       requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
+
       const cursor = after || r.minval;
       const result = await r.table('Project')
         .between([teamId, cursor], [teamId, r.maxval], {index: 'teamIdCreatedAt', leftBound: 'open'})

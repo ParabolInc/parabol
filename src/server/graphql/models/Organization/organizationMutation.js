@@ -5,7 +5,7 @@ import {
   GraphQLBoolean,
   GraphQLID
 } from 'graphql';
-import {requireOrgLeader} from '../authorization';
+import {requireOrgLeader, requireWebsocket} from '../authorization';
 import updateOrgSchema from 'universal/validation/updateOrgSchema';
 import {handleSchemaErrors} from '../utils';
 
@@ -19,10 +19,11 @@ export default {
         description: 'the updated org including the id, and at least one other field'
       }
     },
-    async resolve(source, {updatedOrg}, {authToken}) {
+    async resolve(source, {updatedOrg}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
+      requireWebsocket(socket);
       await requireOrgLeader(authToken, updatedOrg.id);
 
       // VALIDATION
@@ -53,10 +54,11 @@ export default {
         description: 'The billing leader userId to remove from the org'
       }
     },
-    async resolve(source, {orgId, userId}, {authToken}) {
+    async resolve(source, {orgId, userId}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
+      requireWebsocket(socket);
       await requireOrgLeader(authToken, orgId);
 
       // RESOLUTION
