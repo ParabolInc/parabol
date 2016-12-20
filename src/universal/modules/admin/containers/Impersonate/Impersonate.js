@@ -77,7 +77,7 @@ const showDucks = () => {
 
 @connect(mapStateToProps)
 @withRouter
-@requireAuthAndRole('su')
+@requireAuthAndRole('su', {silent: true})
 export default class Impersonate extends Component {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
