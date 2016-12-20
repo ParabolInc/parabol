@@ -154,7 +154,7 @@ get involved and how to get compensated.
 
 | Release | Summary                                    |
 |---------|--------------------------------------------|
-| v0.13.6 | Adds admin user impersonation, fix #579    |
+| v0.13.6 | Adds admin user impersonation, fixes       |
 | v0.13.5 | Fixes: #556, #557, and #559                |
 | v0.13.4 | Fix email validation                       |
 | v0.13.3 | Validations, S3 enhancements, fixes        |
