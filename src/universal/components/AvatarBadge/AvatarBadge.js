@@ -5,10 +5,19 @@ import appTheme from 'universal/styles/theme/appTheme';
 import FontAwesome from 'react-fontawesome';
 import {srOnly} from 'universal/styles/helpers';
 
-const getCheckedInIcon = (isCheckedIn) => {
-  if (isCheckedIn) return 'check-circle';
-  if (isCheckedIn === false) return 'times-circle';
-  return 'circle';
+const checkInStatus = {
+  undefined: {
+    icon: 'circle',
+    statusName: ''
+  },
+  true: {
+    icon: 'check-circle',
+    statusName: ' & present'
+  },
+  false: {
+    icon: 'times-circle',
+    statusName: ' & absent'
+  },
 };
 
 const AvatarBadge = (props) => {
@@ -19,7 +28,8 @@ const AvatarBadge = (props) => {
     styles.badgeIcon,
     styles[connection]
   );
-  const icon = getCheckedInIcon(isCheckedIn);
+  const {icon, statusName} = checkInStatus[isCheckedIn];
+  const title = `${isConnected ? 'Online' : 'Offline'}${statusName}`;
   const largeBadgeClass = size === 'large' || size === 'larger' || size === 'largest';
   const badgeStyles = css(
     styles.badge,
@@ -28,7 +38,7 @@ const AvatarBadge = (props) => {
   const description = `${connection}, ${checkIn}`;
   return (
     <div className={badgeStyles}>
-      <FontAwesome className={iconStyles} name={icon}/>
+      <FontAwesome className={iconStyles} name={icon} title={title}/>
       <span className={css(styles.srOnly)}>
         {description}
       </span>

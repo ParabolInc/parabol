@@ -19,6 +19,9 @@ query {
     id
     picture
     preferredName
+    presence @cached(type: "[Presence]") {
+      userId
+    }
   }
 }`;
 
@@ -28,6 +31,7 @@ const mapStateToProps = (state, props) => {
   const teamContainer = cashay.query(teamContainerSub, {
     op: 'teamContainer',
     key: teamId,
+    resolveCached: {presence: (source) => (doc) => source.id.startsWith(doc.userId)},
     variables: {teamId}
   });
   const {team, teamMembers} = teamContainer.data;

@@ -60,7 +60,7 @@ const Avatar = (props) => {
     >
       <div className={imagePositionStyles}>
         <div className={imageBlockStyles}>
-          <img className={avatarImagesStyles} src={picture}/>
+          <img className={avatarImagesStyles} src={picture} title={preferredName}/>
           {hasBadge && <AvatarBadge isCheckedIn={isCheckedIn} isConnected={isConnected} size={size}/>}
         </div>
       </div>
