@@ -36,6 +36,7 @@ import makeStep2Schema from 'universal/validation/makeStep2Schema';
 import makeAddTeamServerSchema from 'universal/validation/makeAddTeamServerSchema';
 import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED, REQUEST_NEW_USER} from 'universal/utils/constants';
 import ms from 'ms';
+import dndNoise from 'universal/utils/dndNoise';
 
 export default {
   moveMeeting: {
@@ -246,81 +247,128 @@ export default {
       // AUTH
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
+      const meeting = await r.table('Meeting')
+      // get the most recent meeting
+        .getAll(teamId, {index: 'teamId'})
+        .orderBy(r.desc('createdAt'))
+        .nth(0)('id');
+      if (meeting.endedAt) {
+        throw errorObj({_error: 'Meeting already ended!'})
+      }
 
       // RESOLUTION
       const now = new Date();
-      await r.table('Meeting')
+      const meetingId = meeting.id;
+      const meetingChanges = await r.table('AgendaItem')
+      // get all agenda items
         .getAll(teamId, {index: 'teamId'})
-        .orderBy(r.desc('createdAt'))
-        .nth(0)('id')
-        .do((meetingId) => ({
-          meetingId,
-          meetingUpdates: r.table('AgendaItem')
-            .getAll(teamId, {index: 'teamId'})
-            .filter({isActive: true, isComplete: true})
-            .map((doc) => doc('id'))
-            .coerceTo('array')
-            .do((agendaItemIds) => ({
-              // delete any null actions
-              deletedActions: r.table('Action')
+        .filter({isActive: true, isComplete: true})
+        .map((doc) => doc('id'))
+        .coerceTo('array')
+        .do((agendaItemIds) => {
+          // delete any null actions
+          return r.table('Action')
+            .getAll(r.args(agendaItemIds), {index: 'agendaId'})
+            .filter((row) => row('content').eq(null))
+            .delete()
+            .do(() => {
+              // delete any null projects
+              return r.table('Project')
                 .getAll(r.args(agendaItemIds), {index: 'agendaId'})
                 .filter((row) => row('content').eq(null))
-                .delete(),
-              deletedProjects: r.table('Project')
-                .getAll(r.args(agendaItemIds), {index: 'agendaId'})
-                .filter((row) => row('content').eq(null))
-                .delete(),
-              agendaItemIds
-            }))
-            .do((res) => {
+                .delete();
+            })
+            .do(() => {
+              // grab all the actions and projects
               return {
                 actions: r.table('Action')
-                  .getAll(r.args(res('agendaItemIds')), {index: 'agendaId'})
+                  .getAll(r.args(agendaItemIds), {index: 'agendaId'})
                   // we still need to filter because this may occur before we delete them above (not guaranteed in sync)
                   .filter((row) => row('content').ne(null))
                   .map(row => row.merge({id: meetingId.add('::').add(row('id'))}))
                   .pluck('id', 'content', 'teamMemberId')
                   .coerceTo('array'),
-                agendaItemsCompleted: res('agendaItemIds').count(),
                 projects: r.table('Project')
-                  .getAll(r.args(res('agendaItemIds')), {index: 'agendaId'})
+                  .getAll(r.args(agendaItemIds), {index: 'agendaId'})
                   .filter((row) => row('content').ne(null))
                   .map(row => row.merge({id: meetingId.add('::').add(row('id'))}))
                   .pluck('id', 'content', 'status', 'teamMemberId')
                   .coerceTo('array')
               };
             })
-        }))
-        .do((res) => {
-          return r.table('Meeting').get(res('meetingId'))
-            .update({
-              actions: res('meetingUpdates')('actions').default([]),
-              agendaItemsCompleted: res('meetingUpdates')('agendaItemsCompleted').default(0),
-              endedAt: now,
-              facilitator: `${authToken.sub}::${teamId}`,
-              successExpression: makeSuccessExpression(),
-              successStatement: makeSuccessStatement(),
-              invitees: r.table('TeamMember')
-                .getAll(teamId, {index: 'teamId'})
-                .filter({isNotRemoved: true})
-                .coerceTo('array')
-                .map((teamMember) => ({
-                  id: teamMember('id'),
-                  present: r.branch(teamMember('isCheckedIn').eq(true), true, false)
-                })),
-              projects: res('meetingUpdates')('projects').default([]),
-
-            }, {nonAtomic: true});
+            .do((res) => {
+              return r.table('Meeting').get(meetingId)
+                .update({
+                  actions: res('actions').default([]),
+                  agendaItemsCompleted: agendaItemIds.count().default(0),
+                  endedAt: now,
+                  facilitator: `${authToken.sub}::${teamId}`,
+                  successExpression: makeSuccessExpression(),
+                  successStatement: makeSuccessStatement(),
+                  invitees: r.table('TeamMember')
+                    .getAll(teamId, {index: 'teamId'})
+                    .filter({isNotRemoved: true})
+                    .coerceTo('array')
+                    .map((teamMember) => ({
+                      id: teamMember('id'),
+                      actions: res('actions').default([]).filter({teamMemberId: teamMember('id')}),
+                      picture: teamMember('picture'),
+                      preferredName: teamMember('preferredName'),
+                      present: r.branch(teamMember('isCheckedIn').eq(true), true, false),
+                      projects: res('projects').default([]).filter({teamMemberId: teamMember('id')})
+                    })),
+                  projects: res('projects').default([]),
+                }, {nonAtomic: true, returnChanges: true})
+            })
         });
 
+      // give the new projects and actions a new sort order
+      const {invitees} = meetingChanges[0].new_val;
+      const orderedInvitees = invitees.map((invitee) => {
+        return {
+          id: invitee.id,
+          actions: invitee.actions.map((action, idx) => ({id: action.id, increment: idx + 1 + dndNoise()})),
+          projects: invitee.projects.map((project, idx) => ({id: project.id, increment: idx + 1 + dndNoise()})),
+        }
+      });
+      await r.expr(orderedInvitees)
+        .forEach((invitee) => {
+          return {
+            updateActionSortOrder: r.table('Action')
+              .getAll(invitee('id'), {index: 'teamMemberId'})
+              .filter({isComplete: false})
+              .max('sortOrder')
+              .do((maxActionSort) => {
+                return r.expr(invitee('actions'))
+                  .forEach((action) => {
+                    return r.table('Action').get(action('id')).update({
+                      sortOrder: maxActionSort.add(action('increment'))
+                    })
+                  })
+              }),
+            updateProjectSortOrder: r.table('Project')
+              .getAll(invitee('id'), {index: 'teamMemberId'})
+              .filter({isArchived: false})
+              .max('sortOrder')
+              .do((maxProjectSort) => {
+                return r.expr(invitee('projects'))
+                  .forEach((project) => {
+                    return r.table('Project').get(project('id')).update({
+                      sortOrder: maxProjectSort.add(project('increment'))
+                    })
+                  })
+              })
+
+          }
+        });
       // send to summary
       await r.table('Team').get(teamId)
-        .update({
-          facilitatorPhase: SUMMARY,
-          meetingPhase: SUMMARY,
-          facilitatorPhaseItem: null,
-          meetingPhaseItem: null,
-        });
+          .update({
+            facilitatorPhase: SUMMARY,
+            meetingPhase: SUMMARY,
+            facilitatorPhaseItem: null,
+            meetingPhaseItem: null,
+          });
 
       // reset the meeting
       setTimeout(() => {
@@ -376,8 +424,11 @@ export default {
         type: new GraphQLNonNull(GraphQLID),
         description: 'The team that will be having the meeting'
       }
-    },
-    async resolve(source, {teamId}, {authToken, socket}) {
+    }
+    ,
+    async
+    resolve(source, {teamId}, {authToken, socket})
+    {
       const r = getRethink();
 
       // AUTH
@@ -386,18 +437,20 @@ export default {
 
       // RESOLUTION
       // reset the meeting
-      await r.table('Team').get(teamId)
-        .update({
-          facilitatorPhase: LOBBY,
-          meetingPhase: LOBBY,
-          meetingId: null,
-          facilitatorPhaseItem: null,
-          meetingPhaseItem: null,
-          activeFacilitator: null
-        });
+      await
+        r.table('Team').get(teamId)
+          .update({
+            facilitatorPhase: LOBBY,
+            meetingPhase: LOBBY,
+            meetingId: null,
+            facilitatorPhaseItem: null,
+            meetingPhaseItem: null,
+            activeFacilitator: null
+          });
       return true;
     }
-  },
+  }
+  ,
   addTeam: {
     type: GraphQLBoolean,
     description: 'Create a new team and add the first team member',
@@ -405,42 +458,50 @@ export default {
       newTeam: {
         type: new GraphQLNonNull(CreateTeamInput),
         description: 'The new team object with exactly 1 team member'
-      },
+      }
+      ,
       invitees: {
         type: new GraphQLList(new GraphQLNonNull(Invitee))
       }
-    },
-    async resolve(source, args, {authToken, socket}) {
+    }
+    ,
+    async
+    resolve(source, args, {authToken, socket})
+    {
       const r = getRethink();
 
       // AUTH
       const {orgId} = args.newTeam;
       const userId = authToken.sub;
       requireWebsocket(socket);
-      await ensureUserInOrg(userId, orgId);
+      await
+        ensureUserInOrg(userId, orgId);
 
       // VALIDATION
       const schema = makeAddTeamServerSchema({inviteEmails: [], teamMemberEmails: []});
       const {data: {invitees, newTeam}, errors} = schema(args);
       const teamId = newTeam.id;
       handleSchemaErrors(errors);
-      await ensureUniqueId('Team', teamId);
+      await
+        ensureUniqueId('Team', teamId);
 
       // RESOLUTION
       const authTokenObj = socket.getAuthToken();
       authTokenObj.tms = Array.isArray(authTokenObj.tms) ? authTokenObj.tms.concat(teamId) : [teamId];
       socket.setAuthToken(authTokenObj);
-      await createTeamAndLeader(authToken, newTeam);
+      await
+        createTeamAndLeader(authToken, newTeam);
       if (invitees && invitees.length) {
         const inviteeEmails = invitees.map((i) => i.email);
-        const orgMemberInvitees = await r.table('User')
-          .getAll(r.args(inviteeEmails), {index: 'email'})
-          .pluck('id', 'email')
-          // now that we know they exist in the system, see if they exist in the org
-          .filter((row) => {
-            // i wonder if this is inefficient in rethinkDB or if they cache the result?
-            return r.table('Organization').get(orgId)('members').contains(row('id'))
-          });
+        const orgMemberInvitees = await
+          r.table('User')
+            .getAll(r.args(inviteeEmails), {index: 'email'})
+            .pluck('id', 'email')
+            // now that we know they exist in the system, see if they exist in the org
+            .filter((row) => {
+              // i wonder if this is inefficient in rethinkDB or if they cache the result?
+              return r.table('Organization').get(orgId)('members').contains(row('id'))
+            });
         const inOrgMembers = [];
         const outOfOrgEmails = [];
         for (let i = 0; i < invitees.length; i++) {
@@ -453,48 +514,52 @@ export default {
           }
         }
         if (inOrgMembers.length > 0) {
-          await asyncInviteTeam(authToken, teamId, invitees);
+          await
+            asyncInviteTeam(authToken, teamId, invitees);
         }
 
         if (outOfOrgEmails.length) {
           // add a notification to the billing leaders
-          const {billingLeaders, inviter} = await r.table('User')
-            .getAll(orgId, {index: 'billingLeaderOrgs'})('id')
-            .do((billingLeaders) => {
-              return {
-                billingLeaders,
-                inviter: r.table('User').get(userId).pluck('preferredName', 'id')
-              }
-            });
+          const {billingLeaders, inviter} = await
+            r.table('User')
+              .getAll(orgId, {index: 'billingLeaderOrgs'})('id')
+              .do((billingLeaders) => {
+                return {
+                  billingLeaders,
+                  inviter: r.table('User').get(userId).pluck('preferredName', 'id')
+                }
+              });
           const parentId = shortid.generate();
           const notificationIds = billingLeaders.reduce((obj, billingLeaderId) => {
             obj[billingLeaderId] = shortid.generate();
             return obj;
           }, {});
           // send a new notification to each billing leader concerning each out-of-org invitee
-          await r.expr(outOfOrgEmails)
-            .forEach((invitee) => {
-              return r.expr(billingLeaders)
-                .forEach((billingLeader) => {
-                  return r.table('Notification')
-                    .insert({
-                      id: notificationIds[billingLeader],
-                      parentId,
-                      type: REQUEST_NEW_USER,
-                      varList: [inviter.name, inviter.id, invitee, newTeam.name, newTeam.id],
-                      startAt: new Date(),
-                      endAt: new Date(Date.now() + ms('10y')),
-                      userId: billingLeader,
-                      orgId,
-                    })
-                })
-            });
+          await
+            r.expr(outOfOrgEmails)
+              .forEach((invitee) => {
+                return r.expr(billingLeaders)
+                  .forEach((billingLeader) => {
+                    return r.table('Notification')
+                      .insert({
+                        id: notificationIds[billingLeader],
+                        parentId,
+                        type: REQUEST_NEW_USER,
+                        varList: [inviter.name, inviter.id, invitee, newTeam.name, newTeam.id],
+                        startAt: new Date(),
+                        endAt: new Date(Date.now() + ms('10y')),
+                        userId: billingLeader,
+                        orgId,
+                      })
+                  })
+              });
           // TODO: send a toast???
         }
       }
       return true;
     }
-  },
+  }
+  ,
   createTeam: {
     // return the new JWT that has the new tms field
     type: GraphQLID,
@@ -504,13 +569,17 @@ export default {
         type: new GraphQLNonNull(CreateTeamInput),
         description: 'The new team object with exactly 1 team member'
       }
-    },
-    async resolve(source, {newTeam}, {authToken}) {
+    }
+    ,
+    async
+    resolve(source, {newTeam}, {authToken})
+    {
       const r = getRethink();
 
       // AUTH
       const userId = requireAuth(authToken);
-      const hasAnOrg = await r.table('User').get(authToken.sub)('org').default(null);
+      const hasAnOrg = await
+        r.table('User').get(authToken.sub)('org').default(null);
       if (hasAnOrg) {
         throw errorObj({_error: 'cannot use createTeam when already part of an org'});
       }
@@ -519,8 +588,10 @@ export default {
       const schema = makeStep2Schema();
       const {data, errors} = schema(newTeam);
       handleSchemaErrors(errors);
-      await ensureUniqueId('Team', newTeam.id);
-      const user = await r.table('User').get(userId);
+      await
+        ensureUniqueId('Team', newTeam.id);
+      const user = await
+        r.table('User').get(userId);
       if (user.trialExpiresAt) {
         throw errorObj({_error: 'you have already created a team'})
       }
@@ -532,52 +603,55 @@ export default {
       const validNewTeam = {...data, orgId};
       const expiresSoonId = shortid.generate();
       const expiredId = shortid.generate();
-      await r.table('Organization').insert({
-        id: orgId,
-        activeUserCount: 1,
-        createdAt: now,
-        inactiveUserCount: 0,
-        isTrial: true,
-        name: `${user.preferredName}'s Org`,
-        updatedAt: now,
-        validUntil: trialExpiresAt
-      })
-        .do(() => {
-          return r.table('Notification').insert([
-            {
-              id: expiresSoonId,
-              parentId: expiresSoonId,
-              type: TRIAL_EXPIRES_SOON,
-              varList: [trialExpiresAt],
-              startAt: new Date(now + ms('14d')),
-              endAt: trialExpiresAt,
-              userId,
-              orgId,
-            },
-            {
-              id: expiredId,
-              parentId: expiredId,
-              type: TRIAL_EXPIRED,
-              varList: [trialExpiresAt],
-              startAt: trialExpiresAt,
-              endAt: new Date(trialExpiresAt + ms('10y')),
-              userId,
-              orgId,
-            }
-          ])
+      await
+        r.table('Organization').insert({
+          id: orgId,
+          activeUserCount: 1,
+          createdAt: now,
+          inactiveUserCount: 0,
+          isTrial: true,
+          name: `${user.preferredName}'s Org`,
+          updatedAt: now,
+          validUntil: trialExpiresAt
         })
-        .do(() => {
-          return r.table('User').get(userId).update({
-            billingLeaderOrgs: [orgId],
-            orgs: [orgId],
-            trialExpiresAt
+          .do(() => {
+            return r.table('Notification').insert([
+              {
+                id: expiresSoonId,
+                parentId: expiresSoonId,
+                type: TRIAL_EXPIRES_SOON,
+                varList: [trialExpiresAt],
+                startAt: new Date(now + ms('14d')),
+                endAt: trialExpiresAt,
+                userId,
+                orgId,
+              },
+              {
+                id: expiredId,
+                parentId: expiredId,
+                type: TRIAL_EXPIRED,
+                varList: [trialExpiresAt],
+                startAt: trialExpiresAt,
+                endAt: new Date(trialExpiresAt + ms('10y')),
+                userId,
+                orgId,
+              }
+            ])
           })
-        });
+          .do(() => {
+            return r.table('User').get(userId).update({
+              billingLeaderOrgs: [orgId],
+              orgs: [orgId],
+              trialExpiresAt
+            })
+          });
 
-      const tms = await createTeamAndLeader(authToken, validNewTeam);
+      const tms = await
+        createTeamAndLeader(authToken, validNewTeam);
       return tmsSignToken(authToken, tms);
     }
-  },
+  }
+  ,
   changeFacilitator: {
     type: GraphQLBoolean,
     description: 'Change a facilitator while the meeting is in progress',
@@ -586,8 +660,11 @@ export default {
         type: new GraphQLNonNull(GraphQLID),
         description: 'The facilitator teamMemberId for this meeting'
       }
-    },
-    async resolve(source, {facilitatorId}, {authToken, socket}) {
+    }
+    ,
+    async
+    resolve(source, {facilitatorId}, {authToken, socket})
+    {
       const r = getRethink();
 
       // AUTH
@@ -597,16 +674,19 @@ export default {
       requireWebsocket(socket);
 
       // VALIDATION
-      const facilitatorMembership = await r.table('TeamMember').get(facilitatorId);
+      const facilitatorMembership = await
+        r.table('TeamMember').get(facilitatorId);
       if (!facilitatorMembership || !facilitatorMembership.isNotRemoved) {
         throw errorObj({_error: 'facilitator is not active on that team'});
       }
 
       // RESOLUTION
-      await r.table('Team').get(teamId).update({activeFacilitator: facilitatorId});
+      await
+        r.table('Team').get(teamId).update({activeFacilitator: facilitatorId});
       return true;
     }
-  },
+  }
+  ,
   updateTeamName: {
     type: GraphQLBoolean,
     args: {
@@ -614,8 +694,11 @@ export default {
         type: new GraphQLNonNull(UpdateTeamInput),
         description: 'The input object containing the teamId and any modified fields'
       }
-    },
-    async resolve(source, {updatedTeam}, {authToken, socket}) {
+    }
+    ,
+    async
+    resolve(source, {updatedTeam}, {authToken, socket})
+    {
       const r = getRethink();
 
       // AUTH
@@ -628,11 +711,13 @@ export default {
       handleSchemaErrors(errors);
 
       // RESOLUTION
-      await r.table('Team').get(id).update({name});
+      await
+        r.table('Team').get(id).update({name});
       return true;
     }
   }
-};
+}
+;
 
 
 // The since-last-week mega query
