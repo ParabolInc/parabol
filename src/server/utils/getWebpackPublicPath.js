@@ -1,3 +1,5 @@
+import path from 'path';
+import protoRelUrl from './protoRelUrl';
 import {
   APP_VERSION,
   APP_WEBPACK_PUBLIC_PATH_DEFAULT
@@ -5,10 +7,12 @@ import {
 
 export default function getWebpackPublicPath() {
   if (typeof process !== 'undefined' && process.env.CDN_BASE_URL) {
-    // server-side:
-    const publicPath = process.env.CDN_BASE_URL.endsWith('/') ?
-      process.env.CDN_BASE_URL.slice(0, -1) : process.env.CDN_BASE_URL;
-    return `${publicPath}/build/v${APP_VERSION}/`;
+    // this only runs server-side:
+    const parsedUrl = protoRelUrl.parse(process.env.CDN_BASE_URL);
+    parsedUrl.pathname = path.join(
+      parsedUrl.pathname, `/build/v${APP_VERSION}/`
+    );
+    return protoRelUrl.format(parsedUrl);
   }
 
   return APP_WEBPACK_PUBLIC_PATH_DEFAULT;

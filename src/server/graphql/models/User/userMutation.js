@@ -1,3 +1,5 @@
+import path from 'path';
+import shortid from 'shortid';
 import getRethink from 'server/database/rethinkDriver';
 import {GraphQLID, GraphQLString, GraphQLNonNull} from 'graphql';
 import {User, UpdateUserInput} from './userSchema';
@@ -5,7 +7,7 @@ import {AuthenticationClient} from 'auth0';
 import {auth0} from 'universal/utils/clientOptions';
 import sendEmail from 'server/email/sendEmail';
 import ms from 'ms';
-import {requireSU, requireSUOrSelf} from '../authorization';
+import {requireAuth, requireSU, requireSUOrSelf} from '../authorization';
 import {errorObj, handleSchemaErrors, updatedOrOriginal} from '../utils';
 import {
   auth0ManagementClient,
@@ -14,7 +16,10 @@ import {
 import {verify} from 'jsonwebtoken';
 import makeStep1Schema from 'universal/validation/makeStep1Schema';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
-
+import protoRelUrl from 'server/utils/protoRelUrl';
+import {s3SignPutUrl} from 'server/utils/s3SignUrl';
+import {APP_CDN_USER_ASSET_SUBDIR} from 'universal/utils/constants';
+import getFileExtension from 'universal/utils/getFileExtension';
 
 const auth0Client = new AuthenticationClient({
   domain: auth0.domain,
@@ -33,12 +38,17 @@ export default {
     },
     async resolve(source, {userId}, {authToken}) {
       const r = getRethink();
+
+      // AUTH
       requireSU(authToken);
+
+      // VALIDATION
       const user = await r.table('User').get(userId).default({tms: null});
       if (user.tms === null) {
         throw errorObj({_error: `User ${userId} does not exist or has no teams`});
       }
 
+      // RESOLUTION
       const newToken = {
         iss: authToken.iss,
         sub: user.id,
@@ -48,6 +58,45 @@ export default {
       user.jwt = tmsSignToken(newToken, user.tms);
 
       return user;
+    }
+  },
+  createUserPicturePutUrl: {
+    type: GraphQLString,
+    description: 'Given a user id, create a URL the client can HTTP PUT to',
+    args: {
+      userFilename: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: 'user-supplied filename, used only to infer the file extension'
+      }
+    },
+    async resolve(source, {userFilename}, {authToken}) {
+      const r = getRethink();
+
+      // AUTH
+      const userId = requireAuth(authToken);
+
+      // VALIDATION
+      if (typeof process.env.CDN_BASE_URL === 'undefined') {
+        throw errorObj({_error: 'CDN_BASE_URL environment variable is not defined'});
+      }
+      const ext = getFileExtension(userFilename);
+      if (ext === '') {
+        throw errorObj({_error: 'userFilename has no extension'});
+      }
+      const user = await r.table('User').get(userId);
+      if (!user) {
+        throw errorObj({_error: 'User ID not found'});
+      }
+
+      // RESOLUTION
+      const parsedUrl = protoRelUrl.parse(process.env.CDN_BASE_URL);
+      parsedUrl.pathname = path.join(parsedUrl.pathname,
+        APP_CDN_USER_ASSET_SUBDIR,
+        `User/${userId}/picture${shortid.generate()}.${ext}`
+      );
+      return s3SignPutUrl(
+        protoRelUrl.format(parsedUrl, undefined, 'public-read')
+      );
     }
   },
   updateUserWithAuthToken: {
