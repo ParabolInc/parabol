@@ -4,6 +4,7 @@ query {
     email,
     id,
     picture,
+    picturePutUrl,
     preferredName
   }
 }`;
@@ -19,7 +20,13 @@ const customMutations = {
   }`
 };
 
-const updateTokenMutationHandlers = {
+const mutationHandlers = {
+  createUserPicturePutUrl(optimisticVariables, queryResponse, currentResponse) {
+    if (queryResponse) {
+      Object.assign(currentResponse.user, queryResponse);
+    }
+    return currentResponse;
+  },
   updateUserProfile(optimisticVariables, queryResponse, currentResponse) {
     if (optimisticVariables) {
       Object.assign(currentResponse.user, optimisticVariables.updatedProfile);
@@ -40,6 +47,6 @@ const updateTokenMutationHandlers = {
 export const getAuthedOptions = (userId) => ({
   op: 'getAuthedUser',
   resolveCached: {user: () => userId},
-  mutationHandlers: updateTokenMutationHandlers,
+  mutationHandlers,
   customMutations
 });

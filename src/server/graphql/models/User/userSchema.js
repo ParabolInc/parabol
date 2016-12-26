@@ -130,6 +130,10 @@ export const User = new GraphQLObjectType({
     jwt: {
       type: GraphQLID,
       description: 'a refreshed JWT'
+    },
+    picturePutUrl: {
+      type: GraphQLString,
+      description: 'a URL the client may use to PUT an uploaded picture'
     }
   })
 });

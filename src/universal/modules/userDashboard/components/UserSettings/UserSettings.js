@@ -7,6 +7,8 @@ import InputField from 'universal/components/InputField/InputField';
 import {Field} from 'redux-form';
 import {ACTIVITY_WELCOME} from 'universal/modules/userDashboard/ducks/settingsDuck';
 import {randomPreferredName} from 'universal/utils/makeRandomPlaceholder';
+import Avatar from 'universal/components/Avatar/Avatar';
+import FileInput from 'universal/components/FileInput/FileInput';
 
 const renderActivity = (activity) => {
   if (activity === ACTIVITY_WELCOME) {
@@ -21,7 +23,7 @@ const renderActivity = (activity) => {
 };
 
 const UserSettings = (props) => {
-  const {activity, handleSubmit, onSubmit, styles} = props;
+  const {activity, handleSubmit, onSubmit, styles, user: {picture}} = props;
   return (
     <form className={css(styles.root)} onSubmit={handleSubmit(onSubmit)}>
       <DashHeader>
@@ -31,6 +33,16 @@ const UserSettings = (props) => {
         <div className={css(styles.body)}>
           <div className={css(styles.row)}>
             {renderActivity(activity)}
+          </div>
+          <div className={css(styles.row)}>
+            <Avatar hasBadge={false} picture={picture} size="large"/>
+          </div>
+          <div className={css(styles.row)}>
+            <Field
+              component={FileInput}
+              name="pictureFile"
+              type="file"
+            />
           </div>
           <div className={css(styles.row)}>
             <Field
@@ -62,9 +74,13 @@ UserSettings.propTypes = {
   nextPage: PropTypes.string,          // from settingsDuck
   onSubmit: PropTypes.func,
   router: PropTypes.object,
+  user: PropTypes.shape({
+    email: PropTypes.string,
+    id: PropTypes.string,
+    picture: PropTypes.string,
+    preferredName: PropTypes.string,
+  }),
   userId: PropTypes.string,
-  /* User for form defaults: */
-  preferredName: PropTypes.string,
   styles: PropTypes.object
 };
 

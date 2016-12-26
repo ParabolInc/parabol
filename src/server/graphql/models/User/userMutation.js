@@ -61,8 +61,8 @@ export default {
     }
   },
   createUserPicturePutUrl: {
-    type: GraphQLString,
-    description: 'Given a user id, create a URL the client can HTTP PUT to',
+    type: User,
+    description: 'Create a PUT URL on the CDN for the currently authenticated user\'s profile picture',
     args: {
       userFilename: {
         type: new GraphQLNonNull(GraphQLString),
@@ -94,7 +94,9 @@ export default {
         APP_CDN_USER_ASSET_SUBDIR,
         `User/${userId}/picture/${shortid.generate()}.${ext}`
       ).slice(1);
-      return s3SignPutUrl(pathname, undefined, 'public-read');
+      user.picturePutUrl = s3SignPutUrl(pathname, undefined, 'public-read');
+
+      return user;
     }
   },
   updateUserWithAuthToken: {

@@ -57,7 +57,11 @@ export default class UserSettingsContainer extends Component {
 
   onSubmit = (submissionData) => {
     const {activity, dispatch, nextPage, untouch, user, userId, router} = this.props;
-    const {preferredName} = submissionData;
+    const {preferredName, pictureFile} = submissionData;
+    if (pictureFile && pictureFile.name) {
+      console.log('updating picture');
+      this.updatePicture(pictureFile);
+    }
     if (preferredName === user.preferredName) return;
     const options = {
       variables: {
@@ -77,6 +81,20 @@ export default class UserSettingsContainer extends Component {
     }
     untouch('preferredName');
   };
+
+  updatePicture(pictureFile) {
+    cashay.mutate('createUserPicturePutUrl', {
+      variables: {
+        userFilename: pictureFile.name
+      }
+    }).then(({data, error}) => {
+      if (error) {
+        console.warn('oopies, TODO');
+      }
+      const {picturePutUrl} = data.createUserPicturePutUrl;
+      console.log(picturePutUrl);
+    });
+  }
 
   initializeForm() {
     const {dispatch, user: {preferredName}} = this.props;
