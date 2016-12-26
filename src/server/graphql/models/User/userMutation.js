@@ -90,13 +90,11 @@ export default {
 
       // RESOLUTION
       const parsedUrl = protoRelUrl.parse(process.env.CDN_BASE_URL);
-      parsedUrl.pathname = path.join(parsedUrl.pathname,
+      const pathname = path.join(parsedUrl.pathname,
         APP_CDN_USER_ASSET_SUBDIR,
-        `User/${userId}/picture${shortid.generate()}.${ext}`
-      );
-      return s3SignPutUrl(
-        protoRelUrl.format(parsedUrl, undefined, 'public-read')
-      );
+        `User/${userId}/picture/${shortid.generate()}.${ext}`
+      ).slice(1);
+      return s3SignPutUrl(pathname, undefined, 'public-read');
     }
   },
   updateUserWithAuthToken: {
