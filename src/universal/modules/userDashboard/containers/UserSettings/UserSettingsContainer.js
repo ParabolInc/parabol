@@ -11,6 +11,7 @@ import {reduxForm, initialize} from 'redux-form';
 import {cashay} from 'cashay';
 import {withRouter} from 'react-router';
 import makeStep1Schema from 'universal/validation/makeStep1Schema';
+import fetch from 'universal/utils/fetch';
 
 const updateSuccess = {
   title: 'Settings saved!',
@@ -60,7 +61,8 @@ export default class UserSettingsContainer extends Component {
     const {preferredName, pictureFile} = submissionData;
     if (pictureFile && pictureFile.name) {
       console.log('updating picture');
-      this.updatePicture(pictureFile);
+      this.updatePicture(pictureFile)
+      .then(url => console.log(url));
     }
     if (preferredName === user.preferredName) return;
     const options = {
@@ -83,16 +85,37 @@ export default class UserSettingsContainer extends Component {
   };
 
   updatePicture(pictureFile) {
-    cashay.mutate('createUserPicturePutUrl', {
+    return cashay.mutate('createUserPicturePutUrl', {
       variables: {
         userFilename: pictureFile.name
       }
-    }).then(({data, error}) => {
+    })
+    .then(({data, error}) => {
       if (error) {
-        console.warn('oopies, TODO');
+        console.warn('oopies, TODO error');
       }
-      const {picturePutUrl} = data.createUserPicturePutUrl;
-      console.log(picturePutUrl);
+      return data.createUserPicturePutUrl.picturePutUrl;
+    })
+    .then(picturePutUrl => {
+      return fetch(picturePutUrl, {
+        method: 'PUT',
+        body: pictureFile
+      });
+    })
+    .then(response => {
+      if (response.status >= 200 && response.status < 300) {
+        return response.url;
+      }
+      const error = new Error(response.statusText);
+      error.response = response;
+      throw error;
+    })
+    .then(putUrl => {
+      // crafty way of parsing URL, see: https://gist.github.com/jlong/2428561
+      const parser = document.createElement('a');
+      parser.href = putUrl;
+      const {protocol, host, pathname} = parser;
+      return `${protocol}//${host}${pathname}`;
     });
   }
 
