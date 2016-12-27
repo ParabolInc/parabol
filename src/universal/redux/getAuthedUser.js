@@ -14,8 +14,9 @@ const customMutations = {
   updateUserProfile: `
   mutation {
     updateUserProfile(updatedUser: $updatedUser) {
-      preferredName
       id
+      picture
+      preferredName
     }
   }`
 };

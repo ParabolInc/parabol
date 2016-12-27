@@ -71,16 +71,24 @@ export function getRequestedFields(refs) {
   return Object.keys(fieldsObj);
 }
 
+export function firstChange(possiblyUpdatedResult) {
+  if (possiblyUpdatedResult.changes.length) {
+    if (possiblyUpdatedResult.changes.length > 1) {
+      console.warn('firstChange() detects more than 1 change, returning 1st.');
+    }
+    return possiblyUpdatedResult.changes[0];
+  }
+  return { new_val: undefined, old_val: undefined };
+}
+
 export function updatedOrOriginal(possiblyUpdatedResult, original) {
   /*
    * There will only be changes to return if there were changes made to the
    * DB. Therefore, we've got to check.
    */
-  if (possiblyUpdatedResult.changes.length) {
-    if (possiblyUpdatedResult.changes.length > 1) {
-      console.warn('updatedOrOriginal() detects more than 1 change, returning 1st.');
-    }
-    return possiblyUpdatedResult.changes[0].new_val;
-  }
-  return original;
+  return firstChange(possiblyUpdatedResult).new_val || original;
+}
+
+export function previousValue(possiblyUpdatedResult) {
+  return firstChange(possiblyUpdatedResult).old_val;
 }

@@ -11,11 +11,25 @@ const s3 = (typeof process.env.CDN_BASE_URL !== 'undefined') && new aws.S3({
   s3BucketEndpoint: true
 });
 
-export default function s3SignUrl(operation, filename, contentType,
-  acl = 'authenticated-read') {
+function s3CheckInitialized() {
   if (!s3) {
     throw new Error('S3 uninitialized, did you set process.env.CDN_BASE_URL?');
   }
+  return true;
+}
+
+export function s3DeleteObject(url) {
+  s3CheckInitialized();
+  const s3Params = {
+    Bucket: process.env.AWS_S3_BUCKET,
+    Key: protoRelUrl.parse(url).pathname
+  };
+  return s3.deleteObject(s3Params).promise();
+}
+
+export function s3SignUrl(operation, filename, contentType,
+  acl = 'authenticated-read') {
+  s3CheckInitialized();
   if (operation !== 'getObject' && operation !== 'putObject') {
     throw new Error('S3 operation must be getObject or putObject');
   }
@@ -39,3 +53,17 @@ export const s3SignGetUrl = (filename, contentType, acl) =>
 
 export const s3SignPutUrl = (filename, contentType, acl) =>
   s3SignUrl('putObject', filename, contentType, acl);
+
+/*
+ * Checks to see if a url points to an asset on S3.
+ *
+ * Returns Boolean
+ */
+export function urlPossiblyOnS3(url) {
+  if (!url) {
+    return false;
+  }
+  const s3host = protoRelUrl.parse(process.env.CDN_BASE_URL).hostname;
+  const urlHost = protoRelUrl.parse(url).hostname;
+  return s3host === urlHost;
+}

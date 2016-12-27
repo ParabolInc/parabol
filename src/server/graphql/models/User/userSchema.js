@@ -132,7 +132,7 @@ export const User = new GraphQLObjectType({
       description: 'a refreshed JWT'
     },
     picturePutUrl: {
-      type: GraphQLString,
+      type: GraphQLURLType,
       description: 'a URL the client may use to PUT an uploaded picture'
     }
   })
@@ -140,6 +140,11 @@ export const User = new GraphQLObjectType({
 
 const profileInputThunk = () => ({
   id: {type: GraphQLID, description: 'The unique userId'},
+  picture: {
+    type: GraphQLURLType,
+    description: `A link to the user's profile image. If the previous image was
+      on the CDN, the server will attempt to delete it.`
+  },
   preferredName: {
     type: GraphQLString,
     description: 'The name, as confirmed by the user'

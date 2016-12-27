@@ -8,16 +8,16 @@ import {auth0} from 'universal/utils/clientOptions';
 import sendEmail from 'server/email/sendEmail';
 import ms from 'ms';
 import {requireAuth, requireSU, requireSUOrSelf} from '../authorization';
-import {errorObj, handleSchemaErrors, updatedOrOriginal} from '../utils';
+import {errorObj, handleSchemaErrors, previousValue, updatedOrOriginal} from '../utils';
 import {
   auth0ManagementClient,
   clientSecret as auth0ClientSecret
 } from 'server/utils/auth0Helpers';
 import {verify} from 'jsonwebtoken';
-import makeStep1Schema from 'universal/validation/makeStep1Schema';
+import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
 import protoRelUrl from 'server/utils/protoRelUrl';
-import {s3SignPutUrl} from 'server/utils/s3SignUrl';
+import {s3DeleteObject, s3SignPutUrl, urlPossiblyOnS3} from 'server/utils/s3';
 import {APP_CDN_USER_ASSET_SUBDIR} from 'universal/utils/constants';
 import getFileExtension from 'universal/utils/getFileExtension';
 
@@ -188,22 +188,32 @@ export default {
 
       // AUTH
       requireSUOrSelf(authToken, updatedUser.id);
-      // const {id, ...updatedObj} = updatedUser;
 
       // VALIDATION
-      const schema = makeStep1Schema();
+      const schema = makeUpdatedUserSchema();
       const {data: {id, ...validUpdatedUser}, errors} = schema(updatedUser);
       handleSchemaErrors(errors);
+
+      // RESOLUTION
       // propagate denormalized changes to TeamMember
       const dbWork = r.table('TeamMember')
         .getAll(id, {index: 'userId'})
-        .update({preferredName: validUpdatedUser.preferredName})
+        .update({
+          picture: validUpdatedUser.picture,
+          preferredName: validUpdatedUser.preferredName
+        })
         .do(() => r.table('User').get(id).update(validUpdatedUser, {returnChanges: true}));
       const asyncPromises = [
         dbWork,
         auth0ManagementClient.users.updateAppMetadata({id}, {preferredName: validUpdatedUser.preferredName})
       ];
       const [dbProfile] = await Promise.all(asyncPromises);
+      const previousProfile = previousValue(dbProfile);
+      if (previousProfile && urlPossiblyOnS3(previousProfile.picture)) {
+        // possible remove prior profile image from CDN asynchronously
+        console.log(`removing ${previousProfile.picture}`);
+        await s3DeleteObject(previousProfile.picture);
+      }
       return updatedOrOriginal(dbProfile, validUpdatedUser);
     }
   }

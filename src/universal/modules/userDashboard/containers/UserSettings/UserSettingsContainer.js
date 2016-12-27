@@ -10,7 +10,7 @@ import {
 import {reduxForm, initialize} from 'redux-form';
 import {cashay} from 'cashay';
 import {withRouter} from 'react-router';
-import makeStep1Schema from 'universal/validation/makeStep1Schema';
+import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
 import fetch from 'universal/utils/fetch';
 
 const updateSuccess = {
@@ -28,7 +28,7 @@ const mapStateToProps = (state) => {
 };
 
 const validate = (values) => {
-  const schema = makeStep1Schema();
+  const schema = makeUpdatedUserSchema();
   return schema(values).errors;
 };
 
@@ -57,23 +57,25 @@ export default class UserSettingsContainer extends Component {
   }
 
   onSubmit = (submissionData) => {
-    const {activity, dispatch, nextPage, untouch, user, userId, router} = this.props;
+    const {user} = this.props;
     const {preferredName, pictureFile} = submissionData;
     if (pictureFile && pictureFile.name) {
-      console.log('updating picture');
-      this.updatePicture(pictureFile)
-      .then(url => console.log(url));
+      // upload new picture to CDN, then update the user profile:
+      this.uploadPicture(pictureFile)
+      .then(pictureUrl => this.updateProfile(preferredName, pictureUrl))
+      .then(this.onSubmitComplete())
+      .catch(console.warn.bind(console));
+    } else if (preferredName !== user.preferredName) {
+      this.updateProfile(preferredName)
+      .then(this.onSubmitComplete())
+      .catch(console.warn.bind(console));
     }
-    if (preferredName === user.preferredName) return;
-    const options = {
-      variables: {
-        updatedUser: {
-          id: userId,
-          preferredName
-        }
-      }
-    };
-    cashay.mutate('updateUserProfile', options);
+
+    return; // no work to do
+  };
+
+  onSubmitComplete() {
+    const {activity, dispatch, nextPage, untouch, router} = this.props;
     dispatch(showSuccess(updateSuccess));
     if (activity === ACTIVITY_WELCOME) {
       dispatch(clearActivity());
@@ -82,9 +84,9 @@ export default class UserSettingsContainer extends Component {
       router.push(nextPage);
     }
     untouch('preferredName');
-  };
+  }
 
-  updatePicture(pictureFile) {
+  uploadPicture(pictureFile) {
     return cashay.mutate('createUserPicturePutUrl', {
       variables: {
         userFilename: pictureFile.name
@@ -92,7 +94,7 @@ export default class UserSettingsContainer extends Component {
     })
     .then(({data, error}) => {
       if (error) {
-        console.warn('oopies, TODO error');
+        throw new Error(error._error); // eslint-disable-line no-underscore-dangle
       }
       return data.createUserPicturePutUrl.picturePutUrl;
     })
@@ -117,6 +119,20 @@ export default class UserSettingsContainer extends Component {
       const {protocol, host, pathname} = parser;
       return `${protocol}//${host}${pathname}`;
     });
+  }
+
+  updateProfile(preferredName, pictureUrl) {
+    const {userId} = this.props;
+    const options = {
+      variables: {
+        updatedUser: {
+          id: userId,
+          preferredName,
+          picture: pictureUrl
+        }
+      }
+    };
+    return cashay.mutate('updateUserProfile', options);
   }
 
   initializeForm() {
