@@ -12,8 +12,8 @@ const graphQLHost = getGraphQLHost();
 const graphQLProtocol = getGraphQLProtocol();
 
 const graphiqlStylesheet = __PRODUCTION__ ?
- 'https://cdnjs.cloudflare.com/ajax/libs/graphiql/0.7.8/graphiql.min.css' :
- '/static/css/graphiql.css';
+  'https://cdnjs.cloudflare.com/ajax/libs/graphiql/0.8.0/graphiql.min.css' :
+  '/static/css/graphiql.css';
 
 const makeGraphQLFetcher = authToken => {
   return async(graphQLParams) => {
@@ -53,40 +53,35 @@ const styleThunk = () => ({
 @connect(mapStateToProps)
 @withStyles(styleThunk)
 @requireAuthAndRole('su')
-// eslint-disable-next-line react/prefer-stateless-function
 export default class Graphiql extends Component {
   static propTypes = {
     authToken: PropTypes.string,
     styles: PropTypes.object
   };
 
-  constructor() {
-    super();
-    this.state = { cssLoaded: false };
+  constructor(props) {
+    super(props);
+    this.state = {graphQLFetcher: null};
   }
 
   componentDidMount() {
+    const {authToken} = this.props;
     const linkElement = document.createElement('link');
     linkElement.setAttribute('rel', 'stylesheet');
     linkElement.setAttribute('type', 'text/css');
     linkElement.setAttribute('href', graphiqlStylesheet);
-    const eventListener = () =>
-      this.setState({ cssLoaded: true }, () => {
-        linkElement.removeEventListener('load', eventListener);
-      });
-    linkElement.addEventListener('load', eventListener);
-
     document.head.appendChild(linkElement);
+    linkElement.onload = () => {
+      this.setState({graphQLFetcher: makeGraphQLFetcher(authToken)});
+    };
   }
 
   render() {
-    const {cssLoaded} = this.state;
     const {styles} = this.props;
-    if (!cssLoaded) {
+    const {graphQLFetcher} = this.state;
+    if (!graphQLFetcher) {
       return <LoadingView />;
     }
-    const {authToken} = this.props;
-    const graphQLFetcher = makeGraphQLFetcher(authToken);
     return (
       <div className={css(styles.graphiql)}>
         <GraphiQL fetcher={graphQLFetcher}/>
