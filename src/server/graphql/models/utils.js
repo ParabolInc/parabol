@@ -33,7 +33,7 @@ export const nonnullifyInputThunk = (name, inputThunk, requiredFieldNames) => {
   });
 };
 
-function getFields(context, astsParams = context.fieldASTs) {
+function getFields(context, astsParams = context.fieldNodes) {
   // for recursion...Fragments doesn't have many sets...
   const asts = Array.isArray(astsParams) ? astsParams : [astsParams];
 
