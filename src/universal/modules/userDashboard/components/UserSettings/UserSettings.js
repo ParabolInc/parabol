@@ -41,6 +41,7 @@ const UserSettings = (props) => {
             <Field
               component={FileInput}
               name="pictureFile"
+              previousValue={picture}
               type="file"
             />
           </div>

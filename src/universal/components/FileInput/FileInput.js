@@ -2,7 +2,8 @@ import React, {Component, PropTypes} from 'react';
 
 class FileInput extends Component {
   static propTypes = {
-    input: PropTypes.object
+    input: PropTypes.object,
+    previousValue: PropTypes.string
   };
 
   constructor(props) {
@@ -16,9 +17,10 @@ class FileInput extends Component {
   }
 
   render() {
-    const {input: {value}} = this.props;
+    const {input: {value}, previousValue} = this.props;
 
     return (<input
+      key={previousValue} // see: https://github.com/erikras/redux-form/issues/769
       type="file"
       value={value}
       onChange={this.onChange}

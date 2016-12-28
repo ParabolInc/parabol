@@ -17,7 +17,7 @@ import {verify} from 'jsonwebtoken';
 import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
 import protoRelUrl from 'server/utils/protoRelUrl';
-import {s3DeleteObject, s3SignPutUrl, urlPossiblyOnS3} from 'server/utils/s3';
+import {s3DeleteObject, s3SignPutUrl, urlIsPossiblyOnS3} from 'server/utils/s3';
 import {APP_CDN_USER_ASSET_SUBDIR} from 'universal/utils/constants';
 import getFileExtension from 'universal/utils/getFileExtension';
 
@@ -93,8 +93,8 @@ export default {
       const pathname = path.join(parsedUrl.pathname,
         APP_CDN_USER_ASSET_SUBDIR,
         `User/${userId}/picture/${shortid.generate()}.${ext}`
-      ).slice(1);
-      user.picturePutUrl = s3SignPutUrl(pathname, undefined, 'public-read');
+      );
+      user.picturePutUrl = await s3SignPutUrl(pathname, undefined, 'public-read');
 
       return user;
     }
@@ -209,10 +209,10 @@ export default {
       ];
       const [dbProfile] = await Promise.all(asyncPromises);
       const previousProfile = previousValue(dbProfile);
-      if (previousProfile && urlPossiblyOnS3(previousProfile.picture)) {
+      if (previousProfile && urlIsPossiblyOnS3(previousProfile.picture)) {
         // possible remove prior profile image from CDN asynchronously
-        console.log(`removing ${previousProfile.picture}`);
-        await s3DeleteObject(previousProfile.picture);
+        s3DeleteObject(previousProfile.picture)
+        .catch(console.warn.bind(console));
       }
       return updatedOrOriginal(dbProfile, validUpdatedUser);
     }

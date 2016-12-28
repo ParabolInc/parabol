@@ -2,6 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import UserSettings from 'universal/modules/userDashboard/components/UserSettings/UserSettings';
 import {connect} from 'react-redux';
+import {withRouter} from 'react-router';
+import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
 import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
 import {
   ACTIVITY_WELCOME,
@@ -9,7 +11,6 @@ import {
 } from 'universal/modules/userDashboard/ducks/settingsDuck';
 import {reduxForm, initialize} from 'redux-form';
 import {cashay} from 'cashay';
-import {withRouter} from 'react-router';
 import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
 import fetch from 'universal/utils/fetch';
 
@@ -20,10 +21,13 @@ const updateSuccess = {
 };
 
 const mapStateToProps = (state) => {
+  const userId = state.auth.obj.sub;
+  const user = cashay.query(getAuthQueryString, getAuthedOptions(userId)).data.user;
   return {
     activity: state.userDashboardSettings.activity,
     nextPage: state.userDashboardSettings.nextPage,
-    userId: state.auth.obj.sub,
+    user,
+    userId: state.auth.obj.sub
   };
 };
 
@@ -33,8 +37,8 @@ const validate = (values) => {
 };
 
 @requireAuth
-@connect(mapStateToProps)
 @reduxForm({form: 'userSettings', validate})
+@connect(mapStateToProps)
 @withRouter
 export default class UserSettingsContainer extends Component {
   static propTypes = {
