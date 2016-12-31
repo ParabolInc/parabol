@@ -4,7 +4,8 @@ import Action from 'universal/components/Action/Action';
 import injectGlobals from 'universal/styles/hepha';
 import globalStyles from 'universal/styles/theme/globalStyles';
 import {segmentEventPage} from 'universal/redux/segmentActions';
-
+import socketCluster from 'socketcluster-client';
+import {showWarning} from 'universal/modules/notifications/ducks/notifications';
 const updateAnalyticsPage = (dispatch, lastPage, nextPage) => {
   if (typeof document === 'undefined') return;
   const name = document && document.title || '';
@@ -27,6 +28,10 @@ export default class ActionContainer extends Component {
   };
 
   componentWillMount() {
+    const socket = socketCluster.connect();
+    socket.on('version', (version) => {
+      showWarning('You will be logged out and upgraded to version ' + version);
+    });
     const {dispatch, location: {pathname: nextPage}} = this.props;
     updateAnalyticsPage(dispatch, '', nextPage);
     injectGlobals(globalStyles);
