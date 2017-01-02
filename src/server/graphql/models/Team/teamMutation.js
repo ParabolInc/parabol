@@ -251,7 +251,8 @@ export default {
       // get the most recent meeting
         .getAll(teamId, {index: 'teamId'})
         .orderBy(r.desc('createdAt'))
-        .nth(0)('id');
+        .nth(0)
+        .pluck('id', 'endedAt');
       if (meeting.endedAt) {
         throw errorObj({_error: 'Meeting already ended!'})
       }
