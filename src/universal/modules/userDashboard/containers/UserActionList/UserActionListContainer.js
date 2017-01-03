@@ -23,9 +23,9 @@ query {
 `;
 
 const mutationHandlers = {
-  updateAction(optimisticUpdates, queryResponse, currentResponse) {
-    if (optimisticUpdates) {
-      const {updatedAction} = optimisticUpdates;
+  updateAction(optimisticVariables, queryResponse, currentResponse) {
+    if (optimisticVariables) {
+      const {rebalance, updatedAction} = optimisticVariables;
       if (updatedAction && updatedAction.hasOwnProperty('sortOrder')) {
         const {id, sortOrder} = updatedAction;
         const {actions} = currentResponse;
@@ -33,9 +33,15 @@ const mutationHandlers = {
         if (fromAction && sortOrder !== undefined) {
           fromAction.sortOrder = sortOrder;
           actions.sort((a, b) => b.sortOrder - a.sortOrder);
+          if (rebalance) {
+            actions.forEach((action, idx) => {
+              action.sortOrder = idx
+            });
+          }
           return currentResponse;
         }
       }
+
     }
     return undefined;
   }

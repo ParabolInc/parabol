@@ -6,7 +6,7 @@ import FontAwesome from 'react-fontawesome';
 import {srOnly} from 'universal/styles/helpers';
 
 const checkInStatus = {
-  undefined: {
+  null: {
     icon: 'circle',
     statusName: ''
   },
@@ -21,7 +21,7 @@ const checkInStatus = {
 };
 
 const AvatarBadge = (props) => {
-  const {isCheckedIn, isConnected, size, styles} = props;
+  const {isCheckedIn = null, isConnected, size, styles} = props;
   const connection = isConnected ? 'online' : 'offline';
   const checkIn = isCheckedIn ? 'present' : 'absent';
   const iconStyles = css(

@@ -1,5 +1,5 @@
 import {cashay} from 'cashay';
-import {MEETING, MIN_SORT_RESOLUTION, TEAM_DASH, USER_DASH} from 'universal/utils/constants';
+import {DND_THROTTLE, MEETING, MIN_SORT_RESOLUTION, TEAM_DASH, USER_DASH} from 'universal/utils/constants';
 import checkDragForUpdate from 'universal/dnd/checkDragForUpdate';
 
 /**
@@ -10,7 +10,7 @@ import checkDragForUpdate from 'universal/dnd/checkDragForUpdate';
  * A card has a do-nothing zone of the drag source height + 1/2 of the card above + 1/2 of the card below
  * if it exceeds that zone, we update
  *
-*/
+ */
 
 const areaOpLookup = {
   [MEETING]: 'meetingUpdatesContainer',
@@ -18,7 +18,10 @@ const areaOpLookup = {
   [TEAM_DASH]: 'teamColumnsContainer'
 };
 
+let lastSentAt = 0;
 export default function handleProjectHover(targetProps, monitor) {
+  const now = new Date();
+  if (lastSentAt > (now - DND_THROTTLE)) return;
   const {area, dragState, projects, queryKey, status: targetStatus} = targetProps;
   const sourceProps = monitor.getItem();
   const {status: sourceStatus} = sourceProps;
@@ -29,6 +32,7 @@ export default function handleProjectHover(targetProps, monitor) {
   }
   const updatedVariables = checkDragForUpdate(monitor, dragState, projects, sortField, true);
   if (!updatedVariables) return;
+
   const {prevItem, updatedDoc: updatedProject} = updatedVariables;
   const variables = {updatedProject};
 
@@ -46,5 +50,6 @@ export default function handleProjectHover(targetProps, monitor) {
     },
     variables
   };
+  lastSentAt = now;
   cashay.mutate('updateProject', options);
 }

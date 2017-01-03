@@ -42,6 +42,20 @@ const mutationHandlers = {
             if (status) {
               fromProject.status = status;
             }
+            if (rebalance) {
+              teams.reduce((arr, {projects}) => {
+                projects.forEach((project) => {
+                  if (project.status === status) {
+                    arr.push(project);
+                  }
+                });
+                return arr;
+              }, [])
+                .sort((a, b) => b.userSort - a.userSort)
+                .forEach((project, idx) => {
+                  project.userSort = idx
+                });
+            }
             return currentResponse;
           }
         }
@@ -94,7 +108,7 @@ const mapStateToProps = (state) => {
 const UserColumnsContainer = (props) => {
   const {queryKey, projects, teams, userId} = props;
   return (
-    <ProjectColumns queryKey={queryKey} projects={projects} area={USER_DASH} teams={teams} userId={userId} />
+    <ProjectColumns queryKey={queryKey} projects={projects} area={USER_DASH} teams={teams} userId={userId}/>
   );
 };
 

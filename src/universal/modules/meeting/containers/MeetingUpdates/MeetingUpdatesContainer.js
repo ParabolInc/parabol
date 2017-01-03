@@ -33,6 +33,19 @@ const mutationHandlers = {
         if (status) {
           fromProject.status = status;
         }
+        if (rebalance) {
+          projects
+            .reduce((arr, project) => {
+              if (project.status === status) {
+                arr.push(project);
+              }
+              return arr;
+            }, [])
+            .sort((a, b) => b.teamSort - a.teamSort)
+            .forEach((project, idx) => {
+              project.teamSort = idx
+            });
+        }
         // no need to sort since the resolveTeamProjects function will do that next
         return currentResponse;
       }
