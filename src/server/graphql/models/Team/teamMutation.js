@@ -36,7 +36,7 @@ import makeStep2Schema from 'universal/validation/makeStep2Schema';
 import makeAddTeamServerSchema from 'universal/validation/makeAddTeamServerSchema';
 import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED, REQUEST_NEW_USER} from 'universal/utils/constants';
 import ms from 'ms';
-import dndNoise from 'universal/utils/dndNoise';
+import getEndMeetingSortOrders from './getEndMeetingSortOrders';
 
 export default {
   moveMeeting: {
@@ -286,13 +286,13 @@ export default {
                   .getAll(r.args(agendaItemIds), {index: 'agendaId'})
                   // we still need to filter because this may occur before we delete them above (not guaranteed in sync)
                   .filter((row) => row('content').ne(null))
-                  .map(row => row.merge({id: meetingId.add('::').add(row('id'))}))
+                  .map(row => row.merge({id: r.expr(meetingId).add('::').add(row('id'))}))
                   .pluck('id', 'content', 'teamMemberId')
                   .coerceTo('array'),
                 projects: r.table('Project')
                   .getAll(r.args(agendaItemIds), {index: 'agendaId'})
                   .filter((row) => row('content').ne(null))
-                  .map(row => row.merge({id: meetingId.add('::').add(row('id'))}))
+                  .map(row => row.merge({id: r.expr(meetingId).add('::').add(row('id'))}))
                   .pluck('id', 'content', 'status', 'teamMemberId')
                   .coerceTo('array')
               };
@@ -323,53 +323,33 @@ export default {
             })
         });
 
-      // give the new projects and actions a new sort order
-      const {invitees} = meetingChanges[0].new_val;
-      const orderedInvitees = invitees.map((invitee) => {
-        return {
-          id: invitee.id,
-          actions: invitee.actions.map((action, idx) => ({id: action.id, increment: idx + 1 + dndNoise()})),
-          projects: invitee.projects.map((project, idx) => ({id: project.id, increment: idx + 1 + dndNoise()})),
-        }
-      });
-      await r.expr(orderedInvitees)
-        .forEach((invitee) => {
-          return {
-            updateActionSortOrder: r.table('Action')
-              .getAll(invitee('id'), {index: 'teamMemberId'})
-              .filter({isComplete: false})
-              .max('sortOrder')
-              .do((maxActionSort) => {
-                return r.expr(invitee('actions'))
-                  .forEach((action) => {
-                    return r.table('Action').get(action('id')).update({
-                      sortOrder: maxActionSort.add(action('increment'))
-                    })
-                  })
-              }),
-            updateProjectSortOrder: r.table('Project')
-              .getAll(invitee('id'), {index: 'teamMemberId'})
-              .filter({isArchived: false})
-              .max('sortOrder')
-              .do((maxProjectSort) => {
-                return r.expr(invitee('projects'))
-                  .forEach((project) => {
-                    return r.table('Project').get(project('id')).update({
-                      sortOrder: maxProjectSort.add(project('increment'))
-                    })
-                  })
+      const {invitees} = meetingChanges.changes[0].new_val;
+      const {updatedActions, updatedProjects} = await getEndMeetingSortOrders(invitees);
+      await r.expr(updatedActions)
+        .forEach((action) => {
+          return r.table('Action').get(action('id')).update({
+            sortOrder: action('sortOrder')
+          })
+        })
+        .do(() => {
+          return r.expr(updatedProjects)
+            .forEach((project) => {
+              return r.table('Project').get(project('id')).update({
+                teamSort: project('teamSort'),
+                userSort: project('userSort')
               })
-
-          }
+            })
+        })
+        .do(() => {
+          // send to summary view
+          return r.table('Team').get(teamId)
+            .update({
+              facilitatorPhase: SUMMARY,
+              meetingPhase: SUMMARY,
+              facilitatorPhaseItem: null,
+              meetingPhaseItem: null,
+            });
         });
-      // send to summary
-      await r.table('Team').get(teamId)
-          .update({
-            facilitatorPhase: SUMMARY,
-            meetingPhase: SUMMARY,
-            facilitatorPhaseItem: null,
-            meetingPhaseItem: null,
-          });
 
       // reset the meeting
       setTimeout(() => {
@@ -425,10 +405,8 @@ export default {
         type: new GraphQLNonNull(GraphQLID),
         description: 'The team that will be having the meeting'
       }
-    }
-    ,
-    async
-    resolve(source, {teamId}, {authToken, socket})
+    },
+    async resolve(source, {teamId}, {authToken, socket})
     {
       const r = getRethink();
 
@@ -438,16 +416,15 @@ export default {
 
       // RESOLUTION
       // reset the meeting
-      await
-        r.table('Team').get(teamId)
-          .update({
-            facilitatorPhase: LOBBY,
-            meetingPhase: LOBBY,
-            meetingId: null,
-            facilitatorPhaseItem: null,
-            meetingPhaseItem: null,
-            activeFacilitator: null
-          });
+      await r.table('Team').get(teamId)
+        .update({
+          facilitatorPhase: LOBBY,
+          meetingPhase: LOBBY,
+          meetingId: null,
+          facilitatorPhaseItem: null,
+          meetingPhaseItem: null,
+          activeFacilitator: null
+        });
       return true;
     }
   }
@@ -475,34 +452,30 @@ export default {
       const {orgId} = args.newTeam;
       const userId = authToken.sub;
       requireWebsocket(socket);
-      await
-        ensureUserInOrg(userId, orgId);
+      await ensureUserInOrg(userId, orgId);
 
       // VALIDATION
       const schema = makeAddTeamServerSchema({inviteEmails: [], teamMemberEmails: []});
       const {data: {invitees, newTeam}, errors} = schema(args);
       const teamId = newTeam.id;
       handleSchemaErrors(errors);
-      await
-        ensureUniqueId('Team', teamId);
+      await ensureUniqueId('Team', teamId);
 
       // RESOLUTION
       const authTokenObj = socket.getAuthToken();
       authTokenObj.tms = Array.isArray(authTokenObj.tms) ? authTokenObj.tms.concat(teamId) : [teamId];
       socket.setAuthToken(authTokenObj);
-      await
-        createTeamAndLeader(authToken, newTeam);
+      await createTeamAndLeader(authToken, newTeam);
       if (invitees && invitees.length) {
         const inviteeEmails = invitees.map((i) => i.email);
-        const orgMemberInvitees = await
-          r.table('User')
-            .getAll(r.args(inviteeEmails), {index: 'email'})
-            .pluck('id', 'email')
-            // now that we know they exist in the system, see if they exist in the org
-            .filter((row) => {
-              // i wonder if this is inefficient in rethinkDB or if they cache the result?
-              return r.table('Organization').get(orgId)('members').contains(row('id'))
-            });
+        const orgMemberInvitees = await r.table('User')
+          .getAll(r.args(inviteeEmails), {index: 'email'})
+          .pluck('id', 'email')
+          // now that we know they exist in the system, see if they exist in the org
+          .filter((row) => {
+            // i wonder if this is inefficient in rethinkDB or if they cache the result?
+            return r.table('Organization').get(orgId)('members').contains(row('id'))
+          });
         const inOrgMembers = [];
         const outOfOrgEmails = [];
         for (let i = 0; i < invitees.length; i++) {
@@ -515,45 +488,42 @@ export default {
           }
         }
         if (inOrgMembers.length > 0) {
-          await
-            asyncInviteTeam(authToken, teamId, invitees);
+          await asyncInviteTeam(authToken, teamId, invitees);
         }
 
         if (outOfOrgEmails.length) {
           // add a notification to the billing leaders
-          const {billingLeaders, inviter} = await
-            r.table('User')
-              .getAll(orgId, {index: 'billingLeaderOrgs'})('id')
-              .do((billingLeaders) => {
-                return {
-                  billingLeaders,
-                  inviter: r.table('User').get(userId).pluck('preferredName', 'id')
-                }
-              });
+          const {billingLeaders, inviter} = await r.table('User')
+            .getAll(orgId, {index: 'billingLeaderOrgs'})('id')
+            .do((billingLeaders) => {
+              return {
+                billingLeaders,
+                inviter: r.table('User').get(userId).pluck('preferredName', 'id')
+              }
+            });
           const parentId = shortid.generate();
           const notificationIds = billingLeaders.reduce((obj, billingLeaderId) => {
             obj[billingLeaderId] = shortid.generate();
             return obj;
           }, {});
           // send a new notification to each billing leader concerning each out-of-org invitee
-          await
-            r.expr(outOfOrgEmails)
-              .forEach((invitee) => {
-                return r.expr(billingLeaders)
-                  .forEach((billingLeader) => {
-                    return r.table('Notification')
-                      .insert({
-                        id: notificationIds[billingLeader],
-                        parentId,
-                        type: REQUEST_NEW_USER,
-                        varList: [inviter.name, inviter.id, invitee, newTeam.name, newTeam.id],
-                        startAt: new Date(),
-                        endAt: new Date(Date.now() + ms('10y')),
-                        userId: billingLeader,
-                        orgId,
-                      })
-                  })
-              });
+          await r.expr(outOfOrgEmails)
+            .forEach((invitee) => {
+              return r.expr(billingLeaders)
+                .forEach((billingLeader) => {
+                  return r.table('Notification')
+                    .insert({
+                      id: notificationIds[billingLeader],
+                      parentId,
+                      type: REQUEST_NEW_USER,
+                      varList: [inviter.name, inviter.id, invitee, newTeam.name, newTeam.id],
+                      startAt: new Date(),
+                      endAt: new Date(Date.now() + ms('10y')),
+                      userId: billingLeader,
+                      orgId,
+                    })
+                })
+            });
           // TODO: send a toast???
         }
       }
@@ -579,8 +549,7 @@ export default {
 
       // AUTH
       const userId = requireAuth(authToken);
-      const hasAnOrg = await
-        r.table('User').get(authToken.sub)('org').default(null);
+      const hasAnOrg = await r.table('User').get(authToken.sub)('org').default(null);
       if (hasAnOrg) {
         throw errorObj({_error: 'cannot use createTeam when already part of an org'});
       }
@@ -589,10 +558,8 @@ export default {
       const schema = makeStep2Schema();
       const {data, errors} = schema(newTeam);
       handleSchemaErrors(errors);
-      await
-        ensureUniqueId('Team', newTeam.id);
-      const user = await
-        r.table('User').get(userId);
+      await ensureUniqueId('Team', newTeam.id);
+      const user = await r.table('User').get(userId);
       if (user.trialExpiresAt) {
         throw errorObj({_error: 'you have already created a team'})
       }
@@ -604,51 +571,49 @@ export default {
       const validNewTeam = {...data, orgId};
       const expiresSoonId = shortid.generate();
       const expiredId = shortid.generate();
-      await
-        r.table('Organization').insert({
-          id: orgId,
-          activeUserCount: 1,
-          createdAt: now,
-          inactiveUserCount: 0,
-          isTrial: true,
-          name: `${user.preferredName}'s Org`,
-          updatedAt: now,
-          validUntil: trialExpiresAt
+      await r.table('Organization').insert({
+        id: orgId,
+        activeUserCount: 1,
+        createdAt: now,
+        inactiveUserCount: 0,
+        isTrial: true,
+        name: `${user.preferredName}'s Org`,
+        updatedAt: now,
+        validUntil: trialExpiresAt
+      })
+        .do(() => {
+          return r.table('Notification').insert([
+            {
+              id: expiresSoonId,
+              parentId: expiresSoonId,
+              type: TRIAL_EXPIRES_SOON,
+              varList: [trialExpiresAt],
+              startAt: new Date(now + ms('14d')),
+              endAt: trialExpiresAt,
+              userId,
+              orgId,
+            },
+            {
+              id: expiredId,
+              parentId: expiredId,
+              type: TRIAL_EXPIRED,
+              varList: [trialExpiresAt],
+              startAt: trialExpiresAt,
+              endAt: new Date(trialExpiresAt + ms('10y')),
+              userId,
+              orgId,
+            }
+          ])
         })
-          .do(() => {
-            return r.table('Notification').insert([
-              {
-                id: expiresSoonId,
-                parentId: expiresSoonId,
-                type: TRIAL_EXPIRES_SOON,
-                varList: [trialExpiresAt],
-                startAt: new Date(now + ms('14d')),
-                endAt: trialExpiresAt,
-                userId,
-                orgId,
-              },
-              {
-                id: expiredId,
-                parentId: expiredId,
-                type: TRIAL_EXPIRED,
-                varList: [trialExpiresAt],
-                startAt: trialExpiresAt,
-                endAt: new Date(trialExpiresAt + ms('10y')),
-                userId,
-                orgId,
-              }
-            ])
+        .do(() => {
+          return r.table('User').get(userId).update({
+            billingLeaderOrgs: [orgId],
+            orgs: [orgId],
+            trialExpiresAt
           })
-          .do(() => {
-            return r.table('User').get(userId).update({
-              billingLeaderOrgs: [orgId],
-              orgs: [orgId],
-              trialExpiresAt
-            })
-          });
+        });
 
-      const tms = await
-        createTeamAndLeader(authToken, validNewTeam);
+      const tms = await createTeamAndLeader(authToken, validNewTeam);
       return tmsSignToken(authToken, tms);
     }
   }
@@ -675,15 +640,13 @@ export default {
       requireWebsocket(socket);
 
       // VALIDATION
-      const facilitatorMembership = await
-        r.table('TeamMember').get(facilitatorId);
+      const facilitatorMembership = await r.table('TeamMember').get(facilitatorId);
       if (!facilitatorMembership || !facilitatorMembership.isNotRemoved) {
         throw errorObj({_error: 'facilitator is not active on that team'});
       }
 
       // RESOLUTION
-      await
-        r.table('Team').get(teamId).update({activeFacilitator: facilitatorId});
+      await r.table('Team').get(teamId).update({activeFacilitator: facilitatorId});
       return true;
     }
   }
@@ -712,8 +675,7 @@ export default {
       handleSchemaErrors(errors);
 
       // RESOLUTION
-      await
-        r.table('Team').get(id).update({name});
+      await r.table('Team').get(id).update({name});
       return true;
     }
   }
@@ -722,8 +684,7 @@ export default {
 
 
 // The since-last-week mega query
-// const updatedMeeting = await r.table('Meeting')
-//   .getAll(teamId, {index: 'teamId'})
+// const updatedMeeting = await r.table('Meeting') //   .getAll(teamId, {index: 'teamId'})
 //   .orderBy(r.desc('createdAt'))
 //   .limit(2)
 //   .coerceTo('array')
