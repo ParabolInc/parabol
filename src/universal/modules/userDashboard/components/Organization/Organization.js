@@ -11,6 +11,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import AdminUserRow from 'universal/modules/userDashboard/components/AdminUserRow/AdminUserRow';
 import InvoiceRow from 'universal/modules/userDashboard/components/InvoiceRow/InvoiceRow';
 import Button from 'universal/components/Button/Button';
+import ToggleNav from 'universal/components/ToggleNav/ToggleNav';
 import brandMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import makeDateString from 'universal/utils/makeDateString';
 import cardSection from 'universal/styles/helpers/cardSection';
@@ -103,6 +104,7 @@ const Organization = (props) => {
               {activeUserCount} Active Users • {inactiveUserCount} Inactive Users •
                                 Created {makeDateString(createdAt, false)}
             </div>
+            <ToggleNav />
           </div>
         </div>
         <div className={css(styles.orgBlock)}>
@@ -159,7 +161,7 @@ const Organization = (props) => {
           <div className={css(styles.listOfInvoices)}>
             {!isTrial ?
               <div className={css(styles.noInvoices)}>
-                No invoices yet! Can't beet free! Eat some beets! Betaine keeps you healthy!
+                No invoices yet! Can’t beet free! Eat some beets! Betaine keeps you healthy!
               </div> :
               invoices.map((invoice) =>
                 <InvoiceRow invoice={invoice}/>
@@ -170,7 +172,7 @@ const Organization = (props) => {
       </div>
     </UserSettingsWrapper >
   );
-}
+};
 
 Organization.defaultProps = {
   ccLast4Digits: '1234',
@@ -280,8 +282,8 @@ const styleThunk = () => ({
     ...cardSection
   },
   orgDetails: {
-    fontWeight: 700,
-    fontSize: appTheme.typography.s3
+    fontSize: appTheme.typography.s3,
+    paddingBottom: '.75rem'
   },
 
   orgNameAndDetails: {
