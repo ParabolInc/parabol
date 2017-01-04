@@ -23,7 +23,7 @@ const Toggle = (props) => {
   );
 
   return (
-    <div className={toggleStyles}>
+    <div className={toggleStyles} onClick={() => (console.log('toggle clicked'))}>
       <span className={css(styles.label)}>
         {label}
       </span>
