@@ -9,6 +9,7 @@ import {Link, withRouter} from 'react-router';
 //    TODO:
 //  • Add themes, not just mid/purple (TA)
 //  • Make icons optional (TA)
+//  • Add disabled styles (TA)
 
 const ToggleNav = (props) => {
   const {
@@ -19,11 +20,10 @@ const ToggleNav = (props) => {
 
   const renderItems = () =>
     items.map((item, index) => {
-      // Avoid className order conflicts and set active here
-      const isActive = router.isActive(item.linkTo, true);
       const itemStyles = css(
         styles.item,
-        isActive && styles.itemActive,
+        // Avoid className order conflicts and set active here
+        router.isActive(item.linkTo, true) && styles.itemActive,
         index === 0 && styles.itemFirst,
         index === (items.length - 1) && styles.itemLast
       );
