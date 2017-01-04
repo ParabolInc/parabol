@@ -110,7 +110,7 @@ const Organization = (props) => {
         <div className={css(styles.orgBlock)}>
           <div className={css(styles.headerWithBorder)}>
             <div className={css(styles.headerTextBlock)}>
-              <span>ADMINS</span>
+              <span>Admins</span>
               <span className={css(styles.addLeader)}>
                 <FontAwesome
                   className={css(styles.addLeaderIcon)}
@@ -136,7 +136,7 @@ const Organization = (props) => {
         <div className={css(styles.orgBlock)}>
           <div className={css(styles.billingHeader)}>
             <div className={css(styles.headerTextBlock)}>
-              BILLING INFORMATION
+              Credit Card Information
             </div>
           </div>
           <div className={css(styles.infoAndUpdate)}>
@@ -155,7 +155,7 @@ const Organization = (props) => {
         <div className={css(styles.orgBlock)}>
           <div className={css(styles.headerWithBorder)}>
             <div className={css(styles.headerTextBlock)}>
-              INVOICES
+              Invoices
             </div>
           </div>
           <div className={css(styles.listOfInvoices)}>
@@ -239,8 +239,9 @@ const styleThunk = () => ({
     opacity: 0,
     position: 'absolute',
     width: 100,
+
     ':hover': {
-      opacity: .75,
+      opacity: '.75',
       transition: 'opacity .2s ease-in',
     },
   },
@@ -255,10 +256,13 @@ const styleThunk = () => ({
 
   headerTextBlock: {
     alignItems: 'center',
+    color: appTheme.palette.dark,
     display: 'flex',
+    fontSize: appTheme.typography.s3,
     fontWeight: 700,
     justifyContent: 'space-between',
-    margin: '1rem'
+    margin: '1rem',
+    textTransform: 'uppercase'
   },
 
   headerWithBorder: {

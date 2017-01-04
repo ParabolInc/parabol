@@ -1,4 +1,5 @@
 import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
 import {cardBorderTop} from 'universal/styles/helpers';
 
 const cardSection = {
@@ -6,7 +7,7 @@ const cardSection = {
   flexDirection: 'column',
   margin: '1rem 0',
   backgroundColor: '#fff',
-  border: `1px solid ${ui.cardBorderColor}`,
+  border: `1px solid ${appTheme.palette.mid40l}`,
   borderRadius: ui.cardBorderRadius,
   minHeight: ui.cardMinHeight,
   paddingTop: '.1875rem',
@@ -14,7 +15,8 @@ const cardSection = {
   width: '100%',
 
   '::after': {
-    ...cardBorderTop
+    ...cardBorderTop,
+    color: appTheme.palette.mid40l,
   },
 };
 
