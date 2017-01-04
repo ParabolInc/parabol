@@ -9,6 +9,7 @@ import {showWarning} from 'universal/modules/notifications/ducks/notifications';
 import {APP_VERSION_KEY} from 'universal/utils/constants';
 import signout from 'universal/containers/Signout/signout';
 import {withRouter} from 'react-router';
+import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 
 const updateAnalyticsPage = (dispatch, lastPage, nextPage) => {
   if (typeof document === 'undefined') return;
@@ -23,6 +24,7 @@ const updateAnalyticsPage = (dispatch, lastPage, nextPage) => {
 
 @connect()
 @withRouter
+@socketWithPresence
 export default class ActionContainer extends Component {
   static propTypes = {
     children: PropTypes.element.isRequired,
@@ -37,7 +39,8 @@ export default class ActionContainer extends Component {
     updateAnalyticsPage(dispatch, '', nextPage);
     injectGlobals(globalStyles);
     const socket = socketCluster.connect();
-    socket.on('version', (versionOnServer) => {
+    const versionChannel = socket.subscribe('version');
+    versionChannel.watch((versionOnServer) => {
       const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY) || '0.0.0';
       if (versionOnServer !== versionInStorage) {
         signout(dispatch, router);
