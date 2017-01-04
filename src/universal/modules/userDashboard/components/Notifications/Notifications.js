@@ -1,45 +1,33 @@
 import React, {Component, PropTypes} from 'react';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
-import {ORGANIZATIONS} from 'universal/utils/constants';
+import {NOTIFICATIONS} from 'universal/utils/constants';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import FontAwesome from 'react-fontawesome';
 import OrganizationRow from 'universal/modules/userDashboard/components/OrganizationRow/OrganizationRow';
 import {withRouter} from 'react-router';
 import cardSection from 'universal/styles/helpers/cardSection';
+import NotificationRow from 'universal/modules/userDashboard/components/NotificationRow/NotificationRow';
 
-const Organizations = (props) => {
-  const {organizations, router, styles} = props;
+const Notifications = (props) => {
+  const {notifications, router, styles} = props;
   return (
-    <UserSettingsWrapper activeTab={ORGANIZATIONS}>
+    <UserSettingsWrapper activeTab={NOTIFICATIONS}>
       <div className={css(styles.wrapper)}>
-        <div>
-          <h2>
-            Organizations
-          </h2>
-          <div>You are a billing admin for these organizations</div>
-        </div>
-        <div className={css(styles.createNewOrg)}>
+        <div className={css(styles.notifications)}>
           <div className={css(styles.headerWithBorder)}>
             <div className={css(styles.headerTextBlock)}>
-              <span>ORGANIZATIONS</span>
-              <span className={css(styles.addOrg)}>
-                <FontAwesome
-                  className={css(styles.addOrgIcon)}
-                  name="plus-square-o"
-                  title="Create new organization"
-                />
-                Create new organization
-              </span>
+              <span>NOTIFICATIONS</span>
             </div>
           </div>
-          <div className={css(styles.orgList)}>
-            {organizations.map((organization) =>
-              <OrganizationRow
-                key={`orgRow${organization.id}`}
-                organization={organization}
-                onRowClick={() => router.push(`/me/organizations/${organization.id}`)}
+          <div className={css(styles.notificationList)}>
+            {notifications.map((notification) =>
+              <NotificationRow
+                key={`notification${notification}`}
+                type={notification.type}
+                varList={notification.varList}
               />
             )}
           </div>
@@ -60,7 +48,7 @@ const styleThunk = () => ({
     marginRight: '.5rem'
   },
 
-  createNewOrg: {
+  notifications: {
     ...cardSection
   },
   headerTextBlock: {
@@ -75,10 +63,10 @@ const styleThunk = () => ({
     borderBottom: '1px solid #c3c5d1',
   },
 
-  orgList: {},
+  notificationList: {},
   wrapper: {
     maxWidth: '45rem'
   }
 });
 
-export default withRouter(withStyles(styleThunk)(Organizations));
+export default withRouter(withStyles(styleThunk)(Notifications));

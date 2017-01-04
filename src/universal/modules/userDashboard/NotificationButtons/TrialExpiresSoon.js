@@ -10,9 +10,10 @@ const TrialExpiresSoon = (props) => {
   };
   return (
     <Button
-      colorPalette="warm"
+      borderRadius="4px"
+      colorPalette="cool"
       isBlock
-      label="Add Billing"
+      label="Add Billing Info"
       size="small"
       type="submit"
       onClick={addBilling}

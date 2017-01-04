@@ -41,7 +41,7 @@ export const MEETING = 'meeting';
 export const TEAM_DASH = 'teamDash';
 export const USER_DASH = 'userDash';
 
-/* Notification Types */
+/* NotificationRow Types */
 // Sent to billing leaders when their trial will expire in < 2 weeks [trialExpiresAt]
 export const TRIAL_EXPIRES_SOON = 'TRIAL_EXPIRES_SOON';
 // Sent to billing leaders when their trial has expired [trialExpiresAt]
