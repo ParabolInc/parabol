@@ -11,6 +11,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import AdminUserRow from 'universal/modules/userDashboard/components/AdminUserRow/AdminUserRow';
 import InvoiceRow from 'universal/modules/userDashboard/components/InvoiceRow/InvoiceRow';
 import Button from 'universal/components/Button/Button';
+import Toggle from 'universal/components/Toggle/Toggle';
 import ToggleNav from 'universal/components/ToggleNav/ToggleNav';
 import brandMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import makeDateString from 'universal/utils/makeDateString';
@@ -55,6 +56,9 @@ const Organization = (props) => {
     };
     return (
       <div className={css(styles.actionLinkBlock)}>
+        <div className={css(styles.toggleBlock)}>
+          <Toggle active block label="Active" />
+        </div>
         {removeBillingLeaderModal &&
         <RemoveBillingLeaderModal
           onBackdropClick={openRemoveModal}
@@ -104,7 +108,7 @@ const Organization = (props) => {
               {activeUserCount} Active Users • {inactiveUserCount} Inactive Users •
                                 Created {makeDateString(createdAt, false)}
             </div>
-            <ToggleNav />
+            <ToggleNav/>
           </div>
         </div>
         <div className={css(styles.orgBlock)}>
@@ -300,7 +304,13 @@ const styleThunk = () => ({
   goBackLabel: {...goBackLabel},
   wrapper: {
     width: '60%'
-  }
+  },
+
+  toggleBlock: {
+    display: 'inline-block',
+    marginRight: '1rem',
+    width: '100px'
+  },
 });
 
 export default withStyles(styleThunk)(Organization);
