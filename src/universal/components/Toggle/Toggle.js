@@ -54,6 +54,7 @@ const styleThunk = () => ({
     borderRadius: size,
     boxShadow: `inset 0 0 0 ${borderWidth} rgba(0, 0, 0, .05)`,
     color: appTheme.palette.mid,
+    cursor: 'pointer',
     display: 'inline-block',
     fontSize: 0,
     height,
@@ -62,6 +63,7 @@ const styleThunk = () => ({
     paddingRight: borderWidth,
     position: 'relative',
     textAlign: 'center',
+    userSelect: 'none',
 
     ':after': {
       backgroundColor: appTheme.palette.mid50l,
