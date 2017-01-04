@@ -6,6 +6,10 @@ import globalStyles from 'universal/styles/theme/globalStyles';
 import {segmentEventPage} from 'universal/redux/segmentActions';
 import socketCluster from 'socketcluster-client';
 import {showWarning} from 'universal/modules/notifications/ducks/notifications';
+import {APP_VERSION_KEY} from 'universal/utils/constants';
+import signout from 'universal/containers/Signout/signout';
+import {withRouter} from 'react-router';
+
 const updateAnalyticsPage = (dispatch, lastPage, nextPage) => {
   if (typeof document === 'undefined') return;
   const name = document && document.title || '';
@@ -18,6 +22,7 @@ const updateAnalyticsPage = (dispatch, lastPage, nextPage) => {
 };
 
 @connect()
+@withRouter
 export default class ActionContainer extends Component {
   static propTypes = {
     children: PropTypes.element.isRequired,
@@ -28,13 +33,20 @@ export default class ActionContainer extends Component {
   };
 
   componentWillMount() {
-    const socket = socketCluster.connect();
-    socket.on('version', (version) => {
-      showWarning('You will be logged out and upgraded to version ' + version);
-    });
-    const {dispatch, location: {pathname: nextPage}} = this.props;
+    const {dispatch, router, location: {pathname: nextPage}} = this.props;
     updateAnalyticsPage(dispatch, '', nextPage);
     injectGlobals(globalStyles);
+    const socket = socketCluster.connect();
+    socket.on('version', (versionOnServer) => {
+      const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY) || '0.0.0';
+      if (versionOnServer !== versionInStorage) {
+        signout(dispatch, router);
+        dispatch(showWarning({
+          title: 'So long!',
+          message: `Logging you out because a new version of Action is available`
+        }));
+      }
+    });
   }
 
   componentDidUpdate(prevProps) {

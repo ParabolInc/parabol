@@ -5,6 +5,7 @@ import {REFRESH_JWT_AFTER} from 'server/utils/serverConstants';
 import getRetink from 'server/database/rethinkDriver';
 import isObject from 'universal/utils/isObject';
 import jwtDecode from 'jwt-decode';
+import {APP_VERSION} from 'universal/utils/constants';
 
 // we do this otherwise we'd have to blacklist every token that ever got replaced & query that table for each query
 const isTmsValid = (tmsFromDB, tmsFromToken) => {
@@ -53,5 +54,7 @@ export default function scConnectionHandler(exchange) {
       authToken.tms = tms;
       socket.setAuthToken(authToken);
     }
+    // Emit current app version to notify client of possible change
+    socket.emit('version', APP_VERSION);
   };
 }

@@ -2,7 +2,6 @@ import {graphql} from 'graphql';
 import Schema from 'server/graphql/rootSchema';
 import subscriptions from 'universal/subscriptions/subscriptions';
 import parseChannel from 'universal/utils/parseChannel';
-import APP_VERSION from 'universal/utils/constants';
 import {
   ACTIONS,
   ACTIONS_BY_TEAMMEMBER,
@@ -36,8 +35,6 @@ const dechannelfy = {
 
 export default function scSubscribeHandler(exchange, socket) {
   return async function subscribeHandler(subbedChannelName = '') {
-    console.log('Emitting message to client now');
-    socket.emit('version', APP_VERSION);
     const {channel, variableString} = parseChannel(subbedChannelName);
     const subscription = subscriptions.find(sub => sub.channel === channel);
     if (subscription) {
