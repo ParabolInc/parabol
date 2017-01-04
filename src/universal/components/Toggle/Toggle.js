@@ -3,6 +3,11 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 
+//    TODO:
+//  • Add palette variants (TA)
+//  • Add disabled styles (TA)
+//  • Add animation state (turning off/on) (TA)
+
 const Toggle = (props) => {
   const {
     active,
@@ -72,13 +77,7 @@ const styleThunk = () => ({
     }
   },
 
-  label: {
-    display: 'inline-block',
-    fontSize: appTheme.typography.s2,
-    fontWeight: 700,
-    padding: '0 .5rem'
-  },
-
+  // NOTE: modifies 'toggle'
   active: {
     color: appTheme.palette.cool,
     paddingLeft: borderWidth,
@@ -91,8 +90,17 @@ const styleThunk = () => ({
     }
   },
 
+  // NOTE: modifies 'toggle'
   block: {
     display: 'block'
+  },
+
+  // NOTE: inner element
+  label: {
+    display: 'inline-block',
+    fontSize: appTheme.typography.s2,
+    fontWeight: 700,
+    padding: '0 .5rem'
   }
 });
 
