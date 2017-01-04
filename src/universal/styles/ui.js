@@ -9,6 +9,9 @@ import zIndexScale from 'universal/styles/helpers/zIndexScale';
 const backgroundColor = tinycolor.mix(appTheme.palette.mid, '#fff', 95).toHexString();
 
 const ui = {
+  // Base settings
+  baseBorderRadius: '.25rem',
+
   // Action items and cards
   actionCardBgColor: appTheme.palette.light60l,
   actionCardBgActive: 'rgba(255, 255, 255, .85)',

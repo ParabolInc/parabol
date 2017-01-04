@@ -19,8 +19,8 @@ const ToggleNav = (props) => {
 
   const renderItems = () =>
     items.map((item, index) => {
-      const indexOnly = true;
-      const isActive = router.isActive(item.linkTo, indexOnly);
+      // Avoid className order conflicts and set active here
+      const isActive = router.isActive(item.linkTo, true);
       const itemStyles = css(
         styles.item,
         isActive && styles.itemActive,
@@ -67,7 +67,7 @@ ToggleNav.defaultProps = {
   ]
 };
 
-const borderRadius = ui.cardBorderRadius;
+const borderRadius = ui.baseBorderRadius;
 
 const styleThunk = () => ({
   nav: {
@@ -88,6 +88,8 @@ const styleThunk = () => ({
     textAlign: 'center',
     textDecoration: 'none',
 
+    // NOTE: hover/focus are the same
+    // NOTE: overriding anchor styles
     ':hover': {
       backgroundColor: appTheme.palette.mid10a,
       color: appTheme.palette.mid70d,
@@ -101,16 +103,18 @@ const styleThunk = () => ({
   },
 
   itemActive: {
-    backgroundColor: `${appTheme.palette.mid}`,
+    backgroundColor: appTheme.palette.mid,
     color: '#fff',
     cursor: 'default',
 
+    // NOTE: hover/focus are the same
+    // NOTE: overriding anchor styles
     ':hover': {
-      backgroundColor: `${appTheme.palette.mid}`,
+      backgroundColor: appTheme.palette.mid,
       color: '#fff'
     },
     ':focus': {
-      backgroundColor: `${appTheme.palette.mid}`,
+      backgroundColor: appTheme.palette.mid,
       color: '#fff'
     }
   },
