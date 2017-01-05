@@ -25,7 +25,7 @@ const Notifications = (props) => {
           <div className={css(styles.notificationList)}>
             {notifications.map((notification) =>
               <NotificationRow
-                key={`notification${notification}`}
+                key={`notification${notification.id}`}
                 type={notification.type}
                 varList={notification.varList}
               />

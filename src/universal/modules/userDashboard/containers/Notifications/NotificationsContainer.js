@@ -5,13 +5,14 @@ import Notifications from 'universal/modules/userDashboard/components/Notificati
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 
-// const notificationsQuery = `
-// query {
-//   notifications(userId: $userId) @live {
-//     id
-//
-//   }
-// }`;
+const notificationsQuery = `
+query {
+  notifications(userId: $userId) @live {
+    id
+    type
+    varList
+  }
+}`;
 //
 // const mapStateToProps = (state) => {
 //   const {user} = cashay.query(notificationsQuery, {
@@ -24,6 +25,7 @@ import {connect} from 'react-redux';
 
 const notifications = [
   {
+    id: '1',
     type: TRIAL_EXPIRES_SOON,
     varList: [
       new Date(),
@@ -31,6 +33,7 @@ const notifications = [
     ]
   },
   {
+    id: '2',
     type: REQUEST_NEW_USER,
     varList: [
       'Terry',
@@ -41,19 +44,6 @@ const notifications = [
     ]
   }
 ];
-
-const teamProjectsHeaderQuery = `
-query {
-  notifications @live {
-    id
-    isTrial
-    activeUserCount
-    inactiveUserCount
-    name
-    picture
-  }
-}
-`;
 
 const mapStateToProps = (state, props) => {
   // const {notifications} = cashay.query(teamProjectsHeaderQuery, {
