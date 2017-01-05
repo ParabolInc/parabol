@@ -20,6 +20,7 @@ import protocolRelativeUrl from 'server/utils/protocolRelativeUrl';
 import {s3SignPutUrl} from 'server/utils/s3';
 import {APP_CDN_USER_ASSET_SUBDIR} from 'universal/utils/constants';
 import getFileExtension from 'universal/utils/getFileExtension';
+import {GraphQLURLType} from '../types';
 
 const auth0Client = new AuthenticationClient({
   domain: auth0.domain,
@@ -61,7 +62,7 @@ export default {
     }
   },
   createUserPicturePutUrl: {
-    type: User,
+    type: GraphQLURLType,
     description: 'Create a PUT URL on the CDN for the currently authenticated user\'s profile picture',
     args: {
       userFilename: {
@@ -94,9 +95,7 @@ export default {
         APP_CDN_USER_ASSET_SUBDIR,
         `User/${userId}/picture/${shortid.generate()}.${ext}`
       );
-      user.picturePutUrl = await s3SignPutUrl(pathname, undefined, 'public-read');
-
-      return user;
+      return await s3SignPutUrl(pathname, undefined, 'public-read');
     }
   },
   updateUserWithAuthToken: {
