@@ -63,6 +63,7 @@ const ui = {
 
   // Icons
   iconSize: '14px', // FontAwesome base
+  iconSizeAvatar: '21px', // FontAwesome 1.5x
   iconSize2x: '28px', // FontAwesome 2x
   iconSize3x: '42px', // FontAwesome 3x
 

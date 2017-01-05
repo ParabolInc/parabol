@@ -34,7 +34,7 @@ const RequestNewUser = (props) => {
         requested to add
         <span className={css(styles.messageVar)}> {inviteeEmail} </span>
         to
-        <span className={css(styles.messageVar)}> {teamName}</span>.
+        <span className={css(styles.messageVar)}> {teamName}</span>
       </div>
       <div className={css(styles.buttonGroup)}>
         <div className={css(styles.button)}>
