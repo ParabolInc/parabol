@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 import tinycolor from 'tinycolor2';
 
 const {cool, warm, dark, mid, light} = appTheme.palette;
@@ -160,8 +161,10 @@ const keyframesDip = {
 const styleThunk = (customTheme, props) => ({
   // Button base
   base: {
+    appearance: 'none',
     border: '1px solid transparent',
-    borderRadius: props.borderRadius || 0,
+    borderRadius: props.borderRadius || ui.buttonBorderRadius,
+    boxShadow: 'none',
     cursor: 'pointer',
     display: 'inline-block',
     fontSize: '1rem',

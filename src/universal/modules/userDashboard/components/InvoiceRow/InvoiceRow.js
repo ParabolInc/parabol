@@ -1,12 +1,14 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
+import Row from 'universal/components/Row/Row';
 import UserTag from 'universal/components/UserTag/UserTag';
 import FontAwesome from 'react-fontawesome';
 import makeDateString from 'universal/utils/makeDateString';
 
-const UserRow = (props) => {
+const InvoiceRow = (props) => {
   const {
     invoice: {
       invoiceDate,
@@ -16,7 +18,7 @@ const UserRow = (props) => {
     styles
   } = props;
   return (
-    <div className={css(styles.invoiceRow)}>
+    <Row>
       <div className={css(styles.invoiceAvatar)}>
         <div className={css(styles.icon)}>
           <div className={css(styles.iconBackdrop)}></div>
@@ -29,7 +31,7 @@ const UserRow = (props) => {
             {makeDateString(invoiceDate, false)}
           </div>
           {isEstimate &&
-          <UserTag colorPalette="light" label="Current Estimate"/>
+            <UserTag colorPalette="light" label="Current Estimate"/>
           }
         </div>
         <div className={css(styles.subHeader)}>
@@ -51,11 +53,11 @@ const UserRow = (props) => {
           }
         </span>
       </div>
-    </div>
+    </Row>
   );
 };
 
-UserRow.propTypes = {
+InvoiceRow.propTypes = {
   styles: PropTypes.object
 };
 
@@ -64,7 +66,7 @@ const styleThunk = () => ({
     background: appTheme.palette.dark,
     borderRadius: '10%',
     height: 50,
-    opacity: .5,
+    opacity: '.5',
     position: 'absolute',
     width: 50
   },
@@ -76,14 +78,6 @@ const styleThunk = () => ({
     height: 50,
     justifyContent: 'center',
     width: 50
-  },
-
-  invoiceRow: {
-    alignItems: 'center',
-    borderBottom: `1px solid ${appTheme.palette.mid20l}`,
-    display: 'flex',
-    padding: '1rem 0 1rem 1rem',
-    width: '100%'
   },
 
   invoiceAmount: {
@@ -147,4 +141,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(UserRow);
+export default withStyles(styleThunk)(InvoiceRow);

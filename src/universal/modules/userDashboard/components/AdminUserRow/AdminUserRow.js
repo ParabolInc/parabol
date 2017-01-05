@@ -1,8 +1,10 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
+import Row from 'universal/components/Row/Row';
 import UserTag from 'universal/components/UserTag/UserTag';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 
@@ -18,7 +20,7 @@ const AdminUserRow = (props) => {
     styles
   } = props;
   return (
-    <div className={css(styles.userRow)}>
+    <Row>
       <div className={css(styles.userAvatar)}>
         {picture ?
           <Avatar hasBadge={false} picture={picture} size="small"/> :
@@ -31,7 +33,7 @@ const AdminUserRow = (props) => {
             {preferredName}
           </div>
           {inactive &&
-          <UserTag colorPalette="light" label="Inactive"/>
+            <UserTag colorPalette="light" label="Inactive"/>
           }
         </div>
         <a className={css(styles.infoLink)} href={`mailto:${email}`} title="Send an email">
@@ -39,11 +41,11 @@ const AdminUserRow = (props) => {
         </a>
       </div>
       {actions &&
-      <div className={css(styles.userActions)}>
-        {actions}
-      </div>
+        <div className={css(styles.userActions)}>
+          {actions}
+        </div>
       }
-    </div>
+    </Row>
   );
 };
 
@@ -59,14 +61,6 @@ AdminUserRow.propTypes = {
 };
 
 const styleThunk = () => ({
-  userRow: {
-    alignItems: 'center',
-    borderBottom: `1px solid ${appTheme.palette.mid20l}`,
-    display: 'flex',
-    padding: '1rem 0 1rem 1rem',
-    width: '100%'
-  },
-
   userAvatar: {
     // Define
   },

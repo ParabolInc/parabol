@@ -6,12 +6,22 @@ import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import FontAwesome from 'react-fontawesome';
+import IconControl from 'universal/components/IconControl/IconControl';
+import Panel from 'universal/components/Panel/Panel';
 import OrganizationRow from 'universal/modules/userDashboard/components/OrganizationRow/OrganizationRow';
 import {withRouter} from 'react-router';
 import cardSection from 'universal/styles/helpers/cardSection';
 
 const Organizations = (props) => {
   const {organizations, router, styles} = props;
+  const addNewOrg = () =>
+    <IconControl
+      icon="plus-square-o"
+      iconSize={ui.iconSize2x}
+      label="New Organization"
+      lineHeight={ui.iconSize2x}
+      padding={`0 0 0 ${ui.panelGutter}`}
+    />;
   return (
     <UserSettingsWrapper activeTab={ORGANIZATIONS}>
       <div className={css(styles.wrapper)}>
@@ -21,20 +31,7 @@ const Organizations = (props) => {
           </h2>
           <div>You are a billing admin for these organizations</div>
         </div>
-        <div className={css(styles.createNewOrg)}>
-          <div className={css(styles.headerWithBorder)}>
-            <div className={css(styles.headerTextBlock)}>
-              <span>ORGANIZATIONS</span>
-              <span className={css(styles.addOrg)}>
-                <FontAwesome
-                  className={css(styles.addOrgIcon)}
-                  name="plus-square-o"
-                  title="Create new organization"
-                />
-                Create new organization
-              </span>
-            </div>
-          </div>
+        <Panel label="Organizations" controls={addNewOrg()}>
           <div className={css(styles.orgList)}>
             {organizations.map((organization) =>
               <OrganizationRow
@@ -44,7 +41,7 @@ const Organizations = (props) => {
               />
             )}
           </div>
-        </div>
+        </Panel>
       </div>
     </UserSettingsWrapper>
   );
