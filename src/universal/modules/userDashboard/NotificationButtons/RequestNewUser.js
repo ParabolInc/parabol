@@ -8,15 +8,16 @@ import defaultStyles from './styles';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 
 const RequestNewUser = (props) => {
-  const {router, styles, varList} = props;
-  const [inviterName, inviterId,inviteeEmail, teamName,teamId] = varList;
+  const {notificationId, router, styles, varList} = props;
+  const [inviterName, inviterId, inviteeEmail, teamName, teamId] = varList;
 
   const acceptInvite = () => {
     const variables = {
       teamId,
       invitees: [{
         email: inviteeEmail
-      }]
+      }],
+      notificationId
     };
     cashay.mutate('inviteTeamMembers', {variables});
   };

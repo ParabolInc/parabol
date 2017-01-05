@@ -9,6 +9,7 @@ const notificationsQuery = `
 query {
   notifications(userId: $userId) @live {
     id
+    startAt
     type
     varList
   }
@@ -23,42 +24,43 @@ query {
 //   }
 // };
 
-const notifications = [
-  {
-    id: '1',
-    type: TRIAL_EXPIRES_SOON,
-    varList: [
-      new Date(),
-      'org123'
-    ]
-  },
-  {
-    id: '2',
-    type: REQUEST_NEW_USER,
-    varList: [
-      'Terry',
-      'terry123',
-      'jordan@foo.co',
-      'Team Kickass',
-      'team987'
-    ]
-  }
-];
+// const notifications = [
+//   {
+//     id: '1',
+//     type: TRIAL_EXPIRES_SOON,
+//     varList: [
+//       new Date(),
+//       'org123'
+//     ]
+//   },
+//   {
+//     id: '2',
+//     type: REQUEST_NEW_USER,
+//     varList: [
+//       'Terry',
+//       'terry123',
+//       'jordan@foo.co',
+//       'Team Kickass',
+//       'team987'
+//     ]
+//   }
+// ];
 
 const mapStateToProps = (state, props) => {
-  // const {notifications} = cashay.query(teamProjectsHeaderQuery, {
-  //   op: 'organizationsContainer',
-  //   sort: {
-  //     notifications: (a, b) => a.name > b.name ? 1 : -1
-  //   }
-  // }).data;
+  const {notifications} = cashay.query(notificationsQuery, {
+    op: 'notificationsContainer',
+    sort: {
+      notifications: (a, b) => a.startAt > b.startAt ? 1 : -1
+    }
+  }).data;
   return {
-    // notifications
+    notifications
   };
 };
 
 const NotificationsContainer = (props) => {
-  // const {notifications} = props;
+  const {notifications} = props;
+  console.log('no', notifications);
   return (
     <Notifications notifications={notifications}/>
   );

@@ -6,7 +6,7 @@ import {
   GraphQLList,
 } from 'graphql';
 import {Invitee} from './invitationSchema';
-import {getUserId, requireSUOrTeamMember, requireWebsocket} from '../authorization';
+import {getUserId, requireSUOrTeamMember, requireWebsocket, validateNotificationId} from '../authorization';
 import {errorObj, handleSchemaErrors} from '../utils';
 import {
   asyncInviteTeam,
@@ -31,9 +31,12 @@ export default {
       },
       invitees: {
         type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Invitee)))
+      },
+      notificationId: {
+        type: GraphQLID
       }
     },
-    async resolve(source, {invitees, teamId}, {authToken}) {
+    async resolve(source, {invitees, notificationId, teamId}, {authToken}) {
       const r = getRethink();
 
       // AUTH
@@ -63,6 +66,7 @@ export default {
       const schema = makeInviteTeamMembersSchema(schemaProps);
       const {errors, data: validInvitees} = schema(invitees);
       handleSchemaErrors(errors);
+      const parentNotificationId = validateNotificationId(notificationId, authToken);
 
       // RESOLUTION
       const inactiveTeamMembers = usedEmails.teamMembers.filter((m) => m.isNotRemoved === false);
@@ -79,6 +83,13 @@ export default {
       } else {
         asyncInviteTeam(authToken, teamId, validInvitees);
       }
+
+      if (parentNotificationId) {
+        await r.table('Notification')
+          .getAll(parentNotificationId, {index: 'parentId'})
+          .delete()
+      }
+
       return true;
     }
   },

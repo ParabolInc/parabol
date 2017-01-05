@@ -46,7 +46,7 @@ exports.up = async(r) => {
   await Promise.all(waitIndices);
 
   const now = new Date();
-  const trialExpiresAt = new Date(now + TRIAL_PERIOD);
+  const trialExpiresAt = new Date(now.valueOf() + TRIAL_PERIOD);
   const teamLeaders = await r.table('TeamMember').filter({isLead: true});
   // make them unique
   const teamLeaderUserIds = Array.from(new Set(teamLeaders.map((leader) => leader.userId)));
@@ -103,7 +103,7 @@ exports.up = async(r) => {
                     parentId: orgLeader('expiresSoonId'),
                     type: TRIAL_EXPIRES_SOON,
                     varList: orgLeader('varList'),
-                    startAt: new Date(now + ms('14d')),
+                    startAt: new Date(now.valueOf() + ms('14d')),
                     endAt: trialExpiresAt,
                     userId: orgLeader('id'),
                     orgId: orgLeader('orgId'),
@@ -114,7 +114,7 @@ exports.up = async(r) => {
                     type: TRIAL_EXPIRED,
                     varList: orgLeader('varList'),
                     startAt: trialExpiresAt,
-                    endAt: new Date(trialExpiresAt + ms('10y')),
+                    endAt: new Date(trialExpiresAt.valueOf() + ms('10y')),
                     userId: orgLeader('id'),
                     orgId: orgLeader('orgId'),
                   }

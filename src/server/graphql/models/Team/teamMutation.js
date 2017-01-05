@@ -560,7 +560,7 @@ export default {
               type: TRIAL_EXPIRED,
               varList: [trialExpiresAt],
               startAt: trialExpiresAt,
-              endAt: new Date(trialExpiresAt + ms('10y')),
+              endAt: new Date(trialExpiresAt.valueOf() + ms('10y')),
               userId,
               orgId,
             }

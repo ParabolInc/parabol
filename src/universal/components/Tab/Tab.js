@@ -40,8 +40,7 @@ const styleThunk = () => ({
   },
 
   icon: {
-    fontSize: ui.iconSize2x,
-    opacity: '.5'
+    fontSize: ui.iconSize2x
   },
 
   isActive: {

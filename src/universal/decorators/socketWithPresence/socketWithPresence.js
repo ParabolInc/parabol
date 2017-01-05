@@ -4,7 +4,7 @@ import {reduxSocket} from 'redux-socket-cluster';
 import {cashay} from 'cashay';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import reduxSocketOptions from 'universal/redux/reduxSocketOptions';
-import {JOIN_TEAM, PRESENCE, TEAM_MEMBERS, TEAM} from 'universal/subscriptions/constants';
+import {JOIN_TEAM, NOTIFICATIONS, PRESENCE, TEAM_MEMBERS, TEAM} from 'universal/subscriptions/constants';
 import socketCluster from 'socketcluster-client';
 import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
 import parseChannel from 'universal/utils/parseChannel';
@@ -20,6 +20,7 @@ const getTeamName = (teamId) => {
 const mapStateToProps = (state) => {
   return {
     tms: state.auth.obj.tms,
+    userId: state.auth.obj.sub
   };
 };
 
@@ -43,6 +44,7 @@ export default ComposedComponent => {
 
     componentDidMount() {
       this.subscribeToPresence({}, this.props);
+      this.subscribeToNotifications();
       this.watchForKickout();
       // this.watchForJoin();
     }
@@ -83,6 +85,10 @@ export default ComposedComponent => {
           }
         }
       });
+    }
+    subscribeToNotifications() {
+      const {userId} = this.props;
+      cashay.subscribe(NOTIFICATIONS, userId);
     }
     subscribeToPresence(oldProps, props) {
       const {tms} = props;

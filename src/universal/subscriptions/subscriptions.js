@@ -126,8 +126,7 @@ export default [
     subscription {
       notifications {
         id
-        orgId
-        parentId
+        startAt
         type
         varList
       }
