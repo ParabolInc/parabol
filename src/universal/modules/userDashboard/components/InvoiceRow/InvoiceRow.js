@@ -21,8 +21,7 @@ const InvoiceRow = (props) => {
     <Row>
       <div className={css(styles.invoiceAvatar)}>
         <div className={css(styles.icon)}>
-          <div className={css(styles.iconBackdrop)}></div>
-          <FontAwesome name="file-text-o" className={css(styles.fileIcon)}/>
+          <FontAwesome name="file-text" className={css(styles.fileIcon)}/>
         </div>
       </div>
       <div className={css(styles.invoiceInfo)}>
@@ -42,16 +41,14 @@ const InvoiceRow = (props) => {
         <span className={css(styles.invoiceAmount)}>
           ${amount.toFixed(2)}
         </span>
-        <span className={css(styles.dueDate)}>
-          {isEstimate ?
-            <span>
-              Your card will be charged on {makeDateString(invoiceDate, false)}
-            </span> :
-            <span className={css(styles.paid)}>
-              Paid on {makeDateString(invoiceDate, false)}
-            </span>
-          }
-        </span>
+        {isEstimate ?
+          <span className={css(styles.date, styles.toPay)}>
+            Your card will be charged on {makeDateString(invoiceDate, false)}
+          </span> :
+          <span className={css(styles.date, styles.paid)}>
+            Paid on {makeDateString(invoiceDate, false)}
+          </span>
+        }
       </div>
     </Row>
   );
@@ -62,31 +59,24 @@ InvoiceRow.propTypes = {
 };
 
 const styleThunk = () => ({
-  iconBackdrop: {
-    background: appTheme.palette.dark,
-    borderRadius: '10%',
-    height: 50,
-    opacity: '.5',
-    position: 'absolute',
-    width: 50
-  },
-
   fileIcon: {
     alignItems: 'center',
+    color: '#fff',
     display: 'flex',
-    fontSize: appTheme.typography.s7,
+    fontSize: ui.iconSize2x,
     height: 50,
     justifyContent: 'center',
     width: 50
   },
 
   invoiceAmount: {
-    fontSize: appTheme.typography.s7,
+    fontSize: appTheme.typography.s6,
     color: appTheme.palette.cool,
   },
 
   invoiceAvatar: {
-    // Define
+    backgroundColor: appTheme.palette.mid40l,
+    borderRadius: '.5rem'
   },
 
   invoiceInfo: {
@@ -97,7 +87,6 @@ const styleThunk = () => ({
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
-    marginRight: '1rem',
     textAlign: 'right'
   },
 
@@ -105,8 +94,18 @@ const styleThunk = () => ({
     // Define
   },
 
+  date: {
+    fontSize: appTheme.typography.s2
+  },
+
+  toPay: {
+    color: appTheme.palette.cool,
+    fontWeight: 700
+  },
+
   paid: {
-    color: appTheme.palette.cool
+    color: appTheme.palette.mid,
+    fontWeight: 700
   },
 
   preferredName: {

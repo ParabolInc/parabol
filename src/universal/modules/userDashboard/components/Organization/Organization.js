@@ -251,8 +251,7 @@ const styleThunk = () => ({
     alignItems: 'center',
     display: 'flex',
     justifyContent: 'space-between',
-    margin: '0 1rem',
-
+    padding: `0 ${ui.panelGutter} ${ui.panelGutter}`
   },
 
   noInvoices: {

@@ -54,7 +54,6 @@ const styleThunk = () => ({
     flexDirection: 'column',
     fontSize: appTheme.typography.s3,
     lineHeight: appTheme.typography.s5,
-    minHeight: ui.cardMinHeight,
     paddingTop: '.1875rem',
     position: 'relative',
     width: '100%',
