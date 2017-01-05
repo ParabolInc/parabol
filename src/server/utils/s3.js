@@ -1,13 +1,14 @@
 import aws from 'aws-sdk';
+import promisify from 'es6-promisify';
 import mime from 'mime-types';
-import protoRelUrl from './protoRelUrl';
+import protocolRelativeUrl from './protocolRelativeUrl';
 
 /*
  * Initializing AWS S3 implicitly uses environment variables
  * AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
  */
 const s3 = (typeof process.env.CDN_BASE_URL !== 'undefined') && new aws.S3({
-  endpoint: protoRelUrl.parse(process.env.CDN_BASE_URL).hostname,
+  endpoint: protocolRelativeUrl.parse(process.env.CDN_BASE_URL).hostname,
   s3BucketEndpoint: true
 });
 
@@ -29,7 +30,7 @@ export function s3DeleteObject(url) {
   s3CheckInitialized();
   const s3Params = {
     Bucket: process.env.AWS_S3_BUCKET,
-    Key: keyifyPath(decodeURI(protoRelUrl.parse(url).pathname))
+    Key: keyifyPath(decodeURI(protocolRelativeUrl.parse(url).pathname))
   };
   return s3.deleteObject(s3Params).promise();
 }
@@ -53,11 +54,7 @@ export function s3SignUrl(operation, pathname, contentType,
   }
 
   // getSignedUrl does not implement .promise, we we have to do it ourselves:
-  return new Promise((resolve, reject) =>
-    s3.getSignedUrl(operation, s3Params, (err, url) => {
-      if (err) { reject(err); } else { resolve(url); }
-    })
-  );
+  return promisify(s3.getSignedUrl, s3)(operation, s3Params);
 }
 
 export const s3SignGetUrl = (pathname, contentType, acl) =>
@@ -75,7 +72,11 @@ export function urlIsPossiblyOnS3(url) {
   if (!url) {
     return false;
   }
-  const s3host = protoRelUrl.parse(process.env.CDN_BASE_URL).hostname;
-  const urlHost = protoRelUrl.parse(url).hostname;
+  /*
+   * protocolRelativeUrl.parse is guaranteed to return an object with the
+   * hostname property.
+   */
+  const s3host = protocolRelativeUrl.parse(process.env.CDN_BASE_URL).hostname;
+  const urlHost = protocolRelativeUrl.parse(url).hostname;
   return s3host === urlHost;
 }

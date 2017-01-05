@@ -12,6 +12,7 @@ import {
 import {reduxForm, initialize} from 'redux-form';
 import {cashay} from 'cashay';
 import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
+import shouldValidate from 'universal/validation/shouldValidate';
 import fetch from 'universal/utils/fetch';
 
 const updateSuccess = {
@@ -37,7 +38,7 @@ const validate = (values) => {
 };
 
 @requireAuth
-@reduxForm({form: 'userSettings', validate})
+@reduxForm({form: 'userSettings', shouldValidate, validate})
 @connect(mapStateToProps)
 @withRouter
 export default class UserSettingsContainer extends Component {

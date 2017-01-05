@@ -6,11 +6,6 @@ class FileInput extends Component {
     previousValue: PropTypes.string
   };
 
-  constructor(props) {
-    super(props);
-    this.onChange = this.onChange.bind(this);
-  }
-
   onChange(e) {
     const {input: {onChange}} = this.props;
     onChange(e.target.files[0]);
@@ -23,7 +18,7 @@ class FileInput extends Component {
       key={previousValue} // see: https://github.com/erikras/redux-form/issues/769
       type="file"
       value={value}
-      onChange={this.onChange}
+      onChange={(e) => this.onChange(e)}
     />);
   }
 }

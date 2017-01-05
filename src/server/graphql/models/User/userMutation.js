@@ -8,7 +8,7 @@ import {auth0} from 'universal/utils/clientOptions';
 import sendEmail from 'server/email/sendEmail';
 import ms from 'ms';
 import {requireAuth, requireSU, requireSUOrSelf} from '../authorization';
-import {errorObj, handleSchemaErrors, previousValue, updatedOrOriginal} from '../utils';
+import {errorObj, handleSchemaErrors, updatedOrOriginal} from '../utils';
 import {
   auth0ManagementClient,
   clientSecret as auth0ClientSecret
@@ -16,8 +16,8 @@ import {
 import {verify} from 'jsonwebtoken';
 import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
-import protoRelUrl from 'server/utils/protoRelUrl';
-import {s3DeleteObject, s3SignPutUrl, urlIsPossiblyOnS3} from 'server/utils/s3';
+import protocolRelativeUrl from 'server/utils/protocolRelativeUrl';
+import {s3SignPutUrl} from 'server/utils/s3';
 import {APP_CDN_USER_ASSET_SUBDIR} from 'universal/utils/constants';
 import getFileExtension from 'universal/utils/getFileExtension';
 
@@ -89,7 +89,7 @@ export default {
       }
 
       // RESOLUTION
-      const parsedUrl = protoRelUrl.parse(process.env.CDN_BASE_URL);
+      const parsedUrl = protocolRelativeUrl.parse(process.env.CDN_BASE_URL);
       const pathname = path.join(parsedUrl.pathname,
         APP_CDN_USER_ASSET_SUBDIR,
         `User/${userId}/picture/${shortid.generate()}.${ext}`
@@ -208,12 +208,16 @@ export default {
         auth0ManagementClient.users.updateAppMetadata({id}, {preferredName: validUpdatedUser.preferredName})
       ];
       const [dbProfile] = await Promise.all(asyncPromises);
-      const previousProfile = previousValue(dbProfile);
-      if (previousProfile && urlIsPossiblyOnS3(previousProfile.picture)) {
-        // possible remove prior profile image from CDN asynchronously
-        s3DeleteObject(previousProfile.picture)
-        .catch(console.warn.bind(console));
-      }
+      //
+      // If we ever want to delete the previous profile images:
+      //
+      // const previousProfile = previousValue(dbProfile);
+      // if (previousProfile && urlIsPossiblyOnS3(previousProfile.picture)) {
+      // // possible remove prior profile image from CDN asynchronously
+      //   s3DeleteObject(previousProfile.picture)
+      //   .catch(console.warn.bind(console));
+      // }
+      //
       return updatedOrOriginal(dbProfile, validUpdatedUser);
     }
   }
