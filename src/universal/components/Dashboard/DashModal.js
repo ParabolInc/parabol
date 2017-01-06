@@ -91,7 +91,7 @@ const styleThunk = () => ({
   inputModal: {
     background: ui.dashBackgroundColor,
     padding: '1rem',
-    width: '20rem'
+    width: '15rem'
   },
 
   modal: {

@@ -10,12 +10,15 @@ import {css} from 'aphrodite-local-styles/no-important';
 import {reduxForm, Field} from 'redux-form';
 import CreditCardField from './CreditCardField';
 import FontAwesome from 'react-fontawesome';
+import Button from 'universal/components/Button/Button';
 
 const CreditCardModal = (props) => {
   const {handleSubmit, onBackdropClick, orgId, preferredName, styles, userId} = props;
   const handleClick = () => {
     const variables = {orgId, userId};
     cashay.mutate('removeBillingLeader', {variables});
+  };
+  const updateStripeBilling = () => {
   };
   return (
     <DashModal onBackdropClick={onBackdropClick} inputModal>
@@ -68,18 +71,27 @@ const CreditCardModal = (props) => {
           </div>
 
         </form>
-        <div className={css(styles.inputGroup)}>
-
+        <div className={css(styles.buttonGroup)}>
+          <div className={css(styles.cancelButton)}>
+            <Button
+              colorPalette="gray"
+              isBlock
+              label="Cancel"
+              size="small"
+              onClick={onBackdropClick}
+            />
+          </div>
+          <div className={css(styles.updateButton)}>
+            <Button
+              colorPalette="cool"
+              isBlock
+              label="Update"
+              size="small"
+              type="submit"
+              onClick={updateStripeBilling}
+            />
+          </div>
         </div>
-        <IconLink
-          colorPalette="warm"
-          icon="arrow-circle-right"
-          iconPlacement="right"
-          label={`Remove ${preferredName}`}
-          margin="1.5rem 0 0"
-          onClick={handleClick}
-          scale="large"
-        />
       </div>
     </DashModal>
   );
@@ -128,6 +140,22 @@ const styleThunk = () => ({
     width: '2.625rem'
   },
 
+  buttonGroup: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginTop: '2rem',
+    width: '100%'
+  },
+
+  cancelButton: {
+    flexGrow: '1'
+  },
+
+  updateButton: {
+    flexGrow: '2',
+    marginLeft: '1rem'
+  },
+
   creditCardNumber: {
     borderBottom: '1px solid lightgray',
     // borderRadius: '4px 4px 0 0'
@@ -154,6 +182,10 @@ const styleThunk = () => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
+  },
+
+  reassure: {
+    marginBottom: '2rem'
   },
 
   stripeName: {
