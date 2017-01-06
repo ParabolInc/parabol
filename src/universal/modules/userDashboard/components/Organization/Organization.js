@@ -11,11 +11,12 @@ import appTheme from 'universal/styles/theme/appTheme';
 import AdminUserRow from 'universal/modules/userDashboard/components/AdminUserRow/AdminUserRow';
 import InvoiceRow from 'universal/modules/userDashboard/components/InvoiceRow/InvoiceRow';
 import Button from 'universal/components/Button/Button';
+import IconControl from 'universal/components/IconControl/IconControl';
+import Panel from 'universal/components/Panel/Panel';
 import Toggle from 'universal/components/Toggle/Toggle';
 import ToggleNav from 'universal/components/ToggleNav/ToggleNav';
 import brandMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import makeDateString from 'universal/utils/makeDateString';
-import cardSection from 'universal/styles/helpers/cardSection';
 import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/EditOrgName';
 import {toggleLeaveModal, toggleRemoveModal, togglePaymentModal} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
 import RemoveBillingLeaderModal from 'universal/modules/userDashboard/components/RemoveBillingLeaderModal/RemoveBillingLeaderModal';
@@ -96,10 +97,18 @@ const Organization = (props) => {
       </div>
     );
   };
+  const addNewAdmin = () =>
+    <IconControl
+      icon="plus-square-o"
+      iconSize={ui.iconSize2x}
+      label="New Admin"
+      lineHeight={ui.iconSize2x}
+      padding={`0 0 0 ${ui.panelGutter}`}
+    />;
   return (
     <UserSettingsWrapper activeTab={ORGANIZATIONS}>
       <div className={css(styles.wrapper)}>
-        <Link className={css(styles.goBackLabel)} to={`/me/organizations`} title="Back to Organizations">
+        <Link className={css(styles.goBackLabel)} to="/me/organizations" title="Back to Organizations">
           <FontAwesome name="arrow-circle-left" style={inlineBlockStyle}/>
           <div style={inlineBlockStyle}>Back to Organizations</div>
         </Link>
@@ -109,7 +118,7 @@ const Organization = (props) => {
               <FontAwesome name="pencil"/>
               <span>EDIT</span>
             </div>
-            <img className={css(styles.avatarImg)} height={100} width={100} src={orgAvatar || brandMark}/>
+            <img className={css(styles.avatarImg)} height={96} width={96} src={orgAvatar || brandMark}/>
           </div>
           <div className={css(styles.orgNameAndDetails)}>
             <EditOrgName initialValues={initialValues} orgName={orgName} orgId={orgId}/>
@@ -120,20 +129,7 @@ const Organization = (props) => {
             <ToggleNav/>
           </div>
         </div>
-        <div className={css(styles.orgBlock)}>
-          <div className={css(styles.headerWithBorder)}>
-            <div className={css(styles.headerTextBlock)}>
-              <span>Admins</span>
-              <span className={css(styles.addLeader)}>
-                <FontAwesome
-                  className={css(styles.addLeaderIcon)}
-                  name="plus-square-o"
-                  title="Promote a member to billing leader"
-                />
-                New Admin
-              </span>
-            </div>
-          </div>
+        <Panel label="Admins" controls={addNewAdmin()}>
           <div className={css(styles.listOfAdmins)}>
             {billingLeaders.map((billingLeader, idx) => {
               return (
@@ -142,16 +138,11 @@ const Organization = (props) => {
                   actions={billingLeaderRowActions(billingLeader)}
                   billingLeader={billingLeader}
                 />
-              )
+              );
             })}
           </div>
-        </div>
-        <div className={css(styles.orgBlock)}>
-          <div className={css(styles.billingHeader)}>
-            <div className={css(styles.headerTextBlock)}>
-              Credit Card Information
-            </div>
-          </div>
+        </Panel>
+        <Panel label="Credit Card Information">
           <div className={css(styles.infoAndUpdate)}>
             <div className={css(styles.creditCardInfo)}>
               {paymentModal &&
@@ -171,13 +162,8 @@ const Organization = (props) => {
               size="small"
             />
           </div>
-        </div>
-        <div className={css(styles.orgBlock)}>
-          <div className={css(styles.headerWithBorder)}>
-            <div className={css(styles.headerTextBlock)}>
-              Invoices
-            </div>
-          </div>
+        </Panel>
+        <Panel label="Invoices">
           <div className={css(styles.listOfInvoices)}>
             {!isTrial ?
               <div className={css(styles.noInvoices)}>
@@ -188,7 +174,7 @@ const Organization = (props) => {
               )
             }
           </div>
-        </div>
+        </Panel>
       </div>
     </UserSettingsWrapper >
   );
@@ -220,45 +206,36 @@ Organization.defaultProps = {
   ]
 };
 const styleThunk = () => ({
-  addLeader: {
-    fontSize: appTheme.typography.s5,
-    color: appTheme.palette.cool,
-    cursor: 'pointer'
-  },
-
-  addLeaderIcon: {
-    marginRight: '.5rem'
-  },
-
-  adminsBlock: {
-    display: 'flex',
-    flexDirection: 'column'
-  },
-
   avatarAndName: {
+    alignItems: 'flex-start',
     display: 'flex',
-    margin: '1rem 0'
+    margin: '0 0 1rem',
+    maxWidth: '40rem',
+    width: '100%'
   },
 
   avatar: {
-    height: 100,
-    width: 100
+    height: 104,
+    paddingTop: 8,
+    position: 'relative',
+    width: 96
   },
 
   avatarEditOverlay: {
     alignItems: 'center',
-    background: 'black',
-    borderRadius: '10%',
+    backgroundColor: appTheme.palette.dark,
+    borderRadius: '.5rem',
     color: 'white',
     cursor: 'pointer',
     display: 'flex',
     flexDirection: 'column',
+    fontSize: appTheme.typography.s3,
     fontWeight: 700,
-    height: 100,
+    height: 96,
     justifyContent: 'center',
     opacity: 0,
     position: 'absolute',
-    width: 100,
+    width: 96,
 
     ':hover': {
       opacity: '.75',
@@ -274,27 +251,11 @@ const styleThunk = () => ({
     margin: '0 1rem'
   },
 
-  headerTextBlock: {
-    alignItems: 'center',
-    color: appTheme.palette.dark,
-    display: 'flex',
-    fontSize: appTheme.typography.s3,
-    fontWeight: 700,
-    justifyContent: 'space-between',
-    margin: '1rem',
-    textTransform: 'uppercase'
-  },
-
-  headerWithBorder: {
-    borderBottom: '1px solid #c3c5d1',
-  },
-
   infoAndUpdate: {
     alignItems: 'center',
     display: 'flex',
     justifyContent: 'space-between',
-    margin: '0 1rem',
-
+    padding: `0 ${ui.panelGutter} ${ui.panelGutter}`
   },
 
   noInvoices: {
@@ -302,9 +263,6 @@ const styleThunk = () => ({
     margin: '1rem'
   },
 
-  orgBlock: {
-    ...cardSection
-  },
   orgDetails: {
     fontSize: appTheme.typography.s3,
     paddingBottom: '.75rem'
@@ -314,17 +272,23 @@ const styleThunk = () => ({
     color: appTheme.palette.mid,
     display: 'flex',
     flexDirection: 'column',
-    marginLeft: '1rem',
+    marginLeft: '1.5rem',
+    maxWidth: '24rem',
+    width: '100%'
   },
 
-  goBackLabel: {...goBackLabel},
+  goBackLabel: {
+    ...goBackLabel,
+    margin: '1rem 0'
+  },
+
   wrapper: {
-    width: '60%'
+    maxWidth: '40rem'
   },
 
   toggleBlock: {
     display: 'inline-block',
-    marginRight: '1rem',
+    marginLeft: ui.rowGutter,
     width: '100px'
   },
 });

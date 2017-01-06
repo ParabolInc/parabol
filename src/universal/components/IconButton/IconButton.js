@@ -31,7 +31,7 @@ const {cool} = appTheme.palette;
 const baseButtonColor = appTheme.palette.cool40l;
 const styleThunk = () => ({
   base: {
-    background: 'none',
+    background: 'transparent',
     border: 0,
     borderRadius: 0,
     color: baseButtonColor,

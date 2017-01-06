@@ -99,7 +99,7 @@ InviteUser.propTypes = {
 const styleThunk = () => ({
   inviteUser: {
     alignItems: 'center',
-    borderBottom: `1px solid ${appTheme.palette.mid20l}`,
+    // borderBottom: `1px solid ${appTheme.palette.mid20l}`,
     display: 'flex',
     padding: '1rem 0 1rem 1rem',
     width: '100%'

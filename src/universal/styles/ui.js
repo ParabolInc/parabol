@@ -6,11 +6,15 @@ import tinycolor from 'tinycolor2';
 import appTheme from 'universal/styles/theme/appTheme';
 import zIndexScale from 'universal/styles/helpers/zIndexScale';
 
+// Reusable constants for UI object
+// ---------------------------------
 const backgroundColor = tinycolor.mix(appTheme.palette.mid, '#fff', 95).toHexString();
+const baseBorderRadius = '.25rem';
+// ---------------------------------
 
 const ui = {
   // Base settings
-  baseBorderRadius: '.25rem',
+  baseBorderRadius,
 
   // Action items and cards
   actionCardBgColor: appTheme.palette.light60l,
@@ -24,9 +28,12 @@ const ui = {
     widest: '@media (min-width: 120rem)'
   },
 
+  // Buttons
+  buttonBorderRadius: '.25rem',
+
   // Cards
   cardBorderColor: appTheme.palette.mid30l,
-  cardBorderRadius: '.25rem',
+  cardBorderRadius: baseBorderRadius,
   cardMaxWidth: '17.5rem',
   cardMinHeight: '7.5rem',
   cardPaddingBase: '.5rem',
@@ -76,9 +83,19 @@ const ui = {
   menuBackgroundColor: backgroundColor,
   zMenu: zIndexScale(4),
 
+  // Panels
+  panelBorderRadius: baseBorderRadius,
+  panelGutter: '1rem',
+
   // Project columns
   projectColumnsMaxWidth: '78.25rem',
   projectColumnsMinWidth: '48rem',
+
+  // Rows
+  rowBorderColor: appTheme.palette.mid20l,
+  rowHeadingColor: appTheme.palette.dark,
+  rowHeadingFontSize: appTheme.typography.s4,
+  rowGutter: '1rem',
 
   // Generic zIndex scale
   z1: zIndexScale(1),

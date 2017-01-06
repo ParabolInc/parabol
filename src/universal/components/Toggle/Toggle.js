@@ -4,8 +4,8 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 
 //    TODO:
+//  • Add hover/focus/disabled states (TA)
 //  • Add palette variants (TA)
-//  • Add disabled styles (TA)
 //  • Add animation state (turning off/on) (TA)
 
 const Toggle = (props) => {

@@ -1,8 +1,10 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
+import Row from 'universal/components/Row/Row';
 import UserTag from 'universal/components/UserTag/UserTag';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 import brandMark from 'universal/styles/theme/images/brand/mark-color.svg';
@@ -19,7 +21,7 @@ const OrganizationRow = (props) => {
     styles
   } = props;
   return (
-    <div className={css(styles.orgRow)}>
+    <Row>
       <div className={css(styles.orgAvatar)} onClick={onRowClick}>
         <img className={css(styles.avatarImg)} height={50} width={50} src={picture || brandMark}/>
       </div>
@@ -36,7 +38,7 @@ const OrganizationRow = (props) => {
       <div className={css(styles.orgActions)}>
         <span onClick={onRowClick}>Settings and Billing</span>
       </div>
-    </div>
+    </Row>
   );
 };
 
@@ -52,14 +54,6 @@ OrganizationRow.propTypes = {
 };
 
 const styleThunk = () => ({
-  orgRow: {
-    alignItems: 'center',
-    borderBottom: `1px solid ${appTheme.palette.mid20l}`,
-    display: 'flex',
-    padding: '1rem 0 1rem 1rem',
-    width: '100%'
-  },
-
   orgAvatar: {
     cursor: 'pointer'
   },
