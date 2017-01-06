@@ -6,7 +6,8 @@ import {
 } from '../../universal/utils/constants';
 
 export default function getWebpackPublicPath() {
-  if (typeof process !== 'undefined' && process.env.CDN_BASE_URL) {
+  if (typeof process !== 'undefined' && process.env.CDN_BASE_URL &&
+      !process.env.DISABLE_CDN_BUILD) {
     // this only runs server-side:
     const parsedUrl = protocolRelativeUrl.parse(process.env.CDN_BASE_URL);
     parsedUrl.pathname = path.join(
