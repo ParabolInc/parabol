@@ -12,20 +12,23 @@ const Panel = (props) => {
   const {
     children,
     controls,
+    hasHeader,
     label,
     styles
   } = props;
 
   return (
     <div className={css(styles.panel)}>
-      <div className={css(styles.header)}>
-        <div className={css(styles.label)}>
-          {label}
+      {hasHeader &&
+        <div className={css(styles.header)}>
+          <div className={css(styles.label)}>
+            {label}
+          </div>
+          <div className={css(styles.controls)}>
+            {controls}
+          </div>
         </div>
-        <div className={css(styles.controls)}>
-          {controls}
-        </div>
-      </div>
+      }
       <div className={css(styles.children)}>
         {children}
       </div>
@@ -36,11 +39,13 @@ const Panel = (props) => {
 Panel.propTypes = {
   children: PropTypes.any,
   controls: PropTypes.any,
+  hasHeader: PropTypes.bool,
   label: PropTypes.any,
   styles: PropTypes.object
 };
 
 Panel.defaultProps = {
+  hasHeader: true,
   label: 'Panel'
 };
 

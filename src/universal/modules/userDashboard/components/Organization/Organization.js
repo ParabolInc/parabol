@@ -22,6 +22,8 @@ import {toggleLeaveModal, toggleRemoveModal, togglePaymentModal} from 'universal
 import RemoveBillingLeaderModal from 'universal/modules/userDashboard/components/RemoveBillingLeaderModal/RemoveBillingLeaderModal';
 import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal';
 import CreditCardModal from 'universal/modules/userDashboard/components/CreditCardModal/CreditCardModal';
+import ActiveTrialCallOut from '../ActiveTrialCallOut/ActiveTrialCallOut';
+import ExpiredTrialCallOut from '../ExpiredTrialCallOut/ExpiredTrialCallOut';
 
 const inlineBlockStyle = {
   display: 'inline-block',
@@ -142,6 +144,13 @@ const Organization = (props) => {
             })}
           </div>
         </Panel>
+
+        {/* TODO: bring ActiveTrialCallOut to life */}
+        <ActiveTrialCallOut onClick={() => (console.log('ActiveTrialCallOut clicked'))} />
+
+        {/* TODO: bring ExpiredTrialCallOut to life */}
+        <ExpiredTrialCallOut onClick={() => (console.log('ExpiredTrialCallOut clicked'))} />
+
         <Panel label="Credit Card Information">
           <div className={css(styles.infoAndUpdate)}>
             <div className={css(styles.creditCardInfo)}>
@@ -290,7 +299,7 @@ const styleThunk = () => ({
     display: 'inline-block',
     marginLeft: ui.rowGutter,
     width: '100px'
-  },
+  }
 });
 
 export default withStyles(styleThunk)(Organization);
