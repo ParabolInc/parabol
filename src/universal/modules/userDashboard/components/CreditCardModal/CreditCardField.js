@@ -3,6 +3,7 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
 import FontAwesome from 'react-fontawesome';
 
 const CreditCardField = (props) => {
@@ -21,9 +22,25 @@ const CreditCardField = (props) => {
     styles.field,
     topField && styles.topField
   );
+
+  const iconStyle = {
+    color: appTheme.palette.mid50l,
+    display: 'block',
+    fontSize: ui.iconSize,
+    left: '.5rem',
+    lineHeight: appTheme.typography.s6,
+    position: 'absolute',
+    textAlign: 'center',
+    top: '.5rem',
+    width: '1rem'
+  };
+
   return (
     <div className={css(styles.iconAndInput)}>
-      <FontAwesome name={iconName} className={css(styles.icon)}/>
+      <FontAwesome
+        name={iconName}
+        style={iconStyle}
+      />
       <input
         {...input}
         autoFocus={autoFocus}
@@ -50,25 +67,25 @@ CreditCardField.propTypes = {
 
 const styleThunk = () => ({
   field: {
+    appearance: 'none',
+    backgroundColor: '#fff',
     border: '0',
     boxShadow: 'none',
-    fontSize: appTheme.typography.s3,
-    lineHeight: '1.75rem',
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s5,
+    lineHeight: appTheme.typography.s6,
     margin: '0',
-    padding: `.125rem ${ui.fieldPaddingHorizontal} .125rem 1.5rem`,
+    padding: `.5rem ${ui.fieldPaddingHorizontal} .5rem 2rem`,
     outline: 0,
-    width: '100%'
+    width: '100%',
+
+    ...makePlaceholderStyles(appTheme.palette.mid80l)
   },
-  icon: {
-    color: 'gray',
-    left: 0,
-    lineHeight: '2rem',
-    margin: '0 .25rem',
-    position: 'absolute',
-  },
+
   iconAndInput: {
     position: 'relative'
   },
+
   topField: {}
 });
 
