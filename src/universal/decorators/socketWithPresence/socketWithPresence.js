@@ -118,11 +118,11 @@ export default ComposedComponent => {
       socket.on('version', (versionOnServer) => {
         const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY) || '0.0.0';
         if (versionOnServer !== versionInStorage) {
-          signout(dispatch, router);
           dispatch(showWarning({
             title: 'So long!',
             message: `Logging you out because a new version of Action is available`
           }));
+          router.replace('/signout');
         }
       });
     }

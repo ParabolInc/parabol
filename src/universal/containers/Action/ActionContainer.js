@@ -4,7 +4,6 @@ import Action from 'universal/components/Action/Action';
 import injectGlobals from 'universal/styles/hepha';
 import globalStyles from 'universal/styles/theme/globalStyles';
 import {segmentEventPage} from 'universal/redux/segmentActions';
-import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 
 const updateAnalyticsPage = (dispatch, lastPage, nextPage) => {
   if (typeof document === 'undefined') return;
@@ -18,7 +17,6 @@ const updateAnalyticsPage = (dispatch, lastPage, nextPage) => {
 };
 
 @connect()
-@socketWithPresence
 export default class ActionContainer extends Component {
   static propTypes = {
     children: PropTypes.element.isRequired,
