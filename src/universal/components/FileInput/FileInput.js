@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from 'react';
-import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
 import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText';
 
 class FileInput extends Component {
