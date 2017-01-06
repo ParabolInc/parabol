@@ -6,7 +6,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import makeStep2Schema from 'universal/validation/makeStep2Schema';
 
 const fieldStyles = {
-  color: appTheme.palette.dark10d,
+  color: appTheme.palette.mid,
   fontSize: appTheme.typography.s7,
   lineHeight: appTheme.typography.s8,
   placeholderColor: appTheme.palette.mid70l

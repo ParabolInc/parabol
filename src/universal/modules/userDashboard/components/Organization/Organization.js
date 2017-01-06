@@ -17,7 +17,6 @@ import Toggle from 'universal/components/Toggle/Toggle';
 import ToggleNav from 'universal/components/ToggleNav/ToggleNav';
 import brandMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import makeDateString from 'universal/utils/makeDateString';
-import cardSection from 'universal/styles/helpers/cardSection';
 import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/EditOrgName';
 import {toggleLeaveModal, toggleRemoveModal} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
 import RemoveBillingLeaderModal from 'universal/modules/userDashboard/components/RemoveBillingLeaderModal/RemoveBillingLeaderModal';
@@ -110,7 +109,7 @@ const Organization = (props) => {
               <FontAwesome name="pencil"/>
               <span>EDIT</span>
             </div>
-            <img className={css(styles.avatarImg)} height={100} width={100} src={orgAvatar || brandMark}/>
+            <img className={css(styles.avatarImg)} height={96} width={96} src={orgAvatar || brandMark}/>
           </div>
           <div className={css(styles.orgNameAndDetails)}>
             <EditOrgName initialValues={initialValues} orgName={orgName} orgId={orgId}/>
@@ -191,47 +190,36 @@ Organization.defaultProps = {
   ]
 };
 const styleThunk = () => ({
-  newAdminLabel: {
-    color: appTheme.palette.cool,
-    cursor: 'pointer',
-    fontWeight: 700
-  },
-
-  newAdminIcon: {
-    fontSize: `${ui.iconSize2x} !important`,
-    lineHeight: 'inherit !important',
-    marginRight: '.5rem'
-  },
-
-  adminsBlock: {
-    display: 'flex',
-    flexDirection: 'column'
-  },
-
   avatarAndName: {
+    alignItems: 'flex-start',
     display: 'flex',
-    margin: '1rem 0'
+    margin: '0 0 1rem',
+    maxWidth: '40rem',
+    width: '100%'
   },
 
   avatar: {
-    height: 100,
-    width: 100
+    height: 104,
+    paddingTop: 8,
+    position: 'relative',
+    width: 96
   },
 
   avatarEditOverlay: {
     alignItems: 'center',
-    background: 'black',
-    borderRadius: '10%',
+    backgroundColor: appTheme.palette.dark,
+    borderRadius: '.5rem',
     color: 'white',
     cursor: 'pointer',
     display: 'flex',
     flexDirection: 'column',
+    fontSize: appTheme.typography.s3,
     fontWeight: 700,
-    height: 100,
+    height: 96,
     justifyContent: 'center',
     opacity: 0,
     position: 'absolute',
-    width: 100,
+    width: 96,
 
     ':hover': {
       opacity: '.75',
@@ -268,12 +256,18 @@ const styleThunk = () => ({
     color: appTheme.palette.mid,
     display: 'flex',
     flexDirection: 'column',
-    marginLeft: '1rem',
+    marginLeft: '1.5rem',
+    maxWidth: '24rem',
+    width: '100%'
   },
 
-  goBackLabel: {...goBackLabel},
+  goBackLabel: {
+    ...goBackLabel,
+    margin: '1rem 0'
+  },
+
   wrapper: {
-    width: '60%'
+    maxWidth: '40rem'
   },
 
   toggleBlock: {

@@ -42,7 +42,7 @@ const Organizations = (props) => {
 
 const styleThunk = () => ({
   wrapper: {
-    maxWidth: '45rem'
+    maxWidth: '40rem'
   }
 });
 

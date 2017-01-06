@@ -17,38 +17,50 @@ const InvoiceRow = (props) => {
     },
     styles
   } = props;
+  const invoiceAvatarStyles = css(
+    styles.invoiceAvatar,
+    isEstimate && styles.invoiceAvatarEstimate
+  );
   return (
     <Row>
-      <div className={css(styles.invoiceAvatar)}>
+      <div className={invoiceAvatarStyles}>
         <div className={css(styles.icon)}>
           <FontAwesome name="file-text" className={css(styles.fileIcon)}/>
         </div>
       </div>
       <div className={css(styles.invoiceInfo)}>
-        <div className={css(styles.nameAndTags)}>
-          <div className={css(styles.preferredName)}>
-            {makeDateString(invoiceDate, false)}
+        <div className={css(styles.infoRow)}>
+          <div className={css(styles.infoRowLeft)}>
+            <div className={css(styles.invoiceTitle)}>
+              {makeDateString(invoiceDate, false)}
+            </div>
+            {isEstimate &&
+              <UserTag colorPalette="light" label="Current Estimate"/>
+            }
           </div>
-          {isEstimate &&
-            <UserTag colorPalette="light" label="Current Estimate"/>
-          }
+          <div className={css(styles.infoRowRight)}>
+            <span className={css(styles.invoiceAmount)}>
+              ${amount.toFixed(2)}
+            </span>
+          </div>
         </div>
-        <div className={css(styles.subHeader)}>
-          See Details
+        <div className={css(styles.infoRow)}>
+          <div className={css(styles.infoRowLeft)}>
+            <div className={css(styles.subHeader)}>
+              See Details
+            </div>
+          </div>
+          <div className={css(styles.infoRowRight)}>
+            {isEstimate ?
+              <span className={css(styles.date, styles.toPay)}>
+                Your card will be charged on {makeDateString(invoiceDate, false)}
+              </span> :
+              <span className={css(styles.date, styles.paid)}>
+                Paid on {makeDateString(invoiceDate, false)}
+              </span>
+            }
+          </div>
         </div>
-      </div>
-      <div className={css(styles.amountAndDueDate)}>
-        <span className={css(styles.invoiceAmount)}>
-          ${amount.toFixed(2)}
-        </span>
-        {isEstimate ?
-          <span className={css(styles.date, styles.toPay)}>
-            Your card will be charged on {makeDateString(invoiceDate, false)}
-          </span> :
-          <span className={css(styles.date, styles.paid)}>
-            Paid on {makeDateString(invoiceDate, false)}
-          </span>
-        }
       </div>
     </Row>
   );
@@ -57,6 +69,9 @@ const InvoiceRow = (props) => {
 InvoiceRow.propTypes = {
   styles: PropTypes.object
 };
+
+const lineHeightLarge = '1.625rem';
+const lineHeightSmall = '1.125rem';
 
 const styleThunk = () => ({
   fileIcon: {
@@ -79,8 +94,13 @@ const styleThunk = () => ({
     borderRadius: '.5rem'
   },
 
+  invoiceAvatarEstimate: {
+    backgroundColor: appTheme.palette.mid
+  },
+
   invoiceInfo: {
-    paddingLeft: '1rem'
+    paddingLeft: ui.rowGutter,
+    width: '100%'
   },
 
   amountAndDueDate: {
@@ -108,11 +128,11 @@ const styleThunk = () => ({
     fontWeight: 700
   },
 
-  preferredName: {
-    color: appTheme.palette.dark,
+  invoiceTitle: {
+    color: ui.rowHeadingColor,
     display: 'inline-block',
-    fontSize: appTheme.typography.s4,
-    lineHeight: '1.625rem',
+    fontSize: ui.rowHeadingFontSize,
+    lineHeight: lineHeightLarge,
     verticalAlign: 'middle'
   },
 
@@ -121,6 +141,22 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.s2,
     fontWeight: 700,
     lineHeight: appTheme.typography.s4,
+  },
+
+  infoRow: {
+    alignItems: 'center',
+    display: 'flex',
+    width: '100%'
+  },
+
+  infoRowLeft: {
+    // Define
+  },
+
+  infoRowRight: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    textAlign: 'right',
   },
 
   infoLink: {

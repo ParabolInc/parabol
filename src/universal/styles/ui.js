@@ -93,6 +93,8 @@ const ui = {
 
   // Rows
   rowBorderColor: appTheme.palette.mid20l,
+  rowHeadingColor: appTheme.palette.dark,
+  rowHeadingFontSize: appTheme.typography.s4,
   rowGutter: '1rem',
 
   // Generic zIndex scale

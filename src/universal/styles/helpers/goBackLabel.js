@@ -12,6 +12,7 @@ const link = {
   ...inlineBlockStyle,
   color: appTheme.palette.mid,
   fontSize: appTheme.typography.s3,
+  fontWeight: 700,
   height: ui.dashSectionHeaderLineHeight,
   paddingTop: '1px',
 
@@ -27,6 +28,6 @@ const link = {
   ':focus > div': {
     textDecoration: 'underline'
   },
-}
+};
 
 export default link;
