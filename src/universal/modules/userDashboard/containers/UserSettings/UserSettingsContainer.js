@@ -94,7 +94,9 @@ export default class UserSettingsContainer extends Component {
   uploadPicture(pictureFile) {
     return cashay.mutate('createUserPicturePutUrl', {
       variables: {
-        userFilename: pictureFile.name
+        filename: pictureFile.name,
+        contentType: pictureFile.type,
+        contentLength: pictureFile.size,
       }
     })
     .then(({data, error}) => {

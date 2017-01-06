@@ -1,12 +1,13 @@
 import path from 'path';
 import shortid from 'shortid';
+import mime from 'mime-types';
+import ms from 'ms';
 import getRethink from 'server/database/rethinkDriver';
-import {GraphQLID, GraphQLString, GraphQLNonNull} from 'graphql';
+import {GraphQLID, GraphQLInt, GraphQLString, GraphQLNonNull} from 'graphql';
 import {User, UpdateUserInput} from './userSchema';
 import {AuthenticationClient} from 'auth0';
 import {auth0} from 'universal/utils/clientOptions';
 import sendEmail from 'server/email/sendEmail';
-import ms from 'ms';
 import {requireAuth, requireSU, requireSUOrSelf} from '../authorization';
 import {errorObj, handleSchemaErrors, updatedOrOriginal} from '../utils';
 import {
@@ -17,9 +18,11 @@ import {verify} from 'jsonwebtoken';
 import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
 import protocolRelativeUrl from 'server/utils/protocolRelativeUrl';
-import {s3SignPutUrl} from 'server/utils/s3';
-import {APP_CDN_USER_ASSET_SUBDIR} from 'universal/utils/constants';
-import getFileExtension from 'universal/utils/getFileExtension';
+import {s3SignPutObject} from 'server/utils/s3';
+import {
+  APP_CDN_USER_ASSET_SUBDIR,
+  APP_MAX_AVATAR_FILE_SIZE
+} from 'universal/utils/constants';
 
 const auth0Client = new AuthenticationClient({
   domain: auth0.domain,
@@ -64,12 +67,24 @@ export default {
     type: User,
     description: 'Create a PUT URL on the CDN for the currently authenticated user\'s profile picture',
     args: {
-      userFilename: {
+      filename: {
         type: new GraphQLNonNull(GraphQLString),
-        description: 'user-supplied filename, used only to infer the file extension'
+        description: 'user-supplied filename, used to infer MIME-type if not given'
+      },
+      contentType: {
+        type: GraphQLString,
+        description: 'user-supplied MIME content type'
+      },
+      contentLength: {
+        type: new GraphQLNonNull(GraphQLInt),
+        description: 'user-supplied file size'
       }
     },
-    async resolve(source, {userFilename}, {authToken}) {
+    async resolve(source, {
+        filename: userFilename,
+        contentType: userContentType,
+        contentLength: userContentLength
+      }, {authToken}) {
       const r = getRethink();
 
       // AUTH
@@ -79,9 +94,16 @@ export default {
       if (typeof process.env.CDN_BASE_URL === 'undefined') {
         throw errorObj({_error: 'CDN_BASE_URL environment variable is not defined'});
       }
-      const ext = getFileExtension(userFilename);
+      const ext = mime.extension(userContentType) || path.extname(userFilename).slice(1);
       if (ext === '') {
         throw errorObj({_error: 'userFilename has no extension'});
+      }
+      const contentType = userContentType || mime.lookup(ext);
+      if (!contentType || !contentType.startsWith('image/')) {
+        throw errorObj({_error: 'file must be an image'});
+      }
+      if (userContentLength > APP_MAX_AVATAR_FILE_SIZE) {
+        throw errorObj({_error: 'avatar image is too large'});
       }
       const user = await r.table('User').get(userId);
       if (!user) {
@@ -94,7 +116,12 @@ export default {
         APP_CDN_USER_ASSET_SUBDIR,
         `User/${userId}/picture/${shortid.generate()}.${ext}`
       );
-      user.picturePutUrl = await s3SignPutUrl(pathname, undefined, 'public-read');
+      user.picturePutUrl = await s3SignPutObject(
+        pathname,
+        userContentType,
+        userContentLength,
+        'public-read'
+      );
 
       return user;
     }

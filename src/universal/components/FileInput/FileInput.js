@@ -1,9 +1,12 @@
 import React, {Component, PropTypes} from 'react';
+import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
+import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText';
 
 class FileInput extends Component {
   static propTypes = {
     input: PropTypes.object,
-    previousValue: PropTypes.string
+    previousValue: PropTypes.string,
+    meta: PropTypes.object.isRequired,
   };
 
   onChange(e) {
@@ -12,14 +15,30 @@ class FileInput extends Component {
   }
 
   render() {
-    const {input: {value}, previousValue} = this.props;
+    const {input: {value}, previousValue, meta: {touched, error}} = this.props;
 
-    return (<input
-      key={previousValue} // see: https://github.com/erikras/redux-form/issues/769
-      type="file"
-      value={value}
-      onChange={(e) => this.onChange(e)}
-    />);
+    let errorString = error;
+    if (typeof error === 'object') {
+      errorString = Object.keys(error).map(k => error[k]).join(', ');
+    }
+
+    return (
+      <div>
+        <input
+          key={previousValue} // see: https://github.com/erikras/redux-form/issues/769
+          type="file"
+          value={value}
+          onChange={(e) => this.onChange(e)}
+        />
+        {touched && error &&
+          <FieldHelpText
+            hasErrorText
+            helpText={errorString}
+            key={`${previousValue}Error`}
+          />
+        }
+      </div>
+    );
   }
 }
 

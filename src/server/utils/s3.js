@@ -9,7 +9,8 @@ import protocolRelativeUrl from './protocolRelativeUrl';
  */
 const s3 = (typeof process.env.CDN_BASE_URL !== 'undefined') && new aws.S3({
   endpoint: protocolRelativeUrl.parse(process.env.CDN_BASE_URL).hostname,
-  s3BucketEndpoint: true
+  s3BucketEndpoint: true,
+  signatureVersion: 'v4'
 });
 
 function s3CheckInitialized() {
@@ -36,7 +37,7 @@ export function s3DeleteObject(url) {
 }
 
 export function s3SignUrl(operation, pathname, contentType,
-  acl = 'authenticated-read') {
+  contentLength = null, acl = 'authenticated-read') {
   s3CheckInitialized();
   if (operation !== 'getObject' && operation !== 'putObject') {
     throw new Error('S3 operation must be getObject or putObject');
@@ -45,7 +46,6 @@ export function s3SignUrl(operation, pathname, contentType,
   const s3Params = {
     Bucket: process.env.AWS_S3_BUCKET,
     ContentType: contentType,
-    Expires: 60,
     Key: keyifyPath(pathname),
   };
 
@@ -53,15 +53,22 @@ export function s3SignUrl(operation, pathname, contentType,
     s3Params.ACL = acl;
   }
 
-  // getSignedUrl does not implement .promise, we we have to do it ourselves:
-  return promisify(s3.getSignedUrl, s3)(operation, s3Params);
+  const req = s3.makeRequest(operation, s3Params);
+  if (contentLength !== null &&
+    typeof contentLength === 'number' && contentLength >= 0) {
+    req.on('build', () => {
+      // see: https://github.com/aws/aws-sdk-js/issues/502
+      req.httpRequest.path += `?Content-Length=${contentLength}`;
+    });
+  }
+  return promisify(req.presign, req)(60);
 }
 
-export const s3SignGetUrl = (pathname, contentType, acl) =>
-  s3SignUrl('getObject', pathname, contentType, acl);
+export const s3SignGetObject = (pathname, contentType, contentLength, acl) =>
+  s3SignUrl('getObject', pathname, contentType, contentLength, acl);
 
-export const s3SignPutUrl = (pathname, contentType, acl) =>
-  s3SignUrl('putObject', pathname, contentType, acl);
+export const s3SignPutObject = (pathname, contentType, contentLength, acl) =>
+  s3SignUrl('putObject', pathname, contentType, contentLength, acl);
 
 /*
  * Checks to see if a url points to an asset on S3.
