@@ -1,8 +1,7 @@
 version: 2
 executorType: docker
-  containerInfo:
-    - image: node:6.9.4
-    - image: rethinkdb:2.3.5
+containerInfo:
+  - image: node:latest
 stages:
   build:
     workDir: /home/ubuntu/action
@@ -11,29 +10,7 @@ stages:
       - type: add-ssh-keys
       - type: shell
         name: Install Dependencies
-        shell: /bin/bash
-        command: |
-          sudo apt-get update
-          sudo apt-get update # so we can build bcrypt bindings
-          npm i -g yarn
-          yarn
+        command: npm install
       - type: shell
-        name: Database Migration
-        command: |
-          npm run db:migrate
-      - type: shell
-        name: Build Server
-        command: |
-          npm run build:server
-      - type: shell
-        name: Build Client
-        command: |
-          npm run build:client-min
-      - type: shell
-        name: Lint
-        command: |
-          npm run lint
-      - type: shell
-        name: Unit Test
-        command: |
-          npm run test
+        name: NPM Test
+        command: npm test
