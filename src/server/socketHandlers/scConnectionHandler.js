@@ -54,7 +54,7 @@ export default function scConnectionHandler(exchange) {
       authToken.tms = tms;
       socket.setAuthToken(authToken);
     }
-    // Publish current app version to notify client of possible change
-    socket.exchange.publish('version', APP_VERSION);
+    // Emit current app version to notify client of possible change
+    socket.emit('version', APP_VERSION);
   };
 }

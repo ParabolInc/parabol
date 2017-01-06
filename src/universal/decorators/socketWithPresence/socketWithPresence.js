@@ -10,6 +10,8 @@ import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
 import parseChannel from 'universal/utils/parseChannel';
 import {showInfo, showWarning} from 'universal/modules/notifications/ducks/notifications';
 import {withRouter} from 'react-router';
+import {APP_VERSION_KEY} from 'universal/utils/constants';
+import signout from 'universal/containers/Signout/signout';
 
 const getTeamName = (teamId) => {
   const cashayState = cashay.store.getState().cashay;
@@ -45,6 +47,7 @@ export default ComposedComponent => {
       this.subscribeToPresence({}, this.props);
       this.watchForKickout();
       this.watchForJoin();
+      this.listenForVersion();
     }
     componentWillReceiveProps(nextProps) {
       this.subscribeToPresence(this.props, nextProps);
@@ -108,6 +111,20 @@ export default ComposedComponent => {
           this.watchForJoin(teamId);
         }
       }
+    }
+    listenForVersion() {
+      const {dispatch, router} = this.props;
+      const socket = socketCluster.connect();
+      socket.on('version', (versionOnServer) => {
+        const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY) || '0.0.0';
+        if (versionOnServer !== versionInStorage) {
+          signout(dispatch, router);
+          dispatch(showWarning({
+            title: 'So long!',
+            message: `Logging you out because a new version of Action is available`
+          }));
+        }
+      });
     }
 
     render() {

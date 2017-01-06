@@ -4,11 +4,6 @@ import Action from 'universal/components/Action/Action';
 import injectGlobals from 'universal/styles/hepha';
 import globalStyles from 'universal/styles/theme/globalStyles';
 import {segmentEventPage} from 'universal/redux/segmentActions';
-import socketCluster from 'socketcluster-client';
-import {showWarning} from 'universal/modules/notifications/ducks/notifications';
-import {APP_VERSION_KEY} from 'universal/utils/constants';
-import signout from 'universal/containers/Signout/signout';
-import {withRouter} from 'react-router';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 
 const updateAnalyticsPage = (dispatch, lastPage, nextPage) => {
@@ -23,7 +18,6 @@ const updateAnalyticsPage = (dispatch, lastPage, nextPage) => {
 };
 
 @connect()
-@withRouter
 @socketWithPresence
 export default class ActionContainer extends Component {
   static propTypes = {
@@ -35,21 +29,9 @@ export default class ActionContainer extends Component {
   };
 
   componentWillMount() {
-    const {dispatch, router, location: {pathname: nextPage}} = this.props;
+    const {dispatch, location: {pathname: nextPage}} = this.props;
     updateAnalyticsPage(dispatch, '', nextPage);
     injectGlobals(globalStyles);
-    const socket = socketCluster.connect();
-    const versionChannel = socket.subscribe('version');
-    versionChannel.watch((versionOnServer) => {
-      const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY) || '0.0.0';
-      if (versionOnServer !== versionInStorage) {
-        signout(dispatch, router);
-        dispatch(showWarning({
-          title: 'So long!',
-          message: `Logging you out because a new version of Action is available`
-        }));
-      }
-    });
   }
 
   componentDidUpdate(prevProps) {
