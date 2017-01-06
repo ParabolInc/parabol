@@ -1,9 +1,11 @@
-const TOGGLE_REMOVE_BILLING_LEADER = 'teamSettings/TOGGLE_REMOVE_BILLING_LEADER';
-const TOGGLE_LEAVE_ORG = 'teamSettings/TOGGLE_LEAVE_ORG';
+const TOGGLE_REMOVE_BILLING_LEADER = 'orgSettings/TOGGLE_REMOVE_BILLING_LEADER';
+const TOGGLE_LEAVE_ORG = 'orgSettings/TOGGLE_LEAVE_ORG';
+const TOGGLE_PAYMENT_MODAL = 'orgSettings/TOGGLE_PAYMENT_MODAL';
 
 const initialState = {
   removeBillingLeaderModal: false,
   leaveOrgModal: false,
+  paymentModal: true,
   userId: undefined,
   preferredName: undefined,
 };
@@ -26,6 +28,11 @@ export default function reducer(state = initialState, action = {}) {
       leaveOrgModal: !state.leaveOrgModal,
       userId
     };
+  } else if (type === TOGGLE_PAYMENT_MODAL) {
+    return {
+      ...state,
+      paymentModal: !state.paymentModal,
+    }
   }
 
   return state;
@@ -44,4 +51,8 @@ export const toggleLeaveModal = (userId) => ({
   payload: {
     userId
   }
+});
+
+export const togglePaymentModal = () => ({
+  type: TOGGLE_PAYMENT_MODAL
 });

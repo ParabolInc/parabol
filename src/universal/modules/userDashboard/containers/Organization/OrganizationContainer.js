@@ -44,6 +44,7 @@ const mapStateToProps = (state, props) => {
     myUserId: state.auth.obj.sub,
     org,
     leaveOrgModal: state.orgSettings.leaveOrgModal,
+    paymentModal: state.orgSettings.paymentModal,
     removeBillingLeaderModal: state.orgSettings.removeBillingLeaderModal,
     modalUserId: state.orgSettings.userId,
     modalPreferredName: state.orgSettings.preferredName,
@@ -56,6 +57,7 @@ const OrganizationContainer = (props) => {
     removeBillingLeaderModal,
     modalUserId,
     modalPreferredName,
+    paymentModal,
     billingLeaders,
     dispatch,
     myUserId,
@@ -74,6 +76,7 @@ const OrganizationContainer = (props) => {
       removeBillingLeaderModal={removeBillingLeaderModal}
       modalUserId={modalUserId}
       modalPreferredName={modalPreferredName}
+      paymentModal={paymentModal}
     />
   );
 };

@@ -7,6 +7,7 @@ import ui from 'universal/styles/ui';
 const DashModal = (props) => {
   const {
     children,
+    inputModal,
     onBackdropClick,
     position,
     showsOver,
@@ -17,9 +18,18 @@ const DashModal = (props) => {
     position && styles[position],
     showsOver && styles[showsOver],
   );
+  const modalStyles = css(
+    styles.modal,
+    inputModal && styles.inputModal
+  );
+  const onClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onBackdropClick();
+    }
+  };
   return (
-    <div className={backdropStyles} onClick={onBackdropClick}>
-      <div className={css(styles.modal)}>
+    <div className={backdropStyles} onClick={onClick}>
+      <div className={modalStyles}>
         {children}
       </div>
     </div>
@@ -78,13 +88,20 @@ const styleThunk = () => ({
     position: 'fixed'
   },
 
+  inputModal: {
+    background: ui.dashBackgroundColor,
+    padding: '1rem',
+    width: '20rem'
+  },
+
   modal: {
     background: '#fff',
     boxShadow: `0 0 0 .25rem ${appTheme.palette.mid30a}`,
     borderRadius: '.5rem',
     padding: '2rem',
     width: '30rem'
-  }
+  },
+
 });
 
 export default withStyles(styleThunk)(DashModal);

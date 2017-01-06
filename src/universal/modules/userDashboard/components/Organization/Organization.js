@@ -17,9 +17,10 @@ import brandMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import makeDateString from 'universal/utils/makeDateString';
 import cardSection from 'universal/styles/helpers/cardSection';
 import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/EditOrgName';
-import {toggleLeaveModal, toggleRemoveModal} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
+import {toggleLeaveModal, toggleRemoveModal, togglePaymentModal} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
 import RemoveBillingLeaderModal from 'universal/modules/userDashboard/components/RemoveBillingLeaderModal/RemoveBillingLeaderModal';
 import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal';
+import CreditCardModal from 'universal/modules/userDashboard/components/CreditCardModal/CreditCardModal';
 
 const inlineBlockStyle = {
   display: 'inline-block',
@@ -41,11 +42,19 @@ const Organization = (props) => {
     billingLeaders,
     dispatch,
     myUserId,
+    paymentModal,
     styles,
     org
   } = props;
+  console.log('payyment modal', paymentModal)
   const {id: orgId, createdAt, name: orgName, picture: orgAvatar, activeUserCount, inactiveUserCount, isTrial} = org;
   initialValues.orgName = orgName;
+
+  const openPaymentModal = () => {
+    console.log('openPaymentModal')
+    dispatch(togglePaymentModal());
+  };
+
   const billingLeaderRowActions = (billingLeader) => {
     const {id, preferredName} = billingLeader;
     const openRemoveModal = () => {
@@ -145,6 +154,12 @@ const Organization = (props) => {
           </div>
           <div className={css(styles.infoAndUpdate)}>
             <div className={css(styles.creditCardInfo)}>
+              {paymentModal &&
+              <CreditCardModal
+                onBackdropClick={openPaymentModal}
+                orgId={orgId}
+              />
+              }
               <FontAwesome name="credit-card"/>
               <span className={css(styles.creditCardProvider)}>Visa</span>
               <span className={css(styles.creditCardNumber)}>•••• •••• •••• {ccLast4Digits}</span>
@@ -152,6 +167,7 @@ const Organization = (props) => {
             <Button
               colorPalette="cool"
               label="Update"
+              onClick={openPaymentModal}
               size="small"
             />
           </div>
