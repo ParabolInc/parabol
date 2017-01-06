@@ -23,6 +23,7 @@ import {
   APP_CDN_USER_ASSET_SUBDIR,
   APP_MAX_AVATAR_FILE_SIZE
 } from 'universal/utils/constants';
+import {GraphQLURLType} from '../types';
 
 const auth0Client = new AuthenticationClient({
   domain: auth0.domain,
@@ -64,7 +65,7 @@ export default {
     }
   },
   createUserPicturePutUrl: {
-    type: User,
+    type: GraphQLURLType,
     description: 'Create a PUT URL on the CDN for the currently authenticated user\'s profile picture',
     args: {
       filename: {
@@ -116,14 +117,12 @@ export default {
         APP_CDN_USER_ASSET_SUBDIR,
         `User/${userId}/picture/${shortid.generate()}.${ext}`
       );
-      user.picturePutUrl = await s3SignPutObject(
+      return await s3SignPutObject(
         pathname,
         userContentType,
         userContentLength,
         'public-read'
       );
-
-      return user;
     }
   },
   updateUserWithAuthToken: {

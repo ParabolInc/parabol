@@ -103,7 +103,7 @@ export default class UserSettingsContainer extends Component {
       if (error) {
         throw new Error(error._error); // eslint-disable-line no-underscore-dangle
       }
-      return data.createUserPicturePutUrl.picturePutUrl;
+      return data.createUserPicturePutUrl;
     })
     .then(picturePutUrl => {
       return fetch(picturePutUrl, {
