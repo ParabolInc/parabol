@@ -6,13 +6,19 @@ containerInfo:
 stages:
   build:
     workDir: /home/ubuntu/action
+    environment:
+      - DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
+      - DEVOPS_WORKDIR: "/home/ubuntu/action-devops"
     steps:
       - type: add-ssh-keys
         fingerprints:
           - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
+
       - type: checkout
+
       - type: cache-restore
         key: action-{{ checksum "yarn.lock" }}
+
       - type: shell
         name: Install dependencies
         command: |
@@ -20,22 +26,41 @@ stages:
           apt-get -yq install build-essential g++ && \
           npm i -g yarn && \
           yarn
+
       - type: cache-save
         key: action-{{ checksum "yarn.lock" }}
         paths:
           - /home/ubuntu/action/node_modules
+
       - type: shell
         name: Database migration
         command: npm run db:migrate
+
       - type: shell
         name: NPM lint
         command: npm run lint
+
       - type: shell
         name: NPM run test
         command: npm test
+
+      - type: shell
+        name: Pre-build DevOps checkout
+        command: |
+          if [ "${CIRCLE_BRANCH}" == "master" ]; then
+            export DEPLOY_ENV="production";
+          elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+            export DEPLOY_ENV="staging";
+          else
+            export DEPLOY_ENV="development";
+          fi;
+          git clone $DEVOPS_REPO $DEVOPS_WORKDIR &&
+          cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
+
       - type: shell
         name: Build server
         command: npm run build:server
+
       - type: shell
         name: Build client
         command: npm run build:client
