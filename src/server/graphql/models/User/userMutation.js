@@ -68,10 +68,6 @@ export default {
     type: GraphQLURLType,
     description: 'Create a PUT URL on the CDN for the currently authenticated user\'s profile picture',
     args: {
-      filename: {
-        type: new GraphQLNonNull(GraphQLString),
-        description: 'user-supplied filename, used to infer MIME-type if not given'
-      },
       contentType: {
         type: GraphQLString,
         description: 'user-supplied MIME content type'
@@ -81,13 +77,7 @@ export default {
         description: 'user-supplied file size'
       }
     },
-    async resolve(source, {
-        filename: userFilename,
-        contentType: userContentType,
-        contentLength: userContentLength
-      }, {authToken}) {
-      const r = getRethink();
-
+    async resolve(source, {contentType, contentLength}, {authToken}) {
       // AUTH
       const userId = requireAuth(authToken);
 
@@ -95,20 +85,15 @@ export default {
       if (typeof process.env.CDN_BASE_URL === 'undefined') {
         throw errorObj({_error: 'CDN_BASE_URL environment variable is not defined'});
       }
-      const ext = mime.extension(userContentType) || path.extname(userFilename).slice(1);
-      if (ext === '') {
-        throw errorObj({_error: 'userFilename has no extension'});
-      }
-      const contentType = userContentType || mime.lookup(ext);
       if (!contentType || !contentType.startsWith('image/')) {
         throw errorObj({_error: 'file must be an image'});
       }
-      if (userContentLength > APP_MAX_AVATAR_FILE_SIZE) {
-        throw errorObj({_error: 'avatar image is too large'});
+      const ext = mime.extension(contentType);
+      if (!ext) {
+        throw errorObj({_error: `unable to determine extension for ${contentType}`});
       }
-      const user = await r.table('User').get(userId);
-      if (!user) {
-        throw errorObj({_error: 'User ID not found'});
+      if (contentLength > APP_MAX_AVATAR_FILE_SIZE) {
+        throw errorObj({_error: 'avatar image is too large'});
       }
 
       // RESOLUTION
@@ -119,8 +104,8 @@ export default {
       );
       return await s3SignPutObject(
         pathname,
-        userContentType,
-        userContentLength,
+        contentType,
+        contentLength,
         'public-read'
       );
     }

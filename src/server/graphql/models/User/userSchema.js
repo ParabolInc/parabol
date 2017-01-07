@@ -138,8 +138,7 @@ const profileInputThunk = () => ({
   id: {type: GraphQLID, description: 'The unique userId'},
   picture: {
     type: GraphQLURLType,
-    description: `A link to the user's profile image. If the previous image was
-      on the CDN, the server will attempt to delete it.`
+    description: 'A link to the user\'s profile image.'
   },
   preferredName: {
     type: GraphQLString,

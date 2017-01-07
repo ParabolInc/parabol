@@ -69,11 +69,11 @@ export default class UserSettingsContainer extends Component {
       this.uploadPicture(pictureFile)
       .then(pictureUrl => this.updateProfile(preferredName, pictureUrl))
       .then(this.onSubmitComplete())
-      .catch(console.warn.bind(console));
+      .catch((e) => Raven.captureException(e)); // eslint-disable-line no-undef
     } else if (preferredName !== user.preferredName) {
       this.updateProfile(preferredName)
       .then(this.onSubmitComplete())
-      .catch(console.warn.bind(console));
+      .catch((e) => Raven.captureException(e)); // eslint-disable-line no-undef
     }
 
     return; // no work to do
@@ -94,7 +94,6 @@ export default class UserSettingsContainer extends Component {
   uploadPicture(pictureFile) {
     return cashay.mutate('createUserPicturePutUrl', {
       variables: {
-        filename: pictureFile.name,
         contentType: pictureFile.type,
         contentLength: pictureFile.size,
       }
