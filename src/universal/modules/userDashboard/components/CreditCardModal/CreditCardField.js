@@ -12,6 +12,7 @@ const CreditCardField = (props) => {
     iconName,
     input,
     label,
+    maxLength,
     meta: {touched, error},
     placeholder,
     styles,
@@ -35,6 +36,12 @@ const CreditCardField = (props) => {
     width: '1rem'
   };
 
+  const requireNumeric = (e) => {
+    if (isNaN(parseInt(e.key))) {
+      e.preventDefault();
+    }
+  };
+
   return (
     <div className={css(styles.iconAndInput)}>
       <FontAwesome
@@ -45,7 +52,9 @@ const CreditCardField = (props) => {
         {...input}
         autoFocus={autoFocus}
         className={inputStyle}
+        maxLength={maxLength}
         placeholder={placeholder}
+        onKeyPress={requireNumeric}
         type="text"
       />
     </div>

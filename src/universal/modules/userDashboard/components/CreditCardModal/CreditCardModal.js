@@ -7,48 +7,122 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import {reduxForm, Field} from 'redux-form';
+import {reduxForm, Field, SubmissionError} from 'redux-form';
 import CreditCardField from './CreditCardField';
 import FontAwesome from 'react-fontawesome';
+import withAsync from 'react-async-hoc';
+import {stripeKey} from 'universal/utils/clientOptions';
+
+const lockIconStyles = {
+  lineHeight: appTheme.typography.s5,
+  marginRight: '.2em'
+};
+const cardIconStyles = {
+  display: 'block',
+  fontSize: ui.iconSize2x,
+  lineHeight: '3rem'
+};
+
+const stripeFieldLookup = {
+  exp_year: {
+    name: 'expiry',
+    message: 'The expiration year is invalid'
+  },
+  exp_month: {
+    name: 'expiry',
+    message: 'The expiration month is invalid'
+  },
+  number: {
+    name: 'creditCardNumber',
+    message: 'The credit card number is invalid'
+  },
+  cvc: {
+    name: 'cvc',
+    message: 'The cvc is invalid'
+  }
+};
+
+const normalizeExpiry = (value = '', previousValue = '') => {
+  const month = value.substr(0, 2);
+  // left pad
+  if (month.length === 1 && month > 1) {
+    return `0${month}/`;
+  }
+  // if backspacing or typing a month > 12
+  if ((previousValue.length === 3 && value.length === 2) || parseInt(month) > 12) {
+    return value[0];
+  }
+  const numValue = value.replace(/[^\d]/g, '');
+  if (numValue.length >= 2) {
+    const prefix = `${numValue.substr(0, 2)}/`;
+    const year = numValue.substr(2);
+    const currentYear = String((new Date()).getFullYear()).substr(2);
+    // only 201x+
+    if (year.length === 0 || year.length === 1 && year < currentYear[0]) {
+      return prefix;
+    }
+    // only 2017+
+    if (year.length > 0 && year < currentYear) {
+      return `${prefix}${year[0]}`;
+    }
+    // final value
+    return `${prefix}${numValue.substr(2)}`;
+  }
+  // correct month (october+)
+  return value;
+};
+
+const normalizeNumeric = (value) => value.replace(/[^\d]/g, '');
 
 const CreditCardModal = (props) => {
-  const {handleSubmit, onBackdropClick, orgId, preferredName, styles, userId} = props;
-  const handleClick = () => {
-    const variables = {orgId, userId};
-    cashay.mutate('removeBillingLeader', {variables});
+  const {createToken, handleSubmit, onBackdropClick, orgId, styles} = props;
+  const updateStripeBilling = async(submittedData) => {
+    const {creditCardNumber: number, expiry, cvc} = submittedData;
+    const [exp_month, exp_year] = expiry.split('/');
+    const {status, response} = await createToken({
+      number,
+      exp_month,
+      exp_year,
+      cvc
+    });
+    if (status !== 200) {
+      throw new SubmissionError({_error: status});
+    }
+    const {error, id} = response;
+    if (error) {
+      const field = stripeFieldLookup[error.param];
+      if (!field) {
+        throw new SubmissionError({_error: error.message});
+      }
+      throw new SubmissionError({_error: 'Payment error', [field.name]: field.message})
+    }
+    const variables = {stripeToken: id};
+    cashay.mutate('updateStripeBilling', {variables});
   };
-  const updateStripeBilling = () => {
-  };
-  const lockIconStyles = {
-    lineHeight: appTheme.typography.s5,
-    marginRight: '.2em'
-  };
-  const cardIconStyles = {
-    display: 'block',
-    fontSize: ui.iconSize2x,
-    lineHeight: '3rem'
-  };
+
   return (
     <DashModal onBackdropClick={onBackdropClick} inputModal>
       <div className={css(styles.modalBody)}>
         <div className={css(styles.avatarPlaceholder)}>
           <div className={css(styles.avatarPlaceholderInner)}>
-            <FontAwesome name="credit-card" style={cardIconStyles} />
+            <FontAwesome name="credit-card" style={cardIconStyles}/>
           </div>
         </div>
         <Type align="center" colorPalette="mid" lineHeight="1.875rem" marginBottom=".25rem" scale="s6">
           Update Credit Card
         </Type>
         <Type align="center" colorPalette="mid" lineHeight={appTheme.typography.s5} scale="s3">
-          <FontAwesome name="lock" style={lockIconStyles} /> Secured by <b>Stripe</b>
+          <FontAwesome name="lock" style={lockIconStyles}/> Secured by <b>Stripe</b>
         </Type>
-        <form className={css(styles.cardInputs)}>
+        <form className={css(styles.cardInputs)} onSubmit={handleSubmit(updateStripeBilling)}>
           <div className={css(styles.creditCardNumber)}>
             <Field
               autoFocus
               component={CreditCardField}
               iconName="credit-card"
+              maxLength="20"
               name="creditCardNumber"
+              normalize={normalizeNumeric}
               placeholder="Card number"
               shortcutHint="Credit card number"
               topField
@@ -59,16 +133,20 @@ const CreditCardModal = (props) => {
               <Field
                 component={CreditCardField}
                 iconName="calendar"
+                maxLength="5"
                 name="expiry"
                 placeholder="MM/YY"
                 shortcutHint="Expiration date"
+                normalize={normalizeExpiry}
               />
             </div>
             <div>
               <Field
                 component={CreditCardField}
                 iconName="lock"
+                maxLength="4"
                 name="cvc"
+                normalize={normalizeNumeric}
                 placeholder="CVC"
                 shortcutHint="3-digit code on the back of your card"
               />
@@ -92,7 +170,6 @@ const CreditCardModal = (props) => {
               label="Update"
               size="small"
               type="submit"
-              onClick={updateStripeBilling}
             />
           </div>
         </div>
@@ -182,8 +259,21 @@ const styleThunk = () => ({
   }
 });
 
+const stripeCb = () => {
+  const stripe = window.Stripe;
+  stripe.setPublishableKey(stripeKey);
+  return {
+    createToken: (fields) => new Promise((resolve) => {
+      stripe.card.createToken(fields, (status, response) => {
+        resolve({status, response});
+      })
+    })
+  };
+};
 export default reduxForm({form: 'creditCardInfo'})(
-  withStyles(styleThunk)(
-    CreditCardModal
+  withAsync({'https://js.stripe.com/v2/': stripeCb})(
+    withStyles(styleThunk)(
+      CreditCardModal
+    )
   )
 );

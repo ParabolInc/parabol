@@ -109,6 +109,7 @@
     "oy-vey": "^1.0.0-alpha",
     "raven": "^0.12.1",
     "react": "15.4.0",
+    "react-async-hoc": "^0.1.0",
     "react-copy-to-clipboard": "^4.2.3",
     "react-dnd": "^2.1.4",
     "react-dnd-html5-backend": "^2.1.2",

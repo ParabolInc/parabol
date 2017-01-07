@@ -22,3 +22,5 @@ export const head = {
     {property: 'og:creator', content: '@jrhusney'},
   ]
 };
+
+export const stripeKey = process.env.STRIPE_PUBLISHABLE_KEY;
