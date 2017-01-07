@@ -1,7 +1,8 @@
 version: 2
 executorType: docker
 containerInfo:
-  - image: node:latest
+  - image: node:6.9.4
+  - image: rethinkdb:2.3.5
 stages:
   build:
     workDir: /home/ubuntu/action
@@ -10,7 +11,11 @@ stages:
       - type: add-ssh-keys
       - type: shell
         name: Install Dependencies
-        command: npm install
+        command: |
+          sudo apt-get update
+          sudo apt-get install build-essential g++
+          sudo npm i -g yarn
+          yarn
       - type: shell
         name: NPM Test
         command: npm test
