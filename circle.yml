@@ -9,6 +9,8 @@ stages:
     steps:
       - type: checkout
       - type: add-ssh-keys
+      - type: cache-restore
+        key: action-{{ checksum "yarn.lock" }}
       - type: shell
         name: Install dependencies
         command: |
@@ -16,6 +18,10 @@ stages:
           apt-get -yq install build-essential g++ && \
           npm i -g yarn && \
           yarn
+      - type: cache-save
+        key: action-{{ checksum "yarn.lock" }}
+        paths:
+          - /home/ubuntu/action/node_modules
       - type: shell
         name: Database migration
         command: npm run db:migrate
