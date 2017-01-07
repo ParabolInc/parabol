@@ -13,7 +13,7 @@ stages:
         name: Install Dependencies
         command: |
           apt-get update && \
-          apt-get install build-essential g++ && \
+          apt-get -yq install build-essential g++ && \
           npm i -g yarn && \
           yarn
       - type: shell
