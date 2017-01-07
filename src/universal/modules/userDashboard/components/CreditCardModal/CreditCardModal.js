@@ -12,6 +12,7 @@ import CreditCardField from './CreditCardField';
 import FontAwesome from 'react-fontawesome';
 import withAsync from 'react-async-hoc';
 import {stripeKey} from 'universal/utils/clientOptions';
+import makeCreditCardSchema from 'universal/validation/makeCreditCardSchema';
 
 const lockIconStyles = {
   lineHeight: appTheme.typography.s5,
@@ -74,20 +75,25 @@ const normalizeExpiry = (value = '', previousValue = '') => {
 
 const normalizeNumeric = (value) => value.replace(/[^\d]/g, '');
 
+const validate = (values) => {
+  const schema = makeCreditCardSchema();
+  return schema(values).errors;
+};
+
 const CreditCardModal = (props) => {
   const {createToken, handleSubmit, onBackdropClick, orgId, styles} = props;
-  const updateStripeBilling = async(submittedData) => {
+  const updateStripeBilling = async (submittedData) => {
     const {creditCardNumber: number, expiry, cvc} = submittedData;
     const [exp_month, exp_year] = expiry.split('/');
-    const {status, response} = await createToken({
+    const response = await createToken({
       number,
       exp_month,
       exp_year,
       cvc
     });
-    if (status !== 200) {
-      throw new SubmissionError({_error: status});
-    }
+    // if (status !== 200) {
+    //   throw new SubmissionError({_error: status});
+    // }
     const {error, id} = response;
     if (error) {
       const field = stripeFieldLookup[error.param];
@@ -97,6 +103,7 @@ const CreditCardModal = (props) => {
       throw new SubmissionError({_error: 'Payment error', [field.name]: field.message})
     }
     const variables = {stripeToken: id};
+    console.log('vars', variables)
     cashay.mutate('updateStripeBilling', {variables});
   };
 
@@ -170,6 +177,7 @@ const CreditCardModal = (props) => {
               label="Update"
               size="small"
               type="submit"
+              onClick={handleSubmit(updateStripeBilling)}
             />
           </div>
         </div>
@@ -261,16 +269,17 @@ const styleThunk = () => ({
 
 const stripeCb = () => {
   const stripe = window.Stripe;
+  console.log('set key', stripeKey)
   stripe.setPublishableKey(stripeKey);
   return {
     createToken: (fields) => new Promise((resolve) => {
       stripe.card.createToken(fields, (status, response) => {
-        resolve({status, response});
+        resolve(response);
       })
     })
   };
 };
-export default reduxForm({form: 'creditCardInfo'})(
+export default reduxForm({form: 'creditCardInfo'}, validate)(
   withAsync({'https://js.stripe.com/v2/': stripeCb})(
     withStyles(styleThunk)(
       CreditCardModal
