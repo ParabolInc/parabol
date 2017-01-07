@@ -7,8 +7,10 @@ stages:
   build:
     workDir: /home/ubuntu/action
     steps:
-      - type: checkout
       - type: add-ssh-keys
+        fingerprints:
+          - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
+      - type: checkout
       - type: cache-restore
         key: action-{{ checksum "yarn.lock" }}
       - type: shell
