@@ -54,6 +54,9 @@ stages:
           else
             export DEPLOY_ENV="development";
           fi;
+          echo $DEVOPS_REPO;
+          ls ~/.ssh;
+          echo "narf";
           git clone $DEVOPS_REPO $DEVOPS_WORKDIR &&
           cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
 
