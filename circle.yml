@@ -10,7 +10,7 @@ stages:
       - type: checkout
       - type: add-ssh-keys
       - type: shell
-        name: Install Dependencies
+        name: Install dependencies
         command: |
           apt-get update && \
           apt-get -yq install build-essential g++ && \
@@ -20,5 +20,18 @@ stages:
         name: Database migration
         command: npm run db:migrate
       - type: shell
-        name: NPM Test
+        name: NPM lint
+        command: npm run lint
+      - type: shell
+        name: NPM run test
         command: npm test
+      - type: shell
+        name: Build server
+        command: npm run build:server
+      - type: shell
+        name: Build client
+        command: npm run build:client
+
+      - type: artifacts-store
+        path: /home/ubuntu/action/build
+        destination: build
