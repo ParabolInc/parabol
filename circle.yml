@@ -12,10 +12,10 @@ stages:
       - type: shell
         name: Install Dependencies
         command: |
-          apt-get update
-#          sudo apt-get install build-essential g++
-#          sudo npm i -g yarn
-#          yarn
+          apt-get update && \
+          apt-get install build-essential g++ && \
+          npm i -g yarn && \
+          yarn
       - type: shell
         name: NPM Test
         command: npm test
