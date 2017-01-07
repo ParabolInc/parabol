@@ -11,7 +11,8 @@ stages:
       - type: add-ssh-keys
       - type: shell
         name: Install Dependencies
-        command: sudo apt-get update
+        command: |
+          apt-get update
 #          sudo apt-get install build-essential g++
 #          sudo npm i -g yarn
 #          yarn
