@@ -7,6 +7,7 @@ stages:
   build:
     workDir: /home/ubuntu/action
     environment:
+      - DEVOPS_GIT_SSH_COMMAND: "ssh -i ~/.ssh/id_rsa_53a83735c37e54f519f68ea1e07852da"
       - DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       - DEVOPS_WORKDIR: "/home/ubuntu/action-devops"
     steps:
@@ -54,10 +55,8 @@ stages:
           else
             export DEPLOY_ENV="development";
           fi;
-          echo $DEVOPS_REPO;
-          ls ~/.ssh;
-          echo "narf";
-          git clone $DEVOPS_REPO $DEVOPS_WORKDIR &&
+          GIT_SSH_COMMAND=$DEVOPS_GIT_SSH_COMMAND \
+            git clone $DEVOPS_REPO $DEVOPS_WORKDIR &&
           cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
 
       - type: shell
