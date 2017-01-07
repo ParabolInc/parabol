@@ -11,11 +11,10 @@ stages:
       - type: add-ssh-keys
       - type: shell
         name: Install Dependencies
-        command: |
-          sudo apt-get update
-          sudo apt-get install build-essential g++
-          sudo npm i -g yarn
-          yarn
+        command: sudo apt-get update
+#          sudo apt-get install build-essential g++
+#          sudo npm i -g yarn
+#          yarn
       - type: shell
         name: NPM Test
         command: npm test
