@@ -17,5 +17,8 @@ stages:
           npm i -g yarn && \
           yarn
       - type: shell
+        name: Database migration
+        command: npm run db:migrate
+      - type: shell
         name: NPM Test
         command: npm test
