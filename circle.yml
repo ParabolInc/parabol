@@ -56,7 +56,7 @@ stages:
       - type: shell
         name: Pre-build DevOps checkout
         command: |
-          if [ "${CIRCLE_BRANCH}" == "master" ]; then
+          if [ "${CIRCLE_BRANCH}" == "production" ]; then
             export DEPLOY_ENV="production";
           elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
             export DEPLOY_ENV="staging";
@@ -73,13 +73,18 @@ stages:
       - type: deploy
         name: Possible deployment
         command: |
-          if [ "${CIRCLE_BRANCH}" == "master" ]; then
+          if [ "${CIRCLE_BRANCH}" == "production" ]; then
             export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION}";
           elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
             export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}";
           fi;
           if [ -n "${GITHUB_REMOTE}" ]; then
             npm run build:deploy &&
+            git add build &&
+            export ACTION_VERSION=\
+              $([[ $(grep version package.json) =~ (([0-9]+\.?){3}) ]] && \
+                echo ${BASH_REMATCH[1]}) ;
+            git add build && git commit -m "build $ACTION_VERSION"
             git remote add dokku $GITHUB_REMOTE &&
             ssh -o StrictHostKeyChecking=no \
               $(echo $GITHUB_REMOTE | cut -f1 -d:) -T > /dev/null &&
