@@ -2,7 +2,6 @@
 .env
 .idea/
 .happypack/
-build/
 node_modules/
 npm-debug.log
 rethinkdb_data/
