@@ -57,7 +57,7 @@ stages:
           fi;
           ls ~/.ssh;
           ls -l ~/.ssh/id_rsa_53a83735c37e54f519f68ea1e07852da;
-          ls -l $DEVOPS_SSH_KEY;
+          ls -l ${DEVOPS_SSH_KEY};
           git clone "ext::ssh -i $DEVOPS_SSH_KEY git@github.com %S $DEVOPS_GITHUB_REPO" &&
           cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
 
