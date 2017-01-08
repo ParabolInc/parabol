@@ -87,8 +87,8 @@ stages:
             npm run build:server && npm run build:client-min &&
             git remote add dokku $GITHUB_REMOTE &&
             ssh -o StrictHostKeyChecking=no \
-              $(echo $GITHUB_REMOTE | cut -f1 -d:) -T &&
-            git push dokku $CIRCLE_BRANCH:master
+              $(echo $GITHUB_REMOTE | cut -f1 -d:) -T > /dev/null &&
+            git push -f dokku $CIRCLE_BRANCH:master
           fi
 
       - type: artifacts-store
