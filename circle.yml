@@ -64,7 +64,9 @@ stages:
             export DEPLOY_ENV="development";
           fi;
           git clone $DEVOPS_REPO $DEVOPS_WORKDIR &&
-          cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
+          cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env ;
+          grep AWS_ACCESS_KEY_ID .env ;
+          printenv
 
       - type: shell
         name: Build server
