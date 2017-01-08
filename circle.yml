@@ -7,6 +7,7 @@ stages:
   build:
     workDir: /home/ubuntu/action
     environment:
+      - DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       - DEVOPS_GITHUB_REPO: "ParabolInc/action-devops.git"
       - DEVOPS_SSH_KEY: "/root/.ssh/id_rsa_53a83735c37e54f519f68ea1e07852da"
       - DEVOPS_WORKDIR: "/home/ubuntu/action-devops"
@@ -14,6 +15,15 @@ stages:
       - type: add-ssh-keys
         fingerprints:
           - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
+
+      - type: shell
+        name: Start ssh-agent
+        command: |
+          ssh-agent -s > ~/.ssh_agent_conf &&
+          source ~/.ssh_agent_conf &&
+          for _k in $(ls ${HOME}/.ssh/id_*); do
+            ssh-add ${_k} || true;
+          done
 
       - type: checkout
 
@@ -55,10 +65,7 @@ stages:
           else
             export DEPLOY_ENV="development";
           fi;
-          git clone \
-            "ext::ssh -i $DEVOPS_SSH_KEY git@github.com %S $DEVOPS_GITHUB_REPO" \
-            $DEVOPS_WORKDIR &&
-          ls -lR $DEVOPS_WORKDIR;
+          git clone $DEVOPS_REPO $DEVOPS_WORKDIR &&
           cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
 
       - type: shell
