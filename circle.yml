@@ -22,7 +22,7 @@ stages:
       - type: shell
         name: Switch to Github user key
         command: |
-          cp -f $(ls -1 ~/.ssh/id_rsa_* | head -n 1) ~/.ssh/id_rsa &&
+          cp -f $(ls -1 ~/.ssh/id_rsa_* | head -n 1) ~/.ssh/id_rsa
           rm -f ~/.ssh/*.pub
 
       - type: cache-restore
@@ -62,7 +62,7 @@ stages:
             export DEPLOY_ENV="staging";
           else
             export DEPLOY_ENV="development";
-          fi;
+          fi
           git clone $DEVOPS_REPO $DEVOPS_WORKDIR &&
           cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
 
@@ -77,18 +77,18 @@ stages:
             export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION}";
           elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
             export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}";
-          fi;
+          fi
           if [ -n "${GITHUB_REMOTE}" ]; then
             npm run build:deploy &&
             git add build &&
             export ACTION_VERSION="\
               $([[ $(grep version package.json) =~ (([0-9]+\.?){3}) ]] && \
-                echo ${BASH_REMATCH[1]})" ;
-            git config --global user.name "Parabol CircleCI" &&
-            git config --global user.email "admin+circleci@parabol.co" &&
-            git add build &&
-            git commit -m "build $ACTION_VERSION" build &&
-            git remote add dokku $GITHUB_REMOTE &&
+                echo ${BASH_REMATCH[1]})"
+            git config --global user.name "Parabol CircleCI"
+            git config --global user.email "admin+circleci@parabol.co"
+            git add build
+            git commit -m "build $ACTION_VERSION" build
+            git remote add dokku $GITHUB_REMOTE
             ssh -o StrictHostKeyChecking=no \
               $(echo $GITHUB_REMOTE | cut -f1 -d:) -T > /dev/null &&
             git push -f dokku $CIRCLE_BRANCH:master
