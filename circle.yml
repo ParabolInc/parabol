@@ -55,7 +55,9 @@ stages:
           else
             export DEPLOY_ENV="development";
           fi;
-          git clone "ext::ssh -i $DEVOPS_SSH_KEY git@github.com %S $DEVOPS_GITHUB_REPO" &&
+          git clone \
+            "ext::ssh -i $DEVOPS_SSH_KEY git@github.com %S $DEVOPS_GITHUB_REPO" \
+            $DEVOPS_WORKDIR &&
           ls -lR $DEVOPS_WORKDIR;
           cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
 
