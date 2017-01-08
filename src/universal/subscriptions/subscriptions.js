@@ -141,6 +141,11 @@ export default [
         id
         activeUserCount
         createdAt
+        creditCard {
+          brand
+          expiry
+          last4
+        }
         inactiveUserCount
         isTrial
         name

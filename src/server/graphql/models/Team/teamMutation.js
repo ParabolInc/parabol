@@ -553,17 +553,17 @@ export default {
               endAt: trialExpiresAt,
               userId,
               orgId,
-            },
-            {
-              id: expiredId,
-              parentId: expiredId,
-              type: TRIAL_EXPIRED,
-              varList: [trialExpiresAt],
-              startAt: trialExpiresAt,
-              endAt: new Date(trialExpiresAt + ms('10y')),
-              userId,
-              orgId,
             }
+            // {
+            //   id: expiredId,
+            //   parentId: expiredId,
+            //   type: TRIAL_EXPIRED,
+            //   varList: [trialExpiresAt],
+            //   startAt: trialExpiresAt,
+            //   endAt: new Date(trialExpiresAt + ms('10y')),
+            //   userId,
+            //   orgId,
+            // }
           ])
         })
         .do(() => {

@@ -87,7 +87,7 @@ export const requireOrgLeader = async(authToken, orgId) => {
   if (!billingLeaderOrgs.includes(orgId)) {
     throw errorObj({_error: 'Unauthorized. Only an org billing Leader can do this'});
   }
-  return true;
+  return authToken.sub;
 };
 
 export const requireOrgLeaderOfUser = async(authToken, userId) => {

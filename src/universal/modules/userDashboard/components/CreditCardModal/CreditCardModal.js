@@ -182,7 +182,7 @@ const CreditCardModal = (props) => {
 };
 
 CreditCardModal.propTypes = {
-  onBackdropClick: PropTypes.func,
+  onBackdropClick: PropTypes.func.isRequired,
   orgId: PropTypes.string.isRequired,
 };
 

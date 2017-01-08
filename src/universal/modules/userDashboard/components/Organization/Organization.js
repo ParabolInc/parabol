@@ -18,12 +18,10 @@ import ToggleNav from 'universal/components/ToggleNav/ToggleNav';
 import brandMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import makeDateString from 'universal/utils/makeDateString';
 import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/EditOrgName';
-import {toggleLeaveModal, toggleRemoveModal, togglePaymentModal} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
-import RemoveBillingLeaderModal from 'universal/modules/userDashboard/components/RemoveBillingLeaderModal/RemoveBillingLeaderModal';
-import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal';
-import CreditCardModal from 'universal/modules/userDashboard/components/CreditCardModal/CreditCardModal';
 import ActiveTrialCallOut from '../ActiveTrialCallOut/ActiveTrialCallOut';
 import ExpiredTrialCallOut from '../ExpiredTrialCallOut/ExpiredTrialCallOut';
+import SettingsModal from 'universal/modules/userDashboard/components/SettingsModal/SettingsModal';
+import {togglePaymentModal, toggleLeaveModal, toggleRemoveModal} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
 
 const inlineBlockStyle = {
   display: 'inline-block',
@@ -36,25 +34,19 @@ const initialValues = {orgName: ''};
 
 const Organization = (props) => {
   const {
-    ccLast4Digits,
     invoices,
-    leaveOrgModal,
-    removeBillingLeaderModal,
-    modalUserId,
-    modalPreferredName,
     billingLeaders,
     dispatch,
     myUserId,
-    paymentModal,
     styles,
     org
   } = props;
-  console.log('payyment modal', paymentModal)
-  const {id: orgId, createdAt, name: orgName, picture: orgAvatar, activeUserCount, inactiveUserCount, isTrial} = org;
+  const {id: orgId, createdAt, creditCard, name: orgName, picture: orgAvatar, activeUserCount, inactiveUserCount, isTrial} = org;
+  const {brand, last4, expiry} = creditCard;
   initialValues.orgName = orgName;
 
+
   const openPaymentModal = () => {
-    console.log('openPaymentModal')
     dispatch(togglePaymentModal());
   };
 
@@ -68,24 +60,10 @@ const Organization = (props) => {
     };
     return (
       <div className={css(styles.actionLinkBlock)}>
+        <SettingsModal {...props}/>
         <div className={css(styles.toggleBlock)}>
           <Toggle active block label="Active" />
         </div>
-        {removeBillingLeaderModal &&
-        <RemoveBillingLeaderModal
-          onBackdropClick={openRemoveModal}
-          orgId={orgId}
-          preferredName={modalPreferredName}
-          userId={modalUserId}
-        />
-        }
-        {leaveOrgModal &&
-        <LeaveOrgModal
-          onBackdropClick={openLeaveModal}
-          orgId={orgId}
-          userId={modalUserId}
-        />
-        }
         {myUserId !== billingLeader.id &&
         <div className={css(styles.actionLink)} onClick={openRemoveModal}>
           Remove
@@ -154,15 +132,9 @@ const Organization = (props) => {
         <Panel label="Credit Card Information">
           <div className={css(styles.infoAndUpdate)}>
             <div className={css(styles.creditCardInfo)}>
-              {paymentModal &&
-              <CreditCardModal
-                onBackdropClick={openPaymentModal}
-                orgId={orgId}
-              />
-              }
               <FontAwesome name="credit-card"/>
-              <span className={css(styles.creditCardProvider)}>Visa</span>
-              <span className={css(styles.creditCardNumber)}>•••• •••• •••• {ccLast4Digits}</span>
+              <span className={css(styles.creditCardProvider)}>{brand}</span>
+              <span className={css(styles.creditCardNumber)}>•••• •••• •••• {last4}</span>
             </div>
             <Button
               colorPalette="cool"
@@ -190,7 +162,6 @@ const Organization = (props) => {
 };
 
 Organization.defaultProps = {
-  ccLast4Digits: '1234',
   org: {
     activeUsers: 12,
     createdAt: new Date(),

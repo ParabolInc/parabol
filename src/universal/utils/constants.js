@@ -42,17 +42,26 @@ export const TEAM_DASH = 'teamDash';
 export const USER_DASH = 'userDash';
 
 /* Notification Types */
-// Sent to billing leaders when their trial will expire in < 2 weeks [trialExpiresAt]
+/*
+ *  Rather than make a new GraphQL schema for EVERY notification type and union them under Notification and write
+ *  some crazy long schema with inline fragments, we just store all required variables in a list with the schema here.
+ *  This is fine since notifications are side effects generated server-side, so there is no validating client data
+ */
+
+// Sent to billing leaders when their trial will expire in < 2 weeks
+// varList: [trialExpiresAt]
 export const TRIAL_EXPIRES_SOON = 'TRIAL_EXPIRES_SOON';
-// Sent to billing leaders when their trial has expired [trialExpiresAt]
+// Sent to billing leaders when their trial has expired
+// varList: [trialExpiresAt]
 export const TRIAL_EXPIRED = 'TRIAL_EXPIRED';
+// Sent to billing leaders when a reoccuring payment gets rejected
+// varList: [errorMessage, last4]
 export const PAYMENT_REJECTED = 'PAYMENT_REJECTED';
 // Sent to billing leaders when an orgMember attempts to add a non-orgMember to a team
-// [inviterName, inviterId, inviteeEmail, invitedTeamName, invitedTeamId]
+// varList: [inviterName, inviterId, inviteeEmail, invitedTeamName, invitedTeamId]
 export const REQUEST_NEW_USER = 'REQUEST_NEW_USER';
 // Sent to the orgMember that generated the new user request
-export const ACCEPT_NEW_USER = 'ACCEPT_NEW_USER';
-// Sent to the orgMember that generated the new user request
+// varList: [denyReason, leaderName]
 export const DENY_NEW_USER = 'DENY_NEW_USER';
 
 /* User Settings */

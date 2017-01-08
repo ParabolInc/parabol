@@ -10,6 +10,11 @@ query {
     id
     activeUserCount
     createdAt
+    creditCard {
+      brand
+      expiry
+      last4
+    }
     inactiveUserCount
     isTrial
     name
@@ -43,9 +48,7 @@ const mapStateToProps = (state, props) => {
     billingLeaders,
     myUserId: state.auth.obj.sub,
     org,
-    leaveOrgModal: state.orgSettings.leaveOrgModal,
-    paymentModal: state.orgSettings.paymentModal,
-    removeBillingLeaderModal: state.orgSettings.removeBillingLeaderModal,
+    openModal: state.orgSettings.openModal,
     modalUserId: state.orgSettings.userId,
     modalPreferredName: state.orgSettings.preferredName,
   }
@@ -53,14 +56,13 @@ const mapStateToProps = (state, props) => {
 
 const OrganizationContainer = (props) => {
   const {
-    leaveOrgModal,
-    removeBillingLeaderModal,
-    modalUserId,
-    modalPreferredName,
-    paymentModal,
     billingLeaders,
     dispatch,
+    modalPreferredName,
+    modalUserId,
+    modalActions,
     myUserId,
+    openModal,
     org
   }= props;
   if (!org.id) {
@@ -70,13 +72,12 @@ const OrganizationContainer = (props) => {
     <Organization
       billingLeaders={billingLeaders}
       dispatch={dispatch}
+      modalPreferredName={modalPreferredName}
+      modalUserId={modalUserId}
+      modalActions={modalActions}
       myUserId={myUserId}
       org={org}
-      leaveOrgModal={leaveOrgModal}
-      removeBillingLeaderModal={removeBillingLeaderModal}
-      modalUserId={modalUserId}
-      modalPreferredName={modalPreferredName}
-      paymentModal={paymentModal}
+      openModal={openModal}
     />
   );
 };

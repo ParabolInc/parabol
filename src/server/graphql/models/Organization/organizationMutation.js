@@ -9,7 +9,8 @@ import {requireOrgLeader, requireWebsocket} from '../authorization';
 import updateOrgSchema from 'universal/validation/updateOrgSchema';
 import {handleSchemaErrors} from '../utils';
 import stripe from 'server/utils/stripe';
-
+import {TRIAL_EXTENSION} from 'server/utils/serverConstants';
+import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
 export default {
   updateOrg: {
     type: GraphQLBoolean,
@@ -92,9 +93,10 @@ export default {
 
       // AUTH
       requireWebsocket(socket);
-      await requireOrgLeader(authToken, orgId);
+      const userId = await requireOrgLeader(authToken, orgId);
 
       // RESOLUTION
+      const now = new Date();
       const stripeRequests = [
         stripe.customers.create({
           metadata: {
@@ -109,17 +111,41 @@ export default {
       const {id: stripeId} = customer;
       const {brand, last4, exp_month: expMonth, exp_year: expYear} = token.card;
       const expiry = `${expMonth}/${expYear.substr(2)}`;
-      await r.table('Organization').get(orgId).update({
-        creditCard: {
-          brand,
-          last4,
-          expiry
-        },
-        stripeId
-      })
+      const {isTrial, validUntil} = await r.table('Organization')
+        .get(orgId)
+        .pluck('isTrial', 'validUntil');
 
-      // TODO give them another free month if they aren't late
+      const nowValidUntil = (isTrial && validUntil > now) ?
+        new Date(validUntil.valueOf() + TRIAL_EXTENSION) :
+        validUntil;
 
+      await r.table('Organization').get(orgId)
+        .update({
+          creditCard: {
+            brand,
+            last4,
+            expiry
+          },
+          stripeId,
+          validUntil: nowValidUntil
+        });
+
+
+      if (validUntil !== nowValidUntil) {
+        await r.table('User').get(userId)
+          .update({
+            // not too useful (only used as a boolean) but good to keep it matching what's in the org
+            validUntil: nowValidUntil
+          })
+          .do(() => {
+            return r.table('Notification')
+              .getAll(orgId, {index: 'orgId'})
+              .filter({
+                type: TRIAL_EXPIRES_SOON
+              })
+              .delete()
+          })
+      }
     }
   }
 };

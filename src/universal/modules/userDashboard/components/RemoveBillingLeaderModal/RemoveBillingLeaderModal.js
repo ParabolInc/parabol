@@ -33,7 +33,7 @@ const RemoveBillingLeaderModal = (props) => {
 };
 
 RemoveBillingLeaderModal.propTypes = {
-  onBackdropClick: PropTypes.func,
+  onBackdropClick: PropTypes.func.isRequired,
   orgId: PropTypes.string.isRequired,
   preferredName: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired

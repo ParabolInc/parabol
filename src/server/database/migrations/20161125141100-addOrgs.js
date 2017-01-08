@@ -1,20 +1,9 @@
 import shortid from 'shortid';
 import {TRIAL_PERIOD} from '../../utils/serverConstants';
 import ms from 'ms';
-import {TRIAL_EXPIRED, TRIAL_EXPIRES_SOON} from '../../../universal/utils/constants'
+import {TRIAL_EXPIRES_SOON} from '../../../universal/utils/constants'
 /* eslint-disable max-len */
-// taya, jordan, terry, matt
-// const productTeam = [
-//   'auth0|5797eb5d12664ba4675745b9',
-//   'auth0|57a8fb6cab6c18473e47f518',
-//   'auth0|5797e83170dddc395d8d1675',
-//   'auth0|5797eb9712664ba4675745c3'
-// ];
-// const engineeringTeam = [
-//   'auth0|57a8fb6cab6c18473e47f518',
-//   'auth0|5797e83170dddc395d8d1675',
-//   'auth0|5797eb9712664ba4675745c3'
-// ];
+
 exports.up = async(r) => {
   const tables = [
     r.tableCreate('Organization'),
@@ -108,16 +97,16 @@ exports.up = async(r) => {
                     userId: orgLeader('id'),
                     orgId: orgLeader('orgId'),
                   },
-                  {
-                    id: orgLeader('expiredId'),
-                    parentId: orgLeader('expiredId'),
-                    type: TRIAL_EXPIRED,
-                    varList: orgLeader('varList'),
-                    startAt: trialExpiresAt,
-                    endAt: new Date(trialExpiresAt + ms('10y')),
-                    userId: orgLeader('id'),
-                    orgId: orgLeader('orgId'),
-                  }
+                  // {
+                  //   id: orgLeader('expiredId'),
+                  //   parentId: orgLeader('expiredId'),
+                  //   type: TRIAL_EXPIRED,
+                  //   varList: orgLeader('varList'),
+                  //   startAt: trialExpiresAt,
+                  //   endAt: new Date(trialExpiresAt + ms('10y')),
+                  //   userId: orgLeader('id'),
+                  //   orgId: orgLeader('orgId'),
+                  // }
                 ])
             })
             // set an expiry for every team orgLeader and all the orgs the user belongs to

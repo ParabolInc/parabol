@@ -16,7 +16,7 @@ const CreditCard = new GraphQLObjectType({
   fields: () => ({
     brand: {
       type: GraphQLString,
-      description: 'The brand of the credit card'
+      description: 'The brand of the credit card, as provided by skype'
     },
     expiry: {
       type: GraphQLString,

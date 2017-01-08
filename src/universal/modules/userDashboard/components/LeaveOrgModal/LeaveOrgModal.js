@@ -33,7 +33,7 @@ const LeaveOrgModal = (props) => {
 };
 
 LeaveOrgModal.propTypes = {
-  onBackdropClick: PropTypes.func,
+  onBackdropClick: PropTypes.func.isRequired,
   orgId: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired
 };
