@@ -8,7 +8,7 @@ stages:
     workDir: /home/ubuntu/action
     environment:
       - DEVOPS_GITHUB_REPO: "ParabolInc/action-devops.git"
-      - DEVOPS_SSH_KEY: "~/.ssh/id_rsa_53a83735c37e54f519f68ea1e07852da"
+      - DEVOPS_SSH_KEY: "/root/.ssh/id_rsa_53a83735c37e54f519f68ea1e07852da"
       - DEVOPS_WORKDIR: "/home/ubuntu/action-devops"
     steps:
       - type: add-ssh-keys
@@ -57,8 +57,8 @@ stages:
           fi;
           ls ~/.ssh;
           ls -l ~/.ssh/id_rsa_53a83735c37e54f519f68ea1e07852da;
-          ls -l $(echo $DEVOPS_SSH_KEY);
-          git clone "ext::ssh -i $(echo $DEVOPS_SSH_KEY) git@github.com %S $DEVOPS_GITHUB_REPO" &&
+          ls -l $DEVOPS_SSH_KEY;
+          git clone "ext::ssh -i $DEVOPS_SSH_KEY git@github.com %S $DEVOPS_GITHUB_REPO" &&
           cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
 
       - type: shell
