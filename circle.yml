@@ -65,7 +65,8 @@ stages:
           else
             export DEPLOY_ENV="development";
           fi;
-          source ~/.ssh_agent_conf
+          source ~/.ssh_agent_conf &&
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" &&
           git clone $DEVOPS_REPO $DEVOPS_WORKDIR &&
           cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
 
