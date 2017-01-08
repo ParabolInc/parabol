@@ -75,6 +75,7 @@ stages:
         command: npm run build:client
 
       - type: deploy
+        name: Possible deployment
         command: |
           if [ "${CIRCLE_BRANCH}" == "master" ]; then
             export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION}";
