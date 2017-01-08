@@ -86,9 +86,9 @@ stages:
                 echo ${BASH_REMATCH[1]})" ;
             git add build &&
             git commit \
-              -c user.email="admin+circleci@parabol.co"
-              -c user.name="Parabol CircleCI"
-              -m "build $ACTION_VERSION" build
+              -c user.email="admin+circleci@parabol.co" \
+              -c user.name="Parabol CircleCI" \
+              -m "build $ACTION_VERSION" build &&
             git remote add dokku $GITHUB_REMOTE &&
             ssh -o StrictHostKeyChecking=no \
               $(echo $GITHUB_REMOTE | cut -f1 -d:) -T > /dev/null &&
