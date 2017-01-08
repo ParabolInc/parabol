@@ -2037,6 +2037,10 @@ create-hmac@^1.1.0, create-hmac@^1.1.2:
     create-hash "^1.1.0"
     inherits "^2.0.1"
 
+credit-card-type:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/credit-card-type/-/credit-card-type-5.0.0.tgz#a1a4a1e7e21ee53c773fe5fb15267a28879cabee"
+
 cross-spawn@^0.2.9:
   version "0.2.9"
   resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-0.2.9.tgz#bd67f96c07efb6303b7fe94c1e979f88478e0a39"
@@ -4129,6 +4133,10 @@ lodash.isplainobject@^3.0.0, lodash.isplainobject@^3.2.0:
     lodash.isarguments "^3.0.0"
     lodash.keysin "^3.0.0"
 
+lodash.isplainobject@^4.0.6:
+  version "4.0.6"
+  resolved "https://registry.yarnpkg.com/lodash.isplainobject/-/lodash.isplainobject-4.0.6.tgz#7c526a52d89b45c45cc690b88163be0497f550cb"
+
 lodash.istypedarray@^3.0.0:
   version "3.0.6"
   resolved "https://registry.yarnpkg.com/lodash.istypedarray/-/lodash.istypedarray-3.0.6.tgz#c9a477498607501d8e8494d283b87c39281cef62"
@@ -5171,6 +5179,10 @@ punycode@1.3.2:
 q@^1.1.2, q@~1.4.0:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/q/-/q-1.4.1.tgz#55705bcd93c5f3673530c2c2cbc0c2b3addc286e"
+
+qs@^2.4.2:
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-2.4.2.tgz#f7ce788e5777df0b5010da7f7c4e73ba32470f5a"
 
 qs@~6.3.0:
   version "6.3.0"
@@ -6445,6 +6457,15 @@ strip-indent@^1.0.1:
 strip-json-comments@~1.0.1, strip-json-comments@~1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-1.0.4.tgz#1e15fbcac97d3ee99bf2d73b4c656b082bbafb91"
+
+stripe:
+  version "4.14.0"
+  resolved "https://registry.yarnpkg.com/stripe/-/stripe-4.14.0.tgz#37f3cc8f9774d6f3231af65a75b5a6512b438ccb"
+  dependencies:
+    bluebird "^2.10.2"
+    lodash.isplainobject "^4.0.6"
+    object-assign "^4.1.0"
+    qs "^2.4.2"
 
 superagent@^1.4.0:
   version "1.8.5"

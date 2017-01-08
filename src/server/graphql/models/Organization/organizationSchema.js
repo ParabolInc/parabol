@@ -10,18 +10,37 @@ import {
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {GraphQLURLType} from '../types';
 
+const CreditCard = new GraphQLObjectType({
+  name: 'CreditCard',
+  description: 'A credit card',
+  fields: () => ({
+    brand: {
+      type: GraphQLString,
+      description: 'The brand of the credit card'
+    },
+    expiry: {
+      type: GraphQLString,
+      description: 'The MM/YY string of the expiration date'
+    },
+    last4: {
+      type: GraphQLInt,
+      description: 'The last 4 digits of a credit card'
+    }
+  })
+});
+
 export const Organization = new GraphQLObjectType({
   name: 'Organization',
   description: 'An organization',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique organization ID'},
-    // billingLeaders: {
-    //   type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
-    //   description: 'The userId of the person who pays for the org'
-    // },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the organization was created'
+    },
+    creditCard: {
+      type: CreditCard,
+      description: 'The safe credit card details'
     },
     isTrial: {
       type: GraphQLBoolean,
@@ -31,6 +50,10 @@ export const Organization = new GraphQLObjectType({
     picture: {
       type: GraphQLURLType,
       description: 'The org avatar'
+    },
+    stripeId: {
+      type: GraphQLID,
+      description: 'The customerId from stripe'
     },
     updatedAt: {
       type: GraphQLISO8601Type,

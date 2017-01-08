@@ -85,26 +85,21 @@ const CreditCardModal = (props) => {
   const updateStripeBilling = async (submittedData) => {
     const {creditCardNumber: number, expiry, cvc} = submittedData;
     const [exp_month, exp_year] = expiry.split('/');
-    const response = await createToken({
-      number,
-      exp_month,
-      exp_year,
-      cvc
-    });
-    // if (status !== 200) {
-    //   throw new SubmissionError({_error: status});
-    // }
-    const {error, id} = response;
+    const {error, id} = await createToken({number, exp_month, exp_year, cvc})
     if (error) {
+      const errorMessage = {_error: error.message};
       const field = stripeFieldLookup[error.param];
-      if (!field) {
-        throw new SubmissionError({_error: error.message});
+      if (field) {
+        errorMessage[field.name] = field.message;
       }
-      throw new SubmissionError({_error: 'Payment error', [field.name]: field.message})
+      throw new SubmissionError(errorMessage)
     }
-    const variables = {stripeToken: id};
-    console.log('vars', variables)
-    cashay.mutate('updateStripeBilling', {variables});
+    const variables = {
+      orgId,
+      stripeToken: id
+    };
+    cashay.mutate('addBilling', {variables});
+
   };
 
   return (
@@ -279,7 +274,7 @@ const stripeCb = () => {
     })
   };
 };
-export default reduxForm({form: 'creditCardInfo'}, validate)(
+export default reduxForm({form: 'creditCardInfo', validate})(
   withAsync({'https://js.stripe.com/v2/': stripeCb})(
     withStyles(styleThunk)(
       CreditCardModal

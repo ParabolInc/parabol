@@ -6,6 +6,7 @@ export default function makeCreditCardSchema() {
   return legitify({
     creditCardNumber: (value) => value
       .required('You must enter a CC number')
+      .min(16, 'That credit card is missing some digits')
       .test((raw) => {
         return !luhn(raw) && 'Double check that credit card number'
       }),
