@@ -8,8 +8,6 @@ stages:
     workDir: /home/ubuntu/action
     environment:
       - DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
-      - DEVOPS_GITHUB_REPO: "ParabolInc/action-devops.git"
-      - DEVOPS_SSH_KEY: "/root/.ssh/id_rsa_53a83735c37e54f519f68ea1e07852da"
       - DEVOPS_WORKDIR: "/home/ubuntu/action-devops"
     steps:
       - type: add-ssh-keys
@@ -55,7 +53,6 @@ stages:
       - type: shell
         name: Pre-build DevOps checkout
         command: |
-          source ~/.ssh_agent_conf &&
           if [ "${CIRCLE_BRANCH}" == "master" ]; then
             export DEPLOY_ENV="production";
           elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
