@@ -16,16 +16,13 @@ stages:
         fingerprints:
           - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
 
-      - type: mkdir
-        name: Create working directory
+      - type: checkout
 
       - type: shell
-        name: Configure Github user key
+        name: Switch to Github user key
         command: |
           cp -f $(ls -1 ~/.ssh/id_rsa_* | head -n 1) ~/.ssh/id_rsa &&
           rm -f ~/.ssh/*.pub
-
-      - type: checkout
 
       - type: cache-restore
         key: action-{{ checksum "yarn.lock" }}
