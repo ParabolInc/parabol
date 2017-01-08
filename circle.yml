@@ -69,12 +69,8 @@ stages:
           printenv
 
       - type: shell
-        name: Build server
-        command: npm run build:server
-
-      - type: shell
-        name: Build client
-        command: npm run build:client
+        name: Build test
+        command: npm run build
 
       - type: deploy
         name: Possible deployment
@@ -85,8 +81,7 @@ stages:
             export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}";
           fi;
           if [ -n "${GITHUB_REMOTE}" ]; then
-            rm -f build/* &&
-            npm run build:server && npm run build:client-min &&
+            npm run build:deploy &&
             git remote add dokku $GITHUB_REMOTE &&
             ssh -o StrictHostKeyChecking=no \
               $(echo $GITHUB_REMOTE | cut -f1 -d:) -T > /dev/null &&
