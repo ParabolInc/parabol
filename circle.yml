@@ -81,10 +81,12 @@ stages:
           if [ -n "${GITHUB_REMOTE}" ]; then
             npm run build:deploy &&
             git add build &&
-            export ACTION_VERSION=\
+            export ACTION_VERSION="\
               $([[ $(grep version package.json) =~ (([0-9]+\.?){3}) ]] && \
-                echo ${BASH_REMATCH[1]}) ;
-            git add build && git commit -m "build $ACTION_VERSION"
+                echo ${BASH_REMATCH[1]})" ;
+            git add build &&
+            git commit --author "CircleCI <admin+circleci@parabol.co>" \
+              -m "build $ACTION_VERSION"
             git remote add dokku $GITHUB_REMOTE &&
             ssh -o StrictHostKeyChecking=no \
               $(echo $GITHUB_REMOTE | cut -f1 -d:) -T > /dev/null &&
