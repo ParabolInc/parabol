@@ -154,6 +154,7 @@ get involved and how to get compensated.
 
 | Release | Summary                                    |
 |---------|--------------------------------------------|
+| v0.14.0 | Secure user avatar upload to S3 bucket     |
 | v0.13.6 | Adds admin user impersonation, fixes       |
 | v0.13.5 | Fixes: #556, #557, and #559                |
 | v0.13.4 | Fix email validation                       |
