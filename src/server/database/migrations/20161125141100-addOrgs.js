@@ -14,6 +14,7 @@ exports.up = async(r) => {
   } catch (e) {
   }
   const indices = [
+    r.table('Organization').indexCreate('validUntil'),
     r.table('Team').indexCreate('orgId'),
     r.table('Notification').indexCreate('orgId'),
     r.table('Notification').indexCreate('parentId'),

@@ -1,5 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
 import {
+  GraphQLBoolean,
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
@@ -33,6 +34,10 @@ export const Team = new GraphQLObjectType({
   description: 'A team',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique team ID'},
+    isPaid: {
+      type: GraphQLBoolean,
+      description: 'true if the underlying org has a validUntil date greater than now. if false, subs do not work'
+    },
     name: {type: GraphQLString, description: 'The name of the team'},
     meetingNumber: {
       type: GraphQLInt,
