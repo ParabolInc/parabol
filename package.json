@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "0.13.6",
+  "version": "0.14.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -37,7 +37,7 @@
   },
   "pre-commit": [],
   "devDependencies": {
-    "ava": "0.16.0",
+    "ava": "^0.17.0",
     "babel-cli": "6.18.0",
     "babel-core": "6.18.2",
     "babel-eslint": "^6.1.2",
@@ -84,6 +84,7 @@
     "aphrodite-local-styles": "0.6.2",
     "auth0": "^2.5.0",
     "auth0-lock": "^9.2.2",
+    "aws-sdk": "^2.7.19",
     "babel-polyfill": "6.16.0",
     "babel-runtime": "6.18.0",
     "bcrypt": "^0.8.7",
@@ -98,6 +99,7 @@
     "es6-promisify": "^5.0.0",
     "express": "4.14.0",
     "express-jwt": "5.1.0",
+    "fetch-ponyfill": "^3.0.2",
     "graphiql": "^0.8.0",
     "graphql": "^0.8.2",
     "graphql-custom-datetype": "^0.3.0",
@@ -107,6 +109,7 @@
     "lodash.throttle": "^4.1.1",
     "mailcomposer": "^3.12.0",
     "mailgun-js": "^0.7.13",
+    "mime-types": "^2.1.13",
     "ms": "^0.7.2",
     "node-env-flag": "0.1.0",
     "oy-vey": "^1.0.0-alpha",
