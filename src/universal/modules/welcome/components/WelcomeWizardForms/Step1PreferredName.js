@@ -5,17 +5,19 @@ import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import {cashay} from 'cashay';
 import {nextPage, updateCompleted} from 'universal/modules/welcome/ducks/welcomeDuck';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
-import makeStep1Schema from 'universal/validation/makeStep1Schema';
+import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
 import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
+import shouldValidate from 'universal/validation/shouldValidate';
 
 const validate = (values) => {
-  const welcomeSchema = makeStep1Schema();
+  const welcomeSchema = makeUpdatedUserSchema();
   return welcomeSchema(values).errors;
 };
 
 const reduxFormOptions = {
   form: 'welcomeWizard',
   destroyOnUnmount: false,
+  shouldValidate,
   validate
 };
 
