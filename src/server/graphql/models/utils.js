@@ -1,8 +1,23 @@
 import {GraphQLNonNull, GraphQLInputObjectType} from 'graphql';
-
+import getRethink from 'server/database/rethinkDriver';
 // Stringify an object to handle multiple errors
 // Wrap it in a new Error type to avoid sending it twice via the originalError field
 export const errorObj = obj => new Error(JSON.stringify(obj));
+
+export const handleSchemaErrors = (errors) => {
+  if (Object.keys(errors).length > 0) {
+    throw errorObj(errors);
+  }
+};
+
+// VERY important, otherwise eg a user could "create" a new team with an existing teamId & force join that team
+export const ensureUniqueId = async (table, id) => {
+  const r = getRethink();
+  const res = await r.table(table).get(id);
+  if (res) {
+    throw errorObj({type: 'unique id collision'});
+  }
+};
 
 // if the add & update schemas have different required fields, use this
 export const nonnullifyInputThunk = (name, inputThunk, requiredFieldNames) => {
@@ -18,7 +33,7 @@ export const nonnullifyInputThunk = (name, inputThunk, requiredFieldNames) => {
   });
 };
 
-function getFields(context, astsParams = context.fieldASTs) {
+function getFields(context, astsParams = context.fieldNodes) {
   // for recursion...Fragments doesn't have many sets...
   const asts = Array.isArray(astsParams) ? astsParams : [astsParams];
 
@@ -56,16 +71,24 @@ export function getRequestedFields(refs) {
   return Object.keys(fieldsObj);
 }
 
+export function firstChange(possiblyUpdatedResult) {
+  if (possiblyUpdatedResult.changes.length) {
+    if (possiblyUpdatedResult.changes.length > 1) {
+      console.warn('firstChange() detects more than 1 change, returning 1st.');
+    }
+    return possiblyUpdatedResult.changes[0];
+  }
+  return { new_val: undefined, old_val: undefined };
+}
+
 export function updatedOrOriginal(possiblyUpdatedResult, original) {
   /*
    * There will only be changes to return if there were changes made to the
    * DB. Therefore, we've got to check.
    */
-  if (possiblyUpdatedResult.changes.length) {
-    if (possiblyUpdatedResult.changes.length > 1) {
-      console.warn('updatedOrOriginal() detects more than 1 change, returning 1st.');
-    }
-    return possiblyUpdatedResult.changes[0].new_val;
-  }
-  return original;
+  return firstChange(possiblyUpdatedResult).new_val || original;
+}
+
+export function previousValue(possiblyUpdatedResult) {
+  return firstChange(possiblyUpdatedResult).old_val;
 }

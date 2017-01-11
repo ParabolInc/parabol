@@ -8,11 +8,17 @@ import shortid from 'shortid';
 import {cashay} from 'cashay';
 import {setAuthToken} from 'universal/redux/authDuck';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
+import makeStep2Schema from 'universal/validation/makeStep2Schema';
+import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
+
+const validate = (values) => {
+  const welcomeSchema = makeStep2Schema('teamName');
+  return welcomeSchema(values).errors;
+};
 
 const Step2TeamName = (props) => {
-  const {dispatch, handleSubmit, placeholderTheme, preferredName, teamName} = props;
-  const onTeamNameSubmit = data => {
-    const myTeamName = data.teamName;
+  const {dispatch, handleSubmit, preferredName, teamName} = props;
+  const onTeamNameSubmit = (data) => {
     const teamId = shortid.generate();
     const teamMemberId = shortid.generate();
     dispatch(setWelcomeTeam({teamId, teamMemberId}));
@@ -20,7 +26,7 @@ const Step2TeamName = (props) => {
       variables: {
         newTeam: {
           id: teamId,
-          name: myTeamName
+          name: data.teamName.trim()
         }
       }
     };
@@ -47,7 +53,7 @@ const Step2TeamName = (props) => {
           hasButton
           isLarger
           name="teamName"
-          placeholder={placeholderTheme.teamName}
+          placeholder={randomPlaceholderTheme.teamName}
           shortcutHint="Press enter"
           type="text"
         />
@@ -60,7 +66,6 @@ Step2TeamName.propTypes = {
   dispatch: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func,
   onSubmit: PropTypes.func,
-  placeholderTheme: PropTypes.object,
   preferredName: PropTypes.string.isRequired,
   teamName: PropTypes.string,
   user: PropTypes.object,
@@ -69,6 +74,6 @@ Step2TeamName.propTypes = {
 
 export default reduxForm({
   form: 'welcomeWizard',
-  destroyOnUnmount: false
-  // TODO: add validations
+  destroyOnUnmount: false,
+  validate
 })(Step2TeamName);

@@ -4,6 +4,69 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.14.0 - 09-Jan-2017
+### Added
+- Implements #595; upload of user avatar images to S3
+  - Works by securely signing S3 PutObject URL
+    see [documentation](./docs/s3.md)
+- `npm run build:deploy` and `npm run build:min` commands
+
+## v0.13.6 - 20-Dec-2016
+### Added
+- User impersonation, login as a user with knowing their credentials on route
+  `/admin/impersonate/:userid`
+- Expanded requireAuthAndRole with optional args
+- Added segment.io event on 'New Team' creation
+
+## v0.13.5 - 12-Dec-2016
+### Fixed
+- #556 archived cards no longer let you change the owner
+- #557 blur agenda item input after submit
+- #559 participants stopped following the leader after meeting "Last Call"
+
+## v0.13.4 - 08-Dec-2016
+### Fixed
+- #564 Fix email validation
+
+## v0.13.3 - 05-Dec-2016
+### Added
+- Validations system (see: `src/universal/validations/legitify.js`)
+  - Added client and server validations for all mutations
+- Allow team leaders to skip step 3 of the welcome wizard (see #354)
+- S3 deploys into versioned directories within bucket (see #493)
+
+### Fixed
+- #547 welcome wizard step 3 cleanup
+- #549 welcome wizard step 3: removing email calls submit
+
+## v0.13.2 - 27-Nov-2016
+### Added
+- 'Player joined' message when teammate accepts invitation
+
+### Fixed
+- #543 unable to end action meeting
+
+## v0.13.1 - 25-Nov-2016
+### Added
+- Can now filter by team member on team dashboard Views
+- Updated FontAwesome to v4.7.0
+
+### Fixed
+- #514 Relabeling Actions and Projects during agenda processing
+  - Copy now reads "New private action" and "New team project"
+- #536 Cashay warning while proceeding through check-in round
+
+## v0.13.0 - 22-Nov-2016
+We tagged v0.13.0 on our 1,300th commit. What a coinkidink!
+### Added
+- Drag-and-drop everywhere: My Dashboard (actions, projects),
+  Team Dashboards (meeting agenda queue, projects), meeting project updates,
+  and meeting agenda items
+
+### Fixed
+- #508 Agenda items collapse around 1265px
+- #517 Server exception encountered when generating meeting summary
+
 ## v0.12.1 - 15-Nov-2016
 ### Fixed
 - #518 Removed team member does not redirect away while on team dashboard
@@ -58,7 +121,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Fixed
 - #438 fixed TypeError: Cannot read property 'id' of undefined
-- #447 unable to logout and login properly
+- #447 unable to signout and login properly
 - Fixed race condition landing on meeting summary route at end of meeting
 - Fixed short urls
 

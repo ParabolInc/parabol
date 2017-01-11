@@ -32,6 +32,7 @@ export default class MenuContainer extends Component {
       'middle',
       'top'
     ]),
+    zIndex: PropTypes.string
   };
 
   componentWillUpdate(nextProps) {
@@ -64,32 +65,13 @@ export default class MenuContainer extends Component {
   };
 
   render() {
-    const {
-      children,
-      dispatch,
-      isOpen,
-      label,
-      menuKey,
-      menuOrientation,
-      menuWidth,
-      toggle,
-      toggleHeight,
-      verticalAlign
-    } = this.props;
+    const {children} = this.props;
     const properChildren = Children.map(children, child => cloneElement(child, {closeMenu: this.closeMenu}));
     return (
       <Menu
+        {...this.props}
         children={properChildren}
-        dispatch={dispatch}
-        isOpen={isOpen}
-        label={label}
-        menuKey={menuKey}
-        menuOrientation={menuOrientation}
-        menuWidth={menuWidth}
-        toggle={toggle}
-        toggleHeight={toggleHeight}
         toggleMenu={this.toggleMenu}
-        verticalAlign={verticalAlign}
       />
     );
   }

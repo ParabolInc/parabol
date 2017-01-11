@@ -5,7 +5,7 @@ import {RouterContext} from 'react-router';
 import {renderToString} from 'react-dom/server';
 import makeSegmentSnippet from '@segment/snippet';
 import {auth0} from 'universal/utils/clientOptions';
-import getWebpackPublicPath from 'universal/utils/getWebpackPublicPath';
+import getWebpackPublicPath from 'server/utils/getWebpackPublicPath';
 
 const webpackPublicPath = getWebpackPublicPath();
 const segKey = process.env.SEGMENT_WRITE_KEY;
@@ -35,7 +35,7 @@ export default function Html({store, entries, StyleSheetServer, renderProps}) {
       sentry: ${JSON.stringify(process.env.SENTRY_DSN_PUBLIC)}
     };
 `;
-  const fontAwesomeUrl = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css';
+  const fontAwesomeUrl = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css';
   return (
     <html>
       <head>

@@ -3,10 +3,13 @@ import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
+import handleAgendaSort from 'universal/modules/meeting/helpers/handleAgendaSort';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
 import MeetingAvatars from 'universal/modules/meeting/components/MeetingAvatars/MeetingAvatars';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import {withRouter} from 'react-router';
+import {DragDropContext as dragDropContext} from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
@@ -93,12 +96,17 @@ query{
   }
 }`;
 
+const mutationHandlers = {
+  updateAgendaItem: handleAgendaSort
+};
+
 const mapStateToProps = (state, props) => {
   const {params: {localPhaseItem, teamId}} = props;
   const {sub: userId} = state.auth.obj;
   const queryResult = cashay.query(meetingContainerQuery, {
     op: 'meetingContainerQuery',
     key: teamId,
+    mutationHandlers,
     variables: {teamId},
     sort: {
       agenda: (a, b) => a.sortOrder - b.sortOrder,
@@ -126,6 +134,7 @@ let infiniteTrigger = false;
 
 @socketWithPresence
 @connect(mapStateToProps)
+@dragDropContext(HTML5Backend)
 @withRouter
 @withHotkey
 export default class MeetingContainer extends Component {
@@ -145,10 +154,9 @@ export default class MeetingContainer extends Component {
 
   constructor(props) {
     super(props);
-    const {bindHotkey, localPhaseItem, params, router, team} = props;
-    const {localPhase, teamId} = params;
+    const {bindHotkey, params: {teamId}} = props;
     // subscribe to all teams, but don't do anything with that open subscription
-    handleRedirects(team, localPhase, localPhaseItem, {}, router);
+    handleRedirects({}, this.props);
     bindHotkey(['enter', 'right'], this.gotoNext);
     bindHotkey('left', this.gotoPrev);
     bindHotkey('i c a n t h a c k i t', () => cashay.mutate('killMeeting', {variables: {teamId}}));
@@ -182,19 +190,18 @@ export default class MeetingContainer extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    const {localPhaseItem, router, params: {localPhase}, team} = nextProps;
-    const {dispatch, isFacilitating, team: oldTeam} = this.props;
-    const safeRoute = handleRedirects(team, localPhase, localPhaseItem, oldTeam, router);
+    const safeRoute = handleRedirects(this.props, nextProps);
     if (safeRoute) {
       return true;
     }
+    const {dispatch, isFacilitating, team: {id: teamId}} = this.props;
     // if we call router.push
     if (Date.now() - infiniteLoopTimer < 1000) {
       if (++infiniteloopCounter >= 10) {
         // if we're changing locations 10 times in a second, it's probably infinite
         if (isFacilitating) {
           const variables = {
-            teamId: team.id,
+            teamId,
             nextPhase: CHECKIN,
             nextPhaseItem: 1,
             force: true
@@ -308,9 +315,12 @@ export default class MeetingContainer extends Component {
     const {facilitatorPhase, meetingPhase, meetingPhaseItem, name: teamName} = team;
     const agendaPhaseItem = meetingPhase === AGENDA_ITEMS && meetingPhaseItem || 0;
     // if we have a team.name, we have an initial subscription success to the team object
-    if (!teamName || members.length === 0) {
+    if (!teamName ||
+      members.length === 0
+      || ((localPhase === CHECKIN || localPhase === UPDATES) && members.length < localPhaseItem)) {
       return <LoadingView />;
     }
+
     const phaseStateProps = { // DRY
       localPhaseItem,
       members,
@@ -339,7 +349,12 @@ export default class MeetingContainer extends Component {
           }
           {localPhase === FIRST_CALL && <MeetingAgendaFirstCall gotoNext={this.gotoNext}/>}
           {localPhase === AGENDA_ITEMS &&
-            <MeetingAgendaItems agendaItem={agenda[localPhaseItem - 1]} gotoNext={this.gotoNext} members={members}/>
+            <MeetingAgendaItems
+              agendaItem={agenda[localPhaseItem - 1]}
+              isLast={localPhaseItem === agenda.length}
+              gotoNext={this.gotoNext}
+              members={members}
+            />
           }
           {localPhase === LAST_CALL &&
             <MeetingAgendaLastCallContainer

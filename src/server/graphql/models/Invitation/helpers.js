@@ -6,7 +6,6 @@ import bcrypt from 'bcrypt';
 import promisify from 'es6-promisify';
 import {getUserId, requireSUOrTeamMember} from '../authorization';
 import {INVITATION_LIFESPAN} from 'server/utils/serverConstants';
-import {errorObj} from '../utils';
 
 const INVITE_TOKEN_INVITE_ID_LEN = 6;
 const INVITE_TOKEN_KEY_LEN = 8;
@@ -127,30 +126,6 @@ export const asyncInviteTeam = async (authToken, teamId, invitees) => {
   // if (inviteeErrors.length > 0) {
   // throw errorObj({_error: 'Some invitations were not sent', type: 'inviteSendFail', failedEmails: inviteeErrors});
   // }
-};
-
-export const cancelInvitation = async (authToken, inviteId) => {
-  const r = getRethink();
-  const invite = await r.table('Invitation').get(inviteId);
-  const {acceptedAt, teamId, tokenExpiration} = invite;
-  requireSUOrTeamMember(authToken, teamId);
-  const now = new Date();
-  const error = {};
-  if (acceptedAt) {
-    error.type = 'alreadyAccepted';
-  } else if (tokenExpiration < now) {
-    error.type = 'alreadyExpired';
-  }
-  if (error.type) {
-    // eslint-disable-next-line no-underscore-dangle
-    error._error = 'Cannot cancel invitation';
-    throw errorObj(error);
-  }
-  await r.table('Invitation').get(inviteId).update({
-    tokenExpiration: new Date(0),
-    updatedAt: now
-  });
-  return invite;
 };
 
 export const resendInvite = async (authToken, inviteId) => {

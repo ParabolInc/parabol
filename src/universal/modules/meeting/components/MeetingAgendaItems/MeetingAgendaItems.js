@@ -16,6 +16,7 @@ import LoadingView from 'universal/components/LoadingView/LoadingView';
 const MeetingAgendaItems = (props) => {
   const {
     agendaItem,
+    isLast,
     gotoNext,
     members,
     styles,
@@ -54,7 +55,7 @@ const MeetingAgendaItems = (props) => {
                   colorPalette="cool"
                   icon="arrow-circle-right"
                   iconPlacement="right"
-                  label="Next Agenda Item"
+                  label={isLast ? 'Wrap up the meeting' : 'Next Agenda Item'}
                   onClick={gotoNext}
                   scale="small"
                 />
@@ -75,6 +76,7 @@ const MeetingAgendaItems = (props) => {
 
 MeetingAgendaItems.propTypes = {
   agendaItem: PropTypes.object.isRequired,
+  isLast: PropTypes.bool,
   gotoNext: PropTypes.func.isRequired,
   members: PropTypes.array.isRequired,
   styles: PropTypes.object.isRequired

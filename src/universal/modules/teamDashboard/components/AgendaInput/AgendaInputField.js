@@ -6,6 +6,9 @@ import {makePlaceholderStyles} from 'universal/styles/helpers';
 import ui from 'universal/styles/ui';
 import withHotkey from 'react-hotkey-hoc';
 import FontAwesome from 'react-fontawesome';
+import shortid from 'shortid';
+import getNextSortOrder from 'universal/utils/getNextSortOrder';
+import {cashay} from 'cashay';
 
 const defaultColor = appTheme.palette.dark;
 const iconStyle = {
@@ -22,11 +25,28 @@ const iconStyle = {
   zIndex: 100
 };
 const AgendaInputField = (props) => {
-  const {bindHotkey, styles} = props;
+  const {agenda, bindHotkey, handleSubmit, styles, teamId, myTeamMemberId} = props;
   let inputRef;
   const setRef = (c) => {
     inputRef = c;
   };
+  const handleAgendaItemSubmit = (submittedData) => {
+    const content = submittedData.agendaItem;
+    if (!content) return;
+    const options = {
+      variables: {
+        newAgendaItem: {
+          id: `${teamId}::${shortid.generate()}`,
+          content,
+          sortOrder: getNextSortOrder(agenda, 'sortOrder'),
+          teamMemberId: myTeamMemberId
+        }
+      }
+    };
+    cashay.mutate('createAgendaItem', options);
+    inputRef.blur();
+  };
+
   const focusOnInput = (e) => {
     e.preventDefault();
     inputRef.focus();
@@ -38,12 +58,13 @@ const AgendaInputField = (props) => {
   };
   bindHotkey('+', focusOnInput);
   return (
-    <div className={css(styles.root)}>
+    <form className={css(styles.root)} onSubmit={handleSubmit(handleAgendaItemSubmit)}>
       <input
         {...props.input}
         autoCapitalize="off"
         autoComplete="off"
         className={`${css(styles.input)}`}
+        maxLength="63"
         onKeyDown={maybeBlur}
         placeholder="Add Agenda Item"
         ref={setRef}
@@ -51,14 +72,18 @@ const AgendaInputField = (props) => {
         type="text"
       />
       <FontAwesome name="plus-circle" style={iconStyle} />
-    </div>
+    </form>
   );
 };
 
 AgendaInputField.propTypes = {
+  agenda: PropTypes.array,
   bindHotkey: PropTypes.func,
+  handleSubmit: PropTypes.func,
   input: PropTypes.object,
-  styles: PropTypes.object
+  myTeamMemberId: PropTypes.string.isRequired,
+  styles: PropTypes.object,
+  teamId: PropTypes.string
 };
 
 const inputPlaceholderStyles = makePlaceholderStyles(defaultColor);
@@ -71,7 +96,16 @@ const inputFocusActive = {
 
 const styleThunk = () => ({
   root: {
-    position: 'relative'
+    backgroundColor: 'transparent',
+    color: appTheme.palette.cool,
+    fontSize: appTheme.typography.s3,
+    position: 'relative',
+    width: '100%',
+    zIndex: 100,
+
+    ':hover': {
+      backgroundColor: appTheme.palette.dark20l
+    }
   },
 
   input: {

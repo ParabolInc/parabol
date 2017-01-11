@@ -5,11 +5,20 @@ import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import {cashay} from 'cashay';
 import {nextPage, updateCompleted} from 'universal/modules/welcome/ducks/welcomeDuck';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
+import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
+import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
+import shouldValidate from 'universal/validation/shouldValidate';
+
+const validate = (values) => {
+  const welcomeSchema = makeUpdatedUserSchema();
+  return welcomeSchema(values).errors;
+};
 
 const reduxFormOptions = {
   form: 'welcomeWizard',
-  destroyOnUnmount: false
-  // TODO: add validations
+  destroyOnUnmount: false,
+  shouldValidate,
+  validate
 };
 
 @reduxForm(reduxFormOptions)
@@ -32,7 +41,7 @@ export default class Step1PreferredName extends Component {
 
   onPreferredNameSubmit = (submissionData) => {
     const {dispatch, user} = this.props;
-    const {preferredName: newPreferredName} = submissionData;
+    const newPreferredName = submissionData.preferredName.trim();
     const options = {
       variables: {
         updatedUser: {
@@ -50,7 +59,7 @@ export default class Step1PreferredName extends Component {
   };
 
   render() {
-    const {handleSubmit, preferredName, placeholderTheme} = this.props;
+    const {handleSubmit, preferredName} = this.props;
     return (
       <div>{/* Div for that flexy flex */}
         <WelcomeHeading copy={<span>Please type in your name:</span>}/>
@@ -63,7 +72,7 @@ export default class Step1PreferredName extends Component {
             hasButton
             isLarger
             name="preferredName"
-            placeholder={placeholderTheme.preferredName}
+            placeholder={randomPlaceholderTheme.preferredName}
             shortcutHint="Press enter"
             type="text"
           />

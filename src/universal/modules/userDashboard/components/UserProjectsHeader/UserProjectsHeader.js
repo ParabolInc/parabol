@@ -1,7 +1,4 @@
 import React, {PropTypes} from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import {
   DashSectionControl,
@@ -9,9 +6,9 @@ import {
   DashSectionHeader,
   DashSectionHeading
 } from 'universal/components/Dashboard';
-import FontAwesome from 'react-fontawesome';
 import {Menu, MenuItem} from 'universal/modules/menu';
 import {filterTeam} from 'universal/modules/userDashboard/ducks/userDashDuck';
+import DashFilterToggle from 'universal/components/DashFilterToggle/DashFilterToggle';
 
 const inlineBlock = {
   display: 'inline-block',
@@ -20,17 +17,8 @@ const inlineBlock = {
   verticalAlign: 'middle'
 };
 
-const inlineBlockTop = {
-  ...inlineBlock,
-  verticalAlign: 'top'
-};
-
 const UserProjectsHeader = (props) => {
-  const {dispatch, styles, teams, teamFilterId, teamFilterName} = props;
-  const toggle = (label) =>
-    <div className={css(styles.button)} title={`Filter by ${label}`}>
-      <span style={inlineBlockTop}>{label}</span> <FontAwesome name="chevron-circle-down" style={inlineBlockTop} />
-    </div>;
+  const {dispatch, teams, teamFilterId, teamFilterName} = props;
   return (
     <DashSectionHeader>
       <DashSectionHeading icon="calendar" label="My Projects" />
@@ -43,9 +31,11 @@ const UserProjectsHeader = (props) => {
             label="Filter by:"
             menuKey="UserDashFilterTeam"
             menuOrientation="right"
-            toggle={toggle(teamFilterName)}
+            toggle={DashFilterToggle}
+            toggleLabel={teamFilterName}
             toggleHeight={ui.dashSectionHeaderLineHeight}
             verticalAlign="top"
+            zIndex="500"
           >
             <MenuItem
               isActive={teamFilterId === null}
@@ -71,24 +61,9 @@ const UserProjectsHeader = (props) => {
 UserProjectsHeader.propTypes = {
   children: PropTypes.any,
   dispatch: PropTypes.func,
-  styles: PropTypes.object,
   teams: PropTypes.array,
   teamFilterId: PropTypes.string,
   teamFilterName: PropTypes.string
 };
 
-const styleThunk = () => ({
-  button: {
-    ...inlineBlock,
-    color: appTheme.palette.mid,
-
-    ':hover': {
-      color: appTheme.palette.dark
-    },
-    ':focus': {
-      color: appTheme.palette.dark
-    }
-  }
-});
-
-export default withStyles(styleThunk)(UserProjectsHeader);
+export default UserProjectsHeader;

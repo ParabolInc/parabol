@@ -29,14 +29,14 @@ const Welcome = (props) => {
           currentDot={page}
           clickFactory={progressDotClickFactory}
         />
-        {page === 1 && <Step1PreferredName completed={completed} {...props}/>}
-        {page === 2 && <Step2TeamName completed={completed} {...props}/>}
-        {page === 3 && <Step3InviteTeam {...props}/>}
+        {page === 1 && <Step1PreferredName {...props} completed={completed} />}
+        {page === 2 && <Step2TeamName {...props} completed={completed} />}
+        {page === 3 && <Step3InviteTeam {...props} />}
       </WelcomeContent>
       <Link
-        className={css(styles.logout)}
+        className={css(styles.signout)}
         title="Sign Out"
-        to="/logout"
+        to="/signout"
       >
         <FontAwesome
           name="sign-out"
@@ -50,7 +50,6 @@ Welcome.propTypes = {
   dispatch: PropTypes.func,
   invitees: PropTypes.array,
   inviteesRaw: PropTypes.string,
-  placeholderTheme: PropTypes.object,
   preferredName: PropTypes.string,
   progressDotClickFactory: PropTypes.func,
   styles: PropTypes.object.isRequired,
@@ -65,7 +64,7 @@ Welcome.propTypes = {
 };
 
 const styleThunk = () => ({
-  logout: {
+  signout: {
     alignSelf: 'flex-end'
   }
 });

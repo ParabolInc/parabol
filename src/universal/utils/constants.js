@@ -6,6 +6,9 @@ export const APP_REDUX_KEY = `${APP_NAME}:redux`;
 // eslint-disable-next-line global-require
 export const APP_VERSION = require('../../../package.json').version;
 export const APP_VERSION_KEY = `${APP_NAME}:version`;
+export const APP_WEBPACK_PUBLIC_PATH_DEFAULT = '/static/';
+export const APP_CDN_USER_ASSET_SUBDIR = '/store';
+export const APP_MAX_AVATAR_FILE_SIZE = 1024 * 1024;
 
 /* Phases */
 export const LOBBY = 'lobby';
@@ -26,12 +29,14 @@ export const DONE = 'done';
 export const FUTURE = 'future';
 export const columnArray = [DONE, ACTIVE, STUCK, FUTURE];
 
-/* Outcome Type */
+/* Drag-n-Drop Items*/
 export const ACTION = 'action';
 export const PROJECT = 'project';
+export const AGENDA_ITEM = 'agendaItem';
 
 /* Sorting */
 export const SORT_STEP = 1;
+export const MIN_SORT_RESOLUTION = 1e-20;
 
 /* Areas */
 export const MEETING = 'meeting';

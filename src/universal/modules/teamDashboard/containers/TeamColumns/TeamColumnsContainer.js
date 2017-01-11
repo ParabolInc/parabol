@@ -35,32 +35,73 @@ const resolveTeamProjects = (teamMembers) => {
   return resolveTeamProjects.cache;
 };
 
+const mutationHandlers = {
+  updateProject(optimisticUpdates, queryResponse, currentResponse) {
+    if (optimisticUpdates) {
+      const {updatedProject} = optimisticUpdates;
+      if (updatedProject && updatedProject.hasOwnProperty('teamSort')) {
+        const {id, teamSort, status} = updatedProject;
+        const {teamMembers} = currentResponse;
+        for (let i = 0; i < teamMembers.length; i++) {
+          const teamMember = teamMembers[i];
+          const fromProject = teamMember.projects.find((action) => action.id === id);
+          if (fromProject) {
+            if (teamSort !== undefined) {
+              fromProject.teamSort = teamSort;
+            }
+            if (status) {
+              fromProject.status = status;
+            }
+            // no need to sort since the resolveTeamProjects function will do that next
+            return currentResponse;
+          }
+        }
+      }
+    }
+    return undefined;
+  }
+};
+
 const mapStateToProps = (state, props) => {
   const {teamId} = props;
-  const teamColumnsSub = cashay.query(teamColumnsSubQuery, {
+  const {teamMemberFilterId} = state.teamDashboard;
+  const key = teamMemberFilterId || teamId;
+  const filterFn = teamMemberFilterId ? (doc) => doc.id === teamMemberFilterId : () => true;
+  const {teamMembers} = cashay.query(teamColumnsSubQuery, {
     op: 'teamColumnsContainer',
-    key: teamId,
+    filter: {
+      teamMembers: filterFn
+    },
+    key,
+    mutationHandlers,
     variables: {teamId},
-  });
-  const {teamMembers} = teamColumnsSub.data;
+  }).data;
   const projects = resolveTeamProjects(teamMembers);
   return {
     projects,
-    teamMembers,
-    myTeamMemberId: `${state.auth.obj.sub}::${teamId}`
+    myTeamMemberId: `${state.auth.obj.sub}::${teamId}`,
+    teamId,
+    teamMembers
   };
 };
 
+
 const TeamColumnsContainer = (props) => {
-  const {myTeamMemberId, projects} = props;
+  const {myTeamMemberId, projects, teamId} = props;
   return (
-    <ProjectColumns myTeamMemberId={myTeamMemberId} projects={projects} area={TEAM_DASH}/>
+    <ProjectColumns
+      myTeamMemberId={myTeamMemberId}
+      projects={projects}
+      queryKey={teamId}
+      area={TEAM_DASH}
+    />
   );
 };
 
 TeamColumnsContainer.propTypes = {
   myTeamMemberId: PropTypes.string,
-  projects: PropTypes.object
+  projects: PropTypes.object,
+  teamId: PropTypes.string.isRequired
 };
 
 export default connect(mapStateToProps)(TeamColumnsContainer);

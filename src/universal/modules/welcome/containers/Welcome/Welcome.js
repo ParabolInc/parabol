@@ -4,13 +4,13 @@ import {formValueSelector} from 'redux-form';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {goToPage} from 'universal/modules/welcome/ducks/welcomeDuck';
 import Welcome from 'universal/modules/welcome/components/Welcome/Welcome';
-import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 
 const selector = formValueSelector('welcomeWizard');
+const rawSelector = formValueSelector('welcomeWizardRawInvitees');
 
 const mapStateToProps = (state) => ({
   invitees: selector(state, 'invitees'),
-  inviteesRaw: selector(state, 'inviteesRaw'),
+  inviteesRaw: rawSelector(state, 'inviteesRaw'),
   preferredName: selector(state, 'preferredName'),
   teamName: selector(state, 'teamName'),
   authToken: state.authToken,
@@ -28,7 +28,6 @@ const WelcomeContainer = (props) => {
   return (
     <Welcome
       {...props}
-      placeholderTheme={randomPlaceholderTheme}
       progressDotClickFactory={progressDotClickFactory}
       title="Welcome"
     />
@@ -42,6 +41,7 @@ WelcomeContainer.propTypes = {
   preferredName: PropTypes.string,
   teamName: PropTypes.string,
   welcome: PropTypes.shape({
+    existingInvites: PropTypes.array,
     teamId: PropTypes.string,
     teamMemberId: PropTypes.string
   })

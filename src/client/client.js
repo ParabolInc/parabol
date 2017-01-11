@@ -10,7 +10,6 @@ import cashaySchema from 'cashay!../server/utils/getCashaySchema.js';
 // const {routing} = window.__INITIAL_STATE__; // eslint-disable-line no-underscore-dangle
 const initialState = {};
 
-
 (async() => {
   const store = await makeStore(initialState);
   // Create the Cashay singleton:

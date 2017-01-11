@@ -1,6 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
-import {getUserId, requireSUOrTeamMember, requireWebsocket} from '../authorization';
-import {errorObj} from '../utils';
+import {getUserId, requireAuth, requireSUOrTeamMember, requireWebsocket} from '../authorization';
+import {ensureUniqueId, errorObj, handleSchemaErrors} from '../utils';
 import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
 import {
   GraphQLNonNull,
@@ -30,6 +30,9 @@ import tmsSignToken from 'server/graphql/models/tmsSignToken';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
+import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
+import makeStep2Schema from 'universal/validation/makeStep2Schema';
+import makeAddTeamServerSchema from 'universal/validation/makeAddTeamServerSchema';
 
 export default {
   moveMeeting: {
@@ -66,23 +69,26 @@ export default {
        console.log('nextPhaseItem');
        console.log(nextPhaseItem);
        */
+      // AUTH
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
-      if (nextPhase && !phaseArray.includes(nextPhase)) {
-        throw errorObj({_error: `${nextPhase} is not a valid phase`});
-      }
 
+      // BAILOUT
       if (force) {
         // use this if the meeting hit an infinite redirect loop. should never occur
         await r.table('Team').get(teamId).update({
-          facilitatorPhase: nextPhase,
-          facilitatorPhaseItem: nextPhaseItem,
-          meetingPhase: nextPhase,
-          meetingPhaseItem: nextPhaseItem,
+          facilitatorPhase: CHECKIN,
+          facilitatorPhaseItem: 1,
+          meetingPhase: CHECKIN,
+          meetingPhaseItem: 1,
         });
         return true;
       }
 
+      // VALIDATION
+      if (nextPhase && !phaseArray.includes(nextPhase)) {
+        throw errorObj({_error: `${nextPhase} is not a valid phase`});
+      }
       const team = await r.table('Team').get(teamId);
       const {activeFacilitator, facilitatorPhase, meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = team;
       if (nextPhase === CHECKIN || nextPhase === UPDATES) {
@@ -109,21 +115,18 @@ export default {
 
       const userId = getUserId(authToken);
       const teamMemberId = `${userId}::${teamId}`;
-      /*
-       console.log('team');
-       console.log(JSON.stringify(team));
-       */
       if (activeFacilitator !== teamMemberId) {
         throw errorObj({_error: 'Only the facilitator can advance the meeting'});
       }
+
+      // RESOLUTION
       const isSynced = facilitatorPhase === meetingPhase && facilitatorPhaseItem === meetingPhaseItem;
       let incrementsProgress;
-      if (phaseOrder(nextPhase) - phaseOrder(meetingPhase) === 1) {
+      if (nextPhase && (phaseOrder(nextPhase) - phaseOrder(meetingPhase) === 1)) {
         // console.log('phaseOrder increments progress');
         // meeting phase has progressed forward:
         incrementsProgress = true;
-      } else if (typeof nextPhase === 'undefined' &&
-        meetingPhase === CHECKIN || meetingPhase === UPDATES || meetingPhase === AGENDA_ITEMS) {
+      } else if (!nextPhase && hasPhaseItem(meetingPhase)) {
         // console.log('phaseItem increments progress');
         // same phase, and meeting phase item has incremented forward:
         incrementsProgress = nextPhaseItem - meetingPhaseItem === 1;
@@ -182,10 +185,14 @@ export default {
     },
     async resolve(source, {facilitatorId}, {authToken, socket}) {
       const r = getRethink();
+
+      // AUTH
       // facilitatorId is of format 'userId::teamId'
       const [, teamId] = facilitatorId.split('::');
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
+
+      // RESOLUTION
       const facilitatorMembership = await r.table('TeamMember').get(facilitatorId);
       if (!facilitatorMembership || !facilitatorMembership.isNotRemoved) {
         throw errorObj({_error: 'facilitator is not active on that team'});
@@ -232,7 +239,11 @@ export default {
     },
     async resolve(source, {teamId}, {authToken}) {
       const r = getRethink();
+
+      // AUTH
       requireSUOrTeamMember(authToken, teamId);
+
+      // RESOLUTION
       const now = new Date();
       await r.table('Meeting')
         .getAll(teamId, {index: 'teamId'})
@@ -245,16 +256,31 @@ export default {
             .filter({isActive: true, isComplete: true})
             .map((doc) => doc('id'))
             .coerceTo('array')
-            .do((agendaItemIds) => {
+            .do((agendaItemIds) => ({
+              // delete any null actions
+              deletedActions: r.table('Action')
+                .getAll(r.args(agendaItemIds), {index: 'agendaId'})
+                .filter((row) => row('content').eq(null))
+                .delete(),
+              deletedProjects: r.table('Project')
+                .getAll(r.args(agendaItemIds), {index: 'agendaId'})
+                .filter((row) => row('content').eq(null))
+                .delete(),
+              agendaItemIds
+            }))
+            .do((res) => {
               return {
                 actions: r.table('Action')
-                  .getAll(r.args(agendaItemIds), {index: 'agendaId'})
+                  .getAll(r.args(res('agendaItemIds')), {index: 'agendaId'})
+                  // we still need to filter because this may occur before we delete them above (not guaranteed in sync)
+                  .filter((row) => row('content').ne(null))
                   .map(row => row.merge({id: meetingId.add('::').add(row('id'))}))
                   .pluck('id', 'content', 'teamMemberId')
                   .coerceTo('array'),
-                agendaItemsCompleted: agendaItemIds.count(),
+                agendaItemsCompleted: res('agendaItemIds').count(),
                 projects: r.table('Project')
-                  .getAll(r.args(agendaItemIds), {index: 'agendaId'})
+                  .getAll(r.args(res('agendaItemIds')), {index: 'agendaId'})
+                  .filter((row) => row('content').ne(null))
                   .map(row => row.merge({id: meetingId.add('::').add(row('id'))}))
                   .pluck('id', 'content', 'status', 'teamMemberId')
                   .coerceTo('array')
@@ -349,7 +375,11 @@ export default {
     },
     async resolve(source, {teamId}, {authToken}) {
       const r = getRethink();
+
+      // AUTH
       requireSUOrTeamMember(authToken, teamId);
+
+      // RESOLUTION
       // reset the meeting
       await r.table('Team').get(teamId)
         .update({
@@ -372,24 +402,35 @@ export default {
         description: 'The new team object with exactly 1 team member'
       },
       invitees: {
-        type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Invitee)))
+        type: new GraphQLList(new GraphQLNonNull(Invitee))
       }
     },
-    async resolve(source, {invitees, newTeam}, {authToken, socket}) {
+    async resolve(source, args, {authToken, socket}) {
+      // AUTH
       requireWebsocket(socket);
+
+      // VALIDATION
+      const schema = makeAddTeamServerSchema({inviteEmails: [], teamMemberEmails: []});
+      const {data: {invitees, newTeam}, errors} = schema(args);
       const teamId = newTeam.id;
+      handleSchemaErrors(errors);
+      await ensureUniqueId('Team', teamId);
+
+      // RESOLUTION
       const authTokenObj = socket.getAuthToken();
       authTokenObj.tms = Array.isArray(authTokenObj.tms) ? authTokenObj.tms.concat(teamId) : [teamId];
       socket.setAuthToken(authTokenObj);
       await createTeamAndLeader(authToken, newTeam);
-      await asyncInviteTeam(authToken, teamId, invitees);
+      if (invitees && invitees.length) {
+        await asyncInviteTeam(authToken, teamId, invitees);
+      }
       return true;
     }
   },
   createTeam: {
     // return the new JWT that has the new tms field
     type: GraphQLID,
-    description: 'Create a new team and add the first team member',
+    description: 'Create a new team and add the first team member. Called from the welcome wizard',
     args: {
       newTeam: {
         type: new GraphQLNonNull(CreateTeamInput),
@@ -397,9 +438,18 @@ export default {
       }
     },
     async resolve(source, {newTeam}, {authToken}) {
-      const tms = await createTeamAndLeader(authToken, newTeam);
+      // AUTH
+      requireAuth(authToken);
+
+      // VALIDATION
+      const schema = makeStep2Schema();
+      const {data: validNewTeam, errors} = schema(newTeam);
+      handleSchemaErrors(errors);
+      await ensureUniqueId('Team', newTeam.id);
+
+      // RESOLUTION
+      const tms = await createTeamAndLeader(authToken, validNewTeam);
       return tmsSignToken(authToken, tms);
-      // TODO: trigger welcome email
     }
   },
   changeFacilitator: {
@@ -413,14 +463,20 @@ export default {
     },
     async resolve(source, {facilitatorId}, {authToken, socket}) {
       const r = getRethink();
+
+      // AUTH
       // facilitatorId is of format 'userId::teamId'
       const [, teamId] = facilitatorId.split('::');
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
+
+      // VALIDATION
       const facilitatorMembership = await r.table('TeamMember').get(facilitatorId);
       if (!facilitatorMembership || !facilitatorMembership.isNotRemoved) {
         throw errorObj({_error: 'facilitator is not active on that team'});
       }
+
+      // RESOLUTION
       await r.table('Team').get(teamId).update({activeFacilitator: facilitatorId});
       return true;
     }
@@ -435,12 +491,18 @@ export default {
     },
     async resolve(source, {updatedTeam}, {authToken}) {
       const r = getRethink();
-      const {id, name} = updatedTeam;
-      requireSUOrTeamMember(authToken, id);
+
+      // AUTH
+      requireSUOrTeamMember(authToken, updatedTeam.id);
+
+      // VALIDATION
+      const schema = makeStep2Schema();
+      const {errors, data: {id, name}} = schema(updatedTeam);
+      handleSchemaErrors(errors);
+
+      // RESOLUTION
       await r.table('Team').get(id).update({name});
       return true;
-      // TODO think hard about if we can pluck only the changed values (in this case, name)
-      // return updatedOrOriginal(teamFromDB, updatedTeam);
     }
   }
 };

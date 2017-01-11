@@ -41,6 +41,9 @@ const mapStateToProps = (state, props) => {
     variables: {teamId},
     resolveCached: {
       teamMember: (source) => source.teamMemberId
+    },
+    sort: {
+      archivedProjects: (a, b) => b.updatedAt - a.updatedAt
     }
   });
   const {archivedProjects} = teamArchiveContainer.data;

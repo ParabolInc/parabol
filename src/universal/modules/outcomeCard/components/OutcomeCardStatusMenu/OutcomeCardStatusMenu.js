@@ -23,6 +23,7 @@ const OutcomeCardStatusMenu = (props) => {
 
   const archiveProject = () => {
     const options = {
+      ops: {},
       variables: {
         updatedProject: {
           id: outcomeId,
@@ -64,6 +65,7 @@ const OutcomeCardStatusMenu = (props) => {
       return;
     }
     const options = {
+      ops: {},
       variables: {
         updatedProject: {
           id: outcomeId,

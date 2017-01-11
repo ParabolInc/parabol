@@ -25,15 +25,12 @@ const OutcomeCard = (props) => {
     hoverOn,
     hoverOff,
     openArea,
-    toggleAssignMenu,
-    openContentMenu,
-    toggleStatusMenu,
+    openMenu,
     outcome,
     styles,
     teamMembers,
     unarchiveProject
   } = props;
-
   const isProject = Boolean(outcome.status);
   const {isArchived, status} = outcome;
   const rootStyles = css(
@@ -42,7 +39,7 @@ const OutcomeCard = (props) => {
     isProject ? styles[status] : styles.isAction,
     isArchived && styles.isArchived
   );
-
+  const openContentMenu = openMenu('content');
   return (
     <div className={rootStyles} onMouseEnter={hoverOn} onMouseLeave={hoverOff} >
       {openArea === 'assign' &&
@@ -86,8 +83,8 @@ const OutcomeCard = (props) => {
         hasOpenStatusMenu={openArea === 'status'}
         outcome={outcome}
         showTeam={area === USER_DASH}
-        toggleAssignMenu={toggleAssignMenu}
-        toggleStatusMenu={toggleStatusMenu}
+        toggleAssignMenu={openMenu('assign')}
+        toggleStatusMenu={openMenu('status')}
         unarchiveProject={unarchiveProject}
       />
     </div>
@@ -105,9 +102,7 @@ OutcomeCard.propTypes = {
   hoverOn: PropTypes.func,
   hoverOff: PropTypes.func,
   openArea: PropTypes.string,
-  toggleAssignMenu: PropTypes.func,
-  toggleStatusMenu: PropTypes.func,
-  openContentMenu: PropTypes.func,
+  openMenu: PropTypes.func,
   styles: PropTypes.object,
   outcome: PropTypes.shape({
     id: PropTypes.string,
@@ -135,7 +130,7 @@ const styleThunk = () => ({
     backgroundColor: '#fff',
     border: `1px solid ${ui.cardBorderColor}`,
     borderRadius: ui.cardBorderRadius,
-    maxWidth: '20rem',
+    maxWidth: ui.cardMaxWidth,
     minHeight: ui.cardMinHeight,
     paddingTop: '.1875rem',
     position: 'relative',

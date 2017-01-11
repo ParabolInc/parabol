@@ -9,7 +9,7 @@ import MeetingMain from 'universal/modules/meeting/components/MeetingMain/Meetin
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import {UPDATES, phaseOrder, MEETING} from 'universal/utils/constants';
-import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
+import ProgressBarContainer from 'universal/modules/meeting/containers/ProgressBarContainer/ProgressBarContainer';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
 import makeUsername from 'universal/utils/makeUsername';
 
@@ -19,6 +19,7 @@ const MeetingUpdates = (props) => {
     gotoNext,
     localPhaseItem,
     members,
+    queryKey,
     projects,
     styles,
     team
@@ -31,13 +32,13 @@ const MeetingUpdates = (props) => {
   const username = makeUsername(currentTeamMember.preferredName);
   return (
     <MeetingMain>
-      <MeetingSection paddingBottom="2rem" paddingTop=".75rem">
-        <ProgressBar
+      <MeetingSection>
+        <ProgressBarContainer
           gotoItem={gotoItem}
           isComplete={isComplete}
           facilitatorPhaseItem={facilitatorPhaseItem}
-          meetingPhaseItem={meetingPhaseItem}
           localPhaseItem={localPhaseItem}
+          meetingPhaseItem={meetingPhaseItem}
           membersCount={members.length}
         />
       </MeetingSection>
@@ -73,7 +74,7 @@ const MeetingUpdates = (props) => {
           </div>
         </div>
         <div className={css(styles.body)}>
-          <ProjectColumns alignColumns="center" myTeamMemberId={self && self.id} projects={projects} area={MEETING}/>
+          <ProjectColumns alignColumns="center" myTeamMemberId={self && self.id} projects={projects} queryKey={queryKey} area={MEETING}/>
         </div>
         {/* */}
         {/* */}
@@ -89,6 +90,7 @@ MeetingUpdates.propTypes = {
   localPhaseItem: PropTypes.number.isRequired,
   members: PropTypes.array.isRequired,
   projects: PropTypes.object.isRequired,
+  queryKey: PropTypes.string.isRequired,
   styles: PropTypes.object.isRequired,
   team: PropTypes.object.isRequired,
 };
