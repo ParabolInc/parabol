@@ -10,7 +10,7 @@ import {
   GraphQLUnionType
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
-import {makeEnumValues, nonnullifyInputThunk} from '../utils';
+import {makeEnumValues} from '../utils';
 import {
   CC_EXPIRING_SOON,
   DENY_NEW_USER,

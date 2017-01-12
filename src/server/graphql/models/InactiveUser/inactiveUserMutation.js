@@ -11,7 +11,7 @@ import shortid from 'shortid';
 export default {
   inactivateUser: {
     type: GraphQLBoolean,
-    description: 'Manally inactive a user',
+    description: 'Manally inactivate a user',
     args: {
       userId: {
         type: new GraphQLNonNull(GraphQLID),
@@ -22,7 +22,7 @@ export default {
       const r = getRethink();
 
       // AUTH
-      requireOrgLeaderOfUser(authToken, userId);
+      await requireOrgLeaderOfUser(authToken, userId);
       const isInactive = await r.table('User').get('userId')('inactive');
       if (isInactive) {
         throw errorObj({_error: `${userId} is already inactive. cannot inactivate twice`})

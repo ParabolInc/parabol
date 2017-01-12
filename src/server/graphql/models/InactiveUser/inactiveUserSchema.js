@@ -12,17 +12,17 @@ export const InactiveUser = new GraphQLObjectType({
       type: GraphQLID,
       description: 'An id unique to the inactivity period'
     },
-    userId: {
-      type: GraphQLID,
-      description: 'The userId that went inactive'
+    endAt: {
+      type: GraphQLISO8601Type,
+      description: 'The date the inactivity ended'
     },
     startAt: {
       type: GraphQLISO8601Type,
       description: 'The date the inactivity started'
     },
-    endAt: {
-      type: GraphQLISO8601Type,
-      description: 'The date the inactivity ended'
+    userId: {
+      type: GraphQLID,
+      description: 'The userId that went inactive'
     }
   })
 });

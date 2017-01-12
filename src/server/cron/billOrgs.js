@@ -12,9 +12,12 @@ export default async function billOrgs() {
   const now = new Date();
   const billingThreshold = new Date(now.valueOf() + ms('1d'));
 
+  // get orgs to bill
   const orgsToBill = await r.table('Organization')
     .between(r.minval, billingThreshold, {index: 'validUntil'})
     .filter({isTrial: false});
+
+  // create invoice
 
   // TODO send to stripe
 
