@@ -127,6 +127,10 @@ export const Invoice = new GraphQLObjectType({
       type: new GraphQLList(new GraphQLNonNull(InvoiceLineItem)),
       description: 'An invoice line item for a charge'
     },
+    orgId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: '*The organization id to charge'
+    },
     paidAt: {
       type: GraphQLISO8601Type,
       description: 'The datetime the invoice received an approved payment'

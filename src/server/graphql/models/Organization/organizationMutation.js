@@ -11,6 +11,7 @@ import {handleSchemaErrors} from '../utils';
 import stripe from 'server/utils/stripe';
 import {TRIAL_EXTENSION} from 'server/utils/serverConstants';
 import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
+
 export default {
   updateOrg: {
     type: GraphQLBoolean,

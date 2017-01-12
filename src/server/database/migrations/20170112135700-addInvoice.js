@@ -1,14 +1,13 @@
 exports.up = async(r) => {
   const tables = [
-    r.tableCreate('InactiveUser'),
+    r.tableCreate('Invoice'),
   ];
   try {
     await Promise.all(tables);
   } catch (e) {
   }
   const indices = [
-    r.table('InactiveUser').indexCreate('userIdStartAt', (row) => [row('userId'), row('startAt')]),
-    r.table('InactiveUser').indexCreate('orgIdStartAt', (row) => [row('orgId'), row('startAt')]),
+    r.table('Invoice').indexCreate('orgId')
   ];
   try {
     await Promise.all(indices);
@@ -18,7 +17,7 @@ exports.up = async(r) => {
 
 exports.down = async(r) => {
   const tables = [
-    r.tableDrop('InactiveUser'),
+    r.tableDrop('Invoice'),
   ];
   await Promise.all(tables);
 };

@@ -1,4 +1,5 @@
 import {
+  GraphQLList,
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
@@ -9,6 +10,21 @@ import {
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {GraphQLURLType} from '../types';
+
+const RemovedUser = new GraphQLObjectType({
+  name: 'RemovedUser',
+  description: 'A user removed from the org',
+  fields: () => ({
+    removedAt: {
+      type: new GraphQLNonNull(GraphQLISO8601Type),
+      description: 'The datetime the user was removed from the org'
+    },
+    userId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The userId removed from the org'
+    }
+  })
+});
 
 export const creditCardFields = {
   brand: {
@@ -55,6 +71,10 @@ export const Organization = new GraphQLObjectType({
       type: GraphQLURLType,
       description: 'The org avatar'
     },
+    removedUsers: {
+      type: new GraphQLList(new GraphQLNonNull(RemovedUser)),
+      description: 'A list of users removed and the day the were kicked out of the org'
+    },
     stripeId: {
       type: GraphQLID,
       description: 'The customerId from stripe'
@@ -67,7 +87,6 @@ export const Organization = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The datetime the trial is up (if isTrial) or money is due (if !isTrial)'
     },
-    /* GraphQL sugar */
     activeUserCount: {
       type: GraphQLInt,
       description: 'The count of active members that the org is charged for'
