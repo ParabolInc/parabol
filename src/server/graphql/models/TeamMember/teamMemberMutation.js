@@ -163,6 +163,7 @@ export default {
             .getAll(userEmail, email, {index: 'email'})
             .update({
               acceptedAt: now,
+              // flag the token as expired so they cannot reuse the token
               tokenExpiration: new Date(0),
               updatedAt: now
             })

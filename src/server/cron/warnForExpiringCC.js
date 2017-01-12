@@ -28,17 +28,21 @@ export default async function warnForExpiringCC() {
     })
     .pluck('id', 'creditCard');
 
-  const expiringOrgIds = expiringOrgs.map((org) => org.id);
-  const createNotification = (org, parentId, userId) => ({
-    id: shortid.generate(),
-    parentId,
-    type: CC_EXPIRING_SOON,
-    varList: [now],
-    startAt: now,
-    endAt: new Date(now.valueOf() + ms('10y')),
-    userId,
-    orgId: org.id,
-  });
+  const createNotification = (org, parentId, userId) => {
+    const {last4, brand, expiry} = org.creditCard;
+    return {
+      id: shortid.generate(),
+      parentId,
+      type: CC_EXPIRING_SOON,
+      last4,
+      brand,
+      expiry,
+      startAt: now,
+      endAt: new Date(now.valueOf() + ms('10y')),
+      userId,
+      orgId: org.id,
+    }
+  };
 // flag teams as unpaid so subscriptions die. No need to kick them out since mutations won't do anything
   const dbPromises = [
     r.table('Team')
@@ -46,7 +50,7 @@ export default async function warnForExpiringCC() {
       .update({
         isPaid: false
       }),
-    notifyOrgLeaders(orgs, createNotification)
+    notifyOrgLeaders(expiringOrgs, createNotification)
   ];
   await Promise.all(dbPromises);
 }

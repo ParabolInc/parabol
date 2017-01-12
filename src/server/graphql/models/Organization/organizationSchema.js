@@ -10,22 +10,26 @@ import {
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {GraphQLURLType} from '../types';
 
+export const creditCardFields = {
+  brand: {
+    type: GraphQLString,
+    description: 'The brand of the credit card, as provided by skype'
+  },
+  expiry: {
+    type: GraphQLString,
+    description: 'The MM/YY string of the expiration date'
+  },
+  last4: {
+    type: GraphQLInt,
+    description: 'The last 4 digits of a credit card'
+  }
+};
+
 const CreditCard = new GraphQLObjectType({
   name: 'CreditCard',
   description: 'A credit card',
   fields: () => ({
-    brand: {
-      type: GraphQLString,
-      description: 'The brand of the credit card, as provided by skype'
-    },
-    expiry: {
-      type: GraphQLString,
-      description: 'The MM/YY string of the expiration date'
-    },
-    last4: {
-      type: GraphQLInt,
-      description: 'The last 4 digits of a credit card'
-    }
+    ...creditCardFields
   })
 });
 

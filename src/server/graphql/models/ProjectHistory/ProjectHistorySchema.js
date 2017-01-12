@@ -8,15 +8,16 @@ GraphQLEnumType
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {ProjectStatus} from '../Project/projectSchema';
 import {USER_DASH, TEAM_DASH, MEETING} from 'universal/utils/constants';
+import {makeEnumValues} from 'server/graphql/models/utils';
 
 export const ChangeModule = new GraphQLEnumType({
   name: 'ChangeModule',
   description: 'The module where the change occured',
-  values: {
-    MEETING: {value: MEETING},
-    TEAM_DASH: {value: TEAM_DASH},
-    USER_DASH: {value: USER_DASH}
-  }
+  values: makeEnumValues([
+    MEETING,
+    TEAM_DASH,
+    USER_DASH
+    ])
 });
 // const ContentDiff = new GraphQLObjectType({
 //   old: {type: GraphQLString, description: 'The content as it was in the task'},

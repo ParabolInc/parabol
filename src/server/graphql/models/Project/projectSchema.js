@@ -9,17 +9,17 @@ import {
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
-import {nonnullifyInputThunk} from '../utils';
+import {makeEnumValues, nonnullifyInputThunk} from '../utils';
 
 export const ProjectStatus = new GraphQLEnumType({
   name: 'ProjectStatus',
   description: 'The status of the project',
-  values: {
-    [ACTIVE]: {value: ACTIVE},
-    [STUCK]: {value: STUCK},
-    [DONE]: {value: DONE},
-    [FUTURE]: {value: FUTURE}
-  }
+  values: makeEnumValues([
+    [ACTIVE],
+    [STUCK],
+    [DONE],
+    [FUTURE]
+  ])
 });
 
 export const Project = new GraphQLObjectType({

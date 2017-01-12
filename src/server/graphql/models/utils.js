@@ -93,3 +93,10 @@ export function updatedOrOriginal(possiblyUpdatedResult, original) {
   }
   return original;
 }
+
+export function makeEnumValues(constArr) => {
+  return constArr.reduce((values, constant) => {
+    values[constant] = {value: constant};
+    return values;
+  }, {})
+}

@@ -53,7 +53,6 @@ exports.up = async(r) => {
       expiresSoonId: shortid.generate(),
       expiredId: shortid.generate(),
       trialExpiresAt,
-      varList: [trialExpiresAt]
     };
   }, {});
   const orggedTeamLeaders = teamLeaders.map((teamLeader) => {
@@ -92,6 +91,7 @@ exports.up = async(r) => {
                     id: orgLeader('expiresSoonId'),
                     parentId: orgLeader('expiresSoonId'),
                     type: TRIAL_EXPIRES_SOON,
+                    trialExpiresAt: trialExpiresAt,
                     varList: orgLeader('varList'),
                     startAt: new Date(now + ms('14d')),
                     endAt: trialExpiresAt,

@@ -15,7 +15,7 @@ export default async function expireOrgs() {
     id: shortid.generate(),
     parentId,
     type: TRIAL_EXPIRED,
-    varList: [now],
+    trialExpiresAt: now,
     startAt: now,
     endAt: new Date(now.valueOf() + ms('10y')),
     userId,

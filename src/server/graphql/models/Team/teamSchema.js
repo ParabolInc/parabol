@@ -9,7 +9,7 @@ import {
   GraphQLList,
   GraphQLEnumType
 } from 'graphql';
-import {nonnullifyInputThunk} from '../utils';
+import {makeEnumValues, nonnullifyInputThunk} from '../utils';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {TeamMember} from '../TeamMember/teamMemberSchema';
 import {AgendaItem} from '../AgendaItem/agendaItemSchema';
@@ -18,15 +18,15 @@ import {LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY} f
 export const Phase = new GraphQLEnumType({
   name: 'Phase',
   description: 'The phase of the meeting',
-  values: {
-    LOBBY: {value: LOBBY},
-    CHECKIN: {value: CHECKIN},
-    UPDATES: {value: UPDATES},
-    FIRST_CALL: {value: FIRST_CALL},
-    AGENDA_ITEMS: {value: AGENDA_ITEMS},
-    LAST_CALL: {value: LAST_CALL},
-    SUMMARY: {value: SUMMARY}
-  }
+  values: makeEnumValues([
+    LOBBY,
+    CHECKIN,
+    UPDATES,
+    FIRST_CALL,
+    AGENDA_ITEMS,
+    LAST_CALL,
+    SUMMARY
+    ])
 });
 
 export const Team = new GraphQLObjectType({

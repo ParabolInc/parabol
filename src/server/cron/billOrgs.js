@@ -26,9 +26,10 @@ export default async function billOrgs() {
     const notifications = orgLeaderIds.map((userId) => {
       return {
         id: shortid.generate(),
+        errorMessage,
+        last4,
         parentId,
         type: PAYMENT_REJECTED,
-        varList: [errorMessage, last4],
         startAt: now,
         endAt: new Date(now.valueOf() + ms('10y')),
         userId,

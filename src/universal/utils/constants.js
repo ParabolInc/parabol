@@ -49,23 +49,25 @@ export const USER_DASH = 'userDash';
  */
 
 // Sent to billing leaders when their trial will expire in < 2 weeks
-// varList: [trialExpiresAt]
 export const TRIAL_EXPIRES_SOON = 'TRIAL_EXPIRES_SOON';
 // Sent to billing leaders when their trial has expired
-// varList: [trialExpiresAt]
 export const TRIAL_EXPIRED = 'TRIAL_EXPIRED';
 // Sent to billing leaders when a reoccuring payment gets rejected
-// varList: [errorMessage, last4, brand]
 export const PAYMENT_REJECTED = 'PAYMENT_REJECTED';
 // Sent to billing leaders when an orgMember attempts to add a non-orgMember to a team
-// varList: [inviterName, inviterId, inviteeEmail, invitedTeamName, invitedTeamId]
 export const REQUEST_NEW_USER = 'REQUEST_NEW_USER';
 // Sent to the orgMember that generated the new user request
-// varList: [denyReason, leaderName]
 export const DENY_NEW_USER = 'DENY_NEW_USER';
 // Sent to users who have a credit card expiring within 60 days
-// varList: [last4, brand, expiry]
 export const CC_EXPIRING_SOON = 'CC_EXPIRING_SOON';
+export const notificationTypes = [
+  TRIAL_EXPIRES_SOON,
+  TRIAL_EXPIRED,
+  PAYMENT_REJECTED,
+  REQUEST_NEW_USER,
+  DENY_NEW_USER,
+  CC_EXPIRING_SOON
+];
 
 /* User Settings */
 export const SETTINGS = 'settings';
