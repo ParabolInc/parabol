@@ -3,7 +3,7 @@ import {CC_EXPIRING_SOON} from 'universal/utils/constants';
 import shortid from 'shortid';
 import ms from 'ms';
 import notifyOrgLeaders from './helpers/notifyOrgLeaders';
-
+import markTeamsAsUnpaid from './helpers/markTeamsAsUnpaid';
 // Run once a month, kinda expensive
 
 export default async function warnForExpiringCC() {
@@ -45,11 +45,7 @@ export default async function warnForExpiringCC() {
   };
 // flag teams as unpaid so subscriptions die. No need to kick them out since mutations won't do anything
   const dbPromises = [
-    r.table('Team')
-      .getAll(r.args(expiredOrgIds), {index: 'orgId'})
-      .update({
-        isPaid: false
-      }),
+    markTeamsAsUnpaid(expiringOrgs),
     notifyOrgLeaders(expiringOrgs, createNotification)
   ];
   await Promise.all(dbPromises);

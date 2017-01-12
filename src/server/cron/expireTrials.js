@@ -2,15 +2,16 @@ import getRethink from 'server/database/rethinkDriver';
 import {TRIAL_EXPIRED} from 'universal/utils/constants';
 import shortid from 'shortid';
 import ms from 'ms';
+import markTeamsAsUnpaid from './helpers/markTeamsAsUnpaid';
 import notifyOrgLeaders from './helpers/notifyOrgLeaders';
 
 export default async function expireOrgs() {
   const r = getRethink();
   const now = new Date();
-  const expiredOrgIds = await r.table('Organization')
+  const expiredOrgs = await r.table('Organization')
     .between(r.minval, now, {index: 'validUntil'})
-    .filter({isTrial: true})('id');
-
+    .filter({isTrial: true})
+    .pluck('id');
   const createNotification = (orgId, parentId, userId) => ({
     id: shortid.generate(),
     parentId,
@@ -24,12 +25,8 @@ export default async function expireOrgs() {
 
   // flag teams as unpaid so subscriptions die. No need to kick them out since mutations won't do anything
   const dbPromises = [
-    r.table('Team')
-      .getAll(r.args(expiredOrgIds), {index: 'orgId'})
-      .update({
-        isPaid: false
-      }),
-    notifyOrgLeaders(expiredOrgIds, createNotification)
+    markTeamsAsUnpaid(expiredOrgs),
+    notifyOrgLeaders(expiredOrgs, createNotification)
   ];
   await Promise.all(dbPromises);
 
