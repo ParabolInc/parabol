@@ -161,6 +161,10 @@ export const User = new GraphQLObjectType({
 
 const profileInputThunk = () => ({
   id: {type: GraphQLID, description: 'The unique userId'},
+  picture: {
+    type: GraphQLURLType,
+    description: 'A link to the user\'s profile image.'
+  },
   preferredName: {
     type: GraphQLString,
     description: 'The name, as confirmed by the user'

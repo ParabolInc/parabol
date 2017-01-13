@@ -1,11 +1,13 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 import Button from 'universal/components/Button/Button';
 import InputField from 'universal/components/InputField/InputField';
 import {Field} from 'redux-form';
+import {ACTIVITY_WELCOME} from 'universal/modules/userDashboard/ducks/settingsDuck';
 import {randomPreferredName} from 'universal/utils/makeRandomPlaceholder';
+import Avatar from 'universal/components/Avatar/Avatar';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import {ACTIVITY_WELCOME} from 'universal/modules/userDashboard/ducks/settingsDuck';
+import FileInput from 'universal/components/FileInput/FileInput';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
 import {SETTINGS} from 'universal/utils/constants';
 
@@ -21,15 +23,26 @@ const renderActivity = (activity) => {
   return null;
 };
 
-const SettingsMain = (props) => {
-  const {activity, handleSubmit, onSubmit, styles} = props;
+const UserSettings = (props) => {
+  const {activity, handleSubmit, onSubmit, styles, user: {picture}} = props;
   return (
     <UserSettingsWrapper activeTab={SETTINGS}>
       <div className={css(styles.body)}>
-        <div className={css(styles.row)}>
-          {renderActivity(activity)}
-        </div>
         <form className={css(styles.root)} onSubmit={handleSubmit(onSubmit)}>
+          <div className={css(styles.row)}>
+            {renderActivity(activity)}
+          </div>
+          <div className={css(styles.row)}>
+            <Avatar hasBadge={false} picture={picture} size="large"/>
+          </div>
+          <div className={css(styles.row)}>
+            <Field
+              component={FileInput}
+              name="pictureFile"
+              previousValue={picture}
+              type="file"
+            />
+          </div>
           <div className={css(styles.row)}>
             <Field
               autoFocus
@@ -53,6 +66,23 @@ const SettingsMain = (props) => {
   );
 };
 
+UserSettings.propTypes = {
+  activity: PropTypes.string,          // from settingsDuck
+  dispatch: PropTypes.func,
+  handleSubmit: PropTypes.func,
+  nextPage: PropTypes.string,          // from settingsDuck
+  onSubmit: PropTypes.func,
+  router: PropTypes.object,
+  user: PropTypes.shape({
+    email: PropTypes.string,
+    id: PropTypes.string,
+    picture: PropTypes.string,
+    preferredName: PropTypes.string,
+  }),
+  userId: PropTypes.string,
+  styles: PropTypes.object
+};
+
 const styleThunk = () => ({
   root: {
     display: 'flex !important',
@@ -69,4 +99,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(SettingsMain);
+export default withStyles(styleThunk)(UserSettings);

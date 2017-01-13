@@ -154,7 +154,8 @@ get involved and how to get compensated.
 
 | Release | Summary                                    |
 |---------|--------------------------------------------|
-| v0.13.6 | Adds admin user impersonation, fix #579    |
+| v0.14.0 | Secure user avatar upload to S3 bucket     |
+| v0.13.6 | Adds admin user impersonation, fixes       |
 | v0.13.5 | Fixes: #556, #557, and #559                |
 | v0.13.4 | Fix email validation                       |
 | v0.13.3 | Validations, S3 enhancements, fixes        |
@@ -203,14 +204,8 @@ Authored and maintained by [Parabol](http://parabol.co).
 
 Copyright 2016 Parabol, Inc.
 
-Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0 (the
-"License"); you may not use this software except in compliance with the
-License.  You may obtain a copy of the License at
+Action is dual-licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
+Version 3.0 while holding, at its sole discretion, the right to create
+new licenses. For details please read [LICENSE](LICENSE).
 
-    https://www.gnu.org/licenses/agpl-3.0.en.html
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+See [CHANGELOG.md](./CHANGELOG.md)

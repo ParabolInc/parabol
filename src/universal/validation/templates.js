@@ -30,6 +30,13 @@ export const inviteesRaw = (value) => value
     }
     return undefined;
   });
+
+export const preferredName = (value) => value
+  .trim()
+  .required('That\'s not much of a name, is it?')
+  .min(2, 'C\'mon, you call that a name?')
+  .max(100, 'I want your name, not your life story');
+
 export const teamName = (value) => value
   .trim()
   .required('"The nameless wonder" is better than nothing')

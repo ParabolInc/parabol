@@ -13,6 +13,7 @@ import shortid from 'shortid';
 import {withRouter} from 'react-router';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
+import {segmentEventTrack} from 'universal/redux/segmentActions';
 
 const validate = (values) => {
   const schema = makeAddTeamSchema();
@@ -41,6 +42,9 @@ const NewTeamForm = (props) => {
     };
     cashay.mutate('addTeam', options);
     router.push(`/team/${id}`);
+    dispatch(segmentEventTrack('New Team',
+      {inviteeCount: invitees && invitees.length || 0}
+    ));
     dispatch(showSuccess({
       title: 'Team successfully created!',
       message: `Here's your new team dashboard for ${teamName}`

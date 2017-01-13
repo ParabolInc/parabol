@@ -4,14 +4,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v0.13.6 - 17-Dec-2016
+## v0.14.0 - 09-Jan-2017
+### Added
+- Implements #595; upload of user avatar images to S3
+  - Works by securely signing S3 PutObject URL
+    see [documentation](./docs/s3.md)
+- `npm run build:deploy` and `npm run build:min` commands
+
+## v0.13.6 - 20-Dec-2016
 ### Added
 - User impersonation, login as a user with knowing their credentials on route
   `/admin/impersonate/:userid`
-
-### Fixed
-- #579 when too many characters where typed into an agenda field and enter
-  was pressed, everything was lost
+- Expanded requireAuthAndRole with optional args
+- Added segment.io event on 'New Team' creation
 
 ## v0.13.5 - 12-Dec-2016
 ### Fixed
