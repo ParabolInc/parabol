@@ -5,7 +5,7 @@ import {showLock} from 'universal/components/Auth0ShowLock/Auth0ShowLock';
 import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
 import injectGlobals from 'universal/styles/hepha';
 import auth0Overrides from 'universal/styles/theme/auth0Overrides';
-import {showWarning} from 'universal/modules/notifications/ducks/notifications';
+import {showInfo} from 'universal/modules/notifications/ducks/notifications';
 import {APP_UPGRADE_PENDING_KEY} from 'universal/utils/constants';
 
 @loginWithToken
@@ -29,18 +29,15 @@ export default class LandingContainer extends Component {
     const {dispatch} = this.props;
     let loginClickHandler = () => showLock(dispatch);
     // window.localStorage only stores strings
-    if (window.localStorage.getItem(APP_UPGRADE_PENDING_KEY) == 'true') {
+    if (window.localStorage.getItem(APP_UPGRADE_PENDING_KEY) === 'true') {
       loginClickHandler = () => window.location.reload();
       window.localStorage.setItem(APP_UPGRADE_PENDING_KEY, 'false');
-      dispatch(showWarning({
+      dispatch(showInfo({
         title: 'Almost done upgrading!',
-        message: `Just click this button :)`,
-        autoDismiss: 0,
-        action: {
-          label: 'Finish upgrade',
-          callback: () => window.location.reload()
-        }
+        message: 'Just refreshing the page for you :)',
+        autoDismiss: 0
       }));
+      window.location.reload();
     }
     return (
       <div>

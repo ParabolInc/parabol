@@ -119,7 +119,7 @@ export default ComposedComponent => {
         if (versionOnServer !== versionInStorage) {
           dispatch(showWarning({
             title: 'So long!',
-            message: `Logging you out because a new version of Action is available`
+            message: 'Logging you out because a new version of Action is available'
           }));
           window.localStorage.setItem(APP_UPGRADE_PENDING_KEY, 'true');
           router.replace('/signout');
