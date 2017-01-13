@@ -68,9 +68,8 @@ export default function scConnectionHandler(exchange) {
         })
         .do(() => {
           return r.table('InactiveUser')
-            .between([userId, r.minval], [userId, r.maxval], {index: 'userIdStartAt'})
+            .getAll(userId, {index: 'userId'})
             .filter((row) => row('endAt').not())
-            .nth(0)
             .update({
               endAt: now
             })

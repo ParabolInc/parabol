@@ -7,8 +7,7 @@ exports.up = async(r) => {
   } catch (e) {
   }
   const indices = [
-    r.table('InactiveUser').indexCreate('userIdStartAt', (row) => [row('userId'), row('startAt')]),
-    r.table('InactiveUser').indexCreate('orgIdStartAt', (row) => [row('orgId'), row('startAt')]),
+    r.table('InactiveUser').indexCreate('userId')
   ];
   try {
     await Promise.all(indices);

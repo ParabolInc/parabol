@@ -18,11 +18,15 @@ export const InactiveUser = new GraphQLObjectType({
     },
     startAt: {
       type: GraphQLISO8601Type,
-      description: 'The date the inactivity started'
+      description: '*The date the inactivity started (joint-index with userId, orgId)'
+    },
+    orgId: {
+      type: GraphQLID,
+      description: 'The organization '
     },
     userId: {
       type: GraphQLID,
-      description: 'The userId that went inactive'
+      description: '*The userId that went inactive (joint-index with startAt)'
     }
   })
 });

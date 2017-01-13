@@ -2,7 +2,7 @@ import getRethink from 'server/database/rethinkDriver';
 import {PAYMENT_REJECTED} from 'universal/utils/constants';
 import shortid from 'shortid';
 import ms from 'ms';
-import {TRIAL_EXTENSION} from 'server/utils/serverConstants';
+import {INACTIVE_DAYS_THRESH, TRIAL_EXTENSION} from 'server/utils/serverConstants';
 import stripe from 'server/utils/stripe';
 
 // run at 12am everyday
@@ -25,25 +25,48 @@ export default async function billOrgs() {
 
   // create invoice
   for (let i = 0; i < orgsToBill.length; i++) {
+    // get removed users
     const {id: orgId, removedUsers, validUntil} = orgsToBill[i];
 
     // get active users
     const activeUsers = await r.table('User')
-      .getAll(orgId, {index: 'orgId'})
+      .getAll(orgId, {index: 'orgId'});
 
-    // get removed users
-    // const {removedUsers} = org;
+    // union active users and removed users
+    const removedUserIds = removedUsers.map((user) => user.id);
+    const activeUserIds = activeUsers.map((user) => user.id);
+    const allUserIds = [...removedUserIds, ...activeUserIds];
 
-    // get inactivity periods
     // get time of last invoice
     const invoiceStartAt = await r.table('Invoice')
       .getAll(orgId, {index: 'orgId'})
-      .orderBy('startAt')
+      .orderBy(r.desc('startAt'))
       .nth(0)('endAt')
-      .default(validUntil - TRIAL_EXTENSION);
+      .default(new Date(validUntil.valueOf() - TRIAL_EXTENSION));
 
+    // get inactivity periods
+    // TODO when removing a user from an org, clear their inactivity
     const inactivityPeriods = await r.table('InactiveUser')
-      .between([orgId, invoiceStartAt], [orgId, r.maxval], {index: 'orgIdStartAt'});
+      .getAll(r.args(allUserIds), {index: 'userId'})
+      .filter((row) => row('endAt').not()
+        .or(row('endAt').ge(r.epochTime( invoiceStartAt / 1000)))
+      )
+      .merge((row) => ({
+          startAt: r.min(row('startAt'), invoiceStartAt),
+          endAt: row('endAt').default(now)
+      }));
+
+    const legitInactivity = inactivityPeriods.reduce((arr, period) => {
+      const {startAt, endAt} = period;
+      const daysInactive = Math.floor((endAt - startAt) / ms('1d'));
+      if (daysInactive >= INACTIVE_DAYS_THRESH) {
+        arr.push({
+          ...period,
+          daysInactive
+        })
+      }
+      return arr;
+    }, []);
 
     // TODO send to stripe
 
