@@ -23,20 +23,20 @@ export default async initialState => {
   const reducer = makeReducer();
   const engine = createEngine(APP_REDUX_KEY);
   const storageMiddleware = createMiddleware(engine, [], storageWhitelist);
-  const segmentMiddleware = createTracker();
   /*
    * Special action types, such as thunks, must be placed before
    * storageMiddleware so they can be properly interpreted:
    */
   const middlewares = [
     thunkMiddleware,
-    segmentMiddleware,
     storageMiddleware
   ];
 
   if (__PRODUCTION__) {
     // add Sentry error reporting:
     middlewares.unshift(ravenMiddleware(window.__ACTION__.sentry)); // eslint-disable-line no-underscore-dangle
+    const segmentMiddleware = createTracker();
+    middlewares.unshift(segmentMiddleware);
     store = createStore(reducer, initialState, compose(applyMiddleware(...middlewares)));
   } else {
     // eslint-disable-next-line no-underscore-dangle
