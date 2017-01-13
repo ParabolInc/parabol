@@ -7,7 +7,7 @@ export const APP_REDUX_KEY = `${APP_NAME}:redux`;
 export const APP_VERSION = require('../../../package.json').version;
 export const APP_VERSION_KEY = `${APP_NAME}:version`;
 export const APP_WEBPACK_PUBLIC_PATH_DEFAULT = '/static/';
-
+export const APP_UPGRADE_PENDING_KEY = `${APP_NAME}:upgradePending`;
 /* Phases */
 export const LOBBY = 'lobby';
 // lowercase here to match url

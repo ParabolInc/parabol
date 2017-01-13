@@ -5,6 +5,8 @@ import {showLock} from 'universal/components/Auth0ShowLock/Auth0ShowLock';
 import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
 import injectGlobals from 'universal/styles/hepha';
 import auth0Overrides from 'universal/styles/theme/auth0Overrides';
+import {showWarning} from 'universal/modules/notifications/ducks/notifications';
+import {APP_UPGRADE_PENDING_KEY} from 'universal/utils/constants';
 
 @loginWithToken
 export default class LandingContainer extends Component {
@@ -25,11 +27,25 @@ export default class LandingContainer extends Component {
 
   render() {
     const {dispatch} = this.props;
-    const showLockThunk = () => showLock(dispatch);
+    let loginClickHandler = () => showLock(dispatch);
+    // window.localStorage only stores strings
+    if (window.localStorage.getItem(APP_UPGRADE_PENDING_KEY) == 'true') {
+      loginClickHandler = () => window.location.reload();
+      window.localStorage.setItem(APP_UPGRADE_PENDING_KEY, 'false');
+      dispatch(showWarning({
+        title: 'Almost done upgrading!',
+        message: `Just click this button :)`,
+        autoDismiss: 0,
+        action: {
+          label: 'Finish upgrade',
+          callback: () => window.location.reload()
+        }
+      }));
+    }
     return (
       <div>
         <Helmet title="Welcome to Action" />
-        <Landing handleLoginClick={showLockThunk} {...this.props} />
+        <Landing handleLoginClick={loginClickHandler} {...this.props} />
       </div>
     );
   }
