@@ -8,6 +8,9 @@ export const APP_VERSION = require('../../../package.json').version;
 export const APP_VERSION_KEY = `${APP_NAME}:version`;
 export const APP_WEBPACK_PUBLIC_PATH_DEFAULT = '/static/';
 export const APP_UPGRADE_PENDING_KEY = `${APP_NAME}:upgradePending`;
+export const APP_CDN_USER_ASSET_SUBDIR = '/store';
+export const APP_MAX_AVATAR_FILE_SIZE = 1024 * 1024;
+
 /* Phases */
 export const LOBBY = 'lobby';
 // lowercase here to match url
