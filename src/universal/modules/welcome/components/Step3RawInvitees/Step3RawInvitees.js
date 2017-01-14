@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import InputField from 'universal/components/InputField/InputField';
 import {Field, reduxForm, arrayPush, change} from 'redux-form';
 import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
-import makeStep3RawSchema from 'universal/validation/makeStep3RawSchema.js';
+import makeStep3RawSchema from 'universal/validation/makeStep3RawSchema';
 import emailAddresses from 'email-addresses';
 import {updateExistingInvites} from 'universal/modules/welcome/ducks/welcomeDuck';
 
