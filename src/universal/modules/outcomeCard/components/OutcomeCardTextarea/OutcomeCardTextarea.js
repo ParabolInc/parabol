@@ -4,11 +4,11 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import Textarea from 'react-textarea-autosize';
+import Markdown from 'react-remarkable';
 
 class OutcomeCardTextArea extends Component {
   static propTypes = {
     cardHasHover: PropTypes.bool,
-    doFocus: PropTypes.bool,
     editingStatus: PropTypes.any,
     handleActive: PropTypes.func,
     handleSubmit: PropTypes.func,
@@ -25,6 +25,13 @@ class OutcomeCardTextArea extends Component {
     timestamp: PropTypes.string,
   };
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      isEditing: false
+    };
+  }
+
   componentWillReceiveProps(nextProps) {
     const {meta: {active}} = this.props;
     const {handleActive, meta: {active: nextActive}} = nextProps;
@@ -33,7 +40,19 @@ class OutcomeCardTextArea extends Component {
     }
   }
 
-  render() {
+  setEditing = () => {
+    this.setState({
+      isEditing: true
+    });
+  };
+
+  unsetEditing = () => {
+    this.setState({
+      isEditing: false
+    });
+  }
+
+  renderEditing() {
     const {
       cardHasHover,
       handleSubmit,
@@ -41,8 +60,7 @@ class OutcomeCardTextArea extends Component {
       isActionListItem,
       isArchived,
       isProject,
-      doFocus,
-      styles,
+      styles
     } = this.props;
 
     const contentStyles = css(
@@ -61,6 +79,7 @@ class OutcomeCardTextArea extends Component {
         // if there's no value, then the document event listener will handle this
         input.onBlur();
         handleSubmit();
+        this.unsetEditing();
       }
     };
     const handleKeyPress = () => {
@@ -89,8 +108,25 @@ class OutcomeCardTextArea extends Component {
         onDrop={null}
         onKeyDown={submitOnEnter}
         onKeyUp={handleKeyPress}
-        autoFocus={doFocus}
+        autoFocus={true}
       />
+    );
+  }
+
+  renderStatic() {
+    const {input: {value}} = this.props;
+    return (
+      <div onClick={this.setEditing}>
+        <Markdown source={value}/>
+      </div>
+    );
+  }
+
+  render() {
+    return (
+      <div>
+        {this.state.isEditing ? this.renderEditing() : this.renderStatic()}
+      </div>
     );
   }
 }
