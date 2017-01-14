@@ -125,7 +125,9 @@ export default [
     string: `
     subscription {
       notifications {
-        id
+        ... on TrialExpirationType {
+          id
+        }
       }
     }`
   },

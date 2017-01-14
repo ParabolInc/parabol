@@ -75,8 +75,9 @@ const normalizeExpiry = (value = '', previousValue = '') => {
 
 const normalizeNumeric = (value) => value.replace(/[^\d]/g, '');
 
-const validate = (values) => {
-  const schema = makeCreditCardSchema();
+const validate = (values, props) => {
+  const {stripeCard} = props;
+  const schema = makeCreditCardSchema(stripeCard);
   return schema(values).errors;
 };
 
@@ -264,14 +265,14 @@ const styleThunk = () => ({
 
 const stripeCb = () => {
   const stripe = window.Stripe;
-  console.log('set key', stripeKey)
   stripe.setPublishableKey(stripeKey);
   return {
     createToken: (fields) => new Promise((resolve) => {
       stripe.card.createToken(fields, (status, response) => {
         resolve(response);
       })
-    })
+    }),
+    stripeCard: stripe.card
   };
 };
 export default reduxForm({form: 'creditCardInfo', validate})(

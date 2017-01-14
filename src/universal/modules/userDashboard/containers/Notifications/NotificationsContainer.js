@@ -22,13 +22,13 @@ import {NOTIFICATIONS} from 'universal/utils/constants';
 // };
 
 const notifications = [
-  {
-    type: TRIAL_EXPIRES_SOON,
-    varList: [
-      new Date(),
-      'org123'
-    ]
-  }
+  // {
+  //   type: TRIAL_EXPIRES_SOON,
+  //   varList: [
+  //     new Date(),
+  //     'org123'
+  //   ]
+  // }
 ];
 
 export default class NotificationsContainer extends Component {

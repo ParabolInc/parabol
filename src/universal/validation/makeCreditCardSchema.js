@@ -1,20 +1,20 @@
 import legitify from './legitify';
-import luhn from 'fast-luhn';
-import {cvcRegex, expiryRegex} from 'universal/validation/regex';
 
-export default function makeCreditCardSchema() {
+export default function makeCreditCardSchema(stripeCard) {
   return legitify({
     creditCardNumber: (value) => value
       .required('You must enter a CC number')
       .min(16, 'That credit card is missing some digits')
       .test((raw) => {
-        return !luhn(raw) && 'Double check that credit card number'
+        return !stripeCard.validateCardNumber(raw) && 'Double check that credit card number'
       }),
     expiry: (value) => value
       .required('Please enter an expiration date')
-      .matches(expiryRegex, 'That expiration looks invalid'),
+      .test((raw) => {
+        return !stripeCard.validateExpiry(raw) && 'Double check that expiration'
+      }),
     cvc: (value) => value
       .required('You must enter a CVC code')
-      .matches(cvcRegex, 'That CVC looks invalid')
+      .test((raw) => !stripeCard.validateCVC(raw) && 'Double check that CVC')
   });
 }

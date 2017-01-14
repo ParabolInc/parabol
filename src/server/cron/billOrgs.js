@@ -56,17 +56,35 @@ export default async function billOrgs() {
           endAt: row('endAt').default(now)
       }));
 
-    const legitInactivity = inactivityPeriods.reduce((arr, period) => {
-      const {startAt, endAt} = period;
+    const legitInactivity = inactivityPeriods.reduce((arr, doc) => {
+      const {startAt, endAt} = doc;
       const daysInactive = Math.floor((endAt - startAt) / ms('1d'));
       if (daysInactive >= INACTIVE_DAYS_THRESH) {
         arr.push({
-          ...period,
+          ...doc,
           daysInactive
         })
       }
       return arr;
     }, []);
+
+    // inactivityFromRemovals
+    const inactivityFromRemovals = [];
+    for (let j = 0 ; j < removedUsers.length; j++) {
+      const {id: userId, removedAt} = removedUsers[j];
+      const inactiveRemovedUser = legitInactivity.find((doc) => doc.userId === userId && doc.endAt === now);
+      if (!inactiveRemovedUser) {
+        inactivityFromRemovals.push({
+          userId,
+          startAt: removedAt,
+          endAt: now,
+          daysInactive: Math.floor((now - removedAt) / ms('1d'))
+        })
+      }
+    }
+
+    // create the invoice
+
 
     // TODO send to stripe
 
