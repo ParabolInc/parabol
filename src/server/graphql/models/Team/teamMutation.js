@@ -36,6 +36,7 @@ import makeStep2Schema from 'universal/validation/makeStep2Schema';
 import makeAddTeamServerSchema from 'universal/validation/makeAddTeamServerSchema';
 import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED, REQUEST_NEW_USER} from 'universal/utils/constants';
 import ms from 'ms';
+import stripe from 'server/utils/stripe';
 
 export default {
   moveMeeting: {
@@ -513,9 +514,12 @@ export default {
 
       // AUTH
       const userId = requireAuth(authToken);
-      const hasAnOrg = await r.table('User').get(authToken.sub)('org').default(null);
-      if (hasAnOrg) {
+      const user = await r.table('User').get(userId).pluck('id', 'orgs', 'trialExpiresAt');
+      if (user.orgs && user.orgs.length > 0) {
         throw errorObj({_error: 'cannot use createTeam when already part of an org'});
+      }
+      if (user.trialExpiresAt) {
+        throw errorObj({_error: 'you have already created a team'})
       }
 
       // VALIDATION
@@ -523,18 +527,23 @@ export default {
       const {data, errors} = schema(newTeam);
       handleSchemaErrors(errors);
       await ensureUniqueId('Team', newTeam.id);
-      const user = await r.table('User').get(userId);
-      if (user.trialExpiresAt) {
-        throw errorObj({_error: 'you have already created a team'})
-      }
 
       // RESOLUTION
       const now = new Date();
-      const trialExpiresAt = new Date(now + TRIAL_PERIOD);
       const orgId = shortid.generate();
       const validNewTeam = {...data, orgId};
       const expiresSoonId = shortid.generate();
-      const expiredId = shortid.generate();
+      const {id: stripeId} = await stripe.customers.create({
+        metadata: {
+          orgId
+        }
+      });
+      const {trial_end: trialExpiresAt} = await stripe.subscriptions.create({
+        customer: stripeId,
+        plan: 'action-monthly',
+        trial_period_days: 30
+      });
+
       await r.table('Organization').insert({
         id: orgId,
         activeUserCount: 1,
@@ -542,12 +551,12 @@ export default {
         inactiveUserCount: 0,
         isTrial: true,
         name: `${user.preferredName}'s Org`,
+        stripeId,
         updatedAt: now,
         validUntil: trialExpiresAt
       })
         .do(() => {
-          return r.table('Notification').insert([
-            {
+          return r.table('Notification').insert({
               id: expiresSoonId,
               parentId: expiresSoonId,
               type: TRIAL_EXPIRES_SOON,
@@ -556,18 +565,7 @@ export default {
               endAt: trialExpiresAt,
               userId,
               orgId,
-            }
-            // {
-            //   id: expiredId,
-            //   parentId: expiredId,
-            //   type: TRIAL_EXPIRED,
-            //   varList: [trialExpiresAt],
-            //   startAt: trialExpiresAt,
-            //   endAt: new Date(trialExpiresAt + ms('10y')),
-            //   userId,
-            //   orgId,
-            // }
-          ])
+            })
         })
         .do(() => {
           return r.table('User').get(userId).update({
