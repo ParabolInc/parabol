@@ -7,9 +7,9 @@ import {
 } from 'graphql';
 import {requireOrgLeader, requireWebsocket} from '../authorization';
 import updateOrgSchema from 'universal/validation/updateOrgSchema';
-import {handleSchemaErrors} from '../utils';
+import {errorObj, handleSchemaErrors} from '../utils';
 import stripe from 'server/utils/stripe';
-import {TRIAL_EXTENSION} from 'server/utils/serverConstants';
+import {ACTION_MONTHLY, TRIAL_EXTENSION} from 'server/utils/serverConstants';
 import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
 
 export default {
@@ -98,55 +98,62 @@ export default {
 
       // RESOLUTION
       const now = new Date();
+      const {stripeId, trialExpiresAt} = await r.table('User').get(userId)('stripeId', 'trialExpiresAt');
       const stripeRequests = [
-        stripe.customers.create({
-          metadata: {
-            orgId
-          },
-          source: stripeToken
-        }),
+        stripe.customers.update(stripeId, {source: stripeToken}),
         stripe.tokens.retrieve(stripeToken)
       ];
 
       const [customer, token] = await Promise.all(stripeRequests);
-      const {id: stripeId} = customer;
       const {brand, last4, exp_month: expMonth, exp_year: expYear} = token.card;
       const expiry = `${expMonth}/${expYear.substr(2)}`;
       const {isTrial, validUntil} = await r.table('Organization')
         .get(orgId)
         .pluck('isTrial', 'validUntil');
 
-      const nowValidUntil = (isTrial && validUntil > now) ?
-        new Date(validUntil.valueOf() + TRIAL_EXTENSION) :
-        validUntil;
-
-      await r.table('Organization').get(orgId)
+      let nowValidUntil = validUntil;
+      const promises = [];
+      if (isTrial && validUntil > now) {
+        const subscription = customer.subscriptions.data.find((sub) => sub.plan.id === ACTION_MONTHLY);
+        if (!subscription) {
+          throw errorObj({_error: 'No subscription found! This shouldn\'t happen...'});
+        }
+        nowValidUntil = new Date(nowValidUntil.setMilliseconds(0) + TRIAL_EXTENSION);
+        const extendTrial = stripe.subscriptions.update(subscription.id, {
+          trial_end: nowValidUntil / 1000
+        });
+        promises.push(extendTrial);
+      }
+      const updateOrg = r.table('Organization').get(orgId)
         .update({
           creditCard: {
             brand,
             last4,
             expiry
           },
-          stripeId,
           validUntil: nowValidUntil
         });
+      promises.push(updateOrg);
 
 
       if (validUntil !== nowValidUntil) {
-        await r.table('User').get(userId)
-          .update({
-            // not too useful (only used as a boolean) but good to keep it matching what's in the org
-            validUntil: nowValidUntil
+        // this is a hacky way of making sure that the user adding billing info is the one who created the org
+        if (trialExpiresAt === validUntil) {
+          promises.push(r.table('User').get(userId)
+            .update({
+              // not too useful (only used as a boolean) but good to keep it matching what's in the org
+              trialExpiresAt: nowValidUntil
+            }));
+        }
+        // remove the oustanding notifications
+        promises.push(r.table('Notification')
+          .getAll(orgId, {index: 'orgId'})
+          .filter({
+            type: TRIAL_EXPIRES_SOON
           })
-          .do(() => {
-            return r.table('Notification')
-              .getAll(orgId, {index: 'orgId'})
-              .filter({
-                type: TRIAL_EXPIRES_SOON
-              })
-              .delete()
-          })
+          .delete());
       }
+      await Promise.all(promises);
     }
   }
 };
