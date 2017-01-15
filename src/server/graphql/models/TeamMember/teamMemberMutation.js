@@ -18,9 +18,6 @@ import {JOIN_TEAM, KICK_OUT, PRESENCE} from 'universal/subscriptions/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {
   ADD_USER,
-  PAUSE_USER,
-  REMOVE_USER,
-  UNPAUSE_USER
 } from 'server/utils/serverConstants';
 import stripe from 'server/utils/stripe';
 
@@ -139,12 +136,12 @@ export default {
             userInOrg,
             null,
             r.table('Organization')
-            .get(orgId)
-            .update((row) => {
-              return {
-                activeUserCount: row('activeUserCount').add(1)
-              }
-            }))
+              .get(orgId)
+              .update((row) => {
+                return {
+                  activeUserCount: row('activeUserCount').add(1)
+                }
+              }))
         })
         // get number of users
         .do(() => {
@@ -186,7 +183,11 @@ export default {
       await Promise.all(asyncPromises);
 
       if (!userInOrg) {
-        const stripeSubscriptionId = await r.table('Organization').get(orgId)('stripeSubscriptionId');
+        const {changes} = await r.table('Organization').get(orgId)
+          .update((row) => ({
+            activeUserCount: row('activeUserCount').add(1)
+          }), {returnChanges: true});
+        const {stripeSubscriptionId} = changes[0].old_val;
         const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
         await stripe.subscriptions.update(stripeSubscriptionId, {
           quantity: subscription.quantity + 1,
@@ -209,56 +210,62 @@ export default {
         type: new GraphQLNonNull(GraphQLID),
         description: 'The teamMemberId of the person who is being checked in'
       }
-    },
-    async resolve(source, {teamMemberId}, {authToken, exchange, socket}) {
+    }
+    ,
+    async
+    resolve(source, {teamMemberId}, {authToken, exchange, socket})
+    {
       const r = getRethink();
 
       // AUTH
       const [userId, teamId] = teamMemberId.split('::');
-      await requireSUOrSelfOrLead(authToken, userId, teamId);
+      await
+        requireSUOrSelfOrLead(authToken, userId, teamId);
       requireWebsocket(socket);
 
       // RESOLUTION
-      const res = await r.table('TeamMember')
-      // set inactive
-        .get(teamMemberId)
-        .update({
-          isNotRemoved: false
-        })
-        // assign active projects to the team lead
-        .do(() => {
-          return r.table('Project')
-            .getAll(teamMemberId, {index: 'teamMemberId'})
-            .filter({isArchived: false})
-            .update({
-              teamMemberId: r.table('TeamMember')
-                .getAll(teamId, {index: 'teamId'})
-                .filter({isLead: true})
-                .nth(0)('id')
-            }, {nonAtomic: true});
-        })
-        // flag all actions as complete since the user can't edit them now, anyways
-        .do(() => {
-          return r.table('Action')
-            .getAll(teamMemberId, {index: 'teamMemberId'})
-            .update({
-              isComplete: true
-            });
-        })
-        // remove the teamId from the user tms array
-        .do(() => {
-          return r.table('User')
-            .get(userId)
-            .update((user) => {
-              return user.merge({
-                tms: user('tms').filter((id) => id.ne(teamId))
+      const res = await
+        r.table('TeamMember')
+        // set inactive
+          .get(teamMemberId)
+          .update({
+            isNotRemoved: false
+          })
+          // assign active projects to the team lead
+          .do(() => {
+            return r.table('Project')
+              .getAll(teamMemberId, {index: 'teamMemberId'})
+              .filter({isArchived: false})
+              .update({
+                teamMemberId: r.table('TeamMember')
+                  .getAll(teamId, {index: 'teamId'})
+                  .filter({isLead: true})
+                  .nth(0)('id')
+              }, {nonAtomic: true});
+          })
+          // flag all actions as complete since the user can't edit them now, anyways
+          .do(() => {
+            return r.table('Action')
+              .getAll(teamMemberId, {index: 'teamMemberId'})
+              .update({
+                isComplete: true
               });
-            }, {returnChanges: true});
-        });
+          })
+          // remove the teamId from the user tms array
+          .do(() => {
+            return r.table('User')
+              .get(userId)
+              .update((user) => {
+                return user.merge({
+                  tms: user('tms').filter((id) => id.ne(teamId))
+                });
+              }, {returnChanges: true});
+          });
       // update the tms on auth0
       const newtms = res.changes[0] && res.changes[0].new_val.tms;
       if (newtms) {
-        await auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: newtms});
+        await
+          auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: newtms});
       }
 
       // update the server socket, if they're logged in
@@ -266,7 +273,8 @@ export default {
       exchange.publish(channel, {type: KICK_OUT, userId});
       return true;
     }
-  },
+  }
+  ,
   promoteToLead: {
     type: GraphQLBoolean,
     description: 'Promote another team member to be the leader',
@@ -275,38 +283,46 @@ export default {
         type: new GraphQLNonNull(GraphQLID),
         description: 'the new team member that will be the leader'
       }
-    },
-    async resolve(source, {teamMemberId}, {authToken, socket}) {
+    }
+    ,
+    async
+    resolve(source, {teamMemberId}, {authToken, socket})
+    {
       const r = getRethink();
 
       // AUTH
       requireWebsocket(socket);
       const [, teamId] = teamMemberId.split('::');
       const myTeamMemberId = `${authToken.sub}::${teamId}`;
-      await requireSUOrLead(authToken, myTeamMemberId);
+      await
+        requireSUOrLead(authToken, myTeamMemberId);
 
       // VALIDATION
-      const promoteeOnTeam = await r.table('TeamMember').get(teamMemberId);
+      const promoteeOnTeam = await
+        r.table('TeamMember').get(teamMemberId);
       if (!promoteeOnTeam) {
         throw errorObj({_error: `Member ${teamMemberId} is not on the team`});
       }
 
       // RESOLUTION
-      await r.table('TeamMember')
-      // remove leadership from the caller
-        .get(myTeamMemberId)
-        .update({
-          isLead: false
-        })
-        // give leadership to the new person
-        .do(() => {
-          return r.table('TeamMember')
-            .get(teamMemberId)
-            .update({
-              isLead: true
-            });
-        });
+      await
+        r.table('TeamMember')
+        // remove leadership from the caller
+          .get(myTeamMemberId)
+          .update({
+            isLead: false
+          })
+          // give leadership to the new person
+          .do(() => {
+            return r.table('TeamMember')
+              .get(teamMemberId)
+              .update({
+                isLead: true
+              });
+          });
       return true;
     }
-  },
-};
+  }
+  ,
+}
+;

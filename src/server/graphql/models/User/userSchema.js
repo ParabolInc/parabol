@@ -131,6 +131,10 @@ export const User = new GraphQLObjectType({
       type: new GraphQLList(GraphQLID),
       description: 'all the teams the user is a part of'
     },
+    billingLeaderOrgs: {
+      type: new GraphQLList(GraphQLID),
+      description: 'all the orgs a user is a lead of'
+    },
     orgs: {
       type: new GraphQLList(GraphQLID),
       description: 'all the orgs a user is a part of'

@@ -217,5 +217,50 @@ export default {
       await Promise.all(updatePromises);
       return true;
     }
+  },
+  removeOrgUser: {
+    type: GraphQLBoolean,
+    description: 'Remove a user from an org',
+    args: {
+      userId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'the user to remove'
+      },
+      orgId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'the org that does not want them anymore'
+      }
+    },
+    async resolve(source, {orgId, userId}, {authToken}) {
+      const r = getRethink();
+
+      // AUTH
+      await requireOrgLeader(authToken, orgId);
+
+      // RESOLUTION
+      const {changes: userChanges} = await r.table('User').get(userId)
+        .update((row) => ({
+          orgs: row('orgs').filter((id) => id.ne(orgId)),
+          billingLeaderOrgs: row('billingLeaderOrgs').filter((id) => id.ne(orgId))
+        }), {returnChanges: true});
+
+      const {orgs} = userChanges[0].old_val;
+      if (orgs.includes(orgId)) {
+        const {changes: orgChanges} = r.table('Organization').get(orgId)
+          .update((row) => ({
+            activeUserCount: row('activeUserCount').add(-1)
+          }), {returnChanges: true});
+        const {stripeSubscriptionId} = orgChanges[0].old_val;
+        const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+        await stripe.subscriptions.update(stripeSubscriptionId, {
+          quantity: subscription.quantity - 1,
+          metadata: {
+            type: REMOVE_USER,
+            userId
+          }
+        });
+      }
+      return true;
+    }
   }
 };

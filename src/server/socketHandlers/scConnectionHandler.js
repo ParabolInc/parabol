@@ -64,8 +64,13 @@ export default function scConnectionHandler(exchange) {
     }
     // no need to wait for this, it's just for billing
     if (inactive) {
-      const subIds = await r.table('Organization')
-        .getAll(r.args(orgIds), {index: 'id'})('stripeSubscriptionId');
+      const {changes} = await r.table('Organization')
+        .getAll(r.args(orgIds), {index: 'id'})
+        .update((row) => ({
+          activeUserCount: row('activeUserCount').add(1),
+          inactiveUserCount: row('inactiveUserCount').add(-1)
+        }), {returnChanges: true});
+      const subIds = changes.map((change) => change.old_val.stripeSubscriptionId);
       const subPromises = subIds.map((stripeSubscriptionId) => stripe.subscriptions.retrieve(stripeSubscriptionId));
       const subscriptions = await Promise.all(subPromises);
       subscriptions.map((sub) => stripe.subscriptions.update(sub.id, {
