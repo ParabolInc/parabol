@@ -12,6 +12,8 @@ export const APP_REDUX_KEY = `${APP_NAME}:redux`;
  *    APP_UPGRADE_PENDING_FALSE: no upgrade needed
  *   APP_UPGRADE_PENDING_RELOAD: client reload needed
  *     APP_UPGRADE_PENDING_DONE: upgrade complete
+ *
+ * Stored in localSession by APP_UPGRADE_PENDING_KEY.
  */
 export const APP_UPGRADE_PENDING_KEY = `${APP_NAME}:upgradePending`;
 export const APP_UPGRADE_PENDING_FALSE = 'false';
