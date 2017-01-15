@@ -116,8 +116,7 @@ exports.up = async(r) => {
                 .get(orgLeader('id'))
                 .update({
                   billingLeaderOrgs: orgLeader('billingLeaderOrgs'),
-                  // orgs: orgLeader('orgs'),
-                  trialExpiresAt
+                  trialOrg: orgLeader('orgId')
                 });
             });
         })
@@ -148,7 +147,7 @@ exports.down = async(r) => {
     r.table('User').indexDrop('orgs'),
     r.table('User').indexDrop('billingLeaderOrgs'),
     r.table('Team').replace((row) => row.without('orgId')),
-    r.table('User').replace((row) => row.without('trialExpiresAt', 'orgs', 'billingLeaderOrgs')),
+    r.table('User').replace((row) => row.without('trialOrg', 'orgs', 'billingLeaderOrgs')),
   ];
   await Promise.all(tables);
 };

@@ -139,9 +139,9 @@ export const User = new GraphQLObjectType({
       type: new GraphQLList(GraphQLID),
       description: 'all the orgs a user is a part of'
     },
-    trialExpiresAt: {
+    trialOrg: {
       type: GraphQLISO8601Type,
-      description: 'The datetime the users free trial ends'
+      description: 'The orgId that the user created for their free trial'
     },
     welcomeSentAt: {
       type: GraphQLISO8601Type,

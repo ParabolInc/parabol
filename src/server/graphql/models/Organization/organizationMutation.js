@@ -141,14 +141,6 @@ export default {
 
 
       if (validUntil !== nowValidUntil) {
-        // this is a hacky way of making sure that the user adding billing info is the one who created the org
-        if (trialExpiresAt === validUntil) {
-          promises.push(r.table('User').get(userId)
-            .update({
-              // not too useful (only used as a boolean) but good to keep it matching what's in the org
-              trialExpiresAt: nowValidUntil
-            }));
-        }
         // remove the oustanding notifications
         promises.push(r.table('Notification')
           .getAll(orgId, {index: 'orgId'})

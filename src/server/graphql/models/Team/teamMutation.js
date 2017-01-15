@@ -516,11 +516,11 @@ export default {
 
       // AUTH
       const userId = requireAuth(authToken);
-      const user = await r.table('User').get(userId).pluck('id', 'orgs', 'trialExpiresAt');
+      const user = await r.table('User').get(userId).pluck('id', 'orgs', 'trialOrg');
       if (user.orgs && user.orgs.length > 0) {
         throw errorObj({_error: 'cannot use createTeam when already part of an org'});
       }
-      if (user.trialExpiresAt) {
+      if (user.trialOrg) {
         throw errorObj({_error: 'you have already created a team'})
       }
 
