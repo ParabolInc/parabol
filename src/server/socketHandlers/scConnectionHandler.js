@@ -1,11 +1,11 @@
 import scSubscribeHandler from './scSubscribeHandler';
 import scUnsubscribeHandler from './scUnsubscribeHandler';
 import scGraphQLHandler from './scGraphQLHandler';
-import {REFRESH_JWT_AFTER} from 'server/utils/serverConstants';
+import {REFRESH_JWT_AFTER, UNPAUSE_USER} from 'server/utils/serverConstants';
 import getRetink from 'server/database/rethinkDriver';
 import isObject from 'universal/utils/isObject';
 import jwtDecode from 'jwt-decode';
-
+import stripe from 'server/utils/stripe';
 // we do this otherwise we'd have to blacklist every token that ever got replaced & query that table for each query
 const isTmsValid = (tmsFromDB, tmsFromToken) => {
   if (tmsFromDB.length !== tmsFromToken.length) return false;
@@ -48,33 +48,33 @@ export default function scConnectionHandler(exchange) {
     const tokenExpiration = new Date(exp * 1000);
     const timeLeftOnToken = tokenExpiration - now;
     // if the user was booted from the team, give them a new token
-    const tmsDB = await r.table('User').get(userId)('tms');
+    const {changes} = await r.table('User').get(userId)
+      .replace((row) => {
+        return row.without('inactive')
+          .merge({
+            updatedAt: now,
+            lastSeenAt: now
+          })
+      }, {returnChanges: true});
+    const {inactive, tms: tmsDB, orgs: orgIds} = changes[0].old_val;
     const tmsIsValid = isTmsValid(tmsDB, tms);
     if (timeLeftOnToken < REFRESH_JWT_AFTER || !tmsIsValid) {
       authToken.tms = tmsDB;
       socket.setAuthToken(authToken);
     }
     // no need to wait for this, it's just for billing
-    r.branch(
-      r.table('User').get(userId)('inactive').ne(null),
-      r.table('User')
-        .get(userId)
-        .replace((row) => {
-          return row
-            .without('inactive')
-            .merge({
-              updatedAt: now
-            })
-        })
-        .do(() => {
-          return r.table('InactiveUser')
-            .getAll(userId, {index: 'userId'})
-            .filter((row) => row('endAt').not())
-            .update({
-              endAt: now
-            })
-        }),
-      null
-    )
+    if (inactive) {
+      const subIds = await r.table('Organization')
+        .getAll(r.args(orgIds), {index: 'id'})('stripeSubscriptionId');
+      const subPromises = subIds.map((stripeSubscriptionId) => stripe.subscriptions.retrieve(stripeSubscriptionId));
+      const subscriptions = await Promise.all(subPromises);
+      subscriptions.map((sub) => stripe.subscriptions.update(sub.id, {
+        quantity: sub.quantity + 1,
+        metadata: {
+          type: UNPAUSE_USER,
+          userId
+        }
+      }));
+    }
   };
 }

@@ -115,10 +115,10 @@ export const User = new GraphQLObjectType({
       description: 'flag to determine which broadcasts to show'
 
     },
-    // lastLogin: {
-    //   type: GraphQLISO8601Type,
-    //   description: 'The last time the user logged in or used a websocket'
-    // },
+    lastSeenAt: {
+      type: GraphQLISO8601Type,
+      description: 'The last time the user connected via websocket'
+    },
     inactive: {
       type: GraphQLBoolean,
       description: 'true if the user is not currently being billed for service. removed on every websocket handshake'
