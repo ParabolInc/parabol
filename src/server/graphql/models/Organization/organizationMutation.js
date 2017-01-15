@@ -7,7 +7,7 @@ import {
 } from 'graphql';
 import {requireOrgLeader, requireOrgLeaderOfUser, requireWebsocket} from '../authorization';
 import updateOrgSchema from 'universal/validation/updateOrgSchema';
-import {errorObj, handleSchemaErrors} from '../utils';
+import {errorObj, handleSchemaErrors, getOldVal} from '../utils';
 import stripe from 'server/utils/stripe';
 import {ACTION_MONTHLY, TRIAL_EXTENSION} from 'server/utils/serverConstants';
 import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
@@ -105,13 +105,14 @@ export default {
 
       // RESOLUTION
       const now = new Date();
-      const {stripeId, trialExpiresAt} = await r.table('User').get(userId)('stripeId', 'trialExpiresAt');
+      const {stripeId, trialExpiresAt} = await r.table('Organization').get(userId)
+        .pluck('stripeId', 'trialExpiresAt');
       const stripeRequests = [
         stripe.customers.update(stripeId, {source: stripeToken}),
         stripe.tokens.retrieve(stripeToken)
       ];
 
-      const [customer, token] = await Promise.all(stripeRequests);
+      const [, token] = await Promise.all(stripeRequests);
       const {brand, last4, exp_month: expMonth, exp_year: expYear} = token.card;
       const expiry = `${expMonth}/${expYear.substr(2)}`;
       const {isTrial, stripeSubscriptionId, validUntil} = await r.table('Organization')
@@ -173,13 +174,23 @@ export default {
 
       // AUTH
       await requireOrgLeaderOfUser(authToken, userId);
-      const {inactive: isInactive, orgs: orgIds} = await r.table('User').get(userId);
-      if (isInactive) {
+      const res = await r.table('User').get(userId)
+        .update({
+          inactive: true
+        }, {returnChanges: true});
+      const userDoc = getOldVal(res);
+      if (!userDoc) {
+        // no userDoc means there were no changes, which means inactive was already true
         throw errorObj({_error: `${userId} is already inactive. cannot inactivate twice`})
       }
-      const orgDocs = await r.table('Organization')
-        .getAll(r.args(orgIds), {index: 'id'}).pluck('stripeId', 'stripeSubscriptionId');
-
+      const {orgs: orgIds} = userDoc;
+      const {changes} = await r.table('Organization')
+        .getAll(r.args(orgIds), {index: 'id'})
+        .update((row) => ({
+          activeUserCount: row('activeUserCount').add(-1),
+          inactiveUserCount: row('inactiveUserCount').add(1)
+        }), {returnChanges: true});
+      const orgDocs = changes.map((change) => change.new_val);
       const upcomingInvoicesPromises = orgDocs.map(({stripeId}) => stripe.invoices.retrieveUpcoming(stripeId));
       const upcomingInvoices = await Promise.all(upcomingInvoicesPromises);
       for (let i = 0; i < upcomingInvoices.length; i++) {
@@ -197,21 +208,22 @@ export default {
       }
 
       // RESOLUTION
-      const subPromises = orgDocs.map(({stripeSubscriptionId}) => stripe.subscriptions.retrieve(stripeSubscriptionId));
-      const subscriptions = await Promise.all(subPromises);
-      const updatePromises = subscriptions.map((sub) => stripe.subscriptions.update(sub.id, {
-        quantity: sub.quantity - 1,
-        metadata: {
-          type: PAUSE_USER,
-          automatic: true,
-          userId
-        }
-      }));
+      const updatePromises = orgDocs.map((doc) => {
+        const {activeUserCount, stripeSubscriptionId} = doc;
+        return stripe.subscriptions.update(stripeSubscriptionId, {
+          quantity: activeUserCount,
+          metadata: {
+            type: PAUSE_USER,
+            automatic: true,
+            userId
+          }
+        })
+      });
       const now = new Date();
+      // if we got this far, we know we updated it in the AUTH section
       updatePromises.push(r.table('User')
         .get(userId)
         .update({
-          inactive: true,
           updatedAt: now
         }));
       await Promise.all(updatePromises);
@@ -225,42 +237,49 @@ export default {
       userId: {
         type: new GraphQLNonNull(GraphQLID),
         description: 'the user to remove'
-      },
+      }
+      ,
       orgId: {
         type: new GraphQLNonNull(GraphQLID),
         description: 'the org that does not want them anymore'
       }
     },
-    async resolve(source, {orgId, userId}, {authToken}) {
+    async resolve(source, {orgId, userId}, {authToken}){
       const r = getRethink();
 
       // AUTH
       await requireOrgLeader(authToken, orgId);
 
       // RESOLUTION
-      const {changes: userChanges} = await r.table('User').get(userId)
+      const userRes = await r.table('User').get(userId)
         .update((row) => ({
           orgs: row('orgs').filter((id) => id.ne(orgId)),
           billingLeaderOrgs: row('billingLeaderOrgs').filter((id) => id.ne(orgId))
         }), {returnChanges: true});
 
-      const {orgs} = userChanges[0].old_val;
-      if (orgs.includes(orgId)) {
-        const {changes: orgChanges} = r.table('Organization').get(orgId)
-          .update((row) => ({
-            activeUserCount: row('activeUserCount').add(-1)
-          }), {returnChanges: true});
-        const {stripeSubscriptionId} = orgChanges[0].old_val;
-        const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
-        await stripe.subscriptions.update(stripeSubscriptionId, {
-          quantity: subscription.quantity - 1,
-          metadata: {
-            type: REMOVE_USER,
-            userId
-          }
-        });
+      const userDoc = getOldVal(userRes);
+      if (!userDoc) {
+        throw errorObj({_error: `${userId} does not exist`});
       }
+      const {orgs} = userDoc;
+      if (!orgs.includes(orgId)) {
+        throw errorObj({_error: `${userId} is not a part of org ${orgId}`});
+      }
+      const orgRes = r.table('Organization').get(orgId)
+        .update((row) => ({
+          activeUserCount: row('activeUserCount').add(-1)
+        }), {returnChanges: true});
+
+      const {activeUserCount, stripeSubscriptionId} = getOldVal(orgRes);
+      await stripe.subscriptions.update(stripeSubscriptionId, {
+        quantity: activeUserCount - 1,
+        metadata: {
+          type: REMOVE_USER,
+          userId
+        }
+      });
       return true;
     }
   }
-};
+}
+;

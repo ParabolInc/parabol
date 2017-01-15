@@ -4,7 +4,7 @@ import {
   GraphQLID,
   GraphQLBoolean,
 } from 'graphql';
-import {errorObj} from '../utils';
+import {errorObj, getOldVal} from '../utils';
 import {
   requireWebsocket,
   requireSUOrTeamMember,
@@ -71,7 +71,12 @@ export default {
       const {id: inviteId, key: tokenKey} = parseInviteToken(inviteToken);
 
       // see if the invitation exists
-      const invitation = await r.table('Invitation').get(inviteId);
+      const invitationRes = await r.table('Invitation').get(inviteId).update({
+        tokenExpiration: new Date(0),
+        updatedAt: now
+      }, {returnChanges: true});
+      const invitation = getOldVal(invitationRes);
+
       if (!invitation) {
         throw errorObj({
           _error: 'unable to find invitation',
@@ -131,18 +136,6 @@ export default {
             orgs: newUserOrgs
           }
         })
-        .do(() => {
-          return r.branch(
-            userInOrg,
-            null,
-            r.table('Organization')
-              .get(orgId)
-              .update((row) => {
-                return {
-                  activeUserCount: row('activeUserCount').add(1)
-                }
-              }))
-        })
         // get number of users
         .do(() => {
           return r.table('TeamMember')
@@ -183,14 +176,14 @@ export default {
       await Promise.all(asyncPromises);
 
       if (!userInOrg) {
-        const {changes} = await r.table('Organization').get(orgId)
+        const orgRes = await r.table('Organization').get(orgId)
           .update((row) => ({
             activeUserCount: row('activeUserCount').add(1)
           }), {returnChanges: true});
-        const {stripeSubscriptionId} = changes[0].old_val;
-        const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+
+        const {stripeSubscriptionId, activeUserCount} = getOldVal(orgRes);
         await stripe.subscriptions.update(stripeSubscriptionId, {
-          quantity: subscription.quantity + 1,
+          quantity: activeUserCount + 1,
           metadata: {
             type: ADD_USER,
             userId

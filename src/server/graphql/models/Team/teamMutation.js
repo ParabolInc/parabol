@@ -37,6 +37,8 @@ import makeAddTeamServerSchema from 'universal/validation/makeAddTeamServerSchem
 import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED, REQUEST_NEW_USER} from 'universal/utils/constants';
 import ms from 'ms';
 import stripe from 'server/utils/stripe';
+import {ACTION_MONTHLY, TRIAL_PERIOD_DAYS} from 'server/utils/serverConstants';
+import stripeDate from 'universal/utils/stripeDate';
 
 export default {
   moveMeeting: {
@@ -522,6 +524,7 @@ export default {
         throw errorObj({_error: 'you have already created a team'})
       }
 
+
       // VALIDATION
       const schema = makeStep2Schema();
       const {data, errors} = schema(newTeam);
@@ -531,6 +534,18 @@ export default {
       // RESOLUTION
       const now = new Date();
       const orgId = shortid.generate();
+      const res = await r.branch(
+        r.table('User').get(userId)('trialOrg'),
+        null,
+        r.table('User').get(userId).update({
+          billingLeaderOrgs: [orgId],
+          orgs: [orgId],
+          trialOrg: orgId,
+          updatedAt: now
+        }));
+      if (!res) {
+        throw errorObj({_error: 'Multiple calls detected'})
+      }
       const validNewTeam = {...data, orgId};
       const expiresSoonId = shortid.generate();
       const {id: stripeId} = await stripe.customers.create({
@@ -538,12 +553,12 @@ export default {
           orgId
         }
       });
-      const {id: stripeSubscriptionId, trial_end: trialExpiresAt} = await stripe.subscriptions.create({
+      const {id: stripeSubscriptionId, trial_end} = await stripe.subscriptions.create({
         customer: stripeId,
-        plan: 'action-monthly',
-        trial_period_days: 30
+        plan: ACTION_MONTHLY,
+        trial_period_days: TRIAL_PERIOD_DAYS
       });
-
+      const trialExpiresAt = stripeDate(trial_end);
       await r.table('Organization').insert({
         id: orgId,
         activeUserCount: 1,
@@ -567,13 +582,6 @@ export default {
               userId,
               orgId,
             })
-        })
-        .do(() => {
-          return r.table('User').get(userId).update({
-            billingLeaderOrgs: [orgId],
-            orgs: [orgId],
-            trialExpiresAt
-          })
         });
 
       const tms = await createTeamAndLeader(authToken, validNewTeam);

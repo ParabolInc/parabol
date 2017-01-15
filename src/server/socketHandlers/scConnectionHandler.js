@@ -6,6 +6,8 @@ import getRetink from 'server/database/rethinkDriver';
 import isObject from 'universal/utils/isObject';
 import jwtDecode from 'jwt-decode';
 import stripe from 'server/utils/stripe';
+import {getOldVal} from 'server/graphql/models/utils';
+
 // we do this otherwise we'd have to blacklist every token that ever got replaced & query that table for each query
 const isTmsValid = (tmsFromDB, tmsFromToken) => {
   if (tmsFromDB.length !== tmsFromToken.length) return false;
@@ -48,7 +50,7 @@ export default function scConnectionHandler(exchange) {
     const tokenExpiration = new Date(exp * 1000);
     const timeLeftOnToken = tokenExpiration - now;
     // if the user was booted from the team, give them a new token
-    const {changes} = await r.table('User').get(userId)
+    const userRes = await r.table('User').get(userId)
       .replace((row) => {
         return row.without('inactive')
           .merge({
@@ -56,7 +58,8 @@ export default function scConnectionHandler(exchange) {
             lastSeenAt: now
           })
       }, {returnChanges: true});
-    const {inactive, tms: tmsDB, orgs: orgIds} = changes[0].old_val;
+
+    const {inactive, tms: tmsDB, orgs: orgIds} = getOldVal(userRes)
     const tmsIsValid = isTmsValid(tmsDB, tms);
     if (timeLeftOnToken < REFRESH_JWT_AFTER || !tmsIsValid) {
       authToken.tms = tmsDB;
@@ -70,11 +73,10 @@ export default function scConnectionHandler(exchange) {
           activeUserCount: row('activeUserCount').add(1),
           inactiveUserCount: row('inactiveUserCount').add(-1)
         }), {returnChanges: true});
-      const subIds = changes.map((change) => change.old_val.stripeSubscriptionId);
-      const subPromises = subIds.map((stripeSubscriptionId) => stripe.subscriptions.retrieve(stripeSubscriptionId));
-      const subscriptions = await Promise.all(subPromises);
-      subscriptions.map((sub) => stripe.subscriptions.update(sub.id, {
-        quantity: sub.quantity + 1,
+      const orgDocs = changes.map((change) => change.new_val);
+
+      orgDocs.map((org) => stripe.subscriptions.update(org.stripeSubscriptionId, {
+        quantity: org.activeUserCount,
         metadata: {
           type: UNPAUSE_USER,
           userId

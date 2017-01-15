@@ -98,7 +98,7 @@ export function updatedOrOriginal(possiblyUpdatedResult, original) {
   return firstChange(possiblyUpdatedResult).new_val || original;
 }
 
-export function previousValue(possiblyUpdatedResult) {
+export function getOldVal(possiblyUpdatedResult) {
   return firstChange(possiblyUpdatedResult).old_val;
 }
 
