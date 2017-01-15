@@ -107,19 +107,15 @@ export default {
       const [customer, token] = await Promise.all(stripeRequests);
       const {brand, last4, exp_month: expMonth, exp_year: expYear} = token.card;
       const expiry = `${expMonth}/${expYear.substr(2)}`;
-      const {isTrial, validUntil} = await r.table('Organization')
+      const {isTrial, stripeSubscriptionId, validUntil} = await r.table('Organization')
         .get(orgId)
-        .pluck('isTrial', 'validUntil');
+        .pluck('isTrial', 'validUntil', 'stripeSubscriptionId');
 
       let nowValidUntil = validUntil;
       const promises = [];
       if (isTrial && validUntil > now) {
-        const subscription = customer.subscriptions.data.find((sub) => sub.plan.id === ACTION_MONTHLY);
-        if (!subscription) {
-          throw errorObj({_error: 'No subscription found! This shouldn\'t happen...'});
-        }
         nowValidUntil = new Date(nowValidUntil.setMilliseconds(0) + TRIAL_EXTENSION);
-        const extendTrial = stripe.subscriptions.update(subscription.id, {
+        const extendTrial = stripe.subscriptions.update(stripeSubscriptionId, {
           trial_end: nowValidUntil / 1000
         });
         promises.push(extendTrial);

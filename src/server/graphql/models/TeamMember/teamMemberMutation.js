@@ -16,6 +16,13 @@ import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
 import {JOIN_TEAM, KICK_OUT, PRESENCE} from 'universal/subscriptions/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
+import {
+  ADD_USER,
+  PAUSE_USER,
+  REMOVE_USER,
+  UNPAUSE_USER
+} from 'server/utils/serverConstants';
+import stripe from 'server/utils/stripe';
 
 export default {
   checkIn: {
@@ -107,24 +114,37 @@ export default {
       }
 
       // RESOLUTION
-      const orgId = await r.table('Team').get(teamId)('orgId');
+      const {orgId, user} = await r.table('Team').get(teamId)('orgId')
+        .do((orgId) => ({
+          orgId,
+          user: r.table('User').get(userId)
+        }));
+      const userOrgs = user.orgs || [];
+      const userTeams = user.tms || [];
+      const userInOrg = userOrgs.includes(orgId);
+      const newUserOrgs = userInOrg ? userOrgs : [...userOrgs, orgId];
+      const tms = [...userTeams, teamId];
+      const teamMemberId = `${user.id}::${teamId}`;
       const dbWork = r.table('User')
       // add the team to the user doc
         .get(userId)
-        .update((row) => {
+        .update(() => {
           return {
-            tms: row('tms').append(teamId).default([teamId]),
-            orgs: row('orgs').append(orgId).default([orgId])
+            tms,
+            orgs: newUserOrgs
           }
         })
         .do(() => {
-          return r.table('Organization')
+          return r.branch(
+            userInOrg,
+            null,
+            r.table('Organization')
             .get(orgId)
             .update((row) => {
               return {
                 activeUserCount: row('activeUserCount').add(1)
               }
-            })
+            }))
         })
         // get number of users
         .do(() => {
@@ -133,49 +153,50 @@ export default {
             .filter({isNotRemoved: true})
             .count();
         })
-        // get the user
-        .do((usersOnTeam) => ({
-          usersOnTeam,
-          user: r.table('User').get(userId)
-
-        }))
         // insert team member
-        .do((teamCountAndUser) =>
+        .do((teamCount) =>
           r.table('TeamMember').insert({
-            checkInOrder: teamCountAndUser('usersOnTeam').add(1),
-            email: teamCountAndUser('user')('email').default(''),
-            id: teamCountAndUser('user')('id').add('::', teamId),
+            id: teamMemberId,
+            checkInOrder: teamCount.add(1),
+            email: user.email,
             teamId,
             userId,
             isNotRemoved: true,
             isLead: false,
             isFacilitator: true,
-            picture: teamCountAndUser('user')('picture').default(''),
-            preferredName: teamCountAndUser('user')('preferredName').default(''),
-          }).do(() =>
-            // ...but return the user's email
-            teamCountAndUser('user')('email')
-          )
+            picture: user.picture,
+            preferredName: user.preferredName,
+          })
         )
         // find all possible emails linked to this person and mark them as accepted
-        .do((userEmail) =>
+        .do(() =>
           r.table('Invitation')
-            .getAll(userEmail, email, {index: 'email'})
+            .getAll(user.email, email, {index: 'email'})
             .update({
               acceptedAt: now,
               // flag the token as expired so they cannot reuse the token
               tokenExpiration: new Date(0),
               updatedAt: now
             })
-            .do(() => userEmail)
         );
-      const tms = oldtms.concat(teamId);
       const asyncPromises = [
         dbWork,
         auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
       ];
-      const [userEmail] = await Promise.all(asyncPromises);
-      const payload = {type: JOIN_TEAM, name: userEmail};
+      await Promise.all(asyncPromises);
+
+      if (!userInOrg) {
+        const stripeSubscriptionId = await r.table('Organization').get(orgId)('stripeSubscriptionId');
+        const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+        await stripe.subscriptions.update(stripeSubscriptionId, {
+          quantity: subscription.quantity + 1,
+          metadata: {
+            type: ADD_USER,
+            userId
+          }
+        })
+      }
+      const payload = {type: JOIN_TEAM, name: user.email};
       exchange.publish(`${PRESENCE}/${teamId}`, payload);
       return tmsSignToken(authToken, tms);
     }

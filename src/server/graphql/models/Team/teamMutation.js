@@ -538,7 +538,7 @@ export default {
           orgId
         }
       });
-      const {trial_end: trialExpiresAt} = await stripe.subscriptions.create({
+      const {id: stripeSubscriptionId, trial_end: trialExpiresAt} = await stripe.subscriptions.create({
         customer: stripeId,
         plan: 'action-monthly',
         trial_period_days: 30
@@ -552,6 +552,7 @@ export default {
         isTrial: true,
         name: `${user.preferredName}'s Org`,
         stripeId,
+        stripeSubscriptionId,
         updatedAt: now,
         validUntil: trialExpiresAt
       })

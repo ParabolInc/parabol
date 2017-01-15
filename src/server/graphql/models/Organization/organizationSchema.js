@@ -79,6 +79,10 @@ export const Organization = new GraphQLObjectType({
       type: GraphQLID,
       description: 'The customerId from stripe'
     },
+    stripeSubscriptionId: {
+      type: GraphQLID,
+      description: 'The subscriptionId from stripe'
+    },
     updatedAt: {
       type: GraphQLISO8601Type,
       description: 'The datetime the organization was last updated'
