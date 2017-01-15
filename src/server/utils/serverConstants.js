@@ -12,4 +12,5 @@ export const ADD_USER = 'addUser';
 export const PAUSE_USER = 'pauseUser';
 export const REMOVE_USER = 'removeUser';
 export const UNPAUSE_USER = 'unpauseUser';
+export const MAX_MONTHLY_PAUSES = 4;
 

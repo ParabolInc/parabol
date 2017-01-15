@@ -5,12 +5,19 @@ import {
   GraphQLBoolean,
   GraphQLID
 } from 'graphql';
-import {requireOrgLeader, requireWebsocket} from '../authorization';
+import {requireOrgLeader, requireOrgLeaderOfUser, requireWebsocket} from '../authorization';
 import updateOrgSchema from 'universal/validation/updateOrgSchema';
 import {errorObj, handleSchemaErrors} from '../utils';
 import stripe from 'server/utils/stripe';
 import {ACTION_MONTHLY, TRIAL_EXTENSION} from 'server/utils/serverConstants';
 import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
+import {
+  ADD_USER,
+  PAUSE_USER,
+  REMOVE_USER,
+  UNPAUSE_USER,
+  MAX_MONTHLY_PAUSES
+} from 'server/utils/serverConstants';
 
 export default {
   updateOrg: {
@@ -150,6 +157,65 @@ export default {
           .delete());
       }
       await Promise.all(promises);
+    }
+  },
+  inactivateUser: {
+    type: GraphQLBoolean,
+    description: 'pauses the subscription for a single user',
+    args: {
+      userId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'the user to pause'
+      }
+    },
+    async resolve(source, {userId}, {authToken, socket}) {
+      const r = getRethink();
+
+      // AUTH
+      await requireOrgLeaderOfUser(authToken, userId);
+      const {inactive: isInactive, orgs: orgIds} = await r.table('User').get(userId);
+      if (isInactive) {
+        throw errorObj({_error: `${userId} is already inactive. cannot inactivate twice`})
+      }
+      const orgDocs = await r.table('Organization')
+        .getAll(r.args(orgIds), {index: 'id'}).pluck('stripeId', 'stripeSubscriptionId');
+
+      const upcomingInvoicesPromises = orgDocs.map(({stripeId}) => stripe.invoices.retrieveUpcoming(stripeId));
+      const upcomingInvoices = await Promise.all(upcomingInvoicesPromises);
+      for (let i = 0; i < upcomingInvoices.length; i++) {
+        const invoice = upcomingInvoices[i];
+        const invoiceLines = invoice.lines.data;
+        let previousPauses = 0;
+        for (let j = 0; j < invoiceLines.length; j++) {
+          const lineItem = invoiceLines[j];
+          if (lineItem.metadata.userId === userId && lineItem.metadata.type === PAUSE_USER) {
+            if (++previousPauses >= MAX_MONTHLY_PAUSES) {
+              throw errorObj({_error: 'Max monthly pauses exceeded for this user'});
+            }
+          }
+        }
+      }
+
+      // RESOLUTION
+      const subPromises = orgDocs.map(({stripeSubscriptionId}) => stripe.subscriptions.retrieve(stripeSubscriptionId));
+      const subscriptions = await Promise.all(subPromises);
+      const updatePromises = subscriptions.map((sub) => stripe.subscriptions.update(sub.id, {
+        quantity: sub.quantity - 1,
+        metadata: {
+          type: PAUSE_USER,
+          automatic: true,
+          userId
+        }
+      }));
+      const now = new Date();
+      updatePromises.push(r.table('User')
+        .get(userId)
+        .update({
+          inactive: true,
+          updatedAt: now
+        }));
+      await Promise.all(updatePromises);
+      return true;
     }
   }
 };

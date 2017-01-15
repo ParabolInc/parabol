@@ -11,7 +11,7 @@ import shortid from 'shortid';
 export default {
   inactivateUser: {
     type: GraphQLBoolean,
-    description: 'Manally inactivate a user',
+    description: 'Manaully inactivate a user',
     args: {
       userId: {
         type: new GraphQLNonNull(GraphQLID),
