@@ -89,7 +89,9 @@ const Step3InviteeList = (props) => {
         System.import('universal/containers/Dashboard/DashboardContainer');
       }}
       onClick={() => {
-        segmentEventTrack('Welcome Step3 Completed', {inviteeCount: 0});
+        dispatch(
+          segmentEventTrack('Welcome Step3 Completed', {inviteeCount: 0})
+        );
       }}
       title="I'll invite them later"
     >
