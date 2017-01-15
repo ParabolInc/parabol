@@ -36,7 +36,11 @@ export default async initialState => {
     // add Sentry error reporting:
     middlewares.unshift(ravenMiddleware(window.__ACTION__.sentry)); // eslint-disable-line no-underscore-dangle
     const segmentMiddleware = createTracker();
-    middlewares.unshift(segmentMiddleware);
+    if (window.analytics) {
+      middlewares.unshift(segmentMiddleware);
+    } else {
+      console.warn('segment analytics undefined in production?');
+    }
     store = createStore(reducer, initialState, compose(applyMiddleware(...middlewares)));
   } else {
     // eslint-disable-next-line no-underscore-dangle
