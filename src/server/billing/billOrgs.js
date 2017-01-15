@@ -3,7 +3,7 @@ import {PAYMENT_REJECTED} from 'universal/utils/constants';
 import shortid from 'shortid';
 import ms from 'ms';
 import {INACTIVE_DAYS_THRESH, TRIAL_EXTENSION} from 'server/utils/serverConstants';
-import stripe from 'server/utils/stripe';
+import stripe from 'stripe';
 
 // run at 12am everyday
 // look for customers that will expire by 12am tomorrow

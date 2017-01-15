@@ -5,7 +5,7 @@ import {REFRESH_JWT_AFTER, UNPAUSE_USER} from 'server/utils/serverConstants';
 import getRetink from 'server/database/rethinkDriver';
 import isObject from 'universal/utils/isObject';
 import jwtDecode from 'jwt-decode';
-import stripe from 'server/utils/stripe';
+import stripe from '../billing/stripe';
 import {getOldVal} from 'server/graphql/models/utils';
 
 // we do this otherwise we'd have to blacklist every token that ever got replaced & query that table for each query

@@ -8,7 +8,7 @@ import {
 import {requireOrgLeader, requireOrgLeaderOfUser, requireWebsocket} from '../authorization';
 import updateOrgSchema from 'universal/validation/updateOrgSchema';
 import {errorObj, handleSchemaErrors, getOldVal} from '../utils';
-import stripe from 'server/utils/stripe';
+import stripe from '../../../billing/stripe';
 import {ACTION_MONTHLY, TRIAL_EXTENSION} from 'server/utils/serverConstants';
 import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
 import {

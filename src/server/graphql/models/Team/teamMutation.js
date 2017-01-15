@@ -36,7 +36,7 @@ import makeStep2Schema from 'universal/validation/makeStep2Schema';
 import makeAddTeamServerSchema from 'universal/validation/makeAddTeamServerSchema';
 import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED, REQUEST_NEW_USER} from 'universal/utils/constants';
 import ms from 'ms';
-import stripe from 'server/utils/stripe';
+import stripe from '../../../billing/stripe';
 import {ACTION_MONTHLY, TRIAL_PERIOD_DAYS} from 'server/utils/serverConstants';
 import stripeDate from 'universal/utils/stripeDate';
 
@@ -524,7 +524,6 @@ export default {
         throw errorObj({_error: 'you have already created a team'})
       }
 
-
       // VALIDATION
       const schema = makeStep2Schema();
       const {data, errors} = schema(newTeam);
@@ -555,6 +554,9 @@ export default {
       });
       const {id: stripeSubscriptionId, trial_end} = await stripe.subscriptions.create({
         customer: stripeId,
+        metadata: {
+          orgId
+        },
         plan: ACTION_MONTHLY,
         trial_period_days: TRIAL_PERIOD_DAYS
       });

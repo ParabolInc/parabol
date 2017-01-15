@@ -19,7 +19,7 @@ import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {
   ADD_USER,
 } from 'server/utils/serverConstants';
-import stripe from 'server/utils/stripe';
+import stripe from '../../../billing/stripe';
 
 export default {
   checkIn: {

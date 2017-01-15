@@ -71,10 +71,6 @@ export const Organization = new GraphQLObjectType({
       type: GraphQLURLType,
       description: 'The org avatar'
     },
-    // removedUsers: {
-    //   type: new GraphQLList(new GraphQLNonNull(RemovedUser)),
-    //   description: 'A list of users removed and the day the were kicked out of the org'
-    // },
     stripeId: {
       type: GraphQLID,
       description: 'The customerId from stripe'

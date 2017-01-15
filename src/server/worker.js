@@ -15,6 +15,7 @@ import scConnectionHandler from './socketHandlers/scConnectionHandler';
 import httpGraphQLHandler from './graphql/httpGraphQLHandler';
 import mwPresencePublishOut from './socketHandlers/mwPresencePublishOut';
 import mwPresenceSubscribe from './socketHandlers/mwPresenceSubscribe';
+import stripeWebhookHandler from './billing/stripeWebhookHandler';
 
 const PROD = process.env.NODE_ENV === 'production';
 
@@ -65,6 +66,12 @@ export function run(worker) {
 
   // server-side rendering for emails
   app.get('/email', emailSSR);
+
+  // stripe webhooks
+  app.post(`/stripe`, stripeWebhookHandler);
+  app.post('/stripe/live', (req, res) => {
+
+  });
   // server-side rendering
   app.get('*', createSSR);
 
