@@ -10,7 +10,7 @@ import CreditCardModal from 'universal/modules/userDashboard/components/CreditCa
 import {togglePaymentModal, toggleLeaveModal, toggleRemoveModal} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
 
 const SettingsModal = (props) => {
-  const {openModal, org: {id: orgId}, modalUserId, modalPreferredName} = props;
+  const {dispatch, openModal, org: {id: orgId}, modalUserId, modalPreferredName} = props;
   switch(openModal) {
     case TOGGLE_REMOVE_BILLING_LEADER:
       return <RemoveBillingLeaderModal
