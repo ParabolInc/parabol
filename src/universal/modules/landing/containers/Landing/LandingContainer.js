@@ -18,26 +18,39 @@ export default class LandingContainer extends Component {
       picture: PropTypes.string,
       preferredName: PropTypes.string
     }),
-    dispatch: PropTypes.func.isRequired,
+    dispatch: PropTypes.func.isRequired
   };
+
+  constructor(props) {
+    super(props);
+    this.state = {refreshNeeded: false};
+  }
 
   componentWillMount() {
     injectGlobals(auth0Overrides);
   }
 
-  render() {
-    const {dispatch} = this.props;
-    let loginClickHandler = () => showLock(dispatch);
-    // window.localStorage only stores strings
-    if (window.localStorage.getItem(APP_UPGRADE_PENDING_KEY) === 'true') {
-      loginClickHandler = () => window.location.reload();
-      window.localStorage.setItem(APP_UPGRADE_PENDING_KEY, 'false');
+  componentDidMount() {
+    if (window.sessionStorage.getItem(APP_UPGRADE_PENDING_KEY) === 'true') {
+      this.setState({refreshNeeded: true}); // eslint-disable-line react/no-did-mount-set-state
+      window.sessionStorage.setItem(APP_UPGRADE_PENDING_KEY, 'false');
+      const {dispatch} = this.props;
       dispatch(showInfo({
         title: 'Almost done upgrading!',
         message: 'Just refreshing the page for you :)',
         autoDismiss: 0
       }));
       window.location.reload();
+    }
+  }
+
+  render() {
+    let loginClickHandler;
+    if (this.state.refreshNeeded) {
+      loginClickHandler = () => window.location.reload();
+    } else {
+      const {dispatch} = this.props;
+      loginClickHandler = () => showLock(dispatch);
     }
     return (
       <div>
