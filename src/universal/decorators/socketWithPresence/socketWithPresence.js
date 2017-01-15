@@ -10,7 +10,11 @@ import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
 import parseChannel from 'universal/utils/parseChannel';
 import {showInfo, showWarning} from 'universal/modules/notifications/ducks/notifications';
 import {withRouter} from 'react-router';
-import {APP_VERSION_KEY, APP_UPGRADE_PENDING_KEY} from 'universal/utils/constants';
+import {
+  APP_VERSION_KEY,
+  APP_UPGRADE_PENDING_KEY,
+  APP_UPGRADE_PENDING_RELOAD
+} from 'universal/utils/constants';
 
 const getTeamName = (teamId) => {
   const cashayState = cashay.store.getState().cashay;
@@ -118,10 +122,11 @@ export default ComposedComponent => {
         const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY) || '0.0.0';
         if (versionOnServer !== versionInStorage) {
           dispatch(showWarning({
-            title: 'So long!',
-            message: 'Logging you out because a new version of Action is available'
+            title: 'New stuff!',
+            message: 'Logging you out because a new version of Action is available',
           }));
-          window.sessionStorage.setItem(APP_UPGRADE_PENDING_KEY, 'true');
+          window.sessionStorage.setItem(APP_UPGRADE_PENDING_KEY,
+            APP_UPGRADE_PENDING_RELOAD);
           router.replace('/signout');
         }
       });
