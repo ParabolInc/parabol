@@ -93,6 +93,11 @@ stages:
       - type: deploy
         name: Possible (production backup) and deployment
         command: |
+          if [ "${CIRCLE_BRANCH}" == "production" ]; then
+            export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION}"
+          elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+            export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}"
+          fi
           if [ -n "${GITHUB_REMOTE}" ]; then
             git remote add dokku $GITHUB_REMOTE
             export SSH_DESTINATION=$(echo $GITHUB_REMOTE | cut -f1 -d:)
