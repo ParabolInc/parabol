@@ -48,7 +48,7 @@ export default async (userId, teamId) => {
     updatedAt: now
   }));
 
-  return await r.table('Project').insert(seedProjects)
+  return await r.table('Project').insert(seedProjects, {returnChanges: true})
     .do((result) => {
       return r.table('ProjectHistory').insert(
         result('changes').map((change) => ({
