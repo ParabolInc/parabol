@@ -25,7 +25,8 @@ import {
   phaseArray,
   phaseOrder
 } from 'universal/utils/constants';
-import createTeamAndLeader from './createTeamAndLeader';
+import addSeedProjects from './helpers/addSeedProjects';
+import createTeamAndLeader from './helpers/createTeamAndLeader';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
@@ -449,6 +450,9 @@ export default {
 
       // RESOLUTION
       const tms = await createTeamAndLeader(authToken, validNewTeam);
+      // Asynchronously create seed projects for team leader:
+      // TODO: remove me after more
+      addSeedProjects(authToken.sub, newTeam.id);
       return tmsSignToken(authToken, tms);
     }
   },
