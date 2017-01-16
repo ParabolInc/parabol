@@ -11,6 +11,7 @@ stages:
       - DEVOPS_WORKDIR: "/home/ubuntu/action-devops"
       - GITHUB_REMOTE_PRODUCTION: "dokku@action-production.parabol.co:web"
       - GITHUB_REMOTE_STAGING: "dokku@action-staging.parabol.co:web"
+      - PRODUCTION_BACKUP_VOLUME: "/mnt/volume-nyc1-01/action-production"
 
     steps:
       - type: add-ssh-keys
@@ -57,11 +58,11 @@ stages:
         name: Pre-build DevOps checkout
         command: |
           if [ "${CIRCLE_BRANCH}" == "production" ]; then
-            export DEPLOY_ENV="production";
+            export DEPLOY_ENV="production"
           elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
-            export DEPLOY_ENV="staging";
+            export DEPLOY_ENV="staging"
           else
-            export DEPLOY_ENV="development";
+            export DEPLOY_ENV="development"
           fi
           git clone $DEVOPS_REPO $DEVOPS_WORKDIR &&
           cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
@@ -71,16 +72,15 @@ stages:
         command: npm run build
 
       - type: deploy
-        name: Possible deployment
+        name: Possible deployment build
         command: |
           if [ "${CIRCLE_BRANCH}" == "production" ]; then
-            export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION}";
+            export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION}"
           elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
-            export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}";
+            export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}"
           fi
           if [ -n "${GITHUB_REMOTE}" ]; then
             npm run build:deploy &&
-            git add build &&
             export ACTION_VERSION="\
               $([[ $(grep version package.json) =~ (([0-9]+\.?){3}) ]] && \
                 echo ${BASH_REMATCH[1]})"
@@ -88,9 +88,21 @@ stages:
             git config --global user.email "admin+circleci@parabol.co"
             git add build
             git commit -m "build $ACTION_VERSION" build
+          fi
+
+      - type: deploy
+        name: Possible (production backup) and deployment
+        command: |
+          if [ -n "${GITHUB_REMOTE}" ]; then
             git remote add dokku $GITHUB_REMOTE
-            ssh -o StrictHostKeyChecking=no \
-              $(echo $GITHUB_REMOTE | cut -f1 -d:) -T > /dev/null &&
+            export SSH_DESTINATION=$(echo $GITHUB_REMOTE | cut -f1 -d:)
+            ssh -o StrictHostKeyChecking=no "${SSH_DESTINATION}" -T >/dev/null
+          fi &&
+          if [ "${GITHUB_REMOTE}" == "${GITHUB_REMOTE_PRODUCTION}" ]; then
+            $DEVOPS_WORKDIR/dokku/rethinkdb-backup.sh \
+              -s "${SSH_DESTINATION}" -d "${PRODUCTION_BACKUP_VOLUME}"
+          fi &&
+          if [ -n "${GITHUB_REMOTE}" ]; then
             git push -f dokku $CIRCLE_BRANCH:master
           fi
 
