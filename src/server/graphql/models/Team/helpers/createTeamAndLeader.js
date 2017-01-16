@@ -1,5 +1,5 @@
 import getRethink from 'server/database/rethinkDriver';
-import {getUserId} from '../authorization';
+import {getUserId} from '../../authorization';
 import {LOBBY} from 'universal/utils/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 
