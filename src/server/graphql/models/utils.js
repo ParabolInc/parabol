@@ -102,6 +102,10 @@ export function getOldVal(possiblyUpdatedResult) {
   return firstChange(possiblyUpdatedResult).old_val;
 }
 
+export function getNewVal(resultWithReturnChanges) {
+  return firstChange(resultWithReturnChanges).new_val;
+}
+
 export function makeEnumValues(constArr) {
   return constArr.reduce((values, constant) => {
     values[constant] = {value: constant};

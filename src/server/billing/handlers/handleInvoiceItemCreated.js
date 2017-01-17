@@ -1,7 +1,7 @@
 import stripe from 'stripe';
 import getRethink from 'server/database/rethinkDriver';
 
-export default async function handleInvoiceCreated(invoiceId) {
+export default async function handleInvoiceItemCreated(invoiceId) {
   const r = getRethink();
 
   const customer = await stripe.customers.retrieve(customerId);

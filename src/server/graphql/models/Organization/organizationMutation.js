@@ -8,8 +8,8 @@ import {
 import {requireOrgLeader, requireOrgLeaderOfUser, requireWebsocket} from '../authorization';
 import updateOrgSchema from 'universal/validation/updateOrgSchema';
 import {errorObj, handleSchemaErrors, getOldVal} from '../utils';
-import stripe from '../../../billing/stripe';
-import {ACTION_MONTHLY, TRIAL_EXTENSION} from 'server/utils/serverConstants';
+import stripe from 'server/billing/stripe';
+import {TRIAL_EXTENSION} from 'server/utils/serverConstants';
 import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
 import {
   ADD_USER,
@@ -18,6 +18,7 @@ import {
   UNPAUSE_USER,
   MAX_MONTHLY_PAUSES
 } from 'server/utils/serverConstants';
+import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 
 export default {
   updateOrg: {
@@ -176,23 +177,17 @@ export default {
         throw errorObj({_error: `${userId} is already inactive. cannot inactivate twice`})
       }
       const {orgs: orgIds} = userDoc;
-      const {changes} = await r.table('Organization')
-        .getAll(r.args(orgIds), {index: 'id'})
-        .update((row) => ({
-          activeUserCount: row('activeUserCount').add(-1),
-          inactiveUserCount: row('inactiveUserCount').add(1)
-        }), {returnChanges: true});
-      const orgDocs = changes.map((change) => change.new_val);
+      const orgDocs = await r.table('Organization').getAll(r.args(orgIds), {index: 'id'});
       const upcomingInvoicesPromises = orgDocs.map(({stripeId}) => stripe.invoices.retrieveUpcoming(stripeId));
       const upcomingInvoices = await Promise.all(upcomingInvoicesPromises);
       for (let i = 0; i < upcomingInvoices.length; i++) {
-        const invoice = upcomingInvoices[i];
-        const invoiceLines = invoice.lines.data;
+        const invoiceLines = upcomingInvoices[i].lines.data;
         let previousPauses = 0;
         for (let j = 0; j < invoiceLines.length; j++) {
           const lineItem = invoiceLines[j];
           if (lineItem.metadata.userId === userId && lineItem.metadata.type === PAUSE_USER) {
-            if (++previousPauses >= MAX_MONTHLY_PAUSES) {
+            // each pause triggers 2 invoice line items
+            if (++previousPauses >= 2 * MAX_MONTHLY_PAUSES) {
               throw errorObj({_error: 'Max monthly pauses exceeded for this user'});
             }
           }
@@ -200,25 +195,7 @@ export default {
       }
 
       // RESOLUTION
-      const updatePromises = orgDocs.map((doc) => {
-        const {activeUserCount, stripeSubscriptionId} = doc;
-        return stripe.subscriptions.update(stripeSubscriptionId, {
-          quantity: activeUserCount,
-          metadata: {
-            type: PAUSE_USER,
-            automatic: true,
-            userId
-          }
-        })
-      });
-      const now = new Date();
-      // if we got this far, we know we updated it in the AUTH section
-      updatePromises.push(r.table('User')
-        .get(userId)
-        .update({
-          updatedAt: now
-        }));
-      await Promise.all(updatePromises);
+      await adjustUserCount(userId, orgIds, PAUSE_USER);
       return true;
     }
   },
@@ -243,6 +220,7 @@ export default {
       await requireOrgLeader(authToken, orgId);
 
       // RESOLUTION
+      const now = new Date();
       const userRes = await r.table('User').get(userId)
         .update((row) => ({
           orgs: row('orgs').filter((id) => id.ne(orgId)),
@@ -257,21 +235,70 @@ export default {
       if (!orgs.includes(orgId)) {
         throw errorObj({_error: `${userId} is not a part of org ${orgId}`});
       }
-      const orgRes = r.table('Organization').get(orgId)
-        .update((row) => ({
-          activeUserCount: row('activeUserCount').add(-1)
-        }), {returnChanges: true});
-
-      const {activeUserCount, stripeSubscriptionId} = getOldVal(orgRes);
-      await stripe.subscriptions.update(stripeSubscriptionId, {
-        quantity: activeUserCount - 1,
-        metadata: {
-          type: REMOVE_USER,
-          userId
-        }
-      });
+      await adjustUserCount(userId, orgId, REMOVE_USER);
       return true;
     }
   }
-}
-;
+};
+
+// stripe.customers.create({
+//   metadata: {
+//     orgId: 'org123'
+//   },
+//   source: {
+//     object: 'card',
+//     exp_month: 12,
+//     exp_year: 2019,
+//     number: '4242424242424242'
+//   }
+// }).then(res => console.log(res.id))
+
+// stripe.customers.update("cus_9wYZniZh21oSvj", {
+//   source: {
+//     object: 'card',
+//     exp_month: 12,
+//     exp_year: 2019,
+//     number: '4242424242424242'
+//   }
+// })
+// stripe.subscriptions.create({
+//   customer: "cus_9wYZniZh21oSvj",
+//   plan: '3',
+// }).then(res => console.log(res.id))
+//
+// stripe.invoices.retrieveUpcoming("cus_9wYZniZh21oSvj").then(res => console.log(res.lines.data))
+// stripe.subscriptions.update('sub_9wYZtzgKY3PUir', {
+//   quantity: 2,
+//   metadata: {
+//     type: 'addUser',
+//     userId: 'foo123'
+//   },
+//   proration_date: 1484594697
+// })
+//
+// stripe.subscriptions.update('sub_9wYZtzgKY3PUir', {
+//   quantity: 1,
+//   metadata: {
+//     type: 'pauseUser',
+//     userId: 'foo100'
+//   }
+// })
+//
+// stripe.subscriptions.update('sub_9wYZtzgKY3PUir', {
+//   quantity: 0,
+//   metadata: {
+//     type: 'removeUser',
+//     userId: 'foo123'
+//   }
+// })
+//
+// stripe.subscriptions.update('sub_9wYZtzgKY3PUir', {
+//   quantity: 2,
+//   proration_date: 1484592888
+// }).then(res => console.log(res))
+//
+// const obj = {
+//   id: prorationDate,
+//   userId,
+//   type
+// }

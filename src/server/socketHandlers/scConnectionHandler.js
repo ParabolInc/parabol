@@ -67,21 +67,7 @@ export default function scConnectionHandler(exchange) {
     }
     // no need to wait for this, it's just for billing
     if (inactive) {
-      const {changes} = await r.table('Organization')
-        .getAll(r.args(orgIds), {index: 'id'})
-        .update((row) => ({
-          activeUserCount: row('activeUserCount').add(1),
-          inactiveUserCount: row('inactiveUserCount').add(-1)
-        }), {returnChanges: true});
-      const orgDocs = changes.map((change) => change.new_val);
-
-      orgDocs.map((org) => stripe.subscriptions.update(org.stripeSubscriptionId, {
-        quantity: org.activeUserCount,
-        metadata: {
-          type: UNPAUSE_USER,
-          userId
-        }
-      }));
+      adjustUserCount(userId, orgIds, UNPAUSE_USER)
     }
   };
 }

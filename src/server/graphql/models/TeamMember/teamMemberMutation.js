@@ -4,7 +4,7 @@ import {
   GraphQLID,
   GraphQLBoolean,
 } from 'graphql';
-import {errorObj, getOldVal} from '../utils';
+import {errorObj, getNewVal, getOldVal} from '../utils';
 import {
   requireWebsocket,
   requireSUOrTeamMember,
@@ -19,7 +19,7 @@ import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {
   ADD_USER,
 } from 'server/utils/serverConstants';
-import stripe from '../../../billing/stripe';
+import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 
 export default {
   checkIn: {
@@ -176,19 +176,7 @@ export default {
       await Promise.all(asyncPromises);
 
       if (!userInOrg) {
-        const orgRes = await r.table('Organization').get(orgId)
-          .update((row) => ({
-            activeUserCount: row('activeUserCount').add(1)
-          }), {returnChanges: true});
-
-        const {stripeSubscriptionId, activeUserCount} = getOldVal(orgRes);
-        await stripe.subscriptions.update(stripeSubscriptionId, {
-          quantity: activeUserCount + 1,
-          metadata: {
-            type: ADD_USER,
-            userId
-          }
-        })
+        await adjustUserCount(userId, orgId, ADD_USER);
       }
       const payload = {type: JOIN_TEAM, name: user.email};
       exchange.publish(`${PRESENCE}/${teamId}`, payload);
