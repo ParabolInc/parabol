@@ -6,63 +6,47 @@ import {
   GraphQLInt,
   GraphQLFloat,
   GraphQLList,
-  GraphQLUnionType
+  GraphQLUnionType,
+  GraphQLBoolean
 } from 'graphql';
 import {GraphQLEmailType} from '../types';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
-import {makeEnumValues} from '../utils';
+import {makeEnumValues} from 'server/graphql/models/utils';
 
-const SUBSCRIPTION_LINE_ITEM = 'SUBSCRIPTION_LINE_ITEM';
-const TOTAL_INACTIVITY_CREDIT = 'TOTAL_INACTIVITY_CREDIT';
-const USER_INACTIVITY_CREDIT = 'USER_INACTIVITY_CREDIT';
+const NEXT_MONTH_CHARGES = 'NEXT_MONTH_CHARGES';
+const ADDED_USERS = 'ADDED_USERS';
+const REMOVED_USERS = 'REMOVED_USERS';
+const INACTIVITY_CREDITS = 'INACTIVITY_CREDITS';
+
+/* Each invoice has 3 levels.
+ * L1 is a the invoice itself: how much to pay.
+ * L2 is 1 - 4 line items (next month charges, added users, removed users, inactivity credits) with a quantity
+ * L3 is a detailed line item & is a breakdown of the L2 quantity (eg a user with the pause/unpause dates)
+ */
 
 export const LineItemType = new GraphQLEnumType({
   name: 'LineItemType',
-  description: 'The kind of notification',
+  description: 'A big picture line item',
   values: makeEnumValues([
-    SUBSCRIPTION_LINE_ITEM,
-    TOTAL_INACTIVITY_CREDIT,
-    USER_INACTIVITY_CREDIT
+    NEXT_MONTH_CHARGES,
+    ADDED_USERS,
+    REMOVED_USERS,
+    INACTIVITY_CREDITS
   ])
 });
 
-const baseFields = {
-  id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique line item id'},
-  amount: {
-    type: new GraphQLNonNull(GraphQLFloat),
-    description: 'The amount for the line item (in USD)'
-  },
-  type: {
-    type: LineItemType,
-    description: 'The line item type for a monthly billing invoice'
-  }
-};
-
-const SubscriptionLineItemType = new GraphQLObjectType({
-  type: 'SubscriptionLineItemType',
-  description: 'Billing for all users on the org',
+const DetailedLineItem = new GraphQLObjectType({
+  name: 'DetailedLineItem',
+  description: 'The per-user-action line item details,',
   fields: () => ({
-    ...baseFields,
-    quantity: {
-      type: GraphQLInt,
-      description: 'The number of users in the org, regardless of active status'
-    },
-
-  })
-});
-
-const UserInactivityCreditType = new GraphQLObjectType({
-  type: 'UserInactivityCreditType',
-  description: 'User-specific refunds for a particular date range (many could exist in the same billing cycle)',
-  fields: () => ({
-    ...baseFields,
+    id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique detailed line item id'},
     email: {
       type: GraphQLEmailType,
-      description: 'The email linked to the org member that is receiving the credit'
+      description: 'The email affected by this line item change'
     },
-    quantity: {
-      type: GraphQLInt,
-      description: 'The number of days that are not being charged'
+    parentId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The parent line item id'
     },
     startAt: {
       type: GraphQLISO8601Type,
@@ -75,35 +59,28 @@ const UserInactivityCreditType = new GraphQLObjectType({
   })
 });
 
-const TotalInactivityCreditType = new GraphQLObjectType({
-  type: 'TotalInactivityCreditType',
-  description: 'Refunds for new, removed, and inactive users',
+const InvoiceLineItem = new GraphQLObjectType({
+  name: 'InvoiceLineItem',
+  description: 'A single line item charge on the invoice',
   fields: () => ({
-    ...baseFields,
-    quantity: {
-      type: GraphQLInt,
-      description: 'The total number of days that all org users have been inactive during the billing cycle'
-    },
+    id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique line item id'},
     details: {
       type: new GraphQLList(new GraphQLNonNull(UserInactivityCreditType)),
       description: 'Array of user inactivity line items that roll up to total inactivity'
+    },
+    amount: {
+      type: new GraphQLNonNull(GraphQLFloat),
+      description: 'The amount for the line item (in USD)'
+    },
+    type: {
+      type: LineItemType,
+      description: 'The line item type for a monthly billing invoice'
+    },
+    quantity: {
+      type: GraphQLInt,
+      description: 'The total number of days that all org users have been inactive during the billing cycle'
     }
   })
-});
-
-const typeLookup = {
-  [SUBSCRIPTION_LINE_ITEM]: SubscriptionLineItemType,
-  [TOTAL_INACTIVITY_CREDIT]: TotalInactivityCreditType,
-  [USER_INACTIVITY_CREDIT]: UserInactivityCreditType
-};
-
-const InvoiceLineItem = new GraphQLUnionType({
-  name: 'InvoiceLineItem',
-  description: 'A single line item charge on the invoice',
-  resolveType: ({type}) => {
-    return typeLookup[type];
-  },
-  types: Object.values(typeLookup)
 });
 
 export const Invoice = new GraphQLObjectType({
@@ -115,6 +92,10 @@ export const Invoice = new GraphQLObjectType({
       type: GraphQLFloat,
       description: 'The total amount for the invoice (in USD)'
     },
+    invoiceDate: {
+      type: GraphQLISO8601Type,
+      description: 'The date the invoice was created'
+    },
     startAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp for the beginning of the billing cycle'
@@ -125,15 +106,15 @@ export const Invoice = new GraphQLObjectType({
     },
     lineItem: {
       type: new GraphQLList(new GraphQLNonNull(InvoiceLineItem)),
-      description: 'An invoice line item for a charge'
+      description: 'An invoice line item for either the next month or an adjustment from the previous month charge'
     },
     orgId: {
       type: new GraphQLNonNull(GraphQLID),
       description: '*The organization id to charge'
     },
-    paidAt: {
-      type: GraphQLISO8601Type,
-      description: 'The datetime the invoice received an approved payment'
-    }
+    // paid: {
+    //   type: GraphQLBoolean,
+    //   description: 'true if the invoice has been paid, else false'
+    // }
   })
 });

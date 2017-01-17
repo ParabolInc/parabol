@@ -178,20 +178,22 @@ export default {
       }
       const {orgs: orgIds} = userDoc;
       const orgDocs = await r.table('Organization').getAll(r.args(orgIds), {index: 'id'});
-      const upcomingInvoicesPromises = orgDocs.map(({stripeId}) => stripe.invoices.retrieveUpcoming(stripeId));
-      const upcomingInvoices = await Promise.all(upcomingInvoicesPromises);
-      for (let i = 0; i < upcomingInvoices.length; i++) {
-        const invoiceLines = upcomingInvoices[i].lines.data;
-        let previousPauses = 0;
-        for (let j = 0; j < invoiceLines.length; j++) {
-          const lineItem = invoiceLines[j];
-          if (lineItem.metadata.userId === userId && lineItem.metadata.type === PAUSE_USER) {
-            // each pause triggers 2 invoice line items
-            if (++previousPauses >= 2 * MAX_MONTHLY_PAUSES) {
-              throw errorObj({_error: 'Max monthly pauses exceeded for this user'});
-            }
-          }
-        }
+
+      const hookPromises = orgDocs.map((orgDoc) => {
+        const {stripeSubscriptionId, id: orgId} = orgDoc;
+        return stripe.subscriptions.retrieve(stripeSubscriptionId)
+          .then((subscription) => {
+            const {current_period_start: startAt, current_period_end: endAt} = subscription;
+            return r.table('InvoiceItemHook')
+              .between([startAt, orgId], [endAt, orgId])
+              .filter({userId, type: PAUSE_USER})
+              .count()
+          })
+      });
+      const pausesByOrg = await Promise.all(hookPromises);
+      const triggeredPauses = Math.max(...pausesByOrg);
+      if (triggeredPauses >= MAX_MONTHLY_PAUSES) {
+        throw errorObj({_error: 'Max monthly pauses exceeded for this user'});
       }
 
       // RESOLUTION
