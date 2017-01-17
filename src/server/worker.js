@@ -64,7 +64,9 @@ export function run(worker) {
   }), graphQLHandler);
 
   // server-side rendering for emails
-  app.get('/email', emailSSR);
+  if (!PROD) {
+    app.get('/email', emailSSR);
+  }
   // server-side rendering
   app.get('*', createSSR);
 
