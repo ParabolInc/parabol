@@ -1,23 +1,24 @@
 import stripe from 'stripe';
 import getRethink from 'server/database/rethinkDriver';
 
-export default async function handleInvoiceItemCreated(invoiceId) {
+export default async function handleInvoiceItemCreated(invoiceItemId) {
   const r = getRethink();
-
-  const customer = await stripe.customers.retrieve(customerId);
-  const {orgId} = customer.metadata;
-  const cards = customer.sources.data;
-  const card = cards.find((card) => card.id === cardId);
-  if (!card) return undefined;
-  const {brand, last4, exp_month: expMonth, exp_year: expYear} = card;
-  const expiry = `${expMonth}/${expYear.substr(2)}`;
-  await r.table('Organization').get(orgId)
-    .update({
-      creditCard: {
-        brand,
-        last4,
-        expiry
-      },
-    });
-  return undefined;
+  const invoiceItem = await stripe.invoiceItems.retrieve(invoiceItemId);
+  if (!invoiceItem) {
+    console.warn(`No invoice found for ${invoiceItemId}`)
+  }
+  const {subscription, period: {start}} = invoiceItem;
+  const hook = await r.table('InvoiceItemHook')
+    .getAll([start, subscription], {index: 'prorationDateSubId'})
+    .nth(0);
+  if (!hook) {
+    console.warn(`No hook found in the DB! Need to manually update invoiceItem: ${invoiceItemId}`);
+  }
+  const {type, userId} = hook;
+  await stripe.invoiceItems.update(invoiceItemId, {
+    metadata: {
+      type,
+      userId
+    }
+  });
 }

@@ -59,7 +59,7 @@ export default function scConnectionHandler(exchange) {
           })
       }, {returnChanges: true});
 
-    const {inactive, tms: tmsDB, orgs: orgIds} = getOldVal(userRes)
+    const {inactive, tms: tmsDB, orgs: orgIds} = getOldVal(userRes);
     const tmsIsValid = isTmsValid(tmsDB, tms);
     if (timeLeftOnToken < REFRESH_JWT_AFTER || !tmsIsValid) {
       authToken.tms = tmsDB;

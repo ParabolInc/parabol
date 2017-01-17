@@ -13,7 +13,7 @@ export default async function stripeWebhookHandler(req, res) {
     const invoiceId = event.data.object.id;
     const invoice = await stripe.invoices.retrieve(invoiceId);
   } else if (type === 'invoiceitem.created') {
-    handleInvoiceItemCreated()
+    await handleInvoiceItemCreated(objectId);
   } else if (type === 'customer.source.updated') {
     const customerId = event.data.object.customer;
     await handleUpdatedSource(objectId, customerId);
