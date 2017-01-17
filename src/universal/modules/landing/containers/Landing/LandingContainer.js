@@ -6,7 +6,12 @@ import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
 import injectGlobals from 'universal/styles/hepha';
 import auth0Overrides from 'universal/styles/theme/auth0Overrides';
 import {showInfo} from 'universal/modules/notifications/ducks/notifications';
-import {APP_UPGRADE_PENDING_KEY} from 'universal/utils/constants';
+import {
+  APP_UPGRADE_PENDING_KEY,
+  APP_UPGRADE_PENDING_FALSE,
+  APP_UPGRADE_PENDING_RELOAD,
+  APP_UPGRADE_PENDING_DONE
+} from 'universal/utils/constants';
 
 @loginWithToken
 export default class LandingContainer extends Component {
@@ -28,19 +33,31 @@ export default class LandingContainer extends Component {
 
   componentWillMount() {
     injectGlobals(auth0Overrides);
+    if (typeof window !== 'undefined' &&
+        window.sessionStorage.getItem(APP_UPGRADE_PENDING_KEY) ===
+          APP_UPGRADE_PENDING_RELOAD) {
+      this.setState({refreshNeeded: true});
+    }
   }
 
   componentDidMount() {
-    if (window.sessionStorage.getItem(APP_UPGRADE_PENDING_KEY) === 'true') {
-      this.setState({refreshNeeded: true}); // eslint-disable-line react/no-did-mount-set-state
-      window.sessionStorage.setItem(APP_UPGRADE_PENDING_KEY, 'false');
-      const {dispatch} = this.props;
+    const {dispatch} = this.props;
+    const upgradePendingState = window.sessionStorage.getItem(APP_UPGRADE_PENDING_KEY);
+    if (upgradePendingState === APP_UPGRADE_PENDING_RELOAD) {
+      window.sessionStorage.setItem(APP_UPGRADE_PENDING_KEY,
+        APP_UPGRADE_PENDING_DONE);
+      window.location.reload();
+    } else if (upgradePendingState === APP_UPGRADE_PENDING_DONE) {
+      window.sessionStorage.setItem(APP_UPGRADE_PENDING_KEY,
+        APP_UPGRADE_PENDING_FALSE);
       dispatch(showInfo({
-        title: 'Almost done upgrading!',
-        message: 'Just refreshing the page for you :)',
+        title: 'New stuff!',
+        message: 'Action has been upgraded, log in to see what\'s new.',
+        action: {
+          label: 'Ok'
+        },
         autoDismiss: 0
       }));
-      window.location.reload();
     }
   }
 
