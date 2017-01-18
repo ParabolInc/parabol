@@ -7,16 +7,18 @@ import {
   GraphQLFloat,
   GraphQLList,
   GraphQLUnionType,
-  GraphQLBoolean
+  GraphQLBoolean,
+  GraphQLString
 } from 'graphql';
 import {GraphQLEmailType} from '../types';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {makeEnumValues} from 'server/graphql/models/utils';
 
-const NEXT_MONTH_CHARGES = 'NEXT_MONTH_CHARGES';
-const ADDED_USERS = 'ADDED_USERS';
-const REMOVED_USERS = 'REMOVED_USERS';
-const INACTIVITY_CREDITS = 'INACTIVITY_CREDITS';
+export const NEXT_MONTH_CHARGES = 'NEXT_MONTH_CHARGES';
+export const ADDED_USERS = 'ADDED_USERS';
+export const REMOVED_USERS = 'REMOVED_USERS';
+export const INACTIVITY_ADJUSTMENTS = 'INACTIVITY_ADJUSTMENTS';
+export const OTHER_ADJUSTMENTS = 'OTHER_ADJUSTMENTS';
 
 /* Each invoice has 3 levels.
  * L1 is a the invoice itself: how much to pay.
@@ -31,7 +33,8 @@ export const LineItemType = new GraphQLEnumType({
     NEXT_MONTH_CHARGES,
     ADDED_USERS,
     REMOVED_USERS,
-    INACTIVITY_CREDITS
+    INACTIVITY_ADJUSTMENTS,
+    OTHER_ADJUSTMENTS
   ])
 });
 
@@ -40,9 +43,17 @@ const DetailedLineItem = new GraphQLObjectType({
   description: 'The per-user-action line item details,',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique detailed line item id'},
+    amount: {
+      type: new GraphQLNonNull(GraphQLFloat),
+      description: 'The amount for the line item (in USD)'
+    },
     email: {
       type: GraphQLEmailType,
       description: 'The email affected by this line item change'
+    },
+    endAt: {
+      type: GraphQLISO8601Type,
+      description: `End of the event. Only present if a pause action gets matched up with an unpause action`
     },
     parentId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -52,10 +63,6 @@ const DetailedLineItem = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The timestamp for the beginning of the period of no charge'
     },
-    endAt: {
-      type: GraphQLISO8601Type,
-      description: 'The timestamp for the end of the period of no charge'
-    },
   })
 });
 
@@ -64,21 +71,25 @@ const InvoiceLineItem = new GraphQLObjectType({
   description: 'A single line item charge on the invoice',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique line item id'},
-    details: {
-      type: new GraphQLList(new GraphQLNonNull(UserInactivityCreditType)),
-      description: 'Array of user inactivity line items that roll up to total inactivity'
-    },
     amount: {
       type: new GraphQLNonNull(GraphQLFloat),
       description: 'The amount for the line item (in USD)'
     },
-    type: {
-      type: LineItemType,
-      description: 'The line item type for a monthly billing invoice'
+    description: {
+      type: GraphQLString,
+      description: 'A description of the charge. Only present if we have no idea what the charge is'
+    },
+    details: {
+      type: new GraphQLList(new GraphQLNonNull(DetailedLineItem)),
+      description: 'Array of user inactivity line items that roll up to total inactivity'
     },
     quantity: {
       type: GraphQLInt,
       description: 'The total number of days that all org users have been inactive during the billing cycle'
+    },
+    type: {
+      type: LineItemType,
+      description: 'The line item type for a monthly billing invoice'
     }
   })
 });
@@ -104,7 +115,7 @@ export const Invoice = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The timestamp for the end of the billing cycle'
     },
-    lineItem: {
+    lines: {
       type: new GraphQLList(new GraphQLNonNull(InvoiceLineItem)),
       description: 'An invoice line item for either the next month or an adjustment from the previous month charge'
     },

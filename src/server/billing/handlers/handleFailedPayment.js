@@ -54,5 +54,6 @@ export default async function handleFailedPayment(invoiceId) {
       orgId,
     }));
     await r.table('Notification').insert(notifications);
+    return true;
   }
 }

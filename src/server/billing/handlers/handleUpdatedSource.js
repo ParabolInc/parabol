@@ -7,7 +7,10 @@ export default async function handleUpdatedSource(cardId, customerId) {
   const {orgId} = customer.metadata;
   const cards = customer.sources.data;
   const card = cards.find((card) => card.id === cardId);
-  if (!card) return undefined;
+  if (!card) {
+    console.warn(`No Credit card found! cardId: ${cardId}, customerId: ${customerId}`)
+    return false;
+  }
   const {brand, last4, exp_month: expMonth, exp_year: expYear} = card;
   const expiry = `${expMonth}/${expYear.substr(2)}`;
   await r.table('Organization').get(orgId)
@@ -18,5 +21,5 @@ export default async function handleUpdatedSource(cardId, customerId) {
         expiry
       },
     });
-  return undefined;
+  return true;
 }
