@@ -14,7 +14,7 @@ const getImports = importMap => ({
 });
 
 export default (store) => ({
-  path: ':orgId',
+  path: ':orgId(/:orgArea)',
   getComponent: async(location, cb) => {
     const promiseMap = setImports();
     const importMap = await resolvePromiseMap(promiseMap);

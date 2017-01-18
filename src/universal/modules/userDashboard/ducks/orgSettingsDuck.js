@@ -1,6 +1,10 @@
 export const TOGGLE_REMOVE_BILLING_LEADER = 'orgSettings/TOGGLE_REMOVE_BILLING_LEADER';
 export const TOGGLE_LEAVE_ORG = 'orgSettings/TOGGLE_LEAVE_ORG';
 export const TOGGLE_PAYMENT_MODAL = 'orgSettings/TOGGLE_PAYMENT_MODAL';
+// export const TOGGLE_BILLING_MEMBERS = 'orgSettings/TOGGLE_BILLING_MEMBERS';
+
+export const BILLING_PAGE = 'billing';
+export const MEMBERS_PAGE = 'members';
 
 const initialState = {
   removeBillingLeaderModal: false,
@@ -9,10 +13,6 @@ const initialState = {
   openModal: '',
   userId: undefined,
   preferredName: undefined,
-};
-
-const modalLookup = {
-
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -38,6 +38,11 @@ export default function reducer(state = initialState, action = {}) {
       ...state,
       openModal: state.openModal === type ? '' : type,
     }
+  // } else if (type === TOGGLE_BILLING_MEMBERS) {
+  //   return {
+  //     ...state,
+  //     activeOrgDetail: state.activeOrgDetail === BILLING_PAGE ? MEMBERS_PAGE : BILLING_PAGE
+  //   }
   }
 
   return state;
@@ -61,3 +66,7 @@ export const toggleLeaveModal = (userId) => ({
 export const togglePaymentModal = () => ({
   type: TOGGLE_PAYMENT_MODAL
 });
+
+// export const toggleBillingMembers = () => ({
+//   type: TOGGLE_BILLING_MEMBERS
+// });

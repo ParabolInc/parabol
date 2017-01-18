@@ -4,17 +4,20 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import FontAwesome from 'react-fontawesome';
-import {Link, withRouter} from 'react-router';
 
 //    TODO:
 //  • Add themes, not just mid/purple (TA)
 //  • Make icons optional (TA)
 //  • Add disabled styles (TA)
 
+const iconStyles = {
+  lineHeight: 'inherit',
+  paddingRight: '.25rem'
+};
+
 const ToggleNav = (props) => {
   const {
     items,
-    router,
     styles
   } = props;
 
@@ -23,18 +26,14 @@ const ToggleNav = (props) => {
       const itemStyles = css(
         styles.item,
         // Avoid className order conflicts and set active here
-        router.isActive(item.linkTo, true) && styles.itemActive,
+        item.isActive && styles.itemActive,
         index === 0 && styles.itemFirst,
         index === (items.length - 1) && styles.itemLast
       );
-      const iconStyles = {
-        lineHeight: 'inherit',
-        paddingRight: '.25rem'
-      };
       return (
-        <Link className={itemStyles} key={index} to={item.linkTo}>
+        <div className={itemStyles} key={index} onClick={item.onClick}>
           <FontAwesome name={item.icon} style={iconStyles} /> {item.label}
-        </Link>
+        </div>
       );
     }
   );
@@ -48,7 +47,6 @@ const ToggleNav = (props) => {
 
 ToggleNav.propTypes = {
   items: PropTypes.array.isRequired,
-  router: PropTypes.object,
   styles: PropTypes.object
 };
 
@@ -57,12 +55,14 @@ ToggleNav.defaultProps = {
     {
       label: 'Billing',
       icon: 'credit-card',
-      linkTo: '/me/organizations/BJRb7T9Hg'
+      isActive: true,
+      onClick: () => {}
     },
     {
       label: 'Members',
       icon: 'users',
-      linkTo: '/me/organizations'
+      isActive: false,
+      onClick: () => {}
     }
   ]
 };
@@ -131,6 +131,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withRouter(
-  withStyles(styleThunk)(ToggleNav)
-);
+export default withStyles(styleThunk)(ToggleNav);

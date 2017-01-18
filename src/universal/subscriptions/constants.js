@@ -23,3 +23,4 @@ export const TEAM = 'team';
 export const TEAM_MEMBERS = 'teamMembers';
 export const USER = 'user';
 export const USERS_BY_IDS = 'usersByIds';
+export const USERS_BY_ORG = 'usersByOrg';
