@@ -2,20 +2,27 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
-
-import NotificationBar from 'universal/components/NotificationBar/NotificationBar';
+import ActiveTrialNotificationBar from 'universal/components/ActiveTrialNotificationBar/ActiveTrialNotificationBar';
+import ExpiredTrialNotificationBar from 'universal/components/ExpiredTrialNotificationBar/ExpiredTrialNotificationBar';
+import MeetingNotificationBar from 'universal/components/MeetingNotificationBar/MeetingNotificationBar';
 
 const DashLayout = (props) => {
   const {
     activeMeetings,
     children,
-    title,
     styles
   } = props;
-  const hasNotification = activeMeetings.length > 0;
+  const hasActiveTrial = true;
+  const hasExpiredTrial = true;
+  const hasMeetingNotification = activeMeetings.length > 0;
   return (
     <div className={css(styles.root)}>
-      {hasNotification && <NotificationBar activeMeetings={activeMeetings} />}
+      {/* Shows over any dashboard view when we prompt the trial extension (1 week after sign up?). */}
+      {hasActiveTrial && <ActiveTrialNotificationBar accountLink="/me/organizations" />}
+      {/* Shows over any account view when the trial has expired. */}
+      {hasExpiredTrial && <ExpiredTrialNotificationBar accountLink="/me/organizations" />}
+      {/* Shows over any dashboard view when there is a meeting. */}
+      {hasMeetingNotification && <MeetingNotificationBar activeMeetings={activeMeetings} />}
       <div className={css(styles.main)}>
         {children}
       </div>
@@ -26,8 +33,7 @@ const DashLayout = (props) => {
 DashLayout.propTypes = {
   activeMeetings: PropTypes.array.isRequired,
   children: PropTypes.any,
-  styles: PropTypes.object,
-  title: PropTypes.string
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

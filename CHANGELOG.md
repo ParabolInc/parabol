@@ -4,6 +4,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.14.1 - 16-Jan-2017
+### Added
+- Adopted CircleCI 2.0 beta. See [circle.yml](circle.yml). Now deploys
+  securely to `staging` and `production` servers directly from CI servers.
+- Added three seed projects for new team leaders as a simplified on-boarding
+  experience before we implement more immersive tutorial. Implements #631.
+- Segment.io event tracking for welcome wizard during step3 when users only
+  want to kick the tires (#638)
+
+### Removed
+- Segment.io analytics from `npm run dev` and `npm run start` when running on
+  development machine.
+- Only allow for /email route in development (#637)
+
+### Fixed
+- Fixes CircleCI caching issues building native bcrypt modules.
+
 ## v0.14.0 - 09-Jan-2017
 ### Added
 - Implements #595; upload of user avatar images to S3

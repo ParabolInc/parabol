@@ -65,14 +65,14 @@ const Organization = (props) => {
           <Toggle active block label="Active" />
         </div>
         {myUserId !== billingLeader.id &&
-        <div className={css(styles.actionLink)} onClick={openRemoveModal}>
-          Remove
-        </div>
+          <div className={css(styles.actionLink)} onClick={openRemoveModal}>
+            Remove
+          </div>
         }
         {billingLeaders.length > 1 && myUserId === billingLeader.id &&
-        <div className={css(styles.actionLink)} onClick={openLeaveModal}>
-          Leave
-        </div>
+          <div className={css(styles.actionLink)} onClick={openLeaveModal}>
+            Leave
+          </div>
         }
       </div>
     );

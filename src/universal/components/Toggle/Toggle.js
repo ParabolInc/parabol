@@ -45,20 +45,18 @@ Toggle.defaultProps = {
 
 const borderWidth = '.125rem';
 const size = '2rem';
-const height = size;
-const width = size;
+const innerSize = '1.625rem';
 
 const styleThunk = () => ({
   toggle: {
-    backgroundColor: appTheme.palette.mid10l,
+    backgroundColor: appTheme.palette.mid60l,
     borderRadius: size,
-    boxShadow: `inset 0 0 0 ${borderWidth} rgba(0, 0, 0, .05)`,
-    color: appTheme.palette.mid,
+    color: '#fff',
     cursor: 'pointer',
     display: 'inline-block',
     fontSize: 0,
-    height,
-    lineHeight: height,
+    height: size,
+    lineHeight: size,
     paddingLeft: size,
     paddingRight: borderWidth,
     position: 'relative',
@@ -66,29 +64,28 @@ const styleThunk = () => ({
     userSelect: 'none',
 
     ':after': {
-      backgroundColor: appTheme.palette.mid50l,
+      backgroundColor: appTheme.palette.mid10l,
       borderRadius: size,
-      boxShadow: `inset 0 0 0 ${borderWidth} rgba(0, 0, 0, .1)`,
+      boxShadow: '0 1px 0 rgba(0, 0, 0, .2)',
       display: 'block',
       content: '""',
-      height,
-      left: 0,
+      height: innerSize,
+      left: 3,
       position: 'absolute',
-      top: 0,
-      width,
+      top: 3,
+      width: innerSize
     }
   },
 
   // NOTE: modifies 'toggle'
   active: {
-    color: appTheme.palette.cool,
+    backgroundColor: appTheme.palette.cool,
     paddingLeft: borderWidth,
     paddingRight: size,
 
     ':after': {
-      backgroundColor: 'currentColor',
       left: 'auto',
-      right: 0
+      right: 3
     }
   },
 
@@ -102,7 +99,8 @@ const styleThunk = () => ({
     display: 'inline-block',
     fontSize: appTheme.typography.s2,
     fontWeight: 700,
-    padding: '0 .5rem'
+    padding: '0 .5rem',
+    textShadow: '0 1px 0 rgba(0, 0, 0, .2)'
   }
 });
 

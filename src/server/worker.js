@@ -65,13 +65,13 @@ export function run(worker) {
   }), graphQLHandler);
 
   // server-side rendering for emails
-  app.get('/email', emailSSR);
+  if (!PROD) {
+    app.get('/email', emailSSR);
+  }
 
   // stripe webhooks
   app.post(`/stripe`, stripeWebhookHandler);
-  app.post('/stripe/live', (req, res) => {
 
-  });
   // server-side rendering
   app.get('*', createSSR);
 
