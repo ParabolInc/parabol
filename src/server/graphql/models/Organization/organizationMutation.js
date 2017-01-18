@@ -226,7 +226,8 @@ export default {
       const userRes = await r.table('User').get(userId)
         .update((row) => ({
           orgs: row('orgs').filter((id) => id.ne(orgId)),
-          billingLeaderOrgs: row('billingLeaderOrgs').filter((id) => id.ne(orgId))
+          billingLeaderOrgs: row('billingLeaderOrgs').filter((id) => id.ne(orgId)),
+          updatedAt: now
         }), {returnChanges: true});
 
       const userDoc = getOldVal(userRes);
@@ -242,65 +243,3 @@ export default {
     }
   }
 };
-
-// stripe.customers.create({
-//   metadata: {
-//     orgId: 'org123'
-//   },
-//   source: {
-//     object: 'card',
-//     exp_month: 12,
-//     exp_year: 2019,
-//     number: '4242424242424242'
-//   }
-// }).then(res => console.log(res.id))
-
-// stripe.customers.update("cus_9wYZniZh21oSvj", {
-//   source: {
-//     object: 'card',
-//     exp_month: 12,
-//     exp_year: 2019,
-//     number: '4242424242424242'
-//   }
-// })
-// stripe.subscriptions.create({
-//   customer: "cus_9wYZniZh21oSvj",
-//   plan: '3',
-// }).then(res => console.log(res.id))
-//
-// stripe.invoices.retrieveUpcoming("cus_9wYZniZh21oSvj").then(res => console.log(res.lines.data))
-// stripe.subscriptions.update('sub_9wYZtzgKY3PUir', {
-//   quantity: 2,
-//   metadata: {
-//     type: 'addUser',
-//     userId: 'foo123'
-//   },
-//   proration_date: 1484594697
-// })
-//
-// stripe.subscriptions.update('sub_9wYZtzgKY3PUir', {
-//   quantity: 1,
-//   metadata: {
-//     type: 'pauseUser',
-//     userId: 'foo100'
-//   }
-// })
-//
-// stripe.subscriptions.update('sub_9wYZtzgKY3PUir', {
-//   quantity: 0,
-//   metadata: {
-//     type: 'removeUser',
-//     userId: 'foo123'
-//   }
-// })
-//
-// stripe.subscriptions.update('sub_9wYZtzgKY3PUir', {
-//   quantity: 2,
-//   proration_date: 1484592888
-// }).then(res => console.log(res))
-//
-// const obj = {
-//   id: prorationDate,
-//   userId,
-//   type
-// }

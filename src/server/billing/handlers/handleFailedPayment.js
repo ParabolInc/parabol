@@ -1,4 +1,4 @@
-import stripe from 'stripe';
+import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 import {getOldVal} from 'server/graphql/models/utils';
 import shortid from 'shortid';
