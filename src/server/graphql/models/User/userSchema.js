@@ -115,10 +115,10 @@ export const User = new GraphQLObjectType({
       description: 'flag to determine which broadcasts to show'
 
     },
-    // lastLogin: {
-    //   type: GraphQLISO8601Type,
-    //   description: 'The last time the user logged in or used a websocket'
-    // },
+    lastSeenAt: {
+      type: GraphQLISO8601Type,
+      description: 'The last time the user connected via websocket'
+    },
     inactive: {
       type: GraphQLBoolean,
       description: 'true if the user is not currently being billed for service. removed on every websocket handshake'
@@ -131,13 +131,17 @@ export const User = new GraphQLObjectType({
       type: new GraphQLList(GraphQLID),
       description: 'all the teams the user is a part of'
     },
+    billingLeaderOrgs: {
+      type: new GraphQLList(GraphQLID),
+      description: 'all the orgs a user is a lead of'
+    },
     orgs: {
       type: new GraphQLList(GraphQLID),
       description: 'all the orgs a user is a part of'
     },
-    trialExpiresAt: {
+    trialOrg: {
       type: GraphQLISO8601Type,
-      description: 'The datetime the users free trial ends'
+      description: 'The orgId that the user created for their free trial'
     },
     welcomeSentAt: {
       type: GraphQLISO8601Type,

@@ -18,7 +18,7 @@ export default {
       const r = getRethink();
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
-      requireOrgLeader(authToken, orgId);
+      await requireOrgLeader(authToken, orgId);
       r.table('User')
         .getAll(orgId, {index: 'billingLeaderOrgs'})
         .pluck(requestedFields)
