@@ -8,20 +8,14 @@ import goBackLabel from 'universal/styles/helpers/goBackLabel';
 import {ORGANIZATIONS} from 'universal/utils/constants';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
 import appTheme from 'universal/styles/theme/appTheme';
-import AdminUserRow from 'universal/modules/userDashboard/components/AdminUserRow/AdminUserRow';
-import InvoiceRow from 'universal/modules/userDashboard/components/InvoiceRow/InvoiceRow';
-import Button from 'universal/components/Button/Button';
-import IconControl from 'universal/components/IconControl/IconControl';
-import Panel from 'universal/components/Panel/Panel';
-import Toggle from 'universal/components/Toggle/Toggle';
-import ToggleNav from 'universal/components/ToggleNav/ToggleNav';
+import BillingMembersToggle from 'universal/modules/userDashboard/components/BillingMembersToggle/BillingMembersToggle';
 import brandMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import makeDateString from 'universal/utils/makeDateString';
 import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/EditOrgName';
-import ActiveTrialCallOut from '../ActiveTrialCallOut/ActiveTrialCallOut';
-import ExpiredTrialCallOut from '../ExpiredTrialCallOut/ExpiredTrialCallOut';
+import OrgBillingContainer from 'universal/modules/userDashboard/containers/OrgBilling/OrgBillingContainer';
+import OrgMembersContainer from 'universal/modules/userDashboard/containers/OrgMembers/OrgMembersContainer';
+import {BILLING_PAGE} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
 import SettingsModal from 'universal/modules/userDashboard/components/SettingsModal/SettingsModal';
-import {togglePaymentModal, toggleLeaveModal, toggleRemoveModal} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
 
 const inlineBlockStyle = {
   display: 'inline-block',
@@ -34,59 +28,16 @@ const initialValues = {orgName: ''};
 
 const Organization = (props) => {
   const {
-    invoices,
-    billingLeaders,
-    dispatch,
-    myUserId,
+    activeOrgDetail,
     styles,
     org
   } = props;
-  const {id: orgId, createdAt, creditCard, name: orgName, picture: orgAvatar, activeUserCount, inactiveUserCount, isTrial} = org;
-  const {brand, last4, expiry} = creditCard;
+  const {id: orgId, createdAt, name: orgName, picture: orgAvatar, activeUserCount, inactiveUserCount} = org;
   initialValues.orgName = orgName;
-
-
-  const openPaymentModal = () => {
-    dispatch(togglePaymentModal());
-  };
-
-  const billingLeaderRowActions = (billingLeader) => {
-    const {id, preferredName} = billingLeader;
-    const openRemoveModal = () => {
-      dispatch(toggleRemoveModal(id, preferredName));
-    };
-    const openLeaveModal = () => {
-      dispatch(toggleLeaveModal(id));
-    };
-    return (
-      <div className={css(styles.actionLinkBlock)}>
-        <SettingsModal {...props}/>
-        <div className={css(styles.toggleBlock)}>
-          <Toggle active block label="Active" />
-        </div>
-        {myUserId !== billingLeader.id &&
-          <div className={css(styles.actionLink)} onClick={openRemoveModal}>
-            Remove
-          </div>
-        }
-        {billingLeaders.length > 1 && myUserId === billingLeader.id &&
-          <div className={css(styles.actionLink)} onClick={openLeaveModal}>
-            Leave
-          </div>
-        }
-      </div>
-    );
-  };
-  const addNewAdmin = () =>
-    <IconControl
-      icon="plus-square-o"
-      iconSize={ui.iconSize2x}
-      label="New Admin"
-      lineHeight={ui.iconSize2x}
-      padding={`0 0 0 ${ui.panelGutter}`}
-    />;
+  const OrgSection = activeOrgDetail === BILLING_PAGE ? OrgBillingContainer : OrgMembersContainer;
   return (
     <UserSettingsWrapper activeTab={ORGANIZATIONS}>
+      <SettingsModal {...props}/>
       <div className={css(styles.wrapper)}>
         <Link className={css(styles.goBackLabel)} to="/me/organizations" title="Back to Organizations">
           <FontAwesome name="arrow-circle-left" style={inlineBlockStyle}/>
@@ -106,56 +57,10 @@ const Organization = (props) => {
               {activeUserCount} Active Users • {inactiveUserCount} Inactive Users •
                                 Created {makeDateString(createdAt, false)}
             </div>
-            <ToggleNav/>
+            <BillingMembersToggle orgId={orgId} activeOrgDetail={activeOrgDetail}/>
           </div>
         </div>
-        <Panel label="Admins" controls={addNewAdmin()}>
-          <div className={css(styles.listOfAdmins)}>
-            {billingLeaders.map((billingLeader, idx) => {
-              return (
-                <AdminUserRow
-                  key={`billingLeader${idx}`}
-                  actions={billingLeaderRowActions(billingLeader)}
-                  billingLeader={billingLeader}
-                />
-              );
-            })}
-          </div>
-        </Panel>
-
-        {/* TODO: bring ActiveTrialCallOut to life */}
-        <ActiveTrialCallOut onClick={() => (console.log('ActiveTrialCallOut clicked'))} />
-
-        {/* TODO: bring ExpiredTrialCallOut to life */}
-        <ExpiredTrialCallOut onClick={() => (console.log('ExpiredTrialCallOut clicked'))} />
-
-        <Panel label="Credit Card Information">
-          <div className={css(styles.infoAndUpdate)}>
-            <div className={css(styles.creditCardInfo)}>
-              <FontAwesome name="credit-card"/>
-              <span className={css(styles.creditCardProvider)}>{brand}</span>
-              <span className={css(styles.creditCardNumber)}>•••• •••• •••• {last4}</span>
-            </div>
-            <Button
-              colorPalette="cool"
-              label="Update"
-              onClick={openPaymentModal}
-              size="small"
-            />
-          </div>
-        </Panel>
-        <Panel label="Invoices">
-          <div className={css(styles.listOfInvoices)}>
-            {!isTrial ?
-              <div className={css(styles.noInvoices)}>
-                No invoices yet! Can’t beet free! Eat some beets! Betaine keeps you healthy!
-              </div> :
-              invoices.map((invoice) =>
-                <InvoiceRow invoice={invoice}/>
-              )
-            }
-          </div>
-        </Panel>
+        <OrgSection orgId={orgId}/>
       </div>
     </UserSettingsWrapper >
   );
@@ -168,22 +73,7 @@ Organization.defaultProps = {
     name: 'Parabol',
     picture: brandMark,
     totalUsers: 14
-  },
-  invoices: [
-    {
-      invoiceDate: new Date(1484539569909),
-      amount: 22.5,
-      isEstimate: true
-    },
-    {
-      invoiceDate: new Date(1481861169909),
-      amount: 25
-    },
-    {
-      invoiceDate: new Date(1479269976347),
-      amount: 20
-    }
-  ]
+  }
 };
 const styleThunk = () => ({
   avatarAndName: {

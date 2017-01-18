@@ -110,6 +110,10 @@ export const User = new GraphQLObjectType({
       description: 'Array of identifier + ip pairs'
     },
     /* User Profile */
+    billingLeaderOrgs: {
+      type: new GraphQLList(GraphQLID),
+      description: 'all the orgs a user is a lead of'
+    },
     broadcastFlags: {
       type: GraphQLInt,
       description: 'flag to determine which broadcasts to show'
@@ -123,6 +127,11 @@ export const User = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'true if the user is not currently being billed for service. removed on every websocket handshake'
     },
+    isBillingLeader: {
+      type: GraphQLBoolean,
+      description: 'true if the user is a part of the supplied orgId',
+      resolve: (source, {orgId}) => source.billingLeaderOrgs.includes(orgId)
+    },
     preferredName: {
       type: GraphQLString,
       description: 'The application-specific name, defaults to nickname'
@@ -130,10 +139,6 @@ export const User = new GraphQLObjectType({
     tms: {
       type: new GraphQLList(GraphQLID),
       description: 'all the teams the user is a part of'
-    },
-    billingLeaderOrgs: {
-      type: new GraphQLList(GraphQLID),
-      description: 'all the orgs a user is a lead of'
     },
     orgs: {
       type: new GraphQLList(GraphQLID),

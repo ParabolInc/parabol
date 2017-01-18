@@ -26,6 +26,29 @@ export default {
         .run({cursor: true}, changefeedHandler);
     }
   },
+  usersByOrg: {
+    args: {
+      orgId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'the org for which you want the users'
+      }
+    },
+    type: new GraphQLList(User),
+    async resolve(source, {orgId}, {authToken, socket, subbedChannelName}, refs) {
+      const r = getRethink();
+      const requestedFields = getRequestedFields(refs);
+      const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
+      await requireOrgLeader(authToken, orgId);
+      r.table('User')
+        .getAll(orgId, {index: 'orgs'})
+        .merge((row) => ({
+          isBillingLeader: row('billingLeaderOrgs').default([]).contains(orgId)
+        }))
+        .pluck(requestedFields)
+        .changes({includeInitial: true})
+        .run({cursor: true}, changefeedHandler);
+    }
+  },
   user: {
     type: User,
     async resolve(source, args, {authToken, socket, subbedChannelName}, refs) {

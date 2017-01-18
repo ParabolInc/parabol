@@ -3,6 +3,7 @@ import Organization from 'universal/modules/userDashboard/components/Organizatio
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
+import {BILLING_PAGE} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
 
 const organizationContainerQuery = `
 query {
@@ -10,41 +11,27 @@ query {
     id
     activeUserCount
     createdAt
-    creditCard {
-      brand
-      expiry
-      last4
-    }
     inactiveUserCount
     isTrial
     name
     picture
     validUntil
   }
-  billingLeaders(orgId: $orgId) @live {
-    id
-    email
-    inactive
-    picture
-    preferredName
-  }
 }
 `;
 
 const mapStateToProps = (state, props) => {
-  const {params: {orgId}} = props;
+  const {params: {orgId, orgArea}} = props;
   const {billingLeaders, organization: org} = cashay.query(organizationContainerQuery, {
     op: 'organizationContainer',
     key: orgId,
-    resolveCached: {
-      organization: () => orgId
-    },
     sort: {
       billingLeaders: (a, b) => a.preferredName > b.preferredName ? 1 : -1,
     },
     variables: {orgId}
   }).data;
   return {
+    activeOrgDetail: orgArea || BILLING_PAGE,
     billingLeaders,
     myUserId: state.auth.obj.sub,
     org,
@@ -56,6 +43,7 @@ const mapStateToProps = (state, props) => {
 
 const OrganizationContainer = (props) => {
   const {
+    activeOrgDetail,
     billingLeaders,
     dispatch,
     modalPreferredName,
@@ -70,6 +58,7 @@ const OrganizationContainer = (props) => {
   }
   return (
     <Organization
+      activeOrgDetail={activeOrgDetail}
       billingLeaders={billingLeaders}
       dispatch={dispatch}
       modalPreferredName={modalPreferredName}

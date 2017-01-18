@@ -15,6 +15,7 @@ import {
   PROJECTS,
   USER,
   USERS_BY_IDS,
+  USERS_BY_ORG
 } from 'universal/subscriptions/constants';
 
 // For now, use an array. In the future, we can make one exclusively for the server that doesn't need to reparse the AST
@@ -96,11 +97,12 @@ export default [
     }`
   },
   {
-    channel: BILLING_LEADERS,
+    channel: USERS_BY_ORG,
     string: `
     subscription($orgId: ID!) {
-      billingLeaders(orgId: $orgId) {
+      usersByOrg(orgId: $orgId) {
         id
+        isBillingLeader
         email
         inactive
         picture
