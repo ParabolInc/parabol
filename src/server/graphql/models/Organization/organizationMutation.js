@@ -108,13 +108,9 @@ export default {
       const now = new Date();
       const {stripeId, trialExpiresAt} = await r.table('Organization').get(userId)
         .pluck('stripeId', 'trialExpiresAt');
-      const stripeRequests = [
-        stripe.customers.update(stripeId, {source: stripeToken}),
-        stripe.tokens.retrieve(stripeToken)
-      ];
-
-      const [, token] = await Promise.all(stripeRequests);
-      const {brand, last4, exp_month: expMonth, exp_year: expYear} = token.card;
+      const customer = await stripe.customers.update(stripeId, {source: stripeToken});
+      const card = customer.sources.data.find((source) => source.id === customer.default_source);
+      const {brand, last4, exp_month: expMonth, exp_year: expYear} = card;
       const expiry = `${expMonth}/${expYear.substr(2)}`;
       const {isTrial, stripeSubscriptionId, validUntil} = await r.table('Organization')
         .get(orgId)
