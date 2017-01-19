@@ -88,6 +88,11 @@ const Step3InviteeList = (props) => {
       onMouseEnter={() => {
         System.import('universal/containers/Dashboard/DashboardContainer');
       }}
+      onClick={() => {
+        dispatch(
+          segmentEventTrack('Welcome Step3 Completed', {inviteeCount: 0})
+        );
+      }}
       title="I'll invite them later"
     >
       Not yet, I just want to kick the tires
@@ -119,4 +124,3 @@ export default reduxForm({
   destroyOnUnmount: false,
   validate
 })(withRouter(withStyles(styleThunk)(Step3InviteeList)));
-
