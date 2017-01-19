@@ -10,7 +10,7 @@ const DashboardAvatars = (props) => {
       {
         teamMembers.map((avatar, index) =>
           <div className={css(styles.item)} key={`dbAvatar${index}`}>
-            <Avatar {...avatar} hasBadge={false} size="smaller" />
+            <Avatar {...avatar} hasBadge  isConnected={avatar.presence.length > 0} size="smaller" />
           </div>
         )
       }

@@ -56,7 +56,7 @@ export default {
       {test: /\.(eot|ttf|wav|mp3)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file-loader'},
       {
         test: /\.js$/,
-        loader: 'babel',
+        loader: 'babel-loader',
         include: serverInclude
       },
       {

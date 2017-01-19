@@ -55,6 +55,9 @@ export default {
     path: path.join(root, 'build'),
     publicPath: '/static/'
   },
+  performance: {
+    hints: false
+  },
   plugins: [
     ...prefetchPlugins,
     new webpack.optimize.OccurrenceOrderPlugin(),
@@ -79,7 +82,7 @@ export default {
       {test: /\.(eot|ttf|wav|mp3|woff|woff2)(\?\S*)?$/, loader: 'file-loader'},
       {
         test: /\.js$/,
-        loader: 'babel',
+        loader: 'babel-loader',
         query: babelQuery,
         include: clientInclude
       },
