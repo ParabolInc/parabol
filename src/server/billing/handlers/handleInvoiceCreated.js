@@ -22,7 +22,7 @@ export default async function handleInvoiceCreated(invoiceId) {
 
   const stripeLineItems = [];
   for (let i = 0; i < 100; i++) {
-    const options = {limit: 1000};
+    const options = {limit: 100};
     if (i > 0) {
       options.starting_after = stripeLineItems[stripeLineItems.length - 1].id;
     }

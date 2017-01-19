@@ -54,6 +54,10 @@ export const Organization = new GraphQLObjectType({
   description: 'An organization',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique organization ID'},
+    activeUserCount: {
+      type: GraphQLInt,
+      description: 'The count of active members that the org is charged for'
+    },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the organization was created'
@@ -61,6 +65,10 @@ export const Organization = new GraphQLObjectType({
     creditCard: {
       type: CreditCard,
       description: 'The safe credit card details'
+    },
+    inactiveUserCount: {
+      type: GraphQLInt,
+      description: 'The count of inactive members that the org is not charged for'
     },
     isTrial: {
       type: GraphQLBoolean,
@@ -86,14 +94,6 @@ export const Organization = new GraphQLObjectType({
     validUntil: {
       type: GraphQLISO8601Type,
       description: 'The datetime the trial is up (if isTrial) or money is due (if !isTrial)'
-    },
-    activeUserCount: {
-      type: GraphQLInt,
-      description: 'The count of active members that the org is charged for'
-    },
-    inactiveUserCount: {
-      type: GraphQLInt,
-      description: 'The count of inactive members that the org is not charged for'
     }
   })
 });

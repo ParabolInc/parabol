@@ -9,7 +9,7 @@ exports.up = async(r) => {
   }
   const indices = [
     r.table('Invoice').indexCreate('orgId'),
-    r.table('InvoiceItemHook').indexCreate('prorationDateSubId', (row) => [row('prorationDate', row('subId'))])
+    r.table('InvoiceItemHook').indexCreate('prorationDateSubId', (row) => [row('prorationDate'), row('subId')])
   ];
   try {
     await Promise.all(indices);
