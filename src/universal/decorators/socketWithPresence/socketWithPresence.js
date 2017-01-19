@@ -119,15 +119,21 @@ export default ComposedComponent => {
       const {dispatch, router} = this.props;
       const socket = socketCluster.connect();
       socket.on('version', (versionOnServer) => {
-        const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY) || '0.0.0';
+        const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY);
         if (versionOnServer !== versionInStorage) {
           dispatch(showWarning({
             title: 'New stuff!',
-            message: 'Logging you out because a new version of Action is available',
+            message: 'A new version of action is available',
+            autoDismiss: 0,
+            action: {
+              label: 'Log out and upgrade',
+              callback: () => {
+                router.replace('/signout');
+              }
+            }
           }));
           window.sessionStorage.setItem(APP_UPGRADE_PENDING_KEY,
             APP_UPGRADE_PENDING_RELOAD);
-          router.replace('/signout');
         }
       });
     }

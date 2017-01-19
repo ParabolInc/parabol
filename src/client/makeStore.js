@@ -59,7 +59,7 @@ export default async initialState => {
       devtoolsExt || (f => f),
     ));
   }
-  const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY) || '0.0.0';
+  const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY);
   if (APP_VERSION !== versionInStorage) {
     window.localStorage.setItem(APP_VERSION_KEY, APP_VERSION);
     return store;
