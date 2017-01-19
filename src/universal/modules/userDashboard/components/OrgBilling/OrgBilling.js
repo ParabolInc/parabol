@@ -17,19 +17,18 @@ const OrgBilling = (props) => {
     styles,
     org
   } = props;
-  const {creditCard, isTrial} = org;
+  const {creditCard, isTrial, validUntil} = org;
   const {brand, last4, expiry} = creditCard;
   const openPaymentModal = () => {
     dispatch(togglePaymentModal());
   };
-
+  const now = new Date();
+  const activeTrial = isTrial && validUntil > now;
+  const expiredTrial = isTrial && validUntil < now;
   return (
     <div>
-      {/* TODO: bring ActiveTrialCallOut to life */}
-      <ActiveTrialCallOut onClick={() => (console.log('ActiveTrialCallOut clicked'))} />
-
-      {/* TODO: bring ExpiredTrialCallOut to life */}
-      <ExpiredTrialCallOut onClick={() => (console.log('ExpiredTrialCallOut clicked'))} />
+      {activeTrial && <ActiveTrialCallOut validUntil={validUntil} onClick={openPaymentModal} />}
+      {expiredTrial && <ExpiredTrialCallOut onClick={openPaymentModal} />}
       <Panel label="Credit Card Information">
         <div className={css(styles.infoAndUpdate)}>
           <div className={css(styles.creditCardInfo)}>
