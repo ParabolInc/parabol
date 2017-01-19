@@ -1,13 +1,13 @@
 import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
-import {getOldVal} from 'server/graphql/models/utils';
 import shortid from 'shortid';
-import {PAYMENT_REJECTED, TRIAL_EXPIRED} from 'universal/utils/constants';
+import {PAYMENT_REJECTED, TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
+import ms from 'ms';
 
-export default async function handleFailedPayment(invoiceId) {
+export default async function handleFailedPayment(customerId) {
   const r = getRethink();
-  const invoice = await stripe.invoices.retrieve(invoiceId);
-  const {metadata: {orgId}} = invoice;
+  const customer = await stripe.customers.retrieve(customerId);
+  const {metadata: {orgId}} = customer;
   const now = new Date();
 
   // flag teams as unpaid
@@ -16,15 +16,12 @@ export default async function handleFailedPayment(invoiceId) {
     .update({
       isPaid: false
     })
+    // keep isTrial true since we'll use that for the callout
     .do(() => {
-      return r.table('Organization').get(orgId).update({
-        isTrial: false
-      }, {returnChanges: true})
+      return r.table('Organization').get(orgId)
     });
   const userPromise = r.table('User').getAll(orgId, {index: 'billingLeaderOrgs'})('id');
-  const promises = [orgPromise, userPromise];
-  const [orgRes, userIds] = await Promise.all(promises);
-  const orgDoc = getOldVal(orgRes);
+  const [orgDoc, userIds] = await Promise.all([orgPromise, userPromise]);
   const parentId = shortid.generate();
   if (orgDoc.isTrial) {
     const notifications = userIds.map((userId) => ({
@@ -37,7 +34,13 @@ export default async function handleFailedPayment(invoiceId) {
       userId,
       orgId,
     }));
-    await r.table('Notification').insert(notifications);
+    await r.table('Notification').insert(notifications)
+      .do(() => {
+        return r.table('Notification')
+          .getAll(orgId, {index: 'orgId'})
+          .filter({TRIAL_EXPIRES_SOON})
+          .delete()
+      })
   } else {
     const {last4, brand} = orgDoc.creditCard || {};
     const errorMessage = last4 ? 'Credit card was declined' : 'Payment failed because no credit card is on file';

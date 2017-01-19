@@ -3,6 +3,7 @@ import handleFailedPayment from './handlers/handleFailedPayment';
 import handleUpdatedSource from './handlers/handleUpdatedSource';
 import handleInvoiceItemCreated from './handlers/handleInvoiceItemCreated';
 import handleInvoiceCreated from './handlers/handleInvoiceCreated';
+import handleSuccessfulPayment from './handlers/handleSuccessfulPayment';
 
 export default async function stripeWebhookHandler(req, res) {
   const event = req.body;
@@ -17,7 +18,11 @@ export default async function stripeWebhookHandler(req, res) {
     const customerId = event.data.object.customer;
     success = await handleUpdatedSource(objectId, customerId);
   } else if (type === 'invoice.payment_failed') {
-    success = await handleFailedPayment(objectId);
+    const customerId = event.data.object.customer;
+    success = await handleFailedPayment(customerId);
+  } else if (type === 'invoice.payment_succeeded') {
+    const customerId = event.data.object.subscription;
+    success = await handleSuccessfulPayment(customerId);
   }
   if (success) {
     res.sendStatus(200);

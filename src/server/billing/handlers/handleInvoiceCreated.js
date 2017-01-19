@@ -149,6 +149,7 @@ export default async function handleInvoiceCreated(invoiceId) {
 
   const invoice = await stripe.invoices.retrieve(invoiceId);
   const customer = await stripe.customers.retrieve(invoice.customer);
+  const {orgId} = customer.metadata;
   await r.table('Invoice').insert({
     id: invoiceId,
     amount: invoice.total,
@@ -156,7 +157,7 @@ export default async function handleInvoiceCreated(invoiceId) {
     startAt: fromStripeDate(invoice.period_start),
     endAt: fromStripeDate(invoice.period_end),
     lines: invoiceLineItems,
-    orgId: customer.metadata.orgId
+    orgId
   });
   return true;
 }
