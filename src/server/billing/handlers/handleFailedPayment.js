@@ -28,11 +28,12 @@ export default async function handleFailedPayment(customerId) {
       id: shortid.generate(),
       parentId,
       type: TRIAL_EXPIRED,
-      trialExpiresAt: now,
       startAt: now,
       endAt: new Date(now.getTime() + ms('10y')),
-      userId,
       orgId,
+      userId,
+      // trialExpiresAt
+      varList: [now]
     }));
     await r.table('Notification').insert(notifications)
       .do(() => {
@@ -43,18 +44,15 @@ export default async function handleFailedPayment(customerId) {
       })
   } else {
     const {last4, brand} = orgDoc.creditCard || {};
-    const errorMessage = last4 ? 'Credit card was declined' : 'Payment failed because no credit card is on file';
     const notifications = userIds.map((userId) => ({
       id: shortid.generate(),
       parentId,
       type: PAYMENT_REJECTED,
-      errorMessage,
-      brand,
-      last4,
       startAt: now,
       endAt: new Date(now.getTime() + ms('10y')),
-      userId,
       orgId,
+      userId,
+      varList: [last4, brand]
     }));
     await r.table('Notification').insert(notifications);
     return true;

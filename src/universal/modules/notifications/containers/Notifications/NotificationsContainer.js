@@ -1,7 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {TRIAL_EXPIRES_SOON, REQUEST_NEW_USER} from '../../../utils/constants';
-import {NOTIFICATIONS} from '../../../utils/constants';
-import Notifications from '../../userDashboard/components/Notifications/Notifications';
+import Notifications from 'universal/modules/notifications/components/Notifications/Notifications';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 

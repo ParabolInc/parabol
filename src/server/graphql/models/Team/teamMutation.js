@@ -485,14 +485,11 @@ export default {
                       id: notificationIds[billingLeader],
                       parentId,
                       type: REQUEST_NEW_USER,
-                      inviterName: inviter.name,
-                      inviterId: inviter.id,
-                      inviteeEmail: invitee,
-                      teamName: newTeam.name,
                       startAt: new Date(),
                       endAt: new Date(Date.now() + ms('10y')),
-                      userId: billingLeader,
                       orgId,
+                      userId: billingLeader,
+                      varList: [inviter.id, invitee, teamId]
                     })
                 })
             });
@@ -579,11 +576,11 @@ export default {
               id: expiresSoonId,
               parentId: expiresSoonId,
               type: TRIAL_EXPIRES_SOON,
-              trialExpiresAt,
               startAt: new Date(now + ms('14d')),
               endAt: trialExpiresAt,
-              userId,
               orgId,
+              userId,
+              varList: [trialExpiresAt]
             })
         });
 

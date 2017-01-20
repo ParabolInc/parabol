@@ -5,7 +5,6 @@ import {
   DashMain
 } from 'universal/components/Dashboard';
 import SettingsTabs from 'universal/modules/userDashboard/components/SettingsTabs/SettingsTabs';
-import Notifications from 'universal/modules/userDashboard/components/Notifications/Notifications';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 

@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import DashLayout from 'universal/components/Dashboard/DashLayout';
 import {NOTIFICATIONS, TEAM} from 'universal/subscriptions/constants';
+import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
 
 const resolveActiveMeetings = (teams) => {
   if (teams !== resolveActiveMeetings.teams) {
@@ -28,16 +29,21 @@ query {
     name
     meetingId
   }
+  trialNotification @cached(type: "Notification") {
+    orgId
+    type
+  }
 }
 `;
 
 
 const mapStateToProps = (state) => {
-  const {teams} = cashay.query(dashNavListQuery, {
+  const {trialNotification, teams} = cashay.query(dashNavListQuery, {
     // currently same as dashNavListContainer, could combine ops
     op: 'dashLayoutContainer',
     resolveCached: {
-      teams: () => () => true
+      teams: () => () => true,
+      trialNotification: () => (doc) => doc.type === TRIAL_EXPIRED || doc.type === TRIAL_EXPIRES_SOON
     },
     sort: {
       teams: (a, b) => a.name > b.name ? 1 : -1
@@ -46,7 +52,8 @@ const mapStateToProps = (state) => {
   return {
     activeMeetings: resolveActiveMeetings(teams),
     tms: state.auth.obj.tms,
-    userId: state.auth.sub
+    userId: state.auth.sub,
+    trialNotification
   };
 };
 
@@ -68,7 +75,7 @@ export default class DashLayoutContainer extends Component {
   componentDidMount() {
     const {tms, userId} = this.props;
     subToAllTeams(tms);
-    cashay.subscribe(NOTIFICATIONS, userId)
+    // cashay.subscribe(NOTIFICATIONS, userId)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -78,9 +85,9 @@ export default class DashLayoutContainer extends Component {
   }
 
   render() {
-    const {activeMeetings, children} = this.props;
+    const {activeMeetings, children, trialNotification} = this.props;
     return (
-      <DashLayout activeMeetings={activeMeetings} children={children}/>
+      <DashLayout activeMeetings={activeMeetings} children={children} trialNotification={trialNotification}/>
     );
   }
 }

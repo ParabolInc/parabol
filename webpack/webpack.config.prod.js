@@ -82,7 +82,7 @@ export default {
       filename: 'assets.json',
       includeManifest: true
     }),
-    new webpack.NoErrorsPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: true,

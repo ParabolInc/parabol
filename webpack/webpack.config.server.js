@@ -32,7 +32,7 @@ export default {
     modules: [path.join(root, 'src'), 'node_modules', path.join(root, 'build')]
   },
   plugins: [...prefetchPlugins,
-    new webpack.NoErrorsPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
     new webpack.optimize.LimitChunkCountPlugin({maxChunks: 1}),
     new webpack.DefinePlugin({
       __CLIENT__: false,

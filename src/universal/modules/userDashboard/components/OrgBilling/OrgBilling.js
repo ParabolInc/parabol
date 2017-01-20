@@ -50,8 +50,8 @@ const OrgBilling = (props) => {
             <div className={css(styles.noInvoices)}>
               No invoices yet! Can’t beet free! Eat some beets! Betaine keeps you healthy!
             </div> :
-            invoices.map((invoice) =>
-              <InvoiceRow invoice={invoice}/>
+            invoices.map((invoice, idx) =>
+              <InvoiceRow key={`invoiceRow${idx}`} invoice={invoice}/>
             )
           }
         </div>

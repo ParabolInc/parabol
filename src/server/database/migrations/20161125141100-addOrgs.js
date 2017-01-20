@@ -103,11 +103,11 @@ exports.up = async(r) => {
                   id: org('expiresSoonId'),
                   parentId: org('expiresSoonId'),
                   type: TRIAL_EXPIRES_SOON,
-                  trialExpiresAt: org('trialExpiresAt'),
                   startAt: new Date(now.getTime() + ms('14d')),
                   endAt: org('trialExpiresAt'),
                   userId: org('userId'),
                   orgId: org('id'),
+                  varList: [org('trialExpiresAt')]
                 })
             })
             // mark this as the org that counts towards their trial

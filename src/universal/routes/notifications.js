@@ -3,7 +3,7 @@ import {resolvePromiseMap} from 'universal/utils/promises';
 const setImports = () =>
   new Map([
     ['component', System.import(
-      'universal/modules/userDashboard/containers/Notifications/NotificationsContainer')],
+      'universal/modules/notifications/containers/Notifications/NotificationsContainer')],
   ]);
 
 const getImports = importMap => ({

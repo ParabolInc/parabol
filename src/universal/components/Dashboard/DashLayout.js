@@ -5,22 +5,25 @@ import ui from 'universal/styles/ui';
 import ActiveTrialNotificationBar from 'universal/components/ActiveTrialNotificationBar/ActiveTrialNotificationBar';
 import ExpiredTrialNotificationBar from 'universal/components/ExpiredTrialNotificationBar/ExpiredTrialNotificationBar';
 import MeetingNotificationBar from 'universal/components/MeetingNotificationBar/MeetingNotificationBar';
+import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
 
 const DashLayout = (props) => {
   const {
     activeMeetings,
     children,
-    styles
+    styles,
+    trialNotification
   } = props;
   const hasActiveTrial = true;
   const hasExpiredTrial = true;
   const hasMeetingNotification = activeMeetings.length > 0;
+  const {type: barType, orgId} = trialNotification || {};
   return (
     <div className={css(styles.root)}>
       {/* Shows over any dashboard view when we prompt the trial extension (1 week after sign up?). */}
-      {hasActiveTrial && <ActiveTrialNotificationBar accountLink="/me/organizations" />}
+      {barType === TRIAL_EXPIRES_SOON && <ActiveTrialNotificationBar accountLink={`/me/organizations/${orgId}`} />}
       {/* Shows over any account view when the trial has expired. */}
-      {hasExpiredTrial && <ExpiredTrialNotificationBar accountLink="/me/organizations" />}
+      {barType === TRIAL_EXPIRED && <ExpiredTrialNotificationBar accountLink={`/me/organizations/${orgId}`} />}
       {/* Shows over any dashboard view when there is a meeting. */}
       {hasMeetingNotification && <MeetingNotificationBar activeMeetings={activeMeetings} />}
       <div className={css(styles.main)}>

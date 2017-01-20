@@ -128,10 +128,10 @@ export default [
     subscription {
       notifications {
         id
+        orgId
+        startAt
         type
-        ... on TrialExpirationType {  
-          startAt
-        }
+        varList
       }
     }`
   },

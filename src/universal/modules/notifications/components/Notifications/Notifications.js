@@ -1,15 +1,15 @@
 import React, {Component, PropTypes} from 'react';
-import UserSettingsWrapper from '../../userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
-import {NOTIFICATIONS} from '../../../utils/constants';
-import withStyles from '../../../styles/withStyles';
+import UserSettingsWrapper from '../../../userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
+import {NOTIFICATIONS} from '../../../../utils/constants';
+import withStyles from '../../../../styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import ui from '../../../styles/ui';
-import appTheme from '../../../styles/theme/appTheme';
+import ui from '../../../../styles/ui';
+import appTheme from '../../../../styles/theme/appTheme';
 import FontAwesome from 'react-fontawesome';
-import OrganizationRow from '../../userDashboard/components/OrganizationRow/OrganizationRow';
+import OrganizationRow from '../../../userDashboard/components/OrganizationRow/OrganizationRow';
 import {withRouter} from 'react-router';
-import cardSection from '../../../styles/helpers/cardSection';
-import NotificationRow from '../../userDashboard/components/NotificationRow/NotificationRow';
+import cardSection from '../../../../styles/helpers/cardSection';
+import NotificationRow from '../../../userDashboard/components/NotificationRow/NotificationRow';
 
 const Notifications = (props) => {
   const {notifications, router, styles} = props;
