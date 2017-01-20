@@ -50,21 +50,23 @@ class FileInput extends Component {
     const fallbackAvatar = forOrg ? avatarDefaultUser : avatarDefaultOrganization;
 
     return (
-      <div className={css(styles.avatar)}>
-        <div className={css(styles.control)}>
-          <div className={css(styles.avatarEditOverlay)}>
-            <FontAwesome name="pencil"/>
-            <span>EDIT</span>
+      <div>
+        <div className={css(styles.avatar)}>
+          <div className={css(styles.control)}>
+            <div className={css(styles.avatarEditOverlay)}>
+              <FontAwesome name="pencil"/>
+              <span>EDIT</span>
+            </div>
+            <input
+              className={css(styles.input)}
+              key={previousValue} // see: https://github.com/erikras/redux-form/issues/769
+              type="file"
+              value={value}
+              onChange={(e) => this.onChange(e)}
+            />
           </div>
-          <input
-            className={css(styles.input)}
-            key={previousValue} // see: https://github.com/erikras/redux-form/issues/769
-            type="file"
-            value={value}
-            onChange={(e) => this.onChange(e)}
-          />
+          <img className={css(styles.avatarImg)} height={96} width={96} src={picture || fallbackAvatar}/>
         </div>
-        <img className={css(styles.avatarImg)} height={96} width={96} src={picture || fallbackAvatar}/>
         {touched && error &&
           <FieldHelpText
             hasErrorText
