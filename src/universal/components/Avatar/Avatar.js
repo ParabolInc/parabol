@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 import upperFirst from 'universal/utils/upperFirst';
 import AvatarBadge from 'universal/components/AvatarBadge/AvatarBadge';
 import makeUsername from 'universal/utils/makeUsername';
@@ -98,7 +99,7 @@ Avatar.propTypes = {
 
 const borderDefault = appTheme.palette.mid20a;
 const borderWarm = appTheme.palette.warm80a;
-const boxShadowDefault = '0 0 1px 1px rgba(0, 0, 0, .2)';
+const boxShadowDefault = ui.avatarDefaultBoxShadow;
 const boxShadowBase = '0 0 0 2px #fff, 0 0 0 4px';
 const boxShadowBorder = `${boxShadowBase} ${borderDefault}`;
 const boxShadowWarm = `${boxShadowBase} ${borderWarm}`;

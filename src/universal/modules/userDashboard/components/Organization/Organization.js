@@ -43,6 +43,7 @@ const Organization = (props) => {
           <FontAwesome name="arrow-circle-left" style={inlineBlockStyle}/>
           <div style={inlineBlockStyle}>Back to Organizations</div>
         </Link>
+        {/* TODO: See AvatarInput.js for latest */}
         <div className={css(styles.avatarAndName)}>
           <div className={css(styles.avatar)}>
             <div className={css(styles.avatarEditOverlay)}>

@@ -21,6 +21,9 @@ const ui = {
   actionCardBgActive: 'rgba(255, 255, 255, .85)',
   zActionItem: zIndexScale(6),
 
+  // Avatars
+  avatarDefaultBoxShadow: '0 0 1px 1px rgba(0, 0, 0, .2)',
+
   // Breakpoints
   breakpoint: {
     wide: '@media (min-width: 90rem)',

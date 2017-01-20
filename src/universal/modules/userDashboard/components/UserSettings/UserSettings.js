@@ -4,10 +4,9 @@ import InputField from 'universal/components/InputField/InputField';
 import {Field} from 'redux-form';
 import {ACTIVITY_WELCOME} from 'universal/modules/userDashboard/ducks/settingsDuck';
 import {randomPreferredName} from 'universal/utils/makeRandomPlaceholder';
-import Avatar from 'universal/components/Avatar/Avatar';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import FileInput from 'universal/components/FileInput/FileInput';
+import AvatarInput from 'universal/components/AvatarInput/AvatarInput';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
 import {SETTINGS} from 'universal/utils/constants';
 
@@ -33,15 +32,11 @@ const UserSettings = (props) => {
             {renderActivity(activity)}
           </div>
           <div className={css(styles.row)}>
-            <Avatar hasBadge={false} picture={picture} size="large"/>
-          </div>
-          <div className={css(styles.row)}>
             <Field
-              buttonLabel="Update Avatar"
-              component={FileInput}
+              component={AvatarInput}
               name="pictureFile"
+              picture={picture}
               previousValue={picture}
-              size="smallest"
               type="file"
             />
           </div>
