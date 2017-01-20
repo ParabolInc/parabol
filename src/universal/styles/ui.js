@@ -30,6 +30,22 @@ const ui = {
 
   // Buttons
   buttonBorderRadius: '.25rem',
+  buttonSizes: [
+    'smallest',
+    'small',
+    'medium',
+    'large',
+    'largest'
+  ],
+  buttonColorPalette: [
+    'cool',
+    'warm',
+    'dark',
+    'mid',
+    'light',
+    'white',
+    'gray'
+  ],
 
   // Cards
   cardBorderColor: appTheme.palette.mid30l,

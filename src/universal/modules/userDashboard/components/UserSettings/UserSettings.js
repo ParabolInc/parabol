@@ -23,6 +23,9 @@ const renderActivity = (activity) => {
   return null;
 };
 
+const FileInputControl = (props) =>
+  <FileInput buttonLabel="Upload Avatar" {...props} />;
+
 const UserSettings = (props) => {
   const {activity, handleSubmit, onSubmit, styles, user: {picture}} = props;
   return (
@@ -37,7 +40,7 @@ const UserSettings = (props) => {
           </div>
           <div className={css(styles.row)}>
             <Field
-              component={FileInput}
+              component={FileInputControl}
               name="pictureFile"
               previousValue={picture}
               type="file"
