@@ -127,8 +127,10 @@ export default [
     string: `
     subscription {
       notifications {
-        ... on TrialExpirationType {
-          id
+        id
+        type
+        ... on TrialExpirationType {  
+          startAt
         }
       }
     }`

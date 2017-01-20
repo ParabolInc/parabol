@@ -43,14 +43,8 @@ export const MEETING = 'meeting';
 export const TEAM_DASH = 'teamDash';
 export const USER_DASH = 'userDash';
 
-/* Notification Types */
-/*
- *  Rather than make a new GraphQL schema for EVERY notification type and union them under Notification and write
- *  some crazy long schema with inline fragments, we just store all required variables in a list with the schema here.
- *  This is fine since notifications are side effects generated server-side, so there is no validating client data
- */
-
-// Sent to billing leaders when their trial will expire in < 2 weeks
+/* NotificationRow Types */
+// Sent to billing leaders when their trial will expire in < 2 weeks [trialExpiresAt]
 export const TRIAL_EXPIRES_SOON = 'TRIAL_EXPIRES_SOON';
 // Sent to billing leaders when their trial has expired
 export const TRIAL_EXPIRED = 'TRIAL_EXPIRED';

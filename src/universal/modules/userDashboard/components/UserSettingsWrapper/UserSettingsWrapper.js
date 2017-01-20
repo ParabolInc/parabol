@@ -5,13 +5,39 @@ import {
   DashMain
 } from 'universal/components/Dashboard';
 import SettingsTabs from 'universal/modules/userDashboard/components/SettingsTabs/SettingsTabs';
+import Notifications from 'universal/modules/userDashboard/components/Notifications/Notifications';
+import {cashay} from 'cashay';
+import {connect} from 'react-redux';
+
+const notificationsQuery = `
+query {
+  notifications(userId: $userId) @live {
+    id
+    startAt
+    type
+    varList
+  }
+}`;
+
+const mapStateToProps = (state, props) => {
+  const {notifications} = cashay.query(notificationsQuery, {
+    // identical to the other, so leave it be since we only need the count
+    op: 'notificationsContainer',
+    sort: {
+      notifications: (a, b) => a.startAt > b.startAt ? 1 : -1
+    }
+  }).data;
+  return {
+    notificationCount: notifications.length
+  };
+};
 
 const UserSettings = (props) => {
-  const {activeTab, children} = props;
+  const {activeTab, children, notificationCount} = props;
   return (
     <DashMain>
       <DashHeader>
-        <SettingsTabs activeTab={activeTab}/>
+        <SettingsTabs activeTab={activeTab} notificationCount={notificationCount}/>
       </DashHeader>
       <DashContent padding="0 0 0 1rem">
         {children}
@@ -26,4 +52,4 @@ UserSettings.propTypes = {
   children: PropTypes.any
 };
 
-export default UserSettings;
+export default connect(mapStateToProps)(UserSettings);

@@ -90,6 +90,18 @@ export const requireOrgLeader = async(authToken, orgId) => {
   return authToken.sub;
 };
 
+export const validateNotificationId = async (notificationId, authToken) => {
+  if (notificationId) {
+    const userId = getUserId(authToken);
+    const notification = await r.table('Notification').get(notificationId).pluck('userId', 'parentId');
+    if (userId !== notification.userId) {
+      throw errorObj({_error: 'cannot clear someone else\'s notification'});
+    }
+    return notification.parentId;
+  }
+  return undefined;
+};
+
 export const requireOrgLeaderOfUser = async(authToken, userId) => {
   const r = getRethink();
   const isLeaderOfUser = await r.table('User')
