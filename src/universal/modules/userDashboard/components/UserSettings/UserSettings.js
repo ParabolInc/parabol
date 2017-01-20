@@ -24,7 +24,7 @@ const renderActivity = (activity) => {
 };
 
 const FileInputControl = (props) =>
-  <FileInput buttonLabel="Upload Avatar" {...props} />;
+  <FileInput buttonLabel="Update Avatar" size="smallest" {...props} />;
 
 const UserSettings = (props) => {
   const {activity, handleSubmit, onSubmit, styles, user: {picture}} = props;
