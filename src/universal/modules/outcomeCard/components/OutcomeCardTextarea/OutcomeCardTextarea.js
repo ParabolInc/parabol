@@ -9,6 +9,7 @@ import Markdown from 'react-remarkable';
 class OutcomeCardTextArea extends Component {
   static propTypes = {
     cardHasHover: PropTypes.bool,
+    doFocus: PropTypes.bool,
     editingStatus: PropTypes.any,
     handleActive: PropTypes.func,
     handleSubmit: PropTypes.func,
@@ -27,8 +28,9 @@ class OutcomeCardTextArea extends Component {
 
   constructor(props) {
     super(props);
+    const {input: {value}} = this.props;
     this.state = {
-      isEditing: false
+      isEditing: !value
     };
   }
 
@@ -41,15 +43,11 @@ class OutcomeCardTextArea extends Component {
   }
 
   setEditing = () => {
-    this.setState({
-      isEditing: true
-    });
+    this.setState({isEditing: true});
   };
 
   unsetEditing = () => {
-    this.setState({
-      isEditing: false
-    });
+    this.setState({isEditing: false});
   }
 
   renderEditing() {
@@ -60,6 +58,7 @@ class OutcomeCardTextArea extends Component {
       isActionListItem,
       isArchived,
       isProject,
+      doFocus,
       styles
     } = this.props;
 
@@ -79,7 +78,6 @@ class OutcomeCardTextArea extends Component {
         // if there's no value, then the document event listener will handle this
         input.onBlur();
         handleSubmit();
-        this.unsetEditing();
       }
     };
     const handleKeyPress = () => {
@@ -93,6 +91,7 @@ class OutcomeCardTextArea extends Component {
       // hitting enter (not shift+enter) submits the textarea
       if (e.key === 'Enter' && !e.shiftKey) {
         textAreaRef.blur();
+        this.unsetEditing();
       }
     };
 
@@ -108,12 +107,12 @@ class OutcomeCardTextArea extends Component {
         onDrop={null}
         onKeyDown={submitOnEnter}
         onKeyUp={handleKeyPress}
-        autoFocus={true}
+        autoFocus={doFocus}
       />
     );
   }
 
-  renderStatic() {
+  renderMarkdown() {
     const {input: {value}} = this.props;
     return (
       <div onClick={this.setEditing}>
@@ -123,9 +122,16 @@ class OutcomeCardTextArea extends Component {
   }
 
   render() {
+    const {input: {value}} = this.props;
+    let textArea;
+    if (value && !this.state.isEditing) {
+      textArea = this.renderMarkdown();
+    } else {
+      textArea = this.renderEditing();
+    }
     return (
       <div>
-        {this.state.isEditing ? this.renderEditing() : this.renderStatic()}
+        {textArea}
       </div>
     );
   }
