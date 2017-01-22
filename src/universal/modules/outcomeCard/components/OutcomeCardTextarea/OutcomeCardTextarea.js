@@ -27,8 +27,9 @@ class OutcomeCardTextArea extends Component {
 
   constructor(props) {
     super(props);
+    const {input: {value}} = this.props;
     this.state = {
-      isEditing: false
+      isEditing: !value
     };
   }
 
@@ -41,15 +42,11 @@ class OutcomeCardTextArea extends Component {
   }
 
   setEditing = () => {
-    this.setState({
-      isEditing: true
-    });
+    this.setState({isEditing: true});
   };
 
   unsetEditing = () => {
-    this.setState({
-      isEditing: false
-    });
+    this.setState({isEditing: false});
   }
 
   renderEditing() {
@@ -78,8 +75,8 @@ class OutcomeCardTextArea extends Component {
       if (value) {
         // if there's no value, then the document event listener will handle this
         input.onBlur();
-        handleSubmit();
         this.unsetEditing();
+        handleSubmit();
       }
     };
     const handleKeyPress = () => {
@@ -93,6 +90,7 @@ class OutcomeCardTextArea extends Component {
       // hitting enter (not shift+enter) submits the textarea
       if (e.key === 'Enter' && !e.shiftKey) {
         textAreaRef.blur();
+        this.unsetEditing();
       }
     };
 
@@ -113,19 +111,23 @@ class OutcomeCardTextArea extends Component {
     );
   }
 
-  renderStatic() {
+  renderMarkdown() {
     const {input: {value}} = this.props;
     return (
       <div onClick={this.setEditing}>
-        <Markdown source={value}/>
+        <Markdown
+          source={value}
+        />
       </div>
     );
   }
 
   render() {
+    const {input: {value}} = this.props;
     return (
       <div>
-        {this.state.isEditing ? this.renderEditing() : this.renderStatic()}
+        {(value && !this.state.isEditing) ? this.renderMarkdown() :
+          this.renderEditing()}
       </div>
     );
   }
