@@ -16,7 +16,10 @@ export default {
     },
     async resolve(source, {teamId}, {authToken, socket, subbedChannelName}, refs) {
       const r = getRethink();
+
+      // AUTH
       requireSUOrTeamMember(authToken, teamId);
+
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
       const now = Date.now();

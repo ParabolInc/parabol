@@ -2,7 +2,7 @@ import getRethink from 'server/database/rethinkDriver';
 import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
 import {getRequestedFields} from '../utils';
 import {TeamMember} from './teamMemberSchema';
-import {requireSUOrTeamMember} from '../authorization';
+import {requireSUOrTeamMember, requireTeamIsPaid} from '../authorization';
 import makeChangefeedHandler from '../makeChangefeedHandler';
 
 export default {
@@ -16,7 +16,12 @@ export default {
     },
     async resolve(source, {teamId}, {authToken, socket, subbedChannelName}, refs) {
       const r = getRethink();
+
+      // AUTH
       requireSUOrTeamMember(authToken, teamId);
+      await requireTeamIsPaid(teamId);
+
+      // RESOLUTION
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
       r.table('TeamMember')

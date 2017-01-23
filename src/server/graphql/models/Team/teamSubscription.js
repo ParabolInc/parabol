@@ -2,7 +2,7 @@ import getRethink from 'server/database/rethinkDriver';
 import {GraphQLNonNull, GraphQLID} from 'graphql';
 import {getRequestedFields} from '../utils';
 import {Team} from './teamSchema';
-import {requireSUOrTeamMember} from '../authorization';
+import {requireSUOrTeamMember, requireTeamIsPaid} from '../authorization';
 import makeChangefeedHandler from '../makeChangefeedHandler';
 
 export default {
@@ -16,7 +16,11 @@ export default {
     },
     async resolve(source, {teamId}, {authToken, socket, subbedChannelName}, refs) {
       const r = getRethink();
+
+      // AUTH
       requireSUOrTeamMember(authToken, teamId);
+      await requireTeamIsPaid(teamId);
+
       // TODO update subscription on the client when a new team gets added. So rare, it's OK to resend all 3-4 docs
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);

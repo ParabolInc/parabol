@@ -9,8 +9,6 @@ import {
   GraphQLUnionType,
   GraphQLBoolean
 } from 'graphql';
-import {GraphQLEmailType} from '../types';
-import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {makeEnumValues} from '../utils';
 import {
   ADD_USER,

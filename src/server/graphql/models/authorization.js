@@ -122,5 +122,15 @@ export const requireOrgLeaderOfUser = async(authToken, userId) => {
     throw errorObj({_error: 'Unauthorized. Only an billing leader of a user can set this'});
   }
   return true;
-}
+};
+
+export const requireTeamIsPaid = async (teamId) => {
+  const r = getRethink();
+  const isPaid = await r.table('Team').get(teamId)('isPaid');
+  if (!isPaid) {
+    throw errorObj({_error: 'The org leader has not paid. Cannot fetch documents'})
+  }
+  return true;
+};
+
 
