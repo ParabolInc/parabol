@@ -1,5 +1,6 @@
 import {compositeIdRegex, emailRegex, idRegex, urlRegex} from 'universal/validation/regex';
 import emailAddresses from 'email-addresses';
+import {APP_MAX_AVATAR_FILE_SIZE} from 'universal/utils/constants';
 
 export const compositeId = (value) => value.matches(compositeIdRegex);
 export const fullName = (value) => value
@@ -55,3 +56,17 @@ export const makeInviteeTemplate = (inviteEmails, teamMemberEmails) => {
     })
     .test((inviteTeamMember) => teamMemberEmails.includes(inviteTeamMember) && 'That person is already on your team!');
 };
+
+export const avatar = {
+  size: (value) => value
+    .int('Hey! Don\'t monkey with that!')
+    .test((raw) => {
+      if (raw > APP_MAX_AVATAR_FILE_SIZE) {
+        return `File too large! It must be <${APP_MAX_AVATAR_FILE_SIZE / 1024}kB`;
+      }
+      return undefined;
+    }),
+  type: (value) => value
+    .matches(/image\/.+/, 'File must be an image')
+};
+

@@ -3,11 +3,13 @@ import {UpdateOrgInput} from './organizationSchema';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
-  GraphQLID
+  GraphQLID,
+  GraphQLInt,
+  GraphQLString,
 } from 'graphql';
 import {requireOrgLeader, requireOrgLeaderOfUser, requireWebsocket} from '../authorization';
 import updateOrgSchema from 'universal/validation/updateOrgSchema';
-import {errorObj, handleSchemaErrors, getOldVal} from '../utils';
+import {errorObj, handleSchemaErrors, getOldVal, getS3PutUrl, validateAvatarUpload} from '../utils';
 import stripe from 'server/billing/stripe';
 import {TRIAL_EXTENSION} from 'server/utils/serverConstants';
 import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
@@ -19,6 +21,8 @@ import {
   MAX_MONTHLY_PAUSES
 } from 'server/utils/serverConstants';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
+import {GraphQLURLType} from '../types';
+import shortid from 'shortid';
 
 export default {
   updateOrg: {
@@ -237,5 +241,35 @@ export default {
       await adjustUserCount(userId, orgId, REMOVE_USER);
       return true;
     }
-  }
+  },
+  createOrgPicturePutUrl: {
+    type: GraphQLURLType,
+    description: 'Create a PUT URL on the CDN for an organization\'s profile picture',
+    args: {
+      contentType: {
+        type: GraphQLString,
+        description: 'user-supplied MIME content type'
+      },
+      contentLength: {
+        type: new GraphQLNonNull(GraphQLInt),
+        description: 'user-supplied file size'
+      },
+      orgId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The organization id to update'
+      }
+    },
+    async resolve(source, {orgId, contentType, contentLength}, {authToken}) {
+      // AUTH
+      await requireOrgLeader(authToken, orgId);
+
+      // VALIDATION
+      const ext = validateAvatarUpload(contentType, contentLength);
+
+      // RESOLUTION
+      const partialPath = `Organization/${orgId}/picture/${shortid.generate()}.${ext}`;
+      return await getS3PutUrl(contentType, contentLength, partialPath);
+
+    }
+  },
 };

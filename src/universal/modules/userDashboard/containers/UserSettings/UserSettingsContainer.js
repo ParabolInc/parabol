@@ -13,7 +13,6 @@ import {reduxForm, initialize} from 'redux-form';
 import {cashay} from 'cashay';
 import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
 import shouldValidate from 'universal/validation/shouldValidate';
-import fetch from 'universal/utils/fetch';
 
 const updateSuccess = {
   title: 'Settings saved!',
@@ -62,22 +61,16 @@ export default class UserSettingsContainer extends Component {
     this.initializeForm();
   }
 
-  onSubmit = (submissionData) => {
+  onSubmit = async (submissionData) => {
     const {user} = this.props;
-    const {preferredName, pictureFile} = submissionData;
-    if (pictureFile && pictureFile.name) {
-      // upload new picture to CDN, then update the user profile:
-      this.uploadPicture(pictureFile)
-      .then(pictureUrl => this.updateProfile(preferredName, pictureUrl))
-      .then(this.onSubmitComplete())
-      .catch((e) => Raven.captureException(e)); // eslint-disable-line no-undef
-    } else if (preferredName !== user.preferredName) {
+    const {preferredName} = submissionData;
+    if (preferredName !== user.preferredName) {
       this.updateProfile(preferredName)
       .then(this.onSubmitComplete())
       .catch((e) => Raven.captureException(e)); // eslint-disable-line no-undef
     }
 
-    return; // no work to do
+    return undefined; // no work to do
   };
 
   onSubmitComplete() {
@@ -90,42 +83,6 @@ export default class UserSettingsContainer extends Component {
       router.push(nextPage);
     }
     untouch('preferredName');
-  }
-
-  uploadPicture(pictureFile) {
-    return cashay.mutate('createUserPicturePutUrl', {
-      variables: {
-        contentType: pictureFile.type,
-        contentLength: pictureFile.size,
-      }
-    })
-    .then(({data, error}) => {
-      if (error) {
-        throw new Error(error._error); // eslint-disable-line no-underscore-dangle
-      }
-      return data.createUserPicturePutUrl;
-    })
-    .then(picturePutUrl => {
-      return fetch(picturePutUrl, {
-        method: 'PUT',
-        body: pictureFile
-      });
-    })
-    .then(response => {
-      if (response.status >= 200 && response.status < 300) {
-        return response.url;
-      }
-      const error = new Error(response.statusText);
-      error.response = response;
-      throw error;
-    })
-    .then(putUrl => {
-      // crafty way of parsing URL, see: https://gist.github.com/jlong/2428561
-      const parser = document.createElement('a');
-      parser.href = putUrl;
-      const {protocol, host, pathname} = parser;
-      return `${protocol}//${host}${pathname}`;
-    });
   }
 
   updateProfile(preferredName, pictureUrl) {

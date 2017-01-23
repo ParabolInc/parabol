@@ -15,12 +15,14 @@ const Organizations = (props) => {
     router,
     styles
   } = props;
+  const gotoNewTeam = () => {router.push('/newteam')};
   const addNewOrg = () =>
     <IconControl
       icon="plus-square-o"
       iconSize={ui.iconSize2x}
       label="New Organization"
       lineHeight={ui.iconSize2x}
+      onClick={gotoNewTeam}
       padding={`0 0 0 ${ui.panelGutter}`}
     />;
   return (

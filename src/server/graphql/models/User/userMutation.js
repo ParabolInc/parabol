@@ -1,6 +1,4 @@
-import path from 'path';
 import shortid from 'shortid';
-import mime from 'mime-types';
 import ms from 'ms';
 import getRethink from 'server/database/rethinkDriver';
 import {GraphQLID, GraphQLInt, GraphQLString, GraphQLNonNull} from 'graphql';
@@ -8,8 +6,8 @@ import {User, UpdateUserInput} from './userSchema';
 import {AuthenticationClient} from 'auth0';
 import {auth0} from 'universal/utils/clientOptions';
 import sendEmail from 'server/email/sendEmail';
-import {requireAuth, requireSU, requireSUOrSelf} from '../authorization';
-import {errorObj, handleSchemaErrors, updatedOrOriginal} from '../utils';
+import {requireAuth, requireOrgLeader, requireSU, requireSUOrSelf} from '../authorization';
+import {errorObj, getS3PutUrl, handleSchemaErrors, updatedOrOriginal, validateAvatarUpload} from '../utils';
 import {
   auth0ManagementClient,
   clientSecret as auth0ClientSecret
@@ -17,8 +15,7 @@ import {
 import {verify} from 'jsonwebtoken';
 import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
-import protocolRelativeUrl from 'server/utils/protocolRelativeUrl';
-import {s3SignPutObject} from 'server/utils/s3';
+
 import {
   APP_CDN_USER_ASSET_SUBDIR,
   APP_MAX_AVATAR_FILE_SIZE
@@ -77,37 +74,17 @@ export default {
         description: 'user-supplied file size'
       }
     },
-    async resolve(source, {contentType, contentLength}, {authToken}) {
+    async resolve(source, {avatarOwner, contentType, contentLength}, {authToken}) {
       // AUTH
       const userId = requireAuth(authToken);
 
       // VALIDATION
-      if (typeof process.env.CDN_BASE_URL === 'undefined') {
-        throw errorObj({_error: 'CDN_BASE_URL environment variable is not defined'});
-      }
-      if (!contentType || !contentType.startsWith('image/')) {
-        throw errorObj({_error: 'file must be an image'});
-      }
-      const ext = mime.extension(contentType);
-      if (!ext) {
-        throw errorObj({_error: `unable to determine extension for ${contentType}`});
-      }
-      if (contentLength > APP_MAX_AVATAR_FILE_SIZE) {
-        throw errorObj({_error: 'avatar image is too large'});
-      }
+      const ext = validateAvatarUpload(contentType, contentLength);
 
       // RESOLUTION
-      const parsedUrl = protocolRelativeUrl.parse(process.env.CDN_BASE_URL);
-      const pathname = path.join(parsedUrl.pathname,
-        APP_CDN_USER_ASSET_SUBDIR,
-        `User/${userId}/picture/${shortid.generate()}.${ext}`
-      );
-      return await s3SignPutObject(
-        pathname,
-        contentType,
-        contentLength,
-        'public-read'
-      );
+      const partialPath = `User/${userId}/picture/${shortid.generate()}.${ext}`;
+      return await getS3PutUrl(contentType, contentLength, partialPath);
+
     }
   },
   updateUserWithAuthToken: {

@@ -2,15 +2,17 @@ import React, {PropTypes} from 'react';
 import {
   TOGGLE_REMOVE_BILLING_LEADER,
   TOGGLE_LEAVE_ORG,
-  TOGGLE_PAYMENT_MODAL
+  TOGGLE_PAYMENT_MODAL,
+  TOGGLE_AVATAR_MODAL,
 } from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
 import RemoveBillingLeaderModal from 'universal/modules/userDashboard/components/RemoveBillingLeaderModal/RemoveBillingLeaderModal';
 import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal';
 import CreditCardModal from 'universal/modules/userDashboard/components/CreditCardModal/CreditCardModal';
-import {togglePaymentModal, toggleLeaveModal, toggleRemoveModal} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
+import {togglePaymentModal, toggleLeaveModal, toggleRemoveModal, toggleAvatarModal} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
+import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
 
 const SettingsModal = (props) => {
-  const {dispatch, openModal, org: {id: orgId}, modalUserId, modalPreferredName} = props;
+  const {dispatch, openModal, org: {id: orgId, picture}, modalUserId, modalPreferredName} = props;
   switch(openModal) {
     case TOGGLE_REMOVE_BILLING_LEADER:
       return <RemoveBillingLeaderModal
@@ -29,6 +31,12 @@ const SettingsModal = (props) => {
         onBackdropClick={() => {dispatch(toggleLeaveModal())}}
         orgId={orgId}
         userId={modalUserId}
+      />;
+    case TOGGLE_AVATAR_MODAL:
+      return <PhotoUploadModal
+        onBackdropClick={() => {dispatch(toggleAvatarModal())}}
+        orgId={orgId}
+        picture={picture}
       />;
     default:
       return null;

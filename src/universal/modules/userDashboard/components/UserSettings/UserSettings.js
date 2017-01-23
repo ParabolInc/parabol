@@ -7,7 +7,7 @@ import {randomPreferredName} from 'universal/utils/makeRandomPlaceholder';
 import Avatar from 'universal/components/Avatar/Avatar';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import FileInput from 'universal/components/FileInput/FileInput';
+import UserAvatar from 'universal/modules/userDashboard/components/UserAvatar/UserAvatar';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
 import {SETTINGS} from 'universal/utils/constants';
 
@@ -36,12 +36,7 @@ const UserSettings = (props) => {
             <Avatar hasBadge={false} picture={picture} size="large"/>
           </div>
           <div className={css(styles.row)}>
-            <Field
-              component={FileInput}
-              name="pictureFile"
-              previousValue={picture}
-              type="file"
-            />
+            <UserAvatar picture={picture}/>
           </div>
           <div className={css(styles.row)}>
             <Field

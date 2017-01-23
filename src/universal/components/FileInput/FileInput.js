@@ -1,44 +1,50 @@
 import React, {Component, PropTypes} from 'react';
 import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText';
+import Button from 'universal/components/Button/Button';
+import shortid from 'shortid';
 
-class FileInput extends Component {
-  static propTypes = {
-    input: PropTypes.object,
-    previousValue: PropTypes.string,
-    meta: PropTypes.object.isRequired,
-  };
+const hiddenUglyButton = {
+  display: 'none'
+};
 
-  onChange(e) {
-    const {input: {onChange}} = this.props;
-    onChange(e.target.files[0]);
-  }
-
-  render() {
-    const {input: {value}, previousValue, meta: {touched, error}} = this.props;
+const FileInput = (props) => {
+    const {accept, input: {value}, doSubmit, meta: {touched, error}, touch, previousValue, forceUpdate} = props;
 
     let errorString = error;
     if (typeof error === 'object') {
       errorString = Object.keys(error).map(k => error[k]).join(', ');
     }
-
+    let el;
     return (
       <div>
+        <Button colorPalette="cool" label="Change Avatar" onClick={() => {el.click()}}/>
         <input
-          key={previousValue} // see: https://github.com/erikras/redux-form/issues/769
+          accept={accept}
+          onChange={(e) => {
+            // send the file to the redux-form FileList manager
+            props.input.onChange(e.target.files[0]);
+            // if not pushed to the back of the queue, the values don't update, even if the parent component is force updated
+            setTimeout(() => doSubmit(), 0)
+          }}
+          style={hiddenUglyButton}
           type="file"
-          value={value}
-          onChange={(e) => this.onChange(e)}
+          value={undefined} // required to avoid value change security console message
+          ref={(c) => {el = c}}
         />
         {touched && error &&
           <FieldHelpText
             hasErrorText
             helpText={errorString}
-            key={`${previousValue}Error`}
           />
         }
       </div>
     );
-  }
-}
+};
+
+FileInput.propTypes = {
+  input: PropTypes.object,
+  previousValue: PropTypes.string,
+  meta: PropTypes.object.isRequired,
+};
 
 export default FileInput;

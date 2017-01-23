@@ -14,7 +14,7 @@ import makeDateString from 'universal/utils/makeDateString';
 import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/EditOrgName';
 import OrgBillingContainer from 'universal/modules/userDashboard/containers/OrgBilling/OrgBillingContainer';
 import OrgMembersContainer from 'universal/modules/userDashboard/containers/OrgMembers/OrgMembersContainer';
-import {BILLING_PAGE} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
+import {BILLING_PAGE, toggleAvatarModal} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
 import SettingsModal from 'universal/modules/userDashboard/components/SettingsModal/SettingsModal';
 
 const inlineBlockStyle = {
@@ -29,12 +29,16 @@ const initialValues = {orgName: ''};
 const Organization = (props) => {
   const {
     activeOrgDetail,
+    dispatch,
     styles,
     org
   } = props;
   const {id: orgId, createdAt, name: orgName, picture: orgAvatar, activeUserCount, inactiveUserCount} = org;
   initialValues.orgName = orgName;
   const OrgSection = activeOrgDetail === BILLING_PAGE ? OrgBillingContainer : OrgMembersContainer;
+  const openChangeAvatar = () => {
+    dispatch(toggleAvatarModal());
+  };
   return (
     <UserSettingsWrapper activeTab={ORGANIZATIONS}>
       <SettingsModal {...props}/>
@@ -45,7 +49,7 @@ const Organization = (props) => {
         </Link>
         <div className={css(styles.avatarAndName)}>
           <div className={css(styles.avatar)}>
-            <div className={css(styles.avatarEditOverlay)}>
+            <div className={css(styles.avatarEditOverlay)} onClick={openChangeAvatar}>
               <FontAwesome name="pencil"/>
               <span>EDIT</span>
             </div>
