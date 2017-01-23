@@ -91,13 +91,15 @@ const styleThunk = () => ({
   inputModal: {
     background: ui.dashBackgroundColor,
     padding: '1rem',
-    width: '15rem'
+    width: '20rem'
   },
 
   modal: {
     background: '#fff',
-    boxShadow: `0 0 0 .25rem ${appTheme.palette.mid30a}`,
-    borderRadius: '.5rem',
+    border: `.125rem solid ${appTheme.palette.mid30a}`,
+    // boxShadow: `0 0 0 .25rem ${appTheme.palette.mid30a}, ${ui.modalBoxShadow}`,
+    boxShadow: ui.modalBoxShadow,
+    borderRadius: ui.modalBorderRadius,
     padding: '2rem',
     width: '30rem'
   },
