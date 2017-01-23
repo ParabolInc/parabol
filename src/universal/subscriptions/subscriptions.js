@@ -125,8 +125,8 @@ export default [
   {
     channel: NOTIFICATIONS,
     string: `
-    subscription {
-      notifications {
+    subscription($userId: ID!) {
+      notifications(userId: $userId) {
         id
         orgId
         startAt

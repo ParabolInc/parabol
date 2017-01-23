@@ -88,6 +88,7 @@ export default ComposedComponent => {
     }
     subscribeToNotifications() {
       const {userId} = this.props;
+      console.log('userId', userId)
       cashay.subscribe(NOTIFICATIONS, userId);
     }
     subscribeToPresence(oldProps, props) {

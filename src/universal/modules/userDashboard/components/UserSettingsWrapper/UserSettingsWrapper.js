@@ -24,6 +24,9 @@ const mapStateToProps = (state, props) => {
     op: 'notificationsContainer',
     sort: {
       notifications: (a, b) => a.startAt > b.startAt ? 1 : -1
+    },
+    variables: {
+      userId: state.auth.obj.sub
     }
   }).data;
   return {

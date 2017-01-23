@@ -2,21 +2,21 @@ import getRethink from 'server/database/rethinkDriver';
 import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
 import {getRequestedFields} from '../utils';
 import {Notification} from './notificationSchema';
-import {requireAuth} from '../authorization';
+import {requireSUOrSelf} from '../authorization';
 import makeChangefeedHandler from '../makeChangefeedHandler';
 
 export default {
   notifications: {
     type: new GraphQLList(Notification),
-    // args: {
-    //   userId: {
-    //     type: new GraphQLNonNull(GraphQLID),
-    //     description: 'The unique user ID'
-    //   }
-    // },
-    async resolve(source, args, {authToken, socket, subbedChannelName}, refs) {
+    args: {
+      userId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The unique user ID'
+      }
+    },
+    async resolve(source, {userId}, {authToken, socket, subbedChannelName}, refs) {
       const r = getRethink();
-      const userId = requireAuth(authToken);
+      requireSUOrSelf(authToken, userId);
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
       const now = new Date();
