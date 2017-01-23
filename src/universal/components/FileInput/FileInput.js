@@ -1,15 +1,24 @@
 import React, {Component, PropTypes} from 'react';
 import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText';
 import Button from 'universal/components/Button/Button';
-import shortid from 'shortid';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 
 const hiddenUglyButton = {
   display: 'none'
 };
-
 const FileInput = (props) => {
-    const {accept, input: {value}, doSubmit, meta: {touched, error}, touch, previousValue, forceUpdate} = props;
-
+  const {
+    accept,
+    input: {value},
+    doSubmit,
+    meta: {touched, error},
+    size,
+    styles,
+    buttonLabel,
+    colorPalette
+  } = props;
     let errorString = error;
     if (typeof error === 'object') {
       errorString = Object.keys(error).map(k => error[k]).join(', ');
@@ -17,7 +26,14 @@ const FileInput = (props) => {
     let el;
     return (
       <div>
-        <Button colorPalette="cool" label="Change Avatar" onClick={() => {el.click()}}/>
+        <div className={css(styles.control)}>
+          <Button
+            label={buttonLabel}
+            size={size}
+            colorPalette={colorPalette}
+            type="button"
+            onClick={() => {el.click()}}
+          />
         <input
           accept={accept}
           onChange={(e) => {
@@ -31,6 +47,7 @@ const FileInput = (props) => {
           value={undefined} // required to avoid value change security console message
           ref={(c) => {el = c}}
         />
+        </div>
         {touched && error &&
           <FieldHelpText
             hasErrorText
@@ -42,9 +59,46 @@ const FileInput = (props) => {
 };
 
 FileInput.propTypes = {
-  input: PropTypes.object,
-  previousValue: PropTypes.string,
+  buttonLabel: PropTypes.string,
+  colorPalette: PropTypes.oneOf(ui.buttonColorPalette),
+  input: PropTypes.object.isRequired,
   meta: PropTypes.object.isRequired,
+  size: PropTypes.oneOf(ui.buttonSizes),
+  styles: PropTypes.object
 };
 
-export default FileInput;
+FileInput.defaultProps = {
+  buttonLabel: 'Upload Avatar',
+  colorPalette: 'gray',
+  size: 'small'
+};
+
+const styleThunk = () => ({
+  control: {
+    overflow: 'hidden',
+    position: 'relative',
+
+    ':hover': {
+      opacity: '.65'
+    },
+    ':focus': {
+      opacity: '.65'
+    }
+  },
+
+  input: {
+    cursor: 'pointer',
+    display: 'block',
+    fontSize: '999px',
+    filter: 'alpha(opacity=0)',
+    minHeight: '100%',
+    minWidth: '100%',
+    opacity: 0,
+    position: 'absolute',
+    right: 0,
+    textAlign: 'right',
+    top: 0
+  }
+});
+
+export default withStyles(styleThunk)(FileInput);

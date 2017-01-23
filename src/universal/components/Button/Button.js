@@ -107,28 +107,14 @@ Button.propTypes = {
   label: PropTypes.string,
   onClick: PropTypes.func,
   onMouseEnter: PropTypes.func,
-  size: PropTypes.oneOf([
-    'smallest',
-    'small',
-    'medium',
-    'large',
-    'largest'
-  ]),
+  size: PropTypes.oneOf(ui.buttonSizes),
   style: PropTypes.oneOf([
     'solid',
     'outlined',
     'inverted'
   ]),
   styles: PropTypes.object,
-  colorPalette: PropTypes.oneOf([
-    'cool',
-    'warm',
-    'dark',
-    'mid',
-    'light',
-    'white',
-    'gray'
-  ]),
+  colorPalette: PropTypes.oneOf(ui.buttonColorPalette),
   textTransform: PropTypes.oneOf([
     'none',
     'uppercase'

@@ -21,6 +21,9 @@ const ui = {
   actionCardBgActive: 'rgba(255, 255, 255, .85)',
   zActionItem: zIndexScale(6),
 
+  // Avatars
+  avatarDefaultBoxShadow: '0 0 1px 1px rgba(0, 0, 0, .2)',
+
   // Breakpoints
   breakpoint: {
     wide: '@media (min-width: 90rem)',
@@ -30,6 +33,22 @@ const ui = {
 
   // Buttons
   buttonBorderRadius: '.25rem',
+  buttonSizes: [
+    'smallest',
+    'small',
+    'medium',
+    'large',
+    'largest'
+  ],
+  buttonColorPalette: [
+    'cool',
+    'warm',
+    'dark',
+    'mid',
+    'light',
+    'white',
+    'gray'
+  ],
 
   // Cards
   cardBorderColor: appTheme.palette.mid30l,
