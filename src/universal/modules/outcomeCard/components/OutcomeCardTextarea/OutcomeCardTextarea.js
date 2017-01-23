@@ -51,22 +51,16 @@ class OutcomeCardTextArea extends Component {
 
   renderEditing() {
     const {
-      cardHasHover,
       handleSubmit,
       input,
       isActionListItem,
       isArchived,
-      isProject,
       styles
     } = this.props;
-
     const contentStyles = css(
       !isActionListItem && styles.content,
       isActionListItem && styles.actionListContent,
-      isProject && !isArchived && cardHasHover && styles.contentWhenCardHovered,
       isArchived && styles.isArchived,
-      !isProject && cardHasHover && styles.actionContentWhenCardHovered,
-      !isProject && styles.descriptionAction
     );
 
     let textAreaRef;
@@ -93,7 +87,7 @@ class OutcomeCardTextArea extends Component {
         this.unsetEditing();
       }
     };
-
+    const shouldAutoFocus = true;
     return (
       <Textarea
         {...input}
@@ -106,17 +100,30 @@ class OutcomeCardTextArea extends Component {
         onDrop={null}
         onKeyDown={submitOnEnter}
         onKeyUp={handleKeyPress}
-        autoFocus={true}
+        autoFocus={shouldAutoFocus}
       />
     );
   }
 
   renderMarkdown() {
-    const {input: {value}} = this.props;
+    const {
+      styles,
+      isArchived,
+      input: {value}
+    } = this.props;
+    const markdownStyles = css(styles.markdownContent);
+    const markdownOptions = {
+      linkify: true,
+      html: false
+    };
     return (
-      <div onClick={this.setEditing}>
+      <div
+        onClick={!isArchived && this.setEditing}
+        className={markdownStyles}
+      >
         <Markdown
           source={value}
+          options={markdownOptions}
         />
       </div>
     );
@@ -163,13 +170,6 @@ const descriptionFA = {
   color: appTheme.palette.mid10d
 };
 
-const descriptionActionFA = {
-  backgroundColor: ui.actionCardBgActive,
-  borderBottomColor: ui.cardBorderColor,
-  borderTopColor: ui.cardBorderColor,
-  color: appTheme.palette.mid10d
-};
-
 const descriptionBreakpoint = '@media (min-width: 90rem)';
 
 const styleThunk = () => ({
@@ -202,24 +202,6 @@ const styleThunk = () => ({
     }
   },
 
-  contentWhenCardHovered: {
-    ...descriptionFA
-  },
-
-  descriptionAction: {
-    // NOTE: modifies styles.content
-    ':focus': {
-      ...descriptionActionFA
-    },
-    ':active': {
-      ...descriptionActionFA
-    }
-  },
-
-  actionContentWhenCardHovered: {
-    ...descriptionActionFA
-  },
-
   isArchived: {
     cursor: 'not-allowed',
 
@@ -231,6 +213,18 @@ const styleThunk = () => ({
       backgroundColor: 'transparent',
       borderColor: 'transparent'
     }
+  },
+
+  markdownContent: {
+    ...baseStyles,
+    padding: `${basePadding} ${basePadding} ${labelHeight} ${basePadding}`,
+    ':hover': {
+      ...descriptionFA
+    },
+    ':focus': {
+      ...descriptionFA
+    },
+    wordBreak: 'break-word'
   }
 });
 
