@@ -6,7 +6,8 @@ import {
   REMOVED_USERS,
   INACTIVITY_ADJUSTMENTS,
   NEXT_MONTH_CHARGES,
-  OTHER_ADJUSTMENTS
+  OTHER_ADJUSTMENTS,
+  PREVIOUS_BALANCE
 } from 'server/graphql/models/Invoice/invoiceSchema';
 import {
   ADD_USER,
@@ -66,12 +67,16 @@ export default async function handleInvoiceCreated(invoiceId) {
       itemDict[userId][safeType][start].push(lineItem);
     }
   }
+
+  // Make lookup table to get user Emails
   const userIds = Object.keys(itemDict);
   const usersAndEmails = await r.table('User').getAll(r.args(userIds), {index: 'id'}).pluck('id', 'email');
   const emailLookup = usersAndEmails.reduce((dict, doc) => {
     dict[doc.id] = doc.email;
     return dict;
   }, {});
+
+
   for (let i = 0; i < userIds.length; i++) {
     const userId = userIds[i];
     const email = emailLookup[userId];
@@ -149,6 +154,14 @@ export default async function handleInvoiceCreated(invoiceId) {
 
   const invoice = await stripe.invoices.retrieve(invoiceId);
   const customer = await stripe.customers.retrieve(invoice.customer);
+  if (invoice.starting_balance !== 0) {
+    invoiceLineItems.push({
+      id: shortid.generate(),
+      amount: invoice.starting_balance,
+      type: PREVIOUS_BALANCE
+    })
+  }
+  // TODO test to make sure total = invoice total + starting_balance
   const {orgId} = customer.metadata;
   await r.table('Invoice').insert({
     id: invoiceId,

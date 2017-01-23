@@ -19,10 +19,11 @@ export const ADDED_USERS = 'ADDED_USERS';
 export const REMOVED_USERS = 'REMOVED_USERS';
 export const INACTIVITY_ADJUSTMENTS = 'INACTIVITY_ADJUSTMENTS';
 export const OTHER_ADJUSTMENTS = 'OTHER_ADJUSTMENTS';
+export const PREVIOUS_BALANCE = 'PREVIOUS_BALANCE';
 
 /* Each invoice has 3 levels.
  * L1 is a the invoice itself: how much to pay.
- * L2 is 1 - 4 line items (next month charges, added users, removed users, inactivity credits) with a quantity
+ * L2 is line items (next month charges, added users, removed users, inactivity credits, previousBalance) with a quantity
  * L3 is a detailed line item & is a breakdown of the L2 quantity (eg a user with the pause/unpause dates)
  */
 
@@ -30,11 +31,12 @@ export const LineItemType = new GraphQLEnumType({
   name: 'LineItemType',
   description: 'A big picture line item',
   values: makeEnumValues([
-    NEXT_MONTH_CHARGES,
     ADDED_USERS,
-    REMOVED_USERS,
     INACTIVITY_ADJUSTMENTS,
-    OTHER_ADJUSTMENTS
+    NEXT_MONTH_CHARGES,
+    OTHER_ADJUSTMENTS,
+    PREVIOUS_BALANCE,
+    REMOVED_USERS
   ])
 });
 

@@ -1,6 +1,7 @@
 import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 import shortid from 'shortid';
+import {getOldVal} from 'server/graphql/models/utils'
 import {PAYMENT_REJECTED, TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
 import ms from 'ms';
 
@@ -16,12 +17,15 @@ export default async function handleFailedPayment(customerId) {
     .update({
       isPaid: false
     })
-    // keep isTrial true since we'll use that for the callout
+    // don't adjust isTrial since we need that for the front-end callout
     .do(() => {
-      return r.table('Organization').get(orgId)
+      return r.table('Organization')
+        .get(orgId)
+        .replace((row) => row.without('stripeSubscriptionId'), {returnChanges: true});
     });
   const userPromise = r.table('User').getAll(orgId, {index: 'billingLeaderOrgs'})('id');
-  const [orgDoc, userIds] = await Promise.all([orgPromise, userPromise]);
+  const [orgRes, userIds] = await Promise.all([orgPromise, userPromise]);
+  const orgDoc = getOldVal(orgRes);
   const parentId = shortid.generate();
   if (orgDoc.isTrial) {
     const notifications = userIds.map((userId) => ({
@@ -55,6 +59,8 @@ export default async function handleFailedPayment(customerId) {
       varList: [last4, brand]
     }));
     await r.table('Notification').insert(notifications);
-    return true;
   }
+  // stripe already does this for us (per account settings)
+  // await stripe.subscriptions.del(orgDoc.stripeSubscriptionId);
+  return true;
 }
