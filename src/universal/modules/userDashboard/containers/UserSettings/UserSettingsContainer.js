@@ -26,6 +26,7 @@ const mapStateToProps = (state) => {
   return {
     activity: state.userDashboardSettings.activity,
     nextPage: state.userDashboardSettings.nextPage,
+    openModal: state.userDashboardSettings.openModal,
     user,
     userId: state.auth.obj.sub
   };
@@ -53,7 +54,7 @@ export default class UserSettingsContainer extends Component {
       preferredName: PropTypes.string,
     }),
     router: PropTypes.object,
-    untouch: PropTypes.func.isRequired,
+    untouch: PropTypes.func,
     userId: PropTypes.string
   };
 

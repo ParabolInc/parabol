@@ -26,20 +26,19 @@ const uploadPicture = async (orgId, pictureFile) => {
   return sendAssetToS3(pictureFile, putUrl)
 };
 
-const OrgAvatar = (props) => {
+const OrgAvatarInput = (props) => {
   const {handleSubmit, orgId} = props;
 
-  const updateProfile = (pictureUrl) => {
-    const {userId} = props;
+  const updateOrg = (pictureUrl) => {
     const options = {
       variables: {
-        updatedUser: {
-          id: userId,
+        updatedOrg: {
+          id: orgId,
           picture: pictureUrl
         }
       }
     };
-    return cashay.mutate('updateUserProfile', options);
+    return cashay.mutate('updateOrg', options);
   };
 
   const onSubmit = async(submissionData) => {
@@ -48,7 +47,7 @@ const OrgAvatar = (props) => {
       // upload new picture to CDN, then update the user profile:
       const pictureUrl = await uploadPicture(orgId, pictureFile);
       try {
-        await updateProfile(pictureUrl);
+        await updateOrg(pictureUrl);
       } catch (e) {
         // eslint-disable-line no-undef
         Raven.captureException(e)
@@ -70,5 +69,5 @@ const OrgAvatar = (props) => {
 }
 
 export default reduxForm({form: 'orgAvatar', shouldValidate, validate})(
-  OrgAvatar
+  OrgAvatarInput
 )

@@ -1,5 +1,6 @@
-const SET_ACTIVITY = 'action/userDashboard/settings/SET_ACTIVITY';
-const CLEAR_ACTIVITY = 'action/userDashboard/settings/CLEAR_ACTIVITY';
+const SET_ACTIVITY = 'userSettings/SET_ACTIVITY';
+const CLEAR_ACTIVITY = 'userSettings/CLEAR_ACTIVITY';
+export const TOGGLE_USER_AVATAR_MODAL = 'userSettings/TOGGLE_USER_AVATAR_MODAL';
 
 export const ACTIVITY_WELCOME = 'welcome';
 const ACTIVITIES = [ACTIVITY_WELCOME];
@@ -7,27 +8,31 @@ const ACTIVITIES = [ACTIVITY_WELCOME];
 
 const initialState = {
   activity: null,
-  nextPage: null
+  nextPage: null,
+  openModal: ''
 };
 
 export default function reducer(state = initialState, action = {}) {
-  switch (action.type) {
-    case SET_ACTIVITY: {
-      const {activity, nextPage} = action.payload;
+  if (!action.type.startsWith('userSettings/')) return state;
+  const {type, payload} = action;
+  if (type === SET_ACTIVITY) {
+      const {activity, nextPage} = payload;
       return {
         ...state,
         activity,
         nextPage,
       };
+    } else if (type === CLEAR_ACTIVITY) {
+    return {
+      ...state,
+      activity: null,
+      nextPage: null,
+    };
+  } else if (type === TOGGLE_USER_AVATAR_MODAL) {
+    return {
+      ...state,
+      openModal: state.openModal === type ? '' : type,
     }
-    case CLEAR_ACTIVITY:
-      return {
-        ...state,
-        activity: null,
-        nextPage: null,
-      };
-    default:
-      return state;
   }
 }
 
@@ -51,3 +56,7 @@ export const setWelcomeActivity = (nextPage) => {
 export const clearActivity = () => {
   return {type: CLEAR_ACTIVITY};
 };
+
+export const toggleUserAvatarModal = () => ({
+  type: TOGGLE_USER_AVATAR_MODAL
+});

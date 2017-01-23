@@ -48,11 +48,9 @@ export function showInfo(opts) {
   return show(opts, INFO);
 }
 
-export function hide(aNid) {
-  return {
-    type: TOAST_HIDE,
-    payload: {
-      nid: aNid
-    }
-  };
-}
+export const hide = (aNid) => ({
+  type: TOAST_HIDE,
+  payload: {
+    nid: aNid
+  }
+});

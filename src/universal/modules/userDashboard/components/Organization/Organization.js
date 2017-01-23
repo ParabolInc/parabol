@@ -9,13 +9,13 @@ import {ORGANIZATIONS} from 'universal/utils/constants';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
 import appTheme from 'universal/styles/theme/appTheme';
 import BillingMembersToggle from 'universal/modules/userDashboard/components/BillingMembersToggle/BillingMembersToggle';
-import brandMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import makeDateString from 'universal/utils/makeDateString';
 import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/EditOrgName';
 import OrgBillingContainer from 'universal/modules/userDashboard/containers/OrgBilling/OrgBillingContainer';
 import OrgMembersContainer from 'universal/modules/userDashboard/containers/OrgMembers/OrgMembersContainer';
 import {BILLING_PAGE, toggleAvatarModal} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
 import SettingsModal from 'universal/modules/userDashboard/components/SettingsModal/SettingsModal';
+import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
 
 const inlineBlockStyle = {
   display: 'inline-block',
@@ -49,13 +49,8 @@ const Organization = (props) => {
         </Link>
         {/* TODO: See AvatarInput.js for latest */}
         <div className={css(styles.avatarAndName)}>
-          <div className={css(styles.avatar)}>
-            <div className={css(styles.avatarEditOverlay)} onClick={openChangeAvatar}>
-              <FontAwesome name="pencil"/>
-              <span>EDIT</span>
-            </div>
-            <img className={css(styles.avatarImg)} height={96} width={96} src={orgAvatar || brandMark}/>
-          </div>
+          <EditableAvatar borderRadius="10%" picture={orgAvatar} onClick={openChangeAvatar}/>
+
           <div className={css(styles.orgNameAndDetails)}>
             <EditOrgName initialValues={initialValues} orgName={orgName} orgId={orgId}/>
             <div className={css(styles.orgDetails)}>
@@ -76,7 +71,6 @@ Organization.defaultProps = {
     activeUsers: 12,
     createdAt: new Date(),
     name: 'Parabol',
-    picture: brandMark,
     totalUsers: 14
   }
 };
@@ -87,39 +81,6 @@ const styleThunk = () => ({
     margin: '0 0 1rem',
     maxWidth: '40rem',
     width: '100%'
-  },
-
-  avatar: {
-    height: 104,
-    paddingTop: 8,
-    position: 'relative',
-    width: 96
-  },
-
-  avatarEditOverlay: {
-    alignItems: 'center',
-    backgroundColor: appTheme.palette.dark,
-    borderRadius: '.5rem',
-    color: 'white',
-    cursor: 'pointer',
-    display: 'flex',
-    flexDirection: 'column',
-    fontSize: appTheme.typography.s3,
-    fontWeight: 700,
-    height: 96,
-    justifyContent: 'center',
-    opacity: 0,
-    position: 'absolute',
-    width: 96,
-
-    ':hover': {
-      opacity: '.75',
-      transition: 'opacity .2s ease-in',
-    },
-  },
-
-  avatarImg: {
-    borderRadius: '10%',
   },
 
   creditCardProvider: {

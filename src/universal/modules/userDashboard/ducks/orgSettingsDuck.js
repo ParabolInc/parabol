@@ -10,7 +10,7 @@ const initialState = {
   removeBillingLeaderModal: false,
   leaveOrgModal: false,
   paymentModal: true,
-  openModal: TOGGLE_AVATAR_MODAL,
+  openModal: '',
   userId: undefined,
   preferredName: undefined,
 };

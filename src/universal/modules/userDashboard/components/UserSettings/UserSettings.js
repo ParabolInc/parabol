@@ -2,13 +2,15 @@ import React, {PropTypes} from 'react';
 import Button from 'universal/components/Button/Button';
 import InputField from 'universal/components/InputField/InputField';
 import {Field} from 'redux-form';
-import {ACTIVITY_WELCOME} from 'universal/modules/userDashboard/ducks/settingsDuck';
+import {ACTIVITY_WELCOME, TOGGLE_USER_AVATAR_MODAL, toggleUserAvatarModal} from 'universal/modules/userDashboard/ducks/settingsDuck';
 import {randomPreferredName} from 'universal/utils/makeRandomPlaceholder';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import AvatarInput from 'universal/components/AvatarInput/AvatarInput';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
 import {SETTINGS} from 'universal/utils/constants';
+import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
+import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
+import UserAvatarInput from 'universal/modules/userDashboard/components/UserAvatarInput/UserAvatarInput';
 
 const renderActivity = (activity) => {
   if (activity === ACTIVITY_WELCOME) {
@@ -23,21 +25,30 @@ const renderActivity = (activity) => {
 };
 
 const UserSettings = (props) => {
-  const {activity, handleSubmit, onSubmit, styles, user: {picture}} = props;
+  const {activity, dispatch, handleSubmit, onSubmit, openModal, styles, user: {id: userId, picture}} = props;
+  const openChangeAvatar = () => {
+    dispatch(toggleUserAvatarModal());
+  };
   return (
     <UserSettingsWrapper activeTab={SETTINGS}>
+      {openModal === TOGGLE_USER_AVATAR_MODAL &&
+        <PhotoUploadModal
+          onBackdropClick={openChangeAvatar}
+          picture={picture}
+        >
+          <UserAvatarInput userId={userId}/>
+        </PhotoUploadModal>
+      }
       <div className={css(styles.body)}>
         <form className={css(styles.root)} onSubmit={handleSubmit(onSubmit)}>
           <div className={css(styles.row)}>
             {renderActivity(activity)}
           </div>
           <div className={css(styles.row)}>
-            <Field
-              component={AvatarInput}
-              name="pictureFile"
+            <EditableAvatar
+              borderRadius="50%"
               picture={picture}
-              previousValue={picture}
-              type="file"
+              onClick={openChangeAvatar}
             />
           </div>
           <div className={css(styles.row)}>

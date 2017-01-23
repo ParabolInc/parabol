@@ -1,24 +1,18 @@
 import React, {PropTypes} from 'react';
-import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import ToastSystem from 'react-notification-system';
-
 import appTheme from 'universal/styles/theme/appTheme';
-import * as _toastActions from '../../ducks/toastDuck';
+import {hide} from 'universal/modules/toast/ducks/toastDuck';
 
 const mapStateToProps = state => ({
   toasts: state.toasts
 });
 
-const mapDispatchToProps = dispatch => ({
-  toastActions: bindActionCreators(_toastActions, dispatch)
-});
-
-@connect(mapStateToProps, mapDispatchToProps)
+@connect(mapStateToProps)
 export default class Toast extends React.Component {
   static propTypes = {
-    toasts: PropTypes.array,
-    toastActions: PropTypes.object.isRequired,
+    dispatch: PropTypes.func,
+    toasts: PropTypes.array
   };
 
   constructor(props) {
@@ -29,7 +23,7 @@ export default class Toast extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {toasts, toastActions} = nextProps;
+    const {dispatch, toasts} = nextProps;
     const {maxNid} = this.state;
 
     toasts
@@ -38,7 +32,7 @@ export default class Toast extends React.Component {
         this.system().addNotification({
           ...notification,
           onRemove: () => {
-            toastActions.hide(notification.nid);
+            dispatch(hide(notification.nid));
           }
         });
         if (notification.nid > maxNid) {

@@ -8,7 +8,7 @@ import {
   GraphQLString,
 } from 'graphql';
 import {requireOrgLeader, requireOrgLeaderOfUser, requireWebsocket} from '../authorization';
-import updateOrgSchema from 'universal/validation/updateOrgSchema';
+import updateOrgServerSchema from 'universal/validation/updateOrgServerSchema';
 import {errorObj, handleSchemaErrors, getOldVal, getS3PutUrl, validateAvatarUpload} from '../utils';
 import stripe from 'server/billing/stripe';
 import {TRIAL_EXTENSION} from 'server/utils/serverConstants';
@@ -42,7 +42,7 @@ export default {
       await requireOrgLeader(authToken, updatedOrg.id);
 
       // VALIDATION
-      const schema = updateOrgSchema();
+      const schema = updateOrgServerSchema();
       const {errors, data: {id: orgId, ...org}} = schema(updatedOrg);
       handleSchemaErrors(errors);
 
@@ -268,10 +268,7 @@ export default {
 
       // RESOLUTION
       const partialPath = `Organization/${orgId}/picture/${shortid.generate()}.${ext}`;
-      const val = await getS3PutUrl(contentType, contentLength, partialPath);
-      console.log('val to return', val);
-      return val
-
+      return await getS3PutUrl(contentType, contentLength, partialPath);
     }
   },
 };

@@ -6,20 +6,15 @@ import {User, UpdateUserInput} from './userSchema';
 import {AuthenticationClient} from 'auth0';
 import {auth0} from 'universal/utils/clientOptions';
 import sendEmail from 'server/email/sendEmail';
-import {requireAuth, requireOrgLeader, requireSU, requireSUOrSelf} from '../authorization';
+import {requireAuth, requireSU, requireSUOrSelf} from '../authorization';
 import {errorObj, getS3PutUrl, handleSchemaErrors, updatedOrOriginal, validateAvatarUpload} from '../utils';
 import {
   auth0ManagementClient,
   clientSecret as auth0ClientSecret
 } from 'server/utils/auth0Helpers';
 import {verify} from 'jsonwebtoken';
-import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
+import makeUserServerSchema from 'universal/validation/makeUserServerSchema';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
-
-import {
-  APP_CDN_USER_ASSET_SUBDIR,
-  APP_MAX_AVATAR_FILE_SIZE
-} from 'universal/utils/constants';
 import {GraphQLURLType} from '../types';
 
 const auth0Client = new AuthenticationClient({
@@ -181,7 +176,7 @@ export default {
       requireSUOrSelf(authToken, updatedUser.id);
 
       // VALIDATION
-      const schema = makeUpdatedUserSchema();
+      const schema = makeUserServerSchema();
       const {data: {id, ...validUpdatedUser}, errors} = schema(updatedUser);
       handleSchemaErrors(errors);
 

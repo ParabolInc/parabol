@@ -10,6 +10,7 @@ import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgMo
 import CreditCardModal from 'universal/modules/userDashboard/components/CreditCardModal/CreditCardModal';
 import {togglePaymentModal, toggleLeaveModal, toggleRemoveModal, toggleAvatarModal} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
 import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
+import OrgAvatarInput from 'universal/modules/userDashboard/components/OrgAvatarInput/OrgAvatarInput';
 
 const SettingsModal = (props) => {
   const {dispatch, openModal, org: {id: orgId, picture}, modalUserId, modalPreferredName} = props;
@@ -33,11 +34,11 @@ const SettingsModal = (props) => {
         userId={modalUserId}
       />;
     case TOGGLE_AVATAR_MODAL:
-      return <PhotoUploadModal
-        onBackdropClick={() => {dispatch(toggleAvatarModal())}}
-        orgId={orgId}
-        picture={picture}
-      />;
+      return (
+        <PhotoUploadModal onBackdropClick={() => {dispatch(toggleAvatarModal())}} picture={picture}>
+          <OrgAvatarInput orgId={orgId}/>
+        </PhotoUploadModal>
+      );
     default:
       return null;
   }

@@ -2,19 +2,29 @@ import React, {PropTypes} from 'react';
 import {DashModal} from 'universal/components/Dashboard';
 import Type from 'universal/components/Type/Type';
 import brandMark from 'universal/styles/theme/images/brand/mark-color.svg';
-import OrgAvatar from 'universal/modules/userDashboard/components/OrgAvatar/OrgAvatar';
+import IconLink from 'universal/components/IconLink/IconLink';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite-local-styles/no-important';
 
 const PhotoUploadModal = (props) => {
-  const {currentPhoto, onBackdropClick, orgId} = props;
-  const picture = currentPhoto || brandMark;
+  const {children, picture, onBackdropClick, styles} = props;
   return (
     <DashModal onBackdropClick={onBackdropClick}>
       <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
         Upload a new photo
       </Type>
-      <img height={96} width={96} src={picture}/>
-      <div>
-        <OrgAvatar orgId={orgId} picture={picture}/>
+      <img height={96} width={96} src={picture || brandMark}/>
+      {children}
+      <div className={css(styles.done)}>
+        <IconLink
+          colorPalette="cool"
+          icon="arrow-circle-right"
+          iconPlacement="right"
+          label="Done"
+          margin="1.5rem 0 0 0"
+          onClick={onBackdropClick}
+          scale="large"
+        />
       </div>
     </DashModal>
   );
@@ -22,7 +32,13 @@ const PhotoUploadModal = (props) => {
 
 PhotoUploadModal.propTypes = {
   onBackdropClick: PropTypes.func,
-  orgId: PropTypes.string.isRequired
 };
 
-export default PhotoUploadModal;
+const styleThunk = () => ({
+  done: {
+    textAlign: 'right',
+    width: '100%'
+  }
+});
+
+export default withStyles(styleThunk)(PhotoUploadModal);
