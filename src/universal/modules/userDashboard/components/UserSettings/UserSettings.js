@@ -46,9 +46,10 @@ const UserSettings = (props) => {
           <form className={css(styles.form)} onSubmit={handleSubmit(onSubmit)}>
             <div className={css(styles.avatarBlock)}>
               <EditableAvatar
-                borderRadius="50%"
-                picture={picture}
+                forUser
                 onClick={openChangeAvatar}
+                picture={picture}
+                size={96}
               />
             </div>
             <div className={css(styles.infoBlock)}>

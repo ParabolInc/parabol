@@ -54,7 +54,7 @@ const styleThunk = () => ({
     display: 'flex',
     margin: '1.5rem 0',
     backgroundColor: '#fff',
-    border: `1px solid ${appTheme.palette.mid40l}`,
+    border: `1px solid ${ui.panelBorderColor}`,
     borderRadius: ui.cardBorderRadius,
     flexDirection: 'column',
     fontSize: appTheme.typography.s3,

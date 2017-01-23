@@ -33,7 +33,7 @@ const Organization = (props) => {
     styles,
     org
   } = props;
-  const {id: orgId, createdAt, name: orgName, picture: orgAvatar, activeUserCount, inactiveUserCount} = org;
+  const {id: orgId, createdAt, name: orgName, picture: orgAvatar} = org;
   initialValues.orgName = orgName;
   const OrgSection = activeOrgDetail === BILLING_PAGE ? OrgBillingContainer : OrgMembersContainer;
   const openChangeAvatar = () => {
@@ -49,13 +49,11 @@ const Organization = (props) => {
         </Link>
         {/* TODO: See AvatarInput.js for latest */}
         <div className={css(styles.avatarAndName)}>
-          <EditableAvatar borderRadius="10%" picture={orgAvatar} onClick={openChangeAvatar}/>
-
+          <EditableAvatar onClick={openChangeAvatar} picture={orgAvatar} size={96}/>
           <div className={css(styles.orgNameAndDetails)}>
             <EditOrgName initialValues={initialValues} orgName={orgName} orgId={orgId}/>
             <div className={css(styles.orgDetails)}>
-              {activeUserCount} Active Users • {inactiveUserCount} Inactive Users •
-                                Created {makeDateString(createdAt, false)}
+              Created {makeDateString(createdAt, false)}
             </div>
             <BillingMembersToggle orgId={orgId} activeOrgDetail={activeOrgDetail}/>
           </div>
@@ -66,12 +64,15 @@ const Organization = (props) => {
   );
 };
 
+Organization.propTypes = {
+  org: PropTypes.object,
+  styles: PropTypes.object
+};
+
 Organization.defaultProps = {
   org: {
-    activeUsers: 12,
     createdAt: new Date(),
-    name: 'Parabol',
-    totalUsers: 14
+    name: 'Parabol'
   }
 };
 const styleThunk = () => ({
