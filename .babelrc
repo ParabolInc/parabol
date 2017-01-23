@@ -1,6 +1,11 @@
 {
-  "presets": ["react", "es2015", "stage-0"],
+  "presets": ["react", "es2015"],
   "plugins": [
+    ["transform-export-extensions"],
+    ["transform-class-properties"],
+    ["transform-async-generator-functions"],
+    ["transform-async-to-generator"],
+    ["transform-object-rest-spread"],
     ["transform-decorators-legacy"],
     ["add-module-exports"],
     ["react-hot-loader/babel"]

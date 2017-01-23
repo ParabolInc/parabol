@@ -1,16 +1,11 @@
 import React, {PropTypes} from 'react';
 import {DashModal} from 'universal/components/Dashboard';
 import Type from 'universal/components/Type/Type';
-import {cashay} from 'cashay';
 import brandMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import OrgAvatar from 'universal/modules/userDashboard/components/OrgAvatar/OrgAvatar';
 
 const PhotoUploadModal = (props) => {
-  const {currentPhoto, onBackdropClick} = props;
-  const handleClick = () => {
-    const variables = {teamMemberId};
-    cashay.mutate('removeTeamMember', {variables});
-  };
+  const {currentPhoto, onBackdropClick, orgId} = props;
   const picture = currentPhoto || brandMark;
   return (
     <DashModal onBackdropClick={onBackdropClick}>
@@ -19,7 +14,7 @@ const PhotoUploadModal = (props) => {
       </Type>
       <img height={96} width={96} src={picture}/>
       <div>
-        <OrgAvatar picture={picture}/>
+        <OrgAvatar orgId={orgId} picture={picture}/>
       </div>
     </DashModal>
   );
@@ -27,6 +22,7 @@ const PhotoUploadModal = (props) => {
 
 PhotoUploadModal.propTypes = {
   onBackdropClick: PropTypes.func,
+  orgId: PropTypes.string.isRequired
 };
 
 export default PhotoUploadModal;

@@ -1,6 +1,6 @@
 import path from 'path';
 import webpack from 'webpack';
-import { getDotenv } from '../src/universal/utils/dotenv';
+import {getDotenv} from '../src/universal/utils/dotenv';
 // import UnusedFilesWebpackPlugin from "unused-files-webpack-plugin";
 
 /*
@@ -22,7 +22,6 @@ const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(s
 
 const babelQuery = {
   plugins: [
-    ['transform-decorators-legacy'],
     ['react-transform', {
       transforms: [{
         transform: 'react-transform-hmr',

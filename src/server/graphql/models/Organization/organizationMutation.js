@@ -268,7 +268,9 @@ export default {
 
       // RESOLUTION
       const partialPath = `Organization/${orgId}/picture/${shortid.generate()}.${ext}`;
-      return await getS3PutUrl(contentType, contentLength, partialPath);
+      const val = await getS3PutUrl(contentType, contentLength, partialPath);
+      console.log('val to return', val);
+      return val
 
     }
   },

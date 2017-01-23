@@ -11,22 +11,23 @@ const validate = (values) => {
   return schema(values).errors;
 };
 
-const uploadPicture = async(pictureFile) => {
-  const {data, error} = cashay.mutate('createUserPicturePutUrl', {
+const uploadPicture = async (orgId, pictureFile) => {
+  const {data, error} = await cashay.mutate('createOrgPicturePutUrl', {
     variables: {
       contentType: pictureFile.type,
       contentLength: pictureFile.size,
+      orgId,
     }
   });
   if (error) {
     throw new Error(error._error); // eslint-disable-line no-underscore-dangle
   }
-  const {createUserPicturePutUrl: putUrl} = data;
+  const {createOrgPicturePutUrl: putUrl} = data;
   return sendAssetToS3(pictureFile, putUrl)
 };
 
 const OrgAvatar = (props) => {
-  const {handleSubmit} = props;
+  const {handleSubmit, orgId} = props;
 
   const updateProfile = (pictureUrl) => {
     const {userId} = props;
@@ -45,7 +46,7 @@ const OrgAvatar = (props) => {
     const {pictureFile} = submissionData;
     if (pictureFile && pictureFile.name) {
       // upload new picture to CDN, then update the user profile:
-      const pictureUrl = await uploadPicture(pictureFile);
+      const pictureUrl = await uploadPicture(orgId, pictureFile);
       try {
         await updateProfile(pictureUrl);
       } catch (e) {

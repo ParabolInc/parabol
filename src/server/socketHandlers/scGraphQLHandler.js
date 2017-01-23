@@ -3,7 +3,7 @@ import Schema from 'server/graphql/rootSchema';
 
 // eslint-disable-next-line no-underscore-dangle
 const mutations = Schema._mutationType && Schema._mutationType._fields || {};
-const whitelist = ['createUserPicturePutUrl', 'updateUserProfile', 'summarizeMeeting'];
+const whitelist = ['createUserPicturePutUrl', 'createOrgPicturePutUrl', 'updateUserProfile', 'summarizeMeeting'];
 const mutationNames = Object.keys(mutations);
 
 export default function wsGraphQLHandler(exchange, socket) {

@@ -77,7 +77,12 @@
     "webpack-dev-middleware": "1.8.4",
     "webpack-hot-middleware": "^2.13.2",
     "webpack-shell-plugin": "^0.4.3",
-    "why-did-you-update": "0.0.8"
+    "why-did-you-update": "0.0.8",
+    "babel-plugin-transform-async-generator-functions": "^6.22.0",
+    "babel-plugin-transform-async-to-generator": "^6.22.0",
+    "babel-plugin-transform-class-properties": "^6.22.0",
+    "babel-plugin-transform-export-extensions": "^6.22.0",
+    "babel-plugin-transform-object-rest-spread": "^6.22.0",
   },
   "dependencies": {
     "@segment/snippet": "^4.0.1",
