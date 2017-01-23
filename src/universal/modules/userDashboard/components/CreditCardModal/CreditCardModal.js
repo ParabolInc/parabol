@@ -234,7 +234,7 @@ const styleThunk = () => ({
   },
   cardInputs: {
     border: `1px solid ${appTheme.palette.mid60l}`,
-    borderRadius: '4px',
+    borderRadius: ui.borderRadiusSmall,
     display: 'flex',
     flexDirection: 'column',
     margin: '1.25rem 0',
@@ -248,10 +248,11 @@ const styleThunk = () => ({
   },
 
   modalBody: {
+    alignItems: 'center',
     background: ui.dashBackgroundColor,
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    width: '100%'
   },
 
   reassure: {

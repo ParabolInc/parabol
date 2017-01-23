@@ -67,7 +67,7 @@ ToggleNav.defaultProps = {
   ]
 };
 
-const borderRadius = ui.baseBorderRadius;
+const borderRadius = ui.borderRadiusSmall;
 
 const styleThunk = () => ({
   nav: {

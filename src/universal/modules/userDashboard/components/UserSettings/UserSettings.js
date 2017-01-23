@@ -1,11 +1,13 @@
 import React, {PropTypes} from 'react';
 import Button from 'universal/components/Button/Button';
 import InputField from 'universal/components/InputField/InputField';
+import Panel from 'universal/components/Panel/Panel';
 import {Field} from 'redux-form';
 import {ACTIVITY_WELCOME, TOGGLE_USER_AVATAR_MODAL, toggleUserAvatarModal} from 'universal/modules/userDashboard/ducks/settingsDuck';
 import {randomPreferredName} from 'universal/utils/makeRandomPlaceholder';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
 import {SETTINGS} from 'universal/utils/constants';
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
@@ -40,35 +42,39 @@ const UserSettings = (props) => {
         </PhotoUploadModal>
       }
       <div className={css(styles.body)}>
-        <form className={css(styles.root)} onSubmit={handleSubmit(onSubmit)}>
-          <div className={css(styles.row)}>
-            {renderActivity(activity)}
-          </div>
-          <div className={css(styles.row)}>
-            <EditableAvatar
-              borderRadius="50%"
-              picture={picture}
-              onClick={openChangeAvatar}
-            />
-          </div>
-          <div className={css(styles.row)}>
-            <Field
-              autoFocus
-              component={InputField}
-              label="Name"
-              name="preferredName"
-              placeholder={randomPreferredName}
-              type="text"
-            />
-          </div>
-          <Button
-            isBlock
-            label="Update"
-            size="small"
-            colorPalette="cool"
-            type="submit"
-          />
-        </form>
+        <Panel label="My Information">
+          <form className={css(styles.form)} onSubmit={handleSubmit(onSubmit)}>
+            <div className={css(styles.avatarBlock)}>
+              <EditableAvatar
+                borderRadius="50%"
+                picture={picture}
+                onClick={openChangeAvatar}
+              />
+            </div>
+            <div className={css(styles.infoBlock)}>
+              <div className={css(styles.row)}>
+                {renderActivity(activity)}
+              </div>
+              <div className={css(styles.row)}>
+                <Field
+                  autoFocus
+                  component={InputField}
+                  label="Name"
+                  name="preferredName"
+                  placeholder={randomPreferredName}
+                  type="text"
+                />
+              </div>
+              <Button
+                isBlock
+                label="Update"
+                size="small"
+                colorPalette="cool"
+                type="submit"
+              />
+            </div>
+          </form>
+        </Panel>
       </div>
     </UserSettingsWrapper>
   );
@@ -92,18 +98,27 @@ UserSettings.propTypes = {
 };
 
 const styleThunk = () => ({
-  root: {
-    display: 'flex !important',
-    flex: 1,
-    flexDirection: 'column'
+  body: {
+    maxWidth: '37.5rem',
   },
 
-  body: {
-    maxWidth: '20rem'
+  form: {
+    borderTop: `1px solid ${ui.rowBorderColor}`,
+    display: 'flex',
+    padding: ui.panelGutter,
+    width: '100%'
   },
 
   row: {
     margin: '0 0 1.5rem'
+  },
+
+  avatarBlock: {
+    // Define
+  },
+
+  infoBlock: {
+    paddingLeft: ui.panelGutter
   }
 });
 

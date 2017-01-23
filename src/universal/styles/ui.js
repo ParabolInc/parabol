@@ -9,12 +9,21 @@ import zIndexScale from 'universal/styles/helpers/zIndexScale';
 // Reusable constants for UI object
 // ---------------------------------
 const backgroundColor = tinycolor.mix(appTheme.palette.mid, '#fff', 95).toHexString();
-const baseBorderRadius = '.25rem';
+
+// Small border radius for controls (inputs, buttons, etcs.)
+const borderRadiusSmall = '.125rem';
+// Medium border radius for grouped components (cards, panels, etc.)
+const borderRadiusMedium = '.25rem';
+// Large border radius for larger components (modals, pages, etc.)
+const borderRadiusLarge = '.5rem';
+
 // ---------------------------------
 
 const ui = {
   // Base settings
-  baseBorderRadius,
+  borderRadiusSmall,
+  borderRadiusMedium,
+  borderRadiusLarge,
 
   // Action items and cards
   actionCardBgColor: appTheme.palette.light60l,
@@ -32,7 +41,7 @@ const ui = {
   },
 
   // Buttons
-  buttonBorderRadius: '.25rem',
+  buttonBorderRadius: borderRadiusSmall,
   buttonSizes: [
     'smallest',
     'small',
@@ -52,14 +61,14 @@ const ui = {
 
   // Cards
   cardBorderColor: appTheme.palette.mid30l,
-  cardBorderRadius: baseBorderRadius,
+  cardBorderRadius: borderRadiusMedium,
   cardMaxWidth: '17.5rem',
   cardMinHeight: '7.5rem',
   cardPaddingBase: '.5rem',
   cardDragStyle: {
     backgroundColor: appTheme.palette.light10l,
     borderColor: appTheme.palette.mid70l,
-    borderRadius: '.25rem',
+    borderRadius: borderRadiusMedium,
     boxShadow: '0 1px 2px rgba(0, 0, 0, .15)'
   },
   zCard: zIndexScale(6),
@@ -103,8 +112,12 @@ const ui = {
   menuBackgroundColor: backgroundColor,
   zMenu: zIndexScale(4),
 
+  // Modals
+  modalBorderRadius: borderRadiusLarge,
+  modalBoxShadow: '0 .25rem .5rem 0 rgba(0, 0, 0, .35)',
+
   // Panels
-  panelBorderRadius: baseBorderRadius,
+  panelBorderRadius: borderRadiusMedium,
   panelGutter: '1rem',
 
   // Project columns
