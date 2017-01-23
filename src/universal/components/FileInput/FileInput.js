@@ -11,7 +11,6 @@ const hiddenUglyButton = {
 const FileInput = (props) => {
   const {
     accept,
-    input: {value},
     doSubmit,
     meta: {touched, error},
     size,

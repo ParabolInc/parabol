@@ -7,11 +7,8 @@ import sendAssetToS3 from 'universal/utils/sendAssetToS3';
 import FileInput from 'universal/components/FileInput/FileInput';
 
 const validate = (values) => {
-  console.log('validating')
   const schema = makeAvatarSchema();
-  const errors = schema(values).errors;
-  console.log('validate errors', errors);
-  return errors;
+  return schema(values).errors;
 };
 
 const uploadPicture = async(pictureFile) => {
@@ -28,51 +25,47 @@ const uploadPicture = async(pictureFile) => {
   return sendAssetToS3(pictureFile, putUrl)
 };
 
-class OrgAvatar extends Component {
-  render() {
-    const {handleSubmit, picture, touch} = this.props;
-    const updateProfile = (pictureUrl) => {
-      const {userId} = this.props;
-      const options = {
-        variables: {
-          updatedUser: {
-            id: userId,
-            picture: pictureUrl
-          }
-        }
-      };
-      return cashay.mutate('updateUserProfile', options);
-    };
+const OrgAvatar = (props) => {
+  const {handleSubmit} = props;
 
-    const onSubmit = async(submissionData) => {
-      const {pictureFile} = submissionData;
-      if (pictureFile && pictureFile.name) {
-        // upload new picture to CDN, then update the user profile:
-        const pictureUrl = await uploadPicture(pictureFile);
-        try {
-          await updateProfile(pictureUrl);
-        } catch (e) {
-          // eslint-disable-line no-undef
-          Raven.captureException(e)
+  const updateProfile = (pictureUrl) => {
+    const {userId} = props;
+    const options = {
+      variables: {
+        updatedUser: {
+          id: userId,
+          picture: pictureUrl
         }
       }
-      // no work to do
-      return undefined;
     };
-    return (
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Field
-          accept="image/*"
-          component={FileInput}
-          doSubmit={handleSubmit(onSubmit)}
-          name="pictureFile"
-          touch={touch}
-          previousValue={picture}
-          forceUpdate={() => this.forceUpdate()}
-        />
-      </form>
-    );
-  }
+    return cashay.mutate('updateUserProfile', options);
+  };
+
+  const onSubmit = async(submissionData) => {
+    const {pictureFile} = submissionData;
+    if (pictureFile && pictureFile.name) {
+      // upload new picture to CDN, then update the user profile:
+      const pictureUrl = await uploadPicture(pictureFile);
+      try {
+        await updateProfile(pictureUrl);
+      } catch (e) {
+        // eslint-disable-line no-undef
+        Raven.captureException(e)
+      }
+    }
+    // no work to do
+    return undefined;
+  };
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Field
+        accept="image/*"
+        component={FileInput}
+        doSubmit={handleSubmit(onSubmit)}
+        name="pictureFile"
+      />
+    </form>
+  );
 }
 
 export default reduxForm({form: 'orgAvatar', shouldValidate, validate})(
