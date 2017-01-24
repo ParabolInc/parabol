@@ -55,6 +55,11 @@ const bannerMessageStyles = {
   textAlign: 'center'
 };
 
+const meetingLinkTable = {
+  marginLeft: 'auto',
+  marginRight: 'auto'
+};
+
 const meetingLinkBlock = {
   backgroundColor: appTheme.palette.cool10l,
   padding: '10px 8px',
@@ -146,7 +151,7 @@ const SummaryEmail = (props) => {
                 {/* Summary Header */}
                 <SummaryHeader createdAt={createdAt} referrer={referrer} teamDashUrl={teamDashUrl} teamName={teamName}/>
                 {/* Message */}
-                {meetingNumber === 0 ?
+                {meetingNumber === 1 ?
                   <div>
                     <div style={message}>
                       <b style={greetingStyles}>{makeSuccessExpression()}!</b><br />
@@ -159,7 +164,7 @@ const SummaryEmail = (props) => {
                       {'Include the following link to the meeting lobby'}<br />
                       {'in your recurring calendar event:'}
                       <EmptySpace height={8}/>
-                      <table align="center" width="80%">
+                      <table align="center" style={meetingLinkTable} width="80%">
                         <tbody>
                           <tr>
                             <td align="center" style={meetingLinkBlock}>

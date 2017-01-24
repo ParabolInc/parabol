@@ -47,5 +47,9 @@ export default {
     '-webkit-font-smoothing': 'antialiased'
   },
 
+  img: {
+    maxWidth: '100%'
+  },
+
   ...basePlaceholderStyles
 };
