@@ -114,7 +114,9 @@ class OutcomeCardTextArea extends Component {
     const markdownStyles = css(styles.markdownContent);
     const markdownOptions = {
       linkify: true,
-      html: false
+      html: false,
+      quotes: '“”‘’',
+      typographer: true
     };
     return (
       <div
