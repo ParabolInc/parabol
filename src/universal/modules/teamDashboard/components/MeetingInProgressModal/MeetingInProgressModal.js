@@ -4,7 +4,7 @@ import IconLink from 'universal/components/IconLink/IconLink';
 import Type from 'universal/components/Type/Type';
 import {withRouter} from 'react-router';
 
-const TeamDashModal = (props) => {
+const MeetingInProgressModal = (props) => {
   const {teamId, teamName, router} = props;
   const handleClick = () => router.push(`/meeting/${teamId}`);
   return (
@@ -30,10 +30,10 @@ const TeamDashModal = (props) => {
   );
 };
 
-TeamDashModal.propTypes = {
+MeetingInProgressModal.propTypes = {
   router: PropTypes.object,
   teamId: PropTypes.string,
   teamName: PropTypes.string
 };
 
-export default withRouter(TeamDashModal);
+export default withRouter(MeetingInProgressModal);

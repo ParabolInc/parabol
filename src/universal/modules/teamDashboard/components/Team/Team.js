@@ -9,7 +9,7 @@ import {
 } from 'universal/components/Dashboard';
 import {Link, withRouter} from 'react-router';
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
-import TeamDashModal from '../TeamDashModal/TeamDashModal';
+import MeetingInProgressModal from '../MeetingInProgressModal/MeetingInProgressModal';
 
 
 const faIconStyle = {
@@ -74,7 +74,7 @@ const Team = (props) => {
   const DashHeaderInfoTitle = isSettings ? <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId}/> : teamName;
   return (
     <DashMain>
-      {hasOverlay && <TeamDashModal teamId={teamId} teamName={teamName}/>}
+      {hasOverlay && <MeetingInProgressModal teamId={teamId} teamName={teamName}/>}
       <DashHeader hasOverlay={hasOverlay}>
         <DashHeaderInfo title={DashHeaderInfoTitle}>
           {isSettings ? settingsLinks(teamId) : standardLinks(teamId)}
