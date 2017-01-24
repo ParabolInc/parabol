@@ -19,10 +19,10 @@ export default {
 
       // AUTH
       requireSUOrTeamMember(authToken, teamId);
-      await requireTeamIsPaid(teamId);
+      const isPaid = await r.table('Team').get(teamId)('isPaid').default(false);
 
       // TODO update subscription on the client when a new team gets added. So rare, it's OK to resend all 3-4 docs
-      const requestedFields = getRequestedFields(refs);
+      const requestedFields = isPaid ? getRequestedFields(refs) : ['id', 'name'];
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
       r.table('Team')
         .get(teamId)

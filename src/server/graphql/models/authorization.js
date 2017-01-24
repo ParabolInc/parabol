@@ -126,7 +126,7 @@ export const requireOrgLeaderOfUser = async(authToken, userId) => {
 
 export const requireTeamIsPaid = async (teamId) => {
   const r = getRethink();
-  const isPaid = await r.table('Team').get(teamId)('isPaid');
+  const isPaid = await r.table('Team').get(teamId)('isPaid').default(false);
   if (!isPaid) {
     throw errorObj({_error: 'The org leader has not paid. Cannot fetch documents'})
   }

@@ -5,6 +5,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import {Link, withRouter} from 'react-router';
 import DashNavItemBaseStyles from './DashNavItemBaseStyles';
 
+
 const DashNavItem = (props) => {
   const {label, href, styles, router} = props;
   const flagChildren = href === '/me';
@@ -14,13 +15,13 @@ const DashNavItem = (props) => {
     isActive && styles.active
   );
   return (
-    <Link
-      className={linkStyles}
-      title={label}
-      to={href}
-    >
-      {label}
-    </Link>
+      <Link
+        className={linkStyles}
+        title={label}
+        to={href}
+      >
+        {label}
+      </Link>
   );
 };
 

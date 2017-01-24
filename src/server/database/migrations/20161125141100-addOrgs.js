@@ -79,7 +79,7 @@ exports.up = async(r) => {
   });
 
   // update teams with the org
-  await r.expr(teamsWithOrgId).forEach((team) => r.table('Team').get(team('id')).update({orgId: team('orgId')}))
+  await r.expr(teamsWithOrgId).forEach((team) => r.table('Team').get(team('id')).update({orgId: team('orgId'), isPaid: true}))
   // add the org itself
     .do(() => {
       return r.expr(orgs)

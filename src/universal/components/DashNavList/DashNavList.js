@@ -3,6 +3,7 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import DashNavItem from '../Dashboard/DashNavItem';
 import appTheme from 'universal/styles/theme/appTheme';
+import FontAwesome from 'react-fontawesome';
 
 const DashNavList = (props) => {
   const {teams, styles} = props;
@@ -12,10 +13,12 @@ const DashNavList = (props) => {
       {hasTeams ?
         <div>
           {teams.map((team) =>
-            <div key={`teamNav${team.id}`}>
+            <div key={`teamNav${team.id}`} className={css(styles.iconAndLink)}>
+              {!team.isPaid && <FontAwesome name="warning" className={css(styles.itemIcon)} title="Team is disabled for nonpayment"/>}
               <DashNavItem
                 href={`/team/${team.id}`}
                 label={team.name}
+                isPaid={team.isPaid}
               />
             </div>
           )}
@@ -45,6 +48,21 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.sBase,
     fontStyle: 'italic',
     padding: '0 0 .125rem 1rem'
+  },
+
+  iconAndLink: {
+    alignItems: 'center',
+    display: 'flex',
+    position: 'relative'
+  },
+
+  itemIcon: {
+    color: appTheme.palette.light,
+    marginRight: '.5 rem',
+    position: 'absolute',
+    right: '100%',
+    textAlign: 'center',
+    width: 24
   }
 });
 
