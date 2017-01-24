@@ -5,6 +5,7 @@ import ui from 'universal/styles/ui';
 import FontAwesome from 'react-fontawesome';
 import InvoiceRow from 'universal/modules/userDashboard/components/InvoiceRow/InvoiceRow';
 import Button from 'universal/components/Button/Button';
+import FlatButton from 'universal/components/FlatButton/FlatButton';
 import Panel from 'universal/components/Panel/Panel';
 import {togglePaymentModal} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
 import ActiveTrialCallOut from '../ActiveTrialCallOut/ActiveTrialCallOut';
@@ -40,7 +41,7 @@ const OrgBilling = (props) => {
             colorPalette="cool"
             label="Update"
             onClick={openPaymentModal}
-            size="small"
+            size="smallest"
           />
         </div>
       </Panel>

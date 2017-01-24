@@ -24,6 +24,7 @@ const BUTTON_SIZE_SMALL = 'small';
 const BUTTON_SIZE_MEDIUM = 'medium';
 const BUTTON_SIZE_LARGE = 'large';
 const BUTTON_SIZE_LARGEST = 'largest';
+const BUTTON_PADDING_HORIZONTAL_COMPACT = '.625em';
 
 // ---------------------------------
 
@@ -49,14 +50,70 @@ const ui = {
   },
 
   // Buttons
+  buttonBaseStyles: {
+    appearance: 'none',
+    border: '1px solid transparent',
+    boxShadow: 'none',
+    cursor: 'pointer',
+    display: 'inline-block',
+    fontWeight: 700,
+    lineHeight: 'normal',
+    outline: 'none',
+    textAlign: 'center',
+    textDecoration: 'none',
+    userSelect: 'none',
+    ':hover': {
+      textDecoration: 'none'
+    },
+    ':focus': {
+      textDecoration: 'none'
+    },
+    ':active': {
+      animationDuration: '.1s',
+      animationName: {
+        '0%': {
+          transform: 'translate(0, 0)'
+        },
+        '50%': {
+          transform: 'translate(0, .25rem)'
+        },
+        '100%': {
+          transform: 'translate(0)'
+        }
+      },
+      animationTimingFunction: 'ease-in'
+    }
+  },
+  buttonBlockStyles: {
+    display: 'block',
+    paddingLeft: BUTTON_PADDING_HORIZONTAL_COMPACT,
+    paddingRight: BUTTON_PADDING_HORIZONTAL_COMPACT,
+    width: '100%'
+  },
   buttonBorderRadius: borderRadiusSmall,
+  buttonDisabledStyles: {
+    cursor: 'not-allowed',
+    opacity: '.5',
+    ':hover': {
+      opacity: '.5'
+    },
+    ':focus': {
+      opacity: '.5'
+    },
+    ':active': {
+      animation: 'none'
+    }
+  },
   buttonFontSize: {
-    [BUTTON_SIZE_SMALLEST]: appTheme.typography.s1,
+    [BUTTON_SIZE_SMALLEST]: appTheme.typography.s2,
     [BUTTON_SIZE_SMALL]: appTheme.typography.s3,
     [BUTTON_SIZE_MEDIUM]: appTheme.typography.sBase,
     [BUTTON_SIZE_LARGE]: appTheme.typography.s4,
     [BUTTON_SIZE_LARGEST]: appTheme.typography.s5
   },
+  buttonPaddingHorizontal: '1.125em', // 1.5em
+  buttonPaddingHorizontalCompact: BUTTON_PADDING_HORIZONTAL_COMPACT, // .75em
+  buttonPaddingVertical: '.625em', // .75em
   buttonSizes: [
     BUTTON_SIZE_SMALLEST,
     BUTTON_SIZE_SMALL,

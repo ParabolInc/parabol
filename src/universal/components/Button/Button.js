@@ -53,10 +53,30 @@ const makeOutlinedTheme = (color, opacity = '.5') => ({
   }
 });
 
+const makeFlatTheme = (color, opacity = '.5') => ({
+  backgroundColor: 'transparent',
+  borderColor: 'transparent',
+  color,
+  paddingLeft: ui.buttonPaddingHorizontalCompact,
+  paddingRight: ui.buttonPaddingHorizontalCompact,
+
+  ':hover': {
+    color,
+    opacity
+  },
+  ':focus': {
+    color,
+    opacity
+  }
+});
+
 const makePropColors = (style, colorPalette) => {
   const color = buttonPalette[colorPalette];
   if (style === 'outlined') {
     return makeOutlinedTheme(color);
+  }
+  if (style === 'flat') {
+    return makeFlatTheme(color);
   }
   const baseTextColor = style === 'inverted' ? color : white;
   const textColor = (colorPalette === 'white' || colorPalette === 'light' || colorPalette === 'gray') ? dark : baseTextColor;
@@ -109,7 +129,8 @@ Button.propTypes = {
   style: PropTypes.oneOf([
     'solid',
     'outlined',
-    'inverted'
+    'inverted',
+    'flat'
   ]),
   styles: PropTypes.object,
   colorPalette: PropTypes.oneOf(ui.buttonColorPalette),
@@ -130,76 +151,27 @@ Button.defaultProps = {
   type: 'button'
 };
 
-const keyframesDip = {
-  '0%': {
-    transform: 'translate(0, 0)'
-  },
-  '50%': {
-    transform: 'translate(0, .25rem)'
-  },
-  '100%': {
-    transform: 'translate(0)'
-  }
-};
-
 const styleThunk = (customTheme, props) => ({
   // Button base
   base: {
-    appearance: 'none',
-    border: '1px solid transparent',
+    ...ui.buttonBaseStyles,
     borderRadius: props.borderRadius || ui.buttonBorderRadius,
-    boxShadow: 'none',
-    cursor: 'pointer',
-    display: 'inline-block',
     fontSize: ui.buttonFontSize[props.size] || '1rem',
-    fontWeight: 700,
-    lineHeight: 'normal',
-    outline: 'none',
-    padding: '.75em 1.5em',
-    textAlign: 'center',
-    textDecoration: 'none',
-    textTransform: props.textTransform || 'none',
-    userSelect: 'none',
-
-    ':hover': {
-      textDecoration: 'none'
-    },
-    ':focus': {
-      textDecoration: 'none'
-    },
-
-    ':active': {
-      animationDuration: '.1s',
-      animationName: keyframesDip,
-      animationTimingFunction: 'ease-in'
-    }
+    padding: `${ui.buttonPaddingVertical} ${ui.buttonPaddingHorizontal}`,
+    textTransform: props.textTransform || 'none'
   },
 
   isBlock: {
-    display: 'block',
-    paddingLeft: '.25rem',
-    paddingRight: '.25rem',
-    width: '100%'
+    ...ui.buttonBlockStyles
   },
 
-  // doing this saves us from creating 6*3 classes
+  // Variants
+  // NOTE: Doing this saves us from creating 6*3 classes
   propColors: makePropColors(props.style, props.colorPalette),
 
   // Disabled state
   disabled: {
-    cursor: 'not-allowed',
-    opacity: '.5',
-
-    ':hover': {
-      opacity: '.5'
-    },
-    ':focus': {
-      opacity: '.5'
-    },
-
-    ':active': {
-      animation: 'none'
-    }
+    ...ui.buttonDisabledStyles
   }
 });
 
