@@ -1,6 +1,5 @@
 import React from 'react';
 import Helmet from 'react-helmet';
-import NewTeamForm from 'universal/modules/teamDashboard/components/NewTeamForm/NewTeamForm';
 
 const style = {
   margin: '0 auto',
@@ -13,7 +12,6 @@ const PatternsContainer = () =>
     <Helmet title="Welcome to the Action Pattern Library" />
 
     <h1>Pattern Library</h1>
-    <NewTeamForm />
 
   </div>;
 
