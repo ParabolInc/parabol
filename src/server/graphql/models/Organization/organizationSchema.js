@@ -10,6 +10,8 @@ import {
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {GraphQLURLType} from '../types';
+import {User} from 'server/graphql/models/User/userSchema';
+import getRethink from 'server/database/rethinkDriver';
 
 const RemovedUser = new GraphQLObjectType({
   name: 'RemovedUser',
@@ -94,6 +96,15 @@ export const Organization = new GraphQLObjectType({
     validUntil: {
       type: GraphQLISO8601Type,
       description: 'The datetime the trial is up (if isTrial) or money is due (if !isTrial)'
+    },
+    /* GraphQL Sugar */
+    billingLeaders: {
+      type: new GraphQLList(User),
+      description: 'The leaders of the org',
+      resolve: async ({id}) => {
+        const r = getRethink();
+        return r.table('User').getAll(id, {index: 'billingLeaderOrgs'});
+      }
     }
   })
 });

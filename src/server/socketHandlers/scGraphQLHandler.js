@@ -6,6 +6,7 @@ const mutations = Schema._mutationType && Schema._mutationType._fields || {};
 const whitelist = [
   'createOrgPicturePutUrl',
   'createUserPicturePutUrl',
+  'orgDetails',
   'updateOrg',
   'updateUserProfile',
   'summarizeMeeting'

@@ -208,6 +208,7 @@ export default [
          checkInGreeting,
          checkInQuestion,
          id,
+         isPaid,
          name,
          meetingId,
          activeFacilitator,

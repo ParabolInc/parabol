@@ -1,39 +1,28 @@
-// import getRethink from 'server/database/rethinkDriver';
-// import {GraphQLList, GraphQLNonNull, GraphQLID} from 'graphql';
-// import {Organization} from './organizationSchema';
-// import {requireAuth} from '../authorization';
-//
-// export default {
-//   getOrgCount: {
-//     type: new GraphQLList(Organization),
-//     async resolve(source, args, {authToken}) {
-//       const r = getRethink();
-//       const userId = requireAuth(authToken);
-//       const users = await r.table('Organization')
-//         .getAll(userId, {index: 'billingLeaders'})('id')
-//         .coerceTo('array')
-//         .do((orgIds) => {
-//           return r.table('Team')
-//             .getAll(r.args(orgIds), {index: 'orgId'})('id')
-//             .coerceTo('array')
-//         })
-//         .do((teamIds) => {
-//           return r.table('TeamMember')
-//             .getAll(r.args(teamIds), {index: 'teamId'})('userId')
-//             .coerceTo('array')
-//             .distinct()
-//         })
-//         .do((userIds) => {
-//           return r.table('User')
-//             .getAll(r.args(userIds), {index: 'id'})
-//             .pluck('id', 'isActive')
-//         });
-//       const activeCount = users.filter((user) => user.isActive).length;
-//       const inactiveCount = users.length - activeCount;
-//       return {
-//         activeCount,
-//         inactiveCount
-//       };
-//     }
-//   }
-// };
+import getRethink from 'server/database/rethinkDriver';
+import {GraphQLNonNull, GraphQLID} from 'graphql';
+import {Organization} from './organizationSchema';
+import {requireSUOrTeamMember} from '../authorization';
+
+export default {
+  orgDetails: {
+    type: Organization,
+    args: {
+      teamId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The id of the inviting team'
+      }
+    },
+    async resolve(source, {teamId}, {authToken}) {
+      const r = getRethink();
+
+      // AUTH
+      const userId = requireSUOrTeamMember(authToken, teamId);
+
+      // RESOLUTION
+      return await r.table('Team').get(teamId)('orgId')
+        .do((orgId) => {
+          return r.table('Organization').get(orgId)
+        });
+    }
+  }
+};

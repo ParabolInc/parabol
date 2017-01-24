@@ -12,6 +12,7 @@ const teamContainerSub = `
 query {
   team @cached(id: $teamId, type: "Team") {
     id
+    isPaid
     name
     meetingId
   },
@@ -43,7 +44,7 @@ const mapStateToProps = (state, props) => {
 
 const TeamContainer = (props) => {
   const {children, team, teamMembers} = props;
-  const readyEnough = team.id && teamMembers.length > 0;
+  const readyEnough = team.id;
   return (
     <DashboardWrapper title="Team Dashboard">
       {readyEnough ?

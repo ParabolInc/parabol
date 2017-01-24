@@ -10,7 +10,7 @@ import {
 import {Link, withRouter} from 'react-router';
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
 import MeetingInProgressModal from '../MeetingInProgressModal/MeetingInProgressModal';
-
+import UnpaidTeamModalContainer from 'universal/modules/teamDashboard/containers/UnpaidTeamModal/UnpaidTeamModalContainer';
 
 const faIconStyle = {
   fontSize: '14px',
@@ -66,8 +66,7 @@ const initialValues = {teamName: ''};
 
 const Team = (props) => {
   const {children, router, team, teamMembers} = props;
-  const teamId = team.id;
-  const teamName = team.name;
+  const {id: teamId, name: teamName, isPaid} = team;
   const hasOverlay = Boolean(team && team.meetingId);
   const isSettings = router.isActive(`/team/${teamId}/settings`, false);
   initialValues.teamName = teamName;
@@ -75,6 +74,9 @@ const Team = (props) => {
   return (
     <DashMain>
       {hasOverlay && <MeetingInProgressModal teamId={teamId} teamName={teamName}/>}
+      {!isPaid &&
+        <UnpaidTeamModalContainer teamId={teamId} teamName={teamName}/>
+      }
       <DashHeader hasOverlay={hasOverlay}>
         <DashHeaderInfo title={DashHeaderInfoTitle}>
           {isSettings ? settingsLinks(teamId) : standardLinks(teamId)}
