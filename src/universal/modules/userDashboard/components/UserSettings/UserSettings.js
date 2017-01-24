@@ -49,6 +49,7 @@ const UserSettings = (props) => {
                 onClick={openChangeAvatar}
                 picture={picture}
                 size={96}
+                type="user"
               />
             </div>
             <div className={css(styles.infoBlock)}>
