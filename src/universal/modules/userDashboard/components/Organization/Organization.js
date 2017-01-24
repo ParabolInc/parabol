@@ -49,7 +49,7 @@ const Organization = (props) => {
         </Link>
         {/* TODO: See AvatarInput.js for latest */}
         <div className={css(styles.avatarAndName)}>
-          <EditableAvatar onClick={openChangeAvatar} picture={orgAvatar} size={96}/>
+          <EditableAvatar hasPanel onClick={openChangeAvatar} picture={orgAvatar} size={96}/>
           <div className={css(styles.orgNameAndDetails)}>
             <EditOrgName initialValues={initialValues} orgName={orgName} orgId={orgId}/>
             <div className={css(styles.orgDetails)}>

@@ -46,7 +46,6 @@ const UserSettings = (props) => {
           <form className={css(styles.form)} onSubmit={handleSubmit(onSubmit)}>
             <div className={css(styles.avatarBlock)}>
               <EditableAvatar
-                forUser
                 onClick={openChangeAvatar}
                 picture={picture}
                 size={96}

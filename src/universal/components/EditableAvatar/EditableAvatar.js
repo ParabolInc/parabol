@@ -8,11 +8,11 @@ import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 import FontAwesome from 'react-fontawesome';
 
 const EditableAvatar = (props) => {
-  const {forUser, onClick, picture, size, styles} = props;
-  const fallbackImage = forUser ? defaultUserAvatar : defaultOrgAvatar;
+  const {hasPanel, onClick, picture, styles} = props;
+  const fallbackImage = hasPanel ? defaultUserAvatar : defaultOrgAvatar;
   const avatarBlockStyles = css(
     styles.avatar,
-    !forUser && styles.avatarForTeamsOrgs
+    hasPanel && styles.avatarHasPanel
   );
   return (
     <div className={avatarBlockStyles}>
@@ -26,15 +26,15 @@ const EditableAvatar = (props) => {
 };
 
 EditableAvatar.propTypes = {
-  forUser: PropTypes.bool,
+  hasPanel: PropTypes.bool,
   onClick: PropTypes.func,
   picture: PropTypes.string,
   size: PropTypes.number,
   styles: PropTypes.object
 };
 
-const borderRadius = ui.panelBorderRadius;
-const borderRadiusUser = '50%';
+const borderRadius = '50%';
+const borderRadiusPanel = ui.panelBorderRadius;
 
 const styleThunk = (theme, props) => ({
   avatar: {
@@ -43,17 +43,17 @@ const styleThunk = (theme, props) => ({
     width: props.size
   },
 
-  avatarForTeamsOrgs: {
+  avatarHasPanel: {
     backgroundColor: '#fff',
     border: `1px solid ${ui.panelBorderColor}`,
     padding: '.5rem',
-    borderRadius: props.forUser ? borderRadiusUser : borderRadius,
+    borderRadius: props.hasPanel ? borderRadiusPanel : borderRadius,
   },
 
   avatarEditOverlay: {
     alignItems: 'center',
     backgroundColor: appTheme.palette.dark,
-    borderRadius: props.forUser ? borderRadiusUser : borderRadius,
+    borderRadius: props.hasPanel ? borderRadiusPanel : borderRadius,
     color: 'white',
     cursor: 'pointer',
     display: 'flex',
@@ -62,10 +62,10 @@ const styleThunk = (theme, props) => ({
     fontWeight: 700,
     height: props.size,
     justifyContent: 'center',
-    left: props.forUser ? 0 : '-1px',
+    left: props.hasPanel ? '-1px' : 0,
     opacity: 0,
     position: 'absolute',
-    top: props.forUser ? 0 : '-1px',
+    top: props.hasPanel ? '-1px' : 0,
     width: props.size,
 
     ':hover': {
@@ -75,10 +75,10 @@ const styleThunk = (theme, props) => ({
   },
 
   avatarImg: {
-    borderRadius: props.forUser ? borderRadiusUser : 0,
-    boxShadow: props.forUser ? ui.avatarDefaultBoxShadow : 'none',
-    height: props.forUser ? props.size : (props.size - 18),
-    width: props.forUser ? props.size : (props.size - 18),
+    borderRadius: props.hasPanel ? 0 : borderRadius,
+    boxShadow: props.hasPanel ? 'none' : ui.avatarDefaultBoxShadow,
+    height: props.hasPanel ? (props.size - 18) : props.size,
+    width: props.hasPanel ? (props.size - 18) : props.size
   }
 });
 
