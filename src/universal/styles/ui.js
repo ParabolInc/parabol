@@ -8,6 +8,7 @@ import zIndexScale from 'universal/styles/helpers/zIndexScale';
 
 // Reusable constants for UI object
 // ---------------------------------
+
 const backgroundColor = tinycolor.mix(appTheme.palette.mid, '#fff', 95).toHexString();
 
 // Small border radius for controls (inputs, buttons, etcs.)
@@ -16,6 +17,13 @@ const borderRadiusSmall = '.125rem';
 const borderRadiusMedium = '.25rem';
 // Large border radius for larger components (modals, pages, etc.)
 const borderRadiusLarge = '.5rem';
+
+// Button size constants
+const BUTTON_SIZE_SMALLEST = 'smallest';
+const BUTTON_SIZE_SMALL = 'small';
+const BUTTON_SIZE_MEDIUM = 'medium';
+const BUTTON_SIZE_LARGE = 'large';
+const BUTTON_SIZE_LARGEST = 'largest';
 
 // ---------------------------------
 
@@ -42,12 +50,19 @@ const ui = {
 
   // Buttons
   buttonBorderRadius: borderRadiusSmall,
+  buttonFontSize: {
+    [BUTTON_SIZE_SMALLEST]: appTheme.typography.s1,
+    [BUTTON_SIZE_SMALL]: appTheme.typography.s3,
+    [BUTTON_SIZE_MEDIUM]: appTheme.typography.sBase,
+    [BUTTON_SIZE_LARGE]: appTheme.typography.s4,
+    [BUTTON_SIZE_LARGEST]: appTheme.typography.s5
+  },
   buttonSizes: [
-    'smallest',
-    'small',
-    'medium',
-    'large',
-    'largest'
+    BUTTON_SIZE_SMALLEST,
+    BUTTON_SIZE_SMALL,
+    BUTTON_SIZE_MEDIUM,
+    BUTTON_SIZE_LARGE,
+    BUTTON_SIZE_LARGEST
   ],
   buttonColorPalette: [
     'cool',
@@ -117,6 +132,7 @@ const ui = {
   modalBoxShadow: '0 .25rem .5rem 0 rgba(0, 0, 0, .35)',
 
   // Panels
+  panelBorderColor: appTheme.palette.mid40l,
   panelBorderRadius: borderRadiusMedium,
   panelGutter: '1rem',
 

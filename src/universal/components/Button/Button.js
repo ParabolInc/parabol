@@ -70,7 +70,6 @@ const Button = (props) => {
     label,
     onClick,
     onMouseEnter,
-    size,
     styles,
     title,
     type
@@ -80,7 +79,6 @@ const Button = (props) => {
 
   const buttonStyles = css(
     styles.base,
-    styles[size],
     styles.propColors,
     disabled && styles.disabled,
     isBlock && styles.isBlock
@@ -153,7 +151,7 @@ const styleThunk = (customTheme, props) => ({
     boxShadow: 'none',
     cursor: 'pointer',
     display: 'inline-block',
-    fontSize: '1rem',
+    fontSize: ui.buttonFontSize[props.size] || '1rem',
     fontWeight: 700,
     lineHeight: 'normal',
     outline: 'none',
@@ -182,23 +180,6 @@ const styleThunk = (customTheme, props) => ({
     paddingLeft: '.25rem',
     paddingRight: '.25rem',
     width: '100%'
-  },
-
-  // Button sizes
-  smallest: {
-    fontSize: appTheme.typography.s1
-  },
-  small: {
-    fontSize: appTheme.typography.s3
-  },
-  medium: {
-    fontSize: appTheme.typography.sBase
-  },
-  large: {
-    fontSize: appTheme.typography.s4
-  },
-  largest: {
-    fontSize: appTheme.typography.s5
   },
 
   // doing this saves us from creating 6*3 classes
