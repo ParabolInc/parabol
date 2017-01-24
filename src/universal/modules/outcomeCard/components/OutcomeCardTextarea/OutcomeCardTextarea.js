@@ -4,7 +4,8 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import Textarea from 'react-textarea-autosize';
-import Markdown from 'react-remarkable';
+import ReactMarkdown from 'react-markdown';
+import ANewTab from 'universal/components/ANewTab/ANewTab';
 
 class OutcomeCardTextArea extends Component {
   static propTypes = {
@@ -51,21 +52,16 @@ class OutcomeCardTextArea extends Component {
 
   renderEditing() {
     const {
-      cardHasHover,
       handleSubmit,
       input,
       isActionListItem,
       isArchived,
-      isProject,
       styles
     } = this.props;
     const contentStyles = css(
       !isActionListItem && styles.content,
       isActionListItem && styles.actionListContent,
-      isProject && !isArchived && cardHasHover && styles.contentWhenCardHovered,
       isArchived && styles.isArchived,
-      !isProject && cardHasHover && styles.actionContentWhenCardHovered,
-      !isProject && styles.descriptionAction
     );
 
     let textAreaRef;
@@ -117,20 +113,18 @@ class OutcomeCardTextArea extends Component {
       input: {value}
     } = this.props;
     const markdownStyles = css(styles.markdownContent);
-    const markdownOptions = {
-      linkify: true,
-      html: false,
-      quotes: '“”‘’',
-      typographer: true
+    const markdownCustomComponents = {
+      Link: ANewTab
     };
+
     return (
       <div
         onClick={!isArchived && this.setEditing}
         className={markdownStyles}
       >
-        <Markdown
+        <ReactMarkdown
+          renderers={markdownCustomComponents}
           source={value}
-          options={markdownOptions}
         />
       </div>
     );
@@ -177,13 +171,6 @@ const descriptionFA = {
   color: appTheme.palette.mid10d
 };
 
-const descriptionActionFA = {
-  backgroundColor: ui.actionCardBgActive,
-  borderBottomColor: ui.cardBorderColor,
-  borderTopColor: ui.cardBorderColor,
-  color: appTheme.palette.mid10d
-};
-
 const descriptionBreakpoint = '@media (min-width: 90rem)';
 
 const styleThunk = () => ({
@@ -214,24 +201,6 @@ const styleThunk = () => ({
       fontSize: appTheme.typography.sBase,
       lineHeight: appTheme.typography.s6
     }
-  },
-
-  contentWhenCardHovered: {
-    ...descriptionFA
-  },
-
-  descriptionAction: {
-    // NOTE: modifies styles.content
-    ':focus': {
-      ...descriptionActionFA
-    },
-    ':active': {
-      ...descriptionActionFA
-    }
-  },
-
-  actionContentWhenCardHovered: {
-    ...descriptionActionFA
   },
 
   isArchived: {
