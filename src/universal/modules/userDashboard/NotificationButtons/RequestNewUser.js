@@ -40,7 +40,6 @@ const RequestNewUser = (props) => {
       <div className={css(styles.buttonGroup)}>
         <div className={css(styles.button)}>
           <Button
-            borderRadius="4px"
             colorPalette="cool"
             isBlock
             label="Accept"
@@ -51,7 +50,6 @@ const RequestNewUser = (props) => {
         </div>
         <div className={css(styles.button)}>
           <Button
-            borderRadius="4px"
             colorPalette="gray"
             isBlock
             label="Decline"

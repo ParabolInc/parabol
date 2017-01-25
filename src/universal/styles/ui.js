@@ -24,7 +24,13 @@ const BUTTON_SIZE_SMALL = 'small';
 const BUTTON_SIZE_MEDIUM = 'medium';
 const BUTTON_SIZE_LARGE = 'large';
 const BUTTON_SIZE_LARGEST = 'largest';
-const BUTTON_PADDING_HORIZONTAL_COMPACT = '.625em';
+const BUTTON_PADDING_HORIZONTAL_COMPACT = '.5em';
+
+// Icons
+const iconSize = '14px'; // FontAwesome base
+const iconSizeAvatar = '21px'; // FontAwesome 1.5x
+const iconSize2x = '28px'; // FontAwesome 2x
+const iconSize3x = '42px'; // FontAwesome 3x
 
 // ---------------------------------
 
@@ -57,11 +63,12 @@ const ui = {
     cursor: 'pointer',
     display: 'inline-block',
     fontWeight: 700,
-    lineHeight: 'normal',
+    // lineHeight: '1.25em',
     outline: 'none',
     textAlign: 'center',
     textDecoration: 'none',
     userSelect: 'none',
+    verticalAlign: 'middle',
     ':hover': {
       textDecoration: 'none'
     },
@@ -105,15 +112,22 @@ const ui = {
     }
   },
   buttonFontSize: {
-    [BUTTON_SIZE_SMALLEST]: appTheme.typography.s2,
-    [BUTTON_SIZE_SMALL]: appTheme.typography.s3,
-    [BUTTON_SIZE_MEDIUM]: appTheme.typography.sBase,
-    [BUTTON_SIZE_LARGE]: appTheme.typography.s4,
-    [BUTTON_SIZE_LARGEST]: appTheme.typography.s5
+    [BUTTON_SIZE_SMALLEST]: appTheme.typography.s1,
+    [BUTTON_SIZE_SMALL]: appTheme.typography.sBase,
+    [BUTTON_SIZE_MEDIUM]: '1.15rem', // appTheme.typography.s4,
+    [BUTTON_SIZE_LARGE]: appTheme.typography.s5,
+    [BUTTON_SIZE_LARGEST]: '1.75rem'
   },
-  buttonPaddingHorizontal: '1.125em', // 1.5em
-  buttonPaddingHorizontalCompact: BUTTON_PADDING_HORIZONTAL_COMPACT, // .75em
-  buttonPaddingVertical: '.625em', // .75em
+  buttonIconSize: {
+    [BUTTON_SIZE_SMALLEST]: iconSize,
+    [BUTTON_SIZE_SMALL]: iconSize,
+    [BUTTON_SIZE_MEDIUM]: iconSizeAvatar,
+    [BUTTON_SIZE_LARGE]: iconSizeAvatar,
+    [BUTTON_SIZE_LARGEST]: iconSize2x,
+  },
+  buttonLineHeight: '2.5em',
+  buttonPadding: '0 1em',
+  buttonPaddingHorizontalCompact: BUTTON_PADDING_HORIZONTAL_COMPACT,
   buttonSizes: [
     BUTTON_SIZE_SMALLEST,
     BUTTON_SIZE_SMALL,
@@ -172,10 +186,10 @@ const ui = {
   fieldPaddingHorizontal: '.75rem',
 
   // Icons
-  iconSize: '14px', // FontAwesome base
-  iconSizeAvatar: '21px', // FontAwesome 1.5x
-  iconSize2x: '28px', // FontAwesome 2x
-  iconSize3x: '42px', // FontAwesome 3x
+  iconSize,
+  iconSizeAvatar,
+  iconSize2x,
+  iconSize3x,
 
   // Meeting
   meetingSidebarWidth: '15rem',

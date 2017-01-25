@@ -32,7 +32,6 @@ const TrialExpiresSoon = (props) => {
     </div>
     <div className={css(styles.buttonGroup)}>
       <Button
-        borderRadius="4px"
         colorPalette="cool"
         isBlock
         label="Add Billing Info"
@@ -42,8 +41,7 @@ const TrialExpiresSoon = (props) => {
       />
     </div>
   </div>
-
-  )
+  );
 };
 
 const avatarPlaceholderSize = '2.75rem';
@@ -88,6 +86,3 @@ const styleThunk = () => ({
 export default withRouter(
   withStyles(styleThunk)(TrialExpiresSoon)
 );
-
-
-

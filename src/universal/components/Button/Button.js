@@ -4,6 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import tinycolor from 'tinycolor2';
+import FontAwesome from 'react-fontawesome';
 
 const {cool, warm, dark, mid, light} = appTheme.palette;
 const white = '#fff';
@@ -38,27 +39,10 @@ const makeSolidTheme = (themeColor, textColor = '#fff', style = 'solid', opacity
   };
 };
 
-const makeOutlinedTheme = (color, opacity = '.5') => ({
+const makeFlatTheme = (style, color, opacity = '.5') => ({
   backgroundColor: 'transparent',
-  borderColor: 'currentColor',
+  borderColor: style === 'flat' ? 'transparent' : 'currentColor',
   color,
-
-  ':hover': {
-    color,
-    opacity
-  },
-  ':focus': {
-    color,
-    opacity
-  }
-});
-
-const makeFlatTheme = (color, opacity = '.5') => ({
-  backgroundColor: 'transparent',
-  borderColor: 'transparent',
-  color,
-  paddingLeft: ui.buttonPaddingHorizontalCompact,
-  paddingRight: ui.buttonPaddingHorizontalCompact,
 
   ':hover': {
     color,
@@ -72,37 +56,68 @@ const makeFlatTheme = (color, opacity = '.5') => ({
 
 const makePropColors = (style, colorPalette) => {
   const color = buttonPalette[colorPalette];
-  if (style === 'outlined') {
-    return makeOutlinedTheme(color);
-  }
-  if (style === 'flat') {
-    return makeFlatTheme(color);
-  }
   const baseTextColor = style === 'inverted' ? color : white;
   const textColor = (colorPalette === 'white' || colorPalette === 'light' || colorPalette === 'gray') ? dark : baseTextColor;
+  if (style === 'flat' || style === 'outlined') {
+    return makeFlatTheme(style, color);
+  }
   return makeSolidTheme(color, textColor, style);
 };
 
 const Button = (props) => {
   const {
+    compact,
     disabled,
+    icon,
+    iconPlacement,
     isBlock,
     label,
     onClick,
     onMouseEnter,
+    size,
     styles,
     title,
     type
   } = props;
 
   const buttonTitle = title || label;
+  const iconOnly = !label;
 
   const buttonStyles = css(
     styles.base,
+    compact && styles.compact,
+    isBlock && styles.isBlock,
     styles.propColors,
-    disabled && styles.disabled,
-    isBlock && styles.isBlock
+    disabled && styles.disabled
   );
+
+  const makeIconLabel = () => {
+    const defaultIconPlacement = icon && label ? 'left' : '';
+    const thisIconPlacement = iconPlacement || defaultIconPlacement;
+    const iconPlacementStyle = css(
+      thisIconPlacement === 'left' && styles.iconLeft,
+      thisIconPlacement === 'right' && styles.iconRight,
+    );
+    const iconMargin = iconOnly ? '' : iconPlacementStyle;
+    const iconStyle = {
+      fontSize: ui.buttonIconSize[size],
+      lineHeight: 'inherit',
+      verticalAlign: 'middle'
+    };
+    const makeIcon = () =>
+      <FontAwesome className={iconMargin} name={icon} style={iconStyle} />;
+    return (
+      <span className={css(styles.buttonInner)}>
+        {iconOnly ? makeIcon() :
+          <span className={css(styles.buttonInner)}>
+            {thisIconPlacement === 'left' && makeIcon()}
+            <span className={css(styles.label)}>{label}</span>
+            {thisIconPlacement === 'right' && makeIcon()}
+          </span>
+        }
+      </span>
+    );
+  };
 
   return (
     <button
@@ -113,14 +128,24 @@ const Button = (props) => {
       title={buttonTitle}
       type={type}
     >
-      {label}
+      {icon ? makeIconLabel() :
+        <span className={css(styles.buttonInner)}>
+          <span className={css(styles.label)}>{label}</span>
+        </span>
+      }
     </button>
   );
 };
 
 Button.propTypes = {
-  borderRadius: PropTypes.string,
+  colorPalette: PropTypes.oneOf(ui.buttonColorPalette),
+  compact: PropTypes.bool,
   disabled: PropTypes.bool,
+  icon: PropTypes.string,
+  iconPlacement: PropTypes.oneOf([
+    'left',
+    'right'
+  ]),
   isBlock: PropTypes.bool,
   label: PropTypes.string,
   onClick: PropTypes.func,
@@ -133,7 +158,6 @@ Button.propTypes = {
     'flat'
   ]),
   styles: PropTypes.object,
-  colorPalette: PropTypes.oneOf(ui.buttonColorPalette),
   textTransform: PropTypes.oneOf([
     'none',
     'uppercase'
@@ -151,18 +175,24 @@ Button.defaultProps = {
   type: 'button'
 };
 
-const styleThunk = (customTheme, props) => ({
+const styleThunk = (theme, props) => ({
   // Button base
   base: {
     ...ui.buttonBaseStyles,
-    borderRadius: props.borderRadius || ui.buttonBorderRadius,
-    fontSize: ui.buttonFontSize[props.size] || '1rem',
-    padding: `${ui.buttonPaddingVertical} ${ui.buttonPaddingHorizontal}`,
+    borderRadius: ui.buttonBorderRadius,
+    fontSize: ui.buttonFontSize[props.size] || ui.buttonFontSize.medium,
+    lineHeight: ui.buttonLineHeight,
+    padding: ui.buttonPadding,
     textTransform: props.textTransform || 'none'
   },
 
   isBlock: {
     ...ui.buttonBlockStyles
+  },
+
+  compact: {
+    paddingLeft: ui.buttonPaddingHorizontalCompact,
+    paddingRight: ui.buttonPaddingHorizontalCompact
   },
 
   // Variants
@@ -172,6 +202,27 @@ const styleThunk = (customTheme, props) => ({
   // Disabled state
   disabled: {
     ...ui.buttonDisabledStyles
+  },
+
+  iconLeft: {
+    marginRight: '.375em'
+  },
+
+  iconRight: {
+    marginLeft: '.375em'
+  },
+
+  buttonInner: {
+    display: 'block',
+    fontSize: 0
+  },
+
+  label: {
+    display: 'inline-block',
+    fontSize: ui.buttonFontSize[props.size] || appTheme.typography.sBase,
+    height: ui.buttonLineHeight,
+    lineHeight: ui.buttonLineHeight,
+    verticalAlign: 'middle'
   }
 });
 
