@@ -96,6 +96,8 @@ class OutcomeCardTextArea extends Component {
   renderMarkdown() {
     const {
       styles,
+      cardHasHover,
+      isProject,
       isActionListItem,
       isArchived,
       input: {value}
@@ -103,7 +105,11 @@ class OutcomeCardTextArea extends Component {
     const markdownStyles = css(
       styles.markdown,
       !isActionListItem && styles.content,
-      isActionListItem && styles.actionListContent,);
+      isActionListItem && styles.actionListContent,
+      isProject && !isArchived && cardHasHover && styles.contentWhenCardHovered,
+      !isProject && cardHasHover && styles.actionContentWhenCardHovered,
+      !isProject && styles.descriptionAction
+    );
     const markdownCustomComponents = {
       Link: LinkNewTab
     };
@@ -116,6 +122,7 @@ class OutcomeCardTextArea extends Component {
         <ReactMarkdown
           renderers={markdownCustomComponents}
           source={value}
+          escapeHtml={true}
         />
       </div>
     );
@@ -157,6 +164,13 @@ const descriptionBase = {
 
 const descriptionFA = {
   backgroundColor: appTheme.palette.mid10l,
+  borderBottomColor: ui.cardBorderColor,
+  borderTopColor: ui.cardBorderColor,
+  color: appTheme.palette.mid10d
+};
+
+const descriptionActionFA = {
+  backgroundColor: ui.actionCardBgActive,
   borderBottomColor: ui.cardBorderColor,
   borderTopColor: ui.cardBorderColor,
   color: appTheme.palette.mid10d
@@ -205,6 +219,24 @@ const styleThunk = () => ({
       backgroundColor: 'transparent',
       borderColor: 'transparent'
     }
+  },
+
+  contentWhenCardHovered: {
+    ...descriptionFA
+  },
+
+  descriptionAction: {
+    // NOTE: modifies styles.content
+    ':focus': {
+      ...descriptionActionFA
+    },
+    ':active': {
+      ...descriptionActionFA
+    }
+  },
+
+  actionContentWhenCardHovered: {
+    ...descriptionActionFA
   },
 
   markdown: {

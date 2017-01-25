@@ -51,5 +51,9 @@ export default {
     maxWidth: '100%'
   },
 
+  p: {
+    margin: '0'
+  },
+
   ...basePlaceholderStyles
 };
