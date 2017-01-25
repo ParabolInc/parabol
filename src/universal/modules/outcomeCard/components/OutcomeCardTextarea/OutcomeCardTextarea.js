@@ -74,19 +74,8 @@ class OutcomeCardTextArea extends Component {
         handleSubmit();
       }
     };
-    const handleKeyPress = () => {
-      // TODO fix me there's a little lag here
-      // handleSubmit();
-    };
     const setRef = (c) => {
       textAreaRef = c;
-    };
-    const submitOnEnter = (e) => {
-      // hitting enter (not shift+enter) submits the textarea
-      if (e.key === 'Enter' && !e.shiftKey) {
-        textAreaRef.blur();
-        this.unsetEditing();
-      }
     };
     const shouldAutoFocus = true;
     return (
@@ -99,8 +88,6 @@ class OutcomeCardTextArea extends Component {
         placeholder="Type your outcome here"
         onBlur={handleBlur}
         onDrop={null}
-        onKeyDown={submitOnEnter}
-        onKeyUp={handleKeyPress}
         autoFocus={shouldAutoFocus}
       />
     );
@@ -109,10 +96,14 @@ class OutcomeCardTextArea extends Component {
   renderMarkdown() {
     const {
       styles,
+      isActionListItem,
       isArchived,
       input: {value}
     } = this.props;
-    const markdownStyles = css(styles.markdownContent);
+    const markdownStyles = css(
+      styles.markdown,
+      !isActionListItem && styles.content,
+      isActionListItem && styles.actionListContent,);
     const markdownCustomComponents = {
       Link: LinkNewTab
     };
@@ -216,15 +207,7 @@ const styleThunk = () => ({
     }
   },
 
-  markdownContent: {
-    ...baseStyles,
-    padding: `${basePadding} ${basePadding} ${labelHeight} ${basePadding}`,
-    ':hover': {
-      ...descriptionFA
-    },
-    ':focus': {
-      ...descriptionFA
-    },
+  markdown: {
     wordBreak: 'break-word'
   }
 });
