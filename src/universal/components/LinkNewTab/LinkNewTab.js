@@ -4,9 +4,9 @@ const LinkNewTab = (props) => {
   const { children, href, title } = props;
   let url = href;
   // Add http protocol to url if no protocol was provided
-  let urlProtocolRegex = new RegExp(/http:\/\/|https:\/\/|mailto:|ftp:\/\//);
+  const urlProtocolRegex = new RegExp(/http:\/\/|https:\/\/|mailto:|ftp:\/\//);
   if (!href.match(urlProtocolRegex)) {
-    url = 'http://' + url;
+    url = `http://${url}`;
   }
   return (
     <a

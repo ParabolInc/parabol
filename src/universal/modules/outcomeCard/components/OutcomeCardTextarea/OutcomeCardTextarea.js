@@ -64,7 +64,6 @@ class OutcomeCardTextArea extends Component {
       isArchived && styles.isArchived,
     );
 
-    let textAreaRef;
     const handleBlur = () => {
       const {input: {value}} = this.props;
       if (value) {
@@ -74,14 +73,10 @@ class OutcomeCardTextArea extends Component {
         handleSubmit();
       }
     };
-    const setRef = (c) => {
-      textAreaRef = c;
-    };
     const shouldAutoFocus = true;
     return (
       <Textarea
         {...input}
-        ref={setRef}
         className={contentStyles}
         disabled={isArchived}
         maxLength="255"
@@ -122,7 +117,7 @@ class OutcomeCardTextArea extends Component {
         <ReactMarkdown
           renderers={markdownCustomComponents}
           source={value}
-          escapeHtml={true}
+          escapeHtml
         />
       </div>
     );
