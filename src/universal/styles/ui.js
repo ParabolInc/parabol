@@ -36,6 +36,7 @@ const iconSize3x = '42px'; // FontAwesome 3x
 
 const ui = {
   // Base settings
+  backgroundColor,
   borderRadiusSmall,
   borderRadiusMedium,
   borderRadiusLarge,
@@ -190,6 +191,16 @@ const ui = {
   iconSizeAvatar,
   iconSize2x,
   iconSize3x,
+
+  // Invoice
+  invoiceBorderColor: appTheme.palette.mid40l,
+  invoiceBorderColorLighter: appTheme.palette.mid20l,
+  invoiceItemBaseStyles: {
+    display: 'flex',
+    paddingRight: '1.25rem',
+    justifyContent: 'space-between',
+    width: '100%'
+  },
 
   // Meeting
   meetingSidebarWidth: '15rem',
