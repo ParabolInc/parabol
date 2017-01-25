@@ -5,7 +5,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import Textarea from 'react-textarea-autosize';
 import ReactMarkdown from 'react-markdown';
-import ANewTab from 'universal/components/ANewTab/ANewTab';
+import LinkNewTab from 'universal/components/LinkNewTab/LinkNewTab';
 
 class OutcomeCardTextArea extends Component {
   static propTypes = {
@@ -114,7 +114,7 @@ class OutcomeCardTextArea extends Component {
     } = this.props;
     const markdownStyles = css(styles.markdownContent);
     const markdownCustomComponents = {
-      Link: ANewTab
+      Link: LinkNewTab
     };
 
     return (
