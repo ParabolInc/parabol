@@ -4,43 +4,62 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
+import Portal from 'react-portal';
+
+const calculateMenuPosY = (originHeight, originTop, orientation, targetOrientation) => {
+  let topOffset = originTop + window.scrollY;
+  if (orientation === 'center') {
+    topOffset += originHeight / 2;
+  } else if (orientation === 'bottom') {
+    topOffset += originHeight;
+  }
+  return targetOrientation === 'bottom' ? document.body.clientHeight - topOffset : topOffset;
+};
+
+const calculateMenuPosX = (originWidth, originLeft, orientation, targetOrientation) => {
+  let leftOffset = originLeft + window.scrollX;
+  if (orientation === 'center') {
+    leftOffset += originWidth / 2;
+  } else if (orientation === 'right') {
+    leftOffset += originWidth;
+  }
+  return targetOrientation === 'right' ? document.body.clientWidth - leftOffset : leftOffset;
+};
 
 const Menu = (props) => {
   const {
+    originAnchor,
+    targetAnchor,
     children,
-    isOpen,
     label,
-    menuOrientation,
     menuWidth,
     styles,
-    toggle: Toggle,
-    toggleHeight,
-    toggleMenu,
-    verticalAlign,
-    zIndex
+    toggle,
+    coords,
+    setPosition
   } = props;
 
-  const toggleHeightStyle = {
-    height: toggleHeight,
-    lineHeight: toggleHeight,
-    verticalAlign,
-    zIndex
+  const smartToggle = React.cloneElement(toggle, {
+    onMouseEnter: (e) => {
+      const rect = e.target.getBoundingClientRect();
+      const {vertical: originY, horizontal: originX} = originAnchor;
+      const {height, width, left, top} = rect;
+      setPosition({
+        [targetAnchor.vertical]: calculateMenuPosY(height, top, originY, targetAnchor.vertical),
+        [targetAnchor.horizontal]: calculateMenuPosX(width, left, originX, targetAnchor.horizontal)
+      });
+    }
+  });
+  const menuBlockStyle = {
+    width: menuWidth,
+    ...coords
   };
 
-  const menuBlockStyle = {
-    [menuOrientation]: 0,
-    width: menuWidth
-  };
-  const toggleStyle = isOpen ? {opacity: '.5'} : null;
-  const rootStyle = toggleHeight ? toggleHeightStyle : {verticalAlign, zIndex};
   const boxShadow = '0 1px 1px rgba(0, 0, 0, .15)';
   const menuStyle = {boxShadow};
   return (
-    <div className={css(styles.root)} style={rootStyle}>
-      <div className={css(styles.toggle)} onClick={toggleMenu} style={{...rootStyle, ...toggleStyle}}>
-        <Toggle {...props}/>
-      </div>
-      {isOpen &&
+    <div>
+      <Portal closeOnEsc closeOnOutsideClick openByClickOn={smartToggle}>
         <div className={css(styles.menuBlock)} style={menuBlockStyle}>
           <div
             className={css(styles.menu)}
@@ -50,7 +69,7 @@ const Menu = (props) => {
             {children}
           </div>
         </div>
-      }
+      </Portal>
     </div>
   );
 };
@@ -74,7 +93,6 @@ Menu.propTypes = {
   styles: PropTypes.object,
   toggle: PropTypes.any,
   toggleHeight: PropTypes.string,
-  toggleMenu: PropTypes.func.isRequired,
   verticalAlign: PropTypes.oneOf([
     'middle',
     'top'
@@ -103,8 +121,7 @@ const styleThunk = () => ({
 
   menuBlock: {
     paddingTop: '.25rem',
-    position: 'absolute',
-    top: '100%'
+    position: 'absolute'
   },
   menu: {
     backgroundColor: ui.menuBackgroundColor,

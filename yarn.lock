@@ -5406,6 +5406,10 @@ react-notification-system@^0.2.10:
   dependencies:
     object-assign "^4.0.1"
 
+react-portal:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/react-portal/-/react-portal-3.0.0.tgz#9304fce836e8a3216b22588f8dc91b447728f0ae"
+
 react-proxy@^1.1.7:
   version "1.1.8"
   resolved "https://registry.yarnpkg.com/react-proxy/-/react-proxy-1.1.8.tgz#9dbfd9d927528c3aa9f444e4558c37830ab8c26a"

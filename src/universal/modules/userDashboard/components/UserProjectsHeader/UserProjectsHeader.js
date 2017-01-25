@@ -27,31 +27,31 @@ const UserProjectsHeader = (props) => {
         <DashSectionControl>
           <b style={inlineBlock}>Show Actions & Projects for</b><span style={inlineBlock}>:</span>
           {' '}
-          <Menu
-            label="Filter by:"
-            menuKey="UserDashFilterTeam"
-            menuOrientation="right"
-            toggle={DashFilterToggle}
-            toggleLabel={teamFilterName}
-            toggleHeight={ui.dashSectionHeaderLineHeight}
-            verticalAlign="top"
-            zIndex="500"
-          >
-            <MenuItem
-              isActive={teamFilterId === null}
-              key={'teamFilterNULL'}
-              label={'All teams'}
-              onClick={() => dispatch(filterTeam(null, 'All teams'))}
-            />
-            {teams.map((team) =>
-              <MenuItem
-                isActive={team.id === teamFilterId}
-                key={`teamFilter${team.id}`}
-                label={team.name}
-                onClick={() => dispatch(filterTeam(team.id, team.name))}
-              />
-            )}
-          </Menu>
+          {/*<Menu*/}
+            {/*label="Filter by:"*/}
+            {/*menuKey="UserDashFilterTeam"*/}
+            {/*menuOrientation="right"*/}
+            {/*toggle={DashFilterToggle}*/}
+            {/*toggleLabel={teamFilterName}*/}
+            {/*toggleHeight={ui.dashSectionHeaderLineHeight}*/}
+            {/*verticalAlign="top"*/}
+            {/*zIndex="500"*/}
+          {/*>*/}
+            {/*<MenuItem*/}
+              {/*isActive={teamFilterId === null}*/}
+              {/*key={'teamFilterNULL'}*/}
+              {/*label={'All teams'}*/}
+              {/*onClick={() => dispatch(filterTeam(null, 'All teams'))}*/}
+            {/*/>*/}
+            {/*{teams.map((team) =>*/}
+              {/*<MenuItem*/}
+                {/*isActive={team.id === teamFilterId}*/}
+                {/*key={`teamFilter${team.id}`}*/}
+                {/*label={team.name}*/}
+                {/*onClick={() => dispatch(filterTeam(team.id, team.name))}*/}
+              {/*/>*/}
+            {/*)}*/}
+          {/*</Menu>*/}
         </DashSectionControl>
       </DashSectionControls>
     </DashSectionHeader>

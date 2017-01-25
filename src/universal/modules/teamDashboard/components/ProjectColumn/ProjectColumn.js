@@ -27,6 +27,17 @@ const badgeIconStyle = {
   lineHeight: '1.5rem',
   width: '1.5rem'
 };
+
+const originAnchor = {
+  vertical: 'bottom',
+  horizontal: 'right'
+};
+
+const targetAnchor = {
+  vertical: 'top',
+  horizontal: 'right'
+};
+
 const handleAddProjectFactory = (status, teamMemberId, teamSort, userSort) => () => {
   const [, teamId] = teamMemberId.split('::');
   const newProject = {
@@ -74,14 +85,15 @@ const ProjectColumn = (props) => {
         return <AddProjectButton toggleClickHandler={handleAddProject} toggleLabel={label}/>;
       }
       const menuItems = makeTeamMenuItems(userSort);
+      const toggle = <AddProjectButton label={label}/>;
       return (
         <Menu
-          menuKey={`UserDashAdd${status}Project`}
-          menuOrientation="right"
+          originAnchor={originAnchor}
           menuWidth="10rem"
-          toggle={AddProjectButton}
-          toggleLabel={label}
-          toggleHeight="1.5rem" label="Select Team:"
+          targetAnchor={targetAnchor}
+          toggle={toggle}
+          toggleHeight="1.5rem"
+          label="Select Team:"
         >
           {menuItems.map((item, idx) =>
             <MenuItem

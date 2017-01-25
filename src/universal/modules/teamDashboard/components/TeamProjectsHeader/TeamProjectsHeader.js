@@ -45,31 +45,31 @@ const TeamProjectsHeader = (props) => {
         <DashSectionControl>
           <b style={inlineBlock}>Show Actions & Projects for</b><span style={inlineBlock}>:</span>
           {' '}
-          <Menu
-            label="Filter by:"
-            menuKey="TeamDashFilterUser"
-            menuOrientation="right"
-            toggle={DashFilterToggle}
-            toggleLabel={teamMemberFilterName}
-            toggleHeight={ui.dashSectionHeaderLineHeight}
-            verticalAlign="top"
-            zIndex="500"
-          >
-            <MenuItem
-              isActive={teamMemberFilterId === null}
-              key={'teamMemberFilterNULL'}
-              label={'All members'}
-              onClick={() => dispatch(filterTeamMember(null))}
-            />
-            {teamMembers.map((teamMember) =>
-              <MenuItem
-                isActive={teamMember.id === teamMemberFilterId}
-                key={`teamMemberFilter${teamMember.id}`}
-                label={teamMember.preferredName}
-                onClick={() => dispatch(filterTeamMember(teamMember.id, teamMember.preferredName))}
-              />
-            )}
-          </Menu>
+          {/*<Menu*/}
+            {/*label="Filter by:"*/}
+            {/*menuKey="TeamDashFilterUser"*/}
+            {/*menuOrientation="right"*/}
+            {/*toggle={DashFilterToggle}*/}
+            {/*toggleLabel={teamMemberFilterName}*/}
+            {/*toggleHeight={ui.dashSectionHeaderLineHeight}*/}
+            {/*verticalAlign="top"*/}
+            {/*zIndex="500"*/}
+          {/*>*/}
+            {/*<MenuItem*/}
+              {/*isActive={teamMemberFilterId === null}*/}
+              {/*key={'teamMemberFilterNULL'}*/}
+              {/*label={'All members'}*/}
+              {/*onClick={() => dispatch(filterTeamMember(null))}*/}
+            {/*/>*/}
+            {/*{teamMembers.map((teamMember) =>*/}
+              {/*<MenuItem*/}
+                {/*isActive={teamMember.id === teamMemberFilterId}*/}
+                {/*key={`teamMemberFilter${teamMember.id}`}*/}
+                {/*label={teamMember.preferredName}*/}
+                {/*onClick={() => dispatch(filterTeamMember(teamMember.id, teamMember.preferredName))}*/}
+              {/*/>*/}
+            {/*)}*/}
+          {/*</Menu>*/}
         </DashSectionControl>
       </DashSectionControls>
     </DashSectionHeader>

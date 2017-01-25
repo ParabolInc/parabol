@@ -57,7 +57,7 @@ const NewTeamForm = (props) => {
         <Field
           colorPalette="gray"
           component={InputField}
-          label="Organization (required)"
+          label="Add Team to..."
           name="orgId"
         />
         <Field
