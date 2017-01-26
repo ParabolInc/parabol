@@ -12,24 +12,22 @@ const inlineBlock = {
   verticalAlign: 'middle'
 };
 
-const inlineBlockTop = {
-  ...inlineBlock,
-  verticalAlign: 'top'
-};
-
 const DashFilterToggle = (props) => {
-  const {toggleLabel, styles} = props;
+  const {label, styles, onClick} = props;
   return (
-    <div className={css(styles.button)} title={`Filter by ${toggleLabel}`}>
-      <span style={inlineBlockTop}>{toggleLabel}</span> <
-      FontAwesome name="chevron-circle-down" style={inlineBlockTop}
-      />
+    <div
+      className={css(styles.button)}
+      onClick={onClick}
+      title={`Filter by ${label}`}
+    >
+      <span className={css(styles.inlineBlockTop)}>{label}</span>
+      <FontAwesome name="chevron-circle-down" className={css(styles.inlineBlockTop)}/>
     </div>
   );
 };
 
 DashFilterToggle.propTypes = {
-  toggleLabel: PropTypes.string,
+  label: PropTypes.string,
   styles: PropTypes.object
 };
 
@@ -44,6 +42,11 @@ const styleThunk = () => ({
     ':focus': {
       color: appTheme.palette.dark
     }
+  },
+  inlineBlockTop: {
+    ...inlineBlock,
+    verticalAlign: 'top',
+    cursor: 'pointer'
   }
 });
 

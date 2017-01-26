@@ -12,13 +12,12 @@ const iconStyle = {
 };
 
 const AddProjectButton = (props) => {
-  const {styles, toggleLabel, onClick, onMouseEnter} = props;
+  const {styles, toggleLabel, onClick} = props;
   return (
     <FontAwesome
       className={css(styles.addIcon)}
       name="plus-square-o"
       onClick={onClick}
-      onMouseEnter={onMouseEnter}
       style={iconStyle}
       title={`Add a Project set to ${toggleLabel}`}
     />

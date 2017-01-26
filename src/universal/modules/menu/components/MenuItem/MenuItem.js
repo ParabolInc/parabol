@@ -9,10 +9,10 @@ import {textOverflow} from 'universal/styles/helpers';
 // import FontAwesome from 'react-fontawesome';
 
 const MenuItem = (props) => {
-  const {isActive, label, onClick, closeMenu, styles} = props;
+  const {isActive, label, onClick, closePortal, styles} = props;
   const rootStyles = css(styles.root, isActive && styles.active);
   const handleClick = () => {
-    closeMenu();
+    closePortal();
     onClick();
   };
   return (
@@ -23,7 +23,7 @@ const MenuItem = (props) => {
 };
 
 MenuItem.propTypes = {
-  closeMenu: PropTypes.func,
+  closePortal: PropTypes.func,
   isActive: PropTypes.bool,
   label: PropTypes.string,
   onClick: PropTypes.func,

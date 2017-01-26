@@ -4,52 +4,17 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
-import Portal from 'react-portal';
 
-const calculateMenuPosY = (originHeight, originTop, orientation, targetOrientation) => {
-  let topOffset = originTop + window.scrollY;
-  if (orientation === 'center') {
-    topOffset += originHeight / 2;
-  } else if (orientation === 'bottom') {
-    topOffset += originHeight;
-  }
-  return targetOrientation === 'bottom' ? document.body.clientHeight - topOffset : topOffset;
-};
-
-const calculateMenuPosX = (originWidth, originLeft, orientation, targetOrientation) => {
-  let leftOffset = originLeft + window.scrollX;
-  if (orientation === 'center') {
-    leftOffset += originWidth / 2;
-  } else if (orientation === 'right') {
-    leftOffset += originWidth;
-  }
-  return targetOrientation === 'right' ? document.body.clientWidth - leftOffset : leftOffset;
-};
 
 const Menu = (props) => {
   const {
-    originAnchor,
-    targetAnchor,
     children,
     label,
     menuWidth,
     styles,
-    toggle,
     coords,
-    setPosition
   } = props;
 
-  const smartToggle = React.cloneElement(toggle, {
-    onMouseEnter: (e) => {
-      const rect = e.target.getBoundingClientRect();
-      const {vertical: originY, horizontal: originX} = originAnchor;
-      const {height, width, left, top} = rect;
-      setPosition({
-        [targetAnchor.vertical]: calculateMenuPosY(height, top, originY, targetAnchor.vertical),
-        [targetAnchor.horizontal]: calculateMenuPosX(width, left, originX, targetAnchor.horizontal)
-      });
-    }
-  });
   const menuBlockStyle = {
     width: menuWidth,
     ...coords
@@ -59,17 +24,15 @@ const Menu = (props) => {
   const menuStyle = {boxShadow};
   return (
     <div>
-      <Portal closeOnEsc closeOnOutsideClick openByClickOn={smartToggle}>
-        <div className={css(styles.menuBlock)} style={menuBlockStyle}>
-          <div
-            className={css(styles.menu)}
-            style={menuStyle}
-          >
-            <div className={css(styles.label)}>{label}</div>
-            {children}
-          </div>
+      <div className={css(styles.menuBlock)} style={menuBlockStyle}>
+        <div
+          className={css(styles.menu)}
+          style={menuStyle}
+        >
+          <div className={css(styles.label)}>{label}</div>
+          {children}
         </div>
-      </Portal>
+      </div>
     </div>
   );
 };
