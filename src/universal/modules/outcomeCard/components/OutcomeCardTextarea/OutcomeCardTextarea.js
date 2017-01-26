@@ -54,6 +54,7 @@ class OutcomeCardTextArea extends Component {
     const {
       handleSubmit,
       input,
+      isProject,
       isActionListItem,
       isArchived,
       styles
@@ -62,11 +63,11 @@ class OutcomeCardTextArea extends Component {
       !isActionListItem && styles.content,
       isActionListItem && styles.actionListContent,
       isArchived && styles.isArchived,
+      !isProject && styles.descriptionAction
     );
 
     const handleBlur = () => {
-      const {input: {value}} = this.props;
-      if (value) {
+      if (input.value) {
         // if there's no value, then the document event listener will handle this
         input.onBlur();
         this.unsetEditing();
@@ -108,7 +109,7 @@ class OutcomeCardTextArea extends Component {
     const markdownCustomComponents = {
       Link: LinkNewTab
     };
-
+    const shouldEscapeHTML = true;
     return (
       <div
         onClick={!isArchived && this.setEditing}
@@ -117,7 +118,8 @@ class OutcomeCardTextArea extends Component {
         <ReactMarkdown
           renderers={markdownCustomComponents}
           source={value}
-          escapeHtml
+          escapeHtml={shouldEscapeHTML}
+          softBreak="br"
         />
       </div>
     );

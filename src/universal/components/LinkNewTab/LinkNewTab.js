@@ -6,7 +6,7 @@ const LinkNewTab = (props) => {
   // Add http protocol to url if no protocol was provided
   const urlProtocolRegex = new RegExp(/http:\/\/|https:\/\/|mailto:|ftp:\/\//);
   if (!href.match(urlProtocolRegex)) {
-    url = `http://${url}`;
+    url = `http://,${url}`;
   }
   return (
     <a
