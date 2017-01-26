@@ -8,8 +8,30 @@ import socketWithPresence from 'universal/decorators/socketWithPresence/socketWi
 import {DragDropContext as dragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
-const mapStateToProps = (props) => {
+const newTeamOrgDropdownQuery = `
+query {
+  organizations(userId: $userId) @live {
+    id
+    name
+  }
+}
+`;
 
+const mapStateToProps = (state, props) => {
+  const userId = state.auth.obj.sub;
+  const {organizations} = cashay.query(newTeamOrgDropdownQuery, {
+    op: 'organizationsContainer',
+    key: userId,
+    sort: {
+      organizations: (a, b) => a.name > b.name ? 1 : -1
+    },
+    variables: {
+      userId
+    }
+  }).data;
+  return {
+    organizations
+  };
 };
 
 const NewTeam = (props) => {

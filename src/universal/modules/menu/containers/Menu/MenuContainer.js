@@ -38,7 +38,7 @@ export default class MenuContainer extends Component {
   };
 
   render() {
-    const {children, originAnchor, targetAnchor, toggle} = this.props;
+    const {originAnchor, targetAnchor, toggle} = this.props;
     const {coords, isOpen} = this.state;
 
     const smartToggle = React.cloneElement(toggle, {
@@ -67,7 +67,6 @@ export default class MenuContainer extends Component {
         <Portal closeOnEsc closeOnOutsideClick isOpened={isOpen} onClose={this.closePortal}>
           <Menu
             {...this.props}
-            children={Children.map(children, (child) => cloneElement(child, {closePortal: this.closePortal}))}
             coords={coords}
             closePortal={this.closePortal}
           />

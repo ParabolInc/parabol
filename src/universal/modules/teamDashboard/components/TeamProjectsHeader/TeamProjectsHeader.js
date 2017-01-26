@@ -40,7 +40,24 @@ const targetAnchor = {
 
 const TeamProjectsHeader = (props) => {
   const {dispatch, styles, teamId, teamMemberFilterId, teamMemberFilterName, teamMembers} = props;
-  const toggle = <DashFilterToggle label={teamMemberFilterName}/>
+  const toggle = <DashFilterToggle label={teamMemberFilterName}/>;
+
+  const itemFactory = () => {
+    return [<MenuItem
+      isActive={teamMemberFilterId === null}
+      key={'teamMemberFilterNULL'}
+      label={'All members'}
+      onClick={() => dispatch(filterTeamMember(null))}
+    />].concat(
+      teamMembers.map((teamMember) =>
+        <MenuItem
+          isActive={teamMember.id === teamMemberFilterId}
+          key={`teamMemberFilter${teamMember.id}`}
+          label={teamMember.preferredName}
+          onClick={() => dispatch(filterTeamMember(teamMember.id, teamMember.preferredName))}
+        />
+      ))
+  };
   return (
     <DashSectionHeader>
       <DashSectionHeading icon="calendar" label="Team Projects"/>
@@ -58,26 +75,12 @@ const TeamProjectsHeader = (props) => {
             <b style={inlineBlock}>Show Actions & Projects for</b><span style={inlineBlock}>:</span>
             {' '}
             <Menu
+              itemFactory={itemFactory}
               label="Filter by:"
               toggle={toggle}
               originAnchor={originAnchor}
               targetAnchor={targetAnchor}
-            >
-              <MenuItem
-                isActive={teamMemberFilterId === null}
-                key={'teamMemberFilterNULL'}
-                label={'All members'}
-                onClick={() => dispatch(filterTeamMember(null))}
-              />
-              {teamMembers.map((teamMember) =>
-                <MenuItem
-                  isActive={teamMember.id === teamMemberFilterId}
-                  key={`teamMemberFilter${teamMember.id}`}
-                  label={teamMember.preferredName}
-                  onClick={() => dispatch(filterTeamMember(teamMember.id, teamMember.preferredName))}
-                />
-              )}
-            </Menu>
+            />
           </div>
         </DashSectionControl>
       </DashSectionControls>

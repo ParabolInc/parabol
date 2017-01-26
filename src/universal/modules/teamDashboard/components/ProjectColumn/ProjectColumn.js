@@ -75,35 +75,38 @@ const ProjectColumn = (props) => {
     if (area === TEAM_DASH) {
       const teamSort = getNextSortOrder(projects, 'teamSort');
       const handleAddProject = handleAddProjectFactory(status, myTeamMemberId, teamSort, 0);
-      return <AddProjectButton toggleClickHandler={handleAddProject} toggleLabel={label}/>;
+      return <AddProjectButton onClick={handleAddProject} label={label}/>;
     } else if (area === USER_DASH) {
       const userSort = getNextSortOrder(projects, 'userSort');
       if (teams.length === 1) {
         const {id: teamId} = teams[0];
         const generatedMyTeamMemberId = `${userId}::${teamId}`;
         const handleAddProject = handleAddProjectFactory(status, generatedMyTeamMemberId, 0, userSort);
-        return <AddProjectButton toggleClickHandler={handleAddProject} toggleLabel={label}/>;
+        return <AddProjectButton onClick={handleAddProject} label={label}/>;
       }
-      const menuItems = makeTeamMenuItems(userSort);
+      const itemFactory = () => {
+        const menuItems = makeTeamMenuItems(userSort);
+        return menuItems.map((item, idx) =>
+          <MenuItem
+            isActive={item.isActive}
+            key={`MenuItem${idx}`}
+            label={item.label}
+            onClick={item.handleClick}
+          />
+        )
+      };
+
       const toggle = <AddProjectButton label={label}/>;
       return (
         <Menu
+          itemFactory={itemFactory}
           originAnchor={originAnchor}
           menuWidth="10rem"
           targetAnchor={targetAnchor}
           toggle={toggle}
           toggleHeight="1.5rem"
           label="Select Team:"
-        >
-          {menuItems.map((item, idx) =>
-            <MenuItem
-              isActive={item.isActive}
-              key={`MenuItem${idx}`}
-              label={item.label}
-              onClick={item.handleClick}
-            />
-          )}
-        </Menu>
+        />
       );
     }
     return null;
@@ -242,8 +245,8 @@ const dropTargetCb = (connectTarget) => ({
 });
 
 export default
-  withDragState(
-dropTarget(PROJECT, columnTarget, dropTargetCb)(
+withDragState(
+  dropTarget(PROJECT, columnTarget, dropTargetCb)(
     withStyles(styleThunk)(ProjectColumn)
   )
 );

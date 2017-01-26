@@ -1,4 +1,4 @@
-import React, {PropTypes} from 'react';
+import React, {PropTypes, Children, cloneElement} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -8,7 +8,9 @@ import {textOverflow} from 'universal/styles/helpers';
 
 const Menu = (props) => {
   const {
+    closePortal,
     children,
+    itemFactory,
     label,
     menuWidth,
     styles,
@@ -22,6 +24,7 @@ const Menu = (props) => {
 
   const boxShadow = '0 1px 1px rgba(0, 0, 0, .15)';
   const menuStyle = {boxShadow};
+  const kids = Children.map(itemFactory && itemFactory() || children, (child) => cloneElement(child, {closePortal}))
   return (
     <div>
       <div className={css(styles.menuBlock)} style={menuBlockStyle}>
@@ -30,7 +33,7 @@ const Menu = (props) => {
           style={menuStyle}
         >
           <div className={css(styles.label)}>{label}</div>
-          {children}
+          {kids}
         </div>
       </div>
     </div>
