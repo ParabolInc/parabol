@@ -123,6 +123,7 @@ class OutcomeCardTextArea extends Component {
           renderers={markdownCustomComponents}
           source={value}
           escapeHtml={true}
+          softBreak="br"
         />
       </div>
     );
