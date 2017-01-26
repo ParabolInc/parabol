@@ -7,14 +7,8 @@ import Button from 'universal/components/Button/Button';
 import InputField from 'universal/components/InputField/InputField';
 import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 import {Field, reduxForm} from 'redux-form';
-import {cashay} from 'cashay';
-import emailAddresses from 'email-addresses';
-import shortid from 'shortid';
-import {withRouter} from 'react-router';
-import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
-import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
-import {segmentEventTrack} from 'universal/redux/segmentActions';
 import DropdownInput from 'universal/modules/dropdown/components/DropdownInput/DropdownInput';
+import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
 
 const validate = (values) => {
   const schema = makeAddTeamSchema();
@@ -22,44 +16,17 @@ const validate = (values) => {
 };
 
 const NewTeamForm = (props) => {
-  const {dispatch, formName, handleSubmit, router, styles} = props;
-  const onSubmit = (submittedData) => {
-    const schema = makeAddTeamSchema();
-    const {data: {teamName, inviteesRaw}} = schema(submittedData);
-    const invitees = emailAddresses.parseAddressList(inviteesRaw);
-    const serverInvitees = invitees ? invitees.map(email => ({
-      email: email.address,
-      fullName: email.fullName
-    })) : [];
-    const id = shortid.generate();
-    const options = {
-      variables: {
-        newTeam: {
-          id,
-          name: teamName
-        },
-        invitees: serverInvitees
-      }
-    };
-    cashay.mutate('addTeam', options);
-    router.push(`/team/${id}`);
-    dispatch(segmentEventTrack('New Team',
-      {inviteeCount: invitees && invitees.length || 0}
-    ));
-    dispatch(showSuccess({
-      title: 'Team successfully created!',
-      message: `Here's your new team dashboard for ${teamName}`
-    }));
-  };
+  const {handleSubmit, organizations, styles} = props;
   return (
-    <form className={css(styles.form)} onSubmit={handleSubmit(onSubmit)}>
-      <h1 className={css(styles.heading)}>{formName}</h1>
+    <form className={css(styles.form)} onSubmit={handleSubmit}>
+      <h1 className={css(styles.heading)}>Create a New Team</h1>
       <div className={css(styles.formBlock)}>
         <Field
           colorPalette="gray"
           component={DropdownInput}
           label="Add Team to..."
           name="orgId"
+          organizations={organizations}
         />
         <Field
           colorPalette="gray"
@@ -91,21 +58,8 @@ const NewTeamForm = (props) => {
 };
 
 NewTeamForm.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  formName: PropTypes.string,
-  handleSubmit: PropTypes.func.isRequired,
-  router: PropTypes.object.isRequired,
   styles: PropTypes.object
 };
-
-NewTeamForm.defaultProps = {
-  formName: 'Create a New Team'
-};
-
-// const inlineBlock = {
-//   display: 'inline-block',
-//   verticalAlign: 'top'
-// };
 
 const styleThunk = () => ({
   form: {
@@ -128,8 +82,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withRouter(
-  reduxForm({form: 'newTeam', validate})(
-    withStyles(styleThunk)(NewTeamForm)
-  )
-);
+export default reduxForm({form: 'newTeam', validate})(withStyles(styleThunk)(NewTeamForm));

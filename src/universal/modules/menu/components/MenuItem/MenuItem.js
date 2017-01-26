@@ -13,7 +13,10 @@ const MenuItem = (props) => {
   const rootStyles = css(styles.root, isActive && styles.active);
   const handleClick = () => {
     closePortal();
-    onClick();
+    if (onClick) {
+      // if a component is passed in instead of just a text label, it may not include a click handler
+      onClick();
+    }
   };
   const labelEl = typeof label === 'string' ? <div className={css(styles.label)}>{label}</div> : label;
   return (
@@ -26,7 +29,7 @@ const MenuItem = (props) => {
 MenuItem.propTypes = {
   closePortal: PropTypes.func,
   isActive: PropTypes.bool,
-  label: PropTypes.string,
+  label: PropTypes.any,
   onClick: PropTypes.func,
   styles: PropTypes.object
 };

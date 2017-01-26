@@ -1,6 +1,6 @@
 import React from 'react';
 import Helmet from 'react-helmet';
-import NewTeamForm from 'universal/modules/teamDashboard/components/NewTeamForm/NewTeamForm';
+import NewTeamForm from '../../../newTeam/components/NewTeamForm/NewTeamForm';
 
 const style = {
   margin: '0 auto',

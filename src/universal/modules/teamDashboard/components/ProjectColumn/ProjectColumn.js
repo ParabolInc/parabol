@@ -57,7 +57,6 @@ const ProjectColumn = (props) => {
   const makeTeamMenuItems = (userSort) => {
     return teams.map(team => ({
       label: team.name,
-      isActive: false,
       handleClick: () => cashay.mutate('createProject', {
         variables: {
           newProject: {
@@ -88,7 +87,6 @@ const ProjectColumn = (props) => {
         const menuItems = makeTeamMenuItems(userSort);
         return menuItems.map((item, idx) =>
           <MenuItem
-            isActive={item.isActive}
             key={`MenuItem${idx}`}
             label={item.label}
             onClick={item.handleClick}

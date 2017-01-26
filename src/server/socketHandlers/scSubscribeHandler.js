@@ -36,7 +36,7 @@ const dechannelfy = {
   [INVITATIONS]: (variableString) => ({teamId: variableString}),
   [NOTIFICATIONS]: (variableString) => ({userId: variableString}),
   [ORGANIZATION]: (variableString) => ({orgId: variableString}),
-  [ORGANIZATIONS]: (variableString) => ({}),
+  [ORGANIZATIONS]: (userId) => ({userId}),
   [PRESENCE]: (variableString) => ({teamId: variableString}),
   [PROJECTS]: (variableString) => ({teamMemberId: variableString}),
   [TEAM]: (variableString) => ({teamId: variableString}),
@@ -66,7 +66,7 @@ export default function scSubscribeHandler(exchange, socket) {
       // swallow return value, it's a subscription
       const result = await graphql(Schema, subscription.string, {}, context, variables);
       if (result.errors) {
-        console.log('DEBUG GraphQL Subscribe Error:', result.errors);
+        console.log('DEBUG GraphQL Subscribe Error:', channel, result.errors);
       }
     } else {
       console.log(`GraphQL subscription for ${channel} not found`);
