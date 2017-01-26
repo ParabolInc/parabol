@@ -159,8 +159,8 @@ export default [
   {
     channel: ORGANIZATIONS,
     string: `
-    subscription {
-      organizations {
+    subscription($userId: ID!) {
+      organizations(userId: $userId) {
         id
         activeUserCount
         inactiveUserCount

@@ -31,12 +31,6 @@ export default class MenuContainer extends Component {
     };
   }
 
-  setPosition = (coords) => {
-    this.setState({
-      coords
-    })
-  };
-
   closePortal = () => {
     this.setState({
       isOpen: false

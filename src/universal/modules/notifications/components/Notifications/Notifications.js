@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import UserSettingsWrapper from '../../../userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
 import {NOTIFICATIONS} from '../../../../utils/constants';
-import withStyles from '../../../../styles/withStyles';
+import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from '../../../../styles/ui';
 import appTheme from '../../../../styles/theme/appTheme';

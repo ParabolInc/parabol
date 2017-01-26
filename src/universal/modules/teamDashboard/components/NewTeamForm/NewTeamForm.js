@@ -14,6 +14,7 @@ import {withRouter} from 'react-router';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
+import DropdownInput from 'universal/modules/dropdown/components/DropdownInput/DropdownInput';
 
 const validate = (values) => {
   const schema = makeAddTeamSchema();
@@ -56,7 +57,7 @@ const NewTeamForm = (props) => {
       <div className={css(styles.formBlock)}>
         <Field
           colorPalette="gray"
-          component={InputField}
+          component={DropdownInput}
           label="Add Team to..."
           name="orgId"
         />
@@ -110,7 +111,7 @@ const styleThunk = () => ({
   form: {
     margin: 0,
     maxWidth: '20rem',
-    padding: 0
+    padding: '2rem'
   },
 
   heading: {

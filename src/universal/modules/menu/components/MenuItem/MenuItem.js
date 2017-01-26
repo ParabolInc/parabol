@@ -15,9 +15,10 @@ const MenuItem = (props) => {
     closePortal();
     onClick();
   };
+  const labelEl = typeof label === 'string' ? <div className={css(styles.label)}>{label}</div> : label;
   return (
     <div className={rootStyles} onClick={handleClick} >
-      <div className={css(styles.label)}>{label}</div>
+      {labelEl}
     </div>
   );
 };

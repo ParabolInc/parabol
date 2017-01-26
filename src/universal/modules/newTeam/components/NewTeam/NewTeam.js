@@ -8,13 +8,15 @@ import socketWithPresence from 'universal/decorators/socketWithPresence/socketWi
 import {DragDropContext as dragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
+const mapStateToProps = (props) => {
+
+};
+
 const NewTeam = (props) => {
   const {dispatch, styles} = props;
   return (
     <DashboardWrapper title="User Dashboard">
-      <div className={css(styles.newTeamView)}>
         <NewTeamForm dispatch={dispatch}/>
-      </div>
     </DashboardWrapper>
   );
 };

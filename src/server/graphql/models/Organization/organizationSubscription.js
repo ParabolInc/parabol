@@ -6,15 +6,25 @@ import {
 } from 'graphql';
 import {getRequestedFields} from '../utils';
 import {Organization} from './organizationSchema';
-import {requireAuth, requireOrgLeader} from '../authorization';
+import {requireSUOrSelf, requireOrgLeader} from '../authorization';
 import makeChangefeedHandler from '../makeChangefeedHandler';
 
 export default {
   organizations: {
     type: new GraphQLList(Organization),
-    async resolve(source, args, {authToken, socket, subbedChannelName}, refs) {
+    args: {
+      userId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'the user ID that belongs to all the orgs'
+      }
+    },
+    async resolve(source, {userId}, {authToken, socket, subbedChannelName}, refs) {
       const r = getRethink();
-      const userId = requireAuth(authToken);
+
+      // AUTH
+      requireSUOrSelf(authToken, userId);
+
+      // RESOLUTION
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
       const billingLeaderOrgs = await r.table('User').get(userId)('billingLeaderOrgs');
