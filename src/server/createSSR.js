@@ -10,6 +10,7 @@ const metaAndTitle = `
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta property="description" content="Team transparency, made easy."/>
   <title>Action | Parabol Inc</title>
+  <style>@media print { .hide-print {display:none !important;} }</style>
 `;
 
 export default function createSSR(req, res) {

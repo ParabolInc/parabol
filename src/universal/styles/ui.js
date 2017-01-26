@@ -195,6 +195,7 @@ const ui = {
   // Invoice
   invoiceBorderColor: appTheme.palette.mid40l,
   invoiceBorderColorLighter: appTheme.palette.mid20l,
+  invoiceBreakpoint: '@media (min-width: 32rem)',
   invoiceItemBaseStyles: {
     display: 'flex',
     paddingRight: '1.25rem',

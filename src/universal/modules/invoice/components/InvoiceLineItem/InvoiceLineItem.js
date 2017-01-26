@@ -28,7 +28,7 @@ const InvoiceLineItem = (props) => {
     const details = [];
     arr.map((d, i) => details.push(
       <div className={css(styles.detailContent)} key={i}>
-        <div>{d.desc}</div>
+        <div className={css(styles.fill)}>{d.desc}</div>
         <div>{d.amount}</div>
       </div>
     ));
@@ -38,11 +38,11 @@ const InvoiceLineItem = (props) => {
   return (
     <div className={css(styles.item)}>
       <div className={css(styles.itemContent)}>
-        <div>{item.desc}</div>
+        <div className={css(styles.fill)}>{item.desc}</div>
         <div>{item.amount}</div>
       </div>
       {item.details &&
-        <div className={css(styles.details)}>
+        <div className={`${css(styles.details)} hide-print`}>
           {makeToggle()}
           <div className={detailsContentStyles}>
             {makeDetails(item.details)}
@@ -60,18 +60,28 @@ InvoiceLineItem.propTypes = {
   styles: PropTypes.object
 };
 
+const breakpoint = ui.invoiceBreakpoint;
 const styleThunk = () => ({
   item: {
     borderBottom: `1px solid ${ui.invoiceBorderColorLighter}`,
     display: 'block',
-    paddingBottom: '.5rem',
-    paddingTop: '.5rem'
+    paddingBottom: '.625rem',
+    paddingTop: '.625rem'
   },
 
   itemContent: {
     ...ui.invoiceItemBaseStyles,
-    fontSize: appTheme.typography.s4,
-    lineHeight: '1.75rem'
+    fontSize: appTheme.typography.sBase,
+    lineHeight: '1.5',
+
+    [breakpoint]: {
+      fontSize: appTheme.typography.s5
+    }
+  },
+
+  fill: {
+    flex: 1,
+    paddingRight: '1em'
   },
 
   details: {

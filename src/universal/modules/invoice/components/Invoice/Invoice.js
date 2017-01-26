@@ -1,4 +1,5 @@
 import React, {PropTypes} from 'react';
+import Helmet from 'react-helmet';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
@@ -43,7 +44,7 @@ const demoItemsLastMonth = [
         amount: '-$2.50'
       },
       {
-        desc: 'marimar@sample.co unpaused 2016–Jan 2, 2017',
+        desc: 'marimar@sample.co unpaused Jan 2, 2017',
         amount: '$0.67'
       }
     ]
@@ -52,28 +53,38 @@ const demoItemsLastMonth = [
 
 const Invoice = (props) => {
   const {
+    subject,
     styles
   } = props;
 
   const makeLineItems = (arr) =>
     arr.map((li, idx) => <InvoiceLineItemContainer key={idx} item={li}/>);
 
+  const makeAsterisk = () =>
+    <span className={css(styles.asterisk)}>{'*'}</span>;
+
   return (
     <div className={css(styles.invoice)}>
+      <Helmet title={`Parabol Action Invoice for ${subject}`} />
       <InvoiceHeader/>
       <div className={css(styles.panel)}>
         <div className={css(styles.label)}>{'Invoice'}</div>
-        <div className={css(styles.heading)}>{'February 2017'}</div>
+        <div className={css(styles.subject)}>{subject}</div>
 
         <div className={css(styles.sectionHeader)}>
-          <div className={css(styles.subHeading)}>{'Next month’s usage'}</div>
+          <div className={css(styles.heading)}>{'Next month’s usage'}</div>
           <div className={css(styles.meta)}>{'Jan 7, 2017 to Feb 6, 2017'}</div>
         </div>
 
         {makeLineItems(demoItemsNextMonth)}
 
         <div className={css(styles.sectionHeader)}>
-          <div className={css(styles.subHeading)}>{'Last month’s adjustments (prorated)'}</div>
+          <div className={css(styles.heading)}>
+            {'Last month’s adjustments'}{makeAsterisk()}
+            <div className={css(styles.headingLabel)}>
+              {makeAsterisk()}{'Prorated'}
+            </div>
+          </div>
           <div className={css(styles.meta)}>{'Dec 7, 2017 to Jan 6, 2017'}</div>
         </div>
 
@@ -93,32 +104,47 @@ const Invoice = (props) => {
 };
 
 Invoice.propTypes = {
+  subject: PropTypes.string,
   styles: PropTypes.object
 };
 
 Invoice.defaultProps = {
-  // Define
+  subject: 'February 2017'
 };
 
-const panelGutter = '1.25rem';
-const invoiceGutter = '2rem';
+const breakpoint = ui.invoiceBreakpoint;
+const invoiceGutterSmall = '1rem';
+const invoiceGutterLarge = '2rem';
+const labelBreakpoint = '@media (min-width: 24rem)';
+const panelGutterSmall = '.75rem';
+const panelGutterLarge = '1.25rem';
 
 const styleThunk = () => ({
   invoice: {
     backgroundColor: ui.backgroundColor,
     boxShadow: '0 .125rem .25rem 0 rgba(0, 0, 0, .5)',
     color: appTheme.palette.dark,
-    margin: '2rem auto',
+    margin: '0 auto',
     maxWidth: '32rem',
-    padding: invoiceGutter
+    padding: invoiceGutterSmall,
+
+    [breakpoint]: {
+      margin: '2rem auto',
+      padding: invoiceGutterLarge,
+    }
   },
 
   panel: {
     backgroundColor: '#fff',
     border: `1px solid ${ui.invoiceBorderColor}`,
     borderRadius: ui.borderRadiusLarge,
-    margin: `${invoiceGutter} 0`,
-    padding: `${panelGutter} 0 ${panelGutter} ${panelGutter}`
+    margin: `${invoiceGutterSmall} 0`,
+    padding: `${panelGutterSmall} 0 ${panelGutterSmall} ${panelGutterSmall}`,
+
+    [breakpoint]: {
+      margin: `${invoiceGutterLarge} 0`,
+      padding: `${panelGutterLarge} 0 ${panelGutterLarge} ${panelGutterLarge}`,
+    }
   },
 
   label: {
@@ -128,19 +154,60 @@ const styleThunk = () => ({
     textTransform: 'uppercase'
   },
 
-  heading: {
-    fontSize: appTheme.typography.s7
+  subject: {
+    fontSize: '2rem',
+
+    [breakpoint]: {
+      fontSize: appTheme.typography.s7
+    }
   },
 
   sectionHeader: {
     borderBottom: `1px solid ${ui.invoiceBorderColorLighter}`,
-    marginTop: panelGutter,
-    paddingBottom: '.75rem'
+    marginTop: panelGutterSmall,
+    paddingBottom: '.75rem',
+
+    [breakpoint]: {
+      marginTop: panelGutterLarge,
+    }
   },
 
-  subHeading: {
-    fontSize: appTheme.typography.s5,
-    fontWeight: 700
+  heading: {
+    fontSize: appTheme.typography.s4,
+    fontWeight: 700,
+    lineHeight: '1.5',
+
+    [breakpoint]: {
+      fontSize: appTheme.typography.s6
+    }
+  },
+
+  headingLabel: {
+    display: 'block',
+    fontSize: appTheme.typography.s3,
+    lineHeight: 1,
+
+    [labelBreakpoint]: {
+      backgroundColor: appTheme.palette.dark70l,
+      border: `1px solid ${appTheme.palette.dark70l}`,
+      borderRadius: '4em',
+      color: '#fff',
+      display: 'inline-block',
+      fontSize: appTheme.typography.s1,
+      marginBottom: 0,
+      marginLeft: '.5em',
+      padding: '.0625rem .4375rem',
+      textTransform: 'uppercase',
+      verticalAlign: 'middle',
+    }
+  },
+
+  asterisk: {
+    display: 'inline-block',
+
+    [labelBreakpoint]: {
+      display: 'none'
+    }
   },
 
   meta: {
@@ -152,7 +219,11 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.s6,
     fontWeight: 700,
     lineHeight: appTheme.typography.s7,
-    marginTop: panelGutter
+    marginTop: panelGutterSmall,
+
+    [breakpoint]: {
+      marginTop: panelGutterLarge
+    }
   }
 });
 
