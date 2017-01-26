@@ -12,8 +12,8 @@ const InvoiceLineItem = (props) => {
     styles
   } = props;
 
-  const detailsContentStyles = css(
-    styles.detailsContent,
+  const detailsInnerStyles = css(
+    styles.detailsInner,
     detailsOpen && styles.detailsOpen
   );
 
@@ -27,7 +27,7 @@ const InvoiceLineItem = (props) => {
   const makeDetails = (arr) => {
     const details = [];
     arr.map((d, i) => details.push(
-      <div className={css(styles.detailContent)} key={i}>
+      <div className={css(styles.detailsItem)} key={i}>
         <div className={css(styles.fill)}>{d.desc}</div>
         <div>{d.amount}</div>
       </div>
@@ -44,7 +44,7 @@ const InvoiceLineItem = (props) => {
       {item.details &&
         <div className={`${css(styles.details)} hide-print`}>
           {makeToggle()}
-          <div className={detailsContentStyles}>
+          <div className={detailsInnerStyles}>
             {makeDetails(item.details)}
           </div>
         </div>
@@ -73,9 +73,11 @@ const styleThunk = () => ({
     ...ui.invoiceItemBaseStyles,
     fontSize: appTheme.typography.sBase,
     lineHeight: '1.5',
+    paddingRight: ui.invoicePanelGutterSmall,
 
     [breakpoint]: {
-      fontSize: appTheme.typography.s5
+      fontSize: appTheme.typography.s5,
+      paddingRight: ui.invoicePanelGutterLarge,
     }
   },
 
@@ -97,7 +99,7 @@ const styleThunk = () => ({
     textTransform: 'uppercase'
   },
 
-  detailsContent: {
+  detailsInner: {
     display: 'none'
   },
 
@@ -105,10 +107,15 @@ const styleThunk = () => ({
     display: 'block'
   },
 
-  detailContent: {
+  detailsItem: {
     ...ui.invoiceItemBaseStyles,
     fontSize: appTheme.typography.s2,
-    lineHeight: '1.375rem'
+    lineHeight: '1.375rem',
+    paddingRight: ui.invoicePanelGutterSmall,
+
+    [breakpoint]: {
+      paddingRight: ui.invoicePanelGutterLarge
+    }
   }
 });
 

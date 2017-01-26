@@ -198,10 +198,11 @@ const ui = {
   invoiceBreakpoint: '@media (min-width: 32rem)',
   invoiceItemBaseStyles: {
     display: 'flex',
-    paddingRight: '1.25rem',
     justifyContent: 'space-between',
     width: '100%'
   },
+  invoicePanelGutterSmall: '.75rem',
+  invoicePanelGutterLarge: '1.25rem',
 
   // Meeting
   meetingSidebarWidth: '15rem',

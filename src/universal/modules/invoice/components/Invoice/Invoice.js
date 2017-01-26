@@ -116,8 +116,8 @@ const breakpoint = ui.invoiceBreakpoint;
 const invoiceGutterSmall = '1rem';
 const invoiceGutterLarge = '2rem';
 const labelBreakpoint = '@media (min-width: 24rem)';
-const panelGutterSmall = '.75rem';
-const panelGutterLarge = '1.25rem';
+const panelGutterSmall = ui.invoicePanelGutterSmall;
+const panelGutterLarge = ui.invoicePanelGutterLarge;
 
 const styleThunk = () => ({
   invoice: {
@@ -220,9 +220,11 @@ const styleThunk = () => ({
     fontWeight: 700,
     lineHeight: appTheme.typography.s7,
     marginTop: panelGutterSmall,
+    paddingRight: panelGutterSmall,
 
     [breakpoint]: {
-      marginTop: panelGutterLarge
+      marginTop: panelGutterLarge,
+      paddingRight: panelGutterLarge
     }
   }
 });
