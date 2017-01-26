@@ -10,6 +10,7 @@ import LinkNewTab from 'universal/components/LinkNewTab/LinkNewTab';
 class OutcomeCardTextArea extends Component {
   static propTypes = {
     cardHasHover: PropTypes.bool,
+    doFocus: PropTypes.bool,
     editingStatus: PropTypes.any,
     handleActive: PropTypes.func,
     handleSubmit: PropTypes.func,
@@ -52,6 +53,7 @@ class OutcomeCardTextArea extends Component {
 
   renderEditing() {
     const {
+      doFocus,
       handleSubmit,
       input,
       isProject,
@@ -74,7 +76,6 @@ class OutcomeCardTextArea extends Component {
         handleSubmit();
       }
     };
-    const shouldAutoFocus = true;
     return (
       <Textarea
         {...input}
@@ -84,7 +85,7 @@ class OutcomeCardTextArea extends Component {
         placeholder="Type your outcome here"
         onBlur={handleBlur}
         onDrop={null}
-        autoFocus={shouldAutoFocus}
+        autoFocus={doFocus}
       />
     );
   }
@@ -109,7 +110,6 @@ class OutcomeCardTextArea extends Component {
     const markdownCustomComponents = {
       Link: LinkNewTab
     };
-    const shouldEscapeHTML = true;
     return (
       <div
         onClick={!isArchived && this.setEditing}
@@ -118,7 +118,7 @@ class OutcomeCardTextArea extends Component {
         <ReactMarkdown
           renderers={markdownCustomComponents}
           source={value}
-          escapeHtml={shouldEscapeHTML}
+          escapeHtml
           softBreak="br"
         />
       </div>
