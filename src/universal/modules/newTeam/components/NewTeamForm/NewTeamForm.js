@@ -9,6 +9,8 @@ import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 import {Field, reduxForm} from 'redux-form';
 import DropdownInput from 'universal/modules/dropdown/components/DropdownInput/DropdownInput';
 import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
+import CreditCardModal from 'universal/modules/userDashboard/components/CreditCardModal/CreditCardModal';
+import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
 
 const validate = (values) => {
   const schema = makeAddTeamSchema();
@@ -16,18 +18,68 @@ const validate = (values) => {
 };
 
 const NewTeamForm = (props) => {
-  const {handleSubmit, organizations, styles} = props;
+  const {change, dispatch, handleSubmit, isNewOrg, organizations, styles} = props;
+  const handleCreateNew = () => {
+    change('orgId', null);
+  };
+  const addBilling = <Button colorPalette="cool" label="Add Billing Information"/>;
+  const setToken = (stripeToken) => {
+    change('stripeToken', stripeToken);
+  };
+  const resetOrgSelection = () => {
+    change('orgId', organizations[0].id);
+  };
   return (
     <form className={css(styles.form)} onSubmit={handleSubmit}>
       <h1 className={css(styles.heading)}>Create a New Team</h1>
       <div className={css(styles.formBlock)}>
-        <Field
-          colorPalette="gray"
-          component={DropdownInput}
-          label="Add Team to..."
-          name="orgId"
-          organizations={organizations}
-        />
+        {!isNewOrg ?
+          <div>
+            <Field
+              autoFocus
+              colorPalette="gray"
+              component={InputField}
+              label="Organization Name (required)"
+              name="newOrgName"
+              placeholder={randomPlaceholderTheme.orgName}
+            />
+            <Field
+              component="input"
+              type="hidden"
+              name="stripeToken"
+            />
+            <FieldBlock>
+              <div className={css(styles.addBillingBlock)}>
+                <div className={css(styles.addBillingBody)}>
+                  <h3>Billing information (required)</h3>
+                  <span>
+                Your card will be charged $5 for the first month.
+                The members that you invite will be prorated on their
+                join date and added to your second invoice.
+                  <CreditCardModal
+                    onBackdropClick={() => {
+                    }}
+                    handleToken={setToken}
+                    toggle={addBilling}
+                  />
+              </span>
+                  <div className={css(styles.nevermind)} onClick={resetOrgSelection}>
+                    Nevermind, select an existing organization
+                  </div>
+                </div>
+              </div>
+            </FieldBlock>
+          </div>
+          :
+          <Field
+            colorPalette="gray"
+            component={DropdownInput}
+            handleCreateNew={handleCreateNew}
+            label="Add Team to..."
+            name="orgId"
+            organizations={organizations}
+          />
+        }
         <Field
           colorPalette="gray"
           component={InputField}
@@ -62,6 +114,15 @@ NewTeamForm.propTypes = {
 };
 
 const styleThunk = () => ({
+  addBillingBlock: {
+    border: `1px solid ${appTheme.palette.mid}`,
+    background: appTheme.palette.light,
+    margin: '1rem 0'
+  },
+
+  addBillingBody: {
+    margin: '1rem'
+  },
   form: {
     margin: 0,
     maxWidth: '20rem',
@@ -79,6 +140,11 @@ const styleThunk = () => ({
 
   formBlock: {
     margin: '0 auto 2rem'
+  },
+
+  nevermind: {
+    cursor: 'pointer',
+    fontSize: appTheme.typography.s3
   }
 });
 

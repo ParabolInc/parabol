@@ -45,8 +45,9 @@ const styleThunk = () => ({
   },
   inlineBlockTop: {
     ...inlineBlock,
-    verticalAlign: 'top',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    userSelect: 'none',
+    verticalAlign: 'top'
   }
 });
 

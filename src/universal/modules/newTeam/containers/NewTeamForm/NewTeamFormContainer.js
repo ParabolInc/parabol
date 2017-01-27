@@ -38,12 +38,13 @@ const mapStateToProps = (state) => {
     organizations,
     initialValues: {
       orgId
-    }
+    },
+    isNewOrg: state.form.newTeam && state.form.newTeam.values.orgId === null
   };
 };
 
 const NewTeamFormContainer = (props) => {
-  const {dispatch, initialValues, organizations, router} = props;
+  const {dispatch, initialValues, isNewOrg, organizations, router} = props;
   const onSubmit = (submittedData) => {
     const schema = makeAddTeamSchema();
     const {data: {teamName, inviteesRaw}} = schema(submittedData);
@@ -79,6 +80,7 @@ const NewTeamFormContainer = (props) => {
   return (
     <NewTeamForm
       initialValues={initialValues}
+      isNewOrg={isNewOrg}
       onSubmit={onSubmit}
       organizations={organizations}
     />

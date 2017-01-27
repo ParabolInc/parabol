@@ -1,7 +1,6 @@
 import {findDOMNode} from 'react-dom';
 import React, {Children, Component, PropTypes, cloneElement} from 'react';
 import Menu from 'universal/modules/menu/components/Menu/Menu';
-import Portal from 'react-portal';
 
 const calculateMenuPosY = (originHeight, originTop, orientation, targetOrientation) => {
   let topOffset = originTop + window.scrollY;
@@ -26,20 +25,12 @@ const calculateMenuPosX = (originWidth, originLeft, orientation, targetOrientati
 export default class MenuContainer extends Component {
   constructor() {
     super();
-    this.state = {
-      isOpen: false
-    };
+    this.state = {};
   }
-
-  closePortal = () => {
-    this.setState({
-      isOpen: false
-    });
-  };
 
   render() {
     const {originAnchor, targetAnchor, toggle} = this.props;
-    const {coords, isOpen} = this.state;
+    const {coords} = this.state;
 
     const smartToggle = React.cloneElement(toggle, {
       onClick: (e) => {
@@ -48,7 +39,6 @@ export default class MenuContainer extends Component {
         const {vertical: originY, horizontal: originX} = originAnchor;
         const {height, width, left, top} = rect;
         this.setState({
-          isOpen: true,
           coords: {
             [targetAnchor.vertical]: calculateMenuPosY(height, top, originY, targetAnchor.vertical),
             [targetAnchor.horizontal]: calculateMenuPosX(width, left, originX, targetAnchor.horizontal)
@@ -62,16 +52,11 @@ export default class MenuContainer extends Component {
       }
     });
     return (
-      <div>
-        {smartToggle}
-        <Portal closeOnEsc closeOnOutsideClick isOpened={isOpen} onClose={this.closePortal}>
-          <Menu
-            {...this.props}
-            coords={coords}
-            closePortal={this.closePortal}
-          />
-        </Portal>
-      </div>
+      <Menu
+        {...this.props}
+        coords={coords}
+        toggle={smartToggle}
+      />
     );
   }
 }

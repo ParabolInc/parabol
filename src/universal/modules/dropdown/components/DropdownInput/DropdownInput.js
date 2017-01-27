@@ -20,12 +20,9 @@ const targetAnchor = {
 };
 
 const DropdownInput = (props) => {
-  const {input: {name, onChange, value}, label, organizations = [], styles} = props;
+  const {handleCreateNew, input: {name, onChange, value}, label, organizations = [], styles} = props;
   const org = organizations.find((org) => org.id === value);
   const orgName = org && org.name || 'Loading...';
-  const handleCreateNew = () => {
-
-  };
   const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down"/>;
   const createNew = <Button label="Create New Organization" onClick={handleCreateNew}/>;
   const itemFactory = () => {

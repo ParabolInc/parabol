@@ -4,6 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
+import portal from 'react-portal-hoc';
 
 
 const Menu = (props) => {
@@ -16,12 +17,10 @@ const Menu = (props) => {
     styles,
     coords,
   } = props;
-
   const menuBlockStyle = {
     width: menuWidth,
     ...coords
   };
-
   const boxShadow = '0 1px 1px rgba(0, 0, 0, .15)';
   const menuStyle = {boxShadow};
   const kids = Children.map(itemFactory && itemFactory() || children, (child) => cloneElement(child, {closePortal}))
@@ -110,4 +109,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(Menu);
+export default portal({escToClose: true, clickToClose: true})(withStyles(styleThunk)(Menu));

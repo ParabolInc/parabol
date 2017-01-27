@@ -13,6 +13,7 @@ import FontAwesome from 'react-fontawesome';
 import withAsync from 'react-async-hoc';
 import {stripeKey} from 'universal/utils/clientOptions';
 import makeCreditCardSchema from 'universal/validation/makeCreditCardSchema';
+import portal from 'react-portal-hoc';
 
 const lockIconStyles = {
   lineHeight: appTheme.typography.s5,
@@ -82,11 +83,12 @@ const validate = (values, props) => {
 };
 
 const CreditCardModal = (props) => {
-  const {createToken, handleSubmit, onBackdropClick, orgId, styles} = props;
-  const updateStripeBilling = async (submittedData) => {
+  const {createToken, handleSubmit, handleToken, isUpdate, closePortal, orgId, styles} = props;
+  const crudAction = isUpdate ? 'Update' : 'Add';
+  const addStripeBilling = async(submittedData) => {
     const {creditCardNumber: number, expiry, cvc} = submittedData;
     const [exp_month, exp_year] = expiry.split('/');
-    const {error, id} = await createToken({number, exp_month, exp_year, cvc})
+    const {error, id: stripeToken} = await createToken({number, exp_month, exp_year, cvc});
     if (error) {
       const errorMessage = {_error: error.message};
       const field = stripeFieldLookup[error.param];
@@ -95,16 +97,22 @@ const CreditCardModal = (props) => {
       }
       throw new SubmissionError(errorMessage)
     }
-    const variables = {
-      orgId,
-      stripeToken: id
-    };
-    cashay.mutate('addBilling', {variables});
+    if (handleToken) {
+      // without an orgId, assume a cb is provided
+      handleToken(stripeToken);
+    }
+    if (orgId) {
+      const variables = {
+        orgId,
+        stripeToken
+      };
+      cashay.mutate('addBilling', {variables});
+    }
 
   };
 
   return (
-    <DashModal onBackdropClick={onBackdropClick} inputModal>
+    <DashModal onBackdropClick={closePortal} inputModal>
       <div className={css(styles.modalBody)}>
         <div className={css(styles.avatarPlaceholder)}>
           <div className={css(styles.avatarPlaceholderInner)}>
@@ -112,12 +120,12 @@ const CreditCardModal = (props) => {
           </div>
         </div>
         <Type align="center" colorPalette="mid" lineHeight="1.875rem" marginBottom=".25rem" scale="s6">
-          Update Credit Card
+          {crudAction} Credit Card
         </Type>
         <Type align="center" colorPalette="mid" lineHeight={appTheme.typography.s5} scale="s3">
           <FontAwesome name="lock" style={lockIconStyles}/> Secured by <b>Stripe</b>
         </Type>
-        <form className={css(styles.cardInputs)} onSubmit={handleSubmit(updateStripeBilling)}>
+        <form className={css(styles.cardInputs)} onSubmit={handleSubmit(addStripeBilling)}>
           <div className={css(styles.creditCardNumber)}>
             <Field
               autoFocus
@@ -163,17 +171,17 @@ const CreditCardModal = (props) => {
               isBlock
               label="Cancel"
               size="small"
-              onClick={onBackdropClick}
+              onClick={closePortal}
             />
           </div>
           <div className={css(styles.updateButton)}>
             <Button
               colorPalette="cool"
               isBlock
-              label="Update"
+              label={crudAction}
               size="small"
               type="submit"
-              onClick={handleSubmit(updateStripeBilling)}
+              onClick={handleSubmit(addStripeBilling)}
             />
           </div>
         </div>
@@ -183,8 +191,10 @@ const CreditCardModal = (props) => {
 };
 
 CreditCardModal.propTypes = {
-  onBackdropClick: PropTypes.func.isRequired,
-  orgId: PropTypes.string.isRequired,
+  isUpdate: PropTypes.bool,
+  closePortal: PropTypes.func,
+  handleToken: PropTypes.func,
+  orgId: PropTypes.string,
 };
 
 const avatarPlaceholderSize = '4rem';
@@ -276,10 +286,13 @@ const stripeCb = () => {
     stripeCard: stripe.card
   };
 };
-export default reduxForm({form: 'creditCardInfo', validate})(
-  withAsync({'https://js.stripe.com/v2/': stripeCb})(
-    withStyles(styleThunk)(
-      CreditCardModal
+
+export default portal({escToClose: true})(
+  reduxForm({form: 'creditCardInfo', validate})(
+    withAsync({'https://js.stripe.com/v2/': stripeCb})(
+      withStyles(styleThunk)(
+        CreditCardModal
+      )
     )
   )
 );
