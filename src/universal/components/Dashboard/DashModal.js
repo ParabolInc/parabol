@@ -8,6 +8,7 @@ const DashModal = (props) => {
   const {
     children,
     inputModal,
+    isClosing,
     onBackdropClick,
     position,
     showsOver,
@@ -16,12 +17,14 @@ const DashModal = (props) => {
   const backdropStyles = css(
     styles.backdrop,
     position && styles[position],
-    showsOver && styles[showsOver],
+    showsOver && styles[showsOver]
   );
   const modalStyles = css(
     styles.modal,
-    inputModal && styles.inputModal
+    inputModal && styles.inputModal,
+    isClosing && styles.closing
   );
+  console.log('isClosing', isClosing)
   const onClick = (e) => {
     if (e.target === e.currentTarget) {
       onBackdropClick();
@@ -55,6 +58,30 @@ DashModal.propTypes = {
   styles: PropTypes.object
 };
 
+const animateIn = {
+  '0%': {
+    opacity: '0',
+    transform: 'translate3d(0, -50px, 0)'
+
+  },
+  '100%': {
+    opacity: '1',
+    transform: 'translate3d(0, 0, 0)'
+  }
+};
+
+const animateOut = {
+  '0%': {
+    opacity: '1',
+    transform: 'translate3d(0, 0, 0)'
+
+  },
+  '100%': {
+    opacity: '0',
+    transform: 'translate3d(0, -50px, 0)'
+  }
+};
+
 const styleThunk = () => ({
   backdrop: {
     alignItems: 'center',
@@ -70,6 +97,11 @@ const styleThunk = () => ({
     textAlign: 'center',
     top: 0,
     zIndex: 400
+  },
+
+  closing: {
+    animationDuration: '300ms',
+    animationName: animateOut
   },
 
   viewport: {
@@ -101,7 +133,9 @@ const styleThunk = () => ({
     boxShadow: ui.modalBoxShadow,
     borderRadius: ui.modalBorderRadius,
     padding: '2rem',
-    width: '30rem'
+    width: '30rem',
+    animationName: animateIn,
+    animationDuration: '300ms'
   },
 
 });
