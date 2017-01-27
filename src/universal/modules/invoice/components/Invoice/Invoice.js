@@ -125,7 +125,7 @@ const styleThunk = () => ({
     boxShadow: '0 .125rem .25rem 0 rgba(0, 0, 0, .5)',
     color: appTheme.palette.dark,
     margin: '0 auto',
-    maxWidth: '32rem',
+    maxWidth: '37.5rem',
     padding: invoiceGutterSmall,
 
     [breakpoint]: {
