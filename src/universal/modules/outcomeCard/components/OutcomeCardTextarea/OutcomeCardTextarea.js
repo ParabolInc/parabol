@@ -10,7 +10,7 @@ import LinkNewTab from 'universal/components/LinkNewTab/LinkNewTab';
 class OutcomeCardTextArea extends Component {
   static propTypes = {
     cardHasHover: PropTypes.bool,
-    doFocus: PropTypes.bool,
+    doSubmitOnEnter: PropTypes.bool,
     editingStatus: PropTypes.any,
     handleActive: PropTypes.func,
     handleSubmit: PropTypes.func,
@@ -53,7 +53,7 @@ class OutcomeCardTextArea extends Component {
 
   renderEditing() {
     const {
-      doFocus,
+      doSubmitOnEnter,
       handleSubmit,
       input,
       isProject,
@@ -76,16 +76,30 @@ class OutcomeCardTextArea extends Component {
         handleSubmit();
       }
     };
+    let textAreaRef;
+    const setRef = (c) => {
+      textAreaRef = c;
+    };
+
+    const submitOnEnter = (e) => {
+       // hitting enter (not shift+enter) submits the textarea
+      if (e.key === 'Enter' && !e.shiftKey) {
+        textAreaRef.blur();
+      }
+    };
+
     return (
       <Textarea
         {...input}
+        ref={setRef}
         className={contentStyles}
         disabled={isArchived}
         maxLength="255"
         placeholder="Type your outcome here"
         onBlur={handleBlur}
         onDrop={null}
-        autoFocus={doFocus}
+        onKeyDown={doSubmitOnEnter ? submitOnEnter : null}
+        autoFocus
       />
     );
   }
