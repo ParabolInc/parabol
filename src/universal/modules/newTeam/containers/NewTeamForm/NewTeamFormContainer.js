@@ -5,6 +5,7 @@ import shortid from 'shortid';
 import {withRouter} from 'react-router';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
+import addOrgSchema from 'universal/validation/addOrgSchema';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
 import {connect} from 'react-redux';
 import NewTeamForm from 'universal/modules/newTeam/components/NewTeamForm/NewTeamForm';
@@ -46,7 +47,8 @@ const mapStateToProps = (state) => {
 const NewTeamFormContainer = (props) => {
   const {dispatch, initialValues, isNewOrg, organizations, router} = props;
   const onSubmit = (submittedData) => {
-    const schema = makeAddTeamSchema();
+    const {isNewOrg} = props;
+    const schema = isNewOrg ? addOrgSchema() : makeAddTeamSchema();
     const {data: {teamName, inviteesRaw}} = schema(submittedData);
     const invitees = emailAddresses.parseAddressList(inviteesRaw);
     const serverInvitees = invitees ? invitees.map(email => ({

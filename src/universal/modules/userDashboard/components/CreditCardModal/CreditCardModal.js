@@ -83,34 +83,43 @@ const validate = (values, props) => {
 };
 
 const CreditCardModal = (props) => {
-  const {createToken, handleSubmit, handleToken, isUpdate, closePortal, orgId, styles, isClosing} = props;
+  const {createToken, handleSubmit, handleToken, isUpdate, closePortal, orgId, styles, submitting, isClosing} = props;
   const crudAction = isUpdate ? 'Update' : 'Add';
-  const addStripeBilling = async(submittedData) => {
-    const {creditCardNumber: number, expiry, cvc} = submittedData;
-    const [exp_month, exp_year] = expiry.split('/');
-    const {error, id: stripeToken} = await createToken({number, exp_month, exp_year, cvc});
-    if (error) {
-      const errorMessage = {_error: error.message};
-      const field = stripeFieldLookup[error.param];
-      if (field) {
-        errorMessage[field.name] = field.message;
+  const addStripeBilling = (submittedData) => {
+    return new Promise( async (resolve, reject) => {
+      const {creditCardNumber: number, expiry, cvc} = submittedData;
+      const [exp_month, exp_year] = expiry.split('/');
+      const {error, id: stripeToken} = await createToken({number, exp_month, exp_year, cvc});
+      if (error) {
+        const errorMessage = {_error: error.message};
+        const field = stripeFieldLookup[error.param];
+        if (field) {
+          errorMessage[field.name] = field.message;
+        }
+        reject(errorMessage)
       }
-      throw new SubmissionError(errorMessage)
-    }
-    if (handleToken) {
-      // without an orgId, assume a cb is provided
-      handleToken(stripeToken);
-    }
-    if (orgId) {
-      const variables = {
-        orgId,
-        stripeToken
-      };
-      cashay.mutate('addBilling', {variables});
-    }
+      if (handleToken) {
+        // without an orgId, assume a cb is provided
+        handleToken(stripeToken);
+        closePortal();
+        resolve();
+      }
+      if (orgId) {
+        const variables = {
+          orgId,
+          stripeToken
+        };
+        const {error} = await cashay.mutate('addBilling', {variables});
+        if (error) {
+          reject(error);
+        } else {
+          closePortal();
+          resolve();
+        }
+      }
+    })
 
   };
-
   return (
     <DashModal onBackdropClick={closePortal} inputModal isClosing={isClosing}>
       <div className={css(styles.modalBody)}>
@@ -168,6 +177,7 @@ const CreditCardModal = (props) => {
           <div className={css(styles.cancelButton)}>
             <Button
               colorPalette="gray"
+              disabled={submitting}
               isBlock
               label="Cancel"
               size="small"
@@ -177,6 +187,7 @@ const CreditCardModal = (props) => {
           <div className={css(styles.updateButton)}>
             <Button
               colorPalette="cool"
+              disabled={submitting}
               isBlock
               label={crudAction}
               size="small"
@@ -288,8 +299,8 @@ const stripeCb = () => {
 };
 
 export default portal({escToClose: true, animated: true})(
-  reduxForm({form: 'creditCardInfo', validate})(
-    withAsync({'https://js.stripe.com/v2/': stripeCb})(
+  withAsync({'https://js.stripe.com/v2/': stripeCb})(
+    reduxForm({form: 'creditCardInfo', validate})(
       withStyles(styleThunk)(
         CreditCardModal
       )

@@ -24,7 +24,6 @@ const DashModal = (props) => {
     inputModal && styles.inputModal,
     isClosing && styles.closing
   );
-  console.log('isClosing', isClosing)
   const onClick = (e) => {
     if (e.target === e.currentTarget) {
       onBackdropClick();
@@ -100,7 +99,7 @@ const styleThunk = () => ({
   },
 
   closing: {
-    animationDuration: '300ms',
+    animationDuration: '100ms',
     animationName: animateOut
   },
 
@@ -135,7 +134,7 @@ const styleThunk = () => ({
     padding: '2rem',
     width: '30rem',
     animationName: animateIn,
-    animationDuration: '300ms'
+    animationDuration: '200ms'
   },
 
 });

@@ -9,11 +9,13 @@ import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 import {Field, reduxForm} from 'redux-form';
 import DropdownInput from 'universal/modules/dropdown/components/DropdownInput/DropdownInput';
 import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
+import addOrgSchema from 'universal/validation/addOrgSchema';
 import CreditCardModal from 'universal/modules/userDashboard/components/CreditCardModal/CreditCardModal';
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
 
-const validate = (values) => {
-  const schema = makeAddTeamSchema();
+const validate = (values, props) => {
+  const {isNewOrg} = props;
+  const schema = isNewOrg ? addOrgSchema() : makeAddTeamSchema();
   return schema(values).errors;
 };
 
@@ -33,7 +35,7 @@ const NewTeamForm = (props) => {
     <form className={css(styles.form)} onSubmit={handleSubmit}>
       <h1 className={css(styles.heading)}>Create a New Team</h1>
       <div className={css(styles.formBlock)}>
-        {!isNewOrg ?
+        {isNewOrg ?
           <div>
             <Field
               autoFocus
@@ -57,8 +59,6 @@ const NewTeamForm = (props) => {
                 The members that you invite will be prorated on their
                 join date and added to your second invoice.
                   <CreditCardModal
-                    onBackdropClick={() => {
-                    }}
                     handleToken={setToken}
                     toggle={addBilling}
                   />

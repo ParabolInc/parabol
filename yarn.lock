@@ -5197,9 +5197,9 @@ react-addons-test-utils@15.4.0, react-addons-test-utils@^15.0.1:
   version "15.4.0"
   resolved "https://registry.yarnpkg.com/react-addons-test-utils/-/react-addons-test-utils-15.4.0.tgz#bd326904916b80de6a466248ef52cdfc1799e963"
 
-react-async-hoc@^0.1.0:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/react-async-hoc/-/react-async-hoc-0.1.2.tgz#96aa536bac9e8053b2e7dfbc398bfe3b8efe1f80"
+react-async-hoc@0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/react-async-hoc/-/react-async-hoc-0.2.0.tgz#70f1a23737a739d98fb159f8c4faebdfa88c0dfc"
 
 react-copy-to-clipboard@^4.2.3:
   version "4.2.3"

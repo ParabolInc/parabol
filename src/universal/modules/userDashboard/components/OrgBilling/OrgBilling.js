@@ -6,29 +6,30 @@ import FontAwesome from 'react-fontawesome';
 import InvoiceRow from 'universal/modules/userDashboard/components/InvoiceRow/InvoiceRow';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
-import {togglePaymentModal} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
 import ActiveTrialCallOut from '../ActiveTrialCallOut/ActiveTrialCallOut';
 import ExpiredTrialCallOut from '../ExpiredTrialCallOut/ExpiredTrialCallOut';
+import CreditCardModal from 'universal/modules/userDashboard/components/CreditCardModal/CreditCardModal';
 
 const OrgBilling = (props) => {
   const {
     invoices,
-    dispatch,
     styles,
     org
   } = props;
-  const {creditCard, isTrial, validUntil} = org;
+  const {creditCard, id: orgId, isTrial, validUntil} = org;
   const {brand, last4, expiry} = creditCard;
-  const openPaymentModal = () => {
-    dispatch(togglePaymentModal());
-  };
   const now = new Date();
   const activeTrial = isTrial && validUntil > now;
   const expiredTrial = isTrial && validUntil < now;
+  const update = <Button
+    colorPalette="cool"
+    label="Update"
+    size="small"
+  />;
   return (
     <div>
-      {activeTrial && <ActiveTrialCallOut validUntil={validUntil} onClick={openPaymentModal} />}
-      {expiredTrial && <ExpiredTrialCallOut onClick={openPaymentModal} />}
+      {activeTrial && <ActiveTrialCallOut validUntil={validUntil} orgId={orgId} />}
+      {expiredTrial && <ExpiredTrialCallOut orgId={orgId} />}
       <Panel label="Credit Card Information">
         <div className={css(styles.infoAndUpdate)}>
           <div className={css(styles.creditCardInfo)}>
@@ -36,12 +37,7 @@ const OrgBilling = (props) => {
             <span className={css(styles.creditCardProvider)}>{brand}</span>
             <span className={css(styles.creditCardNumber)}>•••• •••• •••• {last4}</span>
           </div>
-          <Button
-            colorPalette="cool"
-            label="Update"
-            onClick={openPaymentModal}
-            size="small"
-          />
+          <CreditCardModal orgId={orgId} toggle={update}/>
         </div>
       </Panel>
       <Panel label="Invoices">
