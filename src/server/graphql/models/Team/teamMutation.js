@@ -1,5 +1,12 @@
 import getRethink from 'server/database/rethinkDriver';
-import {ensureUniqueId, ensureUserInOrg, getUserId, requireAuth, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {
+  ensureUniqueId,
+  ensureUserInOrg,
+  getUserId,
+  requireAuth,
+  requireSUOrTeamMember,
+  requireWebsocket
+} from 'server/utils/authorization';
 import {errorObj, handleSchemaErrors} from 'server/utils/utils';
 import {TRIAL_PERIOD} from 'server/utils/serverConstants';
 import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
@@ -482,27 +489,21 @@ export default {
                 inviter: r.table('User').get(userId).pluck('preferredName', 'id')
               }
             });
-          const parentId = shortid.generate();
-          const notificationIds = billingLeaders.reduce((obj, billingLeaderId) => {
-            obj[billingLeaderId] = shortid.generate();
+          const notificationIds = outOfOrgEmails.reduce((obj, email) => {
+            obj[email] = shortid.generate();
             return obj;
           }, {});
           // send a new notification to each billing leader concerning each out-of-org invitee
           await r.expr(outOfOrgEmails)
             .forEach((invitee) => {
-              return r.expr(billingLeaders)
-                .forEach((billingLeader) => {
-                  return r.table('Notification')
-                    .insert({
-                      id: notificationIds[billingLeader],
-                      parentId,
-                      type: REQUEST_NEW_USER,
-                      startAt: new Date(),
-                      endAt: new Date(Date.now() + ms('10y')),
-                      orgId,
-                      userId: billingLeader,
-                      varList: [inviter.id, invitee, teamId]
-                    })
+              return r.table('Notification')
+                .insert({
+                  id: r.expr(notificationIds)(invitee),
+                  type: REQUEST_NEW_USER,
+                  startAt: new Date(),
+                  orgId,
+                  userIds: [billingLeaders],
+                  varList: [inviter.id, invitee, teamId]
                 })
             });
           // TODO: send a toast???
@@ -584,15 +585,13 @@ export default {
       })
         .do(() => {
           return r.table('Notification').insert({
-              id: expiresSoonId,
-              parentId: expiresSoonId,
-              type: TRIAL_EXPIRES_SOON,
-              startAt: new Date(now + ms('14d')),
-              endAt: trialExpiresAt,
-              orgId,
-              userId,
-              varList: [trialExpiresAt]
-            })
+            id: expiresSoonId,
+            type: TRIAL_EXPIRES_SOON,
+            startAt: new Date(now + ms('14d')),
+            orgId,
+            userIds: [userId],
+            varList: [trialExpiresAt]
+          })
         });
 
       const tms = await createTeamAndLeader(authToken, validNewTeam, true);

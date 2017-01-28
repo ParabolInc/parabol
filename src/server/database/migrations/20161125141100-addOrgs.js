@@ -20,8 +20,7 @@ exports.up = async(r) => {
     r.table('Organization').indexCreate('validUntil'),
     r.table('Team').indexCreate('orgId'),
     r.table('Notification').indexCreate('orgId'),
-    r.table('Notification').indexCreate('parentId'),
-    r.table('Notification').indexCreate('userId'),
+    r.table('Notification').indexCreate('userIds', {multi: true}),
     r.table('User').indexCreate('email'),
     r.table('User').indexCreate('orgs', {multi: true}),
     r.table('User').indexCreate('billingLeaderOrgs', {multi: true}),
@@ -33,7 +32,7 @@ exports.up = async(r) => {
 
   const waitIndices = [
     r.table('Team').indexWait('orgId'),
-    r.table('Notification').indexWait('orgId', 'parentId', 'userId'),
+    r.table('Notification').indexWait('orgId', 'userIds'),
     r.table('User').indexWait('email', 'orgs', 'billingLeaderOrgs')
   ];
   await Promise.all(waitIndices);
@@ -101,11 +100,9 @@ exports.up = async(r) => {
               return r.table('Notification')
                 .insert({
                   id: org('expiresSoonId'),
-                  parentId: org('expiresSoonId'),
                   type: TRIAL_EXPIRES_SOON,
                   startAt: new Date(now.getTime() + ms('14d')),
-                  endAt: org('trialExpiresAt'),
-                  userId: org('userId'),
+                  userIds: [org('userId')],
                   orgId: org('id'),
                   varList: [org('trialExpiresAt')]
                 })

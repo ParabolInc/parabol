@@ -47,6 +47,7 @@ export default {
     const {data: {invitees, newTeam, orgName, stripeToken}, errors} = addOrgValidation()(args);
     const {id: teamId} = newTeam;
     handleSchemaErrors(errors);
+    // this isn't concurrent-safe, but it reduces the risk of conflicting writes
     const ensureUniqueIds = [
       ensureUniqueId('Team', teamId),
       ensureUniqueId('Organization', orgId)
@@ -57,6 +58,10 @@ export default {
     await createTeamAndLeader(userId, newTeam, true);
     if (invitees && invitees.length) {
       await asyncInviteTeam(authToken, teamId, invitees);
+      // create the org
+      r.table('Organization').insert({
+
+      })
     }
     const authTokenObj = socket.getAuthToken();
     authTokenObj.tms = Array.isArray(authTokenObj.tms) ? authTokenObj.tms.concat(teamId) : [teamId];

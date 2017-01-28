@@ -22,18 +22,18 @@ export const Notification = new GraphQLObjectType({
   description: 'A user notification',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique notification id (shortid)'},
-    endAt: {
-      type: GraphQLISO8601Type,
-      description: 'The datetime to deactivate the notification & stop sending it to the client'
-    },
+    // endAt: {
+    //   type: GraphQLISO8601Type,
+    //   description: 'The datetime to deactivate the notification & stop sending it to the client'
+    // },
     orgId: {
       type: GraphQLID,
       description: '*The unique organization ID for this notification. Can be blank for targeted notifications'
     },
-    parentId: {
-      type: GraphQLID,
-      description: '*Unique for the notification content. Not unique if the notification applies to multiple users'
-    },
+    // parentId: {
+    //   type: GraphQLID,
+    //   description: '*Unique for the notification content. Not unique if the notification applies to multiple users'
+    // },
     startAt: {
       type: GraphQLISO8601Type,
       description: 'The datetime to activate the notification & send it to the client'

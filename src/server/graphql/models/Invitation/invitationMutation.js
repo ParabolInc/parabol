@@ -66,7 +66,7 @@ export default {
       const schema = makeInviteTeamMembersSchema(schemaProps);
       const {errors, data: validInvitees} = schema(invitees);
       handleSchemaErrors(errors);
-      const parentNotificationId = validateNotificationId(notificationId, authToken);
+      await validateNotificationId(notificationId, authToken);
 
       // RESOLUTION
       const inactiveTeamMembers = usedEmails.teamMembers.filter((m) => m.isNotRemoved === false);
@@ -84,12 +84,11 @@ export default {
         asyncInviteTeam(authToken, teamId, validInvitees);
       }
 
-      if (parentNotificationId) {
+      if (notificationId) {
         await r.table('Notification')
-          .getAll(parentNotificationId, {index: 'parentId'})
+          .get(notificationId)
           .delete()
       }
-
       return true;
     }
   },

@@ -21,8 +21,8 @@ export default {
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
       const now = new Date();
       r.table('Notification')
-        .getAll(userId, {index: 'userId'})
-        .filter((row) => row('startAt').lt(r.epochTime(now / 1000)).and(row('endAt').gt(r.epochTime(now / 1000))))
+        .getAll(userId, {index: 'userIds'})
+        .filter((row) => row('startAt').lt(r.epochTime(now / 1000)))
         .pluck(requestedFields)
         .changes({includeInitial: true})
         .run({cursor: true}, changefeedHandler);

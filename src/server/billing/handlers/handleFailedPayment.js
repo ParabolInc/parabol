@@ -28,18 +28,14 @@ export default async function handleFailedPayment(customerId) {
   const orgDoc = getOldVal(orgRes);
   const parentId = shortid.generate();
   if (orgDoc.isTrial) {
-    const notifications = userIds.map((userId) => ({
+    await r.table('Notification').insert({
       id: shortid.generate(),
-      parentId,
       type: TRIAL_EXPIRED,
       startAt: now,
-      endAt: new Date(now.getTime() + ms('10y')),
       orgId,
-      userId,
-      // trialExpiresAt
+      userIds,
       varList: [now]
-    }));
-    await r.table('Notification').insert(notifications)
+    })
       .do(() => {
         return r.table('Notification')
           .getAll(orgId, {index: 'orgId'})
@@ -48,17 +44,14 @@ export default async function handleFailedPayment(customerId) {
       })
   } else {
     const {last4, brand} = orgDoc.creditCard || {};
-    const notifications = userIds.map((userId) => ({
+    await r.table('Notification').insert({
       id: shortid.generate(),
-      parentId,
       type: PAYMENT_REJECTED,
       startAt: now,
-      endAt: new Date(now.getTime() + ms('10y')),
       orgId,
-      userId,
+      userIds,
       varList: [last4, brand]
-    }));
-    await r.table('Notification').insert(notifications);
+    });
   }
   // stripe already does this for us (per account settings)
   // await stripe.subscriptions.del(orgDoc.stripeSubscriptionId);

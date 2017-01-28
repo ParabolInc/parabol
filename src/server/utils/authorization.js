@@ -92,14 +92,17 @@ export const requireOrgLeader = async(authToken, orgId) => {
 
 export const validateNotificationId = async (notificationId, authToken) => {
   if (notificationId) {
+    const r = getRethink();
     const userId = getUserId(authToken);
-    const notification = await r.table('Notification').get(notificationId).pluck('userId', 'parentId');
-    if (userId !== notification.userId) {
+    const isOwner = await r.table('Notification')
+      .get(notificationId)
+      .default({})('userIds')
+      .default([])
+      .contains(userId);
+    if (!isOwner) {
       throw errorObj({_error: 'cannot clear someone else\'s notification'});
     }
-    return notification.parentId;
   }
-  return undefined;
 };
 
 export const requireOrgLeaderOfUser = async(authToken, userId) => {
@@ -134,6 +137,7 @@ export const requireTeamIsPaid = async (teamId) => {
 };
 
 // VERY important, otherwise eg a user could "create" a new team with an existing teamId & force join that team
+// this still isn't secure because the resolve could get called twice & make it past this point before 1 of them writes the insert
 export const ensureUniqueId = async (table, id) => {
   const r = getRethink();
   const res = await r.table(table).get(id);
