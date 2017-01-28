@@ -8,7 +8,7 @@ import {
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {notificationTypes} from 'universal/utils/constants';
-import {makeEnumValues} from 'server/graphql/models/utils';
+import makeEnumValues from 'server/graphql/makeEnumValues';
 
 
 export const NotificationType = new GraphQLEnumType({

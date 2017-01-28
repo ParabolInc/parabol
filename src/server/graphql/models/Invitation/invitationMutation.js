@@ -6,8 +6,8 @@ import {
   GraphQLList,
 } from 'graphql';
 import {Invitee} from './invitationSchema';
-import {getUserId, requireSUOrTeamMember, requireWebsocket, validateNotificationId} from '../authorization';
-import {errorObj, handleSchemaErrors} from '../utils';
+import {getUserId, requireSUOrTeamMember, requireWebsocket, validateNotificationId} from 'server/utils/authorization';
+import {errorObj, handleSchemaErrors} from '../../../utils/utils';
 import {
   asyncInviteTeam,
   makeInviteToken,

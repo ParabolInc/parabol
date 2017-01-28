@@ -42,7 +42,7 @@ const NewTeamForm = (props) => {
               colorPalette="gray"
               component={InputField}
               label="Organization Name (required)"
-              name="newOrgName"
+              name="orgName"
               placeholder={randomPlaceholderTheme.orgName}
             />
             <Field

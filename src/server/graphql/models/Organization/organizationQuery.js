@@ -1,7 +1,7 @@
 import getRethink from 'server/database/rethinkDriver';
 import {GraphQLNonNull, GraphQLID} from 'graphql';
 import {Organization} from './organizationSchema';
-import {requireSUOrTeamMember} from '../authorization';
+import {requireSUOrTeamMember} from 'server/utils/authorization';
 
 export default {
   orgDetails: {

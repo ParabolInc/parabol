@@ -1,5 +1,5 @@
 import {errorObj} from './utils';
-import getRethink from 'server/database/rethinkDriver';
+import getRethink from '../database/rethinkDriver';
 
 export const getUserId = authToken => {
   return authToken && typeof authToken === 'object' && authToken.sub;
@@ -133,4 +133,20 @@ export const requireTeamIsPaid = async (teamId) => {
   return true;
 };
 
+// VERY important, otherwise eg a user could "create" a new team with an existing teamId & force join that team
+export const ensureUniqueId = async (table, id) => {
+  const r = getRethink();
+  const res = await r.table(table).get(id);
+  if (res) {
+    throw errorObj({type: 'unique id collision'});
+  }
+};
 
+export const ensureUserInOrg = async (userId, orgId) => {
+  const r = getRethink();
+  const inOrg = await r.table('User').get(userId)('orgs').contains(orgId);
+  if (!inOrg) {
+    throw errorObj({type: `user ${userId} does not belong to org ${orgId}`});
+  }
+  return true;
+};

@@ -4,10 +4,10 @@ import {
   GraphQLNonNull,
   GraphQLID
 } from 'graphql';
-import {getRequestedFields} from '../utils';
+import getRequestedFields from 'server/graphql/getRequestedFields'
 import {Organization} from './organizationSchema';
-import {requireSUOrSelf, requireOrgLeader} from '../authorization';
-import makeChangefeedHandler from '../makeChangefeedHandler';
+import {requireSUOrSelf, requireOrgLeader} from 'server/utils/authorization';
+import makeChangefeedHandler from '../../../utils/makeChangefeedHandler';
 
 export default {
   organizations: {

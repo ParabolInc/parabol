@@ -6,7 +6,7 @@ import getRetink from 'server/database/rethinkDriver';
 import isObject from 'universal/utils/isObject';
 import jwtDecode from 'jwt-decode';
 import stripe from '../billing/stripe';
-import {getOldVal} from 'server/graphql/models/utils';
+import {getOldVal} from '../utils/utils';
 
 // we do this otherwise we'd have to blacklist every token that ever got replaced & query that table for each query
 const isTmsValid = (tmsFromDB, tmsFromToken) => {

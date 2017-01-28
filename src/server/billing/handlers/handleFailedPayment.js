@@ -1,7 +1,7 @@
 import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 import shortid from 'shortid';
-import {getOldVal} from 'server/graphql/models/utils'
+import {getOldVal} from '../../utils/utils'
 import {PAYMENT_REJECTED, TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
 import ms from 'ms';
 

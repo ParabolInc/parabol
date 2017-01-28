@@ -1,9 +1,9 @@
 import getRethink from 'server/database/rethinkDriver';
-import {getRequestedFields} from '../utils';
+import getRequestedFields from 'server/graphql/getRequestedFields'
 import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
 import {User} from './userSchema';
-import makeChangefeedHandler from '../makeChangefeedHandler';
-import {requireOrgLeader} from '../authorization';
+import makeChangefeedHandler from '../../../utils/makeChangefeedHandler';
+import {requireOrgLeader} from 'server/utils/authorization';
 
 export default {
   billingLeaders: {

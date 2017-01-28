@@ -1,20 +1,20 @@
 import getRethink from 'server/database/rethinkDriver';
-import {CreateActionInput, UpdateActionInput} from './actionSchema';
+import {ActionInput} from './actionSchema';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
   GraphQLID
 } from 'graphql';
-import {requireSUOrTeamMember, requireWebsocket} from '../authorization';
+import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import makeActionSchema from 'universal/validation/makeActionSchema';
-import {handleSchemaErrors} from '../utils';
+import {handleSchemaErrors} from '../../../utils/utils';
 export default {
   updateAction: {
     type: GraphQLBoolean,
     description: 'Update a action with a change in content, ownership, or status',
     args: {
       updatedAction: {
-        type: new GraphQLNonNull(UpdateActionInput),
+        type: new GraphQLNonNull(ActionInput),
         description: 'the updated action including the id, and at least one other field'
       },
       rebalance: {
@@ -31,6 +31,7 @@ export default {
       requireWebsocket(socket);
 
       // VALIDATION
+      // TODO make things required like ID
       const schema = makeActionSchema();
       const {errors, data: {id: actionId, ...action}} = schema(updatedAction);
       handleSchemaErrors(errors);
@@ -68,7 +69,7 @@ export default {
     description: 'Create a new action, triggering a CreateCard for other viewers',
     args: {
       newAction: {
-        type: new GraphQLNonNull(CreateActionInput),
+        type: new GraphQLNonNull(ActionInput),
         description: 'The new action including an id, teamMemberId, [agendaId], and sortOrder '
       }
     },
@@ -83,6 +84,7 @@ export default {
       requireWebsocket(socket);
 
       // VALIDATION
+      // TODO make id and teamMemberId required in schema
       const schema = makeActionSchema();
       const {errors, data: validNewAction} = schema(newAction);
       handleSchemaErrors(errors);

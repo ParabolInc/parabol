@@ -1,4 +1,4 @@
-import {requireSUOrTeamMember, requireWebsocketExchange, requireWebsocket} from '../authorization';
+import {requireSUOrTeamMember, requireWebsocketExchange, requireWebsocket} from 'server/utils/authorization';
 import {
   GraphQLNonNull,
   GraphQLBoolean,

@@ -4,16 +4,16 @@ import {
   GraphQLID,
   GraphQLBoolean,
 } from 'graphql';
-import {errorObj, getNewVal, getOldVal} from '../utils';
+import {errorObj, getNewVal, getOldVal} from '../../../utils/utils';
 import {
   requireWebsocket,
   requireSUOrTeamMember,
   requireSUOrSelfOrLead,
   requireSUOrLead,
   requireAuth
-} from '../authorization';
+} from 'server/utils/authorization';
 import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
-import tmsSignToken from 'server/graphql/models/tmsSignToken';
+import tmsSignToken from '../../../utils/tmsSignToken';
 import {JOIN_TEAM, KICK_OUT, PRESENCE} from 'universal/subscriptions/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {

@@ -1,16 +1,16 @@
 import getRethink from 'server/database/rethinkDriver';
-import {CreateProjectInput, UpdateProjectInput} from './projectSchema';
+import {ProjectInput} from './projectSchema';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
   GraphQLString,
   GraphQLID
 } from 'graphql';
-import {requireSUOrTeamMember, requireWebsocket} from '../authorization';
+import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import shortid from 'shortid';
 import ms from 'ms';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
-import {handleSchemaErrors} from '../utils';
+import {handleSchemaErrors} from '../../../utils/utils';
 const DEBOUNCE_TIME = ms('5m');
 
 export default {
@@ -19,7 +19,7 @@ export default {
     description: 'Update a project with a change in content, ownership, or status',
     args: {
       updatedProject: {
-        type: new GraphQLNonNull(UpdateProjectInput),
+        type: new GraphQLNonNull(ProjectInput),
         description: 'the updated project including the id, and at least one other field'
       },
       rebalance: {
@@ -108,7 +108,7 @@ export default {
     description: 'Create a new project, triggering a CreateCard for other viewers',
     args: {
       newProject: {
-        type: new GraphQLNonNull(CreateProjectInput),
+        type: new GraphQLNonNull(ProjectInput),
         description: 'The new project including an id, status, and type, and teamMemberId'
       }
     },
@@ -122,6 +122,7 @@ export default {
       requireWebsocket(socket);
 
       // VALIDATION
+      // TODO make id, status, teamMemberId required
       const schema = makeProjectSchema();
       const {errors, data: validNewProject} = schema(newProject);
       handleSchemaErrors(errors);

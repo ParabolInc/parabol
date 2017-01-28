@@ -1,4 +1,4 @@
-import jsonEqual from 'universal/utils/jsonEqual';
+import jsonEqual from '../../universal/utils/jsonEqual';
 
 const handleRethinkAdd = newVal => {
   return {

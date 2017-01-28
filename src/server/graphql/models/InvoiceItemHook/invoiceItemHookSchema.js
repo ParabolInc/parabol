@@ -9,7 +9,7 @@ import {
   GraphQLUnionType,
   GraphQLBoolean
 } from 'graphql';
-import {makeEnumValues} from '../utils';
+import makeEnumValues from 'server/graphql/makeEnumValues';
 import {
   ADD_USER,
   AUTO_PAUSE_USER,

@@ -44,6 +44,13 @@ export const inviteesRaw = (value) => value
 
 export const id = (value) => value.matches(idRegex);
 
+export const requiredId = (value) => value.required().matches(idRegex);
+
+export const requiredEmail = (value) => value
+  .trim()
+  .required('You should enter an email here')
+  .matches(emailRegex, 'That doesn\'t look like an email address');
+
 export const makeInviteeTemplate = (inviteEmails, teamMemberEmails) => {
   return (value) => value
     .trim()

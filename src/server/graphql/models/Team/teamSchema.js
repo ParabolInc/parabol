@@ -7,9 +7,10 @@ import {
   GraphQLID,
   GraphQLInt,
   GraphQLList,
-  GraphQLEnumType
+  GraphQLEnumType,
+  GraphQLInputObjectType
 } from 'graphql';
-import {makeEnumValues, nonnullifyInputThunk} from '../utils';
+import makeEnumValues from 'server/graphql/makeEnumValues';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {TeamMember} from '../TeamMember/teamMemberSchema';
 import {AgendaItem} from '../AgendaItem/agendaItemSchema';
@@ -34,18 +35,22 @@ export const Team = new GraphQLObjectType({
   description: 'A team',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique team ID'},
+    createdAt: {
+      type: new GraphQLNonNull(GraphQLISO8601Type),
+      description: 'The datetime the team was created'
+    },
     isPaid: {
       type: GraphQLBoolean,
       description: 'true if the underlying org has a validUntil date greater than now. if false, subs do not work'
     },
-    name: {type: GraphQLString, description: 'The name of the team'},
     meetingNumber: {
       type: GraphQLInt,
       description: 'The current or most recent meeting number (also the number of meetings the team has had'
     },
-    createdAt: {
-      type: new GraphQLNonNull(GraphQLISO8601Type),
-      description: 'The datetime the team was created'
+    name: {type: GraphQLString, description: 'The name of the team'},
+    orgId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The organization to which the team belongs'
     },
     updatedAt: {
       type: GraphQLISO8601Type,
@@ -63,10 +68,6 @@ export const Team = new GraphQLObjectType({
     meetingId: {
       type: GraphQLID,
       description: 'The unique Id of the active meeting'
-    },
-    orgId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The organization to which the team belongs'
     },
     activeFacilitator: {
       type: GraphQLID,
@@ -89,14 +90,6 @@ export const Team = new GraphQLObjectType({
       description: 'The current item number for the current phase for the meeting, 1-indexed'
     },
     /* GraphQL sugar */
-    teamMembers: {
-      type: new GraphQLList(TeamMember),
-      description: 'All the team members associated who can join this team',
-      async resolve({id}) {
-        const r = getRethink();
-        return await r.table('TeamMember').getAll(id, {index: 'teamId'});
-      }
-    },
     agendaItems: {
       type: new GraphQLList(AgendaItem),
       description: 'The agenda items for the upcoming or current meeting',
@@ -104,15 +97,23 @@ export const Team = new GraphQLObjectType({
         const r = getRethink();
         return await r.table('AgendaItem').getAll(id, {index: 'teamId'});
       }
+    },
+    teamMembers: {
+      type: new GraphQLList(TeamMember),
+      description: 'All the team members associated who can join this team',
+      async resolve({id}) {
+        const r = getRethink();
+        return await r.table('TeamMember').getAll(id, {index: 'teamId'});
+      }
     }
   })
 });
 
-const teamInputThunk = () => ({
-  id: {type: GraphQLID, description: 'The unique team ID'},
-  name: {type: GraphQLString, description: 'The name of the team'},
-  orgId: {type: GraphQLID, description: 'The unique orginization ID that pays for the team'},
+export const TeamInput =  new GraphQLInputObjectType({
+  name: 'TeamInput',
+  fields: () => ({
+    id: {type: GraphQLID, description: 'The unique team ID'},
+    name: {type: GraphQLString, description: 'The name of the team'},
+    orgId: {type: GraphQLID, description: 'The unique orginization ID that pays for the team'},
+  })
 });
-
-export const CreateTeamInput = nonnullifyInputThunk('CreateTeamInput', teamInputThunk, ['id', 'name']);
-export const UpdateTeamInput = nonnullifyInputThunk('UpdateTeamInput', teamInputThunk, ['id']);

@@ -1,6 +1,6 @@
 import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
-import {getNewVal} from 'server/graphql/models/utils';
+import {getNewVal} from '../../utils/utils';
 import {ACTION_MONTHLY} from 'server/utils/serverConstants';
 import {TRIAL_EXPIRED} from 'universal/utils/constants';
 

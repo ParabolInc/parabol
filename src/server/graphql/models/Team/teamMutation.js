@@ -1,6 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
-import {getUserId, requireAuth, requireSUOrTeamMember, requireWebsocket} from '../authorization';
-import {ensureUniqueId, ensureUserInOrg, errorObj, handleSchemaErrors} from '../utils';
+import {ensureUniqueId, ensureUserInOrg, getUserId, requireAuth, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {errorObj, handleSchemaErrors} from 'server/utils/utils';
 import {TRIAL_PERIOD} from 'server/utils/serverConstants';
 import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
 import {
@@ -11,7 +11,7 @@ import {
   GraphQLInt,
   GraphQLList
 } from 'graphql';
-import {CreateTeamInput, UpdateTeamInput} from './teamSchema';
+import {TeamInput} from './teamSchema';
 import {asyncInviteTeam} from 'server/graphql/models/Invitation/helpers';
 import shortid from 'shortid';
 import {
@@ -28,7 +28,7 @@ import {
 } from 'universal/utils/constants';
 import addSeedProjects from './helpers/addSeedProjects';
 import createTeamAndLeader from './helpers/createTeamAndLeader';
-import tmsSignToken from 'server/graphql/models/tmsSignToken';
+import tmsSignToken from '../../../utils/tmsSignToken';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
@@ -407,11 +407,23 @@ export default {
     description: 'Create a new team and add the first team member',
     args: {
       newTeam: {
-        type: new GraphQLNonNull(CreateTeamInput),
+        type: new GraphQLNonNull(TeamInput),
         description: 'The new team object with exactly 1 team member'
       },
       invitees: {
         type: new GraphQLList(new GraphQLNonNull(Invitee))
+      },
+      orgId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The orgId of the new or existing team'
+      },
+      orgName: {
+        type: GraphQLString,
+        description: 'The name of the new team'
+      },
+      stripeToken: {
+        type: GraphQLString,
+        description: 'The CC info for the new team'
       }
     },
     async resolve(source, args, {authToken, socket}) {
@@ -434,7 +446,7 @@ export default {
       const authTokenObj = socket.getAuthToken();
       authTokenObj.tms = Array.isArray(authTokenObj.tms) ? authTokenObj.tms.concat(teamId) : [teamId];
       socket.setAuthToken(authTokenObj);
-      await createTeamAndLeader(authToken, newTeam);
+      await createTeamAndLeader(userId, newTeam);
       if (invitees && invitees.length) {
         const inviteeEmails = invitees.map((i) => i.email);
         const orgMemberInvitees = await r.table('User')
@@ -505,7 +517,7 @@ export default {
     description: 'Create a new team and add the first team member. Called from the welcome wizard',
     args: {
       newTeam: {
-        type: new GraphQLNonNull(CreateTeamInput),
+        type: new GraphQLNonNull(TeamInput),
         description: 'The new team object with exactly 1 team member'
       }
     },
@@ -535,8 +547,7 @@ export default {
         r.table('User').get(userId)('trialOrg'),
         null,
         r.table('User').get(userId).update({
-          billingLeaderOrgs: [orgId],
-          orgs: [orgId],
+          // billingLeaderOrgs and orgs handled in createTeamAndLeader
           trialOrg: orgId,
           updatedAt: now
         }));
@@ -584,7 +595,7 @@ export default {
             })
         });
 
-      const tms = await createTeamAndLeader(authToken, validNewTeam);
+      const tms = await createTeamAndLeader(authToken, validNewTeam, true);
       // Asynchronously create seed projects for team leader:
       // TODO: remove me after more
       addSeedProjects(authToken.sub, newTeam.id);
@@ -624,7 +635,7 @@ export default {
     type: GraphQLBoolean,
     args: {
       updatedTeam: {
-        type: new GraphQLNonNull(UpdateTeamInput),
+        type: new GraphQLNonNull(TeamInput),
         description: 'The input object containing the teamId and any modified fields'
       }
     },

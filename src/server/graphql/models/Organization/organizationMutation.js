@@ -6,10 +6,12 @@ import {
   GraphQLID,
   GraphQLInt,
   GraphQLString,
+  GraphQLList
 } from 'graphql';
-import {requireOrgLeader, requireOrgLeaderOfUser, requireWebsocket} from '../authorization';
+import {requireOrgLeader, requireOrgLeaderOfUser, requireWebsocket} from 'server/utils/authorization';
 import updateOrgServerSchema from 'universal/validation/updateOrgServerSchema';
-import {errorObj, handleSchemaErrors, getOldVal, getS3PutUrl, validateAvatarUpload} from '../utils';
+import {errorObj, handleSchemaErrors, getOldVal, validateAvatarUpload} from 'server/utils/utils';
+import getS3PutUrl from 'server/utils/getS3PutUrl';
 import stripe from 'server/billing/stripe';
 import {TRIAL_EXTENSION} from 'server/utils/serverConstants';
 import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
@@ -21,8 +23,9 @@ import {
   MAX_MONTHLY_PAUSES
 } from 'server/utils/serverConstants';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
-import {GraphQLURLType} from '../types';
+import {GraphQLURLType} from '../../types';
 import shortid from 'shortid';
+import addOrg from 'server/graphql/models/Organization/addOrg/addOrg'
 
 export default {
   updateOrg: {
@@ -271,4 +274,5 @@ export default {
       return await getS3PutUrl(contentType, contentLength, partialPath);
     }
   },
+  addOrg
 };

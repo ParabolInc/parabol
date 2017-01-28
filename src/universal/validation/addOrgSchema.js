@@ -6,7 +6,7 @@ export default function addOrgSchema() {
   return legitify({
     inviteesRaw,
     teamName,
-    newOrgName: orgName,
+    orgName,
     stripeToken: (value) => value
       .required('Something fishy is going on here....')
       .matches(idRegex)
