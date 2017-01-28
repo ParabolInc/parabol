@@ -216,7 +216,10 @@ export default {
         .do(() => r.table('User').get(id).update(validUpdatedUser, {returnChanges: true}));
       const asyncPromises = [
         dbWork,
-        auth0ManagementClient.users.updateAppMetadata({id}, {preferredName: validUpdatedUser.preferredName})
+        auth0ManagementClient.users.updateAppMetadata({id}, {
+          picture: validUpdatedUser.picture,
+          preferredName: validUpdatedUser.preferredName
+        })
       ];
       const [dbProfile] = await Promise.all(asyncPromises);
       //
