@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.14.2 - 29-Jan-2017
+### Fixes
+- #646 the first-time message meeting completion message was not displaying
+- #659 auth0 profile picture meta-information now updated when user changes
+  profile image
+
 ## v0.14.1 - 16-Jan-2017
 ### Added
 - Adopted CircleCI 2.0 beta. See [circle.yml](circle.yml). Now deploys
