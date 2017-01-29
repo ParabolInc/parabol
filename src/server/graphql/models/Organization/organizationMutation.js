@@ -6,20 +6,15 @@ import {
   GraphQLID,
   GraphQLInt,
   GraphQLString,
-  GraphQLList
 } from 'graphql';
 import {requireOrgLeader, requireOrgLeaderOfUser, requireWebsocket} from 'server/utils/authorization';
 import updateOrgServerSchema from 'universal/validation/updateOrgServerSchema';
 import {errorObj, handleSchemaErrors, getOldVal, validateAvatarUpload} from 'server/utils/utils';
 import getS3PutUrl from 'server/utils/getS3PutUrl';
 import stripe from 'server/billing/stripe';
-import {TRIAL_EXTENSION} from 'server/utils/serverConstants';
-import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
 import {
-  ADD_USER,
   PAUSE_USER,
   REMOVE_USER,
-  UNPAUSE_USER,
   MAX_MONTHLY_PAUSES
 } from 'server/utils/serverConstants';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
@@ -91,71 +86,7 @@ export default {
       return true;
     }
   },
-  addBilling: {
-    type: GraphQLBoolean,
-    description: 'Add a credit card by passing in a stripe token encoded with all the billing details',
-    args: {
-      orgId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'the org requesting the changed billing'
-      },
-      stripeToken: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The token that came back from stripe'
-      }
-    },
-    async resolve(source, {orgId, stripeToken}, {authToken, socket}) {
-      const r = getRethink();
-
-      // AUTH
-      requireWebsocket(socket);
-      const userId = await requireOrgLeader(authToken, orgId);
-
-      // RESOLUTION
-      const now = new Date();
-      const {stripeId, trialExpiresAt} = await r.table('Organization').get(orgId)
-        .pluck('stripeId', 'trialExpiresAt');
-      const customer = await stripe.customers.update(stripeId, {source: stripeToken});
-      const card = customer.sources.data.find((source) => source.id === customer.default_source);
-      const {brand, last4, exp_month: expMonth, exp_year: expYear} = card;
-      const expiry = `${expMonth}/${String(expYear).substr(2)}`;
-      const {isTrial, stripeSubscriptionId, validUntil} = await r.table('Organization')
-        .get(orgId)
-        .pluck('isTrial', 'validUntil', 'stripeSubscriptionId');
-
-      let nowValidUntil = validUntil;
-      const promises = [];
-      if (isTrial && validUntil > now) {
-        nowValidUntil = new Date(nowValidUntil.setMilliseconds(0) + TRIAL_EXTENSION);
-        const extendTrial = stripe.subscriptions.update(stripeSubscriptionId, {
-          trial_end: nowValidUntil / 1000
-        });
-        promises.push(extendTrial);
-      }
-      const updateOrg = r.table('Organization').get(orgId)
-        .update({
-          creditCard: {
-            brand,
-            last4,
-            expiry
-          },
-          validUntil: nowValidUntil
-        });
-      promises.push(updateOrg);
-
-
-      if (validUntil !== nowValidUntil) {
-        // remove the oustanding notifications
-        promises.push(r.table('Notification')
-          .getAll(orgId, {index: 'orgId'})
-          .filter({
-            type: TRIAL_EXPIRES_SOON
-          })
-          .delete());
-      }
-      await Promise.all(promises);
-    }
-  },
+  addBilling,
   inactivateUser: {
     type: GraphQLBoolean,
     description: 'pauses the subscription for a single user',

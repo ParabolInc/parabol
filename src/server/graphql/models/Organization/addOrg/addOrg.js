@@ -14,6 +14,8 @@ import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
 import addOrgValidation from 'server/graphql/models/Organization/addOrg/addOrgValidation';
 import createTeamAndLeader from 'server/graphql/models/Team/helpers/createTeamAndLeader';
 import {asyncInviteTeam} from 'server/graphql/models/Invitation/helpers';
+import createStripeOrg from 'server/graphql/models/Organization/addOrg/createStripeOrg';
+import createStripeBilling from 'server/graphql/models/Organization/addBilling/createStripeBilling';
 
 export default {
   type: GraphQLBoolean,
@@ -37,6 +39,7 @@ export default {
   },
   async resolve(source, args, {authToken, socket}) {
     const r = getRethink();
+    const now = new Date();
 
     // AUTH
     const {orgId} = args.newTeam;
@@ -55,14 +58,21 @@ export default {
     await Promise.all(ensureUniqueIds);
 
     // RESOLUTION
-    await createTeamAndLeader(userId, newTeam, true);
+    const teamOrgInvitations = [
+      createTeamAndLeader(userId, newTeam, true),
+      createStripeOrg(orgId, orgName, false, now)
+    ];
     if (invitees && invitees.length) {
-      await asyncInviteTeam(authToken, teamId, invitees);
-      // create the org
-      r.table('Organization').insert({
-
-      })
+      teamOrgInvitations.push(asyncInviteTeam(authToken, teamId, invitees));
     }
+    await Promise.all(teamOrgInvitations);
+
+    // add the CC info, requires the org to be created so we have to wait
+    await createStripeBilling(orgId, stripeToken);
+
+    // TODO add activeUsers on the Organization table instead of activeUserCount.
+    // That way, we can index on it & subscribe to all the users orgs
+
     const authTokenObj = socket.getAuthToken();
     authTokenObj.tms = Array.isArray(authTokenObj.tms) ? authTokenObj.tms.concat(teamId) : [teamId];
     socket.setAuthToken(authTokenObj);

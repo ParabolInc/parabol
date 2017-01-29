@@ -8,7 +8,6 @@ import {
   requireWebsocket
 } from 'server/utils/authorization';
 import {errorObj, handleSchemaErrors} from 'server/utils/utils';
-import {TRIAL_PERIOD} from 'server/utils/serverConstants';
 import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
 import {
   GraphQLNonNull,
@@ -42,11 +41,9 @@ import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeS
 import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 import makeStep2Schema from 'universal/validation/makeStep2Schema';
 import makeAddTeamServerSchema from 'universal/validation/makeAddTeamServerSchema';
-import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED, REQUEST_NEW_USER} from 'universal/utils/constants';
+import {TRIAL_EXPIRES_SOON, REQUEST_NEW_USER} from 'universal/utils/constants';
 import ms from 'ms';
-import stripe from 'server/billing/stripe';
-import {ACTION_MONTHLY, TRIAL_PERIOD_DAYS} from 'server/utils/serverConstants';
-import {fromStripeDate} from 'server/billing/stripeDate';
+import createStripeOrg from 'server/graphql/models/Organization/addOrg/createStripeOrg';
 
 export default {
   moveMeeting: {
@@ -557,43 +554,17 @@ export default {
       }
       const validNewTeam = {...data, orgId};
       const expiresSoonId = shortid.generate();
-      const {id: stripeId} = await stripe.customers.create({
-        metadata: {
-          orgId
-        }
+      const orgName = `${user.preferredName}'s Org`;
+      const {validUntil} = await createStripeOrg(orgId, orgName, true, now);
+      await r.table('Notification').insert({
+        id: expiresSoonId,
+        type: TRIAL_EXPIRES_SOON,
+        startAt: new Date(now + ms('14d')),
+        orgId,
+        userIds: [userId],
+        // trialExpiresAt
+        varList: [validUntil]
       });
-      const {id: stripeSubscriptionId, trial_end} = await stripe.subscriptions.create({
-        customer: stripeId,
-        metadata: {
-          orgId
-        },
-        plan: ACTION_MONTHLY,
-        trial_period_days: TRIAL_PERIOD_DAYS
-      });
-      const trialExpiresAt = fromStripeDate(trial_end);
-      await r.table('Organization').insert({
-        id: orgId,
-        activeUserCount: 1,
-        createdAt: now,
-        inactiveUserCount: 0,
-        isTrial: true,
-        name: `${user.preferredName}'s Org`,
-        stripeId,
-        stripeSubscriptionId,
-        updatedAt: now,
-        validUntil: trialExpiresAt
-      })
-        .do(() => {
-          return r.table('Notification').insert({
-            id: expiresSoonId,
-            type: TRIAL_EXPIRES_SOON,
-            startAt: new Date(now + ms('14d')),
-            orgId,
-            userIds: [userId],
-            varList: [trialExpiresAt]
-          })
-        });
-
       const tms = await createTeamAndLeader(authToken, validNewTeam, true);
       // Asynchronously create seed projects for team leader:
       // TODO: remove me after more
