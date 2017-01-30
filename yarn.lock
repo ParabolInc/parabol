@@ -244,16 +244,6 @@ assertion-error@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/assertion-error/-/assertion-error-1.0.2.tgz#13ca515d86206da0bac66e834dd397d87581094c"
 
-assets-webpack-plugin@^3.5.1:
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/assets-webpack-plugin/-/assets-webpack-plugin-3.5.1.tgz#931ce0d66d42e88ed5e7f18d65522943c57a387d"
-  dependencies:
-    camelcase "^1.2.1"
-    escape-string-regexp "^1.0.3"
-    lodash.assign "^3.2.0"
-    lodash.merge "^3.3.2"
-    mkdirp "^0.5.1"
-
 ast-traverse@~0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/ast-traverse/-/ast-traverse-0.1.1.tgz#69cf2b8386f19dcda1bb1e05d68fe359d8897de6"
@@ -1869,6 +1859,24 @@ commoner@~0.10.3:
     q "^1.1.2"
     recast "^0.11.17"
 
+commonmark-react-renderer@^4.2.4:
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/commonmark-react-renderer/-/commonmark-react-renderer-4.3.2.tgz#f30cdebd66141eef45ccd2d82fc00861e1e1f747"
+  dependencies:
+    in-publish "^2.0.0"
+    lodash.assign "^4.2.0"
+    lodash.isplainobject "^4.0.6"
+    pascalcase "^0.1.1"
+    xss-filters "^1.2.6"
+
+commonmark@^0.24.0:
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/commonmark/-/commonmark-0.24.0.tgz#b80de0182c546355643aa15db12bfb282368278f"
+  dependencies:
+    entities "~ 1.1.1"
+    mdurl "~ 1.0.1"
+    string.prototype.repeat "^0.2.0"
+
 component-emitter@1.2.0, component-emitter@~1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/component-emitter/-/component-emitter-1.2.0.tgz#ccd113a86388d06482d03de3fc7df98526ba8efe"
@@ -2433,7 +2441,7 @@ enhanced-resolve@^2.2.0:
     object-assign "^4.0.1"
     tapable "^0.2.3"
 
-entities@^1.1.1, entities@~1.1.1:
+entities@^1.1.1, "entities@~ 1.1.1", entities@~1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/entities/-/entities-1.1.1.tgz#6e5c2d0a5621b5dadaecef80b90edfb5cd7772f0"
 
@@ -3432,6 +3440,10 @@ imurmurhash@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/imurmurhash/-/imurmurhash-0.1.4.tgz#9218b9b2b928a238b13dc4fb6b6d576f231453ea"
 
+in-publish@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/in-publish/-/in-publish-2.0.0.tgz#e20ff5e3a2afc2690320b6dc552682a9c7fadf51"
+
 indent-string@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/indent-string/-/indent-string-2.1.0.tgz#8e2d48348742121b4a8218b7a137e9a52049dc80"
@@ -4060,7 +4072,7 @@ lodash.assign@^3.2.0:
     lodash._createassigner "^3.0.0"
     lodash.keys "^3.0.0"
 
-lodash.assign@^4.0.0, lodash.assign@^4.0.3, lodash.assign@^4.0.6:
+lodash.assign@^4.0.0, lodash.assign@^4.0.3, lodash.assign@^4.0.6, lodash.assign@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/lodash.assign/-/lodash.assign-4.2.0.tgz#0d99f3ccd7a6d261d19bdaeb9245005d285808e7"
 
@@ -4143,6 +4155,10 @@ lodash.isplainobject@^3.0.0, lodash.isplainobject@^3.2.0:
     lodash._basefor "^3.0.0"
     lodash.isarguments "^3.0.0"
     lodash.keysin "^3.0.0"
+
+lodash.isplainobject@^4.0.6:
+  version "4.0.6"
+  resolved "https://registry.yarnpkg.com/lodash.isplainobject/-/lodash.isplainobject-4.0.6.tgz#7c526a52d89b45c45cc690b88163be0497f550cb"
 
 lodash.istypedarray@^3.0.0:
   version "3.0.6"
@@ -4358,6 +4374,10 @@ md5-hex@^1.2.0, md5-hex@^1.3.0:
 md5-o-matic@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/md5-o-matic/-/md5-o-matic-0.1.1.tgz#822bccd65e117c514fab176b25945d54100a03c3"
+
+"mdurl@~ 1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/mdurl/-/mdurl-1.0.1.tgz#fe85b2ec75a59037f2adfec100fd6c601761152e"
 
 media-typer@0.3.0:
   version "0.3.0"
@@ -4891,6 +4911,10 @@ pascal-case@^1.1.0:
     camel-case "^1.1.1"
     upper-case-first "^1.1.0"
 
+pascalcase@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/pascalcase/-/pascalcase-0.1.1.tgz#b363e55e8006ca6fe21784d2db22bd15d7917f14"
+
 password-sheriff@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/password-sheriff/-/password-sheriff-0.4.0.tgz#0d64abcb6c9c74ac5ec9b5c83657c9ae7e0e50e4"
@@ -5335,6 +5359,14 @@ react-hotkey-hoc@^0.2.1:
   resolved "https://registry.yarnpkg.com/react-hotkey-hoc/-/react-hotkey-hoc-0.2.1.tgz#b863f626f75c4bef4c7eeee6fe3c84fbd9802c65"
   dependencies:
     mousetrap "^1.6.0"
+
+react-markdown@^2.4.4:
+  version "2.4.4"
+  resolved "https://registry.yarnpkg.com/react-markdown/-/react-markdown-2.4.4.tgz#26d825438d292e7ca6e292fe76201e1dbf2cfeee"
+  dependencies:
+    commonmark "^0.24.0"
+    commonmark-react-renderer "^4.2.4"
+    in-publish "^2.0.0"
 
 react-notification-system@^0.2.10:
   version "0.2.11"
@@ -6349,6 +6381,10 @@ string-width@^2.0.0:
     is-fullwidth-code-point "^2.0.0"
     strip-ansi "^3.0.0"
 
+string.prototype.repeat@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/string.prototype.repeat/-/string.prototype.repeat-0.2.0.tgz#aba36de08dcee6a5a337d49b2ea1da1b28fc0ecf"
+
 string_decoder@^0.10.25, string_decoder@~0.10.x:
   version "0.10.31"
   resolved "https://registry.yarnpkg.com/string_decoder/-/string_decoder-0.10.31.tgz#62e203bc41766c6c28c9fc84301dab1c5310fa94"
@@ -7076,6 +7112,10 @@ xmlbuilder@2.6.2, xmlbuilder@>=2.4.6:
 xregexp@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/xregexp/-/xregexp-2.0.0.tgz#52a63e56ca0b84a7f3a5f3d61872f126ad7a5943"
+
+xss-filters@^1.2.6:
+  version "1.2.7"
+  resolved "https://registry.yarnpkg.com/xss-filters/-/xss-filters-1.2.7.tgz#59fa1de201f36f2f3470dcac5f58ccc2830b0a9a"
 
 xtend@^4.0.0, xtend@^4.0.1, xtend@~4.0.1:
   version "4.0.1"
