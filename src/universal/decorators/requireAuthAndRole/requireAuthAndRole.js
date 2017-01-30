@@ -40,7 +40,6 @@ export default (role, {
       router: PropTypes.object
     };
 
-
     render() {
       const {auth, dispatch, router} = this.props;
       if (auth === undefined) {
