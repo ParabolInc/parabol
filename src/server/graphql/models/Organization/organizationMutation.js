@@ -21,6 +21,7 @@ import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import {GraphQLURLType} from '../../types';
 import shortid from 'shortid';
 import addOrg from 'server/graphql/models/Organization/addOrg/addOrg'
+import addBilling from 'server/graphql/models/Organization/addBilling/addBilling';
 
 export default {
   updateOrg: {

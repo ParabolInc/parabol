@@ -4,17 +4,15 @@ import {
   ACTIONS_BY_AGENDA,
   AGENDA,
   ARCHIVED_PROJECTS,
-  BILLING_LEADERS,
   INVITATIONS,
   NOTIFICATIONS,
   ORGANIZATION,
   ORGANIZATIONS,
+  OWNED_ORGANIZATIONS,
   TEAM,
   TEAM_MEMBERS,
   PRESENCE,
   PROJECTS,
-  USER,
-  USERS_BY_IDS,
   USERS_BY_ORG
 } from 'universal/subscriptions/constants';
 
@@ -170,6 +168,20 @@ export default [
       }
     }`
   },
+  // {
+  //   channel: OWNED_ORGANIZATIONS,
+  //   string: `
+  //   subscription($userId: ID!) {
+  //     organizations(userId: $userId) {
+  //       id
+  //       activeUserCount
+  //       inactiveUserCount
+  //       isTrial
+  //       name
+  //       picture
+  //     }
+  //   }`
+  // },
   {
     channel: PRESENCE,
     string: `

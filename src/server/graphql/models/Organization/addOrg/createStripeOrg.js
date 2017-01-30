@@ -24,7 +24,7 @@ export default async function createStripeOrg(orgId, orgName, isTrial, userId, n
       id: orgId,
       activeUsers: [userId],
       createdAt: now,
-      inactiveUserCount: 0,
+      inactiveUsers: [],
       isTrial: true,
       name: orgName,
       stripeId,
