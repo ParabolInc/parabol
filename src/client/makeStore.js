@@ -36,7 +36,11 @@ export default async initialState => {
     // add Sentry error reporting:
     middlewares.unshift(ravenMiddleware(window.__ACTION__.sentry)); // eslint-disable-line no-underscore-dangle
     const segmentMiddleware = createTracker();
-    middlewares.unshift(segmentMiddleware);
+    if (window.analytics) {
+      middlewares.unshift(segmentMiddleware);
+    } else {
+      console.warn('segment analytics undefined in production?');
+    }
     store = createStore(reducer, initialState, compose(applyMiddleware(...middlewares)));
   } else {
     // eslint-disable-next-line no-underscore-dangle
@@ -55,7 +59,7 @@ export default async initialState => {
       devtoolsExt || (f => f),
     ));
   }
-  const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY) || '0.0.0';
+  const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY);
   if (APP_VERSION !== versionInStorage) {
     window.localStorage.setItem(APP_VERSION_KEY, APP_VERSION);
     return store;

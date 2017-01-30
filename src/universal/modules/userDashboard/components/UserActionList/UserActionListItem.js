@@ -31,7 +31,6 @@ class UserActionListItem extends Component {
   render() {
     const {
       actionId,
-      content,
       handleActionUpdate,
       handleChecked,
       handleSubmit,
@@ -60,7 +59,7 @@ class UserActionListItem extends Component {
           <Field
             name={actionId}
             component={OutcomeCardTextarea}
-            doFocus={!content}
+            doSubmitOnEnter
             handleSubmit={!isPreview && handleSubmit(handleActionUpdate)}
             isActionListItem
           />
@@ -117,4 +116,3 @@ export default
     withStyles(styleThunk)(
       UserActionListItem
 );
-
