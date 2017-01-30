@@ -10,6 +10,11 @@ import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
 import parseChannel from 'universal/utils/parseChannel';
 import {showInfo, showWarning} from 'universal/modules/notifications/ducks/notifications';
 import {withRouter} from 'react-router';
+import {
+  APP_VERSION_KEY,
+  APP_UPGRADE_PENDING_KEY,
+  APP_UPGRADE_PENDING_RELOAD
+} from 'universal/utils/constants';
 
 const getTeamName = (teamId) => {
   const cashayState = cashay.store.getState().cashay;
@@ -45,6 +50,7 @@ export default ComposedComponent => {
       this.subscribeToPresence({}, this.props);
       this.watchForKickout();
       this.watchForJoin();
+      this.listenForVersion();
     }
     componentWillReceiveProps(nextProps) {
       this.subscribeToPresence(this.props, nextProps);
@@ -108,6 +114,28 @@ export default ComposedComponent => {
           this.watchForJoin(teamId);
         }
       }
+    }
+    listenForVersion() {
+      const {dispatch, router} = this.props;
+      const socket = socketCluster.connect();
+      socket.on('version', (versionOnServer) => {
+        const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY);
+        if (versionOnServer !== versionInStorage) {
+          dispatch(showWarning({
+            title: 'New stuff!',
+            message: 'A new version of action is available',
+            autoDismiss: 0,
+            action: {
+              label: 'Log out and upgrade',
+              callback: () => {
+                router.replace('/signout');
+              }
+            }
+          }));
+          window.sessionStorage.setItem(APP_UPGRADE_PENDING_KEY,
+            APP_UPGRADE_PENDING_RELOAD);
+        }
+      });
     }
 
     render() {
