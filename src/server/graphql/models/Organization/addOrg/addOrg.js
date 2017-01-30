@@ -60,7 +60,7 @@ export default {
     // RESOLUTION
     const teamOrgInvitations = [
       createTeamAndLeader(userId, newTeam, true),
-      createStripeOrg(orgId, orgName, false, now)
+      createStripeOrg(orgId, orgName, false, userId, now)
     ];
     if (invitees && invitees.length) {
       teamOrgInvitations.push(asyncInviteTeam(authToken, teamId, invitees));
@@ -74,8 +74,11 @@ export default {
     // That way, we can index on it & subscribe to all the users orgs
 
     const authTokenObj = socket.getAuthToken();
-    authTokenObj.tms = Array.isArray(authTokenObj.tms) ? authTokenObj.tms.concat(teamId) : [teamId];
-    socket.setAuthToken(authTokenObj);
+    const newAuthTokenObj = {
+      ...authTokenObj,
+      tms: authTokenObj.tms.concat(teamId)
+    };
+    socket.setAuthToken(newAuthTokenObj);
     return true;
   }
 }

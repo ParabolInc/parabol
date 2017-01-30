@@ -18,6 +18,7 @@ exports.up = async(r) => {
   }
   const indices = [
     r.table('Organization').indexCreate('validUntil'),
+    r.table('Organization').indexCreate('activeUsers', {multi: true}),
     r.table('Team').indexCreate('orgId'),
     r.table('Notification').indexCreate('orgId'),
     r.table('Notification').indexCreate('userIds', {multi: true}),
@@ -130,8 +131,8 @@ exports.up = async(r) => {
       return r.table('Organization')
         .get(orgId)
         .update({
-          activeUserCount: r.table('User').getAll(orgId, {index: 'orgs'}).count(),
-          inactiveUserCount: 0
+          activeUsers: r.table('User').getAll(orgId, {index: 'orgs'})('id'),
+          inactiveUsers: []
         }, {nonAtomic: true})
     })
 };

@@ -28,8 +28,16 @@ export default async function adjustUserCount(userId, orgInput, type) {
   const {changes: orgChanges} = await r.table('Organization')
     .getAll(r.args(orgIds), {index: 'id'})
     .update((row) => ({
-      activeUserCount: row('activeUserCount').add(activeDelta),
-      inactiveUserCount: row('inactiveUserCount').add(inactiveDelta),
+      activeUserCount: r.branch(
+        activeDelta === 1,
+        row('activeUsers').append(userId),
+        row('activeUsers').filter((user) => user.ne(userId))),
+      inactiveUserCount: r.branch(
+        inactiveDelta === 1,
+        row('inactiveUsers').append(userId),
+        inactiveDelta === -1,
+        row('inactiveUsers').filter((user) => user.ne(userId)),
+        row('inactiveUsers')),
       updatedAt: now
     }), {returnChanges: true});
 

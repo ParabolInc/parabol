@@ -24,7 +24,7 @@ export default async function handleUpdatedSource(cardId, customerId) {
         expiry
       },
     }, {returnChanges: true});
-  const {activeUserCount, stripeSubscriptionId, stripeId} = getNewVal(orgRes);
+  const {activeUsers, stripeSubscriptionId, stripeId} = getNewVal(orgRes);
   if (!stripeSubscriptionId) {
     // Their subscription was cancelled due to nonpayment, and they just updated payment. Let's make a new subscription for them!
     const {id: stripeSubscriptionId, period_end} = await stripe.subscriptions.create({
@@ -33,7 +33,7 @@ export default async function handleUpdatedSource(cardId, customerId) {
         orgId
       },
       plan: ACTION_MONTHLY,
-      quantity: activeUserCount
+      quantity: activeUsers.length
     });
     // if this was a trial, make it legit now
     await r.table('Organization').get(orgId).update({

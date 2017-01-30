@@ -56,9 +56,10 @@ export const Organization = new GraphQLObjectType({
   description: 'An organization',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique organization ID'},
-    activeUserCount: {
+    // do this instead of activeUserCount so we can index on it & use that to subscribe to all the orgs for a user
+    activeUsers: {
       type: GraphQLInt,
-      description: 'The count of active members that the org is charged for'
+      description: 'The userIds that are active on this org'
     },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
@@ -68,9 +69,9 @@ export const Organization = new GraphQLObjectType({
       type: CreditCard,
       description: 'The safe credit card details'
     },
-    inactiveUserCount: {
+    inactiveUsers: {
       type: GraphQLInt,
-      description: 'The count of inactive members that the org is not charged for'
+      description: 'The userIds that are inactive on this org'
     },
     isTrial: {
       type: GraphQLBoolean,

@@ -4,7 +4,7 @@ import {ACTION_MONTHLY, TRIAL_PERIOD_DAYS} from 'server/utils/serverConstants';
 import {fromStripeDate} from 'server/billing/stripeDate';
 import {getNewVal} from 'server/utils/utils';
 
-export default async function createStripeOrg(orgId, orgName, isTrial, now = new Date()) {
+export default async function createStripeOrg(orgId, orgName, isTrial, userId, now = new Date()) {
   const r = getRethink();
   const {id: stripeId} = await stripe.customers.create({
       metadata: {
@@ -22,7 +22,7 @@ export default async function createStripeOrg(orgId, orgName, isTrial, now = new
   const validUntil = fromStripeDate(period_end);
   const res = await r.table('Organization').insert({
       id: orgId,
-      activeUserCount: 1,
+      activeUsers: [userId],
       createdAt: now,
       inactiveUserCount: 0,
       isTrial: true,

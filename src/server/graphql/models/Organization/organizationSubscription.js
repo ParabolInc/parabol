@@ -30,10 +30,13 @@ export default {
       const billingLeaderOrgs = await r.table('User').get(userId)('billingLeaderOrgs');
       // Note: This is not reactive! If I am on this page & get added to a new org, I won't see it until I refresh
       r.table('Organization')
-        .getAll(r.args(billingLeaderOrgs), {index: 'id'})
-        // .merge((row) => ({
-        //   memberCount: row('members').count()
-        // }))
+        .getAll(userId, {index: 'activeUsers'})
+        .filter((org) => r.table('User').get(userId)('billingLeaderOrgs').contains(org('id')))
+        // .getAll(r.args(billingLeaderOrgs), {index: 'id'})
+        .merge((row) => ({
+          activeUserCount: row('activeUsers').count(),
+          inactiveUserCount: row('inactiveUsers').count()
+        }))
         .pluck(requestedFields)
         .changes({includeInitial: true})
         .run({cursor: true}, changefeedHandler);

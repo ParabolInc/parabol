@@ -555,7 +555,7 @@ export default {
       const validNewTeam = {...data, orgId};
       const expiresSoonId = shortid.generate();
       const orgName = `${user.preferredName}'s Org`;
-      const {validUntil} = await createStripeOrg(orgId, orgName, true, now);
+      const {validUntil} = await createStripeOrg(orgId, orgName, true, userId, now);
       await r.table('Notification').insert({
         id: expiresSoonId,
         type: TRIAL_EXPIRES_SOON,
