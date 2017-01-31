@@ -6,7 +6,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ## v0.15.1 - 31-Jan-2017
 ### Added
-- '(<TAB> saves)' string to OutcomeCard components when editing
+- `(<TAB> saves)` string to OutcomeCard components when editing
 - `npm run test:xunit` command for CircleCI 2.0
 
 ## v0.15.0 - 30-Jan-2017
