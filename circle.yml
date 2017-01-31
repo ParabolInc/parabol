@@ -56,6 +56,8 @@ stages:
         command: |
           mkdir -p $CIRCLE_TEST_REPORTS &&
           npm run test:xunit > $CIRCLE_TEST_REPORTS/action-ava.xml
+        environment:
+          - CIRCLE_TEST_REPORTS: "/home/ubuntu/test-reports/action"
 
       - type: shell
         name: Pre-build DevOps checkout
@@ -119,4 +121,4 @@ stages:
         destination: build
 
       - type: test-results-store
-        path: $CIRCLE_TEST_REPORTS
+        path: /home/ubuntu/test-reports/action
