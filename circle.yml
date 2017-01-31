@@ -119,4 +119,4 @@ stages:
         destination: build
 
       - type: test-results-store
-        path: $CIRCLE_TEST_REPORTSa
+        path: $CIRCLE_TEST_REPORTS
