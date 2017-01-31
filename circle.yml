@@ -7,7 +7,6 @@ stages:
   build:
     workDir: /home/ubuntu/action
     environment:
-      - CIRCLE_TEST_REPORTS: "/home/ubuntu/test-reports"
       - DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       - DEVOPS_WORKDIR: "/home/ubuntu/action-devops"
       - GITHUB_REMOTE_PRODUCTION: "dokku@action-production.parabol.co:web"
@@ -60,7 +59,7 @@ stages:
           ls -l $CIRCLE_TEST_REPORTS
 
         environment:
-          - CIRCLE_TEST_REPORTS: "/home/ubuntu/test-reports/action"
+          - CIRCLE_TEST_REPORTS: "/home/ubuntu/test-reports/junit"
 
       - type: shell
         name: Pre-build DevOps checkout
@@ -124,4 +123,4 @@ stages:
         destination: build
 
       - type: test-results-store
-        path: /home/ubuntu/test-reports/action
+        path: /home/ubuntu/test-reports
