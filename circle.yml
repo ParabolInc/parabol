@@ -7,6 +7,7 @@ stages:
   build:
     workDir: /home/ubuntu/action
     environment:
+      - CIRCLE_TEST_REPORTS: "/home/ubuntu/test-reports"
       - DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       - DEVOPS_WORKDIR: "/home/ubuntu/action-devops"
       - GITHUB_REMOTE_PRODUCTION: "dokku@action-production.parabol.co:web"
@@ -52,7 +53,7 @@ stages:
 
       - type: shell
         name: NPM run test
-        command: npm test
+        command: npm test:xunit > $CIRCLE_TEST_REPORTS/action-ava.xml
 
       - type: shell
         name: Pre-build DevOps checkout
@@ -114,3 +115,6 @@ stages:
       - type: artifacts-store
         path: /home/ubuntu/action/build
         destination: build
+
+      - type: test-results-store
+        path: $CIRCLE_TEST_REPORTSa
