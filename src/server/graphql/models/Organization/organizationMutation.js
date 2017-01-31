@@ -78,12 +78,17 @@ export default {
       // RESOLUTION
       const now = new Date();
       await r.table('User').get(orgId)
-        .update((user) => {
-          return user.merge({
-            billingLeaderOrgs: user('billingLeaderOrgs').filter((id) => id.ne(orgId)),
-            updatedAt: now
-          });
-        });
+        .update((user) => ({
+          userOrgs: user('userOrgs').map((userOrg) => {
+            return r.branch(
+              userOrg('id').eq(orgId),
+              userOrg.merge({
+                role: null
+              })
+            )
+          }),
+          updatedAt: now
+        }));
       return true;
     }
   },
@@ -102,16 +107,30 @@ export default {
 
       // AUTH
       await requireOrgLeaderOfUser(authToken, userId);
-      const res = await r.table('User').get(userId)
-        .update({
-          inactive: true
+      const res = await r.table('Organization').getAll(userId, {index: 'orgUsers'}).update((org) => ({
+        orgUsers: org('orgUsers').map((orgUser) => {
+          return r.branch(
+            orgUser('id').eq(userId),
+            orgUser.merge({
+              inactive: true
+            }),
+            orgUser
+          )
+        })
+      }))
+        .do(() => {
+          return r.table('User').get(userId)
+            .update({
+              inactive: true
+            })
         }, {returnChanges: true});
       const userDoc = getOldVal(res);
       if (!userDoc) {
         // no userDoc means there were no changes, which means inactive was already true
         throw errorObj({_error: `${userId} is already inactive. cannot inactivate twice`})
       }
-      const {orgs: orgIds} = userDoc;
+      const {userOrgs} = userDoc;
+      const orgIds = userOrgs.map(({id}) => id);
       const orgDocs = await r.table('Organization').getAll(r.args(orgIds), {index: 'id'});
 
       const hookPromises = orgDocs.map((orgDoc) => {
@@ -160,18 +179,13 @@ export default {
       const now = new Date();
       const userRes = await r.table('User').get(userId)
         .update((row) => ({
-          orgs: row('orgs').filter((id) => id.ne(orgId)),
-          billingLeaderOrgs: row('billingLeaderOrgs').filter((id) => id.ne(orgId)),
+          userOrgs: row('userOrgs').filter(({id}) => id.ne(orgId)),
           updatedAt: now
         }), {returnChanges: true});
 
       const userDoc = getOldVal(userRes);
       if (!userDoc) {
-        throw errorObj({_error: `${userId} does not exist`});
-      }
-      const {orgs} = userDoc;
-      if (!orgs.includes(orgId)) {
-        throw errorObj({_error: `${userId} is not a part of org ${orgId}`});
+        throw errorObj({_error: `${userId} does not exist in org ${orgId}`});
       }
       await adjustUserCount(userId, orgId, REMOVE_USER);
       return true;

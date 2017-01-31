@@ -7,28 +7,32 @@ import {
   UNPAUSE_USER
 } from 'server/utils/serverConstants';
 
-const getPauseThunk = (inactive) => (userId, updatedAt, r) => (org) => ({
-  orgUsers: org('orgUsers').map((orgUser) => {
-    return r.branch(
-      orgUser('id').eq(userId),
-      orgUser.merge({
-        inactive
-      })
-    )
-  }),
-  updatedAt
-});
+const getPauseThunk = (inactive) => (userId) => (org) => {
+  const r = getRethink();
+  const now = new Date();
+  return {
+    orgUsers: org('orgUsers').map((orgUser) => {
+      return r.branch(
+        orgUser('id').eq(userId),
+        orgUser.merge({
+          inactive
+        })
+      )
+    }),
+    updatedAt: now
+  }
+};
 
-const getAddThunk = (userId, updatedAt, r) => (org) => ({
+const getAddThunk = (userId) => (org) => ({
   orgUsers: org('orgUsers').append({
     id: userId
   }),
-  updatedAt
+  updatedAt: new Date()
 });
 
-const getDeleteThunk = (userId, updatedAt, r) => (org) => ({
+const getDeleteThunk = (userId) => (org) => ({
   orgUsers: org('orgUsers').filter((orgUser) => orgUser('id').ne(userId)),
-  updatedAt
+  updatedAt: new Date()
 });
 
 const typeLookup = {
@@ -46,7 +50,7 @@ import {toStripeDate} from 'server/billing/stripeDate';
 export default async function adjustUserCount(userId, orgInput, type) {
   const r = getRethink();
   const now = new Date();
-  const dbAction = typeLookup[type](userId, now, r);
+  const dbAction = typeLookup[type](userId);
   const orgIds = Array.isArray(orgInput) ? orgInput : [orgInput];
   const {changes: orgChanges} = await r.table('Organization')
     .getAll(r.args(orgIds), {index: 'id'})

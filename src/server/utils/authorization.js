@@ -1,5 +1,6 @@
 import {errorObj} from './utils';
 import getRethink from '../database/rethinkDriver';
+import {BILLING_LEADER} from 'universal/utils/constants';
 
 export const getUserId = authToken => {
   return authToken && typeof authToken === 'object' && authToken.sub;
@@ -83,8 +84,12 @@ export const requireWebsocketExchange = (exchange) => {
 
 export const requireOrgLeader = async(authToken, orgId) => {
   const r = getRethink();
-  const billingLeaderOrgs = await r.table('User').get(authToken.sub)('billingLeaderOrgs');
-  if (!billingLeaderOrgs.includes(orgId)) {
+  const isOrgLeader = await r.table('User').get(authToken.sub)('userOrgs')
+    .filter({
+      role: BILLING_LEADER
+    })
+    .contains((userOrg) => userOrg('id').eq(orgId));
+  if (!isOrgLeader) {
     throw errorObj({_error: 'Unauthorized. Only an org billing Leader can do this'});
   }
   return authToken.sub;
@@ -108,18 +113,23 @@ export const validateNotificationId = async (notificationId, authToken) => {
 export const requireOrgLeaderOfUser = async(authToken, userId) => {
   const r = getRethink();
   const isLeaderOfUser = await r.table('User')
-    .get(authToken.sub)('billingLeaderOrgs')
-    .do((billingLeaderOrgs) => {
+    .get(authToken.sub)('userOrgs')
+    .filter({
+      role: BILLING_LEADER
+    })
+    .map((userOrg) => userOrg('id'))
+    .do((leaderOrgs) => {
       return {
-        billingLeaderOrgs,
-        orgs: r.table('User')
-          .get(userId)('orgs')
+        leaderOrgs,
+        memberOrgs: r.table('User')
+          .get(userId)('userOrgs')
+          .map((userOrg) => userOrg('id'))
       }
     })
     .do((res) => {
-      return res('billingLeaderOrgs')
-        .union(res('orgs')).distinct().count()
-        .lt(res('billingLeaderOrgs').count().add(res('orgs').count()))
+      return res('leaderOrgs')
+        .union(res('memberOrgs')).distinct().count()
+        .lt(res('leaderOrgs').count().add(res('memberOrgs').count()))
     });
   if (!isLeaderOfUser) {
     throw errorObj({_error: 'Unauthorized. Only an billing leader of a user can set this'});
@@ -148,7 +158,7 @@ export const ensureUniqueId = async (table, id) => {
 
 export const ensureUserInOrg = async (userId, orgId) => {
   const r = getRethink();
-  const inOrg = await r.table('User').get(userId)('orgs').contains(orgId);
+  const inOrg = await r.table('User').get(userId)('userOrg').contains((userOrg) => userOrg('id').eq(orgId));
   if (!inOrg) {
     throw errorObj({type: `user ${userId} does not belong to org ${orgId}`});
   }

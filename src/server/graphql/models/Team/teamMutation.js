@@ -478,11 +478,15 @@ export default {
 
         if (outOfOrgEmails.length) {
           // add a notification to the billing leaders
-          const {billingLeaders, inviter} = await r.table('User')
-            .getAll(orgId, {index: 'billingLeaderOrgs'})('id')
-            .do((billingLeaders) => {
+          const {userIds, inviter} = await r.table('Organization')
+            .get(orgId)('orgUsers')
+            .filter({
+              role: BILLING_LEADER
+            })
+            .map((orgUser) => orgUser('id'))
+            .do((userIds) => {
               return {
-                billingLeaders,
+                userIds,
                 inviter: r.table('User').get(userId).pluck('preferredName', 'id')
               }
             });
@@ -499,7 +503,7 @@ export default {
                   type: REQUEST_NEW_USER,
                   startAt: new Date(),
                   orgId,
-                  userIds: [billingLeaders],
+                  userIds,
                   varList: [inviter.id, invitee, teamId]
                 })
             });
@@ -524,8 +528,8 @@ export default {
 
       // AUTH
       const userId = requireAuth(authToken);
-      const user = await r.table('User').get(userId).pluck('id', 'orgs', 'trialOrg');
-      if (user.orgs && user.orgs.length > 0) {
+      const user = await r.table('User').get(userId).pluck('id', 'userOrgs', 'trialOrg');
+      if (user.userOrgs && user.userOrgs.length > 0) {
         throw errorObj({_error: 'cannot use createTeam when already part of an org'});
       }
       if (user.trialOrg) {
@@ -545,7 +549,6 @@ export default {
         r.table('User').get(userId)('trialOrg'),
         null,
         r.table('User').get(userId).update({
-          // billingLeaderOrgs and orgs handled in createTeamAndLeader
           trialOrg: orgId,
           updatedAt: now
         }));

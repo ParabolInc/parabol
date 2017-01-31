@@ -1,8 +1,10 @@
 import getRethink from 'server/database/rethinkDriver';
-import {LOBBY} from 'universal/utils/constants';
+import {BILLING_LEADER, LOBBY} from 'universal/utils/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
+import {getNewVal} from 'server/utils/utils';
 
-export default async function createTeamAndLeader(userId, newTeam, isBillingLeader) {
+// used for addorg, addTeam, createTeam
+export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
   const r = getRethink();
 
   const {id: teamId, orgId} = newTeam;
@@ -30,7 +32,7 @@ export default async function createTeamAndLeader(userId, newTeam, isBillingLead
   };
 
   const userRes = r.table('Team')
-    // insert team
+  // insert team
     .insert(verifiedTeam)
     // denormalize common fields to team member
     .do(() => {
@@ -51,20 +53,22 @@ export default async function createTeamAndLeader(userId, newTeam, isBillingLead
       return r.table('User')
         .get(userId)
         .update((userDoc) => ({
-          billingLeaderOrgs: r.branch(isBillingLeader,
-            userDoc('billingLeaderOrgs').default([]).append(orgId).distinct(),
-            userDoc('billingLeaderOrgs')),
-          orgs: userDoc('orgs').default([]).append(orgId).distinct(),
+          userOrgs: r.branch(
+            userDoc('userOrgs').default([]).contains((userOrg) => userOrg('id').eq(orgId)),
+            userDoc('useOrgs'),
+            userDoc('userOrgs').append({
+              id: orgId,
+              role: isNewOrg ? BILLING_LEADER : null
+            })
+          ),
           tms: userDoc('tms').default([]).append(teamId).distinct()
-        }));
-    }, {returnChanges: true});
+        }), {returnChanges: true})
+    });
 
   const {tms} = getNewVal(userRes);
-  const dbPromises = [
-    dbTransaction,
-    auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
-  ];
+
   // we need to await the db transaction because adding a team requires waiting for the team to be created
-  await Promise.all(dbPromises);
+  await auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms});
   return tms;
-};
+}
+;

@@ -126,10 +126,6 @@ export const User = new GraphQLObjectType({
       description: 'The timestamp the user was last updated'
     },
     /* User Profile */
-    billingLeaderOrgs: {
-      type: new GraphQLList(GraphQLID),
-      description: 'all the orgs a user is a lead of'
-    },
     broadcastFlags: {
       type: GraphQLInt,
       description: 'flag to determine which broadcasts to show'
@@ -145,11 +141,7 @@ export const User = new GraphQLObjectType({
     isBillingLeader: {
       type: GraphQLBoolean,
       description: 'true if the user is a part of the supplied orgId',
-      resolve: (source, {orgId}) => source.billingLeaderOrgs.includes(orgId)
-    },
-    orgs: {
-      type: new GraphQLList(GraphQLID),
-      description: 'all the orgs a user is a part of'
+      resolve: (source, {orgId}) => Boolean(source.userOrgs.find((userOrg) => userOrg.id === orgId))
     },
     preferredName: {
       type: GraphQLString,

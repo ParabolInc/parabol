@@ -12,7 +12,7 @@ export default async function handleFailedPayment(customerId) {
   const now = new Date();
 
   // flag teams as unpaid
-  const orgPromise = r.table('Team')
+  const orgRes = await r.table('Team')
     .getAll(orgId, {index: 'orgId'})
     .update({
       isPaid: false
@@ -23,10 +23,8 @@ export default async function handleFailedPayment(customerId) {
         .get(orgId)
         .replace((row) => row.without('stripeSubscriptionId'), {returnChanges: true});
     });
-  const userPromise = r.table('User').getAll(orgId, {index: 'billingLeaderOrgs'})('id');
-  const [orgRes, userIds] = await Promise.all([orgPromise, userPromise]);
   const orgDoc = getOldVal(orgRes);
-  const parentId = shortid.generate();
+  const userIds = orgDoc.orgUsers.map(({id}) => id);
   if (orgDoc.isTrial) {
     await r.table('Notification').insert({
       id: shortid.generate(),

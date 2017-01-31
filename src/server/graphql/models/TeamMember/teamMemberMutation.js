@@ -121,10 +121,13 @@ export default {
           orgId,
           user: r.table('User').get(userId)
         }));
-      const userOrgs = user.orgs || [];
+      const userOrgs = user.userOrgs || [];
       const userTeams = user.tms || [];
-      const userInOrg = userOrgs.includes(orgId);
-      const newUserOrgs = userInOrg ? userOrgs : [...userOrgs, orgId];
+      const userInOrg = Boolean(userOrgs.find((org) => org.id === orgId));
+      const newUserOrgs = userInOrg ? userOrgs : [...userOrgs, {
+          id: orgId,
+          role: null
+        }];
       const tms = [...userTeams, teamId];
       const teamMemberId = `${user.id}::${teamId}`;
       const dbWork = r.table('User')
@@ -133,8 +136,20 @@ export default {
         .update(() => {
           return {
             tms,
-            orgs: newUserOrgs
+            userOrgs: newUserOrgs
           }
+        })
+        .do(() => {
+          return r.branch(
+            userInOrg,
+            null,
+            r.table('Organization').get(orgId).update((org) => ({
+              orgUsers: org('orgUsers').append({
+                id: userId,
+                role: null
+              })
+            }))
+          )
         })
         // get number of users
         .do(() => {
