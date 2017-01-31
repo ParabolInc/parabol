@@ -6,12 +6,13 @@ import {
   GraphQLID,
   GraphQLBoolean,
   GraphQLInt,
-  GraphQLInputObjectType
+  GraphQLInputObjectType,
+  GraphQLEnumType
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
-import {GraphQLURLType} from '../../types';
-import {User} from 'server/graphql/models/User/userSchema';
-import getRethink from 'server/database/rethinkDriver';
+import {GraphQLURLType} from '../types';
+import {BILLING_LEADER} from 'universal/utils/constants'
+import {makeEnumValues} from '../utils';
 
 const RemovedUser = new GraphQLObjectType({
   name: 'RemovedUser',
@@ -51,16 +52,36 @@ const CreditCard = new GraphQLObjectType({
   })
 });
 
+export const OrgUserRole = new GraphQLEnumType({
+  name: 'OrgUserRole',
+  description: 'The role of the org user',
+  values: makeEnumValues([BILLING_LEADER])
+});
+
+const OrgUser = new GraphQLObjectType({
+  name: 'OrgUser',
+  description: 'The user/org M:F join, denormalized on the user/org tables',
+  fields: () => ({
+    id: {
+      type: GraphQLID,
+      description: 'The userId'
+    },
+    role: {
+      type: OrgUserRole,
+      description: 'role of the user in the org'
+    },
+    inactive: {
+      type: GraphQLBoolean,
+      description: 'true if the user is paused and the orgs are not being billed'
+    }
+  })
+});
+
 export const Organization = new GraphQLObjectType({
   name: 'Organization',
   description: 'An organization',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique organization ID'},
-    // do this instead of activeUserCount so we can index on it & use that to subscribe to all the orgs for a user
-    activeUsers: {
-      type: GraphQLInt,
-      description: 'The userIds that are active on this org'
-    },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the organization was created'
@@ -68,10 +89,6 @@ export const Organization = new GraphQLObjectType({
     creditCard: {
       type: CreditCard,
       description: 'The safe credit card details'
-    },
-    inactiveUsers: {
-      type: GraphQLInt,
-      description: 'The userIds that are inactive on this org'
     },
     isTrial: {
       type: GraphQLBoolean,
@@ -94,18 +111,13 @@ export const Organization = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The datetime the organization was last updated'
     },
+    orgUsers: {
+      type: new GraphQLList(OrgUser),
+      description: 'The users that belong to this org'
+    },
     validUntil: {
       type: GraphQLISO8601Type,
       description: 'The datetime the trial is up (if isTrial) or money is due (if !isTrial)'
-    },
-    /* GraphQL Sugar */
-    billingLeaders: {
-      type: new GraphQLList(User),
-      description: 'The leaders of the org',
-      resolve: async ({id}) => {
-        const r = getRethink();
-        return r.table('User').getAll(id, {index: 'billingLeaderOrgs'});
-      }
     }
   })
 });

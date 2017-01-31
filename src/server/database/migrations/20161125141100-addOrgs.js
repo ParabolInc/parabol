@@ -1,6 +1,6 @@
 import shortid from 'shortid';
 import ms from 'ms';
-import {TRIAL_EXPIRES_SOON} from '../../../universal/utils/constants';
+import {BILLING_LEADER, TRIAL_EXPIRES_SOON} from '../../../universal/utils/constants';
 import stripe from '../../billing/stripe';
 import {ACTION_MONTHLY, TRIAL_PERIOD_DAYS} from '../../utils/serverConstants';
 import {fromStripeDate} from '../../billing/stripeDate';
@@ -17,14 +17,14 @@ exports.up = async(r) => {
   } catch (e) {
   }
   const indices = [
+    // need index on validUntil still?
     r.table('Organization').indexCreate('validUntil'),
-    r.table('Organization').indexCreate('activeUsers', {multi: true}),
+    r.table('Organization').indexCreate('orgUsers', r.row('orgUsers')('id'), {multi: true}),
     r.table('Team').indexCreate('orgId'),
     r.table('Notification').indexCreate('orgId'),
     r.table('Notification').indexCreate('userIds', {multi: true}),
     r.table('User').indexCreate('email'),
-    r.table('User').indexCreate('orgs', {multi: true}),
-    r.table('User').indexCreate('billingLeaderOrgs', {multi: true}),
+    r.table('User').indexCreate('userOrgs', r.row('userOrgs')('id'), {multi: true}),
   ];
   try {
     await Promise.all(indices);
@@ -34,107 +34,144 @@ exports.up = async(r) => {
   const waitIndices = [
     r.table('Team').indexWait('orgId'),
     r.table('Notification').indexWait('orgId', 'userIds'),
-    r.table('User').indexWait('email', 'orgs', 'billingLeaderOrgs')
+    r.table('User').indexWait('email', 'userOrgs')
   ];
   await Promise.all(waitIndices);
-
   const now = new Date();
-  // const trialExpiresAt = new Date(now.getTime() + TRIAL_PERIOD);
-  const teamLeaders = await r.table('TeamMember').filter({isLead: true});
 
-  // get all the userIds of all the team leaders
-  const teamLeaderUserIds = Array.from(new Set(teamLeaders.map((leader) => leader.userId)));
-  const teamLeaderUsers = await r.table('User').getAll(r.args(teamLeaderUserIds), {index: 'id'});
+  // every team leader is going to be promoted to an org leader
+  // this means if i was invited to a team then created my own team, where i'm the leader, that will be a new org
+  const teamMembers = await r.table('TeamMember');
+  const teamLeaders = teamMembers.filter((member) => member.isLead === true);
+  const orgLookupByUserId = {};
+  const orgLookupByTeam = {};
+  for (let i = 0; i < teamLeaders.length; i++) {
+    const teamLeader = teamLeaders[i];
+    const {preferredName, teamId, userId} = teamLeader;
+    orgLookupByUserId[userId] = orgLookupByUserId[userId] || shortid.generate();
+    orgLookupByTeam[teamId] = orgLookupByUserId[userId];
+  }
 
-  const orgIds = teamLeaderUsers.map(() => shortid.generate());
+  const orgs = {};
+  const users = {};
+  for (let i = 0; i < teamMembers.length; i++) {
+    const teamMember = teamMembers[i];
+    const {isLead, preferredName, userId, teamId} = teamMember;
+    const orgId = orgLookupByTeam[teamId];
+    teamMember.orgId = orgId;
+    orgs[orgId] = orgs[orgId] || {};
+    orgs[orgId].orgUsersMap = orgs[orgId].orgUsersMap || {};
+    orgs[orgId].orgUsersMap[userId] = isLead;
+    users[userId] = users[userId] || {};
+    users[userId].userOrgsMap = users[userId].userOrgsMap || {};
+    users[userId].userOrgsMap[orgId] = isLead;
+    if (isLead) {
+      orgs[orgId].leaderId = userId;
+      orgs[orgId].name = `${preferredName}'s Org`;
+      users[userId].trialOrg = orgId
+    }
+  }
+
+  const orgIds = Object.keys(orgs);
   const stripeCustomers = await Promise.all(orgIds.map((orgId) => stripe.customers.create({metadata: {orgId}})));
   const subscriptions = await Promise.all(stripeCustomers.map((customer) => {
     return stripe.subscriptions.create({
       customer: customer.id,
-      metadata: {
-        orgId: customer.metadata.orgId
-      },
+      metadata: customer.metadata,
       plan: ACTION_MONTHLY,
+      quantity: Object.keys(orgs[customer.metadata.orgId].orgUsersMap).length,
       trial_period_days: TRIAL_PERIOD_DAYS
     });
   }));
+  const orgsForDB = [];
+  const notificationsForDB = [];
+  for (let i = 0; i < subscriptions.length; i++) {
+    const subscription = subscriptions[i];
+    const {metadata: {orgId}, customer, id, trial_end} = subscription;
+    const validUntil = fromStripeDate(trial_end);
+    const {leaderId, name, orgUserMap} = orgs[orgId];
+    const orgUserIds = Object.keys(orgUserMap);
+    const orgUsers = [];
+    for (let j = 0; j < orgUserIds.length; j++) {
+      const orgUserId = orgUserIds[j];
+      orgUsers[j] = {
+        id: orgUserId,
+        role: orgUserMap[orgUserId] ? BILLING_LEADER : null
+      }
+    }
+    orgsForDB[i] = {
+      id: orgId,
+      createdAt: now,
+      isTrial: true,
+      name,
+      orgUsers,
+      stripeId: customer,
+      stripeSubscriptionId: id,
+      updatedAt: now,
+      validUntil
+    };
+    notificationsForDB[i] = {
+      id: shortid.generate(),
+      type: TRIAL_EXPIRES_SOON,
+      startAt: new Date(now.getTime() + ms('14d')),
+      userIds: [leaderId],
+      orgId,
+      varList: [validUntil]
+    };
+  }
 
-  const orgs = subscriptions.map((sub, idx) => ({
-    id: sub.metadata.orgId,
-    billingLeaderOrgs: [sub.metadata.orgId],
-    // userId is the default billing leader
-    userId: teamLeaderUsers[idx].id,
-    expiresSoonId: shortid.generate(),
-    name: `${teamLeaderUsers[idx].preferredName}'s Org`,
-    stripeId: sub.customer,
-    stripeSubscriptionId: sub.id,
-    trialExpiresAt: fromStripeDate(sub.trial_end)
+  const usersForDB = [];
+  const userIds = Object.keys(users);
+  for (let i = 0; i < userIds.length; i++) {
+    const userId = userIds[i];
+    const user = users[userId];
+    const {trialOrg, userOrgsMap} = user;
+    const userOrgs = [];
+    const userOrgIds = Object.keys(userOrgsMap);
+    for (let j = 0; j < userOrgIds.length; j++) {
+      const userOrgId = userOrgIds[j];
+      userOrgs[j] = {
+        id: userOrgId,
+        role: userOrgsMap[userOrgId] ? BILLING_LEADER : null
+      }
+    }
+    usersForDB[i] = {
+      id: userId,
+      trialOrg,
+      userOrgs
+    }
+  }
+
+  // create updates to make to team docs
+  const teamIds = Object.keys(orgLookupByTeam);
+  const teamsForDB = [];
+  for (let i = 0; i < teamIds.length; i++) {
+    const teamId = teamIds[i];
+    teamsForDB[i] = {
+      id: teamId,
+      orgId: orgLookupByTeam[teamId]
+    }
+  }
+
+  const teamUpdates = r.expr(teamsForDB).forEach((team) => r.table('Team').get(team('id')).update({
+    orgId: team('orgId'),
+    isPaid: true
   }));
 
-  const teamsWithOrgId = teamLeaders.map((teamLeader) => {
-    return {
-      id: teamLeader.teamId,
-      orgId: orgs.find(org => org.userId === teamLeader.userId).id
-    }
-  });
+  const userUpdates = r.expr(usersForDB).forEach((user) => r.table('User').get(user('id')).update({
+    trialOrg: user('trialOrg'),
+    userOrgs: user('userOrgs')
+  }));
 
-  // update teams with the org
-  await r.expr(teamsWithOrgId).forEach((team) => r.table('Team').get(team('id')).update({orgId: team('orgId'), isPaid: true}))
-  // add the org itself
-    .do(() => {
-      return r.expr(orgs)
-        .forEach((org) => {
-          return r.table('Organization')
-            .insert({
-              // user count is handled later
-              id: org('id'),
-              createdAt: now,
-              isTrial: true,
-              name: org('name'),
-              stripeId: org('stripeId'),
-              stripeSubscriptionId: org('stripeSubscriptionId'),
-              updatedAt: now,
-              validUntil: org('trialExpiresAt')
-            })
-            // add expiry notifications
-            .do(() => {
-              return r.table('Notification')
-                .insert({
-                  id: org('expiresSoonId'),
-                  type: TRIAL_EXPIRES_SOON,
-                  startAt: new Date(now.getTime() + ms('14d')),
-                  userIds: [org('userId')],
-                  orgId: org('id'),
-                  varList: [org('trialExpiresAt')]
-                })
-            })
-            // mark this as the org that counts towards their trial
-            .do(() => {
-              return r.table('User')
-                .get(org('userId'))
-                .update({
-                  billingLeaderOrgs: org('billingLeaderOrgs'),
-                  trialOrg: org('id')
-                });
-            });
-        })
-    });
-  // set org array on each user
-  await r.table('User').update({
-    orgs: r.table('Team').getAll(r.args(r.row('tms')), {index: 'id'})('orgId').distinct()
-  }, {nonAtomic: true})
-  ;
+  const orgInserts = r.table('Organization').insert(orgsForDB);
+  const notificationInserts = r.table('Notification').insert(notificationsForDB);
 
-  // set user count on each org here since do clauses aren't guaranteed serial
-  await r.expr(orgIds)
-    .forEach((orgId) => {
-      return r.table('Organization')
-        .get(orgId)
-        .update({
-          activeUsers: r.table('User').getAll(orgId, {index: 'orgs'})('id'),
-          inactiveUsers: []
-        }, {nonAtomic: true})
-    })
+  await Promise.all([
+    teamUpdates,
+    userUpdates,
+    orgInserts,
+    notificationInserts
+  ])
 };
 
 exports.down = async(r) => {
@@ -153,7 +190,7 @@ exports.down = async(r) => {
   try {
     const stripeIds = await r.table('Organization')('stripeId');
     await Promise.all(stripeIds.map((id) => stripe.customers.del(id)));
-  } catch(e) {
+  } catch (e) {
     console.log(`not all customers existed: ${e}`);
   }
 
@@ -162,12 +199,12 @@ exports.down = async(r) => {
     r.tableDrop('Notification'),
     r.table('Team').indexDrop('orgId'),
     r.table('User').indexDrop('email'),
-    r.table('User').indexDrop('orgs'),
-    r.table('User').indexDrop('billingLeaderOrgs'),
+    r.table('User').indexDrop('userOrgs'),
     r.table('Team').replace((row) => row.without('orgId')),
-    r.table('User').replace((row) => row.without('trialOrg', 'orgs', 'billingLeaderOrgs')),
+    r.table('User').replace((row) => row.without('trialOrg', 'userOrgs')),
   ];
   try {
     await Promise.all(tables);
-  } catch(e) {}
+  } catch (e) {
+  }
 };

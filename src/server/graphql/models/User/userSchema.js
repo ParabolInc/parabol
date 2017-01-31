@@ -52,6 +52,22 @@ const BlockedUserType = new GraphQLObjectType({
   })
 });
 
+const UserOrg = new GraphQLObjectType({
+  name: 'UserOrg',
+  description: 'The user/org M:F join, denormalized on the user/org tables',
+  fields: () => ({
+    id: {
+      type: GraphQLID,
+      description: 'The orgId'
+    },
+    role: {
+      type: OrgUserRole,
+      description: 'role of the user in the org'
+    }
+  })
+});
+
+
 export const User = new GraphQLObjectType({
   name: 'User',
   description: 'The user account profile',
@@ -146,6 +162,10 @@ export const User = new GraphQLObjectType({
     trialOrg: {
       type: GraphQLISO8601Type,
       description: 'The orgId that the user created for their free trial'
+    },
+    userOrgs: {
+      type: new GraphQLList(UserOrg),
+      description: 'the orgs and roles for this user on each'
     },
     welcomeSentAt: {
       type: GraphQLISO8601Type,

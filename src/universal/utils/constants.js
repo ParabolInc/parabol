@@ -73,4 +73,6 @@ export const ORGANIZATIONS = 'organizations';
 export const NOTIFICATIONS = 'notifications';
 export const settingsOrder = [SETTINGS, ORGANIZATIONS, NOTIFICATIONS];
 
+/* User Org Roles */
+export const BILLING_LEADER = 'billingLeader';
 
