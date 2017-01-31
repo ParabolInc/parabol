@@ -120,4 +120,4 @@ stages:
         destination: build
 
       - type: test-results-store
-        path: /home/ubuntu/test-reports/junit
+        path: /home/ubuntu/test-reports
