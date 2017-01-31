@@ -55,13 +55,9 @@ stages:
         command: |
           mkdir -p $CIRCLE_TEST_REPORTS &&
           npm run test:xunit > $CIRCLE_TEST_REPORTS/action-ava.xml ;
-          echo "directory is $CIRCLE_TEST_REPORTS" ;
-          ls -l $CIRCLE_TEST_REPORTS
+          cat $CIRCLE_TEST_REPORTS/action-ava.xml
         environment:
           - CIRCLE_TEST_REPORTS: "/home/ubuntu/test-reports/junit"
-
-      - type: test-results-store
-        path: /home/ubuntu/test-reports/junit/action-ava.xml
 
       - type: shell
         name: Pre-build DevOps checkout
@@ -123,3 +119,6 @@ stages:
       - type: artifacts-store
         path: /home/ubuntu/action/build
         destination: build
+
+      - type: test-results-store
+        path: /home/ubuntu/test-reports/junit/action-ava.xml
