@@ -53,7 +53,9 @@ stages:
 
       - type: shell
         name: NPM run test
-        command: npm test:xunit > $CIRCLE_TEST_REPORTS/action-ava.xml
+        command: |
+          mkdir -p $CIRCLE_TEST_REPORTS &&
+          npm test:xunit > $CIRCLE_TEST_REPORTS/action-ava.xml
 
       - type: shell
         name: Pre-build DevOps checkout
