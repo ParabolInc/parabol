@@ -5,7 +5,7 @@ import ui from 'universal/styles/ui';
 import FontAwesome from 'react-fontawesome';
 import {Link} from 'react-router';
 import goBackLabel from 'universal/styles/helpers/goBackLabel';
-import {ORGANIZATIONS} from 'universal/utils/constants';
+import {BILLING_PAGE, ORGANIZATIONS} from 'universal/utils/constants';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
 import appTheme from 'universal/styles/theme/appTheme';
 import BillingMembersToggle from 'universal/modules/userDashboard/components/BillingMembersToggle/BillingMembersToggle';
@@ -13,8 +13,6 @@ import makeDateString from 'universal/utils/makeDateString';
 import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/EditOrgName';
 import OrgBillingContainer from 'universal/modules/userDashboard/containers/OrgBilling/OrgBillingContainer';
 import OrgMembersContainer from 'universal/modules/userDashboard/containers/OrgMembers/OrgMembersContainer';
-import {BILLING_PAGE, toggleAvatarModal} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
-import SettingsModal from 'universal/modules/userDashboard/components/SettingsModal/SettingsModal';
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
 import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
 import OrgAvatarInput from 'universal/modules/userDashboard/components/OrgAvatarInput/OrgAvatarInput';
@@ -43,7 +41,6 @@ const Organization = (props) => {
   const toggle = <EditableAvatar hasPanel picture={pictureOrDefault} size={96}/>;
   return (
     <UserSettingsWrapper activeTab={ORGANIZATIONS}>
-      <SettingsModal {...props}/>
       <div className={css(styles.wrapper)}>
         <Link className={css(styles.goBackLabel)} to="/me/organizations" title="Back to Organizations">
           <FontAwesome name="arrow-circle-left" style={inlineBlockStyle}/>

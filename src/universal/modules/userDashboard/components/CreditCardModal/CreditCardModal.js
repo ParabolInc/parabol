@@ -83,7 +83,7 @@ const validate = (values, props) => {
 };
 
 const CreditCardModal = (props) => {
-  const {createToken, handleSubmit, handleToken, isUpdate, closePortal, orgId, styles, submitting, isClosing} = props;
+  const {closeAfter, createToken, handleSubmit, handleToken, isUpdate, closePortal, orgId, styles, submitting, isClosing} = props;
   const crudAction = isUpdate ? 'Update' : 'Add';
   const addStripeBilling = (submittedData) => {
     return new Promise( async (resolve, reject) => {
@@ -121,7 +121,7 @@ const CreditCardModal = (props) => {
 
   };
   return (
-    <DashModal onBackdropClick={closePortal} inputModal isClosing={isClosing}>
+    <DashModal onBackdropClick={closePortal} inputModal isClosing={isClosing} closeAfter={closeAfter}>
       <div className={css(styles.modalBody)}>
         <div className={css(styles.avatarPlaceholder)}>
           <div className={css(styles.avatarPlaceholderInner)}>
@@ -298,7 +298,7 @@ const stripeCb = () => {
   };
 };
 
-export default portal({escToClose: true, animated: true})(
+export default portal({escToClose: true, closeAfter: 100})(
   withAsync({'https://js.stripe.com/v2/': stripeCb})(
     reduxForm({form: 'creditCardInfo', validate})(
       withStyles(styleThunk)(

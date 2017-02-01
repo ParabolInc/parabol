@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react';
-import {BILLING_PAGE, MEMBERS_PAGE, toggleBillingMembers} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
+import {BILLING_PAGE, MEMBERS_PAGE} from 'universal/utils/constants';
 import ToggleNav from 'universal/components/ToggleNav/ToggleNav';
 import {withRouter} from 'react-router';
 

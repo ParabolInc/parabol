@@ -77,28 +77,28 @@ export default {
         .run({cursor: true}, changefeedHandler);
     }
   },
-  // organizations: {
-  //   type: new GraphQLList(Organization),
-  //   args: {
-  //     userId: {
-  //       type: new GraphQLNonNull(GraphQLID),
-  //       description: 'the user ID that belongs to all the orgs'
-  //     }
-  //   },
-  //   async resolve(source, {userId}, {authToken, socket, subbedChannelName}, refs) {
-  //     const r = getRethink();
-  //
-  //     // AUTH
-  //     await requireSUOrSelf(authToken, userId);
-  //
-  //     // RESOLUTION
-  //     const requestedFields = getRequestedFields(refs);
-  //     const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
-  //     r.table('Organization')
-  //       .getAll(userId, {index: 'orgUsers'})
-  //       .pluck(requestedFields)
-  //       .changes({includeInitial: true})
-  //       .run({cursor: true}, changefeedHandler);
-  //   }
-  // },
+  organizations: {
+    type: new GraphQLList(Organization),
+    args: {
+      userId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'the user ID that belongs to all the orgs'
+      }
+    },
+    async resolve(source, {userId}, {authToken, socket, subbedChannelName}, refs) {
+      const r = getRethink();
+
+      // AUTH
+      await requireSUOrSelf(authToken, userId);
+
+      // RESOLUTION
+      const requestedFields = getRequestedFields(refs);
+      const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
+      r.table('Organization')
+        .getAll(userId, {index: 'orgUsers'})
+        .pluck(requestedFields)
+        .changes({includeInitial: true})
+        .run({cursor: true}, changefeedHandler);
+    }
+  },
 };

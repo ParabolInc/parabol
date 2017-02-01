@@ -4,9 +4,9 @@ import IconLink from 'universal/components/IconLink/IconLink';
 import Type from 'universal/components/Type/Type';
 
 const UnpaidTeamModal = (props) => {
-  const {problem, solution, isALeader, handleClick} = props;
+  const {isClosing, closeAfter, problem, solution, isALeader, handleClick} = props;
   return (
-    <DashModal position="absolute" showsOver="main">
+    <DashModal position="absolute" showsOver="main" isClosing={isClosing} closeAfter={closeAfter}>
       <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
         Oh dear...
       </Type>

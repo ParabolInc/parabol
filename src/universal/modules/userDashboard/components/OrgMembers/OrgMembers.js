@@ -6,35 +6,38 @@ import AdminUserRow from 'universal/modules/userDashboard/components/AdminUserRo
 import IconControl from 'universal/components/IconControl/IconControl';
 import Panel from 'universal/components/Panel/Panel';
 import Toggle from 'universal/components/Toggle/Toggle';
-
-import {
-  toggleLeaveModal,
-  toggleRemoveModal
-} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
+import RemoveBillingLeaderModal from 'universal/modules/userDashboard/components/RemoveBillingLeaderModal/RemoveBillingLeaderModal';
+import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal';
 
 const OrgMembers = (props) => {
   const {
     users,
-    dispatch,
     myUserId,
     styles,
   } = props;
 
   const billingLeaderRowActions = (billingLeader) => {
     const {id, preferredName} = billingLeader;
-    const openRemoveModal = () => {
-      dispatch(toggleRemoveModal(id, preferredName));
-    };
-    const openLeaveModal = () => {
-      dispatch(toggleLeaveModal(id));
-    };
+    // <RemoveBillingLeaderModal
+    //   onBackdropClick={() => {dispatch(toggleRemoveModal())}}
+    //   orgId={orgId}
+    //   preferredName={modalPreferredName}
+    //   userId={modalUserId}
+    // />
+
+    // {/*<LeaveOrgModal*/}
+    //   {/*onBackdropClick={() => {dispatch(toggleLeaveModal())}}*/}
+    //   {/*orgId={orgId}*/}
+    //   {/*userId={modalUserId}*/}
+    // {/*/>*/}
     return (
       <div className={css(styles.actionLinkBlock)}>
         <div className={css(styles.toggleBlock)}>
           <Toggle active block label="Active"/>
         </div>
+
         {myUserId !== billingLeader.id &&
-        <div className={css(styles.actionLink)} onClick={openRemoveModal}>
+        <div className={css(styles.actionLink)}>
           Remove
         </div>
         }

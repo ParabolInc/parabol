@@ -30,7 +30,7 @@ const DashModal = (props) => {
     }
   };
   return (
-    <div className={backdropStyles} onClick={onClick}>
+    <div className={backdropStyles} onClick={onBackdropClick ? onClick : null}>
       <div className={modalStyles}>
         {children}
       </div>
@@ -81,62 +81,66 @@ const animateOut = {
   }
 };
 
-const styleThunk = () => ({
-  backdrop: {
-    alignItems: 'center',
-    background: 'rgba(255, 255, 255, .5)',
-    bottom: 0,
-    display: 'flex !important',
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    left: 0,
-    position: 'fixed',
-    right: 0,
-    textAlign: 'center',
-    top: 0,
-    zIndex: 400
-  },
+const styleThunk = (theme, props) => {
+  console.log('closeAfter', props.closeAfter)
+  return {
 
-  closing: {
-    animationDuration: '100ms',
-    animationName: animateOut
-  },
+    backdrop: {
+      alignItems: 'center',
+      background: 'rgba(255, 255, 255, .5)',
+      bottom: 0,
+      display: 'flex !important',
+      flex: 1,
+      flexDirection: 'column',
+      justifyContent: 'center',
+      left: 0,
+      position: 'fixed',
+      right: 0,
+      textAlign: 'center',
+      top: 0,
+      zIndex: 400
+    },
 
-  viewport: {
-    left: 0
-  },
+    closing: {
+      animationDuration: `${props.closeAfter}ms`,
+      animationName: animateOut
+    },
 
-  main: {
-    left: ui.dashSidebarWidth
-  },
+    viewport: {
+      left: 0
+    },
 
-  absolute: {
-    position: 'absolute'
-  },
+    main: {
+      left: ui.dashSidebarWidth
+    },
 
-  fixed: {
-    position: 'fixed'
-  },
+    absolute: {
+      position: 'absolute'
+    },
 
-  inputModal: {
-    background: ui.dashBackgroundColor,
-    padding: '1rem',
-    width: '20rem'
-  },
+    fixed: {
+      position: 'fixed'
+    },
 
-  modal: {
-    background: '#fff',
-    border: `.125rem solid ${appTheme.palette.mid30a}`,
-    // boxShadow: `0 0 0 .25rem ${appTheme.palette.mid30a}, ${ui.modalBoxShadow}`,
-    boxShadow: ui.modalBoxShadow,
-    borderRadius: ui.modalBorderRadius,
-    padding: '2rem',
-    width: '30rem',
-    animationName: animateIn,
-    animationDuration: '200ms'
-  },
+    inputModal: {
+      background: ui.dashBackgroundColor,
+      padding: '1rem',
+      width: '20rem'
+    },
 
-});
+    modal: {
+      background: '#fff',
+      border: `.125rem solid ${appTheme.palette.mid30a}`,
+      // boxShadow: `0 0 0 .25rem ${appTheme.palette.mid30a}, ${ui.modalBoxShadow}`,
+      boxShadow: ui.modalBoxShadow,
+      borderRadius: ui.modalBorderRadius,
+      padding: '2rem',
+      width: '30rem',
+      animationIterationCount: 1,
+      animationName: animateIn,
+      animationDuration: '200ms'
+    },
+  }
+};
 
 export default withStyles(styleThunk)(DashModal);

@@ -73,6 +73,10 @@ export const ORGANIZATIONS = 'organizations';
 export const NOTIFICATIONS = 'notifications';
 export const settingsOrder = [SETTINGS, ORGANIZATIONS, NOTIFICATIONS];
 
+/* Org Settings */
+export const BILLING_PAGE = 'billing';
+export const MEMBERS_PAGE = 'members';
+
 /* User Org Roles */
 export const BILLING_LEADER = 'billingLeader';
 

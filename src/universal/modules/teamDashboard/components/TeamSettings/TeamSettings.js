@@ -8,7 +8,6 @@ import InviteUser from 'universal/components/InviteUser/InviteUser';
 import UserRow from 'universal/components/UserRow/UserRow';
 import fromNow from 'universal/utils/fromNow';
 import {cashay} from 'cashay';
-import {toggleLeaveModal, toggleRemoveModal, togglePromoteModal} from 'universal/modules/teamDashboard/ducks/teamSettingsDuck';
 import RemoveTeamMemberModal from 'universal/modules/teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal';
 import PromoteTeamMemberModal from 'universal/modules/teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal';
 import LeaveTeamModal from 'universal/modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal';
@@ -18,12 +17,7 @@ const TeamSettings = (props) => {
   const {
     dispatch,
     invitations,
-    leaveTeamModal,
-    modalPreferredName,
-    modalTeamMemberId,
     myTeamMember,
-    promoteTeamMemberModal,
-    removeTeamMemberModal,
     team,
     teamMembers,
     styles
@@ -59,52 +53,33 @@ const TeamSettings = (props) => {
   };
   const teamMemberRowActions = (teamMember) => {
     const {id, preferredName} = teamMember;
-    const openRemoveModal = () => {
-      dispatch(toggleRemoveModal(id, preferredName));
-    };
-    const openPromoteModal = () => {
-      dispatch(togglePromoteModal(id, preferredName));
-    };
-    const openLeaveModal = () => {
-      dispatch(toggleLeaveModal(id));
-    };
     return (
       <div className={css(styles.actionLinkBlock)}>
-        {removeTeamMemberModal &&
-          <RemoveTeamMemberModal
-            onBackdropClick={openRemoveModal}
-            preferredName={modalPreferredName}
-            teamMemberId={modalTeamMemberId}
-          />
-        }
-        {promoteTeamMemberModal &&
+        {myTeamMember.isLead && myTeamMember.id !== teamMember.id &&
           <PromoteTeamMemberModal
-            onBackdropClick={openPromoteModal}
-            preferredName={modalPreferredName}
-            teamMemberId={modalTeamMemberId}
-          />
-        }
-        {leaveTeamModal &&
-          <LeaveTeamModal
-            onBackdropClick={openLeaveModal}
-            teamLead={teamLead}
-            teamMemberId={modalTeamMemberId}
+            toggle={
+              <div className={css(styles.actionLink)}>
+              Promote {teamMember.preferredName} to Team Lead
+              </div>
+            }
+            preferredName={preferredName}
+            teamMemberId={id}
           />
         }
         {myTeamMember.isLead && myTeamMember.id !== teamMember.id &&
-          <div className={css(styles.actionLink)} onClick={openPromoteModal}>
-            Promote {teamMember.preferredName} to Team Lead
-          </div>
-        }
-        {myTeamMember.isLead && myTeamMember.id !== teamMember.id &&
-          <div className={css(styles.actionLink)} onClick={openRemoveModal}>
-            Remove
-          </div>
+            <RemoveTeamMemberModal
+              toggle={<div className={css(styles.actionLink)}>Remove</div>}
+              preferredName={preferredName}
+              teamMemberId={id}
+            />
         }
         {!myTeamMember.isLead && myTeamMember.id === teamMember.id &&
-          <div className={css(styles.actionLink)} onClick={openLeaveModal}>
-            Leave Team
-          </div>
+          <LeaveTeamModal
+            toggle={<div className={css(styles.actionLink)}>Leave Team</div>}
+            teamLead={teamLead}
+            teamMemberId={id}
+          />
+
         }
       </div>
     );
@@ -146,12 +121,7 @@ const TeamSettings = (props) => {
 TeamSettings.propTypes = {
   dispatch: PropTypes.func.isRequired,
   invitations: PropTypes.array.isRequired,
-  leaveTeamModal: PropTypes.bool.isRequired,
-  modalPreferredName: PropTypes.string,
-  modalTeamMemberId: PropTypes.string,
   myTeamMember: PropTypes.object.isRequired,
-  promoteTeamMemberModal: PropTypes.bool.isRequired,
-  removeTeamMemberModal: PropTypes.bool.isRequired,
   styles: PropTypes.object,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired

@@ -8,9 +8,9 @@ import {css} from 'aphrodite-local-styles/no-important';
 import portal from 'react-portal-hoc';
 
 const PhotoUploadModal = (props) => {
-  const {children, closePortal, isClosing, picture, styles} = props;
+  const {children, closeAfter, closePortal, isClosing, picture, styles} = props;
   return (
-    <DashModal onBackdropClick={closePortal} isClosing={isClosing}>
+    <DashModal onBackdropClick={closePortal} isClosing={isClosing} closeAfter={closeAfter}>
       <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
         Upload a new photo
       </Type>
@@ -42,6 +42,6 @@ const styleThunk = () => ({
   }
 });
 
-export default portal({escToClose: true, animated: true})(
+export default portal({escToClose: true, closeAfter: 100})(
   withStyles(styleThunk)(PhotoUploadModal)
 );

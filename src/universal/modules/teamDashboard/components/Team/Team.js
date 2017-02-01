@@ -73,10 +73,8 @@ const Team = (props) => {
   const DashHeaderInfoTitle = isSettings ? <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId}/> : teamName;
   return (
     <DashMain>
-      {hasOverlay && <MeetingInProgressModal teamId={teamId} teamName={teamName}/>}
-      {!isPaid &&
-        <UnpaidTeamModalContainer teamId={teamId} teamName={teamName}/>
-      }
+      <MeetingInProgressModal isOpen={hasOverlay} teamId={teamId} teamName={teamName}/>
+      <UnpaidTeamModalContainer isOpen={!isPaid} teamId={teamId} teamName={teamName}/>
       <DashHeader hasOverlay={hasOverlay}>
         <DashHeaderInfo title={DashHeaderInfoTitle}>
           {isSettings ? settingsLinks(teamId) : standardLinks(teamId)}

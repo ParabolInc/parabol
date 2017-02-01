@@ -3,7 +3,7 @@ import Organization from 'universal/modules/userDashboard/components/Organizatio
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
-import {BILLING_PAGE} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
+import {BILLING_PAGE} from 'universal/utils/constants';
 
 const organizationContainerQuery = `
 query {
@@ -35,9 +35,6 @@ const mapStateToProps = (state, props) => {
     billingLeaders,
     myUserId: state.auth.obj.sub,
     org,
-    openModal: state.orgSettings.openModal,
-    modalUserId: state.orgSettings.userId,
-    modalPreferredName: state.orgSettings.preferredName,
   }
 };
 
@@ -46,11 +43,7 @@ const OrganizationContainer = (props) => {
     activeOrgDetail,
     billingLeaders,
     dispatch,
-    modalPreferredName,
-    modalUserId,
-    modalActions,
     myUserId,
-    openModal,
     org
   }= props;
   if (!org.id) {
@@ -61,12 +54,8 @@ const OrganizationContainer = (props) => {
       activeOrgDetail={activeOrgDetail}
       billingLeaders={billingLeaders}
       dispatch={dispatch}
-      modalPreferredName={modalPreferredName}
-      modalUserId={modalUserId}
-      modalActions={modalActions}
       myUserId={myUserId}
       org={org}
-      openModal={openModal}
     />
   );
 };

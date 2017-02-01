@@ -26,7 +26,6 @@ const mapStateToProps = (state) => {
   return {
     activity: state.userDashboardSettings.activity,
     nextPage: state.userDashboardSettings.nextPage,
-    openModal: state.userDashboardSettings.openModal,
     user,
     userId: state.auth.obj.sub
   };

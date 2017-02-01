@@ -3,7 +3,7 @@ import Button from 'universal/components/Button/Button';
 import InputField from 'universal/components/InputField/InputField';
 import Panel from 'universal/components/Panel/Panel';
 import {Field} from 'redux-form';
-import {ACTIVITY_WELCOME, TOGGLE_USER_AVATAR_MODAL, toggleUserAvatarModal} from 'universal/modules/userDashboard/ducks/settingsDuck';
+import {ACTIVITY_WELCOME} from 'universal/modules/userDashboard/ducks/settingsDuck';
 import {randomPreferredName} from 'universal/utils/makeRandomPlaceholder';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
@@ -28,22 +28,11 @@ const renderActivity = (activity) => {
 };
 
 const UserSettings = (props) => {
-  const {activity, dispatch, handleSubmit, onSubmit, openModal, styles, user: {id: userId, picture}} = props;
-  const openChangeAvatar = () => {
-    dispatch(toggleUserAvatarModal());
-  };
+  const {activity, handleSubmit, onSubmit, styles, user: {id: userId, picture}} = props;
   const pictureOrDefault = picture || defaultUserAvatar;
   const toggle = <EditableAvatar picture={pictureOrDefault} size={96}/>;
   return (
     <UserSettingsWrapper activeTab={SETTINGS}>
-      {openModal === TOGGLE_USER_AVATAR_MODAL &&
-        <PhotoUploadModal
-          onBackdropClick={openChangeAvatar}
-          picture={picture}
-        >
-          <UserAvatarInput userId={userId}/>
-        </PhotoUploadModal>
-      }
       <div className={css(styles.body)}>
         <Panel label="My Information">
           <form className={css(styles.form)} onSubmit={handleSubmit(onSubmit)}>

@@ -40,11 +40,6 @@ const mapStateToProps = (state, props) => {
     invitations,
     team,
     teamMembers,
-    leaveTeamModal: state.teamSettings.leaveTeamModal,
-    promoteTeamMemberModal: state.teamSettings.promoteTeamMemberModal,
-    removeTeamMemberModal: state.teamSettings.removeTeamMemberModal,
-    modalTeamMemberId: state.teamSettings.teamMemberId,
-    modalPreferredName: state.teamSettings.preferredName,
     myTeamMemberId: `${state.auth.obj.sub}::${teamId}`
   };
 };
@@ -53,12 +48,7 @@ const TeamSettingsContainer = (props) => {
   const {
     dispatch,
     invitations,
-    leaveTeamModal,
-    modalPreferredName,
-    modalTeamMemberId,
     myTeamMemberId,
-    promoteTeamMemberModal,
-    removeTeamMemberModal,
     team,
     teamMembers
   } = props;
@@ -70,12 +60,7 @@ const TeamSettingsContainer = (props) => {
     <TeamSettings
       dispatch={dispatch}
       invitations={invitations}
-      leaveTeamModal={leaveTeamModal}
       myTeamMember={myTeamMember}
-      modalTeamMemberId={modalTeamMemberId}
-      modalPreferredName={modalPreferredName}
-      promoteTeamMemberModal={promoteTeamMemberModal}
-      removeTeamMemberModal={removeTeamMemberModal}
       team={team}
       teamMembers={teamMembers}
     />
@@ -85,13 +70,8 @@ const TeamSettingsContainer = (props) => {
 TeamSettingsContainer.propTypes = {
   dispatch: PropTypes.func.isRequired,
   invitations: PropTypes.array.isRequired,
-  leaveTeamModal: PropTypes.bool.isRequired,
-  modalPreferredName: PropTypes.string,
-  modalTeamMemberId: PropTypes.string,
   myTeamMemberId: PropTypes.string.isRequired,
   params: PropTypes.object.isRequired,
-  promoteTeamMemberModal: PropTypes.bool.isRequired,
-  removeTeamMemberModal: PropTypes.bool.isRequired,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired
 };
