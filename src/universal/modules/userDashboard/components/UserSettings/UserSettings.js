@@ -30,7 +30,7 @@ const renderActivity = (activity) => {
 const UserSettings = (props) => {
   const {activity, handleSubmit, onSubmit, styles, user: {id: userId, picture}} = props;
   const pictureOrDefault = picture || defaultUserAvatar;
-  const toggle = <EditableAvatar picture={pictureOrDefault} size={96}/>;
+  const toggle = <EditableAvatar picture={pictureOrDefault} size={96} type="user"/>;
   return (
     <UserSettingsWrapper activeTab={SETTINGS}>
       <div className={css(styles.body)}>

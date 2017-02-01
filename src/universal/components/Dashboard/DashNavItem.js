@@ -15,13 +15,13 @@ const DashNavItem = (props) => {
     isActive && styles.active
   );
   return (
-      <Link
-        className={linkStyles}
-        title={label}
-        to={href}
-      >
-        {label}
-      </Link>
+    <Link
+      className={linkStyles}
+      title={label}
+      to={href}
+    >
+      {label}
+    </Link>
   );
 };
 

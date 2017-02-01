@@ -24,11 +24,19 @@ const BUTTON_SIZE_SMALL = 'small';
 const BUTTON_SIZE_MEDIUM = 'medium';
 const BUTTON_SIZE_LARGE = 'large';
 const BUTTON_SIZE_LARGEST = 'largest';
+const BUTTON_PADDING_HORIZONTAL_COMPACT = '.5em';
+
+// Icons
+const iconSize = '14px'; // FontAwesome base
+const iconSizeAvatar = '21px'; // FontAwesome 1.5x
+const iconSize2x = '28px'; // FontAwesome 2x
+const iconSize3x = '42px'; // FontAwesome 3x
 
 // ---------------------------------
 
 const ui = {
   // Base settings
+  backgroundColor,
   borderRadiusSmall,
   borderRadiusMedium,
   borderRadiusLarge,
@@ -49,14 +57,78 @@ const ui = {
   },
 
   // Buttons
+  buttonBaseStyles: {
+    appearance: 'none',
+    border: '1px solid transparent',
+    boxShadow: 'none',
+    cursor: 'pointer',
+    display: 'inline-block',
+    fontWeight: 700,
+    // lineHeight: '1.25em',
+    outline: 'none',
+    textAlign: 'center',
+    textDecoration: 'none',
+    userSelect: 'none',
+    verticalAlign: 'middle',
+    ':hover': {
+      textDecoration: 'none'
+    },
+    ':focus': {
+      textDecoration: 'none'
+    },
+    ':active': {
+      animationDuration: '.1s',
+      animationName: {
+        '0%': {
+          transform: 'translate(0, 0)'
+        },
+        '50%': {
+          transform: 'translate(0, .25rem)'
+        },
+        '100%': {
+          transform: 'translate(0)'
+        }
+      },
+      animationTimingFunction: 'ease-in'
+    }
+  },
+  buttonBlockStyles: {
+    display: 'block',
+    paddingLeft: BUTTON_PADDING_HORIZONTAL_COMPACT,
+    paddingRight: BUTTON_PADDING_HORIZONTAL_COMPACT,
+    width: '100%'
+  },
   buttonBorderRadius: borderRadiusSmall,
+  buttonDisabledStyles: {
+    cursor: 'not-allowed',
+    opacity: '.5',
+    ':hover': {
+      opacity: '.5'
+    },
+    ':focus': {
+      opacity: '.5'
+    },
+    ':active': {
+      animation: 'none'
+    }
+  },
   buttonFontSize: {
     [BUTTON_SIZE_SMALLEST]: appTheme.typography.s1,
-    [BUTTON_SIZE_SMALL]: appTheme.typography.s3,
-    [BUTTON_SIZE_MEDIUM]: appTheme.typography.sBase,
-    [BUTTON_SIZE_LARGE]: appTheme.typography.s4,
-    [BUTTON_SIZE_LARGEST]: appTheme.typography.s5
+    [BUTTON_SIZE_SMALL]: appTheme.typography.sBase,
+    [BUTTON_SIZE_MEDIUM]: '1.15rem', // appTheme.typography.s4,
+    [BUTTON_SIZE_LARGE]: appTheme.typography.s5,
+    [BUTTON_SIZE_LARGEST]: '1.75rem'
   },
+  buttonIconSize: {
+    [BUTTON_SIZE_SMALLEST]: iconSize,
+    [BUTTON_SIZE_SMALL]: iconSize,
+    [BUTTON_SIZE_MEDIUM]: iconSizeAvatar,
+    [BUTTON_SIZE_LARGE]: iconSizeAvatar,
+    [BUTTON_SIZE_LARGEST]: iconSize2x,
+  },
+  buttonLineHeight: '2.5em',
+  buttonPadding: '0 1em',
+  buttonPaddingHorizontalCompact: BUTTON_PADDING_HORIZONTAL_COMPACT,
   buttonSizes: [
     BUTTON_SIZE_SMALLEST,
     BUTTON_SIZE_SMALL,
@@ -115,10 +187,22 @@ const ui = {
   fieldPaddingHorizontal: '.75rem',
 
   // Icons
-  iconSize: '14px', // FontAwesome base
-  iconSizeAvatar: '21px', // FontAwesome 1.5x
-  iconSize2x: '28px', // FontAwesome 2x
-  iconSize3x: '42px', // FontAwesome 3x
+  iconSize,
+  iconSizeAvatar,
+  iconSize2x,
+  iconSize3x,
+
+  // Invoice
+  invoiceBorderColor: appTheme.palette.mid40l,
+  invoiceBorderColorLighter: appTheme.palette.mid20l,
+  invoiceBreakpoint: '@media (min-width: 32rem)',
+  invoiceItemBaseStyles: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    width: '100%'
+  },
+  invoicePanelGutterSmall: '.75rem',
+  invoicePanelGutterLarge: '1.25rem',
 
   // Meeting
   meetingSidebarWidth: '15rem',

@@ -7,6 +7,7 @@ import tinycolor from 'tinycolor2';
 import FontAwesome from 'react-fontawesome';
 import DashNavListContainer from 'universal/containers/DashNavList/DashNavListContainer';
 import DashNavItem from './DashNavItem';
+import DashNavButton from './DashNavButton';
 import SettingsHub from 'universal/components/SettingsHub/SettingsHub';
 import StandardHubContainer from 'universal/containers/StandardHub/StandardHubContainer';
 import Logo from 'universal/styles/theme/images/brand/parabol-lockup-h.svg';
@@ -19,15 +20,21 @@ const DashSidebar = (props) => {
     styles.addTeam,
     newTeamIsActive && styles.addTeamDisabled
   );
+  const userHasNotifications = true;
   return (
     <div className={css(styles.root)}>
       {isUserSettings ? <SettingsHub/> : <StandardHubContainer/>}
       <nav className={css(styles.nav)}>
         <div className={css(styles.singleNavItem)}>
-          <DashNavItem
-            href="/me"
-            label="My Dashboard"
-          />
+          <div className={css(styles.singleNavItemInner)}>
+            {userHasNotifications &&
+              <DashNavButton href="/me/notifications" icon="bell" title="See your notifications" />
+            }
+            <DashNavItem
+              href="/me"
+              label="My Dashboard"
+            />
+          </div>
         </div>
         <div className={css(styles.navLabel, styles.navLabelForList)}>
           My Teams
@@ -82,6 +89,10 @@ const styleThunk = () => ({
 
   singleNavItem: {
     padding: '.5rem 0'
+  },
+
+  singleNavItemInner: {
+    position: 'relative'
   },
 
   navLabel: {
