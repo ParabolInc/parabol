@@ -60,18 +60,17 @@ exports.up = async(r) => {
     const orgId = orgLookupByTeam[teamId];
     teamMember.orgId = orgId;
     orgs[orgId] = orgs[orgId] || {};
-    orgs[orgId].orgUsersMap = orgs[orgId].orgUsersMap || {};
-    orgs[orgId].orgUsersMap[userId] = isLead;
+    orgs[orgId].orgUserMap = orgs[orgId].orgUserMap || {};
+    orgs[orgId].orgUserMap[userId] = isLead;
     users[userId] = users[userId] || {};
-    users[userId].userOrgsMap = users[userId].userOrgsMap || {};
-    users[userId].userOrgsMap[orgId] = isLead;
+    users[userId].userOrgMap = users[userId].userOrgMap || {};
+    users[userId].userOrgMap[orgId] = isLead;
     if (isLead) {
       orgs[orgId].leaderId = userId;
       orgs[orgId].name = `${preferredName}'s Org`;
       users[userId].trialOrg = orgId
     }
   }
-
   const orgIds = Object.keys(orgs);
   const stripeCustomers = await Promise.all(orgIds.map((orgId) => stripe.customers.create({metadata: {orgId}})));
   const subscriptions = await Promise.all(stripeCustomers.map((customer) => {
@@ -79,7 +78,7 @@ exports.up = async(r) => {
       customer: customer.id,
       metadata: customer.metadata,
       plan: ACTION_MONTHLY,
-      quantity: Object.keys(orgs[customer.metadata.orgId].orgUsersMap).length,
+      quantity: Object.keys(orgs[customer.metadata.orgId].orgUserMap).length,
       trial_period_days: TRIAL_PERIOD_DAYS
     });
   }));
@@ -125,14 +124,14 @@ exports.up = async(r) => {
   for (let i = 0; i < userIds.length; i++) {
     const userId = userIds[i];
     const user = users[userId];
-    const {trialOrg, userOrgsMap} = user;
+    const {trialOrg, userOrgMap} = user;
     const userOrgs = [];
-    const userOrgIds = Object.keys(userOrgsMap);
+    const userOrgIds = Object.keys(userOrgMap);
     for (let j = 0; j < userOrgIds.length; j++) {
       const userOrgId = userOrgIds[j];
       userOrgs[j] = {
         id: userOrgId,
-        role: userOrgsMap[userOrgId] ? BILLING_LEADER : null
+        role: userOrgMap[userOrgId] ? BILLING_LEADER : null
       }
     }
     usersForDB[i] = {

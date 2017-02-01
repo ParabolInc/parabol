@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 
 const teamProjectsHeaderQuery = `
 query {
-  organizations(userId: $userId) @live {
+  ownedOrganizations(userId: $userId) @live {
     id
     isTrial
     activeUserCount
@@ -18,7 +18,7 @@ query {
 
 const mapStateToProps = (state, props) => {
   const userId = state.auth.obj.sub;
-  const {organizations} = cashay.query(teamProjectsHeaderQuery, {
+  const {ownedOrganizations: organizations} = cashay.query(teamProjectsHeaderQuery, {
     op: 'organizationsContainer',
     key: userId,
     sort: {

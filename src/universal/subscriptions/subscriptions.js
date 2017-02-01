@@ -160,6 +160,16 @@ export default [
     subscription($userId: ID!) {
       organizations(userId: $userId) {
         id
+        name
+      }
+    }`
+  },
+  {
+    channel: OWNED_ORGANIZATIONS,
+    string: `
+    subscription($userId: ID!) {
+      ownedOrganizations(userId: $userId) {
+        id
         activeUserCount
         inactiveUserCount
         isTrial
@@ -168,20 +178,6 @@ export default [
       }
     }`
   },
-  // {
-  //   channel: OWNED_ORGANIZATIONS,
-  //   string: `
-  //   subscription($userId: ID!) {
-  //     organizations(userId: $userId) {
-  //       id
-  //       activeUserCount
-  //       inactiveUserCount
-  //       isTrial
-  //       name
-  //       picture
-  //     }
-  //   }`
-  // },
   {
     channel: PRESENCE,
     string: `

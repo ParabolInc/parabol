@@ -3,13 +3,10 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
-import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
-import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 import FontAwesome from 'react-fontawesome';
 
 const EditableAvatar = (props) => {
   const {hasPanel, onClick, picture, styles} = props;
-  const fallbackImage = hasPanel ? defaultUserAvatar : defaultOrgAvatar;
   const avatarBlockStyles = css(
     styles.avatar,
     hasPanel && styles.avatarHasPanel
@@ -20,7 +17,7 @@ const EditableAvatar = (props) => {
         <FontAwesome name="pencil"/>
         <span>EDIT</span>
       </div>
-      <img className={css(styles.avatarImg)} src={picture || fallbackImage}/>
+      <img className={css(styles.avatarImg)} src={picture}/>
     </div>
   );
 };

@@ -32,11 +32,6 @@ export default function reducer(state = initialState, action = {}) {
       openModal: state.openModal === type ? '' : type,
       userId
     };
-  } else if (type === TOGGLE_PAYMENT_MODAL) {
-    return {
-      ...state,
-      openModal: state.openModal === type ? '' : type,
-    }
   }
 
   return state;

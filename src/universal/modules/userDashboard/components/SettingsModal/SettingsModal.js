@@ -2,13 +2,10 @@ import React, {PropTypes} from 'react';
 import {
   TOGGLE_REMOVE_BILLING_LEADER,
   TOGGLE_LEAVE_ORG,
-  TOGGLE_AVATAR_MODAL,
 } from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
 import RemoveBillingLeaderModal from 'universal/modules/userDashboard/components/RemoveBillingLeaderModal/RemoveBillingLeaderModal';
 import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal';
-import {toggleLeaveModal, toggleRemoveModal, toggleAvatarModal} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
-import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
-import OrgAvatarInput from 'universal/modules/userDashboard/components/OrgAvatarInput/OrgAvatarInput';
+import {toggleLeaveModal, toggleRemoveModal} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
 
 const SettingsModal = (props) => {
   const {dispatch, openModal, org: {id: orgId, picture}, modalUserId, modalPreferredName} = props;
@@ -26,12 +23,6 @@ const SettingsModal = (props) => {
         orgId={orgId}
         userId={modalUserId}
       />;
-    case TOGGLE_AVATAR_MODAL:
-      return (
-        <PhotoUploadModal onBackdropClick={() => {dispatch(toggleAvatarModal())}} picture={picture}>
-          <OrgAvatarInput orgId={orgId}/>
-        </PhotoUploadModal>
-      );
     default:
       return null;
   }

@@ -13,6 +13,7 @@ import {SETTINGS} from 'universal/utils/constants';
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
 import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
 import UserAvatarInput from 'universal/modules/userDashboard/components/UserAvatarInput/UserAvatarInput';
+import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 
 const renderActivity = (activity) => {
   if (activity === ACTIVITY_WELCOME) {
@@ -31,6 +32,8 @@ const UserSettings = (props) => {
   const openChangeAvatar = () => {
     dispatch(toggleUserAvatarModal());
   };
+  const pictureOrDefault = picture || defaultUserAvatar;
+  const toggle = <EditableAvatar picture={pictureOrDefault} size={96}/>;
   return (
     <UserSettingsWrapper activeTab={SETTINGS}>
       {openModal === TOGGLE_USER_AVATAR_MODAL &&
@@ -45,11 +48,9 @@ const UserSettings = (props) => {
         <Panel label="My Information">
           <form className={css(styles.form)} onSubmit={handleSubmit(onSubmit)}>
             <div className={css(styles.avatarBlock)}>
-              <EditableAvatar
-                onClick={openChangeAvatar}
-                picture={picture}
-                size={96}
-              />
+              <PhotoUploadModal picture={pictureOrDefault} toggle={toggle}>
+                <UserAvatarInput userId={userId}/>
+              </PhotoUploadModal>
             </div>
             <div className={css(styles.infoBlock)}>
               <div className={css(styles.row)}>

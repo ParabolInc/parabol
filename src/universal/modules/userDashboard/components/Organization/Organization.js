@@ -16,6 +16,9 @@ import OrgMembersContainer from 'universal/modules/userDashboard/containers/OrgM
 import {BILLING_PAGE, toggleAvatarModal} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
 import SettingsModal from 'universal/modules/userDashboard/components/SettingsModal/SettingsModal';
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
+import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
+import OrgAvatarInput from 'universal/modules/userDashboard/components/OrgAvatarInput/OrgAvatarInput';
+import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
 
 const inlineBlockStyle = {
   display: 'inline-block',
@@ -36,9 +39,8 @@ const Organization = (props) => {
   const {id: orgId, createdAt, name: orgName, picture: orgAvatar} = org;
   initialValues.orgName = orgName;
   const OrgSection = activeOrgDetail === BILLING_PAGE ? OrgBillingContainer : OrgMembersContainer;
-  const openChangeAvatar = () => {
-    dispatch(toggleAvatarModal());
-  };
+  const pictureOrDefault = orgAvatar || defaultOrgAvatar;
+  const toggle = <EditableAvatar hasPanel picture={pictureOrDefault} size={96}/>;
   return (
     <UserSettingsWrapper activeTab={ORGANIZATIONS}>
       <SettingsModal {...props}/>
@@ -49,7 +51,9 @@ const Organization = (props) => {
         </Link>
         {/* TODO: See AvatarInput.js for latest */}
         <div className={css(styles.avatarAndName)}>
-          <EditableAvatar hasPanel onClick={openChangeAvatar} picture={orgAvatar} size={96}/>
+          <PhotoUploadModal picture={pictureOrDefault} toggle={toggle}>
+            <OrgAvatarInput orgId={orgId}/>
+          </PhotoUploadModal>
           <div className={css(styles.orgNameAndDetails)}>
             <EditOrgName initialValues={initialValues} orgName={orgName} orgId={orgId}/>
             <div className={css(styles.orgDetails)}>

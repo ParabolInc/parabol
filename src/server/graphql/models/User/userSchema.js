@@ -12,6 +12,7 @@ import {GraphQLEmailType, GraphQLURLType} from '../../types';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {TeamMember} from '../TeamMember/teamMemberSchema';
 import getRethink from 'server/database/rethinkDriver';
+import {OrgUserRole} from 'server/graphql/models/Organization/organizationSchema';
 
 const IdentityType = new GraphQLObjectType({
   name: 'IdentityType',

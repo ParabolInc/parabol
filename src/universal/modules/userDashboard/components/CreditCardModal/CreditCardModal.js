@@ -7,7 +7,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import {reduxForm, Field, SubmissionError} from 'redux-form';
+import {reduxForm, Field} from 'redux-form';
 import CreditCardField from './CreditCardField';
 import FontAwesome from 'react-fontawesome';
 import withAsync from 'react-async-hoc';

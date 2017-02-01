@@ -10,9 +10,9 @@ import {
   GraphQLEnumType
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
-import {GraphQLURLType} from '../types';
+import {GraphQLURLType} from 'server/graphql/types';
 import {BILLING_LEADER} from 'universal/utils/constants'
-import {makeEnumValues} from '../utils';
+import makeEnumValues from 'server/graphql/makeEnumValues';
 
 const RemovedUser = new GraphQLObjectType({
   name: 'RemovedUser',
@@ -82,6 +82,10 @@ export const Organization = new GraphQLObjectType({
   description: 'An organization',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique organization ID'},
+    activeUserCount: {
+      type: GraphQLInt,
+      description: 'The number of orgUsers who do not have an inactive flag'
+    },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the organization was created'
@@ -89,6 +93,10 @@ export const Organization = new GraphQLObjectType({
     creditCard: {
       type: CreditCard,
       description: 'The safe credit card details'
+    },
+    inactiveUserCount: {
+      type: GraphQLInt,
+      description: 'The number of orgUsers who have an inactive flag'
     },
     isTrial: {
       type: GraphQLBoolean,

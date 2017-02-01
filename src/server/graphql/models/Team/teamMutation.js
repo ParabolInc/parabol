@@ -1,7 +1,7 @@
 import getRethink from 'server/database/rethinkDriver';
 import {
   ensureUniqueId,
-  ensureUserInOrg,
+  requireUserInOrg,
   getUserId,
   requireAuth,
   requireSUOrTeamMember,
@@ -437,7 +437,7 @@ export default {
       const {orgId} = args.newTeam;
       const userId = authToken.sub;
       requireWebsocket(socket);
-      await ensureUserInOrg(userId, orgId);
+      await requireUserInOrg(userId, orgId);
 
       // VALIDATION
       const schema = makeAddTeamServerSchema({inviteEmails: [], teamMemberEmails: []});
