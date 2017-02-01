@@ -20,7 +20,7 @@ const UserDashMain = (props) => {
   const {styles} = props;
   const userHasNotifications = true;
   const makeSeparator = () =>
-    <span> {'//'} </span>;
+    <span className={css(styles.separator)}>{' // '}</span>;
   const iconStyle = {
     fontSize: ui.iconSize,
     lineHeight: 'inherit'
@@ -86,6 +86,11 @@ const styleThunk = () => ({
     flex: 1,
     flexDirection: 'column',
     paddingLeft: '1rem'
+  },
+
+  separator: {
+    paddingLeft: '.5em',
+    paddingRight: '.5em'
   }
 });
 
