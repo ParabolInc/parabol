@@ -9,7 +9,7 @@ const thresholds = {
   inf: Infinity
 };
 
-export default function fromNow(time) {
+export function getFromNowString(time) {
   const distance = (Date.now() - time) || 0;
   if (distance < 1000) return 'just now';
   const threshKeys = Object.keys(thresholds);
@@ -25,4 +25,15 @@ export default function fromNow(time) {
   }
   // this is both for eslint, and for chuckles. It should never happen:
   return 'infinitely long ago';
+}
+
+export function getTimeoutDuration(time) {
+  const msElapsed = (Date.now() - time) || 0;
+  const threshKeys = Object.keys(thresholds);
+  for (let i = 1; i < threshKeys.length; i++) {
+    const currentThresh = thresholds[threshKeys[i]];
+    if (msElapsed < currentThresh) {
+      return i === 1 ? 30 * thresholds.second : thresholds[threshKeys[i - 1]];
+    }
+  }
 }

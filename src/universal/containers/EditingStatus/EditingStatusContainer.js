@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
-import fromNow from '../../utils/fromNow';
+import getFromNowString from '../../utils/fromNow';
 import Ellipsis from '../../components/Ellipsis/Ellipsis';
 import EditingStatus from 'universal/components/EditingStatus/EditingStatus';
 
@@ -24,7 +24,7 @@ const makeEditingStatus = (editors, active, updatedAt) => {
     makeEditingStatus.active = active;
     // no one else is editing
     if (editors.length === 0) {
-      makeEditingStatus.cache = active ? <span>editing<Ellipsis/></span> : fromNow(updatedAt);
+      makeEditingStatus.cache = active ? <span>editing<Ellipsis/></span> : getFromNowString(updatedAt);
     } else {
       const editorNames = editors.map(e => e.teamMember.preferredName);
       // one other is editing
