@@ -2,7 +2,7 @@ import getRethink from 'server/database/rethinkDriver';
 import getRequestedFields from 'server/graphql/getRequestedFields'
 import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
 import {User} from './userSchema';
-import makeChangefeedHandler from '../../../utils/makeChangefeedHandler';
+import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
 import {requireOrgLeader} from 'server/utils/authorization';
 
 export default {

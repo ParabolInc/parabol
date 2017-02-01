@@ -7,7 +7,7 @@ import {
 } from 'graphql';
 import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import makeAgendaItemSchema from 'universal/validation/makeAgendaItemSchema';
-import {handleSchemaErrors} from '../../../utils/utils';
+import {handleSchemaErrors} from 'server/utils/utils';
 
 export default {
   createAgendaItem: {

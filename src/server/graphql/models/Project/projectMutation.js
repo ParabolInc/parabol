@@ -10,7 +10,7 @@ import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorizatio
 import shortid from 'shortid';
 import ms from 'ms';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
-import {handleSchemaErrors} from '../../../utils/utils';
+import {handleSchemaErrors} from 'server/utils/utils';
 const DEBOUNCE_TIME = ms('5m');
 
 export default {

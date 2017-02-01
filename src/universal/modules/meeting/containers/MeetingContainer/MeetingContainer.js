@@ -6,7 +6,7 @@ import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import handleAgendaSort from 'universal/modules/meeting/helpers/handleAgendaSort';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
 import MeetingAvatars from 'universal/modules/meeting/components/MeetingAvatars/MeetingAvatars';
-import Sidebar from '../../components/Sidebar/Sidebar';
+import Sidebar from 'universal/modules/meeting/components/Sidebar/Sidebar';
 import {withRouter} from 'react-router';
 import {DragDropContext as dragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';

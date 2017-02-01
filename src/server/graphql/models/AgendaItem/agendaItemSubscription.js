@@ -3,7 +3,7 @@ import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
 import getRequestedFields from 'server/graphql/getRequestedFields'
 import {AgendaItem} from './agendaItemSchema';
 import {requireSUOrTeamMember, requireTeamIsPaid} from 'server/utils/authorization';
-import makeChangefeedHandler from '../../../utils/makeChangefeedHandler';
+import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
 
 export default {
   agenda: {

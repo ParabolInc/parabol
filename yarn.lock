@@ -5273,9 +5273,9 @@ react-notification-system@^0.2.10:
   dependencies:
     object-assign "^4.0.1"
 
-react-portal-hoc@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/react-portal-hoc/-/react-portal-hoc-0.2.0.tgz#731026d8b0a50826647c285a6ee5a37da78774e6"
+react-portal-hoc@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/react-portal-hoc/-/react-portal-hoc-0.3.1.tgz#13835b4f0f8b8ddcf7e73b287d99b3cb06773054"
 
 react-proxy@^1.1.7:
   version "1.1.8"
@@ -6770,11 +6770,11 @@ utils-merge@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.0.tgz#0294fb922bb9375153541c4f7096231f287c8af8"
 
-uuid@3.0.0, uuid@^3.0.0:
+uuid@3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.0.0.tgz#6728fc0459c450d796a99c31837569bdf672d728"
 
-uuid@3.0.1:
+uuid@3.0.1, uuid@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.0.1.tgz#6544bba2dfda8c1cf17e629a3a305e2bb1fee6c1"
 

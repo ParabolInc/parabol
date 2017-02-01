@@ -4,7 +4,7 @@ import {
   GraphQLID,
   GraphQLBoolean,
 } from 'graphql';
-import {errorObj, getNewVal, getOldVal} from '../../../utils/utils';
+import {errorObj, getNewVal, getOldVal} from 'server/utils/utils';
 import {
   requireWebsocket,
   requireSUOrTeamMember,
@@ -13,7 +13,7 @@ import {
   requireAuth
 } from 'server/utils/authorization';
 import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
-import tmsSignToken from '../../../utils/tmsSignToken';
+import tmsSignToken from 'server/utils/tmsSignToken';
 import {JOIN_TEAM, KICK_OUT, PRESENCE} from 'universal/subscriptions/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {

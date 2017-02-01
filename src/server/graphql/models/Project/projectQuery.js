@@ -1,7 +1,7 @@
 import getRethink from 'server/database/rethinkDriver';
 import {GraphQLList, GraphQLNonNull, GraphQLID, GraphQLInt} from 'graphql';
 import {Project} from './projectSchema';
-import {errorObj} from '../../../utils/utils';
+import {errorObj} from 'server/utils/utils';
 import {requireAuth, requireSUOrTeamMember} from 'server/utils/authorization';
 
 export default {

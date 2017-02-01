@@ -7,14 +7,14 @@ import {AuthenticationClient} from 'auth0';
 import {auth0} from 'universal/utils/clientOptions';
 import sendEmail from 'server/email/sendEmail';
 import {requireAuth, requireSU, requireSUOrSelf} from 'server/utils/authorization';
-import {errorObj, getS3PutUrl, handleSchemaErrors, updatedOrOriginal, validateAvatarUpload} from '../../../utils/utils';
+import {errorObj, getS3PutUrl, handleSchemaErrors, updatedOrOriginal, validateAvatarUpload} from 'server/utils/utils';
 import {
   auth0ManagementClient,
   clientSecret as auth0ClientSecret
 } from 'server/utils/auth0Helpers';
 import {verify} from 'jsonwebtoken';
 import makeUserServerSchema from 'universal/validation/makeUserServerSchema';
-import tmsSignToken from '../../../utils/tmsSignToken';
+import tmsSignToken from 'server/utils/tmsSignToken';
 import {GraphQLURLType} from '../../types';
 
 const auth0Client = new AuthenticationClient({

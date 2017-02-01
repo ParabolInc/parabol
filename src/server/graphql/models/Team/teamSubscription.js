@@ -2,8 +2,8 @@ import getRethink from 'server/database/rethinkDriver';
 import {GraphQLNonNull, GraphQLID} from 'graphql';
 import getRequestedFields from 'server/graphql/getRequestedFields'
 import {Team} from './teamSchema';
-import {requireSUOrTeamMember, requireTeamIsPaid} from 'server/utils/authorization';
-import makeChangefeedHandler from '../../../utils/makeChangefeedHandler';
+import {requireSUOrTeamMember} from 'server/utils/authorization';
+import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
 
 export default {
   team: {

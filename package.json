@@ -128,7 +128,7 @@
     "react-helmet": "^3.2.2",
     "react-hotkey-hoc": "^0.2.1",
     "react-notification-system": "^0.2.10",
-    "react-portal-hoc": "^0.2.0",
+    "react-portal-hoc": "^0.3.1",
     "react-redux": "^4.4.6",
     "react-router": "2.8.1",
     "react-textarea-autosize": "^4.0.5",

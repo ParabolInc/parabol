@@ -13,7 +13,7 @@ import {
   DashMain,
   makeDateString
 } from 'universal/components/Dashboard';
-import getRallyLink from '../../helpers/getRallyLink';
+import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
 import {Link} from 'react-router';
 
 const UserDashMain = (props) => {

@@ -34,7 +34,7 @@ import {
 } from 'universal/utils/constants';
 import addSeedProjects from './helpers/addSeedProjects';
 import createTeamAndLeader from './helpers/createTeamAndLeader';
-import tmsSignToken from '../../../utils/tmsSignToken';
+import tmsSignToken from 'server/utils/tmsSignToken';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';

@@ -1,6 +1,6 @@
 import {GraphQLNonNull, GraphQLID} from 'graphql';
 import {User} from './userSchema';
-import {errorObj} from '../../../utils/utils';
+import {errorObj} from 'server/utils/utils';
 import getRethink from 'server/database/rethinkDriver';
 import {requireAuth, requireSU} from 'server/utils/authorization';
 
