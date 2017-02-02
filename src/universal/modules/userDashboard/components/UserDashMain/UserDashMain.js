@@ -1,5 +1,4 @@
 import React, {PropTypes} from 'react';
-import FontAwesome from 'react-fontawesome';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
@@ -14,31 +13,16 @@ import {
   makeDateString
 } from 'universal/components/Dashboard';
 import getRallyLink from '../../helpers/getRallyLink';
-import {Link} from 'react-router';
 
 const UserDashMain = (props) => {
   const {styles} = props;
-  const userHasNotifications = true;
   const makeSeparator = () =>
     <span className={css(styles.separator)}>{' // '}</span>;
-  const iconStyle = {
-    fontSize: ui.iconSize,
-    lineHeight: 'inherit'
-  };
-  const linkStyle = {
-    textDecoration: 'none'
-  };
   return (
     <DashMain>
       <DashHeader>
         <DashHeaderInfo title="My Dashboard">
           {makeDateString()}{makeSeparator()}<span className={css(styles.crayCrayHover)}>{getRallyLink()}!</span>
-          {userHasNotifications && makeSeparator()}
-          {userHasNotifications &&
-            <Link to="/me/notifications" style={linkStyle}>
-              <FontAwesome name="bell" style={iconStyle} /> See Your Notifications
-            </Link>
-          }
         </DashHeaderInfo>
       </DashHeader>
       <DashContent padding="0">
