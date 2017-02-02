@@ -2,7 +2,7 @@ import {errorObj} from './utils';
 import getRethink from '../database/rethinkDriver';
 import {BILLING_LEADER} from 'universal/utils/constants';
 
-export const getUserId = authToken => {
+export const getUserId = (authToken) => {
   return authToken && typeof authToken === 'object' && authToken.sub;
 };
 

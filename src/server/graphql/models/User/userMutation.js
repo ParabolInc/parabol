@@ -150,6 +150,8 @@ export default {
       const returnedUser = {
         ...auth0User,
         lastLogin: now,
+        trialOrg: null,
+        userOrgs: [],
         notificationFlags: 0,
         welcomeSentAt
       };

@@ -568,7 +568,7 @@ export default {
         // trialExpiresAt
         varList: [validUntil]
       });
-      const tms = await createTeamAndLeader(authToken, validNewTeam, true);
+      const tms = await createTeamAndLeader(userId, validNewTeam, true);
       // Asynchronously create seed projects for team leader:
       // TODO: remove me after more
       addSeedProjects(authToken.sub, newTeam.id);
