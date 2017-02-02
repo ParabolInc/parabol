@@ -41,10 +41,9 @@ import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeS
 import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 import makeStep2Schema from 'universal/validation/makeStep2Schema';
 import makeAddTeamServerSchema from 'universal/validation/makeAddTeamServerSchema';
-import {TRIAL_EXPIRES_SOON, REQUEST_NEW_USER} from 'universal/utils/constants';
+import {BILLING_LEADER, TRIAL_EXPIRES_SOON, REQUEST_NEW_USER} from 'universal/utils/constants';
 import ms from 'ms';
 import createStripeOrg from 'server/graphql/models/Organization/addOrg/createStripeOrg';
-
 export default {
   moveMeeting: {
     type: GraphQLBoolean,
@@ -416,18 +415,6 @@ export default {
       },
       invitees: {
         type: new GraphQLList(new GraphQLNonNull(Invitee))
-      },
-      orgId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The orgId of the new or existing team'
-      },
-      orgName: {
-        type: GraphQLString,
-        description: 'The name of the new team'
-      },
-      stripeToken: {
-        type: GraphQLString,
-        description: 'The CC info for the new team'
       }
     },
     async resolve(source, args, {authToken, socket}) {

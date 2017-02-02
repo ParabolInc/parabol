@@ -158,19 +158,23 @@ exports.up = async(r) => {
   }));
 
   const userUpdates = r.expr(usersForDB).forEach((user) => r.table('User').get(user('id')).update({
-    trialOrg: user('trialOrg'),
+    trialOrg: user('trialOrg').default(null),
     userOrgs: user('userOrgs')
-  }));
+  }, {returnChanges: true}));
 
   const orgInserts = r.table('Organization').insert(orgsForDB);
   const notificationInserts = r.table('Notification').insert(notificationsForDB);
 
-  await Promise.all([
-    teamUpdates,
-    userUpdates,
-    orgInserts,
-    notificationInserts
-  ])
+  try {
+    await Promise.all([
+      teamUpdates,
+      userUpdates,
+      orgInserts,
+      notificationInserts
+    ])
+  } catch(e) {
+    console.log(e);
+  }
 };
 
 exports.down = async(r) => {

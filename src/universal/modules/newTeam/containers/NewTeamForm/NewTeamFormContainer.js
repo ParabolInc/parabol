@@ -44,36 +44,62 @@ const mapStateToProps = (state) => {
   };
 };
 
+const makeInvitees = (invitees) => {
+  return invitees ? invitees.map(email => ({
+      email: email.address,
+      fullName: email.fullName
+    })) : [];
+};
+
 const NewTeamFormContainer = (props) => {
   const {dispatch, initialValues, isNewOrg, organizations, router} = props;
   const onSubmit = (submittedData) => {
     const {isNewOrg} = props;
-    const schema = isNewOrg ? addOrgSchema() : makeAddTeamSchema();
-    const {data: {teamName, inviteesRaw}} = schema(submittedData);
-    const invitees = emailAddresses.parseAddressList(inviteesRaw);
-    const serverInvitees = invitees ? invitees.map(email => ({
-        email: email.address,
-        fullName: email.fullName
-      })) : [];
-    const id = shortid.generate();
-    const options = {
-      variables: {
+    const newTeamId = shortid.generate();
+    if (isNewOrg) {
+      const schema = addOrgSchema();
+      const {data: {teamName, inviteesRaw, orgName, stripeToken}} = schema(submittedData);
+      const parsedInvitees = emailAddresses.parseAddressList(inviteesRaw);
+      const invitees = makeInvitees(parsedInvitees);
+      const variables = {
         newTeam: {
-          id,
-          name: teamName
+          id: newTeamId,
+          name: teamName,
+          orgId: shortid.generate()
         },
-        invitees: serverInvitees
-      }
-    };
-    cashay.mutate('addTeam', options);
-    router.push(`/team/${id}`);
-    dispatch(segmentEventTrack('New Team',
-      {inviteeCount: invitees && invitees.length || 0}
-    ));
-    dispatch(showSuccess({
-      title: 'Team successfully created!',
-      message: `Here's your new team dashboard for ${teamName}`
-    }));
+        invitees,
+        orgName,
+        stripeToken
+      };
+      cashay.mutate('addOrg', {variables});
+      dispatch(segmentEventTrack('New Org'));
+      dispatch(showSuccess({
+        title: 'Organization successfully created!',
+        message: `Here's your new team dashboard for ${teamName}`
+      }));
+    } else {
+      const schema = makeAddTeamSchema();
+      const {data: {teamName, inviteesRaw, orgId}} = schema(submittedData);
+      const parsedInvitees = emailAddresses.parseAddressList(inviteesRaw);
+      const invitees = makeInvitees(parsedInvitees);
+      const variables = {
+        newTeam: {
+          id: newTeamId,
+          name: teamName,
+          orgId
+        },
+        invitees,
+      };
+      cashay.mutate('addTeam', {variables});
+      dispatch(segmentEventTrack('New Team',
+        {inviteeCount: invitees && invitees.length || 0}
+      ));
+      dispatch(showSuccess({
+        title: 'Team successfully created!',
+        message: `Here's your new team dashboard for ${teamName}`
+      }));
+    }
+    router.push(`/team/${newTeamId}`);
   };
   if (organizations.length === 0) {
     // more than looks, this is required because initialValues can only be passed in once
