@@ -8,16 +8,15 @@ import {
   ACTIONS_BY_AGENDA,
   AGENDA,
   ARCHIVED_PROJECTS,
-  BILLING_LEADERS,
   INVITATIONS,
   NOTIFICATIONS,
   ORGANIZATION,
   ORGANIZATIONS,
+  OWNED_ORGANIZATIONS,
   PROJECTS,
   PRESENCE,
   TEAM,
   TEAM_MEMBERS,
-  USER,
   USERS_BY_ORG
 } from 'universal/subscriptions/constants';
 
@@ -36,12 +35,12 @@ const dechannelfy = {
   [INVITATIONS]: (variableString) => ({teamId: variableString}),
   [NOTIFICATIONS]: (variableString) => ({userId: variableString}),
   [ORGANIZATION]: (variableString) => ({orgId: variableString}),
-  [ORGANIZATIONS]: (variableString) => ({}),
+  [ORGANIZATIONS]: (userId) => ({userId}),
+  [OWNED_ORGANIZATIONS]: (userId) => ({userId}),
   [PRESENCE]: (variableString) => ({teamId: variableString}),
   [PROJECTS]: (variableString) => ({teamMemberId: variableString}),
   [TEAM]: (variableString) => ({teamId: variableString}),
   [TEAM_MEMBERS]: (variableString) => ({teamId: variableString}),
-  [USER]: () => ({}),
   [USERS_BY_ORG]: (orgId) => ({orgId})
   // [USERS_BY_IDS]: (variableString) => ({userIds: variableString})
 };
@@ -66,7 +65,7 @@ export default function scSubscribeHandler(exchange, socket) {
       // swallow return value, it's a subscription
       const result = await graphql(Schema, subscription.string, {}, context, variables);
       if (result.errors) {
-        console.log('DEBUG GraphQL Subscribe Error:', result.errors);
+        console.log('DEBUG GraphQL Subscribe Error:', channel, result.errors);
       }
     } else {
       console.log(`GraphQL subscription for ${channel} not found`);

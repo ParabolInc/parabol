@@ -11,8 +11,8 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
 const TrialExpiresSoon = (props) => {
-  const {router, styles, varList} = props;
-  const [expiresAt, orgId] = varList;
+  const {orgId, router, styles, varList} = props;
+  const [expiresAt] = varList;
   const daysLeft = fromNow(expiresAt);
   const addBilling = () => {
     router.push(`/me/organizations/${orgId}`)

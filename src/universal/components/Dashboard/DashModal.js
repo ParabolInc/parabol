@@ -8,6 +8,7 @@ const DashModal = (props) => {
   const {
     children,
     inputModal,
+    isClosing,
     onBackdropClick,
     position,
     showsOver,
@@ -16,11 +17,12 @@ const DashModal = (props) => {
   const backdropStyles = css(
     styles.backdrop,
     position && styles[position],
-    showsOver && styles[showsOver],
+    showsOver && styles[showsOver]
   );
   const modalStyles = css(
     styles.modal,
-    inputModal && styles.inputModal
+    inputModal && styles.inputModal,
+    isClosing && styles.closing
   );
   const onClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -28,7 +30,7 @@ const DashModal = (props) => {
     }
   };
   return (
-    <div className={backdropStyles} onClick={onClick}>
+    <div className={backdropStyles} onClick={onBackdropClick ? onClick : null}>
       <div className={modalStyles}>
         {children}
       </div>
@@ -55,55 +57,86 @@ DashModal.propTypes = {
   styles: PropTypes.object
 };
 
-const styleThunk = () => ({
-  backdrop: {
-    alignItems: 'center',
-    background: 'rgba(255, 255, 255, .5)',
-    bottom: 0,
-    display: 'flex !important',
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    left: 0,
-    position: 'fixed',
-    right: 0,
-    textAlign: 'center',
-    top: 0,
-    zIndex: 400
-  },
+const animateIn = {
+  '0%': {
+    opacity: '0',
+    transform: 'translate3d(0, -50px, 0)'
 
-  viewport: {
-    left: 0
   },
+  '100%': {
+    opacity: '1',
+    transform: 'translate3d(0, 0, 0)'
+  }
+};
 
-  main: {
-    left: ui.dashSidebarWidth
+const animateOut = {
+  '0%': {
+    opacity: '1',
+    transform: 'translate3d(0, 0, 0)'
+
   },
+  '100%': {
+    opacity: '0',
+    transform: 'translate3d(0, -50px, 0)'
+  }
+};
 
-  absolute: {
-    position: 'absolute'
-  },
+const styleThunk = (theme, props) => ({
+    backdrop: {
+      alignItems: 'center',
+      background: 'rgba(255, 255, 255, .5)',
+      bottom: 0,
+      display: 'flex !important',
+      flex: 1,
+      flexDirection: 'column',
+      justifyContent: 'center',
+      left: 0,
+      position: 'fixed',
+      right: 0,
+      textAlign: 'center',
+      top: 0,
+      zIndex: 400
+    },
 
-  fixed: {
-    position: 'fixed'
-  },
+    closing: {
+      animationDuration: `${props.closeAfter}ms`,
+      animationName: animateOut
+    },
 
-  inputModal: {
-    background: ui.dashBackgroundColor,
-    padding: '1rem',
-    width: '20rem'
-  },
+    viewport: {
+      left: 0
+    },
 
-  modal: {
-    background: '#fff',
-    border: `.125rem solid ${appTheme.palette.mid30a}`,
-    // boxShadow: `0 0 0 .25rem ${appTheme.palette.mid30a}, ${ui.modalBoxShadow}`,
-    boxShadow: ui.modalBoxShadow,
-    borderRadius: ui.modalBorderRadius,
-    padding: '2rem',
-    width: '30rem'
-  },
+    main: {
+      left: ui.dashSidebarWidth
+    },
 
+    absolute: {
+      position: 'absolute'
+    },
+
+    fixed: {
+      position: 'fixed'
+    },
+
+    inputModal: {
+      background: ui.dashBackgroundColor,
+      padding: '1rem',
+      width: '20rem'
+    },
+
+    modal: {
+      background: '#fff',
+      border: `.125rem solid ${appTheme.palette.mid30a}`,
+      // boxShadow: `0 0 0 .25rem ${appTheme.palette.mid30a}, ${ui.modalBoxShadow}`,
+      boxShadow: ui.modalBoxShadow,
+      borderRadius: ui.modalBorderRadius,
+      padding: '2rem',
+      width: '30rem',
+      animationIterationCount: 1,
+      animationName: animateIn,
+      animationDuration: '200ms'
+    },
 });
 
 export default withStyles(styleThunk)(DashModal);

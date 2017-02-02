@@ -1,7 +1,13 @@
 import getRethink from 'server/database/rethinkDriver';
-import {getUserId, requireAuth, requireSUOrTeamMember, requireWebsocket} from '../authorization';
-import {ensureUniqueId, ensureUserInOrg, errorObj, handleSchemaErrors} from '../utils';
-import {TRIAL_PERIOD} from 'server/utils/serverConstants';
+import {
+  ensureUniqueId,
+  requireUserInOrg,
+  getUserId,
+  requireAuth,
+  requireSUOrTeamMember,
+  requireWebsocket
+} from 'server/utils/authorization';
+import {errorObj, handleSchemaErrors} from 'server/utils/utils';
 import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
 import {
   GraphQLNonNull,
@@ -11,7 +17,7 @@ import {
   GraphQLInt,
   GraphQLList
 } from 'graphql';
-import {CreateTeamInput, UpdateTeamInput} from './teamSchema';
+import {TeamInput} from './teamSchema';
 import {asyncInviteTeam} from 'server/graphql/models/Invitation/helpers';
 import shortid from 'shortid';
 import {
@@ -28,18 +34,16 @@ import {
 } from 'universal/utils/constants';
 import addSeedProjects from './helpers/addSeedProjects';
 import createTeamAndLeader from './helpers/createTeamAndLeader';
-import tmsSignToken from 'server/graphql/models/tmsSignToken';
+import tmsSignToken from 'server/utils/tmsSignToken';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 import makeStep2Schema from 'universal/validation/makeStep2Schema';
 import makeAddTeamServerSchema from 'universal/validation/makeAddTeamServerSchema';
-import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED, REQUEST_NEW_USER} from 'universal/utils/constants';
+import {TRIAL_EXPIRES_SOON, REQUEST_NEW_USER} from 'universal/utils/constants';
 import ms from 'ms';
-import stripe from 'server/billing/stripe';
-import {ACTION_MONTHLY, TRIAL_PERIOD_DAYS} from 'server/utils/serverConstants';
-import {fromStripeDate} from 'server/billing/stripeDate';
+import createStripeOrg from 'server/graphql/models/Organization/addOrg/createStripeOrg';
 
 export default {
   moveMeeting: {
@@ -407,11 +411,23 @@ export default {
     description: 'Create a new team and add the first team member',
     args: {
       newTeam: {
-        type: new GraphQLNonNull(CreateTeamInput),
+        type: new GraphQLNonNull(TeamInput),
         description: 'The new team object with exactly 1 team member'
       },
       invitees: {
         type: new GraphQLList(new GraphQLNonNull(Invitee))
+      },
+      orgId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The orgId of the new or existing team'
+      },
+      orgName: {
+        type: GraphQLString,
+        description: 'The name of the new team'
+      },
+      stripeToken: {
+        type: GraphQLString,
+        description: 'The CC info for the new team'
       }
     },
     async resolve(source, args, {authToken, socket}) {
@@ -421,7 +437,7 @@ export default {
       const {orgId} = args.newTeam;
       const userId = authToken.sub;
       requireWebsocket(socket);
-      await ensureUserInOrg(userId, orgId);
+      await requireUserInOrg(userId, orgId);
 
       // VALIDATION
       const schema = makeAddTeamServerSchema({inviteEmails: [], teamMemberEmails: []});
@@ -432,9 +448,13 @@ export default {
 
       // RESOLUTION
       const authTokenObj = socket.getAuthToken();
-      authTokenObj.tms = Array.isArray(authTokenObj.tms) ? authTokenObj.tms.concat(teamId) : [teamId];
-      socket.setAuthToken(authTokenObj);
-      await createTeamAndLeader(authToken, newTeam);
+      const newAuthTokenObj = {
+        ...authTokenObj,
+        tms: Array.isArray(authTokenObj.tms) ? authTokenObj.tms.concat(teamId) : [teamId],
+        exp: undefined
+      };
+      socket.setAuthToken(newAuthTokenObj);
+      await createTeamAndLeader(userId, newTeam);
       if (invitees && invitees.length) {
         const inviteeEmails = invitees.map((i) => i.email);
         const orgMemberInvitees = await r.table('User')
@@ -462,35 +482,33 @@ export default {
 
         if (outOfOrgEmails.length) {
           // add a notification to the billing leaders
-          const {billingLeaders, inviter} = await r.table('User')
-            .getAll(orgId, {index: 'billingLeaderOrgs'})('id')
-            .do((billingLeaders) => {
+          const {userIds, inviter} = await r.table('Organization')
+            .get(orgId)('orgUsers')
+            .filter({
+              role: BILLING_LEADER
+            })
+            .map((orgUser) => orgUser('id'))
+            .do((userIds) => {
               return {
-                billingLeaders,
+                userIds,
                 inviter: r.table('User').get(userId).pluck('preferredName', 'id')
               }
             });
-          const parentId = shortid.generate();
-          const notificationIds = billingLeaders.reduce((obj, billingLeaderId) => {
-            obj[billingLeaderId] = shortid.generate();
+          const notificationIds = outOfOrgEmails.reduce((obj, email) => {
+            obj[email] = shortid.generate();
             return obj;
           }, {});
           // send a new notification to each billing leader concerning each out-of-org invitee
           await r.expr(outOfOrgEmails)
             .forEach((invitee) => {
-              return r.expr(billingLeaders)
-                .forEach((billingLeader) => {
-                  return r.table('Notification')
-                    .insert({
-                      id: notificationIds[billingLeader],
-                      parentId,
-                      type: REQUEST_NEW_USER,
-                      startAt: new Date(),
-                      endAt: new Date(Date.now() + ms('10y')),
-                      orgId,
-                      userId: billingLeader,
-                      varList: [inviter.id, invitee, teamId]
-                    })
+              return r.table('Notification')
+                .insert({
+                  id: r.expr(notificationIds)(invitee),
+                  type: REQUEST_NEW_USER,
+                  startAt: new Date(),
+                  orgId,
+                  userIds,
+                  varList: [inviter.id, invitee, teamId]
                 })
             });
           // TODO: send a toast???
@@ -505,7 +523,7 @@ export default {
     description: 'Create a new team and add the first team member. Called from the welcome wizard',
     args: {
       newTeam: {
-        type: new GraphQLNonNull(CreateTeamInput),
+        type: new GraphQLNonNull(TeamInput),
         description: 'The new team object with exactly 1 team member'
       }
     },
@@ -514,8 +532,8 @@ export default {
 
       // AUTH
       const userId = requireAuth(authToken);
-      const user = await r.table('User').get(userId).pluck('id', 'orgs', 'trialOrg');
-      if (user.orgs && user.orgs.length > 0) {
+      const user = await r.table('User').get(userId).pluck('id', 'userOrgs', 'trialOrg');
+      if (user.userOrgs && user.userOrgs.length > 0) {
         throw errorObj({_error: 'cannot use createTeam when already part of an org'});
       }
       if (user.trialOrg) {
@@ -535,8 +553,6 @@ export default {
         r.table('User').get(userId)('trialOrg'),
         null,
         r.table('User').get(userId).update({
-          billingLeaderOrgs: [orgId],
-          orgs: [orgId],
           trialOrg: orgId,
           updatedAt: now
         }));
@@ -545,46 +561,18 @@ export default {
       }
       const validNewTeam = {...data, orgId};
       const expiresSoonId = shortid.generate();
-      const {id: stripeId} = await stripe.customers.create({
-        metadata: {
-          orgId
-        }
+      const orgName = `${user.preferredName}'s Org`;
+      const {validUntil} = await createStripeOrg(orgId, orgName, true, userId, now);
+      await r.table('Notification').insert({
+        id: expiresSoonId,
+        type: TRIAL_EXPIRES_SOON,
+        startAt: new Date(now + ms('14d')),
+        orgId,
+        userIds: [userId],
+        // trialExpiresAt
+        varList: [validUntil]
       });
-      const {id: stripeSubscriptionId, trial_end} = await stripe.subscriptions.create({
-        customer: stripeId,
-        metadata: {
-          orgId
-        },
-        plan: ACTION_MONTHLY,
-        trial_period_days: TRIAL_PERIOD_DAYS
-      });
-      const trialExpiresAt = fromStripeDate(trial_end);
-      await r.table('Organization').insert({
-        id: orgId,
-        activeUserCount: 1,
-        createdAt: now,
-        inactiveUserCount: 0,
-        isTrial: true,
-        name: `${user.preferredName}'s Org`,
-        stripeId,
-        stripeSubscriptionId,
-        updatedAt: now,
-        validUntil: trialExpiresAt
-      })
-        .do(() => {
-          return r.table('Notification').insert({
-              id: expiresSoonId,
-              parentId: expiresSoonId,
-              type: TRIAL_EXPIRES_SOON,
-              startAt: new Date(now + ms('14d')),
-              endAt: trialExpiresAt,
-              orgId,
-              userId,
-              varList: [trialExpiresAt]
-            })
-        });
-
-      const tms = await createTeamAndLeader(authToken, validNewTeam);
+      const tms = await createTeamAndLeader(authToken, validNewTeam, true);
       // Asynchronously create seed projects for team leader:
       // TODO: remove me after more
       addSeedProjects(authToken.sub, newTeam.id);
@@ -624,7 +612,7 @@ export default {
     type: GraphQLBoolean,
     args: {
       updatedTeam: {
-        type: new GraphQLNonNull(UpdateTeamInput),
+        type: new GraphQLNonNull(TeamInput),
         description: 'The input object containing the teamId and any modified fields'
       }
     },

@@ -1,6 +1,5 @@
 const SET_ACTIVITY = 'userSettings/SET_ACTIVITY';
 const CLEAR_ACTIVITY = 'userSettings/CLEAR_ACTIVITY';
-export const TOGGLE_USER_AVATAR_MODAL = 'userSettings/TOGGLE_USER_AVATAR_MODAL';
 
 export const ACTIVITY_WELCOME = 'welcome';
 const ACTIVITIES = [ACTIVITY_WELCOME];
@@ -9,7 +8,6 @@ const ACTIVITIES = [ACTIVITY_WELCOME];
 const initialState = {
   activity: null,
   nextPage: null,
-  openModal: ''
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -28,11 +26,6 @@ export default function reducer(state = initialState, action = {}) {
       activity: null,
       nextPage: null,
     };
-  } else if (type === TOGGLE_USER_AVATAR_MODAL) {
-    return {
-      ...state,
-      openModal: state.openModal === type ? '' : type,
-    }
   }
 }
 
@@ -56,7 +49,3 @@ export const setWelcomeActivity = (nextPage) => {
 export const clearActivity = () => {
   return {type: CLEAR_ACTIVITY};
 };
-
-export const toggleUserAvatarModal = () => ({
-  type: TOGGLE_USER_AVATAR_MODAL
-});

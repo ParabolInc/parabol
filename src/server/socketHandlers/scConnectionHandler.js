@@ -6,7 +6,8 @@ import getRetink from 'server/database/rethinkDriver';
 import isObject from 'universal/utils/isObject';
 import jwtDecode from 'jwt-decode';
 import stripe from '../billing/stripe';
-import {getOldVal} from 'server/graphql/models/utils';
+import {getOldVal} from '../utils/utils';
+import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 
 // we do this otherwise we'd have to blacklist every token that ever got replaced & query that table for each query
 const isTmsValid = (tmsFromDB, tmsFromToken) => {
@@ -59,14 +60,19 @@ export default function scConnectionHandler(exchange) {
           })
       }, {returnChanges: true});
 
-    const {inactive, tms: tmsDB, orgs: orgIds} = getOldVal(userRes);
+    const {inactive, tms: tmsDB, userOrgs} = getOldVal(userRes);
     const tmsIsValid = isTmsValid(tmsDB, tms);
     if (timeLeftOnToken < REFRESH_JWT_AFTER || !tmsIsValid) {
-      authToken.tms = tmsDB;
-      socket.setAuthToken(authToken);
+      const newAuthToken = {
+        ...authToken,
+        tms: tmsDB,
+        exp: undefined
+      };
+      socket.setAuthToken(newAuthToken);
     }
     // no need to wait for this, it's just for billing
     if (inactive) {
+      const orgIds = userOrgs.map(({id}) => id);
       adjustUserCount(userId, orgIds, UNPAUSE_USER)
     }
   };

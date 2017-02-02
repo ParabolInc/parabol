@@ -4,7 +4,7 @@ import makeAppLink from 'server/utils/makeAppLink';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import promisify from 'es6-promisify';
-import {getUserId, requireSUOrTeamMember} from '../authorization';
+import {getUserId, requireSUOrTeamMember} from 'server/utils/authorization';
 import {INVITATION_LIFESPAN} from 'server/utils/serverConstants';
 
 const INVITE_TOKEN_INVITE_ID_LEN = 6;

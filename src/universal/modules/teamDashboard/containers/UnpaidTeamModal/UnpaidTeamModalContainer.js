@@ -3,6 +3,7 @@ import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import UnpaidTeamModal from 'universal/modules/teamDashboard/components/UnpaidTeamModal/UnpaidTeamModal';
 import {withRouter} from 'react-router';
+import portal from 'react-portal-hoc';
 
 const orgDetailsQuery = `
 query {
@@ -22,6 +23,7 @@ const mapStateToProps = (state, props) => {
   const {teamId} = props;
   const {orgDetails} = cashay.query(orgDetailsQuery, {
     op: 'unpaidTeamModalContainer',
+    key: teamId,
     variables: {
       teamId
     }
@@ -33,11 +35,11 @@ const mapStateToProps = (state, props) => {
 };
 
 const UnpaidTeamModalContainer = (props) => {
-  const {router, teamName, orgDetails, myUserId} = props;
+  const {closeAfter, isClosing, router, teamName, orgDetails, myUserId} = props;
   const {isTrial, billingLeaders, name: orgName, id: orgId} = orgDetails;
   if (billingLeaders.length === 0) return null;
 
-  const billingLeaderName = billingLeaders[0].name;
+  const billingLeaderName = billingLeaders[0].preferredName;
   const isALeader = billingLeaders.findIndex((leader) => leader.id === myUserId) !== -1;
   const handleClick = () => router.push(`/me/organizations/${orgId}`);
   const problem = isTrial ? `The trial for ${teamName} has ended.` : `There in an unpaid invoice for ${teamName}.`;
@@ -46,6 +48,8 @@ const UnpaidTeamModalContainer = (props) => {
 
   return (
     <UnpaidTeamModal
+      closeAfter={closeAfter}
+      isClosing={isClosing}
       problem={problem}
       solution={solution}
       isALeader={isALeader}
@@ -60,4 +64,4 @@ UnpaidTeamModalContainer.propTypes = {
   teamName: PropTypes.string
 };
 
-export default withRouter(connect(mapStateToProps)(UnpaidTeamModalContainer));
+export default portal({closeAfter: 100})(withRouter(connect(mapStateToProps)(UnpaidTeamModalContainer)));

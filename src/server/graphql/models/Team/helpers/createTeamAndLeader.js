@@ -1,12 +1,14 @@
 import getRethink from 'server/database/rethinkDriver';
-import {getUserId} from '../../authorization';
-import {LOBBY} from 'universal/utils/constants';
+import {BILLING_LEADER, LOBBY} from 'universal/utils/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
+import {getNewVal} from 'server/utils/utils';
 
-export default async function createTeamAndLeader(authToken, newTeam) {
+// used for addorg, addTeam, createTeam
+export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
   const r = getRethink();
-  const userId = getUserId(authToken);
-  const teamMemberId = `${userId}::${newTeam.id}`;
+
+  const {id: teamId, orgId} = newTeam;
+  const teamMemberId = `${userId}::${teamId}`;
 
   const verifiedLeader = {
     id: teamMemberId,
@@ -14,27 +16,23 @@ export default async function createTeamAndLeader(authToken, newTeam) {
     isLead: true,
     isFacilitator: true,
     checkInOrder: 0,
-    teamId: newTeam.id,
+    teamId: teamId,
     userId
   };
 
   const verifiedTeam = {
     ...newTeam,
+    activeFacilitator: null,
     facilitatorPhase: LOBBY,
-    meetingPhase: LOBBY,
-    meetingId: null,
     facilitatorPhaseItem: null,
-    meetingPhaseItem: null,
-    activeFacilitator: null
+    isPaid: true,
+    meetingId: null,
+    meetingPhase: LOBBY,
+    meetingPhaseItem: null
   };
 
-  // rethinkDB do method doesn't guarantee order, so we have to separate this one
-  // grabbing it from the client isn't 100% safe since they could have been removed & then call this function to renew it
-  const currentUser = await r.table('User').get(userId);
-  const tms = currentUser.tms ? currentUser.tms.concat(newTeam.id) : [newTeam.id];
-
-  const dbTransaction = r.table('Team')
-    // insert team
+  const userRes = r.table('Team')
+  // insert team
     .insert(verifiedTeam)
     // denormalize common fields to team member
     .do(() => {
@@ -54,16 +52,23 @@ export default async function createTeamAndLeader(authToken, newTeam) {
     .do(() => {
       return r.table('User')
         .get(userId)
-        .update({
-          tms
-        });
+        .update((userDoc) => ({
+          userOrgs: r.branch(
+            userDoc('userOrgs').default([]).contains((userOrg) => userOrg('id').eq(orgId)),
+            userDoc('useOrgs'),
+            userDoc('userOrgs').append({
+              id: orgId,
+              role: isNewOrg ? BILLING_LEADER : null
+            })
+          ),
+          tms: userDoc('tms').default([]).append(teamId).distinct()
+        }), {returnChanges: true})
     });
 
-  const dbPromises = [
-    dbTransaction,
-    auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
-  ];
+  const {tms} = getNewVal(userRes);
+
   // we need to await the db transaction because adding a team requires waiting for the team to be created
-  await Promise.all(dbPromises);
+  await auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms});
   return tms;
-};
+}
+;

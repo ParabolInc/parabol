@@ -4,16 +4,16 @@ import {
   GraphQLID,
   GraphQLBoolean,
 } from 'graphql';
-import {errorObj, getNewVal, getOldVal} from '../utils';
+import {errorObj, getNewVal, getOldVal} from 'server/utils/utils';
 import {
   requireWebsocket,
   requireSUOrTeamMember,
   requireSUOrSelfOrLead,
   requireSUOrLead,
   requireAuth
-} from '../authorization';
+} from 'server/utils/authorization';
 import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
-import tmsSignToken from 'server/graphql/models/tmsSignToken';
+import tmsSignToken from 'server/utils/tmsSignToken';
 import {JOIN_TEAM, KICK_OUT, PRESENCE} from 'universal/subscriptions/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {
@@ -121,10 +121,13 @@ export default {
           orgId,
           user: r.table('User').get(userId)
         }));
-      const userOrgs = user.orgs || [];
+      const userOrgs = user.userOrgs || [];
       const userTeams = user.tms || [];
-      const userInOrg = userOrgs.includes(orgId);
-      const newUserOrgs = userInOrg ? userOrgs : [...userOrgs, orgId];
+      const userInOrg = Boolean(userOrgs.find((org) => org.id === orgId));
+      const newUserOrgs = userInOrg ? userOrgs : [...userOrgs, {
+          id: orgId,
+          role: null
+        }];
       const tms = [...userTeams, teamId];
       const teamMemberId = `${user.id}::${teamId}`;
       const dbWork = r.table('User')
@@ -133,8 +136,20 @@ export default {
         .update(() => {
           return {
             tms,
-            orgs: newUserOrgs
+            userOrgs: newUserOrgs
           }
+        })
+        .do(() => {
+          return r.branch(
+            userInOrg,
+            null,
+            r.table('Organization').get(orgId).update((org) => ({
+              orgUsers: org('orgUsers').append({
+                id: userId,
+                role: null
+              })
+            }))
+          )
         })
         // get number of users
         .do(() => {

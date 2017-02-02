@@ -10,9 +10,9 @@ import {
   GraphQLBoolean,
   GraphQLString
 } from 'graphql';
-import {GraphQLEmailType} from '../types';
+import {GraphQLEmailType} from '../../types';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
-import {makeEnumValues} from 'server/graphql/models/utils';
+import makeEnumValues from 'server/graphql/makeEnumValues';
 
 export const NEXT_MONTH_CHARGES = 'NEXT_MONTH_CHARGES';
 export const ADDED_USERS = 'ADDED_USERS';

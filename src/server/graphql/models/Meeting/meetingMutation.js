@@ -1,5 +1,5 @@
 import getRethink from 'server/database/rethinkDriver';
-import {requireSUOrTeamMember, requireWebsocket} from '../authorization';
+import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import {Meeting} from './meetingSchema';
 import sendEmailSummary from './helpers/sendEmailSummary';
 

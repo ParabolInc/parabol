@@ -6,42 +6,41 @@ import FontAwesome from 'react-fontawesome';
 import InvoiceRow from 'universal/modules/userDashboard/components/InvoiceRow/InvoiceRow';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
-import {togglePaymentModal} from 'universal/modules/userDashboard/ducks/orgSettingsDuck';
 import ActiveTrialCallOut from '../ActiveTrialCallOut/ActiveTrialCallOut';
 import ExpiredTrialCallOut from '../ExpiredTrialCallOut/ExpiredTrialCallOut';
+import CreditCardModal from 'universal/modules/userDashboard/components/CreditCardModal/CreditCardModal';
+import appTheme from 'universal/styles/theme/appTheme';
 
 const OrgBilling = (props) => {
   const {
     invoices,
-    dispatch,
     styles,
     org
   } = props;
-  const {creditCard, isTrial, validUntil} = org;
-  const {brand, last4, expiry} = creditCard;
-  const openPaymentModal = () => {
-    dispatch(togglePaymentModal());
-  };
+  const {creditCard, id: orgId, isTrial, validUntil} = org;
+  const {brand = '???', last4 = '••••', expiry = '???'} = creditCard;
   const now = new Date();
   const activeTrial = isTrial && validUntil > now;
   const expiredTrial = isTrial && validUntil < now;
+  const update = <Button
+    colorPalette="cool"
+    label="Update"
+    size="small"
+  />;
   return (
     <div>
-      {activeTrial && <ActiveTrialCallOut validUntil={validUntil} onClick={openPaymentModal} />}
-      {expiredTrial && <ExpiredTrialCallOut onClick={openPaymentModal} />}
+      {activeTrial && <ActiveTrialCallOut validUntil={validUntil} orgId={orgId} />}
+      {expiredTrial && <ExpiredTrialCallOut orgId={orgId} />}
       <Panel label="Credit Card Information">
         <div className={css(styles.infoAndUpdate)}>
           <div className={css(styles.creditCardInfo)}>
-            <FontAwesome name="credit-card"/>
-            <span className={css(styles.creditCardProvider)}>{brand}</span>
-            <span className={css(styles.creditCardNumber)}>•••• •••• •••• {last4}</span>
+            <FontAwesome className={css(styles.creditCardIcon)} name="credit-card"/>
+            <span className={css(styles.creditCardProvider)}>{brand || '???'}</span>
+            <span className={css(styles.creditCardNumber)}>•••• •••• •••• {last4 || '••••'}</span>
+            <span className={css(styles.creditCardExpiresLabel)}>Expires</span>
+            <span className={css(styles.expiry)}>{expiry || '??/??'}</span>
           </div>
-          <Button
-            colorPalette="cool"
-            label="Update"
-            onClick={openPaymentModal}
-            size="smallest"
-          />
+          <CreditCardModal isUpdate orgId={orgId} toggle={update}/>
         </div>
       </Panel>
       <Panel label="Invoices">
@@ -61,6 +60,28 @@ const OrgBilling = (props) => {
 };
 
 const styleThunk = () => ({
+  creditCardInfo: {
+    fontSize: appTheme.typography.s4,
+  },
+
+  creditCardIcon: {
+    marginRight: '1rem'
+  },
+
+  creditCardNumber: {
+    marginRight: '1rem'
+  },
+
+  creditCardProvider: {
+    fontWeight: 800,
+    marginRight: '1rem'
+  },
+
+  creditCardExpiresLabel: {
+    fontWeight: 800,
+    marginRight: '.5rem'
+  },
+
   infoAndUpdate: {
     alignItems: 'center',
     display: 'flex',

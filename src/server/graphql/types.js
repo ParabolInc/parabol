@@ -1,7 +1,7 @@
 import {GraphQLScalarType} from 'graphql';
 import {GraphQLError} from 'graphql/error';
 import {Kind} from 'graphql/language';
-import {emailRegex, urlRegex} from 'universal/validation/regex';
+import {emailRegex, urlRegex} from '../../universal/validation/regex';
 
 export const GraphQLEmailType = new GraphQLScalarType({
   name: 'Email',

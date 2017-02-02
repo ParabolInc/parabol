@@ -5,9 +5,9 @@ import {
   GraphQLBoolean,
   GraphQLID
 } from 'graphql';
-import {requireSUOrTeamMember, requireWebsocket} from '../authorization';
+import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import makeAgendaItemSchema from 'universal/validation/makeAgendaItemSchema';
-import {handleSchemaErrors} from '../utils';
+import {handleSchemaErrors} from 'server/utils/utils';
 
 export default {
   createAgendaItem: {

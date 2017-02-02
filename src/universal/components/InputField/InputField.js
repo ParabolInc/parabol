@@ -46,13 +46,6 @@ const InputField = (props) => {
     useTextarea && styles.textarea
   );
 
-  const makeLabelNameForInput = () => {
-    let labelForName = null;
-    if (input && input.name) {
-      labelForName = input.name;
-    }
-    return labelForName;
-  };
   let ref;
   const submitOnEnter = (e) => {
     if (e.key === 'Enter') {
@@ -65,9 +58,7 @@ const InputField = (props) => {
 
   return (
     <FieldBlock>
-      {label &&
-        <FieldLabel label={label} htmlFor={makeLabelNameForInput()} />
-      }
+      {label && <FieldLabel label={label} htmlFor={input.name} />}
       <div className={css(styles.inputBlock)}>
         {/*
           // TODO: input and textarea should be broken out into separate components
@@ -78,14 +69,14 @@ const InputField = (props) => {
           <Textarea
             {...input}
             autoFocus={autoFocus}
-            className={`${inputStyles}`}
+            className={inputStyles}
             disabled={disabled || readyOnly}
             placeholder={placeholder}
           /> :
           <input
             {...input}
             autoFocus={autoFocus}
-            className={`${inputStyles}`}
+            className={inputStyles}
             disabled={disabled || readyOnly}
             placeholder={placeholder}
             onKeyDown={onButtonClick && submitOnEnter}

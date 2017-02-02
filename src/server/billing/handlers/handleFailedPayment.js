@@ -1,7 +1,7 @@
 import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 import shortid from 'shortid';
-import {getOldVal} from 'server/graphql/models/utils'
+import {getOldVal} from '../../utils/utils'
 import {PAYMENT_REJECTED, TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
 import ms from 'ms';
 
@@ -12,7 +12,7 @@ export default async function handleFailedPayment(customerId) {
   const now = new Date();
 
   // flag teams as unpaid
-  const orgPromise = r.table('Team')
+  const orgRes = await r.table('Team')
     .getAll(orgId, {index: 'orgId'})
     .update({
       isPaid: false
@@ -23,23 +23,17 @@ export default async function handleFailedPayment(customerId) {
         .get(orgId)
         .replace((row) => row.without('stripeSubscriptionId'), {returnChanges: true});
     });
-  const userPromise = r.table('User').getAll(orgId, {index: 'billingLeaderOrgs'})('id');
-  const [orgRes, userIds] = await Promise.all([orgPromise, userPromise]);
   const orgDoc = getOldVal(orgRes);
-  const parentId = shortid.generate();
+  const userIds = orgDoc.orgUsers.map(({id}) => id);
   if (orgDoc.isTrial) {
-    const notifications = userIds.map((userId) => ({
+    await r.table('Notification').insert({
       id: shortid.generate(),
-      parentId,
       type: TRIAL_EXPIRED,
       startAt: now,
-      endAt: new Date(now.getTime() + ms('10y')),
       orgId,
-      userId,
-      // trialExpiresAt
+      userIds,
       varList: [now]
-    }));
-    await r.table('Notification').insert(notifications)
+    })
       .do(() => {
         return r.table('Notification')
           .getAll(orgId, {index: 'orgId'})
@@ -48,17 +42,14 @@ export default async function handleFailedPayment(customerId) {
       })
   } else {
     const {last4, brand} = orgDoc.creditCard || {};
-    const notifications = userIds.map((userId) => ({
+    await r.table('Notification').insert({
       id: shortid.generate(),
-      parentId,
       type: PAYMENT_REJECTED,
       startAt: now,
-      endAt: new Date(now.getTime() + ms('10y')),
       orgId,
-      userId,
+      userIds,
       varList: [last4, brand]
-    }));
-    await r.table('Notification').insert(notifications);
+    });
   }
   // stripe already does this for us (per account settings)
   // await stripe.subscriptions.del(orgDoc.stripeSubscriptionId);

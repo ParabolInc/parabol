@@ -5,11 +5,12 @@ import brandMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import IconLink from 'universal/components/IconLink/IconLink';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import portal from 'react-portal-hoc';
 
 const PhotoUploadModal = (props) => {
-  const {children, picture, onBackdropClick, styles} = props;
+  const {children, closeAfter, closePortal, isClosing, picture, styles} = props;
   return (
-    <DashModal onBackdropClick={onBackdropClick}>
+    <DashModal onBackdropClick={closePortal} isClosing={isClosing} closeAfter={closeAfter}>
       <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
         Upload a new photo
       </Type>
@@ -22,7 +23,7 @@ const PhotoUploadModal = (props) => {
           iconPlacement="right"
           label="Done"
           margin="1.5rem 0 0 0"
-          onClick={onBackdropClick}
+          onClick={closePortal}
           scale="large"
         />
       </div>
@@ -31,7 +32,7 @@ const PhotoUploadModal = (props) => {
 };
 
 PhotoUploadModal.propTypes = {
-  onBackdropClick: PropTypes.func,
+  picture: PropTypes.string,
 };
 
 const styleThunk = () => ({
@@ -41,4 +42,6 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(PhotoUploadModal);
+export default portal({escToClose: true, closeAfter: 100})(
+  withStyles(styleThunk)(PhotoUploadModal)
+);

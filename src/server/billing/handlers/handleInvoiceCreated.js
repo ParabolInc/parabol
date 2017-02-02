@@ -21,6 +21,15 @@ import {fromStripeDate} from 'server/billing/stripeDate';
 export default async function handleInvoiceCreated(invoiceId) {
   const r = getRethink();
 
+  // get all users on the org
+
+  // get the lastSeenAt
+
+  // if lastSeenAt < now - 30d, then calc lastSeenAt + 30d
+
+  // reduce seats on stripe for that user at that prorated day
+
+  //
   const stripeLineItems = [];
   for (let i = 0; i < 100; i++) {
     const options = {limit: 100};
@@ -167,8 +176,8 @@ export default async function handleInvoiceCreated(invoiceId) {
     id: invoiceId,
     amount: invoice.total,
     invoiceDate: fromStripeDate(invoice.date),
-    startAt: fromStripeDate(invoice.period_start),
-    endAt: fromStripeDate(invoice.period_end),
+    startAt: fromStripeDate(invoice.current_period_start),
+    endAt: fromStripeDate(invoice.current_period_end),
     lines: invoiceLineItems,
     orgId
   });

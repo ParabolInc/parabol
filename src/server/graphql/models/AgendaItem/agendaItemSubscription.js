@@ -1,9 +1,9 @@
 import getRethink from 'server/database/rethinkDriver';
 import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
-import {getRequestedFields} from '../utils';
+import getRequestedFields from 'server/graphql/getRequestedFields'
 import {AgendaItem} from './agendaItemSchema';
-import {requireSUOrTeamMember, requireTeamIsPaid} from '../authorization';
-import makeChangefeedHandler from '../makeChangefeedHandler';
+import {requireSUOrTeamMember, requireTeamIsPaid} from 'server/utils/authorization';
+import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
 
 export default {
   agenda: {

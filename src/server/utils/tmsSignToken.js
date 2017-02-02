@@ -1,6 +1,6 @@
 import {sign} from 'jsonwebtoken';
-import {clientSecret} from 'server/utils/auth0Helpers';
-import {JWT_LIFESPAN} from 'server/utils/serverConstants';
+import {clientSecret} from './auth0Helpers';
+import {JWT_LIFESPAN} from './serverConstants';
 /**
  * When a user joins a team, we need to put them on that team.
  * This includes storing the team in their JWT

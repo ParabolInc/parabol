@@ -1,9 +1,9 @@
 import getRethink from 'server/database/rethinkDriver';
 import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
-import {getRequestedFields} from '../utils';
+import getRequestedFields from 'server/graphql/getRequestedFields'
 import {Notification} from './notificationSchema';
-import {requireSUOrSelf} from '../authorization';
-import makeChangefeedHandler from '../makeChangefeedHandler';
+import {requireSUOrSelf} from 'server/utils/authorization';
+import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
 
 export default {
   notifications: {
@@ -21,8 +21,8 @@ export default {
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
       const now = new Date();
       r.table('Notification')
-        .getAll(userId, {index: 'userId'})
-        .filter((row) => row('startAt').lt(r.epochTime(now / 1000)).and(row('endAt').gt(r.epochTime(now / 1000))))
+        .getAll(userId, {index: 'userIds'})
+        .filter((row) => row('startAt').lt(r.epochTime(now / 1000)))
         .pluck(requestedFields)
         .changes({includeInitial: true})
         .run({cursor: true}, changefeedHandler);

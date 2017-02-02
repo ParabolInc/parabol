@@ -5,12 +5,10 @@ const setImports = () =>
   new Map([
     ['component', System.import(
       'universal/modules/userDashboard/containers/Organization/OrganizationContainer')],
-    ['orgSettings', System.import('universal/modules/userDashboard/ducks/orgSettingsDuck')]
   ]);
 
 const getImports = importMap => ({
   component: importMap.get('component'),
-  orgSettings: importMap.get('orgSettings').default
 });
 
 export default (store) => ({

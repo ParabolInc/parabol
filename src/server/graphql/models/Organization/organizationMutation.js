@@ -7,22 +7,22 @@ import {
   GraphQLInt,
   GraphQLString,
 } from 'graphql';
-import {requireOrgLeader, requireOrgLeaderOfUser, requireWebsocket} from '../authorization';
+import {requireOrgLeader, requireOrgLeaderOfUser, requireWebsocket} from 'server/utils/authorization';
 import updateOrgServerSchema from 'universal/validation/updateOrgServerSchema';
-import {errorObj, handleSchemaErrors, getOldVal, getS3PutUrl, validateAvatarUpload} from '../utils';
+import {errorObj, handleSchemaErrors, getOldVal, validateAvatarUpload} from 'server/utils/utils';
+import getS3PutUrl from 'server/utils/getS3PutUrl';
 import stripe from 'server/billing/stripe';
-import {TRIAL_EXTENSION} from 'server/utils/serverConstants';
-import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
 import {
-  ADD_USER,
   PAUSE_USER,
   REMOVE_USER,
-  UNPAUSE_USER,
   MAX_MONTHLY_PAUSES
 } from 'server/utils/serverConstants';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
-import {GraphQLURLType} from '../types';
+import {GraphQLURLType} from '../../types';
 import shortid from 'shortid';
+import addOrg from 'server/graphql/models/Organization/addOrg/addOrg'
+import addBilling from 'server/graphql/models/Organization/addBilling/addBilling';
+import {BILLING_LEADER} from 'universal/utils/constants';
 
 export default {
   updateOrg: {
@@ -79,80 +79,22 @@ export default {
       // RESOLUTION
       const now = new Date();
       await r.table('User').get(orgId)
-        .update((user) => {
-          return user.merge({
-            billingLeaderOrgs: user('billingLeaderOrgs').filter((id) => id.ne(orgId)),
-            updatedAt: now
-          });
-        });
+        .update((user) => ({
+          userOrgs: user('userOrgs').map((userOrg) => {
+            return r.branch(
+              userOrg('id').eq(orgId),
+              userOrg.merge({
+                role: null
+              }),
+              userOrg
+            )
+          }),
+          updatedAt: now
+        }));
       return true;
     }
   },
-  addBilling: {
-    type: GraphQLBoolean,
-    description: 'Add a credit card by passing in a stripe token encoded with all the billing details',
-    args: {
-      orgId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'the org requesting the changed billing'
-      },
-      stripeToken: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The token that came back from stripe'
-      }
-    },
-    async resolve(source, {orgId, stripeToken}, {authToken, socket}) {
-      const r = getRethink();
-
-      // AUTH
-      requireWebsocket(socket);
-      const userId = await requireOrgLeader(authToken, orgId);
-
-      // RESOLUTION
-      const now = new Date();
-      const {stripeId, trialExpiresAt} = await r.table('Organization').get(userId)
-        .pluck('stripeId', 'trialExpiresAt');
-      const customer = await stripe.customers.update(stripeId, {source: stripeToken});
-      const card = customer.sources.data.find((source) => source.id === customer.default_source);
-      const {brand, last4, exp_month: expMonth, exp_year: expYear} = card;
-      const expiry = `${expMonth}/${expYear.substr(2)}`;
-      const {isTrial, stripeSubscriptionId, validUntil} = await r.table('Organization')
-        .get(orgId)
-        .pluck('isTrial', 'validUntil', 'stripeSubscriptionId');
-
-      let nowValidUntil = validUntil;
-      const promises = [];
-      if (isTrial && validUntil > now) {
-        nowValidUntil = new Date(nowValidUntil.setMilliseconds(0) + TRIAL_EXTENSION);
-        const extendTrial = stripe.subscriptions.update(stripeSubscriptionId, {
-          trial_end: nowValidUntil / 1000
-        });
-        promises.push(extendTrial);
-      }
-      const updateOrg = r.table('Organization').get(orgId)
-        .update({
-          creditCard: {
-            brand,
-            last4,
-            expiry
-          },
-          validUntil: nowValidUntil
-        });
-      promises.push(updateOrg);
-
-
-      if (validUntil !== nowValidUntil) {
-        // remove the oustanding notifications
-        promises.push(r.table('Notification')
-          .getAll(orgId, {index: 'orgId'})
-          .filter({
-            type: TRIAL_EXPIRES_SOON
-          })
-          .delete());
-      }
-      await Promise.all(promises);
-    }
-  },
+  addBilling,
   inactivateUser: {
     type: GraphQLBoolean,
     description: 'pauses the subscription for a single user',
@@ -167,16 +109,30 @@ export default {
 
       // AUTH
       await requireOrgLeaderOfUser(authToken, userId);
-      const res = await r.table('User').get(userId)
-        .update({
-          inactive: true
+      const res = await r.table('Organization').getAll(userId, {index: 'orgUsers'}).update((org) => ({
+        orgUsers: org('orgUsers').map((orgUser) => {
+          return r.branch(
+            orgUser('id').eq(userId),
+            orgUser.merge({
+              inactive: true
+            }),
+            orgUser
+          )
+        })
+      }))
+        .do(() => {
+          return r.table('User').get(userId)
+            .update({
+              inactive: true
+            })
         }, {returnChanges: true});
       const userDoc = getOldVal(res);
       if (!userDoc) {
         // no userDoc means there were no changes, which means inactive was already true
         throw errorObj({_error: `${userId} is already inactive. cannot inactivate twice`})
       }
-      const {orgs: orgIds} = userDoc;
+      const {userOrgs} = userDoc;
+      const orgIds = userOrgs.map(({id}) => id);
       const orgDocs = await r.table('Organization').getAll(r.args(orgIds), {index: 'id'});
 
       const hookPromises = orgDocs.map((orgDoc) => {
@@ -225,18 +181,13 @@ export default {
       const now = new Date();
       const userRes = await r.table('User').get(userId)
         .update((row) => ({
-          orgs: row('orgs').filter((id) => id.ne(orgId)),
-          billingLeaderOrgs: row('billingLeaderOrgs').filter((id) => id.ne(orgId)),
+          userOrgs: row('userOrgs').filter(({id}) => id.ne(orgId)),
           updatedAt: now
         }), {returnChanges: true});
 
       const userDoc = getOldVal(userRes);
       if (!userDoc) {
-        throw errorObj({_error: `${userId} does not exist`});
-      }
-      const {orgs} = userDoc;
-      if (!orgs.includes(orgId)) {
-        throw errorObj({_error: `${userId} is not a part of org ${orgId}`});
+        throw errorObj({_error: `${userId} does not exist in org ${orgId}`});
       }
       await adjustUserCount(userId, orgId, REMOVE_USER);
       return true;
@@ -271,4 +222,67 @@ export default {
       return await getS3PutUrl(contentType, contentLength, partialPath);
     }
   },
+  addOrg,
+  setOrgUserRole: {
+    type: GraphQLBoolean,
+    description: 'Set the role of a user',
+    args: {
+      orgId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The org to affect'
+      },
+      userId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'the user who is receiving a role change'
+      },
+      role: {
+        type: GraphQLString,
+        description: 'the user\'s new role'
+      }
+    },
+    async resolve(source, {orgId, userId, role}, {authToken}){
+      const r = getRethink();
+
+      // AUTH
+      await requireOrgLeader(authToken, orgId);
+
+
+      // VALIDATION
+      if (role && role !== BILLING_LEADER) {
+        throw errorObj({_error: 'invalid role'})
+      }
+
+      // RESOLUTION
+      const now = new Date();
+      const userRes = await r.table('User').get(userId)
+        .update((user) => ({
+          userOrgs: user('userOrgs').map((userOrg) => {
+            return r.branch(
+              userOrg('id').eq(orgId),
+              userOrg.merge({
+                role
+              }),
+              userOrg
+            )
+          }),
+          updatedAt: now
+        }))
+        .do(() => {
+          r.table('Organization').get(orgId)
+            .update((org) => ({
+              orgUsers: org('orgUsers').map((orgUser) => {
+                return r.branch(
+                  orgUser('id').eq(userId),
+                  orgUser.merge({
+                    role
+                  }),
+                  orgUser
+                )
+              }),
+              updatedAt: now
+            }))
+        });
+      return true;
+    }
+  }
 };

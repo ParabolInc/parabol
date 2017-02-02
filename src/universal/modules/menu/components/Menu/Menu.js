@@ -1,56 +1,40 @@
-import React, {PropTypes} from 'react';
+import React, {PropTypes, Children, cloneElement} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
+import portal from 'react-portal-hoc';
+
 
 const Menu = (props) => {
   const {
+    closePortal,
     children,
-    isOpen,
+    itemFactory,
     label,
-    menuOrientation,
     menuWidth,
     styles,
-    toggle: Toggle,
-    toggleHeight,
-    toggleMenu,
-    verticalAlign,
-    zIndex
+    coords,
   } = props;
-
-  const toggleHeightStyle = {
-    height: toggleHeight,
-    lineHeight: toggleHeight,
-    verticalAlign,
-    zIndex
-  };
-
   const menuBlockStyle = {
-    [menuOrientation]: 0,
-    width: menuWidth
+    width: menuWidth,
+    ...coords
   };
-  const toggleStyle = isOpen ? {opacity: '.5'} : null;
-  const rootStyle = toggleHeight ? toggleHeightStyle : {verticalAlign, zIndex};
   const boxShadow = '0 1px 1px rgba(0, 0, 0, .15)';
   const menuStyle = {boxShadow};
+  const kids = Children.map(itemFactory && itemFactory() || children, (child) => cloneElement(child, {closePortal}))
   return (
-    <div className={css(styles.root)} style={rootStyle}>
-      <div className={css(styles.toggle)} onClick={toggleMenu} style={{...rootStyle, ...toggleStyle}}>
-        <Toggle {...props}/>
-      </div>
-      {isOpen &&
-        <div className={css(styles.menuBlock)} style={menuBlockStyle}>
-          <div
-            className={css(styles.menu)}
-            style={menuStyle}
-          >
-            <div className={css(styles.label)}>{label}</div>
-            {children}
-          </div>
+    <div>
+      <div className={css(styles.menuBlock)} style={menuBlockStyle}>
+        <div
+          className={css(styles.menu)}
+          style={menuStyle}
+        >
+          {label && <div className={css(styles.label)}>{label}</div>}
+          {kids}
         </div>
-      }
+      </div>
     </div>
   );
 };
@@ -74,7 +58,6 @@ Menu.propTypes = {
   styles: PropTypes.object,
   toggle: PropTypes.any,
   toggleHeight: PropTypes.string,
-  toggleMenu: PropTypes.func.isRequired,
   verticalAlign: PropTypes.oneOf([
     'middle',
     'top'
@@ -103,8 +86,7 @@ const styleThunk = () => ({
 
   menuBlock: {
     paddingTop: '.25rem',
-    position: 'absolute',
-    top: '100%'
+    position: 'absolute'
   },
   menu: {
     backgroundColor: ui.menuBackgroundColor,
@@ -127,4 +109,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(Menu);
+export default portal({escToClose: true, clickToClose: true})(withStyles(styleThunk)(Menu));

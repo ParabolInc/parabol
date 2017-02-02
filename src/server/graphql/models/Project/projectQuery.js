@@ -1,8 +1,8 @@
 import getRethink from 'server/database/rethinkDriver';
 import {GraphQLList, GraphQLNonNull, GraphQLID, GraphQLInt} from 'graphql';
 import {Project} from './projectSchema';
-import {errorObj} from '../utils';
-import {requireAuth, requireSUOrTeamMember} from '../authorization';
+import {errorObj} from 'server/utils/utils';
+import {requireAuth, requireSUOrTeamMember} from 'server/utils/authorization';
 
 export default {
   getArchivedProjects: {

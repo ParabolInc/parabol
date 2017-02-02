@@ -9,23 +9,29 @@ import {textOverflow} from 'universal/styles/helpers';
 // import FontAwesome from 'react-fontawesome';
 
 const MenuItem = (props) => {
-  const {isActive, label, onClick, closeMenu, styles} = props;
+  const {isActive, label, onClick, closePortal, styles} = props;
   const rootStyles = css(styles.root, isActive && styles.active);
   const handleClick = () => {
-    closeMenu();
-    onClick();
+    if (closePortal) {
+      closePortal();
+    }
+    if (onClick) {
+      // if a component is passed in instead of just a text label, it may not include a click handler
+      onClick();
+    }
   };
+  const labelEl = typeof label === 'string' ? <div className={css(styles.label)}>{label}</div> : label;
   return (
     <div className={rootStyles} onClick={handleClick} >
-      <div className={css(styles.label)}>{label}</div>
+      {labelEl}
     </div>
   );
 };
 
 MenuItem.propTypes = {
-  closeMenu: PropTypes.func,
+  closePortal: PropTypes.func,
   isActive: PropTypes.bool,
-  label: PropTypes.string,
+  label: PropTypes.any,
   onClick: PropTypes.func,
   styles: PropTypes.object
 };

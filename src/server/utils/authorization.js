@@ -1,5 +1,6 @@
 import {errorObj} from './utils';
-import getRethink from 'server/database/rethinkDriver';
+import getRethink from '../database/rethinkDriver';
+import {BILLING_LEADER} from 'universal/utils/constants';
 
 export const getUserId = authToken => {
   return authToken && typeof authToken === 'object' && authToken.sub;
@@ -83,8 +84,12 @@ export const requireWebsocketExchange = (exchange) => {
 
 export const requireOrgLeader = async(authToken, orgId) => {
   const r = getRethink();
-  const billingLeaderOrgs = await r.table('User').get(authToken.sub)('billingLeaderOrgs');
-  if (!billingLeaderOrgs.includes(orgId)) {
+  const isOrgLeader = await r.table('User').get(authToken.sub)('userOrgs')
+    .filter({
+      role: BILLING_LEADER
+    })
+    .contains((userOrg) => userOrg('id').eq(orgId));
+  if (!isOrgLeader) {
     throw errorObj({_error: 'Unauthorized. Only an org billing Leader can do this'});
   }
   return authToken.sub;
@@ -92,31 +97,39 @@ export const requireOrgLeader = async(authToken, orgId) => {
 
 export const validateNotificationId = async (notificationId, authToken) => {
   if (notificationId) {
+    const r = getRethink();
     const userId = getUserId(authToken);
-    const notification = await r.table('Notification').get(notificationId).pluck('userId', 'parentId');
-    if (userId !== notification.userId) {
+    const isOwner = await r.table('Notification')
+      .get(notificationId)
+      .default({})('userIds')
+      .default([])
+      .contains(userId);
+    if (!isOwner) {
       throw errorObj({_error: 'cannot clear someone else\'s notification'});
     }
-    return notification.parentId;
   }
-  return undefined;
 };
 
 export const requireOrgLeaderOfUser = async(authToken, userId) => {
   const r = getRethink();
   const isLeaderOfUser = await r.table('User')
-    .get(authToken.sub)('billingLeaderOrgs')
-    .do((billingLeaderOrgs) => {
+    .get(authToken.sub)('userOrgs')
+    .filter({
+      role: BILLING_LEADER
+    })
+    .map((userOrg) => userOrg('id'))
+    .do((leaderOrgs) => {
       return {
-        billingLeaderOrgs,
-        orgs: r.table('User')
-          .get(userId)('orgs')
+        leaderOrgs,
+        memberOrgs: r.table('User')
+          .get(userId)('userOrgs')
+          .map((userOrg) => userOrg('id'))
       }
     })
     .do((res) => {
-      return res('billingLeaderOrgs')
-        .union(res('orgs')).distinct().count()
-        .lt(res('billingLeaderOrgs').count().add(res('orgs').count()))
+      return res('leaderOrgs')
+        .union(res('memberOrgs')).distinct().count()
+        .lt(res('leaderOrgs').count().add(res('memberOrgs').count()))
     });
   if (!isLeaderOfUser) {
     throw errorObj({_error: 'Unauthorized. Only an billing leader of a user can set this'});
@@ -133,4 +146,21 @@ export const requireTeamIsPaid = async (teamId) => {
   return true;
 };
 
+// VERY important, otherwise eg a user could "create" a new team with an existing teamId & force join that team
+// this still isn't secure because the resolve could get called twice & make it past this point before 1 of them writes the insert
+export const ensureUniqueId = async (table, id) => {
+  const r = getRethink();
+  const res = await r.table(table).get(id);
+  if (res) {
+    throw errorObj({type: 'unique id collision'});
+  }
+};
 
+export const requireUserInOrg = async (userId, orgId) => {
+  const r = getRethink();
+  const inOrg = await r.table('User').get(userId)('userOrg').contains((userOrg) => userOrg('id').eq(orgId));
+  if (!inOrg) {
+    throw errorObj({type: `user ${userId} does not belong to org ${orgId}`});
+  }
+  return true;
+};

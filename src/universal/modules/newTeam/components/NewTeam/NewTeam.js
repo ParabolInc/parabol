@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import NewTeamForm from 'universal/modules/teamDashboard/components/NewTeamForm/NewTeamForm';
+import NewTeamFormContainer from 'universal/modules/newTeam/containers/NewTeamForm/NewTeamFormContainer';
 import {connect} from 'react-redux';
 import DashboardWrapper from 'universal/components/DashboardWrapper/DashboardWrapper';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
@@ -12,9 +12,7 @@ const NewTeam = (props) => {
   const {dispatch, styles} = props;
   return (
     <DashboardWrapper title="User Dashboard">
-      <div className={css(styles.newTeamView)}>
-        <NewTeamForm dispatch={dispatch}/>
-      </div>
+        <NewTeamFormContainer dispatch={dispatch}/>
     </DashboardWrapper>
   );
 };

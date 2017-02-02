@@ -12,7 +12,7 @@ import {
   DashMain,
   makeDateString
 } from 'universal/components/Dashboard';
-import getRallyLink from '../../helpers/getRallyLink';
+import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
 
 const UserDashMain = (props) => {
   const {styles} = props;

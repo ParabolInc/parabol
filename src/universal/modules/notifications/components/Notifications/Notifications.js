@@ -1,16 +1,15 @@
-import React, {PropTypes} from 'react';
-import UserSettingsWrapper from '../../../userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
-import {NOTIFICATIONS} from '../../../../utils/constants';
-import withStyles from '../../../../styles/withStyles';
+import React, {Component, PropTypes} from 'react';
+import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
+import {NOTIFICATIONS} from 'universal/modules/../utils/constants';
+import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import {withRouter} from 'react-router';
+import NotificationRow from 'universal/modules/userDashboard/components/NotificationRow/NotificationRow';
 import Panel from 'universal/components/Panel/Panel';
-import NotificationRow from '../../../userDashboard/components/NotificationRow/NotificationRow';
 
 const Notifications = (props) => {
   const {
     notifications,
-    router,
     styles
   } = props;
 
@@ -22,6 +21,7 @@ const Notifications = (props) => {
             {notifications.map((notification) =>
               <NotificationRow
                 key={`notification${notification.id}`}
+                orgId={notification.orgId}
                 notificationId={notification.id}
                 type={notification.type}
                 varList={notification.varList}
@@ -50,4 +50,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withRouter(withStyles(styleThunk)(Notifications));
+export default withStyles(styleThunk)(Notifications);

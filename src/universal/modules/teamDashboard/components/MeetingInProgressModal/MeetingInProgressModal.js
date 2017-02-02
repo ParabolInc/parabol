@@ -3,12 +3,15 @@ import {DashModal} from 'universal/components/Dashboard';
 import IconLink from 'universal/components/IconLink/IconLink';
 import Type from 'universal/components/Type/Type';
 import {withRouter} from 'react-router';
+import portal from 'react-portal-hoc';
 
 const MeetingInProgressModal = (props) => {
-  const {teamId, teamName, router} = props;
-  const handleClick = () => router.push(`/meeting/${teamId}`);
+  const {closeAfter, isClosing, teamId, teamName, router} = props;
+  const handleClick = () => {
+    router.push(`/meeting/${teamId}`);
+  };
   return (
-    <DashModal position="absolute" showsOver="main">
+    <DashModal position="absolute" showsOver="main" isClosing={isClosing} closeAfter={closeAfter}>
       <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
         Oh, hi there!
       </Type>
@@ -36,4 +39,4 @@ MeetingInProgressModal.propTypes = {
   teamName: PropTypes.string
 };
 
-export default withRouter(MeetingInProgressModal);
+export default portal({closeAfter: 100})(withRouter(MeetingInProgressModal));
