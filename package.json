@@ -82,6 +82,7 @@
   },
   "dependencies": {
     "@segment/snippet": "^4.0.1",
+    "analytics-node": "^2.1.1",
     "aphrodite-local-styles": "0.6.2",
     "auth0": "^2.5.0",
     "auth0-lock": "^9.2.2",
