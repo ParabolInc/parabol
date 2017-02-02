@@ -1,7 +1,7 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
-import getFromNowString from '../../utils/fromNow';
+import {getFromNowString, getTimeoutDuration} from '../../utils/fromNow';
 import Ellipsis from '../../components/Ellipsis/Ellipsis';
 import EditingStatus from 'universal/components/EditingStatus/EditingStatus';
 
@@ -44,7 +44,7 @@ const makeEditingStatus = (editors, active, updatedAt) => {
 };
 
 const mapStateToProps = (state, props) => {
-  const {form, updatedAt, outcomeId} = props;
+  const {outcomeId} = props;
   const {editors} = cashay.query(editingStatusContainer, {
     op: 'editingStatusContainer',
     variables: {outcomeId},
@@ -61,25 +61,31 @@ const mapStateToProps = (state, props) => {
       }
     }
   }).data;
-  const formState = state.form[form];
-  const active = formState && formState.active === outcomeId;
-  const editingStatus = makeEditingStatus(editors, active, updatedAt);
   return {
-    editingStatus
+    editors
   };
 };
 
-const EditingStatusContainer = (props) => {
-  const {editingStatus} = props;
-  return <EditingStatus status={editingStatus}/>;
-};
+@connect(mapStateToProps)
+export default class EditingStatusContainer extends Component {
+  static propTypes = {
+    active: PropTypes.bool,
+    className: PropTypes.object,
+    editors: PropTypes.any,
+    outcomeId: PropTypes.string,
+    updatedAt: PropTypes.instanceOf(Date)
+  };
 
-EditingStatusContainer.propTypes = {
-  active: PropTypes.bool,
-  className: PropTypes.object,
-  editingStatus: PropTypes.any,
-  outcomeId: PropTypes.string,
-  updatedAt: PropTypes.instanceOf(Date)
-};
+  componentWillUnmount() {
+    clearTimeout(this.timer);
+  }
 
-export default connect(mapStateToProps)(EditingStatusContainer);
+  render() {
+    const {active, editors, updatedAt} = this.props;
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => {
+      this.forceUpdate();
+    }, getTimeoutDuration(updatedAt));
+    return <EditingStatus status={makeEditingStatus(editors, active, updatedAt)}/>;
+  }
+}

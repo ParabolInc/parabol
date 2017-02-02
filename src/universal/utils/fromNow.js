@@ -36,4 +36,6 @@ export function getTimeoutDuration(time) {
       return i === 1 ? 30 * thresholds.second : thresholds[threshKeys[i - 1]];
     }
   }
+  // this is both for eslint, and for chuckles. It should never happen:
+  return 'infinitely long ago';
 }
