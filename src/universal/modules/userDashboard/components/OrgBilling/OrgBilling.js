@@ -9,6 +9,7 @@ import Panel from 'universal/components/Panel/Panel';
 import ActiveTrialCallOut from '../ActiveTrialCallOut/ActiveTrialCallOut';
 import ExpiredTrialCallOut from '../ExpiredTrialCallOut/ExpiredTrialCallOut';
 import CreditCardModal from 'universal/modules/userDashboard/components/CreditCardModal/CreditCardModal';
+import appTheme from 'universal/styles/theme/appTheme';
 
 const OrgBilling = (props) => {
   const {
@@ -17,7 +18,7 @@ const OrgBilling = (props) => {
     org
   } = props;
   const {creditCard, id: orgId, isTrial, validUntil} = org;
-  const {brand, last4, expiry} = creditCard;
+  const {brand = '???', last4 = '••••', expiry = '???'} = creditCard;
   const now = new Date();
   const activeTrial = isTrial && validUntil > now;
   const expiredTrial = isTrial && validUntil < now;
@@ -33,11 +34,13 @@ const OrgBilling = (props) => {
       <Panel label="Credit Card Information">
         <div className={css(styles.infoAndUpdate)}>
           <div className={css(styles.creditCardInfo)}>
-            <FontAwesome name="credit-card"/>
-            <span className={css(styles.creditCardProvider)}>{brand}</span>
-            <span className={css(styles.creditCardNumber)}>•••• •••• •••• {last4}</span>
+            <FontAwesome className={css(styles.creditCardIcon)} name="credit-card"/>
+            <span className={css(styles.creditCardProvider)}>{brand || '???'}</span>
+            <span className={css(styles.creditCardNumber)}>•••• •••• •••• {last4 || '••••'}</span>
+            <span className={css(styles.creditCardExpiresLabel)}>Expires</span>
+            <span className={css(styles.expiry)}>{expiry || '??/??'}</span>
           </div>
-          <CreditCardModal orgId={orgId} toggle={update}/>
+          <CreditCardModal isUpdate orgId={orgId} toggle={update}/>
         </div>
       </Panel>
       <Panel label="Invoices">
@@ -57,6 +60,28 @@ const OrgBilling = (props) => {
 };
 
 const styleThunk = () => ({
+  creditCardInfo: {
+    fontSize: appTheme.typography.s4,
+  },
+
+  creditCardIcon: {
+    marginRight: '1rem'
+  },
+
+  creditCardNumber: {
+    marginRight: '1rem'
+  },
+
+  creditCardProvider: {
+    fontWeight: 800,
+    marginRight: '1rem'
+  },
+
+  creditCardExpiresLabel: {
+    fontWeight: 800,
+    marginRight: '.5rem'
+  },
+
   infoAndUpdate: {
     alignItems: 'center',
     display: 'flex',

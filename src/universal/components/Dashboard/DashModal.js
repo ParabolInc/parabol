@@ -81,10 +81,7 @@ const animateOut = {
   }
 };
 
-const styleThunk = (theme, props) => {
-  console.log('closeAfter', props.closeAfter)
-  return {
-
+const styleThunk = (theme, props) => ({
     backdrop: {
       alignItems: 'center',
       background: 'rgba(255, 255, 255, .5)',
@@ -140,7 +137,6 @@ const styleThunk = (theme, props) => {
       animationName: animateIn,
       animationDuration: '200ms'
     },
-  }
-};
+});
 
 export default withStyles(styleThunk)(DashModal);
