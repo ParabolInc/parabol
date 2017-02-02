@@ -59,15 +59,20 @@ const activeHF = {
 const buttonSize = '2rem';
 const styleThunk = (theme, props) => ({
   button: {
+    appearance: 'none',
     backgroundColor: 'rgba(255, 255, 255, .7)',
+    border: 'none',
     borderRadius: ui.buttonBorderRadius,
+    boxShadow: 'none',
     color: `${appTheme.palette[props.colorPalette] || appTheme.palette.cool} !important`,
     cursor: 'pointer',
     height: buttonSize,
     lineHeight: buttonSize,
     marginRight: '.75rem',
+    outline: 'none',
     position: 'absolute',
     right: '100%',
+    userSelect: 'none',
     textAlign: 'center',
     textDecoration: 'none !important',
     top: 0,
