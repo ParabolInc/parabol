@@ -4,6 +4,7 @@ import {cashay} from 'cashay';
 import {fromNowString, refreshPeriod} from '../../utils/fromNow';
 import Ellipsis from '../../components/Ellipsis/Ellipsis';
 import EditingStatus from 'universal/components/EditingStatus/EditingStatus';
+import ms from 'ms';
 
 const editingStatusContainer = `
 query {
@@ -83,9 +84,12 @@ export default class EditingStatusContainer extends Component {
   render() {
     const {active, editors, updatedAt} = this.props;
     clearTimeout(this.refreshTimer);
-    this.refreshTimer = setTimeout(() => {
-      this.forceUpdate();
-    }, refreshPeriod(updatedAt));
+    const timeoutDuration = refreshPeriod(updatedAt);
+    if (refreshPeriod < ms('1 day')) {
+      this.refreshTimer = setTimeout(() => {
+        this.forceUpdate();
+      }, timeoutDuration);
+    }
     return <EditingStatus status={makeEditingStatus(editors, active, updatedAt)}/>;
   }
 }
