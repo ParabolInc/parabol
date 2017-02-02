@@ -1,27 +1,23 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import UserSettingsWrapper from '../../../userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
 import {NOTIFICATIONS} from '../../../../utils/constants';
 import withStyles from '../../../../styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import ui from '../../../../styles/ui';
-import appTheme from '../../../../styles/theme/appTheme';
-import FontAwesome from 'react-fontawesome';
-import OrganizationRow from '../../../userDashboard/components/OrganizationRow/OrganizationRow';
 import {withRouter} from 'react-router';
-import cardSection from '../../../../styles/helpers/cardSection';
+import Panel from 'universal/components/Panel/Panel';
 import NotificationRow from '../../../userDashboard/components/NotificationRow/NotificationRow';
 
 const Notifications = (props) => {
-  const {notifications, router, styles} = props;
+  const {
+    notifications,
+    router,
+    styles
+  } = props;
+
   return (
     <UserSettingsWrapper activeTab={NOTIFICATIONS}>
       <div className={css(styles.wrapper)}>
-        <div className={css(styles.notifications)}>
-          <div className={css(styles.headerWithBorder)}>
-            <div className={css(styles.headerTextBlock)}>
-              <span>NOTIFICATIONS</span>
-            </div>
-          </div>
+        <Panel label="Notifications">
           <div className={css(styles.notificationList)}>
             {notifications.map((notification) =>
               <NotificationRow
@@ -32,41 +28,25 @@ const Notifications = (props) => {
               />
             )}
           </div>
-        </div>
+        </Panel>
       </div>
     </UserSettingsWrapper>
   );
-}
+};
+
+Notifications.propTypes = {
+  notifications: PropTypes.array,
+  router: PropTypes.object,
+  styles: PropTypes.object
+};
 
 const styleThunk = () => ({
-  addOrg: {
-    fontSize: appTheme.typography.s5,
-    color: appTheme.palette.cool,
-    cursor: 'pointer'
+  notificationList: {
+    // Define
   },
 
-  addOrgIcon: {
-    marginRight: '.5rem'
-  },
-
-  notifications: {
-    ...cardSection
-  },
-  headerTextBlock: {
-    alignItems: 'center',
-    display: 'flex',
-    fontWeight: 700,
-    justifyContent: 'space-between',
-    margin: '1rem'
-  },
-
-  headerWithBorder: {
-    borderBottom: '1px solid #c3c5d1',
-  },
-
-  notificationList: {},
   wrapper: {
-    maxWidth: '45rem'
+    maxWidth: '40rem'
   }
 });
 
