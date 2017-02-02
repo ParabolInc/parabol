@@ -17,6 +17,15 @@ query {
 }
 `;
 
+// memoized
+const countBillingLeaders = (users) => {
+  if (users !== countBillingLeaders.users) {
+    countBillingLeaders.users = users;
+    countBillingLeaders.cache = users.reduce((count, user) => user.isBillingLeader ? count + 1 : count, 0);
+  }
+  return countBillingLeaders.cache;
+};
+
 const mapStateToProps = (state, props) => {
   const {orgId} = props;
   const {usersByOrg: users} = cashay.query(organizationContainerQuery, {
@@ -25,20 +34,23 @@ const mapStateToProps = (state, props) => {
     variables: {orgId}
   }).data;
   return {
+    billingLeaderCount: countBillingLeaders(users),
     myUserId: state.auth.obj.sub,
     users
   }
 };
 
 const OrgMembersContainer = (props) => {
-  const {dispatch, myUserId, users}= props;
+  const {billingLeaderCount, dispatch, myUserId, orgId, users}= props;
   if (users.length < 1) {
     return <LoadingView/>;
   }
   return (
     <OrgMembers
+      billingLeaderCount={billingLeaderCount}
       dispatch={dispatch}
       myUserId={myUserId}
+      orgId={orgId}
       users={users}
     />
   );

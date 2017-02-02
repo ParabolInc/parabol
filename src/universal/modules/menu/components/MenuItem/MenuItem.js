@@ -12,7 +12,9 @@ const MenuItem = (props) => {
   const {isActive, label, onClick, closePortal, styles} = props;
   const rootStyles = css(styles.root, isActive && styles.active);
   const handleClick = () => {
-    closePortal();
+    if (closePortal) {
+      closePortal();
+    }
     if (onClick) {
       // if a component is passed in instead of just a text label, it may not include a click handler
       onClick();

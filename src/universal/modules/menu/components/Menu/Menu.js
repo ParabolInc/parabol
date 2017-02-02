@@ -31,7 +31,7 @@ const Menu = (props) => {
           className={css(styles.menu)}
           style={menuStyle}
         >
-          <div className={css(styles.label)}>{label}</div>
+          {label && <div className={css(styles.label)}>{label}</div>}
           {kids}
         </div>
       </div>

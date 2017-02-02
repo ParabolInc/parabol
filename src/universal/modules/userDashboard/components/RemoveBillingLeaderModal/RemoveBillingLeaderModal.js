@@ -3,15 +3,16 @@ import {DashModal} from 'universal/components/Dashboard';
 import IconLink from 'universal/components/IconLink/IconLink';
 import Type from 'universal/components/Type/Type';
 import {cashay} from 'cashay';
+import portal from 'react-portal-hoc';
 
 const RemoveBillingLeaderModal = (props) => {
-  const {onBackdropClick, orgId, preferredName, userId} = props;
+  const {closeAfter, closePortal, isClosing, orgId, preferredName, userId} = props;
   const handleClick = () => {
     const variables = {orgId, userId};
     cashay.mutate('removeBillingLeader', {variables});
   };
   return (
-    <DashModal onBackdropClick={onBackdropClick}>
+    <DashModal closeAfter={closeAfter} closePortal={closePortal} isClosing={isClosing} onBackdropClick={closePortal}>
       <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
         Are you sure?
       </Type>
@@ -33,10 +34,9 @@ const RemoveBillingLeaderModal = (props) => {
 };
 
 RemoveBillingLeaderModal.propTypes = {
-  onBackdropClick: PropTypes.func.isRequired,
   orgId: PropTypes.string.isRequired,
   preferredName: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired
 };
 
-export default RemoveBillingLeaderModal;
+export default portal({escToClose: true, closeAfter: 100})(RemoveBillingLeaderModal);

@@ -106,5 +106,9 @@ export const ProjectInput =  new GraphQLInputObjectType({
     id: {type: GraphQLID, description: 'The unique team ID'},
     name: {type: GraphQLString, description: 'The name of the team'},
     orgId: {type: GraphQLID, description: 'The unique orginization ID that pays for the team'},
+    teamMemberId: {type: GraphQLID},
+    userSort: {type: GraphQLFloat},
+    teamSort: {type: GraphQLFloat},
+    status: {type: GraphQLString}
   })
 });

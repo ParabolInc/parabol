@@ -16,7 +16,8 @@ const getPauseThunk = (inactive) => (userId) => (org) => {
         orgUser('id').eq(userId),
         orgUser.merge({
           inactive
-        })
+        }),
+        orgUser
       )
     }),
     updatedAt: now

@@ -8,10 +8,10 @@ import Row from 'universal/components/Row/Row';
 import UserTag from 'universal/components/UserTag/UserTag';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 
-const AdminUserRow = (props) => {
+const OrgUserRow = (props) => {
   const {
     actions,
-    billingLeader: {
+    orgUser: {
       email,
       inactive,
       picture,
@@ -49,9 +49,9 @@ const AdminUserRow = (props) => {
   );
 };
 
-AdminUserRow.propTypes = {
+OrgUserRow.propTypes = {
   actions: PropTypes.any,
-  billingLeader: PropTypes.shape({
+  orgUser: PropTypes.shape({
     email: PropTypes.string,
     inactive: PropTypes.bool,
     picture: PropTypes.string,
@@ -110,4 +110,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(AdminUserRow);
+export default withStyles(styleThunk)(OrgUserRow);

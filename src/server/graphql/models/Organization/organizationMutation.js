@@ -22,6 +22,7 @@ import {GraphQLURLType} from '../../types';
 import shortid from 'shortid';
 import addOrg from 'server/graphql/models/Organization/addOrg/addOrg'
 import addBilling from 'server/graphql/models/Organization/addBilling/addBilling';
+import {BILLING_LEADER} from 'universal/utils/constants';
 
 export default {
   updateOrg: {
@@ -84,7 +85,8 @@ export default {
               userOrg('id').eq(orgId),
               userOrg.merge({
                 role: null
-              })
+              }),
+              userOrg
             )
           }),
           updatedAt: now
@@ -220,5 +222,67 @@ export default {
       return await getS3PutUrl(contentType, contentLength, partialPath);
     }
   },
-  addOrg
+  addOrg,
+  setOrgUserRole: {
+    type: GraphQLBoolean,
+    description: 'Set the role of a user',
+    args: {
+      orgId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The org to affect'
+      },
+      userId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'the user who is receiving a role change'
+      },
+      role: {
+        type: GraphQLString,
+        description: 'the user\'s new role'
+      }
+    },
+    async resolve(source, {orgId, userId, role}, {authToken}){
+      const r = getRethink();
+
+      // AUTH
+      await requireOrgLeader(authToken, orgId);
+
+
+      // VALIDATION
+      if (role && role !== BILLING_LEADER) {
+        throw errorObj({_error: 'invalid role'})
+      }
+
+      // RESOLUTION
+      const now = new Date();
+      const userRes = await r.table('User').get(userId)
+        .update((user) => ({
+          userOrgs: user('userOrgs').map((userOrg) => {
+            return r.branch(
+              userOrg('id').eq(orgId),
+              userOrg.merge({
+                role
+              }),
+              userOrg
+            )
+          }),
+          updatedAt: now
+        }))
+        .do(() => {
+          r.table('Organization').get(orgId)
+            .update((org) => ({
+              orgUsers: org('orgUsers').map((orgUser) => {
+                return r.branch(
+                  orgUser('id').eq(userId),
+                  orgUser.merge({
+                    role
+                  }),
+                  orgUser
+                )
+              }),
+              updatedAt: now
+            }))
+        });
+      return true;
+    }
+  }
 };
