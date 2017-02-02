@@ -2,8 +2,9 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import DashNavItem from '../Dashboard/DashNavItem';
-import DashNavButton from '../Dashboard/DashNavButton';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
+import FontAwesome from 'react-fontawesome';
 
 const DashNavList = (props) => {
   const {teams, styles} = props;
@@ -14,14 +15,7 @@ const DashNavList = (props) => {
         <div>
           {teams.map((team) =>
             <div key={`teamNav${team.id}`} className={css(styles.iconAndLink)}>
-              {!team.isPaid &&
-                <DashNavButton
-                  colorPalette="warm"
-                  href="/me/organizations"
-                  icon="warning"
-                  title="Update organization billing to enable this team"
-                />
-              }
+              {!team.isPaid && <FontAwesome name="warning" className={css(styles.itemIcon)} title="Team is disabled for nonpayment"/>}
               <DashNavItem
                 href={`/team/${team.id}`}
                 label={team.name}
@@ -58,7 +52,18 @@ const styleThunk = () => ({
   },
 
   iconAndLink: {
+    alignItems: 'center',
+    display: 'flex',
     position: 'relative'
+  },
+
+  itemIcon: {
+    color: appTheme.palette.light,
+    fontSize: `${ui.iconSize} !important`,
+    position: 'absolute',
+    right: '100%',
+    textAlign: 'center',
+    width: 24
   }
 });
 

@@ -3,25 +3,20 @@ import UserSettingsWrapper from 'universal/modules/userDashboard/components/User
 import {NOTIFICATIONS} from 'universal/modules/../utils/constants';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/modules/../styles/theme/appTheme';
-import FontAwesome from 'react-fontawesome';
-import OrganizationRow from 'universal/modules/userDashboard/components/OrganizationRow/OrganizationRow';
 import {withRouter} from 'react-router';
-import cardSection from 'universal/modules/../styles/helpers/cardSection';
 import NotificationRow from 'universal/modules/userDashboard/components/NotificationRow/NotificationRow';
+import Panel from 'universal/components/Panel/Panel';
 
 const Notifications = (props) => {
-  const {notifications, router, styles} = props;
+  const {
+    notifications,
+    styles
+  } = props;
+
   return (
     <UserSettingsWrapper activeTab={NOTIFICATIONS}>
       <div className={css(styles.wrapper)}>
-        <div className={css(styles.notifications)}>
-          <div className={css(styles.headerWithBorder)}>
-            <div className={css(styles.headerTextBlock)}>
-              <span>NOTIFICATIONS</span>
-            </div>
-          </div>
+        <Panel label="Notifications">
           <div className={css(styles.notificationList)}>
             {notifications.map((notification) =>
               <NotificationRow
@@ -33,42 +28,26 @@ const Notifications = (props) => {
               />
             )}
           </div>
-        </div>
+        </Panel>
       </div>
     </UserSettingsWrapper>
   );
-}
+};
+
+Notifications.propTypes = {
+  notifications: PropTypes.array,
+  router: PropTypes.object,
+  styles: PropTypes.object
+};
 
 const styleThunk = () => ({
-  addOrg: {
-    fontSize: appTheme.typography.s5,
-    color: appTheme.palette.cool,
-    cursor: 'pointer'
+  notificationList: {
+    // Define
   },
 
-  addOrgIcon: {
-    marginRight: '.5rem'
-  },
-
-  notifications: {
-    ...cardSection
-  },
-  headerTextBlock: {
-    alignItems: 'center',
-    display: 'flex',
-    fontWeight: 700,
-    justifyContent: 'space-between',
-    margin: '1rem'
-  },
-
-  headerWithBorder: {
-    borderBottom: '1px solid #c3c5d1',
-  },
-
-  notificationList: {},
   wrapper: {
-    maxWidth: '45rem'
+    maxWidth: '40rem'
   }
 });
 
-export default withRouter(withStyles(styleThunk)(Notifications));
+export default withStyles(styleThunk)(Notifications);
