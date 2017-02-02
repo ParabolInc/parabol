@@ -26,6 +26,7 @@ const Notifications = (props) => {
             {notifications.map((notification) =>
               <NotificationRow
                 key={`notification${notification.id}`}
+                orgId={notification.orgId}
                 notificationId={notification.id}
                 type={notification.type}
                 varList={notification.varList}

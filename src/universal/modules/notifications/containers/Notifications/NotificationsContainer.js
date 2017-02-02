@@ -7,51 +7,23 @@ const notificationsQuery = `
 query {
   notifications(userId: $userId) @live {
     id
+    orgId
     startAt
     type
     varList
   }
 }`;
-//
-// const mapStateToProps = (state) => {
-//   const {user} = cashay.query(notificationsQuery, {
-//     op: 'notificationsContainer',
-//   }).data;
-//   return {
-//     user
-//   }
-// };
-
-// const notifications = [
-//   {
-//     id: '1',
-//     type: TRIAL_EXPIRES_SOON,
-//     varList: [
-//       new Date(),
-//       'org123'
-//     ]
-//   },
-//   {
-//     id: '2',
-//     type: REQUEST_NEW_USER,
-//     varList: [
-//       'Terry',
-//       'terry123',
-//       'jordan@foo.co',
-//       'Team Kickass',
-//       'team987'
-//     ]
-//   }
-// ];
 
 const mapStateToProps = (state, props) => {
+  const userId = state.auth.obj.sub;
   const {notifications} = cashay.query(notificationsQuery, {
     op: 'notificationsContainer',
+    key: userId,
     sort: {
       notifications: (a, b) => a.startAt > b.startAt ? 1 : -1
     },
     variables: {
-      userId: state.auth.obj.sub
+      userId
     }
   }).data;
   return {
@@ -61,7 +33,6 @@ const mapStateToProps = (state, props) => {
 
 const NotificationsContainer = (props) => {
   const {notifications} = props;
-  console.log('no', notifications);
   return (
     <Notifications notifications={notifications}/>
   );
