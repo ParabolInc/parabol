@@ -448,8 +448,12 @@ export default {
 
       // RESOLUTION
       const authTokenObj = socket.getAuthToken();
-      authTokenObj.tms = Array.isArray(authTokenObj.tms) ? authTokenObj.tms.concat(teamId) : [teamId];
-      socket.setAuthToken(authTokenObj);
+      const newAuthTokenObj = {
+        ...authTokenObj,
+        tms: Array.isArray(authTokenObj.tms) ? authTokenObj.tms.concat(teamId) : [teamId],
+        exp: undefined
+      };
+      socket.setAuthToken(newAuthTokenObj);
       await createTeamAndLeader(userId, newTeam);
       if (invitees && invitees.length) {
         const inviteeEmails = invitees.map((i) => i.email);

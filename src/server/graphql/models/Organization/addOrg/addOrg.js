@@ -74,7 +74,8 @@ export default {
     const authTokenObj = socket.getAuthToken();
     const newAuthTokenObj = {
       ...authTokenObj,
-      tms: authTokenObj.tms.concat(teamId)
+      tms: authTokenObj.tms.concat(teamId),
+      exp: undefined
     };
     socket.setAuthToken(newAuthTokenObj);
     return true;

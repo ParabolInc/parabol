@@ -4,7 +4,7 @@ import getRethink from 'server/database/rethinkDriver';
 export default async function handleSuccessfulPayment(subscriptionId) {
   const r = getRethink();
   const subscription = await stripe.customers.retrieve(subscriptionId);
-  const {metadata: {orgId}, period_end: validUntil} = subscription;
+  const {metadata: {orgId}, current_period_end: validUntil} = subscription;
 
   // flag teams as paid, in case they weren't already
   await r.table('Team')

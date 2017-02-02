@@ -27,7 +27,7 @@ export default async function handleUpdatedSource(cardId, customerId) {
   const {activeUsers, stripeSubscriptionId, stripeId} = getNewVal(orgRes);
   if (!stripeSubscriptionId) {
     // Their subscription was cancelled due to nonpayment, and they just updated payment. Let's make a new subscription for them!
-    const {id: stripeSubscriptionId, period_end} = await stripe.subscriptions.create({
+    const {id: stripeSubscriptionId, current_period_end: validUntil} = await stripe.subscriptions.create({
       customer: stripeId,
       metadata: {
         orgId
@@ -38,7 +38,7 @@ export default async function handleUpdatedSource(cardId, customerId) {
     // if this was a trial, make it legit now
     await r.table('Organization').get(orgId).update({
       stripeSubscriptionId,
-      validUntil: period_end,
+      validUntil,
       isTrial: false
     })
       .do(() => {

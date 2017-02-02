@@ -11,7 +11,7 @@ export default async function createStripeOrg(orgId, orgName, isTrial, userId, n
         orgId
       }
     });
-  const {id: stripeSubscriptionId, period_end} = await stripe.subscriptions.create({
+  const {id: stripeSubscriptionId, current_period_end} = await stripe.subscriptions.create({
       customer: stripeId,
       metadata: {
         orgId
@@ -19,7 +19,7 @@ export default async function createStripeOrg(orgId, orgName, isTrial, userId, n
       plan: ACTION_MONTHLY,
       trial_period_days: isTrial ? TRIAL_PERIOD_DAYS : 0
     });
-  const validUntil = fromStripeDate(period_end);
+  const validUntil = fromStripeDate(current_period_end);
   const res = await r.table('Organization').insert({
       id: orgId,
       activeUsers: [userId],

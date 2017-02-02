@@ -43,11 +43,14 @@ export default function mwPresencePublishOut(req, next) {
           }
         });
         const idxToRemove = authToken.tms.indexOf(channelKey);
-        if (idxToRemove !== -1) {
-          authToken.tms.splice(idxToRemove, 1);
-        }
+        const safeIdx = idxToRemove === -1 ? Infinity : idxToRemove;
+        const newAuthToken = {
+          ...authToken,
+          tms: [...authToken.tms.slice(0, safeIdx), authToken.tms.slice(safeIdx +1)],
+          exp: undefined
+        };
         // replace token with one that doesn't include the teamId in tms
-        req.socket.setAuthToken(authToken);
+        req.socket.setAuthToken(newAuthToken);
         next(true);
         return;
       }

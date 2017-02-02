@@ -63,8 +63,12 @@ export default function scConnectionHandler(exchange) {
     const {inactive, tms: tmsDB, userOrgs} = getOldVal(userRes);
     const tmsIsValid = isTmsValid(tmsDB, tms);
     if (timeLeftOnToken < REFRESH_JWT_AFTER || !tmsIsValid) {
-      authToken.tms = tmsDB;
-      socket.setAuthToken(authToken);
+      const newAuthToken = {
+        ...authToken,
+        tms: tmsDB,
+        exp: undefined
+      };
+      socket.setAuthToken(newAuthToken);
     }
     // no need to wait for this, it's just for billing
     if (inactive) {
