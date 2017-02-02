@@ -9,7 +9,7 @@ const thresholds = {
   inf: Infinity
 };
 
-export function getFromNowString(time) {
+export function fromNowString(time) {
   const distance = (Date.now() - time) || 0;
   if (distance < 1000) return 'just now';
   const threshKeys = Object.keys(thresholds);
@@ -27,7 +27,7 @@ export function getFromNowString(time) {
   return 'infinitely long ago';
 }
 
-export function getTimeoutDuration(time) {
+export function refreshPeriod(time) {
   const msElapsed = (Date.now() - time) || 0;
   const threshKeys = Object.keys(thresholds);
   for (let i = 1; i < threshKeys.length; i++) {
@@ -36,6 +36,6 @@ export function getTimeoutDuration(time) {
       return i === 1 ? 30 * thresholds.second : thresholds[threshKeys[i - 1]];
     }
   }
-  // this is both for eslint, and for chuckles. It should never happen:
-  return 'infinitely long ago';
+  // this is both for eslint, and for further chuckling. It should never happen:
+  return Infinity;
 }

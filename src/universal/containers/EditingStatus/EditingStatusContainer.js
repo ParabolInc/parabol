@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
-import {getFromNowString, getTimeoutDuration} from '../../utils/fromNow';
+import {fromNowString, refreshPeriod} from '../../utils/fromNow';
 import Ellipsis from '../../components/Ellipsis/Ellipsis';
 import EditingStatus from 'universal/components/EditingStatus/EditingStatus';
 
@@ -24,7 +24,7 @@ const makeEditingStatus = (editors, active, updatedAt) => {
     makeEditingStatus.active = active;
     // no one else is editing
     if (editors.length === 0) {
-      makeEditingStatus.cache = active ? <span>editing<Ellipsis/></span> : getFromNowString(updatedAt);
+      makeEditingStatus.cache = active ? <span>editing<Ellipsis/></span> : fromNowString(updatedAt);
     } else {
       const editorNames = editors.map(e => e.teamMember.preferredName);
       // one other is editing
@@ -77,15 +77,15 @@ export default class EditingStatusContainer extends Component {
   };
 
   componentWillUnmount() {
-    clearTimeout(this.timer);
+    clearTimeout(this.refreshTimer);
   }
 
   render() {
     const {active, editors, updatedAt} = this.props;
-    clearTimeout(this.timer);
-    this.timer = setTimeout(() => {
+    clearTimeout(this.refreshTimer);
+    this.refreshTimer = setTimeout(() => {
       this.forceUpdate();
-    }, getTimeoutDuration(updatedAt));
+    }, refreshPeriod(updatedAt));
     return <EditingStatus status={makeEditingStatus(editors, active, updatedAt)}/>;
   }
 }
