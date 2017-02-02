@@ -16,7 +16,7 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
     isLead: true,
     isFacilitator: true,
     checkInOrder: 0,
-    teamId: teamId,
+    teamId,
     userId
   };
 
@@ -31,7 +31,7 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
     meetingPhaseItem: null
   };
 
-  const userRes = r.table('Team')
+  const userRes = await r.table('Team')
   // insert team
     .insert(verifiedTeam)
     // denormalize common fields to team member
@@ -55,7 +55,7 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
         .update((userDoc) => ({
           userOrgs: r.branch(
             userDoc('userOrgs').default([]).contains((userOrg) => userOrg('id').eq(orgId)),
-            userDoc('useOrgs'),
+            userDoc('userOrgs'),
             userDoc('userOrgs').append({
               id: orgId,
               role: isNewOrg ? BILLING_LEADER : null
