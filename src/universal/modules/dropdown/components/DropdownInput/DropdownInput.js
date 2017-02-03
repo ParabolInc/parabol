@@ -24,7 +24,10 @@ const DropdownInput = (props) => {
   const org = organizations.find((org) => org.id === value);
   const orgName = org && org.name || 'Loading...';
   const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down"/>;
-  const createNew = <Button label="Create New Organization" onClick={handleCreateNew}/>;
+  const createNew = () =>
+    <div className={css(styles.menuButtonBlock)}>
+      <Button colorPalette="mid" isBlock label="Create New Organization" size="smallest" onClick={handleCreateNew}/>
+    </div>;
   const itemFactory = () => {
     return organizations.map((org, idx) => {
       return (
@@ -40,7 +43,7 @@ const DropdownInput = (props) => {
     })
       .concat(<MenuItem
         key={`newOrg`}
-        label={createNew}
+        label={createNew()}
       />)
   };
   return (
@@ -50,7 +53,7 @@ const DropdownInput = (props) => {
         <span className={css(styles.field)}>{orgName}</span>
         <Menu
           originAnchor={originAnchor}
-          menuWidth="10rem"
+          menuWidth="12rem"
           targetAnchor={targetAnchor}
           toggle={toggle}
           itemFactory={itemFactory}
@@ -90,6 +93,13 @@ const styleThunk = () => ({
     borderColor: appTheme.palette.mid40l,
     position: 'relative'
   },
+
+  menuButtonBlock: {
+    backgroundColor: '#fff',
+    borderTop: `1px solid ${ui.menuBorderColor}`,
+    padding: '.5rem .5rem 0',
+    width: '100%'
+  }
 });
 
 export default withStyles(styleThunk)(DropdownInput);

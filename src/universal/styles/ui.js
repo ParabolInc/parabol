@@ -63,6 +63,7 @@ const ui = {
     boxShadow: 'none',
     cursor: 'pointer',
     display: 'inline-block',
+    fontFamily: appTheme.typography.sansSerif,
     fontWeight: 700,
     // lineHeight: '1.25em',
     outline: 'none',
@@ -208,7 +209,8 @@ const ui = {
   meetingSidebarWidth: '15rem',
 
   // Menus
-  menuBackgroundColor: backgroundColor,
+  menuBackgroundColor: '#fff' || backgroundColor,
+  menuBorderColor: appTheme.palette.mid30l,
   zMenu: zIndexScale(4),
 
   // Modals
