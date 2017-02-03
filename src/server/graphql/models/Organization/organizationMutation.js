@@ -203,7 +203,6 @@ export default {
 
       // AUTH
       requireWebsocket(socket);
-      const userId = getUserId(authToken);
       const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId);
       requireOrgLeader(userOrgDoc);
 

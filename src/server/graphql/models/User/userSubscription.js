@@ -46,7 +46,6 @@ export default {
       // RESOLUTION
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
-      await requireOrgLeader(authToken, orgId);
       r.table('User')
         .getAll(orgId, {index: 'userOrgs'})
         .merge((user) => ({

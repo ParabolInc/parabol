@@ -54,7 +54,7 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
         .get(userId)
         .update((userDoc) => ({
           userOrgs: r.branch(
-            userDoc('userOrgs').default([]).contains((userOrg) => userOrg('id').eq(orgId)),
+            userDoc('userOrgs').contains((userOrg) => userOrg('id').eq(orgId)).default(false),
             userDoc('userOrgs'),
             userDoc('userOrgs').append({
               id: orgId,
@@ -67,8 +67,9 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
 
   const {tms} = getNewVal(userRes);
 
-  // we need to await the db transaction because adding a team requires waiting for the team to be created
-  await auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms});
+  // no need to wait for auth0
+  auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms});
+
   return tms;
 }
 ;
