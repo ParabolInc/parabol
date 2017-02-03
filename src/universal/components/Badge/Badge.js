@@ -3,21 +3,6 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 
-const checkInStatus = {
-  null: {
-    icon: 'circle',
-    statusName: ''
-  },
-  true: {
-    icon: 'check-circle',
-    statusName: ' & present'
-  },
-  false: {
-    icon: 'times-circle',
-    statusName: ' & absent'
-  },
-};
-
 const Badge = (props) => {
   const {
     styles,
