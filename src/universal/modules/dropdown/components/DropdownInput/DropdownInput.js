@@ -25,7 +25,7 @@ const DropdownInput = (props) => {
   const orgName = org && org.name || 'Loading...';
   const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down"/>;
   const createNew = () =>
-    <div className={css(styles.menuButtonBlock)}>
+    <div className={css(styles.menuButtonBlock)} key={'newOrg'}>
       <Button colorPalette="mid" isBlock label="Create New Organization" size="smallest" onClick={handleCreateNew}/>
     </div>;
   const itemFactory = () => {
@@ -41,10 +41,7 @@ const DropdownInput = (props) => {
         />
       )
     })
-      .concat(<MenuItem
-        key={`newOrg`}
-        label={createNew()}
-      />)
+      .concat(createNew())
   };
   return (
     <FieldBlock>

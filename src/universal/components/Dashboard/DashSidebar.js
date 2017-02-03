@@ -7,13 +7,12 @@ import tinycolor from 'tinycolor2';
 import FontAwesome from 'react-fontawesome';
 import DashNavListContainer from 'universal/containers/DashNavList/DashNavListContainer';
 import DashNavItem from './DashNavItem';
-import SettingsHub from 'universal/components/SettingsHub/SettingsHub';
 import StandardHubContainer from 'universal/containers/StandardHub/StandardHubContainer';
 import Logo from 'universal/styles/theme/images/brand/parabol-lockup-h.svg';
 import {Link, withRouter} from 'react-router';
 
 const DashSidebar = (props) => {
-  const {isUserSettings, router, styles} = props;
+  const {router, styles} = props;
   const newTeamIsActive = router.isActive('/newteam', true);
   const addNewStyles = css(
     styles.addTeam,
@@ -21,7 +20,7 @@ const DashSidebar = (props) => {
   );
   return (
     <div className={css(styles.root)}>
-      {isUserSettings ? <SettingsHub/> : <StandardHubContainer/>}
+      <StandardHubContainer/>
       <nav className={css(styles.nav)}>
         <div className={css(styles.singleNavItem)}>
           <DashNavItem
@@ -52,7 +51,6 @@ const DashSidebar = (props) => {
 };
 
 DashSidebar.propTypes = {
-  isUserSettings: PropTypes.bool,
   router: PropTypes.object,
   styles: PropTypes.object
 };
@@ -65,7 +63,7 @@ const linkBaseStyles = {
 
 const styleThunk = () => ({
   root: {
-    backgroundColor: appTheme.palette.mid,
+    backgroundColor: ui.dashSidebarBackgroundColor,
     color: textColor,
     display: 'flex',
     flexDirection: 'column',

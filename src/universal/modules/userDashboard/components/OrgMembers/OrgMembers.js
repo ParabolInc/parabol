@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
 import OrgUserRow from '../OrgUserRow/OrgUserRow';
 import IconControl from 'universal/components/IconControl/IconControl';
 import Panel from 'universal/components/Panel/Panel';
@@ -90,7 +91,6 @@ const OrgMembers = (props) => {
                 <FontAwesome name="ellipsis-v"/>
               </div>
             }
-            toggleHeight="1.5rem"
           />
         </div>
       );
@@ -130,14 +130,15 @@ const styleThunk = () => ({
 
   optionsToggle: {
     alignItems: 'center',
-    borderRadius: '2px',
+    borderRadius: ui.buttonBorderRadius,
     cursor: 'pointer',
     display: 'flex',
     height: '2rem',
     justifyContent: 'center',
     width: '2rem',
+
     ':hover': {
-      background: 'gray'
+      background: appTheme.palette.mid90l
     }
   },
 

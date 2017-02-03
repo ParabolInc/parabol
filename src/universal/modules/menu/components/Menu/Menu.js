@@ -21,6 +21,7 @@ const Menu = (props) => {
     width: menuWidth,
     ...coords
   };
+  // TODO: Make a UI constant (TA)
   const boxShadow = '0 3px 6px rgba(0, 0, 0, .35)';
   const menuStyle = {boxShadow};
   const kids = Children.map(itemFactory && itemFactory() || children, (child) => cloneElement(child, {closePortal}))
@@ -48,6 +49,7 @@ Menu.defaultProps = {
 
 Menu.propTypes = {
   children: PropTypes.any,
+  coords: PropTypes.object,
   isOpen: PropTypes.bool,
   label: PropTypes.string,
   menuOrientation: PropTypes.oneOf([
@@ -57,7 +59,6 @@ Menu.propTypes = {
   menuWidth: PropTypes.string,
   styles: PropTypes.object,
   toggle: PropTypes.any,
-  toggleHeight: PropTypes.string,
   verticalAlign: PropTypes.oneOf([
     'middle',
     'top'
@@ -88,11 +89,12 @@ const styleThunk = () => ({
     paddingTop: '.25rem',
     position: 'absolute'
   },
+
   menu: {
     backgroundColor: ui.menuBackgroundColor,
     border: `1px solid ${ui.menuBorderColor}`,
     borderRadius: '.25rem',
-    padding: '0 0 .5rem',
+    paddingBottom: ui.menuGutterVertical,
     textAlign: 'left',
     width: '100%',
     outline: 0
@@ -104,8 +106,9 @@ const styleThunk = () => ({
     color: appTheme.palette.mid,
     fontSize: appTheme.typography.s2,
     fontWeight: 700,
-    lineHeight: 1,
-    padding: '.5rem'
+    lineHeight: '1.5rem',
+    marginBottom: ui.menuGutterVertical,
+    padding: `${ui.menuGutterVertical} ${ui.menuGutterHorizontal}`
   }
 });
 

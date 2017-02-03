@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import tinycolor from 'tinycolor2';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import {textOverflow} from 'universal/styles/helpers';
 
@@ -9,7 +10,7 @@ import {textOverflow} from 'universal/styles/helpers';
 // import FontAwesome from 'react-fontawesome';
 
 const MenuItem = (props) => {
-  const {isActive, label, onClick, closePortal, styles} = props;
+  const {hr, isActive, label, onClick, closePortal, styles} = props;
   const rootStyles = css(styles.root, isActive && styles.active);
   const handleClick = () => {
     if (closePortal) {
@@ -22,14 +23,22 @@ const MenuItem = (props) => {
   };
   const labelEl = typeof label === 'string' ? <div className={css(styles.label)}>{label}</div> : label;
   return (
-    <div className={rootStyles} onClick={handleClick} >
-      {labelEl}
+    <div>
+      {hr === 'before' && <hr className={css(styles.hr)} />}
+      <div className={rootStyles} onClick={handleClick} >
+        {labelEl}
+      </div>
+      {hr === 'after' && <hr className={css(styles.hr)} />}
     </div>
   );
 };
 
 MenuItem.propTypes = {
   closePortal: PropTypes.func,
+  hr: PropTypes.oneOf([
+    'before',
+    'after',
+  ]),
   isActive: PropTypes.bool,
   label: PropTypes.any,
   onClick: PropTypes.func,
@@ -50,8 +59,10 @@ const activeHoverFocusStyles = {
 
 const styleThunk = () => ({
   root: {
-    backgroundColor: 'transparent',
+    backgroundColor: ui.menuBackgroundColor,
     cursor: 'pointer',
+    transition: `background-color ${ui.transitionFastest}`,
+
     ':hover': {
       ...hoverFocusStyles
     },
@@ -78,7 +89,16 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.s2,
     fontWeight: 700,
     lineHeight: '1.5rem',
-    padding: '.25rem .5rem'
+    padding: `${ui.menuGutterVertical} ${ui.menuGutterHorizontal}`
+  },
+
+  hr: {
+    backgroundColor: ui.menuBorderColor,
+    border: 'none',
+    height: '1px',
+    marginBottom: ui.menuGutterVertical,
+    marginTop: ui.menuGutterVertical,
+    padding: 0
   }
 });
 
