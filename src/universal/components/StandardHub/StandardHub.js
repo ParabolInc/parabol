@@ -71,6 +71,11 @@ const StandardHub = (props) => {
     );
   };
 
+  const notificationsStyles = css(
+    styles.notifications,
+    notificationCount > 0 && styles.notificationsWithBadge
+  );
+
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.user)}>
@@ -81,7 +86,11 @@ const StandardHub = (props) => {
         </div>
         {makeUserMenu()}
       </div>
-      <Link isActive={css(styles.notificationsActive)} to="/me/notifications" className={css(styles.notifications)}>
+      <Link
+        activeClassName={css(styles.notificationsActive)}
+        className={notificationsStyles}
+        to="/me/notifications"
+      >
         <FontAwesome name="bell" style={faStyle}/>
         {notificationCount > 0 &&
           <div className={css(styles.badgeBlock)}>
@@ -106,7 +115,7 @@ StandardHub.defaultProps = {
   notificationCount: 8
 };
 
-const maxWidth = '8.25rem';
+const maxWidth = '6.5rem';
 const styleThunk = () => ({
   root: {
     alignItems: 'center',
@@ -166,22 +175,29 @@ const styleThunk = () => ({
 
   notifications: {
     alignItems: 'center',
-    backgroundColor: appTheme.palette.dark50a,
+    backgroundColor: ui.dashSidebarBackgroundColor,
     borderRadius: ui.buttonBorderRadius,
     display: 'flex',
     height: 32,
     justifyContent: 'center',
     position: 'relative',
+    textDecoration: 'none !important',
     transition: `background-color ${ui.transitionFastest}`,
     width: 32,
 
     ...makeHoverFocus({
-      backgroundColor: appTheme.palette.dark
+      backgroundColor: appTheme.palette.dark,
+      textDecoration: 'none !important'
     })
   },
 
+  notificationsWithBadge: {
+    backgroundColor: appTheme.palette.dark50a,
+  },
+
   notificationsActive: {
-    opacity: '.5'
+    backgroundColor: `${appTheme.palette.dark} !important`,
+    textDecoration: 'none !important'
   },
 
   badgeBlock: {
