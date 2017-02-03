@@ -34,7 +34,7 @@ exports.up = async(r) => {
   const waitIndices = [
     r.table('Team').indexWait('orgId'),
     r.table('Notification').indexWait('orgId', 'userIds'),
-    r.table('User').indexWait('email', 'userOrgs')
+    r.table('User').indexWait('userOrgs')
   ];
   await Promise.all(waitIndices);
   const now = new Date();
