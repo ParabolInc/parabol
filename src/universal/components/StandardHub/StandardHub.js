@@ -11,11 +11,6 @@ import Avatar from 'universal/components/Avatar/Avatar';
 import Badge from 'universal/components/Badge/Badge';
 import {Menu, MenuItem} from 'universal/modules/menu';
 
-const faStyle = {
-  lineHeight: 'inherit',
-  color: 'white'
-};
-
 const StandardHub = (props) => {
   const {
     email,
@@ -62,9 +57,9 @@ const StandardHub = (props) => {
     return (
       <Menu
         itemFactory={itemFactory}
-        originAnchor={originAnchor}
         label={email}
-        menuWidth="12rem"
+        originAnchor={originAnchor}
+        menuWidth="13rem"
         targetAnchor={targetAnchor}
         toggle={<div className={css(styles.menuToggle)}/>}
       />
@@ -75,6 +70,11 @@ const StandardHub = (props) => {
     styles.notifications,
     notificationCount > 0 && styles.notificationsWithBadge
   );
+
+  const iconStyle = {
+    lineHeight: 'inherit',
+    color: 'white'
+  };
 
   return (
     <div className={css(styles.root)}>
@@ -91,7 +91,7 @@ const StandardHub = (props) => {
         className={notificationsStyles}
         to="/me/notifications"
       >
-        <FontAwesome name="bell" style={faStyle}/>
+        <FontAwesome name="bell" style={iconStyle}/>
         {notificationCount > 0 &&
           <div className={css(styles.badgeBlock)}>
             <Badge value={notificationCount} />

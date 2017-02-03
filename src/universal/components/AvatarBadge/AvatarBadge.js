@@ -31,9 +31,11 @@ const AvatarBadge = (props) => {
   const {icon, statusName} = checkInStatus[isCheckedIn];
   const title = `${isConnected ? 'Online' : 'Offline'}${statusName}`;
   const largeBadgeClass = size === 'large' || size === 'larger' || size === 'largest';
+  const smallBadgeClass = size === 'smaller' || size === 'smallest';
   const badgeStyles = css(
     styles.badge,
-    largeBadgeClass && styles.badgeLarge
+    largeBadgeClass && styles.badgeLarge,
+    smallBadgeClass && styles.badgeSmall
   );
   const description = `${connection}, ${checkIn}`;
   return (
@@ -52,6 +54,7 @@ AvatarBadge.propTypes = {
   size: PropTypes.string,
   styles: PropTypes.object,
 };
+
 const styleThunk = () => ({
   badge: {
     display: 'block',
@@ -100,6 +103,11 @@ const styleThunk = () => ({
       top: '2px',
       width: '1.5rem'
     }
+  },
+
+  badgeSmall: {
+    right: '-.1875rem',
+    top: '-.1875rem'
   },
 
   badgeIcon: {
