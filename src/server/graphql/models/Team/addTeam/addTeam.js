@@ -36,7 +36,7 @@ export default {
   },
   async resolve(source, args, {authToken, socket}) {
     const r = getRethink();
-
+    const now = new Date();
     // AUTH
     const {orgId} = args.newTeam;
     requireWebsocket(socket);
@@ -64,13 +64,36 @@ export default {
       return true
     }
 
+    const inviteeEmails = invitees.map((i) => i.email);
     const inviterIsBillingLeader = isBillingLeader(userOrgDoc);
 
+    // sidestep approval process
     if (inviterIsBillingLeader) {
-      await asyncInviteTeam(authToken, teamId, invitees);
+      // remove queued approvals
+      const promises = [
+        r.table('OrgApproval')
+          .getAll(r.args(inviteeEmails), {index: 'email'})
+          .filter({orgId})
+          .delete()
+          .do(() => {
+            // remove notifications about queued approvals
+            return r.table('Notification')
+              .getAll(orgId, {index: 'orgId'})
+              .filter({
+                type: REQUEST_NEW_USER
+              })
+              .filter((notification) => {
+                return r.expr(inviteeEmails).contains(notification('varList')(2))
+              })
+              .delete()
+          }),
+        asyncInviteTeam(authToken, teamId, invitees)
+      ];
+      await Promise.all(promises);
       return true;
     }
-    const inviteeEmails = invitees.map((i) => i.email);
+
+    // send invitation that don't need approval
     const inOrgInvitees = await r.table('User')
       .getAll(orgId, {index: 'userOrgs'})
       .filter((user) => r.expr(inviteeEmails).contains(user('email')))
@@ -81,18 +104,10 @@ export default {
     if (inOrgInvitees.length > 0) {
       await asyncInviteTeam(authToken, teamId, inOrgInvitees);
     }
-    const outOfOrgEmails = inviteeEmails.filter((email) => !inOrgInvitees.find((i) => i.email === email));
 
-    // remove the emails that are already pending org leader approval
-    const emailsWithNotifications = await r.table('Notification')
-      .getAll(orgId, {index: 'orgId'})
-      .filter({
-        type: REQUEST_NEW_USER
-      })('varList')
-      // varList(2) is the email field
-      .map((varList) => varList(2));
-    const newOutOfOrgEmails = outOfOrgEmails.filter((email) => !emailsWithNotifications.find((oldEmail) => oldEmail === email));
-    if (newOutOfOrgEmails.length) {
+    // seek approval for the rest
+    const outOfOrgEmails = inviteeEmails.filter((email) => !inOrgInvitees.find((i) => i.email === email));
+    if (outOfOrgEmails.length) {
       // add a notification to the billing leaders
       const {userIds, inviter} = await r.table('User')
         .getAll(orgId, {index: 'userOrgs'})
@@ -104,23 +119,27 @@ export default {
             inviter: r.table('User').get(userId).pluck('preferredName', 'id')
           }
         });
-      const notificationIds = newOutOfOrgEmails.reduce((obj, email) => {
-        obj[email] = shortid.generate();
-        return obj;
-      }, {});
+
+      const notifications = outOfOrgEmails.map((inviteeEmail) => ({
+        id: shortid.generate(),
+        type: REQUEST_NEW_USER,
+        startAt: now,
+        orgId,
+        userIds,
+        varList: [inviter.id, inviter.preferredName, inviteeEmail, teamId, teamName]
+      }));
+
+      const pendingApprovals = outOfOrgEmails.map((inviteeEmail) => ({
+        id: shortid.generate(),
+        email: inviteeEmail,
+        orgId,
+        teamId
+      }));
       // send a new notification to each billing leader concerning each out-of-org invitee
-      await r.expr(newOutOfOrgEmails)
-        .forEach((inviteeEmail) => {
-          return r.table('Notification')
-            .insert({
-              id: r.expr(notificationIds)(inviteeEmail),
-              type: REQUEST_NEW_USER,
-              startAt: new Date(),
-              orgId,
-              userIds,
-              varList: [inviter.id, inviter.preferredName, inviteeEmail, teamId, teamName]
-            })
-        });
+      await r.table('Notification').insert(notifications)
+        .do(() => {
+          r.table('OrgApproval').insert(pendingApprovals)
+        })
     }
     return true;
   }
