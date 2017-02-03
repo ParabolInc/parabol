@@ -6,7 +6,7 @@ import {
 } from 'graphql';
 import {TRIAL_EXTENSION} from 'server/utils/serverConstants';
 import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
-import {requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
 import stripe from 'server/billing/stripe';
 import {toStripeDate} from 'server/billing/stripeDate';
 import createStripeBilling from 'server/graphql/models/Organization/addBilling/createStripeBilling';
@@ -30,7 +30,9 @@ export default {
 
     // AUTH
     requireWebsocket(socket);
-    await requireOrgLeader(authToken, orgId);
+    const userId = getUserId(authToken);
+    const userOrgDoc = await getUserOrgDoc(userId, orgId);
+    requireOrgLeader(userOrgDoc);
 
     // RESOLUTION
     const {isTrial, stripeSubscriptionId, validUntil} = await r.table('Organization')

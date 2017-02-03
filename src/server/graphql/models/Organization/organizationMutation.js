@@ -7,7 +7,13 @@ import {
   GraphQLInt,
   GraphQLString,
 } from 'graphql';
-import {requireOrgLeader, requireOrgLeaderOfUser, requireWebsocket} from 'server/utils/authorization';
+import {
+  getUserId,
+  getUserOrgDoc,
+  requireOrgLeader,
+  requireOrgLeaderOfUser,
+  requireWebsocket
+} from 'server/utils/authorization';
 import updateOrgServerSchema from 'universal/validation/updateOrgServerSchema';
 import {errorObj, handleSchemaErrors, getOldVal, validateAvatarUpload} from 'server/utils/utils';
 import getS3PutUrl from 'server/utils/getS3PutUrl';
@@ -36,10 +42,13 @@ export default {
     },
     async resolve(source, {updatedOrg}, {authToken, socket}) {
       const r = getRethink();
+      const now = new Date();
 
       // AUTH
       requireWebsocket(socket);
-      await requireOrgLeader(authToken, updatedOrg.id);
+      const userId = getUserId(authToken);
+      const userOrgDoc = await getUserOrgDoc(userId, updatedOrg.id);
+      requireOrgLeader(userOrgDoc);
 
       // VALIDATION
       const schema = updateOrgServerSchema();
@@ -47,7 +56,6 @@ export default {
       handleSchemaErrors(errors);
 
       // RESOLUTION
-      const now = new Date();
       const newAction = {
         ...org,
         updatedAt: now
@@ -56,44 +64,60 @@ export default {
       return true;
     }
   },
-  removeBillingLeader: {
-    type: GraphQLBoolean,
-    description: 'Remove a billing leader from an org',
-    args: {
-      orgId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'the org to remove the billing leader from'
-      },
-      userId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The billing leader userId to remove from the org'
-      }
-    },
-    async resolve(source, {orgId, userId}, {authToken, socket}) {
-      const r = getRethink();
-
-      // AUTH
-      requireWebsocket(socket);
-      await requireOrgLeader(authToken, orgId);
-
-      // RESOLUTION
-      const now = new Date();
-      await r.table('User').get(orgId)
-        .update((user) => ({
-          userOrgs: user('userOrgs').map((userOrg) => {
-            return r.branch(
-              userOrg('id').eq(orgId),
-              userOrg.merge({
-                role: null
-              }),
-              userOrg
-            )
-          }),
-          updatedAt: now
-        }));
-      return true;
-    }
-  },
+  // removeBillingLeader: {
+  //   type: GraphQLBoolean,
+  //   description: 'Remove a billing leader from an org',
+  //   args: {
+  //     orgId: {
+  //       type: new GraphQLNonNull(GraphQLID),
+  //       description: 'the org to remove the billing leader from'
+  //     },
+  //     userId: {
+  //       type: new GraphQLNonNull(GraphQLID),
+  //       description: 'The billing leader userId to remove from the org'
+  //     }
+  //   },
+  //   async resolve(source, {orgId, userId}, {authToken, socket}) {
+  //     const r = getRethink();
+  //
+  //     // AUTH
+  //     requireWebsocket(socket);
+  //     const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId);
+  //     requireOrgLeader(userOrgDoc);
+  //
+  //     // RESOLUTION
+  //     const now = new Date();
+  //     await r.table('User').get(userId)
+  //       .update((user) => ({
+  //         userOrgs: user('userOrgs').map((userOrg) => {
+  //           return r.branch(
+  //             userOrg('id').eq(orgId),
+  //             userOrg.merge({
+  //               role: null
+  //             }),
+  //             userOrg
+  //           )
+  //         }),
+  //         updatedAt: now
+  //       }))
+  //       .do(() => {
+  //         r.table('Organization').get(orgId)
+  //           .update((org) => ({
+  //             orgUsers: org('orgUsers').map((orgUser) => {
+  //               return r.branch(
+  //                 orgUser('id').eq(userId),
+  //                 orgUser.merge({
+  //                   role: null
+  //                 }),
+  //                 orgUser
+  //               )
+  //             }),
+  //             updatedAt: now
+  //           }))
+  //       });
+  //     return true;
+  //   }
+  // },
   addBilling,
   inactivateUser: {
     type: GraphQLBoolean,
@@ -108,7 +132,10 @@ export default {
       const r = getRethink();
 
       // AUTH
+      requireWebsocket(socket);
       await requireOrgLeaderOfUser(authToken, userId);
+
+      // RESOLUTION
       const res = await r.table('Organization').getAll(userId, {index: 'orgUsers'}).update((org) => ({
         orgUsers: org('orgUsers').map((orgUser) => {
           return r.branch(
@@ -164,26 +191,35 @@ export default {
       userId: {
         type: new GraphQLNonNull(GraphQLID),
         description: 'the user to remove'
-      }
-      ,
+      },
       orgId: {
         type: new GraphQLNonNull(GraphQLID),
         description: 'the org that does not want them anymore'
       }
     },
-    async resolve(source, {orgId, userId}, {authToken}){
+    async resolve(source, {orgId, userId}, {authToken, socket}){
       const r = getRethink();
+      const now = new Date();
 
       // AUTH
-      await requireOrgLeader(authToken, orgId);
+      requireWebsocket(socket);
+      const userId = getUserId(authToken);
+      const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId);
+      requireOrgLeader(userOrgDoc);
 
       // RESOLUTION
-      const now = new Date();
-      const userRes = await r.table('User').get(userId)
-        .update((row) => ({
-          userOrgs: row('userOrgs').filter(({id}) => id.ne(orgId)),
+      const userRes = await r.table('Organization').get(orgId)
+        .update((org) => ({
+          orgUsers: org('orgUsers').filter((orgUser) => orgUser('id').ne(userId)),
           updatedAt: now
-        }), {returnChanges: true});
+        }))
+        .do(() => {
+          return r.table('User').get(userId)
+            .update((row) => ({
+              userOrgs: row('userOrgs').filter((userOrg) => userOrg('id').ne(orgId)),
+              updatedAt: now
+            }), {returnChanges: true});
+        });
 
       const userDoc = getOldVal(userRes);
       if (!userDoc) {
@@ -211,8 +247,11 @@ export default {
       }
     },
     async resolve(source, {orgId, contentType, contentLength}, {authToken}) {
+
       // AUTH
-      await requireOrgLeader(authToken, orgId);
+      const userId = getUserId(authToken);
+      const userOrgDoc = await getUserOrgDoc(userId, orgId);
+      requireOrgLeader(userOrgDoc);
 
       // VALIDATION
       const ext = validateAvatarUpload(contentType, contentLength);
@@ -242,9 +281,11 @@ export default {
     },
     async resolve(source, {orgId, userId, role}, {authToken}){
       const r = getRethink();
+      const now = new Date();
 
       // AUTH
-      await requireOrgLeader(authToken, orgId);
+      const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId);
+      requireOrgLeader(userOrgDoc);
 
 
       // VALIDATION
@@ -253,7 +294,6 @@ export default {
       }
 
       // RESOLUTION
-      const now = new Date();
       const userRes = await r.table('User').get(userId)
         .update((user) => ({
           userOrgs: user('userOrgs').map((userOrg) => {
@@ -268,7 +308,7 @@ export default {
           updatedAt: now
         }))
         .do(() => {
-          r.table('Organization').get(orgId)
+          return r.table('Organization').get(orgId)
             .update((org) => ({
               orgUsers: org('orgUsers').map((orgUser) => {
                 return r.branch(

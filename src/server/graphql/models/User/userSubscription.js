@@ -3,7 +3,7 @@ import getRequestedFields from 'server/graphql/getRequestedFields'
 import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
 import {User} from './userSchema';
 import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
-import {requireOrgLeader} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
 
 export default {
   // billingLeaders: {
@@ -36,13 +36,21 @@ export default {
     type: new GraphQLList(User),
     async resolve(source, {orgId}, {authToken, socket, subbedChannelName}, refs) {
       const r = getRethink();
+
+      // AUTH
+      requireWebsocket(socket);
+      const userId = getUserId(authToken);
+      const userOrgDoc = await getUserOrgDoc(userId, orgId);
+      requireOrgLeader(userOrgDoc);
+
+      // RESOLUTION
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
       await requireOrgLeader(authToken, orgId);
       r.table('User')
         .getAll(orgId, {index: 'userOrgs'})
         .merge((user) => ({
-          isBillingLeader: user('userOrgs').default([]).contains((org) => org('id').eq(orgId))
+          isBillingLeader: user('userOrgs').contains((org) => org('id').eq(orgId)).default(false)
         }))
         .pluck(requestedFields)
         .changes({includeInitial: true})

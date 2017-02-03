@@ -1,6 +1,7 @@
 import {errorObj} from './utils';
 import getRethink from '../database/rethinkDriver';
 import {BILLING_LEADER} from 'universal/utils/constants';
+import {billingLeaderFilter} from 'server/utils/utils';
 
 export const getUserId = (authToken) => {
   return authToken && typeof authToken === 'object' && authToken.sub;
@@ -82,17 +83,23 @@ export const requireWebsocketExchange = (exchange) => {
   }
 };
 
-export const requireOrgLeader = async(authToken, orgId) => {
+export const getUserOrgDoc = async (userId, orgId) => {
   const r = getRethink();
-  const isOrgLeader = await r.table('User').get(authToken.sub)('userOrgs')
-    .filter({
-      role: BILLING_LEADER
-    })
-    .contains((userOrg) => userOrg('id').eq(orgId));
-  if (!isOrgLeader) {
-    throw errorObj({_error: 'Unauthorized. Only an org billing Leader can do this'});
+  return await r.table('User').get(user)('userOrgs')
+    .filter({id: orgId})
+    .nth(0)
+    .default(null);
+};
+
+export const isBillingLeader = (userOrgDoc) => {
+  return (userOrgDoc && userOrgDoc.role === BILLING_LEADER);
+};
+
+export const requireOrgLeader = (userOrgDoc) => {
+  const legit = isBillingLeader(userOrgDoc);
+  if (!legit) {
+    throw errorObj({_error: `Unauthorized. ${userId} is not a billing leader for ${orgId}`});
   }
-  return authToken.sub;
 };
 
 export const validateNotificationId = async (notificationId, authToken) => {
@@ -141,7 +148,7 @@ export const requireTeamIsPaid = async (teamId) => {
   const r = getRethink();
   const isPaid = await r.table('Team').get(teamId)('isPaid').default(false);
   if (!isPaid) {
-    throw errorObj({_error: 'The org leader has not paid. Cannot fetch documents'})
+    throw errorObj({_error: `The org leader has not paid for team ${teamId}. Cannot fetch documents`})
   }
   return true;
 };

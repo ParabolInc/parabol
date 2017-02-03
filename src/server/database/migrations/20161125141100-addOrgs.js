@@ -23,7 +23,7 @@ exports.up = async(r) => {
     r.table('Team').indexCreate('orgId'),
     r.table('Notification').indexCreate('orgId'),
     r.table('Notification').indexCreate('userIds', {multi: true}),
-    r.table('User').indexCreate('email'),
+    // r.table('User').indexCreate('email'),
     r.table('User').indexCreate('userOrgs', r.row('userOrgs')('id'), {multi: true}),
   ];
   try {
@@ -201,7 +201,7 @@ exports.down = async(r) => {
     r.tableDrop('Organization'),
     r.tableDrop('Notification'),
     r.table('Team').indexDrop('orgId'),
-    r.table('User').indexDrop('email'),
+    // r.table('User').indexDrop('email'),
     r.table('User').indexDrop('userOrgs'),
     r.table('Team').replace((row) => row.without('orgId')),
     r.table('User').replace((row) => row.without('trialOrg', 'userOrgs')),

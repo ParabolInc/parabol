@@ -6,7 +6,7 @@ import {
 } from 'graphql';
 import getRequestedFields from 'server/graphql/getRequestedFields'
 import {Organization} from './organizationSchema';
-import {requireSUOrSelf, requireOrgLeader} from 'server/utils/authorization';
+import {getUserId, getUserOrgDoc, requireSUOrSelf, requireOrgLeader} from 'server/utils/authorization';
 import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
 import {BILLING_LEADER} from 'universal/utils/constants';
 
@@ -60,7 +60,9 @@ export default {
       const r = getRethink();
 
       // AUTH
-      await requireOrgLeader(authToken, orgId);
+      const userId = getUserId(authToken);
+      const userOrgDoc = await getUserOrgDoc(userId, orgId);
+      requireOrgLeader(userOrgDoc);
 
       // RESOLUTION
       const requestedFields = getRequestedFields(refs);

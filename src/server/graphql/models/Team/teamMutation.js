@@ -1,24 +1,20 @@
 import getRethink from 'server/database/rethinkDriver';
 import {
   ensureUniqueId,
-  requireUserInOrg,
   getUserId,
   requireAuth,
   requireSUOrTeamMember,
   requireWebsocket
 } from 'server/utils/authorization';
 import {errorObj, handleSchemaErrors} from 'server/utils/utils';
-import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
   GraphQLID,
   GraphQLString,
   GraphQLInt,
-  GraphQLList
 } from 'graphql';
 import {TeamInput} from './teamSchema';
-import {asyncInviteTeam} from 'server/graphql/models/Invitation/helpers';
 import shortid from 'shortid';
 import {
   CHECKIN,
@@ -40,10 +36,11 @@ import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 import makeStep2Schema from 'universal/validation/makeStep2Schema';
-import makeAddTeamServerSchema from 'universal/validation/makeAddTeamServerSchema';
-import {BILLING_LEADER, TRIAL_EXPIRES_SOON, REQUEST_NEW_USER} from 'universal/utils/constants';
+import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
 import ms from 'ms';
 import createStripeOrg from 'server/graphql/models/Organization/addOrg/createStripeOrg';
+import addTeam from 'server/graphql/models/Team/addTeam/addTeam';
+
 export default {
   moveMeeting: {
     type: GraphQLBoolean,
@@ -405,105 +402,7 @@ export default {
       return true;
     }
   },
-  addTeam: {
-    type: GraphQLBoolean,
-    description: 'Create a new team and add the first team member',
-    args: {
-      newTeam: {
-        type: new GraphQLNonNull(TeamInput),
-        description: 'The new team object with exactly 1 team member'
-      },
-      invitees: {
-        type: new GraphQLList(new GraphQLNonNull(Invitee))
-      }
-    },
-    async resolve(source, args, {authToken, socket}) {
-      const r = getRethink();
-
-      // AUTH
-      const {orgId} = args.newTeam;
-      const userId = authToken.sub;
-      requireWebsocket(socket);
-      await requireUserInOrg(userId, orgId);
-
-      // VALIDATION
-      const schema = makeAddTeamServerSchema({inviteEmails: [], teamMemberEmails: []});
-      const {data: {invitees, newTeam}, errors} = schema(args);
-      const teamId = newTeam.id;
-      handleSchemaErrors(errors);
-      await ensureUniqueId('Team', teamId);
-
-      // RESOLUTION
-      const authTokenObj = socket.getAuthToken();
-      const newAuthTokenObj = {
-        ...authTokenObj,
-        tms: Array.isArray(authTokenObj.tms) ? authTokenObj.tms.concat(teamId) : [teamId],
-        exp: undefined
-      };
-      socket.setAuthToken(newAuthTokenObj);
-      await createTeamAndLeader(userId, newTeam);
-      if (invitees && invitees.length) {
-        const inviteeEmails = invitees.map((i) => i.email);
-        const orgMemberInvitees = await r.table('User')
-          .getAll(r.args(inviteeEmails), {index: 'email'})
-          .pluck('id', 'email')
-          // now that we know they exist in the system, see if they exist in the org
-          .filter((row) => {
-            // i wonder if this is inefficient in rethinkDB or if they cache the result?
-            return r.table('Organization').get(orgId)('members').contains(row('id'))
-          });
-        const inOrgMembers = [];
-        const outOfOrgEmails = [];
-        for (let i = 0; i < invitees.length; i++) {
-          const invitee = invitees[i];
-          const isMember = orgMemberInvitees.find((i) => i.email === invitee.email);
-          if (isMember) {
-            inOrgMembers.push(invitee)
-          } else {
-            outOfOrgEmails.push(invitee.email);
-          }
-        }
-        if (inOrgMembers.length > 0) {
-          await asyncInviteTeam(authToken, teamId, invitees);
-        }
-
-        if (outOfOrgEmails.length) {
-          // add a notification to the billing leaders
-          const {userIds, inviter} = await r.table('Organization')
-            .get(orgId)('orgUsers')
-            .filter({
-              role: BILLING_LEADER
-            })
-            .map((orgUser) => orgUser('id'))
-            .do((userIds) => {
-              return {
-                userIds,
-                inviter: r.table('User').get(userId).pluck('preferredName', 'id')
-              }
-            });
-          const notificationIds = outOfOrgEmails.reduce((obj, email) => {
-            obj[email] = shortid.generate();
-            return obj;
-          }, {});
-          // send a new notification to each billing leader concerning each out-of-org invitee
-          await r.expr(outOfOrgEmails)
-            .forEach((invitee) => {
-              return r.table('Notification')
-                .insert({
-                  id: r.expr(notificationIds)(invitee),
-                  type: REQUEST_NEW_USER,
-                  startAt: new Date(),
-                  orgId,
-                  userIds,
-                  varList: [inviter.id, invitee, teamId]
-                })
-            });
-          // TODO: send a toast???
-        }
-      }
-      return true;
-    }
-  },
+  addTeam,
   createTeam: {
     // return the new JWT that has the new tms field
     type: GraphQLID,

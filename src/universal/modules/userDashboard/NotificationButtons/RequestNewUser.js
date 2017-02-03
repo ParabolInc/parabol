@@ -6,10 +6,11 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import defaultStyles from './styles';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
+import {connect} from 'react-redux';
 
 const RequestNewUser = (props) => {
   const {notificationId, router, styles, varList} = props;
-  const [inviterName, inviterId, inviteeEmail, teamName, teamId] = varList;
+  const [inviterUserId, inviterUserName, inviteeEmail, teamId, teamName] = varList;
 
   const acceptInvite = () => {
     const variables = {
@@ -67,6 +68,6 @@ const styleThunk = () => ({
   ...defaultStyles
 });
 
-export default withRouter(
-  withStyles(styleThunk)(RequestNewUser)
+export default connect(mapStateToProps)(
+  withRouter(withStyles(styleThunk)(RequestNewUser))
 );

@@ -1,5 +1,5 @@
 import mime from 'mime-types';
-import {APP_MAX_AVATAR_FILE_SIZE} from '../../universal/utils/constants';
+import {APP_MAX_AVATAR_FILE_SIZE, BILLING_LEADER} from '../../universal/utils/constants';
 
 
 // Stringify an object to handle multiple errors
@@ -54,4 +54,8 @@ export function validateAvatarUpload(contentType, contentLength) {
     throw errorObj({_error: 'avatar image is too large'});
   }
   return ext;
+}
+
+export function billingLeaderFilter(id) {
+  return (orgUsers) => orgUsers.contains((orgUser) => orgUser('id').eq(id).and(orgUser('role').eq(BILLING_LEADER)));
 }
