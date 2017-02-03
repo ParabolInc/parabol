@@ -223,6 +223,8 @@ const ui = {
   menuBorderColor: appTheme.palette.mid30l,
   menuGutterHorizontal: '.75rem',
   menuGutterVertical: '.375rem',
+  menuItemPaddingHorizontal: '.75rem',
+  menuItemPaddingVertical: '.25rem',
   zMenu: zIndexScale(4),
 
   // Modals

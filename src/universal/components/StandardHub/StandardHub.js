@@ -19,7 +19,7 @@ const faStyle = {
 const StandardHub = (props) => {
   const {
     email,
-    notificationsCount,
+    notificationCount,
     picture,
     preferredName,
     router,
@@ -52,10 +52,10 @@ const StandardHub = (props) => {
     const itemFactory = () => {
       const listItems = [];
       listItems.push(
-        <MenuItem label="Settings" onClick={goToSettings}/>,
-        <MenuItem label="Organizations" onClick={goToOrganizations}/>,
-        <MenuItem label="Notifications" onClick={goToNotifications}/>,
-        <MenuItem hr="before" label="Sign Out" onClick={signOut}/>
+        <MenuItem icon="address-card" label="Settings" onClick={goToSettings}/>,
+        <MenuItem icon="building" label="Organizations" onClick={goToOrganizations}/>,
+        <MenuItem icon="bell" label="Notifications" onClick={goToNotifications}/>,
+        <MenuItem icon="sign-out" label="Sign Out" onClick={signOut} hr="before"/>
       );
       return listItems;
     };
@@ -66,27 +66,26 @@ const StandardHub = (props) => {
         label={email}
         menuWidth="12rem"
         targetAnchor={targetAnchor}
-        toggle={
-          <div className={css(styles.user)}>
-            <Avatar hasBadge={false} picture={picture} size="small"/>
-            <div className={css(styles.info)}>
-              <div className={css(styles.name)}>{preferredName}</div>
-              <div className={css(styles.email)}>{email}</div>
-            </div>
-          </div>
-        }
+        toggle={<div className={css(styles.menuToggle)}/>}
       />
     );
   };
 
   return (
     <div className={css(styles.root)}>
-      {makeUserMenu()}
+      <div className={css(styles.user)}>
+        <Avatar hasBadge={false} picture={picture} size="small"/>
+        <div className={css(styles.info)}>
+          <div className={css(styles.name)}>{preferredName}</div>
+          <div className={css(styles.email)}>{email}</div>
+        </div>
+        {makeUserMenu()}
+      </div>
       <Link isActive={css(styles.notificationsActive)} to="/me/notifications" className={css(styles.notifications)}>
         <FontAwesome name="bell" style={faStyle}/>
-        {notificationsCount > 0 &&
+        {notificationCount > 0 &&
           <div className={css(styles.badgeBlock)}>
-            <Badge value={notificationsCount} />
+            <Badge value={notificationCount} />
           </div>
         }
       </Link>
@@ -96,7 +95,7 @@ const StandardHub = (props) => {
 
 StandardHub.propTypes = {
   email: PropTypes.string,
-  notificationsCount: PropTypes.number,
+  notificationCount: PropTypes.number,
   picture: PropTypes.string,
   preferredName: PropTypes.string,
   router: PropTypes.object,
@@ -104,7 +103,7 @@ StandardHub.propTypes = {
 };
 
 StandardHub.defaultProps = {
-  notificationsCount: 88
+  notificationCount: 8
 };
 
 const maxWidth = '8.25rem';
@@ -122,11 +121,21 @@ const styleThunk = () => ({
     display: 'flex',
     cursor: 'pointer',
     flex: 1,
+    position: 'relative',
     transition: `opacity ${ui.transitionFastest}`,
 
     ':hover': {
       opacity: '.5'
     }
+  },
+
+  // Make a single clickable area, over user details, to trigger the menu
+  menuToggle: {
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0
   },
 
   info: {

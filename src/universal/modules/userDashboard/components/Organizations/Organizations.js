@@ -26,7 +26,7 @@ const Organizations = (props) => {
       padding={`0 0 0 ${ui.panelGutter}`}
     />;
   return (
-    <UserSettingsWrapper activeTab={ORGANIZATIONS}>
+    <UserSettingsWrapper settingsLocation={ORGANIZATIONS}>
       <div className={css(styles.wrapper)}>
         <Panel label="Organizations" controls={addNewOrg()}>
           {organizations.map((organization) =>

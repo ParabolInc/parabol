@@ -3,6 +3,7 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 import tinycolor from 'tinycolor2';
 import FontAwesome from 'react-fontawesome';
 import DashNavListContainer from 'universal/containers/DashNavList/DashNavListContainer';
@@ -102,16 +103,13 @@ const styleThunk = () => ({
     display: 'block',
     marginTop: '.5rem',
     position: 'relative',
+    transition: `opacity ${ui.transitionFastest}`,
     userSelect: 'none',
 
-    ':hover': {
+    ...makeHoverFocus({
       ...linkBaseStyles,
       opacity: '.5'
-    },
-    ':focus': {
-      ...linkBaseStyles,
-      opacity: '.5'
-    }
+    })
   },
 
   addTeamDisabled: {

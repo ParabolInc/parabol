@@ -26,7 +26,6 @@ DashboardAvatars.propTypes = {
 const styleThunk = () => ({
   root: {
     fontSize: 0,
-    paddingBottom: '1rem',
     position: 'relative',
     textAlign: 'right',
     width: '100%'
