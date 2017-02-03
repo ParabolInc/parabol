@@ -21,7 +21,7 @@ const Menu = (props) => {
     width: menuWidth,
     ...coords
   };
-  const boxShadow = '0 1px 1px rgba(0, 0, 0, .15)';
+  const boxShadow = '0 3px 6px rgba(0, 0, 0, .35)';
   const menuStyle = {boxShadow};
   const kids = Children.map(itemFactory && itemFactory() || children, (child) => cloneElement(child, {closePortal}))
   return (
@@ -90,7 +90,7 @@ const styleThunk = () => ({
   },
   menu: {
     backgroundColor: ui.menuBackgroundColor,
-    border: `1px solid ${appTheme.palette.mid30l}`,
+    border: `1px solid ${ui.menuBorderColor}`,
     borderRadius: '.25rem',
     padding: '0 0 .5rem',
     textAlign: 'left',
