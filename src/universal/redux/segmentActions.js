@@ -43,7 +43,6 @@ export function segmentEventIdentify() {
             userId: profile.id,
             traits: {
               avatar: profile.picture,
-              createdAt: profile.created_at,
               email: profile.email,
               name: profile.name
             }
