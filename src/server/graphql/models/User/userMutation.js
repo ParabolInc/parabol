@@ -1,5 +1,4 @@
 import shortid from 'shortid';
-import ms from 'ms';
 import getRethink from 'server/database/rethinkDriver';
 import {GraphQLID, GraphQLInt, GraphQLString, GraphQLNonNull} from 'graphql';
 import {User, UserInput} from './userSchema';
@@ -8,10 +7,7 @@ import {auth0} from 'universal/utils/clientOptions';
 import sendEmail from 'server/email/sendEmail';
 import {requireAuth, requireSU, requireSUOrSelf} from 'server/utils/authorization';
 import {errorObj, getS3PutUrl, handleSchemaErrors, updatedOrOriginal, validateAvatarUpload} from 'server/utils/utils';
-import {
-  auth0ManagementClient,
-  clientSecret as auth0ClientSecret
-} from 'server/utils/auth0Helpers';
+import { clientSecret as auth0ClientSecret } from 'server/utils/auth0Helpers';
 import {verify} from 'jsonwebtoken';
 import makeUserServerSchema from 'universal/validation/makeUserServerSchema';
 import tmsSignToken from 'server/utils/tmsSignToken';
@@ -79,7 +75,6 @@ export default {
       // RESOLUTION
       const partialPath = `User/${userId}/picture/${shortid.generate()}.${ext}`;
       return await getS3PutUrl(contentType, contentLength, partialPath);
-
     }
   },
   updateUserWithAuthToken: {
@@ -137,8 +132,7 @@ export default {
         type: new GraphQLNonNull(UserInput),
         description: 'The input object containing the user profile fields that can be changed'
       }
-    }
-    ,
+    },
     async resolve(source, {updatedUser}, {authToken}) {
       const r = getRethink();
 
@@ -152,11 +146,13 @@ export default {
 
       // RESOLUTION
       // propagate denormalized changes to TeamMember
-      const dbProfile = r.table('TeamMember')
+      const dbProfile = await r.table('TeamMember')
         .getAll(id, {index: 'userId'})
         .update(validUpdatedUser)
         .do(() => {
-          return r.table('User').get(id).update(validUpdatedUser, {returnChanges: true})
+          return r.table('User')
+            .get(id)
+            .update(validUpdatedUser, {returnChanges: 'always'});
         });
 
       //
