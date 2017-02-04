@@ -6,8 +6,9 @@ import Step3InviteeList from 'universal/modules/welcome/components/Step3InviteeL
 
 const Step3InviteTeam = (props) => {
   const {invitees, inviteesRaw, teamName, welcome: {existingInvites, teamId}} = props;
+  console.log('page 3')
   return (
-    <div>{/* Div for that flexy flex */}
+    <div>
       <Type align="center" italic scale="s6">
         Sounds like a great team!
       </Type>

@@ -5,14 +5,14 @@ import FontAwesome from 'react-fontawesome';
 import appTheme from 'universal/styles/theme/appTheme';
 
 const IconButton = (props) => {
-  const {disabled, iconName, iconSize, onClick, styles, title} = props;
+  const {disabled, iconName, iconSize, onClick, styles, title, type = 'button'} = props;
   const buttonStyles = css(
     styles.base,
     disabled && styles.disabled
   );
   // must declare type="button" or it gets treated as a submit in the welcome wizard. wtf react
   return (
-    <button className={buttonStyles} disabled={disabled} onClick={onClick} title={title} type="button">
+    <button className={buttonStyles} disabled={disabled} onClick={onClick} title={title} type={type}>
       <FontAwesome name={iconName} size={iconSize}/>
     </button>
   );

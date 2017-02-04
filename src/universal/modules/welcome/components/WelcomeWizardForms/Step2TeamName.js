@@ -1,6 +1,8 @@
 import React, {PropTypes} from 'react';
 import InputField from 'universal/components/InputField/InputField';
 import {Field, reduxForm} from 'redux-form';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite-local-styles/no-important';
 import Type from 'universal/components/Type/Type';
 import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import {nextPage, updateCompleted, setWelcomeTeam} from 'universal/modules/welcome/ducks/welcomeDuck';
@@ -10,6 +12,7 @@ import {setAuthToken} from 'universal/redux/authDuck';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
 import makeStep2Schema from 'universal/validation/makeStep2Schema';
 import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
+import WelcomeSubmitButton from 'universal/modules/welcome/components/WelcomeSubmitButton/WelcomeSubmitButton';
 
 const validate = (values) => {
   const welcomeSchema = makeStep2Schema('teamName');
@@ -17,7 +20,7 @@ const validate = (values) => {
 };
 
 const Step2TeamName = (props) => {
-  const {dispatch, handleSubmit, preferredName, teamName} = props;
+  const {dispatch, handleSubmit, preferredName, styles, teamName} = props;
   const onTeamNameSubmit = (data) => {
     const teamId = shortid.generate();
     const teamMemberId = shortid.generate();
@@ -39,24 +42,23 @@ const Step2TeamName = (props) => {
     });
   };
   return (
-    <div>{/* Div for that flexy flex */}
+    <div>
       <Type align="center" italic scale="s6">
         Nice to meet you, {preferredName}!
       </Type>
       <WelcomeHeading copy={<span>Please type in your team name:</span>}/>
-      <form onSubmit={handleSubmit(onTeamNameSubmit)}>
+      <form className={css(styles.formBlock)} onSubmit={handleSubmit(onTeamNameSubmit)}>
         <Field
           autoFocus
-          buttonDisabled={!teamName}
-          buttonIcon="check-circle"
           component={InputField}
-          hasButton
           isLarger
           name="teamName"
           placeholder={randomPlaceholderTheme.teamName}
           shortcutHint="Press enter"
+          shortcutDisabled={!teamName}
           type="text"
         />
+        <WelcomeSubmitButton disabled={!teamName}/>
       </form>
     </div>
   );
@@ -72,8 +74,20 @@ Step2TeamName.propTypes = {
   completed: PropTypes.number
 };
 
-export default reduxForm({
+const styleThunk = () => ({
+  formBlock: {
+    alignItems: 'baseline',
+    display: 'flex'
+  },
+});
+
+
+const formOptions = {
   form: 'welcomeWizard',
   destroyOnUnmount: false,
   validate
-})(Step2TeamName);
+};
+
+export default reduxForm(formOptions)(
+  withStyles(styleThunk)(Step2TeamName)
+);

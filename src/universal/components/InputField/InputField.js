@@ -10,17 +10,14 @@ import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
 import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText';
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
 import FieldShortcutHint from 'universal/components/FieldShortcutHint/FieldShortcutHint';
-import IconButton from 'universal/components/IconButton/IconButton';
 
 const InputField = (props) => {
   const {
     autoFocus,
-    buttonDisabled,
-    buttonIcon,
+    shortcutDisabled,
     colorPalette,
     disabled,
     hasTransparentBackground,
-    hasButton,
     input,
     isLarger,
     isWider,
@@ -83,19 +80,9 @@ const InputField = (props) => {
             ref={(c) => { ref = c; }}
           />
         }
-        {hasButton &&
-          <div className={css(styles.buttonBlock)}>
-            <IconButton
-              disabled={buttonDisabled}
-              iconName={buttonIcon}
-              iconSize="2x"
-              onClick={onButtonClick}
-            />
-          </div>
-        }
       </div>
       {touched && error && <FieldHelpText hasErrorText helpText={error} />}
-      {shortcutHint && <FieldShortcutHint disabled={buttonDisabled} hint={shortcutHint} />}
+      {shortcutHint && <FieldShortcutHint disabled={shortcutDisabled} hint={shortcutHint} />}
     </FieldBlock>
   );
 };
@@ -105,7 +92,7 @@ InputField.propTypes = {
   hasErrorText: PropTypes.bool,
   helpText: PropTypes.any,
   autoFocus: PropTypes.bool,
-  buttonDisabled: PropTypes.bool,
+  shortcutDisabled: PropTypes.bool,
   buttonIcon: PropTypes.string,
   hasButton: PropTypes.bool,
   disabled: PropTypes.bool,
@@ -247,13 +234,6 @@ const styleThunk = () => ({
 
   inputBlock: {
     position: 'relative'
-  },
-
-  buttonBlock: {
-    left: '100%',
-    padding: '0 0 0 1rem',
-    position: 'absolute',
-    top: '.375rem'
   },
 
   textarea: {

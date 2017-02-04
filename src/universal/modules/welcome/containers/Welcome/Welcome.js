@@ -27,7 +27,7 @@ const WelcomeContainer = (props) => {
       dispatch(goToPage(dot));
     }
   };
-  if (tms && completed < 2) {
+  if (tms && completed === 0) {
     router.push('/me');
     return null;
   }
