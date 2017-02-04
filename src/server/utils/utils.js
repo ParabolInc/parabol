@@ -22,20 +22,23 @@ export function firstChange(possiblyUpdatedResult) {
   return { new_val: undefined, old_val: undefined };
 }
 
-export function updatedOrOriginal(possiblyUpdatedResult, original) {
-  /*
-   * There will only be changes to return if there were changes made to the
-   * DB. Therefore, we've got to check.
-   */
-  return firstChange(possiblyUpdatedResult).new_val || original;
-}
-
 export function getOldVal(possiblyUpdatedResult) {
   return firstChange(possiblyUpdatedResult).old_val;
 }
 
 export function getNewVal(resultWithReturnChanges) {
   return firstChange(resultWithReturnChanges).new_val;
+}
+
+export function updatedOrOriginal(possiblyUpdatedResult, original) {
+  /*
+   * There will only be changes to return if there were changes made to the
+   * DB. Therefore, we've got to check.
+   */
+  const originalReturn = (typeof original !== 'undefined') ?
+    original : getOldVal(possiblyUpdatedResult);
+
+  return getNewVal(possiblyUpdatedResult) || originalReturn;
 }
 
 // todo put this in a legitify schema

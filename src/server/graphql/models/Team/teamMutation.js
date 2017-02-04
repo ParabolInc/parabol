@@ -418,12 +418,14 @@ export default {
 
       // AUTH
       const userId = requireAuth(authToken);
-      const user = await r.table('User').get(userId).pluck('id', 'userOrgs', 'trialOrg');
+      const user = await r.table('User')
+        .get(userId)
+        .pluck('id', 'preferredName', 'userOrgs', 'trialOrg');
       if (user.userOrgs && user.userOrgs.length > 0) {
         throw errorObj({_error: 'cannot use createTeam when already part of an org'});
       }
       if (user.trialOrg) {
-        throw errorObj({_error: 'you have already created a team'})
+        throw errorObj({_error: 'you have already created a team'});
       }
 
       // VALIDATION
@@ -443,7 +445,7 @@ export default {
           updatedAt: now
         }));
       if (!res) {
-        throw errorObj({_error: 'Multiple calls detected'})
+        throw errorObj({_error: 'Multiple calls detected'});
       }
       const validNewTeam = {...data, orgId};
       const expiresSoonId = shortid.generate();
