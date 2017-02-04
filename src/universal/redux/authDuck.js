@@ -1,6 +1,5 @@
 import {cashay} from 'cashay';
 import jwtDecode from 'jwt-decode';
-import {EventTypes} from 'redux-segment';
 import ActionHTTPTransport from '../utils/ActionHTTPTransport';
 import {selectSegmentProfile} from './segmentActions';
 
@@ -34,10 +33,9 @@ export default function reducer(state = initialState, action = {}) {
   }
 }
 
-export function setAuthToken(authToken, newProfile, reducerName = DEFAULT_AUTH_REDUCER_NAME) {
+export function setAuthToken(authToken, reducerName = DEFAULT_AUTH_REDUCER_NAME) {
   return (dispatch, getState) => {
-    const cachedProfile = selectSegmentProfile(getState(), reducerName);
-    const profile = newProfile || cachedProfile;
+    const profile = selectSegmentProfile(getState(), reducerName);
 
     if (!authToken) {
       throw new Error('setAuthToken action created with undefined authToken');
@@ -66,20 +64,6 @@ export function setAuthToken(authToken, newProfile, reducerName = DEFAULT_AUTH_R
       payload: {
         obj,
         token: authToken
-      },
-      meta: {
-        analytics: {
-          eventType: EventTypes.identify,
-          eventPayload: {
-            userId: obj.sub,
-            traits: {
-              avatar: profile.picture,
-              createdAt: profile.created_at,
-              email: profile.email,
-              name: profile.name
-            }
-          }
-        }
       }
     });
   };

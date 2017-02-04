@@ -37,11 +37,12 @@ export default class Invitation extends Component {
     withRouter: PropTypes.object
   };
 
-  componentWillMount() {
+  // use DidMount to be SSR friendly
+  componentDidMount() {
     const {auth, dispatch} = this.props;
     this.state = {processedInvitation: false};
     if (!auth.sub) {
-      if (__CLIENT__) showLock(dispatch);
+      showLock(dispatch);
     } else {
       this.stateMachine(this.props);
     }
@@ -93,7 +94,6 @@ export default class Invitation extends Component {
              */
             dispatch(showError(teamAlreadyJoined));
             router.push('/me/settings');
-            return;
           } else if (error.subtype === 'invalidToken') {
             dispatch(showError(invalidInvitation));
           } else if (error.subtype === 'notFound') {
@@ -106,11 +106,15 @@ export default class Invitation extends Component {
           router.push('/welcome');
         } else if (data) {
           const authToken = data.acceptInvitation;
-          const decodedToken = jwtDecode(authToken);
+          const {tms} = jwtDecode(authToken);
           dispatch(showSuccess(successfulJoin));
           dispatch(setAuthToken(authToken));
-          dispatch(setWelcomeActivity(`/team/${decodedToken.tms[0]}`));
-          router.push('/me/settings');
+          if (tms.length <= 1) {
+            dispatch(setWelcomeActivity(`/team/${tms[0]}`));
+            router.push('/me/settings');
+          } else {
+            router.push(`/team/${tms[tms.length-1]}`);
+          }
         }
       })
       .catch(console.warn.bind(console));

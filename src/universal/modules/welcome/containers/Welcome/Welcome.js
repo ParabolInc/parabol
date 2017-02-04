@@ -9,10 +9,11 @@ import {withRouter} from 'react-router';
 const selector = formValueSelector('welcomeWizard');
 const rawSelector = formValueSelector('welcomeWizardRawInvitees');
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state, props) => ({
   invitees: selector(state, 'invitees'),
   inviteesRaw: rawSelector(state, 'inviteesRaw'),
-  preferredName: selector(state, 'preferredName'),
+  // default to something nice
+  preferredName: selector(state, 'preferredName') || (props.user && props.user.preferredName),
   teamName: selector(state, 'teamName'),
   tms: state.auth.obj.tms,
   welcome: state.welcome

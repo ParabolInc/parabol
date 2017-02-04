@@ -62,12 +62,12 @@ export default {
     },
     async resolve(source, {inviteToken}, {authToken, exchange}) {
       const r = getRethink();
+      const now = new Date();
 
       // AUTH
       const userId = requireAuth(authToken);
 
       // VALIDATION
-      const now = new Date();
       const {id: inviteId, key: tokenKey} = parseInviteToken(inviteToken);
 
       // see if the invitation exists
