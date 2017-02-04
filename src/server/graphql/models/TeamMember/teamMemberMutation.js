@@ -208,9 +208,7 @@ export default {
       }
     }
     ,
-    async
-    resolve(source, {teamMemberId}, {authToken, exchange, socket})
-    {
+    async resolve(source, {teamMemberId}, {authToken, exchange, socket}) {
       const r = getRethink();
 
       // AUTH
@@ -260,8 +258,7 @@ export default {
       // update the tms on auth0
       const newtms = res.changes[0] && res.changes[0].new_val.tms;
       if (newtms) {
-        await
-          auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: newtms});
+        await auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: newtms});
       }
 
       // update the server socket, if they're logged in

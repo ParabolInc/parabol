@@ -139,9 +139,7 @@ export default {
       }
     }
     ,
-    async
-    resolve(source, {updatedUser}, {authToken})
-    {
+    async resolve(source, {updatedUser}, {authToken}) {
       const r = getRethink();
 
       // AUTH
@@ -154,19 +152,13 @@ export default {
 
       // RESOLUTION
       // propagate denormalized changes to TeamMember
-      const dbWork = r.table('TeamMember')
+      const dbProfile = r.table('TeamMember')
         .getAll(id, {index: 'userId'})
-        .update({
-          picture: validUpdatedUser.picture,
-          preferredName: validUpdatedUser.preferredName
-        })
-        .do(() => r.table('User').get(id).update(validUpdatedUser, {returnChanges: true}));
-      const asyncPromises = [
-        dbWork,
-        auth0ManagementClient.users.updateAppMetadata({id}, {preferredName: validUpdatedUser.preferredName})
-      ];
-      const [dbProfile] = await
-        Promise.all(asyncPromises);
+        .update(validUpdatedUser)
+        .do(() => {
+          return r.table('User').get(id).update(validUpdatedUser, {returnChanges: true})
+        });
+
       //
       // If we ever want to delete the previous profile images:
       //
@@ -177,8 +169,7 @@ export default {
       //   .catch(console.warn.bind(console));
       // }
       //
-      return updatedOrOriginal(dbProfile, validUpdatedUser);
+      return updatedOrOriginal(dbProfile);
     }
   }
-}
-;
+};
