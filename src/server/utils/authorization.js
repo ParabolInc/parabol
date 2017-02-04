@@ -85,7 +85,7 @@ export const requireWebsocketExchange = (exchange) => {
 
 export const getUserOrgDoc = async (userId, orgId) => {
   const r = getRethink();
-  return await r.table('User').get(user)('userOrgs')
+  return await r.table('User').get(userId)('userOrgs')
     .filter({id: orgId})
     .nth(0)
     .default(null);
@@ -136,7 +136,7 @@ export const requireOrgLeaderOfUser = async(authToken, userId) => {
     .do((res) => {
       return res('leaderOrgs')
         .union(res('memberOrgs')).distinct().count()
-        .lt(res('leaderOrgs').count().add(res('memberOrgs').count()))
+        .lt(res('leaderOrgs').count().add(res('memberOrgs').count()));
     });
   if (!isLeaderOfUser) {
     throw errorObj({_error: 'Unauthorized. Only an billing leader of a user can set this'});
