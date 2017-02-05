@@ -21,11 +21,17 @@ export default function Html({store, entries, StyleSheetServer, renderProps}) {
   // const initialState = `window.__INITIAL_STATE__ = ${JSON.stringify(store.getState())}`;
   // <script dangerouslySetInnerHTML={{__html: initialState}}/>
   const {html, css} = StyleSheetServer.renderStatic(() => {
-    return renderToString(
-      <Provider store={store}>
-        <RouterContext {...renderProps} />
-      </Provider>
-    );
+    try {
+      return renderToString(
+        <Provider store={store}>
+          <RouterContext {...renderProps} />
+        </Provider>
+      );
+    } catch (e) {
+      console.log(`SSR exception: ${e}`);
+      console.trace();
+      return '<div>Error during render!</div>';
+    }
   });
   const dehydratedStyles = `window.__APHRODITE__ = ${JSON.stringify(css.renderedClassNames)}`;
   const clientOptions = `

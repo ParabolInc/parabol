@@ -5,9 +5,9 @@ import {REFRESH_JWT_AFTER, UNPAUSE_USER} from 'server/utils/serverConstants';
 import getRetink from 'server/database/rethinkDriver';
 import isObject from 'universal/utils/isObject';
 import jwtDecode from 'jwt-decode';
-import stripe from '../billing/stripe';
 import {getOldVal} from '../utils/utils';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
+import {APP_VERSION} from 'universal/utils/constants';
 
 // we do this otherwise we'd have to blacklist every token that ever got replaced & query that table for each query
 const isTmsValid = (tmsFromDB, tmsFromToken) => {
@@ -57,7 +57,7 @@ export default function scConnectionHandler(exchange) {
           .merge({
             updatedAt: now,
             lastSeenAt: now
-          })
+          });
       }, {returnChanges: true});
 
     const {inactive, tms: tmsDB, userOrgs} = getOldVal(userRes);
@@ -73,7 +73,9 @@ export default function scConnectionHandler(exchange) {
     // no need to wait for this, it's just for billing
     if (inactive) {
       const orgIds = userOrgs.map(({id}) => id);
-      adjustUserCount(userId, orgIds, UNPAUSE_USER)
+      adjustUserCount(userId, orgIds, UNPAUSE_USER);
     }
+    // Emit current app version to notify client of possible change
+    socket.emit('version', APP_VERSION);
   };
 }
