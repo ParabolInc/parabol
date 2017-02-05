@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 import InputField from 'universal/components/InputField/InputField';
-import {Field, reduxForm} from 'redux-form';
+import appTheme from 'universal/styles/theme/appTheme';
+import {Field, reduxForm, SubmissionError} from 'redux-form';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import Type from 'universal/components/Type/Type';
@@ -10,18 +11,19 @@ import shortid from 'shortid';
 import {cashay} from 'cashay';
 import {setAuthToken} from 'universal/redux/authDuck';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
-import makeStep2Schema from 'universal/validation/makeStep2Schema';
 import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 import WelcomeSubmitButton from 'universal/modules/welcome/components/WelcomeSubmitButton/WelcomeSubmitButton';
+import step2Validation from './step2Validation';
 
 const validate = (values) => {
-  const welcomeSchema = makeStep2Schema('teamName');
+  const welcomeSchema = step2Validation();
   return welcomeSchema(values).errors;
 };
 
 const Step2TeamName = (props) => {
-  const {dispatch, handleSubmit, preferredName, styles, teamName} = props;
-  const onTeamNameSubmit = (data) => {
+  const {error, dispatch, handleSubmit, preferredName, styles, submitting, teamName} = props;
+  const onTeamNameSubmit = async(submissionData) => {
+    const {data: {teamName}} = step2Validation()(submissionData);
     const teamId = shortid.generate();
     const teamMemberId = shortid.generate();
     dispatch(setWelcomeTeam({teamId, teamMemberId}));
@@ -29,17 +31,17 @@ const Step2TeamName = (props) => {
       variables: {
         newTeam: {
           id: teamId,
-          name: data.teamName.trim()
+          name: teamName
         }
       }
     };
     // createFirstTeam returns a new JWT with a new tms field
-    cashay.mutate('createFirstTeam', options).then((res) => {
-      dispatch(setAuthToken(res.data.createFirstTeam));
-      dispatch(segmentEventTrack('Welcome Step2 Completed'));
-      dispatch(updateCompleted(2));
-      dispatch(nextPage());
-    });
+    const {data: {createFirstTeam: newToken}, error} = await cashay.mutate('createFirstTeam', options);
+    if (error) throw SubmissionError(error);
+    dispatch(updateCompleted(2));
+    dispatch(nextPage());
+    dispatch(setAuthToken(newToken));
+    dispatch(segmentEventTrack('Welcome Step2 Completed'));
   };
   return (
     <div>
@@ -48,6 +50,7 @@ const Step2TeamName = (props) => {
       </Type>
       <WelcomeHeading copy={<span>Please type in your team name:</span>}/>
       <form className={css(styles.formBlock)} onSubmit={handleSubmit(onTeamNameSubmit)}>
+        {error && <div className={css(styles.error)}>{error}</div>}
         <Field
           autoFocus
           component={InputField}
@@ -58,7 +61,7 @@ const Step2TeamName = (props) => {
           shortcutDisabled={!teamName}
           type="text"
         />
-        <WelcomeSubmitButton disabled={!teamName}/>
+        <WelcomeSubmitButton disabled={submitting || !teamName}/>
       </form>
     </div>
   );
@@ -75,6 +78,12 @@ Step2TeamName.propTypes = {
 };
 
 const styleThunk = () => ({
+  error: {
+    color: appTheme.palette.warm,
+    fontWeight: 700,
+    textAlign: 'center'
+  },
+
   formBlock: {
     alignItems: 'baseline',
     display: 'flex'

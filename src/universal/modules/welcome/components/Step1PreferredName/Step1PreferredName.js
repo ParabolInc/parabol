@@ -6,7 +6,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import InputField from 'universal/components/InputField/InputField';
 import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import {cashay} from 'cashay';
-import {nextPage, updateCompleted} from '../../ducks/welcomeDuck';
+import {nextPage, updateCompleted} from 'universal/modules/welcome/ducks/welcomeDuck';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
 import step1Validation from './step1Validation';
 import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
@@ -57,11 +57,9 @@ class Step1PreferredName extends Component {
     };
     const {error} = await cashay.mutate('updateUserProfile', options);
     if (error) throw new SubmissionError(error);
-    dispatch(segmentEventTrack('Welcome Step1 Completed',
-      {preferredName}
-    ));
     dispatch(updateCompleted(1));
     dispatch(nextPage());
+    dispatch(segmentEventTrack('Welcome Step1 Completed', {preferredName}));
   };
 
   render() {
