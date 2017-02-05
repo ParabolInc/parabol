@@ -23,9 +23,11 @@ const makeEditingStatus = (editors, active, updatedAt) => {
   if (editors !== makeEditingStatus.editors || active !== makeEditingStatus.active) {
     makeEditingStatus.editors = editors;
     makeEditingStatus.active = active;
+    const endStr = <small>{'(<TAB> saves)'}</small>;
     // no one else is editing
     if (editors.length === 0) {
-      makeEditingStatus.cache = active ? <span>editing<Ellipsis/></span> : fromNowString(updatedAt);
+      makeEditingStatus.cache = active ? <span>editing {endStr}<Ellipsis/></span> :
+        fromNowString(updatedAt);
     } else {
       const editorNames = editors.map(e => e.teamMember.preferredName);
       // one other is editing
@@ -34,10 +36,10 @@ const makeEditingStatus = (editors, active, updatedAt) => {
         makeEditingStatus.cache = <span>{editor} editing{active ? 'too' : ''}<Ellipsis/></span>;
       } else if (editors.length === 2) {
         makeEditingStatus.cache = active ?
-          <span>several are editing<Ellipsis/></span> :
+          <span>several are editing {endStr}<Ellipsis/></span> :
           <span>{`${editorNames[0]} and ${editorNames[1]} editing`}<Ellipsis/></span>;
       } else {
-        makeEditingStatus.cache = <span>several are editing<Ellipsis/></span>;
+        makeEditingStatus.cache = <span>several are editing {endStr}<Ellipsis/></span>;
       }
     }
   }

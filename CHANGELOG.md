@@ -4,6 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.15.2 - 01-Feb-2017
+### Fixed
+- Incremented `package.json` version to match tag – oops!
+
+## v0.15.1 - 31-Jan-2017
+### Added
+- `(<TAB> saves)` string to OutcomeCard components when editing
+- `npm run test:xunit` command for CircleCI 2.0
 
 ## v0.15.0 - 30-Jan-2017
 ### Added
