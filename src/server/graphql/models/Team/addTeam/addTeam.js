@@ -17,7 +17,7 @@ import {
 import {TeamInput} from '../teamSchema';
 import {asyncInviteTeam} from 'server/graphql/models/Invitation/helpers';
 import shortid from 'shortid';
-import createTeamAndLeader from '../helpers/createTeamAndLeader';
+import createTeamAndLeader from '../createFirstTeam/createTeamAndLeader';
 import addTeamValidation from './addTeamValidation';
 import {BILLING_LEADER, REQUEST_NEW_USER} from 'universal/utils/constants';
 

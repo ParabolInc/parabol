@@ -1,8 +1,8 @@
 import React, {PropTypes} from 'react';
 import Type from 'universal/components/Type/Type';
 import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
-import Step3RawInvitees from 'universal/modules/welcome/components/Step3RawInvitees/Step3RawInvitees';
-import Step3InviteeList from 'universal/modules/welcome/components/Step3InviteeList/Step3InviteeList';
+import Step3RawInvitees from '../Step3RawInvitees/Step3RawInvitees';
+import Step3InviteeList from '../Step3InviteeList/Step3InviteeList';
 
 const Step3InviteTeam = (props) => {
   const {invitees, inviteesRaw, teamName, welcome: {existingInvites, teamId}} = props;

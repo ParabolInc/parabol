@@ -1,6 +1,6 @@
 import shortid from 'shortid';
-import getRethink from 'server/database/rethinkDriver';
-import {ACTIVE, FUTURE} from 'universal/utils/constants';
+import getRethink from '../../../../database/rethinkDriver';
+import {ACTIVE, FUTURE} from '../../../../../universal/utils/constants';
 
 const SEED_PROJECTS = [
   {

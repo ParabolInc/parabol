@@ -6,8 +6,9 @@ import {APP_MAX_AVATAR_FILE_SIZE, BILLING_LEADER} from '../../universal/utils/co
 // Wrap it in a new Error type to avoid sending it twice via the originalError field
 export const errorObj = obj => new Error(JSON.stringify(obj));
 
-export const handleSchemaErrors = (errors) => {
+export const handleSchemaErrors = (errors, genericMessage) => {
   if (Object.keys(errors).length > 0) {
+    errors._error = genericMessage || 'Server validation error';
     throw errorObj(errors);
   }
 };

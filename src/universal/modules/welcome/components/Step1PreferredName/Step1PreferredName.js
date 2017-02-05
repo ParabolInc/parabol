@@ -1,19 +1,20 @@
 import React, {Component, PropTypes} from 'react';
-import {Field, reduxForm, initialize} from 'redux-form';
+import {Field, reduxForm, initialize, SubmissionError} from 'redux-form';
+import appTheme from 'universal/styles/theme/appTheme';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import InputField from 'universal/components/InputField/InputField';
 import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import {cashay} from 'cashay';
-import {nextPage, updateCompleted} from 'universal/modules/welcome/ducks/welcomeDuck';
+import {nextPage, updateCompleted} from '../../ducks/welcomeDuck';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
-import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
+import step1Validation from './step1Validation';
 import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 import shouldValidate from 'universal/validation/shouldValidate';
-import WelcomeSubmitButton from 'universal/modules/welcome/components/WelcomeSubmitButton/WelcomeSubmitButton';
+import WelcomeSubmitButton from '../WelcomeSubmitButton/WelcomeSubmitButton';
 
 const validate = (values) => {
-  const welcomeSchema = makeUpdatedUserSchema();
+  const welcomeSchema = step1Validation();
   return welcomeSchema(values).errors;
 };
 
@@ -43,30 +44,32 @@ class Step1PreferredName extends Component {
     }
   }
 
-  onPreferredNameSubmit = (submissionData) => {
+  onPreferredNameSubmit = async(submissionData) => {
     const {dispatch, user} = this.props;
-    const newPreferredName = submissionData.preferredName.trim();
+    const {data: {preferredName}} = step1Validation()(submissionData);
     const options = {
       variables: {
         updatedUser: {
           id: user.id,
-          preferredName: newPreferredName
+          preferredName
         }
       }
     };
-    cashay.mutate('updateUserProfile', options);
+    const {error} = await cashay.mutate('updateUserProfile', options);
+    if (error) throw new SubmissionError(error);
     dispatch(segmentEventTrack('Welcome Step1 Completed',
-      {preferredName: newPreferredName}
+      {preferredName}
     ));
     dispatch(updateCompleted(1));
     dispatch(nextPage());
   };
 
   render() {
-    const {handleSubmit, preferredName, styles} = this.props;
+    const {error, handleSubmit, preferredName, styles, submitting} = this.props;
     return (
       <div>
         <WelcomeHeading copy={<span>Please type in your name:</span>}/>
+        {error && <div className={css(styles.error)}>{error}</div>}
         <form className={css(styles.formBlock)} onSubmit={handleSubmit(this.onPreferredNameSubmit)}>
           <Field
             autoFocus
@@ -78,7 +81,7 @@ class Step1PreferredName extends Component {
             shortcutHint="Press enter"
             type="text"
           />
-          <WelcomeSubmitButton disabled={!preferredName}/>
+          <WelcomeSubmitButton disabled={submitting || !preferredName}/>
         </form>
       </div>
     );
@@ -86,6 +89,11 @@ class Step1PreferredName extends Component {
 }
 
 const styleThunk = () => ({
+  error: {
+    color: appTheme.palette.warm,
+    fontWeight: 700,
+    textAlign: 'center'
+  },
   formBlock: {
     alignItems: 'baseline',
     display: 'flex'

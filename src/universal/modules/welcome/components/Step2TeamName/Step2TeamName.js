@@ -4,7 +4,7 @@ import {Field, reduxForm} from 'redux-form';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import Type from 'universal/components/Type/Type';
-import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
+import WelcomeHeading from 'universal/modules/welcome/components/WelcomeHeading/WelcomeHeading';
 import {nextPage, updateCompleted, setWelcomeTeam} from 'universal/modules/welcome/ducks/welcomeDuck';
 import shortid from 'shortid';
 import {cashay} from 'cashay';
@@ -25,7 +25,7 @@ const Step2TeamName = (props) => {
     const teamId = shortid.generate();
     const teamMemberId = shortid.generate();
     dispatch(setWelcomeTeam({teamId, teamMemberId}));
-    const createTeamOptions = {
+    const options = {
       variables: {
         newTeam: {
           id: teamId,
@@ -33,9 +33,9 @@ const Step2TeamName = (props) => {
         }
       }
     };
-    // createTeam returns a new JWT with a new tms field
-    cashay.mutate('createTeam', createTeamOptions).then((res) => {
-      dispatch(setAuthToken(res.data.createTeam));
+    // createFirstTeam returns a new JWT with a new tms field
+    cashay.mutate('createFirstTeam', options).then((res) => {
+      dispatch(setAuthToken(res.data.createFirstTeam));
       dispatch(segmentEventTrack('Welcome Step2 Completed'));
       dispatch(updateCompleted(2));
       dispatch(nextPage());
