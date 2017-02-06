@@ -73,7 +73,6 @@ const OutcomeCard = (props) => {
               isProject={isProject}
               name={outcome.id}
               isArchived={outcome.isArchived}
-              doFocus={!outcome.content}
             />
           </form>
         </div>
