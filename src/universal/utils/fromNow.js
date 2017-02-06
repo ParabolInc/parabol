@@ -23,8 +23,7 @@ export function fromNowString(time) {
     }
     prevThresh = thresh;
   }
-  // this is both for eslint, and for chuckles. It should never happen:
-  return 'infinitely long ago';
+  throw new Error('Infinite timestamp calculated!');
 }
 
 export function refreshPeriod(time) {
@@ -36,6 +35,5 @@ export function refreshPeriod(time) {
       return i === 1 ? 30 * thresholds.second : thresholds[threshKeys[i - 1]];
     }
   }
-  // this is both for eslint, and for further chuckling. It should never happen:
-  return Infinity;
+  throw new Error('Infinite timestamp calculated!');
 }
