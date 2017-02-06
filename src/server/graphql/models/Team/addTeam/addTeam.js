@@ -97,9 +97,9 @@ export default {
     const inOrgInvitees = await r.table('User')
       .getAll(orgId, {index: 'userOrgs'})
       .filter((user) => r.expr(inviteeEmails).contains(user('email')))
-      .merge({
+      .merge((user) => ({
         fullName: user('preferredName')
-      })
+      }))
       .pluck('fullName', 'email');
     if (inOrgInvitees.length > 0) {
       await asyncInviteTeam(authToken, teamId, inOrgInvitees);
@@ -112,7 +112,8 @@ export default {
       const {userIds, inviter} = await r.table('User')
         .getAll(orgId, {index: 'userOrgs'})
         .filter((user) => user('userOrgs')
-          .contains((userOrg) => userOrg('id').eq(id).and(userOrg('role').eq(BILLING_LEADER))))('id')
+          .contains((userOrg) => userOrg('id').eq(orgId).and(userOrg('role').eq(BILLING_LEADER))))('id')
+        .coerceTo('array')
         .do((userIds) => {
           return {
             userIds,
@@ -131,6 +132,7 @@ export default {
 
       const pendingApprovals = outOfOrgEmails.map((inviteeEmail) => ({
         id: shortid.generate(),
+        createdAt: now,
         email: inviteeEmail,
         orgId,
         teamId
@@ -138,7 +140,7 @@ export default {
       // send a new notification to each billing leader concerning each out-of-org invitee
       await r.table('Notification').insert(notifications)
         .do(() => {
-          r.table('OrgApproval').insert(pendingApprovals)
+          return r.table('OrgApproval').insert(pendingApprovals)
         })
     }
     return true;

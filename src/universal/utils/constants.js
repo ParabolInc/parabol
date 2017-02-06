@@ -54,7 +54,7 @@ export const TRIAL_EXPIRED = 'TRIAL_EXPIRED';
 // varList = [last4, brand]
 export const PAYMENT_REJECTED = 'PAYMENT_REJECTED';
 // Sent to billing leaders when an orgMember attempts to add a non-orgMember to a team
-// [inviterId, inviteeEmail,invitedTeamId]
+// [inviterId, inviterName, inviteeEmail, invitedTeamId, invitedTeamName]
 export const REQUEST_NEW_USER = 'REQUEST_NEW_USER';
 // Sent to the orgMember that generated the new user request
 // [reason, billingLeaderUserId]

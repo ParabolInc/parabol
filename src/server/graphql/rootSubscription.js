@@ -3,6 +3,7 @@ import action from './models/Action/actionSubscription';
 import agenda from './models/AgendaItem/agendaItemSubscription';
 import invitation from './models/Invitation/invitationSubscription';
 import notification from './models/Notification/notificationSubscription';
+import orgApproval from './models/OrgApproval/orgApprovalSubscription';
 import organization from './models/Organization/organizationSubscription';
 import presence from './models/Presence/presenceSubscription';
 import project from './models/Project/projectSubscription';
@@ -15,6 +16,7 @@ const rootFields = Object.assign({},
   agenda,
   invitation,
   notification,
+  orgApproval,
   organization,
   presence,
   project,

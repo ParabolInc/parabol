@@ -14,7 +14,7 @@ const mapStateToProps = () => {
 
 const RequestNewUser = (props) => {
   const {dispatch, notificationId, router, styles, varList} = props;
-  const [inviterUserId, inviterUserName, inviteeEmail, teamId, teamName] = varList;
+  const [inviterUserId, inviterName, inviteeEmail, teamId, teamName] = varList;
 
   const acceptInvite = () => {
     const variables = {

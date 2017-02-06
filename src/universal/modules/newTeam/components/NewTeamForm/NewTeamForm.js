@@ -12,24 +12,30 @@ import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
 import addOrgSchema from 'universal/validation/addOrgSchema';
 import CreditCardModal from 'universal/modules/userDashboard/components/CreditCardModal/CreditCardModal';
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
+import {withRouter} from 'react-router';
+import shouldValidate from 'universal/validation/shouldValidate';
 
 const validate = (values, props) => {
   const {isNewOrg} = props;
   const schema = isNewOrg ? addOrgSchema() : makeAddTeamSchema();
+  // const {errors} = schema(values);
+  // if (Object.keys(errors).length ===1 && errors[])
   return schema(values).errors;
 };
 
 const NewTeamForm = (props) => {
-  const {change, dispatch, handleSubmit, isNewOrg, organizations, styles} = props;
+  const {change, dispatch, handleSubmit, isNewOrg, organizations, router, styles, untouch} = props;
   const handleCreateNew = () => {
-    change('orgId', null);
+    router.push('/newteam/1');
   };
   const addBilling = <Button colorPalette="cool" label="Add Billing Information"/>;
   const setToken = (stripeToken) => {
     change('stripeToken', stripeToken);
   };
   const resetOrgSelection = () => {
-    change('orgId', organizations[0].id);
+    // untouch('orgName');
+    router.push('/newteam');
+    // change('orgId', organizations[0].id);
   };
   return (
     <form className={css(styles.form)} onSubmit={handleSubmit}>
@@ -38,7 +44,6 @@ const NewTeamForm = (props) => {
         {isNewOrg ?
           <div>
             <Field
-              autoFocus
               colorPalette="gray"
               component={InputField}
               label="Organization Name (required)"
@@ -148,4 +153,4 @@ const styleThunk = () => ({
   }
 });
 
-export default reduxForm({form: 'newTeam', validate})(withStyles(styleThunk)(NewTeamForm));
+export default reduxForm({form: 'newTeam', shouldValidate, validate})(withRouter(withStyles(styleThunk)(NewTeamForm)));

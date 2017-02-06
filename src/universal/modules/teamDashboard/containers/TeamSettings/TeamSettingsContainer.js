@@ -22,22 +22,28 @@ query {
     email
     tokenExpiration
     updatedAt
+  },
+  orgApprovals(teamId: $teamId) @live {
+    id
+    email
   }
 }`;
 
 const mapStateToProps = (state, props) => {
   const {teamId} = props.params;
-  const {invitations, team, teamMembers} = cashay.query(teamSettingsQuery, {
+  const {invitations, orgApprovals, team, teamMembers} = cashay.query(teamSettingsQuery, {
     op: 'teamSettingsContainer',
     key: teamId,
     sort: {
       teamMembers: (a, b) => a.preferredName > b.preferredName ? 1 : -1,
-      invitations: (a, b) => a.createdAt > b.createdAt ? 1 : -1
+      invitations: (a, b) => a.createdAt > b.createdAt ? 1 : -1,
+      orgApprovals: (a,b) => a.email > b.email ? 1 : -1
     },
     variables: {teamId}
   }).data;
   return {
     invitations,
+    orgApprovals,
     team,
     teamMembers,
     myTeamMemberId: `${state.auth.obj.sub}::${teamId}`
@@ -47,6 +53,7 @@ const mapStateToProps = (state, props) => {
 const TeamSettingsContainer = (props) => {
   const {
     dispatch,
+    orgApprovals,
     invitations,
     myTeamMemberId,
     team,
@@ -60,6 +67,7 @@ const TeamSettingsContainer = (props) => {
     <TeamSettings
       dispatch={dispatch}
       invitations={invitations}
+      orgApprovals={orgApprovals}
       myTeamMember={myTeamMember}
       team={team}
       teamMembers={teamMembers}
