@@ -68,6 +68,7 @@ const styleThunk = () => ({
     fontSize: '14px',
     fontWeight: 700,
     height: '16px',
+    cursor: 'default',
     position: 'absolute',
     right: '-4px',
     textAlign: 'center',

@@ -14,8 +14,7 @@ import {
   requireOrgLeaderOfUser,
   requireWebsocket
 } from 'server/utils/authorization';
-import updateOrgServerSchema from 'universal/validation/updateOrgServerSchema';
-import {errorObj, handleSchemaErrors, getOldVal, validateAvatarUpload} from 'server/utils/utils';
+import {errorObj, getOldVal, validateAvatarUpload} from 'server/utils/utils';
 import getS3PutUrl from 'server/utils/getS3PutUrl';
 import stripe from 'server/billing/stripe';
 import {
@@ -28,96 +27,11 @@ import {GraphQLURLType} from '../../types';
 import shortid from 'shortid';
 import addOrg from 'server/graphql/models/Organization/addOrg/addOrg'
 import addBilling from 'server/graphql/models/Organization/addBilling/addBilling';
+import updateOrg from 'server/graphql/models/Organization/updateOrg/updateOrg';
 import {BILLING_LEADER} from 'universal/utils/constants';
 
 export default {
-  updateOrg: {
-    type: GraphQLBoolean,
-    description: 'Update an with a change in name, avatar',
-    args: {
-      updatedOrg: {
-        type: new GraphQLNonNull(UpdateOrgInput),
-        description: 'the updated org including the id, and at least one other field'
-      }
-    },
-    async resolve(source, {updatedOrg}, {authToken, socket}) {
-      const r = getRethink();
-      const now = new Date();
-
-      // AUTH
-      requireWebsocket(socket);
-      const userId = getUserId(authToken);
-      const userOrgDoc = await getUserOrgDoc(userId, updatedOrg.id);
-      requireOrgLeader(userOrgDoc);
-
-      // VALIDATION
-      const schema = updateOrgServerSchema();
-      const {errors, data: {id: orgId, ...org}} = schema(updatedOrg);
-      handleSchemaErrors(errors);
-
-      // RESOLUTION
-      const newAction = {
-        ...org,
-        updatedAt: now
-      };
-      await r.table('Organization').get(orgId).update(newAction);
-      return true;
-    }
-  },
-  // removeBillingLeader: {
-  //   type: GraphQLBoolean,
-  //   description: 'Remove a billing leader from an org',
-  //   args: {
-  //     orgId: {
-  //       type: new GraphQLNonNull(GraphQLID),
-  //       description: 'the org to remove the billing leader from'
-  //     },
-  //     userId: {
-  //       type: new GraphQLNonNull(GraphQLID),
-  //       description: 'The billing leader userId to remove from the org'
-  //     }
-  //   },
-  //   async resolve(source, {orgId, userId}, {authToken, socket}) {
-  //     const r = getRethink();
-  //
-  //     // AUTH
-  //     requireWebsocket(socket);
-  //     const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId);
-  //     requireOrgLeader(userOrgDoc);
-  //
-  //     // RESOLUTION
-  //     const now = new Date();
-  //     await r.table('User').get(userId)
-  //       .update((user) => ({
-  //         userOrgs: user('userOrgs').map((userOrg) => {
-  //           return r.branch(
-  //             userOrg('id').eq(orgId),
-  //             userOrg.merge({
-  //               role: null
-  //             }),
-  //             userOrg
-  //           )
-  //         }),
-  //         updatedAt: now
-  //       }))
-  //       .do(() => {
-  //         r.table('Organization').get(orgId)
-  //           .update((org) => ({
-  //             orgUsers: org('orgUsers').map((orgUser) => {
-  //               return r.branch(
-  //                 orgUser('id').eq(userId),
-  //                 orgUser.merge({
-  //                   role: null
-  //                 }),
-  //                 orgUser
-  //               )
-  //             }),
-  //             updatedAt: now
-  //           }))
-  //       });
-  //     return true;
-  //   }
-  // },
+  updateOrg,
   addBilling,
   inactivateUser: {
     type: GraphQLBoolean,

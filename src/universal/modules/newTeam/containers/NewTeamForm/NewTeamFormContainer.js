@@ -21,7 +21,8 @@ query {
 }
 `;
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, props) => {
+  const {newOrgRoute} = props;
   const userId = state.auth.obj.sub;
   const {organizations} = cashay.query(orgDropdownMenuItemsQuery, {
     op: 'newTeamFormContainer',
@@ -34,13 +35,13 @@ const mapStateToProps = (state) => {
     }
   }).data;
   const defaultOrg = organizations[0];
-  const orgId = defaultOrg && defaultOrg.id || null;
+  const orgId = defaultOrg && defaultOrg.id;
   return {
     organizations,
     initialValues: {
       orgId
     },
-    isNewOrg: state.form.newTeam && state.form.newTeam.values.orgId === null
+    isNewOrg: state.form.newTeam && state.form.newTeam.values.orgId === null || newOrgRoute
   };
 };
 

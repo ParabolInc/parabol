@@ -32,9 +32,9 @@ import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeChec
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
-import makeStep2Schema from 'universal/validation/makeStep2Schema';
 import addTeam from 'server/graphql/models/Team/addTeam/addTeam';
 import createFirstTeam from 'server/graphql/models/Team/createFirstTeam/createFirstTeam';
+import updateTeamName from 'server/graphql/models/Team/updateTeamName/updateTeamName';
 
 export default {
   moveMeeting: {
@@ -428,31 +428,7 @@ export default {
       return true;
     }
   },
-  updateTeamName: {
-    type: GraphQLBoolean,
-    args: {
-      updatedTeam: {
-        type: new GraphQLNonNull(TeamInput),
-        description: 'The input object containing the teamId and any modified fields'
-      }
-    },
-    async resolve(source, {updatedTeam}, {authToken, socket}) {
-      const r = getRethink();
-
-      // AUTH
-      requireSUOrTeamMember(authToken, updatedTeam.id);
-      requireWebsocket(socket);
-
-      // VALIDATION
-      const schema = makeStep2Schema();
-      const {errors, data: {id, name}} = schema(updatedTeam);
-      handleSchemaErrors(errors);
-
-      // RESOLUTION
-      await r.table('Team').get(id).update({name});
-      return true;
-    }
-  }
+  updateTeamName
 };
 
 

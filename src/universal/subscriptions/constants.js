@@ -14,6 +14,7 @@ export const ARCHIVED_PROJECTS = 'archivedProjects';
 export const AGENDA = 'agenda';
 export const INVITATIONS = 'invitations';
 export const NOTIFICATIONS = 'notifications';
+export const ORG_APPROVALS = 'orgApprovals';
 export const ORGANIZATION = 'organization';
 export const ORGANIZATIONS = 'organizations';
 export const OWNED_ORGANIZATIONS = 'ownedOrganizations';

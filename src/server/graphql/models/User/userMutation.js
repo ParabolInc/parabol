@@ -7,7 +7,7 @@ import {auth0} from 'universal/utils/clientOptions';
 import sendEmail from 'server/email/sendEmail';
 import {requireAuth, requireSU, requireSUOrSelf} from 'server/utils/authorization';
 import {errorObj, getS3PutUrl, handleSchemaErrors, updatedOrOriginal, validateAvatarUpload} from 'server/utils/utils';
-import { clientSecret as auth0ClientSecret } from 'server/utils/auth0Helpers';
+import {clientSecret as auth0ClientSecret} from 'server/utils/auth0Helpers';
 import {verify} from 'jsonwebtoken';
 import makeUserServerSchema from 'universal/validation/makeUserServerSchema';
 import tmsSignToken from 'server/utils/tmsSignToken';

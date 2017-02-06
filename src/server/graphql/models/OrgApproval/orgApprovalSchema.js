@@ -15,10 +15,10 @@ export const OrgApproval = new GraphQLObjectType({
     //   type: GraphQLID,
     //   description: 'The billingLeader that approved the email. If empty, it is still pending'
     // },
-    // createdAt: {
-    //   type: new GraphQLNonNull(GraphQLISO8601Type),
-    //   description: 'The datetime the organization was created'
-    // },
+    createdAt: {
+      type: new GraphQLNonNull(GraphQLISO8601Type),
+      description: 'The datetime the organization was created'
+    },
     email: {
       type: new GraphQLNonNull(GraphQLEmailType),
       description: '*The email seeking approval'

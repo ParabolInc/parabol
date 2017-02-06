@@ -13,7 +13,7 @@ import shortid from 'shortid';
 import addSeedProjects from './addSeedProjects';
 import createTeamAndLeader from './createTeamAndLeader';
 import tmsSignToken from 'server/utils/tmsSignToken';
-import makeStep2Schema from 'universal/validation/makeStep2Schema';
+import createFirstTeamValidation from './createFirstTeamValidation';
 import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
 import ms from 'ms';
 import createStripeOrg from 'server/graphql/models/Organization/addOrg/createStripeOrg';
@@ -45,7 +45,7 @@ export default {
     }
 
     // VALIDATION
-    const schema = makeStep2Schema();
+    const schema = createFirstTeamValidation();
     const {data, errors} = schema(newTeam);
     handleSchemaErrors(errors);
     await ensureUniqueId('Team', newTeam.id);
@@ -63,22 +63,27 @@ export default {
       throw errorObj({_error: 'Multiple calls detected'});
     }
     const validNewTeam = {...data, orgId};
-    const expiresSoonId = shortid.generate();
-    const orgName = `${user.preferredName}'s Org`;
-    const {validUntil} = await createStripeOrg(orgId, orgName, true, userId, now);
-    await r.table('Notification').insert({
-      id: expiresSoonId,
-      type: TRIAL_EXPIRES_SOON,
-      startAt: new Date(now + ms('14d')),
-      orgId,
-      userIds: [userId],
-      // trialExpiresAt
-      varList: [validUntil]
-    });
-    const tms = await createTeamAndLeader(userId, validNewTeam, true);
-    // Asynchronously create seed projects for team leader:
-    // TODO: remove me after more
-    addSeedProjects(authToken.sub, newTeam.id);
+    const {id: teamId} = validNewTeam;
+    const tms = [teamId];
+    // set up the team while the user is on step 3
+    setTimeout(async() => {
+      const expiresSoonId = shortid.generate();
+      const orgName = `${user.preferredName}'s Org`;
+      const {validUntil} = await createStripeOrg(orgId, orgName, true, userId, now);
+      await createTeamAndLeader(userId, validNewTeam, true);
+      // Asynchronously create seed projects for team leader:
+      // TODO: remove me after more
+      addSeedProjects(userId, teamId);
+      await r.table('Notification').insert({
+        id: expiresSoonId,
+        type: TRIAL_EXPIRES_SOON,
+        startAt: new Date(now.getTime() + ms('14d')),
+        orgId,
+        userIds: [userId],
+        // trialExpiresAt
+        varList: [validUntil]
+      });
+    }, 0);
     return tmsSignToken(authToken, tms);
   }
 }
