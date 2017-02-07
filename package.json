@@ -54,6 +54,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.22.0",
     "babel-preset-es2015": "6.18.0",
     "babel-preset-react": "6.16.0",
+    "babel-preset-stage-0": "^6.22.0",
     "babel-register": "6.18.0",
     "concurrently": "2.2.0",
     "eslint": "^3.10.2",
@@ -161,7 +162,7 @@
     ]
   },
   "engines": {
-    "node": "6.2.0",
+    "node": "7.5.0",
     "npm": "3.9.3"
   }
 }
