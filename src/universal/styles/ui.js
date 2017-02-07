@@ -32,6 +32,14 @@ const iconSizeAvatar = '21px'; // FontAwesome 1.5x
 const iconSize2x = '28px'; // FontAwesome 2x
 const iconSize3x = '42px'; // FontAwesome 3x
 
+// Transitions
+const transitionFastest = '100ms ease-in';
+const transitionFaster = '200ms ease-in';
+const transitionFast = '400ms ease-in';
+const transitionSlow = '800ms ease-in';
+const transitionSlower = '1600ms ease-in';
+const transitionSlowest = '3200ms ease-in';
+
 // ---------------------------------
 
 const ui = {
@@ -63,11 +71,13 @@ const ui = {
     boxShadow: 'none',
     cursor: 'pointer',
     display: 'inline-block',
+    fontFamily: appTheme.typography.sansSerif,
     fontWeight: 700,
     // lineHeight: '1.25em',
     outline: 'none',
     textAlign: 'center',
     textDecoration: 'none',
+    transition: `opacity ${transitionFastest}`,
     userSelect: 'none',
     verticalAlign: 'middle',
     ':hover': {
@@ -170,6 +180,7 @@ const ui = {
   //       in a better future we may be more adaptive/responsive (TA)
   dashMinWidth: '79rem',
   dashSectionHeaderLineHeight: '2rem',
+  dashSidebarBackgroundColor: appTheme.palette.mid,
   dashSidebarWidth: '15rem',
 
   // Email
@@ -208,7 +219,12 @@ const ui = {
   meetingSidebarWidth: '15rem',
 
   // Menus
-  menuBackgroundColor: backgroundColor,
+  menuBackgroundColor: '#fff' || backgroundColor,
+  menuBorderColor: appTheme.palette.mid30l,
+  menuGutterHorizontal: '.75rem',
+  menuGutterVertical: '.375rem',
+  menuItemPaddingHorizontal: '.75rem',
+  menuItemPaddingVertical: '.25rem',
   zMenu: zIndexScale(4),
 
   // Modals
@@ -229,6 +245,14 @@ const ui = {
   rowHeadingColor: appTheme.palette.dark,
   rowHeadingFontSize: appTheme.typography.s4,
   rowGutter: '1rem',
+
+  // Transitions
+  transitionFastest,
+  transitionFaster,
+  transitionFast,
+  transitionSlow,
+  transitionSlower,
+  transitionSlowest,
 
   // Generic zIndex scale
   z1: zIndexScale(1),

@@ -43,7 +43,7 @@ export default connect(mapStateToProps)(NotificationsContainer);
 // export default class NotificationsContainer extends Component {
 //   render() {
 //     return (
-//       <UserSettingsWrapper activeTab={NOTIFICATIONS}>
+//       <UserSettingsWrapper settingsLocation={NOTIFICATIONS}>
 //         <div>
 //           Notifications: {notifications.map((notification) =>
 //           <NotificationRow

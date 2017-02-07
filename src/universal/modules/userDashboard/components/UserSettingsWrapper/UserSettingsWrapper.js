@@ -4,7 +4,8 @@ import {
   DashHeader,
   DashMain
 } from 'universal/components/Dashboard';
-import SettingsTabs from 'universal/modules/userDashboard/components/SettingsTabs/SettingsTabs';
+// import SettingsTabs from 'universal/modules/userDashboard/components/SettingsTabs/SettingsTabs';
+import SettingsHeader from 'universal/modules/userDashboard/components/SettingsHeader/SettingsHeader';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 
@@ -35,11 +36,11 @@ const mapStateToProps = (state, props) => {
 };
 
 const UserSettings = (props) => {
-  const {activeTab, children, notificationCount} = props;
+  const {settingsLocation, children, notificationCount} = props;
   return (
     <DashMain>
       <DashHeader>
-        <SettingsTabs activeTab={activeTab} notificationCount={notificationCount}/>
+        <SettingsHeader location={settingsLocation} />
       </DashHeader>
       <DashContent padding="0 0 0 1rem">
         {children}
@@ -50,7 +51,7 @@ const UserSettings = (props) => {
 };
 
 UserSettings.propTypes = {
-  activeTab: PropTypes.string,
+  settingsLocation: PropTypes.string,
   children: PropTypes.any
 };
 

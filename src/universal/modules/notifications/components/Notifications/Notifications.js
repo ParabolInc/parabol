@@ -14,7 +14,7 @@ const Notifications = (props) => {
   } = props;
 
   return (
-    <UserSettingsWrapper activeTab={NOTIFICATIONS}>
+    <UserSettingsWrapper settingsLocation={NOTIFICATIONS}>
       <div className={css(styles.wrapper)}>
         <Panel label="Notifications">
           <div className={css(styles.notificationList)}>

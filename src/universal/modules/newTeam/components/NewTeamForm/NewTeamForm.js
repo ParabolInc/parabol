@@ -18,64 +18,62 @@ import shouldValidate from 'universal/validation/shouldValidate';
 const validate = (values, props) => {
   const {isNewOrg} = props;
   const schema = isNewOrg ? addOrgSchema() : makeAddTeamSchema();
-  // const {errors} = schema(values);
-  // if (Object.keys(errors).length ===1 && errors[])
   return schema(values).errors;
 };
 
 const NewTeamForm = (props) => {
-  const {change, dispatch, handleSubmit, isNewOrg, organizations, router, styles, untouch} = props;
+  const {change, handleSubmit, isNewOrg, organizations, router, styles} = props;
   const handleCreateNew = () => {
     router.push('/newteam/1');
   };
-  const addBilling = <Button colorPalette="cool" label="Add Billing Information"/>;
+  const addBilling = <Button colorPalette="cool" isBlock label="Add Billing Information"/>;
   const setToken = (stripeToken) => {
     change('stripeToken', stripeToken);
   };
   const resetOrgSelection = () => {
-    // untouch('orgName');
     router.push('/newteam');
-    // change('orgId', organizations[0].id);
   };
   return (
     <form className={css(styles.form)} onSubmit={handleSubmit}>
       <h1 className={css(styles.heading)}>Create a New Team</h1>
       <div className={css(styles.formBlock)}>
-        {isNewOrg ?
-          <div>
-            <Field
-              colorPalette="gray"
-              component={InputField}
-              label="Organization Name (required)"
-              name="orgName"
-              placeholder={randomPlaceholderTheme.orgName}
-            />
-            <Field
-              component="input"
-              type="hidden"
-              name="stripeToken"
-            />
-            <FieldBlock>
-              <div className={css(styles.addBillingBlock)}>
-                <div className={css(styles.addBillingBody)}>
-                  <h3>Billing information (required)</h3>
-                  <span>
+      {isNewOrg ?
+        <div className={css(styles.formBlock)}>
+          <Field
+            autoFocus
+            colorPalette="gray"
+            component={InputField}
+            label="Organization Name (required)"
+            name="orgName"
+            placeholder={randomPlaceholderTheme.orgName}
+          />
+          <Field
+            component="input"
+            type="hidden"
+            name="stripeToken"
+          />
+          <FieldBlock>
+            <div className={css(styles.billingBlock)}>
+              <h3 className={css(styles.billingHeading)}>Billing information (required)</h3>
+              <p className={css(styles.billingCopy)}>
                 Your card will be charged $5 for the first month.
                 The members that you invite will be prorated on their
                 join date and added to your second invoice.
+                <div className={css(styles.billingButtonBlock)}>
                   <CreditCardModal
                     handleToken={setToken}
                     toggle={addBilling}
                   />
-              </span>
-                  <div className={css(styles.nevermind)} onClick={resetOrgSelection}>
-                    Nevermind, select an existing organization
-                  </div>
                 </div>
+              </p>
+              <div className={css(styles.billingCancelLink)} onClick={resetOrgSelection}>
+                Nevermind, select an existing organization
               </div>
-            </FieldBlock>
-          </div>
-          :
+            </div>
+          </FieldBlock>
+        </div>
+        :
+        <div className={css(styles.formBlock)}>
           <Field
             colorPalette="gray"
             component={DropdownInput}
@@ -84,7 +82,9 @@ const NewTeamForm = (props) => {
             name="orgId"
             organizations={organizations}
           />
-        }
+        </div>
+      }
+      <div className={css(styles.formBlock)}>
         <Field
           colorPalette="gray"
           component={InputField}
@@ -119,18 +119,9 @@ NewTeamForm.propTypes = {
 };
 
 const styleThunk = () => ({
-  addBillingBlock: {
-    border: `1px solid ${appTheme.palette.mid}`,
-    background: appTheme.palette.light,
-    margin: '1rem 0'
-  },
-
-  addBillingBody: {
-    margin: '1rem'
-  },
   form: {
     margin: 0,
-    maxWidth: '20rem',
+    maxWidth: '24rem',
     padding: '2rem'
   },
 
@@ -144,12 +135,44 @@ const styleThunk = () => ({
   },
 
   formBlock: {
-    margin: '0 auto 2rem'
+    margin: '0 auto 1.5rem'
   },
 
-  nevermind: {
+  billingBlock: {
+    border: `1px solid ${appTheme.palette.mid30l}`,
+    background: appTheme.palette.light50l,
+    boxShadow: '0 1px 2px rgba(0, 0, 0, .2)',
+    color: appTheme.palette.dark50d,
+    margin: '1rem 0',
+    padding: '.75rem .75rem 1rem'
+  },
+
+  billingHeading: {
+    fontSize: appTheme.typography.sBase,
+    fontWeight: 700,
+    margin: '0 0 .125rem'
+  },
+
+  billingCopy: {
+    fontSize: appTheme.typography.s2,
+    lineHeight: appTheme.typography.s4,
+  },
+
+  billingButtonBlock: {
+    marginTop: '1rem'
+  },
+
+  billingCancelLink: {
     cursor: 'pointer',
-    fontSize: appTheme.typography.s3
+    fontSize: appTheme.typography.s3,
+    fontWeight: 700,
+    textAlign: 'center',
+    textDecoration: 'underline',
+    transition: `opacity ${ui.transitionFastest}`,
+
+    ':hover': {
+      opacity: '.5'
+    }
   }
 });
 

@@ -28,7 +28,6 @@ DashHeaderInfo.propTypes = {
 
 const styleThunk = () => ({
   root: {
-    paddingBottom: '1rem',
     width: '100%'
   },
 

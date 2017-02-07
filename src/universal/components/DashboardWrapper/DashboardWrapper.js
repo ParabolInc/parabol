@@ -16,7 +16,8 @@ const DashboardWrapper = (props) => {
 
 DashboardWrapper.propTypes = {
   children: PropTypes.any,
-  location: PropTypes.object
+  location: PropTypes.object,
+  title: PropTypes.string
 };
 
 export default DashboardWrapper;
