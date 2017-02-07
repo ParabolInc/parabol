@@ -12,6 +12,7 @@ import jwtDecode from 'jwt-decode';
 import {
   invalidInvitation,
   inviteNotFound,
+  inviteExpired,
   teamAlreadyJoined,
   successfulJoin
 } from 'universal/modules/invitation/helpers/notifications';
@@ -98,12 +99,13 @@ export default class Invitation extends Component {
             dispatch(showError(invalidInvitation));
           } else if (error.subtype === 'notFound') {
             dispatch(showWarning(inviteNotFound));
+          } else if (error.subtype === 'expiredInvitation') {
+            dispatch(showWarning(inviteExpired));
           } else {
             console.warn('unable to accept invitation:');
             console.warn(error);
           }
-          // TODO: pop them a toast and tell them what happened?
-          router.push('/welcome');
+          // router.push('/');
         } else if (data) {
           const authToken = data.acceptInvitation;
           const {tms} = jwtDecode(authToken);

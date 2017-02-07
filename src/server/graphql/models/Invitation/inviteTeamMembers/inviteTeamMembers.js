@@ -84,6 +84,7 @@ export default {
     for (let i = 0; i < validInvitees.length; i++) {
       const validInvitee = validInvitees[i];
       const inactiveInvitee = inactiveTeamMembers.find((m) => m.email === validInvitee.email);
+      console.log('inactiveInvitee', inactiveInvitee);
       if (inactiveInvitee) {
         // if they were previously removed from the team, see if they're still in the org
         const inOrg = Boolean(inactiveInvitee.userOrgs.find((userOrg) => userOrg.id === orgId));
@@ -101,8 +102,9 @@ export default {
 
     if (idsToReactivate.length > 0) {
       r.table('TeamMember')
-      .getAll(r.args(idsToReactivate), {index: 'id'})
-      .update({isNotRemoved: true});
+        .getAll(r.args(idsToReactivate), {index: 'id'})
+        .update({isNotRemoved: true})
+        .run()
     }
 
     if (filteredInvitees) {

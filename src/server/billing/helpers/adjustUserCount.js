@@ -35,6 +35,7 @@ const addUser = async (orgIds, userId) => {
     id,
     role: null
   }));
+  console.log('adding user', userOrgAdditions);
   return await r.table('User').get(userId)
     .update((user) => ({
       userOrgs: user('userOrgs').add(userOrgAdditions)
@@ -96,7 +97,7 @@ export default async function adjustUserCount(userId, orgInput, type) {
   // wait here to make sure the webhook finds what it's looking for
   await r.table('InvoiceItemHook').insert(hooks);
   const stripePromises = orgs.map((org) => stripe.subscriptions.update(org.stripeSubscriptionId, {
-    quantity: org.orgUsers.reduce((count, orgUser) => orgUser.inactive ? count : count + 1)
+    quantity: org.orgUsers.reduce((count, orgUser) => orgUser.inactive ? count : count + 1, 0)
   }));
 
   await Promise.all(stripePromises);

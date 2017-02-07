@@ -125,32 +125,16 @@ export default {
       const userOrgs = user.userOrgs || [];
       const userTeams = user.tms || [];
       const userInOrg = Boolean(userOrgs.find((org) => org.id === orgId));
-      const newUserOrgs = userInOrg ? userOrgs : [...userOrgs, {
-          id: orgId,
-          role: null
-        }];
+      console.log('userinOrg', userInOrg);
       const tms = [...userTeams, teamId];
       const teamMemberId = `${user.id}::${teamId}`;
       const dbWork = r.table('User')
       // add the team to the user doc
         .get(userId)
-        .update(() => {
+        .update((user) => {
           return {
-            tms,
-            userOrgs: newUserOrgs
+            tms: user('tms').default([]).append(teamId).distinct(),
           }
-        })
-        .do(() => {
-          return r.branch(
-            userInOrg,
-            null,
-            r.table('Organization').get(orgId).update((org) => ({
-              orgUsers: org('orgUsers').append({
-                id: userId,
-                role: null
-              })
-            }))
-          )
         })
         // get number of users
         .do(() => {
