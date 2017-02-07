@@ -1,4 +1,8 @@
 import {ManagementClient} from 'auth0';
+import {getDotenv} from '../../universal/utils/dotenv';
+
+// Import .env and expand variables:
+getDotenv();
 
 export const auth0ManagementClient = new ManagementClient({
   domain: process.env.AUTH0_DOMAIN || 'parabol.auth0.com',
