@@ -90,6 +90,7 @@ In this mode, webpack will hot swap your updated client modules without
 needing to restarting the development server.
 
 ```bash
+$ npm run build:dll
 $ npm run dev
 ```
 [http://localhost:3000/](http://localhost:3000/)

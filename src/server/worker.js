@@ -51,9 +51,9 @@ export function run(worker) {
   app.use(cors({origin: true, credentials: true}));
   app.use('/static', express.static('static'));
   app.use(favicon(`${__dirname}/../../static/favicon.ico`));
+  app.use('/static', express.static('build'));
   if (PROD) {
     app.use(compression());
-    app.use('/static', express.static('build'));
   }
 
   // HTTP GraphQL endpoint
