@@ -36,7 +36,6 @@ const NewTeamForm = (props) => {
   return (
     <form className={css(styles.form)} onSubmit={handleSubmit}>
       <h1 className={css(styles.heading)}>Create a New Team</h1>
-      <div className={css(styles.formBlock)}>
       {isNewOrg ?
         <div className={css(styles.formBlock)}>
           <Field
