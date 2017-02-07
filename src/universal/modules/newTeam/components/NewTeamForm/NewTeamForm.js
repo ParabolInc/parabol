@@ -24,7 +24,7 @@ const NewTeamForm = (props) => {
   const handleCreateNew = () => {
     change('orgId', null);
   };
-  const addBilling = <Button colorPalette="cool" label="Add Billing Information"/>;
+  const addBilling = <Button colorPalette="cool" isBlock label="Add Billing Information"/>;
   const setToken = (stripeToken) => {
     change('stripeToken', stripeToken);
   };
@@ -50,21 +50,21 @@ const NewTeamForm = (props) => {
             name="stripeToken"
           />
           <FieldBlock>
-            <div className={css(styles.addBillingBlock)}>
-              <div className={css(styles.addBillingBody)}>
-                <h3>Billing information (required)</h3>
-                <span>
-              Your card will be charged $5 for the first month.
-              The members that you invite will be prorated on their
-              join date and added to your second invoice.
-                <CreditCardModal
-                  handleToken={setToken}
-                  toggle={addBilling}
-                />
-            </span>
-                <div className={css(styles.nevermind)} onClick={resetOrgSelection}>
-                  Nevermind, select an existing organization
+            <div className={css(styles.billingBlock)}>
+              <h3 className={css(styles.billingHeading)}>Billing information (required)</h3>
+              <p className={css(styles.billingCopy)}>
+                Your card will be charged $5 for the first month.
+                The members that you invite will be prorated on their
+                join date and added to your second invoice.
+                <div className={css(styles.billingButtonBlock)}>
+                  <CreditCardModal
+                    handleToken={setToken}
+                    toggle={addBilling}
+                  />
                 </div>
+              </p>
+              <div className={css(styles.billingCancelLink)} onClick={resetOrgSelection}>
+                Nevermind, select an existing organization
               </div>
             </div>
           </FieldBlock>
@@ -116,16 +116,6 @@ NewTeamForm.propTypes = {
 };
 
 const styleThunk = () => ({
-  addBillingBlock: {
-    border: `1px solid ${appTheme.palette.mid}`,
-    background: appTheme.palette.light,
-    margin: '1rem 0'
-  },
-
-  addBillingBody: {
-    margin: '1rem'
-  },
-
   form: {
     margin: 0,
     maxWidth: '24rem',
@@ -145,9 +135,41 @@ const styleThunk = () => ({
     margin: '0 auto 1.5rem'
   },
 
-  nevermind: {
+  billingBlock: {
+    border: `1px solid ${appTheme.palette.mid30l}`,
+    background: appTheme.palette.light50l,
+    boxShadow: '0 1px 2px rgba(0, 0, 0, .2)',
+    color: appTheme.palette.dark50d,
+    margin: '1rem 0',
+    padding: '.75rem .75rem 1rem'
+  },
+
+  billingHeading: {
+    fontSize: appTheme.typography.sBase,
+    fontWeight: 700,
+    margin: '0 0 .125rem'
+  },
+
+  billingCopy: {
+    fontSize: appTheme.typography.s2,
+    lineHeight: appTheme.typography.s4,
+  },
+
+  billingButtonBlock: {
+    marginTop: '1rem'
+  },
+
+  billingCancelLink: {
     cursor: 'pointer',
-    fontSize: appTheme.typography.s3
+    fontSize: appTheme.typography.s3,
+    fontWeight: 700,
+    textAlign: 'center',
+    textDecoration: 'underline',
+    transition: `opacity ${ui.transitionFastest}`,
+
+    ':hover': {
+      opacity: '.5'
+    }
   }
 });
 
