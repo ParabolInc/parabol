@@ -26,6 +26,6 @@ const rootFields = Object.assign({},
 );
 
 export default new GraphQLObjectType({
-  name: 'Mutation',
+  name: 'RootMutation',
   fields: () => rootFields
 });
