@@ -9,7 +9,7 @@ const thresholds = {
   inf: Infinity
 };
 
-export function fromNowString(time) {
+export function getFromNowString(time) {
   const distance = (Date.now() - time) || 0;
   if (distance < 1000) return 'just now';
   const threshKeys = Object.keys(thresholds);
@@ -26,7 +26,7 @@ export function fromNowString(time) {
   throw new Error('Infinite timestamp calculated!');
 }
 
-export function refreshPeriod(time) {
+export function getRefreshPeriod(time) {
   const msElapsed = (Date.now() - time) || 0;
   const threshKeys = Object.keys(thresholds);
   for (let i = 1; i < threshKeys.length; i++) {
