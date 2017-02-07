@@ -8,18 +8,19 @@ import {cashay} from 'cashay';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 import {reduxForm, Field} from 'redux-form';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
-import makeInviteOneTeamMemberSchema from 'universal/validation/makeInviteOneTeamMemberSchema';
+import inviteUserValidation from './inviteUserValidation';
 
 const makeSchemaProps = (props) => {
-  const {invitations, teamMembers} = props;
+  const {invitations, orgApprovals, teamMembers} = props;
   const inviteEmails = invitations.map((i) => i.email);
   const teamMemberEmails = teamMembers.map((i) => i.email);
-  return {inviteEmails, teamMemberEmails};
+  const orgApprovalEmails = orgApprovals.map((i) => i.email);
+  return {inviteEmails, orgApprovalEmails, teamMemberEmails};
 };
 
 const validate = (values, props) => {
   const schemaProps = makeSchemaProps(props);
-  const schema = makeInviteOneTeamMemberSchema(schemaProps);
+  const schema = inviteUserValidation(schemaProps);
   return schema(values).errors;
 };
 
@@ -42,7 +43,7 @@ const InviteUser = (props) => {
 
   const updateEditable = (submissionData) => {
     const schemaProps = makeSchemaProps(props);
-    const schema = makeInviteOneTeamMemberSchema(schemaProps);
+    const schema = inviteUserValidation(schemaProps);
     const {data: {inviteTeamMember}} = schema(submissionData);
     const variables = {
       teamId,

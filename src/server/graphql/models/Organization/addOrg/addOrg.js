@@ -11,7 +11,7 @@ import {TeamInput} from 'server/graphql/models/Team/teamSchema';
 import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
 import addOrgValidation from 'server/graphql/models/Organization/addOrg/addOrgValidation';
 import createTeamAndLeader from '../../Team/createFirstTeam/createTeamAndLeader';
-import {asyncInviteTeam} from 'server/graphql/models/Invitation/helpers';
+import asyncInviteTeam from 'server/graphql/models/Invitation/inviteTeamMembers/asyncInviteTeam';
 import createStripeOrg from 'server/graphql/models/Organization/addOrg/createStripeOrg';
 import createStripeBilling from 'server/graphql/models/Organization/addBilling/createStripeBilling';
 

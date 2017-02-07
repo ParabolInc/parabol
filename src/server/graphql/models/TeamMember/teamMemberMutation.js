@@ -12,7 +12,8 @@ import {
   requireSUOrLead,
   requireAuth
 } from 'server/utils/authorization';
-import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
+import parseInviteToken from 'server/graphql/models/Invitation/inviteTeamMembers/parseInviteToken';
+import validateInviteTokenKey from 'server/graphql/models/Invitation/inviteTeamMembers/validateInviteTokenKey';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import {JOIN_TEAM, KICK_OUT, PRESENCE} from 'universal/subscriptions/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
@@ -171,7 +172,8 @@ export default {
             isFacilitator: true,
             picture: user.picture,
             preferredName: user.preferredName,
-          })
+          // conflict is possible if person was removed from the team + org & then rejoined (isNotRemoved would be false)
+          }, {conflict: 'update'})
         )
         // find all possible emails linked to this person and mark them as accepted
         .do(() =>
