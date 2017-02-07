@@ -41,7 +41,7 @@ const InviteUser = (props) => {
     untouch
   } = props;
 
-  const updateEditable = (submissionData) => {
+  const updateEditable = async (submissionData) => {
     const schemaProps = makeSchemaProps(props);
     const schema = inviteUserValidation(schemaProps);
     const {data: {inviteTeamMember}} = schema(submissionData);
@@ -51,11 +51,19 @@ const InviteUser = (props) => {
         email: inviteTeamMember
       }]
     };
-    cashay.mutate('inviteTeamMembers', {variables});
-    dispatch(showSuccess({
-      title: 'Invitation sent!',
-      message: `An invitation has been sent to ${inviteTeamMember}`
-    }));
+    const {data: {inviteTeamMembers: inviteSent}} = await cashay.mutate('inviteTeamMembers', {variables});
+    if (inviteSent === true) {
+      dispatch(showSuccess({
+        title: 'Invitation sent!',
+        message: `An invitation has been sent to ${inviteTeamMember}`
+      }));
+    } else if (inviteSent === false) {
+      dispatch(showSuccess({
+        title: 'Request sent to admin',
+        message: `A request to add ${inviteTeamMember} has been sent to your organization admin`
+      }));
+    }
+
   };
 
   return (

@@ -16,7 +16,8 @@ export default {
   type: GraphQLBoolean,
   description: `If in the org,
      Send invitation emails to a list of email addresses, add them to the invitation table.
-     Else, send a request to the org leader to get them approval and put them in the OrgApproval table`,
+     Else, send a request to the org leader to get them approval and put them in the OrgApproval table.
+     Returns true if invitation is sent, false if approval is needed`,
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -39,7 +40,6 @@ export default {
     const userOrgDoc = await getUserOrgDoc(userId, orgId);
     const inviterIsBillingLeader = isBillingLeader(userOrgDoc);
 
-    console.log('inviterIsBillingLeader', inviterIsBillingLeader);
     // VALIDATION
     const now = Date.now();
     // don't let them invite the same person twice
@@ -84,7 +84,6 @@ export default {
     for (let i = 0; i < validInvitees.length; i++) {
       const validInvitee = validInvitees[i];
       const inactiveInvitee = inactiveTeamMembers.find((m) => m.email === validInvitee.email);
-      console.log('inactiveInvitee', inactiveInvitee);
       if (inactiveInvitee) {
         // if they were previously removed from the team, see if they're still in the org
         const inOrg = Boolean(inactiveInvitee.userOrgs.find((userOrg) => userOrg.id === orgId));
@@ -114,6 +113,8 @@ export default {
       } else {
         const filteredInviteeEmails = filteredInvitees.map((i) => i.email);
         createPendingApprovals(filteredInviteeEmails, orgId, teamId, teamName, userId);
+        // just the approvals were created
+        return false;
       }
     }
     return true;
