@@ -1,9 +1,9 @@
 import {sign} from 'jsonwebtoken';
-import {clientSecret} from '../../utils/auth0Helpers';
-import {JWT_LIFESPAN} from '../../utils/serverConstants';
-import {auth0} from '../../../universal/utils/clientOptions';
+import {clientSecret} from 'server/utils/auth0Helpers';
+import {JWT_LIFESPAN} from 'server/utils/serverConstants';
+import {auth0} from 'universal/utils/clientOptions';
 
-export default (userId) => {
+export const mintTokenUnsigned = (userId, fields) => {
   const now = Date.now();
   const exp = ~~((now + JWT_LIFESPAN) / 1000);
   const iat = ~~(now / 1000);
@@ -13,10 +13,16 @@ export default (userId) => {
     sub: userId,
     aud: auth0.clientId,
     exp,
-    iat
+    iat,
+    ...fields
   };
 
-  const secret = new Buffer(clientSecret, 'base64');
-
-  return sign(newToken, secret);
+  return newToken;
 };
+
+export const mintTokenSigned = (userId, fields) => {
+  const secret = new Buffer(clientSecret, 'base64');
+  return sign(mintTokenUnsigned(userId, fields), secret);
+};
+
+export default mintTokenUnsigned;

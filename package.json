@@ -158,7 +158,7 @@
   "ava": {
     "babel": "inherit",
     "require": [
-      "babel-register"
+      "./src/universal/utils/testEnv.babel"
     ]
   },
   "engines": {
