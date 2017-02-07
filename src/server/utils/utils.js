@@ -6,8 +6,9 @@ import {APP_MAX_AVATAR_FILE_SIZE, BILLING_LEADER} from '../../universal/utils/co
 // Wrap it in a new Error type to avoid sending it twice via the originalError field
 export const errorObj = obj => new Error(JSON.stringify(obj));
 
-export const handleSchemaErrors = (errors) => {
+export const handleSchemaErrors = (errors, genericMessage) => {
   if (Object.keys(errors).length > 0) {
+    errors._error = genericMessage || 'Server validation error';
     throw errorObj(errors);
   }
 };
@@ -22,20 +23,23 @@ export function firstChange(possiblyUpdatedResult) {
   return { new_val: undefined, old_val: undefined };
 }
 
-export function updatedOrOriginal(possiblyUpdatedResult, original) {
-  /*
-   * There will only be changes to return if there were changes made to the
-   * DB. Therefore, we've got to check.
-   */
-  return firstChange(possiblyUpdatedResult).new_val || original;
-}
-
 export function getOldVal(possiblyUpdatedResult) {
   return firstChange(possiblyUpdatedResult).old_val;
 }
 
 export function getNewVal(resultWithReturnChanges) {
   return firstChange(resultWithReturnChanges).new_val;
+}
+
+export function updatedOrOriginal(possiblyUpdatedResult, original) {
+  /*
+   * There will only be changes to return if there were changes made to the
+   * DB. Therefore, we've got to check.
+   */
+  const originalReturn = (typeof original !== 'undefined') ?
+    original : getOldVal(possiblyUpdatedResult);
+
+  return getNewVal(possiblyUpdatedResult) || originalReturn;
 }
 
 // todo put this in a legitify schema

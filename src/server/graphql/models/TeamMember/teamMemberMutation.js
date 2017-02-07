@@ -12,7 +12,8 @@ import {
   requireSUOrLead,
   requireAuth
 } from 'server/utils/authorization';
-import {parseInviteToken, validateInviteTokenKey} from '../Invitation/helpers';
+import parseInviteToken from 'server/graphql/models/Invitation/inviteTeamMembers/parseInviteToken';
+import validateInviteTokenKey from 'server/graphql/models/Invitation/inviteTeamMembers/validateInviteTokenKey';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import {JOIN_TEAM, KICK_OUT, PRESENCE} from 'universal/subscriptions/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
@@ -62,12 +63,12 @@ export default {
     },
     async resolve(source, {inviteToken}, {authToken, exchange}) {
       const r = getRethink();
+      const now = new Date();
 
       // AUTH
       const userId = requireAuth(authToken);
 
       // VALIDATION
-      const now = new Date();
       const {id: inviteId, key: tokenKey} = parseInviteToken(inviteToken);
 
       // see if the invitation exists
@@ -124,32 +125,16 @@ export default {
       const userOrgs = user.userOrgs || [];
       const userTeams = user.tms || [];
       const userInOrg = Boolean(userOrgs.find((org) => org.id === orgId));
-      const newUserOrgs = userInOrg ? userOrgs : [...userOrgs, {
-          id: orgId,
-          role: null
-        }];
+      console.log('userinOrg', userInOrg);
       const tms = [...userTeams, teamId];
       const teamMemberId = `${user.id}::${teamId}`;
       const dbWork = r.table('User')
       // add the team to the user doc
         .get(userId)
-        .update(() => {
+        .update((user) => {
           return {
-            tms,
-            userOrgs: newUserOrgs
+            tms: user('tms').default([]).append(teamId).distinct(),
           }
-        })
-        .do(() => {
-          return r.branch(
-            userInOrg,
-            null,
-            r.table('Organization').get(orgId).update((org) => ({
-              orgUsers: org('orgUsers').append({
-                id: userId,
-                role: null
-              })
-            }))
-          )
         })
         // get number of users
         .do(() => {
@@ -171,7 +156,8 @@ export default {
             isFacilitator: true,
             picture: user.picture,
             preferredName: user.preferredName,
-          })
+          // conflict is possible if person was removed from the team + org & then rejoined (isNotRemoved would be false)
+          }, {conflict: 'update'})
         )
         // find all possible emails linked to this person and mark them as accepted
         .do(() =>
@@ -208,9 +194,7 @@ export default {
       }
     }
     ,
-    async
-    resolve(source, {teamMemberId}, {authToken, exchange, socket})
-    {
+    async resolve(source, {teamMemberId}, {authToken, exchange, socket}) {
       const r = getRethink();
 
       // AUTH
@@ -260,8 +244,7 @@ export default {
       // update the tms on auth0
       const newtms = res.changes[0] && res.changes[0].new_val.tms;
       if (newtms) {
-        await
-          auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: newtms});
+        await auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: newtms});
       }
 
       // update the server socket, if they're logged in

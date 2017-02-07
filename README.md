@@ -90,6 +90,7 @@ In this mode, webpack will hot swap your updated client modules without
 needing to restarting the development server.
 
 ```bash
+$ npm run build:dll
 $ npm run dev
 ```
 [http://localhost:3000/](http://localhost:3000/)
@@ -157,6 +158,7 @@ and more details on all releases, refer to [CHANGELOG.md](./CHANGELOG.md).
 
 | Release | Summary                                    |
 |---------|--------------------------------------------|
+| v0.15.0 | Prompt to upgrade on new version, Markdown |
 | v0.14.0 | Secure user avatar upload to S3 bucket     |
 | v0.13.0 | Drag-and-drop added everywhere, bug fixes  |
 | v0.12.0 | Added team settings, modal components      |

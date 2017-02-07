@@ -5,6 +5,9 @@ import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 import makeStep3RawSchema from 'universal/validation/makeStep3RawSchema';
 import emailAddresses from 'email-addresses';
 import {updateExistingInvites} from 'universal/modules/welcome/ducks/welcomeDuck';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite-local-styles/no-important';
+import WelcomeSubmitButton from 'universal/modules/welcome/components/WelcomeSubmitButton/WelcomeSubmitButton';
 
 const validate = (values) => {
   const schema = makeStep3RawSchema();
@@ -12,7 +15,7 @@ const validate = (values) => {
 };
 
 const Step3RawInvitees = (props) => {
-  const {dispatch, handleSubmit, invitees = [], inviteesRaw, untouch} = props;
+  const {dispatch, handleSubmit, invitees = [], inviteesRaw, untouch, styles} = props;
 
   const onAddInviteesButtonClick = () => {
     const parsedAddresses = emailAddresses.parseAddressList(inviteesRaw);
@@ -50,21 +53,18 @@ const Step3RawInvitees = (props) => {
     untouch('inviteesRaw');
   };
   return (
-    <div style={{margin: '0 auto', width: '30rem'}}>
+    <form className={css(styles.formBlock)} onSubmit={handleSubmit(onAddInviteesButtonClick)}>
       <Field
         autoFocus={!invitees || invitees.length === 0}
-        buttonDisabled={!inviteesRaw}
-        buttonIcon="check-circle"
         component={InputField}
-        hasButton
         isLarger
         isWider
         name="inviteesRaw"
-        onButtonClick={handleSubmit(onAddInviteesButtonClick)}
         placeholder={randomPlaceholderTheme.emailMulti}
         type="text"
       />
-    </div>
+      <WelcomeSubmitButton disabled={!inviteesRaw}/>
+    </form>
   );
 };
 
@@ -76,7 +76,18 @@ Step3RawInvitees.propTypes = {
   untouch: PropTypes.func.isRequired
 };
 
-export default reduxForm({
+const styleThunk = () => ({
+  formBlock: {
+    alignItems: 'baseline',
+    display: 'flex'
+  }
+});
+
+const formOptions = {
   form: 'welcomeWizardRawInvitees',
   validate
-})(Step3RawInvitees);
+};
+
+export default reduxForm(formOptions)(
+  withStyles(styleThunk)(Step3RawInvitees)
+);

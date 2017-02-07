@@ -18,24 +18,23 @@ You can read our latest blog post on our
 
 To get started, simply follow these steps:
 
-   1. **Find a project:** review the “Help Requested” list on GitHub projects
-   and find a mission you’d like to work on
+   1. **Find a project:** review the projects listed under the
+   “Help Requested” list on the [Equity For Effort Projects Board](https://github.com/ParabolInc/action/projects/1) and select one
+   you're interested in working on.
 
-   2. **Bid on it:** move the project to the “Bid” stage and leave a comment
-   saying how many points you’ll do the project for
-   (see: [Points and sizes](#points-and-sizes)) – if a mission is unclear, you
+   2. **Bid on it:** leave a comment on the project saying how many points
+   you’ll do the project for and we’ll move the project to the “Bid” stage
+   (see: [Points and sizes](#points-and-sizes)) – if a project is unclear, you
    can ask for more clarification at this stage
 
    3. **Do it:** Once we’ve accepted your bid, we’ll move the mission to the
    “Building” stage; then, go ahead and perform the work. Once you’re done,
-   submit a pull request and move the project to the “Reviewing” stage.
+   submit a pull request and we'll move the project to the “Reviewing” stage.
 
    4. **Collect points:** After the work has been reviewed and merged into the
    source tree, we’ll update our public scoreboard and credit the creator(s)
-   with the agreed upon number of points + 10 bonus points (to bias toward
-   keeping tasks small). Once an individual accrues more than 100 points,
-   if they’re qualified (of age, legally able, etc.), we issue them options
-   for equity in Parabol, Inc.
+   with the agreed upon number of points. Once an individual accrues more than
+   100 points, if they’re qualified (of age, legally able, etc.), we issue them options for equity in Parabol, Inc.
 
 # Compensation
 
@@ -46,7 +45,6 @@ how it works:
 1. When an issue is merged into the
    [Parabol Inc Action Repository](https://github.com/ParabolInc/action) by
    one of the project maintainers, we’ll tally up the points for your work.
-   **Every merged issue scores 10 points + its bid size.**
 
 2. We’ll add a row to the
    [Parabol Action Contributors Scoreboard](https://docs.google.com/spreadsheets/d/1V1KZJn6oKFsqrYwqr430rO3hkIkekSY7oYFzX3cVty4).
@@ -69,20 +67,23 @@ adjust it to what you think is fair.
 
 |  Points  | Individual *or* team effort required |
 | -------- | ------------------------------------ |
-|    1     | Less than a single day               |
-|    2     | One or two days                      |
-|    3     | Three or four days                   |
-|    5     | Five to seven days                   |
-|    8     | Less than two weeks                  |
-|    13    | Two to three weeks                   |
-|    20    | Three to four weeks                  |
-|    40    | Four to eight weeks                  |
-|    100   | Too big! Let’s break it down…        |
+|    11    | Less than a single day               |
+|    12    | One or two days                      |
+|    13    | Three or four days                   |
+|    15    | Five to seven days                   |
+|    18    | Less than two weeks                  |
+|    23    | Two to three weeks                   |
+|    30    | Three to four weeks                  |
+|    50    | Four to eight weeks                  |
+|    110   | Too big! Let’s break it down…        |
 
 ## Conversion rate
 
 At present, 100 points convert to options for 10,000 shares in Parabol Inc.
 With 10,000,000 shares outstanding, that’s 0.1% of the company.
+
+We'll convert for you every time you hit a new 100 point threshold. That is
+to say, 200 points, 300 points, and so on.
 
 We currently will reevaluate this conversion rate once per calendar quarter
 at our board meeting.

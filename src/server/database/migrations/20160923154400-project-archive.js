@@ -3,7 +3,7 @@ exports.up = async(r) => {
   const queries = [
     r.table('Project').update((doc) => ({
       isArchived: false,
-      teamId: doc('id').split('::')(0)
+      teamId: doc('id').split('::').nth(0)
     })),
     r.table('Project').indexCreate('teamId')
   ];

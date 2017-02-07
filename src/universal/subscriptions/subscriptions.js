@@ -6,6 +6,7 @@ import {
   ARCHIVED_PROJECTS,
   INVITATIONS,
   NOTIFICATIONS,
+  ORG_APPROVALS,
   ORGANIZATION,
   ORGANIZATIONS,
   OWNED_ORGANIZATIONS,
@@ -130,6 +131,17 @@ export default [
         startAt
         type
         varList
+      }
+    }`
+  },
+  {
+    channel: ORG_APPROVALS,
+    string: `
+    subscription($teamId: ID!) {
+      orgApprovals(teamId: $teamId) {
+        id
+        createdAt
+        email
       }
     }`
   },

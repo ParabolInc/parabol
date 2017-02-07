@@ -3,7 +3,7 @@ import Editable from 'universal/components/Editable/Editable.js';
 import {cashay} from 'cashay';
 import {reduxForm, Field} from 'redux-form';
 import appTheme from 'universal/styles/theme/appTheme';
-import makeStep2Schema from 'universal/validation/makeStep2Schema';
+import editOrgNameValidation from './editOrgNameValidation';
 
 const fieldStyles = {
   color: appTheme.palette.mid,
@@ -13,17 +13,20 @@ const fieldStyles = {
 };
 
 const validate = (values) => {
-  const schema = makeStep2Schema('orgName');
+  const schema = editOrgNameValidation();
   return schema(values).errors;
 };
 
 const EditOrgName = (props) => {
   const {orgName, orgId, handleSubmit} = props;
-  const updateEditable = (submissionData) => {
+  const updateEditable = async (submissionData) => {
+    const schema = editOrgNameValidation();
+    const {data: {orgName}} = schema(submissionData);
+
     const variables = {
       updatedOrg: {
         id: orgId,
-        name: submissionData.orgName
+        name: orgName
       }
     };
     cashay.mutate('updateOrg', {variables});

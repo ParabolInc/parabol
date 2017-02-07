@@ -8,18 +8,19 @@ import {cashay} from 'cashay';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 import {reduxForm, Field} from 'redux-form';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
-import makeInviteOneTeamMemberSchema from 'universal/validation/makeInviteOneTeamMemberSchema';
+import inviteUserValidation from './inviteUserValidation';
 
 const makeSchemaProps = (props) => {
-  const {invitations, teamMembers} = props;
+  const {invitations, orgApprovals, teamMembers} = props;
   const inviteEmails = invitations.map((i) => i.email);
   const teamMemberEmails = teamMembers.map((i) => i.email);
-  return {inviteEmails, teamMemberEmails};
+  const orgApprovalEmails = orgApprovals.map((i) => i.email);
+  return {inviteEmails, orgApprovalEmails, teamMemberEmails};
 };
 
 const validate = (values, props) => {
   const schemaProps = makeSchemaProps(props);
-  const schema = makeInviteOneTeamMemberSchema(schemaProps);
+  const schema = inviteUserValidation(schemaProps);
   return schema(values).errors;
 };
 
@@ -40,9 +41,9 @@ const InviteUser = (props) => {
     untouch
   } = props;
 
-  const updateEditable = (submissionData) => {
+  const updateEditable = async (submissionData) => {
     const schemaProps = makeSchemaProps(props);
-    const schema = makeInviteOneTeamMemberSchema(schemaProps);
+    const schema = inviteUserValidation(schemaProps);
     const {data: {inviteTeamMember}} = schema(submissionData);
     const variables = {
       teamId,
@@ -50,11 +51,19 @@ const InviteUser = (props) => {
         email: inviteTeamMember
       }]
     };
-    cashay.mutate('inviteTeamMembers', {variables});
-    dispatch(showSuccess({
-      title: 'Invitation sent!',
-      message: `An invitation has been sent to ${inviteTeamMember}`
-    }));
+    const {data: {inviteTeamMembers: inviteSent}} = await cashay.mutate('inviteTeamMembers', {variables});
+    if (inviteSent === true) {
+      dispatch(showSuccess({
+        title: 'Invitation sent!',
+        message: `An invitation has been sent to ${inviteTeamMember}`
+      }));
+    } else if (inviteSent === false) {
+      dispatch(showSuccess({
+        title: 'Request sent to admin',
+        message: `A request to add ${inviteTeamMember} has been sent to your organization admin`
+      }));
+    }
+
   };
 
   return (

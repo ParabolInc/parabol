@@ -15,12 +15,10 @@ import {
   GraphQLList
 } from 'graphql';
 import {TeamInput} from '../teamSchema';
-import {asyncInviteTeam} from 'server/graphql/models/Invitation/helpers';
-import shortid from 'shortid';
-import createTeamAndLeader from '../helpers/createTeamAndLeader';
+import asyncInviteTeam from 'server/graphql/models/Invitation/inviteTeamMembers/asyncInviteTeam';
+import createTeamAndLeader from '../createFirstTeam/createTeamAndLeader';
 import addTeamValidation from './addTeamValidation';
-import {BILLING_LEADER, REQUEST_NEW_USER} from 'universal/utils/constants';
-
+import createPendingApprovals from 'server/graphql/models/Invitation/inviteTeamMembers/createPendingApprovals';
 
 export default {
   type: GraphQLBoolean,
@@ -36,7 +34,7 @@ export default {
   },
   async resolve(source, args, {authToken, socket}) {
     const r = getRethink();
-
+    const now = new Date();
     // AUTH
     const {orgId} = args.newTeam;
     requireWebsocket(socket);
@@ -66,61 +64,29 @@ export default {
 
     const inviterIsBillingLeader = isBillingLeader(userOrgDoc);
 
+    // sidestep approval process
     if (inviterIsBillingLeader) {
-      await asyncInviteTeam(authToken, teamId, invitees);
+      await inviteAsBillingLeader();
       return true;
     }
     const inviteeEmails = invitees.map((i) => i.email);
+    // send invitation that don't need approval
     const inOrgInvitees = await r.table('User')
       .getAll(orgId, {index: 'userOrgs'})
       .filter((user) => r.expr(inviteeEmails).contains(user('email')))
-      .merge({
+      .merge((user) => ({
         fullName: user('preferredName')
-      })
+      }))
       .pluck('fullName', 'email');
     if (inOrgInvitees.length > 0) {
       await asyncInviteTeam(authToken, teamId, inOrgInvitees);
     }
-    const outOfOrgEmails = inviteeEmails.filter((email) => !inOrgInvitees.find((i) => i.email === email));
 
-    // remove the emails that are already pending org leader approval
-    const emailsWithNotifications = await r.table('Notification')
-      .getAll(orgId, {index: 'orgId'})
-      .filter({
-        type: REQUEST_NEW_USER
-      })('varList')
-      // varList(2) is the email field
-      .map((varList) => varList(2));
-    const newOutOfOrgEmails = outOfOrgEmails.filter((email) => !emailsWithNotifications.find((oldEmail) => oldEmail === email));
-    if (newOutOfOrgEmails.length) {
-      // add a notification to the billing leaders
-      const {userIds, inviter} = await r.table('User')
-        .getAll(orgId, {index: 'userOrgs'})
-        .filter((user) => user('userOrgs')
-          .contains((userOrg) => userOrg('id').eq(id).and(userOrg('role').eq(BILLING_LEADER))))('id')
-        .do((userIds) => {
-          return {
-            userIds,
-            inviter: r.table('User').get(userId).pluck('preferredName', 'id')
-          }
-        });
-      const notificationIds = newOutOfOrgEmails.reduce((obj, email) => {
-        obj[email] = shortid.generate();
-        return obj;
-      }, {});
-      // send a new notification to each billing leader concerning each out-of-org invitee
-      await r.expr(newOutOfOrgEmails)
-        .forEach((inviteeEmail) => {
-          return r.table('Notification')
-            .insert({
-              id: r.expr(notificationIds)(inviteeEmail),
-              type: REQUEST_NEW_USER,
-              startAt: new Date(),
-              orgId,
-              userIds,
-              varList: [inviter.id, inviter.preferredName, inviteeEmail, teamId, teamName]
-            })
-        });
+    // seek approval for the rest
+    const outOfOrgEmails = inviteeEmails.filter((email) => !inOrgInvitees.find((i) => i.email === email));
+    if (outOfOrgEmails.length) {
+      await createPendingApprovals(outOfOrgEmails, orgId, teamId, teamName);
+
     }
     return true;
   }

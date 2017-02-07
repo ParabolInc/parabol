@@ -12,6 +12,8 @@ import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
 import addOrgSchema from 'universal/validation/addOrgSchema';
 import CreditCardModal from 'universal/modules/userDashboard/components/CreditCardModal/CreditCardModal';
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
+import {withRouter} from 'react-router';
+import shouldValidate from 'universal/validation/shouldValidate';
 
 const validate = (values, props) => {
   const {isNewOrg} = props;
@@ -20,16 +22,16 @@ const validate = (values, props) => {
 };
 
 const NewTeamForm = (props) => {
-  const {change, dispatch, handleSubmit, isNewOrg, organizations, styles} = props;
+  const {change, handleSubmit, isNewOrg, organizations, router, styles} = props;
   const handleCreateNew = () => {
-    change('orgId', null);
+    router.push('/newteam/1');
   };
   const addBilling = <Button colorPalette="cool" isBlock label="Add Billing Information"/>;
   const setToken = (stripeToken) => {
     change('stripeToken', stripeToken);
   };
   const resetOrgSelection = () => {
-    change('orgId', organizations[0].id);
+    router.push('/newteam');
   };
   return (
     <form className={css(styles.form)} onSubmit={handleSubmit}>
@@ -173,4 +175,4 @@ const styleThunk = () => ({
   }
 });
 
-export default reduxForm({form: 'newTeam', validate})(withStyles(styleThunk)(NewTeamForm));
+export default reduxForm({form: 'newTeam', shouldValidate, validate})(withRouter(withStyles(styleThunk)(NewTeamForm)));

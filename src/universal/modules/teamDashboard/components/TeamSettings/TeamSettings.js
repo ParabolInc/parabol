@@ -17,6 +17,7 @@ const TeamSettings = (props) => {
   const {
     dispatch,
     invitations,
+    orgApprovals,
     myTeamMember,
     team,
     teamMembers,
@@ -24,6 +25,7 @@ const TeamSettings = (props) => {
   } = props;
   const teamLeadObj = teamMembers.find((m) => m.isLead === true);
   const teamLead = teamLeadObj && teamLeadObj.preferredName;
+
   const invitationRowActions = (invitation) => {
     const cashayOptions = {
       variables: {
@@ -47,6 +49,23 @@ const TeamSettings = (props) => {
         </div>
         <div className={css(styles.actionLink)} onClick={cancel}>
           Cancel Invitation
+        </div>
+      </div>
+    );
+  };
+  const orgApprovalRowActions = (orgApproval) => {
+    const options = {
+      variables: {
+        id: orgApproval.id
+      }
+    };
+    const cancel = () => {
+      cashay.mutate('cancelApproval', options);
+    };
+    return (
+      <div className={css(styles.actionLinkBlock)}>
+        <div className={css(styles.actionLink)} onClick={cancel}>
+          Cancel Pending Approval
         </div>
       </div>
     );
@@ -87,12 +106,17 @@ const TeamSettings = (props) => {
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.inviteBlock)}>
-        <InviteUser dispatch={dispatch} teamId={team.id} invitations={invitations} teamMembers={teamMembers}/>
+        <InviteUser
+          dispatch={dispatch}
+          teamId={team.id}
+          invitations={invitations}
+          orgApprovals={orgApprovals}
+          teamMembers={teamMembers}
+        />
       </div>
       <div className={css(styles.body)}>
         <div className={css(styles.scrollable)}>
-          {
-            teamMembers.map((teamMember, idx) => {
+          {teamMembers.map((teamMember, idx) => {
               return (
                 <UserRow
                   {...teamMember}
@@ -100,7 +124,9 @@ const TeamSettings = (props) => {
                   key={`teamMemberKey${idx}`}
                 />
               );
-            }).concat(invitations.map((invitation, idx) => {
+            })
+          }
+          {invitations.map((invitation, idx) => {
               return (
                 <UserRow
                   {...invitation}
@@ -110,7 +136,19 @@ const TeamSettings = (props) => {
                   key={`invitationKey${idx}`}
                 />
               );
-            }))
+            })
+          }
+          {orgApprovals.map((orgApproval, idx) => {
+            return (
+              <UserRow
+                key={`approval${idx}`}
+                id={orgApproval.id}
+                email={orgApproval.email}
+                invitedAt={`invited ${fromNow(orgApproval.createdAt)}`}
+                actions={orgApprovalRowActions(orgApproval)}
+              />
+            );
+          })
           }
         </div>
       </div>

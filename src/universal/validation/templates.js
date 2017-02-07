@@ -51,7 +51,7 @@ export const requiredEmail = (value) => value
   .required('You should enter an email here')
   .matches(emailRegex, 'That doesn\'t look like an email address');
 
-export const makeInviteeTemplate = (inviteEmails, teamMemberEmails) => {
+export const makeInviteeTemplate = (inviteEmails, teamMemberEmails, pendingApprovalEmails) => {
   return (value) => value
     .trim()
     .required('You should enter an email here')
@@ -59,7 +59,8 @@ export const makeInviteeTemplate = (inviteEmails, teamMemberEmails) => {
     .test((inviteTeamMember) => {
       return inviteEmails.includes(inviteTeamMember) && 'That person has already been invited!';
     })
-    .test((inviteTeamMember) => teamMemberEmails.includes(inviteTeamMember) && 'That person is already on your team!');
+    .test((inviteTeamMember) => teamMemberEmails.includes(inviteTeamMember) && 'That person is already on your team!')
+    .test((inviteTeamMember) => pendingApprovalEmails.includes(inviteTeamMember) && 'That person is awaiting org approval');
 };
 
 export const orgName = (value) => value

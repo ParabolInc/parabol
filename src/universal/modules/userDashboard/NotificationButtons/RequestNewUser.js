@@ -8,9 +8,13 @@ import defaultStyles from './styles';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 import {connect} from 'react-redux';
 
+const mapStateToProps = () => {
+  return { };
+};
+
 const RequestNewUser = (props) => {
-  const {notificationId, router, styles, varList} = props;
-  const [inviterUserId, inviterUserName, inviteeEmail, teamId, teamName] = varList;
+  const {dispatch, notificationId, router, styles, varList} = props;
+  const [inviterUserId, inviterName, inviteeEmail, teamId, teamName] = varList;
 
   const acceptInvite = () => {
     const variables = {

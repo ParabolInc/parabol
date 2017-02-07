@@ -3,7 +3,7 @@ import {BILLING_LEADER, LOBBY} from 'universal/utils/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getNewVal} from 'server/utils/utils';
 
-// used for addorg, addTeam, createTeam
+// used for addorg, addTeam, createFirstTeam
 export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
   const r = getRethink();
 

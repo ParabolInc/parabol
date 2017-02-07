@@ -9,10 +9,10 @@ import {DragDropContext as dragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
 const NewTeam = (props) => {
-  const {dispatch, styles} = props;
+  const {dispatch, params: {newOrg}, styles} = props;
   return (
     <DashboardWrapper title="User Dashboard">
-        <NewTeamFormContainer dispatch={dispatch}/>
+        <NewTeamFormContainer dispatch={dispatch} newOrgRoute={Boolean(newOrg)}/>
     </DashboardWrapper>
   );
 };

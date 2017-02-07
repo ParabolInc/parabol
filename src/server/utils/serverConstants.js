@@ -16,3 +16,6 @@ export const REMOVE_USER = 'removeUser';
 export const UNPAUSE_USER = 'unpauseUser';
 export const MAX_MONTHLY_PAUSES = 4;
 
+/* invite token keys */
+export const INVITE_TOKEN_INVITE_ID_LEN = 6;
+export const INVITE_TOKEN_KEY_LEN = 8;

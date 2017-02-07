@@ -8,12 +8,9 @@ import {css} from 'aphrodite-local-styles/no-important';
 import {Link} from 'react-router';
 import FontAwesome from 'react-fontawesome';
 import Helmet from 'react-helmet';
-
-import {
-  Step1PreferredName,
-  Step2TeamName,
-  Step3InviteTeam
-} from '../../components/WelcomeWizardForms';
+import Step1PreferredName from 'universal/modules/welcome/components/Step1PreferredName/Step1PreferredName';
+import Step2TeamName from 'universal/modules/welcome/components/Step2TeamName/Step2TeamName';
+import Step3InviteTeam from 'universal/modules/welcome/components/Step3InviteTeam/Step3InviteTeam';
 
 const Welcome = (props) => {
   const {progressDotClickFactory, styles, title, welcome: {page, completed}} = props;

@@ -4,11 +4,13 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import Textarea from 'react-textarea-autosize';
+import ReactMarkdown from 'react-markdown';
+import LinkNewTab from 'universal/components/LinkNewTab/LinkNewTab';
 
 class OutcomeCardTextArea extends Component {
   static propTypes = {
     cardHasHover: PropTypes.bool,
-    doFocus: PropTypes.bool,
+    doSubmitOnEnter: PropTypes.bool,
     editingStatus: PropTypes.any,
     handleActive: PropTypes.func,
     handleSubmit: PropTypes.func,
@@ -25,6 +27,14 @@ class OutcomeCardTextArea extends Component {
     timestamp: PropTypes.string,
   };
 
+  constructor(props) {
+    super(props);
+    const {input: {value}} = this.props;
+    this.state = {
+      isEditing: !value
+    };
+  }
+
   componentWillReceiveProps(nextProps) {
     const {meta: {active}} = this.props;
     const {handleActive, meta: {active: nextActive}} = nextProps;
@@ -33,45 +43,46 @@ class OutcomeCardTextArea extends Component {
     }
   }
 
-  render() {
+  setEditing = () => {
+    this.setState({isEditing: true});
+  };
+
+  unsetEditing = () => {
+    this.setState({isEditing: false});
+  }
+
+  renderEditing() {
     const {
-      cardHasHover,
+      doSubmitOnEnter,
       handleSubmit,
       input,
+      isProject,
       isActionListItem,
       isArchived,
-      isProject,
-      doFocus,
-      styles,
+      styles
     } = this.props;
-
     const contentStyles = css(
       !isActionListItem && styles.content,
       isActionListItem && styles.actionListContent,
-      isProject && !isArchived && cardHasHover && styles.contentWhenCardHovered,
       isArchived && styles.isArchived,
-      !isProject && cardHasHover && styles.actionContentWhenCardHovered,
       !isProject && styles.descriptionAction
     );
 
-    let textAreaRef;
     const handleBlur = () => {
-      const {input: {value}} = this.props;
-      if (value) {
+      if (input.value) {
         // if there's no value, then the document event listener will handle this
         input.onBlur();
+        this.unsetEditing();
         handleSubmit();
       }
     };
-    const handleKeyPress = () => {
-      // TODO fix me there's a little lag here
-      // handleSubmit();
-    };
+    let textAreaRef;
     const setRef = (c) => {
       textAreaRef = c;
     };
+
     const submitOnEnter = (e) => {
-      // hitting enter (not shift+enter) submits the textarea
+       // hitting enter (not shift+enter) submits the textarea
       if (e.key === 'Enter' && !e.shiftKey) {
         textAreaRef.blur();
       }
@@ -87,10 +98,54 @@ class OutcomeCardTextArea extends Component {
         placeholder="Type your outcome here"
         onBlur={handleBlur}
         onDrop={null}
-        onKeyDown={submitOnEnter}
-        onKeyUp={handleKeyPress}
-        autoFocus={doFocus}
+        onKeyDown={doSubmitOnEnter ? submitOnEnter : null}
+        autoFocus
       />
+    );
+  }
+
+  renderMarkdown() {
+    const {
+      styles,
+      cardHasHover,
+      isProject,
+      isActionListItem,
+      isArchived,
+      input: {value}
+    } = this.props;
+    const markdownStyles = css(
+      styles.markdown,
+      !isActionListItem && styles.content,
+      isActionListItem && styles.actionListContent,
+      isProject && !isArchived && cardHasHover && styles.contentWhenCardHovered,
+      !isProject && cardHasHover && styles.actionContentWhenCardHovered,
+      !isProject && styles.descriptionAction
+    );
+    const markdownCustomComponents = {
+      Link: LinkNewTab
+    };
+    return (
+      <div
+        onClick={!isArchived && this.setEditing}
+        className={markdownStyles}
+      >
+        <ReactMarkdown
+          renderers={markdownCustomComponents}
+          source={value}
+          escapeHtml
+          softBreak="br"
+        />
+      </div>
+    );
+  }
+
+  render() {
+    const {input: {value}} = this.props;
+    return (
+      <div>
+        {(value && !this.state.isEditing) ? this.renderMarkdown() :
+          this.renderEditing()}
+      </div>
     );
   }
 }
@@ -164,6 +219,19 @@ const styleThunk = () => ({
     }
   },
 
+  isArchived: {
+    cursor: 'not-allowed',
+
+    ':focus': {
+      backgroundColor: 'transparent',
+      borderColor: 'transparent'
+    },
+    ':active': {
+      backgroundColor: 'transparent',
+      borderColor: 'transparent'
+    }
+  },
+
   contentWhenCardHovered: {
     ...descriptionFA
   },
@@ -182,17 +250,8 @@ const styleThunk = () => ({
     ...descriptionActionFA
   },
 
-  isArchived: {
-    cursor: 'not-allowed',
-
-    ':focus': {
-      backgroundColor: 'transparent',
-      borderColor: 'transparent'
-    },
-    ':active': {
-      backgroundColor: 'transparent',
-      borderColor: 'transparent'
-    }
+  markdown: {
+    wordBreak: 'break-word'
   }
 });
 
