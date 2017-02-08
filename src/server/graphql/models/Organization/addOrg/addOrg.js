@@ -12,8 +12,7 @@ import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
 import addOrgValidation from 'server/graphql/models/Organization/addOrg/addOrgValidation';
 import createTeamAndLeader from '../../Team/createFirstTeam/createTeamAndLeader';
 import asyncInviteTeam from 'server/graphql/models/Invitation/inviteTeamMembers/asyncInviteTeam';
-import createStripeOrg from 'server/graphql/models/Organization/addOrg/createStripeOrg';
-import createStripeBilling from 'server/graphql/models/Organization/addBilling/createStripeBilling';
+import createNewOrg from 'server/graphql/models/Organization/addOrg/createNewOrg';
 
 export default {
   type: GraphQLBoolean,
@@ -58,15 +57,12 @@ export default {
     // RESOLUTION
     const teamOrgInvitations = [
       createTeamAndLeader(userId, newTeam, true),
-      createStripeOrg(orgId, orgName, false, userId, now)
+      createNewOrg(orgId, orgName, userId, stripeToken)
     ];
     if (invitees && invitees.length) {
       teamOrgInvitations.push(asyncInviteTeam(authToken, teamId, invitees));
     }
     await Promise.all(teamOrgInvitations);
-
-    // add the CC info, requires the org to be created so we have to wait
-    await createStripeBilling(orgId, stripeToken);
 
     // TODO add activeUsers on the Organization table instead of activeUserCount.
     // That way, we can index on it & subscribe to all the users orgs

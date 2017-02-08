@@ -9,7 +9,7 @@ import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
 import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
 import stripe from 'server/billing/stripe';
 import {toStripeDate} from 'server/billing/stripeDate';
-import createStripeBilling from 'server/graphql/models/Organization/addBilling/createStripeBilling';
+import updateStripeBilling from 'server/graphql/models/Organization/addBilling/updateStripeBilling';
 
 export default {
   type: GraphQLBoolean,
@@ -35,10 +35,10 @@ export default {
     requireOrgLeader(userOrgDoc);
 
     // RESOLUTION
-    const {isTrial, stripeSubscriptionId, validUntil} = await r.table('Organization')
+    const {isTrial, stripeId, stripeSubscriptionId, validUntil} = await r.table('Organization')
       .get(orgId)
       .pluck('isTrial', 'validUntil', 'stripeSubscriptionId');
-    const promises = [];
+    const promises = [updateStripeBilling(orgId, stripeId, stripeToken)];
     let nowValidUntil;
     if (isTrial && validUntil > now) {
       // extend the trial in stripe
@@ -54,7 +54,11 @@ export default {
         })
         .delete());
     }
-    promises.push(createStripeBilling(orgId, stripeToken, nowValidUntil));
-    await Promise.all(promises);
+    const [creditCard] = await promises;
+    const orgUpdates = {creditCard};
+    if (nowValidUntil !== undefined) {
+      orgUpdates.validUntil = nowValidUntil;
+    }
+    return await r.table('Organization').get(orgId).update(orgUpdates);
   }
 };
