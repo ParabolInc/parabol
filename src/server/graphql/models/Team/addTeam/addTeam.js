@@ -19,6 +19,7 @@ import asyncInviteTeam from 'server/graphql/models/Invitation/inviteTeamMembers/
 import createTeamAndLeader from '../createFirstTeam/createTeamAndLeader';
 import addTeamValidation from './addTeamValidation';
 import createPendingApprovals from 'server/graphql/models/Invitation/inviteTeamMembers/createPendingApprovals';
+import inviteAsBillingLeader from 'server/graphql/models/Invitation/inviteTeamMembers/inviteAsBillingLeader';
 
 export default {
   type: GraphQLBoolean,
@@ -66,7 +67,7 @@ export default {
 
     // sidestep approval process
     if (inviterIsBillingLeader) {
-      await inviteAsBillingLeader();
+      await inviteAsBillingLeader(invitees, orgId, authToken, teamId);
       return true;
     }
     const inviteeEmails = invitees.map((i) => i.email);

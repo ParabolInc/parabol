@@ -98,7 +98,7 @@ export default {
 
       // RESOLUTION
       if (authToken.tms) {
-        return r.table('User').get(authToken.sub);
+        return await r.table('User').get(authToken.sub);
       }
       const userInfo = await auth0Client.tokens.getInfo(auth0Token);
       // TODO loginsCount and blockedFor are not a part of this API response
