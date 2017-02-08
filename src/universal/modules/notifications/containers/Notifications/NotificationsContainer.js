@@ -22,6 +22,11 @@ const mapStateToProps = (state, props) => {
     sort: {
       notifications: (a, b) => a.startAt > b.startAt ? 1 : -1
     },
+    filter: {
+      // on the server, we currently send notifications that will start up to 1 day later,
+      // let's filter those out here so we can maintain the illusion of realtime
+      notifications: (notification) => notification.startAt < new Date()
+    },
     variables: {
       userId
     }

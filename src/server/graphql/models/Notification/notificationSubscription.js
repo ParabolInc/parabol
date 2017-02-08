@@ -4,6 +4,7 @@ import getRequestedFields from 'server/graphql/getRequestedFields'
 import {Notification} from './notificationSchema';
 import {requireSUOrSelf} from 'server/utils/authorization';
 import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
+import ms from 'ms';
 
 export default {
   notifications: {
@@ -20,9 +21,11 @@ export default {
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
       const now = new Date();
+      const tomorrow = now.getTime() + ms('1d');
       r.table('Notification')
         .getAll(userId, {index: 'userIds'})
-        .filter((row) => row('startAt').lt(r.epochTime(now / 1000)))
+        // can't use a startAt r.now() here because r.now() changes.
+        .filter((row) => row('startAt').lt(r.epochTime(tomorrow / 1000)))
         .pluck(requestedFields)
         .changes({includeInitial: true})
         .run({cursor: true}, changefeedHandler);

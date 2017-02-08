@@ -4,7 +4,7 @@ import {
   GraphQLID,
   GraphQLBoolean,
 } from 'graphql';
-import {errorObj, getNewVal, getOldVal} from 'server/utils/utils';
+import {errorObj, getOldVal} from 'server/utils/utils';
 import {
   requireWebsocket,
   requireSUOrTeamMember,
@@ -192,20 +192,17 @@ export default {
         type: new GraphQLNonNull(GraphQLID),
         description: 'The teamMemberId of the person who is being checked in'
       }
-    }
-    ,
+    },
     async resolve(source, {teamMemberId}, {authToken, exchange, socket}) {
       const r = getRethink();
 
       // AUTH
       const [userId, teamId] = teamMemberId.split('::');
-      await
-        requireSUOrSelfOrLead(authToken, userId, teamId);
+      await requireSUOrSelfOrLead(authToken, userId, teamId);
       requireWebsocket(socket);
 
       // RESOLUTION
-      const res = await
-        r.table('TeamMember')
+      const res = await r.table('TeamMember')
         // set inactive
           .get(teamMemberId)
           .update({
@@ -301,7 +298,5 @@ export default {
           });
       return true;
     }
-  }
-  ,
-}
-;
+  },
+};

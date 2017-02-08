@@ -86,7 +86,7 @@ export default {
     // seek approval for the rest
     const outOfOrgEmails = inviteeEmails.filter((email) => !inOrgInvitees.find((i) => i.email === email));
     if (outOfOrgEmails.length) {
-      await createPendingApprovals(outOfOrgEmails, orgId, teamId, teamName);
+      await createPendingApprovals(outOfOrgEmails, orgId, teamId, teamName, userId);
 
     }
     return true;
