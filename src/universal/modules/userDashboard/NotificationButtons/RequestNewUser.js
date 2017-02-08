@@ -7,6 +7,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import defaultStyles from './styles';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 import {connect} from 'react-redux';
+import RejectOrgApprovalModal from 'universal/modules/userDashboard/components/RejectOrgApprovalModal/RejectOrgApprovalModal';
 
 const mapStateToProps = () => {
   return { };
@@ -27,9 +28,14 @@ const RequestNewUser = (props) => {
     cashay.mutate('inviteTeamMembers', {variables});
   };
 
-  const declineInvite = () => {
-    dispatch(declineNewUser());
-  };
+  const rejectToggle = <Button
+    colorPalette="gray"
+    isBlock
+    label="Decline"
+    size="small"
+    type="submit"
+  />;
+
   return (
     <div className={css(styles.row)}>
       <div className={css(styles.icon)}>
@@ -54,13 +60,11 @@ const RequestNewUser = (props) => {
           />
         </div>
         <div className={css(styles.button)}>
-          <Button
-            colorPalette="gray"
-            isBlock
-            label="Decline"
-            size="small"
-            type="submit"
-            onClick={declineInvite}
+          <RejectOrgApprovalModal
+            notificationId={notificationId}
+            inviteeEmail={inviteeEmail}
+            inviterName={inviterName}
+            toggle={rejectToggle}
           />
         </div>
       </div>
