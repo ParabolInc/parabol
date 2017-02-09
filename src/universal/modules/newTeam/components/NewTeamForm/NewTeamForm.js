@@ -54,7 +54,7 @@ const NewTeamForm = (props) => {
           <FieldBlock>
             <div className={css(styles.billingBlock)}>
               <h3 className={css(styles.billingHeading)}>Billing information (required)</h3>
-              <p className={css(styles.billingCopy)}>
+              <div className={css(styles.billingCopy)}>
                 Your card will be charged $5 for the first month.
                 The members that you invite will be prorated on their
                 join date and added to your second invoice.
@@ -64,7 +64,7 @@ const NewTeamForm = (props) => {
                     toggle={addBilling}
                   />
                 </div>
-              </p>
+              </div>
               <div className={css(styles.billingCancelLink)} onClick={resetOrgSelection}>
                 Nevermind, select an existing organization
               </div>
@@ -155,6 +155,7 @@ const styleThunk = () => ({
   billingCopy: {
     fontSize: appTheme.typography.s2,
     lineHeight: appTheme.typography.s4,
+    marginBottom: '1rem'
   },
 
   billingButtonBlock: {
