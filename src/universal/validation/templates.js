@@ -69,6 +69,11 @@ export const orgName = (value) => value
   .min(2, 'C\'mon, you call that an organization?')
   .max(100, 'Maybe just the legal name?');
 
+export const orgRejectionReason = (value) => value
+  .trim()
+  .min(2, 'Maybe a couple more words?')
+  .max(255, 'That seems like a good enough reason');
+
 export const preferredName = (value) => value
   .trim()
   .required('That\'s not much of a name, is it?')
