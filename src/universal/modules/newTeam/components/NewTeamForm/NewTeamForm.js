@@ -42,7 +42,7 @@ const NewTeamForm = (props) => {
             autoFocus
             colorPalette="gray"
             component={InputField}
-            label="Organization Name (required)"
+            label="Organization Name"
             name="orgName"
             placeholder={randomPlaceholderTheme.orgName}
           />
@@ -87,7 +87,7 @@ const NewTeamForm = (props) => {
         <Field
           colorPalette="gray"
           component={InputField}
-          label="Team Name (required)"
+          label="Team Name"
           name="teamName"
           placeholder={randomPlaceholderTheme.teamName}
         />

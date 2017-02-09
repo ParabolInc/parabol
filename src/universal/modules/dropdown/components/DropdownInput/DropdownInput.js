@@ -24,10 +24,6 @@ const DropdownInput = (props) => {
   const org = organizations.find((org) => org.id === value);
   const orgName = org && org.name || 'Loading...';
   const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down"/>;
-  const createNew = () =>
-    <div className={css(styles.menuButtonBlock)} key={'newOrg'}>
-      <Button colorPalette="mid" isBlock label="Create New Organization" size="smallest" onClick={handleCreateNew}/>
-    </div>;
   const itemFactory = () => {
     return organizations.map((org, idx) => {
       return (
@@ -41,7 +37,14 @@ const DropdownInput = (props) => {
         />
       )
     })
-      .concat(createNew())
+      .concat(<MenuItem
+        key={'newOrg'}
+        label={
+          <div className={css(styles.menuButtonBlock)}>
+            <Button colorPalette="mid" isBlock label="Create New Organization" size="smallest" onClick={handleCreateNew}/>
+          </div>
+        }
+      />)
   };
   return (
     <FieldBlock>
