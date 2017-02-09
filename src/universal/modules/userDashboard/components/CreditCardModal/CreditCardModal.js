@@ -7,7 +7,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import {reduxForm, Field} from 'redux-form';
+import {reduxForm, Field, SubmissionError} from 'redux-form';
 import CreditCardField from './CreditCardField';
 import FontAwesome from 'react-fontawesome';
 import withAsync from 'react-async-hoc';
@@ -85,40 +85,32 @@ const validate = (values, props) => {
 const CreditCardModal = (props) => {
   const {closeAfter, createToken, handleSubmit, handleToken, isUpdate, closePortal, orgId, styles, submitting, isClosing} = props;
   const crudAction = isUpdate ? 'Update' : 'Add';
-  const addStripeBilling = (submittedData) => {
-    return new Promise( async (resolve, reject) => {
-      const {creditCardNumber: number, expiry, cvc} = submittedData;
-      const [exp_month, exp_year] = expiry.split('/');
-      const {error, id: stripeToken} = await createToken({number, exp_month, exp_year, cvc});
-      if (error) {
-        const errorMessage = {_error: error.message};
-        const field = stripeFieldLookup[error.param];
-        if (field) {
-          errorMessage[field.name] = field.message;
-        }
-        reject(errorMessage)
+  const addStripeBilling = async(submittedData) => {
+    const {creditCardNumber: number, expiry, cvc} = submittedData;
+    const [exp_month, exp_year] = expiry.split('/');
+    const {error, id: stripeToken, card} = await createToken({number, exp_month, exp_year, cvc});
+    if (error) {
+      const errorMessage = {_error: error.message};
+      const field = stripeFieldLookup[error.param];
+      if (field) {
+        errorMessage[field.name] = field.message;
       }
-      if (handleToken) {
-        // without an orgId, assume a cb is provided
-        handleToken(stripeToken);
-        closePortal();
-        resolve();
-      }
-      if (orgId) {
-        const variables = {
-          orgId,
-          stripeToken
-        };
-        const {error} = await cashay.mutate('addBilling', {variables});
-        if (error) {
-          reject(error);
-        } else {
-          closePortal();
-          resolve();
-        }
-      }
-    })
-
+      throw new SubmissionError(errorMessage);
+    }
+    if (handleToken) {
+      // without an orgId, assume a cb is provided
+      handleToken(stripeToken, card.last4);
+      closePortal();
+    }
+    if (orgId) {
+      const variables = {
+        orgId,
+        stripeToken
+      };
+      const {error} = await cashay.mutate('addBilling', {variables});
+      if (error) throw new SubmissionError(error);
+      closePortal();
+    }
   };
   return (
     <DashModal onBackdropClick={closePortal} inputModal isClosing={isClosing} closeAfter={closeAfter}>

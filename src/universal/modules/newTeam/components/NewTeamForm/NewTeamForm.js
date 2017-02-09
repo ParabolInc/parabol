@@ -22,14 +22,11 @@ const validate = (values, props) => {
 };
 
 const NewTeamForm = (props) => {
-  const {change, handleSubmit, isNewOrg, organizations, router, styles} = props;
+  const {handleSubmit, last4, isNewOrg, organizations, router, setCreditCard, styles} = props;
   const handleCreateNew = () => {
     router.push('/newteam/1');
   };
   const addBilling = <Button colorPalette="cool" isBlock label="Add Billing Information"/>;
-  const setToken = (stripeToken) => {
-    change('stripeToken', stripeToken);
-  };
   const resetOrgSelection = () => {
     router.push('/newteam');
   };
@@ -46,11 +43,6 @@ const NewTeamForm = (props) => {
             name="orgName"
             placeholder={randomPlaceholderTheme.orgName}
           />
-          <Field
-            component="input"
-            type="hidden"
-            name="stripeToken"
-          />
           <FieldBlock>
             <div className={css(styles.billingBlock)}>
               <h3 className={css(styles.billingHeading)}>Billing information (required)</h3>
@@ -60,9 +52,12 @@ const NewTeamForm = (props) => {
                 join date and added to your second invoice.
                 <div className={css(styles.billingButtonBlock)}>
                   <CreditCardModal
-                    handleToken={setToken}
+                    handleToken={setCreditCard}
                     toggle={addBilling}
                   />
+                  {last4 &&
+                    <div>Info added for {last4}</div>
+                  }
                 </div>
               </div>
               <div className={css(styles.billingCancelLink)} onClick={resetOrgSelection}>

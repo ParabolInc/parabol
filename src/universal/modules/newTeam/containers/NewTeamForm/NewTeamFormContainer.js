@@ -1,4 +1,4 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {cashay} from 'cashay';
 import emailAddresses from 'email-addresses';
 import shortid from 'shortid';
@@ -41,7 +41,7 @@ const mapStateToProps = (state, props) => {
     initialValues: {
       orgId
     },
-    isNewOrg: state.form.newTeam && state.form.newTeam.values.orgId === null || newOrgRoute
+    isNewOrg: newOrgRoute
   };
 };
 
@@ -52,14 +52,27 @@ const makeInvitees = (invitees) => {
     })) : [];
 };
 
-const NewTeamFormContainer = (props) => {
-  const {dispatch, initialValues, isNewOrg, organizations, router} = props;
-  const onSubmit = (submittedData) => {
+class NewTeamFormContainer extends Component {
+  constructor() {
+    super();
+    this.state = {};
+  }
+
+  setCreditCard = (stripeToken, last4) => {
+    // use container state because we want this gone on dismount. don't wanna persist CC info in the localStorage
+    this.setState({
+      last4,
+      stripeToken
+    })
+  };
+
+  onSubmit = (submittedData) => {
+    const {dispatch, router} = this.props;
     const {isNewOrg} = props;
     const newTeamId = shortid.generate();
     if (isNewOrg) {
       const schema = addOrgSchema();
-      const {data: {teamName, inviteesRaw, orgName, stripeToken}} = schema(submittedData);
+      const {data: {teamName, inviteesRaw, orgName}} = schema(submittedData);
       const parsedInvitees = emailAddresses.parseAddressList(inviteesRaw);
       const invitees = makeInvitees(parsedInvitees);
       const variables = {
@@ -70,7 +83,7 @@ const NewTeamFormContainer = (props) => {
         },
         invitees,
         orgName,
-        stripeToken
+        stripeToken: this.state.stripeToken
       };
       cashay.mutate('addOrg', {variables});
       dispatch(segmentEventTrack('New Org'));
@@ -102,19 +115,27 @@ const NewTeamFormContainer = (props) => {
     }
     router.push(`/team/${newTeamId}`);
   };
-  if (organizations.length === 0) {
-    // more than looks, this is required because initialValues can only be passed in once
-    return <LoadingView />
+
+  render() {
+
+    const {initialValues, isNewOrg, organizations} = this.props;
+    if (organizations.length === 0) {
+      // more than looks, this is required because initialValues can only be passed in once
+      return <LoadingView />
+    }
+    return (
+      <NewTeamForm
+        initialValues={initialValues}
+        isNewOrg={isNewOrg}
+        last4={this.state.last4}
+        onSubmit={this.onSubmit}
+        organizations={organizations}
+        setCreditCard={this.setCreditCard}
+      />
+    );
   }
-  return (
-    <NewTeamForm
-      initialValues={initialValues}
-      isNewOrg={isNewOrg}
-      onSubmit={onSubmit}
-      organizations={organizations}
-    />
-  );
-};
+}
+;
 
 NewTeamFormContainer.propTypes = {
   dispatch: PropTypes.func.isRequired,
