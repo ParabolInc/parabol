@@ -3,44 +3,40 @@ import {withRouter} from 'react-router';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import Button from 'universal/components/Button/Button';
-import fromNow from 'universal/utils/fromNow';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
-import FontAwesome from 'react-fontawesome';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import {cashay} from 'cashay';
 
 const TrialExpiresSoon = (props) => {
-  const {orgId, router, styles, varList} = props;
-  const [expiresAt] = varList;
-  const daysLeft = fromNow(expiresAt);
-  const addBilling = () => {
-    router.push(`/me/organizations/${orgId}`)
+  const {notificationId, styles, varList} = props;
+  const [reason, billingLeaderName, inviteeEmail] = varList;
+  const safeReason = reason || 'none given';
+  const acknowledge = () => {
+    const variables = {notificationId};
+    cashay.mutate('clearNotification', {variables});
   };
   return (
-  <div className={css(styles.row)}>
-    <div className={css(styles.icon)}>
-      <div className={css(styles.avatarPlaceholder)}>
-        <div className={css(styles.avatarPlaceholderInner)}>
-          <FontAwesome name="credit-card"/>
-        </div>
+    <div className={css(styles.row)}>
+      <div className={css(styles.icon)}>
+        <AvatarPlaceholder/>
+      </div>
+      <div className={css(styles.message)}>
+        {billingLeaderName} has denied {inviteeEmail} from joining the organization.
+        Reason: {safeReason}
+      </div>
+      <div className={css(styles.buttonGroup)}>
+        <Button
+          colorPalette="cool"
+          isBlock
+          label="OK"
+          size="small"
+          type="submit"
+          onClick={acknowledge}
+        />
       </div>
     </div>
-    <div className={css(styles.message)}>
-      Your free trial will expire in <span className={css(styles.messageVar)}>{daysLeft}</span>.
-      Want another free month? Just add your billing info
-    </div>
-    <div className={css(styles.buttonGroup)}>
-      <Button
-        colorPalette="cool"
-        isBlock
-        label="Add Billing Info"
-        size="small"
-        type="submit"
-        onClick={addBilling}
-      />
-    </div>
-  </div>
   );
 };
 
@@ -83,6 +79,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withRouter(
-  withStyles(styleThunk)(TrialExpiresSoon)
-);
+export default withStyles(styleThunk)(TrialExpiresSoon);

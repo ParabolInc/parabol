@@ -169,3 +169,12 @@ export const requireUserInOrg = (userOrgDoc, userId, orgId) => {
   }
   return true;
 };
+
+export const requireNotificationOwner = async (userId, notificationId) => {
+  const r = getRethink();
+  const res = await r.table('Notification').get(notificationId)('userIds').contains(userId).default(null);
+  if (!res) {
+    throw errorObj({_error: `Notification ${notificationId} does not exist or ${userId} does not have access to it`});
+  }
+  return true;
+};

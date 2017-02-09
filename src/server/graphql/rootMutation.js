@@ -3,6 +3,7 @@ import action from 'server/graphql/models/Action/actionMutation';
 import agenda from 'server/graphql/models/AgendaItem/agendaItemMutation';
 import invitation from 'server/graphql/models/Invitation/invitationMutation';
 import meeting from 'server/graphql/models/Meeting/meetingMutation';
+import notification from 'server/graphql/models/Notification/notificationMutation';
 import orgApproval from 'server/graphql/models/OrgApproval/orgApprovalMutation';
 import organization from 'server/graphql/models/Organization/organizationMutation';
 import presence from 'server/graphql/models/Presence/presenceMutation';
@@ -16,6 +17,7 @@ const rootFields = Object.assign({},
   agenda,
   invitation,
   meeting,
+  notification,
   orgApproval,
   organization,
   presence,
