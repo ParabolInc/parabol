@@ -1,10 +1,10 @@
 import getRethink from 'server/database/rethinkDriver';
 import {REQUEST_NEW_USER} from 'universal/utils/constants';
 
-export default function removeOrgApprovalAndNotification(orgId, maybeEmails) {
+export default async function removeOrgApprovalAndNotification(orgId, maybeEmails) {
   const emails = Array.isArray(maybeEmails) ? maybeEmails : [maybeEmails];
   const r = getRethink();
-  return r.table('OrgApproval')
+  return await r.table('OrgApproval')
     .getAll(r.args(emails), {index: 'email'})
     .filter({orgId})
     .delete()

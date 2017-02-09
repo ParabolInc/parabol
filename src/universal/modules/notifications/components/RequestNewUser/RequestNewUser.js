@@ -9,12 +9,9 @@ import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlac
 import {connect} from 'react-redux';
 import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalModal';
 
-const mapStateToProps = () => {
-  return { };
-};
-
 const RequestNewUser = (props) => {
-  const {dispatch, notificationId, router, styles, varList} = props;
+  const {notificationId, styles, varList} = props;
+  // TODO can we remove inviterUserId from varList?
   const [inviterUserId, inviterName, inviteeEmail, teamId, teamName] = varList;
 
   const acceptInvite = () => {
@@ -23,7 +20,6 @@ const RequestNewUser = (props) => {
       invitees: [{
         email: inviteeEmail
       }],
-      notificationId
     };
     cashay.mutate('inviteTeamMembers', {variables});
   };
@@ -76,6 +72,4 @@ const styleThunk = () => ({
   ...defaultStyles
 });
 
-export default connect(mapStateToProps)(
-  withRouter(withStyles(styleThunk)(RequestNewUser))
-);
+export default withStyles(styleThunk)(RequestNewUser);

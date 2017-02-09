@@ -11,6 +11,7 @@ import {handleSchemaErrors} from 'server/utils/utils';
 import asyncInviteTeam from './asyncInviteTeam';
 import inviteTeamMemberValidation from './inviteTeamMembersValidation';
 import createPendingApprovals from './createPendingApprovals';
+import removeOrgApprovalAndNotification from 'server/graphql/models/Organization/rejectOrgApproval/removeOrgApprovalAndNotification';
 
 export default {
   type: GraphQLBoolean,
@@ -57,17 +58,17 @@ export default {
               userOrgs: r.table('User').get(teamMember('userId'))('userOrgs')
             }))
             .coerceTo('array'),
-          pendingApprovalEmails: r.table('OrgApproval')
-            .getAll(r.args(emails), {index: 'email'})
-            .filter({teamId})('email')
-            .coerceTo('array')
+          // pendingApprovalEmails: r.table('OrgApproval')
+          //   .getAll(r.args(emails), {index: 'email'})
+          //   .filter({teamId})('email')
+          //   .coerceTo('array')
         }
       });
-    const {inviteEmails, teamMembers, pendingApprovalEmails} = usedEmails;
+    // ignore pendingApprovalEmails because this could be the billing leader hitting accept
+    const {inviteEmails, teamMembers} = usedEmails;
     const schemaProps = {
       activeTeamMemberEmails: teamMembers.filter((m) => m.isNotRemoved === true).map((m) => m.email),
-      inviteEmails,
-      pendingApprovalEmails
+      inviteEmails
     };
     const schema = inviteTeamMemberValidation(schemaProps);
     const {errors, data: validInvitees} = schema(invitees);
@@ -80,7 +81,7 @@ export default {
     // const inactiveTeamMemberEmails = inactiveTeamMembers.map((m) => m.email);
     // console.log(inactiveTeamMembers, inactiveTeamMemberEmails)
     const idsToReactivate = [];
-    const filteredInvitees = [];
+    const inviteesNeedingApproval = [];
     for (let i = 0; i < validInvitees.length; i++) {
       const validInvitee = validInvitees[i];
       const inactiveInvitee = inactiveTeamMembers.find((m) => m.email === validInvitee.email);
@@ -92,10 +93,10 @@ export default {
           idsToReactivate.push(inactiveInvitee.id);
         } else {
           // otherwise, they need approval just like the rest
-          filteredInvitees.push(validInvitee);
+          inviteesNeedingApproval.push(validInvitee);
         }
       } else {
-        filteredInvitees.push(validInvitee);
+        inviteesNeedingApproval.push(validInvitee);
       }
     }
 
@@ -106,13 +107,14 @@ export default {
         .run()
     }
 
-    if (filteredInvitees) {
+    if (inviteesNeedingApproval.length > 0) {
+      const emailsNeedingApproval = inviteesNeedingApproval.map((i) => i.email);
       if (inviterIsBillingLeader) {
-        // no need to check for orgApproval or notifications because OrgApproval was checked in validation
-        asyncInviteTeam(authToken, teamId, filteredInvitees)
+        asyncInviteTeam(authToken, teamId, inviteesNeedingApproval);
+        // if any folks were pending, remove that status now
+        removeOrgApprovalAndNotification(orgId, emailsNeedingApproval);
       } else {
-        const filteredInviteeEmails = filteredInvitees.map((i) => i.email);
-        createPendingApprovals(filteredInviteeEmails, orgId, teamId, teamName, userId);
+        createPendingApprovals(emailsNeedingApproval, orgId, teamId, teamName, userId);
         // just the approvals were created
         return false;
       }

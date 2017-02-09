@@ -51,7 +51,7 @@ export const requiredEmail = (value) => value
   .required('You should enter an email here')
   .matches(emailRegex, 'That doesn\'t look like an email address');
 
-export const makeInviteeTemplate = (inviteEmails, teamMemberEmails, pendingApprovalEmails) => {
+export const makeInviteeTemplate = (inviteEmails, teamMemberEmails, pendingApprovalEmails = []) => {
   return (value) => value
     .trim()
     .required('You should enter an email here')
