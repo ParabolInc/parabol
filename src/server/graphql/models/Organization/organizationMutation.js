@@ -1,5 +1,4 @@
 import getRethink from 'server/database/rethinkDriver';
-import {UpdateOrgInput} from './organizationSchema';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
@@ -28,6 +27,7 @@ import shortid from 'shortid';
 import addOrg from 'server/graphql/models/Organization/addOrg/addOrg'
 import addBilling from 'server/graphql/models/Organization/addBilling/addBilling';
 import updateOrg from 'server/graphql/models/Organization/updateOrg/updateOrg';
+import rejectOrgApproval from 'server/graphql/models/Organization/rejectOrgApproval/rejectOrgApproval';
 import {BILLING_LEADER} from 'universal/utils/constants';
 
 export default {
@@ -98,6 +98,7 @@ export default {
       return true;
     }
   },
+  rejectOrgApproval,
   removeOrgUser: {
     type: GraphQLBoolean,
     description: 'Remove a user from an org',

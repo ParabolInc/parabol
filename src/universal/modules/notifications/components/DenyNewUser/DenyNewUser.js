@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from 'react';
-import {withRouter} from 'react-router';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import Button from 'universal/components/Button/Button';
@@ -23,7 +22,10 @@ const TrialExpiresSoon = (props) => {
         <AvatarPlaceholder/>
       </div>
       <div className={css(styles.message)}>
-        {billingLeaderName} has denied {inviteeEmail} from joining the organization.
+        <span className={css(styles.messageVar)}>{billingLeaderName} </span>
+        has denied
+        <span className={css(styles.messageVar)}> {inviteeEmail} </span>
+        from joining the organization. <br/>
         Reason: {safeReason}
       </div>
       <div className={css(styles.buttonGroup)}>

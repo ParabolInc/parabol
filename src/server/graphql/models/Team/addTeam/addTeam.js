@@ -15,11 +15,10 @@ import {
   GraphQLList
 } from 'graphql';
 import {TeamInput} from '../teamSchema';
-import asyncInviteTeam from 'server/graphql/models/Invitation/inviteTeamMembers/asyncInviteTeam';
 import createTeamAndLeader from '../createFirstTeam/createTeamAndLeader';
 import addTeamValidation from './addTeamValidation';
-import createPendingApprovals from 'server/graphql/models/Invitation/inviteTeamMembers/createPendingApprovals';
 import inviteAsBillingLeader from 'server/graphql/models/Invitation/inviteTeamMembers/inviteAsBillingLeader';
+import inviteAsUser from 'server/graphql/models/Invitation/inviteTeamMembers/inviteAsUser';
 
 export default {
   type: GraphQLBoolean,
@@ -67,28 +66,11 @@ export default {
 
     // sidestep approval process
     if (inviterIsBillingLeader) {
-      await inviteAsBillingLeader(invitees, orgId, authToken, teamId);
-      return true;
-    }
-    const inviteeEmails = invitees.map((i) => i.email);
-    // send invitation that don't need approval
-    const inOrgInvitees = await r.table('User')
-      .getAll(orgId, {index: 'userOrgs'})
-      .filter((user) => r.expr(inviteeEmails).contains(user('email')))
-      .merge((user) => ({
-        fullName: user('preferredName')
-      }))
-      .pluck('fullName', 'email');
-    if (inOrgInvitees.length > 0) {
-      await asyncInviteTeam(authToken, teamId, inOrgInvitees);
+      await inviteAsBillingLeader(invitees, orgId, userId, teamId);
+    } else {
+      await inviteAsUser(invitees, orgId, userId, teamId, teamName);
     }
 
-    // seek approval for the rest
-    const outOfOrgEmails = inviteeEmails.filter((email) => !inOrgInvitees.find((i) => i.email === email));
-    if (outOfOrgEmails.length) {
-      await createPendingApprovals(outOfOrgEmails, orgId, teamId, teamName, userId);
-
-    }
     return true;
   }
 }

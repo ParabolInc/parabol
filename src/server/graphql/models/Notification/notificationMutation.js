@@ -11,7 +11,7 @@ export default {
     type: GraphQLBoolean,
     description: 'Remove a notification by ID',
     args: {
-      id: {
+      notificationId: {
         type: new GraphQLNonNull(GraphQLID),
         description: 'The id of the notification to remove'
       },

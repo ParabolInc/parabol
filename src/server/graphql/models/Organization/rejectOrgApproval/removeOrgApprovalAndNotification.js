@@ -9,7 +9,6 @@ export default async function removeOrgApprovalAndNotification(orgId, maybeEmail
     .filter({orgId})
     .delete()
     .do(() => {
-      // remove notifications about queued approvals
       return r.table('Notification')
         .getAll(orgId, {index: 'orgId'})
         .filter({
@@ -18,6 +17,7 @@ export default async function removeOrgApprovalAndNotification(orgId, maybeEmail
         .filter((notification) => {
           return r.expr(emails).contains(notification('varList')(2))
         })
-        .delete()
+        // get the inviterName
+        .delete({returnChanges: true})('changes')(0)('old_val')('varList')(0).default(null)
     })
 }

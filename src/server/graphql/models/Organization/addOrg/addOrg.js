@@ -60,7 +60,7 @@ export default {
       createNewOrg(orgId, orgName, userId, stripeToken)
     ];
     if (invitees && invitees.length) {
-      teamOrgInvitations.push(asyncInviteTeam(authToken, teamId, invitees));
+      teamOrgInvitations.push(asyncInviteTeam(userId, teamId, invitees));
     }
     await Promise.all(teamOrgInvitations);
 

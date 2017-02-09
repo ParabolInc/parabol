@@ -45,7 +45,7 @@ export default {
     handleSchemaErrors(errors);
 
     // RESOLUTION
-    const [inviterId, , inviteeEmail] = varList[2];
+    const [inviterId, , inviteeEmail] = varList;
     const billingLeaderName = await r.table('User').get(userId)('preferredName').default('A billing leader');
     await Promise.all([
       removeOrgApprovalAndNotification(orgId, inviteeEmail),
