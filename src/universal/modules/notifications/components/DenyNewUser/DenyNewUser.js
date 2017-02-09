@@ -4,7 +4,7 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import Button from 'universal/components/Button/Button';
 import fromNow from 'universal/utils/fromNow';
-import defaultStyles from './styles';
+import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 import FontAwesome from 'react-fontawesome';
 import appTheme from 'universal/styles/theme/appTheme';

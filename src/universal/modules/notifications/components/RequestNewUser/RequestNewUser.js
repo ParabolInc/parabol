@@ -4,10 +4,10 @@ import Button from 'universal/components/Button/Button';
 import {cashay} from 'cashay';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import defaultStyles from './styles';
+import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 import {connect} from 'react-redux';
-import RejectOrgApprovalModal from 'universal/modules/userDashboard/components/RejectOrgApprovalModal/RejectOrgApprovalModal';
+import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalModal';
 
 const mapStateToProps = () => {
   return { };

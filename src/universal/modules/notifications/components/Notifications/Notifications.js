@@ -3,8 +3,7 @@ import UserSettingsWrapper from 'universal/modules/userDashboard/components/User
 import {NOTIFICATIONS} from 'universal/modules/../utils/constants';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import {withRouter} from 'react-router';
-import NotificationRow from 'universal/modules/userDashboard/components/NotificationRow/NotificationRow';
+import NotificationRow from 'universal/modules/notifications/components/NotificationRow/NotificationRow';
 import Panel from 'universal/components/Panel/Panel';
 
 const Notifications = (props) => {
