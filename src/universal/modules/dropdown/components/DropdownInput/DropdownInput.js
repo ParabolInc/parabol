@@ -4,8 +4,9 @@ import {css} from 'aphrodite-local-styles/no-important';
 import FontAwesome from 'react-fontawesome';
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
-import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette';
+import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 import {Menu, MenuItem} from 'universal/modules/menu';
 import Button from 'universal/components/Button/Button';
 
@@ -44,13 +45,13 @@ const DropdownInput = (props) => {
             <Button colorPalette="mid" isBlock label="Create New Organization" size="smallest" onClick={handleCreateNew}/>
           </div>
         }
-      />)
+      />);
   };
   return (
     <FieldBlock>
       {label && <FieldLabel label={label} htmlFor={name}/>}
       <div className={css(styles.inputBlock)}>
-        <span className={css(styles.field)}>{orgName}</span>
+        <span>{orgName}</span>
         <Menu
           originAnchor={originAnchor}
           menuWidth="12rem"
@@ -58,39 +59,32 @@ const DropdownInput = (props) => {
           toggle={toggle}
           itemFactory={itemFactory}
           label="Select Organization:"
-        >
-        </Menu>
+        />
       </div>
     </FieldBlock>
-  )
+  );
 };
 
 const styleThunk = () => ({
   downButton: {
     cursor: 'pointer',
+    fontSize: `${ui.iconSize} !important`,
+    height: '100% !important',
+    lineHeight: '1.875rem !important',
+    padding: '0 1rem 0 0',
     position: 'absolute',
-    right: '1rem',
-    top: '.375rem'
-  },
-
-  field: {
-    appearance: 'none',
-    border: 0,
-    borderBottom: '1px solid transparent',
-    borderRadius: 0,
-    boxShadow: 'none',
-    display: 'block',
-    fontFamily: appTheme.typography.sansSerif,
-    fontSize: appTheme.typography.s4,
-    lineHeight: '1.75rem',
-    margin: '0',
-    padding: `.125rem ${ui.fieldPaddingHorizontal}`,
-    width: '100%',
+    right: 0,
+    textAlign: 'right',
+    top: 0,
+    width: '100%'
   },
 
   inputBlock: {
-    background: appTheme.palette.mid10l,
-    borderColor: appTheme.palette.mid40l,
+    ...ui.fieldBaseStyles,
+    ...makeFieldColorPalette('gray'),
+    ...makeHoverFocus({
+      borderColor: ui.fieldColorPalettes.gray.focusBorderColor
+    }),
     position: 'relative'
   },
 

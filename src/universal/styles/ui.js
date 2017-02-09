@@ -1,13 +1,15 @@
 
+// -----------------------------------------------------------------------------
 // ui.js
-// NOTE: Just normalizing some UI style properties here. (TA)
+// -----------------------------------------------------------------------------
 
 import tinycolor from 'tinycolor2';
 import appTheme from 'universal/styles/theme/appTheme';
+import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
 import zIndexScale from 'universal/styles/helpers/zIndexScale';
 
 // Reusable constants for UI object
-// ---------------------------------
+// -----------------------------------------------------------------------------
 
 const backgroundColor = tinycolor.mix(appTheme.palette.mid, '#fff', 95).toHexString();
 
@@ -26,6 +28,14 @@ const BUTTON_SIZE_LARGE = 'large';
 const BUTTON_SIZE_LARGEST = 'largest';
 const BUTTON_PADDING_HORIZONTAL_COMPACT = '.5em';
 
+// Controls
+// TODO: Define common control properties to be
+//       shared across inputs, buttons, etc. (TA)
+
+// Fields
+const FIELD_PADDING_HORIZONTAL = '.75rem';
+const FIELD_PLACEHOLDER_COLOR = appTheme.palette.mid80l;
+
 // Icons
 const iconSize = '14px'; // FontAwesome base
 const iconSizeAvatar = '21px'; // FontAwesome 1.5x
@@ -40,24 +50,28 @@ const transitionSlow = '800ms ease-in';
 const transitionSlower = '1600ms ease-in';
 const transitionSlowest = '3200ms ease-in';
 
-// ---------------------------------
+// -----------------------------------------------------------------------------
 
 const ui = {
   // Base settings
+  // ---------------------------------------------------------------------------
   backgroundColor,
   borderRadiusSmall,
   borderRadiusMedium,
   borderRadiusLarge,
 
   // Action items and cards
+  // ---------------------------------------------------------------------------
   actionCardBgColor: appTheme.palette.light60l,
   actionCardBgActive: 'rgba(255, 255, 255, .85)',
   zActionItem: zIndexScale(6),
 
   // Avatars
+  // ---------------------------------------------------------------------------
   avatarDefaultBoxShadow: '0 0 1px 1px rgba(0, 0, 0, .2)',
 
   // Breakpoints
+  // ---------------------------------------------------------------------------
   breakpoint: {
     wide: '@media (min-width: 90rem)',
     wider: '@media (min-width: 100rem)',
@@ -65,6 +79,7 @@ const ui = {
   },
 
   // Buttons
+  // ---------------------------------------------------------------------------
   buttonBaseStyles: {
     appearance: 'none',
     border: '1px solid transparent',
@@ -157,6 +172,7 @@ const ui = {
   ],
 
   // Cards
+  // ---------------------------------------------------------------------------
   cardBorderColor: appTheme.palette.mid30l,
   cardBorderRadius: borderRadiusMedium,
   cardMaxWidth: '17.5rem',
@@ -171,6 +187,7 @@ const ui = {
   zCard: zIndexScale(6),
 
   // Dashboards
+  // ---------------------------------------------------------------------------
   dashActionsWidth: '15rem',
   dashAgendaWidth: '15.125rem',
   dashBackgroundColor: backgroundColor,
@@ -184,6 +201,7 @@ const ui = {
   dashSidebarWidth: '15rem',
 
   // Email
+  // ---------------------------------------------------------------------------
   emailBackgroundColor: backgroundColor,
   emailFontFamily: '"Karla", "Helvetica Neue", serif',
   emailRuleColor: appTheme.palette.mid20l,
@@ -194,16 +212,70 @@ const ui = {
   },
 
   // Fields
+  // ---------------------------------------------------------------------------
+  fieldBaseStyles: {
+    appearance: 'none',
+    border: '.0625rem solid transparent',
+    borderRadius: borderRadiusSmall,
+    boxShadow: 'inset 0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)',
+    display: 'block',
+    fontFamily: appTheme.typography.sansSerif,
+    fontSize: appTheme.typography.s4,
+    lineHeight: 'normal',
+    margin: '0',
+    outline: 0,
+    padding: `.25em ${FIELD_PADDING_HORIZONTAL}`,
+    width: '100%'
+  },
+  fieldColorPalettes: {
+    cool: {
+      backgroundColor: appTheme.palette.cool10l,
+      borderColor: appTheme.palette.cool40l,
+      color: appTheme.palette.cool,
+      focusBorderColor: appTheme.palette.cool80l,
+      placeholder: makePlaceholderStyles(appTheme.palette.cool70l),
+      selection: appTheme.palette.cool20l
+    },
+    gray: {
+      backgroundColor: appTheme.palette.mid10l,
+      borderColor: appTheme.palette.mid40l,
+      color: appTheme.palette.dark,
+      focusBorderColor: appTheme.palette.mid80l,
+      placeholder: makePlaceholderStyles(FIELD_PLACEHOLDER_COLOR),
+      selection: appTheme.palette.mid20l
+    },
+    warm: {
+      backgroundColor: appTheme.palette.warm10l,
+      borderColor: appTheme.palette.warm40l,
+      color: appTheme.palette.warm,
+      focusBorderColor: appTheme.palette.warm80l,
+      placeholder: makePlaceholderStyles(appTheme.palette.warm70l),
+      selection: appTheme.palette.warm20l
+    },
+    white: {
+      backgroundColor: '#fff',
+      borderColor: appTheme.palette.mid40l,
+      color: appTheme.palette.dark,
+      focusBorderColor: appTheme.palette.mid80l,
+      placeholder: makePlaceholderStyles(FIELD_PLACEHOLDER_COLOR),
+      selection: appTheme.palette.mid20l
+    }
+  },
+  fieldErrorBorderColor: appTheme.palette.warm90a,
+  fieldErrorPlaceholderColor: appTheme.palette.warm90a,
   fieldLabelGutter: '.5rem',
-  fieldPaddingHorizontal: '.75rem',
+  fieldPaddingHorizontal: FIELD_PADDING_HORIZONTAL,
+  fieldPlaceholderColor: FIELD_PLACEHOLDER_COLOR,
 
   // Icons
+  // ---------------------------------------------------------------------------
   iconSize,
   iconSizeAvatar,
   iconSize2x,
   iconSize3x,
 
   // Invoice
+  // ---------------------------------------------------------------------------
   invoiceBorderColor: appTheme.palette.mid40l,
   invoiceBorderColorLighter: appTheme.palette.mid20l,
   invoiceBreakpoint: '@media (min-width: 32rem)',
@@ -216,9 +288,11 @@ const ui = {
   invoicePanelGutterLarge: '1.25rem',
 
   // Meeting
+  // ---------------------------------------------------------------------------
   meetingSidebarWidth: '15rem',
 
   // Menus
+  // ---------------------------------------------------------------------------
   menuBackgroundColor: '#fff' || backgroundColor,
   menuBorderColor: appTheme.palette.mid30l,
   menuGutterHorizontal: '.75rem',
@@ -228,25 +302,30 @@ const ui = {
   zMenu: zIndexScale(4),
 
   // Modals
+  // ---------------------------------------------------------------------------
   modalBorderRadius: borderRadiusLarge,
   modalBoxShadow: '0 .25rem .5rem 0 rgba(0, 0, 0, .35)',
 
   // Panels
+  // ---------------------------------------------------------------------------
   panelBorderColor: appTheme.palette.mid40l,
   panelBorderRadius: borderRadiusMedium,
   panelGutter: '1rem',
 
   // Project columns
+  // ---------------------------------------------------------------------------
   projectColumnsMaxWidth: '78.25rem',
   projectColumnsMinWidth: '48rem',
 
   // Rows
+  // ---------------------------------------------------------------------------
   rowBorderColor: appTheme.palette.mid20l,
   rowHeadingColor: appTheme.palette.dark,
   rowHeadingFontSize: appTheme.typography.s4,
   rowGutter: '1rem',
 
   // Transitions
+  // ---------------------------------------------------------------------------
   transitionFastest,
   transitionFaster,
   transitionFast,
@@ -255,6 +334,7 @@ const ui = {
   transitionSlowest,
 
   // Generic zIndex scale
+  // ---------------------------------------------------------------------------
   z1: zIndexScale(1),
   z2: zIndexScale(2),
   z3: zIndexScale(4),
