@@ -21,7 +21,8 @@ const CreditCardField = (props) => {
 
   const inputStyle = css(
     styles.field,
-    topField && styles.topField
+    topField && styles.topField,
+    touched && error && styles.error
   );
 
   const iconStyle = {
@@ -75,6 +76,10 @@ CreditCardField.propTypes = {
 };
 
 const styleThunk = () => ({
+  error: {
+    boxShadow: 'inset 0px 0px 8px 3px rgb(189, 15, 15), 0 0 1px 2px rgb(208, 21, 21)'
+  },
+
   field: {
     appearance: 'none',
     backgroundColor: '#fff',

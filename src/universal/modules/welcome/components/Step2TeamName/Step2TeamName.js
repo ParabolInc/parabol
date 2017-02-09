@@ -14,6 +14,7 @@ import {segmentEventTrack} from 'universal/redux/segmentActions';
 import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 import WelcomeSubmitButton from 'universal/modules/welcome/components/WelcomeSubmitButton/WelcomeSubmitButton';
 import step2Validation from './step2Validation';
+import formError from 'universal/styles/helpers/formError';
 
 const validate = (values) => {
   const welcomeSchema = step2Validation();
@@ -79,9 +80,7 @@ Step2TeamName.propTypes = {
 
 const styleThunk = () => ({
   error: {
-    color: appTheme.palette.warm,
-    fontWeight: 700,
-    textAlign: 'center'
+    ...formError
   },
 
   formBlock: {

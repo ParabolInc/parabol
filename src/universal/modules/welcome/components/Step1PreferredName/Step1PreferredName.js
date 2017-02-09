@@ -12,7 +12,7 @@ import step1Validation from './step1Validation';
 import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 import shouldValidate from 'universal/validation/shouldValidate';
 import WelcomeSubmitButton from '../WelcomeSubmitButton/WelcomeSubmitButton';
-
+import formError from 'universal/styles/helpers/formError';
 const validate = (values) => {
   const welcomeSchema = step1Validation();
   return welcomeSchema(values).errors;
@@ -88,9 +88,7 @@ class Step1PreferredName extends Component {
 
 const styleThunk = () => ({
   error: {
-    color: appTheme.palette.warm,
-    fontWeight: 700,
-    textAlign: 'center'
+    ...formError
   },
   formBlock: {
     alignItems: 'baseline',

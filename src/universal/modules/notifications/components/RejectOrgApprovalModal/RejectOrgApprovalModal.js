@@ -10,7 +10,7 @@ import {reduxForm, Field, SubmissionError} from 'redux-form';
 import TextAreaField from 'universal/components/TextAreaField/TextAreaField';
 import rejectOrgApprovalValidation from './rejectOrgApprovalValidation';
 import shouldValidate from 'universal/validation/shouldValidate';
-import appTheme from 'universal/styles/theme/appTheme';
+import formError from 'universal/styles/helpers/formError';
 
 const validate = (values) => {
   const schema = rejectOrgApprovalValidation();
@@ -81,9 +81,7 @@ const styleThunk = () => ({
   },
 
   error: {
-    color: appTheme.palette.warm,
-    fontWeight: 700,
-    textAlign: 'center'
+    ...formError
   },
 });
 

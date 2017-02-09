@@ -14,6 +14,10 @@ import withAsync from 'react-async-hoc';
 import {stripeKey} from 'universal/utils/clientOptions';
 import makeCreditCardSchema from 'universal/validation/makeCreditCardSchema';
 import portal from 'react-portal-hoc';
+import formError from 'universal/styles/helpers/formError';
+import {connect} from 'react-redux';
+import {normalizeExpiry, normalizeNumeric} from './normalizers';
+import shouldValidate from 'universal/validation/shouldValidate';
 
 const lockIconStyles = {
   lineHeight: appTheme.typography.s5,
@@ -44,46 +48,45 @@ const stripeFieldLookup = {
   }
 };
 
-const normalizeExpiry = (value = '', previousValue = '') => {
-  const month = value.substr(0, 2);
-  // left pad
-  if (month.length === 1 && month > 1) {
-    return `0${month}/`;
-  }
-  // if backspacing or typing a month > 12
-  if ((previousValue.length === 3 && value.length === 2) || parseInt(month) > 12) {
-    return value[0];
-  }
-  const numValue = value.replace(/[^\d]/g, '');
-  if (numValue.length >= 2) {
-    const prefix = `${numValue.substr(0, 2)}/`;
-    const year = numValue.substr(2);
-    const currentYear = String((new Date()).getFullYear()).substr(2);
-    // only 201x+
-    if (year.length === 0 || year.length === 1 && year < currentYear[0]) {
-      return prefix;
-    }
-    // only 2017+
-    if (year.length > 0 && year < currentYear) {
-      return `${prefix}${year[0]}`;
-    }
-    // final value
-    return `${prefix}${numValue.substr(2)}`;
-  }
-  // correct month (october+)
-  return value;
-};
-
-const normalizeNumeric = (value) => value.replace(/[^\d]/g, '');
-
 const validate = (values, props) => {
   const {stripeCard} = props;
   const schema = makeCreditCardSchema(stripeCard);
   return schema(values).errors;
 };
 
+const mapStateToProps = (state, props) => {
+  const formState = state.form[props.form];
+  if (formState) {
+    const {syncErrors} = formState;
+    if (syncErrors) {
+      const firstErrorField = Object.keys(syncErrors)[0];
+      const {touched} = formState.fields[firstErrorField] || {};
+      if (touched) {
+        return {
+          syncFormError: syncErrors[firstErrorField]
+        }
+      }
+    }
+  }
+  return {};
+};
+
 const CreditCardModal = (props) => {
-  const {closeAfter, createToken, handleSubmit, handleToken, isUpdate, closePortal, orgId, styles, submitting, isClosing} = props;
+  const {
+    closeAfter,
+    closePortal,
+    createToken,
+    dirty,
+    error,
+    handleSubmit,
+    handleToken,
+    isClosing,
+    isUpdate,
+    orgId,
+    styles,
+    submitting,
+    syncFormError,
+  } = props;
   const crudAction = isUpdate ? 'Update' : 'Add';
   const addStripeBilling = async(submittedData) => {
     const {creditCardNumber: number, expiry, cvc} = submittedData;
@@ -112,6 +115,7 @@ const CreditCardModal = (props) => {
       closePortal();
     }
   };
+  const anyError = error || syncFormError;
   return (
     <DashModal onBackdropClick={closePortal} inputModal isClosing={isClosing} closeAfter={closeAfter}>
       <div className={css(styles.modalBody)}>
@@ -126,6 +130,7 @@ const CreditCardModal = (props) => {
         <Type align="center" colorPalette="mid" lineHeight={appTheme.typography.s5} scale="s3">
           <FontAwesome name="lock" style={lockIconStyles}/> Secured by <b>Stripe</b>
         </Type>
+        {dirty && anyError && <div className={css(styles.error)}>{anyError}</div>}
         <form className={css(styles.cardInputs)} onSubmit={handleSubmit(addStripeBilling)}>
           <div className={css(styles.creditCardNumber)}>
             <Field
@@ -240,7 +245,7 @@ const styleThunk = () => ({
   },
 
   creditCardNumber: {
-    borderBottom: `1px solid ${appTheme.palette.mid20l}`,
+    border: `1px solid ${appTheme.palette.mid20l}`,
   },
   cardDetails: {
     display: 'flex'
@@ -254,6 +259,10 @@ const styleThunk = () => ({
     // required for to clip 0 border radius for input
     overflow: 'hidden',
     width: '100%'
+  },
+
+  error: {
+    ...formError
   },
 
   expiry: {
@@ -292,9 +301,11 @@ const stripeCb = () => {
 
 export default portal({escToClose: true, closeAfter: 100})(
   withAsync({'https://js.stripe.com/v2/': stripeCb})(
-    reduxForm({form: 'creditCardInfo', validate})(
-      withStyles(styleThunk)(
-        CreditCardModal
+    reduxForm({form: 'creditCardInfo', validate, shouldValidate})(
+      connect(mapStateToProps)(
+        withStyles(styleThunk)(
+          CreditCardModal
+        )
       )
     )
   )
