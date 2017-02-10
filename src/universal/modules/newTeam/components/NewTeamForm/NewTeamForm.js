@@ -191,7 +191,7 @@ const styleThunk = () => ({
     display: 'flex',
     fontSize: appTheme.typography.s3,
     margin: '1rem 0 .25rem',
-    paddingLeft: '1rem'
+    paddingLeft: '.75rem'
   },
 
   fill: {
