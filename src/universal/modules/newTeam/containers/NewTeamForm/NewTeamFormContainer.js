@@ -67,8 +67,7 @@ class NewTeamFormContainer extends Component {
   };
 
   onSubmit = (submittedData) => {
-    const {dispatch, router} = this.props;
-    const {isNewOrg} = props;
+    const {dispatch, isNewOrg, router} = this.props;
     const newTeamId = shortid.generate();
     if (isNewOrg) {
       const schema = addOrgSchema();

@@ -3,17 +3,21 @@ import stripe from 'server/billing/stripe';
 import {ACTION_MONTHLY, TRIAL_PERIOD_DAYS} from 'server/utils/serverConstants';
 import {fromStripeDate} from 'server/billing/stripeDate';
 import {BILLING_LEADER} from 'universal/utils/constants';
-import updateStripeBilling from 'server/graphql/models/Organization/addBilling/updateStripeBilling';
+import getCCFromCustomer from 'server/graphql/models/Organization/addBilling/getCCFromCustomer';
 
 export default async function createNewOrg(orgId, orgName, leaderUserId, stripeToken) {
   const r = getRethink();
   const now = new Date();
 
-  const {id: stripeId} = await stripe.customers.create({
+  const customer = await stripe.customers.create({
+    source: stripeToken,
     metadata: {
       orgId
     }
   });
+
+  const creditCard = stripeToken && getCCFromCustomer(customer);
+  const {id: stripeId} = customer;
   const {id: stripeSubscriptionId, current_period_end} = await stripe.subscriptions.create({
     customer: stripeId,
     metadata: {
@@ -24,7 +28,6 @@ export default async function createNewOrg(orgId, orgName, leaderUserId, stripeT
     trial_period_days: stripeToken ? 0 : TRIAL_PERIOD_DAYS
   });
   const validUntil = fromStripeDate(current_period_end);
-  const creditCard = stripeToken && await updateStripeBilling(orgId, stripeId, stripeToken);
 
   return await r.table('Organization').insert({
     id: orgId,

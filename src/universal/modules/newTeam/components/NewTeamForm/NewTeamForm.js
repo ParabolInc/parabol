@@ -39,7 +39,6 @@ const NewTeamForm = (props) => {
   const resetOrgSelection = () => {
     router.push('/newteam');
   };
-  console.log(last4);
   return (
     <form className={css(styles.form)} onSubmit={handleSubmit}>
       <h1 className={css(styles.heading)}>Create a New Team</h1>

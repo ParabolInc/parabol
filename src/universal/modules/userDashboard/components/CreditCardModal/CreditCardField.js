@@ -38,7 +38,8 @@ const CreditCardField = (props) => {
   };
 
   const requireNumeric = (e) => {
-    if (isNaN(parseInt(e.key))) {
+    // keep Enter around to let them submit
+    if (e.key !== 'Enter' && isNaN(parseInt(e.key))) {
       e.preventDefault();
     }
   };

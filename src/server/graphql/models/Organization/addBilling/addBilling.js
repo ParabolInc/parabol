@@ -9,7 +9,7 @@ import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
 import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
 import stripe from 'server/billing/stripe';
 import {toStripeDate} from 'server/billing/stripeDate';
-import updateStripeBilling from 'server/graphql/models/Organization/addBilling/updateStripeBilling';
+import getCCFromCustomer from 'server/graphql/models/Organization/addBilling/getCCFromCustomer';
 
 export default {
   type: GraphQLBoolean,
@@ -38,7 +38,7 @@ export default {
     const {isTrial, stripeId, stripeSubscriptionId, validUntil} = await r.table('Organization')
       .get(orgId)
       .pluck('isTrial', 'validUntil', 'stripeSubscriptionId');
-    const promises = [updateStripeBilling(orgId, stripeId, stripeToken)];
+    const promises = [stripe.customers.update(stripeId, {source: stripeToken})];
     let nowValidUntil;
     if (isTrial && validUntil > now) {
       // extend the trial in stripe
@@ -54,8 +54,10 @@ export default {
         })
         .delete());
     }
-    const [creditCard] = await promises;
-    const orgUpdates = {creditCard};
+    const [customer] = await promises;
+    const orgUpdates = {
+      creditCard: getCCFromCustomer(customer)
+    };
     if (nowValidUntil !== undefined) {
       orgUpdates.validUntil = nowValidUntil;
     }

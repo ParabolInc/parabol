@@ -47,7 +47,7 @@ const CreditCardModal = (props) => {
     <DashModal onBackdropClick={closePortal} inputModal isClosing={isClosing} closeAfter={closeAfter}>
       <div className={css(styles.modalBody)}>
         <div className={css(styles.iconAvatarBlock)}>
-          <IconAvatar colorPalette="mid" icon={cardTypeIcon} size="large" />
+          <IconAvatar colorPalette="mid" icon={cardTypeIcon} size="large"/>
         </div>
         <Type align="center" colorPalette="mid" lineHeight="1.875rem" marginBottom=".25rem" scale="s6">
           {crudAction} Credit Card
@@ -56,69 +56,71 @@ const CreditCardModal = (props) => {
           <FontAwesome name="lock" style={lockIconStyles}/> Secured by <b>Stripe</b>
         </Type>
         {dirty && anyError && <div className={css(styles.error)}>{anyError}</div>}
-        <form className={css(styles.cardInputs)} onSubmit={handleSubmit(addStripeBilling)}>
-          <div className={css(styles.creditCardNumber)}>
-            <Field
-              autoFocus
-              component={CreditCardField}
-              iconName="credit-card"
-              maxLength="20"
-              name="creditCardNumber"
-              normalize={normalizeNumeric}
-              placeholder="Card number"
-              shortcutHint="Credit card number"
-              topField
-              onChange={checkCardType}
-            />
-          </div>
-          <div className={css(styles.cardDetails)}>
-            <div className={css(styles.expiry)}>
+        <form onSubmit={handleSubmit(addStripeBilling)}>
+          <div className={css(styles.cardInputs)}>
+            <div className={css(styles.creditCardNumber)}>
               <Field
+                autoFocus
                 component={CreditCardField}
-                iconName="calendar"
-                maxLength="5"
-                name="expiry"
-                placeholder="MM/YY"
-                shortcutHint="Expiration date"
-                normalize={normalizeExpiry}
+                iconName="credit-card"
+                maxLength="20"
+                name="creditCardNumber"
+                normalize={normalizeNumeric}
+                placeholder="Card number"
+                shortcutHint="Credit card number"
+                topField
+                onChange={checkCardType}
               />
             </div>
-            <div>
-              <Field
-                component={CreditCardField}
-                iconName="lock"
-                maxLength="4"
-                name="cvc"
-                normalize={normalizeNumeric}
-                placeholder="CVC"
-                shortcutHint="3-digit code on the back of your card"
+            <div className={css(styles.cardDetails)}>
+              <div className={css(styles.expiry)}>
+                <Field
+                  component={CreditCardField}
+                  iconName="calendar"
+                  maxLength="5"
+                  name="expiry"
+                  placeholder="MM/YY"
+                  shortcutHint="Expiration date"
+                  normalize={normalizeExpiry}
+                />
+              </div>
+              <div>
+                <Field
+                  component={CreditCardField}
+                  iconName="lock"
+                  maxLength="4"
+                  name="cvc"
+                  normalize={normalizeNumeric}
+                  placeholder="CVC"
+                  shortcutHint="3-digit code on the back of your card"
+                />
+              </div>
+            </div>
+          </div>
+          <div className={css(styles.buttonGroup)}>
+            <div className={css(styles.updateButton)}>
+              <Button
+                colorPalette="cool"
+                disabled={submitting}
+                isBlock
+                label={crudAction}
+                size="small"
+                type="submit"
+                onClick={handleSubmit(addStripeBilling)}
+              />
+            </div>
+            <div className={css(styles.cancelButton)}>
+              <Button
+                colorPalette="gray"
+                disabled={submitting}
+                isBlock
+                label="Cancel"
+                size="small"
+                onClick={closePortal}
               />
             </div>
           </div>
         </form>
-        <div className={css(styles.buttonGroup)}>
-          <div className={css(styles.updateButton)}>
-            <Button
-              colorPalette="cool"
-              disabled={submitting}
-              isBlock
-              label={crudAction}
-              size="small"
-              type="submit"
-              onClick={handleSubmit(addStripeBilling)}
-            />
-          </div>
-          <div className={css(styles.cancelButton)}>
-            <Button
-              colorPalette="gray"
-              disabled={submitting}
-              isBlock
-              label="Cancel"
-              size="small"
-              onClick={closePortal}
-            />
-          </div>
-        </div>
       </div>
     </DashModal>
   );
