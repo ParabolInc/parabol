@@ -33,6 +33,8 @@ const BUTTON_PADDING_HORIZONTAL_COMPACT = '.5em';
 //       shared across inputs, buttons, etc. (TA)
 
 // Fields
+const FIELD_BOX_SHADOW = 'inset 0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)';
+const FIELD_BOX_SHADOW_FOCUS = '0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)';
 const FIELD_PADDING_HORIZONTAL = '.75rem';
 const FIELD_PLACEHOLDER_COLOR = appTheme.palette.mid80l;
 
@@ -217,7 +219,7 @@ const ui = {
     appearance: 'none',
     border: '.0625rem solid transparent',
     borderRadius: borderRadiusSmall,
-    boxShadow: 'inset 0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)',
+    boxShadow: FIELD_BOX_SHADOW,
     display: 'block',
     fontFamily: appTheme.typography.sansSerif,
     fontSize: appTheme.typography.s4,
@@ -225,14 +227,10 @@ const ui = {
     margin: '0',
     outline: 0,
     padding: `.25em ${FIELD_PADDING_HORIZONTAL}`,
-    width: '100%',
-    ':focus': {
-      boxShadow: '0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)'
-    },
-    ':active': {
-      boxShadow: '0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)'
-    }
+    width: '100%'
   },
+  fieldBoxShadow: FIELD_BOX_SHADOW,
+  fieldFocusBoxShadow: FIELD_BOX_SHADOW_FOCUS,
   fieldColorPalettes: {
     cool: {
       backgroundColor: appTheme.palette.cool10l,

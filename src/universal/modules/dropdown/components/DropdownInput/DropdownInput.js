@@ -83,7 +83,8 @@ const styleThunk = () => ({
     ...ui.fieldBaseStyles,
     ...makeFieldColorPalette('gray'),
     ...makeHoverFocus({
-      borderColor: ui.fieldColorPalettes.gray.focusBorderColor
+      borderColor: ui.fieldColorPalettes.gray.focusBorderColor,
+      boxShadow: ui.fieldBoxShadow
     }),
     position: 'relative'
   },
