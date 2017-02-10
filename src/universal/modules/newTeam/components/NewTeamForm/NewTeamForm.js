@@ -36,7 +36,6 @@ const NewTeamForm = (props) => {
       {isNewOrg ?
         <div className={css(styles.formBlock)}>
           <Field
-            autoFocus
             colorPalette="gray"
             component={InputField}
             label="Organization Name"

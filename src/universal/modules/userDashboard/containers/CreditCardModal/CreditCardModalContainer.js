@@ -96,8 +96,8 @@ class CreditCardModalContainer extends Component {
 
   checkCardType = (e) => {
     const {stripeCard} = this.props;
-    if (e.target.value) {
-      const type = stripeCard.cardType(e.target.value);
+    if (e.currentTarget.value) {
+      const type = stripeCard.cardType(e.currentTarget.value);
       const cardTypeIcon = cardTypeLookup[type];
       if (cardTypeIcon !== this.state.cardTypeIcon) {
         this.setState({

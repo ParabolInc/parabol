@@ -37,7 +37,7 @@ const FileInput = (props) => {
           accept={accept}
           onChange={(e) => {
             // send the file to the redux-form FileList manager
-            props.input.onChange(e.target.files[0]);
+            props.input.onChange(e.currentTarget.files[0]);
             // if not pushed to the back of the queue, the values don't update, even if the parent component is force updated
             setTimeout(() => doSubmit(), 0)
           }}
