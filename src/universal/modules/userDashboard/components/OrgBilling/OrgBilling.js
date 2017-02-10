@@ -8,7 +8,7 @@ import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
 import ActiveTrialCallOut from '../ActiveTrialCallOut/ActiveTrialCallOut';
 import ExpiredTrialCallOut from '../ExpiredTrialCallOut/ExpiredTrialCallOut';
-import CreditCardModal from 'universal/modules/userDashboard/components/CreditCardModal/CreditCardModal';
+import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer';
 import appTheme from 'universal/styles/theme/appTheme';
 
 const OrgBilling = (props) => {
@@ -40,7 +40,7 @@ const OrgBilling = (props) => {
             <span className={css(styles.creditCardExpiresLabel)}>Expires</span>
             <span className={css(styles.expiry)}>{expiry || '??/??'}</span>
           </div>
-          <CreditCardModal isUpdate orgId={orgId} toggle={update}/>
+          <CreditCardModalContainer isUpdate orgId={orgId} toggle={update}/>
         </div>
       </Panel>
       <Panel label="Invoices">

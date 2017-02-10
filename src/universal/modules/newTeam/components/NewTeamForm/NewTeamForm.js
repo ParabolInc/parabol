@@ -10,7 +10,7 @@ import {Field, reduxForm} from 'redux-form';
 import DropdownInput from 'universal/modules/dropdown/components/DropdownInput/DropdownInput';
 import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
 import addOrgSchema from 'universal/validation/addOrgSchema';
-import CreditCardModal from 'universal/modules/userDashboard/components/CreditCardModal/CreditCardModal';
+import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer';
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
 import {withRouter} from 'react-router';
 import shouldValidate from 'universal/validation/shouldValidate';
@@ -51,7 +51,7 @@ const NewTeamForm = (props) => {
                 The members that you invite will be prorated on their
                 join date and added to your second invoice.
                 <div className={css(styles.billingButtonBlock)}>
-                  <CreditCardModal
+                  <CreditCardModalContainer
                     handleToken={setCreditCard}
                     toggle={addBilling}
                   />
