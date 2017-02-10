@@ -1,11 +1,12 @@
 import React, {Component, PropTypes} from 'react';
 import {withRouter} from 'react-router';
 import Button from 'universal/components/Button/Button';
+import Row from 'universal/components/Row/Row';
 import {cashay} from 'cashay';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
-import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
+import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import {connect} from 'react-redux';
 import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalModal';
 
@@ -24,18 +25,20 @@ const RequestNewUser = (props) => {
     cashay.mutate('inviteTeamMembers', {variables});
   };
 
-  const rejectToggle = <Button
-    colorPalette="gray"
-    isBlock
-    label="Decline"
-    size="small"
-    type="submit"
-  />;
+  const rejectToggle = (
+    <Button
+      colorPalette="gray"
+      isBlock
+      label="Decline"
+      size="smallest"
+      type="submit"
+    />
+  );
 
   return (
-    <div className={css(styles.row)}>
+    <Row>
       <div className={css(styles.icon)}>
-        <AvatarPlaceholder/>
+        <IconAvatar icon="user" size="medium" />
       </div>
       <div className={css(styles.message)}>
         <span className={css(styles.messageVar)}>{inviterName} </span>
@@ -50,7 +53,7 @@ const RequestNewUser = (props) => {
             colorPalette="cool"
             isBlock
             label="Accept"
-            size="small"
+            size="smallest"
             type="submit"
             onClick={acceptInvite}
           />
@@ -64,7 +67,7 @@ const RequestNewUser = (props) => {
           />
         </div>
       </div>
-    </div>
+    </Row>
   );
 };
 

@@ -40,18 +40,18 @@ const RejectOrgApprovalModal = (props) => {
   };
   return (
     <DashModal closeAfter={closeAfter} closePortal={closePortal} isClosing={isClosing} onBackdropClick={closePortal}>
-      <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
+      <Type align="center" bold marginBottom=".5rem" scale="s6" colorPalette="mid">
         Care to say why?
       </Type>
-      <Type align="center" bold scale="s4">
-        Type a response below <br />
-        and we'll pass it along to {inviterName} <br />
+      <Type align="center" marginBottom="1rem" scale="sBase" colorPalette="black">
+        Type a response below and <br/>we’ll pass it along to {inviterName}.
       </Type>
       <form onSubmit={handleSubmit(onSubmit)}>
         {error && <div className={css(styles.error)}>{error}</div>}
         <Field
           component={TextAreaField}
           name="reason"
+          placeholder="Comment"
         />
         <div className={css(styles.buttonBlock)}>
           <Button

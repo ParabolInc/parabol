@@ -42,10 +42,10 @@ const UserSettings = (props) => {
               </PhotoUploadModal>
             </div>
             <div className={css(styles.infoBlock)}>
-              <div className={css(styles.row)}>
+              <div className={css(styles.block)}>
                 {renderActivity(activity)}
               </div>
-              <div className={css(styles.row)}>
+              <div className={css(styles.block)}>
                 {/* TODO: Make me Editable.js (TA) */}
                 <Field
                   autoFocus
@@ -101,7 +101,7 @@ const styleThunk = () => ({
     width: '100%'
   },
 
-  row: {
+  block: {
     margin: '0 0 1.5rem'
   },
 

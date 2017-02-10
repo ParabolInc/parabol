@@ -261,11 +261,17 @@ const ui = {
       selection: appTheme.palette.mid20l
     }
   },
-  fieldErrorBorderColor: appTheme.palette.warm90a,
-  fieldErrorPlaceholderColor: appTheme.palette.warm90a,
+  fieldDisabled: {
+    cursor: 'not-allowed'
+  },
+  fieldReadOnly: {
+    cursor: 'default'
+  },
   fieldLabelGutter: '.5rem',
   fieldPaddingHorizontal: FIELD_PADDING_HORIZONTAL,
   fieldPlaceholderColor: FIELD_PLACEHOLDER_COLOR,
+  fieldErrorBorderColor: appTheme.palette.warm90a,
+  fieldErrorPlaceholderColor: appTheme.palette.warm90a,
 
   // Icons
   // ---------------------------------------------------------------------------

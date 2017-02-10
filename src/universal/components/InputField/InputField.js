@@ -17,7 +17,6 @@ const InputField = (props) => {
     shortcutDisabled,
     colorPalette,
     disabled,
-    hasTransparentBackground,
     input,
     isLarger,
     isWider,
@@ -35,7 +34,6 @@ const InputField = (props) => {
     // allow hotkeys to be triggered when inside a field input
     styles.field,
     colorPalette ? styles[colorPalette] : styles.white,
-    hasTransparentBackground && styles.transparentBackground,
     disabled && styles.disabled,
     isLarger && styles.fieldLarger,
     readyOnly && styles.readyOnly,
@@ -88,7 +86,6 @@ const InputField = (props) => {
 };
 
 InputField.propTypes = {
-  hasTransparentBackground: PropTypes.bool,
   hasErrorText: PropTypes.bool,
   helpText: PropTypes.any,
   autoFocus: PropTypes.bool,
@@ -122,16 +119,6 @@ InputField.propTypes = {
   useTextarea: PropTypes.bool
 };
 
-const readOnlyStyles = {
-  borderColor: 'transparent',
-  ':focus': {
-    borderColor: 'transparent'
-  },
-  ':active': {
-    borderColor: 'transparent'
-  }
-};
-
 const styleThunk = () => ({
   field: {
     ...ui.fieldBaseStyles
@@ -142,19 +129,8 @@ const styleThunk = () => ({
   warm: makeFieldColorPalette('warm'),
   white: makeFieldColorPalette('white'),
 
-  disabled: {
-    ...readOnlyStyles,
-    cursor: 'not-allowed'
-  },
-
-  readyOnly: {
-    ...readOnlyStyles,
-    cursor: 'default'
-  },
-
-  transparentBackground: {
-    backgroundColor: 'transparent'
-  },
+  disabled: ui.fieldDisabled,
+  readOnly: ui.fieldReadOnly,
 
   fieldLarger: {
     fontSize: appTheme.typography.s6,

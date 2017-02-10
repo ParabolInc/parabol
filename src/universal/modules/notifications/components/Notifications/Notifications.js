@@ -57,7 +57,7 @@ const styleThunk = () => ({
     color: appTheme.palette.dark,
     display: 'flex',
     fontSize: appTheme.typography.s5,
-    height: '10rem',
+    height: '4.8125rem',
     justifyContent: 'center',
     lineHeight: '1.5',
     padding: ui.rowGutter,
