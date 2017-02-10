@@ -94,6 +94,7 @@ const styleThunk = () => ({
     backgroundColor: ui.menuBackgroundColor,
     border: `1px solid ${ui.menuBorderColor}`,
     borderRadius: '.25rem',
+    overflow: 'hidden',
     paddingBottom: ui.menuGutterVertical,
     paddingTop: ui.menuGutterVertical,
     textAlign: 'left',

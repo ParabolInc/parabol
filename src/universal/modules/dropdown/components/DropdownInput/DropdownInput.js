@@ -54,7 +54,7 @@ const DropdownInput = (props) => {
         <span>{orgName}</span>
         <Menu
           originAnchor={originAnchor}
-          menuWidth="12rem"
+          menuWidth="13rem"
           targetAnchor={targetAnchor}
           toggle={toggle}
           itemFactory={itemFactory}
