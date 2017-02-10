@@ -219,7 +219,7 @@ const styleThunk = (theme, props) => ({
 
   label: {
     display: 'inline-block',
-    fontSize: ui.buttonFontSize[props.size] || appTheme.typography.sBase,
+    fontSize: ui.buttonFontSize[props.size] || ui.buttonFontSize.medium,
     height: ui.buttonLineHeight,
     lineHeight: ui.buttonLineHeight,
     verticalAlign: 'middle'

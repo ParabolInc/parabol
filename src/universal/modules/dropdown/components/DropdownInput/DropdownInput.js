@@ -70,7 +70,7 @@ const styleThunk = () => ({
     cursor: 'pointer',
     fontSize: `${ui.iconSize} !important`,
     height: '100% !important',
-    lineHeight: '1.875rem !important',
+    lineHeight: '2.25rem !important',
     padding: '0 1rem 0 0',
     position: 'absolute',
     right: 0,

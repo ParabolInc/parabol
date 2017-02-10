@@ -67,7 +67,7 @@ exports.up = async(r) => {
     users[userId].userOrgMap[orgId] = isLead;
     if (isLead) {
       orgs[orgId].leaderId = userId;
-      orgs[orgId].name = `${preferredName}'s Org`;
+      orgs[orgId].name = `${preferredName}’s Org`;
       users[userId].trialOrg = orgId
     }
   }

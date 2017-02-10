@@ -68,7 +68,7 @@ export default {
     // set up the team while the user is on step 3
     setTimeout(async() => {
       const expiresSoonId = shortid.generate();
-      const orgName = `${user.preferredName}'s Org`;
+      const orgName = `${user.preferredName}’s Org`;
       const {validUntil} = await createNewOrg(orgId, orgName, userId);
       await createTeamAndLeader(userId, validNewTeam, true);
       // Asynchronously create seed projects for team leader:

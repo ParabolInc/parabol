@@ -197,7 +197,8 @@ const styleThunk = () => ({
   },
 
   actionLinkBlock: {
-    fontSize: 0
+    fontSize: 0,
+    textAlign: 'right'
   },
 
   actionLink: {

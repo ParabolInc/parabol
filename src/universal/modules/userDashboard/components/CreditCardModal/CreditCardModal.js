@@ -136,7 +136,7 @@ const inputInnerBorder = `1px solid ${appTheme.palette.mid30l}`;
 const styleThunk = () => ({
   modalBody: {
     alignItems: 'center',
-    background: ui.dashBackgroundColor,
+    background: ui.backgroundColor,
     display: 'flex',
     flexDirection: 'column',
     width: '100%',

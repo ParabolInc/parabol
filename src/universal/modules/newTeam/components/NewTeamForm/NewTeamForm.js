@@ -1,4 +1,5 @@
 import React, {PropTypes} from 'react';
+import FontAwesome from 'react-fontawesome';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -22,14 +23,23 @@ const validate = (values, props) => {
 };
 
 const NewTeamForm = (props) => {
-  const {handleSubmit, last4, isNewOrg, organizations, router, setCreditCard, styles} = props;
+  const {
+    handleSubmit,
+    last4,
+    isNewOrg,
+    organizations,
+    router,
+    setCreditCard,
+    styles
+  } = props;
   const handleCreateNew = () => {
     router.push('/newteam/1');
   };
-  const addBilling = <Button colorPalette="cool" isBlock label="Add Billing Information"/>;
+  const addBilling = <Button colorPalette="cool" isBlock label="Add Billing Information" size="small" />;
   const resetOrgSelection = () => {
     router.push('/newteam');
   };
+  console.log(last4);
   return (
     <form className={css(styles.form)} onSubmit={handleSubmit}>
       <h1 className={css(styles.heading)}>Create a New Team</h1>
@@ -49,19 +59,32 @@ const NewTeamForm = (props) => {
                 Your card will be charged $5 for the first month.
                 The members that you invite will be prorated on their
                 join date and added to your second invoice.
+              </div>
+              {last4 === undefined ?
                 <div className={css(styles.billingButtonBlock)}>
                   <CreditCardModalContainer
                     handleToken={setCreditCard}
                     toggle={addBilling}
                   />
-                  {last4 &&
-                    <div>Info added for {last4}</div>
-                  }
+                  <div className={css(styles.cancelNewOrgButtonBlock)}>
+                    <Button
+                      colorPalette="dark"
+                      isBlock
+                      label="Nevermind, select an existing organization"
+                      onClick={resetOrgSelection}
+                      size="smallest"
+                      style="flat"
+                    />
+                  </div>
+                </div> :
+                <div className={css(styles.cardInfoBlock)}>
+                  <div className={css(styles.fill)}>
+                    <FontAwesome name="credit-card" />
+                    <div className={css(styles.cardInfoLabel)}>Info added for <b>{last4}</b></div>
+                  </div>
+                  <Button colorPalette="cool" label="Update" size="smallest" style="flat" />
                 </div>
-              </div>
-              <div className={css(styles.billingCancelLink)} onClick={resetOrgSelection}>
-                Nevermind, select an existing organization
-              </div>
+              }
             </div>
           </FieldBlock>
         </div>
@@ -100,7 +123,7 @@ const NewTeamForm = (props) => {
         colorPalette="warm"
         isBlock
         label="Create Team"
-        size="small"
+        size="medium"
         type="submit"
       />
     </form>
@@ -114,7 +137,7 @@ NewTeamForm.propTypes = {
 const styleThunk = () => ({
   form: {
     margin: 0,
-    maxWidth: '24rem',
+    maxWidth: '25rem',
     padding: '2rem'
   },
 
@@ -137,7 +160,7 @@ const styleThunk = () => ({
     boxShadow: '0 1px 2px rgba(0, 0, 0, .2)',
     color: appTheme.palette.dark50d,
     margin: '1rem 0',
-    padding: '.75rem .75rem 1rem'
+    padding: '.75rem .75rem .5rem'
   },
 
   billingHeading: {
@@ -148,25 +171,37 @@ const styleThunk = () => ({
 
   billingCopy: {
     fontSize: appTheme.typography.s2,
-    lineHeight: appTheme.typography.s4,
-    marginBottom: '1rem'
+    lineHeight: appTheme.typography.s4
   },
 
   billingButtonBlock: {
-    marginTop: '1rem'
+    margin: '1rem 0 0'
   },
 
-  billingCancelLink: {
-    cursor: 'pointer',
-    fontSize: appTheme.typography.s3,
-    fontWeight: 700,
-    textAlign: 'center',
-    textDecoration: 'underline',
-    transition: `opacity ${ui.transitionFastest}`,
+  cancelNewOrgButtonBlock: {
+    paddingTop: '.5rem'
+  },
 
-    ':hover': {
-      opacity: '.5'
-    }
+  cardInfoBlock: {
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    border: `.0625rem solid ${appTheme.palette.mid30l}`,
+    borderRadius: ui.borderRadiusSmall,
+    color: appTheme.palette.dark,
+    display: 'flex',
+    fontSize: appTheme.typography.s3,
+    margin: '1rem 0 .25rem',
+    paddingLeft: '1rem'
+  },
+
+  fill: {
+    alignItems: 'center',
+    display: 'flex',
+    flex: 1
+  },
+
+  cardInfoLabel: {
+    marginLeft: '.5rem'
   }
 });
 

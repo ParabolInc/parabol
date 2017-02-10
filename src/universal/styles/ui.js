@@ -138,11 +138,11 @@ const ui = {
     }
   },
   buttonFontSize: {
-    [BUTTON_SIZE_SMALLEST]: appTheme.typography.s1,
-    [BUTTON_SIZE_SMALL]: appTheme.typography.sBase,
-    [BUTTON_SIZE_MEDIUM]: '1.15rem', // appTheme.typography.s4,
-    [BUTTON_SIZE_LARGE]: appTheme.typography.s5,
-    [BUTTON_SIZE_LARGEST]: '1.75rem'
+    [BUTTON_SIZE_SMALLEST]: appTheme.typography.s3,
+    [BUTTON_SIZE_SMALL]: appTheme.typography.s4,
+    [BUTTON_SIZE_MEDIUM]: appTheme.typography.s5,
+    [BUTTON_SIZE_LARGE]: '1.375rem',
+    [BUTTON_SIZE_LARGEST]: appTheme.typography.s6
   },
   buttonIconSize: {
     [BUTTON_SIZE_SMALLEST]: iconSize,
@@ -151,8 +151,8 @@ const ui = {
     [BUTTON_SIZE_LARGE]: iconSizeAvatar,
     [BUTTON_SIZE_LARGEST]: iconSize2x,
   },
-  buttonLineHeight: '2.5em',
-  buttonPadding: '0 1em',
+  buttonLineHeight: '1.5em !important', // 2.5em
+  buttonPadding: '.25em 1em',
   buttonPaddingHorizontalCompact: BUTTON_PADDING_HORIZONTAL_COMPACT,
   buttonSizes: [
     BUTTON_SIZE_SMALLEST,
@@ -221,7 +221,7 @@ const ui = {
     display: 'block',
     fontFamily: appTheme.typography.sansSerif,
     fontSize: appTheme.typography.s4,
-    lineHeight: 'normal',
+    lineHeight: '1.5em',
     margin: '0',
     outline: 0,
     padding: `.25em ${FIELD_PADDING_HORIZONTAL}`,
