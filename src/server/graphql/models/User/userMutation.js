@@ -152,12 +152,6 @@ export default {
         tms: userInfo.tms
       };
       const {email, id: userId, createdAt, picture, preferredName} = auth0User;
-      if (segmentIo) {
-        segmentIo.identify({
-          userId,
-          traits: { avatar: picture, createdAt, email, name: preferredName }
-        });
-      }
       const currentUser = await r.table('User').get(userId);
       if (currentUser) {
         // invalidate the email/picture/preferredName where it is denormalized
@@ -184,6 +178,21 @@ export default {
         ...auth0User,
         welcomeSentAt
       };
+      /*
+       * From segment docs:
+       *
+       * We recommend calling identify a single time when the
+       * user’s account is first created, and only identifying
+       * again later when their traits change.
+       *
+       * see: https://segment.com/docs/sources/server/node/
+       */
+      if (segmentIo) {
+        segmentIo.identify({
+          userId,
+          traits: { avatar: picture, createdAt, email, name: preferredName }
+        });
+      }
       const asyncPromises = [
         r.table('User').insert(returnedUser),
         auth0ManagementClient.users.updateAppMetadata({id: userId}, {preferredName})
