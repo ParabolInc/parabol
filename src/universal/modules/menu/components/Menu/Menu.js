@@ -95,6 +95,7 @@ const styleThunk = () => ({
     border: `1px solid ${ui.menuBorderColor}`,
     borderRadius: '.25rem',
     paddingBottom: ui.menuGutterVertical,
+    paddingTop: ui.menuGutterVertical,
     textAlign: 'left',
     width: '100%',
     outline: 0
@@ -108,7 +109,7 @@ const styleThunk = () => ({
     fontWeight: 700,
     lineHeight: '1.5rem',
     marginBottom: ui.menuGutterVertical,
-    padding: `${ui.menuGutterVertical} ${ui.menuGutterHorizontal}`
+    padding: `0 ${ui.menuGutterHorizontal} ${ui.menuGutterVertical}`
   }
 });
 

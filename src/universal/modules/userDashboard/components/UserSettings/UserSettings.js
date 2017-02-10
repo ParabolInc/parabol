@@ -46,8 +46,10 @@ const UserSettings = (props) => {
                 {renderActivity(activity)}
               </div>
               <div className={css(styles.row)}>
+                {/* TODO: Make me Editable.js (TA) */}
                 <Field
                   autoFocus
+                  colorPalette="gray"
                   component={InputField}
                   label="Name"
                   name="preferredName"

@@ -138,6 +138,8 @@ CreditCardModal.propTypes = {
 };
 
 const avatarPlaceholderSize = '4rem';
+const inputInnerBorder = `1px solid ${appTheme.palette.mid30l}`;
+
 const styleThunk = () => ({
   // TODO this is copied from the add
   avatarPlaceholder: {
@@ -163,7 +165,6 @@ const styleThunk = () => ({
   buttonGroup: {
     display: 'flex',
     justifyContent: 'space-between',
-    marginTop: '2rem',
     width: '100%'
   },
 
@@ -172,12 +173,12 @@ const styleThunk = () => ({
   },
 
   updateButton: {
-    flexGrow: '2',
+    flexGrow: '4',
     marginLeft: '1rem'
   },
 
   creditCardNumber: {
-    border: `1px solid ${appTheme.palette.mid20l}`,
+    borderBottom: inputInnerBorder
   },
   cardDetails: {
     display: 'flex'
@@ -194,11 +195,13 @@ const styleThunk = () => ({
   },
 
   error: {
-    ...formError
+    ...formError,
+    marginTop: '1rem',
+    fontSize: appTheme.typography.s2
   },
 
   expiry: {
-    borderRight: `1px solid ${appTheme.palette.mid20l}`
+    borderRight: inputInnerBorder
   },
 
   modalBody: {
