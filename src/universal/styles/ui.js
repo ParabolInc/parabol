@@ -225,7 +225,13 @@ const ui = {
     margin: '0',
     outline: 0,
     padding: `.25em ${FIELD_PADDING_HORIZONTAL}`,
-    width: '100%'
+    width: '100%',
+    ':focus': {
+      boxShadow: '0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)'
+    },
+    ':active': {
+      boxShadow: '0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)'
+    }
   },
   fieldColorPalettes: {
     cool: {
