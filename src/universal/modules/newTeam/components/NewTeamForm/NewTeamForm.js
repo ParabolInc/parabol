@@ -82,7 +82,12 @@ const NewTeamForm = (props) => {
                     <FontAwesome name="credit-card" />
                     <div className={css(styles.cardInfoLabel)}>Info added for <b>{last4}</b></div>
                   </div>
-                  <Button colorPalette="cool" label="Update" size="smallest" style="flat" />
+                  <CreditCardModalContainer
+                    isUpdate
+                    handleToken={setCreditCard}
+                    toggle={<Button colorPalette="cool" label="Update" size="smallest" style="flat" />}
+                  />
+
                 </div>
               }
             </div>
