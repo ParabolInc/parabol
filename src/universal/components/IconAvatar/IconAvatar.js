@@ -56,9 +56,11 @@ const styleThunk = (customTheme, {colorPalette}) => {
   return {
     root: {
       alignItems: 'center',
+      backgroundColor: '#fff',
       borderColor,
       borderRadius: '100%',
       borderStyle: 'solid',
+      borderWidth: '.125rem',
       color,
       display: 'flex',
       justifyContent: 'center',
@@ -66,21 +68,18 @@ const styleThunk = (customTheme, {colorPalette}) => {
     },
 
     small: {
-      borderWidth: '.125rem',
       fontSize: ui.iconSize,
       height: smallSize,
       width: smallSize
     },
 
     medium: {
-      borderWidth: '.125rem',
       fontSize: ui.iconSizeAvatar,
       height: mediumSize,
       width: mediumSize
     },
 
     large: {
-      borderWidth: '.25rem',
       fontSize: ui.iconSize2x,
       height: largeSize,
       width: largeSize
@@ -90,7 +89,7 @@ const styleThunk = (customTheme, {colorPalette}) => {
       fontSize: 'inherit !important',
       height: ui.iconSize2x,
       lineHeight: ui.iconSize2x,
-      width: ui.iconSize2x
+      width: '100%'
     }
   };
 };

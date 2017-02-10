@@ -4,7 +4,7 @@ export default function makeCreditCardSchema(stripeCard) {
   return legitify({
     creditCardNumber: (value) => value
       .required('You must enter a CC number')
-      .min(16, 'That credit card is missing some digits')
+      .min(14, 'That credit card is missing some digits')
       .test((raw) => {
         return !stripeCard.validateCardNumber(raw) && 'Double check that credit card number'
       }),

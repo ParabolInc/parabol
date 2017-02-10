@@ -8,6 +8,7 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import {reduxForm, Field} from 'redux-form';
 import CreditCardField from './CreditCardField';
+import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import FontAwesome from 'react-fontawesome';
 import makeCreditCardSchema from 'universal/validation/makeCreditCardSchema';
 import formError from 'universal/styles/helpers/formError';
@@ -17,11 +18,6 @@ import shouldValidate from 'universal/validation/shouldValidate';
 const lockIconStyles = {
   lineHeight: appTheme.typography.s5,
   marginRight: '.2em'
-};
-const cardIconStyles = {
-  display: 'block',
-  fontSize: ui.iconSize2x,
-  lineHeight: '3rem'
 };
 
 const validate = (values, props) => {
@@ -50,10 +46,8 @@ const CreditCardModal = (props) => {
   return (
     <DashModal onBackdropClick={closePortal} inputModal isClosing={isClosing} closeAfter={closeAfter}>
       <div className={css(styles.modalBody)}>
-        <div className={css(styles.avatarPlaceholder)}>
-          <div className={css(styles.avatarPlaceholderInner)}>
-            <FontAwesome name={cardTypeIcon} style={cardIconStyles}/>
-          </div>
+        <div className={css(styles.iconAvatarBlock)}>
+          <IconAvatar colorPalette="mid" icon={cardTypeIcon} size="large" />
         </div>
         <Type align="center" colorPalette="mid" lineHeight="1.875rem" marginBottom=".25rem" scale="s6">
           {crudAction} Credit Card
@@ -103,16 +97,6 @@ const CreditCardModal = (props) => {
           </div>
         </form>
         <div className={css(styles.buttonGroup)}>
-          <div className={css(styles.cancelButton)}>
-            <Button
-              colorPalette="gray"
-              disabled={submitting}
-              isBlock
-              label="Cancel"
-              size="small"
-              onClick={closePortal}
-            />
-          </div>
           <div className={css(styles.updateButton)}>
             <Button
               colorPalette="cool"
@@ -122,6 +106,16 @@ const CreditCardModal = (props) => {
               size="small"
               type="submit"
               onClick={handleSubmit(addStripeBilling)}
+            />
+          </div>
+          <div className={css(styles.cancelButton)}>
+            <Button
+              colorPalette="gray"
+              disabled={submitting}
+              isBlock
+              label="Cancel"
+              size="small"
+              onClick={closePortal}
             />
           </div>
         </div>
@@ -137,52 +131,21 @@ CreditCardModal.propTypes = {
   orgId: PropTypes.string,
 };
 
-const avatarPlaceholderSize = '4rem';
 const inputInnerBorder = `1px solid ${appTheme.palette.mid30l}`;
 
 const styleThunk = () => ({
-  // TODO this is copied from the add
-  avatarPlaceholder: {
+  modalBody: {
     alignItems: 'center',
-    backgroundColor: '#fff',
-    border: `2px solid ${appTheme.palette.mid50l}`,
-    borderRadius: '100%',
-    color: appTheme.palette.mid50l,
+    background: ui.dashBackgroundColor,
     display: 'flex',
-    height: avatarPlaceholderSize,
-    justifyContent: 'center',
-    lineHeight: avatarPlaceholderSize,
-    margin: '0 0 .5rem',
-    textAlign: 'center',
-    width: avatarPlaceholderSize,
+    flexDirection: 'column',
+    width: '100%',
   },
 
-  avatarPlaceholderInner: {
-    height: '3rem',
-    width: '3rem'
+  iconAvatarBlock: {
+    margin: '0 0 .5rem'
   },
 
-  buttonGroup: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    width: '100%'
-  },
-
-  cancelButton: {
-    flexGrow: '1'
-  },
-
-  updateButton: {
-    flexGrow: '4',
-    marginLeft: '1rem'
-  },
-
-  creditCardNumber: {
-    borderBottom: inputInnerBorder
-  },
-  cardDetails: {
-    display: 'flex'
-  },
   cardInputs: {
     border: `1px solid ${appTheme.palette.mid60l}`,
     borderRadius: ui.borderRadiusSmall,
@@ -194,31 +157,40 @@ const styleThunk = () => ({
     width: '100%'
   },
 
-  error: {
-    ...formError,
-    marginTop: '1rem',
-    fontSize: appTheme.typography.s2
+  creditCardNumber: {
+    borderBottom: inputInnerBorder
+  },
+
+  cardDetails: {
+    display: 'flex'
   },
 
   expiry: {
     borderRight: inputInnerBorder
   },
 
-  modalBody: {
-    alignItems: 'center',
-    background: ui.dashBackgroundColor,
+  error: {
+    ...formError,
+    marginTop: '1rem',
+    fontSize: appTheme.typography.s2
+  },
+
+  buttonGroup: {
     display: 'flex',
-    flexDirection: 'column',
-    width: '100%',
+    flexDirection: 'row-reverse',
+    justifyContent: 'space-between',
+    width: '100%'
   },
 
-  reassure: {
-    marginBottom: '2rem'
+  cancelButton: {
+    flexGrow: '1',
+    paddingRight: '.625rem'
   },
 
-  stripeName: {
-    fontWeight: 700
-  }
+  updateButton: {
+    flexGrow: '4',
+    paddingLeft: '.625rem'
+  },
 });
 
 export default reduxForm({form: 'creditCardInfo', validate, shouldValidate})(
