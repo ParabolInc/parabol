@@ -90,6 +90,7 @@ const OrgMembers = (props) => {
                 <Button
                   colorPalette="dark"
                   icon="ellipsis-v"
+                  isBlock
                   size="smallest"
                   style="flat"
                 />
@@ -133,7 +134,8 @@ const styleThunk = () => ({
   },
 
   menuToggleBlock: {
-    marginLeft: ui.rowGutter
+    marginLeft: ui.rowGutter,
+    width: '1.5rem'
   },
 
   toggleBlock: {
