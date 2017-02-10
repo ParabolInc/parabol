@@ -70,8 +70,10 @@ const styleThunk = () => ({
   },
 
   userActions: {
+    alignItems: 'center',
+    display: 'flex',
     flex: 1,
-    textAlign: 'right'
+    justifyContent: 'flex-end'
   },
 
   nameAndTags: {

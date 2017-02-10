@@ -2,14 +2,13 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
 import OrgUserRow from '../OrgUserRow/OrgUserRow';
 import IconControl from 'universal/components/IconControl/IconControl';
+import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
 import Toggle from 'universal/components/Toggle/Toggle';
 import RemoveBillingLeaderModal from 'universal/modules/userDashboard/components/RemoveBillingLeaderModal/RemoveBillingLeaderModal';
 import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal';
-import FontAwesome from 'react-fontawesome';
 import {Menu, MenuItem} from 'universal/modules/menu';
 import {cashay} from 'cashay';
 import {BILLING_LEADER} from 'universal/utils/constants';
@@ -81,17 +80,22 @@ const OrgMembers = (props) => {
           <div className={css(styles.toggleBlock)}>
             <Toggle active={!inactive} block label="Active"/>
           </div>
-          <Menu
-            itemFactory={itemFactory}
-            originAnchor={originAnchor}
-            menuWidth="12rem"
-            targetAnchor={targetAnchor}
-            toggle={
-              <div className={css(styles.optionsToggle)}>
-                <FontAwesome name="ellipsis-v"/>
-              </div>
-            }
-          />
+          <div className={css(styles.menuToggleBlock)}>
+            <Menu
+              itemFactory={itemFactory}
+              originAnchor={originAnchor}
+              menuWidth="12rem"
+              targetAnchor={targetAnchor}
+              toggle={
+                <Button
+                  colorPalette="dark"
+                  icon="ellipsis-v"
+                  size="smallest"
+                  style="flat"
+                />
+              }
+            />
+          </div>
         </div>
       );
     };
@@ -128,22 +132,11 @@ const styleThunk = () => ({
     justifyContent: 'flex-end'
   },
 
-  optionsToggle: {
-    alignItems: 'center',
-    borderRadius: ui.buttonBorderRadius,
-    cursor: 'pointer',
-    display: 'flex',
-    height: '2rem',
-    justifyContent: 'center',
-    width: '2rem',
-
-    ':hover': {
-      background: appTheme.palette.mid90l
-    }
+  menuToggleBlock: {
+    marginLeft: ui.rowGutter
   },
 
   toggleBlock: {
-    display: 'inline-block',
     marginLeft: ui.rowGutter,
     width: '100px'
   }

@@ -3,7 +3,7 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
-import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.png';
+import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
 
 const InvoiceHeader = (props) => {
   const {
@@ -63,7 +63,7 @@ const styleThunk = () => ({
 
   logo: {
     height: 'auto',
-    maxWidth: '100%'
+    width: '100%'
   },
 
   info: {
