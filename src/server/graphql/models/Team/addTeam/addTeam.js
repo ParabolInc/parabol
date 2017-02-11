@@ -49,12 +49,12 @@ export default {
     await ensureUniqueId('Team', teamId);
 
     // RESOLUTION
-    const newAuthTokenObj = {
+    const newAuthToken = {
       ...authToken,
       tms: Array.isArray(authToken.tms) ? authToken.tms.concat(teamId) : [teamId],
       exp: undefined
     };
-    socket.setAuthToken(newAuthTokenObj);
+    socket.setAuthToken(newAuthToken);
     await createTeamAndLeader(userId, newTeam);
 
     //handle invitees

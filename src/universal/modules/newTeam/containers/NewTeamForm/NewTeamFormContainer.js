@@ -66,7 +66,7 @@ class NewTeamFormContainer extends Component {
     })
   };
 
-  onSubmit = (submittedData) => {
+  onSubmit = async (submittedData) => {
     const {dispatch, isNewOrg, router} = this.props;
     const newTeamId = shortid.generate();
     if (isNewOrg) {
@@ -84,7 +84,7 @@ class NewTeamFormContainer extends Component {
         orgName,
         stripeToken: this.state.stripeToken
       };
-      cashay.mutate('addOrg', {variables});
+      await cashay.mutate('addOrg', {variables});
       dispatch(segmentEventTrack('New Org'));
       dispatch(showSuccess({
         title: 'Organization successfully created!',
@@ -103,7 +103,7 @@ class NewTeamFormContainer extends Component {
         },
         invitees,
       };
-      cashay.mutate('addTeam', {variables});
+      await cashay.mutate('addTeam', {variables});
       dispatch(segmentEventTrack('New Team',
         {inviteeCount: invitees && invitees.length || 0}
       ));

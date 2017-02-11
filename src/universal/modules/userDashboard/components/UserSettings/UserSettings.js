@@ -102,6 +102,7 @@ const styleThunk = () => ({
   },
 
   block: {
+    fontSize: '1rem',
     margin: '0 0 1.5rem'
   },
 

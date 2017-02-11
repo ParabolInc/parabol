@@ -39,6 +39,13 @@ export const successfulJoin = {
           `
 };
 
+export const successfulExistingJoin = {
+  title: 'You\'re in!',
+  message: `
+            Welcome to the new team. 
+          `
+};
+
 export const inviteExpired = {
   title: 'Invitation has expired',
   message: `

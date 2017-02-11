@@ -14,7 +14,8 @@ import {
   inviteNotFound,
   inviteExpired,
   teamAlreadyJoined,
-  successfulJoin
+  successfulJoin,
+  successfulExistingJoin
 } from 'universal/modules/invitation/helpers/notifications';
 
 const mapStateToProps = (state, props) => {
@@ -109,12 +110,13 @@ export default class Invitation extends Component {
         } else if (data) {
           const authToken = data.acceptInvitation;
           const {tms} = jwtDecode(authToken);
-          dispatch(showSuccess(successfulJoin));
           dispatch(setAuthToken(authToken));
           if (tms.length <= 1) {
+            dispatch(showSuccess(successfulJoin));
             dispatch(setWelcomeActivity(`/team/${tms[0]}`));
             router.push('/me/settings');
           } else {
+            dispatch(showSuccess(successfulExistingJoin));
             router.push(`/team/${tms[tms.length-1]}`);
           }
         }

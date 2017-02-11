@@ -55,6 +55,15 @@ export default {
     await Promise.all(ensureUniqueIds);
 
     // RESOLUTION
+
+    // set the token first because it's on the critical path for UX
+    const newAuthToken = {
+      ...authToken,
+      tms: authToken.tms.concat(teamId),
+      exp: undefined
+    };
+    socket.setAuthToken(newAuthToken);
+
     const teamOrgInvitations = [
       createTeamAndLeader(userId, newTeam, true),
       createNewOrg(orgId, orgName, userId, stripeToken)
@@ -67,13 +76,6 @@ export default {
     // TODO add activeUsers on the Organization table instead of activeUserCount.
     // That way, we can index on it & subscribe to all the users orgs
 
-    const authTokenObj = socket.getAuthToken();
-    const newAuthTokenObj = {
-      ...authTokenObj,
-      tms: authTokenObj.tms.concat(teamId),
-      exp: undefined
-    };
-    socket.setAuthToken(newAuthTokenObj);
     return true;
   }
 }

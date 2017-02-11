@@ -50,32 +50,38 @@ export default {
       await requireOrgLeaderOfUser(authToken, userId);
 
       // RESOLUTION
-      const res = await r.table('Organization').getAll(userId, {index: 'orgUsers'}).update((org) => ({
-        orgUsers: org('orgUsers').map((orgUser) => {
-          return r.branch(
-            orgUser('id').eq(userId),
-            orgUser.merge({
-              inactive: true
-            }),
-            orgUser
-          )
-        })
-      }))
+      const orgDocs = await r.table('Organization')
+        .getAll(userId, {index: 'orgUsers'})
+        .update((org) => ({
+          orgUsers: org('orgUsers').map((orgUser) => {
+            return r.branch(
+              orgUser('id').eq(userId),
+              orgUser.merge({
+                inactive: true
+              }),
+              orgUser
+            )
+          })
+        }))
         .do(() => {
-          return r.table('User').get(userId)
+          return r.table('User')
+            .get(userId)
             .update({
               inactive: true
-            })
-        }, {returnChanges: true});
-      const userDoc = getOldVal(res);
-      if (!userDoc) {
-        // no userDoc means there were no changes, which means inactive was already true
+            }, {returnChanges: true})('changes')(0)
+        })
+        .do((firstChange) => {
+          return r.branch(
+            firstChange,
+            r.table('Organization')
+            .getAll(userId, {index: 'orgUsers'})
+            .pluck('id', 'stripeSubscriptionId'),
+            null)
+        });
+      if (!orgDocs) {
+        // no userOrgs means there were no changes, which means inactive was already true
         throw errorObj({_error: `${userId} is already inactive. cannot inactivate twice`})
       }
-      const {userOrgs} = userDoc;
-      const orgIds = userOrgs.map(({id}) => id);
-      const orgDocs = await r.table('Organization').getAll(r.args(orgIds), {index: 'id'});
-
       const hookPromises = orgDocs.map((orgDoc) => {
         const {stripeSubscriptionId, id: orgId} = orgDoc;
         return stripe.subscriptions.retrieve(stripeSubscriptionId)
@@ -94,6 +100,7 @@ export default {
       }
 
       // RESOLUTION
+      const orgIds = orgDocs.map((doc) => doc.id);
       await adjustUserCount(userId, orgIds, PAUSE_USER);
       return true;
     }
