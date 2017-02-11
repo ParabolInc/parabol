@@ -1,7 +1,7 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
-import fromNow from '../../utils/fromNow';
+import {getFromNowString, getRefreshPeriod} from '../../utils/fromNow';
 import Ellipsis from '../../components/Ellipsis/Ellipsis';
 import EditingStatus from 'universal/components/EditingStatus/EditingStatus';
 
@@ -19,34 +19,32 @@ query {
 `;
 
 const makeEditingStatus = (editors, active, updatedAt) => {
-  if (editors !== makeEditingStatus.editors || active !== makeEditingStatus.active) {
-    makeEditingStatus.editors = editors;
-    makeEditingStatus.active = active;
-    const endStr = <small>{'(<TAB> saves)'}</small>;
-    // no one else is editing
-    if (editors.length === 0) {
-      makeEditingStatus.cache = active ? <span>editing {endStr}<Ellipsis/></span> :
-        fromNow(updatedAt);
+  const endStr = <small>{'(<TAB> saves)'}</small>;
+  let editingStatus;
+  // no one else is editing
+  if (editors.length === 0) {
+    editingStatus = active ? <span>editing {endStr}<Ellipsis/></span> :
+      getFromNowString(updatedAt);
+  } else {
+    const editorNames = editors.map(e => e.teamMember.preferredName);
+    // one other is editing
+    if (editors.length === 1) {
+      const editor = editorNames[0];
+      editingStatus = <span>{editor} editing{active ? 'too' : ''}<Ellipsis/></span>;
+    } else if (editors.length === 2) {
+      editingStatus = active ?
+        <span>several are editing {endStr}<Ellipsis/></span> :
+        <span>{`${editorNames[0]} and ${editorNames[1]} editing`}<Ellipsis/></span>;
     } else {
-      const editorNames = editors.map(e => e.teamMember.preferredName);
-      // one other is editing
-      if (editors.length === 1) {
-        const editor = editorNames[0];
-        makeEditingStatus.cache = <span>{editor} editing{active ? 'too' : ''}<Ellipsis/></span>;
-      } else if (editors.length === 2) {
-        makeEditingStatus.cache = active ?
-          <span>several are editing {endStr}<Ellipsis/></span> :
-          <span>{`${editorNames[0]} and ${editorNames[1]} editing`}<Ellipsis/></span>;
-      } else {
-        makeEditingStatus.cache = <span>several are editing {endStr}<Ellipsis/></span>;
-      }
+      editingStatus = <span>several are editing {endStr}<Ellipsis/></span>;
     }
   }
-  return makeEditingStatus.cache;
+  if (!editingStatus) throw new Error('editingStatus never set!');
+  return editingStatus;
 };
 
 const mapStateToProps = (state, props) => {
-  const {form, updatedAt, outcomeId} = props;
+  const {outcomeId} = props;
   const {editors} = cashay.query(editingStatusContainer, {
     op: 'editingStatusContainer',
     variables: {outcomeId},
@@ -63,25 +61,43 @@ const mapStateToProps = (state, props) => {
       }
     }
   }).data;
-  const formState = state.form[form];
-  const active = formState && formState.active === outcomeId;
-  const editingStatus = makeEditingStatus(editors, active, updatedAt);
   return {
-    editingStatus
+    editors
   };
 };
 
-const EditingStatusContainer = (props) => {
-  const {editingStatus} = props;
-  return <EditingStatus status={editingStatus}/>;
-};
+@connect(mapStateToProps)
+export default class EditingStatusContainer extends Component {
+  static propTypes = {
+    active: PropTypes.bool,
+    className: PropTypes.object,
+    editors: PropTypes.any,
+    outcomeId: PropTypes.string,
+    updatedAt: PropTypes.instanceOf(Date)
+  };
 
-EditingStatusContainer.propTypes = {
-  active: PropTypes.bool,
-  className: PropTypes.object,
-  editingStatus: PropTypes.any,
-  outcomeId: PropTypes.string,
-  updatedAt: PropTypes.instanceOf(Date)
-};
+  constructor(props) {
+    super(props);
+    const {active, editors, updatedAt} = this.props;
+    this.state = {
+      editingStatus: makeEditingStatus(editors, active, updatedAt)
+    };
+  }
 
-export default connect(mapStateToProps)(EditingStatusContainer);
+  componentWillUnmount() {
+    clearTimeout(this.refreshTimer);
+  }
+
+  render() {
+    const {active, editors, updatedAt} = this.props;
+    const {editingStatus} = this.state;
+    clearTimeout(this.refreshTimer);
+    const refreshPeriod = getRefreshPeriod(updatedAt);
+    this.refreshTimer = setTimeout(() => {
+      this.setState({
+        editingStatus: makeEditingStatus(editors, active, updatedAt)
+      });
+    }, refreshPeriod);
+    return <EditingStatus status={editingStatus}/>;
+  }
+}
