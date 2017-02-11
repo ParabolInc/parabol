@@ -15,7 +15,7 @@
   "main": "index.js",
   "scripts": {
     "start": "NODE_ENV=production node ./src/server/server.babel.js",
-    "dev": "NODE_ENV=development node ./src/server/server.babel.js",
+    "dev": "if [ ! -f \"dll/vendors.json\" ] ; then npm run build:dll ; fi ; NODE_ENV=development node ./src/server/server.babel.js",
     "build": "rimraf build && concurrently \"npm run build:client\" \"npm run build:server\"",
     "build:deploy": "rimraf build && npm run build:server && npm run build:client-deploy",
     "build:min": "rimraf build && concurrently \"npm run build:client-min\" \"npm run build:server\"",

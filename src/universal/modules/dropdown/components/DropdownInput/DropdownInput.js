@@ -54,7 +54,7 @@ const DropdownInput = (props) => {
         <span>{orgName}</span>
         <Menu
           originAnchor={originAnchor}
-          menuWidth="12rem"
+          menuWidth="13rem"
           targetAnchor={targetAnchor}
           toggle={toggle}
           itemFactory={itemFactory}
@@ -83,7 +83,8 @@ const styleThunk = () => ({
     ...ui.fieldBaseStyles,
     ...makeFieldColorPalette('gray'),
     ...makeHoverFocus({
-      borderColor: ui.fieldColorPalettes.gray.focusBorderColor
+      borderColor: ui.fieldColorPalettes.gray.focusBorderColor,
+      boxShadow: ui.fieldBoxShadow
     }),
     position: 'relative'
   },

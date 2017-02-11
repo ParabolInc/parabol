@@ -14,10 +14,12 @@ export default function makeFieldColorPalette(colorPalette, palettes = fieldColo
     },
     ':focus': {
       borderColor: palettes[colorPalette].focusBorderColor,
+      boxShadow: ui.fieldFocusBoxShadow,
       outline: 'none'
     },
     ':active': {
       borderColor: palettes[colorPalette].focusBorderColor,
+      boxShadow: ui.fieldFocusBoxShadow,
       outline: 'none'
     }
   };
