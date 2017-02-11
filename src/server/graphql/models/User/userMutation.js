@@ -19,6 +19,7 @@ import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
 import tmsSignToken from 'server/graphql/models/tmsSignToken';
 import protocolRelativeUrl from 'server/utils/protocolRelativeUrl';
 import {s3SignPutObject} from 'server/utils/s3';
+import segmentIo from 'server/segmentIo';
 import {
   APP_CDN_USER_ASSET_SUBDIR,
   APP_MAX_AVATAR_FILE_SIZE
@@ -123,7 +124,6 @@ export default {
     },
     async resolve(source, {authToken}) {
       const r = getRethink();
-
       // VALIDATION
       // This is the only resolve function where authToken refers to a base64 string and not an object
       const now = new Date();
@@ -151,7 +151,7 @@ export default {
         createdAt: new Date(userInfo.created_at),
         tms: userInfo.tms
       };
-      const {email, id: userId, picture, preferredName} = auth0User;
+      const {email, id: userId, createdAt, picture, preferredName} = auth0User;
       const currentUser = await r.table('User').get(userId);
       if (currentUser) {
         // invalidate the email/picture/preferredName where it is denormalized
@@ -178,6 +178,21 @@ export default {
         ...auth0User,
         welcomeSentAt
       };
+      /*
+       * From segment docs:
+       *
+       * We recommend calling identify a single time when the
+       * user’s account is first created, and only identifying
+       * again later when their traits change.
+       *
+       * see: https://segment.com/docs/sources/server/node/
+       */
+      if (segmentIo) {
+        segmentIo.identify({
+          userId,
+          traits: { avatar: picture, createdAt, email, name: preferredName }
+        });
+      }
       const asyncPromises = [
         r.table('User').insert(returnedUser),
         auth0ManagementClient.users.updateAppMetadata({id: userId}, {preferredName})
