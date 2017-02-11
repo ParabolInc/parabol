@@ -1,9 +1,9 @@
 import React, {Component, PropTypes} from 'react';
-import notificationPicker from 'universal/modules/userDashboard/NotificationButtons/index';
+import typePicker from 'universal/modules/notifications/helpers/typePicker';
 
 const NotificationRow = (props) => {
   const {notificationId, orgId, type, varList} = props;
-  const NotificationType = notificationPicker[type];
+  const NotificationType = typePicker[type];
   return <NotificationType orgId={orgId} notificationId={notificationId} varList={varList}/>;
 };
 

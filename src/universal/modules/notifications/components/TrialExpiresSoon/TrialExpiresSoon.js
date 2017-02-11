@@ -4,7 +4,8 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import Button from 'universal/components/Button/Button';
 import fromNow from 'universal/utils/fromNow';
-import defaultStyles from './styles';
+import defaultStyles from 'universal/modules/notifications/helpers/styles';
+import Row from 'universal/components/Row/Row';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 import FontAwesome from 'react-fontawesome';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -18,7 +19,7 @@ const TrialExpiresSoon = (props) => {
     router.push(`/me/organizations/${orgId}`)
   };
   return (
-  <div className={css(styles.row)}>
+  <Row>
     <div className={css(styles.icon)}>
       <div className={css(styles.avatarPlaceholder)}>
         <div className={css(styles.avatarPlaceholderInner)}>
@@ -40,7 +41,7 @@ const TrialExpiresSoon = (props) => {
         onClick={addBilling}
       />
     </div>
-  </div>
+  </Row>
   );
 };
 

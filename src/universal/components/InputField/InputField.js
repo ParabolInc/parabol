@@ -3,7 +3,7 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
-import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
+import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette';
 
 import Textarea from 'react-textarea-autosize';
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
@@ -17,7 +17,6 @@ const InputField = (props) => {
     shortcutDisabled,
     colorPalette,
     disabled,
-    hasTransparentBackground,
     input,
     isLarger,
     isWider,
@@ -35,7 +34,6 @@ const InputField = (props) => {
     // allow hotkeys to be triggered when inside a field input
     styles.field,
     colorPalette ? styles[colorPalette] : styles.white,
-    hasTransparentBackground && styles.transparentBackground,
     disabled && styles.disabled,
     isLarger && styles.fieldLarger,
     readyOnly && styles.readyOnly,
@@ -88,7 +86,6 @@ const InputField = (props) => {
 };
 
 InputField.propTypes = {
-  hasTransparentBackground: PropTypes.bool,
   hasErrorText: PropTypes.bool,
   helpText: PropTypes.any,
   autoFocus: PropTypes.bool,
@@ -122,105 +119,18 @@ InputField.propTypes = {
   useTextarea: PropTypes.bool
 };
 
-const palettes = {
-  cool: {
-    backgroundColor: appTheme.palette.cool10l,
-    borderColor: appTheme.palette.cool40l,
-    color: appTheme.palette.cool,
-    focusBorderColor: appTheme.palette.cool,
-    placeholder: makePlaceholderStyles(appTheme.palette.cool70l),
-    selection: appTheme.palette.cool20l
-  },
-  gray: {
-    backgroundColor: appTheme.palette.mid10l,
-    borderColor: appTheme.palette.mid40l,
-    color: appTheme.palette.dark,
-    focusBorderColor: appTheme.palette.dark,
-    placeholder: makePlaceholderStyles(appTheme.palette.mid70l),
-    selection: appTheme.palette.mid20l
-  },
-  warm: {
-    backgroundColor: appTheme.palette.warm10l,
-    borderColor: appTheme.palette.warm40l,
-    color: appTheme.palette.warm,
-    focusBorderColor: appTheme.palette.warm,
-    placeholder: makePlaceholderStyles(appTheme.palette.warm70l),
-    selection: appTheme.palette.warm20l
-  },
-  white: {
-    backgroundColor: '#fff',
-    borderColor: appTheme.palette.mid40l,
-    color: appTheme.palette.dark,
-    focusBorderColor: appTheme.palette.dark,
-    placeholder: makePlaceholderStyles(appTheme.palette.mid70l),
-    selection: appTheme.palette.mid20l
-  }
-};
-
-const makeColorPalette = (theme) => {
-  return {
-    backgroundColor: palettes[theme].backgroundColor,
-    borderColor: palettes[theme].borderColor,
-    color: palettes[theme].color,
-    ...palettes[theme].placeholder,
-    '::selection': {
-      backgroundColor: palettes[theme].selection
-    },
-    ':focus': {
-      borderColor: palettes[theme].focusBorderColor,
-      outline: 'none'
-    },
-    ':active': {
-      borderColor: palettes[theme].focusBorderColor,
-      outline: 'none'
-    }
-  };
-};
-
-const readOnlyStyles = {
-  borderColor: 'transparent',
-  ':focus': {
-    borderColor: 'transparent'
-  },
-  ':active': {
-    borderColor: 'transparent'
-  }
-};
-
 const styleThunk = () => ({
   field: {
-    appearance: 'none',
-    border: 0,
-    borderBottom: '1px solid transparent',
-    borderRadius: 0,
-    boxShadow: 'none',
-    display: 'block', // Todo: make inlineBlock wrapper (TA)
-    fontFamily: appTheme.typography.sansSerif,
-    fontSize: appTheme.typography.s4,
-    lineHeight: '1.75rem',
-    margin: '0',
-    padding: `.125rem ${ui.fieldPaddingHorizontal}`,
-    width: '100%',
+    ...ui.fieldBaseStyles
   },
 
-  cool: makeColorPalette('cool'),
-  gray: makeColorPalette('gray'),
-  warm: makeColorPalette('warm'),
-  white: makeColorPalette('white'),
+  cool: makeFieldColorPalette('cool'),
+  gray: makeFieldColorPalette('gray'),
+  warm: makeFieldColorPalette('warm'),
+  white: makeFieldColorPalette('white'),
 
-  disabled: {
-    ...readOnlyStyles,
-    cursor: 'not-allowed'
-  },
-
-  readyOnly: {
-    ...readOnlyStyles,
-    cursor: 'default'
-  },
-
-  transparentBackground: {
-    backgroundColor: 'transparent'
-  },
+  disabled: ui.fieldDisabled,
+  readOnly: ui.fieldReadOnly,
 
   fieldLarger: {
     fontSize: appTheme.typography.s6,

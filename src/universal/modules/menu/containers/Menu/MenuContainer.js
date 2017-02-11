@@ -35,7 +35,7 @@ export default class MenuContainer extends Component {
     const smartToggle = React.cloneElement(toggle, {
       onClick: (e) => {
         // figure out where to put the menu
-        const rect = e.target.getBoundingClientRect();
+        const rect = e.currentTarget.getBoundingClientRect();
         const {vertical: originY, horizontal: originX} = originAnchor;
         const {height, width, left, top} = rect;
         this.setState({

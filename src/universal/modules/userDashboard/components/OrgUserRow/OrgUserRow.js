@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import Row from 'universal/components/Row/Row';
@@ -70,8 +69,10 @@ const styleThunk = () => ({
   },
 
   userActions: {
+    alignItems: 'center',
+    display: 'flex',
     flex: 1,
-    textAlign: 'right'
+    justifyContent: 'flex-end'
   },
 
   nameAndTags: {

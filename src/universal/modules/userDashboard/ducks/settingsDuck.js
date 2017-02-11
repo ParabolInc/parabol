@@ -11,8 +11,8 @@ const initialState = {
 };
 
 export default function reducer(state = initialState, action = {}) {
-  if (!action.type.startsWith('userSettings/')) return state;
   const {type, payload} = action;
+  if (!type || !type.startsWith('userSettings/')) return state;
   if (type === SET_ACTIVITY) {
       const {activity, nextPage} = payload;
       return {

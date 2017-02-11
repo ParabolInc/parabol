@@ -1,19 +1,18 @@
 import React, {Component, PropTypes} from 'react';
 import {withRouter} from 'react-router';
 import Button from 'universal/components/Button/Button';
+import Row from 'universal/components/Row/Row';
 import {cashay} from 'cashay';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import defaultStyles from './styles';
-import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
+import defaultStyles from 'universal/modules/notifications/helpers/styles';
+import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import {connect} from 'react-redux';
-
-const mapStateToProps = () => {
-  return { };
-};
+import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalModal';
 
 const RequestNewUser = (props) => {
-  const {dispatch, notificationId, router, styles, varList} = props;
+  const {notificationId, styles, varList} = props;
+  // TODO can we remove inviterUserId from varList?
   const [inviterUserId, inviterName, inviteeEmail, teamId, teamName] = varList;
 
   const acceptInvite = () => {
@@ -22,18 +21,24 @@ const RequestNewUser = (props) => {
       invitees: [{
         email: inviteeEmail
       }],
-      notificationId
     };
     cashay.mutate('inviteTeamMembers', {variables});
   };
 
-  const declineInvite = () => {
-    dispatch(declineNewUser());
-  };
+  const rejectToggle = (
+    <Button
+      colorPalette="gray"
+      isBlock
+      label="Decline"
+      size="smallest"
+      type="submit"
+    />
+  );
+
   return (
-    <div className={css(styles.row)}>
+    <Row>
       <div className={css(styles.icon)}>
-        <AvatarPlaceholder/>
+        <IconAvatar icon="user" size="medium" />
       </div>
       <div className={css(styles.message)}>
         <span className={css(styles.messageVar)}>{inviterName} </span>
@@ -48,23 +53,21 @@ const RequestNewUser = (props) => {
             colorPalette="cool"
             isBlock
             label="Accept"
-            size="small"
+            size="smallest"
             type="submit"
             onClick={acceptInvite}
           />
         </div>
         <div className={css(styles.button)}>
-          <Button
-            colorPalette="gray"
-            isBlock
-            label="Decline"
-            size="small"
-            type="submit"
-            onClick={declineInvite}
+          <RejectOrgApprovalModal
+            notificationId={notificationId}
+            inviteeEmail={inviteeEmail}
+            inviterName={inviterName}
+            toggle={rejectToggle}
           />
         </div>
       </div>
-    </div>
+    </Row>
   );
 };
 
@@ -72,6 +75,4 @@ const styleThunk = () => ({
   ...defaultStyles
 });
 
-export default connect(mapStateToProps)(
-  withRouter(withStyles(styleThunk)(RequestNewUser))
-);
+export default withStyles(styleThunk)(RequestNewUser);

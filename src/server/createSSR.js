@@ -54,6 +54,7 @@ export default function createSSR(req, res) {
     </head>
     <body>
       <div id="root"></div>
+      <script src="/static/vendors.dll.js"></script>
       <script src="/static/app.js"></script>
     </body>
     </html>

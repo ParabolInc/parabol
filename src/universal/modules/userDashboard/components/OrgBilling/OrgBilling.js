@@ -8,7 +8,7 @@ import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
 import ActiveTrialCallOut from '../ActiveTrialCallOut/ActiveTrialCallOut';
 import ExpiredTrialCallOut from '../ExpiredTrialCallOut/ExpiredTrialCallOut';
-import CreditCardModal from 'universal/modules/userDashboard/components/CreditCardModal/CreditCardModal';
+import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer';
 import appTheme from 'universal/styles/theme/appTheme';
 
 const OrgBilling = (props) => {
@@ -40,7 +40,7 @@ const OrgBilling = (props) => {
             <span className={css(styles.creditCardExpiresLabel)}>Expires</span>
             <span className={css(styles.expiry)}>{expiry || '??/??'}</span>
           </div>
-          <CreditCardModal isUpdate orgId={orgId} toggle={update}/>
+          <CreditCardModalContainer isUpdate orgId={orgId} toggle={update}/>
         </div>
       </Panel>
       <Panel label="Invoices">
@@ -61,24 +61,26 @@ const OrgBilling = (props) => {
 
 const styleThunk = () => ({
   creditCardInfo: {
-    fontSize: appTheme.typography.s4,
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s3,
+    lineHeight: appTheme.typography.s5
   },
 
   creditCardIcon: {
     marginRight: '1rem'
   },
 
-  creditCardNumber: {
-    marginRight: '1rem'
+  creditCardProvider: {
+    fontWeight: 700,
+    marginRight: '.5rem'
   },
 
-  creditCardProvider: {
-    fontWeight: 800,
-    marginRight: '1rem'
+  creditCardNumber: {
+    marginRight: '2rem'
   },
 
   creditCardExpiresLabel: {
-    fontWeight: 800,
+    fontWeight: 700,
     marginRight: '.5rem'
   },
 

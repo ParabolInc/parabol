@@ -71,7 +71,7 @@ export const PAYMENT_REJECTED = 'PAYMENT_REJECTED';
 // [inviterId, inviterName, inviteeEmail, invitedTeamId, invitedTeamName]
 export const REQUEST_NEW_USER = 'REQUEST_NEW_USER';
 // Sent to the orgMember that generated the new user request
-// [reason, billingLeaderUserId]
+// [reason, billingLeaderName, inviteeEmail]
 export const DENY_NEW_USER = 'DENY_NEW_USER';
 export const notificationTypes = [
   TRIAL_EXPIRES_SOON,

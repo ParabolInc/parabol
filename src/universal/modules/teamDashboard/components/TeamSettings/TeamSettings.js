@@ -106,7 +106,13 @@ const TeamSettings = (props) => {
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.inviteBlock)}>
-        <InviteUser dispatch={dispatch} teamId={team.id} invitations={invitations} teamMembers={teamMembers}/>
+        <InviteUser
+          dispatch={dispatch}
+          teamId={team.id}
+          invitations={invitations}
+          orgApprovals={orgApprovals}
+          teamMembers={teamMembers}
+        />
       </div>
       <div className={css(styles.body)}>
         <div className={css(styles.scrollable)}>
@@ -191,7 +197,8 @@ const styleThunk = () => ({
   },
 
   actionLinkBlock: {
-    fontSize: 0
+    fontSize: 0,
+    textAlign: 'right'
   },
 
   actionLink: {

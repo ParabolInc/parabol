@@ -21,6 +21,7 @@ const prefetches = [];
 const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(specifier));
 
 const babelQuery = {
+  cacheDirectory: true,
   plugins: [
     ['react-transform', {
       transforms: [{
@@ -50,7 +51,8 @@ export default {
   output: {
     // https://github.com/webpack/webpack/issues/1752
     filename: 'app.js',
-    chunkFilename: '[name]_[chunkhash].js',
+    // don't hash for performance
+    chunkFilename: '[name].chunk.js',
     path: path.join(root, 'build'),
     publicPath: '/static/'
   },
@@ -67,6 +69,10 @@ export default {
       __PRODUCTION__: false,
       __WEBPACK__: true,
       'process.env.NODE_ENV': JSON.stringify('development')
+    }),
+    new webpack.DllReferencePlugin({
+      context: root,
+      manifest: require(path.resolve(root, 'dll', 'vendors.json'))
     }),
     // new UnusedFilesWebpackPlugin()
   ],

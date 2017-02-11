@@ -1,10 +1,11 @@
 import React, {PropTypes} from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import tinycolor from 'tinycolor2';
 import FontAwesome from 'react-fontawesome';
+import tinycolor from 'tinycolor2';
+import {css} from 'aphrodite-local-styles/no-important';
+import withStyles from 'universal/styles/withStyles';
+import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
+import textOverflow from 'universal/styles/helpers/textOverflow';
 
 const {cool, warm, dark, mid, light} = appTheme.palette;
 const white = '#fff';
@@ -218,10 +219,12 @@ const styleThunk = (theme, props) => ({
   },
 
   label: {
+    ...textOverflow,
     display: 'inline-block',
-    fontSize: ui.buttonFontSize[props.size] || appTheme.typography.sBase,
+    fontSize: ui.buttonFontSize[props.size] || ui.buttonFontSize.medium,
     height: ui.buttonLineHeight,
     lineHeight: ui.buttonLineHeight,
+    maxWidth: '100%',
     verticalAlign: 'middle'
   }
 });

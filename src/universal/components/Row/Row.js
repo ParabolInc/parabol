@@ -26,6 +26,7 @@ const styleThunk = () => ({
     alignItems: 'center',
     borderTop: `1px solid ${ui.rowBorderColor}`,
     display: 'flex',
+    justifyContent: 'space-between',
     padding: ui.rowGutter,
     width: '100%'
   }

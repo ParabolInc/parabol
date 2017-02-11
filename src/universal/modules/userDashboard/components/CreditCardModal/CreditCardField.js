@@ -21,7 +21,8 @@ const CreditCardField = (props) => {
 
   const inputStyle = css(
     styles.field,
-    topField && styles.topField
+    topField && styles.topField,
+    touched && error && styles.error
   );
 
   const iconStyle = {
@@ -37,7 +38,8 @@ const CreditCardField = (props) => {
   };
 
   const requireNumeric = (e) => {
-    if (isNaN(parseInt(e.key))) {
+    // keep Enter around to let them submit
+    if (e.key !== 'Enter' && isNaN(parseInt(e.key))) {
       e.preventDefault();
     }
   };
@@ -76,19 +78,19 @@ CreditCardField.propTypes = {
 
 const styleThunk = () => ({
   field: {
-    appearance: 'none',
+    ...ui.fieldBaseStyles,
     backgroundColor: '#fff',
-    border: '0',
-    boxShadow: 'none',
+    border: 0,
     color: appTheme.palette.dark,
     fontSize: appTheme.typography.s5,
     lineHeight: appTheme.typography.s6,
-    margin: '0',
     padding: `.5rem ${ui.fieldPaddingHorizontal} .5rem 2rem`,
-    outline: 0,
-    width: '100%',
+    ...makePlaceholderStyles(ui.fieldPlaceholderColor)
+  },
 
-    ...makePlaceholderStyles(appTheme.palette.mid80l)
+  error: {
+    boxShadow: `inset 0 0 1px 1px ${ui.fieldErrorBorderColor}`,
+    ...makePlaceholderStyles(ui.fieldErrorPlaceholderColor)
   },
 
   iconAndInput: {

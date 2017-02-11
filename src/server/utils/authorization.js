@@ -1,7 +1,6 @@
 import {errorObj} from './utils';
 import getRethink from '../database/rethinkDriver';
 import {BILLING_LEADER} from 'universal/utils/constants';
-import {billingLeaderFilter} from 'server/utils/utils';
 
 export const getUserId = (authToken) => {
   return authToken && typeof authToken === 'object' && authToken.sub;
@@ -31,6 +30,28 @@ export const requireSUOrTeamMember = (authToken, teamId) => {
   if (!isSuperUser(authToken)) {
     const teams = authToken.tms || [];
     if (!teams.includes(teamId)) {
+      throw errorObj({_error: `Unauthorized to view details for team ${teamId} with token ${JSON.stringify(authToken)}`});
+    }
+  }
+};
+
+export const requireOrgLeaderOrTeamMember = async (authToken, teamId) => {
+  const r = getRethink();
+  const teams = authToken.tms || [];
+  if (!teams.includes(teamId)) {
+    const userId = getUserId(authToken);
+    const isOrgLeader = await r.table('Team').get(teamId)('orgId').default(null)
+      .do((orgId) => {
+        return r.table('User').get(userId)('userOrgs')
+          .filter({
+            id: orgId,
+            role: BILLING_LEADER
+          })
+          .count()
+          .eq(1)
+          .default(false)
+      });
+    if (!isOrgLeader) {
       throw errorObj({_error: `Unauthorized to view details for team ${teamId} with token ${JSON.stringify(authToken)}`});
     }
   }
@@ -83,7 +104,7 @@ export const requireWebsocketExchange = (exchange) => {
   }
 };
 
-export const getUserOrgDoc = async (userId, orgId) => {
+export const getUserOrgDoc = async(userId, orgId) => {
   const r = getRethink();
   return await r.table('User').get(userId)('userOrgs')
     .filter({id: orgId})
@@ -98,22 +119,7 @@ export const isBillingLeader = (userOrgDoc) => {
 export const requireOrgLeader = (userOrgDoc) => {
   const legit = isBillingLeader(userOrgDoc);
   if (!legit) {
-    throw errorObj({_error: `Unauthorized. ${userId} is not a billing leader for ${orgId}`});
-  }
-};
-
-export const validateNotificationId = async (notificationId, authToken) => {
-  if (notificationId) {
-    const r = getRethink();
-    const userId = getUserId(authToken);
-    const isOwner = await r.table('Notification')
-      .get(notificationId)
-      .default({})('userIds')
-      .default([])
-      .contains(userId);
-    if (!isOwner) {
-      throw errorObj({_error: 'cannot clear someone else\'s notification'});
-    }
+    throw errorObj({_error: `Unauthorized. User is not a billing leader for ${orgId}`});
   }
 };
 
@@ -144,7 +150,7 @@ export const requireOrgLeaderOfUser = async(authToken, userId) => {
   return true;
 };
 
-export const requireTeamIsPaid = async (teamId) => {
+export const requireTeamIsPaid = async(teamId) => {
   const r = getRethink();
   const isPaid = await r.table('Team').get(teamId)('isPaid').default(false);
   if (!isPaid) {
@@ -155,7 +161,7 @@ export const requireTeamIsPaid = async (teamId) => {
 
 // VERY important, otherwise eg a user could "create" a new team with an existing teamId & force join that team
 // this still isn't secure because the resolve could get called twice & make it past this point before 1 of them writes the insert
-export const ensureUniqueId = async (table, id) => {
+export const ensureUniqueId = async(table, id) => {
   const r = getRethink();
   const res = await r.table(table).get(id);
   if (res) {
@@ -166,6 +172,15 @@ export const ensureUniqueId = async (table, id) => {
 export const requireUserInOrg = (userOrgDoc, userId, orgId) => {
   if (!userOrgDoc) {
     throw errorObj({_error: `Unauthorized. ${userId} does not belong in org ${orgId}`});
+  }
+  return true;
+};
+
+export const requireNotificationOwner = async(userId, notificationId) => {
+  const r = getRethink();
+  const res = await r.table('Notification').get(notificationId)('userIds').contains(userId).default(null);
+  if (!res) {
+    throw errorObj({_error: `Notification ${notificationId} does not exist or ${userId} does not have access to it`});
   }
   return true;
 };

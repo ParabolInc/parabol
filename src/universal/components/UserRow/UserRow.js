@@ -89,8 +89,9 @@ const styleThunk = () => ({
   },
 
   userActions: {
+    alignItems: 'center',
     flex: 1,
-    textAlign: 'right'
+    justifyContent: 'flex-end'
   },
 
   nameAndTags: {

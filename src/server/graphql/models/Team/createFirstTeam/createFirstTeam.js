@@ -16,7 +16,7 @@ import tmsSignToken from 'server/utils/tmsSignToken';
 import createFirstTeamValidation from './createFirstTeamValidation';
 import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
 import ms from 'ms';
-import createStripeOrg from 'server/graphql/models/Organization/addOrg/createStripeOrg';
+import createNewOrg from 'server/graphql/models/Organization/addOrg/createNewOrg';
 
 export default {
   // return the new JWT that has the new tms field
@@ -68,8 +68,8 @@ export default {
     // set up the team while the user is on step 3
     setTimeout(async() => {
       const expiresSoonId = shortid.generate();
-      const orgName = `${user.preferredName}'s Org`;
-      const {validUntil} = await createStripeOrg(orgId, orgName, true, userId, now);
+      const orgName = `${user.preferredName}’s Org`;
+      const {validUntil} = await createNewOrg(orgId, orgName, userId);
       await createTeamAndLeader(userId, validNewTeam, true);
       // Asynchronously create seed projects for team leader:
       // TODO: remove me after more

@@ -1,4 +1,5 @@
 import React, {PropTypes} from 'react';
+import FontAwesome from 'react-fontawesome';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -10,7 +11,7 @@ import {Field, reduxForm} from 'redux-form';
 import DropdownInput from 'universal/modules/dropdown/components/DropdownInput/DropdownInput';
 import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
 import addOrgSchema from 'universal/validation/addOrgSchema';
-import CreditCardModal from 'universal/modules/userDashboard/components/CreditCardModal/CreditCardModal';
+import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer';
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
 import {withRouter} from 'react-router';
 import shouldValidate from 'universal/validation/shouldValidate';
@@ -18,24 +19,25 @@ import shouldValidate from 'universal/validation/shouldValidate';
 const validate = (values, props) => {
   const {isNewOrg} = props;
   const schema = isNewOrg ? addOrgSchema() : makeAddTeamSchema();
-  // const {errors} = schema(values);
-  // if (Object.keys(errors).length ===1 && errors[])
   return schema(values).errors;
 };
 
 const NewTeamForm = (props) => {
-  const {change, dispatch, handleSubmit, isNewOrg, organizations, router, styles, untouch} = props;
+  const {
+    handleSubmit,
+    last4,
+    isNewOrg,
+    organizations,
+    router,
+    setCreditCard,
+    styles
+  } = props;
   const handleCreateNew = () => {
     router.push('/newteam/1');
   };
-  const addBilling = <Button colorPalette="cool" label="Add Billing Information"/>;
-  const setToken = (stripeToken) => {
-    change('stripeToken', stripeToken);
-  };
+  const addBilling = <Button colorPalette="cool" isBlock label="Add Billing Information" size="small" />;
   const resetOrgSelection = () => {
-    // untouch('orgName');
     router.push('/newteam');
-    // change('orgId', organizations[0].id);
   };
   return (
     <form className={css(styles.form)} onSubmit={handleSubmit}>
@@ -43,35 +45,50 @@ const NewTeamForm = (props) => {
       {isNewOrg ?
         <div className={css(styles.formBlock)}>
           <Field
-            autoFocus
             colorPalette="gray"
             component={InputField}
-            label="Organization Name (required)"
+            label="Organization Name"
             name="orgName"
             placeholder={randomPlaceholderTheme.orgName}
           />
-          <Field
-            component="input"
-            type="hidden"
-            name="stripeToken"
-          />
           <FieldBlock>
-            <div className={css(styles.addBillingBlock)}>
-              <div className={css(styles.addBillingBody)}>
-                <h3>Billing information (required)</h3>
-                <span>
-              Your card will be charged $5 for the first month.
-              The members that you invite will be prorated on their
-              join date and added to your second invoice.
-                <CreditCardModal
-                  handleToken={setToken}
-                  toggle={addBilling}
-                />
-            </span>
-                <div className={css(styles.nevermind)} onClick={resetOrgSelection}>
-                  Nevermind, select an existing organization
-                </div>
+            <div className={css(styles.billingBlock)}>
+              <h3 className={css(styles.billingHeading)}>Billing information (required)</h3>
+              <div className={css(styles.billingCopy)}>
+                Your card will be charged $5 for the first month.
+                The members that you invite will be prorated on their
+                join date and added to your second invoice.
               </div>
+              {last4 === undefined ?
+                <div className={css(styles.billingButtonBlock)}>
+                  <CreditCardModalContainer
+                    handleToken={setCreditCard}
+                    toggle={addBilling}
+                  />
+                  <div className={css(styles.cancelNewOrgButtonBlock)}>
+                    <Button
+                      colorPalette="dark"
+                      isBlock
+                      label="Nevermind, select an existing organization"
+                      onClick={resetOrgSelection}
+                      size="smallest"
+                      style="flat"
+                    />
+                  </div>
+                </div> :
+                <div className={css(styles.cardInfoBlock)}>
+                  <div className={css(styles.fill)}>
+                    <FontAwesome name="credit-card" />
+                    <div className={css(styles.cardInfoLabel)}>Info added for <b>{last4}</b></div>
+                  </div>
+                  <CreditCardModalContainer
+                    isUpdate
+                    handleToken={setCreditCard}
+                    toggle={<Button colorPalette="cool" label="Update" size="smallest" style="flat" />}
+                  />
+
+                </div>
+              }
             </div>
           </FieldBlock>
         </div>
@@ -91,7 +108,7 @@ const NewTeamForm = (props) => {
         <Field
           colorPalette="gray"
           component={InputField}
-          label="Team Name (required)"
+          label="Team Name"
           name="teamName"
           placeholder={randomPlaceholderTheme.teamName}
         />
@@ -110,7 +127,7 @@ const NewTeamForm = (props) => {
         colorPalette="warm"
         isBlock
         label="Create Team"
-        size="small"
+        size="medium"
         type="submit"
       />
     </form>
@@ -122,19 +139,9 @@ NewTeamForm.propTypes = {
 };
 
 const styleThunk = () => ({
-  addBillingBlock: {
-    border: `1px solid ${appTheme.palette.mid}`,
-    background: appTheme.palette.light,
-    margin: '1rem 0'
-  },
-
-  addBillingBody: {
-    margin: '1rem'
-  },
-
   form: {
     margin: 0,
-    maxWidth: '24rem',
+    maxWidth: '25rem',
     padding: '2rem'
   },
 
@@ -151,9 +158,54 @@ const styleThunk = () => ({
     margin: '0 auto 1.5rem'
   },
 
-  nevermind: {
-    cursor: 'pointer',
-    fontSize: appTheme.typography.s3
+  billingBlock: {
+    border: `1px solid ${appTheme.palette.mid30l}`,
+    background: appTheme.palette.light50l,
+    boxShadow: '0 1px 2px rgba(0, 0, 0, .2)',
+    color: appTheme.palette.dark50d,
+    margin: '1rem 0',
+    padding: '.75rem .75rem .5rem'
+  },
+
+  billingHeading: {
+    fontSize: appTheme.typography.sBase,
+    fontWeight: 700,
+    margin: '0 0 .125rem'
+  },
+
+  billingCopy: {
+    fontSize: appTheme.typography.s2,
+    lineHeight: appTheme.typography.s4
+  },
+
+  billingButtonBlock: {
+    margin: '1rem 0 0'
+  },
+
+  cancelNewOrgButtonBlock: {
+    paddingTop: '.5rem'
+  },
+
+  cardInfoBlock: {
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    border: `.0625rem solid ${appTheme.palette.mid30l}`,
+    borderRadius: ui.borderRadiusSmall,
+    color: appTheme.palette.dark,
+    display: 'flex',
+    fontSize: appTheme.typography.s3,
+    margin: '1rem 0 .25rem',
+    paddingLeft: '.75rem'
+  },
+
+  fill: {
+    alignItems: 'center',
+    display: 'flex',
+    flex: 1
+  },
+
+  cardInfoLabel: {
+    marginLeft: '.5rem'
   }
 });
 
