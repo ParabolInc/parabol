@@ -40,42 +40,43 @@ const NewTeamForm = (props) => {
   return (
     <form className={css(styles.form)} onSubmit={handleSubmit}>
       <h1 className={css(styles.heading)}>Create a New Team</h1>
-      <div className={css(styles.formBlock)}>
-        {isNewOrg ?
-          <div>
-            <Field
-              colorPalette="gray"
-              component={InputField}
-              label="Organization Name (required)"
-              name="orgName"
-              placeholder={randomPlaceholderTheme.orgName}
-            />
-            <Field
-              component="input"
-              type="hidden"
-              name="stripeToken"
-            />
-            <FieldBlock>
-              <div className={css(styles.addBillingBlock)}>
-                <div className={css(styles.addBillingBody)}>
-                  <h3>Billing information (required)</h3>
-                  <span>
-                Your card will be charged $5 for the first month.
-                The members that you invite will be prorated on their
-                join date and added to your second invoice.
-                  <CreditCardModal
-                    handleToken={setToken}
-                    toggle={addBilling}
-                  />
-              </span>
-                  <div className={css(styles.nevermind)} onClick={resetOrgSelection}>
-                    Nevermind, select an existing organization
-                  </div>
+      {isNewOrg ?
+        <div className={css(styles.formBlock)}>
+          <Field
+            autoFocus
+            colorPalette="gray"
+            component={InputField}
+            label="Organization Name (required)"
+            name="orgName"
+            placeholder={randomPlaceholderTheme.orgName}
+          />
+          <Field
+            component="input"
+            type="hidden"
+            name="stripeToken"
+          />
+          <FieldBlock>
+            <div className={css(styles.addBillingBlock)}>
+              <div className={css(styles.addBillingBody)}>
+                <h3>Billing information (required)</h3>
+                <span>
+              Your card will be charged $5 for the first month.
+              The members that you invite will be prorated on their
+              join date and added to your second invoice.
+                <CreditCardModal
+                  handleToken={setToken}
+                  toggle={addBilling}
+                />
+            </span>
+                <div className={css(styles.nevermind)} onClick={resetOrgSelection}>
+                  Nevermind, select an existing organization
                 </div>
               </div>
-            </FieldBlock>
-          </div>
-          :
+            </div>
+          </FieldBlock>
+        </div>
+        :
+        <div className={css(styles.formBlock)}>
           <Field
             colorPalette="gray"
             component={DropdownInput}
@@ -84,7 +85,9 @@ const NewTeamForm = (props) => {
             name="orgId"
             organizations={organizations}
           />
-        }
+        </div>
+      }
+      <div className={css(styles.formBlock)}>
         <Field
           colorPalette="gray"
           component={InputField}
@@ -128,9 +131,10 @@ const styleThunk = () => ({
   addBillingBody: {
     margin: '1rem'
   },
+
   form: {
     margin: 0,
-    maxWidth: '20rem',
+    maxWidth: '24rem',
     padding: '2rem'
   },
 
@@ -144,7 +148,7 @@ const styleThunk = () => ({
   },
 
   formBlock: {
-    margin: '0 auto 2rem'
+    margin: '0 auto 1.5rem'
   },
 
   nevermind: {

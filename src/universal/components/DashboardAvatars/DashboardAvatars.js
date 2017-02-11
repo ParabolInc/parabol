@@ -10,7 +10,7 @@ const DashboardAvatars = (props) => {
       {
         teamMembers.map((avatar, index) =>
           <div className={css(styles.item)} key={`dbAvatar${index}`}>
-            <Avatar {...avatar} hasBadge  isConnected={avatar.presence.length > 0} size="smaller" />
+            <Avatar {...avatar} hasBadge isConnected={avatar.presence.length > 0} size="smaller" />
           </div>
         )
       }
@@ -26,7 +26,6 @@ DashboardAvatars.propTypes = {
 const styleThunk = () => ({
   root: {
     fontSize: 0,
-    paddingBottom: '1rem',
     position: 'relative',
     textAlign: 'right',
     width: '100%'

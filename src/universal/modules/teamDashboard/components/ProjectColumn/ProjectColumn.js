@@ -91,7 +91,7 @@ const ProjectColumn = (props) => {
             label={item.label}
             onClick={item.handleClick}
           />
-        )
+        );
       };
 
       const toggle = <AddProjectButton label={label}/>;
@@ -102,7 +102,6 @@ const ProjectColumn = (props) => {
           menuWidth="10rem"
           targetAnchor={targetAnchor}
           toggle={toggle}
-          toggleHeight="1.5rem"
           label="Select Team:"
         />
       );
