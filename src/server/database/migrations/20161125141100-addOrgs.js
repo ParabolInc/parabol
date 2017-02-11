@@ -3,7 +3,7 @@ import ms from 'ms';
 import {BILLING_LEADER, TRIAL_EXPIRES_SOON} from '../../../universal/utils/constants';
 import stripe from '../../billing/stripe';
 import {ACTION_MONTHLY, TRIAL_PERIOD_DAYS} from '../../utils/serverConstants';
-import {fromStripeDate} from '../../billing/stripeDate';
+import {fromEpochSeconds} from '../../utils/epochTime';
 
 /* eslint-disable max-len */
 
@@ -17,8 +17,8 @@ exports.up = async(r) => {
   } catch (e) {
   }
   const indices = [
-    // need index on validUntil still?
-    r.table('Organization').indexCreate('validUntil'),
+    // need index on periodEnd still?
+    // r.table('Organization').indexCreate('periodEnd'),
     r.table('Organization').indexCreate('orgUsers', r.row('orgUsers')('id'), {multi: true}),
     r.table('Team').indexCreate('orgId'),
     r.table('Notification').indexCreate('orgId'),
@@ -86,8 +86,8 @@ exports.up = async(r) => {
   const notificationsForDB = [];
   for (let i = 0; i < subscriptions.length; i++) {
     const subscription = subscriptions[i];
-    const {metadata: {orgId}, customer, id, trial_end} = subscription;
-    const validUntil = fromStripeDate(trial_end);
+    const {metadata: {orgId}, customer, id, current_period_end} = subscription;
+    const periodEnd = fromEpochSeconds(current_period_end);
     const {leaderId, name, orgUserMap} = orgs[orgId];
     const orgUserIds = Object.keys(orgUserMap);
     const orgUsers = [];
@@ -107,7 +107,7 @@ exports.up = async(r) => {
       stripeId: customer,
       stripeSubscriptionId: id,
       updatedAt: now,
-      validUntil
+      periodEnd
     };
     notificationsForDB[i] = {
       id: shortid.generate(),
@@ -115,7 +115,7 @@ exports.up = async(r) => {
       startAt: new Date(now.getTime() + ms('14d')),
       userIds: [leaderId],
       orgId,
-      varList: [validUntil]
+      varList: [periodEnd]
     };
   }
 

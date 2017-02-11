@@ -8,7 +8,7 @@ import {TRIAL_EXTENSION} from 'server/utils/serverConstants';
 import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
 import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
 import stripe from 'server/billing/stripe';
-import {toStripeDate} from 'server/billing/stripeDate';
+import {toEpochSeconds} from 'server/utils/epochTime';
 import getCCFromCustomer from 'server/graphql/models/Organization/addBilling/getCCFromCustomer';
 
 export default {
@@ -35,16 +35,16 @@ export default {
     requireOrgLeader(userOrgDoc);
 
     // RESOLUTION
-    const {isTrial, stripeId, stripeSubscriptionId, validUntil} = await r.table('Organization')
+    const {isTrial, stripeId, stripeSubscriptionId, periodEnd} = await r.table('Organization')
       .get(orgId)
-      .pluck('isTrial', 'validUntil', 'stripeSubscriptionId');
+      .pluck('isTrial', 'periodEnd', 'stripeSubscriptionId');
     const promises = [stripe.customers.update(stripeId, {source: stripeToken})];
-    let nowValidUntil;
-    if (isTrial && validUntil > now) {
+    let extendedPeriodEnd;
+    if (isTrial && periodEnd > now) {
       // extend the trial in stripe
-      nowValidUntil = new Date(validUntil.setMilliseconds(0) + TRIAL_EXTENSION);
+      extendedPeriodEnd = new Date(periodEnd.setMilliseconds(0) + TRIAL_EXTENSION);
       promises.push(stripe.subscriptions.update(stripeSubscriptionId, {
-        trial_end: toStripeDate(nowValidUntil)
+        trial_end: toEpochSeconds(extendedPeriodEnd)
       }));
       // remove the oustanding notifications
       promises.push(r.table('Notification')
@@ -58,8 +58,8 @@ export default {
     const orgUpdates = {
       creditCard: getCCFromCustomer(customer)
     };
-    if (nowValidUntil !== undefined) {
-      orgUpdates.validUntil = nowValidUntil;
+    if (extendedPeriodEnd !== undefined) {
+      orgUpdates.periodEnd = extendedPeriodEnd;
     }
     return await r.table('Organization').get(orgId).update(orgUpdates);
   }

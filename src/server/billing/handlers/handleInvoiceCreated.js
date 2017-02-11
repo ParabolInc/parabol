@@ -16,7 +16,7 @@ import {
   REMOVE_USER,
   UNPAUSE_USER
 } from 'server/utils/serverConstants';
-import {fromStripeDate} from 'server/billing/stripeDate';
+import {fromEpochSeconds} from 'server/utils/epochTime';
 
 export default async function handleInvoiceCreated(invoiceId) {
   const r = getRethink();
@@ -175,9 +175,9 @@ export default async function handleInvoiceCreated(invoiceId) {
   await r.table('Invoice').insert({
     id: invoiceId,
     amount: invoice.total,
-    invoiceDate: fromStripeDate(invoice.date),
-    startAt: fromStripeDate(invoice.current_period_start),
-    endAt: fromStripeDate(invoice.current_period_end),
+    invoiceDate: fromEpochSeconds(invoice.date),
+    startAt: fromEpochSeconds(invoice.current_period_start),
+    endAt: fromEpochSeconds(invoice.current_period_end),
     lines: invoiceLineItems,
     orgId
   });
