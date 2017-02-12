@@ -23,7 +23,8 @@ export default class LandingContainer extends Component {
       picture: PropTypes.string,
       preferredName: PropTypes.string
     }),
-    dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired,
+    router: PropTypes.object.isRequired
   };
 
   constructor(props) {
@@ -66,8 +67,8 @@ export default class LandingContainer extends Component {
     if (this.state.refreshNeeded) {
       loginClickHandler = () => window.location.reload();
     } else {
-      const {dispatch} = this.props;
-      loginClickHandler = () => showLock(dispatch);
+      const {dispatch, router} = this.props;
+      loginClickHandler = () => showLock(dispatch, router);
     }
     return (
       <div>

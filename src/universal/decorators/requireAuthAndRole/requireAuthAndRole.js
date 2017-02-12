@@ -4,6 +4,7 @@ import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUse
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router';
+import {PENDING_REDIRECT_KEY} from 'universal/utils/constants';
 
 const unauthorizedDefault = {
   title: 'Unauthorized',
@@ -37,11 +38,17 @@ export default (role, {
       auth: PropTypes.object,
       user: PropTypes.object,
       dispatch: PropTypes.func,
-      router: PropTypes.object
+      router: PropTypes.object,
+      location: PropTypes.object
     };
 
     render() {
-      const {auth, dispatch, router} = this.props;
+      const {
+        auth,
+        dispatch,
+        router,
+        location: {pathname}
+      } = this.props;
       if (auth === undefined) {
         throw new Error('Auth token undefined. Did you put @connect on your component?');
       }
@@ -59,6 +66,7 @@ export default (role, {
       } else if (!silent) {
         // no legit authToken to be had & squak about it:
         dispatch(showError(unauthorized));
+        window.sessionStorage.setItem(PENDING_REDIRECT_KEY, pathname);
       }
       router.push(redirect);
       return null;

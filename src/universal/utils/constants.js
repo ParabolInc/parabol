@@ -24,6 +24,8 @@ export const APP_VERSION = require('../../../package.json').version;
 export const APP_VERSION_KEY = `${APP_NAME}:version`;         // in localStorage
 export const APP_WEBPACK_PUBLIC_PATH_DEFAULT = '/static/';
 
+export const PENDING_REDIRECT_KEY = 'pendingRedirect';
+
 /* Phases */
 export const LOBBY = 'lobby';
 // lowercase here to match url
