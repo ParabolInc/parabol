@@ -86,7 +86,7 @@ exports.up = async(r) => {
   const notificationsForDB = [];
   for (let i = 0; i < subscriptions.length; i++) {
     const subscription = subscriptions[i];
-    const {metadata: {orgId}, customer, id, current_period_end} = subscription;
+    const {metadata: {orgId}, customer, id, current_period_end, current_period_start} = subscription;
     const periodEnd = fromEpochSeconds(current_period_end);
     const {leaderId, name, orgUserMap} = orgs[orgId];
     const orgUserIds = Object.keys(orgUserMap);
@@ -95,7 +95,8 @@ exports.up = async(r) => {
       const orgUserId = orgUserIds[j];
       orgUsers[j] = {
         id: orgUserId,
-        role: orgUserMap[orgUserId] ? BILLING_LEADER : null
+        role: orgUserMap[orgUserId] ? BILLING_LEADER : null,
+        inactive: false
       }
     }
     orgsForDB[i] = {
@@ -107,7 +108,8 @@ exports.up = async(r) => {
       stripeId: customer,
       stripeSubscriptionId: id,
       updatedAt: now,
-      periodEnd
+      periodEnd,
+      periodStart: fromEpochSeconds(current_period_start)
     };
     notificationsForDB[i] = {
       id: shortid.generate(),
@@ -158,6 +160,7 @@ exports.up = async(r) => {
   }));
 
   const userUpdates = r.expr(usersForDB).forEach((user) => r.table('User').get(user('id')).update({
+    inactive: false,
     trialOrg: user('trialOrg').default(null),
     userOrgs: user('userOrgs')
   }, {returnChanges: true}));

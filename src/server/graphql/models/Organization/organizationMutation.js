@@ -74,24 +74,23 @@ export default {
           return r.branch(
             firstChange,
             r.table('Organization')
-            .getAll(userId, {index: 'orgUsers'})
-            .pluck('id', 'stripeSubscriptionId'),
+              .getAll(userId, {index: 'orgUsers'})
+              .pluck('id', 'periodStart', 'periodEnd', 'stripeSubscriptionId'),
             null)
         });
       if (!orgDocs) {
         // no userOrgs means there were no changes, which means inactive was already true
         throw errorObj({_error: `${userId} is already inactive. cannot inactivate twice`})
       }
+      const orgIds = orgDocs.map((doc) => doc.id);
+      const subIds = orgDocs.map((doc) => doc.stripeSubscriptionId);
       const hookPromises = orgDocs.map((orgDoc) => {
-        const {stripeSubscriptionId, id: orgId} = orgDoc;
-        return stripe.subscriptions.retrieve(stripeSubscriptionId)
-          .then((subscription) => {
-            const {current_period_start: startAt, current_period_end: endAt} = subscription;
-            return r.table('InvoiceItemHook')
-              .between([startAt, orgId], [endAt, orgId])
-              .filter({userId, type: PAUSE_USER})
-              .count()
-          })
+        const {periodStart, periodEnd} = orgDoc;
+        return r.table('InvoiceItemHook')
+          .between(periodStart, periodEnd, {index: 'prorationDate'})
+          .filter((hook) => r.expr(subIds).contains(hook('subId')))
+          .filter({userId, type: PAUSE_USER})
+          .count()
       });
       const pausesByOrg = await Promise.all(hookPromises);
       const triggeredPauses = Math.max(...pausesByOrg);
@@ -100,7 +99,6 @@ export default {
       }
 
       // RESOLUTION
-      const orgIds = orgDocs.map((doc) => doc.id);
       await adjustUserCount(userId, orgIds, PAUSE_USER);
       return true;
     }
@@ -215,7 +213,7 @@ export default {
       }
 
       // RESOLUTION
-      const userRes = await r.table('User').get(userId)
+      await r.table('User').get(userId)
         .update((user) => ({
           userOrgs: user('userOrgs').map((userOrg) => {
             return r.branch(

@@ -21,7 +21,7 @@ const OrgBilling = (props) => {
   const {brand = '???', last4 = '••••', expiry = '???'} = creditCard;
   const now = new Date();
   const activeTrial = isTrial && periodEnd > now;
-  const expiredTrial = isTrial && periodEnd < now;
+  const expiredTrial = isTrial && periodEnd <= now;
   const update = <Button
     colorPalette="cool"
     label="Update"

@@ -45,7 +45,8 @@ const addUser = async (orgIds, userId) => {
         .getAll(r.args(orgIds), {index: 'id'})
         .update((org) => ({
           orgUsers: org('orgUsers').append({
-            id: userId
+            id: userId,
+            inactive: false
           }),
           updatedAt: new Date()
         }), {returnChanges: true})

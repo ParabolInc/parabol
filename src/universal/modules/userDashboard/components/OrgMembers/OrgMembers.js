@@ -26,6 +26,7 @@ const targetAnchor = {
 const OrgMembers = (props) => {
     const {
       billingLeaderCount,
+      dispatch,
       users,
       myUserId,
       orgId,
@@ -40,6 +41,7 @@ const OrgMembers = (props) => {
       };
       cashay.mutate('setOrgUserRole', {variables});
     };
+
     const userRowActions = (orgUser) => {
       const {id, inactive, preferredName} = orgUser;
       const itemFactory = () => {
@@ -75,10 +77,18 @@ const OrgMembers = (props) => {
 
         return listItems;
       };
+      const toggleHandler = () => {
+        if (!inactive) {
+          const variables = {userId: orgUser.id};
+          cashay.mutate('inactivateUser', {variables})
+        } else {
+          // pop toast until we do find a way to display locally?
+        }
+      };
       return (
         <div className={css(styles.actionLinkBlock)}>
           <div className={css(styles.toggleBlock)}>
-            <Toggle active={!inactive} block label="Active"/>
+            <Toggle active={!inactive} block label="Active" onClick={toggleHandler}/>
           </div>
           <div className={css(styles.menuToggleBlock)}>
             <Menu

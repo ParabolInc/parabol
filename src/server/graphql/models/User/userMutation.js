@@ -110,6 +110,7 @@ export default {
         updatedAt: new Date(userInfo.updated_at),
         picture: userInfo.picture,
         id: userInfo.user_id,
+        inactive: false,
         name: userInfo.name,
         preferredName: userInfo.nickname,
         identities: userInfo.identities || [],

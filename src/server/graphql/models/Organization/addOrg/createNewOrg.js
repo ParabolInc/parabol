@@ -34,7 +34,7 @@ export default async function createNewOrg(orgId, orgName, leaderUserId, stripeT
     createdAt: now,
     isTrial: true,
     name: orgName,
-    orgUsers: [{ id: leaderUserId, role: BILLING_LEADER}],
+    orgUsers: [{ id: leaderUserId, role: BILLING_LEADER, inactive: false}],
     stripeId,
     stripeSubscriptionId,
     updatedAt: now,

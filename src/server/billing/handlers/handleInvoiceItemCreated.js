@@ -14,7 +14,8 @@ export default async function handleInvoiceItemCreated(invoiceItemId) {
   }
   const {subscription, period: {start}} = invoiceItem;
   const hook = await r.table('InvoiceItemHook')
-    .getAll([start, subscription], {index: 'prorationDateSubId'})
+    .getAll(start, {index: 'prorationDate'})
+    .filter({subId: subscription})
     .nth(0);
   if (!hook) {
     console.warn(`No hook found in the DB! Need to manually update invoiceItem: ${invoiceItemId}`);
