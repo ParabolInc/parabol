@@ -233,14 +233,28 @@ export default class MeetingContainer extends Component {
       agenda,
       isFacilitating,
       members,
-      params: {localPhase, teamId},
+      params: {localPhase, localPhaseItem, teamId},
+      dispatch,
       router,
       team
     } = this.props;
-    const {meetingPhase} = team;
+    const {meetingPhase, facilitatorPhase, facilitatorPhaseItem} = team;
     let nextPhase;
     let nextPhaseItem;
-
+    const inSync = isFacilitating ? true :
+      localPhase + localPhaseItem === facilitatorPhase + facilitatorPhaseItem;
+    if (!inSync) {
+      dispatch(showInfo({
+        title: 'You have diverged from the facilitator!',
+        action: {
+          label: 'Rejoin facilitator',
+          callback: () => {
+            const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
+            router.push(pushURL);
+          }
+        }
+      }));
+    }
     // if it's a link on the sidebar
     if (maybeNextPhase) {
       // if we click the Agenda link on the sidebar and we're already past that, goto the next reasonable area
