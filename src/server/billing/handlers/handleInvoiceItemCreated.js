@@ -7,11 +7,13 @@ import getRethink from 'server/database/rethinkDriver';
  */
 export default async function handleInvoiceItemCreated(invoiceItemId) {
   const r = getRethink();
+  console.log('invoice item created', invoiceItemId);
   const invoiceItem = await stripe.invoiceItems.retrieve(invoiceItemId);
   if (!invoiceItem) {
     console.warn(`No invoice found for ${invoiceItemId}`)
     return false;
   }
+  console.log('invoice item created2', invoiceItem);
   const {subscription, period: {start}} = invoiceItem;
   const hook = await r.table('InvoiceItemHook')
     .getAll(start, {index: 'prorationDate'})

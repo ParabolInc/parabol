@@ -6,6 +6,9 @@ import {
   REMOVE_USER,
   UNPAUSE_USER
 } from 'server/utils/serverConstants';
+import stripe from 'server/billing/stripe';
+import shortid from 'shortid';
+import {toEpochSeconds} from 'server/utils/epochTime';
 
 const changePause = (inactive) => async (orgIds, userId) => {
   const r = getRethink();
@@ -76,10 +79,6 @@ const typeLookup = {
   [REMOVE_USER]: deleteUser,
   [UNPAUSE_USER]: changePause(false),
 };
-
-import stripe from 'server/billing/stripe';
-import shortid from 'shortid';
-import {toEpochSeconds} from 'server/utils/epochTime';
 
 export default async function adjustUserCount(userId, orgInput, type) {
   const r = getRethink();

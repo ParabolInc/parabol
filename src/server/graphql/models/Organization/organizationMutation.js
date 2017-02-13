@@ -15,7 +15,6 @@ import {
 } from 'server/utils/authorization';
 import {errorObj, getOldVal, validateAvatarUpload} from 'server/utils/utils';
 import getS3PutUrl from 'server/utils/getS3PutUrl';
-import stripe from 'server/billing/stripe';
 import {
   PAUSE_USER,
   REMOVE_USER,
@@ -29,6 +28,7 @@ import addBilling from 'server/graphql/models/Organization/addBilling/addBilling
 import updateOrg from 'server/graphql/models/Organization/updateOrg/updateOrg';
 import rejectOrgApproval from 'server/graphql/models/Organization/rejectOrgApproval/rejectOrgApproval';
 import {BILLING_LEADER} from 'universal/utils/constants';
+import {toEpochSeconds} from 'server/utils/epochTime';
 
 export default {
   updateOrg,
@@ -86,8 +86,11 @@ export default {
       const subIds = orgDocs.map((doc) => doc.stripeSubscriptionId);
       const hookPromises = orgDocs.map((orgDoc) => {
         const {periodStart, periodEnd} = orgDoc;
+        const periodStartInSeconds = toEpochSeconds(periodStart);
+        const periodEndInSeconds = toEpochSeconds(periodEnd);
         return r.table('InvoiceItemHook')
-          .between(periodStart, periodEnd, {index: 'prorationDate'})
+          .filter()
+          .between(periodStartInSeconds, periodEndInSeconds, {index: 'prorationDate'})
           .filter((hook) => r.expr(subIds).contains(hook('subId')))
           .filter({userId, type: PAUSE_USER})
           .count()

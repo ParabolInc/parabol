@@ -6,8 +6,13 @@ export const TRIAL_PERIOD_DAYS = 30;
 export const TRIAL_PERIOD = ms(`${TRIAL_PERIOD_DAYS}d`);
 export const TRIAL_EXTENSION = ms('30d');
 export const INACTIVE_DAYS_THRESH = ms('7d');
+export const AUTO_PAUSE_THRESH = ms('30d');
+export const AUTO_PAUSE_THROTTLE = 2000;
 
 /* stripe variables */
+// $199,999/mo
+// export const ACTION_MONTHLY = 'dev-monthly';
+// $5/mo
 export const ACTION_MONTHLY = 'action-monthly';
 export const ADD_USER = 'addUser';
 export const PAUSE_USER = 'pauseUser';

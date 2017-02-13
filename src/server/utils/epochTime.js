@@ -5,4 +5,4 @@ export const fromEpochSeconds = (int) => {
 export const toEpochSeconds = (maybeDate) => {
   const msFromEpoch = maybeDate instanceof Date ? maybeDate.getTime() : maybeDate;
   return Math.floor(msFromEpoch / 1000);
-}
+};
