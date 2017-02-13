@@ -62,6 +62,7 @@ const Step3RawInvitees = (props) => {
         name="inviteesRaw"
         placeholder={randomPlaceholderTheme.emailMulti}
         type="text"
+        underline
       />
       <WelcomeSubmitButton disabled={!inviteesRaw}/>
     </form>

@@ -62,6 +62,7 @@ const FieldArrayRow = props => {
               name={`${item}.${nestedFieldName}`}
               placeholder="What’s their priority this week?"
               type="text"
+              underline
             />
           </div>
         </div>
