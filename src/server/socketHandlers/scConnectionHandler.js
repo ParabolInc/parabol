@@ -52,16 +52,13 @@ export default function scConnectionHandler(exchange) {
     const tokenExpiration = fromEpochSeconds(exp);
     const timeLeftOnToken = tokenExpiration - now;
     // if the user was booted from the team, give them a new token
-    const userRes = await r.table('User').get(userId)
-      .replace((row) => {
-        return row.without('inactive')
-          .merge({
-            updatedAt: now,
-            lastSeenAt: now
-          });
-      }, {returnChanges: true});
+    const {inactive, tms: tmsDB, userOrgs} = await r.table('User').get(userId)
+      .update({
+        inactive: false,
+        updatedAt: now,
+        lastSeenAt: now
+      }, {returnChanges: true})('changes')(0)('old_val');
 
-    const {inactive, tms: tmsDB, userOrgs} = getOldVal(userRes);
     const tmsIsValid = isTmsValid(tmsDB, tms);
     if (timeLeftOnToken < REFRESH_JWT_AFTER || !tmsIsValid) {
       const newAuthToken = {

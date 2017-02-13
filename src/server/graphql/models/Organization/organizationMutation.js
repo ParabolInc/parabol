@@ -89,7 +89,6 @@ export default {
         const periodStartInSeconds = toEpochSeconds(periodStart);
         const periodEndInSeconds = toEpochSeconds(periodEnd);
         return r.table('InvoiceItemHook')
-          .filter()
           .between(periodStartInSeconds, periodEndInSeconds, {index: 'prorationDate'})
           .filter((hook) => r.expr(subIds).contains(hook('subId')))
           .filter({userId, type: PAUSE_USER})

@@ -15,7 +15,7 @@
   "main": "index.js",
   "scripts": {
     "start": "NODE_ENV=production node ./src/server/server.babel.js",
-    "start:tunnel": "export $(grep ^ULTRAHOOK_API_KEY .env) && ultrahook -k $ULTRAHOOK_API_KEY dev 3000",
+    "start:tunnel": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d '\"') && ultrahook -k $ULTRAHOOK_API_KEY dev 3000",
     "dev": "if [ ! -f \"dll/vendors.json\" ] ; then npm run build:dll ; fi ; NODE_ENV=development node ./src/server/server.babel.js",
     "build": "rimraf build && concurrently \"npm run build:client\" \"npm run build:server\"",
     "build:deploy": "rimraf build && npm run build:server && npm run build:client-deploy",
@@ -30,6 +30,7 @@
     "db:migrate": "./src/server/database/migrate.sh up-all",
     "test": "NODE_ENV=testing ava ./src/**/__tests__/**/*-tests.js --verbose",
     "test:xunit": "NODE_ENV=testing ava ./src/**/__tests__/**/*-tests.js --tap | tap-xunit",
+    "test:intranetToken": "node ./src/server/utils/getIntranetToken.babel.js",
     "db:migrate-up": "./src/server/database/migrate.sh up",
     "db:migrate-up-all": "npm run db:migrate",
     "db:migrate-down": "./src/server/database/migrate.sh down",

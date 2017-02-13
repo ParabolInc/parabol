@@ -22,7 +22,7 @@ export default {
   },
   autopauseUsers: {
     type: GraphQLInt,
-    description: 'automatically pause users that have been inactive for 30 days',
+    description: 'automatically pause users that have been inactive for 30 days. returns the number of users paused',
     resolve: async(source, args, {authToken}) => {
       const r = getRethink();
 
@@ -30,17 +30,14 @@ export default {
       requireSU(authToken);
 
       // RESOLUTION
-      const activeThresh = Date.now() - AUTO_PAUSE_THRESH;
+      const activeThresh = new Date(Date.now() - AUTO_PAUSE_THRESH);
       const users = await r.table('User')
-        .filter((user) => user('lastSeenAt').le(r.epochTime(activeThresh)))
+        .filter((user) => user('lastSeenAt').le(activeThresh))
         .filter({
           inactive: false
         })
         .pluck('id', 'userOrgs');
       const userIds = users.map(({id}) => id);
-      // const orgIds = await r.table('Organization')
-      //   .getAll(r.args(userIds), {index: 'orgUsers'})
-      //   .pluck('id', 'periodStart', 'periodEnd', 'stripeSubscriptionId');
       const updates = userIds.map((userId) => {
         return r.table('Organization')
           .getAll(userId, {index: 'orgUsers'})
@@ -64,14 +61,20 @@ export default {
           })
       });
       await Promise.all(updates);
-      for (let i = 0; i < users.length; i++) {
-        const user = users[i];
+      const adjustmentPromises = users.map((user, idx) => {
         const orgIds = user.userOrgs.map(({id}) => id);
-        setTimeout(() => {
+        // wrap the timeouts in a promise so we encapsulate all the work within the function (so we can measure duration)
+        return new Promise((resolve) => {
           // stagger the calls because we are using the 1-second resolution prorationDate as the lookup key
-          adjustUserCount(user.id, orgIds, AUTO_PAUSE_USER);
-        }, AUTO_PAUSE_THROTTLE * i);
-      }
+          setTimeout(async() => {
+            await adjustUserCount(user.id, orgIds, AUTO_PAUSE_USER);
+            resolve();
+          }, idx * AUTO_PAUSE_THROTTLE)
+        })
+      });
+
+      await Promise.all(adjustmentPromises);
+      return users.length;
     }
   }
 };
