@@ -16,8 +16,8 @@ export default async function handleInvoiceItemCreated(invoiceItemId) {
   console.log('invoice item created2', invoiceItem);
   const {subscription, period: {start}} = invoiceItem;
   const hook = await r.table('InvoiceItemHook')
-    .getAll(String(start), {index: 'prorationDate'})
-    .filter({subId: subscription})
+    .getAll(start, {index: 'prorationDate'})
+    .filter({stripeSubscriptionId: subscription})
     .nth(0)
     .default(null);
   if (!hook) {

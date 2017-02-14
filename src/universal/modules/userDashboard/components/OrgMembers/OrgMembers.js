@@ -12,6 +12,7 @@ import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgMo
 import {Menu, MenuItem} from 'universal/modules/menu';
 import {cashay} from 'cashay';
 import {BILLING_LEADER} from 'universal/utils/constants';
+import {showError, showInfo} from 'universal/modules/toast/ducks/toastDuck';
 
 const originAnchor = {
   vertical: 'top',
@@ -77,11 +78,21 @@ const OrgMembers = (props) => {
 
         return listItems;
       };
-      const toggleHandler = () => {
+      const toggleHandler = async () => {
         if (!inactive) {
           const variables = {userId: orgUser.id};
-          cashay.mutate('inactivateUser', {variables})
+          const {error} = await cashay.mutate('inactivateUser', {variables})
+          if (error) {
+            dispatch(showError({
+              title: 'Oh dear...',
+              message: error._error || 'Cannot pause user'
+            }));
+          }
         } else {
+          dispatch(showInfo({
+            title: 'Well managed!',
+            message: 'To save you money, we\'ll automatically unpause that user the next time they log in.'
+          }));
           // pop toast until we do find a way to display locally?
         }
       };

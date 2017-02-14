@@ -6,7 +6,6 @@ import {
 import {requireSU} from 'server/utils/authorization';
 import {
   AUTO_PAUSE_THRESH,
-  AUTO_PAUSE_THROTTLE,
   AUTO_PAUSE_USER
 } from 'server/utils/serverConstants'
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
@@ -61,20 +60,13 @@ export default {
           })
       });
       await Promise.all(updates);
-      const adjustmentPromises = users.map((user, idx) => {
+      const adjustmentPromises = users.map((user) => {
         const orgIds = user.userOrgs.map(({id}) => id);
-        // wrap the timeouts in a promise so we encapsulate all the work within the function (so we can measure duration)
-        return new Promise((resolve) => {
-          // stagger the calls because we are using the 1-second resolution prorationDate as the lookup key
-          setTimeout(async() => {
-            await adjustUserCount(user.id, orgIds, AUTO_PAUSE_USER);
-            resolve();
-          }, idx * AUTO_PAUSE_THROTTLE)
-        })
+        return adjustUserCount(user.id, orgIds, AUTO_PAUSE_USER)
       });
 
       await Promise.all(adjustmentPromises);
-      return users.length;
+      return adjustmentPromises.length;
     }
   }
 };

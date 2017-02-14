@@ -48,9 +48,35 @@ export default {
       // AUTH
       requireWebsocket(socket);
       await requireOrgLeaderOfUser(authToken, userId);
+      const orgDocs = await r.table('Organization')
+        .getAll(userId, {index: 'orgUsers'})
+        .pluck('id', 'orgUsers', 'periodStart', 'periodEnd', 'stripeSubscriptionId');
+      const firstOrgUser = orgDocs[0].orgUsers.find((orgUser) => orgUser.id === userId);
+      if (!firstOrgUser) {
+        // no userOrgs means there were no changes, which means inactive was already true
+        throw errorObj({_error: `That user is already inactive. cannot inactivate twice`})
+      }
+      const hookPromises = orgDocs.map((orgDoc) => {
+        const {periodStart, periodEnd, stripeSubscriptionId} = orgDoc;
+        const periodStartInSeconds = toEpochSeconds(periodStart);
+        const periodEndInSeconds = toEpochSeconds(periodEnd);
+        return r.table('InvoiceItemHook')
+          .between(periodStartInSeconds, periodEndInSeconds, {index: 'prorationDate'})
+          .filter({
+            stripeSubscriptionId,
+            type: PAUSE_USER,
+            userId,
+          })
+          .count()
+      });
+      const pausesByOrg = await Promise.all(hookPromises);
+      const triggeredPauses = Math.max(...pausesByOrg);
+      if (triggeredPauses >= MAX_MONTHLY_PAUSES) {
+        throw errorObj({_error: 'Max monthly pauses exceeded for this user'});
+      }
 
       // RESOLUTION
-      const orgDocs = await r.table('Organization')
+      await r.table('Organization')
         .getAll(userId, {index: 'orgUsers'})
         .update((org) => ({
           orgUsers: org('orgUsers').map((orgUser) => {
@@ -68,39 +94,9 @@ export default {
             .get(userId)
             .update({
               inactive: true
-            }, {returnChanges: true})('changes')(0)
-        })
-        .do((firstChange) => {
-          return r.branch(
-            firstChange,
-            r.table('Organization')
-              .getAll(userId, {index: 'orgUsers'})
-              .pluck('id', 'periodStart', 'periodEnd', 'stripeSubscriptionId'),
-            null)
+            })
         });
-      if (!orgDocs) {
-        // no userOrgs means there were no changes, which means inactive was already true
-        throw errorObj({_error: `${userId} is already inactive. cannot inactivate twice`})
-      }
       const orgIds = orgDocs.map((doc) => doc.id);
-      const subIds = orgDocs.map((doc) => doc.stripeSubscriptionId);
-      const hookPromises = orgDocs.map((orgDoc) => {
-        const {periodStart, periodEnd} = orgDoc;
-        const periodStartInSeconds = toEpochSeconds(periodStart);
-        const periodEndInSeconds = toEpochSeconds(periodEnd);
-        return r.table('InvoiceItemHook')
-          .between(periodStartInSeconds, periodEndInSeconds, {index: 'prorationDate'})
-          .filter((hook) => r.expr(subIds).contains(hook('subId')))
-          .filter({userId, type: PAUSE_USER})
-          .count()
-      });
-      const pausesByOrg = await Promise.all(hookPromises);
-      const triggeredPauses = Math.max(...pausesByOrg);
-      if (triggeredPauses >= MAX_MONTHLY_PAUSES) {
-        throw errorObj({_error: 'Max monthly pauses exceeded for this user'});
-      }
-
-      // RESOLUTION
       await adjustUserCount(userId, orgIds, PAUSE_USER);
       return true;
     }

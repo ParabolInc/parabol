@@ -41,11 +41,9 @@ export const InvoiceItemHook = new GraphQLObjectType({
     },
     prorationDate: {
       type: GraphQLFloat,
-      description: `
-      *Timestamp with 1-second resolution. 
-      Composite key: prorationDateSubId to link subscription change to invoice items`
+      description: `*Timestamp with 1-second resolution.`
     },
-    subId: {
+    stripeSubscriptionId: {
       type: GraphQLID,
       description: 'The stripeSubscriptionId from the org that is associated with the change'
     },
