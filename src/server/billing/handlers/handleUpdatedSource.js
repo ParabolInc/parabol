@@ -3,6 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import {getNewVal} from '../../utils/utils';
 import {ACTION_MONTHLY} from 'server/utils/serverConstants';
 import {TRIAL_EXPIRED} from 'universal/utils/constants';
+import {fromEpochSeconds} from 'server/utils/epochTime';
 
 export default async function handleUpdatedSource(cardId, customerId) {
   const r = getRethink();
@@ -11,7 +12,7 @@ export default async function handleUpdatedSource(cardId, customerId) {
   const cards = customer.sources.data;
   const card = cards.find((card) => card.id === cardId);
   if (!card) {
-    console.warn(`No Credit card found! cardId: ${cardId}, customerId: ${customerId}`)
+    console.warn(`No credit card found! cardId: ${cardId}, customerId: ${customerId}`);
     return false;
   }
   const {brand, last4, exp_month: expMonth, exp_year: expYear} = card;
@@ -27,7 +28,7 @@ export default async function handleUpdatedSource(cardId, customerId) {
   const {activeUsers, stripeSubscriptionId, stripeId} = getNewVal(orgRes);
   if (!stripeSubscriptionId) {
     // Their subscription was cancelled due to nonpayment, and they just updated payment. Let's make a new subscription for them!
-    const {id: stripeSubscriptionId, current_period_end: validUntil} = await stripe.subscriptions.create({
+    const {id: stripeSubscriptionId, current_period_end, current_period_start} = await stripe.subscriptions.create({
       customer: stripeId,
       metadata: {
         orgId
@@ -38,7 +39,8 @@ export default async function handleUpdatedSource(cardId, customerId) {
     // if this was a trial, make it legit now
     await r.table('Organization').get(orgId).update({
       stripeSubscriptionId,
-      validUntil,
+      periodEnd: fromEpochSeconds(current_period_end),
+      periodStart: fromEpochSeconds(current_period_start),
       isTrial: false
     })
       .do(() => {

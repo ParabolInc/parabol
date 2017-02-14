@@ -14,7 +14,7 @@ query {
       last4
     }
     isTrial
-    validUntil
+    periodEnd
   }
 }
 `;

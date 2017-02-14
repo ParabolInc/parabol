@@ -109,6 +109,15 @@ export const Organization = new GraphQLObjectType({
       type: GraphQLURLType,
       description: 'The org avatar'
     },
+    periodEnd: {
+      type: GraphQLISO8601Type,
+      description: 'THe datetime the current billing cycle ends',
+    },
+    periodStart: {
+      type: GraphQLISO8601Type,
+      description: 'The datetime the current billing cycle starts'
+    },
+
     stripeId: {
       type: GraphQLID,
       description: 'The customerId from stripe'
@@ -125,10 +134,10 @@ export const Organization = new GraphQLObjectType({
       type: new GraphQLList(OrgUser),
       description: 'The users that belong to this org'
     },
-    validUntil: {
-      type: GraphQLISO8601Type,
-      description: 'The datetime the trial is up (if isTrial) or money is due (if !isTrial)'
-    },
+    // validUntil: {
+    //   type: GraphQLISO8601Type,
+    //   description: 'The datetime the trial is up (if isTrial) or money is due (if !isTrial)'
+    // },
     /* GraphQL Sugar */
     billingLeaders: {
       type: new GraphQLList(User),

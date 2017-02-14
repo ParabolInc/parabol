@@ -161,8 +161,8 @@ export default [
         inactiveUserCount
         isTrial
         name
+        periodEnd
         picture
-        validUntil
       }
     }`
   },

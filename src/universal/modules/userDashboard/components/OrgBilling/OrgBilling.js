@@ -17,11 +17,11 @@ const OrgBilling = (props) => {
     styles,
     org
   } = props;
-  const {creditCard, id: orgId, isTrial, validUntil} = org;
+  const {creditCard, id: orgId, isTrial, periodEnd} = org;
   const {brand = '???', last4 = '••••', expiry = '???'} = creditCard;
   const now = new Date();
-  const activeTrial = isTrial && validUntil > now;
-  const expiredTrial = isTrial && validUntil < now;
+  const activeTrial = isTrial && periodEnd > now;
+  const expiredTrial = isTrial && periodEnd <= now;
   const update = <Button
     colorPalette="cool"
     label="Update"
@@ -29,8 +29,8 @@ const OrgBilling = (props) => {
   />;
   return (
     <div>
-      {activeTrial && <ActiveTrialCallOut validUntil={validUntil} orgId={orgId} />}
-      {expiredTrial && <ExpiredTrialCallOut orgId={orgId} />}
+      {activeTrial && <ActiveTrialCallOut periodEnd={periodEnd} orgId={orgId} />}
+      {expiredTrial && <ExpiredTrialCallOut periodEnd={periodEnd} orgId={orgId} />}
       <Panel label="Credit Card Information">
         <div className={css(styles.infoAndUpdate)}>
           <div className={css(styles.creditCardInfo)}>

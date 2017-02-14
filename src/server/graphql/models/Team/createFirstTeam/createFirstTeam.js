@@ -69,7 +69,7 @@ export default {
     setTimeout(async() => {
       const expiresSoonId = shortid.generate();
       const orgName = `${user.preferredName}’s Org`;
-      const {validUntil} = await createNewOrg(orgId, orgName, userId);
+      const {periodEnd} = await createNewOrg(orgId, orgName, userId);
       await createTeamAndLeader(userId, validNewTeam, true);
       // Asynchronously create seed projects for team leader:
       // TODO: remove me after more
@@ -81,7 +81,7 @@ export default {
         orgId,
         userIds: [userId],
         // trialExpiresAt
-        varList: [validUntil]
+        varList: [periodEnd]
       });
     }, 0);
     return tmsSignToken(authToken, tms);

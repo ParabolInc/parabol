@@ -15,7 +15,7 @@ query {
     isTrial
     name
     picture
-    validUntil
+    periodEnd
   }
 }
 `;

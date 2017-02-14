@@ -6,9 +6,9 @@ import makeDateString from 'universal/utils/makeDateString';
 import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer';
 
 const ActiveTrialCallOut = (props) => {
-  const {orgId, validUntil} = props;
-  const trialEnd = makeDateString(validUntil, false);
-  const newTrialEnd = makeDateString(new Date(validUntil.getTime() + ms('30d')), false);
+  const {orgId, periodEnd} = props;
+  const trialEnd = makeDateString(periodEnd, false);
+  const newTrialEnd = makeDateString(new Date(periodEnd.getTime() + ms('30d')), false);
   const button = <Button colorPalette="cool" label="Add Billing Information"/>;
   const control = <CreditCardModalContainer orgId={orgId} toggle={button}/>;
   return (

@@ -5,8 +5,8 @@ import makeDateString from 'universal/utils/makeDateString';
 import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer';
 
 const ExpiredTrialCallOut = (props) => {
-  const {orgId, validUntil} = props;
-  const trialEnd = makeDateString(validUntil, false);
+  const {orgId, periodEnd} = props;
+  const trialEnd = makeDateString(periodEnd, false);
   const button = <Button colorPalette="cool" label="Add Billing Information"/>;
   const control = <CreditCardModalContainer orgId={orgId} toggle={button}/>;
   return (
@@ -19,7 +19,7 @@ const ExpiredTrialCallOut = (props) => {
 
 ExpiredTrialCallOut.propTypes = {
   orgId: PropTypes.string.isRequired,
-  validUntil: PropTypes.instanceOf(Date)
+  periodEnd: PropTypes.instanceOf(Date)
 };
 
 export default ExpiredTrialCallOut;

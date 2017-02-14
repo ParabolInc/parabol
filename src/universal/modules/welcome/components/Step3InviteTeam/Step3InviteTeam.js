@@ -6,7 +6,6 @@ import Step3InviteeList from '../Step3InviteeList/Step3InviteeList';
 
 const Step3InviteTeam = (props) => {
   const {invitees, inviteesRaw, teamName, welcome: {existingInvites, teamId}} = props;
-  console.log('page 3')
   return (
     <div>
       <Type align="center" italic scale="s6">

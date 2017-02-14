@@ -8,6 +8,7 @@ import jwtDecode from 'jwt-decode';
 import {getOldVal} from '../utils/utils';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import {APP_VERSION} from 'universal/utils/constants';
+import {fromEpochSeconds} from 'server/utils/epochTime';
 
 // we do this otherwise we'd have to blacklist every token that ever got replaced & query that table for each query
 const isTmsValid = (tmsFromDB, tmsFromToken) => {
@@ -48,7 +49,7 @@ export default function scConnectionHandler(exchange) {
     const authToken = socket.getAuthToken();
     const {exp, tms, sub: userId} = authToken;
     const now = new Date();
-    const tokenExpiration = new Date(exp * 1000);
+    const tokenExpiration = fromEpochSeconds(exp);
     const timeLeftOnToken = tokenExpiration - now;
     // if the user was booted from the team, give them a new token
     const userRes = await r.table('User').get(userId)

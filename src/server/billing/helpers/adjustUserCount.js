@@ -45,7 +45,8 @@ const addUser = async (orgIds, userId) => {
         .getAll(r.args(orgIds), {index: 'id'})
         .update((org) => ({
           orgUsers: org('orgUsers').append({
-            id: userId
+            id: userId,
+            inactive: false
           }),
           updatedAt: new Date()
         }), {returnChanges: true})
@@ -78,7 +79,7 @@ const typeLookup = {
 
 import stripe from 'server/billing/stripe';
 import shortid from 'shortid';
-import {toStripeDate} from 'server/billing/stripeDate';
+import {toEpochSeconds} from 'server/utils/epochTime';
 
 export default async function adjustUserCount(userId, orgInput, type) {
   const r = getRethink();
@@ -90,7 +91,7 @@ export default async function adjustUserCount(userId, orgInput, type) {
   const hooks = orgs.map((org) => ({
     id: shortid.generate(),
     subId: org.stripeSubscriptionId,
-    prorationDate: toStripeDate(now),
+    prorationDate: toEpochSeconds(now),
     type,
     userId
   }));
