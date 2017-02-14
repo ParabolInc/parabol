@@ -61,6 +61,7 @@ const Step2TeamName = (props) => {
           shortcutHint="Press enter"
           shortcutDisabled={!teamName}
           type="text"
+          underline
         />
         <WelcomeSubmitButton disabled={submitting || !teamName}/>
       </form>

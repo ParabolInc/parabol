@@ -27,7 +27,8 @@ const InputField = (props) => {
     readyOnly,
     shortcutHint,
     styles,
-    useTextarea
+    useTextarea,
+    underline
   } = props;
 
   const inputStyles = css(
@@ -38,7 +39,8 @@ const InputField = (props) => {
     isLarger && styles.fieldLarger,
     readyOnly && styles.readyOnly,
     isWider && styles.fieldWider,
-    useTextarea && styles.textarea
+    useTextarea && styles.textarea,
+    underline && styles.underline
   );
 
   let ref;
@@ -85,6 +87,13 @@ const InputField = (props) => {
   );
 };
 
+const underlineStyles = {
+  borderLeftColor: 'transparent !important',
+  borderRightColor: 'transparent !important',
+  borderTopColor: 'transparent !important',
+  boxShadow: 'none !important'
+};
+
 InputField.propTypes = {
   hasErrorText: PropTypes.bool,
   helpText: PropTypes.any,
@@ -116,6 +125,7 @@ InputField.propTypes = {
     'white'
   ]),
   meta: PropTypes.object.isRequired,
+  underline: PropTypes.bool,
   useTextarea: PropTypes.bool
 };
 
@@ -148,6 +158,21 @@ const styleThunk = () => ({
 
   textarea: {
     minHeight: '6rem'
+  },
+
+  underline: {
+    borderRadius: 0,
+    ...underlineStyles,
+
+    ':hover': {
+      underlineStyles
+    },
+    ':focus': {
+      underlineStyles
+    },
+    ':active': {
+      underlineStyles
+    }
   }
 });
 
