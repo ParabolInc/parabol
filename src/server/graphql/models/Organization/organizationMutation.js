@@ -125,22 +125,29 @@ export default {
       requireOrgLeader(userOrgDoc);
 
       // RESOLUTION
-      const userRes = await r.table('Organization').get(orgId)
+      const userDoc = await r.table('Organization').get(orgId)
         .update((org) => ({
           orgUsers: org('orgUsers').filter((orgUser) => orgUser('id').ne(userId)),
           updatedAt: now
         }))
         .do(() => {
+          return r.table('TeamMember')
+            .getAll(userId, {index: 'userId'})
+            .update({
+              updatedAt: now,
+              isNotRemoved: false
+            })
+        })
+        .do(() => {
           return r.table('User').get(userId)
             .update((row) => ({
               userOrgs: row('userOrgs').filter((userOrg) => userOrg('id').ne(orgId)),
               updatedAt: now
-            }), {returnChanges: true});
+            }), {returnChanges: true})('changes')(0)('old_val').default(null);
         });
 
-      const userDoc = getOldVal(userRes);
       if (!userDoc) {
-        throw errorObj({_error: `${userId} does not exist in org ${orgId}`});
+        throw errorObj({_error: `User ${userId} does not exist in org ${orgId}`});
       }
       await adjustUserCount(userId, orgId, REMOVE_USER);
       return true;

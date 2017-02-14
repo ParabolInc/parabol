@@ -8,19 +8,19 @@ import {errorObj, getOldVal} from 'server/utils/utils';
 import {
   requireWebsocket,
   requireSUOrTeamMember,
-  requireSUOrSelfOrLead,
   requireSUOrLead,
   requireAuth
 } from 'server/utils/authorization';
 import parseInviteToken from 'server/graphql/models/Invitation/inviteTeamMembers/parseInviteToken';
 import validateInviteTokenKey from 'server/graphql/models/Invitation/inviteTeamMembers/validateInviteTokenKey';
 import tmsSignToken from 'server/utils/tmsSignToken';
-import {JOIN_TEAM, KICK_OUT, PRESENCE} from 'universal/subscriptions/constants';
+import {JOIN_TEAM, PRESENCE} from 'universal/subscriptions/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {
   ADD_USER,
 } from 'server/utils/serverConstants';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
+import removeTeamMember from 'server/graphql/models/TeamMember/removeTeamMember/removeTeamMember';
 
 export default {
   checkIn: {
@@ -184,73 +184,7 @@ export default {
       return tmsSignToken(authToken, tms);
     }
   },
-  removeTeamMember: {
-    type: GraphQLBoolean,
-    description: 'Remove a team member from the team',
-    args: {
-      teamMemberId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The teamMemberId of the person who is being checked in'
-      }
-    },
-    async resolve(source, {teamMemberId}, {authToken, exchange, socket}) {
-      const r = getRethink();
-
-      // AUTH
-      const [userId, teamId] = teamMemberId.split('::');
-      await requireSUOrSelfOrLead(authToken, userId, teamId);
-      requireWebsocket(socket);
-
-      // RESOLUTION
-      const res = await r.table('TeamMember')
-        // set inactive
-          .get(teamMemberId)
-          .update({
-            isNotRemoved: false
-          })
-          // assign active projects to the team lead
-          .do(() => {
-            return r.table('Project')
-              .getAll(teamMemberId, {index: 'teamMemberId'})
-              .filter({isArchived: false})
-              .update({
-                teamMemberId: r.table('TeamMember')
-                  .getAll(teamId, {index: 'teamId'})
-                  .filter({isLead: true})
-                  .nth(0)('id')
-              }, {nonAtomic: true});
-          })
-          // flag all actions as complete since the user can't edit them now, anyways
-          .do(() => {
-            return r.table('Action')
-              .getAll(teamMemberId, {index: 'teamMemberId'})
-              .update({
-                isComplete: true
-              });
-          })
-          // remove the teamId from the user tms array
-          .do(() => {
-            return r.table('User')
-              .get(userId)
-              .update((user) => {
-                return user.merge({
-                  tms: user('tms').filter((id) => id.ne(teamId))
-                });
-              }, {returnChanges: true});
-          });
-      // update the tms on auth0
-      const newtms = res.changes[0] && res.changes[0].new_val.tms;
-      if (newtms) {
-        await auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: newtms});
-      }
-
-      // update the server socket, if they're logged in
-      const channel = `${PRESENCE}/${teamId}`;
-      exchange.publish(channel, {type: KICK_OUT, userId});
-      return true;
-    }
-  }
-  ,
+  removeTeamMember,
   promoteToLead: {
     type: GraphQLBoolean,
     description: 'Promote another team member to be the leader',

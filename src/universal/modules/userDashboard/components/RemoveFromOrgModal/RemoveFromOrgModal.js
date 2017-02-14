@@ -5,11 +5,11 @@ import Type from 'universal/components/Type/Type';
 import {cashay} from 'cashay';
 import portal from 'react-portal-hoc';
 
-const RemoveBillingLeaderModal = (props) => {
+const RemoveFromOrgModal = (props) => {
   const {closeAfter, closePortal, isClosing, orgId, preferredName, userId} = props;
   const handleClick = () => {
     const variables = {orgId, userId};
-    cashay.mutate('removeBillingLeader', {variables});
+    cashay.mutate('removeOrgUser', {variables});
   };
   return (
     <DashModal closeAfter={closeAfter} closePortal={closePortal} isClosing={isClosing} onBackdropClick={closePortal}>
@@ -17,8 +17,8 @@ const RemoveBillingLeaderModal = (props) => {
         Are you sure?
       </Type>
       <Type align="center" bold scale="s4">
-        This will remove {preferredName} as a billing leader from <br />
-        the organization. They will still be a member. <br />
+        This will remove {preferredName} from all teams and the organization.<br />
+        Your next invoice will be refunded a prorated amount for unused time.<br />
       </Type>
       <IconLink
         colorPalette="warm"
@@ -33,10 +33,10 @@ const RemoveBillingLeaderModal = (props) => {
   );
 };
 
-RemoveBillingLeaderModal.propTypes = {
+RemoveFromOrgModal.propTypes = {
   orgId: PropTypes.string.isRequired,
   preferredName: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired
 };
 
-export default portal({escToClose: true, closeAfter: 100})(RemoveBillingLeaderModal);
+export default portal({escToClose: true, closeAfter: 100})(RemoveFromOrgModal);

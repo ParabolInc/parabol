@@ -7,7 +7,7 @@ import IconControl from 'universal/components/IconControl/IconControl';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
 import Toggle from 'universal/components/Toggle/Toggle';
-import RemoveBillingLeaderModal from 'universal/modules/userDashboard/components/RemoveBillingLeaderModal/RemoveBillingLeaderModal';
+import RemoveFromOrgModal from 'universal/modules/userDashboard/components/RemoveFromOrgModal/RemoveFromOrgModal';
 import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal';
 import {Menu, MenuItem} from 'universal/modules/menu';
 import {cashay} from 'cashay';
@@ -58,7 +58,7 @@ const OrgMembers = (props) => {
         }
         if (myUserId !== orgUser.id) {
           listItems.push(
-            <RemoveBillingLeaderModal
+            <RemoveFromOrgModal
               orgId={orgId}
               preferredName={preferredName}
               userId={id}
