@@ -19,8 +19,6 @@ export const APP_UPGRADE_PENDING_KEY = `${APP_NAME}:upgradePending`;
 export const APP_UPGRADE_PENDING_FALSE = 'false';
 export const APP_UPGRADE_PENDING_RELOAD = 'reload';
 export const APP_UPGRADE_PENDING_DONE = 'done';
-// eslint-disable-next-line global-require
-export const APP_VERSION = require('../../../package.json').version;
 export const APP_VERSION_KEY = `${APP_NAME}:version`;         // in localStorage
 export const APP_WEBPACK_PUBLIC_PATH_DEFAULT = '/static/';
 

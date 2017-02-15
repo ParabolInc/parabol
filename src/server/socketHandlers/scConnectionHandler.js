@@ -5,11 +5,11 @@ import {REFRESH_JWT_AFTER, UNPAUSE_USER} from 'server/utils/serverConstants';
 import getRetink from 'server/database/rethinkDriver';
 import isObject from 'universal/utils/isObject';
 import jwtDecode from 'jwt-decode';
-import {getOldVal} from '../utils/utils';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
-import {APP_VERSION} from 'universal/utils/constants';
 import {fromEpochSeconds} from 'server/utils/epochTime';
+import packageJSON from '../../../package.json';
 
+const APP_VERSION = packageJSON.version;
 // we do this otherwise we'd have to blacklist every token that ever got replaced & query that table for each query
 const isTmsValid = (tmsFromDB, tmsFromToken) => {
   if (tmsFromDB.length !== tmsFromToken.length) return false;
