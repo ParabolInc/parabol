@@ -62,7 +62,7 @@ export default {
           //   .getAll(r.args(emails), {index: 'email'})
           //   .filter({teamId})('email')
           //   .coerceTo('array')
-        }
+        };
       });
     // ignore pendingApprovalEmails because this could be the billing leader hitting accept
     const {inviteEmails, teamMembers} = usedEmails;
@@ -102,7 +102,7 @@ export default {
       r.table('TeamMember')
         .getAll(r.args(idsToReactivate), {index: 'id'})
         .update({isNotRemoved: true})
-        .run()
+        .run();
     }
 
     if (filteredInvitees.length > 0) {

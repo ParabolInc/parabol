@@ -20,5 +20,4 @@ export default async function signinAndUpdateToken(dispatch, profile, auth0Token
    * token.
    */
   dispatch(setAuthToken(auth0Token));
-
 }

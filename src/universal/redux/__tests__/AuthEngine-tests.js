@@ -26,7 +26,7 @@ test.before(() => {
       }
     });
   };
-  sinon.stub(cashay, 'query', cashayQueryUserStub);
+  sinon.stub(cashay, 'query').callsFake(cashayQueryUserStub);
 });
 
 test.after.always('cleanup', () => {

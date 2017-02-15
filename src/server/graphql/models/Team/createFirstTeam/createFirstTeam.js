@@ -28,7 +28,7 @@ export default {
       description: 'The new team object with exactly 1 team member'
     }
   },
-  async resolve(source, {newTeam}, {authToken}) {
+  async resolve(source, {newTeam}, {authToken, callback}) {
     const r = getRethink();
     const now = new Date();
 
@@ -56,6 +56,7 @@ export default {
       r.table('User').get(userId)('trialOrg'),
       null,
       r.table('User').get(userId).update({
+        tms: [newTeam.id],
         trialOrg: orgId,
         updatedAt: now
       }));
@@ -83,7 +84,8 @@ export default {
         // trialExpiresAt
         varList: [periodEnd]
       });
+      if (callback) { callback(); }
     }, 0);
     return tmsSignToken(authToken, tms);
   }
-}
+};
