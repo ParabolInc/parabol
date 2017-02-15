@@ -25,6 +25,7 @@ export default {
     requireWebsocket(socket);
 
     // RESOLUTION
-    return removeAllTeamMembers(teamMemberId, exchange);
+    removeAllTeamMembers(teamMemberId, exchange);
+    return true;
   }
 };

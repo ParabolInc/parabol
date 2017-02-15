@@ -11,7 +11,7 @@ const LeaveTeamModal = (props) => {
   const handleClick = () => {
     const variables = {teamMemberId};
     // the KICK_OUT message will handle this anyways, but it's great to do it here to avoid the ducks of doom
-    // router.push('/me');
+    router.push('/me');
     cashay.mutate('removeTeamMember', {variables});
     closePortal();
   };

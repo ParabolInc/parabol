@@ -81,8 +81,7 @@ export default async function removeAllTeamMembers(maybeTeamMemberIds, exchange)
     });
   // update the tms on auth0
   if (newtms) {
-    await
-      auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: newtms});
+    await auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: newtms});
   }
 
   // update the server socket, if they're logged in
