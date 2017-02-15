@@ -12,7 +12,7 @@ import asyncInviteTeam from './asyncInviteTeam';
 import inviteTeamMemberValidation from './inviteTeamMembersValidation';
 import removeOrgApprovalAndNotification from 'server/graphql/models/Organization/rejectOrgApproval/removeOrgApprovalAndNotification';
 import inviteAsUser from 'server/graphql/models/Invitation/inviteTeamMembers/inviteAsUser';
-import {REJOIN_TEAM, PRESENCE} from 'universal/subscriptions/constants'
+import {ADD_TO_TEAM, REJOIN_TEAM, PRESENCE, USER_MEMO} from 'universal/subscriptions/constants'
 
 export default {
   type: GraphQLBoolean,
@@ -118,14 +118,14 @@ export default {
         });
       reactivatedUsers.forEach((user) => {
         const {preferredName, id: reactivatedUserId} = user;
+        const userChannel = `${USER_MEMO}/${reactivatedUserId}`;
+        exchange.publish(userChannel, {type: ADD_TO_TEAM, teamId});
         const channel = `${PRESENCE}/${teamId}`;
         exchange.publish(channel, {
           type: REJOIN_TEAM,
-          userId: reactivatedUserId,
           name: preferredName,
           sender: userId
         });
-        // exchange.publish(channel, {type: JOIN_TEAM, name: preferredName});
       });
 
 

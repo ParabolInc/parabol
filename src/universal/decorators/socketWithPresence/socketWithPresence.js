@@ -4,7 +4,7 @@ import {reduxSocket} from 'redux-socket-cluster';
 import {cashay} from 'cashay';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import reduxSocketOptions from 'universal/redux/reduxSocketOptions';
-import {JOIN_TEAM, REJOIN_TEAM, NOTIFICATIONS, PRESENCE, TEAM_MEMBERS, TEAM} from 'universal/subscriptions/constants';
+import {JOIN_TEAM, REJOIN_TEAM, USER_MEMO, NOTIFICATIONS, PRESENCE, TEAM_MEMBERS, TEAM} from 'universal/subscriptions/constants';
 import socketCluster from 'socketcluster-client';
 import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
 import parseChannel from 'universal/utils/parseChannel';
@@ -51,7 +51,6 @@ export default ComposedComponent => {
       this.subscribeToPresence({tms: []}, this.props);
       this.subscribeToNotifications();
       this.watchForKickout();
-      // this.watchForJoin();
       this.listenForVersion();
     }
     componentWillReceiveProps(nextProps) {
@@ -62,8 +61,8 @@ export default ComposedComponent => {
       const socket = socketCluster.connect();
       socket.off('kickOut', this.kickoutHandler);
       socket.off('version', this.versionHandler);
-
     }
+
     render() {
       return <ComposedComponent {...this.props}/>;
     }
@@ -71,6 +70,8 @@ export default ComposedComponent => {
     kickoutHandler = (error, channelName) => {
       const {dispatch} = this.props;
       const {channel, variableString: teamId} = parseChannel(channelName);
+      // important to flag these as unsubscribed so resubs can ocur
+      cashay.unsubscribe(channel, teamId);
       if (channel === TEAM) {
         const teamName = getTeamName(teamId);
         const {router} = this.props;
@@ -111,11 +112,14 @@ export default ComposedComponent => {
     watchForKickout() {
       const socket = socketCluster.connect();
       socket.on('kickOut', this.kickoutHandler);
-      console.log('socket', socket)
     }
+
     subscribeToNotifications() {
       const {userId} = this.props;
+      const socket = socketCluster.connect();
       cashay.subscribe(NOTIFICATIONS, userId);
+      const userMemoChannel = `${USER_MEMO}/${userId}`;
+      socket.subscribe(userMemoChannel, {waitForAuth: true});
     }
 
     subscribeToPresence(oldProps, props) {

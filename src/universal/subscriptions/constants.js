@@ -4,9 +4,11 @@ export const LEAVE = 'LEAVE';
 export const PRESENT = 'PRESENT';
 export const SOUNDOFF = 'SOUNDOFF';
 export const KICK_OUT = 'KICK_OUT';
+// annoucements to the rest of the team
 export const JOIN_TEAM = 'JOIN_TEAM';
-// re-invited to a team
 export const REJOIN_TEAM = 'REJOIN_TEAM';
+// message to an individual user
+export const ADD_TO_TEAM = 'ADD_TO_TEAM';
 
 // CHANNELS
 export const ACTIONS = 'actions';
@@ -25,3 +27,5 @@ export const PROJECTS = 'projects';
 export const TEAM = 'team';
 export const TEAM_MEMBERS = 'teamMembers';
 export const USERS_BY_ORG = 'usersByOrg';
+// user-specific message channel, not persisted
+export const USER_MEMO = 'userMemo';

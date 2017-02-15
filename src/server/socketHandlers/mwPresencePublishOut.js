@@ -1,4 +1,4 @@
- import parseChannel from 'universal/utils/parseChannel';
+import parseChannel from 'universal/utils/parseChannel';
 import {EDIT, PRESENT, SOUNDOFF, PRESENCE, KICK_OUT, REJOIN_TEAM} from 'universal/subscriptions/constants';
 
 export default function mwPresencePublishOut(req, next) {
@@ -46,7 +46,7 @@ export default function mwPresencePublishOut(req, next) {
         const safeIdx = idxToRemove === -1 ? Infinity : idxToRemove;
         const newAuthToken = {
           ...authToken,
-          tms: [...authToken.tms.slice(0, safeIdx), ...authToken.tms.slice(safeIdx +1)],
+          tms: [...authToken.tms.slice(0, safeIdx), ...authToken.tms.slice(safeIdx + 1)],
           exp: undefined
         };
         // replace token with one that doesn't include the teamId in tms
@@ -57,19 +57,7 @@ export default function mwPresencePublishOut(req, next) {
       // reinvited to the team
     } else if (type === REJOIN_TEAM) {
       const authToken = req.socket.getAuthToken();
-      console.log('REJOIN', authToken.sub, userId, channel, channelKey)
-      if (authToken.sub === userId) {
-        const newAuthToken = {
-          ...authToken,
-          tms: authToken.tms.concat(channelKey),
-          exp: undefined
-        };
-        // replace token with one that doesn't include the teamId in tms
-        console.log('new TMS', newAuthToken.tms);
-        req.socket.setAuthToken(newAuthToken);
-        next(true);
-        return;
-      } else if (authToken.sub === req.data.sender) {
+      if (authToken.sub === req.data.sender) {
         next(true);
         return;
       }

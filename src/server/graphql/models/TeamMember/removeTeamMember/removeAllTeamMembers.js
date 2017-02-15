@@ -87,7 +87,6 @@ export default async function removeAllTeamMembers(maybeTeamMemberIds, exchange)
   // update the server socket, if they're logged in
   teamIds.forEach((teamId) => {
     const channel = `${PRESENCE}/${teamId}`;
-    console.log('kicking out', userId, teamId);
     exchange.publish(channel, {type: KICK_OUT, userId});
   });
   return true;

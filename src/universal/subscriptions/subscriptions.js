@@ -190,17 +190,17 @@ export default [
       }
     }`
   },
-  {
-    channel: PRESENCE,
-    string: `
-    subscription($teamId: ID!) {
-      presence(teamId: $teamId) {
-        id
-        userId
-        editing
-      }
-    }`
-  },
+  // {
+  //   channel: PRESENCE,
+  //   string: `
+  //   subscription($teamId: ID!) {
+  //     presence(teamId: $teamId) {
+  //       id
+  //       userId
+  //       editing
+  //     }
+  //   }`
+  // },
   {
     channel: PROJECTS,
     string: `
