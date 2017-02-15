@@ -1540,9 +1540,9 @@ caseless@~0.11.0:
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.11.0.tgz#715b96ea9841593cc33067923f5ec60ebda4f7d7"
 
-cashay@^0.22.3:
-  version "0.22.3"
-  resolved "https://registry.yarnpkg.com/cashay/-/cashay-0.22.3.tgz#0ce9355612b2e0e32a646cd130f05ba6b879a432"
+cashay@^0.22.4:
+  version "0.22.4"
+  resolved "https://registry.yarnpkg.com/cashay/-/cashay-0.22.4.tgz#33616925372ec9fe1532f52404da3aeead69faf5"
   dependencies:
     graphql "0.7.1"
     isomorphic-fetch "^2.2.1"
