@@ -119,7 +119,7 @@ export default {
       reactivatedUsers.forEach((user) => {
         const {preferredName, id: reactivatedUserId} = user;
         const userChannel = `${USER_MEMO}/${reactivatedUserId}`;
-        exchange.publish(userChannel, {type: ADD_TO_TEAM, teamId});
+        exchange.publish(userChannel, {type: ADD_TO_TEAM, teamId, teamName});
         const channel = `${PRESENCE}/${teamId}`;
         exchange.publish(channel, {
           type: REJOIN_TEAM,

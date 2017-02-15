@@ -2,7 +2,7 @@
 import {USER_MEMO, ADD_TO_TEAM} from 'universal/subscriptions/constants';
 
 export default function mwMemoPublishOut(req, next) {
-  const {channel, variableString: userId} = parseChannel(req.channel);
+  const {channel} = parseChannel(req.channel);
   if (channel === USER_MEMO) {
     const {type} = req.data;
     if (type === ADD_TO_TEAM) {
@@ -14,7 +14,7 @@ export default function mwMemoPublishOut(req, next) {
         exp: undefined
       };
       req.socket.setAuthToken(newAuthToken);
-      next(true);
+      next();
       return;
     }
   }

@@ -4,7 +4,7 @@ import {reduxSocket} from 'redux-socket-cluster';
 import {cashay} from 'cashay';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import reduxSocketOptions from 'universal/redux/reduxSocketOptions';
-import {JOIN_TEAM, REJOIN_TEAM, USER_MEMO, NOTIFICATIONS, PRESENCE, TEAM_MEMBERS, TEAM} from 'universal/subscriptions/constants';
+import {ADD_TO_TEAM, JOIN_TEAM, REJOIN_TEAM, USER_MEMO, NOTIFICATIONS, PRESENCE, TEAM_MEMBERS, TEAM} from 'universal/subscriptions/constants';
 import socketCluster from 'socketcluster-client';
 import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
 import parseChannel from 'universal/utils/parseChannel';
@@ -59,8 +59,11 @@ export default ComposedComponent => {
 
     componentWillUnmount() {
       const socket = socketCluster.connect();
+      const {userId} = this.props;
+      const userMemoChannel = `${USER_MEMO}/${userId}`;
       socket.off('kickOut', this.kickoutHandler);
       socket.off('version', this.versionHandler);
+      socket.unwatch(userMemoChannel, this.memoHandler);
     }
 
     render() {
@@ -82,6 +85,18 @@ export default ComposedComponent => {
         dispatch(showWarning({
           title: 'So long!',
           message: `You have been removed from ${teamName}`
+        }));
+      }
+    };
+
+    memoHandler = (data) => {
+      const {type} = data;
+      const {dispatch} = this.props;
+      if (type === ADD_TO_TEAM) {
+        const {teamName} = data;
+        dispatch(showInfo({
+          title: 'Congratulations!',
+          message: `You\'ve been added to team ${teamName}`
         }));
       }
     };
@@ -120,6 +135,7 @@ export default ComposedComponent => {
       cashay.subscribe(NOTIFICATIONS, userId);
       const userMemoChannel = `${USER_MEMO}/${userId}`;
       socket.subscribe(userMemoChannel, {waitForAuth: true});
+      socket.watch(userMemoChannel, this.memoHandler);
     }
 
     subscribeToPresence(oldProps, props) {
