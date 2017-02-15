@@ -27,14 +27,10 @@ export default function mwPresencePublishOut(req, next) {
       }
     } else if (type === KICK_OUT) {
       const authToken = req.socket.getAuthToken();
-      console.log('kick out received for', authToken.sub, userId)
       if (authToken.sub === userId) {
         const subs = req.socket.subscriptions();
-        console.log('getting subs for', userId)
         subs.forEach((sub) => {
-          console.log('maybe kick out of', sub)
           if (sub.indexOf(channelKey) !== -1) {
-            console.log('kicking out of', sub)
             // remove from client cache
             req.socket.emit(sub, {
               type: 'remove',
@@ -50,7 +46,7 @@ export default function mwPresencePublishOut(req, next) {
         const safeIdx = idxToRemove === -1 ? Infinity : idxToRemove;
         const newAuthToken = {
           ...authToken,
-          tms: [...authToken.tms.slice(0, safeIdx), authToken.tms.slice(safeIdx +1)],
+          tms: [...authToken.tms.slice(0, safeIdx), ...authToken.tms.slice(safeIdx +1)],
           exp: undefined
         };
         // replace token with one that doesn't include the teamId in tms
@@ -69,7 +65,11 @@ export default function mwPresencePublishOut(req, next) {
           exp: undefined
         };
         // replace token with one that doesn't include the teamId in tms
+        console.log('new TMS', newAuthToken.tms);
         req.socket.setAuthToken(newAuthToken);
+        next(true);
+        return;
+      } else if (authToken.sub === req.data.sender) {
         next(true);
         return;
       }

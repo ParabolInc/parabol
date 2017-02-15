@@ -48,9 +48,8 @@ export default ComposedComponent => {
     };
 
     componentDidMount() {
-      this.subscribeToPresence({}, this.props);
+      this.subscribeToPresence({tms: []}, this.props);
       this.subscribeToNotifications();
-      console.log('did mount watchin FOR KICKING OUT');
       this.watchForKickout();
       // this.watchForJoin();
       this.listenForVersion();
@@ -79,7 +78,6 @@ export default ComposedComponent => {
         if (onExTeamRoute) {
           router.push('/me');
         }
-        console.log('dispatching SO LONG', channelName)
         dispatch(showWarning({
           title: 'So long!',
           message: `You have been removed from ${teamName}`
@@ -126,9 +124,8 @@ export default ComposedComponent => {
         throw new Error('Did not finish the welcome wizard! How did you get here?');
         // TODO redirect?
       }
-      if (oldProps.tms !== tms) {
+      if (oldProps.tms.length < tms.length ) {
         const socket = socketCluster.connect();
-        // window.socket = socket;
         for (let i = 0; i < tms.length; i++) {
           const teamId = tms[i];
           if (tmsSubs.includes(teamId)) continue;
@@ -143,6 +140,9 @@ export default ComposedComponent => {
           });
           this.watchForJoin(teamId);
         }
+      } else if (oldProps.tms.length > tms.length) {
+        tmsSubs.length = 0;
+        tmsSubs.push(...tms);
       }
     }
 

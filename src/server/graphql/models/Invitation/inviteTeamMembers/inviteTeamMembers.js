@@ -119,7 +119,12 @@ export default {
       reactivatedUsers.forEach((user) => {
         const {preferredName, id: reactivatedUserId} = user;
         const channel = `${PRESENCE}/${teamId}`;
-        exchange.publish(channel, {type: REJOIN_TEAM, userId: reactivatedUserId, name: preferredName});
+        exchange.publish(channel, {
+          type: REJOIN_TEAM,
+          userId: reactivatedUserId,
+          name: preferredName,
+          sender: userId
+        });
         // exchange.publish(channel, {type: JOIN_TEAM, name: preferredName});
       });
 
