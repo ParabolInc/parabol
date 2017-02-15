@@ -31,7 +31,7 @@ export default {
     //   type: GraphQLID
     // }
   },
-  async resolve(source, {invitees, teamId}, {authToken}) {
+  async resolve(source, {invitees, teamId}, {authToken, unitTestCb}) {
     const r = getRethink();
 
     // AUTH
@@ -99,7 +99,7 @@ export default {
     }
 
     if (idsToReactivate.length > 0) {
-      r.table('TeamMember')
+      await r.table('TeamMember')
         .getAll(r.args(idsToReactivate), {index: 'id'})
         .update({isNotRemoved: true})
         .run();
@@ -112,7 +112,8 @@ export default {
         const inviterId = await removeOrgApprovalAndNotification(orgId, inviteeEmails);
         // when we invite the person, try to invite from the original requester, if not, billing leader
         const safeUserId = inviterId || userId;
-        asyncInviteTeam(safeUserId, teamId, filteredInvitees);
+        unitTestCb();
+        asyncInviteTeam(safeUserId, teamId, filteredInvitees, unitTestCb);
         // if any folks were pending, remove that status now
       } else {
         // return false if org approvals sent, true if only invites were sent

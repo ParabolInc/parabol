@@ -28,7 +28,7 @@ export default {
       description: 'The new team object with exactly 1 team member'
     }
   },
-  async resolve(source, {newTeam}, {authToken, callback}) {
+  async resolve(source, {newTeam}, {authToken, unitTestCb}) {
     const r = getRethink();
     const now = new Date();
 
@@ -84,7 +84,7 @@ export default {
         // trialExpiresAt
         varList: [periodEnd]
       });
-      if (callback) { callback(); }
+      if (unitTestCb) { unitTestCb(); }
     }, 0);
     return tmsSignToken(authToken, tms);
   }

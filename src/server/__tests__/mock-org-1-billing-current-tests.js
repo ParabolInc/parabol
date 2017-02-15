@@ -117,13 +117,13 @@ test.serial('update user profile', async(t) => {
  */
 test.cb.serial('createFirstTeam', (t) => {
   const {authToken} = t.context;
-  const callback = () => {
+  const unitTestCb = () => {
     t.pass();
     t.end();
   };
   const {resolve} = teamMutation.createFirstTeam;
   const newTeam = { ...ORG1_TEAM };
-  resolve({}, {newTeam}, {authToken, callback})
+  resolve({}, {newTeam}, {authToken, unitTestCb})
   .then((result) => t.is(typeof result, 'string'))
   .catch((e) => {
     t.fail(`${e}`);
@@ -138,13 +138,21 @@ test.serial('createFirstTeam disallow second team', (t) => {
   t.throws(resolve({}, {newTeam}, {authToken}));
 });
 
-test.serial('invite team members', async(t) => {
+test.cb.serial('invite team members', (t) => {
   const {authToken} = t.context;
   const teamId = authToken.tms[0];
+  const unitTestCb = () => {
+    t.pass();
+    t.end();
+  };
   const {resolve} = invitationMutation.inviteTeamMembers;
   const invitees = ORG1_TEAM_MEMBERS.map(member => {
     const {auth0UserInfo: {email, name: fullName}} = member;
     return { email, fullName, task: '' };
   });
-  await resolve({}, {invitees, teamId}, {authToken});
+  resolve({}, {invitees, teamId}, {authToken, unitTestCb})
+  .catch((e) => {
+    t.fail(`${e}`);
+    t.end();
+  });
 });
