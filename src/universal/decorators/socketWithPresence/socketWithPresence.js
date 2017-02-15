@@ -4,7 +4,7 @@ import {reduxSocket} from 'redux-socket-cluster';
 import {cashay} from 'cashay';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import reduxSocketOptions from 'universal/redux/reduxSocketOptions';
-import {JOIN_TEAM, NOTIFICATIONS, PRESENCE, TEAM_MEMBERS, TEAM} from 'universal/subscriptions/constants';
+import {JOIN_TEAM, REJOIN_TEAM, NOTIFICATIONS, PRESENCE, TEAM_MEMBERS, TEAM} from 'universal/subscriptions/constants';
 import socketCluster from 'socketcluster-client';
 import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
 import parseChannel from 'universal/utils/parseChannel';
@@ -50,6 +50,7 @@ export default ComposedComponent => {
     componentDidMount() {
       this.subscribeToPresence({}, this.props);
       this.subscribeToNotifications();
+      console.log('did mount watchin FOR KICKING OUT');
       this.watchForKickout();
       // this.watchForJoin();
       this.listenForVersion();
@@ -57,6 +58,34 @@ export default ComposedComponent => {
     componentWillReceiveProps(nextProps) {
       this.subscribeToPresence(this.props, nextProps);
     }
+
+    componentWillUnmount() {
+      const socket = socketCluster.connect();
+      socket.off('kickOut', this.kickoutHandler);
+      socket.off('version', this.versionHandler);
+
+    }
+    render() {
+      return <ComposedComponent {...this.props}/>;
+    }
+
+    kickoutHandler = (error, channelName) => {
+      const {dispatch} = this.props;
+      const {channel, variableString: teamId} = parseChannel(channelName);
+      if (channel === TEAM) {
+        const teamName = getTeamName(teamId);
+        const {router} = this.props;
+        const onExTeamRoute = router.isActive(`/team/${teamId}`) || router.isActive(`/meeting/${teamId}`);
+        if (onExTeamRoute) {
+          router.push('/me');
+        }
+        console.log('dispatching SO LONG', channelName)
+        dispatch(showWarning({
+          title: 'So long!',
+          message: `You have been removed from ${teamName}`
+        }));
+      }
+    };
 
     watchForJoin(teamId) {
       const socket = socketCluster.connect();
@@ -70,39 +99,34 @@ export default ComposedComponent => {
             title: 'Ahoy, a new crewmate!',
             message: `${name} just joined team ${teamName}`
           }));
+        } else if (data.type === REJOIN_TEAM) {
+          const {name} = data;
+          const teamName = getTeamName(teamId);
+          dispatch(showInfo({
+          title: `${name} is back!`,
+            message: `${name} just rejoined team ${teamName}`
+          }));
         }
       });
     }
+
     watchForKickout() {
       const socket = socketCluster.connect();
-      const {dispatch} = this.props;
-      socket.on('kickOut', (error, channelName) => {
-        const {channel, variableString: teamId} = parseChannel(channelName);
-        if (channel === TEAM) {
-          const teamName = getTeamName(teamId);
-          dispatch(showWarning({
-            title: 'So long!',
-            message: `You have been removed from ${teamName}`
-          }));
-          const {router} = this.props;
-          const onExTeamRoute = router.isActive(`/team/${teamId}`) || router.isActive(`/meeting/${teamId}`);
-          if (onExTeamRoute) {
-            router.push('/me');
-          }
-        }
-      });
+      socket.on('kickOut', this.kickoutHandler);
+      console.log('socket', socket)
     }
     subscribeToNotifications() {
       const {userId} = this.props;
       cashay.subscribe(NOTIFICATIONS, userId);
     }
+
     subscribeToPresence(oldProps, props) {
       const {tms} = props;
       if (!tms) {
         throw new Error('Did not finish the welcome wizard! How did you get here?');
         // TODO redirect?
       }
-      if (oldProps.tms !== props.tms) {
+      if (oldProps.tms !== tms) {
         const socket = socketCluster.connect();
         // window.socket = socket;
         for (let i = 0; i < tms.length; i++) {
@@ -111,7 +135,7 @@ export default ComposedComponent => {
           tmsSubs.push(teamId);
           cashay.subscribe(PRESENCE, teamId, presenceSubscriber);
           cashay.subscribe(TEAM_MEMBERS, teamId);
-          socket.on('subscribe', channelName => {
+          socket.on('subscribe', (channelName) => {
             if (channelName === `${PRESENCE}/${teamId}`) {
               const options = {variables: {teamId}};
               cashay.mutate('soundOff', options);
@@ -121,31 +145,30 @@ export default ComposedComponent => {
         }
       }
     }
-    listenForVersion() {
-      const {dispatch, router} = this.props;
-      const socket = socketCluster.connect();
-      socket.on('version', (versionOnServer) => {
-        const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY);
-        if (versionOnServer !== versionInStorage) {
-          dispatch(showWarning({
-            title: 'New stuff!',
-            message: 'A new version of action is available',
-            autoDismiss: 0,
-            action: {
-              label: 'Log out and upgrade',
-              callback: () => {
-                router.replace('/signout');
-              }
-            }
-          }));
-          window.sessionStorage.setItem(APP_UPGRADE_PENDING_KEY,
-            APP_UPGRADE_PENDING_RELOAD);
-        }
-      });
-    }
 
-    render() {
-      return <ComposedComponent {...this.props}/>;
+    versionHandler = (versionOnServer) => {
+      const {dispatch, router} = this.props;
+      const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY);
+      if (versionOnServer !== versionInStorage) {
+        dispatch(showWarning({
+          title: 'New stuff!',
+          message: 'A new version of action is available',
+          autoDismiss: 0,
+          action: {
+            label: 'Log out and upgrade',
+            callback: () => {
+              router.replace('/signout');
+            }
+          }
+        }));
+        window.sessionStorage.setItem(APP_UPGRADE_PENDING_KEY,
+          APP_UPGRADE_PENDING_RELOAD);
+      }
+    };
+
+    listenForVersion() {
+      const socket = socketCluster.connect();
+      socket.on('version', this.versionHandler);
     }
   }
   return SocketWithPresence;

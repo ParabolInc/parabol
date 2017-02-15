@@ -12,13 +12,14 @@ import asyncInviteTeam from './asyncInviteTeam';
 import inviteTeamMemberValidation from './inviteTeamMembersValidation';
 import removeOrgApprovalAndNotification from 'server/graphql/models/Organization/rejectOrgApproval/removeOrgApprovalAndNotification';
 import inviteAsUser from 'server/graphql/models/Invitation/inviteTeamMembers/inviteAsUser';
+import {REJOIN_TEAM, PRESENCE} from 'universal/subscriptions/constants'
 
 export default {
   type: GraphQLBoolean,
   description: `If in the org,
      Send invitation emails to a list of email addresses, add them to the invitation table.
      Else, send a request to the org leader to get them approval and put them in the OrgApproval table.
-     Returns true if invitation is sent, false if approval is needed`,
+     Returns true if invitation is sent, false if approval is needed, undefined/null if neither`,
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -31,7 +32,7 @@ export default {
     //   type: GraphQLID
     // }
   },
-  async resolve(source, {invitees, teamId}, {authToken}) {
+  async resolve(source, {invitees, teamId}, {authToken, exchange}) {
     const r = getRethink();
 
     // AUTH
@@ -99,26 +100,46 @@ export default {
     }
 
     if (idsToReactivate.length > 0) {
-      r.table('TeamMember')
+      const userIdsToReactivate = idsToReactivate.map((teamMemberId) => {
+        return teamMemberId.substr(0, teamMemberId.indexOf('::'))
+      });
+      const reactivatedUsers = await r.table('TeamMember')
         .getAll(r.args(idsToReactivate), {index: 'id'})
         .update({isNotRemoved: true})
-        .run()
+        .do(() => {
+          return r.table('User')
+            .getAll(r.args(userIdsToReactivate))
+            .update((user) => {
+              return user.merge({
+                tms: user('tms').append(teamId)
+              })
+            }, {returnChanges: true})('changes')
+            .map((change) => change('new_val'))
+        });
+      reactivatedUsers.forEach((user) => {
+        const {preferredName, id: reactivatedUserId} = user;
+        const channel = `${PRESENCE}/${teamId}`;
+        exchange.publish(channel, {type: REJOIN_TEAM, userId: reactivatedUserId, name: preferredName});
+        // exchange.publish(channel, {type: JOIN_TEAM, name: preferredName});
+      });
+
+
     }
 
     if (filteredInvitees.length > 0) {
       // if it's a billing leader send them all
       const inviteeEmails = filteredInvitees.map((i) => i.email);
       if (inviterIsBillingLeader) {
+        // if any folks were pending, remove that status now
         const inviterId = await removeOrgApprovalAndNotification(orgId, inviteeEmails);
         // when we invite the person, try to invite from the original requester, if not, billing leader
         const safeUserId = inviterId || userId;
         asyncInviteTeam(safeUserId, teamId, filteredInvitees);
-        // if any folks were pending, remove that status now
-      } else {
-        // return false if org approvals sent, true if only invites were sent
-        return await inviteAsUser(filteredInvitees, orgId, userId, teamId, teamName);
+        return true;
       }
+      // return false if org approvals sent, true if only invites were sent
+      return await inviteAsUser(filteredInvitees, orgId, userId, teamId, teamName);
     }
-    return true;
+    return undefined;
   }
 };

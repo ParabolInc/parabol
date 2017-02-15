@@ -5,6 +5,8 @@ export const PRESENT = 'PRESENT';
 export const SOUNDOFF = 'SOUNDOFF';
 export const KICK_OUT = 'KICK_OUT';
 export const JOIN_TEAM = 'JOIN_TEAM';
+// re-invited to a team
+export const REJOIN_TEAM = 'REJOIN_TEAM';
 
 // CHANNELS
 export const ACTIONS = 'actions';
