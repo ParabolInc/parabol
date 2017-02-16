@@ -3,6 +3,7 @@ import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUse
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router';
+import {unsetNextUrl} from 'universal/redux/authDuck';
 
 const mapStateToProps = state => {
   const auth = state.auth.obj;
@@ -14,12 +15,15 @@ const mapStateToProps = state => {
 
 export default ComposedComponent => {
   const TokenizedComp = (props) => {
-    const {auth, router} = props;
+    const {auth, dispatch, router} = props;
     if (auth.sub) {
       // note if you join a team & leave it, tms will be an empty array
       const isNew = !auth.hasOwnProperty('tms');
       if (isNew) {
         router.push('/welcome');
+      } else if (auth.nextUrl) {
+        router.push(auth.nextUrl);
+        dispatch(unsetNextUrl());
       } else {
         router.push('/me');
       }
@@ -29,6 +33,7 @@ export default ComposedComponent => {
 
   TokenizedComp.propTypes = {
     auth: PropTypes.object,
+    dispatch: PropTypes.object,
     router: PropTypes.object.isRequired
   };
 

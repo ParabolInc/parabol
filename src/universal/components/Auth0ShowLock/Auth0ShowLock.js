@@ -8,7 +8,7 @@ import signinAndUpdateToken from './signinAndUpdateToken';
  * We require auth0-lock from within this function because it cannot be
  * rendered within the SSR.
  */
-export function showLock(dispatch, router) {
+export function showLock(dispatch) {
   // eslint-disable-next-line global-require
   const Auth0Lock = require('auth0-lock');
   let clientOptions = defaultClientOptions;
@@ -24,7 +24,7 @@ export function showLock(dispatch, router) {
     }
   }, (error, profile, authToken) => {
     if (error) throw error;
-    signinAndUpdateToken(dispatch, router, profile, authToken);
+    signinAndUpdateToken(dispatch, profile, authToken);
   });
 }
 

@@ -2,9 +2,8 @@ import {cashay} from 'cashay';
 import {setAuthToken} from 'universal/redux/authDuck';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
-import {PENDING_REDIRECT_KEY} from 'universal/utils/constants';
 
-export default async function signinAndUpdateToken(dispatch, router, profile, authToken) {
+export default async function signinAndUpdateToken(dispatch, profile, authToken) {
   cashay.create({httpTransport: new ActionHTTPTransport(authToken)});
   const options = {variables: {authToken}};
   await cashay.mutate('updateUserWithAuthToken', options);
@@ -16,9 +15,5 @@ export default async function signinAndUpdateToken(dispatch, router, profile, au
    * token.
    */
   dispatch(setAuthToken(authToken, profile));
-  const pendingRedirect = window.sessionStorage.getItem(PENDING_REDIRECT_KEY);
-  if (pendingRedirect) {
-    router.replace(pendingRedirect);
-  }
   dispatch(segmentEventTrack('User Login'));
 }

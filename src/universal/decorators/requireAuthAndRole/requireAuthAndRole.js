@@ -4,7 +4,7 @@ import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUse
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router';
-import {PENDING_REDIRECT_KEY} from 'universal/utils/constants';
+import {setNextUrl} from 'universal/redux/authDuck';
 
 const unauthorizedDefault = {
   title: 'Unauthorized',
@@ -27,7 +27,7 @@ const mapStateToProps = state => {
 export default (role, {
   /* optional named options: */
   silent = false,
-  redirect = '/',
+  redirect = '/login',
   unauthorized = unauthorizedDefault,
   unauthenticated = unauthenticatedDefault
 } = {}) => ComposedComponent => {
@@ -66,7 +66,7 @@ export default (role, {
       } else if (!silent) {
         // no legit authToken to be had & squak about it:
         dispatch(showError(unauthorized));
-        window.sessionStorage.setItem(PENDING_REDIRECT_KEY, pathname);
+        dispatch(setNextUrl(pathname));
       }
       router.push(redirect);
       return null;

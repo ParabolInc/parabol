@@ -6,18 +6,21 @@ import {selectSegmentProfile} from './segmentActions';
 
 const SET_AUTH_TOKEN = '@@authToken/SET_AUTH_TOKEN';
 const REMOVE_AUTH_TOKEN = '@@authToken/REMOVE_AUTH_TOKEN';
+const SET_NEXT_URL = '@@authToken/SET_NEXT_URL';
+const UNSET_NEXT_URL = '@@authToken/UNSET_NEXT_URL';
 
 export const DEFAULT_AUTH_REDUCER_NAME = 'auth';
 
 const initialState = {
   token: null,
   obj: {
-    // rol and tms are not guaranteed
+    // nextUrl, rol, and tms are not guaranteed
     aud: null,
     exp: null,
     iat: null,
     iss: null,
     sub: null,
+    nextUrl: null
   }
 };
 
@@ -25,10 +28,24 @@ export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
     case SET_AUTH_TOKEN: {
       const {obj, token} = action.payload;
-      return {obj, token};
+      const newState = {obj, token};
+      newState.obj.nextUrl = state.obj.nextUrl;
+      return newState;
     }
-    case REMOVE_AUTH_TOKEN:
-      return initialState;
+    case REMOVE_AUTH_TOKEN: {
+      const newState = initialState;
+      newState.obj.nextUrl = state.obj.nextUrl;
+      return newState;
+    }
+    case SET_NEXT_URL: {
+      const {nextUrl} = action.payload;
+      state.obj.nextUrl = nextUrl;
+      return state;
+    }
+    case UNSET_NEXT_URL: {
+      state.obj.nextUrl = null;
+      return state;
+    }
     default:
       return state;
   }
@@ -95,5 +112,20 @@ export function removeAuthToken() {
       Raven.setUserContext({}); // eslint-disable-line no-undef
     }
     dispatch({ type: REMOVE_AUTH_TOKEN });
+  };
+}
+
+export function setNextUrl(nextUrl) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_NEXT_URL,
+      payload: { nextUrl }
+    });
+  };
+}
+
+export function unsetNextUrl() {
+  return (dispatch) => {
+    dispatch({ type: UNSET_NEXT_URL });
   };
 }

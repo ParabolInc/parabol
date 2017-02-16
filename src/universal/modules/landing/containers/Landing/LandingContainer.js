@@ -24,7 +24,8 @@ export default class LandingContainer extends Component {
       preferredName: PropTypes.string
     }),
     dispatch: PropTypes.func.isRequired,
-    router: PropTypes.object.isRequired
+    router: PropTypes.object.isRequired,
+    params: PropTypes.object
   };
 
   constructor(props) {
@@ -42,7 +43,13 @@ export default class LandingContainer extends Component {
   }
 
   componentDidMount() {
-    const {dispatch} = this.props;
+    const {
+      dispatch,
+      params: { splat }
+    } = this.props;
+    if (splat === 'login') {
+      showLock(dispatch);
+    }
     const upgradePendingState = window.sessionStorage.getItem(APP_UPGRADE_PENDING_KEY);
     if (upgradePendingState === APP_UPGRADE_PENDING_RELOAD) {
       window.sessionStorage.setItem(APP_UPGRADE_PENDING_KEY,
@@ -67,8 +74,8 @@ export default class LandingContainer extends Component {
     if (this.state.refreshNeeded) {
       loginClickHandler = () => window.location.reload();
     } else {
-      const {dispatch, router} = this.props;
-      loginClickHandler = () => showLock(dispatch, router);
+      const {dispatch} = this.props;
+      loginClickHandler = () => showLock(dispatch);
     }
     return (
       <div>
