@@ -15,6 +15,8 @@ import CreditCardModalContainer from 'universal/modules/userDashboard/containers
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
 import {withRouter} from 'react-router';
 import shouldValidate from 'universal/validation/shouldValidate';
+import {MONTHLY_PRICE} from 'universal/utils/constants';
+import StripeTokenField from 'universal/modules/newTeam/components/NewTeamForm/StripeTokenField';
 
 const validate = (values, props) => {
   const {isNewOrg} = props;
@@ -24,14 +26,21 @@ const validate = (values, props) => {
 
 const NewTeamForm = (props) => {
   const {
+    change,
     handleSubmit,
     last4,
     isNewOrg,
     organizations,
     router,
-    setCreditCard,
+    setLast4,
     styles
   } = props;
+
+  const setToken = (stripeToken, last4) => {
+    setLast4(last4);
+    change('stripeToken', stripeToken);
+  };
+
   const handleCreateNew = () => {
     router.push('/newteam/1');
   };
@@ -55,14 +64,18 @@ const NewTeamForm = (props) => {
             <div className={css(styles.billingBlock)}>
               <h3 className={css(styles.billingHeading)}>Billing information (required)</h3>
               <div className={css(styles.billingCopy)}>
-                Your card will be charged $5 for the first month.
+                Your card will be charged ${MONTHLY_PRICE} for the first month.
                 The members that you invite will be prorated on their
                 join date and added to your second invoice.
               </div>
+              <Field
+                component={StripeTokenField}
+                name="stripeToken"
+              />
               {last4 === undefined ?
                 <div className={css(styles.billingButtonBlock)}>
                   <CreditCardModalContainer
-                    handleToken={setCreditCard}
+                    handleToken={setToken}
                     toggle={addBilling}
                   />
                   <div className={css(styles.cancelNewOrgButtonBlock)}>
@@ -83,7 +96,7 @@ const NewTeamForm = (props) => {
                   </div>
                   <CreditCardModalContainer
                     isUpdate
-                    handleToken={setCreditCard}
+                    handleToken={setToken}
                     toggle={<Button colorPalette="cool" label="Update" size="smallest" style="flat" />}
                   />
 

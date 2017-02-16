@@ -1,6 +1,8 @@
 import path from 'path';
 import webpack from 'webpack';
 import {getDotenv} from '../src/universal/utils/dotenv';
+import npmPackage from '../package.json';
+
 // import UnusedFilesWebpackPlugin from "unused-files-webpack-plugin";
 
 /*
@@ -68,6 +70,7 @@ export default {
       __CLIENT__: true,
       __PRODUCTION__: false,
       __WEBPACK__: true,
+      __APP_VERSION__: JSON.stringify(npmPackage.version),
       'process.env.NODE_ENV': JSON.stringify('development')
     }),
     new webpack.DllReferencePlugin({

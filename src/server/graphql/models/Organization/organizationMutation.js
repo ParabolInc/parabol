@@ -15,7 +15,6 @@ import {
 } from 'server/utils/authorization';
 import {errorObj, getOldVal, validateAvatarUpload} from 'server/utils/utils';
 import getS3PutUrl from 'server/utils/getS3PutUrl';
-import stripe from 'server/billing/stripe';
 import {
   PAUSE_USER,
   REMOVE_USER,
@@ -29,6 +28,8 @@ import addBilling from 'server/graphql/models/Organization/addBilling/addBilling
 import updateOrg from 'server/graphql/models/Organization/updateOrg/updateOrg';
 import rejectOrgApproval from 'server/graphql/models/Organization/rejectOrgApproval/rejectOrgApproval';
 import {BILLING_LEADER} from 'universal/utils/constants';
+import {toEpochSeconds} from 'server/utils/epochTime';
+import removeAllTeamMembers from 'server/graphql/models/TeamMember/removeTeamMember/removeAllTeamMembers';
 
 export default {
   updateOrg,
@@ -48,9 +49,35 @@ export default {
       // AUTH
       requireWebsocket(socket);
       await requireOrgLeaderOfUser(authToken, userId);
+      const orgDocs = await r.table('Organization')
+        .getAll(userId, {index: 'orgUsers'})
+        .pluck('id', 'orgUsers', 'periodStart', 'periodEnd', 'stripeSubscriptionId');
+      const firstOrgUser = orgDocs[0].orgUsers.find((orgUser) => orgUser.id === userId);
+      if (!firstOrgUser) {
+        // no userOrgs means there were no changes, which means inactive was already true
+        throw errorObj({_error: `That user is already inactive. cannot inactivate twice`})
+      }
+      const hookPromises = orgDocs.map((orgDoc) => {
+        const {periodStart, periodEnd, stripeSubscriptionId} = orgDoc;
+        const periodStartInSeconds = toEpochSeconds(periodStart);
+        const periodEndInSeconds = toEpochSeconds(periodEnd);
+        return r.table('InvoiceItemHook')
+          .between(periodStartInSeconds, periodEndInSeconds, {index: 'prorationDate'})
+          .filter({
+            stripeSubscriptionId,
+            type: PAUSE_USER,
+            userId,
+          })
+          .count()
+      });
+      const pausesByOrg = await Promise.all(hookPromises);
+      const triggeredPauses = Math.max(...pausesByOrg);
+      if (triggeredPauses >= MAX_MONTHLY_PAUSES) {
+        throw errorObj({_error: 'Max monthly pauses exceeded for this user'});
+      }
 
       // RESOLUTION
-      const orgDocs = await r.table('Organization')
+      await r.table('Organization')
         .getAll(userId, {index: 'orgUsers'})
         .update((org) => ({
           orgUsers: org('orgUsers').map((orgUser) => {
@@ -68,37 +95,9 @@ export default {
             .get(userId)
             .update({
               inactive: true
-            }, {returnChanges: true})('changes')(0)
-        })
-        .do((firstChange) => {
-          return r.branch(
-            firstChange,
-            r.table('Organization')
-              .getAll(userId, {index: 'orgUsers'})
-              .pluck('id', 'periodStart', 'periodEnd', 'stripeSubscriptionId'),
-            null)
+            })
         });
-      if (!orgDocs) {
-        // no userOrgs means there were no changes, which means inactive was already true
-        throw errorObj({_error: `${userId} is already inactive. cannot inactivate twice`})
-      }
       const orgIds = orgDocs.map((doc) => doc.id);
-      const subIds = orgDocs.map((doc) => doc.stripeSubscriptionId);
-      const hookPromises = orgDocs.map((orgDoc) => {
-        const {periodStart, periodEnd} = orgDoc;
-        return r.table('InvoiceItemHook')
-          .between(periodStart, periodEnd, {index: 'prorationDate'})
-          .filter((hook) => r.expr(subIds).contains(hook('subId')))
-          .filter({userId, type: PAUSE_USER})
-          .count()
-      });
-      const pausesByOrg = await Promise.all(hookPromises);
-      const triggeredPauses = Math.max(...pausesByOrg);
-      if (triggeredPauses >= MAX_MONTHLY_PAUSES) {
-        throw errorObj({_error: 'Max monthly pauses exceeded for this user'});
-      }
-
-      // RESOLUTION
       await adjustUserCount(userId, orgIds, PAUSE_USER);
       return true;
     }
@@ -117,7 +116,7 @@ export default {
         description: 'the org that does not want them anymore'
       }
     },
-    async resolve(source, {orgId, userId}, {authToken, socket}){
+    async resolve(source, {orgId, userId}, {authToken, exchange, socket}){
       const r = getRethink();
       const now = new Date();
 
@@ -127,7 +126,11 @@ export default {
       requireOrgLeader(userOrgDoc);
 
       // RESOLUTION
-      const userRes = await r.table('Organization').get(orgId)
+      const teamIds = await r.table('Team')
+        .getAll(orgId, {index: 'orgId'})('id');
+      const teamMemberIds = teamIds.map((teamId) => `${userId}::${teamId}`);
+      await removeAllTeamMembers(teamMemberIds, exchange);
+      await r.table('Organization').get(orgId)
         .update((org) => ({
           orgUsers: org('orgUsers').filter((orgUser) => orgUser('id').ne(userId)),
           updatedAt: now
@@ -137,13 +140,10 @@ export default {
             .update((row) => ({
               userOrgs: row('userOrgs').filter((userOrg) => userOrg('id').ne(orgId)),
               updatedAt: now
-            }), {returnChanges: true});
+            }));
         });
 
-      const userDoc = getOldVal(userRes);
-      if (!userDoc) {
-        throw errorObj({_error: `${userId} does not exist in org ${orgId}`});
-      }
+      // need to make sure the org doc is updated before adjusting this
       await adjustUserCount(userId, orgId, REMOVE_USER);
       return true;
     }

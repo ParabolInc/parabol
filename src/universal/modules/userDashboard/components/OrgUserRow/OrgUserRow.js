@@ -13,6 +13,7 @@ const OrgUserRow = (props) => {
     orgUser: {
       email,
       inactive,
+      isBillingLeader,
       picture,
       preferredName
     },
@@ -31,6 +32,9 @@ const OrgUserRow = (props) => {
           <div className={css(styles.preferredName)}>
             {preferredName}
           </div>
+          {isBillingLeader &&
+            <UserTag colorPalette="light" label="Billing leader"/>
+          }
           {inactive &&
             <UserTag colorPalette="light" label="Inactive"/>
           }

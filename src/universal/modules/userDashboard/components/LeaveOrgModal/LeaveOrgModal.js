@@ -9,7 +9,7 @@ const LeaveOrgModal = (props) => {
   const {closeAfter, closePortal, isClosing, orgId, userId} = props;
   const handleClick = () => {
     const variables = {orgId, userId};
-    cashay.mutate('removeBillingLeader', {variables});
+    cashay.mutate('removeOrgUser', {variables});
   };
   return (
     <DashModal closeAfter={closeAfter} closePortal={closePortal} isClosing={isClosing} onBackdropClick={closePortal}>

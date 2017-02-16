@@ -4,6 +4,7 @@ import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
 import {User} from './userSchema';
 import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
 import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
+import {BILLING_LEADER} from 'universal/utils/constants';
 
 export default {
   // billingLeaders: {
@@ -49,7 +50,9 @@ export default {
       r.table('User')
         .getAll(orgId, {index: 'userOrgs'})
         .merge((user) => ({
-          isBillingLeader: user('userOrgs').contains((org) => org('id').eq(orgId)).default(false)
+          isBillingLeader: user('userOrgs')
+            .contains((org) => org('id').eq(orgId).and(org('role').eq(BILLING_LEADER)))
+            .default(false)
         }))
         .pluck(requestedFields)
         .changes({includeInitial: true})

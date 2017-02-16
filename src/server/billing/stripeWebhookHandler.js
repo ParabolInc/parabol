@@ -9,7 +9,8 @@ export default async function stripeWebhookHandler(req, res) {
   const event = req.body;
   const {type} = event;
   const objectId = event.data.object.id;
-  let success;
+  let success = true;
+  console.log('webhook received', type, objectId);
   if (type === 'invoice.created') {
     success = await handleInvoiceCreated(objectId);
   } else if (type === 'invoiceitem.created') {

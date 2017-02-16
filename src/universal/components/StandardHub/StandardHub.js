@@ -8,6 +8,7 @@ import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 import FontAwesome from 'react-fontawesome';
 import {Link, withRouter} from 'react-router';
 import Avatar from 'universal/components/Avatar/Avatar';
+import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 import Badge from 'universal/components/Badge/Badge';
 import {Menu, MenuItem} from 'universal/modules/menu';
 
@@ -76,10 +77,12 @@ const StandardHub = (props) => {
     color: 'white'
   };
 
+  const userAvatar = picture || defaultUserAvatar;
+
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.user)}>
-        <Avatar hasBadge={false} picture={picture} size="small"/>
+        <Avatar hasBadge={false} picture={userAvatar} size="small" />
         <div className={css(styles.info)}>
           <div className={css(styles.name)}>{preferredName}</div>
           <div className={css(styles.email)}>{email}</div>

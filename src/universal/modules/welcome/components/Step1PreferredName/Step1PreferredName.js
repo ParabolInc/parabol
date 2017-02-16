@@ -78,6 +78,7 @@ class Step1PreferredName extends Component {
             shortcutDisabled={!preferredName}
             shortcutHint="Press enter"
             type="text"
+            underline
           />
           <WelcomeSubmitButton disabled={submitting || !preferredName}/>
         </form>

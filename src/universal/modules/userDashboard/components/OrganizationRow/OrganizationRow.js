@@ -1,13 +1,10 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
-import Avatar from 'universal/components/Avatar/Avatar';
 import Row from 'universal/components/Row/Row';
 import UserTag from 'universal/components/UserTag/UserTag';
-import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
-import brandMark from 'universal/styles/theme/images/brand/mark-color.svg';
+import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
 
 const OrganizationRow = (props) => {
   const {
@@ -20,10 +17,11 @@ const OrganizationRow = (props) => {
     onRowClick,
     styles
   } = props;
+  const orgAvatar = picture || defaultOrgAvatar;
   return (
     <Row>
       <div className={css(styles.orgAvatar)} onClick={onRowClick}>
-        <img className={css(styles.avatarImg)} height={50} width={50} src={picture || brandMark}/>
+        <img className={css(styles.avatarImg)} height={50} width={50} src={orgAvatar}/>
       </div>
       <div className={css(styles.orgInfo)}>
         <div className={css(styles.nameAndTags)}>

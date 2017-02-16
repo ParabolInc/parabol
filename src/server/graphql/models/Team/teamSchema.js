@@ -39,6 +39,10 @@ export const Team = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the team was created'
     },
+    // isActive: {
+    //   type: GraphQLBoolean,
+    //   description: 'true if the team is active, false if it is in the archive'
+    // },
     isPaid: {
       type: GraphQLBoolean,
       description: 'true if the underlying org has a validUntil date greater than now. if false, subs do not work'

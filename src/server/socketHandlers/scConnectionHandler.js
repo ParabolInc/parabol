@@ -5,11 +5,11 @@ import {REFRESH_JWT_AFTER, UNPAUSE_USER} from 'server/utils/serverConstants';
 import getRetink from 'server/database/rethinkDriver';
 import isObject from 'universal/utils/isObject';
 import jwtDecode from 'jwt-decode';
-import {getOldVal} from '../utils/utils';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
-import {APP_VERSION} from 'universal/utils/constants';
 import {fromEpochSeconds} from 'server/utils/epochTime';
+import packageJSON from '../../../package.json';
 
+const APP_VERSION = packageJSON.version;
 // we do this otherwise we'd have to blacklist every token that ever got replaced & query that table for each query
 const isTmsValid = (tmsFromDB, tmsFromToken) => {
   if (tmsFromDB.length !== tmsFromToken.length) return false;
@@ -52,16 +52,13 @@ export default function scConnectionHandler(exchange) {
     const tokenExpiration = fromEpochSeconds(exp);
     const timeLeftOnToken = tokenExpiration - now;
     // if the user was booted from the team, give them a new token
-    const userRes = await r.table('User').get(userId)
-      .replace((row) => {
-        return row.without('inactive')
-          .merge({
-            updatedAt: now,
-            lastSeenAt: now
-          });
-      }, {returnChanges: true});
+    const {inactive, tms: tmsDB, userOrgs} = await r.table('User').get(userId)
+      .update({
+        inactive: false,
+        updatedAt: now,
+        lastSeenAt: now
+      }, {returnChanges: true})('changes')(0)('old_val');
 
-    const {inactive, tms: tmsDB, userOrgs} = getOldVal(userRes);
     const tmsIsValid = isTmsValid(tmsDB, tms);
     if (timeLeftOnToken < REFRESH_JWT_AFTER || !tmsIsValid) {
       const newAuthToken = {

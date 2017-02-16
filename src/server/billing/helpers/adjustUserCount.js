@@ -6,6 +6,9 @@ import {
   REMOVE_USER,
   UNPAUSE_USER
 } from 'server/utils/serverConstants';
+import stripe from 'server/billing/stripe';
+import shortid from 'shortid';
+import {toEpochSeconds} from 'server/utils/epochTime';
 
 const changePause = (inactive) => async (orgIds, userId) => {
   const r = getRethink();
@@ -76,27 +79,26 @@ const typeLookup = {
   [UNPAUSE_USER]: changePause(false),
 };
 
-import stripe from 'server/billing/stripe';
-import shortid from 'shortid';
-import {toEpochSeconds} from 'server/utils/epochTime';
-
 export default async function adjustUserCount(userId, orgInput, type) {
   const r = getRethink();
   const now = new Date();
+
   const orgIds = Array.isArray(orgInput) ? orgInput : [orgInput];
   const dbAction = typeLookup[type];
   const {changes: orgChanges} = await dbAction(orgIds, userId);
   const orgs = orgChanges.map((change) => change.new_val);
+  const prorationDate = toEpochSeconds(now);
   const hooks = orgs.map((org) => ({
     id: shortid.generate(),
-    subId: org.stripeSubscriptionId,
-    prorationDate: toEpochSeconds(now),
+    stripeSubscriptionId: org.stripeSubscriptionId,
+    prorationDate,
     type,
     userId
   }));
   // wait here to make sure the webhook finds what it's looking for
   await r.table('InvoiceItemHook').insert(hooks);
   const stripePromises = orgs.map((org) => stripe.subscriptions.update(org.stripeSubscriptionId, {
+    proration_date: prorationDate,
     quantity: org.orgUsers.reduce((count, orgUser) => orgUser.inactive ? count : count + 1, 0)
   }));
 

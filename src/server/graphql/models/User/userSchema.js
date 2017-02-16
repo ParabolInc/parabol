@@ -13,6 +13,7 @@ import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {TeamMember} from '../TeamMember/teamMemberSchema';
 import getRethink from 'server/database/rethinkDriver';
 import {OrgUserRole} from 'server/graphql/models/Organization/organizationSchema';
+import {BILLING_LEADER} from 'universal/utils/constants';
 
 const IdentityType = new GraphQLObjectType({
   name: 'IdentityType',
@@ -142,7 +143,9 @@ export const User = new GraphQLObjectType({
     isBillingLeader: {
       type: GraphQLBoolean,
       description: 'true if the user is a part of the supplied orgId',
-      resolve: (source, {orgId}) => Boolean(source.userOrgs.find((userOrg) => userOrg.id === orgId))
+      resolve: (source, {orgId}) => {
+        return Boolean(source.userOrgs.find((userOrg) => userOrg.id === orgId && userOrg.role === BILLING_LEADER))
+      }
     },
     preferredName: {
       type: GraphQLString,

@@ -1,6 +1,8 @@
 import path from 'path';
 import webpack from 'webpack';
 import WebpackShellPlugin from 'webpack-shell-plugin';
+import npmPackage from '../package.json';
+
 const root = process.cwd();
 const serverInclude = [
   path.join(root, 'src', 'server'),
@@ -38,6 +40,7 @@ export default {
       __CLIENT__: false,
       __PRODUCTION__: true,
       __WEBPACK__: true,
+      __APP_VERSION__: JSON.stringify(npmPackage.version),
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
     new WebpackShellPlugin({

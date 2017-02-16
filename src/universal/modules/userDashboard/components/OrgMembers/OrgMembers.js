@@ -7,11 +7,12 @@ import IconControl from 'universal/components/IconControl/IconControl';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
 import Toggle from 'universal/components/Toggle/Toggle';
-import RemoveBillingLeaderModal from 'universal/modules/userDashboard/components/RemoveBillingLeaderModal/RemoveBillingLeaderModal';
+import RemoveFromOrgModal from 'universal/modules/userDashboard/components/RemoveFromOrgModal/RemoveFromOrgModal';
 import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal';
 import {Menu, MenuItem} from 'universal/modules/menu';
 import {cashay} from 'cashay';
 import {BILLING_LEADER} from 'universal/utils/constants';
+import {showError, showInfo} from 'universal/modules/toast/ducks/toastDuck';
 
 const originAnchor = {
   vertical: 'top',
@@ -29,9 +30,10 @@ const OrgMembers = (props) => {
       dispatch,
       users,
       myUserId,
-      orgId,
+      org,
       styles,
     } = props;
+    const {id: orgId} = org;
 
     const setRole = (userId, role) => () => {
       const variables = {
@@ -57,7 +59,7 @@ const OrgMembers = (props) => {
         }
         if (myUserId !== orgUser.id) {
           listItems.push(
-            <RemoveBillingLeaderModal
+            <RemoveFromOrgModal
               orgId={orgId}
               preferredName={preferredName}
               userId={id}
@@ -77,11 +79,21 @@ const OrgMembers = (props) => {
 
         return listItems;
       };
-      const toggleHandler = () => {
+      const toggleHandler = async () => {
         if (!inactive) {
           const variables = {userId: orgUser.id};
-          cashay.mutate('inactivateUser', {variables})
+          const {error} = await cashay.mutate('inactivateUser', {variables})
+          if (error) {
+            dispatch(showError({
+              title: 'Oh dear...',
+              message: error._error || 'Cannot pause user'
+            }));
+          }
         } else {
+          dispatch(showInfo({
+            title: 'Well managed!',
+            message: 'To save you money, we\'ll automatically unpause that user the next time they log in.'
+          }));
           // pop toast until we do find a way to display locally?
         }
       };
@@ -110,16 +122,8 @@ const OrgMembers = (props) => {
         </div>
       );
     };
-    const newAdmin =
-      <IconControl
-        icon="plus-square-o"
-        iconSize={ui.iconSize2x}
-        label="New Admin"
-        lineHeight={ui.iconSize2x}
-        padding={`0 0 0 ${ui.panelGutter}`}
-      />;
     return (
-      <Panel label="Organization Members" controls={newAdmin}>
+      <Panel label="Organization Members">
         <div className={css(styles.listOfAdmins)}>
           {users.map((orgUser, idx) => {
             return (
