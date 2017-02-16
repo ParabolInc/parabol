@@ -1,20 +1,26 @@
 import React, {PropTypes} from 'react';
 import {DashModal} from 'universal/components/Dashboard';
 import Type from 'universal/components/Type/Type';
-import brandMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import IconLink from 'universal/components/IconLink/IconLink';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import portal from 'react-portal-hoc';
 
 const PhotoUploadModal = (props) => {
-  const {children, closeAfter, closePortal, isClosing, picture, styles} = props;
+  const {
+    children,
+    closeAfter,
+    closePortal,
+    isClosing,
+    picture,
+    styles
+  } = props;
   return (
     <DashModal onBackdropClick={closePortal} isClosing={isClosing} closeAfter={closeAfter}>
       <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
         Upload a new photo
       </Type>
-      <img height={96} width={96} src={picture || brandMark}/>
+      <img height={96} width={96} src={picture}/>
       {children}
       <div className={css(styles.done)}>
         <IconLink
@@ -33,6 +39,7 @@ const PhotoUploadModal = (props) => {
 
 PhotoUploadModal.propTypes = {
   picture: PropTypes.string,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

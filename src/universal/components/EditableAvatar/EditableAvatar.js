@@ -17,7 +17,7 @@ const EditableAvatar = (props) => {
         <FontAwesome name="pencil"/>
         <span>EDIT</span>
       </div>
-      <img className={css(styles.avatarImg)} src={picture}/>
+      <img className={css(styles.avatarImg)} src={picture} />
     </div>
   );
 };

@@ -4,6 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import {UPDATES} from 'universal/utils/constants';
+import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 
 const AvatarGroup = (props) => {
   const {localPhase, avatars, styles} = props;
@@ -14,18 +15,22 @@ const AvatarGroup = (props) => {
         {label}
       </div>
       {
-        avatars.map((avatar, index) =>
-          <div className={css(styles.item)} key={index}>
-            <Avatar
-              {...avatar}
-              forGroup
-              hasBadge
-              hasBorder
-              isActive={avatar.isFacilitating}
-              size="small"
-            />
-          </div>
-        )
+        avatars.map((avatar, index) => {
+          const picture = avatar.picture || defaultUserAvatar;
+          return (
+            <div className={css(styles.item)} key={index}>
+              <Avatar
+                {...avatar}
+                picture={picture}
+                forGroup
+                hasBadge
+                hasBorder
+                isActive={avatar.isFacilitating}
+                size="small"
+              />
+            </div>
+          );
+        })
       }
     </div>
   );

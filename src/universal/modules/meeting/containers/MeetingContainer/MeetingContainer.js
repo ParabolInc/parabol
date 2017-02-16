@@ -338,7 +338,7 @@ export default class MeetingContainer extends Component {
         />
         <MeetingMain>
           <MeetingAvatars>
-            <AvatarGroup avatars={members} localPhase={localPhase}/>
+            <AvatarGroup avatars={members} localPhase={localPhase} />
           </MeetingAvatars>
           {localPhase === LOBBY && <MeetingLobby members={members} team={team}/>}
           {localPhase === CHECKIN &&
