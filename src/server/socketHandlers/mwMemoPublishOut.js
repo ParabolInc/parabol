@@ -20,6 +20,8 @@ export default function mwMemoPublishOut(req, next) {
     if (type === KICK_OUT) {
       const authToken = req.socket.getAuthToken();
       const {teamId} = req.data;
+      // send the message before sending the kickouts so the client can navigate away from components that will request stale things
+      next();
       const subs = req.socket.subscriptions();
       subs.forEach((sub) => {
         if (sub.indexOf(teamId) !== -1) {
@@ -43,8 +45,6 @@ export default function mwMemoPublishOut(req, next) {
       };
       // replace token with one that doesn't include the teamId in tms
       req.socket.setAuthToken(newAuthToken);
-      // no need to send to the client, we emit enough stuff there for them to know whats up
-      next(true);
       return;
     }
   }

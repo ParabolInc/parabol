@@ -4,7 +4,7 @@ import {reduxSocket} from 'redux-socket-cluster';
 import {cashay} from 'cashay';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import reduxSocketOptions from 'universal/redux/reduxSocketOptions';
-import {ADD_TO_TEAM, JOIN_TEAM, REJOIN_TEAM, USER_MEMO, NOTIFICATIONS, PRESENCE, TEAM_MEMBERS, TEAM} from 'universal/subscriptions/constants';
+import {ADD_TO_TEAM, JOIN_TEAM, KICK_OUT, REJOIN_TEAM, USER_MEMO, NOTIFICATIONS, PRESENCE, TEAM_MEMBERS, TEAM} from 'universal/subscriptions/constants';
 import socketCluster from 'socketcluster-client';
 import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
 import parseChannel from 'universal/utils/parseChannel';
@@ -71,23 +71,9 @@ export default ComposedComponent => {
     }
 
     kickoutHandler = (error, channelName) => {
-      const {dispatch} = this.props;
       const {channel, variableString: teamId} = parseChannel(channelName);
-      if (channel === TEAM) {
-        const teamName = getTeamName(teamId);
-        const {router} = this.props;
-        const onExTeamRoute = router.isActive(`/team/${teamId}`) || router.isActive(`/meeting/${teamId}`);
-        if (onExTeamRoute) {
-          router.push('/me');
-        }
-        dispatch(showWarning({
-          title: 'So long!',
-          message: `You have been removed from ${teamName}`
-        }));
-      }
       // important to flag these as unsubscribed so resubs can ocur.
-      // delay so eg TeamSettingsContainer doesn't ask for a dying subscription
-      setTimeout(() => cashay.unsubscribe(channel, teamId),100);
+      setTimeout(() => cashay.unsubscribe(channel, teamId), 100);
     };
 
     memoHandler = (data) => {
@@ -98,6 +84,21 @@ export default ComposedComponent => {
         dispatch(showInfo({
           title: 'Congratulations!',
           message: `You\'ve been added to team ${teamName}`
+        }));
+      } else if (type === KICK_OUT) {
+        console.log('received memo', data);
+        const {teamId} = data;
+        // in order for teamName to be present, the kickout msg must be processed before the cashay.unsubscribe
+        const teamName = getTeamName(teamId);
+        const {router} = this.props;
+        const onExTeamRoute = router.isActive(`/team/${teamId}`) || router.isActive(`/meeting/${teamId}`);
+          console.log('should reroute', onExTeamRoute);
+        if (onExTeamRoute) {
+          router.push('/me');
+        }
+        dispatch(showWarning({
+          title: 'So long!',
+          message: `You have been removed from ${teamName}`
         }));
       }
     };
