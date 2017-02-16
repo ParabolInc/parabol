@@ -122,16 +122,8 @@ const OrgMembers = (props) => {
         </div>
       );
     };
-    const newAdmin =
-      <IconControl
-        icon="plus-square-o"
-        iconSize={ui.iconSize2x}
-        label="New Admin"
-        lineHeight={ui.iconSize2x}
-        padding={`0 0 0 ${ui.panelGutter}`}
-      />;
     return (
-      <Panel label="Organization Members" controls={newAdmin}>
+      <Panel label="Organization Members">
         <div className={css(styles.listOfAdmins)}>
           {users.map((orgUser, idx) => {
             return (

@@ -73,8 +73,6 @@ export default ComposedComponent => {
     kickoutHandler = (error, channelName) => {
       const {dispatch} = this.props;
       const {channel, variableString: teamId} = parseChannel(channelName);
-      // important to flag these as unsubscribed so resubs can ocur
-      cashay.unsubscribe(channel, teamId);
       if (channel === TEAM) {
         const teamName = getTeamName(teamId);
         const {router} = this.props;
@@ -87,6 +85,9 @@ export default ComposedComponent => {
           message: `You have been removed from ${teamName}`
         }));
       }
+      // important to flag these as unsubscribed so resubs can ocur.
+      // delay so eg TeamSettingsContainer doesn't ask for a dying subscription
+      setTimeout(() => cashay.unsubscribe(channel, teamId),100);
     };
 
     memoHandler = (data) => {

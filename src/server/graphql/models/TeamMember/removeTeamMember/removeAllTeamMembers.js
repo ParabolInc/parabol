@@ -1,4 +1,4 @@
-import {KICK_OUT, PRESENCE} from 'universal/subscriptions/constants';
+import {KICK_OUT, USER_MEMO} from 'universal/subscriptions/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import getRethink from 'server/database/rethinkDriver';
 
@@ -88,8 +88,8 @@ export default async function removeAllTeamMembers(maybeTeamMemberIds, exchange)
 
   // update the server socket, if they're logged in
   teamIds.forEach((teamId) => {
-    const channel = `${PRESENCE}/${teamId}`;
-    exchange.publish(channel, {type: KICK_OUT, userId});
+    const channel = `${USER_MEMO}/${userId}`;
+    exchange.publish(channel, {type: KICK_OUT, teamId});
   });
   return true;
 }
