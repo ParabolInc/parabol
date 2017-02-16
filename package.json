@@ -78,7 +78,7 @@
     "redbox-react": "1.3.3",
     "rethink-migrate": "^1.3.1",
     "rimraf": "2.5.4",
-    "sinon": "next",
+    "sinon": "^2.0.0-pre.5",
     "stats-webpack-plugin": "0.4.2",
     "transform-loader": "^0.2.3",
     "unused-files-webpack-plugin": "^3.0.0",
