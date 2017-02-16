@@ -103,5 +103,4 @@ export function run(worker) {
   scServer.addMiddleware(MIDDLEWARE_SUBSCRIBE, mwMemoSubscribe);
   const connectionHandler = scConnectionHandler(scServer.exchange);
   scServer.on('connection', connectionHandler);
-  worker.sendToMaster('test');
 }
