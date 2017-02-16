@@ -58,11 +58,9 @@ class NewTeamFormContainer extends Component {
     this.state = {};
   }
 
-  setCreditCard = (stripeToken, last4) => {
-    // use container state because we want this gone on dismount. don't wanna persist CC info in the localStorage
+  setLast4 = (last4) => {
     this.setState({
       last4,
-      stripeToken
     })
   };
 
@@ -71,7 +69,7 @@ class NewTeamFormContainer extends Component {
     const newTeamId = shortid.generate();
     if (isNewOrg) {
       const schema = addOrgSchema();
-      const {data: {teamName, inviteesRaw, orgName}} = schema(submittedData);
+      const {data: {teamName, inviteesRaw, orgName, stripeToken}} = schema(submittedData);
       const parsedInvitees = emailAddresses.parseAddressList(inviteesRaw);
       const invitees = makeInvitees(parsedInvitees);
       const variables = {
@@ -82,7 +80,7 @@ class NewTeamFormContainer extends Component {
         },
         invitees,
         orgName,
-        stripeToken: this.state.stripeToken
+        stripeToken
       };
       await cashay.mutate('addOrg', {variables});
       dispatch(segmentEventTrack('New Org'));
@@ -129,7 +127,7 @@ class NewTeamFormContainer extends Component {
         last4={this.state.last4}
         onSubmit={this.onSubmit}
         organizations={organizations}
-        setCreditCard={this.setCreditCard}
+        setLast4={this.setLast4}
       />
     );
   }
