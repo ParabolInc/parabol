@@ -17,9 +17,10 @@ const RemoveFromOrgModal = (props) => {
         Are you sure?
       </Type>
       <Type align="center" bold scale="s4">
-        This will remove {preferredName} from the organization. Any outstanding projects will be
-        given to the team leads.
-        Your next invoice will be refunded a prorated amount for unused time.<br />
+        This will remove {preferredName} from the organization.
+        Any outstanding projects will be given to the team leads.
+        Any time remaining on their subscription will be refunded on the next invoice.
+        <br />
       </Type>
       <IconLink
         colorPalette="warm"

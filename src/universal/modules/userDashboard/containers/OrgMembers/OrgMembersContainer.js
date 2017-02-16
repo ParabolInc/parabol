@@ -14,6 +14,11 @@ query {
     picture
     preferredName
   }
+  organization(orgId: $orgId) @live {
+    id
+    periodStart
+    periodEnd
+  }
 }
 `;
 
@@ -28,20 +33,29 @@ const countBillingLeaders = (users) => {
 
 const mapStateToProps = (state, props) => {
   const {orgId} = props;
-  const {usersByOrg: users} = cashay.query(organizationContainerQuery, {
+  const {usersByOrg: users, organization: org} = cashay.query(organizationContainerQuery, {
     op: 'orgMembersContainer',
     key: orgId,
+    sort: {
+      usersByOrg: (a,b) => {
+        if (a.isBillingLeader === b.isBillingLeader) {
+          return a.preferredName > b.preferredName ? 1 : -1;
+        }
+        return a.isBillingLeader ? -1 : 1;
+      }
+    },
     variables: {orgId}
   }).data;
   return {
     billingLeaderCount: countBillingLeaders(users),
     myUserId: state.auth.obj.sub,
-    users
+    users,
+    org
   }
 };
 
 const OrgMembersContainer = (props) => {
-  const {billingLeaderCount, dispatch, myUserId, orgId, users}= props;
+  const {billingLeaderCount, dispatch, myUserId, users, org}= props;
   if (users.length < 1) {
     return <LoadingView/>;
   }
@@ -50,7 +64,7 @@ const OrgMembersContainer = (props) => {
       billingLeaderCount={billingLeaderCount}
       dispatch={dispatch}
       myUserId={myUserId}
-      orgId={orgId}
+      org={org}
       users={users}
     />
   );

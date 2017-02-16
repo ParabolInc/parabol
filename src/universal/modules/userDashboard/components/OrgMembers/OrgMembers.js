@@ -30,9 +30,10 @@ const OrgMembers = (props) => {
       dispatch,
       users,
       myUserId,
-      orgId,
+      org,
       styles,
     } = props;
+    const {id: orgId} = org;
 
     const setRole = (userId, role) => () => {
       const variables = {

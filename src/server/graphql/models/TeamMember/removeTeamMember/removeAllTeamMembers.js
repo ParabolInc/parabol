@@ -4,6 +4,7 @@ import getRethink from 'server/database/rethinkDriver';
 
 export default async function removeAllTeamMembers(maybeTeamMemberIds, exchange) {
   const r = getRethink();
+  const now = new Date();
   const teamMemberIds = Array.isArray(maybeTeamMemberIds) ? maybeTeamMemberIds : [maybeTeamMemberIds];
   const userId = teamMemberIds[0].substr(0, teamMemberIds[0].indexOf('::'));
   const teamIds = teamMemberIds.map((teamMemberId) => teamMemberId.substr(teamMemberId.indexOf('::') + 2));
@@ -48,7 +49,8 @@ export default async function removeAllTeamMembers(maybeTeamMemberIds, exchange)
     .getAll(r.args(teamMemberIds), {index: 'id'})
     .update({
       // inactivate
-      isNotRemoved: false
+      isNotRemoved: false,
+      updatedAt: now
     })
     .do(() => {
       return r.table('Project')
@@ -79,9 +81,9 @@ export default async function removeAllTeamMembers(maybeTeamMemberIds, exchange)
           });
         }, {returnChanges: true})('changes')(0)('new_val')('tms').default(null);
     });
-  // update the tms on auth0
+  // update the tms on auth0 in async
   if (newtms) {
-    await auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: newtms});
+    auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: newtms});
   }
 
   // update the server socket, if they're logged in

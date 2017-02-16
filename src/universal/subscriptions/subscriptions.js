@@ -162,6 +162,7 @@ export default [
         isTrial
         name
         periodEnd
+        periodStart
         picture
       }
     }`

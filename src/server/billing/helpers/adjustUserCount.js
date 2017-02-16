@@ -38,7 +38,6 @@ const addUser = async (orgIds, userId) => {
     id,
     role: null
   }));
-  console.log('adding user', userOrgAdditions);
   return await r.table('User').get(userId)
     .update((user) => ({
       userOrgs: user('userOrgs').add(userOrgAdditions)

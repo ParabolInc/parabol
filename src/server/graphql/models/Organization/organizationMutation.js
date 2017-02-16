@@ -29,6 +29,7 @@ import updateOrg from 'server/graphql/models/Organization/updateOrg/updateOrg';
 import rejectOrgApproval from 'server/graphql/models/Organization/rejectOrgApproval/rejectOrgApproval';
 import {BILLING_LEADER} from 'universal/utils/constants';
 import {toEpochSeconds} from 'server/utils/epochTime';
+import removeAllTeamMembers from 'server/graphql/models/TeamMember/removeTeamMember/removeAllTeamMembers';
 
 export default {
   updateOrg,
@@ -115,7 +116,7 @@ export default {
         description: 'the org that does not want them anymore'
       }
     },
-    async resolve(source, {orgId, userId}, {authToken, socket}){
+    async resolve(source, {orgId, userId}, {authToken, exchange, socket}){
       const r = getRethink();
       const now = new Date();
 
@@ -125,30 +126,24 @@ export default {
       requireOrgLeader(userOrgDoc);
 
       // RESOLUTION
-      const userDoc = await r.table('Organization').get(orgId)
+      const teamIds = await r.table('Team')
+        .getAll(orgId, {index: 'orgId'})('id');
+      const teamMemberIds = teamIds.map((teamId) => `${userId}::${teamId}`);
+      await removeAllTeamMembers(teamMemberIds, exchange);
+      await r.table('Organization').get(orgId)
         .update((org) => ({
           orgUsers: org('orgUsers').filter((orgUser) => orgUser('id').ne(userId)),
           updatedAt: now
         }))
         .do(() => {
-          return r.table('TeamMember')
-            .getAll(userId, {index: 'userId'})
-            .update({
-              updatedAt: now,
-              isNotRemoved: false
-            })
-        })
-        .do(() => {
           return r.table('User').get(userId)
             .update((row) => ({
               userOrgs: row('userOrgs').filter((userOrg) => userOrg('id').ne(orgId)),
               updatedAt: now
-            }), {returnChanges: true})('changes')(0)('old_val').default(null);
+            }));
         });
 
-      if (!userDoc) {
-        throw errorObj({_error: `User ${userId} does not exist in org ${orgId}`});
-      }
+      // need to make sure the org doc is updated before adjusting this
       await adjustUserCount(userId, orgId, REMOVE_USER);
       return true;
     }
