@@ -6,12 +6,14 @@ import {verify} from 'jsonwebtoken';
 import getRethink from '../database/rethinkDriver';
 import mintToken, {mintTokenSigned} from './utils/mintToken';
 import {
-  auth0AuthenticationClient as auth0Client,
+  auth0AuthenticationClient,
+  auth0ManagementClient,
   clientSecret as auth0ClientSecret
 } from '../utils/auth0Helpers';
 
 import invitationMutation from '../graphql/models/Invitation/invitationMutation';
 import teamMutation from '../graphql/models/Team/teamMutation';
+import teamMemberMutation from '../graphql/models/TeamMember/teamMemberMutation';
 import userMutation from '../graphql/models/User/userMutation';
 
 const ORG1_BILLING_LEADER = {
@@ -67,24 +69,30 @@ const ORG1_TEAM = {
  */
 
 test.before(() => {
-  sinon.stub(auth0Client.tokens, 'getInfo').callsFake(auth0Token => {
-    const authToken = verify(auth0Token, Buffer.from(auth0ClientSecret, 'base64'));
-    switch (authToken.sub) {
-      case ORG1_BILLING_LEADER.id:
-        return ORG1_BILLING_LEADER.auth0UserInfo;
-      default:
-        throw new Error(
-          `auth0Client.tokens.getInfo (mock): unknown id ${authToken.sub}`
-        );
-    }
-  });
+  sinon
+    .stub(auth0AuthenticationClient.tokens, 'getInfo')
+    .callsFake(auth0Token => {
+      const authToken = verify(auth0Token, Buffer.from(auth0ClientSecret, 'base64'));
+      const match = [ORG1_BILLING_LEADER, ...ORG1_TEAM_MEMBERS].find((teamMember) =>
+        teamMember.id === authToken.sub);
+      if (match) {
+        return match.auth0UserInfo;
+      }
+      throw new Error(
+        `auth0Client.tokens.getInfo (mock): unknown id ${authToken.sub}`
+      );
+    });
+
+  sinon
+    .stub(auth0ManagementClient.users, 'updateAppMetadata')
+    .callsFake(() => true);
 });
 
 test.serial('user signup from auth0', async(t) => {
   t.plan(2);
   const auth0Token = mintTokenSigned(ORG1_BILLING_LEADER.id);
   const {resolve} = userMutation.updateUserWithAuthToken;
-  const result = await resolve({}, {auth0Token});
+  const result = await resolve({}, {auth0Token, isUnitTest: true});
   t.is(result.id, ORG1_BILLING_LEADER.id);
   t.is(result.email, ORG1_BILLING_LEADER.auth0UserInfo.email);
 });
@@ -138,13 +146,38 @@ test.serial('createFirstTeam disallow second team', (t) => {
   t.throws(resolve({}, {newTeam}, {authToken}));
 });
 
-test.cb.serial('invite team members', (t) => {
-  const {authToken} = t.context;
-  const teamId = authToken.tms[0];
-  const unitTestCb = () => {
+test.cb.serial('invite team members and accept invitations', (t) => {
+  // Done as one test, because we need inviteeTokens to test
+  // the acceptInvitation endpoint
+  const unitTestCb = async(inviteesWithTokens) => {
+    const {resolve: acceptInvitation} = teamMemberMutation.acceptInvitation;
+    const exchange = { publish: () => console.log('publish!') };
+    const acceptPromises = inviteesWithTokens.map(async(inviteeWithToken) => {
+      const {email, inviteToken} = inviteeWithToken;
+      const {id: userId} = ORG1_TEAM_MEMBERS.find((member) =>
+        member.auth0UserInfo.email === email);
+      const auth0Token = mintTokenSigned(userId);
+      const {resolve: updateUserWithAuthToken} = userMutation.updateUserWithAuthToken;
+      await updateUserWithAuthToken({}, {auth0Token, isUnitTest: true});
+      const authToken = mintToken(userId);
+      return acceptInvitation({}, {inviteToken}, {authToken, exchange});
+      // use token and stubbed exchangeApi to accept invitation
+    });
+    try {
+      await Promise.all(acceptPromises);
+    } catch (e) {
+      console.log(`exception: ${e}`);
+      console.trace();
+      t.fail();
+      t.end();
+    }
+    // validate that number of invitees is correct
+    // validate that exchange was called the apppropriate number of times
     t.pass();
     t.end();
   };
+  const {authToken} = t.context;
+  const teamId = authToken.tms[0];
   const {resolve} = invitationMutation.inviteTeamMembers;
   const invitees = ORG1_TEAM_MEMBERS.map(member => {
     const {auth0UserInfo: {email, name: fullName}} = member;
@@ -156,3 +189,12 @@ test.cb.serial('invite team members', (t) => {
     t.end();
   });
 });
+
+// TODO:
+//   * formulate invite token from database
+//   * bypass the token validation to accept invitation
+
+//   * call addTeam a bunch
+//   * invite others to teams
+//   * add current billing information
+//   * advance time? generate invoice?

@@ -112,7 +112,6 @@ export default {
         const inviterId = await removeOrgApprovalAndNotification(orgId, inviteeEmails);
         // when we invite the person, try to invite from the original requester, if not, billing leader
         const safeUserId = inviterId || userId;
-        unitTestCb();
         asyncInviteTeam(safeUserId, teamId, filteredInvitees, unitTestCb);
         // if any folks were pending, remove that status now
       } else {

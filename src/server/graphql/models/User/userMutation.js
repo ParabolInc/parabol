@@ -85,7 +85,7 @@ export default {
         description: 'The ID Token from auth0, a base64 JWT'
       }
     },
-    async resolve(source, {auth0Token}) {
+    async resolve(source, {auth0Token, isUnitTest}) {
       const r = getRethink();
       const now = new Date();
 
@@ -119,7 +119,7 @@ export default {
       await r.table('User').insert(newUser);
 
       // don't await
-      setTimeout(() => sendEmail(newUser.email, 'welcomeEmail', newUser), 0);
+      setTimeout(() => sendEmail(newUser.email, 'welcomeEmail', newUser, isUnitTest), 0);
       return newUser;
     }
   },
