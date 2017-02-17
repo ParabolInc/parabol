@@ -44,7 +44,7 @@ const UnpaidTeamModalContainer = (props) => {
   const billingLeaderName = billingLeaders[0].preferredName;
   const isALeader = billingLeaders.findIndex((leader) => leader.id === myUserId) !== -1;
   const handleClick = () => router.push(`/me/organizations/${orgId}`);
-  const problem = brand ? `The trial for ${teamName} has ended.` : `There in an unpaid invoice for ${teamName}.`;
+  const problem = brand ? `There in an unpaid invoice for ${teamName}.` : `The trial for ${teamName} has ended.`;
   const solution = isALeader ? `Head over to ${orgName} Settings to add a payment method` :
     `Try reaching out to ${billingLeaderName}`;
 

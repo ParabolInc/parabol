@@ -4,7 +4,7 @@ import {
   GraphQLBoolean,
   GraphQLID,
 } from 'graphql';
-import {TRIAL_EXTENSION} from 'server/utils/serverConstants';
+import {TRIAL_EXTENSION, TRIAL_PERIOD} from 'server/utils/serverConstants';
 import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
 import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
 import stripe from 'server/billing/stripe';
@@ -35,14 +35,14 @@ export default {
     requireOrgLeader(userOrgDoc);
 
     // RESOLUTION
-    const {creditCard, stripeId, stripeSubscriptionId, periodEnd} = await r.table('Organization')
+    const {creditCard, stripeId, stripeSubscriptionId, periodEnd, periodStart} = await r.table('Organization')
       .get(orgId)
       .pluck('creditCard', 'periodEnd', 'stripeId', 'stripeSubscriptionId');
     const promises = [stripe.customers.update(stripeId, {source: stripeToken})];
     let extendedPeriodEnd;
-    if (creditCard && periodEnd > now) {
-      // extend the trial in stripe
-      extendedPeriodEnd = new Date(periodEnd.setMilliseconds(0) + TRIAL_EXTENSION);
+    if (!creditCard && periodEnd > now) {
+      // extend the trial in stripe. use periodStart to make sure if this is called twice they don't an extra month
+      extendedPeriodEnd = new Date(periodStart.setMilliseconds(0) + TRIAL_PERIOD + TRIAL_EXTENSION);
       promises.push(stripe.subscriptions.update(stripeSubscriptionId, {
         trial_end: toEpochSeconds(extendedPeriodEnd)
       }));
