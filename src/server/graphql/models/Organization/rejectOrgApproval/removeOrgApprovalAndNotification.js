@@ -18,6 +18,13 @@ export default async function removeOrgApprovalAndNotification(orgId, maybeEmail
           return r.expr(emails).contains(notification('varList')(2))
         })
         // get the inviterName
-        .delete({returnChanges: true})('changes')(0)('old_val')('varList')(0).default(null)
+        .delete({returnChanges: true})('changes')
+        .map((change) => change('old_val')('varList'))
+        .map((varList) => ({
+          inviterId: varList(0),
+          inviteeEmail: varList(2),
+          invitedTeamId: varList(3)
+        }))
+        .default([])
     })
 }

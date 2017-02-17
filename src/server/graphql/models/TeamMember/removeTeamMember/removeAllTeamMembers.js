@@ -11,9 +11,12 @@ export default async function removeAllTeamMembers(maybeTeamMemberIds, exchange)
   // see if they were a leader, make a new guy leader so later we can reassign projects
   await r.table('TeamMember')
     .getAll(r.args(teamMemberIds), {index: 'id'})
-    .filter({isLead: true})
+    .filter({isLead: true, isNotRemoved: true})
     .merge((leader) => ({
-      teamCount: r.table('TeamMember').getAll(leader('teamId'), {index: 'teamId'}).count()
+      teamCount: r.table('TeamMember')
+        .getAll(leader('teamId'), {index: 'teamId'})
+        .filter({isNotRemoved: true})
+        .count()
     }))
     .forEach((leader) => {
       return r.branch(
@@ -23,7 +26,7 @@ export default async function removeAllTeamMembers(maybeTeamMemberIds, exchange)
         // set the next oldest person as team lead
         r.table('TeamMember')
           .getAll(leader('teamId'), {index: 'teamId'})
-          .filter({isLead: false})
+          .filter({isLead: false, isNotRemoved: true})
           .merge((teamMember) => ({
             createdAt: r.table('User').get(teamMember('userId'))('createdAt').default(r.now())
           }))
@@ -59,7 +62,7 @@ export default async function removeAllTeamMembers(maybeTeamMemberIds, exchange)
         .update((project) => ({
           teamMemberId: r.table('TeamMember')
             .getAll(project('teamId'), {index: 'teamId'})
-            .filter({isLead: true})
+            .filter({isLead: true, isNotRemoved: true})
             .nth(0)('id')
         }), {nonAtomic: true})
     })
@@ -86,10 +89,13 @@ export default async function removeAllTeamMembers(maybeTeamMemberIds, exchange)
     auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: newtms});
   }
 
-  // update the server socket, if they're logged in
-  teamIds.forEach((teamId) => {
+  // we have to do this because the client may have already unsubscribed & cleared the team name from the client cache
+  const teams = await r.table('Team').getAll(r.args(teamIds), {index: 'id'}).pluck('id', 'name');
+  teams.forEach((team) => {
+    // update the server socket, if they're logged in
+    const {id: teamId, name: teamName} = team;
     const channel = `${USER_MEMO}/${userId}`;
-    exchange.publish(channel, {type: KICK_OUT, teamId});
+    exchange.publish(channel, {type: KICK_OUT, teamId, teamName});
   });
   return true;
 }

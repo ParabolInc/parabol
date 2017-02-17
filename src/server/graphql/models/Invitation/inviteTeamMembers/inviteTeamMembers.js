@@ -127,19 +127,25 @@ export default {
           sender: userId
         });
       });
-
-
     }
 
     if (filteredInvitees.length > 0) {
       // if it's a billing leader send them all
       const inviteeEmails = filteredInvitees.map((i) => i.email);
       if (inviterIsBillingLeader) {
-        // if any folks were pending, remove that status now
-        const inviterId = await removeOrgApprovalAndNotification(orgId, inviteeEmails);
-        // when we invite the person, try to invite from the original requester, if not, billing leader
-        const safeUserId = inviterId || userId;
-        asyncInviteTeam(safeUserId, teamId, filteredInvitees);
+        // if any folks were pending, release the floodgates, a billing leader has approved them
+        const pendingApprovals = await removeOrgApprovalAndNotification(orgId, inviteeEmails);
+        const freshInvitees = filteredInvitees.filter((i) => !pendingApprovals.find((d) => d.inviteeEmail === i.email));
+        if (freshInvitees) {
+          asyncInviteTeam(userId, teamId, freshInvitees);
+        }
+        pendingApprovals.forEach((invite) => {
+          const {inviterId, inviteeEmail, invitedTeamId} = invite;
+          const invitee = [{email: inviteeEmail}];
+          // when we invite the person, try to invite from the original requester, if not, billing leader
+          asyncInviteTeam(inviterId, invitedTeamId, invitee);
+        });
+
         return true;
       }
       // return false if org approvals sent, true if only invites were sent
