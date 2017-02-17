@@ -20,7 +20,6 @@ const initialState = {
     iat: null,
     iss: null,
     sub: null,
-    nextUrl: null
   }
 };
 

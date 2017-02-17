@@ -47,7 +47,7 @@ export default (role, {
         auth,
         dispatch,
         router,
-        location: {pathname}
+        location: { pathname }
       } = this.props;
       if (auth === undefined) {
         throw new Error('Auth token undefined. Did you put @connect on your component?');

@@ -310,7 +310,6 @@ export default class MeetingContainer extends Component {
   gotoPrev = () => this.gotoItem(this.props.localPhaseItem - 1);
 
   render() {
-    console.log('MeeetingContinaer props:', this.props);
     const {agenda, isFacilitating, localPhaseItem, members, params, team} = this.props;
     const {teamId, localPhase} = params;
     const {facilitatorPhase, meetingPhase, meetingPhaseItem, name: teamName} = team;
