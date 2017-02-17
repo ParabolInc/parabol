@@ -38,7 +38,7 @@ const Organization = (props) => {
   initialValues.orgName = orgName;
   const OrgSection = activeOrgDetail === BILLING_PAGE ? OrgBillingContainer : OrgMembersContainer;
   const pictureOrDefault = orgAvatar || defaultOrgAvatar;
-  const toggle = <EditableAvatar hasPanel picture={pictureOrDefault} size={96}/>;
+  const toggle = <EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled />;
   return (
     <UserSettingsWrapper settingsLocation={ORGANIZATIONS}>
       <div className={css(styles.wrapper)}>
@@ -48,7 +48,7 @@ const Organization = (props) => {
         </Link>
         {/* TODO: See AvatarInput.js for latest */}
         <div className={css(styles.avatarAndName)}>
-          <PhotoUploadModal picture={pictureOrDefault} toggle={toggle}>
+          <PhotoUploadModal picture={pictureOrDefault} toggle={toggle} unstyled>
             <OrgAvatarInput orgId={orgId}/>
           </PhotoUploadModal>
           <div className={css(styles.orgNameAndDetails)}>

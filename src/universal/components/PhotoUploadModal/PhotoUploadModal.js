@@ -5,6 +5,8 @@ import IconLink from 'universal/components/IconLink/IconLink';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import portal from 'react-portal-hoc';
+import Avatar from 'universal/components/Avatar/Avatar';
+import Button from 'universal/components/Button/Button';
 
 const PhotoUploadModal = (props) => {
   const {
@@ -13,24 +15,27 @@ const PhotoUploadModal = (props) => {
     closePortal,
     isClosing,
     picture,
-    styles
+    styles,
+    unstyled
   } = props;
   return (
     <DashModal onBackdropClick={closePortal} isClosing={isClosing} closeAfter={closeAfter}>
-      <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
-        Upload a new photo
+      <Type align="center" bold scale="s6" colorPalette="mid">
+        Upload a New Photo
       </Type>
-      <img height={96} width={96} src={picture}/>
+      <div className={css(styles.avatarBlock)}>
+        <Avatar picture={picture} size="fill" unstyled={unstyled} />
+      </div>
       {children}
       <div className={css(styles.done)}>
-        <IconLink
+        <Button
           colorPalette="cool"
-          icon="arrow-circle-right"
+          icon="check-circle"
           iconPlacement="right"
           label="Done"
-          margin="1.5rem 0 0 0"
           onClick={closePortal}
-          scale="large"
+          size="medium"
+          style="flat"
         />
       </div>
     </DashModal>
@@ -39,13 +44,20 @@ const PhotoUploadModal = (props) => {
 
 PhotoUploadModal.propTypes = {
   picture: PropTypes.string,
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  unstyled: PropTypes.bool
 };
 
 const styleThunk = () => ({
   done: {
     textAlign: 'right',
     width: '100%'
+  },
+
+  avatarBlock: {
+    display: 'block',
+    margin: '1.5rem auto',
+    width: '6rem'
   }
 });
 

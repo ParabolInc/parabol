@@ -1,13 +1,9 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
 import AvatarBadge from 'universal/components/AvatarBadge/AvatarBadge';
-import Tesla from 'universal/styles/theme/images/avatars/tesla-circa-1890.jpeg';
-import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
-
-// TODO: Add tooltip module (TA)
 
 const Avatar = (props) => {
   const {
@@ -20,7 +16,8 @@ const Avatar = (props) => {
     picture,
     onClick,
     size,
-    styles
+    styles,
+    unstyled
   } = props;
 
   const rootStyles = css(
@@ -31,12 +28,11 @@ const Avatar = (props) => {
   const imageBlockStyles = css(
     styles.avatarImageBlock,
     hasBorder ? styles.hasBorder : styles.boxShadow,
-    isActive && styles.isActive
+    isActive && styles.isActive,
+    unstyled && styles.unstyled
   );
-  // NOTE: This is a WIP! Will clean up after working on all instances (TA)
-  const localHackPicture = picture || Tesla || defaultUserAvatar;
   const imageBlockInlineStyle = {
-    backgroundImage: `url(${localHackPicture})`,
+    backgroundImage: `url(${picture})`,
     backgroundPosition: 'center center',
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover'
@@ -82,7 +78,8 @@ Avatar.propTypes = {
     'larger',
     'largest'
   ]),
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  unstyled: PropTypes.bool
 };
 
 const borderDefault = appTheme.palette.mid20a;
@@ -145,6 +142,11 @@ const styleThunk = () => ({
 
   isActive: {
     boxShadow: boxShadowWarm
+  },
+
+  unstyled: {
+    boxShadow: 'none',
+    borderRadius: 0
   }
 });
 

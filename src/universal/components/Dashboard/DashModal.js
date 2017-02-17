@@ -137,7 +137,7 @@ const styleThunk = (theme, props) => ({
     // boxShadow: `0 0 0 .25rem ${appTheme.palette.mid30a}, ${ui.modalBoxShadow}`,
     boxShadow: ui.modalBoxShadow,
     borderRadius: ui.modalBorderRadius,
-    padding: '2rem',
+    padding: '1.25rem',
     width: '30rem',
     animationIterationCount: 1,
     animationName: animateIn,
