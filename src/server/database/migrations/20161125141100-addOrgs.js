@@ -37,8 +37,19 @@ exports.up = async(r) => {
     r.table('User').indexWait('userOrgs')
   ];
   await Promise.all(waitIndices);
-  const now = new Date();
 
+  if (process.env.NODE_ENV === 'testing') {
+    console.warn('NODE_ENV is testing. Removing, not migrating prior users.');
+    const purgeTasks = [
+      r.table('Team').delete(),
+      r.table('TeamMember').delete(),
+      r.table('User').delete()
+    ];
+    await Promise.all(purgeTasks);
+    return;
+  }
+
+  const now = new Date();
   // every team leader is going to be promoted to an org leader
   // this means if i was invited to a team then created my own team, where i'm the leader, that will be a new org
   const teamMembers = await r.table('TeamMember');
@@ -47,7 +58,7 @@ exports.up = async(r) => {
   const orgLookupByTeam = {};
   for (let i = 0; i < teamLeaders.length; i++) {
     const teamLeader = teamLeaders[i];
-    const {preferredName, teamId, userId} = teamLeader;
+    const {teamId, userId} = teamLeader;
     orgLookupByUserId[userId] = orgLookupByUserId[userId] || shortid.generate();
     orgLookupByTeam[teamId] = orgLookupByUserId[userId];
   }
@@ -68,7 +79,7 @@ exports.up = async(r) => {
     if (isLead) {
       orgs[orgId].leaderId = userId;
       orgs[orgId].name = `${preferredName}’s Org`;
-      users[userId].trialOrg = orgId
+      users[userId].trialOrg = orgId;
     }
   }
   const orgIds = Object.keys(orgs);
@@ -97,7 +108,7 @@ exports.up = async(r) => {
         id: orgUserId,
         role: orgUserMap[orgUserId] ? BILLING_LEADER : null,
         inactive: false
-      }
+      };
     }
     orgsForDB[i] = {
       id: orgId,

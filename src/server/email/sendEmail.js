@@ -24,15 +24,17 @@ const maybeBuildMail = async(mailOptions) => {
 
 const maybeSendMail = async(mimeData) => {
   try {
-    await mailgun.messages().sendMime(mimeData);
+    if (mailgun) {
+      await mailgun.messages().sendMime(mimeData);
+    }
   } catch (e) {
-    console.warn(`mailgun: unable to send welcome message ${e}`);
+    console.warn(`mailgun: unable to send message ${e}`);
     return false;
   }
   return true;
 };
 
-export default async function sendEmailPromise(to, template, props) {
+export default async function sendEmailPromise(to, template, props, supressConsole = false) {
   const emailFactory = templates[template];
   if (!emailFactory) {
     throw new Error(`Email template for ${template} does not exist!`);
@@ -60,7 +62,7 @@ export default async function sendEmailPromise(to, template, props) {
     to,
     message: message.toString('ascii')
   };
-  if (!getMailgunApiConfig().apiKey) {
+  if (!supressConsole && !getMailgunApiConfig().apiKey) {
     console.warn(`mailgun: no API key, so not sending the following:
     From: ${from}
     To: ${to}
