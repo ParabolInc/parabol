@@ -1,4 +1,3 @@
-import test from 'ava';
 import reducer, {
   setWelcomeTeam,
   nextPage,
@@ -14,72 +13,77 @@ const stateTemplate = {
   existingInvites: []
 };
 
-test('initial state', t => {
+test('initial state', () => {
   const initialState = reducer();
-  t.deepEqual(initialState, stateTemplate);
+  expect(initialState).toEqual(stateTemplate);
 });
 
-test('setWelcomeTeam() updates teamId, teamMemberId', t => {
+test('setWelcomeTeam() updates teamId, teamMemberId', () => {
   const state = reducer();
 
-  t.deepEqual(
+  expect(
     reducer(state,
       setWelcomeTeam({
         teamId: 'apple1',
         teamMemberId: 'banana2'
       })
-    ), {
-      ...stateTemplate,
-      teamId: 'apple1',
-      teamMemberId: 'banana2'
-    }
-  );
-});
-
-test('nextPage() increments', t => {
-  const initialState = reducer();
-  t.deepEqual(reducer(initialState, nextPage()), {
+    )
+  ).toEqual({
     ...stateTemplate,
-    page: 2
+    teamId: 'apple1',
+    teamMemberId: 'banana2'
   });
 });
 
-test('nextPage() does not exceed 3', t => {
+test('nextPage() increments', () => {
+  const initialState = reducer();
+  expect(reducer(initialState, nextPage()))
+    .toEqual({
+      ...stateTemplate,
+      page: 2
+    });
+});
+
+test('nextPage() does not exceed 3', () => {
   let state = reducer();
   for (let i = 0; i < 3; i++) {
     state = reducer(state, nextPage());
   }
 
-  t.deepEqual(reducer(state, nextPage()), {
-    ...stateTemplate,
-    page: 3
-  });
+  expect(reducer(state, nextPage()))
+    .toEqual({
+      ...stateTemplate,
+      page: 3
+    });
 });
 
-test('previousPage() decrements', t => {
+test('previousPage() decrements', () => {
   let state = reducer();
   state = reducer(state, nextPage());
 
-  t.deepEqual(reducer(state, previousPage()), {
-    ...stateTemplate,
-    page: 1
-  });
+  expect(reducer(state, previousPage()))
+    .toEqual({
+      ...stateTemplate,
+      page: 1
+    });
 });
 
-test('previousPage() is never less than one', t => {
+test('previousPage() is never less than one', () => {
   let state = reducer();
   state = reducer(state, previousPage());
 
-  t.deepEqual(reducer(state, previousPage()), {
-    ...stateTemplate,
-    page: 1
-  });
+  expect(reducer(state, previousPage()))
+    .toEqual({
+      ...stateTemplate,
+      page: 1
+    });
 });
 
-test('updateCompleted() updates state', t => {
+test('updateCompleted() updates state', () => {
   const state = reducer();
-  t.deepEqual(reducer(state, updateCompleted(2)), {
-    ...stateTemplate,
-    completed: 2
-  });
+  expect(reducer(state, updateCompleted(2)))
+    .toEqual({
+      ...stateTemplate,
+      completed: 2
+    });
 });

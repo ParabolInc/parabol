@@ -9,7 +9,7 @@
   "env": {
     "browser": true,
     "node": true,
-    "mocha": true
+    "jest": true
   },
   "rules": {
     "babel/generator-star-spacing": 0,
@@ -42,8 +42,9 @@
     "react/jsx-space-before-closing": 0
   },
   "plugins": [
+    "import",
+    "jest",
     "react",
-    "import"
   ],
   "parser": "babel-eslint",
   "settings": {

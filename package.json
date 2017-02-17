@@ -29,23 +29,22 @@
     "build:server": "NODE_ENV=production webpack --config ./webpack/server.babel.js",
     "db:migrate": "./src/server/database/migrate.sh up-all",
     "db:migrate-testing": "NODE_ENV=testing ./src/server/database/migrate.sh up-all",
-    "test": "NODE_ENV=testing ava ./src/**/__tests__/**/*-tests.js --verbose",
-    "test:xunit": "NODE_ENV=testing ava ./src/**/__tests__/**/*-tests.js --tap | tap-xunit",
+    "test": "NODE_ENV=testing jest",
     "test:intranetToken": "node ./src/server/utils/getIntranetToken.babel.js",
     "db:migrate-up": "./src/server/database/migrate.sh up",
     "db:migrate-up-all": "npm run db:migrate",
     "db:migrate-down": "./src/server/database/migrate.sh down",
     "db:migrate-down-all": "./src/server/database/migrate.sh down-all",
-    "lint": "eslint 'src/**/*.js' 'tests/*.js' 'webpack/*.js'",
+    "lint": "eslint 'src/**/*.js' 'webpack/*.js'",
     "lint:fix": "eslint --fix 'src/**/*.js' 'tests/*.js' 'webpack/*.js'",
     "profile": "NODE_ENV=development webpack --config ./webpack/dev.babel.js --profile --json > stats.json"
   },
   "pre-commit": [],
   "devDependencies": {
-    "ava": "^0.17.0",
     "babel-cli": "6.18.0",
     "babel-core": "6.18.2",
     "babel-eslint": "^6.1.2",
+    "babel-jest": "^18.0.0",
     "babel-loader": "6.2.7",
     "babel-plugin-add-module-exports": "0.2.1",
     "babel-plugin-react-transform": "2.0.2",
@@ -64,8 +63,10 @@
     "eslint": "^3.10.2",
     "eslint-config-airbnb": "^9.0.1",
     "eslint-plugin-import": "^1.12.0",
+    "eslint-plugin-jest": "^1.0.2",
     "eslint-plugin-react": "5.2.2",
     "file-loader": "0.9.0",
+    "jest": "^19.0.0",
     "json-loader": "0.5.4",
     "lockfile": "^1.0.2",
     "manifest-assets-webpack-plugin": "^4.0.0",
@@ -158,14 +159,15 @@
     "tinycolor2": "^1.4.1",
     "webpack-s3-plugin": "^0.9.2"
   },
-  "ava": {
-    "babel": "inherit",
-    "require": [
-      "./src/universal/utils/testEnv.babel"
-    ]
-  },
   "engines": {
     "node": "7.5.0",
     "npm": "3.9.3"
+  },
+  "jest": {
+    "modulePaths": [
+      "<rootDir>/src"
+    ],
+    "testRegex": "/__tests__/.*-tests\\.jsx?$",
+    "verbose": true
   }
 }
