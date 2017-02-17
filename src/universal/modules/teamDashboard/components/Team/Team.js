@@ -67,13 +67,14 @@ const initialValues = {teamName: ''};
 const Team = (props) => {
   const {children, router, team, teamMembers} = props;
   const {id: teamId, name: teamName, isPaid} = team;
-  const hasOverlay = Boolean(team && team.meetingId);
+  const hasActiveMeeting = Boolean(team && team.meetingId);
+  const hasOverlay = hasActiveMeeting || !isPaid;
   const isSettings = router.isActive(`/team/${teamId}/settings`, false);
   initialValues.teamName = teamName;
   const DashHeaderInfoTitle = isSettings ? <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId}/> : teamName;
   return (
     <DashMain>
-      <MeetingInProgressModal isOpen={hasOverlay} teamId={teamId} teamName={teamName} key={teamId}/>
+      <MeetingInProgressModal isOpen={hasActiveMeeting} teamId={teamId} teamName={teamName} key={teamId}/>
       <UnpaidTeamModalContainer isOpen={!isPaid} teamId={teamId} teamName={teamName}/>
       <DashHeader hasOverlay={hasOverlay}>
         <DashHeaderInfo title={DashHeaderInfoTitle}>
