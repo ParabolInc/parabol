@@ -1,9 +1,7 @@
 import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 import shortid from 'shortid';
-import {getOldVal} from '../../utils/utils'
-import {PAYMENT_REJECTED, TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
-import ms from 'ms';
+import {BILLING_LEADER, PAYMENT_REJECTED, TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
 
 export default async function handleFailedPayment(customerId) {
   const r = getRethink();
@@ -12,7 +10,7 @@ export default async function handleFailedPayment(customerId) {
   const now = new Date();
 
   // flag teams as unpaid
-  const orgRes = await r.table('Team')
+  const orgDoc = await r.table('Team')
     .getAll(orgId, {index: 'orgId'})
     .update({
       isPaid: false
@@ -21,9 +19,14 @@ export default async function handleFailedPayment(customerId) {
       return r.table('Organization')
         .get(orgId)
         .replace((row) => row.without('stripeSubscriptionId'), {returnChanges: true});
-    });
-  const orgDoc = getOldVal(orgRes);
-  const userIds = orgDoc.orgUsers.map(({id}) => id);
+    })('changes')(0)('old_val');
+  const userIds = orgDoc.orgUsers.reduce((billingLeaders, orgUser) => {
+    if (orgUser.role === BILLING_LEADER) {
+      billingLeaders.push(orgUser.id);
+    }
+    return billingLeaders;
+  }, []);
+
   if (!orgDoc.creditCard) {
     await r.table('Notification').insert({
       id: shortid.generate(),
@@ -40,7 +43,7 @@ export default async function handleFailedPayment(customerId) {
           .delete()
       })
   } else {
-    const {last4, brand} = orgDoc.creditCard || {};
+    const {last4, brand} = orgDoc.creditCard;
     await r.table('Notification').insert({
       id: shortid.generate(),
       type: PAYMENT_REJECTED,
@@ -49,9 +52,8 @@ export default async function handleFailedPayment(customerId) {
       userIds,
       varList: [last4, brand]
     });
-    // TODO remove CC from org doc
   }
-  // stripe already does this for us (per account settings)
+  // stripe already deletes the subscription so we're good
   // await stripe.subscriptions.del(orgDoc.stripeSubscriptionId);
   return true;
 }

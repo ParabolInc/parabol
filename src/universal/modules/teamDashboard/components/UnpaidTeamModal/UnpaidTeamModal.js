@@ -6,7 +6,7 @@ import Type from 'universal/components/Type/Type';
 const UnpaidTeamModal = (props) => {
   const {isClosing, closeAfter, problem, solution, isALeader, handleClick} = props;
   return (
-    <DashModal position="absolute" showsOver="main" isClosing={isClosing} closeAfter={closeAfter}>
+    <DashModal position="absolute" modalContext="main" isClosing={isClosing} closeAfter={closeAfter}>
       <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
         Oh dear...
       </Type>

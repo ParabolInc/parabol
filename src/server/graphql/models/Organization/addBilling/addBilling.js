@@ -37,7 +37,7 @@ export default {
     // RESOLUTION
     const {creditCard, stripeId, stripeSubscriptionId, periodEnd, periodStart} = await r.table('Organization')
       .get(orgId)
-      .pluck('creditCard', 'periodEnd', 'stripeId', 'stripeSubscriptionId');
+      .pluck('creditCard', 'periodEnd', 'periodStart', 'stripeId', 'stripeSubscriptionId');
     const promises = [stripe.customers.update(stripeId, {source: stripeToken})];
     let extendedPeriodEnd;
     if (!creditCard && periodEnd > now) {

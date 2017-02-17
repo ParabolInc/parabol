@@ -59,7 +59,7 @@ const RejectOrgApprovalModal = (props) => {
             disabled={submitting}
             isBlock
             label={`Reject ${inviteeEmail}`}
-            size="small"
+            size="smallest"
             type="submit"
             onClick={handleSubmit(onSubmit)}
           />

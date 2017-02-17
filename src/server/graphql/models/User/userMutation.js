@@ -4,7 +4,8 @@ import {GraphQLID, GraphQLInt, GraphQLString, GraphQLNonNull} from 'graphql';
 import {User, UserInput} from './userSchema';
 import sendEmail from 'server/email/sendEmail';
 import {requireAuth, requireSU, requireSUOrSelf} from 'server/utils/authorization';
-import {errorObj, getS3PutUrl, handleSchemaErrors, updatedOrOriginal, validateAvatarUpload} from 'server/utils/utils';
+import {errorObj, handleSchemaErrors, updatedOrOriginal, validateAvatarUpload} from 'server/utils/utils';
+import getS3PutUrl from 'server/utils/getS3PutUrl';
 import {
   auth0AuthenticationClient as auth0Client,
   clientId as auth0ClientId,

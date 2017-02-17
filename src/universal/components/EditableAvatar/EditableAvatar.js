@@ -4,9 +4,10 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import FontAwesome from 'react-fontawesome';
+import Avatar from 'universal/components/Avatar/Avatar';
 
 const EditableAvatar = (props) => {
-  const {hasPanel, onClick, picture, styles} = props;
+  const {hasPanel, onClick, picture, styles, unstyled} = props;
   const avatarBlockStyles = css(
     styles.avatar,
     hasPanel && styles.avatarHasPanel
@@ -17,7 +18,9 @@ const EditableAvatar = (props) => {
         <FontAwesome name="pencil"/>
         <span>EDIT</span>
       </div>
-      <img className={css(styles.avatarImg)} src={picture} />
+      <div className={css(styles.avatarImgBlock)}>
+        <Avatar picture={picture} size="fill" unstyled={unstyled} />
+      </div>
     </div>
   );
 };
@@ -32,7 +35,8 @@ EditableAvatar.propTypes = {
     'user',
     'team',
     'organization',
-  ])
+  ]),
+  unstyled: PropTypes.bool
 };
 
 const borderRadius = '50%';
@@ -69,6 +73,7 @@ const styleThunk = (theme, props) => ({
     position: 'absolute',
     top: props.hasPanel ? '-1px' : 0,
     width: props.size,
+    zIndex: 200,
 
     ':hover': {
       opacity: '.75',
@@ -76,11 +81,11 @@ const styleThunk = (theme, props) => ({
     },
   },
 
-  avatarImg: {
-    borderRadius: props.hasPanel ? 0 : borderRadius,
-    boxShadow: props.hasPanel ? 'none' : ui.avatarDefaultBoxShadow,
+  avatarImgBlock: {
     height: props.hasPanel ? (props.size - 18) : props.size,
-    width: props.hasPanel ? (props.size - 18) : props.size
+    position: 'relative',
+    width: props.hasPanel ? (props.size - 18) : props.size,
+    zIndex: 100
   }
 });
 
