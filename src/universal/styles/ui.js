@@ -198,6 +198,7 @@ const ui = {
   // Note: property 'dashMinWidth' prevents layout from collapsing in Safari
   //       in a better future we may be more adaptive/responsive (TA)
   dashMinWidth: '79rem',
+  dashNotificationBarHeight: '2.625rem',
   dashSectionHeaderLineHeight: '2rem',
   dashSidebarBackgroundColor: appTheme.palette.mid,
   dashSidebarWidth: '15rem',

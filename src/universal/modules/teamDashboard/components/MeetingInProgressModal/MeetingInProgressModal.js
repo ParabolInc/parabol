@@ -11,7 +11,7 @@ const MeetingInProgressModal = (props) => {
     router.push(`/meeting/${teamId}`);
   };
   return (
-    <DashModal position="absolute" showsOver="main" isClosing={isClosing} closeAfter={closeAfter}>
+    <DashModal position="absolute" modalContext="meetingInProgress" isClosing={isClosing} closeAfter={closeAfter}>
       <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
         Oh, hi there!
       </Type>
