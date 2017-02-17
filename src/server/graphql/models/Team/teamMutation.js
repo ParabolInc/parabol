@@ -351,6 +351,7 @@ export default {
             // shuffle the teamMember check in order, uncheck them in
             return r.table('TeamMember')
               .getAll(teamId, {index: 'teamId'})
+              .filter({isNotRemoved: true})
               .sample(100000)
               .coerceTo('array')
               .do((arr) => arr.forEach((doc) => {

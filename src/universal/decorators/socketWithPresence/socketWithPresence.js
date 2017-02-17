@@ -87,9 +87,7 @@ export default ComposedComponent => {
         }));
       } else if (type === KICK_OUT) {
         console.log('received memo', data);
-        const {teamId} = data;
-        // in order for teamName to be present, the kickout msg must be processed before the cashay.unsubscribe
-        const teamName = getTeamName(teamId);
+        const {teamId, teamName} = data;
         const {router} = this.props;
         const onExTeamRoute = router.isActive(`/team/${teamId}`) || router.isActive(`/meeting/${teamId}`);
           console.log('should reroute', onExTeamRoute);

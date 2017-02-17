@@ -7,7 +7,6 @@ const teamProjectsHeaderQuery = `
 query {
   ownedOrganizations(userId: $userId) @live {
     id
-    isTrial
     activeUserCount
     inactiveUserCount
     name

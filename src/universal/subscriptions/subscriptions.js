@@ -159,7 +159,6 @@ export default [
           last4
         }
         inactiveUserCount
-        isTrial
         name
         periodEnd
         periodStart
@@ -185,7 +184,6 @@ export default [
         id
         activeUserCount
         inactiveUserCount
-        isTrial
         name
         picture
       }

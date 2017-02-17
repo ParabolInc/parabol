@@ -100,10 +100,6 @@ export const Organization = new GraphQLObjectType({
       type: GraphQLInt,
       description: 'The number of orgUsers who have an inactive flag'
     },
-    isTrial: {
-      type: GraphQLBoolean,
-      description: 'true if the org is still in the trial period'
-    },
     name: {type: GraphQLString, description: 'The name of the organization'},
     picture: {
       type: GraphQLURLType,
@@ -134,10 +130,6 @@ export const Organization = new GraphQLObjectType({
       type: new GraphQLList(OrgUser),
       description: 'The users that belong to this org'
     },
-    // validUntil: {
-    //   type: GraphQLISO8601Type,
-    //   description: 'The datetime the trial is up (if isTrial) or money is due (if !isTrial)'
-    // },
     /* GraphQL Sugar */
     billingLeaders: {
       type: new GraphQLList(User),

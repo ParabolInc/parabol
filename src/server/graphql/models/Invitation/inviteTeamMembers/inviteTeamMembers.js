@@ -12,7 +12,7 @@ import asyncInviteTeam from './asyncInviteTeam';
 import inviteTeamMemberValidation from './inviteTeamMembersValidation';
 import removeOrgApprovalAndNotification from 'server/graphql/models/Organization/rejectOrgApproval/removeOrgApprovalAndNotification';
 import inviteAsUser from 'server/graphql/models/Invitation/inviteTeamMembers/inviteAsUser';
-import {ADD_TO_TEAM, REJOIN_TEAM, PRESENCE, USER_MEMO} from 'universal/subscriptions/constants'
+import reactivateTeamMembers from 'server/graphql/models/Invitation/inviteTeamMembers/reactivateTeamMembers';
 
 export default {
   type: GraphQLBoolean,
@@ -80,7 +80,7 @@ export default {
     // RESOLUTION
     const inactiveTeamMembers = teamMembers.filter((m) => m.isNotRemoved === false);
     const idsToReactivate = [];
-    const filteredInvitees = [];
+    const newInvitees = [];
     for (let i = 0; i < validInvitees.length; i++) {
       const validInvitee = validInvitees[i];
       const inactiveInvitee = inactiveTeamMembers.find((m) => m.email === validInvitee.email);
@@ -90,58 +90,37 @@ export default {
         if (inOrg) {
           // if they're in the org, reactive them
           idsToReactivate.push(inactiveInvitee.id);
-        } else {
-          // otherwise, they need approval just like the rest
-          filteredInvitees.push(validInvitee);
+          continue;
         }
-      } else {
-        filteredInvitees.push(validInvitee);
       }
+      newInvitees.push(validInvitee);
     }
 
-    if (idsToReactivate.length > 0) {
-      const userIdsToReactivate = idsToReactivate.map((teamMemberId) => {
-        return teamMemberId.substr(0, teamMemberId.indexOf('::'))
-      });
-      const reactivatedUsers = await r.table('TeamMember')
-        .getAll(r.args(idsToReactivate), {index: 'id'})
-        .update({isNotRemoved: true})
-        .do(() => {
-          return r.table('User')
-            .getAll(r.args(userIdsToReactivate))
-            .update((user) => {
-              return user.merge({
-                tms: user('tms').append(teamId)
-              })
-            }, {returnChanges: true})('changes')
-            .map((change) => change('new_val'))
-        });
-      reactivatedUsers.forEach((user) => {
-        const {preferredName, id: reactivatedUserId} = user;
-        const userChannel = `${USER_MEMO}/${reactivatedUserId}`;
-        exchange.publish(userChannel, {type: ADD_TO_TEAM, teamId, teamName});
-        const channel = `${PRESENCE}/${teamId}`;
-        exchange.publish(channel, {
-          type: REJOIN_TEAM,
-          name: preferredName,
-          sender: userId
-        });
-      });
-    }
+    await reactivateTeamMembers(idsToReactivate, teamId, teamName, exchange);
 
-    if (filteredInvitees.length > 0) {
+    if (newInvitees.length > 0) {
       // if it's a billing leader send them all
-      const inviteeEmails = filteredInvitees.map((i) => i.email);
+      const inviteeEmails = newInvitees.map((i) => i.email);
       if (inviterIsBillingLeader) {
-        // if any folks were pending, remove that status now
-        const inviterId = await removeOrgApprovalAndNotification(orgId, inviteeEmails);
-        // when we invite the person, try to invite from the original requester, if not, billing leader
-        const safeUserId = inviterId || userId;
-        asyncInviteTeam(safeUserId, teamId, filteredInvitees, unitTestCb);
+        // if any folks were pending, release the floodgates, a billing leader has approved them
+        const pendingApprovals = await removeOrgApprovalAndNotification(orgId, inviteeEmails);
+        // we should always have a fresh invitee, but we do this safety check in case the front-end validation messes up
+        const freshInvitees = newInvitees.filter((i) =>
+          !pendingApprovals.find((d) => d.inviteeEmail === i.email && d.invitedTeamId === teamId));
+        if (freshInvitees) {
+          asyncInviteTeam(userId, teamId, freshInvitees, unitTestCb);
+        }
+        pendingApprovals.forEach((invite) => {
+          const {inviterId, inviteeEmail, invitedTeamId} = invite;
+          const invitee = [{email: inviteeEmail}];
+          // when we invite the person, try to invite from the original requester, if not, billing leader
+          asyncInviteTeam(inviterId, invitedTeamId, invitee, unitTestCb);
+        });
+
         return true;
       }
       // return false if org approvals sent, true if only invites were sent
-      return await inviteAsUser(filteredInvitees, orgId, userId, teamId, teamName);
+      return await inviteAsUser(newInvitees, orgId, userId, teamId, teamName);
     }
     return undefined;
   }

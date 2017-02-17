@@ -41,7 +41,6 @@ export default async function handleUpdatedSource(cardId, customerId) {
       stripeSubscriptionId,
       periodEnd: fromEpochSeconds(current_period_end),
       periodStart: fromEpochSeconds(current_period_start),
-      isTrial: false
     })
       .do(() => {
         return r.table('Notification')

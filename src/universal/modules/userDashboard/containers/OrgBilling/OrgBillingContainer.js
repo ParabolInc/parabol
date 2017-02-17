@@ -13,7 +13,6 @@ query {
       expiry
       last4
     }
-    isTrial
     periodEnd
   }
 }

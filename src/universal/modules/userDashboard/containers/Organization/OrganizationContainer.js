@@ -12,7 +12,6 @@ query {
     activeUserCount
     createdAt
     inactiveUserCount
-    isTrial
     name
     picture
     periodEnd

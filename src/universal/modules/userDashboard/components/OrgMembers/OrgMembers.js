@@ -35,7 +35,7 @@ const OrgMembers = (props) => {
     } = props;
     const {id: orgId} = org;
 
-    const setRole = (userId, role) => () => {
+    const setRole = (userId, role = null) => () => {
       const variables = {
         orgId,
         userId,
@@ -50,11 +50,11 @@ const OrgMembers = (props) => {
         const listItems = [];
         if (orgUser.isBillingLeader) {
           listItems.push(
-            <MenuItem label="Remove from Admin Role" onClick={setRole(id)}/>
+            <MenuItem label="Remove Billing leader role" onClick={setRole(id)}/>
           )
         } else {
           listItems.push(
-            <MenuItem label="Promote to Admin Role" onClick={setRole(id, BILLING_LEADER)}/>
+            <MenuItem label="Promote to Billing leader" onClick={setRole(id, BILLING_LEADER)}/>
           )
         }
         if (myUserId !== orgUser.id) {
