@@ -54,7 +54,7 @@ stages:
         name: NPM run test
         command: |
           mkdir -p $CIRCLE_TEST_REPORTS &&
-          npm run test:xunit > $CIRCLE_TEST_REPORTS/action-ava.xml
+          npm run test
         environment:
           - CIRCLE_TEST_REPORTS: "/home/ubuntu/test-reports/junit"
 
