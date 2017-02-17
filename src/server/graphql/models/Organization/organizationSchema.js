@@ -102,7 +102,7 @@ export const Organization = new GraphQLObjectType({
     },
     isTrial: {
       type: GraphQLBoolean,
-      description: 'true if the org is still in the trial period'
+      description: 'true if the org is still in the trial period and does not have a credit card'
     },
     name: {type: GraphQLString, description: 'The name of the organization'},
     picture: {

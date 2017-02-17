@@ -42,8 +42,8 @@ export const Notification = new GraphQLObjectType({
       type: new GraphQLNonNull(NotificationType),
       description: 'The type of notification this is. Text will be determined by the client'
     },
-    userId: {
-      type: GraphQLID,
+    userIds: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
       description: '*The userId that should see this notification'
     },
     varList: {

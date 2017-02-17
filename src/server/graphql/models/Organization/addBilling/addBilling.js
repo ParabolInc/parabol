@@ -37,7 +37,7 @@ export default {
     // RESOLUTION
     const {isTrial, stripeId, stripeSubscriptionId, periodEnd} = await r.table('Organization')
       .get(orgId)
-      .pluck('isTrial', 'periodEnd', 'stripeSubscriptionId');
+      .pluck('isTrial', 'periodEnd', 'stripeId', 'stripeSubscriptionId');
     const promises = [stripe.customers.update(stripeId, {source: stripeToken})];
     let extendedPeriodEnd;
     if (isTrial && periodEnd > now) {
@@ -54,13 +54,16 @@ export default {
         })
         .delete());
     }
-    const [customer] = await promises;
+    const [customer] = await Promise.all(promises);
+    console.log('stripe customer', JSON.stringify(customer))
     const orgUpdates = {
       creditCard: getCCFromCustomer(customer)
     };
     if (extendedPeriodEnd !== undefined) {
       orgUpdates.periodEnd = extendedPeriodEnd;
     }
+    orgUpdates.isTrial = !Boolean(orgUpdates.creditCard);
+    console.log('updating with', orgUpdates);
     return await r.table('Organization').get(orgId).update(orgUpdates);
   }
 };

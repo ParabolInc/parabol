@@ -72,12 +72,25 @@ export const REQUEST_NEW_USER = 'REQUEST_NEW_USER';
 // Sent to the orgMember that generated the new user request
 // [reason, billingLeaderName, inviteeEmail]
 export const DENY_NEW_USER = 'DENY_NEW_USER';
+// sent to the orgMember that just got promoted, goes away if they get demoted before acknowledging it
+// [orgName]
+export const PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER';
+
+
 export const notificationTypes = [
   TRIAL_EXPIRES_SOON,
   TRIAL_EXPIRED,
   PAYMENT_REJECTED,
+  PROMOTE_TO_BILLING_LEADER,
   REQUEST_NEW_USER,
   DENY_NEW_USER
+];
+
+export const billingLeaderTypes = [
+  TRIAL_EXPIRES_SOON,
+  TRIAL_EXPIRED,
+  PAYMENT_REJECTED,
+  REQUEST_NEW_USER
 ];
 
 /* User Settings */

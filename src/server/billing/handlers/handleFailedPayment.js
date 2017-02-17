@@ -50,6 +50,7 @@ export default async function handleFailedPayment(customerId) {
       userIds,
       varList: [last4, brand]
     });
+    // TODO remove CC from org doc
   }
   // stripe already does this for us (per account settings)
   // await stripe.subscriptions.del(orgDoc.stripeSubscriptionId);
