@@ -53,10 +53,10 @@ stages:
       - type: shell
         name: NPM run test
         command: |
-          mkdir -p $CIRCLE_TEST_REPORTS &&
+          mkdir -p $TEST_REPORT_PATH &&
           npm run test
         environment:
-          - CIRCLE_TEST_REPORTS: "/home/ubuntu/test-reports/junit"
+          - TEST_REPORT_PATH: "/home/ubuntu/test-reports/junit"
 
       - type: shell
         name: Pre-build DevOps checkout

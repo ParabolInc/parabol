@@ -67,6 +67,7 @@
     "eslint-plugin-react": "5.2.2",
     "file-loader": "0.9.0",
     "jest": "^19.0.0",
+    "jest-junit-reporter": "^1.0.1",
     "json-loader": "0.5.4",
     "lockfile": "^1.0.2",
     "manifest-assets-webpack-plugin": "^4.0.0",
@@ -168,6 +169,7 @@
       "<rootDir>/src"
     ],
     "testRegex": "/__tests__/.*-tests\\.jsx?$",
+    "testResultsProcessor": "./node_modules/jest-junit-reporter",
     "verbose": true
   }
 }
