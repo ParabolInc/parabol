@@ -3,9 +3,9 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
-import upperFirst from 'universal/utils/upperFirst';
 import AvatarBadge from 'universal/components/AvatarBadge/AvatarBadge';
-import makeUsername from 'universal/utils/makeUsername';
+import Tesla from 'universal/styles/theme/images/avatars/tesla-circa-1890.jpeg';
+import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 
 // TODO: Add tooltip module (TA)
 
@@ -13,61 +13,52 @@ const Avatar = (props) => {
   const {
     hasBadge,
     hasBorder,
-    hasLabel,
-    labelRight,
     isActive,
     isCheckedIn,
     isClickable,
     isConnected,
     picture,
-    preferredName,
     onClick,
     size,
     styles
   } = props;
 
-  const username = makeUsername(preferredName);
-  const sizeName = upperFirst(size);
-  const sizeStyles = `avatar${sizeName}`;
-  const imageSizeStyles = `avatarImageBlock${sizeName}`;
+  const rootStyles = css(
+    styles.avatar,
+    styles[size]
+  );
   const rootInlineStyle = isClickable ? {cursor: 'pointer'} : {cursor: 'default'};
-  const avatarImagesStyles = css(
-    styles.avatarImage,
+  const imageBlockStyles = css(
+    styles.avatarImageBlock,
     hasBorder ? styles.hasBorder : styles.boxShadow,
     isActive && styles.isActive
   );
-  const avatarStyles = css(
-    styles.avatar,
-    styles[sizeStyles]
-  );
-  const imageBlockStyles = css(
-    styles.avatarImageBlock,
-    styles[imageSizeStyles]
-  );
-  // Position label to the right of avatar image
-  const avatarLabelStyles = css(
-    styles.avatarLabel,
-    labelRight && styles.avatarLabelInlineBlock
-  );
-  const imagePositionStyles = css(
-    styles.avatarImageDisplay,
-    labelRight && styles.avatarImageDisplayInlineBlock
-  );
+  // NOTE: This is a WIP! Will clean up after working on all instances (TA)
+  const localHackPicture = picture || Tesla || defaultUserAvatar;
+  const imageBlockInlineStyle = {
+    backgroundImage: `url(${localHackPicture})`,
+    backgroundPosition: 'center center',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover'
+  };
   return (
     <div
-      className={avatarStyles}
+      className={rootStyles}
       onClick={onClick}
       style={rootInlineStyle}
     >
-      <div className={imagePositionStyles}>
-        <div className={imageBlockStyles}>
-          <img className={avatarImagesStyles} src={picture} title={preferredName}/>
-          {hasBadge && <AvatarBadge isCheckedIn={isCheckedIn} isConnected={isConnected} size={size}/>}
-        </div>
+      <div
+        className={imageBlockStyles}
+        style={imageBlockInlineStyle}
+      >
+        {hasBadge &&
+          <AvatarBadge
+            isCheckedIn={isCheckedIn}
+            isConnected={isConnected}
+            size={size}
+          />
+        }
       </div>
-      {hasLabel &&
-        <div className={avatarLabelStyles}>@{username}</div>
-      }
     </div>
   );
 };
@@ -75,14 +66,11 @@ const Avatar = (props) => {
 Avatar.propTypes = {
   hasBadge: PropTypes.bool,
   hasBorder: PropTypes.bool,
-  hasLabel: PropTypes.bool,
   isActive: PropTypes.bool,
   isCheckedIn: PropTypes.bool,
   isClickable: PropTypes.bool,
   isConnected: PropTypes.bool,
   picture: PropTypes.string,
-  labelRight: PropTypes.bool,
-  preferredName: PropTypes.string,
   onClick: PropTypes.func,
   size: PropTypes.oneOf([
     'fill',
@@ -107,86 +95,44 @@ const boxShadowWarm = `${boxShadowBase} ${borderWarm}`;
 const styleThunk = () => ({
   avatar: {
     display: 'inline-block',
-    fontSize: appTheme.typography.s2,
-    margin: '0',
     position: 'relative',
-    textAlign: 'center',
-    verticalAlign: 'middle'
-  },
-
-  // NOTE: Size modifies avatar
-  avatarSmallest: {
-    fontSize: appTheme.typography.s1
-  },
-  avatarSmaller: {
-    fontSize: appTheme.typography.s1
-  },
-  avatarSmall: {
-    fontSize: appTheme.typography.s2
-  },
-  avatarMedium: {
-    fontSize: appTheme.typography.s3
-  },
-  avatarLarge: {
-    fontSize: appTheme.typography.s4
-  },
-  avatarLarger: {
-    fontSize: appTheme.typography.s4
-  },
-  avatarLargest: {
-    fontSize: appTheme.typography.s6
-  },
-
-  avatarImageDisplay: {
-    borderRadius: '100%',
-    display: 'block'
-  },
-
-  // NOTE: Modifies avatarImageDisplay
-  avatarImageDisplayInlineBlock: {
-    display: 'inline-block',
     verticalAlign: 'middle'
   },
 
   avatarImageBlock: {
     borderRadius: '100%',
     display: 'block',
+    height: 0,
     margin: '0 auto',
+    padding: '100% 0 0',
     position: 'relative',
-    width: '2.75rem'
+    width: '100%'
   },
 
   // NOTE: Size modifies avatarImageBlock
-  avatarImageBlockFill: {
+  fill: {
     width: '100%'
   },
-  avatarImageBlockSmallest: {
+  smallest: {
     width: '1.5rem'
   },
-  avatarImageBlockSmaller: {
+  smaller: {
     width: '2rem'
   },
-  avatarImageBlockSmall: {
+  small: {
     width: '2.75rem'
   },
-  avatarImageBlockMedium: {
+  medium: {
     width: '4rem'
   },
-  avatarImageBlockLarge: {
+  large: {
     width: '5rem'
   },
-  avatarImageBlockLarger: {
+  larger: {
     width: '6rem'
   },
-  avatarImageBlockLargest: {
+  largest: {
     width: '7.5rem'
-  },
-
-  avatarImage: {
-    borderRadius: '100%',
-    display: 'block',
-    height: 'auto',
-    width: '100%'
   },
 
   boxShadow: {
@@ -199,18 +145,6 @@ const styleThunk = () => ({
 
   isActive: {
     boxShadow: boxShadowWarm
-  },
-
-  avatarLabel: {
-    color: appTheme.palette.dark,
-    fontSize: 'inherit',
-    margin: '1em 0'
-  },
-
-  avatarLabelInlineBlock: {
-    display: 'inline-block',
-    marginLeft: '1em',
-    verticalAlign: 'middle'
   }
 });
 
