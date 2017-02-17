@@ -102,7 +102,6 @@ exports.up = async(r) => {
     orgsForDB[i] = {
       id: orgId,
       createdAt: now,
-      isTrial: true,
       name,
       orgUsers,
       stripeId: customer,

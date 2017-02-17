@@ -13,7 +13,6 @@ export default async function handleSuccessfulPayment(subscriptionId) {
     .update({
       isPaid: true
     })
-    // keep isTrial true since we'll use that for the callout
     .do(() => {
       return r.table('Organization').get(orgId).update({
         periodStart: fromEpochSeconds(current_period_start),

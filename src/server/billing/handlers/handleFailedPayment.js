@@ -17,7 +17,6 @@ export default async function handleFailedPayment(customerId) {
     .update({
       isPaid: false
     })
-    // don't adjust isTrial since we need that for the front-end callout
     .do(() => {
       return r.table('Organization')
         .get(orgId)
@@ -25,7 +24,7 @@ export default async function handleFailedPayment(customerId) {
     });
   const orgDoc = getOldVal(orgRes);
   const userIds = orgDoc.orgUsers.map(({id}) => id);
-  if (orgDoc.isTrial) {
+  if (!orgDoc.creditCard) {
     await r.table('Notification').insert({
       id: shortid.generate(),
       type: TRIAL_EXPIRED,

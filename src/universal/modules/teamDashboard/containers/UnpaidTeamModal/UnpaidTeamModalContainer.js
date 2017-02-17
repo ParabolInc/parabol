@@ -13,7 +13,9 @@ query {
       id
       preferredName
     }
-    isTrial
+    creditCard {
+      brand
+    }
     name
   }
 }
@@ -36,13 +38,13 @@ const mapStateToProps = (state, props) => {
 
 const UnpaidTeamModalContainer = (props) => {
   const {closeAfter, isClosing, router, teamName, orgDetails, myUserId} = props;
-  const {isTrial, billingLeaders, name: orgName, id: orgId} = orgDetails;
+  const {creditCard: {brand}, billingLeaders, name: orgName, id: orgId} = orgDetails;
   if (billingLeaders.length === 0) return null;
 
   const billingLeaderName = billingLeaders[0].preferredName;
   const isALeader = billingLeaders.findIndex((leader) => leader.id === myUserId) !== -1;
   const handleClick = () => router.push(`/me/organizations/${orgId}`);
-  const problem = isTrial ? `The trial for ${teamName} has ended.` : `There in an unpaid invoice for ${teamName}.`;
+  const problem = brand ? `The trial for ${teamName} has ended.` : `There in an unpaid invoice for ${teamName}.`;
   const solution = isALeader ? `Head over to ${orgName} Settings to add a payment method` :
     `Try reaching out to ${billingLeaderName}`;
 

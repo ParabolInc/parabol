@@ -35,12 +35,12 @@ export default {
     requireOrgLeader(userOrgDoc);
 
     // RESOLUTION
-    const {isTrial, stripeId, stripeSubscriptionId, periodEnd} = await r.table('Organization')
+    const {creditCard, stripeId, stripeSubscriptionId, periodEnd} = await r.table('Organization')
       .get(orgId)
-      .pluck('isTrial', 'periodEnd', 'stripeId', 'stripeSubscriptionId');
+      .pluck('creditCard', 'periodEnd', 'stripeId', 'stripeSubscriptionId');
     const promises = [stripe.customers.update(stripeId, {source: stripeToken})];
     let extendedPeriodEnd;
-    if (isTrial && periodEnd > now) {
+    if (creditCard && periodEnd > now) {
       // extend the trial in stripe
       extendedPeriodEnd = new Date(periodEnd.setMilliseconds(0) + TRIAL_EXTENSION);
       promises.push(stripe.subscriptions.update(stripeSubscriptionId, {
@@ -55,15 +55,12 @@ export default {
         .delete());
     }
     const [customer] = await Promise.all(promises);
-    console.log('stripe customer', JSON.stringify(customer))
     const orgUpdates = {
       creditCard: getCCFromCustomer(customer)
     };
     if (extendedPeriodEnd !== undefined) {
       orgUpdates.periodEnd = extendedPeriodEnd;
     }
-    orgUpdates.isTrial = !Boolean(orgUpdates.creditCard);
-    console.log('updating with', orgUpdates);
     return await r.table('Organization').get(orgId).update(orgUpdates);
   }
 };
