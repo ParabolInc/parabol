@@ -32,7 +32,7 @@ export default {
     //   type: GraphQLID
     // }
   },
-  async resolve(source, {invitees, teamId}, {authToken, exchange}) {
+  async resolve(source, {invitees, teamId}, {authToken, exchange, unitTestCb}) {
     const r = getRethink();
 
     // AUTH
@@ -63,7 +63,7 @@ export default {
           //   .getAll(r.args(emails), {index: 'email'})
           //   .filter({teamId})('email')
           //   .coerceTo('array')
-        }
+        };
       });
     // ignore pendingApprovalEmails because this could be the billing leader hitting accept
     const {inviteEmails, teamMembers} = usedEmails;
@@ -108,13 +108,13 @@ export default {
         const freshInvitees = newInvitees.filter((i) =>
           !pendingApprovals.find((d) => d.inviteeEmail === i.email && d.invitedTeamId === teamId));
         if (freshInvitees) {
-          asyncInviteTeam(userId, teamId, freshInvitees);
+          asyncInviteTeam(userId, teamId, freshInvitees, unitTestCb);
         }
         pendingApprovals.forEach((invite) => {
           const {inviterId, inviteeEmail, invitedTeamId} = invite;
           const invitee = [{email: inviteeEmail}];
           // when we invite the person, try to invite from the original requester, if not, billing leader
-          asyncInviteTeam(inviterId, invitedTeamId, invitee);
+          asyncInviteTeam(inviterId, invitedTeamId, invitee, unitTestCb);
         });
 
         return true;

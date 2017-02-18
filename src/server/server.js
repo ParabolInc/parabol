@@ -23,4 +23,6 @@ export const options = {
   socketChannelLimit: 1000,
   rebootWorkerOnCrash: true
 };
-new SocketCluster(options); // eslint-disable-line no-new
+const server = new SocketCluster(options); // eslint-disable-line no-new
+
+export default server;

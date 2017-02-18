@@ -125,7 +125,6 @@ export default {
       const userOrgs = user.userOrgs || [];
       const userTeams = user.tms || [];
       const userInOrg = Boolean(userOrgs.find((org) => org.id === orgId));
-      console.log('userinOrg', userInOrg);
       const tms = [...userTeams, teamId];
       const teamMemberId = `${user.id}::${teamId}`;
       const dbWork = r.table('User')
@@ -144,7 +143,7 @@ export default {
             .count();
         })
         // insert team member
-        .do((teamCount) =>
+      .do((teamCount) =>
           r.table('TeamMember').insert({
             id: teamMemberId,
             checkInOrder: teamCount.add(1),

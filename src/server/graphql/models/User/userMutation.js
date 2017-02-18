@@ -2,22 +2,19 @@ import shortid from 'shortid';
 import getRethink from 'server/database/rethinkDriver';
 import {GraphQLID, GraphQLInt, GraphQLString, GraphQLNonNull} from 'graphql';
 import {User, UserInput} from './userSchema';
-import {AuthenticationClient} from 'auth0';
-import {auth0} from 'universal/utils/clientOptions';
 import sendEmail from 'server/email/sendEmail';
 import {requireAuth, requireSU, requireSUOrSelf} from 'server/utils/authorization';
 import {errorObj, handleSchemaErrors, updatedOrOriginal, validateAvatarUpload} from 'server/utils/utils';
 import getS3PutUrl from 'server/utils/getS3PutUrl';
-import {clientSecret as auth0ClientSecret} from 'server/utils/auth0Helpers';
+import {
+  auth0AuthenticationClient as auth0Client,
+  clientId as auth0ClientId,
+  clientSecret as auth0ClientSecret
+} from 'server/utils/auth0Helpers';
 import {verify} from 'jsonwebtoken';
 import makeUserServerSchema from 'universal/validation/makeUserServerSchema';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import {GraphQLURLType} from '../../types';
-
-const auth0Client = new AuthenticationClient({
-  domain: auth0.domain,
-  clientId: auth0.clientId
-});
 
 export default {
   createImposterToken: {
@@ -45,7 +42,7 @@ export default {
       const newToken = {
         iss: authToken.iss,
         sub: user.id,
-        aud: auth0.clientId
+        aud: auth0ClientId
       };
 
       user.jwt = tmsSignToken(newToken, user.tms);
@@ -89,12 +86,12 @@ export default {
         description: 'The ID Token from auth0, a base64 JWT'
       }
     },
-    async resolve(source, {auth0Token}) {
+    async resolve(source, {auth0Token, isUnitTest}) {
       const r = getRethink();
       const now = new Date();
 
       // VALIDATION
-      const authToken = verify(auth0Token, Buffer.from(auth0ClientSecret, 'base64'), {audience: auth0.clientId});
+      const authToken = verify(auth0Token, Buffer.from(auth0ClientSecret, 'base64'), {audience: auth0ClientId});
 
 
       // RESOLUTION
@@ -123,7 +120,7 @@ export default {
       await r.table('User').insert(newUser);
 
       // don't await
-      setTimeout(() => sendEmail(newUser.email, 'welcomeEmail', newUser), 0);
+      setTimeout(() => sendEmail(newUser.email, 'welcomeEmail', newUser, isUnitTest), 0);
       return newUser;
     }
   },

@@ -10,7 +10,7 @@ exports.up = async(r) => {
       preferredName: 'taya'
     },
     {
-      id: 'auth0|57a8fb6cab6c18473e47f518',
+      id: 'auth0|58a861e682b0ca077463c577',
       email: 'jordan@prbl.co',
       picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/5826412fff7c506548200d81/1478902214166/2016+Jordan+Husney.jpg?format=300w',
       preferredName: 'jordan'

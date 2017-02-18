@@ -1,4 +1,3 @@
-import test from 'ava';
 import reducer, {
   ACTIVITY_WELCOME,
   setActivity,
@@ -11,18 +10,19 @@ const stateTemplate = {
   nextPage: null
 };
 
-test('initial state', t => {
+test('initial state', () => {
   const initialState = reducer();
-  t.deepEqual(initialState, stateTemplate);
+  expect(initialState).toEqual(stateTemplate);
 });
 
-test('setActivity() ACTIVITY_WELCOME updates activity, nextPage', t => {
+test('setActivity() ACTIVITY_WELCOME updates activity, nextPage', () => {
   const state = reducer();
 
-  t.deepEqual(
+  expect(
     reducer(state,
       setActivity(ACTIVITY_WELCOME, '/team/baddad')
-    ),
+    )
+  ).toEqual(
     {
       ...stateTemplate,
       activity: ACTIVITY_WELCOME,
@@ -31,17 +31,18 @@ test('setActivity() ACTIVITY_WELCOME updates activity, nextPage', t => {
   );
 });
 
-test('setActivity() of invalid activity throws error', t => {
-  t.throws(() => setActivity('narf!', '/team/d00d00'));
+test('setActivity() of invalid activity throws error', () => {
+  expect(() => setActivity('narf!', '/team/d00d00')).toThrow();
 });
 
-test('setWelcomeActivity() updates activity, nextPage', t => {
+test('setWelcomeActivity() updates activity, nextPage', () => {
   const state = reducer();
 
-  t.deepEqual(
+  expect(
     reducer(state,
       setWelcomeActivity('/team/baddad')
-    ),
+    )
+  ).toEqual(
     {
       ...stateTemplate,
       activity: ACTIVITY_WELCOME,
@@ -50,11 +51,10 @@ test('setWelcomeActivity() updates activity, nextPage', t => {
   );
 });
 
-test('clearWelcomeActivity() resets state', t => {
+test('clearWelcomeActivity() resets state', () => {
   const state = reducer();
 
-  t.deepEqual(
-    reducer(state, clearActivity()),
-    stateTemplate
-  );
+  expect(
+    reducer(state, clearActivity())
+  ).toEqual(stateTemplate);
 });
