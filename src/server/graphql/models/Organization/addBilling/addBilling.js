@@ -5,15 +5,22 @@ import {
   GraphQLID,
 } from 'graphql';
 import {TRIAL_EXTENSION, TRIAL_PERIOD} from 'server/utils/serverConstants';
-import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
+import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
 import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
 import stripe from 'server/billing/stripe';
 import {toEpochSeconds} from 'server/utils/epochTime';
 import getCCFromCustomer from 'server/graphql/models/Organization/addBilling/getCCFromCustomer';
+import {ACTION_MONTHLY} from 'server/utils/serverConstants';
+import {fromEpochSeconds} from 'server/utils/epochTime';
 
 export default {
   type: GraphQLBoolean,
-  description: 'Add a credit card by passing in a stripe token encoded with all the billing details',
+  description: `Add a credit card by passing in a stripe token encoded with all the billing details. 
+  Handles 4 scenarios:
+    1) Updating to a new credit card
+    2) Adding to extend the free trial
+    3) Converting after the trial ended
+    4) Payment was rejected`,
   args: {
     orgId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -35,32 +42,71 @@ export default {
     requireOrgLeader(userOrgDoc);
 
     // RESOLUTION
-    const {creditCard, stripeId, stripeSubscriptionId, periodEnd, periodStart} = await r.table('Organization')
+    const {creditCard, stripeId, stripeSubscriptionId, periodEnd, periodStart, orgUsers} = await r.table('Organization')
       .get(orgId)
-      .pluck('creditCard', 'periodEnd', 'periodStart', 'stripeId', 'stripeSubscriptionId');
-    const promises = [stripe.customers.update(stripeId, {source: stripeToken})];
-    let extendedPeriodEnd;
-    if (!creditCard && periodEnd > now) {
-      // extend the trial in stripe. use periodStart to make sure if this is called twice they don't an extra month
-      extendedPeriodEnd = new Date(periodStart.setMilliseconds(0) + TRIAL_PERIOD + TRIAL_EXTENSION);
-      promises.push(stripe.subscriptions.update(stripeSubscriptionId, {
-        trial_end: toEpochSeconds(extendedPeriodEnd)
-      }));
-      // remove the oustanding notifications
-      promises.push(r.table('Notification')
-        .getAll(orgId, {index: 'orgId'})
-        .filter({
-          type: TRIAL_EXPIRES_SOON
+      .pluck('creditCard', 'orgUsers', 'periodEnd', 'periodStart', 'stripeId', 'stripeSubscriptionId');
+
+    const customer = await stripe.customers.update(stripeId, {source: stripeToken});
+
+    if (periodEnd > now) {
+      // 1) Updating to a new credit card
+      if (creditCard) {
+        await r.table('Organization').get(orgId).update({
+          creditCard: getCCFromCustomer(customer)
+        });
+        // 2) Adding to extend the free trial
+      } else {
+        const extendedPeriodEnd = new Date(periodStart.setMilliseconds(0) + TRIAL_PERIOD + TRIAL_EXTENSION);
+        stripe.subscriptions.update(stripeSubscriptionId, {
+          trial_end: toEpochSeconds(extendedPeriodEnd)
+        });
+        await r.table('Organization').get(orgId).update({
+          creditCard: getCCFromCustomer(customer),
+          periodEnd: extendedPeriodEnd
         })
-        .delete());
+        // remove the oustanding notifications
+          .do(() => {
+            return r.table('Notification')
+              .getAll(orgId, {index: 'orgId'})
+              .filter({
+                type: TRIAL_EXPIRES_SOON
+              })
+              .delete();
+          });
+      }
+    } else {
+      // 3) Converting after the trial ended
+      // 4) Payment was rejected
+      const quantity = orgUsers.reduce((count, orgUser) => orgUser.inactive ? count : count + 1, 0);
+      const {id: stripeSubscriptionId, current_period_end, current_period_start} = await stripe.subscriptions.create({
+        customer: stripeId,
+        metadata: {
+          orgId
+        },
+        plan: ACTION_MONTHLY,
+        quantity
+      });
+      await r.table('Organization').get(orgId).update({
+        creditCard: getCCFromCustomer(customer),
+        periodEnd: fromEpochSeconds(current_period_end),
+        periodStart: fromEpochSeconds(current_period_start),
+        stripeSubscriptionId
+      })
+        .do(() => {
+          return r.table('Team')
+            .getAll(orgId, {index: 'orgId'})
+            .update({
+              isPaid: true
+            })
+        })
+        .do(() => {
+          return r.table('Notification')
+            .getAll(orgId, {index: 'orgId'})
+            .filter({
+              type: TRIAL_EXPIRED
+            })
+            .delete();
+        });
     }
-    const [customer] = await Promise.all(promises);
-    const orgUpdates = {
-      creditCard: getCCFromCustomer(customer)
-    };
-    if (extendedPeriodEnd !== undefined) {
-      orgUpdates.periodEnd = extendedPeriodEnd;
-    }
-    return await r.table('Organization').get(orgId).update(orgUpdates);
   }
 };

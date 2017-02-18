@@ -13,23 +13,21 @@ export default async function handleInvoiceItemCreated(invoiceItemId) {
     console.warn(`No invoice found for ${invoiceItemId}`)
     return false;
   }
-  console.log('invoice item created2', invoiceItem);
   const {subscription, period: {start}} = invoiceItem;
   const hook = await r.table('InvoiceItemHook')
     .getAll(start, {index: 'prorationDate'})
     .filter({stripeSubscriptionId: subscription})
     .nth(0)
     .default(null);
-  if (!hook) {
-    console.warn(`No hook found in the DB! Need to manually update invoiceItem: ${invoiceItemId}`);
-    return false;
+  if (hook) {
+    const {type, userId} = hook;
+    await stripe.invoiceItems.update(invoiceItemId, {
+      metadata: {
+        type,
+        userId
+      }
+    });
+    return true;
   }
-  const {type, userId} = hook;
-  await stripe.invoiceItems.update(invoiceItemId, {
-    metadata: {
-      type,
-      userId
-    }
-  });
-  return true;
+  return false;
 }

@@ -38,8 +38,9 @@ const mapStateToProps = (state, props) => {
 
 const UnpaidTeamModalContainer = (props) => {
   const {closeAfter, isClosing, router, teamName, orgDetails, myUserId} = props;
-  const {creditCard: {brand}, billingLeaders, name: orgName, id: orgId} = orgDetails;
+  const {creditCard, billingLeaders, name: orgName, id: orgId} = orgDetails;
   if (billingLeaders.length === 0) return null;
+  const brand = creditCard && creditCard.brand;
 
   const billingLeaderName = billingLeaders[0].preferredName;
   const isALeader = billingLeaders.findIndex((leader) => leader.id === myUserId) !== -1;
