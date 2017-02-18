@@ -32,24 +32,24 @@ const OrgBilling = (props) => {
       {activeTrial && <ActiveTrialCallOut periodEnd={periodEnd} orgId={orgId}/>}
       {expiredTrial && <ExpiredTrialCallOut periodEnd={periodEnd} orgId={orgId}/>}
       {!activeTrial && !expiredTrial &&
-      <Panel label="Credit Card Information">
-        <div className={css(styles.infoAndUpdate)}>
-          <div className={css(styles.creditCardInfo)}>
-            <FontAwesome className={css(styles.creditCardIcon)} name="credit-card"/>
-            <span className={css(styles.creditCardProvider)}>{brand || '???'}</span>
-            <span className={css(styles.creditCardNumber)}>•••• •••• •••• {last4 || '••••'}</span>
-            <span className={css(styles.creditCardExpiresLabel)}>Expires</span>
-            <span className={css(styles.expiry)}>{expiry || '??/??'}</span>
+        <Panel label="Credit Card Information">
+          <div className={css(styles.infoAndUpdate)}>
+            <div className={css(styles.creditCardInfo)}>
+              <FontAwesome className={css(styles.creditCardIcon)} name="credit-card"/>
+              <span className={css(styles.creditCardProvider)}>{brand || '???'}</span>
+              <span className={css(styles.creditCardNumber)}>•••• •••• •••• {last4 || '••••'}</span>
+              <span className={css(styles.creditCardExpiresLabel)}>Expires</span>
+              <span className={css(styles.expiry)}>{expiry || '??/??'}</span>
+            </div>
+            <CreditCardModalContainer isUpdate orgId={orgId} toggle={update}/>
           </div>
-          <CreditCardModalContainer isUpdate orgId={orgId} toggle={update}/>
-        </div>
-      </Panel>
+        </Panel>
       }
       <Panel label="Invoices">
         <div className={css(styles.listOfInvoices)}>
           {!creditCard.brand ?
             <div className={css(styles.noInvoices)}>
-              No invoices yet! Can’t beet free! Eat some beets! Betaine keeps you healthy!
+              No invoices yet! Keep doing good work, and we'll do the accounting.
             </div> :
             invoices.map((invoice, idx) =>
               <InvoiceRow key={`invoiceRow${idx}`} invoice={invoice}/>

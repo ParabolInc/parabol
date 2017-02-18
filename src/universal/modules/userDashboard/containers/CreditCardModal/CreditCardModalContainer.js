@@ -27,13 +27,13 @@ const stripeFieldLookup = {
 };
 
 const cardTypeLookup = {
-  'Visa': 'cc-visa',
-  'MasterCard': 'cc-mastercard',
+  Visa: 'cc-visa',
+  MasterCard: 'cc-mastercard',
   'American Express': 'cc-amex',
-  'Discover': 'cc-discover',
+  Discover: 'cc-discover',
   'Diners Club': 'cc-diners-club',
-  'JCB': 'cc-jcb',
-  'Unknown': 'credit-card'
+  JCB: 'cc-jcb',
+  Unknown: 'credit-card'
 };
 
 const mapStateToProps = (state) => {
@@ -57,7 +57,7 @@ class CreditCardModalContainer extends Component {
     super();
     this.state = {
       cardTypeIcon: 'credit-card'
-    }
+    };
   }
 
   addStripeBilling = async(submittedData) => {
