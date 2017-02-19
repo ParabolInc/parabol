@@ -1,4 +1,4 @@
-import orgGenerator from 'server/__tests__/orgs/orgGenerator.js';
+import orgGenerator from 'server/__tests__/Organization/data/orgGenerator.js';
 import cleanupOrgData from 'server/__tests__/utils/cleanupOrgData';
 import refreshAuthToken from 'server/__tests__/utils/refreshAuthToken';
 import {
