@@ -61,6 +61,7 @@ export default {
     if (extendedPeriodEnd !== undefined) {
       orgUpdates.periodEnd = extendedPeriodEnd;
     }
-    return await r.table('Organization').get(orgId).update(orgUpdates);
+    await r.table('Organization').get(orgId).update(orgUpdates);
+    return true;
   }
 };

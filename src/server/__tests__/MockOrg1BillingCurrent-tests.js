@@ -1,3 +1,4 @@
+import shortid from 'shortid';
 import {
   ORG1_ALL_TEAM_MEMBERS,
   ORG1_BILLING_LEADER,
@@ -12,6 +13,7 @@ import {
 } from './utils/mockAuth0.js';
 import {
   mockStripeCustomersCreate,
+  mockStripeCustomersUpdate,
   mockStripeSubscriptionsCreate,
   mockStripeSubscriptionsUpdate
 } from './utils/mockStripe';
@@ -19,6 +21,7 @@ import signupTeam from './utils/signupTeam';
 import signupTeamLeader from './utils/signupTeamLeader';
 import syncify from './utils/syncify';
 
+import organizationMutation from '../graphql/models/Organization/organizationMutation';
 import teamMutation from '../graphql/models/Team/teamMutation';
 import userMutation from '../graphql/models/User/userMutation';
 import getRethink from '../database/rethinkDriver';
@@ -57,15 +60,42 @@ signupTeam(
   () => refreshAuthToken(ORG1_BILLING_LEADER.id)
 );
 
-describe('signup team corner case', () => {
+describe('signup team error case', () => {
   test('createFirstTeam disallows second team', async() => {
+    // SETUP
     const authToken = await refreshAuthToken(ORG1_BILLING_LEADER.id);
     const {resolve} = teamMutation.createFirstTeam;
     const newTeam = { ...ORG1_TEAM };
+    // TEST
     const syncResolve = await syncify(() =>
       resolve({}, {newTeam}, {authToken})
     );
+    // VERIFY
     expect(syncResolve).toThrow();
+  });
+});
+
+describe('add billing information', () => {
+  test('via organizationMutation.addBilling', async() => {
+    // SETUP
+    const authToken = await refreshAuthToken(ORG1_BILLING_LEADER.id);
+    const r = getRethink();
+    const orgId = await r.table('User').get(ORG1_BILLING_LEADER.id)
+      .do((user) => user('userOrgs').nth(0)('id'));
+    const stripeToken = `tok_${shortid.generate()}`;
+    const socket = jest.fn();
+    const stripeCustomersUpdate = mockStripeCustomersUpdate();
+    const {resolve} = organizationMutation.addBilling;
+    // TEST
+    const result = await resolve({}, {orgId, stripeToken}, {authToken, socket});
+    // VALIDATE
+    expect(result).toBeTruthy();
+    const [stripeId, options] = stripeCustomersUpdate.mock.calls[0];
+    expect(typeof stripeId === 'string').toBeTruthy();
+    expect(stripeId.startsWith('cust_')).toBeTruthy();
+    expect(typeof options === 'object').toBeTruthy();
+    expect(typeof options.source === 'string').toBeTruthy();
+    expect(options.source.startsWith('tok_')).toBeTruthy();
   });
 });
 
