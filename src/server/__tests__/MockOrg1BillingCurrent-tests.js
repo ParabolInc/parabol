@@ -4,7 +4,7 @@ import {
   ORG1_TEAM,
   ORG1_OTHER_TEAM_MEMBERS
 } from './orgs/org1.js';
-import cleanupTeamAndOrg from './utils/cleanupTeamAndOrg';
+import cleanupOrgData from './utils/cleanupOrgData';
 import refreshAuthToken from './utils/refreshAuthToken';
 import {
   mockAuth0AuthenticationClientTokensGetInfo,
@@ -17,23 +17,18 @@ import {
 } from './utils/mockStripe';
 import signupTeam from './utils/signupTeam';
 import signupTeamLeader from './utils/signupTeamLeader';
+import syncify from './utils/syncify';
 
-import getRethink from '../database/rethinkDriver';
 import teamMutation from '../graphql/models/Team/teamMutation';
-
-/*
- * How many rows in the database should this unit test create?
- *
- * This is a sanity check, to make sure tests are updated when the
- * schema changes. If the row count changes, consider adding tests.
- */
-const EXPECTED_ROWS_CREATED = 37;
+import userMutation from '../graphql/models/User/userMutation';
+import getRethink from '../database/rethinkDriver';
 
 mockAuth0AuthenticationClientTokensGetInfo(ORG1_ALL_TEAM_MEMBERS);
 mockAuth0ManagementClientUsersUpdateAppMetadata();
 mockStripeCustomersCreate();
 mockStripeSubscriptionsUpdate();
 mockStripeSubscriptionsCreate();
+console.error = jest.fn();
 
 afterAll(async() => {
   const r = getRethink();
@@ -41,6 +36,20 @@ afterAll(async() => {
 });
 
 signupTeamLeader(ORG1_BILLING_LEADER);
+describe('update user profile', () => {
+  test('update user profile', async() => {
+    const authToken = await refreshAuthToken(ORG1_BILLING_LEADER.id);
+    const expectedName = 'Cpt. America';
+    const {resolve} = userMutation.updateUserProfile;
+    const updatedUser = {
+      id: ORG1_BILLING_LEADER.id,
+      preferredName: expectedName
+    };
+    const result = await resolve({}, {updatedUser}, {authToken});
+    expect(result.id).toBe(ORG1_BILLING_LEADER.id);
+    expect(result.preferredName).toBe(expectedName);
+  });
+});
 signupTeam(
   ORG1_TEAM,
   ORG1_BILLING_LEADER,
@@ -53,16 +62,15 @@ describe('signup team corner case', () => {
     const authToken = await refreshAuthToken(ORG1_BILLING_LEADER.id);
     const {resolve} = teamMutation.createFirstTeam;
     const newTeam = { ...ORG1_TEAM };
-    expect(resolve({}, {newTeam}, {authToken})).toThrow();
+    const syncResolve = await syncify(() =>
+      resolve({}, {newTeam}, {authToken})
+    );
+    expect(syncResolve).toThrow();
   });
 });
 
 if (process.env.NODE_ENV === 'testing') {
-  cleanupTeamAndOrg(
-    ORG1_BILLING_LEADER,
-    ORG1_OTHER_TEAM_MEMBERS,
-    EXPECTED_ROWS_CREATED
-  );
+  cleanupOrgData(ORG1_BILLING_LEADER, ORG1_OTHER_TEAM_MEMBERS);
 }
 
 // TODO:
