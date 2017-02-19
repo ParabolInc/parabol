@@ -20,6 +20,7 @@ exports.up = async(r) => {
     // need index on periodEnd still?
     // r.table('Organization').indexCreate('periodEnd'),
     r.table('Organization').indexCreate('orgUsers', r.row('orgUsers')('id'), {multi: true}),
+    r.table('ProjectHistory').indexCreate('teamMemberId'),
     r.table('Team').indexCreate('orgId'),
     r.table('Notification').indexCreate('orgId'),
     r.table('Notification').indexCreate('userIds', {multi: true}),
@@ -212,6 +213,7 @@ exports.down = async(r) => {
 
   const tables = [
     r.tableDrop('Organization'),
+    r.table('ProjectHistory').indexDrop('teamMemberId'),
     r.tableDrop('Notification'),
     r.table('Team').indexDrop('orgId'),
     // r.table('User').indexDrop('email'),

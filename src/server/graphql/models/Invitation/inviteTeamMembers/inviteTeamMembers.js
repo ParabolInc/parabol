@@ -96,7 +96,7 @@ export default {
       newInvitees.push(validInvitee);
     }
 
-    await reactivateTeamMembers(idsToReactivate, teamId, teamName, exchange);
+    await reactivateTeamMembers(idsToReactivate, teamId, teamName, exchange, userId);
 
     if (newInvitees.length > 0) {
       // if it's a billing leader send them all

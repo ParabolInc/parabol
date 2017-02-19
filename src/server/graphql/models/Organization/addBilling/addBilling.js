@@ -15,7 +15,7 @@ import {fromEpochSeconds} from 'server/utils/epochTime';
 
 export default {
   type: GraphQLBoolean,
-  description: `Add a credit card by passing in a stripe token encoded with all the billing details. 
+  description: `Add a credit card by passing in a stripe token encoded with all the billing details.
   Handles 4 scenarios:
     1) Updating to a new credit card
     2) Adding to extend the free trial
@@ -108,5 +108,6 @@ export default {
             .delete();
         });
     }
+    return true;
   }
 };
