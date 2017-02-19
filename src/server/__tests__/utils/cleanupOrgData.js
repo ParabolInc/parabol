@@ -31,18 +31,21 @@ export default function cleanupTeamAndOrg(teamLeader, teamMembers) {
           )
         }));
 
-      const dbWork = [
-        r.table('Invitation').getAll(...affect.teamIds, {index: 'teamId'}).delete(),
-        r.table('InvoiceItemHook').getAll(...affect.userIds, {index: 'userId'}).delete(),
-        r.table('Notification').getAll(affect.orgId, {index: 'orgId'}).delete(),
-        r.table('Organization').get(affect.orgId).delete(),
-        r.table('Project').getAll(...affect.teamMemberIds, {index: 'teamMemberId'}).delete(),
-        r.table('ProjectHistory').getAll(...affect.teamMemberIds, {index: 'teamMemberId'}).delete(),
-        r.table('Team').getAll(affect.orgId, {index: 'orgId'}).delete(),
-        r.table('TeamMember').getAll(...affect.teamMemberIds).delete(),
-        r.table('User').getAll(...affect.userIds).delete()
-      ];
-      await Promise.all(dbWork);
+      /*
+       * Why not use Promise.all here?
+       *
+       * If and when one of these queries fail, it's much easier to
+       * debug.
+       */
+      await r.table('Invitation').getAll(...affect.teamIds, {index: 'teamId'}).delete();
+      await r.table('InvoiceItemHook').getAll(...affect.userIds, {index: 'userId'}).delete();
+      await r.table('Notification').getAll(affect.orgId, {index: 'orgId'}).delete();
+      await r.table('Organization').get(affect.orgId).delete();
+      await r.table('Project').getAll(...affect.teamMemberIds, {index: 'teamMemberId'}).delete();
+      await r.table('ProjectHistory').getAll(...affect.teamMemberIds, {index: 'teamMemberId'}).delete();
+      await r.table('Team').getAll(affect.orgId, {index: 'orgId'}).delete();
+      await r.table('TeamMember').getAll(...affect.teamMemberIds).delete();
+      await r.table('User').getAll(...affect.userIds).delete();
 
       const numTeamMembers = teamMembers.length + 1;
       expect(affect.userIds.length).toBe(numTeamMembers);
