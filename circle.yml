@@ -47,16 +47,16 @@ stages:
         command: npm run db:migrate
 
       - type: shell
-        name: NPM lint
-        command: npm run lint
-
-      - type: shell
         name: NPM run test
         command: |
           mkdir -p $TEST_REPORT_PATH &&
           npm run test
         environment:
           - TEST_REPORT_PATH: "/home/ubuntu/test-reports/junit"
+
+      - type: shell
+        name: NPM lint
+        command: npm run lint
 
       - type: shell
         name: Pre-build DevOps checkout
