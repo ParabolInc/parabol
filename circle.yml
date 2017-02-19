@@ -44,13 +44,12 @@ stages:
 
       - type: shell
         name: Database migration
-        command: npm run db:migrate
+        command: npm run db:migrate-testing
 
       - type: shell
         name: NPM run test
         command: |
           mkdir -p $TEST_REPORT_PATH &&
-          npm run db:migrate-testing &&
           npm run test
         environment:
           - TEST_REPORT_PATH: "/home/ubuntu/test-reports/junit"
