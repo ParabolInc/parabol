@@ -50,6 +50,7 @@ stages:
         name: NPM run test
         command: |
           mkdir -p $TEST_REPORT_PATH &&
+          npm run db:migrate-testing &&
           npm run test
         environment:
           - TEST_REPORT_PATH: "/home/ubuntu/test-reports/junit"
