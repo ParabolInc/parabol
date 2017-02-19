@@ -18,10 +18,10 @@ const OrgBilling = (props) => {
     org
   } = props;
   const {creditCard, id: orgId, periodEnd} = org;
-  const {brand = '???', last4 = '••••', expiry = '???'} = creditCard;
+  const {brand = '???', last4 = '••••', expiry = '???'} = creditCard || {};
   const now = new Date();
-  const activeTrial = !creditCard.brand && periodEnd > now;
-  const expiredTrial = !creditCard.brand && periodEnd <= now;
+  const activeTrial = !creditCard && periodEnd > now;
+  const expiredTrial = !creditCard && periodEnd <= now;
   const update = <Button
     colorPalette="cool"
     label="Update"
@@ -47,7 +47,7 @@ const OrgBilling = (props) => {
       }
       <Panel label="Invoices">
         <div className={css(styles.listOfInvoices)}>
-          {!creditCard.brand ?
+          {!creditCard ?
             <div className={css(styles.noInvoices)}>
               No invoices yet! Keep doing good work, and we'll do the accounting.
             </div> :

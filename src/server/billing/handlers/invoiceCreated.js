@@ -40,7 +40,6 @@ export default async function handleInvoiceCreated(invoiceId) {
     stripeLineItems.push(...invoiceLines.data);
     if (!invoiceLines.has_more) break;
   }
-
   const invoiceLineItems = [];
   const detailedLineItems = {
     // [ADDED_USERS]: [],
@@ -84,7 +83,6 @@ export default async function handleInvoiceCreated(invoiceId) {
     dict[doc.id] = doc.email;
     return dict;
   }, {});
-
 
   for (let i = 0; i < userIds.length; i++) {
     const userId = userIds[i];
@@ -160,7 +158,6 @@ export default async function handleInvoiceCreated(invoiceId) {
       })
     }
   }
-
   const invoice = await stripe.invoices.retrieve(invoiceId);
   const customer = await stripe.customers.retrieve(invoice.customer);
   if (invoice.starting_balance !== 0) {
@@ -176,8 +173,8 @@ export default async function handleInvoiceCreated(invoiceId) {
     id: invoiceId,
     amount: invoice.total,
     invoiceDate: fromEpochSeconds(invoice.date),
-    startAt: fromEpochSeconds(invoice.current_period_start),
-    endAt: fromEpochSeconds(invoice.current_period_end),
+    startAt: fromEpochSeconds(invoice.period_start),
+    endAt: fromEpochSeconds(invoice.period_end),
     lines: invoiceLineItems,
     orgId
   });

@@ -24,6 +24,7 @@ export default async function createNewOrg(orgId, orgName, leaderUserId, stripeT
       orgId
     },
     plan: ACTION_MONTHLY,
+    quantity: 1,
     // if a payment token is provided, this isn't a trial
     trial_period_days: stripeToken ? 0 : TRIAL_PERIOD_DAYS
   });
