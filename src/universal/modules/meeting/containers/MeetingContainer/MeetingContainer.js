@@ -15,6 +15,7 @@ import LoadingView from 'universal/components/LoadingView/LoadingView';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingLobby from 'universal/modules/meeting/components/MeetingLobby/MeetingLobby';
 import MeetingCheckin from 'universal/modules/meeting/components/MeetingCheckin/MeetingCheckin';
+import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton';
 import MeetingUpdatesContainer
   from '../MeetingUpdates/MeetingUpdatesContainer';
 import AvatarGroup from 'universal/modules/meeting/components/AvatarGroup/AvatarGroup';
@@ -233,28 +234,13 @@ export default class MeetingContainer extends Component {
       agenda,
       isFacilitating,
       members,
-      params: {localPhase, localPhaseItem, teamId},
-      dispatch,
+      params: {localPhase, teamId},
       router,
       team
     } = this.props;
-    const {meetingPhase, facilitatorPhase, facilitatorPhaseItem} = team;
+    const {meetingPhase} = team;
     let nextPhase;
     let nextPhaseItem;
-    const inSync = isFacilitating ? true :
-      localPhase + localPhaseItem === facilitatorPhase + facilitatorPhaseItem;
-    if (!inSync) {
-      dispatch(showInfo({
-        title: 'You have diverged from the facilitator!',
-        action: {
-          label: 'Rejoin facilitator',
-          callback: () => {
-            const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
-            router.push(pushURL);
-          }
-        }
-      }));
-    }
     // if it's a link on the sidebar
     if (maybeNextPhase) {
       // if we click the Agenda link on the sidebar and we're already past that, goto the next reasonable area
@@ -324,9 +310,21 @@ export default class MeetingContainer extends Component {
   gotoPrev = () => this.gotoItem(this.props.localPhaseItem - 1);
 
   render() {
-    const {agenda, isFacilitating, localPhaseItem, members, params, team} = this.props;
-    const {teamId, localPhase} = params;
-    const {facilitatorPhase, meetingPhase, meetingPhaseItem, name: teamName} = team;
+    const {
+      agenda,
+      isFacilitating,
+      members,
+      params: { teamId, localPhase, localPhaseItem },
+      team,
+      router
+    } = this.props;
+    const {
+      facilitatorPhase,
+      facilitatorPhaseItem,
+      meetingPhase,
+      meetingPhaseItem,
+      name: teamName
+    } = team;
     const agendaPhaseItem = meetingPhase === AGENDA_ITEMS && meetingPhaseItem || 0;
     // if we have a team.name, we have an initial subscription success to the team object
     if (!teamName ||
@@ -334,6 +332,13 @@ export default class MeetingContainer extends Component {
       || ((localPhase === CHECKIN || localPhase === UPDATES) && members.length < localPhaseItem)) {
       return <LoadingView />;
     }
+
+    const inSync = isFacilitating ? true :
+      localPhase + localPhaseItem === facilitatorPhase + facilitatorPhaseItem;
+    const rejoinFacilitator = () => {
+      const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
+      router.push(pushURL);
+    };
 
     const phaseStateProps = { // DRY
       localPhaseItem,
@@ -376,6 +381,9 @@ export default class MeetingContainer extends Component {
               gotoNext={this.gotoNext}
               isFacilitating={isFacilitating}
             />
+          }
+          {!inSync &&
+            <RejoinFacilitatorButton onClickHandler={rejoinFacilitator}/>
           }
         </MeetingMain>
       </MeetingLayout>
