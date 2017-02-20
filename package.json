@@ -27,7 +27,6 @@
     "build:server": "NODE_ENV=production webpack --config ./webpack/server.babel.js",
     "db:migrate": "./src/server/database/migrate.sh up-all",
     "test": "NODE_ENV=testing ava ./src/**/__tests__/**/*-tests.js --verbose",
-    "test:xunit": "NODE_ENV=testing ava ./src/**/__tests__/**/*-tests.js --tap | tap-xunit",
     "db:migrate-up": "./src/server/database/migrate.sh up",
     "db:migrate-up-all": "npm run db:migrate",
     "db:migrate-down": "./src/server/database/migrate.sh down",
