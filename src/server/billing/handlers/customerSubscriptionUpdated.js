@@ -8,7 +8,7 @@ import terminateSubscription from 'server/billing/helpers/terminateSubscription'
  * Used as a pseudo hook for trial ending. We could use payment_failed, but that hook is sent 1 hr after this one
  */
 
-export default async function handleSubscriptionUpdated(subscriptionId, oldStatus) {
+export default async function customerSubscriptionUpdated(subscriptionId, oldStatus) {
   const r = getRethink();
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
   const {metadata: {orgId}, status} = subscription;

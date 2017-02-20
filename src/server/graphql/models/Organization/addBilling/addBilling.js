@@ -12,6 +12,23 @@ import {toEpochSeconds} from 'server/utils/epochTime';
 import getCCFromCustomer from 'server/graphql/models/Organization/addBilling/getCCFromCustomer';
 import {ACTION_MONTHLY} from 'server/utils/serverConstants';
 import {fromEpochSeconds} from 'server/utils/epochTime';
+import {errorObj} from 'server/utils/utils';
+
+const tryNewSubscription = async (stripeId, orgId, quantity) => {
+  try {
+    // this will fail if the payment method is rejected (test card: 4000000000000341)
+    return await stripe.subscriptions.create({
+      customer: stripeId,
+      metadata: {
+        orgId
+      },
+      plan: ACTION_MONTHLY,
+      quantity
+    });
+  } catch(e) {
+    throw errorObj({_error: e.message})
+  }
+};
 
 export default {
   type: GraphQLBoolean,
@@ -76,16 +93,10 @@ export default {
       }
     } else {
       // 3) Converting after the trial ended
-      // 4) Payment was rejected
+      // 4) Payment was rejected and they're adding a new source
       const quantity = orgUsers.reduce((count, orgUser) => orgUser.inactive ? count : count + 1, 0);
-      const {id: stripeSubscriptionId, current_period_end, current_period_start} = await stripe.subscriptions.create({
-        customer: stripeId,
-        metadata: {
-          orgId
-        },
-        plan: ACTION_MONTHLY,
-        quantity
-      });
+      const subscription = await tryNewSubscription(stripeId, orgId, quantity);
+      const {id: stripeSubscriptionId, current_period_end, current_period_start} = subscription;
       await r.table('Organization').get(orgId).update({
         creditCard: getCCFromCustomer(customer),
         periodEnd: fromEpochSeconds(current_period_end),

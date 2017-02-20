@@ -7,7 +7,7 @@ import terminateSubscription from 'server/billing/helpers/terminateSubscription'
 /*
  * Used for failed payments that are not trialing. Trialing orgs will not have a CC
  */
-export default async function handleFailedPayment(subscriptionId) {
+export default async function paymentFailed(subscriptionId) {
   const r = getRethink();
   const now = new Date();
 
