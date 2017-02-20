@@ -44,11 +44,7 @@ stages:
 
       - type: shell
         name: Database migration
-        command: npm run db:migrate
-
-      - type: shell
-        name: NPM lint
-        command: npm run lint
+        command: npm run db:migrate-testing
 
       - type: shell
         name: NPM run test
@@ -57,6 +53,10 @@ stages:
           npm run test
         environment:
           - TEST_REPORT_PATH: "/home/ubuntu/test-reports/junit"
+
+      - type: shell
+        name: NPM lint
+        command: npm run lint
 
       - type: shell
         name: Pre-build DevOps checkout

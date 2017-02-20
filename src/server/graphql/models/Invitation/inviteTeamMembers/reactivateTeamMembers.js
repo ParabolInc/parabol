@@ -1,7 +1,7 @@
 import getRethink from 'server/database/rethinkDriver';
 import {ADD_TO_TEAM, REJOIN_TEAM, PRESENCE, USER_MEMO} from 'universal/subscriptions/constants'
 
-export default async function reactivateTeamMembers(idsToReactivate, teamId, teamName, exchange) {
+export default async function reactivateTeamMembers(idsToReactivate, teamId, teamName, exchange, sender) {
   if (idsToReactivate.length > 0) {
     const r = getRethink();
     const userIdsToReactivate = idsToReactivate.map((teamMemberId) => {
@@ -28,7 +28,7 @@ export default async function reactivateTeamMembers(idsToReactivate, teamId, tea
       exchange.publish(channel, {
         type: REJOIN_TEAM,
         name: preferredName,
-        sender: userId
+        sender
       });
     });
   }

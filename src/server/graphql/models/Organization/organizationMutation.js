@@ -23,7 +23,7 @@ import {
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import {GraphQLURLType} from '../../types';
 import shortid from 'shortid';
-import addOrg from 'server/graphql/models/Organization/addOrg/addOrg'
+import addOrg from 'server/graphql/models/Organization/addOrg/addOrg';
 import addBilling from 'server/graphql/models/Organization/addBilling/addBilling';
 import updateOrg from 'server/graphql/models/Organization/updateOrg/updateOrg';
 import rejectOrgApproval from 'server/graphql/models/Organization/rejectOrgApproval/rejectOrgApproval';
@@ -55,7 +55,7 @@ export default {
       const firstOrgUser = orgDocs[0].orgUsers.find((orgUser) => orgUser.id === userId);
       if (!firstOrgUser) {
         // no userOrgs means there were no changes, which means inactive was already true
-        throw errorObj({_error: `That user is already inactive. cannot inactivate twice`})
+        throw errorObj({_error: 'That user is already inactive. cannot inactivate twice'});
       }
       const hookPromises = orgDocs.map((orgDoc) => {
         const {periodStart, periodEnd, stripeSubscriptionId} = orgDoc;

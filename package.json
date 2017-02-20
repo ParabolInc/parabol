@@ -60,6 +60,7 @@
     "babel-preset-react": "6.16.0",
     "babel-preset-stage-0": "^6.22.0",
     "babel-register": "6.18.0",
+    "chance": "^1.0.4",
     "concurrently": "2.2.0",
     "eslint": "^3.10.2",
     "eslint-config-airbnb": "^9.0.1",
