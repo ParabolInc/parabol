@@ -2,7 +2,8 @@ const ignorePatterns = [
   '\\/\\.',
   '~$',
   '\\.json$',
-  'src/server/database/migrations/.*$'
+  'src/server/database/migrations/.*$',
+  'debug'
 ];
 
 const ignoreRegexp = new RegExp(ignorePatterns.join('|'), 'i');

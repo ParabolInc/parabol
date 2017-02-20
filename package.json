@@ -21,6 +21,7 @@
     "build:deploy": "rimraf build && npm run build:server && npm run build:client-deploy",
     "build:min": "rimraf build && concurrently \"npm run build:client-min\" \"npm run build:server\"",
     "bs": "npm run build && npm start",
+    "debug:stripe": "node ./src/server/billing/debug.babel.js",
     "quickstart": "npm run db:migrate && npm run build && npm run start",
     "build:client": "NODE_ENV=production webpack --config ./webpack/prod.babel.js",
     "build:dll": "NODE_ENV=production webpack --config ./webpack/webpack.config.dll.js",

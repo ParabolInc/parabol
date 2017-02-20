@@ -36,7 +36,7 @@ export default async function handleSubscriptionUpdated(subscriptionId, oldStatu
       .do(() => {
         return r.table('Notification')
           .getAll(orgId, {index: 'orgId'})
-          .filter({TRIAL_EXPIRES_SOON})
+          .filter({type: TRIAL_EXPIRES_SOON})
           .delete()
       })
   }

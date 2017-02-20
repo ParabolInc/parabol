@@ -43,7 +43,7 @@ const mapStateToProps = (state) => {
     op: 'dashLayoutContainer',
     resolveCached: {
       teams: () => () => true,
-      trialNotification: () => (doc) => doc.type === TRIAL_EXPIRED || doc.type === TRIAL_EXPIRES_SOON
+      trialNotification: () => (doc) => (doc.type === TRIAL_EXPIRED || doc.type === TRIAL_EXPIRES_SOON) && doc.startAt < new Date()
     },
     sort: {
       teams: (a, b) => a.name > b.name ? 1 : -1
