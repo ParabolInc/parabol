@@ -12,7 +12,9 @@ const UNSET_NEXT_URL = '@@authToken/UNSET_NEXT_URL';
 export const DEFAULT_AUTH_REDUCER_NAME = 'auth';
 
 const initialState = {
-  token: null,
+  // next URL to navigate to after authenticating:
+  nextUrl: null,
+  // parsed jwt token:
   obj: {
     // nextUrl, rol, and tms are not guaranteed
     aud: null,
@@ -20,30 +22,42 @@ const initialState = {
     iat: null,
     iss: null,
     sub: null,
-  }
+  },
+  // Raw jwt token:
+  token: null
 };
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
     case SET_AUTH_TOKEN: {
       const {obj, token} = action.payload;
-      const newState = {obj, token};
-      newState.obj.nextUrl = state.obj.nextUrl;
-      return newState;
+      return {
+        ...state,
+        obj,
+        token
+      };
     }
     case REMOVE_AUTH_TOKEN: {
-      const newState = initialState;
-      newState.obj.nextUrl = state.obj.nextUrl;
-      return newState;
+      const {nextUrl} = state;
+      return {
+        ...initialState,
+        nextUrl
+      };
     }
     case SET_NEXT_URL: {
       const {nextUrl} = action.payload;
-      state.obj.nextUrl = nextUrl;
-      return state;
+      return {
+        ...state,
+        nextUrl
+      };
     }
     case UNSET_NEXT_URL: {
-      state.obj.nextUrl = null;
-      return state;
+      const {obj, token} = state;
+      return {
+        ...initialState,
+        obj,
+        token
+      };
     }
     default:
       return state;

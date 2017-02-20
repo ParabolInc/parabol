@@ -42,13 +42,37 @@ export default (role, {
       location: PropTypes.object
     };
 
+    componentWillMount() {
+      this.handleAuthChange(this.props);
+    }
+
+    componentWillReceiveProps(nextProps) {
+      const {auth: {sub: prevSub}} = this.props;
+      const {auth: {sub: nextSub}} = nextProps;
+      if (prevSub !== nextSub) {
+        this.handleAuthChange(nextProps);
+      }
+    }
+
+    handleAuthChange(props) {
+      const {auth, dispatch, location: {pathname}} = props;
+
+      if (auth.sub) {
+        if (role && !(auth.sub && auth.rol === role) && !silent) {
+          dispatch(showError(unauthenticated));
+        }
+      } else {
+        // no legit authToken
+        if (!silent) {
+         // squak about it:
+          dispatch(showError(unauthorized));
+        }
+        dispatch(setNextUrl(pathname));
+      }
+    }
+
     render() {
-      const {
-        auth,
-        dispatch,
-        router,
-        location: { pathname }
-      } = this.props;
+      const {auth, router} = this.props;
       if (auth === undefined) {
         throw new Error('Auth token undefined. Did you put @connect on your component?');
       }
@@ -57,16 +81,9 @@ export default (role, {
           // We had a role to check, and role checks out:
           return <ComposedComponent {...this.props} />;
         }
-        if (!silent) {
-          dispatch(showError(unauthenticated));
-        }
       } else if (auth.sub) {
         // We were looking for any authenticated user only:
         return <ComposedComponent {...this.props} />;
-      } else if (!silent) {
-        // no legit authToken to be had & squak about it:
-        dispatch(showError(unauthorized));
-        dispatch(setNextUrl(pathname));
       }
       router.push(redirect);
       return null;
