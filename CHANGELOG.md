@@ -4,6 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.15.3 - 11-Feb-2017
+### Added
+- OutcomeCard components (Projects, Action) now re-render their last-updated
+  time on a smart timer
+### Fixed
+- Generate 'Meeting Completed' on server-side, client was not reliably
+  sending this event
+
 ## v0.15.2 - 01-Feb-2017
 ### Fixed
 - Incremented `package.json` version to match tag – oops!

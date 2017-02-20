@@ -68,6 +68,7 @@ export function setAuthToken(authToken, newProfile, reducerName = DEFAULT_AUTH_R
   return (dispatch, getState) => {
     const cachedProfile = selectSegmentProfile(getState(), reducerName);
     const profile = newProfile || cachedProfile;
+    const meta = { };
 
     if (!authToken) {
       throw new Error('setAuthToken action created with undefined authToken');
@@ -77,6 +78,22 @@ export function setAuthToken(authToken, newProfile, reducerName = DEFAULT_AUTH_R
       obj = jwtDecode(authToken);
     } catch (e) {
       throw new Error(`unable to decode jwt: ${e}`);
+    }
+    if (newProfile) {
+      Object.assign(meta, {
+        analytics: {
+          eventType: EventTypes.identify,
+          eventPayload: {
+            userId: obj.sub,
+            traits: {
+              avatar: profile.picture,
+              createdAt: profile.created_at,
+              email: profile.email,
+              name: profile.name
+            }
+          }
+        }
+      });
     }
 
     cashay.create({httpTransport: new ActionHTTPTransport(authToken)});
@@ -97,20 +114,7 @@ export function setAuthToken(authToken, newProfile, reducerName = DEFAULT_AUTH_R
         obj,
         token: authToken
       },
-      meta: {
-        analytics: {
-          eventType: EventTypes.identify,
-          eventPayload: {
-            userId: obj.sub,
-            traits: {
-              avatar: profile.picture,
-              createdAt: profile.created_at,
-              email: profile.email,
-              name: profile.name
-            }
-          }
-        }
-      }
+      meta
     });
   };
 }
