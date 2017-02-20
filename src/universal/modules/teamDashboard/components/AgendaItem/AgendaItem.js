@@ -3,7 +3,9 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import tinycolor from 'tinycolor2';
 import FontAwesome from 'react-fontawesome';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
+import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 import Avatar from 'universal/components/Avatar/Avatar';
 import voidClick from 'universal/utils/voidClick';
 import {DragSource as dragSource} from 'react-dnd';
@@ -18,7 +20,17 @@ const projectSource = {
 };
 
 const AgendaItem = props => {
-  const {agendaItem, connectDragSource, idx, handleRemove, agendaPhaseItem, gotoAgendaItem, styles} = props;
+  const {
+    agendaItem,
+    canNavigate,
+    connectDragSource,
+    disabled,
+    idx,
+    handleRemove,
+    agendaPhaseItem,
+    gotoAgendaItem,
+    styles
+  } = props;
   const {content, isComplete, teamMember = {}} = agendaItem;
   const isCurrent = idx + 1 === agendaPhaseItem;
   const canDelete = !isComplete && !isCurrent;
@@ -26,24 +38,30 @@ const AgendaItem = props => {
   const handleGoto = isMeeting ? gotoAgendaItem : voidClick;
   const rootStyles = css(
     styles.root,
-    // styles[status],
     isCurrent && styles.itemActive,
-    isComplete && styles.processed
+    isComplete && styles.processed,
+    disabled && styles.rootDisabled
   );
   const contentStyles = css(
+    styles.link,
+    isComplete && styles.strikethrough,
+    canNavigate && styles.canNavigate,
     isCurrent && styles.descActive,
-    isComplete && styles.strikethrough
+  );
+  const delStyles = css(
+    styles.del,
+    styles.delDisabled
   );
   return connectDragSource(
     <div className={rootStyles} title={content}>
       {canDelete &&
-        <div className={css(styles.del)} onClick={handleRemove}>
+        <div className={delStyles} onClick={handleRemove}>
           <FontAwesome name="times-circle" style={{lineHeight: 'inherit'}}/>
         </div>
       }
       <div className={css(styles.index)}>{idx + 1}.</div>
       <div className={css(styles.content)} onClick={handleGoto}>
-        <a className={contentStyles} >{content}</a>”
+        <a className={contentStyles}>{content}</a>”
       </div>
       <div className={css(styles.author)}>
         <Avatar hasBadge={false} picture={teamMember.picture} size="smallest"/>
@@ -54,20 +72,15 @@ const AgendaItem = props => {
 
 AgendaItem.propTypes = {
   agendaPhaseItem: PropTypes.number,
+  canNavigate: PropTypes.bool,
   connectDragSource: PropTypes.func.isRequired,
   content: PropTypes.string,
+  disabled: PropTypes.bool,
   idx: PropTypes.number,
   isCurrent: PropTypes.bool,
   isComplete: PropTypes.bool,
   gotoAgendaItem: PropTypes.func,
   handleRemove: PropTypes.func,
-  // status: PropTypes.oneOf([
-  //   'active',
-  //   'onDrag',
-  //   'onHover',
-  //   'processed',
-  //   'waiting'
-  // ]),
   styles: PropTypes.object,
   teamMember: PropTypes.object
 };
@@ -103,6 +116,15 @@ const styleThunk = () => ({
     }
   },
 
+  rootDisabled: {
+    ':hover': {
+      backgroundColor: 'transparent'
+    },
+    ':focus': {
+      backgroundColor: 'transparent'
+    }
+  },
+
   del: {
     ...block,
     color: appTheme.palette.dark,
@@ -115,6 +137,10 @@ const styleThunk = () => ({
     transition: 'opacity .1s ease-in'
   },
 
+  delDisabled: {
+    opacity: '0 !important'
+  },
+
   content: {
     ...inlineBlock,
     fontFamily: appTheme.typography.serif,
@@ -123,7 +149,7 @@ const styleThunk = () => ({
     fontWeight: 700,
     padding: '0 2rem 0 0',
     position: 'relative',
-    cursor: 'pointer',
+    // cursor: 'pointer',
     width: '10.5rem',
 
     '::before': {
@@ -134,6 +160,13 @@ const styleThunk = () => ({
       textAlign: 'right',
       width: '1rem'
     }
+  },
+
+  link: {
+    ...makeHoverFocus({
+      color: ui.linkColor,
+      textDecoration: 'none'
+    })
   },
 
   itemActive: {
@@ -175,21 +208,25 @@ const styleThunk = () => ({
 
     ':hover': {
       opacity: '1'
-    },
-    ':focus': {
-      opacity: '1'
     }
   },
 
   strikethrough: {
     textDecoration: 'line-through',
 
-    ':hover': {
+    ...makeHoverFocus({
+      textDecoration: 'line-through'
+    })
+  },
+
+  canNavigate: {
+    color: ui.linkColor,
+
+    ...makeHoverFocus({
+      color: ui.linkColorHover,
+      cursor: 'pointer',
       textDecoration: 'underline'
-    },
-    ':focus': {
-      textDecoration: 'underline'
-    }
+    }),
   }
 });
 

@@ -16,13 +16,13 @@ query {
       id
       picture
       preferredName
-    } 
+    }
   },
   myTeamMember @cached(type: "TeamMember") {
     id
     picture
     preferredName
-  }  
+  }
 }`;
 
 const mutationHandlers = {
@@ -54,11 +54,21 @@ const mapStateToProps = (state, props) => {
 };
 
 const AgendaListAndInputContainer = (props) => {
-  const {agendaPhaseItem, agenda, gotoItem, myTeamMember, teamId} = props;
+  const {
+    agendaPhaseItem,
+    agenda,
+    context,
+    disabled,
+    gotoItem,
+    myTeamMember,
+    teamId
+  } = props;
   return (
     <AgendaListAndInput
       agenda={agenda}
       agendaPhaseItem={agendaPhaseItem}
+      context={context}
+      disabled={disabled}
       gotoItem={gotoItem}
       myTeamMember={myTeamMember}
       teamId={teamId}
@@ -69,6 +79,11 @@ const AgendaListAndInputContainer = (props) => {
 AgendaListAndInputContainer.propTypes = {
   agenda: PropTypes.array,
   agendaPhaseItem: PropTypes.number,
+  context: PropTypes.oneOf([
+    'dashboard',
+    'meeting'
+  ]),
+  disabled: PropTypes.bool,
   gotoItem: PropTypes.func.isRequired,
   myTeamMember: PropTypes.object,
   teamId: PropTypes.string

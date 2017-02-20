@@ -5,7 +5,7 @@ import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
-import {CHECKIN, UPDATES, FIRST_CALL, SUMMARY, phaseArray} from 'universal/utils/constants';
+import {CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY, phaseArray} from 'universal/utils/constants';
 import makeHref from 'universal/utils/makeHref';
 import {Link} from 'react-router';
 import AgendaListAndInputContainer from 'universal/modules/teamDashboard/containers/AgendaListAndInput/AgendaListAndInputContainer';
@@ -31,6 +31,10 @@ const Sidebar = (props) => {
   const checkInNavItemStyles = css(styles.navListItem, facilitatorPhase === CHECKIN && styles.navListItemMeetingMarker);
   const updatesNavItemStyles = css(styles.navListItem, facilitatorPhase === UPDATES && styles.navListItemMeetingMarker);
   const requestsNavItemStyles = css(styles.navListItem, inAgendaGroup(facilitatorPhase) && styles.navListItemMeetingMarker);
+  const agendaListCanNavigate =
+    localPhase === UPDATES || localPhase === AGENDA_ITEMS || localPhase === FIRST_CALL || localPhase === LAST_CALL;
+  const agendaListContext = agendaListCanNavigate ? 'meeting' : 'dashboard';
+  const agendaListDisabled = localPhase === CHECKIN;
 
   return (
     <div className={css(styles.sidebar)}>
@@ -86,10 +90,12 @@ const Sidebar = (props) => {
             </li>
           }
         </ul>
-        {localPhase !== CHECKIN && localPhase !== SUMMARY &&
+        {localPhase !== SUMMARY &&
           <div className={css(styles.agendaListBlock)}>
             <AgendaListAndInputContainer
               agendaPhaseItem={agendaPhaseItem}
+              context={agendaListContext}
+              disabled={agendaListDisabled}
               gotoItem={gotoItem}
               teamId={teamId}
             />
