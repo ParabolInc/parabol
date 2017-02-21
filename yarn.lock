@@ -2489,9 +2489,9 @@ eslint-plugin-import@^1.12.0:
     pkg-dir "^1.0.0"
     pkg-up "^1.0.0"
 
-eslint-plugin-jest@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-1.0.2.tgz#372f03f9beb00f908da126c22aef7262815f35e8"
+eslint-plugin-jest@^19.0.0:
+  version "19.0.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-19.0.0.tgz#edb9b278d441e330f6b50b50178b8dd807e429da"
 
 eslint-plugin-react@5.2.2:
   version "5.2.2"
