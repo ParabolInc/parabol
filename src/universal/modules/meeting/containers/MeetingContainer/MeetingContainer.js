@@ -320,7 +320,6 @@ export default class MeetingContainer extends Component {
       || ((localPhase === CHECKIN || localPhase === UPDATES) && members.length < localPhaseItem)) {
       return <LoadingView />;
     }
-
     const phaseStateProps = { // DRY
       localPhaseItem,
       members,
@@ -333,6 +332,8 @@ export default class MeetingContainer extends Component {
           facilitatorPhase={facilitatorPhase}
           gotoItem={this.gotoItem}
           localPhase={localPhase}
+          isFacilitating={isFacilitating}
+          meetingPhase={meetingPhase}
           teamName={teamName}
           teamId={teamId}
         />
