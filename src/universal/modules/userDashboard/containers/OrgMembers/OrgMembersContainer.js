@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
@@ -68,6 +68,14 @@ const OrgMembersContainer = (props) => {
       users={users}
     />
   );
+};
+
+OrgMembersContainer.propTypes = {
+  billingLeaderCount: PropTypes.number,
+  dispatch: PropTypes.func,
+  myUserId: PropTypes.string,
+  org: PropTypes.object,
+  users: PropTypes.array,
 };
 
 export default connect(mapStateToProps)(OrgMembersContainer);

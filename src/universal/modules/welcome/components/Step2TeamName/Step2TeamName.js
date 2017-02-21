@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react';
 import InputField from 'universal/components/InputField/InputField';
-import appTheme from 'universal/styles/theme/appTheme';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
@@ -24,7 +23,7 @@ const validate = (values) => {
 const Step2TeamName = (props) => {
   const {error, dispatch, handleSubmit, preferredName, styles, submitting, teamName} = props;
   const onTeamNameSubmit = async(submissionData) => {
-    const {data: {teamName}} = step2Validation()(submissionData);
+    const {data: {teamName: normalizedTeamName}} = step2Validation()(submissionData);
     const teamId = shortid.generate();
     const teamMemberId = shortid.generate();
     dispatch(setWelcomeTeam({teamId, teamMemberId}));
@@ -32,13 +31,13 @@ const Step2TeamName = (props) => {
       variables: {
         newTeam: {
           id: teamId,
-          name: teamName
+          name: normalizedTeamName
         }
       }
     };
     // createFirstTeam returns a new JWT with a new tms field
-    const {data: {createFirstTeam: newToken}, error} = await cashay.mutate('createFirstTeam', options);
-    if (error) throw SubmissionError(error);
+    const {data: {createFirstTeam: newToken}, error: cashayError} = await cashay.mutate('createFirstTeam', options);
+    if (cashayError) throw new SubmissionError(cashayError);
     dispatch(updateCompleted(2));
     dispatch(nextPage());
     dispatch(setAuthToken(newToken));
@@ -70,10 +69,13 @@ const Step2TeamName = (props) => {
 };
 
 Step2TeamName.propTypes = {
+  error: PropTypes.string,
   dispatch: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func,
   onSubmit: PropTypes.func,
   preferredName: PropTypes.string.isRequired,
+  styles: PropTypes.object,
+  submitting: PropTypes.bool,
   teamName: PropTypes.string,
   user: PropTypes.object,
   completed: PropTypes.number

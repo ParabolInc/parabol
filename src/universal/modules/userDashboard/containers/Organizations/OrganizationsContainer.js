@@ -15,7 +15,7 @@ query {
 }
 `;
 
-const mapStateToProps = (state, props) => {
+const mapStateToProps = (state) => {
   const userId = state.auth.obj.sub;
   const {ownedOrganizations: organizations} = cashay.query(teamProjectsHeaderQuery, {
     op: 'organizationsContainer',
@@ -37,6 +37,10 @@ const OrganizationsContainer = (props) => {
   return (
     <Organizations organizations={organizations}/>
   );
+};
+
+OrganizationsContainer.propTypes = {
+  organizations: PropTypes.array
 };
 
 export default connect(mapStateToProps)(OrganizationsContainer);

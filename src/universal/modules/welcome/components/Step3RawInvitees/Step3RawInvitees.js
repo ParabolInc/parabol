@@ -74,7 +74,8 @@ Step3RawInvitees.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   invitees: PropTypes.array,
   inviteesRaw: PropTypes.string,
-  untouch: PropTypes.func.isRequired
+  untouch: PropTypes.func.isRequired,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

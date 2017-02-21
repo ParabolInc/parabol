@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
@@ -58,6 +58,11 @@ const OrgBillingContainer = (props) => {
       org={org}
     />
   );
+};
+
+OrgBillingContainer.propTypes = {
+  dispatch: PropTypes.func,
+  org: PropTypes.object
 };
 
 export default connect(mapStateToProps)(OrgBillingContainer);

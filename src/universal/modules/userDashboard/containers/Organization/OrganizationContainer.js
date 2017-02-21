@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import Organization from 'universal/modules/userDashboard/components/Organization/Organization';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
@@ -57,6 +57,14 @@ const OrganizationContainer = (props) => {
       org={org}
     />
   );
+};
+
+OrganizationContainer.propTypes = {
+  activeOrgDetail: PropTypes.string,
+  billingLeaders: PropTypes.array,
+  dispatch: PropTypes.func,
+  myUserId: PropTypes.string,
+  org: PropTypes.object
 };
 
 export default connect(mapStateToProps)(OrganizationContainer);

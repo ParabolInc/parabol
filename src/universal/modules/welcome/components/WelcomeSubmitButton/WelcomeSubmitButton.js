@@ -17,6 +17,10 @@ const WelcomeSubmitButton = (props) => {
   );
 };
 
+WelcomeSubmitButton.propTypes = {
+  disabled: PropTypes.bool,
+  styles: PropTypes.object,
+}
 const styleThunk = () => ({
   buttonBlock: {
     padding: '0 0 0 1rem',

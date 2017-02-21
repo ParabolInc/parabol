@@ -1,6 +1,5 @@
 import React, {Component, PropTypes} from 'react';
 import {Field, reduxForm, initialize, SubmissionError} from 'redux-form';
-import appTheme from 'universal/styles/theme/appTheme';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import InputField from 'universal/components/InputField/InputField';
@@ -20,11 +19,14 @@ const validate = (values) => {
 
 class Step1PreferredName extends Component {
   static propTypes = {
+    error: PropTypes.string,
     dispatch: PropTypes.func.isRequired,
     handleSubmit: PropTypes.func,
     placeholderTheme: PropTypes.object,
     preferredName: PropTypes.string,
     onSubmit: PropTypes.func,
+    styles: PropTypes.object,
+    submitting: PropTypes.bool,
     user: PropTypes.object,
     completed: PropTypes.number
   };

@@ -4,7 +4,6 @@ import {
   DashHeader,
   DashMain
 } from 'universal/components/Dashboard';
-// import SettingsTabs from 'universal/modules/userDashboard/components/SettingsTabs/SettingsTabs';
 import SettingsHeader from 'universal/modules/userDashboard/components/SettingsHeader/SettingsHeader';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
@@ -19,7 +18,7 @@ query {
   }
 }`;
 
-const mapStateToProps = (state, props) => {
+const mapStateToProps = (state) => {
   const {notifications} = cashay.query(notificationsQuery, {
     // identical to the other, so leave it be since we only need the count
     op: 'notificationsContainer',

@@ -10,7 +10,7 @@ const getImports = importMap => ({
   component: importMap.get('component')
 });
 
-export default (store) => ({
+export default () => ({
   path: 'notifications',
   getIndexRoute: async(location, cb) => {
     const promiseMap = setImports();

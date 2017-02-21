@@ -8,20 +8,22 @@ const initialState = {
 };
 
 export default function reducer(state = initialState, action = {}) {
-  if (!action.type.startsWith('userDashboard/')) return state;
-  const {type, payload} = action;
-  if (action.type === SELECT_NEW_ACTION_TEAM) {
-    return {
-      ...state,
-      selectingNewActionTeam: payload.selectingNewActionTeam
-    };
-  } else if (type === FILTER_TEAM) {
-    return {
-      ...state,
-      teamFilterId: payload.teamFilterId,
-      teamFilterName: payload.teamFilterName
-    };
+  if (action.type.startsWith('userDashboard/')) {
+    const {type, payload} = action;
+    if (action.type === SELECT_NEW_ACTION_TEAM) {
+      return {
+        ...state,
+        selectingNewActionTeam: payload.selectingNewActionTeam
+      };
+    } else if (type === FILTER_TEAM) {
+      return {
+        ...state,
+        teamFilterId: payload.teamFilterId,
+        teamFilterName: payload.teamFilterName
+      };
+    }
   }
+  return state;
 }
 
 export const selectNewActionTeam = (bool) => {

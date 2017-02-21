@@ -68,8 +68,8 @@ class CreditCardModalContainer extends Component {
       orgId,
     } = this.props;
     const {creditCardNumber: number, expiry, cvc} = submittedData;
-    const [exp_month, exp_year] = expiry.split('/');
-    const {error, id: stripeToken, card} = await createToken({number, exp_month, exp_year, cvc});
+    const [expMonth, expYear] = expiry.split('/');
+    const {error, id: stripeToken, card} = await createToken({number, exp_month: expMonth, exp_year: expYear, cvc});
     if (error) {
       const errorMessage = {_error: error.message};
       const field = stripeFieldLookup[error.param];
@@ -123,10 +123,13 @@ class CreditCardModalContainer extends Component {
 }
 
 CreditCardModalContainer.propTypes = {
+  createToken: PropTypes.func,
+  error: PropTypes.string,
   isUpdate: PropTypes.bool,
   closePortal: PropTypes.func,
   handleToken: PropTypes.func,
   orgId: PropTypes.string,
+  stripeCard: PropTypes.object
 };
 
 const stripeCb = () => {

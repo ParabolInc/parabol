@@ -11,22 +11,24 @@ const initialState = {
 };
 
 export default function reducer(state = initialState, action = {}) {
-  const {type, payload} = action;
-  if (!type || !type.startsWith('userSettings/')) return state;
-  if (type === SET_ACTIVITY) {
-    const {activity, nextPage} = payload;
-    return {
-      ...state,
-      activity,
-      nextPage,
-    };
-  } else if (type === CLEAR_ACTIVITY) {
-    return {
-      ...state,
-      activity: null,
-      nextPage: null,
-    };
+  if (action.type && action.type.startsWith('userSettings/')) {
+    const {type, payload} = action;
+    if (type === SET_ACTIVITY) {
+      const {activity, nextPage} = payload;
+      return {
+        ...state,
+        activity,
+        nextPage,
+      };
+    } else if (type === CLEAR_ACTIVITY) {
+      return {
+        ...state,
+        activity: null,
+        nextPage: null,
+      };
+    }
   }
+  return state;
 }
 
 export const setActivity = (activity, nextPage) => {

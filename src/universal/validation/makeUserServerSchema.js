@@ -1,5 +1,5 @@
 import {urlRegex} from 'universal/validation/regex';
-import {avatar, id, requiredId} from 'universal/validation/templates';
+import {avatar, requiredId} from 'universal/validation/templates';
 import legitify from './legitify';
 
 export default function makeUserServerSchema() {

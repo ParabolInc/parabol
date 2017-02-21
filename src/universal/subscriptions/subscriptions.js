@@ -12,7 +12,6 @@ import {
   OWNED_ORGANIZATIONS,
   TEAM,
   TEAM_MEMBERS,
-  PRESENCE,
   PROJECTS,
   USERS_BY_ORG
 } from 'universal/subscriptions/constants';
