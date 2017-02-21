@@ -1,4 +1,4 @@
-import {id, requiredId, url} from 'universal/validation/templates';
+import {requiredId, url} from 'universal/validation/templates';
 import legitify from 'universal/validation/legitify';
 
 export default function updateOrgValidation() {

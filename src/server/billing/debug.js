@@ -1,5 +1,5 @@
 import stripe from './stripe';
-import ms from 'ms';
+// import ms from 'ms';
 
 // stripe.subscriptions.update('sub_A9nq7dAOWGUKlD', {
 //   trial_end: ~~((Date.now() + ms('5s')) / 1000)

@@ -2,9 +2,9 @@ import parseChannel from 'universal/utils/parseChannel';
 import {EDIT, PRESENT, SOUNDOFF, PRESENCE, REJOIN_TEAM} from 'universal/subscriptions/constants';
 
 export default function mwPresencePublishOut(req, next) {
-  const {channel, variableString: channelKey} = parseChannel(req.channel);
+  const {channel} = parseChannel(req.channel);
   if (channel === PRESENCE) {
-    const {type, targetId, userId} = req.data;
+    const {type, targetId} = req.data;
     if (type === SOUNDOFF) {
       // don't ping yourself
       if (targetId === req.socket.id) {

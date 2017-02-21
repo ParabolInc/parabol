@@ -9,4 +9,5 @@ export default function getCCFromCustomer(customer) {
       expiry
     };
   }
+  return undefined;
 }

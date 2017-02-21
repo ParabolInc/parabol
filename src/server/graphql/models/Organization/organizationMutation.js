@@ -13,7 +13,7 @@ import {
   requireOrgLeaderOfUser,
   requireWebsocket
 } from 'server/utils/authorization';
-import {errorObj, getOldVal, validateAvatarUpload} from 'server/utils/utils';
+import {errorObj, validateAvatarUpload} from 'server/utils/utils';
 import getS3PutUrl from 'server/utils/getS3PutUrl';
 import {
   PAUSE_USER,

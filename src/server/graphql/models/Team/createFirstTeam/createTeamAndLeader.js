@@ -61,7 +61,10 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
               role: isNewOrg ? BILLING_LEADER : null
             })
           ),
-          tms: userDoc('tms').default([]).append(teamId).distinct()
+          tms: userDoc('tms')
+            .default([])
+            .append(teamId)
+            .distinct()
         }), {returnChanges: true});
     });
 

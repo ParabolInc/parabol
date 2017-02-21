@@ -6,6 +6,7 @@ exports.up = async(r) => {
   try {
     await Promise.all(tables);
   } catch (e) {
+    // ignore
   }
   const indices = [
     r.table('Invoice').indexCreate('orgId'),
@@ -16,6 +17,7 @@ exports.up = async(r) => {
   try {
     await Promise.all(indices);
   } catch (e) {
+    // ignore
   }
 };
 

@@ -35,9 +35,6 @@ export default {
     }
   },
   async resolve(source, args, {authToken, socket}) {
-    const r = getRethink();
-    const now = new Date();
-
     // AUTH
     const {orgId} = args.newTeam;
     const userId = getUserId(authToken);

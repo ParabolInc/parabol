@@ -6,18 +6,14 @@ export default async function createPendingApprovals(outOfOrgEmails, orgId, team
   const r = getRethink();
   const now = new Date();
   // add a notification to the billing leaders
-  const {userIds, inviter} = await r.table('User')
-    .getAll(orgId, {index: 'userOrgs'})
-    .filter((user) => user('userOrgs')
-      .contains((userOrg) => userOrg('id').eq(orgId).and(userOrg('role').eq(BILLING_LEADER))))('id')
-    .coerceTo('array')
-    .do((userIds) => {
-      return {
-        userIds,
-        inviter: r.table('User').get(userId).pluck('preferredName', 'id')
-      };
-    });
-
+  const {userIds, inviter} = await r.expr({
+    userIds: r.table('User')
+      .getAll(orgId, {index: 'userOrgs'})
+      .filter((user) => user('userOrgs')
+        .contains((userOrg) => userOrg('id').eq(orgId).and(userOrg('role').eq(BILLING_LEADER))))('id')
+      .coerceTo('array'),
+    inviter: r.table('User').get(userId).pluck('preferredName', 'id')
+  })
   const notifications = outOfOrgEmails.map((inviteeEmail) => ({
     id: shortid.generate(),
     type: REQUEST_NEW_USER,

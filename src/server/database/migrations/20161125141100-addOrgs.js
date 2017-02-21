@@ -15,6 +15,7 @@ exports.up = async(r) => {
   try {
     await Promise.all(tables);
   } catch (e) {
+    // ignore
   }
   const indices = [
     // need index on periodEnd still?
@@ -30,6 +31,7 @@ exports.up = async(r) => {
   try {
     await Promise.all(indices);
   } catch (e) {
+    // ignore
   }
 
   const waitIndices = [
@@ -224,5 +226,6 @@ exports.down = async(r) => {
   try {
     await Promise.all(tables);
   } catch (e) {
+    // ignore
   }
 };

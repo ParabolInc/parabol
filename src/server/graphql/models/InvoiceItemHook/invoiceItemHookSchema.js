@@ -3,11 +3,7 @@ import {
   GraphQLEnumType,
   GraphQLNonNull,
   GraphQLID,
-  GraphQLInt,
   GraphQLFloat,
-  GraphQLList,
-  GraphQLUnionType,
-  GraphQLBoolean
 } from 'graphql';
 import makeEnumValues from 'server/graphql/makeEnumValues';
 import {

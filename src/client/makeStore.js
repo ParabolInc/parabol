@@ -60,8 +60,9 @@ export default async initialState => {
     ));
   }
   const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY);
-  if (__APP_VERSION__ !== versionInStorage) {
-    window.localStorage.setItem(APP_VERSION_KEY, __APP_VERSION__);
+
+  if (__APP_VERSION__ !== versionInStorage) { // eslint-disable-line no-undef
+    window.localStorage.setItem(APP_VERSION_KEY, __APP_VERSION__); // eslint-disable-line no-undef
     return store;
   }
   const load = createLoader(engine);

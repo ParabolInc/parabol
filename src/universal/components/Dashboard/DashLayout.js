@@ -14,8 +14,6 @@ const DashLayout = (props) => {
     styles,
     trialNotification
   } = props;
-  const hasActiveTrial = true;
-  const hasExpiredTrial = true;
   const hasMeetingNotification = activeMeetings.length > 0;
   const {type: barType, orgId} = trialNotification || {};
   return (
@@ -36,7 +34,8 @@ const DashLayout = (props) => {
 DashLayout.propTypes = {
   activeMeetings: PropTypes.array.isRequired,
   children: PropTypes.any,
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  trialNotification: PropTypes.object
 };
 
 const styleThunk = () => ({

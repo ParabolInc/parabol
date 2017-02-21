@@ -6,8 +6,6 @@ import {
   GraphQLInt,
   GraphQLFloat,
   GraphQLList,
-  GraphQLUnionType,
-  GraphQLBoolean,
   GraphQLString
 } from 'graphql';
 import {GraphQLEmailType} from '../../types';

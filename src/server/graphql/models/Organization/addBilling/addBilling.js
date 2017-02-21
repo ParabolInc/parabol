@@ -4,14 +4,12 @@ import {
   GraphQLBoolean,
   GraphQLID,
 } from 'graphql';
-import {TRIAL_EXTENSION, TRIAL_PERIOD} from 'server/utils/serverConstants';
+import {ACTION_MONTHLY, TRIAL_EXTENSION, TRIAL_PERIOD} from 'server/utils/serverConstants';
 import {PAYMENT_REJECTED, TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
 import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
 import stripe from 'server/billing/stripe';
-import {toEpochSeconds} from 'server/utils/epochTime';
+import {fromEpochSeconds, toEpochSeconds} from 'server/utils/epochTime';
 import getCCFromCustomer from 'server/graphql/models/Organization/addBilling/getCCFromCustomer';
-import {ACTION_MONTHLY} from 'server/utils/serverConstants';
-import {fromEpochSeconds} from 'server/utils/epochTime';
 import {errorObj} from 'server/utils/utils';
 
 const tryNewSubscription = async (stripeId, orgId, quantity) => {
@@ -97,12 +95,12 @@ export default {
       const notificationToClear = creditCard ? PAYMENT_REJECTED : TRIAL_EXPIRED;
       const quantity = orgUsers.reduce((count, orgUser) => orgUser.inactive ? count : count + 1, 0);
       const subscription = await tryNewSubscription(stripeId, orgId, quantity);
-      const {id: stripeSubscriptionId, current_period_end, current_period_start} = subscription;
+      const {id, current_period_end, current_period_start} = subscription;
       await r.table('Organization').get(orgId).update({
         creditCard: getCCFromCustomer(customer),
         periodEnd: fromEpochSeconds(current_period_end),
         periodStart: fromEpochSeconds(current_period_start),
-        stripeSubscriptionId
+        stripeSubscriptionId: id
       })
         .do(() => {
           return r.table('Team')

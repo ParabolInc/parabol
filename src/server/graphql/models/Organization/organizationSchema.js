@@ -16,20 +16,20 @@ import makeEnumValues from 'server/graphql/makeEnumValues';
 import getRethink from 'server/database/rethinkDriver';
 import {User} from 'server/graphql/models/User/userSchema';
 
-const RemovedUser = new GraphQLObjectType({
-  name: 'RemovedUser',
-  description: 'A user removed from the org',
-  fields: () => ({
-    removedAt: {
-      type: new GraphQLNonNull(GraphQLISO8601Type),
-      description: 'The datetime the user was removed from the org'
-    },
-    userId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The userId removed from the org'
-    }
-  })
-});
+// const RemovedUser = new GraphQLObjectType({
+//   name: 'RemovedUser',
+//   description: 'A user removed from the org',
+//   fields: () => ({
+//     removedAt: {
+//       type: new GraphQLNonNull(GraphQLISO8601Type),
+//       description: 'The datetime the user was removed from the org'
+//     },
+//     userId: {
+//       type: new GraphQLNonNull(GraphQLID),
+//       description: 'The userId removed from the org'
+//     }
+//   })
+// });
 
 export const creditCardFields = {
   brand: {

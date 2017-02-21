@@ -124,7 +124,7 @@ const makeQuantityChangeLineItems = (detailedLineItems) => {
   return quantityChangeLineItems;
 };
 
-const makeDetailedLineItems = async(itemDict) => {
+const makeDetailedLineItems = async(itemDict, invoiceId) => {
   // Make lookup table to get user Emails
   const userIds = Object.keys(itemDict);
   const emailLookup = await getEmailLookup(userIds);
@@ -190,7 +190,7 @@ export default async function handleInvoiceCreated(invoiceId) {
   const invoice = await stripe.invoices.retrieve(invoiceId);
   const {metadata: {orgId}} = await stripe.customers.retrieve(invoice.customer);
   const {itemDict, unknownLineItems} = makeItemDict(stripeLineItems);
-  const detailedLineItems = await makeDetailedLineItems(itemDict);
+  const detailedLineItems = await makeDetailedLineItems(itemDict, invoiceId);
   const quantityChangeLineItems = makeQuantityChangeLineItems(detailedLineItems);
 
   const previousBalance = {

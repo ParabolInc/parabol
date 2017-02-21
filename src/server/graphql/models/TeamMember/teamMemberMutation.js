@@ -117,11 +117,10 @@ export default {
       }
 
       // RESOLUTION
-      const {orgId, user} = await r.table('Team').get(teamId)('orgId')
-        .do((orgId) => ({
-          orgId,
-          user: r.table('User').get(userId)
-        }));
+      const {orgId, user} = await r.expr({
+        orgId: r.table('Team').get(teamId)('orgId'),
+        user: r.table('User').get(userId)
+      });
       const userOrgs = user.userOrgs || [];
       const userTeams = user.tms || [];
       const userInOrg = Boolean(userOrgs.find((org) => org.id === orgId));
@@ -130,9 +129,12 @@ export default {
       const dbWork = r.table('User')
       // add the team to the user doc
         .get(userId)
-        .update((user) => {
+        .update((userDoc) => {
           return {
-            tms: user('tms').default([]).append(teamId).distinct(),
+            tms: userDoc('tms')
+              .default([])
+              .append(teamId)
+              .distinct(),
           };
         })
         // get number of users

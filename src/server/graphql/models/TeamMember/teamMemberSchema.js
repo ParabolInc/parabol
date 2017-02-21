@@ -5,7 +5,6 @@ import {
   GraphQLID,
   GraphQLString,
   GraphQLInt,
-  GraphQLInputObjectType
 } from 'graphql';
 import {GraphQLEmailType, GraphQLURLType} from '../../types';
 import {Team} from '../Team/teamSchema';

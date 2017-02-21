@@ -2,7 +2,7 @@ import getRethink from 'server/database/rethinkDriver';
 import {GraphQLList, GraphQLNonNull, GraphQLID, GraphQLInt} from 'graphql';
 import {Project} from './projectSchema';
 import {errorObj} from 'server/utils/utils';
-import {requireAuth, requireSUOrTeamMember} from 'server/utils/authorization';
+import {requireAuth, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 
 export default {
   getArchivedProjects: {
@@ -28,11 +28,10 @@ export default {
       requireWebsocket(socket);
 
       const cursor = after || r.minval;
-      const result = await r.table('Project')
+      return await r.table('Project')
         .between([teamId, cursor], [teamId, r.maxval], {index: 'teamIdCreatedAt', leftBound: 'open'})
         .filter({isArchived: true})
         .limit(first);
-      return result;
     }
   },
   getCurrentProject: {

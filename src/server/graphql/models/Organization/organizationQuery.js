@@ -16,7 +16,7 @@ export default {
       const r = getRethink();
 
       // AUTH
-      const userId = requireSUOrTeamMember(authToken, teamId);
+      requireSUOrTeamMember(authToken, teamId);
 
       // RESOLUTION
       return await r.table('Team').get(teamId)('orgId')

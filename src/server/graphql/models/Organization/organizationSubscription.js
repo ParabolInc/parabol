@@ -11,7 +11,10 @@ import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
 import {BILLING_LEADER} from 'universal/utils/constants';
 
 const getCounts = (org) => {
-  return org('orgUsers').filter({inactive: true}).count().default(0)
+  return org('orgUsers')
+    .filter({inactive: true})
+    .count()
+    .default(0)
     .do((inactiveUserCount) => {
       return {
         activeUserCount: org('orgUsers').count().sub(inactiveUserCount),
@@ -72,8 +75,14 @@ export default {
         .changes({includeInitial: true})
         .map((row) => {
           return {
-            new_val: row('new_val').merge(getCounts).pluck(requestedFields).default(null),
-            old_val: row('old_val').merge(getCounts).pluck(requestedFields).default(null)
+            new_val: row('new_val')
+              .merge(getCounts)
+              .pluck(requestedFields)
+              .default(null),
+            old_val: row('old_val')
+              .merge(getCounts)
+              .pluck(requestedFields)
+              .default(null)
           };
         })
         .run({cursor: true}, changefeedHandler);

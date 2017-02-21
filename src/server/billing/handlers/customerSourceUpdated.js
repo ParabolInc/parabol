@@ -9,7 +9,7 @@ export default async function customerSourceUpdated(cardId, customerId) {
   const customer = await stripe.customers.retrieve(customerId);
   const {orgId} = customer.metadata;
   const cards = customer.sources.data;
-  const card = cards.find((card) => card.id === cardId);
+  const card = cards.find((c) => c.id === cardId);
   if (!card) {
     console.warn(`No credit card found! cardId: ${cardId}, customerId: ${customerId}`);
     return false;

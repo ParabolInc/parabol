@@ -32,7 +32,9 @@ export default {
     const userId = getUserId(authToken);
     const {notificationId} = args;
     requireWebsocket(socket);
-    const notification = await r.table('Notification').get(notificationId).pluck('orgId', 'varList').default(null);
+    const notification = await r.table('Notification').get(notificationId)
+      .pluck('orgId', 'varList')
+      .default(null);
     if (!notification) {
       throw errorObj({reason: `Notification ${notificationId} no longer exists!`});
     }
