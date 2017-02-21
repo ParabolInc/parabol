@@ -77,7 +77,7 @@ const HTML_DOC_EXTERNAL_ASSETS = `
 test('omits external assets', () => {
   const result = createEmbeddedImages(HTML_DOC_EXTERNAL_ASSETS);
 
-  expect('html' in result).toBeTruthy;
-  expect('attachments' in result).toBeTruthy;
+  expect(result.hasOwnProperty('html')).toBeTruthy();
+  expect(result.hasOwnProperty('attachments')).toBeTruthy();
   expect(result.attachments.length).toBe(0);
 });

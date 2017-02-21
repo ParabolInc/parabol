@@ -40,6 +40,8 @@ const DashModal = (props) => {
 
 DashModal.propTypes = {
   children: PropTypes.any,
+  inputModal: PropTypes.bool,
+  isClosing: PropTypes.bool,
   onBackdropClick: PropTypes.func,
 
   // NOTE: Use 'fixed' to show over 'viewport'.

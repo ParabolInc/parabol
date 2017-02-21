@@ -1,4 +1,3 @@
-import getRethink from 'server/database/rethinkDriver';
 import {
   getUserId,
   getUserOrgDoc,

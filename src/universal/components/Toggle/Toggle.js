@@ -36,6 +36,7 @@ Toggle.propTypes = {
   active: PropTypes.bool,
   block: PropTypes.bool,
   label: PropTypes.string,
+  onClick: PropTypes.func,
   styles: PropTypes.object
 };
 
