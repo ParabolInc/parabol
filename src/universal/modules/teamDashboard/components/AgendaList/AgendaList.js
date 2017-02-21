@@ -31,6 +31,7 @@ const AgendaList = (props) => {
   } = props;
   const canNavigate = context === 'meeting' && !disabled;
   dragState.clear();
+  console.log(disabled);
   return connectDropTarget(
     <div className={css(styles.root)}>
       <div className={css(styles.inner)}>

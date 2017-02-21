@@ -50,8 +50,9 @@ const AgendaItem = props => {
   );
   const delStyles = css(
     styles.del,
-    styles.delDisabled
+    disabled && styles.delDisabled
   );
+  console.log(`AgendaItem.disabled: ${disabled}`);
   return connectDragSource(
     <div className={rootStyles} title={content}>
       {canDelete &&
