@@ -18,8 +18,14 @@ import ms from 'ms';
 //   })
 // });
 
-stripe.invoices.pay('in_19pUMyFLaFINmHnBIwq5lJlT', (err, invoice) => {
-  console.log('Payment result:', err, invoice)
+stripe.invoices.retrieveLines('in_19pVJzFLaFINmHnBC5uwabBm', (err, invoice) => {
+  for (let i = 0; i < invoice.data.length; i++) {
+    const line = invoice.data[i];
+    // if (!line.period) {
+      console.log(line);
+    // }
+  }
+  // console.log('Payment result:', err, invoice.data)
 })
 
 // stripe.invoices.retrieve('in_19pN1ZFLaFINmHnBv7IU9Vvy', (err, res) => {
