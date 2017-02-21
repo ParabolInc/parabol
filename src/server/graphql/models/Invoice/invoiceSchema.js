@@ -21,6 +21,12 @@ export const INACTIVITY_ADJUSTMENTS = 'INACTIVITY_ADJUSTMENTS';
 export const OTHER_ADJUSTMENTS = 'OTHER_ADJUSTMENTS';
 export const PREVIOUS_BALANCE = 'PREVIOUS_BALANCE';
 
+
+/* Invoice status variables */
+export const PENDING = 'PENDING';
+export const PAID = 'PAID';
+export const UNPAID = 'UNPAID';
+
 /* Each invoice has 3 levels.
  * L1 is a the invoice itself: how much to pay.
  * L2 is line items (next month charges, added users, removed users, inactivity credits, previousBalance) with a quantity
@@ -96,6 +102,16 @@ const InvoiceLineItem = new GraphQLObjectType({
   })
 });
 
+const InvoiceStatus = new GraphQLEnumType({
+  name: 'InvoiceStatus',
+  description: 'The payment status of the invoice',
+  values: makeEnumValues([
+    PENDING,
+    PAID,
+    UNPAID
+  ])
+});
+
 export const Invoice = new GraphQLObjectType({
   name: 'Invoice',
   description: 'A monthly billing invoice for an organization',
@@ -125,6 +141,10 @@ export const Invoice = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: '*The organization id to charge'
     },
+    status: {
+      type: InvoiceStatus,
+      description: 'the status of the invoice. starts as pending, moves to paid or unpaid depending on if the payment succeeded'
+    }
     // paid: {
     //   type: GraphQLBoolean,
     //   description: 'true if the invoice has been paid, else false'

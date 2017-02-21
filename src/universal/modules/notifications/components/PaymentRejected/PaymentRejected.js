@@ -9,7 +9,7 @@ import FontAwesome from 'react-fontawesome';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
-const TrialExpiresSoon = (props) => {
+const PaymentRejected = (props) => {
   const {orgId, router, styles, varList} = props;
   const [last4, brand] = varList;
   const addBilling = () => {
@@ -25,10 +25,9 @@ const TrialExpiresSoon = (props) => {
       </div>
     </div>
     <div className={css(styles.message)}>
-      Your <span className={css(styles.messageVar)}>{brand}</span> card ending in
-      <span className={css(styles.messageVar)}>{last4}</span>
-      was rejected. Call your card provider or head to the settings page to
-      try a new card.
+      Your <span className={css(styles.messageVar)}> {brand} </span> card ending in
+      <span className={css(styles.messageVar)}> {last4} </span> was rejected.
+      Call your card provider or head to the settings page to try a new card.
     </div>
     <div className={css(styles.buttonGroup)}>
       <Button
@@ -84,5 +83,5 @@ const styleThunk = () => ({
 });
 
 export default withRouter(
-  withStyles(styleThunk)(TrialExpiresSoon)
+  withStyles(styleThunk)(PaymentRejected)
 );

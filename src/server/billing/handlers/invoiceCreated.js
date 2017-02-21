@@ -7,7 +7,8 @@ import {
   INACTIVITY_ADJUSTMENTS,
   NEXT_MONTH_CHARGES,
   OTHER_ADJUSTMENTS,
-  PREVIOUS_BALANCE
+  PREVIOUS_BALANCE,
+  PENDING
 } from 'server/graphql/models/Invoice/invoiceSchema';
 import {
   ADD_USER,
@@ -137,7 +138,7 @@ export default async function handleInvoiceCreated(invoiceId) {
 
     // if there is an extra pause, then it's because they are still on pause while we're invoicing.
     if (pausedItems.length > unpausedItems.length) {
-      const lastPausedItem = pausedItems[pausedItems.length-1];
+      const lastPausedItem = pausedItems[pausedItems.length - 1];
       inactivityDetails.push(lastPausedItem);
     }
   }
@@ -158,7 +159,11 @@ export default async function handleInvoiceCreated(invoiceId) {
       })
     }
   }
-  const invoice = await stripe.invoices.retrieve(invoiceId);
+  const invoice = await stripe.invoices.update(invoiceId, {
+    metadata: {
+      orgId
+    }
+  });
   const customer = await stripe.customers.retrieve(invoice.customer);
   if (invoice.starting_balance !== 0) {
     invoiceLineItems.push({
@@ -172,11 +177,12 @@ export default async function handleInvoiceCreated(invoiceId) {
   await r.table('Invoice').insert({
     id: invoiceId,
     amount: invoice.total,
-    invoiceDate: fromEpochSeconds(invoice.date),
-    startAt: fromEpochSeconds(invoice.period_start),
     endAt: fromEpochSeconds(invoice.period_end),
+    invoiceDate: fromEpochSeconds(invoice.date),
     lines: invoiceLineItems,
-    orgId
+    orgId,
+    startAt: fromEpochSeconds(invoice.period_start),
+    status: PENDING
   });
   return true;
 }

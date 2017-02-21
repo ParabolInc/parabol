@@ -22,6 +22,7 @@ export default async function terminateSubscription(orgId) {
     })('changes')(0)('old_val');
   const {stripeSubscriptionId} = orgDoc;
   // stripe already does this for us (per account settings) but we do it here so we don't have to wait an hour
-  await stripe.subscriptions.del(stripeSubscriptionId);
+  // if this function is called by a paymentFailed hook, then the sub may not exist, so catch and release
+  await stripe.subscriptions.del(stripeSubscriptionId).catch((e) => {});
   return orgDoc;
 }

@@ -19,9 +19,10 @@ const OrgBilling = (props) => {
   } = props;
   const {creditCard, id: orgId, periodEnd} = org;
   const {brand = '???', last4 = '••••', expiry = '???'} = creditCard || {};
+  const isTrial = !creditCard || !creditCard.brand;
   const now = new Date();
-  const activeTrial = !creditCard && periodEnd > now;
-  const expiredTrial = !creditCard && periodEnd <= now;
+  const activeTrial = isTrial && periodEnd > now;
+  const expiredTrial = isTrial && periodEnd <= now;
   const update = <Button
     colorPalette="cool"
     label="Update"

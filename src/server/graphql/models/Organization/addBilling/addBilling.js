@@ -5,7 +5,7 @@ import {
   GraphQLID,
 } from 'graphql';
 import {TRIAL_EXTENSION, TRIAL_PERIOD} from 'server/utils/serverConstants';
-import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
+import {PAYMENT_REJECTED, TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
 import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
 import stripe from 'server/billing/stripe';
 import {toEpochSeconds} from 'server/utils/epochTime';
@@ -94,6 +94,7 @@ export default {
     } else {
       // 3) Converting after the trial ended
       // 4) Payment was rejected and they're adding a new source
+      const notificationToClear = creditCard ? PAYMENT_REJECTED : TRIAL_EXPIRED;
       const quantity = orgUsers.reduce((count, orgUser) => orgUser.inactive ? count : count + 1, 0);
       const subscription = await tryNewSubscription(stripeId, orgId, quantity);
       const {id: stripeSubscriptionId, current_period_end, current_period_start} = subscription;
@@ -114,7 +115,7 @@ export default {
           return r.table('Notification')
             .getAll(orgId, {index: 'orgId'})
             .filter({
-              type: TRIAL_EXPIRED
+              type: notificationToClear
             })
             .delete();
         });
