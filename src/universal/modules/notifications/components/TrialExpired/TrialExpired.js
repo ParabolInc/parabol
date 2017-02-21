@@ -12,7 +12,7 @@ import ui from 'universal/styles/ui';
 const TrialExpiresSoon = (props) => {
   const {orgId, router, styles} = props;
   const addBilling = () => {
-    router.push(`/me/organizations/${orgId}`)
+    router.push(`/me/organizations/${orgId}`);
   };
   return (
   <Row>

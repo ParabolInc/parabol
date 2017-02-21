@@ -15,7 +15,7 @@ export default async function removeOrgApprovalAndNotification(orgId, maybeEmail
           type: REQUEST_NEW_USER
         })
         .filter((notification) => {
-          return r.expr(emails).contains(notification('varList')(2))
+          return r.expr(emails).contains(notification('varList')(2));
         })
         // get the inviterName
         .delete({returnChanges: true})('changes')
@@ -25,6 +25,6 @@ export default async function removeOrgApprovalAndNotification(orgId, maybeEmail
           inviteeEmail: varList(2),
           invitedTeamId: varList(3)
         }))
-        .default([])
-    })
+        .default([]);
+    });
 }

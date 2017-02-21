@@ -26,4 +26,4 @@ export default function fromNow(time) {
     prevThresh = thresh;
   }
   throw new Error('Infinite timestamp calculated!');
-};
+}

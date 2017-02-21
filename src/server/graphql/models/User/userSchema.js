@@ -144,7 +144,7 @@ export const User = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'true if the user is a part of the supplied orgId',
       resolve: (source, {orgId}) => {
-        return Boolean(source.userOrgs.find((userOrg) => userOrg.id === orgId && userOrg.role === BILLING_LEADER))
+        return Boolean(source.userOrgs.find((userOrg) => userOrg.id === orgId && userOrg.role === BILLING_LEADER));
       }
     },
     preferredName: {
@@ -183,7 +183,7 @@ export const User = new GraphQLObjectType({
   })
 });
 
-export const UserInput =  new GraphQLInputObjectType({
+export const UserInput = new GraphQLInputObjectType({
   name: 'UserInput',
   fields: () => ({
     id: {type: GraphQLID, description: 'The unique userId'},

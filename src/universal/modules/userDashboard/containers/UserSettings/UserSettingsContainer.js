@@ -4,7 +4,7 @@ import UserSettings from 'universal/modules/userDashboard/components/UserSetting
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router';
 import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
-import {showSuccess} from 'universal/modules/toast/ducks/toastDuck'
+import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import {
   ACTIVITY_WELCOME,
   clearActivity

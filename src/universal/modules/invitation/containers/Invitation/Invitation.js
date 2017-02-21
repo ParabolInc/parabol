@@ -117,7 +117,7 @@ export default class Invitation extends Component {
             router.push('/me/settings');
           } else {
             dispatch(showSuccess(successfulExistingJoin));
-            router.push(`/team/${tms[tms.length-1]}`);
+            router.push(`/team/${tms[tms.length - 1]}`);
           }
         }
       })

@@ -23,7 +23,7 @@ const Tabs = (props) => {
       </div>
       <div style={inkBarStyles}></div>
     </div>
-  )
+  );
 };
 
 const styleThunk = () => ({

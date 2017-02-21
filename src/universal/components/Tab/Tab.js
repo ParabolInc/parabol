@@ -20,7 +20,7 @@ const Tab = (props) => {
         {label}
       </div>
     </div>
-  )
+  );
 };
 
 const styleThunk = () => ({

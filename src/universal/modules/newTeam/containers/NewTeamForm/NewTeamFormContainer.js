@@ -47,9 +47,9 @@ const mapStateToProps = (state, props) => {
 
 const makeInvitees = (invitees) => {
   return invitees ? invitees.map(email => ({
-      email: email.address,
-      fullName: email.fullName
-    })) : [];
+    email: email.address,
+    fullName: email.fullName
+  })) : [];
 };
 
 class NewTeamFormContainer extends Component {
@@ -61,7 +61,7 @@ class NewTeamFormContainer extends Component {
   setLast4 = (last4) => {
     this.setState({
       last4,
-    })
+    });
   };
 
   onSubmit = async (submittedData) => {
@@ -114,11 +114,10 @@ class NewTeamFormContainer extends Component {
   };
 
   render() {
-
     const {initialValues, isNewOrg, organizations} = this.props;
     if (organizations.length === 0) {
       // more than looks, this is required because initialValues can only be passed in once
-      return <LoadingView />
+      return <LoadingView />;
     }
     return (
       <NewTeamForm
@@ -132,7 +131,7 @@ class NewTeamFormContainer extends Component {
     );
   }
 }
-;
+
 
 NewTeamFormContainer.propTypes = {
   dispatch: PropTypes.func.isRequired,

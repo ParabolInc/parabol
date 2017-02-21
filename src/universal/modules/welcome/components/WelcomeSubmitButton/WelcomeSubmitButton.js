@@ -14,7 +14,7 @@ const WelcomeSubmitButton = (props) => {
         type="submit"
       />
     </div>
-  )
+  );
 };
 
 const styleThunk = () => ({

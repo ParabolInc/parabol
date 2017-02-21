@@ -17,7 +17,7 @@ export const ChangeModule = new GraphQLEnumType({
     MEETING,
     TEAM_DASH,
     USER_DASH
-    ])
+  ])
 });
 // const ContentDiff = new GraphQLObjectType({
 //   old: {type: GraphQLString, description: 'The content as it was in the task'},

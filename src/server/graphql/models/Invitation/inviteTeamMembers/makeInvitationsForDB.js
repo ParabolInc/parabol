@@ -1,8 +1,8 @@
-import {INVITATION_LIFESPAN} from 'server/utils/serverConstants'
+import {INVITATION_LIFESPAN} from 'server/utils/serverConstants';
 import parseInviteToken from './parseInviteToken';
 import hashInviteTokenKey from './hashInviteTokenKey';
 
-export default async function makeInvitationsForDB (invitees, teamId, userId) {
+export default async function makeInvitationsForDB(invitees, teamId, userId) {
   const now = new Date();
   const invitedBy = `${userId}::${teamId}`;
   const tokenExpiration = new Date(now.valueOf() + INVITATION_LIFESPAN);

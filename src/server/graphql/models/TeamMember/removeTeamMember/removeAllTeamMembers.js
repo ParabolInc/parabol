@@ -36,15 +36,15 @@ export default async function removeAllTeamMembers(maybeTeamMemberIds, exchange)
             return r.table('TeamMember').get(teamMemberId)
               .update({
                 isLead: true
-              })
+              });
           })
           .do(() => {
             return r.table('TeamMember').get(leader('id'))
               .update({
                 isLead: false
-              })
+              });
           })
-      )
+      );
     });
 
   // assign active projects to the team lead
@@ -64,7 +64,7 @@ export default async function removeAllTeamMembers(maybeTeamMemberIds, exchange)
             .getAll(project('teamId'), {index: 'teamId'})
             .filter({isLead: true, isNotRemoved: true})
             .nth(0)('id')
-        }), {nonAtomic: true})
+        }), {nonAtomic: true});
     })
     // flag all actions as complete since the user can't edit them now, anyways
     .do(() => {

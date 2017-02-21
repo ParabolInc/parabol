@@ -102,7 +102,7 @@ class CreditCardModalContainer extends Component {
       if (cardTypeIcon !== this.state.cardTypeIcon) {
         this.setState({
           cardTypeIcon
-        })
+        });
       }
     }
   };
@@ -136,7 +136,7 @@ const stripeCb = () => {
     createToken: (fields) => new Promise((resolve) => {
       stripe.card.createToken(fields, (status, response) => {
         resolve(response);
-      })
+      });
     }),
     stripeCard: stripe.card
   };

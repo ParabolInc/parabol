@@ -5,9 +5,9 @@ import ms from 'ms';
 getDotenv();
 export default function getIntranetToken() {
   const jwt = {
-    iss: "action-test",
-    sub: "admin@parabol.co",
-    rol: "su"
+    iss: 'action-test',
+    sub: 'admin@parabol.co',
+    rol: 'su'
   };
   const INTRANET_JWT_SECRET = process.env.INTRANET_JWT_SECRET || '';
   const b64Secret = new Buffer(INTRANET_JWT_SECRET, 'base64');

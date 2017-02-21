@@ -2,6 +2,7 @@ import path from 'path';
 import webpack from 'webpack';
 import {getDotenv} from '../src/universal/utils/dotenv';
 import npmPackage from '../package.json';
+import vendors from '../dll/vendors.json';
 
 // import UnusedFilesWebpackPlugin from "unused-files-webpack-plugin";
 
@@ -75,7 +76,7 @@ export default {
     }),
     new webpack.DllReferencePlugin({
       context: root,
-      manifest: require(path.resolve(root, 'dll', 'vendors.json'))
+      manifest: vendors
     }),
     // new UnusedFilesWebpackPlugin()
   ],

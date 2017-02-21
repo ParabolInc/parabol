@@ -11,7 +11,7 @@ import {
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {GraphQLURLType} from 'server/graphql/types';
-import {BILLING_LEADER} from 'universal/utils/constants'
+import {BILLING_LEADER} from 'universal/utils/constants';
 import makeEnumValues from 'server/graphql/makeEnumValues';
 import getRethink from 'server/database/rethinkDriver';
 import {User} from 'server/graphql/models/User/userSchema';
@@ -139,7 +139,7 @@ export const Organization = new GraphQLObjectType({
         return r.table('User')
           .getAll(id, {index: 'userOrgs'})
           .filter((user) => user('userOrgs')
-            .contains((userOrg) => userOrg('id').eq(id).and(userOrg('role').eq(BILLING_LEADER))))
+            .contains((userOrg) => userOrg('id').eq(id).and(userOrg('role').eq(BILLING_LEADER))));
       }
     }
   })

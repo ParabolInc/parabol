@@ -16,7 +16,7 @@ const ActiveTrialCallOut = (props) => {
       <span>Add your billing information by <b>{trialEnd}</b>, <br/>to extend your trial to <b>{newTrialEnd}</b>.</span>
     </CallOutPanel>
   );
-}
+};
 
 ActiveTrialCallOut.propTypes = {
   orgId: PropTypes.string.isRequired

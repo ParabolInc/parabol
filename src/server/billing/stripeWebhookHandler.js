@@ -11,7 +11,6 @@ export default async function stripeWebhookHandler(req, res) {
   const objectId = event.data.object.id;
   console.log('webhook received', type, objectId);
   try {
-
     if (type === 'invoice.created') {
       await invoiceCreated(objectId);
     } else if (type === 'invoiceitem.created') {
@@ -27,7 +26,7 @@ export default async function stripeWebhookHandler(req, res) {
       const oldStatus = event.data.previous_attributes.status;
       await customerSubscriptionUpdated(objectId, oldStatus);
     }
-  } catch(e) {
+  } catch (e) {
     console.log(`Webhook error for ${type}: ${e}`);
     // TODO report to server logs
   } finally {

@@ -49,7 +49,7 @@ export const requireOrgLeaderOrTeamMember = async (authToken, teamId) => {
           })
           .count()
           .eq(1)
-          .default(false)
+          .default(false);
       });
     if (!isOrgLeader) {
       throw errorObj({_error: `Unauthorized to view details for team ${teamId} with token ${JSON.stringify(authToken)}`});
@@ -137,7 +137,7 @@ export const requireOrgLeaderOfUser = async(authToken, userId) => {
         memberOrgs: r.table('User')
           .get(userId)('userOrgs')
           .map((userOrg) => userOrg('id'))
-      }
+      };
     })
     .do((res) => {
       return res('leaderOrgs')
@@ -154,7 +154,7 @@ export const requireTeamIsPaid = async(teamId) => {
   const r = getRethink();
   const isPaid = await r.table('Team').get(teamId)('isPaid').default(false);
   if (!isPaid) {
-    throw errorObj({_error: `The org leader has not paid for team ${teamId}. Cannot fetch documents`})
+    throw errorObj({_error: `The org leader has not paid for team ${teamId}. Cannot fetch documents`});
   }
   return true;
 };

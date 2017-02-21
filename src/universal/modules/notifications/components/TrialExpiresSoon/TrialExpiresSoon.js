@@ -16,7 +16,7 @@ const TrialExpiresSoon = (props) => {
   const [expiresAt] = varList;
   const daysLeft = fromNow(expiresAt);
   const addBilling = () => {
-    router.push(`/me/organizations/${orgId}`)
+    router.push(`/me/organizations/${orgId}`);
   };
   return (
   <Row>

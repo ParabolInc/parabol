@@ -5,7 +5,7 @@ export default async function terminateSubscription(orgId) {
   const r = getRethink();
   const now = new Date();
   // flag teams as unpaid
-  const orgDoc =  await r.table('Team')
+  const orgDoc = await r.table('Team')
     .getAll(orgId, {index: 'orgId'})
     .update({
       isPaid: false

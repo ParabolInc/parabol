@@ -93,7 +93,7 @@ export default class EditingStatusContainer extends Component {
     if (this.props.active !== active || this.props.editors !== editors) {
       this.setState({
         editingStatus: makeEditingStatus(editors, active, updatedAt)
-      })
+      });
     }
   }
 

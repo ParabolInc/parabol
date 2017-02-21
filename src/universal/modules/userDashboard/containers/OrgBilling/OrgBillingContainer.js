@@ -43,11 +43,11 @@ const mapStateToProps = (state, props) => {
   }).data;
   return {
     org
-  }
+  };
 };
 
 const OrgBillingContainer = (props) => {
-  const {dispatch, org}= props;
+  const {dispatch, org} = props;
   if (!org.id) {
     return <LoadingView/>;
   }

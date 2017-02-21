@@ -71,7 +71,7 @@ const reduceItemsByType = (typesDict, email, invoiceId) => {
         amount: lineItems[0].amount + lineItems[1].amount,
         email,
         [dateField]: startTime
-      }
+      };
     }
   }
   return reducedItemsByType;
@@ -93,7 +93,7 @@ const makeDetailedPauseEvents = (pausedItems, unpausedItems) => {
       ...pausedItem,
       amount: unpausedItem.amount + pausedItem.amount,
       endAt: unpausedItem.endAt
-    })
+    });
   }
 
   // if there is an extra pause, then it's because they are still on pause while we're invoicing.
@@ -118,7 +118,7 @@ const makeQuantityChangeLineItems = (detailedLineItems) => {
         details: details.map((doc) => ({...doc, parentId: id})),
         quantity: details.length,
         type: lineItemType
-      })
+      });
     }
   }
   return quantityChangeLineItems;
@@ -181,7 +181,7 @@ const makeItemDict = (stripeLineItems) => {
     }
   }
   return {itemDict, unknownLineItems};
-}
+};
 
 export default async function handleInvoiceCreated(invoiceId) {
   const r = getRethink();

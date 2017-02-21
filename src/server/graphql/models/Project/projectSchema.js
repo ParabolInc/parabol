@@ -100,7 +100,7 @@ const projectInputThunk = () => ({
   }
 });
 
-export const ProjectInput =  new GraphQLInputObjectType({
+export const ProjectInput = new GraphQLInputObjectType({
   name: 'ProjectInput',
   fields: () => ({
     id: {type: GraphQLID, description: 'The unique team ID'},

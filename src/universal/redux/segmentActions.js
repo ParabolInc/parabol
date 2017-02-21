@@ -50,7 +50,7 @@ export function segmentEventIdentify() {
         }
       }
     });
-  }
+  };
 }
 
 export function segmentEventTrack(event, properties, options) {

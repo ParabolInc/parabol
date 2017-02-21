@@ -62,13 +62,12 @@ const InviteUser = (props) => {
         title: 'Request sent to admin',
         message: `A request to add ${inviteTeamMember} has been sent to your organization admin`
       }));
-    } else if (inviteSent === null){
+    } else if (inviteSent === null) {
       dispatch(showSuccess({
         title: `${inviteTeamMember} reactivated!`,
         message: `${inviteTeamMember} used to be on this team, so they were automatically approved`
       }));
     }
-
   };
 
   return (

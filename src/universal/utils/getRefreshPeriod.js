@@ -13,4 +13,4 @@ export default function getRefreshPeriod(time) {
     }
   }
   throw new Error('Infinite timestamp calculated!');
-};
+}

@@ -18,12 +18,12 @@ const FileInput = (props) => {
     buttonLabel,
     colorPalette
   } = props;
-    let errorString = error;
-    if (typeof error === 'object') {
-      errorString = Object.keys(error).map(k => error[k]).join(', ');
-    }
-    let el;
-    return (
+  let errorString = error;
+  if (typeof error === 'object') {
+    errorString = Object.keys(error).map(k => error[k]).join(', ');
+  }
+  let el;
+  return (
       <div>
         <div className={css(styles.control)}>
           <Button
@@ -31,7 +31,7 @@ const FileInput = (props) => {
             size={size}
             colorPalette={colorPalette}
             type="button"
-            onClick={() => {el.click()}}
+            onClick={() => { el.click(); }}
           />
         <input
           accept={accept}
@@ -39,12 +39,12 @@ const FileInput = (props) => {
             // send the file to the redux-form FileList manager
             props.input.onChange(e.currentTarget.files[0]);
             // if not pushed to the back of the queue, the values don't update, even if the parent component is force updated
-            setTimeout(() => doSubmit(), 0)
+            setTimeout(() => doSubmit(), 0);
           }}
           style={hiddenUglyButton}
           type="file"
           value={undefined} // required to avoid value change security console message
-          ref={(c) => {el = c}}
+          ref={(c) => { el = c; }}
         />
         </div>
         {touched && error &&
@@ -54,7 +54,7 @@ const FileInput = (props) => {
           />
         }
       </div>
-    );
+  );
 };
 
 FileInput.propTypes = {

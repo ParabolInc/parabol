@@ -25,8 +25,8 @@ const tryNewSubscription = async (stripeId, orgId, quantity) => {
       plan: ACTION_MONTHLY,
       quantity
     });
-  } catch(e) {
-    throw errorObj({_error: e.message})
+  } catch (e) {
+    throw errorObj({_error: e.message});
   }
 };
 
@@ -109,7 +109,7 @@ export default {
             .getAll(orgId, {index: 'orgId'})
             .update({
               isPaid: true
-            })
+            });
         })
         .do(() => {
           return r.table('Notification')

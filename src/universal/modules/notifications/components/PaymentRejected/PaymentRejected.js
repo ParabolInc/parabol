@@ -13,7 +13,7 @@ const PaymentRejected = (props) => {
   const {orgId, router, styles, varList} = props;
   const [last4, brand] = varList;
   const addBilling = () => {
-    router.push(`/me/organizations/${orgId}`)
+    router.push(`/me/organizations/${orgId}`);
   };
   return (
   <Row>

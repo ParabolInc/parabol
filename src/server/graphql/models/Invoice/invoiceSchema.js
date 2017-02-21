@@ -61,7 +61,7 @@ const DetailedLineItem = new GraphQLObjectType({
     },
     endAt: {
       type: GraphQLISO8601Type,
-      description: `End of the event. Only present if a pause action gets matched up with an unpause action`
+      description: 'End of the event. Only present if a pause action gets matched up with an unpause action'
     },
     parentId: {
       type: new GraphQLNonNull(GraphQLID),

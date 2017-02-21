@@ -41,7 +41,7 @@ export const InvoiceItemHook = new GraphQLObjectType({
     },
     prorationDate: {
       type: GraphQLFloat,
-      description: `*Timestamp with 1-second resolution.`
+      description: '*Timestamp with 1-second resolution.'
     },
     stripeSubscriptionId: {
       type: GraphQLID,

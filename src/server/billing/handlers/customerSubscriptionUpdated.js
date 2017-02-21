@@ -37,8 +37,8 @@ export default async function customerSubscriptionUpdated(subscriptionId, oldSta
         return r.table('Notification')
           .getAll(orgId, {index: 'orgId'})
           .filter({type: TRIAL_EXPIRES_SOON})
-          .delete()
-      })
+          .delete();
+      });
   }
   return true;
 }

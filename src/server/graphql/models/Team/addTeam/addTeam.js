@@ -57,9 +57,9 @@ export default {
     socket.setAuthToken(newAuthToken);
     await createTeamAndLeader(userId, newTeam);
 
-    //handle invitees
+    // handle invitees
     if (!invitees || invitees.length === 0) {
-      return true
+      return true;
     }
 
     const inviterIsBillingLeader = isBillingLeader(userOrgDoc);
@@ -73,4 +73,4 @@ export default {
 
     return true;
   }
-}
+};

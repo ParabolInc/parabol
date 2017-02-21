@@ -145,13 +145,13 @@ exports.up = async(r) => {
       userOrgs[j] = {
         id: userOrgId,
         role: userOrgMap[userOrgId] ? BILLING_LEADER : null
-      }
+      };
     }
     usersForDB[i] = {
       id: userId,
       trialOrg,
       userOrgs
-    }
+    };
   }
 
   // create updates to make to team docs
@@ -162,7 +162,7 @@ exports.up = async(r) => {
     teamsForDB[i] = {
       id: teamId,
       orgId: orgLookupByTeam[teamId]
-    }
+    };
   }
 
   const teamUpdates = r.expr(teamsForDB).forEach((team) => r.table('Team').get(team('id')).update({
@@ -185,8 +185,8 @@ exports.up = async(r) => {
       userUpdates,
       orgInserts,
       notificationInserts
-    ])
-  } catch(e) {
+    ]);
+  } catch (e) {
     console.log(e);
   }
 };

@@ -35,10 +35,10 @@ export default {
             type: REQUEST_NEW_USER
           })
           .filter((notification) => {
-            return notification('varList')(2).eq(email).and(notification('varList')(3).eq(teamId))
+            return notification('varList')(2).eq(email).and(notification('varList')(3).eq(teamId));
           })
-          .delete()
+          .delete();
       });
     return true;
   }
-}
+};

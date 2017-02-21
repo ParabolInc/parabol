@@ -62,7 +62,7 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
             })
           ),
           tms: userDoc('tms').default([]).append(teamId).distinct()
-        }), {returnChanges: true})
+        }), {returnChanges: true});
     });
 
   const {tms} = getNewVal(userRes);

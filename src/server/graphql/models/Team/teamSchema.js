@@ -27,7 +27,7 @@ export const Phase = new GraphQLEnumType({
     AGENDA_ITEMS,
     LAST_CALL,
     SUMMARY
-    ])
+  ])
 });
 
 export const Team = new GraphQLObjectType({
@@ -113,7 +113,7 @@ export const Team = new GraphQLObjectType({
   })
 });
 
-export const TeamInput =  new GraphQLInputObjectType({
+export const TeamInput = new GraphQLInputObjectType({
   name: 'TeamInput',
   fields: () => ({
     id: {type: GraphQLID, description: 'The unique team ID'},

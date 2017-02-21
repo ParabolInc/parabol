@@ -353,12 +353,12 @@ export default {
               .sample(100000)
               .coerceTo('array')
               .do((arr) => arr.forEach((doc) => {
-                  return r.table('TeamMember').get(doc('id'))
+                return r.table('TeamMember').get(doc('id'))
                     .update({
                       checkInOrder: arr.offsetsOf(doc).nth(0),
                       isCheckedIn: null
                     });
-                })
+              })
               );
           })
           .run();

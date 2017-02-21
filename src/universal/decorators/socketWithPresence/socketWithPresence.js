@@ -90,7 +90,7 @@ export default ComposedComponent => {
         const {teamId, teamName} = data;
         const {router} = this.props;
         const onExTeamRoute = router.isActive(`/team/${teamId}`) || router.isActive(`/meeting/${teamId}`);
-          console.log('should reroute', onExTeamRoute);
+        console.log('should reroute', onExTeamRoute);
         if (onExTeamRoute) {
           router.push('/me');
         }
@@ -117,7 +117,7 @@ export default ComposedComponent => {
           const {name} = data;
           const teamName = getTeamName(teamId);
           dispatch(showInfo({
-          title: `${name} is back!`,
+            title: `${name} is back!`,
             message: `${name} just rejoined team ${teamName}`
           }));
         }
@@ -144,7 +144,7 @@ export default ComposedComponent => {
         throw new Error('Did not finish the welcome wizard! How did you get here?');
         // TODO redirect?
       }
-      if (oldProps.tms.length < tms.length ) {
+      if (oldProps.tms.length < tms.length) {
         const socket = socketCluster.connect();
         for (let i = 0; i < tms.length; i++) {
           const teamId = tms[i];

@@ -37,7 +37,7 @@ const mapStateToProps = (state, props) => {
     op: 'orgMembersContainer',
     key: orgId,
     sort: {
-      usersByOrg: (a,b) => {
+      usersByOrg: (a, b) => {
         if (a.isBillingLeader === b.isBillingLeader) {
           return a.preferredName > b.preferredName ? 1 : -1;
         }
@@ -51,11 +51,11 @@ const mapStateToProps = (state, props) => {
     myUserId: state.auth.obj.sub,
     users,
     org
-  }
+  };
 };
 
 const OrgMembersContainer = (props) => {
-  const {billingLeaderCount, dispatch, myUserId, users, org}= props;
+  const {billingLeaderCount, dispatch, myUserId, users, org} = props;
   if (users.length < 1) {
     return <LoadingView/>;
   }

@@ -25,7 +25,7 @@ const SettingsTabs = (props) => {
     }
     return () => {
       router.push(fullPath);
-    }
+    };
   };
   const clickHandlers = settingsOrder.map((path) => makeOnClick(path));
   const notificationIconAndBadge = () => {
@@ -35,7 +35,7 @@ const SettingsTabs = (props) => {
         {notificationCount > 0 ? <div className={css(styles.badge)}>{notificationCount}</div> : null}
       </div>
 
-    )
+    );
   };
 
   return (
@@ -56,7 +56,7 @@ const SettingsTabs = (props) => {
         onClick={clickHandlers[2]}
       />
     </Tabs>
-  )
+  );
 };
 
 const styleThunk = () => ({
@@ -77,6 +77,6 @@ const styleThunk = () => ({
   badgeAndBell: {
     position: 'relative'
   }
-})
+});
 export default withRouter(withStyles(styleThunk)(SettingsTabs));
 

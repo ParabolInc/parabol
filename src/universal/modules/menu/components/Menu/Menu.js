@@ -24,7 +24,7 @@ const Menu = (props) => {
   // TODO: Make a UI constant (TA)
   const boxShadow = '0 3px 6px rgba(0, 0, 0, .35)';
   const menuStyle = {boxShadow};
-  const kids = Children.map(itemFactory && itemFactory() || children, (child) => cloneElement(child, {closePortal}))
+  const kids = Children.map(itemFactory && itemFactory() || children, (child) => cloneElement(child, {closePortal}));
   return (
     <div>
       <div className={css(styles.menuBlock)} style={menuBlockStyle}>

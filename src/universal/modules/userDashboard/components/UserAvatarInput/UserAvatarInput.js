@@ -22,7 +22,7 @@ const uploadPicture = async (pictureFile) => {
     throw new Error(error._error); // eslint-disable-line no-underscore-dangle
   }
   const {createUserPicturePutUrl: putUrl} = data;
-  return sendAssetToS3(pictureFile, putUrl)
+  return sendAssetToS3(pictureFile, putUrl);
 };
 
 const UserAvatarInput = (props) => {
@@ -49,7 +49,7 @@ const UserAvatarInput = (props) => {
         await updateUser(userId, pictureUrl);
       } catch (e) {
         // eslint-disable-line no-undef
-        Raven.captureException(e)
+        Raven.captureException(e);
       }
     }
     // no work to do
@@ -65,8 +65,8 @@ const UserAvatarInput = (props) => {
       />
     </form>
   );
-}
+};
 
 export default reduxForm({form: 'userAvatar', shouldValidate, validate})(
   UserAvatarInput
-)
+);

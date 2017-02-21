@@ -25,10 +25,10 @@ const changePause = (inactive) => async(orgIds, userId) => {
                 inactive
               }),
               orgUser
-            )
+            );
           }),
           updatedAt: new Date()
-        }), {returnChanges: true})
+        }), {returnChanges: true});
     });
 };
 
@@ -51,7 +51,7 @@ const addUser = async(orgIds, userId) => {
             inactive: false
           }),
           updatedAt: new Date()
-        }), {returnChanges: true})
+        }), {returnChanges: true});
     });
 };
 
@@ -67,7 +67,7 @@ const deleteUser = async(orgIds, userId) => {
         .update((org) => ({
           orgUsers: org('orgUsers').filter((orgUser) => orgUser('id').ne(userId)),
           updatedAt: new Date()
-        }), {returnChanges: true})
+        }), {returnChanges: true});
     });
 };
 
@@ -97,7 +97,7 @@ export default async function adjustUserCount(userId, orgInput, type) {
         prorationDate,
         type,
         userId
-      })
+      });
     }
     return arr;
   }, []);
@@ -111,7 +111,7 @@ export default async function adjustUserCount(userId, orgInput, type) {
           proration_date: prorationDate,
           quantity: orgUsers.reduce((count, orgUser) => orgUser.inactive ? count : count + 1, 0)
         })
-      )
+      );
     }
     return arr;
   }, []);

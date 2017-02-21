@@ -15,7 +15,7 @@ export default async function createPendingApprovals(outOfOrgEmails, orgId, team
       return {
         userIds,
         inviter: r.table('User').get(userId).pluck('preferredName', 'id')
-      }
+      };
     });
 
   const notifications = outOfOrgEmails.map((inviteeEmail) => ({
@@ -37,6 +37,6 @@ export default async function createPendingApprovals(outOfOrgEmails, orgId, team
   // send a new notification to each billing leader concerning each out-of-org invitee
   await r.table('Notification').insert(notifications)
     .do(() => {
-      return r.table('OrgApproval').insert(pendingApprovals)
-    })
+      return r.table('OrgApproval').insert(pendingApprovals);
+    });
 }

@@ -133,7 +133,7 @@ export default {
         .update((user) => {
           return {
             tms: user('tms').default([]).append(teamId).distinct(),
-          }
+          };
         })
         // get number of users
         .do(() => {
@@ -192,11 +192,9 @@ export default {
         type: new GraphQLNonNull(GraphQLID),
         description: 'the new team member that will be the leader'
       }
-    }
-    ,
+    },
     async
-    resolve(source, {teamMemberId}, {authToken, socket})
-    {
+    resolve(source, {teamMemberId}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH

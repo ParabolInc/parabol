@@ -34,7 +34,7 @@ const mapStateToProps = (state, props) => {
     billingLeaders,
     myUserId: state.auth.obj.sub,
     org,
-  }
+  };
 };
 
 const OrganizationContainer = (props) => {
@@ -44,7 +44,7 @@ const OrganizationContainer = (props) => {
     dispatch,
     myUserId,
     org
-  }= props;
+  } = props;
   if (!org.id) {
     return <LoadingView/>;
   }

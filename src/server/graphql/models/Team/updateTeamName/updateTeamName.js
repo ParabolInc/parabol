@@ -40,4 +40,4 @@ export default {
     await r.table('Team').get(id).update(dbUpdate);
     return true;
   }
-}
+};

@@ -7,7 +7,7 @@ import {requireSU} from 'server/utils/authorization';
 import {
   AUTO_PAUSE_THRESH,
   AUTO_PAUSE_USER
-} from 'server/utils/serverConstants'
+} from 'server/utils/serverConstants';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 
 export default {
@@ -48,7 +48,7 @@ export default {
                   inactive: true
                 }),
                 orgUser
-              )
+              );
             })
           }))
           .do(() => {
@@ -56,13 +56,13 @@ export default {
               .get(userId)
               .update({
                 inactive: true
-              })
-          })
+              });
+          });
       });
       await Promise.all(updates);
       const adjustmentPromises = users.map((user) => {
         const orgIds = user.userOrgs.map(({id}) => id);
-        return adjustUserCount(user.id, orgIds, AUTO_PAUSE_USER)
+        return adjustUserCount(user.id, orgIds, AUTO_PAUSE_USER);
       });
 
       await Promise.all(adjustmentPromises);

@@ -56,7 +56,7 @@ const TeamProjectsHeader = (props) => {
           label={teamMember.preferredName}
           onClick={() => dispatch(filterTeamMember(teamMember.id, teamMember.preferredName))}
         />
-      ))
+      ));
   };
   return (
     <DashSectionHeader>

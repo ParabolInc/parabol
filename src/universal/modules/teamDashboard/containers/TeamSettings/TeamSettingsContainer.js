@@ -37,7 +37,7 @@ const mapStateToProps = (state, props) => {
     sort: {
       teamMembers: (a, b) => a.preferredName > b.preferredName ? 1 : -1,
       invitations: (a, b) => a.createdAt > b.createdAt ? 1 : -1,
-      orgApprovals: (a,b) => a.email > b.email ? 1 : -1
+      orgApprovals: (a, b) => a.email > b.email ? 1 : -1
     },
     variables: {teamId}
   }).data;

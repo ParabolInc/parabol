@@ -33,10 +33,10 @@ const DropdownInput = (props) => {
           key={`orgDropdownMenuItem${idx}`}
           label={org.name}
           onClick={() => {
-            onChange(org.id)
+            onChange(org.id);
           }}
         />
-      )
+      );
     })
       .concat(<MenuItem
         key={'newOrg'}

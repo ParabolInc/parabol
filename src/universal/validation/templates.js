@@ -93,4 +93,3 @@ export const teamName = (value) => value
 
 export const url = (value) => value.matches(urlRegex);
 
-

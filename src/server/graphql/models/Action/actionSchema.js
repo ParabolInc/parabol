@@ -47,7 +47,7 @@ export const Action = new GraphQLObjectType({
   })
 });
 
-export const ActionInput =  new GraphQLInputObjectType({
+export const ActionInput = new GraphQLInputObjectType({
   name: 'ActionInput',
   fields: () => ({
     id: {type: GraphQLID, description: 'The unique action ID'},

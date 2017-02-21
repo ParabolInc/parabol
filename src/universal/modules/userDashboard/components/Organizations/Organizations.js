@@ -15,7 +15,7 @@ const Organizations = (props) => {
     router,
     styles
   } = props;
-  const gotoNewTeam = () => {router.push('/newteam/1')};
+  const gotoNewTeam = () => { router.push('/newteam/1'); };
   const addNewOrg = () =>
     <IconControl
       icon="plus-square-o"

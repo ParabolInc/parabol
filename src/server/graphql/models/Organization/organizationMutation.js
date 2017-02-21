@@ -68,7 +68,7 @@ export default {
             type: PAUSE_USER,
             userId,
           })
-          .count()
+          .count();
       });
       const pausesByOrg = await Promise.all(hookPromises);
       const triggeredPauses = Math.max(...pausesByOrg);
@@ -87,7 +87,7 @@ export default {
                 inactive: true
               }),
               orgUser
-            )
+            );
           })
         }))
         .do(() => {
@@ -95,7 +95,7 @@ export default {
             .get(userId)
             .update({
               inactive: true
-            })
+            });
         });
       const orgIds = orgDocs.map((doc) => doc.id);
       await adjustUserCount(userId, orgIds, PAUSE_USER);
@@ -116,7 +116,7 @@ export default {
         description: 'the org that does not want them anymore'
       }
     },
-    async resolve(source, {orgId, userId}, {authToken, exchange, socket}){
+    async resolve(source, {orgId, userId}, {authToken, exchange, socket}) {
       const r = getRethink();
       const now = new Date();
 
@@ -156,9 +156,9 @@ export default {
                 notification.update({
                   userIds: notification('userIds').filter((id) => id.ne(userId))
                 })
-              )
-            })
-        })
+              );
+            });
+        });
       // need to make sure the org doc is updated before adjusting this
       await adjustUserCount(userId, orgId, REMOVE_USER);
       return true;
@@ -171,23 +171,18 @@ export default {
       contentType: {
         type: GraphQLString,
         description: 'user-supplied MIME content type'
-      }
-      ,
+      },
       contentLength: {
         type: new GraphQLNonNull(GraphQLInt),
         description: 'user-supplied file size'
-      }
-      ,
+      },
       orgId: {
         type: new GraphQLNonNull(GraphQLID),
         description: 'The organization id to update'
       }
-    }
-    ,
+    },
     async
-    resolve(source, {orgId, contentType, contentLength}, {authToken})
-    {
-
+    resolve(source, {orgId, contentType, contentLength}, {authToken}) {
       // AUTH
       const userId = getUserId(authToken);
       const userOrgDoc = await
@@ -202,8 +197,7 @@ export default {
       return await
         getS3PutUrl(contentType, contentLength, partialPath);
     }
-  }
-  ,
+  },
   addOrg,
   setOrgUserRole: {
     type: GraphQLBoolean,
@@ -212,22 +206,18 @@ export default {
       orgId: {
         type: new GraphQLNonNull(GraphQLID),
         description: 'The org to affect'
-      }
-      ,
+      },
       userId: {
         type: new GraphQLNonNull(GraphQLID),
         description: 'the user who is receiving a role change'
-      }
-      ,
+      },
       role: {
         type: GraphQLString,
         description: 'the user\'s new role'
       }
-    }
-    ,
+    },
     async
-    resolve(source, {orgId, userId, role}, {authToken})
-    {
+    resolve(source, {orgId, userId, role}, {authToken}) {
       const r = getRethink();
       const now = new Date();
 
@@ -239,7 +229,7 @@ export default {
 
       // VALIDATION
       if (role && role !== BILLING_LEADER) {
-        throw errorObj({_error: 'invalid role'})
+        throw errorObj({_error: 'invalid role'});
       }
 
       // RESOLUTION
@@ -253,7 +243,7 @@ export default {
                   role
                 }),
                 userOrg
-              )
+              );
             }),
             updatedAt: now
           }))
@@ -267,10 +257,10 @@ export default {
                       role
                     }),
                     orgUser
-                  )
+                  );
                 }),
                 updatedAt: now
-              }), {returnChanges: true})('changes')(0)('old_val')('name').default(null)
+              }), {returnChanges: true})('changes')(0)('old_val')('name').default(null);
           });
       if (role === BILLING_LEADER) {
         // add a notification
@@ -289,8 +279,8 @@ export default {
                 .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
                 .update((notification) => ({
                   userIds: notification('userIds').append(userId)
-                }))
-            })
+                }));
+            });
       } else if (role === null) {
         await
           r.table('Notification')
@@ -306,8 +296,8 @@ export default {
                 .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
                 .update((notification) => ({
                   userIds: notification('userIds').filter((id) => id.ne(userId))
-                }))
-            })
+                }));
+            });
       }
       return true;
     }

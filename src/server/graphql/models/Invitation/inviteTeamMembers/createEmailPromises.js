@@ -12,4 +12,4 @@ export default function createEmailPromises(inviterInfoAndTeamName, inviteesWith
     };
     return sendEmailPromise(emailProps.inviteeEmail, 'teamInvite', emailProps, isUnitTest);
   });
-};
+}

@@ -23,11 +23,11 @@ const OrgBilling = (props) => {
   const now = new Date();
   const activeTrial = isTrial && periodEnd > now;
   const expiredTrial = isTrial && periodEnd <= now;
-  const update = <Button
+  const update = (<Button
     colorPalette="cool"
     label="Update"
     size="small"
-  />;
+  />);
   return (
     <div>
       {activeTrial && <ActiveTrialCallOut periodEnd={periodEnd} orgId={orgId}/>}

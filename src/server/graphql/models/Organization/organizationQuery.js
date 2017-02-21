@@ -21,7 +21,7 @@ export default {
       // RESOLUTION
       return await r.table('Team').get(teamId)('orgId')
         .do((orgId) => {
-          return r.table('Organization').get(orgId)
+          return r.table('Organization').get(orgId);
         });
     }
   }

@@ -4,7 +4,7 @@ import {
   GraphQLNonNull,
   GraphQLID
 } from 'graphql';
-import getRequestedFields from 'server/graphql/getRequestedFields'
+import getRequestedFields from 'server/graphql/getRequestedFields';
 import {Organization} from './organizationSchema';
 import {getUserId, getUserOrgDoc, requireSUOrSelf, requireOrgLeader} from 'server/utils/authorization';
 import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
@@ -16,8 +16,8 @@ const getCounts = (org) => {
       return {
         activeUserCount: org('orgUsers').count().sub(inactiveUserCount),
         inactiveUserCount,
-      }
-    })
+      };
+    });
 };
 
 export default {

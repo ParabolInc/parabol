@@ -25,7 +25,7 @@ const targetAnchor = {
 };
 
 const OrgMembers = (props) => {
-    const {
+  const {
       billingLeaderCount,
       dispatch,
       users,
@@ -33,71 +33,71 @@ const OrgMembers = (props) => {
       org,
       styles,
     } = props;
-    const {id: orgId} = org;
+  const {id: orgId} = org;
 
-    const setRole = (userId, role = null) => () => {
-      const variables = {
-        orgId,
-        userId,
-        role
-      };
-      cashay.mutate('setOrgUserRole', {variables});
+  const setRole = (userId, role = null) => () => {
+    const variables = {
+      orgId,
+      userId,
+      role
     };
+    cashay.mutate('setOrgUserRole', {variables});
+  };
 
-    const userRowActions = (orgUser) => {
-      const {id, inactive, preferredName} = orgUser;
-      const itemFactory = () => {
-        const listItems = [];
-        if (orgUser.isBillingLeader) {
-          listItems.push(
+  const userRowActions = (orgUser) => {
+    const {id, inactive, preferredName} = orgUser;
+    const itemFactory = () => {
+      const listItems = [];
+      if (orgUser.isBillingLeader) {
+        listItems.push(
             <MenuItem label="Remove Billing leader role" onClick={setRole(id)}/>
-          )
-        } else {
-          listItems.push(
+          );
+      } else {
+        listItems.push(
             <MenuItem label="Promote to Billing leader" onClick={setRole(id, BILLING_LEADER)}/>
-          )
-        }
-        if (myUserId !== orgUser.id) {
-          listItems.push(
+          );
+      }
+      if (myUserId !== orgUser.id) {
+        listItems.push(
             <RemoveFromOrgModal
               orgId={orgId}
               preferredName={preferredName}
               userId={id}
               toggle={<MenuItem label="Remove from Organization"/>}
             />
-          )
-        }
-        if (billingLeaderCount > 1 && myUserId === orgUser.id) {
-          listItems.push(
+          );
+      }
+      if (billingLeaderCount > 1 && myUserId === orgUser.id) {
+        listItems.push(
             <LeaveOrgModal
               orgId={orgId}
               userId={id}
               toggle={<MenuItem label="Leave Organization"/>}
             />
-          )
-        }
+          );
+      }
 
-        return listItems;
-      };
-      const toggleHandler = async () => {
-        if (!inactive) {
-          const variables = {userId: orgUser.id};
-          const {error} = await cashay.mutate('inactivateUser', {variables})
-          if (error) {
-            dispatch(showError({
-              title: 'Oh dear...',
-              message: error._error || 'Cannot pause user'
-            }));
-          }
-        } else {
-          dispatch(showInfo({
-            title: 'Well managed!',
-            message: 'To save you money, we\'ll automatically unpause that user the next time they log in.'
+      return listItems;
+    };
+    const toggleHandler = async () => {
+      if (!inactive) {
+        const variables = {userId: orgUser.id};
+        const {error} = await cashay.mutate('inactivateUser', {variables});
+        if (error) {
+          dispatch(showError({
+            title: 'Oh dear...',
+            message: error._error || 'Cannot pause user'
           }));
-          // pop toast until we do find a way to display locally?
         }
-      };
-      return (
+      } else {
+        dispatch(showInfo({
+          title: 'Well managed!',
+          message: 'To save you money, we\'ll automatically unpause that user the next time they log in.'
+        }));
+          // pop toast until we do find a way to display locally?
+      }
+    };
+    return (
         <div className={css(styles.actionLinkBlock)}>
           <div className={css(styles.toggleBlock)}>
             <Toggle active={!inactive} block label="Active" onClick={toggleHandler}/>
@@ -120,9 +120,9 @@ const OrgMembers = (props) => {
             />
           </div>
         </div>
-      );
-    };
-    return (
+    );
+  };
+  return (
       <Panel label="Organization Members">
         <div className={css(styles.listOfAdmins)}>
           {users.map((orgUser, idx) => {
@@ -136,8 +136,8 @@ const OrgMembers = (props) => {
           })}
         </div>
       </Panel>
-    );
-  }
+  );
+}
   ;
 
 const styleThunk = () => ({

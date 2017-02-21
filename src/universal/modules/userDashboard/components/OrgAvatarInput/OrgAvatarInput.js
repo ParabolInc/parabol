@@ -23,7 +23,7 @@ const uploadPicture = async (orgId, pictureFile) => {
     throw new Error(error._error); // eslint-disable-line no-underscore-dangle
   }
   const {createOrgPicturePutUrl: putUrl} = data;
-  return sendAssetToS3(pictureFile, putUrl)
+  return sendAssetToS3(pictureFile, putUrl);
 };
 
 const OrgAvatarInput = (props) => {
@@ -50,7 +50,7 @@ const OrgAvatarInput = (props) => {
         await updateOrg(pictureUrl);
       } catch (e) {
         // eslint-disable-line no-undef
-        Raven.captureException(e)
+        Raven.captureException(e);
       }
     }
     // no work to do
@@ -66,8 +66,8 @@ const OrgAvatarInput = (props) => {
       />
     </form>
   );
-}
+};
 
 export default reduxForm({form: 'orgAvatar', shouldValidate, validate})(
   OrgAvatarInput
-)
+);
