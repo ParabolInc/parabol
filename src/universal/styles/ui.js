@@ -38,6 +38,9 @@ const FIELD_BOX_SHADOW_FOCUS = '0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)';
 const FIELD_PADDING_HORIZONTAL = '.75rem';
 const FIELD_PLACEHOLDER_COLOR = appTheme.palette.mid80l;
 
+// Filter
+const filterBlur = 'blur(1.5px)';
+
 // Icons
 const iconSize = '14px'; // FontAwesome base
 const iconSizeAvatar = '21px'; // FontAwesome 1.5x
@@ -61,6 +64,7 @@ const ui = {
   borderRadiusSmall,
   borderRadiusMedium,
   borderRadiusLarge,
+  filterBlur,
 
   // Action items and cards
   // ---------------------------------------------------------------------------
@@ -297,6 +301,11 @@ const ui = {
   },
   invoicePanelGutterSmall: '.75rem',
   invoicePanelGutterLarge: '1.25rem',
+
+  // Link
+  // ---------------------------------------------------------------------------
+  linkColor: appTheme.palette.cool,
+  linkColorHover: tinycolor(appTheme.palette.cool).darken(15).toHexString(),
 
   // Meeting
   // ---------------------------------------------------------------------------
