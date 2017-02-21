@@ -10,7 +10,7 @@ import stripe from 'server/billing/stripe';
 import shortid from 'shortid';
 import {toEpochSeconds} from 'server/utils/epochTime';
 
-const changePause = (inactive) => async (orgIds, userId) => {
+const changePause = (inactive) => async(orgIds, userId) => {
   const r = getRethink();
   return await r.table('User').get(userId)
     .update({inactive})
@@ -32,7 +32,7 @@ const changePause = (inactive) => async (orgIds, userId) => {
     });
 };
 
-const addUser = async (orgIds, userId) => {
+const addUser = async(orgIds, userId) => {
   const r = getRethink();
   const userOrgAdditions = orgIds.map((id) => ({
     id,
@@ -55,7 +55,7 @@ const addUser = async (orgIds, userId) => {
     });
 };
 
-const deleteUser = async (orgIds, userId) => {
+const deleteUser = async(orgIds, userId) => {
   const r = getRethink();
   return await r.table('User').get(userId)
     .update((user) => ({
@@ -88,19 +88,33 @@ export default async function adjustUserCount(userId, orgInput, type) {
   const {changes: orgChanges} = await dbAction(orgIds, userId);
   const orgs = orgChanges.map((change) => change.new_val);
   const prorationDate = toEpochSeconds(now);
-  const hooks = orgs.map((org) => ({
-    id: shortid.generate(),
-    stripeSubscriptionId: org.stripeSubscriptionId,
-    prorationDate,
-    type,
-    userId
-  }));
+  const hooks = orgs.reduce((arr, org) => {
+    const {stripeSubscriptionId} = org;
+    if (stripeSubscriptionId) {
+      arr.push({
+        id: shortid.generate(),
+        stripeSubscriptionId: org.stripeSubscriptionId,
+        prorationDate,
+        type,
+        userId
+      })
+    }
+    return arr;
+  }, []);
   // wait here to make sure the webhook finds what it's looking for
   await r.table('InvoiceItemHook').insert(hooks);
-  const stripePromises = orgs.map((org) => stripe.subscriptions.update(org.stripeSubscriptionId, {
-    proration_date: prorationDate,
-    quantity: org.orgUsers.reduce((count, orgUser) => orgUser.inactive ? count : count + 1, 0)
-  }));
+  const stripePromises = orgs.reduce((arr, org) => {
+    const {orgUsers, stripeSubscriptionId} = org;
+    if (stripeSubscriptionId) {
+      arr.push(
+        stripe.subscriptions.update(stripeSubscriptionId, {
+          proration_date: prorationDate,
+          quantity: orgUsers.reduce((count, orgUser) => orgUser.inactive ? count : count + 1, 0)
+        })
+      )
+    }
+    return arr;
+  }, []);
 
   await Promise.all(stripePromises);
 }

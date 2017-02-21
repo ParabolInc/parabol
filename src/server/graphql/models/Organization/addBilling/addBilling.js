@@ -65,7 +65,7 @@ export default {
 
     const customer = await stripe.customers.update(stripeId, {source: stripeToken});
 
-    if (periodEnd > now) {
+    if (periodEnd > now && stripeSubscriptionId) {
       // 1) Updating to a new credit card
       if (creditCard) {
         await r.table('Organization').get(orgId).update({

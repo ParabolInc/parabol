@@ -1,4 +1,3 @@
-import stripe from 'server/billing/stripe';
 import invoicePaymentFailed from './handlers/invoicePaymentFailed';
 import customerSourceUpdated from './handlers/customerSourceUpdated';
 import invoiceItemCreated from './handlers/invoiceItemCreated';
