@@ -1,5 +1,5 @@
 import React from 'react';
-import Invoice from '../../components/Invoice/Invoice';
+import Invoice from 'universal/modules/invoice/components/Invoice/Invoice';
 
 const InvoiceContainer = () =>
   <Invoice/>;

@@ -1,5 +1,5 @@
 import React, {PropTypes, Component} from 'react';
-import InvoiceLineItem from '../../components/InvoiceLineItem/InvoiceLineItem';
+import InvoiceLineItem from 'universal/modules/invoice/components/InvoiceLineItem/InvoiceLineItem';
 
 export default class InvoiceLineItemContainer extends Component {
   static propTypes = {

@@ -6,7 +6,7 @@ import {overflowTouch} from 'universal/styles/helpers';
 import {reduxForm} from 'redux-form';
 import InviteUser from 'universal/components/InviteUser/InviteUser';
 import UserRow from 'universal/components/UserRow/UserRow';
-import fromNowString from 'universal/utils/fromNow';
+import fromNow from 'universal/utils/fromNow';
 import {cashay} from 'cashay';
 import RemoveTeamMemberModal from 'universal/modules/teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal';
 import PromoteTeamMemberModal from 'universal/modules/teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal';
@@ -131,7 +131,7 @@ const TeamSettings = (props) => {
                 <UserRow
                   {...invitation}
                   email={invitation.email}
-                  invitedAt={`invited ${fromNowString(invitation.updatedAt)}`}
+                  invitedAt={`invited ${fromNow(invitation.updatedAt)}`}
                   actions={invitationRowActions(invitation)}
                   key={`invitationKey${idx}`}
                 />

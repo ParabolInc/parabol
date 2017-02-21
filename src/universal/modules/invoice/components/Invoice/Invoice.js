@@ -6,7 +6,7 @@ import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import InvoiceHeader from '../InvoiceHeader/InvoiceHeader';
 import InvoiceFooter from '../InvoiceFooter/InvoiceFooter';
-import InvoiceLineItemContainer from '../../containers/InvoiceLineItemContainer/InvoiceLineItemContainer';
+import InvoiceLineItemContainer from 'universal/modules/invoice/containers/InvoiceLineItemContainer/InvoiceLineItemContainer';
 
 const demoItemsNextMonth = [
   {
