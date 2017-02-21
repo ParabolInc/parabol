@@ -7,11 +7,11 @@ stages:
   build:
     workDir: /home/ubuntu/action
     environment:
-      - DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
-      - DEVOPS_WORKDIR: "/home/ubuntu/action-devops"
-      - GITHUB_REMOTE_PRODUCTION: "dokku@action-production.parabol.co:web"
-      - GITHUB_REMOTE_STAGING: "dokku@action-staging.parabol.co:web"
-      - PRODUCTION_BACKUP_VOLUME: "/mnt/volume-nyc1-01/action-production"
+      DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
+      DEVOPS_WORKDIR: "/home/ubuntu/action-devops"
+      GITHUB_REMOTE_PRODUCTION: "dokku@action-production.parabol.co:web"
+      GITHUB_REMOTE_STAGING: "dokku@action-staging.parabol.co:web"
+      PRODUCTION_BACKUP_VOLUME: "/mnt/volume-nyc1-01/action-production"
 
     steps:
       - type: add-ssh-keys
@@ -44,19 +44,19 @@ stages:
 
       - type: shell
         name: Database migration
-        command: npm run db:migrate-testing
-
-      - type: shell
-        name: NPM run test
-        command: |
-          mkdir -p $TEST_REPORT_PATH &&
-          npm run test
-        environment:
-          - TEST_REPORT_PATH: "/home/ubuntu/test-reports/junit"
+        command: npm run db:migrate
 
       - type: shell
         name: NPM lint
         command: npm run lint
+
+      - type: shell
+        name: NPM run test
+        command: |
+          mkdir -p $CIRCLE_TEST_REPORTS &&
+          npm run test:xunit > $CIRCLE_TEST_REPORTS/action-ava.xml
+        environment:
+          CIRCLE_TEST_REPORTS: "/home/ubuntu/test-reports/junit"
 
       - type: shell
         name: Pre-build DevOps checkout

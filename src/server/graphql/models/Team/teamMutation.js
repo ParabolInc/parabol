@@ -1,12 +1,10 @@
 import getRethink from 'server/database/rethinkDriver';
 import {
-  ensureUniqueId,
   getUserId,
-  requireAuth,
   requireSUOrTeamMember,
   requireWebsocket
 } from 'server/utils/authorization';
-import {errorObj, handleSchemaErrors} from 'server/utils/utils';
+import {errorObj} from 'server/utils/utils';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
@@ -14,7 +12,7 @@ import {
   GraphQLString,
   GraphQLInt,
 } from 'graphql';
-import {TeamInput} from './teamSchema';
+import segmentIo from 'server/segmentIo';
 import shortid from 'shortid';
 import {
   CHECKIN,
@@ -248,7 +246,7 @@ export default {
 
       // RESOLUTION
       const now = new Date();
-      await r.table('Meeting')
+      const endedMeeting = await r.table('Meeting')
         .getAll(teamId, {index: 'teamId'})
         .orderBy(r.desc('createdAt'))
         .nth(0)('id')
@@ -309,7 +307,7 @@ export default {
                 })),
               projects: res('meetingUpdates')('projects').default([]),
 
-            }, {nonAtomic: true});
+            }, {nonAtomic: true, returnChanges: true})('changes')(0)('new_val');
         });
 
       // send to summary
@@ -365,6 +363,20 @@ export default {
           })
           .run();
       }, 5000);
+
+      // report the meeting completion to segment.io:
+      setTimeout(() => {
+        endedMeeting.invitees
+        .filter((invitee) => invitee.present)
+        .forEach((invitee) => {
+          const [userId] = invitee.id.split('::');
+          segmentIo.track({
+            userId,
+            event: 'Meeting Completed',
+            properties: { meetingNumber: endedMeeting.meetingNumber }
+          });
+        });
+      });
       return true;
     }
   },

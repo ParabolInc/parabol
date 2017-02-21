@@ -15,6 +15,7 @@ import {verify} from 'jsonwebtoken';
 import makeUserServerSchema from 'universal/validation/makeUserServerSchema';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import {GraphQLURLType} from '../../types';
+import segmentIo from 'server/segmentIo';
 
 export default {
   createImposterToken: {
@@ -63,7 +64,7 @@ export default {
         description: 'user-supplied file size'
       }
     },
-    async resolve(source, {avatarOwner, contentType, contentLength}, {authToken}) {
+    async resolve(source, {contentType, contentLength}, {authToken}) {
       // AUTH
       const userId = requireAuth(authToken);
 
@@ -101,13 +102,13 @@ export default {
       const userInfo = await auth0Client.tokens.getInfo(auth0Token);
       // TODO loginsCount and blockedFor are not a part of this API response
       const newUser = {
+        id: userInfo.user_id,
         cachedAt: now,
         email: userInfo.email,
         emailVerified: userInfo.email_verified,
         lastLogin: now,
         updatedAt: new Date(userInfo.updated_at),
         picture: userInfo.picture,
-        id: userInfo.user_id,
         inactive: false,
         name: userInfo.name,
         preferredName: userInfo.nickname,
@@ -118,7 +119,26 @@ export default {
         welcomeSentAt: now
       };
       await r.table('User').insert(newUser);
-
+      /*
+       * From segment docs:
+       *
+       * We recommend calling identify a single time when the
+       * user’s account is first created, and only identifying
+       * again later when their traits change.
+       *
+       * see: https://segment.com/docs/sources/server/node/
+       */
+      if (segmentIo) {
+        segmentIo.identify({
+          userId: newUser.id,
+          traits: {
+            avatar: newUser.picture,
+            createdAt: newUser.createdAt,
+            email: newUser.email,
+            name: newUser.preferredName
+          }
+        });
+      }
       // don't await
       setTimeout(() => sendEmail(newUser.email, 'welcomeEmail', newUser, isUnitTest), 0);
       return newUser;
