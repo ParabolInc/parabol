@@ -159,11 +159,7 @@ export default async function handleInvoiceCreated(invoiceId) {
       })
     }
   }
-  const invoice = await stripe.invoices.update(invoiceId, {
-    metadata: {
-      orgId
-    }
-  });
+  const invoice = await stripe.invoices.retrieve(invoiceId);
   const customer = await stripe.customers.retrieve(invoice.customer);
   if (invoice.starting_balance !== 0) {
     invoiceLineItems.push({
@@ -172,11 +168,16 @@ export default async function handleInvoiceCreated(invoiceId) {
       type: PREVIOUS_BALANCE
     })
   }
-  // TODO test to make sure total = invoice total + starting_balance
   const {orgId} = customer.metadata;
+  console.log('setting invoice metadata', orgId);
+  await stripe.invoices.update(invoiceId, {
+    metadata: {
+      orgId
+    }
+  });
   await r.table('Invoice').insert({
     id: invoiceId,
-    amount: invoice.total,
+    amount: invoice.amount_due,
     endAt: fromEpochSeconds(invoice.period_end),
     invoiceDate: fromEpochSeconds(invoice.date),
     lines: invoiceLineItems,
