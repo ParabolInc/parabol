@@ -24,10 +24,18 @@ exports.down = async(r) => {
     r.tableDrop('OrgApproval'),
     r.tableCreate('Participant') // unused table
   ];
-  await Promise.all(tables);
+  try {
+    await Promise.all(tables);
+  } catch (e) {
+    // ignore
+  }
   const indices = [
     r.table('Participant').indexCreate('meetingId'), // unused table
     r.table('Participant').indexCreate('userId') // unused table
   ];
-  await Promise.all(indices);
+  try {
+    await Promise.all(indices);
+  } catch (e) {
+    // ignore
+  }
 };

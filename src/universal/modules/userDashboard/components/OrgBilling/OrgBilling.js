@@ -48,7 +48,7 @@ const OrgBilling = (props) => {
       }
       <Panel label="Invoices">
         <div className={css(styles.listOfInvoices)}>
-          {!creditCard ?
+          {invoices.length === 0 ?
             <div className={css(styles.noInvoices)}>
               No invoices yet! Keep doing good work, and we'll do the accounting.
             </div> :
