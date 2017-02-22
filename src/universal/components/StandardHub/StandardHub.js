@@ -15,6 +15,7 @@ import {Menu, MenuItem} from 'universal/modules/menu';
 const StandardHub = (props) => {
   const {
     email,
+    location,
     notificationCount,
     picture,
     preferredName,
@@ -69,7 +70,8 @@ const StandardHub = (props) => {
 
   const notificationsStyles = css(
     styles.notifications,
-    notificationCount > 0 && styles.notificationsWithBadge
+    notificationCount > 0 && styles.notificationsWithBadge,
+    location === '/me/notifications' && styles.notificationsActive
   );
 
   const iconStyle = {
@@ -90,7 +92,6 @@ const StandardHub = (props) => {
         {makeUserMenu()}
       </div>
       <Link
-        activeClassName={css(styles.notificationsActive)}
         className={notificationsStyles}
         to="/me/notifications"
       >
@@ -108,14 +109,11 @@ const StandardHub = (props) => {
 StandardHub.propTypes = {
   email: PropTypes.string,
   notificationCount: PropTypes.number,
+  location: PropTypes.string,
   picture: PropTypes.string,
   preferredName: PropTypes.string,
   router: PropTypes.object,
   styles: PropTypes.object
-};
-
-StandardHub.defaultProps = {
-  notificationCount: 8
 };
 
 const maxWidth = '6.5rem';

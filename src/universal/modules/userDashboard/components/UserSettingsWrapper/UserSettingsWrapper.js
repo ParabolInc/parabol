@@ -35,7 +35,7 @@ const mapStateToProps = (state) => {
 };
 
 const UserSettings = (props) => {
-  const {settingsLocation, children, notificationCount} = props;
+  const {settingsLocation, children} = props;
   return (
     <DashMain>
       <DashHeader>
@@ -50,6 +50,7 @@ const UserSettings = (props) => {
 };
 
 UserSettings.propTypes = {
+  notificationCount: PropTypes.number,
   settingsLocation: PropTypes.string,
   children: PropTypes.any
 };

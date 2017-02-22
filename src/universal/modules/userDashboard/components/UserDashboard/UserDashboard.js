@@ -8,7 +8,7 @@ const UserDashboard = (props) => {
   const {children, location: {pathname}} = props;
   const title = pathname === '/me' ? 'User Dashboard' : 'User Settings';
   return (
-    <DashboardWrapper title={title}>
+    <DashboardWrapper location={pathname} title={title}>
       {children}
     </DashboardWrapper>
   );

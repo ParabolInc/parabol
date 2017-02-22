@@ -13,15 +13,15 @@ import Logo from 'universal/styles/theme/images/brand/parabol-lockup-h.svg';
 import {Link, withRouter} from 'react-router';
 
 const DashSidebar = (props) => {
-  const {router, styles} = props;
-  const newTeamIsActive = router.isActive('/newteam', true);
+  const {location, router, styles} = props;
+  const newTeamIsActive = router.isActive('/newteam') || router.isActive('/newteam/1');
   const addNewStyles = css(
     styles.addTeam,
     newTeamIsActive && styles.addTeamDisabled
   );
   return (
     <div className={css(styles.root)}>
-      <StandardHubContainer/>
+      <StandardHubContainer location={location} />
       <nav className={css(styles.nav)}>
         <div className={css(styles.singleNavItem)}>
           <DashNavItem
@@ -52,6 +52,7 @@ const DashSidebar = (props) => {
 };
 
 DashSidebar.propTypes = {
+  location: PropTypes.string,
   router: PropTypes.object,
   styles: PropTypes.object
 };
