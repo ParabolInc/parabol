@@ -192,6 +192,10 @@ const ui = {
   },
   zCard: zIndexScale(6),
 
+  // CTA Panels
+  // ---------------------------------------------------------------------------
+  ctaPanelButtonSize: BUTTON_SIZE_LARGE,
+
   // Dashboards
   // ---------------------------------------------------------------------------
   dashActionsWidth: '15rem',

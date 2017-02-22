@@ -10,12 +10,19 @@ const CallOutPanel = (props) => {
     children,
     control,
     heading,
+    panelLabel,
     styles
   } = props;
 
+  const hasHeader = Boolean(panelLabel);
+  const panelBodyStyles = css(
+    styles.panelBody,
+    hasHeader && styles.panelBodyWithHeader
+  );
+
   return (
-    <Panel hasHeader={false}>
-      <div className={css(styles.panelBody)}>
+    <Panel hasHeader={hasHeader} label={panelLabel}>
+      <div className={panelBodyStyles}>
         <Type align="center" bold marginBottom=".5rem" scale="s6">
           {heading}
         </Type>
@@ -32,6 +39,7 @@ CallOutPanel.propTypes = {
   children: PropTypes.any,
   control: PropTypes.any,
   heading: PropTypes.any,
+  panelLabel: PropTypes.any,
   styles: PropTypes.object
 };
 
@@ -39,6 +47,10 @@ const styleThunk = () => ({
   panelBody: {
     padding: `2rem ${ui.panelGutter}`,
     textAlign: 'center'
+  },
+
+  panelBodyWithHeader: {
+    borderTop: `1px solid ${ui.rowBorderColor}`
   }
 });
 

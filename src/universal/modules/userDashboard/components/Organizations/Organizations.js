@@ -7,6 +7,7 @@ import ui from 'universal/styles/ui';
 import IconControl from 'universal/components/IconControl/IconControl';
 import Panel from 'universal/components/Panel/Panel';
 import OrganizationRow from 'universal/modules/userDashboard/components/OrganizationRow/OrganizationRow';
+import EmptyOrgsCallOut from 'universal/modules/userDashboard/components/EmptyOrgsCallOut/EmptyOrgsCallOut';
 import {withRouter} from 'react-router';
 
 const Organizations = (props) => {
@@ -28,15 +29,18 @@ const Organizations = (props) => {
   return (
     <UserSettingsWrapper settingsLocation={ORGANIZATIONS}>
       <div className={css(styles.wrapper)}>
-        <Panel label="Organizations" controls={addNewOrg()}>
-          {organizations.map((organization) =>
-            <OrganizationRow
-              key={`orgRow${organization.id}`}
-              organization={organization}
-              onRowClick={() => router.push(`/me/organizations/${organization.id}`)}
-            />
-          )}
-        </Panel>
+        {organizations.length ?
+          <Panel label="Organizations" controls={addNewOrg()}>
+            {organizations.map((organization) =>
+              <OrganizationRow
+                key={`orgRow${organization.id}`}
+                organization={organization}
+                onRowClick={() => router.push(`/me/organizations/${organization.id}`)}
+              />
+            )}
+          </Panel> :
+          <EmptyOrgsCallOut/>
+        }
       </div>
     </UserSettingsWrapper>
   );
