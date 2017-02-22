@@ -13,7 +13,7 @@ export default async function createPendingApprovals(outOfOrgEmails, orgId, team
         .contains((userOrg) => userOrg('id').eq(orgId).and(userOrg('role').eq(BILLING_LEADER))))('id')
       .coerceTo('array'),
     inviter: r.table('User').get(userId).pluck('preferredName', 'id')
-  })
+  });
   const notifications = outOfOrgEmails.map((inviteeEmail) => ({
     id: shortid.generate(),
     type: REQUEST_NEW_USER,

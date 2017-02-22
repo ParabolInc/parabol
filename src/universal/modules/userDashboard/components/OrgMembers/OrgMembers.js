@@ -91,8 +91,8 @@ const OrgMembers = (props) => {
         }
       } else {
         dispatch(showInfo({
-          title: 'Well managed!',
-          message: 'To save you money, we\'ll automatically unpause that user the next time they log in.'
+          title: 'We got you covered',
+          message: 'We\'ll unpause that user the next time they log in so you don\'t pay a penny more than necessary'
         }));
           // pop toast until we do find a way to display locally?
       }
