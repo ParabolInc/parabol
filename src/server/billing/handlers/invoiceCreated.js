@@ -2,14 +2,16 @@ import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 import shortid from 'shortid';
 import {
+  PENDING
+} from 'server/graphql/models/Invoice/invoiceSchema';
+import {
   ADDED_USERS,
   REMOVED_USERS,
   INACTIVITY_ADJUSTMENTS,
   NEXT_MONTH_CHARGES,
   OTHER_ADJUSTMENTS,
   PREVIOUS_BALANCE,
-  PENDING
-} from 'server/graphql/models/Invoice/invoiceSchema';
+} from 'universal/utils/constants';
 import {
   ADD_USER,
   AUTO_PAUSE_USER,

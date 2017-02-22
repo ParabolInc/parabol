@@ -7,6 +7,7 @@ import Row from 'universal/components/Row/Row';
 import UserTag from 'universal/components/UserTag/UserTag';
 import FontAwesome from 'react-fontawesome';
 import makeDateString from 'universal/utils/makeDateString';
+import makeMonthString from 'universal/utils/makeMonthString';
 import {Link} from 'react-router';
 
 const InvoiceRow = (props) => {
@@ -34,7 +35,7 @@ const InvoiceRow = (props) => {
         <div className={css(styles.infoRow)}>
           <div className={css(styles.infoRowLeft)}>
             <div className={css(styles.invoiceTitle)}>
-              {makeDateString(endAt, false)}
+              {makeMonthString(endAt)}
             </div>
             {isEstimate &&
               <UserTag colorPalette="light" label="Current Estimate"/>
