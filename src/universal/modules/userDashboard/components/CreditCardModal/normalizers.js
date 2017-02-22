@@ -5,7 +5,7 @@ export const normalizeExpiry = (value = '', previousValue = '') => {
     return `0${month}/`;
   }
   // if backspacing or typing a month > 12
-  if ((previousValue.length === 3 && value.length === 2) || parseInt(month) > 12) {
+  if ((previousValue.length === 3 && value.length === 2) || parseInt(month, 10) > 12) {
     return value[0];
   }
   const numValue = value.replace(/[^\d]/g, '');

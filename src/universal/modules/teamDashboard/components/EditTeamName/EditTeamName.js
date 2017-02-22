@@ -21,12 +21,12 @@ const EditTeamName = (props) => {
   const {teamName, teamId, handleSubmit} = props;
   const updateEditable = async (submissionData) => {
     const schema = editTeamNameValidation();
-    const {data: {teamName}} = schema(submissionData);
+    const {data: {teamName: validTeamName}} = schema(submissionData);
 
     const variables = {
       updatedTeam: {
         id: teamId,
-        name: teamName
+        name: validTeamName
       }
     };
     cashay.mutate('updateTeamName', {variables});

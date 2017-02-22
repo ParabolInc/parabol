@@ -1,5 +1,5 @@
 import {GraphQLObjectType} from 'graphql';
-import invoice from './models/Invoice/invoiceQuery'
+import invoice from './models/Invoice/invoiceQuery';
 import meeting from './models/Meeting/meetingQuery';
 import organization from './models/Organization/organizationQuery';
 import outcome from './models/Outcome/outcomeQuery';

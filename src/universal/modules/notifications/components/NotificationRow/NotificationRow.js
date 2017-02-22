@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import typePicker from 'universal/modules/notifications/helpers/typePicker';
 
 const NotificationRow = (props) => {
@@ -7,5 +7,11 @@ const NotificationRow = (props) => {
   return <NotificationType orgId={orgId} notificationId={notificationId} varList={varList}/>;
 };
 
-export default NotificationRow;
+NotificationRow.propTypes = {
+  notificationId: PropTypes.string.isRequired,
+  orgId: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  varList: PropTypes.array.isRequired,
+};
 
+export default NotificationRow;

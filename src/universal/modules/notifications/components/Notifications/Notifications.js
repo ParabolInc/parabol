@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
 import {NOTIFICATIONS} from 'universal/modules/../utils/constants';
 import withStyles from 'universal/styles/withStyles';

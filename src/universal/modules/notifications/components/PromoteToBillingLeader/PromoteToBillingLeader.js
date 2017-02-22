@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import {css} from 'aphrodite-local-styles/no-important';
 import withStyles from 'universal/styles/withStyles';
 import ui from 'universal/styles/ui';
@@ -44,6 +44,14 @@ const PromoteToBillingLeader = (props) => {
       </div>
     </Row>
   );
+};
+
+PromoteToBillingLeader.propTypes = {
+  notificationId: PropTypes.string.isRequired,
+  orgId: PropTypes.string.isRequired,
+  router: PropTypes.object.isRequired,
+  styles: PropTypes.object,
+  varList: PropTypes.array.isRequired
 };
 
 const styleThunk = () => ({

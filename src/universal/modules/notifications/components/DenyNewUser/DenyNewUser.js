@@ -50,7 +50,7 @@ TrialExpiresSoon.propTypes = {
   notificationId: PropTypes.string,
   styles: PropTypes.object,
   varList: PropTypes.array
-}
+};
 
 const styleThunk = () => ({
   ...defaultStyles,

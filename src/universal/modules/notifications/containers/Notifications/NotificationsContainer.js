@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import Notifications from 'universal/modules/notifications/components/Notifications/Notifications';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
@@ -14,7 +14,7 @@ query {
   }
 }`;
 
-const mapStateToProps = (state, props) => {
+const mapStateToProps = (state) => {
   const userId = state.auth.obj.sub;
   const {notifications} = cashay.query(notificationsQuery, {
     op: 'notificationsContainer',
@@ -43,22 +43,8 @@ const NotificationsContainer = (props) => {
   );
 };
 
-export default connect(mapStateToProps)(NotificationsContainer);
+NotificationsContainer.propTypes = {
+  notifications: PropTypes.array.isRequired
+};
 
-// export default class NotificationsContainer extends Component {
-//   render() {
-//     return (
-//       <UserSettingsWrapper settingsLocation={NOTIFICATIONS}>
-//         <div>
-//           Notifications: {notifications.map((notification) =>
-//           <NotificationRow
-//             key={`notification${notification}`}
-//             type={notification.type}
-//             varList={notification.varList}
-//           />
-//         )}
-//         </div>
-//       </UserSettingsWrapper>
-//     );
-//   }
-// }
+export default connect(mapStateToProps)(NotificationsContainer);
