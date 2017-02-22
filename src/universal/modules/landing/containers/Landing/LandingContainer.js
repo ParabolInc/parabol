@@ -23,7 +23,7 @@ export default class LandingContainer extends Component {
       picture: PropTypes.string,
       preferredName: PropTypes.string
     }),
-    dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func
   };
 
   constructor(props) {

@@ -10,7 +10,7 @@ const setImports = () =>
   ]);
 
 const getImports = importMap => ({
-  component: importMap.get('component'),
+  component: importMap.get('component').default,
   socket: importMap.get('socket').socketClusterReducer,
   userDashboard: importMap.get('userDashboard').default
 });
@@ -31,9 +31,9 @@ export default store => ({
   },
   getChildRoutes: (childLocation, cbChild) => {
     cbChild(null, [
-      require('./userSettings')(store),
-      require('./organizations')(store),
-      require('./notifications')(store),
+      require('./userSettings').default(store),
+      require('./organizations').default(store),
+      require('./notifications').default(store),
     ]);
   }
 });

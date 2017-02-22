@@ -7,7 +7,7 @@ const setImports = () =>
   ]);
 
 const getImports = importMap => ({
-  component: importMap.get('component')
+  component: importMap.get('component').default
 });
 
 export default (store) => ({
@@ -20,7 +20,7 @@ export default (store) => ({
   },
   getChildRoutes: (childLocation, cbChild) => {
     cbChild(null, [
-      require('./organization')(store)
+      require('./organization').default(store)
     ]);
   }
 });

@@ -41,7 +41,21 @@ query {
 //   }
 // ];
 
-
+const mapStateToProps = (state, props) => {
+  const {orgId} = props;
+  const {organization: org, invoiceList} = cashay.query(organizationContainerQuery, {
+    op: 'orgBillingContainer',
+    key: orgId,
+    variables: {
+      orgId,
+      first: 5
+    }
+  }).data;
+  return {
+    invoiceList,
+    org
+  };
+};
 
 const OrgBillingContainer = (props) => {
   const {dispatch, invoiceList, org} = props;

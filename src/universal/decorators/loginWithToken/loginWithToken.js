@@ -29,7 +29,7 @@ export default ComposedComponent => {
 
   TokenizedComp.propTypes = {
     auth: PropTypes.object,
-    router: PropTypes.object.isRequired
+    router: PropTypes.object
   };
 
   return connect(mapStateToProps)(withRouter(TokenizedComp));

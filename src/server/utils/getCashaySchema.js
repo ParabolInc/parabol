@@ -22,6 +22,6 @@ require('babel-register')({
 });
 const {transformSchema} = require('cashay');
 const graphql = require('graphql').graphql;
-const rootSchema = require('../graphql/rootSchema');
+const rootSchema = require('../graphql/rootSchema').default;
 
 module.exports = () => transformSchema(rootSchema, graphql);

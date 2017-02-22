@@ -8,7 +8,7 @@ const setImports = () =>
   ]);
 
 const getImports = importMap => ({
-  component: importMap.get('component'),
+  component: importMap.get('component').default,
 });
 
 export default (store) => ({

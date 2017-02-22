@@ -10,7 +10,7 @@ const setImports = () =>
   ]);
 
 const getImports = importMap => ({
-  component: importMap.get('component'),
+  component: importMap.get('component').default,
   socket: importMap.get('socket').socketClusterReducer,
   teamDashboard: importMap.get('teamDashboard').default
 });
@@ -32,8 +32,8 @@ export default store => ({
   getChildRoutes: (childLocation, cbChild) => {
     cbChild(null, [
       /* eslint-disable global-require */
-      require('./teamArchive')(store),
-      require('./teamSettings')(store)
+      require('./teamArchive').default(store),
+      require('./teamSettings').default(store)
       /* eslint-enable */
     ]);
   }
