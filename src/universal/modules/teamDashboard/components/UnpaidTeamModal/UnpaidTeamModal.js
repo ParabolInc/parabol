@@ -30,8 +30,15 @@ const UnpaidTeamModal = (props) => {
 };
 
 UnpaidTeamModal.propTypes = {
+  closeAfter: PropTypes.number,
+  closePortal: PropTypes.func,
+  handleClick: PropTypes.func,
+  isALeader: PropTypes.bool,
+  isClosing: PropTypes.bool,
   router: PropTypes.object,
   orgId: PropTypes.string,
+  problem: PropTypes.string,
+  solution: PropTypes.string,
   teamName: PropTypes.string
 };
 

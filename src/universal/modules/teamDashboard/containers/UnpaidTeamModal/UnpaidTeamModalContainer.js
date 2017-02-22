@@ -62,7 +62,18 @@ const UnpaidTeamModalContainer = (props) => {
 };
 
 UnpaidTeamModalContainer.propTypes = {
+  closeAfter: PropTypes.number,
+  isClosing: PropTypes.bool,
+  myUserId: PropTypes.string,
   router: PropTypes.object,
+  orgDetails: PropTypes.shape({
+    creditCard: PropTypes.shape({
+      brand: PropTypes.string.isRequired
+    }).isRequired,
+    billingLeaders: PropTypes.array.isRequired,
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+  }).isRequired,
   orgId: PropTypes.string,
   teamName: PropTypes.string
 };

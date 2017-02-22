@@ -19,7 +19,8 @@ const ActiveTrialCallOut = (props) => {
 };
 
 ActiveTrialCallOut.propTypes = {
-  orgId: PropTypes.string.isRequired
+  orgId: PropTypes.string.isRequired,
+  periodEnd: PropTypes.object.isRequired
 };
 
 export default ActiveTrialCallOut;
