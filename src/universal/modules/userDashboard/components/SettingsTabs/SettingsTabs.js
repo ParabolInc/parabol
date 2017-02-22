@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import Tabs from 'universal/components/Tabs/Tabs';
@@ -13,13 +13,11 @@ const iconStyle = {opacity: '.5'};
 const SettingsTabs = (props) => {
   const {notificationCount, router, styles} = props;
   let currentPath = SETTINGS;
-  let isRootPath;
   const makeOnClick = (path) => {
     const fullPath = `/me/${path}`;
     if (router.isActive(fullPath)) {
       currentPath = path;
       if (router.isActive(fullPath, true)) {
-        isRootPath = true;
         return undefined;
       }
     }
@@ -59,6 +57,12 @@ const SettingsTabs = (props) => {
   );
 };
 
+SettingsTabs.propTypes = {
+  notificationCount: PropTypes.number,
+  router: PropTypes.object,
+  styles: PropTypes.object
+};
+
 const styleThunk = () => ({
   badge: {
     background: appTheme.palette.warm,
@@ -79,4 +83,3 @@ const styleThunk = () => ({
   }
 });
 export default withRouter(withStyles(styleThunk)(SettingsTabs));
-

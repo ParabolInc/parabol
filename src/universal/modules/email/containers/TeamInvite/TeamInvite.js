@@ -150,9 +150,10 @@ const TeamInvite = props => {
 
 TeamInvite.propTypes = {
   inviterAvatar: PropTypes.string.isRequired,
+  inviteeName: PropTypes.string.isRequired,
+  inviteeEmail: PropTypes.string.isRequired,
   inviterName: PropTypes.string.isRequired,
   inviterEmail: PropTypes.string.isRequired,
-  inviteeEmail: PropTypes.string.isRequired,
   firstProject: PropTypes.string,
   teamName: PropTypes.string.isRequired,
   inviteLink: PropTypes.string.isRequired

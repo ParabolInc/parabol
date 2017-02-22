@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import FontAwesome from 'react-fontawesome';
@@ -22,18 +22,18 @@ const targetAnchor = {
 
 const DropdownInput = (props) => {
   const {handleCreateNew, input: {name, onChange, value}, label, organizations = [], styles} = props;
-  const org = organizations.find((org) => org.id === value);
+  const org = organizations.find((anOrg) => anOrg.id === value);
   const orgName = org && org.name || 'Loading...';
   const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down"/>;
   const itemFactory = () => {
-    return organizations.map((org, idx) => {
+    return organizations.map((anOrg, idx) => {
       return (
         <MenuItem
-          isActive={value === org.id}
+          isActive={value === anOrg.id}
           key={`orgDropdownMenuItem${idx}`}
-          label={org.name}
+          label={anOrg.name}
           onClick={() => {
-            onChange(org.id);
+            onChange(anOrg.id);
           }}
         />
       );
@@ -63,6 +63,18 @@ const DropdownInput = (props) => {
       </div>
     </FieldBlock>
   );
+};
+
+DropdownInput.propTypes = {
+  handleCreateNew: PropTypes.func,
+  input: PropTypes.shape({
+    name: PropTypes.string,
+    onChange: PropTypes.func,
+    value: PropTypes.string
+  }),
+  label: PropTypes.string,
+  organizations: PropTypes.array,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

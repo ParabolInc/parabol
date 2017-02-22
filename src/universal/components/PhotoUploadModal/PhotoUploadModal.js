@@ -42,6 +42,10 @@ const PhotoUploadModal = (props) => {
 };
 
 PhotoUploadModal.propTypes = {
+  children: PropTypes.any,
+  closeAfter: PropTypes.number,
+  closePortal: PropTypes.func,
+  isClosing: PropTypes.bool,
   picture: PropTypes.string,
   styles: PropTypes.object,
   unstyled: PropTypes.bool

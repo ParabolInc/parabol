@@ -4,7 +4,16 @@ import {reduxSocket} from 'redux-socket-cluster';
 import {cashay} from 'cashay';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import reduxSocketOptions from 'universal/redux/reduxSocketOptions';
-import {ADD_TO_TEAM, JOIN_TEAM, KICK_OUT, REJOIN_TEAM, USER_MEMO, NOTIFICATIONS, PRESENCE, TEAM_MEMBERS, TEAM} from 'universal/subscriptions/constants';
+import {
+  ADD_TO_TEAM,
+  JOIN_TEAM,
+  KICK_OUT,
+  REJOIN_TEAM,
+  USER_MEMO,
+  NOTIFICATIONS,
+  PRESENCE,
+  TEAM_MEMBERS
+} from 'universal/subscriptions/constants';
 import socketCluster from 'socketcluster-client';
 import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
 import parseChannel from 'universal/utils/parseChannel';
@@ -38,13 +47,14 @@ export default ComposedComponent => {
   @withRouter
   class SocketWithPresence extends Component {
     static propTypes = {
-      user: PropTypes.object,
       dispatch: PropTypes.func,
       params: PropTypes.shape({
         teamId: PropTypes.string
       }),
       router: PropTypes.object,
-      tms: PropTypes.array
+      tms: PropTypes.array,
+      user: PropTypes.object,
+      userId: PropTypes.string
     };
 
     componentDidMount() {
@@ -66,10 +76,6 @@ export default ComposedComponent => {
       socket.unwatch(userMemoChannel, this.memoHandler);
     }
 
-    render() {
-      return <ComposedComponent {...this.props}/>;
-    }
-
     kickoutHandler = (error, channelName) => {
       const {channel, variableString: teamId} = parseChannel(channelName);
       // important to flag these as unsubscribed so resubs can ocur.
@@ -83,7 +89,7 @@ export default ComposedComponent => {
         const {teamName} = data;
         dispatch(showInfo({
           title: 'Congratulations!',
-          message: `You\'ve been added to team ${teamName}`
+          message: `You've been added to team ${teamName}`
         }));
       } else if (type === KICK_OUT) {
         console.log('received memo', data);
@@ -190,6 +196,11 @@ export default ComposedComponent => {
       const socket = socketCluster.connect();
       socket.on('version', this.versionHandler);
     }
+
+    render() {
+      return <ComposedComponent {...this.props}/>;
+    }
+
   }
   return SocketWithPresence;
 };

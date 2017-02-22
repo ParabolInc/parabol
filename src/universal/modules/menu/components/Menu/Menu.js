@@ -49,8 +49,10 @@ Menu.defaultProps = {
 
 Menu.propTypes = {
   children: PropTypes.any,
+  closePortal: PropTypes.func,
   coords: PropTypes.object,
   isOpen: PropTypes.bool,
+  itemFactory: PropTypes.func,
   label: PropTypes.string,
   menuOrientation: PropTypes.oneOf([
     'left',

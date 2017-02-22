@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import DashLayout from 'universal/components/Dashboard/DashLayout';
-import {NOTIFICATIONS, TEAM} from 'universal/subscriptions/constants';
+import {TEAM} from 'universal/subscriptions/constants';
 import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
 
 const resolveActiveMeetings = (teams) => {
@@ -69,11 +69,13 @@ export default class DashLayoutContainer extends Component {
   static propTypes = {
     activeMeetings: PropTypes.array,
     children: PropTypes.any,
-    tms: PropTypes.array
+    tms: PropTypes.array,
+    trialNotification: PropTypes.object
+    // userId: PropTypes.string
   };
 
   componentDidMount() {
-    const {tms, userId} = this.props;
+    const {tms} = this.props;
     subToAllTeams(tms);
     // cashay.subscribe(NOTIFICATIONS, userId)
   }

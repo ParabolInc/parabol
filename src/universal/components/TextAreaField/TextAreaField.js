@@ -19,7 +19,7 @@ const TextAreaField = (props) => {
     meta: {touched, error},
     placeholder,
     readOnly,
-    styles,
+    styles
   } = props;
 
   const inputStyles = css(
@@ -61,6 +61,7 @@ TextAreaField.propTypes = {
     value: PropTypes.string
   }),
   meta: PropTypes.object.isRequired,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

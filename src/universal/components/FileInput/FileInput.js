@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText';
 import Button from 'universal/components/Button/Button';
 import withStyles from 'universal/styles/withStyles';
@@ -24,15 +24,15 @@ const FileInput = (props) => {
   }
   let el;
   return (
-      <div>
-        <div className={css(styles.control)}>
-          <Button
-            label={buttonLabel}
-            size={size}
-            colorPalette={colorPalette}
-            type="button"
-            onClick={() => { el.click(); }}
-          />
+    <div>
+      <div className={css(styles.control)}>
+        <Button
+          label={buttonLabel}
+          size={size}
+          colorPalette={colorPalette}
+          type="button"
+          onClick={() => { el.click(); }}
+        />
         <input
           accept={accept}
           onChange={(e) => {
@@ -46,14 +46,14 @@ const FileInput = (props) => {
           value={undefined} // required to avoid value change security console message
           ref={(c) => { el = c; }}
         />
-        </div>
-        {touched && error &&
-          <FieldHelpText
-            hasErrorText
-            helpText={errorString}
-          />
-        }
       </div>
+      {touched && error &&
+        <FieldHelpText
+          hasErrorText
+          helpText={errorString}
+        />
+      }
+    </div>
   );
 };
 
