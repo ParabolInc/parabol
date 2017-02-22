@@ -79,6 +79,7 @@ TeamSettingsContainer.propTypes = {
   dispatch: PropTypes.func.isRequired,
   invitations: PropTypes.array.isRequired,
   myTeamMemberId: PropTypes.string.isRequired,
+  orgApprovals: PropTypes.array.isRequired,
   params: PropTypes.object.isRequired,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired

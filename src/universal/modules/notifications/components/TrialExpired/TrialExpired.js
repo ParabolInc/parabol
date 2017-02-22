@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import {withRouter} from 'react-router';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
@@ -15,30 +15,36 @@ const TrialExpiresSoon = (props) => {
     router.push(`/me/organizations/${orgId}`);
   };
   return (
-  <Row>
-    <div className={css(styles.icon)}>
-      <div className={css(styles.avatarPlaceholder)}>
-        <div className={css(styles.avatarPlaceholderInner)}>
-          <FontAwesome name="credit-card"/>
+    <Row>
+      <div className={css(styles.icon)}>
+        <div className={css(styles.avatarPlaceholder)}>
+          <div className={css(styles.avatarPlaceholderInner)}>
+            <FontAwesome name="credit-card"/>
+          </div>
         </div>
       </div>
-    </div>
-    <div className={css(styles.message)}>
-      Your trial has expired!
-      Keep your team going by heading to the Organizastion Settings page.
-    </div>
-    <div className={css(styles.buttonGroup)}>
-      <Button
-        colorPalette="cool"
-        isBlock
-        label="Take me there"
-        size="smallest"
-        type="submit"
-        onClick={addBilling}
-      />
-    </div>
-  </Row>
+      <div className={css(styles.message)}>
+        Your trial has expired!
+        Keep your team going by heading to the Organizastion Settings page.
+      </div>
+      <div className={css(styles.buttonGroup)}>
+        <Button
+          colorPalette="cool"
+          isBlock
+          label="Take me there"
+          size="smallest"
+          type="submit"
+          onClick={addBilling}
+        />
+      </div>
+    </Row>
   );
+};
+
+TrialExpiresSoon.propTypes = {
+  orgId: PropTypes.string.isRequired,
+  router: PropTypes.object.isRequired,
+  styles: PropTypes.string
 };
 
 const avatarPlaceholderSize = '2.75rem';

@@ -1,5 +1,4 @@
-import React, {Component, PropTypes} from 'react';
-import {withRouter} from 'react-router';
+import React, {PropTypes} from 'react';
 import Button from 'universal/components/Button/Button';
 import Row from 'universal/components/Row/Row';
 import {cashay} from 'cashay';
@@ -7,13 +6,12 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
-import {connect} from 'react-redux';
 import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalModal';
 
 const RequestNewUser = (props) => {
   const {notificationId, styles, varList} = props;
   // TODO can we remove inviterUserId from varList?
-  const [inviterUserId, inviterName, inviteeEmail, teamId, teamName] = varList;
+  const [inviterName, inviteeEmail, teamId, teamName] = varList;
 
   const acceptInvite = () => {
     const variables = {
@@ -69,6 +67,12 @@ const RequestNewUser = (props) => {
       </div>
     </Row>
   );
+};
+
+RequestNewUser.propTypes = {
+  notificationId: PropTypes.string.isRequired,
+  styles: PropTypes.object,
+  varList: PropTypes.array.isRequired
 };
 
 const styleThunk = () => ({

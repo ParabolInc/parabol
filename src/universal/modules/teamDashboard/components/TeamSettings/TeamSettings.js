@@ -118,23 +118,23 @@ const TeamSettings = (props) => {
         <div className={css(styles.scrollable)}>
           {teamMembers.map((teamMember, idx) => {
             return (
-                <UserRow
-                  {...teamMember}
-                  actions={teamMemberRowActions(teamMember)}
-                  key={`teamMemberKey${idx}`}
-                />
+              <UserRow
+                {...teamMember}
+                actions={teamMemberRowActions(teamMember)}
+                key={`teamMemberKey${idx}`}
+              />
             );
           })
           }
           {invitations.map((invitation, idx) => {
             return (
-                <UserRow
-                  {...invitation}
-                  email={invitation.email}
-                  invitedAt={`invited ${fromNow(invitation.updatedAt)}`}
-                  actions={invitationRowActions(invitation)}
-                  key={`invitationKey${idx}`}
-                />
+              <UserRow
+                {...invitation}
+                email={invitation.email}
+                invitedAt={`invited ${fromNow(invitation.updatedAt)}`}
+                actions={invitationRowActions(invitation)}
+                key={`invitationKey${idx}`}
+              />
             );
           })
           }
@@ -160,6 +160,7 @@ TeamSettings.propTypes = {
   dispatch: PropTypes.func.isRequired,
   invitations: PropTypes.array.isRequired,
   myTeamMember: PropTypes.object.isRequired,
+  orgApprovals: PropTypes.array,
   styles: PropTypes.object,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired

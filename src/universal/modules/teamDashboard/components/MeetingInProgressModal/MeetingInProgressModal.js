@@ -34,6 +34,8 @@ const MeetingInProgressModal = (props) => {
 };
 
 MeetingInProgressModal.propTypes = {
+  closeAfter: PropTypes.number,
+  isClosing: PropTypes.bool,
   router: PropTypes.object,
   teamId: PropTypes.string,
   teamName: PropTypes.string

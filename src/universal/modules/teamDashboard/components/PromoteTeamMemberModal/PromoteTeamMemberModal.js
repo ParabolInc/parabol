@@ -38,6 +38,9 @@ const PromoteTeamMemberModal = (props) => {
 };
 
 PromoteTeamMemberModal.propTypes = {
+  closeAfter: PropTypes.number,
+  closePortal: PropTypes.func,
+  isClosing: PropTypes.bool,
   onBackdropClick: PropTypes.func,
   preferredName: PropTypes.string.isRequired,
   teamMemberId: PropTypes.string.isRequired

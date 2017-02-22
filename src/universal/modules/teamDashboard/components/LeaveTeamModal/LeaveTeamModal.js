@@ -39,7 +39,12 @@ const LeaveTeamModal = (props) => {
 };
 
 LeaveTeamModal.propTypes = {
+  closeAfter: PropTypes.number,
+  closePortal: PropTypes.func,
+  inputModal: PropTypes.bool,
+  isClosing: PropTypes.bool,
   onBackdropClick: PropTypes.func,
+  router: PropTypes.object.isRequired,
   teamLead: PropTypes.string.isRequired,
   teamMemberId: PropTypes.string.isRequired
 };

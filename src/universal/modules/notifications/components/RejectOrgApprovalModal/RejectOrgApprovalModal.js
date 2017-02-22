@@ -34,8 +34,8 @@ const RejectOrgApprovalModal = (props) => {
     const schema = rejectOrgApprovalValidation();
     const {data: {reason}} = schema(submissionData);
     const variables = {reason, notificationId};
-    const {error} = await cashay.mutate('rejectOrgApproval', {variables});
-    if (error) throw SubmissionError(error);
+    const {error: anError} = await cashay.mutate('rejectOrgApproval', {variables});
+    if (anError) throw new SubmissionError(anError);
     closePortal();
   };
   return (
@@ -70,8 +70,18 @@ const RejectOrgApprovalModal = (props) => {
 };
 
 RejectOrgApprovalModal.propTypes = {
+  closeAfter: PropTypes.number.isRequired,
+  closePortal: PropTypes.func.isRequired,
+  error: PropTypes.string,
+  handleSubmit: PropTypes.func.isRequired,
+  isClosing: PropTypes.bool,
+  inviteeEmail: PropTypes.string,
+  inviterName: PropTypes.string,
+  notificationId: PropTypes.string.isRequired,
   orgId: PropTypes.string.isRequired,
   preferredName: PropTypes.string.isRequired,
+  submitting: PropTypes.bool,
+  styles: PropTypes.object,
   userId: PropTypes.string.isRequired
 };
 

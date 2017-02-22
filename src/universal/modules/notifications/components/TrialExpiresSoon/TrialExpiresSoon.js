@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import {withRouter} from 'react-router';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
@@ -6,7 +6,6 @@ import Button from 'universal/components/Button/Button';
 import fromNow from 'universal/utils/fromNow';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import Row from 'universal/components/Row/Row';
-import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 import FontAwesome from 'react-fontawesome';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
@@ -19,30 +18,37 @@ const TrialExpiresSoon = (props) => {
     router.push(`/me/organizations/${orgId}`);
   };
   return (
-  <Row>
-    <div className={css(styles.icon)}>
-      <div className={css(styles.avatarPlaceholder)}>
-        <div className={css(styles.avatarPlaceholderInner)}>
-          <FontAwesome name="credit-card"/>
+    <Row>
+      <div className={css(styles.icon)}>
+        <div className={css(styles.avatarPlaceholder)}>
+          <div className={css(styles.avatarPlaceholderInner)}>
+            <FontAwesome name="credit-card"/>
+          </div>
         </div>
       </div>
-    </div>
-    <div className={css(styles.message)}>
-      Your free trial will expire in <span className={css(styles.messageVar)}>{daysLeft}</span>.
-      Want another free month? Just add your billing info
-    </div>
-    <div className={css(styles.buttonGroup)}>
-      <Button
-        colorPalette="cool"
-        isBlock
-        label="Add Billing Info"
-        size="smallest"
-        type="submit"
-        onClick={addBilling}
-      />
-    </div>
-  </Row>
+      <div className={css(styles.message)}>
+        Your free trial will expire in <span className={css(styles.messageVar)}>{daysLeft}</span>.
+        Want another free month? Just add your billing info
+      </div>
+      <div className={css(styles.buttonGroup)}>
+        <Button
+          colorPalette="cool"
+          isBlock
+          label="Add Billing Info"
+          size="smallest"
+          type="submit"
+          onClick={addBilling}
+        />
+      </div>
+    </Row>
   );
+};
+
+TrialExpiresSoon.propTypes = {
+  orgId: PropTypes.string.isRequired,
+  router: PropTypes.object.isRequired,
+  styles: PropTypes.object,
+  varList: PropTypes.array.isRequired
 };
 
 const avatarPlaceholderSize = '2.75rem';

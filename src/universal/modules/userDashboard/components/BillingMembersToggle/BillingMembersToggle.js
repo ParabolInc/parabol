@@ -28,7 +28,8 @@ const BillingMembersToggle = (props) => {
 
 BillingMembersToggle.propTypes = {
   activeOrgDetail: PropTypes.string.isRequired,
-  orgId: PropTypes.string.isRequired
+  orgId: PropTypes.string.isRequired,
+  router: PropTypes.object.isRequired
 };
 
 export default withRouter(BillingMembersToggle);
