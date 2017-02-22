@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import {css} from 'aphrodite-local-styles/no-important';
 import withStyles from 'universal/styles/withStyles';
 import ui from 'universal/styles/ui';
@@ -45,6 +45,12 @@ const TrialExpiresSoon = (props) => {
     </Row>
   );
 };
+
+TrialExpiresSoon.propTypes = {
+  notificationId: PropTypes.string,
+  styles: PropTypes.object,
+  varList: PropTypes.array
+}
 
 const styleThunk = () => ({
   ...defaultStyles,

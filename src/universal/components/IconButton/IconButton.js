@@ -24,7 +24,8 @@ IconButton.propTypes = {
   iconSize: PropTypes.string,
   onClick: PropTypes.func,
   styles: PropTypes.object,
-  title: PropTypes.string
+  title: PropTypes.string,
+  type: PropTypes.string
 };
 
 const {cool} = appTheme.palette;

@@ -9,4 +9,11 @@ const StripeTokenField = (props) => {
   return null;
 };
 
+StripeTokenField.propTypes = {
+  meta: PropTypes.shape({
+    error: PropTypes.string,
+    touched: PropTypes.bool
+  })
+};
+
 export default StripeTokenField;

@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -21,6 +21,14 @@ const Tab = (props) => {
       </div>
     </div>
   );
+};
+
+Tab.propTypes = {
+  icon: PropTypes.any,
+  isActive: PropTypes.bool,
+  label: PropTypes.string,
+  onClick: PropTypes.func,
+  styles: PropTypes.object,
 };
 
 const styleThunk = () => ({

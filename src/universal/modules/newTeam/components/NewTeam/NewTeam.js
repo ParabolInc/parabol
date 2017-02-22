@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
 import NewTeamFormContainer from 'universal/modules/newTeam/containers/NewTeamForm/NewTeamFormContainer';
 import {connect} from 'react-redux';
 import DashboardWrapper from 'universal/components/DashboardWrapper/DashboardWrapper';
@@ -9,17 +8,19 @@ import {DragDropContext as dragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
 const NewTeam = (props) => {
-  const {dispatch, params: {newOrg}, styles} = props;
+  const {dispatch, params: {newOrg}} = props;
   return (
     <DashboardWrapper title="User Dashboard">
-        <NewTeamFormContainer dispatch={dispatch} newOrgRoute={Boolean(newOrg)}/>
+      <NewTeamFormContainer dispatch={dispatch} newOrgRoute={Boolean(newOrg)}/>
     </DashboardWrapper>
   );
 };
 
 NewTeam.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  styles: PropTypes.object,
+  params: PropTypes.shape({
+    newOrg: PropTypes.object
+  })
 };
 
 const styleThunk = () => ({
@@ -35,4 +36,3 @@ dragDropContext(HTML5Backend)(
     )
   )
 );
-

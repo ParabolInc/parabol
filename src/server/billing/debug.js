@@ -30,4 +30,4 @@ import stripe from './stripe';
 
 stripe.invoices.retrieve('in_19plLwFLaFINmHnBtYAjtqUN', (err, res) => {
   console.log(err, res);
-})
+});

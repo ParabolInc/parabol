@@ -214,7 +214,7 @@ export default async function handleInvoiceCreated(invoiceId) {
   // sanity check
   const calculatedAmountDue = invoiceLineItems.reduce((sum, {amount}) => sum + amount, 0);
   const stripeTotal = invoice.total + invoice.starting_balance;
-  if (calculatedAmountDue !== stripeTotal ) {
+  if (calculatedAmountDue !== stripeTotal) {
     console.log('Calculated invoice does not match stripe invoice', invoiceId, calculatedAmountDue, stripeTotal);
   }
 

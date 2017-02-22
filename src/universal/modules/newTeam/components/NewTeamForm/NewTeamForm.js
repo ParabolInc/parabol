@@ -36,8 +36,8 @@ const NewTeamForm = (props) => {
     styles
   } = props;
 
-  const setToken = (stripeToken, last4) => {
-    setLast4(last4);
+  const setToken = (stripeToken, myLast4) => {
+    setLast4(myLast4);
     change('stripeToken', stripeToken);
   };
 
@@ -148,6 +148,13 @@ const NewTeamForm = (props) => {
 };
 
 NewTeamForm.propTypes = {
+  change: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
+  last4: PropTypes.string,
+  isNewOrg: PropTypes.bool,
+  organizations: PropTypes.array,
+  router: PropTypes.object.isRequired,
+  setLast4: PropTypes.func.isRequired,
   styles: PropTypes.object
 };
 

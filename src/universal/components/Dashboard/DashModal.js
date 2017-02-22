@@ -40,6 +40,7 @@ const DashModal = (props) => {
 
 DashModal.propTypes = {
   children: PropTypes.any,
+  closeAfter: PropTypes.number,
   inputModal: PropTypes.bool,
   isClosing: PropTypes.bool,
   onBackdropClick: PropTypes.func,

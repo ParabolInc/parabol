@@ -1,5 +1,4 @@
-import {findDOMNode} from 'react-dom';
-import React, {Children, Component, PropTypes, cloneElement} from 'react';
+import React, {Component, PropTypes} from 'react';
 import Menu from 'universal/modules/menu/components/Menu/Menu';
 
 const calculateMenuPosY = (originHeight, originTop, orientation, targetOrientation) => {
@@ -23,6 +22,12 @@ const calculateMenuPosX = (originWidth, originLeft, orientation, targetOrientati
 };
 
 export default class MenuContainer extends Component {
+  static propTypes = {
+    originAnchor: PropTypes.object,
+    targetAnchor: PropTypes.object,
+    toggle: PropTypes.object
+  };
+
   constructor() {
     super();
     this.state = {};

@@ -1,4 +1,4 @@
-import React, {Children, cloneElement, Component, PropTypes} from 'react';
+import React, {Children, cloneElement, PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -24,6 +24,12 @@ const Tabs = (props) => {
       <div style={inkBarStyles}></div>
     </div>
   );
+};
+
+Tabs.propTypes = {
+  activeIdx: PropTypes.number,
+  children: PropTypes.any,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

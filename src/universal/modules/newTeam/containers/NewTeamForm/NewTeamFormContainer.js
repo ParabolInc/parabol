@@ -58,12 +58,6 @@ class NewTeamFormContainer extends Component {
     this.state = {};
   }
 
-  setLast4 = (last4) => {
-    this.setState({
-      last4,
-    });
-  };
-
   onSubmit = async (submittedData) => {
     const {dispatch, isNewOrg, router} = this.props;
     const newTeamId = shortid.generate();
@@ -113,15 +107,20 @@ class NewTeamFormContainer extends Component {
     router.push(`/team/${newTeamId}`);
   };
 
+  setLast4 = (last4) => {
+    this.setState({
+      last4,
+    });
+  };
+
   render() {
-    const {initialValues, isNewOrg, organizations} = this.props;
+    const {isNewOrg, organizations} = this.props;
     if (organizations.length === 0) {
       // more than looks, this is required because initialValues can only be passed in once
       return <LoadingView />;
     }
     return (
       <NewTeamForm
-        initialValues={initialValues}
         isNewOrg={isNewOrg}
         last4={this.state.last4}
         onSubmit={this.onSubmit}
@@ -135,6 +134,8 @@ class NewTeamFormContainer extends Component {
 
 NewTeamFormContainer.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  isNewOrg: PropTypes.bool,
+  organizations: PropTypes.array,
   router: PropTypes.object.isRequired,
 };
 
