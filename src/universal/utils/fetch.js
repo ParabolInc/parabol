@@ -4,7 +4,6 @@
  */
 
 /* eslint-disable global-require */
-console.log('self', self)
 export default self.fetch || require('fetch-ponyfill')().fetch;
 export const Headers = self.Headers || require('fetch-ponyfill')().Headers;
 export const Request = self.Headers || require('fetch-ponyfill')().Request;

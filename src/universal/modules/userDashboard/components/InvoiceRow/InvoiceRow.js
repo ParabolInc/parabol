@@ -9,6 +9,7 @@ import FontAwesome from 'react-fontawesome';
 import makeDateString from 'universal/utils/makeDateString';
 import makeMonthString from 'universal/utils/makeMonthString';
 import {Link} from 'react-router';
+import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineFormat';
 
 const InvoiceRow = (props) => {
   const {
@@ -16,7 +17,7 @@ const InvoiceRow = (props) => {
       id: invoiceId,
       endAt,
       isEstimate,
-      amount
+      amountDue
     },
     styles
   } = props;
@@ -43,7 +44,7 @@ const InvoiceRow = (props) => {
           </div>
           <div className={css(styles.infoRowRight)}>
             <span className={css(styles.invoiceAmount)}>
-              ${(amount / 100).toFixed(2)}
+              {invoiceLineFormat(amountDue)}
             </span>
           </div>
         </div>

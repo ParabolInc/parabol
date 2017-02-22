@@ -8,10 +8,16 @@ import InvoiceHeader from '../InvoiceHeader/InvoiceHeader';
 import InvoiceFooter from '../InvoiceFooter/InvoiceFooter';
 import InvoiceLineItemContainer from 'universal/modules/invoice/containers/InvoiceLineItemContainer/InvoiceLineItemContainer';
 import makeMonthString from 'universal/utils/makeMonthString';
+import makeDateString from 'universal/utils/makeDateString';
 import InvoiceLineItem from 'universal/modules/invoice/components/InvoiceLineItem/InvoiceLineItem';
-
+import plural from 'universal/utils/plural';
+import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineFormat';
 import {
-  NEXT_MONTH_CHARGES,
+  PAID,
+  ADDED_USERS,
+  REMOVED_USERS,
+  INACTIVITY_ADJUSTMENTS,
+  OTHER_ADJUSTMENTS,
 } from 'universal/utils/constants';
 
 const demoItemsNextMonth = [
@@ -57,40 +63,74 @@ const demoItemsLastMonth = [
   }
 ];
 
-// <div className={css(styles.meta)}>{'Jan 7, 2017 to Feb 6, 2017'}</div>
+const descriptionMaker = {
+  [ADDED_USERS]: (quantity) => `${quantity} new users added`,
+  [REMOVED_USERS]: (quantity) => `${quantity} users removed`,
+  [INACTIVITY_ADJUSTMENTS]: () => 'Adjustments for paused users'
+};
 
 const Invoice = (props) => {
   const {
     invoice,
     styles
   } = props;
-  const {endAt, lines} = invoice;
+  const {
+    amountDue,
+    total,
+    billingLeaderEmails,
+    creditCard,
+    picture,
+    endAt,
+    lines,
+    nextMonthCharges,
+    orgName,
+    startAt,
+    startingBalance
+  } = invoice;
+  const {nextPeriodEnd} = nextMonthCharges;
+  const {brand, last4} = creditCard || {};
   const subject = makeMonthString(endAt);
-  const nextMonthCharges = lines.find((line) => line.type === NEXT_MONTH_CHARGES);
-  const {quantity, amount} = nextMonthCharges;
-  // const nextMonthItem = {
-  //   desc: `${quantity} active users (${}`
-  // }
+  // const nextMonthCharges = lines.find((line) => line.type === NEXT_MONTH_CHARGES);
+  const {quantity, unitPrice} = nextMonthCharges;
+  const unitPriceString = (unitPrice / 100).toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0
+  });
+  const nextUsage = {
+    amount: invoiceLineFormat(nextMonthCharges.amount),
+    desc: `${quantity} active ${plural(quantity, 'user')} (${unitPriceString} each)`
+  };
+  const chargeDates = `${makeDateString(startAt, false)} to ${makeDateString(endAt, false)}`;
+  const nextChargesDates = `${makeDateString(endAt, false)} to ${makeDateString(nextPeriodEnd, false)}`;
 
   const makeLineItems = (arr) =>
-    arr.map((li, idx) => <InvoiceLineItemContainer key={idx} item={li}/>);
+    arr.map((item, idx) => {
+      const li = {
+        amount: invoiceLineFormat(item.amount),
+        desc: item.description || descriptionMaker[item.type](item.quantity),
+        details: item.details
+      };
+      return <InvoiceLineItemContainer key={idx} item={li}/>;
+    });
 
   const makeAsterisk = () =>
     <span className={css(styles.asterisk)}>{'*'}</span>;
 
   return (
     <div className={css(styles.invoice)}>
-      <Helmet title={`Parabol Action Invoice for ${subject}`} />
-      <InvoiceHeader/>
+      <Helmet title={`Parabol Action Invoice for ${subject}`}/>
+      <InvoiceHeader orgName={orgName} emails={billingLeaderEmails} picture={picture}/>
       <div className={css(styles.panel)}>
         <div className={css(styles.label)}>{'Invoice'}</div>
         <div className={css(styles.subject)}>{subject}</div>
 
         <div className={css(styles.sectionHeader)}>
           <div className={css(styles.heading)}>{'Next month’s usage'}</div>
+          <div className={css(styles.meta)}>{nextChargesDates}</div>
         </div>
 
-        <InvoiceLineItem item={li}/>
+        <InvoiceLineItem item={nextUsage}/>
 
         <div className={css(styles.sectionHeader)}>
           <div className={css(styles.heading)}>
@@ -99,18 +139,28 @@ const Invoice = (props) => {
               {makeAsterisk()}{'Prorated'}
             </div>
           </div>
-          <div className={css(styles.meta)}>{'Dec 7, 2017 to Jan 6, 2017'}</div>
+          <div className={css(styles.meta)}>{chargeDates}</div>
         </div>
 
-        {makeLineItems(demoItemsLastMonth)}
+        {makeLineItems(lines)}
 
         <div className={css(styles.total)}>
-          <div>{'Total'}</div>
-          <div>{'$43.22'}</div>
+          <div>Total</div>
+          <div>{invoiceLineFormat(total)}</div>
         </div>
-        <div className={css(styles.meta)}>
-          Charged to <b>Visa</b> ending in <b>3245</b>
+        <div className={css(styles.total)}>
+          <div>Previous Balance</div>
+          <div>{invoiceLineFormat(startingBalance)}</div>
         </div>
+        <div className={css(styles.total)}>
+          <div>Amount charged</div>
+          <div>{invoiceLineFormat(amountDue)}</div>
+        </div>
+        {brand &&
+          <div className={css(styles.meta)}>
+            {status === PAID ? 'Charged' : 'Pending charge'} to <b>{brand}</b> ending in <b>{last4}</b>
+          </div>
+        }
       </div>
       <InvoiceFooter/>
     </div>

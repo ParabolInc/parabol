@@ -8,8 +8,14 @@ const invoiceContainerQuery = `
 query {
   invoiceDetails(invoiceId: $invoiceId) {
     id
-    amount
+    amountDue
+    billingLeaderEmails
+    creditCard {
+      brand
+      last4
+    }
     endAt
+    invoiceDate
     lines {
       id
       amount
@@ -24,8 +30,17 @@ query {
       quantity
       type
     }
+    nextMonthCharges {
+      amount
+      nextPeriodEnd
+      quantity
+      unitPrice
+    }
+    orgName
+    startingBalance
     startAt
     status
+    total
   }
 }
 `;
@@ -35,6 +50,9 @@ const mapStateToProps = (state, props) => {
   const {invoiceDetails} = cashay.query(invoiceContainerQuery, {
     op: 'invoiceContainer',
     key: invoiceId,
+    sort: {
+      lines: (a, b) => a.type > b.type ? 1 : -1
+    },
     variables: {invoiceId}
   }).data;
   return {
@@ -47,6 +65,7 @@ const InvoiceContainer = (props) => {
   if (!invoiceDetails.id) {
     return <LoadingView/>;
   }
+  console.log('deets', invoiceDetails)
   return <Invoice invoice={invoiceDetails}/>;
 };
 

@@ -7,36 +7,31 @@ import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.
 
 const InvoiceHeader = (props) => {
   const {
-    contact,
-    logo,
-    name,
+    emails,
+    picture,
+    orgName,
     styles
   } = props;
 
   return (
     <div className={css(styles.header)}>
       <div className={css(styles.logoPanel)}>
-        <img alt={`Logo for ${name}`} className={css(styles.logo)} src={logo}/>
+        <img alt={`Logo for ${orgName}`} className={css(styles.picture)} src={picture || defaultOrgAvatar}/>
       </div>
       <div className={css(styles.info)}>
-        <div className={css(styles.name)}>{name}</div>
-        <div className={css(styles.contact)}>{contact}</div>
+        <div className={css(styles.orgName)}>{orgName}</div>
+        {emails.map((email, idx) => <div key={`email${idx}`} className={css(styles.email)}>{email}</div>)}
+
       </div>
     </div>
   );
 };
 
 InvoiceHeader.propTypes = {
-  contact: PropTypes.string,
-  logo: PropTypes.string,
-  name: PropTypes.string,
+  emails: PropTypes.array,
+  picture: PropTypes.string,
+  orgName: PropTypes.string,
   styles: PropTypes.object
-};
-
-InvoiceHeader.defaultProps = {
-  contact: 'admin@sample.co',
-  logo: defaultOrgAvatar,
-  name: 'Sample Organization',
 };
 
 const breakpoint = ui.invoiceBreakpoint;
@@ -61,7 +56,7 @@ const styleThunk = () => ({
     }
   },
 
-  logo: {
+  picture: {
     height: 'auto',
     width: '100%'
   },
@@ -71,7 +66,7 @@ const styleThunk = () => ({
     marginLeft: '1.25rem',
   },
 
-  name: {
+  orgName: {
     fontSize: appTheme.typography.s5,
     lineHeight: '1.5',
 
@@ -80,7 +75,7 @@ const styleThunk = () => ({
     }
   },
 
-  contact: {
+  email: {
     fontSize: appTheme.typography.s3,
     lineHeight: appTheme.typography.s5,
   }

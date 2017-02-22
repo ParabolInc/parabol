@@ -8,21 +8,20 @@ import {
   GraphQLList,
   GraphQLString
 } from 'graphql';
-import {GraphQLEmailType} from '../../types';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import makeEnumValues from 'server/graphql/makeEnumValues';
 import {
   ADDED_USERS,
   REMOVED_USERS,
   INACTIVITY_ADJUSTMENTS,
-  NEXT_MONTH_CHARGES,
   OTHER_ADJUSTMENTS,
-  PREVIOUS_BALANCE,
+  PENDING,
+  PAID,
+  UNPAID
 } from 'universal/utils/constants';
-/* Invoice status variables */
-export const PENDING = 'PENDING';
-export const PAID = 'PAID';
-export const UNPAID = 'UNPAID';
+import {CreditCard} from 'server/graphql/models/Organization/organizationSchema';
+import {GraphQLEmailType, GraphQLURLType} from 'server/graphql/types';
+
 
 /* Each invoice has 3 levels.
  * L1 is a the invoice itself: how much to pay.
@@ -36,9 +35,7 @@ export const LineItemType = new GraphQLEnumType({
   values: makeEnumValues([
     ADDED_USERS,
     INACTIVITY_ADJUSTMENTS,
-    NEXT_MONTH_CHARGES,
     OTHER_ADJUSTMENTS,
-    PREVIOUS_BALANCE,
     REMOVED_USERS
   ])
 });
@@ -99,6 +96,29 @@ const InvoiceLineItem = new GraphQLObjectType({
   })
 });
 
+const NextMonthCharge = new GraphQLObjectType({
+  name: 'NextMonthCharge',
+  description: 'A single line item for the charges for next month',
+  fields: () => ({
+    amount: {
+      type: new GraphQLNonNull(GraphQLFloat),
+      description: 'The amount for the line item (in USD)'
+    },
+    nextPeriodEnd: {
+      type: GraphQLISO8601Type,
+      description: 'The datetime the next period will end'
+    },
+    quantity: {
+      type: GraphQLInt,
+      description: 'The total number of days that all org users have been inactive during the billing cycle'
+    },
+    unitPrice: {
+      type: GraphQLFloat,
+      description: 'The per-seat monthly price of the subscription (in dollars)'
+    }
+  })
+});
+
 const InvoiceStatus = new GraphQLEnumType({
   name: 'InvoiceStatus',
   description: 'The payment status of the invoice',
@@ -114,37 +134,69 @@ export const Invoice = new GraphQLObjectType({
   description: 'A monthly billing invoice for an organization',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique invoice Id'},
-    amount: {
+    amountDue: {
+      type: GraphQLFloat,
+      description: 'The amount the card will be charged (total + startingBalance with a min value of 0)'
+    },
+    total: {
       type: GraphQLFloat,
       description: 'The total amount for the invoice (in USD)'
     },
-    invoiceDate: {
-      type: GraphQLISO8601Type,
-      description: 'The date the invoice was created'
+    billingLeaderEmails: {
+      type: new GraphQLList(GraphQLEmailType),
+      description: 'The emails the invoice was sent to'
     },
-    startAt: {
-      type: GraphQLISO8601Type,
-      description: 'The timestamp for the beginning of the billing cycle'
+    creditCard: {
+      type: CreditCard,
+      description: 'the card used to pay the invoice. undefined if status is not PAID'
+    },
+    cursor: {
+      type: GraphQLFloat,
+      description: 'the string interpretation of startAt'
     },
     endAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp for the end of the billing cycle'
     },
+    invoiceDate: {
+      type: GraphQLISO8601Type,
+      description: 'The date the invoice was created'
+    },
     lines: {
       type: new GraphQLList(new GraphQLNonNull(InvoiceLineItem)),
-      description: 'An invoice line item for either the next month or an adjustment from the previous month charge'
+      description: 'An invoice line item for previous month adjustments'
+    },
+    nextMonthCharges: {
+      type: NextMonthCharge,
+      description: 'The details that comprise the charges for next month'
     },
     orgId: {
       type: new GraphQLNonNull(GraphQLID),
       description: '*The organization id to charge'
     },
+    orgName: {
+      type: GraphQLString,
+      description: 'The persisted name of the org as it was when invoiced'
+    },
+    paidAt: {
+      type: GraphQLISO8601Type,
+      description: 'the datetime the invoice was successfully paid'
+    },
+    picture: {
+      type: GraphQLURLType,
+      description: 'The picture of the organization'
+    },
+    startAt: {
+      type: GraphQLISO8601Type,
+      description: 'The timestamp for the beginning of the billing cycle'
+    },
+    startingBalance: {
+      type: GraphQLFloat,
+      description: 'The balance on the customer account (in cents)'
+    },
     status: {
       type: InvoiceStatus,
       description: 'the status of the invoice. starts as pending, moves to paid or unpaid depending on if the payment succeeded'
-    },
-    cursor: {
-      type: GraphQLFloat,
-      description: 'the string interpretation of startAt'
     }
   })
 });

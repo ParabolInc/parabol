@@ -1,9 +1,8 @@
 import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 import shortid from 'shortid';
-import {BILLING_LEADER, PAYMENT_REJECTED} from 'universal/utils/constants';
+import {UNPAID, BILLING_LEADER, PAYMENT_REJECTED} from 'universal/utils/constants';
 import terminateSubscription from 'server/billing/helpers/terminateSubscription';
-import {UNPAID} from 'server/graphql/models/Invoice/invoiceSchema';
 
 /*
  * Used for failed payments that are not trialing. Trialing orgs will not have a CC

@@ -31,26 +31,22 @@ import {User} from 'server/graphql/models/User/userSchema';
 //   })
 // });
 
-export const creditCardFields = {
-  brand: {
-    type: GraphQLString,
-    description: 'The brand of the credit card, as provided by skype'
-  },
-  expiry: {
-    type: GraphQLString,
-    description: 'The MM/YY string of the expiration date'
-  },
-  last4: {
-    type: GraphQLInt,
-    description: 'The last 4 digits of a credit card'
-  }
-};
-
-const CreditCard = new GraphQLObjectType({
+export const CreditCard = new GraphQLObjectType({
   name: 'CreditCard',
   description: 'A credit card',
   fields: () => ({
-    ...creditCardFields
+    brand: {
+      type: GraphQLString,
+      description: 'The brand of the credit card, as provided by skype'
+    },
+    expiry: {
+      type: GraphQLString,
+      description: 'The MM/YY string of the expiration date'
+    },
+    last4: {
+      type: GraphQLInt,
+      description: 'The last 4 digits of a credit card'
+    }
   })
 });
 

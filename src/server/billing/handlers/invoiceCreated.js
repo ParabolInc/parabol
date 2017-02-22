@@ -2,15 +2,12 @@ import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 import shortid from 'shortid';
 import {
-  PENDING
-} from 'server/graphql/models/Invoice/invoiceSchema';
-import {
+  PENDING,
   ADDED_USERS,
+  BILLING_LEADER,
   REMOVED_USERS,
   INACTIVITY_ADJUSTMENTS,
-  NEXT_MONTH_CHARGES,
   OTHER_ADJUSTMENTS,
-  PREVIOUS_BALANCE,
 } from 'universal/utils/constants';
 import {
   ADD_USER,
@@ -161,11 +158,11 @@ const makeItemDict = (stripeLineItems) => {
     if (description === null && proration === false) {
       // this must be the next month's charge
       nextMonthCharges = {
-        id: shortid.generate(),
+        // id: shortid.generate(),
         amount,
-        type: NEXT_MONTH_CHARGES,
+        // type: NEXT_MONTH_CHARGES,
         quantity,
-        nextPeriodEnd: end,
+        nextPeriodEnd: fromEpochSeconds(end),
         unitPrice: lineItem.plan.amount
       };
     } else if (!type || !userId) {
@@ -194,6 +191,7 @@ export default async function handleInvoiceCreated(invoiceId) {
   const stripeLineItems = await fetchAllLines(invoiceId);
   const invoice = await stripe.invoices.retrieve(invoiceId);
   const {metadata: {orgId}} = await stripe.customers.retrieve(invoice.customer);
+  await stripe.invoices.update(invoiceId, {metadata: {orgId}});
   const {itemDict, nextMonthCharges, unknownLineItems} = makeItemDict(stripeLineItems);
   const detailedLineItems = await makeDetailedLineItems(itemDict, invoiceId);
   const quantityChangeLineItems = makeQuantityChangeLineItems(detailedLineItems);
@@ -208,31 +206,36 @@ export default async function handleInvoiceCreated(invoiceId) {
     ...quantityChangeLineItems,
   ];
 
-  console.log('setting invoice metadata', orgId);
-  await stripe.invoices.update(invoiceId, {
-    metadata: {
-      orgId
-    }
-  });
-
   // sanity check
-  const calculatedAmountDue = invoiceLineItems.reduce((sum, {amount}) => sum + amount, 0);
-  const stripeTotal = invoice.total + invoice.starting_balance;
-  if (calculatedAmountDue !== stripeTotal) {
-    console.log('Calculated invoice does not match stripe invoice', invoiceId, calculatedAmountDue, stripeTotal);
+  const calculatedTotal = invoiceLineItems.reduce((sum, {amount}) => sum + amount, 0) + nextMonthCharges.amount;
+  // const stripeTotal = invoice.total + invoice.starting_balance;
+  if (calculatedTotal !== invoice.total) {
+    console.log('Calculated invoice does not match stripe invoice', invoiceId, calculatedTotal, invoice.total);
   }
 
-  await r.table('Invoice').insert({
-    id: invoiceId,
-    amount: stripeTotal,
-    endAt: fromEpochSeconds(invoice.period_end),
-    invoiceDate: fromEpochSeconds(invoice.date),
-    lines: invoiceLineItems,
-    nextPeriodEnd:
-    orgId,
-    startAt: fromEpochSeconds(invoice.period_start),
-    startingBalance: invoice.starting_balance,
-    status: PENDING
-  });
+  await r.table('Organization').get(orgId)
+    .do((org) => {
+      return r.table('Invoice').insert({
+        id: invoiceId,
+        amountDue: invoice.amount_due,
+        total: invoice.total,
+        billingLeaderEmails: r.table('User')
+          .getAll(orgId, {index: 'userOrgs'})
+          .filter((user) => user('userOrgs')
+            .contains((userOrg) => userOrg('id').eq(orgId).and(userOrg('role').eq(BILLING_LEADER))))('email')
+          .coerceTo('array'),
+        creditCard: org('creditCard').default(null),
+        endAt: fromEpochSeconds(invoice.period_end),
+        invoiceDate: fromEpochSeconds(invoice.date),
+        lines: invoiceLineItems,
+        nextMonthCharges,
+        orgId,
+        orgName: org('name'),
+        picture: org('picture').default(null),
+        startAt: fromEpochSeconds(invoice.period_start),
+        startingBalance: invoice.starting_balance,
+        status: PENDING
+      })
+    });
   return true;
 }

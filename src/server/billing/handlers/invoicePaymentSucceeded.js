@@ -1,12 +1,13 @@
 import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
-import {PAID} from 'server/graphql/models/Invoice/invoiceSchema';
+import {PAID} from 'universal/utils/constants';
 
 /*
  * Simply update our pretty invoice
  */
 export default async function invoicePaymentSucceeded(invoiceId) {
   const r = getRethink();
+  const now = new Date();
 
   // VALIDATION
   const {customer: customerId, subscription, paid} = await stripe.invoices.retrieve(invoiceId);
@@ -19,7 +20,12 @@ export default async function invoicePaymentSucceeded(invoiceId) {
 
   // RESOLUTION
   // this must have not been a trial (or it was and they entered a card that got invalidated <1 hr after entering it)
-  await r.table('Invoice').get(invoiceId).update({
-    status: PAID
-  });
+  await r.table('Organization').get(orgId)('creditCard').default(null)
+    .do((creditCard) => {
+      return r.table('Invoice').get(invoiceId).update({
+        creditCard,
+        paidAt: now,
+        status: PAID
+      })
+    });
 }

@@ -17,7 +17,7 @@ query {
   }
   invoiceList(orgId: $orgId, first: $first) {
     id
-    amount
+    amountDue
     cursor
     endAt
     startAt
