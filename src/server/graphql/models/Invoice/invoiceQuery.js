@@ -10,6 +10,28 @@ import {Invoice} from './invoiceSchema';
 import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
 
 export default {
+  invoiceDetails: {
+    type: Invoice,
+    args: {
+      invoiceId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'The id of the invoice'
+      }
+    },
+    async resolve(source, {invoiceId}, {authToken}) {
+      const r = getRethink();
+
+      // AUTH
+      const userId = getUserId(authToken);
+      const invoice = await r.table('Invoice').get(invoiceId);
+      const {orgId} = invoice;
+      const userOrgDoc = await getUserOrgDoc(userId, orgId);
+      requireOrgLeader(userOrgDoc);
+
+      // RESOLUTION
+      return invoice;
+    }
+  },
   invoiceList: {
     type: new GraphQLList(new GraphQLNonNull(Invoice)),
     args: {

@@ -1,4 +1,4 @@
-const days = [
+export const days = [
   'Sunday',
   'Monday',
   'Tuesday',
@@ -8,7 +8,7 @@ const days = [
   'Saturday'
 ];
 
-const months = [
+export const months = [
   'January',
   'February',
   'March',

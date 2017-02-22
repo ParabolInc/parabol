@@ -11,15 +11,14 @@ import {
 import {GraphQLEmailType} from '../../types';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import makeEnumValues from 'server/graphql/makeEnumValues';
-
-export const NEXT_MONTH_CHARGES = 'NEXT_MONTH_CHARGES';
-export const ADDED_USERS = 'ADDED_USERS';
-export const REMOVED_USERS = 'REMOVED_USERS';
-export const INACTIVITY_ADJUSTMENTS = 'INACTIVITY_ADJUSTMENTS';
-export const OTHER_ADJUSTMENTS = 'OTHER_ADJUSTMENTS';
-export const PREVIOUS_BALANCE = 'PREVIOUS_BALANCE';
-
-
+import {
+  ADDED_USERS,
+  REMOVED_USERS,
+  INACTIVITY_ADJUSTMENTS,
+  NEXT_MONTH_CHARGES,
+  OTHER_ADJUSTMENTS,
+  PREVIOUS_BALANCE,
+} from 'universal/utils/constants';
 /* Invoice status variables */
 export const PENDING = 'PENDING';
 export const PAID = 'PAID';

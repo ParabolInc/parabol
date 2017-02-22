@@ -7,6 +7,12 @@ import appTheme from 'universal/styles/theme/appTheme';
 import InvoiceHeader from '../InvoiceHeader/InvoiceHeader';
 import InvoiceFooter from '../InvoiceFooter/InvoiceFooter';
 import InvoiceLineItemContainer from 'universal/modules/invoice/containers/InvoiceLineItemContainer/InvoiceLineItemContainer';
+import makeMonthString from 'universal/utils/makeMonthString';
+import InvoiceLineItem from 'universal/modules/invoice/components/InvoiceLineItem/InvoiceLineItem';
+
+import {
+  NEXT_MONTH_CHARGES,
+} from 'universal/utils/constants';
 
 const demoItemsNextMonth = [
   {
@@ -51,11 +57,20 @@ const demoItemsLastMonth = [
   }
 ];
 
+// <div className={css(styles.meta)}>{'Jan 7, 2017 to Feb 6, 2017'}</div>
+
 const Invoice = (props) => {
   const {
-    subject,
+    invoice,
     styles
   } = props;
+  const {endAt, lines} = invoice;
+  const subject = makeMonthString(endAt);
+  const nextMonthCharges = lines.find((line) => line.type === NEXT_MONTH_CHARGES);
+  const {quantity, amount} = nextMonthCharges;
+  // const nextMonthItem = {
+  //   desc: `${quantity} active users (${}`
+  // }
 
   const makeLineItems = (arr) =>
     arr.map((li, idx) => <InvoiceLineItemContainer key={idx} item={li}/>);
@@ -73,10 +88,9 @@ const Invoice = (props) => {
 
         <div className={css(styles.sectionHeader)}>
           <div className={css(styles.heading)}>{'Next month’s usage'}</div>
-          <div className={css(styles.meta)}>{'Jan 7, 2017 to Feb 6, 2017'}</div>
         </div>
 
-        {makeLineItems(demoItemsNextMonth)}
+        <InvoiceLineItem item={li}/>
 
         <div className={css(styles.sectionHeader)}>
           <div className={css(styles.heading)}>

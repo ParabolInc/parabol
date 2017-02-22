@@ -109,3 +109,9 @@ export const BILLING_LEADER = 'billingLeader';
 /* Stripe */
 // changing this does NOT change it in stripe, it just changes the UI
 export const MONTHLY_PRICE = 5;
+export const NEXT_MONTH_CHARGES = 'NEXT_MONTH_CHARGES';
+export const ADDED_USERS = 'ADDED_USERS';
+export const REMOVED_USERS = 'REMOVED_USERS';
+export const INACTIVITY_ADJUSTMENTS = 'INACTIVITY_ADJUSTMENTS';
+export const OTHER_ADJUSTMENTS = 'OTHER_ADJUSTMENTS';
+export const PREVIOUS_BALANCE = 'PREVIOUS_BALANCE';
