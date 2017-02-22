@@ -8,7 +8,6 @@ module.exports = {
     vendors: [
       'aphrodite-local-styles',
       'auth0-lock',
-      'babel-polyfill',
       'cashay',
       'core-js',
       'email-addresses',

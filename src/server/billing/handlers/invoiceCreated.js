@@ -154,17 +154,20 @@ const makeDetailedLineItems = async(itemDict, invoiceId) => {
 const makeItemDict = (stripeLineItems) => {
   const itemDict = {};
   const unknownLineItems = [];
+  let nextMonthCharges;
   for (let i = 0; i < stripeLineItems.length; i++) {
     const lineItem = stripeLineItems[i];
-    const {amount, metadata: {type, userId}, description, period: {start}, proration, quantity} = lineItem;
+    const {amount, metadata: {type, userId}, description, period: {start, end}, proration, quantity} = lineItem;
     if (description === null && proration === false) {
       // this must be the next month's charge
-      unknownLineItems.push({
+      nextMonthCharges = {
         id: shortid.generate(),
         amount,
         type: NEXT_MONTH_CHARGES,
-        quantity
-      });
+        quantity,
+        nextPeriodEnd: end,
+        unitPrice: lineItem.plan.amount
+      };
     } else if (!type || !userId) {
       unknownLineItems.push({
         id: shortid.generate(),
@@ -182,7 +185,7 @@ const makeItemDict = (stripeLineItems) => {
       itemDict[userId][safeType][start].push(lineItem);
     }
   }
-  return {itemDict, unknownLineItems};
+  return {itemDict, nextMonthCharges, unknownLineItems};
 };
 
 export default async function handleInvoiceCreated(invoiceId) {
@@ -191,19 +194,18 @@ export default async function handleInvoiceCreated(invoiceId) {
   const stripeLineItems = await fetchAllLines(invoiceId);
   const invoice = await stripe.invoices.retrieve(invoiceId);
   const {metadata: {orgId}} = await stripe.customers.retrieve(invoice.customer);
-  const {itemDict, unknownLineItems} = makeItemDict(stripeLineItems);
+  const {itemDict, nextMonthCharges, unknownLineItems} = makeItemDict(stripeLineItems);
   const detailedLineItems = await makeDetailedLineItems(itemDict, invoiceId);
   const quantityChangeLineItems = makeQuantityChangeLineItems(detailedLineItems);
 
-  const previousBalance = {
-    id: shortid.generate(),
-    amount: invoice.starting_balance,
-    type: PREVIOUS_BALANCE
-  };
+  // const previousBalance = {
+  //   id: shortid.generate(),
+  //   amount: invoice.starting_balance,
+  //   type: PREVIOUS_BALANCE
+  // };
   const invoiceLineItems = [
     ...unknownLineItems,
     ...quantityChangeLineItems,
-    previousBalance
   ];
 
   console.log('setting invoice metadata', orgId);
@@ -226,8 +228,10 @@ export default async function handleInvoiceCreated(invoiceId) {
     endAt: fromEpochSeconds(invoice.period_end),
     invoiceDate: fromEpochSeconds(invoice.date),
     lines: invoiceLineItems,
+    nextPeriodEnd:
     orgId,
     startAt: fromEpochSeconds(invoice.period_start),
+    startingBalance: invoice.starting_balance,
     status: PENDING
   });
   return true;
