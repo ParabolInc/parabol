@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
 import {ORGANIZATIONS} from 'universal/utils/constants';
 import withStyles from 'universal/styles/withStyles';
@@ -40,6 +40,12 @@ const Organizations = (props) => {
       </div>
     </UserSettingsWrapper>
   );
+};
+
+Organizations.propTypes = {
+  organizations: PropTypes.array,
+  router: PropTypes.object,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

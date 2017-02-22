@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import {reduxForm, Field} from 'redux-form';
 import {cashay} from 'cashay';
 import makeAvatarSchema from 'universal/validation/makeAvatarSchema';
@@ -28,7 +28,7 @@ const uploadPicture = async (pictureFile) => {
 const UserAvatarInput = (props) => {
   const {handleSubmit, userId} = props;
 
-  const updateUser = (userId, pictureUrl) => {
+  const updateUser = (id, pictureUrl) => {
     const options = {
       variables: {
         updatedUser: {
@@ -48,8 +48,7 @@ const UserAvatarInput = (props) => {
       try {
         await updateUser(userId, pictureUrl);
       } catch (e) {
-        // eslint-disable-line no-undef
-        Raven.captureException(e);
+        Raven.captureException(e); // eslint-disable-line no-undef
       }
     }
     // no work to do
@@ -65,6 +64,11 @@ const UserAvatarInput = (props) => {
       />
     </form>
   );
+};
+
+UserAvatarInput.propTypes = {
+  handleSubmit: PropTypes.func,
+  userId: PropTypes.string
 };
 
 export default reduxForm({form: 'userAvatar', shouldValidate, validate})(

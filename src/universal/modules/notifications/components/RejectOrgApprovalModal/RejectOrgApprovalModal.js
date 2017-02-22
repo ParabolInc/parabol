@@ -2,12 +2,13 @@ import React, {PropTypes} from 'react';
 import {DashModal} from 'universal/components/Dashboard';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import Button from 'universal/components/Button/Button';
+import TextAreaField from 'universal/components/TextAreaField/TextAreaField';
 import Type from 'universal/components/Type/Type';
 import {cashay} from 'cashay';
 import portal from 'react-portal-hoc';
 import {reduxForm, Field, SubmissionError} from 'redux-form';
-import TextAreaField from 'universal/components/TextAreaField/TextAreaField';
 import rejectOrgApprovalValidation from './rejectOrgApprovalValidation';
 import shouldValidate from 'universal/validation/shouldValidate';
 import formError from 'universal/styles/helpers/formError';
@@ -59,7 +60,7 @@ const RejectOrgApprovalModal = (props) => {
             disabled={submitting}
             isBlock
             label={`Reject ${inviteeEmail}`}
-            size="smallest"
+            size={ui.modalButtonSize}
             type="submit"
             onClick={handleSubmit(onSubmit)}
           />

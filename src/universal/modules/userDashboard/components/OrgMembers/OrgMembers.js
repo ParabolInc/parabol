@@ -3,7 +3,6 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import OrgUserRow from '../OrgUserRow/OrgUserRow';
-import IconControl from 'universal/components/IconControl/IconControl';
 import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
 import Toggle from 'universal/components/Toggle/Toggle';
@@ -50,30 +49,30 @@ const OrgMembers = (props) => {
       const listItems = [];
       if (orgUser.isBillingLeader) {
         listItems.push(
-            <MenuItem label="Remove Billing leader role" onClick={setRole(id)}/>
+          <MenuItem label="Remove Billing leader role" onClick={setRole(id)}/>
           );
       } else {
         listItems.push(
-            <MenuItem label="Promote to Billing leader" onClick={setRole(id, BILLING_LEADER)}/>
+          <MenuItem label="Promote to Billing leader" onClick={setRole(id, BILLING_LEADER)}/>
           );
       }
       if (myUserId !== orgUser.id) {
         listItems.push(
-            <RemoveFromOrgModal
-              orgId={orgId}
-              preferredName={preferredName}
-              userId={id}
-              toggle={<MenuItem label="Remove from Organization"/>}
-            />
+          <RemoveFromOrgModal
+            orgId={orgId}
+            preferredName={preferredName}
+            userId={id}
+            toggle={<MenuItem label="Remove from Organization"/>}
+          />
           );
       }
       if (billingLeaderCount > 1 && myUserId === orgUser.id) {
         listItems.push(
-            <LeaveOrgModal
-              orgId={orgId}
-              userId={id}
-              toggle={<MenuItem label="Leave Organization"/>}
-            />
+          <LeaveOrgModal
+            orgId={orgId}
+            userId={id}
+            toggle={<MenuItem label="Leave Organization"/>}
+          />
           );
       }
 
@@ -90,55 +89,65 @@ const OrgMembers = (props) => {
           }));
         }
       } else {
-        dispatch(showInfo({
-          title: 'We got you covered',
-          message: 'We\'ll unpause that user the next time they log in so you don\'t pay a penny more than necessary'
-        }));
-          // pop toast until we do find a way to display locally?
+        dispatch(
+          showInfo({
+            title: 'We got you covered',
+            message: 'We\'ll unpause that user the next time they log in so you don\'t pay a penny more than necessary'
+          })
+        );
+        // pop toast until we do find a way to display locally?
       }
     };
     return (
-        <div className={css(styles.actionLinkBlock)}>
-          <div className={css(styles.toggleBlock)}>
-            <Toggle active={!inactive} block label="Active" onClick={toggleHandler}/>
-          </div>
-          <div className={css(styles.menuToggleBlock)}>
-            <Menu
-              itemFactory={itemFactory}
-              originAnchor={originAnchor}
-              menuWidth="12rem"
-              targetAnchor={targetAnchor}
-              toggle={
-                <Button
-                  colorPalette="dark"
-                  icon="ellipsis-v"
-                  isBlock
-                  size="smallest"
-                  style="flat"
-                />
-              }
-            />
-          </div>
+      <div className={css(styles.actionLinkBlock)}>
+        <div className={css(styles.toggleBlock)}>
+          <Toggle active={!inactive} block label="Active" onClick={toggleHandler}/>
         </div>
+        <div className={css(styles.menuToggleBlock)}>
+          <Menu
+            itemFactory={itemFactory}
+            originAnchor={originAnchor}
+            menuWidth="12rem"
+            targetAnchor={targetAnchor}
+            toggle={
+              <Button
+                colorPalette="dark"
+                icon="ellipsis-v"
+                isBlock
+                size="smallest"
+                style="flat"
+              />
+            }
+          />
+        </div>
+      </div>
     );
   };
   return (
-      <Panel label="Organization Members">
-        <div className={css(styles.listOfAdmins)}>
-          {users.map((orgUser, idx) => {
-            return (
-              <OrgUserRow
-                key={`orgUser${idx}`}
-                actions={userRowActions(orgUser)}
-                orgUser={orgUser}
-              />
-            );
-          })}
-        </div>
-      </Panel>
+    <Panel label="Organization Members">
+      <div className={css(styles.listOfAdmins)}>
+        {users.map((orgUser, idx) => {
+          return (
+            <OrgUserRow
+              key={`orgUser${idx}`}
+              actions={userRowActions(orgUser)}
+              orgUser={orgUser}
+            />
+          );
+        })}
+      </div>
+    </Panel>
   );
-}
-  ;
+};
+
+OrgMembers.propTypes = {
+  billingLeaderCount: PropTypes.number,
+  dispatch: PropTypes.func,
+  users: PropTypes.array,
+  myUserId: PropTypes.string,
+  org: PropTypes.object,
+  styles: PropTypes.object
+};
 
 const styleThunk = () => ({
   actionLinkBlock: {

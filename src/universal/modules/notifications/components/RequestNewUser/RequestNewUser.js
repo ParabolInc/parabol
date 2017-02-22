@@ -4,6 +4,7 @@ import Row from 'universal/components/Row/Row';
 import {cashay} from 'cashay';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalModal';
@@ -44,6 +45,7 @@ const RequestNewUser = (props) => {
         <span className={css(styles.messageVar)}> {inviteeEmail} </span>
         to
         <span className={css(styles.messageVar)}> {teamName}</span>
+        <div className={css(styles.messageSub)}>Your monthly invoice will increase by $5.</div>
       </div>
       <div className={css(styles.buttonGroup)}>
         <div className={css(styles.button)}>
@@ -51,7 +53,7 @@ const RequestNewUser = (props) => {
             colorPalette="cool"
             isBlock
             label="Accept"
-            size="smallest"
+            size={ui.notificationButtonSize}
             type="submit"
             onClick={acceptInvite}
           />

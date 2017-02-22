@@ -1,33 +1,19 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import FontAwesome from 'react-fontawesome';
 import {withRouter} from 'react-router';
 import {SETTINGS, ORGANIZATIONS, NOTIFICATIONS} from 'universal/utils/constants';
-import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
-import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
-
-const iconStyle = {
-  color: appTheme.palette.dark,
-  display: 'none',
-  fontSize: ui.iconSize,
-  lineHeight: 'inherit',
-  marginRight: '.5rem'
-};
 
 const heading = {
   [SETTINGS]: {
-    label: 'Settings',
-    icon: 'address-card'
+    label: 'Settings'
   },
   [ORGANIZATIONS]: {
-    label: 'Organizations',
-    icon: 'building'
+    label: 'Organizations'
   },
   [NOTIFICATIONS]: {
-    label: 'Notifications',
-    icon: 'bell'
+    label: 'Notifications'
   }
 };
 
@@ -38,13 +24,10 @@ const SettingsHeader = (props) => {
   } = props;
   return (
     <div className={css(styles.root)}>
-      <FontAwesome name={heading[location].icon} style={iconStyle} />
       <h1 className={css(styles.heading)}>{heading[location].label}</h1>
     </div>
   );
 };
-
-// <IconAvatar icon={heading[location].icon}/>
 
 SettingsHeader.propTypes = {
   location: PropTypes.string,

@@ -15,7 +15,8 @@ const UserDashboard = (props) => {
 };
 
 UserDashboard.propTypes = {
-  children: PropTypes.any
+  children: PropTypes.any,
+  location: PropTypes.object
 };
 
 export default

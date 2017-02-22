@@ -37,7 +37,7 @@ const TrialExpiresSoon = (props) => {
           colorPalette="cool"
           isBlock
           label="Okay"
-          size="smallest"
+          size={ui.notificationButtonSize}
           type="submit"
           onClick={acknowledge}
         />

@@ -86,11 +86,11 @@ const TeamSettings = (props) => {
           />
         }
         {myTeamMember.isLead && myTeamMember.id !== teamMember.id &&
-            <RemoveTeamMemberModal
-              toggle={<div className={css(styles.actionLink)}>Remove</div>}
-              preferredName={preferredName}
-              teamMemberId={id}
-            />
+          <RemoveTeamMemberModal
+            toggle={<div className={css(styles.actionLink)}>Remove</div>}
+            preferredName={preferredName}
+            teamMemberId={id}
+          />
         }
         {!myTeamMember.isLead && myTeamMember.id === teamMember.id &&
           <LeaveTeamModal

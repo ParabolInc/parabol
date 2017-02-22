@@ -35,7 +35,7 @@ const TrialExpiresSoon = (props) => {
           colorPalette="cool"
           isBlock
           label="Add Billing Info"
-          size="smallest"
+          size={ui.notificationButtonSize}
           type="submit"
           onClick={addBilling}
         />

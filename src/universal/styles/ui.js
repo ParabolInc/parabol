@@ -325,6 +325,11 @@ const ui = {
   // ---------------------------------------------------------------------------
   modalBorderRadius: borderRadiusLarge,
   modalBoxShadow: '0 .25rem .5rem 0 rgba(0, 0, 0, .35)',
+  modalButtonSize: BUTTON_SIZE_MEDIUM,
+
+  // Notifications
+  // ---------------------------------------------------------------------------
+  notificationButtonSize: BUTTON_SIZE_SMALLEST,
 
   // Panels
   // ---------------------------------------------------------------------------
