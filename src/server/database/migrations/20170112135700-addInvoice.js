@@ -9,7 +9,7 @@ exports.up = async(r) => {
     // ignore
   }
   const indices = [
-    r.table('Invoice').indexCreate('orgId'),
+    r.table('Invoice').indexCreate('orgIdStartAt', (row) => [row('orgId'), row('startAt')]),
     r.table('InvoiceItemHook').indexCreate('prorationDate'),
     r.table('InvoiceItemHook').indexCreate('userId')
     // r.table('InvoiceItemHook').indexCreate('prorationDateSubId', (row) => [row('prorationDate'), row('subId')])

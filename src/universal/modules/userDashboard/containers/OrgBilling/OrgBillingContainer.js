@@ -15,6 +15,13 @@ query {
     }
     periodEnd
   }
+  invoiceList(orgId: $orgId, first: $first) {
+    id
+    amount
+    cursor
+    endAt
+    startAt
+  }
 }
 `;
 
@@ -36,25 +43,29 @@ const invoices = [
 
 const mapStateToProps = (state, props) => {
   const {orgId} = props;
-  const {organization: org} = cashay.query(organizationContainerQuery, {
+  const {organization: org, invoiceList} = cashay.query(organizationContainerQuery, {
     op: 'orgBillingContainer',
     key: orgId,
-    variables: {orgId}
+    variables: {
+      orgId,
+      first: 5
+    }
   }).data;
   return {
+    invoiceList,
     org
   };
 };
 
 const OrgBillingContainer = (props) => {
-  const {dispatch, org} = props;
+  const {dispatch, invoiceList, org} = props;
   if (!org.id) {
     return <LoadingView/>;
   }
   return (
     <OrgBilling
       dispatch={dispatch}
-      invoices={invoices}
+      invoices={invoiceList}
       org={org}
     />
   );

@@ -11,6 +11,7 @@ export default store => ({
   childRoutes: [
     ...require('./admin'),
     require('./invitation')(store),
+    require('./invoice')(store),
     require('./landing'),
     require('./signout'),
     require('./meeting')(store),

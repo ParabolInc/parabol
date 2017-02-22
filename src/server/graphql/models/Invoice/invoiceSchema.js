@@ -142,10 +142,10 @@ export const Invoice = new GraphQLObjectType({
     status: {
       type: InvoiceStatus,
       description: 'the status of the invoice. starts as pending, moves to paid or unpaid depending on if the payment succeeded'
+    },
+    cursor: {
+      type: GraphQLFloat,
+      description: 'the string interpretation of startAt'
     }
-    // paid: {
-    //   type: GraphQLBoolean,
-    //   description: 'true if the invoice has been paid, else false'
-    // }
   })
 });

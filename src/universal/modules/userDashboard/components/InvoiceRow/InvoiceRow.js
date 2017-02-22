@@ -7,11 +7,13 @@ import Row from 'universal/components/Row/Row';
 import UserTag from 'universal/components/UserTag/UserTag';
 import FontAwesome from 'react-fontawesome';
 import makeDateString from 'universal/utils/makeDateString';
+import {Link} from 'react-router';
 
 const InvoiceRow = (props) => {
   const {
     invoice: {
-      invoiceDate,
+      id: invoiceId,
+      endAt,
       isEstimate,
       amount
     },
@@ -32,7 +34,7 @@ const InvoiceRow = (props) => {
         <div className={css(styles.infoRow)}>
           <div className={css(styles.infoRowLeft)}>
             <div className={css(styles.invoiceTitle)}>
-              {makeDateString(invoiceDate, false)}
+              {makeDateString(endAt, false)}
             </div>
             {isEstimate &&
               <UserTag colorPalette="light" label="Current Estimate"/>
@@ -40,23 +42,23 @@ const InvoiceRow = (props) => {
           </div>
           <div className={css(styles.infoRowRight)}>
             <span className={css(styles.invoiceAmount)}>
-              ${amount.toFixed(2)}
+              ${(amount / 100).toFixed(2)}
             </span>
           </div>
         </div>
         <div className={css(styles.infoRow)}>
           <div className={css(styles.infoRowLeft)}>
-            <div className={css(styles.subHeader)}>
+            <Link className={css(styles.subHeader)} target="_blank" to={`/invoice/${invoiceId}`}>
               See Details
-            </div>
+            </Link>
           </div>
           <div className={css(styles.infoRowRight)}>
             {isEstimate ?
               <span className={css(styles.date, styles.toPay)}>
-                Your card will be charged on {makeDateString(invoiceDate, false)}
+                Your card will be charged on {makeDateString(endAt, false)}
               </span> :
               <span className={css(styles.date, styles.paid)}>
-                Paid on {makeDateString(invoiceDate, false)}
+                Paid on {makeDateString(endAt, false)}
               </span>
             }
           </div>
