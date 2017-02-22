@@ -88,8 +88,8 @@ class CreditCardModalContainer extends Component {
         orgId,
         stripeToken
       };
-      const {error} = await cashay.mutate('addBilling', {variables});
-      if (error) throw new SubmissionError(error);
+      const {error: cashayError} = await cashay.mutate('addBilling', {variables});
+      if (cashayError) throw new SubmissionError(cashayError);
       closePortal();
     }
   };
@@ -129,7 +129,7 @@ CreditCardModalContainer.propTypes = {
   closePortal: PropTypes.func,
   handleToken: PropTypes.func,
   orgId: PropTypes.string,
-  stripeCard: PropTypes.object
+  stripeCard: PropTypes.func
 };
 
 const stripeCb = () => {

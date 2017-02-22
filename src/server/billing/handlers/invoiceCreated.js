@@ -213,13 +213,14 @@ export default async function handleInvoiceCreated(invoiceId) {
 
   // sanity check
   const calculatedAmountDue = invoiceLineItems.reduce((sum, {amount}) => sum + amount, 0);
-  if (calculatedAmountDue !== invoice.amount_due) {
-    console.log('Calculated invoice does not match stripe invoice', invoiceId);
+  const stripeTotal = invoice.total + invoice.starting_balance;
+  if (calculatedAmountDue !== stripeTotal ) {
+    console.log('Calculated invoice does not match stripe invoice', invoiceId, calculatedAmountDue, stripeTotal);
   }
 
   await r.table('Invoice').insert({
     id: invoiceId,
-    amount: invoice.amount_due,
+    amount: stripeTotal,
     endAt: fromEpochSeconds(invoice.period_end),
     invoiceDate: fromEpochSeconds(invoice.date),
     lines: invoiceLineItems,
