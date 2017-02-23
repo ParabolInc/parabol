@@ -47,7 +47,8 @@ DashModal.propTypes = {
 
   // NOTE: Use 'fixed' to show over 'viewport'.
   //       Default styles use 'fixed' and 'viewport' values.
-  //       Use 'absolute' to show over 'main'.
+  //       Use 'absolute' to show over 'main' or 'mainHasNotificationBar'.
+  //       SEE: ui.modalLayout for options
 
   position: PropTypes.oneOf([
     'absolute',
@@ -103,17 +104,17 @@ const styleThunk = (theme, props) => ({
     animationName: animateOut
   },
 
-  viewport: {
-    left: 0
-  },
-
-  main: {
+  [ui.modalLayout[0]]: {
     left: ui.dashSidebarWidth
   },
 
-  mainHasNotificationBar: {
+  [ui.modalLayout[1]]: {
     left: ui.dashSidebarWidth,
     top: ui.dashNotificationBarHeight
+  },
+
+  [ui.modalLayout[2]]: {
+    left: 0
   },
 
   absolute: {
@@ -133,7 +134,6 @@ const styleThunk = (theme, props) => ({
   modal: {
     background: '#fff',
     border: `.125rem solid ${appTheme.palette.mid30a}`,
-    // boxShadow: `0 0 0 .25rem ${appTheme.palette.mid30a}, ${ui.modalBoxShadow}`,
     boxShadow: ui.modalBoxShadow,
     borderRadius: ui.modalBorderRadius,
     padding: '1.25rem',

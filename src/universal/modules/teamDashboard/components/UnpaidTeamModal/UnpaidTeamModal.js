@@ -5,9 +5,9 @@ import Type from 'universal/components/Type/Type';
 import ui from 'universal/styles/ui';
 
 const UnpaidTeamModal = (props) => {
-  const {isClosing, closeAfter, problem, solution, isALeader, handleClick} = props;
+  const {isClosing, closeAfter, modalLayout, problem, solution, isALeader, handleClick} = props;
   return (
-    <DashModal position="absolute" modalLayout="main" isClosing={isClosing} closeAfter={closeAfter}>
+    <DashModal position="absolute" modalLayout={modalLayout} isClosing={isClosing} closeAfter={closeAfter}>
       <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
         Oh dear...
       </Type>
