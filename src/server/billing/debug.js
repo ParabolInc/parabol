@@ -28,6 +28,6 @@ import stripe from './stripe';
   // console.log('Payment result:', err, invoice.data)
 // });
 
-// stripe.invoices.retrieve('in_19pop5FLaFINmHnBE5zonyIx', (err, res) => {
-//   console.log(err, res);
-// });
+stripe.invoices.retrieve('in_19qBaSFLaFINmHnBD7Or01zC', (err, res) => {
+  console.log(err, res, res.lines.data);
+});

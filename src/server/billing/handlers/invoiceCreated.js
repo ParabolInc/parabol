@@ -63,13 +63,13 @@ const reduceItemsByType = (typesDict, email, invoiceId) => {
       const lineItems = startTimeDict[startTime];
       if (lineItems.length !== 2) {
         console.warn(`We did not get 2 line items. What do? Invoice: ${invoiceId}, ${JSON.stringify(lineItems)}`);
-        return false;
+        continue;
       }
       reducedItems[k] = {
         id: shortid.generate(),
         amount: lineItems[0].amount + lineItems[1].amount,
         email,
-        [dateField]: startTime
+        [dateField]: fromEpochSeconds(startTime)
       };
     }
   }
@@ -148,13 +148,22 @@ const makeDetailedLineItems = async(itemDict, invoiceId) => {
   return detailedLineItems;
 };
 
+const addToDict = (itemDict, lineItem) => {
+  const {metadata: {userId, type}, period: {start}} = lineItem;
+  const safeType = type === AUTO_PAUSE_USER ? PAUSE_USER : type;
+  itemDict[userId] = itemDict[userId] || {};
+  itemDict[userId][safeType] = itemDict[userId][safeType] || {};
+  itemDict[userId][safeType][start] = itemDict[userId][safeType][start] || [];
+  itemDict[userId][safeType][start].push(lineItem);
+};
+
 const makeItemDict = (stripeLineItems) => {
   const itemDict = {};
   const unknownLineItems = [];
   let nextMonthCharges;
   for (let i = 0; i < stripeLineItems.length; i++) {
     const lineItem = stripeLineItems[i];
-    const {amount, metadata: {type, userId}, description, period: {start, end}, proration, quantity} = lineItem;
+    const {amount, metadata, description, period: {end}, proration, quantity} = lineItem;
     if (description === null && proration === false) {
       // this must be the next month's charge
       nextMonthCharges = {
@@ -165,24 +174,42 @@ const makeItemDict = (stripeLineItems) => {
         nextPeriodEnd: fromEpochSeconds(end),
         unitPrice: lineItem.plan.amount
       };
-    } else if (!type || !userId) {
-      unknownLineItems.push({
-        id: shortid.generate(),
-        amount,
-        description,
-        quantity,
-        type: OTHER_ADJUSTMENTS
-      });
+    } else if (!metadata.type) {
+      unknownLineItems.push(lineItem);
     } else {
       // at this point, we don't care whether it's an auto pause or manual
-      const safeType = type === AUTO_PAUSE_USER ? PAUSE_USER : type;
-      itemDict[userId] = itemDict[userId] || {};
-      itemDict[userId][safeType] = itemDict[userId][safeType] || {};
-      itemDict[userId][safeType][start] = itemDict[userId][safeType][start] || [];
-      itemDict[userId][safeType][start].push(lineItem);
+      addToDict(itemDict, lineItem);
     }
   }
   return {itemDict, nextMonthCharges, unknownLineItems};
+};
+
+const maybeReduceUnknowns = async(unknownLineItems, itemDict, stripeSubscriptionId) => {
+  const r = getRethink();
+  const unknowns = [];
+  for (let i = 0; i < unknownLineItems.length; i++) {
+    const unknownLineItem = unknownLineItems[i];
+    // this could be inefficient but if all goes as planned, we'll never use this function
+    const hook = await r.table('InvoiceItemHook')
+      .getAll(unknownLineItem.period.start, {index: 'prorationDate'})
+      .filter({stripeSubscriptionId})
+      .nth(0)
+      .default(null);
+    if (hook) {
+      const {id, type, userId} = hook;
+      // push it back to stripe for posterity
+      stripe.invoiceItems.update(id, {
+        metadata: {
+          type,
+          userId
+        }
+      });
+      addToDict(itemDict, unknownLineItem);
+    } else {
+      unknowns.push(unknownLineItem);
+    }
+  }
+  return unknowns;
 };
 
 export default async function handleInvoiceCreated(invoiceId) {
@@ -193,16 +220,18 @@ export default async function handleInvoiceCreated(invoiceId) {
   const {metadata: {orgId}} = await stripe.customers.retrieve(invoice.customer);
   await stripe.invoices.update(invoiceId, {metadata: {orgId}});
   const {itemDict, nextMonthCharges, unknownLineItems} = makeItemDict(stripeLineItems);
+  // technically, invoice.created could be called before invoiceitem.created is if there is a network hiccup. mutates itemDict!
+  const unknownInvoiceLines = await maybeReduceUnknowns(unknownLineItems, itemDict, invoice.subscription);
   const detailedLineItems = await makeDetailedLineItems(itemDict, invoiceId);
   const quantityChangeLineItems = makeQuantityChangeLineItems(detailedLineItems);
-
-  // const previousBalance = {
-  //   id: shortid.generate(),
-  //   amount: invoice.starting_balance,
-  //   type: PREVIOUS_BALANCE
-  // };
   const invoiceLineItems = [
-    ...unknownLineItems,
+    ...unknownInvoiceLines.map((item) => ({
+      id: shortid.generate(),
+      amount: item.amount,
+      description: item.description,
+      quantity: item.quantity,
+      type: OTHER_ADJUSTMENTS
+    })),
     ...quantityChangeLineItems,
   ];
 

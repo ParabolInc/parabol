@@ -7,7 +7,6 @@ import getRethink from 'server/database/rethinkDriver';
  */
 export default async function handleInvoiceItemCreated(invoiceItemId) {
   const r = getRethink();
-  console.log('invoice item created', invoiceItemId);
   const invoiceItem = await stripe.invoiceItems.retrieve(invoiceItemId);
   const {subscription, period: {start}} = invoiceItem;
   const hook = await r.table('InvoiceItemHook')
