@@ -147,23 +147,25 @@ const Invoice = (props) => {
 
         {makeLineItems(lines)}
 
-        <div className={css(styles.total)}>
-          <div>Total</div>
-          <div>{invoiceLineFormat(total)}</div>
-        </div>
-        <div className={css(styles.total)}>
-          <div>Previous Balance</div>
-          <div>{invoiceLineFormat(startingBalance)}</div>
-        </div>
-        <div className={css(styles.total)}>
-          <div>Amount charged</div>
-          <div>{invoiceLineFormat(amountDue)}</div>
-        </div>
-        {brand &&
-          <div className={css(styles.meta)}>
-            {status === PAID ? 'Charged' : 'Pending charge'} to <b>{brand}</b> ending in <b>{last4}</b>
+        <div className={css(styles.amountSection)}>
+          <div className={css(styles.amountLineSub)}>
+            <div>Total</div>
+            <div>{invoiceLineFormat(total)}</div>
           </div>
-        }
+          <div className={css(styles.amountLineSub)}>
+            <div>Previous Balance</div>
+            <div>{invoiceLineFormat(startingBalance)}</div>
+          </div>
+          <div className={css(styles.amountLine)}>
+            <div>Amount charged</div>
+            <div>{invoiceLineFormat(amountDue)}</div>
+          </div>
+          {brand &&
+            <div className={css(styles.meta)}>
+              {status === PAID ? 'Charged' : 'Pending charge'} to <b>{brand}</b> ending in <b>{last4}</b>
+            </div>
+          }
+        </div>
       </div>
       <InvoiceFooter/>
     </div>
@@ -281,18 +283,29 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.s3
   },
 
-  total: {
-    ...ui.invoiceItemBaseStyles,
-    fontSize: appTheme.typography.s6,
-    fontWeight: 700,
-    lineHeight: appTheme.typography.s7,
-    marginTop: panelGutterSmall,
+  amountSection: {
+    borderTop: `1px solid ${ui.invoiceBorderColorLighter}`,
+    marginTop: '1px',
+    paddingTop: panelGutterSmall,
     paddingRight: panelGutterSmall,
 
     [breakpoint]: {
-      marginTop: panelGutterLarge,
+      paddingTop: panelGutterLarge,
       paddingRight: panelGutterLarge
     }
+  },
+
+  amountLine: {
+    ...ui.invoiceItemBaseStyles,
+    fontSize: appTheme.typography.s6,
+    fontWeight: 700,
+    lineHeight: appTheme.typography.s7
+  },
+
+  amountLineSub: {
+    ...ui.invoiceItemBaseStyles,
+    fontSize: appTheme.typography.s4,
+    lineHeight: '1.75rem',
   }
 });
 
