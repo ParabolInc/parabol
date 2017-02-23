@@ -14,22 +14,30 @@ export default class ProgressBarContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      hasHover: false
+      hoverState: {
+        onMouseEnter: false,
+        onMouseLeave: true,
+      }
     };
   }
 
-  handleHover = (hoverState) => {
-    this.setState({ hasHover: !hoverState });
+  handleHover = (type) => {
+    const hoverState = {
+      onMouseEnter: type === 'enter',
+      onMouseLeave: type === 'leave',
+    };
+    this.setState({...this.state, hoverState});
   };
 
   render() {
-    const {hasHover} = this.state;
+    const {hoverState} = this.state;
     return (
       <div
-        onMouseEnter={() => this.handleHover(hasHover)}
-        onMouseLeave={() => this.handleHover(hasHover)}
+        onMouseEnter={() => this.handleHover('enter')}
+        onMouseLeave={() => this.handleHover('leave')}
+        onMouseMove={() => this.handleHover('enter')}
       >
-        <ProgressBar {...this.props} hasHover={hasHover} />
+        <ProgressBar {...this.props} hoverState={hoverState} />
       </div>
     );
   }
