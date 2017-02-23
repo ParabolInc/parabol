@@ -2,7 +2,7 @@ import test from 'ava';
 import {applyMiddleware, combineReducers, createStore} from 'redux';
 import thunk from 'redux-thunk';
 import auth, {setAuthToken, removeAuthToken} from '../authDuck';
-import {testToken, testTokenData} from './testTokens';
+import {testToken, testTokenData, emptyToken} from './testTokens';
 
 test.beforeEach(t => {
   const appReducers = {auth};
@@ -11,18 +11,7 @@ test.beforeEach(t => {
   t.context.initialState = t.context.store.getState();
 });
 
-const initialStateAssertion = {
-  auth: {
-    token: null,
-    obj: {
-      aud: null,
-      exp: null,
-      iat: null,
-      iss: null,
-      sub: null
-    }
-  }
-};
+const initialStateAssertion = { auth: emptyToken };
 
 test('initial state', t => {
   t.deepEqual(t.context.initialState, initialStateAssertion);
@@ -34,6 +23,7 @@ test('can setAuthToken w/token decode', t => {
     auth: {
       obj: testTokenData,
       token: testToken,
+      nextUrl: null
     }
   };
   t.context.store.dispatch(setAuthToken(testToken));
