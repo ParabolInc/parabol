@@ -27,7 +27,8 @@ export default async function stripeWebhookHandler(req, res) {
       await customerSubscriptionUpdated(objectId, oldStatus);
     }
   } catch (e) {
-    console.log(`Webhook error for ${type}: ${e}`);
+    console.log(`Webhook error for ${type}`);
+    throw e;
     // TODO report to server logs
   } finally {
     res.sendStatus(200);

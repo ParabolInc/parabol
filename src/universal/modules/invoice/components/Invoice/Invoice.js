@@ -12,6 +12,7 @@ import makeDateString from 'universal/utils/makeDateString';
 import InvoiceLineItem from 'universal/modules/invoice/components/InvoiceLineItem/InvoiceLineItem';
 import plural from 'universal/utils/plural';
 import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineFormat';
+
 import {
   PAID,
   ADDED_USERS,
@@ -64,8 +65,8 @@ const demoItemsLastMonth = [
 ];
 
 const descriptionMaker = {
-  [ADDED_USERS]: (quantity) => `${quantity} new users added`,
-  [REMOVED_USERS]: (quantity) => `${quantity} users removed`,
+  [ADDED_USERS]: (quantity) => `${quantity} new ${plural(quantity, 'user')} added`,
+  [REMOVED_USERS]: (quantity) => `${quantity} ${plural(quantity, 'user')} removed`,
   [INACTIVITY_ADJUSTMENTS]: () => 'Adjustments for paused users'
 };
 
@@ -106,10 +107,12 @@ const Invoice = (props) => {
 
   const makeLineItems = (arr) =>
     arr.map((item, idx) => {
+    const {amount, description, type, quantity, details} = item;
       const li = {
-        amount: invoiceLineFormat(item.amount),
-        desc: item.description || descriptionMaker[item.type](item.quantity),
-        details: item.details
+        amount: invoiceLineFormat(amount),
+        desc: description || descriptionMaker[type](quantity),
+        details,
+        type
       };
       return <InvoiceLineItemContainer key={idx} item={li}/>;
     });

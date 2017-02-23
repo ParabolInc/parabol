@@ -3,6 +3,27 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
+import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineFormat';
+import {
+  ADDED_USERS,
+  REMOVED_USERS,
+  INACTIVITY_ADJUSTMENTS,
+} from 'universal/utils/constants';
+import makeDateString from 'universal/utils/makeDateString';
+
+const detailDescriptionMaker = {
+  [ADDED_USERS]: (detail) => `${detail.email} joined ${makeDateString(detail.startAt, false)}`,
+  [REMOVED_USERS]: (detail) => `${detail.email} left ${makeDateString(detail.startAt, false)}`,
+  [INACTIVITY_ADJUSTMENTS]: (detail) => {
+    if (!detail.endAt) {
+      return `${detail.email} has been paused since ${makeDateString(detail.startAt)}`;
+    } else if (!detail.startAt) {
+      return `${detail.email} was paused until ${makeDateString(detail.startAt)}`;
+    } else {
+      return `${detail.email} was paused from ${makeDateString(detail.startAt, false)} to ${makeDateString(detail.endAt, false)}`;
+    }
+  }
+};
 
 const InvoiceLineItem = (props) => {
   const {
@@ -11,6 +32,8 @@ const InvoiceLineItem = (props) => {
     item,
     styles
   } = props;
+
+  const {type} = item;
 
   const detailsInnerStyles = css(
     styles.detailsInner,
@@ -24,15 +47,17 @@ const InvoiceLineItem = (props) => {
     );
   };
 
-  const makeDetails = (arr) => {
-    const details = [];
-    arr.map((d, i) => details.push(
-      <div className={css(styles.detailsItem)} key={i}>
-        <div className={css(styles.fill)}>{d.desc}</div>
-        <div>{d.amount}</div>
-      </div>
-    ));
-    return details;
+  const makeDetails = (details) => {
+    return details.map((d, i) => {
+      const amount = invoiceLineFormat(d.amount);
+      const description = detailDescriptionMaker[type](d);
+      return (
+        <div className={css(styles.detailsItem)} key={i}>
+          <div className={css(styles.fill)}>{description}</div>
+          <div>{amount}</div>
+        </div>
+      )
+    });
   };
 
   return (
@@ -42,12 +67,12 @@ const InvoiceLineItem = (props) => {
         <div>{item.amount}</div>
       </div>
       {item.details &&
-        <div className={`${css(styles.details)} hide-print`}>
-          {makeToggle()}
-          <div className={detailsInnerStyles}>
-            {makeDetails(item.details)}
-          </div>
+      <div className={`${css(styles.details)} hide-print`}>
+        {makeToggle()}
+        <div className={detailsInnerStyles}>
+          {makeDetails(item.details)}
         </div>
+      </div>
       }
     </div>
   );
