@@ -10,7 +10,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 const NewTeam = (props) => {
   const {dispatch, params: {newOrg}} = props;
   return (
-    <DashboardWrapper title="User Dashboard">
+    <DashboardWrapper dispatch={dispatch} title="User Dashboard">
       <NewTeamFormContainer dispatch={dispatch} newOrgRoute={Boolean(newOrg)}/>
     </DashboardWrapper>
   );

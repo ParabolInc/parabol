@@ -5,10 +5,10 @@ import {DragDropContext as dragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
 const UserDashboard = (props) => {
-  const {children, location: {pathname}} = props;
+  const {children, dispatch, location: {pathname}} = props;
   const title = pathname === '/me' ? 'User Dashboard' : 'User Settings';
   return (
-    <DashboardWrapper location={pathname} title={title}>
+    <DashboardWrapper dispatch={dispatch} location={pathname} title={title}>
       {children}
     </DashboardWrapper>
   );
@@ -16,6 +16,7 @@ const UserDashboard = (props) => {
 
 UserDashboard.propTypes = {
   children: PropTypes.any,
+  dispatch: PropTypes.func.isRequired,
   location: PropTypes.object
 };
 

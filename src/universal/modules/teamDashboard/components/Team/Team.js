@@ -11,6 +11,7 @@ import {Link, withRouter} from 'react-router';
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
 import MeetingInProgressModal from '../MeetingInProgressModal/MeetingInProgressModal';
 import UnpaidTeamModalContainer from 'universal/modules/teamDashboard/containers/UnpaidTeamModal/UnpaidTeamModalContainer';
+import ui from 'universal/styles/ui';
 
 const faIconStyle = {
   fontSize: '14px',
@@ -65,17 +66,29 @@ const settingsLinks = (teamId) => {
 const initialValues = {teamName: ''};
 
 const Team = (props) => {
-  const {children, router, team, teamMembers} = props;
+  const {children, hasNotificationBar, router, team, teamMembers} = props;
   const {id: teamId, name: teamName, isPaid} = team;
   const hasActiveMeeting = Boolean(team && team.meetingId);
   const hasOverlay = hasActiveMeeting || !isPaid;
   const isSettings = router.isActive(`/team/${teamId}/settings`, false);
   initialValues.teamName = teamName;
   const DashHeaderInfoTitle = isSettings ? <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId}/> : teamName;
+  const modalLayout = hasNotificationBar ? ui.modalLayout[1] : ui.modalLayout[0];
   return (
     <DashMain>
-      <MeetingInProgressModal isOpen={hasActiveMeeting} teamId={teamId} teamName={teamName} key={teamId}/>
-      <UnpaidTeamModalContainer isOpen={!isPaid} teamId={teamId} teamName={teamName}/>
+      <MeetingInProgressModal
+        isOpen={hasActiveMeeting}
+        modalLayout={modalLayout}
+        teamId={teamId}
+        teamName={teamName}
+        key={teamId}
+      />
+      <UnpaidTeamModalContainer
+        isOpen={!isPaid}
+        teamId={teamId}
+        modalLayout={modalLayout}
+        teamName={teamName}
+      />
       <DashHeader hasOverlay={hasOverlay}>
         <DashHeaderInfo title={DashHeaderInfoTitle}>
           {isSettings ? settingsLinks(teamId) : standardLinks(teamId)}
@@ -91,6 +104,7 @@ const Team = (props) => {
 
 Team.propTypes = {
   children: PropTypes.any,
+  hasNotificationBar: PropTypes.bool,
   router: PropTypes.object,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired,

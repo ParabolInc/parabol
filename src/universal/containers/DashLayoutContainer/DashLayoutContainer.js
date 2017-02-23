@@ -4,6 +4,7 @@ import {cashay} from 'cashay';
 import DashLayout from 'universal/components/Dashboard/DashLayout';
 import {TEAM} from 'universal/subscriptions/constants';
 import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
+import {notificationBarPresent} from 'universal/modules/notifications/ducks/notificationDuck';
 
 const resolveActiveMeetings = (teams) => {
   if (teams !== resolveActiveMeetings.teams) {
@@ -69,6 +70,7 @@ export default class DashLayoutContainer extends Component {
   static propTypes = {
     activeMeetings: PropTypes.array,
     children: PropTypes.any,
+    dispatch: PropTypes.func.isRequired,
     tms: PropTypes.array,
     trialNotification: PropTypes.object
     // userId: PropTypes.string
@@ -81,15 +83,28 @@ export default class DashLayoutContainer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    const {activeMeetings, trialNotification} = this.props;
+    const {barType} = trialNotification;
     if (this.props.tms !== nextProps.tms) {
       subToAllTeams(nextProps.tms);
+    }
+
+    if (activeMeetings.length > 0 || barType === TRIAL_EXPIRES_SOON || barType === TRIAL_EXPIRED) {
+      this.props.dispatch(notificationBarPresent(true));
+    } else {
+      this.props.dispatch(notificationBarPresent(false));
     }
   }
 
   render() {
-    const {activeMeetings, children, trialNotification} = this.props;
+    const {activeMeetings, children, dispatch, trialNotification} = this.props;
     return (
-      <DashLayout activeMeetings={activeMeetings} children={children} trialNotification={trialNotification}/>
+      <DashLayout
+        activeMeetings={activeMeetings}
+        children={children}
+        dispatch={dispatch}
+        trialNotification={trialNotification}
+      />
     );
   }
 }

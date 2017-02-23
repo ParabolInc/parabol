@@ -2,11 +2,12 @@ import React, {PropTypes} from 'react';
 import {DashModal} from 'universal/components/Dashboard';
 import IconLink from 'universal/components/IconLink/IconLink';
 import Type from 'universal/components/Type/Type';
+import ui from 'universal/styles/ui';
 
 const UnpaidTeamModal = (props) => {
   const {isClosing, closeAfter, problem, solution, isALeader, handleClick} = props;
   return (
-    <DashModal position="absolute" modalContext="main" isClosing={isClosing} closeAfter={closeAfter}>
+    <DashModal position="absolute" modalLayout="main" isClosing={isClosing} closeAfter={closeAfter}>
       <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
         Oh dear...
       </Type>
@@ -35,6 +36,7 @@ UnpaidTeamModal.propTypes = {
   handleClick: PropTypes.func,
   isALeader: PropTypes.bool,
   isClosing: PropTypes.bool,
+  modalLayout: PropTypes.oneOf(ui.modalLayout),
   router: PropTypes.object,
   orgId: PropTypes.string,
   problem: PropTypes.string,

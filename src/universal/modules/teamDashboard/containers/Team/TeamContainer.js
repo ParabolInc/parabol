@@ -29,6 +29,7 @@ query {
 
 const mapStateToProps = (state, props) => {
   const {teamId} = props.params;
+  const {hasNotificationBar} = state.notifications;
   const teamContainer = cashay.query(teamContainerSub, {
     op: 'teamContainer',
     key: teamId,
@@ -37,21 +38,23 @@ const mapStateToProps = (state, props) => {
   });
   const {team, teamMembers} = teamContainer.data;
   return {
+    hasNotificationBar,
     team,
     teamMembers
   };
 };
 
 const TeamContainer = (props) => {
-  const {children, team, teamMembers} = props;
+  const {children, dispatch, hasNotificationBar, team, teamMembers} = props;
   const readyEnough = team.id;
   return (
-    <DashboardWrapper title="Team Dashboard">
+    <DashboardWrapper dispatch={dispatch} title="Team Dashboard">
       {readyEnough ?
         <Team
+          children={children}
+          hasNotificationBar={hasNotificationBar}
           team={team}
           teamMembers={teamMembers}
-          children={children}
         /> :
         <LoadingView/>
       }
@@ -61,6 +64,8 @@ const TeamContainer = (props) => {
 
 TeamContainer.propTypes = {
   children: PropTypes.any.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  hasNotificationBar: PropTypes.bool,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired,
 };

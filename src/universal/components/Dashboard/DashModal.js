@@ -11,13 +11,13 @@ const DashModal = (props) => {
     isClosing,
     onBackdropClick,
     position,
-    modalContext,
+    modalLayout,
     styles
   } = props;
   const backdropStyles = css(
     styles.backdrop,
     position && styles[position],
-    modalContext && styles[modalContext]
+    modalLayout && styles[modalLayout]
   );
   const modalStyles = css(
     styles.modal,
@@ -53,11 +53,7 @@ DashModal.propTypes = {
     'absolute',
     'fixed'
   ]),
-  modalContext: PropTypes.oneOf([
-    'main',
-    'meetingInProgress',
-    'viewport'
-  ]),
+  modalLayout: PropTypes.oneOf(ui.modalLayout),
   styles: PropTypes.object
 };
 
@@ -115,7 +111,7 @@ const styleThunk = (theme, props) => ({
     left: ui.dashSidebarWidth
   },
 
-  meetingInProgress: {
+  mainHasNotificationBar: {
     left: ui.dashSidebarWidth,
     top: ui.dashNotificationBarHeight
   },
