@@ -7,3 +7,14 @@ export const testTokenData = {
   rol: 'su',
   tms: ['team123']
 };
+export const emptyToken = {
+  token: null,
+  nextUrl: null,
+  obj: {
+    aud: null,
+    exp: null,
+    iat: null,
+    iss: null,
+    sub: null
+  }
+};

@@ -4,7 +4,7 @@ import {applyMiddleware, createStore, combineReducers} from 'redux';
 import thunk from 'redux-thunk';
 import auth from '../authDuck';
 import ReduxAuthEngine from '../AuthEngine';
-import {testToken, testTokenData} from './testTokens';
+import {testToken, testTokenData, emptyToken} from './testTokens';
 
 import {cashay} from 'cashay';
 
@@ -53,6 +53,7 @@ test('saveToken saves token', t => {
     {
       [REDUCER_NAME]: {
         obj: testTokenData,
+        nextUrl: null,
         token: testToken
       }
     }
@@ -72,18 +73,7 @@ test('removeToken removes token', t => {
   rae.removeToken('aName', cb);
   t.deepEqual(
     rae.store.getState(),
-    {
-      [REDUCER_NAME]: {
-        token: null,
-        obj: {
-          aud: null,
-          exp: null,
-          iat: null,
-          iss: null,
-          sub: null
-        }
-      }
-    }
+    { [REDUCER_NAME]: emptyToken }
   );
 });
 
