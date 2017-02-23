@@ -286,12 +286,12 @@ const styleThunk = () => ({
   amountSection: {
     borderTop: `1px solid ${ui.invoiceBorderColorLighter}`,
     marginTop: '1px',
-    paddingTop: panelGutterSmall,
-    paddingRight: panelGutterSmall,
+    paddingTop: '1rem',
+    paddingRight: '1rem',
 
     [breakpoint]: {
-      paddingTop: panelGutterLarge,
-      paddingRight: panelGutterLarge
+      paddingTop: '2rem',
+      paddingRight: '2rem'
     }
   },
 
