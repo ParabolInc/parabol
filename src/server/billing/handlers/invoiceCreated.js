@@ -79,7 +79,7 @@ const reduceItemsByType = (typesDict, email, invoiceId) => {
 const makeDetailedPauseEvents = (pausedItems, unpausedItems) => {
   const inactivityDetails = [];
   // if an unpause happened before a pause, we know they came into this period paused, so we don't want a start date
-  if (unpausedItems && (pausedItems.length === 0 || unpausedItems[0].endAt < pausedItems[0].startAt)) {
+  if (unpausedItems.length > 0 && (pausedItems.length === 0 || unpausedItems[0].endAt < pausedItems[0].startAt)) {
     // mutative
     const firstUnpausedItem = unpausedItems.shift();
     inactivityDetails.push(firstUnpausedItem);

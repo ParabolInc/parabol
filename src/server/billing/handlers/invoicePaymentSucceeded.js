@@ -8,24 +8,20 @@ import {PAID} from 'universal/utils/constants';
 export default async function invoicePaymentSucceeded(invoiceId) {
   const r = getRethink();
   const now = new Date();
-
   // VALIDATION
   const {customer: customerId, subscription, paid} = await stripe.invoices.retrieve(invoiceId);
   const {metadata: {orgId}} = await stripe.customers.retrieve(customerId);
   const org = await r.table('Organization').get(orgId);
-  const {stripeSubscriptionId} = org;
+  const {creditCard, stripeSubscriptionId} = org;
   if (!paid || stripeSubscriptionId !== subscription) {
     throw new Error(`Possible nefarious activity. Bad invoiceId received: ${invoiceId}`);
   }
 
   // RESOLUTION
   // this must have not been a trial (or it was and they entered a card that got invalidated <1 hr after entering it)
-  await r.table('Organization').get(orgId)('creditCard').default(null)
-    .do((creditCard) => {
-      return r.table('Invoice').get(invoiceId).update({
-        creditCard,
-        paidAt: now,
-        status: PAID
-      })
-    });
+  await r.table('Invoice').get(invoiceId).update({
+    creditCard,
+    paidAt: now,
+    status: PAID
+  });
 }
