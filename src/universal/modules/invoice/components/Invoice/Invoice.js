@@ -15,7 +15,7 @@ import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineForm
 
 import {
   PAID,
-  UNPAID,
+  FAILED,
   PENDING,
   ADDED_USERS,
   REMOVED_USERS,
@@ -74,7 +74,7 @@ const descriptionMaker = {
 
 const chargeStatus = {
   [PAID]: 'Charged',
-  [UNPAID]: 'Failed charge',
+  [FAILED]: 'Failed charge',
   [PENDING]: 'Pending charge'
 };
 

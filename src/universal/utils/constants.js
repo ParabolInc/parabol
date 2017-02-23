@@ -115,6 +115,7 @@ export const INACTIVITY_ADJUSTMENTS = 'INACTIVITY_ADJUSTMENTS';
 export const OTHER_ADJUSTMENTS = 'OTHER_ADJUSTMENTS';
 
 /* Invoice status variables */
+export const UPCOMING = 'UPCOMING';
 export const PENDING = 'PENDING';
 export const PAID = 'PAID';
-export const UNPAID = 'UNPAID';
+export const FAILED = 'FAILED';

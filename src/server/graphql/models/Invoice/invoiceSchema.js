@@ -17,7 +17,8 @@ import {
   OTHER_ADJUSTMENTS,
   PENDING,
   PAID,
-  UNPAID
+  FAILED,
+  UPCOMING
 } from 'universal/utils/constants';
 import {CreditCard} from 'server/graphql/models/Organization/organizationSchema';
 import {GraphQLEmailType, GraphQLURLType} from 'server/graphql/types';
@@ -125,7 +126,8 @@ const InvoiceStatus = new GraphQLEnumType({
   values: makeEnumValues([
     PENDING,
     PAID,
-    UNPAID
+    FAILED,
+    UPCOMING
   ])
 });
 

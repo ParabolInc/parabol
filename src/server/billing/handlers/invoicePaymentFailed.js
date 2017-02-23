@@ -1,7 +1,7 @@
 import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 import shortid from 'shortid';
-import {UNPAID, BILLING_LEADER, PAYMENT_REJECTED} from 'universal/utils/constants';
+import {FAILED, BILLING_LEADER, PAYMENT_REJECTED} from 'universal/utils/constants';
 import terminateSubscription from 'server/billing/helpers/terminateSubscription';
 import fetchAllLines from 'server/billing/helpers/fetchAllLines';
 
@@ -48,7 +48,7 @@ export default async function invoicePaymentFailed(invoiceId) {
     });
     console.log('setting unpaid on db');
     await r.table('Invoice').get(invoiceId).update({
-      status: UNPAID
+      status: FAILED
     })
       .do(() => {
         return r.table('Notification').insert({

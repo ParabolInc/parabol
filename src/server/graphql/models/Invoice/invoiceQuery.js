@@ -8,6 +8,9 @@ import {
 } from 'graphql';
 import {Invoice} from './invoiceSchema';
 import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
+import {UPCOMING} from 'universal/utils/constants';
+import stripe from 'server/billing/stripe';
+import {fromEpochSeconds} from 'server/utils/epochTime';
 
 export default {
   invoiceDetails: {
@@ -51,14 +54,43 @@ export default {
       requireOrgLeader(userOrgDoc);
 
       // RESOLUTION
-      const cursor = after || r.minval;
-      return await r.table('Invoice')
-        .between([orgId, cursor], [orgId, r.maxval], {index: 'orgIdStartAt', leftBound: 'open'})
-        .orderBy(r.desc('startAt'))
-        .limit(first)
-        .merge((doc) => ({
-          cursor: doc('startAt')
-        }))
+
+      if (after) {
+        return r.table('Invoice')
+          .between([orgId, after], [orgId, r.maxval], {index: 'orgIdStartAt', leftBound: 'open'})
+          .orderBy(r.desc('startAt'))
+          .limit(first)
+          .merge((doc) => ({
+            cursor: doc('startAt')
+          }))
+      }
+      const stripeId = await r.table('Organization').get(orgId)('stripeId');
+      const promises = [
+        stripe.invoices.retrieveUpcoming(stripeId),
+        r.table('Invoice')
+          .between([orgId, r.minval], [orgId, r.maxval], {index: 'orgIdStartAt', leftBound: 'open'})
+          .orderBy(r.desc('startAt'))
+          .limit(first - 1)
+          .merge((doc) => ({
+            cursor: doc('startAt')
+          }))
+      ];
+      const [stripeInvoice, pastInvoices] = await Promise.all(promises);
+      const upcomingInvoice = {
+        id: `in_${stripeInvoice.date}`,
+        amountDue: stripeInvoice.amount_due,
+        total: stripeInvoice.total,
+        endAt: fromEpochSeconds(stripeInvoice.period_end),
+        invoiceDate: fromEpochSeconds(stripeInvoice.date),
+        orgId,
+        startAt: fromEpochSeconds(stripeInvoice.period_start),
+        startingBalance: stripeInvoice.startingBalance,
+        status: UPCOMING
+      };
+      return [
+        upcomingInvoice,
+        ...pastInvoices
+      ];
     }
   }
 };

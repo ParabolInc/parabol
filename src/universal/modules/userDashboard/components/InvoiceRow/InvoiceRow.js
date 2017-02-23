@@ -10,17 +10,20 @@ import makeDateString from 'universal/utils/makeDateString';
 import makeMonthString from 'universal/utils/makeMonthString';
 import {Link} from 'react-router';
 import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineFormat';
+import {UPCOMING} from 'universal/utils/constants';
 
 const InvoiceRow = (props) => {
   const {
     invoice: {
       id: invoiceId,
+      amountDue,
       endAt,
-      isEstimate,
-      amountDue
+      paidAt,
+      status
     },
     styles
   } = props;
+  const isEstimate = status === UPCOMING;
   const invoiceAvatarStyles = css(
     styles.invoiceAvatar,
     isEstimate && styles.invoiceAvatarEstimate
@@ -60,7 +63,7 @@ const InvoiceRow = (props) => {
                 Your card will be charged on {makeDateString(endAt, false)}
               </span> :
               <span className={css(styles.date, styles.paid)}>
-                Paid on {makeDateString(endAt, false)}
+                Paid on {makeDateString(paidAt, false)}
               </span>
             }
           </div>
