@@ -3,6 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import shortid from 'shortid';
 import {UNPAID, BILLING_LEADER, PAYMENT_REJECTED} from 'universal/utils/constants';
 import terminateSubscription from 'server/billing/helpers/terminateSubscription';
+import fetchAllLines from 'server/billing/helpers/fetchAllLines';
 
 /*
  * Used for failed payments that are not trialing. Trialing orgs will not have a CC
@@ -27,6 +28,10 @@ export default async function invoicePaymentFailed(invoiceId) {
   // this must have not been a trial (or it was and they entered a card that got invalidated <1 hr after entering it)
   if (creditCard) {
     console.log('termination');
+    const stripeLineItems = await fetchAllLines(invoiceId);
+    const nextMonthCharges = stripeLineItems.find((line) => line.description === null && line.proration === false);
+    const nextMonthAmount = nextMonthCharges && nextMonthCharges.amount || 0;
+
     const orgDoc = await terminateSubscription(orgId);
     const userIds = orgDoc.orgUsers.reduce((billingLeaders, orgUser) => {
       if (orgUser.role === BILLING_LEADER) {
@@ -38,7 +43,8 @@ export default async function invoicePaymentFailed(invoiceId) {
     console.log('updating balance', amount_due);
     await stripe.customers.update(customerId, {
       // amount_due includes the old account_balance, so we can (kinda) atomically set this
-      account_balance: amount_due
+      // we take out the charge for future services since we are ending service immediately
+      account_balance: amount_due - nextMonthAmount
     });
     console.log('setting unpaid on db');
     await r.table('Invoice').get(invoiceId).update({
