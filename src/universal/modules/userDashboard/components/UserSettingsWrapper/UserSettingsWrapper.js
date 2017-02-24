@@ -20,8 +20,7 @@ query {
 
 const mapStateToProps = (state) => {
   const {notifications} = cashay.query(notificationsQuery, {
-    // identical to the other, so leave it be since we only need the count
-    op: 'notificationsContainer',
+    op: 'userSettingsWrapper',
     sort: {
       notifications: (a, b) => a.startAt > b.startAt ? 1 : -1
     },
