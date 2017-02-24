@@ -65,7 +65,6 @@ const InvoiceContainer = (props) => {
   if (!invoiceDetails.id) {
     return <LoadingView/>;
   }
-  console.log('deets', invoiceDetails)
   return <Invoice invoice={invoiceDetails}/>;
 };
 

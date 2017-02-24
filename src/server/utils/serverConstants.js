@@ -19,6 +19,7 @@ export const AUTO_PAUSE_USER = 'autoPauseUser';
 export const REMOVE_USER = 'removeUser';
 export const UNPAUSE_USER = 'unpauseUser';
 export const MAX_MONTHLY_PAUSES = 4;
+export const UPCOMING_INVOICE_TIME_VALID = ms('10m');
 
 /* invite token keys */
 export const INVITE_TOKEN_INVITE_ID_LEN = 6;

@@ -17,7 +17,8 @@ import {
   OTHER_ADJUSTMENTS,
   PENDING,
   PAID,
-  UNPAID
+  FAILED,
+  UPCOMING
 } from 'universal/utils/constants';
 import {CreditCard} from 'server/graphql/models/Organization/organizationSchema';
 import {GraphQLEmailType, GraphQLURLType} from 'server/graphql/types';
@@ -125,7 +126,8 @@ const InvoiceStatus = new GraphQLEnumType({
   values: makeEnumValues([
     PENDING,
     PAID,
-    UNPAID
+    FAILED,
+    UPCOMING
   ])
 });
 
@@ -137,6 +139,10 @@ export const Invoice = new GraphQLObjectType({
     amountDue: {
       type: GraphQLFloat,
       description: 'The amount the card will be charged (total + startingBalance with a min value of 0)'
+    },
+    createdAt: {
+      type: GraphQLISO8601Type,
+      description: 'The datetime the invoice was first generated'
     },
     total: {
       type: GraphQLFloat,

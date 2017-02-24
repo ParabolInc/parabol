@@ -15,6 +15,8 @@ import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineForm
 
 import {
   PAID,
+  FAILED,
+  PENDING,
   ADDED_USERS,
   REMOVED_USERS,
   INACTIVITY_ADJUSTMENTS,
@@ -70,6 +72,12 @@ const descriptionMaker = {
   [INACTIVITY_ADJUSTMENTS]: () => 'Adjustments for paused users'
 };
 
+const chargeStatus = {
+  [PAID]: 'Charged',
+  [FAILED]: 'Failed charge',
+  [PENDING]: 'Pending charge'
+};
+
 const Invoice = (props) => {
   const {
     invoice,
@@ -86,6 +94,7 @@ const Invoice = (props) => {
     nextMonthCharges,
     orgName,
     startAt,
+    status,
     startingBalance
   } = invoice;
   const {nextPeriodEnd} = nextMonthCharges;
@@ -104,7 +113,6 @@ const Invoice = (props) => {
   };
   const chargeDates = `${makeDateString(startAt, false)} to ${makeDateString(endAt, false)}`;
   const nextChargesDates = `${makeDateString(endAt, false)} to ${makeDateString(nextPeriodEnd, false)}`;
-
   const makeLineItems = (arr) =>
     arr.map((item, idx) => {
     const {amount, description, type, quantity, details} = item;
@@ -162,7 +170,7 @@ const Invoice = (props) => {
           </div>
           {brand &&
             <div className={css(styles.meta)}>
-              {status === PAID ? 'Charged' : 'Pending charge'} to <b>{brand}</b> ending in <b>{last4}</b>
+              {chargeStatus[status]} to <b>{brand}</b> ending in <b>{last4}</b>
             </div>
           }
         </div>
@@ -286,12 +294,12 @@ const styleThunk = () => ({
   amountSection: {
     borderTop: `1px solid ${ui.invoiceBorderColorLighter}`,
     marginTop: '1px',
-    paddingTop: panelGutterSmall,
-    paddingRight: panelGutterSmall,
+    paddingTop: '1rem',
+    paddingRight: '1rem',
 
     [breakpoint]: {
-      paddingTop: panelGutterLarge,
-      paddingRight: panelGutterLarge
+      paddingTop: '2rem',
+      paddingRight: '2rem'
     }
   },
 

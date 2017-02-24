@@ -20,7 +20,9 @@ query {
     amountDue
     cursor
     endAt
+    paidAt
     startAt
+    status
   }
 }
 `;

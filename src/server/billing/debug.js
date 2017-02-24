@@ -21,13 +21,17 @@ import stripe from './stripe';
 // stripe.invoices.retrieveLines('in_19pVJzFLaFINmHnBC5uwabBm', (err, invoice) => {
 //   for (let i = 0; i < invoice.data.length; i++) {
 //     const line = invoice.data[i];
-    // if (!line.period) {
-    // console.log(line);
-    // }
-  // }
-  // console.log('Payment result:', err, invoice.data)
+// if (!line.period) {
+// console.log(line);
+// }
+// }
+// console.log('Payment result:', err, invoice.data)
 // });
 
-stripe.invoices.retrieve('upcoming', (err, res) => {
-  console.log(err, res, res.lines.data);
-});
+// stripe.invoices.retrieve('upcoming', (err, res) => {
+//   console.log(err, res, res.lines.data);
+// });
+
+// stripe.invoices.retrieveUpcoming('cus_AAUHCZYp65T4Tw', (err, res) => {
+//   console.log(res)
+// });
