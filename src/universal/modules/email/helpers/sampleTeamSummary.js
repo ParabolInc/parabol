@@ -228,7 +228,6 @@ const Terry = {
 
 const sampleTeamSummary = [];
 
-console.log(Jerry);
 sampleTeamSummary.push(Jordan, Marimar, Matt, Taya, Terry);
 
 export default sampleTeamSummary;
