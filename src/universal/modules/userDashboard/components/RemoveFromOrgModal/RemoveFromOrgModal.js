@@ -36,6 +36,9 @@ const RemoveFromOrgModal = (props) => {
 };
 
 RemoveFromOrgModal.propTypes = {
+  closeAfter: PropTypes.any,
+  closePortal: PropTypes.func,
+  isClosing: PropTypes.bool,
   orgId: PropTypes.string.isRequired,
   preferredName: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired

@@ -11,7 +11,6 @@ const CreditCardField = (props) => {
     autoFocus,
     iconName,
     input,
-    label,
     maxLength,
     meta: {touched, error},
     placeholder,
@@ -39,7 +38,7 @@ const CreditCardField = (props) => {
 
   const requireNumeric = (e) => {
     // keep Enter around to let them submit
-    if (e.key !== 'Enter' && isNaN(parseInt(e.key))) {
+    if (e.key !== 'Enter' && isNaN(parseInt(e.key, 10))) {
       e.preventDefault();
     }
   };
@@ -65,7 +64,8 @@ const CreditCardField = (props) => {
 };
 
 CreditCardField.propTypes = {
-  placeholder: PropTypes.string,
+  autoFocus: PropTypes.bool,
+  iconName: PropTypes.string,
   input: PropTypes.shape({
     name: PropTypes.string,
     onBlur: PropTypes.func,
@@ -73,7 +73,12 @@ CreditCardField.propTypes = {
     onFocus: PropTypes.func,
     type: PropTypes.string,
     value: PropTypes.string
-  })
+  }),
+  maxLength: PropTypes.number,
+  meta: PropTypes.object,
+  placeholder: PropTypes.string,
+  styles: PropTypes.object,
+  topField: PropTypes.bool
 };
 
 const styleThunk = () => ({

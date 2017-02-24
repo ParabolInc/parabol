@@ -20,51 +20,7 @@ import {
   ADDED_USERS,
   REMOVED_USERS,
   INACTIVITY_ADJUSTMENTS,
-  OTHER_ADJUSTMENTS,
 } from 'universal/utils/constants';
-
-const demoItemsNextMonth = [
-  {
-    desc: '7 active users ($5 each)',
-    amount: '$35.00',
-    details: null
-  }
-];
-
-const demoItemsLastMonth = [
-  {
-    desc: '3 new users added',
-    amount: '$10.05',
-    details: [
-      {
-        desc: 'matt@sample.co joined Dec 14, 2016',
-        amount: '$3.35'
-      },
-      {
-        desc: 'taya@sample.co joined Dec 14, 2016',
-        amount: '$3.35'
-      },
-      {
-        desc: 'terry@sample.co joined Dec 14, 2016',
-        amount: '$3.35'
-      }
-    ]
-  },
-  {
-    desc: 'Adjustments for paused users',
-    amount: '-$1.83',
-    details: [
-      {
-        desc: 'amal@sample.co paused Dec 14, 2016–Dec 28, 2016',
-        amount: '-$2.50'
-      },
-      {
-        desc: 'marimar@sample.co unpaused Jan 2, 2017',
-        amount: '$0.67'
-      }
-    ]
-  }
-];
 
 const descriptionMaker = {
   [ADDED_USERS]: (quantity) => `${quantity} new ${plural(quantity, 'user')} added`,
@@ -115,10 +71,10 @@ const Invoice = (props) => {
   const nextChargesDates = `${makeDateString(endAt, false)} to ${makeDateString(nextPeriodEnd, false)}`;
   const makeLineItems = (arr) =>
     arr.map((item, idx) => {
-    const {amount, description, type, quantity, details} = item;
+      const {amount, description, type, quantity: lineItemQuantity, details} = item;
       const li = {
         amount: invoiceLineFormat(amount),
-        desc: description || descriptionMaker[type](quantity),
+        desc: description || descriptionMaker[type](lineItemQuantity),
         details,
         type
       };
@@ -181,6 +137,7 @@ const Invoice = (props) => {
 };
 
 Invoice.propTypes = {
+  invoice: PropTypes.object,
   subject: PropTypes.string,
   styles: PropTypes.object
 };

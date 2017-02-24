@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 import Invoice from 'universal/modules/invoice/components/Invoice/Invoice';
 import {cashay} from 'cashay';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
@@ -66,6 +66,10 @@ const InvoiceContainer = (props) => {
     return <LoadingView/>;
   }
   return <Invoice invoice={invoiceDetails}/>;
+};
+
+InvoiceContainer.propTypes = {
+  invoiceDetails: PropTypes.object
 };
 
 export default connect(mapStateToProps)(InvoiceContainer);

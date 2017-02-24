@@ -46,7 +46,7 @@ export default {
         }
         const stripeId = await r.table('Organization').get(orgId)('stripeId');
         const stripeLineItems = await fetchAllLines('upcoming', stripeId);
-        const upcomingInvoice = await stripe.invoices.retrieveUpcoming(stripeId)
+        const upcomingInvoice = await stripe.invoices.retrieveUpcoming(stripeId);
         await generateInvoice(upcomingInvoice, stripeLineItems, orgId, invoiceId);
         return await r.table('Invoice').get(invoiceId);
       }
@@ -61,7 +61,7 @@ export default {
         description: 'The id of the organization'
       },
       after: {type: GraphQLString, description: 'the cursor coming from the front'},
-      first: {type: GraphQLInt, description: "Limit the invoices from the front"},
+      first: {type: GraphQLInt, description: 'Limit the invoices from the front'},
     },
     async resolve(source, {orgId, after, first}, {authToken}) {
       const r = getRethink();
@@ -80,7 +80,7 @@ export default {
           .limit(first)
           .merge((doc) => ({
             cursor: doc('startAt')
-          }))
+          }));
       }
       const stripeId = await r.table('Organization').get(orgId)('stripeId');
       const promises = [

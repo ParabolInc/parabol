@@ -85,7 +85,7 @@ const OrgMembers = (props) => {
         if (error) {
           dispatch(showError({
             title: 'Oh dear...',
-            message: error._error || 'Cannot pause user'
+            message: error._error || 'Cannot pause user' // eslint-disable-line no-underscore-dangle
           }));
         }
       } else {

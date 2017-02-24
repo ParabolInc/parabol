@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import {reduxForm, Field} from 'redux-form';
 import {cashay} from 'cashay';
 import makeAvatarSchema from 'universal/validation/makeAvatarSchema';
@@ -49,8 +49,7 @@ const OrgAvatarInput = (props) => {
       try {
         await updateOrg(pictureUrl);
       } catch (e) {
-        // eslint-disable-line no-undef
-        Raven.captureException(e);
+        Raven.captureException(e); // eslint-disable-line no-undef
       }
     }
     // no work to do
@@ -66,6 +65,11 @@ const OrgAvatarInput = (props) => {
       />
     </form>
   );
+};
+
+OrgAvatarInput.propTypes = {
+  handleSubmit: PropTypes.func,
+  orgId: PropTypes.string
 };
 
 export default reduxForm({form: 'orgAvatar', shouldValidate, validate})(

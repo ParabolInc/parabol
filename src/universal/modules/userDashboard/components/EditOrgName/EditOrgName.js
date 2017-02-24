@@ -21,12 +21,12 @@ const EditOrgName = (props) => {
   const {orgName, orgId, handleSubmit} = props;
   const updateEditable = async (submissionData) => {
     const schema = editOrgNameValidation();
-    const {data: {orgName}} = schema(submissionData);
+    const {data: {orgName: validatedOrgName}} = schema(submissionData);
 
     const variables = {
       updatedOrg: {
         id: orgId,
-        name: orgName
+        name: validatedOrgName
       }
     };
     cashay.mutate('updateOrg', {variables});

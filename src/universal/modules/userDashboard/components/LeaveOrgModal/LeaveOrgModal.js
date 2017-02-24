@@ -34,6 +34,9 @@ const LeaveOrgModal = (props) => {
 };
 
 LeaveOrgModal.propTypes = {
+  closeAfter: PropTypes.number,
+  closePortal: PropTypes.func,
+  isClosing: PropTypes.bool,
   onBackdropClick: PropTypes.func.isRequired,
   orgId: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired
