@@ -3,7 +3,7 @@ import {reduxForm, destroy} from 'redux-form';
 import Button from 'universal/components/Button/Button';
 import LabeledFieldArray from 'universal/containers/LabeledFieldArray/LabeledFieldArrayContainer.js';
 import {cashay} from 'cashay';
-import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
+import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
 import {Link, withRouter} from 'react-router';
 import makeStep3Schema from 'universal/validation/makeStep3Schema';
@@ -72,7 +72,7 @@ const Step3InviteeList = (props) => {
             label="Looks Good!"
             onMouseEnter={() => {
               // optimistically fetch the big ol payload
-              System.import('universal/containers/Dashboard/DashboardContainer');
+              System.import('universal/modules/userDashboard/components/UserDashboard/UserDashboard');
             }}
             size="medium"
             type="submit"
@@ -86,7 +86,7 @@ const Step3InviteeList = (props) => {
       to={`/team/${teamId}`}
       className={css(styles.noThanks)}
       onMouseEnter={() => {
-        System.import('universal/containers/Dashboard/DashboardContainer');
+        System.import('universal/modules/userDashboard/components/UserDashboard/UserDashboard');
       }}
       onClick={() => {
         dispatch(

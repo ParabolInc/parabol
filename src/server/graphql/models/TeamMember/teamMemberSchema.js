@@ -4,13 +4,12 @@ import {
   GraphQLNonNull,
   GraphQLID,
   GraphQLString,
-  GraphQLInt
+  GraphQLInt,
 } from 'graphql';
-import {GraphQLEmailType, GraphQLURLType} from '../types';
+import {GraphQLEmailType, GraphQLURLType} from '../../types';
 import {Team} from '../Team/teamSchema';
 import {User} from '../User/userSchema';
 import {Project} from '../Project/projectSchema';
-import {nonnullifyInputThunk} from '../utils';
 import getRethink from 'server/database/rethinkDriver';
 
 export const TeamMember = new GraphQLObjectType({
@@ -18,7 +17,7 @@ export const TeamMember = new GraphQLObjectType({
   description: 'A member of a team team',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique team member ID'},
-    isNotRemoved: {type: GraphQLBoolean, description: 'Is user a part of the team? False if they were removed'},
+    isNotRemoved: {type: GraphQLBoolean, description: 'true if the user is a part of the team, false if they no longer are'},
     isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
     isFacilitator: {type: GraphQLBoolean, description: 'Is user a team facilitator?'},
     /* denormalized from User */
@@ -80,13 +79,12 @@ export const TeamMember = new GraphQLObjectType({
   })
 });
 
-const teamMemberInputThunk = () => ({
-  id: {type: GraphQLID, description: 'The unique team member ID, composed of the userId::teamId'},
-  isNotRemoved: {type: GraphQLBoolean, description: 'Is user a part of the team?'},
-  isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
-  isFacilitator: {type: GraphQLBoolean, description: 'Is user a team facilitator?'}
-});
-
-export const CreateTeamMemberInput =
-  nonnullifyInputThunk('CreateTeamMemberInput', teamMemberInputThunk, ['id', 'teamId', 'userId']);
-export const UpdateTeamMemberInput = nonnullifyInputThunk('UpdateTeamMemberInput', teamMemberInputThunk, ['id']);
+// export const TeamMemberInput =  new GraphQLInputObjectType({
+//   name: 'TeamMemberInput',
+//   fields: () => ({
+//     id: {type: GraphQLID, description: 'The unique team member ID, composed of the userId::teamId'},
+//     isNotRemoved: {type: GraphQLBoolean, description: 'Is user a part of the team?'},
+//     isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
+//     isFacilitator: {type: GraphQLBoolean, description: 'Is user a team facilitator?'}
+//   })
+// });

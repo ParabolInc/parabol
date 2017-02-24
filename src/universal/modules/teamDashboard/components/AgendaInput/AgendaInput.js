@@ -6,13 +6,14 @@ import AgendaInputField from './AgendaInputField';
 import Avatar from 'universal/components/Avatar/Avatar';
 
 const AgendaInput = (props) => {
-  const {agenda, handleSubmit, teamId, myTeamMember, styles} = props;
+  const {agenda, disabled, handleSubmit, teamId, myTeamMember, styles} = props;
   return (
     <div className={css(styles.fieldAndAvatar)}>
       <Field
         agenda={agenda}
         name="agendaItem"
         component={AgendaInputField}
+        disabled={disabled}
         handleSubmit={handleSubmit}
         myTeamMemberId={myTeamMember.id}
         teamId={teamId}
@@ -26,6 +27,7 @@ const AgendaInput = (props) => {
 
 AgendaInput.propTypes = {
   agenda: PropTypes.array,
+  disabled: PropTypes.bool,
   handleSubmit: PropTypes.func,
   myTeamMember: PropTypes.object,
   styles: PropTypes.object,

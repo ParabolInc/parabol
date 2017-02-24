@@ -22,3 +22,5 @@ export const head = {
     {property: 'og:creator', content: '@jrhusney'},
   ]
 };
+
+export const stripeKey = 'pk_test_MNoKbCzQX0lhktuxxI7M14wd';

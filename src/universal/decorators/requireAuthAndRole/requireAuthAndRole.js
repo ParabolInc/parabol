@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {showError} from 'universal/modules/notifications/ducks/notifications';
+import {showError} from 'universal/modules/toast/ducks/toastDuck';
 import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';

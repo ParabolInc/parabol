@@ -1,9 +1,9 @@
 import getRethink from 'server/database/rethinkDriver';
 import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
-import {getRequestedFields} from '../utils';
+import getRequestedFields from 'server/graphql/getRequestedFields';
 import {Project} from './projectSchema';
-import {requireSUOrTeamMember} from '../authorization';
-import makeChangefeedHandler from '../makeChangefeedHandler';
+import {requireSUOrTeamMember, requireTeamIsPaid} from 'server/utils/authorization';
+import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
 
 export default {
   projects: {
@@ -16,9 +16,14 @@ export default {
     },
     async resolve(source, {teamMemberId}, {authToken, socket, subbedChannelName}, refs) {
       const r = getRethink();
+
+      // AUTH
       // teamMemberId is of format 'userId::teamId'
       const [, teamId] = teamMemberId.split('::');
       requireSUOrTeamMember(authToken, teamId);
+      await requireTeamIsPaid(teamId);
+
+      // RESOLUTION
       const requestedFields = getRequestedFields(refs);
       const removalFields = ['id', 'isArchived', 'teamMemberId'];
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName, {removalFields});

@@ -1,9 +1,11 @@
 import path from 'path';
 import protocolRelativeUrl from './protocolRelativeUrl';
 import {
-  APP_VERSION,
   APP_WEBPACK_PUBLIC_PATH_DEFAULT
 } from '../../universal/utils/constants';
+import packageJSON from '../../../package.json';
+
+const APP_VERSION = packageJSON.version;
 
 export default function getWebpackPublicPath() {
   if (typeof process !== 'undefined' && process.env.CDN_BASE_URL &&

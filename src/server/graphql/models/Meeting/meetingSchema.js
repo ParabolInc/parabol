@@ -8,7 +8,7 @@ import {
   GraphQLString,
   GraphQLList
 } from 'graphql';
-import {GraphQLURLType} from '../types';
+import {GraphQLURLType} from '../../types';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {ProjectStatus} from '../Project/projectSchema';
 import {TeamMember} from '../TeamMember/teamMemberSchema';

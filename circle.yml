@@ -1,7 +1,7 @@
 version: 2
 executorType: docker
 containerInfo:
-  - image: node:6.9.4
+  - image: node:7.6.0
   - image: rethinkdb:2.3.5
 stages:
   build:

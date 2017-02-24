@@ -1,39 +1,52 @@
-import test from 'ava';
 import {applyMiddleware, combineReducers, createStore} from 'redux';
 import thunk from 'redux-thunk';
 import makeRootReducer, {reset} from '../rootDuck';
 import authReducer, {setAuthToken} from '../authDuck';
-import {testToken, emptyToken} from './testTokens';
+import {testToken} from './testTokens';
 
-test.beforeEach(t => {
+let appReducer;
+let rootReducer;
+let store;
+let initialState;
+
+beforeEach(() => {
   const appReducers = {auth: authReducer};
-  t.context.appReducer = combineReducers({...appReducers});
-  t.context.rootReducer = makeRootReducer(t.context.appReducer);
-  t.context.store = createStore(t.context.rootReducer, {}, applyMiddleware(thunk));
-  t.context.initialState = t.context.store.getState();
+  appReducer = combineReducers({...appReducers});
+  rootReducer = makeRootReducer(appReducer);
+  store = createStore(rootReducer, {}, applyMiddleware(thunk));
+  initialState = store.getState();
 });
 
-test('initial state', t => {
-  const stateTemplate = { auth: emptyToken };
-  t.deepEqual(t.context.initialState, stateTemplate);
+test('initial state', () => {
+  const stateTemplate = {
+    auth: {
+      token: null,
+      obj: {
+        aud: null,
+        exp: null,
+        iat: null,
+        iss: null,
+        sub: null
+      }
+    }
+  };
+  expect(initialState).toEqual(stateTemplate);
 });
 
-test('reset app state', t => {
-  t.plan(2);
-  t.context.store.dispatch(setAuthToken(testToken));
-  const nextState = t.context.store.getState();
-  t.notDeepEqual(t.context.initialState, nextState);
-  t.context.store.dispatch(reset());
-  const resetState = t.context.store.getState();
-  t.deepEqual(t.context.initialState, resetState);
+test('reset app state', () => {
+  store.dispatch(setAuthToken(testToken));
+  const nextState = store.getState();
+  expect(initialState).not.toEqual(nextState);
+  store.dispatch(reset());
+  const resetState = store.getState();
+  expect(initialState).toEqual(resetState);
 });
 
-test('reset app state with whitelist', t => {
-  t.plan(2);
-  t.context.store.dispatch(setAuthToken(testToken));
-  const nextState = t.context.store.getState();
-  t.notDeepEqual(t.context.initialState, nextState);
-  t.context.store.dispatch(reset(['auth']));
-  const resetState = t.context.store.getState();
-  t.deepEqual(nextState, resetState);
+test('reset app state with whitelist', () => {
+  store.dispatch(setAuthToken(testToken));
+  const nextState = store.getState();
+  expect(initialState).not.toEqual(nextState);
+  store.dispatch(reset(['auth']));
+  const resetState = store.getState();
+  expect(nextState).toEqual(resetState);
 });

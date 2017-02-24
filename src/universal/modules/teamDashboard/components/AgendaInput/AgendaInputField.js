@@ -23,7 +23,15 @@ const iconStyle = {
   zIndex: 100
 };
 const AgendaInputField = (props) => {
-  const {agenda, bindHotkey, handleSubmit, styles, teamId, myTeamMemberId} = props;
+  const {
+    agenda,
+    bindHotkey,
+    disabled,
+    handleSubmit,
+    styles,
+    teamId,
+    myTeamMemberId
+  } = props;
   let inputRef;
   const setRef = (c) => {
     inputRef = c;
@@ -54,14 +62,23 @@ const AgendaInputField = (props) => {
       inputRef.blur();
     }
   };
-  bindHotkey('+', focusOnInput);
+  const rootStyles = css(
+    styles.root,
+    disabled && styles.rootDisabled
+  );
+  const inputStyles = css(
+    styles.input,
+    !disabled && styles.inputNotDisabled
+  );
+  if (!disabled) { bindHotkey('+', focusOnInput); }
   return (
-    <form className={css(styles.root)} onSubmit={handleSubmit(handleAgendaItemSubmit)}>
+    <form className={rootStyles} onSubmit={handleSubmit(handleAgendaItemSubmit)}>
       <input
         {...props.input}
         autoCapitalize="off"
         autoComplete="off"
-        className={`${css(styles.input)}`}
+        className={inputStyles}
+        disabled={disabled}
         maxLength="63"
         onKeyDown={maybeBlur}
         placeholder="Add Agenda Item"
@@ -77,6 +94,7 @@ const AgendaInputField = (props) => {
 AgendaInputField.propTypes = {
   agenda: PropTypes.array,
   bindHotkey: PropTypes.func,
+  disabled: PropTypes.bool,
   handleSubmit: PropTypes.func,
   input: PropTypes.object,
   myTeamMemberId: PropTypes.string.isRequired,
@@ -106,6 +124,12 @@ const styleThunk = () => ({
     }
   },
 
+  rootDisabled: {
+    ':hover': {
+      backgroundColor: 'transparent'
+    }
+  },
+
   input: {
     backgroundColor: 'transparent',
     border: 0,
@@ -126,7 +150,9 @@ const styleThunk = () => ({
     zIndex: 200,
 
     ...inputPlaceholderStyles,
+  },
 
+  inputNotDisabled: {
     ':focus': {
       ...inputFocusActive
     },

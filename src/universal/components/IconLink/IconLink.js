@@ -79,9 +79,6 @@ IconLink.defaultProps = {
   iconPlacement: 'left',
   label: 'prop.label',
   margin: '0px',
-  onClick(disabled) {
-    console.log(`IconLink onClick, disabled? ${disabled}`);
-  }
 };
 
 const keyframesDip = {

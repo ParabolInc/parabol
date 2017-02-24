@@ -99,8 +99,8 @@ class ProjectCardContainer extends Component {
 
 ProjectCardContainer.propTypes = {
   area: PropTypes.string,
-  connectDragSource: PropTypes.func.isRequired,
-  connectDragPreview: PropTypes.func.isRequired,
+  connectDragSource: PropTypes.func,
+  connectDragPreview: PropTypes.func,
   dispatch: PropTypes.func,
   isDragging: PropTypes.bool,
   isPreview: PropTypes.bool,

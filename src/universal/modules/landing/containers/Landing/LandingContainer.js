@@ -5,7 +5,7 @@ import {showLock} from 'universal/components/Auth0ShowLock/Auth0ShowLock';
 import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
 import injectGlobals from 'universal/styles/hepha';
 import auth0Overrides from 'universal/styles/theme/auth0Overrides';
-import {showInfo} from 'universal/modules/notifications/ducks/notifications';
+import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
 import {
   APP_UPGRADE_PENDING_KEY,
   APP_UPGRADE_PENDING_FALSE,

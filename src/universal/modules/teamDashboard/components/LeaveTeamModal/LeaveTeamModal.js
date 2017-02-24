@@ -3,15 +3,20 @@ import {DashModal} from 'universal/components/Dashboard';
 import IconLink from 'universal/components/IconLink/IconLink';
 import Type from 'universal/components/Type/Type';
 import {cashay} from 'cashay';
+import portal from 'react-portal-hoc';
+import {withRouter} from 'react-router';
 
 const LeaveTeamModal = (props) => {
-  const {onBackdropClick, teamLead, teamMemberId} = props;
+  const {closeAfter, closePortal, isClosing, router, teamLead, teamMemberId} = props;
   const handleClick = () => {
     const variables = {teamMemberId};
+    // the KICK_OUT message will handle this anyways, but it's great to do it here to avoid the ducks of doom
+    router.push('/me');
     cashay.mutate('removeTeamMember', {variables});
+    closePortal();
   };
   return (
-    <DashModal onBackdropClick={onBackdropClick}>
+    <DashModal onBackdropClick={closePortal} isClosing={isClosing} closeAfter={closeAfter}>
       <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
         Are you sure?
       </Type>
@@ -34,9 +39,14 @@ const LeaveTeamModal = (props) => {
 };
 
 LeaveTeamModal.propTypes = {
+  closeAfter: PropTypes.number,
+  closePortal: PropTypes.func,
+  inputModal: PropTypes.bool,
+  isClosing: PropTypes.bool,
   onBackdropClick: PropTypes.func,
+  router: PropTypes.object.isRequired,
   teamLead: PropTypes.string.isRequired,
   teamMemberId: PropTypes.string.isRequired
 };
 
-export default LeaveTeamModal;
+export default portal({escToClose: true, closeAfter: 100})(withRouter(LeaveTeamModal));

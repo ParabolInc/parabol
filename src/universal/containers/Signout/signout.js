@@ -2,7 +2,7 @@ import {cashay} from 'cashay';
 import {removeAuthToken} from 'universal/redux/authDuck';
 import {reset as resetAppState} from 'universal/redux/rootDuck';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
-import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
+import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import {
   APP_UPGRADE_PENDING_KEY,
   APP_UPGRADE_PENDING_RELOAD

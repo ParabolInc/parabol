@@ -2,22 +2,28 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
-import Helmet from 'react-helmet';
-
-import NotificationBar from 'universal/components/NotificationBar/NotificationBar';
+import ActiveTrialNotificationBar from 'universal/components/ActiveTrialNotificationBar/ActiveTrialNotificationBar';
+import ExpiredTrialNotificationBar from 'universal/components/ExpiredTrialNotificationBar/ExpiredTrialNotificationBar';
+import MeetingNotificationBar from 'universal/components/MeetingNotificationBar/MeetingNotificationBar';
+import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
 
 const DashLayout = (props) => {
   const {
     activeMeetings,
     children,
-    title,
-    styles
+    styles,
+    trialNotification
   } = props;
-  const hasNotification = activeMeetings.length > 0;
+  const hasMeetingNotification = activeMeetings.length > 0;
+  const {type: barType, orgId} = trialNotification || {};
   return (
     <div className={css(styles.root)}>
-      <Helmet title={title} />
-      {hasNotification && <NotificationBar activeMeetings={activeMeetings} />}
+      {/* Shows over any dashboard view when we prompt the trial extension (1 week after sign up?). */}
+      {barType === TRIAL_EXPIRES_SOON && <ActiveTrialNotificationBar accountLink={`/me/organizations/${orgId}`} />}
+      {/* Shows over any account view when the trial has expired. */}
+      {barType === TRIAL_EXPIRED && <ExpiredTrialNotificationBar accountLink={`/me/organizations/${orgId}`} />}
+      {/* Shows over any dashboard view when there is a meeting. */}
+      {hasMeetingNotification && <MeetingNotificationBar activeMeetings={activeMeetings} />}
       <div className={css(styles.main)}>
         {children}
       </div>
@@ -29,7 +35,7 @@ DashLayout.propTypes = {
   activeMeetings: PropTypes.array.isRequired,
   children: PropTypes.any,
   styles: PropTypes.object,
-  title: PropTypes.string
+  trialNotification: PropTypes.object
 };
 
 const styleThunk = () => ({

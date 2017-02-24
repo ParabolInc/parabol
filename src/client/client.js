@@ -50,7 +50,7 @@ const initialState = {};
     if (module.hot) {
       /* eslint-disable global-require, no-shadow */
       module.hot.accept('./Root', () => {
-        const Root = require('./Root');
+        const Root = require('./Root').default;
         render(
           <AppContainer>
             <Root store={store}/>
