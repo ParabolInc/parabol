@@ -156,7 +156,7 @@
   },
   "engines": {
     "node": "6.2.0",
-    "npm": "3.9.3"
-  },
-  "cacheDirectories": [".cache", "node_modules"]
+    "npm": "3.9.3",
+    "yarn": "0.16.1"
+  }
 }
