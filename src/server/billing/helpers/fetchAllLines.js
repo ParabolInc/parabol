@@ -1,9 +1,13 @@
 import stripe from 'server/billing/stripe';
 
-export default async function fetchAllLines(invoiceId) {
+export default async function fetchAllLines(invoiceId, customerId) {
   const stripeLineItems = [];
+  const options = {limit: 100};
+  // used for upcoming invoices
+  if (customerId) {
+    options.customer = customerId;
+  }
   for (let i = 0; i < 100; i++) {
-    const options = {limit: 100};
     if (i > 0) {
       options.starting_after = stripeLineItems[stripeLineItems.length - 1].id;
     }

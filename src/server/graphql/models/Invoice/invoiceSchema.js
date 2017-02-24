@@ -140,6 +140,10 @@ export const Invoice = new GraphQLObjectType({
       type: GraphQLFloat,
       description: 'The amount the card will be charged (total + startingBalance with a min value of 0)'
     },
+    createdAt: {
+      type: GraphQLISO8601Type,
+      description: 'The datetime the invoice was first generated'
+    },
     total: {
       type: GraphQLFloat,
       description: 'The total amount for the invoice (in USD)'
