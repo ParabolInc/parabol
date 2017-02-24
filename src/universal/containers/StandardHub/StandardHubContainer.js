@@ -19,8 +19,7 @@ const mapStateToProps = (state) => {
   const {user} = cashay.query(getAuthQueryString, getAuthedOptions(userId)).data;
 
   const {notifications} = cashay.query(notificationsQuery, {
-    // identical to the other, so leave it be since we only need the count
-    op: 'notificationsContainer',
+    op: 'standardHubContainer',
     sort: {
       notifications: (a, b) => a.startAt > b.startAt ? 1 : -1
     },
