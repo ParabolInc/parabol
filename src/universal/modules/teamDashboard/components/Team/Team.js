@@ -73,7 +73,7 @@ const Team = (props) => {
   const isSettings = router.isActive(`/team/${teamId}/settings`, false);
   initialValues.teamName = teamName;
   const DashHeaderInfoTitle = isSettings ? <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId}/> : teamName;
-  const modalLayout = hasNotificationBar ? ui.modalLayout[1] : ui.modalLayout[0];
+  const modalLayout = hasNotificationBar ? ui.modalLayoutMainWithBar : ui.modalLayoutMain;
   return (
     <DashMain>
       <MeetingInProgressModal

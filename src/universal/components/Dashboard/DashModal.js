@@ -104,16 +104,16 @@ const styleThunk = (theme, props) => ({
     animationName: animateOut
   },
 
-  [ui.modalLayout[0]]: {
+  [ui.modalLayoutMain]: {
     left: ui.dashSidebarWidth
   },
 
-  [ui.modalLayout[1]]: {
+  [ui.modalLayoutMainWithBar]: {
     left: ui.dashSidebarWidth,
     top: ui.dashNotificationBarHeight
   },
 
-  [ui.modalLayout[2]]: {
+  [ui.modalLayoutViewport]: {
     left: 0
   },
 

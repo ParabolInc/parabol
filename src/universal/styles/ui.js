@@ -47,6 +47,11 @@ const iconSizeAvatar = '21px'; // FontAwesome 1.5x
 const iconSize2x = '28px'; // FontAwesome 2x
 const iconSize3x = '42px'; // FontAwesome 3x
 
+// Modals
+const MODAL_LAYOUT_MAIN = 'main';
+const MODAL_LAYOUT_MAIN_WITH_BAR = 'mainHasNotificationBar';
+const MODAL_LAYOUT_VIEWPORT = 'viewport';
+
 // Transitions
 const transitionFastest = '100ms ease-in';
 const transitionFaster = '200ms ease-in';
@@ -330,10 +335,13 @@ const ui = {
   modalBorderRadius: borderRadiusLarge,
   modalBoxShadow: '0 .25rem .5rem 0 rgba(0, 0, 0, .35)',
   modalButtonSize: BUTTON_SIZE_MEDIUM,
+  modalLayoutMain: MODAL_LAYOUT_MAIN,
+  modalLayoutMainWithBar: MODAL_LAYOUT_MAIN_WITH_BAR,
+  modalLayoutViewport: MODAL_LAYOUT_VIEWPORT,
   modalLayout: [
-    'main',
-    'mainHasNotificationBar',
-    'viewport'
+    MODAL_LAYOUT_MAIN,
+    MODAL_LAYOUT_MAIN_WITH_BAR,
+    MODAL_LAYOUT_VIEWPORT
   ],
 
   // Notifications
