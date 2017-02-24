@@ -23,7 +23,9 @@ export default class LandingContainer extends Component {
       picture: PropTypes.string,
       preferredName: PropTypes.string
     }),
-    dispatch: PropTypes.func
+    dispatch: PropTypes.func.isRequired,
+    router: PropTypes.object.isRequired,
+    location: PropTypes.object
   };
 
   constructor(props) {
@@ -41,7 +43,13 @@ export default class LandingContainer extends Component {
   }
 
   componentDidMount() {
-    const {dispatch} = this.props;
+    const {
+      dispatch,
+      location: { pathname }
+    } = this.props;
+    if (pathname === '/login') {
+      showLock(dispatch);
+    }
     const upgradePendingState = window.sessionStorage.getItem(APP_UPGRADE_PENDING_KEY);
     if (upgradePendingState === APP_UPGRADE_PENDING_RELOAD) {
       window.sessionStorage.setItem(APP_UPGRADE_PENDING_KEY,
