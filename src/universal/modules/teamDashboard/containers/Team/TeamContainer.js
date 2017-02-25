@@ -1,14 +1,18 @@
 import React, {PropTypes} from 'react';
 import Team from 'universal/modules/teamDashboard/components/Team/Team';
-import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
+import DashboardWrapper from 'universal/components/DashboardWrapper/DashboardWrapper';
+import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
+import {DragDropContext as dragDropContext} from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 
 const teamContainerSub = `
 query {
   team @cached(id: $teamId, type: "Team") {
     id
+    isPaid
     name
     meetingId
   },
@@ -16,6 +20,9 @@ query {
     id
     picture
     preferredName
+    presence @cached(type: "[Presence]") {
+      userId
+    }
   }
 }`;
 
@@ -25,6 +32,7 @@ const mapStateToProps = (state, props) => {
   const teamContainer = cashay.query(teamContainerSub, {
     op: 'teamContainer',
     key: teamId,
+    resolveCached: {presence: (source) => (doc) => source.id.startsWith(doc.userId)},
     variables: {teamId}
   });
   const {team, teamMembers} = teamContainer.data;
@@ -36,16 +44,18 @@ const mapStateToProps = (state, props) => {
 
 const TeamContainer = (props) => {
   const {children, team, teamMembers} = props;
-  const readyEnough = team.id && teamMembers.length > 0;
-  if (!readyEnough) {
-    return <LoadingView/>;
-  }
+  const readyEnough = team.id;
   return (
-    <Team
-      team={team}
-      teamMembers={teamMembers}
-      children={children}
-    />
+    <DashboardWrapper title="Team Dashboard">
+      {readyEnough ?
+        <Team
+          team={team}
+          teamMembers={teamMembers}
+          children={children}
+        /> :
+        <LoadingView/>
+      }
+    </DashboardWrapper>
   );
 };
 
@@ -55,8 +65,11 @@ TeamContainer.propTypes = {
   teamMembers: PropTypes.array.isRequired,
 };
 
-export default requireAuth(
-  connect(mapStateToProps)(
-    TeamContainer
+export default
+dragDropContext(HTML5Backend)(
+  socketWithPresence(
+    connect(mapStateToProps)(
+      TeamContainer
+    )
   )
 );

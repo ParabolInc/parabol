@@ -1,8 +1,8 @@
 import {GraphQLNonNull, GraphQLID} from 'graphql';
 import {Team} from './teamSchema';
-import {errorObj} from '../utils';
+import {errorObj} from 'server/utils/utils';
 import getRethink from 'server/database/rethinkDriver';
-import {requireSUOrTeamMember} from '../authorization';
+import {requireSUOrTeamMember} from 'server/utils/authorization';
 
 export default {
   getTeamById: {

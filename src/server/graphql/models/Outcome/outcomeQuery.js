@@ -1,8 +1,8 @@
 import getRethink from 'server/database/rethinkDriver';
 import {GraphQLNonNull, GraphQLString, GraphQLID} from 'graphql';
 import {Outcome} from './outcomeSchema';
-import {requireSU} from '../authorization';
-import {errorObj} from '../utils';
+import {requireSU} from 'server/utils/authorization';
+import {errorObj} from 'server/utils/utils';
 
 export default {
   getOutcomeById: {

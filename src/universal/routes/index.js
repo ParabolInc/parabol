@@ -9,20 +9,21 @@ export default store => ({
    */
   component: ActionContainer,
   childRoutes: [
-    ...require('./admin'),
-    require('./invitation')(store),
-    require('./landing'),
-    require('./signout'),
-    require('./meeting')(store),
-    require('./newTeam')(store),
+    ...require('./admin').default,
+    require('./invitation').default(store),
+    require('./invoice').default(store),
+    require('./landing').default,
+    require('./signout').default,
+    require('./meeting').default(store),
+    require('./newTeam').default(store),
     // ...require('./meetingLayoutRoutes'),
-    require('./patterns'),
-    require('./summary')(store),
-    require('./teamDashboard')(store),
-    require('./userDashboard')(store),
-    require('./welcome')(store),
+    require('./patterns').default,
+    require('./summary').default(store),
+    require('./teamDashboard').default(store),
+    require('./userDashboard').default(store),
+    require('./welcome').default(store),
     // Catch-all:
-    require('./notFound')
+    require('./notFound').default
   ]
 });
 

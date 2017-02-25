@@ -1,5 +1,5 @@
-const SELECT_NEW_ACTION_TEAM = 'action/userDashboard/SELECT_NEW_ACTION_TEAM';
-const FILTER_TEAM = 'action/userDashboard/FILTER_TEAM';
+const SELECT_NEW_ACTION_TEAM = 'userDashboard/SELECT_NEW_ACTION_TEAM';
+const FILTER_TEAM = 'userDashboard/FILTER_TEAM';
 
 const initialState = {
   selectingNewActionTeam: false,
@@ -8,23 +8,22 @@ const initialState = {
 };
 
 export default function reducer(state = initialState, action = {}) {
-  switch (action.type) {
-    case SELECT_NEW_ACTION_TEAM: {
+  if (action.type.startsWith('userDashboard/')) {
+    const {type, payload} = action;
+    if (action.type === SELECT_NEW_ACTION_TEAM) {
       return {
         ...state,
-        selectingNewActionTeam: action.payload.selectingNewActionTeam
+        selectingNewActionTeam: payload.selectingNewActionTeam
       };
-    }
-    case FILTER_TEAM: {
+    } else if (type === FILTER_TEAM) {
       return {
         ...state,
-        teamFilterId: action.payload.teamFilterId,
-        teamFilterName: action.payload.teamFilterName
+        teamFilterId: payload.teamFilterId,
+        teamFilterName: payload.teamFilterName
       };
     }
-    default:
-      return state;
   }
+  return state;
 }
 
 export const selectNewActionTeam = (bool) => {

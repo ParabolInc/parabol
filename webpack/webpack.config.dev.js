@@ -1,6 +1,9 @@
 import path from 'path';
 import webpack from 'webpack';
-import { getDotenv } from '../src/universal/utils/dotenv';
+import {getDotenv} from '../src/universal/utils/dotenv';
+import npmPackage from '../package.json';
+import vendors from '../dll/vendors.json';
+
 // import UnusedFilesWebpackPlugin from "unused-files-webpack-plugin";
 
 /*
@@ -21,8 +24,8 @@ const prefetches = [];
 const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(specifier));
 
 const babelQuery = {
+  cacheDirectory: true,
   plugins: [
-    ['transform-decorators-legacy'],
     ['react-transform', {
       transforms: [{
         transform: 'react-transform-hmr',
@@ -42,7 +45,6 @@ export default {
   context: path.join(root, 'src'),
   entry: {
     app: [
-      'babel-polyfill',
       'react-hot-loader/patch',
       'webpack-hot-middleware/client',
       'client/client.js'
@@ -51,24 +53,38 @@ export default {
   output: {
     // https://github.com/webpack/webpack/issues/1752
     filename: 'app.js',
-    chunkFilename: '[name]_[chunkhash].js',
+    // don't hash for performance
+    chunkFilename: '[name].chunk.js',
     path: path.join(root, 'build'),
     publicPath: '/static/'
+  },
+  performance: {
+    hints: false
   },
   plugins: [
     ...prefetchPlugins,
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: false,
       __WEBPACK__: true,
+      __APP_VERSION__: JSON.stringify(npmPackage.version),
       'process.env.NODE_ENV': JSON.stringify('development')
+    }),
+    new webpack.DllReferencePlugin({
+      context: root,
+      manifest: vendors
     }),
     // new UnusedFilesWebpackPlugin()
   ],
   resolve: {
+    alias: {
+      // necessary when using symlinks that require these guys
+      react: path.join(root, 'node_modules', 'react'),
+      'react-dom': path.join(root, 'node_modules', 'react-dom'),
+    },
     extensions: ['.js'],
     modules: [path.join(root, 'src'), 'node_modules']
   },
@@ -79,7 +95,7 @@ export default {
       {test: /\.(eot|ttf|wav|mp3|woff|woff2)(\?\S*)?$/, loader: 'file-loader'},
       {
         test: /\.js$/,
-        loader: 'babel',
+        loader: 'babel-loader',
         query: babelQuery,
         include: clientInclude
       },

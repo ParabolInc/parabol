@@ -7,7 +7,7 @@ const AgendaHeader = (props) => {
   const {styles} = props;
   return (
     <div className={css(styles.root)}>
-      <DashSectionHeading icon="calendar-check-o" label="Agenda Queue" />
+      <DashSectionHeading icon="comment" label="Agenda Queue" />
     </div>
   );
 };

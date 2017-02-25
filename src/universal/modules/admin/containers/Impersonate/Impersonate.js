@@ -5,7 +5,7 @@ import Helmet from 'react-helmet';
 import {withRouter} from 'react-router';
 import requireAuthAndRole from 'universal/decorators/requireAuthAndRole/requireAuthAndRole';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
-import {showError} from 'universal/modules/notifications/ducks/notifications';
+import {showError} from 'universal/modules/toast/ducks/toastDuck';
 import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
 import signout from 'universal/containers/Signout/signout';
 import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken';

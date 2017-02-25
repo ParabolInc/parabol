@@ -9,10 +9,17 @@ import {
   AGENDA,
   ARCHIVED_PROJECTS,
   INVITATIONS,
+  NOTIFICATIONS,
+  ORG_APPROVALS,
+  ORGANIZATION,
+  ORGANIZATIONS,
+  OWNED_ORGANIZATIONS,
   PROJECTS,
   PRESENCE,
   TEAM,
-  TEAM_MEMBERS
+  TEAM_MEMBERS,
+  USER_MEMO,
+  USERS_BY_ORG
 } from 'universal/subscriptions/constants';
 
 /*
@@ -27,16 +34,26 @@ const dechannelfy = {
   [AGENDA]: (variableString) => ({teamId: variableString}),
   [ARCHIVED_PROJECTS]: (variableString) => ({teamId: variableString}),
   [INVITATIONS]: (variableString) => ({teamId: variableString}),
-  [PRESENCE]: (variableString) => ({teamId: variableString}),
+  [NOTIFICATIONS]: (variableString) => ({userId: variableString}),
+  [ORG_APPROVALS]: (teamId) => ({teamId}),
+  [ORGANIZATION]: (variableString) => ({orgId: variableString}),
+  [ORGANIZATIONS]: (userId) => ({userId}),
+  [OWNED_ORGANIZATIONS]: (userId) => ({userId}),
+  // [PRESENCE]: (variableString) => ({teamId: variableString}),
   [PROJECTS]: (variableString) => ({teamMemberId: variableString}),
   [TEAM]: (variableString) => ({teamId: variableString}),
-  [TEAM_MEMBERS]: (variableString) => ({teamId: variableString})
+  [TEAM_MEMBERS]: (variableString) => ({teamId: variableString}),
+  [USERS_BY_ORG]: (orgId) => ({orgId}),
+  // [USER_MEMO]: (userId) => ({userId})
+  // [USERS_BY_IDS]: (variableString) => ({userIds: variableString})
 };
 
+const temporalSubs = [PRESENCE, USER_MEMO];
 export default function scSubscribeHandler(exchange, socket) {
   return async function subscribeHandler(subbedChannelName = '') {
     const {channel, variableString} = parseChannel(subbedChannelName);
     const subscription = subscriptions.find(sub => sub.channel === channel);
+
     if (subscription) {
       const dechannelfier = dechannelfy[channel];
       if (!dechannelfier) {
@@ -52,9 +69,9 @@ export default function scSubscribeHandler(exchange, socket) {
       // swallow return value, it's a subscription
       const result = await graphql(Schema, subscription.string, {}, context, variables);
       if (result.errors) {
-        console.log('DEBUG GraphQL Subscribe Error:', result.errors);
+        console.log('DEBUG GraphQL Subscribe Error:', channel, result.errors);
       }
-    } else {
+    } else if (!temporalSubs.includes(channel)) {
       console.log(`GraphQL subscription for ${channel} not found`);
       // not a graphql subscription
     }

@@ -5,21 +5,22 @@ import {
   GraphQLString,
   GraphQLEnumType,
   GraphQLFloat,
-  GraphQLBoolean
+  GraphQLBoolean,
+  GraphQLInputObjectType
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
-import {nonnullifyInputThunk} from '../utils';
+import makeEnumValues from 'server/graphql/makeEnumValues';
 
 export const ProjectStatus = new GraphQLEnumType({
   name: 'ProjectStatus',
   description: 'The status of the project',
-  values: {
-    [ACTIVE]: {value: ACTIVE},
-    [STUCK]: {value: STUCK},
-    [DONE]: {value: DONE},
-    [FUTURE]: {value: FUTURE}
-  }
+  values: makeEnumValues([
+    [ACTIVE],
+    [STUCK],
+    [DONE],
+    [FUTURE]
+  ])
 });
 
 export const Project = new GraphQLObjectType({
@@ -75,30 +76,16 @@ export const Project = new GraphQLObjectType({
   })
 });
 
-const projectInputThunk = () => ({
-  id: {type: GraphQLID, description: 'The unique project ID'},
-  agendaId: {
-    type: GraphQLID,
-    description: 'the agenda item that created this project, if any'
-  },
-  content: {type: GraphQLString, description: 'The body of the project. If null, it is a new project.'},
-  isArchived: {type: GraphQLBoolean, description: 'true if the project is archived'},
-  status: {type: GraphQLID, description: 'The status of the project created'},
-  teamMemberId: {type: GraphQLID, description: 'The team member ID of the person creating the project'},
-  /*
-   * teamSort and userSort are floats because GraphQLInt is a
-   * signed 32-bit int, and we want more range.
-   */
-  teamSort: {
-    type: GraphQLFloat,
-    description: 'the per-status sort order for the team dashboard'
-  },
-  userSort: {
-    type: GraphQLFloat,
-    description: 'the per-status sort order for the user dashboard'
-  }
+export const ProjectInput = new GraphQLInputObjectType({
+  name: 'ProjectInput',
+  fields: () => ({
+    id: {type: GraphQLID, description: 'The unique team ID'},
+    content: {type: GraphQLString},
+    name: {type: GraphQLString, description: 'The name of the team'},
+    orgId: {type: GraphQLID, description: 'The unique orginization ID that pays for the team'},
+    teamMemberId: {type: GraphQLID},
+    userSort: {type: GraphQLFloat},
+    teamSort: {type: GraphQLFloat},
+    status: {type: GraphQLString}
+  })
 });
-
-export const CreateProjectInput =
-  nonnullifyInputThunk('CreateProjectInput', projectInputThunk, ['id', 'status', 'teamMemberId']);
-export const UpdateProjectInput = nonnullifyInputThunk('UpdateProjectInput', projectInputThunk, ['id']);

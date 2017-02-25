@@ -1,49 +1,69 @@
 import React, {PropTypes} from 'react';
+import FontAwesome from 'react-fontawesome';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
-import FontAwesome from 'react-fontawesome';
+import appTheme from 'universal/styles/theme/appTheme';
+import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 
 const inlineBlock = {
   display: 'inline-block',
   height: ui.dashSectionHeaderLineHeight,
   lineHeight: ui.dashSectionHeaderLineHeight,
-  verticalAlign: 'middle'
-};
-
-const inlineBlockTop = {
-  ...inlineBlock,
   verticalAlign: 'top'
 };
 
 const DashFilterToggle = (props) => {
-  const {toggleLabel, styles} = props;
+  const {label, styles, onClick} = props;
   return (
-    <div className={css(styles.button)} title={`Filter by ${toggleLabel}`}>
-      <span style={inlineBlockTop}>{toggleLabel}</span> <
-      FontAwesome name="chevron-circle-down" style={inlineBlockTop}
-      />
-    </div>
+    <button
+      className={css(styles.button)}
+      onClick={onClick}
+      title={`Filter by ${label}`}
+    >
+      <div className={css(styles.inlineBlockTop)} style={{marginRight: '.25rem'}}>{label}</div>
+      <FontAwesome name="chevron-circle-down" className={css(styles.inlineBlockTop)}/>
+    </button>
   );
 };
 
 DashFilterToggle.propTypes = {
-  toggleLabel: PropTypes.string,
+  label: PropTypes.string,
+  onClick: PropTypes.func,
   styles: PropTypes.object
 };
 
 const styleThunk = () => ({
   button: {
     ...inlineBlock,
+    appearance: 'none',
+    backgroundColor: 'transparent',
+    border: 0,
+    boxShadow: 'none',
     color: appTheme.palette.mid,
+    fontFamily: appTheme.typography.sansSerif,
+    fontSize: appTheme.typography.s3,
+    margin: '0 0 0 .5rem',
+    outline: 0,
+    padding: 0,
 
-    ':hover': {
-      color: appTheme.palette.dark
+    ...makeHoverFocus({
+      color: appTheme.palette.dark,
+    }),
+
+    ':hover > div': {
+      textDecoration: 'underline'
     },
-    ':focus': {
-      color: appTheme.palette.dark
+    ':focus > div': {
+      textDecoration: 'underline'
     }
+  },
+
+  inlineBlockTop: {
+    ...inlineBlock,
+    cursor: 'pointer',
+    userSelect: 'none',
+    verticalAlign: 'top'
   }
 });
 

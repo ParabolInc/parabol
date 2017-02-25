@@ -1,8 +1,9 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
-import {getFromNowString, getRefreshPeriod} from '../../utils/fromNow';
-import Ellipsis from '../../components/Ellipsis/Ellipsis';
+import fromNow from 'universal/utils/fromNow';
+import getRefreshPeriod from 'universal/utils/getRefreshPeriod';
+import Ellipsis from 'universal/components/Ellipsis/Ellipsis';
 import EditingStatus from 'universal/components/EditingStatus/EditingStatus';
 
 const editingStatusContainer = `
@@ -24,7 +25,7 @@ const makeEditingStatus = (editors, active, updatedAt) => {
   // no one else is editing
   if (editors.length === 0) {
     editingStatus = active ? <span>editing {endStr}<Ellipsis/></span> :
-      getFromNowString(updatedAt);
+      fromNow(updatedAt);
   } else {
     const editorNames = editors.map(e => e.teamMember.preferredName);
     // one other is editing
@@ -44,7 +45,7 @@ const makeEditingStatus = (editors, active, updatedAt) => {
 };
 
 const mapStateToProps = (state, props) => {
-  const {outcomeId} = props;
+  const {form, outcomeId} = props;
   const {editors} = cashay.query(editingStatusContainer, {
     op: 'editingStatusContainer',
     variables: {outcomeId},
@@ -61,7 +62,10 @@ const mapStateToProps = (state, props) => {
       }
     }
   }).data;
+  const formState = state.form[form];
+  const active = formState && formState.active === outcomeId;
   return {
+    active,
     editors
   };
 };
@@ -82,6 +86,15 @@ export default class EditingStatusContainer extends Component {
     this.state = {
       editingStatus: makeEditingStatus(editors, active, updatedAt)
     };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const {active, editors, updatedAt} = nextProps;
+    if (this.props.active !== active || this.props.editors !== editors) {
+      this.setState({
+        editingStatus: makeEditingStatus(editors, active, updatedAt)
+      });
+    }
   }
 
   componentWillUnmount() {

@@ -1,6 +1,6 @@
 import React, {PropTypes, Component} from 'react';
 import {FieldArray} from 'redux-form';
-import FieldArrayRow from '../../components/FieldArrayRow/FieldArrayRow';
+import FieldArrayRow from 'universal/components/FieldArrayRow/FieldArrayRow';
 
 export default class LabeledFieldArray extends Component {
   static propTypes = {

@@ -5,7 +5,7 @@ import {createMiddleware, createLoader} from 'redux-storage-whitelist-fn';
 import {createTracker} from 'redux-segment';
 import createEngine from 'redux-storage-engine-localstorage';
 import makeReducer from 'universal/redux/makeReducer';
-import {APP_REDUX_KEY, APP_VERSION, APP_VERSION_KEY} from 'universal/utils/constants';
+import {APP_REDUX_KEY, APP_VERSION_KEY} from 'universal/utils/constants';
 
 const storageWhitelist = type => {
   const whitelistPrefixes = ['@@auth', '@@cashay', '@@root'];
@@ -60,8 +60,9 @@ export default async initialState => {
     ));
   }
   const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY);
-  if (APP_VERSION !== versionInStorage) {
-    window.localStorage.setItem(APP_VERSION_KEY, APP_VERSION);
+
+  if (__APP_VERSION__ !== versionInStorage) { // eslint-disable-line no-undef
+    window.localStorage.setItem(APP_VERSION_KEY, __APP_VERSION__); // eslint-disable-line no-undef
     return store;
   }
   const load = createLoader(engine);

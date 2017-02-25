@@ -1,5 +1,5 @@
 import getRethink from 'server/database/rethinkDriver';
-import {requireSUOrTeamMember} from '../authorization';
+import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import {Meeting} from './meetingSchema';
 import sendEmailSummary from './helpers/sendEmailSummary';
 
@@ -18,10 +18,11 @@ export default {
         description: 'The unique meeting ID that we want to summarize'
       }
     },
-    async resolve(source, {meetingId}, {authToken}) {
+    async resolve(source, {meetingId}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
+      requireWebsocket(socket);
       const meeting = await r.table('Meeting').get(meetingId).default({})
         .do((res) => {
           return res.merge({

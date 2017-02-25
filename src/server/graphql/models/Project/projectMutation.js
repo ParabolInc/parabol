@@ -1,16 +1,16 @@
 import getRethink from 'server/database/rethinkDriver';
-import {CreateProjectInput, UpdateProjectInput} from './projectSchema';
+import {ProjectInput} from './projectSchema';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
   GraphQLString,
   GraphQLID
 } from 'graphql';
-import {requireSUOrTeamMember} from '../authorization';
+import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import shortid from 'shortid';
 import ms from 'ms';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
-import {handleSchemaErrors} from '../utils';
+import {handleSchemaErrors} from 'server/utils/utils';
 const DEBOUNCE_TIME = ms('5m');
 
 export default {
@@ -19,7 +19,7 @@ export default {
     description: 'Update a project with a change in content, ownership, or status',
     args: {
       updatedProject: {
-        type: new GraphQLNonNull(UpdateProjectInput),
+        type: new GraphQLNonNull(ProjectInput),
         description: 'the updated project including the id, and at least one other field'
       },
       rebalance: {
@@ -27,13 +27,14 @@ export default {
         description: 'the name of a status if the sort order got so out of whack that we need to reset the btree'
       }
     },
-    async resolve(source, {updatedProject, rebalance}, {authToken}) {
+    async resolve(source, {updatedProject, rebalance}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
       // projectId is of format 'teamId::taskId'
       const [teamId] = updatedProject.id.split('::');
       requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
 
       // VALIDATION
       const schema = makeProjectSchema();
@@ -107,19 +108,21 @@ export default {
     description: 'Create a new project, triggering a CreateCard for other viewers',
     args: {
       newProject: {
-        type: new GraphQLNonNull(CreateProjectInput),
+        type: new GraphQLNonNull(ProjectInput),
         description: 'The new project including an id, status, and type, and teamMemberId'
       }
     },
-    async resolve(source, {newProject}, {authToken}) {
+    async resolve(source, {newProject}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
       // format of id is teamId::taskIdPart
       const [teamId] = newProject.id.split('::');
       requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
 
       // VALIDATION
+      // TODO make id, status, teamMemberId required
       const schema = makeProjectSchema();
       const {errors, data: validNewProject} = schema(newProject);
       handleSchemaErrors(errors);
@@ -158,13 +161,14 @@ export default {
         description: 'The projectId (teamId::shortid) to delete'
       }
     },
-    async resolve(source, {projectId}, {authToken}) {
+    async resolve(source, {projectId}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
       // format of id is teamId::taskIdPart
       const [teamId] = projectId.split('::');
       requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
 
       // RESOLUTION
       await r.table('Project').get(projectId).delete()
@@ -184,13 +188,14 @@ export default {
         description: 'The projectId (teamId::shortid) to delete'
       }
     },
-    async resolve(source, {projectId}, {authToken}) {
+    async resolve(source, {projectId}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
       // format of id is teamId::taskIdPart
       const [teamId] = projectId.split('::');
       requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
 
       // RESOLUTION
       const project = await r.table('Project').get(projectId);

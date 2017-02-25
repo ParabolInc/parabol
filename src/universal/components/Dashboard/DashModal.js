@@ -7,19 +7,31 @@ import ui from 'universal/styles/ui';
 const DashModal = (props) => {
   const {
     children,
+    inputModal,
+    isClosing,
     onBackdropClick,
     position,
-    showsOver,
+    modalContext,
     styles
   } = props;
   const backdropStyles = css(
     styles.backdrop,
     position && styles[position],
-    showsOver && styles[showsOver],
+    modalContext && styles[modalContext]
   );
+  const modalStyles = css(
+    styles.modal,
+    inputModal && styles.inputModal,
+    isClosing && styles.closing
+  );
+  const onClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onBackdropClick();
+    }
+  };
   return (
-    <div className={backdropStyles} onClick={onBackdropClick}>
-      <div className={css(styles.modal)}>
+    <div className={backdropStyles} onClick={onBackdropClick ? onClick : null}>
+      <div className={modalStyles}>
         {children}
       </div>
     </div>
@@ -28,6 +40,9 @@ const DashModal = (props) => {
 
 DashModal.propTypes = {
   children: PropTypes.any,
+  closeAfter: PropTypes.number,
+  inputModal: PropTypes.bool,
+  isClosing: PropTypes.bool,
   onBackdropClick: PropTypes.func,
 
   // NOTE: Use 'fixed' to show over 'viewport'.
@@ -38,14 +53,39 @@ DashModal.propTypes = {
     'absolute',
     'fixed'
   ]),
-  showsOver: PropTypes.oneOf([
+  modalContext: PropTypes.oneOf([
     'main',
+    'meetingInProgress',
     'viewport'
   ]),
   styles: PropTypes.object
 };
 
-const styleThunk = () => ({
+const animateIn = {
+  '0%': {
+    opacity: '0',
+    transform: 'translate3d(0, -50px, 0)'
+
+  },
+  '100%': {
+    opacity: '1',
+    transform: 'translate3d(0, 0, 0)'
+  }
+};
+
+const animateOut = {
+  '0%': {
+    opacity: '1',
+    transform: 'translate3d(0, 0, 0)'
+
+  },
+  '100%': {
+    opacity: '0',
+    transform: 'translate3d(0, -50px, 0)'
+  }
+};
+
+const styleThunk = (theme, props) => ({
   backdrop: {
     alignItems: 'center',
     background: 'rgba(255, 255, 255, .5)',
@@ -62,12 +102,22 @@ const styleThunk = () => ({
     zIndex: 400
   },
 
+  closing: {
+    animationDuration: `${props.closeAfter}ms`,
+    animationName: animateOut
+  },
+
   viewport: {
     left: 0
   },
 
   main: {
     left: ui.dashSidebarWidth
+  },
+
+  meetingInProgress: {
+    left: ui.dashSidebarWidth,
+    top: ui.dashNotificationBarHeight
   },
 
   absolute: {
@@ -78,12 +128,23 @@ const styleThunk = () => ({
     position: 'fixed'
   },
 
+  inputModal: {
+    background: ui.dashBackgroundColor,
+    padding: '1rem',
+    width: '20rem'
+  },
+
   modal: {
     background: '#fff',
-    boxShadow: `0 0 0 .25rem ${appTheme.palette.mid30a}`,
-    borderRadius: '.5rem',
-    padding: '2rem',
-    width: '30rem'
+    border: `.125rem solid ${appTheme.palette.mid30a}`,
+    // boxShadow: `0 0 0 .25rem ${appTheme.palette.mid30a}, ${ui.modalBoxShadow}`,
+    boxShadow: ui.modalBoxShadow,
+    borderRadius: ui.modalBorderRadius,
+    padding: '1.25rem',
+    width: '30rem',
+    animationIterationCount: 1,
+    animationName: animateIn,
+    animationDuration: '200ms'
   }
 });
 

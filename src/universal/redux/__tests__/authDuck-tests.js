@@ -1,23 +1,29 @@
-import test from 'ava';
 import {applyMiddleware, combineReducers, createStore} from 'redux';
 import thunk from 'redux-thunk';
 import auth, {setAuthToken, removeAuthToken} from '../authDuck';
 import {testToken, testTokenData, emptyToken} from './testTokens';
 
-test.beforeEach(t => {
-  const appReducers = {auth};
-  t.context.appReducer = combineReducers({...appReducers});
-  t.context.store = createStore(t.context.appReducer, {}, applyMiddleware(thunk));
-  t.context.initialState = t.context.store.getState();
-});
+const appReducers = {auth};
+let appReducer;
+let store;
+let initialState;
 
 const initialStateAssertion = { auth: emptyToken };
 
-test('initial state', t => {
-  t.deepEqual(t.context.initialState, initialStateAssertion);
+beforeEach(() => {
+  appReducer = combineReducers({...appReducers});
+  store = createStore(appReducer, {}, applyMiddleware(thunk));
+  initialState = store.getState();
+
+  return initialState;
 });
 
-test('can setAuthToken w/token decode', t => {
+
+test('initial state', () => {
+  expect(initialState).toEqual(initialStateAssertion);
+});
+
+test('can setAuthToken w/token decode', () => {
   const expectedState = {
     ...initialStateAssertion,
     auth: {
@@ -26,28 +32,25 @@ test('can setAuthToken w/token decode', t => {
       nextUrl: null
     }
   };
-  t.context.store.dispatch(setAuthToken(testToken));
-  const nextState = t.context.store.getState();
-  t.deepEqual(expectedState, nextState);
+  store.dispatch(setAuthToken(testToken));
+  const nextState = store.getState();
+  expect(expectedState).toEqual(nextState);
 });
 
-test('throws when token undefined', t => {
-  t.throws(() =>
-    t.context.store.dispatch(setAuthToken(undefined))
-  );
+test('throws when token undefined', () => {
+  expect(() =>
+    store.dispatch(setAuthToken(undefined))
+  ).toThrow();
 });
 
-test('throws when token invalid', t => {
-  t.throws(() =>
-    t.context.store.dispatch(setAuthToken(42))
-  );
+test('throws when token invalid', () => {
+  expect(() =>
+    store.dispatch(setAuthToken(42))
+  ).toThrow();
 });
 
-test('can removeAuthToken', t => {
-  t.context.store.dispatch(setAuthToken(testToken));
-  t.context.store.dispatch(removeAuthToken());
-  t.deepEqual(
-    t.context.initialState,
-    t.context.store.getState()
-  );
+test('can removeAuthToken', () => {
+  store.dispatch(setAuthToken(testToken));
+  store.dispatch(removeAuthToken());
+  expect(initialState).toEqual(store.getState());
 });

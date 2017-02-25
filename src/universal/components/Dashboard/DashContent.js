@@ -38,7 +38,7 @@ const styleThunk = () => ({
   },
 
   hasOverlay: {
-    filter: 'blur(1.5px)'
+    filter: ui.filterBlur
   }
 });
 
