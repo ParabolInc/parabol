@@ -25,13 +25,13 @@ const targetAnchor = {
 
 const OrgMembers = (props) => {
   const {
-      billingLeaderCount,
-      dispatch,
-      users,
-      myUserId,
-      org,
-      styles,
-    } = props;
+    billingLeaderCount,
+    dispatch,
+    users,
+    myUserId,
+    org,
+    styles,
+  } = props;
   const {id: orgId} = org;
 
   const setRole = (userId, role = null) => () => {
@@ -48,13 +48,19 @@ const OrgMembers = (props) => {
     const itemFactory = () => {
       const listItems = [];
       if (orgUser.isBillingLeader) {
-        listItems.push(
-          <MenuItem label="Remove Billing leader role" onClick={setRole(id)}/>
+        if (billingLeaderCount > 1) {
+          listItems.push(
+            <MenuItem label="Remove Billing leader role" onClick={setRole(id)}/>
           );
+        } else {
+          listItems.push(
+            <MenuItem label="Have a super day!"/>
+          );
+        }
       } else {
         listItems.push(
           <MenuItem label="Promote to Billing leader" onClick={setRole(id, BILLING_LEADER)}/>
-          );
+        );
       }
       if (myUserId !== orgUser.id) {
         listItems.push(
@@ -64,7 +70,7 @@ const OrgMembers = (props) => {
             userId={id}
             toggle={<MenuItem label="Remove from Organization"/>}
           />
-          );
+        );
       }
       if (billingLeaderCount > 1 && myUserId === orgUser.id) {
         listItems.push(
@@ -73,12 +79,12 @@ const OrgMembers = (props) => {
             userId={id}
             toggle={<MenuItem label="Leave Organization"/>}
           />
-          );
+        );
       }
 
       return listItems;
     };
-    const toggleHandler = async () => {
+    const toggleHandler = async() => {
       if (!inactive) {
         const variables = {userId: orgUser.id};
         const {error} = await cashay.mutate('inactivateUser', {variables});

@@ -222,19 +222,27 @@ export default {
       const now = new Date();
 
       // AUTH
-      const userOrgDoc = await
-        getUserOrgDoc(authToken.sub, orgId);
+      const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId);
       requireOrgLeader(userOrgDoc);
-
 
       // VALIDATION
       if (role && role !== BILLING_LEADER) {
         throw errorObj({_error: 'invalid role'});
       }
+      // if someone is leaving, make sure there is someone else to take their place
+      if (userId === authToken.sub) {
+        const leaderCount = await r.table('Organization').get(orgId)('orgUsers')
+          .filter({
+            role: BILLING_LEADER
+          })
+          .count();
+        if (leaderCount === 1) {
+          throw errorObj({_error: 'You\'re the last leader, you can\'t give that up'});
+        }
+      }
 
       // RESOLUTION
-      const orgName = await
-        r.table('User').get(userId)
+      const orgName = await r.table('User').get(userId)
           .update((user) => ({
             userOrgs: user('userOrgs').map((userOrg) => {
               return r.branch(
@@ -264,15 +272,14 @@ export default {
           });
       if (role === BILLING_LEADER) {
         // add a notification
-        await
-          r.table('Notification').insert({
-            id: shortid.generate(),
-            type: PROMOTE_TO_BILLING_LEADER,
-            startAt: now,
-            orgId,
-            userIds: [userId],
-            varList: [orgName]
-          })
+        await r.table('Notification').insert({
+          id: shortid.generate(),
+          type: PROMOTE_TO_BILLING_LEADER,
+          startAt: now,
+          orgId,
+          userIds: [userId],
+          varList: [orgName]
+        })
             .do(() => {
               return r.table('Notification')
                 .getAll(orgId, {index: 'orgId'})
@@ -282,8 +289,7 @@ export default {
                 }));
             });
       } else if (role === null) {
-        await
-          r.table('Notification')
+        await r.table('Notification')
             .getAll(userId, {index: 'userIds'})
             .filter({
               orgId,
@@ -302,5 +308,4 @@ export default {
       return true;
     }
   }
-}
-;
+};
