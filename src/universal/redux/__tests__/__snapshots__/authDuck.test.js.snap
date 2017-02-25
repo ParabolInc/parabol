@@ -1,0 +1,82 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`can removeAuthToken 1`] = `
+Object {
+  "auth": Object {
+    "nextUrl": null,
+    "obj": Object {
+      "aud": null,
+      "exp": null,
+      "iat": null,
+      "iss": null,
+      "sub": null,
+    },
+    "token": null,
+  },
+}
+`;
+
+exports[`can setAuthToken w/token decode 1`] = `
+Object {
+  "auth": Object {
+    "nextUrl": null,
+    "obj": Object {
+      "name": "Moe",
+      "rol": "su",
+      "sub": "1234567890",
+      "tms": Array [
+        "team123",
+      ],
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik1vZSIsInJvbCI6InN1IiwidG1zIjpbInRlYW0xMjMiXX0.N0NvXB5JCkwwHUsir4hC5noyoWuAhrq6JRvGlvdww5Q",
+  },
+}
+`;
+
+exports[`initial state 1`] = `
+Object {
+  "auth": Object {
+    "nextUrl": null,
+    "obj": Object {
+      "aud": null,
+      "exp": null,
+      "iat": null,
+      "iss": null,
+      "sub": null,
+    },
+    "token": null,
+  },
+}
+`;
+
+exports[`setNextUrl 1`] = `
+Object {
+  "auth": Object {
+    "nextUrl": "/foo",
+    "obj": Object {
+      "aud": null,
+      "exp": null,
+      "iat": null,
+      "iss": null,
+      "sub": null,
+    },
+    "token": null,
+  },
+}
+`;
+
+exports[`unsetNextUrl 1`] = `
+Object {
+  "auth": Object {
+    "nextUrl": null,
+    "obj": Object {
+      "aud": null,
+      "exp": null,
+      "iat": null,
+      "iss": null,
+      "sub": null,
+    },
+    "token": null,
+  },
+}
+`;

@@ -70,7 +70,7 @@
     "eslint-plugin-jest": "^19.0.0",
     "eslint-plugin-react": "5.2.2",
     "file-loader": "0.9.0",
-    "jest": "^18.1.0",
+    "jest": "^19.0.2",
     "jest-junit-reporter": "^1.0.1",
     "json-loader": "0.5.4",
     "lockfile": "^1.0.2",
@@ -128,6 +128,7 @@
     "node-env-flag": "0.1.0",
     "oy-vey": "^1.0.0-alpha",
     "raven": "^0.12.1",
+    "raven-js": "^3.11.0",
     "react": "^15.4.2",
     "react-async-hoc": "0.2.0",
     "react-copy-to-clipboard": "^4.2.3",
@@ -170,7 +171,7 @@
     "modulePaths": [
       "<rootDir>/src"
     ],
-    "testRegex": "/__tests__/.*-tests\\.jsx?$",
+    "testRegex": "/__tests__/.*.test\\.jsx?$",
     "testResultsProcessor": "./node_modules/jest-junit-reporter",
     "verbose": true
   }

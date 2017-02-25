@@ -5,6 +5,7 @@ import makeAvatarSchema from 'universal/validation/makeAvatarSchema';
 import shouldValidate from 'universal/validation/shouldValidate';
 import sendAssetToS3 from 'universal/utils/sendAssetToS3';
 import FileInput from 'universal/components/FileInput/FileInput';
+import raven from 'raven-js';
 
 const validate = (values) => {
   const schema = makeAvatarSchema();
@@ -49,7 +50,7 @@ const OrgAvatarInput = (props) => {
       try {
         await updateOrg(pictureUrl);
       } catch (e) {
-        Raven.captureException(e); // eslint-disable-line no-undef
+        raven.captureException(e);
       }
     }
     // no work to do
