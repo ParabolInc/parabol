@@ -4,6 +4,33 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.16.0 - 25-Feb-2017
+### Added
+- Organizations: teams can be tied together into organizations
+- User trials & billing: hey look! A business model!
+   - New & grandfathered users start a 30 day trial
+   - Trial & access expiry
+   - Payment information & stripe integration
+   - Invoicing
+- Notifications: a new channel to communicate with our users
+- Portals: we're using [react-portal-hoc](https://github.com/mattkrick/react-portal-hoc)
+  to implement our dropdown menus and modals
+- Updated to Node.js 7.6.0, native async/await
+- Switched to [jest](https://facebook.github.io/jest/) for unit testing
+   - Added first suite of server unit tests
+- Improved avatar handling (forms, squaring of images)
+- Refactored drag-and-drop support
+- Refactored `KICK_OUT` message onto `USER_MEMO` websocket channel
+- Much improved development build time by dll-izing vendor package
+   - See: `npm run build:dll`
+- Added `npm run start:tunnel` to start [ultrahook](http://www.ultrahook.com/)
+  to facilitate Stripe & future webhook development
+- Server data validation pattern
+- Badge component
+- Presence added to dashboards (#523)
+### Fixed
+- TODO: What am I missing here?
+
 ## v0.15.3 - 11-Feb-2017
 ### Added
 - OutcomeCard components (Projects, Action) now re-render their last-updated
