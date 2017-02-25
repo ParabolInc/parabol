@@ -7,7 +7,7 @@ const initialState = {
   teamFilterName: 'All teams'
 };
 
-export default function reducer(state = initialState, action = {}) {
+export default function reducer(state = initialState, action = {type: ''}) {
   if (action.type.startsWith('userDashboard/')) {
     const {type, payload} = action;
     if (action.type === SELECT_NEW_ACTION_TEAM) {
@@ -35,12 +35,12 @@ export const selectNewActionTeam = (bool) => {
   };
 };
 
-export const filterTeam = (teamId, teamName) => {
+export const filterTeam = (teamId = null, teamName) => {
   return {
     type: FILTER_TEAM,
     payload: {
       teamFilterId: teamId,
-      teamFilterName: teamName
+      teamFilterName: teamId ? teamName : initialState.teamFilterName
     }
   };
 };

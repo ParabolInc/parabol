@@ -7,7 +7,7 @@ const initialState = {
   // }
 };
 
-export default function reducer(state = initialState, action = {}) {
+export default function reducer(state = initialState, action = {type: ''}) {
   if (!action.type.startsWith('menu/')) return state;
   const {type, payload: {menuKey}} = action;
   if (type === OPEN_MENU) {

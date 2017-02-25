@@ -5,30 +5,17 @@ import reducer, {
   clearActivity
 } from '../settingsDuck';
 
-const stateTemplate = {
-  activity: null,
-  nextPage: null
-};
-
 test('initial state', () => {
   const initialState = reducer();
-  expect(initialState).toEqual(stateTemplate);
+  expect(initialState).toMatchSnapshot();
 });
 
 test('setActivity() ACTIVITY_WELCOME updates activity, nextPage', () => {
-  const state = reducer();
-
   expect(
-    reducer(state,
+    reducer(undefined,
       setActivity(ACTIVITY_WELCOME, '/team/baddad')
     )
-  ).toEqual(
-    {
-      ...stateTemplate,
-      activity: ACTIVITY_WELCOME,
-      nextPage: '/team/baddad'
-    }
-  );
+  ).toMatchSnapshot();
 });
 
 test('setActivity() of invalid activity throws error', () => {
@@ -42,13 +29,7 @@ test('setWelcomeActivity() updates activity, nextPage', () => {
     reducer(state,
       setWelcomeActivity('/team/baddad')
     )
-  ).toEqual(
-    {
-      ...stateTemplate,
-      activity: ACTIVITY_WELCOME,
-      nextPage: '/team/baddad'
-    }
-  );
+  ).toMatchSnapshot();
 });
 
 test('clearWelcomeActivity() resets state', () => {
@@ -56,5 +37,5 @@ test('clearWelcomeActivity() resets state', () => {
 
   expect(
     reducer(state, clearActivity())
-  ).toEqual(stateTemplate);
+  ).toMatchSnapshot();
 });

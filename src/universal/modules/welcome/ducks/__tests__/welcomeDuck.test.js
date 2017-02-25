@@ -6,14 +6,6 @@ import reducer, {
   updateCompleted
 } from '../welcomeDuck';
 
-const stateTemplate = {
-  completed: 0,
-  page: 1,
-  teamId: null,
-  teamMemberId: null,
-  existingInvites: []
-};
-
 test('initial state', () => {
   expect(reducer()).toMatchSnapshot();
 });

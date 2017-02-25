@@ -51,7 +51,7 @@ const UserProjectsHeader = (props) => {
                 isActive={teamFilterId === null}
                 key={'teamFilterNULL'}
                 label={'All teams'}
-                onClick={() => dispatch(filterTeam(null, 'All teams'))}
+                onClick={() => dispatch(filterTeam(null))}
               />
               {teams.map((team) =>
                 <MenuItem

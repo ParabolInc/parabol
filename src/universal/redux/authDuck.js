@@ -27,7 +27,7 @@ const initialState = {
   token: null
 };
 
-export default function reducer(state = initialState, action = {}) {
+export default function reducer(state = initialState, action = {type: ''}) {
   switch (action.type) {
     case SET_AUTH_TOKEN: {
       const {obj, token} = action.payload;

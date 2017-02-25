@@ -10,8 +10,8 @@ const initialState = {
   nextPage: null,
 };
 
-export default function reducer(state = initialState, action = {}) {
-  if (action.type && action.type.startsWith('userSettings/')) {
+export default function reducer(state = initialState, action = {type: ''}) {
+  if (action.type.startsWith('userSettings/')) {
     const {type, payload} = action;
     if (type === SET_ACTIVITY) {
       const {activity, nextPage} = payload;
