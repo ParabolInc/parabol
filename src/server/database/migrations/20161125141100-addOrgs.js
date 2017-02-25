@@ -41,7 +41,7 @@ exports.up = async(r) => {
   ];
   await Promise.all(waitIndices);
 
-  if (process.env.NODE_ENV === 'testing') {
+  if (process.env.NODE_ENV === 'test') {
     console.warn('NODE_ENV is testing. Removing, not migrating prior users.');
     const purgeTasks = [
       r.table('Team').delete(),

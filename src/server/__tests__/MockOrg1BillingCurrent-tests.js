@@ -80,7 +80,7 @@ describe('add billing information', () => {
   );
 });
 
-if (process.env.NODE_ENV === 'testing') {
+if (process.env.NODE_ENV === 'test') {
   cleanupOrgData(ORG1_BILLING_LEADER, ORG1_OTHER_TEAM_MEMBERS);
 }
 
