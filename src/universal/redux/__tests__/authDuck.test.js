@@ -15,7 +15,6 @@ beforeEach(() => {
   appReducer = combineReducers({auth});
   store = createStore(appReducer, {}, applyMiddleware(thunk));
   initialState = store.getState();
-  return initialState;
 });
 
 
