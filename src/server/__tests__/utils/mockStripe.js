@@ -3,6 +3,7 @@ import shortid from 'shortid';
 import stripe from '../../billing/stripe';
 import {toEpochSeconds} from '../../utils/epochTime';
 
+
 class Customers {
   constructor() {
     this.customers = {};

@@ -1,0 +1,181 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`add billing to existing org in a trial period 1`] = `
+Object {
+  "createdAt": 2017-02-26T05:42:20.836Z,
+  "creditCard": Object {
+    "brand": "Visa",
+    "expiry": "12/23",
+    "last4": "4242",
+  },
+  "id": null,
+  "name": "The Averagers, Inc.",
+  "orgUsers": Array [
+    Object {
+      "id": null,
+      "inactive": false,
+      "role": "billingLeader",
+    },
+    Object {
+      "id": null,
+      "inactive": false,
+      "role": null,
+    },
+    Object {
+      "id": null,
+      "inactive": false,
+      "role": null,
+    },
+    Object {
+      "id": null,
+      "inactive": false,
+      "role": null,
+    },
+    Object {
+      "id": null,
+      "inactive": false,
+      "role": null,
+    },
+    Object {
+      "id": null,
+      "inactive": false,
+      "role": null,
+    },
+    Object {
+      "id": null,
+      "inactive": false,
+      "role": null,
+    },
+    Object {
+      "id": null,
+      "inactive": false,
+      "role": null,
+    },
+  ],
+  "periodEnd": 2017-04-27T05:42:20.000Z,
+  "periodStart": 2017-02-26T05:42:20.836Z,
+  "stripeId": null,
+  "stripeSubscriptionId": null,
+  "updatedAt": 2017-02-26T05:42:20.836Z,
+}
+`;
+
+exports[`add billing to existing org in a trial period 2`] = `
+Object {
+  "account_balance": 0,
+  "created": 1488087740,
+  "currency": "usd",
+  "default_source": "card_123",
+  "delinquent": false,
+  "description": null,
+  "discount": null,
+  "email": null,
+  "id": null,
+  "livemode": false,
+  "metadata": Object {
+    "orgId": null,
+  },
+  "object": "customer",
+  "shipping": null,
+  "sources": Object {
+    "data": Array [
+      Object {
+        "address_city": null,
+        "address_country": null,
+        "address_line1": null,
+        "address_line1_check": null,
+        "address_line2": null,
+        "address_state": null,
+        "address_zip": null,
+        "address_zip_check": null,
+        "brand": "Visa",
+        "country": "US",
+        "customer": null,
+        "cvc_check": "pass",
+        "dynamic_last4": null,
+        "exp_month": "12",
+        "exp_year": "2023",
+        "funding": "credit",
+        "id": "card_123",
+        "last4": "4242",
+        "metadata": Object {},
+        "name": null,
+        "object": "card",
+        "tokenization_method": null,
+      },
+    ],
+    "has_more": false,
+    "object": "list",
+    "total_count": 1,
+    "url": null,
+  },
+}
+`;
+
+exports[`add billing to existing org in a trial period 3`] = `
+Object {
+  "application_fee_percent": null,
+  "cancel_at_period_end": false,
+  "canceled_at": null,
+  "created": 1488087740,
+  "current_period_end": 1493271740,
+  "current_period_start": 1488087740,
+  "customer": null,
+  "discount": null,
+  "ended_at": null,
+  "id": null,
+  "items": Object {
+    "data": Array [
+      Object {
+        "created": 1488087740,
+        "id": "si_123",
+        "object": "subscription_item",
+        "plan": Object {
+          "amount": 19999900,
+          "created": 1488087740,
+          "currency": "usd",
+          "id": "action-monthly-test",
+          "interval": "month",
+          "interval_count": 1,
+          "livemode": false,
+          "metadata": Object {},
+          "name": "Action Monthly | TEST",
+          "object": "plan",
+          "statement_descriptor": null,
+          "trial_period_days": null,
+        },
+        "quantity": 8,
+      },
+    ],
+    "has_more": false,
+    "object": "list",
+    "total_count": 1,
+    "url": null,
+  },
+  "livemode": false,
+  "metadata": Object {
+    "orgId": null,
+  },
+  "object": "subscription",
+  "plan": Object {
+    "amount": 19999900,
+    "created": 1488087740,
+    "currency": "usd",
+    "id": "action-monthly-test",
+    "interval": "month",
+    "interval_count": 1,
+    "livemode": false,
+    "metadata": Object {},
+    "name": "Action Monthly | TEST",
+    "object": "plan",
+    "statement_descriptor": null,
+    "trial_period_days": null,
+  },
+  "quantity": 8,
+  "start": 1488087740,
+  "status": "active",
+  "tax_percent": 0,
+  "trial_end": 1493271740,
+  "trial_start": 1488087740,
+}
+`;

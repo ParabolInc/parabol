@@ -35,3 +35,14 @@
 // stripe.invoices.retrieveUpcoming('cus_AAUHCZYp65T4Tw', (err, res) => {
 //   console.log(res)
 // });
+import trimSnapshot from '../__tests__/utils/trimSnapshot';
+
+const orgDoc = {
+  sources: {
+    data: [
+      {customer: 'foo'}
+    ]
+  }
+};
+debugger
+console.log(trimSnapshot(orgDoc, ['sources.data.customer']));

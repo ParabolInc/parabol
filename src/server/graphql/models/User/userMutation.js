@@ -87,13 +87,12 @@ export default {
         description: 'The ID Token from auth0, a base64 JWT'
       }
     },
-    async resolve(source, {auth0Token, isUnitTest}) {
+    async resolve(source, {auth0Token}) {
       const r = getRethink();
       const now = new Date();
 
       // VALIDATION
       const authToken = verify(auth0Token, Buffer.from(auth0ClientSecret, 'base64'), {audience: auth0ClientId});
-
 
       // RESOLUTION
       if (authToken.tms) {
@@ -140,7 +139,7 @@ export default {
         });
       }
       // don't await
-      setTimeout(() => sendEmail(newUser.email, 'welcomeEmail', newUser, isUnitTest), 0);
+      setTimeout(() => sendEmail(newUser.email, 'welcomeEmail', newUser),0);
       return newUser;
     }
   },
