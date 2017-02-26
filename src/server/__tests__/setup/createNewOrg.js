@@ -1,5 +1,5 @@
-import {BILLING_LEADER, LOBBY} from 'universal/utils/constants';
-import {TRIAL_PERIOD} from 'server/utils/serverConstants'
+import {BILLING_LEADER, LOBBY, TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
+import {TRIAL_PERIOD, TRIAL_EXPIRES_SOON_DELAY} from 'server/utils/serverConstants'
 import shortid from 'shortid';
 import testUsers from 'server/__tests__/setup/testUsers';
 import getRethink from 'server/database/rethinkDriver';
@@ -7,7 +7,7 @@ import mockNow from 'server/__tests__/setup/mockNow';
 
 const now = new Date(mockNow);
 
-const createNewOrg = async () => {
+const createNewOrg = async() => {
   const r = getRethink();
   const orgId = shortid.generate();
   const teamId = shortid.generate();
@@ -15,12 +15,14 @@ const createNewOrg = async () => {
   const team = makeTeam(teamId, orgId);
   const teamMembers = users.map((user, idx) => makeTeamMember(user, team, idx));
   const org = makeOrg(orgId, users);
+  const notification = makeNotification(orgId, users[0].id, org.periodEnd);
   const promises = [
     r.table('User').insert(users),
     r.table('Team').insert(team),
     r.table('TeamMember').insert(teamMembers),
-    r.table('Organization').insert(org)
-    ];
+    r.table('Organization').insert(org),
+    r.table('Notification').insert(notification)
+  ];
   await Promise.all(promises);
   return {users, team, teamMembers, org};
 };
@@ -88,4 +90,13 @@ const makeOrg = (orgId, users) => ({
   periodStart: now,
 });
 
+const makeNotification = (orgId, userId, periodEnd) => ({
+  id: `TRIAL_EXPIRES_SOON|orgId`,
+  type: TRIAL_EXPIRES_SOON,
+  startAt: new Date(now.getTime() + TRIAL_EXPIRES_SOON_DELAY),
+  orgId,
+  userIds: [userId],
+  // trialExpiresAt
+  varList: [periodEnd]
+});
 export default createNewOrg;

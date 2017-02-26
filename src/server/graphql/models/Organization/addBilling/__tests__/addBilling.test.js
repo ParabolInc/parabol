@@ -5,7 +5,7 @@ import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
 import stripe from 'server/billing/stripe';
 import MockDate from 'mockdate';
 import mockNow from 'server/__tests__/setup/mockNow';
-import {trimOrg} from 'server/__tests__/utils/trimSnapshot';
+import fetchAndTrim from 'server/__tests__/utils/fetchAndTrim';
 
 MockDate.set(mockNow);
 
@@ -24,9 +24,11 @@ test('add billing to existing org in a trial period', async () => {
   const authToken = mockAuthToken(users[0]);
   const socket = {};
   await addBilling.resolve(undefined, {orgId, stripeToken}, {authToken, socket});
-  const orgDoc = await r.table('Organization').get(orgId);
-  trimOrg(orgDoc);
-  expect(trimOrg(orgDoc)).toMatchSnapshot();
+  const db = await fetchAndTrim({
+    organization: r.table('Organization').get(orgId),
+    notification: r.table('Notification').getAll(orgId, {index: 'orgId'})
+  });
+  expect(db).toMatchSnapshot();
   expect(stripe.customers.__snapshot()).toMatchSnapshot();
   expect(stripe.subscriptions.__snapshot()).toMatchSnapshot();
 });

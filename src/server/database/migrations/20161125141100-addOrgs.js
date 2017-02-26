@@ -1,8 +1,7 @@
 import shortid from 'shortid';
-import ms from 'ms';
 import {BILLING_LEADER, TRIAL_EXPIRES_SOON} from '../../../universal/utils/constants';
 import stripe from '../../billing/stripe';
-import {ACTION_MONTHLY, TRIAL_PERIOD_DAYS} from '../../utils/serverConstants';
+import {ACTION_MONTHLY, TRIAL_PERIOD_DAYS, TRIAL_EXPIRES_SOON_DELAY} from '../../utils/serverConstants';
 import {fromEpochSeconds} from '../../utils/epochTime';
 
 /* eslint-disable max-len */
@@ -127,7 +126,7 @@ exports.up = async(r) => {
     notificationsForDB[i] = {
       id: shortid.generate(),
       type: TRIAL_EXPIRES_SOON,
-      startAt: new Date(now.getTime() + ms('14d')),
+      startAt: new Date(now.getTime() + TRIAL_EXPIRES_SOON_DELAY),
       userIds: [leaderId],
       orgId,
       varList: [periodEnd]

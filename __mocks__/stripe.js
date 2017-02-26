@@ -145,7 +145,7 @@ stripe.customers = {
     }
     resolve(stripe.customers.__mock)
   })),
-  del: jest.fn((customerId) => new Promise((resolve) => resolve(deletedReturnVal(id)))),
+  del: jest.fn((id) => new Promise((resolve) => resolve(deletedReturnVal(id)))),
   __snapshot: () => {
     trimSnapshot(stripe.customers.__mock, ['id', 'metadata.orgId', 'sources.url', 'sources.data.customer']);
     return stripe.customers.__mock;
@@ -163,7 +163,7 @@ stripe.subscriptions = {
     }
     resolve(stripe.subscriptions.__mock)
   })),
-  del: jest.fn((subscriptionId) => new Promise((resolve) => resolve(deletedReturnVal(id)))),
+  del: jest.fn((id) => new Promise((resolve) => resolve(deletedReturnVal(id)))),
   __snapshot: () => {
     trimSnapshot(stripe.subscriptions.__mock, ['customer', 'id', 'items.url', 'metadata.orgId']);
     return stripe.subscriptions.__mock;

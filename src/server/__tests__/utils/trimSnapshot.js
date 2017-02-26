@@ -30,5 +30,3 @@ export default function trimSnapshot(snapshot, uids) {
   }
   return snapshot;
 }
-
-export const trimOrg = (orgDoc) => trimSnapshot(orgDoc, ['id', 'stripeId', 'stripeSubscriptionId', 'orgUsers.id']);
