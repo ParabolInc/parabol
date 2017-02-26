@@ -1,4 +1,4 @@
 export default {
   organization: ['id', 'stripeId', 'stripeSubscriptionId', 'orgUsers.id'],
-  notification: ['id', 'orgId']
+  notification: ['id', 'orgId', 'userIds']
 };

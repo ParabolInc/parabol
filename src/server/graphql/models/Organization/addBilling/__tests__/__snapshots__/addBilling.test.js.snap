@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`add billing to existing org in a trial period 1`] = `
+exports[`add billing to existing org after trial period 1`] = `
 Object {
   "notification": Array [],
   "organization": Object {
@@ -10,60 +10,60 @@ Object {
       "expiry": "12/23",
       "last4": "4242",
     },
-    "id": null,
+    "id": 0,
     "name": "The Averagers, Inc.",
     "orgUsers": Array [
       Object {
-        "id": null,
+        "id": 3,
         "inactive": false,
         "role": "billingLeader",
       },
       Object {
-        "id": null,
+        "id": 4,
         "inactive": false,
         "role": null,
       },
       Object {
-        "id": null,
+        "id": 5,
         "inactive": false,
         "role": null,
       },
       Object {
-        "id": null,
+        "id": 6,
         "inactive": false,
         "role": null,
       },
       Object {
-        "id": null,
+        "id": 7,
         "inactive": false,
         "role": null,
       },
       Object {
-        "id": null,
+        "id": 8,
         "inactive": false,
         "role": null,
       },
       Object {
-        "id": null,
+        "id": 9,
         "inactive": false,
         "role": null,
       },
       Object {
-        "id": null,
+        "id": 10,
         "inactive": false,
         "role": null,
       },
     ],
     "periodEnd": 2017-04-27T05:42:20.000Z,
     "periodStart": 2017-02-26T05:42:20.836Z,
-    "stripeId": null,
-    "stripeSubscriptionId": null,
+    "stripeId": 1,
+    "stripeSubscriptionId": 2,
     "updatedAt": 2017-02-26T05:42:20.836Z,
   },
 }
 `;
 
-exports[`add billing to existing org in a trial period 2`] = `
+exports[`add billing to existing org after trial period 2`] = `
 Object {
   "customers": Object {
     "account_balance": 0,
@@ -74,10 +74,10 @@ Object {
     "description": null,
     "discount": null,
     "email": null,
-    "id": null,
+    "id": 1,
     "livemode": false,
     "metadata": Object {
-      "orgId": null,
+      "orgId": 0,
     },
     "object": "customer",
     "shipping": null,
@@ -94,7 +94,7 @@ Object {
           "address_zip_check": null,
           "brand": "Visa",
           "country": "US",
-          "customer": null,
+          "customer": 1,
           "cvc_check": "pass",
           "dynamic_last4": null,
           "exp_month": "12",
@@ -111,7 +111,7 @@ Object {
       "has_more": false,
       "object": "list",
       "total_count": 1,
-      "url": null,
+      "url": 11,
     },
   },
   "subscriptions": Object {
@@ -121,10 +121,10 @@ Object {
     "created": 1488087740,
     "current_period_end": 1493271740,
     "current_period_start": 1488087740,
-    "customer": null,
+    "customer": 1,
     "discount": null,
     "ended_at": null,
-    "id": null,
+    "id": 2,
     "items": Object {
       "data": Array [
         Object {
@@ -151,11 +151,193 @@ Object {
       "has_more": false,
       "object": "list",
       "total_count": 1,
-      "url": null,
+      "url": 12,
     },
     "livemode": false,
     "metadata": Object {
-      "orgId": null,
+      "orgId": 0,
+    },
+    "object": "subscription",
+    "plan": Object {
+      "amount": 19999900,
+      "created": 1488087740,
+      "currency": "usd",
+      "id": "action-monthly-test",
+      "interval": "month",
+      "interval_count": 1,
+      "livemode": false,
+      "metadata": Object {},
+      "name": "Action Monthly | TEST",
+      "object": "plan",
+      "statement_descriptor": null,
+      "trial_period_days": null,
+    },
+    "quantity": 8,
+    "start": 1488087740,
+    "status": "active",
+    "tax_percent": 0,
+    "trial_end": 1493271740,
+    "trial_start": 1488087740,
+  },
+}
+`;
+
+exports[`add billing to existing org in a trial period 1`] = `
+Object {
+  "notification": Array [],
+  "organization": Object {
+    "createdAt": 2017-02-26T05:42:20.836Z,
+    "creditCard": Object {
+      "brand": "Visa",
+      "expiry": "12/23",
+      "last4": "4242",
+    },
+    "id": 0,
+    "name": "The Averagers, Inc.",
+    "orgUsers": Array [
+      Object {
+        "id": 3,
+        "inactive": false,
+        "role": "billingLeader",
+      },
+      Object {
+        "id": 4,
+        "inactive": false,
+        "role": null,
+      },
+      Object {
+        "id": 5,
+        "inactive": false,
+        "role": null,
+      },
+      Object {
+        "id": 6,
+        "inactive": false,
+        "role": null,
+      },
+      Object {
+        "id": 7,
+        "inactive": false,
+        "role": null,
+      },
+      Object {
+        "id": 8,
+        "inactive": false,
+        "role": null,
+      },
+      Object {
+        "id": 9,
+        "inactive": false,
+        "role": null,
+      },
+      Object {
+        "id": 10,
+        "inactive": false,
+        "role": null,
+      },
+    ],
+    "periodEnd": 2017-04-27T05:42:20.000Z,
+    "periodStart": 2017-02-26T05:42:20.836Z,
+    "stripeId": 1,
+    "stripeSubscriptionId": 2,
+    "updatedAt": 2017-02-26T05:42:20.836Z,
+  },
+}
+`;
+
+exports[`add billing to existing org in a trial period 2`] = `
+Object {
+  "customers": Object {
+    "account_balance": 0,
+    "created": 1488087740,
+    "currency": "usd",
+    "default_source": "card_123",
+    "delinquent": false,
+    "description": null,
+    "discount": null,
+    "email": null,
+    "id": 1,
+    "livemode": false,
+    "metadata": Object {
+      "orgId": 0,
+    },
+    "object": "customer",
+    "shipping": null,
+    "sources": Object {
+      "data": Array [
+        Object {
+          "address_city": null,
+          "address_country": null,
+          "address_line1": null,
+          "address_line1_check": null,
+          "address_line2": null,
+          "address_state": null,
+          "address_zip": null,
+          "address_zip_check": null,
+          "brand": "Visa",
+          "country": "US",
+          "customer": 1,
+          "cvc_check": "pass",
+          "dynamic_last4": null,
+          "exp_month": "12",
+          "exp_year": "2023",
+          "funding": "credit",
+          "id": "card_123",
+          "last4": "4242",
+          "metadata": Object {},
+          "name": null,
+          "object": "card",
+          "tokenization_method": null,
+        },
+      ],
+      "has_more": false,
+      "object": "list",
+      "total_count": 1,
+      "url": 11,
+    },
+  },
+  "subscriptions": Object {
+    "application_fee_percent": null,
+    "cancel_at_period_end": false,
+    "canceled_at": null,
+    "created": 1488087740,
+    "current_period_end": 1493271740,
+    "current_period_start": 1488087740,
+    "customer": 1,
+    "discount": null,
+    "ended_at": null,
+    "id": 2,
+    "items": Object {
+      "data": Array [
+        Object {
+          "created": 1488087740,
+          "id": "si_123",
+          "object": "subscription_item",
+          "plan": Object {
+            "amount": 19999900,
+            "created": 1488087740,
+            "currency": "usd",
+            "id": "action-monthly-test",
+            "interval": "month",
+            "interval_count": 1,
+            "livemode": false,
+            "metadata": Object {},
+            "name": "Action Monthly | TEST",
+            "object": "plan",
+            "statement_descriptor": null,
+            "trial_period_days": null,
+          },
+          "quantity": 8,
+        },
+      ],
+      "has_more": false,
+      "object": "list",
+      "total_count": 1,
+      "url": 12,
+    },
+    "livemode": false,
+    "metadata": Object {
+      "orgId": 0,
     },
     "object": "subscription",
     "plan": Object {

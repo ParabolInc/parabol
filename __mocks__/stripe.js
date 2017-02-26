@@ -1,5 +1,5 @@
 import {toEpochSeconds} from 'server/utils/epochTime';
-import trimSnapshot from 'server/__tests__/utils/trimSnapshot';
+import creditCardByToken from 'server/__tests__/utils/creditCardByToken';
 
 const checkTouchedEntity = (entityName) => {
   const entity = stripe[entityName];
@@ -15,14 +15,7 @@ const checkTouchedEntity = (entityName) => {
 
 const stripe = jest.genMockFromModule('stripe');
 
-const defaultSourceId = {
-  tok_4242424242424242: {
-    id: 'card_123',
-    brand: 'Visa',
-    expiry: '12/23',
-    last4: '4242'
-  }
-};
+
 
 const defaultSubscriptionPlan = {
   id: 'action-monthly-test',
@@ -140,9 +133,10 @@ const makeSubscriptionObject = (org) => ({
   "trial_start": org.creditCard ? null : toEpochSeconds(org.periodStart)
 });
 
-stripe.__setMockData = (org) => {
+stripe.__setMockData = (org, trimSnapshot) => {
   stripe.customers.__mock = makeCustomerObject(org);
   stripe.subscriptions.__mock = makeSubscriptionObject(org);
+  stripe.__trimSnapshot = trimSnapshot;
 };
 
 stripe.__snapshot = () => {
@@ -153,7 +147,7 @@ stripe.__snapshot = () => {
     const name = entityNames[i];
     if (checkTouchedEntity(name)) {
       const entity = stripe[name];
-      snapshot[name] = trimSnapshot(entity.__mock, entity.__trimFields);
+      snapshot[name] = stripe.__trimSnapshot.trim(entity.__mock, entity.__trimFields);
     }
   }
   return snapshot;
@@ -165,7 +159,7 @@ stripe.customers = {
   update: jest.fn((customerId, options) => new Promise((resolve) => {
     const {source} = options;
     if (source) {
-      const card = defaultSourceId[source];
+      const card = creditCardByToken[source];
       stripe.customers.__mock.default_source = card.id;
       stripe.customers.__mock.sources.data = [makeSourceObject(card, stripe.customers.__mock.id)];
     }
