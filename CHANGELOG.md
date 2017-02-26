@@ -18,7 +18,6 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Updated to Node.js 7.6.0, native async/await
 - Switched to [jest](https://facebook.github.io/jest/) for unit testing
    - Added first suite of server unit tests
-- Improved avatar handling (forms, squaring of images)
 - Refactored drag-and-drop support
 - Refactored `KICK_OUT` message onto `USER_MEMO` websocket channel
 - Much improved development build time by dll-izing vendor package
@@ -29,7 +28,19 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Badge component
 - Presence added to dashboards (#523)
 ### Fixed
-- TODO: What am I missing here?
+- #253 auth0 token tms out of sync with rethinkdb
+- #277 graphql browser CSS trouble
+- #437 TypeError: Cannot read property 'openArea' of undefined
+- #517 server exception encountered when generating meeting summary
+- #530 duplicate team selection after reordering
+- #558 when renaming on team settings, validation styling bug
+- #573 Amazon S3 returning 403 for VPN clients
+- #578 meeting Stuck at First Call
+- #583 allow production build without S3
+- #598 fix GraphQL v0.8.0 breaking changes
+- #608 square avatars are square (with rounded styling)
+- #718 toast notification for leaving a team copy
+- #725 acceptInvitation race condition
 
 ## v0.15.3 - 11-Feb-2017
 ### Added
