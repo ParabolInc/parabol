@@ -29,6 +29,5 @@ test('add billing to existing org in a trial period', async () => {
     notification: r.table('Notification').getAll(orgId, {index: 'orgId'})
   });
   expect(db).toMatchSnapshot();
-  expect(stripe.customers.__snapshot()).toMatchSnapshot();
-  expect(stripe.subscriptions.__snapshot()).toMatchSnapshot();
+  expect(stripe.__snapshot()).toMatchSnapshot();
 });

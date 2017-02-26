@@ -1,6 +1,18 @@
 import {toEpochSeconds} from 'server/utils/epochTime';
 import trimSnapshot from 'server/__tests__/utils/trimSnapshot';
 
+const checkTouchedEntity = (entityName) => {
+  const entity = stripe[entityName];
+  const keys = entity.__triggers;
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    if (entity[key].mock.calls.length > 0) {
+      return true;
+    }
+  }
+  return false
+};
+
 const stripe = jest.genMockFromModule('stripe');
 
 const defaultSourceId = {
@@ -133,6 +145,20 @@ stripe.__setMockData = (org) => {
   stripe.subscriptions.__mock = makeSubscriptionObject(org);
 };
 
+stripe.__snapshot = () => {
+  // create a minimum viable snapshot including everything that got touched
+  const snapshot = {};
+  const entityNames = Object.keys(stripe).filter((name) => stripe[name] && stripe[name].__triggers);
+  for (let i = 0; i < entityNames.length; i++) {
+    const name = entityNames[i];
+    if (checkTouchedEntity(name)) {
+      const entity = stripe[name];
+      snapshot[name] = trimSnapshot(entity.__mock, entity.__trimFields);
+    }
+  }
+  return snapshot;
+};
+
 stripe.customers = {
   create: jest.fn((options) => new Promise((resolve) => resolve(stripe.customers.__mock))),
   retrieve: jest.fn((customerId) => new Promise((resolve) => resolve(stripe.customers.__mock))),
@@ -146,10 +172,8 @@ stripe.customers = {
     resolve(stripe.customers.__mock)
   })),
   del: jest.fn((id) => new Promise((resolve) => resolve(deletedReturnVal(id)))),
-  __snapshot: () => {
-    trimSnapshot(stripe.customers.__mock, ['id', 'metadata.orgId', 'sources.url', 'sources.data.customer']);
-    return stripe.customers.__mock;
-  }
+  __trimFields: ['id', 'metadata.orgId', 'sources.url', 'sources.data.customer'],
+  __triggers: ['update', 'del', 'create']
 };
 
 stripe.subscriptions = {
@@ -164,10 +188,8 @@ stripe.subscriptions = {
     resolve(stripe.subscriptions.__mock)
   })),
   del: jest.fn((id) => new Promise((resolve) => resolve(deletedReturnVal(id)))),
-  __snapshot: () => {
-    trimSnapshot(stripe.subscriptions.__mock, ['customer', 'id', 'items.url', 'metadata.orgId']);
-    return stripe.subscriptions.__mock;
-  }
+  __trimFields: ['customer', 'id', 'items.url', 'metadata.orgId'],
+  __triggers: ['update', 'del', 'create']
 };
 
 

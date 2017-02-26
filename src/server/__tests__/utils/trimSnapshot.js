@@ -25,7 +25,6 @@ export default function trimSnapshot(snapshot, uids) {
   for (let i = 0; i < uids.length; i++) {
     const uid = uids[i];
     const path = uid.split('.');
-    // const prop = path.pop();
     visitSnapshot(snapshot, path);
   }
   return snapshot;
