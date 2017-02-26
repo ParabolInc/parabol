@@ -2,86 +2,21 @@ import getRethink from 'server/database/rethinkDriver';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
-  GraphQLID,
-  GraphQLList,
+  GraphQLID
 } from 'graphql';
-import {Invitee} from './invitationSchema';
-import {getUserId, requireSUOrTeamMember} from '../authorization';
-import {errorObj, handleSchemaErrors} from '../utils';
-import {
-  asyncInviteTeam,
-  makeInviteToken,
-  getInviterInfoAndTeamName,
-  createEmailPromises,
-  resolveSentEmails,
-  hashInviteTokenKey,
-  resendInvite
-} from './helpers';
-import makeInviteTeamMembersSchema from 'universal/validation/makeInviteTeamMembersSchema';
+import {getUserId, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
+import {errorObj} from 'server/utils/utils';
+import makeInviteToken from './inviteTeamMembers/makeInviteToken';
+import getInviterInfoAndTeamName from './inviteTeamMembers/getInviterInfoAndTeamName';
+import createEmailPromises from './inviteTeamMembers/createEmailPromises';
+import resolveSentEmails from './inviteTeamMembers/resolveSentEmails';
+import hashInviteTokenKey from './inviteTeamMembers/hashInviteTokenKey';
+import resendInvite from './inviteTeamMembers/resendInvite';
 import {INVITATION_LIFESPAN} from 'server/utils/serverConstants';
+import inviteTeamMembers from 'server/graphql/models/Invitation/inviteTeamMembers/inviteTeamMembers';
 
 export default {
-  inviteTeamMembers: {
-    type: GraphQLBoolean,
-    description: 'Send invitation emails to a list of email addresses, add them to the invitation table',
-    args: {
-      teamId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The id of the inviting team'
-      },
-      invitees: {
-        type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Invitee)))
-      }
-    },
-    async resolve(source, {invitees, teamId}, {authToken}) {
-      const r = getRethink();
-
-      // AUTH
-      requireSUOrTeamMember(authToken, teamId);
-
-      // VALIDATION
-      const now = Date.now();
-      // don't let them invite the same person twice
-      const emails = invitees.map(invitee => invitee.email);
-      const usedEmails = await r.table('Invitation')
-        .getAll(r.args(emails), {index: 'email'})
-        .filter(r.row('tokenExpiration').ge(r.epochTime(now)))('email')
-        .coerceTo('array')
-        .do((inviteEmails) => {
-          return {
-            inviteEmails,
-            teamMembers: r.table('TeamMember')
-              .getAll(teamId, {index: 'teamId'})
-              // .filter({isNotRemoved: true})('email')
-              .coerceTo('array')
-          };
-        });
-      const schemaProps = {
-        inviteEmails: usedEmails.inviteEmails,
-        teamMemberEmails: usedEmails.teamMembers.filter((m) => m.isNotRemoved === true).map((m) => m.email)
-      };
-      const schema = makeInviteTeamMembersSchema(schemaProps);
-      const {errors, data: validInvitees} = schema(invitees);
-      handleSchemaErrors(errors);
-
-      // RESOLUTION
-      const inactiveTeamMembers = usedEmails.teamMembers.filter((m) => m.isNotRemoved === false);
-      // if they used to be on the team, simply reactivate them
-      if (inactiveTeamMembers.length > 0) {
-        const inactiveTeamMemberIds = inactiveTeamMembers.map((m) => m.id);
-        await r.table('TeamMember')
-          .getAll(r.args(inactiveTeamMemberIds), {index: 'id'})
-          .update({isNotRemoved: true});
-        const inactiveTeamMemberEmails = inactiveTeamMembers.map((m) => m.email);
-        const newInvitees = validInvitees.filter((i) => !inactiveTeamMemberEmails.includes(i.email));
-        // TODO send email & maybe pop toast saying that we're only reactivating
-        asyncInviteTeam(authToken, teamId, newInvitees);
-      } else {
-        asyncInviteTeam(authToken, teamId, validInvitees);
-      }
-      return true;
-    }
-  },
+  inviteTeamMembers,
   cancelInvite: {
     type: GraphQLBoolean,
     description: 'Cancel an invitation',
@@ -91,13 +26,14 @@ export default {
         description: 'The id of the invitation'
       },
     },
-    async resolve(source, {inviteId}, {authToken}) {
+    async resolve(source, {inviteId}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
       const invite = await r.table('Invitation').get(inviteId);
       const {acceptedAt, teamId, tokenExpiration} = invite;
       requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
 
       // VALIDATION
       const now = new Date();
@@ -125,13 +61,14 @@ export default {
         description: 'The id of the invitation'
       },
     },
-    async resolve(source, {inviteId}, {authToken}) {
+    async resolve(source, {inviteId}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
       const invitation = await r.table('Invitation').get(inviteId);
       const {email, fullName, teamId} = invitation;
       requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
 
       // RESOLUTION
       const inviteToken = makeInviteToken();
@@ -147,7 +84,7 @@ export default {
       const now = new Date();
       const hashedToken = await hashInviteTokenKey(inviteToken);
       const invitedBy = `${userId}::${teamId}`;
-      const tokenExpiration = new Date(now.valueOf() + INVITATION_LIFESPAN);
+      const tokenExpiration = new Date(now + INVITATION_LIFESPAN);
       await r.table('Invitation').get(inviteId).update({
         hashedToken,
         invitedBy,

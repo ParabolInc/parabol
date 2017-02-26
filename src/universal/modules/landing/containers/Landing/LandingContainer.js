@@ -5,7 +5,7 @@ import {showLock} from 'universal/components/Auth0ShowLock/Auth0ShowLock';
 import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
 import injectGlobals from 'universal/styles/hepha';
 import auth0Overrides from 'universal/styles/theme/auth0Overrides';
-import {showInfo} from 'universal/modules/notifications/ducks/notifications';
+import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
 import {
   APP_UPGRADE_PENDING_KEY,
   APP_UPGRADE_PENDING_FALSE,
@@ -23,7 +23,9 @@ export default class LandingContainer extends Component {
       picture: PropTypes.string,
       preferredName: PropTypes.string
     }),
-    dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired,
+    router: PropTypes.object.isRequired,
+    location: PropTypes.object
   };
 
   constructor(props) {
@@ -41,7 +43,13 @@ export default class LandingContainer extends Component {
   }
 
   componentDidMount() {
-    const {dispatch} = this.props;
+    const {
+      dispatch,
+      location: { pathname }
+    } = this.props;
+    if (pathname === '/login') {
+      showLock(dispatch);
+    }
     const upgradePendingState = window.sessionStorage.getItem(APP_UPGRADE_PENDING_KEY);
     if (upgradePendingState === APP_UPGRADE_PENDING_RELOAD) {
       window.sessionStorage.setItem(APP_UPGRADE_PENDING_KEY,

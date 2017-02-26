@@ -1,4 +1,4 @@
-const days = [
+export const days = [
   'Sunday',
   'Monday',
   'Tuesday',
@@ -8,7 +8,7 @@ const days = [
   'Saturday'
 ];
 
-const months = [
+export const months = [
   'January',
   'February',
   'March',
@@ -23,10 +23,11 @@ const months = [
   'December'
 ];
 
-export default function makeDateString(timestamp = new Date()) {
+export default function makeDateString(timestamp = new Date(), showDay = true) {
   const day = timestamp.getDay();
   const month = timestamp.getMonth();
   const date = timestamp.getDate();
   const year = timestamp.getFullYear();
-  return `${days[day]}, ${months[month]} ${date}, ${year}`;
+  const dayPart = showDay ? `${days[day]}, ` : '';
+  return `${dayPart}${months[month]} ${date}, ${year}`;
 }

@@ -1,44 +1,71 @@
 import {cashay} from 'cashay';
 import jwtDecode from 'jwt-decode';
-import {EventTypes} from 'redux-segment';
 import ActionHTTPTransport from '../utils/ActionHTTPTransport';
 import {selectSegmentProfile} from './segmentActions';
 
 const SET_AUTH_TOKEN = '@@authToken/SET_AUTH_TOKEN';
 const REMOVE_AUTH_TOKEN = '@@authToken/REMOVE_AUTH_TOKEN';
+const SET_NEXT_URL = '@@authToken/SET_NEXT_URL';
+const UNSET_NEXT_URL = '@@authToken/UNSET_NEXT_URL';
 
 export const DEFAULT_AUTH_REDUCER_NAME = 'auth';
 
 const initialState = {
-  token: null,
+  // next URL to navigate to after authenticating:
+  nextUrl: null,
+  // parsed jwt token:
   obj: {
-    // rol and tms are not guaranteed
+    // nextUrl, rol, and tms are not guaranteed
     aud: null,
     exp: null,
     iat: null,
     iss: null,
     sub: null,
-  }
+  },
+  // Raw jwt token:
+  token: null
 };
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
     case SET_AUTH_TOKEN: {
       const {obj, token} = action.payload;
-      return {obj, token};
+      return {
+        ...state,
+        obj,
+        token
+      };
     }
-    case REMOVE_AUTH_TOKEN:
-      return initialState;
+    case REMOVE_AUTH_TOKEN: {
+      const {nextUrl} = state;
+      return {
+        ...initialState,
+        nextUrl
+      };
+    }
+    case SET_NEXT_URL: {
+      const {nextUrl} = action.payload;
+      return {
+        ...state,
+        nextUrl
+      };
+    }
+    case UNSET_NEXT_URL: {
+      const {obj, token} = state;
+      return {
+        ...initialState,
+        obj,
+        token
+      };
+    }
     default:
       return state;
   }
 }
 
-export function setAuthToken(authToken, newProfile, reducerName = DEFAULT_AUTH_REDUCER_NAME) {
+export function setAuthToken(authToken, reducerName = DEFAULT_AUTH_REDUCER_NAME) {
   return (dispatch, getState) => {
-    const cachedProfile = selectSegmentProfile(getState(), reducerName);
-    const profile = newProfile || cachedProfile;
-    const meta = { };
+    const profile = selectSegmentProfile(getState(), reducerName);
 
     if (!authToken) {
       throw new Error('setAuthToken action created with undefined authToken');
@@ -48,22 +75,6 @@ export function setAuthToken(authToken, newProfile, reducerName = DEFAULT_AUTH_R
       obj = jwtDecode(authToken);
     } catch (e) {
       throw new Error(`unable to decode jwt: ${e}`);
-    }
-    if (newProfile) {
-      Object.assign(meta, {
-        analytics: {
-          eventType: EventTypes.identify,
-          eventPayload: {
-            userId: obj.sub,
-            traits: {
-              avatar: profile.picture,
-              createdAt: profile.created_at,
-              email: profile.email,
-              name: profile.name
-            }
-          }
-        }
-      });
     }
 
     cashay.create({httpTransport: new ActionHTTPTransport(authToken)});
@@ -83,8 +94,7 @@ export function setAuthToken(authToken, newProfile, reducerName = DEFAULT_AUTH_R
       payload: {
         obj,
         token: authToken
-      },
-      meta
+      }
     });
   };
 }
@@ -99,5 +109,20 @@ export function removeAuthToken() {
       Raven.setUserContext({}); // eslint-disable-line no-undef
     }
     dispatch({ type: REMOVE_AUTH_TOKEN });
+  };
+}
+
+export function setNextUrl(nextUrl) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_NEXT_URL,
+      payload: { nextUrl }
+    });
+  };
+}
+
+export function unsetNextUrl() {
+  return (dispatch) => {
+    dispatch({ type: UNSET_NEXT_URL });
   };
 }

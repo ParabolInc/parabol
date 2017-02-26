@@ -1,7 +1,7 @@
 version: 2
 executorType: docker
 containerInfo:
-  - image: node:6.9.4
+  - image: node:7.6.0
   - image: rethinkdb:2.3.5
 stages:
   build:
@@ -53,10 +53,7 @@ stages:
       - type: shell
         name: NPM run test
         command: |
-          mkdir -p $CIRCLE_TEST_REPORTS &&
-          npm run test:xunit > $CIRCLE_TEST_REPORTS/action-ava.xml
-        environment:
-          CIRCLE_TEST_REPORTS: "/home/ubuntu/test-reports/junit"
+          npm run test
 
       - type: shell
         name: Pre-build DevOps checkout

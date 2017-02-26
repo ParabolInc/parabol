@@ -44,7 +44,8 @@ Action is a Node.js application based upon the
 | Client State       | [Redux](http://redux.js.org/)                             |
 | Client Data Cache  | [Cashay](https://github.com/mattkrick/cashay)             |
 | Front-end Views    | [React](https://facebook.github.io/react/)                |
-| Styling            | [aphrodite](https://github.com/khan/aphrodite) |
+| Styling            | [aphrodite](https://github.com/khan/aphrodite)            |
+| Unit Testing       | [jest](https://facebook.github.io/jest)                   |
 
 Action is programmed in ECMAscript ES6/7 (including async/await).
 Transpilation is provided by [babel](https://github.com/babel/babel).
@@ -90,6 +91,7 @@ In this mode, webpack will hot swap your updated client modules without
 needing to restarting the development server.
 
 ```bash
+$ npm run build:dll
 $ npm run dev
 ```
 [http://localhost:3000/](http://localhost:3000/)
@@ -157,6 +159,7 @@ and more details on all releases, refer to [CHANGELOG.md](./CHANGELOG.md).
 
 | Release | Summary                                    |
 |---------|--------------------------------------------|
+| v0.16.0 | Orgs, trialing, billing; fixes & more      |
 | v0.15.0 | Prompt to upgrade on new version, Markdown |
 | v0.14.0 | Secure user avatar upload to S3 bucket     |
 | v0.13.0 | Drag-and-drop added everywhere, bug fixes  |

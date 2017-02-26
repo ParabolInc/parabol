@@ -4,6 +4,44 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.16.0 - 25-Feb-2017
+### Added
+- Organizations: teams can be tied together into organizations
+- User trials & billing: hey look! A business model!
+   - New & grandfathered users start a 30 day trial
+   - Trial & access expiry
+   - Payment information & stripe integration
+   - Invoicing
+- Notifications: a new channel to communicate with our users
+- Portals: we're using [react-portal-hoc](https://github.com/mattkrick/react-portal-hoc)
+  to implement our dropdown menus and modals
+- Updated to Node.js 7.6.0, native async/await
+- Switched to [jest](https://facebook.github.io/jest/) for unit testing
+   - Added first suite of server unit tests
+- Refactored drag-and-drop support
+- Refactored `KICK_OUT` message onto `USER_MEMO` websocket channel
+- Much improved development build time by dll-izing vendor package
+   - See: `npm run build:dll`
+- Added `npm run start:tunnel` to start [ultrahook](http://www.ultrahook.com/)
+  to facilitate Stripe & future webhook development
+- Server data validation pattern
+- Badge component
+- Presence added to dashboards (#523)
+### Fixed
+- #253 auth0 token tms out of sync with rethinkdb
+- #277 graphql browser CSS trouble
+- #437 TypeError: Cannot read property 'openArea' of undefined
+- #517 server exception encountered when generating meeting summary
+- #530 duplicate team selection after reordering
+- #558 when renaming on team settings, validation styling bug
+- #573 Amazon S3 returning 403 for VPN clients
+- #578 meeting Stuck at First Call
+- #583 allow production build without S3
+- #598 fix GraphQL v0.8.0 breaking changes
+- #608 square avatars are square (with rounded styling)
+- #718 toast notification for leaving a team copy
+- #725 acceptInvitation race condition
+
 ## v0.15.3 - 11-Feb-2017
 ### Added
 - OutcomeCard components (Projects, Action) now re-render their last-updated

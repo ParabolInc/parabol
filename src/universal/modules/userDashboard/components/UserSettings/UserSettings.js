@@ -1,14 +1,19 @@
 import React, {PropTypes} from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import {DashContent, DashHeader, DashHeaderInfo} from 'universal/components/Dashboard';
 import Button from 'universal/components/Button/Button';
 import InputField from 'universal/components/InputField/InputField';
+import Panel from 'universal/components/Panel/Panel';
 import {Field} from 'redux-form';
 import {ACTIVITY_WELCOME} from 'universal/modules/userDashboard/ducks/settingsDuck';
 import {randomPreferredName} from 'universal/utils/makeRandomPlaceholder';
-import Avatar from 'universal/components/Avatar/Avatar';
-import FileInput from 'universal/components/FileInput/FileInput';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
+import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
+import {SETTINGS} from 'universal/utils/constants';
+import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
+import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
+import UserAvatarInput from 'universal/modules/userDashboard/components/UserAvatarInput/UserAvatarInput';
+import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 
 const renderActivity = (activity) => {
   if (activity === ACTIVITY_WELCOME) {
@@ -23,48 +28,47 @@ const renderActivity = (activity) => {
 };
 
 const UserSettings = (props) => {
-  const {activity, handleSubmit, onSubmit, styles, user: {picture}} = props;
+  const {activity, handleSubmit, onSubmit, styles, user: {id: userId, picture}} = props;
+  const pictureOrDefault = picture || defaultUserAvatar;
+  const toggle = <EditableAvatar picture={pictureOrDefault} size={96}/>;
   return (
-    <form className={css(styles.root)} onSubmit={handleSubmit(onSubmit)}>
-      <DashHeader>
-        <DashHeaderInfo title="My Settings"/>
-      </DashHeader>
-      <DashContent>
-        <div className={css(styles.body)}>
-          <div className={css(styles.row)}>
-            {renderActivity(activity)}
-          </div>
-          <div className={css(styles.row)}>
-            <Avatar hasBadge={false} picture={picture} size="large"/>
-          </div>
-          <div className={css(styles.row)}>
-            <Field
-              component={FileInput}
-              name="pictureFile"
-              previousValue={picture}
-              type="file"
-            />
-          </div>
-          <div className={css(styles.row)}>
-            <Field
-              autoFocus
-              component={InputField}
-              label="Name"
-              name="preferredName"
-              placeholder={randomPreferredName}
-              type="text"
-            />
-          </div>
-          <Button
-            isBlock
-            label="Update"
-            size="small"
-            colorPalette="cool"
-            type="submit"
-          />
-        </div>
-      </DashContent>
-    </form>
+    <UserSettingsWrapper settingsLocation={SETTINGS}>
+      <div className={css(styles.body)}>
+        <Panel label="My Information">
+          <form className={css(styles.form)} onSubmit={handleSubmit(onSubmit)}>
+            <div className={css(styles.avatarBlock)}>
+              <PhotoUploadModal picture={pictureOrDefault} toggle={toggle}>
+                <UserAvatarInput userId={userId}/>
+              </PhotoUploadModal>
+            </div>
+            <div className={css(styles.infoBlock)}>
+              <div className={css(styles.block)}>
+                {renderActivity(activity)}
+              </div>
+              <div className={css(styles.block)}>
+                {/* TODO: Make me Editable.js (TA) */}
+                <Field
+                  autoFocus
+                  colorPalette="gray"
+                  component={InputField}
+                  label="Name"
+                  name="preferredName"
+                  placeholder={randomPreferredName}
+                  type="text"
+                />
+              </div>
+              <Button
+                isBlock
+                label="Update"
+                size="small"
+                colorPalette="cool"
+                type="submit"
+              />
+            </div>
+          </form>
+        </Panel>
+      </div>
+    </UserSettingsWrapper>
   );
 };
 
@@ -86,18 +90,28 @@ UserSettings.propTypes = {
 };
 
 const styleThunk = () => ({
-  root: {
-    display: 'flex !important',
-    flex: 1,
-    flexDirection: 'column'
-  },
-
   body: {
-    maxWidth: '20rem'
+    maxWidth: '37.5rem',
   },
 
-  row: {
+  form: {
+    borderTop: `1px solid ${ui.rowBorderColor}`,
+    display: 'flex',
+    padding: ui.panelGutter,
+    width: '100%'
+  },
+
+  block: {
+    fontSize: '1rem',
     margin: '0 0 1.5rem'
+  },
+
+  avatarBlock: {
+    // Define
+  },
+
+  infoBlock: {
+    paddingLeft: ui.panelGutter
   }
 });
 

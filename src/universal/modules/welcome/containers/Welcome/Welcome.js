@@ -4,27 +4,33 @@ import {formValueSelector} from 'redux-form';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {goToPage} from 'universal/modules/welcome/ducks/welcomeDuck';
 import Welcome from 'universal/modules/welcome/components/Welcome/Welcome';
+import {withRouter} from 'react-router';
 
 const selector = formValueSelector('welcomeWizard');
 const rawSelector = formValueSelector('welcomeWizardRawInvitees');
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state, props) => ({
   invitees: selector(state, 'invitees'),
   inviteesRaw: rawSelector(state, 'inviteesRaw'),
-  preferredName: selector(state, 'preferredName'),
+  // default to something nice
+  preferredName: selector(state, 'preferredName') || (props.user && props.user.preferredName),
   teamName: selector(state, 'teamName'),
-  authToken: state.authToken,
+  tms: state.auth.obj.tms,
   welcome: state.welcome
 });
 
 const WelcomeContainer = (props) => {
-  const {dispatch, welcome: {completed}} = props;
+  const {dispatch, router, tms, welcome: {completed}} = props;
   const progressDotClickFactory = (dot) => (e) => {
     e.preventDefault();
     if (dot <= completed + 1) {
       dispatch(goToPage(dot));
     }
   };
+  if (tms && completed === 0) {
+    router.push('/me');
+    return null;
+  }
   return (
     <Welcome
       {...props}
@@ -39,7 +45,9 @@ WelcomeContainer.propTypes = {
   invitees: PropTypes.array,
   inviteesRaw: PropTypes.string,
   preferredName: PropTypes.string,
+  router: PropTypes.object,
   teamName: PropTypes.string,
+  tms: PropTypes.array,
   welcome: PropTypes.shape({
     existingInvites: PropTypes.array,
     teamId: PropTypes.string,
@@ -48,5 +56,7 @@ WelcomeContainer.propTypes = {
 };
 
 export default connect(mapStateToProps)(
-  requireAuth(WelcomeContainer)
+  requireAuth(
+    withRouter(WelcomeContainer)
+  )
 );

@@ -20,6 +20,4 @@ module.exports.run = function() {
       });
     }
   });
-  // eslint-disable-next-line global-require
-  require('babel-polyfill');
 };

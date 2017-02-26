@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import CheckinCardBaseStyles from './CheckinCardBaseStyles';
@@ -51,7 +52,7 @@ const styleThunk = () => ({
   },
 
   cardIsBlurred: {
-    filter: 'blur(1.5px)',
+    filter: ui.filterBlur,
     opacity: '.65',
     position: 'relative',
     transform: 'scale(.75)'

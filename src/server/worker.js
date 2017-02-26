@@ -12,11 +12,19 @@ import emailSSR from './emailSSR';
 import {clientSecret as secretKey} from './utils/auth0Helpers';
 import {auth0} from 'universal/utils/clientOptions';
 import scConnectionHandler from './socketHandlers/scConnectionHandler';
-import httpGraphQLHandler from './graphql/httpGraphQLHandler';
+import httpGraphQLHandler, {intranetHttpGraphQLHandler} from './graphql/httpGraphQLHandler';
 import mwPresencePublishOut from './socketHandlers/mwPresencePublishOut';
+import mwMemoPublishOut from './socketHandlers/mwMemoPublishOut';
 import mwPresenceSubscribe from './socketHandlers/mwPresenceSubscribe';
+import mwMemoSubscribe from './socketHandlers/mwMemoSubscribe';
+import stripeWebhookHandler from './billing/stripeWebhookHandler';
+import {getDotenv} from '../universal/utils/dotenv';
+
+// Import .env and expand variables:
+getDotenv();
 
 const PROD = process.env.NODE_ENV === 'production';
+const INTRANET_JWT_SECRET = process.env.INTRANET_JWT_SECRET || '';
 
 export function run(worker) {
   console.log('   >> Worker PID:', process.pid);
@@ -48,9 +56,9 @@ export function run(worker) {
   app.use(cors({origin: true, credentials: true}));
   app.use('/static', express.static('static'));
   app.use(favicon(`${__dirname}/../../static/favicon.ico`));
+  app.use('/static', express.static('build'));
   if (PROD) {
     app.use(compression());
-    app.use('/static', express.static('build'));
   }
 
   // HTTP GraphQL endpoint
@@ -61,10 +69,21 @@ export function run(worker) {
     credentialsRequired: false
   }), graphQLHandler);
 
+  // HTTP Intranet GraphQL endpoint:
+  const intranetGraphQLHandler = intranetHttpGraphQLHandler(scServer.exchange);
+  app.post('/intranet-graphql', jwt({
+    secret: new Buffer(INTRANET_JWT_SECRET, 'base64'),
+    credentialsRequired: true
+  }), intranetGraphQLHandler);
+
   // server-side rendering for emails
   if (!PROD) {
     app.get('/email', emailSSR);
   }
+
+  // stripe webhooks
+  app.post('/stripe', stripeWebhookHandler);
+
   // server-side rendering
   app.get('*', createSSR);
 
@@ -74,7 +93,9 @@ export function run(worker) {
   // handle sockets
   const {MIDDLEWARE_PUBLISH_OUT, MIDDLEWARE_SUBSCRIBE} = scServer;
   scServer.addMiddleware(MIDDLEWARE_PUBLISH_OUT, mwPresencePublishOut);
+  scServer.addMiddleware(MIDDLEWARE_PUBLISH_OUT, mwMemoPublishOut);
   scServer.addMiddleware(MIDDLEWARE_SUBSCRIBE, mwPresenceSubscribe);
+  scServer.addMiddleware(MIDDLEWARE_SUBSCRIBE, mwMemoSubscribe);
   const connectionHandler = scConnectionHandler(scServer.exchange);
   scServer.on('connection', connectionHandler);
 }

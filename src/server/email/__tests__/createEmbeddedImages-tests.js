@@ -1,10 +1,7 @@
-import test from 'ava';
 import createEmbeddedImages from '../createEmbeddedImages';
 
-test('throws if no html is provided', t => {
-  t.throws(() => {
-    return createEmbeddedImages();
-  });
+test('throws if no html is provided', () => {
+  expect(() => createEmbeddedImages()).toThrow();
 });
 
 const HTML_DOC = `
@@ -22,22 +19,20 @@ const HTML_DOC = `
   </html>
 `;
 
-test('returns html with embedded attachments', t => {
-  t.plan(8);
-
+test('returns html with embedded attachments', () => {
   const result = createEmbeddedImages(HTML_DOC);
 
-  t.true('html' in result);
-  t.true('attachments' in result);
-  t.is(result.attachments.length, 2);
+  expect('html' in result).toBeTruthy();
+  expect('attachments' in result).toBeTruthy();
+  expect(result.attachments.length).toBe(2);
 
-  t.false(!result.attachments[0].filename);
-  t.false(!result.attachments[0].path);
-  t.false(!result.attachments[0].cid);
+  expect(!result.attachments[0].filename).toBeFalsy();
+  expect(!result.attachments[0].path).toBeFalsy();
+  expect(!result.attachments[0].cid).toBeFalsy();
 
   result.attachments.forEach(attachment => {
     const {cid} = attachment;
-    t.regex(result.html, new RegExp(`img src="cid:${cid}"`));
+    expect(result.html.match(new RegExp(`img src="cid:${cid}"`))).toBeTruthy();
   });
 });
 
@@ -56,14 +51,12 @@ const HTML_DOC_ONE_IMG_NOT_EXIST = `
   </html>
 `;
 
-test('omits non-existing files ', t => {
-  t.plan(3);
-
+test('omits non-existing files ', () => {
   const result = createEmbeddedImages(HTML_DOC_ONE_IMG_NOT_EXIST);
 
-  t.true('html' in result);
-  t.true('attachments' in result);
-  t.is(result.attachments.length, 1);
+  expect('html' in result).toBeTruthy();
+  expect('attachments' in result).toBeTruthy();
+  expect(result.attachments.length).toBe(1);
 });
 
 const HTML_DOC_EXTERNAL_ASSETS = `
@@ -81,12 +74,10 @@ const HTML_DOC_EXTERNAL_ASSETS = `
   </html>
 `;
 
-test('omits external assets', t => {
-  t.plan(3);
-
+test('omits external assets', () => {
   const result = createEmbeddedImages(HTML_DOC_EXTERNAL_ASSETS);
 
-  t.true('html' in result);
-  t.true('attachments' in result);
-  t.is(result.attachments.length, 0);
+  expect(result.hasOwnProperty('html')).toBeTruthy();
+  expect(result.hasOwnProperty('attachments')).toBeTruthy();
+  expect(result.attachments.length).toBe(0);
 });

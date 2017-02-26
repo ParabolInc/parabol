@@ -5,12 +5,10 @@ const setImports = () =>
   new Map([
     ['component', System.import(
       'universal/modules/teamDashboard/containers/TeamSettings/TeamSettingsContainer')],
-    ['teamSettings', System.import('universal/modules/teamDashboard/ducks/teamSettingsDuck')]
   ]);
 
 const getImports = importMap => ({
-  component: importMap.get('component'),
-  teamSettings: importMap.get('teamSettings').default
+  component: importMap.get('component').default,
 });
 
 export default (store) => ({

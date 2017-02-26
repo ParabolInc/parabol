@@ -18,7 +18,9 @@ const defaultProfile = {
 
 export function selectSegmentProfile(state, authReducer = DEFAULT_AUTH_REDUCER_NAME) {
   const userId = state[authReducer].obj.sub;
-  if (!userId) { return defaultProfile; }
+  if (!userId) {
+    return defaultProfile;
+  }
   const {user} = cashay.query(getAuthQueryString, getAuthedOptions(userId)).data;
 
   return ({
@@ -29,11 +31,33 @@ export function selectSegmentProfile(state, authReducer = DEFAULT_AUTH_REDUCER_N
   });
 }
 
+export function segmentEventIdentify() {
+  return (dispatch, getState) => {
+    const profile = selectSegmentProfile(getState());
+    dispatch({
+      type: SEGMENT_EVENT,
+      meta: {
+        analytics: {
+          eventType: EventTypes.identify,
+          eventPayload: {
+            userId: profile.id,
+            traits: {
+              avatar: profile.picture,
+              email: profile.email,
+              name: profile.name
+            }
+          }
+        }
+      }
+    });
+  };
+}
+
 export function segmentEventTrack(event, properties, options) {
   return (dispatch, getState) => {
     const profile = selectSegmentProfile(getState());
     const propertiesOut = Object.assign({}, profile, properties);
-    const optionsOut = Object.assign({}, { context: { traits: profile } }, options);
+    const optionsOut = Object.assign({}, {context: {traits: profile}}, options);
 
     dispatch({
       type: SEGMENT_EVENT,
@@ -55,7 +79,7 @@ export function segmentEventPage(name, category, properties, options) {
   return (dispatch, getState) => {
     const profile = selectSegmentProfile(getState());
     const propertiesOut = Object.assign({}, profile, properties);
-    const optionsOut = Object.assign({}, { context: { traits: profile } }, options);
+    const optionsOut = Object.assign({}, {context: {traits: profile}}, options);
 
     dispatch({
       type: SEGMENT_EVENT,

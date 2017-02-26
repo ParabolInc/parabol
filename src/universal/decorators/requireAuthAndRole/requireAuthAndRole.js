@@ -1,9 +1,10 @@
 import React, {Component, PropTypes} from 'react';
-import {showError} from 'universal/modules/notifications/ducks/notifications';
+import {showError} from 'universal/modules/toast/ducks/toastDuck';
 import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router';
+import {setNextUrl} from 'universal/redux/authDuck';
 
 const unauthorizedDefault = {
   title: 'Unauthorized',
@@ -26,7 +27,7 @@ const mapStateToProps = state => {
 export default (role, {
   /* optional named options: */
   silent = false,
-  redirect = '/',
+  redirect = '/login',
   unauthorized = unauthorizedDefault,
   unauthenticated = unauthenticatedDefault
 } = {}) => ComposedComponent => {
@@ -37,11 +38,41 @@ export default (role, {
       auth: PropTypes.object,
       user: PropTypes.object,
       dispatch: PropTypes.func,
-      router: PropTypes.object
+      router: PropTypes.object,
+      location: PropTypes.object
     };
 
+    componentWillMount() {
+      this.handleAuthChange(this.props);
+    }
+
+    componentWillReceiveProps(nextProps) {
+      const {auth: {sub: prevSub}} = this.props;
+      const {auth: {sub: nextSub}} = nextProps;
+      if (prevSub !== nextSub) {
+        this.handleAuthChange(nextProps);
+      }
+    }
+
+    handleAuthChange(props) {
+      const {auth, dispatch, location: {pathname}} = props;
+
+      if (auth.sub) {
+        if (role && !(auth.sub && auth.rol === role) && !silent) {
+          dispatch(showError(unauthenticated));
+        }
+      } else {
+        // no legit authToken
+        if (!silent) {
+         // squak about it:
+          dispatch(showError(unauthorized));
+        }
+        dispatch(setNextUrl(pathname));
+      }
+    }
+
     render() {
-      const {auth, dispatch, router} = this.props;
+      const {auth, router} = this.props;
       if (auth === undefined) {
         throw new Error('Auth token undefined. Did you put @connect on your component?');
       }
@@ -50,15 +81,9 @@ export default (role, {
           // We had a role to check, and role checks out:
           return <ComposedComponent {...this.props} />;
         }
-        if (!silent) {
-          dispatch(showError(unauthenticated));
-        }
       } else if (auth.sub) {
         // We were looking for any authenticated user only:
         return <ComposedComponent {...this.props} />;
-      } else if (!silent) {
-        // no legit authToken to be had & squak about it:
-        dispatch(showError(unauthorized));
       }
       router.push(redirect);
       return null;
