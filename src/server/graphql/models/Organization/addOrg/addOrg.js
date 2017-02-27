@@ -68,10 +68,6 @@ export default {
       teamOrgInvitations.push(asyncInviteTeam(userId, teamId, invitees));
     }
     await Promise.all(teamOrgInvitations);
-
-    // TODO add activeUsers on the Organization table instead of activeUserCount.
-    // That way, we can index on it & subscribe to all the users orgs
-
     return true;
   }
 };
