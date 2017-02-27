@@ -170,7 +170,6 @@
     "yarn": "0.16.1"
   },
   "jest": {
-    "forceExit": true,
     "modulePaths": [
       "<rootDir>/src/"
     ],

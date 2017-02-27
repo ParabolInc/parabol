@@ -3,15 +3,20 @@ import testUsers from 'server/__tests__/setup/testUsers';
 import shortid from 'shortid';
 import {BILLING_LEADER, LOBBY} from 'universal/utils/constants';
 import {TRIAL_PERIOD} from 'server/utils/serverConstants'
-import mockNow from 'server/__tests__/setup/mockNow';
 import notificationTemplate from 'server/__tests__/utils/notificationTemplate';
-
-const now = new Date(mockNow);
 
 class MockDB {
   constructor() {
     this.db = {};
     this.context = {};
+  }
+
+  _selector = (name) => (contextIdx, updates) => {
+    this.context[name] = this.db[name][contextIdx];
+    if (updates) {
+      Object.assign(this.context[name], updates);
+    }
+    return this;
   }
 
   closeout(table, doc) {
@@ -21,9 +26,33 @@ class MockDB {
     return this;
   }
 
-  // sugar so we don't have to call run all the time
-  then(resolve, reject) {
-    return this.run().then(resolve, reject);
+  init(overrides = {}, templates = {}) {
+    this.context.organization = {id: shortid.generate()};
+    this.context.team = {id: shortid.generate()};
+    const users = testUsers.map((user, idx) => ({
+      ...user,
+      trialOrg: idx === 0 ? this.context.organization.id : null,
+      userOrgs: [{
+        id: this.context.organization.id,
+        role: idx === 0 ? BILLING_LEADER : null,
+      }]
+    }));
+    users.forEach(this.newUser.bind(this));
+    this.newTeam();
+    users.forEach((user, idx) => {
+      this.user(idx);
+      this.newTeamMember({
+        isLead: idx === 0,
+        checkInOrder: idx
+      })
+    });
+    const orgUsers = this.db.user.map((user) => ({
+      id: user.id,
+      inactive: false,
+      role: user.userOrgs.find((org) => org.id === this.context.organization.id).role
+    }));
+    this.newOrg({orgUsers});
+    return this;
   }
 
   newNotification(overrides = {}, template = {}) {
@@ -38,6 +67,7 @@ class MockDB {
   }
 
   newOrg(overrides = {}) {
+    const now = new Date();
     return this.closeout('organization', {
       id: this.context.organization.id,
       createdAt: now,
@@ -87,6 +117,7 @@ class MockDB {
   };
 
   newUser(overrides = {}) {
+    const now = new Date();
     return this.closeout('user', {
       id: `test|${overrides.name.substr(0, 4)}_${this.context.organization.id}`,
       cachedAt: now,
@@ -108,42 +139,8 @@ class MockDB {
     });
   };
 
-  org(contextIdx, updates) {
-    this.context.organization = this.db.organization[contextIdx];
-    if (updates) {
-      Object.assign(this.context.organization, updates);
-    }
-    return this;
-  }
-
-  init(overrides = {}, templates = {}) {
-    this.context.organization = {id: shortid.generate()};
-    this.context.team = {id: shortid.generate()};
-    const users = testUsers.map((user, idx) => ({
-      ...user,
-      trialOrg: idx === 0 ? this.context.organization.id : null,
-      userOrgs: [{
-        id: this.context.organization.id,
-        role: idx === 0 ? BILLING_LEADER : null,
-      }]
-    }));
-    users.forEach(this.newUser.bind(this));
-    this.newTeam();
-    users.forEach((user, idx) => {
-      this.user(idx);
-      this.newTeamMember({
-        isLead: idx === 0,
-        checkInOrder: idx
-      })
-    });
-    const orgUsers = this.db.user.map((user) => ({
-      id: user.id,
-      inactive: false,
-      role: user.userOrgs.find((org) => org.id === this.context.organization.id).role
-    }));
-    this.newOrg({orgUsers});
-    return this;
-  }
+  notification = this._selector('notification');
+  org = this._selector('organization');
 
   async run() {
     const r = getRethink();
@@ -154,13 +151,15 @@ class MockDB {
     return this.db;
   }
 
-  user(contextIdx, updates) {
-    this.context.user = this.db.user[contextIdx];
-    if (updates) {
-      Object.assign(this.context.user, updates);
-    }
-    return this;
+  team = this._selector('team');
+  teamMember = this._selector('teamMember');
+
+  // sugar so we don't have to call run all the time
+  then(resolve, reject) {
+    return this.run().then(resolve, reject);
   }
+
+  user = this._selector('user');
 }
 
 export default MockDB;

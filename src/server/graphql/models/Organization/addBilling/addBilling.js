@@ -28,6 +28,14 @@ const tryNewSubscription = async (stripeId, orgId, quantity) => {
   }
 };
 
+const tryUpdateCustomer = async (stripeId, payload) => {
+  try {
+    return await stripe.customers.update(stripeId, payload);
+  } catch(e) {
+    throw errorObj({_error: e.message})
+  }
+};
+
 export default {
   type: GraphQLBoolean,
   description: `Add a credit card by passing in a stripe token encoded with all the billing details.
@@ -61,7 +69,7 @@ export default {
       .get(orgId)
       .pluck('creditCard', 'orgUsers', 'periodEnd', 'periodStart', 'stripeId', 'stripeSubscriptionId');
 
-    const customer = await stripe.customers.update(stripeId, {source: stripeToken});
+    const customer = await tryUpdateCustomer(stripeId, {source: stripeToken});
     if (periodEnd > now && stripeSubscriptionId) {
       // 1) Updating to a new credit card
       if (creditCard) {

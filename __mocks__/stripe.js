@@ -42,7 +42,7 @@ const deletedReturnVal = (id) => ({
 });
 
 const makeSourceObject = (creditCard, stripeId) => ({
-  "id": 'card_123',
+  "id": creditCard.id,
   "object": "card",
   "address_city": null,
   "address_country": null,
@@ -167,10 +167,13 @@ stripe.__snapshot = () => {
 stripe.customers = {
   create: jest.fn((options) => new Promise((resolve) => resolve(stripe.customers.__mock))),
   retrieve: jest.fn((customerId) => new Promise((resolve) => resolve(stripe.customers.__mock))),
-  update: jest.fn((customerId, options) => new Promise((resolve) => {
+  update: jest.fn((customerId, options) => new Promise((resolve, reject) => {
     const {source} = options;
     if (source) {
       const card = creditCardByToken[source];
+      if (!card) {
+        reject(new Error(`No such token: ${source}`))
+      }
       stripe.customers.__mock.default_source = card.id;
       stripe.customers.__mock.sources.data = [makeSourceObject(card, stripe.customers.__mock.id)];
     }

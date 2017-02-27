@@ -119,7 +119,7 @@ export const isBillingLeader = (userOrgDoc) => {
 export const requireOrgLeader = (userOrgDoc) => {
   const legit = isBillingLeader(userOrgDoc);
   if (!legit) {
-    throw errorObj({_error: `Unauthorized. User is not a billing leader for ${userOrgDoc.id}`});
+    throw errorObj({_error: `Unauthorized. User is not a billing leader for that organization`});
   }
 };
 
