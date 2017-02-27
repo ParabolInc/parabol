@@ -13,7 +13,7 @@ export default async function invoicePaymentFailed(invoiceId) {
   const now = new Date();
 
   // VALIDATION
-  const {amount_due, customer: customerId, metadata: {orgId}, subscription, paid} = await stripe.invoices.retrieve(invoiceId);
+  const {amount_due: amountDue, customer: customerId, metadata: {orgId}, subscription, paid} = await stripe.invoices.retrieve(invoiceId);
   const org = await r.table('Organization').get(orgId).pluck('creditCard', 'stripeSubscriptionId');
   const {creditCard, stripeSubscriptionId} = org;
   /* attack vector #1: call the webhook with the victims invoiceId that was successful
@@ -40,11 +40,10 @@ export default async function invoicePaymentFailed(invoiceId) {
       return billingLeaders;
     }, []);
     const {last4, brand} = creditCard;
-    console.log('updating balance', amount_due);
     await stripe.customers.update(customerId, {
       // amount_due includes the old account_balance, so we can (kinda) atomically set this
       // we take out the charge for future services since we are ending service immediately
-      account_balance: amount_due - nextMonthAmount
+      account_balance: amountDue - nextMonthAmount
     });
     console.log('setting unpaid on db');
     await r.table('Invoice').get(invoiceId).update({

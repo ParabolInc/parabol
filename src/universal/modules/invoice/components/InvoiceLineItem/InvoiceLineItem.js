@@ -19,9 +19,8 @@ const detailDescriptionMaker = {
       return `${detail.email} has been paused since ${makeDateString(detail.startAt)}`;
     } else if (!detail.startAt) {
       return `${detail.email} was paused until ${makeDateString(detail.startAt)}`;
-    } else {
-      return `${detail.email} was paused from ${makeDateString(detail.startAt, false)} to ${makeDateString(detail.endAt, false)}`;
     }
+    return `${detail.email} was paused from ${makeDateString(detail.startAt, false)} to ${makeDateString(detail.endAt, false)}`;
   }
 };
 
@@ -56,7 +55,7 @@ const InvoiceLineItem = (props) => {
           <div className={css(styles.fill)}>{description}</div>
           <div>{amount}</div>
         </div>
-      )
+      );
     });
   };
 
@@ -67,12 +66,12 @@ const InvoiceLineItem = (props) => {
         <div>{item.amount}</div>
       </div>
       {item.details &&
-      <div className={`${css(styles.details)} hide-print`}>
-        {makeToggle()}
-        <div className={detailsInnerStyles}>
-          {makeDetails(item.details)}
+        <div className={`${css(styles.details)} hide-print`}>
+          {makeToggle()}
+          <div className={detailsInnerStyles}>
+            {makeDetails(item.details)}
+          </div>
         </div>
-      </div>
       }
     </div>
   );

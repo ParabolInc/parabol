@@ -249,6 +249,6 @@ export default async function generateInvoice(invoice, stripeLineItems, orgId, i
         startAt: fromEpochSeconds(invoice.period_start),
         startingBalance: invoice.starting_balance,
         status: PENDING
-      }, {conflict: 'replace'})
+      }, {conflict: 'replace'});
     });
 }

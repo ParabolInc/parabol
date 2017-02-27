@@ -35,9 +35,12 @@ const RemoveTeamMemberModal = (props) => {
 };
 
 RemoveTeamMemberModal.propTypes = {
-  toggle: PropTypes.any,
+  closeAfter: PropTypes.number,
+  closePortal: PropTypes.func,
+  isClosing: PropTypes.bool,
   preferredName: PropTypes.string.isRequired,
-  teamMemberId: PropTypes.string.isRequired
+  teamMemberId: PropTypes.string.isRequired,
+  toggle: PropTypes.any
 };
 
 export default portal({escToClose: true, closeAfter: 100})(RemoveTeamMemberModal);

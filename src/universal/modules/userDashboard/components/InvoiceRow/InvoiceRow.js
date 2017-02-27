@@ -74,11 +74,12 @@ const InvoiceRow = (props) => {
 };
 
 InvoiceRow.propTypes = {
+  invoice: PropTypes.object,
   styles: PropTypes.object
 };
 
 const lineHeightLarge = '1.625rem';
-const lineHeightSmall = '1.125rem';
+// const lineHeightSmall = '1.125rem';
 
 const styleThunk = () => ({
   fileIcon: {

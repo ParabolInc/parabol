@@ -13,7 +13,6 @@ const Notifications = (props) => {
     notifications,
     styles
   } = props;
-
   return (
     <UserSettingsWrapper settingsLocation={NOTIFICATIONS}>
       <div className={css(styles.wrapper)}>

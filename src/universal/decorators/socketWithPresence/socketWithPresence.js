@@ -92,11 +92,9 @@ export default ComposedComponent => {
           message: `You've been added to team ${teamName}`
         }));
       } else if (type === KICK_OUT) {
-        console.log('received memo', data);
         const {teamId, teamName} = data;
         const {router} = this.props;
         const onExTeamRoute = router.isActive(`/team/${teamId}`) || router.isActive(`/meeting/${teamId}`);
-        console.log('should reroute', onExTeamRoute);
         if (onExTeamRoute) {
           router.push('/me');
         }

@@ -1,4 +1,4 @@
-import stripe from './stripe';
+// import stripe from './stripe';
 // import ms from 'ms';
 
 // stripe.subscriptions.update('sub_A9nq7dAOWGUKlD', {

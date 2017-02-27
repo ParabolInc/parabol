@@ -17,14 +17,14 @@ const LeaveOrgModal = (props) => {
         Are you sure?
       </Type>
       <Type align="center" bold scale="s4">
-        This will remove you as a billing leader. <br />
+        This will remove you from the organization and all teams under it! <br />
         To undo it, you'll have to ask another billing leader to re-add you <br/>
       </Type>
       <IconLink
         colorPalette="warm"
         icon="arrow-circle-right"
         iconPlacement="right"
-        label={'Leave the team'}
+        label={'Leave the organization'}
         margin="1.5rem 0 0"
         onClick={handleClick}
         scale="large"
@@ -34,6 +34,9 @@ const LeaveOrgModal = (props) => {
 };
 
 LeaveOrgModal.propTypes = {
+  closeAfter: PropTypes.number,
+  closePortal: PropTypes.func,
+  isClosing: PropTypes.bool,
   onBackdropClick: PropTypes.func.isRequired,
   orgId: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired

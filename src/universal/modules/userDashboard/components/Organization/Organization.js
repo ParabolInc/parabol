@@ -30,7 +30,6 @@ const initialValues = {orgName: ''};
 const Organization = (props) => {
   const {
     activeOrgDetail,
-    dispatch,
     styles,
     org
   } = props;
@@ -66,6 +65,7 @@ const Organization = (props) => {
 };
 
 Organization.propTypes = {
+  activeOrgDetail: PropTypes.string,
   org: PropTypes.object,
   styles: PropTypes.object
 };

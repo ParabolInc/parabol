@@ -127,10 +127,22 @@ const CreditCardModal = (props) => {
 };
 
 CreditCardModal.propTypes = {
-  isUpdate: PropTypes.bool,
+  addStripeBilling: PropTypes.func,
+  cardTypeIcon: PropTypes.string,
+  checkCardType: PropTypes.func,
+  closeAfter: PropTypes.number,
   closePortal: PropTypes.func,
+  crudAction: PropTypes.string,
+  dirty: PropTypes.bool,
+  error: PropTypes.string,
   handleToken: PropTypes.func,
+  handleSubmit: PropTypes.func,
+  isClosing: PropTypes.bool,
+  isUpdate: PropTypes.bool,
   orgId: PropTypes.string,
+  styles: PropTypes.object,
+  submitting: PropTypes.bool,
+  syncFormError: PropTypes.string
 };
 
 const inputInnerBorder = `1px solid ${appTheme.palette.mid30l}`;

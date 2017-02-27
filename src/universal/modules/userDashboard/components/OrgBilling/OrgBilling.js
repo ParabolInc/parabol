@@ -62,6 +62,12 @@ const OrgBilling = (props) => {
   );
 };
 
+OrgBilling.propTypes = {
+  invoices: PropTypes.array,
+  styles: PropTypes.object,
+  org: PropTypes.object
+};
+
 const styleThunk = () => ({
   creditCardInfo: {
     color: appTheme.palette.dark,

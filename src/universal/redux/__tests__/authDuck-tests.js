@@ -1,25 +1,14 @@
 import {applyMiddleware, combineReducers, createStore} from 'redux';
 import thunk from 'redux-thunk';
 import auth, {setAuthToken, removeAuthToken} from '../authDuck';
-import {testToken, testTokenData} from './testTokens';
+import {testToken, testTokenData, emptyToken} from './testTokens';
 
 const appReducers = {auth};
 let appReducer;
 let store;
 let initialState;
 
-const initialStateAssertion = {
-  auth: {
-    token: null,
-    obj: {
-      aud: null,
-      exp: null,
-      iat: null,
-      iss: null,
-      sub: null
-    }
-  }
-};
+const initialStateAssertion = { auth: emptyToken };
 
 beforeEach(() => {
   appReducer = combineReducers({...appReducers});
@@ -40,6 +29,7 @@ test('can setAuthToken w/token decode', () => {
     auth: {
       obj: testTokenData,
       token: testToken,
+      nextUrl: null
     }
   };
   store.dispatch(setAuthToken(testToken));

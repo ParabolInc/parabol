@@ -3,7 +3,6 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import Row from 'universal/components/Row/Row';
-import UserTag from 'universal/components/UserTag/UserTag';
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
 
 const OrganizationRow = (props) => {
@@ -46,6 +45,8 @@ OrganizationRow.propTypes = {
   invitedAt: PropTypes.string,
   isAdmin: PropTypes.bool,
   isLead: PropTypes.bool,
+  onRowClick: PropTypes.func,
+  organization: PropTypes.object,
   picture: PropTypes.string,
   name: PropTypes.string,
   styles: PropTypes.object
