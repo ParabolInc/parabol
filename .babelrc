@@ -3,7 +3,13 @@
     "production": {
       "presets": ["react", "es2015", "stage-3"],
       "plugins": [
-        ["transform-decorators-legacy"]
+        ["transform-class-properties"],
+        ["transform-export-extensions"],
+        ["transform-decorators-legacy"],
+        ["transform-class-properties"],
+        ["transform-es2015-modules-commonjs"],
+        ["transform-es2015-destructuring"],
+        ["transform-es2015-classes"]
       ]
     },
     "development": {
