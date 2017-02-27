@@ -10,7 +10,7 @@ export const AUTO_PAUSE_THRESH = ms('30d');
 
 /* stripe variables */
 // $199,999/mo
-export const ACTION_MONTHLY = 'dev-monthly';
+export const ACTION_MONTHLY = 'action-monthly';
 // $5/mo
 // export const ACTION_MONTHLY = 'action-monthly';
 export const ADD_USER = 'addUser';
