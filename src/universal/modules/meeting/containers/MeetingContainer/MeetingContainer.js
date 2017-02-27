@@ -332,8 +332,8 @@ export default class MeetingContainer extends Component {
       || ((localPhase === CHECKIN || localPhase === UPDATES) && members.length < localPhaseItem)) {
       return <LoadingView />;
     }
-
-    const inSync = isFacilitating ? true :
+    const phasesAlwaysInSync = ['lobby', 'firstcall', 'lastcall'];
+    const inSync = isFacilitating || phasesAlwaysInSync.includes(meetingPhase) ? true :
       localPhase + localPhaseItem === facilitatorPhase + facilitatorPhaseItem;
     const rejoinFacilitator = () => {
       const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
