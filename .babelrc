@@ -3,7 +3,7 @@
     "production": {
       "presets": ["react", "es2015", "stage-3"],
       "plugins": [
-        ["transform-decorators-legacy"],
+        ["transform-decorators-legacy"]
       ]
     },
     "development": {
