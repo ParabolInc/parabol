@@ -10,31 +10,7 @@ import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'serv
 import stripe from 'server/billing/stripe';
 import {fromEpochSeconds, toEpochSeconds} from 'server/utils/epochTime';
 import getCCFromCustomer from 'server/graphql/models/Organization/addBilling/getCCFromCustomer';
-import {errorObj} from 'server/utils/utils';
-
-const tryNewSubscription = async (stripeId, orgId, quantity) => {
-  try {
-    // this will fail if the payment method is rejected (test card: 4000000000000341)
-    return await stripe.subscriptions.create({
-      customer: stripeId,
-      metadata: {
-        orgId
-      },
-      plan: ACTION_MONTHLY,
-      quantity
-    });
-  } catch (e) {
-    throw errorObj({_error: e.message});
-  }
-};
-
-const tryUpdateCustomer = async (stripeId, payload) => {
-  try {
-    return await stripe.customers.update(stripeId, payload);
-  } catch(e) {
-    throw errorObj({_error: e.message})
-  }
-};
+import tryStripeCall from 'server/billing/tryStripeCall';
 
 export default {
   type: GraphQLBoolean,
@@ -69,7 +45,7 @@ export default {
       .get(orgId)
       .pluck('creditCard', 'orgUsers', 'periodEnd', 'periodStart', 'stripeId', 'stripeSubscriptionId');
 
-    const customer = await tryUpdateCustomer(stripeId, {source: stripeToken});
+    const customer = await tryStripeCall(stripe.customers.update(stripeId, {source: stripeToken}));
     if (periodEnd > now && stripeSubscriptionId) {
       // 1) Updating to a new credit card
       if (creditCard) {
@@ -101,7 +77,14 @@ export default {
       // 4) Payment was rejected and they're adding a new source
       const notificationToClear = creditCard ? PAYMENT_REJECTED : TRIAL_EXPIRED;
       const quantity = orgUsers.reduce((count, orgUser) => orgUser.inactive ? count : count + 1, 0);
-      const subscription = await tryNewSubscription(stripeId, orgId, quantity);
+      const subscription = await tryStripeCall(stripe.subscriptions.create({
+        customer: stripeId,
+        metadata: {
+          orgId
+        },
+        plan: ACTION_MONTHLY,
+        quantity
+      }));
       const {id, current_period_end, current_period_start} = subscription;
       await r.table('Organization').get(orgId).update({
         creditCard: getCCFromCustomer(customer),

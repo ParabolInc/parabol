@@ -1,12 +1,13 @@
 import {toEpochSeconds} from 'server/utils/epochTime';
 import creditCardByToken from 'server/__tests__/utils/creditCardByToken';
 import ms from 'ms';
+const stripe = jest.genMockFromModule('stripe');
 
-const updateFromOptions = (term, options) => {
+const updateFromOptions = (term, options, reject) => {
   Object.keys(options).forEach((arg) => {
     const specialHandler = term.__specialHandlers[arg];
     if (specialHandler) {
-      specialHandler(term.__mock, options[arg]);
+      specialHandler(term.__mock, options[arg], reject);
     } else {
       term.__mock[arg] = options[arg];
     }
@@ -24,9 +25,6 @@ const checkTouchedEntity = (entityName) => {
   }
   return false
 };
-
-const stripe = jest.genMockFromModule('stripe');
-
 
 const defaultSubscriptionPlan = {
   id: 'action-monthly-test',
@@ -158,6 +156,9 @@ stripe.__snapshot = () => {
     const name = entityNames[i];
     if (checkTouchedEntity(name)) {
       const entity = stripe[name];
+      if (!entity || !entity.__trimFields) {
+        throw new Error(`BAD MOCK: No __trimFields set for ${name}`);
+      }
       snapshot[name] = stripe.__trimSnapshot.trim(entity.__mock, entity.__trimFields);
     }
   }
@@ -165,41 +166,46 @@ stripe.__snapshot = () => {
 };
 
 stripe.customers = {
-  create: jest.fn((options) => new Promise((resolve) => resolve(stripe.customers.__mock))),
-  retrieve: jest.fn((customerId) => new Promise((resolve) => resolve(stripe.customers.__mock))),
-  update: jest.fn((customerId, options) => new Promise((resolve, reject) => {
-    const {source} = options;
-    if (source) {
-      const card = creditCardByToken[source];
-      if (!card) {
-        reject(new Error(`No such token: ${source}`))
-      }
-      stripe.customers.__mock.default_source = card.id;
-      stripe.customers.__mock.sources.data = [makeSourceObject(card, stripe.customers.__mock.id)];
-    }
+  create: jest.fn((options) => new Promise((resolve, reject) => {
+    updateFromOptions(stripe.customers, options, reject);
     resolve(stripe.customers.__mock)
   })),
-  del: jest.fn((id) => new Promise((resolve) => resolve(deletedReturnVal(id)))),
+  retrieve: jest.fn((customerId) => Promise.resolve(stripe.customers.__mock)),
+  update: jest.fn((customerId, options) => new Promise((resolve, reject) => {
+    updateFromOptions(stripe.customers, options, reject);
+    resolve(stripe.customers.__mock)
+  })),
+  del: jest.fn((id) => Promise.resolve(deletedReturnVal(id))),
   __trimFields: ['id', 'metadata.orgId', 'sources.url', 'sources.data.customer'],
-  __triggers: ['update', 'del', 'create']
+  __triggers: ['update', 'del', 'create'],
+  __specialHandlers: {
+    source: (mockObj, source, reject) => {
+      const card = creditCardByToken[source];
+      if (!card) {
+        reject(new Error(`No such token: ${source}`));
+      }
+      mockObj.default_source = card.id;
+      mockObj.sources.data = [makeSourceObject(card, stripe.customers.__mock.id)];
+    }
+  }
 };
 
 stripe.subscriptions = {
-  create: jest.fn((options) => new Promise((resolve) => {
+  create: jest.fn((options) => new Promise((resolve, reject) => {
     const now = new Date();
     const nowInSeconds = toEpochSeconds(now);
     const endInSeconds = toEpochSeconds(now.setMonth(now.getMonth()+1));
     stripe.subscriptions.__mock.current_period_start = nowInSeconds;
     stripe.subscriptions.__mock.current_period_end = endInSeconds;
-    updateFromOptions(stripe.subscriptions, options);
+    updateFromOptions(stripe.subscriptions, options, reject);
     resolve(stripe.subscriptions.__mock)
   })),
-  retrieve: jest.fn((subscriptionId) => new Promise((resolve) => resolve(stripe.customers.__mock))),
-  update: jest.fn((subscriptionId, options) => new Promise((resolve) => {
-    updateFromOptions(stripe.subscriptions, options);
+  retrieve: jest.fn((subscriptionId) => Promise.resolve(stripe.subscriptions.__mock)),
+  update: jest.fn((subscriptionId, options) => new Promise((resolve, reject) => {
+    updateFromOptions(stripe.subscriptions, options, reject);
     resolve(stripe.subscriptions.__mock)
   })),
-  del: jest.fn((id) => new Promise((resolve) => resolve(deletedReturnVal(id)))),
+  del: jest.fn((id) => Promise.resolve(deletedReturnVal(id))),
   __trimFields: ['customer', 'id', 'items.url', 'metadata.orgId'],
   __triggers: ['update', 'del', 'create'],
   __specialHandlers: {
@@ -220,7 +226,6 @@ stripe.subscriptions = {
     }
   }
 };
-
 
 const initStripe = () => stripe;
 module.exports = initStripe;

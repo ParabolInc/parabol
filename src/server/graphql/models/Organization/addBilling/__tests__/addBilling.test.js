@@ -9,10 +9,13 @@ import TrimSnapshot from 'server/__tests__/utils/TrimSnapshot';
 import MockDB from 'server/__tests__/setup/MockDB';
 import {PAYMENT_REJECTED, TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
 import creditCardByToken from 'server/__tests__/utils/creditCardByToken';
+import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
+import socket from 'server/__mocks__/socket';
 
 MockDate.set(mockNow);
 console.error = jest.fn();
 const now = new Date();
+
 describe('addBilling', () => {
   test('extends trial for those still in trial period', async() => {
     // SETUP
@@ -26,7 +29,6 @@ describe('addBilling', () => {
     const stripeToken = 'tok_4242424242424242';
     const orgId = org.id;
     const authToken = mockAuthToken(user[0]);
-    const socket = {};
 
     // TEST
     await addBilling.resolve(undefined, {orgId, stripeToken}, {authToken, socket});
@@ -54,7 +56,6 @@ describe('addBilling', () => {
     stripe.__setMockData(org, trimSnapshot);
     const orgId = org.id;
     const authToken = mockAuthToken(user[0]);
-    const socket = {};
 
     // TEST
     await addBilling.resolve(undefined, {orgId, stripeToken}, {authToken, socket});
@@ -81,7 +82,6 @@ describe('addBilling', () => {
     stripe.__setMockData(org, trimSnapshot);
     const orgId = org.id;
     const authToken = mockAuthToken(user[0]);
-    const socket = {};
 
     // TEST
     const stripeToken = 'tok_4242424242424242';
@@ -109,7 +109,6 @@ describe('addBilling', () => {
     stripe.__setMockData(org, trimSnapshot);
     const orgId = org.id;
     const authToken = mockAuthToken(user[0]);
-    const socket = {};
 
     // TEST
     const stripeToken = 'tok_4242424242424242';
@@ -141,7 +140,6 @@ describe('addBilling', () => {
     stripe.__setMockData(org, trimSnapshot);
     const orgId = org.id;
     const authToken = mockAuthToken(user[0]);
-    const socket = {};
 
     // TEST
     const stripeToken = 'tok_4242424242424242';
@@ -159,11 +157,7 @@ describe('addBilling', () => {
 
   test('throws when no websocket is present', async() => {
     const authToken = {};
-    try {
-      await addBilling.resolve(undefined, {orgId: null, stripeToken: null}, {authToken})
-    } catch(e) {
-      expect(() => {throw e}).toThrowErrorMatchingSnapshot();
-    }
+    await expectAsyncToThrow(addBilling.resolve(undefined, {orgId: null, stripeToken: null}, {authToken}))
   });
 
   test('throw when the caller is not an org leader', async() => {
@@ -172,14 +166,9 @@ describe('addBilling', () => {
     const {user, organization} = await mockDB.init();
     const orgId = organization[0].id;
     const authToken = mockAuthToken(user[1]);
-    const socket = {};
 
     // TEST
-    try {
-      await addBilling.resolve(undefined, {orgId, stripeToken: null}, {authToken, socket});
-    } catch(e) {
-      expect(() => {throw e}).toThrowErrorMatchingSnapshot();
-    }
+    await expectAsyncToThrow(addBilling.resolve(undefined, {orgId, stripeToken: null}, {authToken, socket}))
   });
 
   test('thrown when a bad source token is provided', async() => {
@@ -188,13 +177,9 @@ describe('addBilling', () => {
     const {user, organization} = await mockDB.init();
     const authToken = mockAuthToken(user[0]);
     const orgId = organization[0].id;
-    const socket = {};
     // TEST
     const stripeToken = 'BAD_TOKEN';
-    try {
-      await addBilling.resolve(undefined, {orgId, stripeToken}, {authToken, socket})
-    } catch(e) {
-      expect(() => {throw e}).toThrowErrorMatchingSnapshot();
-    }
+    await expectAsyncToThrow(addBilling.resolve(undefined, {orgId, stripeToken}, {authToken, socket}));
+
   });
 });
