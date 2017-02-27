@@ -95,7 +95,6 @@ export default {
       const quantity = orgUsers.reduce((count, orgUser) => orgUser.inactive ? count : count + 1, 0);
       const subscription = await tryNewSubscription(stripeId, orgId, quantity);
       const {id, current_period_end, current_period_start} = subscription;
-      console.log(current_period_start, current_period_end);
       await r.table('Organization').get(orgId).update({
         creditCard: getCCFromCustomer(customer),
         periodEnd: fromEpochSeconds(current_period_end),

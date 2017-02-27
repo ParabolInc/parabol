@@ -14,9 +14,14 @@ Object {
     "name": "The Averagers, Inc.",
     "orgUsers": Array [
       Object {
-        "id": 3,
+        "id": 2,
         "inactive": false,
         "role": "billingLeader",
+      },
+      Object {
+        "id": 3,
+        "inactive": false,
+        "role": null,
       },
       Object {
         "id": 4,
@@ -48,16 +53,11 @@ Object {
         "inactive": false,
         "role": null,
       },
-      Object {
-        "id": 10,
-        "inactive": false,
-        "role": null,
-      },
     ],
-    "periodEnd": 2017-04-27T05:42:20.000Z,
-    "periodStart": 2017-02-26T05:42:20.836Z,
+    "periodEnd": 2017-03-26T04:42:20.000Z,
+    "periodStart": 2017-02-26T05:42:20.000Z,
     "stripeId": 1,
-    "stripeSubscriptionId": 2,
+    "stripeSubscriptionId": 1,
     "updatedAt": 2017-02-26T05:42:20.836Z,
   },
 }
@@ -111,7 +111,7 @@ Object {
       "has_more": false,
       "object": "list",
       "total_count": 1,
-      "url": 11,
+      "url": 10,
     },
   },
   "subscriptions": Object {
@@ -119,12 +119,12 @@ Object {
     "cancel_at_period_end": false,
     "canceled_at": null,
     "created": 1488087740,
-    "current_period_end": 1493271740,
+    "current_period_end": 1490503340,
     "current_period_start": 1488087740,
     "customer": 1,
     "discount": null,
     "ended_at": null,
-    "id": 2,
+    "id": 1,
     "items": Object {
       "data": Array [
         Object {
@@ -151,7 +151,7 @@ Object {
       "has_more": false,
       "object": "list",
       "total_count": 1,
-      "url": 12,
+      "url": 11,
     },
     "livemode": false,
     "metadata": Object {
@@ -167,7 +167,7 @@ Object {
       "interval_count": 1,
       "livemode": false,
       "metadata": Object {},
-      "name": "Action Monthly | TEST",
+      "name": "dev-monthly",
       "object": "plan",
       "statement_descriptor": null,
       "trial_period_days": null,
@@ -176,7 +176,7 @@ Object {
     "start": 1488087740,
     "status": "active",
     "tax_percent": 0,
-    "trial_end": 1493271740,
+    "trial_end": 1488087740,
     "trial_start": 1488087740,
   },
 }

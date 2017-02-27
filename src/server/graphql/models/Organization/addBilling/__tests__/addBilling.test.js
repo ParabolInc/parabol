@@ -39,7 +39,7 @@ test('add billing to existing org in a trial period', async () => {
   expect(stripe.__snapshot()).toMatchSnapshot();
 });
 
-test.only('add billing to existing org after trial period', async () => {
+test('add billing to existing org after trial period', async () => {
   // SETUP
   const r = getRethink();
   const trimSnapshot = new TrimSnapshot();

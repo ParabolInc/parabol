@@ -1,5 +1,17 @@
 import {toEpochSeconds} from 'server/utils/epochTime';
 import creditCardByToken from 'server/__tests__/utils/creditCardByToken';
+import ms from 'ms';
+
+const updateFromOptions = (term, options) => {
+  Object.keys(options).forEach((arg) => {
+    const specialHandler = term.__specialHandlers[arg];
+    if (specialHandler) {
+      specialHandler(term.__mock, options[arg]);
+    } else {
+      term.__mock[arg] = options[arg];
+    }
+  })
+};
 
 const checkTouchedEntity = (entityName) => {
   const entity = stripe[entityName];
@@ -14,7 +26,6 @@ const checkTouchedEntity = (entityName) => {
 };
 
 const stripe = jest.genMockFromModule('stripe');
-
 
 
 const defaultSubscriptionPlan = {
@@ -171,19 +182,40 @@ stripe.customers = {
 };
 
 stripe.subscriptions = {
-  create: jest.fn((options) => new Promise((resolve) => resolve(stripe.customers.__mock))),
+  create: jest.fn((options) => new Promise((resolve) => {
+    const now = new Date();
+    const nowInSeconds = toEpochSeconds(now);
+    const endInSeconds = toEpochSeconds(now.setMonth(now.getMonth()+1));
+    stripe.subscriptions.__mock.current_period_start = nowInSeconds;
+    stripe.subscriptions.__mock.current_period_end = endInSeconds;
+    updateFromOptions(stripe.subscriptions, options);
+    resolve(stripe.subscriptions.__mock)
+  })),
   retrieve: jest.fn((subscriptionId) => new Promise((resolve) => resolve(stripe.customers.__mock))),
   update: jest.fn((subscriptionId, options) => new Promise((resolve) => {
-    const {trial_end} = options;
-    if (trial_end) {
-      stripe.subscriptions.__mock.trial_end = trial_end;
-      stripe.subscriptions.__mock.current_period_end = trial_end;
-    }
+    updateFromOptions(stripe.subscriptions, options);
     resolve(stripe.subscriptions.__mock)
   })),
   del: jest.fn((id) => new Promise((resolve) => resolve(deletedReturnVal(id)))),
   __trimFields: ['customer', 'id', 'items.url', 'metadata.orgId'],
-  __triggers: ['update', 'del', 'create']
+  __triggers: ['update', 'del', 'create'],
+  __specialHandlers: {
+    customer: (mockObj, customer) => mockObj.id = customer,
+    plan: (mockObj, planName) => mockObj.plan.name = planName,
+    trial_period_days: (mockObj, tpd) => {
+      const now = new Date();
+      const nowInSeconds = toEpochSeconds(now);
+      const endInSeconds = nowInSeconds + toEpochSeconds(ms(`${tpd}d`));
+      mockObj.trial_start = nowInSeconds;
+      mockObj.trial_end = endInSeconds;
+      mockObj.current_period_start = nowInSeconds;
+      mockObj.current_period_end = endInSeconds;
+    },
+    trial_end: (mockObj, trialEnd) => {
+      mockObj.trial_end = trialEnd;
+      mockObj.current_period_end = trialEnd;
+    }
+  }
 };
 
 
