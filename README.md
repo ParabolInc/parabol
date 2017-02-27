@@ -64,13 +64,15 @@ Action also depends on [RethinkDB](https://rethinkdb.com/). Make sure
 you have it installed. If you have OSX, we recommend homebrew so
 upgrades are as easy as `brew update && brew upgrade rethinkdb`
 
+Action also uses [yarn](https://yarnpkg.com/) which can be installed by running `npm install -g yarn`
+
 #### Source code
 
 ```bash
 $ git clone https://github.com/ParabolInc/action.git
 $ cd action
 $ rethinkdb # in a separate window
-$ npm install
+$ yarn
 $ npm run quickstart
 ```
 _Remember: if RethinkDB is running locally, you can reach its dashboard at
@@ -91,7 +93,7 @@ In this mode, webpack will hot swap your updated client modules without
 needing to restarting the development server.
 
 ```bash
-$ npm run build:dll
+$ npm run build
 $ npm run dev
 ```
 [http://localhost:3000/](http://localhost:3000/)
