@@ -2,6 +2,8 @@ import {toEpochSeconds} from 'server/utils/epochTime';
 import creditCardByToken from 'server/__tests__/utils/creditCardByToken';
 import ms from 'ms';
 import shortid from 'shortid';
+import {ACTION_MONTHLY} from 'server/utils/serverConstants';
+import {MONTHLY_PRICE} from 'universal/utils/constants';
 
 const stripe = jest.genMockFromModule('stripe');
 
@@ -37,9 +39,9 @@ const getDoc = (doc, reject) => {
 };
 
 const defaultSubscriptionPlan = {
-  id: 'action-monthly-test',
-  name: 'Action Monthly | TEST',
-  amount: 19999900
+  id: 'action-monthly',
+  name: ACTION_MONTHLY,
+  amount: MONTHLY_PRICE * 100
 };
 
 const getQuantity = (orgUsers) => orgUsers.reduce((count, user) => user.inactive ? count : count + 1, 0);
@@ -76,7 +78,7 @@ const makeSourceObject = (creditCard, stripeId) => ({
 
 export const createNewCustomer = (options, overrides, reject) => {
   const {metadata, source} = options;
-  const {customer} = overrides;
+  const {id} = overrides;
   let card;
   if (source) {
     card = creditCardByToken[source];
@@ -85,7 +87,7 @@ export const createNewCustomer = (options, overrides, reject) => {
     }
   }
   return {
-    "id": customer,
+    "id": id,
     "object": "customer",
     "account_balance": 0,
     "created": toEpochSeconds(new Date()),
@@ -100,10 +102,10 @@ export const createNewCustomer = (options, overrides, reject) => {
     "shipping": null,
     "sources": {
       "object": "list",
-      "data": card ? [makeSourceObject(card, customer)] : null,
+      "data": card ? [makeSourceObject(card, id)] : null,
       "has_more": false,
       "total_count": 1,
-      "url": `/v1/customers/${customer}/sources`
+      "url": `/v1/customers/${id}/sources`
     }
   }
 };
@@ -195,7 +197,7 @@ stripe.__setMockData = (org, trimSnapshot) => {
     metadata,
     source
   };
-  stripe.__db.customers[org.stripeId] = createNewCustomer(customerOptions, {customer: org.stripeId});
+  stripe.__db.customers[org.stripeId] = createNewCustomer(customerOptions, {id: org.stripeId});
 
   const subOptions = {
     customer: org.stripeId,
@@ -224,7 +226,13 @@ stripe.__snapshot = () => {
       if (!resource || !resource.__trimFields) {
         throw new Error(`BAD MOCK: No __trimFields set for ${resourceName}`);
       }
-      snapshot[resourceName] = stripe.__trimSnapshot.trim(stripe.__db[resourceName], resource.__trimFields);
+      snapshot[resourceName] = [];
+      const table= stripe.__db[resourceName];
+      const docIds = Object.keys(table);
+      for (let j = 0; j < docIds.length; j++) {
+        const docId = docIds[j];
+        snapshot[resourceName].push(stripe.__trimSnapshot.trim(table[docId], resource.__trimFields));
+      }
     }
   }
   return snapshot;
@@ -232,8 +240,8 @@ stripe.__snapshot = () => {
 
 stripe.customers = {
   create: jest.fn((options) => new Promise((resolve, reject) => {
-    const customer = `cus_${shortid.generate()}`;
-    const customerDoc = stripe.__db.customers.push(createNewCustomer(options, {customer}, reject));
+    const id = `cus_${shortid.generate()}`;
+    const customerDoc = stripe.__db.customers[id] = createNewCustomer(options, {id}, reject);
     resolve(customerDoc);
   })),
   retrieve: jest.fn((id) => new Promise((resolve, reject) => {
@@ -253,24 +261,22 @@ stripe.customers = {
   __trimFields: ['id', 'metadata.orgId', 'sources.url', 'sources.data.customer'],
   __triggers: ['update', 'del', 'create'],
   __updateHandlers: {
-    source: (mockObj, source, reject) => {
+    source: (mockDoc, source, reject) => {
       const card = creditCardByToken[source];
       if (!card) {
         reject(new Error(`No such token: ${source}`));
       }
-      mockObj.default_source = card.id;
-      mockObj.sources.data = [makeSourceObject(card, stripe.customers.__db.id)];
+      mockDoc.default_source = card.id;
+      mockDoc.sources.data = [makeSourceObject(card, mockDoc.id)];
     }
   }
 };
 
 stripe.subscriptions = {
   create: jest.fn((options) => new Promise((resolve, reject) => {
-    const overrides = {
-      id: `sub_${shortid.generate()}`
-    };
-    const subscriptionDoc = stripe.__db.customers.push(createNewSubscription(options, overrides, reject));
-    resolve(subscriptionDoc);
+    const id = `sub_${shortid.generate()}`;
+    const doc = stripe.__db.subscriptions[id] = createNewSubscription(options, {id}, reject);
+    resolve(doc);
   })),
   retrieve: jest.fn((id) => new Promise((resolve, reject) => {
     const doc = getDoc(stripe.__db.subscriptions[id], reject);
@@ -289,20 +295,20 @@ stripe.subscriptions = {
   __trimFields: ['customer', 'id', 'items.url', 'metadata.orgId'],
   __triggers: ['update', 'del', 'create'],
   __updateHandlers: {
-    customer: (mockObj, customer) => mockObj.id = customer,
-    plan: (mockObj, planName) => mockObj.plan.name = planName,
-    trial_period_days: (mockObj, tpd) => {
+    customer: (mockDoc, customer) => mockDoc.id = customer,
+    plan: (mockDoc, planName) => mockDoc.plan.name = planName,
+    trial_period_days: (mockDoc, tpd) => {
       const now = new Date();
       const nowInSeconds = toEpochSeconds(now);
       const endInSeconds = nowInSeconds + toEpochSeconds(ms(`${tpd}d`));
-      mockObj.trial_start = nowInSeconds;
-      mockObj.trial_end = endInSeconds;
-      mockObj.current_period_start = nowInSeconds;
-      mockObj.current_period_end = endInSeconds;
+      mockDoc.trial_start = nowInSeconds;
+      mockDoc.trial_end = endInSeconds;
+      mockDoc.current_period_start = nowInSeconds;
+      mockDoc.current_period_end = endInSeconds;
     },
-    trial_end: (mockObj, trialEnd) => {
-      mockObj.trial_end = trialEnd;
-      mockObj.current_period_end = trialEnd;
+    trial_end: (mockDoc, trialEnd) => {
+      mockDoc.trial_end = trialEnd;
+      mockDoc.current_period_end = trialEnd;
     }
   }
 };

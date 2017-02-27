@@ -176,7 +176,10 @@ describe('addBilling', () => {
     const mockDB = new MockDB();
     const {user, organization} = await mockDB.init();
     const authToken = mockAuthToken(user[0]);
-    const orgId = organization[0].id;
+    const org = organization[0];
+    const orgId = org.id;
+    stripe.__setMockData(org);
+
     // TEST
     const stripeToken = 'BAD_TOKEN';
     await expectAsyncToThrow(addBilling.resolve(undefined, {orgId, stripeToken}, {authToken, socket}));

@@ -1,4 +1,3 @@
-import stripe from './stripe';
 import {errorObj} from '../utils/utils'
 
 export default async function tryStripeCall(promise) {
