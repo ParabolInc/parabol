@@ -30,7 +30,7 @@
     "build:server": "NODE_ENV=production webpack --config ./webpack/server.babel.js",
     "db:migrate": "./src/server/database/migrate.sh up-all",
     "db:migrate-testing": "NODE_ENV=test ./src/server/database/migrate.sh up-all",
-    "test": "jest",
+    "test": "jest --forceExit",
     "test:intranetToken": "node ./src/server/utils/getIntranetToken.babel.js",
     "db:migrate-up": "./src/server/database/migrate.sh up",
     "db:migrate-up-all": "npm run db:migrate",
