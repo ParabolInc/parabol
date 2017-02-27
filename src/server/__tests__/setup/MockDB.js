@@ -68,6 +68,7 @@ class MockDB {
 
   newOrg(overrides = {}) {
     const now = new Date();
+
     return this.closeout('organization', {
       id: this.context.organization.id,
       createdAt: now,
