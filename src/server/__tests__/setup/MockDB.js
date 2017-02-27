@@ -109,7 +109,6 @@ class MockDB {
   };
 
   org(contextIdx, updates) {
-    debugger
     this.context.organization = this.db.organization[contextIdx];
     if (updates) {
       Object.assign(this.context.organization, updates);

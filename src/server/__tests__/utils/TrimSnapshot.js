@@ -49,7 +49,6 @@ export default class TrimSnapshot {
   };
 
   _visitSnapshot(snapshot, path) {
-    debugger
     Array.isArray(snapshot) ? this._visitArray(snapshot, path) : this._visitObject(snapshot, path);
   }
 

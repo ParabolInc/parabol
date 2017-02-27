@@ -46,10 +46,8 @@ async function foo() {
   const {user, organization} = await mockDB.init()
     // .newNotification(undefined, {type: TRIAL_EXPIRED})
     .org(0, {periodEnd: new Date(now.getTime() + 1)});
-  console.log('res', organization);
   fs.writeFile('./debug.json', JSON.stringify(organization), function(err) {
     if (err) console.log(err);
-    console.log('done')
   });
 }
 foo();
