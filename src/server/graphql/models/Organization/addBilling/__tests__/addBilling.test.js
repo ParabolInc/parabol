@@ -132,7 +132,10 @@ describe('addBilling', () => {
     const mockDB = new MockDB();
     const oldToken = 'tok_4000000000000341';
     const {user, team, organization} = await mockDB.init()
-      .org(0, {creditCard: creditCardByToken[oldToken]})
+      .org(0, {
+        creditCard: creditCardByToken[oldToken],
+        periodEnd: new Date(now.getTime() - 1)
+      })
       .newNotification(undefined, {type: PAYMENT_REJECTED});
     const org = organization[0];
     stripe.__setMockData(org, trimSnapshot);
