@@ -117,4 +117,4 @@ stages:
         destination: build
 
       - type: test-results-store
-        path: /home/ubuntu/test-reports
+        path: /home/ubuntu/test-report
