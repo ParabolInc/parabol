@@ -30,7 +30,7 @@
     "build:server": "NODE_ENV=production webpack --config ./webpack/server.babel.js",
     "db:migrate": "./src/server/database/migrate.sh up-all",
     "db:migrate-testing": "NODE_ENV=test ./src/server/database/migrate.sh up-all",
-    "test": "jest",
+    "test": "jest && codecov",
     "test:intranetToken": "node ./src/server/utils/getIntranetToken.babel.js",
     "db:migrate-up": "./src/server/database/migrate.sh up",
     "db:migrate-up-all": "npm run db:migrate",
@@ -64,6 +64,7 @@
     "babel-preset-stage-3": "^6.22.0",
     "babel-register": "6.18.0",
     "chance": "^1.0.4",
+    "codecov": "^1.0.1",
     "concurrently": "2.2.0",
     "eslint": "^3.10.2",
     "eslint-config-airbnb": "^9.0.1",
@@ -170,6 +171,8 @@
     "yarn": "0.16.1"
   },
   "jest": {
+    "collectCoverage": true,
+    "coverageDirectory": "./coverage/",
     "modulePaths": [
       "<rootDir>/src/"
     ],
