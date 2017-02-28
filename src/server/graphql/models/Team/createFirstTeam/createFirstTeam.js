@@ -15,8 +15,8 @@ import createTeamAndLeader from './createTeamAndLeader';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import createFirstTeamValidation from './createFirstTeamValidation';
 import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
-import ms from 'ms';
 import createNewOrg from 'server/graphql/models/Organization/addOrg/createNewOrg';
+import {TRIAL_EXPIRES_SOON_DELAY} from 'server/utils/serverConstants';
 
 export default {
   // return the new JWT that has the new tms field
@@ -78,7 +78,7 @@ export default {
       await r.table('Notification').insert({
         id: expiresSoonId,
         type: TRIAL_EXPIRES_SOON,
-        startAt: new Date(now.getTime() + ms('14d')),
+        startAt: new Date(now.getTime() + TRIAL_EXPIRES_SOON_DELAY),
         orgId,
         userIds: [userId],
         // trialExpiresAt

@@ -5,7 +5,7 @@ const initialState = {
   teamMemberFilterName: 'All members'
 };
 
-export default function reducer(state = initialState, action = {}) {
+export default function reducer(state = initialState, action = {type: ''}) {
   switch (action.type) {
     case FILTER_TEAM_MEMBER: {
       return {

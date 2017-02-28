@@ -8,7 +8,7 @@ const INFO = 'info';
 
 const initialState = [];
 
-export default function reducer(state = initialState, action = {}) {
+export default function reducer(state = initialState, action = {type: ''}) {
   switch (action.type) {
     case TOAST_SHOW: {
       return state.concat(action.payload);
