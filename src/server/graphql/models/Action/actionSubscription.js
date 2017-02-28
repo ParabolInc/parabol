@@ -16,7 +16,12 @@ export default {
     },
     async resolve(source, {userId}, {authToken, socket, subbedChannelName}, refs) {
       const r = getRethink();
+
+      // AUTH
       requireSUOrSelf(authToken, userId);
+
+
+      // RESOLUTION
       const requestedFields = getRequestedFields(refs);
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
       r.table('Action')
