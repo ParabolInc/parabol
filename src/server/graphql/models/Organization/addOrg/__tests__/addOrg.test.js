@@ -11,6 +11,7 @@ import {PAYMENT_REJECTED, TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/uti
 import creditCardByToken from 'server/__tests__/utils/creditCardByToken';
 import socket from 'server/__mocks__/socket';
 import shortid from 'shortid';
+import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 
 MockDate.set(mockNow);
 console.error = jest.fn();
@@ -27,7 +28,7 @@ describe('addOrg', () => {
       .org(0, {creditCard: creditCardByToken[stripeToken]});
     const org = organization[0];
     stripe.__setMockData(org, trimSnapshot);
-    const orgId = org.id;
+    auth0ManagementClient.__initMock(mockDB.db);
     const authToken = mockAuthToken(user[0]);
 
     // TEST
@@ -41,10 +42,10 @@ describe('addOrg', () => {
 
     // VERIFY
     const db = await fetchAndTrim({
-      organization: r.table('Organization').getAll(newTeam.orgId, {index: 'id'}),
-      team: r.table('Team').getAll(newTeam.orgId, {index: 'orgId'}),
-      teamMember: r.table('TeamMember').getAll(newTeam.id, {index: 'teamId'}),
-      user: r.table('User').getAll(orgId, newTeam.orgId, {index: 'userOrgs'})
+      organization: r.table('Organization').getAll(newTeam.orgId, {index: 'id'}).orderBy('name'),
+      team: r.table('Team').getAll(newTeam.orgId, {index: 'orgId'}).orderBy('name'),
+      teamMember: r.table('TeamMember').getAll(newTeam.id, {index: 'teamId'}).orderBy('preferredName'),
+      user: r.table('User').getAll(org.id, newTeam.orgId, {index: 'userOrgs'}).orderBy('preferredName')
     }, trimSnapshot);
     expect(db).toMatchSnapshot();
     expect(stripe.__snapshot()).toMatchSnapshot();

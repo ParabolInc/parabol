@@ -7,37 +7,37 @@ const steve = {
 const jonas = {
   email: 'vision@avengers.org',
   name: 'Jonas',
-  nickname: 'Vision'
+  preferredName: 'Vision'
 };
 const james = {
   email: 'james.rhodes@avengers.org',
   name: 'James Rhodes',
-  nickname: 'War Machine'
+  preferredName: 'War Machine'
 };
 const tony = {
   email: 'tony.stark@avengers.org',
   name: 'Tony Stark',
-  nickname: 'War Machine'
+  preferredName: 'Iron Man'
 };
 const bruce = {
   email: 'bruce.banner@avengers.org',
   name: 'Bruce Banner',
-  nickname: 'Hulk',
+  preferredName: 'Hulk',
 };
 const natasha = {
   email: 'natasha.romanova@avengers.org',
   name: 'Natasha Romanova',
-  nickname: 'Black Widow'
+  preferredName: 'Black Widow'
 };
 const kyle = {
   email: 'kyle.richmond@avengers.org',
   name: 'Kyle Richmond',
-  nickname: 'Nighthawk',
+  preferredName: 'Nighthawk',
 };
 const thor = {
   email: 'thor@avengers.org',
   name: 'Thor Odinson',
-  nickname: 'Thor',
+  preferredName: 'Thor',
 };
 
 export default [steve, jonas, james, tony, bruce, natasha, kyle, thor];
