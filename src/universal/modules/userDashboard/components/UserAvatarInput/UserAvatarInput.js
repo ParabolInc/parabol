@@ -20,7 +20,7 @@ const uploadPicture = async (pictureFile) => {
     }
   });
   if (error) {
-    throw new Error(error._error); // eslint-disable-line no-underscore-dangle
+    throw new Error(error._error);
   }
   const {createUserPicturePutUrl: putUrl} = data;
   return sendAssetToS3(pictureFile, putUrl);

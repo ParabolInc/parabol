@@ -69,7 +69,7 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
                 tms.contains(teamId),
                 null,
                 tms.append(teamId)
-              )
+              );
             })
         }), {returnChanges: true});
     });

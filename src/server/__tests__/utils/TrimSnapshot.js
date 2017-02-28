@@ -10,7 +10,7 @@ export default class TrimSnapshot {
     const nextProp = path[0];
     if (isFinite(nextProp)) {
       if (path.length > 1) {
-        this._visitSnapshot(snapshot[nextProp], path.slice(1))
+        this._visitSnapshot(snapshot[nextProp], path.slice(1));
       } else {
         const arrVal = snapshot[nextProp];
         this._cache[arrVal] = this._cache.hasOwnProperty(arrVal) ? this._cache[arrVal] : this._counter++;
@@ -45,11 +45,15 @@ export default class TrimSnapshot {
       snapshot[nextLayer] = this._cache[oldVal];
       return;
     }
-    this._visitSnapshot(snapshot[nextLayer], path.slice(1))
-  };
+    this._visitSnapshot(snapshot[nextLayer], path.slice(1));
+  }
 
   _visitSnapshot(snapshot, path) {
-    Array.isArray(snapshot) ? this._visitArray(snapshot, path) : this._visitObject(snapshot, path);
+    if (Array.isArray(snapshot)) {
+      this._visitArray(snapshot, path);
+    } else {
+      this._visitObject(snapshot, path);
+    }
   }
 
   trim(snapshot, uids) {

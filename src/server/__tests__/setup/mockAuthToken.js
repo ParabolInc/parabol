@@ -1,5 +1,5 @@
 import {JWT_LIFESPAN} from 'server/utils/serverConstants';
-import {toEpochSeconds} from 'server/utils/epochTime'
+import {toEpochSeconds} from 'server/utils/epochTime';
 
 export default function mockAuthToken(user) {
   return {
@@ -9,5 +9,5 @@ export default function mockAuthToken(user) {
     exp: toEpochSeconds(user.lastSeenAt.getTime() + JWT_LIFESPAN),
     iat: toEpochSeconds(user.lastSeenAt),
     tms: user.tms
-  }
+  };
 }

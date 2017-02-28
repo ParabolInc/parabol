@@ -139,7 +139,7 @@ export default {
         });
       }
       // don't await
-      setTimeout(() => sendEmail(newUser.email, 'welcomeEmail', newUser),0);
+      setTimeout(() => sendEmail(newUser.email, 'welcomeEmail', newUser), 0);
       return newUser;
     }
   },

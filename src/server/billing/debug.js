@@ -1,4 +1,4 @@
-import stripe from './stripe';
+// import stripe from './stripe';
 // import ms from 'ms';
 // import MockDB from '../__tests__/setup/MockDB';
 // import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
@@ -32,12 +32,12 @@ import stripe from './stripe';
 // console.log('Payment result:', err, invoice.data)
 // });
 
-const foo = async (resource, method, ...args) =>{
-  console.log('args', args, ...args)
-  const res = await stripe[resource][method](...args);
-  console.log(res)
-};
-foo('invoices', 'retrieveLines', 'in_19pVJzFLaFINmHnBC5uwabBm');
+// const foo = async (resource, method, ...args) => {
+//   console.log('args', args, ...args);
+//   const res = await stripe[resource][method](...args);
+//   console.log(res);
+// };
+// foo('invoices', 'retrieveLines', 'in_19pVJzFLaFINmHnBC5uwabBm');
 
 // stripe.invoices.retrieve('upcoming', (err, res) => {
 //   console.log(err, res, res.lines.data);
@@ -53,9 +53,9 @@ foo('invoices', 'retrieveLines', 'in_19pVJzFLaFINmHnBC5uwabBm');
 //   const {user, organization} = await mockDB.init()
 //     // .newNotification(undefined, {type: TRIAL_EXPIRED})
 //     .org(0, {periodEnd: new Date(now.getTime() + 1)});
-  fs.writeFile('./debug.json', JSON.stringify(organization), function(err) {
-    if (err) console.log(err);
-  });
+// fs.writeFile('./debug.json', JSON.stringify(organization), (err) => {
+//   if (err) console.log(err);
+// });
 // }
 // foo();
 // const orgDoc = {

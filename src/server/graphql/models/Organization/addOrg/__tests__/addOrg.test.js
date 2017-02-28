@@ -7,7 +7,6 @@ import mockNow from 'server/__tests__/setup/mockNow';
 import fetchAndTrim from 'server/__tests__/utils/fetchAndTrim';
 import TrimSnapshot from 'server/__tests__/utils/TrimSnapshot';
 import MockDB from 'server/__tests__/setup/MockDB';
-import {PAYMENT_REJECTED, TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
 import creditCardByToken from 'server/__tests__/utils/creditCardByToken';
 import socket from 'server/__mocks__/socket';
 import shortid from 'shortid';
@@ -15,7 +14,6 @@ import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 
 MockDate.set(mockNow);
 console.error = jest.fn();
-const now = new Date();
 
 describe('addOrg', () => {
   test.only('adds a new org with no invitees', async() => {

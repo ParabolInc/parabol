@@ -39,7 +39,7 @@ export default function notificationTemplate(template) {
       startAt: now,
       userIds: billingLeadersOnly(this.db.user, this.context.organization.id),
       varList: [last4, brand]
-    }
+    };
   }
-  return {}
+  return {};
 }

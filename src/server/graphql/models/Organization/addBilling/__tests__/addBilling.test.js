@@ -76,7 +76,7 @@ describe('addBilling', () => {
     const trimSnapshot = new TrimSnapshot();
     const mockDB = new MockDB();
     const oldToken = 'tok_4012888888881881';
-    const {user, team, organization} = await mockDB.init()
+    const {user, organization} = await mockDB.init()
       .org(0, {creditCard: creditCardByToken[oldToken]});
     const org = organization[0];
     stripe.__setMockData(org, trimSnapshot);
@@ -157,7 +157,7 @@ describe('addBilling', () => {
 
   test('throws when no websocket is present', async() => {
     const authToken = {};
-    await expectAsyncToThrow(addBilling.resolve(undefined, {orgId: null, stripeToken: null}, {authToken}))
+    await expectAsyncToThrow(addBilling.resolve(undefined, {orgId: null, stripeToken: null}, {authToken}));
   });
 
   test('throw when the caller is not an org leader', async() => {
@@ -168,7 +168,7 @@ describe('addBilling', () => {
     const authToken = mockAuthToken(user[1]);
 
     // TEST
-    await expectAsyncToThrow(addBilling.resolve(undefined, {orgId, stripeToken: null}, {authToken, socket}))
+    await expectAsyncToThrow(addBilling.resolve(undefined, {orgId, stripeToken: null}, {authToken, socket}));
   });
 
   test('thrown when a bad source token is provided', async() => {
@@ -183,6 +183,5 @@ describe('addBilling', () => {
     // TEST
     const stripeToken = 'BAD_TOKEN';
     await expectAsyncToThrow(addBilling.resolve(undefined, {orgId, stripeToken}, {authToken, socket}));
-
   });
 });

@@ -2,7 +2,7 @@ import getRethink from 'server/database/rethinkDriver';
 import testUsers from 'server/__tests__/setup/testUsers';
 import shortid from 'shortid';
 import {BILLING_LEADER, LOBBY} from 'universal/utils/constants';
-import {TRIAL_PERIOD} from 'server/utils/serverConstants'
+import {TRIAL_PERIOD} from 'server/utils/serverConstants';
 import notificationTemplate from 'server/__tests__/utils/notificationTemplate';
 
 class MockDB {
@@ -26,7 +26,7 @@ class MockDB {
     return this;
   }
 
-  init(overrides = {}, templates = {}) {
+  init() {
     this.context.organization = {id: shortid.generate()};
     this.context.team = {id: shortid.generate()};
     const users = testUsers.map((user, idx) => ({
@@ -44,7 +44,7 @@ class MockDB {
       this.newTeamMember({
         isLead: idx === 0,
         checkInOrder: idx
-      })
+      });
     });
     const orgUsers = this.db.user.map((user) => ({
       id: user.id,
@@ -63,7 +63,7 @@ class MockDB {
       userIds: [this.context.user.id],
       ...notificationTemplate.call(this, template),
       ...overrides
-    })
+    });
   }
 
   newOrg(overrides = {}) {
@@ -84,7 +84,7 @@ class MockDB {
       periodEnd: new Date(now.getTime() + TRIAL_PERIOD),
       periodStart: now,
       ...overrides
-    })
+    });
   }
 
   newTeam(overrides = {}) {
@@ -115,7 +115,7 @@ class MockDB {
       preferredName: this.context.user.preferredName,
       ...overrides
     });
-  };
+  }
 
   newUser(overrides = {}) {
     const now = new Date();
@@ -138,7 +138,7 @@ class MockDB {
       welcomeSentAt: now,
       ...overrides,
     });
-  };
+  }
 
   notification = this._selector('notification');
   org = this._selector('organization');

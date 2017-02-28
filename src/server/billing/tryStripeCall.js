@@ -1,4 +1,4 @@
-import {errorObj} from '../utils/utils'
+import {errorObj} from '../utils/utils';
 
 export default async function tryStripeCall(promise) {
   try {

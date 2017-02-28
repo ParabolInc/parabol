@@ -14,7 +14,7 @@ export default async function teardown(results) {
       const promises = list.map((table) => r.table(table).delete());
       await Promise.all(promises);
     }
-    await r.getPoolMaster().drain()
+    await r.getPoolMaster().drain();
   }
-  process.exit()
+  process.exit();
 };

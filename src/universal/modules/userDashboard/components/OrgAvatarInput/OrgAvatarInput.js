@@ -21,7 +21,7 @@ const uploadPicture = async (orgId, pictureFile) => {
     }
   });
   if (error) {
-    throw new Error(error._error); // eslint-disable-line no-underscore-dangle
+    throw new Error(error._error);
   }
   const {createOrgPicturePutUrl: putUrl} = data;
   return sendAssetToS3(pictureFile, putUrl);
