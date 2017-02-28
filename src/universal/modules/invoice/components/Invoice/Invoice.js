@@ -130,20 +130,24 @@ const Invoice = (props) => {
         {makeLineItems(lines)}
 
         <div className={css(styles.amountSection)}>
-          <div className={css(styles.amountLineSub)}>
-            <div>Total</div>
-            <div>{invoiceLineFormat(total)}</div>
-          </div>
-          <div className={css(styles.amountLineSub)}>
-            <div>Previous Balance</div>
-            <div>{invoiceLineFormat(startingBalance)}</div>
-          </div>
+          {startingBalance === 0 &&
+            <div>
+              <div className={css(styles.amountLineSub)}>
+                <div>Total</div>
+                <div>{invoiceLineFormat(total)}</div>
+              </div>
+              <div className={css(styles.amountLineSub)}>
+                <div>Previous Balance</div>
+                <div>{invoiceLineFormat(startingBalance)}</div>
+              </div>
+            </div>
+          }
           <div className={css(styles.amountLine)}>
-            <div>Amount charged</div>
+            <div>Amount due</div>
             <div>{invoiceLineFormat(amountDue)}</div>
           </div>
           {brand &&
-            <div className={css(styles.meta)}>
+            <div className={css(styles.meta, status === FAILED && styles.metaError)}>
               {chargeStatus[status]} to <b>{brand}</b> ending in <b>{last4}</b>
             </div>
           }
@@ -291,6 +295,10 @@ const styleThunk = () => ({
 
   meta: {
     fontSize: appTheme.typography.s3
+  },
+
+  metaError: {
+    color: appTheme.palette.warm
   },
 
   amountSection: {
