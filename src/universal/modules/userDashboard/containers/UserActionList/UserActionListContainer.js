@@ -5,6 +5,7 @@ import UserActionList from 'universal/modules/userDashboard/components/UserActio
 
 const userActionListQuery = `
 query {
+  actionCount(userId: $id)
   actions(userId: $id) @live {
     content
     id
@@ -47,7 +48,7 @@ const mapStateToProps = (state) => {
   const teamsFilterFn = teamFilterId ? (doc) => doc.id === teamFilterId : () => true;
   const userId = state.auth.obj.sub;
   const queryKey = teamFilterId || '';
-  const {actions, teams} = cashay.query(userActionListQuery, {
+  const {actionCount, actions, teams} = cashay.query(userActionListQuery, {
     op: 'userActions',
     variables: {id: userId},
     key: queryKey,
@@ -66,6 +67,7 @@ const mapStateToProps = (state) => {
     mutationHandlers
   }).data;
   return {
+    initialActionCount: actionCount,
     actions,
     teams,
     userId: state.auth.obj.sub,
@@ -75,7 +77,10 @@ const mapStateToProps = (state) => {
 };
 
 const UserActionListContainer = (props) => {
-  const {actions, dispatch, queryKey, selectingNewActionTeam, teams, userId} = props;
+  const {initialActionCount, actions, dispatch, queryKey, selectingNewActionTeam, teams, userId} = props;
+  if (initialActionCount === null) {
+    return null;
+  }
   return (
     <UserActionList
       actions={actions}
@@ -91,6 +96,7 @@ const UserActionListContainer = (props) => {
 UserActionListContainer.propTypes = {
   actions: PropTypes.array,
   dispatch: PropTypes.func,
+  initialActionCount: PropTypes.number,
   queryKey: PropTypes.string,
   selectingNewActionTeam: PropTypes.bool,
   teams: PropTypes.array,
