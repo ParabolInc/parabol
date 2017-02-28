@@ -13,6 +13,7 @@ import {reduxForm, initialize} from 'redux-form';
 import {cashay} from 'cashay';
 import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
 import shouldValidate from 'universal/validation/shouldValidate';
+import raven from 'raven-js';
 
 const updateSuccess = {
   title: 'Settings saved!',
@@ -67,7 +68,7 @@ export default class UserSettingsContainer extends Component {
     if (preferredName !== user.preferredName) {
       this.updateProfile(preferredName)
       .then(this.onSubmitComplete())
-      .catch((e) => Raven.captureException(e)); // eslint-disable-line no-undef
+      .catch((e) => raven.captureException(e));
     }
 
     return undefined; // no work to do

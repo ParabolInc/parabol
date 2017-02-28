@@ -34,7 +34,7 @@ export default async initialState => {
 
   if (__PRODUCTION__) {
     // add Sentry error reporting:
-    middlewares.unshift(ravenMiddleware(window.__ACTION__.sentry)); // eslint-disable-line no-underscore-dangle
+    middlewares.unshift(ravenMiddleware(window.__ACTION__.sentry));
     const segmentMiddleware = createTracker();
     if (window.analytics) {
       middlewares.unshift(segmentMiddleware);
@@ -43,7 +43,6 @@ export default async initialState => {
     }
     store = createStore(reducer, initialState, compose(applyMiddleware(...middlewares)));
   } else {
-    // eslint-disable-next-line no-underscore-dangle
     const devtoolsExt = global.__REDUX_DEVTOOLS_EXTENSION__ && global.__REDUX_DEVTOOLS_EXTENSION__({ maxAge: 50 });
     if (!devtoolsExt) {
       // We don't have the Redux extension in the browser, show the Redux logger

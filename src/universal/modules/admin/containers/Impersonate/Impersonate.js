@@ -26,7 +26,6 @@ function createImposter(userId, dispatch, router) {
   const variables = {userId};
   cashay.mutate('createImposterToken', {variables}).then(async ({data, error}) => {
     if (error) {
-      // eslint-disable-next-line no-underscore-dangle
       dispatch(showError({ title: 'Whoa there!', message: error._error }));
       return;
     }

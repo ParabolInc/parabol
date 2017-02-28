@@ -9,11 +9,10 @@ import addOrgSchema from 'universal/validation/addOrgSchema';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
 import {connect} from 'react-redux';
 import NewTeamForm from 'universal/modules/newTeam/components/NewTeamForm/NewTeamForm';
-import LoadingView from 'universal/components/LoadingView/LoadingView';
-
 
 const orgDropdownMenuItemsQuery = `
 query {
+  orgCount(userId: $userId)
   organizations(userId: $userId) @live {
     id
     name
@@ -24,7 +23,7 @@ query {
 const mapStateToProps = (state, props) => {
   const {newOrgRoute} = props;
   const userId = state.auth.obj.sub;
-  const {organizations} = cashay.query(orgDropdownMenuItemsQuery, {
+  const {orgCount, organizations} = cashay.query(orgDropdownMenuItemsQuery, {
     op: 'newTeamFormContainer',
     key: userId,
     sort: {
@@ -37,6 +36,7 @@ const mapStateToProps = (state, props) => {
   const defaultOrg = organizations[0];
   const orgId = defaultOrg && defaultOrg.id;
   return {
+    initialOrgCount: orgCount,
     organizations,
     initialValues: {
       orgId
@@ -114,13 +114,15 @@ class NewTeamFormContainer extends Component {
   };
 
   render() {
-    const {isNewOrg, organizations} = this.props;
-    if (organizations.length === 0) {
-      // more than looks, this is required because initialValues can only be passed in once
-      return <LoadingView />;
+    const {initialOrgCount, initialValues, isNewOrg, organizations, router} = this.props;
+    if (initialOrgCount === 0) {
+      router.push('/newteam/1');
+    } else if (!initialValues.orgId) {
+      return null;
     }
     return (
       <NewTeamForm
+        initialValues={initialValues}
         isNewOrg={isNewOrg}
         last4={this.state.last4}
         onSubmit={this.onSubmit}
@@ -134,6 +136,8 @@ class NewTeamFormContainer extends Component {
 
 NewTeamFormContainer.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  initialOrgCount: PropTypes.func.number,
+  initialValues: PropTypes.object,
   isNewOrg: PropTypes.bool,
   organizations: PropTypes.array,
   router: PropTypes.object.isRequired,

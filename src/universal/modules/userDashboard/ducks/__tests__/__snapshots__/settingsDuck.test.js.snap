@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`clearWelcomeActivity() resets state 1`] = `
+Object {
+  "activity": null,
+  "nextPage": null,
+}
+`;
+
+exports[`initial state 1`] = `
+Object {
+  "activity": null,
+  "nextPage": null,
+}
+`;
+
+exports[`setActivity() ACTIVITY_WELCOME updates activity, nextPage 1`] = `
+Object {
+  "activity": "welcome",
+  "nextPage": "/team/baddad",
+}
+`;
+
+exports[`setWelcomeActivity() updates activity, nextPage 1`] = `
+Object {
+  "activity": "welcome",
+  "nextPage": "/team/baddad",
+}
+`;

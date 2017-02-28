@@ -2,6 +2,7 @@
 
 [![Slack Status](http://slackin.parabol.co/badge.svg)](http://slackin.parabol.co/)
 [![CircleCI](https://circleci.com/gh/ParabolInc/action.svg?style=svg)](https://circleci.com/gh/ParabolInc/action)
+[![codecov](https://codecov.io/gh/ParabolInc/action/branch/master/graph/badge.svg)](https://codecov.io/gh/ParabolInc/action)
 
 ## New Beta!
 
@@ -36,7 +37,7 @@ Action is a Node.js application based upon the
 
 | Concern            | Solution                                                  |
 |--------------------|-----------------------------------------------------------|
-| Server             | [Node 6](https://nodejs.org/)                             |
+| Server             | [Node 7](https://nodejs.org/)                             |
 | Server Framework   | [Express](http://expressjs.com/)                          |
 | Database           | [RethinkDB](https://www.rethinkdb.com/)                   |
 | Data Transport     | [GraphQL](https://github.com/graphql/graphql-js)          |
@@ -56,7 +57,7 @@ Transpilation is provided by [babel](https://github.com/babel/babel).
 
 #### Prerequisites
 
-Action requires Node.js >=5.10.1 (we're using 6.2.0 in development).
+Action requires Node.js >=7.6.0 (we're using 7.6.0 in development).
 We recommend using [n](https://github.com/tj/n) to install and manage your
 node versions.
 

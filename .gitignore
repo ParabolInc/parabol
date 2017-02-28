@@ -2,6 +2,7 @@
 .env
 .idea/
 .happypack/
+coverage/
 dll/
 node_modules/
 npm-debug.log

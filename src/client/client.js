@@ -7,7 +7,7 @@ import Root from './Root';
 import {StyleSheet} from 'aphrodite-local-styles/no-important';
 import cashaySchema from 'cashay!../server/utils/getCashaySchema.js';
 
-// const {routing} = window.__INITIAL_STATE__; // eslint-disable-line no-underscore-dangle
+// const {routing} = window.__INITIAL_STATE__;
 const initialState = {};
 
 (async() => {
@@ -24,7 +24,6 @@ const initialState = {};
      * During the production client bundle build, the server will need to be
      * stopped.
      */
-    // eslint-disable-next-line no-underscore-dangle
     StyleSheet.rehydrate(window.__APHRODITE__);
     render(
       <Root store={store}/>,
