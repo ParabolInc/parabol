@@ -105,21 +105,7 @@ export default {
       {
         test: /\.js$/,
         loader: 'babel-loader',
-        include: clientInclude,
-        query: {
-          presets: ['react', 'es2015', 'stage-0'],
-          plugins: [
-            ['transform-class-properties'],
-            ['transform-export-extensions'],
-            ['transform-object-rest-spread'],
-            ['react-hot-loader/babel'],
-            ['transform-decorators-legacy'],
-            ['transform-class-properties'],
-            ['transform-es2015-modules-commonjs'],
-            ['transform-es2015-destructuring'],
-            ['transform-es2015-classes']
-          ]
-        }
+        include: clientInclude
       },
       {
         test: /auth0-lock\/.*\.js$/,
