@@ -96,6 +96,7 @@ const UserActionListContainer = (props) => {
 UserActionListContainer.propTypes = {
   actions: PropTypes.array,
   dispatch: PropTypes.func,
+  initialActionCount: PropTypes.number,
   queryKey: PropTypes.string,
   selectingNewActionTeam: PropTypes.bool,
   teams: PropTypes.array,

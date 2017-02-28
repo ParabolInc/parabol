@@ -79,6 +79,7 @@ const OrgBillingContainer = (props) => {
 OrgBillingContainer.propTypes = {
   dispatch: PropTypes.func,
   invoiceList: PropTypes.array,
+  invoicesReady: PropTypes.bool,
   org: PropTypes.object
 };
 

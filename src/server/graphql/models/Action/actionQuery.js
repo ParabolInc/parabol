@@ -1,6 +1,5 @@
 import getRethink from 'server/database/rethinkDriver';
 import {GraphQLNonNull, GraphQLID, GraphQLInt} from 'graphql';
-import {Action} from './actionSchema';
 import {requireSUOrSelf} from 'server/utils/authorization';
 
 export default {

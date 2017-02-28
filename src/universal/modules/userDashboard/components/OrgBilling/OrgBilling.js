@@ -72,6 +72,7 @@ const OrgBilling = (props) => {
 
 OrgBilling.propTypes = {
   invoices: PropTypes.array,
+  invoicesReady: PropTypes.bool,
   styles: PropTypes.object,
   org: PropTypes.object
 };

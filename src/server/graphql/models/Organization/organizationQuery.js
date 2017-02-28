@@ -21,7 +21,7 @@ export default {
       // RESOLUTION
       return await r.table('Organization')
         .getAll(userId, {index: 'orgUsers'})
-        .count()
+        .count();
     }
   },
   orgDetails: {

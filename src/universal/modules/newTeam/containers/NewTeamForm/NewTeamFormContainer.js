@@ -116,7 +116,7 @@ class NewTeamFormContainer extends Component {
   render() {
     const {initialOrgCount, initialValues, isNewOrg, organizations, router} = this.props;
     if (initialOrgCount === 0) {
-      router.push('/newteam/1')
+      router.push('/newteam/1');
     } else if (!initialValues.orgId) {
       return null;
     }
@@ -136,6 +136,8 @@ class NewTeamFormContainer extends Component {
 
 NewTeamFormContainer.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  initialOrgCount: PropTypes.func.number,
+  initialValues: PropTypes.object,
   isNewOrg: PropTypes.bool,
   organizations: PropTypes.array,
   router: PropTypes.object.isRequired,
