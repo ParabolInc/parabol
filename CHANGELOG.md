@@ -4,6 +4,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.16.1 - 28-Feb-2017
+### Added
+- New unit tests
+
+### Fixed
+- #751 production deploy, assets.json not found
+- #753 cannot read property 'bestCursor' of undefined
+- #754 cannot replace avatar
+- #755 filter handle alignment regression
+- #757 add new team, always shows orgs as "Loading..."
+
 ## v0.16.0 - 25-Feb-2017
 ### Added
 - Organizations: teams can be tied together into organizations
@@ -27,6 +38,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Server data validation pattern
 - Badge component
 - Presence added to dashboards (#523)
+
 ### Fixed
 - #253 auth0 token tms out of sync with rethinkdb
 - #277 graphql browser CSS trouble
