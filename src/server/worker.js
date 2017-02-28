@@ -6,7 +6,6 @@ import bodyParser from 'body-parser';
 import jwt from 'express-jwt';
 import favicon from 'serve-favicon';
 import raven from 'raven';
-import config from '../../webpack/webpack.config.dev';
 import createSSR from './createSSR';
 import emailSSR from './emailSSR';
 import {clientSecret as secretKey} from './utils/auth0Helpers';
@@ -35,6 +34,7 @@ export function run(worker) {
 
   // HMR
   if (!PROD) {
+    const config = require('../../webpack/webpack.config.dev').default;
     const compiler = webpack(config);
     /* eslint-disable global-require */
     app.use(require('webpack-dev-middleware')(compiler, {

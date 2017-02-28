@@ -36,7 +36,7 @@ Action is a Node.js application based upon the
 
 | Concern            | Solution                                                  |
 |--------------------|-----------------------------------------------------------|
-| Server             | [Node 6](https://nodejs.org/)                             |
+| Server             | [Node 7](https://nodejs.org/)                             |
 | Server Framework   | [Express](http://expressjs.com/)                          |
 | Database           | [RethinkDB](https://www.rethinkdb.com/)                   |
 | Data Transport     | [GraphQL](https://github.com/graphql/graphql-js)          |
@@ -56,7 +56,7 @@ Transpilation is provided by [babel](https://github.com/babel/babel).
 
 #### Prerequisites
 
-Action requires Node.js >=5.10.1 (we're using 6.2.0 in development).
+Action requires Node.js >=7.6.0 (we're using 7.6.0 in development).
 We recommend using [n](https://github.com/tj/n) to install and manage your
 node versions.
 
@@ -64,13 +64,15 @@ Action also depends on [RethinkDB](https://rethinkdb.com/). Make sure
 you have it installed. If you have OSX, we recommend homebrew so
 upgrades are as easy as `brew update && brew upgrade rethinkdb`
 
+Action also uses [yarn](https://yarnpkg.com/) which can be installed by running `npm install -g yarn`
+
 #### Source code
 
 ```bash
 $ git clone https://github.com/ParabolInc/action.git
 $ cd action
 $ rethinkdb # in a separate window
-$ npm install
+$ yarn
 $ npm run quickstart
 ```
 _Remember: if RethinkDB is running locally, you can reach its dashboard at
@@ -91,7 +93,7 @@ In this mode, webpack will hot swap your updated client modules without
 needing to restarting the development server.
 
 ```bash
-$ npm run build:dll
+$ npm run build
 $ npm run dev
 ```
 [http://localhost:3000/](http://localhost:3000/)
