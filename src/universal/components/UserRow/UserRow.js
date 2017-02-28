@@ -4,7 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import Row from 'universal/components/Row/Row';
-import UserTag from 'universal/components/UserTag/UserTag';
+import Tag from 'universal/components/Tag/Tag';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 
 const UserRow = (props) => {
@@ -33,10 +33,10 @@ const UserRow = (props) => {
               {preferredName}
             </div>
             {isLead &&
-              <UserTag colorPalette="light" label="Lead" />
+              <Tag colorPalette="light" label="Lead" />
             }
             {isAdmin &&
-              <UserTag colorPalette="gray" label="Admin" />
+              <Tag colorPalette="gray" label="Admin" />
             }
           </div> :
           <div className={css(styles.nameAndTags)}>

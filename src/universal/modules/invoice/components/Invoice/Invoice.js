@@ -12,11 +12,13 @@ import makeDateString from 'universal/utils/makeDateString';
 import InvoiceLineItem from 'universal/modules/invoice/components/InvoiceLineItem/InvoiceLineItem';
 import plural from 'universal/utils/plural';
 import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineFormat';
+import Tag from 'universal/components/Tag/Tag';
 
 import {
   PAID,
   FAILED,
   PENDING,
+  UPCOMING,
   ADDED_USERS,
   REMOVED_USERS,
   INACTIVITY_ADJUSTMENTS,
@@ -31,7 +33,8 @@ const descriptionMaker = {
 const chargeStatus = {
   [PAID]: 'Charged',
   [FAILED]: 'Failed charge',
-  [PENDING]: 'Pending charge'
+  [PENDING]: 'Pending charge',
+  [UPCOMING]: 'Will be charged'
 };
 
 const Invoice = (props) => {
@@ -89,6 +92,21 @@ const Invoice = (props) => {
       <Helmet title={`Parabol Action Invoice for ${subject}`}/>
       <InvoiceHeader orgName={orgName} emails={billingLeaderEmails} picture={picture}/>
       <div className={css(styles.panel)}>
+        {status === FAILED &&
+          <div className={css(styles.failedStamp)}>
+            Payment Failed
+          </div>
+        }
+        {status === UPCOMING &&
+          <div className={css(styles.tagBlock)}>
+            <Tag colorPalette="light" label="Current Estimation"/>
+          </div>
+        }
+        {status === PENDING &&
+          <div className={css(styles.tagBlock)}>
+            <Tag colorPalette="gray" label="Payment Processing"/>
+          </div>
+        }
         <div className={css(styles.label)}>{'Invoice'}</div>
         <div className={css(styles.subject)}>{subject}</div>
 
@@ -174,10 +192,37 @@ const styleThunk = () => ({
     borderRadius: ui.borderRadiusLarge,
     margin: `${invoiceGutterSmall} 0`,
     padding: `${panelGutterSmall} 0 ${panelGutterSmall} ${panelGutterSmall}`,
+    position: 'relative',
 
     [breakpoint]: {
       margin: `${invoiceGutterLarge} 0`,
       padding: `${panelGutterLarge} 0 ${panelGutterLarge} ${panelGutterLarge}`,
+    }
+  },
+
+  failedStamp: {
+    color: appTheme.palette.warm,
+    fontSize: '2.5rem',
+    fontWeight: 700,
+    left: '50%',
+    position: 'absolute',
+    textTransform: 'uppercase',
+    top: '50%',
+    transform: 'translate(-50%, -50%, 0), rotate(45deg)',
+
+    [breakpoint]: {
+      fontSize: '3rem'
+    }
+  },
+
+  tagBlock: {
+    position: 'absolute',
+    right: panelGutterSmall,
+    top: panelGutterSmall,
+
+    [breakpoint]: {
+      right: panelGutterLarge,
+      top: panelGutterLarge
     }
   },
 
