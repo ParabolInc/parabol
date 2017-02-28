@@ -43,8 +43,8 @@ stages:
           - /home/ubuntu/action/node_modules
 
       - type: shell
-        name: Database migration
-        command: npm run db:migrate
+        name: Database migration (testing)
+        command: npm run db:migrate-testing
 
       - type: shell
         name: NPM lint
