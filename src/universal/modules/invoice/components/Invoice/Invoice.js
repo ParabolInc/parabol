@@ -212,7 +212,7 @@ const styleThunk = () => ({
     position: 'absolute',
     textTransform: 'uppercase',
     top: '50%',
-    transform: 'translate(-50%, -50%, 0), rotate(45deg)',
+    transform: 'translate(-50%, -50%, 0), rotate(-30deg)',
 
     [breakpoint]: {
       fontSize: '3rem'
