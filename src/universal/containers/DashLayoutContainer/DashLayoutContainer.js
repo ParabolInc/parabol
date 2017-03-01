@@ -65,6 +65,20 @@ const subToAllTeams = (tms) => {
   }
 };
 
+const checkForNotificationBar = (props, nextProps, dispatch) => {
+  const {activeMeetings, trialNotification} = props;
+  const {activeMeetings: nextActiveMeetings, trialNotification: nextTrialNotification} = nextProps;
+  const {barType} = nextTrialNotification;
+
+  if (activeMeetings !== nextActiveMeetings || trialNotification !== nextTrialNotification) {
+    if (nextActiveMeetings.length > 0 || barType === TRIAL_EXPIRES_SOON || barType === TRIAL_EXPIRED) {
+      dispatch(notificationBarPresent(true));
+    } else {
+      dispatch(notificationBarPresent(false));
+    }
+  }
+};
+
 @connect(mapStateToProps)
 export default class DashLayoutContainer extends Component {
   static propTypes = {
@@ -76,6 +90,10 @@ export default class DashLayoutContainer extends Component {
     // userId: PropTypes.string
   };
 
+  componentWillMount() {
+    checkForNotificationBar({}, this.props, this.props.dispatch);
+  }
+
   componentDidMount() {
     const {tms} = this.props;
     subToAllTeams(tms);
@@ -83,20 +101,10 @@ export default class DashLayoutContainer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {activeMeetings, trialNotification} = this.props;
-    const {activeMeetings: nextActiveMeetings, trialNotification: nextTrialNotification} = nextProps;
-    const {barType} = nextTrialNotification;
     if (this.props.tms !== nextProps.tms) {
       subToAllTeams(nextProps.tms);
     }
-
-    if (activeMeetings !== nextActiveMeetings || trialNotification !== nextTrialNotification) {
-      if (nextActiveMeetings.length > 0 || barType === TRIAL_EXPIRES_SOON || barType === TRIAL_EXPIRED) {
-        this.props.dispatch(notificationBarPresent(true));
-      } else {
-        this.props.dispatch(notificationBarPresent(false));
-      }
-    }
+    checkForNotificationBar(this.props, nextProps, this.props.dispatch);
   }
 
   render() {
