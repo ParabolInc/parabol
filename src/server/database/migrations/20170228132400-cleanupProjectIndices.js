@@ -4,7 +4,7 @@ exports.up = async(r) => {
     r.table('Project').replace((row) => {
       return row
         .merge({
-          sortOrder: row('teamSort')
+          sortOrder: row('teamSort').default(r.random())
         })
         .without('teamSort', 'userSort');
     })

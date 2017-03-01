@@ -15,8 +15,10 @@ import {DropTarget as dropTarget} from 'react-dnd';
 import {ACTION} from 'universal/utils/constants';
 import handleActionHover from 'universal/dnd/handleActionHover';
 import withDragState from 'universal/dnd/withDragState';
+import handleDrop from 'universal/dnd/handleDrop';
 
 const columnTarget = {
+  drop: handleDrop,
   hover: handleActionHover
 };
 

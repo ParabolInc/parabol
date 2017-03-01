@@ -15,10 +15,12 @@ import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import {Menu, MenuItem} from 'universal/modules/menu';
 import {DropTarget as dropTarget} from 'react-dnd';
 import handleColumnHover from 'universal/dnd/handleColumnHover';
+import handleDrop from 'universal/dnd/handleDrop';
 import withDragState from 'universal/dnd/withDragState';
 import AddProjectButton from 'universal/components/AddProjectButton/AddProjectButton';
 
 const columnTarget = {
+  drop: handleDrop,
   hover: handleColumnHover
 };
 
