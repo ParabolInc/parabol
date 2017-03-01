@@ -54,7 +54,8 @@ const mapStateToProps = (state) => {
     activeMeetings: resolveActiveMeetings(teams),
     tms: state.auth.obj.tms,
     userId: state.auth.sub,
-    trialNotification
+    trialNotification,
+    hasNotificationBar: state.notifications.hasNotificationBar || undefined
   };
 };
 
@@ -67,14 +68,22 @@ const subToAllTeams = (tms) => {
 
 const checkForNotificationBar = (props, nextProps, dispatch) => {
   const {activeMeetings, trialNotification} = props;
-  const {activeMeetings: nextActiveMeetings, trialNotification: nextTrialNotification} = nextProps;
+  const {
+    activeMeetings: nextActiveMeetings,
+    trialNotification: nextTrialNotification,
+    hasNotificationBar: nextHasNotificationBar
+  } = nextProps;
   const {barType} = nextTrialNotification;
 
   if (activeMeetings !== nextActiveMeetings || trialNotification !== nextTrialNotification) {
     if (nextActiveMeetings.length > 0 || barType === TRIAL_EXPIRES_SOON || barType === TRIAL_EXPIRED) {
-      dispatch(notificationBarPresent(true));
+      if (!nextHasNotificationBar) {
+        dispatch(notificationBarPresent(true));
+      }
     } else {
-      dispatch(notificationBarPresent(false));
+      if (nextHasNotificationBar) {
+        dispatch(notificationBarPresent(false));
+      }
     }
   }
 };
