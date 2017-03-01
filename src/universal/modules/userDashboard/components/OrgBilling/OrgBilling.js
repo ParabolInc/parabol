@@ -14,6 +14,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 const OrgBilling = (props) => {
   const {
     invoices,
+    invoicesReady,
     styles,
     org
   } = props;
@@ -48,13 +49,20 @@ const OrgBilling = (props) => {
       }
       <Panel label="Invoices">
         <div className={css(styles.listOfInvoices)}>
-          {invoices.length === 0 ?
+          {invoicesReady && invoices.length === 0 &&
             <div className={css(styles.noInvoices)}>
               No invoices yet! Keep doing good work, and we'll do the accounting.
-            </div> :
+            </div>
+          }
+          {invoicesReady && invoices.length > 0 &&
             invoices.map((invoice, idx) =>
               <InvoiceRow key={`invoiceRow${idx}`} invoice={invoice}/>
             )
+          }
+          {!invoicesReady &&
+            <div className={css(styles.noInvoices)}>
+              Loading Invoices...
+            </div>
           }
         </div>
       </Panel>
@@ -64,6 +72,7 @@ const OrgBilling = (props) => {
 
 OrgBilling.propTypes = {
   invoices: PropTypes.array,
+  invoicesReady: PropTypes.bool,
   styles: PropTypes.object,
   org: PropTypes.object
 };

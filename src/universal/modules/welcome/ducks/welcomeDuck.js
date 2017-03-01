@@ -16,7 +16,7 @@ const initialState = {
   existingInvites: []
 };
 
-export default function reducer(state = initialState, action = {}) {
+export default function reducer(state = initialState, action = {type: ''}) {
   switch (action.type) {
     case NEXT_PAGE:
       return {

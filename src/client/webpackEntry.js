@@ -4,7 +4,6 @@ import {APP_WEBPACK_PUBLIC_PATH_DEFAULT} from 'universal/utils/constants';
  * Setup webpack runtime public path loading, used for configuring
  * asset loading from our CDN:
  */
-/* eslint-disable no-underscore-dangle */
 function getWebpackPublicPath() {
   if (typeof window !== 'undefined' && window.__ACTION__ && window.__ACTION__.cdn) {
     return window.__ACTION__.cdn;
@@ -12,7 +11,6 @@ function getWebpackPublicPath() {
 
   return APP_WEBPACK_PUBLIC_PATH_DEFAULT;
 }
-/* eslint-enable */
 
 /* eslint-disable camelcase, no-undef */
 __webpack_public_path__ = getWebpackPublicPath();

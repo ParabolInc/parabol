@@ -1,7 +1,8 @@
 import {cashay} from 'cashay';
 import jwtDecode from 'jwt-decode';
 import ActionHTTPTransport from '../utils/ActionHTTPTransport';
-import {selectSegmentProfile} from './segmentActions';
+import {selectSegmentProfile} from 'universal/redux/segmentActions';
+import raven from 'raven-js';
 
 const SET_AUTH_TOKEN = '@@authToken/SET_AUTH_TOKEN';
 const REMOVE_AUTH_TOKEN = '@@authToken/REMOVE_AUTH_TOKEN';
@@ -26,7 +27,7 @@ const initialState = {
   token: null
 };
 
-export default function reducer(state = initialState, action = {}) {
+export default function reducer(state = initialState, action = {type: ''}) {
   switch (action.type) {
     case SET_AUTH_TOKEN: {
       const {obj, token} = action.payload;
@@ -65,8 +66,6 @@ export default function reducer(state = initialState, action = {}) {
 
 export function setAuthToken(authToken, reducerName = DEFAULT_AUTH_REDUCER_NAME) {
   return (dispatch, getState) => {
-    const profile = selectSegmentProfile(getState(), reducerName);
-
     if (!authToken) {
       throw new Error('setAuthToken action created with undefined authToken');
     }
@@ -78,13 +77,13 @@ export function setAuthToken(authToken, reducerName = DEFAULT_AUTH_REDUCER_NAME)
     }
 
     cashay.create({httpTransport: new ActionHTTPTransport(authToken)});
-
     if (typeof __PRODUCTION__ !== 'undefined' && __PRODUCTION__) {
       /*
        * Sentry error reporting meta-information. Raven object is set via SSR.
        * See server/Html.js for how this is initialized
        */
-      Raven.setUserContext({ // eslint-disable-line no-undef
+      const profile = selectSegmentProfile(getState(), reducerName);
+      raven.setUserContext({
         id: obj.sub,
         email: profile.email
       });
@@ -106,7 +105,7 @@ export function removeAuthToken() {
        * Sentry error reporting meta-information. Raven object is set via SSR.
        * See server/Html.js for how this is initialized
        */
-      Raven.setUserContext({}); // eslint-disable-line no-undef
+      raven.setUserContext({});
     }
     dispatch({ type: REMOVE_AUTH_TOKEN });
   };

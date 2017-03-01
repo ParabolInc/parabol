@@ -56,7 +56,6 @@ const UserActionList = (props) => {
               actions={actions}
               dispatch={dispatch}
               teams={teams}
-              actionCount={actionCount}
               userId={userId}
             /> :
             <UserActionListHeader onAddNewAction={createNewAction}/>

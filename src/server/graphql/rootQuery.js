@@ -1,4 +1,5 @@
 import {GraphQLObjectType} from 'graphql';
+import action from './models/Action/actionQuery';
 import invoice from './models/Invoice/invoiceQuery';
 import meeting from './models/Meeting/meetingQuery';
 import organization from './models/Organization/organizationQuery';
@@ -8,6 +9,7 @@ import team from './models/Team/teamQuery';
 import user from './models/User/userQuery';
 
 const rootFields = Object.assign({},
+  action,
   invoice,
   meeting,
   organization,

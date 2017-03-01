@@ -2,7 +2,7 @@ import shortid from 'shortid';
 import testOrgMember from './testOrgMember';
 
 export const ORG1_BILLING_LEADER = testOrgMember({
-  id: 'avajs|steveRogers',
+  id: 'test|steveRogers',
   email: 'steve.rogers@avengers.org',
   name: 'Steve Rogers',
   nickname: 'Captain America'
@@ -10,43 +10,43 @@ export const ORG1_BILLING_LEADER = testOrgMember({
 
 export const ORG1_OTHER_TEAM_MEMBERS = [
   testOrgMember({
-    id: 'avajs|jonas',
+    id: 'test|jonas',
     email: 'vision@avengers.org',
     name: 'Jonas',
     nickname: 'Vision'
   }),
   testOrgMember({
-    id: 'avajs|jamesRhodes',
+    id: 'test|jamesRhodes',
     email: 'james.rhodes@avengers.org',
     name: 'James Rhodes',
     nickname: 'War Machine'
   }),
   testOrgMember({
-    id: 'avajs|tonyStark',
+    id: 'test|tonyStark',
     email: 'tony.stark@avengers.org',
     name: 'Tony Stark',
     nickname: 'War Machine'
   }),
   testOrgMember({
-    id: 'avajs|bruceBanner',
+    id: 'test|bruceBanner',
     email: 'bruce.banner@avengers.org',
     name: 'Bruce Banner',
     nickname: 'Hulk',
   }),
   testOrgMember({
-    id: 'avajs|natashaRomanova',
+    id: 'test|natashaRomanova',
     email: 'natasha.romanova@avengers.org',
     name: 'Natasha Romanova',
     nickname: 'Black Widow'
   }),
   testOrgMember({
-    id: 'avajs|kyleRichmond',
+    id: 'test|kyleRichmond',
     email: 'kyle.richmond@avengers.org',
     name: 'Kyle Richmond',
     nickname: 'Nighthawk',
   }),
   testOrgMember({
-    id: 'avajs|thorOdinson',
+    id: 'test|thorOdinson',
     email: 'thor@avengers.org',
     name: 'Thor Odinson',
     nickname: 'Thor',

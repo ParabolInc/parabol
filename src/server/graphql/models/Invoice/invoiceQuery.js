@@ -74,8 +74,9 @@ export default {
       // RESOLUTION
 
       if (after) {
+        const dbAfter = after === 0 ? r.minval : after;
         return r.table('Invoice')
-          .between([orgId, after], [orgId, r.maxval], {index: 'orgIdStartAt', leftBound: 'open'})
+          .between([orgId, dbAfter], [orgId, r.maxval], {index: 'orgIdStartAt', leftBound: 'open'})
           .orderBy(r.desc('startAt'))
           .limit(first)
           .merge((doc) => ({
@@ -97,6 +98,7 @@ export default {
       const upcomingInvoice = {
         id: `upcoming_${orgId}`,
         amountDue: stripeInvoice.amount_due,
+        cursor: 0,
         total: stripeInvoice.total,
         endAt: fromEpochSeconds(stripeInvoice.period_end),
         invoiceDate: fromEpochSeconds(stripeInvoice.date),

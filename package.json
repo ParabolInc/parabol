@@ -29,8 +29,8 @@
     "build:client-deploy": "NODE_ENV=production WEBPACK_DEPLOY=true WEBPACK_MIN=true webpack --config ./webpack/prod.babel.js",
     "build:server": "NODE_ENV=production webpack --config ./webpack/server.babel.js",
     "db:migrate": "./src/server/database/migrate.sh up-all",
-    "db:migrate-testing": "NODE_ENV=testing ./src/server/database/migrate.sh up-all",
-    "test": "NODE_ENV=testing jest",
+    "db:migrate-testing": "NODE_ENV=test ./src/server/database/migrate.sh up-all",
+    "test": "jest && codecov",
     "test:intranetToken": "node ./src/server/utils/getIntranetToken.babel.js",
     "db:migrate-up": "./src/server/database/migrate.sh up",
     "db:migrate-up-all": "npm run db:migrate",
@@ -64,6 +64,7 @@
     "babel-preset-stage-3": "^6.22.0",
     "babel-register": "6.18.0",
     "chance": "^1.0.4",
+    "codecov": "^1.0.1",
     "concurrently": "2.2.0",
     "eslint": "^3.10.2",
     "eslint-config-airbnb": "^9.0.1",
@@ -71,11 +72,12 @@
     "eslint-plugin-jest": "^19.0.0",
     "eslint-plugin-react": "5.2.2",
     "file-loader": "0.9.0",
-    "jest": "^18.1.0",
+    "jest": "^19.0.2",
     "jest-junit-reporter": "^1.0.1",
     "json-loader": "0.5.4",
     "lockfile": "^1.0.2",
     "manifest-assets-webpack-plugin": "^4.0.0",
+    "mockdate": "^2.0.1",
     "piping": "^1.0.0-rc.4",
     "pre-commit": "^1.1.3",
     "react-addons-test-utils": "15.4.0",
@@ -129,6 +131,7 @@
     "node-env-flag": "0.1.0",
     "oy-vey": "^1.0.0-alpha",
     "raven": "^0.12.1",
+    "raven-js": "^3.11.0",
     "react": "^15.4.2",
     "react-async-hoc": "0.2.0",
     "react-copy-to-clipboard": "^4.2.3",
@@ -168,11 +171,13 @@
     "yarn": "0.16.1"
   },
   "jest": {
+    "collectCoverage": true,
+    "coverageDirectory": "./coverage/",
     "modulePaths": [
-      "<rootDir>/src"
+      "<rootDir>/src/"
     ],
-    "testRegex": "/__tests__/.*-tests\\.jsx?$",
-    "testResultsProcessor": "./node_modules/jest-junit-reporter",
+    "testRegex": "/__tests__/.*.test\\.jsx?$",
+    "testResultsProcessor": "./src/server/__tests__/teardown",
     "verbose": true
   }
 }
