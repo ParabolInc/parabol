@@ -55,7 +55,7 @@ const mapStateToProps = (state) => {
     tms: state.auth.obj.tms,
     userId: state.auth.sub,
     trialNotification,
-    hasNotificationBar: state.notifications.hasNotificationBar || undefined
+    hasNotificationBar: state.notifications.hasNotificationBar
   };
 };
 
@@ -63,28 +63,6 @@ const subToAllTeams = (tms) => {
   for (let i = 0; i < tms.length; i++) {
     const teamId = tms[i];
     cashay.subscribe(TEAM, teamId);
-  }
-};
-
-const checkForNotificationBar = (props, nextProps, dispatch) => {
-  const {activeMeetings, trialNotification} = props;
-  const {
-    activeMeetings: nextActiveMeetings,
-    trialNotification: nextTrialNotification,
-    hasNotificationBar: nextHasNotificationBar
-  } = nextProps;
-  const {barType} = nextTrialNotification;
-
-  if (activeMeetings !== nextActiveMeetings || trialNotification !== nextTrialNotification) {
-    if (nextActiveMeetings.length > 0 || barType === TRIAL_EXPIRES_SOON || barType === TRIAL_EXPIRED) {
-      if (!nextHasNotificationBar) {
-        dispatch(notificationBarPresent(true));
-      }
-    } else {
-      if (nextHasNotificationBar) {
-        dispatch(notificationBarPresent(false));
-      }
-    }
   }
 };
 
@@ -100,7 +78,7 @@ export default class DashLayoutContainer extends Component {
   };
 
   componentWillMount() {
-    checkForNotificationBar({}, this.props, this.props.dispatch);
+    this.maybeSetBar(this.props);
   }
 
   componentDidMount() {
@@ -113,8 +91,20 @@ export default class DashLayoutContainer extends Component {
     if (this.props.tms !== nextProps.tms) {
       subToAllTeams(nextProps.tms);
     }
-    checkForNotificationBar(this.props, nextProps, this.props.dispatch);
+    this.maybeSetBar(nextProps);
   }
+
+  maybeSetBar(props) {
+    const {
+      activeMeetings,
+      trialNotification,
+      hasNotificationBar
+    } = props;
+    const shouldHaveBar = activeMeetings.length > 0 || trialNotification.type;
+    if (shouldHaveBar !== hasNotificationBar) {
+      this.props.dispatch(notificationBarPresent(shouldHaveBar));
+    }
+  };
 
   render() {
     const {activeMeetings, children, dispatch, trialNotification} = this.props;

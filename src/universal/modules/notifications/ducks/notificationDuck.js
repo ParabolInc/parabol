@@ -1,6 +1,8 @@
 const NOTIFICATION_BAR_PRESENT = 'notifications/NOTIFICATION_BAR_PRESENT';
 
-const initialState = [];
+const initialState = {
+  hasNotificationBar: false
+};
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
