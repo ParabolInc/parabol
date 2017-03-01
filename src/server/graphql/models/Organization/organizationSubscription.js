@@ -100,7 +100,7 @@ export default {
       const r = getRethink();
 
       // AUTH
-      await requireSUOrSelf(authToken, userId);
+      requireSUOrSelf(authToken, userId);
 
       // RESOLUTION
       const requestedFields = getRequestedFields(refs);

@@ -45,22 +45,24 @@ query {
 
 const mapStateToProps = (state, props) => {
   const {orgId} = props;
-  const {organization: org, invoiceList} = cashay.query(organizationContainerQuery, {
+  const res = cashay.query(organizationContainerQuery, {
     op: 'orgBillingContainer',
     key: orgId,
     variables: {
       orgId,
       first: 5
     }
-  }).data;
+  });
+  const {data: {organization: org, invoiceList}, status} = res;
   return {
     invoiceList,
-    org
+    org,
+    invoicesReady: status === 'complete'
   };
 };
 
 const OrgBillingContainer = (props) => {
-  const {dispatch, invoiceList, org} = props;
+  const {dispatch, invoiceList, invoicesReady, org} = props;
   if (!org.id) {
     return <LoadingView/>;
   }
@@ -68,6 +70,7 @@ const OrgBillingContainer = (props) => {
     <OrgBilling
       dispatch={dispatch}
       invoices={invoiceList}
+      invoicesReady={invoicesReady}
       org={org}
     />
   );
@@ -76,6 +79,7 @@ const OrgBillingContainer = (props) => {
 OrgBillingContainer.propTypes = {
   dispatch: PropTypes.func,
   invoiceList: PropTypes.array,
+  invoicesReady: PropTypes.bool,
   org: PropTypes.object
 };
 

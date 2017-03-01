@@ -17,14 +17,20 @@ export default function (numTeamMembers = 1) {
   const chance = new Chance();
   const billingLeader = randomTeamMember();
   const otherTeamMembers = [...Array(numTeamMembers)].map(() => randomTeamMember());
+  const orgId = shortid.generate();
   const team = {
     id: shortid(),
-    name: chance.word().replace(/^./, (s) => s.toUpperCase())
+    name: chance.word().replace(/^./, (s) => s.toUpperCase()),
+    orgId
   };
   return {
     allTeamMembers: [billingLeader, ...otherTeamMembers],
     billingLeader,
     otherTeamMembers,
-    team
+    team,
+    org: {
+      id: orgId,
+      name: `${billingLeader.name}'s org`
+    }
   };
 }

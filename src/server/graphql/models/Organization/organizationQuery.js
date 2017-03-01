@@ -1,9 +1,29 @@
 import getRethink from 'server/database/rethinkDriver';
-import {GraphQLNonNull, GraphQLID} from 'graphql';
+import {GraphQLNonNull, GraphQLID, GraphQLInt} from 'graphql';
 import {Organization} from './organizationSchema';
-import {requireSUOrTeamMember} from 'server/utils/authorization';
+import {requireSUOrTeamMember, requireSUOrSelf} from 'server/utils/authorization';
 
 export default {
+  orgCount: {
+    type: GraphQLInt,
+    args: {
+      userId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'the user ID that belongs to all the orgs'
+      }
+    },
+    async resolve(source, {userId}, {authToken}) {
+      const r = getRethink();
+
+      // AUTH
+      requireSUOrSelf(authToken, userId);
+
+      // RESOLUTION
+      return await r.table('Organization')
+        .getAll(userId, {index: 'orgUsers'})
+        .count();
+    }
+  },
   orgDetails: {
     type: Organization,
     args: {

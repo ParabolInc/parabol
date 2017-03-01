@@ -63,8 +63,14 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
           ),
           tms: userDoc('tms')
             .default([])
-            .append(teamId)
-            .distinct()
+            .do((tms) => {
+              // using distinct disregards order (sometimes cuts the first, sometimes not)
+              return r.branch(
+                tms.contains(teamId),
+                null,
+                tms.append(teamId)
+              );
+            })
         }), {returnChanges: true});
     });
 
