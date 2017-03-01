@@ -11,6 +11,7 @@ import shortid from 'shortid';
 import ms from 'ms';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
 import {handleSchemaErrors} from 'server/utils/utils';
+
 const DEBOUNCE_TIME = ms('5m');
 
 export default {
@@ -42,7 +43,7 @@ export default {
       handleSchemaErrors(errors);
 
       // RESOLUTION
-      const {id: projectId, teamSort, userSort, agendaId, isArchived, ...historicalProject} = validUpdatedProject;
+      const {id: projectId, sortOrder, agendaId, isArchived, ...historicalProject} = validUpdatedProject;
 
       const now = new Date();
 
@@ -50,8 +51,7 @@ export default {
         ...historicalProject,
         agendaId,
         isArchived,
-        teamSort,
-        userSort
+        sortOrder
       };
       const {teamMemberId} = historicalProject;
       if (teamMemberId) {
@@ -59,8 +59,9 @@ export default {
         newProject.userId = userId;
       }
       const dbWork = [];
-      // if this is just a sort update, don't bother writing to the history
-      if (Object.keys(updatedProject).length === 2 && (teamSort !== undefined || userSort !== undefined)) {
+
+      if (Object.keys(updatedProject).length > 2 || sortOrder === undefined) {
+        // if this is anything but a sort update, log it to history
         const mergeDoc = {
           ...historicalProject,
           updatedAt: now,
@@ -79,25 +80,33 @@ export default {
             );
           });
         dbWork.push(projectHistoryPromise);
-      } else {
-        // if we just change the sort, don't change the updatedAt
         newProject.updatedAt = now;
       }
-      if (rebalance) {
-        const rebalanceField = teamSort !== undefined ? 'teamSort' : 'userSort';
-        const rebalanceCountPromise = await r.table('Project')
-          .getAll(teamId, {index: 'teamId'})
-          .filter({status: rebalance})
-          .orderBy(rebalanceField)('id');
-        const updates = rebalanceCountPromise.map((id, idx) => ({id, idx}));
-        const rebalanceUpdatePromise = r.expr(updates)
-          .forEach((update) => {
-            return r.table('Project')
-              .get(update('id'))
-              .update({[rebalanceField]: update('idx')});
-          });
-        dbWork.push(rebalanceUpdatePromise);
-      }
+      // if (rebalance) {
+      //   r.table('User')
+      //     .get(userId)('tms')
+      //     .do((affectedTeams) => {
+      //       return r.table('TeamMember')
+      //         .getAll(r.args(affectedTeams), {index: 'teamId'})('userId')
+      //         .distinct()
+      //     })
+      //     .do((affectedUsers) => {
+      //
+      //     })
+      //   const rebalanceField = teamSort !== undefined ? 'teamSort' : 'userSort';
+      //   const rebalanceCountPromise = await r.table('Project')
+      //     .getAll(teamId, {index: 'teamId'})
+      //     .filter({status: rebalance})
+      //     .orderBy(rebalanceField)('id');
+      //   const updates = rebalanceCountPromise.map((id, idx) => ({id, idx}));
+      //   const rebalanceUpdatePromise = r.expr(updates)
+      //     .forEach((update) => {
+      //       return r.table('Project')
+      //         .get(update('id'))
+      //         .update({[rebalanceField]: update('idx')});
+      //     });
+      //   dbWork.push(rebalanceUpdatePromise);
+      // }
       dbWork.push(r.table('Project').get(projectId).update(newProject));
       await Promise.all(dbWork);
       return true;

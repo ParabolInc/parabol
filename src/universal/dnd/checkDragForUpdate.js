@@ -1,7 +1,7 @@
 import {SORT_STEP} from 'universal/utils/constants';
 import {findDOMNode} from 'react-dom';
 
-export default function checkDragForUpdate(monitor, dragState, itemArray, sortField, isDescending) {
+export default function checkDragForUpdate(monitor, dragState, itemArray, isDescending) {
   const sourceProps = monitor.getItem();
   const {id} = sourceProps;
   const {components, minY, maxY, thresholds} = dragState;
@@ -34,7 +34,7 @@ export default function checkDragForUpdate(monitor, dragState, itemArray, sortFi
   const dFactor = isDescending ? 1 : -1;
   if (thresholds.length === 0) {
     // console.log('no thresholds, setting to first in the column');
-    updatedDoc[sortField] = 0;
+    updatedDoc.sortOrder = 0;
   } else if (i === 0) {
     // if we're trying to put it at the top, make sure it's not already at the top
     if (itemToReplace.id === id) {
@@ -46,7 +46,7 @@ export default function checkDragForUpdate(monitor, dragState, itemArray, sortFi
       return undefined;
     }
     // console.log('setting', id,  'to first in the column behind', itemToReplace);
-    updatedDoc[sortField] = itemToReplace[sortField] + (SORT_STEP * dFactor);
+    updatedDoc.sortOrder = itemToReplace.sortOrder + (SORT_STEP * dFactor);
   } else if (i === thresholds.length) {
     // console.log('putting card at the end')
     // if we wanna put it at the end, make sure it's not already at the end
@@ -59,7 +59,7 @@ export default function checkDragForUpdate(monitor, dragState, itemArray, sortFi
       return undefined;
     }
     // console.log('setting to last in the column after', prevItem);
-    updatedDoc[sortField] = prevItem[sortField] - (SORT_STEP * dFactor);
+    updatedDoc.sortOrder = prevItem.sortOrder - (SORT_STEP * dFactor);
   } else {
     // console.log('putting card in the middle')
     // if we're somewhere in the middle, make sure we're actually gonna move
@@ -72,11 +72,11 @@ export default function checkDragForUpdate(monitor, dragState, itemArray, sortFi
       return undefined;
     }
     // console.log('setting', id,  'in between', prevItem.id, itemToReplace.id);
-    updatedDoc[sortField] = (prevItem[sortField] + itemToReplace[sortField]) / 2;
-    // console.log('new sort', updatedDoc[sortField], 'in between', prevItem[sortField], itemToReplace[sortField])
+    updatedDoc.sortOrder = (prevItem.sortOrder + itemToReplace.sortOrder) / 2;
+    // console.log('new sort', updatedDoc.sortOrder, 'in between', prevItem.sortOrder, itemToReplace.sortOrder)
   }
   // mutative for fast response
-  sourceProps[sortField] = updatedDoc[sortField];
+  sourceProps.sortOrder = updatedDoc.sortOrder;
 
   // close it out! we know we're moving
   dragState.clear();

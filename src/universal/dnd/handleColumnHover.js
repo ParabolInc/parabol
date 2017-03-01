@@ -25,12 +25,11 @@ export default function handleProjectHover(targetProps, monitor) {
   const {area, dragState, projects, queryKey, status: targetStatus} = targetProps;
   const sourceProps = monitor.getItem();
   const {status: sourceStatus} = sourceProps;
-  const sortField = area === USER_DASH ? 'userSort' : 'teamSort';
   if (targetStatus !== sourceStatus) {
     // we don't want the minY and minX to apply if we're hovering over another column
     dragState.handleEndDrag();
   }
-  const updatedVariables = checkDragForUpdate(monitor, dragState, projects, sortField, true);
+  const updatedVariables = checkDragForUpdate(monitor, dragState, projects, true);
   if (!updatedVariables) return;
   const {prevItem, updatedDoc: updatedProject} = updatedVariables;
   const variables = {updatedProject};
@@ -39,7 +38,7 @@ export default function handleProjectHover(targetProps, monitor) {
     updatedProject.status = targetStatus;
     sourceProps.status = targetStatus;
   }
-  if (prevItem && Math.abs(prevItem[sortField] - updatedProject[sortField]) < MIN_SORT_RESOLUTION) {
+  if (prevItem && Math.abs(prevItem.sortOrder - updatedProject.sortOrder) < MIN_SORT_RESOLUTION) {
     variables.rebalance = targetStatus;
   }
   const op = areaOpLookup[area];

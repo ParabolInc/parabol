@@ -38,14 +38,13 @@ const targetAnchor = {
   horizontal: 'right'
 };
 
-const handleAddProjectFactory = (status, teamMemberId, teamSort, userSort) => () => {
+const handleAddProjectFactory = (status, teamMemberId, sortOrder) => () => {
   const [, teamId] = teamMemberId.split('::');
   const newProject = {
     id: `${teamId}::${shortid.generate()}`,
     status,
     teamMemberId,
-    teamSort,
-    userSort
+    sortOrder
   };
   cashay.mutate('createProject', {variables: {newProject}});
 };
@@ -54,7 +53,7 @@ const ProjectColumn = (props) => {
   const {area, connectDropTarget, dragState, status, projects, myTeamMemberId, styles, teams, userId} = props;
 
   const label = themeLabels.projectStatus[status].slug;
-  const makeTeamMenuItems = (userSort) => {
+  const makeTeamMenuItems = (sortOrder) => {
     return teams.map(team => ({
       label: team.name,
       handleClick: () => cashay.mutate('createProject', {
@@ -63,8 +62,7 @@ const ProjectColumn = (props) => {
             id: `${team.id}::${shortid.generate()}`,
             status,
             teamMemberId: `${userId}::${team.id}`,
-            teamSort: 0,
-            userSort
+            sortOrder
           }
         }
       })
@@ -72,19 +70,19 @@ const ProjectColumn = (props) => {
   };
   const makeAddProject = () => {
     if (area === TEAM_DASH) {
-      const teamSort = getNextSortOrder(projects, 'teamSort');
-      const handleAddProject = handleAddProjectFactory(status, myTeamMemberId, teamSort, 0);
+      const sortOrder = getNextSortOrder(projects);
+      const handleAddProject = handleAddProjectFactory(status, myTeamMemberId, sortOrder);
       return <AddProjectButton onClick={handleAddProject} label={label}/>;
     } else if (area === USER_DASH) {
-      const userSort = getNextSortOrder(projects, 'userSort');
+      const sortOrder = getNextSortOrder(projects);
       if (teams.length === 1) {
         const {id: teamId} = teams[0];
         const generatedMyTeamMemberId = `${userId}::${teamId}`;
-        const handleAddProject = handleAddProjectFactory(status, generatedMyTeamMemberId, 0, userSort);
+        const handleAddProject = handleAddProjectFactory(status, generatedMyTeamMemberId, sortOrder);
         return <AddProjectButton onClick={handleAddProject} label={label}/>;
       }
       const itemFactory = () => {
-        const menuItems = makeTeamMenuItems(userSort);
+        const menuItems = makeTeamMenuItems(sortOrder);
         return menuItems.map((item, idx) =>
           <MenuItem
             key={`MenuItem${idx}`}

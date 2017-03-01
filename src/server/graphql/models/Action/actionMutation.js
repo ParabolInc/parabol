@@ -153,8 +153,7 @@ export default {
         createdAt: action.createdAt,
         updatedAt: now,
         status: 'active',
-        teamSort: 0,
-        userSort: 0,
+        sortOrder: 0,
         agendaId: action.agendaId
       };
       await r.table('Project').insert(newProject)

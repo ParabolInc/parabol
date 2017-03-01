@@ -54,13 +54,9 @@ export const Project = new GraphQLObjectType({
       description: 'The timestamp the project was updated'
     },
     status: {type: new GraphQLNonNull(ProjectStatus), description: 'The status of the project'},
-    teamSort: {
+    sortOrder: {
       type: GraphQLFloat,
-      description: 'the per-status sort order for the team dashboard'
-    },
-    userSort: {
-      type: GraphQLFloat,
-      description: 'the per-status sort order for the user dashboard'
+      description: 'the shared sort order for projects on the team dash & user dash'
     },
     agendaId: {
       type: GraphQLID,
@@ -81,11 +77,11 @@ export const ProjectInput = new GraphQLInputObjectType({
   fields: () => ({
     id: {type: GraphQLID, description: 'The unique team ID'},
     content: {type: GraphQLString},
+    isArchived: {type: GraphQLBoolean},
     name: {type: GraphQLString, description: 'The name of the team'},
     orgId: {type: GraphQLID, description: 'The unique orginization ID that pays for the team'},
     teamMemberId: {type: GraphQLID},
-    userSort: {type: GraphQLFloat},
-    teamSort: {type: GraphQLFloat},
+    sortOrder: {type: GraphQLFloat},
     status: {type: GraphQLString}
   })
 });
