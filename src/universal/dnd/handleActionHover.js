@@ -1,8 +1,11 @@
 import {cashay} from 'cashay';
 import checkDragForUpdate from 'universal/dnd/checkDragForUpdate';
-import {MIN_SORT_RESOLUTION} from 'universal/utils/constants';
+import {DND_THROTTLE, MIN_SORT_RESOLUTION} from 'universal/utils/constants';
 
+let lastSentAt = 0;
 export default function handleActionHover(targetProps, monitor) {
+  const now = new Date();
+  if (lastSentAt > (now - DND_THROTTLE)) return;
   const {actions, dragState, queryKey} = targetProps;
   const updatedVariables = checkDragForUpdate(monitor, dragState, actions, 'sortOrder', true);
   if (!updatedVariables) return;
@@ -15,5 +18,6 @@ export default function handleActionHover(targetProps, monitor) {
     ops: {userActions: queryKey},
     variables
   };
+  lastSentAt = now;
   cashay.mutate('updateAction', options);
 }

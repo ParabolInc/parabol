@@ -1,5 +1,5 @@
 import {cashay} from 'cashay';
-import {MEETING, MIN_SORT_RESOLUTION, TEAM_DASH, USER_DASH} from 'universal/utils/constants';
+import {DND_THROTTLE, MEETING, MIN_SORT_RESOLUTION, TEAM_DASH, USER_DASH} from 'universal/utils/constants';
 import checkDragForUpdate from 'universal/dnd/checkDragForUpdate';
 
 /**
@@ -18,7 +18,10 @@ const areaOpLookup = {
   [TEAM_DASH]: 'teamColumnsContainer'
 };
 
+let lastSentAt = 0;
 export default function handleProjectHover(targetProps, monitor) {
+  const now = new Date();
+  if (lastSentAt > (now - DND_THROTTLE)) return;
   const {area, dragState, projects, queryKey, status: targetStatus} = targetProps;
   const sourceProps = monitor.getItem();
   const {status: sourceStatus} = sourceProps;
@@ -46,5 +49,6 @@ export default function handleProjectHover(targetProps, monitor) {
     },
     variables
   };
+  lastSentAt = now;
   cashay.mutate('updateProject', options);
 }
