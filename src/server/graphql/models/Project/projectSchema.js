@@ -49,6 +49,10 @@ export const Project = new GraphQLObjectType({
       type: GraphQLID,
       description: 'The userId that created the project'
     },
+    userId: {
+      type: GraphQLID,
+      description: '* The userId, index useful for server-side methods getting all projects under a user'
+    },
     updatedAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the project was updated'

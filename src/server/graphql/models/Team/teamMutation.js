@@ -33,6 +33,7 @@ import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 import addTeam from 'server/graphql/models/Team/addTeam/addTeam';
 import createFirstTeam from 'server/graphql/models/Team/createFirstTeam/createFirstTeam';
 import updateTeamName from 'server/graphql/models/Team/updateTeamName/updateTeamName';
+import getEndMeetingSortOrders from 'server/graphql/models/Team/getEndMeetingSortOrders';
 
 export default {
   moveMeeting: {
@@ -243,80 +244,106 @@ export default {
       // AUTH
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
+      const meeting = await r.table('Meeting')
+      // get the most recent meeting
+        .getAll(teamId, {index: 'teamId'})
+        .orderBy(r.desc('createdAt'))
+        .nth(0)
+        .pluck('id', 'endedAt');
+      if (meeting.endedAt) {
+        throw errorObj({_error: 'Meeting already ended!'})
+      }
 
       // RESOLUTION
       const now = new Date();
-      const endedMeeting = await r.table('Meeting')
+      const meetingId = meeting.id;
+      const invitees = await r.table('AgendaItem')
+      // get all agenda items
         .getAll(teamId, {index: 'teamId'})
-        .orderBy(r.desc('createdAt'))
-        .nth(0)('id')
-        .do((meetingId) => ({
-          meetingId,
-          meetingUpdates: r.table('AgendaItem')
-            .getAll(teamId, {index: 'teamId'})
-            .filter({isActive: true, isComplete: true})
-            .map((doc) => doc('id'))
-            .coerceTo('array')
-            .do((agendaItemIds) => ({
-              // delete any null actions
-              deletedActions: r.table('Action')
+        .filter({isActive: true, isComplete: true})
+        .map((doc) => doc('id'))
+        .coerceTo('array')
+        .do((agendaItemIds) => {
+          // delete any null actions
+          return r.table('Action')
+            .getAll(r.args(agendaItemIds), {index: 'agendaId'})
+            .filter((row) => row('content').eq(null))
+            .delete()
+            .do(() => {
+              // delete any null projects
+              return r.table('Project')
                 .getAll(r.args(agendaItemIds), {index: 'agendaId'})
                 .filter((row) => row('content').eq(null))
-                .delete(),
-              deletedProjects: r.table('Project')
-                .getAll(r.args(agendaItemIds), {index: 'agendaId'})
-                .filter((row) => row('content').eq(null))
-                .delete(),
-              agendaItemIds
-            }))
-            .do((res) => {
+                .delete();
+            })
+            .do(() => {
+              // grab all the actions and projects
               return {
                 actions: r.table('Action')
-                  .getAll(r.args(res('agendaItemIds')), {index: 'agendaId'})
+                  .getAll(r.args(agendaItemIds), {index: 'agendaId'})
                   // we still need to filter because this may occur before we delete them above (not guaranteed in sync)
                   .filter((row) => row('content').ne(null))
-                  .map(row => row.merge({id: meetingId.add('::').add(row('id'))}))
+                  .map(row => row.merge({id: r.expr(meetingId).add('::').add(row('id'))}))
                   .pluck('id', 'content', 'teamMemberId')
                   .coerceTo('array'),
-                agendaItemsCompleted: res('agendaItemIds').count(),
                 projects: r.table('Project')
-                  .getAll(r.args(res('agendaItemIds')), {index: 'agendaId'})
+                  .getAll(r.args(agendaItemIds), {index: 'agendaId'})
                   .filter((row) => row('content').ne(null))
-                  .map(row => row.merge({id: meetingId.add('::').add(row('id'))}))
+                  .map(row => row.merge({id: r.expr(meetingId).add('::').add(row('id'))}))
                   .pluck('id', 'content', 'status', 'teamMemberId')
                   .coerceTo('array')
               };
             })
-        }))
-        .do((res) => {
-          return r.table('Meeting').get(res('meetingId'))
-            .update({
-              actions: res('meetingUpdates')('actions').default([]),
-              agendaItemsCompleted: res('meetingUpdates')('agendaItemsCompleted').default(0),
-              endedAt: now,
-              facilitator: `${authToken.sub}::${teamId}`,
-              successExpression: makeSuccessExpression(),
-              successStatement: makeSuccessStatement(),
-              invitees: r.table('TeamMember')
-                .getAll(teamId, {index: 'teamId'})
-                .filter({isNotRemoved: true})
-                .coerceTo('array')
-                .map((teamMember) => ({
-                  id: teamMember('id'),
-                  present: r.branch(teamMember('isCheckedIn').eq(true), true, false)
-                })),
-              projects: res('meetingUpdates')('projects').default([]),
-
-            }, {nonAtomic: true, returnChanges: true})('changes')(0)('new_val');
+            .do((res) => {
+              return r.table('Meeting').get(meetingId)
+                .update({
+                  actions: res('actions').default([]),
+                  agendaItemsCompleted: agendaItemIds.count().default(0),
+                  endedAt: now,
+                  facilitator: `${authToken.sub}::${teamId}`,
+                  successExpression: makeSuccessExpression(),
+                  successStatement: makeSuccessStatement(),
+                  invitees: r.table('TeamMember')
+                    .getAll(teamId, {index: 'teamId'})
+                    .filter({isNotRemoved: true})
+                    .coerceTo('array')
+                    .map((teamMember) => ({
+                      id: teamMember('id'),
+                      actions: res('actions').default([]).filter({teamMemberId: teamMember('id')}),
+                      picture: teamMember('picture'),
+                      preferredName: teamMember('preferredName'),
+                      present: teamMember('isCheckedIn').not().not(),
+                      projects: res('projects').default([]).filter({teamMemberId: teamMember('id')})
+                    })),
+                  projects: res('projects').default([]),
+                }, {nonAtomic: true, returnChanges: true})('changes')(0)('new_val')('invitees')
+            })
         });
 
-      // send to summary
-      await r.table('Team').get(teamId)
-        .update({
-          facilitatorPhase: SUMMARY,
-          meetingPhase: SUMMARY,
-          facilitatorPhaseItem: null,
-          meetingPhaseItem: null,
+      const {updatedActions, updatedProjects} = await getEndMeetingSortOrders(invitees);
+      await r.expr(updatedActions)
+        .forEach((action) => {
+          return r.table('Action').get(action('id')).update({
+            sortOrder: action('sortOrder')
+          })
+        })
+        .do(() => {
+          return r.expr(updatedProjects)
+            .forEach((project) => {
+              return r.table('Project').get(project('id')).update({
+                sortOrder: action('sortOrder')
+              })
+            })
+        })
+        .do(() => {
+          // send to summary view
+          return r.table('Team').get(teamId)
+            .update({
+              facilitatorPhase: SUMMARY,
+              meetingPhase: SUMMARY,
+              facilitatorPhaseItem: null,
+              meetingPhaseItem: null,
+            });
         });
 
       // reset the meeting
@@ -349,34 +376,19 @@ export default {
             // shuffle the teamMember check in order, uncheck them in
             return r.table('TeamMember')
               .getAll(teamId, {index: 'teamId'})
-              .filter({isNotRemoved: true})
               .sample(100000)
               .coerceTo('array')
               .do((arr) => arr.forEach((doc) => {
-                return r.table('TeamMember').get(doc('id'))
+                  return r.table('TeamMember').get(doc('id'))
                     .update({
                       checkInOrder: arr.offsetsOf(doc).nth(0),
                       isCheckedIn: null
                     });
-              })
+                })
               );
           })
           .run();
       }, 5000);
-
-      // report the meeting completion to segment.io:
-      setTimeout(() => {
-        endedMeeting.invitees
-        .filter((invitee) => invitee.present)
-        .forEach((invitee) => {
-          const [userId] = invitee.id.split('::');
-          segmentIo.track({
-            userId,
-            event: 'Meeting Completed',
-            properties: { meetingNumber: endedMeeting.meetingNumber }
-          });
-        });
-      });
       return true;
     }
   },
