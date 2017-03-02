@@ -28,19 +28,11 @@ export const Project = new GraphQLObjectType({
   description: 'A long-term project shared across the team, assigned to a single user',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique project id, teamId::shortid'},
-    content: {type: GraphQLString, description: 'The body of the project. If null, it is a new project.'},
-    isArchived: {
-      type: GraphQLBoolean,
-      description: 'true if the project has been archived and will not show up in the main area'
-    },
-    teamId: {
+    agendaId: {
       type: GraphQLID,
-      description: 'The id of the team (indexed). Needed for subscribing to archived projects'
+      description: 'the agenda item that created this project, if any'
     },
-    teamMemberId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the team member assigned to this project, or the creator if content is null'
-    },
+    content: {type: GraphQLString, description: 'The body of the project. If null, it is a new project.'},
     createdAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the project was created'
@@ -49,29 +41,37 @@ export const Project = new GraphQLObjectType({
       type: GraphQLID,
       description: 'The userId that created the project'
     },
-    userId: {
-      type: GraphQLID,
-      description: '* The userId, index useful for server-side methods getting all projects under a user'
-    },
-    updatedAt: {
-      type: GraphQLISO8601Type,
-      description: 'The timestamp the project was updated'
-    },
-    status: {type: new GraphQLNonNull(ProjectStatus), description: 'The status of the project'},
-    sortOrder: {
-      type: GraphQLFloat,
-      description: 'the shared sort order for projects on the team dash & user dash'
-    },
-    agendaId: {
-      type: GraphQLID,
-      description: 'the agenda item that created this project, if any'
-    },
     cursor: {
       type: GraphQLISO8601Type,
       description: 'the pagination cursor (createdAt)',
       resolve({createdAt}) {
         return createdAt;
       }
+    },
+    isArchived: {
+      type: GraphQLBoolean,
+      description: 'true if the project has been archived and will not show up in the main area'
+    },
+    sortOrder: {
+      type: GraphQLFloat,
+      description: 'the shared sort order for projects on the team dash & user dash'
+    },
+    status: {type: new GraphQLNonNull(ProjectStatus), description: 'The status of the project'},
+    teamId: {
+      type: GraphQLID,
+      description: 'The id of the team (indexed). Needed for subscribing to archived projects'
+    },
+    teamMemberId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The id of the team member assigned to this project, or the creator if content is null'
+    },
+    updatedAt: {
+      type: GraphQLISO8601Type,
+      description: 'The timestamp the project was updated'
+    },
+    userId: {
+      type: GraphQLID,
+      description: '* The userId, index useful for server-side methods getting all projects under a user'
     }
   })
 });

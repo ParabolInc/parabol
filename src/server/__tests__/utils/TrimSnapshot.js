@@ -31,6 +31,7 @@ export default class TrimSnapshot {
 
   _visitObject(snapshot, path) {
     const nextLayer = path[0];
+    if (!snapshot.hasOwnProperty(nextLayer)) return;
     if (path.length === 1) {
       const oldVal = snapshot[nextLayer];
       if (Array.isArray(oldVal)) {

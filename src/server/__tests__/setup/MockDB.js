@@ -1,7 +1,7 @@
 import getRethink from 'server/database/rethinkDriver';
 import testUsers from 'server/__tests__/setup/testUsers';
 import shortid from 'shortid';
-import {BILLING_LEADER, LOBBY} from 'universal/utils/constants';
+import {BILLING_LEADER, LOBBY, ACTIVE} from 'universal/utils/constants';
 import {TRIAL_PERIOD} from 'server/utils/serverConstants';
 import notificationTemplate from 'server/__tests__/utils/notificationTemplate';
 import {__anHourAgo} from 'server/__tests__/setup/mockTimes';
@@ -100,6 +100,39 @@ class MockDB {
       updatedAt: anHourAgo,
       periodEnd: new Date(anHourAgo.getTime() + TRIAL_PERIOD),
       periodStart: anHourAgo,
+      ...overrides
+    });
+  }
+
+  newProject(overrides = {}) {
+    const teamMemberId = this.context.teamMember.id;
+    const [userId] = teamMemberId.split('::');
+    const teamId = this.context.team.id;
+    return this.closeout('project', {
+      id: `${teamId}::${shortid.generate()}`,
+      content: 'Test Project',
+      createdAt: new Date(__anHourAgo),
+      createdBy: userId,
+      isArchived: false,
+      sortOrder: 0,
+      status: ACTIVE,
+      teamId,
+      teamMemberId,
+      updatedAt: new Date(__anHourAgo),
+      userId,
+      ...overrides
+    });
+  }
+
+  newProjectHistory(overrides = {}) {
+    const {project: {id, content, teamMemberId, status, updatedAt}} = this.context;
+    return this.closeout('projectHistory', {
+      id: `${id}::${shortid.generate()}`,
+      projectId: id,
+      content,
+      teamMemberId,
+      status,
+      updatedAt,
       ...overrides
     });
   }
