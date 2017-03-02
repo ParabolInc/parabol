@@ -5,15 +5,15 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import {Link} from 'react-router';
 import FontAwesome from 'react-fontawesome';
-import NotificationBar from 'universal/components/NotificationBar/NotificationBar';
+import {DashAlert} from 'universal/components/Dashboard';
 
-const ExpiredTrialNotificationBar = (props) => {
+const ExpiredTrialDashAlert = (props) => {
   const {accountLink, styles} = props;
   const iconStyle = {
     fontSize: ui.iconSize
   };
   return (
-    <NotificationBar colorPalette="light">
+    <DashAlert colorPalette="light">
       <div className={css(styles.inlineBlock, styles.message)}>
         Your trial has expired!
       </div>
@@ -22,11 +22,11 @@ const ExpiredTrialNotificationBar = (props) => {
           <span className={css(styles.underline)}>Add Billing Information</span> <FontAwesome name="arrow-right" style={iconStyle} />
         </Link>
       </div>
-    </NotificationBar>
+    </DashAlert>
   );
 };
 
-ExpiredTrialNotificationBar.propTypes = {
+ExpiredTrialDashAlert.propTypes = {
   accountLink: PropTypes.string,
   styles: PropTypes.object
 };
@@ -64,4 +64,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(ExpiredTrialNotificationBar);
+export default withStyles(styleThunk)(ExpiredTrialDashAlert);

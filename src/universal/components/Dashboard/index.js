@@ -1,3 +1,4 @@
+export DashAlert from './DashAlert.js';
 export DashContent from './DashContent.js';
 export DashHeader from './DashHeader.js';
 export DashHeaderInfo from './DashHeaderInfo.js';

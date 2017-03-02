@@ -66,14 +66,14 @@ const settingsLinks = (teamId) => {
 const initialValues = {teamName: ''};
 
 const Team = (props) => {
-  const {children, hasNotificationBar, router, team, teamMembers} = props;
+  const {children, hasDashAlert, router, team, teamMembers} = props;
   const {id: teamId, name: teamName, isPaid} = team;
   const hasActiveMeeting = Boolean(team && team.meetingId);
   const hasOverlay = hasActiveMeeting || !isPaid;
   const isSettings = router.isActive(`/team/${teamId}/settings`, false);
   initialValues.teamName = teamName;
   const DashHeaderInfoTitle = isSettings ? <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId}/> : teamName;
-  const modalLayout = hasNotificationBar ? ui.modalLayoutMainWithBar : ui.modalLayoutMain;
+  const modalLayout = hasDashAlert ? ui.modalLayoutMainWithDashAlert : ui.modalLayoutMain;
   return (
     <DashMain>
       <MeetingInProgressModal
@@ -104,7 +104,7 @@ const Team = (props) => {
 
 Team.propTypes = {
   children: PropTypes.any,
-  hasNotificationBar: PropTypes.bool,
+  hasDashAlert: PropTypes.bool,
   router: PropTypes.object,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired,

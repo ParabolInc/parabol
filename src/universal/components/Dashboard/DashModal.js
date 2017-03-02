@@ -47,7 +47,7 @@ DashModal.propTypes = {
 
   // NOTE: Use 'fixed' to show over 'viewport'.
   //       Default styles use 'fixed' and 'viewport' values.
-  //       Use 'absolute' to show over 'main' or 'mainHasNotificationBar'.
+  //       Use 'absolute' to show over 'main' or 'mainHasDashAlert'.
   //       SEE: ui.modalLayout for options
 
   position: PropTypes.oneOf([
@@ -108,9 +108,9 @@ const styleThunk = (theme, props) => ({
     left: ui.dashSidebarWidth
   },
 
-  [ui.modalLayoutMainWithBar]: {
+  [ui.modalLayoutMainWithDashAlert]: {
     left: ui.dashSidebarWidth,
-    top: ui.dashNotificationBarHeight
+    top: ui.dashAlertHeight
   },
 
   [ui.modalLayoutViewport]: {

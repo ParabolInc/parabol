@@ -7,7 +7,7 @@ import {reducer as storageReducer} from 'redux-storage-whitelist-fn';
 import storageMerger from 'universal/redux/storageMerger';
 import makeRootReducer from 'universal/redux/rootDuck';
 import menuReducer from 'universal/modules/menu/ducks/menuDuck';
-import notificationReducer from 'universal/modules/notifications/ducks/notificationDuck';
+import dashReducer from 'universal/modules/dashboard/ducks/dashDuck';
 
 const {SET_SUBMIT_SUCCEEDED} = actionTypes;
 
@@ -36,7 +36,7 @@ const appReducers = {
   [DEFAULT_AUTH_REDUCER_NAME]: auth,
   cashay: cashayReducer,
   form: formReducer.plugin(formPlugin),
-  notifications: notificationReducer,
+  dash: dashReducer,
   menu: menuReducer,
   toasts,
 };

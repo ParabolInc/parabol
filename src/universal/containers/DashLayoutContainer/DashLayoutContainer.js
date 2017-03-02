@@ -4,7 +4,7 @@ import {cashay} from 'cashay';
 import DashLayout from 'universal/components/Dashboard/DashLayout';
 import {TEAM} from 'universal/subscriptions/constants';
 import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
-import {notificationBarPresent} from 'universal/modules/notifications/ducks/notificationDuck';
+import {setDashAlertPresence} from 'universal/modules/dashboard/ducks/dashDuck';
 
 const resolveActiveMeetings = (teams) => {
   if (teams !== resolveActiveMeetings.teams) {
@@ -55,7 +55,7 @@ const mapStateToProps = (state) => {
     tms: state.auth.obj.tms,
     userId: state.auth.sub,
     trialNotification,
-    hasNotificationBar: state.notifications.hasNotificationBar
+    hasDashAlert: state.dash.hasDashAlert
   };
 };
 
@@ -78,7 +78,7 @@ export default class DashLayoutContainer extends Component {
   };
 
   componentWillMount() {
-    this.maybeSetBar(this.props);
+    this.maybeSetDashAlert(this.props);
   }
 
   componentDidMount() {
@@ -91,20 +91,20 @@ export default class DashLayoutContainer extends Component {
     if (this.props.tms !== nextProps.tms) {
       subToAllTeams(nextProps.tms);
     }
-    this.maybeSetBar(nextProps);
+    this.maybeSetDashAlert(nextProps);
   }
 
-  maybeSetBar(props) {
+  maybeSetDashAlert(props) {
     const {
       activeMeetings,
       trialNotification,
-      hasNotificationBar
+      hasDashAlert
     } = props;
-    const shouldHaveBar = activeMeetings.length > 0 || trialNotification.type;
-    if (shouldHaveBar !== hasNotificationBar) {
-      this.props.dispatch(notificationBarPresent(shouldHaveBar));
+    const shouldHaveDashAlert = activeMeetings.length > 0 || trialNotification.type;
+    if (shouldHaveDashAlert !== hasDashAlert) {
+      this.props.dispatch(setDashAlertPresence(shouldHaveDashAlert));
     }
-  };
+  }
 
   render() {
     const {activeMeetings, children, dispatch, trialNotification} = this.props;
