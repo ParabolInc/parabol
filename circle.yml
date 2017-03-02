@@ -119,4 +119,4 @@ stages:
         destination: build
 
       - type: test-results-store
-        path: /home/ubuntu/test-report
+        path: /home/ubuntu/test-report.xml
