@@ -1,17 +1,18 @@
 import getRethink from 'server/database/rethinkDriver';
-import {getUserId, requireAuth, requireSUOrTeamMember, requireWebsocket} from '../authorization';
-import {ensureUniqueId, errorObj, handleSchemaErrors} from '../utils';
-import {Invitee} from 'server/graphql/models/Invitation/invitationSchema';
+import {
+  getUserId,
+  requireSUOrTeamMember,
+  requireWebsocket
+} from 'server/utils/authorization';
+import {errorObj} from 'server/utils/utils';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
   GraphQLID,
   GraphQLString,
   GraphQLInt,
-  GraphQLList
 } from 'graphql';
-import {CreateTeamInput, UpdateTeamInput} from './teamSchema';
-import {asyncInviteTeam} from 'server/graphql/models/Invitation/helpers';
+import segmentIo from 'server/segmentIo';
 import shortid from 'shortid';
 import {
   CHECKIN,
@@ -25,15 +26,13 @@ import {
   phaseArray,
   phaseOrder
 } from 'universal/utils/constants';
-import addSeedProjects from './helpers/addSeedProjects';
-import createTeamAndLeader from './helpers/createTeamAndLeader';
-import tmsSignToken from 'server/graphql/models/tmsSignToken';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
-import makeStep2Schema from 'universal/validation/makeStep2Schema';
-import makeAddTeamServerSchema from 'universal/validation/makeAddTeamServerSchema';
+import addTeam from 'server/graphql/models/Team/addTeam/addTeam';
+import createFirstTeam from 'server/graphql/models/Team/createFirstTeam/createFirstTeam';
+import updateTeamName from 'server/graphql/models/Team/updateTeamName/updateTeamName';
 
 export default {
   moveMeeting: {
@@ -238,15 +237,16 @@ export default {
         description: 'The team that will be having the meeting'
       }
     },
-    async resolve(source, {teamId}, {authToken}) {
+    async resolve(source, {teamId}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
       requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
 
       // RESOLUTION
       const now = new Date();
-      await r.table('Meeting')
+      const endedMeeting = await r.table('Meeting')
         .getAll(teamId, {index: 'teamId'})
         .orderBy(r.desc('createdAt'))
         .nth(0)('id')
@@ -307,7 +307,7 @@ export default {
                 })),
               projects: res('meetingUpdates')('projects').default([]),
 
-            }, {nonAtomic: true});
+            }, {nonAtomic: true, returnChanges: true})('changes')(0)('new_val');
         });
 
       // send to summary
@@ -349,6 +349,7 @@ export default {
             // shuffle the teamMember check in order, uncheck them in
             return r.table('TeamMember')
               .getAll(teamId, {index: 'teamId'})
+              .filter({isNotRemoved: true})
               .sample(100000)
               .coerceTo('array')
               .do((arr) => arr.forEach((doc) => {
@@ -362,6 +363,20 @@ export default {
           })
           .run();
       }, 5000);
+
+      // report the meeting completion to segment.io:
+      setTimeout(() => {
+        endedMeeting.invitees
+        .filter((invitee) => invitee.present)
+        .forEach((invitee) => {
+          const [userId] = invitee.id.split('::');
+          segmentIo.track({
+            userId,
+            event: 'Meeting Completed',
+            properties: { meetingNumber: endedMeeting.meetingNumber }
+          });
+        });
+      });
       return true;
     }
   },
@@ -374,11 +389,12 @@ export default {
         description: 'The team that will be having the meeting'
       }
     },
-    async resolve(source, {teamId}, {authToken}) {
+    async resolve(source, {teamId}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
       requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
 
       // RESOLUTION
       // reset the meeting
@@ -394,68 +410,8 @@ export default {
       return true;
     }
   },
-  addTeam: {
-    type: GraphQLBoolean,
-    description: 'Create a new team and add the first team member',
-    args: {
-      newTeam: {
-        type: new GraphQLNonNull(CreateTeamInput),
-        description: 'The new team object with exactly 1 team member'
-      },
-      invitees: {
-        type: new GraphQLList(new GraphQLNonNull(Invitee))
-      }
-    },
-    async resolve(source, args, {authToken, socket}) {
-      // AUTH
-      requireWebsocket(socket);
-
-      // VALIDATION
-      const schema = makeAddTeamServerSchema({inviteEmails: [], teamMemberEmails: []});
-      const {data: {invitees, newTeam}, errors} = schema(args);
-      const teamId = newTeam.id;
-      handleSchemaErrors(errors);
-      await ensureUniqueId('Team', teamId);
-
-      // RESOLUTION
-      const authTokenObj = socket.getAuthToken();
-      authTokenObj.tms = Array.isArray(authTokenObj.tms) ? authTokenObj.tms.concat(teamId) : [teamId];
-      socket.setAuthToken(authTokenObj);
-      await createTeamAndLeader(authToken, newTeam);
-      if (invitees && invitees.length) {
-        await asyncInviteTeam(authToken, teamId, invitees);
-      }
-      return true;
-    }
-  },
-  createTeam: {
-    // return the new JWT that has the new tms field
-    type: GraphQLID,
-    description: 'Create a new team and add the first team member. Called from the welcome wizard',
-    args: {
-      newTeam: {
-        type: new GraphQLNonNull(CreateTeamInput),
-        description: 'The new team object with exactly 1 team member'
-      }
-    },
-    async resolve(source, {newTeam}, {authToken}) {
-      // AUTH
-      requireAuth(authToken);
-
-      // VALIDATION
-      const schema = makeStep2Schema();
-      const {data: validNewTeam, errors} = schema(newTeam);
-      handleSchemaErrors(errors);
-      await ensureUniqueId('Team', newTeam.id);
-
-      // RESOLUTION
-      const tms = await createTeamAndLeader(authToken, validNewTeam);
-      // Asynchronously create seed projects for team leader:
-      // TODO: remove me after more
-      addSeedProjects(authToken.sub, newTeam.id);
-      return tmsSignToken(authToken, tms);
-    }
-  },
+  addTeam,
+  createFirstTeam,
   changeFacilitator: {
     type: GraphQLBoolean,
     description: 'Change a facilitator while the meeting is in progress',
@@ -485,30 +441,7 @@ export default {
       return true;
     }
   },
-  updateTeamName: {
-    type: GraphQLBoolean,
-    args: {
-      updatedTeam: {
-        type: new GraphQLNonNull(UpdateTeamInput),
-        description: 'The input object containing the teamId and any modified fields'
-      }
-    },
-    async resolve(source, {updatedTeam}, {authToken}) {
-      const r = getRethink();
-
-      // AUTH
-      requireSUOrTeamMember(authToken, updatedTeam.id);
-
-      // VALIDATION
-      const schema = makeStep2Schema();
-      const {errors, data: {id, name}} = schema(updatedTeam);
-      handleSchemaErrors(errors);
-
-      // RESOLUTION
-      await r.table('Team').get(id).update({name});
-      return true;
-    }
-  }
+  updateTeamName
 };
 
 

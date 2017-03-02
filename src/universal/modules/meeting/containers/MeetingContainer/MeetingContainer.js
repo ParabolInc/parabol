@@ -6,7 +6,7 @@ import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import handleAgendaSort from 'universal/modules/meeting/helpers/handleAgendaSort';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
 import MeetingAvatars from 'universal/modules/meeting/components/MeetingAvatars/MeetingAvatars';
-import Sidebar from '../../components/Sidebar/Sidebar';
+import Sidebar from 'universal/modules/meeting/components/Sidebar/Sidebar';
 import {withRouter} from 'react-router';
 import {DragDropContext as dragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
@@ -36,7 +36,7 @@ import MeetingAgendaLastCallContainer from 'universal/modules/meeting/containers
 import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 import withHotkey from 'react-hotkey-hoc';
 import getBestPhaseItem from 'universal/modules/meeting/helpers/getBestPhaseItem';
-import {showError, showInfo} from 'universal/modules/notifications/ducks/notifications';
+import {showError, showInfo} from 'universal/modules/toast/ducks/toastDuck';
 
 const resolveMeetingMembers = (queryData, userId) => {
   if (queryData !== resolveMeetingMembers.queryData) {
@@ -339,7 +339,6 @@ export default class MeetingContainer extends Component {
       const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
       router.push(pushURL);
     };
-
     const phaseStateProps = { // DRY
       localPhaseItem,
       members,
@@ -352,12 +351,14 @@ export default class MeetingContainer extends Component {
           facilitatorPhase={facilitatorPhase}
           gotoItem={this.gotoItem}
           localPhase={localPhase}
+          isFacilitating={isFacilitating}
+          meetingPhase={meetingPhase}
           teamName={teamName}
           teamId={teamId}
         />
         <MeetingMain>
           <MeetingAvatars>
-            <AvatarGroup avatars={members} localPhase={localPhase}/>
+            <AvatarGroup avatars={members} localPhase={localPhase} />
           </MeetingAvatars>
           {localPhase === LOBBY && <MeetingLobby members={members} team={team}/>}
           {localPhase === CHECKIN &&

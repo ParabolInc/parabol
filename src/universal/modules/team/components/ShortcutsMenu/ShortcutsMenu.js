@@ -69,10 +69,6 @@ ShortcutsMenu.defaultProps = {
       definition: 'Set project to Future'
     }
   ],
-  onCloseClick(e) {
-    e.preventDefault();
-    console.log('ShortcutsMenu onCloseClick()');
-  }
 };
 
 const keystrokeHeight = '1.5rem';

@@ -42,7 +42,7 @@ const withStyles = (mapThemeToStyles, invalidatingProps) => (WrappedComponent) =
       if (oldContext !== this.context.theme) {
         console.log('a diff!');
       }
-      return <WrappedComponent styles={this.styles} {...this.props}/>;
+      return <WrappedComponent {...this.props} styles={this.styles} />;
     }
   };
 };

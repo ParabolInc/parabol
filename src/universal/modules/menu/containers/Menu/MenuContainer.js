@@ -1,77 +1,66 @@
-import {findDOMNode} from 'react-dom';
-import React, {Children, Component, PropTypes, cloneElement} from 'react';
-import {connect} from 'react-redux';
+import React, {Component, PropTypes} from 'react';
 import Menu from 'universal/modules/menu/components/Menu/Menu';
-import targetIsDescendant from 'universal/utils/targetIsDescendant';
-import {setMenu} from 'universal/modules/menu/ducks/menuDuck';
 
-const mapStateToProps = (state, props) => {
-  const {menuKey} = props;
-  const menuState = state.menu[menuKey];
-  return {
-    isOpen: menuState && menuState.isOpen
-  };
+const calculateMenuPosY = (originHeight, originTop, orientation, targetOrientation) => {
+  let topOffset = originTop + window.scrollY;
+  if (orientation === 'center') {
+    topOffset += originHeight / 2;
+  } else if (orientation === 'bottom') {
+    topOffset += originHeight;
+  }
+  return targetOrientation === 'bottom' ? document.body.clientHeight - topOffset : topOffset;
 };
 
-@connect(mapStateToProps)
+const calculateMenuPosX = (originWidth, originLeft, orientation, targetOrientation) => {
+  let leftOffset = originLeft + window.scrollX;
+  if (orientation === 'center') {
+    leftOffset += originWidth / 2;
+  } else if (orientation === 'right') {
+    leftOffset += originWidth;
+  }
+  return targetOrientation === 'right' ? document.body.clientWidth - leftOffset : leftOffset;
+};
+
 export default class MenuContainer extends Component {
   static propTypes = {
-    children: PropTypes.any,
-    dispatch: PropTypes.func.isRequired,
-    isOpen: PropTypes.bool,
-    label: PropTypes.string,
-    menuKey: PropTypes.string.isRequired,
-    menuOrientation: PropTypes.oneOf([
-      'left',
-      'right'
-    ]),
-    menuWidth: PropTypes.string,
-    toggle: PropTypes.any,
-    toggleHeight: PropTypes.string,
-    verticalAlign: PropTypes.oneOf([
-      'middle',
-      'top'
-    ]),
-    zIndex: PropTypes.string
+    originAnchor: PropTypes.object,
+    targetAnchor: PropTypes.object,
+    toggle: PropTypes.object
   };
 
-  componentWillUpdate(nextProps) {
-    if (!this.props.isOpen && nextProps.isOpen) {
-      document.addEventListener('click', this.handleDocumentClick);
-    } else if (this.props.isOpen && !nextProps.isOpen) {
-      document.removeEventListener('click', this.handleDocumentClick);
-    }
+  constructor() {
+    super();
+    this.state = {};
   }
-
-  componentWillUnmount() {
-    document.removeEventListener('click', this.handleDocumentClick);
-  }
-
-  closeMenu = () => {
-    const {dispatch, menuKey} = this.props;
-    dispatch(setMenu(menuKey, false));
-  };
-
-  toggleMenu = () => {
-    const {dispatch, isOpen, menuKey} = this.props;
-    dispatch(setMenu(menuKey, !isOpen));
-  };
-
-  handleDocumentClick = (e) => {
-    // close as long as they didn't click the toggle
-    if (this.props.isOpen && !targetIsDescendant(e.target, findDOMNode(this))) {
-      this.closeMenu();
-    }
-  };
 
   render() {
-    const {children} = this.props;
-    const properChildren = Children.map(children, child => cloneElement(child, {closeMenu: this.closeMenu}));
+    const {originAnchor, targetAnchor, toggle} = this.props;
+    const {coords} = this.state;
+
+    const smartToggle = React.cloneElement(toggle, {
+      onClick: (e) => {
+        // figure out where to put the menu
+        const rect = e.currentTarget.getBoundingClientRect();
+        const {vertical: originY, horizontal: originX} = originAnchor;
+        const {height, width, left, top} = rect;
+        this.setState({
+          coords: {
+            [targetAnchor.vertical]: calculateMenuPosY(height, top, originY, targetAnchor.vertical),
+            [targetAnchor.horizontal]: calculateMenuPosX(width, left, originX, targetAnchor.horizontal)
+          }
+        });
+        const {onClick} = toggle.props;
+        if (onClick) {
+          // if the menu was gonna do something, do it
+          onClick(e);
+        }
+      }
+    });
     return (
       <Menu
         {...this.props}
-        children={properChildren}
-        toggleMenu={this.toggleMenu}
+        coords={coords}
+        toggle={smartToggle}
       />
     );
   }

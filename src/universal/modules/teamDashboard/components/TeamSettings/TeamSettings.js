@@ -6,30 +6,26 @@ import {overflowTouch} from 'universal/styles/helpers';
 import {reduxForm} from 'redux-form';
 import InviteUser from 'universal/components/InviteUser/InviteUser';
 import UserRow from 'universal/components/UserRow/UserRow';
-import fromNowString from 'universal/utils/fromNow';
+import fromNow from 'universal/utils/fromNow';
 import {cashay} from 'cashay';
-import {toggleLeaveModal, toggleRemoveModal, togglePromoteModal} from 'universal/modules/teamDashboard/ducks/teamSettingsDuck';
 import RemoveTeamMemberModal from 'universal/modules/teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal';
 import PromoteTeamMemberModal from 'universal/modules/teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal';
 import LeaveTeamModal from 'universal/modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal';
-import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
+import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 
 const TeamSettings = (props) => {
   const {
     dispatch,
     invitations,
-    leaveTeamModal,
-    modalPreferredName,
-    modalTeamMemberId,
+    orgApprovals,
     myTeamMember,
-    promoteTeamMemberModal,
-    removeTeamMemberModal,
     team,
     teamMembers,
     styles
   } = props;
   const teamLeadObj = teamMembers.find((m) => m.isLead === true);
   const teamLead = teamLeadObj && teamLeadObj.preferredName;
+
   const invitationRowActions = (invitation) => {
     const cashayOptions = {
       variables: {
@@ -57,54 +53,52 @@ const TeamSettings = (props) => {
       </div>
     );
   };
-  const teamMemberRowActions = (teamMember) => {
-    const {id, preferredName} = teamMember;
-    const openRemoveModal = () => {
-      dispatch(toggleRemoveModal(id, preferredName));
+  const orgApprovalRowActions = (orgApproval) => {
+    const options = {
+      variables: {
+        id: orgApproval.id
+      }
     };
-    const openPromoteModal = () => {
-      dispatch(togglePromoteModal(id, preferredName));
-    };
-    const openLeaveModal = () => {
-      dispatch(toggleLeaveModal(id));
+    const cancel = () => {
+      cashay.mutate('cancelApproval', options);
     };
     return (
       <div className={css(styles.actionLinkBlock)}>
-        {removeTeamMemberModal &&
-          <RemoveTeamMemberModal
-            onBackdropClick={openRemoveModal}
-            preferredName={modalPreferredName}
-            teamMemberId={modalTeamMemberId}
-          />
-        }
-        {promoteTeamMemberModal &&
+        <div className={css(styles.actionLink)} onClick={cancel}>
+          Cancel Pending Approval
+        </div>
+      </div>
+    );
+  };
+  const teamMemberRowActions = (teamMember) => {
+    const {id, preferredName} = teamMember;
+    return (
+      <div className={css(styles.actionLinkBlock)}>
+        {myTeamMember.isLead && myTeamMember.id !== teamMember.id &&
           <PromoteTeamMemberModal
-            onBackdropClick={openPromoteModal}
-            preferredName={modalPreferredName}
-            teamMemberId={modalTeamMemberId}
-          />
-        }
-        {leaveTeamModal &&
-          <LeaveTeamModal
-            onBackdropClick={openLeaveModal}
-            teamLead={teamLead}
-            teamMemberId={modalTeamMemberId}
+            toggle={
+              <div className={css(styles.actionLink)}>
+              Promote {teamMember.preferredName} to Team Lead
+              </div>
+            }
+            preferredName={preferredName}
+            teamMemberId={id}
           />
         }
         {myTeamMember.isLead && myTeamMember.id !== teamMember.id &&
-          <div className={css(styles.actionLink)} onClick={openPromoteModal}>
-            Promote {teamMember.preferredName} to Team Lead
-          </div>
-        }
-        {myTeamMember.isLead && myTeamMember.id !== teamMember.id &&
-          <div className={css(styles.actionLink)} onClick={openRemoveModal}>
-            Remove
-          </div>
+          <RemoveTeamMemberModal
+            toggle={<div className={css(styles.actionLink)}>Remove</div>}
+            preferredName={preferredName}
+            teamMemberId={id}
+          />
         }
         {!myTeamMember.isLead && myTeamMember.id === teamMember.id &&
-          <div className={css(styles.actionLink)} onClick={openLeaveModal}>
-            Leave Team
-          </div>
+          <LeaveTeamModal
+            toggle={<div className={css(styles.actionLink)}>Leave Team</div>}
+            teamLead={teamLead}
+            teamMemberId={id}
+          />
+
         }
       </div>
     );
@@ -112,30 +106,49 @@ const TeamSettings = (props) => {
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.inviteBlock)}>
-        <InviteUser dispatch={dispatch} teamId={team.id} invitations={invitations} teamMembers={teamMembers}/>
+        <InviteUser
+          dispatch={dispatch}
+          teamId={team.id}
+          invitations={invitations}
+          orgApprovals={orgApprovals}
+          teamMembers={teamMembers}
+        />
       </div>
       <div className={css(styles.body)}>
         <div className={css(styles.scrollable)}>
-          {
-            teamMembers.map((teamMember, idx) => {
-              return (
-                <UserRow
-                  {...teamMember}
-                  actions={teamMemberRowActions(teamMember)}
-                  key={`teamMemberKey${idx}`}
-                />
-              );
-            }).concat(invitations.map((invitation, idx) => {
-              return (
-                <UserRow
-                  {...invitation}
-                  email={invitation.email}
-                  invitedAt={`invited ${fromNowString(invitation.updatedAt)}`}
-                  actions={invitationRowActions(invitation)}
-                  key={`invitationKey${idx}`}
-                />
-              );
-            }))
+          {teamMembers.map((teamMember, idx) => {
+            return (
+              <UserRow
+                {...teamMember}
+                actions={teamMemberRowActions(teamMember)}
+                key={`teamMemberKey${idx}`}
+              />
+            );
+          })
+          }
+          {invitations.map((invitation, idx) => {
+            return (
+              <UserRow
+                {...invitation}
+                email={invitation.email}
+                invitedAt={`invited ${fromNow(invitation.updatedAt)}`}
+                actions={invitationRowActions(invitation)}
+                key={`invitationKey${idx}`}
+              />
+            );
+          })
+          }
+          {orgApprovals.map((orgApproval, idx) => {
+            return (
+              <UserRow
+                key={`approval${idx}`}
+                id={orgApproval.id}
+                email={orgApproval.email}
+                invitedAt={`invited ${fromNow(orgApproval.createdAt)}`}
+                actions={orgApprovalRowActions(orgApproval)}
+              />
+            );
+          })
           }
         </div>
       </div>
@@ -146,12 +159,8 @@ const TeamSettings = (props) => {
 TeamSettings.propTypes = {
   dispatch: PropTypes.func.isRequired,
   invitations: PropTypes.array.isRequired,
-  leaveTeamModal: PropTypes.bool.isRequired,
-  modalPreferredName: PropTypes.string,
-  modalTeamMemberId: PropTypes.string,
   myTeamMember: PropTypes.object.isRequired,
-  promoteTeamMemberModal: PropTypes.bool.isRequired,
-  removeTeamMemberModal: PropTypes.bool.isRequired,
+  orgApprovals: PropTypes.array,
   styles: PropTypes.object,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired
@@ -189,7 +198,8 @@ const styleThunk = () => ({
   },
 
   actionLinkBlock: {
-    fontSize: 0
+    fontSize: 0,
+    textAlign: 'right'
   },
 
   actionLink: {

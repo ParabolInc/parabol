@@ -7,6 +7,7 @@ const dashNavListQuery = `
 query {
   teams @cached(type: "[Team]") {
     id
+    isPaid
     name
     meetingId
   }

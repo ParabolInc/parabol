@@ -68,32 +68,32 @@ const Marimar = {
   outcomes: []
 };
 
-const Jerry = {
-  avatar: avatarTerry,
-  name: 'Jerry Seabass',
-  present: false,
-  outcomesX: [],
-  outcomes: [
-    {
-      content: 'First consultant client signed',
-      status: 'active',
-      team: 'Parabol',
-      type: 'project'
-    },
-    {
-      content: 'Accelerator acceptance received',
-      status: 'active',
-      team: 'Parabol',
-      type: 'project'
-    },
-    {
-      content: 'Adjust copy for beta signup page',
-      status: null,
-      team: 'Parabol',
-      type: 'action'
-    }
-  ]
-};
+// const Jerry = {
+//   avatar: avatarTerry,
+//   name: 'Jerry Seabass',
+//   present: false,
+//   outcomesX: [],
+//   outcomes: [
+//     {
+//       content: 'First consultant client signed',
+//       status: 'active',
+//       team: 'Parabol',
+//       type: 'project'
+//     },
+//     {
+//       content: 'Accelerator acceptance received',
+//       status: 'active',
+//       team: 'Parabol',
+//       type: 'project'
+//     },
+//     {
+//       content: 'Adjust copy for beta signup page',
+//       status: null,
+//       team: 'Parabol',
+//       type: 'action'
+//     }
+//   ]
+// };
 
 const Matt = {
   avatar: avatarMatt,
@@ -228,7 +228,6 @@ const Terry = {
 
 const sampleTeamSummary = [];
 
-console.log(Jerry);
 sampleTeamSummary.push(Jordan, Marimar, Matt, Taya, Terry);
 
 export default sampleTeamSummary;

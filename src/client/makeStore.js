@@ -5,7 +5,7 @@ import {createMiddleware, createLoader} from 'redux-storage-whitelist-fn';
 import {createTracker} from 'redux-segment';
 import createEngine from 'redux-storage-engine-localstorage';
 import makeReducer from 'universal/redux/makeReducer';
-import {APP_REDUX_KEY, APP_VERSION, APP_VERSION_KEY} from 'universal/utils/constants';
+import {APP_REDUX_KEY, APP_VERSION_KEY} from 'universal/utils/constants';
 
 const storageWhitelist = type => {
   const whitelistPrefixes = ['@@auth', '@@cashay', '@@root'];
@@ -34,7 +34,7 @@ export default async initialState => {
 
   if (__PRODUCTION__) {
     // add Sentry error reporting:
-    middlewares.unshift(ravenMiddleware(window.__ACTION__.sentry)); // eslint-disable-line no-underscore-dangle
+    middlewares.unshift(ravenMiddleware(window.__ACTION__.sentry));
     const segmentMiddleware = createTracker();
     if (window.analytics) {
       middlewares.unshift(segmentMiddleware);
@@ -43,7 +43,6 @@ export default async initialState => {
     }
     store = createStore(reducer, initialState, compose(applyMiddleware(...middlewares)));
   } else {
-    // eslint-disable-next-line no-underscore-dangle
     const devtoolsExt = global.__REDUX_DEVTOOLS_EXTENSION__ && global.__REDUX_DEVTOOLS_EXTENSION__({ maxAge: 50 });
     if (!devtoolsExt) {
       // We don't have the Redux extension in the browser, show the Redux logger
@@ -60,8 +59,9 @@ export default async initialState => {
     ));
   }
   const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY);
-  if (APP_VERSION !== versionInStorage) {
-    window.localStorage.setItem(APP_VERSION_KEY, APP_VERSION);
+
+  if (__APP_VERSION__ !== versionInStorage) { // eslint-disable-line no-undef
+    window.localStorage.setItem(APP_VERSION_KEY, __APP_VERSION__); // eslint-disable-line no-undef
     return store;
   }
   const load = createLoader(engine);

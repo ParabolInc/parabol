@@ -4,7 +4,7 @@ import {cashay} from 'cashay';
 import {showLock} from 'universal/components/Auth0ShowLock/Auth0ShowLock';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import {withRouter} from 'react-router';
-import {showError, showSuccess, showWarning} from 'universal/modules/notifications/ducks/notifications';
+import {showError, showSuccess, showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import {setAuthToken} from 'universal/redux/authDuck';
 import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
 import {setWelcomeActivity} from 'universal/modules/userDashboard/ducks/settingsDuck';
@@ -12,8 +12,10 @@ import jwtDecode from 'jwt-decode';
 import {
   invalidInvitation,
   inviteNotFound,
+  inviteExpired,
   teamAlreadyJoined,
-  successfulJoin
+  successfulJoin,
+  successfulExistingJoin
 } from 'universal/modules/invitation/helpers/notifications';
 
 const mapStateToProps = (state, props) => {
@@ -37,11 +39,12 @@ export default class Invitation extends Component {
     withRouter: PropTypes.object
   };
 
-  componentWillMount() {
+  // use DidMount to be SSR friendly
+  componentDidMount() {
     const {auth, dispatch} = this.props;
     this.state = {processedInvitation: false};
     if (!auth.sub) {
-      if (__CLIENT__) showLock(dispatch);
+      showLock(dispatch);
     } else {
       this.stateMachine(this.props);
     }
@@ -93,24 +96,29 @@ export default class Invitation extends Component {
              */
             dispatch(showError(teamAlreadyJoined));
             router.push('/me/settings');
-            return;
           } else if (error.subtype === 'invalidToken') {
             dispatch(showError(invalidInvitation));
           } else if (error.subtype === 'notFound') {
             dispatch(showWarning(inviteNotFound));
+          } else if (error.subtype === 'expiredInvitation') {
+            dispatch(showWarning(inviteExpired));
           } else {
             console.warn('unable to accept invitation:');
             console.warn(error);
           }
-          // TODO: pop them a toast and tell them what happened?
-          router.push('/welcome');
+          // router.push('/');
         } else if (data) {
           const authToken = data.acceptInvitation;
-          const decodedToken = jwtDecode(authToken);
-          dispatch(showSuccess(successfulJoin));
+          const {tms} = jwtDecode(authToken);
           dispatch(setAuthToken(authToken));
-          dispatch(setWelcomeActivity(`/team/${decodedToken.tms[0]}`));
-          router.push('/me/settings');
+          if (tms.length <= 1) {
+            dispatch(showSuccess(successfulJoin));
+            dispatch(setWelcomeActivity(`/team/${tms[0]}`));
+            router.push('/me/settings');
+          } else {
+            dispatch(showSuccess(successfulExistingJoin));
+            router.push(`/team/${tms[tms.length - 1]}`);
+          }
         }
       })
       .catch(console.warn.bind(console));

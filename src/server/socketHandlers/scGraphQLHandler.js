@@ -1,10 +1,18 @@
 import {graphql} from 'graphql';
 import Schema from 'server/graphql/rootSchema';
 
-// eslint-disable-next-line no-underscore-dangle
-const mutations = Schema._mutationType && Schema._mutationType._fields || {};
-const whitelist = ['createUserPicturePutUrl', 'updateUserProfile', 'summarizeMeeting'];
-const mutationNames = Object.keys(mutations);
+// const mutations = Schema._mutationType && Schema._mutationType._fields || {};
+// const whitelist = [
+//   'addBilling',
+//   'createOrgPicturePutUrl',
+//   'createUserPicturePutUrl',
+//   'orgDetails',
+//   'updateOrg',
+//   'updateUserProfile',
+//   'summarizeMeeting'
+// ];
+// const mutationNames = Object.keys(mutations);
+const blacklist = [];
 
 export default function wsGraphQLHandler(exchange, socket) {
   return async function graphQLHandler(body, cb) {
@@ -22,8 +30,7 @@ export default function wsGraphQLHandler(exchange, socket) {
     }
     const resolvedQueries = Object.keys(result.data);
     const firstQuery = resolvedQueries[0];
-    if (resolvedQueries.length !== 1 || !mutationNames.includes(firstQuery) || whitelist.includes(firstQuery)) {
-      cb(null, result);
-    }
+    const clientValue = blacklist.includes(firstQuery) ? true : result;
+    cb(null, clientValue);
   };
 }

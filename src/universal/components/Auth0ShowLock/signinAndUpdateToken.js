@@ -1,19 +1,17 @@
 import {cashay} from 'cashay';
 import {setAuthToken} from 'universal/redux/authDuck';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
-import {segmentEventTrack} from 'universal/redux/segmentActions';
+import {segmentEventIdentify, segmentEventTrack} from 'universal/redux/segmentActions';
 
-export default async function signinAndUpdateToken(dispatch, profile, authToken) {
-  cashay.create({httpTransport: new ActionHTTPTransport(authToken)});
-  const options = {variables: {authToken}};
-  await cashay.mutate('updateUserWithAuthToken', options);
+export default async function signinAndUpdateToken(dispatch, profile, auth0Token) {
+  cashay.create({httpTransport: new ActionHTTPTransport(auth0Token)});
+  const options = {variables: {auth0Token}};
   /*
-   * The Invitation script starts processing the token when auth.sub is truthy
-   * That doesn't necessarily mean that the DB has created the new user's
-   * account though. Auth0 could take awhile. So, to avoid the race condition,
-   * wait for the account be get created, then set the token to accept the
-   * token.
+   * We must await this mutation in order to wait for the server to
+   * acknowledge that a possibly new User has been written to the DB.
    */
-  dispatch(setAuthToken(authToken, profile));
+  await cashay.mutate('updateUserWithAuthToken', options);
+  dispatch(segmentEventIdentify());
   dispatch(segmentEventTrack('User Login'));
+  dispatch(setAuthToken(auth0Token));
 }

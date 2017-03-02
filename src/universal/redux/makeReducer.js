@@ -1,6 +1,6 @@
 import {combineReducers} from 'redux';
 import {cashayReducer} from 'cashay';
-import notifications from 'universal/modules/notifications/ducks/notifications';
+import toasts from 'universal/modules/toast/ducks/toastDuck';
 import {reducer as formReducer, actionTypes} from 'redux-form';
 import auth, {DEFAULT_AUTH_REDUCER_NAME} from './authDuck';
 import {reducer as storageReducer} from 'redux-storage-whitelist-fn';
@@ -36,7 +36,7 @@ const appReducers = {
   cashay: cashayReducer,
   form: formReducer.plugin(formPlugin),
   menu: menuReducer,
-  notifications,
+  toasts,
 };
 
 

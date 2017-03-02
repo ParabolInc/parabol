@@ -14,7 +14,10 @@ fi
 
 
 ## Import .env
-if [ -e ${PROJROOT}/.env ]; then
+if [ "$NODE_ENV" = "test" -a -e ${PROJROOT}/.env.test ]; then
+    echo "NODE_ENV is test, loading .env.test..."
+    source ${PROJROOT}/.env.test
+elif [ -e ${PROJROOT}/.env ]; then
     source ${PROJROOT}/.env
 fi
 

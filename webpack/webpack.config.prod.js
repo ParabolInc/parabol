@@ -5,6 +5,7 @@ import WebpackShellPlugin from 'webpack-shell-plugin';
 import S3Plugin from 'webpack-s3-plugin';
 import {getDotenv} from '../src/universal/utils/dotenv';
 import {getS3BasePath} from './utils/getS3BasePath';
+import npmPackage from '../package.json';
 
 // Import .env and expand variables:
 getDotenv();
@@ -82,11 +83,12 @@ export default {
       filename: 'assets.json',
       includeManifest: true
     }),
-    new webpack.NoErrorsPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: true,
       __WEBPACK__: true,
+      __APP_VERSION__: JSON.stringify(npmPackage.version),
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
     new WebpackShellPlugin({
@@ -102,7 +104,7 @@ export default {
       {test: /\.(eot|ttf|wav|mp3)(\?\S*)?$/, loader: 'file-loader'},
       {
         test: /\.js$/,
-        loader: 'babel',
+        loader: 'babel-loader',
         include: clientInclude
       },
       {

@@ -5,13 +5,15 @@ import {
   GraphQLNonNull,
   GraphQLList,
   GraphQLID,
-  GraphQLInt
+  GraphQLInt,
+  GraphQLInputObjectType
 } from 'graphql';
-import {GraphQLEmailType, GraphQLURLType} from '../types';
+import {GraphQLEmailType, GraphQLURLType} from '../../types';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {TeamMember} from '../TeamMember/teamMemberSchema';
 import getRethink from 'server/database/rethinkDriver';
-import {nonnullifyInputThunk} from '../utils';
+import {OrgUserRole} from 'server/graphql/models/Organization/organizationSchema';
+import {BILLING_LEADER} from 'universal/utils/constants';
 
 const IdentityType = new GraphQLObjectType({
   name: 'IdentityType',
@@ -52,6 +54,22 @@ const BlockedUserType = new GraphQLObjectType({
   })
 });
 
+const UserOrg = new GraphQLObjectType({
+  name: 'UserOrg',
+  description: 'The user/org M:F join, denormalized on the user/org tables',
+  fields: () => ({
+    id: {
+      type: GraphQLID,
+      description: 'The orgId'
+    },
+    role: {
+      type: OrgUserRole,
+      description: 'role of the user in the org'
+    }
+  })
+});
+
+
 export const User = new GraphQLObjectType({
   name: 'User',
   description: 'The user account profile',
@@ -59,6 +77,10 @@ export const User = new GraphQLObjectType({
     id: {
       type: GraphQLID,
       description: 'The userId provided by auth0'
+    },
+    blockedFor: {
+      type: new GraphQLList(BlockedUserType),
+      description: 'Array of identifier + ip pairs'
     },
     cachedAt: {
       type: GraphQLISO8601Type,
@@ -72,10 +94,6 @@ export const User = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The timestamp the user was created'
     },
-    updatedAt: {
-      type: GraphQLISO8601Type,
-      description: 'The timestamp the user was last updated'
-    },
     email: {
       type: new GraphQLNonNull(GraphQLEmailType),
       description: 'The user email'
@@ -83,18 +101,6 @@ export const User = new GraphQLObjectType({
     emailVerified: {
       type: GraphQLBoolean,
       description: 'true if email is verified, false otherwise'
-    },
-    picture: {
-      type: GraphQLURLType,
-      description: 'url of user\'s profile picture'
-    },
-    name: {
-      type: GraphQLString,
-      description: 'Name associated with the user'
-    },
-    nickname: {
-      type: GraphQLString,
-      description: 'Nickname associated with the user'
     },
     identities: {
       type: new GraphQLList(IdentityType),
@@ -105,18 +111,61 @@ export const User = new GraphQLObjectType({
       type: GraphQLInt,
       description: 'The number of logins for this user'
     },
-    blockedFor: {
-      type: new GraphQLList(BlockedUserType),
-      description: 'Array of identifier + ip pairs'
+    name: {
+      type: GraphQLString,
+      description: 'Name associated with the user'
+    },
+    nickname: {
+      type: GraphQLString,
+      description: 'Nickname associated with the user'
+    },
+    picture: {
+      type: GraphQLURLType,
+      description: 'url of user\'s profile picture'
+    },
+    updatedAt: {
+      type: GraphQLISO8601Type,
+      description: 'The timestamp the user was last updated'
     },
     /* User Profile */
-    welcomeSentAt: {
+    broadcastFlags: {
+      type: GraphQLInt,
+      description: 'flag to determine which broadcasts to show'
+    },
+    lastSeenAt: {
       type: GraphQLISO8601Type,
-      description: 'The datetime that we sent them a welcome email'
+      description: 'The last time the user connected via websocket'
+    },
+    inactive: {
+      type: GraphQLBoolean,
+      description: 'true if the user is not currently being billed for service. removed on every websocket handshake'
+    },
+    isBillingLeader: {
+      type: GraphQLBoolean,
+      description: 'true if the user is a part of the supplied orgId',
+      resolve: (source, {orgId}) => {
+        return Boolean(source.userOrgs.find((userOrg) => userOrg.id === orgId && userOrg.role === BILLING_LEADER));
+      }
     },
     preferredName: {
       type: GraphQLString,
       description: 'The application-specific name, defaults to nickname'
+    },
+    tms: {
+      type: new GraphQLList(GraphQLID),
+      description: 'all the teams the user is a part of'
+    },
+    trialOrg: {
+      type: GraphQLISO8601Type,
+      description: 'The orgId that the user created for their free trial'
+    },
+    userOrgs: {
+      type: new GraphQLList(UserOrg),
+      description: 'the orgs and roles for this user on each'
+    },
+    welcomeSentAt: {
+      type: GraphQLISO8601Type,
+      description: 'The datetime that we sent them a welcome email'
     },
     /* GraphQL Sugar */
     memberships: {
@@ -134,16 +183,17 @@ export const User = new GraphQLObjectType({
   })
 });
 
-const profileInputThunk = () => ({
-  id: {type: GraphQLID, description: 'The unique userId'},
-  picture: {
-    type: GraphQLURLType,
-    description: 'A link to the user\'s profile image.'
-  },
-  preferredName: {
-    type: GraphQLString,
-    description: 'The name, as confirmed by the user'
-  }
+export const UserInput = new GraphQLInputObjectType({
+  name: 'UserInput',
+  fields: () => ({
+    id: {type: GraphQLID, description: 'The unique userId'},
+    picture: {
+      type: GraphQLURLType,
+      description: 'A link to the user\'s profile image.'
+    },
+    preferredName: {
+      type: GraphQLString,
+      description: 'The name, as confirmed by the user'
+    }
+  })
 });
-
-export const UpdateUserInput = nonnullifyInputThunk('UpdateUserInput', profileInputThunk, ['id']);

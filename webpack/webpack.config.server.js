@@ -1,6 +1,8 @@
 import path from 'path';
 import webpack from 'webpack';
 import WebpackShellPlugin from 'webpack-shell-plugin';
+import npmPackage from '../package.json';
+
 const root = process.cwd();
 const serverInclude = [
   path.join(root, 'src', 'server'),
@@ -32,12 +34,13 @@ export default {
     modules: [path.join(root, 'src'), 'node_modules', path.join(root, 'build')]
   },
   plugins: [...prefetchPlugins,
-    new webpack.NoErrorsPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
     new webpack.optimize.LimitChunkCountPlugin({maxChunks: 1}),
     new webpack.DefinePlugin({
       __CLIENT__: false,
       __PRODUCTION__: true,
       __WEBPACK__: true,
+      __APP_VERSION__: JSON.stringify(npmPackage.version),
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
     new WebpackShellPlugin({
@@ -56,7 +59,7 @@ export default {
       {test: /\.(eot|ttf|wav|mp3)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file-loader'},
       {
         test: /\.js$/,
-        loader: 'babel',
+        loader: 'babel-loader',
         include: serverInclude
       },
       {
