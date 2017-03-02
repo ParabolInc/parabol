@@ -3,6 +3,7 @@ import getRethink from 'server/database/rethinkDriver';
 import shortid from 'shortid';
 import {
   PENDING,
+  UPCOMING,
   ADDED_USERS,
   BILLING_LEADER,
   REMOVED_USERS,
@@ -226,6 +227,9 @@ export default async function generateInvoice(invoice, stripeLineItems, orgId, i
     console.log('Calculated invoice does not match stripe invoice', invoiceId, calculatedTotal, invoice.total);
   }
 
+  const [type] = invoiceId.split('_');
+  const isUpcoming = type === 'upcoming';
+
   await r.table('Organization').get(orgId)
     .do((org) => {
       return r.table('Invoice').insert({
@@ -248,7 +252,7 @@ export default async function generateInvoice(invoice, stripeLineItems, orgId, i
         picture: org('picture').default(null),
         startAt: fromEpochSeconds(invoice.period_start),
         startingBalance: invoice.starting_balance,
-        status: PENDING
+        status: isUpcoming ? UPCOMING : PENDING
       }, {conflict: 'replace'});
     });
 }
