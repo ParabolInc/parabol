@@ -107,7 +107,7 @@
     "babel-runtime": "6.18.0",
     "bcrypt": "^1.0.2",
     "body-parser": "1.15.2",
-    "cashay": "^0.22.6",
+    "cashay": "^0.22.7",
     "cheerio": "^0.22.0",
     "compression": "1.6.2",
     "cors": "2.8.1",
