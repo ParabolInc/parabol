@@ -17,9 +17,12 @@ export default function reducer(state = initialState, action = {}) {
   }
 }
 
-export const setDashAlertPresence = (hasDashAlert) => ({
-  type: DASH_ALERT_PRESENCE,
-  payload: {
-    hasDashAlert
-  }
-});
+export const setDashAlertPresence = (bool) => {
+  const hasDashAlert = Boolean(bool);
+  return {
+    type: DASH_ALERT_PRESENCE,
+    payload: {
+      hasDashAlert
+    }
+  };
+};

@@ -71,7 +71,6 @@ export default class DashLayoutContainer extends Component {
   static propTypes = {
     activeMeetings: PropTypes.array,
     children: PropTypes.any,
-    dispatch: PropTypes.func.isRequired,
     tms: PropTypes.array,
     trialNotification: PropTypes.object
     // userId: PropTypes.string
@@ -98,21 +97,21 @@ export default class DashLayoutContainer extends Component {
     const {
       activeMeetings,
       trialNotification,
-      hasDashAlert
+      hasDashAlert,
+      dispatch
     } = props;
     const shouldHaveDashAlert = activeMeetings.length > 0 || trialNotification.type;
     if (shouldHaveDashAlert !== hasDashAlert) {
-      this.props.dispatch(setDashAlertPresence(shouldHaveDashAlert));
+      dispatch(setDashAlertPresence(shouldHaveDashAlert));
     }
   }
 
   render() {
-    const {activeMeetings, children, dispatch, trialNotification} = this.props;
+    const {activeMeetings, children, trialNotification} = this.props;
     return (
       <DashLayout
         activeMeetings={activeMeetings}
         children={children}
-        dispatch={dispatch}
         trialNotification={trialNotification}
       />
     );
