@@ -1,4 +1,4 @@
-const DASH_ALERT_PRESENT = 'dash/DASH_ALERT_PRESENT';
+const DASH_ALERT_PRESENCE = 'dash/DASH_ALERT_PRESENCE';
 
 const initialState = {
   hasDashAlert: false
@@ -6,7 +6,7 @@ const initialState = {
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
-    case DASH_ALERT_PRESENT: {
+    case DASH_ALERT_PRESENCE: {
       return {
         ...state,
         hasDashAlert: action.payload.hasDashAlert,
@@ -18,7 +18,7 @@ export default function reducer(state = initialState, action = {}) {
 }
 
 export const setDashAlertPresence = (hasDashAlert) => ({
-  type: DASH_ALERT_PRESENT,
+  type: DASH_ALERT_PRESENCE,
   payload: {
     hasDashAlert
   }
