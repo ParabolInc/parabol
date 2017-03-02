@@ -3,7 +3,7 @@ import addOrg from 'server/graphql/models/Organization/addOrg/addOrg';
 import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
 import stripe from 'server/billing/stripe';
 import MockDate from 'mockdate';
-import mockNow from 'server/__tests__/setup/mockNow';
+import {__now} from 'server/__tests__/setup/mockTimes';
 import fetchAndTrim from 'server/__tests__/utils/fetchAndTrim';
 import TrimSnapshot from 'server/__tests__/utils/TrimSnapshot';
 import MockDB from 'server/__tests__/setup/MockDB';
@@ -12,7 +12,7 @@ import socket from 'server/__mocks__/socket';
 import shortid from 'shortid';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 
-MockDate.set(mockNow);
+MockDate.set(__now);
 console.error = jest.fn();
 
 describe('addOrg', () => {

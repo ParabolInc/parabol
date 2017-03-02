@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`updateAction throws when no websocket is present 1`] = `"{\\"_error\\":\\"this must be called from a websocket\\"}"`;
+
+exports[`updateAction updates the sortOrder without changing updatedAt 1`] = `
+Object {
+  "action": Object {
+    "agendaId": 1,
+    "content": "Test Action",
+    "createdAt": 2017-01-01T07:00:00.000Z,
+    "createdBy": "test|Thor_rJObwEUre",
+    "id": 0,
+    "sortOrder": 2,
+    "teamMemberId": 2,
+    "updatedAt": 2017-01-01T07:00:00.000Z,
+    "userId": 3,
+  },
+}
+`;

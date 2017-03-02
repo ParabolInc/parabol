@@ -1,9 +1,9 @@
 import {PAYMENT_REJECTED, TRIAL_EXPIRES_SOON, TRIAL_EXPIRED, BILLING_LEADER} from 'universal/utils/constants';
 import {TRIAL_EXPIRES_SOON_DELAY} from 'server/utils/serverConstants';
 import MockDate from 'mockdate';
-import mockNow from 'server/__tests__/setup/mockNow';
+import {__now} from 'server/__tests__/setup/mockTimes';
 
-MockDate.set(mockNow);
+MockDate.set(__now);
 const now = new Date();
 
 const billingLeadersOnly = (users, orgId) => users.reduce((list, user) => {

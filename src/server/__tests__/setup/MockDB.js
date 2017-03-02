@@ -4,6 +4,7 @@ import shortid from 'shortid';
 import {BILLING_LEADER, LOBBY} from 'universal/utils/constants';
 import {TRIAL_PERIOD} from 'server/utils/serverConstants';
 import notificationTemplate from 'server/__tests__/utils/notificationTemplate';
+import {__anHourAgo} from 'server/__tests__/setup/mockTimes';
 
 class MockDB {
   constructor() {
@@ -55,10 +56,25 @@ class MockDB {
     return this;
   }
 
+  newAction(overrides = {}) {
+    const teamMemberId = this.context.teamMember.id;
+    const [userId] = teamMemberId.split('::');
+    return this.closeout('action', {
+      id: `${this.context.team.id}::${shortid.generate()}`,
+      content: 'Test Action',
+      createdAt: new Date(__anHourAgo),
+      createdBy: userId,
+      updatedAt: new Date(__anHourAgo),
+      sortOrder: 0,
+      teamMemberId,
+      userId
+    })
+  }
+
   newNotification(overrides = {}, template = {}) {
     return this.closeout('notification', {
       id: `${overrides.type}|${shortid.generate()}`,
-      startAt: new Date(),
+      startAt: new Date(__anHourAgo),
       orgId: this.context.organization.id,
       userIds: [this.context.user.id],
       ...notificationTemplate.call(this, template),
@@ -67,11 +83,11 @@ class MockDB {
   }
 
   newOrg(overrides = {}) {
-    const now = new Date();
+    const anHourAgo = new Date(__anHourAgo);
 
     return this.closeout('organization', {
       id: this.context.organization.id,
-      createdAt: now,
+      createdAt: anHourAgo,
       name: 'The Averagers, Inc.',
       orgUsers: [{
         id: this.context.user.id,
@@ -80,9 +96,9 @@ class MockDB {
       }],
       stripeId: `cus_${this.context.organization.id}`,
       stripeSubscriptionId: `sub_${this.context.organization.id}`,
-      updatedAt: now,
-      periodEnd: new Date(now.getTime() + TRIAL_PERIOD),
-      periodStart: now,
+      updatedAt: anHourAgo,
+      periodEnd: new Date(anHourAgo.getTime() + TRIAL_PERIOD),
+      periodStart: anHourAgo,
       ...overrides
     });
   }
@@ -118,24 +134,24 @@ class MockDB {
   }
 
   newUser(overrides = {}) {
-    const now = new Date();
+    const anHourAgo = new Date(__anHourAgo);
     return this.closeout('user', {
       id: `test|${overrides.name.substr(0, 4)}_${this.context.organization.id}`,
-      cachedAt: now,
-      createdAt: now,
+      cachedAt: anHourAgo,
+      createdAt: anHourAgo,
       emailVerified: false,
-      lastLogin: now,
-      lastSeenAt: now,
+      lastLogin: anHourAgo,
+      lastSeenAt: anHourAgo,
       inactive: false,
       identities: [],
       picture: 'https://placeimg.com/100/100/animals',
       tms: [this.context.team.id],
-      updatedAt: now,
+      updatedAt: anHourAgo,
       userOrgs: [{
         id: this.context.organization.id,
         role: null,
       }],
-      welcomeSentAt: now,
+      welcomeSentAt: anHourAgo,
       ...overrides,
     });
   }
