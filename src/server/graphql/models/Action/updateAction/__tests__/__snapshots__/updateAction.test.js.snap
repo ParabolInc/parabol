@@ -8,12 +8,12 @@ Object {
     "agendaId": 1,
     "content": "Test Action",
     "createdAt": 2017-01-01T07:00:00.000Z,
-    "createdBy": "test|Thor_rJObwEUre",
+    "createdBy": 2,
     "id": 0,
     "sortOrder": 2,
-    "teamMemberId": 2,
+    "teamMemberId": 3,
     "updatedAt": 2017-01-01T07:00:00.000Z,
-    "userId": 3,
+    "userId": 2,
   },
 }
 `;
