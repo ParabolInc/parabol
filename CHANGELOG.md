@@ -4,11 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v0.16.1 - 28-Feb-2017
+## v0.16.1 - 2-Mar-2017
 ### Added
 - New unit tests
 
 ### Fixed
+- Fix upcoming vs pending on invoices
 - #751 production deploy, assets.json not found
 - #753 cannot read property 'bestCursor' of undefined
 - #754 cannot replace avatar
