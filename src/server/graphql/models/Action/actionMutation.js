@@ -17,12 +17,8 @@ export default {
         type: new GraphQLNonNull(ActionInput),
         description: 'the updated action including the id, and at least one other field'
       },
-      rebalance: {
-        type: GraphQLBoolean,
-        description: 'true if we should resort the action list because the float resolution has gotten too small'
-      }
     },
-    async resolve(source, {updatedAction, rebalance}, {authToken, socket}) {
+    async resolve(source, {updatedAction}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
@@ -49,18 +45,6 @@ export default {
       }
       // we could possibly combine this into the rebalance if we did a resort on the server, but separate logic is nice
       await r.table('Action').get(actionId).update(newAction);
-      if (rebalance) {
-        const rebalanceCountPromise = await r.table('Action')
-          .getAll(authToken.sub, {index: 'userId'})
-          .orderBy('sortOrder')('id');
-        const updates = rebalanceCountPromise.map((id, idx) => ({id, idx}));
-        await r.expr(updates)
-          .forEach((update) => {
-            return r.table('Action')
-              .get(update('id'))
-              .update({sortOrder: update('idx')});
-          });
-      }
       return true;
     }
   },

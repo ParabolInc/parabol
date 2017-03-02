@@ -1,5 +1,5 @@
 import {cashay} from 'cashay';
-import {DND_THROTTLE, MEETING, MIN_SORT_RESOLUTION, TEAM_DASH, USER_DASH} from 'universal/utils/constants';
+import {DND_THROTTLE, MEETING, TEAM_DASH, USER_DASH} from 'universal/utils/constants';
 import checkDragForUpdate from 'universal/dnd/checkDragForUpdate';
 
 /**
@@ -31,23 +31,28 @@ export default function handleProjectHover(targetProps, monitor) {
   }
   const updatedVariables = checkDragForUpdate(monitor, dragState, projects, true);
   if (!updatedVariables) return;
-  const {prevItem, updatedDoc: updatedProject} = updatedVariables;
-  const variables = {updatedProject};
-
+  const {rebalanceDoc, updatedDoc: updatedProject} = updatedVariables;
   if (sourceStatus !== targetStatus) {
     updatedProject.status = targetStatus;
     sourceProps.status = targetStatus;
   }
-  if (prevItem && Math.abs(prevItem.sortOrder - updatedProject.sortOrder) < MIN_SORT_RESOLUTION) {
-    variables.rebalance = targetStatus;
-  }
+  lastSentAt = now;
   const op = areaOpLookup[area];
   const options = {
     ops: {
       [op]: queryKey
     },
-    variables
+    variables: {updatedProject}
   };
-  lastSentAt = now;
   cashay.mutate('updateProject', options);
+  if (rebalanceDoc) {
+    // bad times. just toss the offending doc to the bottom of the column
+    const rebalanceOptions = {
+      ops: {
+        [op]: queryKey
+      },
+      variables: {updatedProject: rebalanceDoc}
+    };
+    cashay.mutate('updateProject', rebalanceOptions);
+  }
 }

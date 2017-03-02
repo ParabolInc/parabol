@@ -3,7 +3,6 @@ import {ProjectInput} from './projectSchema';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
-  GraphQLString,
   GraphQLID
 } from 'graphql';
 import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
@@ -22,13 +21,9 @@ export default {
       updatedProject: {
         type: new GraphQLNonNull(ProjectInput),
         description: 'the updated project including the id, and at least one other field'
-      },
-      rebalance: {
-        type: GraphQLString,
-        description: 'the name of a status if the sort order got so out of whack that we need to reset the btree'
       }
     },
-    async resolve(source, {updatedProject, rebalance}, {authToken, socket}) {
+    async resolve(source, {updatedProject}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
@@ -82,31 +77,6 @@ export default {
         dbWork.push(projectHistoryPromise);
         newProject.updatedAt = now;
       }
-      // if (rebalance) {
-      //   r.table('User')
-      //     .get(userId)('tms')
-      //     .do((affectedTeams) => {
-      //       return r.table('TeamMember')
-      //         .getAll(r.args(affectedTeams), {index: 'teamId'})('userId')
-      //         .distinct()
-      //     })
-      //     .do((affectedUsers) => {
-      //
-      //     })
-      //   const rebalanceField = teamSort !== undefined ? 'teamSort' : 'userSort';
-      //   const rebalanceCountPromise = await r.table('Project')
-      //     .getAll(teamId, {index: 'teamId'})
-      //     .filter({status: rebalance})
-      //     .orderBy(rebalanceField)('id');
-      //   const updates = rebalanceCountPromise.map((id, idx) => ({id, idx}));
-      //   const rebalanceUpdatePromise = r.expr(updates)
-      //     .forEach((update) => {
-      //       return r.table('Project')
-      //         .get(update('id'))
-      //         .update({[rebalanceField]: update('idx')});
-      //     });
-      //   dbWork.push(rebalanceUpdatePromise);
-      // }
       dbWork.push(r.table('Project').get(projectId).update(newProject));
       await Promise.all(dbWork);
       return true;

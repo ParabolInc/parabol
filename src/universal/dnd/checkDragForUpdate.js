@@ -1,5 +1,6 @@
 import {SORT_STEP} from 'universal/utils/constants';
 import {findDOMNode} from 'react-dom';
+import dndNoise from 'universal/utils/dndNoise';
 
 export default function checkDragForUpdate(monitor, dragState, itemArray, isDescending) {
   const sourceProps = monitor.getItem();
@@ -31,6 +32,7 @@ export default function checkDragForUpdate(monitor, dragState, itemArray, isDesc
   const itemToReplace = itemArray[i];
   const prevItem = itemArray[i - 1];
   const dFactor = isDescending ? 1 : -1;
+  let rebalanceDoc;
   if (thresholds.length === 0) {
     // console.log('no thresholds, setting to first in the column');
     updatedDoc.sortOrder = 0;
@@ -74,8 +76,21 @@ export default function checkDragForUpdate(monitor, dragState, itemArray, isDesc
     // if 2 users drag a project to slot 3 in a column on their user dash at the same time,
     // it's possible they have the same val, so we want it close to .5 to avoid rebalances, but with some noise
     const [minVal, maxVal] = [prevItem.sortOrder, itemToReplace.sortOrder].sort();
-    const  yahtzee = (Math.random() + Math.random()) / 2;
-    updatedDoc.sortOrder = minVal + yahtzee * (maxVal - minVal);
+    const yahtzee = (Math.random() + Math.random()) / 2;
+    const range = maxVal - minVal;
+    const newSortOrder = minVal + yahtzee * range;
+    if (newSortOrder === prevItem.sortOrder) {
+      rebalanceDoc = {
+        id: prevItem.id,
+        sortOrder: 0
+      };
+    } else if (newSortOrder === itemToReplace.sortOrder) {
+      rebalanceDoc = {
+        id: itemToReplace.id,
+        sortOrder: 0
+      };
+    }
+    updatedDoc.sortOrder = newSortOrder;
     // console.log('new sort', updatedDoc.sortOrder, 'in between', prevItem.sortOrder, itemToReplace.sortOrder)
   }
   // mutative for fast response
@@ -84,7 +99,7 @@ export default function checkDragForUpdate(monitor, dragState, itemArray, isDesc
   // close it out! we know we're moving
   dragState.clear();
   return {
-    prevItem,
+    rebalanceDoc,
     updatedDoc
   };
 }

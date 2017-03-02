@@ -1,6 +1,6 @@
 import {cashay} from 'cashay';
 import checkDragForUpdate from 'universal/dnd/checkDragForUpdate';
-import {DND_THROTTLE, MIN_SORT_RESOLUTION} from 'universal/utils/constants';
+import {DND_THROTTLE} from 'universal/utils/constants';
 
 let lastSentAt = 0;
 export default function handleActionHover(targetProps, monitor) {
@@ -9,15 +9,18 @@ export default function handleActionHover(targetProps, monitor) {
   const {actions, dragState, queryKey} = targetProps;
   const updatedVariables = checkDragForUpdate(monitor, dragState, actions, true);
   if (!updatedVariables) return;
-  const {prevItem, updatedDoc: updatedAction} = updatedVariables;
-  const variables = {updatedAction};
-  if (prevItem && Math.abs(prevItem.sortOrder - updatedAction.sortOrder) < MIN_SORT_RESOLUTION) {
-    variables.rebalance = true;
-  }
+  const {rebalanceDoc, updatedDoc: updatedAction} = updatedVariables;
+  lastSentAt = now;
   const options = {
     ops: {userActions: queryKey},
-    variables
+    variables: {updatedAction}
   };
-  lastSentAt = now;
   cashay.mutate('updateAction', options);
+  if (rebalanceDoc) {
+    const rebalanceOptions = {
+      ops: {userActions: queryKey},
+      variables: {updatedAction: rebalanceDoc}
+    };
+    cashay.mutate('updateAction', rebalanceOptions);
+  }
 }

@@ -12,7 +12,6 @@ import {
   GraphQLString,
   GraphQLInt,
 } from 'graphql';
-import segmentIo from 'server/segmentIo';
 import shortid from 'shortid';
 import {
   CHECKIN,
@@ -251,7 +250,7 @@ export default {
         .nth(0)
         .pluck('id', 'endedAt');
       if (meeting.endedAt) {
-        throw errorObj({_error: 'Meeting already ended!'})
+        throw errorObj({_error: 'Meeting already ended!'});
       }
 
       // RESOLUTION
@@ -316,8 +315,8 @@ export default {
                       projects: res('projects').default([]).filter({teamMemberId: teamMember('id')})
                     })),
                   projects: res('projects').default([]),
-                }, {nonAtomic: true, returnChanges: true})('changes')(0)('new_val')('invitees')
-            })
+                }, {nonAtomic: true, returnChanges: true})('changes')(0)('new_val')('invitees');
+            });
         });
 
       const {updatedActions, updatedProjects} = await getEndMeetingSortOrders(invitees);
@@ -325,15 +324,15 @@ export default {
         .forEach((action) => {
           return r.table('Action').get(action('id')).update({
             sortOrder: action('sortOrder')
-          })
+          });
         })
         .do(() => {
           return r.expr(updatedProjects)
             .forEach((project) => {
               return r.table('Project').get(project('id')).update({
-                sortOrder: action('sortOrder')
-              })
-            })
+                sortOrder: project('sortOrder')
+              });
+            });
         })
         .do(() => {
           // send to summary view
@@ -379,12 +378,12 @@ export default {
               .sample(100000)
               .coerceTo('array')
               .do((arr) => arr.forEach((doc) => {
-                  return r.table('TeamMember').get(doc('id'))
+                return r.table('TeamMember').get(doc('id'))
                     .update({
                       checkInOrder: arr.offsetsOf(doc).nth(0),
                       isCheckedIn: null
                     });
-                })
+              })
               );
           })
           .run();
