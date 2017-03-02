@@ -2,6 +2,22 @@
 
 exports[`updateAction throws when no websocket is present 1`] = `"{\\"_error\\":\\"this must be called from a websocket\\"}"`;
 
+exports[`updateAction updates the content of the action 1`] = `
+Object {
+  "action": Object {
+    "agendaId": 1,
+    "content": "Updated content",
+    "createdAt": 2017-01-01T07:00:00.000Z,
+    "createdBy": 2,
+    "id": 0,
+    "sortOrder": 0,
+    "teamMemberId": 3,
+    "updatedAt": 2017-01-01T08:00:00.000Z,
+    "userId": 2,
+  },
+}
+`;
+
 exports[`updateAction updates the sortOrder without changing updatedAt 1`] = `
 Object {
   "action": Object {

@@ -35,8 +35,7 @@ export default {
     const newAction = {
       ...validAction,
       // don't update updatedAt for sortOrder changes
-      updatedAt: (Object.keys(validAction).length > 1 || validAction.sortOrder === undefined) ? now : undefined,
-      userId: validAction.teamMemberId ? validAction.teamMemberId.split('::')[0] : undefined
+      updatedAt: (Object.keys(validAction).length > 1 || validAction.sortOrder === undefined) ? now : undefined
     };
     await r.table('Action').get(actionId).update(newAction);
     return true;

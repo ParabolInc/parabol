@@ -18,11 +18,11 @@ export default function updateActionValidation(tms) {
       .max(255, 'Whoa! That looks like 2 actions'),
     isComplete: (value) => value.boolean(),
     sortOrder: (value) => value.float(),
-    teamMemberId: (value) => value
-      .test((id) => {
-        if (!id) return undefined;
-        const [, teamId] = id.split('::');
-        return !tms.includes(teamId) && `Not on team ${teamId}`;
-      })
+    // teamMemberId: (value) => value
+    //   .test((id) => {
+    //     if (!id) return undefined;
+    //     const [, teamId] = id.split('::');
+    //     return !tms.includes(teamId) && `Not on team ${teamId}`;
+    //   })
   });
 }
