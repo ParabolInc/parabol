@@ -6,4 +6,4 @@ export const __aMinuteAgo = __now - ms('1m');
 
 export const __anHourAgo = __now - ms('1h');
 
-export const __aDayAgo = __now- ms('1d');
+export const __aDayAgo = __now - ms('1d');

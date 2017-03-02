@@ -21,7 +21,7 @@ export default function updateActionValidation(tms) {
     teamMemberId: (value) => value
       .test((id) => {
         if (!id) return undefined;
-        const [,teamId] = id.split('::');
+        const [, teamId] = id.split('::');
         return !tms.includes(teamId) && `Not on team ${teamId}`;
       })
   });

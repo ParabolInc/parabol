@@ -41,4 +41,4 @@ export default {
     await r.table('Action').get(actionId).update(newAction);
     return true;
   }
-}
+};

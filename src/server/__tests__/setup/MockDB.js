@@ -67,8 +67,9 @@ class MockDB {
       updatedAt: new Date(__anHourAgo),
       sortOrder: 0,
       teamMemberId,
-      userId
-    })
+      userId,
+      ...overrides
+    });
   }
 
   newNotification(overrides = {}, template = {}) {
