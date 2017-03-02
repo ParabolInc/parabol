@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`endMeeting throw when the caller is not a team member 1`] = `"{\\"_error\\":\\"You do not have access to that team!\\"}"`;
+
+exports[`endMeeting throws when no websocket is present 1`] = `"{\\"_error\\":\\"this must be called from a websocket\\"}"`;

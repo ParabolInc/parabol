@@ -15,24 +15,21 @@ import {
 import shortid from 'shortid';
 import {
   CHECKIN,
-  DONE,
   LOBBY,
   UPDATES,
   FIRST_CALL,
   AGENDA_ITEMS,
   LAST_CALL,
-  SUMMARY,
   phaseArray,
   phaseOrder
 } from 'universal/utils/constants';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
-import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 import addTeam from 'server/graphql/models/Team/addTeam/addTeam';
 import createFirstTeam from 'server/graphql/models/Team/createFirstTeam/createFirstTeam';
 import updateTeamName from 'server/graphql/models/Team/updateTeamName/updateTeamName';
-import getEndMeetingSortOrders from 'server/graphql/models/Team/getEndMeetingSortOrders';
+import endMeeting from 'server/graphql/models/Team/endMeeting/endMeeting';
 
 export default {
   moveMeeting: {
@@ -228,169 +225,7 @@ export default {
       return true;
     }
   },
-  endMeeting: {
-    type: GraphQLBoolean,
-    description: 'Finish a meeting and go to the summary',
-    args: {
-      teamId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The team that will be having the meeting'
-      }
-    },
-    async resolve(source, {teamId}, {authToken, socket}) {
-      const r = getRethink();
-
-      // AUTH
-      requireSUOrTeamMember(authToken, teamId);
-      requireWebsocket(socket);
-      const meeting = await r.table('Meeting')
-      // get the most recent meeting
-        .getAll(teamId, {index: 'teamId'})
-        .orderBy(r.desc('createdAt'))
-        .nth(0)
-        .pluck('id', 'endedAt');
-      if (meeting.endedAt) {
-        throw errorObj({_error: 'Meeting already ended!'});
-      }
-
-      // RESOLUTION
-      const now = new Date();
-      const meetingId = meeting.id;
-      const invitees = await r.table('AgendaItem')
-      // get all agenda items
-        .getAll(teamId, {index: 'teamId'})
-        .filter({isActive: true, isComplete: true})
-        .map((doc) => doc('id'))
-        .coerceTo('array')
-        .do((agendaItemIds) => {
-          // delete any null actions
-          return r.table('Action')
-            .getAll(r.args(agendaItemIds), {index: 'agendaId'})
-            .filter((row) => row('content').eq(null))
-            .delete()
-            .do(() => {
-              // delete any null projects
-              return r.table('Project')
-                .getAll(r.args(agendaItemIds), {index: 'agendaId'})
-                .filter((row) => row('content').eq(null))
-                .delete();
-            })
-            .do(() => {
-              // grab all the actions and projects
-              return {
-                actions: r.table('Action')
-                  .getAll(r.args(agendaItemIds), {index: 'agendaId'})
-                  // we still need to filter because this may occur before we delete them above (not guaranteed in sync)
-                  .filter((row) => row('content').ne(null))
-                  .map(row => row.merge({id: r.expr(meetingId).add('::').add(row('id'))}))
-                  .pluck('id', 'content', 'teamMemberId')
-                  .coerceTo('array'),
-                projects: r.table('Project')
-                  .getAll(r.args(agendaItemIds), {index: 'agendaId'})
-                  .filter((row) => row('content').ne(null))
-                  .map(row => row.merge({id: r.expr(meetingId).add('::').add(row('id'))}))
-                  .pluck('id', 'content', 'status', 'teamMemberId')
-                  .coerceTo('array')
-              };
-            })
-            .do((res) => {
-              return r.table('Meeting').get(meetingId)
-                .update({
-                  actions: res('actions').default([]),
-                  agendaItemsCompleted: agendaItemIds.count().default(0),
-                  endedAt: now,
-                  facilitator: `${authToken.sub}::${teamId}`,
-                  successExpression: makeSuccessExpression(),
-                  successStatement: makeSuccessStatement(),
-                  invitees: r.table('TeamMember')
-                    .getAll(teamId, {index: 'teamId'})
-                    .filter({isNotRemoved: true})
-                    .coerceTo('array')
-                    .map((teamMember) => ({
-                      id: teamMember('id'),
-                      actions: res('actions').default([]).filter({teamMemberId: teamMember('id')}),
-                      picture: teamMember('picture'),
-                      preferredName: teamMember('preferredName'),
-                      present: teamMember('isCheckedIn').not().not(),
-                      projects: res('projects').default([]).filter({teamMemberId: teamMember('id')})
-                    })),
-                  projects: res('projects').default([]),
-                }, {nonAtomic: true, returnChanges: true})('changes')(0)('new_val')('invitees');
-            });
-        });
-
-      const {updatedActions, updatedProjects} = await getEndMeetingSortOrders(invitees);
-      await r.expr(updatedActions)
-        .forEach((action) => {
-          return r.table('Action').get(action('id')).update({
-            sortOrder: action('sortOrder')
-          });
-        })
-        .do(() => {
-          return r.expr(updatedProjects)
-            .forEach((project) => {
-              return r.table('Project').get(project('id')).update({
-                sortOrder: project('sortOrder')
-              });
-            });
-        })
-        .do(() => {
-          // send to summary view
-          return r.table('Team').get(teamId)
-            .update({
-              facilitatorPhase: SUMMARY,
-              meetingPhase: SUMMARY,
-              facilitatorPhaseItem: null,
-              meetingPhaseItem: null,
-            });
-        });
-
-      // reset the meeting
-      setTimeout(() => {
-        r.table('Team').get(teamId)
-          .update({
-            facilitatorPhase: LOBBY,
-            meetingPhase: LOBBY,
-            meetingId: null,
-            facilitatorPhaseItem: null,
-            meetingPhaseItem: null,
-            activeFacilitator: null
-          })
-          .do(() => {
-            // flag agenda items as inactive (more or less deleted)
-            return r.table('AgendaItem').getAll(teamId, {index: 'teamId'})
-              .update({
-                isActive: false
-              });
-          })
-          .do(() => {
-            // archive projects that are DONE
-            return r.table('Project').getAll(teamId, {index: 'teamId'})
-              .filter({status: DONE})
-              .update({
-                isArchived: true
-              });
-          })
-          .do(() => {
-            // shuffle the teamMember check in order, uncheck them in
-            return r.table('TeamMember')
-              .getAll(teamId, {index: 'teamId'})
-              .sample(100000)
-              .coerceTo('array')
-              .do((arr) => arr.forEach((doc) => {
-                return r.table('TeamMember').get(doc('id'))
-                    .update({
-                      checkInOrder: arr.offsetsOf(doc).nth(0),
-                      isCheckedIn: null
-                    });
-              })
-              );
-          })
-          .run();
-      }, 5000);
-      return true;
-    }
-  },
+  endMeeting,
   killMeeting: {
     type: GraphQLBoolean,
     description: 'Finish a meeting abruptly',
