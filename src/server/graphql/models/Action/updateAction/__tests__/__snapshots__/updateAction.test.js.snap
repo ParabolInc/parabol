@@ -1,5 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`updateAction throw when the caller is not a team member 1`] = `"{\\"_error\\":\\"You do not have access to that team!\\"}"`;
+
 exports[`updateAction throws when no websocket is present 1`] = `"{\\"_error\\":\\"this must be called from a websocket\\"}"`;
 
 exports[`updateAction updates the content of the action 1`] = `
@@ -29,6 +31,23 @@ Object {
     "sortOrder": 2,
     "teamMemberId": 3,
     "updatedAt": 2017-01-01T07:00:00.000Z,
+    "userId": 2,
+  },
+}
+`;
+
+exports[`updateAction updates the status of the action 1`] = `
+Object {
+  "action": Object {
+    "agendaId": 1,
+    "content": "Test Action",
+    "createdAt": 2017-01-01T07:00:00.000Z,
+    "createdBy": 2,
+    "id": 0,
+    "isComplete": true,
+    "sortOrder": 0,
+    "teamMemberId": 3,
+    "updatedAt": 2017-01-01T08:00:00.000Z,
     "userId": 2,
   },
 }

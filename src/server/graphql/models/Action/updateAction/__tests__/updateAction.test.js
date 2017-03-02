@@ -37,7 +37,7 @@ describe('updateAction', () => {
     expect(db).toMatchSnapshot();
   });
 
-  test.only('updates the content of the action', async() => {
+  test('updates the content of the action', async() => {
     // SETUP
     const r = getRethink();
     const trimSnapshot = new TrimSnapshot();
@@ -61,8 +61,48 @@ describe('updateAction', () => {
     expect(db).toMatchSnapshot();
   });
 
+  test('updates the status of the action', async() => {
+    // SETUP
+    const r = getRethink();
+    const trimSnapshot = new TrimSnapshot();
+    const mockDB = new MockDB();
+    const {action, user} = await mockDB.init()
+      .newAction();
+    const actionId = action[0].id;
+    const authToken = mockAuthToken(user[7]);
+
+    // TEST
+    const updatedAction = {
+      id: actionId,
+      isComplete: true
+    };
+    await updateAction.resolve(undefined, {updatedAction}, {authToken, socket});
+
+    // VERIFY
+    const db = await fetchAndTrim({
+      action: r.table('Action').get(actionId),
+    }, trimSnapshot);
+    expect(db).toMatchSnapshot();
+  });
+
   test('throws when no websocket is present', async() => {
     const authToken = {};
     await expectAsyncToThrow(updateAction.resolve(undefined, {updatedAction: {}}, {authToken}));
+  });
+
+  test('throw when the caller is not a team member', async() => {
+    // SETUP
+    const mockDB = new MockDB();
+    const {action, user} = await mockDB.init()
+      .newAction();
+    const authToken = mockAuthToken(user[1], {tms: ['foo']});
+    const actionId = action[0].id;
+
+    // TEST
+    const updatedAction = {
+      id: actionId,
+      isComplete: true
+    };
+    await expectAsyncToThrow(updateAction.resolve(undefined, {updatedAction}, {authToken, socket}));
   });
 });
