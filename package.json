@@ -16,7 +16,7 @@
   "scripts": {
     "start": "NODE_ENV=production node ./src/server/server.babel.js",
     "start:tunnel": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d '\"') && ultrahook -k $ULTRAHOOK_API_KEY dev 3000",
-    "dev": "if [ ! -f \"dll/vendors.json\" ] ; then npm run build:dll ; fi ; NODE_ENV=development node ./src/server/server.babel.js",
+    "dev": "if [ ! -f \"dll/vendors.json\" ] ; then npm run build:dll ; fi ; NODE_ENV=development node --trace-warnings ./src/server/server.babel.js",
     "build": "rimraf build && concurrently \"npm run build:client\" \"npm run build:server\"",
     "build:deploy": "rimraf build && npm run build:server && npm run build:client-deploy",
     "build:min": "rimraf build && concurrently \"npm run build:client-min\" \"npm run build:server\"",
@@ -91,7 +91,7 @@
     "transform-loader": "^0.2.3",
     "unused-files-webpack-plugin": "^3.0.0",
     "url-loader": "0.5.7",
-    "webpack": "2.2.0",
+    "webpack": "^2.2.1",
     "webpack-dev-middleware": "1.8.4",
     "webpack-hot-middleware": "^2.13.2",
     "webpack-shell-plugin": "^0.4.3",

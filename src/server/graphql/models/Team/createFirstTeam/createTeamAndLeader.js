@@ -67,7 +67,7 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
               // using distinct disregards order (sometimes cuts the first, sometimes not)
               return r.branch(
                 tms.contains(teamId),
-                null,
+                tms,
                 tms.append(teamId)
               );
             })

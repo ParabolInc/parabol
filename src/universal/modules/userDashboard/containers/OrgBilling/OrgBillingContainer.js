@@ -53,11 +53,11 @@ const mapStateToProps = (state, props) => {
       first: 5
     }
   });
-  const {data: {organization: org, invoiceList}, status} = res;
+  const {data: {organization: org, invoiceList}} = res;
   return {
     invoiceList,
     org,
-    invoicesReady: status === 'complete'
+    invoicesReady: invoiceList.length > 0
   };
 };
 

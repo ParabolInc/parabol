@@ -56,7 +56,7 @@ const OrgBilling = (props) => {
           }
           {invoicesReady && invoices.length > 0 &&
             invoices.map((invoice, idx) =>
-              <InvoiceRow key={`invoiceRow${idx}`} invoice={invoice}/>
+              <InvoiceRow key={`invoiceRow${idx}`} invoice={invoice} hasCard={Boolean(creditCard)}/>
             )
           }
           {!invoicesReady &&
