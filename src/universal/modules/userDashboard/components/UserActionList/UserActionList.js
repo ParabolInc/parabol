@@ -35,7 +35,7 @@ const UserActionList = (props) => {
           newAction: {
             id: `${teamId}::${shortid.generate()}`,
             teamMemberId: `${userId}::${teamId}`,
-            sortOrder: getNextSortOrder(actions, 'sortOrder')
+            sortOrder: getNextSortOrder(actions)
           }
         }
       };

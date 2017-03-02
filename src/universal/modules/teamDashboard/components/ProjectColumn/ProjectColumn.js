@@ -18,6 +18,7 @@ import handleColumnHover from 'universal/dnd/handleColumnHover';
 import handleDrop from 'universal/dnd/handleDrop';
 import withDragState from 'universal/dnd/withDragState';
 import AddProjectButton from 'universal/components/AddProjectButton/AddProjectButton';
+import dndNoise from 'universal/utils/dndNoise';
 
 const columnTarget = {
   drop: handleDrop,
@@ -71,12 +72,11 @@ const ProjectColumn = (props) => {
     }));
   };
   const makeAddProject = () => {
+    const sortOrder = getNextSortOrder(projects, dndNoise());
     if (area === TEAM_DASH) {
-      const sortOrder = getNextSortOrder(projects);
       const handleAddProject = handleAddProjectFactory(status, myTeamMemberId, sortOrder);
       return <AddProjectButton onClick={handleAddProject} label={label}/>;
     } else if (area === USER_DASH) {
-      const sortOrder = getNextSortOrder(projects);
       if (teams.length === 1) {
         const {id: teamId} = teams[0];
         const generatedMyTeamMemberId = `${userId}::${teamId}`;

@@ -7,7 +7,7 @@ export default function handleActionHover(targetProps, monitor) {
   const now = new Date();
   if (lastSentAt > (now - DND_THROTTLE)) return;
   const {actions, dragState, queryKey} = targetProps;
-  const updatedVariables = checkDragForUpdate(monitor, dragState, actions, 'sortOrder', true);
+  const updatedVariables = checkDragForUpdate(monitor, dragState, actions, true);
   if (!updatedVariables) return;
   const {prevItem, updatedDoc: updatedAction} = updatedVariables;
   const variables = {updatedAction};

@@ -7,7 +7,7 @@ export default function handleAgendaHover(targetProps, monitor) {
   const now = new Date();
   if (lastSentAt > (now - DND_THROTTLE)) return;
   const {agenda, dragState, teamId} = targetProps;
-  const updatedVariables = checkDragForUpdate(monitor, dragState, agenda, 'sortOrder', false);
+  const updatedVariables = checkDragForUpdate(monitor, dragState, agenda, false);
   if (!updatedVariables) return;
   const {updatedDoc: updatedAgendaItem} = updatedVariables;
   const options = {

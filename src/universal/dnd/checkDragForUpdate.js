@@ -6,7 +6,6 @@ export default function checkDragForUpdate(monitor, dragState, itemArray, isDesc
   const {id} = sourceProps;
   const {components, minY, maxY, thresholds} = dragState;
   const {y: sourceOffsetY} = monitor.getClientOffset();
-
   if (minY !== null && sourceOffsetY >= minY && sourceOffsetY <= maxY) {
     return undefined;
   }
@@ -46,7 +45,7 @@ export default function checkDragForUpdate(monitor, dragState, itemArray, isDesc
       return undefined;
     }
     // console.log('setting', id,  'to first in the column behind', itemToReplace);
-    updatedDoc.sortOrder = itemToReplace.sortOrder + (SORT_STEP * dFactor);
+    updatedDoc.sortOrder = itemToReplace.sortOrder + (SORT_STEP * dFactor + dndNoise());
   } else if (i === thresholds.length) {
     // console.log('putting card at the end')
     // if we wanna put it at the end, make sure it's not already at the end
@@ -59,7 +58,7 @@ export default function checkDragForUpdate(monitor, dragState, itemArray, isDesc
       return undefined;
     }
     // console.log('setting to last in the column after', prevItem);
-    updatedDoc.sortOrder = prevItem.sortOrder - (SORT_STEP * dFactor);
+    updatedDoc.sortOrder = prevItem.sortOrder - (SORT_STEP * dFactor + dndNoise());
   } else {
     // console.log('putting card in the middle')
     // if we're somewhere in the middle, make sure we're actually gonna move
@@ -72,7 +71,11 @@ export default function checkDragForUpdate(monitor, dragState, itemArray, isDesc
       return undefined;
     }
     // console.log('setting', id,  'in between', prevItem.id, itemToReplace.id);
-    updatedDoc.sortOrder = (prevItem.sortOrder + itemToReplace.sortOrder) / 2;
+    // if 2 users drag a project to slot 3 in a column on their user dash at the same time,
+    // it's possible they have the same val, so we want it close to .5 to avoid rebalances, but with some noise
+    const [minVal, maxVal] = [prevItem.sortOrder, itemToReplace.sortOrder].sort();
+    const  yahtzee = (Math.random() + Math.random()) / 2;
+    updatedDoc.sortOrder = minVal + yahtzee * (maxVal - minVal);
     // console.log('new sort', updatedDoc.sortOrder, 'in between', prevItem.sortOrder, itemToReplace.sortOrder)
   }
   // mutative for fast response
