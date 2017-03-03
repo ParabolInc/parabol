@@ -45,7 +45,7 @@ export default {
     // RESOLUTION
     const now = new Date();
     const meetingId = meeting.id;
-    const invitees = await r.table('AgendaItem')
+    const completedMeeting = await r.table('AgendaItem')
     // get all agenda items
       .getAll(teamId, {index: 'teamId'})
       .filter({isActive: true, isComplete: true})
@@ -107,10 +107,10 @@ export default {
                     projects: res('projects').default([]).filter({teamMemberId: teamMember('id')})
                   })),
                 projects: res('projects').default([]),
-              }, {nonAtomic: true, returnChanges: true})('changes')(0)('new_val')('invitees');
+              }, {nonAtomic: true, returnChanges: true})('changes')(0)('new_val').pluck('projects', 'invitees');
           });
       });
-    const {updatedActions, updatedProjects} = await getEndMeetingSortOrders(invitees);
+    const {updatedActions, updatedProjects} = await getEndMeetingSortOrders(completedMeeting);
     await r.expr(updatedActions)
       .forEach((action) => {
         return r.table('Action').get(action('id')).update({

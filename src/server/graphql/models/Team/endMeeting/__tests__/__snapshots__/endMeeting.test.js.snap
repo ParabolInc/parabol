@@ -177,7 +177,7 @@ Object {
       "createdBy": 11,
       "id": 9,
       "isArchived": false,
-      "sortOrder": 1,
+      "sortOrder": 2,
       "status": "active",
       "teamId": 12,
       "teamMemberId": 13,

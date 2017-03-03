@@ -1,7 +1,8 @@
 import getRethink from 'server/database/rethinkDriver';
 
 // give the new projects and actions a new sort order
-export default async function getEndMeetingSortOrders(invitees) {
+export default async function getEndMeetingSortOrders(completedMeeting) {
+  const {projects, invitees} = completedMeeting;
   const r = getRethink();
   const teamMemberIds = invitees.map(({id}) => id);
   const userIds = teamMemberIds.map((teamMemberId) => teamMemberId.split('::')[0]);
@@ -24,8 +25,6 @@ export default async function getEndMeetingSortOrders(invitees) {
     return obj;
   }, {});
   const updatedActions = [];
-  const updatedProjects = [];
-
   invitees.forEach((invitee) => {
     const maxSort = actionMaxSort[invitee.id] || 0;
     invitee.actions.forEach((action, idx) => {
@@ -34,13 +33,11 @@ export default async function getEndMeetingSortOrders(invitees) {
         sortOrder: maxSort + idx + 1
       });
     });
-    invitee.projects.forEach((project, idx) => {
-      updatedProjects.push({
-        id: project.id.substr(project.id.indexOf('::') + 2),
-        sortOrder: projectMax + idx + 1
-      });
-    });
   });
+  const updatedProjects = projects.map((project, idx) => ({
+    id: project.id.substr(project.id.indexOf('::') + 2),
+    sortOrder: projectMax + idx + 1
+  }));
   return {
     updatedActions,
     updatedProjects
