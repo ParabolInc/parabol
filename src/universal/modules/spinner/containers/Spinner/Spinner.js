@@ -3,21 +3,12 @@ import {findDOMNode} from 'react-dom';
 import {Expo, TweenMax, TimelineMax, Power0} from 'gsap';
 import ui from 'universal/styles/ui';
 
-export default class SpinnerContainer extends Component {
+export default class Spinner extends Component {
   static propTypes = {
     fillColor: PropTypes.oneOf(ui.paletteOptions),
-    dispatch: PropTypes.func,
     styles: PropTypes.object,
-    toasts: PropTypes.array,
     width: PropTypes.number
   };
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      maxNid: 0
-    };
-  }
 
   componentDidMount() {
     const leaves = findDOMNode(this.refs.leaves);
