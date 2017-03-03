@@ -11,6 +11,7 @@ import zIndexScale from 'universal/styles/helpers/zIndexScale';
 // Reusable constants for UI object
 // -----------------------------------------------------------------------------
 
+const {cool, warm, dark, mid, light} = appTheme.palette;
 const backgroundColor = tinycolor.mix(appTheme.palette.mid, '#fff', 95).toHexString();
 
 // Small border radius for controls (inputs, buttons, etcs.)
@@ -27,6 +28,28 @@ const BUTTON_SIZE_MEDIUM = 'medium';
 const BUTTON_SIZE_LARGE = 'large';
 const BUTTON_SIZE_LARGEST = 'largest';
 const BUTTON_PADDING_HORIZONTAL_COMPACT = '.5em';
+
+// Color palette
+const white = '#fff';
+const gray = appTheme.palette.mid20l;
+const PALETTE_OPTIONS = [
+  'cool',
+  'warm',
+  'dark',
+  'mid',
+  'light',
+  'white',
+  'gray'
+];
+const PALETTE_VALUES = {
+  cool,
+  warm,
+  dark,
+  mid,
+  light,
+  white,
+  gray
+};
 
 // Controls
 // TODO: Define common control properties to be
@@ -64,6 +87,8 @@ const ui = {
   borderRadiusSmall,
   borderRadiusMedium,
   borderRadiusLarge,
+  paletteOptions: PALETTE_OPTIONS,
+  palette: PALETTE_VALUES,
   filterBlur,
 
   // Action items and cards
@@ -166,15 +191,6 @@ const ui = {
     BUTTON_SIZE_MEDIUM,
     BUTTON_SIZE_LARGE,
     BUTTON_SIZE_LARGEST
-  ],
-  buttonColorPalette: [
-    'cool',
-    'warm',
-    'dark',
-    'mid',
-    'light',
-    'white',
-    'gray'
   ],
 
   // Cards
