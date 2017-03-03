@@ -34,19 +34,40 @@ const keyframesRotate = {
   '0%': {
     transform: 'rotate(0deg)'
   },
-  '20%': {
-    transform: 'rotate(359deg)'
-  },
-  '84%': {
-    transform: 'rotate(359deg)'
-  },
-  '85%': {
-    transform: 'rotate(360deg)'
-  },
   '100%': {
     transform: 'rotate(360deg)'
   }
 };
+
+const div = 100 / 6;
+const keyframesOpacity = {
+  '0%': {
+    opacity: '.25'
+  },
+  [`${div}%`]: {
+    opacity: '1'
+  },
+  [`${100 - div}%`]: {
+    opacity: '1'
+  },
+  '100%': {
+    opacity: '.25'
+  }
+};
+
+// const leafDelay = 1000;
+//
+// const makeLeafDelayStyles = (delay) => {
+//   const leaveStyles = {};
+//   for (let i = 0; i < 6; i++) {
+//     const num = i + 1;
+//     leaveStyles[`leaf${num}`] = {animationDelay: `${delay * num}ms`};
+//   }
+//   console.dir(leaveStyles);
+//   return leaveStyles;
+// };
+
+const cbTiming = 'cubic-bezier(.9, 0, .1, 1)';
 
 const styleThunk = (theme, {fillColor, width}) => ({
   root: {
@@ -66,11 +87,19 @@ const styleThunk = (theme, {fillColor, width}) => ({
     animationDuration: '3s',
     animationIterationCount: 'infinite',
     animationName: keyframesRotate,
+    animationTimingFunction: cbTiming,
     width
   },
   leaf: {
-    fill: ui.palette[fillColor]
-  }
+    // // animationDuration: `${leafDelay}ms`,
+    // animationDuration: '3s',
+    // animationIterationCount: 'infinite',
+    // animationName: keyframesOpacity,
+    // animationTimingFunction: 'ease-in-out',
+    fill: ui.palette[fillColor],
+    // opacity: '.25'
+  },
+  // ...makeLeafDelayStyles(leafDelay)
 });
 
 export default withStyles(styleThunk)(Spinner);
