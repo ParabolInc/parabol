@@ -6,7 +6,7 @@ exports.up = async(r) => {
           sortOrder: row('teamSort').default(r.random())
         })
         .without('teamSort', 'userSort');
-    })
+    }, {nonAtomic: true})
   ];
   await Promise.all(fields);
 

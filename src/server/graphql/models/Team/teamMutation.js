@@ -211,13 +211,10 @@ export default {
       };
       await r.table('Team').get(teamId).update(updatedTeam)
         .do(() => {
-          return r.table('Meeting').getAll(teamId, {index: 'teamId'}).count();
-        })
-        .do((meetingCount) => {
           return r.table('Meeting').insert({
             id: meetingId,
             createdAt: now,
-            meetingNumber: meetingCount.add(1),
+            meetingNumber: r.table('Meeting').getAll(teamId, {index: 'teamId'}).count().add(1),
             teamId,
             teamName: r.table('Team').get(teamId)('name')
           });

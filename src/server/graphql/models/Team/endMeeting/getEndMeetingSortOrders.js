@@ -16,6 +16,7 @@ export default async function getEndMeetingSortOrders(invitees) {
           .getAll(r.args(userIds), {index: 'userId'})
           .filter({isArchived: false})
           .max('sortOrder')('sortOrder')
+          .default(0)
   });
   const actionMaxSort = actionMaxes.reduce((obj, task) => {
     const {group, reduction} = task;
@@ -26,7 +27,7 @@ export default async function getEndMeetingSortOrders(invitees) {
   const updatedProjects = [];
 
   invitees.forEach((invitee) => {
-    const maxSort = actionMaxSort[invitee.id];
+    const maxSort = actionMaxSort[invitee.id] || 0;
     invitee.actions.forEach((action, idx) => {
       updatedActions.push({
         id: action.id.substr(action.id.indexOf('::') + 2),

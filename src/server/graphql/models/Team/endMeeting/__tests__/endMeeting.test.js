@@ -13,29 +13,31 @@ MockDate.set(__now);
 console.error = jest.fn();
 
 describe('endMeeting', () => {
-  // test('updates the sortOrder without changing updatedAt', async() => {
-  //   // SETUP
-  //   const r = getRethink();
-  //   const trimSnapshot = new TrimSnapshot();
-  //   const mockDB = new MockDB();
-  //   const {action, user} = await mockDB.init()
-  //     .newAction();
-  //   const actionId = action[0].id;
-  //   const authToken = mockAuthToken(user[7]);
-  //
-  //   // TEST
-  //   const updatedAction = {
-  //     id: actionId,
-  //     sortOrder: 2
-  //   };
-  //   await endMeeting.resolve(undefined, {updatedAction}, {authToken, socket});
-  //
-  //   // VERIFY
-  //   const db = await fetchAndTrim({
-  //     action: r.table('Action').get(actionId),
-  //   }, trimSnapshot);
-  //   expect(db).toMatchSnapshot();
-  // });
+  test('generates a meeting summary and sets sort order', async() => {
+    // SETUP
+    const r = getRethink();
+    const trimSnapshot = new TrimSnapshot();
+    const mockDB = new MockDB();
+    const {teamMember, user} = await mockDB.init()
+      .newMeeting(undefined, {inProgress: true});
+    const authToken = mockAuthToken(user[0]);
+    const meetingId = mockDB.context.meeting.id;
+    const teamId = mockDB.context.team.id;
+    const teamMemberIds = teamMember.filter((tm) => tm.teamId === teamId).map(({id}) => id);
+    // TEST
+    await endMeeting.resolve(undefined, {teamId}, {authToken, socket});
+
+    // VERIFY
+    const db = await fetchAndTrim({
+      action: r.table('Action').getAll(r.args(teamMemberIds), {index: 'teamMemberId'}).orderBy('teamMemberId'),
+      project: r.table('Project').getAll(r.args(teamMemberIds), {index: 'teamMemberId'}).orderBy('teamMemberId'),
+      meeting: r.table('Meeting').get(meetingId),
+      team: r.table('Team').get(teamId),
+
+    }, trimSnapshot);
+    expect(db).toMatchSnapshot();
+    await new Promise(res => setTimeout(() => res(), 100));
+  });
   //
   // test('updates the content of the action', async() => {
   //   // SETUP

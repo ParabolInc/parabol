@@ -1,5 +1,207 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`endMeeting generates a meeting summary and sets sort order 1`] = `
+Object {
+  "action": Array [
+    Object {
+      "agendaId": 2,
+      "content": "Test Action[1]",
+      "createdAt": 2017-01-01T06:59:59.998Z,
+      "createdBy": 4,
+      "id": 0,
+      "sortOrder": 1,
+      "teamMemberId": 6,
+      "updatedAt": 2017-01-01T06:59:59.999Z,
+      "userId": 4,
+    },
+    Object {
+      "agendaId": 3,
+      "content": "Test Action[0]",
+      "createdAt": 2017-01-01T06:59:59.999Z,
+      "createdBy": 5,
+      "id": 1,
+      "sortOrder": 1,
+      "teamMemberId": 7,
+      "updatedAt": 2017-01-01T07:00:00.000Z,
+      "userId": 5,
+    },
+  ],
+  "meeting": Object {
+    "actions": Array [
+      Object {
+        "content": "Test Action[1]",
+        "id": 15,
+        "teamMemberId": 6,
+      },
+      Object {
+        "content": "Test Action[0]",
+        "id": 16,
+        "teamMemberId": 7,
+      },
+    ],
+    "agendaItemsCompleted": 3,
+    "createdAt": 2017-01-01T08:00:00.000Z,
+    "endedAt": 2017-01-01T08:00:00.000Z,
+    "facilitator": 17,
+    "id": 14,
+    "invitees": Array [
+      Object {
+        "actions": Array [],
+        "id": 18,
+        "picture": "https://placeimg.com/100/100/animals",
+        "preferredName": "Black Widow",
+        "present": false,
+        "projects": Array [],
+      },
+      Object {
+        "actions": Array [],
+        "id": 17,
+        "picture": "https://placeimg.com/100/100/animals",
+        "preferredName": "Captain America",
+        "present": false,
+        "projects": Array [],
+      },
+      Object {
+        "actions": Array [],
+        "id": 19,
+        "picture": "https://placeimg.com/100/100/animals",
+        "preferredName": "Hulk",
+        "present": false,
+        "projects": Array [],
+      },
+      Object {
+        "actions": Array [],
+        "id": 20,
+        "picture": "https://placeimg.com/100/100/animals",
+        "preferredName": "Iron Man",
+        "present": false,
+        "projects": Array [],
+      },
+      Object {
+        "actions": Array [],
+        "id": 21,
+        "picture": "https://placeimg.com/100/100/animals",
+        "preferredName": "Nighthawk",
+        "present": false,
+        "projects": Array [],
+      },
+      Object {
+        "actions": Array [
+          Object {
+            "content": "Test Action[0]",
+            "id": 16,
+            "teamMemberId": 7,
+          },
+        ],
+        "id": 7,
+        "picture": "https://placeimg.com/100/100/animals",
+        "preferredName": "Thor",
+        "present": false,
+        "projects": Array [],
+      },
+      Object {
+        "actions": Array [],
+        "id": 13,
+        "picture": "https://placeimg.com/100/100/animals",
+        "preferredName": "Vision",
+        "present": false,
+        "projects": Array [
+          Object {
+            "content": "Test Project[0]",
+            "id": 22,
+            "status": "active",
+            "teamMemberId": 13,
+          },
+        ],
+      },
+      Object {
+        "actions": Array [
+          Object {
+            "content": "Test Action[1]",
+            "id": 15,
+            "teamMemberId": 6,
+          },
+        ],
+        "id": 6,
+        "picture": "https://placeimg.com/100/100/animals",
+        "preferredName": "War Machine",
+        "present": false,
+        "projects": Array [
+          Object {
+            "content": "Test Project[1]",
+            "id": 23,
+            "status": "active",
+            "teamMemberId": 6,
+          },
+        ],
+      },
+    ],
+    "meetingNumber": 1,
+    "projects": Array [
+      Object {
+        "content": "Test Project[1]",
+        "id": 23,
+        "status": "active",
+        "teamMemberId": 6,
+      },
+      Object {
+        "content": "Test Project[0]",
+        "id": 22,
+        "status": "active",
+        "teamMemberId": 13,
+      },
+    ],
+    "successExpression": "Woot, woot",
+    "successStatement": "Looks like things are moving along!",
+    "teamId": 12,
+  },
+  "project": Array [
+    Object {
+      "agendaId": 2,
+      "content": "Test Project[1]",
+      "createdAt": 2017-01-01T06:59:59.998Z,
+      "createdBy": 4,
+      "id": 8,
+      "isArchived": false,
+      "sortOrder": 1,
+      "status": "active",
+      "teamId": 12,
+      "teamMemberId": 6,
+      "updatedAt": 2017-01-01T06:59:59.999Z,
+      "userId": 4,
+    },
+    Object {
+      "agendaId": 10,
+      "content": "Test Project[0]",
+      "createdAt": 2017-01-01T06:59:59.999Z,
+      "createdBy": 11,
+      "id": 9,
+      "isArchived": false,
+      "sortOrder": 1,
+      "status": "active",
+      "teamId": 12,
+      "teamMemberId": 13,
+      "updatedAt": 2017-01-01T07:00:00.000Z,
+      "userId": 11,
+    },
+  ],
+  "team": Object {
+    "activeFacilitator": 24,
+    "checkInGreeting": "Salut",
+    "checkInQuestion": "learn any new slang lately",
+    "facilitatorPhase": "summary",
+    "facilitatorPhaseItem": null,
+    "id": 12,
+    "isPaid": true,
+    "meetingId": 14,
+    "meetingPhase": "summary",
+    "meetingPhaseItem": null,
+    "orgId": 25,
+    "teamName": "Team America",
+  },
+}
+`;
+
 exports[`endMeeting throw when the caller is not a team member 1`] = `"{\\"_error\\":\\"You do not have access to that team!\\"}"`;
 
 exports[`endMeeting throws when no websocket is present 1`] = `"{\\"_error\\":\\"this must be called from a websocket\\"}"`;

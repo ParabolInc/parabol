@@ -72,12 +72,14 @@ export default {
                 // we still need to filter because this may occur before we delete them above (not guaranteed in sync)
                 .filter((row) => row('content').ne(null))
                 .map(row => row.merge({id: r.expr(meetingId).add('::').add(row('id'))}))
+                .orderBy('createdAt')
                 .pluck('id', 'content', 'teamMemberId')
                 .coerceTo('array'),
               projects: r.table('Project')
                 .getAll(r.args(agendaItemIds), {index: 'agendaId'})
                 .filter((row) => row('content').ne(null))
                 .map(row => row.merge({id: r.expr(meetingId).add('::').add(row('id'))}))
+                .orderBy('createdAt')
                 .pluck('id', 'content', 'status', 'teamMemberId')
                 .coerceTo('array')
             };
@@ -94,20 +96,20 @@ export default {
                 invitees: r.table('TeamMember')
                   .getAll(teamId, {index: 'teamId'})
                   .filter({isNotRemoved: true})
+                  .orderBy('preferredName')
                   .coerceTo('array')
                   .map((teamMember) => ({
                     id: teamMember('id'),
                     actions: res('actions').default([]).filter({teamMemberId: teamMember('id')}),
                     picture: teamMember('picture'),
                     preferredName: teamMember('preferredName'),
-                    present: teamMember('isCheckedIn').not().not(),
+                    present: teamMember('isCheckedIn').not().not().default(false),
                     projects: res('projects').default([]).filter({teamMemberId: teamMember('id')})
                   })),
                 projects: res('projects').default([]),
               }, {nonAtomic: true, returnChanges: true})('changes')(0)('new_val')('invitees');
           });
       });
-
     const {updatedActions, updatedProjects} = await getEndMeetingSortOrders(invitees);
     await r.expr(updatedActions)
       .forEach((action) => {

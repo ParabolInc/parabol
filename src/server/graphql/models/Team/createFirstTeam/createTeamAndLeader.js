@@ -12,6 +12,7 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
 
   const verifiedLeader = {
     id: teamMemberId,
+    isCheckedIn: null,
     isNotRemoved: true,
     isLead: true,
     isFacilitator: true,

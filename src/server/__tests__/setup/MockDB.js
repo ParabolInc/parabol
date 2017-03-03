@@ -1,14 +1,46 @@
 import getRethink from 'server/database/rethinkDriver';
 import testUsers from 'server/__tests__/setup/testUsers';
 import shortid from 'shortid';
-import {BILLING_LEADER, LOBBY, ACTIVE} from 'universal/utils/constants';
+import {
+  BILLING_LEADER,
+  LOBBY,
+  ACTIVE,
+  CHECKIN
+} from 'universal/utils/constants';
 import {TRIAL_PERIOD} from 'server/utils/serverConstants';
 import notificationTemplate from 'server/__tests__/utils/notificationTemplate';
 import {__anHourAgo} from 'server/__tests__/setup/mockTimes';
+import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
+import getWeekOfYear from 'universal/utils/getWeekOfYear';
+import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
+
+const meetingAction = ({id, content, teamMemberId}) => ({
+  id,
+  content,
+  teamMemberId,
+});
+
+const meetingProject = ({id, content, status, teamMemberId}) => ({
+  id,
+  content,
+  status,
+  teamMemberId,
+});
 
 class MockDB {
   constructor() {
-    this.db = {};
+    this.db = {
+      action: [],
+      agendaItem: [],
+      meeting: [],
+      notification: [],
+      organization: [],
+      project: [],
+      projectHistory: [],
+      team: [],
+      teamMember: [],
+      user: []
+    };
     this.context = {};
   }
 
@@ -18,7 +50,7 @@ class MockDB {
       Object.assign(this.context[name], updates);
     }
     return this;
-  }
+  };
 
   closeout(table, doc) {
     this.db[table] = this.db[table] || [];
@@ -59,17 +91,99 @@ class MockDB {
   newAction(overrides = {}) {
     const teamMemberId = this.context.teamMember.id;
     const [userId] = teamMemberId.split('::');
+    const table = this.db.action;
     return this.closeout('action', {
       id: `${this.context.team.id}::${shortid.generate()}`,
-      content: 'Test Action',
-      createdAt: new Date(__anHourAgo),
+      content: `Test Action[${table.length}]`,
+      createdAt: new Date(__anHourAgo - 1 - table.length),
       createdBy: userId,
-      updatedAt: new Date(__anHourAgo),
+      updatedAt: new Date(__anHourAgo - table.length),
       sortOrder: 0,
       teamMemberId,
       userId,
       ...overrides
     });
+  }
+
+  newAgendaItem(overrides = {}) {
+    const teamMemberId = this.context.teamMember.id;
+    const [userId, teamId] = teamMemberId.split('::');
+    const table = this.db.agendaItem;
+    return this.closeout('agendaItem', {
+      id: `${teamId}::${shortid.generate()}`,
+      content: `Test Agenda Item[${table.length}]`,
+      isActive: true,
+      isComplete: false,
+      createdAt: new Date(__anHourAgo - 1 - table.length),
+      createdBy: userId,
+      sortOrder: table.filter((item) => item.teamId === teamId).length,
+      teamId,
+      teamMemberId,
+      updatedAt: new Date(__anHourAgo - table.length),
+      ...overrides
+    });
+  }
+
+  newMeeting(overrides = {}, template = {}) {
+    const {inProgress, activeFacilitatorIdx = 0} = template;
+    const meetingId = shortid.generate();
+    const teamId = this.context.team.id;
+    const baseMeeting = {
+      id: meetingId,
+      createdAt: inProgress ? new Date() : new Date(__anHourAgo),
+      meetingNumber: this.db.meeting.filter((meeting) => meeting.teamId === this.context.team).length + 1,
+      teamId,
+      teamName: this.context.team.name
+    };
+    // 3 agenda items, #1 has 1 action, #2 has 1 project, #3 has 1 of each
+    const actions = [];
+    const projects = [];
+    this.newAgendaItem({isComplete: true});
+    this.newAction({agendaId: this.context.agendaItem.id, sortOrder: undefined});
+    actions.push(meetingAction(this.context.action));
+    this.teamMember(1);
+    this.newAgendaItem({isComplete: true});
+    this.newProject({agendaId: this.context.agendaItem.id, sortOrder: undefined});
+    projects.push(meetingProject(this.context.project));
+    this.teamMember(2);
+    this.newAgendaItem({isComplete: true});
+    this.newAction({agendaId: this.context.agendaItem.id, sortOrder: undefined});
+    this.newProject({agendaId: this.context.agendaItem.id, sortOrder: undefined});
+    actions.push(meetingAction(this.context.action));
+    projects.push(meetingProject(this.context.project));
+    if (inProgress) {
+      const week = getWeekOfYear(new Date());
+      this.teamMember(activeFacilitatorIdx);
+      Object.assign(this.context.team, {
+        checkInGreeting: makeCheckinGreeting(week),
+        checkInQuestion: makeCheckinQuestion(week),
+        meetingId,
+        activeFacilitator: this.context.teamMember,
+        facilitatorPhase: CHECKIN,
+        facilitatorPhaseItem: 1,
+        meetingPhase: CHECKIN,
+        meetingPhaseItem: 1,
+      });
+    } else {
+      Object.assign(baseMeeting, {
+        actions,
+        agendaItemsCompleted: 3,
+        endedAt: new Date(),
+        facilitator: this.context.team.activeFacilitator,
+        successExpression: makeSuccessExpression(),
+        successStatement: makeSuccessStatement(),
+        invitees: this.db.teamMember.filter((tm) => tm.teamId === teamId).map((teamMember) => ({
+          id: teamMember.id,
+          actions: actions.filter((a) => a.teamMemberId === teamMember.id),
+          picture: teamMember.picture,
+          preferredName: teamMember.preferredName,
+          present: true,
+          projects: projects.filter((a) => a.teamMemberId === teamMember.id),
+        })),
+        projects
+      })
+    }
+    return this.closeout('meeting', baseMeeting);
   }
 
   newNotification(overrides = {}, template = {}) {
@@ -108,17 +222,18 @@ class MockDB {
     const teamMemberId = this.context.teamMember.id;
     const [userId] = teamMemberId.split('::');
     const teamId = this.context.team.id;
+    const table = this.db.project;
     return this.closeout('project', {
       id: `${teamId}::${shortid.generate()}`,
-      content: 'Test Project',
-      createdAt: new Date(__anHourAgo),
+      content: `Test Project[${table.length}]`,
+      createdAt: new Date(__anHourAgo - 1 - table.length),
       createdBy: userId,
       isArchived: false,
       sortOrder: 0,
       status: ACTIVE,
       teamId,
       teamMemberId,
-      updatedAt: new Date(__anHourAgo),
+      updatedAt: new Date(__anHourAgo - table.length),
       userId,
       ...overrides
     });
@@ -197,7 +312,7 @@ class MockDB {
     const r = getRethink();
     const tables = Object.keys(this.db).map((name) => name[0].toUpperCase() + name.substr(1));
     const docsToInsert = Object.values(this.db);
-    const promises = docsToInsert.map((docs, idx) => r.table(tables[idx]).insert(docs));
+    const promises = docsToInsert.map((docs, idx) => docs.length && r.table(tables[idx]).insert(docs));
     await Promise.all(promises);
     return this.db;
   }
