@@ -79,4 +79,4 @@ export default {
     await Promise.all(dbWork);
     return true;
   }
-}
+};

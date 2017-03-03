@@ -214,7 +214,10 @@ export default {
           return r.table('Meeting').insert({
             id: meetingId,
             createdAt: now,
-            meetingNumber: r.table('Meeting').getAll(teamId, {index: 'teamId'}).count().add(1),
+            meetingNumber: r.table('Meeting')
+              .getAll(teamId, {index: 'teamId'})
+              .count()
+              .add(1),
             teamId,
             teamName: r.table('Team').get(teamId)('name')
           });

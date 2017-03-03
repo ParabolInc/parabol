@@ -103,7 +103,8 @@ export default {
                     actions: res('actions').default([]).filter({teamMemberId: teamMember('id')}),
                     picture: teamMember('picture'),
                     preferredName: teamMember('preferredName'),
-                    present: teamMember('isCheckedIn').not().not().default(false),
+                    present: teamMember('isCheckedIn').not().not()
+                      .default(false),
                     projects: res('projects').default([]).filter({teamMemberId: teamMember('id')})
                   })),
                 projects: res('projects').default([]),
@@ -169,16 +170,16 @@ export default {
             .sample(100000)
             .coerceTo('array')
             .do((arr) => arr.forEach((doc) => {
-                return r.table('TeamMember').get(doc('id'))
+              return r.table('TeamMember').get(doc('id'))
                   .update({
                     checkInOrder: arr.offsetsOf(doc).nth(0),
                     isCheckedIn: null
                   });
-              })
+            })
             );
         })
         .run();
     }, 5000);
     return true;
   }
-}
+};

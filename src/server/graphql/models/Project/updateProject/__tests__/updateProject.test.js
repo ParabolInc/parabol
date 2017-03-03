@@ -73,7 +73,7 @@ describe('updateProject', () => {
     const r = getRethink();
     const trimSnapshot = new TrimSnapshot();
     const mockDB = new MockDB();
-    const {project, projectHistory, teamMember, user} = await mockDB.init()
+    const {project, teamMember, user} = await mockDB.init()
       .newProject({updatedAt: new Date(__anHourAgo)})
       .newProjectHistory();
     const projectId = project[0].id;

@@ -181,7 +181,7 @@ class MockDB {
           projects: projects.filter((a) => a.teamMemberId === teamMember.id),
         })),
         projects
-      })
+      });
     }
     return this.closeout('meeting', baseMeeting);
   }
