@@ -26,6 +26,7 @@ const TeamSettings = (props) => {
     teamMembers,
     styles
   } = props;
+  console.log(props);
   const teamLeadObj = teamMembers.find((m) => m.isLead === true);
   const teamLead = teamLeadObj && teamLeadObj.preferredName;
 
@@ -108,8 +109,13 @@ const TeamSettings = (props) => {
   };
 
   const deleteTeam = () => {
-    cashay.mutate('deleteTeam', {variables: {deletedTeam: team}});
-    router.push('/me');
+    if (!myTeamMember.isLead) return;
+    if (teamMembers.length === 1) {
+      cashay.mutate('deleteTeam', {variables: {deletedTeam: team}});
+      router.push('/me');
+    } else {
+      console.log('soft delete');
+    }
   };
   const deleteTeamButton = (
     <Button
