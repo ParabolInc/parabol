@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import TeamSettings from 'universal/modules/teamDashboard/components/TeamSettings/TeamSettings';
 import {cashay} from 'cashay';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
+import {withRouter} from 'react-router';
 
 const teamSettingsQuery = `
 query {
@@ -53,6 +54,7 @@ const mapStateToProps = (state, props) => {
 const TeamSettingsContainer = (props) => {
   const {
     dispatch,
+    router,
     orgApprovals,
     invitations,
     myTeamMemberId,
@@ -66,6 +68,7 @@ const TeamSettingsContainer = (props) => {
   return (
     <TeamSettings
       dispatch={dispatch}
+      router={router}
       invitations={invitations}
       orgApprovals={orgApprovals}
       myTeamMember={myTeamMember}
@@ -85,4 +88,4 @@ TeamSettingsContainer.propTypes = {
   teamMembers: PropTypes.array.isRequired
 };
 
-export default connect(mapStateToProps)(TeamSettingsContainer);
+export default connect(mapStateToProps)(withRouter(TeamSettingsContainer));

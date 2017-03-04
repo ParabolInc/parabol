@@ -18,6 +18,7 @@ import Button from 'universal/components/Button/Button';
 const TeamSettings = (props) => {
   const {
     dispatch,
+    router,
     invitations,
     orgApprovals,
     myTeamMember,
@@ -108,6 +109,7 @@ const TeamSettings = (props) => {
 
   const deleteTeam = () => {
     cashay.mutate('deleteTeam', {variables: {deletedTeam: team}});
+    router.push('/me');
   };
   const deleteTeamButton = (
     <Button
