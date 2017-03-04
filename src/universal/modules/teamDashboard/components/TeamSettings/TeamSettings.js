@@ -106,15 +106,17 @@ const TeamSettings = (props) => {
     );
   };
 
-  const deleteTeam = () => {console.log('BLAWH')}
+  const deleteTeam = () => {
+    cashay.mutate('deleteTeam', {variables: {deletedTeam: team}});
+  };
   const deleteTeamButton = (
     <Button
-      colorPalette="mid"
+      colorPalette="warm"
       label="Delete Team"
       size="smallest"
       onClick={deleteTeam}
     />
-  )
+  );
 
   return (
     <div className={css(styles.root)}>
