@@ -32,7 +32,7 @@ export default {
     //   type: GraphQLID
     // }
   },
-  async resolve(source, {invitees, teamId}, {authToken, exchange, unitTestCb}) {
+  async resolve(source, {invitees, teamId}, {authToken, exchange}) {
     const r = getRethink();
 
     // AUTH
@@ -101,13 +101,17 @@ export default {
         const freshInvitees = newInvitees.filter((i) =>
           !pendingApprovals.find((d) => d.inviteeEmail === i.email && d.invitedTeamId === teamId));
         if (freshInvitees) {
-          asyncInviteTeam(userId, teamId, freshInvitees, unitTestCb);
+          setTimeout(async() =>
+            await asyncInviteTeam(userId, teamId, freshInvitees),
+          0);
         }
         pendingApprovals.forEach((invite) => {
           const {inviterId, inviteeEmail, invitedTeamId} = invite;
           const invitee = [{email: inviteeEmail}];
           // when we invite the person, try to invite from the original requester, if not, billing leader
-          asyncInviteTeam(inviterId, invitedTeamId, invitee, unitTestCb);
+          setTimeout(async() =>
+            await asyncInviteTeam(inviterId, invitedTeamId, invitee),
+          0);
         });
 
         return true;
