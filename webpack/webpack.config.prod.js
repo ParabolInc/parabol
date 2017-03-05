@@ -1,6 +1,6 @@
 import path from 'path';
 import webpack from 'webpack';
-import AssetsPlugin from 'manifest-assets-webpack-plugin';
+import AssetsPlugin from 'assets-webpack-plugin';
 import WebpackShellPlugin from 'webpack-shell-plugin';
 import S3Plugin from 'webpack-s3-plugin';
 import {getDotenv} from '../src/universal/utils/dotenv';
@@ -32,7 +32,11 @@ const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(s
 
 const deployPlugins = [];
 if (process.env.WEBPACK_MIN) {
-  deployPlugins.push(new webpack.optimize.UglifyJsPlugin({compressor: {warnings: false}, comments: /(?:)/}));
+  deployPlugins.push(new webpack.optimize.UglifyJsPlugin({
+    compressor: {warnings: false},
+    comments: /(?:)/,
+    sourceMap: true
+  }));
   deployPlugins.push(new webpack.LoaderOptionsPlugin({comments: false}));
 }
 if (process.env.WEBPACK_DEPLOY) {
@@ -97,6 +101,7 @@ export default {
       ]
     })
   ],
+  devtool: 'source-map',
   module: {
     loaders: [
       {test: /\.json$/, loader: 'json-loader'},
