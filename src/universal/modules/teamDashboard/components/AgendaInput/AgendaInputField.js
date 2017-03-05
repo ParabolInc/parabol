@@ -44,7 +44,7 @@ const AgendaInputField = (props) => {
         newAgendaItem: {
           id: `${teamId}::${shortid.generate()}`,
           content,
-          sortOrder: getNextSortOrder(agenda, 'sortOrder'),
+          sortOrder: getNextSortOrder(agenda),
           teamMemberId: myTeamMemberId
         }
       }

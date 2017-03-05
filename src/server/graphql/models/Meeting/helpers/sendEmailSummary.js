@@ -6,10 +6,9 @@ export default async function sendEmailSummary(meeting, teamMemberId) {
   const r = getRethink();
   if (facilitator === teamMemberId && !summarySentAt) {
     // send the summary email
-    const userIds = invitees.map((doc) => doc.id.substr(0, doc.id.indexOf('::')));
-    const emails = await r.table('User')
-      .getAll(r.args(userIds))
-      .map((user) => user('email'));
+    const teamMemberIds = invitees.map(({id}) => id);
+    const emails = await r.table('TeamMember')
+      .getAll(r.args(teamMemberIds))('email');
     const emailString = emails.join(', ');
     const emailSuccess = await sendEmailPromise(emailString, 'summaryEmail', {meeting});
     if (emailSuccess) {

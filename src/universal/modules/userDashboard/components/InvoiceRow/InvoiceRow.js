@@ -14,6 +14,7 @@ import {UPCOMING} from 'universal/utils/constants';
 
 const InvoiceRow = (props) => {
   const {
+    hasCard,
     invoice: {
       id: invoiceId,
       amountDue,
@@ -60,7 +61,9 @@ const InvoiceRow = (props) => {
           <div className={css(styles.infoRowRight)}>
             {isEstimate ?
               <span className={css(styles.date, styles.toPay)}>
-                Your card will be charged on {makeDateString(endAt, false)}
+                {hasCard ? `card will be charged on ${makeDateString(endAt, false)}` :
+                  `Make sure to add billing info before ${makeDateString(endAt, false)}!`
+                }
               </span> :
               <span className={css(styles.date, styles.paid)}>
                 Paid on {makeDateString(paidAt, false)}
@@ -74,6 +77,7 @@ const InvoiceRow = (props) => {
 };
 
 InvoiceRow.propTypes = {
+  hasCard: PropTypes.bool,
   invoice: PropTypes.object,
   styles: PropTypes.object
 };

@@ -11,8 +11,7 @@ import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalM
 
 const RequestNewUser = (props) => {
   const {notificationId, styles, varList} = props;
-  // TODO can we remove inviterUserId from varList?
-  const [inviterName, inviteeEmail, teamId, teamName] = varList;
+  const [, inviterName, inviteeEmail, teamId, teamName] = varList;
 
   const acceptInvite = () => {
     const variables = {
@@ -37,7 +36,7 @@ const RequestNewUser = (props) => {
   return (
     <Row>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="user" size="medium" />
+        <IconAvatar icon="user" size="medium"/>
       </div>
       <div className={css(styles.message)}>
         <span className={css(styles.messageVar)}>{inviterName} </span>

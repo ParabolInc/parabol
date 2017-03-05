@@ -32,7 +32,7 @@ export default {
     //   type: GraphQLID
     // }
   },
-  async resolve(source, {invitees, teamId}, {authToken, exchange, unitTestCb}) {
+  async resolve(source, {invitees, teamId}, {authToken, exchange}) {
     const r = getRethink();
 
     // AUTH
@@ -46,25 +46,18 @@ export default {
     const now = Date.now();
     // don't let them invite the same person twice
     const emailArr = invitees.map(invitee => invitee.email);
-    const usedEmails = await r.expr(emailArr)
-      .do((emails) => {
-        return {
-          inviteEmails: r.table('Invitation')
-            .getAll(r.args(emails), {index: 'email'})
-            .filter((invitation) => invitation('tokenExpiration').ge(r.epochTime(now)))('email')
-            .coerceTo('array'),
-          teamMembers: r.table('TeamMember')
-            .getAll(teamId, {index: 'teamId'})
-            .merge((teamMember) => ({
-              userOrgs: r.table('User').get(teamMember('userId'))('userOrgs')
-            }))
-            .coerceTo('array'),
-          // pendingApprovalEmails: r.table('OrgApproval')
-          //   .getAll(r.args(emails), {index: 'email'})
-          //   .filter({teamId})('email')
-          //   .coerceTo('array')
-        };
-      });
+    const usedEmails = await r.expr({
+      inviteEmails: r.table('Invitation')
+        .getAll(r.args(emailArr), {index: 'email'})
+        .filter((invitation) => invitation('tokenExpiration').ge(r.epochTime(now)))('email')
+        .coerceTo('array'),
+      teamMembers: r.table('TeamMember')
+        .getAll(teamId, {index: 'teamId'})
+        .merge((teamMember) => ({
+          userOrgs: r.table('User').get(teamMember('userId'))('userOrgs').default([])
+        }))
+        .coerceTo('array'),
+    });
     // ignore pendingApprovalEmails because this could be the billing leader hitting accept
     const {inviteEmails, teamMembers} = usedEmails;
     const schemaProps = {
@@ -108,13 +101,17 @@ export default {
         const freshInvitees = newInvitees.filter((i) =>
           !pendingApprovals.find((d) => d.inviteeEmail === i.email && d.invitedTeamId === teamId));
         if (freshInvitees) {
-          asyncInviteTeam(userId, teamId, freshInvitees, unitTestCb);
+          setTimeout(async() =>
+            await asyncInviteTeam(userId, teamId, freshInvitees),
+          0);
         }
         pendingApprovals.forEach((invite) => {
           const {inviterId, inviteeEmail, invitedTeamId} = invite;
           const invitee = [{email: inviteeEmail}];
           // when we invite the person, try to invite from the original requester, if not, billing leader
-          asyncInviteTeam(inviterId, invitedTeamId, invitee, unitTestCb);
+          setTimeout(async() =>
+            await asyncInviteTeam(inviterId, invitedTeamId, invitee),
+          0);
         });
 
         return true;

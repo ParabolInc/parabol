@@ -16,7 +16,7 @@
   "scripts": {
     "start": "NODE_ENV=production node ./src/server/server.babel.js",
     "start:tunnel": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d '\"') && ultrahook -k $ULTRAHOOK_API_KEY dev 3000",
-    "dev": "if [ ! -f \"dll/vendors.json\" ] ; then npm run build:dll ; fi ; NODE_ENV=development node ./src/server/server.babel.js",
+    "dev": "if [ ! -f \"dll/vendors.json\" ] ; then npm run build:dll ; fi ; NODE_ENV=development node --trace-warnings ./src/server/server.babel.js",
     "build": "rimraf build && concurrently \"npm run build:client\" \"npm run build:server\"",
     "build:deploy": "rimraf build && npm run build:server && npm run build:client-deploy",
     "build:min": "rimraf build && concurrently \"npm run build:client-min\" \"npm run build:server\"",
@@ -29,8 +29,8 @@
     "build:client-deploy": "NODE_ENV=production WEBPACK_DEPLOY=true WEBPACK_MIN=true webpack --config ./webpack/prod.babel.js",
     "build:server": "NODE_ENV=production webpack --config ./webpack/server.babel.js",
     "db:migrate": "./src/server/database/migrate.sh up-all",
-    "db:migrate-testing": "NODE_ENV=test ./src/server/database/migrate.sh up-all",
-    "test": "jest && codecov",
+    "db:migrate-testing": "NODE_ENV=test ./src/server/database/migrate.sh up-all && NODE_ENV=test node ./src/server/__tests__/setup/softenDurability.babel.js",
+    "test": "jest --bail --coverage && codecov",
     "test:intranetToken": "node ./src/server/utils/getIntranetToken.babel.js",
     "db:migrate-up": "./src/server/database/migrate.sh up",
     "db:migrate-up-all": "npm run db:migrate",
@@ -89,7 +89,7 @@
     "transform-loader": "^0.2.3",
     "unused-files-webpack-plugin": "^3.0.0",
     "url-loader": "0.5.7",
-    "webpack": "2.2.0",
+    "webpack": "^2.2.1",
     "webpack-dev-middleware": "1.8.4",
     "webpack-hot-middleware": "^2.13.2",
     "webpack-shell-plugin": "^0.4.3",
@@ -106,7 +106,7 @@
     "babel-runtime": "6.18.0",
     "bcrypt": "^1.0.2",
     "body-parser": "1.15.2",
-    "cashay": "^0.22.6",
+    "cashay": "^0.22.7",
     "cheerio": "^0.22.0",
     "compression": "1.6.2",
     "cors": "2.8.1",
@@ -117,8 +117,8 @@
     "express": "4.14.0",
     "express-jwt": "5.1.0",
     "fetch-ponyfill": "^3.0.2",
-    "graphiql": "^0.8.0",
-    "graphql": "^0.8.2",
+    "graphiql": "^0.9.3",
+    "graphql": "^0.9.1",
     "graphql-custom-datetype": "^0.3.0",
     "isomorphic-fetch": "2.2.1",
     "jsonwebtoken": "^7.1.9",
@@ -171,13 +171,10 @@
     "yarn": "0.21.3"
   },
   "jest": {
-    "collectCoverage": true,
-    "coverageDirectory": "./coverage/",
     "modulePaths": [
       "<rootDir>/src/"
     ],
     "testRegex": "/__tests__/.*.test\\.jsx?$",
-    "testResultsProcessor": "./src/server/__tests__/teardown",
-    "verbose": true
+    "testResultsProcessor": "./src/server/__tests__/teardown"
   }
 }
