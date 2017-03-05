@@ -97,9 +97,10 @@ class MockDB {
       content: `Test Action[${table.length}]`,
       createdAt: new Date(__anHourAgo - 1 - table.length),
       createdBy: userId,
-      updatedAt: new Date(__anHourAgo - table.length),
-      sortOrder: 0,
+      isComplete: false,
+      sortOrder: table.filter((item) => item.userId === userId).length,
       teamMemberId,
+      updatedAt: new Date(__anHourAgo - table.length),
       userId,
       ...overrides
     });
@@ -229,7 +230,7 @@ class MockDB {
       createdAt: new Date(__anHourAgo - 1 - table.length),
       createdBy: userId,
       isArchived: false,
-      sortOrder: 0,
+      sortOrder: table.filter((item) => item.teamId === teamId).length,
       status: ACTIVE,
       teamId,
       teamMemberId,

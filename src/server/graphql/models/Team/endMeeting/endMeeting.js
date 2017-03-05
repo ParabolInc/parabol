@@ -36,7 +36,8 @@ export default {
       .getAll(teamId, {index: 'teamId'})
       .orderBy(r.desc('createdAt'))
       .nth(0)
-      .pluck('id', 'endedAt');
+      .pluck('id', 'endedAt')
+      .default({endedAt: r.now()});
     if (meeting.endedAt) {
       throw errorObj({_error: 'Meeting already ended!'});
     }
