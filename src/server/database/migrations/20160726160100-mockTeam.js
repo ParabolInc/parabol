@@ -40,7 +40,7 @@ exports.up = async(r) => {
   };
   const teamMembers = [
     {
-      id: 'auth0|57a8fb6cab6c18473e47f518::team123',
+      id: 'auth0|58a861e682b0ca077463c577::team123',
       isActive: true,
       isFacilitator: true,
       isLead: true,
@@ -92,7 +92,7 @@ exports.up = async(r) => {
   };
   const engineeringMembers = [
     {
-      id: 'auth0|57a8fb6cab6c18473e47f518::team456',
+      id: 'auth0|58a861e682b0ca077463c577::team456',
       isActive: true,
       isFacilitator: true,
       isLead: false,
