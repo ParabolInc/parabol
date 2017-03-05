@@ -123,10 +123,10 @@ const InvoiceStatus = new GraphQLEnumType({
   name: 'InvoiceStatus',
   description: 'The payment status of the invoice',
   values: {
-    PENDING: {},
-    PAID: {},
-    FAILED: {},
-    UPCOMING: {}
+    [PENDING]: {},
+    [PAID]: {},
+    [FAILED]: {},
+    [UPCOMING]: {}
   }
 });
 
