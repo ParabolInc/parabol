@@ -9,7 +9,6 @@ import {
   GraphQLString
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
-import makeEnumValues from 'server/graphql/makeEnumValues';
 import {
   ADDED_USERS,
   REMOVED_USERS,
@@ -33,12 +32,12 @@ import {GraphQLEmailType, GraphQLURLType} from 'server/graphql/types';
 export const LineItemType = new GraphQLEnumType({
   name: 'LineItemType',
   description: 'A big picture line item',
-  values: makeEnumValues([
-    ADDED_USERS,
-    INACTIVITY_ADJUSTMENTS,
-    OTHER_ADJUSTMENTS,
-    REMOVED_USERS
-  ])
+  values: {
+    [ADDED_USERS]: {},
+    [INACTIVITY_ADJUSTMENTS]: {},
+    [OTHER_ADJUSTMENTS]: {},
+    [REMOVED_USERS]: {}
+  }
 });
 
 const DetailedLineItem = new GraphQLObjectType({
@@ -123,12 +122,12 @@ const NextMonthCharge = new GraphQLObjectType({
 const InvoiceStatus = new GraphQLEnumType({
   name: 'InvoiceStatus',
   description: 'The payment status of the invoice',
-  values: makeEnumValues([
-    PENDING,
-    PAID,
-    FAILED,
-    UPCOMING
-  ])
+  values: {
+    PENDING: {},
+    PAID: {},
+    FAILED: {},
+    UPCOMING: {}
+  }
 });
 
 export const Invoice = new GraphQLObjectType({

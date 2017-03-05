@@ -10,17 +10,16 @@ import {
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
-import makeEnumValues from 'server/graphql/makeEnumValues';
 
 export const ProjectStatus = new GraphQLEnumType({
   name: 'ProjectStatus',
   description: 'The status of the project',
-  values: makeEnumValues([
-    [ACTIVE],
-    [STUCK],
-    [DONE],
-    [FUTURE]
-  ])
+  values: {
+    [ACTIVE]: {},
+    [STUCK]: {},
+    [DONE]: {},
+    [FUTURE]: {}
+  }
 });
 
 export const Project = new GraphQLObjectType({
