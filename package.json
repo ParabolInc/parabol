@@ -168,7 +168,7 @@
   },
   "engines": {
     "node": "7.6.0",
-    "yarn": "0.16.1"
+    "yarn": "0.21.3"
   },
   "jest": {
     "collectCoverage": true,
