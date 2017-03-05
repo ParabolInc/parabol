@@ -4,6 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import {Link, withRouter} from 'react-router';
 import DashNavItemBaseStyles from './DashNavItemBaseStyles';
+import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 
 const DashNavItem = (props) => {
   const {label, href, styles, router} = props;
@@ -31,39 +32,25 @@ DashNavItem.propTypes = {
   styles: PropTypes.object
 };
 
-const linkHF = {
-  backgroundColor: appTheme.palette.dark50a,
-  color: 'inherit',
-  cursor: 'pointer',
-  textDecoration: 'none'
-};
-
-const activeHF = {
-  backgroundColor: appTheme.palette.dark,
-  cursor: 'default'
-};
-
 const styleThunk = () => ({
   link: {
     ...DashNavItemBaseStyles,
 
-    ':hover': {
-      ...linkHF
-    },
-    ':focus': {
-      ...linkHF
-    }
+    ...makeHoverFocus({
+      backgroundColor: appTheme.palette.dark50a,
+      color: 'inherit',
+      cursor: 'pointer',
+      textDecoration: 'none'
+    })
   },
 
   active: {
     backgroundColor: appTheme.palette.dark,
 
-    ':hover': {
-      ...activeHF
-    },
-    ':focus': {
-      ...activeHF
-    }
+    ...makeHoverFocus({
+      backgroundColor: appTheme.palette.dark,
+      cursor: 'default'
+    })
   }
 });
 

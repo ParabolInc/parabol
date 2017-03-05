@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`loadToken callsback with token 1`] = `
+Object {
+  "marvin": Object {
+    "nextUrl": null,
+    "obj": Object {
+      "name": "Moe",
+      "rol": "su",
+      "sub": "1234567890",
+      "tms": Array [
+        "team123",
+      ],
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik1vZSIsInJvbCI6InN1IiwidG1zIjpbInRlYW0xMjMiXX0.N0NvXB5JCkwwHUsir4hC5noyoWuAhrq6JRvGlvdww5Q",
+  },
+}
+`;
+
+exports[`loadToken callsback with token 2`] = `
+Object {
+  "marvin": Object {
+    "nextUrl": null,
+    "obj": Object {
+      "name": "Moe",
+      "rol": "su",
+      "sub": "1234567890",
+      "tms": Array [
+        "team123",
+      ],
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik1vZSIsInJvbCI6InN1IiwidG1zIjpbInRlYW0xMjMiXX0.N0NvXB5JCkwwHUsir4hC5noyoWuAhrq6JRvGlvdww5Q",
+  },
+}
+`;

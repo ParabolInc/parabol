@@ -9,7 +9,7 @@ const setMeetingImports = () =>
   ]);
 
 const getMeetingImports = importMap => ({
-  component: importMap.get('component'),
+  component: importMap.get('component').default,
   socket: importMap.get('socket').socketClusterReducer,
 });
 

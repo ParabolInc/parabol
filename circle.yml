@@ -1,25 +1,121 @@
-machine:
-  node:
-    version: 7.0.0
-dependencies:
-  pre:
-    - source /etc/lsb-release && echo "deb http://download.rethinkdb.com/apt $DISTRIB_CODENAME main" | sudo tee /etc/apt/sources.list.d/rethinkdb.list
-    - wget -qO- https://download.rethinkdb.com/apt/pubkey.gpg | sudo apt-key add -
-    - sudo apt-get update
-    - sudo apt-get install build-essential g++ # so we can build bcrypt bindings
-    - sudo apt-get install rethinkdb
-    - sudo cp /etc/rethinkdb/default.conf.sample /etc/rethinkdb/instances.d/instance1.conf
-    - sudo /etc/init.d/rethinkdb restart
-    - npm i -g yarn
-  override:
-    - yarn
-  cache_directories:
-    - "node_modules"
-  post:
-    - npm run db:migrate
-test:
-  post:
-    - npm run build:server
-    - npm run build:client-min
-    - npm run lint
-    - npm run test
+version: 2
+executorType: docker
+containerInfo:
+  - image: node:7.6.0
+  - image: rethinkdb:2.3.5
+stages:
+  build:
+    workDir: /home/ubuntu/action
+    environment:
+      CODECOV_TOKEN: "ebdd735e-579a-4afd-85fc-f53907544c31"
+      DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
+      DEVOPS_WORKDIR: "/home/ubuntu/action-devops"
+      GITHUB_REMOTE_PRODUCTION: "dokku@action-production.parabol.co:web"
+      GITHUB_REMOTE_STAGING: "dokku@action-staging.parabol.co:web"
+      PRODUCTION_BACKUP_VOLUME: "/mnt/volume-nyc1-01/action-production"
+
+
+    steps:
+      - type: add-ssh-keys
+        fingerprints:
+          - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
+
+      - type: checkout
+
+      - type: shell
+        name: Switch to Github user key
+        command: |
+          cp -f $(ls -1 ~/.ssh/id_rsa_* | head -n 1) ~/.ssh/id_rsa
+          rm -f ~/.ssh/*.pub
+
+      - type: cache-restore
+        key: action-{{ checksum "yarn.lock" }}
+
+      - type: shell
+        name: Install dependencies
+        command: |
+          apt-get update &&
+          apt-get -yq install build-essential g++ &&
+          yarn
+
+      - type: cache-save
+        key: action-{{ checksum "yarn.lock" }}
+        paths:
+          - /home/ubuntu/action/node_modules
+
+      - type: shell
+        name: Database migration (testing)
+        command: npm run db:migrate-testing
+
+      - type: shell
+        name: NPM lint
+        command: npm run lint
+
+      - type: shell
+        name: NPM run test
+        command: |
+          npm run test
+
+      - type: shell
+        name: Pre-build DevOps checkout
+        command: |
+          if [ "${CIRCLE_BRANCH}" == "production" ]; then
+            export DEPLOY_ENV="production"
+          elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+            export DEPLOY_ENV="staging"
+          else
+            export DEPLOY_ENV="development"
+          fi
+          git clone $DEVOPS_REPO $DEVOPS_WORKDIR &&
+          cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
+
+      - type: shell
+        name: Build test
+        command: npm run build
+
+      - type: deploy
+        name: Possible deployment build
+        command: |
+          if [ "${CIRCLE_BRANCH}" == "production" ]; then
+            export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION}"
+          elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+            export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}"
+          fi
+          if [ -n "${GITHUB_REMOTE}" ]; then
+            npm run build:deploy &&
+            export ACTION_VERSION="\
+              $([[ $(grep version package.json) =~ (([0-9]+\.?){3}) ]] && \
+                echo ${BASH_REMATCH[1]})"
+            git config --global user.name "Parabol CircleCI"
+            git config --global user.email "admin+circleci@parabol.co"
+            git add build
+            git commit -m "build $ACTION_VERSION" build
+          fi
+
+      - type: deploy
+        name: Possible (production backup) and deployment
+        command: |
+          if [ "${CIRCLE_BRANCH}" == "production" ]; then
+            export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION}"
+          elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+            export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}"
+          fi
+          if [ -n "${GITHUB_REMOTE}" ]; then
+            git remote add dokku $GITHUB_REMOTE
+            export SSH_DESTINATION=$(echo $GITHUB_REMOTE | cut -f1 -d:)
+            ssh -o StrictHostKeyChecking=no "${SSH_DESTINATION}" -T >/dev/null
+          fi &&
+          if [ "${GITHUB_REMOTE}" == "${GITHUB_REMOTE_PRODUCTION}" ]; then
+            $DEVOPS_WORKDIR/dokku/rethinkdb-backup.sh \
+              -s "${SSH_DESTINATION}" -d "${PRODUCTION_BACKUP_VOLUME}"
+          fi &&
+          if [ -n "${GITHUB_REMOTE}" ]; then
+            git push -f dokku $CIRCLE_BRANCH:master
+          fi
+
+      - type: artifacts-store
+        path: /home/ubuntu/action/build
+        destination: build
+
+      - type: test-results-store
+        path: /home/ubuntu/test-report

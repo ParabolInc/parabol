@@ -38,3 +38,23 @@ export const successfulJoin = {
             Welcome to Action. Let's get you set up.
           `
 };
+
+export const successfulExistingJoin = {
+  title: 'You\'re in!',
+  message: `
+            Welcome to the new team. 
+          `
+};
+
+export const inviteExpired = {
+  title: 'Invitation has expired',
+  message: `
+              Hey, your invitation expired. Maybe someone already used it or
+              it was sitting in your inbox too long.
+              Ask your friend for a new one.
+            `,
+  action: {
+    label: 'Got it',
+  },
+  autoDismiss: 0
+};

@@ -1,0 +1,81 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`goToPage 1`] = `
+Object {
+  "completed": 0,
+  "existingInvites": Array [],
+  "page": 1,
+  "teamId": null,
+  "teamMemberId": null,
+}
+`;
+
+exports[`initial state 1`] = `
+Object {
+  "completed": 0,
+  "existingInvites": Array [],
+  "page": 1,
+  "teamId": null,
+  "teamMemberId": null,
+}
+`;
+
+exports[`nextPage() does not exceed 3 1`] = `
+Object {
+  "completed": 0,
+  "existingInvites": Array [],
+  "page": 3,
+  "teamId": null,
+  "teamMemberId": null,
+}
+`;
+
+exports[`nextPage() increments 1`] = `
+Object {
+  "completed": 0,
+  "existingInvites": Array [],
+  "page": 2,
+  "teamId": null,
+  "teamMemberId": null,
+}
+`;
+
+exports[`previousPage() decrements 1`] = `
+Object {
+  "completed": 0,
+  "existingInvites": Array [],
+  "page": 1,
+  "teamId": null,
+  "teamMemberId": null,
+}
+`;
+
+exports[`previousPage() is never less than one 1`] = `
+Object {
+  "completed": 0,
+  "existingInvites": Array [],
+  "page": 1,
+  "teamId": null,
+  "teamMemberId": null,
+}
+`;
+
+exports[`setWelcomeTeam() updates teamId, teamMemberId 1`] = `
+Object {
+  "completed": 0,
+  "existingInvites": Array [],
+  "page": 1,
+  "teamId": "apple1",
+  "teamMemberId": "banana2",
+}
+`;
+
+exports[`updateCompleted() updates state 1`] = `
+Object {
+  "completed": 2,
+  "existingInvites": Array [],
+  "page": 1,
+  "teamId": null,
+  "teamMemberId": null,
+}
+`;

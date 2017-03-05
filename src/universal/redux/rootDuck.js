@@ -1,4 +1,3 @@
-
 export const RESET = '@@root/RESET';
 
 export default (appReducer) => (state, action) => {

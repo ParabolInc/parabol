@@ -3,25 +3,25 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 import tinycolor from 'tinycolor2';
 import FontAwesome from 'react-fontawesome';
 import DashNavListContainer from 'universal/containers/DashNavList/DashNavListContainer';
 import DashNavItem from './DashNavItem';
-import SettingsHub from 'universal/components/SettingsHub/SettingsHub';
 import StandardHubContainer from 'universal/containers/StandardHub/StandardHubContainer';
 import Logo from 'universal/styles/theme/images/brand/parabol-lockup-h.svg';
 import {Link, withRouter} from 'react-router';
 
 const DashSidebar = (props) => {
-  const {isUserSettings, router, styles} = props;
-  const newTeamIsActive = router.isActive('/newteam', true);
+  const {location, router, styles} = props;
+  const newTeamIsActive = router.isActive('/newteam') || router.isActive('/newteam/1');
   const addNewStyles = css(
     styles.addTeam,
     newTeamIsActive && styles.addTeamDisabled
   );
   return (
     <div className={css(styles.root)}>
-      {isUserSettings ? <SettingsHub/> : <StandardHubContainer/>}
+      <StandardHubContainer location={location} />
       <nav className={css(styles.nav)}>
         <div className={css(styles.singleNavItem)}>
           <DashNavItem
@@ -52,7 +52,7 @@ const DashSidebar = (props) => {
 };
 
 DashSidebar.propTypes = {
-  isUserSettings: PropTypes.bool,
+  location: PropTypes.string,
   router: PropTypes.object,
   styles: PropTypes.object
 };
@@ -65,7 +65,7 @@ const linkBaseStyles = {
 
 const styleThunk = () => ({
   root: {
-    backgroundColor: appTheme.palette.mid,
+    backgroundColor: ui.dashSidebarBackgroundColor,
     color: textColor,
     display: 'flex',
     flexDirection: 'column',
@@ -104,16 +104,13 @@ const styleThunk = () => ({
     display: 'block',
     marginTop: '.5rem',
     position: 'relative',
+    transition: `opacity ${ui.transitionFastest}`,
     userSelect: 'none',
 
-    ':hover': {
+    ...makeHoverFocus({
       ...linkBaseStyles,
       opacity: '.5'
-    },
-    ':focus': {
-      ...linkBaseStyles,
-      opacity: '.5'
-    }
+    })
   },
 
   addTeamDisabled: {

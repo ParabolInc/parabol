@@ -2,15 +2,18 @@ import React, {Component, PropTypes} from 'react';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import UserSettings from 'universal/modules/userDashboard/components/UserSettings/UserSettings';
 import {connect} from 'react-redux';
-import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
+import {withRouter} from 'react-router';
+import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
+import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import {
   ACTIVITY_WELCOME,
   clearActivity
 } from 'universal/modules/userDashboard/ducks/settingsDuck';
 import {reduxForm, initialize} from 'redux-form';
 import {cashay} from 'cashay';
-import {withRouter} from 'react-router';
-import makeStep1Schema from 'universal/validation/makeStep1Schema';
+import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
+import shouldValidate from 'universal/validation/shouldValidate';
+import raven from 'raven-js';
 
 const updateSuccess = {
   title: 'Settings saved!',
@@ -19,21 +22,25 @@ const updateSuccess = {
 };
 
 const mapStateToProps = (state) => {
+  const userId = state.auth.obj.sub;
+  const user = cashay.query(getAuthQueryString, getAuthedOptions(userId)).data.user;
   return {
     activity: state.userDashboardSettings.activity,
     nextPage: state.userDashboardSettings.nextPage,
-    userId: state.auth.obj.sub,
+    user,
+    userId: state.auth.obj.sub
   };
 };
 
 const validate = (values) => {
-  const schema = makeStep1Schema();
+  const schema = makeUpdatedUserSchema();
   return schema(values).errors;
 };
 
+// use requireAuth to get the user doc
 @requireAuth
+@reduxForm({form: 'userSettings', shouldValidate, validate})
 @connect(mapStateToProps)
-@reduxForm({form: 'userSettings', validate})
 @withRouter
 export default class UserSettingsContainer extends Component {
   static propTypes = {
@@ -47,7 +54,7 @@ export default class UserSettingsContainer extends Component {
       preferredName: PropTypes.string,
     }),
     router: PropTypes.object,
-    untouch: PropTypes.func.isRequired,
+    untouch: PropTypes.func,
     userId: PropTypes.string
   };
 
@@ -55,19 +62,20 @@ export default class UserSettingsContainer extends Component {
     this.initializeForm();
   }
 
-  onSubmit = (submissionData) => {
-    const {activity, dispatch, nextPage, untouch, user, userId, router} = this.props;
+  onSubmit = async (submissionData) => {
+    const {user} = this.props;
     const {preferredName} = submissionData;
-    if (preferredName === user.preferredName) return;
-    const options = {
-      variables: {
-        updatedUser: {
-          id: userId,
-          preferredName
-        }
-      }
-    };
-    cashay.mutate('updateUserProfile', options);
+    if (preferredName !== user.preferredName) {
+      this.updateProfile(preferredName)
+      .then(this.onSubmitComplete())
+      .catch((e) => raven.captureException(e));
+    }
+
+    return undefined; // no work to do
+  };
+
+  onSubmitComplete() {
+    const {activity, dispatch, nextPage, untouch, router} = this.props;
     dispatch(showSuccess(updateSuccess));
     if (activity === ACTIVITY_WELCOME) {
       dispatch(clearActivity());
@@ -76,7 +84,21 @@ export default class UserSettingsContainer extends Component {
       router.push(nextPage);
     }
     untouch('preferredName');
-  };
+  }
+
+  updateProfile(preferredName, pictureUrl) {
+    const {userId} = this.props;
+    const options = {
+      variables: {
+        updatedUser: {
+          id: userId,
+          preferredName,
+          picture: pictureUrl
+        }
+      }
+    };
+    return cashay.mutate('updateUserProfile', options);
+  }
 
   initializeForm() {
     const {dispatch, user: {preferredName}} = this.props;

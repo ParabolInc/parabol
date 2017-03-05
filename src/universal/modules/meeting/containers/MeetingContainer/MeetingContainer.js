@@ -6,7 +6,7 @@ import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import handleAgendaSort from 'universal/modules/meeting/helpers/handleAgendaSort';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
 import MeetingAvatars from 'universal/modules/meeting/components/MeetingAvatars/MeetingAvatars';
-import Sidebar from '../../components/Sidebar/Sidebar';
+import Sidebar from 'universal/modules/meeting/components/Sidebar/Sidebar';
 import {withRouter} from 'react-router';
 import {DragDropContext as dragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
@@ -15,6 +15,7 @@ import LoadingView from 'universal/components/LoadingView/LoadingView';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingLobby from 'universal/modules/meeting/components/MeetingLobby/MeetingLobby';
 import MeetingCheckin from 'universal/modules/meeting/components/MeetingCheckin/MeetingCheckin';
+import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton';
 import MeetingUpdatesContainer
   from '../MeetingUpdates/MeetingUpdatesContainer';
 import AvatarGroup from 'universal/modules/meeting/components/AvatarGroup/AvatarGroup';
@@ -35,7 +36,7 @@ import MeetingAgendaLastCallContainer from 'universal/modules/meeting/containers
 import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 import withHotkey from 'react-hotkey-hoc';
 import getBestPhaseItem from 'universal/modules/meeting/helpers/getBestPhaseItem';
-import {showError, showInfo} from 'universal/modules/notifications/ducks/notifications';
+import {showError, showInfo} from 'universal/modules/toast/ducks/toastDuck';
 
 const resolveMeetingMembers = (queryData, userId) => {
   if (queryData !== resolveMeetingMembers.queryData) {
@@ -240,7 +241,6 @@ export default class MeetingContainer extends Component {
     const {meetingPhase} = team;
     let nextPhase;
     let nextPhaseItem;
-
     // if it's a link on the sidebar
     if (maybeNextPhase) {
       // if we click the Agenda link on the sidebar and we're already past that, goto the next reasonable area
@@ -310,9 +310,21 @@ export default class MeetingContainer extends Component {
   gotoPrev = () => this.gotoItem(this.props.localPhaseItem - 1);
 
   render() {
-    const {agenda, isFacilitating, localPhaseItem, members, params, team} = this.props;
-    const {teamId, localPhase} = params;
-    const {facilitatorPhase, meetingPhase, meetingPhaseItem, name: teamName} = team;
+    const {
+      agenda,
+      isFacilitating,
+      members,
+      params: { teamId, localPhase, localPhaseItem },
+      team,
+      router
+    } = this.props;
+    const {
+      facilitatorPhase,
+      facilitatorPhaseItem,
+      meetingPhase,
+      meetingPhaseItem,
+      name: teamName
+    } = team;
     const agendaPhaseItem = meetingPhase === AGENDA_ITEMS && meetingPhaseItem || 0;
     // if we have a team.name, we have an initial subscription success to the team object
     if (!teamName ||
@@ -320,7 +332,13 @@ export default class MeetingContainer extends Component {
       || ((localPhase === CHECKIN || localPhase === UPDATES) && members.length < localPhaseItem)) {
       return <LoadingView />;
     }
-
+    const phasesAlwaysInSync = ['lobby', 'firstcall', 'lastcall'];
+    const inSync = isFacilitating || phasesAlwaysInSync.includes(meetingPhase) ? true :
+      localPhase + localPhaseItem === facilitatorPhase + facilitatorPhaseItem;
+    const rejoinFacilitator = () => {
+      const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
+      router.push(pushURL);
+    };
     const phaseStateProps = { // DRY
       localPhaseItem,
       members,
@@ -333,12 +351,14 @@ export default class MeetingContainer extends Component {
           facilitatorPhase={facilitatorPhase}
           gotoItem={this.gotoItem}
           localPhase={localPhase}
+          isFacilitating={isFacilitating}
+          meetingPhase={meetingPhase}
           teamName={teamName}
           teamId={teamId}
         />
         <MeetingMain>
           <MeetingAvatars>
-            <AvatarGroup avatars={members} localPhase={localPhase}/>
+            <AvatarGroup avatars={members} localPhase={localPhase} />
           </MeetingAvatars>
           {localPhase === LOBBY && <MeetingLobby members={members} team={team}/>}
           {localPhase === CHECKIN &&
@@ -362,6 +382,9 @@ export default class MeetingContainer extends Component {
               gotoNext={this.gotoNext}
               isFacilitating={isFacilitating}
             />
+          }
+          {!inSync &&
+            <RejoinFacilitatorButton onClickHandler={rejoinFacilitator}/>
           }
         </MeetingMain>
       </MeetingLayout>

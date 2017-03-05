@@ -1,18 +1,25 @@
 import {GraphQLObjectType} from 'graphql';
-import action from './models/Action/actionMutation';
-import agenda from './models/AgendaItem/agendaItemMutation';
-import invitation from './models/Invitation/invitationMutation';
-import meeting from './models/Meeting/meetingMutation';
-import presence from './models/Presence/presenceMutation';
-import project from './models/Project/projectMutation';
-import team from './models/Team/teamMutation';
-import teamMember from './models/TeamMember/teamMemberMutation';
-import user from './models/User/userMutation';
+import action from 'server/graphql/models/Action/actionMutation';
+import agenda from 'server/graphql/models/AgendaItem/agendaItemMutation';
+import invitation from 'server/graphql/models/Invitation/invitationMutation';
+import meeting from 'server/graphql/models/Meeting/meetingMutation';
+import notification from 'server/graphql/models/Notification/notificationMutation';
+import orgApproval from 'server/graphql/models/OrgApproval/orgApprovalMutation';
+import organization from 'server/graphql/models/Organization/organizationMutation';
+import presence from 'server/graphql/models/Presence/presenceMutation';
+import project from 'server/graphql/models/Project/projectMutation';
+import team from 'server/graphql/models/Team/teamMutation';
+import teamMember from 'server/graphql/models/TeamMember/teamMemberMutation';
+import user from 'server/graphql/models/User/userMutation';
+
 const rootFields = Object.assign({},
   action,
   agenda,
   invitation,
   meeting,
+  notification,
+  orgApproval,
+  organization,
   presence,
   project,
   team,
@@ -21,6 +28,6 @@ const rootFields = Object.assign({},
 );
 
 export default new GraphQLObjectType({
-  name: 'Mutation',
+  name: 'RootMutation',
   fields: () => rootFields
 });

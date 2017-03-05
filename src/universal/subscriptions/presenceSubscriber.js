@@ -36,4 +36,5 @@ export default function presenceSubscriber(channel, key, handlers) {
       remove({id: data.socketId});
     }
   });
+  return () => socket.unsubscribe(fullChannel);
 }

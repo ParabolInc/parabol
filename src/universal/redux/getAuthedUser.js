@@ -13,13 +13,14 @@ const customMutations = {
   updateUserProfile: `
   mutation {
     updateUserProfile(updatedUser: $updatedUser) {
-      preferredName
       id
+      picture
+      preferredName
     }
   }`
 };
 
-const updateTokenMutationHandlers = {
+const mutationHandlers = {
   updateUserProfile(optimisticVariables, queryResponse, currentResponse) {
     if (optimisticVariables) {
       Object.assign(currentResponse.user, optimisticVariables.updatedProfile);
@@ -39,7 +40,8 @@ const updateTokenMutationHandlers = {
 
 export const getAuthedOptions = (userId) => ({
   op: 'getAuthedUser',
+  key: userId,
   resolveCached: {user: () => userId},
-  mutationHandlers: updateTokenMutationHandlers,
+  mutationHandlers,
   customMutations
 });

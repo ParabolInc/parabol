@@ -2,6 +2,7 @@
 
 [![Slack Status](http://slackin.parabol.co/badge.svg)](http://slackin.parabol.co/)
 [![CircleCI](https://circleci.com/gh/ParabolInc/action.svg?style=svg)](https://circleci.com/gh/ParabolInc/action)
+[![codecov](https://codecov.io/gh/ParabolInc/action/branch/master/graph/badge.svg)](https://codecov.io/gh/ParabolInc/action)
 
 ## New Beta!
 
@@ -36,7 +37,7 @@ Action is a Node.js application based upon the
 
 | Concern            | Solution                                                  |
 |--------------------|-----------------------------------------------------------|
-| Server             | [Node 6](https://nodejs.org/)                             |
+| Server             | [Node 7](https://nodejs.org/)                             |
 | Server Framework   | [Express](http://expressjs.com/)                          |
 | Database           | [RethinkDB](https://www.rethinkdb.com/)                   |
 | Data Transport     | [GraphQL](https://github.com/graphql/graphql-js)          |
@@ -44,7 +45,8 @@ Action is a Node.js application based upon the
 | Client State       | [Redux](http://redux.js.org/)                             |
 | Client Data Cache  | [Cashay](https://github.com/mattkrick/cashay)             |
 | Front-end Views    | [React](https://facebook.github.io/react/)                |
-| Styling            | [aphrodite](https://github.com/khan/aphrodite) |
+| Styling            | [aphrodite](https://github.com/khan/aphrodite)            |
+| Unit Testing       | [jest](https://facebook.github.io/jest)                   |
 
 Action is programmed in ECMAscript ES6/7 (including async/await).
 Transpilation is provided by [babel](https://github.com/babel/babel).
@@ -55,7 +57,7 @@ Transpilation is provided by [babel](https://github.com/babel/babel).
 
 #### Prerequisites
 
-Action requires Node.js >=5.10.1 (we're using 6.2.0 in development).
+Action requires Node.js >=7.6.0 (we're using 7.6.0 in development).
 We recommend using [n](https://github.com/tj/n) to install and manage your
 node versions.
 
@@ -63,13 +65,15 @@ Action also depends on [RethinkDB](https://rethinkdb.com/). Make sure
 you have it installed. If you have OSX, we recommend homebrew so
 upgrades are as easy as `brew update && brew upgrade rethinkdb`
 
+Action also uses [yarn](https://yarnpkg.com/) which can be installed by running `npm install -g yarn`
+
 #### Source code
 
 ```bash
 $ git clone https://github.com/ParabolInc/action.git
 $ cd action
 $ rethinkdb # in a separate window
-$ npm install
+$ yarn
 $ npm run quickstart
 ```
 _Remember: if RethinkDB is running locally, you can reach its dashboard at
@@ -90,6 +94,7 @@ In this mode, webpack will hot swap your updated client modules without
 needing to restarting the development server.
 
 ```bash
+$ npm run build
 $ npm run dev
 ```
 [http://localhost:3000/](http://localhost:3000/)
@@ -152,41 +157,28 @@ get involved and how to get compensated.
 
 ## Releases
 
+This table only includes major and minor releases. For patches
+and more details on all releases, refer to [CHANGELOG.md](./CHANGELOG.md).
+
 | Release | Summary                                    |
 |---------|--------------------------------------------|
-| v0.13.5 | Various fixed                              |
-| v0.13.4 | Fix email validation                       |
-| v0.13.3 | Validations, S3 enhancements, fixes        |
-| v0.13.2 | Add 'player joined' message. Fixed #543    |
-| v0.13.1 | Filter by member on team dashboard, fixes  |
+| v0.16.0 | Orgs, trialing, billing; fixes & more      |
+| v0.15.0 | Prompt to upgrade on new version, Markdown |
+| v0.14.0 | Secure user avatar upload to S3 bucket     |
 | v0.13.0 | Drag-and-drop added everywhere, bug fixes  |
-| v0.12.1 | Fix for #518; redirect removed user        |
 | v0.12.0 | Added team settings, modal components      |
 | v0.11.0 | Added S3 deployment, minor UI improvements |
 | v0.10.0 | Can add new teams, many fixes              |
-| v0.9.6  | Auto-elect new facilitator, fixes          |
-| v0.9.5  | Fixes #433, #440, #445                     |
-| v0.9.4  | Fixes #428, #429, #430, and #431           |
 | v0.9.3  | Emails meeting summary, add Segment events |
-| v0.8.1  | Added sentry.io. Many bug fixes            |
 | v0.8.0  | Added end of meeting summary               |
-| v0.7.5  | Added temporary end meeting logic, fixes   |
-| v0.7.4  | Auth0 production options, numerous fixes   |
-| v0.7.1  | Fixes #322, #323, #334, #335, #336         |
 | v0.7.0  | Switch to aphrodite, me dashboard updates  |
-| v0.6.3  | Agenda processing order fix for issue #294 |
-| v0.6.2  | Processing of meeting agenda to projects   |
 | v0.6.1  | Agenda items, @live directive, bug fixes   |
 | v0.5.3  | Add Project Updates, rallies, segment.io   |
-| v0.4.1  | Added Me Dash., multiplayer editing states |
 | v0.4.0  | Add Lobby, Check-in, start of Team Dash.   |
 | v0.3.0  | Add Welcome journey, redux-storage         |
 | v0.2.0  | Add first pass at team creation/invitation |
 | v0.1.0  | Things got a whole lot meatier             |
 | v0.0.1  | Developer preview and architecture demo    |
-
-See [CHANGELOG.md](./CHANGELOG.md) for greater detail on changes between
-releases.
 
 ## About
 
@@ -202,14 +194,8 @@ Authored and maintained by [Parabol](http://parabol.co).
 
 Copyright 2016 Parabol, Inc.
 
-Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0 (the
-"License"); you may not use this software except in compliance with the
-License.  You may obtain a copy of the License at
+Action is dual-licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
+Version 3.0 while holding, at its sole discretion, the right to create
+new licenses. For details please read [LICENSE](LICENSE).
 
-    https://www.gnu.org/licenses/agpl-3.0.en.html
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+See [CHANGELOG.md](./CHANGELOG.md)

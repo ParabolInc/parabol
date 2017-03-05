@@ -9,6 +9,8 @@ import {
 import {Menu, MenuItem} from 'universal/modules/menu';
 import {filterTeam} from 'universal/modules/userDashboard/ducks/userDashDuck';
 import DashFilterToggle from 'universal/components/DashFilterToggle/DashFilterToggle';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite-local-styles/no-important';
 
 const inlineBlock = {
   display: 'inline-block',
@@ -17,41 +19,50 @@ const inlineBlock = {
   verticalAlign: 'middle'
 };
 
+const originAnchor = {
+  vertical: 'bottom',
+  horizontal: 'right'
+};
+
+const targetAnchor = {
+  vertical: 'top',
+  horizontal: 'right'
+};
+
 const UserProjectsHeader = (props) => {
-  const {dispatch, teams, teamFilterId, teamFilterName} = props;
+  const {dispatch, styles, teams, teamFilterId, teamFilterName} = props;
+  const toggle = <DashFilterToggle label={teamFilterName}/>;
   return (
     <DashSectionHeader>
-      <DashSectionHeading icon="calendar" label="My Projects" />
+      <DashSectionHeading icon="calendar" label="My Projects"/>
       <DashSectionControls>
         {/* TODO: needs minimal, inline dropdown */}
         <DashSectionControl>
-          <b style={inlineBlock}>Show Actions & Projects for</b><span style={inlineBlock}>:</span>
-          {' '}
-          <Menu
-            label="Filter by:"
-            menuKey="UserDashFilterTeam"
-            menuOrientation="right"
-            toggle={DashFilterToggle}
-            toggleLabel={teamFilterName}
-            toggleHeight={ui.dashSectionHeaderLineHeight}
-            verticalAlign="top"
-            zIndex="500"
-          >
-            <MenuItem
-              isActive={teamFilterId === null}
-              key={'teamFilterNULL'}
-              label={'All teams'}
-              onClick={() => dispatch(filterTeam(null, 'All teams'))}
-            />
-            {teams.map((team) =>
+          <div className={css(styles.filterRow)}>
+            <b style={inlineBlock}>Show Actions & Projects for</b><span style={inlineBlock}>:</span>
+            {' '}
+            <Menu
+              label="Filter by:"
+              originAnchor={originAnchor}
+              targetAnchor={targetAnchor}
+              toggle={toggle}
+            >
               <MenuItem
-                isActive={team.id === teamFilterId}
-                key={`teamFilter${team.id}`}
-                label={team.name}
-                onClick={() => dispatch(filterTeam(team.id, team.name))}
+                isActive={teamFilterId === null}
+                key={'teamFilterNULL'}
+                label={'All teams'}
+                onClick={() => dispatch(filterTeam(null))}
               />
-            )}
-          </Menu>
+              {teams.map((team) =>
+                <MenuItem
+                  isActive={team.id === teamFilterId}
+                  key={`teamFilter${team.id}`}
+                  label={team.name}
+                  onClick={() => dispatch(filterTeam(team.id, team.name))}
+                />
+              )}
+            </Menu>
+          </div>
         </DashSectionControl>
       </DashSectionControls>
     </DashSectionHeader>
@@ -61,9 +72,17 @@ const UserProjectsHeader = (props) => {
 UserProjectsHeader.propTypes = {
   children: PropTypes.any,
   dispatch: PropTypes.func,
+  styles: PropTypes.object,
   teams: PropTypes.array,
   teamFilterId: PropTypes.string,
   teamFilterName: PropTypes.string
 };
 
-export default UserProjectsHeader;
+const styleThunk = () => ({
+  filterRow: {
+    display: 'flex',
+    justifyContent: 'flex-end'
+  }
+});
+
+export default withStyles(styleThunk)(UserProjectsHeader);

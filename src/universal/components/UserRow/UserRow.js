@@ -3,7 +3,8 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
-import UserTag from 'universal/components/UserTag/UserTag';
+import Row from 'universal/components/Row/Row';
+import Tag from 'universal/components/Tag/Tag';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 
 const UserRow = (props) => {
@@ -18,7 +19,7 @@ const UserRow = (props) => {
     styles
   } = props;
   return (
-    <div className={css(styles.userRow)}>
+    <Row>
       <div className={css(styles.userAvatar)}>
         {picture ?
           <Avatar hasBadge={false} picture={picture} size="small"/> :
@@ -32,10 +33,10 @@ const UserRow = (props) => {
               {preferredName}
             </div>
             {isLead &&
-              <UserTag colorPalette="light" label="Lead" />
+              <Tag colorPalette="light" label="Lead" />
             }
             {isAdmin &&
-              <UserTag colorPalette="gray" label="Admin" />
+              <Tag colorPalette="gray" label="Admin" />
             }
           </div> :
           <div className={css(styles.nameAndTags)}>
@@ -58,7 +59,7 @@ const UserRow = (props) => {
           {actions}
         </div>
       }
-    </div>
+    </Row>
   );
 };
 
@@ -78,14 +79,6 @@ UserRow.defaultProps = {
 };
 
 const styleThunk = () => ({
-  userRow: {
-    alignItems: 'center',
-    borderBottom: `1px solid ${appTheme.palette.mid20l}`,
-    display: 'flex',
-    padding: '1rem 0 1rem 1rem',
-    width: '100%'
-  },
-
   userAvatar: {
     // Define
   },
@@ -95,8 +88,9 @@ const styleThunk = () => ({
   },
 
   userActions: {
+    alignItems: 'center',
     flex: 1,
-    textAlign: 'right'
+    justifyContent: 'flex-end'
   },
 
   nameAndTags: {

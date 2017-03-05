@@ -5,9 +5,9 @@ import {
   GraphQLBoolean,
   GraphQLID
 } from 'graphql';
-import {requireSUOrTeamMember} from '../authorization';
+import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import makeAgendaItemSchema from 'universal/validation/makeAgendaItemSchema';
-import {handleSchemaErrors} from '../utils';
+import {handleSchemaErrors} from 'server/utils/utils';
 
 export default {
   createAgendaItem: {
@@ -19,12 +19,13 @@ export default {
         description: 'The new task including an id, teamMemberId, and content'
       }
     },
-    async resolve(source, {newAgendaItem}, {authToken}) {
+    async resolve(source, {newAgendaItem}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
       const [teamId] = newAgendaItem.id.split('::');
       requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
 
       // VALIDATION
       const schema = makeAgendaItemSchema();
@@ -54,13 +55,14 @@ export default {
         description: 'The agenda item unique id'
       }
     },
-    async resolve(source, {id}, {authToken}) {
+    async resolve(source, {id}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
       // id is of format 'teamId::restOfAgendaItemId'
       const [teamId] = id.split('::');
       requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
 
       // RESOLUTION
       await r.table('AgendaItem').get(id).delete();
@@ -76,12 +78,13 @@ export default {
         description: 'The updated item including an id, content, status, sortOrder'
       }
     },
-    async resolve(source, {updatedAgendaItem}, {authToken}) {
+    async resolve(source, {updatedAgendaItem}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
       const [teamId] = updatedAgendaItem.id.split('::');
       requireSUOrTeamMember(authToken, teamId);
+      requireWebsocket(socket);
 
       // VALIDATION
       const schema = makeAgendaItemSchema();

@@ -1,10 +1,10 @@
 import parseChannel from 'universal/utils/parseChannel';
-import {EDIT, PRESENT, SOUNDOFF, PRESENCE, KICK_OUT} from 'universal/subscriptions/constants';
+import {EDIT, PRESENT, SOUNDOFF, PRESENCE, REJOIN_TEAM} from 'universal/subscriptions/constants';
 
 export default function mwPresencePublishOut(req, next) {
-  const {channel, variableString: channelKey} = parseChannel(req.channel);
+  const {channel} = parseChannel(req.channel);
   if (channel === PRESENCE) {
-    const {type, targetId, userId} = req.data;
+    const {type, targetId} = req.data;
     if (type === SOUNDOFF) {
       // don't ping yourself
       if (targetId === req.socket.id) {
@@ -25,29 +25,10 @@ export default function mwPresencePublishOut(req, next) {
         next(true);
         return;
       }
-    } else if (type === KICK_OUT) {
+      // reinvited to the team
+    } else if (type === REJOIN_TEAM) {
       const authToken = req.socket.getAuthToken();
-      if (authToken.sub === userId) {
-        const subs = req.socket.subscriptions();
-        subs.forEach((sub) => {
-          if (sub.indexOf(channelKey) !== -1) {
-            // remove from client cache
-            req.socket.emit(sub, {
-              type: 'remove',
-              fields: {
-                id: channelKey
-              }
-            });
-            // stop listening
-            req.socket.kickOut(sub, 'Removed from team');
-          }
-        });
-        const idxToRemove = authToken.tms.indexOf(channelKey);
-        if (idxToRemove !== -1) {
-          authToken.tms.splice(idxToRemove, 1);
-        }
-        // replace token with one that doesn't include the teamId in tms
-        req.socket.setAuthToken(authToken);
+      if (authToken.sub === req.data.sender) {
         next(true);
         return;
       }

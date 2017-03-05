@@ -1,21 +1,26 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import NewTeamForm from 'universal/modules/teamDashboard/components/NewTeamForm/NewTeamForm';
+import NewTeamFormContainer from 'universal/modules/newTeam/containers/NewTeamForm/NewTeamFormContainer';
 import {connect} from 'react-redux';
+import DashboardWrapper from 'universal/components/DashboardWrapper/DashboardWrapper';
+import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
+import {DragDropContext as dragDropContext} from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 
 const NewTeam = (props) => {
-  const {dispatch, styles} = props;
+  const {dispatch, params: {newOrg}} = props;
   return (
-    <div className={css(styles.newTeamView)}>
-      <NewTeamForm dispatch={dispatch}/>
-    </div>
+    <DashboardWrapper title="User Dashboard">
+      <NewTeamFormContainer dispatch={dispatch} newOrgRoute={Boolean(newOrg)}/>
+    </DashboardWrapper>
   );
 };
 
 NewTeam.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  styles: PropTypes.object,
+  params: PropTypes.shape({
+    newOrg: PropTypes.object
+  })
 };
 
 const styleThunk = () => ({
@@ -24,4 +29,10 @@ const styleThunk = () => ({
   }
 });
 
-export default connect()(withStyles(styleThunk)(NewTeam));
+export default
+dragDropContext(HTML5Backend)(
+  socketWithPresence(
+    connect()(withStyles(styleThunk)(NewTeam)
+    )
+  )
+);

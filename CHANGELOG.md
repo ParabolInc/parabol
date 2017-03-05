@@ -4,7 +4,122 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v0.13.5 - 08-Dec-2016
+## v0.16.2 - 4-Mar-2017
+### Added
+- Rejoin facilitator button
+- Switched to [migrate-rethinkdb](https://github.com/ParabolInc/migrate-rethinkdb)
+
+## v0.16.1 - 2-Mar-2017
+### Added
+- New unit tests
+
+### Fixed
+- Fix upcoming vs pending on invoices
+- #751 production deploy, assets.json not found
+- #753 cannot read property 'bestCursor' of undefined
+- #755 filter handle alignment regression
+- #757 add new team, always shows orgs as "Loading..."
+
+## v0.16.0 - 25-Feb-2017
+### Added
+- Organizations: teams can be tied together into organizations
+- User trials & billing: hey look! A business model!
+   - New & grandfathered users start a 30 day trial
+   - Trial & access expiry
+   - Payment information & stripe integration
+   - Invoicing
+- Notifications: a new channel to communicate with our users
+- Portals: we're using [react-portal-hoc](https://github.com/mattkrick/react-portal-hoc)
+  to implement our dropdown menus and modals
+- Updated to Node.js 7.6.0, native async/await
+- Switched to [jest](https://facebook.github.io/jest/) for unit testing
+   - Added first suite of server unit tests
+- Refactored drag-and-drop support
+- Refactored `KICK_OUT` message onto `USER_MEMO` websocket channel
+- Much improved development build time by dll-izing vendor package
+   - See: `npm run build:dll`
+- Added `npm run start:tunnel` to start [ultrahook](http://www.ultrahook.com/)
+  to facilitate Stripe & future webhook development
+- Server data validation pattern
+- Badge component
+- Presence added to dashboards (#523)
+
+### Fixed
+- #253 auth0 token tms out of sync with rethinkdb
+- #277 graphql browser CSS trouble
+- #437 TypeError: Cannot read property 'openArea' of undefined
+- #517 server exception encountered when generating meeting summary
+- #530 duplicate team selection after reordering
+- #558 when renaming on team settings, validation styling bug
+- #573 Amazon S3 returning 403 for VPN clients
+- #578 meeting Stuck at First Call
+- #583 allow production build without S3
+- #598 fix GraphQL v0.8.0 breaking changes
+- #608 square avatars are square (with rounded styling)
+- #718 toast notification for leaving a team copy
+- #725 acceptInvitation race condition
+
+## v0.15.3 - 11-Feb-2017
+### Added
+- OutcomeCard components (Projects, Action) now re-render their last-updated
+  time on a smart timer
+### Fixed
+- Generate 'Meeting Completed' on server-side, client was not reliably
+  sending this event
+
+## v0.15.2 - 01-Feb-2017
+### Fixed
+- Incremented `package.json` version to match tag – oops!
+
+## v0.15.1 - 31-Jan-2017
+### Added
+- `(<TAB> saves)` string to OutcomeCard components when editing
+- `npm run test:xunit` command for CircleCI 2.0
+
+## v0.15.0 - 30-Jan-2017
+### Added
+- When version is upgraded, we now emit a toast asking the user to upgrade
+  their client version
+- Markdown support added to Action and Project cards
+
+## v0.14.2 - 29-Jan-2017
+### Fixes
+- #646 the first-time message meeting completion message was not displaying
+- #659 auth0 profile picture meta-information now updated when user changes
+  profile image
+
+## v0.14.1 - 16-Jan-2017
+### Added
+- Adopted CircleCI 2.0 beta. See [circle.yml](circle.yml). Now deploys
+  securely to `staging` and `production` servers directly from CI servers.
+- Added three seed projects for new team leaders as a simplified on-boarding
+  experience before we implement more immersive tutorial. Implements #631.
+- Segment.io event tracking for welcome wizard during step3 when users only
+  want to kick the tires (#638)
+
+### Removed
+- Segment.io analytics from `npm run dev` and `npm run start` when running on
+  development machine.
+- Only allow for /email route in development (#637)
+
+### Fixed
+- Fixes CircleCI caching issues building native bcrypt modules.
+
+## v0.14.0 - 09-Jan-2017
+### Added
+- Implements #595; upload of user avatar images to S3
+  - Works by securely signing S3 PutObject URL
+    see [documentation](./docs/s3.md)
+- `npm run build:deploy` and `npm run build:min` commands
+
+## v0.13.6 - 20-Dec-2016
+### Added
+- User impersonation, login as a user with knowing their credentials on route
+  `/admin/impersonate/:userid`
+- Expanded requireAuthAndRole with optional args
+- Added segment.io event on 'New Team' creation
+
+## v0.13.5 - 12-Dec-2016
 ### Fixed
 - #556 archived cards no longer let you change the owner
 - #557 blur agenda item input after submit

@@ -5,11 +5,13 @@ import thunkMiddleware from 'redux-thunk';
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import Html from './Html';
+import printStyles from 'universal/styles/theme/printStyles';
 const metaAndTitle = `
   <meta charSet="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta property="description" content="Team transparency, made easy."/>
   <title>Action | Parabol Inc</title>
+  <style>${printStyles}</style>
 `;
 
 export default function createSSR(req, res) {
@@ -52,6 +54,7 @@ export default function createSSR(req, res) {
     </head>
     <body>
       <div id="root"></div>
+      <script src="/static/vendors.dll.js"></script>
       <script src="/static/app.js"></script>
     </body>
     </html>

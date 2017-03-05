@@ -1,11 +1,26 @@
 /**
  * Big stuff:
  */
+export const APP_CDN_USER_ASSET_SUBDIR = '/store';
+export const APP_MAX_AVATAR_FILE_SIZE = 1024 * 1024;
 export const APP_NAME = 'Action';
 export const APP_REDUX_KEY = `${APP_NAME}:redux`;
-// eslint-disable-next-line global-require
-export const APP_VERSION = require('../../../package.json').version;
-export const APP_VERSION_KEY = `${APP_NAME}:version`;
+
+/**
+ * Upgrade pending states, called when the server version changes.
+ * Must be a string:
+ *
+ *    APP_UPGRADE_PENDING_FALSE: no upgrade needed
+ *   APP_UPGRADE_PENDING_RELOAD: client reload needed
+ *     APP_UPGRADE_PENDING_DONE: upgrade complete
+ *
+ * Stored in localSession by APP_UPGRADE_PENDING_KEY.
+ */
+export const APP_UPGRADE_PENDING_KEY = `${APP_NAME}:upgradePending`;
+export const APP_UPGRADE_PENDING_FALSE = 'false';
+export const APP_UPGRADE_PENDING_RELOAD = 'reload';
+export const APP_UPGRADE_PENDING_DONE = 'done';
+export const APP_VERSION_KEY = `${APP_NAME}:version`;         // in localStorage
 export const APP_WEBPACK_PUBLIC_PATH_DEFAULT = '/static/';
 
 /* Phases */
@@ -40,3 +55,67 @@ export const MIN_SORT_RESOLUTION = 1e-20;
 export const MEETING = 'meeting';
 export const TEAM_DASH = 'teamDash';
 export const USER_DASH = 'userDash';
+
+/* NotificationRow Types */
+// Sent to billing leaders when their trial will expire in < 2 weeks
+// varList = [trialExpiresAt]
+export const TRIAL_EXPIRES_SOON = 'TRIAL_EXPIRES_SOON';
+// Sent to billing leaders when their trial has expired
+// varList = [trialExpiresAt]
+export const TRIAL_EXPIRED = 'TRIAL_EXPIRED';
+// Sent to billing leaders when a reoccuring payment gets rejected
+// varList = [last4, brand]
+export const PAYMENT_REJECTED = 'PAYMENT_REJECTED';
+// Sent to billing leaders when an orgMember attempts to add a non-orgMember to a team
+// [inviterId, inviterName, inviteeEmail, invitedTeamId, invitedTeamName]
+export const REQUEST_NEW_USER = 'REQUEST_NEW_USER';
+// Sent to the orgMember that generated the new user request
+// [reason, billingLeaderName, inviteeEmail]
+export const DENY_NEW_USER = 'DENY_NEW_USER';
+// sent to the orgMember that just got promoted, goes away if they get demoted before acknowledging it
+// [orgName]
+export const PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER';
+
+
+export const notificationTypes = [
+  TRIAL_EXPIRES_SOON,
+  TRIAL_EXPIRED,
+  PAYMENT_REJECTED,
+  PROMOTE_TO_BILLING_LEADER,
+  REQUEST_NEW_USER,
+  DENY_NEW_USER
+];
+
+export const billingLeaderTypes = [
+  TRIAL_EXPIRES_SOON,
+  TRIAL_EXPIRED,
+  PAYMENT_REJECTED,
+  REQUEST_NEW_USER
+];
+
+/* User Settings */
+export const SETTINGS = 'settings';
+export const ORGANIZATIONS = 'organizations';
+export const NOTIFICATIONS = 'notifications';
+export const settingsOrder = [SETTINGS, ORGANIZATIONS, NOTIFICATIONS];
+
+/* Org Settings */
+export const BILLING_PAGE = 'billing';
+export const MEMBERS_PAGE = 'members';
+
+/* User Org Roles */
+export const BILLING_LEADER = 'billingLeader';
+
+/* Stripe */
+// changing this does NOT change it in stripe, it just changes the UI
+export const MONTHLY_PRICE = 5;
+export const ADDED_USERS = 'ADDED_USERS';
+export const REMOVED_USERS = 'REMOVED_USERS';
+export const INACTIVITY_ADJUSTMENTS = 'INACTIVITY_ADJUSTMENTS';
+export const OTHER_ADJUSTMENTS = 'OTHER_ADJUSTMENTS';
+
+/* Invoice status variables */
+export const UPCOMING = 'UPCOMING';
+export const PENDING = 'PENDING';
+export const PAID = 'PAID';
+export const FAILED = 'FAILED';

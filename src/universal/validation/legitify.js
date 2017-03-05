@@ -95,7 +95,7 @@ const legitify = (expected) => (actual) => {
       if (typeof maybeValidator === 'function') {
         const monadicVal = new Legitity(actualValue);
         const {error, value} = maybeValidator(monadicVal);
-        if (actual.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(actual, key)) {
           data[key] = value;
         }
         if (error) {

@@ -21,11 +21,17 @@ export default function Html({store, entries, StyleSheetServer, renderProps}) {
   // const initialState = `window.__INITIAL_STATE__ = ${JSON.stringify(store.getState())}`;
   // <script dangerouslySetInnerHTML={{__html: initialState}}/>
   const {html, css} = StyleSheetServer.renderStatic(() => {
-    return renderToString(
-      <Provider store={store}>
-        <RouterContext {...renderProps} />
-      </Provider>
-    );
+    try {
+      return renderToString(
+        <Provider store={store}>
+          <RouterContext {...renderProps} />
+        </Provider>
+      );
+    } catch (e) {
+      console.log(`SSR exception: ${e}`);
+      console.trace();
+      return '<div>Error during render!</div>';
+    }
   });
   const dehydratedStyles = `window.__APHRODITE__ = ${JSON.stringify(css.renderedClassNames)}`;
   const clientOptions = `
@@ -43,8 +49,6 @@ export default function Html({store, entries, StyleSheetServer, renderProps}) {
         <link rel="stylesheet" type="text/css" href={fontAwesomeUrl}/>
         {/* segment.io analytics */}
         <script type="text/javascript" dangerouslySetInnerHTML={{__html: segmentSnippet}}/>
-        {/* sentry.io error reporting */}
-        <script src="https://cdn.ravenjs.com/3.7.0/raven.min.js" crossOrigin="anonymous"/>
       </head>
       <body>
         <script dangerouslySetInnerHTML={{__html: dehydratedStyles}}/>

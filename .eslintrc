@@ -9,41 +9,44 @@
   "env": {
     "browser": true,
     "node": true,
-    "mocha": true
+    "jest": true
   },
   "rules": {
+    "arrow-body-style": 0,
     "babel/generator-star-spacing": 0,
-    "react/no-multi-comp": 0,
+    "global-require": 0,
     "import/default": 0,
     "import/no-duplicates": 0,
     "import/named": 0,
     "import/namespace": 0,
     "import/no-unresolved": 0,
-    "import/no-named-as-default": 2,
-    "arrow-body-style": 0,
+    "import/no-named-as-default": 0,
     "comma-dangle": 0,
     "id-length": 0,
     "indent": [
       2,
       2,
       {
-        "SwitchCase": 1
+        "SwitchCase": 1,
       }
     ],
     "no-alert": 0,
     "no-console": 0,
     "no-param-reassign": 0,
     "no-confusing-arrow": 0,
+    "no-underscore-dangle": 0,
     "max-len": [
       1,
-      140
+      140,
     ],
     "object-curly-spacing": 0,
-    "react/jsx-space-before-closing": 0
+    "react/jsx-space-before-closing": 0,
+    "react/no-multi-comp": 0
   },
   "plugins": [
+    "import",
+    "jest",
     "react",
-    "import"
   ],
   "parser": "babel-eslint",
   "settings": {

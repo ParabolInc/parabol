@@ -63,11 +63,12 @@ const TeamInvite = props => {
     inviterName,
     inviterEmail,
     inviteeEmail,
+    inviteeName,
     // firstProject,
     teamName,
     inviteLink
   } = props;
-
+  const nameOrEmail = inviteeName || inviteeEmail;
   return (
     <Layout>
 
@@ -101,7 +102,7 @@ const TeamInvite = props => {
               <td style={{paddingLeft: '16px', paddingRight: '16px'}}>
                 <Callout fontSize={18} width="100%">
                   <b style={calloutTextStyle}>
-                    Hi <a href={`mailto:${inviteeEmail}`} style={{...colorWarm, textDecoration: 'none'}}>{inviteeEmail}</a>!<br />
+                    Hi <a href={`mailto:${inviteeEmail}`} style={{...colorWarm, textDecoration: 'none'}}>{nameOrEmail}</a>!<br />
                     {inviterName} has invited you to join a team on Action:
                   </b>
                   <EmptySpace height={12} />
@@ -149,16 +150,17 @@ const TeamInvite = props => {
 
 TeamInvite.propTypes = {
   inviterAvatar: PropTypes.string.isRequired,
+  inviteeName: PropTypes.string.isRequired,
+  inviteeEmail: PropTypes.string.isRequired,
   inviterName: PropTypes.string.isRequired,
   inviterEmail: PropTypes.string.isRequired,
-  inviteeEmail: PropTypes.string.isRequired,
   firstProject: PropTypes.string,
   teamName: PropTypes.string.isRequired,
   inviteLink: PropTypes.string.isRequired
 };
 
 export const teamInviteText = (props) => `
-Hello ${props.inviteeEmail},
+Hello ${props.inviteeName || props.inviteeEmail},
 
 ${props.inviterName} has invited you to join the ${props.teamName} on Action.
 

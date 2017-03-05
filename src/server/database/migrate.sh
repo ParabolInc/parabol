@@ -5,7 +5,7 @@ PWD="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJROOT="${PWD}/../../.."
 NMB="${PROJROOT}/node_modules/.bin"
 BABEL_NODE="${NMB}/babel-node"
-RETHINK_MIGRATE="${NMB}/rethink-migrate"
+RETHINK_MIGRATE="${NMB}/migrate-rethinkdb"
 
 ## Script defaults
 if [[ -z "${RETHINKDB_URL// }" ]]; then
@@ -14,7 +14,10 @@ fi
 
 
 ## Import .env
-if [ -e ${PROJROOT}/.env ]; then
+if [ "$NODE_ENV" = "test" -a -e ${PROJROOT}/.env.test ]; then
+    echo "NODE_ENV is test, loading .env.test..."
+    source ${PROJROOT}/.env.test
+elif [ -e ${PROJROOT}/.env ]; then
     source ${PROJROOT}/.env
 fi
 
@@ -23,7 +26,7 @@ fi
 case $1 in
 down)
   echo "will migrate down one"
-  MIGRATE_ARGS="down"
+  MIGRATE_ARGS="down --one"
   ;;
 down-all)
   echo "will migrate down all"
@@ -31,7 +34,7 @@ down-all)
   ;;
 up)
   echo "will migrate up one"
-  MIGRATE_ARGS="up"
+  MIGRATE_ARGS="up --one"
   ;;
 up-all)
   echo "will migrate up all"

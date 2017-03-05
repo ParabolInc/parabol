@@ -3,7 +3,7 @@ import Editable from 'universal/components/Editable/Editable.js';
 import {cashay} from 'cashay';
 import {reduxForm, Field} from 'redux-form';
 import appTheme from 'universal/styles/theme/appTheme';
-import makeStep2Schema from 'universal/validation/makeStep2Schema';
+import editTeamNameValidation from './editTeamNameValidation';
 
 const fieldStyles = {
   color: appTheme.palette.dark10d,
@@ -13,17 +13,20 @@ const fieldStyles = {
 };
 
 const validate = (values) => {
-  const schema = makeStep2Schema('teamName');
+  const schema = editTeamNameValidation();
   return schema(values).errors;
 };
 
 const EditTeamName = (props) => {
   const {teamName, teamId, handleSubmit} = props;
-  const updateEditable = (submissionData) => {
+  const updateEditable = async (submissionData) => {
+    const schema = editTeamNameValidation();
+    const {data: {teamName: validTeamName}} = schema(submissionData);
+
     const variables = {
       updatedTeam: {
         id: teamId,
-        name: submissionData.teamName
+        name: validTeamName
       }
     };
     cashay.mutate('updateTeamName', {variables});

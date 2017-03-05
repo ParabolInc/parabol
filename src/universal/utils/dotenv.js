@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+import dotenvExpand from 'dotenv-expand';
 
 /*
  * getDotenv()
@@ -7,9 +9,11 @@
  * Returns true.
  */
 export function getDotenv() {
-  var dotenv = require('dotenv');              // eslint-disable-line
-  var dotenvExpand = require('dotenv-expand'); // eslint-disable-line
-  var myEnv = dotenv.config({silent: true});   // eslint-disable-line
+  const myConfig = {silent: true};
+  if (process.env.NODE_ENV === 'test') {
+    myConfig.path = '.env.test';
+  }
+  const myEnv = dotenv.config(myConfig);
   dotenvExpand(myEnv);
 
   return true;

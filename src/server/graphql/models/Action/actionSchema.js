@@ -4,10 +4,10 @@ import {
   GraphQLID,
   GraphQLString,
   GraphQLFloat,
-  GraphQLBoolean
+  GraphQLBoolean,
+  GraphQLInputObjectType
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
-import {nonnullifyInputThunk} from '../utils';
 
 export const Action = new GraphQLObjectType({
   name: 'Action',
@@ -47,23 +47,23 @@ export const Action = new GraphQLObjectType({
   })
 });
 
-const actionInputThunk = () => ({
-  id: {type: GraphQLID, description: 'The unique action ID'},
-  agendaId: {
-    type: GraphQLID,
-    description: 'the agenda item that created this project, if any'
-  },
-  content: {type: GraphQLString, description: 'The body of the action. If null, it is a new action.'},
-  isComplete: {
-    type: GraphQLBoolean,
-    description: 'Marks the item as checked off'
-  },
-  sortOrder: {
-    type: GraphQLFloat,
-    description: 'the per-status sort order for the user dashboard'
-  },
-  teamMemberId: {type: GraphQLID, description: 'The team member ID of the person creating the action (optional)'}
+export const ActionInput = new GraphQLInputObjectType({
+  name: 'ActionInput',
+  fields: () => ({
+    id: {type: GraphQLID, description: 'The unique action ID'},
+    agendaId: {
+      type: GraphQLID,
+      description: 'the agenda item that created this project, if any'
+    },
+    content: {type: GraphQLString, description: 'The body of the action. If null, it is a new action.'},
+    isComplete: {
+      type: GraphQLBoolean,
+      description: 'Marks the item as checked off'
+    },
+    sortOrder: {
+      type: GraphQLFloat,
+      description: 'the per-status sort order for the user dashboard'
+    },
+    teamMemberId: {type: GraphQLID, description: 'The team member ID of the person creating the action (optional)'}
+  })
 });
-
-export const CreateActionInput = nonnullifyInputThunk('CreateActionInput', actionInputThunk, ['id', 'teamMemberId']);
-export const UpdateActionInput = nonnullifyInputThunk('UpdateActionInput', actionInputThunk, ['id']);
