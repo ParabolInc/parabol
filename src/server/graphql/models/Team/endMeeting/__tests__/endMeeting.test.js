@@ -8,6 +8,7 @@ import MockDB from 'server/__tests__/setup/MockDB';
 import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
 import socket from 'server/__mocks__/socket';
 import endMeeting from 'server/graphql/models/Team/endMeeting/endMeeting';
+import * as resetMeeting from 'server/graphql/models/Team/endMeeting/resetMeeting';
 
 MockDate.set(__now);
 console.error = jest.fn();
@@ -24,68 +25,23 @@ describe('endMeeting', () => {
     const meetingId = mockDB.context.meeting.id;
     const teamId = mockDB.context.team.id;
     const teamMemberIds = teamMember.filter((tm) => tm.teamId === teamId).map(({id}) => id);
+
+    const mockFn = resetMeeting.default = jest.fn();
+    //
     // TEST
     await endMeeting.resolve(undefined, {teamId}, {authToken, socket});
-
     // VERIFY
     const db = await fetchAndTrim({
+      agendaItem: r.table('AgendaItem').getAll(teamId, {index: 'teamId'}).orderBy('teamMemberId'),
       action: r.table('Action').getAll(r.args(teamMemberIds), {index: 'teamMemberId'}).orderBy('teamMemberId'),
       project: r.table('Project').getAll(r.args(teamMemberIds), {index: 'teamMemberId'}).orderBy('teamMemberId'),
       meeting: r.table('Meeting').get(meetingId),
       team: r.table('Team').get(teamId),
-
+      teamMember: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).orderBy('preferredName'),
     }, trimSnapshot);
     expect(db).toMatchSnapshot();
-    await new Promise(res => setTimeout(() => res(), 100));
+    expect(mockFn).toBeCalledWith(teamId);
   });
-  //
-  // test('updates the content of the action', async() => {
-  //   // SETUP
-  //   const r = getRethink();
-  //   const trimSnapshot = new TrimSnapshot();
-  //   const mockDB = new MockDB();
-  //   const {action, user} = await mockDB.init()
-  //     .newAction();
-  //   const actionId = action[0].id;
-  //   const authToken = mockAuthToken(user[7]);
-  //
-  //   // TEST
-  //   const updatedAction = {
-  //     id: actionId,
-  //     content: 'Updated content'
-  //   };
-  //   await endMeeting.resolve(undefined, {updatedAction}, {authToken, socket});
-  //
-  //   // VERIFY
-  //   const db = await fetchAndTrim({
-  //     action: r.table('Action').get(actionId),
-  //   }, trimSnapshot);
-  //   expect(db).toMatchSnapshot();
-  // });
-  //
-  // test('updates the status of the action', async() => {
-  //   // SETUP
-  //   const r = getRethink();
-  //   const trimSnapshot = new TrimSnapshot();
-  //   const mockDB = new MockDB();
-  //   const {action, user} = await mockDB.init()
-  //     .newAction();
-  //   const actionId = action[0].id;
-  //   const authToken = mockAuthToken(user[7]);
-  //
-  //   // TEST
-  //   const updatedAction = {
-  //     id: actionId,
-  //     isComplete: true
-  //   };
-  //   await endMeeting.resolve(undefined, {updatedAction}, {authToken, socket});
-  //
-  //   // VERIFY
-  //   const db = await fetchAndTrim({
-  //     action: r.table('Action').get(actionId),
-  //   }, trimSnapshot);
-  //   expect(db).toMatchSnapshot();
-  // });
 
   test('throws when no websocket is present', async() => {
     const authToken = {};

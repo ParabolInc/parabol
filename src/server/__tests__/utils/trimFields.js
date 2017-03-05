@@ -1,6 +1,6 @@
 export default {
   action: ['id', 'agendaId', 'createdBy', 'teamMemberId', 'userId'],
-  agendaItem: ['id', 'teamId', 'teamMemberId'],
+  agendaItem: ['id', 'createdBy', 'teamId', 'teamMemberId'],
   meeting: [
     'id',
     'actions.id',
@@ -20,6 +20,6 @@ export default {
   project: ['id', 'agendaId', 'createdBy', 'teamId', 'teamMemberId', 'userId'],
   projectHistory: ['id', 'projectId', 'teamMemberId'],
   team: ['id', 'activeFacilitator', 'meetingId', 'orgId'],
-  teamMember: ['id', 'teamId', 'userId'],
+  teamMember: ['id', 'checkInOrder', 'teamId', 'userId'],
   user: ['id', 'tms', 'trialOrg', 'userOrgs.id']
 };
