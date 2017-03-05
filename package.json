@@ -29,7 +29,7 @@
     "build:client-deploy": "NODE_ENV=production WEBPACK_DEPLOY=true WEBPACK_MIN=true webpack --config ./webpack/prod.babel.js",
     "build:server": "NODE_ENV=production webpack --config ./webpack/server.babel.js",
     "db:migrate": "./src/server/database/migrate.sh up-all",
-    "db:migrate-testing": "NODE_ENV=test ./src/server/database/migrate.sh up-all",
+    "db:migrate-testing": "NODE_ENV=test ./src/server/database/migrate.sh up-all && NODE_ENV=test node ./src/server/__tests__/setup/softenDurability.babel.js",
     "test": "jest --bail --coverage && codecov",
     "test:intranetToken": "node ./src/server/utils/getIntranetToken.babel.js",
     "db:migrate-up": "./src/server/database/migrate.sh up",
