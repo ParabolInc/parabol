@@ -7,29 +7,25 @@ exports.up = async(r) => {
       id: 'auth0|5797eb5d12664ba4675745b9',
       email: 'taya@prbl.co',
       picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/58264149ff7c5065482011ce/1478902205921/2016+Taya+Mueller.jpg?format=300w',
-      preferredName: 'taya',
-      tms: ['team123']
+      preferredName: 'taya'
     },
     {
       id: 'auth0|58a861e682b0ca077463c577',
       email: 'jordan@prbl.co',
       picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/5826412fff7c506548200d81/1478902214166/2016+Jordan+Husney.jpg?format=300w',
-      preferredName: 'jordan',
-      tms: ['team123', 'team456']
+      preferredName: 'jordan'
     },
     {
       id: 'auth0|5797e83170dddc395d8d1675',
       email: 'terry@prbl.co',
       picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/58264194ff7c506548201522/1478902180686/2016+Terry+Acker.png?format=300w',
-      preferredName: 'terry',
-      tms: ['team123', 'team456']
+      preferredName: 'terry'
     },
     {
       id: 'auth0|5797eb9712664ba4675745c3',
       email: 'matt@prbl.co',
       picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/5826415aff7c506548201290/1478902195409/2016+Matt+Krick.png?format=300w',
-      preferredName: 'matt',
-      tms: ['team123', 'team456']
+      preferredName: 'matt'
     }
   ];
   const team = {
@@ -51,7 +47,7 @@ exports.up = async(r) => {
       picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/5826412fff7c506548200d81/1478902214166/2016+Jordan+Husney.jpg?format=300w',
       preferredName: 'jordan',
       teamId: 'team123',
-      userId: 'auth0|57a8fb6cab6c18473e47f518'
+      userId: 'auth0|58a861e682b0ca077463c577'
     },
     {
       id: 'auth0|5797e83170dddc395d8d1675::team123',
@@ -103,7 +99,7 @@ exports.up = async(r) => {
       picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/5826412fff7c506548200d81/1478902214166/2016+Jordan+Husney.jpg?format=300w',
       preferredName: 'jordan',
       teamId: 'team456',
-      userId: 'auth0|57a8fb6cab6c18473e47f518'
+      userId: 'auth0|58a861e682b0ca077463c577'
     },
     {
       id: 'auth0|5797e83170dddc395d8d1675::team456',
