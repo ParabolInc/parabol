@@ -4,7 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import Row from 'universal/components/Row/Row';
-import UserTag from 'universal/components/UserTag/UserTag';
+import Tag from 'universal/components/Tag/Tag';
 import FontAwesome from 'react-fontawesome';
 import makeDateString from 'universal/utils/makeDateString';
 import makeMonthString from 'universal/utils/makeMonthString';
@@ -43,7 +43,7 @@ const InvoiceRow = (props) => {
               {makeMonthString(endAt)}
             </div>
             {isEstimate &&
-              <UserTag colorPalette="light" label="Current Estimate"/>
+              <Tag colorPalette="light" label="Current Estimate"/>
             }
           </div>
           <div className={css(styles.infoRowRight)}>

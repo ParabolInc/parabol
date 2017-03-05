@@ -5,7 +5,7 @@ PWD="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJROOT="${PWD}/../../.."
 NMB="${PROJROOT}/node_modules/.bin"
 BABEL_NODE="${NMB}/babel-node"
-RETHINK_MIGRATE="${NMB}/rethink-migrate"
+RETHINK_MIGRATE="${NMB}/migrate-rethinkdb"
 
 ## Script defaults
 if [[ -z "${RETHINKDB_URL// }" ]]; then
@@ -26,7 +26,7 @@ fi
 case $1 in
 down)
   echo "will migrate down one"
-  MIGRATE_ARGS="down"
+  MIGRATE_ARGS="down --one"
   ;;
 down-all)
   echo "will migrate down all"
@@ -34,7 +34,7 @@ down-all)
   ;;
 up)
   echo "will migrate up one"
-  MIGRATE_ARGS="up"
+  MIGRATE_ARGS="up --one"
   ;;
 up-all)
   echo "will migrate up all"

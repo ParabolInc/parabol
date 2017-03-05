@@ -34,9 +34,10 @@ stages:
       - type: shell
         name: Install dependencies
         command: |
-          apt-get update &&
-          apt-get -yq install build-essential g++ &&
-          npm i -g yarn &&
+          apt-get update && apt-get -yq install build-essential
+          if [ ! -x "$(which yarn)" ] ; then
+            npm -i -g yarn
+          fi
           yarn
 
       - type: cache-save
