@@ -80,6 +80,7 @@ export const ProjectInput = new GraphQLInputObjectType({
   name: 'ProjectInput',
   fields: () => ({
     id: {type: GraphQLID, description: 'The unique team ID'},
+    agendaId: {type: GraphQLID},
     content: {type: GraphQLString},
     isArchived: {type: GraphQLBoolean},
     name: {type: GraphQLString, description: 'The name of the team'},
