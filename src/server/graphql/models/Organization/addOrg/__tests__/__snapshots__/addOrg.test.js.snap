@@ -42,9 +42,10 @@ Object {
   ],
   "teamMember": Array [
     Object {
-      "checkInOrder": 0,
+      "checkInOrder": 6,
       "email": "steve.rogers@avengers.org",
       "id": 5,
+      "isCheckedIn": null,
       "isFacilitator": true,
       "isLead": true,
       "isNotRemoved": true,
@@ -60,7 +61,7 @@ Object {
       "createdAt": 2017-01-01T07:00:00.000Z,
       "email": "natasha.romanova@avengers.org",
       "emailVerified": false,
-      "id": 6,
+      "id": 7,
       "identities": Array [],
       "inactive": false,
       "lastLogin": 2017-01-01T07:00:00.000Z,
@@ -69,9 +70,9 @@ Object {
       "picture": "https://placeimg.com/100/100/animals",
       "preferredName": "Black Widow",
       "tms": Array [
-        13,
+        14,
       ],
-      "trialOrg": 14,
+      "trialOrg": null,
       "updatedAt": 2017-01-01T07:00:00.000Z,
       "userOrgs": Array [
         Object {
@@ -95,7 +96,7 @@ Object {
       "picture": "https://placeimg.com/100/100/animals",
       "preferredName": "Captain America",
       "tms": Array [
-        13,
+        14,
         4,
       ],
       "trialOrg": 15,
@@ -126,7 +127,7 @@ Object {
       "picture": "https://placeimg.com/100/100/animals",
       "preferredName": "Captain America",
       "tms": Array [
-        13,
+        14,
         4,
       ],
       "trialOrg": 15,
@@ -148,7 +149,7 @@ Object {
       "createdAt": 2017-01-01T07:00:00.000Z,
       "email": "bruce.banner@avengers.org",
       "emailVerified": false,
-      "id": 7,
+      "id": 8,
       "identities": Array [],
       "inactive": false,
       "lastLogin": 2017-01-01T07:00:00.000Z,
@@ -157,9 +158,9 @@ Object {
       "picture": "https://placeimg.com/100/100/animals",
       "preferredName": "Hulk",
       "tms": Array [
-        13,
+        14,
       ],
-      "trialOrg": 14,
+      "trialOrg": null,
       "updatedAt": 2017-01-01T07:00:00.000Z,
       "userOrgs": Array [
         Object {
@@ -174,7 +175,7 @@ Object {
       "createdAt": 2017-01-01T07:00:00.000Z,
       "email": "tony.stark@avengers.org",
       "emailVerified": false,
-      "id": 8,
+      "id": 9,
       "identities": Array [],
       "inactive": false,
       "lastLogin": 2017-01-01T07:00:00.000Z,
@@ -183,9 +184,9 @@ Object {
       "picture": "https://placeimg.com/100/100/animals",
       "preferredName": "Iron Man",
       "tms": Array [
-        13,
+        14,
       ],
-      "trialOrg": 14,
+      "trialOrg": null,
       "updatedAt": 2017-01-01T07:00:00.000Z,
       "userOrgs": Array [
         Object {
@@ -200,7 +201,7 @@ Object {
       "createdAt": 2017-01-01T07:00:00.000Z,
       "email": "kyle.richmond@avengers.org",
       "emailVerified": false,
-      "id": 9,
+      "id": 10,
       "identities": Array [],
       "inactive": false,
       "lastLogin": 2017-01-01T07:00:00.000Z,
@@ -209,9 +210,9 @@ Object {
       "picture": "https://placeimg.com/100/100/animals",
       "preferredName": "Nighthawk",
       "tms": Array [
-        13,
+        14,
       ],
-      "trialOrg": 14,
+      "trialOrg": null,
       "updatedAt": 2017-01-01T07:00:00.000Z,
       "userOrgs": Array [
         Object {
@@ -226,7 +227,7 @@ Object {
       "createdAt": 2017-01-01T07:00:00.000Z,
       "email": "thor@avengers.org",
       "emailVerified": false,
-      "id": 10,
+      "id": 11,
       "identities": Array [],
       "inactive": false,
       "lastLogin": 2017-01-01T07:00:00.000Z,
@@ -235,9 +236,9 @@ Object {
       "picture": "https://placeimg.com/100/100/animals",
       "preferredName": "Thor",
       "tms": Array [
-        13,
+        14,
       ],
-      "trialOrg": 14,
+      "trialOrg": null,
       "updatedAt": 2017-01-01T07:00:00.000Z,
       "userOrgs": Array [
         Object {
@@ -252,7 +253,7 @@ Object {
       "createdAt": 2017-01-01T07:00:00.000Z,
       "email": "vision@avengers.org",
       "emailVerified": false,
-      "id": 11,
+      "id": 12,
       "identities": Array [],
       "inactive": false,
       "lastLogin": 2017-01-01T07:00:00.000Z,
@@ -261,9 +262,9 @@ Object {
       "picture": "https://placeimg.com/100/100/animals",
       "preferredName": "Vision",
       "tms": Array [
-        13,
+        14,
       ],
-      "trialOrg": 14,
+      "trialOrg": null,
       "updatedAt": 2017-01-01T07:00:00.000Z,
       "userOrgs": Array [
         Object {
@@ -278,7 +279,7 @@ Object {
       "createdAt": 2017-01-01T07:00:00.000Z,
       "email": "james.rhodes@avengers.org",
       "emailVerified": false,
-      "id": 12,
+      "id": 13,
       "identities": Array [],
       "inactive": false,
       "lastLogin": 2017-01-01T07:00:00.000Z,
@@ -287,9 +288,9 @@ Object {
       "picture": "https://placeimg.com/100/100/animals",
       "preferredName": "War Machine",
       "tms": Array [
-        13,
+        14,
       ],
-      "trialOrg": 14,
+      "trialOrg": null,
       "updatedAt": 2017-01-01T07:00:00.000Z,
       "userOrgs": Array [
         Object {

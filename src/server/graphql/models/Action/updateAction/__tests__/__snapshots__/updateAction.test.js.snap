@@ -7,15 +7,14 @@ exports[`updateAction throws when no websocket is present 1`] = `"{\\"_error\\":
 exports[`updateAction updates the content of the action 1`] = `
 Object {
   "action": Object {
-    "agendaId": 1,
     "content": "Updated content",
-    "createdAt": 2017-01-01T07:00:00.000Z,
-    "createdBy": 2,
+    "createdAt": 2017-01-01T06:59:59.999Z,
+    "createdBy": 1,
     "id": 0,
     "sortOrder": 0,
-    "teamMemberId": 3,
+    "teamMemberId": 2,
     "updatedAt": 2017-01-01T08:00:00.000Z,
-    "userId": 2,
+    "userId": 1,
   },
 }
 `;
@@ -23,15 +22,14 @@ Object {
 exports[`updateAction updates the sortOrder without changing updatedAt 1`] = `
 Object {
   "action": Object {
-    "agendaId": 1,
-    "content": "Test Action",
-    "createdAt": 2017-01-01T07:00:00.000Z,
-    "createdBy": 2,
+    "content": "Test Action[0]",
+    "createdAt": 2017-01-01T06:59:59.999Z,
+    "createdBy": 1,
     "id": 0,
     "sortOrder": 2,
-    "teamMemberId": 3,
+    "teamMemberId": 2,
     "updatedAt": 2017-01-01T07:00:00.000Z,
-    "userId": 2,
+    "userId": 1,
   },
 }
 `;
@@ -39,16 +37,15 @@ Object {
 exports[`updateAction updates the status of the action 1`] = `
 Object {
   "action": Object {
-    "agendaId": 1,
-    "content": "Test Action",
-    "createdAt": 2017-01-01T07:00:00.000Z,
-    "createdBy": 2,
+    "content": "Test Action[0]",
+    "createdAt": 2017-01-01T06:59:59.999Z,
+    "createdBy": 1,
     "id": 0,
     "isComplete": true,
     "sortOrder": 0,
-    "teamMemberId": 3,
+    "teamMemberId": 2,
     "updatedAt": 2017-01-01T08:00:00.000Z,
-    "userId": 2,
+    "userId": 1,
   },
 }
 `;

@@ -175,7 +175,6 @@
       "<rootDir>/src/"
     ],
     "testRegex": "/__tests__/.*.test\\.jsx?$",
-    "testResultsProcessor": "./src/server/__tests__/teardown",
-    "verbose": true
+    "testResultsProcessor": "./src/server/__tests__/teardown"
   }
 }

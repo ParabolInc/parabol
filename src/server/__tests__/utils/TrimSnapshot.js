@@ -13,6 +13,7 @@ export default class TrimSnapshot {
         this._visitSnapshot(snapshot[nextProp], path.slice(1));
       } else {
         const arrVal = snapshot[nextProp];
+        if (arrVal === undefined || arrVal === null) return;
         this._cache[arrVal] = this._cache.hasOwnProperty(arrVal) ? this._cache[arrVal] : this._counter++;
         snapshot[nextProp] = this._cache[arrVal];
       }
@@ -20,11 +21,6 @@ export default class TrimSnapshot {
     }
     for (let i = 0; i < snapshot.length; i++) {
       const arrVal = snapshot[i];
-      // if (typeof arrVal !== 'object') {
-      //   debugger
-      //   this._cache[arrVal] = this._cache.hasOwnProperty(arrVal) ? this._cache[arrVal] : this._counter++;
-      //   snapshot[i] = this._cache[arrVal];
-      // }
       this._visitSnapshot(arrVal, path);
     }
   }
@@ -37,11 +33,13 @@ export default class TrimSnapshot {
       if (Array.isArray(oldVal)) {
         for (let i = 0; i < oldVal.length; i++) {
           const arrVal = oldVal[i];
+          if (oldVal[i] === undefined || oldVal[i] === null) continue;
           this._cache[arrVal] = this._cache.hasOwnProperty(arrVal) ? this._cache[arrVal] : this._counter++;
           oldVal[i] = this._cache[arrVal];
         }
         return;
       }
+      if (snapshot[nextLayer] === undefined || snapshot[nextLayer] === null) return;
       this._cache[oldVal] = this._cache.hasOwnProperty(oldVal) ? this._cache[oldVal] : this._counter++;
       snapshot[nextLayer] = this._cache[oldVal];
       return;
