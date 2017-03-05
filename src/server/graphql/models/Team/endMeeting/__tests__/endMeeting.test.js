@@ -61,9 +61,9 @@ describe('endMeeting', () => {
     await endMeeting.resolve(undefined, {teamId}, {authToken, socket});
     // VERIFY
     const db = await fetchAndTrim({
-      agendaItem: r.table('AgendaItem').getAll(teamId, {index: 'teamId'}).orderBy('teamMemberId'),
-      action: r.table('Action').getAll(r.args(teamMemberIds), {index: 'teamMemberId'}).orderBy('teamMemberId'),
-      project: r.table('Project').getAll(r.args(teamMemberIds), {index: 'teamMemberId'}).orderBy('teamMemberId'),
+      agendaItem: r.table('AgendaItem').getAll(teamId, {index: 'teamId'}).orderBy('content'),
+      action: r.table('Action').getAll(r.args(teamMemberIds), {index: 'teamMemberId'}).orderBy('content'),
+      project: r.table('Project').getAll(r.args(teamMemberIds), {index: 'teamMemberId'}).orderBy('content'),
       meeting: r.table('Meeting').get(meetingId),
       team: r.table('Team').get(teamId),
       teamMember: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).orderBy('preferredName'),
