@@ -89,6 +89,7 @@ export default {
         r.table('Invoice')
           .between([orgId, r.minval], [orgId, r.maxval], {index: 'orgIdStartAt', leftBound: 'open'})
           .orderBy(r.desc('startAt'))
+          .filter((invoice) => invoice('status').ne(UPCOMING))
           .limit(first - 1)
           .merge((doc) => ({
             cursor: doc('startAt')

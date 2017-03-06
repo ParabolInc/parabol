@@ -1,7 +1,7 @@
 import {ACTIVE, STUCK, DONE, FUTURE, columnArray} from './constants';
 
 // sorts post-split to be a little more efficient
-export default function makeProjectsByStatus(projects, sortOrder) {
+export default function makeProjectsByStatus(projects) {
   const projectsByStatus = {
     [ACTIVE]: [],
     [STUCK]: [],
@@ -16,7 +16,7 @@ export default function makeProjectsByStatus(projects, sortOrder) {
   // sort after for performance
   for (let i = 0; i < columnArray.length; i++) {
     const status = columnArray[i];
-    projectsByStatus[status].sort((a, b) => b[sortOrder] - a[sortOrder]);
+    projectsByStatus[status].sort((a, b) => b.sortOrder - a.sortOrder);
   }
   return projectsByStatus;
 }

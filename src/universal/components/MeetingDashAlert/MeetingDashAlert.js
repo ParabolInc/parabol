@@ -3,12 +3,12 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import {Link} from 'react-router';
 import plural from 'universal/utils/plural';
-import NotificationBar from 'universal/components/NotificationBar/NotificationBar';
+import {DashAlert} from 'universal/components/Dashboard';
 
-const MeetingNotificationBar = (props) => {
+const MeetingDashAlert = (props) => {
   const {activeMeetings, styles} = props;
   return (
-    <NotificationBar colorPalette="warm">
+    <DashAlert colorPalette="warm">
       <div className={css(styles.inlineBlock, styles.message)}>
         {`${plural(activeMeetings.length, 'Meeting')} in progress:`}
       </div>
@@ -21,11 +21,11 @@ const MeetingNotificationBar = (props) => {
           );
         })}
       </div>
-    </NotificationBar>
+    </DashAlert>
   );
 };
 
-MeetingNotificationBar.propTypes = {
+MeetingDashAlert.propTypes = {
   activeMeetings: PropTypes.array,
   styles: PropTypes.object
 };
@@ -58,4 +58,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(MeetingNotificationBar);
+export default withStyles(styleThunk)(MeetingDashAlert);

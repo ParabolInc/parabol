@@ -9,7 +9,7 @@ const mapStateToProps = state => {
   const {auth} = state;
   return {
     auth,
-    user: cashay.query(getAuthQueryString, getAuthedOptions(auth.sub)).data.user
+    user: cashay.query(getAuthQueryString, getAuthedOptions(auth.obj.sub)).data.user
   };
 };
 

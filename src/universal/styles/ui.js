@@ -47,6 +47,11 @@ const iconSizeAvatar = '21px'; // FontAwesome 1.5x
 const iconSize2x = '28px'; // FontAwesome 2x
 const iconSize3x = '42px'; // FontAwesome 3x
 
+// Modals
+const MODAL_LAYOUT_MAIN = 'main';
+const MODAL_LAYOUT_MAIN_WITH_DASH_ALERT = 'mainHasDashAlert';
+const MODAL_LAYOUT_VIEWPORT = 'viewport';
+
 // Transitions
 const transitionFastest = '100ms ease-in';
 const transitionFaster = '200ms ease-in';
@@ -206,7 +211,7 @@ const ui = {
   // Note: property 'dashMinWidth' prevents layout from collapsing in Safari
   //       in a better future we may be more adaptive/responsive (TA)
   dashMinWidth: '79rem',
-  dashNotificationBarHeight: '2.625rem',
+  dashAlertHeight: '2.625rem',
   dashSectionHeaderLineHeight: '2rem',
   dashSidebarBackgroundColor: appTheme.palette.mid,
   dashSidebarWidth: '15rem',
@@ -330,6 +335,14 @@ const ui = {
   modalBorderRadius: borderRadiusLarge,
   modalBoxShadow: '0 .25rem .5rem 0 rgba(0, 0, 0, .35)',
   modalButtonSize: BUTTON_SIZE_MEDIUM,
+  modalLayoutMain: MODAL_LAYOUT_MAIN,
+  modalLayoutMainWithDashAlert: MODAL_LAYOUT_MAIN_WITH_DASH_ALERT,
+  modalLayoutViewport: MODAL_LAYOUT_VIEWPORT,
+  modalLayout: [
+    MODAL_LAYOUT_MAIN,
+    MODAL_LAYOUT_MAIN_WITH_DASH_ALERT,
+    MODAL_LAYOUT_VIEWPORT
+  ],
 
   // Notifications
   // ---------------------------------------------------------------------------

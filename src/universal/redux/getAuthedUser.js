@@ -40,7 +40,6 @@ const mutationHandlers = {
 
 export const getAuthedOptions = (userId) => ({
   op: 'getAuthedUser',
-  key: userId,
   resolveCached: {user: () => userId},
   mutationHandlers,
   customMutations

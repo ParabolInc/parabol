@@ -4,14 +4,15 @@ import IconLink from 'universal/components/IconLink/IconLink';
 import Type from 'universal/components/Type/Type';
 import {withRouter} from 'react-router';
 import portal from 'react-portal-hoc';
+import ui from 'universal/styles/ui';
 
 const MeetingInProgressModal = (props) => {
-  const {closeAfter, isClosing, teamId, teamName, router} = props;
+  const {closeAfter, isClosing, modalLayout, teamId, teamName, router} = props;
   const handleClick = () => {
     router.push(`/meeting/${teamId}`);
   };
   return (
-    <DashModal position="absolute" modalContext="meetingInProgress" isClosing={isClosing} closeAfter={closeAfter}>
+    <DashModal position="absolute" modalLayout={modalLayout} isClosing={isClosing} closeAfter={closeAfter}>
       <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
         Oh, hi there!
       </Type>
@@ -36,6 +37,7 @@ const MeetingInProgressModal = (props) => {
 MeetingInProgressModal.propTypes = {
   closeAfter: PropTypes.number,
   isClosing: PropTypes.bool,
+  modalLayout: PropTypes.oneOf(ui.modalLayout),
   router: PropTypes.object,
   teamId: PropTypes.string,
   teamName: PropTypes.string

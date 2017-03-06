@@ -152,6 +152,7 @@ export default {
             email: user.email,
             teamId,
             userId,
+            isCheckedIn: null,
             isNotRemoved: true,
             isLead: false,
             isFacilitator: true,

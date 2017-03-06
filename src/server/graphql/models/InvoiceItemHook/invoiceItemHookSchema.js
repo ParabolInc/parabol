@@ -5,7 +5,6 @@ import {
   GraphQLID,
   GraphQLFloat,
 } from 'graphql';
-import makeEnumValues from 'server/graphql/makeEnumValues';
 import {
   ADD_USER,
   AUTO_PAUSE_USER,
@@ -17,13 +16,13 @@ import {
 export const HookType = new GraphQLEnumType({
   name: 'HookType',
   description: 'The cause of the invoice item line being created',
-  values: makeEnumValues([
-    ADD_USER,
-    AUTO_PAUSE_USER,
-    REMOVE_USER,
-    PAUSE_USER,
-    UNPAUSE_USER
-  ])
+  values: {
+    [ADD_USER]: {},
+    [AUTO_PAUSE_USER]: {},
+    [REMOVE_USER]: {},
+    [PAUSE_USER]: {},
+    [UNPAUSE_USER]: {}
+  }
 });
 
 export const InvoiceItemHook = new GraphQLObjectType({
