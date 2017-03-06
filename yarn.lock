@@ -2179,6 +2179,10 @@ duplexer@~0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/duplexer/-/duplexer-0.1.1.tgz#ace6ff808c1ce66b57d1ebf97977acb02334cfc1"
 
+dynamic-serializer@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/dynamic-serializer/-/dynamic-serializer-0.0.1.tgz#d5c75903c252dada618a542f2c87f76ec5b9505b"
+
 ecc-jsbn@~0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/ecc-jsbn/-/ecc-jsbn-0.1.1.tgz#0fc73a9ed5f0d53c38193398523ef7e543777505"

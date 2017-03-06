@@ -5,7 +5,7 @@ import stripe from 'server/billing/stripe';
 import MockDate from 'mockdate';
 import {__now} from 'server/__tests__/setup/mockTimes';
 import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
-import DynamicSerializer from 'server/__tests__/utils/DynamicSerializer';
+import DynamicSerializer from 'dynamic-serializer';
 import MockDB from 'server/__tests__/setup/MockDB';
 import creditCardByToken from 'server/__tests__/utils/creditCardByToken';
 import socket from 'server/__mocks__/socket';
