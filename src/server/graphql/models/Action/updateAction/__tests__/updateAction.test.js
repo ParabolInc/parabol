@@ -2,8 +2,8 @@ import getRethink from 'server/database/rethinkDriver';
 import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
 import MockDate from 'mockdate';
 import {__now} from 'server/__tests__/setup/mockTimes';
-import fetchAndTrim from 'server/__tests__/utils/fetchAndTrim';
-import TrimSnapshot from 'server/__tests__/utils/TrimSnapshot';
+import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
+import DynamicSerializer from 'server/__tests__/utils/DynamicSerializer';
 import MockDB from 'server/__tests__/setup/MockDB';
 import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
 import socket from 'server/__mocks__/socket';
@@ -16,7 +16,7 @@ describe('updateAction', () => {
   test('updates the sortOrder without changing updatedAt', async() => {
     // SETUP
     const r = getRethink();
-    const trimSnapshot = new TrimSnapshot();
+    const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
     const {action, user} = await mockDB.init()
       .newAction();
@@ -31,16 +31,16 @@ describe('updateAction', () => {
     await updateAction.resolve(undefined, {updatedAction}, {authToken, socket});
 
     // VERIFY
-    const db = await fetchAndTrim({
+    const db = await fetchAndSerialize({
       action: r.table('Action').get(actionId),
-    }, trimSnapshot);
+    }, dynamicSerializer);
     expect(db).toMatchSnapshot();
   });
 
   test('updates the content of the action', async() => {
     // SETUP
     const r = getRethink();
-    const trimSnapshot = new TrimSnapshot();
+    const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
     const {action, user} = await mockDB.init()
       .newAction();
@@ -55,16 +55,16 @@ describe('updateAction', () => {
     await updateAction.resolve(undefined, {updatedAction}, {authToken, socket});
 
     // VERIFY
-    const db = await fetchAndTrim({
+    const db = await fetchAndSerialize({
       action: r.table('Action').get(actionId),
-    }, trimSnapshot);
+    }, dynamicSerializer);
     expect(db).toMatchSnapshot();
   });
 
   test('updates the status of the action', async() => {
     // SETUP
     const r = getRethink();
-    const trimSnapshot = new TrimSnapshot();
+    const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
     const {action, user} = await mockDB.init()
       .newAction();
@@ -79,9 +79,9 @@ describe('updateAction', () => {
     await updateAction.resolve(undefined, {updatedAction}, {authToken, socket});
 
     // VERIFY
-    const db = await fetchAndTrim({
+    const db = await fetchAndSerialize({
       action: r.table('Action').get(actionId),
-    }, trimSnapshot);
+    }, dynamicSerializer);
     expect(db).toMatchSnapshot();
   });
 
