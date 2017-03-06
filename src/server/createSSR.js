@@ -36,9 +36,8 @@ export default function createSSR(req, res) {
       } else if (redirectLocation) {
         res.redirect(redirectLocation.pathname + redirectLocation.search);
       } else if (renderProps) {
-        const {entries} = assets;
         const htmlString = renderToStaticMarkup(
-          <Html store={store} entries={entries} StyleSheetServer={StyleSheetServer} renderProps={renderProps}/>
+          <Html store={store} assets={assets} StyleSheetServer={StyleSheetServer} renderProps={renderProps}/>
         );
         res.send(`<!DOCTYPE html>${htmlString}`.replace('<head>', `<head>${metaAndTitle}`));
       } else {
