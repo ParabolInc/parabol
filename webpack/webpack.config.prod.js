@@ -5,6 +5,7 @@ import WebpackShellPlugin from 'webpack-shell-plugin';
 import S3Plugin from 'webpack-s3-plugin';
 import {getDotenv} from '../src/universal/utils/dotenv';
 import {getS3BasePath} from './utils/getS3BasePath';
+import getWebpackPublicPath from '../src/server/utils/getWebpackPublicPath';
 import npmPackage from '../package.json';
 
 // Import .env and expand variables:
@@ -37,6 +38,13 @@ if (process.env.WEBPACK_MIN) {
     comments: /(?:)/,
     sourceMap: true
   }));
+  if (process.env.CDN_BASE_URL) {
+    const sourceMappingBase = getWebpackPublicPath();
+    deployPlugins.push(new webpack.SourceMapDevToolPlugin({
+      filename: '[name]_[chunkhash].js.map',
+      append: `\n//# sourceMappingURL=${sourceMappingBase}[url]`
+    }));
+  }
   deployPlugins.push(new webpack.LoaderOptionsPlugin({comments: false}));
 }
 if (process.env.WEBPACK_DEPLOY) {
