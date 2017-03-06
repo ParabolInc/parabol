@@ -1,8 +1,8 @@
 import getRethink from 'server/database/rethinkDriver';
 import MockDate from 'mockdate';
 import {__now} from 'server/__tests__/setup/mockTimes';
-import fetchAndTrim from 'server/__tests__/utils/fetchAndTrim';
-import TrimSnapshot from 'server/__tests__/utils/TrimSnapshot';
+import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
+import DynamicSerializer from 'server/__tests__/utils/DynamicSerializer';
 import MockDB from 'server/__tests__/setup/MockDB';
 import resetMeeting from 'server/graphql/models/Team/endMeeting/resetMeeting';
 
@@ -13,7 +13,7 @@ describe('resetMeeting', () => {
   test('resets the meeting state back to the lobby after the meeting ended', async() => {
     // SETUP
     const r = getRethink();
-    const trimSnapshot = new TrimSnapshot();
+    const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
     const {teamMember} = await mockDB.init()
       .newMeeting(undefined, {inProgress: true});
@@ -26,13 +26,13 @@ describe('resetMeeting', () => {
     jest.runTimersToTime(5000);
     await promise;
     // VERIFY
-    const db = await fetchAndTrim({
+    const db = await fetchAndSerialize({
       agendaItem: r.table('AgendaItem').getAll(teamId, {index: 'teamId'}).orderBy('teamMemberId'),
       project: r.table('Project').getAll(r.args(teamMemberIds), {index: 'teamMemberId'}).orderBy('teamMemberId'),
       team: r.table('Team').get(teamId),
       teamMember: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).orderBy('preferredName'),
 
-    }, trimSnapshot);
+    }, dynamicSerializer);
     expect(db).toMatchSnapshot();
   });
 });

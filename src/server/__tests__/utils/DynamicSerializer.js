@@ -1,6 +1,6 @@
-// mutatively remove fields from a snapshot that will always be changing
+// mutatively replace fields from a snapshot that will always be changing to something deterministic
 
-export default class TrimSnapshot {
+export default class DynamicSerializer {
   constructor() {
     this._counter = 0;
     this._cache = {};
@@ -55,7 +55,7 @@ export default class TrimSnapshot {
     }
   }
 
-  trim(snapshot, uids) {
+  toStatic(snapshot, uids) {
     for (let i = 0; i < uids.length; i++) {
       const uid = uids[i];
       const path = uid.split('.');
