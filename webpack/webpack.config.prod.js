@@ -50,7 +50,8 @@ if (process.env.WEBPACK_DEPLOY) {
     s3UploadOptions: {
       Bucket: process.env.AWS_S3_BUCKET
     },
-    basePath: getS3BasePath()
+    basePath: getS3BasePath(),
+    directory: path.join(root, 'build')
   }));
 }
 
