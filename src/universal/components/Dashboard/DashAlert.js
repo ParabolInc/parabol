@@ -3,7 +3,7 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 
-const NotificationBar = (props) => {
+const DashAlert = (props) => {
   const {children, styles} = props;
   return (
     <div className={css(styles.bar)}>
@@ -12,7 +12,7 @@ const NotificationBar = (props) => {
   );
 };
 
-NotificationBar.propTypes = {
+DashAlert.propTypes = {
   children: PropTypes.any,
   colorPalette: PropTypes.oneOf([
     'cool',
@@ -36,4 +36,4 @@ const styleThunk = (customTheme, props) => ({
   }
 });
 
-export default withStyles(styleThunk)(NotificationBar);
+export default withStyles(styleThunk)(DashAlert);

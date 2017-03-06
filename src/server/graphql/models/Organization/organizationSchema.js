@@ -12,7 +12,6 @@ import {
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {GraphQLURLType} from 'server/graphql/types';
 import {BILLING_LEADER} from 'universal/utils/constants';
-import makeEnumValues from 'server/graphql/makeEnumValues';
 import getRethink from 'server/database/rethinkDriver';
 import {User} from 'server/graphql/models/User/userSchema';
 
@@ -53,7 +52,9 @@ export const CreditCard = new GraphQLObjectType({
 export const OrgUserRole = new GraphQLEnumType({
   name: 'OrgUserRole',
   description: 'The role of the org user',
-  values: makeEnumValues([BILLING_LEADER])
+  values: {
+    [BILLING_LEADER]: {}
+  }
 });
 
 const OrgUser = new GraphQLObjectType({

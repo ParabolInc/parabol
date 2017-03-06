@@ -212,9 +212,8 @@ export default [
         isArchived
         status
         teamMemberId
-        teamSort
+        sortOrder
         updatedAt
-        userSort
       }
     }`
   },

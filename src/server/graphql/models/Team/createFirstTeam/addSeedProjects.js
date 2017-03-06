@@ -5,8 +5,7 @@ import {ACTIVE, FUTURE} from '../../../../../universal/utils/constants';
 const SEED_PROJECTS = [
   {
     status: ACTIVE,
-    teamSort: 0,
-    userSort: 0,
+    sortOrder: 0,
     content: `
       Invite any missing team members to join the team. Tap on ‘Team Settings’
       in the dashboard header above.
@@ -14,8 +13,7 @@ const SEED_PROJECTS = [
   },
   {
     status: ACTIVE,
-    teamSort: 1,
-    userSort: 1,
+    sortOrder: 1,
     content: `
       Try a test run of an Action meeting. Tap on ‘Meeting Lobby’ in
       the dashboard header above.
@@ -23,8 +21,7 @@ const SEED_PROJECTS = [
   },
   {
     status: FUTURE,
-    teamSort: 0,
-    userSort: 0,
+    sortOrder: 0,
     content: `
       Make good teaming a habit! Schedule a weekly Action meeting with your
       team. Pro-tip: include a link to the meeting lobby.

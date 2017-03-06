@@ -4,6 +4,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.16.3 - 5-Mar-2017
+### Added
+- #462 source maps added to minified production builds
+- Individual team and user project drag-and-drop sort orders now combined
+  into one, universal sorting order used across the system
+- Dashboard notification bar is now implemented as a "DashAlert" modal
+- #736 permutations on invoice
+
+### Fixed
+- #553 fine tune DnD
+- #714 can't delete team members
+- #724 top notification bar & dash modal overlap
+- #733 team project columns (filtered by team member) cache/redux error on DnD
+
 ## v0.16.2 - 4-Mar-2017
 ### Added
 - Rejoin facilitator button

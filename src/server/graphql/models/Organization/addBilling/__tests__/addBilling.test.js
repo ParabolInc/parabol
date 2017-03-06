@@ -3,7 +3,7 @@ import addBilling from 'server/graphql/models/Organization/addBilling/addBilling
 import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
 import stripe from 'server/billing/stripe';
 import MockDate from 'mockdate';
-import mockNow from 'server/__tests__/setup/mockNow';
+import {__now} from 'server/__tests__/setup/mockTimes';
 import fetchAndTrim from 'server/__tests__/utils/fetchAndTrim';
 import TrimSnapshot from 'server/__tests__/utils/TrimSnapshot';
 import MockDB from 'server/__tests__/setup/MockDB';
@@ -12,7 +12,7 @@ import creditCardByToken from 'server/__tests__/utils/creditCardByToken';
 import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
 import socket from 'server/__mocks__/socket';
 
-MockDate.set(mockNow);
+MockDate.set(__now);
 console.error = jest.fn();
 const now = new Date();
 

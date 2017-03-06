@@ -8,8 +8,10 @@ import {AGENDA_ITEM, AGENDA_ITEMS} from 'universal/utils/constants';
 import handleAgendaHover from 'universal/dnd/handleAgendaHover';
 import {DropTarget as dropTarget} from 'react-dnd';
 import withDragState from 'universal/dnd/withDragState';
+import handleDrop from 'universal/dnd/handleDrop';
 
 const columnTarget = {
+  drop: handleDrop,
   hover: handleAgendaHover
 };
 

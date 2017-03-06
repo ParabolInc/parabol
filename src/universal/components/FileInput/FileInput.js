@@ -67,7 +67,7 @@ FileInput.propTypes = {
 };
 
 FileInput.defaultProps = {
-  buttonLabel: 'Upload Avatar',
+  buttonLabel: 'Submit',
   colorPalette: 'gray',
   size: 'small'
 };

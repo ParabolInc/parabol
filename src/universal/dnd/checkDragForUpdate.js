@@ -1,12 +1,12 @@
 import {SORT_STEP} from 'universal/utils/constants';
 import {findDOMNode} from 'react-dom';
+import dndNoise from 'universal/utils/dndNoise';
 
-export default function checkDragForUpdate(monitor, dragState, itemArray, sortField, isDescending) {
+export default function checkDragForUpdate(monitor, dragState, itemArray, isDescending) {
   const sourceProps = monitor.getItem();
   const {id} = sourceProps;
   const {components, minY, maxY, thresholds} = dragState;
   const {y: sourceOffsetY} = monitor.getClientOffset();
-
   if (minY !== null && sourceOffsetY >= minY && sourceOffsetY <= maxY) {
     return undefined;
   }
@@ -32,9 +32,10 @@ export default function checkDragForUpdate(monitor, dragState, itemArray, sortFi
   const itemToReplace = itemArray[i];
   const prevItem = itemArray[i - 1];
   const dFactor = isDescending ? 1 : -1;
+  let rebalanceDoc;
   if (thresholds.length === 0) {
     // console.log('no thresholds, setting to first in the column');
-    updatedDoc[sortField] = 0;
+    updatedDoc.sortOrder = 0;
   } else if (i === 0) {
     // if we're trying to put it at the top, make sure it's not already at the top
     if (itemToReplace.id === id) {
@@ -46,7 +47,7 @@ export default function checkDragForUpdate(monitor, dragState, itemArray, sortFi
       return undefined;
     }
     // console.log('setting', id,  'to first in the column behind', itemToReplace);
-    updatedDoc[sortField] = itemToReplace[sortField] + (SORT_STEP * dFactor);
+    updatedDoc.sortOrder = itemToReplace.sortOrder + (SORT_STEP * dFactor + dndNoise());
   } else if (i === thresholds.length) {
     // console.log('putting card at the end')
     // if we wanna put it at the end, make sure it's not already at the end
@@ -59,7 +60,7 @@ export default function checkDragForUpdate(monitor, dragState, itemArray, sortFi
       return undefined;
     }
     // console.log('setting to last in the column after', prevItem);
-    updatedDoc[sortField] = prevItem[sortField] - (SORT_STEP * dFactor);
+    updatedDoc.sortOrder = prevItem.sortOrder - (SORT_STEP * dFactor + dndNoise());
   } else {
     // console.log('putting card in the middle')
     // if we're somewhere in the middle, make sure we're actually gonna move
@@ -72,16 +73,33 @@ export default function checkDragForUpdate(monitor, dragState, itemArray, sortFi
       return undefined;
     }
     // console.log('setting', id,  'in between', prevItem.id, itemToReplace.id);
-    updatedDoc[sortField] = (prevItem[sortField] + itemToReplace[sortField]) / 2;
-    // console.log('new sort', updatedDoc[sortField], 'in between', prevItem[sortField], itemToReplace[sortField])
+    // if 2 users drag a project to slot 3 in a column on their user dash at the same time,
+    // it's possible they have the same val, so we want it close to .5 to avoid rebalances, but with some noise
+    const [minVal, maxVal] = [prevItem.sortOrder, itemToReplace.sortOrder].sort();
+    const yahtzee = (Math.random() + Math.random()) / 2;
+    const range = maxVal - minVal;
+    const newSortOrder = minVal + yahtzee * range;
+    if (newSortOrder === prevItem.sortOrder) {
+      rebalanceDoc = {
+        id: prevItem.id,
+        sortOrder: 0
+      };
+    } else if (newSortOrder === itemToReplace.sortOrder) {
+      rebalanceDoc = {
+        id: itemToReplace.id,
+        sortOrder: 0
+      };
+    }
+    updatedDoc.sortOrder = newSortOrder;
+    // console.log('new sort', updatedDoc.sortOrder, 'in between', prevItem.sortOrder, itemToReplace.sortOrder)
   }
   // mutative for fast response
-  sourceProps[sortField] = updatedDoc[sortField];
+  sourceProps.sortOrder = updatedDoc.sortOrder;
 
   // close it out! we know we're moving
   dragState.clear();
   return {
-    prevItem,
+    rebalanceDoc,
     updatedDoc
   };
 }
