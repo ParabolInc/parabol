@@ -38,13 +38,11 @@ if (process.env.WEBPACK_MIN) {
     comments: /(?:)/,
     sourceMap: true
   }));
-  if (process.env.CDN_BASE_URL) {
-    const sourceMappingBase = getWebpackPublicPath();
-    deployPlugins.push(new webpack.SourceMapDevToolPlugin({
-      filename: '[name]_[chunkhash].js.map',
-      append: `\n//# sourceMappingURL=${sourceMappingBase}[url]`
-    }));
-  }
+  const sourceMappingBase = getWebpackPublicPath();
+  deployPlugins.push(new webpack.SourceMapDevToolPlugin({
+    filename: '[name]_[chunkhash].js.map',
+    append: `\n//# sourceMappingURL=${sourceMappingBase}[url]`
+  }));
   deployPlugins.push(new webpack.LoaderOptionsPlugin({comments: false}));
 }
 if (process.env.WEBPACK_DEPLOY) {
@@ -110,7 +108,6 @@ export default {
       ]
     })
   ],
-  devtool: 'source-map',
   module: {
     loaders: [
       {test: /\.json$/, loader: 'json-loader'},
