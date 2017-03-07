@@ -103,6 +103,6 @@ describe('updateAction', () => {
       id: actionId,
       isComplete: true
     };
-    await expectAsyncToThrow(updateAction.resolve(undefined, {updatedAction}, {authToken, socket}));
+    await expectAsyncToThrow(updateAction.resolve(undefined, {updatedAction}, {authToken, socket}), [mockDB.context.team.id]);
   });
 });

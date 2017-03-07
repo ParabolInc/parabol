@@ -708,6 +708,6 @@ exports[`endMeeting throw if called after meeting ended or no active meeting 1`]
 
 exports[`endMeeting throw if no meeting has ever been created 1`] = `"{\\"_error\\":\\"Meeting already ended!\\"}"`;
 
-exports[`endMeeting throw when the caller is not a team member 1`] = `"{\\"_error\\":\\"You do not have access to that team!\\"}"`;
+exports[`endMeeting throw when the caller is not a team member 1`] = `"{\\"_error\\":\\"You do not have access to team foo\\"}"`;
 
 exports[`endMeeting throws when no websocket is present 1`] = `"{\\"_error\\":\\"this must be called from a websocket\\"}"`;

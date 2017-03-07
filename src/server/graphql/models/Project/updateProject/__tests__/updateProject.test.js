@@ -169,6 +169,6 @@ describe('updateProject', () => {
       id: projectId,
       status: DONE
     };
-    await expectAsyncToThrow(updateProject.resolve(undefined, {updatedProject}, {authToken, socket}));
+    await expectAsyncToThrow(updateProject.resolve(undefined, {updatedProject}, {authToken, socket}), [mockDB.context.team.id]);
   });
 });
