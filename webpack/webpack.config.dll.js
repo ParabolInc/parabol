@@ -8,7 +8,7 @@ module.exports = {
     vendors: [
       'aphrodite-local-styles',
       'auth0-lock',
-      'cashay',
+      // 'cashay',
       'core-js',
       'email-addresses',
       'graphiql',
