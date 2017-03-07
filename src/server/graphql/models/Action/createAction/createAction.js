@@ -45,4 +45,4 @@ export default {
     };
     await r.table('Action').insert(action);
   }
-}
+};
