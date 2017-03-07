@@ -15,9 +15,9 @@ export default async function customerSubscriptionUpdated(subscriptionId, oldSta
   const now = new Date();
   if (oldStatus === 'trialing' && status === 'active') {
     // their trial probably just expired. if they have a CC, we know they converted
-    const creditCard = await r.table('Organization').get(orgId)('creditCard').default(null);
+    const hasCreditCard = await r.table('Organization').get(orgId)('creditCard')('last4').default(null);
     // they converted! (or someone was sending a phony event to our webhook)
-    if (creditCard) return true;
+    if (hasCreditCard) return true;
     const orgDoc = await terminateSubscription(orgId);
     const userIds = orgDoc.orgUsers.reduce((billingLeaders, orgUser) => {
       if (orgUser.role === BILLING_LEADER) {

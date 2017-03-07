@@ -188,7 +188,7 @@ stripe.__db = {
 
 stripe.__setMockData = (org, dynamicSerializer) => {
   let source;
-  if (org.creditCard) {
+  if (org.creditCard.last4) {
     const tokenIds = Object.keys(creditCardByToken);
     source = tokenIds.find((token) => token.endsWith(org.creditCard.last4));
   }
@@ -203,7 +203,7 @@ stripe.__setMockData = (org, dynamicSerializer) => {
     customer: org.stripeId,
     metadata,
     quantity: getQuantity(org.orgUsers),
-    trial_end: org.creditCard ? undefined : toEpochSeconds(org.periodEnd)
+    trial_end: org.creditCard.last4 ? undefined : toEpochSeconds(org.periodEnd)
   };
 
   const overrides = {
