@@ -12,11 +12,13 @@ import makeDateString from 'universal/utils/makeDateString';
 import InvoiceLineItem from 'universal/modules/invoice/components/InvoiceLineItem/InvoiceLineItem';
 import plural from 'universal/utils/plural';
 import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineFormat';
+import Tag from 'universal/components/Tag/Tag';
 
 import {
   PAID,
   FAILED,
   PENDING,
+  UPCOMING,
   ADDED_USERS,
   REMOVED_USERS,
   INACTIVITY_ADJUSTMENTS,
@@ -31,7 +33,8 @@ const descriptionMaker = {
 const chargeStatus = {
   [PAID]: 'Charged',
   [FAILED]: 'Failed charge',
-  [PENDING]: 'Pending charge'
+  [PENDING]: 'Pending charge',
+  [UPCOMING]: 'Will be charged'
 };
 
 const Invoice = (props) => {
@@ -89,6 +92,21 @@ const Invoice = (props) => {
       <Helmet title={`Parabol Action Invoice for ${subject}`}/>
       <InvoiceHeader orgName={orgName} emails={billingLeaderEmails} picture={picture}/>
       <div className={css(styles.panel)}>
+        {status === FAILED &&
+          <div className={css(styles.failedStamp)}>
+            Payment Failed
+          </div>
+        }
+        {status === UPCOMING &&
+          <div className={css(styles.tagBlock)}>
+            <Tag colorPalette="light" label="Current Estimation"/>
+          </div>
+        }
+        {status === PENDING &&
+          <div className={css(styles.tagBlock)}>
+            <Tag colorPalette="gray" label="Payment Processing"/>
+          </div>
+        }
         <div className={css(styles.label)}>{'Invoice'}</div>
         <div className={css(styles.subject)}>{subject}</div>
 
@@ -112,20 +130,24 @@ const Invoice = (props) => {
         {makeLineItems(lines)}
 
         <div className={css(styles.amountSection)}>
-          <div className={css(styles.amountLineSub)}>
-            <div>Total</div>
-            <div>{invoiceLineFormat(total)}</div>
-          </div>
-          <div className={css(styles.amountLineSub)}>
-            <div>Previous Balance</div>
-            <div>{invoiceLineFormat(startingBalance)}</div>
-          </div>
+          {startingBalance === 0 &&
+            <div>
+              <div className={css(styles.amountLineSub)}>
+                <div>Total</div>
+                <div>{invoiceLineFormat(total)}</div>
+              </div>
+              <div className={css(styles.amountLineSub)}>
+                <div>Previous Balance</div>
+                <div>{invoiceLineFormat(startingBalance)}</div>
+              </div>
+            </div>
+          }
           <div className={css(styles.amountLine)}>
-            <div>Amount charged</div>
+            <div>Amount due</div>
             <div>{invoiceLineFormat(amountDue)}</div>
           </div>
           {brand &&
-            <div className={css(styles.meta)}>
+            <div className={css(styles.meta, status === FAILED && styles.metaError)}>
               {chargeStatus[status]} to <b>{brand}</b> ending in <b>{last4}</b>
             </div>
           }
@@ -174,10 +196,37 @@ const styleThunk = () => ({
     borderRadius: ui.borderRadiusLarge,
     margin: `${invoiceGutterSmall} 0`,
     padding: `${panelGutterSmall} 0 ${panelGutterSmall} ${panelGutterSmall}`,
+    position: 'relative',
 
     [breakpoint]: {
       margin: `${invoiceGutterLarge} 0`,
       padding: `${panelGutterLarge} 0 ${panelGutterLarge} ${panelGutterLarge}`,
+    }
+  },
+
+  failedStamp: {
+    color: appTheme.palette.warm,
+    fontSize: '2.5rem',
+    fontWeight: 700,
+    left: '50%',
+    position: 'absolute',
+    textTransform: 'uppercase',
+    top: '50%',
+    transform: 'translate(-50%, -50%, 0), rotate(-30deg)',
+
+    [breakpoint]: {
+      fontSize: '3rem'
+    }
+  },
+
+  tagBlock: {
+    position: 'absolute',
+    right: panelGutterSmall,
+    top: panelGutterSmall,
+
+    [breakpoint]: {
+      right: panelGutterLarge,
+      top: panelGutterLarge
     }
   },
 
@@ -246,6 +295,10 @@ const styleThunk = () => ({
 
   meta: {
     fontSize: appTheme.typography.s3
+  },
+
+  metaError: {
+    color: appTheme.palette.warm
   },
 
   amountSection: {

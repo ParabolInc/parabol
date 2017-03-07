@@ -13,8 +13,7 @@ query {
     status
     teamMemberId
     updatedAt
-    userSort
-    teamSort
+    sortOrder
   }
 }
 `;
@@ -23,12 +22,12 @@ const mutationHandlers = {
   updateProject(optimisticUpdates, queryResponse, currentResponse) {
     if (optimisticUpdates) {
       const {updatedProject} = optimisticUpdates;
-      if (updatedProject && updatedProject.hasOwnProperty('teamSort')) {
-        const {id, teamSort, status} = updatedProject;
+      if (updatedProject && updatedProject.hasOwnProperty('sortOrder')) {
+        const {id, sortOrder, status} = updatedProject;
         const {projects} = currentResponse;
         const fromProject = projects.find((project) => project.id === id);
-        if (teamSort !== undefined) {
-          fromProject.teamSort = teamSort;
+        if (sortOrder !== undefined) {
+          fromProject.sortOrder = sortOrder;
         }
         if (status) {
           fromProject.status = status;
@@ -51,7 +50,7 @@ const mapStateToProps = (state, props) => {
     mutationHandlers,
     variables: {teamMemberId},
   }).data.projects;
-  const projects = makeProjectsByStatus(memberProjects, 'teamSort');
+  const projects = makeProjectsByStatus(memberProjects);
   return {
     projects,
     queryKey: teamMemberId

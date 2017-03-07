@@ -15,27 +15,27 @@ export const AgendaItem = new GraphQLObjectType({
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique agenda item id teamId::shortid'},
     content: {type: new GraphQLNonNull(GraphQLString), description: 'The body of the agenda item'},
-    teamId: {type: new GraphQLNonNull(GraphQLID), description: 'The team for this agenda item'},
-    teamMemberId: {type: new GraphQLNonNull(GraphQLID), description: 'The teamMemberId that created this agenda item'},
     createdAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the agenda item was created'
-    },
-    updatedAt: {
-      type: GraphQLISO8601Type,
-      description: 'The timestamp the agenda item was updated'
-    },
-    isComplete: {
-      type: GraphQLBoolean,
-      description: 'true if the agenda item has been addressed in a meeting (will have a strikethrough or similar)'
     },
     isActive: {
       type: GraphQLBoolean,
       description: 'true until the agenda item has been marked isComplete and the meeting has ended'
     },
+    isComplete: {
+      type: GraphQLBoolean,
+      description: 'true if the agenda item has been addressed in a meeting (will have a strikethrough or similar)'
+    },
     sortOrder: {
       type: GraphQLFloat,
       description: 'The sort order of the agenda item in the list'
+    },
+    teamId: {type: new GraphQLNonNull(GraphQLID), description: 'The team for this agenda item'},
+    teamMemberId: {type: new GraphQLNonNull(GraphQLID), description: 'The teamMemberId that created this agenda item'},
+    updatedAt: {
+      type: GraphQLISO8601Type,
+      description: 'The timestamp the agenda item was updated'
     }
   })
 });

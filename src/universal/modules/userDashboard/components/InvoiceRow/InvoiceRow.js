@@ -4,7 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import Row from 'universal/components/Row/Row';
-import UserTag from 'universal/components/UserTag/UserTag';
+import Tag from 'universal/components/Tag/Tag';
 import FontAwesome from 'react-fontawesome';
 import makeDateString from 'universal/utils/makeDateString';
 import makeMonthString from 'universal/utils/makeMonthString';
@@ -14,6 +14,7 @@ import {UPCOMING} from 'universal/utils/constants';
 
 const InvoiceRow = (props) => {
   const {
+    hasCard,
     invoice: {
       id: invoiceId,
       amountDue,
@@ -42,7 +43,7 @@ const InvoiceRow = (props) => {
               {makeMonthString(endAt)}
             </div>
             {isEstimate &&
-              <UserTag colorPalette="light" label="Current Estimate"/>
+              <Tag colorPalette="light" label="Current Estimate"/>
             }
           </div>
           <div className={css(styles.infoRowRight)}>
@@ -60,7 +61,9 @@ const InvoiceRow = (props) => {
           <div className={css(styles.infoRowRight)}>
             {isEstimate ?
               <span className={css(styles.date, styles.toPay)}>
-                Your card will be charged on {makeDateString(endAt, false)}
+                {hasCard ? `card will be charged on ${makeDateString(endAt, false)}` :
+                  `Make sure to add billing info before ${makeDateString(endAt, false)}!`
+                }
               </span> :
               <span className={css(styles.date, styles.paid)}>
                 Paid on {makeDateString(paidAt, false)}
@@ -74,6 +77,7 @@ const InvoiceRow = (props) => {
 };
 
 InvoiceRow.propTypes = {
+  hasCard: PropTypes.bool,
   invoice: PropTypes.object,
   styles: PropTypes.object
 };

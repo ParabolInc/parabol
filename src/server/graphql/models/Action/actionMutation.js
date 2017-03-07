@@ -8,62 +8,10 @@ import {
 import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import makeActionSchema from 'universal/validation/makeActionSchema';
 import {handleSchemaErrors} from 'server/utils/utils';
+import updateAction from 'server/graphql/models/Action/updateAction/updateAction';
+
 export default {
-  updateAction: {
-    type: GraphQLBoolean,
-    description: 'Update a action with a change in content, ownership, or status',
-    args: {
-      updatedAction: {
-        type: new GraphQLNonNull(ActionInput),
-        description: 'the updated action including the id, and at least one other field'
-      },
-      rebalance: {
-        type: GraphQLBoolean,
-        description: 'true if we should resort the action list because the float resolution has gotten too small'
-      }
-    },
-    async resolve(source, {updatedAction, rebalance}, {authToken, socket}) {
-      const r = getRethink();
-
-      // AUTH
-      const [teamId] = updatedAction.id.split('::');
-      requireSUOrTeamMember(authToken, teamId);
-      requireWebsocket(socket);
-
-      // VALIDATION
-      // TODO make things required like ID
-      const schema = makeActionSchema();
-      const {errors, data: {id: actionId, ...action}} = schema(updatedAction);
-      handleSchemaErrors(errors);
-
-      // RESOLUTION
-      const now = new Date();
-      const newAction = {
-        ...action,
-        updatedAt: now
-      };
-      const {teamMemberId} = action;
-      if (teamMemberId) {
-        const [userId] = teamMemberId.split('::');
-        newAction.userId = userId;
-      }
-      // we could possibly combine this into the rebalance if we did a resort on the server, but separate logic is nice
-      await r.table('Action').get(actionId).update(newAction);
-      if (rebalance) {
-        const rebalanceCountPromise = await r.table('Action')
-          .getAll(authToken.sub, {index: 'userId'})
-          .orderBy('sortOrder')('id');
-        const updates = rebalanceCountPromise.map((id, idx) => ({id, idx}));
-        await r.expr(updates)
-          .forEach((update) => {
-            return r.table('Action')
-              .get(update('id'))
-              .update({sortOrder: update('idx')});
-          });
-      }
-      return true;
-    }
-  },
+  updateAction,
   createAction: {
     type: GraphQLBoolean,
     description: 'Create a new action, triggering a CreateCard for other viewers',
@@ -84,7 +32,6 @@ export default {
       requireWebsocket(socket);
 
       // VALIDATION
-      // TODO make id and teamMemberId required in schema
       const schema = makeActionSchema();
       const {errors, data: validNewAction} = schema(newAction);
       handleSchemaErrors(errors);
@@ -153,8 +100,7 @@ export default {
         createdAt: action.createdAt,
         updatedAt: now,
         status: 'active',
-        teamSort: 0,
-        userSort: 0,
+        sortOrder: 0,
         agendaId: action.agendaId
       };
       await r.table('Project').insert(newProject)

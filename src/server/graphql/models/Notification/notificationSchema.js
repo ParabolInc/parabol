@@ -7,14 +7,27 @@ import {
   GraphQLEnumType
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
-import {notificationTypes} from 'universal/utils/constants';
-import makeEnumValues from 'server/graphql/makeEnumValues';
+import {
+  TRIAL_EXPIRES_SOON,
+  TRIAL_EXPIRED,
+  PAYMENT_REJECTED,
+  PROMOTE_TO_BILLING_LEADER,
+  REQUEST_NEW_USER,
+  DENY_NEW_USER,
+} from 'universal/utils/constants';
 
 
 export const NotificationType = new GraphQLEnumType({
   name: 'NotificationType',
   description: 'The kind of notification',
-  values: makeEnumValues(notificationTypes)
+  values: {
+    [TRIAL_EXPIRES_SOON]: {},
+    [TRIAL_EXPIRED]: {},
+    [PAYMENT_REJECTED]: {},
+    [PROMOTE_TO_BILLING_LEADER]: {},
+    [REQUEST_NEW_USER]: {},
+    [DENY_NEW_USER]: {}
+  }
 });
 
 export const Notification = new GraphQLObjectType({

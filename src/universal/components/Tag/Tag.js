@@ -3,7 +3,7 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 
-const UserTag = (props) => {
+const Tag = (props) => {
   const {
     colorPalette,
     label,
@@ -22,7 +22,7 @@ const UserTag = (props) => {
   );
 };
 
-UserTag.propTypes = {
+Tag.propTypes = {
   colorPalette: PropTypes.oneOf([
     'gray',
     'light',
@@ -32,7 +32,7 @@ UserTag.propTypes = {
   styles: PropTypes.object
 };
 
-UserTag.defaultProps = {
+Tag.defaultProps = {
   email: 'email@domain.co'
 };
 
@@ -72,4 +72,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(UserTag);
+export default withStyles(styleThunk)(Tag);

@@ -40,14 +40,14 @@ exports.up = async(r) => {
   };
   const teamMembers = [
     {
-      id: 'auth0|57a8fb6cab6c18473e47f518::team123',
+      id: 'auth0|58a861e682b0ca077463c577::team123',
       isActive: true,
       isFacilitator: true,
       isLead: true,
       picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/5826412fff7c506548200d81/1478902214166/2016+Jordan+Husney.jpg?format=300w',
       preferredName: 'jordan',
       teamId: 'team123',
-      userId: 'auth0|57a8fb6cab6c18473e47f518'
+      userId: 'auth0|58a861e682b0ca077463c577'
     },
     {
       id: 'auth0|5797e83170dddc395d8d1675::team123',
@@ -92,14 +92,14 @@ exports.up = async(r) => {
   };
   const engineeringMembers = [
     {
-      id: 'auth0|57a8fb6cab6c18473e47f518::team456',
+      id: 'auth0|58a861e682b0ca077463c577::team456',
       isActive: true,
       isFacilitator: true,
       isLead: false,
       picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/5826412fff7c506548200d81/1478902214166/2016+Jordan+Husney.jpg?format=300w',
       preferredName: 'jordan',
       teamId: 'team456',
-      userId: 'auth0|57a8fb6cab6c18473e47f518'
+      userId: 'auth0|58a861e682b0ca077463c577'
     },
     {
       id: 'auth0|5797e83170dddc395d8d1675::team456',

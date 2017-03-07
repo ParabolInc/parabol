@@ -10,7 +10,6 @@ import {
   GraphQLEnumType,
   GraphQLInputObjectType
 } from 'graphql';
-import makeEnumValues from 'server/graphql/makeEnumValues';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {TeamMember} from '../TeamMember/teamMemberSchema';
 import {AgendaItem} from '../AgendaItem/agendaItemSchema';
@@ -19,15 +18,15 @@ import {LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY} f
 export const Phase = new GraphQLEnumType({
   name: 'Phase',
   description: 'The phase of the meeting',
-  values: makeEnumValues([
-    LOBBY,
-    CHECKIN,
-    UPDATES,
-    FIRST_CALL,
-    AGENDA_ITEMS,
-    LAST_CALL,
-    SUMMARY
-  ])
+  values: {
+    [LOBBY]: {},
+    [CHECKIN]: {},
+    [UPDATES]: {},
+    [FIRST_CALL]: {},
+    [AGENDA_ITEMS]: {},
+    [LAST_CALL]: {},
+    [SUMMARY]: {}
+  }
 });
 
 export const Team = new GraphQLObjectType({

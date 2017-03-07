@@ -1,5 +1,5 @@
 import {cashay} from 'cashay';
-import {MEETING, MIN_SORT_RESOLUTION, TEAM_DASH, USER_DASH} from 'universal/utils/constants';
+import {DND_THROTTLE, MEETING, TEAM_DASH, USER_DASH} from 'universal/utils/constants';
 import checkDragForUpdate from 'universal/dnd/checkDragForUpdate';
 
 /**
@@ -18,33 +18,41 @@ const areaOpLookup = {
   [TEAM_DASH]: 'teamColumnsContainer'
 };
 
+let lastSentAt = 0;
 export default function handleProjectHover(targetProps, monitor) {
+  const now = new Date();
+  if (lastSentAt > (now - DND_THROTTLE)) return;
   const {area, dragState, projects, queryKey, status: targetStatus} = targetProps;
   const sourceProps = monitor.getItem();
   const {status: sourceStatus} = sourceProps;
-  const sortField = area === USER_DASH ? 'userSort' : 'teamSort';
   if (targetStatus !== sourceStatus) {
     // we don't want the minY and minX to apply if we're hovering over another column
     dragState.handleEndDrag();
   }
-  const updatedVariables = checkDragForUpdate(monitor, dragState, projects, sortField, true);
+  const updatedVariables = checkDragForUpdate(monitor, dragState, projects, true);
   if (!updatedVariables) return;
-  const {prevItem, updatedDoc: updatedProject} = updatedVariables;
-  const variables = {updatedProject};
-
+  const {rebalanceDoc, updatedDoc: updatedProject} = updatedVariables;
   if (sourceStatus !== targetStatus) {
     updatedProject.status = targetStatus;
     sourceProps.status = targetStatus;
   }
-  if (prevItem && Math.abs(prevItem[sortField] - updatedProject[sortField]) < MIN_SORT_RESOLUTION) {
-    variables.rebalance = targetStatus;
-  }
+  lastSentAt = now;
   const op = areaOpLookup[area];
   const options = {
     ops: {
       [op]: queryKey
     },
-    variables
+    variables: {updatedProject}
   };
   cashay.mutate('updateProject', options);
+  if (rebalanceDoc) {
+    // bad times. just toss the offending doc to the bottom of the column
+    const rebalanceOptions = {
+      ops: {
+        [op]: queryKey
+      },
+      variables: {updatedProject: rebalanceDoc}
+    };
+    cashay.mutate('updateProject', rebalanceOptions);
+  }
 }

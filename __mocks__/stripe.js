@@ -186,7 +186,7 @@ stripe.__db = {
   subscriptions: {},
 };
 
-stripe.__setMockData = (org, trimSnapshot) => {
+stripe.__setMockData = (org, dynamicSerializer) => {
   let source;
   if (org.creditCard) {
     const tokenIds = Object.keys(creditCardByToken);
@@ -212,7 +212,7 @@ stripe.__setMockData = (org, trimSnapshot) => {
     current_period_start: toEpochSeconds(org.periodStart),
   };
   stripe.__db.subscriptions[org.stripeSubscriptionId] = createNewSubscription(subOptions, overrides);
-  stripe.__trimSnapshot = trimSnapshot;
+  stripe.__dynamicSerializer = dynamicSerializer;
 };
 
 stripe.__snapshot = () => {
@@ -231,7 +231,7 @@ stripe.__snapshot = () => {
       const docIds = Object.keys(table);
       for (let j = 0; j < docIds.length; j++) {
         const docId = docIds[j];
-        snapshot[resourceName].push(stripe.__trimSnapshot.trim(table[docId], resource.__trimFields));
+        snapshot[resourceName].push(stripe.__dynamicSerializer.toStatic(table[docId], resource.__trimFields));
       }
     }
   }

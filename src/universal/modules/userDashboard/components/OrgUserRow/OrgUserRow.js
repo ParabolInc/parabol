@@ -4,7 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import Row from 'universal/components/Row/Row';
-import UserTag from 'universal/components/UserTag/UserTag';
+import Tag from 'universal/components/Tag/Tag';
 import AvatarPlaceholder from 'universal/components/AvatarPlaceholder/AvatarPlaceholder';
 
 const OrgUserRow = (props) => {
@@ -33,10 +33,10 @@ const OrgUserRow = (props) => {
             {preferredName}
           </div>
           {isBillingLeader &&
-            <UserTag colorPalette="light" label="Billing leader"/>
+            <Tag colorPalette="light" label="Billing leader"/>
           }
           {inactive &&
-            <UserTag colorPalette="light" label="Inactive"/>
+            <Tag colorPalette="light" label="Inactive"/>
           }
         </div>
         <a className={css(styles.infoLink)} href={`mailto:${email}`} title="Send an email">

@@ -4,6 +4,7 @@ import {cashay} from 'cashay';
 import DashLayout from 'universal/components/Dashboard/DashLayout';
 import {TEAM} from 'universal/subscriptions/constants';
 import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
+import {setDashAlertPresence} from 'universal/modules/dashboard/ducks/dashDuck';
 
 const resolveActiveMeetings = (teams) => {
   if (teams !== resolveActiveMeetings.teams) {
@@ -53,7 +54,8 @@ const mapStateToProps = (state) => {
     activeMeetings: resolveActiveMeetings(teams),
     tms: state.auth.obj.tms,
     userId: state.auth.sub,
-    trialNotification
+    trialNotification,
+    hasDashAlert: state.dash.hasDashAlert
   };
 };
 
@@ -74,6 +76,10 @@ export default class DashLayoutContainer extends Component {
     // userId: PropTypes.string
   };
 
+  componentWillMount() {
+    this.maybeSetDashAlert(this.props);
+  }
+
   componentDidMount() {
     const {tms} = this.props;
     subToAllTeams(tms);
@@ -84,12 +90,30 @@ export default class DashLayoutContainer extends Component {
     if (this.props.tms !== nextProps.tms) {
       subToAllTeams(nextProps.tms);
     }
+    this.maybeSetDashAlert(nextProps);
+  }
+
+  maybeSetDashAlert(props) {
+    const {
+      activeMeetings,
+      trialNotification,
+      hasDashAlert,
+      dispatch
+    } = props;
+    const shouldHaveDashAlert = activeMeetings.length > 0 || trialNotification.type;
+    if (shouldHaveDashAlert !== hasDashAlert) {
+      dispatch(setDashAlertPresence(shouldHaveDashAlert));
+    }
   }
 
   render() {
     const {activeMeetings, children, trialNotification} = this.props;
     return (
-      <DashLayout activeMeetings={activeMeetings} children={children} trialNotification={trialNotification}/>
+      <DashLayout
+        activeMeetings={activeMeetings}
+        children={children}
+        trialNotification={trialNotification}
+      />
     );
   }
 }

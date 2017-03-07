@@ -4,15 +4,15 @@ import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import {Link} from 'react-router';
 import FontAwesome from 'react-fontawesome';
-import NotificationBar from 'universal/components/NotificationBar/NotificationBar';
+import {DashAlert} from 'universal/components/Dashboard';
 
-const ActiveTrialNotificationBar = (props) => {
+const ActiveTrialDashAlert = (props) => {
   const {accountLink, styles} = props;
   const iconStyle = {
     fontSize: ui.iconSize
   };
   return (
-    <NotificationBar colorPalette="cool">
+    <DashAlert colorPalette="cool">
       <div className={css(styles.inlineBlock, styles.message)}>
         Add 30 days to your trial!
       </div>
@@ -21,11 +21,11 @@ const ActiveTrialNotificationBar = (props) => {
           <span className={css(styles.underline)}>Go to My Account</span> <FontAwesome name="arrow-right" style={iconStyle} />
         </Link>
       </div>
-    </NotificationBar>
+    </DashAlert>
   );
 };
 
-ActiveTrialNotificationBar.propTypes = {
+ActiveTrialDashAlert.propTypes = {
   accountLink: PropTypes.string,
   styles: PropTypes.object
 };
@@ -62,4 +62,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(ActiveTrialNotificationBar);
+export default withStyles(styleThunk)(ActiveTrialDashAlert);

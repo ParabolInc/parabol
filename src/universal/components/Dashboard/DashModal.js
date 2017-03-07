@@ -11,13 +11,13 @@ const DashModal = (props) => {
     isClosing,
     onBackdropClick,
     position,
-    modalContext,
+    modalLayout,
     styles
   } = props;
   const backdropStyles = css(
     styles.backdrop,
     position && styles[position],
-    modalContext && styles[modalContext]
+    modalLayout && styles[modalLayout]
   );
   const modalStyles = css(
     styles.modal,
@@ -47,17 +47,14 @@ DashModal.propTypes = {
 
   // NOTE: Use 'fixed' to show over 'viewport'.
   //       Default styles use 'fixed' and 'viewport' values.
-  //       Use 'absolute' to show over 'main'.
+  //       Use 'absolute' to show over 'main' or 'mainHasDashAlert'.
+  //       SEE: ui.modalLayout for options
 
   position: PropTypes.oneOf([
     'absolute',
     'fixed'
   ]),
-  modalContext: PropTypes.oneOf([
-    'main',
-    'meetingInProgress',
-    'viewport'
-  ]),
+  modalLayout: PropTypes.oneOf(ui.modalLayout),
   styles: PropTypes.object
 };
 
@@ -107,17 +104,17 @@ const styleThunk = (theme, props) => ({
     animationName: animateOut
   },
 
-  viewport: {
-    left: 0
-  },
-
-  main: {
+  [ui.modalLayoutMain]: {
     left: ui.dashSidebarWidth
   },
 
-  meetingInProgress: {
+  [ui.modalLayoutMainWithDashAlert]: {
     left: ui.dashSidebarWidth,
-    top: ui.dashNotificationBarHeight
+    top: ui.dashAlertHeight
+  },
+
+  [ui.modalLayoutViewport]: {
+    left: 0
   },
 
   absolute: {
@@ -137,7 +134,6 @@ const styleThunk = (theme, props) => ({
   modal: {
     background: '#fff',
     border: `.125rem solid ${appTheme.palette.mid30a}`,
-    // boxShadow: `0 0 0 .25rem ${appTheme.palette.mid30a}, ${ui.modalBoxShadow}`,
     boxShadow: ui.modalBoxShadow,
     borderRadius: ui.modalBorderRadius,
     padding: '1.25rem',

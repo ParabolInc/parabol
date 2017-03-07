@@ -3,7 +3,11 @@ import protocolRelativeUrl from './protocolRelativeUrl';
 import {
   APP_WEBPACK_PUBLIC_PATH_DEFAULT
 } from '../../universal/utils/constants';
+import {getDotenv} from '../../universal/utils/dotenv';
 import packageJSON from '../../../package.json';
+
+// Import .env and expand variables:
+getDotenv();
 
 const APP_VERSION = packageJSON.version;
 
