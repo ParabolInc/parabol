@@ -25,7 +25,7 @@ describe('addBilling', () => {
     const {user, organization} = await mockDB.init()
       .newNotification(undefined, {type: TRIAL_EXPIRES_SOON});
     const org = organization[0];
-    stripe.__setMockData(org, dynamicSerializer);
+    stripe.__setMockData(org);
     const stripeToken = 'tok_4242424242424242';
     const orgId = org.id;
     const authToken = mockAuthToken(user[0]);
@@ -39,7 +39,7 @@ describe('addBilling', () => {
       notification: r.table('Notification').getAll(orgId, {index: 'orgId'})
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
-    expect(stripe.__snapshot()).toMatchSnapshot();
+    expect(stripe.__snapshot(org.stripeId, dynamicSerializer)).toMatchSnapshot();
   });
 
   test('starts a new subscription for those who let the trial expire', async() => {
@@ -53,7 +53,7 @@ describe('addBilling', () => {
       .org(0, {periodEnd: new Date(now.getTime() - 1)})
       .team(0, {isPaid: false});
     const org = organization[0];
-    stripe.__setMockData(org, dynamicSerializer);
+    stripe.__setMockData(org);
     const orgId = org.id;
     const authToken = mockAuthToken(user[0]);
 
@@ -67,7 +67,7 @@ describe('addBilling', () => {
       team: r.table('Team').get(team[0].id)
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
-    expect(stripe.__snapshot()).toMatchSnapshot();
+    expect(stripe.__snapshot(org.stripeId, dynamicSerializer)).toMatchSnapshot();
   });
 
   test('changes cards for customers in good standing', async() => {
@@ -79,7 +79,7 @@ describe('addBilling', () => {
     const {user, organization} = await mockDB.init()
       .org(0, {creditCard: creditCardByToken[oldToken]});
     const org = organization[0];
-    stripe.__setMockData(org, dynamicSerializer);
+    stripe.__setMockData(org);
     const orgId = org.id;
     const authToken = mockAuthToken(user[0]);
 
@@ -92,34 +92,7 @@ describe('addBilling', () => {
       organization: r.table('Organization').get(orgId),
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
-    expect(stripe.__snapshot(dynamicSerializer)).toMatchSnapshot();
-  });
-
-  test('changes cards for customers in good standing', async() => {
-    // SETUP
-    const r = getRethink();
-    const dynamicSerializer = new DynamicSerializer();
-    const mockDB = new MockDB();
-    const oldToken = 'tok_4012888888881881';
-    const {user, organization} = await mockDB.init()
-      .org(0, {creditCard: creditCardByToken[oldToken]});
-    const org = organization[0];
-    stripe.__setMockData(org, dynamicSerializer);
-    const orgId = org.id;
-    const authToken = mockAuthToken(user[0]);
-
-    // TEST
-    const stripeToken = 'tok_4242424242424242';
-    await addBilling.resolve(undefined, {orgId, stripeToken}, {authToken, socket});
-
-    // VERIFY
-    const db = await fetchAndSerialize({
-      organization: r.table('Organization').get(orgId),
-      // notification: r.table('Notification').getAll(orgId, {index: 'orgId'}),
-      // team: r.table('Team').get(team[0].id)
-    }, dynamicSerializer);
-    expect(db).toMatchSnapshot();
-    expect(stripe.__snapshot()).toMatchSnapshot();
+    expect(stripe.__snapshot(org.stripeId, dynamicSerializer)).toMatchSnapshot();
   });
 
   test('changes cards for customer who had a failed charge', async() => {
@@ -135,12 +108,13 @@ describe('addBilling', () => {
       })
       .newNotification(undefined, {type: PAYMENT_REJECTED});
     const org = organization[0];
-    stripe.__setMockData(org, dynamicSerializer);
+    stripe.__setMockData(org);
     const orgId = org.id;
     const authToken = mockAuthToken(user[0]);
 
     // TEST
     const stripeToken = 'tok_4242424242424242';
+
     await addBilling.resolve(undefined, {orgId, stripeToken}, {authToken, socket});
 
     // VERIFY
@@ -150,7 +124,7 @@ describe('addBilling', () => {
       team: r.table('Team').get(team[0].id)
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
-    expect(stripe.__snapshot()).toMatchSnapshot();
+    expect(stripe.__snapshot(org.stripeId, dynamicSerializer)).toMatchSnapshot();
   });
 
   test('throws when no websocket is present', async() => {
