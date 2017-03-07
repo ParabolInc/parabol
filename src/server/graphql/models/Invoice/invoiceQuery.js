@@ -61,9 +61,10 @@ export default {
         description: 'The id of the organization'
       },
       after: {type: GraphQLString, description: 'the cursor coming from the front'},
-      first: {type: GraphQLInt, description: 'Limit the invoices from the front'},
+      // purposefully ignore pagination until we get cashay working correctly
+      count: {type: GraphQLInt, description: 'Limit the invoices from the front'},
     },
-    async resolve(source, {orgId, after, first}, {authToken}) {
+    async resolve(source, {orgId, after, count}, {authToken}) {
       const r = getRethink();
 
       // AUTH
@@ -78,7 +79,7 @@ export default {
         return r.table('Invoice')
           .between([orgId, dbAfter], [orgId, r.maxval], {index: 'orgIdStartAt', leftBound: 'open'})
           .orderBy(r.desc('startAt'))
-          .limit(first)
+          .limit(count)
           .merge((doc) => ({
             cursor: doc('startAt')
           }));
@@ -90,7 +91,7 @@ export default {
           .between([orgId, r.minval], [orgId, r.maxval], {index: 'orgIdStartAt', leftBound: 'open'})
           .orderBy(r.desc('startAt'))
           .filter((invoice) => invoice('status').ne(UPCOMING))
-          .limit(first - 1)
+          .limit(count - 1)
           .merge((doc) => ({
             cursor: doc('startAt')
           }))
