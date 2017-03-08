@@ -17,7 +17,7 @@ export default async function createNewOrg(orgId, orgName, leaderUserId, stripeT
     }
   }));
 
-  const creditCard = stripeToken && getCCFromCustomer(customer);
+  const creditCard = stripeToken ? getCCFromCustomer(customer) : {};
   const {id: stripeId} = customer;
   const {id: stripeSubscriptionId, current_period_end, current_period_start} =
     await tryStripeCall(stripe.subscriptions.create({

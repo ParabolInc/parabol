@@ -89,8 +89,8 @@ const styleThunk = () => ({
   fileIcon: {
     alignItems: 'center',
     color: '#fff',
-    display: 'flex',
-    fontSize: ui.iconSize2x,
+    display: 'flex !important',
+    fontSize: `${ui.iconSize2x} !important`,
     height: 50,
     justifyContent: 'center',
     width: 50

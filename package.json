@@ -14,7 +14,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=production node ./src/server/server.babel.js",
+    "start": "NODE_ENV=production node --trace-warnings ./src/server/server.babel.js",
     "start:tunnel": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d '\"') && ultrahook -k $ULTRAHOOK_API_KEY dev 3000",
     "dev": "if [ ! -f \"dll/vendors.json\" ] ; then npm run build:dll ; fi ; NODE_ENV=development node --trace-warnings ./src/server/server.babel.js",
     "build": "rimraf build && concurrently \"npm run build:client\" \"npm run build:server\"",
@@ -66,6 +66,7 @@
     "chance": "^1.0.4",
     "codecov": "^1.0.1",
     "concurrently": "2.2.0",
+    "dynamic-serializer": "^0.1.0",
     "eslint": "^3.10.2",
     "eslint-config-airbnb": "^9.0.1",
     "eslint-plugin-import": "^1.12.0",

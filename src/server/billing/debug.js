@@ -46,7 +46,7 @@
 // stripe.invoices.retrieveUpcoming('cus_AAUHCZYp65T4Tw', (err, res) => {
 //   console.log(res)
 // });
-// import DynamicSerializer from 'server/__tests__/utils/DynamicSerializer';
+// import DynamicSerializer from 'dynamic-serializer';
 // const now = new Date();
 // async function foo() {
 //   const mockDB = new MockDB();

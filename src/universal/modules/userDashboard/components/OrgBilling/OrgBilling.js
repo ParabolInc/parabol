@@ -19,8 +19,8 @@ const OrgBilling = (props) => {
     org
   } = props;
   const {creditCard, id: orgId, periodEnd} = org;
-  const {brand = '???', last4 = '••••', expiry = '???'} = creditCard || {};
-  const isTrial = !creditCard || !creditCard.brand;
+  const {brand = '???', last4 = '••••', expiry = '???'} = creditCard;
+  const isTrial = !creditCard.last4;
   const now = new Date();
   const activeTrial = isTrial && periodEnd > now;
   const expiredTrial = isTrial && periodEnd <= now;
@@ -56,7 +56,7 @@ const OrgBilling = (props) => {
           }
           {invoicesReady && invoices.length > 0 &&
             invoices.map((invoice, idx) =>
-              <InvoiceRow key={`invoiceRow${idx}`} invoice={invoice} hasCard={Boolean(creditCard)}/>
+              <InvoiceRow key={`invoiceRow${idx}`} invoice={invoice} hasCard={Boolean(creditCard.last4)}/>
             )
           }
           {!invoicesReady &&
