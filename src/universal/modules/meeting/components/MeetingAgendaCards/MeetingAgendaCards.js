@@ -26,8 +26,7 @@ const handleAddProjectFactory = (teamMemberId, agendaId) => () => {
     id: `${teamId}::${shortid.generate()}`,
     status: ACTIVE,
     teamMemberId,
-    teamSort: 0,
-    userSort: 0,
+    sortOrder: 0,
     agendaId
   };
   cashay.mutate('createProject', {variables: {newProject}});

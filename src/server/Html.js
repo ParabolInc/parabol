@@ -15,8 +15,8 @@ const segmentSnippet = segKey && makeSegmentSnippet.min({
 });
 
 // Injects the server rendered state and app into a basic html template
-export default function Html({store, entries, StyleSheetServer, renderProps}) {
-  const {manifest, app, vendor} = entries;
+export default function Html({store, assets, StyleSheetServer, renderProps}) {
+  const {manifest, app, vendor} = assets;
   // TURN ON WHEN WE SEND STATE TO CLIENT
   // const initialState = `window.__INITIAL_STATE__ = ${JSON.stringify(store.getState())}`;
   // <script dangerouslySetInnerHTML={{__html: initialState}}/>
@@ -65,6 +65,6 @@ export default function Html({store, entries, StyleSheetServer, renderProps}) {
 Html.propTypes = {
   StyleSheetServer: PropTypes.object,
   store: PropTypes.object.isRequired,
-  entries: PropTypes.object,
+  assets: PropTypes.object,
   renderProps: PropTypes.object
 };

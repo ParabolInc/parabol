@@ -18,8 +18,7 @@ query {
       status
       teamMemberId
       updatedAt
-      userSort
-      teamSort
+      sortOrder
     }
   }
 }
@@ -30,7 +29,7 @@ const resolveTeamProjects = (teamMembers) => {
   if (teamMembers !== resolveTeamProjects.teamMembers) {
     resolveTeamProjects.teamMembers = teamMembers;
     const allProjects = makeAllProjects(teamMembers);
-    resolveTeamProjects.cache = makeProjectsByStatus(allProjects, 'teamSort');
+    resolveTeamProjects.cache = makeProjectsByStatus(allProjects);
   }
   return resolveTeamProjects.cache;
 };
@@ -39,15 +38,15 @@ const mutationHandlers = {
   updateProject(optimisticUpdates, queryResponse, currentResponse) {
     if (optimisticUpdates) {
       const {updatedProject} = optimisticUpdates;
-      if (updatedProject && updatedProject.hasOwnProperty('teamSort')) {
-        const {id, teamSort, status} = updatedProject;
+      if (updatedProject && updatedProject.hasOwnProperty('sortOrder')) {
+        const {id, sortOrder, status} = updatedProject;
         const {teamMembers} = currentResponse;
         for (let i = 0; i < teamMembers.length; i++) {
           const teamMember = teamMembers[i];
           const fromProject = teamMember.projects.find((action) => action.id === id);
           if (fromProject) {
-            if (teamSort !== undefined) {
-              fromProject.teamSort = teamSort;
+            if (sortOrder !== undefined) {
+              fromProject.sortOrder = sortOrder;
             }
             if (status) {
               fromProject.status = status;

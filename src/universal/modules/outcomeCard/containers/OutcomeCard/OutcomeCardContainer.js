@@ -94,6 +94,7 @@ class OutcomeCardContainer extends Component {
   handleCardUpdate = (submittedData) => {
     const {outcome} = this.props;
     const submittedContent = submittedData[outcome.id];
+    if (outcome.content === submittedContent) return;
     if (!submittedContent) {
       const {argName, mutationName} = getOutcomeNames(outcome, 'delete');
       // delete blank cards
