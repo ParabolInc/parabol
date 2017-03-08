@@ -186,24 +186,23 @@ stripe.__db = {
   subscriptions: {},
 };
 
-stripe.__setMockData = (org, trimSnapshot) => {
+stripe.__setMockData = (org) => {
   let source;
-  if (org.creditCard) {
+  if (org.creditCard.last4) {
     const tokenIds = Object.keys(creditCardByToken);
     source = tokenIds.find((token) => token.endsWith(org.creditCard.last4));
   }
-  const metadata = {orgId: org.id};
   const customerOptions = {
-    metadata,
+    metadata: {orgId: org.id},
     source
   };
   stripe.__db.customers[org.stripeId] = createNewCustomer(customerOptions, {id: org.stripeId});
 
   const subOptions = {
     customer: org.stripeId,
-    metadata,
+    metadata: {orgId: org.id},
     quantity: getQuantity(org.orgUsers),
-    trial_end: org.creditCard ? undefined : toEpochSeconds(org.periodEnd)
+    trial_end: org.creditCard.last4 ? undefined : toEpochSeconds(org.periodEnd)
   };
 
   const overrides = {
@@ -212,10 +211,9 @@ stripe.__setMockData = (org, trimSnapshot) => {
     current_period_start: toEpochSeconds(org.periodStart),
   };
   stripe.__db.subscriptions[org.stripeSubscriptionId] = createNewSubscription(subOptions, overrides);
-  stripe.__trimSnapshot = trimSnapshot;
 };
 
-stripe.__snapshot = () => {
+stripe.__snapshot = (customerId, dynamicSerializer) => {
   // create a minimum viable snapshot including everything that got touched
   const snapshot = {};
   const resourceNames = Object.keys(stripe.__db);
@@ -228,10 +226,18 @@ stripe.__snapshot = () => {
       }
       snapshot[resourceName] = [];
       const table= stripe.__db[resourceName];
+      const customerIdField = resourceName === 'customers' ? 'id' : 'customer';
       const docIds = Object.keys(table);
       for (let j = 0; j < docIds.length; j++) {
         const docId = docIds[j];
-        snapshot[resourceName].push(stripe.__trimSnapshot.trim(table[docId], resource.__trimFields));
+        const doc = table[docId];
+
+        if (doc[customerIdField] === customerId) {
+          snapshot[resourceName].push(dynamicSerializer.toStatic(table[docId], resource.__trimFields));
+        }
+      }
+      if (snapshot[resourceName].length === 0) {
+        delete snapshot[resourceName]
       }
     }
   }

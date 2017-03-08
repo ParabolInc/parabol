@@ -153,7 +153,7 @@ export const Invoice = new GraphQLObjectType({
     },
     creditCard: {
       type: CreditCard,
-      description: 'the card used to pay the invoice. undefined if status is not PAID'
+      description: 'the card used to pay the invoice'
     },
     cursor: {
       type: GraphQLFloat,

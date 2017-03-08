@@ -2,8 +2,8 @@ import getRethink from 'server/database/rethinkDriver';
 import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
 import MockDate from 'mockdate';
 import {__now, __aMinuteAgo, __anHourAgo} from 'server/__tests__/setup/mockTimes';
-import fetchAndTrim from 'server/__tests__/utils/fetchAndTrim';
-import TrimSnapshot from 'server/__tests__/utils/TrimSnapshot';
+import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
+import DynamicSerializer from 'dynamic-serializer';
 import MockDB from 'server/__tests__/setup/MockDB';
 import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
 import socket from 'server/__mocks__/socket';
@@ -17,7 +17,7 @@ describe('updateProject', () => {
   test('updates the sortOrder without changing updatedAt or making a history item', async() => {
     // SETUP
     const r = getRethink();
-    const trimSnapshot = new TrimSnapshot();
+    const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
     const {project, user} = await mockDB.init()
       .newProject();
@@ -32,19 +32,19 @@ describe('updateProject', () => {
     await updateProject.resolve(undefined, {updatedProject}, {authToken, socket});
 
     // VERIFY
-    const db = await fetchAndTrim({
+    const db = await fetchAndSerialize({
       project: r.table('Project').get(projectId),
       projectHistory: r.table('ProjectHistory')
         .between([projectId, r.minval], [projectId, r.maxval], {index: 'projectIdUpdatedAt'})
         .orderBy({index: 'projectIdUpdatedAt'})
-    }, trimSnapshot);
+    }, dynamicSerializer);
     expect(db).toMatchSnapshot();
   });
 
   test('updates the content of the project', async() => {
     // SETUP
     const r = getRethink();
-    const trimSnapshot = new TrimSnapshot();
+    const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
     const {project, user} = await mockDB.init()
       .newProject();
@@ -59,19 +59,19 @@ describe('updateProject', () => {
     await updateProject.resolve(undefined, {updatedProject}, {authToken, socket});
 
     // VERIFY
-    const db = await fetchAndTrim({
+    const db = await fetchAndSerialize({
       project: r.table('Project').get(projectId),
       projectHistory: r.table('ProjectHistory')
         .between([projectId, r.minval], [projectId, r.maxval], {index: 'projectIdUpdatedAt'})
         .orderBy({index: 'projectIdUpdatedAt'})
-    }, trimSnapshot);
+    }, dynamicSerializer);
     expect(db).toMatchSnapshot();
   });
 
   test('updates the teamMember of the project slowly and trigger a new history item', async() => {
     // SETUP
     const r = getRethink();
-    const trimSnapshot = new TrimSnapshot();
+    const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
     const {project, teamMember, user} = await mockDB.init()
       .newProject({updatedAt: new Date(__anHourAgo)})
@@ -87,19 +87,19 @@ describe('updateProject', () => {
     await updateProject.resolve(undefined, {updatedProject}, {authToken, socket});
 
     // VERIFY
-    const db = await fetchAndTrim({
+    const db = await fetchAndSerialize({
       project: r.table('Project').get(projectId),
       projectHistory: r.table('ProjectHistory')
         .between([projectId, r.minval], [projectId, r.maxval], {index: 'projectIdUpdatedAt'})
         .orderBy({index: 'projectIdUpdatedAt'})
-    }, trimSnapshot);
+    }, dynamicSerializer);
     expect(db).toMatchSnapshot();
   });
 
   test('updates the content of the project quickly and do not trigger a new history item', async() => {
     // SETUP
     const r = getRethink();
-    const trimSnapshot = new TrimSnapshot();
+    const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
     const {project, user} = await mockDB.init()
       .newProject({updatedAt: new Date(__aMinuteAgo)})
@@ -115,19 +115,19 @@ describe('updateProject', () => {
     await updateProject.resolve(undefined, {updatedProject}, {authToken, socket});
 
     // VERIFY
-    const db = await fetchAndTrim({
+    const db = await fetchAndSerialize({
       project: r.table('Project').get(projectId),
       projectHistory: r.table('ProjectHistory')
         .between([projectId, r.minval], [projectId, r.maxval], {index: 'projectIdUpdatedAt'})
         .orderBy({index: 'projectIdUpdatedAt'})
-    }, trimSnapshot);
+    }, dynamicSerializer);
     expect(db).toMatchSnapshot();
   });
 
   test('updates the status of the project', async() => {
     // SETUP
     const r = getRethink();
-    const trimSnapshot = new TrimSnapshot();
+    const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
     const {project, user} = await mockDB.init()
       .newProject();
@@ -142,12 +142,12 @@ describe('updateProject', () => {
     await updateProject.resolve(undefined, {updatedProject}, {authToken, socket});
 
     // VERIFY
-    const db = await fetchAndTrim({
+    const db = await fetchAndSerialize({
       project: r.table('Project').get(projectId),
       projectHistory: r.table('ProjectHistory')
         .between([projectId, r.minval], [projectId, r.maxval], {index: 'projectIdUpdatedAt'})
         .orderBy({index: 'projectIdUpdatedAt'})
-    }, trimSnapshot);
+    }, dynamicSerializer);
     expect(db).toMatchSnapshot();
   });
 
@@ -169,6 +169,6 @@ describe('updateProject', () => {
       id: projectId,
       status: DONE
     };
-    await expectAsyncToThrow(updateProject.resolve(undefined, {updatedProject}, {authToken, socket}));
+    await expectAsyncToThrow(updateProject.resolve(undefined, {updatedProject}, {authToken, socket}), [mockDB.context.team.id]);
   });
 });

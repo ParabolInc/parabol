@@ -30,7 +30,7 @@ export const requireSUOrTeamMember = (authToken, teamId) => {
   if (!isSuperUser(authToken)) {
     const teams = authToken.tms || [];
     if (!teams.includes(teamId)) {
-      throw errorObj({_error: 'You do not have access to that team!'});
+      throw errorObj({_error: `You do not have access to team ${teamId}`});
     }
   }
 };

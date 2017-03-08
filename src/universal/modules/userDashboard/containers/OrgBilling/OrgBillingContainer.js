@@ -15,7 +15,7 @@ query {
     }
     periodEnd
   }
-  invoiceList(orgId: $orgId, first: $first) {
+  invoiceList(orgId: $orgId, count: $count) {
     id
     amountDue
     cursor
@@ -50,7 +50,7 @@ const mapStateToProps = (state, props) => {
     key: orgId,
     variables: {
       orgId,
-      first: 5
+      count: 5
     }
   });
   const {data: {organization: org, invoiceList}} = res;

@@ -2,7 +2,7 @@
 // import ms from 'ms';
 // import MockDB from '../__tests__/setup/MockDB';
 // import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
-// import trimFields from 'server/__tests__/utils/trimFields';
+// import fieldsToSerialize from 'server/__tests__/utils/fieldsToSerialize';
 // import fs from 'fs';
 
 // stripe.subscriptions.update('sub_A9nq7dAOWGUKlD', {
@@ -46,7 +46,7 @@
 // stripe.invoices.retrieveUpcoming('cus_AAUHCZYp65T4Tw', (err, res) => {
 //   console.log(res)
 // });
-// import TrimSnapshot from 'server/__tests__/utils/TrimSnapshot';
+// import DynamicSerializer from 'dynamic-serializer';
 // const now = new Date();
 // async function foo() {
 //   const mockDB = new MockDB();
@@ -66,4 +66,4 @@
 //   }
 // };
 // debugger
-// console.log(trimSnapshot(orgDoc, ['sources.data.customer']));
+// console.log(dynamicSerializer(orgDoc, ['sources.data.customer']));
