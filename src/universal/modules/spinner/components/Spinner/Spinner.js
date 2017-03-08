@@ -55,7 +55,7 @@ const keyframesOpacity = {
   }
 };
 
-const leavesDelay = 3000;
+const leavesDuration = 3000;
 const leafDelay = 150;
 
 const makeLeafDelayStyles = (delay) => {
@@ -87,14 +87,14 @@ const styleThunk = (theme, {fillColor, width}) => ({
     width
   },
   leaves: {
-    animationDuration: `${leavesDelay}ms`,
+    animationDuration: `${leavesDuration}ms`,
     animationIterationCount: 'infinite',
     animationName: keyframesRotate,
     animationTimingFunction: cbTiming,
     width
   },
   leaf: {
-    animationDuration: `${leavesDelay - leafDelay}ms`,
+    animationDuration: `${leavesDuration - leafDelay}ms`,
     animationIterationCount: 'infinite',
     animationName: keyframesOpacity,
     animationTimingFunction: 'ease-in-out',
