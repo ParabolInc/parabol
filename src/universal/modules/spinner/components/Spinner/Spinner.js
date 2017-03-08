@@ -4,9 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 
 const Spinner = (props) => {
-  const {
-    styles,
-  } = props;
+  const {styles} = props;
   /* eslint-disable max-len */
   return (
     <div className={css(styles.root)}>
