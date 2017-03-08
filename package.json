@@ -120,7 +120,6 @@
     "graphiql": "^0.9.3",
     "graphql": "^0.9.1",
     "graphql-custom-datetype": "^0.3.0",
-    "gsap": "^1.19.1",
     "isomorphic-fetch": "2.2.1",
     "jsonwebtoken": "^7.1.9",
     "jwt-decode": "^2.1.0",

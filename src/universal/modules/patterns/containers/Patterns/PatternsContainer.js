@@ -1,7 +1,6 @@
 import React from 'react';
 import Helmet from 'react-helmet';
-import SpinnerBasic from 'universal/modules/spinner/components/Spinner/Spinner';
-import SpinnerGSAP from 'universal/modules/spinner/containers/Spinner/Spinner';
+import Spinner from 'universal/modules/spinner/components/Spinner/Spinner';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import Button from 'universal/components/Button/Button';
 
@@ -15,8 +14,7 @@ const PatternsContainer = () =>
   <div style={rootStyle}>
     <Helmet title="Welcome to the Action Pattern Library" />
 
-    <SpinnerBasic fillColor="warm" width={64} />
-    <SpinnerGSAP fillColor="warm" width={64} />
+    <Spinner fillColor="warm" width={64} />
 
     <h2>IconAvatar examples</h2>
     <IconAvatar colorPalette="mid" icon="bell" size="small" />
