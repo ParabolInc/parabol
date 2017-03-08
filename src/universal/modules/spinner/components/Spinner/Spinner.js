@@ -67,9 +67,6 @@ const makeLeafDelayStyles = (delay) => {
   return leaveStyles;
 };
 
-const cbTiming = 'cubic-bezier(.8, 0, .1, 1)';
-const leafDelayStyles = makeLeafDelayStyles(leafDelay);
-
 const styleThunk = (theme, {fillColor, width}) => ({
   root: {
     display: 'inline-block',
@@ -88,7 +85,7 @@ const styleThunk = (theme, {fillColor, width}) => ({
     animationDuration,
     animationIterationCount: 'infinite',
     animationName: keyframesRotate,
-    animationTimingFunction: cbTiming,
+    animationTimingFunction: 'cubic-bezier(.8, 0, .1, 1)',
     width
   },
   leaf: {
@@ -99,7 +96,7 @@ const styleThunk = (theme, {fillColor, width}) => ({
     fill: ui.palette[fillColor],
     opacity: '.25'
   },
-  ...leafDelayStyles
+  ...makeLeafDelayStyles(leafDelay)
 });
 
 export default withStyles(styleThunk)(Spinner);
