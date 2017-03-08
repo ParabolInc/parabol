@@ -39,15 +39,15 @@ const keyframesRotate = {
   }
 };
 
-const div = 100 / 6;
+const timing = 100 / 6;
 const keyframesOpacity = {
   '0%': {
     opacity: '.25'
   },
-  [`${div}%`]: {
+  [`${timing}%`]: {
     opacity: '1'
   },
-  [`${100 - div}%`]: {
+  [`${100 - timing}%`]: {
     opacity: '1'
   },
   '100%': {
@@ -55,19 +55,22 @@ const keyframesOpacity = {
   }
 };
 
-// const leafDelay = 1000;
-//
-// const makeLeafDelayStyles = (delay) => {
-//   const leaveStyles = {};
-//   for (let i = 0; i < 6; i++) {
-//     const num = i + 1;
-//     leaveStyles[`leaf${num}`] = {animationDelay: `${delay * num}ms`};
-//   }
-//   console.dir(leaveStyles);
-//   return leaveStyles;
-// };
+const leavesDelay = 3000;
+const leafDelay = 150;
+
+const makeLeafDelayStyles = (delay) => {
+  const leaveStyles = {};
+  for (let i = 0; i < 6; i++) {
+    const num = i + 1;
+    leaveStyles[`leaf${num}`] = {
+      animationDelay: `${delay * num}ms`
+    };
+  }
+  return leaveStyles;
+};
 
 const cbTiming = 'cubic-bezier(.9, 0, .1, 1)';
+const leafDelayStyles = makeLeafDelayStyles(leafDelay);
 
 const styleThunk = (theme, {fillColor, width}) => ({
   root: {
@@ -84,22 +87,21 @@ const styleThunk = (theme, {fillColor, width}) => ({
     width
   },
   leaves: {
-    animationDuration: '3s',
+    animationDuration: `${leavesDelay}ms`,
     animationIterationCount: 'infinite',
     animationName: keyframesRotate,
     animationTimingFunction: cbTiming,
     width
   },
   leaf: {
-    // // animationDuration: `${leafDelay}ms`,
-    // animationDuration: '3s',
-    // animationIterationCount: 'infinite',
-    // animationName: keyframesOpacity,
-    // animationTimingFunction: 'ease-in-out',
+    animationDuration: `${leavesDelay - leafDelay}ms`,
+    animationIterationCount: 'infinite',
+    animationName: keyframesOpacity,
+    animationTimingFunction: 'ease-in-out',
     fill: ui.palette[fillColor],
-    // opacity: '.25'
+    opacity: '.25'
   },
-  // ...makeLeafDelayStyles(leafDelay)
+  ...leafDelayStyles
 });
 
 export default withStyles(styleThunk)(Spinner);
