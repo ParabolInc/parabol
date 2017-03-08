@@ -85,6 +85,30 @@ describe('updateAction', () => {
     expect(db).toMatchSnapshot();
   });
 
+  test('updates the teamMemberId of the action (in meeting only)', async() => {
+    // SETUP
+    const r = getRethink();
+    const dynamicSerializer = new DynamicSerializer();
+    const mockDB = new MockDB();
+    const {action, teamMember, user} = await mockDB.init()
+      .newAction();
+    const actionId = action[0].id;
+    const authToken = mockAuthToken(user[7]);
+
+    // TEST
+    const updatedAction = {
+      id: actionId,
+      teamMemberId: teamMember[5].id
+    };
+    await updateAction.resolve(undefined, {updatedAction}, {authToken, socket});
+
+    // VERIFY
+    const db = await fetchAndSerialize({
+      action: r.table('Action').get(actionId),
+    }, dynamicSerializer);
+    expect(db).toMatchSnapshot();
+  });
+
   test('throws when no websocket is present', async() => {
     const authToken = {};
     await expectAsyncToThrow(updateAction.resolve(undefined, {updatedAction: {}}, {authToken}));

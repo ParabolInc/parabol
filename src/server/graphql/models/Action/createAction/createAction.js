@@ -5,8 +5,8 @@ import {
   GraphQLBoolean,
 } from 'graphql';
 import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import makeActionSchema from 'universal/validation/makeActionSchema';
 import {handleSchemaErrors} from 'server/utils/utils';
+import createActionValidation from './createActionValidation';
 
 export default {
   type: GraphQLBoolean,
@@ -28,7 +28,7 @@ export default {
     requireWebsocket(socket);
 
     // VALIDATION
-    const schema = makeActionSchema();
+    const schema = createActionValidation(authToken.tms);
     const {errors, data: validNewAction} = schema(newAction);
     handleSchemaErrors(errors);
 

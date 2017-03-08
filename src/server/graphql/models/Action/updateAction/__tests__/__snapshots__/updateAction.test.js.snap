@@ -51,3 +51,19 @@ Object {
   },
 }
 `;
+
+exports[`updateAction updates the teamMemberId of the action (in meeting only) 1`] = `
+Object {
+  "action": Object {
+    "content": "Test Action[0]",
+    "createdAt": 2017-01-01T06:59:59.999Z,
+    "createdBy": 1,
+    "id": 0,
+    "isComplete": false,
+    "sortOrder": 0,
+    "teamMemberId": 2,
+    "updatedAt": 2017-01-01T08:00:00.000Z,
+    "userId": 1,
+  },
+}
+`;
