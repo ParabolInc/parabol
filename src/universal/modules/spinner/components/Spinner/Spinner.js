@@ -47,7 +47,7 @@ const keyframesOpacity = {
   [`${timing}%`]: {
     opacity: '1'
   },
-  [`${100 - timing}%`]: {
+  [`${timing * 2}%`]: {
     opacity: '1'
   },
   '100%': {
@@ -63,13 +63,13 @@ const makeLeafDelayStyles = (delay) => {
   for (let i = 0; i < 6; i++) {
     const num = i + 1;
     leaveStyles[`leaf${num}`] = {
-      animationDelay: `${delay * num}ms`
+      animationDelay: `${delay * i}ms`
     };
   }
   return leaveStyles;
 };
 
-const cbTiming = 'cubic-bezier(.9, 0, .1, 1)';
+const cbTiming = 'cubic-bezier(.8, 0, .1, 1)';
 const leafDelayStyles = makeLeafDelayStyles(leafDelay);
 
 const styleThunk = (theme, {fillColor, width}) => ({
@@ -94,7 +94,7 @@ const styleThunk = (theme, {fillColor, width}) => ({
     width
   },
   leaf: {
-    animationDuration: `${leavesDuration - leafDelay}ms`,
+    animationDuration: `${leavesDuration}ms`,
     animationIterationCount: 'infinite',
     animationName: keyframesOpacity,
     animationTimingFunction: 'ease-in-out',
