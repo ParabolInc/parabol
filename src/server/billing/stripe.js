@@ -1,6 +1,7 @@
 import initStripe from 'stripe';
 import {getDotenv} from '../../universal/utils/dotenv';
 import {errorObj} from '../utils/utils';
+import {usedMethods, usedResources} from 'server/billing/constants';
 
 const tryCatchWrapper = (target) => async(...args) => {
   try {
@@ -9,8 +10,6 @@ const tryCatchWrapper = (target) => async(...args) => {
     throw errorObj({_error: e.message});
   }
 };
-const usedMethods = ['update', 'retrieve', 'del', 'create'];
-const usedResources = ['customers', 'invoices', 'invoiceItems', 'subscriptions'];
 
 getDotenv();
 const stripe = initStripe(process.env.STRIPE_SECRET_KEY);
