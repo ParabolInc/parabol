@@ -51,7 +51,7 @@ describe('stripeWebhookHandler', () => {
 
   test('handles customer.source.updated webhooks', async() => {
     // SETUP
-    const objectId = customerSourceUpdatedEvent.data.object.id;
+    // const objectId = customerSourceUpdatedEvent.data.object.id;
     const customerId = customerSourceUpdatedEvent.data.object.customer;
     const req = {body: customerSourceUpdatedEvent};
 
@@ -62,7 +62,7 @@ describe('stripeWebhookHandler', () => {
     await stripeWebhookHandler(req, res);
 
     // VERIFY
-    expect(mockFn).toBeCalledWith(objectId, customerId);
+    expect(mockFn).toBeCalledWith(customerId);
     expect(res.sendStatus).toBeCalledWith(200);
   });
 

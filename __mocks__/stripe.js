@@ -225,7 +225,7 @@ stripe.__snapshot = (customerId, dynamicSerializer) => {
         throw new Error(`BAD MOCK: No __trimFields set for ${resourceName}`);
       }
       snapshot[resourceName] = [];
-      const table= stripe.__db[resourceName];
+      const table = stripe.__db[resourceName];
       const customerIdField = resourceName === 'customers' ? 'id' : 'customer';
       const docIds = Object.keys(table);
       for (let j = 0; j < docIds.length; j++) {
