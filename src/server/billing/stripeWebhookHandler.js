@@ -6,24 +6,26 @@ import customerSubscriptionUpdated from './handlers/customerSubscriptionUpdated'
 import invoicePaymentSucceeded from './handlers/invoicePaymentSucceeded';
 
 export default async function stripeWebhookHandler(req, res) {
-  const event = req.body;
-  const {type} = event;
-  const objectId = event.data.object.id;
-  console.log('webhook received', event.data.previous_attributes);
+  // code defensively here because anyone can call this endpoint
+  const event = req.body || {};
+  const {data = {}, type} = event;
+  const dataObject = data.object || {};
+  const objectId = dataObject.id;
+  console.log('webhook received', objectId);
   try {
     if (type === 'invoice.created') {
       await invoiceCreated(objectId);
     } else if (type === 'invoiceitem.created') {
       await invoiceItemCreated(objectId);
     } else if (type === 'customer.source.updated') {
-      const customerId = event.data.object.customer;
+      const customerId = dataObject.customer;
       await customerSourceUpdated(customerId);
     } else if (type === 'invoice.payment_failed') {
       await invoicePaymentFailed(objectId);
     } else if (type === 'invoice.payment_succeeded') {
       await invoicePaymentSucceeded(objectId);
     } else if (type === 'customer.subscription.updated') {
-      const oldStatus = event.data.previous_attributes.status;
+      const oldStatus = data.previous_attributes && data.previous_attributes.status;
       await customerSubscriptionUpdated(objectId, oldStatus);
     }
   } catch (e) {

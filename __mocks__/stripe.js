@@ -150,6 +150,10 @@ const createNewSubscription = (options, overrides = {}, reject) => {
   } = overrides;
   let trialEnd = trial_end === 'now' ? nowInSeconds : trial_end;
   trialEnd = trial_period_days ? nowInSeconds + toEpochSeconds(ms(`${trial_period_days}d`)) : trialEnd;
+  let status = current_period_end < nowInSeconds ? 'canceled' : 'active';
+  if (trialEnd && status === 'active') {
+    status = 'trialing'
+  }
   return {
     "id": id,
     "object": "subscription",
@@ -174,7 +178,7 @@ const createNewSubscription = (options, overrides = {}, reject) => {
     "plan": makeSubscriptionPlan(created),
     "quantity": quantity,
     "start": current_period_start,
-    "status": "active",
+    "status": status,
     "tax_percent": 0.0,
     "trial_end": trialEnd || null,
     "trial_start": trialEnd ? nowInSeconds : null

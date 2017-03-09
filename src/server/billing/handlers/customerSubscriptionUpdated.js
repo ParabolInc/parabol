@@ -16,8 +16,10 @@ export default async function customerSubscriptionUpdated(subscriptionId, oldSta
   if (oldStatus === 'trialing' && status === 'active') {
     // their trial probably just expired. if they have a CC, we know they converted
     const hasCreditCard = await r.table('Organization').get(orgId)('creditCard')('last4').default(null);
-    // they converted! (or someone was sending a phony event to our webhook)
-    if (hasCreditCard) return true;
+    if (hasCreditCard) {
+      // they already converted! (or someone was sending a phony event to our webhook)
+      return;
+    }
     const orgDoc = await terminateSubscription(orgId);
     const userIds = orgDoc.orgUsers.reduce((billingLeaders, orgUser) => {
       if (orgUser.role === BILLING_LEADER) {
@@ -40,5 +42,4 @@ export default async function customerSubscriptionUpdated(subscriptionId, oldSta
           .delete();
       });
   }
-  return true;
 }

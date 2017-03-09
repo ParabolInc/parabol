@@ -60,18 +60,19 @@ class MockDB {
   }
 
   init() {
-    this.context.organization = {id: shortid.generate()};
-    this.context.team = {id: shortid.generate()};
+    const orgId = shortid.generate();
+    const teamId = shortid.generate();
+    // this.context.team = {id: shortid.generate()};
     const users = testUsers.map((user, idx) => ({
       ...user,
-      trialOrg: idx === 0 ? this.context.organization.id : null,
+      trialOrg: idx === 0 ? orgId : null,
       userOrgs: [{
-        id: this.context.organization.id,
+        id: orgId,
         role: idx === 0 ? BILLING_LEADER : null,
       }]
     }));
+    this.newTeam({id: teamId, orgId});
     users.forEach(this.newUser.bind(this));
-    this.newTeam();
     users.forEach((user, idx) => {
       this.user(idx);
       this.newTeamMember({
@@ -82,9 +83,9 @@ class MockDB {
     const orgUsers = this.db.user.map((user) => ({
       id: user.id,
       inactive: false,
-      role: user.userOrgs.find((org) => org.id === this.context.organization.id).role
+      role: user.userOrgs.find((org) => org.id === orgId).role
     }));
-    this.newOrg({orgUsers});
+    this.newOrg({id: orgId, orgUsers});
     return this;
   }
 
@@ -200,19 +201,19 @@ class MockDB {
 
   newOrg(overrides = {}) {
     const anHourAgo = new Date(__anHourAgo);
-
+    const {id = shortid.generate()} = this.context.organizaton || {};
     return this.closeout('organization', {
-      id: this.context.organization.id,
+      id,
       createdAt: anHourAgo,
       creditCard: {},
       name: 'The Averagers, Inc.',
-      orgUsers: [{
+      orgUsers: this.context.user ? [{
         id: this.context.user.id,
         role: BILLING_LEADER,
         inactive: false
-      }],
-      stripeId: `cus_${this.context.organization.id}`,
-      stripeSubscriptionId: `sub_${this.context.organization.id}`,
+      }] : [],
+      stripeId: `cus_${id}`,
+      stripeSubscriptionId: `sub_${id}`,
       updatedAt: anHourAgo,
       periodEnd: new Date(anHourAgo.getTime() + TRIAL_PERIOD),
       periodStart: anHourAgo,
@@ -255,9 +256,11 @@ class MockDB {
   }
 
   newTeam(overrides = {}) {
+    const {id = shortid.generate()} = this.context.team || {};
+    const {id: orgId = shortid.generate()} = this.context.organization || {};
     return this.closeout('team', {
-      id: this.context.team.id,
-      orgId: this.context.organization.id,
+      id,
+      orgId,
       teamName: 'Team America',
       activeFacilitator: null,
       facilitatorPhase: LOBBY,
@@ -286,8 +289,10 @@ class MockDB {
 
   newUser(overrides = {}) {
     const anHourAgo = new Date(__anHourAgo);
+    const {id: orgId = shortid.generate()} = this.context.organization || {};
+    const {id: teamId = shortid.generate()} = this.context.team || {};
     return this.closeout('user', {
-      id: `test|${overrides.name.substr(0, 4)}_${this.context.organization.id}`,
+      id: `test|${overrides.name.substr(0, 4)}_${orgId}`,
       cachedAt: anHourAgo,
       createdAt: anHourAgo,
       emailVerified: false,
@@ -296,10 +301,10 @@ class MockDB {
       inactive: false,
       identities: [],
       picture: 'https://placeimg.com/100/100/animals',
-      tms: [this.context.team.id],
+      tms: [teamId],
       updatedAt: anHourAgo,
       userOrgs: [{
-        id: this.context.organization.id,
+        id: orgId,
         role: null,
       }],
       welcomeSentAt: anHourAgo,
