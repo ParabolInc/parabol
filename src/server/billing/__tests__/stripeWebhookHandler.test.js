@@ -5,15 +5,12 @@ import * as invoiceItemCreated from 'server/billing/handlers/invoiceItemCreated'
 import * as invoiceCreated from 'server/billing/handlers/invoiceCreated';
 import * as customerSubscriptionUpdated from 'server/billing/handlers/customerSubscriptionUpdated';
 import * as invoicePaymentSucceeded from 'server/billing/handlers/invoicePaymentSucceeded';
-
-const makeReq = (object, type) => ({
-  body: {
-    data: {
-      object
-    },
-    type
-  }
-});
+import customerSourceUpdatedEvent from 'server/billing/__tests__/events/customerSourceUpdatedEvent';
+import invoiceCreatedEvent from 'server/billing/__tests__/events/invoiceCreatedEvent';
+import customerSubscriptionUpdatedEvent from 'server/billing/__tests__/events/customerSubscriptionUpdatedEvent';
+import invoiceItemCreatedEvent from 'server/billing/__tests__/events/invoiceItemCreatedEvent';
+import invoicePaymentSucceededEvent from 'server/billing/__tests__/events/invoicePaymentSucceededEvent';
+import invoicePaymentFailedEvent from 'server/billing/__tests__/events/invoicePaymentFailedEvent';
 
 const mockRes = () => ({
   sendStatus: jest.fn()
@@ -22,9 +19,8 @@ const mockRes = () => ({
 describe('stripeWebhookHandler', () => {
   test('handles invoice.created webhooks', async() => {
     // SETUP
-    const objectId = 'invoiceId';
-    const type = 'invoice.created';
-    const req = makeReq({id: objectId}, type);
+    const objectId = invoiceCreatedEvent.data.object.id;
+    const req = {body: invoiceCreatedEvent};
 
     const res = mockRes();
     const mockFn = invoiceCreated.default = jest.fn();
@@ -39,9 +35,8 @@ describe('stripeWebhookHandler', () => {
 
   test('handles invoiceitem.created webhooks', async() => {
     // SETUP
-    const objectId = 'invoiceItemId';
-    const type = 'invoiceitem.created';
-    const req = makeReq({id: objectId}, type);
+    const objectId = invoiceItemCreatedEvent.data.object.id;
+    const req = {body: invoiceItemCreatedEvent};
 
     const res = mockRes();
     const mockFn = invoiceItemCreated.default = jest.fn();
@@ -56,10 +51,9 @@ describe('stripeWebhookHandler', () => {
 
   test('handles customer.source.updated webhooks', async() => {
     // SETUP
-    const objectId = 'sourceId';
-    const customerId = 'customerId';
-    const type = 'customer.source.updated';
-    const req = makeReq({id: objectId, customer: customerId}, type);
+    const objectId = customerSourceUpdatedEvent.data.object.id;
+    const customerId = customerSourceUpdatedEvent.data.object.customer;
+    const req = {body: customerSourceUpdatedEvent};
 
     const res = mockRes();
     const mockFn = customerSourceUpdated.default = jest.fn();
@@ -74,9 +68,8 @@ describe('stripeWebhookHandler', () => {
 
   test('handles invoice.payment_failed webhooks', async() => {
     // SETUP
-    const objectId = 'invoiceId';
-    const type = 'invoice.payment_failed';
-    const req = makeReq({id: objectId}, type);
+    const objectId = invoicePaymentFailedEvent.data.object.id;
+    const req = {body: invoicePaymentFailedEvent};
 
     const res = mockRes();
     const mockFn = invoicePaymentFailed.default = jest.fn();
@@ -91,9 +84,8 @@ describe('stripeWebhookHandler', () => {
 
   test('handles invoice.payment_succeeded webhooks', async() => {
     // SETUP
-    const objectId = 'invoiceId';
-    const type = 'invoice.payment_succeeded';
-    const req = makeReq({id: objectId}, type);
+    const objectId = invoicePaymentSucceededEvent.data.object.id;
+    const req = {body: invoicePaymentSucceededEvent};
 
     const res = mockRes();
     const mockFn = invoicePaymentSucceeded.default = jest.fn();
@@ -108,11 +100,9 @@ describe('stripeWebhookHandler', () => {
 
   test('handles customer.subscription.updated webhooks', async() => {
     // SETUP
-    const objectId = 'customerId';
-    const status = 'trialing';
-    const type = 'customer.subscription.updated';
-    const req = makeReq({id: objectId}, type);
-    req.body.data.previous_attributes = {status};
+    const objectId = customerSubscriptionUpdatedEvent.data.object.id;
+    const {status} =customerSubscriptionUpdatedEvent.data.previous_attributes;
+    const req = {body: customerSubscriptionUpdatedEvent};
     const res = mockRes();
     const mockFn = customerSubscriptionUpdated.default = jest.fn();
 
