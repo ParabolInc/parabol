@@ -1,4 +1,4 @@
-// import stripe from './stripe';
+import stripe from './stripe';
 // import ms from 'ms';
 // import MockDB from '../__tests__/setup/MockDB';
 // import {TRIAL_EXPIRES_SOON} from 'universal/utils/constants';
@@ -39,9 +39,9 @@
 // };
 // foo('invoices', 'retrieveLines', 'in_19pVJzFLaFINmHnBC5uwabBm');
 
-// stripe.invoices.retrieve('upcoming', (err, res) => {
-//   console.log(err, res, res.lines.data);
-// });
+stripe.invoices.retrieve('in_19vX24FLaFINmHnB05YS7u5R', (err, res) => {
+  console.log(err, res, res.lines.data);
+});
 
 // stripe.invoices.retrieveUpcoming('cus_AAUHCZYp65T4Tw', (err, res) => {
 //   console.log(res)

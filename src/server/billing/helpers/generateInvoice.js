@@ -242,13 +242,13 @@ export default async function generateInvoice(invoice, stripeLineItems, orgId, i
           .filter((user) => user('userOrgs')
             .contains((userOrg) => userOrg('id').eq(orgId).and(userOrg('role').eq(BILLING_LEADER))))('email')
           .coerceTo('array'),
-        creditCard: org('creditCard'),
+        creditCard: org('creditCard').default({}),
         endAt: fromEpochSeconds(invoice.period_end),
         invoiceDate: fromEpochSeconds(invoice.date),
         lines: invoiceLineItems,
         nextMonthCharges,
         orgId,
-        orgName: org('name'),
+        orgName: org('name').default(null),
         picture: org('picture').default(null),
         startAt: fromEpochSeconds(invoice.period_start),
         startingBalance: invoice.starting_balance,

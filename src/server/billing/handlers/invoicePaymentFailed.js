@@ -4,6 +4,7 @@ import shortid from 'shortid';
 import {FAILED, BILLING_LEADER, PAYMENT_REJECTED} from 'universal/utils/constants';
 import terminateSubscription from 'server/billing/helpers/terminateSubscription';
 import fetchAllLines from 'server/billing/helpers/fetchAllLines';
+import {errorObj} from 'server/utils/utils';
 
 /*
  * Used for failed payments that are not trialing. Trialing orgs will not have a CC
@@ -13,7 +14,14 @@ export default async function invoicePaymentFailed(invoiceId) {
   const now = new Date();
 
   // VALIDATION
-  const {amount_due: amountDue, customer: customerId, metadata: {orgId}, subscription, paid} = await stripe.invoices.retrieve(invoiceId);
+  const {amount_due: amountDue, customer: customerId, metadata, subscription, paid} = await stripe.invoices.retrieve(invoiceId);
+  let orgId =  metadata.orgId;
+  if (!orgId) {
+    ({metadata: {orgId}} = await stripe.customers.retrieve(customerId));
+    if (!orgId) {
+      throw errorObj({_error: `Could not find orgId on invoice ${invoiceId}`})
+    }
+  }
   const org = await r.table('Organization').get(orgId).pluck('creditCard', 'stripeSubscriptionId');
   const {creditCard, stripeSubscriptionId} = org;
   /* attack vector #1: call the webhook with the victims invoiceId that was successful
@@ -22,7 +30,7 @@ export default async function invoicePaymentFailed(invoiceId) {
    this is better than making sure the webhook was sent just a couple hours ago
    also better than looking up the charge & making sure that there hasn't been a more recent, successful charge*/
   console.log('paid, eq', paid, stripeSubscriptionId, subscription);
-  if (paid || stripeSubscriptionId !== subscription) return false;
+  if (paid || stripeSubscriptionId !== subscription) return;
 
   // RESOLUTION
   // this must have not been a trial (or it was and they entered a card that got invalidated <1 hr after entering it)
@@ -60,5 +68,4 @@ export default async function invoicePaymentFailed(invoiceId) {
         });
       });
   }
-  return true;
 }

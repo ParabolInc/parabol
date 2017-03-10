@@ -6,7 +6,7 @@ import MockDB from 'server/__tests__/setup/MockDB';
 import creditCardByToken from 'server/__tests__/utils/creditCardByToken';
 import customerSourceUpdated from 'server/billing/handlers/customerSourceUpdated';
 
-describe('customerSourceUpdated', () => {
+describe('invoiceCreated', () => {
   test('handles stripe updating the credit card', async() => {
     // SETUP
     const r = getRethink();

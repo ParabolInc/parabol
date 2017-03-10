@@ -11,7 +11,7 @@ const defaultSubscriptionPlan = {
   amount: MONTHLY_PRICE * 100
 };
 
-const makeSubscriptionPlan = (created) => ({
+export const makeSubscriptionPlan = (created) => ({
   ...defaultSubscriptionPlan,
   "object": "plan",
   "created": created,
