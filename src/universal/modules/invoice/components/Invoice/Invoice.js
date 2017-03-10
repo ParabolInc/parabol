@@ -57,7 +57,7 @@ const Invoice = (props) => {
     startingBalance
   } = invoice;
   const {nextPeriodEnd} = nextMonthCharges;
-  const {brand, last4} = creditCard || {};
+  const {brand, last4} = creditCard;
   const subject = makeMonthString(endAt);
   // const nextMonthCharges = lines.find((line) => line.type === NEXT_MONTH_CHARGES);
   const {quantity, unitPrice} = nextMonthCharges;

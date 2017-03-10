@@ -11,7 +11,6 @@ exports.up = async(r) => {
   await Promise.all(fields);
 
   const indices = [
-    r.table('Project').indexDrop('teamIdCreatedAt'),
     r.table('Project').indexDrop('tokenExpiration'),
     r.table('Project').indexCreate('userId'),
   ];
@@ -36,7 +35,6 @@ exports.down = async(r) => {
   await Promise.all(fields);
 
   const indices = [
-    r.table('Project').indexCreate('teamIdCreatedAt'),
     r.table('Project').indexCreate('tokenExpiration'),
     r.table('Project').indexDrop('userId'),
   ];

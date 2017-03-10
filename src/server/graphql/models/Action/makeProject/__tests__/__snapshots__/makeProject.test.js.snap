@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`makeProject convert an action into a project 1`] = `
+Object {
+  "action": Object {},
+  "project": Object {
+    "content": "Test Action[0]",
+    "createdAt": 2017-01-01T06:59:59.999Z,
+    "id": 0,
+    "isArchived": false,
+    "sortOrder": 0,
+    "status": "active",
+    "teamId": 1,
+    "teamMemberId": 2,
+    "updatedAt": 2017-01-01T08:00:00.000Z,
+  },
+}
+`;
+
+exports[`makeProject throw when the caller is not a team member 1`] = `"{\\"_error\\":\\"You do not have access to team 0\\"}"`;
+
+exports[`makeProject throws when no websocket is present 1`] = `"{\\"_error\\":\\"this must be called from a websocket\\"}"`;
