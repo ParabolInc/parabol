@@ -110,12 +110,27 @@ const TeamSettings = (props) => {
 
   const deleteTeam = () => {
     if (!myTeamMember.isLead) return;
-    if (teamMembers.length === 1) {
-      cashay.mutate('deleteTeam', {variables: {deletedTeam: team}});
-      router.push('/me');
-    } else {
-      console.log('soft delete');
-    }
+    const variables = {
+      updatedTeam: {
+        id: team.id,
+        isArchived: false
+      }
+    };
+    cashay.mutate('archiveTeam', {variables});
+    console.log('soft delete', variables);
+    // if (teamMembers.length === 1) {
+    //   cashay.mutate('deleteTeam', {variables: {deletedTeam: team}});
+    //   router.push('/me');
+    // } else {
+    //   const variables = {
+    //     updatedTeam: {
+    //       id: teamId,
+    //       isArchived: true
+    //     }
+    //   };
+    //   cashay.mutate('archiveTeam', {variables});
+    //   console.log('soft delete');
+    // }
   };
   const deleteTeamButton = (
     <Button

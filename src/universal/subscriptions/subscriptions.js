@@ -12,6 +12,7 @@ import {
   OWNED_ORGANIZATIONS,
   TEAM,
   TEAM_MEMBERS,
+  TEAMS_BY_ORG,
   PROJECTS,
   USERS_BY_ORG
 } from 'universal/subscriptions/constants';
@@ -238,6 +239,23 @@ export default [
   },
   {
     channel: TEAM_MEMBERS,
+    string: `
+    subscription($teamId: ID!) {
+       teamMembers(teamId: $teamId) {
+         id,
+         checkInOrder,
+         email,
+         isNotRemoved,
+         isCheckedIn,
+         isFacilitator,
+         isLead,
+         picture,
+         preferredName
+       }
+    }`
+  },
+  {
+    channel: TEAMS_BY_ORG,
     string: `
     subscription($teamId: ID!) {
        teamMembers(teamId: $teamId) {

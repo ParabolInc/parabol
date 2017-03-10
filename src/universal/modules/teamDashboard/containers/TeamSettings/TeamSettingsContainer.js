@@ -10,6 +10,8 @@ query {
   team @cached(id: $teamId, type: "Team") {
     id
     name
+    orgId
+    meetingPhase
   },
   teamMembers(teamId: $teamId) @live {
     id
@@ -52,6 +54,7 @@ const mapStateToProps = (state, props) => {
 };
 
 const TeamSettingsContainer = (props) => {
+  console.log('conainter props',props);
   const {
     dispatch,
     router,

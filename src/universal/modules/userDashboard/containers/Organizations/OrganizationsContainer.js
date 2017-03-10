@@ -11,13 +11,19 @@ query {
     inactiveUserCount
     name
     picture
+  },
+  teams (type: "[Team]") @live {
+    id
+    isPaid
+    name
+    meetingId
   }
 }
 `;
 
 const mapStateToProps = (state) => {
   const userId = state.auth.obj.sub;
-  const {ownedOrganizations: organizations} = cashay.query(teamProjectsHeaderQuery, {
+  const bleh = cashay.query(teamProjectsHeaderQuery, {
     op: 'organizationsContainer',
     key: userId,
     sort: {
@@ -27,6 +33,8 @@ const mapStateToProps = (state) => {
       userId
     }
   }).data;
+  console.log('orgCont', bleh);
+  const {ownedOrganizations: organizations} = bleh;
   return {
     organizations
   };
