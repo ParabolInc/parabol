@@ -2,6 +2,7 @@ import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 import shortid from 'shortid';
 import {
+  PAID,
   PENDING,
   UPCOMING,
   ADDED_USERS,
@@ -229,6 +230,12 @@ export default async function generateInvoice(invoice, stripeLineItems, orgId, i
 
   const [type] = invoiceId.split('_');
   const isUpcoming = type === 'upcoming';
+  const amountDue = invoice.amount_due;
+  let status = isUpcoming ? UPCOMING : PENDING;
+  if (status === PENDING && amountDue <= 0) {
+    status = PAID
+  }
+  const paidAt = status === PAID && now;
 
   await r.table('Organization').get(orgId)
     .do((org) => {
@@ -249,10 +256,11 @@ export default async function generateInvoice(invoice, stripeLineItems, orgId, i
         nextMonthCharges,
         orgId,
         orgName: org('name').default(null),
+        paidAt,
         picture: org('picture').default(null),
         startAt: fromEpochSeconds(invoice.period_start),
         startingBalance: invoice.starting_balance,
-        status: isUpcoming ? UPCOMING : PENDING
+        status
       }, {conflict: 'replace'});
     });
 }

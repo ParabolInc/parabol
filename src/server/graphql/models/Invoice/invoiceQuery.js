@@ -2,7 +2,6 @@ import getRethink from 'server/database/rethinkDriver';
 import {
   GraphQLNonNull,
   GraphQLID,
-  GraphQLString,
   GraphQLInt,
   GraphQLList
 } from 'graphql';
@@ -60,11 +59,11 @@ export default {
         type: new GraphQLNonNull(GraphQLID),
         description: 'The id of the organization'
       },
-      after: {type: GraphQLString, description: 'the cursor coming from the front'},
+      // after: {type: GraphQLString, description: 'the cursor coming from the front'},
       // purposefully ignore pagination until we get cashay working correctly
       count: {type: GraphQLInt, description: 'Limit the invoices from the front'},
     },
-    async resolve(source, {orgId, after, count}, {authToken}) {
+    async resolve(source, {orgId, count}, {authToken}) {
       const r = getRethink();
 
       // AUTH
@@ -74,16 +73,16 @@ export default {
 
       // RESOLUTION
 
-      if (after) {
-        const dbAfter = after === 0 ? r.minval : after;
-        return r.table('Invoice')
-          .between([orgId, dbAfter], [orgId, r.maxval], {index: 'orgIdStartAt', leftBound: 'open'})
-          .orderBy(r.desc('startAt'))
-          .limit(count)
-          .merge((doc) => ({
-            cursor: doc('startAt')
-          }));
-      }
+      // if (after) {
+      //   const dbAfter = after === 0 ? r.minval : after;
+      //   return r.table('Invoice')
+      //     .between([orgId, dbAfter], [orgId, r.maxval], {index: 'orgIdStartAt', leftBound: 'open'})
+      //     .orderBy(r.desc('startAt'))
+      //     .limit(count)
+      //     .merge((doc) => ({
+      //       cursor: doc('startAt')
+      //     }));
+      // }
       const stripeId = await r.table('Organization').get(orgId)('stripeId');
       const promises = [
         stripe.invoices.retrieveUpcoming(stripeId),
