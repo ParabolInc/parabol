@@ -4,21 +4,7 @@ import tinycolor from 'tinycolor2';
 import {css} from 'aphrodite-local-styles/no-important';
 import withStyles from 'universal/styles/withStyles';
 import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
 import textOverflow from 'universal/styles/helpers/textOverflow';
-
-const {cool, warm, dark, mid, light} = appTheme.palette;
-const white = '#fff';
-const gray = appTheme.palette.mid20l;
-const buttonPalette = {
-  cool,
-  warm,
-  dark,
-  mid,
-  light,
-  gray,
-  white
-};
 
 const makeSolidTheme = (themeColor, textColor = '#fff', style = 'solid', opacity = '.65') => {
   const buttonColor = style === 'inverted' ? tinycolor.mix(themeColor, '#fff', 90).toHexString() : themeColor;
@@ -56,9 +42,10 @@ const makeFlatTheme = (style, color, opacity = '.5') => ({
 });
 
 const makePropColors = (style, colorPalette) => {
-  const color = buttonPalette[colorPalette];
-  const baseTextColor = style === 'inverted' ? color : white;
-  const textColor = (colorPalette === 'white' || colorPalette === 'light' || colorPalette === 'gray') ? dark : baseTextColor;
+  const color = ui.palette[colorPalette];
+  const baseTextColor = style === 'inverted' ? color : ui.palette.white;
+  const textColor = (colorPalette === 'white' || colorPalette === 'light' || colorPalette === 'gray') ?
+    ui.palette.dark : baseTextColor;
   if (style === 'flat' || style === 'outlined') {
     return makeFlatTheme(style, color);
   }
@@ -139,7 +126,7 @@ const Button = (props) => {
 };
 
 Button.propTypes = {
-  colorPalette: PropTypes.oneOf(ui.buttonColorPalette),
+  colorPalette: PropTypes.oneOf(ui.paletteOptions),
   compact: PropTypes.bool,
   disabled: PropTypes.bool,
   icon: PropTypes.string,
