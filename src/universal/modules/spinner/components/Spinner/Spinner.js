@@ -69,14 +69,13 @@ const keyframesOpacity = {
 };
 
 const makeLeafDelayStyles = (delay, length) => {
-  const leaveStyles = {};
+  const delayStyles = {};
   for (let i = 0; i < length; i++) {
-    const num = i + 1;
-    leaveStyles[`leaf${num}`] = {
+    delayStyles[`leaf${i + 1}`] = {
       animationDelay: `${delay * i}ms`
     };
   }
-  return leaveStyles;
+  return delayStyles;
 };
 
 const styleThunk = (theme, {fillColor, width}) => ({
