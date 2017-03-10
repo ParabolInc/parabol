@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`createAction creates an action from a meeting 1`] = `
+Object {
+  "action": Object {
+    "agendaId": 1,
+    "createdAt": 2017-01-01T08:00:00.000Z,
+    "createdBy": 2,
+    "id": 0,
+    "isComplete": false,
+    "sortOrder": 0,
+    "teamMemberId": 3,
+    "updatedAt": 2017-01-01T08:00:00.000Z,
+    "userId": 2,
+  },
+}
+`;
+
+exports[`createAction creates an action from the team dash 1`] = `
+Object {
+  "action": Object {
+    "createdAt": 2017-01-01T08:00:00.000Z,
+    "createdBy": 1,
+    "id": 0,
+    "isComplete": false,
+    "sortOrder": 0,
+    "teamMemberId": 2,
+    "updatedAt": 2017-01-01T08:00:00.000Z,
+    "userId": 1,
+  },
+}
+`;
+
+exports[`createAction throw when the caller is not a team member 1`] = `"{\\"_error\\":\\"You do not have access to team foo\\"}"`;
+
+exports[`createAction throws when no websocket is present 1`] = `"Cannot read property 'split' of undefined"`;

@@ -5,7 +5,7 @@ import stripe from 'server/billing/stripe';
 import MockDate from 'mockdate';
 import {__now} from 'server/__tests__/setup/mockTimes';
 import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
-import DynamicSerializer from 'server/__tests__/utils/DynamicSerializer';
+import DynamicSerializer from 'dynamic-serializer';
 import MockDB from 'server/__tests__/setup/MockDB';
 import creditCardByToken from 'server/__tests__/utils/creditCardByToken';
 import socket from 'server/__mocks__/socket';
@@ -25,7 +25,7 @@ describe('addOrg', () => {
     const {organization, user} = await mockDB.init()
       .org(0, {creditCard: creditCardByToken[stripeToken]});
     const org = organization[0];
-    stripe.__setMockData(org, dynamicSerializer);
+    stripe.__setMockData(org);
     auth0ManagementClient.__initMock(mockDB.db);
     const authToken = mockAuthToken(user[0]);
 
@@ -46,6 +46,6 @@ describe('addOrg', () => {
       user: r.table('User').getAll(org.id, newTeam.orgId, {index: 'userOrgs'}).orderBy('preferredName')
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
-    expect(stripe.__snapshot()).toMatchSnapshot();
+    expect(stripe.__snapshot(org.stripeId, dynamicSerializer)).toMatchSnapshot();
   });
 });

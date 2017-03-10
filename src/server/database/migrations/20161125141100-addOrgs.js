@@ -115,6 +115,7 @@ exports.up = async(r) => {
     orgsForDB[i] = {
       id: orgId,
       createdAt: now,
+      creditCard: {},
       name,
       orgUsers,
       stripeId: customer,
