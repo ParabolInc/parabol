@@ -84,13 +84,11 @@ export default {
       // }
       const stripeId = await r.table('Organization').get(orgId)('stripeId');
       return await r.table('Invoice')
-          .between([orgId, r.minval], [orgId, r.maxval], {index: 'orgIdStartAt', leftBound: 'open'})
-          .orderBy(r.desc('startAt'))
-          .filter((invoice) => invoice('status').ne(UPCOMING))
-          .limit(count - 1)
-          .merge((doc) => ({
-            cursor: doc('startAt')
-          }));
+        .between([orgId, r.minval], [orgId, r.maxval], {index: 'orgIdStartAt', leftBound: 'open'})
+        .orderBy(r.desc('startAt'))
+        // remove upcoming & trial invoices
+        .filter((invoice) => invoice('status').ne(UPCOMING).and(invoice('total').ne(0)))
+        .limit(count)
     }
   }
 };
