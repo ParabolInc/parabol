@@ -18,7 +18,7 @@ const inlineBlockTop = {
   cursor: 'pointer',
   userSelect: 'none',
   verticalAlign: 'top'
-}
+};
 
 const DashFilterToggle = (props) => {
   const {label, styles, onClick} = props;
@@ -28,8 +28,8 @@ const DashFilterToggle = (props) => {
       onClick={onClick}
       title={`Filter by ${label}`}
     >
-      <div className={css(styles.inlineBlockTop)} style={{marginRight: '.25rem'}}>{label}</div>
-      <FontAwesome name="chevron-circle-down" styles={inlineBlockTop}/>
+      <div style={{...inlineBlockTop, marginRight: '.25rem'}}>{label}</div>
+      <FontAwesome name="chevron-circle-down" style={inlineBlockTop}/>
     </button>
   );
 };
