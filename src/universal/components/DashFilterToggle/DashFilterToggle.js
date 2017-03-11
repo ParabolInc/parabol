@@ -18,7 +18,7 @@ const inlineBlockTop = {
   cursor: 'pointer',
   userSelect: 'none',
   verticalAlign: 'top'
-}
+};
 
 const DashFilterToggle = (props) => {
   const {label, styles, onClick} = props;
