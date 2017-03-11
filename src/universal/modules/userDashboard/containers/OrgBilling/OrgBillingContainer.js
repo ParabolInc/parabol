@@ -94,7 +94,8 @@ OrgBillingContainer.propTypes = {
   dispatch: PropTypes.func,
   invoiceList: PropTypes.array,
   invoicesReady: PropTypes.bool,
-  org: PropTypes.object
+  org: PropTypes.object,
+  upcomingInvoice: PropTypes.object
 };
 
 export default connect(mapStateToProps)(OrgBillingContainer);

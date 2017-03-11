@@ -28,4 +28,4 @@ export default {
       subscription_item: 'si_00000000000000'
     }
   }
-}
+};

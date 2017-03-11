@@ -21,9 +21,9 @@ if (!stripe.mock) {
     const stripeResource = stripe[resource];
     usedMethods.forEach((method) => {
       if (stripeResource[method]) {
-        stripeResource[method] = tryCatchWrapper(stripeResource[method].bind(stripeResource))
+        stripeResource[method] = tryCatchWrapper(stripeResource[method].bind(stripeResource));
       }
-    })
+    });
   });
   stripe.invoices.retrieveLines = tryCatchWrapper(stripe.invoices.retrieveLines.bind(stripe.invoices));
   stripe.invoices.retrieveUpcoming = tryCatchWrapper(stripe.invoices.retrieveUpcoming.bind(stripe.invoices));

@@ -70,7 +70,7 @@ export default {
                 type: TRIAL_EXPIRES_SOON
               })
               .delete();
-          })
+          });
       }
     } else {
       // 3) Converting after the trial ended

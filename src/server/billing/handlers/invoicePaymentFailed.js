@@ -15,11 +15,11 @@ export default async function invoicePaymentFailed(invoiceId) {
 
   // VALIDATION
   const {amount_due: amountDue, customer: customerId, metadata, subscription, paid} = await stripe.invoices.retrieve(invoiceId);
-  let orgId =  metadata.orgId;
+  let orgId = metadata.orgId;
   if (!orgId) {
     ({metadata: {orgId}} = await stripe.customers.retrieve(customerId));
     if (!orgId) {
-      throw errorObj({_error: `Could not find orgId on invoice ${invoiceId}`})
+      throw errorObj({_error: `Could not find orgId on invoice ${invoiceId}`});
     }
   }
   const org = await r.table('Organization').get(orgId).pluck('creditCard', 'stripeSubscriptionId');

@@ -233,7 +233,7 @@ export default async function generateInvoice(invoice, stripeLineItems, orgId, i
   const amountDue = invoice.amount_due;
   let status = isUpcoming ? UPCOMING : PENDING;
   if (status === PENDING && amountDue <= 0) {
-    status = PAID
+    status = PAID;
   }
   const paidAt = status === PAID && now;
 

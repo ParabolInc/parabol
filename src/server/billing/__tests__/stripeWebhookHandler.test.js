@@ -102,7 +102,7 @@ describe('stripeWebhookHandler', () => {
   test('handles customer.subscription.updated webhooks', async() => {
     // SETUP
     const objectId = customerSubscriptionUpdatedEvent.data.object.id;
-    const {status} =customerSubscriptionUpdatedEvent.data.previous_attributes;
+    const {status} = customerSubscriptionUpdatedEvent.data.previous_attributes;
     const req = {body: customerSubscriptionUpdatedEvent};
     const res = mockRes();
     const mockFn = customerSubscriptionUpdated.default = jest.fn();

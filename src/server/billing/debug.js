@@ -37,5 +37,5 @@ import stripe from './stripe';
 // });
 
 stripe.invoices.retrieveUpcoming('cus_AGA08G2n4ueq5c', (err, res) => {
-  console.log(res, res.lines.data)
+  console.log(res, res.lines.data);
 });

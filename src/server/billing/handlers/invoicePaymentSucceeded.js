@@ -14,7 +14,7 @@ export default async function invoicePaymentSucceeded(invoiceId) {
   const {metadata: {orgId}} = await stripe.customers.retrieve(customerId);
   const org = await r.table('Organization').get(orgId);
   if (!org) {
-    throw errorObj({_error: `Payment cannot succeed. Org ${orgId} does not exist for invoice ${invoiceId}`})
+    throw errorObj({_error: `Payment cannot succeed. Org ${orgId} does not exist for invoice ${invoiceId}`});
   }
   const {creditCard, stripeSubscriptionId} = org;
   if (!paid || stripeSubscriptionId !== subscription) {

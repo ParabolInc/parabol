@@ -13,6 +13,13 @@ const inlineBlock = {
   verticalAlign: 'top'
 };
 
+const inlineBlockTop = {
+  ...inlineBlock,
+  cursor: 'pointer',
+  userSelect: 'none',
+  verticalAlign: 'top'
+}
+
 const DashFilterToggle = (props) => {
   const {label, styles, onClick} = props;
   return (
@@ -22,7 +29,7 @@ const DashFilterToggle = (props) => {
       title={`Filter by ${label}`}
     >
       <div className={css(styles.inlineBlockTop)} style={{marginRight: '.25rem'}}>{label}</div>
-      <FontAwesome name="chevron-circle-down" className={css(styles.inlineBlockTop)}/>
+      <FontAwesome name="chevron-circle-down" styles={inlineBlockTop}/>
     </button>
   );
 };
@@ -57,13 +64,6 @@ const styleThunk = () => ({
     ':focus > div': {
       textDecoration: 'underline'
     }
-  },
-
-  inlineBlockTop: {
-    ...inlineBlock,
-    cursor: 'pointer',
-    userSelect: 'none',
-    verticalAlign: 'top'
   }
 });
 

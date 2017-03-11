@@ -5,7 +5,6 @@ import DynamicSerializer from 'dynamic-serializer';
 import MockDB from 'server/__tests__/setup/MockDB';
 import customerSubscriptionUpdated from 'server/billing/handlers/customerSubscriptionUpdated';
 import creditCardByToken from 'server/__tests__/utils/creditCardByToken';
-import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
 import * as makeUpcomingInvoice from 'server/graphql/models/Invoice/makeUpcomingInvoice';
 import exchange from 'server/__mocks__/exchange';
 
@@ -62,7 +61,6 @@ describe('customerSubscriptionUpdated', () => {
     expect(db).toMatchSnapshot();
     expect(stripe.__snapshot(org.stripeId, dynamicSerializer)).toMatchSnapshot();
     expect(exchange.publish).toBeCalled();
-
   });
 
   test('exits if it isn\'t a switch from trialing to active', async() => {

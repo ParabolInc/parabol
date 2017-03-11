@@ -34,4 +34,4 @@ export default {
     },
     previous_attributes: {exp_year: '2013'}
   }
-}
+};

@@ -13,7 +13,7 @@ export default {
         description: 'The unique org ID that owns the invoice'
       }
     },
-    async resolve(source, {orgId}, {authToken, socket, subbedChannelName}, refs) {
+    async resolve(source, {orgId}, {authToken, socket, subbedChannelName}) {
       const r = getRethink();
 
       // AUTH

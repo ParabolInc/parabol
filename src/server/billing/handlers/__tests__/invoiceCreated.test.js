@@ -32,7 +32,6 @@ describe('invoiceCreated', () => {
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
     expect(stripe.__snapshot(org.stripeId, dynamicSerializer)).toMatchSnapshot();
-
   });
 });
 

@@ -52,5 +52,4 @@ export default async function customerSubscriptionUpdated(subscriptionId, oldSta
     fields: upcomingInvoice
   };
   exchange.publish(channel, payload);
-
 }
