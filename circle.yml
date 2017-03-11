@@ -50,6 +50,10 @@ stages:
         command: npm run db:migrate-testing
 
       - type: shell
+        name: NPM lint
+        command: npm run lint
+
+      - type: shell
         name: NPM run test
         command: |
           npm run test
