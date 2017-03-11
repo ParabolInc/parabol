@@ -99,6 +99,12 @@ export default (stripe) => ({
     const doc = getDoc(stripe.__db.invoices[id], reject);
     resolve(doc);
   })),
+  //TODO
+  retrieveUpcoming: jest.fn((id) => new Promise((resolve, reject) => {
+    const doc = getDoc(stripe.__db.invoices[id], reject);
+    resolve(doc);
+  })),
+  //
   update: jest.fn((id, options) => new Promise((resolve, reject) => {
     const doc = getDoc(stripe.__db.invoices[id], reject);
     updateFromOptions(doc, stripe.invoices.__updateHandlers, options, reject);

@@ -6,6 +6,8 @@ import MockDB from 'server/__tests__/setup/MockDB';
 import customerSubscriptionUpdated from 'server/billing/handlers/customerSubscriptionUpdated';
 import creditCardByToken from 'server/__tests__/utils/creditCardByToken';
 import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
+import * as makeUpcomingInvoice from 'server/graphql/models/Invoice/makeUpcomingInvoice';
+import exchange from 'server/__mocks__/exchange';
 
 console.error = jest.fn();
 
@@ -21,9 +23,9 @@ describe('customerSubscriptionUpdated', () => {
     stripe.__setMockData(org);
     const {id: orgId, stripeSubscriptionId} = org;
     stripe.__db.subscriptions[stripeSubscriptionId].status = 'active';
-
+    makeUpcomingInvoice.default = jest.fn(() => ({}));
     // TEST
-    await customerSubscriptionUpdated(stripeSubscriptionId, 'trialing');
+    await customerSubscriptionUpdated(stripeSubscriptionId, 'trialing', exchange);
     // VERIFY
     const db = await fetchAndSerialize({
       organization: r.table('Organization').get(orgId),
@@ -32,6 +34,7 @@ describe('customerSubscriptionUpdated', () => {
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
     expect(stripe.__snapshot(org.stripeId, dynamicSerializer)).toMatchSnapshot();
+    expect(exchange.publish).toBeCalled();
   });
 
   test('exits if called on a non-trialing member', async() => {
@@ -46,9 +49,9 @@ describe('customerSubscriptionUpdated', () => {
     const org = organization[0];
     stripe.__setMockData(org);
     const {id: orgId, stripeSubscriptionId} = org;
-
+    makeUpcomingInvoice.default = jest.fn(() => ({}));
     // TEST
-    await customerSubscriptionUpdated(stripeSubscriptionId, 'trialing');
+    await customerSubscriptionUpdated(stripeSubscriptionId, 'trialing', exchange);
 
     // VERIFY
     const db = await fetchAndSerialize({
@@ -58,6 +61,7 @@ describe('customerSubscriptionUpdated', () => {
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
     expect(stripe.__snapshot(org.stripeId, dynamicSerializer)).toMatchSnapshot();
+    expect(exchange.publish).toBeCalled();
 
   });
 
@@ -73,9 +77,10 @@ describe('customerSubscriptionUpdated', () => {
     const org = organization[0];
     stripe.__setMockData(org);
     const {id: orgId, stripeSubscriptionId} = org;
+    makeUpcomingInvoice.default = jest.fn(() => ({}));
 
     // TEST
-    await customerSubscriptionUpdated(stripeSubscriptionId, 'active');
+    await customerSubscriptionUpdated(stripeSubscriptionId, 'active', exchange);
     // VERIFY
     const db = await fetchAndSerialize({
       organization: r.table('Organization').get(orgId),
@@ -84,6 +89,7 @@ describe('customerSubscriptionUpdated', () => {
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
     expect(stripe.__snapshot(org.stripeId, dynamicSerializer)).toMatchSnapshot();
+    expect(exchange.publish).toBeCalled();
   });
 });
 

@@ -2,13 +2,14 @@ import {toEpochSeconds} from 'server/utils/epochTime';
 import creditCardByToken from 'server/__tests__/utils/creditCardByToken';
 import subscriptions, {createNewSubscription} from './stripe/subscriptions';
 import customers, {createNewCustomer} from './stripe/customers';
+import invoices from './stripe/invoices';
 import {getQuantity} from './stripe/utils';
 import {usedResources} from 'server/billing/constants';
 
 const stripe = jest.genMockFromModule('stripe');
 stripe.customers = customers(stripe);
 stripe.subscriptions = subscriptions(stripe);
-stripe.invoices = {};
+stripe.invoices = invoices(stripe);
 stripe.invoiceItems = {};
 stripe.__db = usedResources.reduce((db, key) => {
   db[key] = {};

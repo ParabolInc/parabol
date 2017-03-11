@@ -11,6 +11,7 @@ import customerSubscriptionUpdatedEvent from 'server/billing/__tests__/events/cu
 import invoiceItemCreatedEvent from 'server/billing/__tests__/events/invoiceItemCreatedEvent';
 import invoicePaymentSucceededEvent from 'server/billing/__tests__/events/invoicePaymentSucceededEvent';
 import invoicePaymentFailedEvent from 'server/billing/__tests__/events/invoicePaymentFailedEvent';
+import exchange from 'server/__mocks__/exchange';
 
 const mockRes = () => ({
   sendStatus: jest.fn()
@@ -26,7 +27,7 @@ describe('stripeWebhookHandler', () => {
     const mockFn = invoiceCreated.default = jest.fn();
 
     // TEST
-    await stripeWebhookHandler(req, res);
+    await stripeWebhookHandler(exchange)(req, res);
 
     // VERIFY
     expect(mockFn).toBeCalledWith(objectId);
@@ -42,7 +43,7 @@ describe('stripeWebhookHandler', () => {
     const mockFn = invoiceItemCreated.default = jest.fn();
 
     // TEST
-    await stripeWebhookHandler(req, res);
+    await stripeWebhookHandler(exchange)(req, res);
 
     // VERIFY
     expect(mockFn).toBeCalledWith(objectId);
@@ -59,7 +60,7 @@ describe('stripeWebhookHandler', () => {
     const mockFn = customerSourceUpdated.default = jest.fn();
 
     // TEST
-    await stripeWebhookHandler(req, res);
+    await stripeWebhookHandler(exchange)(req, res);
 
     // VERIFY
     expect(mockFn).toBeCalledWith(customerId);
@@ -75,7 +76,7 @@ describe('stripeWebhookHandler', () => {
     const mockFn = invoicePaymentFailed.default = jest.fn();
 
     // TEST
-    await stripeWebhookHandler(req, res);
+    await stripeWebhookHandler(exchange)(req, res);
 
     // VERIFY
     expect(mockFn).toBeCalledWith(objectId);
@@ -91,7 +92,7 @@ describe('stripeWebhookHandler', () => {
     const mockFn = invoicePaymentSucceeded.default = jest.fn();
 
     // TEST
-    await stripeWebhookHandler(req, res);
+    await stripeWebhookHandler(exchange)(req, res);
 
     // VERIFY
     expect(mockFn).toBeCalledWith(objectId);
@@ -107,10 +108,10 @@ describe('stripeWebhookHandler', () => {
     const mockFn = customerSubscriptionUpdated.default = jest.fn();
 
     // TEST
-    await stripeWebhookHandler(req, res);
+    await stripeWebhookHandler(exchange)(req, res);
 
     // VERIFY
-    expect(mockFn).toBeCalledWith(objectId, status);
+    expect(mockFn).toBeCalledWith(objectId, status, exchange);
     expect(res.sendStatus).toBeCalledWith(200);
   });
 });

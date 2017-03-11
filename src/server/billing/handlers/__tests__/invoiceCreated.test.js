@@ -6,6 +6,8 @@ import MockDB from 'server/__tests__/setup/MockDB';
 import creditCardByToken from 'server/__tests__/utils/creditCardByToken';
 import customerSourceUpdated from 'server/billing/handlers/customerSourceUpdated';
 
+console.error = jest.fn();
+
 describe('invoiceCreated', () => {
   test('handles stripe updating the credit card', async() => {
     // SETUP
