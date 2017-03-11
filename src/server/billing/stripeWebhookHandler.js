@@ -5,7 +5,7 @@ import invoiceCreated from './handlers/invoiceCreated';
 import customerSubscriptionUpdated from './handlers/customerSubscriptionUpdated';
 import invoicePaymentSucceeded from './handlers/invoicePaymentSucceeded';
 
-export default async function stripeWebhookHandler(req, res) {
+export default (exchange) => async function stripeWebhookHandler(req, res) {
   // code defensively here because anyone can call this endpoint
   const event = req.body || {};
   const {data = {}, type} = event;
@@ -26,7 +26,7 @@ export default async function stripeWebhookHandler(req, res) {
       await invoicePaymentSucceeded(objectId);
     } else if (type === 'customer.subscription.updated') {
       const oldStatus = data.previous_attributes && data.previous_attributes.status;
-      await customerSubscriptionUpdated(objectId, oldStatus);
+      await customerSubscriptionUpdated(objectId, oldStatus, exchange);
     }
   } catch (e) {
     console.log(`Webhook error for ${type}`);
