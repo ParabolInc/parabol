@@ -11,7 +11,7 @@ export default async function stripeWebhookHandler(req, res) {
   const {data = {}, type} = event;
   const dataObject = data.object || {};
   const objectId = dataObject.id;
-  console.log('webhook received', objectId);
+  console.log('webhook received', type, objectId);
   try {
     if (type === 'invoice.created') {
       await invoiceCreated(objectId);

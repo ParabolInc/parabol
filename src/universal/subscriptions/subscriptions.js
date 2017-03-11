@@ -13,6 +13,7 @@ import {
   TEAM,
   TEAM_MEMBERS,
   PROJECTS,
+  UPCOMING_INVOICE,
   USERS_BY_ORG
 } from 'universal/subscriptions/constants';
 
@@ -251,6 +252,21 @@ export default [
          picture,
          preferredName
        }
+    }`
+  },
+  {
+    channel: UPCOMING_INVOICE,
+    string: `
+    subscription($orgId: ID!) {
+      upcomingInvoice(orgId: $orgId) {
+        id
+        amountDue
+        cursor
+        endAt
+        paidAt
+        startAt
+        status
+      }
     }`
   },
   {

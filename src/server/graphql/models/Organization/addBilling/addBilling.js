@@ -10,6 +10,7 @@ import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'serv
 import stripe from 'server/billing/stripe';
 import {fromEpochSeconds, toEpochSeconds} from 'server/utils/epochTime';
 import getCCFromCustomer from 'server/graphql/models/Organization/addBilling/getCCFromCustomer';
+import makeUpcomingInvoice from 'server/graphql/models/Invoice/makeUpcomingInvoice';
 
 export default {
   type: GraphQLBoolean,
@@ -69,7 +70,7 @@ export default {
                 type: TRIAL_EXPIRES_SOON
               })
               .delete();
-          });
+          })
       }
     } else {
       // 3) Converting after the trial ended
@@ -107,6 +108,18 @@ export default {
             .delete();
         });
     }
+    // nuke the upcoming invoice if it existed
+    await r.table('Invoice')
+      .get(`upcoming_${orgId}`)
+      .delete();
+
+    const channel = `upcomingInvoice/${orgId}`;
+    const upcomingInvoice = await makeUpcomingInvoice(orgId, stripeId);
+    const payload = {
+      type: 'update',
+      fields: upcomingInvoice
+    };
+    socket.emit(channel, payload);
     return true;
   }
 };

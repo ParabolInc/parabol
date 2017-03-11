@@ -32,38 +32,10 @@ import stripe from './stripe';
 // console.log('Payment result:', err, invoice.data)
 // });
 
-// const foo = async (resource, method, ...args) => {
-//   console.log('args', args, ...args);
-//   const res = await stripe[resource][method](...args);
-//   console.log(res);
-// };
-// foo('invoices', 'retrieveLines', 'in_19pVJzFLaFINmHnBC5uwabBm');
+// stripe.invoices.retrieve('in_19vduHFLaFINmHnB77RHVwvE', (err, res) => {
+//   console.log(err, res, res.lines.data);
+// });
 
-stripe.invoices.retrieve('in_19vX24FLaFINmHnB05YS7u5R', (err, res) => {
-  console.log(err, res, res.lines.data);
+stripe.invoices.retrieveUpcoming('cus_AGA08G2n4ueq5c', (err, res) => {
+  console.log(res, res.lines.data)
 });
-
-// stripe.invoices.retrieveUpcoming('cus_AAUHCZYp65T4Tw', (err, res) => {
-//   console.log(res)
-// });
-// import DynamicSerializer from 'dynamic-serializer';
-// const now = new Date();
-// async function foo() {
-//   const mockDB = new MockDB();
-//   const {user, organization} = await mockDB.init()
-//     // .newNotification(undefined, {type: TRIAL_EXPIRED})
-//     .org(0, {periodEnd: new Date(now.getTime() + 1)});
-// fs.writeFile('./debug.json', JSON.stringify(organization), (err) => {
-//   if (err) console.log(err);
-// });
-// }
-// foo();
-// const orgDoc = {
-//   sources: {
-//     data: [
-//       {customer: 'foo'}
-//     ]
-//   }
-// };
-// debugger
-// console.log(dynamicSerializer(orgDoc, ['sources.data.customer']));

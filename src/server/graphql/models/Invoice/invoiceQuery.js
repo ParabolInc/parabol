@@ -9,7 +9,6 @@ import {Invoice} from './invoiceSchema';
 import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
 import {UPCOMING} from 'universal/utils/constants';
 import stripe from 'server/billing/stripe';
-import {fromEpochSeconds} from 'server/utils/epochTime';
 import fetchAllLines from 'server/billing/helpers/fetchAllLines';
 import generateInvoice from 'server/billing/helpers/generateInvoice';
 import {UPCOMING_INVOICE_TIME_VALID} from 'server/utils/serverConstants';
@@ -84,34 +83,14 @@ export default {
       //     }));
       // }
       const stripeId = await r.table('Organization').get(orgId)('stripeId');
-      const promises = [
-        stripe.invoices.retrieveUpcoming(stripeId),
-        r.table('Invoice')
+      return await r.table('Invoice')
           .between([orgId, r.minval], [orgId, r.maxval], {index: 'orgIdStartAt', leftBound: 'open'})
           .orderBy(r.desc('startAt'))
           .filter((invoice) => invoice('status').ne(UPCOMING))
           .limit(count - 1)
           .merge((doc) => ({
             cursor: doc('startAt')
-          }))
-      ];
-      const [stripeInvoice, pastInvoices] = await Promise.all(promises);
-      const upcomingInvoice = {
-        id: `upcoming_${orgId}`,
-        amountDue: stripeInvoice.amount_due,
-        cursor: 0,
-        total: stripeInvoice.total,
-        endAt: fromEpochSeconds(stripeInvoice.period_end),
-        invoiceDate: fromEpochSeconds(stripeInvoice.date),
-        orgId,
-        startAt: fromEpochSeconds(stripeInvoice.period_start),
-        startingBalance: stripeInvoice.startingBalance,
-        status: UPCOMING
-      };
-      return [
-        upcomingInvoice,
-        ...pastInvoices
-      ];
+          }));
     }
   }
 };

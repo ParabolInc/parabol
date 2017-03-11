@@ -74,7 +74,7 @@ CreditCardField.propTypes = {
     type: PropTypes.string,
     value: PropTypes.string
   }),
-  maxLength: PropTypes.number,
+  maxLength: PropTypes.string,
   meta: PropTypes.object,
   placeholder: PropTypes.string,
   styles: PropTypes.object,
