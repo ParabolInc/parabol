@@ -1,7 +1,7 @@
 import initStripe from 'stripe';
 import {getDotenv} from '../../universal/utils/dotenv';
 import {errorObj} from '../utils/utils';
-import {usedMethods, usedResources} from 'server/billing/constants';
+import {usedMethods, usedResources} from './constants';
 
 const tryCatchWrapper = (target) => async(...args) => {
   try {
