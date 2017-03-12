@@ -14,6 +14,7 @@ import {
   TEAM_MEMBERS,
   TEAMS_BY_ORG,
   PROJECTS,
+  UPCOMING_INVOICE,
   USERS_BY_ORG
 } from 'universal/subscriptions/constants';
 
@@ -255,20 +256,18 @@ export default [
     }`
   },
   {
-    channel: TEAMS_BY_ORG,
+    channel: UPCOMING_INVOICE,
     string: `
-    subscription($teamId: ID!) {
-       teamMembers(teamId: $teamId) {
-         id,
-         checkInOrder,
-         email,
-         isNotRemoved,
-         isCheckedIn,
-         isFacilitator,
-         isLead,
-         picture,
-         preferredName
-       }
+    subscription($orgId: ID!) {
+      upcomingInvoice(orgId: $orgId) {
+        id
+        amountDue
+        cursor
+        endAt
+        paidAt
+        startAt
+        status
+      }
     }`
   },
   {

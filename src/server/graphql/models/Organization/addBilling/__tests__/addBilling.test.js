@@ -11,6 +11,7 @@ import {PAYMENT_REJECTED, TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/uti
 import creditCardByToken from 'server/__tests__/utils/creditCardByToken';
 import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow';
 import socket from 'server/__mocks__/socket';
+import * as makeUpcomingInvoice from 'server/graphql/models/Invoice/makeUpcomingInvoice';
 
 MockDate.set(__now);
 console.error = jest.fn();
@@ -29,6 +30,7 @@ describe('addBilling', () => {
     const stripeToken = 'tok_4242424242424242';
     const orgId = org.id;
     const authToken = mockAuthToken(user[0]);
+    makeUpcomingInvoice.default = jest.fn(() => ({}));
 
     // TEST
     await addBilling.resolve(undefined, {orgId, stripeToken}, {authToken, socket});
@@ -56,6 +58,7 @@ describe('addBilling', () => {
     stripe.__setMockData(org);
     const orgId = org.id;
     const authToken = mockAuthToken(user[0]);
+    makeUpcomingInvoice.default = jest.fn(() => ({}));
 
     // TEST
     await addBilling.resolve(undefined, {orgId, stripeToken}, {authToken, socket});
@@ -82,6 +85,7 @@ describe('addBilling', () => {
     stripe.__setMockData(org);
     const orgId = org.id;
     const authToken = mockAuthToken(user[0]);
+    makeUpcomingInvoice.default = jest.fn(() => ({}));
 
     // TEST
     const stripeToken = 'tok_4242424242424242';
@@ -111,6 +115,7 @@ describe('addBilling', () => {
     stripe.__setMockData(org);
     const orgId = org.id;
     const authToken = mockAuthToken(user[0]);
+    makeUpcomingInvoice.default = jest.fn(() => ({}));
 
     // TEST
     const stripeToken = 'tok_4242424242424242';

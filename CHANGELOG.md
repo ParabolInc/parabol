@@ -4,13 +4,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.16.5 - 11-Mar-2017
+### Added
+- Awesome spinner component
+- Billing unit tests
+- A few modifications and final touches to invoices
+
+### Fixed
+- #755 filter handle alignment regression
+- #759 regression: clients unable to accept invitations
+- #793 no such customer exception
+
 ## v0.16.3 - 8-Mar-2017
 ### Added
 - Unit tests for Action mutations
+
 ### Fixed
 - #780 email regex allowed multiple emails
 - #782 regression on Project index used by archived projects
-- #783 ensured CC always exists on org, no longer using pagination for invoiceList 
+- #783 ensured CC always exists on org, no longer using pagination for invoiceList
 - #784 invoice icon styling bug in production
 
 ## v0.16.3 - 5-Mar-2017
