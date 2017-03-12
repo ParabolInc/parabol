@@ -136,7 +136,7 @@ class NewTeamFormContainer extends Component {
 
 NewTeamFormContainer.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  initialOrgCount: PropTypes.func.number,
+  initialOrgCount: PropTypes.number,
   initialValues: PropTypes.object,
   isNewOrg: PropTypes.bool,
   organizations: PropTypes.array,
