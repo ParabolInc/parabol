@@ -26,7 +26,7 @@ export default async function invoicePaymentFailed(invoiceId) {
 
   // RESOLUTION
   // this must have not been a trial (or it was and they entered a card that got invalidated <1 hr after entering it)
-  if (creditCard) {
+  if (creditCard.last4) {
     console.log('termination');
     const stripeLineItems = await fetchAllLines(invoiceId);
     const nextMonthCharges = stripeLineItems.find((line) => line.description === null && line.proration === false);

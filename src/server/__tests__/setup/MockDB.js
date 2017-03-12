@@ -204,6 +204,7 @@ class MockDB {
     return this.closeout('organization', {
       id: this.context.organization.id,
       createdAt: anHourAgo,
+      creditCard: {},
       name: 'The Averagers, Inc.',
       orgUsers: [{
         id: this.context.user.id,

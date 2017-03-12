@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`deleteAction throw when the caller is not a team member 1`] = `"{\\"_error\\":\\"You do not have access to team foo\\"}"`;
+
+exports[`deleteAction throws when no websocket is present 1`] = `"{\\"_error\\":\\"You do not have access to team \\"}"`;

@@ -48,7 +48,7 @@ export default {
     const customer = await tryStripeCall(stripe.customers.update(stripeId, {source: stripeToken}));
     if (periodEnd > now && stripeSubscriptionId) {
       // 1) Updating to a new credit card
-      if (creditCard) {
+      if (creditCard.last4) {
         await r.table('Organization').get(orgId).update({
           creditCard: getCCFromCustomer(customer)
         });
@@ -75,7 +75,7 @@ export default {
     } else {
       // 3) Converting after the trial ended
       // 4) Payment was rejected and they're adding a new source
-      const notificationToClear = creditCard ? PAYMENT_REJECTED : TRIAL_EXPIRED;
+      const notificationToClear = creditCard.last4 ? PAYMENT_REJECTED : TRIAL_EXPIRED;
       const quantity = orgUsers.reduce((count, orgUser) => orgUser.inactive ? count : count + 1, 0);
       const subscription = await tryStripeCall(stripe.subscriptions.create({
         customer: stripeId,

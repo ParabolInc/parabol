@@ -40,12 +40,12 @@ const UnpaidTeamModalContainer = (props) => {
   const {closeAfter, isClosing, router, teamName, orgDetails, myUserId} = props;
   const {creditCard, billingLeaders, name: orgName, id: orgId} = orgDetails;
   if (billingLeaders.length === 0) return null;
-  const brand = creditCard && creditCard.brand;
+  const {last4} = creditCard;
 
   const billingLeaderName = billingLeaders[0].preferredName;
   const isALeader = billingLeaders.findIndex((leader) => leader.id === myUserId) !== -1;
   const handleClick = () => router.push(`/me/organizations/${orgId}`);
-  const problem = brand ? `There in an unpaid invoice for ${teamName}.` : `The trial for ${teamName} has ended.`;
+  const problem = last4 ? `There in an unpaid invoice for ${teamName}.` : `The trial for ${teamName} has ended.`;
   const solution = isALeader ? `Head over to ${orgName} Settings to add a payment method` :
     `Try reaching out to ${billingLeaderName}`;
 
@@ -68,7 +68,7 @@ UnpaidTeamModalContainer.propTypes = {
   router: PropTypes.object,
   orgDetails: PropTypes.shape({
     creditCard: PropTypes.shape({
-      brand: PropTypes.string.isRequired
+      last4: PropTypes.string
     }).isRequired,
     billingLeaders: PropTypes.array.isRequired,
     id: PropTypes.string.isRequired,

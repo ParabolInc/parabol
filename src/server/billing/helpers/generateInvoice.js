@@ -242,7 +242,7 @@ export default async function generateInvoice(invoice, stripeLineItems, orgId, i
           .filter((user) => user('userOrgs')
             .contains((userOrg) => userOrg('id').eq(orgId).and(userOrg('role').eq(BILLING_LEADER))))('email')
           .coerceTo('array'),
-        creditCard: org('creditCard').default(null),
+        creditCard: org('creditCard'),
         endAt: fromEpochSeconds(invoice.period_end),
         invoiceDate: fromEpochSeconds(invoice.date),
         lines: invoiceLineItems,
