@@ -117,20 +117,21 @@ const Invoice = (props) => {
 
         <InvoiceLineItem item={nextUsage}/>
 
-        <div className={css(styles.sectionHeader)}>
-          <div className={css(styles.heading)}>
-            {'Last month’s adjustments'}{makeAsterisk()}
-            <div className={css(styles.headingLabel)}>
-              {makeAsterisk()}{'Prorated'}
+        {lines.length > 0 &&
+          <div className={css(styles.sectionHeader)}>
+            <div className={css(styles.heading)}>
+              {'Last month’s adjustments'}{makeAsterisk()}
+              <div className={css(styles.headingLabel)}>
+                {makeAsterisk()}{'Prorated'}
+              </div>
             </div>
+            <div className={css(styles.meta)}>{chargeDates}</div>
           </div>
-          <div className={css(styles.meta)}>{chargeDates}</div>
-        </div>
-
+        }
         {makeLineItems(lines)}
 
         <div className={css(styles.amountSection)}>
-          {startingBalance === 0 &&
+          {startingBalance !== 0 &&
             <div>
               <div className={css(styles.amountLineSub)}>
                 <div>Total</div>

@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import OrgBilling from 'universal/modules/userDashboard/components/OrgBilling/OrgBilling';
 
-const organizationContainerQuery = `
+export const organizationContainerQuery = `
 query {
   organization(orgId: $orgId) @live {
     id
@@ -14,6 +14,15 @@ query {
       last4
     }
     periodEnd
+  }
+  upcomingInvoice(orgId: $orgId) @live {
+    id
+    amountDue
+    cursor
+    endAt
+    paidAt
+    startAt
+    status
   }
   invoiceList(orgId: $orgId, count: $count) {
     id
@@ -53,23 +62,28 @@ const mapStateToProps = (state, props) => {
       count: 5
     }
   });
-  const {data: {organization: org, invoiceList}} = res;
+  const {data: {organization: org, invoiceList, upcomingInvoice}} = res;
   return {
     invoiceList,
     org,
-    invoicesReady: invoiceList.length > 0
+    upcomingInvoice,
+    invoicesReady: Boolean(upcomingInvoice.id)
   };
 };
 
 const OrgBillingContainer = (props) => {
-  const {dispatch, invoiceList, invoicesReady, org} = props;
+  const {dispatch, invoiceList, invoicesReady, org, upcomingInvoice} = props;
+  const invoices = [
+    upcomingInvoice,
+    ...invoiceList
+  ];
   if (!org.id) {
     return <LoadingView/>;
   }
   return (
     <OrgBilling
       dispatch={dispatch}
-      invoices={invoiceList}
+      invoices={invoices}
       invoicesReady={invoicesReady}
       org={org}
     />
@@ -80,7 +94,8 @@ OrgBillingContainer.propTypes = {
   dispatch: PropTypes.func,
   invoiceList: PropTypes.array,
   invoicesReady: PropTypes.bool,
-  org: PropTypes.object
+  org: PropTypes.object,
+  upcomingInvoice: PropTypes.object
 };
 
 export default connect(mapStateToProps)(OrgBillingContainer);

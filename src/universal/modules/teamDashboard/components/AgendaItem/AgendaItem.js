@@ -86,20 +86,13 @@ AgendaItem.propTypes = {
 };
 
 const warmLinkHover = tinycolor(appTheme.palette.warm).darken(15).toHexString();
-const block = {
-  lineHeight: '1.5rem'
-};
-
-const inlineBlock = {
-  ...block,
-  display: 'inline-block',
-  verticalAlign: 'top'
-};
+const lineHeight = '1.5rem';
 
 const styleThunk = () => ({
   root: {
     backgroundColor: 'transparent',
     color: appTheme.palette.cool,
+    display: 'flex',
     fontSize: appTheme.typography.s3,
     padding: '.5rem .5rem .5rem 0',
     position: 'relative',
@@ -126,11 +119,11 @@ const styleThunk = () => ({
   },
 
   del: {
-    ...block,
     color: appTheme.palette.dark,
     cursor: 'pointer',
-    left: '1.125rem',
     height: '1.5rem',
+    left: '1.125rem',
+    lineHeight,
     opacity: 0,
     position: 'absolute',
     top: '.5rem',
@@ -142,15 +135,13 @@ const styleThunk = () => ({
   },
 
   content: {
-    ...inlineBlock,
     fontFamily: appTheme.typography.serif,
     fontSize: appTheme.typography.s3,
+    flex: 1,
     fontStyle: 'italic',
     fontWeight: 700,
-    padding: '0 2rem 0 0',
+    lineHeight,
     position: 'relative',
-    // cursor: 'pointer',
-    width: '10.5rem',
 
     '::before': {
       content: '"“"',
@@ -184,9 +175,9 @@ const styleThunk = () => ({
   },
 
   index: {
-    ...inlineBlock,
     fontWeight: 700,
     height: '1.5rem',
+    lineHeight,
     paddingRight: '.75rem',
     paddingTop: '.0625rem',
     textAlign: 'right',
@@ -194,9 +185,8 @@ const styleThunk = () => ({
   },
 
   author: {
-    position: 'absolute',
-    right: '.5rem',
-    top: '.5rem'
+    textAlign: 'right',
+    width: '2rem'
   },
 
   active: {

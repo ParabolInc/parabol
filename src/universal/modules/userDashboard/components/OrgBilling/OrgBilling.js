@@ -49,12 +49,7 @@ const OrgBilling = (props) => {
       }
       <Panel label="Invoices">
         <div className={css(styles.listOfInvoices)}>
-          {invoicesReady && invoices.length === 0 &&
-            <div className={css(styles.noInvoices)}>
-              No invoices yet! Keep doing good work, and we’ll do the accounting.
-            </div>
-          }
-          {invoicesReady && invoices.length > 0 &&
+          {invoicesReady &&
             invoices.map((invoice, idx) =>
               <InvoiceRow key={`invoiceRow${idx}`} invoice={invoice} hasCard={Boolean(creditCard.last4)}/>
             )
