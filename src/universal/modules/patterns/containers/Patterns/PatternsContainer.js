@@ -1,6 +1,6 @@
 import React from 'react';
 import Helmet from 'react-helmet';
-import InvoiceContainer from 'universal/modules/invoice/containers/InvoiceContainer/InvoiceContainer';
+import Spinner from 'universal/modules/spinner/components/Spinner/Spinner';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import Button from 'universal/components/Button/Button';
 
@@ -13,6 +13,8 @@ const rootStyle = {
 const PatternsContainer = () =>
   <div style={rootStyle}>
     <Helmet title="Welcome to the Action Pattern Library" />
+
+    <Spinner fillColor="warm" width={64} />
 
     <h2>IconAvatar examples</h2>
     <IconAvatar colorPalette="mid" icon="bell" size="small" />
@@ -45,7 +47,6 @@ const PatternsContainer = () =>
     <Button colorPalette="gray" label="Button" size="largest" style="flat" />
 
     <h2>Invoice presentation</h2>
-    <InvoiceContainer />
   </div>;
 
 export default PatternsContainer;
