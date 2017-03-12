@@ -96,7 +96,11 @@ export default {
 
       // RESOLUTION
       if (authToken.tms) {
-        return await r.table('User').get(authToken.sub);
+        const user = await r.table('User').get(authToken.sub);
+        if (user) {
+          return user;
+        }
+        // should never reach this line in production. that means our DB !== auth0 DB
       }
       const userInfo = await auth0Client.tokens.getInfo(auth0Token);
       // TODO loginsCount and blockedFor are not a part of this API response

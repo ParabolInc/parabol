@@ -82,7 +82,8 @@ export function run(worker) {
   }
 
   // stripe webhooks
-  app.post('/stripe', stripeWebhookHandler);
+  const stripeHandler = stripeWebhookHandler(scServer.exchange);
+  app.post('/stripe', stripeHandler);
 
   // server-side rendering
   app.get('*', createSSR);
