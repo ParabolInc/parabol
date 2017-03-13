@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v0.16.6 - 13-Mar-2017
+## v0.16.7 - 13-Mar-2017
 ### Fixed
 - #808 hey I want to pay!
 
