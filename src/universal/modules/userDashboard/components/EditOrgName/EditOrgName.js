@@ -19,17 +19,18 @@ const validate = (values) => {
 
 const EditOrgName = (props) => {
   const {orgName, orgId, handleSubmit} = props;
-  const updateEditable = async (submissionData) => {
+  const updateEditable = async(submissionData) => {
     const schema = editOrgNameValidation();
     const {data: {orgName: validatedOrgName}} = schema(submissionData);
-
-    const variables = {
-      updatedOrg: {
-        id: orgId,
-        name: validatedOrgName
-      }
-    };
-    cashay.mutate('updateOrg', {variables});
+    if (validatedOrgName && validatedOrgName !== orgName) {
+      const variables = {
+        updatedOrg: {
+          id: orgId,
+          name: validatedOrgName
+        }
+      };
+      cashay.mutate('updateOrg', {variables});
+    }
   };
   return (
     <Field
