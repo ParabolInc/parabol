@@ -5,7 +5,9 @@ import {usedMethods, usedResources} from './constants';
 
 const tryCatchWrapper = (target) => async(...args) => {
   try {
-    return await target(...args);
+    /* work around for apparent babel destructuring transpiliation bug: */
+    const myArgs = args;
+    return await target(...myArgs);
   } catch (e) {
     throw errorObj({_error: e.message});
   }
