@@ -38,7 +38,9 @@
     "db:migrate-down-all": "./src/server/database/migrate.sh down-all",
     "lint": "eslint 'src/**/*.js' 'webpack/*.js'",
     "lint:fix": "eslint --fix 'src/**/*.js' 'tests/*.js' 'webpack/*.js'",
-    "profile": "NODE_ENV=development webpack --config ./webpack/dev.babel.js --profile --json > stats.json"
+    "profile": "NODE_ENV=development webpack --config ./webpack/dev.babel.js --profile --json > stats.json",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "pre-commit": [],
   "devDependencies": {
@@ -106,7 +108,7 @@
     "aws-sdk": "^2.7.19",
     "babel-runtime": "6.18.0",
     "bcrypt": "^1.0.2",
-    "body-parser": "1.15.2",
+    "body-parser": "1.17.1",
     "cashay": "^0.22.7",
     "cheerio": "^0.22.0",
     "compression": "1.6.2",
@@ -115,7 +117,7 @@
     "dotenv-expand": "^0.1.0",
     "email-addresses": "^2.0.2",
     "es6-promisify": "^5.0.0",
-    "express": "4.14.0",
+    "express": "4.15.2",
     "express-jwt": "5.1.0",
     "fetch-ponyfill": "^3.0.2",
     "graphiql": "^0.9.3",
@@ -165,7 +167,8 @@
     "stripe": "^4.14.0",
     "tap-xunit": "^1.7.0",
     "tinycolor2": "^1.4.1",
-    "webpack-s3-plugin": "^0.9.2"
+    "webpack-s3-plugin": "^0.9.2",
+    "snyk": "^1.25.2"
   },
   "engines": {
     "node": "7.6.0",
@@ -177,5 +180,6 @@
     ],
     "testRegex": "/__tests__/.*.test\\.jsx?$",
     "testResultsProcessor": "./src/server/__tests__/teardown"
-  }
+  },
+  "snyk": true
 }
