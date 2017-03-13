@@ -13,7 +13,6 @@ stages:
       GITHUB_REMOTE_PRODUCTION: "dokku@action-production.parabol.co:web"
       GITHUB_REMOTE_STAGING: "dokku@action-staging.parabol.co:web"
       PRODUCTION_BACKUP_VOLUME: "/mnt/volume-nyc1-01/action-production"
-      SNYK_TOKEN: "1ab08374-3093-46c9-bf27-ab9cc0747227"
     steps:
       - type: add-ssh-keys
         fingerprints:
@@ -56,11 +55,6 @@ stages:
         name: NPM run test
         command: |
           npm run test
-
-      - type: shell
-        name: NPM run vuln
-        command: |
-          npm run vuln
 
       - type: shell
         name: Pre-build DevOps checkout
