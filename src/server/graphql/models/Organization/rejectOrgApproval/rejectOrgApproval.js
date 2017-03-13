@@ -18,7 +18,7 @@ export default {
   args: {
     notificationId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The notification to which the billing leader is responding'
+      description: 'The notification to which the Billing Leader is responding'
     },
     reason: {
       type: GraphQLString
@@ -48,7 +48,7 @@ export default {
 
     // RESOLUTION
     const [inviterId, , inviteeEmail] = varList;
-    const billingLeaderName = await r.table('User').get(userId)('preferredName').default('A billing leader');
+    const billingLeaderName = await r.table('User').get(userId)('preferredName').default('A Billing Leader');
     await Promise.all([
       removeOrgApprovalAndNotification(orgId, inviteeEmail),
       r.table('Notification').insert({

@@ -5,7 +5,7 @@ import {BILLING_LEADER, REQUEST_NEW_USER} from 'universal/utils/constants';
 export default async function createPendingApprovals(outOfOrgEmails, orgId, teamId, teamName, userId) {
   const r = getRethink();
   const now = new Date();
-  // add a notification to the billing leaders
+  // add a notification to the Billing Leaders
   const {userIds, inviter} = await r.expr({
     userIds: r.table('User')
       .getAll(orgId, {index: 'userOrgs'})
@@ -30,7 +30,7 @@ export default async function createPendingApprovals(outOfOrgEmails, orgId, team
     orgId,
     teamId
   }));
-  // send a new notification to each billing leader concerning each out-of-org invitee
+  // send a new notification to each Billing Leader concerning each out-of-org invitee
   await r.table('Notification').insert(notifications)
     .do(() => {
       return r.table('OrgApproval').insert(pendingApprovals);

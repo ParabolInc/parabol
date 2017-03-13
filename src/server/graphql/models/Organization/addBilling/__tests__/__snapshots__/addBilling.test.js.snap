@@ -901,7 +901,7 @@ Object {
 }
 `;
 
-exports[`addBilling throw when the caller is not an org leader 1`] = `"{\\"_error\\":\\"Unauthorized. User is not a billing leader for that organization\\"}"`;
+exports[`addBilling throw when the caller is not an org leader 1`] = `"{\\"_error\\":\\"Unauthorized. User is not a Billing Leader for that organization\\"}"`;
 
 exports[`addBilling thrown when a bad source token is provided 1`] = `"No such token: BAD_TOKEN"`;
 

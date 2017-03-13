@@ -85,7 +85,7 @@
 // }
 //
 // // TODO:
-// //   * promote Iron Man as billing leader
+// //   * promote Iron Man as Billing Leader
 // //   * call addTeam a bunch
 // //   * invite others to teams
 // //   * add current billing information
