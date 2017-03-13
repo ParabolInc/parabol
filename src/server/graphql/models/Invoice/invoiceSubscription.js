@@ -15,7 +15,6 @@ export default {
     },
     async resolve(source, {orgId}, {authToken, socket, subbedChannelName}) {
       const r = getRethink();
-      console.log(`upcomingInvoice(): ${orgId}`);
 
       // AUTH
       const userId = getUserId(authToken);
@@ -24,7 +23,6 @@ export default {
 
       // RESOLUTION
       const stripeId = await r.table('Organization').get(orgId)('stripeId');
-      console.log(`upcomingInvoice(): ${stripeId}`);
       const upcomingInvoice = await makeUpcomingInvoice(orgId, stripeId);
       const payload = {
         type: 'add',
