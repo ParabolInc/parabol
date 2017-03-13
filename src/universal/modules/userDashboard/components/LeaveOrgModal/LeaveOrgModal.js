@@ -18,7 +18,7 @@ const LeaveOrgModal = (props) => {
       </Type>
       <Type align="center" bold scale="s4">
         This will remove you from the organization and all teams under it! <br />
-        To undo it, you'll have to ask another billing leader to re-add you <br/>
+        To undo it, you'll have to ask another Billing Leader to re-add you <br/>
       </Type>
       <IconLink
         colorPalette="warm"

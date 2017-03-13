@@ -50,7 +50,7 @@ const OrgMembers = (props) => {
       if (orgUser.isBillingLeader) {
         if (billingLeaderCount > 1) {
           listItems.push(
-            <MenuItem label="Remove Billing leader role" onClick={setRole(id)}/>
+            <MenuItem label="Remove Billing Leader role" onClick={setRole(id)}/>
           );
         } else {
           listItems.push(
@@ -59,7 +59,7 @@ const OrgMembers = (props) => {
         }
       } else {
         listItems.push(
-          <MenuItem label="Promote to Billing leader" onClick={setRole(id, BILLING_LEADER)}/>
+          <MenuItem label="Promote to Billing Leader" onClick={setRole(id, BILLING_LEADER)}/>
         );
       }
       if (myUserId !== orgUser.id) {
