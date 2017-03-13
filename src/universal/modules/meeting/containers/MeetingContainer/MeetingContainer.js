@@ -227,6 +227,10 @@ export default class MeetingContainer extends Component {
     return false;
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.toastTimer);
+  }
+
   gotoItem = (maybeNextPhaseItem, maybeNextPhase) => {
     // if we try to go backwards on a place that doesn't have items
     if (!maybeNextPhaseItem && !maybeNextPhase) return;
@@ -248,7 +252,10 @@ export default class MeetingContainer extends Component {
         nextPhase = agenda.length ? AGENDA_ITEMS : LAST_CALL;
       } else {
         const maxPhaseOrder = isFacilitating ? phaseOrder(meetingPhase) + 1 : phaseOrder(meetingPhase);
-        if (phaseOrder(maybeNextPhase) > maxPhaseOrder) return;
+        if (phaseOrder(maybeNextPhase) > maxPhaseOrder) {
+          this.popNoAdvancePhaseToast();
+          return;
+        }
         nextPhase = maybeNextPhase;
       }
       // if we're going to an area that has items, try going to the facilitator item, or the meeting item, or just 1
@@ -298,6 +305,8 @@ export default class MeetingContainer extends Component {
       if (phaseOrder(nextPhase) <= phaseOrder(meetingPhase)) {
         const pushURL = makePushURL(teamId, nextPhase, nextPhaseItem);
         router.push(pushURL);
+      } else if (!isFacilitating) {
+        this.popNoAdvancePhaseToast();
       }
     }
   };
@@ -308,6 +317,23 @@ export default class MeetingContainer extends Component {
     return this.gotoItem(nextPhaseItem, nextPhase);
   }
   gotoPrev = () => this.gotoItem(this.props.localPhaseItem - 1);
+
+  popNoAdvancePhaseToast = () => {
+    if (!this.noAdvancePhaseToastShowing) {
+      const {dispatch} = this.props;
+      const dismissSeconds = 5;
+      dispatch(showInfo({
+        title: 'Slow down there!',
+        message: 'Only the facilitator can advance the meeting',
+        autoDismiss: dismissSeconds
+      }));
+      this.noAdvancePhaseToastShowing = true;
+      clearTimeout(this.toastTimer);
+      this.toastTimer = setTimeout(() => {
+        this.noAdvancePhaseToastShowing = false;
+      }, dismissSeconds * 1000);
+    }
+  }
 
   render() {
     const {
