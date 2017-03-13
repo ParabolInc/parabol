@@ -14,7 +14,7 @@ export function getDotenv() {
     myConfig.path = '.env.test';
   }
   const myEnv = dotenv.config(myConfig);
-  dotenvExpand(myEnv);
+  dotenvExpand(myEnv.parsed);
 
   return true;
 }
