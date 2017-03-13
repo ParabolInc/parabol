@@ -5,6 +5,7 @@ import {usedMethods, usedResources} from './constants';
 
 const tryCatchWrapper = (target) => async(...args) => {
   try {
+    console.log(`tryCatchWrapper(): called with ${args}`);
     return await target(...args);
   } catch (e) {
     throw errorObj({_error: e.message});
