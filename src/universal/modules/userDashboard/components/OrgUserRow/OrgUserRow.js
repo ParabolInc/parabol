@@ -33,7 +33,7 @@ const OrgUserRow = (props) => {
             {preferredName}
           </div>
           {isBillingLeader &&
-            <Tag colorPalette="light" label="Billing leader"/>
+            <Tag colorPalette="light" label="Billing Leader"/>
           }
           {inactive &&
             <Tag colorPalette="light" label="Inactive"/>
