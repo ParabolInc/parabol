@@ -75,7 +75,8 @@ export const DENY_NEW_USER = 'DENY_NEW_USER';
 // sent to the orgMember that just got promoted, goes away if they get demoted before acknowledging it
 // [orgName]
 export const PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER';
-
+// sent to members of team that was archived
+export const TEAM_ARCHIVED = 'TEAM_ARCHIVED';
 
 export const notificationTypes = [
   TRIAL_EXPIRES_SOON,
@@ -83,7 +84,8 @@ export const notificationTypes = [
   PAYMENT_REJECTED,
   PROMOTE_TO_BILLING_LEADER,
   REQUEST_NEW_USER,
-  DENY_NEW_USER
+  DENY_NEW_USER,
+  TEAM_ARCHIVED
 ];
 
 export const billingLeaderTypes = [

@@ -11,12 +11,6 @@ query {
     inactiveUserCount
     name
     picture
-  },
-  teams (type: "[Team]") @live {
-    id
-    isPaid
-    name
-    meetingId
   }
 }
 `;

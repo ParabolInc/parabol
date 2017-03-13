@@ -54,7 +54,6 @@ const mapStateToProps = (state, props) => {
 };
 
 const TeamSettingsContainer = (props) => {
-  console.log('conainter props',props);
   const {
     dispatch,
     router,
@@ -83,6 +82,7 @@ const TeamSettingsContainer = (props) => {
 
 TeamSettingsContainer.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  router: PropTypes.object.isRequired,
   invitations: PropTypes.array.isRequired,
   myTeamMemberId: PropTypes.string.isRequired,
   orgApprovals: PropTypes.array.isRequired,

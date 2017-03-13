@@ -29,7 +29,6 @@ import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 import addTeam from 'server/graphql/models/Team/addTeam/addTeam';
 import createFirstTeam from 'server/graphql/models/Team/createFirstTeam/createFirstTeam';
 import updateTeamName from 'server/graphql/models/Team/updateTeamName/updateTeamName';
-import deleteTeam from 'server/graphql/models/Team/deleteTeam/deleteTeam';
 import archiveTeam from 'server/graphql/models/Team/archiveTeam/archiveTeam';
 import endMeeting from 'server/graphql/models/Team/endMeeting/endMeeting';
 
@@ -260,7 +259,6 @@ export default {
   },
   addTeam,
   createFirstTeam,
-  deleteTeam,
   changeFacilitator: {
     type: GraphQLBoolean,
     description: 'Change a facilitator while the meeting is in progress',

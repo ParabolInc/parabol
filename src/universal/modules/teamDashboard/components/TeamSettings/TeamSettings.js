@@ -26,7 +26,6 @@ const TeamSettings = (props) => {
     teamMembers,
     styles
   } = props;
-  console.log(props);
   const teamLeadObj = teamMembers.find((m) => m.isLead === true);
   const teamLead = teamLeadObj && teamLeadObj.preferredName;
 
@@ -108,36 +107,25 @@ const TeamSettings = (props) => {
     );
   };
 
-  const deleteTeam = () => {
+  const archiveTeam = () => {
     if (!myTeamMember.isLead) return;
+    const {id, name} = team;
     const variables = {
       updatedTeam: {
-        id: team.id,
-        isArchived: false
+        id,
+        name,
+        isArchived: true
       }
     };
     cashay.mutate('archiveTeam', {variables});
-    console.log('soft delete', variables);
-    // if (teamMembers.length === 1) {
-    //   cashay.mutate('deleteTeam', {variables: {deletedTeam: team}});
-    //   router.push('/me');
-    // } else {
-    //   const variables = {
-    //     updatedTeam: {
-    //       id: teamId,
-    //       isArchived: true
-    //     }
-    //   };
-    //   cashay.mutate('archiveTeam', {variables});
-    //   console.log('soft delete');
-    // }
+    router.push('/me');
   };
-  const deleteTeamButton = (
+  const archiveTeamButton = (
     <Button
       colorPalette="warm"
-      label="Delete Team"
+      label="Archive Team"
       size="smallest"
-      onClick={deleteTeam}
+      onClick={archiveTeam}
     />
   );
 
@@ -189,7 +177,7 @@ const TeamSettings = (props) => {
           })
           }
           <Row
-            children={deleteTeamButton}
+            children={archiveTeamButton}
           />
         </div>
       </div>
@@ -199,6 +187,7 @@ const TeamSettings = (props) => {
 
 TeamSettings.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  router: PropTypes.object.isRequired,
   invitations: PropTypes.array.isRequired,
   myTeamMember: PropTypes.object.isRequired,
   orgApprovals: PropTypes.array,

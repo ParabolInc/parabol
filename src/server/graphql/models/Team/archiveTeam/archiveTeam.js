@@ -9,7 +9,9 @@ import {
   GraphQLBoolean,
 } from 'graphql';
 import {TeamInput} from '../teamSchema';
-
+import shortid from 'shortid';
+import {TEAM_ARCHIVED} from 'universal/utils/constants';
+import archiveTeamValidation from './archiveTeamValidation';
 
 export default {
   type: GraphQLBoolean,
@@ -21,17 +23,36 @@ export default {
   },
   async resolve(source, {updatedTeam}, {authToken, socket}) {
     const r = getRethink();
-    const now = new Date();
-    const {id, isArchived} = updatedTeam;
-    // // AUTH
-    // requireSUOrTeamMember(authToken, updatedTeam.id);
-    // requireWebsocket(socket);
+
+    // AUTH
+    requireSUOrTeamMember(authToken, updatedTeam.id);
+    requireWebsocket(socket);
+
+    // VALIDATION
+    const {errors, data: {id, name, isArchived}} = archiveTeamValidation()(updatedTeam);
+    handleSchemaErrors(errors);
 
     // RESOLUTION
-    const dbUpdate = {
-      isArchived: isArchived
-    };
-    await r.table('Team').get(id).update(dbUpdate);
+    await r.table('Team').get(id).update({isArchived});
+
+    setTimeout(async() => {
+      const notifId = shortid.generate();
+      const now = new Date();
+      const {orgId} = await r.table('Team').get(id).pluck('orgId');
+      const teamMembers = await r.table('TeamMember')
+        .filter({teamId: id})
+        .pluck('userId');
+      const userIds = teamMembers.map(member => member.userId);
+      await r.table('Notification').insert({
+        id: notifId,
+        type: TEAM_ARCHIVED,
+        startAt: now,
+        orgId,
+        userIds,
+        varList: [name]
+      });
+    }, 0);
+
     return true;
   }
 };
