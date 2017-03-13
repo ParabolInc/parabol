@@ -3,7 +3,9 @@ import stripe from 'server/billing/stripe';
 import {fromEpochSeconds} from 'server/utils/epochTime';
 
 export default async function makeUpcomingInvoice(orgId, stripeId) {
+  console.log(`makeUpcomingInvoice(${orgId}, ${stripeId}): enter`);
   const stripeInvoice = await stripe.invoices.retrieveUpcoming(stripeId);
+  console.log(`makeUpcomingInvoice(${orgId}, ${stripeId}): return ${stripeInvoice}`);
   return {
     id: `upcoming_${orgId}`,
     amountDue: stripeInvoice.amount_due,
