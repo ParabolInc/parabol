@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
+import raven from 'raven-js';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import handleAgendaSort from 'universal/modules/meeting/helpers/handleAgendaSort';
@@ -218,7 +219,9 @@ export default class MeetingContainer extends Component {
           title: 'Awh shoot',
           message: 'You found a glitch! We saved your work, but forgot where you were. We sent the bug to our team.'
         }));
-        // TODO send to server
+        raven.captureMessage(
+          'MeetingContainer::shouldComponentUpdate(): infiniteLoop watchdog triggered',
+        );
       }
     } else {
       infiniteloopCounter = 0;
