@@ -136,7 +136,8 @@ export const Organization = new GraphQLObjectType({
         return r.table('User')
           .getAll(id, {index: 'userOrgs'})
           .filter((user) => user('userOrgs')
-            .contains((userOrg) => userOrg('id').eq(id).and(userOrg('role').eq(BILLING_LEADER))));
+            .contains((userOrg) => userOrg('id').eq(id).and(userOrg('role').eq(BILLING_LEADER))))
+          .run();
       }
     }
   })

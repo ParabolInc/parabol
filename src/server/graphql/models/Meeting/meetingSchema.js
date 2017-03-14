@@ -155,7 +155,9 @@ const MeetingInvitee = new GraphQLObjectType({
       description: 'All of the fields from the team member table',
       resolve({id}) {
         const r = getRethink();
-        return r.table('TeamMember').get(id);
+        return r.table('TeamMember')
+          .get(id)
+          .run();
       }
     }
   })
@@ -223,7 +225,9 @@ const Meeting = new GraphQLObjectType({
       description: 'All the team members associated who can join this team',
       resolve({teamId}) {
         const r = getRethink();
-        return r.table('TeamMember').getAll(teamId, {index: 'teamId'});
+        return r.table('TeamMember')
+          .getAll(teamId, {index: 'teamId'})
+          .run();
       }
     },
   })
