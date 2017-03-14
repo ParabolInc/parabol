@@ -72,7 +72,7 @@
   "settings": {
     "import/parser": "babel-eslint",
     "import/resolver": {
-      "./resolver": {
+      "webpack": {
         "config": "webpack/prod.babel.js"
       }
     },
