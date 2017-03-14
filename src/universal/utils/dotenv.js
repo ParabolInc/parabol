@@ -9,13 +9,16 @@ import dotenvExpand from 'dotenv-expand';
  * Returns true.
  */
 export default function getDotenv() {
-  const myConfig = {silent: true};
+  const myConfig = {};
   if (process.env.NODE_ENV === 'test') {
     myConfig.path = '.env.test';
   }
   const myEnv = dotenv.config(myConfig);
   console.log('ENV', myEnv, myEnv.parsed);
-  dotenvExpand(myEnv.parsed);
+  const {parsed} = myEnv;
+  if (parsed) {
+    dotenvExpand(parsed);
+  }
 
   return true;
 }
