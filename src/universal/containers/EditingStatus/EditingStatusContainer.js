@@ -24,20 +24,20 @@ const makeEditingStatus = (editors, active, updatedAt) => {
   let editingStatus;
   // no one else is editing
   if (editors.length === 0) {
-    editingStatus = active ? <span>editing {endStr}<Ellipsis/></span> :
+    editingStatus = active ? <span>editing {endStr}<Ellipsis /></span> :
       fromNow(updatedAt);
   } else {
-    const editorNames = editors.map(e => e.teamMember.preferredName);
+    const editorNames = editors.map((e) => e.teamMember.preferredName);
     // one other is editing
     if (editors.length === 1) {
       const editor = editorNames[0];
-      editingStatus = <span>{editor} editing{active ? 'too' : ''}<Ellipsis/></span>;
+      editingStatus = <span>{editor} editing{active ? 'too' : ''}<Ellipsis /></span>;
     } else if (editors.length === 2) {
       editingStatus = active ?
-        <span>several are editing {endStr}<Ellipsis/></span> :
-        <span>{`${editorNames[0]} and ${editorNames[1]} editing`}<Ellipsis/></span>;
+        <span>several are editing {endStr}<Ellipsis /></span> :
+        <span>{`${editorNames[0]} and ${editorNames[1]} editing`}<Ellipsis /></span>;
     } else {
-      editingStatus = <span>several are editing {endStr}<Ellipsis/></span>;
+      editingStatus = <span>several are editing {endStr}<Ellipsis /></span>;
     }
   }
   if (!editingStatus) throw new Error('editingStatus never set!');
@@ -111,6 +111,6 @@ export default class EditingStatusContainer extends Component {
         editingStatus: makeEditingStatus(editors, active, updatedAt)
       });
     }, refreshPeriod);
-    return <EditingStatus status={editingStatus}/>;
+    return <EditingStatus status={editingStatus} />;
   }
 }

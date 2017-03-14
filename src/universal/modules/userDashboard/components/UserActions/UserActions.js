@@ -9,8 +9,8 @@ const UserActions = (props) => {
   const {styles} = props;
   return (
     <div className={css(styles.root)}>
-      <UserActionHeader/>
-      <UserActionListContainer/>
+      <UserActionHeader />
+      <UserActionListContainer />
     </div>
   );
 };

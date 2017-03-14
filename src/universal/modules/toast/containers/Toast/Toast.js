@@ -4,7 +4,7 @@ import ToastSystem from 'react-notification-system';
 import appTheme from 'universal/styles/theme/appTheme';
 import {hide} from 'universal/modules/toast/ducks/toastDuck';
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   toasts: state.toasts
 });
 
@@ -20,6 +20,7 @@ export default class Toast extends React.Component {
     this.state = {
       maxNid: 0
     };
+    this.el = null;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -27,8 +28,8 @@ export default class Toast extends React.Component {
     const {maxNid} = this.state;
 
     toasts
-      .filter(notification => notification.nid > maxNid)
-      .forEach(notification => {
+      .filter((notification) => notification.nid > maxNid)
+      .forEach((notification) => {
         this.system().addNotification({
           ...notification,
           onRemove: () => {
@@ -46,10 +47,7 @@ export default class Toast extends React.Component {
 
     if (toasts.length > 0) {
       const {maxNid} = this.state;
-      const nextNid = Math.max.apply(
-        Math,
-        toasts.map(n => n.nid)
-      );
+      const nextNid = Math.max(...toasts.map((n) => n.nid));
 
       return nextNid > maxNid;
     }
@@ -58,7 +56,7 @@ export default class Toast extends React.Component {
   }
 
   system() {
-    return this.refs.notify;
+    return this.el;
   }
 
   render() {
@@ -104,7 +102,7 @@ export default class Toast extends React.Component {
     };
 
     return (
-      <ToastSystem ref="notify" style={styles} />
+      <ToastSystem ref={(c) => { this.el = c; }} refstyle={styles} />
     );
   }
 }

@@ -38,7 +38,7 @@ const AgendaList = (props) => {
       <div className={css(styles.inner)}>
         {agenda.map((item, idx) =>
           <AgendaItem
-            key={`agendaItem${idx}`}
+            key={`agendaItem${item.id}`}
             agendaItem={item}
             agendaPhaseItem={agendaPhaseItem}
             canNavigate={canNavigate}

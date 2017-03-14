@@ -59,12 +59,12 @@ const MeetingAgendaLastCall = (props) => {
               label="End Meeting"
               onClick={gotoNext}
               size="largest"
-              style="solid"
+              buttonStyle="solid"
               textTransform="uppercase"
             /> :
             <div className={css(styles.warmHighlight)}>
               <Type align="center" scale="s4" colorPalette="black">
-                <span className={css(styles.highlight)}>Waiting for <b>{facilitatorName}</b> to end the meeting<Ellipsis/></span>
+                <span className={css(styles.highlight)}>Waiting for <b>{facilitatorName}</b> to end the meeting<Ellipsis /></span>
               </Type>
             </div>
           }

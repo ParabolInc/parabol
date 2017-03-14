@@ -26,7 +26,7 @@ const MeetingUpdates = (props) => {
   } = props;
   const {meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = team;
   const currentTeamMember = members[localPhaseItem - 1];
-  const self = members.find(m => m.isSelf);
+  const self = members.find((m) => m.isSelf);
   const isComplete = phaseOrder(meetingPhase) > phaseOrder(UPDATES);
   const isLastMember = localPhaseItem === members.length;
   const username = makeUsername(currentTeamMember.preferredName);
@@ -57,7 +57,7 @@ const MeetingUpdates = (props) => {
             <div className={css(styles.linkSpacer)}>{' '}</div>
             <div className={css(styles.avatarBlock)}>
               <div className={css(styles.avatar)}>
-                <Avatar {...currentTeamMember} size="fill"/>
+                <Avatar {...currentTeamMember} size="fill" />
               </div>
               <div className={css(styles.username)}>@{username}</div>
             </div>
@@ -74,7 +74,7 @@ const MeetingUpdates = (props) => {
           </div>
         </div>
         <div className={css(styles.body)}>
-          <ProjectColumns alignColumns="center" myTeamMemberId={self && self.id} projects={projects} queryKey={queryKey} area={MEETING}/>
+          <ProjectColumns alignColumns="center" myTeamMemberId={self && self.id} projects={projects} queryKey={queryKey} area={MEETING} />
         </div>
         {/* */}
         {/* */}

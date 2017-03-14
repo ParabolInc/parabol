@@ -29,7 +29,7 @@ const TrialExpiresSoon = (props) => {
         <span className={css(styles.messageVar)}>{billingLeaderName} </span>
         has denied
         <span className={css(styles.messageVar)}> {inviteeEmail} </span>
-        from joining the organization. <br/>
+        from joining the organization. <br />
         <b>Reason</b>: “{safeReason}”
       </div>
       <div className={css(styles.button)}>

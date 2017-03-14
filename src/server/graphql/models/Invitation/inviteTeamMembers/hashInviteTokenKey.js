@@ -5,7 +5,7 @@ import parseInviteToken from 'server/graphql/models/Invitation/inviteTeamMembers
 const hash = promisify(bcrypt.hash);
 const INVITE_TOKEN_KEY_HASH_ROUNDS = parseInt(process.env.INVITE_TOKEN_KEY_HASH_ROUNDS, 10) || 10;
 
-export default async function hashInviteTokenKey(uriTokenString) {
+export default function hashInviteTokenKey(uriTokenString) {
   const {key} = parseInviteToken(uriTokenString);
-  return await hash(key, INVITE_TOKEN_KEY_HASH_ROUNDS);
-};
+  return hash(key, INVITE_TOKEN_KEY_HASH_ROUNDS);
+}

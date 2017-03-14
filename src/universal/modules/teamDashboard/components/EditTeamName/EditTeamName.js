@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react';
-import Editable from 'universal/components/Editable/Editable.js';
+import Editable from 'universal/components/Editable/Editable';
 import {cashay} from 'cashay';
 import {reduxForm, Field} from 'redux-form';
 import appTheme from 'universal/styles/theme/appTheme';

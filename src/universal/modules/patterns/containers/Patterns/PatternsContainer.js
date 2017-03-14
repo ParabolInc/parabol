@@ -24,27 +24,27 @@ const PatternsContainer = () =>
     <h2>Button variants</h2>
     <Button colorPalette="warm" icon="info-circle" label="Button" size="smallest" />{' '}
     <Button colorPalette="warm" label="Button" size="smallest" />{' '}
-    <Button colorPalette="warm" label="Button" size="smallest" style="flat" />
-    <br/>
-    <br/>
+    <Button colorPalette="warm" label="Button" size="smallest" buttonStyle="flat" />
+    <br />
+    <br />
     <Button colorPalette="dark" icon="info-circle" label="Button" size="small" />{' '}
     <Button colorPalette="dark" label="Button" size="small" />{' '}
-    <Button colorPalette="dark" label="Button" size="small" style="flat" />
-    <br/>
-    <br/>
+    <Button colorPalette="dark" label="Button" size="small" buttonStyle="flat" />
+    <br />
+    <br />
     <Button colorPalette="mid" icon="info-circle" label="Button" size="medium" />{' '}
     <Button colorPalette="mid" label="Button" size="medium" />{' '}
-    <Button colorPalette="mid" label="Button" size="medium" style="flat" />
-    <br/>
-    <br/>
+    <Button colorPalette="mid" label="Button" size="medium" buttonStyle="flat" />
+    <br />
+    <br />
     <Button colorPalette="cool" icon="info-circle" label="Button" size="large" />{' '}
     <Button colorPalette="cool" label="Button" size="large" />{' '}
-    <Button colorPalette="cool" label="Button" size="large" style="flat" />
-    <br/>
-    <br/>
+    <Button colorPalette="cool" label="Button" size="large" buttonStyle="flat" />
+    <br />
+    <br />
     <Button colorPalette="gray" icon="info-circle" label="Button" size="largest" />{' '}
     <Button colorPalette="gray" label="Button" size="largest" />{' '}
-    <Button colorPalette="gray" label="Button" size="largest" style="flat" />
+    <Button colorPalette="gray" label="Button" size="largest" buttonStyle="flat" />
 
     <h2>Invoice presentation</h2>
   </div>;

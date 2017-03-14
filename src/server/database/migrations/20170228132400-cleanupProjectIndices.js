@@ -1,4 +1,4 @@
-exports.up = async(r) => {
+exports.up = async (r) => {
   const fields = [
     r.table('Project').replace((row) => {
       return row
@@ -21,7 +21,7 @@ exports.up = async(r) => {
   }
 };
 
-exports.down = async(r) => {
+exports.down = async (r) => {
   const fields = [
     r.table('Project').replace((row) => {
       return row

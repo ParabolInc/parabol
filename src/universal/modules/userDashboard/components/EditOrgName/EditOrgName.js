@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react';
-import Editable from 'universal/components/Editable/Editable.js';
+import Editable from 'universal/components/Editable/Editable';
 import {cashay} from 'cashay';
 import {reduxForm, Field} from 'redux-form';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -22,14 +22,15 @@ const EditOrgName = (props) => {
   const updateEditable = async (submissionData) => {
     const schema = editOrgNameValidation();
     const {data: {orgName: validatedOrgName}} = schema(submissionData);
-
-    const variables = {
-      updatedOrg: {
-        id: orgId,
-        name: validatedOrgName
-      }
-    };
-    cashay.mutate('updateOrg', {variables});
+    if (validatedOrgName && validatedOrgName !== orgName) {
+      const variables = {
+        updatedOrg: {
+          id: orgId,
+          name: validatedOrgName
+        }
+      };
+      cashay.mutate('updateOrg', {variables});
+    }
   };
   return (
     <Field

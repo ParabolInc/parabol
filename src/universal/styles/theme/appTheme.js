@@ -1,7 +1,7 @@
 
 let appTheme = {};
 
-/* eslint-disable global-require */
+/* eslint-disable */
 if (typeof __PRODUCTION__ !== 'undefined' && __PRODUCTION__) {
   /*
    * Production optimization, built by npm run build:server

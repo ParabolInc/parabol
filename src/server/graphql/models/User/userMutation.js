@@ -64,7 +64,7 @@ export default {
         description: 'user-supplied file size'
       }
     },
-    async resolve(source, {contentType, contentLength}, {authToken}) {
+    resolve(source, {contentType, contentLength}, {authToken}) {
       // AUTH
       const userId = requireAuth(authToken);
 
@@ -73,7 +73,7 @@ export default {
 
       // RESOLUTION
       const partialPath = `User/${userId}/picture/${shortid.generate()}.${ext}`;
-      return await getS3PutUrl(contentType, contentLength, partialPath);
+      return getS3PutUrl(contentType, contentLength, partialPath);
     }
   },
   updateUserWithAuthToken: {

@@ -14,7 +14,7 @@ MockDate.set(__now);
 console.error = jest.fn();
 
 describe('endMeeting', () => {
-  test('generates a meeting summary and sets sort order', async() => {
+  test('generates a meeting summary and sets sort order', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
@@ -42,7 +42,7 @@ describe('endMeeting', () => {
     expect(mockFn).toBeCalledWith(teamId);
   });
 
-  test('generates a meeting summary and sets sort order with pre-existing actions and projects', async() => {
+  test('generates a meeting summary and sets sort order with pre-existing actions and projects', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
@@ -72,7 +72,7 @@ describe('endMeeting', () => {
     expect(mockFn).toBeCalledWith(teamId);
   });
 
-  test('throw if called after meeting ended or no active meeting', async() => {
+  test('throw if called after meeting ended or no active meeting', async () => {
     // SETUP
     const mockDB = new MockDB();
     const {user} = await mockDB.init()
@@ -84,7 +84,7 @@ describe('endMeeting', () => {
     await expectAsyncToThrow(endMeeting.resolve(undefined, {teamId}, {authToken, socket}));
   });
 
-  test('throw if no meeting has ever been created', async() => {
+  test('throw if no meeting has ever been created', async () => {
     // SETUP
     const mockDB = new MockDB();
     const {user} = await mockDB.init();
@@ -95,12 +95,12 @@ describe('endMeeting', () => {
     await expectAsyncToThrow(endMeeting.resolve(undefined, {teamId}, {authToken, socket}));
   });
 
-  test('throws when no websocket is present', async() => {
+  test('throws when no websocket is present', async () => {
     const authToken = {};
     await expectAsyncToThrow(endMeeting.resolve(undefined, {teamId: 'foo'}, {authToken}));
   });
 
-  test('throw when the caller is not a team member', async() => {
+  test('throw when the caller is not a team member', async () => {
     // SETUP
     const mockDB = new MockDB();
     const {user} = await mockDB.init();

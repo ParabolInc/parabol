@@ -32,7 +32,7 @@ const mapStateToProps = (state) => {
 const UserProjectsHeaderContainer = (props) => {
   const {dispatch, teams, teamFilterId, teamFilterName} = props;
   return (
-    <UserProjectsHeader dispatch={dispatch} teams={teams} teamFilterId={teamFilterId} teamFilterName={teamFilterName}/>
+    <UserProjectsHeader dispatch={dispatch} teams={teams} teamFilterId={teamFilterId} teamFilterName={teamFilterName} />
   );
 };
 

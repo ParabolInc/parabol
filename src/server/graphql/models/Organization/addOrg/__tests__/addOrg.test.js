@@ -16,7 +16,7 @@ MockDate.set(__now);
 console.error = jest.fn();
 
 describe('addOrg', () => {
-  test('adds a new org with no invitees', async() => {
+  test('adds a new org with no invitees', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();

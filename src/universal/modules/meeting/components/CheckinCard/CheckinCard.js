@@ -26,9 +26,9 @@ const CheckinCard = (props) => {
   );
   return (
     <div className={cardStyles} onClick={!isActive && handleCardClick}>
-      <Avatar {...member} size="largest"/>
+      <Avatar {...member} size="largest" />
       <div className={css(styles.cardName)}>{preferredName}</div>
-      {isActive && <CheckinCardButtons checkInPressFactory={checkInPressFactory} isCheckedIn={isCheckedIn}/>}
+      {isActive && <CheckinCardButtons checkInPressFactory={checkInPressFactory} isCheckedIn={isCheckedIn} />}
     </div>
   );
 };

@@ -57,7 +57,7 @@ const secondaryMessage = {
 //   fontSize: '24px'
 // };
 
-const TeamInvite = props => {
+const TeamInvite = (props) => {
   const {
     inviterAvatar,
     inviterName,
@@ -128,7 +128,7 @@ const TeamInvite = props => {
             title="How to Navigate Uncertainty using the Action Rhythm"
           >
             develop a weekly rhythm
-          </a>.<br/>
+          </a>.<br />
           <a href={inviteLink} style={boldLinkStyle}>Add a project to the board</a> to get started.
         </div>
         <EmptySpace height={32} />

@@ -15,7 +15,7 @@ const DashNavList = (props) => {
         <div>
           {teams.map((team) =>
             <div key={`teamNav${team.id}`} className={css(styles.iconAndLink)}>
-              {!team.isPaid && <FontAwesome name="warning" className={css(styles.itemIcon)} title="Team is disabled for nonpayment"/>}
+              {!team.isPaid && <FontAwesome name="warning" className={css(styles.itemIcon)} title="Team is disabled for nonpayment" />}
               <DashNavItem
                 href={`/team/${team.id}`}
                 label={team.name}

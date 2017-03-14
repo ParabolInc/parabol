@@ -5,7 +5,7 @@ export default async function resolveSentEmails(sendEmailPromises, inviteesWithT
   for (let i = 0; i < sendEmailPromises.length; i++) {
     const promise = sendEmailPromises[i];
     const invitee = inviteesWithTokens[i];
-    const resolvedPromise = await promise;
+    const resolvedPromise = await promise; // eslint-disable-line no-await-in-loop
     const arrayToFill = resolvedPromise ? inviteesToStore : inviteeErrors;
     arrayToFill.push(invitee);
   }

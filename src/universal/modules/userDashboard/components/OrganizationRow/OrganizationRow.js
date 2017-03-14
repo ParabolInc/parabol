@@ -20,7 +20,7 @@ const OrganizationRow = (props) => {
   return (
     <Row>
       <div className={css(styles.orgAvatar)} onClick={onRowClick}>
-        <img className={css(styles.avatarImg)} height={50} width={50} src={orgAvatar}/>
+        <img className={css(styles.avatarImg)} height={50} width={50} src={orgAvatar} />
       </div>
       <div className={css(styles.orgInfo)}>
         <div className={css(styles.nameAndTags)}>

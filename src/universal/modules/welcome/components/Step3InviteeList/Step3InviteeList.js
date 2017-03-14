@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import {reduxForm, destroy} from 'redux-form';
 import Button from 'universal/components/Button/Button';
-import LabeledFieldArray from 'universal/containers/LabeledFieldArray/LabeledFieldArrayContainer.js';
+import LabeledFieldArray from 'universal/containers/LabeledFieldArray/LabeledFieldArrayContainer';
 import {cashay} from 'cashay';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
@@ -24,7 +24,7 @@ const Step3InviteeList = (props) => {
   const {dispatch, existingInvites, handleSubmit, invitees, router, styles, teamId} = props;
   const onInviteTeamSubmit = () => {
     if (invitees && invitees.length > 0) {
-      const serverInvitees = invitees.map(invitee => {
+      const serverInvitees = invitees.map((invitee) => {
         const {email, fullName, task} = invitee;
         return {
           email,

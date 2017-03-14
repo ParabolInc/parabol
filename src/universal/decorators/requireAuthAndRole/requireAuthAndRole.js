@@ -16,7 +16,7 @@ const unauthenticatedDefault = {
   message: 'Hey! You haven\'t signed in yet. Taking you to the sign in page.'
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   const userId = state.auth.obj.sub;
   return {
     auth: state.auth.obj,
@@ -30,7 +30,7 @@ export default (role, {
   redirect = '/login',
   unauthorized = unauthorizedDefault,
   unauthenticated = unauthenticatedDefault
-} = {}) => ComposedComponent => {
+} = {}) => (ComposedComponent) => {
   @connect(mapStateToProps)
   @withRouter
   class RequiredAuthAndRole extends Component {
@@ -54,7 +54,7 @@ export default (role, {
       }
     }
 
-    handleAuthChange(props) {
+    handleAuthChange(props) { // eslint-disable-line
       const {auth, dispatch, location: {pathname}} = props;
 
       if (auth.sub) {

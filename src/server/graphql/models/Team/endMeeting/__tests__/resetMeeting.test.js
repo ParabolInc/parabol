@@ -10,7 +10,7 @@ MockDate.set(__now);
 console.error = jest.fn();
 
 describe('resetMeeting', () => {
-  test('resets the meeting state back to the lobby after the meeting ended', async() => {
+  test('resets the meeting state back to the lobby after the meeting ended', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();

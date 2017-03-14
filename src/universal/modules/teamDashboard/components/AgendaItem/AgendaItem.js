@@ -19,7 +19,7 @@ const projectSource = {
   }
 };
 
-const AgendaItem = props => {
+const AgendaItem = (props) => {
   const {
     agendaItem,
     canNavigate,
@@ -56,7 +56,7 @@ const AgendaItem = props => {
     <div className={rootStyles} title={content}>
       {canDelete &&
         <div className={delStyles} onClick={handleRemove}>
-          <FontAwesome name="times-circle" style={{lineHeight: 'inherit'}}/>
+          <FontAwesome name="times-circle" style={{lineHeight: 'inherit'}} />
         </div>
       }
       <div className={css(styles.index)}>{idx + 1}.</div>
@@ -64,7 +64,7 @@ const AgendaItem = props => {
         <a className={contentStyles}>{content}</a>”
       </div>
       <div className={css(styles.author)}>
-        <Avatar hasBadge={false} picture={teamMember.picture} size="smallest"/>
+        <Avatar hasBadge={false} picture={teamMember.picture} size="smallest" />
       </div>
     </div>
   );

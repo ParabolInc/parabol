@@ -46,18 +46,18 @@ export default function Html({store, assets, StyleSheetServer, renderProps}) {
   return (
     <html>
       <head>
-        <style data-aphrodite dangerouslySetInnerHTML={{__html: css.content}}/>
-        <link rel="stylesheet" type="text/css" href={fontAwesomeUrl}/>
+        <style data-aphrodite dangerouslySetInnerHTML={{__html: css.content}} />
+        <link rel="stylesheet" type="text/css" href={fontAwesomeUrl} />
         {/* segment.io analytics */}
-        <script type="text/javascript" dangerouslySetInnerHTML={{__html: segmentSnippet}}/>
+        <script type="text/javascript" dangerouslySetInnerHTML={{__html: segmentSnippet}} />
       </head>
       <body>
-        <script dangerouslySetInnerHTML={{__html: dehydratedStyles}}/>
-        <script dangerouslySetInnerHTML={{__html: clientOptions}}/>
-        <div id="root" dangerouslySetInnerHTML={{__html: html}}></div>
-        <script dangerouslySetInnerHTML={{__html: manifest.text}}/>
-        <script src={`${webpackPublicPath}${vendor.js}`}/>
-        <script src={`${webpackPublicPath}${app.js}`}/>
+        <script dangerouslySetInnerHTML={{__html: dehydratedStyles}} />
+        <script dangerouslySetInnerHTML={{__html: clientOptions}} />
+        <div id="root" dangerouslySetInnerHTML={{__html: html}} />
+        <script dangerouslySetInnerHTML={{__html: manifest.text}} />
+        <script src={`${webpackPublicPath}${vendor.js}`} />
+        <script src={`${webpackPublicPath}${app.js}`} />
       </body>
     </html>
   );

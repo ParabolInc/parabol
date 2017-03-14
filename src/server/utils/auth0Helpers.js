@@ -1,6 +1,6 @@
 import {AuthenticationClient, ManagementClient} from 'auth0';
 import {auth0 as auth0ClientOptions} from '../../universal/utils/clientOptions';
-import {getDotenv} from '../../universal/utils/dotenv';
+import getDotenv from '../../universal/utils/dotenv';
 
 // Import .env and expand variables:
 getDotenv();

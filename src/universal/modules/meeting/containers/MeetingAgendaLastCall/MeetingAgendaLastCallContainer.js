@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import MeetingAgendaLastCall from 'universal/modules/meeting/components/MeetingAgendaLastCall/MeetingAgendaLastCall';
 
-const getCount = (agenda, field) => agenda.map(a => a[field].length).reduce((sum, val) => sum + val, 0);
+const getCount = (agenda, field) => agenda.map((a) => a[field].length).reduce((sum, val) => sum + val, 0);
 const countOutcomes = (agenda) => {
   if (agenda !== countOutcomes.agenda) {
     countOutcomes.agenda = agenda;
@@ -51,7 +51,7 @@ const mapStateToProps = (state, props) => {
 
 const MeetingAgendaLastCallContainer = (props) => {
   const {agendaItemCount, actionCount, gotoNext, isFacilitating, members, projectCount, team} = props;
-  const facilitator = members.find(member => member.id === team.activeFacilitator);
+  const facilitator = members.find((member) => member.id === team.activeFacilitator);
   const facilitatorName = facilitator && facilitator.preferredName || 'Facilitator';
   return (
     <MeetingAgendaLastCall

@@ -7,7 +7,7 @@ const DashboardWrapper = (props) => {
   const {children, location, title} = props;
   return (
     <DashLayoutContainer>
-      <Helmet title={title}/>
+      <Helmet title={title} />
       <DashSidebar isUserSettings={title === 'User Settings'} location={location} />
       {children}
     </DashLayoutContainer>

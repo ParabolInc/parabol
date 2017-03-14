@@ -40,7 +40,7 @@ const targetAnchor = {
 
 const TeamProjectsHeader = (props) => {
   const {dispatch, styles, teamId, teamMemberFilterId, teamMemberFilterName, teamMembers} = props;
-  const toggle = <DashFilterToggle label={teamMemberFilterName}/>;
+  const toggle = <DashFilterToggle label={teamMemberFilterName} />;
 
   const itemFactory = () => {
     return [<MenuItem
@@ -60,11 +60,11 @@ const TeamProjectsHeader = (props) => {
   };
   return (
     <DashSectionHeader>
-      <DashSectionHeading icon="calendar" label="Team Projects"/>
+      <DashSectionHeading icon="calendar" label="Team Projects" />
       <DashSectionControls>
         {/* TODO: needs link to archive */}
         <DashSectionControl>
-          <FontAwesome name="archive" style={iconStyle}/>
+          <FontAwesome name="archive" style={iconStyle} />
           <Link className={css(styles.link)} to={`/team/${teamId}/archive`}>
             See Archived Projects
           </Link>

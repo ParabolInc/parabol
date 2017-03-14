@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.16.8 - 14-Mar-2017
+### Fixed
+- #811 Rejoin facilitator button cursor is pointer
+- fix orgName update
+- Dependency bumps & linting
+
 ## v0.16.7 - 13-Mar-2017
 ### Fixed
 - #808 hey I want to pay!
@@ -22,15 +28,6 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ## v0.16.3 - 8-Mar-2017
 ### Added
 - Unit tests for Action mutations
-
-### Fixed
-- #780 email regex allowed multiple emails
-- #782 regression on Project index used by archived projects
-- #783 ensured CC always exists on org, no longer using pagination for invoiceList
-- #784 invoice icon styling bug in production
-
-## v0.16.3 - 5-Mar-2017
-### Added
 - #462 source maps added to minified production builds
 - Individual team and user project drag-and-drop sort orders now combined
   into one, universal sorting order used across the system
@@ -38,6 +35,10 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #736 permutations on invoice
 
 ### Fixed
+- #780 email regex allowed multiple emails
+- #782 regression on Project index used by archived projects
+- #783 ensured CC always exists on org, no longer using pagination for invoiceList
+- #784 invoice icon styling bug in production
 - #553 fine tune DnD
 - #714 can't delete team members
 - #724 top notification bar & dash modal overlap

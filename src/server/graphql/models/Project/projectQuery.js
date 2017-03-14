@@ -22,13 +22,13 @@ export default {
         description: 'The pagination cursor'
       }
     },
-    async resolve(source, {teamId, first, after}, {authToken, socket}) {
+    resolve(source, {teamId, first, after}, {authToken, socket}) {
       const r = getRethink();
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
 
       const cursor = after || r.minval;
-      return await r.table('Project')
+      return r.table('Project')
         .between([teamId, cursor], [teamId, r.maxval], {index: 'teamIdCreatedAt', leftBound: 'open'})
         .filter({isArchived: true})
         .limit(first);

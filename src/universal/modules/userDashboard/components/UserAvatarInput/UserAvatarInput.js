@@ -41,7 +41,7 @@ const UserAvatarInput = (props) => {
     return cashay.mutate('updateUserProfile', options);
   };
 
-  const onSubmit = async(submissionData) => {
+  const onSubmit = async (submissionData) => {
     const {pictureFile} = submissionData;
     if (pictureFile && pictureFile.name) {
       // upload new picture to CDN, then update the user profile:

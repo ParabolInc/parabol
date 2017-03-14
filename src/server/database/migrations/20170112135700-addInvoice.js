@@ -1,4 +1,4 @@
-exports.up = async(r) => {
+exports.up = async (r) => {
   const tables = [
     r.tableCreate('Invoice'),
     r.tableCreate('InvoiceItemHook')
@@ -21,7 +21,7 @@ exports.up = async(r) => {
   }
 };
 
-exports.down = async(r) => {
+exports.down = async (r) => {
   const tables = [
     r.tableDrop('Invoice'),
     r.tableDrop('InvoiceItemHook'),

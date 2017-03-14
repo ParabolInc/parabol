@@ -13,7 +13,7 @@ MockDate.set(__now);
 console.error = jest.fn();
 
 describe('updateAction', () => {
-  test('updates the sortOrder without changing updatedAt', async() => {
+  test('updates the sortOrder without changing updatedAt', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
@@ -37,7 +37,7 @@ describe('updateAction', () => {
     expect(db).toMatchSnapshot();
   });
 
-  test('updates the content of the action', async() => {
+  test('updates the content of the action', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
@@ -61,7 +61,7 @@ describe('updateAction', () => {
     expect(db).toMatchSnapshot();
   });
 
-  test('updates the status of the action', async() => {
+  test('updates the status of the action', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
@@ -85,7 +85,7 @@ describe('updateAction', () => {
     expect(db).toMatchSnapshot();
   });
 
-  test('updates the teamMemberId of the action (in meeting only)', async() => {
+  test('updates the teamMemberId of the action (in meeting only)', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
@@ -109,12 +109,12 @@ describe('updateAction', () => {
     expect(db).toMatchSnapshot();
   });
 
-  test('throws when no websocket is present', async() => {
+  test('throws when no websocket is present', async () => {
     const authToken = {};
     await expectAsyncToThrow(updateAction.resolve(undefined, {updatedAction: {}}, {authToken}));
   });
 
-  test('throw when the caller is not a team member', async() => {
+  test('throw when the caller is not a team member', async () => {
     // SETUP
     const mockDB = new MockDB();
     const {action, user} = await mockDB.init()

@@ -1,5 +1,5 @@
 /* eslint-disable global-require */
-import {resolvePromiseMap} from 'universal/utils/promises';
+import resolvePromiseMap from 'universal/utils/promises';
 import makeReducer from 'universal/redux/makeReducer';
 
 const setImports = () =>
@@ -9,15 +9,15 @@ const setImports = () =>
     ['teamDashboard', System.import('universal/modules/teamDashboard/ducks/teamDashDuck')]
   ]);
 
-const getImports = importMap => ({
+const getImports = (importMap) => ({
   component: importMap.get('component').default,
   socket: importMap.get('socket').socketClusterReducer,
   teamDashboard: importMap.get('teamDashboard').default
 });
 
-export default store => ({
+export default (store) => ({
   path: 'team/:teamId',
-  getComponent: async(location, cb) => {
+  getComponent: async (location, cb) => {
     const promiseMap = setImports();
     const importMap = await resolvePromiseMap(promiseMap);
     const {component, ...asyncReducers} = getImports(importMap);
@@ -25,7 +25,7 @@ export default store => ({
     store.replaceReducer(newReducer);
     cb(null, component);
   },
-  getIndexRoute: async(location, cb) => {
+  getIndexRoute: async (location, cb) => {
     const component = await System.import('universal/modules/teamDashboard/components/AgendaAndProjects/AgendaAndProjects');
     cb(null, {component: component.default});
   },
