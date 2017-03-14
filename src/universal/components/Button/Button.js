@@ -6,9 +6,9 @@ import withStyles from 'universal/styles/withStyles';
 import ui from 'universal/styles/ui';
 import textOverflow from 'universal/styles/helpers/textOverflow';
 
-const makeSolidTheme = (themeColor, textColor = '#fff', style = 'solid', opacity = '.65') => {
-  const buttonColor = style === 'inverted' ? tinycolor.mix(themeColor, '#fff', 90).toHexString() : themeColor;
-  const color = style === 'inverted' ? tinycolor.mix(textColor, '#000', 10).toHexString() : textColor;
+const makeSolidTheme = (themeColor, textColor = '#fff', buttonStyle = 'solid', opacity = '.65') => {
+  const buttonColor = buttonStyle === 'inverted' ? tinycolor.mix(themeColor, '#fff', 90).toHexString() : themeColor;
+  const color = buttonStyle === 'inverted' ? tinycolor.mix(textColor, '#000', 10).toHexString() : textColor;
 
   return {
     backgroundColor: buttonColor,
@@ -26,9 +26,9 @@ const makeSolidTheme = (themeColor, textColor = '#fff', style = 'solid', opacity
   };
 };
 
-const makeFlatTheme = (style, color, opacity = '.5') => ({
+const makeFlatTheme = (buttonStyle, color, opacity = '.5') => ({
   backgroundColor: 'transparent',
-  borderColor: style === 'flat' ? 'transparent' : 'currentColor',
+  borderColor: buttonStyle === 'flat' ? 'transparent' : 'currentColor',
   color,
 
   ':hover': {
@@ -41,15 +41,15 @@ const makeFlatTheme = (style, color, opacity = '.5') => ({
   }
 });
 
-const makePropColors = (style, colorPalette) => {
+const makePropColors = (buttonStyle, colorPalette) => {
   const color = ui.palette[colorPalette];
-  const baseTextColor = style === 'inverted' ? color : ui.palette.white;
+  const baseTextColor = buttonStyle === 'inverted' ? color : ui.palette.white;
   const textColor = (colorPalette === 'white' || colorPalette === 'light' || colorPalette === 'gray') ?
     ui.palette.dark : baseTextColor;
-  if (style === 'flat' || style === 'outlined') {
-    return makeFlatTheme(style, color);
+  if (buttonStyle === 'flat' || buttonStyle === 'outlined') {
+    return makeFlatTheme(buttonStyle, color);
   }
-  return makeSolidTheme(color, textColor, style);
+  return makeSolidTheme(color, textColor, buttonStyle);
 };
 
 const Button = (props) => {
@@ -97,11 +97,11 @@ const Button = (props) => {
     return (
       <span className={css(styles.buttonInner)}>
         {iconOnly ? makeIcon() :
-          <span className={css(styles.buttonInner)}>
-            {thisIconPlacement === 'left' && makeIcon()}
-            <span className={css(styles.label)}>{label}</span>
-            {thisIconPlacement === 'right' && makeIcon()}
-          </span>
+        <span className={css(styles.buttonInner)}>
+          {thisIconPlacement === 'left' && makeIcon()}
+          <span className={css(styles.label)}>{label}</span>
+          {thisIconPlacement === 'right' && makeIcon()}
+        </span>
         }
       </span>
     );
@@ -117,9 +117,9 @@ const Button = (props) => {
       type={type}
     >
       {icon ? makeIconLabel() :
-        <span className={css(styles.buttonInner)}>
-          <span className={css(styles.label)}>{label}</span>
-        </span>
+      <span className={css(styles.buttonInner)}>
+        <span className={css(styles.label)}>{label}</span>
+      </span>
       }
     </button>
   );
@@ -139,7 +139,7 @@ Button.propTypes = {
   onClick: PropTypes.func,
   onMouseEnter: PropTypes.func,
   size: PropTypes.oneOf(ui.buttonSizes),
-  style: PropTypes.oneOf([
+  buttonStyle: PropTypes.oneOf([
     'solid',
     'outlined',
     'inverted',
@@ -185,7 +185,7 @@ const styleThunk = (theme, props) => ({
 
   // Variants
   // NOTE: Doing this saves us from creating 6*3 classes
-  propColors: makePropColors(props.style, props.colorPalette),
+  propColors: makePropColors(props.buttonStyle, props.colorPalette),
 
   // Disabled state
   disabled: {

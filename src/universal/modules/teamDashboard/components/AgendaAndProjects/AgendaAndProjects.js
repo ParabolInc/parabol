@@ -12,7 +12,7 @@ const AgendaAndProjects = (props) => {
     <div className={css(styles.root)}>
       <div className={css(styles.inner)}>
         <div className={css(styles.agendaLayout)}>
-          <TeamAgenda teamId={teamId}/>
+          <TeamAgenda teamId={teamId} />
         </div>
         <div className={css(styles.projectsLayout)}>
           <div className={css(styles.root, styles.projects)}>

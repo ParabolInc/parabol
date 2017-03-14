@@ -14,7 +14,7 @@ console.error = jest.fn();
 
 
 describe('makeProject', () => {
-  test('convert an action into a project', async() => {
+  test('convert an action into a project', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
@@ -35,12 +35,12 @@ describe('makeProject', () => {
     expect(db).toMatchSnapshot();
   });
 
-  test('throws when no websocket is present', async() => {
+  test('throws when no websocket is present', async () => {
     const authToken = {};
     await expectAsyncToThrow(makeProject.resolve(undefined, {actionId: {}}, {authToken}));
   });
 
-  test('throw when the caller is not a team member', async() => {
+  test('throw when the caller is not a team member', async () => {
     // SETUP
     const mockDB = new MockDB();
     const {action, user} = await mockDB.init()

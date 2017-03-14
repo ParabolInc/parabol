@@ -141,6 +141,7 @@ let infiniteTrigger = false;
 export default class MeetingContainer extends Component {
   static propTypes = {
     agenda: PropTypes.array.isRequired,
+    bindHotkey: PropTypes.func.isRequired,
     dispatch: PropTypes.func.isRequired,
     isFacilitating: PropTypes.bool,
     localPhaseItem: PropTypes.number,
@@ -360,14 +361,14 @@ export default class MeetingContainer extends Component {
           <MeetingAvatars>
             <AvatarGroup avatars={members} localPhase={localPhase} />
           </MeetingAvatars>
-          {localPhase === LOBBY && <MeetingLobby members={members} team={team}/>}
+          {localPhase === LOBBY && <MeetingLobby members={members} team={team} />}
           {localPhase === CHECKIN &&
             <MeetingCheckin gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
           }
           {localPhase === UPDATES &&
             <MeetingUpdatesContainer gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
           }
-          {localPhase === FIRST_CALL && <MeetingAgendaFirstCall gotoNext={this.gotoNext}/>}
+          {localPhase === FIRST_CALL && <MeetingAgendaFirstCall gotoNext={this.gotoNext} />}
           {localPhase === AGENDA_ITEMS &&
             <MeetingAgendaItems
               agendaItem={agenda[localPhaseItem - 1]}
@@ -384,7 +385,7 @@ export default class MeetingContainer extends Component {
             />
           }
           {!inSync &&
-            <RejoinFacilitatorButton onClickHandler={rejoinFacilitator}/>
+            <RejoinFacilitatorButton onClickHandler={rejoinFacilitator} />
           }
         </MeetingMain>
       </MeetingLayout>

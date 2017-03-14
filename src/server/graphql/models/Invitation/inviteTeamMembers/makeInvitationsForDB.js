@@ -6,7 +6,7 @@ export default async function makeInvitationsForDB(invitees, teamId, userId) {
   const now = new Date();
   const invitedBy = `${userId}::${teamId}`;
   const tokenExpiration = new Date(now.valueOf() + INVITATION_LIFESPAN);
-  const hashPromises = invitees.map(invitee => hashInviteTokenKey(invitee.inviteToken));
+  const hashPromises = invitees.map((invitee) => hashInviteTokenKey(invitee.inviteToken));
   const hashedTokens = await Promise.all(hashPromises);
   return invitees.map((invitee, idx) => {
     const {email, inviteToken, task, fullName} = invitee;

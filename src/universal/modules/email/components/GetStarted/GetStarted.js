@@ -39,6 +39,7 @@ const GetStarted = () => {
             <span style={headingStyle}>Getting Started</span><br />
             Read <a
               href="https://focus.parabol.co/how-to-navigate-uncertainty-fc0dfaaf3830"
+              rel="noopener noreferrer"
               style={linkStyle}
               target="_blank"
               title="How to Navigate Uncertainty using the Action Rhythm"

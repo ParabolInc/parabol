@@ -11,7 +11,7 @@ import {
   GraphQLInputObjectType
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
-import {TeamMember} from '../TeamMember/teamMemberSchema';
+import TeamMember from '../TeamMember/teamMemberSchema';
 import {AgendaItem} from '../AgendaItem/agendaItemSchema';
 import {LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY} from 'universal/utils/constants';
 
@@ -96,17 +96,17 @@ export const Team = new GraphQLObjectType({
     agendaItems: {
       type: new GraphQLList(AgendaItem),
       description: 'The agenda items for the upcoming or current meeting',
-      async resolve({id}) {
+      resolve({id}) {
         const r = getRethink();
-        return await r.table('AgendaItem').getAll(id, {index: 'teamId'});
+        return r.table('AgendaItem').getAll(id, {index: 'teamId'});
       }
     },
     teamMembers: {
       type: new GraphQLList(TeamMember),
       description: 'All the team members associated who can join this team',
-      async resolve({id}) {
+      resolve({id}) {
         const r = getRethink();
-        return await r.table('TeamMember').getAll(id, {index: 'teamId'});
+        return r.table('TeamMember').getAll(id, {index: 'teamId'});
       }
     }
   })

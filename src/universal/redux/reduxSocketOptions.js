@@ -1,11 +1,11 @@
 import {cashay, Transport} from 'cashay';
-import AuthEngine from './AuthEngine';
 import socketCluster from 'socketcluster-client';
 import subscriber from 'universal/subscriptions/subscriber';
+import AuthEngine from './AuthEngine';
 
 const onConnect = (options, hocOptions, socket) => {
   if (!cashay.priorityTransport) {
-    const sendToServer = request => {
+    const sendToServer = (request) => {
       return new Promise((resolve) => {
         socket.emit('graphql', request, (error, response) => {
           resolve(response);

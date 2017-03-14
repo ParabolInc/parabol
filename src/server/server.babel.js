@@ -9,7 +9,7 @@ const ignorePatterns = [
 
 const ignoreRegexp = new RegExp(ignorePatterns.join('|'), 'i');
 if (process.env.NODE_ENV !== 'production') {
-  if (!require('piping')({ // eslint-disable-line global-require
+  if (!require('piping')({ // eslint-disable-line
     hook: false,
     ignore: ignoreRegexp
   })) {
@@ -17,5 +17,5 @@ if (process.env.NODE_ENV !== 'production') {
   }
 }
 
-require('babel-register');
+require('babel-register'); // eslint-disable-line import/no-extraneous-dependencies
 require('./server');

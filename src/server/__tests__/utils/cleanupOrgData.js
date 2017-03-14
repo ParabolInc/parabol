@@ -2,7 +2,7 @@ import getRethink from '../../database/rethinkDriver';
 
 export default function cleanupTeamAndOrg(teamLeader, teamMembers) {
   describe('cleanup org data', () => {
-    test('count rows and purge', async() => {
+    test('count rows and purge', async () => {
       const r = getRethink();
 
       const affect = await r.table('User').get(teamLeader.id)

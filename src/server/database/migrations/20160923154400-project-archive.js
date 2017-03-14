@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-exports.up = async(r) => {
+exports.up = async (r) => {
   const queries = [
     r.table('Project').update((doc) => ({
       isArchived: false,
@@ -10,10 +10,10 @@ exports.up = async(r) => {
   await Promise.all(queries);
 };
 
-exports.down = async(r) => {
+exports.down = async (r) => {
   const queries = [
     r.table('Project').indexDrop('teamId'),
     r.table('Project').replace(r.row.without('teamId', 'isArchived'))
   ];
-  return await Promise.all(queries);
+  await Promise.all(queries);
 };

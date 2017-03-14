@@ -20,7 +20,8 @@ const mapStateToProps = (state, props) => ({
 });
 
 const WelcomeContainer = (props) => {
-  const {dispatch, router, tms, welcome: {completed}} = props;
+  const {dispatch, invitees, inviteesRaw, preferredName, teamName, router, tms, welcome} = props;
+  const {completed} = welcome;
   const progressDotClickFactory = (dot) => (e) => {
     e.preventDefault();
     if (dot <= completed + 1) {
@@ -33,7 +34,12 @@ const WelcomeContainer = (props) => {
   }
   return (
     <Welcome
-      {...props}
+      invitees={invitees}
+      inviteesRaw={inviteesRaw}
+      preferredName={preferredName}
+      teamName={teamName}
+      tms={tms}
+      welcome={welcome}
       progressDotClickFactory={progressDotClickFactory}
       title="Welcome"
     />

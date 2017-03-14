@@ -6,12 +6,12 @@ export const getUserId = (authToken) => {
   return authToken && typeof authToken === 'object' && authToken.sub;
 };
 
-export const isSuperUser = authToken => {
+export const isSuperUser = (authToken) => {
   const userId = getUserId(authToken);
   return userId && authToken.rol === 'su';
 };
 
-export const requireAuth = authToken => {
+export const requireAuth = (authToken) => {
   const userId = getUserId(authToken);
   if (userId) return userId;
   throw errorObj({_error: 'Unauthorized. Must be logged in for this action.'});
@@ -20,7 +20,7 @@ export const requireAuth = authToken => {
 /*
  * Won't return a teamMember if it's a super user
  */
-export const requireSU = authToken => {
+export const requireSU = (authToken) => {
   if (!isSuperUser(authToken)) {
     throw errorObj({_error: 'Unauthorized. Must be a super user to run this query.'});
   }
@@ -66,7 +66,7 @@ export const requireSUOrSelf = (authToken, userId) => {
   throw errorObj({_error: 'Unauthorized. You cannot modify another user.'});
 };
 
-export const requireSUOrSelfOrLead = async(authToken, userId, teamId) => {
+export const requireSUOrSelfOrLead = async (authToken, userId, teamId) => {
   if (isSuperUser(authToken)) return undefined;
   const authTokenUserId = getUserId(authToken);
   if (authTokenUserId === userId) {
@@ -81,7 +81,7 @@ export const requireSUOrSelfOrLead = async(authToken, userId, teamId) => {
   throw errorObj({_error: 'Unauthorized. Only the team member or the leader can remove someone'});
 };
 
-export const requireSUOrLead = async(authToken, teamMemberId) => {
+export const requireSUOrLead = async (authToken, teamMemberId) => {
   if (isSuperUser(authToken)) return undefined;
   const r = getRethink();
   const teamMember = await r.table('TeamMember').get(teamMemberId);
@@ -104,9 +104,9 @@ export const requireWebsocketExchange = (exchange) => {
   }
 };
 
-export const getUserOrgDoc = async(userId, orgId) => {
+export const getUserOrgDoc = (userId, orgId) => {
   const r = getRethink();
-  return await r.table('User').get(userId)('userOrgs')
+  return r.table('User').get(userId)('userOrgs')
     .filter({id: orgId})
     .nth(0)
     .default(null);
@@ -123,7 +123,7 @@ export const requireOrgLeader = (userOrgDoc) => {
   }
 };
 
-export const requireOrgLeaderOfUser = async(authToken, userId) => {
+export const requireOrgLeaderOfUser = async (authToken, userId) => {
   const r = getRethink();
   const isLeaderOfUser = await r.table('User')
     .get(authToken.sub)('userOrgs')
@@ -152,7 +152,7 @@ export const requireOrgLeaderOfUser = async(authToken, userId) => {
   return true;
 };
 
-export const requireTeamIsPaid = async(teamId) => {
+export const requireTeamIsPaid = async (teamId) => {
   const r = getRethink();
   const isPaid = await r.table('Team').get(teamId)('isPaid').default(false);
   if (!isPaid) {
@@ -163,7 +163,7 @@ export const requireTeamIsPaid = async(teamId) => {
 
 // VERY important, otherwise eg a user could "create" a new team with an existing teamId & force join that team
 // this still isn't secure because the resolve could get called twice & make it past this point before 1 of them writes the insert
-export const ensureUniqueId = async(table, id) => {
+export const ensureUniqueId = async (table, id) => {
   const r = getRethink();
   const res = await r.table(table).get(id);
   if (res) {
@@ -178,7 +178,7 @@ export const requireUserInOrg = (userOrgDoc, userId, orgId) => {
   return true;
 };
 
-export const requireNotificationOwner = async(userId, notificationId) => {
+export const requireNotificationOwner = async (userId, notificationId) => {
   const r = getRethink();
   const res = await r.table('Notification').get(notificationId)('userIds').contains(userId).default(null);
   if (!res) {

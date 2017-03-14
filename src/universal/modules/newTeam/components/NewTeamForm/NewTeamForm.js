@@ -85,7 +85,7 @@ const NewTeamForm = (props) => {
                       label="Nevermind, select an existing organization"
                       onClick={resetOrgSelection}
                       size="smallest"
-                      style="flat"
+                      buttonStyle="flat"
                     />
                   </div>
                 </div> :
@@ -97,7 +97,7 @@ const NewTeamForm = (props) => {
                   <CreditCardModalContainer
                     isUpdate
                     handleToken={setToken}
-                    toggle={<Button colorPalette="cool" label="Update" size="smallest" style="flat" />}
+                    toggle={<Button colorPalette="cool" label="Update" size="smallest" buttonStyle="flat" />}
                   />
 
                 </div>

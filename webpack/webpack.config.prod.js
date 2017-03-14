@@ -3,7 +3,7 @@ import webpack from 'webpack';
 import AssetsPlugin from 'assets-webpack-plugin';
 import WebpackShellPlugin from 'webpack-shell-plugin';
 import S3Plugin from 'webpack-s3-plugin';
-import {getDotenv} from '../src/universal/utils/dotenv';
+import getDotenv from '../src/universal/utils/dotenv';
 import {getS3BasePath} from './utils/getS3BasePath';
 import getWebpackPublicPath from '../src/server/utils/getWebpackPublicPath';
 import npmPackage from '../package.json';
@@ -29,7 +29,7 @@ const vendor = [
 ];
 
 const prefetches = [];
-const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(specifier));
+const prefetchPlugins = prefetches.map((specifier) => new webpack.PrefetchPlugin(specifier));
 
 const deployPlugins = [];
 if (process.env.WEBPACK_MIN) {

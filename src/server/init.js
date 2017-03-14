@@ -1,9 +1,9 @@
 const path = require('path');
-const resolve = require('resolve');
+const resolve = require('resolve'); // eslint-disable-line import/no-extraneous-dependencies
 
 // eslint-disable-next-line
 module.exports.run = function() {
-  // eslint-disable-next-line global-require
+  // eslint-disable-next-line
   require('babel-register')({
     only(filename) {
       return (filename.indexOf('build') === -1 && filename.indexOf('node_modules') === -1);

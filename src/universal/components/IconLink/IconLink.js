@@ -42,9 +42,9 @@ const IconLink = (props) => {
       style={inlineStyle}
       title={label}
     >
-      {iconPlacement === 'left' && <FontAwesome className={iconStyles} name={icon}/>}
+      {iconPlacement === 'left' && <FontAwesome className={iconStyles} name={icon} />}
       <span className={css(styles.label)}>{label}</span>
-      {iconPlacement === 'right' && <FontAwesome className={iconStyles} name={icon}/>}
+      {iconPlacement === 'right' && <FontAwesome className={iconStyles} name={icon} />}
     </a>
   );
 };

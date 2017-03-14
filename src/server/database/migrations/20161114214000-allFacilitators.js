@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-exports.up = async(r) => {
+exports.up = async (r) => {
   const fields = [
     r.table('TeamMember').replace((row) => {
       return row
@@ -13,7 +13,7 @@ exports.up = async(r) => {
   await Promise.all(fields);
 };
 
-exports.down = async(r) => {
+exports.down = async (r) => {
   const fields = [
     r.table('TeamMember').replace((row) => {
       return row

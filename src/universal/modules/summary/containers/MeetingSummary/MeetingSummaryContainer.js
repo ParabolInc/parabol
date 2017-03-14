@@ -104,7 +104,7 @@ export default class MeetingSummaryContainer extends Component {
   render() {
     const {meeting} = this.props;
     if (!meeting.createdAt) {
-      return <LoadingView/>;
+      return <LoadingView />;
     }
     const {teamId} = meeting;
     const title = `Action Meeting #${meeting.meetingNumber} Summary for ${meeting.teamName}`;

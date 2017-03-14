@@ -5,8 +5,8 @@ import {auth0} from 'universal/utils/clientOptions';
 
 export const mintTokenUnsigned = (userId, fields) => {
   const now = Date.now();
-  const exp = ~~((now + JWT_LIFESPAN) / 1000);
-  const iat = ~~(now / 1000);
+  const exp = ~~((now + JWT_LIFESPAN) / 1000); // eslint-disable-line no-bitwise
+  const iat = ~~(now / 1000); // eslint-disable-line no-bitwise
 
   const newToken = {
     iss: 'ava-unit-test',

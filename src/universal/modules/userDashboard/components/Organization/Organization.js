@@ -42,23 +42,23 @@ const Organization = (props) => {
     <UserSettingsWrapper settingsLocation={ORGANIZATIONS}>
       <div className={css(styles.wrapper)}>
         <Link className={css(styles.goBackLabel)} to="/me/organizations" title="Back to Organizations">
-          <FontAwesome name="arrow-circle-left" style={inlineBlockStyle}/>
+          <FontAwesome name="arrow-circle-left" style={inlineBlockStyle} />
           <div style={inlineBlockStyle}>Back to Organizations</div>
         </Link>
         {/* TODO: See AvatarInput.js for latest */}
         <div className={css(styles.avatarAndName)}>
           <PhotoUploadModal picture={pictureOrDefault} toggle={toggle} unstyled>
-            <OrgAvatarInput orgId={orgId}/>
+            <OrgAvatarInput orgId={orgId} />
           </PhotoUploadModal>
           <div className={css(styles.orgNameAndDetails)}>
-            <EditOrgName initialValues={initialValues} orgName={orgName} orgId={orgId}/>
+            <EditOrgName initialValues={initialValues} orgName={orgName} orgId={orgId} />
             <div className={css(styles.orgDetails)}>
               Created {makeDateString(createdAt, false)}
             </div>
-            <BillingMembersToggle orgId={orgId} activeOrgDetail={activeOrgDetail}/>
+            <BillingMembersToggle orgId={orgId} activeOrgDetail={activeOrgDetail} />
           </div>
         </div>
-        <OrgSection orgId={orgId}/>
+        <OrgSection orgId={orgId} />
       </div>
     </UserSettingsWrapper >
   );

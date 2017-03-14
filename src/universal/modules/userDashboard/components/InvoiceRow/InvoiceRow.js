@@ -33,7 +33,7 @@ const InvoiceRow = (props) => {
     <Row>
       <div className={invoiceAvatarStyles}>
         <div className={css(styles.icon)}>
-          <FontAwesome name="file-text" className={css(styles.fileIcon)}/>
+          <FontAwesome name="file-text" className={css(styles.fileIcon)} />
         </div>
       </div>
       <div className={css(styles.invoiceInfo)}>
@@ -43,7 +43,7 @@ const InvoiceRow = (props) => {
               {makeMonthString(endAt)}
             </div>
             {isEstimate &&
-              <Tag colorPalette="light" label="Current Estimate"/>
+              <Tag colorPalette="light" label="Current Estimate" />
             }
           </div>
           <div className={css(styles.infoRowRight)}>
@@ -54,7 +54,7 @@ const InvoiceRow = (props) => {
         </div>
         <div className={css(styles.infoRow)}>
           <div className={css(styles.infoRowLeft)}>
-            <Link className={css(styles.subHeader)} target="_blank" to={`/invoice/${invoiceId}`}>
+            <Link className={css(styles.subHeader)} rel="noopener noreferrer" target="_blank" to={`/invoice/${invoiceId}`}>
               See Details
             </Link>
           </div>

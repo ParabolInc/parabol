@@ -1,8 +1,8 @@
+import raven from 'raven-js';
 import {applyMiddleware, combineReducers, createStore} from 'redux';
 import thunk from 'redux-thunk';
 import auth, {setAuthToken, removeAuthToken, setNextUrl, unsetNextUrl} from '../authDuck';
 import {testToken, testTokenData} from './testTokens';
-import raven from 'raven-js';
 import * as segmentActions from '../segmentActions';
 
 raven.setUserContext = jest.fn();

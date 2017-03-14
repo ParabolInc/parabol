@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+
 const root = process.cwd();
 
 module.exports = {

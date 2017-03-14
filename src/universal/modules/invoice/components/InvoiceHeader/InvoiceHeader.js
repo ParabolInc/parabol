@@ -16,11 +16,11 @@ const InvoiceHeader = (props) => {
   return (
     <div className={css(styles.header)}>
       <div className={css(styles.logoPanel)}>
-        <img alt={`Logo for ${orgName}`} className={css(styles.picture)} src={picture || defaultOrgAvatar}/>
+        <img alt={`Logo for ${orgName}`} className={css(styles.picture)} src={picture || defaultOrgAvatar} />
       </div>
       <div className={css(styles.info)}>
         <div className={css(styles.orgName)}>{orgName}</div>
-        {emails.map((email, idx) => <div key={`email${idx}`} className={css(styles.email)}>{email}</div>)}
+        {emails.map((email) => <div key={`email${email}`} className={css(styles.email)}>{email}</div>)}
 
       </div>
     </div>

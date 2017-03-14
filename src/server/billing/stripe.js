@@ -1,9 +1,9 @@
 import initStripe from 'stripe';
-import {getDotenv} from '../../universal/utils/dotenv';
+import getDotenv from '../../universal/utils/dotenv';
 import {errorObj} from '../utils/utils';
 import {usedMethods, usedResources} from './constants';
 
-const tryCatchWrapper = (target) => async(...args) => {
+const tryCatchWrapper = (target) => async (...args) => {
   try {
     /* work around for apparent babel destructuring transpiliation bug: */
     const myArgs = args;

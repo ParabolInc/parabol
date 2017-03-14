@@ -57,7 +57,7 @@ const ProjectColumn = (props) => {
 
   const label = themeLabels.projectStatus[status].slug;
   const makeTeamMenuItems = (sortOrder) => {
-    return teams.map(team => ({
+    return teams.map((team) => ({
       label: team.name,
       handleClick: () => cashay.mutate('createProject', {
         variables: {
@@ -75,26 +75,26 @@ const ProjectColumn = (props) => {
     const sortOrder = getNextSortOrder(projects, dndNoise());
     if (area === TEAM_DASH) {
       const handleAddProject = handleAddProjectFactory(status, myTeamMemberId, sortOrder);
-      return <AddProjectButton onClick={handleAddProject} label={label}/>;
+      return <AddProjectButton onClick={handleAddProject} label={label} />;
     } else if (area === USER_DASH) {
       if (teams.length === 1) {
         const {id: teamId} = teams[0];
         const generatedMyTeamMemberId = `${userId}::${teamId}`;
         const handleAddProject = handleAddProjectFactory(status, generatedMyTeamMemberId, sortOrder);
-        return <AddProjectButton onClick={handleAddProject} label={label}/>;
+        return <AddProjectButton onClick={handleAddProject} label={label} />;
       }
       const itemFactory = () => {
         const menuItems = makeTeamMenuItems(sortOrder);
-        return menuItems.map((item, idx) =>
+        return menuItems.map((item) =>
           <MenuItem
-            key={`MenuItem${idx}`}
+            key={`MenuItem${item.label}`}
             label={item.label}
             onClick={item.handleClick}
           />
         );
       };
 
-      const toggle = <AddProjectButton label={label}/>;
+      const toggle = <AddProjectButton label={label} />;
       return (
         <Menu
           itemFactory={itemFactory}
@@ -128,7 +128,7 @@ const ProjectColumn = (props) => {
       </div>
       <div className={css(styles.columnBody)}>
         <div className={css(styles.columnInner)}>
-          {projects.map(project =>
+          {projects.map((project) =>
             <ProjectCardContainer
               key={`teamCard${project.id}`}
               area={area}

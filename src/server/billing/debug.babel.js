@@ -1,7 +1,7 @@
 const path = require('path');
-const resolve = require('resolve');
+const resolve = require('resolve'); // eslint-disable-line import/no-extraneous-dependencies
 
-require('babel-register')({
+require('babel-register')({ // eslint-disable-line import/no-extraneous-dependencies
   resolveModuleSource(source, filename) {
     return resolve.sync(source, {
       basedir: path.resolve(filename, '..'),

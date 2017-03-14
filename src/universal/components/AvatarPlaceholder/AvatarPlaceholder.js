@@ -11,7 +11,7 @@ const AvatarPlaceholder = (props) => {
     <div className={css(styles.avatarBlock)}>
       <div className={css(styles.avatarPlaceholder)}>
         <div className={css(styles.avatarPlaceholderInner)}>
-          <FontAwesome name="user" style={{position: 'relative', top: '4px'}}/>
+          <FontAwesome name="user" style={{position: 'relative', top: '4px'}} />
         </div>
       </div>
     </div>

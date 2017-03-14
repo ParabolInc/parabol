@@ -22,8 +22,8 @@ const UserRow = (props) => {
     <Row>
       <div className={css(styles.userAvatar)}>
         {picture ?
-          <Avatar hasBadge={false} picture={picture} size="small"/> :
-          <AvatarPlaceholder/>
+          <Avatar hasBadge={false} picture={picture} size="small" /> :
+          <AvatarPlaceholder />
         }
       </div>
       <div className={css(styles.userInfo)}>

@@ -49,10 +49,10 @@ const StandardHub = (props) => {
     const itemFactory = () => {
       const listItems = [];
       listItems.push(
-        <MenuItem icon="address-card" label="Settings" onClick={goToSettings}/>,
-        <MenuItem icon="building" label="Organizations" onClick={goToOrganizations}/>,
-        <MenuItem icon="bell" label="Notifications" onClick={goToNotifications}/>,
-        <MenuItem icon="sign-out" label="Sign Out" onClick={signOut} hr="before"/>
+        <MenuItem icon="address-card" label="Settings" onClick={goToSettings} />,
+        <MenuItem icon="building" label="Organizations" onClick={goToOrganizations} />,
+        <MenuItem icon="bell" label="Notifications" onClick={goToNotifications} />,
+        <MenuItem icon="sign-out" label="Sign Out" onClick={signOut} hr="before" />
       );
       return listItems;
     };
@@ -63,7 +63,7 @@ const StandardHub = (props) => {
         originAnchor={originAnchor}
         menuWidth="13rem"
         targetAnchor={targetAnchor}
-        toggle={<div className={css(styles.menuToggle)}/>}
+        toggle={<div className={css(styles.menuToggle)} />}
       />
     );
   };
@@ -95,7 +95,7 @@ const StandardHub = (props) => {
         className={notificationsStyles}
         to="/me/notifications"
       >
-        <FontAwesome name="bell" style={iconStyle}/>
+        <FontAwesome name="bell" style={iconStyle} />
         {notificationCount > 0 &&
           <div className={css(styles.badgeBlock)}>
             <Badge value={notificationCount} />

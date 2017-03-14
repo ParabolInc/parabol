@@ -29,7 +29,7 @@ const DashFilterToggle = (props) => {
       title={`Filter by ${label}`}
     >
       <div style={{...inlineBlockTop, marginRight: '.25rem'}}>{label}</div>
-      <FontAwesome name="chevron-circle-down" style={inlineBlockTop}/>
+      <FontAwesome name="chevron-circle-down" style={inlineBlockTop} />
     </button>
   );
 };

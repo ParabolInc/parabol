@@ -9,9 +9,9 @@ import {
 } from 'universal/components/Dashboard';
 import {Link, withRouter} from 'react-router';
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
-import MeetingInProgressModal from '../MeetingInProgressModal/MeetingInProgressModal';
 import UnpaidTeamModalContainer from 'universal/modules/teamDashboard/containers/UnpaidTeamModal/UnpaidTeamModalContainer';
 import ui from 'universal/styles/ui';
+import MeetingInProgressModal from '../MeetingInProgressModal/MeetingInProgressModal';
 
 const faIconStyle = {
   fontSize: '14px',
@@ -35,14 +35,14 @@ const standardLinks = (teamId) => {
         style={linkStyle}
         title="Meeting Lobby"
       >
-        <FontAwesome name="arrow-circle-right" style={faIconStyle}/> Meeting Lobby
+        <FontAwesome name="arrow-circle-right" style={faIconStyle} /> Meeting Lobby
       </Link>
       <Link
         to={`/team/${teamId}/settings`}
         style={linkStyle}
         title="Team Settings"
       >
-        <FontAwesome name="cog" style={faIconStyle}/> Team Settings
+        <FontAwesome name="cog" style={faIconStyle} /> Team Settings
       </Link>
     </div>
   );
@@ -56,7 +56,7 @@ const settingsLinks = (teamId) => {
         style={linkStyle}
         title="Back to Team Dashboard"
       >
-        <FontAwesome name="arrow-circle-left" style={faIconStyle}/> Back to Team Dashboard
+        <FontAwesome name="arrow-circle-left" style={faIconStyle} /> Back to Team Dashboard
       </Link>
     </div>
   );
@@ -72,7 +72,7 @@ const Team = (props) => {
   const hasOverlay = hasActiveMeeting || !isPaid;
   const isSettings = router.isActive(`/team/${teamId}/settings`, false);
   initialValues.teamName = teamName;
-  const DashHeaderInfoTitle = isSettings ? <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId}/> : teamName;
+  const DashHeaderInfoTitle = isSettings ? <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId} /> : teamName;
   const modalLayout = hasDashAlert ? ui.modalLayoutMainWithDashAlert : ui.modalLayoutMain;
   return (
     <DashMain>
@@ -93,7 +93,7 @@ const Team = (props) => {
         <DashHeaderInfo title={DashHeaderInfoTitle}>
           {isSettings ? settingsLinks(teamId) : standardLinks(teamId)}
         </DashHeaderInfo>
-        <DashboardAvatars teamMembers={teamMembers}/>
+        <DashboardAvatars teamMembers={teamMembers} />
       </DashHeader>
       <DashContent hasOverlay={hasOverlay} padding="0">
         {children}

@@ -11,9 +11,9 @@ const Step3InviteTeam = (props) => {
       <Type align="center" italic scale="s6">
         Sounds like a great team!
       </Type>
-      <WelcomeHeading copy={<span>Let’s invite some folks to the <b>{teamName}</b> team.</span>}/>
-      <Step3RawInvitees invitees={invitees} inviteesRaw={inviteesRaw}/>
-      <Step3InviteeList existingInvites={existingInvites} invitees={invitees} teamId={teamId}/>
+      <WelcomeHeading copy={<span>Let’s invite some folks to the <b>{teamName}</b> team.</span>} />
+      <Step3RawInvitees invitees={invitees} inviteesRaw={inviteesRaw} />
+      <Step3InviteeList existingInvites={existingInvites} invitees={invitees} teamId={teamId} />
     </div>
   );
 };

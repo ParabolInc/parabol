@@ -15,16 +15,16 @@ const InvoiceFooter = (props) => {
         {'Thank you for using Action!'}
       </div>
       <div className={css(styles.copy)}>
-        {'Questions? Concerns?'}<br/>
+        {'Questions? Concerns?'}<br />
         {'Get in touch: '}<a href="mailto:billing@parabol.co" title="Contact Us"><b>{'billing@parabol.co'}</b></a>
       </div>
-      <img alt="Logo for Parabol" className={css(styles.lockup)} src={lockup}/>
+      <img alt="Logo for Parabol" className={css(styles.lockup)} src={lockup} />
       <div className={css(styles.finePrint)}>
-        {'Parabol, Inc.'}<br/>
-        {'68 3rd Street'}<br/>
-        {'Brooklyn, NY, 11231'}<br/>
-        {'United States'}<br/>
-        <a href="tel:6122275673" title="Call us: 612-227-5673">{'612-227-5673'}</a><br/>
+        {'Parabol, Inc.'}<br />
+        {'68 3rd Street'}<br />
+        {'Brooklyn, NY, 11231'}<br />
+        {'United States'}<br />
+        <a href="tel:6122275673" title="Call us: 612-227-5673">{'612-227-5673'}</a><br />
         <a href="mailto:love@parabol.co" title="Email us:love@parabol.co">{'love@parabol.co'}</a>
       </div>
     </div>

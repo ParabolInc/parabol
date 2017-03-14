@@ -78,7 +78,7 @@ const OrgBillingContainer = (props) => {
     ...invoiceList
   ];
   if (!org.id) {
-    return <LoadingView/>;
+    return <LoadingView />;
   }
   return (
     <OrgBilling

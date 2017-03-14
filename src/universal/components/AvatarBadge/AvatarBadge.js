@@ -40,7 +40,7 @@ const AvatarBadge = (props) => {
   const description = `${connection}, ${checkIn}`;
   return (
     <div className={badgeStyles}>
-      <FontAwesome className={iconStyles} name={icon} title={title}/>
+      <FontAwesome className={iconStyles} name={icon} title={title} />
       <span className={css(styles.srOnly)}>
         {description}
       </span>

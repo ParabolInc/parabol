@@ -5,12 +5,12 @@ import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
 import makeStore from './makeStore';
 import Root from './Root';
 import {StyleSheet} from 'aphrodite-local-styles/no-important';
-import cashaySchema from 'cashay!../server/utils/getCashaySchema.js';
+import cashaySchema from 'cashay!../server/utils/getCashaySchema.js'; // eslint-disable-line
 
 // const {routing} = window.__INITIAL_STATE__;
 const initialState = {};
 
-(async() => {
+(async () => {
   const store = await makeStore(initialState);
   // Create the Cashay singleton:
   const persistedToken = store.getState().auth.token;
@@ -26,7 +26,7 @@ const initialState = {};
      */
     StyleSheet.rehydrate(window.__APHRODITE__);
     render(
-      <Root store={store}/>,
+      <Root store={store} />,
       document.getElementById('root')
     );
   } else {
@@ -35,13 +35,13 @@ const initialState = {};
      * take care of that when it wants to exit.
      */
     // eslint-disable-next-line global-require
-    const {AppContainer} = require('react-hot-loader');
+    const {AppContainer} = require('react-hot-loader'); // eslint-disable-line import/no-extraneous-dependencies
     // ENABLE THIS FOR EXPLORING FRONT END PERFORMANCE
     // const {whyDidYouUpdate} = require('why-did-you-update');
     // whyDidYouUpdate(React);
     render(
       <AppContainer>
-        <Root store={store}/>
+        <Root store={store} />
       </AppContainer>,
       document.getElementById('root')
     );
@@ -52,7 +52,7 @@ const initialState = {};
         const Root = require('./Root').default;
         render(
           <AppContainer>
-            <Root store={store}/>
+            <Root store={store} />
           </AppContainer>,
           document.getElementById('root')
         );

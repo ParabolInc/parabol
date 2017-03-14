@@ -1,6 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
-import {Meeting} from './meetingSchema';
+import Meeting from './meetingSchema';
 import sendEmailSummary from './helpers/sendEmailSummary';
 
 import {

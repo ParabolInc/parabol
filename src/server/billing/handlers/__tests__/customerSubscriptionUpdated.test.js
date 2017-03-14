@@ -11,7 +11,7 @@ import exchange from 'server/__mocks__/exchange';
 console.error = jest.fn();
 
 describe('customerSubscriptionUpdated', () => {
-  test('handles a trial that just expired', async() => {
+  test('handles a trial that just expired', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
@@ -36,7 +36,7 @@ describe('customerSubscriptionUpdated', () => {
     expect(exchange.publish).toBeCalled();
   });
 
-  test('exits if called on a non-trialing member', async() => {
+  test('exits if called on a non-trialing member', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
@@ -63,7 +63,7 @@ describe('customerSubscriptionUpdated', () => {
     expect(exchange.publish).toBeCalled();
   });
 
-  test('exits if it isn\'t a switch from trialing to active', async() => {
+  test('exits if it isn\'t a switch from trialing to active', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();

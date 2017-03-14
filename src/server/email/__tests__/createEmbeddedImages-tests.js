@@ -30,7 +30,7 @@ test('returns html with embedded attachments', () => {
   expect(!result.attachments[0].path).toBeFalsy();
   expect(!result.attachments[0].cid).toBeFalsy();
 
-  result.attachments.forEach(attachment => {
+  result.attachments.forEach((attachment) => {
     const {cid} = attachment;
     expect(result.html.match(new RegExp(`img src="cid:${cid}"`))).toBeTruthy();
   });
