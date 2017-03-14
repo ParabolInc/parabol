@@ -57,16 +57,16 @@ export const TEAM_DASH = 'teamDash';
 export const USER_DASH = 'userDash';
 
 /* NotificationRow Types */
-// Sent to billing leaders when their trial will expire in < 2 weeks
+// Sent to Billing Leaders when their trial will expire in < 2 weeks
 // varList = [trialExpiresAt]
 export const TRIAL_EXPIRES_SOON = 'TRIAL_EXPIRES_SOON';
-// Sent to billing leaders when their trial has expired
+// Sent to Billing Leaders when their trial has expired
 // varList = [trialExpiresAt]
 export const TRIAL_EXPIRED = 'TRIAL_EXPIRED';
-// Sent to billing leaders when a reoccuring payment gets rejected
+// Sent to Billing Leaders when a reoccuring payment gets rejected
 // varList = [last4, brand]
 export const PAYMENT_REJECTED = 'PAYMENT_REJECTED';
-// Sent to billing leaders when an orgMember attempts to add a non-orgMember to a team
+// Sent to Billing Leaders when an orgMember attempts to add a non-orgMember to a team
 // [inviterId, inviterName, inviteeEmail, invitedTeamId, invitedTeamName]
 export const REQUEST_NEW_USER = 'REQUEST_NEW_USER';
 // Sent to the orgMember that generated the new user request

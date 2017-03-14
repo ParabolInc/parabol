@@ -11,7 +11,7 @@ export default {
   //   args: {
   //     orgId: {
   //       type: new GraphQLNonNull(GraphQLID),
-  //       description: 'the org the billing leaders are in charge of'
+  //       description: 'the org the Billing Leaders are in charge of'
   //     }
   //   },
   //   type: new GraphQLList(User),

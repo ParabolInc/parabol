@@ -58,7 +58,7 @@ export default {
         }))
         .coerceTo('array'),
     });
-    // ignore pendingApprovalEmails because this could be the billing leader hitting accept
+    // ignore pendingApprovalEmails because this could be the Billing Leader hitting accept
     const {inviteEmails, teamMembers} = usedEmails;
     const schemaProps = {
       activeTeamMemberEmails: teamMembers.filter((m) => m.isNotRemoved === true).map((m) => m.email),
@@ -92,10 +92,10 @@ export default {
     await reactivateTeamMembers(idsToReactivate, teamId, teamName, exchange, userId);
 
     if (newInvitees.length > 0) {
-      // if it's a billing leader send them all
+      // if it's a Billing Leader send them all
       const inviteeEmails = newInvitees.map((i) => i.email);
       if (inviterIsBillingLeader) {
-        // if any folks were pending, release the floodgates, a billing leader has approved them
+        // if any folks were pending, release the floodgates, a Billing Leader has approved them
         const pendingApprovals = await removeOrgApprovalAndNotification(orgId, inviteeEmails);
         // we should always have a fresh invitee, but we do this safety check in case the front-end validation messes up
         const freshInvitees = newInvitees.filter((i) =>
@@ -108,7 +108,7 @@ export default {
         pendingApprovals.forEach((invite) => {
           const {inviterId, inviteeEmail, invitedTeamId} = invite;
           const invitee = [{email: inviteeEmail}];
-          // when we invite the person, try to invite from the original requester, if not, billing leader
+          // when we invite the person, try to invite from the original requester, if not, Billing Leader
           setTimeout(async() =>
             await asyncInviteTeam(inviterId, invitedTeamId, invitee),
           0);
