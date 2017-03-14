@@ -14,6 +14,7 @@ export default function getDotenv() {
     myConfig.path = '.env.test';
   }
   const myEnv = dotenv.config(myConfig);
+  console.log('ENV', myEnv, myEnv.parsed);
   dotenvExpand(myEnv.parsed);
 
   return true;
