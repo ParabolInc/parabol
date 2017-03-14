@@ -64,13 +64,20 @@ exports.resolve = function (source, file, settings) {
     configPath = findConfigPath(configPath, packageDir)
 
     log('Config path resolved to:', configPath)
+    console.log('configer', configPath)
     if (configPath) {
-      webpackConfig = require(configPath)
+      console.log('web conf', configPath)
+      try {
+        webpackConfig = require(configPath)
+        console.log('COR', webpackConfig)
+      } catch(e) {
+        console.log('ERR', e)
+        throw e
+      }
     } else {
       log("No config path found relative to", file, "; using {}")
       webpackConfig = {}
     }
-
     if (webpackConfig && webpackConfig.default) {
       log('Using ES6 module "default" key instead of module.exports.')
       webpackConfig = webpackConfig.default
@@ -95,8 +102,8 @@ exports.resolve = function (source, file, settings) {
       })
     }
   }
-
-  log('Using config: ', webpackConfig)
+  console.log('USING CONF')
+  // log('Using config: ', webpackConfig)
 
   // externals
   if (findExternal(source, webpackConfig.externals, path.dirname(file))) {
@@ -106,7 +113,8 @@ exports.resolve = function (source, file, settings) {
   // otherwise, resolve "normally"
   var resolveSync = createResolveSync(configPath, webpackConfig)
   try {
-    return { found: true, path: resolveSync(path.dirname(file), source) }
+    const foo =  { found: true, path: resolveSync(path.dirname(file), source) }
+    console.log('FOO', foo)
   } catch (err) {
     log('Error during module resolution:', err)
     return { found: false }
@@ -137,7 +145,7 @@ function createResolveSync(configPath, webpackConfig) {
 
   var enhancedResolvePackage = webpackRequire('enhanced-resolve/package.json')
   var enhancedResolveVersion = enhancedResolvePackage.version
-  log('enhanced-resolve version:', enhancedResolveVersion)
+  // log('enhanced-resolve version:', enhancedResolveVersion)
 
   var resolveConfig = webpackConfig.resolve || {}
 
@@ -150,8 +158,9 @@ function createResolveSync(configPath, webpackConfig) {
 
 function createWebpack2ResolveSync(webpackRequire, resolveConfig) {
   var EnhancedResolve = webpackRequire('enhanced-resolve')
-
-  return EnhancedResolve.create.sync(Object.assign({}, webpack2DefaultResolveConfig, resolveConfig))
+  const foo = EnhancedResolve.create.sync(Object.assign({}, webpack2DefaultResolveConfig, resolveConfig))
+  console.log('CREATING WEB2', foo)
+  return foo;
 }
 
 /**
