@@ -64,12 +64,9 @@ exports.resolve = function (source, file, settings) {
     configPath = findConfigPath(configPath, packageDir)
 
     log('Config path resolved to:', configPath)
-    console.log('configer', configPath)
     if (configPath) {
-      console.log('web conf', configPath)
       try {
         webpackConfig = require(configPath)
-        console.log('COR', webpackConfig)
       } catch(e) {
         console.log('ERR', e)
         throw e

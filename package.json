@@ -113,7 +113,7 @@
     "cheerio": "^0.22.0",
     "compression": "1.6.2",
     "cors": "2.8.1",
-    "dotenv": "^4.0.0",
+    "dotenv": "2.0.0",
     "dotenv-expand": "^0.1.0",
     "email-addresses": "^2.0.2",
     "es6-promisify": "^5.0.0",
