@@ -65,7 +65,7 @@ const Button = (props) => {
     size,
     styles,
     title,
-    buttonStyle
+    type
   } = props;
 
   const buttonTitle = title || label;
