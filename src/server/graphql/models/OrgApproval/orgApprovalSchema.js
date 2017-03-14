@@ -6,7 +6,7 @@ import {
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {GraphQLEmailType} from 'server/graphql/types';
 
-export const OrgApproval = new GraphQLObjectType({
+const OrgApproval = new GraphQLObjectType({
   name: 'OrgApproval',
   description: 'The state of approving an email address to join a team and org',
   fields: () => ({
@@ -37,3 +37,5 @@ export const OrgApproval = new GraphQLObjectType({
     // },
   })
 });
+
+export default OrgApproval;

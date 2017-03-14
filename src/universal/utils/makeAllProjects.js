@@ -5,9 +5,10 @@ export default function makeAllProjects(teamOrMembers) {
     const {projects} = teamOrMembers[i];
     for (let j = 0; j < projects.length; j++) {
       const project = projects[j];
-      if (projectIds.has(project.id)) continue;
-      projectIds.add(project.id);
-      allProjects.push(projects[j]);
+      if (!projectIds.has(project.id)) {
+        projectIds.add(project.id);
+        allProjects.push(projects[j]);
+      }
     }
   }
   return allProjects;

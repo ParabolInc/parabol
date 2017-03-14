@@ -15,10 +15,10 @@ const AvatarGroup = (props) => {
         {label}
       </div>
       {
-        avatars.map((avatar, index) => {
+        avatars.map((avatar) => {
           const picture = avatar.picture || defaultUserAvatar;
           return (
-            <div className={css(styles.item)} key={index}>
+            <div className={css(styles.item)} key={avatar.id}>
               <Avatar
                 {...avatar}
                 picture={picture}

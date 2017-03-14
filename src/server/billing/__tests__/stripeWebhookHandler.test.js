@@ -18,7 +18,7 @@ const mockRes = () => ({
 });
 
 describe('stripeWebhookHandler', () => {
-  test('handles invoice.created webhooks', async() => {
+  test('handles invoice.created webhooks', async () => {
     // SETUP
     const objectId = invoiceCreatedEvent.data.object.id;
     const req = {body: invoiceCreatedEvent};
@@ -34,7 +34,7 @@ describe('stripeWebhookHandler', () => {
     expect(res.sendStatus).toBeCalledWith(200);
   });
 
-  test('handles invoiceitem.created webhooks', async() => {
+  test('handles invoiceitem.created webhooks', async () => {
     // SETUP
     const objectId = invoiceItemCreatedEvent.data.object.id;
     const req = {body: invoiceItemCreatedEvent};
@@ -50,7 +50,7 @@ describe('stripeWebhookHandler', () => {
     expect(res.sendStatus).toBeCalledWith(200);
   });
 
-  test('handles customer.source.updated webhooks', async() => {
+  test('handles customer.source.updated webhooks', async () => {
     // SETUP
     // const objectId = customerSourceUpdatedEvent.data.object.id;
     const customerId = customerSourceUpdatedEvent.data.object.customer;
@@ -67,7 +67,7 @@ describe('stripeWebhookHandler', () => {
     expect(res.sendStatus).toBeCalledWith(200);
   });
 
-  test('handles invoice.payment_failed webhooks', async() => {
+  test('handles invoice.payment_failed webhooks', async () => {
     // SETUP
     const objectId = invoicePaymentFailedEvent.data.object.id;
     const req = {body: invoicePaymentFailedEvent};
@@ -83,7 +83,7 @@ describe('stripeWebhookHandler', () => {
     expect(res.sendStatus).toBeCalledWith(200);
   });
 
-  test('handles invoice.payment_succeeded webhooks', async() => {
+  test('handles invoice.payment_succeeded webhooks', async () => {
     // SETUP
     const objectId = invoicePaymentSucceededEvent.data.object.id;
     const req = {body: invoicePaymentSucceededEvent};
@@ -99,7 +99,7 @@ describe('stripeWebhookHandler', () => {
     expect(res.sendStatus).toBeCalledWith(200);
   });
 
-  test('handles customer.subscription.updated webhooks', async() => {
+  test('handles customer.subscription.updated webhooks', async () => {
     // SETUP
     const objectId = customerSubscriptionUpdatedEvent.data.object.id;
     const {status} = customerSubscriptionUpdatedEvent.data.previous_attributes;

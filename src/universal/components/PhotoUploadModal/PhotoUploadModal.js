@@ -34,7 +34,7 @@ const PhotoUploadModal = (props) => {
           label="Done"
           onClick={closePortal}
           size="medium"
-          style="flat"
+          buttonStyle="flat"
         />
       </div>
     </DashModal>

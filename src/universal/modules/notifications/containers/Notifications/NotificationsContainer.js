@@ -39,7 +39,7 @@ const mapStateToProps = (state) => {
 const NotificationsContainer = (props) => {
   const {notifications} = props;
   return (
-    <Notifications notifications={notifications}/>
+    <Notifications notifications={notifications} />
   );
 };
 

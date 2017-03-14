@@ -1,7 +1,7 @@
 import {LOBBY} from 'universal/utils/constants';
 import hasPhaseItem from './hasPhaseItem';
 
-const safePhaseItem = phaseItem => {
+const safePhaseItem = (phaseItem) => {
   if (phaseItem <= 0 || isNaN(phaseItem)) {
     return 1;
   }

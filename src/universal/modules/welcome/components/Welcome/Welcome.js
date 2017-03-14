@@ -18,7 +18,7 @@ const Welcome = (props) => {
   return (
     <WelcomeLayout>
       <Helmet title={title} />
-      <WelcomeHeader heading={<span>{headingText}</span>}/>
+      <WelcomeHeader heading={<span>{headingText}</span>} />
       <WelcomeContent>
         <ProgressDots
           numDots={3}

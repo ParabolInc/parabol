@@ -10,9 +10,9 @@ import stripe from 'server/billing/stripe';
 import shortid from 'shortid';
 import {toEpochSeconds} from 'server/utils/epochTime';
 
-const changePause = (inactive) => async(orgIds, userId) => {
+const changePause = (inactive) => (orgIds, userId) => {
   const r = getRethink();
-  return await r.table('User').get(userId)
+  return r.table('User').get(userId)
     .update({inactive})
     .do(() => {
       return r.table('Organization')
@@ -32,13 +32,13 @@ const changePause = (inactive) => async(orgIds, userId) => {
     });
 };
 
-const addUser = async(orgIds, userId) => {
+const addUser = (orgIds, userId) => {
   const r = getRethink();
   const userOrgAdditions = orgIds.map((id) => ({
     id,
     role: null
   }));
-  return await r.table('User').get(userId)
+  return r.table('User').get(userId)
     .update((user) => ({
       userOrgs: user('userOrgs').add(userOrgAdditions)
     }))
@@ -55,9 +55,9 @@ const addUser = async(orgIds, userId) => {
     });
 };
 
-const deleteUser = async(orgIds, userId) => {
+const deleteUser = (orgIds, userId) => {
   const r = getRethink();
-  return await r.table('User').get(userId)
+  return r.table('User').get(userId)
     .update((user) => ({
       userOrgs: user('userOrgs').filter((userOrg) => r.expr(orgIds).contains(userOrg('id')).not())
     }))

@@ -29,7 +29,7 @@ const emailLink = {
   textDecoration: 'none'
 };
 
-const WelcomeEmail = props => {
+const WelcomeEmail = (props) => {
   const {email} = props;
 
   return (

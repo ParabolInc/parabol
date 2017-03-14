@@ -11,7 +11,7 @@ MockDate.set(__now);
 console.error = jest.fn();
 
 describe('deleteAction', () => {
-  test('deletes an action', async() => {
+  test('deletes an action', async () => {
     // SETUP
     const r = getRethink();
     const mockDB = new MockDB();
@@ -28,12 +28,12 @@ describe('deleteAction', () => {
     expect(dbAction).toBe(null);
   });
 
-  test('throws when no websocket is present', async() => {
+  test('throws when no websocket is present', async () => {
     const authToken = {};
     await expectAsyncToThrow(deleteAction.resolve(undefined, {actionId: ''}, {authToken}));
   });
 
-  test('throw when the caller is not a team member', async() => {
+  test('throw when the caller is not a team member', async () => {
     // SETUP
     const mockDB = new MockDB();
     const {user} = await mockDB.init();

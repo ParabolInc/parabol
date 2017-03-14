@@ -51,12 +51,14 @@ const TeamContainer = (props) => {
     <DashboardWrapper title="Team Dashboard">
       {readyEnough ?
         <Team
-          children={children}
           hasDashAlert={hasDashAlert}
           team={team}
           teamMembers={teamMembers}
-        /> :
-        <LoadingView/>
+        >
+          {children}
+        </Team>
+          :
+        <LoadingView />
       }
     </DashboardWrapper>
   );

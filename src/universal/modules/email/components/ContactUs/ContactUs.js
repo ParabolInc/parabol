@@ -43,6 +43,7 @@ const ContactUs = (props) => {
                 <br />
                 <a
                   href="https://focus.parabol.co/how-to-navigate-uncertainty-fc0dfaaf3830"
+                  rel="noopener noreferrer"
                   style={linkStyle}
                   target="_blank"
                   title="How to Navigate Uncertainty using the Action Rhythm"

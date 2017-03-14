@@ -1,8 +1,8 @@
 import {cashay} from 'cashay';
 import jwtDecode from 'jwt-decode';
-import ActionHTTPTransport from '../utils/ActionHTTPTransport';
 import {selectSegmentProfile} from 'universal/redux/segmentActions';
 import raven from 'raven-js';
+import ActionHTTPTransport from '../utils/ActionHTTPTransport';
 
 const SET_AUTH_TOKEN = '@@authToken/SET_AUTH_TOKEN';
 const REMOVE_AUTH_TOKEN = '@@authToken/REMOVE_AUTH_TOKEN';

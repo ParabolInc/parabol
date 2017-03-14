@@ -30,7 +30,7 @@ const renderActivity = (activity) => {
 const UserSettings = (props) => {
   const {activity, handleSubmit, onSubmit, styles, user: {id: userId, picture}} = props;
   const pictureOrDefault = picture || defaultUserAvatar;
-  const toggle = <EditableAvatar picture={pictureOrDefault} size={96}/>;
+  const toggle = <EditableAvatar picture={pictureOrDefault} size={96} />;
   return (
     <UserSettingsWrapper settingsLocation={SETTINGS}>
       <div className={css(styles.body)}>
@@ -38,7 +38,7 @@ const UserSettings = (props) => {
           <form className={css(styles.form)} onSubmit={handleSubmit(onSubmit)}>
             <div className={css(styles.avatarBlock)}>
               <PhotoUploadModal picture={pictureOrDefault} toggle={toggle}>
-                <UserAvatarInput userId={userId}/>
+                <UserAvatarInput userId={userId} />
               </PhotoUploadModal>
             </div>
             <div className={css(styles.infoBlock)}>

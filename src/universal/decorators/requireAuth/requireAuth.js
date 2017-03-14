@@ -5,4 +5,4 @@ import requireAuthAndRole from '../requireAuthAndRole/requireAuthAndRole';
  * user requireAuthAndRole but pass it an undefined role to match. This
  * checks only for an authenticated user.
  */
-export default ComposedComponent => requireAuthAndRole()(ComposedComponent);
+export default (ComposedComponent) => requireAuthAndRole()(ComposedComponent);

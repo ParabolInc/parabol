@@ -116,32 +116,32 @@ const TeamSettings = (props) => {
       </div>
       <div className={css(styles.body)}>
         <div className={css(styles.scrollable)}>
-          {teamMembers.map((teamMember, idx) => {
+          {teamMembers.map((teamMember) => {
             return (
               <UserRow
                 {...teamMember}
                 actions={teamMemberRowActions(teamMember)}
-                key={`teamMemberKey${idx}`}
+                key={`teamMemberKey${teamMember.id}`}
               />
             );
           })
           }
-          {invitations.map((invitation, idx) => {
+          {invitations.map((invitation) => {
             return (
               <UserRow
                 {...invitation}
                 email={invitation.email}
                 invitedAt={`invited ${fromNow(invitation.updatedAt)}`}
                 actions={invitationRowActions(invitation)}
-                key={`invitationKey${idx}`}
+                key={`invitationKey${invitation.email}`}
               />
             );
           })
           }
-          {orgApprovals.map((orgApproval, idx) => {
+          {orgApprovals.map((orgApproval) => {
             return (
               <UserRow
-                key={`approval${idx}`}
+                key={`approval${orgApproval.id}`}
                 id={orgApproval.id}
                 email={orgApproval.email}
                 invitedAt={`invited ${fromNow(orgApproval.createdAt)}`}

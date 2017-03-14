@@ -9,9 +9,9 @@ import Type from 'universal/components/Type/Type';
 import {cashay} from 'cashay';
 import portal from 'react-portal-hoc';
 import {reduxForm, Field, SubmissionError} from 'redux-form';
-import rejectOrgApprovalValidation from './rejectOrgApprovalValidation';
 import shouldValidate from 'universal/validation/shouldValidate';
 import formError from 'universal/styles/helpers/formError';
+import rejectOrgApprovalValidation from './rejectOrgApprovalValidation';
 
 const validate = (values) => {
   const schema = rejectOrgApprovalValidation();
@@ -31,7 +31,7 @@ const RejectOrgApprovalModal = (props) => {
     submitting,
     styles
   } = props;
-  const onSubmit = async(submissionData) => {
+  const onSubmit = async (submissionData) => {
     const schema = rejectOrgApprovalValidation();
     const {data: {reason}} = schema(submissionData);
     const variables = {reason, notificationId};
@@ -45,7 +45,7 @@ const RejectOrgApprovalModal = (props) => {
         Care to say why?
       </Type>
       <Type align="center" marginBottom="1rem" scale="sBase" colorPalette="black">
-        Type a response below and <br/>we’ll pass it along to {inviterName}.
+        Type a response below and <br />we’ll pass it along to {inviterName}.
       </Type>
       <form onSubmit={handleSubmit(onSubmit)}>
         {error && <div className={css(styles.error)}>{error}</div>}

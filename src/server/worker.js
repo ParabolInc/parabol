@@ -1,5 +1,5 @@
 import express from 'express';
-import webpack from 'webpack';
+import webpack from 'webpack'; // eslint-disable-line import/no-extraneous-dependencies
 import compression from 'compression';
 import cors from 'cors';
 import bodyParser from 'body-parser';
@@ -17,7 +17,7 @@ import mwMemoPublishOut from './socketHandlers/mwMemoPublishOut';
 import mwPresenceSubscribe from './socketHandlers/mwPresenceSubscribe';
 import mwMemoSubscribe from './socketHandlers/mwMemoSubscribe';
 import stripeWebhookHandler from './billing/stripeWebhookHandler';
-import {getDotenv} from '../universal/utils/dotenv';
+import getDotenv from '../universal/utils/dotenv';
 
 // Import .env and expand variables:
 getDotenv();
@@ -25,7 +25,7 @@ getDotenv();
 const PROD = process.env.NODE_ENV === 'production';
 const INTRANET_JWT_SECRET = process.env.INTRANET_JWT_SECRET || '';
 
-export function run(worker) {
+export function run(worker) { // eslint-disable-line import/prefer-default-export
   console.log('   >> Worker PID:', process.pid);
   const app = express();
   const scServer = worker.scServer;
@@ -37,7 +37,7 @@ export function run(worker) {
     const config = require('../../webpack/webpack.config.dev').default;
     const compiler = webpack(config);
     /* eslint-disable global-require */
-    app.use(require('webpack-dev-middleware')(compiler, {
+    app.use(require('webpack-dev-middleware')(compiler, { // eslint-disable-line import/no-extraneous-dependencies
       noInfo: false,
       publicPath: config.output.publicPath,
       stats: {
@@ -45,7 +45,7 @@ export function run(worker) {
         colors: true
       }
     }));
-    app.use(require('webpack-hot-middleware')(compiler));
+    app.use(require('webpack-hot-middleware')(compiler)); // eslint-disable-line import/no-extraneous-dependencies
     /* eslint-enable global-require */
   }
 

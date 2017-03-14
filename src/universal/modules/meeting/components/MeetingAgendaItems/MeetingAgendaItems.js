@@ -25,7 +25,7 @@ const MeetingAgendaItems = (props) => {
     return <LoadingView />;
   }
   const currentTeamMember = members.find((m) => m.id === agendaItem.teamMemberId);
-  const self = members.find(m => m.isSelf);
+  const self = members.find((m) => m.isSelf);
   const hasFirstSpacer = true;
   return (
     <MeetingMain>
@@ -44,7 +44,7 @@ const MeetingAgendaItems = (props) => {
               {hasFirstSpacer && <div className={css(styles.linkSpacer)}>{' '}</div>}
               <div className={css(styles.avatarBlock)}>
                 <div className={css(styles.avatar)}>
-                  <Avatar {...currentTeamMember} size="fill"/>
+                  <Avatar {...currentTeamMember} size="fill" />
                 </div>
                 <div className={css(styles.agendaItemLabel)}>
                   “{agendaItem.content}”

@@ -181,12 +181,10 @@ export default {
         description: 'The organization id to update'
       }
     },
-    async
-    resolve(source, {orgId, contentType, contentLength}, {authToken}) {
+    async resolve(source, {orgId, contentType, contentLength}, {authToken}) {
       // AUTH
       const userId = getUserId(authToken);
-      const userOrgDoc = await
-        getUserOrgDoc(userId, orgId);
+      const userOrgDoc = await getUserOrgDoc(userId, orgId);
       requireOrgLeader(userOrgDoc);
 
       // VALIDATION
@@ -194,8 +192,7 @@ export default {
 
       // RESOLUTION
       const partialPath = `Organization/${orgId}/picture/${shortid.generate()}.${ext}`;
-      return await
-        getS3PutUrl(contentType, contentLength, partialPath);
+      return getS3PutUrl(contentType, contentLength, partialPath);
     }
   },
   addOrg,

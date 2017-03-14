@@ -24,13 +24,13 @@ const DropdownInput = (props) => {
   const {handleCreateNew, input: {name, onChange, value}, label, organizations = [], styles} = props;
   const org = organizations.find((anOrg) => anOrg.id === value);
   const orgName = org && org.name || 'Loading...';
-  const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down"/>;
+  const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" />;
   const itemFactory = () => {
-    return organizations.map((anOrg, idx) => {
+    return organizations.map((anOrg) => {
       return (
         <MenuItem
           isActive={value === anOrg.id}
-          key={`orgDropdownMenuItem${idx}`}
+          key={`orgDropdownMenuItem${anOrg.id}`}
           label={anOrg.name}
           onClick={() => {
             onChange(anOrg.id);
@@ -42,14 +42,14 @@ const DropdownInput = (props) => {
         key={'newOrg'}
         label={
           <div className={css(styles.menuButtonBlock)}>
-            <Button colorPalette="mid" isBlock label="Create New Organization" size="smallest" onClick={handleCreateNew}/>
+            <Button colorPalette="mid" isBlock label="Create New Organization" size="smallest" onClick={handleCreateNew} />
           </div>
         }
       />);
   };
   return (
     <FieldBlock>
-      {label && <FieldLabel label={label} htmlFor={name}/>}
+      {label && <FieldLabel label={label} htmlFor={name} />}
       <div className={css(styles.inputBlock)}>
         <span>{orgName}</span>
         <Menu

@@ -11,14 +11,14 @@ export default {
         description: 'userId that owns all the actions'
       }
     },
-    async resolve(source, {userId}, {authToken}) {
+    resolve(source, {userId}, {authToken}) {
       const r = getRethink();
 
       // AUTH
       requireSUOrSelf(authToken, userId);
 
       // RESOLUTION
-      return await r.table('Action')
+      return r.table('Action')
         .getAll(userId, {index: 'userId'})
         .filter({isComplete: false})
         .count();

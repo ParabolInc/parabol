@@ -29,7 +29,7 @@ function getItemStyles(props) {
   };
 }
 
-@dragLayer(monitor => ({
+@dragLayer((monitor) => ({
   initialOffset: monitor.getInitialSourceClientOffset(),
   currentOffset: monitor.getSourceClientOffset(),
 }))
@@ -47,7 +47,7 @@ export default class ActionDragLayer extends Component {
     return (
       <div style={getItemStyles(this.props)}>
         <div className={this.props.parentStyles} style={ui.cardDragStyle}>
-          <UserActionListItem {...this.props} isPreview isDragging={false}/>
+          <UserActionListItem {...this.props} isPreview isDragging={false} />
         </div>
       </div>
     );

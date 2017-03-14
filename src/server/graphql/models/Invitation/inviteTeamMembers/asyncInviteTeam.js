@@ -7,7 +7,7 @@ import makeInvitationsForDB from './makeInvitationsForDB';
 
 export default async function asyncInviteTeam(inviterUserId, teamId, invitees) {
   const r = getRethink();
-  const inviteesWithTokens = invitees.map(invitee => ({...invitee, inviteToken: makeInviteToken()}));
+  const inviteesWithTokens = invitees.map((invitee) => ({...invitee, inviteToken: makeInviteToken()}));
   const inviterInfoAndTeamName = await getInviterInfoAndTeamName(teamId, inviterUserId);
   const sendEmailPromises = createEmailPromises(inviterInfoAndTeamName, inviteesWithTokens);
   const {inviteesToStore} = await resolveSentEmails(sendEmailPromises, inviteesWithTokens);

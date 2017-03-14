@@ -1,7 +1,7 @@
 const AGENDA_ID_FIELD = 'agendaId';
 
 /* eslint-disable max-len */
-exports.up = async(r) => {
+exports.up = async (r) => {
   const withAgendaId = {
     [AGENDA_ID_FIELD]: null
   };
@@ -14,7 +14,7 @@ exports.up = async(r) => {
   await Promise.all(queries);
 };
 
-exports.down = async(r) => {
+exports.down = async (r) => {
   const withoutAgendaId = r.row.without(AGENDA_ID_FIELD);
   const queries = [
     r.table('Action').replace(withoutAgendaId),
@@ -22,5 +22,5 @@ exports.down = async(r) => {
     r.table('Action').indexDrop('agendaId'),
     r.table('Project').replace(withoutAgendaId),
   ];
-  return await Promise.all(queries);
+  await Promise.all(queries);
 };

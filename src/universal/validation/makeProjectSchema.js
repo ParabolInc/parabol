@@ -1,6 +1,6 @@
 import {compositeId} from 'universal/validation/templates';
-import legitify from './legitify';
 import {columnArray} from 'universal/utils/constants';
+import legitify from './legitify';
 
 export default function makeProjectSchema() {
   return legitify({

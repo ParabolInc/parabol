@@ -65,7 +65,7 @@ const MeetingSummary = (props) => {
           </MeetingSection>
 
           <MeetingSection paddingBottom="2rem" paddingTop="2rem">
-            <SummaryEmailPreview teamMembers={teamMembers}/>
+            <SummaryEmailPreview teamMembers={teamMembers} />
           </MeetingSection>
 
         </MeetingSection>

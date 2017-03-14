@@ -4,7 +4,7 @@ import typePicker from 'universal/modules/notifications/helpers/typePicker';
 const NotificationRow = (props) => {
   const {notificationId, orgId, type, varList} = props;
   const NotificationType = typePicker[type];
-  return <NotificationType orgId={orgId} notificationId={notificationId} varList={varList}/>;
+  return <NotificationType orgId={orgId} notificationId={notificationId} varList={varList} />;
 };
 
 NotificationRow.propTypes = {

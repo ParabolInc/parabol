@@ -10,7 +10,7 @@ import {
 } from 'graphql';
 import {GraphQLEmailType, GraphQLURLType} from '../../types';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
-import {TeamMember} from '../TeamMember/teamMemberSchema';
+import TeamMember from '../TeamMember/teamMemberSchema';
 import getRethink from 'server/database/rethinkDriver';
 import {OrgUserRole} from 'server/graphql/models/Organization/organizationSchema';
 import {BILLING_LEADER} from 'universal/utils/constants';
@@ -171,9 +171,9 @@ export const User = new GraphQLObjectType({
     memberships: {
       type: new GraphQLList(TeamMember),
       description: 'The memberships to different teams that the user has',
-      async resolve({id}) {
+      resolve({id}) {
         const r = getRethink();
-        return await r.table('TeamMember').getAll(id, {index: 'userId'});
+        return r.table('TeamMember').getAll(id, {index: 'userId'});
       }
     },
     jwt: {

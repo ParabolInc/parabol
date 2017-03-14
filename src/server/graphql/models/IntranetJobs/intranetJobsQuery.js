@@ -22,7 +22,7 @@ export default {
   autopauseUsers: {
     type: GraphQLInt,
     description: 'automatically pause users that have been inactive for 30 days. returns the number of users paused',
-    resolve: async(source, args, {authToken}) => {
+    resolve: async (source, args, {authToken}) => {
       const r = getRethink();
 
       // AUTH

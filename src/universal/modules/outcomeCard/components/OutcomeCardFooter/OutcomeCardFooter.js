@@ -66,7 +66,7 @@ const OutcomeCardFooter = (props) => {
       </div>
       <div className={css(styles.buttonBlock)}>
         <button className={buttonStyles} onClick={isArchived ? unarchiveProject : toggleStatusMenu}>
-          <FontAwesome name={buttonIcon} style={faStyle}/>
+          <FontAwesome name={buttonIcon} style={faStyle} />
         </button>
       </div>
     </div>

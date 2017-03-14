@@ -35,7 +35,7 @@ const mapStateToProps = (state) => {
 const OrganizationsContainer = (props) => {
   const {organizations} = props;
   return (
-    <Organizations organizations={organizations}/>
+    <Organizations organizations={organizations} />
   );
 };
 

@@ -9,7 +9,7 @@ import customerSourceUpdated from 'server/billing/handlers/customerSourceUpdated
 console.error = jest.fn();
 
 describe('invoiceCreated', () => {
-  test('handles stripe updating the credit card', async() => {
+  test('handles stripe updating the credit card', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();

@@ -26,8 +26,8 @@ const CheckinCards = (props) => {
   return (
     <div className={css(styles.base)}>
       {leftCard ?
-        <CheckinCard handleCardClick={() => gotoItem(localPhaseItem - 1)} member={leftCard}/> :
-        <div className={css(styles.placeholder)}></div>
+        <CheckinCard handleCardClick={() => gotoItem(localPhaseItem - 1)} member={leftCard} /> :
+        <div className={css(styles.placeholder)} />
       }
       {activeCard &&
         <CheckinCard
@@ -37,8 +37,8 @@ const CheckinCards = (props) => {
         />
       }
       {rightCard ?
-        <CheckinCard handleCardClick={gotoNext} member={rightCard}/> :
-        <div className={css(styles.placeholder)}></div>
+        <CheckinCard handleCardClick={gotoNext} member={rightCard} /> :
+        <div className={css(styles.placeholder)} />
       }
     </div>
   );

@@ -8,7 +8,7 @@ import IconButton from 'universal/components/IconButton/IconButton';
 import InputField from 'universal/components/InputField/InputField';
 import appTheme from 'universal/styles/theme/appTheme';
 
-const FieldArrayRow = props => {
+const FieldArrayRow = (props) => {
   const {
     existingInvites,
     invitees,
@@ -38,7 +38,7 @@ const FieldArrayRow = props => {
       {fields.map((item, index) =>
         <div
           className={css(styles.fieldGroupRow)}
-          key={`inviteeRow${index}`}
+          key={`inviteeRow${index}`} // eslint-disable-line react/no-array-index-key
           onMouseEnter={() => onHoverRow(index)}
           onMouseLeave={() => onLeaveRow()}
         >

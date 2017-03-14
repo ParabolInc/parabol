@@ -39,7 +39,7 @@ const Organizations = (props) => {
               />
             )}
           </Panel> :
-          <EmptyOrgsCallOut/>
+          <EmptyOrgsCallOut />
         }
       </div>
     </UserSettingsWrapper>

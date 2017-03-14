@@ -69,6 +69,7 @@
     "dynamic-serializer": "^0.1.0",
     "eslint": "^3.17.1",
     "eslint-config-airbnb": "^14.1.0",
+    "eslint-import-resolver-webpack": "^0.8.1",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jest": "^19.0.1",
     "eslint-plugin-react": "6.10.0",

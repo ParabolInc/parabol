@@ -9,7 +9,7 @@ const SEED_PROJECTS = [
     content: `
       Invite any missing team members to join the team. Tap on ‘Team Settings’
       in the dashboard header above.
-    `.split(/\s/).filter(s => s.length).join(' ')
+    `.split(/\s/).filter((s) => s.length).join(' ')
   },
   {
     status: ACTIVE,
@@ -17,7 +17,7 @@ const SEED_PROJECTS = [
     content: `
       Try a test run of an Action meeting. Tap on ‘Meeting Lobby’ in
       the dashboard header above.
-    `.split(/\s/).filter(s => s.length).join(' ')
+    `.split(/\s/).filter((s) => s.length).join(' ')
   },
   {
     status: FUTURE,
@@ -25,11 +25,11 @@ const SEED_PROJECTS = [
     content: `
       Make good teaming a habit! Schedule a weekly Action meeting with your
       team. Pro-tip: include a link to the meeting lobby.
-    `.split(/\s/).filter(s => s.length).join(' ')
+    `.split(/\s/).filter((s) => s.length).join(' ')
   }
 ];
 
-export default async (userId, teamId) => {
+export default (userId, teamId) => {
   const r = getRethink();
   const now = new Date();
 
@@ -45,7 +45,7 @@ export default async (userId, teamId) => {
     updatedAt: now
   }));
 
-  return await r.table('Project').insert(seedProjects, {returnChanges: true})
+  return r.table('Project').insert(seedProjects, {returnChanges: true})
     .do((result) => {
       return r.table('ProjectHistory').insert(
         result('changes').map((change) => ({

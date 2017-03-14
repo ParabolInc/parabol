@@ -1,6 +1,6 @@
 import jsonEqual from '../../universal/utils/jsonEqual';
 
-const handleRethinkAdd = newVal => {
+const handleRethinkAdd = (newVal) => {
   return {
     type: 'add',
     fields: newVal
@@ -75,7 +75,7 @@ export default function makeChangefeedHandler(socket, subbedChannelName, options
         // TODO send to segment! This will only happen if it is a team sub & the tms doc has a teamId that isn't in the DB
       }
     });
-    socket.on('unsubscribe', channelName => {
+    socket.on('unsubscribe', (channelName) => {
       if (channelName === subbedChannelName) {
         cursor.close();
       }

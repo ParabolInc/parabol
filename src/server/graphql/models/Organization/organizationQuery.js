@@ -12,14 +12,14 @@ export default {
         description: 'the user ID that belongs to all the orgs'
       }
     },
-    async resolve(source, {userId}, {authToken}) {
+    resolve(source, {userId}, {authToken}) {
       const r = getRethink();
 
       // AUTH
       requireSUOrSelf(authToken, userId);
 
       // RESOLUTION
-      return await r.table('Organization')
+      return r.table('Organization')
         .getAll(userId, {index: 'orgUsers'})
         .count();
     }
@@ -32,14 +32,14 @@ export default {
         description: 'The id of the inviting team'
       }
     },
-    async resolve(source, {teamId}, {authToken}) {
+    resolve(source, {teamId}, {authToken}) {
       const r = getRethink();
 
       // AUTH
       requireSUOrTeamMember(authToken, teamId);
 
       // RESOLUTION
-      return await r.table('Team').get(teamId)('orgId')
+      return r.table('Team').get(teamId)('orgId')
         .do((orgId) => {
           return r.table('Organization').get(orgId);
         });

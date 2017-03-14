@@ -40,7 +40,7 @@ const mapStateToProps = (state) => {
 
 const tmsSubs = [];
 
-export default ComposedComponent => {
+export default (ComposedComponent) => {
   @requireAuth
   @reduxSocket({}, reduxSocketOptions)
   @connect(mapStateToProps)
@@ -196,7 +196,7 @@ export default ComposedComponent => {
     }
 
     render() {
-      return <ComposedComponent {...this.props}/>;
+      return <ComposedComponent {...this.props} />;
     }
 
   }

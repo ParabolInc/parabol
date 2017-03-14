@@ -12,7 +12,7 @@ import {User} from '../User/userSchema';
 import {Project} from '../Project/projectSchema';
 import getRethink from 'server/database/rethinkDriver';
 
-export const TeamMember = new GraphQLObjectType({
+const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',
   description: 'A member of a team team',
   fields: () => ({
@@ -55,36 +55,28 @@ export const TeamMember = new GraphQLObjectType({
     team: {
       type: Team,
       description: 'The team this team member belongs to',
-      async resolve({teamId}) {
+      resolve({teamId}) {
         const r = getRethink();
-        return await r.table('Team').get(teamId);
+        return r.table('Team').get(teamId);
       }
     },
     user: {
       type: User,
       description: 'The user for the team member',
-      async resolve(source) {
+      resolve(source) {
         const r = getRethink();
-        return await r.table('User').get(source.userId);
+        return r.table('User').get(source.userId);
       }
     },
     projects: {
       type: Project,
       description: 'Projects owned by the team member',
-      async resolve(source) {
+      resolve(source) {
         const r = getRethink();
-        return await r.table('Project').getAll(source.id, {index: 'teamMemberId'});
+        return r.table('Project').getAll(source.id, {index: 'teamMemberId'});
       }
     }
   })
 });
 
-// export const TeamMemberInput =  new GraphQLInputObjectType({
-//   name: 'TeamMemberInput',
-//   fields: () => ({
-//     id: {type: GraphQLID, description: 'The unique team member ID, composed of the userId::teamId'},
-//     isNotRemoved: {type: GraphQLBoolean, description: 'Is user a part of the team?'},
-//     isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
-//     isFacilitator: {type: GraphQLBoolean, description: 'Is user a team facilitator?'}
-//   })
-// });
+export default TeamMember;

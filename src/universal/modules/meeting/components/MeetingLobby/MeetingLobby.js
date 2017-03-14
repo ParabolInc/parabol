@@ -12,7 +12,7 @@ import MeetingSection from 'universal/modules/meeting/components/MeetingSection/
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
 
 const createStartMeetingHandler = (members) => () => {
-  const self = members.find(member => member.isSelf);
+  const self = members.find((member) => member.isSelf);
   if (!self) {
     throw new Error('You are not a member! How can that be?');
   }
@@ -35,19 +35,19 @@ const MeetingLobby = (props) => {
           <MeetingPhaseHeading>Hi, {teamName} Team!</MeetingPhaseHeading>
           <p className={css(styles.label)}>Share this meeting:</p>
           <div className={css(styles.urlBlock)}>
-            <CopyShortLink url={shortUrl}/>
+            <CopyShortLink url={shortUrl} />
           </div>
           <h2 className={css(styles.prompt)}>Team Facilitator: begin the Check-In round!</h2>
           <Button
             label="Start Meeting"
             onClick={onStartMeetingClick}
             size="largest"
-            style="solid"
+            buttonStyle="solid"
             colorPalette="cool"
             textTransform="uppercase"
           />
           <div className={css(styles.helpText)}>
-            The person who presses “Start Meeting” will lead the meeting.<br/>
+            The person who presses “Start Meeting” will lead the meeting.<br />
             Everyone else’s display will follow the leader automatically.
           </div>
         </div>

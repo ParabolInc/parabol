@@ -21,7 +21,7 @@ const Tabs = (props) => {
       <div className={css(styles.tabs)}>
         {properChildren}
       </div>
-      <div style={inkBarStyles}></div>
+      <div style={inkBarStyles} />
     </div>
   );
 };

@@ -6,7 +6,7 @@ import {fromEpochSeconds} from '../../utils/epochTime';
 
 /* eslint-disable max-len */
 
-exports.up = async(r) => {
+exports.up = async (r) => {
   const tables = [
     r.tableCreate('Organization'),
     r.tableCreate('Notification')
@@ -193,7 +193,7 @@ exports.up = async(r) => {
   }
 };
 
-exports.down = async(r) => {
+exports.down = async (r) => {
   // removes ALL customers from stripe. DOING THIS SUCKS FOR DEV SINCE WE ALL HAVE DIFFERENT DBS
   // const stripeCustomers = [];
   // for (let i = 0; i < 100; i++) {

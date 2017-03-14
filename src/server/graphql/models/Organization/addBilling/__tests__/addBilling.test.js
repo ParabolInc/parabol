@@ -18,7 +18,7 @@ console.error = jest.fn();
 const now = new Date();
 
 describe('addBilling', () => {
-  test('extends trial for those still in trial period', async() => {
+  test('extends trial for those still in trial period', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
@@ -44,7 +44,7 @@ describe('addBilling', () => {
     expect(stripe.__snapshot(org.stripeId, dynamicSerializer)).toMatchSnapshot();
   });
 
-  test('starts a new subscription for those who let the trial expire', async() => {
+  test('starts a new subscription for those who let the trial expire', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
@@ -73,7 +73,7 @@ describe('addBilling', () => {
     expect(stripe.__snapshot(org.stripeId, dynamicSerializer)).toMatchSnapshot();
   });
 
-  test('changes cards for customers in good standing', async() => {
+  test('changes cards for customers in good standing', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
@@ -99,7 +99,7 @@ describe('addBilling', () => {
     expect(stripe.__snapshot(org.stripeId, dynamicSerializer)).toMatchSnapshot();
   });
 
-  test('changes cards for customer who had a failed charge', async() => {
+  test('changes cards for customer who had a failed charge', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
@@ -132,12 +132,12 @@ describe('addBilling', () => {
     expect(stripe.__snapshot(org.stripeId, dynamicSerializer)).toMatchSnapshot();
   });
 
-  test('throws when no websocket is present', async() => {
+  test('throws when no websocket is present', async () => {
     const authToken = {};
     await expectAsyncToThrow(addBilling.resolve(undefined, {orgId: null, stripeToken: null}, {authToken}));
   });
 
-  test('throw when the caller is not an org leader', async() => {
+  test('throw when the caller is not an org leader', async () => {
     // SETUP
     const mockDB = new MockDB();
     const {user, organization} = await mockDB.init();
@@ -148,7 +148,7 @@ describe('addBilling', () => {
     await expectAsyncToThrow(addBilling.resolve(undefined, {orgId, stripeToken: null}, {authToken, socket}));
   });
 
-  test('thrown when a bad source token is provided', async() => {
+  test('thrown when a bad source token is provided', async () => {
     // SETUP
     const mockDB = new MockDB();
     const {user, organization} = await mockDB.init();

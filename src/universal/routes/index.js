@@ -1,8 +1,8 @@
 import ActionContainer from '../containers/Action/ActionContainer';
-import _cashaySchema from 'cashay!server/utils/getCashaySchema.js';
+import _cashaySchema from 'cashay!server/utils/getCashaySchema.js'; // eslint-disable-line
 
 /* eslint-disable global-require */
-export default store => ({
+export default (store) => ({
   /*
    * setting a component above the '/' route allows for sharing a container across a landing page
    * as the index route and repeat that container for child routes
@@ -16,7 +16,6 @@ export default store => ({
     require('./signout').default,
     require('./meeting').default(store),
     require('./newTeam').default(store),
-    // ...require('./meetingLayoutRoutes'),
     require('./patterns').default,
     require('./summary').default(store),
     require('./teamDashboard').default(store),

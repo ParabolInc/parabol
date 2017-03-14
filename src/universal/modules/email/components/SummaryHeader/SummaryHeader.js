@@ -53,7 +53,7 @@ const SummaryHeader = (props) => {
   const meetingDate = makeDateString(createdAt);
   return (
     <div style={{padding: '0 16px'}}>
-      <EmptySpace height={props.vSpacing}/>
+      <EmptySpace height={props.vSpacing} />
       <table width={props.width}>
         <tbody>
           <tr>
@@ -75,7 +75,7 @@ const SummaryHeader = (props) => {
           </tr>
         </tbody>
       </table>
-      <EmptySpace height={props.vSpacing}/>
+      <EmptySpace height={props.vSpacing} />
     </div>
   );
 };
