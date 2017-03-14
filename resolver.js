@@ -108,11 +108,14 @@ exports.resolve = function (source, file, settings) {
   }
 
   // otherwise, resolve "normally"
-  var resolveSync = createResolveSync(configPath, webpackConfig)
+  var resolveSync = createResolveSync(configPath, webpackConfig);
+  console.log('got resolveSync', configPath);
   try {
     const foo =  { found: true, path: resolveSync(path.dirname(file), source) }
     console.log('FOO', foo)
+    return foo;
   } catch (err) {
+    console.log('ERR on resolveSync', err)
     log('Error during module resolution:', err)
     return { found: false }
   }
