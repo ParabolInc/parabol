@@ -36,7 +36,7 @@ const styleThunk = () => ({
     borderRadius: '4px',
     fontSize: appTheme.typography.s4,
     boxShadow: '2px 2px 2px rgba(0, 0, 0, .2)',
-
+    cursor: 'pointer',
     ':hover': {
       opacity: '.65'
     }
