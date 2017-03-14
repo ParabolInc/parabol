@@ -36,7 +36,7 @@
     "db:migrate-up-all": "npm run db:migrate",
     "db:migrate-down": "./src/server/database/migrate.sh down",
     "db:migrate-down-all": "./src/server/database/migrate.sh down-all",
-    "lint": "eslint 'src/**/*.js' 'webpack/*.js'",
+    "lint": "eslint 'src/client/*.js' 'webpack/*.js'",
     "lint:fix": "eslint --fix 'src/**/*.js' 'tests/*.js' 'webpack/*.js'",
     "profile": "NODE_ENV=development webpack --config ./webpack/dev.babel.js --profile --json > stats.json"
   },

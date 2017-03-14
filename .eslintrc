@@ -72,8 +72,8 @@
   "settings": {
     "import/parser": "babel-eslint",
     "import/resolver": {
-      "webpack": {
-        "config": "src/../webpack/prod.babel.js"
+      "./resolver": {
+        "config": "webpack/prod.babel.js"
       }
     },
     "import/ignore": [
