@@ -14,5 +14,6 @@ export default function getInviterInfoAndTeamName(teamId, userId) {
       inviterEmail: doc('email'),
       inviterName: doc('preferredName'),
       teamName: r.table('Team').get(teamId)('name')
-    }));
+    }))
+    .run();
 }

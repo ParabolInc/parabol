@@ -51,7 +51,7 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
 
   // setup middleware
   // sentry.io request handler capture middleware, must be first:
-  app.use(raven.middleware.express.requestHandler(process.env.SENTRY_DSN));
+  app.use(raven.requestHandler(process.env.SENTRY_DSN));
   app.use(bodyParser.json());
   app.use(cors({origin: true, credentials: true}));
   app.use('/static', express.static('static'));

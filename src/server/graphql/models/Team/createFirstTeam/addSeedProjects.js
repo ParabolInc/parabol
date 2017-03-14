@@ -57,5 +57,6 @@ export default (userId, teamId) => {
           updatedAt: change('new_val')('updatedAt'),
         }))
       );
-    });
+    })
+    .run();
 };

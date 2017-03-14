@@ -46,7 +46,9 @@ export default {
         const stripeLineItems = await fetchAllLines('upcoming', stripeId);
         const upcomingInvoice = await stripe.invoices.retrieveUpcoming(stripeId);
         await generateInvoice(upcomingInvoice, stripeLineItems, orgId, invoiceId);
-        return r.table('Invoice').get(invoiceId);
+        return r.table('Invoice')
+          .get(invoiceId)
+          .run();
       }
       return currentInvoice;
     }
@@ -87,7 +89,8 @@ export default {
         .orderBy(r.desc('startAt'))
         // remove upcoming & trial invoices
         .filter((invoice) => invoice('status').ne(UPCOMING).and(invoice('total').ne(0)))
-        .limit(count);
+        .limit(count)
+        .run();
     }
   }
 };
