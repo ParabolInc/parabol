@@ -37,25 +37,10 @@ import MeetingAgendaLastCallContainer from 'universal/modules/meeting/containers
 import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 import withHotkey from 'react-hotkey-hoc';
 import getBestPhaseItem from 'universal/modules/meeting/helpers/getBestPhaseItem';
-import {showError, showInfo} from 'universal/modules/toast/ducks/toastDuck';
+import {showError} from 'universal/modules/toast/ducks/toastDuck';
+import resolveMeetingMembers from 'universal/modules/meeting/helpers/resolveMeetingMembers';
+import electFacilitatorIfNone from 'universal/modules/meeting/helpers/electFacilitatorIfNone';
 
-const resolveMeetingMembers = (queryData, userId) => {
-  if (queryData !== resolveMeetingMembers.queryData) {
-    resolveMeetingMembers.queryData = queryData;
-    const {teamMembers, team} = queryData;
-    resolveMeetingMembers.cache = [];
-    for (let i = 0; i < teamMembers.length; i++) {
-      const teamMember = teamMembers[i];
-      resolveMeetingMembers.cache[i] = {
-        ...teamMember,
-        isConnected: teamMember.presence.length > 0,
-        isFacilitating: team.activeFacilitator === teamMember.id,
-        isSelf: teamMember.id.startsWith(userId)
-      };
-    }
-  }
-  return resolveMeetingMembers.cache;
-};
 
 const meetingContainerQuery = `
 query{
@@ -71,6 +56,7 @@ query{
     meetingPhase,
     meetingPhaseItem
   }
+  teamMemberCount(teamId: $teamId)
   teamMembers(teamId: $teamId) @live {
     id
     preferredName
@@ -86,6 +72,7 @@ query{
       id
     }
   }
+  agendaCount(teamId: $teamId)
   agenda(teamId: $teamId) @live {
     id
     content
@@ -119,14 +106,16 @@ const mapStateToProps = (state, props) => {
       team: () => teamId
     }
   });
-  const {agenda, team} = queryResult.data;
+  const {agenda, agendaCount, team, teamMemberCount} = queryResult.data;
   const myTeamMemberId = `${userId}::${teamId}`;
   return {
     agenda,
+    agendaCount,
     isFacilitating: myTeamMemberId === team.activeFacilitator,
     localPhaseItem: localPhaseItem && Number(localPhaseItem),
     members: resolveMeetingMembers(queryResult.data, userId),
-    team
+    team,
+    teamMemberCount
   };
 };
 
@@ -158,7 +147,6 @@ export default class MeetingContainer extends Component {
   constructor(props) {
     super(props);
     const {bindHotkey, params: {teamId}} = props;
-    // subscribe to all teams, but don't do anything with that open subscription
     handleRedirects({}, this.props);
     bindHotkey(['enter', 'right'], this.gotoNext);
     bindHotkey('left', this.gotoPrev);
@@ -166,30 +154,7 @@ export default class MeetingContainer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // make sure we still have a facilitator. if we don't elect a new one
-    const {dispatch, team: {activeFacilitator}, members} = nextProps;
-    if (!activeFacilitator) return;
-    // if the meeting has started, find the facilitator
-    const facilitatingMemberIdx = members.findIndex((m) => m.isFacilitating);
-    const facilitatingMember = members[facilitatingMemberIdx];
-    if (!facilitatingMember || facilitatingMember.isConnected === true) return;
-    // check the old value because it's possible that we're trying before the message from the Presence sub comes in
-    const {members: oldMembers} = this.props;
-    const oldFacilitatingMember = oldMembers[facilitatingMemberIdx];
-    if (!oldFacilitatingMember || oldFacilitatingMember.isConnected === false) return;
-    // if the facilitator isn't connected, then make the first connected user elect a new one
-    const onlineMembers = members.filter((m) => m.isConnected);
-    const callingMember = onlineMembers[0];
-    const nextFacilitator = members.find((m) => m.isFacilitator && m.isConnected) || callingMember;
-    if (callingMember.isSelf) {
-      const options = {variables: {facilitatorId: nextFacilitator.id}};
-      cashay.mutate('changeFacilitator', options);
-    }
-    const facilitatorIntro = nextFacilitator.isSelf ? 'You are' : `${nextFacilitator} is`;
-    dispatch(showInfo({
-      title: `${facilitatingMember.preferredName} Disconnected!`,
-      message: `${facilitatorIntro} the new facilitator`
-    }));
+    electFacilitatorIfNone(nextProps, this.props.members);
   }
 
   shouldComponentUpdate(nextProps) {
@@ -317,8 +282,9 @@ export default class MeetingContainer extends Component {
     const {
       agenda,
       isFacilitating,
+      localPhaseItem,
       members,
-      params: { teamId, localPhase, localPhaseItem },
+      params: { teamId, localPhase},
       team,
       router
     } = this.props;
