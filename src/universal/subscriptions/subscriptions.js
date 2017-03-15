@@ -227,7 +227,6 @@ export default [
          checkInQuestion,
          id,
          isPaid,
-         isArchived,
          name,
          meetingId,
          activeFacilitator,
