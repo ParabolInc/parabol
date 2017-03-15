@@ -7,6 +7,7 @@ const dashNavListQuery = `
 query {
   teams @cached(type: "[Team]") {
     id
+    isArchived
     isPaid
     name
     meetingId
@@ -22,6 +23,9 @@ const mapStateToProps = () => {
     },
     sort: {
       teams: (a, b) => a.name > b.name ? 1 : -1
+    },
+    filter: {
+      teams: (team) => !team.isArchived
     }
   }).data;
   return {
