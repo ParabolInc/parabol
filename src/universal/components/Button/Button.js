@@ -97,11 +97,11 @@ const Button = (props) => {
     return (
       <span className={css(styles.buttonInner)}>
         {iconOnly ? makeIcon() :
-        <span className={css(styles.buttonInner)}>
-          {thisIconPlacement === 'left' && makeIcon()}
-          <span className={css(styles.label)}>{label}</span>
-          {thisIconPlacement === 'right' && makeIcon()}
-        </span>
+          <span className={css(styles.buttonInner)}>
+            {thisIconPlacement === 'left' && makeIcon()}
+            <span className={css(styles.label)}>{label}</span>
+            {thisIconPlacement === 'right' && makeIcon()}
+          </span>
         }
       </span>
     );
@@ -117,9 +117,9 @@ const Button = (props) => {
       type={type}
     >
       {icon ? makeIconLabel() :
-      <span className={css(styles.buttonInner)}>
-        <span className={css(styles.label)}>{label}</span>
-      </span>
+        <span className={css(styles.buttonInner)}>
+          <span className={css(styles.label)}>{label}</span>
+        </span>
       }
     </button>
   );
