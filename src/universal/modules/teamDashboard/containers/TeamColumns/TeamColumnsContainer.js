@@ -79,19 +79,19 @@ const mapStateToProps = (state, props) => {
   return {
     projects,
     myTeamMemberId: `${state.auth.obj.sub}::${teamId}`,
-    teamId,
+    queryKey: key,
     teamMembers
   };
 };
 
 
 const TeamColumnsContainer = (props) => {
-  const {myTeamMemberId, projects, teamId} = props;
+  const {myTeamMemberId, projects, queryKey} = props;
   return (
     <ProjectColumns
       myTeamMemberId={myTeamMemberId}
       projects={projects}
-      queryKey={teamId}
+      queryKey={queryKey}
       area={TEAM_DASH}
     />
   );
