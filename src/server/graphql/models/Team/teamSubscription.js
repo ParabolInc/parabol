@@ -26,7 +26,7 @@ export default {
       r.table('Team')
         .filter(team => {
           return (team('isArchived').eq(false).default(true)
-            .and(team('id').eq(teamId)))
+            .and(team('id').eq(teamId)));
         })
         .changes({includeInitial: true})
         .map((row) => {
