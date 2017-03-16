@@ -69,7 +69,7 @@ export default {
             userId,
           })
           .count()
-          .run()
+          .run();
       });
       const pausesByOrg = await Promise.all(hookPromises);
       const triggeredPauses = Math.max(...pausesByOrg);

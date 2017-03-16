@@ -31,5 +31,4 @@ exports.up = async (r) => {
 
 exports.down = async () => {
   // NO-OP
-  return;
 };
