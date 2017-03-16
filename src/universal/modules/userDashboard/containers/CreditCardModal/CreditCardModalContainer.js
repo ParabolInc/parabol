@@ -93,12 +93,7 @@ class CreditCardModalContainer extends Component {
         stripeToken
       };
       const {error: cashayError} = await cashay.mutate('addBilling', {variables});
-      if (cashayError) {
-        dispatch(
-          segmentEventTrack('addStripeBilling Cashay Error', {error: cashayError._error})
-        );
-        throw new SubmissionError(cashayError);
-      }
+      if (cashayError) throw new SubmissionError(cashayError);
       dispatch(segmentEventTrack('addStripeBilling Success'));
       closePortal();
     }
