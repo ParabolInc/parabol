@@ -11,6 +11,7 @@ const DashLayout = (props) => {
   const {
     activeMeetings,
     children,
+    dispatch,
     styles,
     trialNotification
   } = props;
@@ -19,9 +20,9 @@ const DashLayout = (props) => {
   return (
     <div className={css(styles.root)}>
       {/* Shows over any dashboard view when we prompt the trial extension (1 week after sign up?). */}
-      {barType === TRIAL_EXPIRES_SOON && <ActiveTrialDashAlert accountLink={`/me/organizations/${orgId}`} />}
+      {barType === TRIAL_EXPIRES_SOON && <ActiveTrialDashAlert accountLink={`/me/organizations/${orgId}`} dispatch={dispatch} />}
       {/* Shows over any account view when the trial has expired. */}
-      {barType === TRIAL_EXPIRED && <ExpiredTrialDashAlert accountLink={`/me/organizations/${orgId}`} />}
+      {barType === TRIAL_EXPIRED && <ExpiredTrialDashAlert accountLink={`/me/organizations/${orgId}`} dispatch={dispatch} />}
       {/* Shows over any dashboard view when there is a meeting. */}
       {hasMeetingNotification && <MeetingDashAlert activeMeetings={activeMeetings} />}
       <div className={css(styles.main)}>
@@ -34,6 +35,7 @@ const DashLayout = (props) => {
 DashLayout.propTypes = {
   activeMeetings: PropTypes.array.isRequired,
   children: PropTypes.any,
+  dispatch: PropTypes.func.isRequired,
   styles: PropTypes.object,
   trialNotification: PropTypes.object
 };
