@@ -21,25 +21,22 @@ import MeetingUpdatesContainer
   from '../MeetingUpdates/MeetingUpdatesContainer';
 import AvatarGroup from 'universal/modules/meeting/components/AvatarGroup/AvatarGroup';
 import {
-  phaseArray,
-  phaseOrder,
   LOBBY,
   CHECKIN,
   UPDATES,
   FIRST_CALL,
   AGENDA_ITEMS,
   LAST_CALL,
-  SUMMARY
 } from 'universal/utils/constants';
 import MeetingAgendaItems from 'universal/modules/meeting/components/MeetingAgendaItems/MeetingAgendaItems';
 import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
 import MeetingAgendaLastCallContainer from 'universal/modules/meeting/containers/MeetingAgendaLastCall/MeetingAgendaLastCallContainer';
-import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 import withHotkey from 'react-hotkey-hoc';
-import getBestPhaseItem from 'universal/modules/meeting/helpers/getBestPhaseItem';
 import {showError} from 'universal/modules/toast/ducks/toastDuck';
 import resolveMeetingMembers from 'universal/modules/meeting/helpers/resolveMeetingMembers';
 import electFacilitatorIfNone from 'universal/modules/meeting/helpers/electFacilitatorIfNone';
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
+import generateMeetingRoute from 'universal/modules/meeting/helpers/generateMeetingRoute';
 
 
 const meetingContainerQuery = `
@@ -200,83 +197,50 @@ export default class MeetingContainer extends Component {
     // if we try to go backwards on a place that doesn't have items
     if (!maybeNextPhaseItem && !maybeNextPhase) return;
     const {
-      agenda,
       isFacilitating,
-      members,
       params: {localPhase, teamId},
       router,
       team
     } = this.props;
     const {meetingPhase} = team;
-    let nextPhase;
-    let nextPhaseItem;
-    // if it's a link on the sidebar
-    if (maybeNextPhase) {
-      // if we click the Agenda link on the sidebar and we're already past that, goto the next reasonable area
-      if (maybeNextPhase === FIRST_CALL && phaseOrder(meetingPhase) > phaseOrder(FIRST_CALL)) {
-        nextPhase = agenda.length ? AGENDA_ITEMS : LAST_CALL;
-      } else {
-        const maxPhaseOrder = isFacilitating ? phaseOrder(meetingPhase) + 1 : phaseOrder(meetingPhase);
-        if (phaseOrder(maybeNextPhase) > maxPhaseOrder) return;
-        nextPhase = maybeNextPhase;
-      }
-      // if we're going to an area that has items, try going to the facilitator item, or the meeting item, or just 1
-      if (hasPhaseItem(nextPhase)) {
-        nextPhaseItem = maybeNextPhaseItem || getBestPhaseItem(nextPhase, team);
-      }
-    } else {
-      const localPhaseOrder = phaseOrder(localPhase);
-      if (hasPhaseItem(localPhase)) {
-        const totalPhaseItems = localPhase === AGENDA_ITEMS ? agenda.length : members.length;
-        nextPhase = maybeNextPhaseItem > totalPhaseItems ? phaseArray[localPhaseOrder + 1] : localPhase;
-      } else {
-        nextPhase = phaseArray[localPhaseOrder + 1];
-      }
+    const meetingPhaseInfo = actionMeeting[meetingPhase];
+    const safeRoute = generateMeetingRoute(maybeNextPhaseItem, maybeNextPhase || localPhase, props);
+    if (!safeRoute) return;
+    const {nextPhase, nextPhaseItem} = safeRoute;
+    const nextPhaseInfo = actionMeeting[nextPhase];
 
-      // Never return to the FIRST_CALL after it's been visited
-      if (nextPhase === FIRST_CALL && phaseOrder(meetingPhase) > phaseOrder(FIRST_CALL)) {
-        nextPhase = agenda.length ? AGENDA_ITEMS : LAST_CALL;
-      }
-      if (nextPhase === localPhase) {
-        nextPhaseItem = Math.max(1, maybeNextPhaseItem);
-      } else {
-        nextPhaseItem = hasPhaseItem(nextPhase) ? 1 : '';
-      }
+    if (nextPhaseInfo.index <= meetingPhaseInfo.index) {
+      const pushURL = makePushURL(teamId, nextPhase, nextPhaseItem);
+      router.push(pushURL);
     }
 
-    if (nextPhase === AGENDA_ITEMS && agenda.length === 0) {
-      nextPhaseItem = undefined;
-      nextPhase = LAST_CALL;
-    }
-    // nextPhase is undefined if we're at the summary
-    if (nextPhase) {
-      if (isFacilitating) {
-        const variables = {teamId};
-        if (nextPhase === SUMMARY) {
-          cashay.mutate('endMeeting', {variables: {teamId}});
-          return;
-        }
+    if (isFacilitating) {
+      const variables = {teamId};
+      if (!nextPhaseInfo.next) {
+        cashay.mutate('endMeeting', {variables: {teamId}});
+      } else {
         if (nextPhase !== localPhase) {
           variables.nextPhase = nextPhase;
         }
-        if (nextPhaseItem !== '') {
+        if (nextPhaseItem) {
           variables.nextPhaseItem = nextPhaseItem;
         }
         cashay.mutate('moveMeeting', {variables});
-      }
-      if (phaseOrder(nextPhase) <= phaseOrder(meetingPhase)) {
-        const pushURL = makePushURL(teamId, nextPhase, nextPhaseItem);
-        router.push(pushURL);
       }
     }
   };
 
   gotoNext = () => {
-    const nextPhaseItem = this.props.localPhaseItem + 1;
-    const nextPhase = nextPhaseItem ? undefined : phaseArray[phaseOrder(this.props.params.localPhase) + 1];
-    return this.gotoItem(nextPhaseItem, nextPhase);
-  }
-  gotoPrev = () => this.gotoItem(this.props.localPhaseItem - 1);
+    const {params: {localPhase}, localPhaseItem} = this.props;
+    const nextPhaseInfo = actionMeeting[localPhase];
+    if (nextPhaseInfo.items) {
+      this.gotoItem(localPhaseItem + 1);
+    } else {
+      this.gotoItem(undefined, nextPhaseInfo.next);
+    }
+  };
+
+  gotoPrev = () => {this.gotoItem(this.props.localPhaseItem - 1)};
 
   render() {
     const {
@@ -284,7 +248,7 @@ export default class MeetingContainer extends Component {
       isFacilitating,
       localPhaseItem,
       members,
-      params: { teamId, localPhase},
+      params: {teamId, localPhase},
       team,
       router
     } = this.props;
@@ -328,33 +292,33 @@ export default class MeetingContainer extends Component {
         />
         <MeetingMain>
           <MeetingAvatars>
-            <AvatarGroup avatars={members} localPhase={localPhase} />
+            <AvatarGroup avatars={members} localPhase={localPhase}/>
           </MeetingAvatars>
-          {localPhase === LOBBY && <MeetingLobby members={members} team={team} />}
+          {localPhase === LOBBY && <MeetingLobby members={members} team={team}/>}
           {localPhase === CHECKIN &&
-            <MeetingCheckin gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
+          <MeetingCheckin gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
           }
           {localPhase === UPDATES &&
-            <MeetingUpdatesContainer gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
+          <MeetingUpdatesContainer gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
           }
-          {localPhase === FIRST_CALL && <MeetingAgendaFirstCall gotoNext={this.gotoNext} />}
+          {localPhase === FIRST_CALL && <MeetingAgendaFirstCall gotoNext={this.gotoNext}/>}
           {localPhase === AGENDA_ITEMS &&
-            <MeetingAgendaItems
-              agendaItem={agenda[localPhaseItem - 1]}
-              isLast={localPhaseItem === agenda.length}
-              gotoNext={this.gotoNext}
-              members={members}
-            />
+          <MeetingAgendaItems
+            agendaItem={agenda[localPhaseItem - 1]}
+            isLast={localPhaseItem === agenda.length}
+            gotoNext={this.gotoNext}
+            members={members}
+          />
           }
           {localPhase === LAST_CALL &&
-            <MeetingAgendaLastCallContainer
-              {...phaseStateProps}
-              gotoNext={this.gotoNext}
-              isFacilitating={isFacilitating}
-            />
+          <MeetingAgendaLastCallContainer
+            {...phaseStateProps}
+            gotoNext={this.gotoNext}
+            isFacilitating={isFacilitating}
+          />
           }
           {!inSync &&
-            <RejoinFacilitatorButton onClickHandler={rejoinFacilitator} />
+          <RejoinFacilitatorButton onClickHandler={rejoinFacilitator}/>
           }
         </MeetingMain>
       </MeetingLayout>

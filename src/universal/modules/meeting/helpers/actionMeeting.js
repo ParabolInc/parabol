@@ -4,6 +4,7 @@ export default {
   [LOBBY]: {
     index: 0,
     name: 'Lobby',
+    next: CHECKIN,
     route: 'lobby',
     visitOnce: true,
   },
@@ -14,6 +15,7 @@ export default {
       arrayName: 'members'
     },
     name: 'Check-in',
+    next: UPDATES,
     route: 'checkin',
     visitOnce: false,
   },
@@ -24,12 +26,14 @@ export default {
       arrayName: 'members'
     },
     name: 'Updates',
+    next: FIRST_CALL,
     route: 'updates',
     visitOnce: false,
   },
   [FIRST_CALL]: {
     index: 3,
     name: 'First call',
+    next: AGENDA_ITEMS,
     route: 'firstcall',
     visitOnce: true,
   },
@@ -40,12 +44,14 @@ export default {
       arrayName: 'agenda'
     },
     name: 'Agenda items',
+    next: LAST_CALL,
     route: 'agenda',
     visitOnce: false,
   },
   [LAST_CALL]: {
     index: 5,
     name: 'Last call',
+    next: SUMMARY,
     route: 'lastcall',
     visitOnce: true,
   },

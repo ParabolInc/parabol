@@ -28,7 +28,7 @@ class Step1PreferredName extends Component {
     onSubmit: PropTypes.func,
     styles: PropTypes.object,
     submitting: PropTypes.bool,
-    user: PropTypes.object,
+    user: PropTypes.object.isRequired,
     completed: PropTypes.number
   };
 
