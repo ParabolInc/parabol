@@ -54,46 +54,34 @@ export function segmentEventIdentify() {
 }
 
 export function segmentEventTrack(event, properties, options) {
-  return (dispatch, getState) => {
-    const profile = selectSegmentProfile(getState());
-    const propertiesOut = Object.assign({}, profile, properties);
-    const optionsOut = Object.assign({}, {context: {traits: profile}}, options);
-
-    dispatch({
-      type: SEGMENT_EVENT,
-      meta: {
-        analytics: {
-          eventType: EventTypes.track,
-          eventPayload: {
-            event,
-            properties: propertiesOut,
-            options: optionsOut
-          }
+  return ({
+    type: SEGMENT_EVENT,
+    meta: {
+      analytics: {
+        eventType: EventTypes.track,
+        eventPayload: {
+          event,
+          properties,
+          options
         }
       }
-    });
-  };
+    }
+  });
 }
 
 export function segmentEventPage(name, category, properties, options) {
-  return (dispatch, getState) => {
-    const profile = selectSegmentProfile(getState());
-    const propertiesOut = Object.assign({}, profile, properties);
-    const optionsOut = Object.assign({}, {context: {traits: profile}}, options);
-
-    dispatch({
-      type: SEGMENT_EVENT,
-      meta: {
-        analytics: {
-          eventType: EventTypes.page,
-          eventPayload: {
-            name,
-            category,
-            properties: propertiesOut,
-            options: optionsOut
-          }
+  return ({
+    type: SEGMENT_EVENT,
+    meta: {
+      analytics: {
+        eventType: EventTypes.page,
+        eventPayload: {
+          name,
+          category,
+          properties,
+          options
         }
       }
-    });
-  };
+    }
+  });
 }
