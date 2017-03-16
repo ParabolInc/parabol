@@ -168,7 +168,7 @@ export default {
 
       // RESOLUTION
       // propagate denormalized changes to TeamMember
-      const dbProfile = await r.table('TeamMember')
+      const dbProfileChanges = await r.table('TeamMember')
         .getAll(id, {index: 'userId'})
         .update(validUpdatedUser)
         .do(() => {
@@ -176,18 +176,29 @@ export default {
             .get(id)
             .update(validUpdatedUser, {returnChanges: 'always'});
         });
-
       //
       // If we ever want to delete the previous profile images:
       //
-      // const previousProfile = previousValue(dbProfile);
+      // const previousProfile = previousValue(dbProfileChanges);
       // if (previousProfile && urlIsPossiblyOnS3(previousProfile.picture)) {
       // // possible remove prior profile image from CDN asynchronously
       //   s3DeleteObject(previousProfile.picture)
       //   .catch(console.warn.bind(console));
       // }
       //
-      return updatedOrOriginal(dbProfile);
+      const dbProfile = updatedOrOriginal(dbProfileChanges);
+      if (segmentIo) {
+        segmentIo.identify({
+          userId: dbProfile.id,
+          traits: {
+            avatar: dbProfile.picture,
+            createdAt: dbProfile.createdAt,
+            email: dbProfile.email,
+            name: dbProfile.preferredName
+          }
+        });
+      }
+      return dbProfile;
     }
   }
 };

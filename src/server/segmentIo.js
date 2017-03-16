@@ -1,4 +1,6 @@
 import SegmentIo from 'analytics-node';
+import getDotenv from '../universal/utils/dotenv';
+getDotenv();
 
 // const segmentIoOpts = process.env.NODE_ENV === 'production' ?
 //  { flushAt: 20, flushAfter: 10000} : { flushAt: 1 };
