@@ -4,7 +4,7 @@ import {Provider} from 'react-redux';
 import {RouterContext} from 'react-router';
 import {renderToString} from 'react-dom/server';
 import makeSegmentSnippet from '@segment/snippet';
-import {auth0} from 'universal/utils/clientOptions';
+import {auth0, stripeKey} from 'universal/utils/clientOptions';
 import getWebpackPublicPath from 'server/utils/getWebpackPublicPath';
 
 const webpackPublicPath = getWebpackPublicPath();
@@ -38,7 +38,8 @@ export default function Html({store, assets, StyleSheetServer, renderProps}) {
     window.__ACTION__ = {
       auth0: ${JSON.stringify(auth0)},
       cdn: ${JSON.stringify(webpackPublicPath)},
-      sentry: ${JSON.stringify(process.env.SENTRY_DSN_PUBLIC)}
+      sentry: ${JSON.stringify(process.env.SENTRY_DSN_PUBLIC)},
+      stripe: ${JSON.stringify(stripeKey)}
     };
 `;
   const fontAwesomeUrl = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css';

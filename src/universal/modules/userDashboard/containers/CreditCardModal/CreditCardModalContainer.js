@@ -2,7 +2,6 @@ import React, {Component, PropTypes} from 'react';
 import {cashay} from 'cashay';
 import {SubmissionError} from 'redux-form';
 import withAsync from 'react-async-hoc';
-import {stripeKey} from 'universal/utils/clientOptions';
 import portal from 'react-portal-hoc';
 import {connect} from 'react-redux';
 import CreditCardModal from 'universal/modules/userDashboard/components/CreditCardModal/CreditCardModal';
@@ -134,7 +133,7 @@ CreditCardModalContainer.propTypes = {
 
 const stripeCb = () => {
   const stripe = window.Stripe;
-  stripe.setPublishableKey(stripeKey);
+  stripe.setPublishableKey(window.__ACTION__.stripe);
   return {
     createToken: (fields) => new Promise((resolve) => {
       stripe.card.createToken(fields, (status, response) => {

@@ -119,7 +119,7 @@ export const isBillingLeader = (userOrgDoc) => {
 export const requireOrgLeader = (userOrgDoc) => {
   const legit = isBillingLeader(userOrgDoc);
   if (!legit) {
-    throw errorObj({_error: 'Unauthorized. User is not a billing leader for that organization'});
+    throw errorObj({_error: 'Unauthorized. User is not a Billing Leader for that organization'});
   }
 };
 
@@ -147,7 +147,7 @@ export const requireOrgLeaderOfUser = async(authToken, userId) => {
         .lt(res('leaderOrgs').count().add(res('memberOrgs').count()));
     });
   if (!isLeaderOfUser) {
-    throw errorObj({_error: 'Unauthorized. Only an billing leader of a user can set this'});
+    throw errorObj({_error: 'Unauthorized. Only an Billing Leader of a user can set this'});
   }
   return true;
 };

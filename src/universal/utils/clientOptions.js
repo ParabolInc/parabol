@@ -23,4 +23,4 @@ export const head = {
   ]
 };
 
-export const stripeKey = 'pk_test_MNoKbCzQX0lhktuxxI7M14wd';
+export const stripeKey = process.env.STRIPE_PUBLISHABLE_KEY || 'pk_test_MNoKbCzQX0lhktuxxI7M14wd';
