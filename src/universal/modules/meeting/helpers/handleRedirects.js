@@ -28,7 +28,7 @@ export default function handleRedirects(oldProps, nextProps) {
   if (localPhaseInfo.items) {
     const {countName, arrayName} = localPhaseInfo.items;
     const initialPhaseItemCount = nextProps[countName];
-    const phaseItems =  nextProps[arrayName];
+    const phaseItems = nextProps[arrayName];
     // bail out fast if the query or sub items haven't returned
     if (initialPhaseItemCount === null || initialPhaseItemCount > phaseItems.length) {
       return false;
@@ -70,13 +70,13 @@ export default function handleRedirects(oldProps, nextProps) {
   }
 
   // is the facilitator making moves?
-  if (team.facilitatorPhaseItem !== oldTeam.facilitatorPhaseItem ||
-    team.facilitatorPhase !== oldTeam.facilitatorPhase) {
+  if (facilitatorPhaseItem !== oldTeam.facilitatorPhaseItem ||
+    facilitatorPhase !== oldTeam.facilitatorPhase) {
     // were we n'sync?
     const inSync = localPhase === oldTeam.facilitatorPhase &&
       (localPhaseItem === undefined || localPhaseItem === oldTeam.facilitatorPhaseItem);
     if (inSync) {
-      const pushURL = makePushURL(team.id, team.facilitatorPhase, team.facilitatorPhaseItem);
+      const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
       router.replace(pushURL);
       return false;
     }
@@ -90,15 +90,15 @@ export default function handleRedirects(oldProps, nextProps) {
     if (!newAgendaItem || newAgendaItem.id !== oldAgendaItem.id) {
       const updatedAgendaItemIdx = agenda.findIndex((a) => a.id === oldAgendaItem.id);
       if (updatedAgendaItemIdx !== -1) {
-        const pushURL = makePushURL(team.id, AGENDA_ITEMS, updatedAgendaItemIdx + 1);
+        const pushURL = makePushURL(teamId, AGENDA_ITEMS, updatedAgendaItemIdx + 1);
         router.replace(pushURL);
         return false;
       }
     }
   }
 
-  if (team.facilitatorPhase === SUMMARY) {
-    router.replace(`/summary/${team.meetingId}`);
+  if (facilitatorPhase === SUMMARY) {
+    router.replace(`/summary/${meetingId}`);
     return false;
   }
   return true;

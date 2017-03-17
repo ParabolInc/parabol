@@ -134,6 +134,7 @@ let infiniteTrigger = false;
 export default class MeetingContainer extends Component {
   static propTypes = {
     agenda: PropTypes.array.isRequired,
+    agendaCount: PropTypes.number,
     bindHotkey: PropTypes.func.isRequired,
     dispatch: PropTypes.func.isRequired,
     isFacilitating: PropTypes.bool,
@@ -145,6 +146,7 @@ export default class MeetingContainer extends Component {
     }).isRequired,
     router: PropTypes.object,
     team: PropTypes.object.isRequired,
+    teamMemberCount: PropTypes.number
   };
 
   constructor(props) {
@@ -260,7 +262,7 @@ export default class MeetingContainer extends Component {
   };
 
   gotoPrev = () => {
-    this.gotoItem(this.props.localPhaseItem - 1)
+    this.gotoItem(this.props.localPhaseItem - 1);
   };
 
   render() {
@@ -313,16 +315,16 @@ export default class MeetingContainer extends Component {
         />
         <MeetingMain>
           <MeetingAvatars>
-            <AvatarGroup avatars={members} localPhase={localPhase}/>
+            <AvatarGroup avatars={members} localPhase={localPhase} />
           </MeetingAvatars>
-          {localPhase === LOBBY && <MeetingLobby members={members} team={team}/>}
+          {localPhase === LOBBY && <MeetingLobby members={members} team={team} />}
           {localPhase === CHECKIN &&
           <MeetingCheckin gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
           }
           {localPhase === UPDATES &&
           <MeetingUpdatesContainer gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
           }
-          {localPhase === FIRST_CALL && <MeetingAgendaFirstCall gotoNext={this.gotoNext}/>}
+          {localPhase === FIRST_CALL && <MeetingAgendaFirstCall gotoNext={this.gotoNext} />}
           {localPhase === AGENDA_ITEMS &&
           <MeetingAgendaItems
             agendaItem={agenda[localPhaseItem - 1]}
@@ -339,7 +341,7 @@ export default class MeetingContainer extends Component {
           />
           }
           {!inSync &&
-          <RejoinFacilitatorButton onClickHandler={rejoinFacilitator}/>
+          <RejoinFacilitatorButton onClickHandler={rejoinFacilitator} />
           }
         </MeetingMain>
       </MeetingLayout>

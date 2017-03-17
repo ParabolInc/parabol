@@ -60,7 +60,7 @@ export default {
                 inactive: true
               });
           })
-          .run()
+          .run();
       });
       await Promise.all(updates);
       const adjustmentPromises = users.map((user) => {

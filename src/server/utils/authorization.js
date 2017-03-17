@@ -110,7 +110,7 @@ export const getUserOrgDoc = (userId, orgId) => {
     .filter({id: orgId})
     .nth(0)
     .default(null)
-    .run()
+    .run();
 };
 
 export const isBillingLeader = (userOrgDoc) => {

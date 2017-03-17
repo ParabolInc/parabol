@@ -55,6 +55,7 @@ WelcomeContainer.propTypes = {
   router: PropTypes.object,
   teamName: PropTypes.string,
   tms: PropTypes.array,
+  user: PropTypes.object.isRequired,
   welcome: PropTypes.shape({
     existingInvites: PropTypes.array,
     teamId: PropTypes.string,

@@ -151,7 +151,7 @@ export default {
       }
 
       const updatedState = {
-        facilitatorPhase: nextPhase ? nextPhase : undefined,
+        facilitatorPhase: nextPhase || undefined,
         facilitatorPhaseItem: isNaN(nextPhaseItem) ? null : nextPhaseItem,
         meetingPhase: goingForwardAPhase ? nextPhase : undefined,
         meetingPhaseItem: newMeetingPhaseItem

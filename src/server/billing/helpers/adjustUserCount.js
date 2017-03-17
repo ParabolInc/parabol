@@ -30,7 +30,7 @@ const changePause = (inactive) => (orgIds, userId) => {
           updatedAt: new Date()
         }), {returnChanges: true});
     })
-    .run()
+    .run();
 };
 
 const addUser = (orgIds, userId) => {
@@ -54,7 +54,7 @@ const addUser = (orgIds, userId) => {
           updatedAt: new Date()
         }), {returnChanges: true});
     })
-    .run()
+    .run();
 };
 
 const deleteUser = (orgIds, userId) => {
@@ -71,7 +71,7 @@ const deleteUser = (orgIds, userId) => {
           updatedAt: new Date()
         }), {returnChanges: true});
     })
-    .run()
+    .run();
 };
 
 const typeLookup = {

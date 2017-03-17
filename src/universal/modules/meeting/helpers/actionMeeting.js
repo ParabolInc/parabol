@@ -61,4 +61,4 @@ export default {
     route: 'summary',
     visitOnce: false,
   }
-}
+};

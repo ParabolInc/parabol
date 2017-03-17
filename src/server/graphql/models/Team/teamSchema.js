@@ -100,7 +100,7 @@ export const Team = new GraphQLObjectType({
         const r = getRethink();
         return r.table('AgendaItem')
           .getAll(id, {index: 'teamId'})
-          .run()
+          .run();
       }
     },
     teamMembers: {
@@ -110,7 +110,7 @@ export const Team = new GraphQLObjectType({
         const r = getRethink();
         return r.table('TeamMember')
           .getAll(id, {index: 'teamId'})
-          .run()
+          .run();
       }
     }
   })

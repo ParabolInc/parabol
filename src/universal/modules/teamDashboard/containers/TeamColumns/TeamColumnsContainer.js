@@ -100,6 +100,7 @@ const TeamColumnsContainer = (props) => {
 TeamColumnsContainer.propTypes = {
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.object,
+  queryKey: PropTypes.string.isRequired,
   teamId: PropTypes.string.isRequired
 };
 
