@@ -66,7 +66,7 @@ const mapStateToProps = (state, props) => {
   const queryData = cashay.query(meetingAgendaCardsQuery, {
     op: 'meetingAgendaCardsContainer',
     key: agendaId,
-    variables: {agendaId},
+    variables: {teamId},
     resolveCached: {
       outcomes: (source, args) => (doc) => doc.agendaId === args.id,
       teamMember: (source) => source.teamMemberId
