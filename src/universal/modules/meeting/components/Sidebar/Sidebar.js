@@ -259,9 +259,8 @@ const styleThunk = () => ({
     color: appTheme.palette.dark10d,
     display: 'block',
     fontSize: appTheme.typography.s2,
-    lineHeight: 'normal',
-    marginBottom: '.625rem',
-    paddingRight: '.5rem',
+    lineHeight: appTheme.typography.sBase,
+    paddingRight: ui.meetingSidebarGutter,
     textDecoration: 'none',
 
     ':hover': {
@@ -279,8 +278,7 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.s5,
     fontStyle: 'italic',
     fontWeight: 700,
-    lineHeight: 'normal',
-    marginBottom: '.5rem'
+    lineHeight: '1.5'
   },
 
   timer: {
