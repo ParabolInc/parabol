@@ -82,6 +82,12 @@ query{
   }
 }`;
 
+const perMeetingQueries = `
+query{
+  teamMemberCount(teamId: $teamId)
+  agendaCount(teamId: $teamId)
+}`;
+
 const mutationHandlers = {
   updateAgendaItem: handleAgendaSort
 };
@@ -148,6 +154,20 @@ export default class MeetingContainer extends Component {
     bindHotkey(['enter', 'right'], this.gotoNext);
     bindHotkey('left', this.gotoPrev);
     bindHotkey('i c a n t h a c k i t', () => cashay.mutate('killMeeting', {variables: {teamId}}));
+  }
+
+  componentDidMount() {
+    const {agendaCount, params: {teamId}} = this.props;
+    // if we have stale count data (from a previous meeting) freshen it up!
+    if (agendaCount !== null) {
+      cashay.query(perMeetingQueries, {
+        op: 'meetingContainerMountQuery',
+        key: teamId,
+        mutationHandlers,
+        variables: {teamId},
+        forceFetch: true
+      });
+    }
   }
 
   componentWillReceiveProps(nextProps) {
