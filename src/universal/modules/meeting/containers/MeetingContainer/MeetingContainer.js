@@ -175,7 +175,6 @@ export default class MeetingContainer extends Component {
             cashay.mutate('moveMeeting', {variables});
             infiniteTrigger = true;
           }
-          return false;
         }
         this.gotoItem(1, CHECKIN);
         dispatch(showError({
@@ -204,7 +203,7 @@ export default class MeetingContainer extends Component {
     } = this.props;
     const {meetingPhase} = team;
     const meetingPhaseInfo = actionMeeting[meetingPhase];
-    const safeRoute = generateMeetingRoute(maybeNextPhaseItem, maybeNextPhase || localPhase, props);
+    const safeRoute = generateMeetingRoute(maybeNextPhaseItem, maybeNextPhase || localPhase, this.props);
     if (!safeRoute) return;
     const {nextPhase, nextPhaseItem} = safeRoute;
     const nextPhaseInfo = actionMeeting[nextPhase];
@@ -240,7 +239,9 @@ export default class MeetingContainer extends Component {
     }
   };
 
-  gotoPrev = () => {this.gotoItem(this.props.localPhaseItem - 1)};
+  gotoPrev = () => {
+    this.gotoItem(this.props.localPhaseItem - 1)
+  };
 
   render() {
     const {
