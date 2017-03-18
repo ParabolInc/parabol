@@ -389,6 +389,7 @@ export default class MeetingContainer extends Component {
           }
           {localPhase === FIRST_CALL &&
             <MeetingAgendaFirstCall
+              {...phaseStateProps}
               gotoNext={this.gotoNext}
               hideMoveMeetingControls={hideMoveMeetingControls}
             />
