@@ -34,6 +34,7 @@ import MeetingAgendaItems from 'universal/modules/meeting/components/MeetingAgen
 import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
 import MeetingAgendaLastCallContainer from 'universal/modules/meeting/containers/MeetingAgendaLastCall/MeetingAgendaLastCallContainer';
 import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
+import isLastItemOfPhase from 'universal/modules/meeting/helpers/isLastItemOfPhase';
 import withHotkey from 'react-hotkey-hoc';
 import getBestPhaseItem from 'universal/modules/meeting/helpers/getBestPhaseItem';
 import {showError, showInfo} from 'universal/modules/toast/ducks/toastDuck';
@@ -227,10 +228,6 @@ export default class MeetingContainer extends Component {
     return false;
   }
 
-  componentWillUnmount() {
-    clearTimeout(this.toastTimer);
-  }
-
   gotoItem = (maybeNextPhaseItem, maybeNextPhase) => {
     // if we try to go backwards on a place that doesn't have items
     if (!maybeNextPhaseItem && !maybeNextPhase) return;
@@ -252,10 +249,7 @@ export default class MeetingContainer extends Component {
         nextPhase = agenda.length ? AGENDA_ITEMS : LAST_CALL;
       } else {
         const maxPhaseOrder = isFacilitating ? phaseOrder(meetingPhase) + 1 : phaseOrder(meetingPhase);
-        if (phaseOrder(maybeNextPhase) > maxPhaseOrder) {
-          this.popNoAdvancePhaseToast();
-          return;
-        }
+        if (phaseOrder(maybeNextPhase) > maxPhaseOrder) return;
         nextPhase = maybeNextPhase;
       }
       // if we're going to an area that has items, try going to the facilitator item, or the meeting item, or just 1
@@ -305,8 +299,6 @@ export default class MeetingContainer extends Component {
       if (phaseOrder(nextPhase) <= phaseOrder(meetingPhase)) {
         const pushURL = makePushURL(teamId, nextPhase, nextPhaseItem);
         router.push(pushURL);
-      } else if (!isFacilitating) {
-        this.popNoAdvancePhaseToast();
       }
     }
   };
@@ -317,23 +309,6 @@ export default class MeetingContainer extends Component {
     return this.gotoItem(nextPhaseItem, nextPhase);
   }
   gotoPrev = () => this.gotoItem(this.props.localPhaseItem - 1);
-
-  popNoAdvancePhaseToast = () => {
-    if (!this.noAdvancePhaseToastShowing) {
-      const {dispatch} = this.props;
-      const dismissSeconds = 5;
-      dispatch(showInfo({
-        title: 'Slow down there!',
-        message: 'Only the facilitator can advance the meeting',
-        autoDismiss: dismissSeconds
-      }));
-      this.noAdvancePhaseToastShowing = true;
-      clearTimeout(this.toastTimer);
-      this.toastTimer = setTimeout(() => {
-        this.noAdvancePhaseToastShowing = false;
-      }, dismissSeconds * 1000);
-    }
-  }
 
   render() {
     const {
@@ -365,6 +340,11 @@ export default class MeetingContainer extends Component {
       const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
       router.push(pushURL);
     };
+
+    const isBehindMeeting = phaseOrder(localPhase) < phaseOrder(meetingPhase);
+    const hideMoveMeetingControls = isFacilitating ? false :
+      (!isBehindMeeting && isLastItemOfPhase(localPhase, localPhaseItem, members, agenda));
+
     const phaseStateProps = { // DRY
       localPhaseItem,
       members,
@@ -388,25 +368,41 @@ export default class MeetingContainer extends Component {
           </MeetingAvatars>
           {localPhase === LOBBY && <MeetingLobby members={members} team={team}/>}
           {localPhase === CHECKIN &&
-            <MeetingCheckin gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
+            <MeetingCheckin
+              gotoItem={this.gotoItem}
+              gotoNext={this.gotoNext}
+              hideMoveMeetingControls={hideMoveMeetingControls}
+              {...phaseStateProps}
+            />
           }
           {localPhase === UPDATES &&
-            <MeetingUpdatesContainer gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
+            <MeetingUpdatesContainer
+              gotoItem={this.gotoItem}
+              gotoNext={this.gotoNext}
+              hideMoveMeetingControls={hideMoveMeetingControls}
+              {...phaseStateProps}
+            />
           }
-          {localPhase === FIRST_CALL && <MeetingAgendaFirstCall gotoNext={this.gotoNext}/>}
+          {localPhase === FIRST_CALL &&
+            <MeetingAgendaFirstCall
+              gotoNext={this.gotoNext}
+              hideMoveMeetingControls={hideMoveMeetingControls}
+            />
+          }
           {localPhase === AGENDA_ITEMS &&
             <MeetingAgendaItems
               agendaItem={agenda[localPhaseItem - 1]}
               isLast={localPhaseItem === agenda.length}
               gotoNext={this.gotoNext}
               members={members}
+              hideMoveMeetingControls={hideMoveMeetingControls}
             />
           }
           {localPhase === LAST_CALL &&
             <MeetingAgendaLastCallContainer
               {...phaseStateProps}
               gotoNext={this.gotoNext}
-              isFacilitating={isFacilitating}
+              hideMoveMeetingControls={hideMoveMeetingControls}
             />
           }
           {!inSync &&

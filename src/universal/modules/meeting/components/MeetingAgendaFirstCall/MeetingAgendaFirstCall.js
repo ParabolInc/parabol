@@ -6,7 +6,7 @@ import MeetingSection from 'universal/modules/meeting/components/MeetingSection/
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
 
 const MeetingAgendaFirstCall = (props) => {
-  const {gotoNext} = props;
+  const {gotoNext, hideMoveMeetingControls} = props;
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="2rem">
@@ -15,15 +15,17 @@ const MeetingAgendaFirstCall = (props) => {
           <Type align="center" bold marginTop="2rem" scale="s5" colorPalette="black">
             Add your Agenda Items to the queue now…
           </Type>
-          <IconLink
-            icon="arrow-circle-right"
-            iconPlacement="right"
-            label="…great! Let’s take care of our Agenda Items"
-            scale="large"
-            colorPalette="cool"
-            onClick={gotoNext}
-            margin="2rem 0 0"
-          />
+          {!hideMoveMeetingControls &&
+            <IconLink
+              icon="arrow-circle-right"
+              iconPlacement="right"
+              label="…great! Let’s take care of our Agenda Items"
+              scale="large"
+              colorPalette="cool"
+              onClick={gotoNext}
+              margin="2rem 0 0"
+            />
+          }
         </MeetingSection>
       </MeetingSection>
     </MeetingMain>
@@ -31,7 +33,8 @@ const MeetingAgendaFirstCall = (props) => {
 };
 
 MeetingAgendaFirstCall.propTypes = {
-  gotoNext: PropTypes.func
+  gotoNext: PropTypes.func,
+  hideMoveMeetingControls: PropTypes.bool
 };
 
 export default MeetingAgendaFirstCall;

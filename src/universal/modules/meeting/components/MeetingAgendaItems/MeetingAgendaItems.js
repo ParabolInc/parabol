@@ -20,7 +20,9 @@ const MeetingAgendaItems = (props) => {
     gotoNext,
     members,
     styles,
+    hideMoveMeetingControls
   } = props;
+
   if (!agendaItem) {
     return <LoadingView />;
   }
@@ -51,14 +53,16 @@ const MeetingAgendaItems = (props) => {
                 </div>
               </div>
               <div className={css(styles.linkSpacer)}>
-                <IconLink
-                  colorPalette="cool"
-                  icon="arrow-circle-right"
-                  iconPlacement="right"
-                  label={isLast ? 'Wrap up the meeting' : 'Next Agenda Item'}
-                  onClick={gotoNext}
-                  scale="small"
-                />
+                {!hideMoveMeetingControls &&
+                  <IconLink
+                    colorPalette="cool"
+                    icon="arrow-circle-right"
+                    iconPlacement="right"
+                    label={isLast ? 'Wrap up the meeting' : 'Next Agenda Item'}
+                    onClick={gotoNext}
+                    scale="small"
+                  />
+                }
               </div>
             </div>
             <MeetingAgendaCardsContainer
@@ -79,7 +83,8 @@ MeetingAgendaItems.propTypes = {
   isLast: PropTypes.bool,
   gotoNext: PropTypes.func.isRequired,
   members: PropTypes.array.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
+  hideMoveMeetingControls: PropTypes.bool
 };
 
 const styleThunk = () => ({

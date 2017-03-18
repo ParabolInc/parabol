@@ -50,7 +50,7 @@ const mapStateToProps = (state, props) => {
 };
 
 const MeetingAgendaLastCallContainer = (props) => {
-  const {agendaItemCount, actionCount, gotoNext, isFacilitating, members, projectCount, team} = props;
+  const {agendaItemCount, actionCount, gotoNext, hideMoveMeetingControls, members, projectCount, team} = props;
   const facilitator = members.find(member => member.id === team.activeFacilitator);
   const facilitatorName = facilitator && facilitator.preferredName || 'Facilitator';
   return (
@@ -59,7 +59,7 @@ const MeetingAgendaLastCallContainer = (props) => {
       actionCount={actionCount}
       gotoNext={gotoNext}
       facilitatorName={facilitatorName}
-      isFacilitating={isFacilitating}
+      hideMoveMeetingControls={hideMoveMeetingControls}
       projectCount={projectCount}
     />
   );
@@ -72,7 +72,8 @@ MeetingAgendaLastCallContainer.propTypes = {
   isFacilitating: PropTypes.bool,
   members: PropTypes.array,
   projectCount: PropTypes.number,
-  team: PropTypes.object
+  team: PropTypes.object,
+  hideMoveMeetingControls: PropTypes.bool
 };
 
 export default connect(mapStateToProps)(MeetingAgendaLastCallContainer);
