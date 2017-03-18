@@ -157,6 +157,7 @@ export default function getRallyLink(hasStyle = true) {
   return (
     <a
       href={rally.link}
+      rel="noopener noreferrer"
       style={hasStyle ? style : null}
       target="_blank"
       title={rallyPhrase}

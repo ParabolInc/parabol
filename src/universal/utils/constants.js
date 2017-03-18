@@ -33,7 +33,7 @@ export const AGENDA_ITEMS = 'agendaitems';
 export const LAST_CALL = 'lastcall';
 export const SUMMARY = 'summary';
 export const phaseArray = [LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY];
-export const phaseOrder = phase => phaseArray.indexOf(phase);
+export const phaseOrder = (phase) => phaseArray.indexOf(phase);
 
 /* Columns */
 export const ACTIVE = 'active';

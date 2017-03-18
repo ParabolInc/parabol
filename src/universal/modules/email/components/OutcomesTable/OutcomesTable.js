@@ -19,17 +19,16 @@ const getOutcomeRows = (arr) => {
   return rows;
 };
 
+/* eslint-disable react/no-array-index-key */
 const makeOutcomeCards = (arr) => {
-  const cards = () =>
-    arr.map((card, idx) =>
-      <td style={cardRowCell} key={`outcomeCard${idx}`}>
-        <Card
-          content={card.content}
-          status={card.status}
-        />
-      </td>
-    );
-  return cards();
+  return arr.map((card, idx) =>
+    <td style={cardRowCell} key={`outcomeCard${idx}`}>
+      <Card
+        content={card.content}
+        status={card.status}
+      />
+    </td>
+  );
 };
 
 const OutcomesTable = (props) => {
@@ -41,12 +40,12 @@ const OutcomesTable = (props) => {
           <tr key={`outcomeRow${idx}`}>
             {makeOutcomeCards(row)}
           </tr>
-        )}
+      )}
       </tbody>
     </table>
   );
 };
-
+/* eslint-enable */
 OutcomesTable.propTypes = {
   outcomes: PropTypes.array
 };

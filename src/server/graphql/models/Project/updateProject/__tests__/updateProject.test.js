@@ -14,7 +14,7 @@ MockDate.set(__now);
 console.error = jest.fn();
 
 describe('updateProject', () => {
-  test('updates the sortOrder without changing updatedAt or making a history item', async() => {
+  test('updates the sortOrder without changing updatedAt or making a history item', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
@@ -41,7 +41,7 @@ describe('updateProject', () => {
     expect(db).toMatchSnapshot();
   });
 
-  test('updates the content of the project', async() => {
+  test('updates the content of the project', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
@@ -68,7 +68,7 @@ describe('updateProject', () => {
     expect(db).toMatchSnapshot();
   });
 
-  test('updates the teamMember of the project slowly and trigger a new history item', async() => {
+  test('updates the teamMember of the project slowly and trigger a new history item', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
@@ -96,7 +96,7 @@ describe('updateProject', () => {
     expect(db).toMatchSnapshot();
   });
 
-  test('updates the content of the project quickly and do not trigger a new history item', async() => {
+  test('updates the content of the project quickly and do not trigger a new history item', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
@@ -124,7 +124,7 @@ describe('updateProject', () => {
     expect(db).toMatchSnapshot();
   });
 
-  test('updates the status of the project', async() => {
+  test('updates the status of the project', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
@@ -151,12 +151,12 @@ describe('updateProject', () => {
     expect(db).toMatchSnapshot();
   });
 
-  test('throws when no websocket is present', async() => {
+  test('throws when no websocket is present', async () => {
     const authToken = {};
     await expectAsyncToThrow(updateProject.resolve(undefined, {updatedProject: {}}, {authToken}));
   });
 
-  test('throw when the caller is not a team member', async() => {
+  test('throw when the caller is not a team member', async () => {
     // SETUP
     const mockDB = new MockDB();
     const {project, user} = await mockDB.init()

@@ -11,6 +11,7 @@ const LeaveOrgModal = (props) => {
     const variables = {orgId, userId};
     cashay.mutate('removeOrgUser', {variables});
   };
+  const undoStr = 'To undo it, you\'ll have to ask another Billing Leader to re-add you';
   return (
     <DashModal closeAfter={closeAfter} closePortal={closePortal} isClosing={isClosing} onBackdropClick={closePortal}>
       <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
@@ -18,7 +19,7 @@ const LeaveOrgModal = (props) => {
       </Type>
       <Type align="center" bold scale="s4">
         This will remove you from the organization and all teams under it! <br />
-        To undo it, you'll have to ask another Billing Leader to re-add you <br/>
+        {undoStr}<br />
       </Type>
       <IconLink
         colorPalette="warm"

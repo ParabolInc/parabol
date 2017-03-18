@@ -18,10 +18,12 @@ export default {
       requireSUOrSelf(authToken, userId);
 
       // RESOLUTION
-      return await r.table('Action')
+      return r.table('Action')
         .getAll(userId, {index: 'userId'})
         .filter({isComplete: false})
-        .count();
+        .count()
+        .default(0)
+        .run();
     }
   }
 };

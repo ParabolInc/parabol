@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
+import raven from 'raven-js';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import handleAgendaSort from 'universal/modules/meeting/helpers/handleAgendaSort';
@@ -142,6 +143,7 @@ let infiniteTrigger = false;
 export default class MeetingContainer extends Component {
   static propTypes = {
     agenda: PropTypes.array.isRequired,
+    bindHotkey: PropTypes.func.isRequired,
     dispatch: PropTypes.func.isRequired,
     isFacilitating: PropTypes.bool,
     localPhaseItem: PropTypes.number,
@@ -219,7 +221,9 @@ export default class MeetingContainer extends Component {
           title: 'Awh shoot',
           message: 'You found a glitch! We saved your work, but forgot where you were. We sent the bug to our team.'
         }));
-        // TODO send to server
+        raven.captureMessage(
+          'MeetingContainer::shouldComponentUpdate(): infiniteLoop watchdog triggered',
+        );
       }
     } else {
       infiniteloopCounter = 0;
@@ -366,7 +370,7 @@ export default class MeetingContainer extends Component {
           <MeetingAvatars>
             <AvatarGroup avatars={members} localPhase={localPhase} />
           </MeetingAvatars>
-          {localPhase === LOBBY && <MeetingLobby members={members} team={team}/>}
+          {localPhase === LOBBY && <MeetingLobby members={members} team={team} />}
           {localPhase === CHECKIN &&
             <MeetingCheckin
               gotoItem={this.gotoItem}
@@ -406,7 +410,7 @@ export default class MeetingContainer extends Component {
             />
           }
           {!inSync &&
-            <RejoinFacilitatorButton onClickHandler={rejoinFacilitator}/>
+            <RejoinFacilitatorButton onClickHandler={rejoinFacilitator} />
           }
         </MeetingMain>
       </MeetingLayout>

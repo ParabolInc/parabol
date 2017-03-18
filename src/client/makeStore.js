@@ -7,7 +7,7 @@ import createEngine from 'redux-storage-engine-localstorage';
 import makeReducer from 'universal/redux/makeReducer';
 import {APP_REDUX_KEY, APP_VERSION_KEY} from 'universal/utils/constants';
 
-const storageWhitelist = type => {
+const storageWhitelist = (type) => {
   const whitelistPrefixes = ['@@auth', '@@cashay', '@@root'];
   for (let i = 0; i < whitelistPrefixes.length; i++) {
     const prefix = whitelistPrefixes[i];
@@ -18,7 +18,7 @@ const storageWhitelist = type => {
   return false;
 };
 
-export default async initialState => {
+export default async (initialState) => {
   let store;
   const reducer = makeReducer();
   const engine = createEngine(APP_REDUX_KEY);
@@ -55,7 +55,7 @@ export default async initialState => {
     }
     store = createStore(reducer, initialState, compose(
       applyMiddleware(...middlewares),
-      devtoolsExt || (f => f),
+      devtoolsExt || ((f) => f),
     ));
   }
   const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY);

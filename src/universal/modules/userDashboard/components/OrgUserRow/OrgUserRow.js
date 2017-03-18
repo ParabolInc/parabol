@@ -23,8 +23,8 @@ const OrgUserRow = (props) => {
     <Row>
       <div className={css(styles.userAvatar)}>
         {picture ?
-          <Avatar hasBadge={false} picture={picture} size="small"/> :
-          <AvatarPlaceholder/>
+          <Avatar hasBadge={false} picture={picture} size="small" /> :
+          <AvatarPlaceholder />
         }
       </div>
       <div className={css(styles.userInfo)}>
@@ -33,10 +33,10 @@ const OrgUserRow = (props) => {
             {preferredName}
           </div>
           {isBillingLeader &&
-            <Tag colorPalette="light" label="Billing Leader"/>
+            <Tag colorPalette="light" label="Billing Leader" />
           }
           {inactive &&
-            <Tag colorPalette="light" label="Inactive"/>
+            <Tag colorPalette="light" label="Inactive" />
           }
         </div>
         <a className={css(styles.infoLink)} href={`mailto:${email}`} title="Send an email">

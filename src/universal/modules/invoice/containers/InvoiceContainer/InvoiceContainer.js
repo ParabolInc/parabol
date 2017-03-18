@@ -63,9 +63,9 @@ const mapStateToProps = (state, props) => {
 const InvoiceContainer = (props) => {
   const {invoiceDetails} = props;
   if (!invoiceDetails.id) {
-    return <LoadingView/>;
+    return <LoadingView />;
   }
-  return <Invoice invoice={invoiceDetails}/>;
+  return <Invoice invoice={invoiceDetails} />;
 };
 
 InvoiceContainer.propTypes = {

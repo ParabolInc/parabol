@@ -72,7 +72,7 @@ const InviteUser = (props) => {
 
   return (
     <div className={css(styles.inviteUser)}>
-      <AvatarPlaceholder/>
+      <AvatarPlaceholder />
       <div className={css(styles.fieldBlock)}>
         <Field
           component={Editable}

@@ -73,15 +73,15 @@ const Invoice = (props) => {
   const chargeDates = `${makeDateString(startAt, false)} to ${makeDateString(endAt, false)}`;
   const nextChargesDates = `${makeDateString(endAt, false)} to ${makeDateString(nextPeriodEnd, false)}`;
   const makeLineItems = (arr) =>
-    arr.map((item, idx) => {
-      const {amount, description, type, quantity: lineItemQuantity, details} = item;
+    arr.map((item) => {
+      const {id: lineId, amount, description, type, quantity: lineItemQuantity, details} = item;
       const li = {
         amount: invoiceLineFormat(amount),
         desc: description || descriptionMaker[type](lineItemQuantity),
         details,
         type
       };
-      return <InvoiceLineItemContainer key={idx} item={li}/>;
+      return <InvoiceLineItemContainer key={lineId} item={li} />;
     });
 
   const makeAsterisk = () =>
@@ -89,8 +89,8 @@ const Invoice = (props) => {
 
   return (
     <div className={css(styles.invoice)}>
-      <Helmet title={`Parabol Action Invoice for ${subject}`}/>
-      <InvoiceHeader orgName={orgName} emails={billingLeaderEmails} picture={picture}/>
+      <Helmet title={`Parabol Action Invoice for ${subject}`} />
+      <InvoiceHeader orgName={orgName} emails={billingLeaderEmails} picture={picture} />
       <div className={css(styles.panel)}>
         {status === FAILED &&
           <div className={css(styles.failedStamp)}>
@@ -99,12 +99,12 @@ const Invoice = (props) => {
         }
         {status === UPCOMING &&
           <div className={css(styles.tagBlock)}>
-            <Tag colorPalette="light" label="Current Estimation"/>
+            <Tag colorPalette="light" label="Current Estimation" />
           </div>
         }
         {status === PENDING &&
           <div className={css(styles.tagBlock)}>
-            <Tag colorPalette="gray" label="Payment Processing"/>
+            <Tag colorPalette="gray" label="Payment Processing" />
           </div>
         }
         <div className={css(styles.label)}>{'Invoice'}</div>
@@ -115,7 +115,7 @@ const Invoice = (props) => {
           <div className={css(styles.meta)}>{nextChargesDates}</div>
         </div>
 
-        <InvoiceLineItem item={nextUsage}/>
+        <InvoiceLineItem item={nextUsage} />
 
         {lines.length > 0 &&
           <div className={css(styles.sectionHeader)}>
@@ -154,7 +154,7 @@ const Invoice = (props) => {
           }
         </div>
       </div>
-      <InvoiceFooter/>
+      <InvoiceFooter />
     </div>
   );
 };

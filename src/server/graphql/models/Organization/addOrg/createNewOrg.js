@@ -30,7 +30,7 @@ export default async function createNewOrg(orgId, orgName, leaderUserId, stripeT
       trial_period_days: stripeToken ? 0 : TRIAL_PERIOD_DAYS
     });
 
-  return await r.table('Organization').insert({
+  return r.table('Organization').insert({
     id: orgId,
     creditCard,
     createdAt: now,
@@ -41,5 +41,6 @@ export default async function createNewOrg(orgId, orgName, leaderUserId, stripeT
     updatedAt: now,
     periodEnd: fromEpochSeconds(current_period_end),
     periodStart: fromEpochSeconds(current_period_start),
-  }, {returnChanges: true})('changes')(0)('new_val');
+  }, {returnChanges: true})('changes')(0)('new_val')
+    .run()
 }

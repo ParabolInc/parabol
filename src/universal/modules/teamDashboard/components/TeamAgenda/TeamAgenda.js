@@ -9,7 +9,7 @@ const TeamAgenda = (props) => {
   const {styles, teamId} = props;
   return (
     <div className={css(styles.root)}>
-      <AgendaHeader/>
+      <AgendaHeader />
       <AgendaListAndInputContainer context="dashboard" disabled={false} gotoItem={voidClick} teamId={teamId} />
     </div>
   );

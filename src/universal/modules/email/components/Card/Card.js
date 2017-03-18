@@ -7,7 +7,7 @@ import EmptySpace from '../EmptySpace/EmptySpace';
 
 const Card = (props) => {
   const {content, status} = props;
-  const type = Boolean(status) ? 'project' : 'action';
+  const type = status ? 'project' : 'action';
   let backgroundColor;
 
   if (type === 'project') {

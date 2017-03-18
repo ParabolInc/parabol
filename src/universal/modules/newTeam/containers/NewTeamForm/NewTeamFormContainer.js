@@ -46,7 +46,7 @@ const mapStateToProps = (state, props) => {
 };
 
 const makeInvitees = (invitees) => {
-  return invitees ? invitees.map(email => ({
+  return invitees ? invitees.map((email) => ({
     email: email.address,
     fullName: email.fullName
   })) : [];

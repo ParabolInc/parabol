@@ -1,6 +1,6 @@
 import path from 'path';
 import webpack from 'webpack';
-import {getDotenv} from '../src/universal/utils/dotenv';
+import getDotenv from '../src/universal/utils/dotenv';
 import npmPackage from '../package.json';
 import vendors from '../dll/vendors.json';
 
@@ -21,7 +21,7 @@ const clientInclude = [
 
 const prefetches = [];
 
-const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(specifier));
+const prefetchPlugins = prefetches.map((specifier) => new webpack.PrefetchPlugin(specifier));
 
 const babelQuery = {
   cacheDirectory: true,

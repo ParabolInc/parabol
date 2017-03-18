@@ -59,7 +59,7 @@ class CreditCardModalContainer extends Component {
     };
   }
 
-  addStripeBilling = async(submittedData) => {
+  addStripeBilling = async (submittedData) => {
     const {
       closePortal,
       createToken,

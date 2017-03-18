@@ -60,13 +60,13 @@ const UserActionList = (props) => {
               teams={teams}
               userId={userId}
             /> :
-            <UserActionListHeader onAddNewAction={createNewAction}/>
+            <UserActionListHeader onAddNewAction={createNewAction} />
           }
         </div>
         {actionCount ?
           <div className={css(styles.actionsBlock)}>
             <div className={css(styles.actions)}>
-              {actions.map(action =>
+              {actions.map((action) =>
                 <UserActionListItemContainer
                   key={`actionItem::${action.id}`}
                   actionId={action.id}
@@ -82,7 +82,7 @@ const UserActionList = (props) => {
                   team={action.team.name}
                 />
               )}
-              <div className={css(styles.hr)}></div>
+              <div className={css(styles.hr)} />
             </div>
             :
           </div> :

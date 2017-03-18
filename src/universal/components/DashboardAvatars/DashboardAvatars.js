@@ -9,10 +9,10 @@ const DashboardAvatars = (props) => {
   return (
     <div className={css(styles.root)}>
       {
-        teamMembers.map((avatar, index) => {
+        teamMembers.map((avatar) => {
           const picture = avatar.picture || defaultUserAvatar;
           return (
-            <div className={css(styles.item)} key={`dbAvatar${index}`}>
+            <div className={css(styles.item)} key={`dbAvatar${avatar.id}`}>
               <Avatar
                 {...avatar}
                 picture={picture}

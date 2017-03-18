@@ -30,7 +30,7 @@ const TextAreaField = (props) => {
 
   return (
     <FieldBlock>
-      {label && <FieldLabel label={label} htmlFor={input.name}/>}
+      {label && <FieldLabel label={label} htmlFor={input.name} />}
       <div className={css(styles.inputBlock)}>
         <Textarea
           {...input}
@@ -40,7 +40,7 @@ const TextAreaField = (props) => {
           placeholder={placeholder}
         />
       </div>
-      {touched && error && <FieldHelpText hasErrorText helpText={error}/>}
+      {touched && error && <FieldHelpText hasErrorText helpText={error} />}
     </FieldBlock>
   );
 };

@@ -61,7 +61,7 @@ const TeamSettingsContainer = (props) => {
   } = props;
   const myTeamMember = teamMembers.find((member) => member.id === myTeamMemberId);
   if (!myTeamMember) {
-    return <LoadingView/>;
+    return <LoadingView />;
   }
   return (
     <TeamSettings

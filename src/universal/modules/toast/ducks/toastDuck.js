@@ -14,7 +14,7 @@ export default function reducer(state = initialState, action = {type: ''}) {
       return state.concat(action.payload);
     }
     case TOAST_HIDE:
-      return state.filter(notification => notification.nid !== action.payload.nid);
+      return state.filter((notification) => notification.nid !== action.payload.nid);
     default:
       return state;
   }

@@ -11,7 +11,7 @@ const NewTeam = (props) => {
   const {dispatch, params: {newOrg}} = props;
   return (
     <DashboardWrapper title="User Dashboard">
-      <NewTeamFormContainer dispatch={dispatch} newOrgRoute={Boolean(newOrg)}/>
+      <NewTeamFormContainer dispatch={dispatch} newOrgRoute={Boolean(newOrg)} />
     </DashboardWrapper>
   );
 };

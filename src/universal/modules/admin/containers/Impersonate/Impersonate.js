@@ -68,7 +68,7 @@ const mapStateToProps = (state, props) => {
 const showDucks = () => {
   return (
     <div>
-      <Helmet title="Authenticating As..."/>
+      <Helmet title="Authenticating As..." />
       <LoadingView />
     </div>
   );

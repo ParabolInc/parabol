@@ -4,7 +4,7 @@ export default function subscriber(channel, key, handlers) {
   const socket = socketCluster.connect();
   const {upsert, update, remove} = handlers;
   const channelName = key ? `${channel}/${key}` : channel;
-  const messageHandler = data => {
+  const messageHandler = (data) => {
     if (data.type === 'add') {
       upsert(data.fields);
     } else if (data.type === 'remove') {
@@ -18,7 +18,7 @@ export default function subscriber(channel, key, handlers) {
   socket.subscribe(channelName, {waitForAuth: true});
   socket.on(channelName, messageHandler);
   socket.watch(channelName, messageHandler);
-  socket.on('unsubscribe', unsubChannel => {
+  socket.on('unsubscribe', (unsubChannel) => {
     if (unsubChannel === channelName) {
       console.log(`unsubbed from ${unsubChannel}`);
     }

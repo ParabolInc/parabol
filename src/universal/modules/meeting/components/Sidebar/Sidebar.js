@@ -56,7 +56,7 @@ const Sidebar = (props) => {
     <div className={css(styles.sidebar)}>
       <div className={css(styles.sidebarHeader)}>
         <a className={css(styles.brandLink)}>
-          <img className={css(styles.brandLogo)} src={actionUIMark}/>
+          <img className={css(styles.brandLogo)} src={actionUIMark} />
         </a>
         <Link className={css(styles.teamName)} to={`/team/${teamId}`} title={`Go to the ${teamName} Team Dashboard`}>{teamName}</Link>
         <a className={css(styles.shortUrl)} href={relativeLink}>{shortUrl}</a>

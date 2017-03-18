@@ -1,5 +1,5 @@
 import makeReducer from 'universal/redux/makeReducer';
-import {resolvePromiseMap} from 'universal/utils/promises';
+import resolvePromiseMap from 'universal/utils/promises';
 
 const setImports = () =>
   new Map([
@@ -9,14 +9,14 @@ const setImports = () =>
       'universal/modules/userDashboard/ducks/settingsDuck')]
   ]);
 
-const getImports = importMap => ({
+const getImports = (importMap) => ({
   component: importMap.get('component').default,
   userDashboardSettings: importMap.get('userDashboardSettings').default
 });
 
 export default (store) => ({
   path: '/invitation/:id',
-  getComponent: async(location, cb) => {
+  getComponent: async (location, cb) => {
     const promiseMap = setImports();
     const importMap = await resolvePromiseMap(promiseMap);
     const {component, ...asyncReducers} = getImports(importMap);
