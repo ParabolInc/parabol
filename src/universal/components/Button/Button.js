@@ -96,7 +96,8 @@ const Button = (props) => {
       <FontAwesome className={iconMargin} name={icon} style={iconStyle} />;
     return (
       <span className={css(styles.buttonInner)}>
-        {iconOnly ? makeIcon() :
+        {iconOnly ?
+          makeIcon() :
           <span className={css(styles.buttonInner)}>
             {thisIconPlacement === 'left' && makeIcon()}
             <span className={css(styles.label)}>{label}</span>
@@ -116,7 +117,8 @@ const Button = (props) => {
       title={buttonTitle}
       type={type}
     >
-      {icon ? makeIconLabel() :
+      {icon ?
+        makeIconLabel() :
         <span className={css(styles.buttonInner)}>
           <span className={css(styles.label)}>{label}</span>
         </span>

@@ -22,7 +22,7 @@ export default {
       return r.table('Organization')
         .getAll(userId, {index: 'orgUsers'})
         .count()
-        .run()
+        .run();
     }
   },
   orgDetails: {

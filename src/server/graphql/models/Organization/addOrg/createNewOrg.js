@@ -42,5 +42,5 @@ export default async function createNewOrg(orgId, orgName, leaderUserId, stripeT
     periodEnd: fromEpochSeconds(current_period_end),
     periodStart: fromEpochSeconds(current_period_start),
   }, {returnChanges: true})('changes')(0)('new_val')
-    .run()
+    .run();
 }

@@ -175,7 +175,7 @@ export const User = new GraphQLObjectType({
         const r = getRethink();
         return r.table('TeamMember')
           .getAll(id, {index: 'userId'})
-          .run()
+          .run();
       }
     },
     jwt: {
