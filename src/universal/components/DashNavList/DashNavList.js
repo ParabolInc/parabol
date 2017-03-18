@@ -7,7 +7,6 @@ import appTheme from 'universal/styles/theme/appTheme';
 import FontAwesome from 'react-fontawesome';
 
 const DashNavList = (props) => {
-  console.log('dashnavlist');
   const {teams, styles} = props;
   const hasTeams = teams.length > 0;
   return (

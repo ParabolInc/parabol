@@ -1,10 +1,8 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-// import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette';
-// import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
 import Textarea from 'react-textarea-autosize';
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
 import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText';
@@ -36,8 +34,10 @@ const TextAreaField = (props) => {
           {...input}
           autoFocus={autoFocus}
           className={inputStyles}
+          defaultValue={input.value}
           disabled={disabled || readOnly}
           placeholder={placeholder}
+          value={undefined}
         />
       </div>
       {touched && error && <FieldHelpText hasErrorText helpText={error} />}

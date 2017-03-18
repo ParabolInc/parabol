@@ -4,8 +4,6 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette';
-
-import Textarea from 'react-textarea-autosize';
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
 import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText';
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
@@ -27,7 +25,6 @@ const InputField = (props) => {
     readyOnly,
     shortcutHint,
     styles,
-    useTextarea,
     underline
   } = props;
 
@@ -39,7 +36,6 @@ const InputField = (props) => {
     isLarger && styles.fieldLarger,
     readyOnly && styles.readyOnly,
     isWider && styles.fieldWider,
-    useTextarea && styles.textarea,
     underline && styles.underline
   );
 
@@ -57,29 +53,15 @@ const InputField = (props) => {
     <FieldBlock>
       {label && <FieldLabel label={label} htmlFor={input.name} />}
       <div className={css(styles.inputBlock)}>
-        {/*
-          // TODO: input and textarea should be broken out into separate components
-          //       this component 'InputField' can be renamed to wrap form components of any type
-          //       select, input, textarea, etc. that can use a label, help text, shortcut hints, etc.
-        */}
-        {useTextarea ?
-          <Textarea
-            {...input}
-            autoFocus={autoFocus}
-            className={inputStyles}
-            disabled={disabled || readyOnly}
-            placeholder={placeholder}
-          /> :
-          <input
-            {...input}
-            autoFocus={autoFocus}
-            className={inputStyles}
-            disabled={disabled || readyOnly}
-            placeholder={placeholder}
-            onKeyDown={onButtonClick && submitOnEnter}
-            ref={(c) => { ref = c; }}
-          />
-        }
+        <input
+          {...input}
+          autoFocus={autoFocus}
+          className={inputStyles}
+          disabled={disabled || readyOnly}
+          placeholder={placeholder}
+          onKeyDown={onButtonClick && submitOnEnter}
+          ref={(c) => { ref = c; }}
+        />
       </div>
       {touched && error && <FieldHelpText hasErrorText helpText={error} />}
       {shortcutHint && <FieldShortcutHint disabled={shortcutDisabled} hint={shortcutHint} />}
@@ -126,7 +108,6 @@ InputField.propTypes = {
   ]),
   meta: PropTypes.object.isRequired,
   underline: PropTypes.bool,
-  useTextarea: PropTypes.bool
 };
 
 const styleThunk = () => ({
@@ -154,10 +135,6 @@ const styleThunk = () => ({
 
   inputBlock: {
     position: 'relative'
-  },
-
-  textarea: {
-    minHeight: '6rem'
   },
 
   underline: {
