@@ -62,7 +62,8 @@ query{
     isCheckedIn
     isFacilitator,
     isLead,
-    presence @cached(type: "[Presence]") {
+    presence(teamId: $teamId) @live {
+      id
       userId
     },
     projects(teamMemberId: $teamMemberId) @live {
@@ -104,9 +105,9 @@ const mapStateToProps = (state, props) => {
       agenda: (a, b) => a.sortOrder - b.sortOrder,
       teamMembers: (a, b) => a.checkInOrder - b.checkInOrder
     },
-    resolveCached: {presence: (source) => (doc) => source.id.startsWith(doc.userId)},
     resolveChannelKey: {
-      team: () => teamId
+      team: () => teamId,
+      presence: () => teamId
     }
   });
   const {agenda, agendaCount, team, teamMemberCount} = queryResult.data;
