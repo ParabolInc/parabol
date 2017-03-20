@@ -53,15 +53,13 @@ export default {
         await r.table('Organization').get(orgId).update({
           creditCard: getCCFromCustomer(customer)
         });
-        if (segmentIo) {
-          segmentIo.track({
-            userId,
-            event: 'addBilling New Payment Success',
-            properties: {
-              orgId
-            }
-          });
-        }
+        segmentIo.track({
+          userId,
+          event: 'addBilling New Payment Success',
+          properties: {
+            orgId
+          }
+        });
         // 2) Adding to extend the free trial
       } else {
         const extendedPeriodEnd = new Date(periodStart.setMilliseconds(0) + TRIAL_PERIOD + TRIAL_EXTENSION);
@@ -81,15 +79,13 @@ export default {
               })
               .delete();
           });
-        if (segmentIo) {
-          segmentIo.track({
-            userId,
-            event: 'addBilling Free Trial Extended',
-            properties: {
-              orgId
-            }
-          });
-        }
+        segmentIo.track({
+          userId,
+          event: 'addBilling Free Trial Extended',
+          properties: {
+            orgId
+          }
+        });
       }
     } else {
       // 3) Converting after the trial ended
@@ -126,16 +122,14 @@ export default {
             })
             .delete();
         });
-      if (segmentIo) {
-        segmentIo.track({
-          userId,
-          event: 'addBilling New Payment Success',
-          properties: {
-            orgId,
-            quantity
-          }
-        });
-      }
+      segmentIo.track({
+        userId,
+        event: 'addBilling New Payment Success',
+        properties: {
+          orgId,
+          quantity
+        }
+      });
     }
     // nuke the upcoming invoice if it existed
     await r.table('Invoice')

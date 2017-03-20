@@ -131,17 +131,15 @@ export default {
        *
        * see: https://segment.com/docs/sources/server/node/
        */
-      if (segmentIo) {
-        segmentIo.identify({
-          userId: newUser.id,
-          traits: {
-            avatar: newUser.picture,
-            createdAt: newUser.createdAt,
-            email: newUser.email,
-            name: newUser.preferredName
-          }
-        });
-      }
+      segmentIo.identify({
+        userId: newUser.id,
+        traits: {
+          avatar: newUser.picture,
+          createdAt: newUser.createdAt,
+          email: newUser.email,
+          name: newUser.preferredName
+        }
+      });
       // don't await
       setTimeout(() => sendEmail(newUser.email, 'welcomeEmail', newUser), 0);
       return newUser;
@@ -187,17 +185,15 @@ export default {
       // }
       //
       const dbProfile = updatedOrOriginal(dbProfileChanges);
-      if (segmentIo) {
-        segmentIo.identify({
-          userId: dbProfile.id,
-          traits: {
-            avatar: dbProfile.picture,
-            createdAt: dbProfile.createdAt,
-            email: dbProfile.email,
-            name: dbProfile.preferredName
-          }
-        });
-      }
+      segmentIo.identify({
+        userId: dbProfile.id,
+        traits: {
+          avatar: dbProfile.picture,
+          createdAt: dbProfile.createdAt,
+          email: dbProfile.email,
+          name: dbProfile.preferredName
+        }
+      });
       return dbProfile;
     }
   }
