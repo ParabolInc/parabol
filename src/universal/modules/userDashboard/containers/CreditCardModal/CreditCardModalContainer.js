@@ -78,7 +78,7 @@ class CreditCardModalContainer extends Component {
         errorMessage[field.name] = field.message;
       }
       dispatch(
-        segmentEventTrack('addStripeBilling Stripe Error', {error: errorMessage})
+        segmentEventTrack('addBilling Stripe Error', {error: errorMessage})
       );
       throw new SubmissionError(errorMessage);
     }
@@ -94,7 +94,6 @@ class CreditCardModalContainer extends Component {
       };
       const {error: cashayError} = await cashay.mutate('addBilling', {variables});
       if (cashayError) throw new SubmissionError(cashayError);
-      dispatch(segmentEventTrack('addStripeBilling Success'));
       closePortal();
     }
   };

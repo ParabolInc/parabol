@@ -10,7 +10,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
 
-const TrialExpires = (props) => {
+const TrialExpired = (props) => {
   const {dispatch, orgId, router, styles} = props;
   const addBilling = () => {
     dispatch(
@@ -45,7 +45,7 @@ const TrialExpires = (props) => {
   );
 };
 
-TrialExpires.propTypes = {
+TrialExpired.propTypes = {
   dispatch: PropTypes.func.isRequired,
   orgId: PropTypes.string.isRequired,
   router: PropTypes.object.isRequired,
@@ -92,5 +92,5 @@ const styleThunk = () => ({
 });
 
 export default withRouter(
-  withStyles(styleThunk)(TrialExpires)
+  withStyles(styleThunk)(TrialExpired)
 );
