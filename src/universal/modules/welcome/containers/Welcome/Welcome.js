@@ -20,7 +20,7 @@ const mapStateToProps = (state, props) => ({
 });
 
 const WelcomeContainer = (props) => {
-  const {dispatch, invitees, inviteesRaw, preferredName, teamName, router, tms, welcome} = props;
+  const {dispatch, invitees, inviteesRaw, preferredName, teamName, router, tms, user, welcome} = props;
   const {completed} = welcome;
   const progressDotClickFactory = (dot) => (e) => {
     e.preventDefault();
@@ -42,6 +42,7 @@ const WelcomeContainer = (props) => {
       welcome={welcome}
       progressDotClickFactory={progressDotClickFactory}
       title="Welcome"
+      user={user}
     />
   );
 };
@@ -54,6 +55,7 @@ WelcomeContainer.propTypes = {
   router: PropTypes.object,
   teamName: PropTypes.string,
   tms: PropTypes.array,
+  user: PropTypes.object.isRequired,
   welcome: PropTypes.shape({
     existingInvites: PropTypes.array,
     teamId: PropTypes.string,

@@ -16,20 +16,15 @@ import shortid from 'shortid';
 import {
   CHECKIN,
   LOBBY,
-  UPDATES,
-  FIRST_CALL,
   AGENDA_ITEMS,
-  LAST_CALL,
-  phaseArray,
-  phaseOrder
 } from 'universal/utils/constants';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
-import hasPhaseItem from 'universal/modules/meeting/helpers/hasPhaseItem';
 import addTeam from 'server/graphql/models/Team/addTeam/addTeam';
 import createFirstTeam from 'server/graphql/models/Team/createFirstTeam/createFirstTeam';
 import updateTeamName from 'server/graphql/models/Team/updateTeamName/updateTeamName';
 import endMeeting from 'server/graphql/models/Team/endMeeting/endMeeting';
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 
 export default {
   moveMeeting: {
@@ -83,31 +78,39 @@ export default {
       }
 
       // VALIDATION
-      if (nextPhase && !phaseArray.includes(nextPhase)) {
-        throw errorObj({_error: `${nextPhase} is not a valid phase`});
-      }
+      const nextPhaseInfo = actionMeeting[nextPhase];
       const team = await r.table('Team').get(teamId);
       const {activeFacilitator, facilitatorPhase, meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = team;
-      if (nextPhase === CHECKIN || nextPhase === UPDATES) {
-        const teamMembersCount = await r.table('TeamMember')
-          .getAll(teamId, {index: 'teamId'})
-          .filter({isNotRemoved: true})
-          .count();
-        if (nextPhaseItem < 1 || nextPhaseItem > teamMembersCount) {
-          throw errorObj({_error: 'We don\'t have that many team members!'});
+      const meetingPhaseInfo = actionMeeting[meetingPhase];
+      if (nextPhase) {
+        if (!nextPhaseInfo) {
+          throw errorObj({_error: `${nextPhase} is not a valid phase`});
         }
-      } else if (nextPhase === AGENDA_ITEMS) {
-        const agendaItemCount = await r.table('AgendaItem')
-          .getAll(teamId, {index: 'teamId'})
-          .filter({isActive: true})
-          .count();
-        if (nextPhaseItem < 1 || nextPhaseItem > agendaItemCount) {
-          throw errorObj({_error: 'We don\'t have that many agenda items!'});
+        if (nextPhaseInfo.items) {
+          const {arrayName} = nextPhaseInfo.items;
+          if (arrayName === 'members') {
+            const teamMembersCount = await r.table('TeamMember')
+              .getAll(teamId, {index: 'teamId'})
+              .filter({isNotRemoved: true})
+              .count();
+            if (nextPhaseItem < 1 || nextPhaseItem > teamMembersCount) {
+              throw errorObj({_error: 'We don\'t have that many team members!'});
+            }
+          } else if (arrayName === 'agenda') {
+            const agendaItemCount = await r.table('AgendaItem')
+              .getAll(teamId, {index: 'teamId'})
+              .filter({isActive: true})
+              .count();
+            if (nextPhaseItem < 1 || nextPhaseItem > agendaItemCount) {
+              throw errorObj({_error: 'We don\'t have that many agenda items!'});
+            }
+          }
+          if (nextPhaseInfo.visitOnce && meetingPhaseInfo.index > nextPhaseInfo.index) {
+            throw errorObj({_error: 'You can\'t visit first call twice!'});
+          }
+        } else if (nextPhaseItem) {
+          throw errorObj({_error: `${nextPhase} does not have phase items, but you said ${nextPhaseItem}`});
         }
-      } else if (nextPhase === FIRST_CALL && phaseOrder(meetingPhase) > phaseOrder(FIRST_CALL)) {
-        throw errorObj({_error: 'You can\'t visit first call twice!'});
-      } else if (nextPhase && nextPhaseItem) {
-        throw errorObj({_error: `${nextPhase} does not have phase items, but you said ${nextPhaseItem}`});
       }
 
       const userId = getUserId(authToken);
@@ -117,32 +120,22 @@ export default {
       }
 
       // RESOLUTION
-      const isSynced = facilitatorPhase === meetingPhase && facilitatorPhaseItem === meetingPhaseItem;
-      let incrementsProgress;
-      if (nextPhase && (phaseOrder(nextPhase) - phaseOrder(meetingPhase) === 1)) {
-        // console.log('phaseOrder increments progress');
-        // meeting phase has progressed forward:
-        incrementsProgress = true;
-      } else if (!nextPhase && hasPhaseItem(meetingPhase)) {
-        // console.log('phaseItem increments progress');
-        // same phase, and meeting phase item has incremented forward:
-        incrementsProgress = nextPhaseItem - meetingPhaseItem === 1;
-      } else if (meetingPhase === FIRST_CALL && nextPhase === LAST_CALL) {
-        const agendaItemCount = await r.table('AgendaItem')
-          .getAll(teamId, {index: 'teamId'})
-          .filter({isActive: true})
-          .count();
-        incrementsProgress = agendaItemCount === 0;
-      }
-      const moveMeeting = isSynced && incrementsProgress;
+      const goingForwardAPhase = nextPhase && nextPhaseInfo.index > meetingPhaseInfo.index;
+      const onSamePhaseWithItems = (!nextPhase || nextPhase === meetingPhase) && meetingPhaseInfo.items;
+
+      const promises = [];
       if (facilitatorPhase === AGENDA_ITEMS) {
-        if (moveMeeting || phaseOrder(meetingPhase) > phaseOrder(AGENDA_ITEMS)) {
-          await r.table('AgendaItem')
+        const agendaIdx = actionMeeting[AGENDA_ITEMS].index;
+        const markComplete = (!nextPhase && meetingPhase === AGENDA_ITEMS) ||
+          (nextPhaseInfo && nextPhaseInfo.index > agendaIdx);
+        if (markComplete) {
+          promises.push(r.table('AgendaItem')
             .getAll(teamId, {index: 'teamId'})
             .filter({isActive: true})
             .orderBy('sortOrder')
             .nth(facilitatorPhaseItem - 1)
-            .update({isComplete: true});
+            .update({isComplete: true})
+            .run());
         }
       }
       /*
@@ -150,24 +143,26 @@ export default {
        console.log(moveMeeting);
        */
 
+      let newMeetingPhaseItem;
+      if (goingForwardAPhase) {
+        newMeetingPhaseItem = nextPhase.items ? nextPhaseItem : null;
+      } else if (onSamePhaseWithItems) {
+        newMeetingPhaseItem = (nextPhaseItem - meetingPhaseItem === 1) ? nextPhaseItem : undefined;
+      }
+
       const updatedState = {
-        facilitatorPhaseItem: nextPhaseItem,
+        facilitatorPhase: nextPhase || undefined,
+        facilitatorPhaseItem: isNaN(nextPhaseItem) ? null : nextPhaseItem,
+        meetingPhase: goingForwardAPhase ? nextPhase : undefined,
+        meetingPhaseItem: newMeetingPhaseItem
       };
-      if (moveMeeting) {
-        updatedState.meetingPhaseItem = nextPhaseItem;
-      }
-      if (nextPhase) {
-        updatedState.facilitatorPhase = nextPhase;
-        if (moveMeeting) {
-          updatedState.meetingPhase = nextPhase;
-        }
-      }
-      await r.table('Team').get(teamId).update(updatedState);
-      /*
-       console.log('updatedState');
-       console.log(updatedState);
-       console.log('------------');
-       */
+      promises.push(r.table('Team').get(teamId).update(updatedState).run());
+      await Promise.all(promises);
+       // console.log('updatedState');
+       // console.log(updatedState);
+       // console.log(facilitatorPhase, meetingPhase)
+       // console.log(facilitatorPhaseItem, meetingPhaseItem)
+       // console.log('------------');
       return true;
     }
   },
