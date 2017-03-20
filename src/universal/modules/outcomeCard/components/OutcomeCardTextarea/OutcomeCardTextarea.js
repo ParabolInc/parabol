@@ -92,6 +92,8 @@ class OutcomeCardTextArea extends Component {
       <Textarea
         {...input}
         ref={setRef}
+        defaultValue={input.value}
+        value={undefined}
         className={contentStyles}
         disabled={isArchived}
         maxLength="255"

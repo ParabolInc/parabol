@@ -22,7 +22,6 @@ export default {
         .getAll(userId, {index: 'userId'})
         .filter({isComplete: false})
         .count()
-        .default(0)
         .run();
     }
   }

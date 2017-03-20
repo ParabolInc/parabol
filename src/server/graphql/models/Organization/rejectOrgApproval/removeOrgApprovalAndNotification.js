@@ -27,5 +27,5 @@ export default function removeOrgApprovalAndNotification(orgId, maybeEmails) {
         }))
         .default([]);
     })
-    .run()
+    .run();
 }
