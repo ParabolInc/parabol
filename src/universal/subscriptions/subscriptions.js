@@ -245,6 +245,7 @@ export default [
          id,
          checkInOrder,
          email,
+         hideAgenda,
          isNotRemoved,
          isCheckedIn,
          isFacilitator,
