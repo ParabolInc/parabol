@@ -39,7 +39,7 @@ export const ACTIVE = 'active';
 export const STUCK = 'stuck';
 export const DONE = 'done';
 export const FUTURE = 'future';
-export const columnArray = [DONE, ACTIVE, STUCK, FUTURE];
+export const columnArray = [FUTURE, STUCK, ACTIVE, DONE];
 
 /* Drag-n-Drop Items*/
 export const ACTION = 'action';
