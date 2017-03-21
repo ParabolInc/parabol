@@ -11,7 +11,7 @@ export default async function signinAndUpdateToken(dispatch, profile, auth0Token
    * acknowledge that a possibly new User has been written to the DB.
    */
   await cashay.mutate('updateUserWithAuthToken', options);
-  dispatch(segmentEventIdentify());
-  dispatch(segmentEventTrack('User Login'));
   dispatch(setAuthToken(auth0Token));
+  dispatch(segmentEventIdentify()); // depends on auth0Token being in redux store
+  dispatch(segmentEventTrack('User Login'));
 }
