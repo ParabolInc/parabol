@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.16.10 - 21-Mar-2017
+### Fixed
+- Re-adds user traits as context to segment events
+
 ## v0.16.9 - 20-Mar-2017
 ### Added
 - #404 add automated error reporting if meeting state gets stuck
