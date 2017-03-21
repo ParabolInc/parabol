@@ -40,6 +40,7 @@ export const STUCK = 'stuck';
 export const DONE = 'done';
 export const FUTURE = 'future';
 export const columnArray = [FUTURE, STUCK, ACTIVE, DONE];
+export const meetingColumnArray = [DONE, ACTIVE, STUCK, FUTURE];
 
 /* Drag-n-Drop Items*/
 export const ACTION = 'action';
