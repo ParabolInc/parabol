@@ -9,12 +9,16 @@ import Row from 'universal/components/Row/Row';
 import FontAwesome from 'react-fontawesome';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import {segmentEventTrack} from 'universal/redux/segmentActions';
 
 const TrialExpiresSoon = (props) => {
-  const {orgId, router, styles, varList} = props;
+  const {dispatch, orgId, router, styles, varList} = props;
   const [expiresAt] = varList;
   const daysLeft = fromNow(expiresAt);
   const addBilling = () => {
+    dispatch(
+      segmentEventTrack('Notification TrialExpiresSoon Click')
+    );
     router.push(`/me/organizations/${orgId}`);
   };
   return (
@@ -45,6 +49,7 @@ const TrialExpiresSoon = (props) => {
 };
 
 TrialExpiresSoon.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   orgId: PropTypes.string.isRequired,
   router: PropTypes.object.isRequired,
   styles: PropTypes.object,
