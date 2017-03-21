@@ -3,6 +3,7 @@ import jwtDecode from 'jwt-decode';
 import {selectSegmentProfile} from 'universal/redux/segmentActions';
 import raven from 'raven-js';
 import ActionHTTPTransport from '../utils/ActionHTTPTransport';
+import {segmentEventIdentify, segmentEventReset} from 'universal/redux/segmentActions';
 
 const SET_AUTH_TOKEN = '@@authToken/SET_AUTH_TOKEN';
 const REMOVE_AUTH_TOKEN = '@@authToken/REMOVE_AUTH_TOKEN';
@@ -95,6 +96,7 @@ export function setAuthToken(authToken, reducerName = DEFAULT_AUTH_REDUCER_NAME)
         token: authToken
       }
     });
+    dispatch(segmentEventIdentify());
   };
 }
 
@@ -108,6 +110,7 @@ export function removeAuthToken() {
       raven.setUserContext({});
     }
     dispatch({ type: REMOVE_AUTH_TOKEN });
+    dispatch(segmentEventReset());
   };
 }
 

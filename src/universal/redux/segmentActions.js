@@ -25,6 +25,7 @@ export function selectSegmentProfile(state, authReducer = DEFAULT_AUTH_REDUCER_N
 
   return ({
     avatar: user.picture,
+    createdAt: user.createdAt && new Date(user.createdAt) || undefined,
     email: user.email,
     id: user.id,
     name: user.preferredName,
@@ -42,7 +43,8 @@ export function segmentEventIdentify() {
           eventPayload: {
             userId: profile.id,
             traits: {
-              avatar: profile.picture,
+              avatar: profile.avatar,
+              createdAt: profile.createdAt,
               email: profile.email,
               name: profile.name
             }
