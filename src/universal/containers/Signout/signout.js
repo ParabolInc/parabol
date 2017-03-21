@@ -1,7 +1,7 @@
 import {cashay} from 'cashay';
 import {removeAuthToken} from 'universal/redux/authDuck';
 import {reset as resetAppState} from 'universal/redux/rootDuck';
-import {segmentEventTrack, segmentEventReset} from 'universal/redux/segmentActions';
+import {segmentEventTrack} from 'universal/redux/segmentActions';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import {
   APP_UPGRADE_PENDING_KEY,
@@ -16,7 +16,6 @@ const signoutSuccess = {
 export default function signout(dispatch, router) {
   const reloadPendingState = window.sessionStorage.getItem(APP_UPGRADE_PENDING_KEY);
   dispatch(segmentEventTrack('User Logout'));
-  dispatch(segmentEventReset());
   dispatch(removeAuthToken());
   /* reset the app state, but preserve any pending notifications: */
   if (router) {
