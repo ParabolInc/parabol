@@ -55,7 +55,7 @@ export default {
         });
         segmentIo.track({
           userId,
-          event: 'addBilling New Payment Success',
+          event: 'addBilling Update Payment Success',
           properties: {
             orgId
           }
