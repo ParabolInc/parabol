@@ -85,3 +85,14 @@ export function segmentEventPage(name, category, properties, options) {
     }
   });
 }
+
+export function segmentEventReset() {
+  return ({
+    type: SEGMENT_EVENT,
+    meta: {
+      analytics: {
+        eventType: EventTypes.reset
+      }
+    }
+  });
+}

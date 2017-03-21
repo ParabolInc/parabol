@@ -1,7 +1,7 @@
 .DS_Store
 .env
 .idea/
-build/
+.happypack/
 coverage/
 dll/
 node_modules/
