@@ -44,10 +44,11 @@ const makeEditingStatus = (editors, active, updatedAt) => {
 
 const mapStateToProps = (state, props) => {
   const {form, outcomeId} = props;
-  const [teamId] = outcomeId.split('::');
   const {presence: editors} = cashay.query(editingStatusContainer, {
     op: 'editingStatusContainer',
-    variables: {teamId},
+    variables: {
+      teamId: outcomeId.split('::')[0]
+    },
     key: outcomeId,
     filter: {
       presence: (presence) => presence.editing === `Task::${outcomeId}`

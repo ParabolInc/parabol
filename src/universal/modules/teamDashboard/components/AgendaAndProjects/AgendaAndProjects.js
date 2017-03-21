@@ -14,20 +14,20 @@ const AgendaAndProjects = (props) => {
     <div className={css(styles.root)}>
       <div className={css(styles.headers)}>
         <div className={css(styles.agendaLayout)}>
-          <AgendaHeader hideAgenda={hideAgenda} teamId={teamId}/>
+          <AgendaHeader hideAgenda={hideAgenda} teamId={teamId} />
         </div>
         <div className={css(styles.projectsLayout)}>
-          <TeamProjectsHeaderContainer teamId={teamId}/>
+          <TeamProjectsHeaderContainer teamId={teamId} />
         </div>
       </div>
       <div className={css(styles.agendaAndProjects)}>
         {!hideAgenda &&
           <div className={css(styles.agendaLayout)}>
-            <AgendaListAndInputContainer context="dashboard" disabled={false} gotoItem={voidClick} teamId={teamId}/>
+            <AgendaListAndInputContainer context="dashboard" disabled={false} gotoItem={voidClick} teamId={teamId} />
           </div>
         }
         <div className={css(styles.projectsLayout, !hideAgenda && styles.projectsLayoutShared)}>
-          <TeamColumnsContainer teamId={teamId}/>
+          <TeamColumnsContainer teamId={teamId} />
         </div>
       </div>
     </div>
@@ -35,6 +35,7 @@ const AgendaAndProjects = (props) => {
 };
 
 AgendaAndProjects.propTypes = {
+  hideAgenda: PropTypes.bool,
   params: PropTypes.object,
   styles: PropTypes.object,
   teamId: PropTypes.string,

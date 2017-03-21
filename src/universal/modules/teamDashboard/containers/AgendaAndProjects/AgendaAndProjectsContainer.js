@@ -42,6 +42,7 @@ const AgendaAndProjectsContainer = (props) => {
 
 AgendaAndProjectsContainer.propTypes = {
   hideAgenda: PropTypes.bool,
+  params: PropTypes.object,
   teamId: PropTypes.string
 };
 

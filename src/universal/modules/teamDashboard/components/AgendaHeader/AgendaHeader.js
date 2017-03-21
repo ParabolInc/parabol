@@ -19,7 +19,9 @@ const AgendaHeader = (props) => {
 };
 
 AgendaHeader.propTypes = {
-  styles: PropTypes.object
+  hideAgenda: PropTypes.bool,
+  styles: PropTypes.object,
+  teamId: PropTypes.string
 };
 
 const styleThunk = () => ({
