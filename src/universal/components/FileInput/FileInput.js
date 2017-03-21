@@ -61,7 +61,7 @@ FileInput.propTypes = {
   accept: PropTypes.any,
   doSubmit: PropTypes.func,
   buttonLabel: PropTypes.string,
-  colorPalette: PropTypes.oneOf(ui.buttonColorPalette),
+  colorPalette: PropTypes.oneOf(ui.paletteOptions),
   input: PropTypes.object.isRequired,
   meta: PropTypes.object.isRequired,
   size: PropTypes.oneOf(ui.buttonSizes),

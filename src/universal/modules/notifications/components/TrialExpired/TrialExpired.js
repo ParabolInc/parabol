@@ -8,10 +8,14 @@ import Row from 'universal/components/Row/Row';
 import FontAwesome from 'react-fontawesome';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import {segmentEventTrack} from 'universal/redux/segmentActions';
 
-const TrialExpiresSoon = (props) => {
-  const {orgId, router, styles} = props;
+const TrialExpired = (props) => {
+  const {dispatch, orgId, router, styles} = props;
   const addBilling = () => {
+    dispatch(
+      segmentEventTrack('Notification TrialExpired Click')
+    );
     router.push(`/me/organizations/${orgId}`);
   };
   return (
@@ -41,7 +45,8 @@ const TrialExpiresSoon = (props) => {
   );
 };
 
-TrialExpiresSoon.propTypes = {
+TrialExpired.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   orgId: PropTypes.string.isRequired,
   router: PropTypes.object.isRequired,
   styles: PropTypes.string
@@ -87,5 +92,5 @@ const styleThunk = () => ({
 });
 
 export default withRouter(
-  withStyles(styleThunk)(TrialExpiresSoon)
+  withStyles(styleThunk)(TrialExpired)
 );

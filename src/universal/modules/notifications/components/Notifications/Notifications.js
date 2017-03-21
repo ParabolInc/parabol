@@ -10,6 +10,7 @@ import Panel from 'universal/components/Panel/Panel';
 
 const Notifications = (props) => {
   const {
+    dispatch,
     notifications,
     styles
   } = props;
@@ -21,6 +22,7 @@ const Notifications = (props) => {
             <div className={css(styles.notificationList)}>
               {notifications.map((notification) =>
                 <NotificationRow
+                  dispatch={dispatch}
                   key={`notification${notification.id}`}
                   orgId={notification.orgId}
                   notificationId={notification.id}
@@ -40,8 +42,8 @@ const Notifications = (props) => {
 };
 
 Notifications.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   notifications: PropTypes.array,
-  router: PropTypes.object,
   styles: PropTypes.object
 };
 

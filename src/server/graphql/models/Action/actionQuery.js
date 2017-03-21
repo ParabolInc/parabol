@@ -11,7 +11,7 @@ export default {
         description: 'userId that owns all the actions'
       }
     },
-    resolve(source, {userId}, {authToken}) {
+    async resolve(source, {userId}, {authToken}) {
       const r = getRethink();
 
       // AUTH
@@ -21,7 +21,8 @@ export default {
       return r.table('Action')
         .getAll(userId, {index: 'userId'})
         .filter({isComplete: false})
-        .count();
+        .count()
+        .run();
     }
   }
 };

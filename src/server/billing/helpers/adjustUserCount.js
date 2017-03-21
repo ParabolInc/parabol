@@ -29,7 +29,8 @@ const changePause = (inactive) => (orgIds, userId) => {
           }),
           updatedAt: new Date()
         }), {returnChanges: true});
-    });
+    })
+    .run();
 };
 
 const addUser = (orgIds, userId) => {
@@ -52,7 +53,8 @@ const addUser = (orgIds, userId) => {
           }),
           updatedAt: new Date()
         }), {returnChanges: true});
-    });
+    })
+    .run();
 };
 
 const deleteUser = (orgIds, userId) => {
@@ -68,7 +70,8 @@ const deleteUser = (orgIds, userId) => {
           orgUsers: org('orgUsers').filter((orgUser) => orgUser('id').ne(userId)),
           updatedAt: new Date()
         }), {returnChanges: true});
-    });
+    })
+    .run();
 };
 
 const typeLookup = {

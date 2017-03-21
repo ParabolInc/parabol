@@ -109,7 +109,8 @@ export const getUserOrgDoc = (userId, orgId) => {
   return r.table('User').get(userId)('userOrgs')
     .filter({id: orgId})
     .nth(0)
-    .default(null);
+    .default(null)
+    .run();
 };
 
 export const isBillingLeader = (userOrgDoc) => {

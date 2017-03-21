@@ -68,7 +68,8 @@ export default {
             type: PAUSE_USER,
             userId,
           })
-          .count();
+          .count()
+          .run();
       });
       const pausesByOrg = await Promise.all(hookPromises);
       const triggeredPauses = Math.max(...pausesByOrg);

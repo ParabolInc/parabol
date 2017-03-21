@@ -84,6 +84,7 @@ export default class DashLayoutContainer extends Component {
   static propTypes = {
     activeMeetings: PropTypes.array,
     children: PropTypes.any,
+    dispatch: PropTypes.func.isRequired,
     tms: PropTypes.array,
     trialNotification: PropTypes.object
     // userId: PropTypes.string
@@ -107,10 +108,11 @@ export default class DashLayoutContainer extends Component {
   }
 
   render() {
-    const {activeMeetings, children, trialNotification} = this.props;
+    const {activeMeetings, children, dispatch, trialNotification} = this.props;
     return (
       <DashLayout
         activeMeetings={activeMeetings}
+        dispatch={dispatch}
         trialNotification={trialNotification}
       >
         {children}

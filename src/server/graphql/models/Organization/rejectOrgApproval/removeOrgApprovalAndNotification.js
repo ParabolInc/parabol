@@ -26,5 +26,6 @@ export default function removeOrgApprovalAndNotification(orgId, maybeEmails) {
           invitedTeamId: varList(3)
         }))
         .default([]);
-    });
+    })
+    .run();
 }

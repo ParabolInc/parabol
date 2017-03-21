@@ -57,7 +57,9 @@ const TeamMember = new GraphQLObjectType({
       description: 'The team this team member belongs to',
       resolve({teamId}) {
         const r = getRethink();
-        return r.table('Team').get(teamId);
+        return r.table('Team')
+          .get(teamId)
+          .run();
       }
     },
     user: {
@@ -65,7 +67,9 @@ const TeamMember = new GraphQLObjectType({
       description: 'The user for the team member',
       resolve(source) {
         const r = getRethink();
-        return r.table('User').get(source.userId);
+        return r.table('User')
+          .get(source.userId)
+          .run();
       }
     },
     projects: {
@@ -73,7 +77,9 @@ const TeamMember = new GraphQLObjectType({
       description: 'Projects owned by the team member',
       resolve(source) {
         const r = getRethink();
-        return r.table('Project').getAll(source.id, {index: 'teamMemberId'});
+        return r.table('Project')
+          .getAll(source.id, {index: 'teamMemberId'})
+          .run();
       }
     }
   })

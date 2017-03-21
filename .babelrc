@@ -1,29 +1,16 @@
 {
   "env": {
     "production": {
-      "presets": ["react", "es2015", "stage-3"],
+      "presets": ["es2015", "stage-0", "react"],
       "plugins": [
-        ["transform-class-properties"],
-        ["transform-export-extensions"],
-        ["transform-decorators-legacy"],
-        ["transform-class-properties"],
-        ["transform-es2015-modules-commonjs"],
-        ["transform-es2015-destructuring"],
-        ["transform-es2015-classes"]
+        ["transform-decorators-legacy"]
       ]
     },
     "development": {
-      "presets": ["react"],
+      "presets": ["es2015", "stage-0", "react"],
       "plugins": [
-        ["transform-class-properties"],
-        ["transform-export-extensions"],
-        ["transform-object-rest-spread"],
         ["react-hot-loader/babel"],
-        ["transform-decorators-legacy"],
-        ["transform-class-properties"],
-        ["transform-es2015-modules-commonjs"],
-        ["transform-es2015-destructuring"],
-        ["transform-es2015-classes"]
+        ["transform-decorators-legacy"]
       ]
     },
     "test": {

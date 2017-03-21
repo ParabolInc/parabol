@@ -31,7 +31,8 @@ export default {
       return r.table('Project')
         .between([teamId, cursor], [teamId, r.maxval], {index: 'teamIdCreatedAt', leftBound: 'open'})
         .filter({isArchived: true})
-        .limit(first);
+        .limit(first)
+        .run();
     }
   },
   getCurrentProject: {

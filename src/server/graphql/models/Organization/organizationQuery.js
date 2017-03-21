@@ -21,7 +21,8 @@ export default {
       // RESOLUTION
       return r.table('Organization')
         .getAll(userId, {index: 'orgUsers'})
-        .count();
+        .count()
+        .run();
     }
   },
   orgDetails: {
@@ -42,7 +43,8 @@ export default {
       return r.table('Team').get(teamId)('orgId')
         .do((orgId) => {
           return r.table('Organization').get(orgId);
-        });
+        })
+        .run();
     }
   }
 };

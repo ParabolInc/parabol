@@ -17,6 +17,7 @@ import {withRouter} from 'react-router';
 import shouldValidate from 'universal/validation/shouldValidate';
 import {MONTHLY_PRICE} from 'universal/utils/constants';
 import StripeTokenField from 'universal/modules/newTeam/components/NewTeamForm/StripeTokenField';
+import TextAreaField from 'universal/components/TextAreaField/TextAreaField';
 
 const validate = (values, props) => {
   const {isNewOrg} = props;
@@ -128,12 +129,10 @@ const NewTeamForm = (props) => {
       </div>
       <div className={css(styles.formBlock)}>
         <Field
-          colorPalette="gray"
-          component={InputField}
+          component={TextAreaField}
           name="inviteesRaw"
           label="Invite Team Members (optional)"
           placeholder={randomPlaceholderTheme.emailMulti}
-          useTextarea
         />
       </div>
       <Button

@@ -98,7 +98,9 @@ export const Team = new GraphQLObjectType({
       description: 'The agenda items for the upcoming or current meeting',
       resolve({id}) {
         const r = getRethink();
-        return r.table('AgendaItem').getAll(id, {index: 'teamId'});
+        return r.table('AgendaItem')
+          .getAll(id, {index: 'teamId'})
+          .run();
       }
     },
     teamMembers: {
@@ -106,7 +108,9 @@ export const Team = new GraphQLObjectType({
       description: 'All the team members associated who can join this team',
       resolve({id}) {
         const r = getRethink();
-        return r.table('TeamMember').getAll(id, {index: 'teamId'});
+        return r.table('TeamMember')
+          .getAll(id, {index: 'teamId'})
+          .run();
       }
     }
   })

@@ -6,6 +6,7 @@ coverage/
 dll/
 node_modules/
 npm-debug.log
+yarn-error.log
 rethinkdb_data/
 rethinkdb_dump_*
 stats.json

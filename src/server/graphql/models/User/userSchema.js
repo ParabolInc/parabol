@@ -173,7 +173,9 @@ export const User = new GraphQLObjectType({
       description: 'The memberships to different teams that the user has',
       resolve({id}) {
         const r = getRethink();
-        return r.table('TeamMember').getAll(id, {index: 'userId'});
+        return r.table('TeamMember')
+          .getAll(id, {index: 'userId'})
+          .run();
       }
     },
     jwt: {
