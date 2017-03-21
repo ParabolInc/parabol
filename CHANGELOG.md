@@ -4,6 +4,31 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.16.9 - 20-Mar-2017
+### Added
+- #404 add automated error reporting if meeting state gets stuck
+- #762 spinner component
+- #820 Trial and payment segment events
+- Added raven message to meeting infiniteLoop watchdog
+### Fixed
+- Patch for rejoin button styles
+- Ensure graphql gets a promise back from newly non-awaited calls
+- Refactored segment.io calls to only pass identity traits on login and change
+- #442 action disappears when creator reassigns to different owner
+- #444, #663 LeftNav view glitch in Chrome
+- #487 skipping updates to agenda via progress bar causes router loop
+- #553, #773 DnD acts strangly when user filter active on team dashboard
+- #592 facilitator abandons meeting; allow others to end it
+- #660 new team member invite bug
+- #714 Can't delete team members
+- #718 Notification for leaving a team
+- #738 Navigate to Team Settings, error ensues
+- #780 Team settings invite validation allows multiple emails
+- #808 Hey, I wanna pay!
+- #818 highlighted team no worky
+- #821 actions list not showing in my dashboard
+- #824 Editing/cursor bug workaround, root cause still unknown
+
 ## v0.16.8 - 14-Mar-2017
 ### Fixed
 - #811 Rejoin facilitator button cursor is pointer
