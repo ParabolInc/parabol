@@ -9,7 +9,7 @@ import segmentIo from '../../segmentIo';
  */
 
 exports.up = async (r) => {
-  if (!segmentIo) {
+  if (!process.env.SEGMENT_WRITE_KEY) {
     console.warn('no segment.io configuration, skipping this migration.');
     return;
   }
