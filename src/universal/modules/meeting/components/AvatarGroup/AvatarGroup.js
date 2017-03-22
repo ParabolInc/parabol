@@ -33,7 +33,7 @@ const AvatarGroup = (props) => {
               />
               {isFacilitating &&
                 <div className={css(styles.tagBlock)}>
-                  <Tag colorPalette="warm" label="Facilitator" />
+                  <Tag colorPalette="gray" label="Facilitator" />
                 </div>
               }
             </div>

@@ -46,6 +46,12 @@ const styleThunk = () => ({
     verticalAlign: 'middle'
   },
 
+  cool: {
+    backgroundColor: appTheme.palette.cool10l,
+    borderColor: appTheme.palette.cool40l,
+    color: appTheme.palette.cool
+  },
+
   gray: {
     backgroundColor: appTheme.palette.mid10l,
     borderColor: appTheme.palette.mid30l,
