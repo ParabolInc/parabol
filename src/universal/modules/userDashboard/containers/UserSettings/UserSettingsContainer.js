@@ -62,7 +62,7 @@ export default class UserSettingsContainer extends Component {
     this.initializeForm();
   }
 
-  onSubmit = async (submissionData) => {
+  onSubmit = (submissionData) => {
     const {user} = this.props;
     const {preferredName} = submissionData;
     if (preferredName !== user.preferredName) {

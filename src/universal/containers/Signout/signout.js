@@ -26,8 +26,4 @@ export default function signout(dispatch, router) {
     dispatch(showSuccess(signoutSuccess));
   }
   cashay.clear();
-  if (typeof window !== 'undefined' && typeof window.analytics !== 'undefined') {
-    // inform segment of the signout, wipe state:
-    window.analytics.reset();
-  }
 }

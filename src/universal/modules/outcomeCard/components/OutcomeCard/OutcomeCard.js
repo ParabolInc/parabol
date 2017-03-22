@@ -59,12 +59,12 @@ const OutcomeCard = (props) => {
       }
       {openArea === 'content' &&
         <div>
+          <EditingStatusContainer
+            form={form}
+            outcomeId={outcome.id}
+            updatedAt={outcome.updatedAt}
+          />
           <form>
-            <EditingStatusContainer
-              form={form}
-              outcomeId={outcome.id}
-              updatedAt={outcome.updatedAt}
-            />
             <Field
               cardHasHover={hasHover}
               component={OutcomeCardTextarea}

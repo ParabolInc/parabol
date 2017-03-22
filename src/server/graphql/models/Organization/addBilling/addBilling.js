@@ -11,6 +11,7 @@ import stripe from 'server/billing/stripe';
 import {fromEpochSeconds, toEpochSeconds} from 'server/utils/epochTime';
 import getCCFromCustomer from 'server/graphql/models/Organization/addBilling/getCCFromCustomer';
 import makeUpcomingInvoice from 'server/graphql/models/Invoice/makeUpcomingInvoice';
+import segmentIo from 'server/segmentIo';
 
 export default {
   type: GraphQLBoolean,
@@ -52,6 +53,13 @@ export default {
         await r.table('Organization').get(orgId).update({
           creditCard: getCCFromCustomer(customer)
         });
+        segmentIo.track({
+          userId,
+          event: 'addBilling Update Payment Success',
+          properties: {
+            orgId
+          }
+        });
         // 2) Adding to extend the free trial
       } else {
         const extendedPeriodEnd = new Date(periodStart.setMilliseconds(0) + TRIAL_PERIOD + TRIAL_EXTENSION);
@@ -71,6 +79,13 @@ export default {
               })
               .delete();
           });
+        segmentIo.track({
+          userId,
+          event: 'addBilling Free Trial Extended',
+          properties: {
+            orgId
+          }
+        });
       }
     } else {
       // 3) Converting after the trial ended
@@ -107,6 +122,14 @@ export default {
             })
             .delete();
         });
+      segmentIo.track({
+        userId,
+        event: 'addBilling New Payment Success',
+        properties: {
+          orgId,
+          quantity
+        }
+      });
     }
     // nuke the upcoming invoice if it existed
     await r.table('Invoice')

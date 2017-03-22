@@ -9,6 +9,7 @@ export const TRIAL_EXPIRES_SOON_DELAY = ms('14d');
 export const TRIAL_EXTENSION = ms('30d');
 export const INACTIVE_DAYS_THRESH = ms('7d');
 export const AUTO_PAUSE_THRESH = ms('30d');
+export const OLD_MEETING_AGE = ms('1d');
 
 /* stripe variables */
 // $199,999/mo

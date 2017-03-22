@@ -1,7 +1,7 @@
 import {cashay} from 'cashay';
 import {setAuthToken} from 'universal/redux/authDuck';
 import ActionHTTPTransport from 'universal/utils/ActionHTTPTransport';
-import {segmentEventIdentify, segmentEventTrack} from 'universal/redux/segmentActions';
+import {segmentEventTrack} from 'universal/redux/segmentActions';
 
 export default async function signinAndUpdateToken(dispatch, profile, auth0Token) {
   cashay.create({httpTransport: new ActionHTTPTransport(auth0Token)});
@@ -11,7 +11,6 @@ export default async function signinAndUpdateToken(dispatch, profile, auth0Token
    * acknowledge that a possibly new User has been written to the DB.
    */
   await cashay.mutate('updateUserWithAuthToken', options);
-  dispatch(segmentEventIdentify());
-  dispatch(segmentEventTrack('User Login'));
   dispatch(setAuthToken(auth0Token));
+  dispatch(segmentEventTrack('User Login'));
 }
