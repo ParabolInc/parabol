@@ -305,19 +305,25 @@ export default class MeetingContainer extends Component {
       (!isBehindMeeting && isLastItemOfPhase(localPhase, localPhaseItem, members, agenda));
 
     const phaseStateProps = { // DRY
+      facilitatorPhase,
+      localPhase,
       localPhaseItem,
       members,
       team
     };
+
     return (
       <MeetingLayout title={`Action Meeting for ${teamName}`}>
         <Sidebar
           agendaPhaseItem={agendaPhaseItem}
           facilitatorPhase={facilitatorPhase}
+          facilitatorPhaseItem={facilitatorPhaseItem}
           gotoItem={this.gotoItem}
           localPhase={localPhase}
+          localPhaseItem={localPhaseItem}
           isFacilitating={isFacilitating}
           meetingPhase={meetingPhase}
+          meetingPhaseItem={meetingPhaseItem}
           teamName={teamName}
           teamId={teamId}
         />

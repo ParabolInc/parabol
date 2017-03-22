@@ -1,11 +1,14 @@
 import React, {PropTypes, Component} from 'react';
 import ProgressBar from 'universal/modules/meeting/components/ProgressBar/ProgressBar';
+import {phaseArray} from 'universal/utils/constants';
 
 export default class ProgressBarContainer extends Component {
   static propTypes = {
     gotoItem: PropTypes.func.isRequired,
     isComplete: PropTypes.bool,
+    facilitatorPhase: PropTypes.oneOf(phaseArray),
     facilitatorPhaseItem: PropTypes.number,
+    localPhase: PropTypes.oneOf(phaseArray),
     localPhaseItem: PropTypes.number,
     meetingPhaseItem: PropTypes.number,
     membersCount: PropTypes.number

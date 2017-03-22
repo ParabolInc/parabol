@@ -3,6 +3,7 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import {srOnly} from 'universal/styles/helpers';
+import {phaseArray} from 'universal/utils/constants';
 
 const barHeight = 8;
 const pointHeight = barHeight;
@@ -15,8 +16,10 @@ const ProgressBar = (props) => {
   const {
     gotoItem,
     membersCount,
-    hoverState: {onMouseEnter},
+    facilitatorPhase,
     facilitatorPhaseItem,
+    hoverState: {onMouseEnter},
+    localPhase,
     localPhaseItem,
     meetingPhaseItem,
     isComplete,
@@ -26,11 +29,14 @@ const ProgressBar = (props) => {
     const marginRight = {
       marginRight: idx === membersCount ? 0 : `${blockWidth - pointWidth}px`
     };
+
+    const isFacilitatorPhase = facilitatorPhase === localPhase;
+
     const pointStyles = css(
       styles.point,
       (idx <= meetingPhaseItem || isComplete) && styles.pointCompleted,
       idx === localPhaseItem && styles.pointLocal,
-      idx === facilitatorPhaseItem && styles.pointFacilitator,
+      idx === facilitatorPhaseItem && isFacilitatorPhase && styles.pointFacilitator,
       onMouseEnter && styles.pointWithAreaHover
     );
     return (
@@ -65,7 +71,9 @@ ProgressBar.propTypes = {
   gotoItem: PropTypes.func.isRequired,
   hoverState: PropTypes.object,
   isComplete: PropTypes.bool,
+  facilitatorPhase: PropTypes.oneOf(phaseArray),
   facilitatorPhaseItem: PropTypes.number,
+  localPhase: PropTypes.oneOf(phaseArray),
   localPhaseItem: PropTypes.number,
   meetingPhaseItem: PropTypes.number,
   membersCount: PropTypes.number,
