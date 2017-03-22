@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import Tag from 'universal/components/Tag/Tag';
@@ -88,7 +89,7 @@ const styleThunk = () => ({
   tagBlock: {
     bottom: '-1.5rem',
     left: '50%',
-    paddingRight: '.75rem',
+    paddingRight: ui.tagGutter,
     position: 'absolute',
     transform: 'translateX(-50%)'
   }

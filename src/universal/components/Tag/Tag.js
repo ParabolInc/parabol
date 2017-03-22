@@ -40,7 +40,7 @@ const styleThunk = () => ({
     fontWeight: 700,
     height: '.875rem',
     lineHeight: '.75rem',
-    marginLeft: '.75rem',
+    marginLeft: ui.tagGutter,
     padding: '0 .4375rem',
     textTransform: 'uppercase',
     verticalAlign: 'middle'
