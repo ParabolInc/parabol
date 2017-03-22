@@ -83,8 +83,8 @@ class OutcomeCardTextArea extends Component {
     };
 
     const submitOnEnter = (e) => {
-       // hitting enter (not shift+enter) submits the textarea
-      if (e.key === 'Enter' && !e.shiftKey) {
+       // hitting enter (not shift+enter or any wacky combo) submits the textarea
+      if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
         textAreaRef.blur();
       }
     };

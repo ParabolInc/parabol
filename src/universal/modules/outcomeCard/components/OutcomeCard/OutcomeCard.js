@@ -68,6 +68,7 @@ const OutcomeCard = (props) => {
             <Field
               cardHasHover={hasHover}
               component={OutcomeCardTextarea}
+              doSubmitOnEnter
               handleActive={handleCardActive}
               handleSubmit={handleSubmit(handleCardUpdate)}
               isProject={isProject}

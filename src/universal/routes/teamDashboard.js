@@ -26,7 +26,7 @@ export default (store) => ({
     cb(null, component);
   },
   getIndexRoute: async (location, cb) => {
-    const component = await System.import('universal/modules/teamDashboard/components/AgendaAndProjects/AgendaAndProjects');
+    const component = await System.import('universal/modules/teamDashboard/containers/AgendaAndProjects/AgendaAndProjectsContainer');
     cb(null, {component: component.default});
   },
   getChildRoutes: (childLocation, cbChild) => {

@@ -22,8 +22,12 @@ const lockIconStyles = {
 
 const validate = (values, props) => {
   const {stripeCard} = props;
-  const schema = makeCreditCardSchema(stripeCard);
-  return schema(values).errors;
+  // stripeCard loads async, so until it loads, don't bother validating
+  if (stripeCard) {
+    const schema = makeCreditCardSchema(stripeCard);
+    return schema(values).errors;
+  }
+  return {};
 };
 
 const CreditCardModal = (props) => {

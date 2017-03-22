@@ -145,7 +145,7 @@ export default {
             .count();
         })
         // insert team member
-      .do((teamCount) =>
+        .do((teamCount) =>
           r.table('TeamMember').insert({
             id: teamMemberId,
             checkInOrder: teamCount.add(1),
@@ -158,7 +158,7 @@ export default {
             isFacilitator: true,
             picture: user.picture,
             preferredName: user.preferredName,
-          // conflict is possible if person was removed from the team + org & then rejoined (isNotRemoved would be false)
+            // conflict is possible if person was removed from the team + org & then rejoined (isNotRemoved would be false)
           }, {conflict: 'update'})
         )
         // find all possible emails linked to this person and mark them as accepted
@@ -233,4 +233,30 @@ export default {
       return true;
     }
   },
+  toggleAgendaList: {
+    type: GraphQLBoolean,
+    description: 'Show/hide the agenda list',
+    args: {
+      teamId: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: 'the new team member that will be the leader'
+      }
+    },
+    async resolve(source, {teamId}, {authToken, socket}) {
+      const r = getRethink();
+
+      // AUTH
+      requireWebsocket(socket);
+      const myTeamMemberId = `${authToken.sub}::${teamId}`;
+      await requireSUOrTeamMember(authToken, teamId);
+
+      // RESOLUTION
+      await r.table('TeamMember')
+        .get(myTeamMemberId)
+        .update((teamMember) => ({
+          hideAgenda: teamMember('hideAgenda').default(false).not()
+        }));
+      return true;
+    }
+  }
 };
