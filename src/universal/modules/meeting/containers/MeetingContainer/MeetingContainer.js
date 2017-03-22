@@ -27,10 +27,12 @@ import {
   FIRST_CALL,
   AGENDA_ITEMS,
   LAST_CALL,
+  phaseArray
 } from 'universal/utils/constants';
 import MeetingAgendaItems from 'universal/modules/meeting/components/MeetingAgendaItems/MeetingAgendaItems';
 import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
 import MeetingAgendaLastCallContainer from 'universal/modules/meeting/containers/MeetingAgendaLastCall/MeetingAgendaLastCallContainer';
+import isLastItemOfPhase from 'universal/modules/meeting/helpers/isLastItemOfPhase';
 import withHotkey from 'react-hotkey-hoc';
 import {showError} from 'universal/modules/toast/ducks/toastDuck';
 import resolveMeetingMembers from 'universal/modules/meeting/helpers/resolveMeetingMembers';
@@ -297,6 +299,11 @@ export default class MeetingContainer extends Component {
       const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
       router.push(pushURL);
     };
+
+    const isBehindMeeting = phaseArray.indexOf(localPhase) < phaseArray.indexOf(meetingPhase);
+    const hideMoveMeetingControls = isFacilitating ? false :
+      (!isBehindMeeting && isLastItemOfPhase(localPhase, localPhaseItem, members, agenda));
+
     const phaseStateProps = { // DRY
       localPhaseItem,
       members,
@@ -320,29 +327,46 @@ export default class MeetingContainer extends Component {
           </MeetingAvatars>
           {localPhase === LOBBY && <MeetingLobby members={members} team={team} />}
           {localPhase === CHECKIN &&
-          <MeetingCheckin gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
+            <MeetingCheckin
+              gotoItem={this.gotoItem}
+              gotoNext={this.gotoNext}
+              hideMoveMeetingControls={hideMoveMeetingControls}
+              {...phaseStateProps}
+            />
           }
           {localPhase === UPDATES &&
-          <MeetingUpdatesContainer gotoItem={this.gotoItem} gotoNext={this.gotoNext} {...phaseStateProps} />
+            <MeetingUpdatesContainer
+              gotoItem={this.gotoItem}
+              gotoNext={this.gotoNext}
+              hideMoveMeetingControls={hideMoveMeetingControls}
+              {...phaseStateProps}
+            />
           }
-          {localPhase === FIRST_CALL && <MeetingAgendaFirstCall gotoNext={this.gotoNext} />}
+          {localPhase === FIRST_CALL &&
+            <MeetingAgendaFirstCall
+              {...phaseStateProps}
+              gotoNext={this.gotoNext}
+              hideMoveMeetingControls={hideMoveMeetingControls}
+            />
+          }
           {localPhase === AGENDA_ITEMS &&
-          <MeetingAgendaItems
-            agendaItem={agenda[localPhaseItem - 1]}
-            isLast={localPhaseItem === agenda.length}
-            gotoNext={this.gotoNext}
-            members={members}
-          />
+            <MeetingAgendaItems
+              agendaItem={agenda[localPhaseItem - 1]}
+              isLast={localPhaseItem === agenda.length}
+              gotoNext={this.gotoNext}
+              members={members}
+              hideMoveMeetingControls={hideMoveMeetingControls}
+            />
           }
           {localPhase === LAST_CALL &&
-          <MeetingAgendaLastCallContainer
-            {...phaseStateProps}
-            gotoNext={this.gotoNext}
-            isFacilitating={isFacilitating}
-          />
+            <MeetingAgendaLastCallContainer
+              {...phaseStateProps}
+              gotoNext={this.gotoNext}
+              hideMoveMeetingControls={hideMoveMeetingControls}
+            />
           }
           {!inSync &&
-          <RejoinFacilitatorButton onClickHandler={rejoinFacilitator} />
+            <RejoinFacilitatorButton onClickHandler={rejoinFacilitator} />
           }
         </MeetingMain>
       </MeetingLayout>

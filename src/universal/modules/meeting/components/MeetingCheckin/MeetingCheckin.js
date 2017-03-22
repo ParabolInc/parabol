@@ -16,7 +16,8 @@ const MeetingCheckin = (props) => {
     gotoNext,
     localPhaseItem,
     members,
-    team
+    team,
+    hideMoveMeetingControls
   } = props;
 
   const {
@@ -67,14 +68,16 @@ const MeetingCheckin = (props) => {
           members={members}
         />
         <MeetingSection paddingTop=".75rem">
-          <IconLink
-            colorPalette="cool"
-            icon="arrow-circle-right"
-            iconPlacement="right"
-            label={isLastMember ? 'Move on to Updates' : 'Next teammate (press enter)'}
-            scale="large"
-            onClick={gotoNext}
-          />
+          {!hideMoveMeetingControls &&
+            <IconLink
+              colorPalette="cool"
+              icon="arrow-circle-right"
+              iconPlacement="right"
+              label={isLastMember ? 'Move on to Updates' : 'Next teammate (press enter)'}
+              scale="large"
+              onClick={gotoNext}
+            />
+          }
         </MeetingSection>
         {/* */}
         {/* */}
@@ -89,7 +92,8 @@ MeetingCheckin.propTypes = {
   gotoNext: PropTypes.func.isRequired,
   localPhaseItem: PropTypes.number,
   members: PropTypes.array,
-  team: PropTypes.object
+  team: PropTypes.object,
+  hideMoveMeetingControls: PropTypes.bool
 };
 
 export default MeetingCheckin;

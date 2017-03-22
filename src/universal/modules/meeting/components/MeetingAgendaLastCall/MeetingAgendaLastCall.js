@@ -16,7 +16,7 @@ const MeetingAgendaLastCall = (props) => {
   const {
     agendaItemCount,
     actionCount,
-    isFacilitating,
+    hideMoveMeetingControls,
     gotoNext,
     facilitatorName,
     projectCount,
@@ -53,7 +53,7 @@ const MeetingAgendaLastCall = (props) => {
             <span className={css(styles.highlight)}>add another Agenda Item</span>.<br />
             If not, you can end the meeting to see a summary.
           </Type>
-          {isFacilitating ?
+          {!hideMoveMeetingControls ?
             <Button
               colorPalette="cool"
               label="End Meeting"
@@ -80,7 +80,7 @@ MeetingAgendaLastCall.propTypes = {
   gotoNext: PropTypes.func,
   facilitatorName: PropTypes.string,
   localPhaseItem: PropTypes.number,
-  isFacilitating: PropTypes.bool,
+  hideMoveMeetingControls: PropTypes.bool,
   projectCount: PropTypes.number,
   styles: PropTypes.object,
   team: PropTypes.object

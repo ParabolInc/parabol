@@ -23,7 +23,8 @@ const MeetingUpdates = (props) => {
     queryKey,
     projects,
     styles,
-    team
+    team,
+    hideMoveMeetingControls
   } = props;
   const {meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = team;
   const currentTeamMember = members[localPhaseItem - 1];
@@ -63,14 +64,16 @@ const MeetingUpdates = (props) => {
               <div className={css(styles.username)}>@{username}</div>
             </div>
             <div className={css(styles.linkSpacer)}>
-              <IconLink
-                colorPalette="cool"
-                icon="arrow-circle-right"
-                iconPlacement="right"
-                label={isLastMember ? 'Move on to the Agenda' : 'Next team member '}
-                onClick={gotoNext}
-                scale="small"
-              />
+              {!hideMoveMeetingControls &&
+                <IconLink
+                  colorPalette="cool"
+                  icon="arrow-circle-right"
+                  iconPlacement="right"
+                  label={isLastMember ? 'Move on to the Agenda' : 'Next team member '}
+                  onClick={gotoNext}
+                  scale="small"
+                />
+              }
             </div>
           </div>
         </div>
@@ -94,6 +97,7 @@ MeetingUpdates.propTypes = {
   queryKey: PropTypes.string.isRequired,
   styles: PropTypes.object.isRequired,
   team: PropTypes.object.isRequired,
+  hideMoveMeetingControls: PropTypes.bool
 };
 
 const styleThunk = () => ({
