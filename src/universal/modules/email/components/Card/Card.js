@@ -5,7 +5,7 @@ import ui from 'universal/styles/ui';
 import {trimString} from 'universal/utils';
 import EmptySpace from '../EmptySpace/EmptySpace';
 import ReactMarkdown from 'react-markdown';
-import LinkNewTab from 'universal/components/LinkNewTab/LinkNewTab';
+import markdownCustomComponents from 'universal/utils/markdownCustomComponents';
 
 const Card = (props) => {
   const {content, status} = props;
@@ -55,9 +55,6 @@ const Card = (props) => {
     };
   }
 
-  const markdownCustomComponents = {
-    Link: LinkNewTab
-  };
   return (
     <table style={ui.emailTableBase} width="100%">
       <tbody>

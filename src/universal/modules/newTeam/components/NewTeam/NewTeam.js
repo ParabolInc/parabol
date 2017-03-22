@@ -8,7 +8,6 @@ import {DragDropContext as dragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
 const NewTeam = (props) => {
-  console.log(props);
   const {dispatch, params: {newOrg}} = props;
   return (
     <DashboardWrapper title="User Dashboard">
