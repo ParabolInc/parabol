@@ -8,6 +8,7 @@ import Ellipsis from 'universal/components/Ellipsis/Ellipsis';
 import withStyles from 'universal/styles/withStyles';
 import appTheme from 'universal/styles/theme/appTheme';
 import {css} from 'aphrodite-local-styles/no-important';
+import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
 
 const MeetingAgendaFirstCall = (props) => {
   const {
@@ -17,8 +18,6 @@ const MeetingAgendaFirstCall = (props) => {
     hideMoveMeetingControls,
     styles
   } = props;
-  const facilitator = members.find((member) => member.id === team.activeFacilitator);
-  const facilitatorName = facilitator && facilitator.preferredName || 'Facilitator';
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="2rem">
@@ -39,7 +38,7 @@ const MeetingAgendaFirstCall = (props) => {
             /> :
             <div className={css(styles.warmHighlight)}>
               <Type align="center" scale="s4" colorPalette="black">
-                <span className={css(styles.highlight)}>Waiting for <b>{facilitatorName}</b> to advance the meeting<Ellipsis /></span>
+                <span className={css(styles.highlight)}>Waiting for <b>{getFacilitatorName(team, members)}</b> to advance the meeting<Ellipsis /></span>
               </Type>
             </div>
           }
