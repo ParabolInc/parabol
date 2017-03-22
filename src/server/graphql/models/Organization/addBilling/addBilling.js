@@ -51,7 +51,7 @@ export default {
     const {creditCard, stripeId, stripeSubscriptionId, periodEnd, periodStart, orgUsers} = await r.table('Organization')
       .get(orgId)
       .pluck('creditCard', 'orgUsers', 'periodEnd', 'periodStart', 'stripeId', 'stripeSubscriptionId');
-    const segmentTraits = getUserSegmentTraits(userId);
+    const segmentTraits = await getUserSegmentTraits(userId);
 
     const customer = await stripe.customers.update(stripeId, {source: stripeToken});
     if (periodEnd > now && stripeSubscriptionId) {

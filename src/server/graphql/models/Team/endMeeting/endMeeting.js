@@ -139,19 +139,21 @@ export default {
           });
       });
     // dispatch segment events:
-    const segmentTraits = await getSegmentTraitsForUsers(
+    getSegmentTraitsForUsers(
+      // extract user part of id from x::y invitee:
       completedMeeting.invitees.map((invitee) => invitee.id.split('::')[0])
+    ).then((segmentTraits) =>
+      segmentTraits.forEach((traits) => {
+        segmentIo.track({
+          userId: traits.id,
+          event: 'Meeting Complete',
+          properties: {
+            meetingNumber: completedMeeting.meetingNumber,
+            traits
+          }
+        });
+      })
     );
-    segmentTraits.forEach((traits) => {
-      segmentIo.track({
-        userId: traits.id,
-        event: 'Meeting Complete',
-        properties: {
-          meetingNumber: completedMeeting.meetingNumber,
-          traits
-        }
-      });
-    });
     // reset the meeting
     resetMeeting(teamId);
     return true;
