@@ -105,6 +105,7 @@ export const requireWebsocketExchange = (exchange) => {
 };
 
 export const getSegmentTraitsForUsers = async (userIds) => {
+  // TODO: one day we'll store this in something like redis
   const r = getRethink();
   const traits = await r.table('User')
     .getAll(...userIds)
