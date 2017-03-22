@@ -5,9 +5,9 @@ import {emailRegex, urlRegex} from '../../universal/validation/regex';
 
 export const GraphQLEmailType = new GraphQLScalarType({
   name: 'Email',
-  serialize: value => value.toLowerCase(),
-  parseValue: value => value.toLowerCase(),
-  parseLiteral: ast => {
+  serialize: (value) => value.toLowerCase(),
+  parseValue: (value) => value.toLowerCase(),
+  parseLiteral: (ast) => {
     if (ast.kind !== Kind.STRING) {
       throw new GraphQLError(`Query error: Email is not a string, it is a: ${ast.kind}`, [ast]);
     }
@@ -26,9 +26,9 @@ export const GraphQLEmailType = new GraphQLScalarType({
 
 export const GraphQLURLType = new GraphQLScalarType({
   name: 'URL',
-  serialize: value => String(value),
-  parseValue: value => String(value),
-  parseLiteral: ast => {
+  serialize: (value) => String(value),
+  parseValue: (value) => String(value),
+  parseLiteral: (ast) => {
     // eslint-disable-next-line max-len, no-useless-escape
     if (!urlRegex.test(ast.value)) {
       throw new GraphQLError('Query error: Not a valid URL', [ast]);

@@ -191,7 +191,7 @@ Object {
       },
       "quantity": 8,
       "start": 1483254000,
-      "status": "active",
+      "status": "canceled",
       "tax_percent": 0,
       "trial_end": null,
       "trial_start": null,
@@ -629,7 +629,7 @@ Object {
       },
       "quantity": 8,
       "start": 1483254000,
-      "status": "active",
+      "status": "trialing",
       "tax_percent": 0,
       "trial_end": 1488438000,
       "trial_start": 1483257600,
@@ -827,7 +827,7 @@ Object {
       },
       "quantity": 8,
       "start": 1483254000,
-      "status": "active",
+      "status": "canceled",
       "tax_percent": 0,
       "trial_end": 1483257599,
       "trial_start": 1483257600,
@@ -901,8 +901,8 @@ Object {
 }
 `;
 
-exports[`addBilling throw when the caller is not an org leader 1`] = `"{\\"_error\\":\\"Unauthorized. User is not a billing leader for that organization\\"}"`;
+exports[`addBilling throw when the caller is not an org leader 1`] = `"{\\"_error\\":\\"Unauthorized. User is not a Billing Leader for that organization\\"}"`;
 
-exports[`addBilling thrown when a bad source token is provided 1`] = `"{\\"_error\\":\\"No such token: BAD_TOKEN\\"}"`;
+exports[`addBilling thrown when a bad source token is provided 1`] = `"No such token: BAD_TOKEN"`;
 
 exports[`addBilling throws when no websocket is present 1`] = `"{\\"_error\\":\\"this must be called from a websocket\\"}"`;

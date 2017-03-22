@@ -15,7 +15,7 @@ const EditableAvatar = (props) => {
   return (
     <div className={avatarBlockStyles}>
       <div className={css(styles.avatarEditOverlay)} onClick={onClick}>
-        <FontAwesome name="pencil"/>
+        <FontAwesome name="pencil" />
         <span>EDIT</span>
       </div>
       <div className={css(styles.avatarImgBlock)}>

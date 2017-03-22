@@ -1,4 +1,4 @@
-import {resolvePromiseMap} from 'universal/utils/promises';
+import resolvePromiseMap from 'universal/utils/promises';
 
 const setImports = () =>
   new Map([
@@ -6,13 +6,13 @@ const setImports = () =>
       'universal/modules/userDashboard/containers/Organizations/OrganizationsContainer')],
   ]);
 
-const getImports = importMap => ({
+const getImports = (importMap) => ({
   component: importMap.get('component').default
 });
 
 export default (store) => ({
   path: 'organizations',
-  getIndexRoute: async(location, cb) => {
+  getIndexRoute: async (location, cb) => {
     const promiseMap = setImports();
     const importMap = await resolvePromiseMap(promiseMap);
     const {component} = getImports(importMap);

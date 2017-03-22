@@ -6,9 +6,11 @@ import {
 import {requireSU} from 'server/utils/authorization';
 import {
   AUTO_PAUSE_THRESH,
-  AUTO_PAUSE_USER
+  AUTO_PAUSE_USER,
+  OLD_MEETING_AGE
 } from 'server/utils/serverConstants';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
+import endMeeting from 'server/graphql/models/Team/endMeeting/endMeeting';
 
 export default {
   intranetPing: {
@@ -22,7 +24,7 @@ export default {
   autopauseUsers: {
     type: GraphQLInt,
     description: 'automatically pause users that have been inactive for 30 days. returns the number of users paused',
-    resolve: async(source, args, {authToken}) => {
+    resolve: async (source, args, {authToken}) => {
       const r = getRethink();
 
       // AUTH
@@ -57,7 +59,8 @@ export default {
               .update({
                 inactive: true
               });
-          });
+          })
+          .run();
       });
       await Promise.all(updates);
       const adjustmentPromises = users.map((user) => {
@@ -67,6 +70,27 @@ export default {
 
       await Promise.all(adjustmentPromises);
       return adjustmentPromises.length;
+    }
+  },
+  endOldMeetings: {
+    type: GraphQLInt,
+    description: 'close all meetings that started before the given threshold',
+    resolve: async (source, args, {authToken}) => {
+      const r = getRethink();
+
+      // AUTH
+      requireSU(authToken);
+
+      // RESOLUTION
+      const activeThresh = new Date(Date.now() - OLD_MEETING_AGE);
+      const teamIds = await r.table('Meeting')
+        .filter({
+          endedAt: null
+        })
+        .filter((meeting) => meeting('createdAt').le(activeThresh))('teamId');
+      const promises = teamIds.map((teamId) => endMeeting.resolve(undefined, {teamId}, {authToken, socket: {}}));
+      await Promise.all(promises);
+      return teamIds.length;
     }
   }
 };

@@ -19,9 +19,9 @@ const Landing = (props) => {
       <div className={css(styles.header)}>
         <div className={css(styles.container)}>
           <a href="http://www.parabol.co/" title="Parabol, Inc.">
-            <img className={css(styles.headerBrand)} src={parabolLogoMark}/>
+            <img className={css(styles.headerBrand)} src={parabolLogoMark} />
           </a>
-          <img className={css(styles.actionLogo)} src={actionLogo}/>
+          <img className={css(styles.actionLogo)} src={actionLogo} />
           <h1 className={css(styles.mainHeading)}>Action</h1>
           <h2 className={css(styles.mainSubheading)}>
             An open-source tool for adaptive teams.
@@ -57,7 +57,7 @@ const Landing = (props) => {
               <div className={css(styles.card)}>
                 <div className={css(styles.cardBadge)}>1</div>
                 <div className={css(styles.cardIconGroup)}>
-                  <img className={css(styles.cardIcon)} src={teamCheckIcon}/>
+                  <img className={css(styles.cardIcon)} src={teamCheckIcon} />
                 </div>
                 <div className={css(styles.cardCopy)}>Check in with your team.</div>
               </div>
@@ -65,7 +65,7 @@ const Landing = (props) => {
               <div className={css(styles.card)}>
                 <div className={css(styles.cardBadge)}>2</div>
                 <div className={css(styles.cardIconGroup)}>
-                  <img className={css(styles.cardIcon)} src={mapIcon}/>
+                  <img className={css(styles.cardIcon)} src={mapIcon} />
                 </div>
                 <div className={css(styles.cardCopy)}>Journey toward your next goals.</div>
               </div>
@@ -73,7 +73,7 @@ const Landing = (props) => {
               <div className={css(styles.card, styles.cardIsLast)}>
                 <div className={css(styles.cardBadge)}>3</div>
                 <div className={css(styles.cardIconGroup)}>
-                  <img className={css(styles.cardIcon)} src={megaphoneIcon}/>
+                  <img className={css(styles.cardIcon)} src={megaphoneIcon} />
                 </div>
                 <div className={css(styles.cardCopy)}>Share your progress!</div>
               </div>
@@ -85,7 +85,7 @@ const Landing = (props) => {
         <div className={css(styles.section, styles.sectionHasBorder)}>
           <div className={css(styles.container)}>
             <h2 className={css(styles.sectionHeading)}>Get Involved</h2>
-            <img className={css(styles.githubIcon)} src={github}/>
+            <img className={css(styles.githubIcon)} src={github} />
             <br />
             <div className={css(styles.copyGroup)}>
               <p className={css(styles.copyParagraph)}>
@@ -111,7 +111,7 @@ const Landing = (props) => {
       <div className={css(styles.footer)}>
         <div className={css(styles.container)}>
           <a href="http://www.parabol.co/" title="Parabol, Inc.">
-            <img className={css(styles.footerBrand)} src={parabolLogoMark}/>
+            <img className={css(styles.footerBrand)} src={parabolLogoMark} />
           </a>
           <div className={css(styles.footerCopy)}>
             ©2016{' '}
@@ -122,9 +122,9 @@ const Landing = (props) => {
             >
               Parabol, Inc.
             </a>{' '}
-            <br className={css(styles.footerBreak)}/>
+            <br className={css(styles.footerBreak)} />
             Made with care by friendly folks.{' '}
-            <br className={css(styles.footerBreak)}/>
+            <br className={css(styles.footerBreak)} />
             Say hello:{' '}
             <a
               className={css(styles.footerLink)}

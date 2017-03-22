@@ -8,10 +8,11 @@ import IconLink from 'universal/components/IconLink/IconLink';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import {UPDATES, phaseOrder, MEETING} from 'universal/utils/constants';
+import {UPDATES, MEETING} from 'universal/utils/constants';
 import ProgressBarContainer from 'universal/modules/meeting/containers/ProgressBarContainer/ProgressBarContainer';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
 import makeUsername from 'universal/utils/makeUsername';
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 
 const MeetingUpdates = (props) => {
   const {
@@ -26,8 +27,8 @@ const MeetingUpdates = (props) => {
   } = props;
   const {meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = team;
   const currentTeamMember = members[localPhaseItem - 1];
-  const self = members.find(m => m.isSelf);
-  const isComplete = phaseOrder(meetingPhase) > phaseOrder(UPDATES);
+  const self = members.find((m) => m.isSelf);
+  const isComplete = actionMeeting[meetingPhase].index > actionMeeting[UPDATES].index;
   const isLastMember = localPhaseItem === members.length;
   const username = makeUsername(currentTeamMember.preferredName);
   return (
@@ -57,7 +58,7 @@ const MeetingUpdates = (props) => {
             <div className={css(styles.linkSpacer)}>{' '}</div>
             <div className={css(styles.avatarBlock)}>
               <div className={css(styles.avatar)}>
-                <Avatar {...currentTeamMember} size="fill"/>
+                <Avatar {...currentTeamMember} size="fill" />
               </div>
               <div className={css(styles.username)}>@{username}</div>
             </div>
@@ -74,7 +75,7 @@ const MeetingUpdates = (props) => {
           </div>
         </div>
         <div className={css(styles.body)}>
-          <ProjectColumns alignColumns="center" myTeamMemberId={self && self.id} projects={projects} queryKey={queryKey} area={MEETING}/>
+          <ProjectColumns alignColumns="center" myTeamMemberId={self && self.id} projects={projects} queryKey={queryKey} area={MEETING} />
         </div>
         {/* */}
         {/* */}

@@ -64,7 +64,7 @@ const Step3RawInvitees = (props) => {
         type="text"
         underline
       />
-      <WelcomeSubmitButton disabled={!inviteesRaw}/>
+      <WelcomeSubmitButton disabled={!inviteesRaw} />
     </form>
   );
 };

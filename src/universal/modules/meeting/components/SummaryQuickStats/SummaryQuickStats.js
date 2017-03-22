@@ -31,12 +31,12 @@ const SummaryQuickStats = (props) => {
       <div className={css(styles.cardGroup)}>
         <div className={projects}>
           <div className={css(styles.count)}>{projectCount}</div>
-          <FontAwesome name={labels.project.icon} style={iconStyle}/>
+          <FontAwesome name={labels.project.icon} style={iconStyle} />
           <div className={css(styles.label)}>New Projects</div>
         </div>
         <div className={actions}>
           <div className={css(styles.count)}>{actionCount}</div>
-          <FontAwesome name={labels.action.icon} style={iconStyle}/>
+          <FontAwesome name={labels.action.icon} style={iconStyle} />
           <div className={css(styles.label)}>New Actions</div>
         </div>
       </div>

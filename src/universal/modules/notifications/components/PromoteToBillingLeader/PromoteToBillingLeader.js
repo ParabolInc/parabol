@@ -29,7 +29,7 @@ const PromoteToBillingLeader = (props) => {
         <IconAvatar icon="user" size="medium" />
       </div>
       <div className={css(styles.message)}>
-        You are now a billing leader for
+        You are now a Billing Leader for
         <span className={css(styles.messageVar)}> {orgName}</span>
       </div>
       <div className={css(styles.button)}>

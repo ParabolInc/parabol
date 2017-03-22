@@ -9,7 +9,7 @@ import LinkNewTab from 'universal/components/LinkNewTab/LinkNewTab';
 
 const Card = (props) => {
   const {content, status} = props;
-  const type = Boolean(status) ? 'project' : 'action';
+  const type = status ? 'project' : 'action';
   let backgroundColor;
 
   if (type === 'project') {

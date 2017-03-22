@@ -2,10 +2,10 @@ import React, {Component, PropTypes} from 'react';
 import {cashay} from 'cashay';
 import {SubmissionError} from 'redux-form';
 import withAsync from 'react-async-hoc';
-import {stripeKey} from 'universal/utils/clientOptions';
 import portal from 'react-portal-hoc';
 import {connect} from 'react-redux';
 import CreditCardModal from 'universal/modules/userDashboard/components/CreditCardModal/CreditCardModal';
+import {segmentEventTrack} from 'universal/redux/segmentActions';
 
 const stripeFieldLookup = {
   exp_year: {
@@ -60,8 +60,9 @@ class CreditCardModalContainer extends Component {
     };
   }
 
-  addStripeBilling = async(submittedData) => {
+  addStripeBilling = async (submittedData) => {
     const {
+      dispatch,
       closePortal,
       createToken,
       handleToken,
@@ -76,6 +77,9 @@ class CreditCardModalContainer extends Component {
       if (field) {
         errorMessage[field.name] = field.message;
       }
+      dispatch(
+        segmentEventTrack('addBilling Stripe Error', {error: errorMessage})
+      );
       throw new SubmissionError(errorMessage);
     }
     if (handleToken) {
@@ -124,6 +128,7 @@ class CreditCardModalContainer extends Component {
 
 CreditCardModalContainer.propTypes = {
   createToken: PropTypes.func,
+  dispatch: PropTypes.func.isRequired,
   error: PropTypes.string,
   isUpdate: PropTypes.bool,
   closePortal: PropTypes.func,
@@ -134,7 +139,7 @@ CreditCardModalContainer.propTypes = {
 
 const stripeCb = () => {
   const stripe = window.Stripe;
-  stripe.setPublishableKey(stripeKey);
+  stripe.setPublishableKey(window.__ACTION__.stripe);
   return {
     createToken: (fields) => new Promise((resolve) => {
       stripe.card.createToken(fields, (status, response) => {

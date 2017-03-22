@@ -10,7 +10,8 @@ import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'serv
 import stripe from 'server/billing/stripe';
 import {fromEpochSeconds, toEpochSeconds} from 'server/utils/epochTime';
 import getCCFromCustomer from 'server/graphql/models/Organization/addBilling/getCCFromCustomer';
-import tryStripeCall from 'server/billing/tryStripeCall';
+import makeUpcomingInvoice from 'server/graphql/models/Invoice/makeUpcomingInvoice';
+import segmentIo from 'server/segmentIo';
 
 export default {
   type: GraphQLBoolean,
@@ -45,12 +46,19 @@ export default {
       .get(orgId)
       .pluck('creditCard', 'orgUsers', 'periodEnd', 'periodStart', 'stripeId', 'stripeSubscriptionId');
 
-    const customer = await tryStripeCall(stripe.customers.update(stripeId, {source: stripeToken}));
+    const customer = await stripe.customers.update(stripeId, {source: stripeToken});
     if (periodEnd > now && stripeSubscriptionId) {
       // 1) Updating to a new credit card
       if (creditCard.last4) {
         await r.table('Organization').get(orgId).update({
           creditCard: getCCFromCustomer(customer)
+        });
+        segmentIo.track({
+          userId,
+          event: 'addBilling Update Payment Success',
+          properties: {
+            orgId
+          }
         });
         // 2) Adding to extend the free trial
       } else {
@@ -71,20 +79,27 @@ export default {
               })
               .delete();
           });
+        segmentIo.track({
+          userId,
+          event: 'addBilling Free Trial Extended',
+          properties: {
+            orgId
+          }
+        });
       }
     } else {
       // 3) Converting after the trial ended
       // 4) Payment was rejected and they're adding a new source
       const notificationToClear = creditCard.last4 ? PAYMENT_REJECTED : TRIAL_EXPIRED;
       const quantity = orgUsers.reduce((count, orgUser) => orgUser.inactive ? count : count + 1, 0);
-      const subscription = await tryStripeCall(stripe.subscriptions.create({
+      const subscription = await stripe.subscriptions.create({
         customer: stripeId,
         metadata: {
           orgId
         },
         plan: ACTION_MONTHLY,
         quantity
-      }));
+      });
       const {id, current_period_end, current_period_start} = subscription;
       await r.table('Organization').get(orgId).update({
         creditCard: getCCFromCustomer(customer),
@@ -107,7 +122,27 @@ export default {
             })
             .delete();
         });
+      segmentIo.track({
+        userId,
+        event: 'addBilling New Payment Success',
+        properties: {
+          orgId,
+          quantity
+        }
+      });
     }
+    // nuke the upcoming invoice if it existed
+    await r.table('Invoice')
+      .get(`upcoming_${orgId}`)
+      .delete();
+
+    const channel = `upcomingInvoice/${orgId}`;
+    const upcomingInvoice = await makeUpcomingInvoice(orgId, stripeId);
+    const payload = {
+      type: 'update',
+      fields: upcomingInvoice
+    };
+    socket.emit(channel, payload);
     return true;
   }
 };

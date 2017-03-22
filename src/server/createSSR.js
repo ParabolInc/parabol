@@ -6,6 +6,7 @@ import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import Html from './Html';
 import printStyles from 'universal/styles/theme/printStyles';
+
 const metaAndTitle = `
   <meta charSet="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -37,7 +38,7 @@ export default function createSSR(req, res) {
         res.redirect(redirectLocation.pathname + redirectLocation.search);
       } else if (renderProps) {
         const htmlString = renderToStaticMarkup(
-          <Html store={store} assets={assets} StyleSheetServer={StyleSheetServer} renderProps={renderProps}/>
+          <Html store={store} assets={assets} StyleSheetServer={StyleSheetServer} renderProps={renderProps} />
         );
         res.send(`<!DOCTYPE html>${htmlString}`.replace('<head>', `<head>${metaAndTitle}`));
       } else {

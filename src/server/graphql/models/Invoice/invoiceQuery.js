@@ -2,7 +2,6 @@ import getRethink from 'server/database/rethinkDriver';
 import {
   GraphQLNonNull,
   GraphQLID,
-  GraphQLString,
   GraphQLInt,
   GraphQLList
 } from 'graphql';
@@ -10,7 +9,6 @@ import {Invoice} from './invoiceSchema';
 import {getUserId, getUserOrgDoc, requireOrgLeader} from 'server/utils/authorization';
 import {UPCOMING} from 'universal/utils/constants';
 import stripe from 'server/billing/stripe';
-import {fromEpochSeconds} from 'server/utils/epochTime';
 import fetchAllLines from 'server/billing/helpers/fetchAllLines';
 import generateInvoice from 'server/billing/helpers/generateInvoice';
 import {UPCOMING_INVOICE_TIME_VALID} from 'server/utils/serverConstants';
@@ -48,7 +46,9 @@ export default {
         const stripeLineItems = await fetchAllLines('upcoming', stripeId);
         const upcomingInvoice = await stripe.invoices.retrieveUpcoming(stripeId);
         await generateInvoice(upcomingInvoice, stripeLineItems, orgId, invoiceId);
-        return await r.table('Invoice').get(invoiceId);
+        return r.table('Invoice')
+          .get(invoiceId)
+          .run();
       }
       return currentInvoice;
     }
@@ -60,11 +60,11 @@ export default {
         type: new GraphQLNonNull(GraphQLID),
         description: 'The id of the organization'
       },
-      after: {type: GraphQLString, description: 'the cursor coming from the front'},
+      // after: {type: GraphQLString, description: 'the cursor coming from the front'},
       // purposefully ignore pagination until we get cashay working correctly
       count: {type: GraphQLInt, description: 'Limit the invoices from the front'},
     },
-    async resolve(source, {orgId, after, count}, {authToken}) {
+    async resolve(source, {orgId, count}, {authToken}) {
       const r = getRethink();
 
       // AUTH
@@ -74,45 +74,23 @@ export default {
 
       // RESOLUTION
 
-      if (after) {
-        const dbAfter = after === 0 ? r.minval : after;
-        return r.table('Invoice')
-          .between([orgId, dbAfter], [orgId, r.maxval], {index: 'orgIdStartAt', leftBound: 'open'})
-          .orderBy(r.desc('startAt'))
-          .limit(count)
-          .merge((doc) => ({
-            cursor: doc('startAt')
-          }));
-      }
-      const stripeId = await r.table('Organization').get(orgId)('stripeId');
-      const promises = [
-        stripe.invoices.retrieveUpcoming(stripeId),
-        r.table('Invoice')
-          .between([orgId, r.minval], [orgId, r.maxval], {index: 'orgIdStartAt', leftBound: 'open'})
-          .orderBy(r.desc('startAt'))
-          .filter((invoice) => invoice('status').ne(UPCOMING))
-          .limit(count - 1)
-          .merge((doc) => ({
-            cursor: doc('startAt')
-          }))
-      ];
-      const [stripeInvoice, pastInvoices] = await Promise.all(promises);
-      const upcomingInvoice = {
-        id: `upcoming_${orgId}`,
-        amountDue: stripeInvoice.amount_due,
-        cursor: 0,
-        total: stripeInvoice.total,
-        endAt: fromEpochSeconds(stripeInvoice.period_end),
-        invoiceDate: fromEpochSeconds(stripeInvoice.date),
-        orgId,
-        startAt: fromEpochSeconds(stripeInvoice.period_start),
-        startingBalance: stripeInvoice.startingBalance,
-        status: UPCOMING
-      };
-      return [
-        upcomingInvoice,
-        ...pastInvoices
-      ];
+      // if (after) {
+      //   const dbAfter = after === 0 ? r.minval : after;
+      //   return r.table('Invoice')
+      //     .between([orgId, dbAfter], [orgId, r.maxval], {index: 'orgIdStartAt', leftBound: 'open'})
+      //     .orderBy(r.desc('startAt'))
+      //     .limit(count)
+      //     .merge((doc) => ({
+      //       cursor: doc('startAt')
+      //     }));
+      // }
+      return r.table('Invoice')
+        .between([orgId, r.minval], [orgId, r.maxval], {index: 'orgIdStartAt', leftBound: 'open'})
+        .orderBy(r.desc('startAt'))
+        // remove upcoming & trial invoices
+        .filter((invoice) => invoice('status').ne(UPCOMING).and(invoice('total').ne(0)))
+        .limit(count)
+        .run();
     }
   }
 };

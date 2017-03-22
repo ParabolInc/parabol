@@ -31,32 +31,27 @@ const OrgBilling = (props) => {
   />);
   return (
     <div>
-      {activeTrial && <ActiveTrialCallOut periodEnd={periodEnd} orgId={orgId}/>}
-      {expiredTrial && <ExpiredTrialCallOut periodEnd={periodEnd} orgId={orgId}/>}
+      {activeTrial && <ActiveTrialCallOut periodEnd={periodEnd} orgId={orgId} />}
+      {expiredTrial && <ExpiredTrialCallOut periodEnd={periodEnd} orgId={orgId} />}
       {!activeTrial && !expiredTrial &&
         <Panel label="Credit Card Information">
           <div className={css(styles.infoAndUpdate)}>
             <div className={css(styles.creditCardInfo)}>
-              <FontAwesome className={css(styles.creditCardIcon)} name="credit-card"/>
+              <FontAwesome className={css(styles.creditCardIcon)} name="credit-card" />
               <span className={css(styles.creditCardProvider)}>{brand || '???'}</span>
               <span className={css(styles.creditCardNumber)}>•••• •••• •••• {last4 || '••••'}</span>
               <span className={css(styles.creditCardExpiresLabel)}>Expires</span>
               <span className={css(styles.expiry)}>{expiry || '??/??'}</span>
             </div>
-            <CreditCardModalContainer isUpdate orgId={orgId} toggle={update}/>
+            <CreditCardModalContainer isUpdate orgId={orgId} toggle={update} />
           </div>
         </Panel>
       }
       <Panel label="Invoices">
         <div className={css(styles.listOfInvoices)}>
-          {invoicesReady && invoices.length === 0 &&
-            <div className={css(styles.noInvoices)}>
-              No invoices yet! Keep doing good work, and we’ll do the accounting.
-            </div>
-          }
-          {invoicesReady && invoices.length > 0 &&
-            invoices.map((invoice, idx) =>
-              <InvoiceRow key={`invoiceRow${idx}`} invoice={invoice} hasCard={Boolean(creditCard.last4)}/>
+          {invoicesReady &&
+            invoices.map((invoice) =>
+              <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} hasCard={Boolean(creditCard.last4)} />
             )
           }
           {!invoicesReady &&

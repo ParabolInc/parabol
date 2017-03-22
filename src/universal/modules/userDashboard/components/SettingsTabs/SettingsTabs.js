@@ -29,7 +29,7 @@ const SettingsTabs = (props) => {
   const notificationIconAndBadge = () => {
     return (
       <div className={css(styles.badgeAndBell)}>
-        <FontAwesome name="bell" style={iconStyle}/>
+        <FontAwesome name="bell" style={iconStyle} />
         {notificationCount > 0 ? <div className={css(styles.badge)}>{notificationCount}</div> : null}
       </div>
 
@@ -39,12 +39,12 @@ const SettingsTabs = (props) => {
   return (
     <Tabs activeIdx={settingsOrder.indexOf(currentPath)}>
       <Tab
-        icon={<FontAwesome name="address-card" style={iconStyle}/>}
+        icon={<FontAwesome name="address-card" style={iconStyle} />}
         label="Settings"
         onClick={clickHandlers[0]}
       />
       <Tab
-        icon={<FontAwesome name="users" style={iconStyle}/>}
+        icon={<FontAwesome name="users" style={iconStyle} />}
         label="Organizations"
         onClick={clickHandlers[1]}
       />

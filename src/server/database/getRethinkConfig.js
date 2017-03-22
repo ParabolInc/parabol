@@ -1,12 +1,12 @@
 import url from 'url';
-import {readCert} from './readCert';
+import readCert from './readCert';
 import flag from 'node-env-flag';
-import {getDotenv} from '../../universal/utils/dotenv';
+import getDotenv from '../../universal/utils/dotenv';
 
 // Import .env and expand variables:
 getDotenv();
 
-export const getRethinkConfig = () => {
+export default function getRethinkConfig() {
   const urlString = process.env.RETHINKDB_URL || 'rethinkdb://localhost:28015/actionDevelopment';
   const u = url.parse(urlString);
 
@@ -30,4 +30,4 @@ export const getRethinkConfig = () => {
     });
   }
   return config;
-};
+}

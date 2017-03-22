@@ -1,10 +1,10 @@
-import orgGenerator from 'server/__tests__/Organization/data/orgGenerator.js';
+import orgGenerator from 'server/__tests__/Organization/data/orgGenerator';
 import cleanupOrgData from 'server/__tests__/utils/cleanupOrgData';
 import refreshAuthToken from 'server/__tests__/utils/refreshAuthToken';
 import {
   mockAuth0AuthenticationClientTokensGetInfo,
   mockAuth0ManagementClientUsersUpdateAppMetadata
-} from 'server/__tests__/utils/mockAuth0.js';
+} from 'server/__tests__/utils/mockAuth0';
 import {
   mockStripeCustomersCreate,
   mockStripeSubscriptionsCreate,
@@ -34,7 +34,7 @@ mockStripeSubscriptionsUpdate();
 mockStripeSubscriptionsCreate();
 console.error = jest.fn();
 
-afterAll(async() => {
+afterAll(async () => {
   const r = getRethink();
   await r.getPoolMaster().drain();
 });
@@ -48,7 +48,7 @@ signupTeam(
 );
 
 describe('team member reactivation', () => {
-  test('member leaves a team', async() => {
+  test('member leaves a team', async () => {
     // SETUP
     const authToken = await refreshAuthToken(testOrg.billingLeader.id);
     const {resolve} = teamMemberMutation.removeTeamMember;
@@ -73,7 +73,7 @@ describe('team member reactivation', () => {
     expect(socket.mock.calls.length).toBe(0);
   });
 
-  test('member reactivated on team', async() => {
+  test('member reactivated on team', async () => {
     // SETUP
     const teamMemberId = `${testOrg.otherTeamMembers[0].id}::${testOrg.team.id}`;
     const exchange = { publish: jest.fn() };

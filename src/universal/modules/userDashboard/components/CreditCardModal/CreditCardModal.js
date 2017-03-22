@@ -47,13 +47,13 @@ const CreditCardModal = (props) => {
     <DashModal onBackdropClick={closePortal} inputModal isClosing={isClosing} closeAfter={closeAfter}>
       <div className={css(styles.modalBody)}>
         <div className={css(styles.iconAvatarBlock)}>
-          <IconAvatar colorPalette="mid" icon={cardTypeIcon} size="large"/>
+          <IconAvatar colorPalette="mid" icon={cardTypeIcon} size="large" />
         </div>
         <Type align="center" colorPalette="mid" lineHeight="1.875rem" marginBottom=".25rem" scale="s6">
           {crudAction} Credit Card
         </Type>
         <Type align="center" colorPalette="mid" lineHeight={appTheme.typography.s5} scale="s3">
-          <FontAwesome name="lock" style={lockIconStyles}/> Secured by <b>Stripe</b>
+          <FontAwesome name="lock" style={lockIconStyles} /> Secured by <b>Stripe</b>
         </Type>
         {dirty && anyError && <div className={css(styles.error)}>{anyError}</div>}
         <form onSubmit={handleSubmit(addStripeBilling)}>

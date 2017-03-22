@@ -1,13 +1,13 @@
 import socketCluster from 'socketcluster-client';
-import {EDIT, PRESENT, LEAVE, SOUNDOFF} from './constants';
 import {cashay} from 'cashay';
+import {EDIT, PRESENT, LEAVE, SOUNDOFF} from './constants';
 
 export default function presenceSubscriber(channel, key, handlers) {
   const fullChannel = `${channel}/${key}`;
   const socket = socketCluster.connect();
   const {upsert, remove} = handlers;
   socket.subscribe(fullChannel, {waitForAuth: true});
-  socket.watch(fullChannel, data => {
+  socket.watch(fullChannel, (data) => {
     if (data.type === SOUNDOFF) {
       const {editing} = cashay.store.getState();
       const options = {

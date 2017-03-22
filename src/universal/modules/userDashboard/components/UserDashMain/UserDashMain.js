@@ -32,7 +32,7 @@ const UserDashMain = (props) => {
           </div>
           <div className={css(styles.projectsLayout)}>
             <UserProjectsHeaderContainer />
-            <UserColumnsContainer/>
+            <UserColumnsContainer />
           </div>
         </div>
       </DashContent>

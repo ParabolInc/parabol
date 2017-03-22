@@ -11,7 +11,7 @@ import {
 import {GraphQLURLType} from '../../types';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {ProjectStatus} from '../Project/projectSchema';
-import {TeamMember} from '../TeamMember/teamMemberSchema';
+import TeamMember from '../TeamMember/teamMemberSchema';
 
 const MeetingAction = new GraphQLObjectType({
   name: 'MeetingAction',
@@ -153,15 +153,17 @@ const MeetingInvitee = new GraphQLObjectType({
     membership: {
       type: TeamMember,
       description: 'All of the fields from the team member table',
-      async resolve({id}) {
+      resolve({id}) {
         const r = getRethink();
-        return await r.table('TeamMember').get(id);
+        return r.table('TeamMember')
+          .get(id)
+          .run();
       }
     }
   })
 });
 
-export const Meeting = new GraphQLObjectType({
+const Meeting = new GraphQLObjectType({
   name: 'Meeting',
   description: 'A team meeting history for all previous meetings',
   fields: () => ({
@@ -221,10 +223,14 @@ export const Meeting = new GraphQLObjectType({
     teamMembers: {
       type: new GraphQLList(TeamMember),
       description: 'All the team members associated who can join this team',
-      async resolve({teamId}) {
+      resolve({teamId}) {
         const r = getRethink();
-        return await r.table('TeamMember').getAll(teamId, {index: 'teamId'});
+        return r.table('TeamMember')
+          .getAll(teamId, {index: 'teamId'})
+          .run();
       }
     },
   })
 });
+
+export default Meeting;

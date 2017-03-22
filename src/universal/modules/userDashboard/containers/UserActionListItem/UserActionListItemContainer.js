@@ -110,7 +110,7 @@ export default class UserActionListItemContainer extends Component {
     const {connectDragSource, isDragging} = this.props;
     return connectDragSource(
       <div>
-        {isDragging && <ActionDragLayer {...this.props}/>}
+        {isDragging && <ActionDragLayer {...this.props} />}
         <UserActionListItem
           {...this.props}
           handleChecked={this.handleChecked}

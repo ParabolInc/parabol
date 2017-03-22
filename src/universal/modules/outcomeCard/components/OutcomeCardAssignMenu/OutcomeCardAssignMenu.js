@@ -32,11 +32,11 @@ const OutcomeCardAssignMenu = (props) => {
   return (
     <div className={css(styles.root)}>
       {
-        teamMembers.map((teamMember, idx) => {
+        teamMembers.map((teamMember) => {
           const isClickable = currentOwner !== teamMember.id;
           const menuItemStyles = css(styles.menuItem, isClickable && styles.menuItemClickable);
           return (
-            <div className={menuItemStyles} key={`menuItem${idx}`}>
+            <div className={menuItemStyles} key={`menuItem${teamMember.id}`}>
               <Avatar
                 {...teamMember}
                 isClickable={isClickable}

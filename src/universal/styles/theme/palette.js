@@ -1,8 +1,5 @@
-
-// palette.js
-
-import brand from './brand';
 import tinycolor from 'tinycolor2';
+import brand from './brand';
 
 const theme = {
   cool: brand.darkCyan,
@@ -22,7 +19,7 @@ const grayedBase = '#808080';
 const lightenedBase = '#fff';
 
 Object.keys(theme).forEach((color) => {
-  for (const value of alphaValues) {
+  alphaValues.forEach((value) => {
     const alphaColor = tinycolor(theme[color]).setAlpha(value * 0.01).toRgbString();
     const alphaSlug = `${color}${value}a`;
     theme[alphaSlug] = alphaColor;
@@ -44,7 +41,7 @@ Object.keys(theme).forEach((color) => {
       const lightenedSlug = `${color}${value}l`;
       theme[lightenedSlug] = lightenedColor;
     }
-  }
+  });
 });
 
 export default theme;

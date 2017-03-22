@@ -20,7 +20,7 @@ const FileInput = (props) => {
   } = props;
   let errorString = error;
   if (typeof error === 'object') {
-    errorString = Object.keys(error).map(k => error[k]).join(', ');
+    errorString = Object.keys(error).map((k) => error[k]).join(', ');
   }
   let el;
   return (
@@ -58,8 +58,10 @@ const FileInput = (props) => {
 };
 
 FileInput.propTypes = {
+  accept: PropTypes.any,
+  doSubmit: PropTypes.func,
   buttonLabel: PropTypes.string,
-  colorPalette: PropTypes.oneOf(ui.buttonColorPalette),
+  colorPalette: PropTypes.oneOf(ui.paletteOptions),
   input: PropTypes.object.isRequired,
   meta: PropTypes.object.isRequired,
   size: PropTypes.oneOf(ui.buttonSizes),

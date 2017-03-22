@@ -13,7 +13,7 @@ const MeetingDashAlert = (props) => {
         {`${plural(activeMeetings.length, 'Meeting')} in progress:`}
       </div>
       <div className={css(styles.inlineBlock)}>
-        {activeMeetings.map(meeting => {
+        {activeMeetings.map((meeting) => {
           return (
             <Link key={meeting.link} className={css(styles.link)} title="Join Active Meeting" to={meeting.link}>
               {meeting.name}

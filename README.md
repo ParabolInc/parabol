@@ -112,8 +112,8 @@ $ npm run bs
 ### Database development
 
 The database schema version is managed by
-[rethink-migrate](https://github.com/JohanObrink/rethink-migrate). Migrations
-scripts are stored in `./src/server/database/migrations`.
+[migrate-rethinkdb](https://github.com/ParabolInc/migrate-rethinkdb).
+Migration scripts are stored in `./src/server/database/migrations`.
 
 If you make changes to the Action schema, make certain to create a new
 migration.
@@ -157,28 +157,7 @@ get involved and how to get compensated.
 
 ## Releases
 
-This table only includes major and minor releases. For patches
-and more details on all releases, refer to [CHANGELOG.md](./CHANGELOG.md).
-
-| Release | Summary                                    |
-|---------|--------------------------------------------|
-| v0.16.0 | Orgs, trialing, billing; fixes & more      |
-| v0.15.0 | Prompt to upgrade on new version, Markdown |
-| v0.14.0 | Secure user avatar upload to S3 bucket     |
-| v0.13.0 | Drag-and-drop added everywhere, bug fixes  |
-| v0.12.0 | Added team settings, modal components      |
-| v0.11.0 | Added S3 deployment, minor UI improvements |
-| v0.10.0 | Can add new teams, many fixes              |
-| v0.9.3  | Emails meeting summary, add Segment events |
-| v0.8.0  | Added end of meeting summary               |
-| v0.7.0  | Switch to aphrodite, me dashboard updates  |
-| v0.6.1  | Agenda items, @live directive, bug fixes   |
-| v0.5.3  | Add Project Updates, rallies, segment.io   |
-| v0.4.0  | Add Lobby, Check-in, start of Team Dash.   |
-| v0.3.0  | Add Welcome journey, redux-storage         |
-| v0.2.0  | Add first pass at team creation/invitation |
-| v0.1.0  | Things got a whole lot meatier             |
-| v0.0.1  | Developer preview and architecture demo    |
+For details on all releases, refer to [CHANGELOG.md](./CHANGELOG.md).
 
 ## About
 

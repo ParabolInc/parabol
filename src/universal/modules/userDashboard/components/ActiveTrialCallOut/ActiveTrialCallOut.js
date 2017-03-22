@@ -11,10 +11,10 @@ const ActiveTrialCallOut = (props) => {
   const trialEnd = makeDateString(periodEnd, false);
   const newTrialEnd = makeDateString(new Date(periodEnd.getTime() + ms('30d')), false);
   const button = <Button colorPalette="cool" label="Add Billing Information" size={ui.ctaPanelButtonSize} />;
-  const control = <CreditCardModalContainer orgId={orgId} toggle={button}/>;
+  const control = <CreditCardModalContainer orgId={orgId} toggle={button} />;
   return (
     <CallOutPanel control={control} heading={'Add a free 30 days to your trial period!'}>
-      <span>Add your billing information by <b>{trialEnd}</b>, <br/>to extend your trial to <b>{newTrialEnd}</b>.</span>
+      <span>Add your billing information by <b>{trialEnd}</b>, <br />to extend your trial to <b>{newTrialEnd}</b>.</span>
     </CallOutPanel>
   );
 };

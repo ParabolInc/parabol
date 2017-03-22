@@ -10,7 +10,7 @@ const serverInclude = [
 ];
 
 const prefetches = [];
-const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(specifier));
+const prefetchPlugins = prefetches.map((specifier) => new webpack.PrefetchPlugin(specifier));
 
 
 export default {

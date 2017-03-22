@@ -2,6 +2,7 @@ import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 import shortid from 'shortid';
 import {
+  PAID,
   PENDING,
   UPCOMING,
   ADDED_USERS,
@@ -19,7 +20,7 @@ import {
 } from 'server/utils/serverConstants';
 import {fromEpochSeconds} from 'server/utils/epochTime';
 
-const getEmailLookup = async(userIds) => {
+const getEmailLookup = async (userIds) => {
   const r = getRethink();
   const usersAndEmails = await r.table('User').getAll(r.args(userIds), {index: 'id'}).pluck('id', 'email');
   return usersAndEmails.reduce((dict, doc) => {
@@ -110,7 +111,7 @@ const makeQuantityChangeLineItems = (detailedLineItems) => {
   return quantityChangeLineItems;
 };
 
-const makeDetailedLineItems = async(itemDict, invoiceId) => {
+const makeDetailedLineItems = async (itemDict, invoiceId) => {
   // Make lookup table to get user Emails
   const userIds = Object.keys(itemDict);
   const emailLookup = await getEmailLookup(userIds);
@@ -171,13 +172,14 @@ const makeItemDict = (stripeLineItems) => {
   return {itemDict, nextMonthCharges, unknownLineItems};
 };
 
-const maybeReduceUnknowns = async(unknownLineItems, itemDict, stripeSubscriptionId) => {
+const maybeReduceUnknowns = async (unknownLineItems, itemDict, stripeSubscriptionId) => {
   const r = getRethink();
   const unknowns = [];
   for (let i = 0; i < unknownLineItems.length; i++) {
     const unknownLineItem = unknownLineItems[i];
     // this could be inefficient but if all goes as planned, we'll never use this function
-    const hook = await r.table('InvoiceItemHook')
+
+    const hook = await r.table('InvoiceItemHook') // eslint-disable-line no-await-in-loop
       .getAll(unknownLineItem.period.start, {index: 'prorationDate'})
       .filter({stripeSubscriptionId})
       .nth(0)
@@ -229,6 +231,12 @@ export default async function generateInvoice(invoice, stripeLineItems, orgId, i
 
   const [type] = invoiceId.split('_');
   const isUpcoming = type === 'upcoming';
+  const amountDue = invoice.amount_due;
+  let status = isUpcoming ? UPCOMING : PENDING;
+  if (status === PENDING && amountDue <= 0) {
+    status = PAID;
+  }
+  const paidAt = status === PAID && now;
 
   await r.table('Organization').get(orgId)
     .do((org) => {
@@ -242,17 +250,18 @@ export default async function generateInvoice(invoice, stripeLineItems, orgId, i
           .filter((user) => user('userOrgs')
             .contains((userOrg) => userOrg('id').eq(orgId).and(userOrg('role').eq(BILLING_LEADER))))('email')
           .coerceTo('array'),
-        creditCard: org('creditCard'),
+        creditCard: org('creditCard').default({}),
         endAt: fromEpochSeconds(invoice.period_end),
         invoiceDate: fromEpochSeconds(invoice.date),
         lines: invoiceLineItems,
         nextMonthCharges,
         orgId,
-        orgName: org('name'),
+        orgName: org('name').default(null),
+        paidAt,
         picture: org('picture').default(null),
         startAt: fromEpochSeconds(invoice.period_start),
         startingBalance: invoice.starting_balance,
-        status: isUpcoming ? UPCOMING : PENDING
+        status
       }, {conflict: 'replace'});
     });
 }

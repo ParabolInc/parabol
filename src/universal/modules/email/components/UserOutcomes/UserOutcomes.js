@@ -63,8 +63,8 @@ const UserOutcomes = (props) => {
       <tbody>
         <tr>
           <td style={topBorderStyle}>
-            <EmptySpace height={24}/>
-            <img height="80" src={picture} style={avatarStyles} width="80"/>
+            <EmptySpace height={24} />
+            <img height="80" src={picture} style={avatarStyles} width="80" />
             <div style={nameStyle}>{preferredName}</div>
             <div style={presentLabelStyles}>{presentLabel}</div>
           </td>
@@ -89,8 +89,8 @@ const UserOutcomes = (props) => {
         </tr>
         <tr>
           <td align="center" style={cardsCell}>
-            <OutcomesTable outcomes={projects.concat(actions)}/>
-            <EmptySpace height={24}/>
+            <OutcomesTable outcomes={projects.concat(actions)} />
+            <EmptySpace height={24} />
           </td>
         </tr>
       </tbody>

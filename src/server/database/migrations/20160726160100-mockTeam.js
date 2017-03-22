@@ -1,7 +1,7 @@
 import {LOBBY} from '../../../universal/utils/constants';
 
 /* eslint-disable max-len */
-exports.up = async(r) => {
+exports.up = async (r) => {
   const users = [
     {
       id: 'auth0|5797eb5d12664ba4675745b9',
@@ -132,11 +132,11 @@ exports.up = async(r) => {
   await Promise.all(mockUsers);
 };
 
-exports.down = async(r) => {
+exports.down = async (r) => {
   const meetingTables = [
     r.table('User').delete(),
     r.table('TeamMember').delete(),
     r.table('Team').delete()
   ];
-  return await Promise.all(meetingTables);
+  await Promise.all(meetingTables);
 };

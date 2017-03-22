@@ -1,4 +1,4 @@
-import {resolvePromiseMap} from 'universal/utils/promises';
+import resolvePromiseMap from 'universal/utils/promises';
 import makeReducer from 'universal/redux/makeReducer';
 
 const setMeetingImports = () =>
@@ -8,14 +8,14 @@ const setMeetingImports = () =>
     ['socket', System.import('redux-socket-cluster')],
   ]);
 
-const getMeetingImports = importMap => ({
+const getMeetingImports = (importMap) => ({
   component: importMap.get('component').default,
   socket: importMap.get('socket').socketClusterReducer,
 });
 
-export default store => ({
+export default (store) => ({
   path: 'meeting/:teamId(/:localPhase)(/:localPhaseItem)',
-  getComponent: async(location, cb) => {
+  getComponent: async (location, cb) => {
     const promiseMap = setMeetingImports();
     const importMap = await resolvePromiseMap(promiseMap);
     const {component, ...asyncReducers} = getMeetingImports(importMap);

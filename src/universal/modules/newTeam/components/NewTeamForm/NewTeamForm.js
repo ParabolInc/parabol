@@ -17,6 +17,7 @@ import {withRouter} from 'react-router';
 import shouldValidate from 'universal/validation/shouldValidate';
 import {MONTHLY_PRICE} from 'universal/utils/constants';
 import StripeTokenField from 'universal/modules/newTeam/components/NewTeamForm/StripeTokenField';
+import TextAreaField from 'universal/components/TextAreaField/TextAreaField';
 
 const validate = (values, props) => {
   const {isNewOrg} = props;
@@ -85,7 +86,7 @@ const NewTeamForm = (props) => {
                       label="Nevermind, select an existing organization"
                       onClick={resetOrgSelection}
                       size="smallest"
-                      style="flat"
+                      buttonStyle="flat"
                     />
                   </div>
                 </div> :
@@ -97,7 +98,7 @@ const NewTeamForm = (props) => {
                   <CreditCardModalContainer
                     isUpdate
                     handleToken={setToken}
-                    toggle={<Button colorPalette="cool" label="Update" size="smallest" style="flat" />}
+                    toggle={<Button colorPalette="cool" label="Update" size="smallest" buttonStyle="flat" />}
                   />
 
                 </div>
@@ -128,12 +129,10 @@ const NewTeamForm = (props) => {
       </div>
       <div className={css(styles.formBlock)}>
         <Field
-          colorPalette="gray"
-          component={InputField}
+          component={TextAreaField}
           name="inviteesRaw"
           label="Invite Team Members (optional)"
           placeholder={randomPlaceholderTheme.emailMulti}
-          useTextarea
         />
       </div>
       <Button

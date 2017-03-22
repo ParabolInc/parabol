@@ -61,7 +61,7 @@ const MeetingUpdatesContainer = (props) => {
   if (!props.projects) {
     return <LoadingView />;
   }
-  return <MeetingUpdates {...props}/>;
+  return <MeetingUpdates {...props} />;
 };
 
 MeetingUpdatesContainer.propTypes = {

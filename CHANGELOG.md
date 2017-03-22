@@ -4,17 +4,59 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.16.10 - 21-Mar-2017
+### Fixed
+- Re-adds user traits as context to segment events
+
+## v0.16.9 - 20-Mar-2017
+### Added
+- #404 add automated error reporting if meeting state gets stuck
+- #762 spinner component
+- #820 Trial and payment segment events
+- Added raven message to meeting infiniteLoop watchdog
+### Fixed
+- Patch for rejoin button styles
+- Ensure graphql gets a promise back from newly non-awaited calls
+- Refactored segment.io calls to only pass identity traits on login and change
+- #442 action disappears when creator reassigns to different owner
+- #444, #663 LeftNav view glitch in Chrome
+- #487 skipping updates to agenda via progress bar causes router loop
+- #553, #773 DnD acts strangly when user filter active on team dashboard
+- #592 facilitator abandons meeting; allow others to end it
+- #660 new team member invite bug
+- #714 Can't delete team members
+- #718 Notification for leaving a team
+- #738 Navigate to Team Settings, error ensues
+- #780 Team settings invite validation allows multiple emails
+- #808 Hey, I wanna pay!
+- #818 highlighted team no worky
+- #821 actions list not showing in my dashboard
+- #824 Editing/cursor bug workaround, root cause still unknown
+
+## v0.16.8 - 14-Mar-2017
+### Fixed
+- #811 Rejoin facilitator button cursor is pointer
+- fix orgName update
+- Dependency bumps & linting
+
+## v0.16.7 - 13-Mar-2017
+### Fixed
+- #808 hey I want to pay!
+
+## v0.16.5 - 11-Mar-2017
+### Added
+- Awesome spinner component
+- Billing unit tests
+- A few modifications and final touches to invoices
+
+### Fixed
+- #755 filter handle alignment regression
+- #759 regression: clients unable to accept invitations
+- #793 no such customer exception
+
 ## v0.16.3 - 8-Mar-2017
 ### Added
 - Unit tests for Action mutations
-### Fixed
-- #780 email regex allowed multiple emails
-- #782 regression on Project index used by archived projects
-- #783 ensured CC always exists on org, no longer using pagination for invoiceList 
-- #784 invoice icon styling bug in production
-
-## v0.16.3 - 5-Mar-2017
-### Added
 - #462 source maps added to minified production builds
 - Individual team and user project drag-and-drop sort orders now combined
   into one, universal sorting order used across the system
@@ -22,6 +64,10 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #736 permutations on invoice
 
 ### Fixed
+- #780 email regex allowed multiple emails
+- #782 regression on Project index used by archived projects
+- #783 ensured CC always exists on org, no longer using pagination for invoiceList
+- #784 invoice icon styling bug in production
 - #553 fine tune DnD
 - #714 can't delete team members
 - #724 top notification bar & dash modal overlap

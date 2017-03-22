@@ -1,5 +1,5 @@
 import rethinkdbdash from 'rethinkdbdash';
-import {getRethinkConfig} from './getRethinkConfig';
+import getRethinkConfig from './getRethinkConfig';
 
 const config = getRethinkConfig();
 let driver;

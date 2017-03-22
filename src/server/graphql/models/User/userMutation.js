@@ -64,7 +64,7 @@ export default {
         description: 'user-supplied file size'
       }
     },
-    async resolve(source, {contentType, contentLength}, {authToken}) {
+    resolve(source, {contentType, contentLength}, {authToken}) {
       // AUTH
       const userId = requireAuth(authToken);
 
@@ -73,7 +73,7 @@ export default {
 
       // RESOLUTION
       const partialPath = `User/${userId}/picture/${shortid.generate()}.${ext}`;
-      return await getS3PutUrl(contentType, contentLength, partialPath);
+      return getS3PutUrl(contentType, contentLength, partialPath);
     }
   },
   updateUserWithAuthToken: {
@@ -96,7 +96,11 @@ export default {
 
       // RESOLUTION
       if (authToken.tms) {
-        return await r.table('User').get(authToken.sub);
+        const user = await r.table('User').get(authToken.sub);
+        if (user) {
+          return user;
+        }
+        // should never reach this line in production. that means our DB !== auth0 DB
       }
       const userInfo = await auth0Client.tokens.getInfo(auth0Token);
       // TODO loginsCount and blockedFor are not a part of this API response
@@ -127,17 +131,15 @@ export default {
        *
        * see: https://segment.com/docs/sources/server/node/
        */
-      if (segmentIo) {
-        segmentIo.identify({
-          userId: newUser.id,
-          traits: {
-            avatar: newUser.picture,
-            createdAt: newUser.createdAt,
-            email: newUser.email,
-            name: newUser.preferredName
-          }
-        });
-      }
+      segmentIo.identify({
+        userId: newUser.id,
+        traits: {
+          avatar: newUser.picture,
+          createdAt: newUser.createdAt,
+          email: newUser.email,
+          name: newUser.preferredName
+        }
+      });
       // don't await
       setTimeout(() => sendEmail(newUser.email, 'welcomeEmail', newUser), 0);
       return newUser;
@@ -164,7 +166,7 @@ export default {
 
       // RESOLUTION
       // propagate denormalized changes to TeamMember
-      const dbProfile = await r.table('TeamMember')
+      const dbProfileChanges = await r.table('TeamMember')
         .getAll(id, {index: 'userId'})
         .update(validUpdatedUser)
         .do(() => {
@@ -172,18 +174,27 @@ export default {
             .get(id)
             .update(validUpdatedUser, {returnChanges: 'always'});
         });
-
       //
       // If we ever want to delete the previous profile images:
       //
-      // const previousProfile = previousValue(dbProfile);
+      // const previousProfile = previousValue(dbProfileChanges);
       // if (previousProfile && urlIsPossiblyOnS3(previousProfile.picture)) {
       // // possible remove prior profile image from CDN asynchronously
       //   s3DeleteObject(previousProfile.picture)
       //   .catch(console.warn.bind(console));
       // }
       //
-      return updatedOrOriginal(dbProfile);
+      const dbProfile = updatedOrOriginal(dbProfileChanges);
+      segmentIo.identify({
+        userId: dbProfile.id,
+        traits: {
+          avatar: dbProfile.picture,
+          createdAt: dbProfile.createdAt,
+          email: dbProfile.email,
+          name: dbProfile.preferredName
+        }
+      });
+      return dbProfile;
     }
   }
 };

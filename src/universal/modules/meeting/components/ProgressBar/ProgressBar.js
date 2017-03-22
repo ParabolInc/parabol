@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme.js';
+import appTheme from 'universal/styles/theme/appTheme';
 import {srOnly} from 'universal/styles/helpers';
 
 const barHeight = 8;
@@ -55,7 +55,7 @@ const ProgressBar = (props) => {
         <div className={css(styles.points)}>
           {renderPoints()}
         </div>
-        <div className={css(styles.bar)} style={barStyle}></div>
+        <div className={css(styles.bar)} style={barStyle} />
       </div>
     </div>
   );

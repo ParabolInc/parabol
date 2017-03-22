@@ -31,7 +31,7 @@ const ToggleNav = (props) => {
         index === (items.length - 1) && styles.itemLast
       );
       return (
-        <div className={itemStyles} key={index} onClick={item.onClick}>
+        <div className={itemStyles} key={item.label} onClick={item.onClick}>
           <FontAwesome name={item.icon} style={iconStyles} /> {item.label}
         </div>
       );
