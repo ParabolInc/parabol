@@ -19,7 +19,7 @@ const NewTeam = (props) => {
 NewTeam.propTypes = {
   dispatch: PropTypes.func.isRequired,
   params: PropTypes.shape({
-    newOrg: PropTypes.object
+    newOrg: PropTypes.string
   })
 };
 
