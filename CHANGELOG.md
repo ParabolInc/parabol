@@ -4,9 +4,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v0.16.10 - 21-Mar-2017
+## v0.16.10 - 22-Mar-2017
+### Added
+- Clearer direction to meeting participants when they want to skip ahead
+  of the meeting facilitator (#806, #392)
+- Project cards once again submit on enter, not tab
+- #728, #794 markdown now renders in email summary
+
 ### Fixed
-- Re-adds user traits as context to segment events
+- Re-adds user traits as context and properties to all segment events
+- #840 column order:
+   - We're more orthodox Kanban now dashboards (time flows left to right),
+     but intentionally reversed in meetings so things are covered in a
+     productive order
+- #848 eager-load error validation error for stripCard
 
 ## v0.16.9 - 20-Mar-2017
 ### Added
@@ -14,6 +25,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #762 spinner component
 - #820 Trial and payment segment events
 - Added raven message to meeting infiniteLoop watchdog
+
 ### Fixed
 - Patch for rejoin button styles
 - Ensure graphql gets a promise back from newly non-awaited calls
