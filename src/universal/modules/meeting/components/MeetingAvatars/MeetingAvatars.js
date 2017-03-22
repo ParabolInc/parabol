@@ -24,11 +24,11 @@ const styleThunk = () => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    padding: '1.25rem 0 0',
+    padding: '1.25rem 0 .75rem',
     width: '100%',
 
     [ui.breakpoint.wide]: {
-      padding: '2rem 0 0'
+      padding: '2rem 0 .75rem'
     }
   }
 });
