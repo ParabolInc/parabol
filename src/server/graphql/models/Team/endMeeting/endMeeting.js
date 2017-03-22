@@ -1,5 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
 import {
+  getSegmentTraitsForUsers,
   requireSUOrTeamMember,
   requireWebsocket
 } from 'server/utils/authorization';
@@ -15,6 +16,7 @@ import {
 import resetMeeting from './resetMeeting';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 import getEndMeetingSortOrders from 'server/graphql/models/Team/endMeeting/getEndMeetingSortOrders';
+import segmentIo from 'server/segmentIo';
 
 export default {
   type: GraphQLBoolean,
@@ -108,7 +110,7 @@ export default {
                     projects: res('projects').default([]).filter({teamMemberId: teamMember('id')})
                   })),
                 projects: res('projects').default([]),
-              }, {nonAtomic: true, returnChanges: true})('changes')(0)('new_val').pluck('projects', 'invitees');
+              }, {nonAtomic: true, returnChanges: true})('changes')(0)('new_val').pluck('invitees', 'meetingNumber', 'projects');
           });
       });
     const {updatedActions, updatedProjects} = await getEndMeetingSortOrders(completedMeeting);
@@ -136,7 +138,22 @@ export default {
             meetingPhaseItem: null,
           });
       });
-
+    // dispatch segment events:
+    getSegmentTraitsForUsers(
+      // extract user part of id from x::y invitee:
+      completedMeeting.invitees.map((invitee) => invitee.id.split('::')[0])
+    ).then((segmentTraits) =>
+      segmentTraits.forEach((traits) => {
+        segmentIo.track({
+          userId: traits.id,
+          event: 'Meeting Complete',
+          properties: {
+            meetingNumber: completedMeeting.meetingNumber,
+            traits
+          }
+        });
+      })
+    );
     // reset the meeting
     resetMeeting(teamId);
     return true;

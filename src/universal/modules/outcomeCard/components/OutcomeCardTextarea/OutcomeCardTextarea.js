@@ -5,7 +5,8 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import Textarea from 'react-textarea-autosize';
 import ReactMarkdown from 'react-markdown';
-import LinkNewTab from 'universal/components/LinkNewTab/LinkNewTab';
+import markdownCustomComponents from 'universal/utils/markdownCustomComponents';
+
 
 class OutcomeCardTextArea extends Component {
   static propTypes = {
@@ -82,8 +83,8 @@ class OutcomeCardTextArea extends Component {
     };
 
     const submitOnEnter = (e) => {
-       // hitting enter (not shift+enter) submits the textarea
-      if (e.key === 'Enter' && !e.shiftKey) {
+       // hitting enter (not shift+enter or any wacky combo) submits the textarea
+      if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
         textAreaRef.blur();
       }
     };
@@ -123,9 +124,6 @@ class OutcomeCardTextArea extends Component {
       !isProject && cardHasHover && styles.actionContentWhenCardHovered,
       !isProject && styles.descriptionAction
     );
-    const markdownCustomComponents = {
-      Link: LinkNewTab
-    };
     return (
       <div
         onClick={!isArchived && this.setEditing}

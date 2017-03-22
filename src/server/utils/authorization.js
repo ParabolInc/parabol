@@ -104,6 +104,27 @@ export const requireWebsocketExchange = (exchange) => {
   }
 };
 
+export const getSegmentTraitsForUsers = async (userIds) => {
+  // TODO: one day we'll store this in something like redis
+  const r = getRethink();
+  const traits = await r.table('User')
+    .getAll(...userIds)
+    .map({
+      avatar: r.row('picture').default(''),
+      createdAt: r.row('createdAt').default(0),
+      email: r.row('email'),
+      id: r.row('id'),
+      name: r.row('preferredName')
+    })
+    .run();
+
+  return traits;
+};
+
+export const getUserSegmentTraits = async (userId) => {
+  return (await getSegmentTraitsForUsers([userId]))[0];
+};
+
 export const getUserOrgDoc = (userId, orgId) => {
   const r = getRethink();
   return r.table('User').get(userId)('userOrgs')

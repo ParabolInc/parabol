@@ -2,27 +2,32 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
-import TeamAgenda from 'universal/modules/teamDashboard/components/TeamAgenda/TeamAgenda';
 import TeamColumnsContainer from 'universal/modules/teamDashboard/containers/TeamColumns/TeamColumnsContainer';
 import TeamProjectsHeaderContainer from 'universal/modules/teamDashboard/containers/TeamProjectsHeader/TeamProjectsHeaderContainer';
+import AgendaHeader from 'universal/modules/teamDashboard/components/AgendaHeader/AgendaHeader';
+import AgendaListAndInputContainer from 'universal/modules/teamDashboard/containers/AgendaListAndInput/AgendaListAndInputContainer';
+import voidClick from 'universal/utils/voidClick';
 
 const AgendaAndProjects = (props) => {
-  const {params: {teamId}, styles} = props;
+  const {hideAgenda, teamId, styles} = props;
   return (
     <div className={css(styles.root)}>
-      <div className={css(styles.inner)}>
+      <div className={css(styles.headers)}>
         <div className={css(styles.agendaLayout)}>
-          <TeamAgenda teamId={teamId} />
+          <AgendaHeader hideAgenda={hideAgenda} teamId={teamId} />
         </div>
         <div className={css(styles.projectsLayout)}>
-          <div className={css(styles.root, styles.projects)}>
-            <TeamProjectsHeaderContainer
-              teamId={teamId}
-            />
-            <TeamColumnsContainer
-              teamId={teamId}
-            />
+          <TeamProjectsHeaderContainer teamId={teamId} />
+        </div>
+      </div>
+      <div className={css(styles.agendaAndProjects)}>
+        {!hideAgenda &&
+          <div className={css(styles.agendaLayout)}>
+            <AgendaListAndInputContainer context="dashboard" disabled={false} gotoItem={voidClick} teamId={teamId} />
           </div>
+        }
+        <div className={css(styles.projectsLayout, !hideAgenda && styles.projectsLayoutShared)}>
+          <TeamColumnsContainer teamId={teamId} />
         </div>
       </div>
     </div>
@@ -30,6 +35,7 @@ const AgendaAndProjects = (props) => {
 };
 
 AgendaAndProjects.propTypes = {
+  hideAgenda: PropTypes.bool,
   params: PropTypes.object,
   styles: PropTypes.object,
   teamId: PropTypes.string,
@@ -45,15 +51,15 @@ const styleThunk = () => ({
     width: '100%'
   },
 
-  inner: {
+  headers: {
     display: 'flex',
-    flex: 1,
     width: '100%'
   },
 
-  projects: {
+  agendaAndProjects: {
+    display: 'flex',
     flex: 1,
-    flexDirection: 'column',
+    width: '100%'
   },
 
   agendaLayout: {
@@ -67,7 +73,9 @@ const styleThunk = () => ({
   projectsLayout: {
     display: 'flex',
     flex: 1,
-    flexDirection: 'column',
+    flexDirection: 'column'
+  },
+  projectsLayoutShared: {
     paddingLeft: '1rem'
   }
 });

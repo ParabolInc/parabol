@@ -26,7 +26,7 @@ export function selectSegmentTraits(state, authReducer = DEFAULT_AUTH_REDUCER_NA
 
   return ({
     avatar: user.picture,
-    createdAt: new Date(user.createdAt),
+    createdAt: isNaN(user.createdAt.getTime()) ? null : user.createdAt,
     email: user.email,
     id: user.id,
     name: user.preferredName,
@@ -54,15 +54,16 @@ export function segmentEventIdentify(authReducer = DEFAULT_AUTH_REDUCER_NAME) {
 export function segmentEventTrack(event, properties, options, authReducer = DEFAULT_AUTH_REDUCER_NAME) {
   return (dispatch, getState) => {
     const traits = selectSegmentTraits(getState(), authReducer);
+    const propertiesOut = Object.assign({}, {traits}, properties);
     const optionsOut = Object.assign({}, {context: {traits}}, options);
-    dispatch({
-      type: SEGMENT_EVENT,
+
+    dispatch({ type: SEGMENT_EVENT,
       meta: {
         analytics: {
           eventType: EventTypes.track,
           eventPayload: {
             event,
-            properties,
+            properties: propertiesOut,
             options: optionsOut
           }
         }
@@ -74,7 +75,9 @@ export function segmentEventTrack(event, properties, options, authReducer = DEFA
 export function segmentEventPage(name, category, properties, options, authReducer = DEFAULT_AUTH_REDUCER_NAME) {
   return (dispatch, getState) => {
     const traits = selectSegmentTraits(getState(), authReducer);
+    const propertiesOut = Object.assign({}, {traits}, properties);
     const optionsOut = Object.assign({}, {context: {traits}}, options);
+
     dispatch({
       type: SEGMENT_EVENT,
       meta: {
@@ -83,7 +86,7 @@ export function segmentEventPage(name, category, properties, options, authReduce
           eventPayload: {
             name,
             category,
-            properties,
+            properties: propertiesOut,
             options: optionsOut
           }
         }
