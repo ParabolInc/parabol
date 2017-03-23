@@ -137,6 +137,7 @@ Sidebar.propTypes = {
   facilitatorPhase: PropTypes.oneOf(phaseArray),
   facilitatorPhaseItem: PropTypes.number,
   isFacilitating: PropTypes.bool,
+  gotoItem: PropTypes.func.isRequired,
   gotoAgendaItem: PropTypes.func.isRequired,
   localPhase: PropTypes.oneOf(phaseArray),
   localPhaseItem: PropTypes.number,

@@ -114,7 +114,7 @@ export default {
       }
 
       if (!nextPhaseItem && (!nextPhase || nextPhaseInfo.items)) {
-        throw errorObj({_error: 'Did not receive a nextPhaseItem'})
+        throw errorObj({_error: 'Did not receive a nextPhaseItem'});
       }
 
       const userId = getUserId(authToken);
