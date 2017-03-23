@@ -20,6 +20,7 @@ query {
     id
     picture
     preferredName
+    isLead
     presence @cached(type: "[Presence]") {
       userId
     }
@@ -40,13 +41,21 @@ const mapStateToProps = (state, props) => {
   return {
     hasDashAlert,
     team,
-    teamMembers
+    teamMembers,
+    myTeamMemberId: `${state.auth.obj.sub}::${teamId}`
   };
 };
 
 const TeamContainer = (props) => {
-  const {children, hasDashAlert, team, teamMembers} = props;
+  const {
+    children,
+    hasDashAlert,
+    team,
+    teamMembers,
+    myTeamMemberId
+  } = props;
   const readyEnough = team.id;
+  const myTeamMember = teamMembers.find((member) => member.id === myTeamMemberId);
   return (
     <DashboardWrapper title="Team Dashboard">
       {readyEnough ?
@@ -54,6 +63,7 @@ const TeamContainer = (props) => {
           hasDashAlert={hasDashAlert}
           team={team}
           teamMembers={teamMembers}
+          myTeamMember={myTeamMember}
         >
           {children}
         </Team>

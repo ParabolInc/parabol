@@ -12,6 +12,10 @@ import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAva
 import UnpaidTeamModalContainer from 'universal/modules/teamDashboard/containers/UnpaidTeamModal/UnpaidTeamModalContainer';
 import ui from 'universal/styles/ui';
 import MeetingInProgressModal from '../MeetingInProgressModal/MeetingInProgressModal';
+import Button from 'universal/components/Button/Button';
+import {cashay} from 'cashay';
+import {Field, reduxForm} from 'redux-form';
+import InputField from 'universal/components/InputField/InputField';
 
 const faIconStyle = {
   fontSize: '14px',
@@ -25,6 +29,10 @@ const linkStyle = {
   lineHeight: '15px',
   marginRight: '1.5rem',
   textDecoration: 'none'
+};
+
+const buttonStyle = {
+  textAlign: 'right'
 };
 
 const standardLinks = (teamId) => {
@@ -62,11 +70,21 @@ const settingsLinks = (teamId) => {
   );
 };
 
+
 // use the same object so the EditTeamName doesn't rerender so gosh darn always
 const initialValues = {teamName: ''};
 
 const Team = (props) => {
-  const {children, hasDashAlert, router, team, teamMembers} = props;
+  const {
+    children,
+    hasDashAlert,
+    router,
+    team,
+    teamMembers,
+    myTeamMember,
+    handleSubmit
+  } = props;
+  console.log(props);
   const {id: teamId, name: teamName, isPaid} = team;
   const hasActiveMeeting = Boolean(team && team.meetingId);
   const hasOverlay = hasActiveMeeting || !isPaid;
@@ -74,6 +92,42 @@ const Team = (props) => {
   initialValues.teamName = teamName;
   const DashHeaderInfoTitle = isSettings ? <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId} /> : teamName;
   const modalLayout = hasDashAlert ? ui.modalLayoutMainWithDashAlert : ui.modalLayoutMain;
+  const archiveTeam = () => {
+    const {id, name} = team;
+    const variables = {
+      updatedTeam: {
+        id,
+        name,
+        isArchived: true
+      }
+    };
+    cashay.mutate('archiveTeam', {variables});
+    router.push('/me');
+  };
+
+  const potato = async (data) => {
+    console.log(data);
+  };
+  handleSubmit(potato);
+  const archiveTeamButton = (
+    <div style={buttonStyle}>
+      <Button
+        colorPalette="warm"
+        label="Archive Team"
+        size="smallest"
+        onClick={archiveTeam}
+      />
+      <Field
+        autoFocus
+        handleSubmit={handleSubmit(potato)}
+        colorPalette="gray"
+        component={InputField}
+        name="preferredName"
+        placeholder="Type the team name to confirm"
+        type="text"
+      />
+    </div>
+  );
   return (
     <DashMain>
       <MeetingInProgressModal
@@ -93,6 +147,7 @@ const Team = (props) => {
         <DashHeaderInfo title={DashHeaderInfoTitle}>
           {isSettings ? settingsLinks(teamId) : standardLinks(teamId)}
         </DashHeaderInfo>
+        {isSettings && myTeamMember.isLead && archiveTeamButton}
         <DashboardAvatars teamMembers={teamMembers} />
       </DashHeader>
       <DashContent hasOverlay={hasOverlay} padding="0">
@@ -108,6 +163,7 @@ Team.propTypes = {
   router: PropTypes.object,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired,
+  handleSubmit: PropTypes.func.isRequired
 };
 
-export default withRouter(Team);
+export default reduxForm({form: 'archiveTeamConfirmation'})(withRouter(Team));

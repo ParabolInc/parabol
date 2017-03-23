@@ -107,28 +107,6 @@ const TeamSettings = (props) => {
     );
   };
 
-  const archiveTeam = () => {
-    if (!myTeamMember.isLead) return;
-    const {id, name} = team;
-    const variables = {
-      updatedTeam: {
-        id,
-        name,
-        isArchived: true
-      }
-    };
-    cashay.mutate('archiveTeam', {variables});
-    router.push('/me');
-  };
-  const archiveTeamButton = (
-    <Button
-      colorPalette="warm"
-      label="Archive Team"
-      size="smallest"
-      onClick={archiveTeam}
-    />
-  );
-
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.inviteBlock)}>
@@ -176,9 +154,6 @@ const TeamSettings = (props) => {
             );
           })
           }
-          <Row
-            children={archiveTeamButton}
-          />
         </div>
       </div>
     </div>
