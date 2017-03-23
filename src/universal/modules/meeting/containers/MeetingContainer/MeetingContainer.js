@@ -40,7 +40,6 @@ import electFacilitatorIfNone from 'universal/modules/meeting/helpers/electFacil
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import generateMeetingRoute from 'universal/modules/meeting/helpers/generateMeetingRoute';
 
-
 const meetingContainerQuery = `
 query{
   team @live {
