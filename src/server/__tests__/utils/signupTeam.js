@@ -8,7 +8,7 @@ import userMutation from '../../graphql/models/User/userMutation';
 export default function signupTeam(team, teamLeader, teamMembers, refreshAuthToken) {
   describe('signup team', () => {
     let authToken;
-    beforeEach(async() => { authToken = await refreshAuthToken(); });
+    beforeEach(async () => { authToken = await refreshAuthToken(); });
 
     /*
      * We must wait for the work performed in setTimeout()
@@ -29,11 +29,11 @@ export default function signupTeam(team, teamLeader, teamMembers, refreshAuthTok
     test('invite team members and accept invitations', (done) => {
       // Done as one test, because we need inviteeTokens to test
       // the acceptInvitation endpoint
-      const unitTestCb = async(inviteesWithTokens) => {
+      const unitTestCb = async (inviteesWithTokens) => {
         const {resolve: acceptInvitation} = teamMemberMutation.acceptInvitation;
         const exchange = { publish: jest.fn() };
 
-        const acceptPromises = inviteesWithTokens.map(async(inviteeWithToken) => {
+        const acceptPromises = inviteesWithTokens.map(async (inviteeWithToken) => {
           const {email, inviteToken} = inviteeWithToken;
           const {id: userId} = teamMembers.find((member) =>
             member.auth0UserInfo.email === email);
@@ -49,7 +49,7 @@ export default function signupTeam(team, teamLeader, teamMembers, refreshAuthTok
       };
       const teamId = authToken.tms[0];
       const {resolve} = invitationMutation.inviteTeamMembers;
-      const invitees = teamMembers.map(member => {
+      const invitees = teamMembers.map((member) => {
         const {auth0UserInfo: {email, name: fullName}} = member;
         return { email, fullName, task: '' };
       });

@@ -32,10 +32,10 @@ const DashSidebar = (props) => {
         <div className={css(styles.navLabel, styles.navLabelForList)}>
           My Teams
         </div>
-        <DashNavListContainer/>
+        <DashNavListContainer />
         <Link className={addNewStyles} title="Add New Team" to="/newteam">
           <div className={css(styles.addTeamIcon)}>
-            <FontAwesome name="plus-square"/>
+            <FontAwesome name="plus-square" />
           </div>
           <div className={css(styles.addTeamLabel)}>
             Add New Team
@@ -43,7 +43,7 @@ const DashSidebar = (props) => {
         </Link>
       </nav>
       <div className={css(styles.brand)}>
-        <a href="http://www.parabol.co/" title="Action by Parabol, Inc." target="_blank">
+        <a href="http://www.parabol.co/" rel="noopener noreferrer" title="Action by Parabol, Inc." target="_blank">
           <img alt="Action by Parabol, Inc." className={css(styles.logo)} src={Logo} />
         </a>
       </div>

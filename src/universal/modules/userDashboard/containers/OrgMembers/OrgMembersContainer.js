@@ -57,7 +57,7 @@ const mapStateToProps = (state, props) => {
 const OrgMembersContainer = (props) => {
   const {billingLeaderCount, dispatch, myUserId, users, org} = props;
   if (users.length < 1) {
-    return <LoadingView/>;
+    return <LoadingView />;
   }
   return (
     <OrgMembers

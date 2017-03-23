@@ -13,7 +13,7 @@ const IconButton = (props) => {
   // must declare type="button" or it gets treated as a submit in the welcome wizard. wtf react
   return (
     <button className={buttonStyles} disabled={disabled} onClick={onClick} title={title} type={type}>
-      <FontAwesome name={iconName} size={iconSize}/>
+      <FontAwesome name={iconName} size={iconSize} />
     </button>
   );
 };

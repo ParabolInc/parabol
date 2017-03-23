@@ -31,10 +31,10 @@ const targetAnchor = {
 
 const UserProjectsHeader = (props) => {
   const {dispatch, styles, teams, teamFilterId, teamFilterName} = props;
-  const toggle = <DashFilterToggle label={teamFilterName}/>;
+  const toggle = <DashFilterToggle label={teamFilterName} />;
   return (
     <DashSectionHeader>
-      <DashSectionHeading icon="calendar" label="My Projects"/>
+      <DashSectionHeading icon="calendar" label="My Projects" />
       <DashSectionControls>
         {/* TODO: needs minimal, inline dropdown */}
         <DashSectionControl>

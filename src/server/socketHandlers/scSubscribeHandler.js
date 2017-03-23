@@ -54,7 +54,7 @@ const temporalSubs = [PRESENCE, USER_MEMO];
 export default function scSubscribeHandler(exchange, socket) {
   return async function subscribeHandler(subbedChannelName = '') {
     const {channel, variableString} = parseChannel(subbedChannelName);
-    const subscription = subscriptions.find(sub => sub.channel === channel);
+    const subscription = subscriptions.find((sub) => sub.channel === channel);
 
     if (subscription) {
       const dechannelfier = dechannelfy[channel];

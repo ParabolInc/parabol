@@ -2,8 +2,8 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import {reduxForm, Field} from 'redux-form';
-import AgendaInputField from './AgendaInputField';
 import Avatar from 'universal/components/Avatar/Avatar';
+import AgendaInputField from './AgendaInputField';
 
 const AgendaInput = (props) => {
   const {agenda, disabled, handleSubmit, teamId, myTeamMember, styles} = props;
@@ -19,7 +19,7 @@ const AgendaInput = (props) => {
         teamId={teamId}
       />
       <div className={css(styles.author)}>
-        <Avatar hasBadge={false} picture={myTeamMember.picture} size="smallest"/>
+        <Avatar hasBadge={false} picture={myTeamMember.picture} size="smallest" />
       </div>
     </div>
   );

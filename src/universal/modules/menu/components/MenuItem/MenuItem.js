@@ -45,7 +45,7 @@ const MenuItem = (props) => {
     width: '1.25rem'
   };
   const makeIcon = () =>
-    <FontAwesome name={icon} style={iconStyle}/>;
+    <FontAwesome name={icon} style={iconStyle} />;
   return (
     <div title={titleStr}>
       {hr === 'before' && <hr className={css(styles.hr)} />}

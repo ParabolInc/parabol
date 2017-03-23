@@ -382,6 +382,17 @@ const ui = {
   rowHeadingFontSize: appTheme.typography.s4,
   rowGutter: '1rem',
 
+  // Tags
+  // ---------------------------------------------------------------------------
+  tagGutter: '.75rem',
+  tagPalette: [
+    'cool',
+    'gray',
+    'light',
+    'warm',
+    'white'
+  ],
+
   // Transitions
   // ---------------------------------------------------------------------------
   transitionFastest,

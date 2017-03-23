@@ -6,11 +6,18 @@ import {
 } from 'graphql';
 import {ACTION_MONTHLY, TRIAL_EXTENSION, TRIAL_PERIOD} from 'server/utils/serverConstants';
 import {PAYMENT_REJECTED, TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
-import {getUserId, getUserOrgDoc, requireOrgLeader, requireWebsocket} from 'server/utils/authorization';
+import {
+  getUserId,
+  getUserOrgDoc,
+  getUserSegmentTraits,
+  requireOrgLeader,
+  requireWebsocket
+} from 'server/utils/authorization';
 import stripe from 'server/billing/stripe';
 import {fromEpochSeconds, toEpochSeconds} from 'server/utils/epochTime';
 import getCCFromCustomer from 'server/graphql/models/Organization/addBilling/getCCFromCustomer';
 import makeUpcomingInvoice from 'server/graphql/models/Invoice/makeUpcomingInvoice';
+import segmentIo from 'server/segmentIo';
 
 export default {
   type: GraphQLBoolean,
@@ -44,6 +51,7 @@ export default {
     const {creditCard, stripeId, stripeSubscriptionId, periodEnd, periodStart, orgUsers} = await r.table('Organization')
       .get(orgId)
       .pluck('creditCard', 'orgUsers', 'periodEnd', 'periodStart', 'stripeId', 'stripeSubscriptionId');
+    const segmentTraits = await getUserSegmentTraits(userId);
 
     const customer = await stripe.customers.update(stripeId, {source: stripeToken});
     if (periodEnd > now && stripeSubscriptionId) {
@@ -51,6 +59,14 @@ export default {
       if (creditCard.last4) {
         await r.table('Organization').get(orgId).update({
           creditCard: getCCFromCustomer(customer)
+        });
+        segmentIo.track({
+          userId,
+          event: 'addBilling Update Payment Success',
+          properties: {
+            orgId,
+            traits: segmentTraits
+          }
         });
         // 2) Adding to extend the free trial
       } else {
@@ -71,6 +87,14 @@ export default {
               })
               .delete();
           });
+        segmentIo.track({
+          userId,
+          event: 'addBilling Free Trial Extended',
+          properties: {
+            orgId,
+            traits: segmentTraits
+          }
+        });
       }
     } else {
       // 3) Converting after the trial ended
@@ -107,6 +131,15 @@ export default {
             })
             .delete();
         });
+      segmentIo.track({
+        userId,
+        event: 'addBilling New Payment Success',
+        properties: {
+          orgId,
+          quantity,
+          traits: segmentTraits
+        }
+      });
     }
     // nuke the upcoming invoice if it existed
     await r.table('Invoice')

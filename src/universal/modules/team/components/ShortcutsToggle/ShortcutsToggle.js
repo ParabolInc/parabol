@@ -2,16 +2,16 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import FontAwesome from 'react-fontawesome';
-import appTheme from 'universal/styles/theme/appTheme.js';
+import appTheme from 'universal/styles/theme/appTheme';
 import {srOnly} from 'universal/styles/helpers';
 
 const ShortcutsToggle = (props) => {
   const {handleOnClick, styles} = props;
   return (
     <a className={css(styles.root)} href="#" onClick={handleOnClick} title="Show shortcuts">
-      <FontAwesome name="keyboard-o"/>
+      <FontAwesome name="keyboard-o" />
       &nbsp;
-      <FontAwesome name="question-circle"/>
+      <FontAwesome name="question-circle" />
       <span className={css(styles.srOnly)}>Show shortcuts</span>
     </a>
   );

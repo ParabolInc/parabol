@@ -5,9 +5,10 @@ import CheckinCards from 'universal/modules/meeting/components/CheckinCards/Chec
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import {CHECKIN, phaseOrder} from 'universal/utils/constants';
+import {CHECKIN} from 'universal/utils/constants';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import appTheme from 'universal/styles/theme/appTheme';
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 
 const MeetingCheckin = (props) => {
   const {
@@ -15,7 +16,8 @@ const MeetingCheckin = (props) => {
     gotoNext,
     localPhaseItem,
     members,
-    team
+    team,
+    hideMoveMeetingControls
   } = props;
 
   const {
@@ -35,10 +37,10 @@ const MeetingCheckin = (props) => {
     );
   }
 
-// 1-indexed
+  // 1-indexed
   const isLastMember = localPhaseItem === members.length;
   const currentName = members[localPhaseItem - 1] && members[localPhaseItem - 1].preferredName;
-  const isComplete = phaseOrder(meetingPhase) > phaseOrder(CHECKIN);
+  const isComplete = actionMeeting[meetingPhase].index > actionMeeting[CHECKIN].index;
   return (
     <MeetingMain>
       {/* */}
@@ -66,14 +68,16 @@ const MeetingCheckin = (props) => {
           members={members}
         />
         <MeetingSection paddingTop=".75rem">
-          <IconLink
-            colorPalette="cool"
-            icon="arrow-circle-right"
-            iconPlacement="right"
-            label={isLastMember ? 'Move on to Updates' : 'Next teammate (press enter)'}
-            scale="large"
-            onClick={gotoNext}
-          />
+          {!hideMoveMeetingControls &&
+            <IconLink
+              colorPalette="cool"
+              icon="arrow-circle-right"
+              iconPlacement="right"
+              label={isLastMember ? 'Move on to Updates' : 'Next teammate (press enter)'}
+              scale="large"
+              onClick={gotoNext}
+            />
+          }
         </MeetingSection>
         {/* */}
         {/* */}
@@ -88,7 +92,8 @@ MeetingCheckin.propTypes = {
   gotoNext: PropTypes.func.isRequired,
   localPhaseItem: PropTypes.number,
   members: PropTypes.array,
-  team: PropTypes.object
+  team: PropTypes.object,
+  hideMoveMeetingControls: PropTypes.bool
 };
 
 export default MeetingCheckin;

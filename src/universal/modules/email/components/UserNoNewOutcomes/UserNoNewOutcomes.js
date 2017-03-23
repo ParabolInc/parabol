@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
-import EmptySpace from '../../components/EmptySpace/EmptySpace';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import EmptySpace from '../../components/EmptySpace/EmptySpace';
 
 const UserNoNewOutcomes = (props) => {
   const {members} = props;
@@ -103,6 +103,7 @@ const UserNoNewOutcomes = (props) => {
     return cells();
   };
 
+  /* eslint-disable react/no-array-index-key */
   return (
     <table align="center" style={ui.emailTableBase} width="100%">
       <tbody>
@@ -139,6 +140,7 @@ const UserNoNewOutcomes = (props) => {
       </tbody>
     </table>
   );
+  /* eslint-enable */
 };
 
 UserNoNewOutcomes.propTypes = {

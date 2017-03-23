@@ -33,14 +33,14 @@ export const AGENDA_ITEMS = 'agendaitems';
 export const LAST_CALL = 'lastcall';
 export const SUMMARY = 'summary';
 export const phaseArray = [LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY];
-export const phaseOrder = phase => phaseArray.indexOf(phase);
 
 /* Columns */
 export const ACTIVE = 'active';
 export const STUCK = 'stuck';
 export const DONE = 'done';
 export const FUTURE = 'future';
-export const columnArray = [DONE, ACTIVE, STUCK, FUTURE];
+export const columnArray = [FUTURE, STUCK, ACTIVE, DONE];
+export const meetingColumnArray = [DONE, ACTIVE, STUCK, FUTURE];
 
 /* Drag-n-Drop Items*/
 export const ACTION = 'action';

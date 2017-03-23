@@ -14,7 +14,7 @@ MockDate.set(__now);
 console.error = jest.fn();
 
 describe('createAction', () => {
-  test('creates an action from a meeting', async() => {
+  test('creates an action from a meeting', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
@@ -42,7 +42,7 @@ describe('createAction', () => {
     expect(db).toMatchSnapshot();
   });
 
-  test('creates an action from the team dash', async() => {
+  test('creates an action from the team dash', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
@@ -67,12 +67,12 @@ describe('createAction', () => {
     expect(db).toMatchSnapshot();
   });
 
-  test('throws when no websocket is present', async() => {
+  test('throws when no websocket is present', async () => {
     const authToken = {};
     await expectAsyncToThrow(createAction.resolve(undefined, {newAction: {}}, {authToken}));
   });
 
-  test('throw when the caller is not a team member', async() => {
+  test('throw when the caller is not a team member', async () => {
     // SETUP
     const mockDB = new MockDB();
     const {teamMember, user} = await mockDB.init();

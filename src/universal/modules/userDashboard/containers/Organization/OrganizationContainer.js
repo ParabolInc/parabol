@@ -46,7 +46,7 @@ const OrganizationContainer = (props) => {
     org
   } = props;
   if (!org.id) {
-    return <LoadingView/>;
+    return <LoadingView />;
   }
   return (
     <Organization

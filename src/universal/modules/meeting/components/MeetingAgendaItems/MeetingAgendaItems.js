@@ -20,12 +20,14 @@ const MeetingAgendaItems = (props) => {
     gotoNext,
     members,
     styles,
+    hideMoveMeetingControls
   } = props;
+
   if (!agendaItem) {
     return <LoadingView />;
   }
   const currentTeamMember = members.find((m) => m.id === agendaItem.teamMemberId);
-  const self = members.find(m => m.isSelf);
+  const self = members.find((m) => m.isSelf);
   const hasFirstSpacer = true;
   return (
     <MeetingMain>
@@ -44,21 +46,23 @@ const MeetingAgendaItems = (props) => {
               {hasFirstSpacer && <div className={css(styles.linkSpacer)}>{' '}</div>}
               <div className={css(styles.avatarBlock)}>
                 <div className={css(styles.avatar)}>
-                  <Avatar {...currentTeamMember} size="fill"/>
+                  <Avatar {...currentTeamMember} size="fill" />
                 </div>
                 <div className={css(styles.agendaItemLabel)}>
                   “{agendaItem.content}”
                 </div>
               </div>
               <div className={css(styles.linkSpacer)}>
-                <IconLink
-                  colorPalette="cool"
-                  icon="arrow-circle-right"
-                  iconPlacement="right"
-                  label={isLast ? 'Wrap up the meeting' : 'Next Agenda Item'}
-                  onClick={gotoNext}
-                  scale="small"
-                />
+                {!hideMoveMeetingControls &&
+                  <IconLink
+                    colorPalette="cool"
+                    icon="arrow-circle-right"
+                    iconPlacement="right"
+                    label={isLast ? 'Wrap up the meeting' : 'Next Agenda Item'}
+                    onClick={gotoNext}
+                    scale="small"
+                  />
+                }
               </div>
             </div>
             <MeetingAgendaCardsContainer
@@ -79,7 +83,8 @@ MeetingAgendaItems.propTypes = {
   isLast: PropTypes.bool,
   gotoNext: PropTypes.func.isRequired,
   members: PropTypes.array.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
+  hideMoveMeetingControls: PropTypes.bool
 };
 
 const styleThunk = () => ({

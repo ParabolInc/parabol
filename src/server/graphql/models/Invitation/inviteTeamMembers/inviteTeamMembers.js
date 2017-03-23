@@ -45,7 +45,7 @@ export default {
     // VALIDATION
     const now = Date.now();
     // don't let them invite the same person twice
-    const emailArr = invitees.map(invitee => invitee.email);
+    const emailArr = invitees.map((invitee) => invitee.email);
     const usedEmails = await r.expr({
       inviteEmails: r.table('Invitation')
         .getAll(r.args(emailArr), {index: 'email'})
@@ -101,23 +101,23 @@ export default {
         const freshInvitees = newInvitees.filter((i) =>
           !pendingApprovals.find((d) => d.inviteeEmail === i.email && d.invitedTeamId === teamId));
         if (freshInvitees) {
-          setTimeout(async() =>
-            await asyncInviteTeam(userId, teamId, freshInvitees),
-          0);
+          setTimeout(async () => {
+            await asyncInviteTeam(userId, teamId, freshInvitees);
+          }, 0);
         }
         pendingApprovals.forEach((invite) => {
           const {inviterId, inviteeEmail, invitedTeamId} = invite;
           const invitee = [{email: inviteeEmail}];
           // when we invite the person, try to invite from the original requester, if not, Billing Leader
-          setTimeout(async() =>
-            await asyncInviteTeam(inviterId, invitedTeamId, invitee),
-          0);
+          setTimeout(async () => {
+            await asyncInviteTeam(inviterId, invitedTeamId, invitee);
+          }, 0);
         });
 
         return true;
       }
       // return false if org approvals sent, true if only invites were sent
-      return await inviteAsUser(newInvitees, orgId, userId, teamId, teamName);
+      return inviteAsUser(newInvitees, orgId, userId, teamId, teamName);
     }
     return undefined;
   }

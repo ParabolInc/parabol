@@ -22,7 +22,7 @@ const BillingMembersToggle = (props) => {
   ];
 
   return (
-    <ToggleNav items={items}/>
+    <ToggleNav items={items} />
   );
 };
 

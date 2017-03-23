@@ -67,7 +67,7 @@ export default {
     const {id: teamId} = validNewTeam;
     const tms = [teamId];
     // set up the team while the user is on step 3
-    setTimeout(async() => {
+    setTimeout(async () => {
       const expiresSoonId = shortid.generate();
       const orgName = `${user.preferredName}’s Org`;
       const {periodEnd} = await createNewOrg(orgId, orgName, userId);

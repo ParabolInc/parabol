@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
-import {columnArray} from 'universal/utils/constants';
+import {columnArray, meetingColumnArray, MEETING} from 'universal/utils/constants';
 import ProjectColumn from 'universal/modules/teamDashboard/components/ProjectColumn/ProjectColumn';
 
 const ProjectColumns = (props) => {
@@ -19,11 +19,11 @@ const ProjectColumns = (props) => {
     userId
   } = props;
   const rootStyles = css(styles.root, styles[alignColumns]);
-
+  const lanes = area === MEETING ? meetingColumnArray : columnArray;
   return (
     <div className={rootStyles}>
       <div className={css(styles.columns)}>
-        {columnArray.map((status) =>
+        {lanes.map((status) =>
           <ProjectColumn
             key={`projectCol${status}`}
             area={area}

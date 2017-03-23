@@ -5,7 +5,7 @@ import {
   GraphQLID
 } from 'graphql';
 import getRequestedFields from 'server/graphql/getRequestedFields';
-import {OrgApproval} from './orgApprovalSchema';
+import OrgApproval from './orgApprovalSchema';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
 import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
 

@@ -8,7 +8,7 @@ const withDragState = (WrappedComponent) => {
     }
 
     render() {
-      return <WrappedComponent dragState={this.dragState} {...this.props}/>;
+      return <WrappedComponent dragState={this.dragState} {...this.props} />;
     }
   };
 };

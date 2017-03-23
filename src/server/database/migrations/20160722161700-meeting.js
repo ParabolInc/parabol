@@ -18,7 +18,7 @@ exports.up = async (r) => {
     r.table('Project').indexCreate('teamMemberId'),
     r.table('Project').indexCreate('teamIdCreatedAt', (row) => [row('teamId'), row('createdAt')])
   ];
-  return await Promise.all(meetingIndices);
+  await Promise.all(meetingIndices);
 };
 
 exports.down = async (r) => {
@@ -31,5 +31,5 @@ exports.down = async (r) => {
     r.tableDrop('Outcome'),
     r.tableDrop('TaskOutcomeDiff')
   ];
-  return await Promise.all(meetingTables);
+  await Promise.all(meetingTables);
 };

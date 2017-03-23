@@ -13,7 +13,7 @@ exports.up = async (r) => {
     r.table('Invitation').indexCreate('teamId'),
     r.table('Invitation').indexCreate('email')
   ];
-  return await Promise.all(initialIndices);
+  await Promise.all(initialIndices);
 };
 
 exports.down = async (r) => {
@@ -23,5 +23,5 @@ exports.down = async (r) => {
     r.tableDrop('Invitation'),
     r.tableDrop('Team')
   ];
-  return await Promise.all(initialTables);
+  await Promise.all(initialTables);
 };

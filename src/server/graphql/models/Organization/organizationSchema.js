@@ -131,12 +131,13 @@ export const Organization = new GraphQLObjectType({
     billingLeaders: {
       type: new GraphQLList(User),
       description: 'The leaders of the org',
-      resolve: async({id}) => {
+      resolve: async ({id}) => {
         const r = getRethink();
         return r.table('User')
           .getAll(id, {index: 'userOrgs'})
           .filter((user) => user('userOrgs')
-            .contains((userOrg) => userOrg('id').eq(id).and(userOrg('role').eq(BILLING_LEADER))));
+            .contains((userOrg) => userOrg('id').eq(id).and(userOrg('role').eq(BILLING_LEADER))))
+          .run();
       }
     }
   })

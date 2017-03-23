@@ -46,7 +46,7 @@ const mapStateToProps = (state, props) => {
 };
 
 const makeInvitees = (invitees) => {
-  return invitees ? invitees.map(email => ({
+  return invitees ? invitees.map((email) => ({
     email: email.address,
     fullName: email.fullName
   })) : [];
@@ -136,7 +136,7 @@ class NewTeamFormContainer extends Component {
 
 NewTeamFormContainer.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  initialOrgCount: PropTypes.func.number,
+  initialOrgCount: PropTypes.number,
   initialValues: PropTypes.object,
   isNewOrg: PropTypes.bool,
   organizations: PropTypes.array,

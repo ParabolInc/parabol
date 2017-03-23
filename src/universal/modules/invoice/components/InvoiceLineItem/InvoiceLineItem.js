@@ -47,11 +47,11 @@ const InvoiceLineItem = (props) => {
   };
 
   const makeDetails = (details) => {
-    return details.map((d, i) => {
+    return details.map((d) => {
       const amount = invoiceLineFormat(d.amount);
       const description = detailDescriptionMaker[type](d);
       return (
-        <div className={css(styles.detailsItem)} key={i}>
+        <div className={css(styles.detailsItem)} key={d.id}>
           <div className={css(styles.fill)}>{description}</div>
           <div>{amount}</div>
         </div>

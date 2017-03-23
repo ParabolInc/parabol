@@ -11,41 +11,40 @@ const SEGMENT_EVENT = '@@segment/EVENT';
 
 const defaultProfile = {
   avatar: null,
+  createdAt: null,
   email: null,
   id: null,
   name: null
 };
 
-export function selectSegmentProfile(state, authReducer = DEFAULT_AUTH_REDUCER_NAME) {
+export function selectSegmentTraits(state, authReducer = DEFAULT_AUTH_REDUCER_NAME) {
   const userId = state[authReducer].obj.sub;
   if (!userId) {
     return defaultProfile;
   }
   const {user} = cashay.query(getAuthQueryString, getAuthedOptions(userId)).data;
+  const createdAt = new Date(user.createdAt);
 
   return ({
     avatar: user.picture,
+    createdAt: isNaN(createdAt.getTime()) ? null : createdAt,
     email: user.email,
     id: user.id,
     name: user.preferredName,
   });
 }
 
-export function segmentEventIdentify() {
+export function segmentEventIdentify(authReducer = DEFAULT_AUTH_REDUCER_NAME) {
   return (dispatch, getState) => {
-    const profile = selectSegmentProfile(getState());
+    const traits = selectSegmentTraits(getState(), authReducer);
     dispatch({
       type: SEGMENT_EVENT,
       meta: {
         analytics: {
           eventType: EventTypes.identify,
           eventPayload: {
-            userId: profile.id,
-            traits: {
-              avatar: profile.picture,
-              email: profile.email,
-              name: profile.name
-            }
+            userId: traits.id,
+            traits
           }
         }
       }
@@ -53,14 +52,13 @@ export function segmentEventIdentify() {
   };
 }
 
-export function segmentEventTrack(event, properties, options) {
+export function segmentEventTrack(event, properties, options, authReducer = DEFAULT_AUTH_REDUCER_NAME) {
   return (dispatch, getState) => {
-    const profile = selectSegmentProfile(getState());
-    const propertiesOut = Object.assign({}, profile, properties);
-    const optionsOut = Object.assign({}, {context: {traits: profile}}, options);
+    const traits = selectSegmentTraits(getState(), authReducer);
+    const propertiesOut = Object.assign({}, {traits}, properties);
+    const optionsOut = Object.assign({}, {context: {traits}}, options);
 
-    dispatch({
-      type: SEGMENT_EVENT,
+    dispatch({ type: SEGMENT_EVENT,
       meta: {
         analytics: {
           eventType: EventTypes.track,
@@ -75,11 +73,11 @@ export function segmentEventTrack(event, properties, options) {
   };
 }
 
-export function segmentEventPage(name, category, properties, options) {
+export function segmentEventPage(name, category, properties, options, authReducer = DEFAULT_AUTH_REDUCER_NAME) {
   return (dispatch, getState) => {
-    const profile = selectSegmentProfile(getState());
-    const propertiesOut = Object.assign({}, profile, properties);
-    const optionsOut = Object.assign({}, {context: {traits: profile}}, options);
+    const traits = selectSegmentTraits(getState(), authReducer);
+    const propertiesOut = Object.assign({}, {traits}, properties);
+    const optionsOut = Object.assign({}, {context: {traits}}, options);
 
     dispatch({
       type: SEGMENT_EVENT,
@@ -96,4 +94,15 @@ export function segmentEventPage(name, category, properties, options) {
       }
     });
   };
+}
+
+export function segmentEventReset() {
+  return ({
+    type: SEGMENT_EVENT,
+    meta: {
+      analytics: {
+        eventType: EventTypes.reset
+      }
+    }
+  });
 }

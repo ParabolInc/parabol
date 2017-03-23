@@ -36,7 +36,7 @@ const RequestNewUser = (props) => {
   return (
     <Row>
       <div className={css(styles.icon)}>
-        <IconAvatar icon="user" size="medium"/>
+        <IconAvatar icon="user" size="medium" />
       </div>
       <div className={css(styles.message)}>
         <span className={css(styles.messageVar)}>{inviterName} </span>

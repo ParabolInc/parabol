@@ -132,13 +132,13 @@ const SummaryEmail = (props) => {
         <tbody>
           <tr>
             <td style={bannerStyle}>
-              <EmptySpace height={8}/>
+              <EmptySpace height={8} />
               {bannerMessage &&
                 <div style={bannerMessageStyles}>
                   {bannerMessage}
                 </div>
               }
-              <EmptySpace height={8}/>
+              <EmptySpace height={8} />
             </td>
           </tr>
         </tbody>
@@ -149,7 +149,7 @@ const SummaryEmail = (props) => {
             <tr>
               <td align="center" style={{padding: 0}}>
                 {/* Summary Header */}
-                <SummaryHeader createdAt={createdAt} referrer={referrer} teamDashUrl={teamDashUrl} teamName={teamName}/>
+                <SummaryHeader createdAt={createdAt} referrer={referrer} teamDashUrl={teamDashUrl} teamName={teamName} />
                 {/* Message */}
                 {meetingNumber === 1 ?
                   <div>
@@ -163,7 +163,7 @@ const SummaryEmail = (props) => {
                       {'preferably recurring on Mondays or Tuesdays.'}<br />
                       {'Include the following link to the meeting lobby'}<br />
                       {'in your recurring calendar event:'}
-                      <EmptySpace height={8}/>
+                      <EmptySpace height={8} />
                       <table align="center" style={meetingLinkTable} width="80%">
                         <tbody>
                           <tr>
@@ -193,7 +193,7 @@ const SummaryEmail = (props) => {
                     }
                   </div>
                 }
-                <EmptySpace height={8}/>
+                <EmptySpace height={8} />
               </td>
             </tr>
           </tbody>
@@ -213,15 +213,15 @@ const SummaryEmail = (props) => {
             </tr>
           </tbody>
         </table>
-        {membersWithOutcomes.map(member =>
-          <UserOutcomes member={member} key={`memberOutcomes'${member.id}`}/>
+        {membersWithOutcomes.map((member) =>
+          <UserOutcomes member={member} key={`memberOutcomes'${member.id}`} />
         )}
         {hasUsersWithoutOutcomes &&
-          <UserNoNewOutcomes members={membersSansOutcomes}/>
+          <UserNoNewOutcomes members={membersSansOutcomes} />
         }
-        <EmptySpace height={0}/>
-        <hr style={ruleStyle}/>
-        <EmptySpace height={48}/>
+        <EmptySpace height={0} />
+        <hr style={ruleStyle} />
+        <EmptySpace height={48} />
         <ContactUs
           fontSize={18}
           hasLearningLink
@@ -230,9 +230,9 @@ const SummaryEmail = (props) => {
           tagline="We’re eager for your feedback!"
           vSpacing={0}
         />
-        <EmptySpace height={32}/>
+        <EmptySpace height={32} />
       </Body>
-      <Footer color={appTheme.palette.dark}/>
+      <Footer color={appTheme.palette.dark} />
     </Layout>
   );
 };

@@ -3,11 +3,15 @@ import thunk from 'redux-thunk';
 import auth, {DEFAULT_AUTH_REDUCER_NAME} from '../authDuck';
 import ReduxAuthEngine from '../AuthEngine';
 import {testToken} from './testTokens';
+import * as segmentActions from '../segmentActions';
 
 const REDUCER_NAME = 'marvin'; // use a different key than default for testing
 const reducers = combineReducers({[REDUCER_NAME]: auth});
 let store;
 let rae;
+segmentActions.selectSegmentTraits = jest.fn(() => ({email: 'a@a.co'}));
+segmentActions.segmentEventIdentify = jest.fn(() => ({ type: '@@segment/EVENT' }));
+segmentActions.segmentEventReset = jest.fn(() => ({ type: '@@segment/EVENT' }));
 
 beforeEach(() => {
   store = createStore(reducers, {}, applyMiddleware(thunk));
@@ -27,6 +31,7 @@ test('saveToken saves token', (done) => {
   const cb = (err, token) => {
     expect(err).toBe(null);
     expect(token).toBe(testToken);
+    expect(segmentActions.segmentEventIdentify).toBeCalled();
     done();
   };
 
@@ -38,6 +43,7 @@ test('removeToken removes token', (done) => {
   const cb = (err, token) => {
     expect(err).toBe(null);
     expect(token).toBe(testToken);
+    expect(segmentActions.segmentEventReset).toBeCalled();
     done();
   };
 
@@ -50,6 +56,7 @@ test('loadToken callsback with token', (done) => {
   const cb = (err, token) => {
     expect(err).toBe(null);
     expect(token).toBe(testToken);
+    expect(segmentActions.segmentEventIdentify).toBeCalled();
     done();
   };
 

@@ -12,8 +12,8 @@ import {setAuthToken} from 'universal/redux/authDuck';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
 import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 import WelcomeSubmitButton from 'universal/modules/welcome/components/WelcomeSubmitButton/WelcomeSubmitButton';
-import step2Validation from './step2Validation';
 import formError from 'universal/styles/helpers/formError';
+import step2Validation from './step2Validation';
 
 const validate = (values) => {
   const welcomeSchema = step2Validation();
@@ -22,7 +22,7 @@ const validate = (values) => {
 
 const Step2TeamName = (props) => {
   const {error, dispatch, handleSubmit, preferredName, styles, submitting, teamName} = props;
-  const onTeamNameSubmit = async(submissionData) => {
+  const onTeamNameSubmit = async (submissionData) => {
     const {data: {teamName: normalizedTeamName}} = step2Validation()(submissionData);
     const teamId = shortid.generate();
     const teamMemberId = shortid.generate();
@@ -48,7 +48,7 @@ const Step2TeamName = (props) => {
       <Type align="center" italic scale="s6">
         Nice to meet you, {preferredName}!
       </Type>
-      <WelcomeHeading copy={<span>Please type in your team name:</span>}/>
+      <WelcomeHeading copy={<span>Please type in your team name:</span>} />
       <form className={css(styles.formBlock)} onSubmit={handleSubmit(onTeamNameSubmit)}>
         {error && <div className={css(styles.error)}>{error}</div>}
         <Field
@@ -62,7 +62,7 @@ const Step2TeamName = (props) => {
           type="text"
           underline
         />
-        <WelcomeSubmitButton disabled={submitting || !teamName}/>
+        <WelcomeSubmitButton disabled={submitting || !teamName} />
       </form>
     </div>
   );

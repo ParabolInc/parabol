@@ -3,7 +3,8 @@ import {
   GraphQLID
 } from 'graphql';
 
-export const UserMemo = new GraphQLObjectType({
+
+export const UserMemo = new GraphQLObjectType({ // eslint-disable-line import/prefer-default-export
   name: 'UserMemo',
   description: 'A temporary message for a single user',
   fields: () => ({

@@ -1,5 +1,5 @@
 import {sign} from 'jsonwebtoken';
-import {getDotenv} from '../../universal/utils/dotenv';
+import getDotenv from '../../universal/utils/dotenv';
 import ms from 'ms';
 
 getDotenv();
