@@ -8,7 +8,7 @@ import IconLink from 'universal/components/IconLink/IconLink';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import {UPDATES, MEETING, phaseArray} from 'universal/utils/constants';
+import {UPDATES, MEETING} from 'universal/utils/constants';
 import ProgressBarContainer from 'universal/modules/meeting/containers/ProgressBarContainer/ProgressBarContainer';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
 import makeUsername from 'universal/utils/makeUsername';
@@ -16,12 +16,11 @@ import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 
 const MeetingUpdates = (props) => {
   const {
-    facilitatorPhase,
     gotoItem,
     gotoNext,
-    localPhase,
     localPhaseItem,
     members,
+    onFacilitatorPhase,
     queryKey,
     projects,
     styles,
@@ -40,12 +39,11 @@ const MeetingUpdates = (props) => {
         <ProgressBarContainer
           gotoItem={gotoItem}
           isComplete={isComplete}
-          facilitatorPhase={facilitatorPhase}
           facilitatorPhaseItem={facilitatorPhaseItem}
-          localPhase={localPhase}
           localPhaseItem={localPhaseItem}
           meetingPhaseItem={meetingPhaseItem}
           membersCount={members.length}
+          onFacilitatorPhase={onFacilitatorPhase}
         />
       </MeetingSection>
       {/* */}
@@ -93,12 +91,11 @@ const MeetingUpdates = (props) => {
 };
 
 MeetingUpdates.propTypes = {
-  facilitatorPhase: PropTypes.oneOf(phaseArray),
   gotoItem: PropTypes.func.isRequired,
   gotoNext: PropTypes.func.isRequired,
-  localPhase: PropTypes.oneOf(phaseArray),
   localPhaseItem: PropTypes.number.isRequired,
   members: PropTypes.array.isRequired,
+  onFacilitatorPhase: PropTypes.bool,
   projects: PropTypes.object.isRequired,
   queryKey: PropTypes.string.isRequired,
   styles: PropTypes.object.isRequired,

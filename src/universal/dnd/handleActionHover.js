@@ -15,6 +15,9 @@ export default function handleActionHover(targetProps, monitor) {
     ops: {userActions: queryKey},
     variables: {updatedAction}
   };
+  // close it out! we know we're moving
+  dragState.clear();
+
   cashay.mutate('updateAction', options);
   if (rebalanceDoc) {
     const rebalanceOptions = {

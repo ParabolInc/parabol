@@ -4,7 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import {overflowTouch} from 'universal/styles/helpers';
 import {cashay} from 'cashay';
 import AgendaItem from 'universal/modules/teamDashboard/components/AgendaItem/AgendaItem';
-import {AGENDA_ITEM, AGENDA_ITEMS, phaseArray} from 'universal/utils/constants';
+import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants';
 import handleAgendaHover from 'universal/dnd/handleAgendaHover';
 import {DropTarget as dropTarget} from 'react-dnd';
 import withDragState from 'universal/dnd/withDragState';
@@ -30,11 +30,12 @@ const AgendaList = (props) => {
     dragState,
     facilitatorPhase,
     facilitatorPhaseItem,
-    gotoItem,
+    gotoAgendaItem,
     localPhase,
     localPhaseItem,
     styles
   } = props;
+
   const canNavigate = context === 'meeting' && !disabled;
   dragState.clear();
   return connectDropTarget(
@@ -49,7 +50,7 @@ const AgendaList = (props) => {
             disabled={disabled}
             facilitatorPhase={facilitatorPhase}
             facilitatorPhaseItem={facilitatorPhaseItem}
-            gotoAgendaItem={() => gotoItem(idx + 1, AGENDA_ITEMS)}
+            gotoAgendaItem={gotoAgendaItem(idx)}
             handleRemove={removeItemFactory(item.id)}
             idx={idx}
             localPhase={localPhase}
@@ -76,7 +77,7 @@ AgendaList.propTypes = {
   disabled: PropTypes.bool,
   facilitatorPhase: PropTypes.oneOf(phaseArray),
   facilitatorPhaseItem: PropTypes.number,
-  gotoItem: PropTypes.func.isRequired,
+  gotoAgendaItem: PropTypes.func.isRequired,
   localPhase: PropTypes.oneOf(phaseArray),
   localPhaseItem: PropTypes.number,
   router: PropTypes.object,

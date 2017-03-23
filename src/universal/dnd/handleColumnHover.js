@@ -31,6 +31,10 @@ export default function handleProjectHover(targetProps, monitor) {
   }
   const updatedVariables = checkDragForUpdate(monitor, dragState, projects, true);
   if (!updatedVariables) return;
+
+  // close it out! we know we're moving
+  dragState.clear();
+
   const {rebalanceDoc, updatedDoc: updatedProject} = updatedVariables;
   if (sourceStatus !== targetStatus) {
     updatedProject.status = targetStatus;

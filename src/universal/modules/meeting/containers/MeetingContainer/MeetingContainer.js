@@ -27,7 +27,8 @@ import {
   FIRST_CALL,
   AGENDA_ITEMS,
   LAST_CALL,
-  phaseArray
+  phaseArray,
+  SORT_STEP
 } from 'universal/utils/constants';
 import MeetingAgendaItems from 'universal/modules/meeting/components/MeetingAgendaItems/MeetingAgendaItems';
 import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall';
@@ -39,7 +40,6 @@ import resolveMeetingMembers from 'universal/modules/meeting/helpers/resolveMeet
 import electFacilitatorIfNone from 'universal/modules/meeting/helpers/electFacilitatorIfNone';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import generateMeetingRoute from 'universal/modules/meeting/helpers/generateMeetingRoute';
-
 
 const meetingContainerQuery = `
 query{
@@ -285,7 +285,7 @@ export default class MeetingContainer extends Component {
       meetingPhaseItem,
       name: teamName
     } = team;
-    const agendaPhaseItem = meetingPhase === AGENDA_ITEMS && meetingPhaseItem || 0;
+    const agendaPhaseItem = meetingPhase === AGENDA_ITEMS ? meetingPhaseItem : null;
     // if we have a team.name, we have an initial subscription success to the team object
     if (!teamName ||
       members.length === 0
@@ -305,11 +305,33 @@ export default class MeetingContainer extends Component {
       (!isBehindMeeting && isLastItemOfPhase(localPhase, localPhaseItem, members, agenda));
 
     const phaseStateProps = { // DRY
-      facilitatorPhase,
-      localPhase,
       localPhaseItem,
+      onFacilitatorPhase: facilitatorPhase === localPhase,
       members,
       team
+    };
+    const gotoAgendaItem = (idx) => () => {
+      if (isFacilitating && idx > agendaPhaseItem) {
+        // resort
+        const desiredItem = agenda[idx];
+        const nextItem = agenda[agendaPhaseItem];
+        const prevItem = agenda[agendaPhaseItem - 1];
+        const options = {
+          ops: {
+            agendaListAndInputContainer: teamId
+          },
+          variables: {
+            updatedAgendaItem: {
+              id: desiredItem.id,
+              sortOrder: prevItem ? (prevItem.sortOrder + nextItem.sortOrder) / 2 : nextItem.sortOrder - SORT_STEP
+            }
+          }
+        };
+        cashay.mutate('updateAgendaItem', options);
+        this.gotoItem(meetingPhaseItem + 1, AGENDA_ITEMS);
+      } else {
+        this.gotoItem(idx + 1, AGENDA_ITEMS);
+      }
     };
 
     return (
@@ -319,6 +341,7 @@ export default class MeetingContainer extends Component {
           facilitatorPhase={facilitatorPhase}
           facilitatorPhaseItem={facilitatorPhaseItem}
           gotoItem={this.gotoItem}
+          gotoAgendaItem={gotoAgendaItem}
           localPhase={localPhase}
           localPhaseItem={localPhaseItem}
           isFacilitating={isFacilitating}

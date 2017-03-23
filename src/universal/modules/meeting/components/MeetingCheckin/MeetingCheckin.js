@@ -5,7 +5,7 @@ import CheckinCards from 'universal/modules/meeting/components/CheckinCards/Chec
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import {CHECKIN, phaseArray} from 'universal/utils/constants';
+import {CHECKIN} from 'universal/utils/constants';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import appTheme from 'universal/styles/theme/appTheme';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
@@ -14,10 +14,9 @@ const MeetingCheckin = (props) => {
   const {
     gotoItem,
     gotoNext,
-    facilitatorPhase,
-    localPhase,
     localPhaseItem,
     members,
+    onFacilitatorPhase,
     team,
     hideMoveMeetingControls
   } = props;
@@ -50,12 +49,11 @@ const MeetingCheckin = (props) => {
         <ProgressBarContainer
           gotoItem={gotoItem}
           isComplete={isComplete}
-          facilitatorPhase={facilitatorPhase}
           facilitatorPhaseItem={facilitatorPhaseItem}
-          localPhase={localPhase}
           localPhaseItem={localPhaseItem}
           meetingPhaseItem={meetingPhaseItem}
           membersCount={members.length}
+          onFacilitatorPhase={onFacilitatorPhase}
         />
       </MeetingSection>
       <MeetingSection flexToFill paddingBottom="1rem">
@@ -92,12 +90,11 @@ const MeetingCheckin = (props) => {
 };
 
 MeetingCheckin.propTypes = {
-  facilitatorPhase: PropTypes.oneOf(phaseArray),
   gotoItem: PropTypes.func.isRequired,
   gotoNext: PropTypes.func.isRequired,
-  localPhase: PropTypes.oneOf(phaseArray),
   localPhaseItem: PropTypes.number,
   members: PropTypes.array,
+  onFacilitatorPhase: PropTypes.bool,
   team: PropTypes.object,
   hideMoveMeetingControls: PropTypes.bool
 };
