@@ -59,7 +59,7 @@ const AgendaListAndInputContainer = (props) => {
     agenda,
     context,
     disabled,
-    gotoItem,
+    gotoAgendaItem,
     myTeamMember,
     teamId
   } = props;
@@ -69,7 +69,7 @@ const AgendaListAndInputContainer = (props) => {
       agendaPhaseItem={agendaPhaseItem}
       context={context}
       disabled={disabled}
-      gotoItem={gotoItem}
+      gotoAgendaItem={gotoAgendaItem}
       myTeamMember={myTeamMember}
       teamId={teamId}
     />
@@ -84,7 +84,7 @@ AgendaListAndInputContainer.propTypes = {
     'meeting'
   ]),
   disabled: PropTypes.bool,
-  gotoItem: PropTypes.func.isRequired,
+  gotoAgendaItem: PropTypes.func.isRequired,
   myTeamMember: PropTypes.object,
   teamId: PropTypes.string
 };
