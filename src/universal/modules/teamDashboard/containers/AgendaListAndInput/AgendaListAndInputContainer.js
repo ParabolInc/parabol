@@ -62,7 +62,7 @@ const AgendaListAndInputContainer = (props) => {
     disabled,
     facilitatorPhase,
     facilitatorPhaseItem,
-    gotoItem,
+    gotoAgendaItem,
     localPhase,
     localPhaseItem,
     myTeamMember,
@@ -76,7 +76,7 @@ const AgendaListAndInputContainer = (props) => {
       disabled={disabled}
       facilitatorPhase={facilitatorPhase}
       facilitatorPhaseItem={facilitatorPhaseItem}
-      gotoItem={gotoItem}
+      gotoAgendaItem={gotoAgendaItem}
       localPhase={localPhase}
       localPhaseItem={localPhaseItem}
       myTeamMember={myTeamMember}
@@ -95,7 +95,7 @@ AgendaListAndInputContainer.propTypes = {
   disabled: PropTypes.bool,
   facilitatorPhase: PropTypes.oneOf(phaseArray),
   facilitatorPhaseItem: PropTypes.number,
-  gotoItem: PropTypes.func.isRequired,
+  gotoAgendaItem: PropTypes.func.isRequired,
   localPhase: PropTypes.oneOf(phaseArray),
   localPhaseItem: PropTypes.number,
   myTeamMember: PropTypes.object,

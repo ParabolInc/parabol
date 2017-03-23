@@ -23,10 +23,11 @@ export function selectSegmentTraits(state, authReducer = DEFAULT_AUTH_REDUCER_NA
     return defaultProfile;
   }
   const {user} = cashay.query(getAuthQueryString, getAuthedOptions(userId)).data;
+  const createdAt = new Date(user.createdAt);
 
   return ({
     avatar: user.picture,
-    createdAt: isNaN(user.createdAt.getTime()) ? null : user.createdAt,
+    createdAt: isNaN(createdAt.getTime()) ? null : createdAt,
     email: user.email,
     id: user.id,
     name: user.preferredName,

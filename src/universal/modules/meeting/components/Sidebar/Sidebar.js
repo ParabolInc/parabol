@@ -19,6 +19,7 @@ const Sidebar = (props) => {
     facilitatorPhase,
     facilitatorPhaseItem,
     gotoItem,
+    gotoAgendaItem,
     isFacilitating,
     localPhase,
     localPhaseItem,
@@ -118,7 +119,7 @@ const Sidebar = (props) => {
               disabled={agendaListDisabled}
               facilitatorPhase={facilitatorPhase}
               facilitatorPhaseItem={facilitatorPhaseItem}
-              gotoItem={gotoItem}
+              gotoAgendaItem={gotoAgendaItem}
               localPhase={localPhase}
               localPhaseItem={localPhaseItem}
               teamId={teamId}
@@ -136,7 +137,7 @@ Sidebar.propTypes = {
   facilitatorPhase: PropTypes.oneOf(phaseArray),
   facilitatorPhaseItem: PropTypes.number,
   isFacilitating: PropTypes.bool,
-  gotoItem: PropTypes.func.isRequired,
+  gotoAgendaItem: PropTypes.func.isRequired,
   localPhase: PropTypes.oneOf(phaseArray),
   localPhaseItem: PropTypes.number,
   meetingPhase: PropTypes.oneOf(phaseArray),
