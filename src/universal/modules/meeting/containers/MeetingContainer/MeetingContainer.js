@@ -334,9 +334,6 @@ export default class MeetingContainer extends Component {
       }
     };
 
-    console.log('typeof gotoAgendaItem');
-    console.log(typeof gotoAgendaItem);
-
     return (
       <MeetingLayout title={`Action Meeting for ${teamName}`}>
         <Sidebar

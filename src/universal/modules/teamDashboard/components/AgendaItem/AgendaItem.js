@@ -36,10 +36,6 @@ const AgendaItem = (props) => {
     localPhaseItem,
     styles
   } = props;
-  console.log('typeof gotoAgendaItem');
-  console.log(typeof gotoAgendaItem);
-  console.log('typeof voidClick');
-  console.log(typeof voidClick);
   const {content, isComplete, teamMember = {}} = agendaItem;
   const isCurrent = idx + 1 === agendaPhaseItem;
   const isLocal = idx + 1 === localPhaseItem;
@@ -54,7 +50,8 @@ const AgendaItem = (props) => {
     inAgendaGroupLocal && isLocal && styles.itemLocal,
     inAgendaGroupFacilitator && isFacilitator && styles.itemFacilitator,
     isComplete && styles.processed,
-    disabled && styles.rootDisabled
+    disabled && styles.rootDisabled,
+    isComplete && disabled && styles.processedDisabled,
   );
   const contentStyles = css(
     styles.link,
@@ -231,6 +228,12 @@ const styleThunk = () => ({
 
     ':hover': {
       opacity: '1'
+    }
+  },
+
+  processedDisabled: {
+    ':hover': {
+      opacity: '.5'
     }
   },
 
