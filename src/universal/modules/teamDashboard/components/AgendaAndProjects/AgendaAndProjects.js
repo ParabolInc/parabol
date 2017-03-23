@@ -23,7 +23,7 @@ const AgendaAndProjects = (props) => {
       <div className={css(styles.agendaAndProjects)}>
         {!hideAgenda &&
           <div className={css(styles.agendaLayout)}>
-            <AgendaListAndInputContainer context="dashboard" disabled={false} gotoItem={voidClick} teamId={teamId} />
+            <AgendaListAndInputContainer context="dashboard" disabled={false} gotoAgendaItem={voidClick} teamId={teamId} />
           </div>
         }
         <div className={css(styles.projectsLayout, !hideAgenda && styles.projectsLayoutShared)}>

@@ -285,7 +285,7 @@ export default class MeetingContainer extends Component {
       meetingPhaseItem,
       name: teamName
     } = team;
-    const agendaPhaseItem = meetingPhase === AGENDA_ITEMS && meetingPhaseItem;
+    const agendaPhaseItem = meetingPhase === AGENDA_ITEMS ? meetingPhaseItem : null;
     // if we have a team.name, we have an initial subscription success to the team object
     if (!teamName ||
       members.length === 0
@@ -308,16 +308,14 @@ export default class MeetingContainer extends Component {
       localPhaseItem,
       onFacilitatorPhase: facilitatorPhase === localPhase,
       members,
-      team,
-      onFacilitatorPhase: facilitatorPhase === localPhase
+      team
     };
     const gotoAgendaItem = (idx) => () => {
-
       if (isFacilitating && idx > agendaPhaseItem) {
         // resort
         const desiredItem = agenda[idx];
         const nextItem = agenda[agendaPhaseItem];
-        const prevItem = agenda[agendaPhaseItem -1];
+        const prevItem = agenda[agendaPhaseItem - 1];
         const options = {
           ops: {
             agendaListAndInputContainer: teamId
@@ -332,9 +330,12 @@ export default class MeetingContainer extends Component {
         cashay.mutate('updateAgendaItem', options);
         this.gotoItem(meetingPhaseItem + 1, AGENDA_ITEMS);
       } else {
-        this.gotoItem(idx + 1, AGENDA_ITEMS)
+        this.gotoItem(idx + 1, AGENDA_ITEMS);
       }
     };
+
+    console.log('typeof gotoAgendaItem');
+    console.log(typeof gotoAgendaItem);
 
     return (
       <MeetingLayout title={`Action Meeting for ${teamName}`}>

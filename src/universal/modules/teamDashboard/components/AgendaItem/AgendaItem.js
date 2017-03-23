@@ -36,6 +36,10 @@ const AgendaItem = (props) => {
     localPhaseItem,
     styles
   } = props;
+  console.log('typeof gotoAgendaItem');
+  console.log(typeof gotoAgendaItem);
+  console.log('typeof voidClick');
+  console.log(typeof voidClick);
   const {content, isComplete, teamMember = {}} = agendaItem;
   const isCurrent = idx + 1 === agendaPhaseItem;
   const isLocal = idx + 1 === localPhaseItem;
