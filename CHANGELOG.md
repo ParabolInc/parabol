@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.16.11 - 22-Mar-2017
+### Fixed
+- Hotfix #850 r.createdAt.getTime is not a function
+
 ## v0.16.10 - 22-Mar-2017
 ### Added
 - Clearer direction to meeting participants when they want to skip ahead
