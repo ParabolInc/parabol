@@ -15,6 +15,7 @@ const ProgressBar = (props) => {
   const {
     gotoItem,
     membersCount,
+    onFacilitatorPhase,
     hoverState: {onMouseEnter},
     facilitatorPhaseItem,
     localPhaseItem,
@@ -30,7 +31,7 @@ const ProgressBar = (props) => {
       styles.point,
       (idx <= meetingPhaseItem || isComplete) && styles.pointCompleted,
       idx === localPhaseItem && styles.pointLocal,
-      idx === facilitatorPhaseItem && styles.pointFacilitator,
+      idx === facilitatorPhaseItem && onFacilitatorPhase && styles.pointFacilitator,
       onMouseEnter && styles.pointWithAreaHover
     );
     return (

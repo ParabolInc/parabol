@@ -285,7 +285,7 @@ export default class MeetingContainer extends Component {
       meetingPhaseItem,
       name: teamName
     } = team;
-    const agendaPhaseItem = meetingPhase === AGENDA_ITEMS && meetingPhaseItem || 0;
+    const agendaPhaseItem = meetingPhase === AGENDA_ITEMS && meetingPhaseItem;
     // if we have a team.name, we have an initial subscription success to the team object
     if (!teamName ||
       members.length === 0
@@ -307,7 +307,8 @@ export default class MeetingContainer extends Component {
     const phaseStateProps = { // DRY
       localPhaseItem,
       members,
-      team
+      team,
+      onFacilitatorPhase: facilitatorPhase === localPhase
     };
     return (
       <MeetingLayout title={`Action Meeting for ${teamName}`}>

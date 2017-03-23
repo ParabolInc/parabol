@@ -53,7 +53,7 @@ MeetingAgendaFirstCall.propTypes = {
   hideMoveMeetingControls: PropTypes.bool,
   styles: PropTypes.object,
   team: PropTypes.object,
-  members: PropTypes.object
+  members: PropTypes.array
 };
 
 const styleThunk = () => ({
