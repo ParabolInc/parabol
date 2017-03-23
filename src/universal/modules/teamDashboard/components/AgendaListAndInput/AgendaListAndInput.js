@@ -60,7 +60,7 @@ AgendaListAndInput.propTypes = {
   disabled: PropTypes.bool,
   facilitatorPhase: PropTypes.oneOf(phaseArray),
   facilitatorPhaseItem: PropTypes.number,
-  gotoAgendaItem: PropTypes.func.isRequired,
+  gotoAgendaItem: PropTypes.func,
   localPhase: PropTypes.oneOf(phaseArray),
   localPhaseItem: PropTypes.number,
   myTeamMember: PropTypes.object,

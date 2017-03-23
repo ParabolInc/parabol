@@ -50,7 +50,7 @@ const AgendaList = (props) => {
             disabled={disabled}
             facilitatorPhase={facilitatorPhase}
             facilitatorPhaseItem={facilitatorPhaseItem}
-            gotoAgendaItem={gotoAgendaItem(idx)}
+            gotoAgendaItem={gotoAgendaItem && gotoAgendaItem(idx)}
             handleRemove={removeItemFactory(item.id)}
             idx={idx}
             localPhase={localPhase}
@@ -77,7 +77,7 @@ AgendaList.propTypes = {
   disabled: PropTypes.bool,
   facilitatorPhase: PropTypes.oneOf(phaseArray),
   facilitatorPhaseItem: PropTypes.number,
-  gotoAgendaItem: PropTypes.func.isRequired,
+  gotoAgendaItem: PropTypes.func,
   localPhase: PropTypes.oneOf(phaseArray),
   localPhaseItem: PropTypes.number,
   router: PropTypes.object,

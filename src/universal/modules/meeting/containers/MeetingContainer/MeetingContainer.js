@@ -187,7 +187,7 @@ export default class MeetingContainer extends Component {
     const {dispatch, isFacilitating, team: {id: teamId}} = this.props;
     // if we call router.push
     if (Date.now() - infiniteLoopTimer < 1000) {
-      if (++infiniteloopCounter >= 10) {
+      if (++infiniteloopCounter >= 100) {
         // if we're changing locations 10 times in a second, it's probably infinite
         if (isFacilitating) {
           const variables = {
@@ -285,7 +285,7 @@ export default class MeetingContainer extends Component {
       meetingPhaseItem,
       name: teamName
     } = team;
-    const agendaPhaseItem = meetingPhase === AGENDA_ITEMS ? meetingPhaseItem : null;
+    const agendaPhaseItem = meetingPhase === AGENDA_ITEMS ? meetingPhaseItem : undefined;
     // if we have a team.name, we have an initial subscription success to the team object
     if (!teamName ||
       members.length === 0
@@ -310,8 +310,8 @@ export default class MeetingContainer extends Component {
       members,
       team
     };
-    const gotoAgendaItem = (idx) => () => {
-      if (isFacilitating && idx > agendaPhaseItem) {
+    const gotoAgendaItem = (idx) => async () => {
+      if (isFacilitating && agendaPhaseItem !== undefined && idx > agendaPhaseItem) {
         // resort
         const desiredItem = agenda[idx];
         const nextItem = agenda[agendaPhaseItem];
@@ -327,7 +327,7 @@ export default class MeetingContainer extends Component {
             }
           }
         };
-        cashay.mutate('updateAgendaItem', options);
+        await cashay.mutate('updateAgendaItem', options);
         this.gotoItem(meetingPhaseItem + 1, AGENDA_ITEMS);
       } else {
         this.gotoItem(idx + 1, AGENDA_ITEMS);

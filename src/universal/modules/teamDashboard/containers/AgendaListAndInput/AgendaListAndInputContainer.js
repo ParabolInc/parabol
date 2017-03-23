@@ -68,6 +68,7 @@ const AgendaListAndInputContainer = (props) => {
     myTeamMember,
     teamId
   } = props;
+
   return (
     <AgendaListAndInput
       agenda={agenda}
@@ -95,7 +96,7 @@ AgendaListAndInputContainer.propTypes = {
   disabled: PropTypes.bool,
   facilitatorPhase: PropTypes.oneOf(phaseArray),
   facilitatorPhaseItem: PropTypes.number,
-  gotoAgendaItem: PropTypes.func.isRequired,
+  gotoAgendaItem: PropTypes.func,
   localPhase: PropTypes.oneOf(phaseArray),
   localPhaseItem: PropTypes.number,
   myTeamMember: PropTypes.object,

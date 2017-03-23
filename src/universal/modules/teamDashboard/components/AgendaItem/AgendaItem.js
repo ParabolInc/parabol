@@ -7,7 +7,6 @@ import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 import Avatar from 'universal/components/Avatar/Avatar';
-import voidClick from 'universal/utils/voidClick';
 import {DragSource as dragSource} from 'react-dnd';
 import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants';
 import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
@@ -41,10 +40,8 @@ const AgendaItem = (props) => {
   const isLocal = idx + 1 === localPhaseItem;
   const isFacilitator = idx + 1 === facilitatorPhaseItem;
   const canDelete = !isComplete && !isCurrent;
-  const isMeeting = agendaPhaseItem !== undefined;
   const inAgendaGroupLocal = inAgendaGroup(localPhase);
   const inAgendaGroupFacilitator = inAgendaGroup(facilitatorPhase);
-  const handleGoto = isMeeting ? gotoAgendaItem : voidClick;
   const rootStyles = css(
     styles.root,
     inAgendaGroupLocal && isLocal && styles.itemLocal,
@@ -72,7 +69,7 @@ const AgendaItem = (props) => {
         </div>
       }
       <div className={css(styles.index)}>{idx + 1}.</div>
-      <div className={css(styles.content)} onClick={handleGoto}>
+      <div className={css(styles.content)} onClick={gotoAgendaItem}>
         <a className={contentStyles}>{content}</a>”
       </div>
       <div className={css(styles.author)}>
