@@ -6,7 +6,7 @@ import ui from 'universal/styles/ui';
 import Textarea from 'react-textarea-autosize';
 import ReactMarkdown from 'react-markdown';
 import markdownCustomComponents from 'universal/utils/markdownCustomComponents';
-
+import {PROJECT_MAX_CHARS} from 'universal/utils/constants';
 
 class OutcomeCardTextArea extends Component {
   static propTypes = {
@@ -97,7 +97,7 @@ class OutcomeCardTextArea extends Component {
         value={undefined}
         className={contentStyles}
         disabled={isArchived}
-        maxLength="255"
+        maxLength={PROJECT_MAX_CHARS}
         placeholder="Type your outcome here"
         onBlur={handleBlur}
         onDrop={null}

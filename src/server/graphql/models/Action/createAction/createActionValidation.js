@@ -1,4 +1,5 @@
 import legitify from 'universal/validation/legitify';
+import {PROJECT_MAX_CHARS} from 'universal/utils/constants';
 
 export default function createActionValidation(tms) {
   return legitify({
@@ -15,7 +16,7 @@ export default function createActionValidation(tms) {
       }),
     content: (value) => value
       .trim()
-      .max(255, 'Whoa! That looks like 2 actions'),
+      .max(PROJECT_MAX_CHARS, 'Whoa! That looks like 2 actions'),
     isComplete: (value) => value.boolean(),
     sortOrder: (value) => value.float(),
     // required for actions created in meetings
