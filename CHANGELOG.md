@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ## v0.16.11 - 22-Mar-2017
+### Added
+- #344 meeting agenda list now reflects location of Facilitator and participants
+- #837 added `Facilitator` badge and styling added to meeting Facilitator
+
+### Fixed
+- Better fix for #850 r.createdAt.getTime is not a function
+
+## v0.16.11 - 22-Mar-2017
 ### Fixed
 - Hotfix #850 r.createdAt.getTime is not a function
 
