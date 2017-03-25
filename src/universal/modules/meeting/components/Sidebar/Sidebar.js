@@ -17,9 +17,12 @@ const Sidebar = (props) => {
   const {
     agendaPhaseItem,
     facilitatorPhase,
+    facilitatorPhaseItem,
     gotoItem,
+    gotoAgendaItem,
     isFacilitating,
     localPhase,
+    localPhaseItem,
     meetingPhase,
     styles,
     teamName,
@@ -114,7 +117,11 @@ const Sidebar = (props) => {
               agendaPhaseItem={agendaPhaseItem}
               context={agendaListContext}
               disabled={agendaListDisabled}
-              gotoItem={gotoItem}
+              facilitatorPhase={facilitatorPhase}
+              facilitatorPhaseItem={facilitatorPhaseItem}
+              gotoAgendaItem={gotoAgendaItem}
+              localPhase={localPhase}
+              localPhaseItem={localPhaseItem}
               teamId={teamId}
             />
           </div>
@@ -128,9 +135,12 @@ Sidebar.propTypes = {
   agenda: PropTypes.array,
   agendaPhaseItem: PropTypes.number,
   facilitatorPhase: PropTypes.oneOf(phaseArray),
+  facilitatorPhaseItem: PropTypes.number,
   isFacilitating: PropTypes.bool,
   gotoItem: PropTypes.func.isRequired,
+  gotoAgendaItem: PropTypes.func.isRequired,
   localPhase: PropTypes.oneOf(phaseArray),
+  localPhaseItem: PropTypes.number,
   meetingPhase: PropTypes.oneOf(phaseArray),
   styles: PropTypes.object,
   teamName: PropTypes.string,

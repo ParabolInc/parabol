@@ -20,6 +20,7 @@ const MeetingUpdates = (props) => {
     gotoNext,
     localPhaseItem,
     members,
+    onFacilitatorPhase,
     queryKey,
     projects,
     styles,
@@ -42,6 +43,7 @@ const MeetingUpdates = (props) => {
           localPhaseItem={localPhaseItem}
           meetingPhaseItem={meetingPhaseItem}
           membersCount={members.length}
+          onFacilitatorPhase={onFacilitatorPhase}
         />
       </MeetingSection>
       {/* */}
@@ -93,6 +95,7 @@ MeetingUpdates.propTypes = {
   gotoNext: PropTypes.func.isRequired,
   localPhaseItem: PropTypes.number.isRequired,
   members: PropTypes.array.isRequired,
+  onFacilitatorPhase: PropTypes.bool,
   projects: PropTypes.object.isRequired,
   queryKey: PropTypes.string.isRequired,
   styles: PropTypes.object.isRequired,

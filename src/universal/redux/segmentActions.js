@@ -27,7 +27,7 @@ export function selectSegmentTraits(state, authReducer = DEFAULT_AUTH_REDUCER_NA
 
   return ({
     avatar: user.picture,
-    createdAt: isNaN(createdAt.getTime()) ? null : createdAt,
+    createdAt: isNaN(createdAt) ? null : createdAt,
     email: user.email,
     id: user.id,
     name: user.preferredName,

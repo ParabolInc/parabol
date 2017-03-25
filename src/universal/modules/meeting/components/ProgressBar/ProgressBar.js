@@ -13,24 +13,26 @@ const outerPadding = (avatarWidth - pointWidth) / 2;
 const blockWidth = avatarWidth + avatarGutter;
 const ProgressBar = (props) => {
   const {
-    gotoItem,
-    membersCount,
-    hoverState: {onMouseEnter},
     facilitatorPhaseItem,
+    gotoItem,
+    hoverState: {onMouseEnter},
+    isComplete,
     localPhaseItem,
     meetingPhaseItem,
-    isComplete,
+    membersCount,
+    onFacilitatorPhase,
     styles
   } = props;
   const renderPoint = (idx) => {
     const marginRight = {
       marginRight: idx === membersCount ? 0 : `${blockWidth - pointWidth}px`
     };
+
     const pointStyles = css(
       styles.point,
       (idx <= meetingPhaseItem || isComplete) && styles.pointCompleted,
       idx === localPhaseItem && styles.pointLocal,
-      idx === facilitatorPhaseItem && styles.pointFacilitator,
+      idx === facilitatorPhaseItem && onFacilitatorPhase && styles.pointFacilitator,
       onMouseEnter && styles.pointWithAreaHover
     );
     return (
@@ -67,6 +69,7 @@ ProgressBar.propTypes = {
   isComplete: PropTypes.bool,
   facilitatorPhaseItem: PropTypes.number,
   localPhaseItem: PropTypes.number,
+  onFacilitatorPhase: PropTypes.bool,
   meetingPhaseItem: PropTypes.number,
   membersCount: PropTypes.number,
   styles: PropTypes.object

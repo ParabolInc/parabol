@@ -7,9 +7,9 @@ import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 import Avatar from 'universal/components/Avatar/Avatar';
-import voidClick from 'universal/utils/voidClick';
 import {DragSource as dragSource} from 'react-dnd';
-import {AGENDA_ITEM} from 'universal/utils/constants';
+import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants';
+import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
 
 const projectSource = {
   beginDrag(props) {
@@ -28,25 +28,34 @@ const AgendaItem = (props) => {
     idx,
     handleRemove,
     agendaPhaseItem,
+    localPhase,
+    facilitatorPhase,
+    facilitatorPhaseItem,
     gotoAgendaItem,
+    localPhaseItem,
     styles
   } = props;
   const {content, isComplete, teamMember = {}} = agendaItem;
   const isCurrent = idx + 1 === agendaPhaseItem;
+  const isLocal = idx + 1 === localPhaseItem;
+  const isFacilitator = idx + 1 === facilitatorPhaseItem;
   const canDelete = !isComplete && !isCurrent;
-  const isMeeting = agendaPhaseItem !== undefined;
-  const handleGoto = isMeeting ? gotoAgendaItem : voidClick;
+  const inAgendaGroupLocal = inAgendaGroup(localPhase);
+  const inAgendaGroupFacilitator = inAgendaGroup(facilitatorPhase);
   const rootStyles = css(
     styles.root,
-    isCurrent && styles.itemActive,
+    inAgendaGroupLocal && isLocal && styles.itemLocal,
+    inAgendaGroupFacilitator && isFacilitator && styles.itemFacilitator,
     isComplete && styles.processed,
-    disabled && styles.rootDisabled
+    disabled && styles.rootDisabled,
+    isComplete && disabled && styles.processedDisabled,
   );
   const contentStyles = css(
     styles.link,
     isComplete && styles.strikethrough,
     canNavigate && styles.canNavigate,
-    isCurrent && styles.descActive,
+    inAgendaGroupLocal && isLocal && styles.descLocal,
+    inAgendaGroupFacilitator && isFacilitator && styles.descFacilitator,
   );
   const delStyles = css(
     styles.del,
@@ -60,7 +69,7 @@ const AgendaItem = (props) => {
         </div>
       }
       <div className={css(styles.index)}>{idx + 1}.</div>
-      <div className={css(styles.content)} onClick={handleGoto}>
+      <div className={css(styles.content)} onClick={gotoAgendaItem}>
         <a className={contentStyles}>{content}</a>”
       </div>
       <div className={css(styles.author)}>
@@ -76,11 +85,15 @@ AgendaItem.propTypes = {
   connectDragSource: PropTypes.func.isRequired,
   content: PropTypes.string,
   disabled: PropTypes.bool,
+  handleRemove: PropTypes.func,
   idx: PropTypes.number,
   isCurrent: PropTypes.bool,
   isComplete: PropTypes.bool,
+  facilitatorPhase: PropTypes.oneOf(phaseArray),
+  facilitatorPhaseItem: PropTypes.number,
   gotoAgendaItem: PropTypes.func,
-  handleRemove: PropTypes.func,
+  localPhase: PropTypes.oneOf(phaseArray),
+  localPhaseItem: PropTypes.number,
   styles: PropTypes.object,
   teamMember: PropTypes.object
 };
@@ -160,11 +173,25 @@ const styleThunk = () => ({
     })
   },
 
-  itemActive: {
+  itemLocal: {
+    color: appTheme.palette.dark70d
+  },
+
+  descLocal: {
+    color: appTheme.palette.dark70d,
+    ':hover': {
+      color: appTheme.palette.dark
+    },
+    ':focus': {
+      color: appTheme.palette.dark
+    },
+  },
+
+  itemFacilitator: {
     color: appTheme.palette.warm
   },
 
-  descActive: {
+  descFacilitator: {
     color: appTheme.palette.warm,
     ':hover': {
       color: warmLinkHover
@@ -198,6 +225,12 @@ const styleThunk = () => ({
 
     ':hover': {
       opacity: '1'
+    }
+  },
+
+  processedDisabled: {
+    ':hover': {
+      opacity: '.5'
     }
   },
 
