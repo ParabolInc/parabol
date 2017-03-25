@@ -29,30 +29,29 @@ const MeetingLobby = (props) => {
   return (
     <MeetingMain>
       {/* */}
-      <MeetingSection flexToFill paddingBottom="2rem">
-        {/* */}
-        <div className={css(styles.root)}>
-          <MeetingPhaseHeading>Hi, {teamName} Team!</MeetingPhaseHeading>
-          <p className={css(styles.label)}>Share this meeting:</p>
-          <div className={css(styles.urlBlock)}>
-            <CopyShortLink url={shortUrl} />
-          </div>
-          <h2 className={css(styles.prompt)}>Team Facilitator: begin the Check-In round!</h2>
-          <Button
-            label="Start Meeting"
-            onClick={onStartMeetingClick}
-            size="largest"
-            buttonStyle="solid"
-            colorPalette="cool"
-            textTransform="uppercase"
-          />
-          <div className={css(styles.helpText)}>
-            The person who presses “Start Meeting” will lead the meeting.<br />
-            Everyone else’s display will follow the leader automatically.
-          </div>
+      <div className={css(styles.root)}>
+        <MeetingPhaseHeading>Hi, {teamName} Team!</MeetingPhaseHeading>
+        <div className={css(styles.helpText)}>Is the whole team here?</div>
+        <div className={css(styles.prompt)}>
+          The person who presses “Start Meeting” will facilitate the meeting.<br />
+          Everyone’s display automatically follows the facilitator.
         </div>
-        {/* */}
-      </MeetingSection>
+        <div className={css(styles.helpText)}>
+          Today's facilitator: begin your Check-in round!
+        </div>
+        <Button
+          label="Start Meeting"
+          onClick={onStartMeetingClick}
+          size="largest"
+          buttonStyle="solid"
+          colorPalette="cool"
+          textTransform="uppercase"
+        />
+        <p className={css(styles.label)}>MEETING LINK:</p>
+        <div className={css(styles.urlBlock)}>
+          <CopyShortLink url={shortUrl}/>
+        </div>
+      </div>
       {/* */}
     </MeetingMain>
   );
@@ -92,15 +91,17 @@ const styleThunk = () => ({
 
   prompt: {
     color: appTheme.palette.dark,
-    margin: '0 0 2.25rem'
+    fontSize: appTheme.typography.s6,
+    fontWeight: 700,
+    margin: '2rem 0 2.25rem'
   },
 
   helpText: {
     color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s4,
+    fontSize: appTheme.typography.s6,
     fontWeight: 400,
     lineHeight: 1.5,
-    margin: '2rem 0 0'
+    margin: '1rem 0 0'
   }
 });
 
