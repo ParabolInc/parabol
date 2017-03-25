@@ -8,7 +8,6 @@ import makeHref from 'universal/utils/makeHref';
 import Button from 'universal/components/Button/Button';
 import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
-import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
 
 const createStartMeetingHandler = (members) => () => {
@@ -26,6 +25,7 @@ const MeetingLobby = (props) => {
 
   const onStartMeetingClick = createStartMeetingHandler(members);
   const shortUrl = makeHref(`/team/${teamId}`);
+  const instructions = 'Today\'s facilitator: begin your Check-in round!';
   return (
     <MeetingMain>
       {/* */}
@@ -37,7 +37,7 @@ const MeetingLobby = (props) => {
           Everyone’s display automatically follows the facilitator.
         </div>
         <div className={css(styles.helpText)}>
-          Today's facilitator: begin your Check-in round!
+          {instructions}
         </div>
         <Button
           label="Start Meeting"
@@ -49,7 +49,7 @@ const MeetingLobby = (props) => {
         />
         <p className={css(styles.label)}>MEETING LINK:</p>
         <div className={css(styles.urlBlock)}>
-          <CopyShortLink url={shortUrl}/>
+          <CopyShortLink url={shortUrl} />
         </div>
       </div>
       {/* */}
