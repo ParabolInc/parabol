@@ -119,3 +119,6 @@ export const UPCOMING = 'UPCOMING';
 export const PENDING = 'PENDING';
 export const PAID = 'PAID';
 export const FAILED = 'FAILED';
+
+/* character limits */
+export const PROJECT_MAX_CHARS = 512;
