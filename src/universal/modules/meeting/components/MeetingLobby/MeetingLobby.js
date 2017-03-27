@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import {cashay} from 'cashay';
 import makeHref from 'universal/utils/makeHref';
@@ -22,10 +22,8 @@ const createStartMeetingHandler = (members) => () => {
 const MeetingLobby = (props) => {
   const {members, team, styles} = props;
   const {id: teamId, name: teamName} = team;
-
   const onStartMeetingClick = createStartMeetingHandler(members);
   const shortUrl = makeHref(`/team/${teamId}`);
-  const instructions = 'Today\'s facilitator: begin your Check-in round!';
   return (
     <MeetingMain>
       {/* */}
@@ -34,19 +32,21 @@ const MeetingLobby = (props) => {
         <div className={css(styles.helpText)}>Is the whole team here?</div>
         <div className={css(styles.prompt)}>
           The person who presses “Start Meeting” will facilitate the meeting.<br />
-          Everyone’s display automatically follows the facilitator.
+          Everyone’s display automatically follows the Facilitator.
         </div>
         <div className={css(styles.helpText)}>
-          {instructions}
+          <b>Today’s Facilitator</b>: begin the Check-In Round!
         </div>
-        <Button
-          label="Start Meeting"
-          onClick={onStartMeetingClick}
-          size="largest"
-          buttonStyle="solid"
-          colorPalette="cool"
-          textTransform="uppercase"
-        />
+        <div className={css(styles.buttonBlock)}>
+          <Button
+            buttonStyle="solid"
+            colorPalette="cool"
+            label="Start Meeting"
+            onClick={onStartMeetingClick}
+            size="largest"
+            textTransform="uppercase"
+          />
+        </div>
         <p className={css(styles.label)}>MEETING LINK:</p>
         <div className={css(styles.urlBlock)}>
           <CopyShortLink url={shortUrl} />
@@ -73,7 +73,37 @@ MeetingLobby.propTypes = {
 
 const styleThunk = () => ({
   root: {
-    textAlign: 'center'
+    paddingTop: '2rem',
+    textAlign: 'center',
+
+    [ui.breakpoint.wide]: {
+      paddingTop: '3rem'
+    },
+    [ui.breakpoint.wider]: {
+      paddingTop: '4rem'
+    },
+    [ui.breakpoint.widest]: {
+      paddingTop: '6rem'
+    }
+  },
+
+  helpText: {
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s5,
+    fontWeight: 400,
+    lineHeight: 1.5,
+    margin: '1.75rem 0 0'
+  },
+
+  prompt: {
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s5,
+    fontWeight: 700,
+    margin: '2rem 0'
+  },
+
+  buttonBlock: {
+    paddingTop: '2.25rem'
   },
 
   label: {
@@ -85,24 +115,9 @@ const styleThunk = () => ({
   },
 
   urlBlock: {
-    margin: '.5rem 0 4rem',
+    margin: '.5rem 0 0',
     verticalAlign: 'middle'
   },
-
-  prompt: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s6,
-    fontWeight: 700,
-    margin: '2rem 0 2.25rem'
-  },
-
-  helpText: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s6,
-    fontWeight: 400,
-    lineHeight: 1.5,
-    margin: '1rem 0 0'
-  }
 });
 
 export default withStyles(styleThunk)(MeetingLobby);
