@@ -1,6 +1,7 @@
 import {compositeId} from 'universal/validation/templates';
 import {columnArray} from 'universal/utils/constants';
 import legitify from './legitify';
+import {PROJECT_MAX_CHARS} from 'universal/utils/constants';
 
 export default function makeProjectSchema() {
   return legitify({
@@ -8,7 +9,7 @@ export default function makeProjectSchema() {
     agendaId: compositeId,
     content: (value) => value
       .trim()
-      .max(255, 'Whoa! That looks like 2 projects'),
+      .max(PROJECT_MAX_CHARS, 'Whoa! That looks like 2 projects'),
     isArchived: (value) => value.boolean(),
     status: (value) => value
       // status may be empty eg unarchive card
