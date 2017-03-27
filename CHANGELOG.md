@@ -4,6 +4,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.17.0
+### Added
+- Start of many copy edits (watch for more changes in future versions),
+  including #716 meeting lobby updates
+
+### Fixed
+- #643 summary email subject line
+- #839 max chars for projects
+- #857 mystery notification
+
 ## v0.16.11 - 22-Mar-2017
 ### Added
 - #344 meeting agenda list now reflects location of Facilitator and participants
