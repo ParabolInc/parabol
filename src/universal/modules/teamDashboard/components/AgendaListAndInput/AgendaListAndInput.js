@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import {phaseArray} from 'universal/utils/constants';
 import AgendaList from 'universal/modules/teamDashboard/components/AgendaList/AgendaList';
 import AgendaInput from 'universal/modules/teamDashboard/components/AgendaInput/AgendaInput';
 import voidClick from 'universal/utils/voidClick';
@@ -11,7 +12,11 @@ const AgendaListAndInput = (props) => {
     agendaPhaseItem,
     context,
     disabled,
-    gotoItem,
+    facilitatorPhase,
+    facilitatorPhaseItem,
+    gotoAgendaItem,
+    localPhase,
+    localPhaseItem,
     myTeamMember,
     styles,
     teamId
@@ -34,7 +39,11 @@ const AgendaListAndInput = (props) => {
         agendaPhaseItem={agendaPhaseItem}
         context={context}
         disabled={disabled}
-        gotoItem={gotoItem}
+        facilitatorPhase={facilitatorPhase}
+        facilitatorPhaseItem={facilitatorPhaseItem}
+        gotoAgendaItem={gotoAgendaItem}
+        localPhase={localPhase}
+        localPhaseItem={localPhaseItem}
         teamId={teamId}
       />
     </div>
@@ -49,7 +58,11 @@ AgendaListAndInput.propTypes = {
     'meeting'
   ]),
   disabled: PropTypes.bool,
-  gotoItem: PropTypes.func.isRequired,
+  facilitatorPhase: PropTypes.oneOf(phaseArray),
+  facilitatorPhaseItem: PropTypes.number,
+  gotoAgendaItem: PropTypes.func,
+  localPhase: PropTypes.oneOf(phaseArray),
+  localPhaseItem: PropTypes.number,
   myTeamMember: PropTypes.object,
   styles: PropTypes.object,
   teamId: PropTypes.string

@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
+import {phaseArray} from 'universal/utils/constants';
 import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput';
 import handleAgendaSort from 'universal/modules/meeting/helpers/handleAgendaSort';
 
@@ -59,17 +60,26 @@ const AgendaListAndInputContainer = (props) => {
     agenda,
     context,
     disabled,
-    gotoItem,
+    facilitatorPhase,
+    facilitatorPhaseItem,
+    gotoAgendaItem,
+    localPhase,
+    localPhaseItem,
     myTeamMember,
     teamId
   } = props;
+
   return (
     <AgendaListAndInput
       agenda={agenda}
       agendaPhaseItem={agendaPhaseItem}
       context={context}
       disabled={disabled}
-      gotoItem={gotoItem}
+      facilitatorPhase={facilitatorPhase}
+      facilitatorPhaseItem={facilitatorPhaseItem}
+      gotoAgendaItem={gotoAgendaItem}
+      localPhase={localPhase}
+      localPhaseItem={localPhaseItem}
       myTeamMember={myTeamMember}
       teamId={teamId}
     />
@@ -84,7 +94,11 @@ AgendaListAndInputContainer.propTypes = {
     'meeting'
   ]),
   disabled: PropTypes.bool,
-  gotoItem: PropTypes.func.isRequired,
+  facilitatorPhase: PropTypes.oneOf(phaseArray),
+  facilitatorPhaseItem: PropTypes.number,
+  gotoAgendaItem: PropTypes.func,
+  localPhase: PropTypes.oneOf(phaseArray),
+  localPhaseItem: PropTypes.number,
   myTeamMember: PropTypes.object,
   teamId: PropTypes.string
 };

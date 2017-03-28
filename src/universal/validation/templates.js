@@ -1,6 +1,7 @@
 import {compositeIdRegex, emailRegex, idRegex, urlRegex} from 'universal/validation/regex';
 import emailAddresses from 'email-addresses';
 import {APP_MAX_AVATAR_FILE_SIZE} from 'universal/utils/constants';
+import {PROJECT_MAX_CHARS} from 'universal/utils/constants';
 
 export const avatar = {
   size: (value) => value
@@ -20,7 +21,7 @@ export const compositeId = (value) => value.matches(compositeIdRegex);
 export const fullName = (value) => value
   .trim()
   .min(1, 'It looks like you wanted to include a name')
-  .max(255, 'That name looks too long!');
+  .max(PROJECT_MAX_CHARS, 'That name looks too long!');
 
 export const inviteesRaw = (value) => value
   .test((raw) => {
@@ -72,7 +73,7 @@ export const orgName = (value) => value
 export const orgRejectionReason = (value) => value
   .trim()
   .min(2, 'Maybe a couple more words?')
-  .max(255, 'That seems like a good enough reason');
+  .max(PROJECT_MAX_CHARS, 'That seems like a good enough reason');
 
 export const preferredName = (value) => value
   .trim()
@@ -83,7 +84,7 @@ export const preferredName = (value) => value
 export const task = (value) => value
   .trim()
   .min(2, 'That doesn\'t seem like much of a task')
-  .max(255, 'Try shortening down the task name');
+  .max(PROJECT_MAX_CHARS, 'Try shortening down the task name');
 
 export const teamName = (value) => value
   .trim()

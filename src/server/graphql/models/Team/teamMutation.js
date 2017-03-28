@@ -114,6 +114,10 @@ export default {
         }
       }
 
+      if (!nextPhaseItem && (!nextPhase || nextPhaseInfo.items)) {
+        throw errorObj({_error: 'Did not receive a nextPhaseItem'});
+      }
+
       const userId = getUserId(authToken);
       const teamMemberId = `${userId}::${teamId}`;
       if (activeFacilitator !== teamMemberId) {
@@ -146,7 +150,7 @@ export default {
 
       let newMeetingPhaseItem;
       if (goingForwardAPhase) {
-        newMeetingPhaseItem = nextPhase.items ? nextPhaseItem : null;
+        newMeetingPhaseItem = nextPhaseInfo.items ? nextPhaseItem : null;
       } else if (onSamePhaseWithItems) {
         newMeetingPhaseItem = (nextPhaseItem - meetingPhaseItem === 1) ? nextPhaseItem : undefined;
       }
@@ -159,11 +163,11 @@ export default {
       };
       promises.push(r.table('Team').get(teamId).update(updatedState).run());
       await Promise.all(promises);
-       // console.log('updatedState');
-       // console.log(updatedState);
-       // console.log(facilitatorPhase, meetingPhase)
-       // console.log(facilitatorPhaseItem, meetingPhaseItem)
-       // console.log('------------');
+      // console.log('updatedState');
+      // console.log(updatedState);
+      // console.log(facilitatorPhase, meetingPhase)
+      // console.log(facilitatorPhaseItem, meetingPhaseItem)
+      // console.log('------------');
       return true;
     }
   },

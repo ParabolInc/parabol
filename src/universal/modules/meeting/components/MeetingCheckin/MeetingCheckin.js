@@ -16,6 +16,7 @@ const MeetingCheckin = (props) => {
     gotoNext,
     localPhaseItem,
     members,
+    onFacilitatorPhase,
     team,
     hideMoveMeetingControls
   } = props;
@@ -52,6 +53,7 @@ const MeetingCheckin = (props) => {
           localPhaseItem={localPhaseItem}
           meetingPhaseItem={meetingPhaseItem}
           membersCount={members.length}
+          onFacilitatorPhase={onFacilitatorPhase}
         />
       </MeetingSection>
       <MeetingSection flexToFill paddingBottom="1rem">
@@ -92,6 +94,7 @@ MeetingCheckin.propTypes = {
   gotoNext: PropTypes.func.isRequired,
   localPhaseItem: PropTypes.number,
   members: PropTypes.array,
+  onFacilitatorPhase: PropTypes.bool,
   team: PropTypes.object,
   hideMoveMeetingControls: PropTypes.bool
 };

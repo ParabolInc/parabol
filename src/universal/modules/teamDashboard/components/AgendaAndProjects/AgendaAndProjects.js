@@ -6,7 +6,6 @@ import TeamColumnsContainer from 'universal/modules/teamDashboard/containers/Tea
 import TeamProjectsHeaderContainer from 'universal/modules/teamDashboard/containers/TeamProjectsHeader/TeamProjectsHeaderContainer';
 import AgendaHeader from 'universal/modules/teamDashboard/components/AgendaHeader/AgendaHeader';
 import AgendaListAndInputContainer from 'universal/modules/teamDashboard/containers/AgendaListAndInput/AgendaListAndInputContainer';
-import voidClick from 'universal/utils/voidClick';
 
 const AgendaAndProjects = (props) => {
   const {hideAgenda, teamId, styles} = props;
@@ -23,7 +22,7 @@ const AgendaAndProjects = (props) => {
       <div className={css(styles.agendaAndProjects)}>
         {!hideAgenda &&
           <div className={css(styles.agendaLayout)}>
-            <AgendaListAndInputContainer context="dashboard" disabled={false} gotoItem={voidClick} teamId={teamId} />
+            <AgendaListAndInputContainer context="dashboard" disabled={false} teamId={teamId} />
           </div>
         }
         <div className={css(styles.projectsLayout, !hideAgenda && styles.projectsLayoutShared)}>

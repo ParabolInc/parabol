@@ -38,7 +38,9 @@ const MeetingAgendaFirstCall = (props) => {
             /> :
             <div className={css(styles.warmHighlight)}>
               <Type align="center" scale="s4" colorPalette="black">
-                <span className={css(styles.highlight)}>Waiting for <b>{getFacilitatorName(team, members)}</b> to advance the meeting<Ellipsis /></span>
+                <span className={css(styles.highlight)}>
+                  Waiting for <b>{getFacilitatorName(team, members)}</b> to advance the meeting<Ellipsis />
+                </span>
               </Type>
             </div>
           }
@@ -53,7 +55,7 @@ MeetingAgendaFirstCall.propTypes = {
   hideMoveMeetingControls: PropTypes.bool,
   styles: PropTypes.object,
   team: PropTypes.object,
-  members: PropTypes.object
+  members: PropTypes.array
 };
 
 const styleThunk = () => ({

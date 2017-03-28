@@ -1,14 +1,13 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import {cashay} from 'cashay';
 import makeHref from 'universal/utils/makeHref';
 import Button from 'universal/components/Button/Button';
 import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
-import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
 
 const createStartMeetingHandler = (members) => () => {
@@ -23,36 +22,36 @@ const createStartMeetingHandler = (members) => () => {
 const MeetingLobby = (props) => {
   const {members, team, styles} = props;
   const {id: teamId, name: teamName} = team;
-
   const onStartMeetingClick = createStartMeetingHandler(members);
   const shortUrl = makeHref(`/team/${teamId}`);
   return (
     <MeetingMain>
       {/* */}
-      <MeetingSection flexToFill paddingBottom="2rem">
-        {/* */}
-        <div className={css(styles.root)}>
-          <MeetingPhaseHeading>Hi, {teamName} Team!</MeetingPhaseHeading>
-          <p className={css(styles.label)}>Share this meeting:</p>
-          <div className={css(styles.urlBlock)}>
-            <CopyShortLink url={shortUrl} />
-          </div>
-          <h2 className={css(styles.prompt)}>Team Facilitator: begin the Check-In round!</h2>
+      <div className={css(styles.root)}>
+        <MeetingPhaseHeading>Hi, {teamName} Team!</MeetingPhaseHeading>
+        <div className={css(styles.helpText)}>Is the whole team here?</div>
+        <div className={css(styles.prompt)}>
+          The person who presses “Start Meeting” will facilitate the meeting.<br />
+          Everyone’s display automatically follows the Facilitator.
+        </div>
+        <div className={css(styles.helpText)}>
+          <b>Today’s Facilitator</b>: begin the Check-In Round!
+        </div>
+        <div className={css(styles.buttonBlock)}>
           <Button
+            buttonStyle="solid"
+            colorPalette="cool"
             label="Start Meeting"
             onClick={onStartMeetingClick}
             size="largest"
-            buttonStyle="solid"
-            colorPalette="cool"
             textTransform="uppercase"
           />
-          <div className={css(styles.helpText)}>
-            The person who presses “Start Meeting” will lead the meeting.<br />
-            Everyone else’s display will follow the leader automatically.
-          </div>
         </div>
-        {/* */}
-      </MeetingSection>
+        <p className={css(styles.label)}>MEETING LINK:</p>
+        <div className={css(styles.urlBlock)}>
+          <CopyShortLink url={shortUrl} />
+        </div>
+      </div>
       {/* */}
     </MeetingMain>
   );
@@ -74,7 +73,37 @@ MeetingLobby.propTypes = {
 
 const styleThunk = () => ({
   root: {
-    textAlign: 'center'
+    paddingTop: '2rem',
+    textAlign: 'center',
+
+    [ui.breakpoint.wide]: {
+      paddingTop: '3rem'
+    },
+    [ui.breakpoint.wider]: {
+      paddingTop: '4rem'
+    },
+    [ui.breakpoint.widest]: {
+      paddingTop: '6rem'
+    }
+  },
+
+  helpText: {
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s5,
+    fontWeight: 400,
+    lineHeight: 1.5,
+    margin: '1.75rem 0 0'
+  },
+
+  prompt: {
+    color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s5,
+    fontWeight: 700,
+    margin: '2rem 0'
+  },
+
+  buttonBlock: {
+    paddingTop: '2.25rem'
   },
 
   label: {
@@ -86,22 +115,9 @@ const styleThunk = () => ({
   },
 
   urlBlock: {
-    margin: '.5rem 0 4rem',
+    margin: '.5rem 0 0',
     verticalAlign: 'middle'
   },
-
-  prompt: {
-    color: appTheme.palette.dark,
-    margin: '0 0 2.25rem'
-  },
-
-  helpText: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s4,
-    fontWeight: 400,
-    lineHeight: 1.5,
-    margin: '2rem 0 0'
-  }
 });
 
 export default withStyles(styleThunk)(MeetingLobby);
