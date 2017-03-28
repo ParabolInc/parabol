@@ -3,14 +3,27 @@ import {reduxForm, Field} from 'redux-form';
 import InputField from 'universal/components/InputField/InputField';
 import {cashay} from 'cashay';
 import Button from 'universal/components/Button/Button';
+import {css} from 'aphrodite-local-styles/no-important';
+import withStyles from 'universal/styles/withStyles';
 
-class ArchiveTeamConfirmation extends Component {
+
+const styleThunk = () => ({
+  archiveTeamConfirmation: {
+    marginLeft: '66px'
+  }
+});
+
+@withStyles(styleThunk)
+@reduxForm({form: 'archiveTeamConfirmation'})
+
+export default class ArchiveTeamConfirmation extends Component {
 
   static propTypes = {
     teamName: PropTypes.string.isRequired,
     teamId: PropTypes.string.isRequired,
     handleSubmit: PropTypes.func.isRequired,
-    router: PropTypes.object.isRequired
+    router: PropTypes.object.isRequired,
+    styles: PropTypes.object
   }
 
   constructor(props) {
@@ -46,29 +59,29 @@ class ArchiveTeamConfirmation extends Component {
   }
 
   render() {
-    const {handleSubmit} = this.props;
+    const {handleSubmit, styles} = this.props;
     const {showConfirmationField} = this.state;
     return (
-      (!showConfirmationField ?
-        <Button
-          colorPalette="warm"
-          label="Archive Team"
-          size="smallest"
-          onClick={this.archiveTeamClick}
-        /> :
-        <form onSubmit={handleSubmit(this.formSubmit)}>
-          <Field
-            autoFocus
-            colorPalette="gray"
-            component={InputField}
-            name="archivedTeamName"
-            placeholder="Type the team name to confirm"
-            type="text"
-          />
-        </form>
-      )
+      <div className={css(styles.archiveTeamConfirmation)}>
+        {!showConfirmationField ?
+          <Button
+            colorPalette="warm"
+            label="Archive Team"
+            size="smallest"
+            onClick={this.archiveTeamClick}
+          /> :
+          <form onSubmit={handleSubmit(this.formSubmit)}>
+            <Field
+              autoFocus
+              colorPalette="gray"
+              component={InputField}
+              name="archivedTeamName"
+              placeholder="Type the team name to confirm"
+              type="text"
+            />
+          </form>
+        }
+      </div>
     );
   }
 }
-
-export default reduxForm({form: 'archiveTeamConfirmation'})(ArchiveTeamConfirmation);
