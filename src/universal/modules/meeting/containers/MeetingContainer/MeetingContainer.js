@@ -186,7 +186,7 @@ export default class MeetingContainer extends Component {
     }
     const {dispatch, isFacilitating, team: {id: teamId}} = this.props;
     // if we call router.push
-    if (Date.now() - infiniteLoopTimer < 1000) {
+    if (safeRoute === false && Date.now() - infiniteLoopTimer < 1000) {
       if (++infiniteloopCounter >= 100) {
         // if we're changing locations 10 times in a second, it's probably infinite
         if (isFacilitating) {
