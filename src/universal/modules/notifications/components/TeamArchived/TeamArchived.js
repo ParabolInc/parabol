@@ -45,7 +45,8 @@ const TeamArchived = (props) => {
 
 TeamArchived.propTypes = {
   styles: PropTypes.object,
-  varList: PropTypes.array.isRequired
+  varList: PropTypes.array.isRequired,
+  notificationId: PropTypes.string.isRequired
 };
 
 const styleThunk = () => ({

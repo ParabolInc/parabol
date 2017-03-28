@@ -24,7 +24,7 @@ export default {
       const requestedFields = isPaid ? getRequestedFields(refs) : ['id', 'name'];
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
       r.table('Team')
-        .filter(team => {
+        .filter((team) => {
           return (team('isArchived').eq(false).default(true)
             .and(team('id').eq(teamId)));
         })

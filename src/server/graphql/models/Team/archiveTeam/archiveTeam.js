@@ -35,14 +35,14 @@ export default {
     // RESOLUTION
     await r.table('Team').get(id).update({isArchived});
 
-    setTimeout(async() => {
+    setTimeout(async () => {
       const notifId = shortid.generate();
       const now = new Date();
       const {orgId} = await r.table('Team').get(id).pluck('orgId');
       const teamMembers = await r.table('TeamMember')
         .filter({teamId: id})
         .pluck('userId');
-      const userIds = teamMembers.map(member => member.userId);
+      const userIds = teamMembers.map((member) => member.userId);
       await r.table('Notification').insert({
         id: notifId,
         type: TEAM_ARCHIVED,

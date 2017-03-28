@@ -79,6 +79,7 @@ TeamContainer.propTypes = {
   hasDashAlert: PropTypes.bool,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired,
+  myTeamMemberId: PropTypes.string.isRequired
 };
 
 export default

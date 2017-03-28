@@ -6,19 +6,16 @@ import {overflowTouch} from 'universal/styles/helpers';
 import {reduxForm} from 'redux-form';
 import InviteUser from 'universal/components/InviteUser/InviteUser';
 import UserRow from 'universal/components/UserRow/UserRow';
-import Row from 'universal/components/Row/Row';
 import fromNow from 'universal/utils/fromNow';
 import {cashay} from 'cashay';
 import RemoveTeamMemberModal from 'universal/modules/teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal';
 import PromoteTeamMemberModal from 'universal/modules/teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal';
 import LeaveTeamModal from 'universal/modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
-import Button from 'universal/components/Button/Button';
 
 const TeamSettings = (props) => {
   const {
     dispatch,
-    router,
     invitations,
     orgApprovals,
     myTeamMember,
@@ -162,7 +159,6 @@ const TeamSettings = (props) => {
 
 TeamSettings.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  router: PropTypes.object.isRequired,
   invitations: PropTypes.array.isRequired,
   myTeamMember: PropTypes.object.isRequired,
   orgApprovals: PropTypes.array,
