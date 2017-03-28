@@ -4,16 +4,17 @@ import {
 } from 'universal/utils/constants';
 import makePushURL from './makePushURL';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
+import {cashay} from 'cashay';
 
 export default function handleRedirects(oldProps, nextProps) {
-  const {agenda, localPhaseItem, router, params: {localPhase}, team} = nextProps;
+  const {agenda, isFacilitating, localPhaseItem, router, params: {localPhase}, team} = nextProps;
   const {agenda: oldAgenda = {}, team: oldTeam = {}} = oldProps;
   /* DEBUG: uncomment below */
   // console.log(`handleRedirects(${JSON.stringify(team)}, ${localPhase}, ${localPhaseItem}, ...)`);
   const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, id: teamId, meetingId} = team;
 
   // bail out fast while we're waiting for the team sub
-  if (!teamId) return false;
+  if (!teamId) return undefined;
 
   // DEBUGGING
   // if no/bad phase given, goto the facilitator
@@ -29,15 +30,31 @@ export default function handleRedirects(oldProps, nextProps) {
     const {countName, arrayName} = localPhaseInfo.items;
     const initialPhaseItemCount = nextProps[countName];
     const phaseItems = nextProps[arrayName];
+
     // bail out fast if the query or sub items haven't returned
     if (initialPhaseItemCount === null || initialPhaseItemCount > phaseItems.length) {
-      return false;
+      return undefined;
     }
 
     // if it's a bad number (or not a number at all)
     if (localPhaseItem > phaseItems.length || localPhaseItem <= 0) {
+      // did an item get removed?
+      const oldPhaseItems = oldProps[arrayName];
+      if (oldPhaseItems.length > phaseItems.length) {
+        // // an agenda item or team member got deleted, is it the current one?
+        const nextPhaseItem = phaseItems.length;
+        if (isFacilitating) {
+          const variables = {
+            teamId,
+            nextPhaseItem,
+          };
+          cashay.mutate('moveMeeting', {variables});
+        }
+        const pushURL = makePushURL(teamId, facilitatorPhase, nextPhaseItem);
+        router.replace(pushURL);
+        return false;
+      } else if (facilitatorPhase === localPhase || phaseItems.length <= 1) {
       // if they're in the same phase as the facilitator, or the phase they wanna go to has no items, go to their phase item
-      if (facilitatorPhase === localPhase || phaseItems.length <= 1) {
         const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
         router.replace(pushURL);
         return false;
