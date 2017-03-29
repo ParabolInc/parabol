@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.17.1 - 29-Mar-2017
+### Fixed
+- #859 infinite redirect loop when deleting the last phaseItem
+
 ## v0.17.0 - 27-Mar-2017
 ### Added
 - Start of many copy edits (watch for more changes in future versions),
