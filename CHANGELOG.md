@@ -4,7 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v0.17.0
+## v0.17.1 - 29-Mar-2017
+### Fixed
+- #859 infinite redirect loop when deleting the last phaseItem
+
+## v0.17.0 - 27-Mar-2017
 ### Added
 - Start of many copy edits (watch for more changes in future versions),
   including #716 meeting lobby updates
@@ -14,7 +18,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - #839 max chars for projects
 - #857 mystery notification
 
-## v0.16.11 - 22-Mar-2017
+## v0.16.12 - 22-Mar-2017
 ### Added
 - #344 meeting agenda list now reflects location of Facilitator and participants
 - #837 added `Facilitator` badge and styling added to meeting Facilitator
