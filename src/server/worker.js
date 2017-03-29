@@ -18,12 +18,14 @@ import mwPresenceSubscribe from './socketHandlers/mwPresenceSubscribe';
 import mwMemoSubscribe from './socketHandlers/mwMemoSubscribe';
 import stripeWebhookHandler from './billing/stripeWebhookHandler';
 import getDotenv from '../universal/utils/dotenv';
+import Queue from 'bull';
 
 // Import .env and expand variables:
 getDotenv();
 
 const PROD = process.env.NODE_ENV === 'production';
 const INTRANET_JWT_SECRET = process.env.INTRANET_JWT_SECRET || '';
+const githubIntegrationQueue = Queue('github integration webhooks');
 
 export function run(worker) { // eslint-disable-line import/prefer-default-export
   console.log('   >> Worker PID:', process.pid);
@@ -99,4 +101,9 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   scServer.addMiddleware(MIDDLEWARE_SUBSCRIBE, mwMemoSubscribe);
   const connectionHandler = scConnectionHandler(scServer.exchange);
   scServer.on('connection', connectionHandler);
+
+  // redis queue
+  githubIntegrationQueue.process((job) => {
+    console.log('MSG FROM INTEGRATOR:', job, job.data)
+  })
 }
