@@ -19,7 +19,7 @@ Curious what this is all about? Each week we publish a distillation of our
 progress, philosophy, and more in
 [Parabol Focus](https://medium.com/parabol-focus).
 
-Live demo: http://action-staging.parabol.co/
+Live beta product: http://action.parabol.co/
 
 ### Quick Links
 
