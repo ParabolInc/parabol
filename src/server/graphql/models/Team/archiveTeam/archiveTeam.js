@@ -1,6 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
 import {
-  requireSUOrTeamMember,
+  requireSUOrLead,
   requireWebsocket
 } from 'server/utils/authorization';
 import {handleSchemaErrors} from 'server/utils/utils';
@@ -25,7 +25,7 @@ export default {
     const r = getRethink();
 
     // AUTH
-    requireSUOrTeamMember(authToken, updatedTeam.id);
+    requireSUOrLead(authToken, updatedTeam.id);
     requireWebsocket(socket);
 
     // VALIDATION
@@ -33,25 +33,31 @@ export default {
     handleSchemaErrors(errors);
 
     // RESOLUTION
-    await r.table('Team').get(id).update({isArchived});
-
-    setTimeout(async () => {
-      const notifId = shortid.generate();
-      const now = new Date();
-      const {orgId} = await r.table('Team').get(id).pluck('orgId');
-      const teamMembers = await r.table('TeamMember')
-        .filter({teamId: id})
-        .pluck('userId');
-      const userIds = teamMembers.map((member) => member.userId);
-      await r.table('Notification').insert({
-        id: notifId,
-        type: TEAM_ARCHIVED,
-        startAt: now,
-        orgId,
-        userIds,
-        varList: [name]
-      });
-    }, 0);
+    await r.db('actionDevelopment').table('Team')
+      .get(id)
+      .pluck('orgId')
+      .do((doc) => {
+        return ({
+          orgId: doc('orgId'),
+          userIds: r.db('actionDevelopment').table('TeamMember').getAll(id, {index: 'teamId'})
+          .pluck('userId')
+          .coerceTo('array')
+          .map((doc) => doc('userId'))
+        })
+      })
+      .do((doc) => {
+        return r.db('actionDevelopment').table('Notification').insert({
+          id: shortid.generate(),
+          type: TEAM_ARCHIVED,
+          startAt: r.now(),
+          orgId: doc('orgId'),
+          userIds: doc('userIds'),
+          varList: [name]
+        })
+      })
+      .do(() => {
+        return r.db('actionDevelopment').table('Team').get(id).update({isArchived})
+      })
 
     return true;
   }
