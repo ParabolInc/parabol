@@ -22,12 +22,8 @@
     "import/default": 0,
     "import/extensions": [
       2,
-      "never",
-      {
-        "json": "always",
-        "png": "always",
-        "svg": "always"
-      }
+      "always",
+      {"js": "never"}
     ],
     "import/first": 0,
     "import/no-duplicates": 0,
