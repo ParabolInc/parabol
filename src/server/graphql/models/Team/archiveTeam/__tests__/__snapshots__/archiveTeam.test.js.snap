@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ArchiveTeam archives a team 1`] = `
+Object {
+  "notification": Array [
+    Object {
+      "id": 2,
+      "orgId": 1,
+      "startAt": 2017-01-01T08:00:00.000Z,
+      "type": "TEAM_ARCHIVED",
+      "userIds": Array [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+      ],
+      "varList": Array [
+        "Team America",
+      ],
+    },
+  ],
+  "team": Object {
+    "activeFacilitator": null,
+    "facilitatorPhase": "lobby",
+    "facilitatorPhaseItem": null,
+    "id": 0,
+    "isArchived": true,
+    "isPaid": true,
+    "meetingId": null,
+    "meetingPhase": "lobby",
+    "meetingPhaseItem": null,
+    "orgId": 1,
+    "teamName": "Team America",
+  },
+}
+`;

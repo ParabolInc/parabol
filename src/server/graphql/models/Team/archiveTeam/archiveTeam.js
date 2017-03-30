@@ -23,6 +23,7 @@ export default {
   },
   async resolve(source, {updatedTeam}, {authToken, socket}) {
     const r = getRethink();
+    const now = new Date();
 
     // AUTH
     requireSUOrLead(authToken, updatedTeam.id);
@@ -33,30 +34,30 @@ export default {
     handleSchemaErrors(errors);
 
     // RESOLUTION
-    await r.db('actionDevelopment').table('Team')
+    await r.table('Team')
       .get(id)
       .pluck('orgId')
       .do((doc) => {
         return ({
           orgId: doc('orgId'),
-          userIds: r.db('actionDevelopment').table('TeamMember').getAll(id, {index: 'teamId'})
+          userIds: r.table('TeamMember').getAll(id, {index: 'teamId'})
           .pluck('userId')
           .coerceTo('array')
-          .map((usrId) => usrId('userId'))
+          .map((newDoc) => newDoc('userId'))
         });
       })
       .do((doc) => {
-        return r.db('actionDevelopment').table('Notification').insert({
+        return r.table('Notification').insert({
           id: shortid.generate(),
           type: TEAM_ARCHIVED,
-          startAt: r.now(),
+          startAt: now,
           orgId: doc('orgId'),
           userIds: doc('userIds'),
           varList: [name]
         });
       })
       .do(() => {
-        return r.db('actionDevelopment').table('Team').get(id).update({isArchived});
+        return r.table('Team').get(id).update({isArchived});
       });
 
     return true;
