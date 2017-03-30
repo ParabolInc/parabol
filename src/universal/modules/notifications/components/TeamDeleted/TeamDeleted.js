@@ -25,7 +25,7 @@ const TeamDeleted = (props) => {
         <IconAvatar icon="users" size="medium" />
       </div>
       <div className={css(styles.message)}>
-        The team:
+        The empty team:
         <span className={css(styles.messageVar)}> {teamName} </span>
         was deleted
       </div>
