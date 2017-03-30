@@ -20,7 +20,6 @@ query {
     id
     picture
     preferredName
-    isLead
     presence @cached(type: "[Presence]") {
       userId
     }
@@ -41,8 +40,7 @@ const mapStateToProps = (state, props) => {
   return {
     hasDashAlert,
     team,
-    teamMembers,
-    myTeamMemberId: `${state.auth.obj.sub}::${teamId}`
+    teamMembers
   };
 };
 
@@ -51,11 +49,9 @@ const TeamContainer = (props) => {
     children,
     hasDashAlert,
     team,
-    teamMembers,
-    myTeamMemberId
+    teamMembers
   } = props;
   const readyEnough = team.id;
-  const myTeamMember = teamMembers.find((member) => member.id === myTeamMemberId);
   return (
     <DashboardWrapper title="Team Dashboard">
       {readyEnough ?
@@ -63,7 +59,6 @@ const TeamContainer = (props) => {
           hasDashAlert={hasDashAlert}
           team={team}
           teamMembers={teamMembers}
-          myTeamMember={myTeamMember}
         >
           {children}
         </Team>
@@ -78,8 +73,7 @@ TeamContainer.propTypes = {
   children: PropTypes.any.isRequired,
   hasDashAlert: PropTypes.bool,
   team: PropTypes.object.isRequired,
-  teamMembers: PropTypes.array.isRequired,
-  myTeamMemberId: PropTypes.string.isRequired
+  teamMembers: PropTypes.array.isRequired
 };
 
 export default

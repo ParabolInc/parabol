@@ -17,7 +17,7 @@ query {
 
 const mapStateToProps = (state) => {
   const userId = state.auth.obj.sub;
-  const bleh = cashay.query(teamProjectsHeaderQuery, {
+  const {ownedOrganizations: organizations} = cashay.query(teamProjectsHeaderQuery, {
     op: 'organizationsContainer',
     key: userId,
     sort: {
@@ -27,8 +27,6 @@ const mapStateToProps = (state) => {
       userId
     }
   }).data;
-  console.log('orgCont', bleh);
-  const {ownedOrganizations: organizations} = bleh;
   return {
     organizations
   };

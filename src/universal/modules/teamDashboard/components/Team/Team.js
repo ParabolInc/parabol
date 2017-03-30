@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react';
 import FontAwesome from 'react-fontawesome';
 import EditTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditTeamName';
-import ArchiveTeamConfirmation from 'universal/modules/teamDashboard/components/ArchiveTeamConfirmation/ArchiveTeamConfirmation';
 import {
   DashContent,
   DashHeader,
@@ -73,8 +72,7 @@ const Team = (props) => {
     hasDashAlert,
     router,
     team,
-    teamMembers,
-    myTeamMember
+    teamMembers
   } = props;
   const {id: teamId, name: teamName, isPaid} = team;
   const hasActiveMeeting = Boolean(team && team.meetingId);
@@ -102,13 +100,6 @@ const Team = (props) => {
         <DashHeaderInfo title={DashHeaderInfoTitle}>
           {isSettings ? settingsLinks(teamId) : standardLinks(teamId)}
         </DashHeaderInfo>
-        {isSettings && myTeamMember.isLead &&
-          <ArchiveTeamConfirmation
-            teamId={teamId}
-            teamName={teamName}
-            router={router}
-          />
-        }
         <DashboardAvatars teamMembers={teamMembers} />
       </DashHeader>
       <DashContent hasOverlay={hasOverlay} padding="0">
@@ -123,8 +114,7 @@ Team.propTypes = {
   hasDashAlert: PropTypes.bool,
   router: PropTypes.object,
   team: PropTypes.object.isRequired,
-  teamMembers: PropTypes.array.isRequired,
-  myTeamMember: PropTypes.object.isRequired
+  teamMembers: PropTypes.array.isRequired
 };
 
 export default withRouter(Team);

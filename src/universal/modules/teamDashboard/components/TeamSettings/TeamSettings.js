@@ -12,10 +12,14 @@ import RemoveTeamMemberModal from 'universal/modules/teamDashboard/components/Re
 import PromoteTeamMemberModal from 'universal/modules/teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal';
 import LeaveTeamModal from 'universal/modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
+import Panel from 'universal/components/Panel/Panel';
+import ArchiveTeamConfirmation from 'universal/modules/teamDashboard/components/ArchiveTeamConfirmation/ArchiveTeamConfirmation';
+import ui from 'universal/styles/ui';
 
 const TeamSettings = (props) => {
   const {
     dispatch,
+    router,
     invitations,
     orgApprovals,
     myTeamMember,
@@ -149,7 +153,17 @@ const TeamSettings = (props) => {
                 actions={orgApprovalRowActions(orgApproval)}
               />
             );
-          })
+          })}
+          {myTeamMember.isLead &&
+            <Panel label="Danger Zone">
+              <div className={css(styles.dangerZoneChildren)}>
+                <ArchiveTeamConfirmation
+                  teamId={team.id}
+                  teamName={team.name}
+                  router={router}
+                />
+              </div>
+            </Panel>
           }
         </div>
       </div>
@@ -159,6 +173,7 @@ const TeamSettings = (props) => {
 
 TeamSettings.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  router: PropTypes.object.isRequired,
   invitations: PropTypes.array.isRequired,
   myTeamMember: PropTypes.object.isRequired,
   orgApprovals: PropTypes.array,
@@ -217,6 +232,10 @@ const styleThunk = () => ({
     ':hover': {
       opacity: '.5'
     }
+  },
+
+  dangerZoneChildren: {
+    padding: `0 ${ui.panelGutter} ${ui.panelGutter}`
   }
 });
 

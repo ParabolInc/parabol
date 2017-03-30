@@ -4,18 +4,17 @@ import InputField from 'universal/components/InputField/InputField';
 import {cashay} from 'cashay';
 import Button from 'universal/components/Button/Button';
 import {css} from 'aphrodite-local-styles/no-important';
+import appTheme from 'universal/styles/theme/appTheme';
 import withStyles from 'universal/styles/withStyles';
 
-
 const styleThunk = () => ({
-  archiveTeamConfirmation: {
-    marginLeft: '66px'
+  errorMessage: {
+    color: appTheme.palette.warm
   }
 });
 
 @withStyles(styleThunk)
 @reduxForm({form: 'archiveTeamConfirmation'})
-
 export default class ArchiveTeamConfirmation extends Component {
 
   static propTypes = {
@@ -23,12 +22,15 @@ export default class ArchiveTeamConfirmation extends Component {
     teamId: PropTypes.string.isRequired,
     handleSubmit: PropTypes.func.isRequired,
     router: PropTypes.object.isRequired,
-    styles: PropTypes.object
+    styles: PropTypes.object.isRequired
   }
 
   constructor(props) {
     super(props);
-    this.state = {showConfirmationField: false};
+    this.state = {
+      showConfirmationField: false,
+      showError: false
+    };
   }
 
   archiveTeam = () => {
@@ -50,8 +52,15 @@ export default class ArchiveTeamConfirmation extends Component {
     if (teamName === archivedTeamName) {
       this.archiveTeam();
     } else {
-      this.setState({showConfirmationField: false});
+      this.setState({showError: true});
     }
+  }
+
+  formBlurred = () => {
+    this.setState({
+      showConfirmationField: false,
+      showError: false
+    });
   }
 
   archiveTeamClick = () => {
@@ -60,9 +69,14 @@ export default class ArchiveTeamConfirmation extends Component {
 
   render() {
     const {handleSubmit, styles} = this.props;
-    const {showConfirmationField} = this.state;
+    const {showConfirmationField, showError} = this.state;
     return (
-      <div className={css(styles.archiveTeamConfirmation)}>
+      <div>
+        {showError &&
+          <div className={css(styles.errorMessage)}>
+            The team name entered was incorrect
+          </div>
+        }
         {!showConfirmationField ?
           <Button
             colorPalette="warm"
@@ -73,6 +87,7 @@ export default class ArchiveTeamConfirmation extends Component {
           <form onSubmit={handleSubmit(this.formSubmit)}>
             <Field
               autoFocus
+              onBlur={this.formBlurred}
               colorPalette="gray"
               component={InputField}
               name="archivedTeamName"
