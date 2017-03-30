@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`resetMeeting resets the meeting state back to the lobby after the meeting ended 1`] = `
+Object {
+  "team": Object {
+    "activeFacilitator": 24,
+    "checkInGreeting": "Salut",
+    "checkInQuestion": "learn any new slang lately",
+    "facilitatorPhase": "summary",
+    "facilitatorPhaseItem": null,
+    "id": 6,
+    "isPaid": true,
+    "meetingId": 14,
+    "meetingPhase": "summary",
+    "meetingPhaseItem": null,
+    "orgId": 25,
+    "teamName": "Team America",
+    "isArchived": true
+  }
+}
+`;

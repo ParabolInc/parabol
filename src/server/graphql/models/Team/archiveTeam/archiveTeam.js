@@ -42,8 +42,8 @@ export default {
           userIds: r.db('actionDevelopment').table('TeamMember').getAll(id, {index: 'teamId'})
           .pluck('userId')
           .coerceTo('array')
-          .map((doc) => doc('userId'))
-        })
+          .map((usrId) => usrId('userId'))
+        });
       })
       .do((doc) => {
         return r.db('actionDevelopment').table('Notification').insert({
@@ -53,11 +53,11 @@ export default {
           orgId: doc('orgId'),
           userIds: doc('userIds'),
           varList: [name]
-        })
+        });
       })
       .do(() => {
-        return r.db('actionDevelopment').table('Team').get(id).update({isArchived})
-      })
+        return r.db('actionDevelopment').table('Team').get(id).update({isArchived});
+      });
 
     return true;
   }
