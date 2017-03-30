@@ -3,24 +3,20 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
-import FontAwesome from 'react-fontawesome';
+import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
+import Avatar from 'universal/components/Avatar/Avatar';
 
 const MeetingPrompt = (props) => {
-  const {heading, helpText, styles} = props;
-  const iconStyle = {
-    display: 'block',
-    fontSize: ui.iconSize2x,
-    height: ui.iconSize2x,
-    lineHeight: ui.iconSize2x,
-    textAlign: 'center'
-  };
+  const {
+    avatar,
+    heading,
+    helpText,
+    styles
+  } = props;
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.iconBlock)}>
-        <div className={css(styles.iconGroup)}>
-          <FontAwesome className={css(styles.iconTop)} name="commenting-o" style={iconStyle} />
-          <FontAwesome className={css(styles.iconBottom)} name="comment" style={iconStyle} />
-        </div>
+        <Avatar picture={avatar || defaultUserAvatar} size="fill" />
       </div>
       <div className={css(styles.body)}>
         <div className={css(styles.heading)}>
@@ -37,6 +33,7 @@ const MeetingPrompt = (props) => {
 };
 
 MeetingPrompt.propTypes = {
+  avatar: PropTypes.string,
   heading: PropTypes.any,
   helpText: PropTypes.any,
   styles: PropTypes.object
@@ -50,13 +47,7 @@ const promptBreakpoint = ui.breakpoint.wider;
 
 const styleThunk = () => ({
   root: {
-    display: 'inline-block',
-    paddingLeft: iconBlockWidth,
-    position: 'relative',
-
-    [promptBreakpoint]: {
-      paddingLeft: iconBlockWidthLarge
-    }
+    display: 'flex'
   },
 
   body: {
@@ -103,16 +94,17 @@ const styleThunk = () => ({
   },
 
   iconBlock: {
+    alignItems: 'center',
     background: appTheme.palette.mid30l,
     borderRadius: '.5rem 0 0 .5rem',
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-    top: 0,
-    width: iconBlockWidth,
+    display: 'flex',
+    justifyContent: 'center',
+    padding: '.5rem',
+    width: '6rem',
 
     [promptBreakpoint]: {
-      width: iconBlockWidthLarge,
+      padding: '1rem',
+      width: '8rem'
     }
   },
 

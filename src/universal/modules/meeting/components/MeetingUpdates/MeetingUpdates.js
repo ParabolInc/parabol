@@ -8,44 +8,51 @@ import IconLink from 'universal/components/IconLink/IconLink';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import {UPDATES, MEETING} from 'universal/utils/constants';
-import ProgressBarContainer from 'universal/modules/meeting/containers/ProgressBarContainer/ProgressBarContainer';
+import {
+  // UPDATES,
+  MEETING
+} from 'universal/utils/constants';
+// import ProgressBarContainer from 'universal/modules/meeting/containers/ProgressBarContainer/ProgressBarContainer';
 import ProjectColumns from 'universal/components/ProjectColumns/ProjectColumns';
 import makeUsername from 'universal/utils/makeUsername';
-import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
+// import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 
 const MeetingUpdates = (props) => {
   const {
-    gotoItem,
+    // gotoItem,
     gotoNext,
     localPhaseItem,
     members,
-    onFacilitatorPhase,
+    // onFacilitatorPhase,
     queryKey,
     projects,
     styles,
-    team,
+    // team,
     hideMoveMeetingControls
   } = props;
-  const {meetingPhase, facilitatorPhaseItem, meetingPhaseItem} = team;
+  // const {
+  //   meetingPhase,
+  //   facilitatorPhaseItem,
+  //   meetingPhaseItem
+  // } = team;
   const currentTeamMember = members[localPhaseItem - 1];
   const self = members.find((m) => m.isSelf);
-  const isComplete = actionMeeting[meetingPhase].index > actionMeeting[UPDATES].index;
+  // const isComplete = actionMeeting[meetingPhase].index > actionMeeting[UPDATES].index;
   const isLastMember = localPhaseItem === members.length;
   const username = makeUsername(currentTeamMember.preferredName);
+  // <MeetingSection>
+  //   <ProgressBarContainer
+  //     gotoItem={gotoItem}
+  //     isComplete={isComplete}
+  //     facilitatorPhaseItem={facilitatorPhaseItem}
+  //     localPhaseItem={localPhaseItem}
+  //     meetingPhaseItem={meetingPhaseItem}
+  //     membersCount={members.length}
+  //     onFacilitatorPhase={onFacilitatorPhase}
+  //   />
+  // </MeetingSection>
   return (
     <MeetingMain>
-      <MeetingSection>
-        <ProgressBarContainer
-          gotoItem={gotoItem}
-          isComplete={isComplete}
-          facilitatorPhaseItem={facilitatorPhaseItem}
-          localPhaseItem={localPhaseItem}
-          meetingPhaseItem={meetingPhaseItem}
-          membersCount={members.length}
-          onFacilitatorPhase={onFacilitatorPhase}
-        />
-      </MeetingSection>
       {/* */}
       <MeetingSection flexToFill>
         {/* */}

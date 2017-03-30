@@ -6,7 +6,6 @@ import socketWithPresence from 'universal/decorators/socketWithPresence/socketWi
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import handleAgendaSort from 'universal/modules/meeting/helpers/handleAgendaSort';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
-import MeetingAvatars from 'universal/modules/meeting/components/MeetingAvatars/MeetingAvatars';
 import Sidebar from 'universal/modules/meeting/components/Sidebar/Sidebar';
 import {withRouter} from 'react-router';
 import {DragDropContext as dragDropContext} from 'react-dnd';
@@ -19,7 +18,7 @@ import MeetingCheckin from 'universal/modules/meeting/components/MeetingCheckin/
 import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton';
 import MeetingUpdatesContainer
   from '../MeetingUpdates/MeetingUpdatesContainer';
-import AvatarGroup from 'universal/modules/meeting/components/AvatarGroup/AvatarGroup';
+import MeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/MeetingAvatarGroup';
 import {
   LOBBY,
   CHECKIN,
@@ -305,9 +304,10 @@ export default class MeetingContainer extends Component {
       (!isBehindMeeting && isLastItemOfPhase(localPhase, localPhaseItem, members, agenda));
 
     const phaseStateProps = { // DRY
+      facilitatorPhaseItem,
       localPhaseItem,
-      onFacilitatorPhase: facilitatorPhase === localPhase,
       members,
+      onFacilitatorPhase: facilitatorPhase === localPhase,
       team
     };
     const gotoAgendaItem = (idx) => async () => {
@@ -351,9 +351,13 @@ export default class MeetingContainer extends Component {
           teamId={teamId}
         />
         <MeetingMain>
-          <MeetingAvatars>
-            <AvatarGroup avatars={members} localPhase={localPhase} />
-          </MeetingAvatars>
+          <MeetingAvatarGroup
+            avatars={members}
+            gotoItem={this.gotoItem}
+            gotoNext={this.gotoNext}
+            localPhase={localPhase}
+            {...phaseStateProps}
+          />
           {localPhase === LOBBY && <MeetingLobby members={members} team={team} />}
           {localPhase === CHECKIN &&
             <MeetingCheckin

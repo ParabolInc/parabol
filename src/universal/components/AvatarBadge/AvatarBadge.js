@@ -15,7 +15,7 @@ const checkInStatus = {
     statusName: ' & present'
   },
   false: {
-    icon: 'times-circle',
+    icon: 'minus-circle',
     statusName: ' & absent'
   },
 };
@@ -61,10 +61,10 @@ const styleThunk = () => ({
     fontSize: '.875rem',
     height: '.875rem',
     lineHeight: '.875rem',
-    position: 'absolute',
-    right: 0,
+    // position: 'absolute',
+    // right: 0,
     textAlign: 'center',
-    top: 0,
+    // top: 0,
 
     '::before': {
       backgroundColor: '#fff',
@@ -106,8 +106,8 @@ const styleThunk = () => ({
   },
 
   badgeSmall: {
-    right: '-.1875rem',
-    top: '-.1875rem'
+    // right: '-.1875rem',
+    // top: '-.1875rem'
   },
 
   badgeIcon: {
