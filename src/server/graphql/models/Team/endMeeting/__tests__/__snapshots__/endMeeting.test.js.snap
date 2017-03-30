@@ -194,6 +194,7 @@ Object {
     "successExpression": "Woot, woot",
     "successStatement": "Looks like things are moving along!",
     "teamId": 6,
+    "teamName": "Team America",
   },
   "project": Array [
     Object {
@@ -236,8 +237,8 @@ Object {
     "meetingId": 14,
     "meetingPhase": "summary",
     "meetingPhaseItem": null,
+    "name": "Team America",
     "orgId": 25,
-    "teamName": "Team America",
   },
   "teamMember": Array [
     Object {
@@ -545,6 +546,7 @@ Object {
     "successExpression": "Woot, woot",
     "successStatement": "Looks like things are moving along!",
     "teamId": 6,
+    "teamName": "Team America",
   },
   "project": Array [
     Object {
@@ -600,8 +602,8 @@ Object {
     "meetingId": 16,
     "meetingPhase": "summary",
     "meetingPhaseItem": null,
+    "name": "Team America",
     "orgId": 27,
-    "teamName": "Team America",
   },
   "teamMember": Array [
     Object {

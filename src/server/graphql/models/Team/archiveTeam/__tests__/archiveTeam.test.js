@@ -19,13 +19,12 @@ describe('ArchiveTeam', () => {
     const mockDB = new MockDB();
     const {user, team: [updatedTeam], teamMember} = await mockDB.init();
     updatedTeam.isArchived = true;
-    updatedTeam.name = updatedTeam.teamName;
     const teamLeadId = teamMember.find((tm) => tm.teamId === updatedTeam.id && tm.isLead).userId;
     const teamLead = user.find((usr) => usr.id === teamLeadId);
     const authToken = mockAuthToken(teamLead);
 
     // TEST
-    await archiveTeam.resolve(undefined, {updatedTeam}, {authToken, socket});
+    await archiveTeam.resolve(undefined, {teamId: updatedTeam.id}, {authToken, socket});
 
     // VERIFY
     const db = await fetchAndSerialize({
@@ -42,15 +41,14 @@ describe('ArchiveTeam', () => {
     const mockDB = new MockDB();
     const {user: [user], team: [updatedTeam]} = await mockDB
       .newOrg({name: 'Sad Sacks, Inc.'})
-      .newTeam({teamName: 'The Lonely Ones'})
+      .newTeam({name: 'The Lonely Ones'})
       .newUser({name: 'Leader of One'})
       .newTeamMember({isLead: true});
     updatedTeam.isArchived = true;
-    updatedTeam.name = updatedTeam.teamName;
     const authToken = mockAuthToken(user);
 
     // TEST
-    await archiveTeam.resolve(undefined, {updatedTeam}, {authToken, socket});
+    await archiveTeam.resolve(undefined, {teamId: updatedTeam.id}, {authToken, socket});
 
     // VERIFY
     const db = await fetchAndSerialize({

@@ -79,8 +79,8 @@ Object {
     "meetingId": null,
     "meetingPhase": "lobby",
     "meetingPhaseItem": null,
+    "name": "Team America",
     "orgId": 12,
-    "teamName": "Team America",
   },
   "teamMember": Array [
     Object {

@@ -261,7 +261,7 @@ class MockDB {
     return this.closeout('team', {
       id,
       orgId,
-      teamName: 'Team America',
+      name: 'Team America',
       activeFacilitator: null,
       facilitatorPhase: LOBBY,
       facilitatorPhaseItem: null,

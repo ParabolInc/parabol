@@ -34,14 +34,8 @@ export default class ArchiveTeamConfirmation extends Component {
   }
 
   archiveTeam = () => {
-    const {teamName, teamId, router} = this.props;
-    const variables = {
-      updatedTeam: {
-        id: teamId,
-        name: teamName,
-        isArchived: true
-      }
-    };
+    const {teamId, router} = this.props;
+    const variables = { teamId };
     cashay.mutate('archiveTeam', {variables});
     router.push('/me');
   }

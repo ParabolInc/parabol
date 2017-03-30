@@ -71,8 +71,8 @@ Object {
     "meetingId": null,
     "meetingPhase": "lobby",
     "meetingPhaseItem": null,
+    "name": "Team America",
     "orgId": 0,
-    "teamName": "Team America",
   },
 }
 `;
@@ -220,8 +220,8 @@ Object {
     "meetingId": null,
     "meetingPhase": "lobby",
     "meetingPhaseItem": null,
+    "name": "Team America",
     "orgId": 0,
-    "teamName": "Team America",
   },
 }
 `;
@@ -376,8 +376,8 @@ Object {
     "meetingId": null,
     "meetingPhase": "lobby",
     "meetingPhaseItem": null,
+    "name": "Team America",
     "orgId": 0,
-    "teamName": "Team America",
   },
 }
 `;
