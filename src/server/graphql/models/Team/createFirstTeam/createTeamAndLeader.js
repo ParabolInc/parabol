@@ -26,6 +26,7 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
     activeFacilitator: null,
     facilitatorPhase: LOBBY,
     facilitatorPhaseItem: null,
+    isArchived: false,
     isPaid: true,
     meetingId: null,
     meetingPhase: LOBBY,

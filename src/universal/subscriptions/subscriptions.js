@@ -226,6 +226,7 @@ export default [
          checkInGreeting,
          checkInQuestion,
          id,
+         isArchived,
          isPaid,
          name,
          meetingId,

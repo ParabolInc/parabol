@@ -46,7 +46,7 @@ const mapStateToProps = (state) => {
     op: 'dashLayoutContainer',
     variables: {userId},
     resolveCached: {
-      teams: () => () => true,
+      teams: () => () => true
     },
     filter: {
       notifications: (n) => (n.type === TRIAL_EXPIRED || n.type === TRIAL_EXPIRES_SOON) && n.startAt < new Date()

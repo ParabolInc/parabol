@@ -75,6 +75,7 @@ Object {
     "facilitatorPhase": "lobby",
     "facilitatorPhaseItem": null,
     "id": 6,
+    "isArchived": false,
     "isPaid": true,
     "meetingId": null,
     "meetingPhase": "lobby",
