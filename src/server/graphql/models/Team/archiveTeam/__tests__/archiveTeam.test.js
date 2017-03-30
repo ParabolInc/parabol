@@ -29,8 +29,35 @@ describe('ArchiveTeam', () => {
 
     // VERIFY
     const db = await fetchAndSerialize({
-      team: r.table('Team').get(updatedTeam.id),
-      notification: r.table('Notification').getAll(updatedTeam.orgId, {index: 'orgId'}).orderBy('startAt')
+      notification: r.table('Notification').getAll(updatedTeam.orgId, {index: 'orgId'}).orderBy('startAt'),
+      team: r.table('Team').get(updatedTeam.id)
+    }, dynamicSerializer);
+    expect(db).toMatchSnapshot();
+  });
+
+  test('deletes a team when it has no projects or other team members', async () => {
+    // SETUP
+    const r = getRethink();
+    const dynamicSerializer = new DynamicSerializer();
+    const mockDB = new MockDB();
+    const {user: [user], team: [updatedTeam]} = await mockDB
+      .newOrg({name: 'Sad Sacks, Inc.'})
+      .newTeam({teamName: 'The Lonely Ones'})
+      .newUser({name: 'Leader of One'})
+      .newTeamMember({isLead: true});
+    updatedTeam.isArchived = true;
+    updatedTeam.name = updatedTeam.teamName;
+    const authToken = mockAuthToken(user);
+
+    // TEST
+    await archiveTeam.resolve(undefined, {updatedTeam}, {authToken, socket});
+
+    // VERIFY
+    const db = await fetchAndSerialize({
+      notification: r.table('Notification').getAll(updatedTeam.orgId, {index: 'orgId'}).orderBy('startAt'),
+      team: r.table('Team').get(updatedTeam.id).default({}),
+      teamMember: r.table('TeamMember').getAll(updatedTeam.id, {index: 'teamId'}).default([]),
+      user: r.table('User').get(user.id)
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
   });
