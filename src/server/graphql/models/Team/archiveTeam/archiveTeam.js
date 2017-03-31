@@ -1,3 +1,4 @@
+import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import getRethink from 'server/database/rethinkDriver';
 import {
   requireSUOrLead,
@@ -9,6 +10,7 @@ import {
   GraphQLString
 } from 'graphql';
 import shortid from 'shortid';
+import {KICK_OUT, USER_MEMO} from 'universal/subscriptions/constants';
 import {TEAM_ARCHIVED} from 'universal/utils/constants';
 
 export default {
@@ -19,7 +21,7 @@ export default {
       description: 'The teamId to archive (or delete, if team is unused)'
     }
   },
-  async resolve(source, {teamId}, {authToken, socket}) {
+  async resolve(source, {teamId}, {authToken, exchange, socket}) {
     const r = getRethink();
     const now = new Date();
 
@@ -28,7 +30,7 @@ export default {
     requireWebsocket(socket);
 
     // RESOLUTION
-    await r.table('Team')
+    const dbResult = await r.table('Team')
       .get(teamId)
       .pluck('name', 'orgId')
       .do((team) => ({
@@ -36,36 +38,45 @@ export default {
         team,
         userIds: r.table('TeamMember').getAll(teamId, {index: 'teamId'})('userId').coerceTo('array')
       }))
-      .do((doc) => r.branch(
-        r.and(doc('projectCount').eq(0), doc('userIds').count().eq(1)),
-        {
-          // Team has no projects nor addn'l TeamMembers, hard delete it:
-          teamResult: r.table('Team').get(teamId).delete(),
-          teamMemberResult: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).delete(),
-          userResult: r.table('User').get(doc('userIds').nth(0))
-            .do((user) =>
-              // remove team from user tms, N.B. we don't bother issuing a new token
-              r.table('User').get(user('id')).update({tms: user('tms').difference([teamId])})
-            )
-        },
-        {
-          // Team has data or TeamMembers, archive team:
-          notificationResult: r.table('Notification').insert({
-            id: shortid.generate(),
-            orgId: doc('team')('orgId'),
-            startAt: now,
-            type: TEAM_ARCHIVED,
+      .do((doc) => r.table('User')
+        .getAll(r.args(doc('userIds')), {index: 'id'})
+        .update((user) => ({tms: user('tms').difference([teamId])}), {returnChanges: true})
+        .do((userResult) => r.branch(
+          r.and(doc('projectCount').eq(0), doc('userIds').count().eq(1)),
+          {
+            // Team has no projects nor addn'l TeamMembers, hard delete it:
+            team: doc('team'),
+            teamResult: r.table('Team').get(teamId).delete(),
+            teamMemberResult: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).delete(),
+            userResult,
+          },
+          {
+            // Team has data or TeamMembers, archive team:
+            notificationResult: r.table('Notification').insert({
+              id: shortid.generate(),
+              orgId: doc('team')('orgId'),
+              startAt: now,
+              type: TEAM_ARCHIVED,
+              userIds: doc('userIds'),
+              varList: [doc('team')('name')]
+            }),
+            team: doc('team'),
+            teamResult: r.table('Team').get(teamId).update({isArchived: true}),
             userIds: doc('userIds'),
-            varList: [doc('team')('name')]
-          }),
-          teamResult: r.table('Team').get(teamId).update({isArchived: true})
-        }
-      ));
+            userResult
+          }
+        ))
+      );
 
-    /*
-     * TODO: in the future (where everything is better) we could return
-     * a new token with the tms field ommitting the deleted team.
-     */
+    const {team: {name: teamName}, userResult: {changes: userChanges}} = dbResult;
+    userChanges.forEach((change) => {
+      const {id, tms} = change.new_val;
+      // update the tms on auth0 in async
+      auth0ManagementClient.users.updateAppMetadata({id}, {tms});
+      // update the server socket, if they're logged in
+      const channel = `${USER_MEMO}/${id}`;
+      exchange.publish(channel, {type: KICK_OUT, teamId, teamName});
+    });
 
     return true;
   }
