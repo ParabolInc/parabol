@@ -6,6 +6,7 @@ import Button from 'universal/components/Button/Button';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import withStyles from 'universal/styles/withStyles';
+import {withRouter} from 'react-router';
 
 const styleThunk = () => ({
   errorMessage: {
@@ -13,6 +14,7 @@ const styleThunk = () => ({
   }
 });
 
+@withRouter
 @withStyles(styleThunk)
 @reduxForm({form: 'archiveTeamConfirmation'})
 export default class ArchiveTeamConfirmation extends Component {

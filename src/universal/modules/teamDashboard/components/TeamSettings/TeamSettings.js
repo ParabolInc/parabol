@@ -19,7 +19,6 @@ import ui from 'universal/styles/ui';
 const TeamSettings = (props) => {
   const {
     dispatch,
-    router,
     invitations,
     orgApprovals,
     myTeamMember,
@@ -160,7 +159,6 @@ const TeamSettings = (props) => {
                 <ArchiveTeamConfirmation
                   teamId={team.id}
                   teamName={team.name}
-                  router={router}
                 />
               </div>
             </Panel>
@@ -173,7 +171,6 @@ const TeamSettings = (props) => {
 
 TeamSettings.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  router: PropTypes.object.isRequired,
   invitations: PropTypes.array.isRequired,
   myTeamMember: PropTypes.object.isRequired,
   orgApprovals: PropTypes.array,
