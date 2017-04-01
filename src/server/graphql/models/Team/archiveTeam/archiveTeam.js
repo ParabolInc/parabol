@@ -62,7 +62,6 @@ export default {
             }),
             team: doc('team'),
             teamResult: r.table('Team').get(teamId).update({isArchived: true}),
-            userIds: doc('userIds'),
             userResult
           }
         ))
