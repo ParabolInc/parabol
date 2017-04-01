@@ -3,17 +3,7 @@ import {reduxForm, Field} from 'redux-form';
 import InputField from 'universal/components/InputField/InputField';
 import {cashay} from 'cashay';
 import Button from 'universal/components/Button/Button';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import withStyles from 'universal/styles/withStyles';
 
-const styleThunk = () => ({
-  errorMessage: {
-    color: appTheme.palette.warm
-  }
-});
-
-@withStyles(styleThunk)
 @reduxForm({form: 'archiveTeamConfirmation'})
 export default class ArchiveTeamConfirmation extends Component {
 
@@ -21,16 +11,21 @@ export default class ArchiveTeamConfirmation extends Component {
     teamId: PropTypes.string.isRequired,
     teamName: PropTypes.string.isRequired,
     handleSubmit: PropTypes.func.isRequired,
-    router: PropTypes.object.isRequired,
-    styles: PropTypes.object.isRequired
+    router: PropTypes.object.isRequired
   }
 
   constructor(props) {
     super(props);
-    this.state = {
-      showConfirmationField: false,
-      showError: false
-    };
+    this.state = {showConfirmationField: false};
+  }
+
+  archiveTeamClick = () => {
+    this.setState({showConfirmationField: true});
+  }
+
+  validate = (value) => {
+    const {teamName} = this.props;
+    return teamName !== value && 'The team name entered was incorrect';
   }
 
   archiveTeam = () => {
@@ -40,37 +35,15 @@ export default class ArchiveTeamConfirmation extends Component {
     router.push('/me');
   }
 
-  formSubmit = (data) => {
-    const {teamName} = this.props;
-    const {archivedTeamName} = data;
-    if (teamName === archivedTeamName) {
-      this.archiveTeam();
-    } else {
-      this.setState({showError: true});
-    }
-  }
-
   formBlurred = () => {
-    this.setState({
-      showConfirmationField: false,
-      showError: false
-    });
-  }
-
-  archiveTeamClick = () => {
-    this.setState({showConfirmationField: true});
+    this.setState({showConfirmationField: false});
   }
 
   render() {
-    const {handleSubmit, styles} = this.props;
-    const {showConfirmationField, showError} = this.state;
+    const {handleSubmit} = this.props;
+    const {showConfirmationField} = this.state;
     return (
       <div>
-        {showError &&
-          <div className={css(styles.errorMessage)}>
-            The team name entered was incorrect
-          </div>
-        }
         {!showConfirmationField ?
           <Button
             colorPalette="warm"
@@ -78,16 +51,16 @@ export default class ArchiveTeamConfirmation extends Component {
             size="smallest"
             onClick={this.archiveTeamClick}
           /> :
-          <form onSubmit={handleSubmit(this.formSubmit)}>
+          <form onSubmit={handleSubmit(this.archiveTeam)}>
             <Field
               autoFocus
-              error={showError}
               onBlur={this.formBlurred}
               colorPalette="gray"
               component={InputField}
               name="archivedTeamName"
               placeholder="Type the team name to confirm"
               type="text"
+              validate={this.validate}
             />
           </form>
         }
