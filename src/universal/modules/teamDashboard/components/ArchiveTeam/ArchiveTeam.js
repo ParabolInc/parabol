@@ -11,7 +11,8 @@ export default class ArchiveTeamConfirmation extends Component {
     teamId: PropTypes.string.isRequired,
     teamName: PropTypes.string.isRequired,
     handleSubmit: PropTypes.func.isRequired,
-    router: PropTypes.object.isRequired
+    router: PropTypes.object.isRequired,
+    submitting: PropTypes.bool.isRequired
   }
 
   constructor(props) {
@@ -20,7 +21,10 @@ export default class ArchiveTeamConfirmation extends Component {
   }
 
   archiveTeamClick = () => {
-    this.setState({showConfirmationField: true});
+    const {submitting} = this.props;
+    if (!submitting) {
+      this.setState({showConfirmationField: true});
+    }
   }
 
   validate = (value) => {
@@ -29,10 +33,13 @@ export default class ArchiveTeamConfirmation extends Component {
   }
 
   archiveTeam = () => {
-    const {teamId, router} = this.props;
-    const variables = {teamId};
-    cashay.mutate('archiveTeam', {variables});
-    router.push('/me');
+    return new Promise((resolve) => {
+      const {teamId, router} = this.props;
+      const variables = {teamId};
+      cashay.mutate('archiveTeam', {variables});
+      router.push('/me');
+      resolve();
+    });
   }
 
   formBlurred = () => {
