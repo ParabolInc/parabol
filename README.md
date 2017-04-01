@@ -19,7 +19,7 @@ Curious what this is all about? Each week we publish a distillation of our
 progress, philosophy, and more in
 [Parabol Focus](https://medium.com/parabol-focus).
 
-Live demo: http://action-staging.parabol.co/
+Live beta product: http://action.parabol.co/
 
 ### Quick Links
 
@@ -117,6 +117,13 @@ Migration scripts are stored in `./src/server/database/migrations`.
 
 If you make changes to the Action schema, make certain to create a new
 migration.
+
+### Test development
+
+```bash
+$ npm run db:migrate-testing # Only needs to be run once
+$ npm run test # Runs all tests
+```
 
 ## Bringing your database up to date
 
