@@ -55,7 +55,6 @@ const mapStateToProps = (state, props) => {
 const TeamSettingsContainer = (props) => {
   const {
     dispatch,
-    router,
     orgApprovals,
     invitations,
     myTeamMemberId,

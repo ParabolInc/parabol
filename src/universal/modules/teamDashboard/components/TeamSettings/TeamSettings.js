@@ -13,7 +13,7 @@ import PromoteTeamMemberModal from 'universal/modules/teamDashboard/components/P
 import LeaveTeamModal from 'universal/modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import Panel from 'universal/components/Panel/Panel';
-import ArchiveTeamConfirmation from 'universal/modules/teamDashboard/components/ArchiveTeamConfirmation/ArchiveTeamConfirmation';
+import ArchiveTeamContainer from 'universal/modules/teamDashboard/containers/ArchiveTeamContainer/ArchiveTeamContainer';
 import ui from 'universal/styles/ui';
 
 const TeamSettings = (props) => {
@@ -156,7 +156,7 @@ const TeamSettings = (props) => {
           {myTeamMember.isLead &&
             <Panel label="Danger Zone">
               <div className={css(styles.dangerZoneChildren)}>
-                <ArchiveTeamConfirmation
+                <ArchiveTeamContainer
                   teamId={team.id}
                   teamName={team.name}
                 />
