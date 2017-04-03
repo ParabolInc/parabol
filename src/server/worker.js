@@ -113,8 +113,12 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
 
   // messages straight from a microservice to be forwarded to the channel
   actionSubQueue.process(async (job) => {
-    const {data: {channel, ...socketIdPayload}} = job;
-    exchange.publish(channel, socketIdPayload);
+    const {data: {channel, socketId, payload}} = job;
+    if (socketId) {
+      exchange.publish(channel, {socketId, payload});
+    } else {
+      exchange.publish(channel, payload);
+    }
   })
 
 }
