@@ -16,6 +16,7 @@ import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 const TeamSettings = (props) => {
   const {
     dispatch,
+    integrations,
     invitations,
     orgApprovals,
     myTeamMember,
@@ -23,6 +24,10 @@ const TeamSettings = (props) => {
     teamMembers,
     styles
   } = props;
+  const handleGithub = (e) => {
+    const uri = `https://github.com/login/oauth/authorize?scope=user:email,repo,write:repo_hook&state=${myTeamMember.id}&client_id=${__GITHUB_CLIENT_ID__}`;
+    window.open(uri);
+  };
   const teamLeadObj = teamMembers.find((m) => m.isLead === true);
   const teamLead = teamLeadObj && teamLeadObj.preferredName;
 
@@ -152,6 +157,16 @@ const TeamSettings = (props) => {
           }
         </div>
       </div>
+        <div className={css(styles.integrations)}>
+          <h2>Integrations</h2>
+          <div onClick={handleGithub}>
+            Trigger GitHub Integration
+          </div>
+          <div>Integrations</div>
+          {integrations.map((i) => {
+            return <div key={i.id}>{i.service} - {i.id}</div>
+          })}
+        </div>
     </div>
   );
 };
