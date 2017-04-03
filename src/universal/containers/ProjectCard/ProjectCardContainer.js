@@ -28,6 +28,7 @@ query {
     status
     teamMemberId
     updatedAt
+    createdAt
     teamMember @cached(type: "TeamMember") {
       id
       picture

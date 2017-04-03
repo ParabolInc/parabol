@@ -5,13 +5,18 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
 const EditingStatus = (props) => {
-  const {status, styles} = props;
-  return <div className={css(styles.timestamp)}>{status}</div>;
+  const {status, styles, handleClick} = props;
+  return (
+    <div className={css(styles.timestamp)} onClick={handleClick}>
+      {status}
+    </div>
+  );
 };
 
 EditingStatus.propTypes = {
-  status: PropTypes.any,
-  styles: PropTypes.object
+  handleClick: PropTypes.func.isRequired,
+  status: PropTypes.string.isRequired,
+  styles: PropTypes.object.isRequired
 };
 
 const styleThunk = () => ({

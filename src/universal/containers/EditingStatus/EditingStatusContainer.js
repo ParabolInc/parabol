@@ -84,7 +84,7 @@ export default class EditingStatusContainer extends Component {
 
   constructor(props) {
     super(props);
-    const {active, editors, updatedAt} = this.props;
+    const {active, editors, updatedAt, createdAt} = this.props;
     this.state = {
       editingStatus: makeEditingStatus(editors, active, updatedAt)
     };
@@ -103,6 +103,10 @@ export default class EditingStatusContainer extends Component {
     clearTimeout(this.refreshTimer);
   }
 
+  toggleTimestamp() {
+    console.log('toggle timestamp');
+  }
+
   render() {
     const {active, editors, updatedAt} = this.props;
     const {editingStatus} = this.state;
@@ -113,6 +117,6 @@ export default class EditingStatusContainer extends Component {
         editingStatus: makeEditingStatus(editors, active, updatedAt)
       });
     }, refreshPeriod);
-    return <EditingStatus status={editingStatus} />;
+    return <EditingStatus status={editingStatus} handleClick={this.toggleTimestamp}/>;
   }
 }
