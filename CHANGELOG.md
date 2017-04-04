@@ -12,7 +12,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Fixed
 - #866 trial date completion bug
-- #868 agendas items not marked as complete
+- #868, #879 agendas items not marked as complete
 
 ## v0.17.1 - 29-Mar-2017
 ### Fixed
