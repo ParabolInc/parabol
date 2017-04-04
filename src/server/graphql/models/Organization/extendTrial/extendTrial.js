@@ -1,7 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
 import {
   GraphQLNonNull,
-  GraphQLBoolean,
   GraphQLString,
   GraphQLInt
 } from 'graphql';
@@ -18,7 +17,7 @@ import {GraphQLEmailType} from 'server/graphql/types';
 
 export default {
   type: GraphQLString,
-  description: `Extend the trial for all orgs owned by an email address for the given amount of days`,
+  description: 'Extend the trial for all orgs owned by an email address for the given amount of days',
   args: {
     email: {
       type: new GraphQLNonNull(GraphQLEmailType),
@@ -31,14 +30,13 @@ export default {
   },
   async resolve(source, {email, days}, {authToken}) {
     const r = getRethink();
-    const now = new Date();
 
     // AUTH
     requireSU(authToken);
 
     // RESOLUTION
     const user = await r.table('User')
-      .filter((user) => user('email').downcase().eq(email))
+      .filter((doc) => doc('email').downcase().eq(email))
       .nth(0)
       .default(null);
     if (!user) {
@@ -96,12 +94,12 @@ export default {
                 .filter((n) => r.expr(trialArr).contains(n('type')))
                 .delete();
             })
-            .run()
-        })
+            .run();
+        });
     });
     await Promise.all(updates);
 
 
-    return `${email} had ${orgs.length} trials extended to ${days} from now`
+    return `${email} had ${orgs.length} trials extended to ${days} from now`;
   }
 };
