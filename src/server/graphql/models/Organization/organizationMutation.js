@@ -25,6 +25,7 @@ import {GraphQLURLType} from '../../types';
 import shortid from 'shortid';
 import addOrg from 'server/graphql/models/Organization/addOrg/addOrg';
 import addBilling from 'server/graphql/models/Organization/addBilling/addBilling';
+import extendTrial from 'server/graphql/models/Organization/extendTrial/extendTrial';
 import updateOrg from 'server/graphql/models/Organization/updateOrg/updateOrg';
 import rejectOrgApproval from 'server/graphql/models/Organization/rejectOrgApproval/rejectOrgApproval';
 import {BILLING_LEADER, PROMOTE_TO_BILLING_LEADER, billingLeaderTypes} from 'universal/utils/constants';
@@ -34,6 +35,7 @@ import removeAllTeamMembers from 'server/graphql/models/TeamMember/removeTeamMem
 export default {
   updateOrg,
   addBilling,
+  extendTrial,
   inactivateUser: {
     type: GraphQLBoolean,
     description: 'pauses the subscription for a single user',
