@@ -23,6 +23,7 @@ import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import addTeam from 'server/graphql/models/Team/addTeam/addTeam';
 import createFirstTeam from 'server/graphql/models/Team/createFirstTeam/createFirstTeam';
 import updateTeamName from 'server/graphql/models/Team/updateTeamName/updateTeamName';
+import archiveTeam from 'server/graphql/models/Team/archiveTeam/archiveTeam';
 import endMeeting from 'server/graphql/models/Team/endMeeting/endMeeting';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 
@@ -286,7 +287,8 @@ export default {
       return true;
     }
   },
-  updateTeamName
+  archiveTeam,
+  updateTeamName,
 };
 
 

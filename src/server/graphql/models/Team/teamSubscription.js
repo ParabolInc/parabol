@@ -4,6 +4,7 @@ import getRequestedFields from 'server/graphql/getRequestedFields';
 import {Team} from './teamSchema';
 import {requireSUOrTeamMember} from 'server/utils/authorization';
 import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
+import {errorObj} from 'server/utils/utils';
 
 export default {
   team: {
@@ -19,8 +20,12 @@ export default {
 
       // AUTH
       requireSUOrTeamMember(authToken, teamId);
-      const isPaid = await r.table('Team').get(teamId)('isPaid').default(false);
-
+      const {isArchived, isPaid} = await r.table('Team').get(teamId)
+        .do((team) => ({
+          isArchived: team('isArchived').default(false),
+          isPaid: team('isPaid').default(false)
+        }));
+      if (isArchived) throw errorObj({_error: 'That team is archived!'});
       // TODO update subscription on the client when a new team gets added. So rare, it's OK to resend all 3-4 docs
       const requestedFields = isPaid ? getRequestedFields(refs) : ['id', 'name'];
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);

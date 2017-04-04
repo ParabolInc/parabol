@@ -4,7 +4,8 @@ import {
   PROMOTE_TO_BILLING_LEADER,
   REQUEST_NEW_USER,
   TRIAL_EXPIRES_SOON,
-  TRIAL_EXPIRED
+  TRIAL_EXPIRED,
+  TEAM_ARCHIVED
 } from 'universal/utils/constants';
 import DenyNewUser from 'universal/modules/notifications/components/DenyNewUser/DenyNewUser';
 import TrialExpiresSoon from 'universal/modules/notifications/components/TrialExpiresSoon/TrialExpiresSoon';
@@ -12,6 +13,7 @@ import TrialExpired from 'universal/modules/notifications/components/TrialExpire
 import PaymentRejected from 'universal/modules/notifications/components/PaymentRejected/PaymentRejected';
 import PromoteToBillingLeader from 'universal/modules/notifications/components/PromoteToBillingLeader/PromoteToBillingLeader';
 import RequestNewUser from 'universal/modules/notifications/components/RequestNewUser/RequestNewUser';
+import TeamArchived from 'universal/modules/notifications/components/TeamArchived/TeamArchived';
 
 export default {
   [DENY_NEW_USER]: DenyNewUser,
@@ -20,4 +22,5 @@ export default {
   [REQUEST_NEW_USER]: RequestNewUser,
   [TRIAL_EXPIRED]: TrialExpired,
   [TRIAL_EXPIRES_SOON]: TrialExpiresSoon,
+  [TEAM_ARCHIVED]: TeamArchived
 };

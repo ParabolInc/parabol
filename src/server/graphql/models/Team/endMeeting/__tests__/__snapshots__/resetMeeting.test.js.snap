@@ -75,12 +75,13 @@ Object {
     "facilitatorPhase": "lobby",
     "facilitatorPhaseItem": null,
     "id": 6,
+    "isArchived": false,
     "isPaid": true,
     "meetingId": null,
     "meetingPhase": "lobby",
     "meetingPhaseItem": null,
+    "name": "Team America",
     "orgId": 12,
-    "teamName": "Team America",
   },
   "teamMember": Array [
     Object {
