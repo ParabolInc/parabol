@@ -130,18 +130,13 @@ export default {
 
       const promises = [];
       if (facilitatorPhase === AGENDA_ITEMS) {
-        const agendaIdx = actionMeeting[AGENDA_ITEMS].index;
-        const markComplete = (!nextPhase && meetingPhase === AGENDA_ITEMS) ||
-          (nextPhaseInfo && nextPhaseInfo.index > agendaIdx);
-        if (markComplete) {
-          promises.push(r.table('AgendaItem')
-            .getAll(teamId, {index: 'teamId'})
-            .filter({isActive: true})
-            .orderBy('sortOrder')
-            .nth(facilitatorPhaseItem - 1)
-            .update({isComplete: true})
-            .run());
-        }
+        promises.push(r.table('AgendaItem')
+          .getAll(teamId, {index: 'teamId'})
+          .filter({isActive: true})
+          .orderBy('sortOrder')
+          .nth(facilitatorPhaseItem - 1)
+          .update({isComplete: true})
+          .run());
       }
       /*
        console.log('moveMeeting');
