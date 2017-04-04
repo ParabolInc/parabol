@@ -4,6 +4,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.17.2 - 04-Apr-2017
+### Added
+- #555 can now archive teams
+  - N.B. teams can't yet be unarchived, so be careful :)
+- #878 superuser GraphQL endpoint `extendTrial` to extend trial time
+
+### Fixed
+- #866 trial date completion bug
+- #868 agendas items not marked as complete
+
 ## v0.17.1 - 29-Mar-2017
 ### Fixed
 - #859 infinite redirect loop when deleting the last phaseItem
