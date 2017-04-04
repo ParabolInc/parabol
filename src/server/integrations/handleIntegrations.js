@@ -1,10 +1,10 @@
 import fetch from 'node-fetch';
 import * as querystring from 'querystring';
-import Queue from 'bull';
+import Queue from 'server/utils/bull';
 
 const integratorQueue = Queue('integrator');
-export default function(exchange) {
-  return async function(req, res) {
+export default function (exchange) {
+  return async (req, res) => {
     // close the oauth popup window. i'm just winging this. seems to work.
     const autoClose = `<!DOCTYPE html>
     <html>
@@ -57,5 +57,5 @@ export default function(exchange) {
         userId
       }
     });
-  }
+  };
 }

@@ -1,7 +1,7 @@
 import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
 import {requireSUOrSelf, requireSUOrTeamMember} from 'server/utils/authorization';
 import {Integration} from './integrationSchema';
-import Queue from 'bull';
+import Queue from 'server/utils/bull';
 
 const integratorSubQueue = Queue('integratorSub');
 export default {

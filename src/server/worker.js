@@ -19,7 +19,7 @@ import mwPresenceSubscribe from './socketHandlers/mwPresenceSubscribe';
 import mwMemoSubscribe from './socketHandlers/mwMemoSubscribe';
 import stripeWebhookHandler from './billing/stripeWebhookHandler';
 import getDotenv from '../universal/utils/dotenv';
-import Queue from 'bull';
+import Queue from 'server/utils/bull';
 import handleIntegrations from './integrations/handleIntegrations';
 
 // Import .env and expand variables:

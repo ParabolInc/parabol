@@ -1,5 +1,5 @@
 import SegmentIo from 'analytics-node';
-import getDotenv from '../universal/utils/dotenv';
+import getDotenv from '../../universal/utils/dotenv';
 
 getDotenv();
 

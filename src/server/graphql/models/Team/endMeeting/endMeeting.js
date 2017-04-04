@@ -16,7 +16,7 @@ import {
 import resetMeeting from './resetMeeting';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 import getEndMeetingSortOrders from 'server/graphql/models/Team/endMeeting/getEndMeetingSortOrders';
-import segmentIo from 'server/segmentIo';
+import segmentIo from 'server/utils/segmentIo';
 
 export default {
   type: GraphQLBoolean,

@@ -15,7 +15,7 @@ import {verify} from 'jsonwebtoken';
 import makeUserServerSchema from 'universal/validation/makeUserServerSchema';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import {GraphQLURLType} from '../../types';
-import segmentIo from 'server/segmentIo';
+import segmentIo from 'server/utils/segmentIo';
 
 export default {
   createImposterToken: {
