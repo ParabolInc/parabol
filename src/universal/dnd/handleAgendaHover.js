@@ -7,7 +7,6 @@ export default function handleAgendaHover(targetProps, monitor) {
   const now = new Date();
   if (lastSentAt > (now - DND_THROTTLE)) return;
   const {agenda, agendaPhaseItem, dragState, teamId} = targetProps;
-
   // dont let current or previous items get dragged
   const {id} = monitor.getItem();
   const currentItemIdx = agenda.findIndex((i) => i.isComplete === false);
@@ -21,11 +20,7 @@ export default function handleAgendaHover(targetProps, monitor) {
   if (agendaPhaseItem) {
     const currentItem = agenda[agendaPhaseItem - 1];
     const {sortOrder: minSort} = currentItem;
-    // const sourceProps = monitor.getItem();
-    // console.log('fd', sourceProps, minSort)
-
     if (updatedAgendaItem.sortOrder <= minSort) {
-      // console.log('returning')
       return;
     }
   }

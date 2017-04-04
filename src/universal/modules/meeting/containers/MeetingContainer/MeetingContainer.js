@@ -268,6 +268,36 @@ export default class MeetingContainer extends Component {
     this.gotoItem(this.props.localPhaseItem - 1);
   };
 
+  gotoAgendaItem = (idx) => async () => {
+    const {agenda, team: {id: teamId, facilitatorPhase}, isFacilitating} = this.props;
+    const facilitatorPhaseInfo = actionMeeting[facilitatorPhase];
+    const agendaPhaseInfo = actionMeeting[AGENDA_ITEMS];
+    const firstIncompleteIdx = agenda.findIndex((a) => a.isComplete === false);
+    const nextItemIdx = firstIncompleteIdx + (facilitatorPhase === AGENDA_ITEMS ? 1 : 0);
+    const shouldResort = facilitatorPhaseInfo.index >= agendaPhaseInfo.index && idx > nextItemIdx && firstIncompleteIdx > -1;
+    if (isFacilitating && shouldResort) {
+      // resort
+      const desiredItem = agenda[idx];
+      const nextItem = agenda[nextItemIdx];
+      const prevItem = agenda[nextItemIdx - 1];
+      const options = {
+        ops: {
+          agendaListAndInputContainer: teamId
+        },
+        variables: {
+          updatedAgendaItem: {
+            id: desiredItem.id,
+            sortOrder: prevItem ? (prevItem.sortOrder + nextItem.sortOrder) / 2 : nextItem.sortOrder - SORT_STEP
+          }
+        }
+      };
+      await cashay.mutate('updateAgendaItem', options);
+      this.gotoItem(nextItemIdx + 1, AGENDA_ITEMS);
+    } else {
+      this.gotoItem(idx + 1, AGENDA_ITEMS);
+    }
+  };
+
   render() {
     const {
       agenda,
@@ -285,7 +315,8 @@ export default class MeetingContainer extends Component {
       meetingPhaseItem,
       name: teamName
     } = team;
-    const agendaPhaseItem = meetingPhase === AGENDA_ITEMS ? meetingPhaseItem : undefined;
+    const agendaPhaseItem = agenda.findIndex((a) => a.isComplete === false) + 1;
+
     // if we have a team.name, we have an initial subscription success to the team object
     if (!teamName ||
       members.length === 0
@@ -310,33 +341,6 @@ export default class MeetingContainer extends Component {
       members,
       team
     };
-    const gotoAgendaItem = (idx) => async () => {
-      const meetingPhaseInfo = actionMeeting[meetingPhase];
-      const agendaPhaseInfo = actionMeeting[AGENDA_ITEMS];
-      const firstIncompleteIdx = agenda.findIndex((a) => a.isComplete === false);
-      const shouldResort = meetingPhaseInfo.index >= agendaPhaseInfo.index && idx > firstIncompleteIdx && firstIncompleteIdx > -1;
-      if (isFacilitating && shouldResort) {
-        // resort
-        const desiredItem = agenda[idx];
-        const nextItem = agenda[firstIncompleteIdx];
-        const prevItem = agenda[firstIncompleteIdx - 1];
-        const options = {
-          ops: {
-            agendaListAndInputContainer: teamId
-          },
-          variables: {
-            updatedAgendaItem: {
-              id: desiredItem.id,
-              sortOrder: prevItem ? (prevItem.sortOrder + nextItem.sortOrder) / 2 : nextItem.sortOrder - SORT_STEP
-            }
-          }
-        };
-        await cashay.mutate('updateAgendaItem', options);
-        this.gotoItem(firstIncompleteIdx + 1, AGENDA_ITEMS);
-      } else {
-        this.gotoItem(idx + 1, AGENDA_ITEMS);
-      }
-    };
 
     return (
       <MeetingLayout title={`Action Meeting for ${teamName}`}>
@@ -345,7 +349,7 @@ export default class MeetingContainer extends Component {
           facilitatorPhase={facilitatorPhase}
           facilitatorPhaseItem={facilitatorPhaseItem}
           gotoItem={this.gotoItem}
-          gotoAgendaItem={gotoAgendaItem}
+          gotoAgendaItem={this.gotoAgendaItem}
           localPhase={localPhase}
           localPhaseItem={localPhaseItem}
           isFacilitating={isFacilitating}
