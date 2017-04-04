@@ -55,6 +55,7 @@ export default {
       __PRODUCTION__: false,
       __WEBPACK__: true,
       __APP_VERSION__: JSON.stringify(npmPackage.version),
+      __GITHUB_CLIENT_ID__: JSON.stringify(process.env.GITHUB_CLIENT_ID),
       'process.env.NODE_ENV': JSON.stringify('development')
     }),
     new webpack.DllReferencePlugin({

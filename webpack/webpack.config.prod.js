@@ -100,6 +100,7 @@ export default {
       __PRODUCTION__: true,
       __WEBPACK__: true,
       __APP_VERSION__: JSON.stringify(npmPackage.version),
+      __GITHUB_CLIENT_ID__: JSON.stringify(process.env.GITHUB_CLIENT_ID),
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
     new WebpackShellPlugin({

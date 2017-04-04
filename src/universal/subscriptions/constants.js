@@ -16,6 +16,7 @@ export const ACTIONS_BY_TEAMMEMBER = 'actionsByTeamMember';
 export const ACTIONS_BY_AGENDA = 'actionsByAgenda';
 export const ARCHIVED_PROJECTS = 'archivedProjects';
 export const AGENDA = 'agenda';
+export const INTEGRATIONS = 'integrations';
 export const INVITATIONS = 'invitations';
 export const NOTIFICATIONS = 'notifications';
 export const ORG_APPROVALS = 'orgApprovals';

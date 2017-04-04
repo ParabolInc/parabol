@@ -4,6 +4,7 @@ import {
   ACTIONS_BY_AGENDA,
   AGENDA,
   ARCHIVED_PROJECTS,
+  INTEGRATIONS,
   INVITATIONS,
   NOTIFICATIONS,
   ORG_APPROVALS,
@@ -106,6 +107,17 @@ export default [
         inactive
         picture
         preferredName
+      }
+    }`
+  },
+  {
+    channel: INTEGRATIONS,
+    string: `
+    subscription($teamMemberId: ID!) {
+      integrations(teamMemberId: $teamMemberId) {
+        id
+        service
+        userId
       }
     }`
   },

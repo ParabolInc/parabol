@@ -14,22 +14,28 @@ import scConnectionHandler from './socketHandlers/scConnectionHandler';
 import httpGraphQLHandler, {intranetHttpGraphQLHandler} from './graphql/httpGraphQLHandler';
 import mwPresencePublishOut from './socketHandlers/mwPresencePublishOut';
 import mwMemoPublishOut from './socketHandlers/mwMemoPublishOut';
+import mwGetIntegrationsPublishOut from './socketHandlers/mwGetIntegrationsPublishOut';
 import mwPresenceSubscribe from './socketHandlers/mwPresenceSubscribe';
 import mwMemoSubscribe from './socketHandlers/mwMemoSubscribe';
 import stripeWebhookHandler from './billing/stripeWebhookHandler';
 import getDotenv from '../universal/utils/dotenv';
+import Queue from 'bull';
+import handleIntegrations from './integrations/handleIntegrations';
 
 // Import .env and expand variables:
 getDotenv();
 
 const PROD = process.env.NODE_ENV === 'production';
 const INTRANET_JWT_SECRET = process.env.INTRANET_JWT_SECRET || '';
+// used for initial responses
+const actionSubQueue = Queue('actionSub');
 
 export function run(worker) { // eslint-disable-line import/prefer-default-export
   console.log('   >> Worker PID:', process.pid);
   const app = express();
   const scServer = worker.scServer;
   const httpServer = worker.httpServer;
+  const {exchange} = scServer;
   httpServer.on('request', app);
 
   // HMR
@@ -62,7 +68,7 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   }
 
   // HTTP GraphQL endpoint
-  const graphQLHandler = httpGraphQLHandler(scServer.exchange);
+  const graphQLHandler = httpGraphQLHandler(exchange);
   app.post('/graphql', jwt({
     secret: new Buffer(secretKey, 'base64'),
     audience: auth0.clientId,
@@ -70,7 +76,7 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   }), graphQLHandler);
 
   // HTTP Intranet GraphQL endpoint:
-  const intranetGraphQLHandler = intranetHttpGraphQLHandler(scServer.exchange);
+  const intranetGraphQLHandler = intranetHttpGraphQLHandler(exchange);
   app.post('/intranet-graphql', jwt({
     secret: new Buffer(INTRANET_JWT_SECRET, 'base64'),
     credentialsRequired: true
@@ -82,8 +88,12 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   }
 
   // stripe webhooks
-  const stripeHandler = stripeWebhookHandler(scServer.exchange);
+  const stripeHandler = stripeWebhookHandler(exchange);
   app.post('/stripe', stripeHandler);
+
+  // integration setup callbacks
+  const integrationHandler = handleIntegrations(exchange);
+  app.get('/auth/:service', integrationHandler);
 
   // server-side rendering
   app.get('*', createSSR);
@@ -93,10 +103,22 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
 
   // handle sockets
   const {MIDDLEWARE_PUBLISH_OUT, MIDDLEWARE_SUBSCRIBE} = scServer;
+  scServer.addMiddleware(MIDDLEWARE_PUBLISH_OUT, mwGetIntegrationsPublishOut);
   scServer.addMiddleware(MIDDLEWARE_PUBLISH_OUT, mwPresencePublishOut);
   scServer.addMiddleware(MIDDLEWARE_PUBLISH_OUT, mwMemoPublishOut);
   scServer.addMiddleware(MIDDLEWARE_SUBSCRIBE, mwPresenceSubscribe);
   scServer.addMiddleware(MIDDLEWARE_SUBSCRIBE, mwMemoSubscribe);
-  const connectionHandler = scConnectionHandler(scServer.exchange);
+  const connectionHandler = scConnectionHandler(exchange);
   scServer.on('connection', connectionHandler);
+
+  // messages straight from a microservice to be forwarded to the channel
+  actionSubQueue.process(async (job) => {
+    const {data: {channel, socketId, payload}} = job;
+    if (socketId) {
+      exchange.publish(channel, {socketId, payload});
+    } else {
+      exchange.publish(channel, payload);
+    }
+  })
+
 }
