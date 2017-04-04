@@ -1,48 +1,53 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
-import PushButton from 'universal/components/PushButton/PushButton';
+import FontAwesome from 'react-fontawesome';
 import withHotkey from 'react-hotkey-hoc';
-import voidClick from 'universal/utils/voidClick';
 
 const CheckinCardButtons = (props) => {
-  const {bindHotkey, checkInPressFactory, isCheckedIn, styles} = props;
+  const {
+    bindHotkey,
+    checkInPressFactory,
+    member,
+    styles
+  } = props;
 
-  const handleOnClickPresent = isCheckedIn ? voidClick : checkInPressFactory(true);
-  const handleOnClickAbsent = isCheckedIn !== false ? checkInPressFactory(false) : voidClick;
+  const handleOnClickPresent = checkInPressFactory(true);
+  const handleOnClickAbsent = checkInPressFactory(false);
+  const name = member.preferredName;
+  const icon = {
+    display: 'inline-block',
+    lineHeight: 'inherit',
+    textAlign: 'right',
+    verticalAlign: 'middle',
+    width: '2rem'
+  };
+  const nextIcon = {
+    ...icon,
+    fontSize: ui.iconSize2x
+  };
+  const skipIcon = {
+    ...icon,
+    fontSize: ui.iconSize
+  };
 
-  const presentLabel = () =>
-    <div className={css(styles.buttonLabel)}>
-      <span className={css(styles.preLabel)}>mark as</span>
-      <span className={css(styles.label)}><u>p</u>resent</span>
-    </div>;
-
-  const notPresentLabel = () =>
-    <div className={css(styles.buttonLabel)}>
-      <span className={css(styles.preLabel)}>mark as</span>
-      <span className={css(styles.label)}><u>n</u>ot present</span>
-    </div>;
-
-  bindHotkey('p', handleOnClickPresent);
-  bindHotkey('n', handleOnClickAbsent);
+  bindHotkey('n', handleOnClickPresent);
+  bindHotkey('s', handleOnClickAbsent);
 
   return (
-    <div className={css(styles.buttonsBlock)}>
-      <PushButton
-        handleOnClick={handleOnClickPresent}
-        isPressed={isCheckedIn === true}
-        keystroke="p"
-        label={presentLabel()}
-        size="large"
-      />
-      <PushButton
-        handleOnClick={handleOnClickAbsent}
-        isPressed={isCheckedIn === false}
-        keystroke="n"
-        label={notPresentLabel()}
-        size="large"
-      />
+    <div className={css(styles.controlBlock)}>
+
+      <div className={css(styles.control, styles.nextControl)} onClick={handleOnClickPresent}>
+        <FontAwesome name="check-circle" style={nextIcon} />
+        <span className={css(styles.label)}><u>N</u>ext ({name} checked in)</span>
+      </div>
+
+      <div className={css(styles.control, styles.skipControl)} onClick={handleOnClickAbsent}>
+        <FontAwesome name="minus-circle" style={skipIcon} />
+        <span className={css(styles.label)}><u>S</u>kip ({name}’s not here)</span>
+      </div>
     </div>
   );
 };
@@ -50,39 +55,45 @@ const CheckinCardButtons = (props) => {
 CheckinCardButtons.propTypes = {
   bindHotkey: PropTypes.func,
   checkInPressFactory: PropTypes.func.isRequired,
-  isCheckedIn: PropTypes.bool,
+  member: PropTypes.object,
   styles: PropTypes.object
 };
 
 const styleThunk = () => ({
-  buttonsBlock: {
-    display: 'inline-block',
-    textAlign: 'left'
+  control: {
+    cursor: 'pointer',
+    display: 'block',
+    lineHeight: '1.5'
   },
 
-  buttonLabel: {
-    color: appTheme.palette.dark,
-    display: 'inline-block',
-    paddingLeft: '.25rem',
-    verticalAlign: 'middle'
+  nextControl: {
+    color: appTheme.palette.cool,
+    fontSize: appTheme.typography.s6,
+    marginBottom: '.5rem',
   },
 
-  preLabel: {
+  skipControl: {
+    color: appTheme.palette.warm,
+    fontSize: appTheme.typography.s3,
+  },
+
+  controlBlock: {
     display: 'inline-block',
-    fontFamily: appTheme.typography.serif,
-    fontSize: appTheme.typography.s2,
-    fontStyle: 'italic',
-    verticalAlign: 'baseline'
+    paddingTop: '1rem',
+    textAlign: 'center'
   },
 
   label: {
     display: 'inline-block',
-    fontFamily: appTheme.typography.sansSerif,
-    fontStyle: 'normal',
-    fontWeight: 700,
-    paddingLeft: '.25rem',
-    textTransform: 'uppercase',
-    verticalAlign: 'baseline'
+    paddingLeft: '.5rem',
+    verticalAlign: 'middle',
+
+    ':hover': {
+      textDecoration: 'underline'
+    },
+    ':focus': {
+      textDecoration: 'underline'
+    }
   }
 });
 

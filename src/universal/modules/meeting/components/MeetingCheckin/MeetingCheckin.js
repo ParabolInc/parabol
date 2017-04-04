@@ -54,6 +54,11 @@ const MeetingCheckin = (props) => {
   const currentAvatar = members[localPhaseItem - 1] && members[localPhaseItem - 1].picture;
   const currentName = members[localPhaseItem - 1] && members[localPhaseItem - 1].preferredName;
   // const isComplete = actionMeeting[meetingPhase].index > actionMeeting[CHECKIN].index;
+  const meetingPromptHeading = () =>
+    <span>
+      <span style={{color: appTheme.palette.warm}}>{checkInGreeting}, {currentName}</span>
+      <br /><i>{checkInQuestion}</i>?
+    </span>;
   return (
     <MeetingMain>
       {/* */}
@@ -61,7 +66,7 @@ const MeetingCheckin = (props) => {
         <MeetingSection paddingBottom=".5rem">
           <MeetingPrompt
             avatar={currentAvatar}
-            heading={<span><span style={{color: appTheme.palette.warm}}>{checkInGreeting}, {currentName}</span><br/>{checkInQuestion}?</span>}
+            heading={meetingPromptHeading()}
           />
         </MeetingSection>
         {/* */}
@@ -71,18 +76,6 @@ const MeetingCheckin = (props) => {
           localPhaseItem={localPhaseItem}
           members={members}
         />
-        <MeetingSection paddingTop=".75rem">
-          {!hideMoveMeetingControls &&
-            <IconLink
-              colorPalette="cool"
-              icon="arrow-circle-right"
-              iconPlacement="right"
-              label={isLastMember ? 'Move on to Updates' : 'Next teammate (press enter)'}
-              scale="large"
-              onClick={gotoNext}
-            />
-          }
-        </MeetingSection>
         {/* */}
         {/* */}
       </MeetingSection>
@@ -90,6 +83,18 @@ const MeetingCheckin = (props) => {
     </MeetingMain>
   );
 };
+// <MeetingSection paddingTop=".75rem">
+// {!hideMoveMeetingControls &&
+//   <IconLink
+//   colorPalette="cool"
+//   icon="arrow-circle-right"
+//   iconPlacement="right"
+//   label={isLastMember ? 'Move on to Updates' : 'Next teammate (press enter)'}
+//   scale="large"
+//   onClick={gotoNext}
+//   />
+// }
+// </MeetingSection>
 
 MeetingCheckin.propTypes = {
   gotoItem: PropTypes.func.isRequired,

@@ -61,10 +61,7 @@ const styleThunk = () => ({
     fontSize: '.875rem',
     height: '.875rem',
     lineHeight: '.875rem',
-    // position: 'absolute',
-    // right: 0,
     textAlign: 'center',
-    // top: 0,
 
     '::before': {
       backgroundColor: '#fff',

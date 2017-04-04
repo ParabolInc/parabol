@@ -11,10 +11,11 @@ const MeetingPrompt = (props) => {
     avatar,
     heading,
     helpText,
-    styles
+    styles,
+    subHeading
   } = props;
   return (
-    <div className={css(styles.root)}>
+    <div className={css(styles.meetingPromptRoot)}>
       <div className={css(styles.iconBlock)}>
         <Avatar picture={avatar || defaultUserAvatar} size="fill" />
       </div>
@@ -22,6 +23,11 @@ const MeetingPrompt = (props) => {
         <div className={css(styles.heading)}>
           {heading}
         </div>
+        {subHeading &&
+          <div className={css(styles.subHeading)}>
+            {subHeading}
+          </div>
+        }
         {helpText &&
           <div className={css(styles.helpText)}>
             {helpText}
@@ -36,23 +42,24 @@ MeetingPrompt.propTypes = {
   avatar: PropTypes.string,
   heading: PropTypes.any,
   helpText: PropTypes.any,
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  subHeading: PropTypes.any,
 };
 
 const iconWidth = '2rem';
-const iconBlockWidth = '3rem';
-const iconBlockWidthLarge = '4rem';
 
 const promptBreakpoint = ui.breakpoint.wider;
 
 const styleThunk = () => ({
-  root: {
-    display: 'flex'
+  meetingPromptRoot: {
+    borderRadius: '.5rem',
+    boxShadow: '.125rem .25rem .25rem rgba(0, 0, 0, .25)',
+    display: 'flex',
+    overflow: 'hidden'
   },
 
   body: {
     background: appTheme.palette.mid10l,
-    borderRadius: '0 .5rem .5rem 0',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
@@ -80,9 +87,10 @@ const styleThunk = () => ({
     }
   },
 
-  helpText: {
+  subHeading: {
     color: appTheme.palette.dark90l,
     fontSize: appTheme.typography.s3,
+    fontWeight: 700,
     lineHeight: '1.5',
     margin: 0,
     padding: 0,
@@ -93,10 +101,22 @@ const styleThunk = () => ({
     }
   },
 
+  helpText: {
+    color: appTheme.palette.dark90l,
+    fontSize: appTheme.typography.s2,
+    lineHeight: '1.5',
+    margin: 0,
+    padding: 0,
+    width: '100%',
+
+    [promptBreakpoint]: {
+      fontSize: appTheme.typography.s3
+    }
+  },
+
   iconBlock: {
     alignItems: 'center',
     background: appTheme.palette.mid30l,
-    borderRadius: '.5rem 0 0 .5rem',
     display: 'flex',
     justifyContent: 'center',
     padding: '.5rem',

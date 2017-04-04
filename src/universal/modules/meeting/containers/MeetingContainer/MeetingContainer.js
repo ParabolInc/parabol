@@ -13,8 +13,10 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
+import MeetingMainHeader from 'universal/modules/meeting/components/MeetingMainHeader/MeetingMainHeader';
 import MeetingLobby from 'universal/modules/meeting/components/MeetingLobby/MeetingLobby';
 import MeetingCheckin from 'universal/modules/meeting/components/MeetingCheckin/MeetingCheckin';
+import MeetingUpdatesPrompt from 'universal/modules/meeting/components/MeetingUpdatesPrompt/MeetingUpdatesPrompt';
 import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton';
 import MeetingUpdatesContainer
   from '../MeetingUpdates/MeetingUpdatesContainer';
@@ -350,14 +352,22 @@ export default class MeetingContainer extends Component {
           teamName={teamName}
           teamId={teamId}
         />
-        <MeetingMain>
-          <MeetingAvatarGroup
-            avatars={members}
-            gotoItem={this.gotoItem}
-            gotoNext={this.gotoNext}
-            localPhase={localPhase}
-            {...phaseStateProps}
-          />
+        <MeetingMain hasBoxShadow>
+          <MeetingMainHeader>
+            <MeetingAvatarGroup
+              avatars={members}
+              gotoItem={this.gotoItem}
+              gotoNext={this.gotoNext}
+              localPhase={localPhase}
+              {...phaseStateProps}
+            />
+            {localPhase === UPDATES &&
+              <MeetingUpdatesPrompt
+                localPhaseItem={localPhaseItem}
+                members={members}
+              />
+            }
+          </MeetingMainHeader>
           {localPhase === LOBBY && <MeetingLobby members={members} team={team} />}
           {localPhase === CHECKIN &&
             <MeetingCheckin

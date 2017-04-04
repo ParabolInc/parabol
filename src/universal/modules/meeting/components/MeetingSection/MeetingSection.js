@@ -41,7 +41,6 @@ MeetingContent.defaultProps = {
 const styleThunk = () => ({
   root: {
     alignItems: 'center',
-    backgroundColor: '#fff',
     display: 'flex !important',
     flexDirection: 'column',
     justifyContent: 'center',

@@ -28,6 +28,10 @@ const MeetingAvatarGroup = (props) => {
             const picture = avatar.picture || defaultUserAvatar;
             const isFacilitating = avatar.isFacilitating;
             const count = idx + 1;
+            const itemStyles = css(
+              styles.item,
+              !canNavigate && styles.itemReadOnly
+            );
             const avatarBlockStyles = css(
               styles.avatarBlock,
               count === localPhaseItem && styles.avatarBlockLocal,
@@ -46,7 +50,7 @@ const MeetingAvatarGroup = (props) => {
               }
             };
             return (
-              <div className={css(styles.item)} key={avatar.id}>
+              <div className={itemStyles} key={avatar.id}>
                 <div className={avatarBlockStyles} onClick={(e) => handleClick(e)}>
                   <Avatar
                     {...avatar}
@@ -82,18 +86,12 @@ MeetingAvatarGroup.propTypes = {
 };
 
 const borderDefault = appTheme.palette.mid20a;
-// const borderDefaultHover = appTheme.palette.mid50a;
 const borderWarm = appTheme.palette.warm80a;
-// const borderLocal = appTheme.palette.dark70d;
 const borderLocal = appTheme.palette.dark;
-// const borderDisabled = ui.backgroundColor;
-// const boxShadowDefault = ui.avatarDefaultBoxShadow;
 const boxShadowBase = '0 0 0 3px #fff, 0 0 0 7px';
 const boxShadowBorder = `${boxShadowBase} ${borderDefault}`;
-// const boxShadowBorderHover = `${boxShadowBase} ${borderDefaultHover}`;
 const boxShadowWarm = `${boxShadowBase} ${borderWarm}`;
 const boxShadowLocal = `${boxShadowBase} ${borderLocal}`;
-// const boxShadowDisabled = `${boxShadowBase} ${borderDisabled}`;
 
 const styleThunk = () => ({
   meetingAvatarGroupRoot: {
@@ -102,12 +100,7 @@ const styleThunk = () => ({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    padding: '1.25rem .5rem',
-    width: '100%',
-
-    [ui.breakpoint.wide]: {
-      padding: '2rem 1.25rem'
-    }
+    padding: '.4375rem 0'
   },
 
   meetingAvatarGroupInner: {
@@ -117,22 +110,21 @@ const styleThunk = () => ({
   },
 
   item: {
-    // display: 'inline-block',
-    margin: '0 .75rem',
-    position: 'relative',
-    // verticalAlign: 'top'
+    marginLeft: '1.25rem',
+    marginRight: '.4375rem',
+    position: 'relative'
   },
 
   avatarBlock: {
     borderRadius: '100%',
     boxShadow: boxShadowBorder,
-    width: '2rem',
+    width: '2.25rem',
 
     [ui.breakpoint.wide]: {
-      width: '2.25rem'
+      width: '2.5rem'
     },
     [ui.breakpoint.wider]: {
-      width: '2.5rem'
+      width: '3rem'
     },
     [ui.breakpoint.widest]: {
       width: '4rem'
@@ -151,10 +143,16 @@ const styleThunk = () => ({
     boxShadow: boxShadowWarm
   },
 
+  itemReadOnly: {
+    // marginRight: 0,
+  },
+
   avatarBlockReadOnly: {
-    // boxShadow: 'none',
-    // boxShadow: boxShadowDisabled
-    boxShadow: ui.avatarDefaultBoxShadow
+    boxShadow: ui.avatarDefaultBoxShadow,
+
+    ':hover': {
+      opacity: '1'
+    }
   },
 
   tagBlock: {
@@ -166,7 +164,7 @@ const styleThunk = () => ({
   },
 
   tagBlockReadOnly: {
-    bottom: '-1.3125rem'
+    // bottom: '-1.3125rem'
   }
 });
 

@@ -29,28 +29,25 @@ const MeetingAgendaItems = (props) => {
   const currentTeamMember = members.find((m) => m.id === agendaItem.teamMemberId);
   const self = members.find((m) => m.isSelf);
   const hasFirstSpacer = true;
+  const heading = <span>{currentTeamMember.preferredName}: <i style={{color: ui.palette.warm}}>“{agendaItem.content}”</i></span>;
+
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="2rem">
-        {/* */}
-        <MeetingSection paddingBottom="2rem" paddingTop="2rem">
-          <MeetingPrompt
-            heading={<span>Whatcha need?</span>}
-            helpText={<span><b>Actions</b>: quick tasks • <b>Projects</b>: tracked outcomes</span>}
-          />
-        </MeetingSection>
-        {/* */}
         <MeetingSection flexToFill>
           <div className={css(styles.layout)}>
+            <div className={css(styles.prompt)}>
+              <MeetingPrompt
+                avatar={currentTeamMember.picture}
+                heading={heading}
+                subHeading={'Whatcha need?'}
+                helpText={<span><b>Actions</b>: quick tasks • <b>Projects</b>: tracked outcomes</span>}
+              />
+            </div>
             <div className={css(styles.nav)}>
               {hasFirstSpacer && <div className={css(styles.linkSpacer)}>{' '}</div>}
               <div className={css(styles.avatarBlock)}>
-                <div className={css(styles.avatar)}>
-                  <Avatar {...currentTeamMember} size="fill" />
-                </div>
-                <div className={css(styles.agendaItemLabel)}>
-                  “{agendaItem.content}”
-                </div>
+                {' '}
               </div>
               <div className={css(styles.linkSpacer)}>
                 {!hideMoveMeetingControls &&
@@ -105,6 +102,12 @@ const styleThunk = () => ({
     [ui.breakpoint.widest]: {
       paddingBottom: '12rem'
     }
+  },
+
+  prompt: {
+    alignItems: 'center',
+    display: 'flex',
+    justifyContent: 'center'
   },
 
   nav: {
