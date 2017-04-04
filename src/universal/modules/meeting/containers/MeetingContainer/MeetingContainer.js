@@ -311,11 +311,15 @@ export default class MeetingContainer extends Component {
       team
     };
     const gotoAgendaItem = (idx) => async () => {
-      if (isFacilitating && agendaPhaseItem !== undefined && idx > agendaPhaseItem) {
+      const meetingPhaseInfo = actionMeeting[meetingPhase];
+      const agendaPhaseInfo = actionMeeting[AGENDA_ITEMS];
+      const firstIncompleteIdx = agenda.findIndex((a) => a.isComplete === false);
+      const shouldResort = meetingPhaseInfo.index >= agendaPhaseInfo.index && idx > firstIncompleteIdx && firstIncompleteIdx > -1;
+      if (isFacilitating && shouldResort) {
         // resort
         const desiredItem = agenda[idx];
-        const nextItem = agenda[agendaPhaseItem];
-        const prevItem = agenda[agendaPhaseItem - 1];
+        const nextItem = agenda[firstIncompleteIdx];
+        const prevItem = agenda[firstIncompleteIdx - 1];
         const options = {
           ops: {
             agendaListAndInputContainer: teamId
@@ -328,7 +332,7 @@ export default class MeetingContainer extends Component {
           }
         };
         await cashay.mutate('updateAgendaItem', options);
-        this.gotoItem(meetingPhaseItem + 1, AGENDA_ITEMS);
+        this.gotoItem(firstIncompleteIdx + 1, AGENDA_ITEMS);
       } else {
         this.gotoItem(idx + 1, AGENDA_ITEMS);
       }
