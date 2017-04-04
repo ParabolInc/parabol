@@ -314,7 +314,7 @@ export default class MeetingContainer extends Component {
       const meetingPhaseInfo = actionMeeting[meetingPhase];
       const agendaPhaseInfo = actionMeeting[AGENDA_ITEMS];
       const firstIncompleteIdx = agenda.findIndex((a) => a.isComplete === false);
-      const shouldResort = meetingPhaseInfo.index >= agendaPhaseInfo.index && idx > firstIncompleteIdx;
+      const shouldResort = meetingPhaseInfo.index >= agendaPhaseInfo.index && idx > firstIncompleteIdx && firstIncompleteIdx > -1;
       if (isFacilitating && shouldResort) {
         // resort
         const desiredItem = agenda[idx];
