@@ -8,6 +8,10 @@ import portal from 'react-portal-hoc';
 import Spinner from "../../../spinner/components/Spinner/Spinner";
 
 
+// TODO: Make a UI constant (TA)
+const boxShadow = '0 3px 6px rgba(0, 0, 0, .35)';
+const menuStyle = {boxShadow};
+
 const Menu = (props) => {
   const {
     closePortal,
@@ -22,10 +26,8 @@ const Menu = (props) => {
     width: menuWidth,
     ...coords
   };
-  // TODO: Make a UI constant (TA)
-  const boxShadow = '0 3px 6px rgba(0, 0, 0, .35)';
-  const menuStyle = {boxShadow};
   const kids = Children.map(itemFactory && itemFactory() || children, (child) => cloneElement(child, {closePortal}));
+  console.log('kids', kids, children)
   return (
     <div>
       <div className={css(styles.menuBlock)} style={menuBlockStyle}>

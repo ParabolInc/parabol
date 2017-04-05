@@ -12,7 +12,7 @@ import {
 } from 'server/utils/authorization';
 import stripe from 'server/billing/stripe';
 import {fromEpochSeconds} from 'server/utils/epochTime';
-import segmentIo from 'server/segmentIo';
+import segmentIo from 'server/utils/segmentIo';
 import {GraphQLEmailType} from 'server/graphql/types';
 
 export default {

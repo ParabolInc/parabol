@@ -29,43 +29,39 @@ class ServiceDropdownInput extends Component {
     }
   }
 
+  shouldComponentUpdate() {
+    console.log('options', this.state.options)
+    return true
+  }
   render() {
     const {accessToken, input: {name, onChange, value}, label, organizations = [], styles} = this.props;
-    const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down"/>;
-    // TODO make this its own component with a state
-    const itemFactory = () => {
+    const handleToggleClick = (e) => {
       const now = new Date();
       if (now - lastUpdated > ms('3s')) {
-        lastUpdated = now;
-        const uri = `https://api.github.com/user/repos`;
-        const ghRes = fetch(uri, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `token ${accessToken}`
-          }
-        }).then((res) => res.json())
-          .then((res) => {
-            console.log('setting options', res);
-            this.state.options = res.map((repo) => ({
-              id: repo.id,
-              name: repo.full_name
-            }));
+        setTimeout(() => {
+          this.setState({
+            options:[{id: 1, name: '1'}]
           })
+        },1000)
+        // lastUpdated = now;
+        // const uri = `https://api.github.com/user/repos`;
+        // fetch(uri, {
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //     Authorization: `token ${accessToken}`
+        //   }
+        // }).then((res) => res.json())
+        //   .then((res) => {
+        //     console.log('setting options', res);
+        //     this.state.options = res.map((repo) => ({
+        //       id: repo.id,
+        //       name: repo.full_name
+        //     }));
+        //   }).catch((e) => {console.log(e)})
       }
-      console.log('return options', this.state.options)
-      return this.state.options.map((repos) => {
-        return (
-          <MenuItem
-            isActive={false}
-            key={`serviceDropdownMenuItem${repos.id}`}
-            label={repos.name}
-            onClick={() => {
-              console.log(repos.id);
-            }}
-          />
-        );
-      });
-    };
+    }
+    const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" onClick={handleToggleClick}/>;
+    console.log('mapping options', this.state.options);
     return (
       <FieldBlock>
         {label && <FieldLabel label={label} htmlFor={name}/>}
@@ -76,8 +72,20 @@ class ServiceDropdownInput extends Component {
             menuWidth="13rem"
             targetAnchor={targetAnchor}
             toggle={toggle}
-            itemFactory={itemFactory}
-          />
+          >
+            {this.state.options.map((repos) => {
+              return (
+                <MenuItem
+                  isActive={false}
+                  key={`serviceDropdownMenuItem${repos.id}`}
+                  label={repos.name}
+                  onClick={() => {
+                    console.log(repos.id);
+                  }}
+                />
+              )
+            })}
+          </Menu>
         </div>
       </FieldBlock>
     )
