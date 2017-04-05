@@ -23,7 +23,11 @@
     "import/extensions": [
       2,
       "never",
-      {"json": "always"}
+      {
+        "json": "always",
+        "png": "always",
+        "svg": "always"
+      }
     ],
     "import/first": 0,
     "import/no-duplicates": 0,

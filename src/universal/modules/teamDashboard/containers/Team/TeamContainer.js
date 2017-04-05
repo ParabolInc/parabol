@@ -45,7 +45,12 @@ const mapStateToProps = (state, props) => {
 };
 
 const TeamContainer = (props) => {
-  const {children, hasDashAlert, team, teamMembers} = props;
+  const {
+    children,
+    hasDashAlert,
+    team,
+    teamMembers
+  } = props;
   const readyEnough = team.id;
   return (
     <DashboardWrapper title="Team Dashboard">
@@ -68,7 +73,7 @@ TeamContainer.propTypes = {
   children: PropTypes.any.isRequired,
   hasDashAlert: PropTypes.bool,
   team: PropTypes.object.isRequired,
-  teamMembers: PropTypes.array.isRequired,
+  teamMembers: PropTypes.array.isRequired
 };
 
 export default
