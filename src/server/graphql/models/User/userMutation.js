@@ -16,8 +16,10 @@ import makeUserServerSchema from 'universal/validation/makeUserServerSchema';
 import tmsSignToken from 'server/utils/tmsSignToken';
 import {GraphQLURLType} from '../../types';
 import segmentIo from 'server/utils/segmentIo';
+import addFeatureFlag from "./addFeatureFlag/addFeatureFlag";
 
 export default {
+  addFeatureFlag,
   createImposterToken: {
     type: User,
     description: 'for troubleshooting by admins, create a JWT for a given userId',
