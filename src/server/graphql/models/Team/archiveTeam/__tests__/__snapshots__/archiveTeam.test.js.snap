@@ -1,0 +1,69 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ArchiveTeam archives a team 1`] = `
+Object {
+  "notification": Array [
+    Object {
+      "id": 0,
+      "orgId": 1,
+      "startAt": 2017-01-01T08:00:00.000Z,
+      "type": "TEAM_ARCHIVED",
+      "userIds": Array [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+      ],
+      "varList": Array [
+        "Team America",
+      ],
+    },
+  ],
+  "team": Object {
+    "activeFacilitator": null,
+    "facilitatorPhase": "lobby",
+    "facilitatorPhaseItem": null,
+    "id": 10,
+    "isArchived": true,
+    "isPaid": true,
+    "meetingId": null,
+    "meetingPhase": "lobby",
+    "meetingPhaseItem": null,
+    "name": "Team America",
+    "orgId": 1,
+  },
+}
+`;
+
+exports[`ArchiveTeam deletes a team when it has no projects or other team members 1`] = `
+Object {
+  "notification": Array [],
+  "team": Object {},
+  "teamMember": Array [],
+  "user": Object {
+    "cachedAt": 2017-01-01T07:00:00.000Z,
+    "createdAt": 2017-01-01T07:00:00.000Z,
+    "emailVerified": false,
+    "id": 0,
+    "identities": Array [],
+    "inactive": false,
+    "lastLogin": 2017-01-01T07:00:00.000Z,
+    "lastSeenAt": 2017-01-01T07:00:00.000Z,
+    "name": "Leader of One",
+    "picture": "https://placeimg.com/100/100/animals",
+    "tms": Array [],
+    "updatedAt": 2017-01-01T07:00:00.000Z,
+    "userOrgs": Array [
+      Object {
+        "id": 1,
+        "role": null,
+      },
+    ],
+    "welcomeSentAt": 2017-01-01T07:00:00.000Z,
+  },
+}
+`;

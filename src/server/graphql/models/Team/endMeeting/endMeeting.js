@@ -50,7 +50,7 @@ export default {
     const completedMeeting = await r.table('AgendaItem')
     // get all agenda items
       .getAll(teamId, {index: 'teamId'})
-      .filter({isActive: true, isComplete: true})
+      .filter({isActive: true})
       .map((doc) => doc('id'))
       .coerceTo('array')
       .do((agendaItemIds) => {

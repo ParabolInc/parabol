@@ -67,12 +67,13 @@ Object {
     "facilitatorPhase": "lobby",
     "facilitatorPhaseItem": null,
     "id": 11,
+    "isArchived": false,
     "isPaid": true,
     "meetingId": null,
     "meetingPhase": "lobby",
     "meetingPhaseItem": null,
+    "name": "Team America",
     "orgId": 0,
-    "teamName": "Team America",
   },
 }
 `;
@@ -703,12 +704,13 @@ Object {
     "facilitatorPhase": "lobby",
     "facilitatorPhaseItem": null,
     "id": 11,
+    "isArchived": false,
     "isPaid": true,
     "meetingId": null,
     "meetingPhase": "lobby",
     "meetingPhaseItem": null,
+    "name": "Team America",
     "orgId": 0,
-    "teamName": "Team America",
   },
 }
 `;

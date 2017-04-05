@@ -23,6 +23,7 @@ import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import addTeam from 'server/graphql/models/Team/addTeam/addTeam';
 import createFirstTeam from 'server/graphql/models/Team/createFirstTeam/createFirstTeam';
 import updateTeamName from 'server/graphql/models/Team/updateTeamName/updateTeamName';
+import archiveTeam from 'server/graphql/models/Team/archiveTeam/archiveTeam';
 import endMeeting from 'server/graphql/models/Team/endMeeting/endMeeting';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 
@@ -129,18 +130,13 @@ export default {
 
       const promises = [];
       if (facilitatorPhase === AGENDA_ITEMS) {
-        const agendaIdx = actionMeeting[AGENDA_ITEMS].index;
-        const markComplete = (!nextPhase && meetingPhase === AGENDA_ITEMS) ||
-          (nextPhaseInfo && nextPhaseInfo.index > agendaIdx);
-        if (markComplete) {
-          promises.push(r.table('AgendaItem')
-            .getAll(teamId, {index: 'teamId'})
-            .filter({isActive: true})
-            .orderBy('sortOrder')
-            .nth(facilitatorPhaseItem - 1)
-            .update({isComplete: true})
-            .run());
-        }
+        promises.push(r.table('AgendaItem')
+          .getAll(teamId, {index: 'teamId'})
+          .filter({isActive: true})
+          .orderBy('sortOrder')
+          .nth(facilitatorPhaseItem - 1)
+          .update({isComplete: true})
+          .run());
       }
       /*
        console.log('moveMeeting');
@@ -286,7 +282,8 @@ export default {
       return true;
     }
   },
-  updateTeamName
+  archiveTeam,
+  updateTeamName,
 };
 
 
