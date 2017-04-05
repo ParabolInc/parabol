@@ -30,17 +30,7 @@ const styleThunk = () => ({
     maxWidth: '100%',
     overflow: 'hidden',
     padding: '1rem',
-    width: '100%',
-
-    [ui.wider]: {
-      padding: '2rem'
-    },
-
-    [ui.widest]: {
-      alignItems: 'center',
-      flexDirection: 'column',
-      justifyContent: 'center'
-    }
+    width: '100%'
   }
 });
 
