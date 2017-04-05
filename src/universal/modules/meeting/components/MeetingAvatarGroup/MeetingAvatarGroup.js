@@ -100,7 +100,7 @@ const styleThunk = () => ({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    padding: '.4375rem 0'
+    padding: '1rem 0'
   },
 
   meetingAvatarGroupInner: {

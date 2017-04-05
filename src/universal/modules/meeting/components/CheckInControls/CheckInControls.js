@@ -33,8 +33,6 @@ const CheckinCardButtons = (props) => {
     fontSize: ui.iconSize2x
   };
 
-  // NOTE: assume “present” if hitting enter/right the first time
-  bindHotkey(['enter', 'right'], handleOnClickPresent);
   bindHotkey('p', handleOnClickPresent);
   bindHotkey('n', handleOnClickAbsent);
 

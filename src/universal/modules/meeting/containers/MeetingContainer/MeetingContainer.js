@@ -371,6 +371,7 @@ export default class MeetingContainer extends Component {
             />
             {localPhase === UPDATES &&
               <MeetingUpdatesPrompt
+                gotoNext={this.gotoNext}
                 localPhaseItem={localPhaseItem}
                 members={members}
               />

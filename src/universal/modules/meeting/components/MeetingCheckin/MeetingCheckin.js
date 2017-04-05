@@ -46,7 +46,6 @@ const MeetingCheckin = (props) => {
     gotoNext();
   };
 
-  // const isLastMember = localPhaseItem === members.length;
   const memberIdx = localPhaseItem - 1;
   const currentMember = members[memberIdx];
   const nextMember = memberIdx < members.length && members[memberIdx + 1];

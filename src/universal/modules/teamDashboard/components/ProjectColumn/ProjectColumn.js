@@ -19,16 +19,11 @@ import handleDrop from 'universal/dnd/handleDrop';
 import withDragState from 'universal/dnd/withDragState';
 import AddProjectButton from 'universal/components/AddProjectButton/AddProjectButton';
 import dndNoise from 'universal/utils/dndNoise';
+import Badge from 'universal/components/Badge/Badge';
 
 const columnTarget = {
   drop: handleDrop,
   hover: handleColumnHover
-};
-
-const badgeIconStyle = {
-  height: '1.5rem',
-  lineHeight: '1.5rem',
-  width: '1.5rem'
 };
 
 const originAnchor = {
@@ -53,7 +48,19 @@ const handleAddProjectFactory = (status, teamMemberId, sortOrder) => () => {
 };
 
 const ProjectColumn = (props) => {
-  const {area, connectDropTarget, dragState, status, projects, myTeamMemberId, styles, teams, userId} = props;
+  const {
+    area,
+    connectDropTarget,
+    dragState,
+    firstColumn,
+    lastColumn,
+    status,
+    projects,
+    myTeamMemberId,
+    styles,
+    teams,
+    userId
+  } = props;
 
   const label = themeLabels.projectStatus[status].slug;
   const makeTeamMenuItems = (sortOrder) => {
@@ -109,21 +116,40 @@ const ProjectColumn = (props) => {
     return null;
   };
 
+  const badgeColor = {
+    done: 'dark10d',
+    active: 'cool',
+    stuck: 'warm',
+    future: 'mid'
+  };
+
+  const columnStyles = css(
+    styles.column,
+    firstColumn && styles.columnFirst,
+    lastColumn && styles.columnLast
+  );
+
+  console.log(status);
+  console.log(projects.length);
+
   // reset every rerender so we make sure we got the freshest info
   dragState.clear();
   return connectDropTarget(
-    <div className={css(styles.column)}>
+    <div className={columnStyles}>
       <div className={css(styles.columnHeader)}>
-        <span className={css(styles.statusBadge, styles[`${status}Bg`])}>
-          <FontAwesome
-            className={css(styles.statusBadgeIcon)}
-            name={themeLabels.projectStatus[status].icon}
-            style={badgeIconStyle}
-          />
-        </span>
-        <span className={css(styles.statusLabel, styles[status])}>
-          {label}
-        </span>
+        <div className={css(styles.statusLabelBlock)}>
+          <span className={css(styles.statusIcon, styles[status])}>
+            <FontAwesome name={themeLabels.projectStatus[status].icon} />
+          </span>
+          <span className={css(styles.statusLabel, styles[status])}>
+            {label}
+          </span>
+          {(projects.length > 0) &&
+            <span className={css(styles.statusBadge)}>
+              <Badge colorPalette={badgeColor[status]} flat value={projects.length} />
+            </span>
+          }
+        </div>
         {makeAddProject()}
       </div>
       <div className={css(styles.columnBody)}>
@@ -149,6 +175,8 @@ const ProjectColumn = (props) => {
 
 ProjectColumn.propTypes = {
   area: PropTypes.string,
+  firstColumn: PropTypes.bool,
+  lastColumn: PropTypes.bool,
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.array.isRequired,
   queryKey: PropTypes.string,
@@ -166,14 +194,9 @@ const columnStyles = {
 };
 
 const styleThunk = () => ({
-  columnFirst: {
-    ...columnStyles,
-    padding: '1rem 1rem 0 0'
-  },
-
   column: {
     ...columnStyles,
-    borderLeft: `1px solid ${borderColor}`,
+    borderLeft: `2px dashed ${borderColor}`,
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
@@ -181,14 +204,20 @@ const styleThunk = () => ({
     position: 'relative'
   },
 
+  columnFirst: {
+    borderLeft: 0
+    // ...columnStyles,
+    // padding: '1rem 1rem 0 0'
+  },
+
   columnLast: {
-    ...columnStyles,
-    borderLeft: `1px solid ${borderColor}`,
-    padding: '1rem 0 0 1rem',
+    // ...columnStyles,
+    // borderLeft: `1px solid ${borderColor}`,
+    // padding: '1rem 0 0 1rem',
   },
 
   columnHeader: {
-    borderBottom: '1px solid rgba(0, 0, 0, .05)',
+    // borderBottom: '1px solid rgba(0, 0, 0, .05)',
     color: appTheme.palette.dark,
     display: 'flex !important',
     lineHeight: '1.5rem',
@@ -204,33 +233,35 @@ const styleThunk = () => ({
   columnInner: {
     ...overflowTouch,
     height: '100%',
-    padding: '.5rem 1rem 0',
+    // padding: '.5rem 1rem 0',
+    padding: '0 1rem',
     position: 'absolute',
     width: '100%'
   },
 
-  statusBadge: {
-    borderRadius: '.5rem',
-    color: '#fff',
-    display: 'inline-block',
-    fontSize: '14px',
-    height: '1.5rem',
-    lineHeight: '1.5rem',
-    marginRight: '.5rem',
-    textAlign: 'center',
-    verticalAlign: 'middle',
-    width: '1.5rem'
+  statusLabelBlock: {
+    alignItems: 'center',
+    display: 'flex',
+    flex: 1,
+    fontSize: appTheme.typography.s3,
   },
 
-  statusBadgeIcon: {
-    lineHeight: '1.5rem'
+  statusIcon: {
+    fontSize: '14px',
+    marginRight: '.25rem',
+    paddingTop: 1,
+    textAlign: 'center',
+    verticalAlign: 'middle',
   },
 
   statusLabel: {
-    flex: 1,
-    fontSize: appTheme.typography.s3,
     fontWeight: 700,
+    paddingTop: 2,
     textTransform: 'uppercase'
+  },
+
+  statusBadge: {
+    marginLeft: '.5rem'
   },
 
   ...projectStatusStyles('backgroundColor', 'Bg'),

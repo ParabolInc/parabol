@@ -101,7 +101,8 @@ const styleThunk = () => ({
   },
 
   item: {
-    marginTop: '2rem',
+    marginBottom: '1rem',
+    marginTop: '1rem',
     padding: '0 .5rem',
     width: '25%',
 

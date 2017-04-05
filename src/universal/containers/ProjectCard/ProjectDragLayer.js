@@ -26,8 +26,8 @@ function getItemStyles(props) {
   const dashMinWidth = '9.9375rem';
   const meetingMinWidth = '12.4375rem';
   const minWidth = area === 'meeting' ? meetingMinWidth : dashMinWidth;
-  const dashWidth = 'calc((100vw - 39.375rem) / 4)';
-  const meetingWidth = 'calc((100vw - 25.25rem) / 4)';
+  const dashWidth = 'calc((100vw - 39.3125rem) / 4)';
+  const meetingWidth = 'calc((100vw - 25.1875rem) / 4)';
   const width = area === 'meeting' ? meetingWidth : dashWidth;
   return {
     ...layerStyles,

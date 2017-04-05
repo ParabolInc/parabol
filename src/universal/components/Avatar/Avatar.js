@@ -50,7 +50,6 @@ const Avatar = (props) => {
               <AvatarBadge
                 isCheckedIn={isCheckedIn}
                 isConnected={isConnected}
-                size={size}
               />
             </div>
           </div>

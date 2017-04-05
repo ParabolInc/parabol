@@ -128,8 +128,10 @@ OutcomeCard.propTypes = {
 const styleThunk = () => ({
   root: {
     backgroundColor: '#fff',
-    border: `1px solid ${ui.cardBorderColor}`,
+    // border: `1px solid ${ui.cardBorderColor}`,
     borderRadius: ui.cardBorderRadius,
+    borderTop: '1px solid',
+    boxShadow: ui.cardBoxShadow,
     maxWidth: ui.cardMaxWidth,
     minHeight: ui.cardMinHeight,
     paddingTop: '.1875rem',

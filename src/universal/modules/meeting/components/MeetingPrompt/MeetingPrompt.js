@@ -52,6 +52,7 @@ const promptBreakpoint = ui.breakpoint.wider;
 
 const styleThunk = () => ({
   meetingPromptRoot: {
+    backgroundColor: appTheme.palette.mid10l,
     borderRadius: '.5rem',
     boxShadow: '.125rem .25rem .25rem rgba(0, 0, 0, .25)',
     display: 'flex',
@@ -59,16 +60,15 @@ const styleThunk = () => ({
   },
 
   body: {
-    background: appTheme.palette.mid10l,
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     minHeight: '4.25rem',
-    padding: '.5rem 1rem',
+    padding: '.75rem 1rem .75rem 0',
 
     [promptBreakpoint]: {
       minHeight: '5.25rem',
-      padding: '1rem 1.5rem'
+      padding: '1rem 1.5rem 1rem 0'
     }
   },
 
@@ -89,7 +89,7 @@ const styleThunk = () => ({
 
   subHeading: {
     color: appTheme.palette.dark90l,
-    fontSize: appTheme.typography.s3,
+    fontSize: appTheme.typography.s4,
     fontWeight: 700,
     lineHeight: '1.5',
     margin: 0,
@@ -97,7 +97,7 @@ const styleThunk = () => ({
     width: '100%',
 
     [promptBreakpoint]: {
-      fontSize: appTheme.typography.s4
+      fontSize: appTheme.typography.s5
     }
   },
 
@@ -116,10 +116,10 @@ const styleThunk = () => ({
 
   iconBlock: {
     alignItems: 'center',
-    background: appTheme.palette.mid30l,
+    // background: appTheme.palette.mid30l,
     display: 'flex',
     justifyContent: 'center',
-    padding: '.5rem',
+    padding: '.75rem',
     width: '6rem',
 
     [promptBreakpoint]: {

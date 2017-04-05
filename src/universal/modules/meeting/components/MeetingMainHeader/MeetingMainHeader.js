@@ -28,6 +28,7 @@ const styleThunk = () => ({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     maxWidth: '100%',
+    overflow: 'hidden',
     padding: '1rem',
     width: '100%',
 

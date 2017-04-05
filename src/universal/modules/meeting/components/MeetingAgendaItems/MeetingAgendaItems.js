@@ -4,9 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
-
-import Avatar from 'universal/components/Avatar/Avatar';
-import IconLink from 'universal/components/IconLink/IconLink';
+import Button from 'universal/components/Button/Button';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
@@ -28,7 +26,6 @@ const MeetingAgendaItems = (props) => {
   }
   const currentTeamMember = members.find((m) => m.id === agendaItem.teamMemberId);
   const self = members.find((m) => m.isSelf);
-  const hasFirstSpacer = true;
   const heading = <span>{currentTeamMember.preferredName}: <i style={{color: ui.palette.warm}}>“{agendaItem.content}”</i></span>;
 
   return (
@@ -45,22 +42,17 @@ const MeetingAgendaItems = (props) => {
               />
             </div>
             <div className={css(styles.nav)}>
-              {hasFirstSpacer && <div className={css(styles.linkSpacer)}>{' '}</div>}
-              <div className={css(styles.avatarBlock)}>
-                {' '}
-              </div>
-              <div className={css(styles.linkSpacer)}>
-                {!hideMoveMeetingControls &&
-                  <IconLink
-                    colorPalette="cool"
-                    icon="arrow-circle-right"
-                    iconPlacement="right"
-                    label={isLast ? 'Wrap up the meeting' : 'Next Agenda Item'}
-                    onClick={gotoNext}
-                    scale="small"
-                  />
-                }
-              </div>
+              {!hideMoveMeetingControls &&
+                <Button
+                  buttonStyle="flat"
+                  colorPalette="cool"
+                  icon="arrow-circle-right"
+                  iconPlacement="right"
+                  label={isLast ? 'Wrap up the meeting' : 'Next Agenda Item'}
+                  onClick={gotoNext}
+                  size="smallest"
+                />
+              }
             </div>
             <MeetingAgendaCardsContainer
               agendaId={agendaItem.id}
@@ -111,7 +103,8 @@ const styleThunk = () => ({
   },
 
   nav: {
-    display: 'flex !important',
+    paddingTop: '1rem',
+    textAlign: 'center',
     width: '100%'
   },
 
