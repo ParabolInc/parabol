@@ -37,7 +37,6 @@ const MeetingAgendaLastCall = (props) => {
           <Type
             align="center"
             bold
-            family="serif"
             marginBottom="2.25rem"
             marginTop="2rem"
             scale="s5"
@@ -55,11 +54,12 @@ const MeetingAgendaLastCall = (props) => {
           </Type>
           {!hideMoveMeetingControls ?
             <Button
+              buttonStyle="solid"
               colorPalette="cool"
               label="End Meeting"
               onClick={gotoNext}
+              raised
               size="largest"
-              buttonStyle="solid"
               textTransform="uppercase"
             /> :
             <div className={css(styles.warmHighlight)}>

@@ -1,8 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
 import Button from 'universal/components/Button/Button';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
@@ -33,7 +31,7 @@ const MeetingUpdates = (props) => {
               iconPlacement="right"
               label={isLastMember ? 'Move on to the Agenda' : 'Next team member '}
               onClick={gotoNext}
-              size="smallest"
+              size="small"
             />
           }
         </div>
@@ -66,58 +64,11 @@ const styleThunk = () => ({
     width: '100%'
   },
 
-  nav: {
-    display: 'flex !important',
-    width: '100%'
-  },
-
   body: {
-    // backgroundColor: ui.backgroundColor,
     display: 'flex',
     flex: 1,
     padding: '1rem 1rem 0',
     width: '100%'
-  },
-
-  avatarBlock: {
-    flex: 1,
-    textAlign: 'center'
-  },
-
-  avatar: {
-    display: 'inline-block',
-    verticalAlign: 'middle',
-    width: '5rem',
-
-    [ui.breakpoint.wider]: {
-      width: '7.5rem'
-    }
-  },
-
-  username: {
-    color: appTheme.palette.dark,
-    display: 'inline-block',
-    fontSize: appTheme.typography.s5,
-    fontWeight: 700,
-    marginLeft: '1.5rem',
-    verticalAlign: 'middle',
-
-    [ui.breakpoint.wider]: {
-      fontSize: appTheme.typography.s6
-    }
-  },
-
-  linkSpacer: {
-    display: 'flex',
-    flexDirection: 'column',
-    padding: '2px 0 0 0',
-    justifyContent: 'center',
-    textAlign: 'right',
-    width: '16rem',
-
-    [ui.breakpoint.wider]: {
-      paddingTop: '4px'
-    }
   }
 });
 

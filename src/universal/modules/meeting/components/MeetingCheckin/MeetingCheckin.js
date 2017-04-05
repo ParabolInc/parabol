@@ -62,6 +62,7 @@ const MeetingCheckin = (props) => {
       <MeetingSection flexToFill paddingBottom="1rem">
         <MeetingPrompt
           avatar={currentAvatar}
+          avatarLarge
           heading={meetingPromptHeading()}
         />
         <div className={css(styles.base)}>

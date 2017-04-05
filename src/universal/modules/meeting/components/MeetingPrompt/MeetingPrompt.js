@@ -16,7 +16,7 @@ const MeetingPrompt = (props) => {
   } = props;
   return (
     <div className={css(styles.meetingPromptRoot)}>
-      <div className={css(styles.iconBlock)}>
+      <div className={css(styles.avatarBlock)}>
         <Avatar picture={avatar || defaultUserAvatar} size="fill" />
       </div>
       <div className={css(styles.body)}>
@@ -40,17 +40,16 @@ const MeetingPrompt = (props) => {
 
 MeetingPrompt.propTypes = {
   avatar: PropTypes.string,
+  avatarLarge: PropTypes.bool,
   heading: PropTypes.any,
   helpText: PropTypes.any,
   styles: PropTypes.object,
   subHeading: PropTypes.any,
 };
 
-const iconWidth = '2rem';
-
 const promptBreakpoint = ui.breakpoint.wider;
 
-const styleThunk = () => ({
+const styleThunk = (theme, {avatarLarge}) => ({
   meetingPromptRoot: {
     backgroundColor: appTheme.palette.mid10l,
     borderRadius: '.5rem',
@@ -114,44 +113,17 @@ const styleThunk = () => ({
     }
   },
 
-  iconBlock: {
+  avatarBlock: {
     alignItems: 'center',
-    // background: appTheme.palette.mid30l,
     display: 'flex',
     justifyContent: 'center',
     padding: '.75rem',
-    width: '6rem',
+    width: avatarLarge ? '8rem' : '6rem',
 
     [promptBreakpoint]: {
       padding: '1rem',
-      width: '8rem'
+      width: avatarLarge ? '10rem' : '8rem'
     }
-  },
-
-  iconGroup: {
-    height: ui.iconSize2x,
-    left: '50%',
-    lineHeight: ui.iconSize2x,
-    margin: '-14px auto auto -1rem',
-    position: 'absolute',
-    top: '50%',
-    width: iconWidth
-  },
-
-  iconTop: {
-    color: appTheme.palette.dark,
-    position: 'relative',
-    width: iconWidth,
-    zIndex: 200
-  },
-
-  iconBottom: {
-    color: '#fff',
-    left: 0,
-    position: 'absolute',
-    top: 0,
-    width: iconWidth,
-    zIndex: 100
   }
 });
 
