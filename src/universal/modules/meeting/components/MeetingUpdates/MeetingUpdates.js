@@ -110,10 +110,10 @@ const styleThunk = () => ({
   linkSpacer: {
     display: 'flex',
     flexDirection: 'column',
-    padding: '2px 1rem 0 0',
+    padding: '2px 0 0 0',
     justifyContent: 'center',
     textAlign: 'right',
-    width: '12rem',
+    width: '16rem',
 
     [ui.breakpoint.wider]: {
       paddingTop: '4px'
