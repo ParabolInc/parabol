@@ -129,9 +129,6 @@ const ProjectColumn = (props) => {
     lastColumn && styles.columnLast
   );
 
-  console.log(status);
-  console.log(projects.length);
-
   // reset every rerender so we make sure we got the freshest info
   dragState.clear();
   return connectDropTarget(
@@ -186,38 +183,26 @@ ProjectColumn.propTypes = {
   userId: PropTypes.string
 };
 
-const borderColor = ui.dashBorderColor;
-
-const columnStyles = {
-  flex: 1,
-  width: '25%'
-};
-
 const styleThunk = () => ({
   column: {
-    ...columnStyles,
-    borderLeft: `2px dashed ${borderColor}`,
+    borderLeft: `2px dashed ${ui.dashBorderColor}`,
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
     overflow: 'scroll',
-    position: 'relative'
+    position: 'relative',
+    width: '25%'
   },
 
   columnFirst: {
     borderLeft: 0
-    // ...columnStyles,
-    // padding: '1rem 1rem 0 0'
   },
 
   columnLast: {
-    // ...columnStyles,
-    // borderLeft: `1px solid ${borderColor}`,
-    // padding: '1rem 0 0 1rem',
+    // keeping this around, we may need it (TA)
   },
 
   columnHeader: {
-    // borderBottom: '1px solid rgba(0, 0, 0, .05)',
     color: appTheme.palette.dark,
     display: 'flex !important',
     lineHeight: '1.5rem',
@@ -233,7 +218,6 @@ const styleThunk = () => ({
   columnInner: {
     ...overflowTouch,
     height: '100%',
-    // padding: '.5rem 1rem 0',
     padding: '0 1rem',
     position: 'absolute',
     width: '100%'
@@ -264,7 +248,6 @@ const styleThunk = () => ({
     marginLeft: '.5rem'
   },
 
-  ...projectStatusStyles('backgroundColor', 'Bg'),
   ...projectStatusStyles('color'),
 });
 

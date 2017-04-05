@@ -6,7 +6,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import FontAwesome from 'react-fontawesome';
 import withHotkey from 'react-hotkey-hoc';
 
-const CheckinCardButtons = (props) => {
+const CheckInControls = (props) => {
   const {
     bindHotkey,
     checkInPressFactory,
@@ -56,7 +56,7 @@ const CheckinCardButtons = (props) => {
   );
 };
 
-CheckinCardButtons.propTypes = {
+CheckInControls.propTypes = {
   bindHotkey: PropTypes.func,
   checkInPressFactory: PropTypes.func.isRequired,
   nextMember: PropTypes.object,
@@ -100,4 +100,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(withHotkey(CheckinCardButtons));
+export default withStyles(styleThunk)(withHotkey(CheckInControls));

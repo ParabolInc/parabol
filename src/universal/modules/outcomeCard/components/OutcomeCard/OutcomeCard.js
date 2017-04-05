@@ -1,8 +1,8 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import {cardRootStyles} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
 import labels from 'universal/styles/theme/labels';
 import {ACTIVE, STUCK, DONE, FUTURE, USER_DASH} from 'universal/utils/constants';
 import {cardBorderTop} from 'universal/styles/helpers';
@@ -127,16 +127,8 @@ OutcomeCard.propTypes = {
 
 const styleThunk = () => ({
   root: {
-    backgroundColor: '#fff',
-    // border: `1px solid ${ui.cardBorderColor}`,
-    borderRadius: ui.cardBorderRadius,
-    borderTop: '1px solid',
-    boxShadow: ui.cardBoxShadow,
-    maxWidth: ui.cardMaxWidth,
-    minHeight: ui.cardMinHeight,
+    ...cardRootStyles,
     paddingTop: '.1875rem',
-    position: 'relative',
-    width: '100%',
 
     '::after': {
       ...cardBorderTop

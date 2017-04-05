@@ -78,8 +78,7 @@ Avatar.propTypes = {
     'larger',
     'largest'
   ]),
-  styles: PropTypes.object,
-  unstyled: PropTypes.bool
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({
