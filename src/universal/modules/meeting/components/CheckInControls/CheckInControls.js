@@ -10,13 +10,13 @@ const CheckinCardButtons = (props) => {
   const {
     bindHotkey,
     checkInPressFactory,
-    member,
+    nextMember,
     styles
   } = props;
 
   const handleOnClickPresent = checkInPressFactory(true);
   const handleOnClickAbsent = checkInPressFactory(false);
-  const name = member.preferredName;
+
   const icon = {
     display: 'inline-block',
     lineHeight: 'inherit',
@@ -30,23 +30,29 @@ const CheckinCardButtons = (props) => {
   };
   const skipIcon = {
     ...icon,
-    fontSize: ui.iconSize
+    fontSize: ui.iconSize2x
   };
 
-  bindHotkey('n', handleOnClickPresent);
-  bindHotkey('s', handleOnClickAbsent);
+  // NOTE: assume “present” if hitting enter/right the first time
+  bindHotkey(['enter', 'right'], handleOnClickPresent);
+  bindHotkey('p', handleOnClickPresent);
+  bindHotkey('n', handleOnClickAbsent);
 
   return (
     <div className={css(styles.controlBlock)}>
 
       <div className={css(styles.control, styles.nextControl)} onClick={handleOnClickPresent}>
         <FontAwesome name="check-circle" style={nextIcon} />
-        <span className={css(styles.label)}><u>N</u>ext ({name} checked in)</span>
+        <span className={css(styles.label)}>
+          <u>P</u>resent—{nextMember ? `Move to ${nextMember.preferredName}` : 'Move to Updates'}
+        </span>
       </div>
 
       <div className={css(styles.control, styles.skipControl)} onClick={handleOnClickAbsent}>
         <FontAwesome name="minus-circle" style={skipIcon} />
-        <span className={css(styles.label)}><u>S</u>kip ({name}’s not here)</span>
+        <span className={css(styles.label)}>
+          <u>N</u>ot Present—{nextMember ? `Skip to ${nextMember.preferredName}` : 'Skip to Updates'}
+        </span>
       </div>
     </div>
   );
@@ -55,7 +61,7 @@ const CheckinCardButtons = (props) => {
 CheckinCardButtons.propTypes = {
   bindHotkey: PropTypes.func,
   checkInPressFactory: PropTypes.func.isRequired,
-  member: PropTypes.object,
+  nextMember: PropTypes.object,
   styles: PropTypes.object
 };
 
@@ -63,24 +69,23 @@ const styleThunk = () => ({
   control: {
     cursor: 'pointer',
     display: 'block',
+    fontSize: appTheme.typography.s5,
     lineHeight: '1.5'
   },
 
   nextControl: {
     color: appTheme.palette.cool,
-    fontSize: appTheme.typography.s6,
     marginBottom: '.5rem',
   },
 
   skipControl: {
-    color: appTheme.palette.warm,
-    fontSize: appTheme.typography.s3,
+    color: appTheme.palette.warm
   },
 
   controlBlock: {
     display: 'inline-block',
     paddingTop: '1rem',
-    textAlign: 'center'
+    textAlign: 'left'
   },
 
   label: {

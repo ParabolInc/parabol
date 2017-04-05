@@ -2,8 +2,7 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
-import CheckinCard from 'universal/modules/meeting/components/CheckinCard/CheckinCard';
-import CheckinCardBaseStyles from '../CheckinCard/CheckinCardBaseStyles';
+import CheckInControls from 'universal/modules/meeting/components/CheckInControls/CheckInControls';
 import {cashay} from 'cashay';
 
 const makeCheckinPressFactory = (teamMemberId, gotoNext) => (isCheckedIn) => () => {
@@ -18,38 +17,31 @@ const makeCheckinPressFactory = (teamMemberId, gotoNext) => (isCheckedIn) => () 
 };
 
 const CheckinCards = (props) => {
-  const {gotoItem, gotoNext, members, localPhaseItem, styles} = props;
+  const {
+    gotoNext,
+    members,
+    localPhaseItem,
+    styles
+  } = props;
   const memberIdx = localPhaseItem - 1;
-  const leftCard = memberIdx > 0 && members[memberIdx - 1];
-  const rightCard = memberIdx < members.length && members[memberIdx + 1];
-  const activeCard = members[memberIdx];
+  const currentMember = members[memberIdx];
+  const nextMember = memberIdx < members.length && members[memberIdx + 1];
   return (
     <div className={css(styles.base)}>
-      {leftCard ?
-        <CheckinCard handleCardClick={() => gotoItem(localPhaseItem - 1)} member={leftCard} /> :
-        <div className={css(styles.placeholder)} />
-      }
-      {activeCard &&
-        <CheckinCard
-          checkInPressFactory={makeCheckinPressFactory(activeCard.id, gotoNext)}
-          member={activeCard}
-          isActive
-        />
-      }
-      {rightCard ?
-        <CheckinCard handleCardClick={gotoNext} member={rightCard} /> :
-        <div className={css(styles.placeholder)} />
-      }
+      <CheckInControls
+        checkInPressFactory={makeCheckinPressFactory(currentMember.id, gotoNext)}
+        member={currentMember}
+        nextMember={nextMember}
+      />
     </div>
   );
 };
 
 CheckinCards.propTypes = {
-  gotoItem: PropTypes.func.isRequired,
   gotoNext: PropTypes.func.isRequired,
   members: PropTypes.array,
   localPhaseItem: PropTypes.number,
-  styles: PropTypes.object,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({
@@ -70,10 +62,6 @@ const styleThunk = () => ({
     [ui.breakpoint.widest]: {
       padding: '4rem 0'
     }
-  },
-
-  placeholder: {
-    ...CheckinCardBaseStyles
   }
 });
 

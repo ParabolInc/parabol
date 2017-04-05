@@ -116,7 +116,7 @@ const styleThunk = () => ({
   },
 
   offline: {
-    color: appTheme.palette.cool10g
+    color: appTheme.palette.dark10d
   },
 
   online: {
