@@ -3,29 +3,31 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
-import FontAwesome from 'react-fontawesome';
+import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
+import Avatar from 'universal/components/Avatar/Avatar';
 
 const MeetingPrompt = (props) => {
-  const {heading, helpText, styles} = props;
-  const iconStyle = {
-    display: 'block',
-    fontSize: ui.iconSize2x,
-    height: ui.iconSize2x,
-    lineHeight: ui.iconSize2x,
-    textAlign: 'center'
-  };
+  const {
+    avatar,
+    heading,
+    helpText,
+    styles,
+    subHeading
+  } = props;
   return (
-    <div className={css(styles.root)}>
-      <div className={css(styles.iconBlock)}>
-        <div className={css(styles.iconGroup)}>
-          <FontAwesome className={css(styles.iconTop)} name="commenting-o" style={iconStyle} />
-          <FontAwesome className={css(styles.iconBottom)} name="comment" style={iconStyle} />
-        </div>
+    <div className={css(styles.meetingPromptRoot)}>
+      <div className={css(styles.avatarBlock)}>
+        <Avatar picture={avatar || defaultUserAvatar} size="fill" />
       </div>
       <div className={css(styles.body)}>
         <div className={css(styles.heading)}>
           {heading}
         </div>
+        {subHeading &&
+          <div className={css(styles.subHeading)}>
+            {subHeading}
+          </div>
+        }
         {helpText &&
           <div className={css(styles.helpText)}>
             {helpText}
@@ -37,40 +39,35 @@ const MeetingPrompt = (props) => {
 };
 
 MeetingPrompt.propTypes = {
+  avatar: PropTypes.string,
+  avatarLarge: PropTypes.bool,
   heading: PropTypes.any,
   helpText: PropTypes.any,
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  subHeading: PropTypes.any,
 };
-
-const iconWidth = '2rem';
-const iconBlockWidth = '3rem';
-const iconBlockWidthLarge = '4rem';
 
 const promptBreakpoint = ui.breakpoint.wider;
 
-const styleThunk = () => ({
-  root: {
-    display: 'inline-block',
-    paddingLeft: iconBlockWidth,
-    position: 'relative',
-
-    [promptBreakpoint]: {
-      paddingLeft: iconBlockWidthLarge
-    }
+const styleThunk = (theme, {avatarLarge}) => ({
+  meetingPromptRoot: {
+    backgroundColor: appTheme.palette.mid10l,
+    borderRadius: '.5rem',
+    boxShadow: '.125rem .25rem .25rem rgba(0, 0, 0, .25)',
+    display: 'flex',
+    overflow: 'hidden'
   },
 
   body: {
-    background: appTheme.palette.mid10l,
-    borderRadius: '0 .5rem .5rem 0',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     minHeight: '4.25rem',
-    padding: '.5rem 1rem',
+    padding: '.75rem 1rem .75rem 0',
 
     [promptBreakpoint]: {
       minHeight: '5.25rem',
-      padding: '1rem 1.5rem'
+      padding: '1rem 1.5rem 1rem 0'
     }
   },
 
@@ -89,57 +86,44 @@ const styleThunk = () => ({
     }
   },
 
-  helpText: {
+  subHeading: {
     color: appTheme.palette.dark90l,
-    fontSize: appTheme.typography.s3,
+    fontSize: appTheme.typography.s4,
+    fontWeight: 700,
     lineHeight: '1.5',
     margin: 0,
     padding: 0,
     width: '100%',
 
     [promptBreakpoint]: {
-      fontSize: appTheme.typography.s4
+      fontSize: appTheme.typography.s5
     }
   },
 
-  iconBlock: {
-    background: appTheme.palette.mid30l,
-    borderRadius: '.5rem 0 0 .5rem',
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-    top: 0,
-    width: iconBlockWidth,
+  helpText: {
+    color: appTheme.palette.dark90l,
+    fontSize: appTheme.typography.s2,
+    lineHeight: '1.5',
+    margin: 0,
+    padding: 0,
+    width: '100%',
 
     [promptBreakpoint]: {
-      width: iconBlockWidthLarge,
+      fontSize: appTheme.typography.s3
     }
   },
 
-  iconGroup: {
-    height: ui.iconSize2x,
-    left: '50%',
-    lineHeight: ui.iconSize2x,
-    margin: '-14px auto auto -1rem',
-    position: 'absolute',
-    top: '50%',
-    width: iconWidth
-  },
+  avatarBlock: {
+    alignItems: 'center',
+    display: 'flex',
+    justifyContent: 'center',
+    padding: '.75rem',
+    width: avatarLarge ? '8rem' : '6rem',
 
-  iconTop: {
-    color: appTheme.palette.dark,
-    position: 'relative',
-    width: iconWidth,
-    zIndex: 200
-  },
-
-  iconBottom: {
-    color: '#fff',
-    left: 0,
-    position: 'absolute',
-    top: 0,
-    width: iconWidth,
-    zIndex: 100
+    [promptBreakpoint]: {
+      padding: '1rem',
+      width: avatarLarge ? '10rem' : '8rem'
+    }
   }
 });
 

@@ -75,7 +75,7 @@ const styleThunk = () => ({
     flexDirection: 'column'
   },
   projectsLayoutShared: {
-    paddingLeft: '1rem'
+    // paddingLeft: '1rem'
   }
 });
 

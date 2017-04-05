@@ -32,14 +32,14 @@ Tag.propTypes = {
 const styleThunk = () => ({
   tagBase: {
     backgroundColor: 'transparent',
-    border: '1px solid transparent',
     borderRadius: '4em',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, .3)',
     color: appTheme.palette.dark,
     display: 'inline-block',
     fontSize: '.625rem',
     fontWeight: 700,
     height: '.875rem',
-    lineHeight: '.75rem',
+    lineHeight: '.875rem',
     marginLeft: ui.tagGutter,
     padding: '0 .4375rem',
     textTransform: 'uppercase',
@@ -48,31 +48,26 @@ const styleThunk = () => ({
 
   cool: {
     backgroundColor: appTheme.palette.cool10l,
-    borderColor: appTheme.palette.cool40l,
     color: appTheme.palette.cool
   },
 
   gray: {
     backgroundColor: appTheme.palette.mid10l,
-    borderColor: appTheme.palette.mid30l,
     color: appTheme.palette.dark
   },
 
   light: {
     backgroundColor: appTheme.palette.light,
-    borderColor: appTheme.palette.light70g,
     color: appTheme.palette.light30d
   },
 
   warm: {
     backgroundColor: appTheme.palette.warm10l,
-    borderColor: appTheme.palette.warm40l,
     color: appTheme.palette.warm
   },
 
   white: {
     backgroundColor: '#fff',
-    borderColor: '#fff',
     color: appTheme.palette.mid
   }
 });

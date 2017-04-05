@@ -43,6 +43,7 @@ const MeetingLobby = (props) => {
             colorPalette="cool"
             label="Start Meeting"
             onClick={onStartMeetingClick}
+            raised
             size="largest"
             textTransform="uppercase"
           />

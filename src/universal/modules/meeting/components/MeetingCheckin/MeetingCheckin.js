@@ -1,33 +1,30 @@
 import React, {PropTypes} from 'react';
-import IconLink from 'universal/components/IconLink/IconLink';
-import ProgressBarContainer from 'universal/modules/meeting/containers/ProgressBarContainer/ProgressBarContainer';
-import CheckinCards from 'universal/modules/meeting/components/CheckinCards/CheckinCards';
+import {cashay} from 'cashay';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite-local-styles/no-important';
+import CheckInControls from 'universal/modules/meeting/components/CheckInControls/CheckInControls';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import {CHECKIN} from 'universal/utils/constants';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
-import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 
 const MeetingCheckin = (props) => {
   const {
-    gotoItem,
     gotoNext,
     localPhaseItem,
     members,
-    onFacilitatorPhase,
     team,
-    hideMoveMeetingControls
+    styles
   } = props;
 
   const {
     checkInGreeting,
     checkInQuestion,
-    facilitatorPhaseItem,
-    meetingPhase,
-    meetingPhaseItem
+    facilitatorPhaseItem
   } = team;
+
   if (localPhaseItem > members.length) {
     return (
       <LoadingView>
@@ -38,65 +35,75 @@ const MeetingCheckin = (props) => {
     );
   }
 
-  // 1-indexed
-  const isLastMember = localPhaseItem === members.length;
+  const makeCheckinPressFactory = (teamMemberId) => (isCheckedIn) => () => {
+    const options = {
+      variables: {
+        isCheckedIn,
+        teamMemberId
+      }
+    };
+    cashay.mutate('checkIn', options);
+    gotoNext();
+  };
+
+  const memberIdx = localPhaseItem - 1;
+  const currentMember = members[memberIdx];
+  const nextMember = memberIdx < members.length && members[memberIdx + 1];
+
+  const currentAvatar = members[localPhaseItem - 1] && members[localPhaseItem - 1].picture;
   const currentName = members[localPhaseItem - 1] && members[localPhaseItem - 1].preferredName;
-  const isComplete = actionMeeting[meetingPhase].index > actionMeeting[CHECKIN].index;
+  const meetingPromptHeading = () =>
+    <span>
+      <span style={{color: appTheme.palette.warm}}>{checkInGreeting}, {currentName}</span>
+      <br /><i>{checkInQuestion}</i>?
+    </span>;
   return (
     <MeetingMain>
-      {/* */}
-      <MeetingSection>
-        <ProgressBarContainer
-          gotoItem={gotoItem}
-          isComplete={isComplete}
-          facilitatorPhaseItem={facilitatorPhaseItem}
-          localPhaseItem={localPhaseItem}
-          meetingPhaseItem={meetingPhaseItem}
-          membersCount={members.length}
-          onFacilitatorPhase={onFacilitatorPhase}
-        />
-      </MeetingSection>
       <MeetingSection flexToFill paddingBottom="1rem">
-        <MeetingSection paddingBottom=".5rem">
-          <MeetingPrompt
-            heading={<span><span style={{color: appTheme.palette.warm}}>{checkInGreeting}, {currentName}</span>—{checkInQuestion}?</span>}
-          />
-        </MeetingSection>
-        {/* */}
-        <CheckinCards
-          gotoItem={gotoItem}
-          gotoNext={gotoNext}
-          localPhaseItem={localPhaseItem}
-          members={members}
+        <MeetingPrompt
+          avatar={currentAvatar}
+          avatarLarge
+          heading={meetingPromptHeading()}
         />
-        <MeetingSection paddingTop=".75rem">
-          {!hideMoveMeetingControls &&
-            <IconLink
-              colorPalette="cool"
-              icon="arrow-circle-right"
-              iconPlacement="right"
-              label={isLastMember ? 'Move on to Updates' : 'Next teammate (press enter)'}
-              scale="large"
-              onClick={gotoNext}
-            />
-          }
-        </MeetingSection>
-        {/* */}
-        {/* */}
+        <div className={css(styles.base)}>
+          <CheckInControls
+            checkInPressFactory={makeCheckinPressFactory(currentMember.id)}
+            nextMember={nextMember}
+          />
+        </div>
       </MeetingSection>
-      {/* */}
     </MeetingMain>
   );
 };
 
 MeetingCheckin.propTypes = {
-  gotoItem: PropTypes.func.isRequired,
   gotoNext: PropTypes.func.isRequired,
   localPhaseItem: PropTypes.number,
   members: PropTypes.array,
   onFacilitatorPhase: PropTypes.bool,
-  team: PropTypes.object,
-  hideMoveMeetingControls: PropTypes.bool
+  styles: PropTypes.object,
+  team: PropTypes.object
 };
 
-export default MeetingCheckin;
+const styleThunk = () => ({
+  base: {
+    display: 'flex',
+    justifyContent: 'center',
+    padding: '1rem 0',
+    width: '100%',
+
+    [ui.breakpoint.wide]: {
+      padding: '2rem 0'
+    },
+
+    [ui.breakpoint.wider]: {
+      padding: '3rem 0'
+    },
+
+    [ui.breakpoint.widest]: {
+      padding: '4rem 0'
+    }
+  }
+});
+
+export default withStyles(styleThunk)(MeetingCheckin);

@@ -1,11 +1,9 @@
-import appTheme from 'universal/styles/theme/appTheme';
 import {cardRootStyles} from 'universal/styles/helpers';
 import ui from 'universal/styles/ui';
 
 const CreateCardRootStyles = {
   ...cardRootStyles,
   alignItems: 'center',
-  borderColor: appTheme.palette.mid40l,
   display: 'flex !important',
   justifyContent: 'center',
   // TODO: Cards need block containers, not margin (TA)

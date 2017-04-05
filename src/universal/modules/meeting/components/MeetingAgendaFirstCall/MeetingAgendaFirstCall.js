@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react';
-import IconLink from 'universal/components/IconLink/IconLink';
+import Button from 'universal/components/Button/Button';
 import Type from 'universal/components/Type/Type';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
@@ -23,18 +23,18 @@ const MeetingAgendaFirstCall = (props) => {
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="2rem">
           <MeetingPhaseHeading>Whatcha need?</MeetingPhaseHeading>
-          <Type align="center" bold marginTop="2rem" scale="s5" colorPalette="black">
+          <Type align="center" bold marginBottom="2rem" marginTop="2rem" scale="s5" colorPalette="black">
             Add your Agenda Items to the queue now…
           </Type>
           {!hideMoveMeetingControls ?
-            <IconLink
+            <Button
+              buttonStyle="flat"
+              colorPalette="cool"
               icon="arrow-circle-right"
               iconPlacement="right"
               label="…great! Let’s take care of our Agenda Items"
-              scale="large"
-              colorPalette="cool"
               onClick={gotoNext}
-              margin="2rem 0 0"
+              size="medium"
             /> :
             <div className={css(styles.warmHighlight)}>
               <Type align="center" scale="s4" colorPalette="black">
@@ -66,8 +66,7 @@ const styleThunk = () => ({
   warmHighlight: {
     backgroundColor: appTheme.palette.warm10l,
     borderRadius: '.25rem',
-    padding: '.25rem 1rem',
-    marginTop: '.75rem'
+    padding: '.25rem 1rem'
   }
 });
 
