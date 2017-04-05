@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
 import makeUsername from 'universal/utils/makeUsername';
 
-const MeetingUpdates = (props) => {
+const MeetingUpdatesPrompt = (props) => {
   const {
     localPhaseItem,
     members
@@ -19,10 +19,9 @@ const MeetingUpdates = (props) => {
   );
 };
 
-MeetingUpdates.propTypes = {
+MeetingUpdatesPrompt.propTypes = {
   localPhaseItem: PropTypes.number.isRequired,
-  members: PropTypes.array.isRequired,
-  styles: PropTypes.object.isRequired,
+  members: PropTypes.array.isRequired
 };
 
-export default MeetingUpdates;
+export default MeetingUpdatesPrompt;
