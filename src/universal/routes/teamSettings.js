@@ -20,5 +20,12 @@ export default (store) => ({
     const newReducer = makeReducer(asyncReducers);
     store.replaceReducer(newReducer);
     cb(null, component);
-  }
+  },
+  // getChildRoutes: (childLocation, cbChild) => {
+  //   cbChild(null, [
+  //     /* eslint-disable global-require */
+  //     require('./integrations').default(store),
+  //     /* eslint-enable */
+  //   ]);
+  // }
 });

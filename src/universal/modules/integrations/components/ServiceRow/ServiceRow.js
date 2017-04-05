@@ -1,0 +1,86 @@
+import React, {PropTypes} from 'react';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite-local-styles/no-important';
+import appTheme from 'universal/styles/theme/appTheme';
+import Row from 'universal/components/Row/Row';
+import Button from "../../../../components/Button/Button";
+import {Field, reduxForm} from 'redux-form';
+import ServiceDropdownInput from 'universal/modules/integrations/components/ServiceDropdownInput/ServiceDropdownInput';
+
+const ServiceRow = (props) => {
+  const {
+    accessToken,
+    logo,
+    name,
+    openOauth,
+    removeOauth,
+    styles
+  } = props;
+  return (
+    <Row>
+      <div className={css(styles.logo)}>
+        <img height={50} width={50} src={logo}/>
+      </div>
+      <div className={css(styles.name)}>
+        {name}
+      </div>
+      <div>
+        <Field
+          accessToken={accessToken}
+          colorPalette="gray"
+          component={ServiceDropdownInput}
+          name="repo"
+        />
+      </div>
+      {
+        accessToken ?
+          <div>
+            <Button
+              colorPalette="cool"
+              label="Refresh access Token"
+              size="smallest"
+              buttonStyle="solid"
+              onClick={openOauth}
+            />
+            <Button
+              colorPalette="warm"
+              label="Remove Integrations"
+              size="smallest"
+              buttonStyle="flat"
+              onClick={removeOauth}
+            />
+          </div> :
+          <Button colorPalette="cool" label="Add integration" size="smallest" buttonStyle="solid" onClick={openOauth}/>
+      }
+    </Row>
+  );
+};
+
+ServiceRow.propTypes = {
+  actions: PropTypes.any,
+  email: PropTypes.string,
+  invitedAt: PropTypes.string,
+  isAdmin: PropTypes.bool,
+  isLead: PropTypes.bool,
+  picture: PropTypes.string,
+  name: PropTypes.string,
+  styles: PropTypes.object
+};
+
+const styleThunk = () => ({
+  logo: {
+    flexShrink: 0
+  },
+
+  name: {
+    color: appTheme.palette.dark,
+    display: 'inline-block',
+    fontSize: appTheme.typography.s4,
+    lineHeight: '1.625rem',
+    verticalAlign: 'middle'
+  },
+});
+
+export default reduxForm()(
+  withStyles(styleThunk)(ServiceRow)
+);

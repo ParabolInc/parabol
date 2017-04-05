@@ -5,6 +5,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
 import portal from 'react-portal-hoc';
+import Spinner from "../../../spinner/components/Spinner/Spinner";
 
 
 const Menu = (props) => {
@@ -34,6 +35,11 @@ const Menu = (props) => {
         >
           {label && <div className={css(styles.label)}>{label}</div>}
           {kids}
+          {kids.length === 0 &&
+            <div className={css(styles.spinner)}>
+              <Spinner fillColor="cool" width={25}/>
+            </div>
+          }
         </div>
       </div>
     </div>
@@ -89,7 +95,8 @@ const styleThunk = () => ({
 
   menuBlock: {
     paddingTop: '.25rem',
-    position: 'absolute'
+    position: 'absolute',
+    zIndex: ui.zMenu
   },
 
   menu: {
@@ -113,6 +120,10 @@ const styleThunk = () => ({
     lineHeight: '1.5rem',
     marginBottom: ui.menuGutterVertical,
     padding: `0 ${ui.menuGutterHorizontal} ${ui.menuGutterVertical}`
+  },
+
+  spinner: {
+    width: '100%'
   }
 });
 

@@ -17,11 +17,6 @@ query {
     picture
     preferredName
   },
-  integrations(teamMemberId: $teamMemberId) @live {
-    id
-    service
-    userId
-  }
   invitations(teamId: $teamId) @live {
     id
     email
@@ -37,7 +32,7 @@ query {
 const mapStateToProps = (state, props) => {
   const {params: {teamId}} = props;
   const teamMemberId = `${state.auth.obj.sub}::${teamId}`;
-  const {invitations, integrations, orgApprovals, team, teamMembers} = cashay.query(teamSettingsQuery, {
+  const {invitations, orgApprovals, team, teamMembers} = cashay.query(teamSettingsQuery, {
     op: 'teamSettingsContainer',
     key: teamId,
     sort: {
@@ -45,18 +40,15 @@ const mapStateToProps = (state, props) => {
       invitations: (a, b) => a.createdAt > b.createdAt ? 1 : -1,
       orgApprovals: (a, b) => a.email > b.email ? 1 : -1
     },
-    resolveChannelKey: {
-      integrations: () => teamMemberId
-    },
     variables: {teamId, teamMemberId}
   }).data;
   return {
-    integrations,
     invitations,
     orgApprovals,
     team,
     teamMembers,
-    myTeamMemberId: teamMemberId
+    myTeamMemberId: teamMemberId,
+    beta: state.auth.obj.bet
   };
 };
 
@@ -64,9 +56,9 @@ const TeamSettingsContainer = (props) => {
   const {
     dispatch,
     orgApprovals,
-    integrations,
     invitations,
     myTeamMemberId,
+    beta,
     team,
     teamMembers
   } = props;
@@ -77,10 +69,10 @@ const TeamSettingsContainer = (props) => {
   return (
     <TeamSettings
       dispatch={dispatch}
-      integrations={integrations}
       invitations={invitations}
       orgApprovals={orgApprovals}
       myTeamMember={myTeamMember}
+      beta={beta}
       team={team}
       teamMembers={teamMembers}
     />
