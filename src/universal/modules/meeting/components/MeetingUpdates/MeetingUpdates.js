@@ -51,7 +51,7 @@ MeetingUpdates.propTypes = {
   onFacilitatorPhase: PropTypes.bool,
   projects: PropTypes.object.isRequired,
   queryKey: PropTypes.string.isRequired,
-  styles: PropTypes.object.isRequired,
+  styles: PropTypes.object,
   team: PropTypes.object.isRequired,
   hideMoveMeetingControls: PropTypes.bool
 };
