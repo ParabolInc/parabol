@@ -4,6 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.17.3 - 05-Apr-2017
+### Added
+- Action meeting layout and check-in UI/UX changes:
+   - #717 Simplified meeting check-in process
+   - #627 More vertical height during project updates
+   - New placement and look for callouts and avatars
+- New counters on project columns
+
 ## v0.17.2 - 04-Apr-2017
 ### Added
 - #555 can now archive teams
