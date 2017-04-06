@@ -1,6 +1,7 @@
 const path = require('path');
-const resolve = require('resolve');
-require('babel-register')({
+const resolve = require('resolve'); // eslint-disable-line import/no-extraneous-dependencies
+
+require('babel-register')({ // eslint-disable-line import/no-extraneous-dependencies
   /*
    * Setup require and ES6 import statements to resolve from our app's
    * root path, just like our webpack environment is configured to do.
@@ -20,9 +21,8 @@ require('babel-register')({
     });
   }
 });
-require('babel-polyfill');
 const {transformSchema} = require('cashay');
 const graphql = require('graphql').graphql;
-const rootSchema = require('../graphql/rootSchema');
+const rootSchema = require('../graphql/rootSchema').default;
 
 module.exports = () => transformSchema(rootSchema, graphql);

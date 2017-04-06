@@ -1,9 +1,12 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
+import Tag from 'universal/components/Tag/Tag';
 import {UPDATES} from 'universal/utils/constants';
+import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 
 const AvatarGroup = (props) => {
   const {localPhase, avatars, styles} = props;
@@ -14,18 +17,28 @@ const AvatarGroup = (props) => {
         {label}
       </div>
       {
-        avatars.map((avatar, index) =>
-          <div className={css(styles.item)} key={index}>
-            <Avatar
-              {...avatar}
-              forGroup
-              hasBadge
-              hasBorder
-              isActive={avatar.isFacilitating}
-              size="small"
-            />
-          </div>
-        )
+        avatars.map((avatar) => {
+          const picture = avatar.picture || defaultUserAvatar;
+          const isFacilitating = avatar.isFacilitating;
+          return (
+            <div className={css(styles.item)} key={avatar.id}>
+              <Avatar
+                {...avatar}
+                picture={picture}
+                forGroup
+                hasBadge
+                hasBorder
+                isActive={isFacilitating}
+                size="small"
+              />
+              {isFacilitating &&
+                <div className={css(styles.tagBlock)}>
+                  <Tag colorPalette="gray" label="Facilitator" />
+                </div>
+              }
+            </div>
+          );
+        })
       }
     </div>
   );
@@ -70,7 +83,15 @@ const styleThunk = () => ({
     display: 'inline-block',
     margin: '0 .75rem',
     position: 'relative',
-    verticalAlign: 'middle'
+    verticalAlign: 'top'
+  },
+
+  tagBlock: {
+    bottom: '-1.5rem',
+    left: '50%',
+    paddingRight: ui.tagGutter,
+    position: 'absolute',
+    transform: 'translateX(-50%)'
   }
 });
 

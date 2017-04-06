@@ -16,7 +16,8 @@ import {makeSuccessExpression} from 'universal/utils/makeSuccessCopy';
 const MeetingAgendaLastCall = (props) => {
   const {
     agendaItemCount,
-    isFacilitating,
+    actionCount,
+    hideMoveMeetingControls,
     gotoNext,
     facilitatorName,
     styles
@@ -44,20 +45,21 @@ const MeetingAgendaLastCall = (props) => {
             We worked on <span className={css(styles.highlight)}>{`${agendaItemCount} ${plural(agendaItemCount, 'Agenda Item')}`}</span>
             —any additional items?
           </Type>
-          <AgendaShortcutHint />
+          {!hideMoveMeetingControls ?
           <div style={{marginBottom: '2.5rem'}}></div>
           {isFacilitating ?
             <Button
+              buttonStyle="solid"
               colorPalette="cool"
               label="End Meeting"
               onClick={gotoNext}
+              raised
               size="largest"
-              style="solid"
               textTransform="uppercase"
             /> :
             <div className={css(styles.warmHighlight)}>
               <Type align="center" scale="s4" colorPalette="black">
-                <span className={css(styles.highlight)}>Waiting for <b>{facilitatorName}</b> to end the meeting<Ellipsis/></span>
+                <span className={css(styles.highlight)}>Waiting for <b>{facilitatorName}</b> to end the meeting<Ellipsis /></span>
               </Type>
             </div>
           }
@@ -72,7 +74,7 @@ MeetingAgendaLastCall.propTypes = {
   gotoNext: PropTypes.func,
   facilitatorName: PropTypes.string,
   localPhaseItem: PropTypes.number,
-  isFacilitating: PropTypes.bool,
+  hideMoveMeetingControls: PropTypes.bool,
   styles: PropTypes.object,
   team: PropTypes.object
 };

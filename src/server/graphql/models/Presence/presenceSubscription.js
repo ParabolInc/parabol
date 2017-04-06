@@ -1,4 +1,4 @@
-import {Presence} from './presenceSchema';
+import Presence from './presenceSchema';
 import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
 
 export default {

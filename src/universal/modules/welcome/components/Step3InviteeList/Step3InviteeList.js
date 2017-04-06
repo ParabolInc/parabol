@@ -1,9 +1,9 @@
 import React, {PropTypes} from 'react';
 import {reduxForm, destroy} from 'redux-form';
 import Button from 'universal/components/Button/Button';
-import LabeledFieldArray from 'universal/containers/LabeledFieldArray/LabeledFieldArrayContainer.js';
+import LabeledFieldArray from 'universal/containers/LabeledFieldArray/LabeledFieldArrayContainer';
 import {cashay} from 'cashay';
-import {showSuccess} from 'universal/modules/notifications/ducks/notifications';
+import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
 import {Link, withRouter} from 'react-router';
 import makeStep3Schema from 'universal/validation/makeStep3Schema';
@@ -24,7 +24,7 @@ const Step3InviteeList = (props) => {
   const {dispatch, existingInvites, handleSubmit, invitees, router, styles, teamId} = props;
   const onInviteTeamSubmit = () => {
     if (invitees && invitees.length > 0) {
-      const serverInvitees = invitees.map(invitee => {
+      const serverInvitees = invitees.map((invitee) => {
         const {email, fullName, task} = invitee;
         return {
           email,
@@ -72,7 +72,7 @@ const Step3InviteeList = (props) => {
             label="Looks Good!"
             onMouseEnter={() => {
               // optimistically fetch the big ol payload
-              System.import('universal/containers/Dashboard/DashboardContainer');
+              System.import('universal/modules/userDashboard/components/UserDashboard/UserDashboard');
             }}
             size="medium"
             type="submit"
@@ -86,7 +86,12 @@ const Step3InviteeList = (props) => {
       to={`/team/${teamId}`}
       className={css(styles.noThanks)}
       onMouseEnter={() => {
-        System.import('universal/containers/Dashboard/DashboardContainer');
+        System.import('universal/modules/userDashboard/components/UserDashboard/UserDashboard');
+      }}
+      onClick={() => {
+        dispatch(
+          segmentEventTrack('Welcome Step3 Completed', {inviteeCount: 0})
+        );
       }}
       title="I'll invite them later"
     >
@@ -119,4 +124,3 @@ export default reduxForm({
   destroyOnUnmount: false,
   validate
 })(withRouter(withStyles(styleThunk)(Step3InviteeList)));
-

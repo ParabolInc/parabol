@@ -37,7 +37,7 @@ const Type = (props) => {
   };
 
   // mutates the above object, getting rid of nulls. not sure if react does this for us?
-  Object.keys(styleTag).forEach(tag => {
+  Object.keys(styleTag).forEach((tag) => {
     if (styleTag[tag] === null) {
       delete styleTag[tag];
     }

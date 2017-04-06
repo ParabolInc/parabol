@@ -5,7 +5,6 @@ import Helmet from 'react-helmet';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import SummaryEmail from 'universal/modules/email/components/SummaryEmail/SummaryEmail';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
-import {segmentEventTrack} from 'universal/redux/segmentActions';
 import makeHref from 'universal/utils/makeHref';
 import {maintainSocket} from 'redux-socket-cluster';
 
@@ -87,24 +86,10 @@ export default class MeetingSummaryContainer extends Component {
     cashay.mutate('summarizeMeeting', {variables});
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {dispatch, meeting: {meetingNumber: oldMeetingNumber}} = this.props;
-    const {meeting: {meetingNumber: newMeetingNumber}} = nextProps;
-    /*
-     * Track meeting completitions by idenity.
-     *
-     * N.B. it is ok if these are sent as dupes, i.e. when viewed from
-     * meeting history.
-     */
-    if (!oldMeetingNumber && newMeetingNumber) {
-      dispatch(segmentEventTrack('Meeting Completed', {meetingNumber: newMeetingNumber }));
-    }
-  }
-
   render() {
     const {meeting} = this.props;
     if (!meeting.createdAt) {
-      return <LoadingView/>;
+      return <LoadingView />;
     }
     const {teamId} = meeting;
     const title = `Action Meeting #${meeting.meetingNumber} Summary for ${meeting.teamName}`;

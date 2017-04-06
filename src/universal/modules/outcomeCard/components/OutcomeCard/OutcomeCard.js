@@ -1,8 +1,8 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import {cardRootStyles} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
 import labels from 'universal/styles/theme/labels';
 import {ACTIVE, STUCK, DONE, FUTURE, USER_DASH} from 'universal/utils/constants';
 import {cardBorderTop} from 'universal/styles/helpers';
@@ -59,21 +59,21 @@ const OutcomeCard = (props) => {
       }
       {openArea === 'content' &&
         <div>
+          <EditingStatusContainer
+            form={form}
+            outcomeId={outcome.id}
+            updatedAt={outcome.updatedAt}
+          />
           <form>
-            <EditingStatusContainer
-              form={form}
-              outcomeId={outcome.id}
-              updatedAt={outcome.updatedAt}
-            />
             <Field
               cardHasHover={hasHover}
               component={OutcomeCardTextarea}
+              doSubmitOnEnter
               handleActive={handleCardActive}
               handleSubmit={handleSubmit(handleCardUpdate)}
               isProject={isProject}
               name={outcome.id}
               isArchived={outcome.isArchived}
-              doFocus={!outcome.content}
             />
           </form>
         </div>
@@ -127,14 +127,8 @@ OutcomeCard.propTypes = {
 
 const styleThunk = () => ({
   root: {
-    backgroundColor: '#fff',
-    border: `1px solid ${ui.cardBorderColor}`,
-    borderRadius: ui.cardBorderRadius,
-    maxWidth: ui.cardMaxWidth,
-    minHeight: ui.cardMinHeight,
+    ...cardRootStyles,
     paddingTop: '.1875rem',
-    position: 'relative',
-    width: '100%',
 
     '::after': {
       ...cardBorderTop

@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import FontAwesome from 'react-fontawesome';
-import appTheme from 'universal/styles/theme/appTheme.js';
+import appTheme from 'universal/styles/theme/appTheme';
 import {srOnly} from 'universal/styles/helpers';
 
 const ShortcutsMenu = (props) => {
@@ -69,10 +69,6 @@ ShortcutsMenu.defaultProps = {
       definition: 'Set project to Future'
     }
   ],
-  onCloseClick(e) {
-    e.preventDefault();
-    console.log('ShortcutsMenu onCloseClick()');
-  }
 };
 
 const keystrokeHeight = '1.5rem';

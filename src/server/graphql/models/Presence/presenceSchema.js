@@ -4,7 +4,7 @@ import {
   GraphQLID
 } from 'graphql';
 
-export const Presence = new GraphQLObjectType({
+const Presence = new GraphQLObjectType({
   name: 'Presence',
   description: 'A connection\'s presence in a team',
   fields: () => ({
@@ -13,3 +13,5 @@ export const Presence = new GraphQLObjectType({
     editing: {type: GraphQLID, description: 'The normalized object id currently edited by the user' }
   })
 });
+
+export default Presence;

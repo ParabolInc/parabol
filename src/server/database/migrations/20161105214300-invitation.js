@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-exports.up = async(r) => {
+exports.up = async (r) => {
   const indices = [
     r.table('Project').indexCreate('tokenExpiration')
   ];
@@ -12,7 +12,7 @@ exports.up = async(r) => {
   await Promise.all(fields);
 };
 
-exports.down = async(r) => {
+exports.down = async (r) => {
   const indices = [
     r.table('Project').indexDrop('tokenExpiration')
   ];

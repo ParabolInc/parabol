@@ -2,8 +2,10 @@ import ui from 'universal/styles/ui';
 
 const cardRootStyles = {
   backgroundColor: '#fff',
-  border: `1px solid ${ui.cardBorderColor}`,
+  border: 0,
   borderRadius: ui.cardBorderRadius,
+  borderTop: '1px solid',
+  boxShadow: ui.cardBoxShadow,
   position: 'relative',
   width: '100%'
 };

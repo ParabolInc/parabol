@@ -5,10 +5,16 @@ import {
   AGENDA,
   ARCHIVED_PROJECTS,
   INVITATIONS,
+  NOTIFICATIONS,
+  ORG_APPROVALS,
+  ORGANIZATION,
+  ORGANIZATIONS,
+  OWNED_ORGANIZATIONS,
   TEAM,
   TEAM_MEMBERS,
-  PRESENCE,
-  PROJECTS
+  PROJECTS,
+  UPCOMING_INVOICE,
+  USERS_BY_ORG
 } from 'universal/subscriptions/constants';
 
 // For now, use an array. In the future, we can make one exclusively for the server that doesn't need to reparse the AST
@@ -90,6 +96,20 @@ export default [
     }`
   },
   {
+    channel: USERS_BY_ORG,
+    string: `
+    subscription($orgId: ID!) {
+      usersByOrg(orgId: $orgId) {
+        id
+        isBillingLeader
+        email
+        inactive
+        picture
+        preferredName
+      }
+    }`
+  },
+  {
     channel: INVITATIONS,
     string: `
     subscription($teamId: ID!) {
@@ -102,16 +122,84 @@ export default [
     }`
   },
   {
-    channel: PRESENCE,
+    channel: NOTIFICATIONS,
     string: `
-    subscription($teamId: ID!) {
-      presence(teamId: $teamId) {
+    subscription($userId: ID!) {
+      notifications(userId: $userId) {
         id
-        userId
-        editing
+        orgId
+        startAt
+        type
+        varList
       }
     }`
   },
+  {
+    channel: ORG_APPROVALS,
+    string: `
+    subscription($teamId: ID!) {
+      orgApprovals(teamId: $teamId) {
+        id
+        createdAt
+        email
+      }
+    }`
+  },
+  {
+    channel: ORGANIZATION,
+    string: `
+    subscription($orgId: ID!) {
+      organization(orgId: $orgId) {
+        id
+        activeUserCount
+        createdAt
+        creditCard {
+          brand
+          expiry
+          last4
+        }
+        inactiveUserCount
+        name
+        periodEnd
+        periodStart
+        picture
+      }
+    }`
+  },
+  {
+    channel: ORGANIZATIONS,
+    string: `
+    subscription($userId: ID!) {
+      organizations(userId: $userId) {
+        id
+        name
+      }
+    }`
+  },
+  {
+    channel: OWNED_ORGANIZATIONS,
+    string: `
+    subscription($userId: ID!) {
+      ownedOrganizations(userId: $userId) {
+        id
+        activeUserCount
+        inactiveUserCount
+        name
+        picture
+      }
+    }`
+  },
+  // {
+  //   channel: PRESENCE,
+  //   string: `
+  //   subscription($teamId: ID!) {
+  //     presence(teamId: $teamId) {
+  //       id
+  //       userId
+  //       editing
+  //     }
+  //   }`
+  // },
   {
     channel: PROJECTS,
     string: `
@@ -125,9 +213,8 @@ export default [
         isArchived
         status
         teamMemberId
-        teamSort
+        sortOrder
         updatedAt
-        userSort
       }
     }`
   },
@@ -139,6 +226,8 @@ export default [
          checkInGreeting,
          checkInQuestion,
          id,
+         isArchived,
+         isPaid,
          name,
          meetingId,
          activeFacilitator,
@@ -157,6 +246,7 @@ export default [
          id,
          checkInOrder,
          email,
+         hideAgenda,
          isNotRemoved,
          isCheckedIn,
          isFacilitator,
@@ -167,10 +257,28 @@ export default [
     }`
   },
   {
+    channel: UPCOMING_INVOICE,
+    string: `
+    subscription($orgId: ID!) {
+      upcomingInvoice(orgId: $orgId) {
+        id
+        amountDue
+        cursor
+        endAt
+        paidAt
+        startAt
+        status
+      }
+    }`
+  },
+  {
     channel: 'user',
     string: `
     subscription($userId: ID!) {
-      user(userId: $userId)
+      user(userId: $userId) {
+        id
+        notificationFlags
+      }
     }`
   }
 ];

@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 
 const DashHeader = (props) => {
   const {children, hasOverlay, styles} = props;
@@ -33,7 +34,7 @@ const styleThunk = () => ({
   },
 
   hasOverlay: {
-    filter: 'blur(1.5px)'
+    filter: ui.filterBlur
   }
 });
 

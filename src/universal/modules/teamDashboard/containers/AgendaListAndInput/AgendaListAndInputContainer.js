@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
+import {phaseArray} from 'universal/utils/constants';
 import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput';
 import handleAgendaSort from 'universal/modules/meeting/helpers/handleAgendaSort';
 
@@ -16,13 +17,13 @@ query {
       id
       picture
       preferredName
-    } 
+    }
   },
   myTeamMember @cached(type: "TeamMember") {
     id
     picture
     preferredName
-  }  
+  }
 }`;
 
 const mutationHandlers = {
@@ -54,12 +55,31 @@ const mapStateToProps = (state, props) => {
 };
 
 const AgendaListAndInputContainer = (props) => {
-  const {agendaPhaseItem, agenda, gotoItem, myTeamMember, teamId} = props;
+  const {
+    agendaPhaseItem,
+    agenda,
+    context,
+    disabled,
+    facilitatorPhase,
+    facilitatorPhaseItem,
+    gotoAgendaItem,
+    localPhase,
+    localPhaseItem,
+    myTeamMember,
+    teamId
+  } = props;
+
   return (
     <AgendaListAndInput
       agenda={agenda}
       agendaPhaseItem={agendaPhaseItem}
-      gotoItem={gotoItem}
+      context={context}
+      disabled={disabled}
+      facilitatorPhase={facilitatorPhase}
+      facilitatorPhaseItem={facilitatorPhaseItem}
+      gotoAgendaItem={gotoAgendaItem}
+      localPhase={localPhase}
+      localPhaseItem={localPhaseItem}
       myTeamMember={myTeamMember}
       teamId={teamId}
     />
@@ -69,7 +89,16 @@ const AgendaListAndInputContainer = (props) => {
 AgendaListAndInputContainer.propTypes = {
   agenda: PropTypes.array,
   agendaPhaseItem: PropTypes.number,
-  gotoItem: PropTypes.func.isRequired,
+  context: PropTypes.oneOf([
+    'dashboard',
+    'meeting'
+  ]),
+  disabled: PropTypes.bool,
+  facilitatorPhase: PropTypes.oneOf(phaseArray),
+  facilitatorPhaseItem: PropTypes.number,
+  gotoAgendaItem: PropTypes.func,
+  localPhase: PropTypes.oneOf(phaseArray),
+  localPhaseItem: PropTypes.number,
   myTeamMember: PropTypes.object,
   teamId: PropTypes.string
 };

@@ -7,6 +7,8 @@ const dashNavListQuery = `
 query {
   teams @cached(type: "[Team]") {
     id
+    isArchived
+    isPaid
     name
     meetingId
   }
@@ -17,7 +19,7 @@ const mapStateToProps = () => {
   const {teams} = cashay.query(dashNavListQuery, {
     op: 'dashNavListContainer',
     resolveCached: {
-      teams: () => () => true
+      teams: () => (doc) => !doc.isArchived
     },
     sort: {
       teams: (a, b) => a.name > b.name ? 1 : -1
@@ -30,11 +32,11 @@ const mapStateToProps = () => {
 
 const DashNavListContainer = (props) => {
   const {teams} = props;
-  return <DashNavList teams={teams}/>;
+  return <DashNavList teams={teams} />;
 };
 
 DashNavListContainer.propTypes = {
   teams: PropTypes.array
 };
 
-export default connect(mapStateToProps)(DashNavListContainer);
+export default connect(mapStateToProps, undefined, undefined, {pure: false})(DashNavListContainer);

@@ -6,7 +6,7 @@ import globalStyles from 'universal/styles/theme/globalStyles';
 import {segmentEventPage} from 'universal/redux/segmentActions';
 
 const updateAnalyticsPage = (dispatch, lastPage, nextPage) => {
-  if (typeof document === 'undefined') return;
+  if (typeof document === 'undefined' || typeof window.analytics === 'undefined') return;
   const name = document && document.title || '';
   const properties = {
     title: name,

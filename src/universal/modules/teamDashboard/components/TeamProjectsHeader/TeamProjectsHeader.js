@@ -28,8 +28,36 @@ const inlineBlock = {
   verticalAlign: 'middle'
 };
 
+const originAnchor = {
+  vertical: 'bottom',
+  horizontal: 'right'
+};
+
+const targetAnchor = {
+  vertical: 'top',
+  horizontal: 'right'
+};
+
 const TeamProjectsHeader = (props) => {
   const {dispatch, styles, teamId, teamMemberFilterId, teamMemberFilterName, teamMembers} = props;
+  const toggle = <DashFilterToggle label={teamMemberFilterName} />;
+
+  const itemFactory = () => {
+    return [<MenuItem
+      isActive={teamMemberFilterId === null}
+      key={'teamMemberFilterNULL'}
+      label={'All members'}
+      onClick={() => dispatch(filterTeamMember(null))}
+    />].concat(
+      teamMembers.map((teamMember) =>
+        <MenuItem
+          isActive={teamMember.id === teamMemberFilterId}
+          key={`teamMemberFilter${teamMember.id}`}
+          label={teamMember.preferredName}
+          onClick={() => dispatch(filterTeamMember(teamMember.id, teamMember.preferredName))}
+        />
+      ));
+  };
   return (
     <DashSectionHeader>
       <DashSectionHeading icon="calendar" label="Team Projects" />
@@ -43,33 +71,17 @@ const TeamProjectsHeader = (props) => {
         </DashSectionControl>
         {/* TODO: needs minimal, inline dropdown */}
         <DashSectionControl>
-          <b style={inlineBlock}>Show Actions & Projects for</b><span style={inlineBlock}>:</span>
-          {' '}
-          <Menu
-            label="Filter by:"
-            menuKey="TeamDashFilterUser"
-            menuOrientation="right"
-            toggle={DashFilterToggle}
-            toggleLabel={teamMemberFilterName}
-            toggleHeight={ui.dashSectionHeaderLineHeight}
-            verticalAlign="top"
-            zIndex="500"
-          >
-            <MenuItem
-              isActive={teamMemberFilterId === null}
-              key={'teamMemberFilterNULL'}
-              label={'All members'}
-              onClick={() => dispatch(filterTeamMember(null))}
+          <div className={css(styles.filterRow)}>
+            <b style={inlineBlock}>Show Actions & Projects for</b><span style={inlineBlock}>:</span>
+            {' '}
+            <Menu
+              itemFactory={itemFactory}
+              label="Filter by:"
+              toggle={toggle}
+              originAnchor={originAnchor}
+              targetAnchor={targetAnchor}
             />
-            {teamMembers.map((teamMember) =>
-              <MenuItem
-                isActive={teamMember.id === teamMemberFilterId}
-                key={`teamMemberFilter${teamMember.id}`}
-                label={teamMember.preferredName}
-                onClick={() => dispatch(filterTeamMember(teamMember.id, teamMember.preferredName))}
-              />
-            )}
-          </Menu>
+          </div>
         </DashSectionControl>
       </DashSectionControls>
     </DashSectionHeader>
@@ -97,6 +109,11 @@ const styleThunk = () => ({
     ':focus': {
       color: appTheme.palette.dark
     }
+  },
+
+  filterRow: {
+    display: 'flex',
+    justifyContent: 'flex-end'
   },
 
   link: {

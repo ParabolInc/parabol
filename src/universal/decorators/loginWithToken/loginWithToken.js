@@ -1,36 +1,59 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router';
+import {unsetNextUrl} from 'universal/redux/authDuck';
 
-const mapStateToProps = state => {
-  const auth = state.auth.obj;
+const mapStateToProps = (state) => {
+  const {auth} = state;
   return {
-    auth: state.auth.obj,
-    user: cashay.query(getAuthQueryString, getAuthedOptions(auth.sub)).data.user
+    auth,
+    user: cashay.query(getAuthQueryString, getAuthedOptions(auth.obj.sub)).data.user
   };
 };
 
-export default ComposedComponent => {
-  const TokenizedComp = (props) => {
-    const {auth, router} = props;
-    if (auth.sub) {
-      // note if you join a team & leave it, tms will be an empty array
-      const isNew = !auth.hasOwnProperty('tms');
-      if (isNew) {
-        router.push('/welcome');
-      } else {
-        router.push('/me');
+const handleAuthChange = (props) => {
+  const {auth, dispatch, router} = props;
+
+  if (auth.obj.sub) {
+    // note if you join a team & leave it, tms will be an empty array
+    const isNew = !auth.obj.hasOwnProperty('tms');
+    if (isNew) {
+      router.push('/welcome');
+    } else if (auth.nextUrl) {
+      router.push(auth.nextUrl);
+      dispatch(unsetNextUrl());
+    } else {
+      router.push('/me');
+    }
+  }
+};
+
+export default (ComposedComponent) => {
+  @connect(mapStateToProps)
+  @withRouter
+  class LoginWithToken extends Component {
+    static propTypes = {
+      auth: PropTypes.object,
+      dispatch: PropTypes.func,
+      router: PropTypes.object.isRequired
+    };
+
+    componentWillMount() {
+      handleAuthChange(this.props);
+    }
+    componentWillReceiveProps(nextProps) {
+      const {auth: {obj: {sub: prevSub}}} = this.props;
+      const {auth: {obj: {sub: nextSub}}} = nextProps;
+      if (prevSub !== nextSub) {
+        handleAuthChange(nextProps);
       }
     }
-    return <ComposedComponent {...props}/>;
-  };
 
-  TokenizedComp.propTypes = {
-    auth: PropTypes.object,
-    router: PropTypes.object.isRequired
-  };
-
-  return connect(mapStateToProps)(withRouter(TokenizedComp));
+    render() {
+      return <ComposedComponent {...this.props} />;
+    }
+  }
+  return LoginWithToken;
 };

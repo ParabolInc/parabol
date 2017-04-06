@@ -13,7 +13,7 @@ const buildMail = (options) => new Promise((resolve, reject) => {
   });
 });
 
-const maybeBuildMail = async(mailOptions) => {
+const maybeBuildMail = async (mailOptions) => {
   try {
     return await buildMail(mailOptions);
   } catch (e) {
@@ -22,11 +22,13 @@ const maybeBuildMail = async(mailOptions) => {
   return false;
 };
 
-const maybeSendMail = async(mimeData) => {
+const maybeSendMail = async (mimeData) => {
   try {
-    await mailgun.messages().sendMime(mimeData);
+    if (mailgun) {
+      await mailgun.messages().sendMime(mimeData);
+    }
   } catch (e) {
-    console.warn(`mailgun: unable to send welcome message ${e}`);
+    console.warn(`mailgun: unable to send message ${e}`);
     return false;
   }
   return true;

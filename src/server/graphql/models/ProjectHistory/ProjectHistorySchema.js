@@ -3,7 +3,7 @@ import {
   GraphQLNonNull,
   GraphQLID,
   GraphQLString,
-GraphQLEnumType
+  GraphQLEnumType
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {ProjectStatus} from '../Project/projectSchema';
@@ -13,9 +13,9 @@ export const ChangeModule = new GraphQLEnumType({
   name: 'ChangeModule',
   description: 'The module where the change occured',
   values: {
-    MEETING: {value: MEETING},
-    TEAM_DASH: {value: TEAM_DASH},
-    USER_DASH: {value: USER_DASH}
+    [MEETING]: {},
+    [TEAM_DASH]: {},
+    [USER_DASH]: {}
   }
 });
 // const ContentDiff = new GraphQLObjectType({
@@ -41,7 +41,10 @@ export const ProjectHistory = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: 'A unique projectHistoryId: shortid'
     },
-    projectId: {type: new GraphQLNonNull(GraphQLID), description: 'The underlying projectId that was changed teamId::shortid'},
+    projectId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The underlying projectId that was changed teamId::shortid'
+    },
     /* duplicate data from the project itself */
     content: {
       type: GraphQLString,

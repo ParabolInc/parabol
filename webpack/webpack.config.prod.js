@@ -1,10 +1,12 @@
 import path from 'path';
 import webpack from 'webpack';
-import AssetsPlugin from 'manifest-assets-webpack-plugin';
+import AssetsPlugin from 'assets-webpack-plugin';
 import WebpackShellPlugin from 'webpack-shell-plugin';
 import S3Plugin from 'webpack-s3-plugin';
-import {getDotenv} from '../src/universal/utils/dotenv';
+import getDotenv from '../src/universal/utils/dotenv';
 import {getS3BasePath} from './utils/getS3BasePath';
+import getWebpackPublicPath from '../src/server/utils/getWebpackPublicPath';
+import npmPackage from '../package.json';
 
 // Import .env and expand variables:
 getDotenv();
@@ -27,26 +29,36 @@ const vendor = [
 ];
 
 const prefetches = [];
-const prefetchPlugins = prefetches.map(specifier => new webpack.PrefetchPlugin(specifier));
+const prefetchPlugins = prefetches.map((specifier) => new webpack.PrefetchPlugin(specifier));
 
 const deployPlugins = [];
-if (process.env.DEPLOY) {
-  deployPlugins.push(new webpack.optimize.UglifyJsPlugin({compressor: {warnings: false}, comments: /(?:)/}));
+if (process.env.WEBPACK_MIN) {
+  deployPlugins.push(new webpack.optimize.UglifyJsPlugin({
+    compressor: {warnings: false},
+    comments: /(?:)/,
+    sourceMap: true
+  }));
+  const sourceMappingBase = getWebpackPublicPath();
+  deployPlugins.push(new webpack.SourceMapDevToolPlugin({
+    filename: '[name]_[chunkhash].js.map',
+    append: `\n//# sourceMappingURL=${sourceMappingBase}[url]`
+  }));
   deployPlugins.push(new webpack.LoaderOptionsPlugin({comments: false}));
-  if (!process.env.CI) {
-    // do not deploy to S3 if running in continuous integration environment:
-    deployPlugins.push(new S3Plugin({
-      s3Options: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-        region: process.env.AWS_REGION
-      },
-      s3UploadOptions: {
-        Bucket: process.env.AWS_S3_BUCKET
-      },
-      basePath: getS3BasePath()
-    }));
-  }
+}
+if (process.env.WEBPACK_DEPLOY) {
+  // do not deploy to S3 if running in continuous integration environment:
+  deployPlugins.push(new S3Plugin({
+    s3Options: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      region: process.env.AWS_REGION
+    },
+    s3UploadOptions: {
+      Bucket: process.env.AWS_S3_BUCKET
+    },
+    basePath: getS3BasePath(),
+    directory: path.join(root, 'build')
+  }));
 }
 
 export default {
@@ -82,11 +94,12 @@ export default {
       filename: 'assets.json',
       includeManifest: true
     }),
-    new webpack.NoErrorsPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: true,
       __WEBPACK__: true,
+      __APP_VERSION__: JSON.stringify(npmPackage.version),
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
     new WebpackShellPlugin({
@@ -102,7 +115,7 @@ export default {
       {test: /\.(eot|ttf|wav|mp3)(\?\S*)?$/, loader: 'file-loader'},
       {
         test: /\.js$/,
-        loader: 'babel',
+        loader: 'babel-loader',
         include: clientInclude
       },
       {

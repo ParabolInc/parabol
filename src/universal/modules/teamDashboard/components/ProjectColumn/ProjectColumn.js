@@ -15,108 +15,143 @@ import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import {Menu, MenuItem} from 'universal/modules/menu';
 import {DropTarget as dropTarget} from 'react-dnd';
 import handleColumnHover from 'universal/dnd/handleColumnHover';
+import handleDrop from 'universal/dnd/handleDrop';
 import withDragState from 'universal/dnd/withDragState';
 import AddProjectButton from 'universal/components/AddProjectButton/AddProjectButton';
+import dndNoise from 'universal/utils/dndNoise';
+import Badge from 'universal/components/Badge/Badge';
 
 const columnTarget = {
+  drop: handleDrop,
   hover: handleColumnHover
 };
 
-const badgeIconStyle = {
-  height: '1.5rem',
-  lineHeight: '1.5rem',
-  width: '1.5rem'
+const originAnchor = {
+  vertical: 'bottom',
+  horizontal: 'right'
 };
-const handleAddProjectFactory = (status, teamMemberId, teamSort, userSort) => () => {
+
+const targetAnchor = {
+  vertical: 'top',
+  horizontal: 'right'
+};
+
+const handleAddProjectFactory = (status, teamMemberId, sortOrder) => () => {
   const [, teamId] = teamMemberId.split('::');
   const newProject = {
     id: `${teamId}::${shortid.generate()}`,
     status,
     teamMemberId,
-    teamSort,
-    userSort
+    sortOrder
   };
   cashay.mutate('createProject', {variables: {newProject}});
 };
 
 const ProjectColumn = (props) => {
-  const {area, connectDropTarget, dragState, status, projects, myTeamMemberId, styles, teams, userId} = props;
+  const {
+    area,
+    connectDropTarget,
+    dragState,
+    firstColumn,
+    lastColumn,
+    status,
+    projects,
+    myTeamMemberId,
+    styles,
+    teams,
+    userId
+  } = props;
 
   const label = themeLabels.projectStatus[status].slug;
-  const makeTeamMenuItems = (userSort) => {
-    return teams.map(team => ({
+  const makeTeamMenuItems = (sortOrder) => {
+    return teams.map((team) => ({
       label: team.name,
-      isActive: false,
       handleClick: () => cashay.mutate('createProject', {
         variables: {
           newProject: {
             id: `${team.id}::${shortid.generate()}`,
             status,
             teamMemberId: `${userId}::${team.id}`,
-            teamSort: 0,
-            userSort
+            sortOrder
           }
         }
       })
     }));
   };
   const makeAddProject = () => {
+    const sortOrder = getNextSortOrder(projects, dndNoise());
     if (area === TEAM_DASH) {
-      const teamSort = getNextSortOrder(projects, 'teamSort');
-      const handleAddProject = handleAddProjectFactory(status, myTeamMemberId, teamSort, 0);
-      return <AddProjectButton toggleClickHandler={handleAddProject} toggleLabel={label}/>;
+      const handleAddProject = handleAddProjectFactory(status, myTeamMemberId, sortOrder);
+      return <AddProjectButton onClick={handleAddProject} label={label} />;
     } else if (area === USER_DASH) {
-      const userSort = getNextSortOrder(projects, 'userSort');
       if (teams.length === 1) {
         const {id: teamId} = teams[0];
         const generatedMyTeamMemberId = `${userId}::${teamId}`;
-        const handleAddProject = handleAddProjectFactory(status, generatedMyTeamMemberId, 0, userSort);
-        return <AddProjectButton toggleClickHandler={handleAddProject} toggleLabel={label}/>;
+        const handleAddProject = handleAddProjectFactory(status, generatedMyTeamMemberId, sortOrder);
+        return <AddProjectButton onClick={handleAddProject} label={label} />;
       }
-      const menuItems = makeTeamMenuItems(userSort);
+      const itemFactory = () => {
+        const menuItems = makeTeamMenuItems(sortOrder);
+        return menuItems.map((item) =>
+          <MenuItem
+            key={`MenuItem${item.label}`}
+            label={item.label}
+            onClick={item.handleClick}
+          />
+        );
+      };
+
+      const toggle = <AddProjectButton label={label} />;
       return (
         <Menu
-          menuKey={`UserDashAdd${status}Project`}
-          menuOrientation="right"
+          itemFactory={itemFactory}
+          originAnchor={originAnchor}
           menuWidth="10rem"
-          toggle={AddProjectButton}
-          toggleLabel={label}
-          toggleHeight="1.5rem" label="Select Team:"
-        >
-          {menuItems.map((item, idx) =>
-            <MenuItem
-              isActive={item.isActive}
-              key={`MenuItem${idx}`}
-              label={item.label}
-              onClick={item.handleClick}
-            />
-          )}
-        </Menu>
+          targetAnchor={targetAnchor}
+          toggle={toggle}
+          label="Select Team:"
+        />
       );
     }
     return null;
   };
 
+  const badgeColor = {
+    done: 'dark10d',
+    active: 'cool',
+    stuck: 'warm',
+    future: 'mid'
+  };
+
+  const columnStyles = css(
+    styles.column,
+    firstColumn && styles.columnFirst,
+    lastColumn && styles.columnLast
+  );
+
   // reset every rerender so we make sure we got the freshest info
   dragState.clear();
   return connectDropTarget(
-    <div className={css(styles.column)}>
+    <div className={columnStyles}>
       <div className={css(styles.columnHeader)}>
-        <span className={css(styles.statusBadge, styles[`${status}Bg`])}>
-          <FontAwesome
-            className={css(styles.statusBadgeIcon)}
-            name={themeLabels.projectStatus[status].icon}
-            style={badgeIconStyle}
-          />
-        </span>
-        <span className={css(styles.statusLabel, styles[status])}>
-          {label}
-        </span>
+        <div className={css(styles.statusLabelBlock)}>
+          <span className={css(styles.statusIcon, styles[status])}>
+            <FontAwesome name={themeLabels.projectStatus[status].icon} />
+          </span>
+          <span className={css(styles.statusLabel, styles[status])}>
+            {label}
+          </span>
+          {(projects.length > 0) &&
+            <span className={css(styles.statusBadge)}>
+              <Badge colorPalette={badgeColor[status]} flat value={projects.length} />
+            </span>
+          }
+        </div>
         {makeAddProject()}
       </div>
       <div className={css(styles.columnBody)}>
         <div className={css(styles.columnInner)}>
-          {projects.map(project =>
+          {projects.map((project) =>
             <ProjectCardContainer
               key={`teamCard${project.id}`}
               area={area}
@@ -137,6 +172,8 @@ const ProjectColumn = (props) => {
 
 ProjectColumn.propTypes = {
   area: PropTypes.string,
+  firstColumn: PropTypes.bool,
+  lastColumn: PropTypes.bool,
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.array.isRequired,
   queryKey: PropTypes.string,
@@ -146,37 +183,26 @@ ProjectColumn.propTypes = {
   userId: PropTypes.string
 };
 
-const borderColor = ui.dashBorderColor;
-
-const columnStyles = {
-  flex: 1,
-  width: '25%'
-};
-
 const styleThunk = () => ({
-  columnFirst: {
-    ...columnStyles,
-    padding: '1rem 1rem 0 0'
-  },
-
   column: {
-    ...columnStyles,
-    borderLeft: `1px solid ${borderColor}`,
+    borderLeft: `2px dashed ${ui.dashBorderColor}`,
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
     overflow: 'scroll',
-    position: 'relative'
+    position: 'relative',
+    width: '25%'
+  },
+
+  columnFirst: {
+    borderLeft: 0
   },
 
   columnLast: {
-    ...columnStyles,
-    borderLeft: `1px solid ${borderColor}`,
-    padding: '1rem 0 0 1rem',
+    // keeping this around, we may need it (TA)
   },
 
   columnHeader: {
-    borderBottom: '1px solid rgba(0, 0, 0, .05)',
     color: appTheme.palette.dark,
     display: 'flex !important',
     lineHeight: '1.5rem',
@@ -192,36 +218,36 @@ const styleThunk = () => ({
   columnInner: {
     ...overflowTouch,
     height: '100%',
-    padding: '.5rem 1rem 0',
+    padding: '0 1rem',
     position: 'absolute',
     width: '100%'
   },
 
-  statusBadge: {
-    borderRadius: '.5rem',
-    color: '#fff',
-    display: 'inline-block',
-    fontSize: '14px',
-    height: '1.5rem',
-    lineHeight: '1.5rem',
-    marginRight: '.5rem',
-    textAlign: 'center',
-    verticalAlign: 'middle',
-    width: '1.5rem'
+  statusLabelBlock: {
+    alignItems: 'center',
+    display: 'flex',
+    flex: 1,
+    fontSize: appTheme.typography.s3,
   },
 
-  statusBadgeIcon: {
-    lineHeight: '1.5rem'
+  statusIcon: {
+    fontSize: '14px',
+    marginRight: '.25rem',
+    paddingTop: 1,
+    textAlign: 'center',
+    verticalAlign: 'middle',
   },
 
   statusLabel: {
-    flex: 1,
-    fontSize: appTheme.typography.s3,
     fontWeight: 700,
+    paddingTop: 2,
     textTransform: 'uppercase'
   },
 
-  ...projectStatusStyles('backgroundColor', 'Bg'),
+  statusBadge: {
+    marginLeft: '.5rem'
+  },
+
   ...projectStatusStyles('color'),
 });
 
@@ -230,8 +256,8 @@ const dropTargetCb = (connectTarget) => ({
 });
 
 export default
-  withDragState(
-dropTarget(PROJECT, columnTarget, dropTargetCb)(
+withDragState(
+  dropTarget(PROJECT, columnTarget, dropTargetCb)(
     withStyles(styleThunk)(ProjectColumn)
   )
 );

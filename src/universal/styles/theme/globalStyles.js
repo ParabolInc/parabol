@@ -1,6 +1,6 @@
 import appTheme from 'universal/styles/theme/appTheme';
 import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
-import tinycolor from 'tinycolor2';
+import ui from 'universal/styles/ui';
 import fontLoader from 'universal/styles/theme/fontLoader';
 
 const basePlaceholderStyles = makePlaceholderStyles(appTheme.palette.dark50l);
@@ -32,12 +32,12 @@ export default {
   },
 
   a: {
-    color: appTheme.palette.cool,
+    color: ui.linkColor,
     textDecoration: 'none'
   },
 
   'a:hover, a:focus': {
-    color: tinycolor(appTheme.palette.cool).darken(15).toHexString(),
+    color: ui.linkColorHover,
     textDecoration: 'underline'
   },
 
@@ -45,6 +45,14 @@ export default {
     fontFamily: appTheme.typography.sansSerif,
     '-moz-osx-font-smoothing': 'grayscale',
     '-webkit-font-smoothing': 'antialiased'
+  },
+
+  img: {
+    maxWidth: '100%'
+  },
+
+  p: {
+    margin: '0'
   },
 
   ...basePlaceholderStyles

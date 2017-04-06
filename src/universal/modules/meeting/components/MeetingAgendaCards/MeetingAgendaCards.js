@@ -26,8 +26,7 @@ const handleAddProjectFactory = (teamMemberId, agendaId) => () => {
     id: `${teamId}::${shortid.generate()}`,
     status: ACTIVE,
     teamMemberId,
-    teamSort: 0,
-    userSort: 0,
+    sortOrder: 0,
     agendaId
   };
   cashay.mutate('createProject', {variables: {newProject}});
@@ -40,7 +39,7 @@ const makeCards = (array, dispatch, myTeamMemberId, itemStyle) => {
     const [myUserId] = myTeamMemberId.split('::');
     return (
       <div className={css(itemStyle)} key={key}>
-        <OutcomeOrNullCard form={key} isAgenda myUserId={myUserId} outcome={outcome}/>
+        <OutcomeOrNullCard form={key} isAgenda myUserId={myUserId} outcome={outcome} />
       </div>
     );
   });
@@ -49,6 +48,7 @@ const makeCards = (array, dispatch, myTeamMemberId, itemStyle) => {
 const makePlaceholders = (length, itemStyle) => {
   const rowLength = 4;
   const emptyCardCount = rowLength - (length % rowLength + 1);
+  /* eslint-disable react/no-array-index-key */
   return new Array(emptyCardCount).fill(undefined).map((item, idx) =>
     <div
       className={css(itemStyle)}
@@ -56,6 +56,7 @@ const makePlaceholders = (length, itemStyle) => {
     >
       <CreateCard />
     </div>);
+  /* eslint-enable */
 };
 
 const MeetingAgendaCards = (props) => {
@@ -100,7 +101,8 @@ const styleThunk = () => ({
   },
 
   item: {
-    marginTop: '2rem',
+    marginBottom: '1rem',
+    marginTop: '1rem',
     padding: '0 .5rem',
     width: '25%',
 

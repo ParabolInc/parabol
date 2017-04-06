@@ -1,14 +1,13 @@
-import test from 'ava';
 import path from 'path';
 import url from 'url';
 import protocolRelativeUrl from '../protocolRelativeUrl';
 
 
-test('parses protocol-relative URL', t => {
+test('parses protocol-relative URL', () => {
   const testUrl = '//s3-host.prbl.co/test';
   const result = protocolRelativeUrl.parse(testUrl);
   // Object.assign drops result's class:
-  t.deepEqual(Object.assign({}, result), {
+  expect(Object.assign({}, result)).toEqual({
     protocol: '//',
     slashes: true,
     auth: null,
@@ -24,14 +23,13 @@ test('parses protocol-relative URL', t => {
   });
 });
 
-test('still parses regular URLs', t => {
+test('still parses regular URLs', () => {
   const testUrl = 'http://s3-host.prbl.co/test';
   const result = protocolRelativeUrl.parse(testUrl);
-  t.deepEqual(result, url.parse(testUrl));
+  expect(result).toEqual(url.parse(testUrl));
 });
 
-test('formats protocol-relative URLs', t => {
-  t.plan(2);
+test('formats protocol-relative URLs', () => {
   const parsedUrl = {
     protocol: '//',
     slashes: true,
@@ -46,13 +44,14 @@ test('formats protocol-relative URLs', t => {
     path: '/test',
     href: '//s3-host.prbl.co/test'
   };
-  t.deepEqual('//s3-host.prbl.co/test', protocolRelativeUrl.format(parsedUrl));
+  expect('//s3-host.prbl.co/test')
+    .toEqual(protocolRelativeUrl.format(parsedUrl));
   parsedUrl.pathname = path.join(parsedUrl.pathname, '/subdir');
-  t.deepEqual('//s3-host.prbl.co/test/subdir', protocolRelativeUrl.format(parsedUrl));
+  expect('//s3-host.prbl.co/test/subdir')
+    .toEqual(protocolRelativeUrl.format(parsedUrl));
 });
 
-test('still formats regular URLs', t => {
-  t.plan(2);
+test('still formats regular URLs', () => {
   const parsedUrl = {
     protocol: 'http:',
     slashes: true,
@@ -67,7 +66,9 @@ test('still formats regular URLs', t => {
     path: '/test',
     href: 'http://s3-host.prbl.co/test'
   };
-  t.deepEqual('http://s3-host.prbl.co/test', protocolRelativeUrl.format(parsedUrl));
+  expect('http://s3-host.prbl.co/test')
+    .toEqual(protocolRelativeUrl.format(parsedUrl));
   parsedUrl.pathname = path.join(parsedUrl.pathname, '/subdir');
-  t.deepEqual('http://s3-host.prbl.co/test/subdir', protocolRelativeUrl.format(parsedUrl));
+  expect('http://s3-host.prbl.co/test/subdir')
+    .toEqual(protocolRelativeUrl.format(parsedUrl));
 });

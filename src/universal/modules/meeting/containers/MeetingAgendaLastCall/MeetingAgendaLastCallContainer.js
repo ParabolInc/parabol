@@ -2,6 +2,18 @@ import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import MeetingAgendaLastCall from 'universal/modules/meeting/components/MeetingAgendaLastCall/MeetingAgendaLastCall';
+import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
+
+const getCount = (agenda, field) => agenda.map((a) => a[field].length).reduce((sum, val) => sum + val, 0);
+const countOutcomes = (agenda) => {
+  if (agenda !== countOutcomes.agenda) {
+    countOutcomes.agenda = agenda;
+    countOutcomes.actionCount = getCount(agenda, 'actions');
+    countOutcomes.projectCount = getCount(agenda, 'projects');
+  }
+  const {actionCount, projectCount} = countOutcomes;
+  return {actionCount, projectCount};
+};
 
 const meetingAgendaLastCallQuery = `
 query {
@@ -38,15 +50,22 @@ const mapStateToProps = (state, props) => {
 };
 
 const MeetingAgendaLastCallContainer = (props) => {
-  const {agendaItemCount, gotoNext, isFacilitating, members, team} = props;
-  const facilitator = members.find(member => member.id === team.activeFacilitator);
-  const facilitatorName = facilitator && facilitator.preferredName || 'Facilitator';
+  const {
+    agendaItemCount,
+    actionCount,
+    gotoNext,
+    hideMoveMeetingControls,
+    members,
+    projectCount,
+    team
+  } = props;
   return (
     <MeetingAgendaLastCall
       agendaItemCount={agendaItemCount}
       gotoNext={gotoNext}
-      facilitatorName={facilitatorName}
-      isFacilitating={isFacilitating}
+      facilitatorName={getFacilitatorName(team, members)}
+      hideMoveMeetingControls={hideMoveMeetingControls}
+      projectCount={projectCount}
     />
   );
 };
@@ -56,7 +75,8 @@ MeetingAgendaLastCallContainer.propTypes = {
   gotoNext: PropTypes.func,
   isFacilitating: PropTypes.bool,
   members: PropTypes.array,
-  team: PropTypes.object
+  team: PropTypes.object,
+  hideMoveMeetingControls: PropTypes.bool
 };
 
 export default connect(mapStateToProps)(MeetingAgendaLastCallContainer);

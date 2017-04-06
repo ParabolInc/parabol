@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme.js';
+import appTheme from 'universal/styles/theme/appTheme';
 import {srOnly} from 'universal/styles/helpers';
 
 const barHeight = 8;
@@ -12,17 +12,28 @@ const avatarGutter = 24; // see AvatarGroup
 const outerPadding = (avatarWidth - pointWidth) / 2;
 const blockWidth = avatarWidth + avatarGutter;
 const ProgressBar = (props) => {
-  const {gotoItem, membersCount, hasHover, facilitatorPhaseItem, localPhaseItem, meetingPhaseItem, isComplete, styles} = props;
+  const {
+    facilitatorPhaseItem,
+    gotoItem,
+    hoverState: {onMouseEnter},
+    isComplete,
+    localPhaseItem,
+    meetingPhaseItem,
+    membersCount,
+    onFacilitatorPhase,
+    styles
+  } = props;
   const renderPoint = (idx) => {
     const marginRight = {
       marginRight: idx === membersCount ? 0 : `${blockWidth - pointWidth}px`
     };
+
     const pointStyles = css(
       styles.point,
       (idx <= meetingPhaseItem || isComplete) && styles.pointCompleted,
       idx === localPhaseItem && styles.pointLocal,
-      idx === facilitatorPhaseItem && styles.pointFacilitator,
-      hasHover && styles.pointWithAreaHover
+      idx === facilitatorPhaseItem && onFacilitatorPhase && styles.pointFacilitator,
+      onMouseEnter && styles.pointWithAreaHover
     );
     return (
       <div className={pointStyles} onClick={() => gotoItem(idx)} style={marginRight} key={`pbPoint${idx}`}>
@@ -46,7 +57,7 @@ const ProgressBar = (props) => {
         <div className={css(styles.points)}>
           {renderPoints()}
         </div>
-        <div className={css(styles.bar)} style={barStyle}></div>
+        <div className={css(styles.bar)} style={barStyle} />
       </div>
     </div>
   );
@@ -54,13 +65,19 @@ const ProgressBar = (props) => {
 
 ProgressBar.propTypes = {
   gotoItem: PropTypes.func.isRequired,
-  hasHover: PropTypes.bool,
+  hoverState: PropTypes.object,
   isComplete: PropTypes.bool,
   facilitatorPhaseItem: PropTypes.number,
   localPhaseItem: PropTypes.number,
+  onFacilitatorPhase: PropTypes.bool,
   meetingPhaseItem: PropTypes.number,
   membersCount: PropTypes.number,
   styles: PropTypes.object
+};
+
+const pointHoverBase = {
+  borderColor: '#fff',
+  borderRadius: '100%'
 };
 
 const styleThunk = () => ({
@@ -107,16 +124,13 @@ const styleThunk = () => ({
     width: `${pointWidth}px`,
 
     ':hover': {
-      transform: 'scale(3)'
-    },
-    ':focus': {
+      ...pointHoverBase,
       transform: 'scale(3)'
     }
   },
 
   pointWithAreaHover: {
-    borderColor: '#fff',
-    borderRadius: '100%',
+    ...pointHoverBase,
     transform: 'scale(2)'
   },
 

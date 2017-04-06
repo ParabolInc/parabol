@@ -1,0 +1,140 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`updateProject throw when the caller is not a team member 1`] = `"{\\"_error\\":\\"You do not have access to team 0\\"}"`;
+
+exports[`updateProject throws when no websocket is present 1`] = `"{\\"_error\\":\\"this must be called from a websocket\\"}"`;
+
+exports[`updateProject updates the content of the project 1`] = `
+Object {
+  "project": Object {
+    "content": "Updated content",
+    "createdAt": 2017-01-01T06:59:59.999Z,
+    "createdBy": 1,
+    "id": 0,
+    "isArchived": false,
+    "sortOrder": 0,
+    "status": "active",
+    "teamId": 2,
+    "teamMemberId": 3,
+    "updatedAt": 2017-01-01T08:00:00.000Z,
+    "userId": 1,
+  },
+  "projectHistory": Array [
+    Object {
+      "content": "Updated content",
+      "id": 4,
+      "projectId": 0,
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+  ],
+}
+`;
+
+exports[`updateProject updates the content of the project quickly and do not trigger a new history item 1`] = `
+Object {
+  "project": Object {
+    "content": "Updated content",
+    "createdAt": 2017-01-01T06:59:59.999Z,
+    "createdBy": 1,
+    "id": 0,
+    "isArchived": false,
+    "sortOrder": 0,
+    "status": "active",
+    "teamId": 2,
+    "teamMemberId": 3,
+    "updatedAt": 2017-01-01T08:00:00.000Z,
+    "userId": 1,
+  },
+  "projectHistory": Array [
+    Object {
+      "content": "Updated content",
+      "id": 4,
+      "projectId": 0,
+      "status": "active",
+      "teamMemberId": 3,
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+  ],
+}
+`;
+
+exports[`updateProject updates the sortOrder without changing updatedAt or making a history item 1`] = `
+Object {
+  "project": Object {
+    "content": "Test Project[0]",
+    "createdAt": 2017-01-01T06:59:59.999Z,
+    "createdBy": 1,
+    "id": 0,
+    "isArchived": false,
+    "sortOrder": 2,
+    "status": "active",
+    "teamId": 2,
+    "teamMemberId": 3,
+    "updatedAt": 2017-01-01T07:00:00.000Z,
+    "userId": 1,
+  },
+  "projectHistory": Array [],
+}
+`;
+
+exports[`updateProject updates the status of the project 1`] = `
+Object {
+  "project": Object {
+    "content": "Test Project[0]",
+    "createdAt": 2017-01-01T06:59:59.999Z,
+    "createdBy": 1,
+    "id": 0,
+    "isArchived": false,
+    "sortOrder": 0,
+    "status": "done",
+    "teamId": 2,
+    "teamMemberId": 3,
+    "updatedAt": 2017-01-01T08:00:00.000Z,
+    "userId": 1,
+  },
+  "projectHistory": Array [
+    Object {
+      "id": 4,
+      "projectId": 0,
+      "status": "done",
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+  ],
+}
+`;
+
+exports[`updateProject updates the teamMember of the project slowly and trigger a new history item 1`] = `
+Object {
+  "project": Object {
+    "content": "Test Project[0]",
+    "createdAt": 2017-01-01T06:59:59.999Z,
+    "createdBy": 1,
+    "id": 0,
+    "isArchived": false,
+    "sortOrder": 0,
+    "status": "active",
+    "teamId": 2,
+    "teamMemberId": 3,
+    "updatedAt": 2017-01-01T08:00:00.000Z,
+    "userId": 4,
+  },
+  "projectHistory": Array [
+    Object {
+      "content": "Test Project[0]",
+      "id": 5,
+      "projectId": 0,
+      "status": "active",
+      "teamMemberId": 7,
+      "updatedAt": 2017-01-01T07:00:00.000Z,
+    },
+    Object {
+      "content": "Test Project[0]",
+      "id": 6,
+      "projectId": 0,
+      "status": "active",
+      "teamMemberId": 3,
+      "updatedAt": 2017-01-01T08:00:00.000Z,
+    },
+  ],
+}
+`;

@@ -4,12 +4,14 @@ import {css} from 'aphrodite-local-styles/no-important';
 import {overflowTouch} from 'universal/styles/helpers';
 import {cashay} from 'cashay';
 import AgendaItem from 'universal/modules/teamDashboard/components/AgendaItem/AgendaItem';
-import {AGENDA_ITEM, AGENDA_ITEMS} from 'universal/utils/constants';
+import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants';
 import handleAgendaHover from 'universal/dnd/handleAgendaHover';
 import {DropTarget as dropTarget} from 'react-dnd';
 import withDragState from 'universal/dnd/withDragState';
+import handleDrop from 'universal/dnd/handleDrop';
 
 const columnTarget = {
+  drop: handleDrop,
   hover: handleAgendaHover
 };
 
@@ -19,19 +21,40 @@ const removeItemFactory = (itemId) => () => {
 };
 
 const AgendaList = (props) => {
-  const {agenda, agendaPhaseItem, connectDropTarget, dragState, gotoItem, styles} = props;
+  const {
+    agenda,
+    agendaPhaseItem,
+    connectDropTarget,
+    context,
+    disabled,
+    dragState,
+    facilitatorPhase,
+    facilitatorPhaseItem,
+    gotoAgendaItem,
+    localPhase,
+    localPhaseItem,
+    styles
+  } = props;
+
+  const canNavigate = context === 'meeting' && !disabled;
   dragState.clear();
   return connectDropTarget(
     <div className={css(styles.root)}>
       <div className={css(styles.inner)}>
         {agenda.map((item, idx) =>
           <AgendaItem
-            key={`agendaItem${idx}`}
+            key={`agendaItem${item.id}`}
             agendaItem={item}
             agendaPhaseItem={agendaPhaseItem}
-            gotoAgendaItem={() => gotoItem(idx + 1, AGENDA_ITEMS)}
+            canNavigate={canNavigate}
+            disabled={disabled}
+            facilitatorPhase={facilitatorPhase}
+            facilitatorPhaseItem={facilitatorPhaseItem}
+            gotoAgendaItem={gotoAgendaItem && gotoAgendaItem(idx)}
             handleRemove={removeItemFactory(item.id)}
             idx={idx}
+            localPhase={localPhase}
+            localPhaseItem={localPhaseItem}
             ref={(c) => {
               if (c) {
                 dragState.components.push(c);
@@ -51,7 +74,13 @@ AgendaList.propTypes = {
   })),
   agendaPhaseItem: PropTypes.number,
   connectDropTarget: PropTypes.func.isRequired,
-  gotoItem: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
+  facilitatorPhase: PropTypes.oneOf(phaseArray),
+  facilitatorPhaseItem: PropTypes.number,
+  gotoAgendaItem: PropTypes.func,
+  localPhase: PropTypes.oneOf(phaseArray),
+  localPhaseItem: PropTypes.number,
+  router: PropTypes.object,
   styles: PropTypes.object,
   teamId: PropTypes.string.isRequired
 };

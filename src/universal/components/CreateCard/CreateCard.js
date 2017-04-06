@@ -39,7 +39,7 @@ const CreateCard = (props) => {
 
   const cardStyles = css(
     styles.root,
-    (hasControls || isCreating) && styles.rootBorderVariant
+    (hasControls || isCreating) && styles.hasControls
   );
 
   return (
@@ -111,7 +111,7 @@ const styleThunk = () => ({
     }
   },
 
-  rootBorderVariant: {
+  hasControls: {
     '::after': {
       color: appTheme.palette.mid
     }

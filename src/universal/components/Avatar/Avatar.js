@@ -1,88 +1,73 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import upperFirst from 'universal/utils/upperFirst';
+import ui from 'universal/styles/ui';
 import AvatarBadge from 'universal/components/AvatarBadge/AvatarBadge';
-import makeUsername from 'universal/utils/makeUsername';
-
-// TODO: Add tooltip module (TA)
 
 const Avatar = (props) => {
   const {
     hasBadge,
-    hasBorder,
-    hasLabel,
-    labelRight,
-    isActive,
     isCheckedIn,
     isClickable,
     isConnected,
-    picture,
-    preferredName,
     onClick,
+    picture,
+    sansRadius,
+    sansShadow,
     size,
     styles
   } = props;
 
-  const username = makeUsername(preferredName);
-  const sizeName = upperFirst(size);
-  const sizeStyles = `avatar${sizeName}`;
-  const imageSizeStyles = `avatarImageBlock${sizeName}`;
-  const rootInlineStyle = isClickable ? {cursor: 'pointer'} : {cursor: 'default'};
-  const avatarImagesStyles = css(
-    styles.avatarImage,
-    hasBorder ? styles.hasBorder : styles.boxShadow,
-    isActive && styles.isActive
-  );
-  const avatarStyles = css(
+  const rootStyles = css(
     styles.avatar,
-    styles[sizeStyles]
+    styles[size]
   );
+  const rootInlineStyle = isClickable ? {cursor: 'pointer'} : {cursor: 'default'};
   const imageBlockStyles = css(
     styles.avatarImageBlock,
-    styles[imageSizeStyles]
+    sansRadius && styles.sansRadius,
+    sansShadow && styles.sansShadow
   );
-  // Position label to the right of avatar image
-  const avatarLabelStyles = css(
-    styles.avatarLabel,
-    labelRight && styles.avatarLabelInlineBlock
-  );
-  const imagePositionStyles = css(
-    styles.avatarImageDisplay,
-    labelRight && styles.avatarImageDisplayInlineBlock
-  );
+  const imageBlockInlineStyle = {
+    backgroundImage: `url(${picture})`,
+    backgroundPosition: 'center center',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover'
+  };
   return (
     <div
-      className={avatarStyles}
+      className={rootStyles}
       onClick={onClick}
       style={rootInlineStyle}
     >
-      <div className={imagePositionStyles}>
-        <div className={imageBlockStyles}>
-          <img className={avatarImagesStyles} src={picture}/>
-          {hasBadge && <AvatarBadge isCheckedIn={isCheckedIn} isConnected={isConnected} size={size}/>}
-        </div>
+      <div
+        className={imageBlockStyles}
+        style={imageBlockInlineStyle}
+      >
+        {hasBadge &&
+          <div className={css(styles.badgeBlock)}>
+            <div className={css(styles.badgeBlockInner)}>
+              <AvatarBadge
+                isCheckedIn={isCheckedIn}
+                isConnected={isConnected}
+              />
+            </div>
+          </div>
+        }
       </div>
-      {hasLabel &&
-        <div className={avatarLabelStyles}>@{username}</div>
-      }
     </div>
   );
 };
 
 Avatar.propTypes = {
   hasBadge: PropTypes.bool,
-  hasBorder: PropTypes.bool,
-  hasLabel: PropTypes.bool,
-  isActive: PropTypes.bool,
   isCheckedIn: PropTypes.bool,
   isClickable: PropTypes.bool,
   isConnected: PropTypes.bool,
-  picture: PropTypes.string,
-  labelRight: PropTypes.bool,
-  preferredName: PropTypes.string,
   onClick: PropTypes.func,
+  picture: PropTypes.string,
+  sansRadius: PropTypes.bool,
+  sansShadow: PropTypes.bool,
   size: PropTypes.oneOf([
     'fill',
     'smallest',
@@ -96,120 +81,73 @@ Avatar.propTypes = {
   styles: PropTypes.object
 };
 
-const borderDefault = appTheme.palette.mid20a;
-const borderWarm = appTheme.palette.warm80a;
-const boxShadowDefault = '0 0 1px 1px rgba(0, 0, 0, .2)';
-const boxShadowBase = '0 0 0 2px #fff, 0 0 0 4px';
-const boxShadowBorder = `${boxShadowBase} ${borderDefault}`;
-const boxShadowWarm = `${boxShadowBase} ${borderWarm}`;
-
 const styleThunk = () => ({
   avatar: {
     display: 'inline-block',
-    fontSize: appTheme.typography.s2,
-    margin: '0',
     position: 'relative',
-    textAlign: 'center',
-    verticalAlign: 'middle'
-  },
-
-  // NOTE: Size modifies avatar
-  avatarSmallest: {
-    fontSize: appTheme.typography.s1
-  },
-  avatarSmaller: {
-    fontSize: appTheme.typography.s1
-  },
-  avatarSmall: {
-    fontSize: appTheme.typography.s2
-  },
-  avatarMedium: {
-    fontSize: appTheme.typography.s3
-  },
-  avatarLarge: {
-    fontSize: appTheme.typography.s4
-  },
-  avatarLarger: {
-    fontSize: appTheme.typography.s4
-  },
-  avatarLargest: {
-    fontSize: appTheme.typography.s6
-  },
-
-  avatarImageDisplay: {
-    borderRadius: '100%',
-    display: 'block'
-  },
-
-  // NOTE: Modifies avatarImageDisplay
-  avatarImageDisplayInlineBlock: {
-    display: 'inline-block',
     verticalAlign: 'middle'
   },
 
   avatarImageBlock: {
     borderRadius: '100%',
+    boxShadow: ui.avatarDefaultBoxShadow,
     display: 'block',
+    height: 0,
     margin: '0 auto',
+    padding: '100% 0 0',
     position: 'relative',
-    width: '2.75rem'
+    width: '100%'
   },
 
   // NOTE: Size modifies avatarImageBlock
-  avatarImageBlockFill: {
+  fill: {
     width: '100%'
   },
-  avatarImageBlockSmallest: {
+  smallest: {
     width: '1.5rem'
   },
-  avatarImageBlockSmaller: {
+  smaller: {
     width: '2rem'
   },
-  avatarImageBlockSmall: {
+  small: {
     width: '2.75rem'
   },
-  avatarImageBlockMedium: {
+  medium: {
     width: '4rem'
   },
-  avatarImageBlockLarge: {
+  large: {
     width: '5rem'
   },
-  avatarImageBlockLarger: {
+  larger: {
     width: '6rem'
   },
-  avatarImageBlockLargest: {
+  largest: {
     width: '7.5rem'
   },
 
-  avatarImage: {
-    borderRadius: '100%',
-    display: 'block',
-    height: 'auto',
-    width: '100%'
+  sansShadow: {
+    boxShadow: 'none'
   },
 
-  boxShadow: {
-    boxShadow: boxShadowDefault
+  sansRadius: {
+    borderRadius: 0
   },
 
-  hasBorder: {
-    boxShadow: boxShadowBorder
+  badgeBlock: {
+    height: '25%',
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    width: '25%'
   },
 
-  isActive: {
-    boxShadow: boxShadowWarm
-  },
-
-  avatarLabel: {
-    color: appTheme.palette.dark,
-    fontSize: 'inherit',
-    margin: '1em 0'
-  },
-
-  avatarLabelInlineBlock: {
-    display: 'inline-block',
-    marginLeft: '1em',
-    verticalAlign: 'middle'
+  badgeBlockInner: {
+    height: '14px',
+    left: '50%',
+    position: 'absolute',
+    top: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '14px'
   }
 });
 

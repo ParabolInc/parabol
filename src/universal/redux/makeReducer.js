@@ -1,12 +1,13 @@
 import {combineReducers} from 'redux';
 import {cashayReducer} from 'cashay';
-import notifications from 'universal/modules/notifications/ducks/notifications';
+import toasts from 'universal/modules/toast/ducks/toastDuck';
 import {reducer as formReducer, actionTypes} from 'redux-form';
-import auth, {DEFAULT_AUTH_REDUCER_NAME} from './authDuck';
 import {reducer as storageReducer} from 'redux-storage-whitelist-fn';
 import storageMerger from 'universal/redux/storageMerger';
 import makeRootReducer from 'universal/redux/rootDuck';
 import menuReducer from 'universal/modules/menu/ducks/menuDuck';
+import dashReducer from 'universal/modules/dashboard/ducks/dashDuck';
+import auth, {DEFAULT_AUTH_REDUCER_NAME} from './authDuck';
 
 const {SET_SUBMIT_SUCCEEDED} = actionTypes;
 
@@ -35,8 +36,9 @@ const appReducers = {
   [DEFAULT_AUTH_REDUCER_NAME]: auth,
   cashay: cashayReducer,
   form: formReducer.plugin(formPlugin),
+  dash: dashReducer,
   menu: menuReducer,
-  notifications,
+  toasts,
 };
 
 

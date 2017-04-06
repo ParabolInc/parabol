@@ -9,6 +9,8 @@ query {
   team @cached(id: $teamId, type: "Team") {
     id
     name
+    orgId
+    meetingPhase
   },
   teamMembers(teamId: $teamId) @live {
     id
@@ -22,29 +24,30 @@ query {
     email
     tokenExpiration
     updatedAt
+  },
+  orgApprovals(teamId: $teamId) @live {
+    id
+    email
   }
 }`;
 
 const mapStateToProps = (state, props) => {
   const {teamId} = props.params;
-  const {invitations, team, teamMembers} = cashay.query(teamSettingsQuery, {
+  const {invitations, orgApprovals, team, teamMembers} = cashay.query(teamSettingsQuery, {
     op: 'teamSettingsContainer',
     key: teamId,
     sort: {
       teamMembers: (a, b) => a.preferredName > b.preferredName ? 1 : -1,
-      invitations: (a, b) => a.createdAt > b.createdAt ? 1 : -1
+      invitations: (a, b) => a.createdAt > b.createdAt ? 1 : -1,
+      orgApprovals: (a, b) => a.email > b.email ? 1 : -1
     },
     variables: {teamId}
   }).data;
   return {
     invitations,
+    orgApprovals,
     team,
     teamMembers,
-    leaveTeamModal: state.teamSettings.leaveTeamModal,
-    promoteTeamMemberModal: state.teamSettings.promoteTeamMemberModal,
-    removeTeamMemberModal: state.teamSettings.removeTeamMemberModal,
-    modalTeamMemberId: state.teamSettings.teamMemberId,
-    modalPreferredName: state.teamSettings.preferredName,
     myTeamMemberId: `${state.auth.obj.sub}::${teamId}`
   };
 };
@@ -52,30 +55,22 @@ const mapStateToProps = (state, props) => {
 const TeamSettingsContainer = (props) => {
   const {
     dispatch,
+    orgApprovals,
     invitations,
-    leaveTeamModal,
-    modalPreferredName,
-    modalTeamMemberId,
     myTeamMemberId,
-    promoteTeamMemberModal,
-    removeTeamMemberModal,
     team,
     teamMembers
   } = props;
   const myTeamMember = teamMembers.find((member) => member.id === myTeamMemberId);
   if (!myTeamMember) {
-    return <LoadingView/>;
+    return <LoadingView />;
   }
   return (
     <TeamSettings
       dispatch={dispatch}
       invitations={invitations}
-      leaveTeamModal={leaveTeamModal}
+      orgApprovals={orgApprovals}
       myTeamMember={myTeamMember}
-      modalTeamMemberId={modalTeamMemberId}
-      modalPreferredName={modalPreferredName}
-      promoteTeamMemberModal={promoteTeamMemberModal}
-      removeTeamMemberModal={removeTeamMemberModal}
       team={team}
       teamMembers={teamMembers}
     />
@@ -85,13 +80,9 @@ const TeamSettingsContainer = (props) => {
 TeamSettingsContainer.propTypes = {
   dispatch: PropTypes.func.isRequired,
   invitations: PropTypes.array.isRequired,
-  leaveTeamModal: PropTypes.bool.isRequired,
-  modalPreferredName: PropTypes.string,
-  modalTeamMemberId: PropTypes.string,
   myTeamMemberId: PropTypes.string.isRequired,
+  orgApprovals: PropTypes.array.isRequired,
   params: PropTypes.object.isRequired,
-  promoteTeamMemberModal: PropTypes.bool.isRequired,
-  removeTeamMemberModal: PropTypes.bool.isRequired,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired
 };

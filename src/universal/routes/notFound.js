@@ -5,6 +5,6 @@ export default {
   component: LandingContainer,
   getIndexRoute: async (location, cb) => {
     const component = await System.import('universal/components/NotFound/NotFound');
-    cb(null, {component});
+    cb(null, {component: component.default});
   }
 };

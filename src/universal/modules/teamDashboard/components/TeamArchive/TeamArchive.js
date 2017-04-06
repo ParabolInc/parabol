@@ -20,12 +20,12 @@ const TeamArchive = (props) => {
   const {archivedProjects, styles, teamId} = props;
   return (
     <div className={css(styles.root)}>
-      <TeamArchiveHeader teamId={teamId}/>
+      <TeamArchiveHeader teamId={teamId} />
       <div className={css(styles.body)}>
         <div className={css(styles.scrollable)}>
           {archivedProjects.length ?
             <div className={css(styles.cardGrid)}>
-              {archivedProjects.map(project =>
+              {archivedProjects.map((project) =>
                 <div className={css(styles.cardBlock)} key={`cardBlockFor${project.id}`}>
                   <OutcomeCardContainer
                     key={project.id}

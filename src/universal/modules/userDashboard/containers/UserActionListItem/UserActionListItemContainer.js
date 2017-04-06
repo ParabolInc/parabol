@@ -39,10 +39,10 @@ export default class UserActionListItemContainer extends Component {
     dispatch: PropTypes.func,
     form: PropTypes.string,
     isActive: PropTypes.bool,
-    isDragging: PropTypes.bool.isRequired,
+    isDragging: PropTypes.bool,
     isPreview: PropTypes.bool,
-    connectDragSource: PropTypes.func.isRequired,
-    connectDragPreview: PropTypes.func.isRequired,
+    connectDragSource: PropTypes.func,
+    connectDragPreview: PropTypes.func,
   };
 
   componentWillMount() {
@@ -110,7 +110,7 @@ export default class UserActionListItemContainer extends Component {
     const {connectDragSource, isDragging} = this.props;
     return connectDragSource(
       <div>
-        {isDragging && <ActionDragLayer {...this.props}/>}
+        {isDragging && <ActionDragLayer {...this.props} />}
         <UserActionListItem
           {...this.props}
           handleChecked={this.handleChecked}

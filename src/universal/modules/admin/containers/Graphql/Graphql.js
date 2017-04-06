@@ -15,8 +15,8 @@ const graphiqlStylesheet = __PRODUCTION__ ?
   'https://cdnjs.cloudflare.com/ajax/libs/graphiql/0.8.0/graphiql.min.css' :
   '/static/css/graphiql.css';
 
-const makeGraphQLFetcher = authToken => {
-  return async(graphQLParams) => {
+const makeGraphQLFetcher = (authToken) => {
+  return async (graphQLParams) => {
     if (!__CLIENT__) {
       return undefined;
     }
@@ -34,7 +34,7 @@ const makeGraphQLFetcher = authToken => {
   };
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     authToken: state.auth.token
   };
@@ -84,7 +84,7 @@ export default class Graphiql extends Component {
     }
     return (
       <div className={css(styles.graphiql)}>
-        <GraphiQL fetcher={graphQLFetcher}/>
+        <GraphiQL fetcher={graphQLFetcher} />
       </div>
     );
   }

@@ -2,22 +2,29 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
-import Helmet from 'react-helmet';
-
-import NotificationBar from 'universal/components/NotificationBar/NotificationBar';
+import ActiveTrialDashAlert from 'universal/components/ActiveTrialDashAlert/ActiveTrialDashAlert';
+import ExpiredTrialDashAlert from 'universal/components/ExpiredTrialDashAlert/ExpiredTrialDashAlert';
+import MeetingDashAlert from 'universal/components/MeetingDashAlert/MeetingDashAlert';
+import {TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
 
 const DashLayout = (props) => {
   const {
     activeMeetings,
     children,
-    title,
-    styles
+    dispatch,
+    styles,
+    trialNotification
   } = props;
-  const hasNotification = activeMeetings.length > 0;
+  const hasMeetingNotification = activeMeetings.length > 0;
+  const {type: barType, orgId} = trialNotification || {};
   return (
     <div className={css(styles.root)}>
-      <Helmet title={title} />
-      {hasNotification && <NotificationBar activeMeetings={activeMeetings} />}
+      {/* Shows over any dashboard view when we prompt the trial extension (1 week after sign up?). */}
+      {barType === TRIAL_EXPIRES_SOON && <ActiveTrialDashAlert accountLink={`/me/organizations/${orgId}`} dispatch={dispatch} />}
+      {/* Shows over any account view when the trial has expired. */}
+      {barType === TRIAL_EXPIRED && <ExpiredTrialDashAlert accountLink={`/me/organizations/${orgId}`} dispatch={dispatch} />}
+      {/* Shows over any dashboard view when there is a meeting. */}
+      {hasMeetingNotification && <MeetingDashAlert activeMeetings={activeMeetings} />}
       <div className={css(styles.main)}>
         {children}
       </div>
@@ -28,8 +35,9 @@ const DashLayout = (props) => {
 DashLayout.propTypes = {
   activeMeetings: PropTypes.array.isRequired,
   children: PropTypes.any,
+  dispatch: PropTypes.func.isRequired,
   styles: PropTypes.object,
-  title: PropTypes.string
+  trialNotification: PropTypes.object
 };
 
 const styleThunk = () => ({

@@ -5,19 +5,25 @@ import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
-import {CHECKIN, UPDATES, FIRST_CALL, SUMMARY, phaseArray} from 'universal/utils/constants';
+import {CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, SUMMARY, phaseArray} from 'universal/utils/constants';
 import makeHref from 'universal/utils/makeHref';
 import {Link} from 'react-router';
 import AgendaListAndInputContainer from 'universal/modules/teamDashboard/containers/AgendaListAndInput/AgendaListAndInputContainer';
 import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
 import labels from 'universal/styles/theme/labels';
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 
 const Sidebar = (props) => {
   const {
     agendaPhaseItem,
     facilitatorPhase,
+    facilitatorPhaseItem,
     gotoItem,
+    gotoAgendaItem,
+    isFacilitating,
     localPhase,
+    localPhaseItem,
+    meetingPhase,
     styles,
     teamName,
     teamId
@@ -25,18 +31,37 @@ const Sidebar = (props) => {
 
   const relativeLink = `/meeting/${teamId}`;
   const shortUrl = makeHref(relativeLink);
-  const checkInLinkStyles = css(styles.navListItemLink, localPhase === CHECKIN && styles.navListItemLinkActive);
-  const updatesLinkStyles = css(styles.navListItemLink, localPhase === UPDATES && styles.navListItemLinkActive);
-  const requestsLinkStyles = css(styles.navListItemLink, inAgendaGroup(localPhase) && styles.navListItemLinkActive);
+  const canNavigateTo = (phase) => {
+    const adjustForFacilitator = isFacilitating ? 1 : 0;
+    const phaseInfo = actionMeeting[phase];
+    const meetingPhaseInfo = actionMeeting[meetingPhase];
+    return Boolean(meetingPhaseInfo.index >= (phaseInfo.index - adjustForFacilitator));
+  };
+  const checkInLinkStyles = css(
+    styles.navListItemLink,
+    localPhase === CHECKIN && styles.navListItemLinkActive,
+    !canNavigateTo(CHECKIN) && styles.navListItemLinkDisabled
+  );
+  const updatesLinkStyles = css(
+    styles.navListItemLink,
+    localPhase === UPDATES && styles.navListItemLinkActive,
+    !canNavigateTo(UPDATES) && styles.navListItemLinkDisabled
+  );
+  const agendaLinkStyles = css(
+    styles.navListItemLink,
+    inAgendaGroup(localPhase) && styles.navListItemLinkActive,
+    !canNavigateTo(FIRST_CALL) && styles.navListItemLinkDisabled
+  );
   const checkInNavItemStyles = css(styles.navListItem, facilitatorPhase === CHECKIN && styles.navListItemMeetingMarker);
   const updatesNavItemStyles = css(styles.navListItem, facilitatorPhase === UPDATES && styles.navListItemMeetingMarker);
-  const requestsNavItemStyles = css(styles.navListItem, inAgendaGroup(facilitatorPhase) && styles.navListItemMeetingMarker);
-
+  const agendaNavItemStyles = css(styles.navListItem, inAgendaGroup(facilitatorPhase) && styles.navListItemMeetingMarker);
+  const agendaListContext = canNavigateTo(AGENDA_ITEMS) ? 'meeting' : 'dashboard';
+  const agendaListDisabled = meetingPhase === CHECKIN;
   return (
     <div className={css(styles.sidebar)}>
       <div className={css(styles.sidebarHeader)}>
         <a className={css(styles.brandLink)}>
-          <img className={css(styles.brandLogo)} src={actionUIMark}/>
+          <img className={css(styles.brandLogo)} src={actionUIMark} />
         </a>
         <Link className={css(styles.teamName)} to={`/team/${teamId}`} title={`Go to the ${teamName} Team Dashboard`}>{teamName}</Link>
         <a className={css(styles.shortUrl)} href={relativeLink}>{shortUrl}</a>
@@ -63,9 +88,9 @@ const Sidebar = (props) => {
               <span className={css(styles.label)}>{labels.meetingPhase.updates.label}</span>
             </div>
           </li>
-          <li className={requestsNavItemStyles}>
+          <li className={agendaNavItemStyles}>
             <div
-              className={requestsLinkStyles}
+              className={agendaLinkStyles}
               onClick={() => gotoItem(null, FIRST_CALL)}
               title={labels.meetingPhase.agenda.label}
             >
@@ -86,11 +111,17 @@ const Sidebar = (props) => {
             </li>
           }
         </ul>
-        {localPhase !== CHECKIN && localPhase !== SUMMARY &&
+        {localPhase !== SUMMARY &&
           <div className={css(styles.agendaListBlock)}>
             <AgendaListAndInputContainer
               agendaPhaseItem={agendaPhaseItem}
-              gotoItem={gotoItem}
+              context={agendaListContext}
+              disabled={agendaListDisabled}
+              facilitatorPhase={facilitatorPhase}
+              facilitatorPhaseItem={facilitatorPhaseItem}
+              gotoAgendaItem={gotoAgendaItem}
+              localPhase={localPhase}
+              localPhaseItem={localPhaseItem}
               teamId={teamId}
             />
           </div>
@@ -104,8 +135,13 @@ Sidebar.propTypes = {
   agenda: PropTypes.array,
   agendaPhaseItem: PropTypes.number,
   facilitatorPhase: PropTypes.oneOf(phaseArray),
+  facilitatorPhaseItem: PropTypes.number,
+  isFacilitating: PropTypes.bool,
   gotoItem: PropTypes.func.isRequired,
+  gotoAgendaItem: PropTypes.func.isRequired,
   localPhase: PropTypes.oneOf(phaseArray),
+  localPhaseItem: PropTypes.number,
+  meetingPhase: PropTypes.oneOf(phaseArray),
   styles: PropTypes.object,
   teamName: PropTypes.string,
   teamId: PropTypes.string,
@@ -165,6 +201,7 @@ const styleThunk = () => ({
     color: appTheme.palette.dark60l,
     cursor: 'pointer',
     textDecoration: 'none',
+    userSelect: 'none',
 
     ':hover': {
       color: appTheme.palette.dark
@@ -174,7 +211,6 @@ const styleThunk = () => ({
     }
   },
 
-  // TODO: implement disabled state to phases that should not be navigated to
   navListItemLinkDisabled: {
     color: appTheme.palette.dark60l,
     cursor: 'not-allowed',

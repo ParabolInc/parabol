@@ -4,6 +4,232 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.17.3 - 05-Apr-2017
+### Added
+- Action meeting layout and check-in UI/UX changes:
+   - #717 Simplified meeting check-in process
+   - #627 More vertical height during project updates
+   - New placement and look for callouts and avatars
+- New counters on project columns
+
+## v0.17.2 - 04-Apr-2017
+### Added
+- #555 can now archive teams
+  - N.B. teams can't yet be unarchived, so be careful :)
+- #878 superuser GraphQL endpoint `extendTrial` to extend trial time
+
+### Fixed
+- #866 trial date completion bug
+- #868, #879 agendas items not marked as complete
+
+## v0.17.1 - 29-Mar-2017
+### Fixed
+- #859 infinite redirect loop when deleting the last phaseItem
+
+## v0.17.0 - 27-Mar-2017
+### Added
+- Start of many copy edits (watch for more changes in future versions),
+  including #716 meeting lobby updates
+
+### Fixed
+- #643 summary email subject line
+- #839 max chars for projects
+- #857 mystery notification
+
+## v0.16.12 - 22-Mar-2017
+### Added
+- #344 meeting agenda list now reflects location of Facilitator and participants
+- #837 added `Facilitator` badge and styling added to meeting Facilitator
+
+### Fixed
+- Better fix for #850 r.createdAt.getTime is not a function
+
+## v0.16.11 - 22-Mar-2017
+### Fixed
+- Hotfix #850 r.createdAt.getTime is not a function
+
+## v0.16.10 - 22-Mar-2017
+### Added
+- Clearer direction to meeting participants when they want to skip ahead
+  of the meeting facilitator (#806, #392)
+- Project cards once again submit on enter, not tab
+- #728, #794 markdown now renders in email summary
+
+### Fixed
+- Re-adds user traits as context and properties to all segment events
+- #840 column order:
+   - We're more orthodox Kanban now dashboards (time flows left to right),
+     but intentionally reversed in meetings so things are covered in a
+     productive order
+- #848 eager-load error validation error for stripCard
+
+## v0.16.9 - 20-Mar-2017
+### Added
+- #404 add automated error reporting if meeting state gets stuck
+- #762 spinner component
+- #820 Trial and payment segment events
+- Added raven message to meeting infiniteLoop watchdog
+
+### Fixed
+- Patch for rejoin button styles
+- Ensure graphql gets a promise back from newly non-awaited calls
+- Refactored segment.io calls to only pass identity traits on login and change
+- #442 action disappears when creator reassigns to different owner
+- #444, #663 LeftNav view glitch in Chrome
+- #487 skipping updates to agenda via progress bar causes router loop
+- #553, #773 DnD acts strangly when user filter active on team dashboard
+- #592 facilitator abandons meeting; allow others to end it
+- #660 new team member invite bug
+- #714 Can't delete team members
+- #718 Notification for leaving a team
+- #738 Navigate to Team Settings, error ensues
+- #780 Team settings invite validation allows multiple emails
+- #808 Hey, I wanna pay!
+- #818 highlighted team no worky
+- #821 actions list not showing in my dashboard
+- #824 Editing/cursor bug workaround, root cause still unknown
+
+## v0.16.8 - 14-Mar-2017
+### Fixed
+- #811 Rejoin facilitator button cursor is pointer
+- fix orgName update
+- Dependency bumps & linting
+
+## v0.16.7 - 13-Mar-2017
+### Fixed
+- #808 hey I want to pay!
+
+## v0.16.5 - 11-Mar-2017
+### Added
+- Awesome spinner component
+- Billing unit tests
+- A few modifications and final touches to invoices
+
+### Fixed
+- #755 filter handle alignment regression
+- #759 regression: clients unable to accept invitations
+- #793 no such customer exception
+
+## v0.16.3 - 8-Mar-2017
+### Added
+- Unit tests for Action mutations
+- #462 source maps added to minified production builds
+- Individual team and user project drag-and-drop sort orders now combined
+  into one, universal sorting order used across the system
+- Dashboard notification bar is now implemented as a "DashAlert" modal
+- #736 permutations on invoice
+
+### Fixed
+- #780 email regex allowed multiple emails
+- #782 regression on Project index used by archived projects
+- #783 ensured CC always exists on org, no longer using pagination for invoiceList
+- #784 invoice icon styling bug in production
+- #553 fine tune DnD
+- #714 can't delete team members
+- #724 top notification bar & dash modal overlap
+- #733 team project columns (filtered by team member) cache/redux error on DnD
+
+## v0.16.2 - 4-Mar-2017
+### Added
+- Rejoin facilitator button
+- Switched to [migrate-rethinkdb](https://github.com/ParabolInc/migrate-rethinkdb)
+
+## v0.16.1 - 2-Mar-2017
+### Added
+- New unit tests
+
+### Fixed
+- Fix upcoming vs pending on invoices
+- #751 production deploy, assets.json not found
+- #753 cannot read property 'bestCursor' of undefined
+- #755 filter handle alignment regression
+- #757 add new team, always shows orgs as "Loading..."
+
+## v0.16.0 - 25-Feb-2017
+### Added
+- Organizations: teams can be tied together into organizations
+- User trials & billing: hey look! A business model!
+   - New & grandfathered users start a 30 day trial
+   - Trial & access expiry
+   - Payment information & stripe integration
+   - Invoicing
+- Notifications: a new channel to communicate with our users
+- Portals: we're using [react-portal-hoc](https://github.com/mattkrick/react-portal-hoc)
+  to implement our dropdown menus and modals
+- Updated to Node.js 7.6.0, native async/await
+- Switched to [jest](https://facebook.github.io/jest/) for unit testing
+   - Added first suite of server unit tests
+- Refactored drag-and-drop support
+- Refactored `KICK_OUT` message onto `USER_MEMO` websocket channel
+- Much improved development build time by dll-izing vendor package
+   - See: `npm run build:dll`
+- Added `npm run start:tunnel` to start [ultrahook](http://www.ultrahook.com/)
+  to facilitate Stripe & future webhook development
+- Server data validation pattern
+- Badge component
+- Presence added to dashboards (#523)
+
+### Fixed
+- #253 auth0 token tms out of sync with rethinkdb
+- #277 graphql browser CSS trouble
+- #437 TypeError: Cannot read property 'openArea' of undefined
+- #517 server exception encountered when generating meeting summary
+- #530 duplicate team selection after reordering
+- #558 when renaming on team settings, validation styling bug
+- #573 Amazon S3 returning 403 for VPN clients
+- #578 meeting Stuck at First Call
+- #583 allow production build without S3
+- #598 fix GraphQL v0.8.0 breaking changes
+- #608 square avatars are square (with rounded styling)
+- #718 toast notification for leaving a team copy
+- #725 acceptInvitation race condition
+
+## v0.15.3 - 11-Feb-2017
+### Added
+- OutcomeCard components (Projects, Action) now re-render their last-updated
+  time on a smart timer
+### Fixed
+- Generate 'Meeting Completed' on server-side, client was not reliably
+  sending this event
+
+## v0.15.2 - 01-Feb-2017
+### Fixed
+- Incremented `package.json` version to match tag – oops!
+
+## v0.15.1 - 31-Jan-2017
+### Added
+- `(<TAB> saves)` string to OutcomeCard components when editing
+- `npm run test:xunit` command for CircleCI 2.0
+
+## v0.15.0 - 30-Jan-2017
+### Added
+- When version is upgraded, we now emit a toast asking the user to upgrade
+  their client version
+- Markdown support added to Action and Project cards
+
+## v0.14.2 - 29-Jan-2017
+### Fixes
+- #646 the first-time message meeting completion message was not displaying
+- #659 auth0 profile picture meta-information now updated when user changes
+  profile image
+
+## v0.14.1 - 16-Jan-2017
+### Added
+- Adopted CircleCI 2.0 beta. See [circle.yml](circle.yml). Now deploys
+  securely to `staging` and `production` servers directly from CI servers.
+- Added three seed projects for new team leaders as a simplified on-boarding
+  experience before we implement more immersive tutorial. Implements #631.
+- Segment.io event tracking for welcome wizard during step3 when users only
+  want to kick the tires (#638)
+
+### Removed
+- Segment.io analytics from `npm run dev` and `npm run start` when running on
+  development machine.
+- Only allow for /email route in development (#637)
+
+### Fixed
+- Fixes CircleCI caching issues building native bcrypt modules.
+
 ## v0.14.0 - 09-Jan-2017
 ### Added
 - Implements #595; upload of user avatar images to S3
