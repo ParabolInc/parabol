@@ -335,6 +335,7 @@ const ui = {
 
   // Meeting
   // ---------------------------------------------------------------------------
+  meetingSidebarGutter: '.5rem',
   meetingSidebarWidth: '15rem',
 
   // Menus

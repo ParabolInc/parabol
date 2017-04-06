@@ -14,12 +14,14 @@ const defaultColor = appTheme.palette.dark;
 const iconStyle = {
   color: defaultColor,
   display: 'block',
-  height: ui.fontSize,
-  left: '2.5rem',
-  lineHeight: ui.fontSize,
+  fontSize: ui.iconSize2x,
+  height: ui.iconSize2x,
+  left: '1.5rem',
+  lineHeight: ui.iconSize2x,
   position: 'absolute',
-  top: '.8125rem',
-  width: ui.fontSize,
+  textAlign: 'right',
+  top: '.375rem',
+  width: ui.iconSize2x,
   zIndex: 100
 };
 const AgendaInputField = (props) => {
@@ -86,7 +88,7 @@ const AgendaInputField = (props) => {
         title="Add Agenda Item"
         type="text"
       />
-      <FontAwesome name="plus-circle" style={iconStyle} />
+      <FontAwesome name="plus-square-o" style={iconStyle} />
     </form>
   );
 };

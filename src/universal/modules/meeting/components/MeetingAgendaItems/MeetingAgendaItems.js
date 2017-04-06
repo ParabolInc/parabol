@@ -35,7 +35,7 @@ const MeetingAgendaItems = (props) => {
               <MeetingPrompt
                 avatar={currentTeamMember.picture}
                 heading={heading}
-                subHeading={'Whatcha need?'}
+                subHeading={'What do you need?'}
                 helpText={<span><b>Actions</b>: quick tasks • <b>Projects</b>: tracked outcomes</span>}
               />
             </div>
