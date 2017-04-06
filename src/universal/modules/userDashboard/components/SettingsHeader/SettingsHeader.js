@@ -4,7 +4,6 @@ import {css} from 'aphrodite-local-styles/no-important';
 import {withRouter} from 'react-router';
 import {SETTINGS, ORGANIZATIONS, NOTIFICATIONS} from 'universal/utils/constants';
 import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
 
 const heading = {
   [SETTINGS]: {
