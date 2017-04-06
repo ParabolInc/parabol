@@ -79,7 +79,7 @@ export default class LandingContainer extends Component {
     }
     return (
       <div>
-        <Helmet title="Welcome to Action" />
+        <Helmet title="Welcome to Action by Parabol" />
         <Landing handleLoginClick={loginClickHandler} {...this.props} />
       </div>
     );
