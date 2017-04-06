@@ -33,14 +33,14 @@ export const AGENDA_ITEMS = 'agendaitems';
 export const LAST_CALL = 'lastcall';
 export const SUMMARY = 'summary';
 export const phaseArray = [LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY];
-export const phaseOrder = (phase) => phaseArray.indexOf(phase);
 
 /* Columns */
 export const ACTIVE = 'active';
 export const STUCK = 'stuck';
 export const DONE = 'done';
 export const FUTURE = 'future';
-export const columnArray = [DONE, ACTIVE, STUCK, FUTURE];
+export const columnArray = [FUTURE, STUCK, ACTIVE, DONE];
+export const meetingColumnArray = [DONE, ACTIVE, STUCK, FUTURE];
 
 /* Drag-n-Drop Items*/
 export const ACTION = 'action';
@@ -75,7 +75,8 @@ export const DENY_NEW_USER = 'DENY_NEW_USER';
 // sent to the orgMember that just got promoted, goes away if they get demoted before acknowledging it
 // [orgName]
 export const PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER';
-
+// sent to members of team that was archived
+export const TEAM_ARCHIVED = 'TEAM_ARCHIVED';
 
 export const notificationTypes = [
   TRIAL_EXPIRES_SOON,
@@ -83,7 +84,8 @@ export const notificationTypes = [
   PAYMENT_REJECTED,
   PROMOTE_TO_BILLING_LEADER,
   REQUEST_NEW_USER,
-  DENY_NEW_USER
+  DENY_NEW_USER,
+  TEAM_ARCHIVED
 ];
 
 export const billingLeaderTypes = [
@@ -119,3 +121,6 @@ export const UPCOMING = 'UPCOMING';
 export const PENDING = 'PENDING';
 export const PAID = 'PAID';
 export const FAILED = 'FAILED';
+
+/* character limits */
+export const PROJECT_MAX_CHARS = 512;

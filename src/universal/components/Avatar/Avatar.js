@@ -2,22 +2,20 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
 import AvatarBadge from 'universal/components/AvatarBadge/AvatarBadge';
 
 const Avatar = (props) => {
   const {
     hasBadge,
-    hasBorder,
-    isActive,
     isCheckedIn,
     isClickable,
     isConnected,
-    picture,
     onClick,
+    picture,
+    sansRadius,
+    sansShadow,
     size,
-    styles,
-    unstyled
+    styles
   } = props;
 
   const rootStyles = css(
@@ -27,9 +25,8 @@ const Avatar = (props) => {
   const rootInlineStyle = isClickable ? {cursor: 'pointer'} : {cursor: 'default'};
   const imageBlockStyles = css(
     styles.avatarImageBlock,
-    hasBorder ? styles.hasBorder : styles.boxShadow,
-    isActive && styles.isActive,
-    unstyled && styles.unstyled
+    sansRadius && styles.sansRadius,
+    sansShadow && styles.sansShadow
   );
   const imageBlockInlineStyle = {
     backgroundImage: `url(${picture})`,
@@ -48,11 +45,14 @@ const Avatar = (props) => {
         style={imageBlockInlineStyle}
       >
         {hasBadge &&
-          <AvatarBadge
-            isCheckedIn={isCheckedIn}
-            isConnected={isConnected}
-            size={size}
-          />
+          <div className={css(styles.badgeBlock)}>
+            <div className={css(styles.badgeBlockInner)}>
+              <AvatarBadge
+                isCheckedIn={isCheckedIn}
+                isConnected={isConnected}
+              />
+            </div>
+          </div>
         }
       </div>
     </div>
@@ -61,13 +61,13 @@ const Avatar = (props) => {
 
 Avatar.propTypes = {
   hasBadge: PropTypes.bool,
-  hasBorder: PropTypes.bool,
-  isActive: PropTypes.bool,
   isCheckedIn: PropTypes.bool,
   isClickable: PropTypes.bool,
   isConnected: PropTypes.bool,
-  picture: PropTypes.string,
   onClick: PropTypes.func,
+  picture: PropTypes.string,
+  sansRadius: PropTypes.bool,
+  sansShadow: PropTypes.bool,
   size: PropTypes.oneOf([
     'fill',
     'smallest',
@@ -78,16 +78,8 @@ Avatar.propTypes = {
     'larger',
     'largest'
   ]),
-  styles: PropTypes.object,
-  unstyled: PropTypes.bool
+  styles: PropTypes.object
 };
-
-const borderDefault = appTheme.palette.mid20a;
-const borderWarm = appTheme.palette.warm80a;
-const boxShadowDefault = ui.avatarDefaultBoxShadow;
-const boxShadowBase = '0 0 0 2px #fff, 0 0 0 4px';
-const boxShadowBorder = `${boxShadowBase} ${borderDefault}`;
-const boxShadowWarm = `${boxShadowBase} ${borderWarm}`;
 
 const styleThunk = () => ({
   avatar: {
@@ -98,6 +90,7 @@ const styleThunk = () => ({
 
   avatarImageBlock: {
     borderRadius: '100%',
+    boxShadow: ui.avatarDefaultBoxShadow,
     display: 'block',
     height: 0,
     margin: '0 auto',
@@ -132,21 +125,29 @@ const styleThunk = () => ({
     width: '7.5rem'
   },
 
-  boxShadow: {
-    boxShadow: boxShadowDefault
+  sansShadow: {
+    boxShadow: 'none'
   },
 
-  hasBorder: {
-    boxShadow: boxShadowBorder
-  },
-
-  isActive: {
-    boxShadow: boxShadowWarm
-  },
-
-  unstyled: {
-    boxShadow: 'none',
+  sansRadius: {
     borderRadius: 0
+  },
+
+  badgeBlock: {
+    height: '25%',
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    width: '25%'
+  },
+
+  badgeBlockInner: {
+    height: '14px',
+    left: '50%',
+    position: 'absolute',
+    top: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '14px'
   }
 });
 

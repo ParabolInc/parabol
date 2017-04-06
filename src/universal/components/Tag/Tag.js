@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 
 const Tag = (props) => {
@@ -23,51 +24,50 @@ const Tag = (props) => {
 };
 
 Tag.propTypes = {
-  colorPalette: PropTypes.oneOf([
-    'gray',
-    'light',
-    'white'
-  ]),
+  colorPalette: PropTypes.oneOf(ui.tagPalette),
   label: PropTypes.string,
   styles: PropTypes.object
-};
-
-Tag.defaultProps = {
-  email: 'email@domain.co'
 };
 
 const styleThunk = () => ({
   tagBase: {
     backgroundColor: 'transparent',
-    border: '1px solid transparent',
     borderRadius: '4em',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, .3)',
     color: appTheme.palette.dark,
     display: 'inline-block',
     fontSize: '.625rem',
     fontWeight: 700,
     height: '.875rem',
-    lineHeight: '.75rem',
-    marginLeft: '.75rem',
+    lineHeight: '.875rem',
+    marginLeft: ui.tagGutter,
     padding: '0 .4375rem',
     textTransform: 'uppercase',
     verticalAlign: 'middle'
   },
 
+  cool: {
+    backgroundColor: appTheme.palette.cool10l,
+    color: appTheme.palette.cool
+  },
+
   gray: {
     backgroundColor: appTheme.palette.mid10l,
-    borderColor: appTheme.palette.mid30l,
     color: appTheme.palette.dark
   },
 
   light: {
     backgroundColor: appTheme.palette.light,
-    borderColor: appTheme.palette.light70g,
     color: appTheme.palette.light30d
+  },
+
+  warm: {
+    backgroundColor: appTheme.palette.warm10l,
+    color: appTheme.palette.warm
   },
 
   white: {
     backgroundColor: '#fff',
-    borderColor: '#fff',
     color: appTheme.palette.mid
   }
 });

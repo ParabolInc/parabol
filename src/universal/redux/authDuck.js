@@ -1,8 +1,9 @@
 import {cashay} from 'cashay';
 import jwtDecode from 'jwt-decode';
-import {selectSegmentProfile} from 'universal/redux/segmentActions';
+import {selectSegmentTraits} from 'universal/redux/segmentActions';
 import raven from 'raven-js';
 import ActionHTTPTransport from '../utils/ActionHTTPTransport';
+import {segmentEventIdentify, segmentEventReset} from 'universal/redux/segmentActions';
 
 const SET_AUTH_TOKEN = '@@authToken/SET_AUTH_TOKEN';
 const REMOVE_AUTH_TOKEN = '@@authToken/REMOVE_AUTH_TOKEN';
@@ -82,7 +83,7 @@ export function setAuthToken(authToken, reducerName = DEFAULT_AUTH_REDUCER_NAME)
        * Sentry error reporting meta-information. Raven object is set via SSR.
        * See server/Html.js for how this is initialized
        */
-      const profile = selectSegmentProfile(getState(), reducerName);
+      const profile = selectSegmentTraits(getState(), reducerName);
       raven.setUserContext({
         id: obj.sub,
         email: profile.email
@@ -95,6 +96,7 @@ export function setAuthToken(authToken, reducerName = DEFAULT_AUTH_REDUCER_NAME)
         token: authToken
       }
     });
+    dispatch(segmentEventIdentify(reducerName));
   };
 }
 
@@ -108,6 +110,7 @@ export function removeAuthToken() {
       raven.setUserContext({});
     }
     dispatch({ type: REMOVE_AUTH_TOKEN });
+    dispatch(segmentEventReset());
   };
 }
 

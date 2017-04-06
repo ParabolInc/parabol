@@ -4,6 +4,91 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.17.3 - 05-Apr-2017
+### Added
+- Action meeting layout and check-in UI/UX changes:
+   - #717 Simplified meeting check-in process
+   - #627 More vertical height during project updates
+   - New placement and look for callouts and avatars
+- New counters on project columns
+
+## v0.17.2 - 04-Apr-2017
+### Added
+- #555 can now archive teams
+  - N.B. teams can't yet be unarchived, so be careful :)
+- #878 superuser GraphQL endpoint `extendTrial` to extend trial time
+
+### Fixed
+- #866 trial date completion bug
+- #868, #879 agendas items not marked as complete
+
+## v0.17.1 - 29-Mar-2017
+### Fixed
+- #859 infinite redirect loop when deleting the last phaseItem
+
+## v0.17.0 - 27-Mar-2017
+### Added
+- Start of many copy edits (watch for more changes in future versions),
+  including #716 meeting lobby updates
+
+### Fixed
+- #643 summary email subject line
+- #839 max chars for projects
+- #857 mystery notification
+
+## v0.16.12 - 22-Mar-2017
+### Added
+- #344 meeting agenda list now reflects location of Facilitator and participants
+- #837 added `Facilitator` badge and styling added to meeting Facilitator
+
+### Fixed
+- Better fix for #850 r.createdAt.getTime is not a function
+
+## v0.16.11 - 22-Mar-2017
+### Fixed
+- Hotfix #850 r.createdAt.getTime is not a function
+
+## v0.16.10 - 22-Mar-2017
+### Added
+- Clearer direction to meeting participants when they want to skip ahead
+  of the meeting facilitator (#806, #392)
+- Project cards once again submit on enter, not tab
+- #728, #794 markdown now renders in email summary
+
+### Fixed
+- Re-adds user traits as context and properties to all segment events
+- #840 column order:
+   - We're more orthodox Kanban now dashboards (time flows left to right),
+     but intentionally reversed in meetings so things are covered in a
+     productive order
+- #848 eager-load error validation error for stripCard
+
+## v0.16.9 - 20-Mar-2017
+### Added
+- #404 add automated error reporting if meeting state gets stuck
+- #762 spinner component
+- #820 Trial and payment segment events
+- Added raven message to meeting infiniteLoop watchdog
+
+### Fixed
+- Patch for rejoin button styles
+- Ensure graphql gets a promise back from newly non-awaited calls
+- Refactored segment.io calls to only pass identity traits on login and change
+- #442 action disappears when creator reassigns to different owner
+- #444, #663 LeftNav view glitch in Chrome
+- #487 skipping updates to agenda via progress bar causes router loop
+- #553, #773 DnD acts strangly when user filter active on team dashboard
+- #592 facilitator abandons meeting; allow others to end it
+- #660 new team member invite bug
+- #714 Can't delete team members
+- #718 Notification for leaving a team
+- #738 Navigate to Team Settings, error ensues
+- #780 Team settings invite validation allows multiple emails
+- #808 Hey, I wanna pay!
+- #818 highlighted team no worky
+- #821 actions list not showing in my dashboard
+- #824 Editing/cursor bug workaround, root cause still unknown
+
 ## v0.16.8 - 14-Mar-2017
 ### Fixed
 - #811 Rejoin facilitator button cursor is pointer

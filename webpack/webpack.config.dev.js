@@ -23,22 +23,6 @@ const prefetches = [];
 
 const prefetchPlugins = prefetches.map((specifier) => new webpack.PrefetchPlugin(specifier));
 
-const babelQuery = {
-  cacheDirectory: true,
-  plugins: [
-    ['react-transform', {
-      transforms: [{
-        transform: 'react-transform-hmr',
-        imports: ['react'],
-        locals: ['module']
-      }, {
-        transform: 'react-transform-catch-errors',
-        imports: ['react', 'redbox-react']
-      }]
-    }]
-  ]
-};
-
 export default {
   // devtool: 'source-maps',
   devtool: 'eval',
@@ -95,8 +79,7 @@ export default {
       {test: /\.(eot|ttf|wav|mp3|woff|woff2)(\?\S*)?$/, loader: 'file-loader'},
       {
         test: /\.js$/,
-        loader: 'babel-loader',
-        query: babelQuery,
+        loaders: ['react-hot-loader/webpack', 'babel-loader?cacheDirectory'],
         include: clientInclude
       },
       {

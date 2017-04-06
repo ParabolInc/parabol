@@ -5,20 +5,24 @@ import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
-import {LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, SUMMARY, phaseArray, phaseOrder} from 'universal/utils/constants';
+import {CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, SUMMARY, phaseArray} from 'universal/utils/constants';
 import makeHref from 'universal/utils/makeHref';
 import {Link} from 'react-router';
 import AgendaListAndInputContainer from 'universal/modules/teamDashboard/containers/AgendaListAndInput/AgendaListAndInputContainer';
 import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
 import labels from 'universal/styles/theme/labels';
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 
 const Sidebar = (props) => {
   const {
     agendaPhaseItem,
     facilitatorPhase,
+    facilitatorPhaseItem,
     gotoItem,
+    gotoAgendaItem,
     isFacilitating,
     localPhase,
+    localPhaseItem,
     meetingPhase,
     styles,
     teamName,
@@ -29,7 +33,9 @@ const Sidebar = (props) => {
   const shortUrl = makeHref(relativeLink);
   const canNavigateTo = (phase) => {
     const adjustForFacilitator = isFacilitating ? 1 : 0;
-    return Boolean(phaseOrder(meetingPhase) >= (phaseOrder(phase) - adjustForFacilitator));
+    const phaseInfo = actionMeeting[phase];
+    const meetingPhaseInfo = actionMeeting[meetingPhase];
+    return Boolean(meetingPhaseInfo.index >= (phaseInfo.index - adjustForFacilitator));
   };
   const checkInLinkStyles = css(
     styles.navListItemLink,
@@ -50,8 +56,7 @@ const Sidebar = (props) => {
   const updatesNavItemStyles = css(styles.navListItem, facilitatorPhase === UPDATES && styles.navListItemMeetingMarker);
   const agendaNavItemStyles = css(styles.navListItem, inAgendaGroup(facilitatorPhase) && styles.navListItemMeetingMarker);
   const agendaListContext = canNavigateTo(AGENDA_ITEMS) ? 'meeting' : 'dashboard';
-  const agendaListDisabled = phaseOrder(meetingPhase) <= phaseOrder(CHECKIN) && phaseOrder(meetingPhase) !== phaseOrder(LOBBY);
-
+  const agendaListDisabled = meetingPhase === CHECKIN;
   return (
     <div className={css(styles.sidebar)}>
       <div className={css(styles.sidebarHeader)}>
@@ -112,7 +117,11 @@ const Sidebar = (props) => {
               agendaPhaseItem={agendaPhaseItem}
               context={agendaListContext}
               disabled={agendaListDisabled}
-              gotoItem={gotoItem}
+              facilitatorPhase={facilitatorPhase}
+              facilitatorPhaseItem={facilitatorPhaseItem}
+              gotoAgendaItem={gotoAgendaItem}
+              localPhase={localPhase}
+              localPhaseItem={localPhaseItem}
               teamId={teamId}
             />
           </div>
@@ -126,9 +135,12 @@ Sidebar.propTypes = {
   agenda: PropTypes.array,
   agendaPhaseItem: PropTypes.number,
   facilitatorPhase: PropTypes.oneOf(phaseArray),
+  facilitatorPhaseItem: PropTypes.number,
   isFacilitating: PropTypes.bool,
   gotoItem: PropTypes.func.isRequired,
+  gotoAgendaItem: PropTypes.func.isRequired,
   localPhase: PropTypes.oneOf(phaseArray),
+  localPhaseItem: PropTypes.number,
   meetingPhase: PropTypes.oneOf(phaseArray),
   styles: PropTypes.object,
   teamName: PropTypes.string,

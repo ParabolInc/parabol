@@ -30,8 +30,10 @@ query {
     name
     meetingId
   }
-  trialNotification @cached(type: "Notification") {
+  notifications(userId: $userId) @live {
+    id
     orgId
+    startAt
     type
   }
 }
@@ -39,12 +41,15 @@ query {
 
 
 const mapStateToProps = (state) => {
-  const {trialNotification, teams} = cashay.query(dashNavListQuery, {
-    // currently same as dashNavListContainer, could combine ops
+  const userId = state.auth.obj.sub;
+  const {notifications, teams} = cashay.query(dashNavListQuery, {
     op: 'dashLayoutContainer',
+    variables: {userId},
     resolveCached: {
-      teams: () => () => true,
-      trialNotification: () => (doc) => (doc.type === TRIAL_EXPIRED || doc.type === TRIAL_EXPIRES_SOON) && doc.startAt < new Date()
+      teams: () => () => true
+    },
+    filter: {
+      notifications: (n) => (n.type === TRIAL_EXPIRED || n.type === TRIAL_EXPIRES_SOON) && n.startAt < new Date()
     },
     sort: {
       teams: (a, b) => a.name > b.name ? 1 : -1
@@ -54,7 +59,7 @@ const mapStateToProps = (state) => {
     activeMeetings: resolveActiveMeetings(teams),
     tms: state.auth.obj.tms,
     userId: state.auth.sub,
-    trialNotification,
+    trialNotification: notifications[0],
     hasDashAlert: state.dash.hasDashAlert
   };
 };
@@ -66,7 +71,7 @@ const maybeSetDashAlert = (props) => {
     hasDashAlert,
     dispatch
   } = props;
-  const shouldHaveDashAlert = activeMeetings.length > 0 || trialNotification.type;
+  const shouldHaveDashAlert = activeMeetings.length > 0 || (trialNotification && trialNotification.type);
   if (shouldHaveDashAlert !== hasDashAlert) {
     dispatch(setDashAlertPresence(shouldHaveDashAlert));
   }
@@ -84,6 +89,7 @@ export default class DashLayoutContainer extends Component {
   static propTypes = {
     activeMeetings: PropTypes.array,
     children: PropTypes.any,
+    dispatch: PropTypes.func.isRequired,
     tms: PropTypes.array,
     trialNotification: PropTypes.object
     // userId: PropTypes.string
@@ -107,10 +113,11 @@ export default class DashLayoutContainer extends Component {
   }
 
   render() {
-    const {activeMeetings, children, trialNotification} = this.props;
+    const {activeMeetings, children, dispatch, trialNotification} = this.props;
     return (
       <DashLayout
         activeMeetings={activeMeetings}
+        dispatch={dispatch}
         trialNotification={trialNotification}
       >
         {children}

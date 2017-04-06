@@ -1,6 +1,7 @@
 export const getAuthQueryString = `
 query {
   user @cached(type: "User") {
+    createdAt,
     email,
     id,
     picture,

@@ -261,11 +261,12 @@ class MockDB {
     return this.closeout('team', {
       id,
       orgId,
-      teamName: 'Team America',
+      name: 'Team America',
       activeFacilitator: null,
       facilitatorPhase: LOBBY,
       facilitatorPhaseItem: null,
       isPaid: true,
+      isArchived: false,
       meetingId: null,
       meetingPhase: LOBBY,
       meetingPhaseItem: null,

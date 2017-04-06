@@ -100,7 +100,7 @@ export const Team = new GraphQLObjectType({
         const r = getRethink();
         return r.table('AgendaItem')
           .getAll(id, {index: 'teamId'})
-          .run()
+          .run();
       }
     },
     teamMembers: {
@@ -110,8 +110,12 @@ export const Team = new GraphQLObjectType({
         const r = getRethink();
         return r.table('TeamMember')
           .getAll(id, {index: 'teamId'})
-          .run()
+          .run();
       }
+    },
+    isArchived: {
+      type: GraphQLBoolean,
+      description: 'true if the team has been archived'
     }
   })
 });
@@ -122,5 +126,6 @@ export const TeamInput = new GraphQLInputObjectType({
     id: {type: GraphQLID, description: 'The unique team ID'},
     name: {type: GraphQLString, description: 'The name of the team'},
     orgId: {type: GraphQLID, description: 'The unique orginization ID that pays for the team'},
+    isArchived: {type: GraphQLBoolean}
   })
 });

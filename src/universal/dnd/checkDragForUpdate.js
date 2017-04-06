@@ -96,8 +96,6 @@ export default function checkDragForUpdate(monitor, dragState, itemArray, isDesc
   // mutative for fast response
   sourceProps.sortOrder = updatedDoc.sortOrder;
 
-  // close it out! we know we're moving
-  dragState.clear();
   return {
     rebalanceDoc,
     updatedDoc

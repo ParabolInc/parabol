@@ -62,11 +62,18 @@ const settingsLinks = (teamId) => {
   );
 };
 
+
 // use the same object so the EditTeamName doesn't rerender so gosh darn always
 const initialValues = {teamName: ''};
 
 const Team = (props) => {
-  const {children, hasDashAlert, router, team, teamMembers} = props;
+  const {
+    children,
+    hasDashAlert,
+    router,
+    team,
+    teamMembers
+  } = props;
   const {id: teamId, name: teamName, isPaid} = team;
   const hasActiveMeeting = Boolean(team && team.meetingId);
   const hasOverlay = hasActiveMeeting || !isPaid;
@@ -107,7 +114,7 @@ Team.propTypes = {
   hasDashAlert: PropTypes.bool,
   router: PropTypes.object,
   team: PropTypes.object.isRequired,
-  teamMembers: PropTypes.array.isRequired,
+  teamMembers: PropTypes.array.isRequired
 };
 
 export default withRouter(Team);

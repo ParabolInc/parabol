@@ -6,9 +6,10 @@ import ui from 'universal/styles/ui';
 import {Link} from 'react-router';
 import FontAwesome from 'react-fontawesome';
 import {DashAlert} from 'universal/components/Dashboard';
+import {segmentEventTrack} from 'universal/redux/segmentActions';
 
 const ExpiredTrialDashAlert = (props) => {
-  const {accountLink, styles} = props;
+  const {accountLink, dispatch, styles} = props;
   const iconStyle = {
     fontSize: ui.iconSize
   };
@@ -18,7 +19,16 @@ const ExpiredTrialDashAlert = (props) => {
         Your trial has expired!
       </div>
       <div className={css(styles.inlineBlock)}>
-        <Link className={css(styles.link)} title="Add Billing Information" to={accountLink}>
+        <Link
+          className={css(styles.link)}
+          title="Add Billing Information"
+          to={accountLink}
+          onClick={() => {
+            dispatch(
+              segmentEventTrack('DashAlert Click ExpiredTrialDashAlert')
+            );
+          }}
+        >
           <span className={css(styles.underline)}>Add Billing Information</span> <FontAwesome name="arrow-right" style={iconStyle} />
         </Link>
       </div>
@@ -28,6 +38,7 @@ const ExpiredTrialDashAlert = (props) => {
 
 ExpiredTrialDashAlert.propTypes = {
   accountLink: PropTypes.string,
+  dispatch: PropTypes.func.isRequired,
   styles: PropTypes.object
 };
 

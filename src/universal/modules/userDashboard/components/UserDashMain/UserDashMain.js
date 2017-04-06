@@ -68,8 +68,7 @@ const styleThunk = () => ({
   projectsLayout: {
     display: 'flex',
     flex: 1,
-    flexDirection: 'column',
-    paddingLeft: '1rem'
+    flexDirection: 'column'
   },
 
   separator: {

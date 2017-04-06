@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import MeetingAgendaLastCall from 'universal/modules/meeting/components/MeetingAgendaLastCall/MeetingAgendaLastCall';
+import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitatorName';
 
 const getCount = (agenda, field) => agenda.map((a) => a[field].length).reduce((sum, val) => sum + val, 0);
 const countOutcomes = (agenda) => {
@@ -50,16 +51,22 @@ const mapStateToProps = (state, props) => {
 };
 
 const MeetingAgendaLastCallContainer = (props) => {
-  const {agendaItemCount, actionCount, gotoNext, isFacilitating, members, projectCount, team} = props;
-  const facilitator = members.find((member) => member.id === team.activeFacilitator);
-  const facilitatorName = facilitator && facilitator.preferredName || 'Facilitator';
+  const {
+    agendaItemCount,
+    actionCount,
+    gotoNext,
+    hideMoveMeetingControls,
+    members,
+    projectCount,
+    team
+  } = props;
   return (
     <MeetingAgendaLastCall
       agendaItemCount={agendaItemCount}
       actionCount={actionCount}
       gotoNext={gotoNext}
-      facilitatorName={facilitatorName}
-      isFacilitating={isFacilitating}
+      facilitatorName={getFacilitatorName(team, members)}
+      hideMoveMeetingControls={hideMoveMeetingControls}
       projectCount={projectCount}
     />
   );
@@ -72,7 +79,8 @@ MeetingAgendaLastCallContainer.propTypes = {
   isFacilitating: PropTypes.bool,
   members: PropTypes.array,
   projectCount: PropTypes.number,
-  team: PropTypes.object
+  team: PropTypes.object,
+  hideMoveMeetingControls: PropTypes.bool
 };
 
 export default connect(mapStateToProps)(MeetingAgendaLastCallContainer);

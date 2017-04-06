@@ -23,7 +23,7 @@ const PhotoUploadModal = (props) => {
         Upload a New Photo
       </Type>
       <div className={css(styles.avatarBlock)}>
-        <Avatar picture={picture} size="fill" unstyled={unstyled} />
+        <Avatar picture={picture} size="fill" sansRadius={unstyled} sansShadow={unstyled} />
       </div>
       {children}
       <div className={css(styles.done)}>

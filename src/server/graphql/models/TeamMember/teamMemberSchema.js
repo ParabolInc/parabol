@@ -20,6 +20,10 @@ const TeamMember = new GraphQLObjectType({
     isNotRemoved: {type: GraphQLBoolean, description: 'true if the user is a part of the team, false if they no longer are'},
     isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
     isFacilitator: {type: GraphQLBoolean, description: 'Is user a team facilitator?'},
+    hideAgenda: {
+      type: GraphQLBoolean,
+      description: 'hide the agenda list on the dashboard'
+    },
     /* denormalized from User */
     email: {
       type: GraphQLEmailType,

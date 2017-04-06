@@ -12,6 +12,9 @@ import RemoveTeamMemberModal from 'universal/modules/teamDashboard/components/Re
 import PromoteTeamMemberModal from 'universal/modules/teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal';
 import LeaveTeamModal from 'universal/modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
+import Panel from 'universal/components/Panel/Panel';
+import ArchiveTeamContainer from 'universal/modules/teamDashboard/containers/ArchiveTeamContainer/ArchiveTeamContainer';
+import ui from 'universal/styles/ui';
 
 const TeamSettings = (props) => {
   const {
@@ -103,6 +106,7 @@ const TeamSettings = (props) => {
       </div>
     );
   };
+
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.inviteBlock)}>
@@ -148,7 +152,16 @@ const TeamSettings = (props) => {
                 actions={orgApprovalRowActions(orgApproval)}
               />
             );
-          })
+          })}
+          {myTeamMember.isLead &&
+            <Panel label="Danger Zone">
+              <div className={css(styles.dangerZoneChildren)}>
+                <ArchiveTeamContainer
+                  teamId={team.id}
+                  teamName={team.name}
+                />
+              </div>
+            </Panel>
           }
         </div>
       </div>
@@ -216,6 +229,10 @@ const styleThunk = () => ({
     ':hover': {
       opacity: '.5'
     }
+  },
+
+  dangerZoneChildren: {
+    padding: `0 ${ui.panelGutter} ${ui.panelGutter}`
   }
 });
 

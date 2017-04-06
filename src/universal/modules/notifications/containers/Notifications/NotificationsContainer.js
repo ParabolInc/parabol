@@ -37,13 +37,14 @@ const mapStateToProps = (state) => {
 };
 
 const NotificationsContainer = (props) => {
-  const {notifications} = props;
+  const {dispatch, notifications} = props;
   return (
-    <Notifications notifications={notifications} />
+    <Notifications dispatch={dispatch} notifications={notifications} />
   );
 };
 
 NotificationsContainer.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   notifications: PropTypes.array.isRequired
 };
 

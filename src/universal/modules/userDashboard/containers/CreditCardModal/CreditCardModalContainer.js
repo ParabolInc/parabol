@@ -5,6 +5,7 @@ import withAsync from 'react-async-hoc';
 import portal from 'react-portal-hoc';
 import {connect} from 'react-redux';
 import CreditCardModal from 'universal/modules/userDashboard/components/CreditCardModal/CreditCardModal';
+import {segmentEventTrack} from 'universal/redux/segmentActions';
 
 const stripeFieldLookup = {
   exp_year: {
@@ -61,6 +62,7 @@ class CreditCardModalContainer extends Component {
 
   addStripeBilling = async (submittedData) => {
     const {
+      dispatch,
       closePortal,
       createToken,
       handleToken,
@@ -75,6 +77,9 @@ class CreditCardModalContainer extends Component {
       if (field) {
         errorMessage[field.name] = field.message;
       }
+      dispatch(
+        segmentEventTrack('addBilling Stripe Error', {error: errorMessage})
+      );
       throw new SubmissionError(errorMessage);
     }
     if (handleToken) {
@@ -123,6 +128,7 @@ class CreditCardModalContainer extends Component {
 
 CreditCardModalContainer.propTypes = {
   createToken: PropTypes.func,
+  dispatch: PropTypes.func.isRequired,
   error: PropTypes.string,
   isUpdate: PropTypes.bool,
   closePortal: PropTypes.func,

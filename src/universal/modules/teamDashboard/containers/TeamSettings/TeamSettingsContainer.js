@@ -9,6 +9,8 @@ query {
   team @cached(id: $teamId, type: "Team") {
     id
     name
+    orgId
+    meetingPhase
   },
   teamMembers(teamId: $teamId) @live {
     id
