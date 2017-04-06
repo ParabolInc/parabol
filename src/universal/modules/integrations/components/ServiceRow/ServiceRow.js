@@ -21,9 +21,9 @@ const ServiceRow = (props) => {
       <div className={css(styles.logo)}>
         <img height={50} width={50} src={logo}/>
       </div>
-      <div className={css(styles.name)}>
-        {name}
-      </div>
+      {/*<div className={css(styles.name)}>*/}
+        {/*{name}*/}
+      {/*</div>*/}
       <div>
         <Field
           accessToken={accessToken}
@@ -34,17 +34,17 @@ const ServiceRow = (props) => {
       </div>
       {
         accessToken ?
-          <div>
+          <div className={css(styles.manageService)}>
             <Button
               colorPalette="cool"
-              label="Refresh access Token"
+              label="Refresh Token"
               size="smallest"
-              buttonStyle="solid"
+              buttonStyle="flat"
               onClick={openOauth}
             />
             <Button
               colorPalette="warm"
-              label="Remove Integrations"
+              label="Remove Token"
               size="smallest"
               buttonStyle="flat"
               onClick={removeOauth}
@@ -70,6 +70,10 @@ ServiceRow.propTypes = {
 const styleThunk = () => ({
   logo: {
     flexShrink: 0
+  },
+
+  manageService: {
+    display: 'flex'
   },
 
   name: {

@@ -6,7 +6,7 @@ import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
 import portal from 'react-portal-hoc';
 import Spinner from "../../../spinner/components/Spinner/Spinner";
-
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 // TODO: Make a UI constant (TA)
 const boxShadow = '0 3px 6px rgba(0, 0, 0, .35)';
@@ -27,7 +27,6 @@ const Menu = (props) => {
     ...coords
   };
   const kids = Children.map(itemFactory && itemFactory() || children, (child) => cloneElement(child, {closePortal}));
-  console.log('kids', kids, children)
   return (
     <div>
       <div className={css(styles.menuBlock)} style={menuBlockStyle}>
@@ -37,11 +36,23 @@ const Menu = (props) => {
         >
           {label && <div className={css(styles.label)}>{label}</div>}
           {kids}
-          {kids.length === 0 &&
-            <div className={css(styles.spinner)}>
-              <Spinner fillColor="cool" width={25}/>
-            </div>
-          }
+          <ReactCSSTransitionGroup
+            transitionName={{
+              appear: css(styles.spinnerAppear),
+              appearActive: css(styles.spinnerAppearActive),
+            }}
+            transitionAppear={true}
+            transitionEnter={false}
+            transitionLeave={false}
+            transitionAppearTimeout={300}
+          >
+            {
+              kids.length === 0 &&
+              <div key="spinner" className={css(styles.spinner)}>
+                <Spinner fillColor="cool" width={40}/>
+              </div>
+            }
+          </ReactCSSTransitionGroup>
         </div>
       </div>
     </div>
@@ -50,8 +61,6 @@ const Menu = (props) => {
 
 Menu.defaultProps = {
   menuOrientation: 'left',
-  menuWidth: '12rem',
-  toggle: 'Toggle Menu',
   verticalAlign: 'middle'
 };
 
@@ -105,12 +114,13 @@ const styleThunk = () => ({
     backgroundColor: ui.menuBackgroundColor,
     border: `1px solid ${ui.menuBorderColor}`,
     borderRadius: '.25rem',
-    overflow: 'hidden',
+    overflowY: 'scroll',
     paddingBottom: ui.menuGutterVertical,
     paddingTop: ui.menuGutterVertical,
     textAlign: 'left',
     width: '100%',
-    outline: 0
+    outline: 0,
+    maxHeight: '10rem'
   },
 
   label: {
@@ -125,8 +135,25 @@ const styleThunk = () => ({
   },
 
   spinner: {
+    alignItems: 'center',
+    display: 'flex',
+    justifyContent: 'center',
+    minHeight: '3rem',
     width: '100%'
+  },
+
+  spinnerAppear: {
+    opacity: 0,
+    transform: 'translate3d(0, 10px, 0)'
+  },
+
+  spinnerAppearActive: {
+    opacity: 1,
+    transform: 'translate3d(0, 0, 0)',
+    transition: 'all 300ms ease-in'
   }
 });
 
 export default portal({escToClose: true, clickToClose: true})(withStyles(styleThunk)(Menu));
+
+

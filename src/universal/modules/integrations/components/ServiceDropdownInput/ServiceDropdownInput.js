@@ -29,47 +29,43 @@ class ServiceDropdownInput extends Component {
     }
   }
 
-  shouldComponentUpdate() {
-    console.log('options', this.state.options)
-    return true
-  }
   render() {
     const {accessToken, input: {name, onChange, value}, label, organizations = [], styles} = this.props;
     const handleToggleClick = (e) => {
       const now = new Date();
       if (now - lastUpdated > ms('3s')) {
-        setTimeout(() => {
-          this.setState({
-            options:[{id: 1, name: '1'}]
-          })
-        },1000)
-        // lastUpdated = now;
-        // const uri = `https://api.github.com/user/repos`;
-        // fetch(uri, {
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //     Authorization: `token ${accessToken}`
-        //   }
-        // }).then((res) => res.json())
-        //   .then((res) => {
-        //     console.log('setting options', res);
-        //     this.state.options = res.map((repo) => ({
-        //       id: repo.id,
-        //       name: repo.full_name
-        //     }));
-        //   }).catch((e) => {console.log(e)})
+        // setTimeout(() => {
+        //   this.setState({
+        //     options:[{id: 1, name: '1'}, {id: 2, name: '2'}, {id: 3, name: '3'}, {id: 4, name: '4'}]
+        //   })
+        // },1000)
+        lastUpdated = now;
+        const uri = `https://api.github.com/user/repos`;
+        fetch(uri, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `token ${accessToken}`
+          }
+        }).then((res) => res.json())
+          .then((res) => {
+            this.setState({
+              options: res.map((repo) => ({
+                id: repo.id,
+                name: repo.full_name
+              }))
+            });
+          }).catch((e) => {console.log(e)})
       }
     }
     const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" onClick={handleToggleClick}/>;
-    console.log('mapping options', this.state.options);
     return (
       <FieldBlock>
         {label && <FieldLabel label={label} htmlFor={name}/>}
         <div className={css(styles.inputBlock)}>
-          <span>"Sync a project"</span>
+          <span>Sync a project</span>
           <Menu
+            menuWidth="20rem"
             originAnchor={originAnchor}
-            menuWidth="13rem"
             targetAnchor={targetAnchor}
             toggle={toggle}
           >
@@ -127,7 +123,8 @@ const styleThunk = () => ({
       borderColor: ui.fieldColorPalettes.gray.focusBorderColor,
       boxShadow: ui.fieldBoxShadow
     }),
-    position: 'relative'
+    position: 'relative',
+    width: '20rem'
   },
 
   menuButtonBlock: {

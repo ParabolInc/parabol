@@ -30,11 +30,17 @@ const mapStateToProps = (state, props) => {
 
 const IntegrationsContainer = (props) => {
   const {
+    closeAfter,
+    closePortal,
+    isClosing,
     teamMemberId,
     services,
   } = props;
   return (
     <Integrations
+      closeAfter={closeAfter}
+      closePortal={closePortal}
+      isClosing={isClosing}
       teamMemberId={teamMemberId}
       services={services}
     />

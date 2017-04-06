@@ -19,7 +19,7 @@ const Integrations = (props) => {
   } = props;
 
   return (
-    <DashModal onBackdropClick={closePortal} isClosing={isClosing} closeAfter={closeAfter} modalLayout={ui.modalLayoutMain}>
+    <DashModal onBackdropClick={closePortal} isClosing={isClosing} inheritWidth closeAfter={closeAfter} modalLayout={ui.modalLayoutMain}>
       <div className={css(styles.integrations)}>
         <h2>Integrations</h2>
         <div>Synced Accounts</div>
