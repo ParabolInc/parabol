@@ -73,6 +73,7 @@ const Team = (props) => {
         <div className={css(styles.teamLinks)}>
           {isSettings ?
             <Button
+              key="1"
               buttonStyle="flat"
               colorPalette="cool"
               icon="arrow-circle-left"
@@ -83,6 +84,7 @@ const Team = (props) => {
               size="smallest"
             /> :
             <Button
+              key="2"
               buttonStyle="flat"
               colorPalette="cool"
               icon="cog"
