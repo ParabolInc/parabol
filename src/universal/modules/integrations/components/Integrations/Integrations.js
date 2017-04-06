@@ -30,10 +30,12 @@ const Integrations = (props) => {
           const accessToken = matchingService && matchingService.id;
           return (
             <ServiceRow
+              key={i.service}
               accessToken={accessToken}
               logo={i.logo}
               name={i.name}
               openOauth={i.openOauth(teamMemberId)}
+              removeOauth={i.removeOauth(teamMemberId)}
               form={`${i.service}Form`}
             />
           )

@@ -9,6 +9,7 @@ import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalett
 import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 import {Menu, MenuItem} from 'universal/modules/menu';
 import ms from 'ms';
+import ghFetch from "../../../../utils/ghFetch";
 
 const originAnchor = {
   vertical: 'bottom',
@@ -49,10 +50,7 @@ class ServiceDropdownInput extends Component {
         }).then((res) => res.json())
           .then((res) => {
             this.setState({
-              options: res.map((repo) => ({
-                id: repo.id,
-                name: repo.full_name
-              }))
+              options: res.map((repo) => repo.full_name)
             });
           }).catch((e) => {console.log(e)})
       }
@@ -69,14 +67,16 @@ class ServiceDropdownInput extends Component {
             targetAnchor={targetAnchor}
             toggle={toggle}
           >
-            {this.state.options.map((repos) => {
+            {this.state.options.map((repoFullName) => {
               return (
                 <MenuItem
                   isActive={false}
-                  key={`serviceDropdownMenuItem${repos.id}`}
-                  label={repos.name}
-                  onClick={() => {
-                    console.log(repos.id);
+                  key={`serviceDropdownMenuItem${repoFullName}`}
+                  label={repoFullName}
+                  onClick={async () => {
+                    const issues = await ghFetch(`/repos/${repoFullName}/issues`, accessToken);
+                    console.log('issues', issues);
+
                   }}
                 />
               )
