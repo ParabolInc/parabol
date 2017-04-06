@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
-import FontAwesome from 'react-fontawesome';
+import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite-local-styles/no-important';
 import EditTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditTeamName';
 import {
   DashContent,
@@ -7,61 +8,12 @@ import {
   DashHeaderInfo,
   DashMain,
 } from 'universal/components/Dashboard';
-import {Link, withRouter} from 'react-router';
+import {withRouter} from 'react-router';
+import Button from 'universal/components/Button/Button';
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
 import UnpaidTeamModalContainer from 'universal/modules/teamDashboard/containers/UnpaidTeamModal/UnpaidTeamModalContainer';
 import ui from 'universal/styles/ui';
 import MeetingInProgressModal from '../MeetingInProgressModal/MeetingInProgressModal';
-
-const faIconStyle = {
-  fontSize: '14px',
-  lineHeight: 'inherit',
-  marginRight: '.25rem'
-};
-
-const linkStyle = {
-  display: 'inline-block',
-  height: '15px',
-  lineHeight: '15px',
-  marginRight: '1.5rem',
-  textDecoration: 'none'
-};
-
-const standardLinks = (teamId) => {
-  return (
-    <div>
-      <Link
-        to={`/meeting/${teamId}`}
-        style={linkStyle}
-        title="Meeting Lobby"
-      >
-        <FontAwesome name="arrow-circle-right" style={faIconStyle} /> Meeting Lobby
-      </Link>
-      <Link
-        to={`/team/${teamId}/settings`}
-        style={linkStyle}
-        title="Team Settings"
-      >
-        <FontAwesome name="cog" style={faIconStyle} /> Team Settings
-      </Link>
-    </div>
-  );
-};
-
-const settingsLinks = (teamId) => {
-  return (
-    <div>
-      <Link
-        to={`/team/${teamId}`}
-        style={linkStyle}
-        title="Back to Team Dashboard"
-      >
-        <FontAwesome name="arrow-circle-left" style={faIconStyle} /> Back to Team Dashboard
-      </Link>
-    </div>
-  );
-};
-
 
 // use the same object so the EditTeamName doesn't rerender so gosh darn always
 const initialValues = {teamName: ''};
@@ -71,6 +23,7 @@ const Team = (props) => {
     children,
     hasDashAlert,
     router,
+    styles,
     team,
     teamMembers
   } = props;
@@ -81,6 +34,12 @@ const Team = (props) => {
   initialValues.teamName = teamName;
   const DashHeaderInfoTitle = isSettings ? <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId} /> : teamName;
   const modalLayout = hasDashAlert ? ui.modalLayoutMainWithDashAlert : ui.modalLayoutMain;
+  const goToMeetingLobby = () =>
+    router.push(`/meeting/${teamId}/`);
+  const goToTeamSettings = () =>
+    router.push(`/team/${teamId}/settings/`);
+  const goToTeamDashboard = () =>
+    router.push(`/team/${teamId}`);
   return (
     <DashMain>
       <MeetingInProgressModal
@@ -98,9 +57,44 @@ const Team = (props) => {
       />
       <DashHeader hasOverlay={hasOverlay}>
         <DashHeaderInfo title={DashHeaderInfoTitle}>
-          {isSettings ? settingsLinks(teamId) : standardLinks(teamId)}
+          {!isSettings &&
+            <Button
+              buttonStyle="solid"
+              colorPalette="warm"
+              icon="users"
+              iconPlacement="left"
+              label="Meeting Lobby"
+              onClick={goToMeetingLobby}
+              raised
+              size="smallest"
+            />
+          }
         </DashHeaderInfo>
-        <DashboardAvatars teamMembers={teamMembers} />
+        <div className={css(styles.teamLinks)}>
+          {isSettings ?
+            <Button
+              buttonStyle="flat"
+              colorPalette="cool"
+              icon="arrow-circle-left"
+              iconPlacement="left"
+              isBlock
+              label="Back to Team Dashboard"
+              onClick={goToTeamDashboard}
+              size="smallest"
+            /> :
+            <Button
+              buttonStyle="flat"
+              colorPalette="cool"
+              icon="cog"
+              iconPlacement="left"
+              isBlock
+              label="Team Settings"
+              onClick={goToTeamSettings}
+              size="smallest"
+            />
+          }
+          <DashboardAvatars teamMembers={teamMembers} />
+        </div>
       </DashHeader>
       <DashContent hasOverlay={hasOverlay} padding="0">
         {children}
@@ -113,8 +107,16 @@ Team.propTypes = {
   children: PropTypes.any,
   hasDashAlert: PropTypes.bool,
   router: PropTypes.object,
+  styles: PropTypes.object,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired
 };
 
-export default withRouter(Team);
+const styleThunk = () => ({
+  teamLinks: {
+    display: 'flex',
+    flexWrap: 'nowrap'
+  }
+});
+
+export default withRouter(withStyles(styleThunk)(Team));

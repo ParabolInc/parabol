@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
 import UserActions from 'universal/modules/userDashboard/components/UserActions/UserActions';
 import UserColumnsContainer from 'universal/modules/userDashboard/containers/UserColumns/UserColumnsContainer';
 import UserProjectsHeaderContainer from 'universal/modules/userDashboard/containers/UserProjectsHeader/UserProjectsHeaderContainer';
@@ -22,7 +23,9 @@ const UserDashMain = (props) => {
     <DashMain>
       <DashHeader>
         <DashHeaderInfo title="My Dashboard">
-          {makeDateString()}{makeSeparator()}<span className={css(styles.crayCrayHover)}>{getRallyLink()}!</span>
+          <div className={css(styles.headerCopy)}>
+            {makeDateString()}{makeSeparator()}<span className={css(styles.hover)}>{getRallyLink()}!</span>
+          </div>
         </DashHeaderInfo>
       </DashHeader>
       <DashContent padding="0">
@@ -61,7 +64,7 @@ const styleThunk = () => ({
     width: ui.dashActionsWidth
   },
 
-  crayCrayHover: {
+  hover: {
     color: 'inherit'
   },
 
@@ -74,6 +77,14 @@ const styleThunk = () => ({
   separator: {
     paddingLeft: '.5em',
     paddingRight: '.5em'
+  },
+
+  headerCopy: {
+    color: appTheme.palette.mid,
+    flex: 1,
+    fontSize: appTheme.typography.sBase,
+    lineHeight: '1.5',
+    textAlign: 'right'
   }
 });
 
