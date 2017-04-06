@@ -6,7 +6,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 
 const UserDashboard = (props) => {
   const {children, location: {pathname}} = props;
-  const title = pathname === '/me' ? 'User Dashboard' : 'User Settings';
+  const title = pathname === '/me' ? 'My Dashboard | Parabol' : 'My Settings | Parabol';
   return (
     <DashboardWrapper location={pathname} title={title}>
       {children}
