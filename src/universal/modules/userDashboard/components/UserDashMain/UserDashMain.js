@@ -17,14 +17,15 @@ import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
 
 const UserDashMain = (props) => {
   const {styles} = props;
-  const makeSeparator = () =>
-    <span className={css(styles.separator)}>{' // '}</span>;
   return (
     <DashMain>
       <DashHeader>
         <DashHeaderInfo title="My Dashboard">
           <div className={css(styles.headerCopy)}>
-            {makeDateString()}{makeSeparator()}<span className={css(styles.hover)}>{getRallyLink()}!</span>
+            {makeDateString()}<br />
+            <span className={css(styles.rallyLink)}>
+              <i>{getRallyLink()}</i>
+            </span>
           </div>
         </DashHeaderInfo>
       </DashHeader>
@@ -64,28 +65,25 @@ const styleThunk = () => ({
     width: ui.dashActionsWidth
   },
 
-  hover: {
-    color: 'inherit'
-  },
-
   projectsLayout: {
     display: 'flex',
     flex: 1,
     flexDirection: 'column'
   },
 
-  separator: {
-    paddingLeft: '.5em',
-    paddingRight: '.5em'
-  },
-
   headerCopy: {
     color: appTheme.palette.mid,
     flex: 1,
     fontSize: appTheme.typography.sBase,
-    lineHeight: '1.5',
+    fontWeight: 700,
+    lineHeight: '1.25',
     textAlign: 'right'
-  }
+  },
+
+  rallyLink: {
+    color: 'inherit',
+    fontWeight: 400
+  },
 });
 
 export default withStyles(styleThunk)(UserDashMain);
