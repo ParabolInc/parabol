@@ -24,9 +24,9 @@ const MeetingAgendaFirstCall = (props) => {
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="2rem">
           <MeetingPhaseHeading>
-            {'Now…what do you need?'}
+            {'Now, what do you need?'}
           </MeetingPhaseHeading>
-          <Type align="center" bold marginBottom="2rem" scale="s5" colorPalette="black">
+          <Type align="center" bold marginBottom="2.5rem" marginTop=".5rem" scale="s5" colorPalette="black">
             (Time to add your agenda items to the list.)
           </Type>
 
@@ -72,13 +72,13 @@ const styleThunk = () => ({
   },
 
   buttonBlock: {
-    marginTop: '2rem'
+    marginTop: '2.5rem'
   },
 
   warmHighlight: {
     backgroundColor: appTheme.palette.warm10l,
     borderRadius: '.25rem',
-    marginTop: '2rem',
+    marginTop: '2.5rem',
     padding: '.25rem 1rem'
   }
 });
