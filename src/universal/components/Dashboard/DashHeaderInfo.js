@@ -31,7 +31,7 @@ const styleThunk = () => ({
 
   title: {
     ...ui.dashHeaderTitleStyles,
-    marginRight: '1.5rem'
+    marginRight: '2rem'
   }
 });
 
