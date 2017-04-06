@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
 import UserActions from 'universal/modules/userDashboard/components/UserActions/UserActions';
 import UserColumnsContainer from 'universal/modules/userDashboard/containers/UserColumns/UserColumnsContainer';
 import UserProjectsHeaderContainer from 'universal/modules/userDashboard/containers/UserProjectsHeader/UserProjectsHeaderContainer';
@@ -16,13 +17,16 @@ import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
 
 const UserDashMain = (props) => {
   const {styles} = props;
-  const makeSeparator = () =>
-    <span className={css(styles.separator)}>{' // '}</span>;
   return (
     <DashMain>
       <DashHeader>
         <DashHeaderInfo title="My Dashboard">
-          {makeDateString()}{makeSeparator()}<span className={css(styles.crayCrayHover)}>{getRallyLink()}!</span>
+          <div className={css(styles.headerCopy)}>
+            {makeDateString()}<br />
+            <span className={css(styles.rallyLink)}>
+              <i>{getRallyLink()}</i>
+            </span>
+          </div>
         </DashHeaderInfo>
       </DashHeader>
       <DashContent padding="0">
@@ -61,20 +65,25 @@ const styleThunk = () => ({
     width: ui.dashActionsWidth
   },
 
-  crayCrayHover: {
-    color: 'inherit'
-  },
-
   projectsLayout: {
     display: 'flex',
     flex: 1,
     flexDirection: 'column'
   },
 
-  separator: {
-    paddingLeft: '.5em',
-    paddingRight: '.5em'
-  }
+  headerCopy: {
+    color: appTheme.palette.mid,
+    flex: 1,
+    fontSize: appTheme.typography.sBase,
+    fontWeight: 700,
+    lineHeight: '1.25',
+    textAlign: 'right'
+  },
+
+  rallyLink: {
+    color: 'inherit',
+    fontWeight: 400
+  },
 });
 
 export default withStyles(styleThunk)(UserDashMain);

@@ -227,6 +227,12 @@ const ui = {
   dashGutter: '1rem',
   // Note: property 'dashMinWidth' prevents layout from collapsing in Safari
   //       in a better future we may be more adaptive/responsive (TA)
+  dashHeaderTitleStyles: {
+    color: appTheme.palette.dark,
+    fontSize: '1.75rem',
+    fontWeight: 400,
+    lineHeight: '1.5'
+  },
   dashMinWidth: '79rem',
   dashAlertHeight: '2.625rem',
   dashSectionHeaderLineHeight: '2rem',

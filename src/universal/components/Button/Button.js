@@ -211,7 +211,8 @@ const styleThunk = (theme, props) => ({
 
   buttonInner: {
     display: 'block',
-    fontSize: 0
+    fontSize: 0,
+    whiteSpace: 'nowrap'
   },
 
   label: {

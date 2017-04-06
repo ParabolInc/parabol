@@ -2,13 +2,12 @@ import React, {PropTypes} from 'react';
 import Editable from 'universal/components/Editable/Editable';
 import {cashay} from 'cashay';
 import {reduxForm, Field} from 'redux-form';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import editTeamNameValidation from './editTeamNameValidation';
 
 const fieldStyles = {
-  color: appTheme.palette.dark10d,
-  fontSize: appTheme.typography.s5,
-  lineHeight: appTheme.typography.s6,
+  ...ui.dashHeaderTitleStyles,
   placeholderColor: appTheme.palette.mid70l
 };
 
