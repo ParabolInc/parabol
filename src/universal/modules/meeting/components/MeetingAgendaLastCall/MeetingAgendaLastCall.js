@@ -16,7 +16,6 @@ import {makeSuccessExpression} from 'universal/utils/makeSuccessCopy';
 const MeetingAgendaLastCall = (props) => {
   const {
     agendaItemCount,
-    actionCount,
     hideMoveMeetingControls,
     gotoNext,
     facilitatorName,
@@ -38,25 +37,27 @@ const MeetingAgendaLastCall = (props) => {
             align="center"
             bold
             marginBottom="2rem"
-            marginTop="2rem"
             scale="s5"
             colorPalette="black"
           >
             We worked on <span className={css(styles.highlight)}>{`${agendaItemCount} ${plural(agendaItemCount, 'Agenda Item')}`}</span>
             —any additional items?
           </Type>
+
+          <AgendaShortcutHint />
+
           {!hideMoveMeetingControls ?
-          <div style={{marginBottom: '2.5rem'}}></div>
-          {isFacilitating ?
-            <Button
-              buttonStyle="solid"
-              colorPalette="cool"
-              label="End Meeting"
-              onClick={gotoNext}
-              raised
-              size="largest"
-              textTransform="uppercase"
-            /> :
+            <div className={css(styles.buttonBlock)}>
+              <Button
+                buttonStyle="solid"
+                colorPalette="cool"
+                label="End Meeting"
+                onClick={gotoNext}
+                size="largest"
+                raised
+                textTransform="uppercase"
+              />
+            </div> :
             <div className={css(styles.warmHighlight)}>
               <Type align="center" scale="s4" colorPalette="black">
                 <span className={css(styles.highlight)}>Waiting for <b>{facilitatorName}</b> to end the meeting<Ellipsis /></span>
@@ -73,10 +74,8 @@ MeetingAgendaLastCall.propTypes = {
   agendaItemCount: PropTypes.number,
   gotoNext: PropTypes.func,
   facilitatorName: PropTypes.string,
-  localPhaseItem: PropTypes.number,
   hideMoveMeetingControls: PropTypes.bool,
-  styles: PropTypes.object,
-  team: PropTypes.object
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({
@@ -84,9 +83,14 @@ const styleThunk = () => ({
     color: appTheme.palette.warm
   },
 
+  buttonBlock: {
+    marginTop: '2rem'
+  },
+
   warmHighlight: {
     backgroundColor: appTheme.palette.warm10l,
     borderRadius: '.25rem',
+    marginTop: '2rem',
     padding: '.25rem 1rem'
   }
 });

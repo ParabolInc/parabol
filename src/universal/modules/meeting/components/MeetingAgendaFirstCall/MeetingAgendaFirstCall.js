@@ -4,6 +4,7 @@ import Type from 'universal/components/Type/Type';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
+import AgendaShortcutHint from 'universal/modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint';
 import Ellipsis from 'universal/components/Ellipsis/Ellipsis';
 import withStyles from 'universal/styles/withStyles';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -22,20 +23,27 @@ const MeetingAgendaFirstCall = (props) => {
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="2rem">
-          <MeetingPhaseHeading>Whatcha need?</MeetingPhaseHeading>
-          <Type align="center" bold marginBottom="2rem" marginTop="2rem" scale="s5" colorPalette="black">
-            Add your Agenda Items to the queue now…
+          <MeetingPhaseHeading>
+            {'Now…what do you need?'}
+          </MeetingPhaseHeading>
+          <Type align="center" bold marginBottom="2rem" scale="s5" colorPalette="black">
+            (Time to add your agenda items to the list.)
           </Type>
+
+          <AgendaShortcutHint />
+
           {!hideMoveMeetingControls ?
-            <Button
-              buttonStyle="flat"
-              colorPalette="cool"
-            icon="arrow-circle-right"
-            iconPlacement="right"
-            label="Let’s begin: Agenda"
-            onClick={gotoNext}
-              size="medium"
-            /> :
+            <div className={css(styles.buttonBlock)}>
+              <Button
+                buttonStyle="flat"
+                colorPalette="cool"
+                icon="arrow-circle-right"
+                iconPlacement="right"
+                label="Let’s begin: Agenda"
+                onClick={gotoNext}
+                size="largest"
+              />
+            </div> :
             <div className={css(styles.warmHighlight)}>
               <Type align="center" scale="s4" colorPalette="black">
                 <span className={css(styles.highlight)}>
@@ -53,9 +61,9 @@ const MeetingAgendaFirstCall = (props) => {
 MeetingAgendaFirstCall.propTypes = {
   gotoNext: PropTypes.func,
   hideMoveMeetingControls: PropTypes.bool,
+  members: PropTypes.array,
   styles: PropTypes.object,
-  team: PropTypes.object,
-  members: PropTypes.array
+  team: PropTypes.object
 };
 
 const styleThunk = () => ({
@@ -63,9 +71,14 @@ const styleThunk = () => ({
     color: appTheme.palette.warm
   },
 
+  buttonBlock: {
+    marginTop: '2rem'
+  },
+
   warmHighlight: {
     backgroundColor: appTheme.palette.warm10l,
     borderRadius: '.25rem',
+    marginTop: '2rem',
     padding: '.25rem 1rem'
   }
 });

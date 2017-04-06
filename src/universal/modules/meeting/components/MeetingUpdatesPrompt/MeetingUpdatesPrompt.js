@@ -14,7 +14,7 @@ const MeetingUpdatesPrompt = (props) => {
     <MeetingPrompt
       avatar={currentTeamMember.picture}
       heading={heading}
-      helpText={<span><b>Keep ‘em quick</b>—discussion time is next!</span>}
+      helpText={<span><b>Quick updates only, please.</b></span>}
     />
   );
 };

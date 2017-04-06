@@ -88,7 +88,7 @@ const AgendaInputField = (props) => {
         title="Add Agenda Item"
         type="text"
       />
-      <FontAwesome name="plus-circle" style={iconStyle} />
+      <FontAwesome name="plus-square-o" style={iconStyle} />
     </form>
   );
 };
