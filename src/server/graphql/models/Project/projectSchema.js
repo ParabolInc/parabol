@@ -56,6 +56,10 @@ export const Project = new GraphQLObjectType({
       description: 'the shared sort order for projects on the team dash & user dash'
     },
     status: {type: new GraphQLNonNull(ProjectStatus), description: 'The status of the project'},
+    tags: {
+      type: new GraphQLList(GraphQLString),
+      description: 'The tags associated with the project'
+    },
     teamId: {
       type: GraphQLID,
       description: 'The id of the team (indexed). Needed for subscribing to archived projects'
