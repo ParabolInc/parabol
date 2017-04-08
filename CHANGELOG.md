@@ -4,6 +4,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.17.4 - 07-Apr-2017
+### Added
+- Team dash header changes: (hot lobby button! Team settings! and more!)
+- New rallies!
+- Updated copy for agenda last call
+
+### Fixed
+- #508 agenda input shortcut prompt
+- #768 page title improvements
+- Pencil after blur for editable
+- Ensure meeting infinite loop fix
+- Avatar group, dates
+
 ## v0.17.3 - 05-Apr-2017
 ### Added
 - Action meeting layout and check-in UI/UX changes:
