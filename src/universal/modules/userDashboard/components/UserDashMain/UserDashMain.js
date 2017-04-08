@@ -3,7 +3,6 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
-import UserActions from 'universal/modules/userDashboard/components/UserActions/UserActions';
 import UserColumnsContainer from 'universal/modules/userDashboard/containers/UserColumns/UserColumnsContainer';
 import UserProjectsHeaderContainer from 'universal/modules/userDashboard/containers/UserProjectsHeader/UserProjectsHeaderContainer';
 import {
@@ -31,9 +30,6 @@ const UserDashMain = (props) => {
       </DashHeader>
       <DashContent padding="0">
         <div className={css(styles.root)}>
-          <div className={css(styles.actionsLayout)}>
-            <UserActions />
-          </div>
           <div className={css(styles.projectsLayout)}>
             <UserProjectsHeaderContainer />
             <UserColumnsContainer />

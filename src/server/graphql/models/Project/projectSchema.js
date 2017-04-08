@@ -6,6 +6,7 @@ import {
   GraphQLEnumType,
   GraphQLFloat,
   GraphQLBoolean,
+  GraphQLList,
   GraphQLInputObjectType
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
