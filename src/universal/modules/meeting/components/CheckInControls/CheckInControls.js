@@ -42,14 +42,14 @@ const CheckInControls = (props) => {
       <div className={css(styles.control, styles.nextControl)} onClick={handleOnClickPresent}>
         <FontAwesome name="check-circle" style={nextIcon} />
         <span className={css(styles.label)}>
-          <u>P</u>resent – {nextMember ? `Move to ${nextMember.preferredName}` : 'Move to Updates'}
+          <u>P</u>resent – {nextMember ? `move to ${nextMember.preferredName}` : 'move to updates'}
         </span>
       </div>
 
       <div className={css(styles.control, styles.skipControl)} onClick={handleOnClickAbsent}>
         <FontAwesome name="minus-circle" style={skipIcon} />
         <span className={css(styles.label)}>
-          <u>N</u>ot Present – {nextMember ? `Skip to ${nextMember.preferredName}` : 'Skip to Updates'}
+          <u>N</u>ot Present – {nextMember ? `skip to ${nextMember.preferredName}` : 'skip to updates'}
         </span>
       </div>
     </div>
