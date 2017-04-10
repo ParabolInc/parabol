@@ -146,7 +146,7 @@ export default {
       segmentTraits.forEach((traits) => {
         segmentIo.track({
           userId: traits.id,
-          event: 'Meeting Complete',
+          event: 'Meeting Completed',
           properties: {
             meetingNumber: completedMeeting.meetingNumber,
             traits
