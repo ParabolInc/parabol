@@ -149,6 +149,7 @@ export default {
           event: 'Meeting Completed',
           properties: {
             meetingNumber: completedMeeting.meetingNumber,
+            teamId,
             traits
           }
         });
