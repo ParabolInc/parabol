@@ -5829,6 +5829,13 @@ react-fontawesome@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/react-fontawesome/-/react-fontawesome-1.5.0.tgz#879d1b2aa5c48bba551e9237f84993217b5645c4"
 
+react-githubish-mentions@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/react-githubish-mentions/-/react-githubish-mentions-0.0.1.tgz#0cdc2ed55615e7cceb1a2ae54fd99c777749fa4a"
+  dependencies:
+    react-portal-hoc "^0.3.2"
+    textarea-caret "^3.0.2"
+
 react-helmet@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/react-helmet/-/react-helmet-4.0.0.tgz#df74bcd6ff585a1ccbbfba5aaa1c346cabc43d03"
@@ -5911,10 +5918,6 @@ react-side-effect@^1.1.0:
   dependencies:
     exenv "^1.2.1"
     shallowequal "^0.2.2"
-
-react-textarea-autosize@^4.0.5:
-  version "4.0.5"
-  resolved "https://registry.yarnpkg.com/react-textarea-autosize/-/react-textarea-autosize-4.0.5.tgz#55379f6a6fa575fc87d1b8de2756e57e3b6c995d"
 
 react-transform-catch-errors@1.0.2:
   version "1.0.2"
@@ -7240,6 +7243,10 @@ test-exclude@^4.0.0:
 text-table@~0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
+
+textarea-caret@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/textarea-caret/-/textarea-caret-3.0.2.tgz#f360c48699aa1abf718680a43a31a850665c2caf"
 
 then-fs@^2.0.0:
   version "2.0.0"

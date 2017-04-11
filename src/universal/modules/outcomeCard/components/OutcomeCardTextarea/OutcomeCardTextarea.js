@@ -6,7 +6,22 @@ import ui from 'universal/styles/ui';
 import ReactMarkdown from 'react-markdown';
 import markdownCustomComponents from 'universal/utils/markdownCustomComponents';
 import {PROJECT_MAX_CHARS} from 'universal/utils/constants';
+import {MentionWrapper, MentionMenu} from 'react-githubish-mentions';
 
+
+const MenuItem = (props) => {
+  const {active, picture, value} = props;
+  const activeStyle = active ? {
+    background: 'blue'
+  } : {};
+  return (
+    <div style={activeStyle}>
+      {value}
+    </div>
+  )
+};
+
+let textAreaRef;
 class OutcomeCardTextArea extends Component {
   static propTypes = {
     cardHasHover: PropTypes.bool,
@@ -76,7 +91,7 @@ class OutcomeCardTextArea extends Component {
         handleSubmit();
       }
     };
-    let textAreaRef;
+
     const setRef = (c) => {
       textAreaRef = c;
     };
@@ -88,20 +103,37 @@ class OutcomeCardTextArea extends Component {
       }
     };
 
-    return (
+    const handleInput = (e) => {
+      const coords = getCaretCoords(textAreaRef, textAreaRef.startingSelection);
+      const {top, left} = textAreaRef.getBoundingClientRect();
+      coords.left += left;
+      coords.top += top;
+    };
 
-      <textarea
+    const atQuery = async (query) => {
+      const {teamMembers} = this.props;
+      const tm = ['matt', 'jordan', 'terry', 'taya'].map((name) => ({value: name}));
+      return tm.filter((member) => member.value.startsWith(query))
+    };
+    const mentionMenuStyle = css(styles.mentionMenu);
+    return (
+      <MentionWrapper
         {...input}
-        ref={setRef}
+        getRef={setRef}
         className={contentStyles}
         disabled={isArchived}
         maxLength={PROJECT_MAX_CHARS}
         placeholder="Type your outcome here"
         onBlur={handleBlur}
         onDrop={null}
+        onInput={handleInput}
         onKeyDown={doSubmitOnEnter ? submitOnEnter : null}
         autoFocus
-      />
+      >
+        <MentionMenu className={mentionMenuStyle} trigger="@" item={MenuItem} resolve={atQuery}/>
+        <MentionMenu className={mentionMenuStyle} trigger="#" resolve={atQuery}/>
+      </MentionWrapper>
+
     );
   }
 
@@ -250,6 +282,11 @@ const styleThunk = () => ({
 
   markdown: {
     wordBreak: 'break-word'
+  },
+
+  mentionMenu: {
+    background: 'grey',
+    border: '1px solid black'
   }
 });
 
