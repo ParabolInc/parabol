@@ -3,12 +3,11 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
-import ReactMarkdown from 'react-markdown';
-import markdownCustomComponents from 'universal/utils/markdownCustomComponents';
 import {PROJECT_MAX_CHARS, tags} from 'universal/utils/constants';
 import {MentionWrapper, MentionMenu} from 'react-githubish-mentions';
 import MentionTeamMember from "../../../../components/MentionTeamMember/MentionTeamMember";
 import MentionTag from "../../../../components/MentionTag/MentionTag";
+import Markdown from "../../../../components/Markdown/Markdown";
 
 let textAreaRef;
 class OutcomeCardTextArea extends Component {
@@ -145,12 +144,7 @@ class OutcomeCardTextArea extends Component {
         onClick={!isArchived && this.setEditing}
         className={markdownStyles}
       >
-        <ReactMarkdown
-          renderers={markdownCustomComponents}
-          source={value}
-          escapeHtml
-          softBreak="br"
-        />
+        <Markdown source={value}/>
       </div>
     );
   }

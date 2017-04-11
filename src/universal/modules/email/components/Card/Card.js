@@ -4,8 +4,7 @@ import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
 import {trimString} from 'universal/utils';
 import EmptySpace from '../EmptySpace/EmptySpace';
-import ReactMarkdown from 'react-markdown';
-import markdownCustomComponents from 'universal/utils/markdownCustomComponents';
+import Markdown from "../../../../components/Markdown/Markdown";
 
 const Card = (props) => {
   const {content, status} = props;
@@ -68,12 +67,7 @@ const Card = (props) => {
         <tr>
           <td style={cellStyle}>
             <div style={contentStyle}>
-              <ReactMarkdown
-                renderers={markdownCustomComponents}
-                source={trimString(content, 52)}
-                escapeHtml
-                softBreak="br"
-              />
+              <Markdown source={trimString(content, 52)}/>
             </div>
           </td>
         </tr>

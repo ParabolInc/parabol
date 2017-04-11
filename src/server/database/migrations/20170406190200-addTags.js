@@ -6,17 +6,11 @@ exports.up = async(r) => {
         project('isArchived'),
         project.merge({
           tags: ['archived']
-        }),
+        }).without('isArchived'),
         project.merge({
           tags: []
-        })
+        }).without('isArchived')
       )
-        .do((project) => {
-          return project.merge({
-            tags: project('tags').append(project('status').default('active'))
-          })
-            .without('status', 'isArchived')
-        })
     })
   ];
   const [actions] = await Promise.all(mutations);
@@ -27,7 +21,8 @@ exports.up = async(r) => {
     createdAt: action.createdAt,
     isArchived: false,
     sortOrder: idx, // meh, so they have to resort, oh well
-    tags: ['active', 'private'],
+    status: 'active',
+    tags: ['private'],
     teamId: action.teamMemberId.split('::')[1],
     teamMemberId: action.teamMemberId,
     updatedAt: action.updatedAt,
@@ -81,21 +76,9 @@ exports.down = async(r) => {
   await r.table('Action').insert(actions);
 
   const mutations = [
-    r.table('Project').getAll('archived').update({
+    r.table('Project').getAll('archived', {index: 'tags'}).update({
       isArchived: true
     }),
-    r.table('Project').getAll('active').update({
-      status: 'active'
-    }),
-    r.table('Project').getAll('stuck').update({
-      status: 'stuck'
-    }),
-    r.table('Project').getAll('future').update({
-      status: 'future'
-    }),
-    r.table('Project').getAll('done').update({
-      status: 'done'
-    })
   ];
 
   await Promise.all(mutations);
