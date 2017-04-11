@@ -5,21 +5,10 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import ReactMarkdown from 'react-markdown';
 import markdownCustomComponents from 'universal/utils/markdownCustomComponents';
-import {PROJECT_MAX_CHARS} from 'universal/utils/constants';
+import {PROJECT_MAX_CHARS, tags} from 'universal/utils/constants';
 import {MentionWrapper, MentionMenu} from 'react-githubish-mentions';
-
-
-const MenuItem = (props) => {
-  const {active, picture, value} = props;
-  const activeStyle = active ? {
-    background: 'blue'
-  } : {};
-  return (
-    <div style={activeStyle}>
-      {value}
-    </div>
-  )
-};
+import MentionTeamMember from "../../../../components/MentionTeamMember/MentionTeamMember";
+import MentionTag from "../../../../components/MentionTag/MentionTag";
 
 let textAreaRef;
 class OutcomeCardTextArea extends Component {
@@ -103,18 +92,16 @@ class OutcomeCardTextArea extends Component {
       }
     };
 
-    const handleInput = (e) => {
-      const coords = getCaretCoords(textAreaRef, textAreaRef.startingSelection);
-      const {top, left} = textAreaRef.getBoundingClientRect();
-      coords.left += left;
-      coords.top += top;
-    };
-
     const atQuery = async (query) => {
       const {teamMembers} = this.props;
-      const tm = ['matt', 'jordan', 'terry', 'taya'].map((name) => ({value: name}));
-      return tm.filter((member) => member.value.startsWith(query))
+      const matchingMembers = teamMembers.filter((member) => member.preferredName.startsWith(query))
+      return matchingMembers.map((member) => ({...member, value: member.preferredName}));
     };
+
+    const tagQuery = async (query) => {
+      return tags.filter((tag) => tag.value.startsWith(query))
+    };
+
     const mentionMenuStyle = css(styles.mentionMenu);
     return (
       <MentionWrapper
@@ -126,12 +113,11 @@ class OutcomeCardTextArea extends Component {
         placeholder="Type your outcome here"
         onBlur={handleBlur}
         onDrop={null}
-        onInput={handleInput}
         onKeyDown={doSubmitOnEnter ? submitOnEnter : null}
         autoFocus
       >
-        <MentionMenu className={mentionMenuStyle} trigger="@" item={MenuItem} resolve={atQuery}/>
-        <MentionMenu className={mentionMenuStyle} trigger="#" resolve={atQuery}/>
+        <MentionMenu className={mentionMenuStyle} trigger="@" item={MentionTeamMember} resolve={atQuery}/>
+        <MentionMenu className={mentionMenuStyle} trigger="#" item={MentionTag} resolve={tagQuery}/>
       </MentionWrapper>
 
     );
@@ -285,8 +271,10 @@ const styleThunk = () => ({
   },
 
   mentionMenu: {
-    background: 'grey',
-    border: '1px solid black'
+    background: 'white',
+    border: '1px solid gray',
+    borderRadius: '2px',
+    boxShadow: ui.menuBoxShadow
   }
 });
 

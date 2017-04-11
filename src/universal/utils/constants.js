@@ -124,3 +124,15 @@ export const FAILED = 'FAILED';
 
 /* character limits */
 export const PROJECT_MAX_CHARS = 512;
+
+/* Action Tags */
+export const tags = [
+  {
+    value: 'private',
+    description: 'Only you will be able to see this project'
+  },
+  {
+    value: 'archived',
+    description: 'Hidden from your main board'
+  }
+];

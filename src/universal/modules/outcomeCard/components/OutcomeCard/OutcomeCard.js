@@ -64,7 +64,6 @@ const OutcomeCard = (props) => {
             outcomeId={outcome.id}
             updatedAt={outcome.updatedAt}
           />
-          <form>
             <Field
               cardHasHover={hasHover}
               component={OutcomeCardTextarea}
@@ -74,8 +73,8 @@ const OutcomeCard = (props) => {
               isProject={isProject}
               name={outcome.id}
               isArchived={outcome.isArchived}
+              teamMembers={teamMembers}
             />
-          </form>
         </div>
       }
       <OutcomeCardFooter

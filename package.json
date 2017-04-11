@@ -143,7 +143,7 @@
     "react-dnd-html5-backend": "^2.2.4",
     "react-dom": "^15.4.2",
     "react-fontawesome": "^1.5.0",
-    "react-githubish-mentions": "^0.0.1",
+    "react-githubish-mentions": "^0.0.2",
     "react-helmet": "^4.0.0",
     "react-hotkey-hoc": "^0.2.1",
     "react-markdown": "^2.4.5",
