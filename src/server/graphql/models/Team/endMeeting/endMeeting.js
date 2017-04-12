@@ -55,17 +55,10 @@ export default {
       .coerceTo('array')
       .do((agendaItemIds) => {
         // delete any null actions
-        return r.table('Action')
+        return r.table('Project')
           .getAll(r.args(agendaItemIds), {index: 'agendaId'})
           .filter((row) => row('content').eq(null))
           .delete()
-          .do(() => {
-            // delete any null projects
-            return r.table('Project')
-              .getAll(r.args(agendaItemIds), {index: 'agendaId'})
-              .filter((row) => row('content').eq(null))
-              .delete();
-          })
           .do(() => {
             // grab all the projects
             return r.table('Project')
