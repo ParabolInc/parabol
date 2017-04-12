@@ -9,6 +9,7 @@ import shortid from 'shortid';
 import ms from 'ms';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
 import {handleSchemaErrors} from 'server/utils/utils';
+import extractTags from 'universal/utils/extractTags';
 
 const DEBOUNCE_TIME = ms('5m');
 
@@ -36,13 +37,14 @@ export default {
     handleSchemaErrors(errors);
 
     // RESOLUTION
-    const {id: projectId, sortOrder, agendaId, isArchived, ...historicalProject} = validUpdatedProject;
+    const {id: projectId, sortOrder, agendaId, isArchived, content, ...historicalProject} = validUpdatedProject;
 
     const now = new Date();
 
     const newProject = {
       ...historicalProject,
       agendaId,
+      content,
       isArchived,
       sortOrder
     };
@@ -51,14 +53,20 @@ export default {
       const [userId] = teamMemberId.split('::');
       newProject.userId = userId;
     }
+    
+    if (content) {
+      newProject.tags = extractTags(content); 
+    }
     const dbWork = [];
 
     if (Object.keys(updatedProject).length > 2 || sortOrder === undefined) {
       // if this is anything but a sort update, log it to history
       const mergeDoc = {
         ...historicalProject,
+        content,
         updatedAt: now,
-        projectId
+        projectId,
+        tags: newProject.tags
       };
       const projectHistoryPromise = r.table('ProjectHistory')
         .between([projectId, r.minval], [projectId, r.maxval], {index: 'projectIdUpdatedAt'})

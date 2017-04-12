@@ -163,6 +163,7 @@ export default [
         id
         isArchived
         status
+        tags
         teamMemberId
         sortOrder
         updatedAt

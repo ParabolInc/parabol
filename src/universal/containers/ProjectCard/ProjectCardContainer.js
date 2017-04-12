@@ -26,8 +26,8 @@ query {
     createdBy
     id
     status
+    tags
     teamMemberId
-    updatedAt
     teamMember @cached(type: "TeamMember") {
       id
       picture
@@ -37,6 +37,7 @@ query {
       id
       name
     }
+    updatedAt
   }
   user @cached(type: "User") {
     id

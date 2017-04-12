@@ -32,11 +32,13 @@ const OutcomeCard = (props) => {
     unarchiveProject
   } = props;
   const isProject = Boolean(outcome.status);
-  const {isArchived, status} = outcome;
+  const isPrivate = outcome.tags.includes('#private');
+  const isArchived = outcome.tags.includes('#archived');
+  const {status} = outcome;
   const rootStyles = css(
     styles.root,
     styles.cardBlock,
-    isProject ? styles[status] : styles.isAction,
+    isPrivate ? styles.isPrivate : styles[status],
     isArchived && styles.isArchived
   );
   const openContentMenu = openMenu('content');
@@ -72,7 +74,7 @@ const OutcomeCard = (props) => {
               handleSubmit={handleSubmit(handleCardUpdate)}
               isProject={isProject}
               name={outcome.id}
-              isArchived={outcome.isArchived}
+              isArchived={isArchived}
               teamMembers={teamMembers}
             />
         </div>
@@ -163,7 +165,7 @@ const styleThunk = () => ({
     marginBottom: '.5rem'
   },
 
-  isAction: {
+  isPrivate: {
     backgroundColor: appTheme.palette.light50l,
 
     '::after': {
