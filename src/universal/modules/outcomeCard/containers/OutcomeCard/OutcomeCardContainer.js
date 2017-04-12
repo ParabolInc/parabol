@@ -178,7 +178,6 @@ OutcomeCardContainer.propTypes = {
   focus: PropTypes.func,
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,
-  isProject: PropTypes.bool,
   owner: PropTypes.object,
   teamMembers: PropTypes.array,
   updatedAt: PropTypes.instanceOf(Date),

@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import UserColumnsContainer from 'universal/modules/userDashboard/containers/UserColumns/UserColumnsContainer';
 import UserProjectsHeaderContainer from 'universal/modules/userDashboard/containers/UserProjectsHeader/UserProjectsHeaderContainer';
@@ -51,14 +50,6 @@ const styleThunk = () => ({
     display: 'flex',
     flex: 1,
     width: '100%'
-  },
-
-  actionsLayout: {
-    boxSizing: 'content-box',
-    borderRight: `2px solid ${ui.dashBorderColor}`,
-    display: 'flex',
-    flexDirection: 'column',
-    width: ui.dashActionsWidth
   },
 
   projectsLayout: {

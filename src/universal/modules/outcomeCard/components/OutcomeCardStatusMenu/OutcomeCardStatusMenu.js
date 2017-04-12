@@ -114,7 +114,6 @@ const OutcomeCardStatusMenu = (props) => {
 OutcomeCardStatusMenu.propTypes = {
   outcome: PropTypes.object,
   isAgenda: PropTypes.bool,
-  isProject: PropTypes.bool,
   onComplete: PropTypes.func,
   styles: PropTypes.object
 };

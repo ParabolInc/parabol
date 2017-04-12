@@ -16,7 +16,6 @@ const CreateCard = (props) => {
     handleAddProject,
     hasControls,
     isCreating,
-    isProject,
     styles
   } = props;
 
@@ -52,7 +51,7 @@ const CreateCard = (props) => {
       }
       {isCreating &&
         <Type align="center" bold scale="s3" colorPalette="mid">
-          @{username}<br />is adding {isProject ? 'a Project' : 'an Action'}<Ellipsis />
+          @{username}<br />is adding a Project<Ellipsis />
         </Type>
       }
     </div>
@@ -65,7 +64,6 @@ CreateCard.propTypes = {
   handleAddProject: PropTypes.func,
   hasControls: PropTypes.bool,
   isCreating: PropTypes.bool,
-  isProject: PropTypes.bool,
   styles: PropTypes.object
 };
 

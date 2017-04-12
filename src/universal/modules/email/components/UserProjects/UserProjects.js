@@ -5,9 +5,9 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import plural from 'universal/utils/plural';
 
-const UserOutcomes = (props) => {
+const UserProjects = (props) => {
   const {member} = props;
-  const {actions, projects, picture, preferredName, present} = member;
+  const {projects, picture, preferredName, present} = member;
   const cardsCell = {
     padding: '8px',
     textAlign: 'center'
@@ -71,18 +71,9 @@ const UserOutcomes = (props) => {
         </tr>
         <tr>
           <td style={userStats}>
-            {/* For some reason HTML prints 0 unless using length > 0 */}
             {projects.length > 0 &&
               <span style={labelStyle}>
                 {`${projects.length} New ${plural(projects.length, 'Project')}`}
-              </span>
-            }
-            {projects.length > 0 && actions.length > 0 &&
-              <span style={{...labelStyle, padding: '0 8px'}}>{'•'}</span>
-            }
-            {actions.length > 0 &&
-              <span style={labelStyle}>
-                {`${actions.length} New ${plural(actions.length, 'Action')}`}
               </span>
             }
           </td>
@@ -98,8 +89,8 @@ const UserOutcomes = (props) => {
   );
 };
 
-UserOutcomes.propTypes = {
+UserProjects.propTypes = {
   member: PropTypes.object.isRequired
 };
 
-export default UserOutcomes;
+export default UserProjects;

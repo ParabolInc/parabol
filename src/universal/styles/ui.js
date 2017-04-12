@@ -227,7 +227,6 @@ const ui = {
 
   // Dashboards
   // ---------------------------------------------------------------------------
-  dashActionsWidth: '15rem',
   dashAgendaWidth: '15.125rem',
   dashBackgroundColor: backgroundColor,
   dashBorderColor: 'rgba(0, 0, 0, .1)',
