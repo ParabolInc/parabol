@@ -14,6 +14,7 @@ const OutcomeCardFooter = (props) => {
   const {
     cardHasHover,
     hasOpenStatusMenu,
+    isPrivate,
     outcome,
     showTeam,
     styles,
@@ -39,7 +40,8 @@ const OutcomeCardFooter = (props) => {
   );
   const buttonStyles = css(
     styles.buttonBase,
-    showFully && styles.projectButtonShowFully
+    isPrivate && styles.privateButton,
+    showFully && (isPrivate ? styles.privateButtonShowFully : styles.projectButtonShowFully)
   );
   return (
     <div className={css(styles.root)}>
@@ -78,6 +80,7 @@ OutcomeCardFooter.propTypes = {
   toggleStatusMenu: PropTypes.func,
   hasOpenStatusMenu: PropTypes.bool,
   isArchived: PropTypes.bool,
+  isPrivate: PropTypes.bool,
   outcome: PropTypes.object,
   owner: PropTypes.object,
   showTeam: PropTypes.bool,
@@ -87,6 +90,11 @@ OutcomeCardFooter.propTypes = {
 };
 const buttonShowFully = {
   backgroundColor: appTheme.palette.mid10l,
+  color: appTheme.palette.dark
+};
+
+const privateButtonShowFully = {
+  backgroundColor: appTheme.palette.light90g,
   color: appTheme.palette.dark
 };
 
@@ -194,6 +202,18 @@ const styleThunk = () => ({
   projectButtonShowFully: {
     ...buttonBase,
     ...buttonShowFully
+  },
+
+  privateButton: {
+    ...buttonBase,
+
+    ':focus': {
+      ...privateButtonShowFully
+    }
+  },
+
+  privateButtonShowFully: {
+    ...privateButtonShowFully
   }
 });
 

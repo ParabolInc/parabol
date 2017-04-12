@@ -65,21 +65,23 @@ const OutcomeCard = (props) => {
             outcomeId={outcome.id}
             updatedAt={outcome.updatedAt}
           />
-            <Field
-              cardHasHover={hasHover}
-              component={OutcomeCardTextarea}
-              doSubmitOnEnter
-              handleActive={handleCardActive}
-              handleSubmit={handleSubmit(handleCardUpdate)}
-              name={outcome.id}
-              isArchived={isArchived}
-              teamMembers={teamMembers}
-            />
+          <Field
+            cardHasHover={hasHover}
+            component={OutcomeCardTextarea}
+            doSubmitOnEnter
+            handleActive={handleCardActive}
+            handleSubmit={handleSubmit(handleCardUpdate)}
+            name={outcome.id}
+            isArchived={isArchived}
+            isPrivate={isPrivate}
+            teamMembers={teamMembers}
+          />
         </div>
       }
       <OutcomeCardFooter
         cardHasHover={hasHover}
         hasOpenStatusMenu={openArea === 'status'}
+        isPrivate={isPrivate}
         outcome={outcome}
         showTeam={area === USER_DASH}
         toggleAssignMenu={openMenu('assign')}
