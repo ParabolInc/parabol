@@ -30,7 +30,7 @@ const makeEditingStatus = (editors, active, updatedAt) => {
     // one other is editing
     if (editors.length === 1) {
       const editor = editorNames[0];
-      editingStatus = <span>{editor} editing{active ? 'too' : ''}<Ellipsis /></span>;
+      editingStatus = <span>{editor} editing{active ? ' too' : ''}<Ellipsis /></span>;
     } else if (editors.length === 2) {
       editingStatus = active ?
         <span>several are editing<Ellipsis /></span> :
