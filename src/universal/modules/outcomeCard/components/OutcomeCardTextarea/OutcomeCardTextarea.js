@@ -197,7 +197,8 @@ const descriptionBreakpoint = '@media (min-width: 90rem)';
 const styleThunk = () => ({
   content: {
     ...contentBase,
-    minHeight: '3.3125rem',
+    // TODO: only set this during the agenda round to match the card placeholder row height?
+    // minHeight: '3.3125rem',
     padding: `0 ${ui.cardPaddingBase} .1875rem`,
 
     ':focus': {
