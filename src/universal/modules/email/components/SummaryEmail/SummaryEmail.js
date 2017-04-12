@@ -104,135 +104,119 @@ const SummaryEmail = (props) => {
     teamDashUrl
   } = props;
   const {agendaItemsCompleted, invitees, createdAt, meetingNumber, teamName} = meeting;
-  const membersSansOutcomes = [];
-  const membersWithOutcomes = [];
-  let presentMemberCount = 0;
-  let actionCount = 0;
-  let projectCount = 0;
-
-  for (let i = 0; i < invitees.length; i++) {
-    const invitee = invitees[i];
-    if (invitee.present) {
-      presentMemberCount++;
-    }
-    const projLen = invitee.projects.length;
-    const actionLen = invitee.actions.length;
-    actionCount += actionLen;
-    projectCount += projLen;
-    const arr = (!projLen && !actionLen) ? membersSansOutcomes : membersWithOutcomes;
-    arr.push(invitee);
-  }
+  const membersSansOutcomes = invitees.filter((invitee) => invitee.projects.length === 0);
+  const membersWithOutcomes = invitees.filter((invitee) => invitee.projects.length > 0);
+  const presentMemberCount = invitees.filter((invitee) => invitee.present).length;
+  const projectCount = invitees.reduce((sum, invitee) => sum + invitee.projects.length, 0);
 
   const bannerMessage = makeBannerMessage(referrer, referrerUrl);
-  const memberCount = membersSansOutcomes.length + membersWithOutcomes.length;
   const hasUsersWithoutOutcomes = membersSansOutcomes.length !== 0;
   return (
     <Layout>
       <table style={ui.emailTableBase} width="100%">
         <tbody>
-          <tr>
-            <td style={bannerStyle}>
-              <EmptySpace height={8} />
-              {bannerMessage &&
-                <div style={bannerMessageStyles}>
-                  {bannerMessage}
-                </div>
-              }
-              <EmptySpace height={8} />
-            </td>
-          </tr>
+        <tr>
+          <td style={bannerStyle}>
+            <EmptySpace height={8}/>
+            {bannerMessage &&
+            <div style={bannerMessageStyles}>
+              {bannerMessage}
+            </div>
+            }
+            <EmptySpace height={8}/>
+          </td>
+        </tr>
         </tbody>
       </table>
       <Body verticalGutter={0}>
-        <table align="center" style={ui.emailTableBase} width="100%">
-          <tbody>
-            <tr>
-              <td align="center" style={{padding: 0}}>
-                {/* Summary Header */}
-                <SummaryHeader createdAt={createdAt} referrer={referrer} teamDashUrl={teamDashUrl} teamName={teamName} />
-                {/* Message */}
-                {meetingNumber === 1 ?
-                  <div>
-                    <div style={message}>
-                      <b style={greetingStyles}>{makeSuccessExpression()}!</b><br />
-                      {'Way to go on your first Action Meeting!'}<br />
-                      {'You are unlocking new superpowers.'}<br />
-                      <br />
-                      <b style={greetingStyles}>{'Make it a habit:'}</b><br />
-                      {'If you haven’t already, schedule a 30 minute meeting,'}<br />
-                      {'preferably recurring on Mondays or Tuesdays.'}<br />
-                      {'Include the following link to the meeting lobby'}<br />
-                      {'in your recurring calendar event:'}
-                      <EmptySpace height={8} />
-                      <table align="center" style={meetingLinkTable} width="80%">
-                        <tbody>
-                          <tr>
-                            <td align="center" style={meetingLinkBlock}>
-                              <a href={meetingUrl} style={meetingLink}>
-                                {meetingUrl}
-                              </a>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
+      <table align="center" style={ui.emailTableBase} width="100%">
+        <tbody>
+        <tr>
+          <td align="center" style={{padding: 0}}>
+            {/* Summary Header */}
+            <SummaryHeader createdAt={createdAt} referrer={referrer} teamDashUrl={teamDashUrl} teamName={teamName}/>
+            {/* Message */}
+            {meetingNumber === 1 ?
+              <div>
+                <div style={message}>
+                  <b style={greetingStyles}>{makeSuccessExpression()}!</b><br />
+                  {'Way to go on your first Action Meeting!'}<br />
+                  {'You are unlocking new superpowers.'}<br />
+                  <br />
+                  <b style={greetingStyles}>{'Make it a habit:'}</b><br />
+                  {'If you haven’t already, schedule a 30 minute meeting,'}<br />
+                  {'preferably recurring on Mondays or Tuesdays.'}<br />
+                  {'Include the following link to the meeting lobby'}<br />
+                  {'in your recurring calendar event:'}
+                  <EmptySpace height={8}/>
+                  <table align="center" style={meetingLinkTable} width="80%">
+                    <tbody>
+                    <tr>
+                      <td align="center" style={meetingLinkBlock}>
+                        <a href={meetingUrl} style={meetingLink}>
+                          {meetingUrl}
+                        </a>
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div> :
+              <div>
+                {agendaItemsCompleted === 0 ?
+                  <div style={message}>
+                    <b style={greetingStyles}>{'Hey there!'}</b><br />
+                    {'It looks like there weren’t any agenda items.'}<br />
+                    {'Did our software give you trouble?'}<br />
+                    {'Let us know: '}
+                    <a href="mailto:love@parabol.co" style={linkStyles} title="Email us at: love@parabol.co">love@parabol.co</a>
                   </div> :
-                  <div>
-                    {agendaItemsCompleted === 0 ?
-                      <div style={message}>
-                        <b style={greetingStyles}>{'Hey there!'}</b><br />
-                        {'It looks like there weren’t any agenda items.'}<br />
-                        {'Did our software give you trouble?'}<br />
-                        {'Let us know: '}
-                        <a href="mailto:love@parabol.co" style={linkStyles} title="Email us at: love@parabol.co">love@parabol.co</a>
-                      </div> :
-                      <div style={message}>
-                        <b style={greetingStyles}>{makeSuccessExpression()}!</b><br />
-                        {makeSuccessStatement()}
-                      </div>
-                    }
+                  <div style={message}>
+                    <b style={greetingStyles}>{makeSuccessExpression()}!</b><br />
+                    {makeSuccessStatement()}
                   </div>
                 }
-                <EmptySpace height={8} />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <table align="center" style={ui.emailTableBase} width="100%">
-          <tbody>
-            <tr>
-              <td align="center" style={quickStatsBlock}>
-                <QuickStats
-                  agendaItems={agendaItemsCompleted}
-                  newProjects={projectCount}
-                  newActions={actionCount}
-                  teamMembers={memberCount}
-                  teamMembersPresent={presentMemberCount}
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        {membersWithOutcomes.map((member) =>
-          <UserProjects member={member} key={`userProjects'${member.id}`} />
-        )}
-        {hasUsersWithoutOutcomes &&
-          <UserNoNewOutcomes members={membersSansOutcomes} />
-        }
-        <EmptySpace height={0} />
-        <hr style={ruleStyle} />
-        <EmptySpace height={48} />
-        <ContactUs
-          fontSize={18}
-          hasLearningLink
-          lineHeight={1.5}
-          prompt="How’d your meeting go?"
-          tagline="We’re eager for your feedback!"
-          vSpacing={0}
-        />
-        <EmptySpace height={32} />
+              </div>
+            }
+            <EmptySpace height={8}/>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <table align="center" style={ui.emailTableBase} width="100%">
+        <tbody>
+        <tr>
+          <td align="center" style={quickStatsBlock}>
+            <QuickStats
+              agendaItems={agendaItemsCompleted}
+              newProjects={projectCount}
+              teamMembers={invitees.length}
+              teamMembersPresent={presentMemberCount}
+            />
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      {membersWithOutcomes.map((member) =>
+        <UserProjects member={member} key={`userProjects'${member.id}`}/>
+      )}
+      {hasUsersWithoutOutcomes &&
+      <UserNoNewOutcomes members={membersSansOutcomes}/>
+      }
+      <EmptySpace height={0}/>
+      <hr style={ruleStyle}/>
+      <EmptySpace height={48}/>
+      <ContactUs
+        fontSize={18}
+        hasLearningLink
+        lineHeight={1.5}
+        prompt="How’d your meeting go?"
+        tagline="We’re eager for your feedback!"
+        vSpacing={0}
+      />
+      <EmptySpace height={32}/>
       </Body>
-      <Footer color={appTheme.palette.dark} />
+      <Footer color={appTheme.palette.dark}/>
     </Layout>
   );
 };
@@ -247,7 +231,6 @@ SummaryEmail.propTypes = {
   ]).isRequired,
   referrerUrl: PropTypes.string,
   teamDashUrl: PropTypes.string,
-  actionCount: PropTypes.number,
   projectCount: PropTypes.number
 };
 
@@ -255,10 +238,8 @@ export const summaryEmailText = (props) => {
   const {meeting} = props;
   const {teamName, agendaItemsCompleted, invitees} = meeting;
   const projectCount = invitees.reduce((sum, member) => sum + member.projects.length, 0);
-  const actionCount = invitees.reduce((sum, member) => sum + member.actions.length, 0);
   return `Hello ${teamName}! As a team you discussed ${agendaItemsCompleted} Agenda Items${' '}
-resulting in ${projectCount} New Projects${' '}
-and ${actionCount} New Actions.${' '}`;
+  resulting in ${projectCount} New Projects.${' '}`;
 };
 
 export default SummaryEmail;
