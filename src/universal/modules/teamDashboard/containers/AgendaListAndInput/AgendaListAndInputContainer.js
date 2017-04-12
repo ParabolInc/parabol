@@ -58,6 +58,7 @@ const AgendaListAndInputContainer = (props) => {
   const {
     agendaPhaseItem,
     agenda,
+    canNavigate,
     context,
     disabled,
     facilitatorPhase,
@@ -73,6 +74,7 @@ const AgendaListAndInputContainer = (props) => {
     <AgendaListAndInput
       agenda={agenda}
       agendaPhaseItem={agendaPhaseItem}
+      canNavigate={canNavigate}
       context={context}
       disabled={disabled}
       facilitatorPhase={facilitatorPhase}
@@ -89,6 +91,7 @@ const AgendaListAndInputContainer = (props) => {
 AgendaListAndInputContainer.propTypes = {
   agenda: PropTypes.array,
   agendaPhaseItem: PropTypes.number,
+  canNavigate: PropTypes.bool,
   context: PropTypes.oneOf([
     'dashboard',
     'meeting'
