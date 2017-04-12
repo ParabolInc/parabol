@@ -80,9 +80,6 @@ query{
     isComplete
     sortOrder
     teamMemberId
-    actionsByAgenda @live {
-      id
-    }
   }
 }`;
 

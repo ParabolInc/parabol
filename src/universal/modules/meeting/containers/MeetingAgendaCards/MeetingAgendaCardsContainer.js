@@ -22,32 +22,14 @@ query {
       teamMemberId
     }
   }
-  agenda(teamId: $teamId) @live {
-    id
-    actionsByAgenda @live {
-      id
-      agendaId
-      type: __typename
-      content
-      createdAt
-      createdBy
-      teamMember @cached(type: "TeamMember") {
-        picture
-        preferredName
-      }
-      teamMemberId
-      isComplete
-    }
-  }
 }
 `;
 
 const makeOutcomes = (queryData) => {
   if (queryData !== makeOutcomes.queryData) {
     makeOutcomes.queryData = queryData;
-    const {teamMembers, agenda} = queryData;
+    const {teamMembers} = queryData;
     makeOutcomes.cache = [];
-    const filteredAgendaItem = agenda[0];
     for (let i = 0; i < teamMembers.length; i++) {
       const {projects} = teamMembers[i];
       makeOutcomes.cache.push(...projects);
@@ -62,14 +44,12 @@ const mapStateToProps = (state, props) => {
   const [, teamId] = myTeamMemberId.split('::');
   const queryData = cashay.query(meetingAgendaCardsQuery, {
     op: 'meetingAgendaCardsContainer',
-    key: agendaId,
+    key: teamId,
     variables: {teamId},
     resolveCached: {
-      outcomes: (source, args) => (doc) => doc.agendaId === args.id,
       teamMember: (source) => source.teamMemberId
     },
     filter: {
-      agenda: (a) => a.id === agendaId,
       projects: (outcome) => outcome.agendaId === agendaId,
     },
   }).data;

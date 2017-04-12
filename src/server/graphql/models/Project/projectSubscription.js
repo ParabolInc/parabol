@@ -29,7 +29,7 @@ export default {
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName, {removalFields});
       r.table('Project')
         .getAll(teamMemberId, {index: 'teamMemberId'})
-        .filter({isArchived: false})
+        .filter((project) => project('tags').contains('#private').or(project('tags').contains('#archived')).not())
         .pluck(requestedFields)
         .changes({includeInitial: true})
         .run({cursor: true}, changefeedHandler);
