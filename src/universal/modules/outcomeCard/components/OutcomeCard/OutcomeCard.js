@@ -75,6 +75,7 @@ const OutcomeCard = (props) => {
             handleSubmit={handleSubmit(handleCardUpdate)}
             name={outcome.id}
             isArchived={isArchived}
+            isPrivate={isPrivate}
             teamMembers={teamMembers}
           />
         </div>
@@ -82,6 +83,7 @@ const OutcomeCard = (props) => {
       <OutcomeCardFooter
         cardHasHover={hasHover}
         hasOpenStatusMenu={openArea === 'status'}
+        isPrivate={isPrivate}
         outcome={outcome}
         showTeam={area === USER_DASH}
         toggleAssignMenu={openMenu('assign')}
