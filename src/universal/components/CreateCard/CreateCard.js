@@ -12,7 +12,7 @@ import makeUsername from 'universal/utils/makeUsername';
 const CreateCard = (props) => {
   const {
     createdBy,
-    handleAddAction,
+    handleAddPrivateProject,
     handleAddProject,
     hasControls,
     isCreating,
@@ -20,9 +20,9 @@ const CreateCard = (props) => {
     styles
   } = props;
 
-  const actionLabel = () =>
-    <span title="Press “a” to add a new Action">
-      + New Private <u>A</u>ction
+  const privateLabel = () =>
+    <span title="Press “a” to add a new Private Project">
+      + New Priv<u>a</u>te Project
     </span>;
 
   const projectLabel = () =>
@@ -46,7 +46,7 @@ const CreateCard = (props) => {
     <div className={cardStyles}>
       {hasControls &&
         <div className={css(styles.controlsBlock)}>
-          {addNewOutcome(styles.actionStyles, actionLabel, handleAddAction)}
+          {addNewOutcome(styles.privateStyles, privateLabel, handleAddPrivateProject)}
           {addNewOutcome(styles.projectStyles, projectLabel, handleAddProject)}
         </div>
       }
@@ -61,7 +61,7 @@ const CreateCard = (props) => {
 
 CreateCard.propTypes = {
   createdBy: PropTypes.string,
-  handleAddAction: PropTypes.func,
+  handleAddPrivateProject: PropTypes.func,
   handleAddProject: PropTypes.func,
   hasControls: PropTypes.bool,
   isCreating: PropTypes.bool,
@@ -121,9 +121,9 @@ const styleThunk = () => ({
     // Define
   },
 
-  actionStyles: {
+  privateStyles: {
     ...labelBaseStyles,
-    backgroundColor: ui.actionCardBgColor,
+    backgroundColor: ui.privateCardBgColor,
     borderColor: appTheme.palette.light50g,
     color: appTheme.palette.dark
   },

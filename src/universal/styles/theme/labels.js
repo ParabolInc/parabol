@@ -81,14 +81,6 @@ const labels = {
     shortcutLabel: <span>Ar<u>c</u>hived</span>,
     slug: 'archived'
   },
-  action: {
-    color: appTheme.palette.dark,
-    icon: 'calendar-check-o',
-    keystroke: 't',
-    label: 'Action',
-    shortcutLabel: <span>Ac<u>t</u>ion</span>,
-    slug: 'action'
-  },
   project: {
     color: appTheme.palette.dark,
     icon: 'calendar',

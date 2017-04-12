@@ -33,7 +33,7 @@ const mutationHandlers = {
         const {teams} = currentResponse;
         for (let i = 0; i < teams.length; i++) {
           const team = teams[i];
-          const fromProject = team.projects.find((action) => action.id === id);
+          const fromProject = team.projects.find((project) => project.id === id);
           if (fromProject) {
             if (sortOrder !== undefined) {
               fromProject.sortOrder = sortOrder;

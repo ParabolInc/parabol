@@ -48,9 +48,6 @@ const makeOutcomes = (queryData) => {
     const {teamMembers, agenda} = queryData;
     makeOutcomes.cache = [];
     const filteredAgendaItem = agenda[0];
-    if (filteredAgendaItem) {
-      makeOutcomes.cache.push(...filteredAgendaItem.actionsByAgenda);
-    }
     for (let i = 0; i < teamMembers.length; i++) {
       const {projects} = teamMembers[i];
       makeOutcomes.cache.push(...projects);

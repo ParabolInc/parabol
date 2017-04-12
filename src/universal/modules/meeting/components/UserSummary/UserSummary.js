@@ -31,6 +31,7 @@ const UserSummary = (props) => {
             <SummaryCard
               content={outcome.content}
               status={outcome.status}
+              tags={outcome.tags}
             />
           </div>
         )}

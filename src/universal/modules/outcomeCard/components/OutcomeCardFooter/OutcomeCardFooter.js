@@ -22,7 +22,6 @@ const OutcomeCardFooter = (props) => {
     unarchiveProject
   } = props;
   const {isArchived, teamMember: owner} = outcome;
-  const isProject = Boolean(outcome.status);
   // AVATAR
   // -------
   const avatarImage = owner.picture;
@@ -40,8 +39,7 @@ const OutcomeCardFooter = (props) => {
   );
   const buttonStyles = css(
     styles.buttonBase,
-    !isProject && styles.actionButton,
-    showFully && (isProject ? styles.projectButtonShowFully : styles.actionButtonShowFully)
+    showFully && styles.projectButtonShowFully
   );
   return (
     <div className={css(styles.root)}>
@@ -80,7 +78,6 @@ OutcomeCardFooter.propTypes = {
   toggleStatusMenu: PropTypes.func,
   hasOpenStatusMenu: PropTypes.bool,
   isArchived: PropTypes.bool,
-  isProject: PropTypes.bool,
   outcome: PropTypes.object,
   owner: PropTypes.object,
   showTeam: PropTypes.bool,
@@ -92,10 +89,7 @@ const buttonShowFully = {
   backgroundColor: appTheme.palette.mid10l,
   color: appTheme.palette.dark
 };
-const actionButtonShowFully = {
-  backgroundColor: appTheme.palette.light90g,
-  color: appTheme.palette.dark
-};
+
 const buttonBase = {
   backgroundColor: 'transparent',
   border: 0,
@@ -200,18 +194,6 @@ const styleThunk = () => ({
   projectButtonShowFully: {
     ...buttonBase,
     ...buttonShowFully
-  },
-
-  actionButton: {
-    ...buttonBase,
-
-    ':focus': {
-      ...actionButtonShowFully
-    }
-  },
-
-  actionButtonShowFully: {
-    ...actionButtonShowFully
   }
 });
 

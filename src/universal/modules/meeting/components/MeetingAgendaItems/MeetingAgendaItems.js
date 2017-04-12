@@ -36,7 +36,7 @@ const MeetingAgendaItems = (props) => {
                 avatar={currentTeamMember.picture}
                 heading={heading}
                 subHeading={'What do you need?'}
-                helpText={<span><b>Actions</b>: quick tasks • <b>Projects</b>: tracked outcomes</span>}
+                helpText={<span><b>Private Projects</b>: quick tasks • <b>Projects</b>: tracked outcomes</span>}
               />
             </div>
             <div className={css(styles.nav)}>

@@ -9,7 +9,7 @@ import Footer from '../../components/Footer/Footer';
 import Layout from '../../components/Layout/Layout';
 import QuickStats from '../../components/QuickStats/QuickStats';
 import SummaryHeader from '../../components/SummaryHeader/SummaryHeader';
-import UserOutcomes from '../../components/UserOutcomes/UserOutcomes';
+import UserProjects from '../UserProjects/UserProjects';
 import UserNoNewOutcomes from '../../components/UserNoNewOutcomes/UserNoNewOutcomes';
 
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
@@ -214,7 +214,7 @@ const SummaryEmail = (props) => {
           </tbody>
         </table>
         {membersWithOutcomes.map((member) =>
-          <UserOutcomes member={member} key={`memberOutcomes'${member.id}`} />
+          <UserProjects member={member} key={`userProjects'${member.id}`} />
         )}
         {hasUsersWithoutOutcomes &&
           <UserNoNewOutcomes members={membersSansOutcomes} />

@@ -104,11 +104,10 @@ const ui = {
   palette: PALETTE_VALUES,
   filterBlur,
 
-  // Action items and cards
+  // Private projects
   // ---------------------------------------------------------------------------
-  actionCardBgColor: appTheme.palette.light60l,
-  actionCardBgActive: 'rgba(255, 255, 255, .85)',
-  zActionItem: zIndexScale(6),
+  privateCardBgColor: appTheme.palette.light60l,
+  privateCardBgActive: 'rgba(255, 255, 255, .85)',
 
   // Avatars
   // ---------------------------------------------------------------------------

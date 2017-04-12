@@ -3,7 +3,6 @@ import {findDOMNode} from 'react-dom';
 import {cashay} from 'cashay';
 import {reduxForm, initialize} from 'redux-form';
 import labels from 'universal/styles/theme/labels';
-import getOutcomeNames from 'universal/utils/getOutcomeNames';
 import {connect} from 'react-redux';
 import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/OutcomeCard';
 import targetIsDescendant from 'universal/utils/targetIsDescendant';
@@ -96,22 +95,20 @@ class OutcomeCardContainer extends Component {
     const submittedContent = submittedData[outcome.id];
     if (outcome.content === submittedContent) return;
     if (!submittedContent) {
-      const {argName, mutationName} = getOutcomeNames(outcome, 'delete');
       // delete blank cards
-      cashay.mutate(mutationName, {variables: {[argName]: outcome.id}});
+      cashay.mutate('deleteProject', {variables: {projectId: outcome.id}});
     } else {
       // TODO debounce for useless things like ctrl, shift, etc
-      const {argName, mutationName} = getOutcomeNames(outcome, 'update');
       const options = {
         ops: {},
         variables: {
-          [argName]: {
+          updatedProject: {
             id: outcome.id,
             content: submittedContent
           }
         }
       };
-      cashay.mutate(mutationName, options);
+      cashay.mutate('updateProject', options);
     }
   };
 

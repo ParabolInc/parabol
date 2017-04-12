@@ -1,5 +1,4 @@
 import {GraphQLObjectType} from 'graphql';
-import action from './models/Action/actionSubscription';
 import agenda from './models/AgendaItem/agendaItemSubscription';
 import invitation from './models/Invitation/invitationSubscription';
 import invoice from './models/Invoice/invoiceSubscription';
@@ -13,7 +12,6 @@ import teamMember from './models/TeamMember/teamMemberSubscription';
 import user from './models/User/userSubscription';
 
 const rootFields = Object.assign({},
-  action,
   agenda,
   invitation,
   invoice,

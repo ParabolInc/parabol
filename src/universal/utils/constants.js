@@ -43,7 +43,6 @@ export const columnArray = [FUTURE, STUCK, ACTIVE, DONE];
 export const meetingColumnArray = [DONE, ACTIVE, STUCK, FUTURE];
 
 /* Drag-n-Drop Items*/
-export const ACTION = 'action';
 export const PROJECT = 'project';
 export const AGENDA_ITEM = 'agendaItem';
 

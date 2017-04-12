@@ -67,29 +67,19 @@ export default {
               .delete();
           })
           .do(() => {
-            // grab all the actions and projects
-            return {
-              actions: r.table('Action')
-                .getAll(r.args(agendaItemIds), {index: 'agendaId'})
-                // we still need to filter because this may occur before we delete them above (not guaranteed in sync)
-                .filter((row) => row('content').ne(null))
-                .map((row) => row.merge({id: r.expr(meetingId).add('::').add(row('id'))}))
-                .orderBy('createdAt')
-                .pluck('id', 'content', 'teamMemberId')
-                .coerceTo('array'),
-              projects: r.table('Project')
-                .getAll(r.args(agendaItemIds), {index: 'agendaId'})
-                .filter((row) => row('content').ne(null))
-                .map((row) => row.merge({id: r.expr(meetingId).add('::').add(row('id'))}))
-                .orderBy('createdAt')
-                .pluck('id', 'content', 'status', 'teamMemberId')
-                .coerceTo('array')
-            };
+            // grab all the projects
+            return r.table('Project')
+              .getAll(r.args(agendaItemIds), {index: 'agendaId'})
+              .filter((row) => row('content').ne(null))
+              .map((row) => row.merge({id: r.expr(meetingId).add('::').add(row('id'))}))
+              .orderBy('createdAt')
+              .pluck('id', 'content', 'status', 'teamMemberId')
+              .coerceTo('array')
+              .default([])
           })
-          .do((res) => {
+          .do((projects) => {
             return r.table('Meeting').get(meetingId)
               .update({
-                actions: res('actions').default([]),
                 agendaItemsCompleted: agendaItemIds.count().default(0),
                 endedAt: now,
                 facilitator: `${authToken.sub}::${teamId}`,
@@ -102,31 +92,25 @@ export default {
                   .coerceTo('array')
                   .map((teamMember) => ({
                     id: teamMember('id'),
-                    actions: res('actions').default([]).filter({teamMemberId: teamMember('id')}),
                     picture: teamMember('picture'),
                     preferredName: teamMember('preferredName'),
                     present: teamMember('isCheckedIn').not().not()
                       .default(false),
-                    projects: res('projects').default([]).filter({teamMemberId: teamMember('id')})
+                    projects: projects.filter({teamMemberId: teamMember('id')})
                   })),
-                projects: res('projects').default([]),
-              }, {nonAtomic: true, returnChanges: true})('changes')(0)('new_val').pluck('invitees', 'meetingNumber', 'projects');
+                projects: projects,
+              }, {
+                nonAtomic: true,
+                returnChanges: true
+              })('changes')(0)('new_val').pluck('invitees', 'meetingNumber', 'projects');
           });
       });
-    const {updatedActions, updatedProjects} = await getEndMeetingSortOrders(completedMeeting);
-    await r.expr(updatedActions)
-      .forEach((action) => {
-        return r.table('Action').get(action('id')).update({
-          sortOrder: action('sortOrder')
+    const updatedProjects = await getEndMeetingSortOrders(completedMeeting);
+    await r.expr(updatedProjects)
+      .forEach((project) => {
+        return r.table('Project').get(project('id')).update({
+          sortOrder: project('sortOrder')
         });
-      })
-      .do(() => {
-        return r.expr(updatedProjects)
-          .forEach((project) => {
-            return r.table('Project').get(project('id')).update({
-              sortOrder: project('sortOrder')
-            });
-          });
       })
       .do(() => {
         // send to summary view

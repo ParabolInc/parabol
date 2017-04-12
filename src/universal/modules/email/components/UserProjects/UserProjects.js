@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import EmptySpace from '../../components/EmptySpace/EmptySpace';
-import OutcomesTable from '../../components/OutcomesTable/OutcomesTable';
+import ProjectsTable from '../ProjectsTable/ProjectsTable';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import plural from 'universal/utils/plural';
@@ -89,7 +89,7 @@ const UserOutcomes = (props) => {
         </tr>
         <tr>
           <td align="center" style={cardsCell}>
-            <OutcomesTable outcomes={projects.concat(actions)} />
+            <ProjectsTable projects={projects} />
             <EmptySpace height={24} />
           </td>
         </tr>

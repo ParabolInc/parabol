@@ -18,9 +18,7 @@ class OutcomeCardTextArea extends Component {
     handleActive: PropTypes.func,
     handleSubmit: PropTypes.func,
     input: PropTypes.object,
-    isActionListItem: PropTypes.bool,
     isArchived: PropTypes.bool,
-    isProject: PropTypes.bool,
     meta: PropTypes.shape({
       active: PropTypes.bool
     }),
@@ -59,16 +57,12 @@ class OutcomeCardTextArea extends Component {
       doSubmitOnEnter,
       handleSubmit,
       input,
-      isProject,
-      isActionListItem,
       isArchived,
       styles
     } = this.props;
     const contentStyles = css(
-      !isActionListItem && styles.content,
-      isActionListItem && styles.actionListContent,
+      styles.content,
       isArchived && styles.isArchived,
-      !isProject && styles.descriptionAction
     );
 
     const handleBlur = () => {
@@ -126,18 +120,13 @@ class OutcomeCardTextArea extends Component {
     const {
       styles,
       cardHasHover,
-      isProject,
-      isActionListItem,
       isArchived,
       input: {value}
     } = this.props;
     const markdownStyles = css(
       styles.markdown,
-      !isActionListItem && styles.content,
-      isActionListItem && styles.actionListContent,
-      isProject && !isArchived && cardHasHover && styles.contentWhenCardHovered,
-      !isProject && cardHasHover && styles.actionContentWhenCardHovered,
-      !isProject && styles.descriptionAction
+      styles.content,
+      !isArchived && cardHasHover && styles.contentWhenCardHovered,
     );
     return (
       <div
@@ -190,27 +179,9 @@ const descriptionFA = {
   color: appTheme.palette.mid10d
 };
 
-const descriptionActionFA = {
-  backgroundColor: ui.actionCardBgActive,
-  borderBottomColor: ui.cardBorderColor,
-  borderTopColor: ui.cardBorderColor,
-  color: appTheme.palette.mid10d
-};
-
 const descriptionBreakpoint = '@media (min-width: 90rem)';
 
 const styleThunk = () => ({
-  actionListContent: {
-    ...baseStyles,
-    padding: `${basePadding} ${basePadding} ${labelHeight} 1.75rem`,
-
-    ':hover': {
-      backgroundColor: ui.actionCardBgActive
-    },
-    ':focus': {
-      backgroundColor: ui.actionCardBgActive
-    }
-  },
   content: {
     ...descriptionBase,
     minHeight: '3.3125rem',
@@ -244,20 +215,6 @@ const styleThunk = () => ({
 
   contentWhenCardHovered: {
     ...descriptionFA
-  },
-
-  descriptionAction: {
-    // NOTE: modifies styles.content
-    ':focus': {
-      ...descriptionActionFA
-    },
-    ':active': {
-      ...descriptionActionFA
-    }
-  },
-
-  actionContentWhenCardHovered: {
-    ...descriptionActionFA
   },
 
   markdown: {

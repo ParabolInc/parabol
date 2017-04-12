@@ -8,25 +8,20 @@ import projectStatusStyles from 'universal/styles/helpers/projectStatusStyles';
 import upperFirst from 'universal/utils/upperFirst';
 import OutcomeCardMenuButton from 'universal/modules/outcomeCard/components/OutcomeCardMenuButton/OutcomeCardMenuButton';
 
-import getOutcomeNames from 'universal/utils/getOutcomeNames';
-
 const buttonArray = labels.projectStatus.slugs.slice(0);
 
 const OutcomeCardStatusMenu = (props) => {
-  const {onComplete, outcome, isAgenda, isProject, styles} = props;
-  const {id: outcomeId, status} = outcome;
-  const outcomeName = isProject ? 'Project' : 'Action';
+  const {onComplete, outcome, isAgenda, styles} = props;
+  const {id: projectId, status} = outcome;
   const notArchivedLabel = <span>Move to Ar<u>c</u>hive</span>;
-  const deleteOutcomeLabel = <span>De<u>l</u>ete this {outcomeName}</span>;
-  const moveToActionsLabel = <span>Move to Ac<u>t</u>ions</span>;
-  const moveToProjectsLabel = <span>Move to <u>P</u>rojects</span>;
+  const deleteOutcomeLabel = <span>De<u>l</u>ete this Project</span>;
 
   const archiveProject = () => {
     const options = {
       ops: {},
       variables: {
         updatedProject: {
-          id: outcomeId,
+          id: projectId,
           isArchived: true
         }
       }
@@ -35,26 +30,12 @@ const OutcomeCardStatusMenu = (props) => {
   };
 
   const deleteOutcome = () => {
-    const {argName, mutationName} = getOutcomeNames(outcome, 'delete');
     const options = {
       variables: {
-        [argName]: outcomeId
+        projectId
       }
     };
-    cashay.mutate(mutationName, options);
-    if (onComplete) {
-      onComplete();
-    }
-  };
-
-  const toggleOutcomeType = () => {
-    const {argName, mutationName} = getOutcomeNames(outcome, 'toggleType');
-    const options = {
-      variables: {
-        [argName]: outcomeId
-      }
-    };
-    cashay.mutate(mutationName, options);
+    cashay.mutate('deleteProject', options);
     if (onComplete) {
       onComplete();
     }
@@ -68,7 +49,7 @@ const OutcomeCardStatusMenu = (props) => {
       ops: {},
       variables: {
         updatedProject: {
-          id: outcomeId,
+          id: projectId,
           status: newStatus
         }
       }
@@ -96,7 +77,7 @@ const OutcomeCardStatusMenu = (props) => {
 
   return (
     <div className={css(styles.root)}>
-      {isProject && buttonArray.map((btn, idx) => {
+      {buttonArray.map((btn, idx) => {
         const btnStatus = labels.projectStatus[btn];
         return (
           <div className={css(styles.column)} key={btn}>
@@ -104,7 +85,7 @@ const OutcomeCardStatusMenu = (props) => {
           </div>
         );
       })}
-      {isProject && !isAgenda &&
+      {!isAgenda &&
         <div className={css(styles.buttonBlock)}>
           <OutcomeCardMenuButton
             icon="archive"
@@ -122,30 +103,9 @@ const OutcomeCardStatusMenu = (props) => {
             label={deleteOutcomeLabel}
             onClick={deleteOutcome}
             status="archive"
-            title={`Delete this ${outcomeName}`}
+            title="Delete this Project"
           />
         </div>
-      }
-      {isAgenda &&
-        (isProject ?
-          <div className={css(styles.buttonBlock)}>
-            <OutcomeCardMenuButton
-              icon="calendar-check-o"
-              label={moveToActionsLabel}
-              onClick={toggleOutcomeType}
-              status="active"
-              title="Move to Actions"
-            />
-          </div> :
-          <div className={css(styles.buttonBlock)}>
-            <OutcomeCardMenuButton
-              icon="calendar"
-              label={moveToProjectsLabel}
-              onClick={toggleOutcomeType}
-              status="active"
-              title="Move to Projects"
-            />
-          </div>)
       }
     </div>
   );

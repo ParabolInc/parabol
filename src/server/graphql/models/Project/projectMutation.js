@@ -88,44 +88,5 @@ export default {
             .delete();
         });
     }
-  },
-  makeAction: {
-    type: GraphQLBoolean,
-    description: 'Turn a project into an action',
-    args: {
-      projectId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The projectId (teamId::shortid) to delete'
-      }
-    },
-    async resolve(source, {projectId}, {authToken, socket}) {
-      const r = getRethink();
-
-      // AUTH
-      // format of id is teamId::taskIdPart
-      const [teamId] = projectId.split('::');
-      requireSUOrTeamMember(authToken, teamId);
-      requireWebsocket(socket);
-
-      // RESOLUTION
-      const project = await r.table('Project').get(projectId);
-      const now = new Date();
-      const [userId] = project.teamMemberId.split('::');
-      const newAction = {
-        id: projectId,
-        content: project.content,
-        userId,
-        teamMemberId: project.teamMemberId,
-        isComplete: false,
-        createdAt: project.createdAt,
-        updatedAt: now,
-        sortOrder: 0,
-        agendaId: project.agendaId
-      };
-      await r.table('Action').insert(newAction)
-        .do(() => {
-          return r.table('Project').get(projectId).delete();
-        });
-    }
   }
 };

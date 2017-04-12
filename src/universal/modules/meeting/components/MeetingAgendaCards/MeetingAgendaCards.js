@@ -9,25 +9,15 @@ import {ACTIVE} from 'universal/utils/constants';
 import withHotkey from 'react-hotkey-hoc';
 import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
 
-const handleAddActionFactory = (teamMemberId, agendaId) => () => {
-  const [, teamId] = teamMemberId.split('::');
-  const newAction = {
-    id: `${teamId}::${shortid.generate()}`,
-    teamMemberId,
-    sortOrder: 0,
-    agendaId
-  };
-  cashay.mutate('createAction', {variables: {newAction}});
-};
-
-const handleAddProjectFactory = (teamMemberId, agendaId) => () => {
+const handleAddProjectFactory = (teamMemberId, agendaId, isPrivate) => () => {
   const [, teamId] = teamMemberId.split('::');
   const newProject = {
     id: `${teamId}::${shortid.generate()}`,
     status: ACTIVE,
     teamMemberId,
     sortOrder: 0,
-    agendaId
+    agendaId,
+    content: isPrivate ? ' #private' : undefined
   };
   cashay.mutate('createProject', {variables: {newProject}});
 };
@@ -61,9 +51,9 @@ const makePlaceholders = (length, itemStyle) => {
 
 const MeetingAgendaCards = (props) => {
   const {agendaId, bindHotkey, dispatch, myTeamMemberId, outcomes, styles} = props;
-  const handleAddAction = handleAddActionFactory(myTeamMemberId, agendaId);
+  const handleAddPrivateProject = handleAddProjectFactory(myTeamMemberId, agendaId, true);
   const handleAddProject = handleAddProjectFactory(myTeamMemberId, agendaId);
-  bindHotkey('a', handleAddAction);
+  bindHotkey('a', handleAddPrivateProject);
   bindHotkey('p', handleAddProject);
   return (
     <div className={css(styles.root)}>
@@ -74,7 +64,7 @@ const MeetingAgendaCards = (props) => {
       {/* Input Card */}
       <div className={css(styles.item)}>
         <CreateCard
-          handleAddAction={handleAddAction}
+          handleAddPrivateProject={handleAddPrivateProject}
           handleAddProject={handleAddProject}
           hasControls
         />
