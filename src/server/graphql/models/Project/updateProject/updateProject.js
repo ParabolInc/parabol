@@ -37,7 +37,7 @@ export default {
     handleSchemaErrors(errors);
 
     // RESOLUTION
-    const {id: projectId, sortOrder, agendaId, isArchived, content, ...historicalProject} = validUpdatedProject;
+    const {id: projectId, sortOrder, agendaId, content, ...historicalProject} = validUpdatedProject;
 
     const now = new Date();
 
@@ -45,7 +45,6 @@ export default {
       ...historicalProject,
       agendaId,
       content,
-      isArchived,
       sortOrder
     };
     const {teamMemberId} = historicalProject;

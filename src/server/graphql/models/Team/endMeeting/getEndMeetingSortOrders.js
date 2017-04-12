@@ -8,7 +8,7 @@ export default async function getEndMeetingSortOrders(completedMeeting) {
   const userIds = teamMemberIds.map((teamMemberId) => teamMemberId.split('::')[0]);
   const projectMax = await r.table('Project')
     .getAll(r.args(userIds), {index: 'userId'})
-    .filter({isArchived: false})
+    .filter((project) => project('tags').contains('#archived').not())
     .max('sortOrder')('sortOrder')
     .default(0)
   return projects.map((project, idx) => ({

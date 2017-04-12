@@ -6,7 +6,7 @@ import labels from 'universal/styles/theme/labels';
 import {connect} from 'react-redux';
 import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/OutcomeCard';
 import targetIsDescendant from 'universal/utils/targetIsDescendant';
-
+import removeTagFromString from 'universal/utils/removeTagFromString'
 const outcomeCardAssignMenuQuery = `
 query {
   teamMembers(teamId: $teamId) @live {
@@ -133,12 +133,14 @@ class OutcomeCardContainer extends Component {
   hoverOff = () => this.setState({hasHover: false});
 
   unarchiveProject = () => {
+    const {outcome: {id, content}} = this.props;
+
     const options = {
       ops: {},
       variables: {
         updatedProject: {
-          id: this.props.outcome.id,
-          isArchived: false
+          id,
+          content: removeTagFromString(content, '#archived')
         }
       }
     };

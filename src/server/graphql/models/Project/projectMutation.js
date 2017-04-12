@@ -43,7 +43,6 @@ export default {
       const [userId] = validNewProject.teamMemberId.split('::');
       const project = {
         ...validNewProject,
-        isArchived: false,
         userId,
         createdAt: now,
         createdBy: authToken.sub,

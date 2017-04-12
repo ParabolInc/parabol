@@ -25,9 +25,11 @@ export default async function resetMeeting(teamId) {
           // archive projects that are DONE
           return r.table('Project').getAll(teamId, {index: 'teamId'})
             .filter({status: DONE})
-            .update({
-              isArchived: true
-            });
+            .filter((project) => project('tags').contains('#archived').not())
+            .update((project) => ({
+              tags: project('tags').append('#archived'),
+              content: project('content').add(' #archived')
+            }));
         })
         .do(() => {
           // shuffle the teamMember check in order, uncheck them in

@@ -48,10 +48,6 @@ export const Project = new GraphQLObjectType({
         return createdAt;
       }
     },
-    isArchived: {
-      type: GraphQLBoolean,
-      description: 'true if the project has been archived and will not show up in the main area'
-    },
     sortOrder: {
       type: GraphQLFloat,
       description: 'the shared sort order for projects on the team dash & user dash'
@@ -86,7 +82,6 @@ export const ProjectInput = new GraphQLInputObjectType({
     id: {type: GraphQLID, description: 'The unique team ID'},
     agendaId: {type: GraphQLID},
     content: {type: GraphQLString},
-    isArchived: {type: GraphQLBoolean},
     name: {type: GraphQLString, description: 'The name of the team'},
     orgId: {type: GraphQLID, description: 'The unique orginization ID that pays for the team'},
     teamMemberId: {type: GraphQLID},

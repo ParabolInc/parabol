@@ -4,6 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import FontAwesome from 'react-fontawesome';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import isProjectArchived from 'universal/utils/isProjectArchived';
 
 const avatarSize = '1.5rem';
 const faStyle = {
@@ -21,7 +22,8 @@ const OutcomeCardFooter = (props) => {
     toggleStatusMenu,
     unarchiveProject
   } = props;
-  const {isArchived, teamMember: owner} = outcome;
+  const {teamMember: owner} = outcome;
+  const isArchived = isProjectArchived(outcome.tags);
   // AVATAR
   // -------
   const avatarImage = owner.picture;
@@ -77,7 +79,6 @@ OutcomeCardFooter.propTypes = {
   toggleAssignMenu: PropTypes.func,
   toggleStatusMenu: PropTypes.func,
   hasOpenStatusMenu: PropTypes.bool,
-  isArchived: PropTypes.bool,
   outcome: PropTypes.object,
   owner: PropTypes.object,
   showTeam: PropTypes.bool,

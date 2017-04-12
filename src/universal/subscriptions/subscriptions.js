@@ -23,8 +23,8 @@ export default [
       archivedProjects(teamId: $teamId) {
         content
         id
-        isArchived
         status
+        tags
         teamMemberId
         updatedAt
       }
@@ -158,7 +158,6 @@ export default [
         createdAt
         createdBy
         id
-        isArchived
         status
         tags
         teamMemberId

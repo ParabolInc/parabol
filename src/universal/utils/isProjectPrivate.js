@@ -1,3 +1,1 @@
-const isProjectPrivate = (tags) => tags.includes('@private');
-
-export default isProjectPrivate;
+export default (tags) => tags.includes('#private');

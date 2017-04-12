@@ -12,6 +12,8 @@ import OutcomeCardFooter from 'universal/modules/outcomeCard/components/OutcomeC
 import OutcomeCardAssignMenu from 'universal/modules/outcomeCard/components/OutcomeCardAssignMenu/OutcomeCardAssignMenu';
 import OutcomeCardStatusMenu from 'universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu';
 import {Field} from 'redux-form';
+import isProjectPrivate from 'universal/utils/isProjectPrivate';
+import isProjectArchived from 'universal/utils/isProjectArchived';
 
 const OutcomeCard = (props) => {
   const {
@@ -31,8 +33,8 @@ const OutcomeCard = (props) => {
     teamMembers,
     unarchiveProject
   } = props;
-  const isPrivate = outcome.tags.includes('#private');
-  const isArchived = outcome.tags.includes('#archived');
+  const isPrivate = isProjectPrivate(outcome.tags);
+  const isArchived = isProjectArchived(outcome.tags);
   const {status} = outcome;
   const rootStyles = css(
     styles.root,
@@ -65,16 +67,16 @@ const OutcomeCard = (props) => {
             outcomeId={outcome.id}
             updatedAt={outcome.updatedAt}
           />
-            <Field
-              cardHasHover={hasHover}
-              component={OutcomeCardTextarea}
-              doSubmitOnEnter
-              handleActive={handleCardActive}
-              handleSubmit={handleSubmit(handleCardUpdate)}
-              name={outcome.id}
-              isArchived={isArchived}
-              teamMembers={teamMembers}
-            />
+          <Field
+            cardHasHover={hasHover}
+            component={OutcomeCardTextarea}
+            doSubmitOnEnter
+            handleActive={handleCardActive}
+            handleSubmit={handleSubmit(handleCardUpdate)}
+            name={outcome.id}
+            isArchived={isArchived}
+            teamMembers={teamMembers}
+          />
         </div>
       }
       <OutcomeCardFooter

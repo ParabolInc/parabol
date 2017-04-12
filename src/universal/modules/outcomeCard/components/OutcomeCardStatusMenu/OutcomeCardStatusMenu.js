@@ -22,7 +22,7 @@ const OutcomeCardStatusMenu = (props) => {
       variables: {
         updatedProject: {
           id: projectId,
-          isArchived: true
+          content: `${outcome.content} #archived`
         }
       }
     };
