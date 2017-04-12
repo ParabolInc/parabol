@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "0.17.3",
+  "version": "0.17.4",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -172,7 +172,7 @@
   },
   "engines": {
     "node": "7.6.0",
-    "yarn": "0.21.3"
+    "yarn": "0.22.0"
   },
   "jest": {
     "modulePaths": [
