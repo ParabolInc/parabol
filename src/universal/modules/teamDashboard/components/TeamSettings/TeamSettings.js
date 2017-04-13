@@ -110,46 +110,48 @@ const TeamSettings = (props) => {
     <div className={css(styles.root)}>
       <div className={css(styles.panels)}>
         <Panel label="Manage Team">
-          <InviteUser
-            dispatch={dispatch}
-            teamId={team.id}
-            invitations={invitations}
-            orgApprovals={orgApprovals}
-            teamMembers={teamMembers}
-          />
-          {teamMembers.map((teamMember) => {
-            return (
-              <UserRow
-                {...teamMember}
-                actions={teamMemberRowActions(teamMember)}
-                key={`teamMemberKey${teamMember.id}`}
-              />
-            );
-          })
-          }
-          {invitations.map((invitation) => {
-            return (
-              <UserRow
-                {...invitation}
-                email={invitation.email}
-                invitedAt={`invited ${fromNow(invitation.updatedAt)}`}
-                actions={invitationRowActions(invitation)}
-                key={`invitationKey${invitation.email}`}
-              />
-            );
-          })
-          }
-          {orgApprovals.map((orgApproval) => {
-            return (
-              <UserRow
-                key={`approval${orgApproval.id}`}
-                id={orgApproval.id}
-                email={orgApproval.email}
-                invitedAt={`invited ${fromNow(orgApproval.createdAt)}`}
-                actions={orgApprovalRowActions(orgApproval)}
-              />
-            );
-          })}
+          <div className={css(styles.panelBorder)}>
+            <InviteUser
+              dispatch={dispatch}
+              teamId={team.id}
+              invitations={invitations}
+              orgApprovals={orgApprovals}
+              teamMembers={teamMembers}
+            />
+            {teamMembers.map((teamMember) => {
+              return (
+                <UserRow
+                  {...teamMember}
+                  actions={teamMemberRowActions(teamMember)}
+                  key={`teamMemberKey${teamMember.id}`}
+                />
+              );
+            })
+            }
+            {invitations.map((invitation) => {
+              return (
+                <UserRow
+                  {...invitation}
+                  email={invitation.email}
+                  invitedAt={`invited ${fromNow(invitation.updatedAt)}`}
+                  actions={invitationRowActions(invitation)}
+                  key={`invitationKey${invitation.email}`}
+                />
+              );
+            })
+            }
+            {orgApprovals.map((orgApproval) => {
+              return (
+                <UserRow
+                  key={`approval${orgApproval.id}`}
+                  id={orgApproval.id}
+                  email={orgApproval.email}
+                  invitedAt={`invited ${fromNow(orgApproval.createdAt)}`}
+                  actions={orgApprovalRowActions(orgApproval)}
+                />
+              );
+            })}
+          </div>
         </Panel>
         {myTeamMember.isLead &&
           <Panel label="Danger Zone">
@@ -211,8 +213,13 @@ const styleThunk = () => ({
     }
   },
 
+  panelBorder: {
+    borderTop: `1px solid ${ui.panelBorderColor}`
+  },
+
   dangerZoneChildren: {
-    padding: `0 ${ui.panelGutter} ${ui.panelGutter}`
+    borderTop: `1px solid ${ui.panelBorderColor}`,
+    padding: `${ui.panelGutter}`
   }
 });
 
