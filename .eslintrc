@@ -26,6 +26,7 @@
       {
         "json": "always",
         "png": "always",
+        "jpg": "always",
         "svg": "always"
       }
     ],
@@ -83,7 +84,6 @@
     "import/ignore": [
       ".scss$",
       ".css$",
-      ".jpg$",
       ".svg$"
     ]
   },
