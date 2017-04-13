@@ -2,7 +2,6 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
-import {overflowTouch} from 'universal/styles/helpers';
 import {reduxForm} from 'redux-form';
 import InviteUser from 'universal/components/InviteUser/InviteUser';
 import UserRow from 'universal/components/UserRow/UserRow';
@@ -109,17 +108,15 @@ const TeamSettings = (props) => {
 
   return (
     <div className={css(styles.root)}>
-      <div className={css(styles.inviteBlock)}>
-        <InviteUser
-          dispatch={dispatch}
-          teamId={team.id}
-          invitations={invitations}
-          orgApprovals={orgApprovals}
-          teamMembers={teamMembers}
-        />
-      </div>
-      <div className={css(styles.body)}>
-        <div className={css(styles.scrollable)}>
+      <div className={css(styles.panels)}>
+        <Panel label="Manage Team">
+          <InviteUser
+            dispatch={dispatch}
+            teamId={team.id}
+            invitations={invitations}
+            orgApprovals={orgApprovals}
+            teamMembers={teamMembers}
+          />
           {teamMembers.map((teamMember) => {
             return (
               <UserRow
@@ -153,17 +150,17 @@ const TeamSettings = (props) => {
               />
             );
           })}
-          {myTeamMember.isLead &&
-            <Panel label="Danger Zone">
-              <div className={css(styles.dangerZoneChildren)}>
-                <ArchiveTeamContainer
-                  teamId={team.id}
-                  teamName={team.name}
-                />
-              </div>
-            </Panel>
-          }
-        </div>
+        </Panel>
+        {myTeamMember.isLead &&
+          <Panel label="Danger Zone">
+            <div className={css(styles.dangerZoneChildren)}>
+              <ArchiveTeamContainer
+                teamId={team.id}
+                teamName={team.name}
+              />
+            </div>
+          </Panel>
+        }
       </div>
     </div>
   );
@@ -188,26 +185,9 @@ const styleThunk = () => ({
     width: '100%'
   },
 
-  inviteBlock: {
+  panels: {
     maxWidth: '42rem',
     padding: '0 1rem'
-  },
-
-  body: {
-    flex: 1,
-    position: 'relative',
-    width: '100%'
-  },
-
-  scrollable: {
-    ...overflowTouch,
-    bottom: 0,
-    left: 0,
-    maxWidth: '42rem',
-    padding: '0 1rem 1rem',
-    position: 'absolute',
-    right: 0,
-    top: 0,
   },
 
   actionLinkBlock: {
