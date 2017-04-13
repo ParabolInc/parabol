@@ -229,7 +229,7 @@ Object {
   "team": Object {
     "activeFacilitator": 24,
     "checkInGreeting": "Salut",
-    "checkInQuestion": "learn any new slang lately",
+    "checkInQuestion": "Learn any new slang lately",
     "facilitatorPhase": "summary",
     "facilitatorPhaseItem": null,
     "id": 6,
@@ -595,7 +595,7 @@ Object {
   "team": Object {
     "activeFacilitator": 26,
     "checkInGreeting": "Salut",
-    "checkInQuestion": "learn any new slang lately",
+    "checkInQuestion": "Learn any new slang lately",
     "facilitatorPhase": "summary",
     "facilitatorPhaseItem": null,
     "id": 6,
