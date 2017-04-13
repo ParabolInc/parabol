@@ -5,18 +5,24 @@ import {cashay} from 'cashay';
 
 const dashNavListQuery = `
 query {
+  orgCount(userId: $userId),\
+  organizations(userId: $userId) @live {
+    id
+    name
+  },
   teams @cached(type: "[Team]") {
     id
     isArchived
     isPaid
     name
     meetingId
+    orgId
   }
 }
 `;
 
 const mapStateToProps = () => {
-  const {teams} = cashay.query(dashNavListQuery, {
+  const {organizations, teams} = cashay.query(dashNavListQuery, {
     op: 'dashNavListContainer',
     resolveCached: {
       teams: () => (doc) => !doc.isArchived
@@ -25,17 +31,21 @@ const mapStateToProps = () => {
       teams: (a, b) => a.name > b.name ? 1 : -1
     }
   }).data;
+  console.dir(organizations);
+  console.dir(teams);
   return {
+    organizations,
     teams
   };
 };
 
 const DashNavListContainer = (props) => {
-  const {teams} = props;
-  return <DashNavList teams={teams} />;
+  const {organizations, teams} = props;
+  return <DashNavList teams={teams} organizations={organizations} />;
 };
 
 DashNavListContainer.propTypes = {
+  organizations: PropTypes.array,
   teams: PropTypes.array
 };
 

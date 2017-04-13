@@ -7,11 +7,11 @@ import appTheme from 'universal/styles/theme/appTheme';
 import FontAwesome from 'react-fontawesome';
 
 const DashNavList = (props) => {
-  const {teams, styles} = props;
+  const {organizations, teams, styles} = props;
   const hasTeams = teams.length > 0;
 
   // Help!!
-  const hasOrgs = true; // TODO: if user is part of more than 1 org
+  const hasOrgs = organizations.length > 1;
   const orgName = 'Organization'; // TODO: can get org name from team.orgId?
 
   return (
@@ -24,9 +24,11 @@ const DashNavList = (props) => {
               <DashNavItem
                 href={`/team/${team.id}`}
                 label={team.name}
-                orgLabel={hasOrgs && orgName}
+                orgLabel={hasOrgs ? orgName : ''}
                 isPaid={team.isPaid}
               />
+              {console.log('team.orgId')}
+              {console.log(team.orgId)}
             </div>
           )}
         </div> :
@@ -38,6 +40,7 @@ const DashNavList = (props) => {
 
 DashNavList.propTypes = {
   styles: PropTypes.object,
+  organizations: PropTypes.array,
   teams: PropTypes.arrayOf(
     PropTypes.shape({
       href: PropTypes.string,
