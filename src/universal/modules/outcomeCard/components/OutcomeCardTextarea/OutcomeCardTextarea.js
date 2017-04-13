@@ -111,6 +111,7 @@ class OutcomeCardTextArea extends Component {
         onDrop={null}
         onKeyDown={doSubmitOnEnter ? submitOnEnter : null}
         autoFocus
+        rows={3}
       >
         <MentionMenu className={mentionMenuStyle} trigger="@" item={MentionTeamMember} resolve={atQuery} />
         <MentionMenu className={mentionMenuStyle} trigger="#" item={MentionTag} resolve={tagQuery} />
