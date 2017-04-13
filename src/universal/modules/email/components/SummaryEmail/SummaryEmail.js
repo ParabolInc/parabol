@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import FontAwesome from 'react-fontawesome';
-import {createGoogleCalendarInviteURL, createICS} from 'universal/modules/email/helpers/makeCalendarInvites';
+import {createGoogleCalendarInviteURL, makeIcsUrl} from 'universal/utils/makeCalendarInvites';
 
 import Body from '../../components/Body/Body';
 import ContactUs from '../../components/ContactUs/ContactUs';
@@ -159,7 +159,11 @@ const SummaryEmail = (props) => {
                       <FontAwesome name="google"/>
                     </a>
                     {' '}
-                    <a download="Parabol Action Meeting" href={createICS(createdAt, meetingUrl, teamName)}>
+                    <a
+                      href={makeIcsUrl(createdAt, meetingUrl, teamName)}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
                       <FontAwesome name="calendar-plus-o"/>
                     </a>
                   </span>

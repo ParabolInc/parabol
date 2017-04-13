@@ -46,7 +46,7 @@ export const createGoogleCalendarInviteURL = (createdAt, meetingUrl, teamName) =
 export const createICS = (createdAt, meetingUrl, teamName) => {
   const [startTime, endTime] = getStartTime(createdAt).split('/');
   // it's ugly, but if you mess with the indention here, you eff up the world
-  const text = `
+  return `
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:parabol.co
@@ -66,11 +66,9 @@ DTSTAMP:${startTime}
 RRULE:FREQ=WEEKLY;COUNT=8
 END:VEVENT
 END:VCALENDAR`;
-  const textBlob = new Blob([text], {type: 'text/calendar'});
-  if (window) {
-    return window.URL.createObjectURL(textBlob);
-  } else {
-    // TODO we'll need to add this as an attachment
-  }
-
 };
+
+export const makeIcsUrl = (createdAt, meetingUrl, teamName) => {
+  const baseUrl = meetingUrl.substr(0, meetingUrl.indexOf('/meeting'));
+  return `${baseUrl}/email/createics?teamName=${teamName}&createdAt=${createdAt.getTime()}&meetingUrl=${meetingUrl}`;
+}
