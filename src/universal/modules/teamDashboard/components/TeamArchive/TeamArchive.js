@@ -20,7 +20,10 @@ const TeamArchive = (props) => {
   const {archivedProjects, styles, teamId} = props;
   return (
     <div className={css(styles.root)}>
-      <TeamArchiveHeader teamId={teamId} />
+      <div className={css(styles.header)}>
+        <TeamArchiveHeader teamId={teamId} />
+        <div className={css(styles.border)} />
+      </div>
       <div className={css(styles.body)}>
         <div className={css(styles.scrollable)}>
           {archivedProjects.length ?
@@ -62,12 +65,20 @@ const styleThunk = () => ({
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
+    width: '100%'
+  },
+
+  header: {
     padding: '0 0 0 1rem',
+  },
+
+  border: {
+    borderTop: `1px solid ${ui.dashBorderColor}`,
+    height: '1px',
     width: '100%'
   },
 
   body: {
-    borderTop: `1px solid ${ui.dashBorderColor}`,
     flex: 1,
     position: 'relative'
   },
@@ -76,7 +87,7 @@ const styleThunk = () => ({
     ...overflowTouch,
     bottom: 0,
     left: 0,
-    padding: '1rem 0 0',
+    padding: '1rem 0 0 1.0625rem',
     position: 'absolute',
     right: 0,
     top: 0,
