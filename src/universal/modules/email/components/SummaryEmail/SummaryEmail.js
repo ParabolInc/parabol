@@ -1,6 +1,8 @@
 import React, {PropTypes} from 'react';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import FontAwesome from 'react-fontawesome';
+import {createGoogleCalendarInviteURL, createICS} from 'universal/modules/email/helpers/makeCalendarInvites';
 
 import Body from '../../components/Body/Body';
 import ContactUs from '../../components/ContactUs/ContactUs';
@@ -28,7 +30,8 @@ const message = {
   fontSize: '18px',
   lineHeight: '28px',
   padding: '0 16px',
-  textAlign: 'center'
+  textAlign: 'center',
+  whiteSpace: 'pre-line'
 };
 
 const linkStyles = {
@@ -39,7 +42,7 @@ const linkStyles = {
 
 const greetingStyles = {
   fontSize: '27px',
-  lineHeight: '40px',
+  lineHeight: '40px'
 };
 
 const bannerStyle = {
@@ -140,14 +143,28 @@ const SummaryEmail = (props) => {
               <div>
                 <div style={message}>
                   <b style={greetingStyles}>{makeSuccessExpression()}!</b><br />
-                  {'Way to go on your first Action Meeting!'}<br />
-                  {'You are unlocking new superpowers.'}<br />
+                  {`
+                  Way to go on your first Action Meeting!
+                  You are unlocking new superpowers.
+                  High-performing teams have regular habits!
+                  Create a 30-minute meeting at the start of each week.
+                  `}
+                  <span>
+                    <span>Click here to schedule:</span>
+                    <a
+                      href={createGoogleCalendarInviteURL(createdAt, meetingUrl, teamName)}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      <FontAwesome name="google"/>
+                    </a>
+                    {' '}
+                    <a download="Parabol Action Meeting" href={createICS(createdAt, meetingUrl, teamName)}>
+                      <FontAwesome name="calendar-plus-o"/>
+                    </a>
+                  </span>
                   <br />
-                  <b style={greetingStyles}>{'Make it a habit:'}</b><br />
-                  {'If you haven’t already, schedule a 30 minute meeting,'}<br />
-                  {'preferably recurring on Mondays or Tuesdays.'}<br />
-                  {'Include the following link to the meeting lobby'}<br />
-                  {'in your recurring calendar event:'}
+                  {`Or, make your own and include this link as the location`}
                   <EmptySpace height={8}/>
                   <table align="center" style={meetingLinkTable} width="80%">
                     <tbody>
