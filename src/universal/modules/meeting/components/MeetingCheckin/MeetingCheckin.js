@@ -52,9 +52,20 @@ const MeetingCheckin = (props) => {
 
   const currentAvatar = members[localPhaseItem - 1] && members[localPhaseItem - 1].picture;
   const currentName = members[localPhaseItem - 1] && members[localPhaseItem - 1].preferredName;
+
+  const makeGreeting = (greeting) =>
+    <span
+      className={css(styles.greeting)}
+      title={`${greeting.content} means “hello” in ${greeting.language}`}
+    >
+      {greeting.content}
+    </span>;
+
   const meetingPromptHeading = () =>
     <span>
-      <span style={{color: appTheme.palette.warm}}>{checkInGreeting}, {currentName}</span>
+      <span style={{color: appTheme.palette.warm}}>
+        {makeGreeting(checkInGreeting)}, {currentName}
+      </span>
       <br /><i>{checkInQuestion}</i>?
     </span>;
   return (
@@ -103,6 +114,11 @@ const styleThunk = () => ({
     [ui.breakpoint.widest]: {
       padding: '4rem 0'
     }
+  },
+
+  greeting: {
+    borderBottom: '1px dotted currentColor',
+    color: 'inherit'
   }
 });
 
