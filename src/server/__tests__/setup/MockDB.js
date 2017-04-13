@@ -234,6 +234,7 @@ class MockDB {
       activeFacilitator: null,
       facilitatorPhase: LOBBY,
       facilitatorPhaseItem: null,
+      isArchived: false,
       isPaid: true,
       meetingId: null,
       meetingPhase: LOBBY,
