@@ -10,7 +10,6 @@ const AgendaListAndInput = (props) => {
   const {
     agenda,
     agendaPhaseItem,
-    canNavigate,
     context,
     disabled,
     facilitatorPhase,
@@ -31,7 +30,6 @@ const AgendaListAndInput = (props) => {
     <div className={rootStyles} onClick={handleOnClick}>
       <AgendaInput
         agenda={agenda}
-        context={context}
         disabled={disabled}
         teamId={teamId}
         myTeamMember={myTeamMember}
@@ -39,7 +37,6 @@ const AgendaListAndInput = (props) => {
       <AgendaList
         agenda={agenda}
         agendaPhaseItem={agendaPhaseItem}
-        canNavigate={canNavigate}
         context={context}
         disabled={disabled}
         facilitatorPhase={facilitatorPhase}
@@ -56,7 +53,6 @@ const AgendaListAndInput = (props) => {
 AgendaListAndInput.propTypes = {
   agenda: PropTypes.array,
   agendaPhaseItem: PropTypes.number,
-  canNavigate: PropTypes.bool,
   context: PropTypes.oneOf([
     'dashboard',
     'meeting'
@@ -72,12 +68,11 @@ AgendaListAndInput.propTypes = {
   teamId: PropTypes.string
 };
 
-const styleThunk = (theme, {context}) => ({
+const styleThunk = () => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
-    paddingTop: context === 'dashboard' && '.125rem',
     width: '100%'
   },
 

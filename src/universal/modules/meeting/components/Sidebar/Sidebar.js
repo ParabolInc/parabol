@@ -55,7 +55,7 @@ const Sidebar = (props) => {
   const checkInNavItemStyles = css(styles.navListItem, facilitatorPhase === CHECKIN && styles.navListItemMeetingMarker);
   const updatesNavItemStyles = css(styles.navListItem, facilitatorPhase === UPDATES && styles.navListItemMeetingMarker);
   const agendaNavItemStyles = css(styles.navListItem, inAgendaGroup(facilitatorPhase) && styles.navListItemMeetingMarker);
-  const agendaListCanNavigate = canNavigateTo(AGENDA_ITEMS); // ? 'meeting' : 'dashboard';
+  const agendaListContext = canNavigateTo(AGENDA_ITEMS) ? 'meeting' : 'dashboard';
   const agendaListDisabled = meetingPhase === CHECKIN;
   return (
     <div className={css(styles.sidebar)}>
@@ -115,8 +115,7 @@ const Sidebar = (props) => {
           <div className={css(styles.agendaListBlock)}>
             <AgendaListAndInputContainer
               agendaPhaseItem={agendaPhaseItem}
-              canNavigate={agendaListCanNavigate}
-              context={'meeting'}
+              context={agendaListContext}
               disabled={agendaListDisabled}
               facilitatorPhase={facilitatorPhase}
               facilitatorPhaseItem={facilitatorPhaseItem}
