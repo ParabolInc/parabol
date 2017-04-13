@@ -2,7 +2,7 @@ import getRethink from 'server/database/rethinkDriver';
 import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
 import getRequestedFields from 'server/graphql/getRequestedFields';
 import {Project} from './projectSchema';
-import {requireSUOrSelf, requireSUOrTeamMember, requireTeamIsPaid} from 'server/utils/authorization';
+import {requireSUOrTeamMember, requireTeamIsPaid} from 'server/utils/authorization';
 import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
 
 export default {
@@ -23,7 +23,7 @@ export default {
       requireSUOrTeamMember(authToken, teamId);
       await requireTeamIsPaid(teamId);
 
-      const myTeamMemberId = `${authToken.sub}::${teamId}`
+      const myTeamMemberId = `${authToken.sub}::${teamId}`;
       // RESOLUTION
       const requestedFields = getRequestedFields(refs);
       const removalFields = ['id', 'teamMemberId'];
@@ -32,7 +32,8 @@ export default {
         .getAll(teamMemberId, {index: 'teamMemberId'})
         .filter((project) => project('tags')
           .contains('#private').and(project('teamMemberId').ne(myTeamMemberId))
-            .or(project('tags').contains('#archived')).not())
+          .or(project('tags').contains('#archived'))
+          .not())
         .pluck(requestedFields)
         .changes({includeInitial: true})
         .run({cursor: true}, changefeedHandler);
@@ -53,7 +54,7 @@ export default {
       // const removalFields = ['id', 'isArchived'];
       const changefeedHandler = makeChangefeedHandler(socket, subbedChannelName);
       r.table('Project')
-        // use a compound index so we can easily paginate later
+      // use a compound index so we can easily paginate later
         .between([teamId, r.minval], [teamId, r.maxval], {index: 'teamIdCreatedAt'})
         .filter((project) => project('tags').contains('#archived'))
         .pluck(requestedFields)

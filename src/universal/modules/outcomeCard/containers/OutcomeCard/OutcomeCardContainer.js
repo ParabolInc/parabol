@@ -6,7 +6,8 @@ import labels from 'universal/styles/theme/labels';
 import {connect} from 'react-redux';
 import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/OutcomeCard';
 import targetIsDescendant from 'universal/utils/targetIsDescendant';
-import removeTagFromString from 'universal/utils/removeTagFromString'
+import removeTagFromString from 'universal/utils/removeTagFromString';
+
 const outcomeCardAssignMenuQuery = `
 query {
   teamMembers(teamId: $teamId) @live {
@@ -174,16 +175,17 @@ OutcomeCardContainer.propTypes = {
     teamMemberId: PropTypes.string,
   }),
   dispatch: PropTypes.func.isRequired,
-  form: PropTypes.string,
   editors: PropTypes.array,
   field: PropTypes.string,
   focus: PropTypes.func,
+  form: PropTypes.string,
+  handleSubmit: PropTypes.func,
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,
   owner: PropTypes.object,
+  tags: PropTypes.array,
   teamMembers: PropTypes.array,
   updatedAt: PropTypes.instanceOf(Date),
-  handleSubmit: PropTypes.func,
 };
 
 // Using decorators causes a fun bug where reduxForm can't find dispatch, so we do it the boring way

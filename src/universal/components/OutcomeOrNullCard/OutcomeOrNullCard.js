@@ -16,6 +16,6 @@ export default class OutcomeOrNullCard extends Component {
     const {content, createdBy, teamMember: {preferredName}} = outcome;
     const showOutcome = content || createdBy === myUserId;
     return showOutcome ? <OutcomeCardContainer {...this.props} /> :
-    <NullCard preferredName={preferredName}/>;
+    <NullCard preferredName={preferredName} />;
   }
 }

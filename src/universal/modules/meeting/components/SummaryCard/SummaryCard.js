@@ -37,7 +37,8 @@ const SummaryCard = (props) => {
 SummaryCard.propTypes = {
   content: PropTypes.string,
   status: PropTypes.oneOf(labels.projectStatus.slugs),
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  tags: PropTypes.array
 };
 
 const styleThunk = () => ({

@@ -5,7 +5,6 @@ import {
   GraphQLString,
   GraphQLEnumType,
   GraphQLFloat,
-  GraphQLBoolean,
   GraphQLList,
   GraphQLInputObjectType
 } from 'graphql';

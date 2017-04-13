@@ -1,4 +1,4 @@
-exports.up = async(r) => {
+exports.up = async (r) => {
   const mutations = [
     r.table('Action'),
     r.table('Project').replace((project) => {
@@ -10,7 +10,7 @@ exports.up = async(r) => {
         project.merge({
           tags: []
         }).without('isArchived')
-      )
+      );
     })
   ];
   const [actions] = await Promise.all(mutations);
@@ -51,7 +51,7 @@ exports.up = async(r) => {
   await Promise.all(waitIndices);
 };
 
-exports.down = async(r) => {
+exports.down = async (r) => {
   const tables = [
     r.tableCreate('Action')
   ];

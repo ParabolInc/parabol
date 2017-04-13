@@ -52,9 +52,9 @@ export default {
       const [userId] = teamMemberId.split('::');
       newProject.userId = userId;
     }
-    
+
     if (content) {
-      newProject.tags = extractTags(content); 
+      newProject.tags = extractTags(content);
     }
     const dbWork = [];
 

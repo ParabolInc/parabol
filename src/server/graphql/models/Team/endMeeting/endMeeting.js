@@ -68,7 +68,7 @@ export default {
               .orderBy('createdAt')
               .pluck('id', 'content', 'status', 'teamMemberId')
               .coerceTo('array')
-              .default([])
+              .default([]);
           })
           .do((projects) => {
             return r.table('Meeting').get(meetingId)
@@ -91,7 +91,7 @@ export default {
                       .default(false),
                     projects: projects.filter({teamMemberId: teamMember('id')})
                   })),
-                projects: projects,
+                projects,
               }, {
                 nonAtomic: true,
                 returnChanges: true

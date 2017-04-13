@@ -8,7 +8,7 @@ import {cardBorderTop} from 'universal/styles/helpers';
 import makeUsername from 'universal/utils/makeUsername';
 
 const NullCard = (props) => {
-  const {styles, type, preferredName} = props;
+  const {styles, preferredName} = props;
   const username = makeUsername(preferredName);
   return (
     <div className={css(styles.root)}>

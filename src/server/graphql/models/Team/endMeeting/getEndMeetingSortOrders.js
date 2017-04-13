@@ -10,7 +10,7 @@ export default async function getEndMeetingSortOrders(completedMeeting) {
     .getAll(r.args(userIds), {index: 'userId'})
     .filter((project) => project('tags').contains('#archived').not())
     .max('sortOrder')('sortOrder')
-    .default(0)
+    .default(0);
   return projects.map((project, idx) => ({
     id: project.id.substr(project.id.indexOf('::') + 2),
     sortOrder: projectMax + idx + 1
