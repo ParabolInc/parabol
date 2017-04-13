@@ -64,6 +64,7 @@ const Sidebar = (props) => {
           <img className={css(styles.brandLogo)} src={actionUIMark} />
         </a>
         <Link className={css(styles.teamName)} to={`/team/${teamId}`} title={`Go to the ${teamName} Team Dashboard`}>{teamName}</Link>
+        <div className={css(styles.orgName)}>Organization</div>
         <a className={css(styles.shortUrl)} href={relativeLink}>{shortUrl}</a>
       </div>
       <nav className={css(styles.nav)}>
@@ -291,6 +292,14 @@ const styleThunk = () => ({
     fontStyle: 'italic',
     fontWeight: 700,
     lineHeight: '1.5'
+  },
+
+  orgName: {
+    color: appTheme.palette.dark10d,
+    fontSize: appTheme.typography.s2,
+    fontWeight: 700,
+    lineHeight: appTheme.typography.sBase,
+    margin: '0 0 .25rem'
   },
 
   timer: {
