@@ -7,7 +7,6 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import CreateCardRootStyles from './CreateCardRootStyles';
 import {cardBorderTop} from 'universal/styles/helpers';
-import makeUsername from 'universal/utils/makeUsername';
 
 const CreateCard = (props) => {
   const {
@@ -35,8 +34,6 @@ const CreateCard = (props) => {
       {label()}
     </div>;
 
-  const username = makeUsername(createdBy);
-
   const cardStyles = css(
     styles.root,
     (hasControls || isCreating) && styles.hasControls
@@ -52,7 +49,7 @@ const CreateCard = (props) => {
       }
       {isCreating &&
         <Type align="center" bold scale="s3" colorPalette="mid">
-          @{username}<br />is adding {isProject ? 'a Project' : 'an Action'}<Ellipsis />
+          {createdBy}<br />is adding {isProject ? 'a Project' : 'an Action'}<Ellipsis />
         </Type>
       }
     </div>
