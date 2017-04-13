@@ -71,7 +71,7 @@ Object {
   "team": Object {
     "activeFacilitator": null,
     "checkInGreeting": "Salut",
-    "checkInQuestion": "learn any new slang lately",
+    "checkInQuestion": "Learn any new slang lately",
     "facilitatorPhase": "lobby",
     "facilitatorPhaseItem": null,
     "id": 6,
