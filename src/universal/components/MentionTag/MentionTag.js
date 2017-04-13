@@ -26,20 +26,22 @@ MentionTag.propTypes = {
 
 const styleThunk = () => ({
   active: {
-    backgroundColor: appTheme.palette.cool,
+    backgroundColor: appTheme.palette.dark,
+    color: '#fff'
   },
 
   description: {
-    marginLeft: '8px'
+    marginLeft: '.5rem'
   },
 
   row: {
+    alignItems: 'center',
     display: 'flex',
-    padding: '4px'
+    padding: '.5rem'
   },
 
   value: {
-    fontWeight: 800,
+    fontWeight: 700,
   }
 });
 

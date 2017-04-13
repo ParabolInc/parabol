@@ -29,16 +29,18 @@ MentionTeamMember.propTypes = {
 
 const styleThunk = () => ({
   active: {
-    background: appTheme.palette.cool
+    backgroundColor: appTheme.palette.dark,
+    color: '#fff'
   },
 
   name: {
-    marginLeft: '4px'
+    marginLeft: '.5rem'
   },
 
   row: {
+    alignItems: 'center',
     display: 'flex',
-    padding: '4px'
+    padding: '.5rem'
   }
 });
 

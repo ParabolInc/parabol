@@ -250,10 +250,12 @@ const styleThunk = () => ({
   },
 
   mentionMenu: {
-    background: 'white',
-    border: '1px solid gray',
-    borderRadius: '2px',
-    boxShadow: ui.menuBoxShadow
+    background: '#fff',
+    border: `1px solid ${ui.cardBorderCoor}`,
+    borderRadius: ui.borderRadiusSmall,
+    boxShadow: ui.menuBoxShadow,
+    color: ui.palette.dark,
+    padding: ui.borderRadiusSmall,
   }
 });
 
