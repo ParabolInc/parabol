@@ -6991,6 +6991,10 @@ string-length@^1.0.0, string-length@^1.0.1:
   dependencies:
     strip-ansi "^3.0.0"
 
+string-score@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/string-score/-/string-score-1.0.1.tgz#a1f31910705a119337a506ca718b1e85df12dd58"
+
 string-width@^1.0.1, string-width@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-1.0.2.tgz#118bdf5b8cdc51a2a7e70d211e07e2b0b9b107d3"

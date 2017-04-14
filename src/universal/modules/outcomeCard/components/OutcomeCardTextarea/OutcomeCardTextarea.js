@@ -8,6 +8,9 @@ import {MentionWrapper, MentionMenu} from 'react-githubish-mentions';
 import MentionTeamMember from '../../../../components/MentionTeamMember/MentionTeamMember';
 import MentionTag from '../../../../components/MentionTag/MentionTag';
 import Markdown from '../../../../components/Markdown/Markdown';
+import emojiArray from 'universal/utils/emojiArray';
+import MentionEmoji from '../../../../components/MentionEmoji/MentionEmoji';
+import stringScore from 'string-score';
 
 class OutcomeCardTextArea extends Component {
   static propTypes = {
@@ -103,6 +106,22 @@ class OutcomeCardTextArea extends Component {
       return tags.filter((tag) => tag.value.startsWith(query));
     };
 
+    const emojiQuery = async (query) => {
+      if (!query) {
+        return emojiArray.slice(2, 8);
+      }
+      return emojiArray.map((obj) => ({
+        ...obj,
+        score: stringScore(obj.value, query)
+      }))
+        .sort((a, b) => a.score < b.score ? 1 : -1)
+        .slice(0, 6)
+        // ":place of worship:" shouldn't pop up when i type ":poop"
+        .filter((obj, idx, arr) => obj.score > 0 && arr[0].score - obj.score < 0.3);
+    };
+
+    const emojiReplace = (userObj) => `${userObj.emoji} `;
+
     const mentionMenuStyle = css(styles.mentionMenu);
     return (
       <MentionWrapper
@@ -121,6 +140,7 @@ class OutcomeCardTextArea extends Component {
       >
         <MentionMenu className={mentionMenuStyle} trigger="@" item={MentionTeamMember} resolve={atQuery} />
         <MentionMenu className={mentionMenuStyle} trigger="#" item={MentionTag} resolve={tagQuery} />
+        <MentionMenu className={mentionMenuStyle} trigger=":" item={MentionEmoji} resolve={emojiQuery} replace={emojiReplace} />
       </MentionWrapper>
 
     );
