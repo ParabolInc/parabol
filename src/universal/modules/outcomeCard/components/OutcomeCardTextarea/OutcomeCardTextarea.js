@@ -56,7 +56,6 @@ class OutcomeCardTextArea extends Component {
   handleChange = () => {
     const {change, input: {name}} = this.props;
     change(name, this.textAreaRef.value);
-
   }
 
   renderEditing() {
@@ -94,13 +93,13 @@ class OutcomeCardTextArea extends Component {
       }
     };
 
-    const atQuery = async(query) => {
+    const atQuery = async (query) => {
       const {teamMembers} = this.props;
       const matchingMembers = teamMembers.filter((member) => member.preferredName.startsWith(query));
       return matchingMembers.map((member) => ({...member, value: member.preferredName}));
     };
 
-    const tagQuery = async(query) => {
+    const tagQuery = async (query) => {
       return tags.filter((tag) => tag.value.startsWith(query));
     };
 
@@ -120,8 +119,8 @@ class OutcomeCardTextArea extends Component {
         autoFocus
         rows={3}
       >
-        <MentionMenu className={mentionMenuStyle} trigger="@" item={MentionTeamMember} resolve={atQuery}/>
-        <MentionMenu className={mentionMenuStyle} trigger="#" item={MentionTag} resolve={tagQuery}/>
+        <MentionMenu className={mentionMenuStyle} trigger="@" item={MentionTeamMember} resolve={atQuery} />
+        <MentionMenu className={mentionMenuStyle} trigger="#" item={MentionTag} resolve={tagQuery} />
       </MentionWrapper>
 
     );
@@ -147,7 +146,7 @@ class OutcomeCardTextArea extends Component {
         onClick={!isArchived && this.setEditing}
         className={markdownStyles}
       >
-        <Markdown source={value}/>
+        <Markdown source={value} />
       </div>
     );
   }
