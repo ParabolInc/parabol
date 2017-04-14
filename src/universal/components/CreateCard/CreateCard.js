@@ -12,17 +12,11 @@ import makeUsername from 'universal/utils/makeUsername';
 const CreateCard = (props) => {
   const {
     createdBy,
-    handleAddPrivateProject,
     handleAddProject,
     hasControls,
     isCreating,
     styles
   } = props;
-
-  const privateLabel = () =>
-    <span title="Press “a” to add a new Private Project">
-      + New Priv<u>a</u>te Project
-    </span>;
 
   const projectLabel = () =>
     <span title="Press “p” to add a new Project">
@@ -45,7 +39,6 @@ const CreateCard = (props) => {
     <div className={cardStyles}>
       {hasControls &&
         <div className={css(styles.controlsBlock)}>
-          {addNewOutcome(styles.privateStyles, privateLabel, handleAddPrivateProject)}
           {addNewOutcome(styles.projectStyles, projectLabel, handleAddProject)}
         </div>
       }
@@ -60,7 +53,6 @@ const CreateCard = (props) => {
 
 CreateCard.propTypes = {
   createdBy: PropTypes.string,
-  handleAddPrivateProject: PropTypes.func,
   handleAddProject: PropTypes.func,
   hasControls: PropTypes.bool,
   isCreating: PropTypes.bool,

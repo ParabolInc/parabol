@@ -10,11 +10,11 @@ query {
     projects(teamMemberId: $teamMemberId) @live {
       id
       agendaId
-      type: __typename
       content
       createdAt
       createdBy
       status
+      tags
       teamMember @cached(type: "TeamMember") {
         picture
         preferredName
