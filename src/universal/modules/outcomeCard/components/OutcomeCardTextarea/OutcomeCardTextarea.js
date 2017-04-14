@@ -9,10 +9,10 @@ import MentionTeamMember from '../../../../components/MentionTeamMember/MentionT
 import MentionTag from '../../../../components/MentionTag/MentionTag';
 import Markdown from '../../../../components/Markdown/Markdown';
 
-let textAreaRef;
 class OutcomeCardTextArea extends Component {
   static propTypes = {
     cardHasHover: PropTypes.bool,
+    change: PropTypes.func,
     doSubmitOnEnter: PropTypes.bool,
     editingStatus: PropTypes.any,
     handleActive: PropTypes.func,
@@ -51,6 +51,12 @@ class OutcomeCardTextArea extends Component {
 
   unsetEditing = () => {
     this.setState({isEditing: false});
+  };
+
+  handleChange = () => {
+    const {change, input: {name}} = this.props;
+    change(name, this.textAreaRef.value);
+
   }
 
   renderEditing() {
@@ -78,23 +84,23 @@ class OutcomeCardTextArea extends Component {
     };
 
     const setRef = (c) => {
-      textAreaRef = c;
+      this.textAreaRef = c;
     };
 
     const submitOnEnter = (e) => {
-       // hitting enter (not shift+enter or any wacky combo) submits the textarea
+      // hitting enter (not shift+enter or any wacky combo) submits the textarea
       if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
-        textAreaRef.blur();
+        this.textAreaRef.blur();
       }
     };
 
-    const atQuery = async (query) => {
+    const atQuery = async(query) => {
       const {teamMembers} = this.props;
       const matchingMembers = teamMembers.filter((member) => member.preferredName.startsWith(query));
       return matchingMembers.map((member) => ({...member, value: member.preferredName}));
     };
 
-    const tagQuery = async (query) => {
+    const tagQuery = async(query) => {
       return tags.filter((tag) => tag.value.startsWith(query));
     };
 
@@ -108,12 +114,13 @@ class OutcomeCardTextArea extends Component {
         maxLength={PROJECT_MAX_CHARS}
         placeholder="Type your outcome here"
         onBlur={handleBlur}
+        onChange={this.handleChange}
         onDrop={null}
         onKeyDown={doSubmitOnEnter ? submitOnEnter : null}
         autoFocus
       >
-        <MentionMenu className={mentionMenuStyle} trigger="@" item={MentionTeamMember} resolve={atQuery} />
-        <MentionMenu className={mentionMenuStyle} trigger="#" item={MentionTag} resolve={tagQuery} />
+        <MentionMenu className={mentionMenuStyle} trigger="@" item={MentionTeamMember} resolve={atQuery}/>
+        <MentionMenu className={mentionMenuStyle} trigger="#" item={MentionTag} resolve={tagQuery}/>
       </MentionWrapper>
 
     );
@@ -139,7 +146,7 @@ class OutcomeCardTextArea extends Component {
         onClick={!isArchived && this.setEditing}
         className={markdownStyles}
       >
-        <Markdown source={value} />
+        <Markdown source={value}/>
       </div>
     );
   }

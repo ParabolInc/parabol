@@ -37,6 +37,7 @@ const styleThunk = () => ({
   },
 
   row: {
+    cursor: 'pointer',
     display: 'flex',
     padding: '4px'
   }

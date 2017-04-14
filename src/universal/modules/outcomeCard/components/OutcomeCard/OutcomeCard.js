@@ -18,6 +18,7 @@ import isProjectArchived from 'universal/utils/isProjectArchived';
 const OutcomeCard = (props) => {
   const {
     area,
+    change,
     isAgenda,
     form,
     handleCardActive,
@@ -69,6 +70,7 @@ const OutcomeCard = (props) => {
           />
           <Field
             cardHasHover={hasHover}
+            change={change}
             component={OutcomeCardTextarea}
             doSubmitOnEnter
             handleActive={handleCardActive}
@@ -96,6 +98,7 @@ const OutcomeCard = (props) => {
 
 OutcomeCard.propTypes = {
   area: PropTypes.string,
+  change: PropTypes.func,
   children: PropTypes.any,
   isArchived: PropTypes.bool,
   isAgenda: PropTypes.bool,
