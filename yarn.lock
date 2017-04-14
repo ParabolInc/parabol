@@ -4799,6 +4799,10 @@ map-obj@^1.0.0, map-obj@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/map-obj/-/map-obj-1.0.1.tgz#d933ceb9205d82bdcf4886f6742bdc2b4dea146d"
 
+markdown-it-emoji@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/markdown-it-emoji/-/markdown-it-emoji-1.3.0.tgz#903ae1a9968c3f17d4e142f115d4ec575e56d2cb"
+
 markdown-it@^8.3.1:
   version "8.3.1"
   resolved "https://registry.yarnpkg.com/markdown-it/-/markdown-it-8.3.1.tgz#2f4b622948ccdc193d66f3ca2d43125ac4ac7323"
@@ -5819,9 +5823,9 @@ react-fontawesome@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/react-fontawesome/-/react-fontawesome-1.5.0.tgz#879d1b2aa5c48bba551e9237f84993217b5645c4"
 
-react-githubish-mentions@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/react-githubish-mentions/-/react-githubish-mentions-0.0.3.tgz#c83118fb7739421e41831dc88c9df351cf2a0ee9"
+react-githubish-mentions@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/react-githubish-mentions/-/react-githubish-mentions-0.0.4.tgz#3b5104802f77568bff71ccf4fd654e8be620f0cd"
   dependencies:
     react-portal-hoc "^0.3.2"
     textarea-caret "git://github.com/mattkrick/textarea-caret-position.git#ede461f40712238c505e4a1861fc68de6e7731ad"

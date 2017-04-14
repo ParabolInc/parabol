@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import MarkdownIt from 'markdown-it';
+import emoji from 'markdown-it-emoji';
 
 const options = {
   breaks: true,
@@ -15,6 +16,7 @@ class Markdown extends Component {
   constructor(props) {
     super(props);
     this.md = new MarkdownIt(options);
+    this.md.use(emoji);
   }
 
   shouldComponentUpdate(nextProps) {
