@@ -118,6 +118,7 @@ class OutcomeCardTextArea extends Component {
         onDrop={null}
         onKeyDown={doSubmitOnEnter ? submitOnEnter : null}
         autoFocus
+        rows={3}
       >
         <MentionMenu className={mentionMenuStyle} trigger="@" item={MentionTeamMember} resolve={atQuery}/>
         <MentionMenu className={mentionMenuStyle} trigger="#" item={MentionTag} resolve={tagQuery}/>
@@ -204,8 +205,6 @@ const descriptionBreakpoint = '@media (min-width: 90rem)';
 const styleThunk = () => ({
   content: {
     ...contentBase,
-    // TODO: only set this during the agenda round to match the card placeholder row height?
-    // minHeight: '3.3125rem',
     padding: `0 ${ui.cardPaddingBase} .1875rem`,
 
     ':focus': {
@@ -257,10 +256,12 @@ const styleThunk = () => ({
   },
 
   mentionMenu: {
-    background: 'white',
-    border: '1px solid gray',
-    borderRadius: '2px',
-    boxShadow: ui.menuBoxShadow
+    background: '#fff',
+    border: `1px solid ${ui.cardBorderCoor}`,
+    borderRadius: ui.borderRadiusSmall,
+    boxShadow: ui.menuBoxShadow,
+    color: ui.palette.dark,
+    padding: ui.borderRadiusSmall,
   }
 });
 
