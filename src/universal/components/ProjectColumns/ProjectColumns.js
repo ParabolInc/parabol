@@ -23,10 +23,12 @@ const ProjectColumns = (props) => {
   return (
     <div className={rootStyles}>
       <div className={css(styles.columns)}>
-        {lanes.map((status) =>
+        {lanes.map((status, idx) =>
           <ProjectColumn
             key={`projectCol${status}`}
             area={area}
+            firstColumn={idx === 0}
+            lastColumn={idx === (lanes.length - 1)}
             myTeamMemberId={myTeamMemberId}
             projects={projects[status]}
             queryKey={queryKey}

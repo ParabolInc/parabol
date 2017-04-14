@@ -4,6 +4,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import FontAwesome from 'react-fontawesome';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import isProjectArchived from 'universal/utils/isProjectArchived';
 
 const avatarSize = '1.5rem';
 const faStyle = {
@@ -14,6 +15,7 @@ const OutcomeCardFooter = (props) => {
   const {
     cardHasHover,
     hasOpenStatusMenu,
+    isPrivate,
     outcome,
     showTeam,
     styles,
@@ -21,8 +23,8 @@ const OutcomeCardFooter = (props) => {
     toggleStatusMenu,
     unarchiveProject
   } = props;
-  const {isArchived, teamMember: owner} = outcome;
-  const isProject = Boolean(outcome.status);
+  const {teamMember: owner} = outcome;
+  const isArchived = isProjectArchived(outcome.tags);
   // AVATAR
   // -------
   const avatarImage = owner.picture;
@@ -40,8 +42,8 @@ const OutcomeCardFooter = (props) => {
   );
   const buttonStyles = css(
     styles.buttonBase,
-    !isProject && styles.actionButton,
-    showFully && (isProject ? styles.projectButtonShowFully : styles.actionButtonShowFully)
+    isPrivate && styles.privateButton,
+    showFully && (isPrivate ? styles.privateButtonShowFully : styles.projectButtonShowFully)
   );
   return (
     <div className={css(styles.root)}>
@@ -80,7 +82,7 @@ OutcomeCardFooter.propTypes = {
   toggleStatusMenu: PropTypes.func,
   hasOpenStatusMenu: PropTypes.bool,
   isArchived: PropTypes.bool,
-  isProject: PropTypes.bool,
+  isPrivate: PropTypes.bool,
   outcome: PropTypes.object,
   owner: PropTypes.object,
   showTeam: PropTypes.bool,
@@ -92,10 +94,12 @@ const buttonShowFully = {
   backgroundColor: appTheme.palette.mid10l,
   color: appTheme.palette.dark
 };
-const actionButtonShowFully = {
+
+const privateButtonShowFully = {
   backgroundColor: appTheme.palette.light90g,
   color: appTheme.palette.dark
 };
+
 const buttonBase = {
   backgroundColor: 'transparent',
   border: 0,
@@ -202,16 +206,16 @@ const styleThunk = () => ({
     ...buttonShowFully
   },
 
-  actionButton: {
+  privateButton: {
     ...buttonBase,
 
     ':focus': {
-      ...actionButtonShowFully
+      ...privateButtonShowFully
     }
   },
 
-  actionButtonShowFully: {
-    ...actionButtonShowFully
+  privateButtonShowFully: {
+    ...privateButtonShowFully
   }
 });
 

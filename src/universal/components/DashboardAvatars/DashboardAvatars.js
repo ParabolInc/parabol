@@ -35,17 +35,13 @@ DashboardAvatars.propTypes = {
 
 const styleThunk = () => ({
   root: {
-    fontSize: 0,
-    position: 'relative',
-    textAlign: 'right',
+    display: 'flex',
     width: '100%'
   },
 
   item: {
-    display: 'inline-block',
-    margin: '0 .75rem',
-    position: 'relative',
-    verticalAlign: 'middle'
+    margin: '0 0 0 1rem',
+    position: 'relative'
   }
 });
 

@@ -9,17 +9,6 @@ import {ACTIVE} from 'universal/utils/constants';
 import withHotkey from 'react-hotkey-hoc';
 import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
 
-const handleAddActionFactory = (teamMemberId, agendaId) => () => {
-  const [, teamId] = teamMemberId.split('::');
-  const newAction = {
-    id: `${teamId}::${shortid.generate()}`,
-    teamMemberId,
-    sortOrder: 0,
-    agendaId
-  };
-  cashay.mutate('createAction', {variables: {newAction}});
-};
-
 const handleAddProjectFactory = (teamMemberId, agendaId) => () => {
   const [, teamId] = teamMemberId.split('::');
   const newProject = {
@@ -27,15 +16,15 @@ const handleAddProjectFactory = (teamMemberId, agendaId) => () => {
     status: ACTIVE,
     teamMemberId,
     sortOrder: 0,
-    agendaId
+    agendaId,
   };
   cashay.mutate('createProject', {variables: {newProject}});
 };
 
 const makeCards = (array, dispatch, myTeamMemberId, itemStyle) => {
   return array.map((outcome) => {
-    const {type, id} = outcome;
-    const key = `${type}OutcomeCard${id}`;
+    const {id} = outcome;
+    const key = `$outcomeCard${id}`;
     const [myUserId] = myTeamMemberId.split('::');
     return (
       <div className={css(itemStyle)} key={key}>
@@ -61,9 +50,7 @@ const makePlaceholders = (length, itemStyle) => {
 
 const MeetingAgendaCards = (props) => {
   const {agendaId, bindHotkey, dispatch, myTeamMemberId, outcomes, styles} = props;
-  const handleAddAction = handleAddActionFactory(myTeamMemberId, agendaId);
   const handleAddProject = handleAddProjectFactory(myTeamMemberId, agendaId);
-  bindHotkey('a', handleAddAction);
   bindHotkey('p', handleAddProject);
   return (
     <div className={css(styles.root)}>
@@ -74,7 +61,6 @@ const MeetingAgendaCards = (props) => {
       {/* Input Card */}
       <div className={css(styles.item)}>
         <CreateCard
-          handleAddAction={handleAddAction}
           handleAddProject={handleAddProject}
           hasControls
         />
@@ -101,7 +87,8 @@ const styleThunk = () => ({
   },
 
   item: {
-    marginTop: '2rem',
+    marginBottom: '1rem',
+    marginTop: '1rem',
     padding: '0 .5rem',
     width: '25%',
 

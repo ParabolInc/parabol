@@ -16,7 +16,6 @@ import {makeSuccessExpression} from 'universal/utils/makeSuccessCopy';
 
 const MeetingSummary = (props) => {
   const {
-    actionCount,
     agendaItemsCompleted,
     meetingNumber,
     projectCount,
@@ -41,8 +40,6 @@ const MeetingSummary = (props) => {
             <span className={css(styles.highlight)}>{agendaItemsCompleted} Agenda Items</span><br />
             <span>resulting in </span>
             <span className={css(styles.highlight)}>{projectCount} New Projects </span>
-            <span>and </span>
-            <span className={css(styles.highlight)}>{actionCount} New Actions</span>
             <span>.</span>
           </Type>
 
@@ -59,7 +56,6 @@ const MeetingSummary = (props) => {
 
           <MeetingSection paddingBottom="2rem" paddingTop="2rem">
             <SummaryQuickStats
-              actionCount={actionCount}
               projectCount={projectCount}
             />
           </MeetingSection>
@@ -90,7 +86,6 @@ const styleThunk = () => ({
 });
 
 MeetingSummary.propTypes = {
-  actionCount: PropTypes.number,
   agendaItemsCompleted: PropTypes.number,
   meetingNumber: PropTypes.number,
   projectCount: PropTypes.number,

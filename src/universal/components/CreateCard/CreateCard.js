@@ -12,18 +12,11 @@ import makeUsername from 'universal/utils/makeUsername';
 const CreateCard = (props) => {
   const {
     createdBy,
-    handleAddAction,
     handleAddProject,
     hasControls,
     isCreating,
-    isProject,
     styles
   } = props;
-
-  const actionLabel = () =>
-    <span title="Press “a” to add a new Action">
-      + New Private <u>A</u>ction
-    </span>;
 
   const projectLabel = () =>
     <span title="Press “p” to add a new Project">
@@ -39,20 +32,19 @@ const CreateCard = (props) => {
 
   const cardStyles = css(
     styles.root,
-    (hasControls || isCreating) && styles.rootBorderVariant
+    (hasControls || isCreating) && styles.hasControls
   );
 
   return (
     <div className={cardStyles}>
       {hasControls &&
         <div className={css(styles.controlsBlock)}>
-          {addNewOutcome(styles.actionStyles, actionLabel, handleAddAction)}
           {addNewOutcome(styles.projectStyles, projectLabel, handleAddProject)}
         </div>
       }
       {isCreating &&
         <Type align="center" bold scale="s3" colorPalette="mid">
-          @{username}<br />is adding {isProject ? 'a Project' : 'an Action'}<Ellipsis />
+          @{username}<br />is adding a Project<Ellipsis />
         </Type>
       }
     </div>
@@ -61,11 +53,9 @@ const CreateCard = (props) => {
 
 CreateCard.propTypes = {
   createdBy: PropTypes.string,
-  handleAddAction: PropTypes.func,
   handleAddProject: PropTypes.func,
   hasControls: PropTypes.bool,
   isCreating: PropTypes.bool,
-  isProject: PropTypes.bool,
   styles: PropTypes.object
 };
 
@@ -111,7 +101,7 @@ const styleThunk = () => ({
     }
   },
 
-  rootBorderVariant: {
+  hasControls: {
     '::after': {
       color: appTheme.palette.mid
     }
@@ -121,9 +111,9 @@ const styleThunk = () => ({
     // Define
   },
 
-  actionStyles: {
+  privateStyles: {
     ...labelBaseStyles,
-    backgroundColor: ui.actionCardBgColor,
+    backgroundColor: ui.privateCardBgColor,
     borderColor: appTheme.palette.light50g,
     color: appTheme.palette.dark
   },

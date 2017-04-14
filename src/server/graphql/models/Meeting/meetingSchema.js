@@ -13,25 +13,6 @@ import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {ProjectStatus} from '../Project/projectSchema';
 import TeamMember from '../TeamMember/teamMemberSchema';
 
-const MeetingAction = new GraphQLObjectType({
-  name: 'MeetingAction',
-  description: 'The action that was created in a meeting',
-  fields: () => ({
-    id: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The unique action id, meetingId::actionId'
-    },
-    content: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The description of the action created during the meeting'
-    },
-    teamMemberId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the team member the action was assigned to during the meeting'
-    }
-  }),
-});
-
 const MeetingProject = new GraphQLObjectType({
   name: 'MeetingProject',
   description: 'The project that was created in a meeting',
@@ -132,11 +113,6 @@ const MeetingInvitee = new GraphQLObjectType({
       description: 'true if the invitee was present in the meeting'
     },
     /* RethinkDB sugar */
-    actions: {
-      type: new GraphQLList(MeetingAction),
-      description: `A list of actions that were created in the meeting. 
-      These details never change, even if the underlying action does`
-    },
     projects: {
       type: new GraphQLList(MeetingProject),
       description: 'A list of immutable projects, as they were created in the meeting'
@@ -168,11 +144,6 @@ const Meeting = new GraphQLObjectType({
   description: 'A team meeting history for all previous meetings',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique meeting id. shortid.'},
-    actions: {
-      type: new GraphQLList(MeetingAction),
-      description: `A list of actions that were created in the meeting. 
-      These details never change, even if the underlying action does`
-    },
     agendaItemsCompleted: {
       type: GraphQLInt,
       description: 'The number of agenda items completed during the meeting'

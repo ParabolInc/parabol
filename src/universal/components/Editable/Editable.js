@@ -47,9 +47,10 @@ class Editable extends Component {
       styles.input
     );
 
-    const submitAndSet = (e) => {
+    const submitAndSet = async (e) => {
       e.preventDefault();
-      if (!handleSubmit()) {
+      const didSubmit = await handleSubmit();
+      if (!didSubmit) {
         this.unsetEditing();
       }
     };

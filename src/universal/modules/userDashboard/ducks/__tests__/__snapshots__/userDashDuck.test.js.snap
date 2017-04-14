@@ -31,19 +31,3 @@ Object {
   "teamFilterName": "All teams",
 }
 `;
-
-exports[`selectNewActionTeam off 1`] = `
-Object {
-  "selectingNewActionTeam": false,
-  "teamFilterId": null,
-  "teamFilterName": "All teams",
-}
-`;
-
-exports[`selectNewActionTeam on 1`] = `
-Object {
-  "selectingNewActionTeam": true,
-  "teamFilterId": null,
-  "teamFilterName": "All teams",
-}
-`;

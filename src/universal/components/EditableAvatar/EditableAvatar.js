@@ -19,7 +19,7 @@ const EditableAvatar = (props) => {
         <span>EDIT</span>
       </div>
       <div className={css(styles.avatarImgBlock)}>
-        <Avatar picture={picture} size="fill" unstyled={unstyled} />
+        <Avatar picture={picture} size="fill" sansRadius={unstyled} sansShadow={unstyled} />
       </div>
     </div>
   );

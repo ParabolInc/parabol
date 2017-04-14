@@ -20,11 +20,6 @@ query{
     invitees {
       id
       present
-      actions {
-        id
-        content
-        teamMemberId
-      }
       projects {
         id
         content

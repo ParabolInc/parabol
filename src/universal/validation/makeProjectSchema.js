@@ -10,7 +10,6 @@ export default function makeProjectSchema() {
     content: (value) => value
       .trim()
       .max(PROJECT_MAX_CHARS, 'Whoa! That looks like 2 projects'),
-    isArchived: (value) => value.boolean(),
     status: (value) => value
       // status may be empty eg unarchive card
       .test((str) => str && !columnArray.includes(str) && 'That isn\'t a status!'),

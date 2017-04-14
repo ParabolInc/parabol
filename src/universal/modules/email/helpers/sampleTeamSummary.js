@@ -86,12 +86,6 @@ const Marimar = {
 //       team: 'Parabol',
 //       type: 'project'
 //     },
-//     {
-//       content: 'Adjust copy for beta signup page',
-//       status: null,
-//       team: 'Parabol',
-//       type: 'action'
-//     }
 //   ]
 // };
 

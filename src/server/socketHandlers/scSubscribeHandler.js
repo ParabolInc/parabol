@@ -3,9 +3,6 @@ import Schema from 'server/graphql/rootSchema';
 import subscriptions from 'universal/subscriptions/subscriptions';
 import parseChannel from 'universal/utils/parseChannel';
 import {
-  ACTIONS,
-  ACTIONS_BY_TEAMMEMBER,
-  ACTIONS_BY_AGENDA,
   AGENDA,
   ARCHIVED_PROJECTS,
   INTEGRATIONS,
@@ -30,9 +27,6 @@ import {
  * By creating this on the server it keeps payloads really small
  * */
 const dechannelfy = {
-  [ACTIONS]: (variableString) => ({userId: variableString}),
-  [ACTIONS_BY_TEAMMEMBER]: (variableString) => ({teamMemberId: variableString}),
-  [ACTIONS_BY_AGENDA]: (variableString) => ({agendaId: variableString}),
   [AGENDA]: (variableString) => ({teamId: variableString}),
   [ARCHIVED_PROJECTS]: (variableString) => ({teamId: variableString}),
   [INTEGRATIONS]: (teamMemberId) => ({teamMemberId}),

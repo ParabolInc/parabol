@@ -1,12 +1,8 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
-import {textOverflow} from 'universal/styles/helpers';
-
-import Avatar from 'universal/components/Avatar/Avatar';
-import IconLink from 'universal/components/IconLink/IconLink';
+import Button from 'universal/components/Button/Button';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
@@ -28,42 +24,33 @@ const MeetingAgendaItems = (props) => {
   }
   const currentTeamMember = members.find((m) => m.id === agendaItem.teamMemberId);
   const self = members.find((m) => m.isSelf);
-  const hasFirstSpacer = true;
+  const heading = <span>{currentTeamMember.preferredName}: <i style={{color: ui.palette.warm}}>“{agendaItem.content}”</i></span>;
+
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="2rem">
-        {/* */}
-        <MeetingSection paddingBottom="2rem" paddingTop="2rem">
-          <MeetingPrompt
-            heading={<span>Whatcha need?</span>}
-            helpText={<span><b>Actions</b>: quick tasks • <b>Projects</b>: tracked outcomes</span>}
-          />
-        </MeetingSection>
-        {/* */}
         <MeetingSection flexToFill>
           <div className={css(styles.layout)}>
+            <div className={css(styles.prompt)}>
+              <MeetingPrompt
+                avatar={currentTeamMember.picture}
+                heading={heading}
+                subHeading={'What do you need?'}
+                helpText={<span><b>Private Projects</b>: quick tasks • <b>Projects</b>: tracked outcomes</span>}
+              />
+            </div>
             <div className={css(styles.nav)}>
-              {hasFirstSpacer && <div className={css(styles.linkSpacer)}>{' '}</div>}
-              <div className={css(styles.avatarBlock)}>
-                <div className={css(styles.avatar)}>
-                  <Avatar {...currentTeamMember} size="fill" />
-                </div>
-                <div className={css(styles.agendaItemLabel)}>
-                  “{agendaItem.content}”
-                </div>
-              </div>
-              <div className={css(styles.linkSpacer)}>
-                {!hideMoveMeetingControls &&
-                  <IconLink
-                    colorPalette="cool"
-                    icon="arrow-circle-right"
-                    iconPlacement="right"
-                    label={isLast ? 'Wrap up the meeting' : 'Next Agenda Item'}
-                    onClick={gotoNext}
-                    scale="small"
-                  />
-                }
-              </div>
+              {!hideMoveMeetingControls &&
+                <Button
+                  buttonStyle="flat"
+                  colorPalette="cool"
+                  icon="arrow-circle-right"
+                  iconPlacement="right"
+                  label={isLast ? 'Wrap up the meeting' : 'Next Agenda Item'}
+                  onClick={gotoNext}
+                  size="small"
+                />
+              }
             </div>
             <MeetingAgendaCardsContainer
               agendaId={agendaItem.id}
@@ -107,55 +94,16 @@ const styleThunk = () => ({
     }
   },
 
-  nav: {
-    display: 'flex !important',
-    width: '100%'
-  },
-
-  avatarBlock: {
-    flex: 1,
-    textAlign: 'center',
-    whiteSpace: 'nowrap'
-  },
-
-  avatar: {
-    display: 'inline-block',
-    verticalAlign: 'middle',
-    width: '5rem',
-
-    [ui.breakpoint.wider]: {
-      width: '7.5rem'
-    }
-  },
-
-  linkSpacer: {
+  prompt: {
+    alignItems: 'center',
     display: 'flex',
-    flexDirection: 'column',
-    padding: '4px 1rem 0 2rem',
-    justifyContent: 'center',
-    textAlign: 'right',
-    width: '12rem',
-
-    [ui.breakpoint.wider]: {
-      paddingTop: '6px'
-    }
+    justifyContent: 'center'
   },
 
-  agendaItemLabel: {
-    ...textOverflow,
-    color: appTheme.palette.dark,
-    display: 'inline-block',
-    fontFamily: appTheme.typography.serif,
-    fontSize: appTheme.typography.s5,
-    fontStyle: 'italic',
-    fontWeight: 700,
-    marginLeft: '1.5rem',
-    maxWidth: '40rem',
-    verticalAlign: 'middle',
-
-    [ui.breakpoint.wider]: {
-      fontSize: appTheme.typography.s6
-    }
+  nav: {
+    paddingTop: '1rem',
+    textAlign: 'center',
+    width: '100%'
   }
 });
 

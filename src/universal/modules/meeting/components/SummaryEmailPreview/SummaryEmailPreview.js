@@ -27,7 +27,6 @@ const SummaryEmailPreview = (props) => {
       </Type>
       {teamMembers.map((teamMember) =>
         <UserSummary
-          actions={teamMember.actions}
           key={`teamMember-summary-${teamMember.id}`}
           picture={teamMember.picture}
           preferredName={teamMember.preferredName}

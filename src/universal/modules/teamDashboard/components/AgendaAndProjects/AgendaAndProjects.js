@@ -22,7 +22,7 @@ const AgendaAndProjects = (props) => {
       <div className={css(styles.agendaAndProjects)}>
         {!hideAgenda &&
           <div className={css(styles.agendaLayout)}>
-            <AgendaListAndInputContainer context="dashboard" disabled={false} teamId={teamId} />
+            <AgendaListAndInputContainer canNavigate={false} context="dashboard" disabled={false} teamId={teamId} />
           </div>
         }
         <div className={css(styles.projectsLayout, !hideAgenda && styles.projectsLayoutShared)}>
@@ -75,7 +75,7 @@ const styleThunk = () => ({
     flexDirection: 'column'
   },
   projectsLayoutShared: {
-    paddingLeft: '1rem'
+    // paddingLeft: '1rem'
   }
 });
 

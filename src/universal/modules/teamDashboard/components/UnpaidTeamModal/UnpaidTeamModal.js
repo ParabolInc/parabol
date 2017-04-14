@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import {DashModal} from 'universal/components/Dashboard';
-import IconLink from 'universal/components/IconLink/IconLink';
+import Button from 'universal/components/Button/Button';
 import Type from 'universal/components/Type/Type';
 import ui from 'universal/styles/ui';
 
@@ -11,19 +11,19 @@ const UnpaidTeamModal = (props) => {
       <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
         Oh dear...
       </Type>
-      <Type align="center" bold scale="s4">
+      <Type align="center" bold marginBottom="1.5rem" scale="s4">
         {problem}<br />
         {solution}<br />
       </Type>
       {isALeader &&
-        <IconLink
+        <Button
+          buttonStyle="flat"
           colorPalette="warm"
           icon="arrow-circle-right"
           iconPlacement="right"
           label="Take me there"
-          margin="1.5rem 0 0"
           onClick={handleClick}
-          scale="large"
+          size="large"
         />
       }
     </DashModal>

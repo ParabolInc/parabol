@@ -5,7 +5,7 @@ import {
   GraphQLString,
   GraphQLEnumType,
   GraphQLFloat,
-  GraphQLBoolean,
+  GraphQLList,
   GraphQLInputObjectType
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
@@ -47,15 +47,15 @@ export const Project = new GraphQLObjectType({
         return createdAt;
       }
     },
-    isArchived: {
-      type: GraphQLBoolean,
-      description: 'true if the project has been archived and will not show up in the main area'
-    },
     sortOrder: {
       type: GraphQLFloat,
       description: 'the shared sort order for projects on the team dash & user dash'
     },
     status: {type: new GraphQLNonNull(ProjectStatus), description: 'The status of the project'},
+    tags: {
+      type: new GraphQLList(GraphQLString),
+      description: 'The tags associated with the project'
+    },
     teamId: {
       type: GraphQLID,
       description: 'The id of the team (indexed). Needed for subscribing to archived projects'
@@ -81,7 +81,6 @@ export const ProjectInput = new GraphQLInputObjectType({
     id: {type: GraphQLID, description: 'The unique team ID'},
     agendaId: {type: GraphQLID},
     content: {type: GraphQLString},
-    isArchived: {type: GraphQLBoolean},
     name: {type: GraphQLString, description: 'The name of the team'},
     orgId: {type: GraphQLID, description: 'The unique orginization ID that pays for the team'},
     teamMemberId: {type: GraphQLID},

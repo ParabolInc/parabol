@@ -31,7 +31,7 @@ const TrialExpiresSoon = (props) => {
         </div>
       </div>
       <div className={css(styles.message)}>
-        Your free trial will expire in <span className={css(styles.messageVar)}>{daysLeft}</span>.
+        Your free trial <span className={css(styles.messageVar)}>will expire in {daysLeft}</span>.
         Want another free month? Just add your billing info
       </div>
       <div className={css(styles.buttonGroup)}>

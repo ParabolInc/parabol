@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 
-const MeetingContent = (props) => {
+const MeetingSection = (props) => {
   const {
     children,
     flexToFill,
@@ -25,7 +25,7 @@ const MeetingContent = (props) => {
   );
 };
 
-MeetingContent.propTypes = {
+MeetingSection.propTypes = {
   children: PropTypes.any,
   flexToFill: PropTypes.bool,
   paddingBottom: PropTypes.string,
@@ -33,7 +33,7 @@ MeetingContent.propTypes = {
   styles: PropTypes.object
 };
 
-MeetingContent.defaultProps = {
+MeetingSection.defaultProps = {
   paddingBottom: '0px',
   paddingTop: '0px'
 };
@@ -41,7 +41,6 @@ MeetingContent.defaultProps = {
 const styleThunk = () => ({
   root: {
     alignItems: 'center',
-    backgroundColor: '#fff',
     display: 'flex !important',
     flexDirection: 'column',
     justifyContent: 'center',
@@ -54,4 +53,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(MeetingContent);
+export default withStyles(styleThunk)(MeetingSection);

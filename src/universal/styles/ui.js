@@ -1,4 +1,3 @@
-
 // -----------------------------------------------------------------------------
 // ui.js
 // -----------------------------------------------------------------------------
@@ -83,6 +82,15 @@ const transitionSlow = '800ms ease-in';
 const transitionSlower = '1600ms ease-in';
 const transitionSlowest = '3200ms ease-in';
 
+// Shadows
+const shadow = [
+  '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+  '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
+  '0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)',
+  '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)',
+  '0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22)'
+];
+
 // -----------------------------------------------------------------------------
 
 const ui = {
@@ -96,11 +104,10 @@ const ui = {
   palette: PALETTE_VALUES,
   filterBlur,
 
-  // Action items and cards
+  // Private projects
   // ---------------------------------------------------------------------------
-  actionCardBgColor: appTheme.palette.light60l,
-  actionCardBgActive: 'rgba(255, 255, 255, .85)',
-  zActionItem: zIndexScale(6),
+  privateCardBgColor: appTheme.palette.light60l,
+  privateCardBgActive: 'rgba(255, 255, 255, .85)',
 
   // Avatars
   // ---------------------------------------------------------------------------
@@ -202,14 +209,15 @@ const ui = {
   // ---------------------------------------------------------------------------
   cardBorderColor: appTheme.palette.mid30l,
   cardBorderRadius: borderRadiusMedium,
+  cardBoxShadow: '0 1px 2px rgba(103, 107, 139, .75)',
   cardMaxWidth: '17.5rem',
-  cardMinHeight: '7.5rem',
+  cardMinHeight: '8.9375rem',
   cardPaddingBase: '.5rem',
   cardDragStyle: {
     backgroundColor: appTheme.palette.light10l,
     borderColor: appTheme.palette.mid70l,
     borderRadius: borderRadiusMedium,
-    boxShadow: '0 1px 2px rgba(0, 0, 0, .15)'
+    boxShadow: '0 6px 12px rgba(0, 0, 0, .25)'
   },
   zCard: zIndexScale(6),
 
@@ -219,13 +227,18 @@ const ui = {
 
   // Dashboards
   // ---------------------------------------------------------------------------
-  dashActionsWidth: '15rem',
   dashAgendaWidth: '15.125rem',
   dashBackgroundColor: backgroundColor,
   dashBorderColor: 'rgba(0, 0, 0, .1)',
   dashGutter: '1rem',
   // Note: property 'dashMinWidth' prevents layout from collapsing in Safari
   //       in a better future we may be more adaptive/responsive (TA)
+  dashHeaderTitleStyles: {
+    color: appTheme.palette.dark,
+    fontSize: '1.75rem',
+    fontWeight: 400,
+    lineHeight: '1.5'
+  },
   dashMinWidth: '79rem',
   dashAlertHeight: '2.625rem',
   dashSectionHeaderLineHeight: '2rem',
@@ -334,12 +347,14 @@ const ui = {
 
   // Meeting
   // ---------------------------------------------------------------------------
+  meetingSidebarGutter: '.5rem',
   meetingSidebarWidth: '15rem',
 
   // Menus
   // ---------------------------------------------------------------------------
   menuBackgroundColor: '#fff' || backgroundColor,
   menuBorderColor: appTheme.palette.mid30l,
+  menuBoxShadow: shadow[1],
   menuGutterHorizontal: '.75rem',
   menuGutterVertical: '.375rem',
   menuItemPaddingHorizontal: '.75rem',
@@ -381,6 +396,9 @@ const ui = {
   rowHeadingColor: appTheme.palette.dark,
   rowHeadingFontSize: appTheme.typography.s4,
   rowGutter: '1rem',
+
+  // Shadows
+  shadow,
 
   // Tags
   // ---------------------------------------------------------------------------

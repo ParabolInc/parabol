@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import {DashModal} from 'universal/components/Dashboard';
-import IconLink from 'universal/components/IconLink/IconLink';
+import Button from 'universal/components/Button/Button';
 import Type from 'universal/components/Type/Type';
 import {cashay} from 'cashay';
 import portal from 'react-portal-hoc';
@@ -16,20 +16,20 @@ const RemoveFromOrgModal = (props) => {
       <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="cool">
         Are you sure?
       </Type>
-      <Type align="center" bold scale="s4">
+      <Type align="center" bold marginBottom="1.5rem" scale="s4">
         This will remove {preferredName} from the organization.
         Any outstanding projects will be given to the team leads.
         Any time remaining on their subscription will be refunded on the next invoice.
         <br />
       </Type>
-      <IconLink
+      <Button
+        buttonStyle="flat"
         colorPalette="warm"
         icon="arrow-circle-right"
         iconPlacement="right"
         label={`Remove ${preferredName}`}
-        margin="1.5rem 0 0"
         onClick={handleClick}
-        scale="large"
+        size="large"
       />
     </DashModal>
   );

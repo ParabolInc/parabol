@@ -52,8 +52,9 @@ const TeamContainer = (props) => {
     teamMembers
   } = props;
   const readyEnough = team.id;
+  const pageTitle = team !== null ? `${team.name} Team Dashboard | Parabol` : 'Team Dashboard | Parabol';
   return (
-    <DashboardWrapper title="Team Dashboard">
+    <DashboardWrapper title={pageTitle}>
       {readyEnough ?
         <Team
           hasDashAlert={hasDashAlert}

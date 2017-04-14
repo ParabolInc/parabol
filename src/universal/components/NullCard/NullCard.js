@@ -8,13 +8,12 @@ import {cardBorderTop} from 'universal/styles/helpers';
 import makeUsername from 'universal/utils/makeUsername';
 
 const NullCard = (props) => {
-  const {styles, type, preferredName} = props;
+  const {styles, preferredName} = props;
   const username = makeUsername(preferredName);
-  const label = type === 'Action' ? 'an Action' : 'a Project';
   return (
     <div className={css(styles.root)}>
       <Type align="center" bold scale="s3" colorPalette="mid">
-        @{username}<br />is adding {label}<Ellipsis />
+        @{username}<br />is adding a Project<Ellipsis />
       </Type>
     </div>
   );
@@ -22,7 +21,6 @@ const NullCard = (props) => {
 
 NullCard.propTypes = {
   styles: PropTypes.object,
-  type: PropTypes.oneOf(['Action', 'Project']),
   preferredName: PropTypes.string,
 };
 

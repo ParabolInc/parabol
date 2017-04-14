@@ -9,59 +9,70 @@ import Type from 'universal/components/Type/Type';
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
-import getWeekOfYear from 'universal/utils/getWeekOfYear';
-import {makeSuccessExpression} from 'universal/utils/makeSuccessCopy';
+import AgendaShortcutHint from 'universal/modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint';
 
 const MeetingAgendaLastCall = (props) => {
   const {
     agendaItemCount,
-    actionCount,
     hideMoveMeetingControls,
     gotoNext,
     facilitatorName,
-    projectCount,
     styles
   } = props;
-
-  const now = new Date();
-  const week = getWeekOfYear(now);
 
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="2rem">
           <MeetingPhaseHeading>
-            {/* Add 2 to week number to make expression different from Summary */}
-            {makeSuccessExpression(week + 2)}!
+            {agendaItemCount === 0 ?
+              <span>{'No agenda items?'}</span> :
+              <span>{'That wraps up the agenda!'}</span>
+            }
           </MeetingPhaseHeading>
-          <Type
-            align="center"
-            bold
-            family="serif"
-            marginBottom="2.25rem"
-            marginTop="2rem"
-            scale="s5"
-            colorPalette="black"
-          >
-            We worked on <span className={css(styles.highlight)}>{`${agendaItemCount} ${plural(agendaItemCount, 'Agenda Item')} `}</span>
-            resulting in <span className={css(styles.highlight)}>{`${actionCount} ${plural(actionCount, 'Action')} `}</span>
-            and <span className={css(styles.highlight)}>{`${projectCount} ${plural(projectCount, 'Project')}`}</span>.
-          </Type>
-          <Type align="center" marginBottom="2.75rem" scale="s4" colorPalette="black">
-            Anybody have <b><i>additional Agenda Items</i></b>?<br />
-            If so, just press “<span className={css(styles.highlight)}><b>+</b></span>” or{' '}
-            <span className={css(styles.highlight)}>add another Agenda Item</span>.<br />
-            If not, you can end the meeting to see a summary.
-          </Type>
+          {agendaItemCount === 0 ?
+            <Type
+              align="center"
+              marginBottom="2.5rem"
+              marginTop=".5rem"
+              scale="s5"
+              colorPalette="black"
+            >
+              <span>
+                {'Looks like you didn’t process any agenda items.'}
+                <br />
+                {'You can add agenda items in the left sidebar before ending the meeting.'}
+                <br />
+                {'Simply tap on any items you create to process them.'}
+              </span>
+            </Type> :
+            <Type
+              align="center"
+              bold
+              marginBottom="2.5rem"
+              marginTop=".5rem"
+              scale="s5"
+              colorPalette="black"
+            >
+              We worked on <span className={css(styles.highlight)}>{`${agendaItemCount} ${plural(agendaItemCount, 'Agenda Item')}`}</span>
+              {'—need anything else?'}
+            </Type>
+          }
+
+          <AgendaShortcutHint />
+
           {!hideMoveMeetingControls ?
-            <Button
-              colorPalette="cool"
-              label="End Meeting"
-              onClick={gotoNext}
-              size="largest"
-              buttonStyle="solid"
-              textTransform="uppercase"
-            /> :
+            <div className={css(styles.buttonBlock)}>
+              <Button
+                buttonStyle="solid"
+                colorPalette="cool"
+                label="End Meeting"
+                onClick={gotoNext}
+                size="largest"
+                raised
+                textTransform="uppercase"
+              />
+            </div> :
             <div className={css(styles.warmHighlight)}>
               <Type align="center" scale="s4" colorPalette="black">
                 <span className={css(styles.highlight)}>Waiting for <b>{facilitatorName}</b> to end the meeting<Ellipsis /></span>
@@ -76,14 +87,10 @@ const MeetingAgendaLastCall = (props) => {
 
 MeetingAgendaLastCall.propTypes = {
   agendaItemCount: PropTypes.number,
-  actionCount: PropTypes.number,
   gotoNext: PropTypes.func,
   facilitatorName: PropTypes.string,
-  localPhaseItem: PropTypes.number,
   hideMoveMeetingControls: PropTypes.bool,
-  projectCount: PropTypes.number,
-  styles: PropTypes.object,
-  team: PropTypes.object
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({
@@ -91,9 +98,14 @@ const styleThunk = () => ({
     color: appTheme.palette.warm
   },
 
+  buttonBlock: {
+    marginTop: '2.5rem'
+  },
+
   warmHighlight: {
     backgroundColor: appTheme.palette.warm10l,
     borderRadius: '.25rem',
+    marginTop: '2.5rem',
     padding: '.25rem 1rem'
   }
 });

@@ -9,7 +9,7 @@ import Footer from '../../components/Footer/Footer';
 import Layout from '../../components/Layout/Layout';
 import QuickStats from '../../components/QuickStats/QuickStats';
 import SummaryHeader from '../../components/SummaryHeader/SummaryHeader';
-import UserOutcomes from '../../components/UserOutcomes/UserOutcomes';
+import UserProjects from '../UserProjects/UserProjects';
 import UserNoNewOutcomes from '../../components/UserNoNewOutcomes/UserNoNewOutcomes';
 
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
@@ -104,27 +104,12 @@ const SummaryEmail = (props) => {
     teamDashUrl
   } = props;
   const {agendaItemsCompleted, invitees, createdAt, meetingNumber, teamName} = meeting;
-  const membersSansOutcomes = [];
-  const membersWithOutcomes = [];
-  let presentMemberCount = 0;
-  let actionCount = 0;
-  let projectCount = 0;
-
-  for (let i = 0; i < invitees.length; i++) {
-    const invitee = invitees[i];
-    if (invitee.present) {
-      presentMemberCount++;
-    }
-    const projLen = invitee.projects.length;
-    const actionLen = invitee.actions.length;
-    actionCount += actionLen;
-    projectCount += projLen;
-    const arr = (!projLen && !actionLen) ? membersSansOutcomes : membersWithOutcomes;
-    arr.push(invitee);
-  }
+  const membersSansOutcomes = invitees.filter((invitee) => invitee.projects.length === 0);
+  const membersWithOutcomes = invitees.filter((invitee) => invitee.projects.length > 0);
+  const presentMemberCount = invitees.filter((invitee) => invitee.present).length;
+  const projectCount = invitees.reduce((sum, invitee) => sum + invitee.projects.length, 0);
 
   const bannerMessage = makeBannerMessage(referrer, referrerUrl);
-  const memberCount = membersSansOutcomes.length + membersWithOutcomes.length;
   const hasUsersWithoutOutcomes = membersSansOutcomes.length !== 0;
   return (
     <Layout>
@@ -134,10 +119,10 @@ const SummaryEmail = (props) => {
             <td style={bannerStyle}>
               <EmptySpace height={8} />
               {bannerMessage &&
-                <div style={bannerMessageStyles}>
-                  {bannerMessage}
-                </div>
-              }
+              <div style={bannerMessageStyles}>
+                {bannerMessage}
+              </div>
+            }
               <EmptySpace height={8} />
             </td>
           </tr>
@@ -192,7 +177,7 @@ const SummaryEmail = (props) => {
                       </div>
                     }
                   </div>
-                }
+            }
                 <EmptySpace height={8} />
               </td>
             </tr>
@@ -205,8 +190,7 @@ const SummaryEmail = (props) => {
                 <QuickStats
                   agendaItems={agendaItemsCompleted}
                   newProjects={projectCount}
-                  newActions={actionCount}
-                  teamMembers={memberCount}
+                  teamMembers={invitees.length}
                   teamMembersPresent={presentMemberCount}
                 />
               </td>
@@ -214,11 +198,11 @@ const SummaryEmail = (props) => {
           </tbody>
         </table>
         {membersWithOutcomes.map((member) =>
-          <UserOutcomes member={member} key={`memberOutcomes'${member.id}`} />
-        )}
+          <UserProjects member={member} key={`userProjects'${member.id}`} />
+      )}
         {hasUsersWithoutOutcomes &&
-          <UserNoNewOutcomes members={membersSansOutcomes} />
-        }
+        <UserNoNewOutcomes members={membersSansOutcomes} />
+      }
         <EmptySpace height={0} />
         <hr style={ruleStyle} />
         <EmptySpace height={48} />
@@ -247,7 +231,6 @@ SummaryEmail.propTypes = {
   ]).isRequired,
   referrerUrl: PropTypes.string,
   teamDashUrl: PropTypes.string,
-  actionCount: PropTypes.number,
   projectCount: PropTypes.number
 };
 
@@ -255,10 +238,8 @@ export const summaryEmailText = (props) => {
   const {meeting} = props;
   const {teamName, agendaItemsCompleted, invitees} = meeting;
   const projectCount = invitees.reduce((sum, member) => sum + member.projects.length, 0);
-  const actionCount = invitees.reduce((sum, member) => sum + member.actions.length, 0);
   return `Hello ${teamName}! As a team you discussed ${agendaItemsCompleted} Agenda Items${' '}
-resulting in ${projectCount} New Projects${' '}
-and ${actionCount} New Actions.${' '}`;
+  resulting in ${projectCount} New Projects.${' '}`;
 };
 
 export default SummaryEmail;

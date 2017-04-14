@@ -55,7 +55,7 @@ const Sidebar = (props) => {
   const checkInNavItemStyles = css(styles.navListItem, facilitatorPhase === CHECKIN && styles.navListItemMeetingMarker);
   const updatesNavItemStyles = css(styles.navListItem, facilitatorPhase === UPDATES && styles.navListItemMeetingMarker);
   const agendaNavItemStyles = css(styles.navListItem, inAgendaGroup(facilitatorPhase) && styles.navListItemMeetingMarker);
-  const agendaListContext = canNavigateTo(AGENDA_ITEMS) ? 'meeting' : 'dashboard';
+  const agendaListCanNavigate = canNavigateTo(AGENDA_ITEMS);
   const agendaListDisabled = meetingPhase === CHECKIN;
   return (
     <div className={css(styles.sidebar)}>
@@ -115,7 +115,8 @@ const Sidebar = (props) => {
           <div className={css(styles.agendaListBlock)}>
             <AgendaListAndInputContainer
               agendaPhaseItem={agendaPhaseItem}
-              context={agendaListContext}
+              canNavigate={agendaListCanNavigate}
+              context={'meeting'}
               disabled={agendaListDisabled}
               facilitatorPhase={facilitatorPhase}
               facilitatorPhaseItem={facilitatorPhaseItem}
@@ -271,9 +272,8 @@ const styleThunk = () => ({
     color: appTheme.palette.dark10d,
     display: 'block',
     fontSize: appTheme.typography.s2,
-    lineHeight: 'normal',
-    marginBottom: '.625rem',
-    paddingRight: '.5rem',
+    lineHeight: appTheme.typography.sBase,
+    paddingRight: ui.meetingSidebarGutter,
     textDecoration: 'none',
 
     ':hover': {
@@ -291,8 +291,7 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.s5,
     fontStyle: 'italic',
     fontWeight: 700,
-    lineHeight: 'normal',
-    marginBottom: '.5rem'
+    lineHeight: '1.5'
   },
 
   timer: {

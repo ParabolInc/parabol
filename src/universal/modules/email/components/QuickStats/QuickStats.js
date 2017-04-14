@@ -8,7 +8,6 @@ const QuickStats = (props) => {
   const {
     agendaItems,
     newProjects,
-    newActions,
     teamMembers,
     teamMembersPresent
   } = props;
@@ -76,12 +75,6 @@ const QuickStats = (props) => {
             </td>
             <td style={cellStyles}>
               <div style={statStyles}>
-                <div style={statValue}>{newActions}</div>
-                <div style={statLabel}>New {plural(newActions, 'Action')}</div>
-              </div>
-            </td>
-            <td style={cellStyles}>
-              <div style={statStyles}>
                 <div style={statValue}>
                   {teamMembersPresent >= 10 ?
                     <span>{teamMembersPresent}</span> :
@@ -102,7 +95,6 @@ const QuickStats = (props) => {
 QuickStats.propTypes = {
   agendaItems: PropTypes.number,
   newProjects: PropTypes.number,
-  newActions: PropTypes.number,
   teamMembers: PropTypes.number,
   teamMembersPresent: PropTypes.number
 };

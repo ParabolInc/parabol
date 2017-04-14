@@ -3,10 +3,10 @@ import {findDOMNode} from 'react-dom';
 import {cashay} from 'cashay';
 import {reduxForm, initialize} from 'redux-form';
 import labels from 'universal/styles/theme/labels';
-import getOutcomeNames from 'universal/utils/getOutcomeNames';
 import {connect} from 'react-redux';
 import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/OutcomeCard';
 import targetIsDescendant from 'universal/utils/targetIsDescendant';
+import removeTagFromString from 'universal/utils/removeTagFromString';
 
 const outcomeCardAssignMenuQuery = `
 query {
@@ -96,22 +96,20 @@ class OutcomeCardContainer extends Component {
     const submittedContent = submittedData[outcome.id];
     if (outcome.content === submittedContent) return;
     if (!submittedContent) {
-      const {argName, mutationName} = getOutcomeNames(outcome, 'delete');
       // delete blank cards
-      cashay.mutate(mutationName, {variables: {[argName]: outcome.id}});
+      cashay.mutate('deleteProject', {variables: {projectId: outcome.id}});
     } else {
       // TODO debounce for useless things like ctrl, shift, etc
-      const {argName, mutationName} = getOutcomeNames(outcome, 'update');
       const options = {
         ops: {},
         variables: {
-          [argName]: {
+          updatedProject: {
             id: outcome.id,
             content: submittedContent
           }
         }
       };
-      cashay.mutate(mutationName, options);
+      cashay.mutate('updateProject', options);
     }
   };
 
@@ -136,12 +134,14 @@ class OutcomeCardContainer extends Component {
   hoverOff = () => this.setState({hasHover: false});
 
   unarchiveProject = () => {
+    const {outcome: {id, content}} = this.props;
+
     const options = {
       ops: {},
       variables: {
         updatedProject: {
-          id: this.props.outcome.id,
-          isArchived: false
+          id,
+          content: removeTagFromString(content, '#archived')
         }
       }
     };
@@ -175,17 +175,17 @@ OutcomeCardContainer.propTypes = {
     teamMemberId: PropTypes.string,
   }),
   dispatch: PropTypes.func.isRequired,
-  form: PropTypes.string,
   editors: PropTypes.array,
   field: PropTypes.string,
   focus: PropTypes.func,
+  form: PropTypes.string,
+  handleSubmit: PropTypes.func,
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,
-  isProject: PropTypes.bool,
   owner: PropTypes.object,
+  tags: PropTypes.array,
   teamMembers: PropTypes.array,
   updatedAt: PropTypes.instanceOf(Date),
-  handleSubmit: PropTypes.func,
 };
 
 // Using decorators causes a fun bug where reduxForm can't find dispatch, so we do it the boring way

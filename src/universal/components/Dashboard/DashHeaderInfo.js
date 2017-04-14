@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 
 const DashHeaderInfo = (props) => {
   const {children, styles, title} = props;
@@ -10,11 +10,7 @@ const DashHeaderInfo = (props) => {
       <div className={css(styles.title)}>
         {title}
       </div>
-      {children &&
-        <div className={css(styles.children)}>
-          {children}
-        </div>
-      }
+      {children}
     </div>
   );
 };
@@ -28,23 +24,14 @@ DashHeaderInfo.propTypes = {
 
 const styleThunk = () => ({
   root: {
+    alignItems: 'center',
+    display: 'flex',
     width: '100%'
   },
 
   title: {
-    color: appTheme.palette.dark10d,
-    // @terry, had to do this to bump down the children for the error message when it comes
-    display: 'inline-block',
-    fontSize: appTheme.typography.s5,
-    height: appTheme.typography.s6,
-    lineHeight: appTheme.typography.s6
-  },
-
-  children: {
-    color: appTheme.palette.dark70l,
-    fontSize: appTheme.typography.s2,
-    lineHeight: appTheme.typography.sBase,
-    marginTop: '.125rem'
+    ...ui.dashHeaderTitleStyles,
+    marginRight: '2rem'
   }
 });
 

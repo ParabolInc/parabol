@@ -308,7 +308,6 @@ export default {
 //       meetingId: res('meetingId'),
 //       projectDiffs: r.table('Project')
 //         .getAll(teamId, {index: 'teamId'})
-//         .filter({isArchived: false})
 //         .coerceTo('array')
 //         .map((project) => {
 //           // for each team project, get the old val and new val

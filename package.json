@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "0.17.2",
+  "version": "0.17.4",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -30,7 +30,7 @@
     "build:server": "NODE_ENV=production webpack --config ./webpack/server.babel.js",
     "db:migrate": "./src/server/database/migrate.sh up-all",
     "db:migrate-testing": "NODE_ENV=test ./src/server/database/migrate.sh up-all && NODE_ENV=test node ./src/server/__tests__/setup/softenDurability.babel.js",
-    "test": "jest --coverage && codecov",
+    "test": "jest --bail --coverage && codecov",
     "test:intranetToken": "node ./src/server/utils/getIntranetToken.babel.js",
     "db:migrate-up": "./src/server/database/migrate.sh up",
     "db:migrate-up-all": "npm run db:migrate",
@@ -130,6 +130,8 @@
     "jwt-decode": "^2.1.0",
     "mailcomposer": "^4.0.1",
     "mailgun-js": "^0.8.2",
+    "markdown-it": "^8.3.1",
+    "markdown-it-emoji": "^1.3.0",
     "migrate-rethinkdb": "^1.5.0",
     "mime-types": "^2.1.14",
     "ms": "^0.7.3",
@@ -146,14 +148,13 @@
     "react-dnd-html5-backend": "^2.2.4",
     "react-dom": "^15.4.2",
     "react-fontawesome": "^1.5.0",
+    "react-githubish-mentions": "^1.0.1",
     "react-helmet": "^4.0.0",
     "react-hotkey-hoc": "^0.2.1",
-    "react-markdown": "^2.4.5",
     "react-notification-system": "^0.2.12",
     "react-portal-hoc": "^0.3.2",
     "react-redux": "^5.0.3",
     "react-router": "2.8.1",
-    "react-textarea-autosize": "^4.0.5",
     "redux": "3.6.0",
     "redux-form": "^6.5.0",
     "redux-logger": "2.8.2",
@@ -168,6 +169,7 @@
     "shortid": "^2.2.8",
     "socketcluster": "^5.9.1",
     "socketcluster-client": "^5.3.0",
+    "string-score": "^1.0.1",
     "stripe": "^4.15.1",
     "tap-xunit": "^1.7.0",
     "tinycolor2": "^1.4.1",
@@ -175,7 +177,7 @@
   },
   "engines": {
     "node": "7.6.0",
-    "yarn": "0.21.3"
+    "yarn": "0.22.0"
   },
   "jest": {
     "modulePaths": [

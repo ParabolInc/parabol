@@ -23,11 +23,11 @@ function getItemStyles(props) {
   const {x, y} = currentOffset;
   const transform = `translate3d(${x}px, ${y}px, 0px)`;
   // NOTE: Widths are calculated based on the results of UI constants, but yeah, manual (TA)
-  const dashMinWidth = '9.9375rem';
+  const dashMinWidth = '10.125rem';
   const meetingMinWidth = '12.4375rem';
   const minWidth = area === 'meeting' ? meetingMinWidth : dashMinWidth;
-  const dashWidth = 'calc((100vw - 39.375rem) / 4)';
-  const meetingWidth = 'calc((100vw - 25.25rem) / 4)';
+  const dashWidth = 'calc((100vw - 38.3125rem) / 4)';
+  const meetingWidth = 'calc((100vw - 25.1875rem) / 4)';
   const width = area === 'meeting' ? meetingWidth : dashWidth;
   return {
     ...layerStyles,

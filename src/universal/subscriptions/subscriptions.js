@@ -1,7 +1,4 @@
 import {
-  ACTIONS,
-  ACTIONS_BY_TEAMMEMBER,
-  ACTIONS_BY_AGENDA,
   AGENDA,
   ARCHIVED_PROJECTS,
   INTEGRATIONS,
@@ -27,57 +24,8 @@ export default [
       archivedProjects(teamId: $teamId) {
         content
         id
-        isArchived
         status
-        teamMemberId
-        updatedAt
-      }
-    }`
-  },
-  {
-    channel: ACTIONS,
-    string: `
-    subscription($userId: ID!) {
-      actions(userId: $userId) {
-        id
-        content
-        createdBy
-        isComplete
-        updatedAt
-        sortOrder
-        agendaId
-      }
-    }`
-  },
-  {
-    channel: ACTIONS_BY_TEAMMEMBER,
-    string: `
-    subscription($teamMemberId: ID!) {
-      actionsByTeamMember(teamMemberId: $teamMemberId) {
-        agendaId
-        createdAt
-        createdBy
-        content
-        id
-        isComplete
-        sortOrder
-        teamMemberId
-        updatedAt
-      }
-    }`
-  },
-  {
-    channel: ACTIONS_BY_AGENDA,
-    string: `
-    subscription($agendaId: ID!) {
-      actionsByAgenda(agendaId: $agendaId) {
-        agendaId
-        createdAt
-        createdBy
-        content
-        id
-        isComplete
-        sortOrder
+        tags
         teamMemberId
         updatedAt
       }
@@ -222,8 +170,8 @@ export default [
         createdAt
         createdBy
         id
-        isArchived
         status
+        tags
         teamMemberId
         sortOrder
         updatedAt

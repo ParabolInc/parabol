@@ -1,8 +1,8 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import {cardRootStyles} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
 import labels from 'universal/styles/theme/labels';
 import {ACTIVE, STUCK, DONE, FUTURE, USER_DASH} from 'universal/utils/constants';
 import {cardBorderTop} from 'universal/styles/helpers';
@@ -12,10 +12,13 @@ import OutcomeCardFooter from 'universal/modules/outcomeCard/components/OutcomeC
 import OutcomeCardAssignMenu from 'universal/modules/outcomeCard/components/OutcomeCardAssignMenu/OutcomeCardAssignMenu';
 import OutcomeCardStatusMenu from 'universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu';
 import {Field} from 'redux-form';
+import isProjectPrivate from 'universal/utils/isProjectPrivate';
+import isProjectArchived from 'universal/utils/isProjectArchived';
 
 const OutcomeCard = (props) => {
   const {
     area,
+    change,
     isAgenda,
     form,
     handleCardActive,
@@ -31,12 +34,14 @@ const OutcomeCard = (props) => {
     teamMembers,
     unarchiveProject
   } = props;
-  const isProject = Boolean(outcome.status);
-  const {isArchived, status} = outcome;
+  const isPrivate = isProjectPrivate(outcome.tags);
+  const isArchived = isProjectArchived(outcome.tags);
+  const {status} = outcome;
   const rootStyles = css(
     styles.root,
     styles.cardBlock,
-    isProject ? styles[status] : styles.isAction,
+    styles[status],
+    isPrivate && styles.isPrivate,
     isArchived && styles.isArchived
   );
   const openContentMenu = openMenu('content');
@@ -52,7 +57,6 @@ const OutcomeCard = (props) => {
       {openArea === 'status' &&
         <OutcomeCardStatusMenu
           isAgenda={isAgenda}
-          isProject={isProject}
           onComplete={openContentMenu}
           outcome={outcome}
         />
@@ -64,23 +68,24 @@ const OutcomeCard = (props) => {
             outcomeId={outcome.id}
             updatedAt={outcome.updatedAt}
           />
-          <form>
-            <Field
-              cardHasHover={hasHover}
-              component={OutcomeCardTextarea}
-              doSubmitOnEnter
-              handleActive={handleCardActive}
-              handleSubmit={handleSubmit(handleCardUpdate)}
-              isProject={isProject}
-              name={outcome.id}
-              isArchived={outcome.isArchived}
-            />
-          </form>
+          <Field
+            cardHasHover={hasHover}
+            change={change}
+            component={OutcomeCardTextarea}
+            doSubmitOnEnter
+            handleActive={handleCardActive}
+            handleSubmit={handleSubmit(handleCardUpdate)}
+            name={outcome.id}
+            isArchived={isArchived}
+            isPrivate={isPrivate}
+            teamMembers={teamMembers}
+          />
         </div>
       }
       <OutcomeCardFooter
         cardHasHover={hasHover}
         hasOpenStatusMenu={openArea === 'status'}
+        isPrivate={isPrivate}
         outcome={outcome}
         showTeam={area === USER_DASH}
         toggleAssignMenu={openMenu('assign')}
@@ -93,6 +98,7 @@ const OutcomeCard = (props) => {
 
 OutcomeCard.propTypes = {
   area: PropTypes.string,
+  change: PropTypes.func,
   children: PropTypes.any,
   isArchived: PropTypes.bool,
   isAgenda: PropTypes.bool,
@@ -117,7 +123,6 @@ OutcomeCard.propTypes = {
   focus: PropTypes.func,
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,
-  isProject: PropTypes.bool,
   owner: PropTypes.object,
   teamMembers: PropTypes.array,
   updatedAt: PropTypes.instanceOf(Date),
@@ -127,14 +132,8 @@ OutcomeCard.propTypes = {
 
 const styleThunk = () => ({
   root: {
-    backgroundColor: '#fff',
-    border: `1px solid ${ui.cardBorderColor}`,
-    borderRadius: ui.cardBorderRadius,
-    maxWidth: ui.cardMaxWidth,
-    minHeight: ui.cardMinHeight,
+    ...cardRootStyles,
     paddingTop: '.1875rem',
-    position: 'relative',
-    width: '100%',
 
     '::after': {
       ...cardBorderTop
@@ -170,12 +169,8 @@ const styleThunk = () => ({
     marginBottom: '.5rem'
   },
 
-  isAction: {
+  isPrivate: {
     backgroundColor: appTheme.palette.light50l,
-
-    '::after': {
-      color: labels.action.color
-    }
   },
 
   isArchived: {

@@ -11,9 +11,6 @@ export const REJOIN_TEAM = 'REJOIN_TEAM';
 export const ADD_TO_TEAM = 'ADD_TO_TEAM';
 
 // CHANNELS
-export const ACTIONS = 'actions';
-export const ACTIONS_BY_TEAMMEMBER = 'actionsByTeamMember';
-export const ACTIONS_BY_AGENDA = 'actionsByAgenda';
 export const ARCHIVED_PROJECTS = 'archivedProjects';
 export const AGENDA = 'agenda';
 export const INTEGRATIONS = 'integrations';
