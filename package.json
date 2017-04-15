@@ -126,6 +126,7 @@
     "graphiql": "^0.9.3",
     "graphql": "^0.9.1",
     "graphql-custom-datetype": "^0.3.0",
+    "ioredis": "^2.5.0",
     "isomorphic-fetch": "2.2.1",
     "jscodeshift": "^0.3.30",
     "jsonwebtoken": "^7.3.0",

@@ -119,6 +119,5 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
     } else {
       exchange.publish(channel, payload);
     }
-  })
-
+  });
 }

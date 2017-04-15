@@ -1,10 +1,29 @@
 import BullQueue from 'bull';
+import Redis from 'ioredis';
 import getDotenv from '../../universal/utils/dotenv';
 
 getDotenv();
 
-const [DEFAULT_HOST, DEFAULT_PORT = 6379] = process.env.REDIS_HOST ?
-  process.env.REDIS_HOST : ['127.0.0.1'];
+const urlString = process.env.REDIS_URL || 'redis://localhost:6379';
 
-export default (name, host = DEFAULT_HOST, port = DEFAULT_PORT) =>
-  BullQueue(name, port, host);
+// Re-use redis connections:
+const client = new Redis(urlString);
+const subscriber = new Redis(urlString);
+const opts = {
+  redis: {
+    opts: {
+      createClient: (type) => {
+        switch (type) {
+          case 'client':
+            return client;
+          case 'subscriber':
+            return subscriber;
+          default:
+            return new Redis(urlString);
+        }
+      }
+    }
+  }
+};
+
+export default (name) => BullQueue(name, opts);
