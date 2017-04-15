@@ -5,7 +5,7 @@ import makeHref from "../../../utils/makeHref";
 
 export default [
   {
-    logo: github,
+    logo: githubLogo,
     name: 'GitHub',
     openOauth: (teamMemberId) => (e) => {
       const uri = `https://github.com/login/oauth/authorize?scope=user:email,repo,write:repo_hook&state=${teamMemberId}&client_id=${__GITHUB_CLIENT_ID__}`;
@@ -42,7 +42,7 @@ export default [
     }
   },
   {
-    logo: slack,
+    logo: slackLogo,
     name: 'Slack',
     openOauth: (teamMemberId) => (e) => {
       const redirect = makeHref('/auth/slack');
