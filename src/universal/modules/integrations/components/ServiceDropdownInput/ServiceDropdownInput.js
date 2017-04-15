@@ -31,53 +31,26 @@ class ServiceDropdownInput extends Component {
   }
 
   render() {
-    const {accessToken, input: {name, onChange, value}, label, organizations = [], styles} = this.props;
-    const handleToggleClick = (e) => {
-      const now = new Date();
-      if (now - lastUpdated > ms('3s')) {
-        // setTimeout(() => {
-        //   this.setState({
-        //     options:[{id: 1, name: '1'}, {id: 2, name: '2'}, {id: 3, name: '3'}, {id: 4, name: '4'}]
-        //   })
-        // },1000)
-        lastUpdated = now;
-        const uri = `https://api.github.com/user/repos`;
-        fetch(uri, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `token ${accessToken}`
-          }
-        }).then((res) => res.json())
-          .then((res) => {
-            this.setState({
-              options: res.map((repo) => repo.full_name)
-            });
-          }).catch((e) => {console.log(e)})
-      }
-    }
-    const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" onClick={handleToggleClick}/>;
+    const {accessToken, dropdownMapper, dropdownText, input: {name, onChange, value}, itemClick, label, organizations = [], styles} = this.props;
+    const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" onClick={dropdownMapper(accessToken, lastUpdated)}/>;
     return (
       <FieldBlock>
         {label && <FieldLabel label={label} htmlFor={name}/>}
         <div className={css(styles.inputBlock)}>
-          <span>Sync a project</span>
+          <span>{dropdownText}</span>
           <Menu
             menuWidth="20rem"
             originAnchor={originAnchor}
             targetAnchor={targetAnchor}
             toggle={toggle}
           >
-            {this.state.options.map((repoFullName) => {
+            {this.state.options.map((repo) => {
               return (
                 <MenuItem
                   isActive={false}
-                  key={`serviceDropdownMenuItem${repoFullName}`}
-                  label={repoFullName}
-                  onClick={async () => {
-                    const issues = await ghFetch(`/repos/${repoFullName}/issues`, accessToken);
-                    console.log('issues', issues);
-
-                  }}
+                  key={`serviceDropdownMenuItem${repo.id}`}
+                  label={repo.label}
+                  onClick={itemClick(accessToken, repo)}
                 />
               )
             })}
