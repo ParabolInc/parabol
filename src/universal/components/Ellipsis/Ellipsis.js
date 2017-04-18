@@ -28,7 +28,7 @@ const Ellipsis = (props) => {
 Ellipsis.propTypes = {
   fontSize: PropTypes.string,
   isAnimated: PropTypes.bool,
-  styles: PropTypes.object,
+  styles: PropTypes.object
 };
 
 Ellipsis.defaultProps = {
@@ -65,15 +65,15 @@ const styleThunk = () => ({
   },
 
   dot1: {
-    animationDelay: '0ms',
+    animationDelay: '0ms'
   },
 
   dot2: {
-    animationDelay: '200ms',
+    animationDelay: '200ms'
   },
 
   dot3: {
-    animationDelay: '400ms',
+    animationDelay: '400ms'
   }
 });
 

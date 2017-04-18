@@ -3,7 +3,7 @@ import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
-  GraphQLID,
+  GraphQLID
 } from 'graphql';
 
 const IntegrationSync = new GraphQLObjectType({
@@ -14,7 +14,7 @@ const IntegrationSync = new GraphQLObjectType({
     slackChannelId: {
       type: GraphQLID,
       description: 'the sync id provided by the service, if available. Useful for fetching from their API'
-    },
+    }
     // name: {
     //   type: GraphQLString,
     //   description: 'The name of the sync (repo, channel, etc)'

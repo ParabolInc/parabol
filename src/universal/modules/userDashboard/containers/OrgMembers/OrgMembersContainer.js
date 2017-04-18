@@ -75,7 +75,7 @@ OrgMembersContainer.propTypes = {
   dispatch: PropTypes.func,
   myUserId: PropTypes.string,
   org: PropTypes.object,
-  users: PropTypes.array,
+  users: PropTypes.array
 };
 
 export default connect(mapStateToProps)(OrgMembersContainer);

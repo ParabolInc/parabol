@@ -3,7 +3,7 @@ import withStyles from '../../../../styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from '../../../../styles/theme/appTheme';
 import {overflowTouch} from 'universal/styles/helpers';
-import DashModal from "../../../../components/Dashboard/DashModal";
+import DashModal from '../../../../components/Dashboard/DashModal';
 // import allServices from 'universal/modules/integrations/helpers/allServices';
 import ui from 'universal/styles/ui';
 import IntegrateSlack from 'universal/modules/integrations/components/IntegrateSlack/IntegrateSlack';
@@ -19,45 +19,47 @@ const Integrations = (props) => {
   } = props;
 
   return (
-    <DashModal onBackdropClick={closePortal} isClosing={isClosing} inheritWidth closeAfter={closeAfter}
-               modalLayout={ui.modalLayoutMain}>
+    <DashModal
+      onBackdropClick={closePortal} isClosing={isClosing} inheritWidth closeAfter={closeAfter}
+      modalLayout={ui.modalLayoutMain}
+    >
       <div className={css(styles.integrations)}>
         <h2>Integrations</h2>
-        <IntegrateSlack service={services.slack} teamMemberId={teamMemberId}/>
+        <IntegrateSlack service={services.slack} teamMemberId={teamMemberId} />
 
-        {/*<ServiceRow*/}
-        {/*accessToken={tokenLookup.slack}*/}
-        {/*dropdownMapper={dropdownMapper}*/}
-        {/*label="Sync a project"*/}
-        {/*logo={githubLogo}*/}
-        {/*name="GitHub"*/}
-        {/*openOauth={() => {*/}
-        {/*const uri = `https://github.com/login/oauth/authorize?scope=user:email,repo,write:repo_hook&state=${teamMemberId}&client_id=${__GITHUB_CLIENT_ID__}`;*/}
-        {/*window.open(uri);*/}
-        {/*}}*/}
-        {/*removeOauth={() => {*/}
-        {/*cashay.mutate('removeIntegration', {variables: {teamMemberId, service: 'github'}})*/}
-        {/*}}*/}
-        {/*form={`${service}Form`}*/}
-        {/*/>*/}
+        {/* <ServiceRow*/}
+        {/* accessToken={tokenLookup.slack}*/}
+        {/* dropdownMapper={dropdownMapper}*/}
+        {/* label="Sync a project"*/}
+        {/* logo={githubLogo}*/}
+        {/* name="GitHub"*/}
+        {/* openOauth={() => {*/}
+        {/* const uri = `https://github.com/login/oauth/authorize?scope=user:email,repo,write:repo_hook&state=${teamMemberId}&client_id=${__GITHUB_CLIENT_ID__}`;*/}
+        {/* window.open(uri);*/}
+        {/* }}*/}
+        {/* removeOauth={() => {*/}
+        {/* cashay.mutate('removeIntegration', {variables: {teamMemberId, service: 'github'}})*/}
+        {/* }}*/}
+        {/* form={`${service}Form`}*/}
+        {/* />*/}
 
-        {/*{allServices.map((integration) => {*/}
-        {/*const {openOauth, removeOauth, service, logo, name, dropdownMapper} = integration;*/}
-        {/*const matchingService = services.find((s) => s.service === service);*/}
-        {/*const accessToken = matchingService && matchingService.id;*/}
-        {/*return (*/}
-        {/*<ServiceRow*/}
-        {/*key={service}*/}
-        {/*accessToken={accessToken}*/}
-        {/*dropdownMapper={dropdownMapper}*/}
-        {/*logo={logo}*/}
-        {/*name={name}*/}
-        {/*openOauth={openOauth(teamMemberId)}*/}
-        {/*removeOauth={removeOauth(teamMemberId)}*/}
-        {/*form={`${service}Form`}*/}
-        {/*/>*/}
-        {/*)*/}
-        {/*})}*/}
+        {/* {allServices.map((integration) => {*/}
+        {/* const {openOauth, removeOauth, service, logo, name, dropdownMapper} = integration;*/}
+        {/* const matchingService = services.find((s) => s.service === service);*/}
+        {/* const accessToken = matchingService && matchingService.id;*/}
+        {/* return (*/}
+        {/* <ServiceRow*/}
+        {/* key={service}*/}
+        {/* accessToken={accessToken}*/}
+        {/* dropdownMapper={dropdownMapper}*/}
+        {/* logo={logo}*/}
+        {/* name={name}*/}
+        {/* openOauth={openOauth(teamMemberId)}*/}
+        {/* removeOauth={removeOauth(teamMemberId)}*/}
+        {/* form={`${service}Form`}*/}
+        {/* />*/}
+        {/* )*/}
+        {/* })}*/}
       </div>
     </DashModal>
   );
@@ -66,7 +68,7 @@ const Integrations = (props) => {
 Integrations.propTypes = {
   services: PropTypes.array.isRequired,
   teamMemberId: PropTypes.string.isRequired,
-  styles: PropTypes.object,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({
@@ -97,7 +99,7 @@ const styleThunk = () => ({
     padding: '0 1rem 1rem',
     position: 'absolute',
     right: 0,
-    top: 0,
+    top: 0
   },
 
   actionLinkBlock: {

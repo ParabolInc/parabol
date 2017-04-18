@@ -11,13 +11,13 @@ const queryIntegrator = (actionAndPayload) => {
     oneTimeQueue.process((job) => {
       const {data} = job;
       resolve(data);
-      oneTimeQueue.close()
+      oneTimeQueue.close();
     });
     integratron.add({
       ...actionAndPayload,
       queue: oneTimeId
     });
-  })
+  });
 };
 
 export default queryIntegrator;

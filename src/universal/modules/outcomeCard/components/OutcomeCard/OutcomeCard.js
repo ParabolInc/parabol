@@ -114,7 +114,7 @@ OutcomeCard.propTypes = {
     id: PropTypes.string,
     content: PropTypes.string,
     status: PropTypes.oneOf(labels.projectStatus.slugs),
-    teamMemberId: PropTypes.string,
+    teamMemberId: PropTypes.string
   }),
   dispatch: PropTypes.func.isRequired,
   form: PropTypes.string,
@@ -170,7 +170,7 @@ const styleThunk = () => ({
   },
 
   isPrivate: {
-    backgroundColor: appTheme.palette.light50l,
+    backgroundColor: appTheme.palette.light50l
   },
 
   isArchived: {

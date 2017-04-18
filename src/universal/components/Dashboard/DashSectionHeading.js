@@ -21,7 +21,7 @@ DashSectionHeading.propTypes = {
   icon: PropTypes.string,
   label: PropTypes.string,
   margin: PropTypes.string,
-  styles: PropTypes.object,
+  styles: PropTypes.object
 };
 
 DashSectionHeading.defaultProps = {

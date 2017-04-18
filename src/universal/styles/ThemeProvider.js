@@ -21,5 +21,5 @@ ThemeProvider.propTypes = {
 };
 
 ThemeProvider.childContextTypes = {
-  customTheme: PropTypes.object.isRequired,
+  customTheme: PropTypes.object.isRequired
 };

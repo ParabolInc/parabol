@@ -3,7 +3,7 @@ import {requireSUOrSelf, requireSUOrTeamMember} from 'server/utils/authorization
 import {Integration} from './integrationSchema';
 import queryIntegrator from 'server/utils/queryIntegrator';
 import {errorObj} from 'server/utils/utils';
-import {handleRethinkAdd} from "../../../utils/makeChangefeedHandler";
+import {handleRethinkAdd} from '../../../utils/makeChangefeedHandler';
 
 export default {
   integrations: {

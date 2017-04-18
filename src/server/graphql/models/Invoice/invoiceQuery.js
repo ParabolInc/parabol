@@ -62,7 +62,7 @@ export default {
       },
       // after: {type: GraphQLString, description: 'the cursor coming from the front'},
       // purposefully ignore pagination until we get cashay working correctly
-      count: {type: GraphQLInt, description: 'Limit the invoices from the front'},
+      count: {type: GraphQLInt, description: 'Limit the invoices from the front'}
     },
     async resolve(source, {orgId, count}, {authToken}) {
       const r = getRethink();

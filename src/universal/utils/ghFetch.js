@@ -10,7 +10,7 @@ const ghFetch = async (endpoint, accessToken) => {
       }
     });
     return res.json();
-  } catch(e) {
+  } catch (e) {
     // TODO pop a toast saying limit hit or whatever
     throw new Error(e);
   }

@@ -32,7 +32,7 @@ const styleThunk = () => ({
   },
 
   hasBoxShadow: {
-    boxShadow: 'inset 4px 0 8px rgba(0, 0, 0, .15), inset 1px 0 1px rgba(0, 0, 0, .1)',
+    boxShadow: 'inset 4px 0 8px rgba(0, 0, 0, .15), inset 1px 0 1px rgba(0, 0, 0, .1)'
   }
 });
 

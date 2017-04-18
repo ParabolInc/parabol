@@ -14,8 +14,8 @@ import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import Panel from 'universal/components/Panel/Panel';
 import ArchiveTeamContainer from 'universal/modules/teamDashboard/containers/ArchiveTeamContainer/ArchiveTeamContainer';
 import ui from 'universal/styles/ui';
-import IntegrationsContainer from "../../../integrations/containers/Integrations/IntegrationsContainer";
-import Button from "../../../../components/Button/Button";
+import IntegrationsContainer from '../../../integrations/containers/Integrations/IntegrationsContainer';
+import Button from '../../../../components/Button/Button';
 
 const TeamSettings = (props) => {
   const {

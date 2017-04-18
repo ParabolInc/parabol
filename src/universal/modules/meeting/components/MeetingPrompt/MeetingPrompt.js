@@ -44,7 +44,7 @@ MeetingPrompt.propTypes = {
   heading: PropTypes.any,
   helpText: PropTypes.any,
   styles: PropTypes.object,
-  subHeading: PropTypes.any,
+  subHeading: PropTypes.any
 };
 
 const promptBreakpoint = ui.breakpoint.wider;

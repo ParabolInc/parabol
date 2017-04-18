@@ -227,7 +227,7 @@ const styleThunk = () => ({
     alignItems: 'center',
     display: 'flex',
     flex: 1,
-    fontSize: appTheme.typography.s3,
+    fontSize: appTheme.typography.s3
   },
 
   statusIcon: {
@@ -235,7 +235,7 @@ const styleThunk = () => ({
     marginRight: '.25rem',
     paddingTop: 1,
     textAlign: 'center',
-    verticalAlign: 'middle',
+    verticalAlign: 'middle'
   },
 
   statusLabel: {
@@ -248,7 +248,7 @@ const styleThunk = () => ({
     marginLeft: '.5rem'
   },
 
-  ...projectStatusStyles('color'),
+  ...projectStatusStyles('color')
 });
 
 const dropTargetCb = (connectTarget) => ({

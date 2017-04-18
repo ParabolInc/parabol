@@ -12,7 +12,7 @@ exports.up = async (r) => {
 
   const indices = [
     r.table('Project').indexDrop('tokenExpiration'),
-    r.table('Project').indexCreate('userId'),
+    r.table('Project').indexCreate('userId')
   ];
   try {
     await Promise.all(indices);
@@ -27,7 +27,7 @@ exports.down = async (r) => {
       return row
         .merge({
           teamSort: row('sortOrder'),
-          userSort: row('sortOrder'),
+          userSort: row('sortOrder')
         })
         .without('sortOrder');
     })
@@ -36,7 +36,7 @@ exports.down = async (r) => {
 
   const indices = [
     r.table('Project').indexCreate('tokenExpiration'),
-    r.table('Project').indexDrop('userId'),
+    r.table('Project').indexDrop('userId')
   ];
   try {
     await Promise.all(indices);

@@ -57,7 +57,7 @@ const mapStateToProps = (state, props) => {
       // example of returning a string instead of a function so it runs in O(1)
       teamMember: (source) => source.teamMemberId,
       user: () => () => true
-    },
+    }
   }).data;
   return {
     project,

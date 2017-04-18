@@ -29,7 +29,7 @@ class ServiceDropdownInput extends Component {
 
   render() {
     const {dropdownMapper, handleItemClick, options, styles} = this.props;
-    const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" onClick={dropdownMapper}/>;
+    const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" onClick={dropdownMapper} />;
     return (
       <FieldBlock>
         <div className={css(styles.inputBlock)}>
@@ -54,7 +54,7 @@ class ServiceDropdownInput extends Component {
                   label={option.label}
                   onClick={onClick}
                 />
-              )
+              );
             })}
           </Menu>
         </div>
@@ -62,7 +62,7 @@ class ServiceDropdownInput extends Component {
     )
       ;
   }
-};
+}
 
 ServiceDropdownInput.propTypes = {
   dropdownMapper: PropTypes.func.isRequired,

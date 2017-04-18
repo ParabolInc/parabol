@@ -73,7 +73,7 @@ export default {
   output: {
     filename: '[name]_[chunkhash].js',
     chunkFilename: '[name]_[chunkhash].js',
-    path: path.join(root, 'build'),
+    path: path.join(root, 'build')
   },
   resolve: {
     extensions: ['.js'],

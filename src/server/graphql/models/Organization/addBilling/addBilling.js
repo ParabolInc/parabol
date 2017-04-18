@@ -2,7 +2,7 @@ import getRethink from 'server/database/rethinkDriver';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
-  GraphQLID,
+  GraphQLID
 } from 'graphql';
 import {ACTION_MONTHLY, TRIAL_EXTENSION, TRIAL_PERIOD} from 'server/utils/serverConstants';
 import {PAYMENT_REJECTED, TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';

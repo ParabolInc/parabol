@@ -22,7 +22,7 @@ const initialState = {
     exp: null,
     iat: null,
     iss: null,
-    sub: null,
+    sub: null
   },
   // Raw jwt token:
   token: null

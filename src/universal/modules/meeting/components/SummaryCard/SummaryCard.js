@@ -14,7 +14,7 @@ const SummaryCard = (props) => {
     content,
     status,
     tags,
-    styles,
+    styles
   } = props;
   const isPrivate = isProjectPrivate(tags);
   const rootStyles = css(

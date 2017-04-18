@@ -169,7 +169,7 @@ Landing.propTypes = {
   // children included here for multi-part landing pages (FAQs, pricing, cha la la)
   // children: PropTypes.element,
   handleLoginClick: PropTypes.func.isRequired,
-  styles: PropTypes.object,
+  styles: PropTypes.object
 };
 
 // Breakpoint constants
@@ -249,7 +249,7 @@ const styleThunk = () => ({
   },
 
   brandLogo: {
-    width: '12rem',
+    width: '12rem'
   },
 
   content: {

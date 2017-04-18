@@ -192,7 +192,7 @@ const ui = {
     [BUTTON_SIZE_SMALL]: iconSize,
     [BUTTON_SIZE_MEDIUM]: iconSizeAvatar,
     [BUTTON_SIZE_LARGE]: iconSizeAvatar,
-    [BUTTON_SIZE_LARGEST]: iconSize2x,
+    [BUTTON_SIZE_LARGEST]: iconSize2x
   },
   buttonLineHeight: '1.5em !important', // 2.5em
   buttonPadding: '.25em 1em',

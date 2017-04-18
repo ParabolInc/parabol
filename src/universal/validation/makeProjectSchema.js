@@ -14,6 +14,6 @@ export default function makeProjectSchema() {
       // status may be empty eg unarchive card
       .test((str) => str && !columnArray.includes(str) && 'That isn\'t a status!'),
     teamMemberId: compositeId,
-    sortOrder: (value) => value.float(),
+    sortOrder: (value) => value.float()
   });
 }

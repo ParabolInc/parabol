@@ -5,7 +5,7 @@ import emoji from 'markdown-it-emoji';
 const options = {
   breaks: true,
   linkify: true,
-  typographer: true,
+  typographer: true
 };
 
 class Markdown extends Component {

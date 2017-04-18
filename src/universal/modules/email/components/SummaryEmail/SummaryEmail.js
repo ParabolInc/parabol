@@ -39,7 +39,7 @@ const linkStyles = {
 
 const greetingStyles = {
   fontSize: '27px',
-  lineHeight: '40px',
+  lineHeight: '40px'
 };
 
 const bannerStyle = {

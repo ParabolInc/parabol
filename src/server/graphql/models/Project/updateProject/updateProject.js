@@ -2,7 +2,7 @@ import getRethink from 'server/database/rethinkDriver';
 import {ProjectInput} from 'server/graphql/models/Project/projectSchema';
 import {
   GraphQLNonNull,
-  GraphQLBoolean,
+  GraphQLBoolean
 } from 'graphql';
 import {requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import shortid from 'shortid';

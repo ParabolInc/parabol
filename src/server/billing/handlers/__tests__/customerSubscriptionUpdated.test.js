@@ -29,7 +29,7 @@ describe('customerSubscriptionUpdated', () => {
     const db = await fetchAndSerialize({
       organization: r.table('Organization').get(orgId),
       team: r.table('Team').get(team[0].id),
-      notification: r.table('Notification').getAll(orgId, {index: 'orgId'}),
+      notification: r.table('Notification').getAll(orgId, {index: 'orgId'})
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
     expect(stripe.__snapshot(org.stripeId, dynamicSerializer)).toMatchSnapshot();
@@ -56,7 +56,7 @@ describe('customerSubscriptionUpdated', () => {
     const db = await fetchAndSerialize({
       organization: r.table('Organization').get(orgId),
       team: r.table('Team').get(team[0].id),
-      notification: r.table('Notification').getAll(orgId, {index: 'orgId'}),
+      notification: r.table('Notification').getAll(orgId, {index: 'orgId'})
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
     expect(stripe.__snapshot(org.stripeId, dynamicSerializer)).toMatchSnapshot();
@@ -83,7 +83,7 @@ describe('customerSubscriptionUpdated', () => {
     const db = await fetchAndSerialize({
       organization: r.table('Organization').get(orgId),
       team: r.table('Team').get(team[0].id),
-      notification: r.table('Notification').getAll(orgId, {index: 'orgId'}),
+      notification: r.table('Notification').getAll(orgId, {index: 'orgId'})
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
     expect(stripe.__snapshot(org.stripeId, dynamicSerializer)).toMatchSnapshot();

@@ -21,7 +21,7 @@ const NullCard = (props) => {
 
 NullCard.propTypes = {
   styles: PropTypes.object,
-  preferredName: PropTypes.string,
+  preferredName: PropTypes.string
 };
 
 const styleThunk = () => ({

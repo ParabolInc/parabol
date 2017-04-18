@@ -8,6 +8,6 @@ export const UserMemo = new GraphQLObjectType({ // eslint-disable-line import/pr
   name: 'UserMemo',
   description: 'A temporary message for a single user',
   fields: () => ({
-    teamId: {type: GraphQLID, description: 'The teamId affected by this message'},
+    teamId: {type: GraphQLID, description: 'The teamId affected by this message'}
   })
 });

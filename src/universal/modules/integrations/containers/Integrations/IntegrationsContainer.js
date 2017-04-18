@@ -36,7 +36,7 @@ const mapStateToProps = (state, props) => {
     op: 'integrationsContainer',
     key: teamMemberId,
     sort: {
-      integrations: (a, b) => a.service > b.service ? 1 : -1,
+      integrations: (a, b) => a.service > b.service ? 1 : -1
     },
     variables: {teamMemberId}
   }).data;
@@ -51,7 +51,7 @@ const IntegrationsContainer = (props) => {
     closePortal,
     isClosing,
     teamMemberId,
-    services,
+    services
   } = props;
   return (
     <Integrations

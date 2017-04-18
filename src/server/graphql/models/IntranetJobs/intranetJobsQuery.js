@@ -1,7 +1,7 @@
 import getRethink from 'server/database/rethinkDriver';
 import {
   GraphQLString,
-  GraphQLInt,
+  GraphQLInt
 } from 'graphql';
 import {requireSU} from 'server/utils/authorization';
 import {

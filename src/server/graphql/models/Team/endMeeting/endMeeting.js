@@ -8,10 +8,10 @@ import {errorObj} from 'server/utils/utils';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
-  GraphQLID,
+  GraphQLID
 } from 'graphql';
 import {
-  SUMMARY,
+  SUMMARY
 } from 'universal/utils/constants';
 import resetMeeting from './resetMeeting';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
@@ -91,7 +91,7 @@ export default {
                       .default(false),
                     projects: projects.filter({teamMemberId: teamMember('id')})
                   })),
-                projects,
+                projects
               }, {
                 nonAtomic: true,
                 returnChanges: true
@@ -112,7 +112,7 @@ export default {
             facilitatorPhase: SUMMARY,
             meetingPhase: SUMMARY,
             facilitatorPhaseItem: null,
-            meetingPhaseItem: null,
+            meetingPhaseItem: null
           });
       });
     // dispatch segment events:

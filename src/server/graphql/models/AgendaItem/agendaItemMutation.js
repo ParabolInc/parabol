@@ -95,10 +95,10 @@ export default {
       const now = new Date();
       const agendaItem = {
         ...doc,
-        updatedAt: now,
+        updatedAt: now
       };
       await r.table('AgendaItem').get(id).update(agendaItem);
       return true;
     }
-  },
+  }
 };

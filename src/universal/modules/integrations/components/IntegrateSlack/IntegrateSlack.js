@@ -3,8 +3,8 @@ import withStyles from 'universal/styles/withStyles';
 import appTheme from 'universal/styles/theme/appTheme';
 import slackLogo from 'universal/styles/theme/images/graphics/Slack_Mark.svg';
 import {cashay} from 'cashay';
-import makeHref from "universal/utils/makeHref";
-import ServiceRow from "../ServiceRow/ServiceRow";
+import makeHref from 'universal/utils/makeHref';
+import ServiceRow from '../ServiceRow/ServiceRow';
 import ms from 'ms';
 
 class IntegrateSlack extends Component {
@@ -21,6 +21,7 @@ class IntegrateSlack extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (!this.props.service && nextProps.service) {
+      console.log('got the service');
       this.getChannelList();
     }
   }
@@ -29,7 +30,7 @@ class IntegrateSlack extends Component {
     if (!this.props.service) {
       return [];
     }
-    console.log('getting channelList)')
+    console.log('getting channelList)');
     const accessToken = this.props.service && this.props.service.id;
     const uri = `https://slack.com/api/channels.list?token=${accessToken}&exclude_archived=1`;
     const res = await fetch(uri);
@@ -37,9 +38,8 @@ class IntegrateSlack extends Component {
     if (resJson && resJson.ok) {
       this.channelList = res.channels;
       return res.channels;
-    } else {
-      return [];
     }
+    return [];
   }
 
   dropdownMapper = async () => {
@@ -56,7 +56,7 @@ class IntegrateSlack extends Component {
   handleItemClick = (option) => () => {
     const {teamMemberId} = this.props;
     console.log('you clicked', option.label);
-    cashay.mutate('addSlackChannel', {variables: {teamMemberId, slackChannelId: option.id}})
+    cashay.mutate('addSlackChannel', {variables: {teamMemberId, slackChannelId: option.id}});
   };
 
   openOauth = () => {
@@ -93,13 +93,13 @@ class IntegrateSlack extends Component {
             <div>
               {channel.id} - {channel.name}
             </div>
-          )
+          );
         })}
       </div>
     );
   }
 }
-;
+
 
 IntegrateSlack.propTypes = {};
 
@@ -118,7 +118,7 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.s4,
     lineHeight: '1.625rem',
     verticalAlign: 'middle'
-  },
+  }
 });
 
 export default withStyles(styleThunk)(IntegrateSlack);

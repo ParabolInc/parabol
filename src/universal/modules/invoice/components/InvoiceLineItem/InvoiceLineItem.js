@@ -7,7 +7,7 @@ import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineForm
 import {
   ADDED_USERS,
   REMOVED_USERS,
-  INACTIVITY_ADJUSTMENTS,
+  INACTIVITY_ADJUSTMENTS
 } from 'universal/utils/constants';
 import makeDateString from 'universal/utils/makeDateString';
 
@@ -101,7 +101,7 @@ const styleThunk = () => ({
 
     [breakpoint]: {
       fontSize: appTheme.typography.s5,
-      paddingRight: ui.invoicePanelGutterLarge,
+      paddingRight: ui.invoicePanelGutterLarge
     }
   },
 

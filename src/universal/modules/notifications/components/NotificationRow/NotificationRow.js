@@ -12,7 +12,7 @@ NotificationRow.propTypes = {
   notificationId: PropTypes.string.isRequired,
   orgId: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
-  varList: PropTypes.array.isRequired,
+  varList: PropTypes.array.isRequired
 };
 
 export default NotificationRow;

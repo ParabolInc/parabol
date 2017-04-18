@@ -5,7 +5,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
 import portal from 'react-portal-hoc';
-import Spinner from "../../../spinner/components/Spinner/Spinner";
+import Spinner from '../../../spinner/components/Spinner/Spinner';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 // TODO: Make a UI constant (TA)
@@ -20,7 +20,7 @@ const Menu = (props) => {
     label,
     menuWidth,
     styles,
-    coords,
+    coords
   } = props;
   const menuBlockStyle = {
     width: menuWidth,
@@ -39,9 +39,9 @@ const Menu = (props) => {
           <ReactCSSTransitionGroup
             transitionName={{
               appear: css(styles.spinnerAppear),
-              appearActive: css(styles.spinnerAppearActive),
+              appearActive: css(styles.spinnerAppearActive)
             }}
-            transitionAppear={true}
+            transitionAppear
             transitionEnter={false}
             transitionLeave={false}
             transitionAppearTimeout={300}
@@ -49,7 +49,7 @@ const Menu = (props) => {
             {
               kids.length === 0 &&
               <div key="spinner" className={css(styles.spinner)}>
-                <Spinner fillColor="cool" width={40}/>
+                <Spinner fillColor="cool" width={40} />
               </div>
             }
           </ReactCSSTransitionGroup>
@@ -155,5 +155,4 @@ const styleThunk = () => ({
 });
 
 export default portal({escToClose: true, clickToClose: true})(withStyles(styleThunk)(Menu));
-
 

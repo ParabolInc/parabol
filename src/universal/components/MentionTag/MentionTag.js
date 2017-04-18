@@ -21,7 +21,7 @@ MentionTag.propTypes = {
   active: PropTypes.bool,
   description: PropTypes.string,
   styles: PropTypes.object,
-  value: PropTypes.string,
+  value: PropTypes.string
 };
 
 const styleThunk = () => ({
@@ -42,7 +42,7 @@ const styleThunk = () => ({
   },
 
   value: {
-    fontWeight: 700,
+    fontWeight: 700
   }
 });
 

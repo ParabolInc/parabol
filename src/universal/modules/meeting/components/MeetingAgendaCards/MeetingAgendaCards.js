@@ -16,7 +16,7 @@ const handleAddProjectFactory = (teamMemberId, agendaId) => () => {
     status: ACTIVE,
     teamMemberId,
     sortOrder: 0,
-    agendaId,
+    agendaId
   };
   cashay.mutate('createProject', {variables: {newProject}});
 };

@@ -4,6 +4,6 @@ import {requiredId, teamName} from 'universal/validation/templates';
 export default function updateTeamNameValidation() {
   return legitify({
     id: requiredId,
-    name: teamName,
+    name: teamName
   });
 }

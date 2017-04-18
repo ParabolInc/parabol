@@ -69,7 +69,7 @@ const styleThunk = () => ({
   },
 
   header: {
-    padding: '0 0 0 1rem',
+    padding: '0 0 0 1rem'
   },
 
   border: {
@@ -90,7 +90,7 @@ const styleThunk = () => ({
     padding: '1rem 0 0 1.0625rem',
     position: 'absolute',
     right: 0,
-    top: 0,
+    top: 0
   },
 
   cardGrid: {

@@ -9,7 +9,7 @@ exports.up = async (r) => {
     r.table('Action').update(withAgendaId),
     r.table('Action').indexCreate('teamMemberId'),
     r.table('Action').indexCreate('agendaId'),
-    r.table('Project').update(withAgendaId),
+    r.table('Project').update(withAgendaId)
   ];
   await Promise.all(queries);
 };
@@ -20,7 +20,7 @@ exports.down = async (r) => {
     r.table('Action').replace(withoutAgendaId),
     r.table('Action').indexDrop('teamMemberId'),
     r.table('Action').indexDrop('agendaId'),
-    r.table('Project').replace(withoutAgendaId),
+    r.table('Project').replace(withoutAgendaId)
   ];
   await Promise.all(queries);
 };

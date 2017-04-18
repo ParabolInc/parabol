@@ -6,7 +6,7 @@ export default {
     name: 'Lobby',
     next: CHECKIN,
     route: 'lobby',
-    visitOnce: true,
+    visitOnce: true
   },
   [CHECKIN]: {
     index: 1,
@@ -17,7 +17,7 @@ export default {
     name: 'Check-in',
     next: UPDATES,
     route: 'checkin',
-    visitOnce: false,
+    visitOnce: false
   },
   [UPDATES]: {
     index: 2,
@@ -28,14 +28,14 @@ export default {
     name: 'Updates',
     next: FIRST_CALL,
     route: 'updates',
-    visitOnce: false,
+    visitOnce: false
   },
   [FIRST_CALL]: {
     index: 3,
     name: 'First call',
     next: AGENDA_ITEMS,
     route: 'firstcall',
-    visitOnce: true,
+    visitOnce: true
   },
   [AGENDA_ITEMS]: {
     index: 4,
@@ -46,19 +46,19 @@ export default {
     name: 'Agenda items',
     next: LAST_CALL,
     route: 'agenda',
-    visitOnce: false,
+    visitOnce: false
   },
   [LAST_CALL]: {
     index: 5,
     name: 'Last call',
     next: SUMMARY,
     route: 'lastcall',
-    visitOnce: true,
+    visitOnce: true
   },
   [SUMMARY]: {
     index: 6,
     name: 'Summary',
     route: 'summary',
-    visitOnce: false,
+    visitOnce: false
   }
 };

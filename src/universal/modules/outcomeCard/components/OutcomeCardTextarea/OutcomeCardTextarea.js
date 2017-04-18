@@ -29,7 +29,7 @@ class OutcomeCardTextArea extends Component {
     styles: PropTypes.object,
     teamMemberId: PropTypes.string,
     teamMembers: PropTypes.array,
-    timestamp: PropTypes.string,
+    timestamp: PropTypes.string
   };
 
   constructor(props) {
@@ -280,7 +280,7 @@ const styleThunk = () => ({
     borderRadius: ui.borderRadiusSmall,
     boxShadow: ui.menuBoxShadow,
     color: ui.palette.dark,
-    padding: ui.borderRadiusSmall,
+    padding: ui.borderRadiusSmall
   }
 });
 

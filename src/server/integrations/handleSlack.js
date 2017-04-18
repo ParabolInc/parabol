@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 import {stringify} from 'querystring';
 import Queue from 'server/utils/bull';
 import {postOptions} from 'server/utils/fetchOptions';
-import handleIntegration from "./handleIntegration";
+import handleIntegration from './handleIntegration';
 
 export default function (exchange) {
   return async (req, res) => {
@@ -14,13 +14,13 @@ export default function (exchange) {
     const queryParams = {
       client_id: process.env.SLACK_CLIENT_ID,
       client_secret: process.env.SLACK_CLIENT_SECRET,
-      code,
+      code
     };
     const uri = `https://slack.com/api/oauth.access?${stringify(queryParams)}`;
     const slackRes = await fetch(uri, postOptions);
     const json = await slackRes.json();
-    console.log('res', json)
+    console.log('res', json);
     const {access_token: accessToken, team_name: slackTeamName, team_id: slackTeamId} = json;
     handleIntegration(accessToken, exchange, service, state);
   };
-};
+}

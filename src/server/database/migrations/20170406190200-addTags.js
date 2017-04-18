@@ -25,7 +25,7 @@ exports.up = async (r) => {
     tags: ['private'],
     teamId: action.teamMemberId.split('::')[1],
     teamMemberId: action.teamMemberId,
-    updatedAt: action.updatedAt,
+    updatedAt: action.updatedAt
   }));
 
   await r.table('Project').insert(newProjects);
@@ -37,7 +37,7 @@ exports.up = async (r) => {
   }
 
   const indices = [
-    r.table('Project').indexCreate('tags', {multi: true}),
+    r.table('Project').indexCreate('tags', {multi: true})
   ];
   try {
     await Promise.all(indices);
@@ -46,7 +46,7 @@ exports.up = async (r) => {
   }
 
   const waitIndices = [
-    r.table('Project').indexWait('tags'),
+    r.table('Project').indexWait('tags')
   ];
   await Promise.all(waitIndices);
 };
@@ -78,13 +78,13 @@ exports.down = async (r) => {
   const mutations = [
     r.table('Project').getAll('archived', {index: 'tags'}).update({
       isArchived: true
-    }),
+    })
   ];
 
   await Promise.all(mutations);
 
   const indices = [
-    r.table('Project').indexDrop('tags'),
+    r.table('Project').indexDrop('tags')
   ];
   try {
     await Promise.all(indices);

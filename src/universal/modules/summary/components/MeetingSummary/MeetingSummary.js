@@ -71,7 +71,7 @@ const MeetingSummary = (props) => {
 };
 
 MeetingSummary.propTypes = {
-  styles: PropTypes.object,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

@@ -3,7 +3,7 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import Row from 'universal/components/Row/Row';
-import Button from "../../../../components/Button/Button";
+import Button from '../../../../components/Button/Button';
 import ServiceDropdownInput from 'universal/modules/integrations/components/ServiceDropdownInput/ServiceDropdownInput';
 
 
@@ -23,13 +23,12 @@ const ServiceRow = (props) => {
   return (
     <Row>
       <div className={css(styles.logo)}>
-        <img height={50} width={50} src={logo}/>
+        <img height={50} width={50} src={logo} />
       </div>
-      {/*<div className={css(styles.name)}>*/}
-      {/*{name}*/}
-      {/*</div>*/}
-      <div>
-      </div>
+      {/* <div className={css(styles.name)}>*/}
+      {/* {name}*/}
+      {/* </div>*/}
+      <div />
       {
         accessToken ?
           <div className={css(styles.hasToken)}>
@@ -56,7 +55,7 @@ const ServiceRow = (props) => {
               />
             </div>
           </div> :
-          <Button colorPalette="cool" label="Add integration" size="smallest" buttonStyle="solid" onClick={openOauth}/>
+          <Button colorPalette="cool" label="Add integration" size="smallest" buttonStyle="solid" onClick={openOauth} />
       }
     </Row>
   );
@@ -92,7 +91,7 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.s4,
     lineHeight: '1.625rem',
     verticalAlign: 'middle'
-  },
+  }
 });
 
 export default withStyles(styleThunk)(ServiceRow);

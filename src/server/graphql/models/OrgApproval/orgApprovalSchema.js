@@ -1,7 +1,7 @@
 import {
   GraphQLObjectType,
   GraphQLNonNull,
-  GraphQLID,
+  GraphQLID
 } from 'graphql';
 import GraphQLISO8601Type from 'graphql-custom-datetype';
 import {GraphQLEmailType} from 'server/graphql/types';
@@ -30,7 +30,7 @@ const OrgApproval = new GraphQLObjectType({
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: '*The team seeking approval. Used to populate in the team settings page'
-    },
+    }
     // updatedAt: {
     //   type: GraphQLISO8601Type,
     //   description: 'The datetime the approval was last updated'

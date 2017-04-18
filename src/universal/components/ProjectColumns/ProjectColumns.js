@@ -70,15 +70,15 @@ const styleThunk = () => ({
   },
 
   center: {
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
 
   left: {
-    justifyContent: 'flex-start',
+    justifyContent: 'flex-start'
   },
 
   right: {
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-end'
   },
 
   columns: {

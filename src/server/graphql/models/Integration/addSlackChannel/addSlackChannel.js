@@ -1,13 +1,13 @@
 import {
   GraphQLNonNull,
   GraphQLBoolean,
-  GraphQLID,
+  GraphQLID
 } from 'graphql';
 import {requireSUOrSelf, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import {SLACK} from 'universal/utils/constants';
 import queryIntegrator from 'server/utils/queryIntegrator';
 import {errorObj} from 'server/utils/utils';
-import {handleRethinkUpdate} from "../../../../utils/makeChangefeedHandler";
+import {handleRethinkUpdate} from '../../../../utils/makeChangefeedHandler';
 
 export default {
   type: GraphQLBoolean,
@@ -49,7 +49,7 @@ export default {
     const channelInfo = await fetch(channelInfoUrl);
     const channelInfoJson = await channelInfo.json();
     if (!channelInfoJson.ok) {
-      throw errorObj({_error: channelInfoJson.error})
+      throw errorObj({_error: channelInfoJson.error});
     }
 
     // RESOLUTION

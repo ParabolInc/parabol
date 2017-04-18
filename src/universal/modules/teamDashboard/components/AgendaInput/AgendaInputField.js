@@ -153,7 +153,7 @@ const styleThunk = () => ({
     width: '100%',
     zIndex: 200,
 
-    ...inputPlaceholderStyles,
+    ...inputPlaceholderStyles
   },
 
   inputNotDisabled: {

@@ -15,7 +15,7 @@ exports.up = async (r) => {
 exports.down = async (r) => {
   const tables = [
     r.tableDrop('ProjectHistory'),
-    r.tableCreate('TaskOutcomeDiff'),
+    r.tableCreate('TaskOutcomeDiff')
   ];
   await Promise.all(tables);
   const indices = [

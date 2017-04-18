@@ -172,7 +172,7 @@ OutcomeCardContainer.propTypes = {
     id: PropTypes.string,
     content: PropTypes.string,
     status: PropTypes.oneOf(labels.projectStatus.slugs),
-    teamMemberId: PropTypes.string,
+    teamMemberId: PropTypes.string
   }),
   dispatch: PropTypes.func.isRequired,
   editors: PropTypes.array,
@@ -185,7 +185,7 @@ OutcomeCardContainer.propTypes = {
   owner: PropTypes.object,
   tags: PropTypes.array,
   teamMembers: PropTypes.array,
-  updatedAt: PropTypes.instanceOf(Date),
+  updatedAt: PropTypes.instanceOf(Date)
 };
 
 // Using decorators causes a fun bug where reduxForm can't find dispatch, so we do it the boring way

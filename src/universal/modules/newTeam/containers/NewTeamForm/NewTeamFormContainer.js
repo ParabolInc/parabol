@@ -93,7 +93,7 @@ class NewTeamFormContainer extends Component {
           name: teamName,
           orgId
         },
-        invitees,
+        invitees
       };
       await cashay.mutate('addTeam', {variables});
       dispatch(segmentEventTrack('New Team',
@@ -109,7 +109,7 @@ class NewTeamFormContainer extends Component {
 
   setLast4 = (last4) => {
     this.setState({
-      last4,
+      last4
     });
   };
 
@@ -140,7 +140,7 @@ NewTeamFormContainer.propTypes = {
   initialValues: PropTypes.object,
   isNewOrg: PropTypes.bool,
   organizations: PropTypes.array,
-  router: PropTypes.object.isRequired,
+  router: PropTypes.object.isRequired
 };
 
 export default connect(mapStateToProps)(

@@ -1,4 +1,4 @@
-import queryIntegrator from "../../../../utils/queryIntegrator";
+import queryIntegrator from '../../../../utils/queryIntegrator';
 
 const notifySlack = (type, teamId) => {
   queryIntegrator({

@@ -1,5 +1,5 @@
-import queryIntegrator from "../utils/queryIntegrator";
-import {handleRethinkRemove} from "../utils/makeChangefeedHandler";
+import queryIntegrator from '../utils/queryIntegrator';
+import {handleRethinkRemove} from '../utils/makeChangefeedHandler';
 
 const handleIntegration = async (accessToken, exchange, service, teamMemberId) => {
   const [userId] = teamMemberId.split('::');

@@ -48,7 +48,7 @@ const mapStateToProps = (state, props) => {
     op: 'meetingUpdatesContainer',
     key: teamMemberId,
     mutationHandlers,
-    variables: {teamMemberId},
+    variables: {teamMemberId}
   }).data.projects;
   const projects = makeProjectsByStatus(memberProjects);
   return {
@@ -71,7 +71,7 @@ MeetingUpdatesContainer.propTypes = {
   members: PropTypes.array.isRequired,
   projects: PropTypes.object.isRequired,
   queryKey: PropTypes.string,
-  team: PropTypes.object.isRequired,
+  team: PropTypes.object.isRequired
 };
 
 export default connect(mapStateToProps)(MeetingUpdatesContainer);

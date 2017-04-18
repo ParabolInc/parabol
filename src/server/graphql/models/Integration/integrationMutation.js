@@ -39,7 +39,7 @@ export default {
         payload: {
           service,
           teamMemberId
-        },
+        }
       });
 
       // TODO refactor projects to hold an id like github's full_name for repos

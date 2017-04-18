@@ -145,7 +145,7 @@ Sidebar.propTypes = {
   meetingPhase: PropTypes.oneOf(phaseArray),
   styles: PropTypes.object,
   teamName: PropTypes.string,
-  teamId: PropTypes.string,
+  teamId: PropTypes.string
 };
 
 const styleThunk = () => ({
@@ -189,7 +189,7 @@ const styleThunk = () => ({
   navList: {
     listStyle: 'none',
     margin: 0,
-    padding: 0,
+    padding: 0
   },
 
   navListItem: {
@@ -297,7 +297,7 @@ const styleThunk = () => ({
   timer: {
     color: appTheme.palette.warm,
     fontFamily: appTheme.typography.monospace,
-    fontSize: appTheme.typography.s4,
+    fontSize: appTheme.typography.s4
   }
 });
 

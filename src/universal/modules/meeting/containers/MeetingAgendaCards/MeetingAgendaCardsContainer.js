@@ -50,8 +50,8 @@ const mapStateToProps = (state, props) => {
       teamMember: (source) => source.teamMemberId
     },
     filter: {
-      projects: (outcome) => outcome.agendaId === agendaId,
-    },
+      projects: (outcome) => outcome.agendaId === agendaId
+    }
   }).data;
 
   return {

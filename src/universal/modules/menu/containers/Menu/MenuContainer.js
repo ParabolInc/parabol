@@ -39,15 +39,15 @@ export default class MenuContainer extends Component {
       onClick: (e) => {
         // always set coords, otherwise we'd have to intercept all calls to closePortal to keep coords at null & window resize events
           // figure out where to put the menu
-          const rect = e.currentTarget.getBoundingClientRect();
-          const {vertical: originY, horizontal: originX} = originAnchor;
-          const {height, width, left, top} = rect;
-          this.setState({
-            coords: {
-              [targetAnchor.vertical]: calculateMenuPosY(height, top, originY, targetAnchor.vertical),
-              [targetAnchor.horizontal]: calculateMenuPosX(width, left, originX, targetAnchor.horizontal)
-            }
-          });
+        const rect = e.currentTarget.getBoundingClientRect();
+        const {vertical: originY, horizontal: originX} = originAnchor;
+        const {height, width, left, top} = rect;
+        this.setState({
+          coords: {
+            [targetAnchor.vertical]: calculateMenuPosY(height, top, originY, targetAnchor.vertical),
+            [targetAnchor.horizontal]: calculateMenuPosX(width, left, originX, targetAnchor.horizontal)
+          }
+        });
         const {onClick} = toggle.props;
         if (onClick) {
           // if the menu was gonna do something, do it

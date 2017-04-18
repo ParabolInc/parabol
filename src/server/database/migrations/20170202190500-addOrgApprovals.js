@@ -10,7 +10,7 @@ exports.up = async (r) => {
   }
   const indices = [
     r.table('OrgApproval').indexCreate('teamId'),
-    r.table('OrgApproval').indexCreate('email'),
+    r.table('OrgApproval').indexCreate('email')
   ];
   try {
     await Promise.all(indices);

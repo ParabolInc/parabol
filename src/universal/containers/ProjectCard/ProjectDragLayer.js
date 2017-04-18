@@ -39,7 +39,7 @@ function getItemStyles(props) {
 }
 
 const collect = (monitor) => ({
-  currentOffset: monitor.getSourceClientOffset(),
+  currentOffset: monitor.getSourceClientOffset()
 });
 const arePropsEqual = () => true;
 

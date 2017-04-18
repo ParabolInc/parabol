@@ -24,7 +24,7 @@ MentionTeamMember.propTypes = {
   active: PropTypes.bool,
   picture: PropTypes.string,
   styles: PropTypes.object,
-  value: PropTypes.string,
+  value: PropTypes.string
 };
 
 const styleThunk = () => ({

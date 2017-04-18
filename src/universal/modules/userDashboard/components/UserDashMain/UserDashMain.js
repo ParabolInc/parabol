@@ -70,7 +70,7 @@ const styleThunk = () => ({
   rallyLink: {
     color: 'inherit',
     fontWeight: 400
-  },
+  }
 });
 
 export default withStyles(styleThunk)(UserDashMain);

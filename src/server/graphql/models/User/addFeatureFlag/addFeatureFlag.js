@@ -1,10 +1,10 @@
 import getRethink from 'server/database/rethinkDriver';
 import {
   GraphQLNonNull,
-  GraphQLString,
+  GraphQLString
 } from 'graphql';
 import {
-  requireSU,
+  requireSU
 } from 'server/utils/authorization';
 import {GraphQLEmailType} from 'server/graphql/types';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
