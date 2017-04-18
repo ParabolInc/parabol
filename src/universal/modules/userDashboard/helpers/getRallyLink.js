@@ -141,6 +141,14 @@ const rallyList = [
   {
     phrase: 'An Invocation for Beginnings',
     link: 'https://youtu.be/RYlCVwxoL_g'
+  },
+  {
+    phrase: 'You Mean Something',
+    link: 'https://youtu.be/YGqPsqDWS00'
+  },
+  {
+    phrase: 'Time To Set Up Shop',
+    link: 'https://youtu.be/tvy5TGLUls8'
   }
 ];
 
