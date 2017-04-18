@@ -9,28 +9,27 @@ import FontAwesome from 'react-fontawesome';
 const DashNavList = (props) => {
   const {organizations, teams, styles} = props;
   const hasTeams = teams.length > 0;
-
-  // Help!!
   const hasOrgs = organizations.length > 1;
-  const orgName = 'Organization'; // TODO: can get org name from team.orgId?
 
   return (
     <div className={css(styles.root)}>
       {hasTeams ?
         <div>
-          {teams.map((team) =>
-            <div key={`teamNav${team.id}`} className={css(styles.iconAndLink)}>
-              {!team.isPaid && <FontAwesome name="warning" className={css(styles.itemIcon)} title="Team is disabled for nonpayment" />}
-              <DashNavItem
-                href={`/team/${team.id}`}
-                label={team.name}
-                orgLabel={hasOrgs ? orgName : ''}
-                isPaid={team.isPaid}
-              />
-              {console.log('team.orgId')}
-              {console.log(team.orgId)}
-            </div>
-          )}
+          {teams.map((team) => {
+            const {orgName} = organizations.find((org) => org.id === team.orgId) || {};
+            return (
+              <div key={`teamNav${team.id}`} className={css(styles.iconAndLink)}>
+                {!team.isPaid && <FontAwesome name="warning" className={css(styles.itemIcon)} title="Team is disabled for nonpayment" />}
+                <DashNavItem
+                  href={`/team/${team.id}`}
+                  isPaid={team.isPaid}
+                  label={team.name}
+                  orgLabel={hasOrgs ? orgName : ''}
+                />
+              </div>
+            );
+          })
+        }
         </div> :
         <div className={css(styles.emptyTeams)}>It appears you are not a member of any team!</div>
       }
