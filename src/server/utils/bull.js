@@ -6,24 +6,34 @@ getDotenv();
 
 const urlString = process.env.REDIS_URL || 'redis://localhost:6379';
 
-// Re-use redis connections:
-const client = new Redis(urlString);
-const subscriber = new Redis(urlString);
-const opts = {
-  redis: {
-    opts: {
-      createClient: (type) => {
-        switch (type) {
-          case 'client':
-            return client;
-          case 'subscriber':
-            return subscriber;
-          default:
-            return new Redis(urlString);
+let opts;
+const startRedis = () => {
+  // Re-use redis connections:
+  const client = new Redis(urlString);
+  const subscriber = new Redis(urlString);
+
+  opts = {
+    redis: {
+      opts: {
+        createClient: (type) => {
+          switch (type) {
+            case 'client':
+              return client;
+            case 'subscriber':
+              return subscriber;
+            default:
+              return new Redis(urlString);
+          }
         }
       }
     }
-  }
+  };
 };
 
-export default (name) => BullQueue(name, opts);
+
+export default (name) => {
+  if (!opts) {
+    startRedis();
+  }
+  BullQueue(name, opts);
+};
