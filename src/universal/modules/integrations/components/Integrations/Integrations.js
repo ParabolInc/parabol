@@ -8,10 +8,6 @@ import DashModal from "../../../../components/Dashboard/DashModal";
 import ui from 'universal/styles/ui';
 import IntegrateSlack from 'universal/modules/integrations/components/IntegrateSlack/IntegrateSlack';
 
-const integrationPicker = {
-  slack: IntegrateSlack,
-  // github:
-}
 const Integrations = (props) => {
   const {
     closePortal,
@@ -22,48 +18,45 @@ const Integrations = (props) => {
     styles
   } = props;
 
-  const tokenLookup = services.reduce((obj, usedService) => ({[usedService.service]: usedService.id}), {});
   return (
-    <DashModal onBackdropClick={closePortal} isClosing={isClosing} inheritWidth closeAfter={closeAfter} modalLayout={ui.modalLayoutMain}>
+    <DashModal onBackdropClick={closePortal} isClosing={isClosing} inheritWidth closeAfter={closeAfter}
+               modalLayout={ui.modalLayoutMain}>
       <div className={css(styles.integrations)}>
         <h2>Integrations</h2>
-        <div>Synced Accounts</div>
-        <div>...</div>
-        <div>Services</div>
-        <IntegrateSlack accessToken={tokenLookup.slack} teamMemberId={teamMemberId}/>
+        <IntegrateSlack service={services.slack} teamMemberId={teamMemberId}/>
 
         {/*<ServiceRow*/}
-          {/*accessToken={tokenLookup.slack}*/}
-          {/*dropdownMapper={dropdownMapper}*/}
-          {/*label="Sync a project"*/}
-          {/*logo={githubLogo}*/}
-          {/*name="GitHub"*/}
-          {/*openOauth={() => {*/}
-            {/*const uri = `https://github.com/login/oauth/authorize?scope=user:email,repo,write:repo_hook&state=${teamMemberId}&client_id=${__GITHUB_CLIENT_ID__}`;*/}
-            {/*window.open(uri);*/}
-          {/*}}*/}
-          {/*removeOauth={() => {*/}
-            {/*cashay.mutate('removeIntegration', {variables: {teamMemberId, service: 'github'}})*/}
-          {/*}}*/}
-          {/*form={`${service}Form`}*/}
+        {/*accessToken={tokenLookup.slack}*/}
+        {/*dropdownMapper={dropdownMapper}*/}
+        {/*label="Sync a project"*/}
+        {/*logo={githubLogo}*/}
+        {/*name="GitHub"*/}
+        {/*openOauth={() => {*/}
+        {/*const uri = `https://github.com/login/oauth/authorize?scope=user:email,repo,write:repo_hook&state=${teamMemberId}&client_id=${__GITHUB_CLIENT_ID__}`;*/}
+        {/*window.open(uri);*/}
+        {/*}}*/}
+        {/*removeOauth={() => {*/}
+        {/*cashay.mutate('removeIntegration', {variables: {teamMemberId, service: 'github'}})*/}
+        {/*}}*/}
+        {/*form={`${service}Form`}*/}
         {/*/>*/}
 
         {/*{allServices.map((integration) => {*/}
-          {/*const {openOauth, removeOauth, service, logo, name, dropdownMapper} = integration;*/}
-          {/*const matchingService = services.find((s) => s.service === service);*/}
-          {/*const accessToken = matchingService && matchingService.id;*/}
-          {/*return (*/}
-            {/*<ServiceRow*/}
-              {/*key={service}*/}
-              {/*accessToken={accessToken}*/}
-              {/*dropdownMapper={dropdownMapper}*/}
-              {/*logo={logo}*/}
-              {/*name={name}*/}
-              {/*openOauth={openOauth(teamMemberId)}*/}
-              {/*removeOauth={removeOauth(teamMemberId)}*/}
-              {/*form={`${service}Form`}*/}
-            {/*/>*/}
-          {/*)*/}
+        {/*const {openOauth, removeOauth, service, logo, name, dropdownMapper} = integration;*/}
+        {/*const matchingService = services.find((s) => s.service === service);*/}
+        {/*const accessToken = matchingService && matchingService.id;*/}
+        {/*return (*/}
+        {/*<ServiceRow*/}
+        {/*key={service}*/}
+        {/*accessToken={accessToken}*/}
+        {/*dropdownMapper={dropdownMapper}*/}
+        {/*logo={logo}*/}
+        {/*name={name}*/}
+        {/*openOauth={openOauth(teamMemberId)}*/}
+        {/*removeOauth={removeOauth(teamMemberId)}*/}
+        {/*form={`${service}Form`}*/}
+        {/*/>*/}
+        {/*)*/}
         {/*})}*/}
       </div>
     </DashModal>

@@ -17,9 +17,22 @@ query {
   }
 }`;
 
+const serviceMap = (integrations) => {
+  if (integrations !== serviceMap.integrations) {
+    serviceMap.integrations = integrations;
+    serviceMap.cache = {};
+    for (let i = 0; i < integrations.length; i++) {
+      const integrationService = integrations[i];
+      const {service, ...content} = integrationService;
+      serviceMap.cache[service] = content;
+    }
+  }
+  return serviceMap.cache;
+};
+
 const mapStateToProps = (state, props) => {
   const {teamMemberId} = props;
-  const {integrations: services} = cashay.query(teamSettingsQuery, {
+  const {integrations} = cashay.query(teamSettingsQuery, {
     op: 'integrationsContainer',
     key: teamMemberId,
     sort: {
@@ -28,7 +41,7 @@ const mapStateToProps = (state, props) => {
     variables: {teamMemberId}
   }).data;
   return {
-    services
+    services: serviceMap(integrations)
   };
 };
 

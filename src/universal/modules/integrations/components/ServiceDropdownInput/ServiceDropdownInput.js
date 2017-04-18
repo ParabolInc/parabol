@@ -3,13 +3,10 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import FontAwesome from 'react-fontawesome';
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
-import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
 import ui from 'universal/styles/ui';
 import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette';
 import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 import {Menu, MenuItem} from 'universal/modules/menu';
-import ms from 'ms';
-import ghFetch from "../../../../utils/ghFetch";
 
 const originAnchor = {
   vertical: 'bottom',
@@ -21,7 +18,6 @@ const targetAnchor = {
   horizontal: 'right'
 };
 
-let lastUpdated = 0;
 class ServiceDropdownInput extends Component {
   constructor(props) {
     super(props);
@@ -32,16 +28,10 @@ class ServiceDropdownInput extends Component {
   }
 
   render() {
-    const {accessToken, dropdownMapper, handleItemClick, input: {name, onChange, value}, itemClick, label, options, styles} = this.props;
+    const {dropdownMapper, handleItemClick, options, styles} = this.props;
     const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" onClick={dropdownMapper}/>;
-    const handleClick = (e) => {
-      this.setState({
-
-      })
-    }
     return (
       <FieldBlock>
-        {label && <FieldLabel label={label} htmlFor={name}/>}
         <div className={css(styles.inputBlock)}>
           <span>{this.state.dropdownText}</span>
           <Menu
@@ -72,18 +62,13 @@ class ServiceDropdownInput extends Component {
     )
       ;
   }
-}
-;
+};
 
 ServiceDropdownInput.propTypes = {
-  handleCreateNew: PropTypes.func,
-  input: PropTypes.shape({
-    name: PropTypes.string,
-    onChange: PropTypes.func,
-    value: PropTypes.string
-  }),
-  label: PropTypes.string,
-  organizations: PropTypes.array,
+  dropdownMapper: PropTypes.func.isRequired,
+  dropdownText: PropTypes.string.isRequired,
+  handleItemClick: PropTypes.func.isRequired,
+  options: PropTypes.array.isRequired,
   styles: PropTypes.object
 };
 

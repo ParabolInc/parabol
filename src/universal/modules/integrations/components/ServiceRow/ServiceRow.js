@@ -4,7 +4,6 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import Row from 'universal/components/Row/Row';
 import Button from "../../../../components/Button/Button";
-import {Field, reduxForm} from 'redux-form';
 import ServiceDropdownInput from 'universal/modules/integrations/components/ServiceDropdownInput/ServiceDropdownInput';
 
 
@@ -34,14 +33,10 @@ const ServiceRow = (props) => {
       {
         accessToken ?
           <div className={css(styles.hasToken)}>
-            <Field
-              component={ServiceDropdownInput}
-              accessToken={accessToken}
-              colorPalette="gray"
+            <ServiceDropdownInput
               dropdownMapper={dropdownMapper}
               dropdownText={dropdownText}
               handleItemClick={handleItemClick}
-              name="integrationOptions"
               options={options}
             />
             <div className={css(styles.manageService)}>
@@ -100,6 +95,4 @@ const styleThunk = () => ({
   },
 });
 
-export default reduxForm()(
-  withStyles(styleThunk)(ServiceRow)
-);
+export default withStyles(styleThunk)(ServiceRow);

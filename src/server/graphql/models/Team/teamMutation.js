@@ -218,7 +218,6 @@ export default {
             teamName: r.table('Team').get(teamId)('name')
           });
         });
-      console.log('starting meeting')
       notifySlack('startMeeting', teamId);
       return true;
     }

@@ -1,7 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import appTheme from 'universal/styles/theme/appTheme';
-import {reduxForm} from 'redux-form';
 import slackLogo from 'universal/styles/theme/images/graphics/Slack_Mark.svg';
 import {cashay} from 'cashay';
 import makeHref from "universal/utils/makeHref";
@@ -9,31 +8,48 @@ import ServiceRow from "../ServiceRow/ServiceRow";
 import ms from 'ms';
 
 class IntegrateSlack extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      options: []
+      options: [],
+      syncsById: {}
     };
     this.lastUpdated = 0;
+    this.channelList = [];
+    this.getChannelList();
   }
 
-  dropdownMapper = () => {
+  componentWillReceiveProps(nextProps) {
+    if (!this.props.service && nextProps.service) {
+      this.getChannelList();
+    }
+  }
+
+  async getChannelList() {
+    if (!this.props.service) {
+      return [];
+    }
+    console.log('getting channelList)')
+    const accessToken = this.props.service && this.props.service.id;
+    const uri = `https://slack.com/api/channels.list?token=${accessToken}&exclude_archived=1`;
+    const res = await fetch(uri);
+    const resJson = await res.json();
+    if (resJson && resJson.ok) {
+      this.channelList = res.channels;
+      return res.channels;
+    } else {
+      return [];
+    }
+  }
+
+  dropdownMapper = async () => {
     const now = new Date();
-    if (now - this.lastUpdated > ms('3s')) {
-      const {accessToken} = this.props;
+    if (now - this.lastUpdated > ms('30s')) {
       this.lastUpdated = now;
-      const uri = `https://slack.com/api/channels.list?token=${accessToken}&exclude_archived=1`;
-      fetch(uri).then((res) => res.json())
-        .then((res) => {
-          console.log('slack response', res);
-          if (res && res.ok) {
-            this.setState({
-              options: res.channels.map((channel) => ({id: channel.id, label: channel.name}))
-            });
-          }
-        }).catch((e) => {
-        console.log(e)
-      })
+      const channels = await this.getChannelList();
+      this.setState({
+        options: channels.map((channel) => ({id: channel.id, label: channel.name}))
+      });
     }
   };
 
@@ -56,37 +72,36 @@ class IntegrateSlack extends Component {
   }
 
   render() {
-    const {accessToken} = this.props;
+    const {service} = this.props;
     return (
-      <ServiceRow
-        accessToken={accessToken}
-        dropdownMapper={this.dropdownMapper}
-        dropdownText="Add a Slack Channel"
-        handleItemClick={this.handleItemClick}
-        logo={slackLogo}
-        name="Slack"
-        openOauth={this.openOauth}
-        options={this.state.options}
-        removeOauth={this.removeOauth}
-        form="slack"
-      />
+      <div>
+        <ServiceRow
+          accessToken={service && service.id}
+          dropdownMapper={this.dropdownMapper}
+          dropdownText="Add a Slack Channel"
+          handleItemClick={this.handleItemClick}
+          logo={slackLogo}
+          name="Slack"
+          openOauth={this.openOauth}
+          options={this.state.options}
+          removeOauth={this.removeOauth}
+        />
+        {service && service.syncs.map((sync) => {
+          const channel = this.channelList.find((c) => c.id === sync.id);
+          if (!channel) return null;
+          return (
+            <div>
+              {channel.id} - {channel.name}
+            </div>
+          )
+        })}
+      </div>
     );
   }
 }
 ;
 
-
-IntegrateSlack.propTypes = {
-  actions: PropTypes.any,
-  email: PropTypes.string,
-  invitedAt: PropTypes.string,
-  isAdmin: PropTypes.bool,
-  isLead: PropTypes.bool,
-  picture: PropTypes.string,
-  name: PropTypes.string,
-  styles: PropTypes.object,
-  teamMemberId: PropTypes.string
-};
+IntegrateSlack.propTypes = {};
 
 const styleThunk = () => ({
   logo: {
@@ -106,6 +121,4 @@ const styleThunk = () => ({
   },
 });
 
-export default reduxForm()(
-  withStyles(styleThunk)(IntegrateSlack)
-);
+export default withStyles(styleThunk)(IntegrateSlack);
