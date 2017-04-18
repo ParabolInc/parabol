@@ -82,6 +82,7 @@ const TeamSettingsContainer = (props) => {
 };
 
 TeamSettingsContainer.propTypes = {
+  beta: PropTypes.number,
   dispatch: PropTypes.func.isRequired,
   invitations: PropTypes.array.isRequired,
   myTeamMemberId: PropTypes.string.isRequired,

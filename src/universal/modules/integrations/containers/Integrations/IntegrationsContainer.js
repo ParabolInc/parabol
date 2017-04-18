@@ -65,6 +65,9 @@ const IntegrationsContainer = (props) => {
 };
 
 IntegrationsContainer.propTypes = {
+  closeAfter: PropTypes.number.isRequired,
+  closePortal: PropTypes.func.isRequired,
+  isClosing: PropTypes.bool,
   teamMemberId: PropTypes.string.isRequired,
   services: PropTypes.array.isRequired
 };

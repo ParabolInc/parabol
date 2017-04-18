@@ -14,7 +14,6 @@ const ServiceRow = (props) => {
     dropdownText,
     handleItemClick,
     logo,
-    name,
     openOauth,
     options,
     removeOauth,
@@ -62,14 +61,14 @@ const ServiceRow = (props) => {
 };
 
 ServiceRow.propTypes = {
-  actions: PropTypes.any,
-  email: PropTypes.string,
-  invitedAt: PropTypes.string,
-  isAdmin: PropTypes.bool,
-  isLead: PropTypes.bool,
-  picture: PropTypes.string,
-  name: PropTypes.string,
-  styles: PropTypes.object
+  accessToken: PropTypes.string,
+  dropdownMapper: PropTypes.func,
+  dropdownText: PropTypes.string,
+  handleItemClick: PropTypes.func,
+  logo: PropTypes.string,
+  openOauth: PropTypes.func,
+  options: PropTypes.array,
+  removeOauth: PropTypes.func
 };
 
 const styleThunk = () => ({
