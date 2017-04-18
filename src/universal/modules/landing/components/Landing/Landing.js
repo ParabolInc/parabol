@@ -24,11 +24,10 @@ const Landing = (props) => {
               <img className={css(styles.brandLogo)} src={parabolLogoMark} />
             </a>
             <h1 className={css(styles.mainHeading)}>
-              ACTION: Software for Better Teaming
+              {'ACTION: The Real-Time Prioritization Dashboard'}
             </h1>
             <h2 className={css(styles.mainSubheading)}>
-              {'Teams use Action each week to track progress together, '}
-              {'unblock bottlenecks, rapidly reprioritize, and sync across all tools and disciplines.'}
+              {'Enable true cross-functional collaboration and clarity by syncing teams across all preferred tools to a single dashboard.'}
             </h2>
             <Button
               buttonStyle="solid"
@@ -62,8 +61,18 @@ const Landing = (props) => {
           <div className={css(styles.container)}>
             <h2 className={css(styles.sectionHeading, styles.firstHeading)}>Parabol Action 101</h2>
             <p className={css(styles.copyGroup, styles.firstCopy)}>
-              {'Curious about how Parabol Action works? Here’s our first demo video to introduce our beta software. '}
+              {'Curious about how Parabol Action works? Here’s a demo video of our beta software. '}
               {'Check back frequently for updates as our software evolves!'}
+              <br />
+              <br />
+              <b>
+                <a
+                  href="https://docs.google.com/presentation/d/1u9iiVkZKlaEaY7lSDXckdjuSSfX-1lA-swtOjiu6F9g/edit?usp=sharing"
+                  title="Learn More: The Theory Behind Action"
+                >
+                  Learn More: The Theory Behind Action
+                </a>
+              </b>
             </p>
             <div className="wistia_responsive_padding" style={{padding: '56.25% 0 0 0', position: 'relative'}}>
               <div className="wistia_responsive_wrapper" style={{height: '100%', left: 0, position: 'absolute', top: 0, width: '100%'}}>
@@ -114,11 +123,8 @@ const Landing = (props) => {
             <br />
             <div className={css(styles.copyGroup)}>
               <p className={css(styles.copyParagraph)}>
-                Action is an open-source software solution crafted with
-                care by the folks at Parabol. We created this tool to make
-                work meaningful for agile business teams.
-              </p>
-              <p className={css(styles.copyParagraph)}>
+                {'Action is an open-source software solution crafted with care by the folks at Parabol.'}
+                <br />
                 To get involved,{' '}
                 <a
                   href="https://github.com/ParabolInc/action/blob/master/CONTRIBUTING.md"
@@ -139,7 +145,9 @@ const Landing = (props) => {
             <img className={css(styles.footerBrand)} src={parabolLogoMark} />
           </a>
           <div className={css(styles.footerCopy)}>
-            ©2017{' '}
+            {'©2017 Crafted with care by'}
+            <br className={css(styles.footerBreak)} />
+            {'the friendly folks at '}
             <a
               className={css(styles.footerLink)}
               href="http://www.parabol.co/"
@@ -147,8 +155,6 @@ const Landing = (props) => {
             >
               Parabol, Inc.
             </a>{' '}
-            <br className={css(styles.footerBreak)} />
-            Made with care by friendly folks.{' '}
             <br className={css(styles.footerBreak)} />
             Say hello:{' '}
             <a
@@ -183,7 +189,7 @@ const styleThunk = () => ({
   // -------
 
   layout: {
-    // Define
+    lineHeight: 1.5,
 
     [layoutBreakpoint]: {
       display: 'flex',
@@ -261,12 +267,11 @@ const styleThunk = () => ({
   mainHeading: {
     fontSize: '1.75rem',
     fontWeight: 700,
-    margin: '0 0 1.25rem',
+    margin: '0 0 .25em',
     textShadow,
 
     [headerBreakpoint]: {
-      fontSize: '3rem',
-      margin: '0 0 2rem'
+      fontSize: '3rem'
     }
   },
 
@@ -295,13 +300,13 @@ const styleThunk = () => ({
 
   // Combine styles with section
   sectionHasBorder: {
-    borderColor: appTheme.palette.cool30a,
+    borderColor: appTheme.palette.mid30a,
     borderTopStyle: 'solid',
     borderTopWidth: '2px'
   },
 
   sectionHeading: {
-    color: appTheme.palette.cool,
+    color: appTheme.palette.mid,
     fontSize: appTheme.typography.s6,
     fontWeight: 700,
     margin: '0 0 2rem',
@@ -425,11 +430,11 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.sBase,
     margin: '0 auto',
     maxWidth: '30rem',
-    textAlign: 'left',
+    textAlign: 'center',
 
     [layoutBreakpoint]: {
       fontSize: appTheme.typography.s5,
-      maxWidth: '40rem'
+      maxWidth: '48rem'
     }
   },
 
