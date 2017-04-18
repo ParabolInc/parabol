@@ -2,14 +2,15 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
+import Button from 'universal/components/Button/Button';
 
-// SVG images
-import parabolLogoMark from './images/parabol-logo-mark.svg';
-import actionLogo from './images/action-logo.svg';
+// Images
+import parabolLogoMark from 'universal/styles/theme/images/brand/parabol-lockup-h.svg';
 import teamCheckIcon from './images/team-check-icon.svg';
 import mapIcon from './images/map-icon.svg';
 import megaphoneIcon from './images/megaphone-icon.svg';
 import github from './images/github.svg';
+import teamingPhoto from 'universal/styles/theme/images/banners/teaming.jpg';
 
 const Landing = (props) => {
   const {handleLoginClick, styles} = props;
@@ -17,39 +18,63 @@ const Landing = (props) => {
     <div className={css(styles.layout)}>
       {/* Header */}
       <div className={css(styles.header)}>
-        <div className={css(styles.container)}>
-          <a href="http://www.parabol.co/" title="Parabol, Inc.">
-            <img className={css(styles.headerBrand)} src={parabolLogoMark} />
-          </a>
-          <img className={css(styles.actionLogo)} src={actionLogo} />
-          <h1 className={css(styles.mainHeading)}>Action</h1>
-          <h2 className={css(styles.mainSubheading)}>
-            An open-source tool for adaptive teams.
-          </h2>
-          <button
-            className={css(styles.ctaButton)}
-            onClick={handleLoginClick}
-            title="Get Started"
-          >
-            Get Started
-          </button>
-          <br />
-          {/* TODO: Add click handler for logging in */}
-          <a
-            className={css(styles.headerLink)}
-            href="#"
-            title="Log In"
-            onClick={handleLoginClick}
-          >
-            Or, log in
-          </a>
+        <div className={css(styles.headerInner)}>
+          <div className={css(styles.container)}>
+            <a className={css(styles.brandLink)} href="http://www.parabol.co/" title="Parabol, Inc.">
+              <img className={css(styles.brandLogo)} src={parabolLogoMark} />
+            </a>
+            <h1 className={css(styles.mainHeading)}>
+              ACTION: Software for Better Teaming
+            </h1>
+            <h2 className={css(styles.mainSubheading)}>
+              {'Teams use Action each week to track progress together, '}
+              {'unblock bottlenecks, rapidly reprioritize, and sync across all tools and disciplines.'}
+            </h2>
+            <Button
+              buttonStyle="solid"
+              colorPalette="warm"
+              label="Get Started"
+              onClick={handleLoginClick}
+              raised
+              size="largest"
+              textTransform="uppercase"
+            />
+            <div style={{marginTop: '1rem'}}>
+              <Button
+                buttonStyle="outlined"
+                colorPalette="white"
+                label="Log In"
+                onClick={handleLoginClick}
+                raised
+                size="smallest"
+                textTransform="uppercase"
+              />
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Content */}
       <div className={css(styles.content)}>
-        {/* How It Works */}
+
+        {/* Video */}
         <div className={css(styles.section)}>
+          <div className={css(styles.container)}>
+            <h2 className={css(styles.sectionHeading, styles.firstHeading)}>Parabol Action 101</h2>
+            <p className={css(styles.copyGroup, styles.firstCopy)}>
+              {'Curious about how Parabol Action works? Here’s our first demo video to introduce our beta software. '}
+              {'Check back frequently for updates as our software evolves!'}
+            </p>
+            <div className="wistia_responsive_padding" style={{padding: '56.25% 0 0 0', position: 'relative'}}>
+              <div className="wistia_responsive_wrapper" style={{height: '100%', left: 0, position: 'absolute', top: 0, width: '100%'}}>
+                <div className="wistia_embed wistia_async_zoyitx0tkh videoFoam=true" style={{height: '100%', width: '100%'}}>&nbsp;</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* How It Works */}
+        <div className={css(styles.section)} style={{display: 'none'}}>
           <div className={css(styles.container)}>
             <h2 className={css(styles.sectionHeading)}>How It Works</h2>
             <div className={css(styles.cardGroup)}>
@@ -114,7 +139,7 @@ const Landing = (props) => {
             <img className={css(styles.footerBrand)} src={parabolLogoMark} />
           </a>
           <div className={css(styles.footerCopy)}>
-            ©2016{' '}
+            ©2017{' '}
             <a
               className={css(styles.footerLink)}
               href="http://www.parabol.co/"
@@ -151,6 +176,7 @@ Landing.propTypes = {
 const layoutBreakpoint = '@media (min-width: 64rem)';
 const headerBreakpoint = '@media (min-width: 48rem)';
 const cardBreakpoint = '@media (min-width: 75rem)';
+const textShadow = '0 1px 0 rgba(0, 0, 0, .5)';
 
 const styleThunk = () => ({
   // Layout
@@ -167,9 +193,20 @@ const styleThunk = () => ({
   },
 
   header: {
+    alignItems: 'center',
     backgroundColor: appTheme.palette.warm,
+    backgroundImage: `url(${teamingPhoto})`,
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
     color: '#fff',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    minHeight: 'calc(100vw * .35)',
+    position: 'relative',
     textAlign: 'center',
+    width: '100%',
 
     [headerBreakpoint]: {
       padding: '2rem 1rem'
@@ -177,29 +214,42 @@ const styleThunk = () => ({
 
     [layoutBreakpoint]: {
       padding: 0
+    },
+
+    '::after': {
+      backgroundColor: appTheme.palette.dark,
+      bottom: 0,
+      content: '""',
+      left: 0,
+      opacity: '.65',
+      position: 'absolute',
+      right: 0,
+      top: 0,
+      zIndex: 100
     }
   },
 
-  headerBrand: {
-    left: '1rem',
-    position: 'absolute',
-    top: '1rem',
-    width: '2.75rem',
+  headerInner: {
+    position: 'relative',
+    zIndex: 200
+  },
+
+  brandLink: {
+    cursor: 'pointer',
+    display: 'block',
+    margin: '0 auto 2rem',
+    opacity: '.65',
 
     ':hover': {
-      opacity: '.65'
+      opacity: '1'
     },
-
-    [headerBreakpoint]: {
-      left: 0,
-      top: 0,
-      width: 'auto'
-    },
-
-    [layoutBreakpoint]: {
-      left: '2rem',
-      top: '2rem'
+    ':focus': {
+      opacity: '1'
     }
+  },
+
+  brandLogo: {
+    width: '12rem',
   },
 
   content: {
@@ -208,84 +258,33 @@ const styleThunk = () => ({
     }
   },
 
-  actionLogo: {
-    display: 'inline-block',
-    margin: '0 0 .5rem',
-    width: '4rem',
-
-    [headerBreakpoint]: {
-      width: 'auto'
-    }
-  },
-
   mainHeading: {
     fontSize: '1.75rem',
     fontWeight: 700,
-    margin: '0 0 1.125rem',
+    margin: '0 0 1.25rem',
+    textShadow,
 
     [headerBreakpoint]: {
       fontSize: '3rem',
-      margin: '0 0 1.875rem'
+      margin: '0 0 2rem'
     }
+  },
+
+  firstCopy: {
+    margin: '0 0 2rem'
   },
 
   mainSubheading: {
     fontSize: '1rem',
     fontWeight: 700,
-    margin: '0 0 1rem',
+    margin: '0 auto 1rem',
+    maxWidth: '52rem',
+    textShadow,
 
     [headerBreakpoint]: {
       fontSize: appTheme.typography.s6,
       fontWeight: 400,
-      margin: '0 0 1.5rem'
-    }
-  },
-
-  ctaButton: {
-    backgroundColor: 'transparent',
-    border: '1px solid currentColor',
-    color: 'inherit',
-    cursor: 'pointer',
-    display: 'inline-block',
-    fontSize: '1.25rem',
-    fontWeight: 700,
-    margin: '.5rem 0 1rem',
-    padding: '.75em 1.25em',
-    textAlign: 'center',
-    textDecoration: 'none',
-    textTransform: 'uppercase',
-
-    [headerBreakpoint]: {
-      fontSize: '1.5rem',
-      margin: '1rem 0'
-    },
-
-    // NOTE: Same styles for both :hover, :focus
-    ':hover': {
-      color: 'inherit',
-      opacity: '.65',
-      textDecoration: 'none'
-    },
-    ':focus': {
-      color: 'inherit',
-      opacity: '.65',
-      textDecoration: 'none'
-    }
-  },
-
-  headerLink: {
-    color: 'inherit',
-    display: 'inline-block',
-    fontWeight: 700,
-
-    // NOTE: Same styles for both :hover, :focus
-    ':hover': {
-      color: 'inherit',
-      opacity: '.75'
-    },
-    ':focus': {
-      color: 'inherit',
-      opacity: '.75'
+      margin: '0 auto 1.5rem'
     }
   },
 
@@ -311,6 +310,10 @@ const styleThunk = () => ({
     [layoutBreakpoint]: {
       margin: '0 0 4rem'
     }
+  },
+
+  firstHeading: {
+    margin: '0 0 1rem !important'
   },
 
   container: {

@@ -117,7 +117,7 @@ const ProjectColumn = (props) => {
   };
 
   const badgeColor = {
-    done: 'dark10d',
+    done: 'dark',
     active: 'cool',
     stuck: 'warm',
     future: 'mid'

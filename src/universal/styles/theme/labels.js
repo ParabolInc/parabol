@@ -49,7 +49,7 @@ const labels = {
       slug: STUCK
     },
     [DONE]: {
-      color: appTheme.palette.dark10d,
+      color: appTheme.palette.dark,
       icon: 'check',
       keystroke: 'd',
       label: 'Done',
@@ -66,7 +66,7 @@ const labels = {
     }
   },
   archive: {
-    color: appTheme.palette.dark,
+    color: appTheme.palette.dark10d,
     icon: 'archive',
     keystroke: 'c',
     label: 'Archive',
@@ -74,7 +74,7 @@ const labels = {
     slug: 'archive'
   },
   archived: {
-    color: appTheme.palette.dark,
+    color: appTheme.palette.dark10d,
     icon: 'archive',
     keystroke: 'c',
     label: 'Archived',

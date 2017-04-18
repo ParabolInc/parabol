@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "0.17.4",
+  "version": "0.17.5",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -30,7 +30,7 @@
     "build:server": "NODE_ENV=production webpack --config ./webpack/server.babel.js",
     "db:migrate": "./src/server/database/migrate.sh up-all",
     "db:migrate-testing": "NODE_ENV=test ./src/server/database/migrate.sh up-all && NODE_ENV=test node ./src/server/__tests__/setup/softenDurability.babel.js",
-    "test": "jest --coverage && codecov",
+    "test": "jest --bail --coverage && codecov",
     "test:intranetToken": "node ./src/server/utils/getIntranetToken.babel.js",
     "db:migrate-up": "./src/server/database/migrate.sh up",
     "db:migrate-up-all": "npm run db:migrate",
