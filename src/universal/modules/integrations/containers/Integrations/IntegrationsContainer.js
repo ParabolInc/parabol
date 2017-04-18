@@ -69,7 +69,7 @@ IntegrationsContainer.propTypes = {
   closePortal: PropTypes.func.isRequired,
   isClosing: PropTypes.bool,
   teamMemberId: PropTypes.string.isRequired,
-  services: PropTypes.array.isRequired
+  services: PropTypes.object.isRequired
 };
 
 export default portal({escToClose: true, closeAfter: 100})(

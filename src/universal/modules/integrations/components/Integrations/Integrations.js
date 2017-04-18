@@ -69,7 +69,7 @@ Integrations.propTypes = {
   closeAfter: PropTypes.number,
   closePortal: PropTypes.func,
   isClosing: PropTypes.bool,
-  services: PropTypes.array.isRequired,
+  services: PropTypes.object.isRequired,
   teamMemberId: PropTypes.string.isRequired,
   styles: PropTypes.object
 };

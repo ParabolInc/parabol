@@ -12,50 +12,44 @@ class IntegrateSlack extends Component {
     super(props);
     this.state = {
       options: [],
-      syncsById: {}
+      channelList: []
     };
     this.lastUpdated = 0;
-    this.channelList = [];
-    this.getChannelList();
+    this.getChannelList(props.service);
   }
 
   componentWillReceiveProps(nextProps) {
     if (!this.props.service && nextProps.service) {
-      console.log('got the service');
-      this.getChannelList();
+      this.getChannelList(nextProps.service);
     }
   }
 
-  async getChannelList() {
-    if (!this.props.service) {
-      return [];
+  async getChannelList(service = {}) {
+    const now = new Date();
+    const accessToken = service.id;
+    if (accessToken && now - this.lastUpdated > ms('30s')) {
+      this.lastUpdated = now;
+      const uri = `https://slack.com/api/channels.list?token=${accessToken}&exclude_archived=1`;
+      const res = await fetch(uri);
+      const resJson = await res.json();
+      if (resJson && resJson.ok) {
+        this.setState({
+          channelList: resJson.channels
+        });
+      }
     }
-    console.log('getting channelList)');
-    const accessToken = this.props.service && this.props.service.id;
-    const uri = `https://slack.com/api/channels.list?token=${accessToken}&exclude_archived=1`;
-    const res = await fetch(uri);
-    const resJson = await res.json();
-    if (resJson && resJson.ok) {
-      this.channelList = res.channels;
-      return res.channels;
-    }
-    return [];
+    return this.state.channelList;
   }
 
   dropdownMapper = async () => {
-    const now = new Date();
-    if (now - this.lastUpdated > ms('30s')) {
-      this.lastUpdated = now;
-      const channels = await this.getChannelList();
-      this.setState({
-        options: channels.map((channel) => ({id: channel.id, label: channel.name}))
-      });
-    }
+    const channels = await this.getChannelList(this.props.service);
+    this.setState({
+      options: channels.map((channel) => ({id: channel.id, label: channel.name}))
+    });
   };
 
   handleItemClick = (option) => () => {
     const {teamMemberId} = this.props;
-    console.log('you clicked', option.label);
     cashay.mutate('addSlackChannel', {variables: {teamMemberId, slackChannelId: option.id}});
   };
 
@@ -88,10 +82,10 @@ class IntegrateSlack extends Component {
           removeOauth={this.removeOauth}
         />
         {service && service.syncs.map((sync) => {
-          const channel = this.channelList.find((c) => c.id === sync.id);
+          const channel = this.state.channelList.find((c) => c.id === sync.slackChannelId);
           if (!channel) return null;
           return (
-            <div>
+            <div key={channel.id}>
               {channel.id} - {channel.name}
             </div>
           );
@@ -103,7 +97,7 @@ class IntegrateSlack extends Component {
 
 
 IntegrateSlack.propTypes = {
-  service: PropTypes.string,
+  service: PropTypes.object,
   teamMemberId: PropTypes.string.isRequired
 
 };
