@@ -70,7 +70,6 @@ const questions = [
   'What’s the weirdest thing in your fridge right now',
   'How are your hobbies doing',
   'What are you cooking next',
-  'Learn any new slang lately',
   'Heard any good advice lately',
   'If you could have one superpower today, what would it be',
   'What’s got your attention this week'
