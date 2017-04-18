@@ -118,4 +118,4 @@ stages:
         destination: build
 
       - type: test-results-store
-        path: /home/ubuntu/test-report.xml
+        path: /home/ubuntu/action/test-report.xml
