@@ -62,7 +62,7 @@ class IntegrateSlack extends Component {
   openOauth = () => {
     const {teamMemberId} = this.props;
     const redirect = makeHref('/auth/slack');
-    // eslint-disable-next-line no-undef
+    // eslint-disable-next-line
     const uri = `https://slack.com/oauth/authorize?client_id=${__SLACK_CLIENT_ID__}&scope=channels:read,chat:write:bot&state=${teamMemberId}&redirect_uri=${redirect}`;
     window.open(uri);
   };
@@ -104,7 +104,7 @@ class IntegrateSlack extends Component {
 
 IntegrateSlack.propTypes = {
   service: PropTypes.string,
-  teamMemberId: Proptypes.string.isRequired,
+  teamMemberId: PropTypes.string.isRequired
 
 };
 

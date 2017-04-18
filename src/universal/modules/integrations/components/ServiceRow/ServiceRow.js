@@ -68,7 +68,8 @@ ServiceRow.propTypes = {
   logo: PropTypes.string,
   openOauth: PropTypes.func,
   options: PropTypes.array,
-  removeOauth: PropTypes.func
+  removeOauth: PropTypes.func,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({
