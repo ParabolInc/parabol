@@ -18,7 +18,7 @@ export default {
       description: 'the email of the person to whom you are giving advanced features'
     }
   },
-  async resolve(source, {email}, {authToken, exchange}) {
+  async resolve(source, {email}, {authToken}) {
     const r = getRethink();
 
     // AUTH

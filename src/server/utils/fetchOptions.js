@@ -1,4 +1,4 @@
-export const postOptions = {
+export default {
   method: 'POST',
   headers: {
     Accept: 'application/json',

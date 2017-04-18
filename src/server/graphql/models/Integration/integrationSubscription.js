@@ -14,7 +14,7 @@ export default {
         description: 'The unique teamMember ID'
       }
     },
-    async resolve(source, {teamMemberId}, {authToken, exchange, socket}) {
+    async resolve(source, {teamMemberId}, {authToken, socket}) {
       // AUTH
       const [userId, teamId] = teamMemberId.split('::');
       requireSUOrSelf(authToken, userId);

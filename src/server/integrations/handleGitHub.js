@@ -1,7 +1,7 @@
 import closeClientPage from 'server/utils/closeClientPage';
 import fetch from 'node-fetch';
 import {stringify} from 'querystring';
-import {postOptions} from 'server/utils/fetchOptions';
+import postOptions from 'server/utils/fetchOptions';
 import handleIntegration from './handleIntegration';
 
 export default function (exchange) {

@@ -6,7 +6,7 @@ import {
   GraphQLID
 } from 'graphql';
 
-const IntegrationSync = new GraphQLObjectType({
+export const IntegrationSync = new GraphQLObjectType({
   name: 'IntegrationSync',
   description: 'A channel/repo/etc that is synced with the Parabol team',
   fields: () => ({

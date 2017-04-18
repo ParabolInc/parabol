@@ -1,8 +1,8 @@
 import closeClientPage from 'server/utils/closeClientPage';
 import fetch from 'node-fetch';
 import {stringify} from 'querystring';
-import Queue from 'server/utils/bull';
-import {postOptions} from 'server/utils/fetchOptions';
+// import Queue from 'server/utils/bull';
+import postOptions from 'server/utils/fetchOptions';
 import handleIntegration from './handleIntegration';
 
 export default function (exchange) {
@@ -20,7 +20,8 @@ export default function (exchange) {
     const slackRes = await fetch(uri, postOptions);
     const json = await slackRes.json();
     console.log('res', json);
-    const {access_token: accessToken, team_name: slackTeamName, team_id: slackTeamId} = json;
+    // const {access_token: accessToken, team_name: slackTeamName, team_id: slackTeamId} = json;
+    const {access_token: accessToken} = json;
     handleIntegration(accessToken, exchange, service, state);
   };
 }
