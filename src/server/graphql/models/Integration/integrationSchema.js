@@ -11,7 +11,7 @@ const IntegrationSync = new GraphQLObjectType({
   description: 'A channel/repo/etc that is synced with the Parabol team',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'shortid'},
-    integrationSyncId: {
+    slackChannelId: {
       type: GraphQLID,
       description: 'the sync id provided by the service, if available. Useful for fetching from their API'
     },

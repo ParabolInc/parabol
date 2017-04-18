@@ -12,7 +12,7 @@ query {
     userId
     syncs {
       id
-      integrationSyncId
+      slackChannelId
     }
   }
 }`;
@@ -52,13 +52,8 @@ const IntegrationsContainer = (props) => {
 };
 
 IntegrationsContainer.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  invitations: PropTypes.array.isRequired,
-  myTeamMemberId: PropTypes.string.isRequired,
-  orgApprovals: PropTypes.array.isRequired,
-  params: PropTypes.object.isRequired,
-  team: PropTypes.object.isRequired,
-  teamMembers: PropTypes.array.isRequired
+  teamMemberId: PropTypes.string.isRequired,
+  services: PropTypes.array.isRequired
 };
 
 export default portal({escToClose: true, closeAfter: 100})(

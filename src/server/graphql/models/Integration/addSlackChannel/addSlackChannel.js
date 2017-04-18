@@ -7,7 +7,7 @@ import {requireSUOrSelf, requireSUOrTeamMember, requireWebsocket} from 'server/u
 import {SLACK} from 'universal/utils/constants';
 import queryIntegrator from 'server/utils/queryIntegrator';
 import {errorObj} from 'server/utils/utils';
-import {handleRethinkAdd} from "../../../../utils/makeChangefeedHandler";
+import {handleRethinkUpdate} from "../../../../utils/makeChangefeedHandler";
 
 export default {
   type: GraphQLBoolean,
@@ -31,18 +31,22 @@ export default {
 
 
     // VALIDATION
-    const token = await queryIntegrator({
+    const {data: validationData, errors: validationErrors} = await queryIntegrator({
       action: 'getToken',
       payload: {
         service: SLACK,
         teamMemberId
       }
     });
+    if (validationErrors) {
+      throw errorObj({_error: validationErrors[0]});
+    }
+    const token = validationData.getToken;
     if (!token) {
       throw errorObj({_error: `No token found for ${teamMemberId}`});
     }
-
-    const channelInfo = await fetch(`https://slack.com/api/channels.info?token=${token}&channel=${slackChannelId}`);
+    const channelInfoUrl = `https://slack.com/api/channels.info?token=${token}&channel=${slackChannelId}`;
+    const channelInfo = await fetch(channelInfoUrl);
     const channelInfoJson = await channelInfo.json();
     if (!channelInfoJson.ok) {
       throw errorObj({_error: channelInfoJson.error})
@@ -62,8 +66,9 @@ export default {
 
     // notify all the listeners that a mutation occurred
     const channel = `integrations/${teamMemberId}`;
-    const payload = handleRethinkAdd(data);
-    exchange.publish(channel, {excludeSocket: socket.id, payload});
+    const payload = handleRethinkUpdate(data);
+    exchange.publish(channel, payload);
     return true;
   }
-}
+};
+

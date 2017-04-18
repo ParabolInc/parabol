@@ -71,13 +71,9 @@ const Integrations = (props) => {
 };
 
 Integrations.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  invitations: PropTypes.array.isRequired,
-  myTeamMember: PropTypes.object.isRequired,
-  orgApprovals: PropTypes.array,
+  services: PropTypes.array.isRequired,
+  teamMemberId: PropTypes.string.isRequired,
   styles: PropTypes.object,
-  team: PropTypes.object.isRequired,
-  teamMembers: PropTypes.array.isRequired
 };
 
 const styleThunk = () => ({

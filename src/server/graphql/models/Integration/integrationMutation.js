@@ -7,8 +7,10 @@ import {
 } from 'graphql';
 import {requireSUOrSelf, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
 import queryIntegrator from 'server/utils/queryIntegrator';
+import addSlackChannel from './addSlackChannel/addSlackChannel';
 
 export default {
+  addSlackChannel,
   removeIntegration: {
     type: GraphQLBoolean,
     description: 'Remove an integration from a team',

@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import appTheme from 'universal/styles/theme/appTheme';
-import {Field, reduxForm} from 'redux-form';
+import {reduxForm} from 'redux-form';
 import slackLogo from 'universal/styles/theme/images/graphics/Slack_Mark.svg';
 import {cashay} from 'cashay';
 import makeHref from "universal/utils/makeHref";
@@ -38,32 +38,36 @@ class IntegrateSlack extends Component {
   };
 
   handleItemClick = (option) => () => {
+    const {teamMemberId} = this.props;
     console.log('you clicked', option.label);
     cashay.mutate('addSlackChannel', {variables: {teamMemberId, slackChannelId: option.id}})
   };
 
+  openOauth = () => {
+    const {teamMemberId} = this.props;
+    const redirect = makeHref('/auth/slack');
+    const uri = `https://slack.com/oauth/authorize?client_id=${__SLACK_CLIENT_ID__}&scope=channels:read,chat:write:bot&state=${teamMemberId}&redirect_uri=${redirect}`;
+    window.open(uri);
+  };
+
+  removeOauth = () => {
+    const {teamMemberId} = this.props;
+    cashay.mutate('removeIntegration', {variables: {teamMemberId, service: 'slack'}});
+  }
+
   render() {
-    const {
-      accessToken,
-      teamMemberId
-    } = this.props;
+    const {accessToken} = this.props;
     return (
       <ServiceRow
         accessToken={accessToken}
         dropdownMapper={this.dropdownMapper}
+        dropdownText="Add a Slack Channel"
         handleItemClick={this.handleItemClick}
-        label="Sync a channel"
         logo={slackLogo}
         name="Slack"
-        openOauth={() => {
-          const redirect = makeHref('/auth/slack');
-          const uri = `https://slack.com/oauth/authorize?client_id=${__SLACK_CLIENT_ID__}&scope=channels:read,chat:write:bot&state=${teamMemberId}&redirect_uri=${redirect}`;
-          window.open(uri);
-        }}
+        openOauth={this.openOauth}
         options={this.state.options}
-        removeOauth={() => {
-          cashay.mutate('removeIntegration', {variables: {teamMemberId, service: 'slack'}})
-        }}
+        removeOauth={this.removeOauth}
         form="slack"
       />
     );
@@ -80,7 +84,8 @@ IntegrateSlack.propTypes = {
   isLead: PropTypes.bool,
   picture: PropTypes.string,
   name: PropTypes.string,
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  teamMemberId: PropTypes.string
 };
 
 const styleThunk = () => ({

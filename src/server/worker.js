@@ -109,15 +109,4 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   scServer.addMiddleware(MIDDLEWARE_SUBSCRIBE, mwMemoSubscribe);
   const connectionHandler = scConnectionHandler(exchange);
   scServer.on('connection', connectionHandler);
-
-  // messages straight from a microservice to be forwarded to the channel
-  actionSubQueue.process(async (job) => {
-    const {data: {channel, socketId, payload}} = job;
-    if (socketId) {
-      exchange.publish(channel, {socketId, payload});
-    } else {
-      exchange.publish(channel, payload);
-    }
-  })
-
 }

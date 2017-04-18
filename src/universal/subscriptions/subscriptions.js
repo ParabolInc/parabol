@@ -68,7 +68,7 @@ export default [
         userId,
         syncs {
           id
-          integrationSyncId
+          slackChannelId
         }
       }
     }`

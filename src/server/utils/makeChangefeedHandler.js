@@ -19,7 +19,7 @@ export const handleRethinkRemove = (doc, removalFields = ['id']) => {
   };
 };
 
-const handleRethinkUpdate = (doc) => {
+export const handleRethinkUpdate = (doc) => {
   const oldVals = doc.old_val;
   const newVals = doc.new_val;
   const oldFields = Object.keys(oldVals);

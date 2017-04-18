@@ -23,14 +23,27 @@ const targetAnchor = {
 
 let lastUpdated = 0;
 class ServiceDropdownInput extends Component {
+  constructor(props) {
+    super(props);
+    const {dropdownText} = props;
+    this.state = {
+      dropdownText
+    };
+  }
+
   render() {
-    const {accessToken, dropdownMapper, dropdownText, handleItemClick, input: {name, onChange, value}, itemClick, label, options, styles} = this.props;
+    const {accessToken, dropdownMapper, handleItemClick, input: {name, onChange, value}, itemClick, label, options, styles} = this.props;
     const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" onClick={dropdownMapper}/>;
+    const handleClick = (e) => {
+      this.setState({
+
+      })
+    }
     return (
       <FieldBlock>
         {label && <FieldLabel label={label} htmlFor={name}/>}
         <div className={css(styles.inputBlock)}>
-          <span>{dropdownText}</span>
+          <span>{this.state.dropdownText}</span>
           <Menu
             menuWidth="20rem"
             originAnchor={originAnchor}
@@ -38,12 +51,18 @@ class ServiceDropdownInput extends Component {
             toggle={toggle}
           >
             {options.map((option) => {
+              const onClick = (e) => {
+                this.setState({
+                  dropdownText: option.label
+                });
+                handleItemClick(option)(e);
+              };
               return (
                 <MenuItem
                   isActive={false}
                   key={`serviceDropdownMenuItem${option.id}`}
                   label={option.label}
-                  onClick={handleItemClick(option)}
+                  onClick={onClick}
                 />
               )
             })}
@@ -89,8 +108,7 @@ const styleThunk = () => ({
       borderColor: ui.fieldColorPalettes.gray.focusBorderColor,
       boxShadow: ui.fieldBoxShadow
     }),
-    position: 'relative',
-    width: '20rem'
+    position: 'relative'
   },
 
   menuButtonBlock: {

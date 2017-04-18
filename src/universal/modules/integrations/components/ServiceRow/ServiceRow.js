@@ -12,6 +12,7 @@ const ServiceRow = (props) => {
   const {
     accessToken,
     dropdownMapper,
+    dropdownText,
     handleItemClick,
     logo,
     name,
@@ -32,12 +33,13 @@ const ServiceRow = (props) => {
       </div>
       {
         accessToken ?
-          <div>
+          <div className={css(styles.hasToken)}>
             <Field
               component={ServiceDropdownInput}
               accessToken={accessToken}
               colorPalette="gray"
               dropdownMapper={dropdownMapper}
+              dropdownText={dropdownText}
               handleItemClick={handleItemClick}
               name="integrationOptions"
               options={options}
@@ -77,6 +79,10 @@ ServiceRow.propTypes = {
 };
 
 const styleThunk = () => ({
+  hasToken: {
+    display: 'flex'
+  },
+
   logo: {
     flexShrink: 0
   },
