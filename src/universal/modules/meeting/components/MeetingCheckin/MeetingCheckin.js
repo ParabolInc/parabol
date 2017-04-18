@@ -117,8 +117,9 @@ const styleThunk = () => ({
   },
 
   greeting: {
-    borderBottom: '1px dotted currentColor',
-    color: 'inherit'
+    borderBottom: '1px dashed currentColor',
+    color: 'inherit',
+    cursor: 'help'
   }
 });
 
