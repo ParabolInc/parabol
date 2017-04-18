@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import {reduxForm, Field} from 'redux-form';
 import InputField from 'universal/components/InputField/InputField';
 import Button from 'universal/components/Button/Button';
+import Type from 'universal/components/Type/Type';
 
 const ArchiveTeam = (props) => {
   const {
@@ -25,12 +26,17 @@ const ArchiveTeam = (props) => {
   return (
     <div>
       {!showConfirmationField ?
-        <Button
-          colorPalette="warm"
-          label="Archive Team"
-          size="smallest"
-          onClick={archiveTeamClick}
-        /> :
+        <div>
+          <Button
+            colorPalette="warm"
+            label="Delete Team"
+            size="smallest"
+            onClick={archiveTeamClick}
+          />
+          <Type width="auto" marginTop=".5rem" scale="s2">
+            <b>Note</b>: {'Currently, this can’t be undone.'}
+          </Type>
+        </div> :
         <form onSubmit={handleSubmit(handleFormSubmit)}>
           <Field
             autoFocus
