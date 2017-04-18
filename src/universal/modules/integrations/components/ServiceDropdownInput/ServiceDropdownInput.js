@@ -23,16 +23,9 @@ const targetAnchor = {
 
 let lastUpdated = 0;
 class ServiceDropdownInput extends Component {
-  constructor() {
-    super();
-    this.state = {
-      options: []
-    }
-  }
-
   render() {
-    const {accessToken, dropdownMapper, dropdownText, input: {name, onChange, value}, itemClick, label, organizations = [], styles} = this.props;
-    const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" onClick={dropdownMapper(accessToken, lastUpdated)}/>;
+    const {accessToken, dropdownMapper, dropdownText, handleItemClick, input: {name, onChange, value}, itemClick, label, options, styles} = this.props;
+    const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" onClick={dropdownMapper}/>;
     return (
       <FieldBlock>
         {label && <FieldLabel label={label} htmlFor={name}/>}
@@ -44,13 +37,13 @@ class ServiceDropdownInput extends Component {
             targetAnchor={targetAnchor}
             toggle={toggle}
           >
-            {this.state.options.map((repo) => {
+            {options.map((option) => {
               return (
                 <MenuItem
                   isActive={false}
-                  key={`serviceDropdownMenuItem${repo.id}`}
-                  label={repo.label}
-                  onClick={itemClick(accessToken, repo)}
+                  key={`serviceDropdownMenuItem${option.id}`}
+                  label={option.label}
+                  onClick={handleItemClick(option)}
                 />
               )
             })}

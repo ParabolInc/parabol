@@ -12,9 +12,11 @@ const ServiceRow = (props) => {
   const {
     accessToken,
     dropdownMapper,
+    handleItemClick,
     logo,
     name,
     openOauth,
+    options,
     removeOauth,
     styles
   } = props;
@@ -32,11 +34,13 @@ const ServiceRow = (props) => {
         accessToken ?
           <div>
             <Field
+              component={ServiceDropdownInput}
               accessToken={accessToken}
               colorPalette="gray"
               dropdownMapper={dropdownMapper}
-              component={ServiceDropdownInput}
-              name="repo"
+              handleItemClick={handleItemClick}
+              name="integrationOptions"
+              options={options}
             />
             <div className={css(styles.manageService)}>
               <Button

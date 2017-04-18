@@ -1,9 +1,26 @@
 import {
+  GraphQLList,
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLID,
 } from 'graphql';
+
+const IntegrationSync = new GraphQLObjectType({
+  name: 'IntegrationSync',
+  description: 'A channel/repo/etc that is synced with the Parabol team',
+  fields: () => ({
+    id: {type: new GraphQLNonNull(GraphQLID), description: 'shortid'},
+    integrationSyncId: {
+      type: GraphQLID,
+      description: 'the sync id provided by the service, if available. Useful for fetching from their API'
+    },
+    // name: {
+    //   type: GraphQLString,
+    //   description: 'The name of the sync (repo, channel, etc)'
+    // },
+  })
+});
 
 export const Integration = new GraphQLObjectType({
   name: 'Integration',
@@ -21,6 +38,10 @@ export const Integration = new GraphQLObjectType({
     userId: {
       type: GraphQLID,
       description: 'The user that the access token is attached to'
+    },
+    syncs: {
+      type: new GraphQLList(IntegrationSync),
+      description: 'A channel/repo/etc that is synced with the Parabol team'
     }
   })
 });

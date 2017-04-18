@@ -65,7 +65,11 @@ export default [
       integrations(teamMemberId: $teamMemberId) {
         id
         service
-        userId
+        userId,
+        syncs {
+          id
+          integrationSyncId
+        }
       }
     }`
   },

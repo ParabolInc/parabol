@@ -6,9 +6,8 @@ import {
   GraphQLString
 } from 'graphql';
 import {requireSUOrSelf, requireSUOrTeamMember, requireWebsocket} from 'server/utils/authorization';
-import Queue from 'server/utils/bull';
+import queryIntegrator from 'server/utils/queryIntegrator';
 
-const integratorQueue = Queue('integrator');
 export default {
   removeIntegration: {
     type: GraphQLBoolean,
@@ -32,14 +31,13 @@ export default {
       requireSUOrTeamMember(authToken, teamId);
       requireWebsocket(socket);
       // RESOLUTION
-      const channel = `integrations/${teamMemberId}`;
-      integratorQueue.add({
+      // const channel = `integrations/${teamMemberId}`;
+      const res = await queryIntegrator({
         action: 'removeToken',
-        channel,
         payload: {
+          service,
           teamMemberId
         },
-        service
       });
 
       // TODO refactor projects to hold an id like github's full_name for repos
@@ -49,7 +47,7 @@ export default {
           integrationId: 'foo'
         })
         .delete();
-      return true;
+      return res.data;
     }
   }
 };

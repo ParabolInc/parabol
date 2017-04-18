@@ -10,6 +10,10 @@ query {
     id
     service
     userId
+    syncs {
+      id
+      integrationSyncId
+    }
   }
 }`;
 

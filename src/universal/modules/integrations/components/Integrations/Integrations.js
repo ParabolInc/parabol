@@ -4,12 +4,8 @@ import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from '../../../../styles/theme/appTheme';
 import {overflowTouch} from 'universal/styles/helpers';
 import DashModal from "../../../../components/Dashboard/DashModal";
-import allServices from 'universal/modules/integrations/helpers/allServices';
-import ServiceRow from "../ServiceRow/ServiceRow";
+// import allServices from 'universal/modules/integrations/helpers/allServices';
 import ui from 'universal/styles/ui';
-import githubLogo from 'universal/styles/theme/images/graphics/GitHub-Mark-120px-plus.png';
-import {cashay} from 'cashay';
-import makeHref from "universal/utils/makeHref";
 import IntegrateSlack from 'universal/modules/integrations/components/IntegrateSlack/IntegrateSlack';
 
 const integrationPicker = {
@@ -34,11 +30,7 @@ const Integrations = (props) => {
         <div>Synced Accounts</div>
         <div>...</div>
         <div>Services</div>
-        {services.map((service) => {
-          const IntegrationComponent = integrationPicker[service.service];
-          if (!IntegrationComponent) return null;
-          return <IntegrationComponent accessToken={service.id} teamMemberId={teamMemberId}/>
-        })}
+        <IntegrateSlack accessToken={tokenLookup.slack} teamMemberId={teamMemberId}/>
 
         {/*<ServiceRow*/}
           {/*accessToken={tokenLookup.slack}*/}

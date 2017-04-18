@@ -1,9 +1,10 @@
 import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
 import {requireSUOrSelf, requireSUOrTeamMember} from 'server/utils/authorization';
 import {Integration} from './integrationSchema';
-import Queue from 'server/utils/bull';
+import queryIntegrator from 'server/utils/queryIntegrator';
+import {errorObj} from 'server/utils/utils';
+import {handleRethinkAdd} from "../../../utils/makeChangefeedHandler";
 
-const integratorSubQueue = Queue('integratorSub');
 export default {
   integrations: {
     type: new GraphQLList(Integration),
@@ -13,20 +14,27 @@ export default {
         description: 'The unique teamMember ID'
       }
     },
-    async resolve(source, {teamMemberId}, {authToken, socket}) {
+    async resolve(source, {teamMemberId}, {authToken, exchange, socket}) {
       // AUTH
       const [userId, teamId] = teamMemberId.split('::');
       requireSUOrSelf(authToken, userId);
       requireSUOrTeamMember(authToken, teamId);
 
       // RESOLUTION
-      integratorSubQueue.add({
-        channel: `integrations/${teamMemberId}`,
-        socketId: socket.id,
-        sub: 'getIntegrations',
-        variables: {
+      const {data, errors} = await queryIntegrator({
+        action: 'getIntegrations',
+        payload: {
           teamMemberId
         }
+      });
+      if (errors) {
+        throw errorObj({_error: errors[0]});
+      }
+
+      const channel = `integrations/${teamMemberId}`;
+      data.getIntegrations.forEach((doc) => {
+        const feedDoc = handleRethinkAdd(doc);
+        socket.emit(channel, feedDoc);
       });
     }
   }

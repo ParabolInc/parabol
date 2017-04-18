@@ -14,13 +14,14 @@ import scConnectionHandler from './socketHandlers/scConnectionHandler';
 import httpGraphQLHandler, {intranetHttpGraphQLHandler} from './graphql/httpGraphQLHandler';
 import mwPresencePublishOut from './socketHandlers/mwPresencePublishOut';
 import mwMemoPublishOut from './socketHandlers/mwMemoPublishOut';
-import mwGetIntegrationsPublishOut from './socketHandlers/mwGetIntegrationsPublishOut';
+import mwBroadcast from './socketHandlers/mwBroadcast';
 import mwPresenceSubscribe from './socketHandlers/mwPresenceSubscribe';
 import mwMemoSubscribe from './socketHandlers/mwMemoSubscribe';
 import stripeWebhookHandler from './billing/stripeWebhookHandler';
 import getDotenv from '../universal/utils/dotenv';
-import Queue from 'server/utils/bull';
-import handleIntegrations from './integrations/handleIntegrations';
+// import Queue from 'server/utils/bull';
+import handleGitHub from './integrations/handleGitHub';
+import handleSlack from './integrations/handleSlack';
 
 // Import .env and expand variables:
 getDotenv();
@@ -28,7 +29,6 @@ getDotenv();
 const PROD = process.env.NODE_ENV === 'production';
 const INTRANET_JWT_SECRET = process.env.INTRANET_JWT_SECRET || '';
 // used for initial responses
-const actionSubQueue = Queue('actionSub');
 
 export function run(worker) { // eslint-disable-line import/prefer-default-export
   console.log('   >> Worker PID:', process.pid);
@@ -92,8 +92,8 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   app.post('/stripe', stripeHandler);
 
   // integration setup callbacks
-  const integrationHandler = handleIntegrations(exchange);
-  app.get('/auth/:service', integrationHandler);
+  app.get('/auth/github', handleGitHub(exchange));
+  app.get('/auth/slack', handleSlack(exchange));
 
   // server-side rendering
   app.get('*', createSSR);
@@ -103,22 +103,12 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
 
   // handle sockets
   const {MIDDLEWARE_PUBLISH_OUT, MIDDLEWARE_SUBSCRIBE} = scServer;
-  scServer.addMiddleware(MIDDLEWARE_PUBLISH_OUT, mwGetIntegrationsPublishOut);
+  scServer.addMiddleware(MIDDLEWARE_PUBLISH_OUT, mwBroadcast);
   scServer.addMiddleware(MIDDLEWARE_PUBLISH_OUT, mwPresencePublishOut);
   scServer.addMiddleware(MIDDLEWARE_PUBLISH_OUT, mwMemoPublishOut);
   scServer.addMiddleware(MIDDLEWARE_SUBSCRIBE, mwPresenceSubscribe);
   scServer.addMiddleware(MIDDLEWARE_SUBSCRIBE, mwMemoSubscribe);
   const connectionHandler = scConnectionHandler(exchange);
   scServer.on('connection', connectionHandler);
-
-  // messages straight from a microservice to be forwarded to the channel
-  actionSubQueue.process(async (job) => {
-    const {data: {channel, socketId, payload}} = job;
-    if (socketId) {
-      exchange.publish(channel, {socketId, payload});
-    } else {
-      exchange.publish(channel, payload);
-    }
-  })
 
 }

@@ -135,3 +135,7 @@ export const tags = [
     description: 'Hidden from your main board'
   }
 ];
+
+/* Integrations */
+export const GITHUB = 'github';
+export const SLACK = 'slack';
