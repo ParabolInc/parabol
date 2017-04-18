@@ -145,7 +145,7 @@ const Landing = (props) => {
             <img className={css(styles.footerBrand)} src={parabolLogoMark} />
           </a>
           <div className={css(styles.footerCopy)}>
-            {'©2017 Crafted with care by'}
+            {'©2017 Crafted with care by '}
             <br className={css(styles.footerBreak)} />
             {'the friendly folks at '}
             <a
