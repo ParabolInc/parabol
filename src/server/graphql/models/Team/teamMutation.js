@@ -26,6 +26,7 @@ import updateTeamName from 'server/graphql/models/Team/updateTeamName/updateTeam
 import archiveTeam from 'server/graphql/models/Team/archiveTeam/archiveTeam';
 import endMeeting from 'server/graphql/models/Team/endMeeting/endMeeting';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
+import notifySlack from './notifySlack/notifySlack';
 
 export default {
   moveMeeting: {
@@ -217,6 +218,8 @@ export default {
             teamName: r.table('Team').get(teamId)('name')
           });
         });
+      console.log('starting meeting')
+      notifySlack('startMeeting', teamId);
       return true;
     }
   },
