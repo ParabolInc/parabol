@@ -40,6 +40,15 @@ export default class LandingContainer extends Component {
           APP_UPGRADE_PENDING_RELOAD) {
       this.setState({refreshNeeded: true});
     }
+
+    const script1 = document.createElement('script');
+    const script2 = document.createElement('script');
+    script1.src = '//fast.wistia.com/embed/medias/zoyitx0tkh.jsonp';
+    script1.async = true;
+    script2.src = '//fast.wistia.com/assets/external/E-v1.js';
+    script2.async = true;
+    document.body.appendChild(script1);
+    document.body.appendChild(script2);
   }
 
   componentDidMount() {
