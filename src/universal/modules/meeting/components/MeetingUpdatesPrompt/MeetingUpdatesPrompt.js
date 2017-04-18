@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react';
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
-import makeUsername from 'universal/utils/makeUsername';
 
 const MeetingUpdatesPrompt = (props) => {
   const {
@@ -8,8 +7,7 @@ const MeetingUpdatesPrompt = (props) => {
     members
   } = props;
   const currentTeamMember = members[localPhaseItem - 1];
-  const username = makeUsername(currentTeamMember.preferredName);
-  const heading = <span>{username}, <i>what’s changed since last week</i>?</span>;
+  const heading = <span>{currentTeamMember.preferredName}, <i>what’s changed since last week</i>?</span>;
   return (
     <MeetingPrompt
       avatar={currentTeamMember.picture}
