@@ -20,14 +20,14 @@ const getStartTime = (createdAt) => {
   }
   newTime.setSeconds(0);
 
-  //start
+  // start
   const YYYY = newTime.getFullYear();
   const MM = padLeftZero(newTime.getMonth() + 1);
   const DD = padLeftZero(newTime.getDate());
   const HH = padLeftZero(newTime.getHours());
   const mm = padLeftZero(newTime.getMinutes());
 
-  //end
+  // end
   const DURATION = ms('30m');
   const endTime = new Date(newTime + DURATION);
   const YYY2 = endTime.getFullYear();
@@ -40,6 +40,7 @@ const getStartTime = (createdAt) => {
 };
 
 export const createGoogleCalendarInviteURL = (createdAt, meetingUrl, teamName) => {
+  // eslint-disable-next-line max-len
   return encodeURI(`http://www.google.com/calendar/render?action=TEMPLATE&text=Action Meeting for ${teamName}&dates=${getStartTime(createdAt)}&trp=true&location=${meetingUrl}&sprop=${meetingUrl}&sprop=name:${teamName} Action Meeting`);
 };
 
@@ -71,4 +72,4 @@ END:VCALENDAR`;
 export const makeIcsUrl = (createdAt, meetingUrl, teamName) => {
   const baseUrl = meetingUrl.substr(0, meetingUrl.indexOf('/meeting'));
   return `${baseUrl}/email/createics?teamName=${teamName}&createdAt=${createdAt.getTime()}&meetingUrl=${meetingUrl}`;
-}
+};

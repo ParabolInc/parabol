@@ -4,13 +4,13 @@ import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
 import {trimString} from 'universal/utils';
 import EmptySpace from '../EmptySpace/EmptySpace';
-import Markdown from "../../../../components/Markdown/Markdown";
+import Markdown from '../../../../components/Markdown/Markdown';
 import isProjectPrivate from 'universal/utils/isProjectPrivate';
 
 const Card = (props) => {
   const {content, status, tags} = props;
   const isPrivate = isProjectPrivate(tags);
-  const backgroundColor = isPrivate ? ui.privateCardBgColor : `#FFFFFF`;
+  const backgroundColor = isPrivate ? ui.privateCardBgColor : '#FFFFFF';
 
   const cellStyle = {
     padding: 0,
@@ -52,7 +52,7 @@ const Card = (props) => {
         <tr>
           <td style={cellStyle}>
             <div style={contentStyle}>
-              <Markdown source={trimString(content, 52)}/>
+              <Markdown source={trimString(content, 52)} />
             </div>
           </td>
         </tr>

@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
-import FontAwesome from 'react-fontawesome';
 import {createGoogleCalendarInviteURL, makeIcsUrl} from 'universal/utils/makeCalendarInvites';
 
 import Body from '../../components/Body/Body';
@@ -111,133 +110,173 @@ const SummaryEmail = (props) => {
   const membersWithOutcomes = invitees.filter((invitee) => invitee.projects.length > 0);
   const presentMemberCount = invitees.filter((invitee) => invitee.present).length;
   const projectCount = invitees.reduce((sum, invitee) => sum + invitee.projects.length, 0);
-
   const bannerMessage = makeBannerMessage(referrer, referrerUrl);
   const hasUsersWithoutOutcomes = membersSansOutcomes.length !== 0;
+  const iconSize = 28;
+  const iconLinkBlock = {
+    backgroundColor: appTheme.palette.cool10l,
+    display: 'inline-block',
+    margin: '14px',
+    minWidth: '211px',
+    padding: '9px 8px'
+  };
+  const iconLink = {
+    color: appTheme.palette.cool
+  };
+  const iconLinkIcon = {
+    border: 0,
+    display: 'inline-block',
+    verticalAlign: 'middle'
+  };
+  const iconLinkLabel = {
+    display: 'inline-block',
+    height: `${iconSize}px`,
+    lineHeight: `${iconSize}px`,
+    margin: '0 0 0 6px',
+    verticalAlign: 'middle'
+  };
   return (
     <Layout>
       <table style={ui.emailTableBase} width="100%">
         <tbody>
-        <tr>
-          <td style={bannerStyle}>
-            <EmptySpace height={8}/>
-            {bannerMessage &&
-            <div style={bannerMessageStyles}>
-              {bannerMessage}
-            </div>
-            }
-            <EmptySpace height={8}/>
-          </td>
-        </tr>
+          <tr>
+            <td style={bannerStyle}>
+              <EmptySpace height={8} />
+              {bannerMessage &&
+              <div style={bannerMessageStyles}>
+                {bannerMessage}
+              </div>
+              }
+              <EmptySpace height={8} />
+            </td>
+          </tr>
         </tbody>
       </table>
       <Body verticalGutter={0}>
-      <table align="center" style={ui.emailTableBase} width="100%">
-        <tbody>
-        <tr>
-          <td align="center" style={{padding: 0}}>
-            {/* Summary Header */}
-            <SummaryHeader createdAt={createdAt} referrer={referrer} teamDashUrl={teamDashUrl} teamName={teamName}/>
-            {/* Message */}
-            {meetingNumber === 1 ?
-              <div>
-                <div style={message}>
-                  <b style={greetingStyles}>{makeSuccessExpression()}!</b><br />
-                  {`
-                  Way to go on your first Action Meeting!
-                  You are unlocking new superpowers.
-                  High-performing teams have regular habits!
-                  Create a 30-minute meeting at the start of each week.
-                  `}
-                  <span>
-                    <span>Click here to schedule:</span>
-                    <a
-                      href={createGoogleCalendarInviteURL(createdAt, meetingUrl, teamName)}
-                      rel="noopener noreferrer"
-                      target="_blank"
-                    >
-                      <FontAwesome name="google"/>
-                    </a>
-                    {' '}
-                    <a
-                      href={makeIcsUrl(createdAt, meetingUrl, teamName)}
-                      rel="noopener noreferrer"
-                      target="_blank"
-                    >
-                      <FontAwesome name="calendar-plus-o"/>
-                    </a>
-                  </span>
-                  <br />
-                  {`Or, make your own and include this link as the location`}
-                  <EmptySpace height={8}/>
-                  <table align="center" style={meetingLinkTable} width="80%">
-                    <tbody>
-                    <tr>
-                      <td align="center" style={meetingLinkBlock}>
-                        <a href={meetingUrl} style={meetingLink}>
-                          {meetingUrl}
-                        </a>
-                      </td>
-                    </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div> :
-              <div>
-                {agendaItemsCompleted === 0 ?
-                  <div style={message}>
-                    <b style={greetingStyles}>{'Hey there!'}</b><br />
-                    {'It looks like there weren’t any agenda items.'}<br />
-                    {'Did our software give you trouble?'}<br />
-                    {'Let us know: '}
-                    <a href="mailto:love@parabol.co" style={linkStyles} title="Email us at: love@parabol.co">love@parabol.co</a>
+        <table align="center" style={ui.emailTableBase} width="100%">
+          <tbody>
+            <tr>
+              <td align="center" style={{padding: 0}}>
+                {/* Summary Header */}
+                <SummaryHeader createdAt={createdAt} referrer={referrer} teamDashUrl={teamDashUrl} teamName={teamName} />
+                {/* Message */}
+                {meetingNumber === 1 ?
+                  <div>
+                    <div style={message}>
+                      <b style={greetingStyles}>{makeSuccessExpression()}!</b><br />
+                      {`
+                      Way to go on your first Action Meeting!
+                      You are unlocking new superpowers.
+                      High-performing teams have regular habits!
+                      Create a 30-minute meeting at the start of each week.
+                      `}
+                      <br />
+                      <div>
+                        <span>Click here to schedule:</span>
+                        <br />
+                        <div style={iconLinkBlock}>
+                          <a
+                            href={createGoogleCalendarInviteURL(createdAt, meetingUrl, teamName)}
+                            rel="noopener noreferrer"
+                            style={iconLink}
+                            target="_blank"
+                          >
+                            <img
+                              style={iconLinkIcon}
+                              src="/static/images/icons/google@5x.png"
+                              height={iconSize}
+                              width={iconSize}
+                            />
+                            <span style={iconLinkLabel}>Google Calendar</span>
+                          </a>
+                        </div>
+                        <div style={iconLinkBlock}>
+                          <a
+                            href={makeIcsUrl(createdAt, meetingUrl, teamName)}
+                            rel="noopener noreferrer"
+                            style={iconLink}
+                            target="_blank"
+                          >
+                            <img
+                              style={iconLinkIcon}
+                              src="/static/images/icons/calendar-plus-o@5x.png"
+                              height={iconSize}
+                              width={iconSize}
+                            />
+                            <span style={iconLinkLabel}>Outlook, etc.</span>
+                          </a>
+                        </div>
+                      </div>
+                      {'Or, make your own and include this link as the location:'}
+                      <EmptySpace height={8} />
+                      <table align="center" style={meetingLinkTable} width="80%">
+                        <tbody>
+                          <tr>
+                            <td align="center" style={meetingLinkBlock}>
+                              <a href={meetingUrl} style={meetingLink}>
+                                {meetingUrl}
+                              </a>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div> :
-                  <div style={message}>
-                    <b style={greetingStyles}>{makeSuccessExpression()}!</b><br />
-                    {makeSuccessStatement()}
+                  <div>
+                    {agendaItemsCompleted === 0 ?
+                      <div style={message}>
+                        <b style={greetingStyles}>{'Hey there!'}</b><br />
+                        {'It looks like there weren’t any agenda items.'}<br />
+                        {'Did our software give you trouble?'}<br />
+                        {'Let us know: '}
+                        <a href="mailto:love@parabol.co" style={linkStyles} title="Email us at: love@parabol.co">love@parabol.co</a>
+                      </div> :
+                      <div style={message}>
+                        <b style={greetingStyles}>{makeSuccessExpression()}!</b><br />
+                        {makeSuccessStatement()}
+                      </div>
+                    }
                   </div>
                 }
-              </div>
-            }
-            <EmptySpace height={8}/>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-      <table align="center" style={ui.emailTableBase} width="100%">
-        <tbody>
-        <tr>
-          <td align="center" style={quickStatsBlock}>
-            <QuickStats
-              agendaItems={agendaItemsCompleted}
-              newProjects={projectCount}
-              teamMembers={invitees.length}
-              teamMembersPresent={presentMemberCount}
-            />
-          </td>
-        </tr>
-        </tbody>
-      </table>
-      {membersWithOutcomes.map((member) =>
-        <UserProjects member={member} key={`userProjects'${member.id}`}/>
-      )}
-      {hasUsersWithoutOutcomes &&
-      <UserNoNewOutcomes members={membersSansOutcomes}/>
-      }
-      <EmptySpace height={0}/>
-      <hr style={ruleStyle}/>
-      <EmptySpace height={48}/>
-      <ContactUs
-        fontSize={18}
-        hasLearningLink
-        lineHeight={1.5}
-        prompt="How’d your meeting go?"
-        tagline="We’re eager for your feedback!"
-        vSpacing={0}
-      />
-      <EmptySpace height={32}/>
+                <EmptySpace height={8} />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table align="center" style={ui.emailTableBase} width="100%">
+          <tbody>
+            <tr>
+              <td align="center" style={quickStatsBlock}>
+                <QuickStats
+                  agendaItems={agendaItemsCompleted}
+                  newProjects={projectCount}
+                  teamMembers={invitees.length}
+                  teamMembersPresent={presentMemberCount}
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        {membersWithOutcomes.map((member) =>
+          <UserProjects member={member} key={`userProjects'${member.id}`} />
+        )}
+        {hasUsersWithoutOutcomes &&
+        <UserNoNewOutcomes members={membersSansOutcomes} />
+        }
+        <EmptySpace height={0} />
+        <hr style={ruleStyle} />
+        <EmptySpace height={48} />
+        <ContactUs
+          fontSize={18}
+          hasLearningLink
+          lineHeight={1.5}
+          prompt="How’d your meeting go?"
+          tagline="We’re eager for your feedback!"
+          vSpacing={0}
+        />
+        <EmptySpace height={32} />
       </Body>
-      <Footer color={appTheme.palette.dark}/>
+      <Footer color={appTheme.palette.dark} />
     </Layout>
   );
 };
