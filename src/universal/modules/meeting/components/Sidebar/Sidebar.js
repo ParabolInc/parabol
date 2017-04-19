@@ -289,15 +289,7 @@ const styleThunk = () => ({
     cursor: 'pointer',
     fontFamily: appTheme.typography.serif,
     fontSize: appTheme.typography.s5,
-    fontStyle: 'italic',
-    fontWeight: 700,
     lineHeight: '1.5'
-  },
-
-  timer: {
-    color: appTheme.palette.warm,
-    fontFamily: appTheme.typography.monospace,
-    fontSize: appTheme.typography.s4,
   }
 });
 

@@ -148,10 +148,8 @@ const styleThunk = () => ({
   },
 
   content: {
-    fontFamily: appTheme.typography.serif,
     fontSize: appTheme.typography.s3,
     flex: 1,
-    fontStyle: 'italic',
     fontWeight: 700,
     lineHeight,
     position: 'relative',

@@ -12,7 +12,7 @@ const DashSectionHeading = (props) => {
   return (
     <div className={css(styles.root)} style={{margin}}>
       <FontAwesome className={css(styles.icon)} name={icon} style={{...ib, lineHeight: 'inherit'}} />
-      <Type display="inlineBlock" lineHeight={ui.dashSectionHeaderLineHeight} scale="s4" colorPalette="dark">{label}</Type>
+      <Type display="inlineBlock" family="serif" lineHeight={ui.dashSectionHeaderLineHeight} scale="s4" colorPalette="dark">{label}</Type>
     </div>
   );
 };

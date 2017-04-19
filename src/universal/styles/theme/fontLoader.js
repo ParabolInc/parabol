@@ -1,50 +1,55 @@
-import karlaWoff2 from 'universal/styles/theme/fonts/Karla-regular.woff2';
-import karlaItalicWoff2 from 'universal/styles/theme/fonts/Karla-italic.woff2';
-import karlaBoldWoff2 from 'universal/styles/theme/fonts/Karla-700.woff2';
-import karalaBoldItalicWoff2 from 'universal/styles/theme/fonts/Karla-700italic.woff2';
-import merriweatherWoff2 from 'universal/styles/theme/fonts/Merriweather-regular.woff2';
-import merriweatherItalicWoff2 from 'universal/styles/theme/fonts/Merriweather-italic.woff2';
-import merriweatherBoldWoff2 from 'universal/styles/theme/fonts/Merriweather-700.woff2';
-import merriweatherBoldItalicWoff2 from 'universal/styles/theme/fonts/Merriweather-700italic.woff2';
 
-import karlaTrueType from 'universal/styles/theme/fonts/Karla-regular.ttf';
-import karlaItalicTrueType from 'universal/styles/theme/fonts/Karla-italic.ttf';
-import karlaBoldTrueType from 'universal/styles/theme/fonts/Karla-700.ttf';
-import karalaBoldItalicTrueType from 'universal/styles/theme/fonts/Karla-700italic.ttf';
-import merriweatherTrueType from 'universal/styles/theme/fonts/Merriweather-regular.ttf';
-import merriweatherItalicTrueType from 'universal/styles/theme/fonts/Merriweather-italic.ttf';
-import merriweatherBoldTrueType from 'universal/styles/theme/fonts/Merriweather-700.ttf';
-import merriweatherBoldItalicTrueType from 'universal/styles/theme/fonts/Merriweather-700italic.ttf';
+// fontLoader.js
+
+import webfontRobotoBoldWoff from 'universal/styles/theme/fonts/roboto-bold-webfont.woff';
+import webfontRobotoBoldWoff2 from 'universal/styles/theme/fonts/roboto-bold-webfont.woff2';
+
+import webfontRobotoBoldItalicWoff from 'universal/styles/theme/fonts/roboto-bolditalic-webfont.woff';
+import webfontRobotoBoldItalicWoff2 from 'universal/styles/theme/fonts/roboto-bolditalic-webfont.woff2';
+
+import webfontRobotoItalicWoff from 'universal/styles/theme/fonts/roboto-italic-webfont.woff';
+import webfontRobotoItalicWoff2 from 'universal/styles/theme/fonts/roboto-italic-webfont.woff2';
+
+import webfontRobotoRegularWoff from 'universal/styles/theme/fonts/roboto-regular-webfont.woff';
+import webfontRobotoRegularWoff2 from 'universal/styles/theme/fonts/roboto-regular-webfont.woff2';
+
+import webfontRobotoSlabBoldWoff from 'universal/styles/theme/fonts/robotoslab-bold-webfont.woff';
+import webfontRobotoSlabBoldWoff2 from 'universal/styles/theme/fonts/robotoslab-bold-webfont.woff2';
+
+import webfontRobotoSlabLightWoff from 'universal/styles/theme/fonts/robotoslab-light-webfont.woff';
+import webfontRobotoSlabLightWoff2 from 'universal/styles/theme/fonts/robotoslab-light-webfont.woff2';
+
+import webfontRobotoSlabRegularWoff from 'universal/styles/theme/fonts/robotoslab-regular-webfont.woff';
+import webfontRobotoSlabRegularWoff2 from 'universal/styles/theme/fonts/robotoslab-regular-webfont.woff2';
 
 const fontStylesRegular = {fontWeight: 400, fontStretch: 'normal', fontStyle: 'normal'};
 const fontStylesItalic = {fontWeight: 400, fontStretch: 'normal', fontStyle: 'italic'};
+const fontStylesLight = {fontWeight: 300, fontStretch: 'normal', fontStyle: 'normal'};
 const fontStylesBold = {fontWeight: 700, fontStretch: 'normal', fontStyle: 'normal'};
 const fontStylesBoldItalic = {fontWeight: 700, fontStretch: 'normal', fontStyle: 'italic'};
 
-const makeFont = (fontFamily, woffFile, ttfFile, style) => ({
+const makeFont = (fontFamily, woff2File, woffFile, style) => ({
   ...style,
   fontFamily,
-  src: `url('${woffFile}') format('woff2'), url('${ttfFile}') format('truetype')`
+  src: `url('${woff2File}') format('woff2'), url('${woffFile}') format('woff')`
 });
 
 
-const karla = makeFont('Karla', karlaWoff2, karlaTrueType, fontStylesRegular);
-const karlaItalic = makeFont('Karla', karlaItalicWoff2, karlaItalicTrueType, fontStylesItalic);
-const karlaBold = makeFont('Karla', karlaBoldWoff2, karlaBoldTrueType, fontStylesBold);
-const karlaBoldItalic = makeFont('Karla', karalaBoldItalicWoff2, karalaBoldItalicTrueType, fontStylesBoldItalic);
+const robotoBold = makeFont('Roboto', webfontRobotoBoldWoff2, webfontRobotoBoldWoff, fontStylesBold);
+const robotoBoldItalic = makeFont('Roboto', webfontRobotoBoldItalicWoff2, webfontRobotoBoldItalicWoff, fontStylesBoldItalic);
+const robotoItalic = makeFont('Roboto', webfontRobotoItalicWoff2, webfontRobotoItalicWoff, fontStylesItalic);
+const robotoRegular = makeFont('Roboto', webfontRobotoRegularWoff2, webfontRobotoRegularWoff, fontStylesRegular);
 
-const merriweather = makeFont('Merriweather', merriweatherWoff2, merriweatherTrueType, fontStylesRegular);
-const merriweatherItalic = makeFont('Merriweather', merriweatherItalicWoff2, merriweatherItalicTrueType, fontStylesItalic);
-const merriweatherBold = makeFont('Merriweather', merriweatherBoldWoff2, merriweatherBoldTrueType, fontStylesBold);
-const merriweatherBoldItalic = makeFont('Merriweather', merriweatherBoldItalicWoff2, merriweatherBoldItalicTrueType, fontStylesBoldItalic);
+const robotoSlabBold = makeFont('Roboto Slab', webfontRobotoSlabBoldWoff2, webfontRobotoSlabBoldWoff, fontStylesBold);
+const robotoSlabLight = makeFont('Roboto Slab', webfontRobotoSlabLightWoff2, webfontRobotoSlabLightWoff, fontStylesLight);
+const robotoSlabRegular = makeFont('Roboto Slab', webfontRobotoSlabRegularWoff2, webfontRobotoSlabRegularWoff, fontStylesRegular);
 
 export default [
-  karla,
-  karlaItalic,
-  karlaBold,
-  karlaBoldItalic,
-  merriweather,
-  merriweatherItalic,
-  merriweatherBold,
-  merriweatherBoldItalic
+  robotoBold,
+  robotoBoldItalic,
+  robotoItalic,
+  robotoRegular,
+  robotoSlabBold,
+  robotoSlabLight,
+  robotoSlabRegular
 ];

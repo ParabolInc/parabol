@@ -229,8 +229,7 @@ const ui = {
   //       in a better future we may be more adaptive/responsive (TA)
   dashHeaderTitleStyles: {
     color: appTheme.palette.dark,
-    fontSize: '1.75rem',
-    fontWeight: 400,
+    fontSize: appTheme.typography.s6,
     lineHeight: '1.5'
   },
   dashMinWidth: '79rem',
