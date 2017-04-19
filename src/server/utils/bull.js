@@ -35,5 +35,5 @@ export default (name) => {
   if (!opts) {
     startRedis();
   }
-  BullQueue(name, opts);
+  return BullQueue(name, opts);
 };

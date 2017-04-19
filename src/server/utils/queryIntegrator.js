@@ -1,6 +1,5 @@
 import Queue from 'server/utils/bull';
-
-const integratron = Queue('integratron');
+import getIntegratron from './getIntegratron';
 
 let channelNumber = -1;
 const queryIntegrator = (actionAndPayload) => {
@@ -17,6 +16,7 @@ const queryIntegrator = (actionAndPayload) => {
       const {data} = job;
       resolve(data);
     });
+    const integratron = getIntegratron();
     integratron.add({
       ...actionAndPayload,
       queue: oneTimeId
