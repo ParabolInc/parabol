@@ -11,7 +11,7 @@ const statements = [
   'Iteration is key!',
   'Moving forward, one step at a time!',
   'Looks like things are moving along!',
-  'Making progress, little!'
+  'Making progress, every day!'
 ];
 
 export const makeSuccessExpression = (number = getWeekOfYear()) => {
