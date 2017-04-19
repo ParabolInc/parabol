@@ -99,7 +99,11 @@ export default class EditingStatusContainer extends Component {
     const {active, editors, updatedAt, createdAt} = nextProps;
     const {timestampType} = this.state;
     const timestamp = timestampType === 'updatedAt' ? updatedAt : createdAt;
-    if (this.props.active !== active || this.props.editors !== editors) {
+    if (this.props.active !== active
+        || this.props.editors !== editors
+        || this.props.updatedAt !== updatedAt
+        || this.props.createdAt !== createdAt
+      ) {
       this.setState({
         editingStatus: makeEditingStatus(editors, active, timestamp, timestampType)
       });
@@ -119,7 +123,6 @@ export default class EditingStatusContainer extends Component {
       timestampType: newTimestampType,
       editingStatus: makeEditingStatus(editors, active, timestamp, newTimestampType)
     });
-    clearTimeout(this.refreshTimer);
   }
 
   render() {
