@@ -241,7 +241,7 @@ const ui = {
   // Email
   // ---------------------------------------------------------------------------
   emailBackgroundColor: backgroundColor,
-  emailFontFamily: '"Karla", "Helvetica Neue", serif',
+  emailFontFamily: '"Roboto", "Helvetica Neue", serif',
   emailRuleColor: appTheme.palette.mid20l,
   emailTableBase: {
     borderCollapse: 'collapse',
