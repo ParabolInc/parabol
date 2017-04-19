@@ -139,3 +139,6 @@ export const tags = [
 /* Integrations */
 export const GITHUB = 'github';
 export const SLACK = 'slack';
+
+/* JavaScript specifics */
+export const MAX_TIMEOUT = 2147483647;
