@@ -17,7 +17,7 @@ const Layout = (props) => {
     msoTableLspace: '0pt',
     msoTableRspace: '0pt',
     borderCollapse: 'collapse',
-    fontFamily: '"Karla", "Helvetica Neue", sans-serif',
+    fontFamily: '"Roboto", "Helvetica Neue", sans-serif',
     margin: '0px auto',
     textAlign: 'center'
   };

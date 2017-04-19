@@ -166,6 +166,7 @@ const styleThunk = () => ({
 
   heading: {
     color: appTheme.palette.mid,
+    fontFamily: appTheme.typography.serif,
     fontSize: appTheme.typography.s6,
     fontWeight: 400,
     lineHeight: '2rem',

@@ -1,7 +1,7 @@
 const typography = {
   // Font stacks
-  sansSerif: ['Karla', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
-  serif: ['Merriweather', 'Georgia', 'Times New Roman', 'Times', 'serif'],
+  sansSerif: ['Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+  serif: ['Roboto Slab', 'Georgia', 'Times New Roman', 'Times', 'serif'],
   monospace: ['Menlo', 'Monaco', 'Consolas', 'Courier New', 'monospace'],
 
   // Typography scale (matches a subset of Sketch defaults)

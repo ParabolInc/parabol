@@ -18,22 +18,30 @@ const Type = (props) => {
     marginTop,
     scale,
     colorPalette,
+    weight,
     width
   } = props;
 
+  const weights = {
+    bold: 700,
+    light: 300,
+    regular: 400
+  };
+  const fontWeight = bold ? 700 : weights[weight];
+
   const styleTag = {
-    textAlign: align,
-    fontWeight: bold ? 700 : null,
+    color: palettePlus[colorPalette],
     display: display === 'inlineBlock' ? 'inline-block' : display,
-    verticalAlign: display === 'inlineBlock' ? 'middle' : null,
     fontFamily: appTheme.typography[family],
     fontSize: appTheme.typography[scale],
-    color: palettePlus[colorPalette],
     fontStyle: italic ? 'italic' : null,
-    width: width === 'full' ? '100%' : width,
+    fontWeight,
     lineHeight,
     marginBottom,
-    marginTop
+    marginTop,
+    textAlign: align,
+    verticalAlign: display === 'inlineBlock' ? 'middle' : null,
+    width: width === 'full' ? '100%' : width
   };
 
   // mutates the above object, getting rid of nulls. not sure if react does this for us?
@@ -69,6 +77,7 @@ Type.propTypes = {
     'serif'
   ]),
   italic: PropTypes.bool,
+  light: PropTypes.bool,
   lineHeight: PropTypes.string,
   marginBottom: PropTypes.string,
   marginTop: PropTypes.string,
@@ -92,6 +101,11 @@ Type.propTypes = {
     'black',
     'white'
   ]),
+  weight: PropTypes.oneOf([
+    'bold',
+    'light',
+    'regular'
+  ]),
   width: PropTypes.oneOf([
     'auto',
     'full'
@@ -108,6 +122,7 @@ Type.defaultProps = {
   scale: 'sBase',
   style: 'normal',
   colorPalette: 'dark',
+  weight: 'regular',
   width: 'full'
 };
 

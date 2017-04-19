@@ -24,7 +24,7 @@ const UserActionListEmpty = () =>
   <div style={rootStyle}>
     <FontAwesome name="lightbulb-o" style={iconStyle} />
     <div style={{overflow: 'hidden'}}>
-      <Type family="serif" italic lineHeight="1.25rem" scale="s2">
+      <Type italic lineHeight="1.25rem" scale="s2">
         Actions are smaller tasks not tracked on the team dashboard;{' '}
         only you can see them after they are created.{' '}
         They are great for things you can complete in under a day or two.

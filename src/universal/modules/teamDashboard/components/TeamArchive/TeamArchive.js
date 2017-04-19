@@ -114,7 +114,6 @@ const styleThunk = () => ({
     backgroundColor: '#fff',
     border: `1px solid ${appTheme.palette.mid30l}`,
     borderRadius: '.25rem',
-    fontFamily: appTheme.typography.serif,
     fontSize: appTheme.typography.s2,
     fontStyle: 'italic',
     display: 'inline-block',

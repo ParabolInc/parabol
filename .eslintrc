@@ -27,7 +27,9 @@
         "json": "always",
         "png": "always",
         "jpg": "always",
-        "svg": "always"
+        "svg": "always",
+        "woff": "always",
+        "woff2": "always"
       }
     ],
     "import/first": 0,
