@@ -59,8 +59,8 @@ export default class EditingStatusContainer extends Component {
   };
 
   shouldComponentUpdate(nextProps) {
-    return this.props.active !== nextProps.active || this.props.editors !== nextProps.editors
-  };
+    return this.props.active !== nextProps.active || this.props.editors !== nextProps.editors;
+  }
 
   componentWillUnmount() {
     this.resetTimeout();
@@ -83,6 +83,6 @@ export default class EditingStatusContainer extends Component {
   render() {
     const {active, editors, updatedAt} = this.props;
     this.queueNextRender();
-    return <EditingStatus active={active} editors={editors} updatedAt={updatedAt}/>
+    return <EditingStatus active={active} editors={editors} updatedAt={updatedAt} />;
   }
 }
