@@ -88,6 +88,7 @@ export default class EditingStatusContainer extends Component {
     this.state = {
       editingStatus: makeEditingStatus(editors, active, updatedAt)
     };
+
   }
 
   componentWillReceiveProps(nextProps) {
