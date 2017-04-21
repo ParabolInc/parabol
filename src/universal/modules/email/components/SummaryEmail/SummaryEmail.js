@@ -172,7 +172,7 @@ const SummaryEmail = (props) => {
                       `}
                       <br />
                       <div>
-                        <span>Click here to schedule:</span>
+                        <span>{'Tap here to schedule:'}</span>
                         <br />
                         <div style={iconLinkBlock}>
                           <a
