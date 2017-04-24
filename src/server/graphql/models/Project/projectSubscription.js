@@ -20,10 +20,8 @@ export default {
       // AUTH
       // teamMemberId is of format 'userId::teamId'
       const [, teamId] = teamMemberId.split('::');
-      console.log('subbing', teamMemberId)
       requireSUOrTeamMember(authToken, teamId);
       await requireTeamIsPaid(teamId);
-      console.log('subbed!')
       const myTeamMemberId = `${authToken.sub}::${teamId}`;
       // RESOLUTION
       const requestedFields = getRequestedFields(refs);
