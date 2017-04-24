@@ -5,7 +5,7 @@ exports.up = async (r) => {
       return r.branch(
         project('isArchived'),
         project.merge({
-          tags: ['archived']
+          tags: ['#archived']
         }).without('isArchived'),
         project.merge({
           tags: []
@@ -22,7 +22,7 @@ exports.up = async (r) => {
     isArchived: false,
     sortOrder: idx, // meh, so they have to resort, oh well
     status: 'active',
-    tags: ['private'],
+    tags: ['#private'],
     teamId: action.teamMemberId.split('::')[1],
     teamMemberId: action.teamMemberId,
     updatedAt: action.updatedAt
@@ -60,7 +60,7 @@ exports.down = async (r) => {
   } catch (e) {
     //
   }
-  const projectsToConvert = await r.table('Project').getAll('private', {index: 'tags'});
+  const projectsToConvert = await r.table('Project').getAll('#private', {index: 'tags'});
   const actions = projectsToConvert.map((project, idx) => ({
     id: project.id,
     content: project.content,
@@ -76,9 +76,13 @@ exports.down = async (r) => {
   await r.table('Action').insert(actions);
 
   const mutations = [
-    r.table('Project').getAll('archived', {index: 'tags'}).update({
-      isArchived: true
-    })
+    r.table('Project').update((project) => ({
+      isArchived: r.branch(
+        project('tags').contains('#archived'),
+        true,
+        false
+      )
+    }))
   ];
 
   await Promise.all(mutations);
