@@ -84,7 +84,10 @@ exports.down = async (r) => {
   await Promise.all(mutations);
 
   const indices = [
-    r.table('Project').indexDrop('tags')
+    r.table('Project').indexDrop('tags'),
+    r.table('Action').indexCreate('userId'),
+    r.table('Action').indexCreate('teamMemberId'),
+    r.table('Action').indexCreate('agendaId'),
   ];
   try {
     await Promise.all(indices);
