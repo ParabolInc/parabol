@@ -15,60 +15,34 @@ import stringScore from 'string-score';
 class OutcomeCardTextArea extends Component {
   static propTypes = {
     cardHasHover: PropTypes.bool,
-    change: PropTypes.func,
-    doSubmitOnEnter: PropTypes.bool,
-    editingStatus: PropTypes.any,
-    handleActive: PropTypes.func,
-    handleSubmit: PropTypes.func,
-    input: PropTypes.object,
+    content: PropTypes.string,
     isArchived: PropTypes.bool,
     isPrivate: PropTypes.bool,
-    meta: PropTypes.shape({
-      active: PropTypes.bool
-    }),
+    name: PropTypes.string,
     styles: PropTypes.object,
-    teamMemberId: PropTypes.string,
-    teamMembers: PropTypes.array,
-    timestamp: PropTypes.string
+    teamMembers: PropTypes.array
   };
 
-  constructor(props) {
-    super(props);
-    const {input: {value}} = this.props;
-    this.state = {
-      isEditing: !value
-    };
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const {meta: {active}} = this.props;
-    const {handleActive, meta: {active: nextActive}} = nextProps;
-    if (active !== nextActive && handleActive) {
-      handleActive(nextActive);
+  submitOnEnter = (e) => {
+    // hitting enter (not shift+enter or any wacky combo) submits the textarea
+    if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      this.textAreaRef.blur();
+      e.preventDefault();
     }
-  }
-
-  setEditing = () => {
-    this.setState({isEditing: true});
   };
 
-  unsetEditing = () => {
-    this.setState({isEditing: false});
+  handleChange = (e) => {
+    const {setValue} = this.props;
+    setValue(e.target.value)
   };
-
-  handleChange = () => {
-    const {change, input: {name}} = this.props;
-    change(name, this.textAreaRef.value);
-  }
 
   renderEditing() {
     const {
-      doSubmitOnEnter,
-      handleSubmit,
-      input,
+      handleCardUpdate,
       isArchived,
       isPrivate,
-      styles
+      styles,
+      textAreaValue
     } = this.props;
     const contentStyles = css(
       styles.content,
@@ -76,24 +50,8 @@ class OutcomeCardTextArea extends Component {
       isArchived && styles.isArchived,
     );
 
-    const handleBlur = () => {
-      if (input.value) {
-        // if there's no value, then the document event listener will handle this
-        input.onBlur();
-        this.unsetEditing();
-        handleSubmit();
-      }
-    };
-
     const setRef = (c) => {
       this.textAreaRef = c;
-    };
-
-    const submitOnEnter = (e) => {
-      // hitting enter (not shift+enter or any wacky combo) submits the textarea
-      if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
-        this.textAreaRef.blur();
-      }
     };
 
     const atQuery = async (query) => {
@@ -125,17 +83,17 @@ class OutcomeCardTextArea extends Component {
     const mentionMenuStyle = css(styles.mentionMenu);
     return (
       <MentionWrapper
-        {...input}
         getRef={setRef}
         className={contentStyles}
         disabled={isArchived}
         maxLength={PROJECT_MAX_CHARS}
         placeholder="Type your outcome here"
-        onBlur={handleBlur}
+        onBlur={handleCardUpdate}
         onChange={this.handleChange}
         onDrop={null}
-        onKeyDown={doSubmitOnEnter ? submitOnEnter : null}
+        onKeyDown={this.submitOnEnter}
         autoFocus
+        value={textAreaValue}
         rows={3}
       >
         <MentionMenu className={mentionMenuStyle} trigger="@" item={MentionTeamMember} resolve={atQuery} />
@@ -148,11 +106,12 @@ class OutcomeCardTextArea extends Component {
 
   renderMarkdown() {
     const {
-      styles,
       cardHasHover,
       isArchived,
       isPrivate,
-      input: {value}
+      setEditing,
+      styles,
+      textAreaValue
     } = this.props;
     const markdownStyles = css(
       styles.markdown,
@@ -162,23 +121,15 @@ class OutcomeCardTextArea extends Component {
       isArchived && styles.isArchived
     );
     return (
-      <div
-        onClick={!isArchived && this.setEditing}
-        className={markdownStyles}
-      >
-        <Markdown source={value} />
+      <div onClick={!isArchived && setEditing} className={markdownStyles}>
+        <Markdown source={textAreaValue} />
       </div>
     );
   }
 
   render() {
-    const {input: {value}} = this.props;
-    return (
-      <div>
-        {(value && !this.state.isEditing) ? this.renderMarkdown() :
-          this.renderEditing()}
-      </div>
-    );
+    const {isEditing} = this.props;
+    return isEditing ? this.renderEditing() : this.renderMarkdown();
   }
 }
 
