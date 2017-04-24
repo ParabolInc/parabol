@@ -26,7 +26,7 @@ class IntegrateSlack extends Component {
 
   async getChannelList(service = {}) {
     const now = new Date();
-    const accessToken = service.id;
+    const {accessToken} = service;
     if (accessToken && now - this.lastUpdated > ms('30s')) {
       this.lastUpdated = now;
       const uri = `https://slack.com/api/channels.list?token=${accessToken}&exclude_archived=1`;
@@ -55,6 +55,7 @@ class IntegrateSlack extends Component {
 
   openOauth = () => {
     const {teamMemberId} = this.props;
+    console.log('sending tmi', teamMemberId)
     const redirect = makeHref('/auth/slack');
     // eslint-disable-next-line
     const uri = `https://slack.com/oauth/authorize?client_id=${__SLACK_CLIENT_ID__}&scope=channels:read,chat:write:bot&state=${teamMemberId}&redirect_uri=${redirect}`;
@@ -71,7 +72,7 @@ class IntegrateSlack extends Component {
     return (
       <div>
         <ServiceRow
-          accessToken={service && service.id}
+          accessToken={service && service.accessToken}
           dropdownMapper={this.dropdownMapper}
           dropdownText="Add a Slack Channel"
           handleItemClick={this.handleItemClick}

@@ -64,6 +64,7 @@ export default [
     subscription($teamMemberId: ID!) {
       integrations(teamMemberId: $teamMemberId) {
         id
+        accessToken
         service
         userId,
         syncs {

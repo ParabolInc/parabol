@@ -3,7 +3,7 @@ exports.up = async (r) => {
     r.table('Action'),
     r.table('Project').replace((project) => {
       return r.branch(
-        project('isArchived'),
+        project('isArchived').eq(true).default(false),
         project.merge({
           tags: ['#archived']
         }).without('isArchived'),
