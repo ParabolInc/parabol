@@ -1,7 +1,6 @@
 .DS_Store
 .env
 .idea/
-build/
 coverage/
 dll/
 node_modules/
