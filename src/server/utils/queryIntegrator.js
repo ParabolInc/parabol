@@ -8,9 +8,7 @@ const queryIntegrator = (actionAndPayload) => {
   return new Promise((resolve) => {
     const oneTimeQueue = Queue(oneTimeId);
     oneTimeQueue.on('completed', () => {
-      setTimeout(() => {
-        oneTimeQueue.close();
-      }, 100);
+      oneTimeQueue.close();
     });
     oneTimeQueue.process((job) => {
       const {data} = job;

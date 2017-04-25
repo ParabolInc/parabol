@@ -19,7 +19,7 @@ query {
 
 
 const mapStateToProps = (state, props) => {
-  const {form, outcomeId} = props;
+  const {outcomeId} = props;
   const {presence: editors} = cashay.query(editingStatusContainer, {
     op: 'editingStatusContainer',
     variables: {
@@ -40,10 +40,7 @@ const mapStateToProps = (state, props) => {
       }
     }
   }).data;
-  const formState = state.form[form];
-  const active = formState && formState.active === outcomeId;
   return {
-    active,
     editors
   };
 };
@@ -51,15 +48,15 @@ const mapStateToProps = (state, props) => {
 @connect(mapStateToProps)
 export default class EditingStatusContainer extends Component {
   static propTypes = {
-    active: PropTypes.bool,
     className: PropTypes.object,
+    isEditing: PropTypes.bool,
     editors: PropTypes.any,
     outcomeId: PropTypes.string,
     updatedAt: PropTypes.instanceOf(Date)
   };
 
   shouldComponentUpdate(nextProps) {
-    return this.props.active !== nextProps.active || this.props.editors !== nextProps.editors;
+    return this.props.isEditing !== nextProps.isEditing || this.props.editors !== nextProps.editors;
   }
 
   componentWillUnmount() {
@@ -81,8 +78,8 @@ export default class EditingStatusContainer extends Component {
   }
 
   render() {
-    const {active, editors, updatedAt} = this.props;
+    const {isEditing, editors, updatedAt} = this.props;
     this.queueNextRender();
-    return <EditingStatus active={active} editors={editors} updatedAt={updatedAt} />;
+    return <EditingStatus isEditing={isEditing} editors={editors} updatedAt={updatedAt} />;
   }
 }

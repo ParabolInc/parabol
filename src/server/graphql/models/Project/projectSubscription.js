@@ -22,7 +22,6 @@ export default {
       const [, teamId] = teamMemberId.split('::');
       requireSUOrTeamMember(authToken, teamId);
       await requireTeamIsPaid(teamId);
-
       const myTeamMemberId = `${authToken.sub}::${teamId}`;
       // RESOLUTION
       const requestedFields = getRequestedFields(refs);

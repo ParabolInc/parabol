@@ -11,27 +11,26 @@ import EditingStatusContainer from 'universal/containers/EditingStatus/EditingSt
 import OutcomeCardFooter from 'universal/modules/outcomeCard/components/OutcomeCardFooter/OutcomeCardFooter';
 import OutcomeCardAssignMenu from 'universal/modules/outcomeCard/components/OutcomeCardAssignMenu/OutcomeCardAssignMenu';
 import OutcomeCardStatusMenu from 'universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu';
-import {Field} from 'redux-form';
 import isProjectPrivate from 'universal/utils/isProjectPrivate';
 import isProjectArchived from 'universal/utils/isProjectArchived';
 
 const OutcomeCard = (props) => {
   const {
     area,
-    change,
     isAgenda,
-    form,
-    handleCardActive,
+    isEditing,
     handleCardUpdate,
-    handleSubmit,
     hasHover,
     hoverOn,
     hoverOff,
     openArea,
     openMenu,
     outcome,
+    setEditing,
+    setValue,
     styles,
     teamMembers,
+    textAreaValue,
     unarchiveProject
   } = props;
   const isPrivate = isProjectPrivate(outcome.tags);
@@ -64,21 +63,22 @@ const OutcomeCard = (props) => {
       {openArea === 'content' &&
         <div>
           <EditingStatusContainer
-            form={form}
+            isEditing={isEditing}
             outcomeId={outcome.id}
             updatedAt={outcome.updatedAt}
           />
-          <Field
+          <OutcomeCardTextarea
             cardHasHover={hasHover}
-            change={change}
-            component={OutcomeCardTextarea}
-            doSubmitOnEnter
-            handleActive={handleCardActive}
-            handleSubmit={handleSubmit(handleCardUpdate)}
-            name={outcome.id}
+            content={outcome.content}
+            handleCardUpdate={handleCardUpdate}
             isArchived={isArchived}
+            isEditing={isEditing}
             isPrivate={isPrivate}
+            name={outcome.id}
+            setEditing={setEditing}
+            setValue={setValue}
             teamMembers={teamMembers}
+            textAreaValue={textAreaValue}
           />
         </div>
       }
@@ -98,15 +98,14 @@ const OutcomeCard = (props) => {
 
 OutcomeCard.propTypes = {
   area: PropTypes.string,
-  change: PropTypes.func,
   children: PropTypes.any,
   isArchived: PropTypes.bool,
   isAgenda: PropTypes.bool,
-  handleCardActive: PropTypes.func,
   handleCardUpdate: PropTypes.func,
   hasHover: PropTypes.bool,
   hoverOn: PropTypes.func,
   hoverOff: PropTypes.func,
+  isEditing: PropTypes.bool,
   openArea: PropTypes.string,
   openMenu: PropTypes.func,
   styles: PropTypes.object,
@@ -116,17 +115,15 @@ OutcomeCard.propTypes = {
     status: PropTypes.oneOf(labels.projectStatus.slugs),
     teamMemberId: PropTypes.string
   }),
-  dispatch: PropTypes.func.isRequired,
-  form: PropTypes.string,
   editors: PropTypes.array,
-  field: PropTypes.string,
-  focus: PropTypes.func,
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,
   owner: PropTypes.object,
+  setEditing: PropTypes.func,
+  setValue: PropTypes.func,
   teamMembers: PropTypes.array,
+  textAreaValue: PropTypes.string,
   updatedAt: PropTypes.instanceOf(Date),
-  handleSubmit: PropTypes.func,
   unarchiveProject: PropTypes.func.isRequired
 };
 

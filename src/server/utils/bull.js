@@ -6,13 +6,12 @@ getDotenv();
 
 const urlString = process.env.REDIS_URL || 'redis://localhost:6379';
 
-let opts;
-const startRedis = () => {
+export default (name) => {
   // Re-use redis connections:
   const client = new Redis(urlString);
   const subscriber = new Redis(urlString);
 
-  opts = {
+  const opts = {
     redis: {
       opts: {
         createClient: (type) => {
@@ -28,12 +27,5 @@ const startRedis = () => {
       }
     }
   };
-};
-
-
-export default (name) => {
-  if (!opts) {
-    startRedis();
-  }
   return BullQueue(name, opts);
 };

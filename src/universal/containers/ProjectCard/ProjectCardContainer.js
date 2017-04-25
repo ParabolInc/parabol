@@ -19,6 +19,7 @@ const projectSource = {
   }
 };
 
+// TODO get rid of this & just use the object that's passed down
 const projectCardSubQuery = `
 query {
   project @cached(type: "Project") {
@@ -39,15 +40,12 @@ query {
     }
     updatedAt
   }
-  user @cached(type: "User") {
-    id
-  }
 }
 `;
 
 const mapStateToProps = (state, props) => {
   const projectId = props.project.id;
-  const {project, user} = cashay.query(projectCardSubQuery, {
+  const {project} = cashay.query(projectCardSubQuery, {
     op: 'projectCardContainer',
     key: projectId,
     variables: {projectId},
@@ -61,7 +59,7 @@ const mapStateToProps = (state, props) => {
   }).data;
   return {
     project,
-    myUserId: user.id
+    myUserId: state.auth.obj.sub
   };
 };
 
@@ -80,14 +78,12 @@ class ProjectCardContainer extends Component {
         {isDragging &&
           <ProjectDragLayer
             area={area}
-            form={project.id}
             outcome={project}
           />
         }
         <div style={{opacity: isDragging ? 0.5 : 1}}>
           <OutcomeOrNullCard
             area={area}
-            form={project.id}
             outcome={project}
             myUserId={myUserId}
           />

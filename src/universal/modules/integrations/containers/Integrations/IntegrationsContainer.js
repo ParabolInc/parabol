@@ -8,6 +8,7 @@ const teamSettingsQuery = `
 query {
   integrations(teamMemberId: $teamMemberId) @live {
     id
+    accessToken
     service
     userId
     syncs {

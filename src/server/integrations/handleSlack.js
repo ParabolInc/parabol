@@ -19,7 +19,6 @@ export default function (exchange) {
     const uri = `https://slack.com/api/oauth.access?${stringify(queryParams)}`;
     const slackRes = await fetch(uri, postOptions);
     const json = await slackRes.json();
-    console.log('res', json);
     // const {access_token: accessToken, team_name: slackTeamName, team_id: slackTeamId} = json;
     const {access_token: accessToken} = json;
     handleIntegration(accessToken, exchange, service, state);

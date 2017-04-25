@@ -26,7 +26,14 @@ export const Integration = new GraphQLObjectType({
   name: 'Integration',
   description: 'An invitation to become a team member',
   fields: () => ({
-    id: {type: new GraphQLNonNull(GraphQLID), description: 'The access token to the service'},
+    id: {
+      description: 'shortid',
+      type: new GraphQLNonNull(GraphQLID)
+    },
+    accessToken: {
+      description: 'The access token to the service. Not the ID because some tokens may be shared across teams (eg slack)',
+      type: new GraphQLNonNull(GraphQLID)
+    },
     service: {
       type: GraphQLString,
       description: 'The name of the service'
