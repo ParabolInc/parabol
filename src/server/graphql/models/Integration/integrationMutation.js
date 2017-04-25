@@ -10,6 +10,7 @@ import queryIntegrator from 'server/utils/queryIntegrator';
 import addSlackChannel from './addSlackChannel/addSlackChannel';
 import {GITHUB} from 'universal/utils/constants';
 import {handleRethinkRemove} from 'server/utils/makeChangefeedHandler';
+
 export default {
   addSlackChannel,
   removeIntegration: {

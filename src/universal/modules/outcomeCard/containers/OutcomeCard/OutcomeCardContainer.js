@@ -35,7 +35,7 @@ class OutcomeCardContainer extends Component {
       //   document.removeEventListener('click', this.handleDocumentClick);
       // }
       this.setState({
-        textAreaValue: nextProps.content
+        textAreaValue: nextContent
       });
     }
   }
@@ -43,6 +43,38 @@ class OutcomeCardContainer extends Component {
   componentWillUnmount() {
     document.removeEventListener('click', this.handleDocumentClick);
   }
+
+  setValue = (textAreaValue) => {
+    this.setState({
+      textAreaValue
+    });
+  };
+
+  setEditing = () => {
+    this.setState({isEditing: true});
+    document.addEventListener('click', this.handleDocumentClick);
+    const {outcome: {id: projectId}} = this.props;
+    const [teamId] = projectId.split('::');
+    cashay.mutate('edit', {
+      variables: {
+        teamId,
+        editing: `Task::${projectId}`
+      }
+    });
+  };
+
+  hoverOn = () => this.setState({hasHover: true});
+
+  hoverOff = () => this.setState({hasHover: false});
+
+  openMenu = (nextArea) => () => {
+    const {openArea} = this.state;
+    if (nextArea === openArea) {
+      this.setState({openArea: 'content'});
+    } else {
+      this.setState({openArea: nextArea});
+    }
+  };
 
   handleCardUpdate = () => {
     const {textAreaValue} = this.state;
@@ -61,8 +93,6 @@ class OutcomeCardContainer extends Component {
     }
   };
 
-
-
   handleDocumentClick = (e) => {
     // try to delete empty card unless they click inside the card
     if (!targetIsDescendant(e.target, findDOMNode(this))) {
@@ -70,38 +100,6 @@ class OutcomeCardContainer extends Component {
       this.unsetEditing();
     }
   };
-
-  hoverOn = () => this.setState({hasHover: true});
-
-  hoverOff = () => this.setState({hasHover: false});
-
-  openMenu = (nextArea) => () => {
-    const {openArea} = this.state;
-    if (nextArea === openArea) {
-      this.setState({openArea: 'content'});
-    } else {
-      this.setState({openArea: nextArea});
-    }
-  };
-
-  setEditing = () => {
-    this.setState({isEditing: true});
-    document.addEventListener('click', this.handleDocumentClick);
-    const {outcome: {id: projectId}} = this.props;
-    const [teamId] = projectId.split('::');
-    cashay.mutate('edit', {
-      variables: {
-        teamId,
-        editing: `Task::${projectId}`
-      }
-    });
-  };
-
-  setValue = (textAreaValue) => {
-    this.setState({
-      textAreaValue
-    });
-  }
 
   unarchiveProject = () => {
     const {outcome: {id, content}} = this.props;

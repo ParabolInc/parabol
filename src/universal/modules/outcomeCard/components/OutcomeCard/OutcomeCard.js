@@ -101,11 +101,11 @@ OutcomeCard.propTypes = {
   children: PropTypes.any,
   isArchived: PropTypes.bool,
   isAgenda: PropTypes.bool,
-  handleCardActive: PropTypes.func,
   handleCardUpdate: PropTypes.func,
   hasHover: PropTypes.bool,
   hoverOn: PropTypes.func,
   hoverOff: PropTypes.func,
+  isEditing: PropTypes.bool,
   openArea: PropTypes.string,
   openMenu: PropTypes.func,
   styles: PropTypes.object,
@@ -116,12 +116,13 @@ OutcomeCard.propTypes = {
     teamMemberId: PropTypes.string
   }),
   editors: PropTypes.array,
-  field: PropTypes.string,
-  focus: PropTypes.func,
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,
   owner: PropTypes.object,
+  setEditing: PropTypes.func,
+  setValue: PropTypes.func,
   teamMembers: PropTypes.array,
+  textAreaValue: PropTypes.string,
   updatedAt: PropTypes.instanceOf(Date),
   unarchiveProject: PropTypes.func.isRequired
 };

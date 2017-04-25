@@ -28,11 +28,11 @@ export const Integration = new GraphQLObjectType({
   fields: () => ({
     id: {
       description: 'shortid',
-      type: new GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID)
     },
     accessToken: {
       description: 'The access token to the service. Not the ID because some tokens may be shared across teams (eg slack)',
-      type: new GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID)
     },
     service: {
       type: GraphQLString,

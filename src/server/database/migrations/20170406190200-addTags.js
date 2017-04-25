@@ -91,7 +91,7 @@ exports.down = async (r) => {
     r.table('Project').indexDrop('tags'),
     r.table('Action').indexCreate('userId'),
     r.table('Action').indexCreate('teamMemberId'),
-    r.table('Action').indexCreate('agendaId'),
+    r.table('Action').indexCreate('agendaId')
   ];
   try {
     await Promise.all(indices);

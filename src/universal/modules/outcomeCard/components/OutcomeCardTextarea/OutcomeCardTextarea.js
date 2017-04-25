@@ -16,11 +16,16 @@ class OutcomeCardTextArea extends Component {
   static propTypes = {
     cardHasHover: PropTypes.bool,
     content: PropTypes.string,
+    handleCardUpdate: PropTypes.func,
     isArchived: PropTypes.bool,
+    isEditing: PropTypes.bool,
     isPrivate: PropTypes.bool,
     name: PropTypes.string,
+    setEditing: PropTypes.func,
+    setValue: PropTypes.func,
     styles: PropTypes.object,
-    teamMembers: PropTypes.array
+    teamMembers: PropTypes.array,
+    textAreaValue: PropTypes.string
   };
 
   submitOnEnter = (e) => {
@@ -33,7 +38,7 @@ class OutcomeCardTextArea extends Component {
 
   handleChange = (e) => {
     const {setValue} = this.props;
-    setValue(e.target.value)
+    setValue(e.target.value);
   };
 
   renderEditing() {

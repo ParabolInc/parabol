@@ -4,6 +4,7 @@ import NullCard from 'universal/components/NullCard/NullCard';
 
 export default class OutcomeOrNullCard extends Component {
   static propTypes = {
+    area: PropTypes.string,
     myUserId: PropTypes.string,
     outcome: PropTypes.object
   };
