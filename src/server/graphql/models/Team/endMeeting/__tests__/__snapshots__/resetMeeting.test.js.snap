@@ -70,8 +70,11 @@ Object {
   ],
   "team": Object {
     "activeFacilitator": null,
-    "checkInGreeting": "Salut",
-    "checkInQuestion": "Learn any new slang lately",
+    "checkInGreeting": Object {
+      "content": "Salut",
+      "language": "Catalan",
+    },
+    "checkInQuestion": "Heard any good advice lately",
     "facilitatorPhase": "lobby",
     "facilitatorPhaseItem": null,
     "id": 6,
