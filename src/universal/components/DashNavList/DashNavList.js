@@ -7,22 +7,29 @@ import appTheme from 'universal/styles/theme/appTheme';
 import FontAwesome from 'react-fontawesome';
 
 const DashNavList = (props) => {
-  const {teams, styles} = props;
+  const {organizations, teams, styles} = props;
   const hasTeams = teams.length > 0;
+  const hasOrgs = organizations.length > 1;
+
   return (
     <div className={css(styles.root)}>
       {hasTeams ?
         <div>
-          {teams.map((team) =>
-            <div key={`teamNav${team.id}`} className={css(styles.iconAndLink)}>
-              {!team.isPaid && <FontAwesome name="warning" className={css(styles.itemIcon)} title="Team is disabled for nonpayment" />}
-              <DashNavItem
-                href={`/team/${team.id}`}
-                label={team.name}
-                isPaid={team.isPaid}
-              />
-            </div>
-          )}
+          {teams.map((team) => {
+            const {orgName} = organizations.find((org) => org.id === team.orgId) || {};
+            return (
+              <div key={`teamNav${team.id}`} className={css(styles.iconAndLink)}>
+                {!team.isPaid && <FontAwesome name="warning" className={css(styles.itemIcon)} title="Team is disabled for nonpayment" />}
+                <DashNavItem
+                  href={`/team/${team.id}`}
+                  isPaid={team.isPaid}
+                  label={team.name}
+                  orgLabel={hasOrgs ? orgName : ''}
+                />
+              </div>
+            );
+          })
+        }
         </div> :
         <div className={css(styles.emptyTeams)}>It appears you are not a member of any team!</div>
       }
@@ -32,6 +39,7 @@ const DashNavList = (props) => {
 
 DashNavList.propTypes = {
   styles: PropTypes.object,
+  organizations: PropTypes.array,
   teams: PropTypes.arrayOf(
     PropTypes.shape({
       href: PropTypes.string,

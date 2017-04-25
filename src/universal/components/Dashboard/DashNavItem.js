@@ -7,7 +7,13 @@ import DashNavItemBaseStyles from './DashNavItemBaseStyles';
 import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 
 const DashNavItem = (props) => {
-  const {label, href, styles, router} = props;
+  const {
+    href,
+    label,
+    orgLabel,
+    router,
+    styles
+  } = props;
   const flagChildren = href === '/me';
   const isActive = router.isActive(href, flagChildren);
   const linkStyles = css(
@@ -20,7 +26,10 @@ const DashNavItem = (props) => {
       title={label}
       to={href}
     >
-      {label}
+      <div className={css(styles.label)}>{label}</div>
+      {orgLabel &&
+        <div className={css(styles.orgLabel)}>{orgLabel}</div>
+      }
     </Link>
   );
 };
@@ -28,6 +37,7 @@ const DashNavItem = (props) => {
 DashNavItem.propTypes = {
   href: PropTypes.string,
   label: PropTypes.string,
+  orgLabel: PropTypes.string,
   router: PropTypes.object,
   styles: PropTypes.object
 };
@@ -51,6 +61,18 @@ const styleThunk = () => ({
       backgroundColor: appTheme.palette.dark,
       cursor: 'default'
     })
+  },
+
+  label: {
+    lineHeight: '1.375'
+  },
+
+  orgLabel: {
+    color: '#fff',
+    fontSize: appTheme.typography.s1,
+    fontWeight: 700,
+    lineHeight: appTheme.typography.sBase,
+    opacity: '.5'
   }
 });
 
