@@ -97,7 +97,10 @@ class NewTeamFormContainer extends Component {
       };
       await cashay.mutate('addTeam', {variables});
       dispatch(segmentEventTrack('New Team',
-        {inviteeCount: invitees && invitees.length || 0}
+        {
+          inviteeCount: invitees && invitees.length || 0,
+          teamId: newTeamId
+        }
       ));
       dispatch(showSuccess({
         title: 'Team successfully created!',
