@@ -31,9 +31,6 @@ class OutcomeCardContainer extends Component {
     const {content: nextContent} = nextProps.outcome;
     const {content} = this.props.outcome;
     if (content !== nextContent) {
-      // if (!content) {
-      //   document.removeEventListener('click', this.handleDocumentClick);
-      // }
       this.setState({
         textAreaValue: nextContent
       });
@@ -85,19 +82,19 @@ class OutcomeCardContainer extends Component {
       cashay.mutate('updateProject', {
         variables: {
           updatedProject: {
-            id: name,
+            id: projectId,
             content: textAreaValue
           }
         }
       });
     }
+    this.unsetEditing();
   };
 
   handleDocumentClick = (e) => {
     // try to delete empty card unless they click inside the card
     if (!targetIsDescendant(e.target, findDOMNode(this))) {
       this.handleCardUpdate();
-      this.unsetEditing();
     }
   };
 
@@ -131,19 +128,23 @@ class OutcomeCardContainer extends Component {
 
   render() {
     const {hasHover, isEditing, openArea, textAreaValue} = this.state;
+    const {area, isAgenda, outcome, teamMembers} = this.props;
     return (
       <OutcomeCard
-        {...this.props}
+        area={area}
         handleCardUpdate={this.handleCardUpdate}
         hasHover={hasHover}
         hoverOn={this.hoverOn}
         hoverOff={this.hoverOff}
+        isAgenda={isAgenda}
         isEditing={isEditing}
         openArea={openArea}
         openMenu={this.openMenu}
+        outcome={outcome}
         unarchiveProject={this.unarchiveProject}
         setEditing={this.setEditing}
         setValue={this.setValue}
+        teamMembers={teamMembers}
         textAreaValue={textAreaValue}
       />
 
@@ -152,6 +153,7 @@ class OutcomeCardContainer extends Component {
 }
 
 OutcomeCardContainer.propTypes = {
+  area: PropTypes.string,
   outcome: PropTypes.shape({
     id: PropTypes.string,
     content: PropTypes.string,
@@ -165,7 +167,9 @@ OutcomeCardContainer.propTypes = {
   handleSubmit: PropTypes.func,
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,
+  isAgenda: PropTypes.bool,
   owner: PropTypes.object,
+  teamMembers: PropTypes.array,
   tags: PropTypes.array,
   updatedAt: PropTypes.instanceOf(Date)
 };
