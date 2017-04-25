@@ -228,7 +228,10 @@ Object {
   ],
   "team": Object {
     "activeFacilitator": 24,
-    "checkInGreeting": "Salut",
+    "checkInGreeting": Object {
+      "content": "Salut",
+      "language": "Catalan",
+    },
     "checkInQuestion": "Heard any good advice lately",
     "facilitatorPhase": "summary",
     "facilitatorPhaseItem": null,
@@ -594,7 +597,10 @@ Object {
   ],
   "team": Object {
     "activeFacilitator": 26,
-    "checkInGreeting": "Salut",
+    "checkInGreeting": Object {
+      "content": "Salut",
+      "language": "Catalan",
+    },
     "checkInQuestion": "Heard any good advice lately",
     "facilitatorPhase": "summary",
     "facilitatorPhaseItem": null,
