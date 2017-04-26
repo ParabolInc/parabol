@@ -1,5 +1,9 @@
 import ms from 'ms';
 
+// eslint-disable-next-line max-len
+const description = `Our weekly meeting to update each other on our progress, build and process an agenda to unblock one another and track new projects.
+  Add your conference or dial-in bridge information here.`;
+
 const padLeftZero = (number) => {
   return String(number).padStart(2, 0);
 };
@@ -40,8 +44,9 @@ const getStartTime = (createdAt) => {
 };
 
 export const createGoogleCalendarInviteURL = (createdAt, meetingUrl, teamName) => {
+  const text = `Action Meeting for ${teamName}`;
   // eslint-disable-next-line max-len
-  return encodeURI(`http://www.google.com/calendar/render?action=TEMPLATE&text=Action Meeting for ${teamName}&dates=${getStartTime(createdAt)}&trp=true&location=${meetingUrl}&sprop=${meetingUrl}&sprop=name:${teamName} Action Meeting`);
+  return encodeURI(`http://www.google.com/calendar/render?action=TEMPLATE&text=${text}&description=${description}&dates=${getStartTime(createdAt)}&trp=true&location=${meetingUrl}&sprop=${meetingUrl}&sprop=name:${teamName} Action Meeting`);
 };
 
 export const createICS = (createdAt, meetingUrl, teamName) => {
@@ -60,6 +65,7 @@ TRANSP:OPAQUE
 DTEND:${endTime}
 LOCATION:${meetingUrl}
 SUMMARY:Star Wars Day Party
+DESCRIPTION:${description}
 CLASS:PUBLIC
 SUMMARY:Action Meeting for ${teamName}
 CLASS:PUBLIC
