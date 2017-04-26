@@ -75,6 +75,6 @@ export default class EditingStatusContainer extends Component {
   render() {
     const {isEditing, editors, updatedAt} = this.props;
     this.queueNextRender();
-    return <EditingStatus isEditing={isEditing} editors={editors} updatedAt={updatedAt}/>;
+    return <EditingStatus isEditing={isEditing} editors={editors} updatedAt={updatedAt} />;
   }
 }
