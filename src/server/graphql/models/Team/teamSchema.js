@@ -33,7 +33,7 @@ export const Greeting = new GraphQLObjectType({
   name: 'Greeting',
   fields: () => ({
     content: {type: GraphQLString, description: 'The foreign-language greeting'},
-    language: {type: GraphQLString, description: 'The sourge language for the greeting'},
+    language: {type: GraphQLString, description: 'The source language for the greeting'}
   })
 });
 
