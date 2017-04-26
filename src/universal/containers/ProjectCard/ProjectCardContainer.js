@@ -73,7 +73,7 @@ class ProjectCardContainer extends Component {
 
   shouldComponentUpdate() {
     // this container is just for data & DnD, everything important will change below it
-    return false;
+    return this.props.isDragging;
   }
 
   render() {

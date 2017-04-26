@@ -1,12 +1,9 @@
 import ms from 'ms';
 
+// the ICS doesn't get the 'Add your conference' line because it doesn't accept line breaks. that's cool though because it isn't editable
 // eslint-disable-next-line max-len
 const description = `Our weekly meeting to update each other on our progress, build and process an agenda to unblock one another and track new projects.
-  Add your conference or dial-in bridge information here.`;
-
-const padLeftZero = (number) => {
-  return String(number).padStart(2, 0);
-};
+Add your conference or dial-in bridge information here.`;
 
 const getStartTime = (createdAt) => {
   const newTime = new Date(createdAt.getTime() + ms('7d'));
@@ -25,28 +22,20 @@ const getStartTime = (createdAt) => {
   newTime.setSeconds(0);
 
   // start
-  const YYYY = newTime.getFullYear();
-  const MM = padLeftZero(newTime.getMonth() + 1);
-  const DD = padLeftZero(newTime.getDate());
-  const HH = padLeftZero(newTime.getHours());
-  const mm = padLeftZero(newTime.getMinutes());
+  const start = newTime.toISOString().replace(/-|:|\.\d\d\d/g,'');
 
   // end
   const DURATION = ms('30m');
-  const endTime = new Date(newTime + DURATION);
-  const YYY2 = endTime.getFullYear();
-  const M2 = padLeftZero(endTime.getMonth() + 1);
-  const D2 = padLeftZero(endTime.getDate());
-  const H2 = padLeftZero(endTime.getHours());
-  const m2 = padLeftZero(endTime.getMinutes());
+  const endTime = new Date(newTime.getTime() + DURATION);
+  const end = endTime.toISOString().replace(/-|:|\.\d\d\d/g,'');
 
-  return `${YYYY}${MM}${DD}T${HH}${mm}00Z/${YYY2}${M2}${D2}T${H2}${m2}00Z`;
+  return `${start}/${end}`;
 };
 
 export const createGoogleCalendarInviteURL = (createdAt, meetingUrl, teamName) => {
   const text = `Action Meeting for ${teamName}`;
   // eslint-disable-next-line max-len
-  return encodeURI(`http://www.google.com/calendar/render?action=TEMPLATE&text=${text}&description=${description}&dates=${getStartTime(createdAt)}&trp=true&location=${meetingUrl}&sprop=${meetingUrl}&sprop=name:${teamName} Action Meeting`);
+  return encodeURI(`http://www.google.com/calendar/render?action=TEMPLATE&text=${text}&details=${description}&dates=${getStartTime(createdAt)}&trp=true&location=${meetingUrl}&sprop=${meetingUrl}&sprop=name:${teamName} Action Meeting`);
 };
 
 export const createICS = (createdAt, meetingUrl, teamName) => {
