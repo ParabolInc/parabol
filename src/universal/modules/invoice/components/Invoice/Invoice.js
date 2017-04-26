@@ -306,11 +306,11 @@ const styleThunk = () => ({
     borderTop: `1px solid ${ui.invoiceBorderColorLighter}`,
     marginTop: '1px',
     paddingTop: '1rem',
-    paddingRight: '1rem',
+    paddingRight: panelGutterSmall,
 
     [breakpoint]: {
       paddingTop: '2rem',
-      paddingRight: '2rem'
+      paddingRight: panelGutterLarge
     }
   },
 

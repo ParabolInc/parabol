@@ -188,7 +188,10 @@ export default [
     string: `
     subscription($teamId: ID!) {
        team(teamId: $teamId) {
-         checkInGreeting,
+         checkInGreeting {
+           content,
+           language
+         },
          checkInQuestion,
          id,
          isArchived,
