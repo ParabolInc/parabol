@@ -48,16 +48,11 @@ const mapStateToProps = (state, props) => {
 @connect(mapStateToProps)
 export default class EditingStatusContainer extends Component {
   static propTypes = {
-    className: PropTypes.object,
     isEditing: PropTypes.bool,
     editors: PropTypes.any,
     outcomeId: PropTypes.string,
     updatedAt: PropTypes.instanceOf(Date)
   };
-
-  shouldComponentUpdate(nextProps) {
-    return this.props.isEditing !== nextProps.isEditing || this.props.editors !== nextProps.editors;
-  }
 
   componentWillUnmount() {
     this.resetTimeout();
@@ -80,6 +75,6 @@ export default class EditingStatusContainer extends Component {
   render() {
     const {isEditing, editors, updatedAt} = this.props;
     this.queueNextRender();
-    return <EditingStatus isEditing={isEditing} editors={editors} updatedAt={updatedAt} />;
+    return <EditingStatus isEditing={isEditing} editors={editors} updatedAt={updatedAt}/>;
   }
 }

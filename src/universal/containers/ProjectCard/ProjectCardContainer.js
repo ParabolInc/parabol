@@ -71,13 +71,12 @@ class ProjectCardContainer extends Component {
     }
   }
 
-  shouldComponentUpdate() {
-    // this container is just for data & DnD, everything important will change below it
-    return this.props.isDragging;
+  shouldComponentUpdate(nextProps) {
+    const {isDragging, project} = nextProps;
+    return (project !== this.props.project || isDragging !== this.props.isDragging);
   }
 
   render() {
-    // console.log(count++)
     const {area, connectDragSource, isDragging, myUserId, project} = this.props;
     return connectDragSource(
       <div>
