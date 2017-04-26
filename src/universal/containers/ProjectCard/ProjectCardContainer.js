@@ -19,6 +19,7 @@ const projectSource = {
   }
 };
 
+// TODO get rid of this & just use the object that's passed down
 const projectCardSubQuery = `
 query {
   project @cached(type: "Project") {
@@ -39,15 +40,12 @@ query {
     }
     updatedAt
   }
-  user @cached(type: "User") {
-    id
-  }
 }
 `;
 
 const mapStateToProps = (state, props) => {
   const projectId = props.project.id;
-  const {project, user} = cashay.query(projectCardSubQuery, {
+  const {project} = cashay.query(projectCardSubQuery, {
     op: 'projectCardContainer',
     key: projectId,
     variables: {projectId},
@@ -57,11 +55,11 @@ const mapStateToProps = (state, props) => {
       // example of returning a string instead of a function so it runs in O(1)
       teamMember: (source) => source.teamMemberId,
       user: () => () => true
-    },
+    }
   }).data;
   return {
     project,
-    myUserId: user.id
+    myUserId: state.auth.obj.sub
   };
 };
 
@@ -73,21 +71,25 @@ class ProjectCardContainer extends Component {
     }
   }
 
+  shouldComponentUpdate() {
+    // this container is just for data & DnD, everything important will change below it
+    return false;
+  }
+
   render() {
+    // console.log(count++)
     const {area, connectDragSource, isDragging, myUserId, project} = this.props;
     return connectDragSource(
       <div>
         {isDragging &&
           <ProjectDragLayer
             area={area}
-            form={project.id}
             outcome={project}
           />
         }
         <div style={{opacity: isDragging ? 0.5 : 1}}>
           <OutcomeOrNullCard
             area={area}
-            form={project.id}
             outcome={project}
             myUserId={myUserId}
           />

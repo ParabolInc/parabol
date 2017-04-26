@@ -18,7 +18,7 @@ const meetingProject = ({id, content, status, teamMemberId}) => ({
   id,
   content,
   status,
-  teamMemberId,
+  teamMemberId
 });
 
 class MockDB {
@@ -61,7 +61,7 @@ class MockDB {
       trialOrg: idx === 0 ? orgId : null,
       userOrgs: [{
         id: orgId,
-        role: idx === 0 ? BILLING_LEADER : null,
+        role: idx === 0 ? BILLING_LEADER : null
       }]
     }));
     this.newTeam({id: teamId, orgId});
@@ -136,7 +136,7 @@ class MockDB {
         facilitatorPhase: CHECKIN,
         facilitatorPhaseItem: 1,
         meetingPhase: CHECKIN,
-        meetingPhaseItem: 1,
+        meetingPhaseItem: 1
       });
     } else {
       Object.assign(baseMeeting, {
@@ -150,7 +150,7 @@ class MockDB {
           picture: teamMember.picture,
           preferredName: teamMember.preferredName,
           present: true,
-          projects: projects.filter((a) => a.teamMemberId === teamMember.id),
+          projects: projects.filter((a) => a.teamMemberId === teamMember.id)
         })),
         projects
       });
@@ -234,6 +234,7 @@ class MockDB {
       activeFacilitator: null,
       facilitatorPhase: LOBBY,
       facilitatorPhaseItem: null,
+      isArchived: false,
       isPaid: true,
       meetingId: null,
       meetingPhase: LOBBY,
@@ -274,10 +275,10 @@ class MockDB {
       updatedAt: anHourAgo,
       userOrgs: [{
         id: orgId,
-        role: null,
+        role: null
       }],
       welcomeSentAt: anHourAgo,
-      ...overrides,
+      ...overrides
     });
   }
 

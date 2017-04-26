@@ -31,7 +31,7 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.sBase,
     fontWeight: 700,
     lineHeight: appTheme.typography.s5,
-    padding: `0 ${ui.fieldPaddingHorizontal} ${ui.fieldLabelGutter}`,
+    padding: `0 ${ui.fieldPaddingHorizontal} ${ui.fieldLabelGutter}`
   },
 
   resetPadding: {

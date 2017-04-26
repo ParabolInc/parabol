@@ -107,7 +107,7 @@ InputField.propTypes = {
     'white'
   ]),
   meta: PropTypes.object.isRequired,
-  underline: PropTypes.bool,
+  underline: PropTypes.bool
 };
 
 const styleThunk = () => ({
@@ -126,7 +126,7 @@ const styleThunk = () => ({
   fieldLarger: {
     fontSize: appTheme.typography.s6,
     fontWeight: 400,
-    lineHeight: '2.625rem',
+    lineHeight: '2.625rem'
   },
 
   fieldWider: {

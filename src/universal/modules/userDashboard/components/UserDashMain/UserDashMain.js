@@ -22,7 +22,7 @@ const UserDashMain = (props) => {
           <div className={css(styles.headerCopy)}>
             {makeDateString()}<br />
             <span className={css(styles.rallyLink)}>
-              <i>{getRallyLink()}</i>
+              <i>{getRallyLink()}!</i>
             </span>
           </div>
         </DashHeaderInfo>
@@ -70,7 +70,7 @@ const styleThunk = () => ({
   rallyLink: {
     color: 'inherit',
     fontWeight: 400
-  },
+  }
 });
 
 export default withStyles(styleThunk)(UserDashMain);

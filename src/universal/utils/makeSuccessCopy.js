@@ -3,18 +3,15 @@ import getWeekOfYear from 'universal/utils/getWeekOfYear';
 const expressions = [
   'Great job',
   'High five',
-  'Wowza',
-  'Boom',
-  'Woot, woot',
-  'Yaaasss'
+  'Nice work',
+  'Excellent'
 ];
 
 const statements = [
-  'You are on a roll!',
-  'One step closer to world domination!',
+  'Iteration is key!',
+  'Moving forward, one step at a time!',
   'Looks like things are moving along!',
-  'Making progress, little by little!',
-  'You are unstoppable!'
+  'Making progress, every day!'
 ];
 
 export const makeSuccessExpression = (number = getWeekOfYear()) => {

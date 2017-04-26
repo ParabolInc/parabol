@@ -22,7 +22,7 @@ const tony = {
 const bruce = {
   email: 'bruce.banner@avengers.org',
   name: 'Bruce Banner',
-  preferredName: 'Hulk',
+  preferredName: 'Hulk'
 };
 const natasha = {
   email: 'natasha.romanova@avengers.org',
@@ -32,12 +32,12 @@ const natasha = {
 const kyle = {
   email: 'kyle.richmond@avengers.org',
   name: 'Kyle Richmond',
-  preferredName: 'Nighthawk',
+  preferredName: 'Nighthawk'
 };
 const thor = {
   email: 'thor@avengers.org',
   name: 'Thor Odinson',
-  preferredName: 'Thor',
+  preferredName: 'Thor'
 };
 
 export default [steve, jonas, james, tony, bruce, natasha, kyle, thor];

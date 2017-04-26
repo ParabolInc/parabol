@@ -109,7 +109,7 @@ const styleThunk = () => ({
     color: appTheme.palette.mid,
     fontSize: appTheme.typography.s2,
     fontWeight: 700,
-    lineHeight: appTheme.typography.s4,
+    lineHeight: appTheme.typography.s4
   },
 
   infoLink: {

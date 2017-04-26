@@ -115,7 +115,7 @@ const styleThunk = () => ({
 
   fieldGroupColumn: {
     margin: '0 0 1rem',
-    position: 'relative',
+    position: 'relative'
   },
 
   // NOTE: Modifies fieldGroupColumn
@@ -144,8 +144,8 @@ const styleThunk = () => ({
 
   highlighted: {
     animationDuration: '1s',
-    animationName: highlightEmail,
-  },
+    animationName: highlightEmail
+  }
 });
 
 export default withStyles(styleThunk)(FieldArrayRow);

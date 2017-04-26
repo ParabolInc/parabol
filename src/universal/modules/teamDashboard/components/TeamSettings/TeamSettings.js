@@ -2,7 +2,6 @@ import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
-import {overflowTouch} from 'universal/styles/helpers';
 import {reduxForm} from 'redux-form';
 import InviteUser from 'universal/components/InviteUser/InviteUser';
 import UserRow from 'universal/components/UserRow/UserRow';
@@ -15,9 +14,12 @@ import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import Panel from 'universal/components/Panel/Panel';
 import ArchiveTeamContainer from 'universal/modules/teamDashboard/containers/ArchiveTeamContainer/ArchiveTeamContainer';
 import ui from 'universal/styles/ui';
+import IntegrationsContainer from '../../../integrations/containers/Integrations/IntegrationsContainer';
+import Button from '../../../../components/Button/Button';
 
 const TeamSettings = (props) => {
   const {
+    beta,
     dispatch,
     invitations,
     orgApprovals,
@@ -109,67 +111,74 @@ const TeamSettings = (props) => {
 
   return (
     <div className={css(styles.root)}>
-      <div className={css(styles.inviteBlock)}>
-        <InviteUser
-          dispatch={dispatch}
-          teamId={team.id}
-          invitations={invitations}
-          orgApprovals={orgApprovals}
-          teamMembers={teamMembers}
-        />
-      </div>
-      <div className={css(styles.body)}>
-        <div className={css(styles.scrollable)}>
-          {teamMembers.map((teamMember) => {
-            return (
-              <UserRow
-                {...teamMember}
-                actions={teamMemberRowActions(teamMember)}
-                key={`teamMemberKey${teamMember.id}`}
-              />
-            );
-          })
-          }
-          {invitations.map((invitation) => {
-            return (
-              <UserRow
-                {...invitation}
-                email={invitation.email}
-                invitedAt={`invited ${fromNow(invitation.updatedAt)}`}
-                actions={invitationRowActions(invitation)}
-                key={`invitationKey${invitation.email}`}
-              />
-            );
-          })
-          }
-          {orgApprovals.map((orgApproval) => {
-            return (
-              <UserRow
-                key={`approval${orgApproval.id}`}
-                id={orgApproval.id}
-                email={orgApproval.email}
-                invitedAt={`invited ${fromNow(orgApproval.createdAt)}`}
-                actions={orgApprovalRowActions(orgApproval)}
-              />
-            );
-          })}
-          {myTeamMember.isLead &&
-            <Panel label="Danger Zone">
-              <div className={css(styles.dangerZoneChildren)}>
-                <ArchiveTeamContainer
-                  teamId={team.id}
-                  teamName={team.name}
+      <div className={css(styles.panels)}>
+        <Panel label="Manage Team">
+          <div className={css(styles.panelBorder)}>
+            <InviteUser
+              dispatch={dispatch}
+              teamId={team.id}
+              invitations={invitations}
+              orgApprovals={orgApprovals}
+              teamMembers={teamMembers}
+            />
+            {teamMembers.map((teamMember) => {
+              return (
+                <UserRow
+                  {...teamMember}
+                  actions={teamMemberRowActions(teamMember)}
+                  key={`teamMemberKey${teamMember.id}`}
                 />
-              </div>
-            </Panel>
-          }
-        </div>
+              );
+            })
+            }
+            {invitations.map((invitation) => {
+              return (
+                <UserRow
+                  {...invitation}
+                  email={invitation.email}
+                  invitedAt={`invited ${fromNow(invitation.updatedAt)}`}
+                  actions={invitationRowActions(invitation)}
+                  key={`invitationKey${invitation.email}`}
+                />
+              );
+            })
+            }
+            {orgApprovals.map((orgApproval) => {
+              return (
+                <UserRow
+                  key={`approval${orgApproval.id}`}
+                  id={orgApproval.id}
+                  email={orgApproval.email}
+                  invitedAt={`invited ${fromNow(orgApproval.createdAt)}`}
+                  actions={orgApprovalRowActions(orgApproval)}
+                />
+              );
+            })}
+          </div>
+        </Panel>
+        {myTeamMember.isLead &&
+          <Panel label="Danger Zone">
+            <div className={css(styles.dangerZoneChildren)}>
+              <ArchiveTeamContainer
+                teamId={team.id}
+                teamName={team.name}
+              />
+            </div>
+          </Panel>
+        }
       </div>
+      {beta &&
+        <IntegrationsContainer
+          teamMemberId={myTeamMember.id}
+          toggle={<Button colorPalette="cool" label="Integrations" size="medium" buttonStyle="solid" />}
+        />
+      }
     </div>
   );
 };
 
 TeamSettings.propTypes = {
+  beta: PropTypes.number,
   dispatch: PropTypes.func.isRequired,
   invitations: PropTypes.array.isRequired,
   myTeamMember: PropTypes.object.isRequired,
@@ -188,26 +197,9 @@ const styleThunk = () => ({
     width: '100%'
   },
 
-  inviteBlock: {
+  panels: {
     maxWidth: '42rem',
     padding: '0 1rem'
-  },
-
-  body: {
-    flex: 1,
-    position: 'relative',
-    width: '100%'
-  },
-
-  scrollable: {
-    ...overflowTouch,
-    bottom: 0,
-    left: 0,
-    maxWidth: '42rem',
-    padding: '0 1rem 1rem',
-    position: 'absolute',
-    right: 0,
-    top: 0,
   },
 
   actionLinkBlock: {
@@ -231,8 +223,13 @@ const styleThunk = () => ({
     }
   },
 
+  panelBorder: {
+    borderTop: `1px solid ${ui.panelBorderColor}`
+  },
+
   dangerZoneChildren: {
-    padding: `0 ${ui.panelGutter} ${ui.panelGutter}`
+    borderTop: `1px solid ${ui.panelBorderColor}`,
+    padding: `${ui.panelGutter}`
   }
 });
 

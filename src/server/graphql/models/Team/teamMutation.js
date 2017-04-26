@@ -10,13 +10,13 @@ import {
   GraphQLBoolean,
   GraphQLID,
   GraphQLString,
-  GraphQLInt,
+  GraphQLInt
 } from 'graphql';
 import shortid from 'shortid';
 import {
   CHECKIN,
   LOBBY,
-  AGENDA_ITEMS,
+  AGENDA_ITEMS
 } from 'universal/utils/constants';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
@@ -26,6 +26,7 @@ import updateTeamName from 'server/graphql/models/Team/updateTeamName/updateTeam
 import archiveTeam from 'server/graphql/models/Team/archiveTeam/archiveTeam';
 import endMeeting from 'server/graphql/models/Team/endMeeting/endMeeting';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
+import notifySlack from './notifySlack/notifySlack';
 
 export default {
   moveMeeting: {
@@ -73,7 +74,7 @@ export default {
           facilitatorPhase: CHECKIN,
           facilitatorPhaseItem: 1,
           meetingPhase: CHECKIN,
-          meetingPhaseItem: 1,
+          meetingPhaseItem: 1
         });
         return true;
       }
@@ -202,7 +203,7 @@ export default {
         facilitatorPhase: CHECKIN,
         facilitatorPhaseItem: 1,
         meetingPhase: CHECKIN,
-        meetingPhaseItem: 1,
+        meetingPhaseItem: 1
       };
       await r.table('Team').get(teamId).update(updatedTeam)
         .do(() => {
@@ -217,6 +218,7 @@ export default {
             teamName: r.table('Team').get(teamId)('name')
           });
         });
+      notifySlack('startMeeting', teamId);
       return true;
     }
   },
@@ -283,7 +285,7 @@ export default {
     }
   },
   archiveTeam,
-  updateTeamName,
+  updateTeamName
 };
 
 

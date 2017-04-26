@@ -33,7 +33,7 @@ export default (store) => ({
     cbChild(null, [
       require('./userSettings').default(store),
       require('./organizations').default(store),
-      require('./notifications').default(store),
+      require('./notifications').default(store)
     ]);
   }
 });

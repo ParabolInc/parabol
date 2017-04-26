@@ -132,7 +132,7 @@ const styleThunk = () => ({
 
   avatarLayout: {
     flex: 1,
-    fontSize: 0,
+    fontSize: 0
   },
 
   avatarBlock: {

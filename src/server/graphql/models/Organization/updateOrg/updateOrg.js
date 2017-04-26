@@ -2,7 +2,7 @@ import getRethink from 'server/database/rethinkDriver';
 import {UpdateOrgInput} from '../organizationSchema';
 import {
   GraphQLNonNull,
-  GraphQLBoolean,
+  GraphQLBoolean
 } from 'graphql';
 import {
   getUserId,

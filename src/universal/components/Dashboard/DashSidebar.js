@@ -9,7 +9,7 @@ import FontAwesome from 'react-fontawesome';
 import DashNavListContainer from 'universal/containers/DashNavList/DashNavListContainer';
 import DashNavItem from './DashNavItem';
 import StandardHubContainer from 'universal/containers/StandardHub/StandardHubContainer';
-import Logo from 'universal/styles/theme/images/brand/parabol-lockup-h.svg';
+import Logo from 'universal/styles/theme/images/brand/parabol-beta-lockup.svg';
 import {Link, withRouter} from 'react-router';
 
 const DashSidebar = (props) => {
@@ -125,7 +125,7 @@ const styleThunk = () => ({
     position: 'absolute',
     right: '100%',
     top: '1px',
-    width: '24px',
+    width: '24px'
   },
 
   addTeamLabel: {
@@ -145,7 +145,6 @@ const styleThunk = () => ({
 
   logo: {
     display: 'inline-block',
-    opacity: '.5',
     verticalAlign: 'top'
   }
 });

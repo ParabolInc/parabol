@@ -2,7 +2,7 @@ import getRethink from 'server/database/rethinkDriver';
 import {
   GraphQLNonNull,
   GraphQLID,
-  GraphQLBoolean,
+  GraphQLBoolean
 } from 'graphql';
 import {requireWebsocket, requireSUOrTeamMember} from 'server/utils/authorization';
 import {REQUEST_NEW_USER} from 'universal/utils/constants';

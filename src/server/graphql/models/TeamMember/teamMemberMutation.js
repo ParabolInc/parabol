@@ -2,7 +2,7 @@ import getRethink from 'server/database/rethinkDriver';
 import {
   GraphQLNonNull,
   GraphQLID,
-  GraphQLBoolean,
+  GraphQLBoolean
 } from 'graphql';
 import {errorObj, getOldVal} from 'server/utils/utils';
 import {
@@ -17,7 +17,7 @@ import tmsSignToken from 'server/utils/tmsSignToken';
 import {JOIN_TEAM, PRESENCE} from 'universal/subscriptions/constants';
 import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {
-  ADD_USER,
+  ADD_USER
 } from 'server/utils/serverConstants';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import removeTeamMember from 'server/graphql/models/TeamMember/removeTeamMember/removeTeamMember';
@@ -134,7 +134,7 @@ export default {
             tms: userDoc('tms')
               .default([])
               .append(teamId)
-              .distinct(),
+              .distinct()
           };
         })
         // get number of users
@@ -157,7 +157,7 @@ export default {
             isLead: false,
             isFacilitator: true,
             picture: user.picture,
-            preferredName: user.preferredName,
+            preferredName: user.preferredName
             // conflict is possible if person was removed from the team + org & then rejoined (isNotRemoved would be false)
           }, {conflict: 'update'})
         )

@@ -10,6 +10,6 @@ export default function makeAgendaItemSchema() {
     isActive: (value) => value.boolean(),
     isComplete: (value) => value.boolean(),
     sortOrder: (value) => value.float(),
-    teamMemberId: compositeId,
+    teamMemberId: compositeId
   });
 }

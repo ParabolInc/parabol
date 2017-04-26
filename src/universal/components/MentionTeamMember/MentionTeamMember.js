@@ -1,10 +1,10 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import Avatar from "../Avatar/Avatar";
+import Avatar from '../Avatar/Avatar';
 import appTheme from 'universal/styles/theme/appTheme';
 
-const MentionItem = (props) => {
+const MentionTeamMember = (props) => {
   const {active, picture, value, styles} = props;
   const itemStyle = css(
     styles.row,
@@ -17,22 +17,32 @@ const MentionItem = (props) => {
         {value}
       </div>
     </div>
-  )
+  );
+};
+
+MentionTeamMember.propTypes = {
+  active: PropTypes.bool,
+  picture: PropTypes.string,
+  styles: PropTypes.object,
+  value: PropTypes.string
 };
 
 const styleThunk = () => ({
   active: {
-    background: appTheme.palette.cool
+    backgroundColor: appTheme.palette.dark,
+    color: '#fff'
   },
 
   name: {
-    marginLeft: '4px'
+    marginLeft: '.5rem'
   },
 
   row: {
+    alignItems: 'center',
+    cursor: 'pointer',
     display: 'flex',
-    padding: '4px'
+    padding: '.5rem'
   }
 });
 
-export default withStyles(styleThunk)(MentionItem);
+export default withStyles(styleThunk)(MentionTeamMember);

@@ -58,7 +58,7 @@ OrgUserRow.propTypes = {
     email: PropTypes.string,
     inactive: PropTypes.bool,
     picture: PropTypes.string,
-    preferredName: PropTypes.string,
+    preferredName: PropTypes.string
   }),
   styles: PropTypes.object
 };
@@ -95,7 +95,7 @@ const styleThunk = () => ({
     color: appTheme.palette.mid,
     fontSize: appTheme.typography.s2,
     fontWeight: 700,
-    lineHeight: appTheme.typography.s4,
+    lineHeight: appTheme.typography.s4
   },
 
   infoLink: {

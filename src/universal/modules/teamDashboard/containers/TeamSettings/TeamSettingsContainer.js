@@ -32,7 +32,8 @@ query {
 }`;
 
 const mapStateToProps = (state, props) => {
-  const {teamId} = props.params;
+  const {params: {teamId}} = props;
+  const teamMemberId = `${state.auth.obj.sub}::${teamId}`;
   const {invitations, orgApprovals, team, teamMembers} = cashay.query(teamSettingsQuery, {
     op: 'teamSettingsContainer',
     key: teamId,
@@ -41,14 +42,15 @@ const mapStateToProps = (state, props) => {
       invitations: (a, b) => a.createdAt > b.createdAt ? 1 : -1,
       orgApprovals: (a, b) => a.email > b.email ? 1 : -1
     },
-    variables: {teamId}
+    variables: {teamId, teamMemberId}
   }).data;
   return {
     invitations,
     orgApprovals,
     team,
     teamMembers,
-    myTeamMemberId: `${state.auth.obj.sub}::${teamId}`
+    myTeamMemberId: teamMemberId,
+    beta: state.auth.obj.bet
   };
 };
 
@@ -58,6 +60,7 @@ const TeamSettingsContainer = (props) => {
     orgApprovals,
     invitations,
     myTeamMemberId,
+    beta,
     team,
     teamMembers
   } = props;
@@ -71,6 +74,7 @@ const TeamSettingsContainer = (props) => {
       invitations={invitations}
       orgApprovals={orgApprovals}
       myTeamMember={myTeamMember}
+      beta={beta}
       team={team}
       teamMembers={teamMembers}
     />
@@ -78,6 +82,7 @@ const TeamSettingsContainer = (props) => {
 };
 
 TeamSettingsContainer.propTypes = {
+  beta: PropTypes.number,
   dispatch: PropTypes.func.isRequired,
   invitations: PropTypes.array.isRequired,
   myTeamMemberId: PropTypes.string.isRequired,

@@ -192,7 +192,7 @@ const ui = {
     [BUTTON_SIZE_SMALL]: iconSize,
     [BUTTON_SIZE_MEDIUM]: iconSizeAvatar,
     [BUTTON_SIZE_LARGE]: iconSizeAvatar,
-    [BUTTON_SIZE_LARGEST]: iconSize2x,
+    [BUTTON_SIZE_LARGEST]: iconSize2x
   },
   buttonLineHeight: '1.5em !important', // 2.5em
   buttonPadding: '.25em 1em',
@@ -211,7 +211,7 @@ const ui = {
   cardBorderRadius: borderRadiusMedium,
   cardBoxShadow: '0 1px 2px rgba(103, 107, 139, .75)',
   cardMaxWidth: '17.5rem',
-  cardMinHeight: '7.5rem',
+  cardMinHeight: '8.9375rem',
   cardPaddingBase: '.5rem',
   cardDragStyle: {
     backgroundColor: appTheme.palette.light10l,

@@ -46,7 +46,7 @@ export function s3SignUrl(operation, pathname, contentType,
   const s3Params = {
     Bucket: process.env.AWS_S3_BUCKET,
     ContentType: contentType,
-    Key: keyifyPath(pathname),
+    Key: keyifyPath(pathname)
   };
 
   if (operation === 'putObject') {

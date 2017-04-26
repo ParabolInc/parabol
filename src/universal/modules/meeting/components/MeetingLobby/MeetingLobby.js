@@ -69,7 +69,7 @@ MeetingLobby.propTypes = {
     name: PropTypes.string
   }),
   teamId: PropTypes.string,
-  teamName: PropTypes.string,
+  teamName: PropTypes.string
 };
 
 const styleThunk = () => ({
@@ -118,7 +118,7 @@ const styleThunk = () => ({
   urlBlock: {
     margin: '.5rem 0 0',
     verticalAlign: 'middle'
-  },
+  }
 });
 
 export default withStyles(styleThunk)(MeetingLobby);

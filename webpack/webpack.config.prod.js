@@ -73,7 +73,7 @@ export default {
   output: {
     filename: '[name]_[chunkhash].js',
     chunkFilename: '[name]_[chunkhash].js',
-    path: path.join(root, 'build'),
+    path: path.join(root, 'build')
   },
   resolve: {
     extensions: ['.js'],
@@ -100,6 +100,8 @@ export default {
       __PRODUCTION__: true,
       __WEBPACK__: true,
       __APP_VERSION__: JSON.stringify(npmPackage.version),
+      __GITHUB_CLIENT_ID__: JSON.stringify(process.env.GITHUB_CLIENT_ID),
+      __SLACK_CLIENT_ID__: JSON.stringify(process.env.SLACK_CLIENT_ID),
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
     new WebpackShellPlugin({

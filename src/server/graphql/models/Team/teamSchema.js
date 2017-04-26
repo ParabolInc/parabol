@@ -29,6 +29,14 @@ export const Phase = new GraphQLEnumType({
   }
 });
 
+export const Greeting = new GraphQLObjectType({
+  name: 'Greeting',
+  fields: () => ({
+    content: {type: GraphQLString, description: 'The foreign-language greeting'},
+    language: {type: GraphQLString, description: 'The source language for the greeting'}
+  })
+});
+
 export const Team = new GraphQLObjectType({
   name: 'Team',
   description: 'A team',
@@ -61,7 +69,7 @@ export const Team = new GraphQLObjectType({
     },
     /* Ephemeral meeting state */
     checkInGreeting: {
-      type: GraphQLString,
+      type: Greeting,
       description: 'The checkIn greeting (fun language)'
     },
     checkInQuestion: {

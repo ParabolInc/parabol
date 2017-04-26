@@ -73,7 +73,7 @@ const mapStateToProps = (state, props) => {
     },
     key,
     mutationHandlers,
-    variables: {teamId},
+    variables: {teamId}
   }).data;
   const projects = resolveTeamProjects(teamMembers);
   return {

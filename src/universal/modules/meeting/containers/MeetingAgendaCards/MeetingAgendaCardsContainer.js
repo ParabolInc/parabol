@@ -10,11 +10,11 @@ query {
     projects(teamMemberId: $teamMemberId) @live {
       id
       agendaId
-      type: __typename
       content
       createdAt
       createdBy
       status
+      tags
       teamMember @cached(type: "TeamMember") {
         picture
         preferredName
@@ -50,8 +50,8 @@ const mapStateToProps = (state, props) => {
       teamMember: (source) => source.teamMemberId
     },
     filter: {
-      projects: (outcome) => outcome.agendaId === agendaId,
-    },
+      projects: (outcome) => outcome.agendaId === agendaId
+    }
   }).data;
 
   return {

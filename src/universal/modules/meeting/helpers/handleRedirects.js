@@ -1,6 +1,6 @@
 import {
   AGENDA_ITEMS,
-  SUMMARY,
+  SUMMARY
 } from 'universal/utils/constants';
 import makePushURL from './makePushURL';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
@@ -46,7 +46,7 @@ export default function handleRedirects(oldProps, nextProps) {
         if (isFacilitating) {
           const variables = {
             teamId,
-            nextPhaseItem,
+            nextPhaseItem
           };
           cashay.mutate('moveMeeting', {variables});
         }

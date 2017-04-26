@@ -2,7 +2,7 @@ import getRethink from 'server/database/rethinkDriver';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
-  GraphQLID,
+  GraphQLID
 } from 'graphql';
 import {getUserId, requireNotificationOwner} from 'server/utils/authorization';
 
@@ -14,7 +14,7 @@ export default {
       notificationId: {
         type: new GraphQLNonNull(GraphQLID),
         description: 'The id of the notification to remove'
-      },
+      }
     },
     async resolve(source, {notificationId}, {authToken}) {
       const r = getRethink();

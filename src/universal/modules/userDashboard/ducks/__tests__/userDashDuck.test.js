@@ -1,5 +1,5 @@
 import reducer, {
-  filterTeam,
+  filterTeam
 } from '../userDashDuck';
 
 test('initial state', () => {

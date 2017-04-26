@@ -26,7 +26,6 @@ Badge.propTypes = {
   colorPalette: PropTypes.oneOf([
     'cool',
     'dark',
-    'dark10d', // for “Done” projects
     'mid',
     'warm'
   ]),

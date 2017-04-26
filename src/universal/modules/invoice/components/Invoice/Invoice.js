@@ -21,7 +21,7 @@ import {
   UPCOMING,
   ADDED_USERS,
   REMOVED_USERS,
-  INACTIVITY_ADJUSTMENTS,
+  INACTIVITY_ADJUSTMENTS
 } from 'universal/utils/constants';
 
 const descriptionMaker = {
@@ -187,7 +187,7 @@ const styleThunk = () => ({
 
     [breakpoint]: {
       margin: '2rem auto',
-      padding: invoiceGutterLarge,
+      padding: invoiceGutterLarge
     }
   },
 
@@ -201,7 +201,7 @@ const styleThunk = () => ({
 
     [breakpoint]: {
       margin: `${invoiceGutterLarge} 0`,
-      padding: `${panelGutterLarge} 0 ${panelGutterLarge} ${panelGutterLarge}`,
+      padding: `${panelGutterLarge} 0 ${panelGutterLarge} ${panelGutterLarge}`
     }
   },
 
@@ -252,7 +252,7 @@ const styleThunk = () => ({
     paddingBottom: '.75rem',
 
     [breakpoint]: {
-      marginTop: panelGutterLarge,
+      marginTop: panelGutterLarge
     }
   },
 
@@ -282,7 +282,7 @@ const styleThunk = () => ({
       marginLeft: '.5em',
       padding: '.0625rem .4375rem',
       textTransform: 'uppercase',
-      verticalAlign: 'middle',
+      verticalAlign: 'middle'
     }
   },
 
@@ -306,11 +306,11 @@ const styleThunk = () => ({
     borderTop: `1px solid ${ui.invoiceBorderColorLighter}`,
     marginTop: '1px',
     paddingTop: '1rem',
-    paddingRight: '1rem',
+    paddingRight: panelGutterSmall,
 
     [breakpoint]: {
       paddingTop: '2rem',
-      paddingRight: '2rem'
+      paddingRight: panelGutterLarge
     }
   },
 
@@ -324,7 +324,7 @@ const styleThunk = () => ({
   amountLineSub: {
     ...ui.invoiceItemBaseStyles,
     fontSize: appTheme.typography.s4,
-    lineHeight: '1.75rem',
+    lineHeight: '1.75rem'
   }
 });
 

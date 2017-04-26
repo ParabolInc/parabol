@@ -24,7 +24,7 @@ const mapStateToProps = (state, props) => {
     }
   }).data;
   return {
-    agendaItemCount: agenda.length,
+    agendaItemCount: agenda.length
   };
 };
 

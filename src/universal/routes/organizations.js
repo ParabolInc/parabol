@@ -3,7 +3,7 @@ import resolvePromiseMap from 'universal/utils/promises';
 const setImports = () =>
   new Map([
     ['component', System.import(
-      'universal/modules/userDashboard/containers/Organizations/OrganizationsContainer')],
+      'universal/modules/userDashboard/containers/Organizations/OrganizationsContainer')]
   ]);
 
 const getImports = (importMap) => ({

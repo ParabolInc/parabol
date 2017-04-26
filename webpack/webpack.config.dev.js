@@ -55,19 +55,21 @@ export default {
       __PRODUCTION__: false,
       __WEBPACK__: true,
       __APP_VERSION__: JSON.stringify(npmPackage.version),
+      __GITHUB_CLIENT_ID__: JSON.stringify(process.env.GITHUB_CLIENT_ID),
+      __SLACK_CLIENT_ID__: JSON.stringify(process.env.SLACK_CLIENT_ID),
       'process.env.NODE_ENV': JSON.stringify('development')
     }),
     new webpack.DllReferencePlugin({
       context: root,
       manifest: vendors
-    }),
+    })
     // new UnusedFilesWebpackPlugin()
   ],
   resolve: {
     alias: {
       // necessary when using symlinks that require these guys
       react: path.join(root, 'node_modules', 'react'),
-      'react-dom': path.join(root, 'node_modules', 'react-dom'),
+      'react-dom': path.join(root, 'node_modules', 'react-dom')
     },
     extensions: ['.js'],
     modules: [path.join(root, 'src'), 'node_modules']

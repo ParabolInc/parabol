@@ -29,11 +29,15 @@ const MeetingProject = new GraphQLObjectType({
       type: ProjectStatus,
       description: 'The description of the action created during the meeting'
     },
+    tags: {
+      type: new GraphQLList(GraphQLString),
+      description: 'The tags associated with the project'
+    },
     teamMemberId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The id of the team member the action was assigned to during the meeting'
     }
-  }),
+  })
 });
 
 // const HistoricalAction = new GraphQLObjectType({
@@ -162,7 +166,7 @@ const Meeting = new GraphQLObjectType({
       description: 'The teamMemberId of the person who ended the meeting'
     },
     invitees: {
-      type: new GraphQLList(MeetingInvitee),
+      type: new GraphQLList(MeetingInvitee)
     },
     meetingNumber: {
       type: new GraphQLNonNull(GraphQLInt),
@@ -200,7 +204,7 @@ const Meeting = new GraphQLObjectType({
           .getAll(teamId, {index: 'teamId'})
           .run();
       }
-    },
+    }
   })
 });
 

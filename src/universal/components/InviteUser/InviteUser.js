@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import Button from 'universal/components/Button/Button';
 import Editable from 'universal/components/Editable/Editable';
@@ -28,7 +29,7 @@ const fieldStyles = {
   color: appTheme.palette.dark,
   fontSize: appTheme.typography.s4,
   lineHeight: '1.625rem',
-  placeholderColor: appTheme.palette.mid70l,
+  placeholderColor: appTheme.palette.mid70l
 };
 
 const InviteUser = (props) => {
@@ -113,7 +114,7 @@ const styleThunk = () => ({
     alignItems: 'center',
     // borderBottom: `1px solid ${appTheme.palette.mid20l}`,
     display: 'flex',
-    padding: '1rem 0 1rem 1rem',
+    padding: ui.rowGutter,
     width: '100%'
   },
 

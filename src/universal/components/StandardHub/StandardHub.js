@@ -193,7 +193,7 @@ const styleThunk = () => ({
   },
 
   notificationsWithBadge: {
-    backgroundColor: appTheme.palette.dark50a,
+    backgroundColor: appTheme.palette.dark50a
   },
 
   notificationsActive: {

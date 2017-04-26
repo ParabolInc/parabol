@@ -5,6 +5,7 @@ import parseChannel from 'universal/utils/parseChannel';
 import {
   AGENDA,
   ARCHIVED_PROJECTS,
+  INTEGRATIONS,
   INVITATIONS,
   NOTIFICATIONS,
   ORG_APPROVALS,
@@ -28,6 +29,7 @@ import {
 const dechannelfy = {
   [AGENDA]: (variableString) => ({teamId: variableString}),
   [ARCHIVED_PROJECTS]: (variableString) => ({teamId: variableString}),
+  [INTEGRATIONS]: (teamMemberId) => ({teamMemberId}),
   [INVITATIONS]: (variableString) => ({teamId: variableString}),
   [NOTIFICATIONS]: (variableString) => ({userId: variableString}),
   [ORG_APPROVALS]: (teamId) => ({teamId}),
@@ -39,7 +41,7 @@ const dechannelfy = {
   [TEAM]: (variableString) => ({teamId: variableString}),
   [TEAM_MEMBERS]: (variableString) => ({teamId: variableString}),
   [UPCOMING_INVOICE]: (orgId) => ({orgId}),
-  [USERS_BY_ORG]: (orgId) => ({orgId}),
+  [USERS_BY_ORG]: (orgId) => ({orgId})
   // [USER_MEMO]: (userId) => ({userId})
   // [USERS_BY_IDS]: (variableString) => ({userIds: variableString})
 };

@@ -3,6 +3,7 @@ executorType: docker
 containerInfo:
   - image: node:7.6.0
   - image: rethinkdb:2.3.5
+  - image: redis:3.2.8
 stages:
   build:
     workDir: /home/ubuntu/action
@@ -19,12 +20,6 @@ stages:
           - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
 
       - type: checkout
-
-      - type: shell
-        name: Switch to Github user key
-        command: |
-          cp -f $(ls -1 ~/.ssh/id_rsa_* | head -n 1) ~/.ssh/id_rsa
-          rm -f ~/.ssh/*.pub
 
       - type: cache-restore
         key: action-{{ checksum "yarn.lock" }}
@@ -55,6 +50,7 @@ stages:
         name: NPM run test
         command: |
           npm run test
+          mkdir test-report ; mv test-report.xml test-report
 
       - type: shell
         name: Pre-build DevOps checkout
@@ -66,7 +62,11 @@ stages:
           else
             export DEPLOY_ENV="development"
           fi
-          git clone $DEVOPS_REPO $DEVOPS_WORKDIR &&
+          ssh-agent $(
+            ssh-add -D;
+            ssh-add ~/.ssh/id_rsa_53a83735c37e54f519f68ea1e07852da;
+            git clone $DEVOPS_REPO $DEVOPS_WORKDIR
+          )
           cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
 
       - type: shell
@@ -118,4 +118,4 @@ stages:
         destination: build
 
       - type: test-results-store
-        path: /home/ubuntu/test-report.xml
+        path: /home/ubuntu/action/test-report

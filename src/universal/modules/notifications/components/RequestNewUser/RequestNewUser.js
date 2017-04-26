@@ -18,7 +18,7 @@ const RequestNewUser = (props) => {
       teamId,
       invitees: [{
         email: inviteeEmail
-      }],
+      }]
     };
     cashay.mutate('inviteTeamMembers', {variables});
   };

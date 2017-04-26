@@ -68,7 +68,7 @@ const styleThunk = () => ({
     marginRight: '1rem',
     cursor: 'pointer',
     textAlign: 'right',
-    textDecoration: 'underline',
+    textDecoration: 'underline'
   },
 
   nameAndTags: {
@@ -88,7 +88,7 @@ const styleThunk = () => ({
     color: appTheme.palette.mid,
     fontSize: appTheme.typography.s2,
     fontWeight: 700,
-    lineHeight: appTheme.typography.s4,
+    lineHeight: appTheme.typography.s4
   },
 
   infoLink: {
@@ -111,8 +111,8 @@ const styleThunk = () => ({
     color: appTheme.palette.mid,
     fontSize: appTheme.typography.s2,
     fontWeight: 700,
-    lineHeight: appTheme.typography.s4,
-  },
+    lineHeight: appTheme.typography.s4
+  }
 });
 
 export default withStyles(styleThunk)(OrganizationRow);

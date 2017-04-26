@@ -24,7 +24,7 @@ exports.up = async (r) => {
 exports.down = async (r) => {
   const tables = [
     r.tableDrop('Invoice'),
-    r.tableDrop('InvoiceItemHook'),
+    r.tableDrop('InvoiceItemHook')
   ];
   await Promise.all(tables);
 };

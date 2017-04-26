@@ -1,6 +1,7 @@
 import {
   AGENDA,
   ARCHIVED_PROJECTS,
+  INTEGRATIONS,
   INVITATIONS,
   NOTIFICATIONS,
   ORG_APPROVALS,
@@ -54,6 +55,22 @@ export default [
         inactive
         picture
         preferredName
+      }
+    }`
+  },
+  {
+    channel: INTEGRATIONS,
+    string: `
+    subscription($teamMemberId: ID!) {
+      integrations(teamMemberId: $teamMemberId) {
+        id
+        accessToken
+        service
+        userId,
+        syncs {
+          id
+          slackChannelId
+        }
       }
     }`
   },
@@ -171,7 +188,10 @@ export default [
     string: `
     subscription($teamId: ID!) {
        team(teamId: $teamId) {
-         checkInGreeting,
+         checkInGreeting {
+           content,
+           language
+         },
          checkInQuestion,
          id,
          isArchived,

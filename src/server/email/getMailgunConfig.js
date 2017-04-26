@@ -4,5 +4,5 @@ export const getMailgunApiConfig = () => ({
 });
 
 export const getMailgunOptions = () => ({
-  from: process.env.MAILGUN_FROM || '',
+  from: process.env.MAILGUN_FROM || ''
 });

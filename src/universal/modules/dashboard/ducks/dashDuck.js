@@ -9,7 +9,7 @@ export default function reducer(state = initialState, action = {}) {
     case DASH_ALERT_PRESENCE: {
       return {
         ...state,
-        hasDashAlert: action.payload.hasDashAlert,
+        hasDashAlert: action.payload.hasDashAlert
       };
     }
     default:

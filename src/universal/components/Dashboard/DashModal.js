@@ -8,6 +8,7 @@ const DashModal = (props) => {
   const {
     children,
     inputModal,
+    inheritWidth,
     isClosing,
     onBackdropClick,
     position,
@@ -22,6 +23,7 @@ const DashModal = (props) => {
   const modalStyles = css(
     styles.modal,
     inputModal && styles.inputModal,
+    inheritWidth && styles.inheritWidth,
     isClosing && styles.closing
   );
   const onClick = (e) => {
@@ -41,6 +43,7 @@ const DashModal = (props) => {
 DashModal.propTypes = {
   children: PropTypes.any,
   closeAfter: PropTypes.number,
+  inheritWidth: PropTypes.bool,
   inputModal: PropTypes.bool,
   isClosing: PropTypes.bool,
   onBackdropClick: PropTypes.func,
@@ -131,11 +134,16 @@ const styleThunk = (theme, props) => ({
     width: '20rem'
   },
 
+  inheritWidth: {
+    width: 'inherit'
+  },
+
   modal: {
     background: '#fff',
     border: `.125rem solid ${appTheme.palette.mid30a}`,
     boxShadow: ui.modalBoxShadow,
     borderRadius: ui.modalBorderRadius,
+    overflow: 'hidden',
     padding: '1.25rem',
     width: '30rem',
     animationIterationCount: 1,

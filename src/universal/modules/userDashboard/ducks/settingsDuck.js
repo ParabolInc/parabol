@@ -7,7 +7,7 @@ const ACTIVITIES = [ACTIVITY_WELCOME];
 
 const initialState = {
   activity: null,
-  nextPage: null,
+  nextPage: null
 };
 
 export default function reducer(state = initialState, action = {type: ''}) {
@@ -18,13 +18,13 @@ export default function reducer(state = initialState, action = {type: ''}) {
       return {
         ...state,
         activity,
-        nextPage,
+        nextPage
       };
     } else if (type === CLEAR_ACTIVITY) {
       return {
         ...state,
         activity: null,
-        nextPage: null,
+        nextPage: null
       };
     }
   }

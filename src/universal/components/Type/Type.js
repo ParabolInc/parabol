@@ -81,7 +81,7 @@ Type.propTypes = {
     's5',    // 20px
     's6',    // 24px
     's7',    // 36px
-    's8',    // 48px
+    's8'    // 48px
   ]),
   colorPalette: PropTypes.oneOf([
     'cool',

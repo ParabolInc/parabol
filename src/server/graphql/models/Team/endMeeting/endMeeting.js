@@ -8,15 +8,15 @@ import {errorObj} from 'server/utils/utils';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
-  GraphQLID,
+  GraphQLID
 } from 'graphql';
 import {
-  SUMMARY,
+  SUMMARY
 } from 'universal/utils/constants';
 import resetMeeting from './resetMeeting';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 import getEndMeetingSortOrders from 'server/graphql/models/Team/endMeeting/getEndMeetingSortOrders';
-import segmentIo from 'server/segmentIo';
+import segmentIo from 'server/utils/segmentIo';
 
 export default {
   type: GraphQLBoolean,
@@ -66,9 +66,9 @@ export default {
               .filter((row) => row('content').ne(null))
               .map((row) => row.merge({id: r.expr(meetingId).add('::').add(row('id'))}))
               .orderBy('createdAt')
-              .pluck('id', 'content', 'status', 'teamMemberId')
+              .pluck('id', 'content', 'status', 'tags', 'teamMemberId')
               .coerceTo('array')
-              .default([])
+              .default([]);
           })
           .do((projects) => {
             return r.table('Meeting').get(meetingId)
@@ -91,7 +91,7 @@ export default {
                       .default(false),
                     projects: projects.filter({teamMemberId: teamMember('id')})
                   })),
-                projects: projects,
+                projects
               }, {
                 nonAtomic: true,
                 returnChanges: true
@@ -112,7 +112,7 @@ export default {
             facilitatorPhase: SUMMARY,
             meetingPhase: SUMMARY,
             facilitatorPhaseItem: null,
-            meetingPhaseItem: null,
+            meetingPhaseItem: null
           });
       });
     // dispatch segment events:
@@ -123,6 +123,7 @@ export default {
       segmentTraits.forEach((traits) => {
         segmentIo.track({
           userId: traits.id,
+          teamId,
           event: 'Meeting Completed',
           properties: {
             meetingNumber: completedMeeting.meetingNumber,

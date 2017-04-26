@@ -66,7 +66,7 @@ class CreditCardModalContainer extends Component {
       closePortal,
       createToken,
       handleToken,
-      orgId,
+      orgId
     } = this.props;
     const {creditCardNumber: number, expiry, cvc} = submittedData;
     const [expMonth, expYear] = expiry.split('/');
