@@ -75,6 +75,7 @@ Menu.propTypes = {
     'left',
     'right'
   ]),
+  maxHeight: PropTypes.string,
   menuWidth: PropTypes.string,
   styles: PropTypes.object,
   toggle: PropTypes.any,
@@ -85,7 +86,7 @@ Menu.propTypes = {
   zIndex: PropTypes.string
 };
 
-const styleThunk = () => ({
+const styleThunk = (theme, {maxHeight}) => ({
   root: {
     display: 'inline-block',
     position: 'relative',
@@ -114,13 +115,13 @@ const styleThunk = () => ({
     backgroundColor: ui.menuBackgroundColor,
     border: `1px solid ${ui.menuBorderColor}`,
     borderRadius: '.25rem',
+    maxHeight: maxHeight || '10rem',
+    outline: 0,
     overflowY: 'scroll',
     paddingBottom: ui.menuGutterVertical,
     paddingTop: ui.menuGutterVertical,
     textAlign: 'left',
-    width: '100%',
-    outline: 0,
-    maxHeight: '10rem'
+    width: '100%'
   },
 
   label: {
@@ -155,4 +156,3 @@ const styleThunk = () => ({
 });
 
 export default portal({escToClose: true, clickToClose: true})(withStyles(styleThunk)(Menu));
-

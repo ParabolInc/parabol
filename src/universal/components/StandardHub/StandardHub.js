@@ -61,6 +61,7 @@ const StandardHub = (props) => {
         itemFactory={itemFactory}
         label={email}
         originAnchor={originAnchor}
+        maxHeight="none"
         menuWidth="13rem"
         targetAnchor={targetAnchor}
         toggle={<div className={css(styles.menuToggle)} />}

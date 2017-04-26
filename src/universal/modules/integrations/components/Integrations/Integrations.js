@@ -34,7 +34,9 @@ const Integrations = (props) => {
         {/* logo={githubLogo}*/}
         {/* name="GitHub"*/}
         {/* openOauth={() => {*/}
+        {/* eslint-disable max-len */}
         {/* const uri = `https://github.com/login/oauth/authorize?scope=user:email,repo,write:repo_hook&state=${teamMemberId}&client_id=${__GITHUB_CLIENT_ID__}`;*/}
+        {/* eslint-enable max-len */}
         {/* window.open(uri);*/}
         {/* }}*/}
         {/* removeOauth={() => {*/}

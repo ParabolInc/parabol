@@ -5880,9 +5880,9 @@ react-fontawesome@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/react-fontawesome/-/react-fontawesome-1.5.0.tgz#879d1b2aa5c48bba551e9237f84993217b5645c4"
 
-react-githubish-mentions@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/react-githubish-mentions/-/react-githubish-mentions-1.0.1.tgz#984a5254fba9cb0ff8c047393078267ff080c613"
+react-githubish-mentions@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/react-githubish-mentions/-/react-githubish-mentions-1.0.2.tgz#2f2238110b374dd4b45bb2a66f5f0973e508b08b"
   dependencies:
     react-portal-hoc "^0.3.2"
     textarea-caret "git://github.com/mattkrick/textarea-caret-position.git#ede461f40712238c505e4a1861fc68de6e7731ad"
