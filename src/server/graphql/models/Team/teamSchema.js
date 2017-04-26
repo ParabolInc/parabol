@@ -63,6 +63,10 @@ export const Team = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The organization to which the team belongs'
     },
+    tags: {
+      type: new GraphQLList(GraphQLString),
+      description: 'Arbitrary tags that the team uses'
+    },
     updatedAt: {
       type: GraphQLISO8601Type,
       description: 'The datetime the team was last updated'
