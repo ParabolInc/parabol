@@ -24,8 +24,10 @@ const MeetingAgendaItems = (props) => {
   }
   const currentTeamMember = members.find((m) => m.id === agendaItem.teamMemberId);
   const self = members.find((m) => m.isSelf);
+  if (!currentTeamMember || !self) {
+    return <LoadingView />;
+  }
   const heading = <span>{currentTeamMember.preferredName}: <i style={{color: ui.palette.warm}}>“{agendaItem.content}”</i></span>;
-
   return (
     <MeetingMain>
       <MeetingSection flexToFill paddingBottom="2rem">
@@ -54,7 +56,7 @@ const MeetingAgendaItems = (props) => {
             </div>
             <MeetingAgendaCardsContainer
               agendaId={agendaItem.id}
-              myTeamMemberId={self && self.id}
+              myTeamMemberId={self.id}
             />
           </div>
         </MeetingSection>

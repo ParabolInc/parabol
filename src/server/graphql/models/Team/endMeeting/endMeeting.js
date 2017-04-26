@@ -66,7 +66,7 @@ export default {
               .filter((row) => row('content').ne(null))
               .map((row) => row.merge({id: r.expr(meetingId).add('::').add(row('id'))}))
               .orderBy('createdAt')
-              .pluck('id', 'content', 'status', 'teamMemberId')
+              .pluck('id', 'content', 'status', 'tags', 'teamMemberId')
               .coerceTo('array')
               .default([]);
           })

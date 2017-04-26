@@ -5,7 +5,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import {PROJECT_MAX_CHARS, tags} from 'universal/utils/constants';
 import {MentionWrapper, MentionMenu} from 'react-githubish-mentions';
-import MentionTeamMember from '../../../../components/MentionTeamMember/MentionTeamMember';
+// import MentionTeamMember from '../../../../components/MentionTeamMember/MentionTeamMember';
 import MentionTag from '../../../../components/MentionTag/MentionTag';
 import Markdown from '../../../../components/Markdown/Markdown';
 import emojiArray from 'universal/utils/emojiArray';
@@ -59,11 +59,11 @@ class OutcomeCardTextArea extends Component {
       this.textAreaRef = c;
     };
 
-    const atQuery = async (query) => {
-      const {teamMembers} = this.props;
-      const matchingMembers = teamMembers.filter((member) => member.preferredName.startsWith(query));
-      return matchingMembers.map((member) => ({...member, value: member.preferredName}));
-    };
+    // const atQuery = async (query) => {
+    //   const {teamMembers} = this.props;
+    //   const matchingMembers = teamMembers.filter((member) => member.preferredName.startsWith(query));
+    //   return matchingMembers.map((member) => ({...member, value: member.preferredName}));
+    // };
 
     const tagQuery = async (query) => {
       return tags.filter((tag) => tag.value.startsWith(query));
@@ -98,10 +98,10 @@ class OutcomeCardTextArea extends Component {
         onDrop={null}
         onKeyDown={this.submitOnEnter}
         autoFocus
-        value={textAreaValue}
+        value={textAreaValue || ''}
         rows={3}
       >
-        <MentionMenu className={mentionMenuStyle} trigger="@" item={MentionTeamMember} resolve={atQuery} />
+        {/* <MentionMenu className={mentionMenuStyle} trigger="@" item={MentionTeamMember} resolve={atQuery} />*/}
         <MentionMenu className={mentionMenuStyle} trigger="#" item={MentionTag} resolve={tagQuery} />
         <MentionMenu className={mentionMenuStyle} trigger=":" item={MentionEmoji} resolve={emojiQuery} replace={emojiReplace} />
       </MentionWrapper>
