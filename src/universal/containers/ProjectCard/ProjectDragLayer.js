@@ -40,15 +40,13 @@ function getItemStyles(props) {
       width: calcWidth('23.375rem')
     }
   };
-  const minWidth = widthValues[area].minWidth;
-  const width = widthValues[area].width;
 
   return {
     ...layerStyles,
-    minWidth,
+    minWidth: widthValues[area].minWidth,
     transform,
     WebkitTransform: transform,
-    width
+    width: widthValues[area].width
   };
 }
 
