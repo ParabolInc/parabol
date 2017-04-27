@@ -22,12 +22,12 @@ const getStartTime = (createdAt) => {
   newTime.setSeconds(0);
 
   // start
-  const start = newTime.toISOString().replace(/-|:|\.\d\d\d/g,'');
+  const start = newTime.toISOString().replace(/-|:|\.\d\d\d/g, '');
 
   // end
   const DURATION = ms('30m');
   const endTime = new Date(newTime.getTime() + DURATION);
-  const end = endTime.toISOString().replace(/-|:|\.\d\d\d/g,'');
+  const end = endTime.toISOString().replace(/-|:|\.\d\d\d/g, '');
 
   return `${start}/${end}`;
 };
