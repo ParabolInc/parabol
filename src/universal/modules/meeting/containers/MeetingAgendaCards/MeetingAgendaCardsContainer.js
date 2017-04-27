@@ -44,16 +44,15 @@ const mapStateToProps = (state, props) => {
   const [, teamId] = myTeamMemberId.split('::');
   const queryData = cashay.query(meetingAgendaCardsQuery, {
     op: 'meetingAgendaCardsContainer',
-    key: teamId,
+    key: agendaId,
     variables: {teamId},
     resolveCached: {
       teamMember: (source) => source.teamMemberId
     },
     filter: {
-      projects: (outcome) => outcome.agendaId === agendaId
+      projects: (project) => project.agendaId === agendaId
     }
   }).data;
-
   return {
     outcomes: makeOutcomes(queryData)
   };
