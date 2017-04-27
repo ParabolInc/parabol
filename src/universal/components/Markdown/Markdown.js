@@ -25,6 +25,7 @@ class Markdown extends Component {
 
   render() {
     const {source} = this.props;
+    if (!source) return null;
     // eslint-disable-next-line react/no-danger
     return <span dangerouslySetInnerHTML={{__html: this.md.render(source)}} />;
   }
