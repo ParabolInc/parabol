@@ -1,5 +1,6 @@
 import {
   AGENDA,
+  AGENDA_PROJECTS,
   ARCHIVED_PROJECTS,
   INTEGRATIONS,
   INVITATIONS,
@@ -17,6 +18,23 @@ import {
 
 // For now, use an array. In the future, we can make one exclusively for the server that doesn't need to reparse the AST
 export default [
+  {
+    channel: AGENDA_PROJECTS,
+    string: `
+    subscription($agendaId: ID!) {
+      agendaProjects(agendaId: $agendaId) {
+        id
+        agendaId
+        content
+        createdAt
+        createdBy
+        status
+        tags
+        teamMemberId
+        updatedAt
+      }
+    }`
+  },
   {
     channel: ARCHIVED_PROJECTS,
     string: `
