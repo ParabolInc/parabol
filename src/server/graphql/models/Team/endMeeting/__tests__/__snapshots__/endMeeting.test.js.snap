@@ -92,6 +92,9 @@ Object {
             "content": "Test Project[0]",
             "id": 20,
             "status": "active",
+            "tags": Array [
+              "#private",
+            ],
             "teamMemberId": 9,
           },
         ],
@@ -126,6 +129,9 @@ Object {
             "content": "Test Project[2]",
             "id": 23,
             "status": "active",
+            "tags": Array [
+              "#private",
+            ],
             "teamMemberId": 7,
           },
         ],
@@ -143,6 +149,9 @@ Object {
         "content": "Test Project[2]",
         "id": 23,
         "status": "active",
+        "tags": Array [
+          "#private",
+        ],
         "teamMemberId": 7,
       },
       Object {
@@ -155,6 +164,9 @@ Object {
         "content": "Test Project[0]",
         "id": 20,
         "status": "active",
+        "tags": Array [
+          "#private",
+        ],
         "teamMemberId": 9,
       },
     ],
@@ -225,8 +237,11 @@ Object {
   ],
   "team": Object {
     "activeFacilitator": 24,
-    "checkInGreeting": "Salut",
-    "checkInQuestion": "Learn any new slang lately",
+    "checkInGreeting": Object {
+      "content": "Salut",
+      "language": "Catalan",
+    },
+    "checkInQuestion": "Heard any good advice lately",
     "facilitatorPhase": "summary",
     "facilitatorPhaseItem": null,
     "id": 6,
@@ -431,6 +446,9 @@ Object {
             "content": "Test Project[1]",
             "id": 21,
             "status": "active",
+            "tags": Array [
+              "#private",
+            ],
             "teamMemberId": 7,
           },
         ],
@@ -465,6 +483,9 @@ Object {
             "content": "Test Project[3]",
             "id": 24,
             "status": "active",
+            "tags": Array [
+              "#private",
+            ],
             "teamMemberId": 9,
           },
         ],
@@ -482,6 +503,9 @@ Object {
         "content": "Test Project[3]",
         "id": 24,
         "status": "active",
+        "tags": Array [
+          "#private",
+        ],
         "teamMemberId": 9,
       },
       Object {
@@ -494,6 +518,9 @@ Object {
         "content": "Test Project[1]",
         "id": 21,
         "status": "active",
+        "tags": Array [
+          "#private",
+        ],
         "teamMemberId": 7,
       },
     ],
@@ -576,8 +603,11 @@ Object {
   ],
   "team": Object {
     "activeFacilitator": 25,
-    "checkInGreeting": "Salut",
-    "checkInQuestion": "Learn any new slang lately",
+    "checkInGreeting": Object {
+      "content": "Salut",
+      "language": "Catalan",
+    },
+    "checkInQuestion": "Heard any good advice lately",
     "facilitatorPhase": "summary",
     "facilitatorPhaseItem": null,
     "id": 6,

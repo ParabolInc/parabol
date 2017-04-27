@@ -5,6 +5,7 @@ import NullCard from 'universal/components/NullCard/NullCard';
 export default class OutcomeOrNullCard extends Component {
   static propTypes = {
     area: PropTypes.string,
+    isAgenda: PropTypes.bool,
     myUserId: PropTypes.string,
     outcome: PropTypes.object
   };
@@ -13,10 +14,10 @@ export default class OutcomeOrNullCard extends Component {
     return Boolean(!nextProps.isPreview || nextProps.outcome.status !== this.props.outcome.status);
   }
   render() {
-    const {area, myUserId, outcome} = this.props;
+    const {area, isAgenda, myUserId, outcome} = this.props;
     const {content, createdBy, teamMember: {preferredName}} = outcome;
     const showOutcome = content || createdBy === myUserId;
-    return showOutcome ? <OutcomeCardContainer area={area} outcome={outcome} myUserId={myUserId} /> :
+    return showOutcome ? <OutcomeCardContainer area={area} isAgenda={isAgenda} outcome={outcome} myUserId={myUserId} /> :
     <NullCard preferredName={preferredName} />;
   }
 }

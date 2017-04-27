@@ -29,6 +29,14 @@ export const Phase = new GraphQLEnumType({
   }
 });
 
+export const Greeting = new GraphQLObjectType({
+  name: 'Greeting',
+  fields: () => ({
+    content: {type: GraphQLString, description: 'The foreign-language greeting'},
+    language: {type: GraphQLString, description: 'The source language for the greeting'}
+  })
+});
+
 export const Team = new GraphQLObjectType({
   name: 'Team',
   description: 'A team',
@@ -55,13 +63,17 @@ export const Team = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The organization to which the team belongs'
     },
+    tags: {
+      type: new GraphQLList(GraphQLString),
+      description: 'Arbitrary tags that the team uses'
+    },
     updatedAt: {
       type: GraphQLISO8601Type,
       description: 'The datetime the team was last updated'
     },
     /* Ephemeral meeting state */
     checkInGreeting: {
-      type: GraphQLString,
+      type: Greeting,
       description: 'The checkIn greeting (fun language)'
     },
     checkInQuestion: {

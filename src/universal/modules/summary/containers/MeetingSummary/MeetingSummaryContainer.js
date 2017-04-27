@@ -25,6 +25,7 @@ query{
         content
         status
         teamMemberId
+        tags
       }
       picture
       preferredName

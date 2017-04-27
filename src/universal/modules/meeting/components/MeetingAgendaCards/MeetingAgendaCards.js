@@ -28,7 +28,7 @@ const makeCards = (array, dispatch, myTeamMemberId, itemStyle) => {
     const [myUserId] = myTeamMemberId.split('::');
     return (
       <div className={css(itemStyle)} key={key}>
-        <OutcomeOrNullCard form={key} isAgenda myUserId={myUserId} outcome={outcome} />
+        <OutcomeOrNullCard isAgenda myUserId={myUserId} outcome={outcome} />
       </div>
     );
   });

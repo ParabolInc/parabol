@@ -45,7 +45,10 @@ import generateMeetingRoute from 'universal/modules/meeting/helpers/generateMeet
 const meetingContainerQuery = `
 query{
   team @live {
-    checkInGreeting,
+    checkInGreeting {
+      content,
+      language
+    },
     checkInQuestion,
     id,
     name,

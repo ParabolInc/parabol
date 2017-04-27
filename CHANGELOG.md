@@ -4,6 +4,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.17.6 - 25-Apr-2017
+### Added
+- Hello lang tooltips, we'll now tell you which language is saying
+  hello to you during check-in round
+- `teamId` added to most segment.io events, so we can account for
+  metrics at the team level
+- Various copy updates across the product
+
+### Fixed
+- #927 fix intranet query for un-ended meetings
+- CircleCI `circle.yml` ssh key management regression fixed
+
 ## v0.17.5 - 17-Apr-2017
 ### Fixed
 - typo in segment 'Meeting Completed' event

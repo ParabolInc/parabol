@@ -84,9 +84,7 @@ export default {
       // RESOLUTION
       const activeThresh = new Date(Date.now() - OLD_MEETING_AGE);
       const teamIds = await r.table('Meeting')
-        .filter({
-          endedAt: null
-        })
+        .filter({ endedAt: null }, { default: true })
         .filter((meeting) => meeting('createdAt').le(activeThresh))('teamId');
       const promises = teamIds.map((teamId) => endMeeting.resolve(undefined, {teamId}, {authToken, socket: {}}));
       await Promise.all(promises);

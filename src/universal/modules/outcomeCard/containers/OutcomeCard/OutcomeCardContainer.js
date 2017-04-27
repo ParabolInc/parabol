@@ -80,6 +80,7 @@ class OutcomeCardContainer extends Component {
       cashay.mutate('deleteProject', {variables: {projectId}});
     } else if (textAreaValue !== content) {
       cashay.mutate('updateProject', {
+        ops: {},
         variables: {
           updatedProject: {
             id: projectId,

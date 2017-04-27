@@ -11,6 +11,7 @@ query {
     content
     id
     status
+    tags
     teamMemberId
     updatedAt
     sortOrder
@@ -48,7 +49,10 @@ const mapStateToProps = (state, props) => {
     op: 'meetingUpdatesContainer',
     key: teamMemberId,
     mutationHandlers,
-    variables: {teamMemberId}
+    variables: {teamMemberId},
+    filter: {
+      projects: (project) => !project.tags.includes('#private')
+    }
   }).data.projects;
   const projects = makeProjectsByStatus(memberProjects);
   return {
