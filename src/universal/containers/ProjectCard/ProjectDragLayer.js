@@ -22,19 +22,31 @@ function getItemStyles(props) {
   }
   const {x, y} = currentOffset;
   const transform = `translate3d(${x}px, ${y}px, 0px)`;
+
   // NOTE: Widths are calculated based on the results of UI constants, but yeah, manual (TA)
-  const dashMinWidth = '10.125rem';
-  const meetingMinWidth = '12.4375rem';
-  const minWidth = area === 'meeting' ? meetingMinWidth : dashMinWidth;
-  const dashWidth = 'calc((100vw - 38.3125rem) / 4)';
-  const meetingWidth = 'calc((100vw - 25.1875rem) / 4)';
-  const width = area === 'meeting' ? meetingWidth : dashWidth;
+  // TODO: Robots, please substract chrome box values, kthxbai (TA)
+  const calcWidth = (value) => `calc((100vw - ${value}) / 4)`;
+  const widthValues = {
+    meeting: {
+      minWidth: '12.40625rem',
+      width: calcWidth('25.375rem')
+    },
+    teamDash: {
+      minWidth: '10.125rem',
+      width: calcWidth('38.3125rem')
+    },
+    userDash: {
+      minWidth: '13.90625rem',
+      width: calcWidth('23.375rem')
+    }
+  };
+
   return {
     ...layerStyles,
-    minWidth,
+    minWidth: widthValues[area].minWidth,
     transform,
     WebkitTransform: transform,
-    width
+    width: widthValues[area].width
   };
 }
 
