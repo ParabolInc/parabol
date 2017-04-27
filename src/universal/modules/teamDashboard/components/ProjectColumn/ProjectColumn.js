@@ -55,10 +55,6 @@ const handleAddProjectFactory = (status, teamMemberId, sortOrder) => () => {
 };
 
 class ProjectColumn extends Component {
-  shouldComponentUpdate(nextProps) {
-    return nextProps.projects.length !== this.props.projects.length;
-  }
-
   makeAddProject = () => {
     const {
       area,

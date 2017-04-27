@@ -4,6 +4,7 @@ import subscriptions from 'universal/subscriptions/subscriptions';
 import parseChannel from 'universal/utils/parseChannel';
 import {
   AGENDA,
+  AGENDA_PROJECTS,
   ARCHIVED_PROJECTS,
   INTEGRATIONS,
   INVITATIONS,
@@ -28,6 +29,7 @@ import {
  * */
 const dechannelfy = {
   [AGENDA]: (variableString) => ({teamId: variableString}),
+  [AGENDA_PROJECTS]: (agendaId) => ({agendaId}),
   [ARCHIVED_PROJECTS]: (variableString) => ({teamId: variableString}),
   [INTEGRATIONS]: (teamMemberId) => ({teamMemberId}),
   [INVITATIONS]: (variableString) => ({teamId: variableString}),

@@ -36,9 +36,10 @@ class OutcomeCardTextArea extends Component {
     }
   };
 
-  handleChange = (e) => {
+  handleChange = (e, newVal) => {
     const {setValue} = this.props;
-    setValue(e.target.value);
+    const value = e.target.value || newVal;
+    setValue(value);
   };
 
   renderEditing() {

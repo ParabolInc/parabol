@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import {connect} from 'react-redux';
 import {findDOMNode} from 'react-dom';
 import {cashay} from 'cashay';
 import labels from 'universal/styles/theme/labels';
@@ -6,6 +7,29 @@ import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/Ou
 import targetIsDescendant from 'universal/utils/targetIsDescendant';
 import removeTagFromString from 'universal/utils/removeTagFromString';
 
+const teamMembersQuery = `
+query {
+  teamMembers(teamId: $teamId) @live {
+    id
+    picture
+    preferredName
+  }
+}
+`;
+
+const mapStateToProps = (state, props) => {
+  const [teamId] = props.outcome.id.split('::');
+  const {teamMembers} = cashay.query(teamMembersQuery, {
+    op: 'outcomeCardContainer',
+    key: teamId,
+    variables: {teamId}
+  }).data;
+  return {
+    teamMembers
+  };
+};
+
+@connect(mapStateToProps)
 class OutcomeCardContainer extends Component {
   constructor(props) {
     super(props);
