@@ -13,12 +13,23 @@ query {
     id
     name
     projects @live {
-      content
       id
+      content
+      createdBy
+      sortOrder
       status
+      tags
       teamMemberId
       updatedAt
-      sortOrder
+      team @cached(type: "Team") {
+        id
+        name
+      }
+      teamMember @cached(type: "TeamMember") {
+        id
+        picture
+        preferredName
+      }
     }
   }
 }
@@ -70,7 +81,9 @@ const mapStateToProps = (state) => {
     key: queryKey,
     mutationHandlers,
     resolveCached: {
-      teams: () => () => true
+      teams: () => () => true,
+      team: (source) => source.teamMemberId.split('::')[1],
+      teamMember: (source) => source.teamMemberId
     },
     resolveChannelKey: {
       projects: (source) => `${userId}::${source.id}`

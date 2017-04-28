@@ -13,6 +13,7 @@ query {
     teamMemberId
     updatedAt
     teamMember @cached(type: "TeamMember") {
+      id
       picture
       preferredName
     }

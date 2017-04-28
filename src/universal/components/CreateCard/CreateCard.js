@@ -1,20 +1,15 @@
 import React, {PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import Ellipsis from '../Ellipsis/Ellipsis';
-import Type from '../Type/Type';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import CreateCardRootStyles from './CreateCardRootStyles';
 import {cardBorderTop} from 'universal/styles/helpers';
-import makeUsername from 'universal/utils/makeUsername';
 
 const CreateCard = (props) => {
   const {
-    createdBy,
     handleAddProject,
     hasControls,
-    isCreating,
     styles
   } = props;
 
@@ -28,11 +23,9 @@ const CreateCard = (props) => {
       {label()}
     </div>;
 
-  const username = makeUsername(createdBy);
-
   const cardStyles = css(
     styles.root,
-    (hasControls || isCreating) && styles.hasControls
+    (hasControls) && styles.hasControls
   );
 
   return (
@@ -42,20 +35,13 @@ const CreateCard = (props) => {
           {addNewOutcome(styles.projectStyles, projectLabel, handleAddProject)}
         </div>
       }
-      {isCreating &&
-        <Type align="center" bold scale="s3" colorPalette="mid">
-          @{username}<br />is adding a Project<Ellipsis />
-        </Type>
-      }
     </div>
   );
 };
 
 CreateCard.propTypes = {
-  createdBy: PropTypes.string,
   handleAddProject: PropTypes.func,
   hasControls: PropTypes.bool,
-  isCreating: PropTypes.bool,
   styles: PropTypes.object
 };
 

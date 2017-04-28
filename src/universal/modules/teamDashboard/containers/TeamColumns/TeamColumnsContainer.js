@@ -10,15 +10,21 @@ const teamColumnsSubQuery = `
 query {
   teamMembers (teamId: $teamId) @live {
     id
-    picture
-    preferredName,
     projects @live {
-      content
       id
+      content
+      createdBy
       status
+      tags
       teamMemberId
       updatedAt
       sortOrder
+      updatedAt
+      teamMember @cached(type: "TeamMember") {
+        id
+        picture
+        preferredName
+      }
     }
   }
 }
@@ -73,14 +79,16 @@ const mapStateToProps = (state, props) => {
     },
     key,
     mutationHandlers,
+    resolveCached: {
+      teamMember: (source) => source.teamMemberId
+    },
     variables: {teamId}
   }).data;
   const projects = resolveTeamProjects(teamMembers);
   return {
     projects,
     myTeamMemberId: `${state.auth.obj.sub}::${teamId}`,
-    queryKey: key,
-    teamMembers
+    queryKey: key
   };
 };
 
