@@ -32,6 +32,7 @@ class OutcomeCardTextArea extends Component {
     // hitting enter (not shift+enter or any wacky combo) submits the textarea
     if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
       this.textAreaRef.blur();
+      this.props.handleCardUpdate();
       e.preventDefault();
     }
   };
@@ -44,7 +45,6 @@ class OutcomeCardTextArea extends Component {
 
   renderEditing() {
     const {
-      handleCardUpdate,
       isArchived,
       isPrivate,
       styles,
@@ -94,7 +94,6 @@ class OutcomeCardTextArea extends Component {
         disabled={isArchived}
         maxLength={PROJECT_MAX_CHARS}
         placeholder="Type your outcome here"
-        onBlur={handleCardUpdate}
         onChange={this.handleChange}
         onDrop={null}
         onKeyDown={this.submitOnEnter}

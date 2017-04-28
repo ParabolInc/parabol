@@ -1,6 +1,4 @@
 import React, {Component, PropTypes} from 'react';
-import {connect} from 'react-redux';
-import {cashay} from 'cashay';
 import OutcomeOrNullCard from 'universal/components/OutcomeOrNullCard/OutcomeOrNullCard';
 import {PROJECT} from 'universal/utils/constants';
 import {DragSource as dragSource} from 'react-dnd';
@@ -19,49 +17,7 @@ const projectSource = {
   }
 };
 
-// TODO get rid of this & just use the object that's passed down
-const projectCardSubQuery = `
-query {
-  project @cached(type: "Project") {
-    content
-    createdBy
-    id
-    status
-    tags
-    teamMemberId
-    teamMember @cached(type: "TeamMember") {
-      id
-      picture
-      preferredName
-    }
-    team @cached(type: "Team") {
-      id
-      name
-    }
-    updatedAt
-  }
-}
-`;
-
-const mapStateToProps = (state, props) => {
-  const projectId = props.project.id;
-  const {project} = cashay.query(projectCardSubQuery, {
-    op: 'projectCardContainer',
-    key: projectId,
-    variables: {projectId},
-    resolveCached: {
-      project: () => projectId,
-      team: (source) => (doc) => source.id.startsWith(doc.id),
-      // example of returning a string instead of a function so it runs in O(1)
-      teamMember: (source) => source.teamMemberId,
-      user: () => () => true
-    }
-  }).data;
-  return {
-    project,
-    myUserId: state.auth.obj.sub
-  };
-};
+const importantProps = ['content', 'status', 'teamMemberId', 'sortOrder'];
 
 class ProjectCardContainer extends Component {
   componentDidMount() {
@@ -72,8 +28,14 @@ class ProjectCardContainer extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    const {isDragging, project} = nextProps;
-    return (project !== this.props.project || isDragging !== this.props.isDragging);
+    const {isDragging} = nextProps;
+    for (let i = 0; i < importantProps.length; i++) {
+      const key = importantProps[i];
+      if (nextProps.project[key] !== this.props.project[key]) {
+        return true;
+      }
+    }
+    return isDragging !== this.props.isDragging;
   }
 
   render() {
@@ -123,6 +85,4 @@ const dragSourceCb = (connectSource, monitor) => ({
   isDragging: monitor.isDragging()
 });
 
-export default dragSource(PROJECT, projectSource, dragSourceCb)(
-  connect(mapStateToProps)(ProjectCardContainer)
-);
+export default dragSource(PROJECT, projectSource, dragSourceCb)(ProjectCardContainer);
