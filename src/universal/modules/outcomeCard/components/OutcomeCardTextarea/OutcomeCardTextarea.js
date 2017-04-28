@@ -138,7 +138,6 @@ class OutcomeCardTextArea extends Component {
       </div>
     );
   }
- 
 
   /* Works in ES5 onwards
      But planning to make edits to match React code structure (use this. refs instead of document. ...)
