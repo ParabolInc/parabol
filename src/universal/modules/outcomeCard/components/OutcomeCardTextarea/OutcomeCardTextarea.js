@@ -139,11 +139,6 @@ class OutcomeCardTextArea extends Component {
     );
   }
 
-  /* Works in ES5 onwards
-     But planning to make edits to match React code structure (use this. refs instead of document. ...)
-      - open to take the risk for now but uncertain on "correctness" for submission 
-  */
-
   function replaceIt(markdown) {
 	//get start and finish points of selected text in active textarea element
     var start = document.activeElement.selectionStart;
@@ -187,9 +182,7 @@ class OutcomeCardTextArea extends Component {
       }
   }
   document.onkeydown = KeyPress;
-
-  //Working on code to re-place caret depending on markdown (better usability)... 
-
+  
   render() {
     const {input: {value}} = this.props;
     return (
