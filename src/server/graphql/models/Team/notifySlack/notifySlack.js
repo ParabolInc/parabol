@@ -1,6 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
 import queryIntegrator from '../../../../utils/queryIntegrator';
-import makeAppLink from "../../../../utils/makeAppLink";
+import makeAppLink from '../../../../utils/makeAppLink';
 
 const notifySlack = (text, teamId) => {
   queryIntegrator({
