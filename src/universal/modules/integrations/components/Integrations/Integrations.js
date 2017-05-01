@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import withStyles from '../../../../styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from '../../../../styles/theme/appTheme';

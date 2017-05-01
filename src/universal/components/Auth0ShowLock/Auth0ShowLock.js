@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import {auth0 as defaultClientOptions} from 'universal/utils/clientOptions';
 import signinAndUpdateToken from './signinAndUpdateToken';
 import injectGlobals from 'universal/styles/hepha';

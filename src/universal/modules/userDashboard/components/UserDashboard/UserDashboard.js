@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import DashboardWrapper from 'universal/components/DashboardWrapper/DashboardWrapper';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 import {DragDropContext as dragDropContext} from 'react-dnd';

@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import Button from 'universal/components/Button/Button';
 import Row from 'universal/components/Row/Row';
 import {cashay} from 'cashay';

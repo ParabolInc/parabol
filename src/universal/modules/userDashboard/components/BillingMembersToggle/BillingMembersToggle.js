@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import {BILLING_PAGE, MEMBERS_PAGE} from 'universal/utils/constants';
 import ToggleNav from 'universal/components/ToggleNav/ToggleNav';
 import {withRouter} from 'react-router';

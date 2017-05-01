@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, { Component } from 'react';
 import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import UserSettings from 'universal/modules/userDashboard/components/UserSettings/UserSettings';
 import {connect} from 'react-redux';
@@ -13,6 +13,7 @@ import {reduxForm, initialize} from 'redux-form';
 import {cashay} from 'cashay';
 import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
 import shouldValidate from 'universal/validation/shouldValidate';
+import PropTypes from 'prop-types';
 import raven from 'raven-js';
 
 const updateSuccess = {

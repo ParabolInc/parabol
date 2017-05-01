@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import ProgressDots from 'universal/modules/welcome/components/ProgressDots/ProgressDots';
 import WelcomeContent from 'universal/modules/welcome/components/WelcomeContent/WelcomeContent';
 import WelcomeHeader from 'universal/modules/welcome/components/WelcomeHeader/WelcomeHeader';

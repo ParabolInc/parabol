@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import Invoice from 'universal/modules/invoice/components/Invoice/Invoice';
 import {cashay} from 'cashay';
 import LoadingView from 'universal/components/LoadingView/LoadingView';

@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import {reduxForm, destroy} from 'redux-form';
 import Button from 'universal/components/Button/Button';
 import LabeledFieldArray from 'universal/containers/LabeledFieldArray/LabeledFieldArrayContainer';

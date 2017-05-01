@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import {connect} from 'react-redux';
 import TeamSettings from 'universal/modules/teamDashboard/components/TeamSettings/TeamSettings';
 import {cashay} from 'cashay';

@@ -139,6 +139,7 @@
     "node-env-flag": "0.1.0",
     "node-fetch": "^1.6.3",
     "oy-vey": "^1.0.0-alpha",
+    "prop-types": "^15.5.8",
     "raven": "^1.1.4",
     "raven-js": "^3.12.1",
     "react": "^15.5.4",

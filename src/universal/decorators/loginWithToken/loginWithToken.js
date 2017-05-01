@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';

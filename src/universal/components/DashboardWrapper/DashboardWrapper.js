@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import {DashSidebar} from 'universal/components/Dashboard';
 import DashLayoutContainer from 'universal/containers/DashLayoutContainer/DashLayoutContainer';
 import Helmet from 'react-helmet';

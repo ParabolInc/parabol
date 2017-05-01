@@ -1,6 +1,7 @@
-import React, {Component, PropTypes} from 'react';
+import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
+import PropTypes from 'prop-types';
 import raven from 'raven-js';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL';

@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import Button from 'universal/components/Button/Button';
 import InputField from 'universal/components/InputField/InputField';
 import Panel from 'universal/components/Panel/Panel';

@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import Type from 'universal/components/Type/Type';
 import WelcomeHeading from '../WelcomeHeading/WelcomeHeading';
 import Step3RawInvitees from '../Step3RawInvitees/Step3RawInvitees';

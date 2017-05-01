@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import Notifications from 'universal/modules/notifications/components/Notifications/Notifications';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';

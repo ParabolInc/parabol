@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import Layout from '../../components/Layout/Layout';
 import Callout from '../../components/Callout/Callout';
 import ContactUs from '../../components/ContactUs/ContactUs';

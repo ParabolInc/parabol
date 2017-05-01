@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import Landing from 'universal/modules/landing/components/Landing/Landing';
 import Helmet from 'react-helmet';
 import {showLock} from 'universal/components/Auth0ShowLock/Auth0ShowLock';

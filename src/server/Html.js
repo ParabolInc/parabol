@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types';
 /* eslint react/no-danger:0 */
-import React, {PropTypes} from 'react';
+import React from 'react';
 import {Provider} from 'react-redux';
 import {RouterContext} from 'react-router';
 import {renderToString} from 'react-dom/server';

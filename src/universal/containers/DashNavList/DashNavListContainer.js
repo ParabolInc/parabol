@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import DashNavList from 'universal/components/DashNavList/DashNavList';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
