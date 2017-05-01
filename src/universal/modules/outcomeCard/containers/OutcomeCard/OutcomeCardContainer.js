@@ -113,13 +113,13 @@ class OutcomeCardContainer extends Component {
         }
       });
     }
-    this.unsetEditing();
   };
 
   handleDocumentClick = (e) => {
     // try to delete empty card unless they click inside the card
     if (!targetIsDescendant(e.target, findDOMNode(this))) {
       this.handleCardUpdate();
+      this.unsetEditing();
     }
   };
 
@@ -171,6 +171,7 @@ class OutcomeCardContainer extends Component {
         setValue={this.setValue}
         teamMembers={teamMembers}
         textAreaValue={textAreaValue}
+        unsetEditing={this.unsetEditing}
       />
 
     );
