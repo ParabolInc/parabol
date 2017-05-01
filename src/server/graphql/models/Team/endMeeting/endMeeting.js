@@ -17,6 +17,7 @@ import resetMeeting from './resetMeeting';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 import getEndMeetingSortOrders from 'server/graphql/models/Team/endMeeting/getEndMeetingSortOrders';
 import segmentIo from 'server/utils/segmentIo';
+import {endSlackMeeting} from 'server/graphql/models/Team/notifySlack/notifySlack';
 
 export default {
   type: GraphQLBoolean,
@@ -135,6 +136,7 @@ export default {
     );
     // reset the meeting
     resetMeeting(teamId);
+    endSlackMeeting(meetingId, teamId);
     return true;
   }
 };
