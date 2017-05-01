@@ -52,7 +52,7 @@ class OutcomeCardTextArea extends Component {
       isArchived,
       isPrivate,
       styles,
-      textAreaValue,
+      textAreaValue
     } = this.props;
     const contentStyles = css(
       styles.content,
