@@ -6,6 +6,9 @@ import Toast from 'universal/modules/toast/containers/Toast/Toast';
 import {Route} from 'react-router-dom';
 import LandingBundle from 'universal/modules/landing/containers/Landing/LandingBundle';
 import WelcomeBundle from 'universal/modules/welcome/containers/Welcome/WelcomeBundle';
+import TeamBundle from 'universal/modules/teamDashboard/containers/Team/TeamBundle';
+import UserBundle from 'universal/modules/userDashboard/components/UserDashboard/UserBundle';
+import SignoutBundle from "../../containers/Signout/SignoutBundle";
 
 const Action = (props) => {
   const {styles} = props;
@@ -14,6 +17,9 @@ const Action = (props) => {
       <Toast />
       <Route exact path="/" component={LandingBundle} />
       <Route path="/welcome" component={WelcomeBundle} />
+      <Route path="/team/:teamId" component={TeamBundle} />
+      <Route path="/me" component={UserBundle} />
+      <Route path="/signout" component={SignoutBundle} />
     </div>
   );
 };

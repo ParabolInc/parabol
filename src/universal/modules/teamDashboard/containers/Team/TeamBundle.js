@@ -3,8 +3,9 @@ import React from "react";
 import resolveDefault from "../../../../utils/resolveDefault";
 
 const TeamBundle = () => {
+  console.log('getting team bundle');
   const promises = {
-    component: import('universal/modules/landing/containers/Landing/LandingContainer').then(resolveDefault),
+    component: import('universal/modules/teamDashboard/containers/AgendaAndProjects/AgendaAndProjectsContainer').then(resolveDefault),
     socket: import('redux-socket-cluster').then((res) => res.socketClusterReducer),
     teamDashboard: import('universal/modules/teamDashboard/ducks/teamDashDuck').then(resolveDefault)
   };

@@ -16,7 +16,9 @@ import {Link} from 'react-router-dom'
 
 const DashSidebar = (props) => {
   const {location, router, styles} = props;
-  const newTeamIsActive = router.isActive('/newteam') || router.isActive('/newteam/1');
+  console.log('loc', location)
+  // const newTeamIsActive = router.isActive('/newteam') || router.isActive('/newteam/1');
+  const newTeamIsActive = false;
   const addNewStyles = css(
     styles.addTeam,
     newTeamIsActive && styles.addTeamDisabled

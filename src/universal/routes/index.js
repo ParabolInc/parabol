@@ -12,7 +12,6 @@ export default (store) => ({
     ...require('./admin').default,
     require('./invitation').default(store),
     require('./invoice').default(store),
-    require('./signout').default,
     require('./meeting').default(store),
     require('./newTeam').default(store),
     require('./patterns').default,

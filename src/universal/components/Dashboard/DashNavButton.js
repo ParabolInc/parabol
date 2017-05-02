@@ -12,7 +12,8 @@ import {Link} from 'react-router-dom'
 const DashNavButton = (props) => {
   const {icon, href, router, styles, title} = props;
   const flagChildren = href === '/me';
-  const isActive = router.isActive(href, flagChildren);
+  const isActive = false;
+  // const isActive = router.isActive(href, flagChildren);
   const buttonStyles = css(
     styles.button,
     isActive && styles.isActive

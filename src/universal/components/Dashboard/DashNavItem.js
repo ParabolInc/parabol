@@ -11,7 +11,8 @@ import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 const DashNavItem = (props) => {
   const {label, href, styles, router} = props;
   const flagChildren = href === '/me';
-  const isActive = router.isActive(href, flagChildren);
+  const isActive = false;
+  // const isActive = router.isActive(href, flagChildren);
   const linkStyles = css(
     styles.link,
     isActive && styles.active
