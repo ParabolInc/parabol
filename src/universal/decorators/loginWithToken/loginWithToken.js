@@ -15,18 +15,18 @@ const mapStateToProps = (state) => {
 };
 
 const handleAuthChange = (props) => {
-  const {auth, dispatch, router} = props;
+  const {auth, dispatch, history} = props;
 
   if (auth.obj.sub) {
     // note if you join a team & leave it, tms will be an empty array
     const isNew = !auth.obj.hasOwnProperty('tms');
     if (isNew) {
-      router.push('/welcome');
+      history.push('/welcome');
     } else if (auth.nextUrl) {
-      router.push(auth.nextUrl);
+      history.push(auth.nextUrl);
       dispatch(unsetNextUrl());
     } else {
-      router.push('/me');
+      history.push('/me');
     }
   }
 };
@@ -38,7 +38,7 @@ export default (ComposedComponent) => {
     static propTypes = {
       auth: PropTypes.object,
       dispatch: PropTypes.func,
-      router: PropTypes.object.isRequired
+      history: PropTypes.object.isRequired
     };
 
     componentWillMount() {
