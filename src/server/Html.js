@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 /* eslint react/no-danger:0 */
 import React from 'react';
 import {Provider} from 'react-redux';
-import {RouterContext} from 'react-router';
 import {renderToString} from 'react-dom/server';
 import makeSegmentSnippet from '@segment/snippet';
 import {auth0, stripeKey} from 'universal/utils/clientOptions';
 import getWebpackPublicPath from 'server/utils/getWebpackPublicPath';
+import {StaticRouter} from 'react-router';
 
 const webpackPublicPath = getWebpackPublicPath();
 const segKey = process.env.SEGMENT_WRITE_KEY;
@@ -16,16 +16,19 @@ const segmentSnippet = segKey && makeSegmentSnippet.min({
 });
 
 // Injects the server rendered state and app into a basic html template
-export default function Html({store, assets, StyleSheetServer, renderProps}) {
+export default function Html({store, assets, StyleSheetServer, url}) {
   const {manifest, app, vendor} = assets;
   // TURN ON WHEN WE SEND STATE TO CLIENT
   // const initialState = `window.__INITIAL_STATE__ = ${JSON.stringify(store.getState())}`;
   // <script dangerouslySetInnerHTML={{__html: initialState}}/>
+  const context = {};
   const {html, css} = StyleSheetServer.renderStatic(() => {
     try {
       return renderToString(
         <Provider store={store}>
-          <RouterContext {...renderProps} />
+          <StaticRouter location={url} context={context}>
+
+          </StaticRouter>
         </Provider>
       );
     } catch (e) {

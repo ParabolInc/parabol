@@ -4,7 +4,7 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import FontAwesome from 'react-fontawesome';
-import {Link} from 'react-router';
+import {Link} from 'react-router-dom';
 import goBackLabel from 'universal/styles/helpers/goBackLabel';
 import {BILLING_PAGE, ORGANIZATIONS} from 'universal/utils/constants';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';

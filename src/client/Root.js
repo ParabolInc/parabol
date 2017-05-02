@@ -1,15 +1,18 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Router, browserHistory} from 'react-router';
+import {BrowserRouter as Router} from 'react-router-dom';
 import {Provider} from 'react-redux';
-import routesFactory from 'universal/routes/index';
+// import routesFactory from 'universal/routes/index';
+import ActionContainer from 'universal/containers/Action/ActionContainer';
 
 export default function Root({store}) {
-  const routes = routesFactory(store);
+  // const routes = routesFactory(store);
   return (
     <Provider store={store}>
       <div>
-        <Router history={browserHistory} routes={routes} />
+        <Router>
+          <ActionContainer/>
+        </Router>
       </div>
     </Provider>
   );

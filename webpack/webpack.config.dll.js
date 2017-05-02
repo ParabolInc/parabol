@@ -29,7 +29,7 @@ module.exports = {
       'react-notification-system',
       'react-portal-hoc',
       'react-redux',
-      'react-router',
+      // 'react-router',
       'redbox-react',
       'redux',
       'redux-form',

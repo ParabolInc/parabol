@@ -8,7 +8,7 @@ import ui from 'universal/styles/ui';
 import actionUIMark from 'universal/styles/theme/images/brand/mark-color.svg';
 import {CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, SUMMARY, phaseArray} from 'universal/utils/constants';
 import makeHref from 'universal/utils/makeHref';
-import {Link} from 'react-router';
+import {Link} from 'react-router-dom';
 import AgendaListAndInputContainer from 'universal/modules/teamDashboard/containers/AgendaListAndInput/AgendaListAndInputContainer';
 import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
 import labels from 'universal/styles/theme/labels';

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import {Link} from 'react-router';
+import {Link} from 'react-router-dom';
 import plural from 'universal/utils/plural';
 import {DashAlert} from 'universal/components/Dashboard';
 

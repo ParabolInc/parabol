@@ -9,7 +9,7 @@ import Tag from 'universal/components/Tag/Tag';
 import FontAwesome from 'react-fontawesome';
 import makeDateString from 'universal/utils/makeDateString';
 import makeMonthString from 'universal/utils/makeMonthString';
-import {Link} from 'react-router';
+import {Link} from 'react-router-dom';
 import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineFormat';
 import {UPCOMING} from 'universal/utils/constants';
 

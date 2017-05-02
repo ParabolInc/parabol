@@ -11,7 +11,8 @@ import DashNavListContainer from 'universal/containers/DashNavList/DashNavListCo
 import DashNavItem from './DashNavItem';
 import StandardHubContainer from 'universal/containers/StandardHub/StandardHubContainer';
 import Logo from 'universal/styles/theme/images/brand/parabol-beta-lockup.svg';
-import {Link, withRouter} from 'react-router';
+import {withRouter} from 'react-router';
+import {Link} from 'react-router-dom'
 
 const DashSidebar = (props) => {
   const {location, router, styles} = props;

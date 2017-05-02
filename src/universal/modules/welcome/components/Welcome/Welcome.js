@@ -6,7 +6,7 @@ import WelcomeHeader from 'universal/modules/welcome/components/WelcomeHeader/We
 import WelcomeLayout from 'universal/modules/welcome/components/WelcomeLayout/WelcomeLayout';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
-import {Link} from 'react-router';
+import {Link} from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
 import Helmet from 'react-helmet';
 import Step1PreferredName from 'universal/modules/welcome/components/Step1PreferredName/Step1PreferredName';

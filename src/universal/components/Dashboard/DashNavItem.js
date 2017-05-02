@@ -3,7 +3,8 @@ import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
-import {Link, withRouter} from 'react-router';
+import {withRouter} from 'react-router';
+import {Link} from 'react-router-dom'
 import DashNavItemBaseStyles from './DashNavItemBaseStyles';
 import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 

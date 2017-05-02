@@ -5,6 +5,7 @@ import Action from 'universal/components/Action/Action';
 import injectGlobals from 'universal/styles/hepha';
 import globalStyles from 'universal/styles/theme/globalStyles';
 import {segmentEventPage} from 'universal/redux/segmentActions';
+import {withRouter} from 'react-router';
 
 const updateAnalyticsPage = (dispatch, lastPage, nextPage, params) => {
   if (typeof document === 'undefined' || typeof window.analytics === 'undefined') return;
@@ -19,9 +20,9 @@ const updateAnalyticsPage = (dispatch, lastPage, nextPage, params) => {
 };
 
 @connect()
+@withRouter
 export default class ActionContainer extends Component {
   static propTypes = {
-    children: PropTypes.element.isRequired,
     dispatch: PropTypes.func,
     location: PropTypes.shape({
       pathname: PropTypes.string.isRequired

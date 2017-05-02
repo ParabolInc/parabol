@@ -20,20 +20,12 @@ const initialState = {};
     httpTransport: new ActionHTTPTransport(persistedToken)
   });
   if (__PRODUCTION__) {
-    /*
-     * During the production client bundle build, the server will need to be
-     * stopped.
-     */
     StyleSheet.rehydrate(window.__APHRODITE__);
     render(
       <Root store={store} />,
       document.getElementById('root')
     );
   } else {
-    /*
-     * Hey! We're the server. No need to stop rethink. The server will
-     * take care of that when it wants to exit.
-     */
     // eslint-disable-next-line global-require
     const {AppContainer} = require('react-hot-loader'); // eslint-disable-line import/no-extraneous-dependencies
     // ENABLE THIS FOR EXPLORING FRONT END PERFORMANCE

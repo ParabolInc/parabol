@@ -7,7 +7,8 @@ import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 import FontAwesome from 'react-fontawesome';
-import {Link, withRouter} from 'react-router';
+import {withRouter} from 'react-router';
+import {Link} from 'react-router-dom'
 import Avatar from 'universal/components/Avatar/Avatar';
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 import Badge from 'universal/components/Badge/Badge';

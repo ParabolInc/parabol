@@ -6,7 +6,8 @@ import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
-import {Link, withRouter} from 'react-router';
+import {withRouter} from 'react-router';
+import {Link} from 'react-router-dom'
 
 const DashNavButton = (props) => {
   const {icon, href, router, styles, title} = props;
