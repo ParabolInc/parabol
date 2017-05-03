@@ -11,6 +11,12 @@ import UserBundle from 'universal/modules/userDashboard/components/UserDashboard
 import SignoutBundle from "../../containers/Signout/SignoutBundle";
 import NotFoundBundle from "../NotFound/NotFoundBundle";
 import NewTeamBundle from "../../modules/newTeam/components/NewTeam/NewTeamBundle";
+import MeetingSummaryBundle from "../../modules/summary/containers/MeetingSummary/MeetingSummaryBundle";
+import MeetingBundle from "../../modules/meeting/containers/MeetingContainer/MeetingBundle";
+import InvoiceBundle from "../../modules/invoice/containers/InvoiceContainer/InvoiceBundle";
+import InvitationBundle from "../../modules/invitation/containers/Invitation/InvitationBundle";
+import GraphqlBundle from "../../modules/admin/containers/Graphql/GraphqlBundle";
+import ImpersonateBundle from "../../modules/admin/containers/Impersonate/ImpersonateBundle";
 
 const Action = (props) => {
   const {styles} = props;
@@ -19,11 +25,17 @@ const Action = (props) => {
       <Toast />
       <Switch>
         <Route exact path="/" component={LandingBundle}/>
-        <Route path="/welcome" component={WelcomeBundle}/>
+        <Route path="/admin/graphql" component={GraphqlBundle}/>
+        <Route path="/admin/impersonate/:newUserId" component={ImpersonateBundle}/>
         <Route path="/newteam/:newOrg?" component={NewTeamBundle}/>
-        <Route path="/team/:teamId" component={TeamBundle}/>
+        <Route path="/invitation/:id" component={InvitationBundle}/>
+        <Route path="/invoice/:invoiceId" component={InvoiceBundle}/>
         <Route path="/me" component={UserBundle}/>
+        <Route path="/meeting/:teamId/:localPhase?/:localPhaseItem?" component={MeetingBundle}/>
         <Route path="/signout" component={SignoutBundle}/>
+        <Route path="/summary/:meetingId" component={MeetingSummaryBundle}/>
+        <Route path="/team/:teamId" component={TeamBundle}/>
+        <Route path="/welcome" component={WelcomeBundle}/>
         <Route component={NotFoundBundle}/>
       </Switch>
     </div>

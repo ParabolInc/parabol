@@ -9,13 +9,10 @@ export default (store) => ({
    */
   component: ActionContainer,
   childRoutes: [
-    ...require('./admin').default,
-    require('./invitation').default(store),
-    require('./invoice').default(store),
-    require('./meeting').default(store),
-    require('./patterns').default,
-    require('./summary').default(store),
-    require('./teamDashboard').default(store),
+    // ...require('./admin').default,
+    // require('./invitation').default(store),
+    // require('./meeting').default(store),
+    // require('./patterns').default,
   ]
 });
 

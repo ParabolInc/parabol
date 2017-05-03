@@ -47,7 +47,7 @@ query {
 `;
 
 const mapStateToProps = (state, props) => {
-  const {params: {invoiceId}} = props;
+  const {match: {params: {invoiceId}}} = props;
   const {invoiceDetails} = cashay.query(invoiceContainerQuery, {
     op: 'invoiceContainer',
     key: invoiceId,
@@ -70,7 +70,8 @@ const InvoiceContainer = (props) => {
 };
 
 InvoiceContainer.propTypes = {
-  invoiceDetails: PropTypes.object
+  invoiceDetails: PropTypes.object,
+  match: PropTypes.object.isRequired
 };
 
 export default connect(mapStateToProps)(InvoiceContainer);

@@ -4,7 +4,7 @@ import resolvePromiseMap from 'universal/utils/promises';
 const setImports = () =>
   new Map([
     ['component', System.import(
-      'universal/modules/invitation/containers/Invitation/Invitation')],
+      'InvitationContainer.js')],
     ['userDashboardSettings', System.import(
       'universal/modules/userDashboard/ducks/settingsDuck')]
   ]);

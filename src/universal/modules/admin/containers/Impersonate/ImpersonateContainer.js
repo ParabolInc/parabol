@@ -23,7 +23,7 @@ query {
   }
 }`;
 
-function createImposter(userId, dispatch, router) {
+function createImposter(userId, dispatch, history) {
   const variables = {userId};
   cashay.mutate('createImposterToken', {variables}).then(async ({data, error}) => {
     if (error) {
@@ -39,7 +39,7 @@ function createImposter(userId, dispatch, router) {
     // Assume the identity of the new user:
     await signinAndUpdateToken(dispatch, profile, jwt);
     // Navigate to a default location, the application root:
-    router.replace('/');
+    history.replace('/');
   });
 }
 
@@ -53,7 +53,7 @@ const mutationHandlers = {
 };
 
 const mapStateToProps = (state, props) => {
-  const {params: {newUserId}} = props;
+  const {match: {params: {newUserId}}} = props;
   const userId = state.auth.obj.sub;
   const {user} = cashay.query(impersonateTokenQuery, {
     op: 'impersonate',
@@ -81,17 +81,18 @@ const showDucks = () => {
 export default class Impersonate extends Component {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
+    match: PropTypes.object.isRequired,
     newUserId: PropTypes.string,
-    router: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired
   };
 
   componentWillMount() {
-    const {dispatch, newUserId, router} = this.props;
+    const {dispatch, newUserId, history} = this.props;
 
     if (!newUserId) {
       return;
     }
-    createImposter(newUserId, dispatch, router);
+    createImposter(newUserId, dispatch, history);
   }
 
   render() {
