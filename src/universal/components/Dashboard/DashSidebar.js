@@ -17,7 +17,7 @@ const DashSidebar = (props) => {
   const {styles} = props;
   return (
     <div className={css(styles.root)}>
-      <StandardHubContainer/>
+      <StandardHubContainer />
       <nav className={css(styles.nav)}>
         <div className={css(styles.singleNavItem)}>
           <DashNavItem
@@ -143,4 +143,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withStyles(styleThunk)(DashSidebar)
+export default withStyles(styleThunk)(DashSidebar);

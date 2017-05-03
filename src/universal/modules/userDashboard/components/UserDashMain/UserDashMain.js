@@ -13,11 +13,13 @@ import {
   makeDateString
 } from 'universal/components/Dashboard';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
+import Helmet from 'react-helmet';
 
 const UserDashMain = (props) => {
   const {styles} = props;
   return (
     <DashMain>
+      <Helmet title="My Dashboard | Parabol" />
       <DashHeader>
         <DashHeaderInfo title="My Dashboard">
           <div className={css(styles.headerCopy)}>

@@ -11,8 +11,16 @@ import {
   APP_UPGRADE_PENDING_RELOAD,
   APP_UPGRADE_PENDING_DONE
 } from 'universal/utils/constants';
+import {connect} from 'react-redux';
+
+const mapStateToProps = (state) => {
+  return {
+    nextUrl: state.auth.nextUrl
+  };
+};
 
 @loginWithToken
+@connect(mapStateToProps)
 export default class LandingContainer extends Component {
   static propTypes = {
     auth: PropTypes.object,
@@ -23,7 +31,7 @@ export default class LandingContainer extends Component {
       preferredName: PropTypes.string
     }),
     dispatch: PropTypes.func.isRequired,
-    location: PropTypes.object
+    nextUrl: PropTypes.string
   };
 
   constructor(props) {
@@ -42,9 +50,9 @@ export default class LandingContainer extends Component {
   componentDidMount() {
     const {
       dispatch,
-      location: { pathname }
+      nextUrl
     } = this.props;
-    if (pathname === '/login') {
+    if (nextUrl) {
       showLock(dispatch);
     }
     const upgradePendingState = window.sessionStorage.getItem(APP_UPGRADE_PENDING_KEY);

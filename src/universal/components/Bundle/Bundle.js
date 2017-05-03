@@ -9,6 +9,7 @@ class Bundle extends Component {
   };
 
   static propTypes = {
+    extraProps: PropTypes.object,
     match: PropTypes.object,
     promises: PropTypes.object.isRequired
   };
@@ -32,8 +33,8 @@ class Bundle extends Component {
 
   render() {
     const {Mod} = this.state;
-    const {match} = this.props;
-    return Mod ? <Mod match={match}/> : null;
+    const {extraProps, match} = this.props;
+    return Mod ? <Mod {...extraProps} match={match} /> : null;
   }
 }
 

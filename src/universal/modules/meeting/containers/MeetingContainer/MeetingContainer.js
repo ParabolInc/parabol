@@ -142,6 +142,7 @@ export default class MeetingContainer extends Component {
     bindHotkey: PropTypes.func.isRequired,
     dispatch: PropTypes.func.isRequired,
     isFacilitating: PropTypes.bool,
+    localPhase: PropTypes.string,
     localPhaseItem: PropTypes.number,
     members: PropTypes.array,
     match: PropTypes.shape({
@@ -153,12 +154,12 @@ export default class MeetingContainer extends Component {
     }),
     history: PropTypes.object,
     team: PropTypes.object.isRequired,
+    teamId: PropTypes.string.isRequired,
     teamMemberCount: PropTypes.number
   };
 
-  constructor(props) {
-    super(props);
-    const {bindHotkey, teamId} = props;
+  componentWillMount() {
+    const {bindHotkey, teamId} = this.props;
     handleRedirects({}, this.props);
     bindHotkey(['enter', 'right'], this.gotoNext);
     bindHotkey('left', this.gotoPrev);
@@ -229,7 +230,7 @@ export default class MeetingContainer extends Component {
       history,
       localPhase,
       team,
-      teamId,
+      teamId
     } = this.props;
     const {meetingPhase} = team;
     const meetingPhaseInfo = actionMeeting[meetingPhase];
@@ -382,7 +383,7 @@ export default class MeetingContainer extends Component {
             />
             }
           </MeetingMainHeader>
-          {localPhase === LOBBY && <MeetingLobby members={members} team={team}/>}
+          {localPhase === LOBBY && <MeetingLobby members={members} team={team} />}
           {localPhase === CHECKIN &&
           <MeetingCheckin
             gotoItem={this.gotoItem}
@@ -423,7 +424,7 @@ export default class MeetingContainer extends Component {
           />
           }
           {!inSync &&
-          <RejoinFacilitatorButton onClickHandler={rejoinFacilitator}/>
+          <RejoinFacilitatorButton onClickHandler={rejoinFacilitator} />
           }
         </MeetingMain>
       </MeetingLayout>

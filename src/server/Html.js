@@ -26,9 +26,7 @@ export default function Html({store, assets, StyleSheetServer, url}) {
     try {
       return renderToString(
         <Provider store={store}>
-          <StaticRouter location={url} context={context}>
-
-          </StaticRouter>
+          <StaticRouter location={url} context={context} />
         </Provider>
       );
     } catch (e) {

@@ -41,7 +41,6 @@ export default class ActionContainer extends Component {
   componentDidUpdate(prevProps) {
     const {location: {pathname: lastPage}} = prevProps;
     const {location: {pathname: nextPage}} = this.props;
-    console.log('loc', this.props)
     if (lastPage !== nextPage) {
       const {dispatch} = this.context.store;
       /*

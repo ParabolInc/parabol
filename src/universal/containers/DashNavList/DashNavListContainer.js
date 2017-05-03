@@ -40,4 +40,4 @@ DashNavListContainer.propTypes = {
   teams: PropTypes.array
 };
 
-export default connect(mapStateToProps, undefined, undefined, {pure: false})(DashNavListContainer);
+export default connect(mapStateToProps)(DashNavListContainer);

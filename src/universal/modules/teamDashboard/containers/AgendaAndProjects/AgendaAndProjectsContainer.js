@@ -32,19 +32,22 @@ const mapStateToProps = (state, props) => {
 const AgendaAndProjectsContainer = (props) => {
   const {
     teamId,
+    teamName,
     hideAgenda
   } = props;
   return (
     <AgendaAndProjects
       hideAgenda={hideAgenda}
       teamId={teamId}
+      teamName={teamName}
     />
   );
 };
 
 AgendaAndProjectsContainer.propTypes = {
   hideAgenda: PropTypes.bool,
-  teamId: PropTypes.string
+  teamId: PropTypes.string,
+  teamName: PropTypes.string
 };
 
 export default connect(mapStateToProps)(AgendaAndProjectsContainer);

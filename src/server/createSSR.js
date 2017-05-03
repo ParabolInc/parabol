@@ -31,7 +31,7 @@ export default function createSSR(req, res) {
       httpTransport: {}
     });
     const htmlString = renderToStaticMarkup(
-      <Html store={store} assets={assets} StyleSheetServer={StyleSheetServer}/>
+      <Html store={store} assets={assets} StyleSheetServer={StyleSheetServer} />
     );
     res.send(`<!DOCTYPE html>${htmlString}`.replace('<head>', `<head>${metaAndTitle}`));
     // const routes = makeRoutes(store);

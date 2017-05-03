@@ -9,6 +9,7 @@ import Panel from 'universal/components/Panel/Panel';
 import OrganizationRow from 'universal/modules/userDashboard/components/OrganizationRow/OrganizationRow';
 import EmptyOrgsCallOut from 'universal/modules/userDashboard/components/EmptyOrgsCallOut/EmptyOrgsCallOut';
 import {withRouter} from 'react-router';
+import Helmet from 'react-helmet';
 
 const Organizations = (props) => {
   const {
@@ -28,6 +29,7 @@ const Organizations = (props) => {
     />;
   return (
     <UserSettingsWrapper>
+      <Helmet title="My Organizations | Parabol" />
       <div className={css(styles.wrapper)}>
         {organizations.length ?
           <Panel label="Organizations" controls={addNewOrg()}>

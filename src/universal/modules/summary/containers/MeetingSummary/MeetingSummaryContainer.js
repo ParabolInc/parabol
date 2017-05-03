@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import Helmet from 'react-helmet';
-import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import SummaryEmail from 'universal/modules/email/components/SummaryEmail/SummaryEmail';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import makeHref from 'universal/utils/makeHref';
@@ -68,7 +67,6 @@ const mapStateToProps = (state, props) => {
   };
 };
 
-@requireAuth
 @connect(mapStateToProps)
 @maintainSocket
 export default class MeetingSummaryContainer extends Component {
@@ -76,7 +74,7 @@ export default class MeetingSummaryContainer extends Component {
     dispatch: PropTypes.func,
     meeting: PropTypes.object.isRequired,
     params: PropTypes.object.isRequired,
-    meetingId: PropTypes.string.isRequired,
+    meetingId: PropTypes.string.isRequired
   };
 
   componentWillMount() {

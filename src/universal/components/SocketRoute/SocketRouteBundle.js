@@ -3,15 +3,16 @@ import React from 'react';
 import resolveDefault from 'universal/utils/resolveDefault';
 import PropTypes from 'prop-types';
 
-const InvoiceBundle = ({match}) => {
+const SocketRouteBundle = ({match}) => {
   const promises = {
-    component: import('./InvoiceContainer').then(resolveDefault)
+    component: import('./SocketRoute').then(resolveDefault),
+    socket: import('redux-socket-cluster').then((res) => res.socketClusterReducer)
   };
   return <Bundle match={match} promises={promises} />;
 };
 
-InvoiceBundle.propTypes = {
+SocketRouteBundle.propTypes = {
   match: PropTypes.object.isRequired
 };
 
-export default InvoiceBundle;
+export default SocketRouteBundle;

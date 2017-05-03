@@ -3,15 +3,15 @@ import React from 'react';
 import resolveDefault from 'universal/utils/resolveDefault';
 import PropTypes from 'prop-types';
 
-const InvoiceBundle = ({match}) => {
+const DashboardWrapperBundle = ({match}) => {
   const promises = {
-    component: import('./InvoiceContainer').then(resolveDefault)
+    component: import('./DashboardWrapper').then(resolveDefault)
   };
   return <Bundle match={match} promises={promises} />;
 };
 
-InvoiceBundle.propTypes = {
+DashboardWrapperBundle.propTypes = {
   match: PropTypes.object.isRequired
 };
 
-export default InvoiceBundle;
+export default DashboardWrapperBundle;

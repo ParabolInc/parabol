@@ -11,7 +11,7 @@ export default function Root({store}) {
     <Provider store={store}>
       <div>
         <Router>
-          <ActionContainer/>
+          <ActionContainer />
         </Router>
       </div>
     </Provider>

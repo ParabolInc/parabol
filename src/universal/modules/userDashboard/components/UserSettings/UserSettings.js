@@ -10,11 +10,11 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
-import {SETTINGS} from 'universal/utils/constants';
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
 import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
 import UserAvatarInput from 'universal/modules/userDashboard/components/UserAvatarInput/UserAvatarInput';
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
+import Helmet from 'react-helmet';
 
 const renderActivity = (activity) => {
   if (activity === ACTIVITY_WELCOME) {
@@ -34,6 +34,7 @@ const UserSettings = (props) => {
   const toggle = <EditableAvatar picture={pictureOrDefault} size={96} />;
   return (
     <UserSettingsWrapper>
+      <Helmet title="My Settings | Parabol" />
       <div className={css(styles.body)}>
         <Panel label="My Information">
           <form className={css(styles.form)} onSubmit={handleSubmit(onSubmit)}>

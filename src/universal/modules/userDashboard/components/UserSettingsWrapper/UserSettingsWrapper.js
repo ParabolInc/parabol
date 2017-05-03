@@ -39,7 +39,7 @@ const UserSettings = (props) => {
   return (
     <DashMain>
       <DashHeader>
-        <SettingsHeader/>
+        <SettingsHeader />
       </DashHeader>
       <DashContent padding="0 0 0 1rem">
         {children}

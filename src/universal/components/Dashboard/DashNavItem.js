@@ -3,7 +3,7 @@ import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
-import {NavLink} from 'react-router-dom'
+import {NavLink} from 'react-router-dom';
 import DashNavItemBaseStyles from './DashNavItemBaseStyles';
 
 const DashNavItem = (props) => {
@@ -57,4 +57,4 @@ const styleThunk = () => ({
 });
 
 // router for navlink unblock
-export default withStyles(styleThunk)(DashNavItem)
+export default withStyles(styleThunk)(DashNavItem);

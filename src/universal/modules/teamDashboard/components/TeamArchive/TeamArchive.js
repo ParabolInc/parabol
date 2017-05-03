@@ -18,9 +18,10 @@ const iconStyle = {
 };
 
 const TeamArchive = (props) => {
-  const {archivedProjects, styles, teamId} = props;
+  const {archivedProjects, styles, teamId, teamName} = props;
   return (
     <div className={css(styles.root)}>
+      <Helmet title={`${teamName} Archive | Parabol`}/>
       <div className={css(styles.header)}>
         <TeamArchiveHeader teamId={teamId} />
         <div className={css(styles.border)} />
@@ -58,6 +59,7 @@ TeamArchive.propTypes = {
   archivedProjects: PropTypes.array,
   styles: PropTypes.object,
   teamId: PropTypes.string,
+  teamName: PropTypes.string,
   teamMembers: PropTypes.array
 };
 

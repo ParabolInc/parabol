@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import UserSettings from 'universal/modules/userDashboard/components/UserSettings/UserSettings';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router';
@@ -38,8 +37,6 @@ const validate = (values) => {
   return schema(values).errors;
 };
 
-// use requireAuth to get the user doc
-@requireAuth
 @reduxForm({form: 'userSettings', shouldValidate, validate})
 @connect(mapStateToProps)
 @withRouter

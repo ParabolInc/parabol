@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
 import {formValueSelector} from 'redux-form';
-import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {goToPage} from 'universal/modules/welcome/ducks/welcomeDuck';
 import Welcome from 'universal/modules/welcome/components/Welcome/Welcome';
 import {withRouter} from 'react-router';
@@ -65,7 +64,5 @@ WelcomeContainer.propTypes = {
 };
 
 export default connect(mapStateToProps)(
-  requireAuth(
-    withRouter(WelcomeContainer)
-  )
+  withRouter(WelcomeContainer)
 );

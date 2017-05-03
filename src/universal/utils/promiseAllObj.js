@@ -6,4 +6,4 @@ export default async (promiseObj) => {
     newObj[keys[idx]] = value;
     return newObj;
   }, {});
-}
+};

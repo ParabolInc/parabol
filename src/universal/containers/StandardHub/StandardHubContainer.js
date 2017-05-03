@@ -50,6 +50,7 @@ const StandardHubContainer = (props) => {
 };
 
 StandardHubContainer.propTypes = {
+  history: PropTypes.object.isRequired,
   notificationCount: PropTypes.number,
   user: PropTypes.shape({
     email: PropTypes.string,
@@ -58,4 +59,5 @@ StandardHubContainer.propTypes = {
   }).isRequired
 };
 
+// router required to update nested content on route changes
 export default withRouter(connect(mapStateToProps)(StandardHubContainer));

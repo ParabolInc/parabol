@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {reduxSocket} from 'redux-socket-cluster';
 import {cashay} from 'cashay';
-import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import reduxSocketOptions from 'universal/redux/reduxSocketOptions';
 import {
   ADD_TO_TEAM,
@@ -19,7 +18,7 @@ import socketCluster from 'socketcluster-client';
 import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
 import parseChannel from 'universal/utils/parseChannel';
 import {showInfo, showWarning} from 'universal/modules/toast/ducks/toastDuck';
-import {withRouter} from 'react-router-dom';
+import {matchPath, withRouter} from 'react-router-dom';
 import {
   APP_VERSION_KEY,
   APP_UPGRADE_PENDING_KEY,
@@ -42,7 +41,6 @@ const mapStateToProps = (state) => {
 const tmsSubs = [];
 
 export default (ComposedComponent) => {
-  @requireAuth
   @reduxSocket({}, reduxSocketOptions)
   @connect(mapStateToProps)
   @withRouter
@@ -55,6 +53,9 @@ export default (ComposedComponent) => {
         })
       }),
       history: PropTypes.object,
+      location: PropTypes.shape({
+        pathname: PropTypes.string.isRequired
+      }),
       tms: PropTypes.array,
       user: PropTypes.object,
       userId: PropTypes.string
@@ -96,8 +97,10 @@ export default (ComposedComponent) => {
         }));
       } else if (type === KICK_OUT) {
         const {teamId, teamName} = data;
-        const {history} = this.props;
-        const onExTeamRoute = history.isActive(`/team/${teamId}`) || history.isActive(`/meeting/${teamId}`);
+        const {history, location: {pathname}} = this.props;
+        const onExTeamRoute = Boolean(matchPath(pathname, {
+          path: `(/team/:${teamId}|/meeting/${teamId})`
+        }));
         if (onExTeamRoute) {
           history.push('/me');
         }

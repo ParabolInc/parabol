@@ -28,7 +28,6 @@ const mapStateToProps = (state) => {
 export default (role, {
   /* optional named options: */
   silent = false,
-  redirect = '/login',
   unauthorized = unauthorizedDefault,
   unauthenticated = unauthenticatedDefault
 } = {}) => (ComposedComponent) => {
@@ -59,7 +58,7 @@ export default (role, {
       const {auth, dispatch, location: {pathname}} = props;
 
       if (auth.sub) {
-        if (role && !(auth.sub && auth.rol === role) && !silent) {
+        if (role && auth.rol !== role && !silent) {
           dispatch(showError(unauthenticated));
         }
       } else {
@@ -86,7 +85,7 @@ export default (role, {
         // We were looking for any authenticated user only:
         return <ComposedComponent {...this.props} />;
       }
-      history.push(redirect);
+      history.push('/');
       return null;
     }
   }

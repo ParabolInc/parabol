@@ -1,41 +1,32 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import NewTeamFormContainer from 'universal/modules/newTeam/containers/NewTeamForm/NewTeamFormContainer';
-import {connect} from 'react-redux';
-import DashboardWrapper from 'universal/components/DashboardWrapper/DashboardWrapper';
-import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
-import {DragDropContext as dragDropContext} from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
-
-const NewTeam = (props) => {
-  const {dispatch, match: {params: {newOrg}}} = props;
-  return (
-    <DashboardWrapper title="New Team | Parabol">
-      <NewTeamFormContainer dispatch={dispatch} newOrgRoute={Boolean(newOrg)} />
-    </DashboardWrapper>
-  );
-};
-
-NewTeam.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      newOrg: PropTypes.string
-    })
-  })
-};
-
-const styleThunk = () => ({
-  newTeamView: {
-    padding: '2rem'
-  }
-});
-
-export default
-dragDropContext(HTML5Backend)(
-  socketWithPresence(
-    connect()(withStyles(styleThunk)(NewTeam)
-    )
-  )
-);
+// import PropTypes from 'prop-types';
+// import React from 'react';
+// import withStyles from 'universal/styles/withStyles';
+// import NewTeamFormContainer from 'universal/modules/newTeam/containers/NewTeamForm/NewTeamFormContainer';
+// import {connect} from 'react-redux';
+// import DashboardWrapper from 'universal/components/DashboardWrapper/DashboardWrapper';
+//
+// const NewTeam = (props) => {
+//   const {dispatch, match: {params: {newOrg}}} = props;
+//   return (
+//     <DashboardWrapper title="New Team | Parabol">
+//       <NewTeamFormContainer dispatch={dispatch} newOrgRoute={Boolean(newOrg)} />
+//     </DashboardWrapper>
+//   );
+// };
+//
+// NewTeam.propTypes = {
+//   dispatch: PropTypes.func.isRequired,
+//   match: PropTypes.shape({
+//     params: PropTypes.shape({
+//       newOrg: PropTypes.string
+//     })
+//   })
+// };
+//
+// const styleThunk = () => ({
+//   newTeamView: {
+//     padding: '2rem'
+//   }
+// });
+//
+// export default withStyles(styleThunk)(NewTeam);
