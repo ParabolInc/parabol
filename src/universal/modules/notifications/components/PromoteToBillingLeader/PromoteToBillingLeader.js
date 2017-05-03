@@ -14,7 +14,7 @@ const PromoteToBillingLeader = (props) => {
   const {
     notificationId,
     orgId,
-    router,
+    history,
     styles,
     varList
   } = props;
@@ -22,7 +22,7 @@ const PromoteToBillingLeader = (props) => {
   const acknowledge = () => {
     const variables = {notificationId};
     cashay.mutate('clearNotification', {variables});
-    router.push(`/me/organizations/${orgId}`);
+    history.push(`/me/organizations/${orgId}`);
   };
   return (
     <Row>
@@ -50,7 +50,7 @@ const PromoteToBillingLeader = (props) => {
 PromoteToBillingLeader.propTypes = {
   notificationId: PropTypes.string.isRequired,
   orgId: PropTypes.string.isRequired,
-  router: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
   styles: PropTypes.object,
   varList: PropTypes.array.isRequired
 };

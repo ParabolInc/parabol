@@ -33,7 +33,7 @@ const NewTeamForm = (props) => {
     last4,
     isNewOrg,
     organizations,
-    router,
+    history,
     setLast4,
     styles
   } = props;
@@ -44,11 +44,11 @@ const NewTeamForm = (props) => {
   };
 
   const handleCreateNew = () => {
-    router.push('/newteam/1');
+    history.push('/newteam/1');
   };
   const addBilling = <Button colorPalette="cool" isBlock label="Add Billing Information" size="small" />;
   const resetOrgSelection = () => {
-    router.push('/newteam');
+    history.push('/newteam');
   };
   return (
     <form className={css(styles.form)} onSubmit={handleSubmit}>
@@ -153,7 +153,7 @@ NewTeamForm.propTypes = {
   last4: PropTypes.string,
   isNewOrg: PropTypes.bool,
   organizations: PropTypes.array,
-  router: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
   setLast4: PropTypes.func.isRequired,
   styles: PropTypes.object
 };

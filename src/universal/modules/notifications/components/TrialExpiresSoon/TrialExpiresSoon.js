@@ -13,14 +13,14 @@ import ui from 'universal/styles/ui';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
 
 const TrialExpiresSoon = (props) => {
-  const {dispatch, orgId, router, styles, varList} = props;
+  const {dispatch, orgId, history, styles, varList} = props;
   const [expiresAt] = varList;
   const daysLeft = fromNow(expiresAt);
   const addBilling = () => {
     dispatch(
       segmentEventTrack('Notification TrialExpiresSoon Click')
     );
-    router.push(`/me/organizations/${orgId}`);
+    history.push(`/me/organizations/${orgId}`);
   };
   return (
     <Row>
@@ -52,7 +52,7 @@ const TrialExpiresSoon = (props) => {
 TrialExpiresSoon.propTypes = {
   dispatch: PropTypes.func.isRequired,
   orgId: PropTypes.string.isRequired,
-  router: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
   styles: PropTypes.object,
   varList: PropTypes.array.isRequired
 };

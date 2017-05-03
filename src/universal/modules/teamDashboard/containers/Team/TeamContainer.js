@@ -71,7 +71,7 @@ const TeamContainer = (props) => {
     path: '/team/:teamId/settings'
   });
   return (
-    <DashboardWrapper title={pageTitle} url={url}>
+    <DashboardWrapper title={pageTitle}>
       <Team
         hasDashAlert={hasDashAlert}
         isSettings={isSettings || false}

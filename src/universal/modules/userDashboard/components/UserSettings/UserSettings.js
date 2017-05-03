@@ -79,7 +79,6 @@ UserSettings.propTypes = {
   handleSubmit: PropTypes.func,
   nextPage: PropTypes.string,          // from settingsDuck
   onSubmit: PropTypes.func,
-  router: PropTypes.object,
   user: PropTypes.shape({
     email: PropTypes.string,
     id: PropTypes.string,

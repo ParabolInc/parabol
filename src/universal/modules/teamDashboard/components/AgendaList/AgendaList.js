@@ -97,7 +97,6 @@ AgendaList.propTypes = {
   gotoAgendaItem: PropTypes.func,
   localPhase: PropTypes.oneOf(phaseArray),
   localPhaseItem: PropTypes.number,
-  router: PropTypes.object,
   styles: PropTypes.object,
   teamId: PropTypes.string.isRequired
 };

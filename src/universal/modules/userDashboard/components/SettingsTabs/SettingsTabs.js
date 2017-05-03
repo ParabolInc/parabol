@@ -12,18 +12,18 @@ import appTheme from 'universal/styles/theme/appTheme';
 const iconStyle = {opacity: '.5'};
 
 const SettingsTabs = (props) => {
-  const {notificationCount, router, styles} = props;
+  const {notificationCount, history, styles} = props;
   let currentPath = SETTINGS;
   const makeOnClick = (path) => {
     const fullPath = `/me/${path}`;
-    if (router.isActive(fullPath)) {
+    if (history.isActive(fullPath)) {
       currentPath = path;
-      if (router.isActive(fullPath, true)) {
+      if (history.isActive(fullPath, true)) {
         return undefined;
       }
     }
     return () => {
-      router.push(fullPath);
+      history.push(fullPath);
     };
   };
   const clickHandlers = settingsOrder.map((path) => makeOnClick(path));
@@ -60,7 +60,7 @@ const SettingsTabs = (props) => {
 
 SettingsTabs.propTypes = {
   notificationCount: PropTypes.number,
-  router: PropTypes.object,
+  history: PropTypes.object,
   styles: PropTypes.object
 };
 

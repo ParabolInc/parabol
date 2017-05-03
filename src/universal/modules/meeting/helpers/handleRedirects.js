@@ -7,7 +7,7 @@ import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import {cashay} from 'cashay';
 
 export default function handleRedirects(oldProps, nextProps) {
-  const {agenda, isFacilitating, localPhaseItem, router, params: {localPhase}, team} = nextProps;
+  const {agenda, isFacilitating, localPhaseItem, history, params: {localPhase}, team} = nextProps;
   const {agenda: oldAgenda = {}, team: oldTeam = {}} = oldProps;
   /* DEBUG: uncomment below */
   // console.log(`handleRedirects(${JSON.stringify(team)}, ${localPhase}, ${localPhaseItem}, ...)`);
@@ -21,7 +21,7 @@ export default function handleRedirects(oldProps, nextProps) {
   const localPhaseInfo = actionMeeting[localPhase];
   if (!localPhaseInfo) {
     const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
-    router.replace(pushURL);
+    history.replace(pushURL);
     return false;
   }
 
@@ -51,23 +51,23 @@ export default function handleRedirects(oldProps, nextProps) {
           cashay.mutate('moveMeeting', {variables});
         }
         const pushURL = makePushURL(teamId, facilitatorPhase, nextPhaseItem);
-        router.replace(pushURL);
+        history.replace(pushURL);
         return false;
       } else if (facilitatorPhase === localPhase || phaseItems.length <= 1) {
       // if they're in the same phase as the facilitator, or the phase they wanna go to has no items, go to their phase item
         const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
-        router.replace(pushURL);
+        history.replace(pushURL);
         return false;
       }
       // if they wanna go somewhere that the facilitator isn't take them to the beginning (url is 1-indexed)
       const pushURL = makePushURL(teamId, localPhase, 1);
-      router.replace(pushURL);
+      history.replace(pushURL);
       return false;
     }
   } else if (localPhaseItem !== undefined) {
     // if the url has a phase item that it shouldn't, remove it
     const pushURL = makePushURL(teamId, localPhase);
-    router.replace(pushURL);
+    history.replace(pushURL);
     return false;
   }
 
@@ -75,14 +75,14 @@ export default function handleRedirects(oldProps, nextProps) {
   const meetingPhaseInfo = actionMeeting[meetingPhase];
   if (localPhaseInfo.visitOnce === true && localPhaseInfo.index < meetingPhaseInfo.index) {
     const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
-    router.replace(pushURL);
+    history.replace(pushURL);
     return false;
   }
 
   // don't let anyone skip to the next phase
   if (localPhaseInfo.index > meetingPhaseInfo.index) {
     const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
-    router.replace(pushURL);
+    history.replace(pushURL);
     return false;
   }
 
@@ -94,7 +94,7 @@ export default function handleRedirects(oldProps, nextProps) {
       (localPhaseItem === undefined || localPhaseItem === oldTeam.facilitatorPhaseItem);
     if (inSync) {
       const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
-      router.replace(pushURL);
+      history.replace(pushURL);
       return false;
     }
   }
@@ -108,14 +108,14 @@ export default function handleRedirects(oldProps, nextProps) {
       const updatedAgendaItemIdx = agenda.findIndex((a) => a.id === oldAgendaItem.id);
       if (updatedAgendaItemIdx !== -1) {
         const pushURL = makePushURL(teamId, AGENDA_ITEMS, updatedAgendaItemIdx + 1);
-        router.replace(pushURL);
+        history.replace(pushURL);
         return false;
       }
     }
   }
 
   if (facilitatorPhase === SUMMARY) {
-    router.replace(`/summary/${meetingId}`);
+    history.replace(`/summary/${meetingId}`);
     return false;
   }
   return true;

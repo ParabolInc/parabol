@@ -38,7 +38,6 @@ UnpaidTeamModal.propTypes = {
   isALeader: PropTypes.bool,
   isClosing: PropTypes.bool,
   modalLayout: PropTypes.oneOf(ui.modalLayout),
-  router: PropTypes.object,
   orgId: PropTypes.string,
   problem: PropTypes.string,
   solution: PropTypes.string,

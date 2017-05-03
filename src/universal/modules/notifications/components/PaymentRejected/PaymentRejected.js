@@ -11,10 +11,10 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
 const PaymentRejected = (props) => {
-  const {orgId, router, styles, varList} = props;
+  const {orgId, history, styles, varList} = props;
   const [last4, brand] = varList;
   const addBilling = () => {
-    router.push(`/me/organizations/${orgId}`);
+    history.push(`/me/organizations/${orgId}`);
   };
   return (
     <Row>
@@ -46,7 +46,7 @@ const PaymentRejected = (props) => {
 
 PaymentRejected.propTypes = {
   orgId: PropTypes.string.isRequired,
-  router: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
   styles: PropTypes.object,
   varList: PropTypes.array.isRequired
 };

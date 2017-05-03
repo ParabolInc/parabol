@@ -39,7 +39,7 @@ export default (role, {
       auth: PropTypes.object,
       user: PropTypes.object,
       dispatch: PropTypes.func,
-      router: PropTypes.object,
+      history: PropTypes.object,
       location: PropTypes.object
     };
 
@@ -73,7 +73,7 @@ export default (role, {
     }
 
     render() {
-      const {auth, router} = this.props;
+      const {auth, history} = this.props;
       if (auth === undefined) {
         throw new Error('Auth token undefined. Did you put @connect on your component?');
       }
@@ -86,7 +86,7 @@ export default (role, {
         // We were looking for any authenticated user only:
         return <ComposedComponent {...this.props} />;
       }
-      router.push(redirect);
+      history.push(redirect);
       return null;
     }
   }

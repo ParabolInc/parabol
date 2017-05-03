@@ -23,7 +23,7 @@ const emailInviteSuccess = {
 };
 
 const Step3InviteeList = (props) => {
-  const {dispatch, existingInvites, handleSubmit, invitees, router, styles, teamId} = props;
+  const {dispatch, existingInvites, handleSubmit, invitees, history, styles, teamId} = props;
   const onInviteTeamSubmit = () => {
     if (invitees && invitees.length > 0) {
       const serverInvitees = invitees.map((invitee) => {
@@ -42,7 +42,7 @@ const Step3InviteeList = (props) => {
       };
       cashay.mutate('inviteTeamMembers', options);
     }
-    router.push(`/team/${teamId}`);  // redirect leader to their new team
+    history.push(`/team/${teamId}`);  // redirect leader to their new team
 
     // loading that user dashboard is really expensive and causes dropped frames, so let's lighten the load
     setTimeout(() => {
@@ -107,7 +107,7 @@ Step3InviteeList.propTypes = {
   existingInvites: PropTypes.array,
   handleSubmit: PropTypes.func.isRequired,
   invitees: PropTypes.array,
-  router: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
   styles: PropTypes.object,
   teamId: PropTypes.string.isRequired
 };

@@ -11,18 +11,10 @@ import DashNavListContainer from 'universal/containers/DashNavList/DashNavListCo
 import DashNavItem from './DashNavItem';
 import StandardHubContainer from 'universal/containers/StandardHub/StandardHubContainer';
 import Logo from 'universal/styles/theme/images/brand/parabol-beta-lockup.svg';
-import {withRouter} from 'react-router';
-import {NavLink} from 'react-router-dom'
+import {NavLink} from 'react-router-dom';
 
 const DashSidebar = (props) => {
-  const {styles, url} = props;
-  // const newTeamIsActive = router.isActive('/newteam') || router.isActive('/newteam/1');
-
-  // const newTeamIsActive = url.indexOf('/newteam') !== -1;
-  const addNewStyles = css(
-    styles.addTeam,
-    // newTeamIsActive && styles.addTeamDisabled
-  );
+  const {styles} = props;
   return (
     <div className={css(styles.root)}>
       <StandardHubContainer/>
@@ -37,7 +29,7 @@ const DashSidebar = (props) => {
           My Teams
         </div>
         <DashNavListContainer />
-        <NavLink className={addNewStyles} activeClassName={css(styles.addTeamDisabled)} title="Add New Team" to="/newteam">
+        <NavLink className={css(styles.addTeam)} activeClassName={css(styles.addTeamDisabled)} title="Add New Team" to="/newteam">
           <div className={css(styles.addTeamIcon)}>
             <FontAwesome name="plus-square" />
           </div>
@@ -56,7 +48,6 @@ const DashSidebar = (props) => {
 };
 
 DashSidebar.propTypes = {
-  router: PropTypes.object,
   styles: PropTypes.object
 };
 
@@ -152,6 +143,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withRouter(
-  withStyles(styleThunk)(DashSidebar)
-);
+export default withStyles(styleThunk)(DashSidebar)

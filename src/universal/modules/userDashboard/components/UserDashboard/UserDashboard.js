@@ -16,7 +16,7 @@ const UserDashboard = (props) => {
   const {url} = match;
   const title = url === '/me' ? 'My Dashboard | Parabol' : 'My Settings | Parabol';
   return (
-    <DashboardWrapper title={title} url={url}>
+    <DashboardWrapper title={title}>
       <Switch>
         <Route exact path={match.url} component={UserDashBundle}/>
         <Route path={`${match.url}/settings`} component={UserSettingsBundle}/>

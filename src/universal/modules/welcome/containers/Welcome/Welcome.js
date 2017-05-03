@@ -21,7 +21,7 @@ const mapStateToProps = (state, props) => ({
 });
 
 const WelcomeContainer = (props) => {
-  const {dispatch, invitees, inviteesRaw, preferredName, teamName, router, tms, user, welcome} = props;
+  const {dispatch, invitees, inviteesRaw, preferredName, teamName, history, tms, user, welcome} = props;
   const {completed} = welcome;
   const progressDotClickFactory = (dot) => (e) => {
     e.preventDefault();
@@ -30,7 +30,7 @@ const WelcomeContainer = (props) => {
     }
   };
   if (tms && completed === 0) {
-    router.push('/me');
+    history.push('/me');
     return null;
   }
   return (
@@ -53,7 +53,7 @@ WelcomeContainer.propTypes = {
   invitees: PropTypes.array,
   inviteesRaw: PropTypes.string,
   preferredName: PropTypes.string,
-  router: PropTypes.object,
+  history: PropTypes.object,
   teamName: PropTypes.string,
   tms: PropTypes.array,
   user: PropTypes.object.isRequired,

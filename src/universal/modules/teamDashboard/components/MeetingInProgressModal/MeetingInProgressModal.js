@@ -8,9 +8,9 @@ import portal from 'react-portal-hoc';
 import ui from 'universal/styles/ui';
 
 const MeetingInProgressModal = (props) => {
-  const {closeAfter, isClosing, modalLayout, teamId, teamName, router} = props;
+  const {closeAfter, isClosing, modalLayout, teamId, teamName, history} = props;
   const handleClick = () => {
-    router.push(`/meeting/${teamId}`);
+    history.push(`/meeting/${teamId}`);
   };
   return (
     <DashModal position="absolute" modalLayout={modalLayout} isClosing={isClosing} closeAfter={closeAfter}>
@@ -40,7 +40,7 @@ MeetingInProgressModal.propTypes = {
   closeAfter: PropTypes.number,
   isClosing: PropTypes.bool,
   modalLayout: PropTypes.oneOf(ui.modalLayout),
-  router: PropTypes.object,
+  history: PropTypes.object,
   teamId: PropTypes.string,
   teamName: PropTypes.string
 };

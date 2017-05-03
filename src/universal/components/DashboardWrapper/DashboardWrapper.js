@@ -5,11 +5,11 @@ import DashLayoutContainer from 'universal/containers/DashLayoutContainer/DashLa
 import Helmet from 'react-helmet';
 
 const DashboardWrapper = (props) => {
-  const {children, title, url} = props;
+  const {children, title} = props;
   return (
     <DashLayoutContainer>
       <Helmet title={title} />
-      <DashSidebar url={url} />
+      <DashSidebar />
       {children}
     </DashLayoutContainer>
   );
@@ -17,8 +17,7 @@ const DashboardWrapper = (props) => {
 
 DashboardWrapper.propTypes = {
   children: PropTypes.any.isRequired,
-  title: PropTypes.string,
-  url: PropTypes.string.isRequired
+  title: PropTypes.string
 };
 
 export default DashboardWrapper;

@@ -146,7 +146,7 @@ export default class MeetingContainer extends Component {
       localPhase: PropTypes.string,
       teamId: PropTypes.string.isRequired
     }).isRequired,
-    router: PropTypes.object,
+    history: PropTypes.object,
     team: PropTypes.object.isRequired,
     teamMemberCount: PropTypes.number
   };
@@ -184,7 +184,7 @@ export default class MeetingContainer extends Component {
       return true;
     }
     const {dispatch, isFacilitating, team: {id: teamId}} = this.props;
-    // if we call router.push
+    // if we call history.push
     if (safeRoute === false && Date.now() - infiniteLoopTimer < 1000) {
       if (++infiniteloopCounter >= 10) {
         // if we're changing locations 10 times in a second, it's probably infinite
@@ -222,7 +222,7 @@ export default class MeetingContainer extends Component {
     const {
       isFacilitating,
       params: {localPhase, teamId},
-      router,
+      history,
       team
     } = this.props;
     const {meetingPhase} = team;
@@ -234,7 +234,7 @@ export default class MeetingContainer extends Component {
 
     if (nextPhaseInfo.index <= meetingPhaseInfo.index) {
       const pushURL = makePushURL(teamId, nextPhase, nextPhaseItem);
-      router.push(pushURL);
+      history.push(pushURL);
     }
 
     if (isFacilitating) {
@@ -305,7 +305,7 @@ export default class MeetingContainer extends Component {
       members,
       params: {teamId, localPhase},
       team,
-      router
+      history
     } = this.props;
     const {
       facilitatorPhase,
@@ -327,7 +327,7 @@ export default class MeetingContainer extends Component {
       localPhase + localPhaseItem === facilitatorPhase + facilitatorPhaseItem;
     const rejoinFacilitator = () => {
       const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
-      router.push(pushURL);
+      history.push(pushURL);
     };
 
     const isBehindMeeting = phaseArray.indexOf(localPhase) < phaseArray.indexOf(meetingPhase);

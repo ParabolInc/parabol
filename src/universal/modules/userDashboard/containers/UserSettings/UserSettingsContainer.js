@@ -54,7 +54,7 @@ export default class UserSettingsContainer extends Component {
       picture: PropTypes.string,
       preferredName: PropTypes.string
     }),
-    router: PropTypes.object,
+    history: PropTypes.object,
     untouch: PropTypes.func,
     userId: PropTypes.string
   };
@@ -76,13 +76,13 @@ export default class UserSettingsContainer extends Component {
   };
 
   onSubmitComplete() {
-    const {activity, dispatch, nextPage, untouch, router} = this.props;
+    const {activity, dispatch, nextPage, untouch, history} = this.props;
     dispatch(showSuccess(updateSuccess));
     if (activity === ACTIVITY_WELCOME) {
       dispatch(clearActivity());
     }
     if (nextPage) {
-      router.push(nextPage);
+      history.push(nextPage);
     }
     untouch('preferredName');
   }

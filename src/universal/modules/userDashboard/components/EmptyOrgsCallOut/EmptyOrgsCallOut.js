@@ -7,10 +7,10 @@ import {withRouter} from 'react-router';
 
 const EmptyOrgsCallOut = (props) => {
   const {
-    router
+    history
   } = props;
 
-  const gotoNewTeam = () => { router.push('/newteam/1'); };
+  const gotoNewTeam = () => { history.push('/newteam/1'); };
   const button = (
     <Button
       colorPalette="cool"
@@ -28,7 +28,7 @@ const EmptyOrgsCallOut = (props) => {
 };
 
 EmptyOrgsCallOut.propTypes = {
-  router: PropTypes.object
+  history: PropTypes.object
 };
 
 export default withRouter(EmptyOrgsCallOut);
