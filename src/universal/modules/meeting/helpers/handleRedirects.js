@@ -7,7 +7,7 @@ import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import {cashay} from 'cashay';
 
 export default function handleRedirects(oldProps, nextProps) {
-  const {agenda, isFacilitating, localPhaseItem, history, params: {localPhase}, team} = nextProps;
+  const {agenda, isFacilitating, localPhaseItem, history, localPhase, team} = nextProps;
   const {agenda: oldAgenda = {}, team: oldTeam = {}} = oldProps;
   /* DEBUG: uncomment below */
   // console.log(`handleRedirects(${JSON.stringify(team)}, ${localPhase}, ${localPhaseItem}, ...)`);

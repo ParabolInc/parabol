@@ -36,7 +36,6 @@ const AgendaAndProjects = (props) => {
 
 AgendaAndProjects.propTypes = {
   hideAgenda: PropTypes.bool,
-  params: PropTypes.object,
   styles: PropTypes.object,
   teamId: PropTypes.string,
   teamMembers: PropTypes.array

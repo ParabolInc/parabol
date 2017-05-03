@@ -63,7 +63,8 @@ const mapStateToProps = (state, props) => {
     }
   }).data;
   return {
-    meeting
+    meeting,
+    meetingId
   };
 };
 
@@ -74,11 +75,12 @@ export default class MeetingSummaryContainer extends Component {
   static propTypes = {
     dispatch: PropTypes.func,
     meeting: PropTypes.object.isRequired,
-    params: PropTypes.object.isRequired
+    params: PropTypes.object.isRequired,
+    meetingId: PropTypes.string.isRequired,
   };
 
   componentWillMount() {
-    const {params: {meetingId}} = this.props;
+    const {meetingId} = this.props;
     const variables = {meetingId};
     cashay.mutate('summarizeMeeting', {variables});
   }

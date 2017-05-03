@@ -61,9 +61,6 @@ const MeetingLobby = (props) => {
 
 MeetingLobby.propTypes = {
   members: PropTypes.array,
-  params: PropTypes.shape({
-    teamId: PropTypes.string
-  }),
   styles: PropTypes.object,
   team: PropTypes.shape({
     id: PropTypes.string,

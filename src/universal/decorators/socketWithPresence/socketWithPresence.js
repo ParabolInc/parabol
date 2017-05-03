@@ -49,8 +49,10 @@ export default (ComposedComponent) => {
   class SocketWithPresence extends Component {
     static propTypes = {
       dispatch: PropTypes.func,
-      params: PropTypes.shape({
-        teamId: PropTypes.string
+      match: PropTypes.shape({
+        params: PropTypes.shape({
+          teamId: PropTypes.string
+        })
       }),
       history: PropTypes.object,
       tms: PropTypes.array,

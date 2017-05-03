@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import PropTypes from 'prop-types';
@@ -95,7 +95,7 @@ const mutationHandlers = {
 };
 
 const mapStateToProps = (state, props) => {
-  const {params: {localPhaseItem, teamId}} = props;
+  const {match: {params: {localPhase, localPhaseItem, teamId}}} = props;
   const {sub: userId} = state.auth.obj;
   const queryResult = cashay.query(meetingContainerQuery, {
     op: 'meetingContainerQuery',
@@ -118,8 +118,10 @@ const mapStateToProps = (state, props) => {
     agendaCount,
     isFacilitating: myTeamMemberId === team.activeFacilitator,
     localPhaseItem: localPhaseItem && Number(localPhaseItem),
+    localPhase,
     members: resolveMeetingMembers(queryResult.data, userId),
     team,
+    teamId,
     teamMemberCount
   };
 };
@@ -142,10 +144,13 @@ export default class MeetingContainer extends Component {
     isFacilitating: PropTypes.bool,
     localPhaseItem: PropTypes.number,
     members: PropTypes.array,
-    params: PropTypes.shape({
-      localPhase: PropTypes.string,
-      teamId: PropTypes.string.isRequired
-    }).isRequired,
+    match: PropTypes.shape({
+      params: PropTypes.shape({
+        localPhase: PropTypes.string,
+        localPhaseItem: PropTypes.string,
+        teamId: PropTypes.string.isRequired
+      })
+    }),
     history: PropTypes.object,
     team: PropTypes.object.isRequired,
     teamMemberCount: PropTypes.number
@@ -153,7 +158,7 @@ export default class MeetingContainer extends Component {
 
   constructor(props) {
     super(props);
-    const {bindHotkey, params: {teamId}} = props;
+    const {bindHotkey, teamId} = props;
     handleRedirects({}, this.props);
     bindHotkey(['enter', 'right'], this.gotoNext);
     bindHotkey('left', this.gotoPrev);
@@ -161,7 +166,7 @@ export default class MeetingContainer extends Component {
   }
 
   componentDidMount() {
-    const {agendaCount, params: {teamId}} = this.props;
+    const {agendaCount, teamId} = this.props;
     // if we have stale count data (from a previous meeting) freshen it up!
     if (agendaCount !== null) {
       cashay.query(perMeetingQueries, {
@@ -221,9 +226,10 @@ export default class MeetingContainer extends Component {
     if (!maybeNextPhaseItem && !maybeNextPhase) return;
     const {
       isFacilitating,
-      params: {localPhase, teamId},
       history,
-      team
+      localPhase,
+      team,
+      teamId,
     } = this.props;
     const {meetingPhase} = team;
     const meetingPhaseInfo = actionMeeting[meetingPhase];
@@ -254,7 +260,7 @@ export default class MeetingContainer extends Component {
   };
 
   gotoNext = () => {
-    const {params: {localPhase}, localPhaseItem} = this.props;
+    const {localPhase, localPhaseItem} = this.props;
     const nextPhaseInfo = actionMeeting[localPhase];
     if (nextPhaseInfo.items) {
       this.gotoItem(localPhaseItem + 1);
@@ -301,10 +307,11 @@ export default class MeetingContainer extends Component {
     const {
       agenda,
       isFacilitating,
+      localPhase,
       localPhaseItem,
       members,
-      params: {teamId, localPhase},
       team,
+      teamId,
       history
     } = this.props;
     const {
@@ -368,55 +375,55 @@ export default class MeetingContainer extends Component {
               {...phaseStateProps}
             />
             {localPhase === UPDATES &&
-              <MeetingUpdatesPrompt
-                gotoNext={this.gotoNext}
-                localPhaseItem={localPhaseItem}
-                members={members}
-              />
+            <MeetingUpdatesPrompt
+              gotoNext={this.gotoNext}
+              localPhaseItem={localPhaseItem}
+              members={members}
+            />
             }
           </MeetingMainHeader>
-          {localPhase === LOBBY && <MeetingLobby members={members} team={team} />}
+          {localPhase === LOBBY && <MeetingLobby members={members} team={team}/>}
           {localPhase === CHECKIN &&
-            <MeetingCheckin
-              gotoItem={this.gotoItem}
-              gotoNext={this.gotoNext}
-              hideMoveMeetingControls={hideMoveMeetingControls}
-              {...phaseStateProps}
-            />
+          <MeetingCheckin
+            gotoItem={this.gotoItem}
+            gotoNext={this.gotoNext}
+            hideMoveMeetingControls={hideMoveMeetingControls}
+            {...phaseStateProps}
+          />
           }
           {localPhase === UPDATES &&
-            <MeetingUpdatesContainer
-              gotoItem={this.gotoItem}
-              gotoNext={this.gotoNext}
-              hideMoveMeetingControls={hideMoveMeetingControls}
-              {...phaseStateProps}
-            />
+          <MeetingUpdatesContainer
+            gotoItem={this.gotoItem}
+            gotoNext={this.gotoNext}
+            hideMoveMeetingControls={hideMoveMeetingControls}
+            {...phaseStateProps}
+          />
           }
           {localPhase === FIRST_CALL &&
-            <MeetingAgendaFirstCall
-              {...phaseStateProps}
-              gotoNext={this.gotoNext}
-              hideMoveMeetingControls={hideMoveMeetingControls}
-            />
+          <MeetingAgendaFirstCall
+            {...phaseStateProps}
+            gotoNext={this.gotoNext}
+            hideMoveMeetingControls={hideMoveMeetingControls}
+          />
           }
           {localPhase === AGENDA_ITEMS &&
-            <MeetingAgendaItems
-              agendaItem={agenda[localPhaseItem - 1]}
-              isLast={localPhaseItem === agenda.length}
-              gotoNext={this.gotoNext}
-              members={members}
-              hideMoveMeetingControls={hideMoveMeetingControls}
-            />
+          <MeetingAgendaItems
+            agendaItem={agenda[localPhaseItem - 1]}
+            isLast={localPhaseItem === agenda.length}
+            gotoNext={this.gotoNext}
+            members={members}
+            hideMoveMeetingControls={hideMoveMeetingControls}
+          />
           }
           {localPhase === LAST_CALL &&
-            <MeetingAgendaLastCallContainer
-              {...phaseStateProps}
-              gotoNext={this.gotoNext}
-              hideMoveMeetingControls={hideMoveMeetingControls}
-            />
+          <MeetingAgendaLastCallContainer
+            {...phaseStateProps}
+            gotoNext={this.gotoNext}
+            hideMoveMeetingControls={hideMoveMeetingControls}
+          />
           }
           {!inSync &&
-            <RejoinFacilitatorButton onClickHandler={rejoinFacilitator} />
+          <RejoinFacilitatorButton onClickHandler={rejoinFacilitator}/>
           }
         </MeetingMain>
       </MeetingLayout>
