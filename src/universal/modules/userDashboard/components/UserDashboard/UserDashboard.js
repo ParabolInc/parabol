@@ -12,11 +12,11 @@ import OrganizationBundle from "../../containers/Organization/OrganizationBundle
 import NotificationsBundle from "../../../notifications/containers/Notifications/NotificationsBundle";
 
 const UserDashboard = (props) => {
-  const {location: {pathname}, match} = props;
-  const title = pathname === '/me' ? 'My Dashboard | Parabol' : 'My Settings | Parabol';
-  console.log('match', match.url)
+  const {match} = props;
+  const {url} = match;
+  const title = url === '/me' ? 'My Dashboard | Parabol' : 'My Settings | Parabol';
   return (
-    <DashboardWrapper location={pathname} title={title}>
+    <DashboardWrapper title={title} url={url}>
       <Switch>
         <Route exact path={match.url} component={UserDashBundle}/>
         <Route path={`${match.url}/settings`} component={UserSettingsBundle}/>

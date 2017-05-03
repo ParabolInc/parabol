@@ -9,7 +9,6 @@ const TeamBundle = ({match}) => {
     socket: import('redux-socket-cluster').then((res) => res.socketClusterReducer),
     teamDashboard: import('universal/modules/teamDashboard/ducks/teamDashDuck').then(resolveDefault)
   };
-  console.log('created promises! (see this more than once & it is bad)')
   return <Bundle match={match} promises={promises}/>;
 };
 

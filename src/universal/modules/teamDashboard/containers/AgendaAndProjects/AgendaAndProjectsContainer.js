@@ -13,7 +13,6 @@ query {
 }`;
 
 const mapStateToProps = (state, props) => {
-  console.log('match', props.match)
   const {match: {params: {teamId}}} = props;
   const userId = state.auth.obj.sub;
   const {myTeamMember} = cashay.query(agendaAndProjectsQuery, {
@@ -35,7 +34,6 @@ const AgendaAndProjectsContainer = (props) => {
     teamId,
     hideAgenda
   } = props;
-  console.log('TEAMID', teamId)
   return (
     <AgendaAndProjects
       hideAgenda={hideAgenda}

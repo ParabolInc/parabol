@@ -36,7 +36,6 @@ query {
 const mapStateToProps = (state, props) => {
   const {match: {params: {teamId}}} = props;
   const {hasDashAlert} = state.dash;
-  console.log('query with teamId', teamId)
   const teamContainer = cashay.query(teamContainerSub, {
     op: 'teamContainer',
     key: teamId,
@@ -66,12 +65,13 @@ const TeamContainer = (props) => {
     )
   }
 
+  const {url} = match;
   const pageTitle = `${team.name} Team Dashboard | Parabol`;
-  const isSettings = matchPath(match.url, {
+  const isSettings = matchPath(url, {
     path: '/team/:teamId/settings'
   });
   return (
-    <DashboardWrapper title={pageTitle}>
+    <DashboardWrapper title={pageTitle} url={url}>
       <Team
         hasDashAlert={hasDashAlert}
         isSettings={isSettings || false}

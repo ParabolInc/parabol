@@ -15,9 +15,10 @@ import {withRouter} from 'react-router';
 import {NavLink} from 'react-router-dom'
 
 const DashSidebar = (props) => {
-  const {styles} = props;
+  const {styles, url} = props;
   // const newTeamIsActive = router.isActive('/newteam') || router.isActive('/newteam/1');
-  // const newTeamIsActive = false;
+
+  // const newTeamIsActive = url.indexOf('/newteam') !== -1;
   const addNewStyles = css(
     styles.addTeam,
     // newTeamIsActive && styles.addTeamDisabled

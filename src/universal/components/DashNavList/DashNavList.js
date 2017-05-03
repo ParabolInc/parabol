@@ -20,7 +20,6 @@ const DashNavList = (props) => {
               <DashNavItem
                 href={`/team/${team.id}`}
                 label={team.name}
-                isPaid={team.isPaid}
               />
             </div>
           )}

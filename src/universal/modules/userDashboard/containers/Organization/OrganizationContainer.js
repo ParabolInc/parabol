@@ -21,7 +21,6 @@ query {
 `;
 
 const mapStateToProps = (state, props) => {
-  console.log('props', props)
   const {match: {params: {orgId, orgArea}}} = props;
   const {billingLeaders, organization: org} = cashay.query(organizationContainerQuery, {
     op: 'organizationContainer',
