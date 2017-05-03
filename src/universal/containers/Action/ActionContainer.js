@@ -6,14 +6,13 @@ import globalStyles from 'universal/styles/theme/globalStyles';
 import {segmentEventPage} from 'universal/redux/segmentActions';
 import {withRouter} from 'react-router-dom';
 
-const updateAnalyticsPage = (dispatch, lastPage, nextPage, params) => {
+const updateAnalyticsPage = (dispatch, lastPage, nextPage) => {
   if (typeof document === 'undefined' || typeof window.analytics === 'undefined') return;
   const name = document && document.title || '';
   const properties = {
     title: name,
     referrer: lastPage,
-    path: nextPage,
-    params
+    path: nextPage
   };
   dispatch(segmentEventPage(name, null, properties));
 };
@@ -41,7 +40,8 @@ export default class ActionContainer extends Component {
 
   componentDidUpdate(prevProps) {
     const {location: {pathname: lastPage}} = prevProps;
-    const {location: {pathname: nextPage}, params} = this.props;
+    const {location: {pathname: nextPage}} = this.props;
+    console.log('loc', this.props)
     if (lastPage !== nextPage) {
       const {dispatch} = this.context.store;
       /*
@@ -49,7 +49,7 @@ export default class ActionContainer extends Component {
        * document.title will be current after any child <Helmet />
        * element(s) are rendered.
        */
-      updateAnalyticsPage(dispatch, lastPage, nextPage, params);
+      updateAnalyticsPage(dispatch, lastPage, nextPage);
     }
   }
 
