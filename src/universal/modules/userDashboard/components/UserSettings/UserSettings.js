@@ -33,7 +33,7 @@ const UserSettings = (props) => {
   const pictureOrDefault = picture || defaultUserAvatar;
   const toggle = <EditableAvatar picture={pictureOrDefault} size={96} />;
   return (
-    <UserSettingsWrapper settingsLocation={SETTINGS}>
+    <UserSettingsWrapper>
       <div className={css(styles.body)}>
         <Panel label="My Information">
           <form className={css(styles.form)} onSubmit={handleSubmit(onSubmit)}>

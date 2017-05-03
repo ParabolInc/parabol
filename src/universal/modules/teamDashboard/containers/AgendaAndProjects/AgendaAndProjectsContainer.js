@@ -13,7 +13,8 @@ query {
 }`;
 
 const mapStateToProps = (state, props) => {
-  const {params: {teamId}} = props;
+  console.log('match', props.match)
+  const {match: {params: {teamId}}} = props;
   const userId = state.auth.obj.sub;
   const {myTeamMember} = cashay.query(agendaAndProjectsQuery, {
     variables: {teamId},
@@ -24,15 +25,17 @@ const mapStateToProps = (state, props) => {
     }
   }).data;
   return {
-    hideAgenda: myTeamMember.hideAgenda
+    hideAgenda: myTeamMember.hideAgenda,
+    teamId
   };
 };
 
 const AgendaAndProjectsContainer = (props) => {
   const {
-    params: {teamId},
+    teamId,
     hideAgenda
   } = props;
+  console.log('TEAMID', teamId)
   return (
     <AgendaAndProjects
       hideAgenda={hideAgenda}
@@ -43,7 +46,6 @@ const AgendaAndProjectsContainer = (props) => {
 
 AgendaAndProjectsContainer.propTypes = {
   hideAgenda: PropTypes.bool,
-  params: PropTypes.object,
   teamId: PropTypes.string
 };
 

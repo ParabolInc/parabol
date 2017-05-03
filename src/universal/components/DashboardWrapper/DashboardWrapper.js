@@ -6,6 +6,7 @@ import Helmet from 'react-helmet';
 
 const DashboardWrapper = (props) => {
   const {children, location, title} = props;
+  console.log('dash wrapper')
   return (
     <DashLayoutContainer>
       <Helmet title={title} />

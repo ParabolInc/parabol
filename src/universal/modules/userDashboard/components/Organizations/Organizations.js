@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
-import {ORGANIZATIONS} from 'universal/utils/constants';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
@@ -14,10 +13,10 @@ import {withRouter} from 'react-router';
 const Organizations = (props) => {
   const {
     organizations,
-    router,
+    history,
     styles
   } = props;
-  const gotoNewTeam = () => { router.push('/newteam/1'); };
+  const gotoNewTeam = () => { history.push('/newteam/1'); };
   const addNewOrg = () =>
     <IconControl
       icon="plus-square-o"
@@ -28,7 +27,7 @@ const Organizations = (props) => {
       padding={`0 0 0 ${ui.panelGutter}`}
     />;
   return (
-    <UserSettingsWrapper settingsLocation={ORGANIZATIONS}>
+    <UserSettingsWrapper>
       <div className={css(styles.wrapper)}>
         {organizations.length ?
           <Panel label="Organizations" controls={addNewOrg()}>
@@ -36,7 +35,7 @@ const Organizations = (props) => {
               <OrganizationRow
                 key={`orgRow${organization.id}`}
                 organization={organization}
-                onRowClick={() => router.push(`/me/organizations/${organization.id}`)}
+                onRowClick={() => history.push(`/me/organizations/${organization.id}`)}
               />
             )}
           </Panel> :
@@ -49,7 +48,7 @@ const Organizations = (props) => {
 
 Organizations.propTypes = {
   organizations: PropTypes.array,
-  router: PropTypes.object,
+  history: PropTypes.object,
   styles: PropTypes.object
 };
 

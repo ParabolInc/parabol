@@ -16,7 +16,7 @@ const Notifications = (props) => {
     styles
   } = props;
   return (
-    <UserSettingsWrapper settingsLocation={NOTIFICATIONS}>
+    <UserSettingsWrapper>
       <div className={css(styles.wrapper)}>
         <Panel label="Notifications">
           {notifications.length ?

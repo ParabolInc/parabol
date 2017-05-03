@@ -23,7 +23,6 @@ export default class LandingContainer extends Component {
       preferredName: PropTypes.string
     }),
     dispatch: PropTypes.func.isRequired,
-    router: PropTypes.object.isRequired,
     location: PropTypes.object
   };
 

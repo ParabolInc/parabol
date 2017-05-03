@@ -13,13 +13,9 @@ export default (store) => ({
     require('./invitation').default(store),
     require('./invoice').default(store),
     require('./meeting').default(store),
-    require('./newTeam').default(store),
     require('./patterns').default,
     require('./summary').default(store),
     require('./teamDashboard').default(store),
-    require('./userDashboard').default(store),
-    // Catch-all:
-    require('./notFound').default
   ]
 });
 

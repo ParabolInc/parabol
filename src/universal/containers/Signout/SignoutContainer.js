@@ -10,8 +10,7 @@ export default class SignoutContainer extends Component {
   };
 
   static propTypes = {
-    dispatch: PropTypes.func.isRequired,
-    router: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired
   };
 
   componentWillMount() {

@@ -19,7 +19,7 @@ import socketCluster from 'socketcluster-client';
 import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
 import parseChannel from 'universal/utils/parseChannel';
 import {showInfo, showWarning} from 'universal/modules/toast/ducks/toastDuck';
-import {withRouter} from 'react-router';
+import {withRouter} from 'react-router-dom';
 import {
   APP_VERSION_KEY,
   APP_UPGRADE_PENDING_KEY,
@@ -52,7 +52,7 @@ export default (ComposedComponent) => {
       params: PropTypes.shape({
         teamId: PropTypes.string
       }),
-      router: PropTypes.object,
+      history: PropTypes.object,
       tms: PropTypes.array,
       user: PropTypes.object,
       userId: PropTypes.string
@@ -94,10 +94,10 @@ export default (ComposedComponent) => {
         }));
       } else if (type === KICK_OUT) {
         const {teamId, teamName} = data;
-        const {router} = this.props;
-        const onExTeamRoute = router.isActive(`/team/${teamId}`) || router.isActive(`/meeting/${teamId}`);
+        const {history} = this.props;
+        const onExTeamRoute = history.isActive(`/team/${teamId}`) || history.isActive(`/meeting/${teamId}`);
         if (onExTeamRoute) {
-          router.push('/me');
+          history.push('/me');
         }
         dispatch(showWarning({
           title: 'So long!',
@@ -172,7 +172,7 @@ export default (ComposedComponent) => {
     }
 
     versionHandler = (versionOnServer) => {
-      const {dispatch, router} = this.props;
+      const {dispatch, history} = this.props;
       const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY);
       if (versionOnServer !== versionInStorage) {
         dispatch(showWarning({
@@ -182,7 +182,7 @@ export default (ComposedComponent) => {
           action: {
             label: 'Log out and upgrade',
             callback: () => {
-              router.replace('/signout');
+              history.replace('/signout');
             }
           }
         }));

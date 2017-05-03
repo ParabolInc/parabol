@@ -23,7 +23,8 @@ const Team = (props) => {
   const {
     children,
     hasDashAlert,
-    router,
+    isSettings,
+    history,
     styles,
     team,
     teamMembers
@@ -31,16 +32,15 @@ const Team = (props) => {
   const {id: teamId, name: teamName, isPaid} = team;
   const hasActiveMeeting = Boolean(team && team.meetingId);
   const hasOverlay = hasActiveMeeting || !isPaid;
-  const isSettings = router.isActive(`/team/${teamId}/settings`, false);
   initialValues.teamName = teamName;
   const DashHeaderInfoTitle = isSettings ? <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId} /> : teamName;
   const modalLayout = hasDashAlert ? ui.modalLayoutMainWithDashAlert : ui.modalLayoutMain;
   const goToMeetingLobby = () =>
-    router.push(`/meeting/${teamId}/`);
+    history.push(`/meeting/${teamId}/`);
   const goToTeamSettings = () =>
-    router.push(`/team/${teamId}/settings/`);
+    history.push(`/team/${teamId}/settings/`);
   const goToTeamDashboard = () =>
-    router.push(`/team/${teamId}`);
+    history.push(`/team/${teamId}`);
   return (
     <DashMain>
       <MeetingInProgressModal
@@ -109,7 +109,8 @@ const Team = (props) => {
 Team.propTypes = {
   children: PropTypes.any,
   hasDashAlert: PropTypes.bool,
-  router: PropTypes.object,
+  isSettings: PropTypes.bool.isRequired,
+  history: PropTypes.object,
   styles: PropTypes.object,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired

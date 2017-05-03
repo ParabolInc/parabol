@@ -40,7 +40,7 @@ const Organization = (props) => {
   const pictureOrDefault = orgAvatar || defaultOrgAvatar;
   const toggle = <EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled />;
   return (
-    <UserSettingsWrapper settingsLocation={ORGANIZATIONS}>
+    <UserSettingsWrapper>
       <div className={css(styles.wrapper)}>
         <Link className={css(styles.goBackLabel)} to="/me/organizations" title="Back to Organizations">
           <FontAwesome name="arrow-circle-left" style={inlineBlockStyle} />

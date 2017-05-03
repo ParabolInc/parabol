@@ -4,6 +4,7 @@ import {cashay} from 'cashay';
 import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
 import {connect} from 'react-redux';
 import StandardHub from 'universal/components/StandardHub/StandardHub';
+import {withRouter} from 'react-router-dom';
 
 const notificationsQuery = `
 query {
@@ -36,20 +37,19 @@ const mapStateToProps = (state) => {
 };
 
 const StandardHubContainer = (props) => {
-  const {location, notificationCount, user: {picture, preferredName, email}} = props;
+  const {history, notificationCount, user: {picture, preferredName, email}} = props;
   return (
     <StandardHub
       email={email}
-      location={location}
       notificationCount={notificationCount}
       picture={picture}
       preferredName={preferredName}
+      history={history}
     />
   );
 };
 
 StandardHubContainer.propTypes = {
-  location: PropTypes.string,
   notificationCount: PropTypes.number,
   user: PropTypes.shape({
     email: PropTypes.string,
@@ -58,4 +58,4 @@ StandardHubContainer.propTypes = {
   }).isRequired
 };
 
-export default connect(mapStateToProps)(StandardHubContainer);
+export default withRouter(connect(mapStateToProps)(StandardHubContainer));

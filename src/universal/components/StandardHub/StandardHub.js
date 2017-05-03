@@ -7,8 +7,7 @@ import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 import FontAwesome from 'react-fontawesome';
-import {withRouter} from 'react-router';
-import {Link} from 'react-router-dom'
+import {NavLink} from 'react-router-dom';
 import Avatar from 'universal/components/Avatar/Avatar';
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 import Badge from 'universal/components/Badge/Badge';
@@ -17,11 +16,10 @@ import {Menu, MenuItem} from 'universal/modules/menu';
 const StandardHub = (props) => {
   const {
     email,
-    location,
     notificationCount,
     picture,
     preferredName,
-    router,
+    history,
     styles
   } = props;
 
@@ -36,16 +34,16 @@ const StandardHub = (props) => {
   };
 
   const goToSettings = () =>
-    router.push('/me/settings');
+    history.push('/me/settings');
 
   const goToOrganizations = () =>
-    router.push('/me/organizations');
+    history.push('/me/organizations');
 
   const goToNotifications = () =>
-    router.push('/me/notifications');
+    history.push('/me/notifications');
 
   const signOut = () =>
-    router.push('/signout');
+    history.push('/signout');
 
   const makeUserMenu = () => {
     const itemFactory = () => {
@@ -74,7 +72,7 @@ const StandardHub = (props) => {
   const notificationsStyles = css(
     styles.notifications,
     notificationCount > 0 && styles.notificationsWithBadge,
-    location === '/me/notifications' && styles.notificationsActive
+    // location === '/me/notifications' && styles.notificationsActive
   );
 
   const iconStyle = {
@@ -94,7 +92,8 @@ const StandardHub = (props) => {
         </div>
         {makeUserMenu()}
       </div>
-      <Link
+      <NavLink
+        activeClassName={css(styles.notificationsActive)}
         className={notificationsStyles}
         to="/me/notifications"
       >
@@ -104,7 +103,7 @@ const StandardHub = (props) => {
             <Badge value={notificationCount} />
           </div>
         }
-      </Link>
+      </NavLink>
     </div>
   );
 };
@@ -112,10 +111,9 @@ const StandardHub = (props) => {
 StandardHub.propTypes = {
   email: PropTypes.string,
   notificationCount: PropTypes.number,
-  location: PropTypes.string,
   picture: PropTypes.string,
   preferredName: PropTypes.string,
-  router: PropTypes.object,
+  history: PropTypes.object,
   styles: PropTypes.object
 };
 
@@ -211,4 +209,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withRouter(withStyles(styleThunk)(StandardHub));
+export default withStyles(styleThunk)(StandardHub);

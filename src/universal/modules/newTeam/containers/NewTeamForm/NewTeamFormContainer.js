@@ -60,7 +60,7 @@ class NewTeamFormContainer extends Component {
   }
 
   onSubmit = async (submittedData) => {
-    const {dispatch, isNewOrg, router} = this.props;
+    const {dispatch, isNewOrg, history} = this.props;
     const newTeamId = shortid.generate();
     if (isNewOrg) {
       const schema = addOrgSchema();
@@ -108,7 +108,7 @@ class NewTeamFormContainer extends Component {
         message: `Here's your new team dashboard for ${teamName}`
       }));
     }
-    router.push(`/team/${newTeamId}`);
+    history.push(`/team/${newTeamId}`);
   };
 
   setLast4 = (last4) => {
@@ -118,9 +118,9 @@ class NewTeamFormContainer extends Component {
   };
 
   render() {
-    const {initialOrgCount, initialValues, isNewOrg, organizations, router} = this.props;
+    const {initialOrgCount, initialValues, isNewOrg, organizations, history} = this.props;
     if (initialOrgCount === 0) {
-      router.push('/newteam/1');
+      history.push('/newteam/1');
     } else if (!initialValues.orgId) {
       return null;
     }
@@ -144,7 +144,7 @@ NewTeamFormContainer.propTypes = {
   initialValues: PropTypes.object,
   isNewOrg: PropTypes.bool,
   organizations: PropTypes.array,
-  router: PropTypes.object.isRequired
+  history: PropTypes.object.isRequired
 };
 
 export default connect(mapStateToProps)(

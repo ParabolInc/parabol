@@ -1,6 +1,6 @@
 import {createStore, applyMiddleware} from 'redux';
 import makeReducer from 'universal/redux/makeReducer';
-import {match} from 'react-router';
+// import {match} from 'react-router';
 import thunkMiddleware from 'redux-thunk';
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
