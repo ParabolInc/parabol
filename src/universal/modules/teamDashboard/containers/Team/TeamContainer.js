@@ -10,6 +10,8 @@ import {DragDropContext as dragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import {Switch, Route, matchPath} from 'react-router-dom';
 import AgendaAndProjectsBundle from "../AgendaAndProjects/AgendaAndProjectsBundle";
+import TeamSettingsBundle from "../TeamSettings/TeamSettingsBundle";
+import TeamArchiveBundle from "../TeamArchive/TeamArchiveBundle";
 
 const teamContainerSub = `
 query {
@@ -68,7 +70,6 @@ const TeamContainer = (props) => {
   const isSettings = matchPath(match.url, {
     path: '/team/:teamId/settings'
   });
-
   return (
     <DashboardWrapper title={pageTitle}>
       <Team
@@ -80,7 +81,8 @@ const TeamContainer = (props) => {
         <Switch>
           {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539*/}
           <Route exact path={match.path} component={AgendaAndProjectsBundle}/>
-          <Route path={`${match.path}/settings`} component={AgendaAndProjectsBundle}/>
+          <Route path={`${match.path}/settings`} component={TeamSettingsBundle}/>
+          <Route path={`${match.path}/archive`} component={TeamArchiveBundle}/>
         </Switch>
       </Team>
     </DashboardWrapper>

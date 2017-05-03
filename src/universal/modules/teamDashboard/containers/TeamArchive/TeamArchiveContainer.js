@@ -36,7 +36,7 @@ query {
 // };
 
 const mapStateToProps = (state, props) => {
-  const {teamId} = props.params;
+  const {match: {params: {teamId}}} = props;
   const teamArchiveContainer = cashay.query(teamArchiveQuery, {
     op: 'teamArchiveContainer',
     key: teamId,
@@ -50,12 +50,13 @@ const mapStateToProps = (state, props) => {
   });
   const {archivedProjects} = teamArchiveContainer.data;
   return {
-    archivedProjects
+    archivedProjects,
+    teamId
   };
 };
 
 const TeamArchiveContainer = (props) => {
-  const {archivedProjects, params: {teamId}} = props;
+  const {archivedProjects, teamId} = props;
   return (
     <TeamArchive
       archivedProjects={archivedProjects}
@@ -66,7 +67,8 @@ const TeamArchiveContainer = (props) => {
 
 TeamArchiveContainer.propTypes = {
   archivedProjects: PropTypes.array.isRequired,
-  params: PropTypes.object.isRequired
+  match: PropTypes.object.isRequired,
+  teamId: PropTypes.string.isRequired
 };
 
 export default connect(mapStateToProps)(TeamArchiveContainer);

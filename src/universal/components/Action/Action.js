@@ -21,7 +21,7 @@ const Action = (props) => {
         <Route exact path="/" component={LandingBundle}/>
         <Route path="/welcome" component={WelcomeBundle}/>
         <Route path="/newteam/:newOrg?" component={NewTeamBundle}/>
-        <Route exact path="/team/:teamId" component={TeamBundle}/>
+        <Route path="/team/:teamId" component={TeamBundle}/>
         <Route path="/me" component={UserBundle}/>
         <Route path="/signout" component={SignoutBundle}/>
         <Route component={NotFoundBundle}/>
