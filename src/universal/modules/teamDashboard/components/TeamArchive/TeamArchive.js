@@ -7,7 +7,7 @@ import {ib, overflowTouch} from 'universal/styles/helpers';
 import ui from 'universal/styles/ui';
 import TeamArchiveHeader from 'universal/modules/teamDashboard/components/TeamArchiveHeader/TeamArchiveHeader';
 import OutcomeCardContainer from 'universal/modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer';
-
+import Helmet from 'react-helmet';
 import FontAwesome from 'react-fontawesome';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
 
@@ -21,7 +21,7 @@ const TeamArchive = (props) => {
   const {archivedProjects, styles, teamId, teamName} = props;
   return (
     <div className={css(styles.root)}>
-      <Helmet title={`${teamName} Archive | Parabol`}/>
+      <Helmet title={`${teamName} Archive | Parabol`} />
       <div className={css(styles.header)}>
         <TeamArchiveHeader teamId={teamId} />
         <div className={css(styles.border)} />

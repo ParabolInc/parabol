@@ -70,7 +70,7 @@ TeamArchiveContainer.propTypes = {
   archivedProjects: PropTypes.array.isRequired,
   match: PropTypes.object.isRequired,
   teamId: PropTypes.string.isRequired,
-  teamName: PropTypes.string,
+  teamName: PropTypes.string
 };
 
 export default connect(mapStateToProps)(TeamArchiveContainer);

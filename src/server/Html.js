@@ -6,7 +6,8 @@ import {renderToString} from 'react-dom/server';
 import makeSegmentSnippet from '@segment/snippet';
 import {auth0, stripeKey} from 'universal/utils/clientOptions';
 import getWebpackPublicPath from 'server/utils/getWebpackPublicPath';
-// import {StaticRouter} from 'react-router';
+import {StaticRouter} from 'react-router';
+// import {StyleSheetServer} from 'aphrodite-local-styles/no-important';
 
 const webpackPublicPath = getWebpackPublicPath();
 const segKey = process.env.SEGMENT_WRITE_KEY;
@@ -16,7 +17,9 @@ const segmentSnippet = segKey && makeSegmentSnippet.min({
 });
 
 // Injects the server rendered state and app into a basic html template
-export default function Html({store, assets, StyleSheetServer, url}) {
+export default function Html({store, assets}) {
+  // const ActionContainer = require('../../build/prerender');
+  const {default: ActionContainer, StyleSheetServer} = require('../../build/prerender');
   const {manifest, app, vendor} = assets;
   // TURN ON WHEN WE SEND STATE TO CLIENT
   // const initialState = `window.__INITIAL_STATE__ = ${JSON.stringify(store.getState())}`;
@@ -26,7 +29,9 @@ export default function Html({store, assets, StyleSheetServer, url}) {
     try {
       return renderToString(
         <Provider store={store}>
-          <StaticRouter location={url} context={context} />
+          <StaticRouter location={'/'} context={context}>
+            <ActionContainer />
+          </StaticRouter>
         </Provider>
       );
     } catch (e) {
@@ -66,8 +71,6 @@ export default function Html({store, assets, StyleSheetServer, url}) {
 }
 
 Html.propTypes = {
-  StyleSheetServer: PropTypes.object,
   store: PropTypes.object.isRequired,
-  assets: PropTypes.object,
-  renderProps: PropTypes.object
+  assets: PropTypes.object
 };

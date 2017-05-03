@@ -1,7 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
-import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router';
 import {unsetNextUrl} from 'universal/redux/authDuck';
@@ -9,8 +7,7 @@ import {unsetNextUrl} from 'universal/redux/authDuck';
 const mapStateToProps = (state) => {
   const {auth} = state;
   return {
-    auth,
-    user: cashay.query(getAuthQueryString, getAuthedOptions(auth.obj.sub)).data.user
+    auth
   };
 };
 

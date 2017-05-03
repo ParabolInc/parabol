@@ -12,6 +12,8 @@ import {
   APP_UPGRADE_PENDING_DONE
 } from 'universal/utils/constants';
 import {connect} from 'react-redux';
+import injectGlobals from 'universal/styles/hepha';
+import globalStyles from 'universal/styles/theme/globalStyles';
 
 const mapStateToProps = (state) => {
   return {
@@ -24,12 +26,6 @@ const mapStateToProps = (state) => {
 export default class LandingContainer extends Component {
   static propTypes = {
     auth: PropTypes.object,
-    user: PropTypes.shape({
-      email: PropTypes.string,
-      id: PropTypes.string,
-      picture: PropTypes.string,
-      preferredName: PropTypes.string
-    }),
     dispatch: PropTypes.func.isRequired,
     nextUrl: PropTypes.string
   };
@@ -44,6 +40,8 @@ export default class LandingContainer extends Component {
         window.sessionStorage.getItem(APP_UPGRADE_PENDING_KEY) ===
           APP_UPGRADE_PENDING_RELOAD) {
       this.setState({refreshNeeded: true});
+    } else {
+      injectGlobals(globalStyles);
     }
   }
 
@@ -98,3 +96,5 @@ export default class LandingContainer extends Component {
     );
   }
 }
+
+export {StyleSheetServer} from 'aphrodite-local-styles/no-important';

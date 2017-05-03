@@ -8,7 +8,7 @@ const PrivateRoute = ({component, ...rest}) => {
   return <Route {...rest} render={(routeProps) => <Component {...routeProps} />} />;
 };
 
-RouteWithProps.propTypes = {
+PrivateRoute.propTypes = {
   component: PropTypes.any.isRequired
 };
 
