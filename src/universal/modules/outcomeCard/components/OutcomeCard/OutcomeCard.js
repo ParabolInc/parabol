@@ -31,7 +31,8 @@ const OutcomeCard = (props) => {
     styles,
     teamMembers,
     textAreaValue,
-    unarchiveProject
+    unarchiveProject,
+    unsetEditing
   } = props;
   const isPrivate = isProjectPrivate(outcome.tags);
   const isArchived = isProjectArchived(outcome.tags);
@@ -79,6 +80,7 @@ const OutcomeCard = (props) => {
             setValue={setValue}
             teamMembers={teamMembers}
             textAreaValue={textAreaValue}
+            unsetEditing={unsetEditing}
           />
         </div>
       }
@@ -124,7 +126,8 @@ OutcomeCard.propTypes = {
   teamMembers: PropTypes.array,
   textAreaValue: PropTypes.string,
   updatedAt: PropTypes.instanceOf(Date),
-  unarchiveProject: PropTypes.func.isRequired
+  unarchiveProject: PropTypes.func.isRequired,
+  unsetEditing: PropTypes.func
 };
 
 const styleThunk = () => ({

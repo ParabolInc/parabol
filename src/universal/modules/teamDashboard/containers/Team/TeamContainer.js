@@ -21,6 +21,7 @@ query {
     picture
     preferredName
     presence @cached(type: "[Presence]") {
+      id
       userId
     }
   }

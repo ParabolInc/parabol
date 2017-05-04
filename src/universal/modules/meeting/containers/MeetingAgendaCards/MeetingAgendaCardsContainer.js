@@ -14,6 +14,7 @@ query {
     status
     tags
     teamMember @cached(type: "TeamMember") {
+      id
       picture
       preferredName
     }

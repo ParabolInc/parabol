@@ -6,6 +6,7 @@ import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import Html from './Html';
 import printStyles from 'universal/styles/theme/printStyles';
+import getWebpackPublicPath from 'server/utils/getWebpackPublicPath';
 
 const metaAndTitle = `
   <meta charSet="utf-8"/>
@@ -14,6 +15,17 @@ const metaAndTitle = `
   <title>Action | Parabol Inc</title>
   <style>${printStyles}</style>
 `;
+const clientIds = {
+  auth0: process.env.AUTH0_CLIENT_ID,
+  auth0Domain: process.env.AUTH0_DOMAIN,
+  cdn: getWebpackPublicPath(),
+  github: process.env.GITHUB_CLIENT_ID,
+  sentry: process.env.SENTRY_DSN_PUBLIC,
+  slack: process.env.SLACK_CLIENT_ID,
+  stripe: process.env.STRIPE_PUBLISHABLE_KEY
+};
+
+const clientKeyLoader = `window.__ACTION__ = ${JSON.stringify(clientIds)}`;
 
 export default function createSSR(req, res) {
   const finalCreateStore = applyMiddleware(thunkMiddleware)(createStore);
@@ -38,7 +50,7 @@ export default function createSSR(req, res) {
         res.redirect(redirectLocation.pathname + redirectLocation.search);
       } else if (renderProps) {
         const htmlString = renderToStaticMarkup(
-          <Html store={store} assets={assets} StyleSheetServer={StyleSheetServer} renderProps={renderProps} />
+          <Html store={store} assets={assets} StyleSheetServer={StyleSheetServer} renderProps={renderProps} clientKeyLoader={clientKeyLoader} />
         );
         res.send(`<!DOCTYPE html>${htmlString}`.replace('<head>', `<head>${metaAndTitle}`));
       } else {
@@ -56,6 +68,7 @@ export default function createSSR(req, res) {
       <div id="root"></div>
       <script src="/static/vendors.dll.js"></script>
       <script src="/static/app.js"></script>
+      <script>${clientKeyLoader}</script>
     </body>
     </html>
     `;

@@ -7,7 +7,7 @@ import {requireSUOrSelf, requireSUOrTeamMember, requireWebsocket} from 'server/u
 import {SLACK} from 'universal/utils/constants';
 import queryIntegrator from 'server/utils/queryIntegrator';
 import {errorObj} from 'server/utils/utils';
-import {handleRethinkUpdate} from '../../../../utils/makeChangefeedHandler';
+import {handleRethinkAdd} from '../../../../utils/makeChangefeedHandler';
 
 export default {
   type: GraphQLBoolean,
@@ -66,7 +66,7 @@ export default {
 
     // notify all the listeners that a mutation occurred
     const channel = `integrations/${teamMemberId}`;
-    const payload = handleRethinkUpdate(data);
+    const payload = handleRethinkAdd(data.addSlackChannel);
     exchange.publish(channel, payload);
     return true;
   }

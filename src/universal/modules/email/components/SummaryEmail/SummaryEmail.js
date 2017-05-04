@@ -110,6 +110,7 @@ const SummaryEmail = (props) => {
   const membersWithOutcomes = invitees.filter((invitee) => invitee.projects.length > 0);
   const presentMemberCount = invitees.filter((invitee) => invitee.present).length;
   const projectCount = invitees.reduce((sum, invitee) => sum + invitee.projects.length, 0);
+
   const bannerMessage = makeBannerMessage(referrer, referrerUrl);
   const hasUsersWithoutOutcomes = membersSansOutcomes.length !== 0;
   const iconSize = 28;
@@ -146,7 +147,7 @@ const SummaryEmail = (props) => {
               <div style={bannerMessageStyles}>
                 {bannerMessage}
               </div>
-              }
+            }
               <EmptySpace height={8} />
             </td>
           </tr>
@@ -259,10 +260,10 @@ const SummaryEmail = (props) => {
         </table>
         {membersWithOutcomes.map((member) =>
           <UserProjects member={member} key={`userProjects'${member.id}`} />
-        )}
+      )}
         {hasUsersWithoutOutcomes &&
         <UserNoNewOutcomes members={membersSansOutcomes} />
-        }
+      }
         <EmptySpace height={0} />
         <hr style={ruleStyle} />
         <EmptySpace height={48} />

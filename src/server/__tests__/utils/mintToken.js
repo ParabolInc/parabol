@@ -1,7 +1,6 @@
 import {sign} from 'jsonwebtoken';
 import {clientSecret} from 'server/utils/auth0Helpers';
 import {JWT_LIFESPAN} from 'server/utils/serverConstants';
-import {auth0} from 'universal/utils/clientOptions';
 
 export const mintTokenUnsigned = (userId, fields) => {
   const now = Date.now();
@@ -11,7 +10,7 @@ export const mintTokenUnsigned = (userId, fields) => {
   const newToken = {
     iss: 'ava-unit-test',
     sub: userId,
-    aud: auth0.clientId,
+    aud: process.env.AUTH0_CLIENT_ID,
     exp,
     iat,
     ...fields

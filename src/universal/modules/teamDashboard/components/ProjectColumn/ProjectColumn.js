@@ -132,7 +132,8 @@ class ProjectColumn extends Component {
       lastColumn,
       status,
       projects,
-      styles
+      styles,
+      userId
     } = this.props;
     const label = themeLabels.projectStatus[status].slug;
     const columnStyles = css(
@@ -169,6 +170,7 @@ class ProjectColumn extends Component {
                 area={area}
                 project={project}
                 dragState={dragState}
+                myUserId={userId}
                 ref={(c) => {
                   if (c) {
                     dragState.components.push(c);

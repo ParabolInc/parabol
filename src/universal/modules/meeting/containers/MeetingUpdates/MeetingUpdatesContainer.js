@@ -8,13 +8,19 @@ import LoadingView from 'universal/components/LoadingView/LoadingView';
 const meetingUpdatesQuery = `
 query {
   projects(teamMemberId: $teamMemberId) @live {
-    content
     id
+    content
+    createdBy
     status
     tags
     teamMemberId
     updatedAt
     sortOrder
+    teamMember @cached(type: "TeamMember") {
+      id
+      picture
+      preferredName
+    }
   }
 }
 `;
@@ -52,6 +58,9 @@ const mapStateToProps = (state, props) => {
     variables: {teamMemberId},
     filter: {
       projects: (project) => !project.tags.includes('#private')
+    },
+    resolveCached: {
+      teamMember: (source) => source.teamMemberId
     }
   }).data.projects;
   const projects = makeProjectsByStatus(memberProjects);

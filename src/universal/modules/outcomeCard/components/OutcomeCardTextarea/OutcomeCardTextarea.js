@@ -25,13 +25,17 @@ class OutcomeCardTextArea extends Component {
     setValue: PropTypes.func,
     styles: PropTypes.object,
     teamMembers: PropTypes.array,
-    textAreaValue: PropTypes.string
+    textAreaValue: PropTypes.string,
+    unsetEditing: PropTypes.func
   };
 
   submitOnEnter = (e) => {
     // hitting enter (not shift+enter or any wacky combo) submits the textarea
     if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
       this.textAreaRef.blur();
+      const {handleCardUpdate, unsetEditing} = this.props;
+      handleCardUpdate();
+      unsetEditing();
       e.preventDefault();
     }
   };

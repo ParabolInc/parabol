@@ -11,6 +11,7 @@ query {
     userId
     editing
     teamMember @cached(type: "TeamMember") {
+      id
       preferredName
     }
   }
