@@ -3,7 +3,7 @@ import React from 'react';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import UnpaidTeamModal from 'universal/modules/teamDashboard/components/UnpaidTeamModal/UnpaidTeamModal';
-import {withRouter} from 'react-router';
+import {withRouter} from 'react-router-dom';
 import portal from 'react-portal-hoc';
 
 const orgDetailsQuery = `

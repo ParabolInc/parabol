@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import Helmet from 'react-helmet';
-import {withRouter} from 'react-router';
+import {withRouter} from 'react-router-dom';
 import requireAuthAndRole from 'universal/decorators/requireAuthAndRole/requireAuthAndRole';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import {showError} from 'universal/modules/toast/ducks/toastDuck';

@@ -9,7 +9,7 @@ import {
   DashHeaderInfo,
   DashMain
 } from 'universal/components/Dashboard';
-import {withRouter} from 'react-router';
+import {withRouter} from 'react-router-dom';
 import Button from 'universal/components/Button/Button';
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
 import UnpaidTeamModalContainer from 'universal/modules/teamDashboard/containers/UnpaidTeamModal/UnpaidTeamModalContainer';

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import UserSettings from 'universal/modules/userDashboard/components/UserSettings/UserSettings';
 import {connect} from 'react-redux';
-import {withRouter} from 'react-router';
+import {withRouter} from 'react-router-dom';
 import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import {

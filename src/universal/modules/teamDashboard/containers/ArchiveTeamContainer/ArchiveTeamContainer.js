@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import {withRouter} from 'react-router';
+import {withRouter} from 'react-router-dom';
 import {cashay} from 'cashay';
 import ArchiveTeam from 'universal/modules/teamDashboard/components/ArchiveTeam/ArchiveTeam';
 import {segmentEventTrack} from 'universal/redux/segmentActions';

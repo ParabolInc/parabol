@@ -3,7 +3,7 @@ import React from 'react';
 import ui from 'universal/styles/ui';
 import Button from 'universal/components/Button/Button';
 import CallOutPanel from 'universal/components/CallOutPanel/CallOutPanel';
-import {withRouter} from 'react-router';
+import {withRouter} from 'react-router-dom';
 
 const EmptyOrgsCallOut = (props) => {
   const {

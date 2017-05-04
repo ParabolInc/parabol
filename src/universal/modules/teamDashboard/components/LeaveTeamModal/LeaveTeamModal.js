@@ -5,7 +5,7 @@ import Button from 'universal/components/Button/Button';
 import Type from 'universal/components/Type/Type';
 import {cashay} from 'cashay';
 import portal from 'react-portal-hoc';
-import {withRouter} from 'react-router';
+import {withRouter} from 'react-router-dom';
 
 const LeaveTeamModal = (props) => {
   const {closeAfter, closePortal, isClosing, history, teamLead, teamMemberId} = props;

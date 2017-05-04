@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import {cashay} from 'cashay';
 import emailAddresses from 'email-addresses';
 import shortid from 'shortid';
-import {withRouter} from 'react-router';
+import {withRouter} from 'react-router-dom';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
 import addOrgSchema from 'universal/validation/addOrgSchema';

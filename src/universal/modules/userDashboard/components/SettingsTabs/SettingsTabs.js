@@ -5,7 +5,7 @@
 // import Tabs from 'universal/components/Tabs/Tabs';
 // import Tab from 'universal/components/Tab/Tab';
 // import FontAwesome from 'react-fontawesome';
-// import {withRouter} from 'react-router';
+// import {withRouter} from 'react-router-dom';
 // import {SETTINGS, settingsOrder} from 'universal/utils/constants';
 // import appTheme from 'universal/styles/theme/appTheme';
 //

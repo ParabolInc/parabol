@@ -3,7 +3,7 @@ import React from 'react';
 import {DashModal} from 'universal/components/Dashboard';
 import Button from 'universal/components/Button/Button';
 import Type from 'universal/components/Type/Type';
-import {withRouter} from 'react-router';
+import {withRouter} from 'react-router-dom';
 import portal from 'react-portal-hoc';
 import ui from 'universal/styles/ui';
 

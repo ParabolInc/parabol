@@ -6,7 +6,7 @@ import LabeledFieldArray from 'universal/containers/LabeledFieldArray/LabeledFie
 import {cashay} from 'cashay';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
-import {withRouter} from 'react-router';
+import {withRouter} from 'react-router-dom';
 import {Link} from 'react-router-dom';
 import makeStep3Schema from 'universal/validation/makeStep3Schema';
 import withStyles from 'universal/styles/withStyles';

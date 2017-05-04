@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {formValueSelector} from 'redux-form';
 import {goToPage} from 'universal/modules/welcome/ducks/welcomeDuck';
 import Welcome from 'universal/modules/welcome/components/Welcome/Welcome';
-import {withRouter} from 'react-router';
+import {withRouter} from 'react-router-dom';
 
 const selector = formValueSelector('welcomeWizard');
 const rawSelector = formValueSelector('welcomeWizardRawInvitees');

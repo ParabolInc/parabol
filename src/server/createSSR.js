@@ -36,7 +36,7 @@ export default function createSSR(req, res) {
       const assets = require('../../build/assets.json');
       /* eslint-enable */
       const htmlString = renderToStaticMarkup(
-        <Html store={store} assets={assets} clientKeyLoader={clientKeyLoader}/>
+        <Html store={store} assets={assets} clientKeyLoader={clientKeyLoader} />
       );
       cachedPage = `<!DOCTYPE html>${htmlString}`.replace('<head>', `<head>${metaAndTitle}`);
     }

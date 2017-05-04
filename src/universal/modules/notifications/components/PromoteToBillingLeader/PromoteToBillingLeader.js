@@ -8,7 +8,7 @@ import Row from 'universal/components/Row/Row';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import {cashay} from 'cashay';
-import {withRouter} from 'react-router';
+import {withRouter} from 'react-router-dom';
 
 const PromoteToBillingLeader = (props) => {
   const {
