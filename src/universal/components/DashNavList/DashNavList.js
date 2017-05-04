@@ -9,6 +9,11 @@ import FontAwesome from 'react-fontawesome';
 const DashNavList = (props) => {
   const {teams, styles} = props;
   const hasTeams = teams.length > 0;
+
+  // Help!!
+  const hasOrgs = true; // TODO: if user is part of more than 1 org
+  const orgName = 'Organization'; // TODO: can get org name from team.orgId?
+
   return (
     <div className={css(styles.root)}>
       {hasTeams ?
@@ -19,6 +24,7 @@ const DashNavList = (props) => {
               <DashNavItem
                 href={`/team/${team.id}`}
                 label={team.name}
+                orgLabel={hasOrgs && orgName}
                 isPaid={team.isPaid}
               />
             </div>
