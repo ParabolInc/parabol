@@ -15,7 +15,7 @@ const segmentSnippet = segKey && makeSegmentSnippet.min({
 });
 
 // Injects the server rendered state and app into a basic html template
-export default function Html({store, assets}) {
+export default function Html({store, assets, clientKeyLoader}) {
   // const ActionContainer = require('../../build/prerender');
   const {default: ActionContainer, StyleSheetServer} = require('../../build/prerender');
   const {manifest, app, vendor} = assets;

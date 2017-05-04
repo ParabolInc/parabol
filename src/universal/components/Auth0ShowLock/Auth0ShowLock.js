@@ -29,7 +29,6 @@ export function showLock(dispatch) {
     signinAndUpdateToken(dispatch, profile, authToken);
   });
 }
-}
 
 const Auth0ShowLock = (props) => {
   const {dispatch} = props;
