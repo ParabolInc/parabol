@@ -1,5 +1,7 @@
 import React, {PropTypes} from 'react';
 import signinAndUpdateToken from './signinAndUpdateToken';
+import injectGlobals from 'universal/styles/hepha';
+import auth0Overrides from 'universal/styles/theme/auth0Overrides';
 
 /*
  * NOTE: showLock is, and may only ever be called from the client:
@@ -7,7 +9,12 @@ import signinAndUpdateToken from './signinAndUpdateToken';
  * We require auth0-lock from within this function because it cannot be
  * rendered within the SSR.
  */
+let stylesInjected;
 export function showLock(dispatch) {
+  if (!stylesInjected) {
+    stylesInjected = true;
+    injectGlobals(auth0Overrides);
+  }
   // eslint-disable-next-line global-require
   const Auth0Lock = require('auth0-lock');
   const {auth0, auth0Domain} = window.__ACTION__;

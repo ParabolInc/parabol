@@ -238,7 +238,7 @@ const SummaryEmail = (props) => {
                       </div>
                     }
                   </div>
-                }
+            }
                 <EmptySpace height={8} />
               </td>
             </tr>
