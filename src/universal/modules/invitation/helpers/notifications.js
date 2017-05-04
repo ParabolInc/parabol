@@ -4,7 +4,7 @@ export const invalidInvitation = {
               We had difficulty with that link. Did you paste it correctly?
             `,
   action: {
-    label: 'Ok',
+    label: 'Ok'
   },
   autoDismiss: 10
 };
@@ -16,7 +16,7 @@ export const inviteNotFound = {
               create your own team, you can start that process here.
             `,
   action: {
-    label: 'Got it',
+    label: 'Got it'
   },
   autoDismiss: 0
 };
@@ -27,7 +27,7 @@ export const teamAlreadyJoined = {
               Hey, we think you already belong to this team.
             `,
   action: {
-    label: 'Ok',
+    label: 'Ok'
   },
   autoDismiss: 0
 };
@@ -54,7 +54,7 @@ export const inviteExpired = {
               Ask your friend for a new one.
             `,
   action: {
-    label: 'Got it',
+    label: 'Got it'
   },
   autoDismiss: 0
 };

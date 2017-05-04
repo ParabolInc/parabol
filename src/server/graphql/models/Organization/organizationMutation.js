@@ -4,7 +4,7 @@ import {
   GraphQLBoolean,
   GraphQLID,
   GraphQLInt,
-  GraphQLString,
+  GraphQLString
 } from 'graphql';
 import {
   getUserId,
@@ -68,7 +68,7 @@ export default {
           .filter({
             stripeSubscriptionId,
             type: PAUSE_USER,
-            userId,
+            userId
           })
           .count()
           .run();

@@ -98,7 +98,7 @@ const styleThunk = () => ({
 
   invoiceAmount: {
     fontSize: appTheme.typography.s6,
-    color: appTheme.palette.cool,
+    color: appTheme.palette.cool
   },
 
   invoiceAvatar: {
@@ -152,7 +152,7 @@ const styleThunk = () => ({
     color: appTheme.palette.mid,
     fontSize: appTheme.typography.s2,
     fontWeight: 700,
-    lineHeight: appTheme.typography.s4,
+    lineHeight: appTheme.typography.s4
   },
 
   infoRow: {
@@ -168,7 +168,7 @@ const styleThunk = () => ({
   infoRowRight: {
     flex: 1,
     justifyContent: 'flex-end',
-    textAlign: 'right',
+    textAlign: 'right'
   },
 
   infoLink: {

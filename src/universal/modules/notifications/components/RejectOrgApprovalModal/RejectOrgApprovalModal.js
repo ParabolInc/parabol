@@ -93,7 +93,7 @@ const styleThunk = () => ({
 
   error: {
     ...formError
-  },
+  }
 });
 
 export default portal({escToClose: true, closeAfter: 100})(

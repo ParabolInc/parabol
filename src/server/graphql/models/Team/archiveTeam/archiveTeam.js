@@ -48,7 +48,7 @@ export default {
             team: doc('team'),
             teamResult: r.table('Team').get(teamId).delete(),
             teamMemberResult: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).delete(),
-            userResult,
+            userResult
           },
           {
             // Team has data or TeamMembers, archive team:

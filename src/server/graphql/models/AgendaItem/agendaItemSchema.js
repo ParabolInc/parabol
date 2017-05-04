@@ -31,7 +31,7 @@ export const AgendaItem = new GraphQLObjectType({
       type: GraphQLFloat,
       description: 'The sort order of the agenda item in the list'
     },
-    teamId: {type: new GraphQLNonNull(GraphQLID), description: 'The team for this agenda item'},
+    teamId: {type: new GraphQLNonNull(GraphQLID), description: '*The team for this agenda item'},
     teamMemberId: {type: new GraphQLNonNull(GraphQLID), description: 'The teamMemberId that created this agenda item'},
     updatedAt: {
       type: GraphQLISO8601Type,

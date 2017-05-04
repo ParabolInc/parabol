@@ -88,10 +88,7 @@ const styleThunk = () => ({
   },
   archived: {
     color: labels.archived.color
-  },
-  action: {
-    color: labels.action.color
-  },
+  }
 });
 
 export default withStyles(styleThunk)(OutcomeCardMenuButton);

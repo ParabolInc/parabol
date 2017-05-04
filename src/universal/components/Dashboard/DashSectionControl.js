@@ -16,7 +16,7 @@ const DashSectionControl = (props) => {
 
 DashSectionControl.propTypes = {
   children: PropTypes.any,
-  styles: PropTypes.object,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

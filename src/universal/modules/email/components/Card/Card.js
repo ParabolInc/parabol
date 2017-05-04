@@ -4,19 +4,13 @@ import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
 import {trimString} from 'universal/utils';
 import EmptySpace from '../EmptySpace/EmptySpace';
-import ReactMarkdown from 'react-markdown';
-import markdownCustomComponents from 'universal/utils/markdownCustomComponents';
+import Markdown from '../../../../components/Markdown/Markdown';
+import isProjectPrivate from 'universal/utils/isProjectPrivate';
 
 const Card = (props) => {
-  const {content, status} = props;
-  const type = status ? 'project' : 'action';
-  let backgroundColor;
-
-  if (type === 'project') {
-    backgroundColor = '#FFFFFF';
-  } else {
-    backgroundColor = ui.actionCardBgColor;
-  }
+  const {content, status, tags} = props;
+  const isPrivate = isProjectPrivate(tags);
+  const backgroundColor = isPrivate ? ui.privateCardBgColor : '#FFFFFF';
 
   const cellStyle = {
     padding: 0,
@@ -39,21 +33,11 @@ const Card = (props) => {
     textAlign: 'left'
   };
 
-  let borderTopStyle;
-
-  if (type === 'project') {
-    borderTopStyle = {
-      backgroundColor: labels.projectStatus[status].color,
-      borderRadius: '4px 4px 0 0',
-      padding: 0
-    };
-  } else {
-    borderTopStyle = {
-      backgroundColor: labels.action.color,
-      borderRadius: '4px 4px 0 0',
-      padding: 0
-    };
-  }
+  const borderTopStyle = {
+    backgroundColor: labels.projectStatus[status].color,
+    borderRadius: '4px 4px 0 0',
+    padding: 0
+  };
 
   return (
     <table style={ui.emailTableBase} width="100%">
@@ -68,12 +52,7 @@ const Card = (props) => {
         <tr>
           <td style={cellStyle}>
             <div style={contentStyle}>
-              <ReactMarkdown
-                renderers={markdownCustomComponents}
-                source={trimString(content, 52)}
-                escapeHtml
-                softBreak="br"
-              />
+              <Markdown source={trimString(content, 52)} />
             </div>
           </td>
         </tr>
@@ -85,6 +64,7 @@ const Card = (props) => {
 Card.propTypes = {
   content: PropTypes.string,
   status: PropTypes.oneOf(labels.projectStatus.slugs),
+  tags: PropTypes.array
 };
 
 export default Card;

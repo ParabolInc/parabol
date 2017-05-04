@@ -1,7 +1,7 @@
 const textOverflow = {
   overflow: 'hidden',
   textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
+  whiteSpace: 'nowrap'
 };
 
 export default textOverflow;

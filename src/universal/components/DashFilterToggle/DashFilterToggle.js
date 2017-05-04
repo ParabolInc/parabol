@@ -55,7 +55,7 @@ const styleThunk = () => ({
     padding: 0,
 
     ...makeHoverFocus({
-      color: appTheme.palette.dark,
+      color: appTheme.palette.dark
     }),
 
     ':hover > div': {

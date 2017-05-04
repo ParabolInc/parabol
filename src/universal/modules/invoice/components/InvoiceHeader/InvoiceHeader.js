@@ -63,7 +63,7 @@ const styleThunk = () => ({
 
   info: {
     flex: 1,
-    marginLeft: '1.25rem',
+    marginLeft: '1.25rem'
   },
 
   orgName: {
@@ -77,7 +77,7 @@ const styleThunk = () => ({
 
   email: {
     fontSize: appTheme.typography.s3,
-    lineHeight: appTheme.typography.s5,
+    lineHeight: appTheme.typography.s5
   }
 });
 

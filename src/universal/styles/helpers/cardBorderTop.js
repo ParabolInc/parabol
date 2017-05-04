@@ -11,7 +11,7 @@ const cardBorderTop = {
   left: '-1px',
   position: 'absolute',
   right: '-1px',
-  top: '-1px',
+  top: '-1px'
 };
 
 export default cardBorderTop;

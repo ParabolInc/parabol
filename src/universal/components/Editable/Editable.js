@@ -85,7 +85,7 @@ class Editable extends Component {
       icon,
       initialValue,
       placeholder,
-      styles,
+      styles
     } = this.props;
     const staticStyles = css(
       styles.static,

@@ -89,7 +89,7 @@ const styleThunk = () => ({
   formBlock: {
     alignItems: 'baseline',
     display: 'flex'
-  },
+  }
 });
 
 

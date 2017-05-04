@@ -28,9 +28,9 @@ describe('resetMeeting', () => {
     // VERIFY
     const db = await fetchAndSerialize({
       agendaItem: r.table('AgendaItem').getAll(teamId, {index: 'teamId'}).orderBy('teamMemberId'),
-      project: r.table('Project').getAll(r.args(teamMemberIds), {index: 'teamMemberId'}).orderBy('teamMemberId'),
+      project: r.table('Project').getAll(r.args(teamMemberIds), {index: 'teamMemberId'}).orderBy('content'),
       team: r.table('Team').get(teamId),
-      teamMember: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).orderBy('preferredName'),
+      teamMember: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).orderBy('preferredName')
 
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();

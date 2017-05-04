@@ -51,7 +51,7 @@ export default class UserSettingsContainer extends Component {
       email: PropTypes.string,
       id: PropTypes.string,
       picture: PropTypes.string,
-      preferredName: PropTypes.string,
+      preferredName: PropTypes.string
     }),
     router: PropTypes.object,
     untouch: PropTypes.func,

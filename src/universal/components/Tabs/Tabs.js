@@ -37,7 +37,7 @@ const styleThunk = () => ({
     display: 'flex',
     flexDirection: 'column',
     maxWidth: '24rem',
-    width: '100%',
+    width: '100%'
   },
 
   tabs: {

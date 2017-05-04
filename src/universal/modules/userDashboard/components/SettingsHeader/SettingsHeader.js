@@ -31,7 +31,7 @@ const SettingsHeader = (props) => {
 
 SettingsHeader.propTypes = {
   location: PropTypes.string,
-  styles: PropTypes.object,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

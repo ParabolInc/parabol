@@ -3,7 +3,6 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import {cashay} from 'cashay';
 import Avatar from 'universal/components/Avatar/Avatar';
-import getOutcomeNames from 'universal/utils/getOutcomeNames';
 
 const OutcomeCardAssignMenu = (props) => {
   const {onComplete, outcome, styles, teamMembers} = props;
@@ -13,17 +12,16 @@ const OutcomeCardAssignMenu = (props) => {
     if (newOwner === currentOwner) {
       return;
     }
-    const {argName, mutationName} = getOutcomeNames(outcome, 'update');
     const options = {
       ops: {},
       variables: {
-        [argName]: {
+        updatedProject: {
           id: outcomeId,
           teamMemberId: newOwner
         }
       }
     };
-    cashay.mutate(mutationName, options);
+    cashay.mutate('updateProject', options);
     if (onComplete) {
       onComplete();
     }

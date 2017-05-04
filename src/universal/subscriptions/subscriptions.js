@@ -1,9 +1,8 @@
 import {
-  ACTIONS,
-  ACTIONS_BY_TEAMMEMBER,
-  ACTIONS_BY_AGENDA,
   AGENDA,
+  AGENDA_PROJECTS,
   ARCHIVED_PROJECTS,
+  INTEGRATIONS,
   INVITATIONS,
   NOTIFICATIONS,
   ORG_APPROVALS,
@@ -20,63 +19,31 @@ import {
 // For now, use an array. In the future, we can make one exclusively for the server that doesn't need to reparse the AST
 export default [
   {
+    channel: AGENDA_PROJECTS,
+    string: `
+    subscription($agendaId: ID!) {
+      agendaProjects(agendaId: $agendaId) {
+        id
+        agendaId
+        content
+        createdAt
+        createdBy
+        status
+        tags
+        teamMemberId
+        updatedAt
+      }
+    }`
+  },
+  {
     channel: ARCHIVED_PROJECTS,
     string: `
     subscription($teamId: ID!) {
       archivedProjects(teamId: $teamId) {
         content
         id
-        isArchived
         status
-        teamMemberId
-        updatedAt
-      }
-    }`
-  },
-  {
-    channel: ACTIONS,
-    string: `
-    subscription($userId: ID!) {
-      actions(userId: $userId) {
-        id
-        content
-        createdBy
-        isComplete
-        updatedAt
-        sortOrder
-        agendaId
-      }
-    }`
-  },
-  {
-    channel: ACTIONS_BY_TEAMMEMBER,
-    string: `
-    subscription($teamMemberId: ID!) {
-      actionsByTeamMember(teamMemberId: $teamMemberId) {
-        agendaId
-        createdAt
-        createdBy
-        content
-        id
-        isComplete
-        sortOrder
-        teamMemberId
-        updatedAt
-      }
-    }`
-  },
-  {
-    channel: ACTIONS_BY_AGENDA,
-    string: `
-    subscription($agendaId: ID!) {
-      actionsByAgenda(agendaId: $agendaId) {
-        agendaId
-        createdAt
-        createdBy
-        content
-        id
-        isComplete
-        sortOrder
+        tags
         teamMemberId
         updatedAt
       }
@@ -106,6 +73,22 @@ export default [
         inactive
         picture
         preferredName
+      }
+    }`
+  },
+  {
+    channel: INTEGRATIONS,
+    string: `
+    subscription($teamMemberId: ID!) {
+      integrations(teamMemberId: $teamMemberId) {
+        id
+        accessToken
+        service
+        userId,
+        syncs {
+          id
+          slackChannelId
+        }
       }
     }`
   },
@@ -210,8 +193,8 @@ export default [
         createdAt
         createdBy
         id
-        isArchived
         status
+        tags
         teamMemberId
         sortOrder
         updatedAt

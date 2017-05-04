@@ -25,7 +25,7 @@ const mapStateToProps = (state, props) => {
     op: 'organizationContainer',
     key: orgId,
     sort: {
-      billingLeaders: (a, b) => a.preferredName > b.preferredName ? 1 : -1,
+      billingLeaders: (a, b) => a.preferredName > b.preferredName ? 1 : -1
     },
     variables: {orgId}
   }).data;
@@ -33,7 +33,7 @@ const mapStateToProps = (state, props) => {
     activeOrgDetail: orgArea || BILLING_PAGE,
     billingLeaders,
     myUserId: state.auth.obj.sub,
-    org,
+    org
   };
 };
 

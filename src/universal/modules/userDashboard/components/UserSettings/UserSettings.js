@@ -83,7 +83,7 @@ UserSettings.propTypes = {
     email: PropTypes.string,
     id: PropTypes.string,
     picture: PropTypes.string,
-    preferredName: PropTypes.string,
+    preferredName: PropTypes.string
   }),
   userId: PropTypes.string,
   styles: PropTypes.object
@@ -91,7 +91,7 @@ UserSettings.propTypes = {
 
 const styleThunk = () => ({
   body: {
-    maxWidth: '37.5rem',
+    maxWidth: '37.5rem'
   },
 
   form: {

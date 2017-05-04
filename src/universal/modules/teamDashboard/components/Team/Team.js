@@ -6,7 +6,7 @@ import {
   DashContent,
   DashHeader,
   DashHeaderInfo,
-  DashMain,
+  DashMain
 } from 'universal/components/Dashboard';
 import {withRouter} from 'react-router';
 import Button from 'universal/components/Button/Button';

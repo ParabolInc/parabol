@@ -50,7 +50,7 @@ const mapStateToProps = (state, props) => {
   return {
     agenda,
     teamId,
-    myTeamMember,
+    myTeamMember
   };
 };
 

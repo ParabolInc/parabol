@@ -104,7 +104,7 @@ export const Organization = new GraphQLObjectType({
     },
     periodEnd: {
       type: GraphQLISO8601Type,
-      description: 'THe datetime the current billing cycle ends',
+      description: 'THe datetime the current billing cycle ends'
     },
     periodStart: {
       type: GraphQLISO8601Type,

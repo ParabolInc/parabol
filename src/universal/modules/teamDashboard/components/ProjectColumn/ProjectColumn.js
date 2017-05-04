@@ -1,4 +1,4 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -36,6 +36,13 @@ const targetAnchor = {
   horizontal: 'right'
 };
 
+const badgeColor = {
+  done: 'dark',
+  active: 'cool',
+  stuck: 'warm',
+  future: 'mid'
+};
+
 const handleAddProjectFactory = (status, teamMemberId, sortOrder) => () => {
   const [, teamId] = teamMemberId.split('::');
   const newProject = {
@@ -47,38 +54,17 @@ const handleAddProjectFactory = (status, teamMemberId, sortOrder) => () => {
   cashay.mutate('createProject', {variables: {newProject}});
 };
 
-const ProjectColumn = (props) => {
-  const {
-    area,
-    connectDropTarget,
-    dragState,
-    firstColumn,
-    lastColumn,
-    status,
-    projects,
-    myTeamMemberId,
-    styles,
-    teams,
-    userId
-  } = props;
-
-  const label = themeLabels.projectStatus[status].slug;
-  const makeTeamMenuItems = (sortOrder) => {
-    return teams.map((team) => ({
-      label: team.name,
-      handleClick: () => cashay.mutate('createProject', {
-        variables: {
-          newProject: {
-            id: `${team.id}::${shortid.generate()}`,
-            status,
-            teamMemberId: `${userId}::${team.id}`,
-            sortOrder
-          }
-        }
-      })
-    }));
-  };
-  const makeAddProject = () => {
+class ProjectColumn extends Component {
+  makeAddProject = () => {
+    const {
+      area,
+      status,
+      projects,
+      myTeamMemberId,
+      teams,
+      userId
+    } = this.props;
+    const label = themeLabels.projectStatus[status].slug;
     const sortOrder = getNextSortOrder(projects, dndNoise());
     if (area === TEAM_DASH) {
       const handleAddProject = handleAddProjectFactory(status, myTeamMemberId, sortOrder);
@@ -91,7 +77,7 @@ const ProjectColumn = (props) => {
         return <AddProjectButton onClick={handleAddProject} label={label} />;
       }
       const itemFactory = () => {
-        const menuItems = makeTeamMenuItems(sortOrder);
+        const menuItems = this.makeTeamMenuItems(sortOrder);
         return menuItems.map((item) =>
           <MenuItem
             key={`MenuItem${item.label}`}
@@ -116,62 +102,94 @@ const ProjectColumn = (props) => {
     return null;
   };
 
-  const badgeColor = {
-    done: 'dark',
-    active: 'cool',
-    stuck: 'warm',
-    future: 'mid'
+  makeTeamMenuItems = (sortOrder) => {
+    const {
+      status,
+      teams,
+      userId
+    } = this.props;
+    return teams.map((team) => ({
+      label: team.name,
+      handleClick: () => cashay.mutate('createProject', {
+        variables: {
+          newProject: {
+            id: `${team.id}::${shortid.generate()}`,
+            status,
+            teamMemberId: `${userId}::${team.id}`,
+            sortOrder
+          }
+        }
+      })
+    }));
   };
 
-  const columnStyles = css(
-    styles.column,
-    firstColumn && styles.columnFirst,
-    lastColumn && styles.columnLast
-  );
+  render() {
+    const {
+      area,
+      connectDropTarget,
+      dragState,
+      firstColumn,
+      lastColumn,
+      status,
+      projects,
+      styles,
+      userId
+    } = this.props;
+    const label = themeLabels.projectStatus[status].slug;
+    const columnStyles = css(
+      styles.column,
+      firstColumn && styles.columnFirst,
+      lastColumn && styles.columnLast
+    );
 
-  // reset every rerender so we make sure we got the freshest info
-  dragState.clear();
-  return connectDropTarget(
-    <div className={columnStyles}>
-      <div className={css(styles.columnHeader)}>
-        <div className={css(styles.statusLabelBlock)}>
-          <span className={css(styles.statusIcon, styles[status])}>
-            <FontAwesome name={themeLabels.projectStatus[status].icon} />
-          </span>
-          <span className={css(styles.statusLabel, styles[status])}>
-            {label}
-          </span>
-          {(projects.length > 0) &&
+    // reset every rerender so we make sure we got the freshest info
+    dragState.clear();
+    return connectDropTarget(
+      <div className={columnStyles}>
+        <div className={css(styles.columnHeader)}>
+          <div className={css(styles.statusLabelBlock)}>
+            <span className={css(styles.statusIcon, styles[status])}>
+              <FontAwesome name={themeLabels.projectStatus[status].icon} />
+            </span>
+            <span className={css(styles.statusLabel, styles[status])}>
+              {label}
+            </span>
+            {(projects.length > 0) &&
             <span className={css(styles.statusBadge)}>
               <Badge colorPalette={badgeColor[status]} flat value={projects.length} />
             </span>
-          }
+            }
+          </div>
+          {this.makeAddProject()}
         </div>
-        {makeAddProject()}
-      </div>
-      <div className={css(styles.columnBody)}>
-        <div className={css(styles.columnInner)}>
-          {projects.map((project) =>
-            <ProjectCardContainer
-              key={`teamCard${project.id}`}
-              area={area}
-              project={project}
-              dragState={dragState}
-              ref={(c) => {
-                if (c) {
-                  dragState.components.push(c);
-                }
-              }}
-            />)
-          }
+        <div className={css(styles.columnBody)}>
+          <div className={css(styles.columnInner)}>
+            {projects.map((project) =>
+              <ProjectCardContainer
+                key={`teamCard${project.id}`}
+                area={area}
+                project={project}
+                dragState={dragState}
+                myUserId={userId}
+                ref={(c) => {
+                  if (c) {
+                    dragState.components.push(c);
+                  }
+                }}
+              />)
+            }
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+}
+
 
 ProjectColumn.propTypes = {
   area: PropTypes.string,
+  connectDropTarget: PropTypes.func,
+  dragState: PropTypes.object,
   firstColumn: PropTypes.bool,
   lastColumn: PropTypes.bool,
   myTeamMemberId: PropTypes.string,
@@ -227,7 +245,7 @@ const styleThunk = () => ({
     alignItems: 'center',
     display: 'flex',
     flex: 1,
-    fontSize: appTheme.typography.s3,
+    fontSize: appTheme.typography.s3
   },
 
   statusIcon: {
@@ -235,7 +253,7 @@ const styleThunk = () => ({
     marginRight: '.25rem',
     paddingTop: 1,
     textAlign: 'center',
-    verticalAlign: 'middle',
+    verticalAlign: 'middle'
   },
 
   statusLabel: {
@@ -248,7 +266,7 @@ const styleThunk = () => ({
     marginLeft: '.5rem'
   },
 
-  ...projectStatusStyles('color'),
+  ...projectStatusStyles('color')
 });
 
 const dropTargetCb = (connectTarget) => ({

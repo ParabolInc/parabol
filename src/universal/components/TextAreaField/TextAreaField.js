@@ -3,7 +3,7 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette';
-import Textarea from 'react-textarea-autosize';
+// import Textarea from 'react-textarea-autosize';
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
 import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText';
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
@@ -30,7 +30,7 @@ const TextAreaField = (props) => {
     <FieldBlock>
       {label && <FieldLabel label={label} htmlFor={input.name} />}
       <div className={css(styles.inputBlock)}>
-        <Textarea
+        <textarea
           {...input}
           autoFocus={autoFocus}
           className={inputStyles}

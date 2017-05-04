@@ -20,16 +20,12 @@ query{
     invitees {
       id
       present
-      actions {
-        id
-        content
-        teamMemberId
-      }
       projects {
         id
         content
         status
         teamMemberId
+        tags
       }
       picture
       preferredName
@@ -63,7 +59,7 @@ const mapStateToProps = (state, props) => {
     },
     sort: {
       invitees: (a, b) => a.preferredName > b.preferredName ? 1 : -1
-    },
+    }
   }).data;
   return {
     meeting

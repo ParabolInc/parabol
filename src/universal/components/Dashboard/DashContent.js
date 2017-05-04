@@ -21,7 +21,7 @@ DashContent.propTypes = {
   children: PropTypes.any,
   hasOverlay: PropTypes.bool,
   padding: PropTypes.string,
-  styles: PropTypes.object,
+  styles: PropTypes.object
 };
 
 DashContent.defaultProps = {

@@ -5,80 +5,39 @@ import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgen
 
 const meetingAgendaCardsQuery = `
 query {
-  teamMembers(teamId: $teamId) @live {
+  agendaProjects(agendaId: $agendaId) @live {
     id
-    projects(teamMemberId: $teamMemberId) @live {
+    agendaId
+    content
+    createdAt
+    createdBy
+    status
+    tags
+    teamMember @cached(type: "TeamMember") {
       id
-      agendaId
-      type: __typename
-      content
-      createdAt
-      createdBy
-      status
-      teamMember @cached(type: "TeamMember") {
-        picture
-        preferredName
-      }
-      teamMemberId
+      picture
+      preferredName
     }
-  }
-  agenda(teamId: $teamId) @live {
-    id
-    actionsByAgenda @live {
-      id
-      agendaId
-      type: __typename
-      content
-      createdAt
-      createdBy
-      teamMember @cached(type: "TeamMember") {
-        picture
-        preferredName
-      }
-      teamMemberId
-      isComplete
-    }
+    teamMemberId
   }
 }
 `;
 
-const makeOutcomes = (queryData) => {
-  if (queryData !== makeOutcomes.queryData) {
-    makeOutcomes.queryData = queryData;
-    const {teamMembers, agenda} = queryData;
-    makeOutcomes.cache = [];
-    const filteredAgendaItem = agenda[0];
-    if (filteredAgendaItem) {
-      makeOutcomes.cache.push(...filteredAgendaItem.actionsByAgenda);
-    }
-    for (let i = 0; i < teamMembers.length; i++) {
-      const {projects} = teamMembers[i];
-      makeOutcomes.cache.push(...projects);
-    }
-    makeOutcomes.cache.sort((a, b) => a.createdAt - b.createdAt);
-  }
-  return makeOutcomes.cache;
-};
-
 const mapStateToProps = (state, props) => {
-  const {agendaId, myTeamMemberId} = props;
-  const [, teamId] = myTeamMemberId.split('::');
-  const queryData = cashay.query(meetingAgendaCardsQuery, {
+  const {agendaId} = props;
+  const {agendaProjects} = cashay.query(meetingAgendaCardsQuery, {
     op: 'meetingAgendaCardsContainer',
     key: agendaId,
-    variables: {teamId},
+    variables: {agendaId},
     resolveCached: {
-      outcomes: (source, args) => (doc) => doc.agendaId === args.id,
       teamMember: (source) => source.teamMemberId
     },
-    filter: {
-      agenda: (a) => a.id === agendaId,
-      projects: (outcome) => outcome.agendaId === agendaId,
-    },
+    sort: {
+      agendaProjects: (a, b) => a.createdAt - b.createdAt
+    }
   }).data;
-
   return {
-    outcomes: makeOutcomes(queryData)
+    outcomes: agendaProjects
   };
 };
 

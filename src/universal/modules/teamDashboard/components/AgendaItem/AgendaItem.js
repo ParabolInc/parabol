@@ -14,7 +14,7 @@ import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
 const projectSource = {
   beginDrag(props) {
     return {
-      id: props.agendaItem.id,
+      id: props.agendaItem.id
     };
   }
 };
@@ -184,7 +184,7 @@ const styleThunk = () => ({
     },
     ':focus': {
       color: appTheme.palette.dark
-    },
+    }
   },
 
   itemFacilitator: {
@@ -198,7 +198,7 @@ const styleThunk = () => ({
     },
     ':focus': {
       color: warmLinkHover
-    },
+    }
   },
 
   index: {
@@ -249,7 +249,7 @@ const styleThunk = () => ({
       color: ui.linkColorHover,
       cursor: 'pointer',
       textDecoration: 'underline'
-    }),
+    })
   }
 });
 

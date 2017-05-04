@@ -14,23 +14,16 @@ import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeChec
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
 
-const meetingAction = ({id, content, teamMemberId}) => ({
-  id,
-  content,
-  teamMemberId,
-});
-
 const meetingProject = ({id, content, status, teamMemberId}) => ({
   id,
   content,
   status,
-  teamMemberId,
+  teamMemberId
 });
 
 class MockDB {
   constructor() {
     this.db = {
-      action: [],
       agendaItem: [],
       meeting: [],
       notification: [],
@@ -68,7 +61,7 @@ class MockDB {
       trialOrg: idx === 0 ? orgId : null,
       userOrgs: [{
         id: orgId,
-        role: idx === 0 ? BILLING_LEADER : null,
+        role: idx === 0 ? BILLING_LEADER : null
       }]
     }));
     this.newTeam({id: teamId, orgId});
@@ -87,24 +80,6 @@ class MockDB {
     }));
     this.newOrg({id: orgId, orgUsers});
     return this;
-  }
-
-  newAction(overrides = {}) {
-    const teamMemberId = this.context.teamMember.id;
-    const [userId] = teamMemberId.split('::');
-    const table = this.db.action;
-    return this.closeout('action', {
-      id: `${this.context.team.id}::${shortid.generate()}`,
-      content: `Test Action[${table.length}]`,
-      createdAt: new Date(__anHourAgo - 1 - table.length),
-      createdBy: userId,
-      isComplete: false,
-      sortOrder: table.filter((item) => item.userId === userId).length,
-      teamMemberId,
-      updatedAt: new Date(__anHourAgo - table.length),
-      userId,
-      ...overrides
-    });
   }
 
   newAgendaItem(overrides = {}) {
@@ -137,21 +112,18 @@ class MockDB {
       teamId,
       teamName: this.context.team.name
     };
-    // 3 agenda items, #1 has 1 action, #2 has 1 project, #3 has 1 of each
-    const actions = [];
+    // 3 agenda items, #1 has 1 private project, #2 has 1 project, #3 has 1 of each
     const projects = [];
     this.newAgendaItem({isComplete: true});
-    this.newAction({agendaId: this.context.agendaItem.id, sortOrder: undefined});
-    actions.push(meetingAction(this.context.action));
+    this.newProject({agendaId: this.context.agendaItem.id, sortOrder: undefined, tags: ['#private']});
     this.teamMember(1);
     this.newAgendaItem({isComplete: true});
     this.newProject({agendaId: this.context.agendaItem.id, sortOrder: undefined});
     projects.push(meetingProject(this.context.project));
     this.teamMember(2);
     this.newAgendaItem({isComplete: true});
-    this.newAction({agendaId: this.context.agendaItem.id, sortOrder: undefined});
+    this.newProject({agendaId: this.context.agendaItem.id, sortOrder: undefined, tags: ['#private']});
     this.newProject({agendaId: this.context.agendaItem.id, sortOrder: undefined});
-    actions.push(meetingAction(this.context.action));
     projects.push(meetingProject(this.context.project));
     if (inProgress) {
       const week = getWeekOfYear(new Date());
@@ -164,11 +136,10 @@ class MockDB {
         facilitatorPhase: CHECKIN,
         facilitatorPhaseItem: 1,
         meetingPhase: CHECKIN,
-        meetingPhaseItem: 1,
+        meetingPhaseItem: 1
       });
     } else {
       Object.assign(baseMeeting, {
-        actions,
         agendaItemsCompleted: 3,
         endedAt: new Date(),
         facilitator: this.context.team.activeFacilitator,
@@ -176,11 +147,10 @@ class MockDB {
         successStatement: makeSuccessStatement(),
         invitees: this.db.teamMember.filter((tm) => tm.teamId === teamId).map((teamMember) => ({
           id: teamMember.id,
-          actions: actions.filter((a) => a.teamMemberId === teamMember.id),
           picture: teamMember.picture,
           preferredName: teamMember.preferredName,
           present: true,
-          projects: projects.filter((a) => a.teamMemberId === teamMember.id),
+          projects: projects.filter((a) => a.teamMemberId === teamMember.id)
         })),
         projects
       });
@@ -231,7 +201,6 @@ class MockDB {
       content: `Test Project[${table.length}]`,
       createdAt: new Date(__anHourAgo - 1 - table.length),
       createdBy: userId,
-      isArchived: false,
       sortOrder: table.filter((item) => item.teamId === teamId).length,
       status: ACTIVE,
       teamId,
@@ -265,8 +234,8 @@ class MockDB {
       activeFacilitator: null,
       facilitatorPhase: LOBBY,
       facilitatorPhaseItem: null,
-      isPaid: true,
       isArchived: false,
+      isPaid: true,
       meetingId: null,
       meetingPhase: LOBBY,
       meetingPhaseItem: null,
@@ -306,10 +275,10 @@ class MockDB {
       updatedAt: anHourAgo,
       userOrgs: [{
         id: orgId,
-        role: null,
+        role: null
       }],
       welcomeSentAt: anHourAgo,
-      ...overrides,
+      ...overrides
     });
   }
 

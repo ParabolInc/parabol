@@ -30,7 +30,7 @@ export function selectSegmentTraits(state, authReducer = DEFAULT_AUTH_REDUCER_NA
     createdAt: isNaN(createdAt) ? null : createdAt,
     email: user.email,
     id: user.id,
-    name: user.preferredName,
+    name: user.preferredName
   });
 }
 

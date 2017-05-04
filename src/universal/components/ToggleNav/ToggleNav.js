@@ -93,12 +93,12 @@ const styleThunk = () => ({
     ':hover': {
       backgroundColor: appTheme.palette.mid10a,
       color: appTheme.palette.mid70d,
-      textDecoration: 'none',
+      textDecoration: 'none'
     },
     ':focus': {
       backgroundColor: appTheme.palette.mid10a,
       color: appTheme.palette.mid70d,
-      textDecoration: 'none',
+      textDecoration: 'none'
     }
   },
 

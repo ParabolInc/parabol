@@ -54,6 +54,7 @@ const DropdownInput = (props) => {
         <span>{orgName}</span>
         <Menu
           originAnchor={originAnchor}
+          maxHeight="none"
           menuWidth="13rem"
           targetAnchor={targetAnchor}
           toggle={toggle}

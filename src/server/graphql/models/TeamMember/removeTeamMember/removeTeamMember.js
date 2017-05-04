@@ -1,11 +1,11 @@
 import {
   GraphQLNonNull,
   GraphQLID,
-  GraphQLBoolean,
+  GraphQLBoolean
 } from 'graphql';
 import {
   requireWebsocket,
-  requireSUOrSelfOrLead,
+  requireSUOrSelfOrLead
 } from 'server/utils/authorization';
 import removeAllTeamMembers from 'server/graphql/models/TeamMember/removeTeamMember/removeAllTeamMembers';
 

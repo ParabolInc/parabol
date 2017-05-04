@@ -68,6 +68,6 @@ export const ProjectHistory = new GraphQLObjectType({
     meetingId: {
       type: GraphQLID,
       description: 'if changedIn is a meeting, the id of the meeting where it occured'
-    },
+    }
   })
 });

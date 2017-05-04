@@ -18,7 +18,7 @@ const getCounts = (org) => {
     .do((inactiveUserCount) => {
       return {
         activeUserCount: org('orgUsers').count().sub(inactiveUserCount),
-        inactiveUserCount,
+        inactiveUserCount
       };
     });
 };
@@ -111,5 +111,5 @@ export default {
         .changes({includeInitial: true})
         .run({cursor: true}, changefeedHandler);
     }
-  },
+  }
 };

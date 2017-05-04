@@ -4,11 +4,11 @@ import resolvePromiseMap from 'universal/utils/promises';
 const setImports = () =>
   new Map([
     ['component', System.import(
-      'universal/modules/teamDashboard/containers/TeamSettings/TeamSettingsContainer')],
+      'universal/modules/teamDashboard/containers/TeamSettings/TeamSettingsContainer')]
   ]);
 
 const getImports = (importMap) => ({
-  component: importMap.get('component').default,
+  component: importMap.get('component').default
 });
 
 export default (store) => ({
@@ -21,4 +21,11 @@ export default (store) => ({
     store.replaceReducer(newReducer);
     cb(null, component);
   }
+  // getChildRoutes: (childLocation, cbChild) => {
+  //   cbChild(null, [
+  //     /* eslint-disable global-require */
+  //     require('./integrations').default(store),
+  //     /* eslint-enable */
+  //   ]);
+  // }
 });

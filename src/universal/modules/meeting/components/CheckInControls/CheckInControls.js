@@ -73,7 +73,7 @@ const styleThunk = () => ({
 
   nextControl: {
     color: appTheme.palette.cool,
-    marginBottom: '.5rem',
+    marginBottom: '.5rem'
   },
 
   skipControl: {

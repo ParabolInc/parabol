@@ -8,12 +8,19 @@ import LoadingView from 'universal/components/LoadingView/LoadingView';
 const meetingUpdatesQuery = `
 query {
   projects(teamMemberId: $teamMemberId) @live {
-    content
     id
+    content
+    createdBy
     status
+    tags
     teamMemberId
     updatedAt
     sortOrder
+    teamMember @cached(type: "TeamMember") {
+      id
+      picture
+      preferredName
+    }
   }
 }
 `;
@@ -49,6 +56,12 @@ const mapStateToProps = (state, props) => {
     key: teamMemberId,
     mutationHandlers,
     variables: {teamMemberId},
+    filter: {
+      projects: (project) => !project.tags.includes('#private')
+    },
+    resolveCached: {
+      teamMember: (source) => source.teamMemberId
+    }
   }).data.projects;
   const projects = makeProjectsByStatus(memberProjects);
   return {
@@ -71,7 +84,7 @@ MeetingUpdatesContainer.propTypes = {
   members: PropTypes.array.isRequired,
   projects: PropTypes.object.isRequired,
   queryKey: PropTypes.string,
-  team: PropTypes.object.isRequired,
+  team: PropTypes.object.isRequired
 };
 
 export default connect(mapStateToProps)(MeetingUpdatesContainer);

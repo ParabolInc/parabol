@@ -57,7 +57,9 @@ const AgendaInputField = (props) => {
 
   const focusOnInput = (e) => {
     e.preventDefault();
-    inputRef.focus();
+    if (inputRef) {
+      inputRef.focus();
+    }
   };
   const maybeBlur = (e) => {
     if (e.key === 'Escape') {
@@ -151,7 +153,7 @@ const styleThunk = () => ({
     width: '100%',
     zIndex: 200,
 
-    ...inputPlaceholderStyles,
+    ...inputPlaceholderStyles
   },
 
   inputNotDisabled: {

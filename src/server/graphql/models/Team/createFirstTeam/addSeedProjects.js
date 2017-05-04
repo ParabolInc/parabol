@@ -36,9 +36,9 @@ export default (userId, teamId) => {
   const seedProjects = SEED_PROJECTS.map((proj) => ({
     ...proj,
     id: `${teamId}::${shortid.generate()}`,
-    isArchived: false,
     createdAt: now,
     createdBy: userId,
+    tags: [],
     teamId,
     teamMemberId: `${userId}::${teamId}`,
     userId,
@@ -54,7 +54,7 @@ export default (userId, teamId) => {
           projectId: change('new_val')('id'),
           status: change('new_val')('status'),
           teamMemberId: change('new_val')('teamMemberId'),
-          updatedAt: change('new_val')('updatedAt'),
+          updatedAt: change('new_val')('updatedAt')
         }))
       );
     })

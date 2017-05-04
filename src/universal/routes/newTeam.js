@@ -5,12 +5,12 @@ import makeReducer from 'universal/redux/makeReducer';
 const setImports = () =>
   new Map([
     ['component', System.import('universal/modules/newTeam/components/NewTeam/NewTeam')],
-    ['socket', System.import('redux-socket-cluster')],
+    ['socket', System.import('redux-socket-cluster')]
   ]);
 
 const getImports = (importMap) => ({
   component: importMap.get('component').default,
-  socket: importMap.get('socket').socketClusterReducer,
+  socket: importMap.get('socket').socketClusterReducer
 });
 
 export default (store) => ({

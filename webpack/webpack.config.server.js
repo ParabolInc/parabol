@@ -21,7 +21,7 @@ export default {
     path: path.join(root, 'build'),
     chunkFilename: '[name]_[chunkhash].js',
     filename: '[name].js',
-    libraryTarget: 'commonjs2',
+    libraryTarget: 'commonjs2'
   },
   // ignore anything that throws warnings & doesn't affect the view
   externals: [

@@ -125,7 +125,7 @@ const styleThunk = () => ({
     position: 'absolute',
     right: '100%',
     top: '1px',
-    width: '24px',
+    width: '24px'
   },
 
   addTeamLabel: {

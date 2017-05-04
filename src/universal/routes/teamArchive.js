@@ -3,7 +3,7 @@ import resolvePromiseMap from 'universal/utils/promises';
 
 const setImports = () =>
   new Map([
-    ['component', System.import('universal/modules/teamDashboard/containers/TeamArchive/TeamArchiveContainer')],
+    ['component', System.import('universal/modules/teamDashboard/containers/TeamArchive/TeamArchiveContainer')]
   ]);
 
 const getImports = (importMap) => ({

@@ -31,7 +31,7 @@ export const ORG1_OTHER_TEAM_MEMBERS = [
     id: 'test|bruceBanner',
     email: 'bruce.banner@avengers.org',
     name: 'Bruce Banner',
-    nickname: 'Hulk',
+    nickname: 'Hulk'
   }),
   testOrgMember({
     id: 'test|natashaRomanova',
@@ -43,13 +43,13 @@ export const ORG1_OTHER_TEAM_MEMBERS = [
     id: 'test|kyleRichmond',
     email: 'kyle.richmond@avengers.org',
     name: 'Kyle Richmond',
-    nickname: 'Nighthawk',
+    nickname: 'Nighthawk'
   }),
   testOrgMember({
     id: 'test|thorOdinson',
     email: 'thor@avengers.org',
     name: 'Thor Odinson',
-    nickname: 'Thor',
+    nickname: 'Thor'
   })
 ];
 

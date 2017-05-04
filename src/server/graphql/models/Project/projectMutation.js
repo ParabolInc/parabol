@@ -10,6 +10,7 @@ import shortid from 'shortid';
 import makeProjectSchema from 'universal/validation/makeProjectSchema';
 import {handleSchemaErrors} from 'server/utils/utils';
 import updateProject from 'server/graphql/models/Project/updateProject/updateProject';
+import extractTags from 'universal/utils/extractTags';
 
 export default {
   updateProject,
@@ -42,10 +43,10 @@ export default {
       const [userId] = validNewProject.teamMemberId.split('::');
       const project = {
         ...validNewProject,
-        isArchived: false,
         userId,
         createdAt: now,
         createdBy: authToken.sub,
+        tags: extractTags(validNewProject.content),
         teamId,
         updatedAt: now
       };
@@ -86,45 +87,6 @@ export default {
           return r.table('ProjectHistory')
             .between([projectId, r.minval], [projectId, r.maxval], {index: 'projectIdUpdatedAt'})
             .delete();
-        });
-    }
-  },
-  makeAction: {
-    type: GraphQLBoolean,
-    description: 'Turn a project into an action',
-    args: {
-      projectId: {
-        type: new GraphQLNonNull(GraphQLID),
-        description: 'The projectId (teamId::shortid) to delete'
-      }
-    },
-    async resolve(source, {projectId}, {authToken, socket}) {
-      const r = getRethink();
-
-      // AUTH
-      // format of id is teamId::taskIdPart
-      const [teamId] = projectId.split('::');
-      requireSUOrTeamMember(authToken, teamId);
-      requireWebsocket(socket);
-
-      // RESOLUTION
-      const project = await r.table('Project').get(projectId);
-      const now = new Date();
-      const [userId] = project.teamMemberId.split('::');
-      const newAction = {
-        id: projectId,
-        content: project.content,
-        userId,
-        teamMemberId: project.teamMemberId,
-        isComplete: false,
-        createdAt: project.createdAt,
-        updatedAt: now,
-        sortOrder: 0,
-        agendaId: project.agendaId
-      };
-      await r.table('Action').insert(newAction)
-        .do(() => {
-          return r.table('Project').get(projectId).delete();
         });
     }
   }

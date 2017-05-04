@@ -4,11 +4,11 @@ import resolvePromiseMap from 'universal/utils/promises';
 const setImports = () =>
   new Map([
     ['component', System.import(
-      'universal/modules/invoice/containers/InvoiceContainer/InvoiceContainer')],
+      'universal/modules/invoice/containers/InvoiceContainer/InvoiceContainer')]
   ]);
 
 const getImports = (importMap) => ({
-  component: importMap.get('component').default,
+  component: importMap.get('component').default
 });
 
 export default (store) => ({
