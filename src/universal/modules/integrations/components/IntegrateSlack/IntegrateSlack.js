@@ -58,7 +58,7 @@ class IntegrateSlack extends Component {
     console.log('sending tmi', teamMemberId);
     const redirect = makeHref('/auth/slack');
     // eslint-disable-next-line
-    const uri = `https://slack.com/oauth/authorize?client_id=${__SLACK_CLIENT_ID__}&scope=channels:read,chat:write:bot&state=${teamMemberId}&redirect_uri=${redirect}`;
+    const uri = `https://slack.com/oauth/authorize?client_id=${window.__ACTION__.slack}&scope=channels:read,chat:write:bot&state=${teamMemberId}&redirect_uri=${redirect}`;
     window.open(uri);
   };
 
