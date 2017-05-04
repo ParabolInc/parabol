@@ -1,7 +1,6 @@
 import closeClientPage from 'server/utils/closeClientPage';
 import fetch from 'node-fetch';
 import {stringify} from 'querystring';
-// import Queue from 'server/utils/bull';
 import postOptions from 'server/utils/fetchOptions';
 import handleIntegration from './handleIntegration';
 import makeAppLink from 'server/utils/makeAppLink';
