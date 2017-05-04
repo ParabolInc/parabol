@@ -20,6 +20,8 @@ import stripeWebhookHandler from './billing/stripeWebhookHandler';
 import getDotenv from '../universal/utils/dotenv';
 import handleGitHub from './integrations/handleGitHub';
 import handleSlack from './integrations/handleSlack';
+import sendICS from './sendICS';
+import './polyfills';
 
 // Import .env and expand variables:
 getDotenv();
@@ -84,6 +86,7 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   if (!PROD) {
     app.get('/email', emailSSR);
   }
+  app.get('/email/createics', sendICS);
 
   // stripe webhooks
   const stripeHandler = stripeWebhookHandler(exchange);
