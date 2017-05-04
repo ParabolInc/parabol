@@ -86,22 +86,25 @@ const mapStateToProps = (state, props) => {
     variables: {teamId}
   }).data;
   const projects = resolveTeamProjects(teamMembers);
+  const userId = state.auth.obj.sub;
   return {
     projects,
-    myTeamMemberId: `${state.auth.obj.sub}::${teamId}`,
-    queryKey: key
+    myTeamMemberId: `${userId}::${teamId}`,
+    queryKey: key,
+    userId
   };
 };
 
 
 const TeamColumnsContainer = (props) => {
-  const {myTeamMemberId, projects, queryKey} = props;
+  const {myTeamMemberId, projects, queryKey, userId} = props;
   return (
     <ProjectColumns
       myTeamMemberId={myTeamMemberId}
       projects={projects}
       queryKey={queryKey}
       area={TEAM_DASH}
+      userId={userId}
     />
   );
 };
@@ -110,7 +113,8 @@ TeamColumnsContainer.propTypes = {
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.object,
   queryKey: PropTypes.string.isRequired,
-  teamId: PropTypes.string.isRequired
+  teamId: PropTypes.string.isRequired,
+  userId: PropTypes.string.isRequired
 };
 
 export default connect(mapStateToProps)(TeamColumnsContainer);

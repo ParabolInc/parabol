@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import {createGoogleCalendarInviteURL, makeIcsUrl} from 'universal/utils/makeCalendarInvites';
 
 import Body from '../../components/Body/Body';
 import ContactUs from '../../components/ContactUs/ContactUs';
@@ -29,7 +30,8 @@ const message = {
   fontSize: '18px',
   lineHeight: '28px',
   padding: '0 16px',
-  textAlign: 'center'
+  textAlign: 'center',
+  whiteSpace: 'pre-line'
 };
 
 const linkStyles = {
@@ -112,6 +114,29 @@ const SummaryEmail = (props) => {
 
   const bannerMessage = makeBannerMessage(referrer, referrerUrl);
   const hasUsersWithoutOutcomes = membersSansOutcomes.length !== 0;
+  const iconSize = 28;
+  const iconLinkBlock = {
+    backgroundColor: appTheme.palette.cool10l,
+    display: 'inline-block',
+    margin: '14px',
+    minWidth: '211px',
+    padding: '9px 8px'
+  };
+  const iconLink = {
+    color: appTheme.palette.cool
+  };
+  const iconLinkIcon = {
+    border: 0,
+    display: 'inline-block',
+    verticalAlign: 'middle'
+  };
+  const iconLinkLabel = {
+    display: 'inline-block',
+    height: `${iconSize}px`,
+    lineHeight: `${iconSize}px`,
+    margin: '0 0 0 6px',
+    verticalAlign: 'middle'
+  };
   return (
     <Layout>
       <table style={ui.emailTableBase} width="100%">
@@ -141,14 +166,50 @@ const SummaryEmail = (props) => {
                   <div>
                     <div style={message}>
                       <b style={greetingStyles}>{makeSuccessExpression()}!</b><br />
-                      {'Way to go on your first Action Meeting!'}<br />
-                      {'You are unlocking new superpowers.'}<br />
+                      {`
+                      Way to go on your first Action Meeting!
+                      You are unlocking new superpowers.
+                      High-performing teams have regular habits!
+                      Create a 30-minute meeting at the start of each week.
+                      `}
                       <br />
-                      <b style={greetingStyles}>{'Make it a habit:'}</b><br />
-                      {'If you haven’t already, schedule a 30 minute meeting,'}<br />
-                      {'preferably recurring on Mondays or Tuesdays.'}<br />
-                      {'Include the following link to the meeting lobby'}<br />
-                      {'in your recurring calendar event:'}
+                      <div>
+                        <span>{'Tap here to schedule:'}</span>
+                        <br />
+                        <div style={iconLinkBlock}>
+                          <a
+                            href={createGoogleCalendarInviteURL(createdAt, meetingUrl, teamName)}
+                            rel="noopener noreferrer"
+                            style={iconLink}
+                            target="_blank"
+                          >
+                            <img
+                              style={iconLinkIcon}
+                              src="/static/images/icons/google@5x.png"
+                              height={iconSize}
+                              width={iconSize}
+                            />
+                            <span style={iconLinkLabel}>Google Calendar</span>
+                          </a>
+                        </div>
+                        <div style={iconLinkBlock}>
+                          <a
+                            href={makeIcsUrl(createdAt, meetingUrl, teamName)}
+                            rel="noopener noreferrer"
+                            style={iconLink}
+                            target="_blank"
+                          >
+                            <img
+                              style={iconLinkIcon}
+                              src="/static/images/icons/calendar-plus-o@5x.png"
+                              height={iconSize}
+                              width={iconSize}
+                            />
+                            <span style={iconLinkLabel}>Outlook, etc.</span>
+                          </a>
+                        </div>
+                      </div>
+                      {'Or, make your own and include this link as the location:'}
                       <EmptySpace height={8} />
                       <table align="center" style={meetingLinkTable} width="80%">
                         <tbody>

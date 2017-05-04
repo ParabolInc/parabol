@@ -1,13 +1,11 @@
-import PropTypes from 'prop-types';
 /* eslint react/no-danger:0 */
+import PropTypes from 'prop-types';
 import React from 'react';
 import {Provider} from 'react-redux';
 import {renderToString} from 'react-dom/server';
 import makeSegmentSnippet from '@segment/snippet';
-import {auth0, stripeKey} from 'universal/utils/clientOptions';
 import getWebpackPublicPath from 'server/utils/getWebpackPublicPath';
 import {StaticRouter} from 'react-router';
-// import {StyleSheetServer} from 'aphrodite-local-styles/no-important';
 
 const webpackPublicPath = getWebpackPublicPath();
 const segKey = process.env.SEGMENT_WRITE_KEY;
@@ -41,14 +39,6 @@ export default function Html({store, assets}) {
     }
   });
   const dehydratedStyles = `window.__APHRODITE__ = ${JSON.stringify(css.renderedClassNames)}`;
-  const clientOptions = `
-    window.__ACTION__ = {
-      auth0: ${JSON.stringify(auth0)},
-      cdn: ${JSON.stringify(webpackPublicPath)},
-      sentry: ${JSON.stringify(process.env.SENTRY_DSN_PUBLIC)},
-      stripe: ${JSON.stringify(stripeKey)}
-    };
-`;
   const fontAwesomeUrl = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css';
   return (
     <html>
@@ -60,7 +50,7 @@ export default function Html({store, assets}) {
       </head>
       <body>
         <script dangerouslySetInnerHTML={{__html: dehydratedStyles}} />
-        <script dangerouslySetInnerHTML={{__html: clientOptions}} />
+        <script dangerouslySetInnerHTML={{__html: clientKeyLoader}} />
         <div id="root" dangerouslySetInnerHTML={{__html: html}} />
         <script dangerouslySetInnerHTML={{__html: manifest.text}} />
         <script src={`${webpackPublicPath}${vendor.js}`} />
@@ -71,6 +61,7 @@ export default function Html({store, assets}) {
 }
 
 Html.propTypes = {
+  clientKeyLoader: PropTypes.string.isRequired,
   store: PropTypes.object.isRequired,
   assets: PropTypes.object
 };

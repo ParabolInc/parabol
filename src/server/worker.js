@@ -9,7 +9,6 @@ import raven from 'raven';
 import createSSR from './createSSR';
 import emailSSR from './emailSSR';
 import {clientSecret as secretKey} from './utils/auth0Helpers';
-import {auth0} from 'universal/utils/clientOptions';
 import scConnectionHandler from './socketHandlers/scConnectionHandler';
 import httpGraphQLHandler, {intranetHttpGraphQLHandler} from './graphql/httpGraphQLHandler';
 import mwPresencePublishOut from './socketHandlers/mwPresencePublishOut';
@@ -21,6 +20,8 @@ import stripeWebhookHandler from './billing/stripeWebhookHandler';
 import getDotenv from '../universal/utils/dotenv';
 import handleGitHub from './integrations/handleGitHub';
 import handleSlack from './integrations/handleSlack';
+import sendICS from './sendICS';
+import './polyfills';
 
 // Import .env and expand variables:
 getDotenv();
@@ -70,7 +71,7 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   const graphQLHandler = httpGraphQLHandler(exchange);
   app.post('/graphql', jwt({
     secret: new Buffer(secretKey, 'base64'),
-    audience: auth0.clientId,
+    audience: process.env.AUTH0_CLIENT_ID,
     credentialsRequired: false
   }), graphQLHandler);
 
@@ -85,6 +86,7 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   if (!PROD) {
     app.get('/email', emailSSR);
   }
+  app.get('/email/createics', sendICS);
 
   // stripe webhooks
   const stripeHandler = stripeWebhookHandler(exchange);

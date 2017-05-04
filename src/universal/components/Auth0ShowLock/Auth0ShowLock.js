@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {auth0 as defaultClientOptions} from 'universal/utils/clientOptions';
 import signinAndUpdateToken from './signinAndUpdateToken';
 import injectGlobals from 'universal/styles/hepha';
 import auth0Overrides from 'universal/styles/theme/auth0Overrides';
@@ -19,13 +18,8 @@ export function showLock(dispatch) {
   }
   // eslint-disable-next-line global-require
   const Auth0Lock = require('auth0-lock');
-  let clientOptions = defaultClientOptions;
-  if (__PRODUCTION__) {
-    // See server/Html.js for how this is initialized:
-    clientOptions = window.__ACTION__.auth0;
-  }
-  const {clientId, domain} = clientOptions;
-  const lock = new Auth0Lock(clientId, domain);
+  const {auth0, auth0Domain} = window.__ACTION__;
+  const lock = new Auth0Lock(auth0, auth0Domain);
   lock.show({
     authParams: {
       scope: 'openid rol tms bet'
@@ -34,6 +28,7 @@ export function showLock(dispatch) {
     if (error) throw error;
     signinAndUpdateToken(dispatch, profile, authToken);
   });
+}
 }
 
 const Auth0ShowLock = (props) => {
