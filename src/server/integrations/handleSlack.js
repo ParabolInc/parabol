@@ -16,7 +16,7 @@ export default function (exchange) {
       client_id: process.env.SLACK_CLIENT_ID,
       client_secret: process.env.SLACK_CLIENT_SECRET,
       code,
-      redirect_uri: makeAppLink('auth/slack');
+      redirect_uri: makeAppLink('auth/slack')
     };
     console.log('queryParams', JSON.stringify(queryParams));
     const uri = `https://slack.com/api/oauth.access?${stringify(queryParams)}`;
