@@ -4,6 +4,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.18.0 - 04-May-2017
+### Added
+- Tags (#archive, #private)
+- Calendar invites on first meeting Email Summary
+- Integrator Microservice (Bull Job Queue, action-integrator)
+- Slack integration (Naive meeting alerts)
+- react-githubish-mentions
+- emoji support in markdown
+
+### Fixed
+- CSS For auth0 modal on invitation route
+- sorting first agenda item bug #896
+
+### Removed
+- Actions (in favor of private projects)
+- redux-form from projects
+
 ## v0.17.6 - 25-Apr-2017
 ### Added
 - Hello lang tooltips, we'll now tell you which language is saying
