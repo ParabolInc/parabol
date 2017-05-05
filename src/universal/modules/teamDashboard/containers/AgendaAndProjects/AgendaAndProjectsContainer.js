@@ -20,10 +20,10 @@ const mapStateToProps = (state, props) => {
     key: teamId,
     resolveCached: {
       myTeamMember: () => `${userId}::${teamId}`
-    },
+    }
   }).data;
   return {
-    hideAgenda: myTeamMember.hideAgenda,
+    hideAgenda: myTeamMember.hideAgenda
   };
 };
 

@@ -28,7 +28,7 @@ Tab.propTypes = {
   isActive: PropTypes.bool,
   label: PropTypes.string,
   onClick: PropTypes.func,
-  styles: PropTypes.object,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({
@@ -52,7 +52,7 @@ const styleThunk = () => ({
   },
 
   isActive: {
-    color: appTheme.palette.cool,
+    color: appTheme.palette.cool
   },
 
   label: {

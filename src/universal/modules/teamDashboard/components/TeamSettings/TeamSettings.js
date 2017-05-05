@@ -14,9 +14,12 @@ import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import Panel from 'universal/components/Panel/Panel';
 import ArchiveTeamContainer from 'universal/modules/teamDashboard/containers/ArchiveTeamContainer/ArchiveTeamContainer';
 import ui from 'universal/styles/ui';
+import IntegrationsContainer from '../../../integrations/containers/Integrations/IntegrationsContainer';
+import Button from '../../../../components/Button/Button';
 
 const TeamSettings = (props) => {
   const {
+    beta,
     dispatch,
     invitations,
     orgApprovals,
@@ -164,11 +167,18 @@ const TeamSettings = (props) => {
           </Panel>
         }
       </div>
+      {beta &&
+        <IntegrationsContainer
+          teamMemberId={myTeamMember.id}
+          toggle={<Button colorPalette="cool" label="Integrations" size="medium" buttonStyle="solid" />}
+        />
+      }
     </div>
   );
 };
 
 TeamSettings.propTypes = {
+  beta: PropTypes.number,
   dispatch: PropTypes.func.isRequired,
   invitations: PropTypes.array.isRequired,
   myTeamMember: PropTypes.object.isRequired,

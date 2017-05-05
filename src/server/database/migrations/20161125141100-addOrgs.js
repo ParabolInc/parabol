@@ -25,7 +25,7 @@ exports.up = async (r) => {
     r.table('Notification').indexCreate('orgId'),
     r.table('Notification').indexCreate('userIds', {multi: true}),
     // r.table('User').indexCreate('email'),
-    r.table('User').indexCreate('userOrgs', r.row('userOrgs')('id'), {multi: true}),
+    r.table('User').indexCreate('userOrgs', r.row('userOrgs')('id'), {multi: true})
   ];
   try {
     await Promise.all(indices);
@@ -221,7 +221,7 @@ exports.down = async (r) => {
     // r.table('User').indexDrop('email'),
     r.table('User').indexDrop('userOrgs'),
     r.table('Team').replace((row) => row.without('orgId')),
-    r.table('User').replace((row) => row.without('trialOrg', 'userOrgs')),
+    r.table('User').replace((row) => row.without('trialOrg', 'userOrgs'))
   ];
   try {
     await Promise.all(tables);

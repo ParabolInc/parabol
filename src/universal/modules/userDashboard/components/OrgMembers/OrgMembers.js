@@ -30,7 +30,7 @@ const OrgMembers = (props) => {
     users,
     myUserId,
     org,
-    styles,
+    styles
   } = props;
   const {id: orgId} = org;
 

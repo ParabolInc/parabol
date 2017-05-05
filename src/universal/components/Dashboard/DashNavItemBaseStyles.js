@@ -11,7 +11,7 @@ const DashNavItemBaseStyles = {
   padding: '.3125rem .5rem .3125rem 1rem',
   transition: `background-color ${ui.transitionFastest}`,
   userSelect: 'none',
-  width: '100%',
+  width: '100%'
 };
 
 export default DashNavItemBaseStyles;

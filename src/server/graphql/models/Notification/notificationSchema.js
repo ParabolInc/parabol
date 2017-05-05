@@ -13,7 +13,7 @@ import {
   PAYMENT_REJECTED,
   PROMOTE_TO_BILLING_LEADER,
   REQUEST_NEW_USER,
-  DENY_NEW_USER,
+  DENY_NEW_USER
 } from 'universal/utils/constants';
 
 

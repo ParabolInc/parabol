@@ -9,7 +9,7 @@ import {
   BILLING_LEADER,
   REMOVED_USERS,
   INACTIVITY_ADJUSTMENTS,
-  OTHER_ADJUSTMENTS,
+  OTHER_ADJUSTMENTS
 } from 'universal/utils/constants';
 import {
   ADD_USER,
@@ -219,7 +219,7 @@ export default async function generateInvoice(invoice, stripeLineItems, orgId, i
       quantity: item.quantity,
       type: OTHER_ADJUSTMENTS
     })),
-    ...quantityChangeLineItems,
+    ...quantityChangeLineItems
   ];
 
   // sanity check

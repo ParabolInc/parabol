@@ -65,7 +65,7 @@ const styleThunk = () => ({
 
     '::after': {
       ...cardBorderTop,
-      color: appTheme.palette.mid40l,
+      color: appTheme.palette.mid40l
     }
   },
 

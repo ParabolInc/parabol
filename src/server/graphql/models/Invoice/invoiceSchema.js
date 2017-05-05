@@ -64,7 +64,7 @@ const DetailedLineItem = new GraphQLObjectType({
     startAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp for the beginning of the period of no charge'
-    },
+    }
   })
 });
 

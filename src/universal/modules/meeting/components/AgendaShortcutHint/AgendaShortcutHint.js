@@ -43,7 +43,7 @@ const styleThunk = () => ({
     margin: '0 auto',
     padding: '.625rem 1rem',
     textAlign: 'center',
-    textDecoration: 'none !important',
+    textDecoration: 'none !important'
   },
 
   linkText: {

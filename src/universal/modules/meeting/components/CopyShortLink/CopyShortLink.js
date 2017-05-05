@@ -74,7 +74,7 @@ const styleThunk = () => ({
   icon: {
     ...inlineBlock,
     fontSize: ui.iconSize2x,
-    marginLeft: '.5rem',
+    marginLeft: '.5rem'
   }
 });
 

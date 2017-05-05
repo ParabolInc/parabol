@@ -60,14 +60,14 @@ export default {
     new webpack.DllReferencePlugin({
       context: root,
       manifest: vendors
-    }),
+    })
     // new UnusedFilesWebpackPlugin()
   ],
   resolve: {
     alias: {
       // necessary when using symlinks that require these guys
       react: path.join(root, 'node_modules', 'react'),
-      'react-dom': path.join(root, 'node_modules', 'react-dom'),
+      'react-dom': path.join(root, 'node_modules', 'react-dom')
     },
     extensions: ['.js'],
     modules: [path.join(root, 'src'), 'node_modules']

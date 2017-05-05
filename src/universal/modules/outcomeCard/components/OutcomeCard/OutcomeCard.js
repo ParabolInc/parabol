@@ -11,32 +11,37 @@ import EditingStatusContainer from 'universal/containers/EditingStatus/EditingSt
 import OutcomeCardFooter from 'universal/modules/outcomeCard/components/OutcomeCardFooter/OutcomeCardFooter';
 import OutcomeCardAssignMenu from 'universal/modules/outcomeCard/components/OutcomeCardAssignMenu/OutcomeCardAssignMenu';
 import OutcomeCardStatusMenu from 'universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu';
-import {Field} from 'redux-form';
+import isProjectPrivate from 'universal/utils/isProjectPrivate';
+import isProjectArchived from 'universal/utils/isProjectArchived';
 
 const OutcomeCard = (props) => {
   const {
     area,
     isAgenda,
-    form,
-    handleCardActive,
+    isEditing,
     handleCardUpdate,
-    handleSubmit,
     hasHover,
     hoverOn,
     hoverOff,
     openArea,
     openMenu,
     outcome,
+    setEditing,
+    setValue,
     styles,
     teamMembers,
-    unarchiveProject
+    textAreaValue,
+    unarchiveProject,
+    unsetEditing
   } = props;
-  const isProject = Boolean(outcome.status);
-  const {isArchived, status} = outcome;
+  const isPrivate = isProjectPrivate(outcome.tags);
+  const isArchived = isProjectArchived(outcome.tags);
+  const {status} = outcome;
   const rootStyles = css(
     styles.root,
     styles.cardBlock,
-    isProject ? styles[status] : styles.isAction,
+    styles[status],
+    isPrivate && styles.isPrivate,
     isArchived && styles.isArchived
   );
   const openContentMenu = openMenu('content');
@@ -52,7 +57,6 @@ const OutcomeCard = (props) => {
       {openArea === 'status' &&
         <OutcomeCardStatusMenu
           isAgenda={isAgenda}
-          isProject={isProject}
           onComplete={openContentMenu}
           outcome={outcome}
         />
@@ -60,27 +64,30 @@ const OutcomeCard = (props) => {
       {openArea === 'content' &&
         <div>
           <EditingStatusContainer
-            form={form}
+            isEditing={isEditing}
             outcomeId={outcome.id}
             updatedAt={outcome.updatedAt}
           />
-          <form>
-            <Field
-              cardHasHover={hasHover}
-              component={OutcomeCardTextarea}
-              doSubmitOnEnter
-              handleActive={handleCardActive}
-              handleSubmit={handleSubmit(handleCardUpdate)}
-              isProject={isProject}
-              name={outcome.id}
-              isArchived={outcome.isArchived}
-            />
-          </form>
+          <OutcomeCardTextarea
+            cardHasHover={hasHover}
+            content={outcome.content}
+            handleCardUpdate={handleCardUpdate}
+            isArchived={isArchived}
+            isEditing={isEditing}
+            isPrivate={isPrivate}
+            name={outcome.id}
+            setEditing={setEditing}
+            setValue={setValue}
+            teamMembers={teamMembers}
+            textAreaValue={textAreaValue}
+            unsetEditing={unsetEditing}
+          />
         </div>
       }
       <OutcomeCardFooter
         cardHasHover={hasHover}
         hasOpenStatusMenu={openArea === 'status'}
+        isPrivate={isPrivate}
         outcome={outcome}
         showTeam={area === USER_DASH}
         toggleAssignMenu={openMenu('assign')}
@@ -96,11 +103,11 @@ OutcomeCard.propTypes = {
   children: PropTypes.any,
   isArchived: PropTypes.bool,
   isAgenda: PropTypes.bool,
-  handleCardActive: PropTypes.func,
   handleCardUpdate: PropTypes.func,
   hasHover: PropTypes.bool,
   hoverOn: PropTypes.func,
   hoverOff: PropTypes.func,
+  isEditing: PropTypes.bool,
   openArea: PropTypes.string,
   openMenu: PropTypes.func,
   styles: PropTypes.object,
@@ -108,21 +115,19 @@ OutcomeCard.propTypes = {
     id: PropTypes.string,
     content: PropTypes.string,
     status: PropTypes.oneOf(labels.projectStatus.slugs),
-    teamMemberId: PropTypes.string,
+    teamMemberId: PropTypes.string
   }),
-  dispatch: PropTypes.func.isRequired,
-  form: PropTypes.string,
   editors: PropTypes.array,
-  field: PropTypes.string,
-  focus: PropTypes.func,
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,
-  isProject: PropTypes.bool,
   owner: PropTypes.object,
+  setEditing: PropTypes.func,
+  setValue: PropTypes.func,
   teamMembers: PropTypes.array,
+  textAreaValue: PropTypes.string,
   updatedAt: PropTypes.instanceOf(Date),
-  handleSubmit: PropTypes.func,
-  unarchiveProject: PropTypes.func.isRequired
+  unarchiveProject: PropTypes.func.isRequired,
+  unsetEditing: PropTypes.func
 };
 
 const styleThunk = () => ({
@@ -164,12 +169,8 @@ const styleThunk = () => ({
     marginBottom: '.5rem'
   },
 
-  isAction: {
-    backgroundColor: appTheme.palette.light50l,
-
-    '::after': {
-      color: labels.action.color
-    }
+  isPrivate: {
+    backgroundColor: appTheme.palette.light50l
   },
 
   isArchived: {

@@ -48,7 +48,7 @@ const styleThunk = () => ({
 
   copy: {
     fontSize: appTheme.typography.s3,
-    lineHeight: appTheme.typography.s5,
+    lineHeight: appTheme.typography.s5
   },
 
   lockup: {
@@ -60,7 +60,7 @@ const styleThunk = () => ({
   finePrint: {
     fontSize: appTheme.typography.s1,
     lineHeight: '1.5',
-    margin: '1rem auto 0',
+    margin: '1rem auto 0'
   }
 });
 

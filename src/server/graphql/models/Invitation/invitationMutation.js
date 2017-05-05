@@ -24,7 +24,7 @@ export default {
       inviteId: {
         type: new GraphQLNonNull(GraphQLID),
         description: 'The id of the invitation'
-      },
+      }
     },
     async resolve(source, {inviteId}, {authToken, socket}) {
       const r = getRethink();
@@ -59,7 +59,7 @@ export default {
       inviteId: {
         type: new GraphQLNonNull(GraphQLID),
         description: 'The id of the invitation'
-      },
+      }
     },
     async resolve(source, {inviteId}, {authToken, socket}) {
       const r = getRethink();

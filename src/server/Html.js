@@ -4,8 +4,8 @@ import {Provider} from 'react-redux';
 import {RouterContext} from 'react-router';
 import {renderToString} from 'react-dom/server';
 import makeSegmentSnippet from '@segment/snippet';
-import {auth0, stripeKey} from 'universal/utils/clientOptions';
 import getWebpackPublicPath from 'server/utils/getWebpackPublicPath';
+
 
 const webpackPublicPath = getWebpackPublicPath();
 const segKey = process.env.SEGMENT_WRITE_KEY;
@@ -15,7 +15,7 @@ const segmentSnippet = segKey && makeSegmentSnippet.min({
 });
 
 // Injects the server rendered state and app into a basic html template
-export default function Html({store, assets, StyleSheetServer, renderProps}) {
+export default function Html({store, assets, StyleSheetServer, renderProps, clientKeyLoader}) {
   const {manifest, app, vendor} = assets;
   // TURN ON WHEN WE SEND STATE TO CLIENT
   // const initialState = `window.__INITIAL_STATE__ = ${JSON.stringify(store.getState())}`;
@@ -34,14 +34,6 @@ export default function Html({store, assets, StyleSheetServer, renderProps}) {
     }
   });
   const dehydratedStyles = `window.__APHRODITE__ = ${JSON.stringify(css.renderedClassNames)}`;
-  const clientOptions = `
-    window.__ACTION__ = {
-      auth0: ${JSON.stringify(auth0)},
-      cdn: ${JSON.stringify(webpackPublicPath)},
-      sentry: ${JSON.stringify(process.env.SENTRY_DSN_PUBLIC)},
-      stripe: ${JSON.stringify(stripeKey)}
-    };
-`;
   const fontAwesomeUrl = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css';
   return (
     <html>
@@ -53,7 +45,7 @@ export default function Html({store, assets, StyleSheetServer, renderProps}) {
       </head>
       <body>
         <script dangerouslySetInnerHTML={{__html: dehydratedStyles}} />
-        <script dangerouslySetInnerHTML={{__html: clientOptions}} />
+        <script dangerouslySetInnerHTML={{__html: clientKeyLoader}} />
         <div id="root" dangerouslySetInnerHTML={{__html: html}} />
         <script dangerouslySetInnerHTML={{__html: manifest.text}} />
         <script src={`${webpackPublicPath}${vendor.js}`} />
@@ -64,6 +56,7 @@ export default function Html({store, assets, StyleSheetServer, renderProps}) {
 }
 
 Html.propTypes = {
+  clientKeyLoader: PropTypes.string.isRequired,
   StyleSheetServer: PropTypes.object,
   store: PropTypes.object.isRequired,
   assets: PropTypes.object,

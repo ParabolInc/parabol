@@ -3,7 +3,7 @@ import {
   GraphQLEnumType,
   GraphQLNonNull,
   GraphQLID,
-  GraphQLFloat,
+  GraphQLFloat
 } from 'graphql';
 import {
   ADD_USER,

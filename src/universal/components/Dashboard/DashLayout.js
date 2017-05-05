@@ -53,7 +53,7 @@ const styleThunk = () => ({
     display: 'flex !important',
     flex: 1,
     position: 'relative'
-  },
+  }
 });
 
 export default withStyles(styleThunk)(DashLayout);

@@ -4,7 +4,7 @@ export default function ({
   email,
   name,
   nickname,
-  picture = null,
+  picture = null
 } = {}) {
   const now = new Date();
 

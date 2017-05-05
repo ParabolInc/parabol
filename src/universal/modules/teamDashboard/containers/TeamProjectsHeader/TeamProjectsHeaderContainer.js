@@ -63,7 +63,7 @@ TeamProjectsHeaderContainer.propTypes = {
   teamId: PropTypes.string.isRequired,
   teamMemberFilterId: PropTypes.string,
   teamMemberFilterName: PropTypes.string,
-  teamMembers: PropTypes.array.isRequired,
+  teamMembers: PropTypes.array.isRequired
 };
 
 export default connect(mapStateToProps)(TeamProjectsHeaderContainer);

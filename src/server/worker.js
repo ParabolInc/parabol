@@ -9,27 +9,33 @@ import raven from 'raven';
 import createSSR from './createSSR';
 import emailSSR from './emailSSR';
 import {clientSecret as secretKey} from './utils/auth0Helpers';
-import {auth0} from 'universal/utils/clientOptions';
 import scConnectionHandler from './socketHandlers/scConnectionHandler';
 import httpGraphQLHandler, {intranetHttpGraphQLHandler} from './graphql/httpGraphQLHandler';
 import mwPresencePublishOut from './socketHandlers/mwPresencePublishOut';
 import mwMemoPublishOut from './socketHandlers/mwMemoPublishOut';
+import mwBroadcast from './socketHandlers/mwBroadcast';
 import mwPresenceSubscribe from './socketHandlers/mwPresenceSubscribe';
 import mwMemoSubscribe from './socketHandlers/mwMemoSubscribe';
 import stripeWebhookHandler from './billing/stripeWebhookHandler';
 import getDotenv from '../universal/utils/dotenv';
+import handleGitHub from './integrations/handleGitHub';
+import handleSlack from './integrations/handleSlack';
+import sendICS from './sendICS';
+import './polyfills';
 
 // Import .env and expand variables:
 getDotenv();
 
 const PROD = process.env.NODE_ENV === 'production';
 const INTRANET_JWT_SECRET = process.env.INTRANET_JWT_SECRET || '';
+// used for initial responses
 
 export function run(worker) { // eslint-disable-line import/prefer-default-export
   console.log('   >> Worker PID:', process.pid);
   const app = express();
   const scServer = worker.scServer;
   const httpServer = worker.httpServer;
+  const {exchange} = scServer;
   httpServer.on('request', app);
 
   // HMR
@@ -62,15 +68,15 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   }
 
   // HTTP GraphQL endpoint
-  const graphQLHandler = httpGraphQLHandler(scServer.exchange);
+  const graphQLHandler = httpGraphQLHandler(exchange);
   app.post('/graphql', jwt({
     secret: new Buffer(secretKey, 'base64'),
-    audience: auth0.clientId,
+    audience: process.env.AUTH0_CLIENT_ID,
     credentialsRequired: false
   }), graphQLHandler);
 
   // HTTP Intranet GraphQL endpoint:
-  const intranetGraphQLHandler = intranetHttpGraphQLHandler(scServer.exchange);
+  const intranetGraphQLHandler = intranetHttpGraphQLHandler(exchange);
   app.post('/intranet-graphql', jwt({
     secret: new Buffer(INTRANET_JWT_SECRET, 'base64'),
     credentialsRequired: true
@@ -80,10 +86,15 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
   if (!PROD) {
     app.get('/email', emailSSR);
   }
+  app.get('/email/createics', sendICS);
 
   // stripe webhooks
-  const stripeHandler = stripeWebhookHandler(scServer.exchange);
+  const stripeHandler = stripeWebhookHandler(exchange);
   app.post('/stripe', stripeHandler);
+
+  // integration setup callbacks
+  app.get('/auth/github', handleGitHub(exchange));
+  app.get('/auth/slack', handleSlack(exchange));
 
   // server-side rendering
   app.get('*', createSSR);
@@ -93,10 +104,11 @@ export function run(worker) { // eslint-disable-line import/prefer-default-expor
 
   // handle sockets
   const {MIDDLEWARE_PUBLISH_OUT, MIDDLEWARE_SUBSCRIBE} = scServer;
+  scServer.addMiddleware(MIDDLEWARE_PUBLISH_OUT, mwBroadcast);
   scServer.addMiddleware(MIDDLEWARE_PUBLISH_OUT, mwPresencePublishOut);
   scServer.addMiddleware(MIDDLEWARE_PUBLISH_OUT, mwMemoPublishOut);
   scServer.addMiddleware(MIDDLEWARE_SUBSCRIBE, mwPresenceSubscribe);
   scServer.addMiddleware(MIDDLEWARE_SUBSCRIBE, mwMemoSubscribe);
-  const connectionHandler = scConnectionHandler(scServer.exchange);
+  const connectionHandler = scConnectionHandler(exchange);
   scServer.on('connection', connectionHandler);
 }

@@ -3,6 +3,7 @@
 .idea/
 coverage/
 dll/
+dump.rdb
 node_modules/
 npm-debug.log
 yarn-error.log

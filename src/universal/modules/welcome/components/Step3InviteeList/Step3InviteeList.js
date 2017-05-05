@@ -115,7 +115,7 @@ const styleThunk = () => ({
     margin: '2rem 0',
     textAlign: 'right',
     textDecoration: 'none',
-    width: '100%',
+    width: '100%'
   }
 });
 

@@ -9,10 +9,11 @@ query {
     id
     content
     status
+    tags
     teamMemberId
     updatedAt
-    isArchived
     teamMember @cached(type: "TeamMember") {
+      id
       picture
       preferredName
     }

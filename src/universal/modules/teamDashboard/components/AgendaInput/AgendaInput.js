@@ -31,7 +31,7 @@ AgendaInput.propTypes = {
   handleSubmit: PropTypes.func,
   myTeamMember: PropTypes.object,
   styles: PropTypes.object,
-  teamId: PropTypes.string,
+  teamId: PropTypes.string
 };
 
 const styleThunk = () => ({

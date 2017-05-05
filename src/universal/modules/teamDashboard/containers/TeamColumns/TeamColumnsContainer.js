@@ -10,15 +10,21 @@ const teamColumnsSubQuery = `
 query {
   teamMembers (teamId: $teamId) @live {
     id
-    picture
-    preferredName,
     projects @live {
-      content
       id
+      content
+      createdBy
       status
+      tags
       teamMemberId
       updatedAt
       sortOrder
+      updatedAt
+      teamMember @cached(type: "TeamMember") {
+        id
+        picture
+        preferredName
+      }
     }
   }
 }
@@ -43,7 +49,7 @@ const mutationHandlers = {
         const {teamMembers} = currentResponse;
         for (let i = 0; i < teamMembers.length; i++) {
           const teamMember = teamMembers[i];
-          const fromProject = teamMember.projects.find((action) => action.id === id);
+          const fromProject = teamMember.projects.find((project) => project.id === id);
           if (fromProject) {
             if (sortOrder !== undefined) {
               fromProject.sortOrder = sortOrder;
@@ -73,26 +79,31 @@ const mapStateToProps = (state, props) => {
     },
     key,
     mutationHandlers,
-    variables: {teamId},
+    resolveCached: {
+      teamMember: (source) => source.teamMemberId
+    },
+    variables: {teamId}
   }).data;
   const projects = resolveTeamProjects(teamMembers);
+  const userId = state.auth.obj.sub;
   return {
     projects,
-    myTeamMemberId: `${state.auth.obj.sub}::${teamId}`,
+    myTeamMemberId: `${userId}::${teamId}`,
     queryKey: key,
-    teamMembers
+    userId
   };
 };
 
 
 const TeamColumnsContainer = (props) => {
-  const {myTeamMemberId, projects, queryKey} = props;
+  const {myTeamMemberId, projects, queryKey, userId} = props;
   return (
     <ProjectColumns
       myTeamMemberId={myTeamMemberId}
       projects={projects}
       queryKey={queryKey}
       area={TEAM_DASH}
+      userId={userId}
     />
   );
 };
@@ -101,7 +112,8 @@ TeamColumnsContainer.propTypes = {
   myTeamMemberId: PropTypes.string,
   projects: PropTypes.object,
   queryKey: PropTypes.string.isRequired,
-  teamId: PropTypes.string.isRequired
+  teamId: PropTypes.string.isRequired,
+  userId: PropTypes.string.isRequired
 };
 
 export default connect(mapStateToProps)(TeamColumnsContainer);

@@ -35,11 +35,10 @@ export default class MenuContainer extends Component {
 
   render() {
     const {originAnchor, targetAnchor, toggle} = this.props;
-    const {coords} = this.state;
-
     const smartToggle = React.cloneElement(toggle, {
       onClick: (e) => {
-        // figure out where to put the menu
+        // always set coords, otherwise we'd have to intercept all calls to closePortal to keep coords at null & window resize events
+          // figure out where to put the menu
         const rect = e.currentTarget.getBoundingClientRect();
         const {vertical: originY, horizontal: originX} = originAnchor;
         const {height, width, left, top} = rect;
@@ -59,7 +58,7 @@ export default class MenuContainer extends Component {
     return (
       <Menu
         {...this.props}
-        coords={coords}
+        coords={this.state.coords}
         toggle={smartToggle}
       />
     );

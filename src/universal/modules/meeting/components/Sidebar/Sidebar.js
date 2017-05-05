@@ -55,7 +55,7 @@ const Sidebar = (props) => {
   const checkInNavItemStyles = css(styles.navListItem, facilitatorPhase === CHECKIN && styles.navListItemMeetingMarker);
   const updatesNavItemStyles = css(styles.navListItem, facilitatorPhase === UPDATES && styles.navListItemMeetingMarker);
   const agendaNavItemStyles = css(styles.navListItem, inAgendaGroup(facilitatorPhase) && styles.navListItemMeetingMarker);
-  const agendaListCanNavigate = canNavigateTo(AGENDA_ITEMS); // ? 'meeting' : 'dashboard';
+  const agendaListCanNavigate = canNavigateTo(AGENDA_ITEMS);
   const agendaListDisabled = meetingPhase === CHECKIN;
   return (
     <div className={css(styles.sidebar)}>
@@ -145,7 +145,7 @@ Sidebar.propTypes = {
   meetingPhase: PropTypes.oneOf(phaseArray),
   styles: PropTypes.object,
   teamName: PropTypes.string,
-  teamId: PropTypes.string,
+  teamId: PropTypes.string
 };
 
 const styleThunk = () => ({
@@ -189,7 +189,7 @@ const styleThunk = () => ({
   navList: {
     listStyle: 'none',
     margin: 0,
-    padding: 0,
+    padding: 0
   },
 
   navListItem: {

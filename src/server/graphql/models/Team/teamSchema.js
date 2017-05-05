@@ -33,7 +33,7 @@ export const Greeting = new GraphQLObjectType({
   name: 'Greeting',
   fields: () => ({
     content: {type: GraphQLString, description: 'The foreign-language greeting'},
-    language: {type: GraphQLString, description: 'The sourge language for the greeting'},
+    language: {type: GraphQLString, description: 'The source language for the greeting'}
   })
 });
 
@@ -62,6 +62,10 @@ export const Team = new GraphQLObjectType({
     orgId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The organization to which the team belongs'
+    },
+    tags: {
+      type: new GraphQLList(GraphQLString),
+      description: 'Arbitrary tags that the team uses'
     },
     updatedAt: {
       type: GraphQLISO8601Type,

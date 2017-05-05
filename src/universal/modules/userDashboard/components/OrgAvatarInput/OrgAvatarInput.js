@@ -17,7 +17,7 @@ const uploadPicture = async (orgId, pictureFile) => {
     variables: {
       contentType: pictureFile.type,
       contentLength: pictureFile.size,
-      orgId,
+      orgId
     }
   });
   if (error) {

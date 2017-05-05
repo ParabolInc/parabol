@@ -72,7 +72,7 @@ UnpaidTeamModalContainer.propTypes = {
     }).isRequired,
     billingLeaders: PropTypes.array.isRequired,
     id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired
   }).isRequired,
   orgId: PropTypes.string,
   teamName: PropTypes.string

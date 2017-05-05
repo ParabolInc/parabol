@@ -72,9 +72,6 @@ query{
       id
       userId
     },
-    projects(teamMemberId: $teamMemberId) @live {
-      id
-    }
   }
   agendaCount(teamId: $teamId)
   agenda(teamId: $teamId) @live {
@@ -83,9 +80,6 @@ query{
     isComplete
     sortOrder
     teamMemberId
-    actionsByAgenda @live {
-      id
-    }
   }
 }`;
 

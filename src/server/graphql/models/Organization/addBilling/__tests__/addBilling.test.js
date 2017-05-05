@@ -93,7 +93,7 @@ describe('addBilling', () => {
 
     // VERIFY
     const db = await fetchAndSerialize({
-      organization: r.table('Organization').get(orgId),
+      organization: r.table('Organization').get(orgId)
     }, dynamicSerializer);
     expect(db).toMatchSnapshot();
     expect(stripe.__snapshot(org.stripeId, dynamicSerializer)).toMatchSnapshot();

@@ -39,7 +39,7 @@ const UserProjectsHeader = (props) => {
         {/* TODO: needs minimal, inline dropdown */}
         <DashSectionControl>
           <div className={css(styles.filterRow)}>
-            <b style={inlineBlock}>Show Actions & Projects for</b><span style={inlineBlock}>:</span>
+            <b style={inlineBlock}>Show Projects for</b><span style={inlineBlock}>:</span>
             {' '}
             <Menu
               label="Filter by:"

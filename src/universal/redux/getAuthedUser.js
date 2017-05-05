@@ -36,7 +36,7 @@ const mutationHandlers = {
       return currentResponse;
     }
     return undefined;
-  },
+  }
 };
 
 export const getAuthedOptions = (userId) => ({

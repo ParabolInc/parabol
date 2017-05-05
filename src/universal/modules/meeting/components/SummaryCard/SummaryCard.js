@@ -7,17 +7,20 @@ import labels from 'universal/styles/theme/labels';
 import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
 import {cardBorderTop} from 'universal/styles/helpers';
 import {trimString} from 'universal/utils';
+import isProjectPrivate from 'universal/utils/isProjectPrivate';
 
 const SummaryCard = (props) => {
   const {
     content,
     status,
-    styles,
+    tags,
+    styles
   } = props;
-
+  const isPrivate = isProjectPrivate(tags);
   const rootStyles = css(
     styles.root,
-    status ? styles[status] : styles.isAction
+    styles[status],
+    isPrivate && styles.isPrivate
   );
 
   const trimmedContent = trimString(content, 40);
@@ -34,7 +37,8 @@ const SummaryCard = (props) => {
 SummaryCard.propTypes = {
   content: PropTypes.string,
   status: PropTypes.oneOf(labels.projectStatus.slugs),
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  tags: PropTypes.array
 };
 
 const styleThunk = () => ({
@@ -81,12 +85,8 @@ const styleThunk = () => ({
     }
   },
 
-  isAction: {
-    backgroundColor: appTheme.palette.light50l,
-
-    '::after': {
-      color: labels.action.color
-    }
+  isPrivate: {
+    backgroundColor: appTheme.palette.light50l
   }
 });
 

@@ -3,155 +3,148 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
-import Textarea from 'react-textarea-autosize';
-import ReactMarkdown from 'react-markdown';
-import markdownCustomComponents from 'universal/utils/markdownCustomComponents';
-import {PROJECT_MAX_CHARS} from 'universal/utils/constants';
+import {PROJECT_MAX_CHARS, tags} from 'universal/utils/constants';
+import {MentionWrapper, MentionMenu} from 'react-githubish-mentions';
+// import MentionTeamMember from '../../../../components/MentionTeamMember/MentionTeamMember';
+import MentionTag from '../../../../components/MentionTag/MentionTag';
+import Markdown from '../../../../components/Markdown/Markdown';
+import emojiArray from 'universal/utils/emojiArray';
+import MentionEmoji from '../../../../components/MentionEmoji/MentionEmoji';
+import stringScore from 'string-score';
 
 class OutcomeCardTextArea extends Component {
   static propTypes = {
     cardHasHover: PropTypes.bool,
-    doSubmitOnEnter: PropTypes.bool,
-    editingStatus: PropTypes.any,
-    handleActive: PropTypes.func,
-    handleSubmit: PropTypes.func,
-    input: PropTypes.object,
-    isActionListItem: PropTypes.bool,
+    content: PropTypes.string,
+    handleCardUpdate: PropTypes.func,
     isArchived: PropTypes.bool,
-    isProject: PropTypes.bool,
-    meta: PropTypes.shape({
-      active: PropTypes.bool
-    }),
+    isEditing: PropTypes.bool,
+    isPrivate: PropTypes.bool,
+    name: PropTypes.string,
+    setEditing: PropTypes.func,
+    setValue: PropTypes.func,
     styles: PropTypes.object,
-    teamMemberId: PropTypes.string,
     teamMembers: PropTypes.array,
-    timestamp: PropTypes.string,
+    textAreaValue: PropTypes.string,
+    unsetEditing: PropTypes.func
   };
 
-  constructor(props) {
-    super(props);
-    const {input: {value}} = this.props;
-    this.state = {
-      isEditing: !value
-    };
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const {meta: {active}} = this.props;
-    const {handleActive, meta: {active: nextActive}} = nextProps;
-    if (active !== nextActive && handleActive) {
-      handleActive(nextActive);
+  submitOnEnter = (e) => {
+    // hitting enter (not shift+enter or any wacky combo) submits the textarea
+    if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      this.textAreaRef.blur();
+      const {handleCardUpdate, unsetEditing} = this.props;
+      handleCardUpdate();
+      unsetEditing();
+      e.preventDefault();
     }
-  }
-
-  setEditing = () => {
-    this.setState({isEditing: true});
   };
 
-  unsetEditing = () => {
-    this.setState({isEditing: false});
-  }
+  handleChange = (e, newVal) => {
+    const {setValue} = this.props;
+    const value = e.target.value || newVal;
+    setValue(value);
+  };
 
   renderEditing() {
     const {
-      doSubmitOnEnter,
-      handleSubmit,
-      input,
-      isProject,
-      isActionListItem,
+      handleCardUpdate,
       isArchived,
-      styles
+      isPrivate,
+      styles,
+      textAreaValue
     } = this.props;
     const contentStyles = css(
-      !isActionListItem && styles.content,
-      isActionListItem && styles.actionListContent,
+      styles.content,
+      isPrivate && styles.contentPrivate,
       isArchived && styles.isArchived,
-      !isProject && styles.descriptionAction
     );
 
-    const handleBlur = () => {
-      if (input.value) {
-        // if there's no value, then the document event listener will handle this
-        input.onBlur();
-        this.unsetEditing();
-        handleSubmit();
-      }
-    };
-    let textAreaRef;
     const setRef = (c) => {
-      textAreaRef = c;
+      this.textAreaRef = c;
     };
 
-    const submitOnEnter = (e) => {
-       // hitting enter (not shift+enter or any wacky combo) submits the textarea
-      if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
-        textAreaRef.blur();
+    // const atQuery = async (query) => {
+    //   const {teamMembers} = this.props;
+    //   const matchingMembers = teamMembers.filter((member) => member.preferredName.startsWith(query));
+    //   return matchingMembers.map((member) => ({...member, value: member.preferredName}));
+    // };
+
+    const tagQuery = async (query) => {
+      return tags.filter((tag) => tag.value.startsWith(query));
+    };
+
+    const emojiQuery = async (query) => {
+      if (!query) {
+        return emojiArray.slice(2, 8);
       }
+      return emojiArray.map((obj) => ({
+        ...obj,
+        score: stringScore(obj.value, query)
+      }))
+        .sort((a, b) => a.score < b.score ? 1 : -1)
+        .slice(0, 6)
+        // ":place of worship:" shouldn't pop up when i type ":poop"
+        .filter((obj, idx, arr) => obj.score > 0 && arr[0].score - obj.score < 0.3);
     };
 
+    const emojiReplace = (userObj) => `${userObj.emoji} `;
+
+    const mentionMenuStyle = css(styles.mentionMenu);
     return (
-      <Textarea
-        {...input}
-        ref={setRef}
-        defaultValue={input.value}
-        value={undefined}
+      <MentionWrapper
+        getRef={setRef}
         className={contentStyles}
         disabled={isArchived}
         maxLength={PROJECT_MAX_CHARS}
         placeholder="Type your outcome here"
-        onBlur={handleBlur}
+        onBlur={handleCardUpdate}
+        onChange={this.handleChange}
         onDrop={null}
-        onKeyDown={doSubmitOnEnter ? submitOnEnter : null}
+        onKeyDown={this.submitOnEnter}
         autoFocus
-      />
+        value={textAreaValue || ''}
+        rows={3}
+      >
+        {/* <MentionMenu className={mentionMenuStyle} trigger="@" item={MentionTeamMember} resolve={atQuery} />*/}
+        <MentionMenu className={mentionMenuStyle} trigger="#" item={MentionTag} resolve={tagQuery} />
+        <MentionMenu className={mentionMenuStyle} trigger=":" item={MentionEmoji} resolve={emojiQuery} replace={emojiReplace} />
+      </MentionWrapper>
+
     );
   }
 
   renderMarkdown() {
     const {
-      styles,
       cardHasHover,
-      isProject,
-      isActionListItem,
       isArchived,
-      input: {value}
+      isPrivate,
+      setEditing,
+      styles,
+      textAreaValue
     } = this.props;
     const markdownStyles = css(
       styles.markdown,
-      !isActionListItem && styles.content,
-      isActionListItem && styles.actionListContent,
-      isProject && !isArchived && cardHasHover && styles.contentWhenCardHovered,
-      !isProject && cardHasHover && styles.actionContentWhenCardHovered,
-      !isProject && styles.descriptionAction
+      styles.content,
+      isPrivate && styles.contentPrivate,
+      !isArchived && cardHasHover && (isPrivate ? styles.privateContentOnHover : styles.contentOnHover),
+      isArchived && styles.isArchived
     );
     return (
-      <div
-        onClick={!isArchived && this.setEditing}
-        className={markdownStyles}
-      >
-        <ReactMarkdown
-          renderers={markdownCustomComponents}
-          source={value}
-          escapeHtml
-          softBreak="br"
-        />
+      <div onClick={!isArchived && setEditing} className={markdownStyles}>
+        <Markdown source={textAreaValue} />
       </div>
     );
   }
 
   render() {
-    const {input: {value}} = this.props;
-    return (
-      <div>
-        {(value && !this.state.isEditing) ? this.renderMarkdown() :
-          this.renderEditing()}
-      </div>
-    );
+    const {isEditing} = this.props;
+    return isEditing ? this.renderEditing() : this.renderMarkdown();
   }
 }
 
-const basePadding = '.375rem';
-const labelHeight = '1.5rem';
+// const basePadding = '.375rem';
+// const labelHeight = '1.5rem';
 
 const baseStyles = {
   backgroundColor: 'transparent',
@@ -166,22 +159,22 @@ const baseStyles = {
   width: '100%'
 };
 
-const descriptionBase = {
+const contentBase = {
   ...baseStyles,
   borderBottom: '1px solid transparent',
   borderTop: '1px solid transparent',
   color: appTheme.palette.dark10d
 };
 
-const descriptionFA = {
+const contentFA = {
   backgroundColor: appTheme.palette.mid10l,
   borderBottomColor: ui.cardBorderColor,
   borderTopColor: ui.cardBorderColor,
   color: appTheme.palette.mid10d
 };
 
-const descriptionActionFA = {
-  backgroundColor: ui.actionCardBgActive,
+const contentPrivateFA = {
+  backgroundColor: ui.privateCardBgActive,
   borderBottomColor: ui.cardBorderColor,
   borderTopColor: ui.cardBorderColor,
   color: appTheme.palette.mid10d
@@ -190,27 +183,15 @@ const descriptionActionFA = {
 const descriptionBreakpoint = '@media (min-width: 90rem)';
 
 const styleThunk = () => ({
-  actionListContent: {
-    ...baseStyles,
-    padding: `${basePadding} ${basePadding} ${labelHeight} 1.75rem`,
-
-    ':hover': {
-      backgroundColor: ui.actionCardBgActive
-    },
-    ':focus': {
-      backgroundColor: ui.actionCardBgActive
-    }
-  },
   content: {
-    ...descriptionBase,
-    minHeight: '3.3125rem',
+    ...contentBase,
     padding: `0 ${ui.cardPaddingBase} .1875rem`,
 
     ':focus': {
-      ...descriptionFA
+      ...contentFA
     },
     ':active': {
-      ...descriptionFA
+      ...contentFA
     },
 
     [descriptionBreakpoint]: {
@@ -232,26 +213,35 @@ const styleThunk = () => ({
     }
   },
 
-  contentWhenCardHovered: {
-    ...descriptionFA
+  contentOnHover: {
+    ...contentFA
   },
 
-  descriptionAction: {
+  contentPrivate: {
     // NOTE: modifies styles.content
     ':focus': {
-      ...descriptionActionFA
+      ...contentPrivateFA
     },
     ':active': {
-      ...descriptionActionFA
+      ...contentPrivateFA
     }
   },
 
-  actionContentWhenCardHovered: {
-    ...descriptionActionFA
+  privateContentOnHover: {
+    ...contentPrivateFA
   },
 
   markdown: {
     wordBreak: 'break-word'
+  },
+
+  mentionMenu: {
+    background: '#fff',
+    border: `1px solid ${ui.cardBorderCoor}`,
+    borderRadius: ui.borderRadiusSmall,
+    boxShadow: ui.menuBoxShadow,
+    color: ui.palette.dark,
+    padding: ui.borderRadiusSmall
   }
 });
 

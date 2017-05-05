@@ -76,7 +76,7 @@ const styleThunk = () => ({
     position: 'absolute',
     right: '-4px',
     textAlign: 'center',
-    width: '16px',
+    width: '16px'
   },
   badgeAndBell: {
     position: 'relative'

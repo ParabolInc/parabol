@@ -7,7 +7,7 @@ export default {
     flex: 1,
     fontSize: appTheme.typography.sBase,
     lineHeight: 1.5,
-    marginLeft: ui.rowGutter,
+    marginLeft: ui.rowGutter
   },
   messageVar: {
     color: appTheme.palette.cool,

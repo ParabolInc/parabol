@@ -61,7 +61,7 @@ MenuItem.propTypes = {
   closePortal: PropTypes.func,
   hr: PropTypes.oneOf([
     'before',
-    'after',
+    'after'
   ]),
   icon: PropTypes.string,
   isActive: PropTypes.bool,

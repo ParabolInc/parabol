@@ -3,11 +3,10 @@ import Schema from 'server/graphql/rootSchema';
 import subscriptions from 'universal/subscriptions/subscriptions';
 import parseChannel from 'universal/utils/parseChannel';
 import {
-  ACTIONS,
-  ACTIONS_BY_TEAMMEMBER,
-  ACTIONS_BY_AGENDA,
   AGENDA,
+  AGENDA_PROJECTS,
   ARCHIVED_PROJECTS,
+  INTEGRATIONS,
   INVITATIONS,
   NOTIFICATIONS,
   ORG_APPROVALS,
@@ -29,11 +28,10 @@ import {
  * By creating this on the server it keeps payloads really small
  * */
 const dechannelfy = {
-  [ACTIONS]: (variableString) => ({userId: variableString}),
-  [ACTIONS_BY_TEAMMEMBER]: (variableString) => ({teamMemberId: variableString}),
-  [ACTIONS_BY_AGENDA]: (variableString) => ({agendaId: variableString}),
   [AGENDA]: (variableString) => ({teamId: variableString}),
+  [AGENDA_PROJECTS]: (agendaId) => ({agendaId}),
   [ARCHIVED_PROJECTS]: (variableString) => ({teamId: variableString}),
+  [INTEGRATIONS]: (teamMemberId) => ({teamMemberId}),
   [INVITATIONS]: (variableString) => ({teamId: variableString}),
   [NOTIFICATIONS]: (variableString) => ({userId: variableString}),
   [ORG_APPROVALS]: (teamId) => ({teamId}),
@@ -45,7 +43,7 @@ const dechannelfy = {
   [TEAM]: (variableString) => ({teamId: variableString}),
   [TEAM_MEMBERS]: (variableString) => ({teamId: variableString}),
   [UPCOMING_INVOICE]: (orgId) => ({orgId}),
-  [USERS_BY_ORG]: (orgId) => ({orgId}),
+  [USERS_BY_ORG]: (orgId) => ({orgId})
   // [USER_MEMO]: (userId) => ({userId})
   // [USERS_BY_IDS]: (variableString) => ({userIds: variableString})
 };

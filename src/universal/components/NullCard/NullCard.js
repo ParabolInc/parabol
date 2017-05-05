@@ -5,14 +5,15 @@ import appTheme from 'universal/styles/theme/appTheme';
 import {Ellipsis, Type} from 'universal/components';
 import CreateCardRootStyles from '../CreateCard/CreateCardRootStyles';
 import {cardBorderTop} from 'universal/styles/helpers';
+import makeUsername from 'universal/utils/makeUsername';
 
 const NullCard = (props) => {
-  const {styles, type, preferredName} = props;
-  const label = type === 'Action' ? 'an Action' : 'a Project';
+  const {styles, preferredName} = props;
+  const username = makeUsername(preferredName);
   return (
     <div className={css(styles.root)}>
       <Type align="center" bold scale="s3" colorPalette="mid">
-        {preferredName}<br />is adding {label}<Ellipsis />
+        @{username}<br />is adding a Project<Ellipsis />
       </Type>
     </div>
   );
@@ -20,8 +21,7 @@ const NullCard = (props) => {
 
 NullCard.propTypes = {
   styles: PropTypes.object,
-  type: PropTypes.oneOf(['Action', 'Project']),
-  preferredName: PropTypes.string,
+  preferredName: PropTypes.string
 };
 
 const styleThunk = () => ({

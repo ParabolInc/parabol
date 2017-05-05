@@ -1,14 +1,13 @@
 import React, {Component, PropTypes} from 'react';
+import {connect} from 'react-redux';
 import {findDOMNode} from 'react-dom';
 import {cashay} from 'cashay';
-import {reduxForm, initialize} from 'redux-form';
 import labels from 'universal/styles/theme/labels';
-import getOutcomeNames from 'universal/utils/getOutcomeNames';
-import {connect} from 'react-redux';
 import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/OutcomeCard';
 import targetIsDescendant from 'universal/utils/targetIsDescendant';
+import removeTagFromString from 'universal/utils/removeTagFromString';
 
-const outcomeCardAssignMenuQuery = `
+const teamMembersQuery = `
 query {
   teamMembers(teamId: $teamId) @live {
     id
@@ -19,50 +18,46 @@ query {
 `;
 
 const mapStateToProps = (state, props) => {
-  const {form, outcome} = props;
-  const formState = state.form[form];
-  const active = formState && formState.active && form.endsWith(formState.active);
-  const {id: outcomeId} = outcome;
-  const [teamId] = outcomeId.split('::');
-  const {teamMembers} = cashay.query(outcomeCardAssignMenuQuery, {
-    op: 'outcomeCardAssignMenuContainer',
+  const [teamId] = props.outcome.id.split('::');
+  const {teamMembers} = cashay.query(teamMembersQuery, {
+    op: 'outcomeCardContainer',
     key: teamId,
     variables: {teamId}
   }).data;
   return {
-    active,
     teamMembers
   };
 };
 
+@connect(mapStateToProps)
 class OutcomeCardContainer extends Component {
   constructor(props) {
     super(props);
+    const {outcome: {content}} = props;
     this.state = {
       hasHover: false,
-      openArea: 'content'
+      isEditing: !content,
+      openArea: 'content',
+      textAreaValue: content
     };
   }
 
   componentWillMount() {
-    const {outcome: {content}} = this.props;
-    if (content) {
-      this.initializeValues(content);
-    } else {
+    // const {outcome: {content}} = this.props;
+    const {isEditing} = this.state;
+    if (isEditing) {
       // if there is no content, delete it if the user clicks away from the card
       document.addEventListener('click', this.handleDocumentClick);
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    const nextContent = nextProps.outcome.content;
+    const {content: nextContent} = nextProps.outcome;
     const {content} = this.props.outcome;
-    if (nextContent !== content) {
-      // if content changes, don't try to remove it anymore
-      document.removeEventListener('click', this.handleDocumentClick);
-      this.initializeValues(nextContent);
-    } else if (!content) {
-      document.addEventListener('click', this.handleDocumentClick);
+    if (content !== nextContent) {
+      this.setState({
+        textAreaValue: nextContent
+      });
     }
   }
 
@@ -70,57 +65,28 @@ class OutcomeCardContainer extends Component {
     document.removeEventListener('click', this.handleDocumentClick);
   }
 
-  initializeValues(content) {
-    const {dispatch, form, outcome: {id}} = this.props;
-    dispatch(initialize(form, {[id]: content}));
-  }
+  setValue = (textAreaValue) => {
+    this.setState({
+      textAreaValue
+    });
+  };
 
-  handleCardActive = (isActive) => {
-    const outcomeId = this.props.outcome.id;
-    if (isActive === undefined) {
-      return;
-    }
-    const [teamId] = outcomeId.split('::');
-    const editing = isActive ? `Task::${outcomeId}` : null;
-    const options = {
+  setEditing = () => {
+    this.setState({isEditing: true});
+    document.addEventListener('click', this.handleDocumentClick);
+    const {outcome: {id: projectId}} = this.props;
+    const [teamId] = projectId.split('::');
+    cashay.mutate('edit', {
       variables: {
         teamId,
-        editing
+        editing: `Task::${projectId}`
       }
-    };
-    cashay.mutate('edit', options);
+    });
   };
 
-  handleCardUpdate = (submittedData) => {
-    const {outcome} = this.props;
-    const submittedContent = submittedData[outcome.id];
-    if (outcome.content === submittedContent) return;
-    if (!submittedContent) {
-      const {argName, mutationName} = getOutcomeNames(outcome, 'delete');
-      // delete blank cards
-      cashay.mutate(mutationName, {variables: {[argName]: outcome.id}});
-    } else {
-      // TODO debounce for useless things like ctrl, shift, etc
-      const {argName, mutationName} = getOutcomeNames(outcome, 'update');
-      const options = {
-        ops: {},
-        variables: {
-          [argName]: {
-            id: outcome.id,
-            content: submittedContent
-          }
-        }
-      };
-      cashay.mutate(mutationName, options);
-    }
-  };
+  hoverOn = () => this.setState({hasHover: true});
 
-  handleDocumentClick = (e) => {
-    // try to delete empty card unless they click inside the card
-    if (!targetIsDescendant(e.target, findDOMNode(this))) {
-      this.props.handleSubmit(this.handleCardUpdate)();
-    }
-  };
+  hoverOff = () => this.setState({hasHover: false});
 
   openMenu = (nextArea) => () => {
     const {openArea} = this.state;
@@ -131,36 +97,81 @@ class OutcomeCardContainer extends Component {
     }
   };
 
-  hoverOn = () => this.setState({hasHover: true});
+  handleCardUpdate = () => {
+    const {textAreaValue} = this.state;
+    const {outcome: {id: projectId, content}} = this.props;
+    if (!textAreaValue) {
+      cashay.mutate('deleteProject', {variables: {projectId}});
+    } else if (textAreaValue !== content) {
+      cashay.mutate('updateProject', {
+        ops: {},
+        variables: {
+          updatedProject: {
+            id: projectId,
+            content: textAreaValue
+          }
+        }
+      });
+    }
+  };
 
-  hoverOff = () => this.setState({hasHover: false});
+  handleDocumentClick = (e) => {
+    // try to delete empty card unless they click inside the card
+    if (!targetIsDescendant(e.target, findDOMNode(this))) {
+      this.handleCardUpdate();
+      this.unsetEditing();
+    }
+  };
 
   unarchiveProject = () => {
+    const {outcome: {id, content}} = this.props;
+
     const options = {
       ops: {},
       variables: {
         updatedProject: {
-          id: this.props.outcome.id,
-          isArchived: false
+          id,
+          content: removeTagFromString(content, '#archived')
         }
       }
     };
     cashay.mutate('updateProject', options);
   };
 
+  unsetEditing = () => {
+    const {outcome: {id: projectId}} = this.props;
+    this.setState({isEditing: false});
+    document.removeEventListener('click', this.handleDocumentClick);
+    const [teamId] = projectId.split('::');
+    cashay.mutate('edit', {
+      variables: {
+        teamId,
+        editing: null
+      }
+    });
+  };
+
   render() {
-    const {hasHover, openArea} = this.state;
+    const {hasHover, isEditing, openArea, textAreaValue} = this.state;
+    const {area, isAgenda, outcome, teamMembers} = this.props;
     return (
       <OutcomeCard
-        {...this.props}
-        handleCardActive={this.handleCardActive}
+        area={area}
         handleCardUpdate={this.handleCardUpdate}
         hasHover={hasHover}
         hoverOn={this.hoverOn}
         hoverOff={this.hoverOff}
+        isAgenda={isAgenda}
+        isEditing={isEditing}
         openArea={openArea}
         openMenu={this.openMenu}
+        outcome={outcome}
         unarchiveProject={this.unarchiveProject}
+        setEditing={this.setEditing}
+        setValue={this.setValue}
+        teamMembers={teamMembers}
+        textAreaValue={textAreaValue}
+        unsetEditing={this.unsetEditing}
       />
 
     );
@@ -168,28 +179,25 @@ class OutcomeCardContainer extends Component {
 }
 
 OutcomeCardContainer.propTypes = {
+  area: PropTypes.string,
   outcome: PropTypes.shape({
     id: PropTypes.string,
     content: PropTypes.string,
     status: PropTypes.oneOf(labels.projectStatus.slugs),
-    teamMemberId: PropTypes.string,
+    teamMemberId: PropTypes.string
   }),
-  dispatch: PropTypes.func.isRequired,
-  form: PropTypes.string,
   editors: PropTypes.array,
   field: PropTypes.string,
   focus: PropTypes.func,
+  form: PropTypes.string,
+  handleSubmit: PropTypes.func,
   hasOpenAssignMenu: PropTypes.bool,
   hasOpenStatusMenu: PropTypes.bool,
-  isProject: PropTypes.bool,
+  isAgenda: PropTypes.bool,
   owner: PropTypes.object,
   teamMembers: PropTypes.array,
-  updatedAt: PropTypes.instanceOf(Date),
-  handleSubmit: PropTypes.func,
+  tags: PropTypes.array,
+  updatedAt: PropTypes.instanceOf(Date)
 };
 
-// Using decorators causes a fun bug where reduxForm can't find dispatch, so we do it the boring way
-export default
-connect(mapStateToProps)(
-  reduxForm({destroyOnUnmount: false})(OutcomeCardContainer)
-);
+export default OutcomeCardContainer;

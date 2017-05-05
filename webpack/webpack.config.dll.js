@@ -15,6 +15,7 @@ module.exports = {
       'graphiql',
       'graphql',
       'html-entities', // server
+      'markdown-it',
       'react',
       'react-async-hoc',
       'react-copy-to-clipboard',
@@ -22,14 +23,13 @@ module.exports = {
       'react-dnd-html5-backend',
       'react-dom',
       'react-fontawesome',
+      'react-githubish-mentions',
       'react-helmet',
       'react-hotkey-hoc',
-      'react-markdown',
       'react-notification-system',
       'react-portal-hoc',
       'react-redux',
       'react-router',
-      'react-textarea-autosize',
       'redbox-react',
       'redux',
       'redux-form',
@@ -49,10 +49,10 @@ module.exports = {
   output: {
     filename: '[name].dll.js',
     path: path.join(root, 'build'),
-    library: '[name]',
+    library: '[name]'
   },
   plugins: [
-    new webpack.DllPlugin({ name: '[name]', path: path.join(root, 'dll', '[name].json') }), // eslint-disable-line no-new
+    new webpack.DllPlugin({ name: '[name]', path: path.join(root, 'dll', '[name].json') }) // eslint-disable-line no-new
   ],
   module: {
     loaders: [
@@ -69,4 +69,3 @@ module.exports = {
     ]
   }
 };
-

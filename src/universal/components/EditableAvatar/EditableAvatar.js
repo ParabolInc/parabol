@@ -34,7 +34,7 @@ EditableAvatar.propTypes = {
   type: PropTypes.oneOf([
     'user',
     'team',
-    'organization',
+    'organization'
   ]),
   unstyled: PropTypes.bool
 };
@@ -53,7 +53,7 @@ const styleThunk = (theme, props) => ({
     backgroundColor: '#fff',
     border: `1px solid ${ui.panelBorderColor}`,
     padding: '.5rem',
-    borderRadius: props.hasPanel ? borderRadiusPanel : borderRadius,
+    borderRadius: props.hasPanel ? borderRadiusPanel : borderRadius
   },
 
   avatarEditOverlay: {
@@ -77,8 +77,8 @@ const styleThunk = (theme, props) => ({
 
     ':hover': {
       opacity: '.75',
-      transition: 'opacity .2s ease-in',
-    },
+      transition: 'opacity .2s ease-in'
+    }
   },
 
   avatarImgBlock: {

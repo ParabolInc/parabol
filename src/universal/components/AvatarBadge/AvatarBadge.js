@@ -17,7 +17,7 @@ const checkInStatus = {
   false: {
     icon: 'minus-circle',
     statusName: ' & absent'
-  },
+  }
 };
 
 const AvatarBadge = (props) => {
@@ -44,7 +44,7 @@ const AvatarBadge = (props) => {
 AvatarBadge.propTypes = {
   isCheckedIn: PropTypes.bool,
   isConnected: PropTypes.bool,
-  styles: PropTypes.object,
+  styles: PropTypes.object
 };
 
 const styleThunk = () => ({

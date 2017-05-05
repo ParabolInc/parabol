@@ -1,5 +1,4 @@
 export default {
-  action: ['id', 'agendaId', 'createdBy', 'teamMemberId', 'userId'],
   agendaItem: ['id', 'createdBy', 'teamId', 'teamMemberId'],
   meeting: [
     'id',

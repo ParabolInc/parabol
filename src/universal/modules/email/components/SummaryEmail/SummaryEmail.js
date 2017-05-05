@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
+import {createGoogleCalendarInviteURL, makeIcsUrl} from 'universal/utils/makeCalendarInvites';
 
 import Body from '../../components/Body/Body';
 import ContactUs from '../../components/ContactUs/ContactUs';
@@ -9,7 +10,7 @@ import Footer from '../../components/Footer/Footer';
 import Layout from '../../components/Layout/Layout';
 import QuickStats from '../../components/QuickStats/QuickStats';
 import SummaryHeader from '../../components/SummaryHeader/SummaryHeader';
-import UserOutcomes from '../../components/UserOutcomes/UserOutcomes';
+import UserProjects from '../UserProjects/UserProjects';
 import UserNoNewOutcomes from '../../components/UserNoNewOutcomes/UserNoNewOutcomes';
 
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
@@ -28,7 +29,8 @@ const message = {
   fontSize: '18px',
   lineHeight: '28px',
   padding: '0 16px',
-  textAlign: 'center'
+  textAlign: 'center',
+  whiteSpace: 'pre-line'
 };
 
 const linkStyles = {
@@ -39,7 +41,7 @@ const linkStyles = {
 
 const greetingStyles = {
   fontSize: '27px',
-  lineHeight: '40px',
+  lineHeight: '40px'
 };
 
 const bannerStyle = {
@@ -104,28 +106,36 @@ const SummaryEmail = (props) => {
     teamDashUrl
   } = props;
   const {agendaItemsCompleted, invitees, createdAt, meetingNumber, teamName} = meeting;
-  const membersSansOutcomes = [];
-  const membersWithOutcomes = [];
-  let presentMemberCount = 0;
-  let actionCount = 0;
-  let projectCount = 0;
-
-  for (let i = 0; i < invitees.length; i++) {
-    const invitee = invitees[i];
-    if (invitee.present) {
-      presentMemberCount++;
-    }
-    const projLen = invitee.projects.length;
-    const actionLen = invitee.actions.length;
-    actionCount += actionLen;
-    projectCount += projLen;
-    const arr = (!projLen && !actionLen) ? membersSansOutcomes : membersWithOutcomes;
-    arr.push(invitee);
-  }
+  const membersSansOutcomes = invitees.filter((invitee) => invitee.projects.length === 0);
+  const membersWithOutcomes = invitees.filter((invitee) => invitee.projects.length > 0);
+  const presentMemberCount = invitees.filter((invitee) => invitee.present).length;
+  const projectCount = invitees.reduce((sum, invitee) => sum + invitee.projects.length, 0);
 
   const bannerMessage = makeBannerMessage(referrer, referrerUrl);
-  const memberCount = membersSansOutcomes.length + membersWithOutcomes.length;
   const hasUsersWithoutOutcomes = membersSansOutcomes.length !== 0;
+  const iconSize = 28;
+  const iconLinkBlock = {
+    backgroundColor: appTheme.palette.cool10l,
+    display: 'inline-block',
+    margin: '14px',
+    minWidth: '211px',
+    padding: '9px 8px'
+  };
+  const iconLink = {
+    color: appTheme.palette.cool
+  };
+  const iconLinkIcon = {
+    border: 0,
+    display: 'inline-block',
+    verticalAlign: 'middle'
+  };
+  const iconLinkLabel = {
+    display: 'inline-block',
+    height: `${iconSize}px`,
+    lineHeight: `${iconSize}px`,
+    margin: '0 0 0 6px',
+    verticalAlign: 'middle'
+  };
   return (
     <Layout>
       <table style={ui.emailTableBase} width="100%">
@@ -134,10 +144,10 @@ const SummaryEmail = (props) => {
             <td style={bannerStyle}>
               <EmptySpace height={8} />
               {bannerMessage &&
-                <div style={bannerMessageStyles}>
-                  {bannerMessage}
-                </div>
-              }
+              <div style={bannerMessageStyles}>
+                {bannerMessage}
+              </div>
+            }
               <EmptySpace height={8} />
             </td>
           </tr>
@@ -155,14 +165,50 @@ const SummaryEmail = (props) => {
                   <div>
                     <div style={message}>
                       <b style={greetingStyles}>{makeSuccessExpression()}!</b><br />
-                      {'Way to go on your first Action Meeting!'}<br />
-                      {'You are unlocking new superpowers.'}<br />
+                      {`
+                      Way to go on your first Action Meeting!
+                      You are unlocking new superpowers.
+                      High-performing teams have regular habits!
+                      Create a 30-minute meeting at the start of each week.
+                      `}
                       <br />
-                      <b style={greetingStyles}>{'Make it a habit:'}</b><br />
-                      {'If you haven’t already, schedule a 30 minute meeting,'}<br />
-                      {'preferably recurring on Mondays or Tuesdays.'}<br />
-                      {'Include the following link to the meeting lobby'}<br />
-                      {'in your recurring calendar event:'}
+                      <div>
+                        <span>{'Tap here to schedule:'}</span>
+                        <br />
+                        <div style={iconLinkBlock}>
+                          <a
+                            href={createGoogleCalendarInviteURL(createdAt, meetingUrl, teamName)}
+                            rel="noopener noreferrer"
+                            style={iconLink}
+                            target="_blank"
+                          >
+                            <img
+                              style={iconLinkIcon}
+                              src="/static/images/icons/google@5x.png"
+                              height={iconSize}
+                              width={iconSize}
+                            />
+                            <span style={iconLinkLabel}>Google Calendar</span>
+                          </a>
+                        </div>
+                        <div style={iconLinkBlock}>
+                          <a
+                            href={makeIcsUrl(createdAt, meetingUrl, teamName)}
+                            rel="noopener noreferrer"
+                            style={iconLink}
+                            target="_blank"
+                          >
+                            <img
+                              style={iconLinkIcon}
+                              src="/static/images/icons/calendar-plus-o@5x.png"
+                              height={iconSize}
+                              width={iconSize}
+                            />
+                            <span style={iconLinkLabel}>Outlook, etc.</span>
+                          </a>
+                        </div>
+                      </div>
+                      {'Or, make your own and include this link as the location:'}
                       <EmptySpace height={8} />
                       <table align="center" style={meetingLinkTable} width="80%">
                         <tbody>
@@ -192,7 +238,7 @@ const SummaryEmail = (props) => {
                       </div>
                     }
                   </div>
-                }
+            }
                 <EmptySpace height={8} />
               </td>
             </tr>
@@ -205,8 +251,7 @@ const SummaryEmail = (props) => {
                 <QuickStats
                   agendaItems={agendaItemsCompleted}
                   newProjects={projectCount}
-                  newActions={actionCount}
-                  teamMembers={memberCount}
+                  teamMembers={invitees.length}
                   teamMembersPresent={presentMemberCount}
                 />
               </td>
@@ -214,11 +259,11 @@ const SummaryEmail = (props) => {
           </tbody>
         </table>
         {membersWithOutcomes.map((member) =>
-          <UserOutcomes member={member} key={`memberOutcomes'${member.id}`} />
-        )}
+          <UserProjects member={member} key={`userProjects'${member.id}`} />
+      )}
         {hasUsersWithoutOutcomes &&
-          <UserNoNewOutcomes members={membersSansOutcomes} />
-        }
+        <UserNoNewOutcomes members={membersSansOutcomes} />
+      }
         <EmptySpace height={0} />
         <hr style={ruleStyle} />
         <EmptySpace height={48} />
@@ -247,7 +292,6 @@ SummaryEmail.propTypes = {
   ]).isRequired,
   referrerUrl: PropTypes.string,
   teamDashUrl: PropTypes.string,
-  actionCount: PropTypes.number,
   projectCount: PropTypes.number
 };
 
@@ -255,10 +299,8 @@ export const summaryEmailText = (props) => {
   const {meeting} = props;
   const {teamName, agendaItemsCompleted, invitees} = meeting;
   const projectCount = invitees.reduce((sum, member) => sum + member.projects.length, 0);
-  const actionCount = invitees.reduce((sum, member) => sum + member.actions.length, 0);
   return `Hello ${teamName}! As a team you discussed ${agendaItemsCompleted} Agenda Items${' '}
-resulting in ${projectCount} New Projects${' '}
-and ${actionCount} New Actions.${' '}`;
+  resulting in ${projectCount} New Projects.${' '}`;
 };
 
 export default SummaryEmail;

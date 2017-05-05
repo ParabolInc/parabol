@@ -6,7 +6,7 @@ import {
 import {handleSchemaErrors} from 'server/utils/utils';
 import {
   GraphQLNonNull,
-  GraphQLBoolean,
+  GraphQLBoolean
 } from 'graphql';
 import {TeamInput} from '../teamSchema';
 import updateTeamNameValidation from './updateTeamNameValidation';

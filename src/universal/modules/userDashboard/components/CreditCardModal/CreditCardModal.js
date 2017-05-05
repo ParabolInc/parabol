@@ -44,7 +44,7 @@ const CreditCardModal = (props) => {
     isClosing,
     styles,
     submitting,
-    syncFormError,
+    syncFormError
   } = props;
   const anyError = error || syncFormError;
   return (
@@ -157,7 +157,7 @@ const styleThunk = () => ({
     background: ui.backgroundColor,
     display: 'flex',
     flexDirection: 'column',
-    width: '100%',
+    width: '100%'
   },
 
   iconAvatarBlock: {
@@ -208,7 +208,7 @@ const styleThunk = () => ({
   updateButton: {
     flexGrow: '4',
     paddingLeft: '.625rem'
-  },
+  }
 });
 
 export default reduxForm({form: 'creditCardInfo', validate, shouldValidate})(

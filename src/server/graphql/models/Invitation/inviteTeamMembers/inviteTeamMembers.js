@@ -3,7 +3,7 @@ import {
   GraphQLNonNull,
   GraphQLBoolean,
   GraphQLID,
-  GraphQLList,
+  GraphQLList
 } from 'graphql';
 import {Invitee} from '../invitationSchema';
 import {requireOrgLeaderOrTeamMember, getUserId, getUserOrgDoc, isBillingLeader} from 'server/utils/authorization';
@@ -27,7 +27,7 @@ export default {
     },
     invitees: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Invitee)))
-    },
+    }
     // notificationId: {
     //   type: GraphQLID
     // }
@@ -56,7 +56,7 @@ export default {
         .merge((teamMember) => ({
           userOrgs: r.table('User').get(teamMember('userId'))('userOrgs').default([])
         }))
-        .coerceTo('array'),
+        .coerceTo('array')
     });
     // ignore pendingApprovalEmails because this could be the Billing Leader hitting accept
     const {inviteEmails, teamMembers} = usedEmails;

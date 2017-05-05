@@ -2,7 +2,7 @@ import getRethink from 'server/database/rethinkDriver';
 import {
   GraphQLNonNull,
   GraphQLBoolean,
-  GraphQLID,
+  GraphQLID
 } from 'graphql';
 import {ACTION_MONTHLY, TRIAL_EXTENSION, TRIAL_PERIOD} from 'server/utils/serverConstants';
 import {PAYMENT_REJECTED, TRIAL_EXPIRES_SOON, TRIAL_EXPIRED} from 'universal/utils/constants';
@@ -17,7 +17,7 @@ import stripe from 'server/billing/stripe';
 import {fromEpochSeconds, toEpochSeconds} from 'server/utils/epochTime';
 import getCCFromCustomer from 'server/graphql/models/Organization/addBilling/getCCFromCustomer';
 import makeUpcomingInvoice from 'server/graphql/models/Invoice/makeUpcomingInvoice';
-import segmentIo from 'server/segmentIo';
+import segmentIo from 'server/utils/segmentIo';
 
 export default {
   type: GraphQLBoolean,

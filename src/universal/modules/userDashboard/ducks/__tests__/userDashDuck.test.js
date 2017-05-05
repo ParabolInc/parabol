@@ -1,21 +1,10 @@
 import reducer, {
-  selectNewActionTeam,
-  filterTeam,
+  filterTeam
 } from '../userDashDuck';
 
 test('initial state', () => {
   const initialState = reducer();
   expect(initialState).toMatchSnapshot();
-});
-
-test('selectNewActionTeam on', () => {
-  expect(reducer(undefined, selectNewActionTeam(true))).toMatchSnapshot();
-});
-
-test('selectNewActionTeam off', () => {
-  const state = reducer(undefined, selectNewActionTeam(true));
-  const nextState = reducer(state, selectNewActionTeam(false));
-  expect(nextState).toMatchSnapshot();
 });
 
 test('filter team on', () => {

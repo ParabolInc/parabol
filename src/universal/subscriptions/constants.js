@@ -11,11 +11,9 @@ export const REJOIN_TEAM = 'REJOIN_TEAM';
 export const ADD_TO_TEAM = 'ADD_TO_TEAM';
 
 // CHANNELS
-export const ACTIONS = 'actions';
-export const ACTIONS_BY_TEAMMEMBER = 'actionsByTeamMember';
-export const ACTIONS_BY_AGENDA = 'actionsByAgenda';
 export const ARCHIVED_PROJECTS = 'archivedProjects';
 export const AGENDA = 'agenda';
+export const INTEGRATIONS = 'integrations';
 export const INVITATIONS = 'invitations';
 export const NOTIFICATIONS = 'notifications';
 export const ORG_APPROVALS = 'orgApprovals';
@@ -24,6 +22,7 @@ export const ORGANIZATIONS = 'organizations';
 export const OWNED_ORGANIZATIONS = 'ownedOrganizations';
 export const PRESENCE = 'presence';
 export const PROJECTS = 'projects';
+export const AGENDA_PROJECTS = 'agendaProjects';
 export const TEAM = 'team';
 export const TEAM_MEMBERS = 'teamMembers';
 export const UPCOMING_INVOICE = 'upcomingInvoice';

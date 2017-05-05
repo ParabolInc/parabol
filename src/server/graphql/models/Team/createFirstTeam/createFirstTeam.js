@@ -1,12 +1,12 @@
 import getRethink from 'server/database/rethinkDriver';
 import {
   ensureUniqueId,
-  requireAuth,
+  requireAuth
 } from 'server/utils/authorization';
 import {errorObj, handleSchemaErrors} from 'server/utils/utils';
 import {
   GraphQLNonNull,
-  GraphQLID,
+  GraphQLID
 } from 'graphql';
 import {TeamInput} from '../teamSchema';
 import shortid from 'shortid';

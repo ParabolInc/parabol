@@ -15,13 +15,9 @@ const iconStyle = {
 
 const SummaryQuickStats = (props) => {
   const {
-    actionCount,
     projectCount,
     styles
   } = props;
-
-  const actions = css(styles.cardRootStyles, styles.actions);
-  const projects = css(styles.cardRootStyles, styles.projects);
 
   return (
     <div className={css(styles.root)}>
@@ -29,15 +25,10 @@ const SummaryQuickStats = (props) => {
         <span className={css(styles.headingLabel)}>Quick Stats</span>
       </div>
       <div className={css(styles.cardGroup)}>
-        <div className={projects}>
+        <div className={css(styles.cardRootStyles, styles.projects)}>
           <div className={css(styles.count)}>{projectCount}</div>
           <FontAwesome name={labels.project.icon} style={iconStyle} />
           <div className={css(styles.label)}>New Projects</div>
-        </div>
-        <div className={actions}>
-          <div className={css(styles.count)}>{actionCount}</div>
-          <FontAwesome name={labels.action.icon} style={iconStyle} />
-          <div className={css(styles.label)}>New Actions</div>
         </div>
       </div>
     </div>
@@ -45,14 +36,8 @@ const SummaryQuickStats = (props) => {
 };
 
 SummaryQuickStats.propTypes = {
-  actionCount: PropTypes.number,
   projectCount: PropTypes.number,
   styles: PropTypes.object
-};
-
-SummaryQuickStats.defaultProps = {
-  actionCount: 12,
-  projectCount: 4
 };
 
 const styleThunk = () => ({
@@ -148,15 +133,6 @@ const styleThunk = () => ({
     color: labels.projectStatus[DONE].color,
     '::after': {
       color: labels.projectStatus[DONE].color
-    }
-  },
-
-  actions: {
-    backgroundColor: appTheme.palette.light50l,
-    color: labels.action.color,
-
-    '::after': {
-      color: labels.action.color
     }
   }
 });

@@ -48,7 +48,7 @@ const mutationHandlers = {
       Object.assign(currentResponse.user, queryResponse);
     }
     return currentResponse;
-  },
+  }
 };
 
 const mapStateToProps = (state, props) => {

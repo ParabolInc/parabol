@@ -17,17 +17,17 @@ const link = {
   paddingTop: '1px',
 
   ':hover': {
-    color: appTheme.palette.dark,
+    color: appTheme.palette.dark
   },
   ':focus': {
-    color: appTheme.palette.dark,
+    color: appTheme.palette.dark
   },
   ':hover > div': {
     textDecoration: 'underline'
   },
   ':focus > div': {
     textDecoration: 'underline'
-  },
+  }
 };
 
 export default link;

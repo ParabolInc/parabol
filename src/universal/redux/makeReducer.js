@@ -38,7 +38,7 @@ const appReducers = {
   form: formReducer.plugin(formPlugin),
   dash: dashReducer,
   menu: menuReducer,
-  toasts,
+  toasts
 };
 
 

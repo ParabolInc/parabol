@@ -19,7 +19,7 @@ export const head = {
     {property: 'og:description', content: 'Team transparency, made easy.'},
     {property: 'og:card', content: 'summary'},
     {property: 'og:site', content: '@jrhusney'},
-    {property: 'og:creator', content: '@jrhusney'},
+    {property: 'og:creator', content: '@jrhusney'}
   ]
 };
 

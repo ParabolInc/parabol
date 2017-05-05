@@ -79,7 +79,7 @@ const typeLookup = {
   [AUTO_PAUSE_USER]: changePause(true),
   [PAUSE_USER]: changePause(true),
   [REMOVE_USER]: deleteUser,
-  [UNPAUSE_USER]: changePause(false),
+  [UNPAUSE_USER]: changePause(false)
 };
 
 export default async function adjustUserCount(userId, orgInput, type) {
