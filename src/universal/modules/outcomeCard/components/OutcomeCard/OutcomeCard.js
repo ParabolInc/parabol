@@ -63,6 +63,7 @@ const OutcomeCard = (props) => {
             form={form}
             outcomeId={outcome.id}
             updatedAt={outcome.updatedAt}
+            createdAt={outcome.createdAt}
           />
           <form>
             <Field

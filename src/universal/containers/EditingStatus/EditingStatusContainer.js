@@ -19,12 +19,12 @@ query {
 }
 `;
 
-const makeEditingStatus = (editors, active, updatedAt) => {
+const makeEditingStatus = (editors, active, timestamp, timestampType) => {
   let editingStatus = null;
   // no one else is editing
   if (editors.length === 0) {
     editingStatus = active ? <span>editing<Ellipsis /></span> :
-      fromNow(updatedAt);
+      ((timestampType === 'updatedAt' ? 'Updated ' : 'Created ') + fromNow(timestamp));
   } else {
     const editorNames = editors.map((e) => e.teamMember.preferredName);
     // one other is editing
@@ -79,22 +79,33 @@ export default class EditingStatusContainer extends Component {
     className: PropTypes.object,
     editors: PropTypes.any,
     outcomeId: PropTypes.string,
-    updatedAt: PropTypes.instanceOf(Date)
+    updatedAt: PropTypes.instanceOf(Date),
+    createdAt: PropTypes.instanceOf(Date)
   };
 
   constructor(props) {
     super(props);
-    const {active, editors, updatedAt} = this.props;
+    const {active, editors, updatedAt, createdAt} = this.props;
+    const timestampType = 'updatedAt'; // Should pull this default from storage instead
+    const timestamp = timestampType === 'updatedAt' ? updatedAt : createdAt;
     this.state = {
-      editingStatus: makeEditingStatus(editors, active, updatedAt)
+      timestampType,
+      editingStatus: makeEditingStatus(editors, active, timestamp, timestampType)
     };
+    this.toggleTimestamp = this.toggleTimestamp.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
-    const {active, editors, updatedAt} = nextProps;
-    if (this.props.active !== active || this.props.editors !== editors) {
+    const {active, editors, updatedAt, createdAt} = nextProps;
+    const {timestampType} = this.state;
+    const timestamp = timestampType === 'updatedAt' ? updatedAt : createdAt;
+    if (this.props.active !== active
+        || this.props.editors !== editors
+        || this.props.updatedAt !== updatedAt
+        || this.props.createdAt !== createdAt
+      ) {
       this.setState({
-        editingStatus: makeEditingStatus(editors, active, updatedAt)
+        editingStatus: makeEditingStatus(editors, active, timestamp, timestampType)
       });
     }
   }
@@ -103,16 +114,28 @@ export default class EditingStatusContainer extends Component {
     clearTimeout(this.refreshTimer);
   }
 
+  toggleTimestamp() {
+    const {timestampType} = this.state;
+    const {editors, active, updatedAt, createdAt} = this.props;
+    const newTimestampType = timestampType === 'updatedAt' ? 'createdAt' : 'updatedAt';
+    const timestamp = newTimestampType === 'updatedAt' ? updatedAt : createdAt;
+    this.setState({
+      timestampType: newTimestampType,
+      editingStatus: makeEditingStatus(editors, active, timestamp, newTimestampType)
+    });
+  }
+
   render() {
-    const {active, editors, updatedAt} = this.props;
-    const {editingStatus} = this.state;
+    const {active, editors, updatedAt, createdAt} = this.props;
+    const {editingStatus, timestampType} = this.state;
+    const timestamp = timestampType === 'updatedAt' ? updatedAt : createdAt;
     clearTimeout(this.refreshTimer);
-    const refreshPeriod = getRefreshPeriod(updatedAt);
+    const refreshPeriod = getRefreshPeriod(timestamp);
     this.refreshTimer = setTimeout(() => {
       this.setState({
-        editingStatus: makeEditingStatus(editors, active, updatedAt)
+        editingStatus: makeEditingStatus(editors, active, timestamp, timestampType)
       });
     }, refreshPeriod);
-    return <EditingStatus status={editingStatus} />;
+    return <EditingStatus status={editingStatus} handleClick={this.toggleTimestamp} />;
   }
 }
