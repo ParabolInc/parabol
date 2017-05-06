@@ -4,7 +4,6 @@ import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import {showLock} from 'universal/components/Auth0ShowLock/Auth0ShowLock';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
-import {withRouter} from 'react-router-dom';
 import {showError, showSuccess, showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import {setAuthToken} from 'universal/redux/authDuck';
 import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
@@ -18,6 +17,8 @@ import {
   successfulJoin,
   successfulExistingJoin
 } from 'universal/modules/invitation/helpers/notifications';
+import withReducer from 'universal/decorators/withReducer/withReducer';
+import userSettingsReducer from 'universal/modules/userDashboard/ducks/settingsDuck';
 
 const mapStateToProps = (state, props) => {
   const {match: {params: {id}}} = props;
@@ -30,7 +31,7 @@ const mapStateToProps = (state, props) => {
 };
 
 @connect(mapStateToProps)
-@withRouter
+@withReducer({userDashboardSettings: userSettingsReducer})
 export default class Invitation extends Component {
   static propTypes = {
     auth: PropTypes.object,
@@ -38,7 +39,6 @@ export default class Invitation extends Component {
     inviteToken: PropTypes.string.isRequired,
     match: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
-    withRouter: PropTypes.object
   };
 
   // use DidMount to be SSR friendly

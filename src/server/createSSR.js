@@ -14,6 +14,7 @@ const metaAndTitle = `
   <title>Action | Parabol Inc</title>
   <style>${printStyles}</style>
 `;
+
 const clientIds = {
   auth0: process.env.AUTH0_CLIENT_ID,
   auth0Domain: process.env.AUTH0_DOMAIN,

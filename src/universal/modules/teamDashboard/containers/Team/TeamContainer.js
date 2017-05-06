@@ -4,11 +4,10 @@ import Team from 'universal/modules/teamDashboard/components/Team/Team';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
-import {Switch, Route, matchPath, withRouter} from 'react-router-dom';
-import AgendaAndProjectsBundle from '../AgendaAndProjects/AgendaAndProjectsBundle';
-import TeamSettingsBundle from '../TeamSettings/TeamSettingsBundle';
-import TeamArchiveBundle from '../TeamArchive/TeamArchiveBundle';
-import RouteWithProps from '../../../../components/RouteWithProps/RouteWithProps';
+import {Switch, matchPath} from 'react-router-dom';
+import withReducer from 'universal/decorators/withReducer/withReducer';
+import teamDashReducer from 'universal/modules/teamDashboard/ducks/teamDashDuck';
+import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 
 const teamContainerSub = `
 query {
@@ -62,7 +61,6 @@ const TeamContainer = (props) => {
   const isSettings = Boolean(matchPath(pathname, {
     path: '/team/:teamId/settings'
   }));
-  const extraProps = {teamName: team.name};
   return (
     <Team
       hasDashAlert={hasDashAlert}
@@ -72,9 +70,14 @@ const TeamContainer = (props) => {
     >
       <Switch>
         {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539*/}
-        <RouteWithProps exact path={match.path} extraProps={extraProps} component={AgendaAndProjectsBundle} />
-        <Route path={`${match.path}/settings`} component={TeamSettingsBundle} />
-        <RouteWithProps path={`${match.path}/archive`} extraProps={extraProps} component={TeamArchiveBundle} />
+        <AsyncRoute
+          exact
+          path={match.path}
+          teamName={team.name}
+          mod={() => System.import('universal/modules/teamDashboard/containers/AgendaAndProjects/AgendaAndProjectsContainer')}
+        />
+        <AsyncRoute path={`${match.path}/settings`} mod={() => System.import('universal/modules/teamDashboard/containers/TeamSettings/TeamSettingsContainer')}/>
+        <AsyncRoute path={`${match.path}/archive`} teamName={team.name} mod={() => System.import('universal/modules/teamDashboard/containers/TeamArchive/TeamArchiveContainer')}/>
       </Switch>
     </Team>
   );
@@ -90,4 +93,6 @@ TeamContainer.propTypes = {
   teamMembers: PropTypes.array.isRequired
 };
 
-export default withRouter(connect(mapStateToProps)(TeamContainer));
+export default withReducer({teamDashboard: teamDashReducer})(
+  connect(mapStateToProps)(TeamContainer)
+);

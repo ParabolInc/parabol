@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import promiseAllObj from 'universal/utils/promiseAllObj';
-import makeReducer from 'universal/redux/makeReducer';
+import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 
 class Bundle extends Component {
   static contextTypes = {
@@ -9,32 +8,49 @@ class Bundle extends Component {
   };
 
   static propTypes = {
-    extraProps: PropTypes.object,
+    extra: PropTypes.object,
+    history: PropTypes.object.isRequired,
+    isPrivate: PropTypes.bool,
+    location: PropTypes.object.isRequired,
     match: PropTypes.object,
-    promises: PropTypes.object.isRequired
+    mod: PropTypes.func.isRequired
   };
 
   state = {
     mod: null
   };
 
-  async componentWillMount() {
-    const {promises} = this.props;
-    const {component, ...asyncReducers} = await promiseAllObj(promises);
-    if (Object.keys(asyncReducers).length > 0) {
-      const {store} = this.context;
-      const newReducers = makeReducer(asyncReducers);
-      store.replaceReducer(newReducers);
+  componentWillMount() {
+    this.loadMod(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const {mod} = this.props;
+    if (mod !== nextProps.mod) {
+      this.loadMod(nextProps);
     }
-    this.setState({
-      Mod: component
+  }
+
+  loadMod(props) {
+    this.setState({Mod: null})
+    const {isPrivate, mod} = props;
+    mod().then((res) => {
+      let component = res.default;
+      if (isPrivate) {
+        component = requireAuth(component);
+      }
+      this.setState({
+        Mod: component
+      });
     });
+
   }
 
   render() {
     const {Mod} = this.state;
-    const {extraProps, match} = this.props;
-    return Mod ? <Mod {...extraProps} match={match} /> : null;
+    if (!Mod) return null;
+    const {history, location, match, extra} = this.props;
+    return <Mod {...extra} history={history} location={location} match={match} />;
   }
 }
 

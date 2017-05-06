@@ -74,7 +74,7 @@ const Step3InviteeList = (props) => {
             label="Looks Good!"
             onMouseEnter={() => {
               // optimistically fetch the big ol payload
-              System.import('universal/modules/userDashboard/components/UserDashboard/UserDashboard');
+              System.import('universal/modules/teamDashboard/containers/Team/TeamContainer');
             }}
             size="medium"
             type="submit"
@@ -88,7 +88,7 @@ const Step3InviteeList = (props) => {
       to={`/team/${teamId}`}
       className={css(styles.noThanks)}
       onMouseEnter={() => {
-        System.import('universal/modules/userDashboard/components/UserDashboard/UserDashboard');
+        System.import('universal/modules/teamDashboard/containers/Team/TeamContainer');
       }}
       onClick={() => {
         dispatch(

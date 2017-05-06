@@ -3,15 +3,17 @@ import React from 'react';
 import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
 import {DragDropContext as dragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import {Route, Switch} from 'react-router-dom';
-import MeetingBundle from '../../modules/meeting/containers/MeetingContainer/MeetingBundle';
-import DashboardWrapperBundle from '../DashboardWrapper/DashboardWrapperBundle';
+import {Switch} from 'react-router-dom';
+import withReducer from "../../decorators/withReducer/withReducer";
+import {socketClusterReducer} from 'redux-socket-cluster';
+import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
+
 
 const PrivateRoute = () => {
   return (
     <Switch>
-      <Route path="(/me|/newteam|/team)" component={DashboardWrapperBundle} />
-      <Route path="/meeting/:teamId/:localPhase?/:localPhaseItem?" component={MeetingBundle} />
+      <AsyncRoute path="(/me|/newteam|/team)" mod={() => System.import('universal/components/DashboardWrapper/DashboardWrapper')}/>
+      <AsyncRoute path="/meeting/:teamId/:localPhase?/:localPhaseItem?" mod={() => System.import('universal/modules/meeting/containers/MeetingContainer/MeetingContainer')}/>
     </Switch>
   );
 };
@@ -21,8 +23,10 @@ PrivateRoute.propTypes = {
 };
 
 export default
-dragDropContext(HTML5Backend)(
-  socketWithPresence(
-    PrivateRoute
+withReducer({socket: socketClusterReducer})(
+  dragDropContext(HTML5Backend)(
+    socketWithPresence(
+      PrivateRoute
+    )
   )
 );

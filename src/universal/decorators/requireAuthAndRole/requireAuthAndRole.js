@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {showError} from 'universal/modules/toast/ducks/toastDuck';
 import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
 import {setNextUrl} from 'universal/redux/authDuck';
+import {Redirect} from "react-router-dom";
 
 const unauthorizedDefault = {
   title: 'Unauthorized',
@@ -18,9 +18,10 @@ const unauthenticatedDefault = {
 };
 
 const mapStateToProps = (state) => {
-  const userId = state.auth.obj.sub;
+  const {sub: userId, rol: tokenRole} = state.auth.obj;
   return {
-    auth: state.auth.obj,
+    userId,
+    tokenRole,
     user: cashay.query(getAuthQueryString, getAuthedOptions(userId)).data.user
   };
 };
@@ -32,61 +33,58 @@ export default (role, {
   unauthenticated = unauthenticatedDefault
 } = {}) => (ComposedComponent) => {
   @connect(mapStateToProps)
-  @withRouter
   class RequiredAuthAndRole extends Component {
     static propTypes = {
-      auth: PropTypes.object,
-      user: PropTypes.object,
-      dispatch: PropTypes.func,
-      history: PropTypes.object,
-      location: PropTypes.object
+      user: PropTypes.object.isRequired,
+      dispatch: PropTypes.func.isRequired,
+      history: PropTypes.object.isRequired,
+      location: PropTypes.object.isRequired,
+      tokenRole: PropTypes.string,
+      userId: PropTypes.string.isRequired
+    };
+
+    state = {
+      legit: true
     };
 
     componentWillMount() {
       this.handleAuthChange(this.props);
     }
 
-    componentWillReceiveProps(nextProps) {
-      const {auth: {sub: prevSub}} = this.props;
-      const {auth: {sub: nextSub}} = nextProps;
-      if (prevSub !== nextSub) {
-        this.handleAuthChange(nextProps);
-      }
-    }
+    // componentWillReceiveProps(nextProps) {
+    //   const {userId} = this.props;
+    //   if (userId !== nextProps.userId) {
+    //     this.handleAuthChange(nextProps);
+    //   }
+    // }
 
     handleAuthChange(props) { // eslint-disable-line
-      const {auth, dispatch, location: {pathname}} = props;
+      const {userId, tokenRole, dispatch, location: {pathname}} = props;
 
-      if (auth.sub) {
-        if (role && auth.rol !== role && !silent) {
-          dispatch(showError(unauthenticated));
+      if (userId) {
+        if (role && role !== tokenRole) {
+          this.setState({legit: false});
+          if (!silent) {
+            dispatch(showError(unauthenticated));
+          }
         }
       } else {
         // no legit authToken
         if (!silent) {
-         // squak about it:
+          // squak about it:
           dispatch(showError(unauthorized));
         }
         dispatch(setNextUrl(pathname));
+        this.setState({legit: false});
       }
     }
 
     render() {
-      const {auth, history} = this.props;
-      if (auth === undefined) {
-        throw new Error('Auth token undefined. Did you put @connect on your component?');
+      const {legit} = this.state;
+      if (!legit) {
+        return <Redirect to="/" />
       }
-      if (role) {
-        if (auth.sub && auth.rol === role) {
-          // We had a role to check, and role checks out:
-          return <ComposedComponent {...this.props} />;
-        }
-      } else if (auth.sub) {
-        // We were looking for any authenticated user only:
-        return <ComposedComponent {...this.props} />;
-      }
-      history.push('/');
-      return null;
+      return <ComposedComponent {...this.props} />;
     }
   }
   return RequiredAuthAndRole;

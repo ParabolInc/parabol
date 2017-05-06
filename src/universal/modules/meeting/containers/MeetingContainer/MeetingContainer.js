@@ -8,7 +8,6 @@ import makePushURL from 'universal/modules/meeting/helpers/makePushURL';
 import handleAgendaSort from 'universal/modules/meeting/helpers/handleAgendaSort';
 import MeetingLayout from 'universal/modules/meeting/components/MeetingLayout/MeetingLayout';
 import Sidebar from 'universal/modules/meeting/components/Sidebar/Sidebar';
-import {withRouter} from 'react-router-dom';
 import {DragDropContext as dragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects';
@@ -133,7 +132,6 @@ let infiniteTrigger = false;
 @socketWithPresence
 @connect(mapStateToProps)
 @dragDropContext(HTML5Backend)
-@withRouter
 @withHotkey
 export default class MeetingContainer extends Component {
   static propTypes = {

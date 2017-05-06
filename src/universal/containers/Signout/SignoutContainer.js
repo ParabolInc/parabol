@@ -1,9 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react'; // eslint-disable-line no-unused-vars
-import {withRouter} from 'react-router-dom';
 import signout from './signout';
 
-@withRouter
 export default class SignoutContainer extends Component {
   static contextTypes = {
     store: PropTypes.object

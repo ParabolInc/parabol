@@ -2,18 +2,15 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import DashSidebar from 'universal/components/Dashboard/DashSidebar';
 import DashLayoutContainer from 'universal/containers/DashLayoutContainer/DashLayoutContainer';
-import {Route} from 'react-router-dom';
-import TeamBundle from 'universal/modules/teamDashboard/containers/Team/TeamBundle';
-import UserBundle from 'universal/modules/userDashboard/components/UserDashboard/UserBundle';
-import NewTeamBundle from '../../modules/newTeam/components/NewTeam/NewTeamBundle';
+import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 
 const DashboardWrapper = () => {
   return (
     <DashLayoutContainer>
       <DashSidebar />
-      <Route path="/me" component={UserBundle} />
-      <Route path="/team/:teamId" component={TeamBundle} />
-      <Route path="/newteam/:newOrg?" component={NewTeamBundle} />
+      <AsyncRoute path="/me" mod={() => System.import('universal/modules/userDashboard/components/UserDashboard/UserDashboard')} />
+      <AsyncRoute path="/team/:teamId" mod={() => System.import('universal/modules/teamDashboard/containers/Team/TeamContainer')} />
+      <AsyncRoute path="/newteam/:newOrg?" mod={() => System.import('universal/modules/newTeam/containers/NewTeamForm/NewTeamFormContainer')} />
     </DashLayoutContainer>
   );
 };

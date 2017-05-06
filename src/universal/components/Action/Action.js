@@ -4,17 +4,8 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import Toast from 'universal/modules/toast/containers/Toast/Toast';
 import {Route, Switch} from 'react-router-dom';
-import LandingBundle from 'universal/modules/landing/containers/Landing/LandingBundle';
-import WelcomeBundle from 'universal/modules/welcome/containers/Welcome/WelcomeBundle';
-import SignoutBundle from '../../containers/Signout/SignoutBundle';
-import NotFoundBundle from '../NotFound/NotFoundBundle';
-import MeetingSummaryBundle from '../../modules/summary/containers/MeetingSummary/MeetingSummaryBundle';
-import InvoiceBundle from '../../modules/invoice/containers/InvoiceContainer/InvoiceBundle';
-import InvitationBundle from '../../modules/invitation/containers/Invitation/InvitationBundle';
-import GraphqlBundle from '../../modules/admin/containers/Graphql/GraphqlBundle';
-import ImpersonateBundle from '../../modules/admin/containers/Impersonate/ImpersonateBundle';
-import SocketRouteBundle from '../SocketRoute/SocketRouteBundle';
-import PrivateRoute from '../PrivateRoute/PrivateRoute';
+import LandingContainer from 'universal/modules/landing/containers/Landing/LandingContainer';
+import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 
 const Action = (props) => {
   const {styles} = props;
@@ -22,16 +13,16 @@ const Action = (props) => {
     <div className={css(styles.app)}>
       <Toast />
       <Switch>
-        <Route exact path="/" component={LandingBundle} />
-        <PrivateRoute path="(/me|/meeting|/newteam|/team)" component={SocketRouteBundle} />
-        <PrivateRoute path="/invoice/:invoiceId" component={InvoiceBundle} />
-        <PrivateRoute path="/summary/:meetingId" component={MeetingSummaryBundle} />
-        <PrivateRoute path="/welcome" component={WelcomeBundle} />
-        <Route path="/admin/graphql" component={GraphqlBundle} />
-        <Route path="/admin/impersonate/:newUserId" component={ImpersonateBundle} />
-        <Route path="/invitation/:id" component={InvitationBundle} />
-        <Route path="/signout" component={SignoutBundle} />
-        <Route component={NotFoundBundle} />
+        <Route exact path="/" component={LandingContainer} />
+        <AsyncRoute isPrivate path="(/me|/meeting|/newteam|/team)" mod={() => System.import('universal/components/SocketRoute/SocketRoute')}/>
+        <AsyncRoute isPrivate path="/invoice/:invoiceId" mod={() => System.import('universal/modules/invoice/containers/InvoiceContainer/InvoiceContainer')} />
+        <AsyncRoute isPrivate path="/summary/:meetingId" mod={() => System.import('universal/modules/meeting/containers/MeetingContainer/MeetingContainer')} />
+        <AsyncRoute isPrivate path="/welcome" mod={() => System.import('universal/modules/welcome/containers/Welcome/Welcome')} />
+        <AsyncRoute path="/admin/graphql" mod={() => System.import('universal/modules/admin/containers/Graphql/GraphqlContainer')} />
+        <AsyncRoute path="/admin/impersonate/:newUserId" mod={() => System.import('universal/modules/admin/containers/Impersonate/ImpersonateContainer')} />
+        <AsyncRoute path="/invitation/:id" mod={() => System.import('universal/modules/invitation/containers/Invitation/InvitationContainer')} />
+        <AsyncRoute path="/signout" mod={() => System.import('universal/containers/Signout/SignoutContainer')} />
+        <AsyncRoute mod={() => System.import('universal/components/NotFound/NotFound')} />
       </Switch>
     </div>
   );

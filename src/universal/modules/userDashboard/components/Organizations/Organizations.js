@@ -8,7 +8,6 @@ import IconControl from 'universal/components/IconControl/IconControl';
 import Panel from 'universal/components/Panel/Panel';
 import OrganizationRow from 'universal/modules/userDashboard/components/OrganizationRow/OrganizationRow';
 import EmptyOrgsCallOut from 'universal/modules/userDashboard/components/EmptyOrgsCallOut/EmptyOrgsCallOut';
-import {withRouter} from 'react-router-dom';
 import Helmet from 'react-helmet';
 
 const Organizations = (props) => {
@@ -60,4 +59,6 @@ const styleThunk = () => ({
   }
 });
 
-export default withRouter(withStyles(styleThunk)(Organizations));
+export default withStyles(styleThunk)(
+  Organizations
+);

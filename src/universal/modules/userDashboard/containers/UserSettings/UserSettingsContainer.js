@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import UserSettings from 'universal/modules/userDashboard/components/UserSettings/UserSettings';
 import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
 import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import {
@@ -14,6 +13,8 @@ import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
 import shouldValidate from 'universal/validation/shouldValidate';
 import PropTypes from 'prop-types';
 import raven from 'raven-js';
+import withReducer from 'universal/decorators/withReducer/withReducer';
+import userSettingsReducer from 'universal/modules/userDashboard/ducks/settingsDuck';
 
 const updateSuccess = {
   title: 'Settings saved!',
@@ -39,7 +40,7 @@ const validate = (values) => {
 
 @reduxForm({form: 'userSettings', shouldValidate, validate})
 @connect(mapStateToProps)
-@withRouter
+@withReducer({userDashboardSettings: userSettingsReducer})
 export default class UserSettingsContainer extends Component {
   static propTypes = {
     activity: PropTypes.string,

@@ -14,7 +14,6 @@ import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
 import addOrgSchema from 'universal/validation/addOrgSchema';
 import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer';
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
-import {withRouter} from 'react-router-dom';
 import shouldValidate from 'universal/validation/shouldValidate';
 import {MONTHLY_PRICE} from 'universal/utils/constants';
 import StripeTokenField from 'universal/modules/newTeam/components/NewTeamForm/StripeTokenField';
@@ -46,7 +45,7 @@ const NewTeamForm = (props) => {
   const handleCreateNew = () => {
     history.push('/newteam/1');
   };
-  const addBilling = <Button colorPalette="cool" isBlock label="Add Billing Information" size="small" />;
+  const addBilling = <Button colorPalette="cool" isBlock label="Add Billing Information" size="small"/>;
   const resetOrgSelection = () => {
     history.push('/newteam');
   };
@@ -93,13 +92,13 @@ const NewTeamForm = (props) => {
                 </div> :
                 <div className={css(styles.cardInfoBlock)}>
                   <div className={css(styles.fill)}>
-                    <FontAwesome name="credit-card" />
+                    <FontAwesome name="credit-card"/>
                     <div className={css(styles.cardInfoLabel)}>Info added for <b>{last4}</b></div>
                   </div>
                   <CreditCardModalContainer
                     isUpdate
                     handleToken={setToken}
-                    toggle={<Button colorPalette="cool" label="Update" size="smallest" buttonStyle="flat" />}
+                    toggle={<Button colorPalette="cool" label="Update" size="smallest" buttonStyle="flat"/>}
                   />
 
                 </div>
@@ -229,4 +228,7 @@ const styleThunk = () => ({
   }
 });
 
-export default reduxForm({form: 'newTeam', shouldValidate, validate})(withRouter(withStyles(styleThunk)(NewTeamForm)));
+export default reduxForm({form: 'newTeam', shouldValidate, validate})(
+  withStyles(styleThunk)(
+    NewTeamForm)
+);

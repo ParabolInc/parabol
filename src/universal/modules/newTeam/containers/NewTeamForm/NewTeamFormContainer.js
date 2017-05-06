@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {cashay} from 'cashay';
 import emailAddresses from 'email-addresses';
 import shortid from 'shortid';
-import {withRouter} from 'react-router-dom';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
 import addOrgSchema from 'universal/validation/addOrgSchema';
@@ -126,6 +125,7 @@ class NewTeamFormContainer extends Component {
     }
     return (
       <NewTeamForm
+        history={history}
         initialValues={initialValues}
         isNewOrg={isNewOrg}
         last4={this.state.last4}
@@ -148,7 +148,5 @@ NewTeamFormContainer.propTypes = {
 };
 
 export default connect(mapStateToProps)(
-  withRouter(
-    NewTeamFormContainer
-  )
+  NewTeamFormContainer
 );

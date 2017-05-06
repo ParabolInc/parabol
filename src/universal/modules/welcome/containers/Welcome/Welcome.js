@@ -4,7 +4,10 @@ import {connect} from 'react-redux';
 import {formValueSelector} from 'redux-form';
 import {goToPage} from 'universal/modules/welcome/ducks/welcomeDuck';
 import Welcome from 'universal/modules/welcome/components/Welcome/Welcome';
-import {withRouter} from 'react-router-dom';
+import welcomeReducer from 'universal/modules/welcome/ducks/welcomeDuck';
+import withReducer from "../../../../decorators/withReducer/withReducer";
+import {cashay} from 'cashay';
+import {getAuthedOptions, getAuthQueryString} from "universal/redux/getAuthedUser";
 
 const selector = formValueSelector('welcomeWizard');
 const rawSelector = formValueSelector('welcomeWizardRawInvitees');
@@ -16,6 +19,7 @@ const mapStateToProps = (state, props) => ({
   preferredName: selector(state, 'preferredName') || (props.user && props.user.preferredName),
   teamName: selector(state, 'teamName'),
   tms: state.auth.obj.tms,
+  user: cashay.query(getAuthQueryString, getAuthedOptions(state.auth.obj.sub)).data.user,
   welcome: state.welcome
 });
 
@@ -63,6 +67,8 @@ WelcomeContainer.propTypes = {
   })
 };
 
-export default connect(mapStateToProps)(
-  withRouter(WelcomeContainer)
+export default withReducer({welcome: welcomeReducer})(
+  connect(mapStateToProps)(
+    WelcomeContainer
+  )
 );

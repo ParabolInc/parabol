@@ -1,21 +1,19 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import UserDashBundle from './UserDashBundle';
-import {Route, Switch, withRouter} from 'react-router-dom';
-import UserSettingsBundle from '../../containers/UserSettings/UserSettingsBundle';
-import OrganizationsBundle from '../../containers/Organizations/OrganizationsBundle';
-import OrganizationBundle from '../../containers/Organization/OrganizationBundle';
-import NotificationsBundle from '../../../notifications/containers/Notifications/NotificationsBundle';
+import {Switch} from 'react-router-dom';
+import userDashReducer from 'universal/modules/userDashboard/ducks/userDashDuck';
+import withReducer from "../../../../decorators/withReducer/withReducer";
+import AsyncRoute from "universal/components/AsyncRoute/AsyncRoute";
 
 const UserDashboard = (props) => {
   const {match} = props;
   return (
     <Switch>
-      <Route exact path={match.url} component={UserDashBundle} />
-      <Route path={`${match.url}/settings`} component={UserSettingsBundle} />
-      <Route exact path={`${match.url}/organizations`} component={OrganizationsBundle} />
-      <Route path={`${match.url}/organizations/:orgId/:orgArea?`} component={OrganizationBundle} />
-      <Route path={`${match.url}/notifications`} component={NotificationsBundle} />
+      <AsyncRoute exact path={match.url} mod={() => System.import('universal/modules/userDashboard/components/UserDashMain/UserDashMain')}/>
+      <AsyncRoute path={`${match.url}/settings`} mod={() => System.import('universal/modules/userDashboard/containers/UserSettings/UserSettingsContainer')}/>
+      <AsyncRoute exact path={`${match.url}/organizations`} mod={() => System.import('universal/modules/userDashboard/containers/Organizations/OrganizationsContainer')}/>
+      <AsyncRoute path={`${match.url}/organizations/:orgId/:orgArea?`} mod={() => System.import('universal/modules/userDashboard/containers/Organization/OrganizationContainer')}/>
+      <AsyncRoute path={`${match.url}/notifications`} mod={() => System.import('universal/modules/notifications/containers/Notifications/NotificationsContainer')}/>
     </Switch>
   );
 };
@@ -24,4 +22,6 @@ UserDashboard.propTypes = {
   match: PropTypes.object.isRequired
 };
 
-export default withRouter(UserDashboard);
+export default withReducer({userDashboard: userDashReducer})(
+  UserDashboard
+);
