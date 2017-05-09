@@ -24,7 +24,7 @@ const Landing = (props) => {
               <img className={css(styles.brandLogo)} src={parabolLogoMark} />
             </a>
             <h1 className={css(styles.mainHeading)}>
-              {'ACTION: The Real-Time Prioritization Dashboard'}
+              {'The Real-Time Prioritization Dashboard'}
             </h1>
             <h2 className={css(styles.mainSubheading)}>
               {'Enable true cross-functional collaboration and clarity by syncing teams across all preferred tools to a single dashboard.'}
@@ -59,18 +59,18 @@ const Landing = (props) => {
         {/* Video */}
         <div className={css(styles.section)}>
           <div className={css(styles.container)}>
-            <h2 className={css(styles.sectionHeading, styles.firstHeading)}>Parabol Action 101</h2>
+            <h2 className={css(styles.sectionHeading, styles.firstHeading)}>PARABOL 101</h2>
             <p className={css(styles.copyGroup, styles.firstCopy)}>
-              {'Curious about how Parabol Action works? Here’s a demo video of our beta software. '}
+              {'Curious about how PARABOL works? Here’s a demo video of our beta software. '}
               {'Check back frequently for updates as our software evolves!'}
               <br />
               <br />
               <b>
                 <a
-                  href="https://docs.google.com/presentation/d/1u9iiVkZKlaEaY7lSDXckdjuSSfX-1lA-swtOjiu6F9g/edit?usp=sharing"
-                  title="Learn More: The Theory Behind Action"
+                  href="https://docs.google.com/presentation/d/1bxpUB6hLSSZRnkPngZOPggEaQm5_qv5TmgLa9maiglc/edit?usp=sharing"
+                  title="Learn More: The Theory Behind PARABOL"
                 >
-                  Learn More: The Theory Behind Action
+                  {'Learn More: The Theory Behind PARABOL'}
                 </a>
               </b>
             </p>
@@ -123,7 +123,7 @@ const Landing = (props) => {
             <br />
             <div className={css(styles.copyGroup)}>
               <p className={css(styles.copyParagraph)}>
-                {'Action is an open-source software solution crafted with care by the folks at Parabol.'}
+                {'Parabol is an open-source software solution crafted with care by the folks at Parabol.'}
                 <br />
                 To get involved,{' '}
                 <a

@@ -89,7 +89,7 @@ const Invoice = (props) => {
 
   return (
     <div className={css(styles.invoice)}>
-      <Helmet title={`Parabol Action Invoice for ${subject}`} />
+      <Helmet title={`PARABOL Invoice for ${subject}`} />
       <InvoiceHeader orgName={orgName} emails={billingLeaderEmails} picture={picture} />
       <div className={css(styles.panel)}>
         {status === FAILED &&

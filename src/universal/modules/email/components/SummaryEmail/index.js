@@ -8,7 +8,7 @@ import makeDateString from 'universal/utils/makeDateString';
 export default (props) => {
   const {meeting: {teamName, endedAt}} = props;
   const dateStr = makeDateString(endedAt, false);
-  const subject = `${teamName} ${dateStr} Action Meeting Summary`;
+  const subject = `${teamName} ${dateStr} PARABOL Meeting Summary`;
   return {
     subject,
     body: summaryEmailText(props),

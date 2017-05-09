@@ -2,7 +2,7 @@ import React from 'react';
 import Oy from 'oy-vey';
 import TeamInvite, {teamInviteText} from './TeamInvite';
 
-const subject = 'You’ve been invited to Action by Parabol';
+const subject = 'You’ve been invited to PARABOL';
 
 export default (props) => ({
   subject,
