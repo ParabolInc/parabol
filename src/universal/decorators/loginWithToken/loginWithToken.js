@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {unsetNextUrl} from 'universal/redux/authDuck';
-import {getAuthedOptions, getAuthQueryString} from "../../redux/getAuthedUser";
-import {cashay} from "cashay";
+import {getAuthedOptions, getAuthQueryString} from '../../redux/getAuthedUser';
+import {cashay} from 'cashay';
 
 const mapStateToProps = (state) => {
   const {auth} = state;

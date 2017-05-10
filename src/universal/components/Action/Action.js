@@ -14,15 +14,45 @@ const Action = (props) => {
       <Toast />
       <Switch>
         <Route exact path="/" component={LandingContainer} />
-        <AsyncRoute isPrivate path="(/me|/meeting|/newteam|/team)" mod={() => System.import('universal/components/SocketRoute/SocketRoute')}/>
-        <AsyncRoute isPrivate path="/invoice/:invoiceId" mod={() => System.import('universal/modules/invoice/containers/InvoiceContainer/InvoiceContainer')} />
-        <AsyncRoute isPrivate path="/summary/:meetingId" mod={() => System.import('universal/modules/meeting/containers/MeetingContainer/MeetingContainer')} />
-        <AsyncRoute isPrivate path="/welcome" mod={() => System.import('universal/modules/welcome/containers/Welcome/Welcome')} />
-        <AsyncRoute path="/admin/graphql" mod={() => System.import('universal/modules/admin/containers/Graphql/GraphqlContainer')} />
-        <AsyncRoute path="/admin/impersonate/:newUserId" mod={() => System.import('universal/modules/admin/containers/Impersonate/ImpersonateContainer')} />
-        <AsyncRoute path="/invitation/:id" mod={() => System.import('universal/modules/invitation/containers/Invitation/InvitationContainer')} />
-        <AsyncRoute path="/signout" mod={() => System.import('universal/containers/Signout/SignoutContainer')} />
-        <AsyncRoute mod={() => System.import('universal/components/NotFound/NotFound')} />
+        <AsyncRoute
+          isPrivate
+          path="(/me|/meeting|/newteam|/team)"
+          mod={() => System.import('universal/components/SocketRoute/SocketRoute')}
+        />
+        <AsyncRoute
+          isPrivate
+          path="/invoice/:invoiceId"
+          mod={() => System.import('universal/modules/invoice/containers/InvoiceContainer/InvoiceContainer')}
+        />
+        <AsyncRoute
+          isPrivate
+          path="/summary/:meetingId"
+          mod={() => System.import('universal/modules/meeting/containers/MeetingContainer/MeetingContainer')}
+        />
+        <AsyncRoute
+          isPrivate
+          path="/welcome"
+          mod={() => System.import('universal/modules/welcome/containers/Welcome/Welcome')}
+        />
+        <AsyncRoute
+          path="/admin/graphql"
+          mod={() => System.import('universal/modules/admin/containers/Graphql/GraphqlContainer')}
+        />
+        <AsyncRoute
+          path="/admin/impersonate/:newUserId"
+          mod={() => System.import('universal/modules/admin/containers/Impersonate/ImpersonateContainer')}
+        />
+        <AsyncRoute
+          path="/invitation/:id"
+          mod={() => System.import('universal/modules/invitation/containers/Invitation/InvitationContainer')}
+        />
+        <AsyncRoute
+          path="/signout"
+          mod={() => System.import('universal/containers/Signout/SignoutContainer')}
+        />
+        <AsyncRoute
+          mod={() => System.import('universal/components/NotFound/NotFound')}
+        />
       </Switch>
     </div>
   );

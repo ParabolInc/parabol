@@ -5,7 +5,7 @@ import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUse
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import {setNextUrl} from 'universal/redux/authDuck';
-import {Redirect} from "react-router-dom";
+import {Redirect} from 'react-router-dom';
 
 const unauthorizedDefault = {
   title: 'Unauthorized',
@@ -82,7 +82,7 @@ export default (role, {
     render() {
       const {legit} = this.state;
       if (!legit) {
-        return <Redirect to="/" />
+        return <Redirect to="/" />;
       }
       return <ComposedComponent {...this.props} />;
     }

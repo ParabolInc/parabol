@@ -32,7 +32,7 @@ class Bundle extends Component {
   }
 
   loadMod(props) {
-    this.setState({Mod: null})
+    this.setState({Mod: null});
     const {isPrivate, mod} = props;
     mod().then((res) => {
       let component = res.default;
@@ -43,7 +43,6 @@ class Bundle extends Component {
         Mod: component
       });
     });
-
   }
 
   render() {

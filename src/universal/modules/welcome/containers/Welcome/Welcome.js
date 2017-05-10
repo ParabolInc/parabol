@@ -5,9 +5,9 @@ import {formValueSelector} from 'redux-form';
 import {goToPage} from 'universal/modules/welcome/ducks/welcomeDuck';
 import Welcome from 'universal/modules/welcome/components/Welcome/Welcome';
 import welcomeReducer from 'universal/modules/welcome/ducks/welcomeDuck';
-import withReducer from "../../../../decorators/withReducer/withReducer";
+import withReducer from '../../../../decorators/withReducer/withReducer';
 import {cashay} from 'cashay';
-import {getAuthedOptions, getAuthQueryString} from "universal/redux/getAuthedUser";
+import {getAuthedOptions, getAuthQueryString} from 'universal/redux/getAuthedUser';
 
 const selector = formValueSelector('welcomeWizard');
 const rawSelector = formValueSelector('welcomeWizardRawInvitees');

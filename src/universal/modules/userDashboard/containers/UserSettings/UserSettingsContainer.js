@@ -38,9 +38,9 @@ const validate = (values) => {
   return schema(values).errors;
 };
 
+@withReducer({userDashboardSettings: userSettingsReducer})
 @reduxForm({form: 'userSettings', shouldValidate, validate})
 @connect(mapStateToProps)
-@withReducer({userDashboardSettings: userSettingsReducer})
 export default class UserSettingsContainer extends Component {
   static propTypes = {
     activity: PropTypes.string,
@@ -66,8 +66,8 @@ export default class UserSettingsContainer extends Component {
     const {preferredName} = submissionData;
     if (preferredName !== user.preferredName) {
       this.updateProfile(preferredName)
-      .then(this.onSubmitComplete())
-      .catch((e) => raven.captureException(e));
+        .then(this.onSubmitComplete())
+        .catch((e) => raven.captureException(e));
     }
 
     return undefined; // no work to do
@@ -113,3 +113,4 @@ export default class UserSettingsContainer extends Component {
     );
   }
 }
+

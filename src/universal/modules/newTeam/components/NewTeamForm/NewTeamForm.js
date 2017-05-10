@@ -45,7 +45,7 @@ const NewTeamForm = (props) => {
   const handleCreateNew = () => {
     history.push('/newteam/1');
   };
-  const addBilling = <Button colorPalette="cool" isBlock label="Add Billing Information" size="small"/>;
+  const addBilling = <Button colorPalette="cool" isBlock label="Add Billing Information" size="small" />;
   const resetOrgSelection = () => {
     history.push('/newteam');
   };
@@ -92,13 +92,13 @@ const NewTeamForm = (props) => {
                 </div> :
                 <div className={css(styles.cardInfoBlock)}>
                   <div className={css(styles.fill)}>
-                    <FontAwesome name="credit-card"/>
+                    <FontAwesome name="credit-card" />
                     <div className={css(styles.cardInfoLabel)}>Info added for <b>{last4}</b></div>
                   </div>
                   <CreditCardModalContainer
                     isUpdate
                     handleToken={setToken}
-                    toggle={<Button colorPalette="cool" label="Update" size="smallest" buttonStyle="flat"/>}
+                    toggle={<Button colorPalette="cool" label="Update" size="smallest" buttonStyle="flat" />}
                   />
 
                 </div>

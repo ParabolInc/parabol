@@ -4,7 +4,7 @@ import Team from 'universal/modules/teamDashboard/components/Team/Team';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
-import {Switch, matchPath} from 'react-router-dom';
+import {matchPath, Switch} from 'react-router-dom';
 import withReducer from 'universal/decorators/withReducer/withReducer';
 import teamDashReducer from 'universal/modules/teamDashboard/ducks/teamDashDuck';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
@@ -76,8 +76,15 @@ const TeamContainer = (props) => {
           teamName={team.name}
           mod={() => System.import('universal/modules/teamDashboard/containers/AgendaAndProjects/AgendaAndProjectsContainer')}
         />
-        <AsyncRoute path={`${match.path}/settings`} mod={() => System.import('universal/modules/teamDashboard/containers/TeamSettings/TeamSettingsContainer')}/>
-        <AsyncRoute path={`${match.path}/archive`} teamName={team.name} mod={() => System.import('universal/modules/teamDashboard/containers/TeamArchive/TeamArchiveContainer')}/>
+        <AsyncRoute
+          path={`${match.path}/settings`}
+          mod={() => System.import('universal/modules/teamDashboard/containers/TeamSettings/TeamSettingsContainer')}
+        />
+        <AsyncRoute
+          path={`${match.path}/archive`}
+          teamName={team.name}
+          mod={() => System.import('universal/modules/teamDashboard/containers/TeamArchive/TeamArchiveContainer')}
+        />
       </Switch>
     </Team>
   );

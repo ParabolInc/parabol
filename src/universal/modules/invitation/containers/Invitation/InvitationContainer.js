@@ -38,7 +38,7 @@ export default class Invitation extends Component {
     dispatch: PropTypes.func.isRequired,
     inviteToken: PropTypes.string.isRequired,
     match: PropTypes.object.isRequired,
-    history: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired
   };
 
   // use DidMount to be SSR friendly
