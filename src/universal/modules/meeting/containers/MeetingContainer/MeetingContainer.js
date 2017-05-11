@@ -342,7 +342,7 @@ export default class MeetingContainer extends Component {
     };
 
     return (
-      <MeetingLayout title={`Action Meeting for ${teamName} | Parabol`}>
+      <MeetingLayout title={`PARABOL Meeting for ${teamName}`}>
         <Sidebar
           agendaPhaseItem={agendaPhaseItem}
           facilitatorPhase={facilitatorPhase}

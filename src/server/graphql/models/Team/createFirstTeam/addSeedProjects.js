@@ -15,7 +15,7 @@ const SEED_PROJECTS = [
     status: ACTIVE,
     sortOrder: 1,
     content: `
-      Try a test run of an Action Meeting. Tap on ‘Meeting Lobby’ in
+      Try a test run of a meeting. Tap on ‘Meeting Lobby’ in
       the dashboard header above.
     `.split(/\s/).filter((s) => s.length).join(' ')
   },
@@ -23,7 +23,7 @@ const SEED_PROJECTS = [
     status: FUTURE,
     sortOrder: 0,
     content: `
-      Make good teaming a habit! Schedule a weekly Action Meeting with your
+      Make good teaming a habit! Schedule a weekly meeting with your
       team. Pro-tip: include a link to the meeting lobby.
     `.split(/\s/).filter((s) => s.length).join(' ')
   }
