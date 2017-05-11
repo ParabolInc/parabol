@@ -50,6 +50,7 @@ export default function createSSR(req, res) {
         res.redirect(redirectLocation.pathname + redirectLocation.search);
       } else if (renderProps) {
         const htmlString = renderToStaticMarkup(
+          // eslint-disable-next-line max-len
           <Html store={store} assets={assets} StyleSheetServer={StyleSheetServer} renderProps={renderProps} clientKeyLoader={clientKeyLoader} />
         );
         res.send(`<!DOCTYPE html>${htmlString}`.replace('<head>', `<head>${metaAndTitle}`));
