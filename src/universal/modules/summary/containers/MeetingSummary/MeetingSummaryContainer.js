@@ -48,7 +48,7 @@ const mutationHandlers = {
 };
 
 const mapStateToProps = (state, props) => {
-  const {params: {meetingId}} = props;
+  const {match: {params: {meetingId}}} = props;
   const {meeting} = cashay.query(meetingSummaryQuery, {
     op: 'meetingSummaryContainer',
     key: '',
@@ -72,8 +72,8 @@ const mapStateToProps = (state, props) => {
 export default class MeetingSummaryContainer extends Component {
   static propTypes = {
     dispatch: PropTypes.func,
+    match: PropTypes.object.isRequired,
     meeting: PropTypes.object.isRequired,
-    params: PropTypes.object.isRequired,
     meetingId: PropTypes.string.isRequired
   };
 

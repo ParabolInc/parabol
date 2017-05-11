@@ -27,7 +27,7 @@ const Action = (props) => {
         <AsyncRoute
           isPrivate
           path="/summary/:meetingId"
-          mod={() => System.import('universal/modules/meeting/containers/MeetingContainer/MeetingContainer')}
+          mod={() => System.import('universal/modules/summary/containers/MeetingSummary/MeetingSummaryContainer')}
         />
         <AsyncRoute
           isPrivate

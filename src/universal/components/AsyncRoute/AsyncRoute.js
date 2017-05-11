@@ -17,7 +17,7 @@ AsyncRoute.propTypes = {
   extra: PropTypes.object,
   isPrivate: PropTypes.bool,
   mod: PropTypes.func.isRequired,
-  path: PropTypes.string.isRequired
+  path: PropTypes.string
 };
 
 export default AsyncRoute;

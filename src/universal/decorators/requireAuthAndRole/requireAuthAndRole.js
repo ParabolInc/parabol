@@ -65,14 +65,14 @@ export default (role, {
         if (role && role !== tokenRole) {
           this.setState({legit: false});
           if (!silent) {
-            dispatch(showError(unauthenticated));
+            dispatch(showError(unauthorized));
           }
         }
       } else {
         // no legit authToken
         if (!silent) {
           // squak about it:
-          dispatch(showError(unauthorized));
+          dispatch(showError(unauthenticated));
         }
         dispatch(setNextUrl(pathname));
         this.setState({legit: false});
