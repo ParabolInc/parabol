@@ -87,7 +87,7 @@ like a refreshing breeze through your hair.
 Your pal,
 
 --
-Parabol Crew
+The Parabol Crew
 `;
 
 export default WelcomeEmail;
