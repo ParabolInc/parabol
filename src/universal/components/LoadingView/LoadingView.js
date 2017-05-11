@@ -24,7 +24,7 @@ const LoadingView = (props) => {
   const duckStyles = [pato0, pato1, pato2];
   return (
     <div className={css(styles.root)}>
-      <h1 className={css(styles.heading)}>Welcome to PARABOL!</h1>
+      <h1 className={css(styles.heading)}>Welcome to Parabol!</h1>
       {duckStyles.map((delayClass, idx) =>
         <LoadingDuck
           className={css(delayClass, styles.patoStyles)}

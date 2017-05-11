@@ -103,7 +103,7 @@ const TeamInvite = (props) => {
                 <Callout fontSize={18} width="100%">
                   <b style={calloutTextStyle}>
                     Hi <a href={`mailto:${inviteeEmail}`} style={{...colorWarm, textDecoration: 'none'}}>{nameOrEmail}</a>!<br />
-                    {inviterName} has invited you to join a team on PARABOL:
+                    {inviterName} has invited you to join a team on Parabol:
                   </b>
                   <EmptySpace height={12} />
                   <span style={teamNameStyle}>{teamName}</span>
@@ -121,7 +121,7 @@ const TeamInvite = (props) => {
         <div style={ruleStyle} />
         <EmptySpace height={32} />
         <div className={secondaryMessage}>
-          PARABOL helps teams{' '}
+          Parabol helps teams{' '}
           <a
             href="https://focus.parabol.co/how-to-navigate-uncertainty-fc0dfaaf3830"
             style={boldLinkStyle}
@@ -141,7 +141,7 @@ const TeamInvite = (props) => {
 // TODO: Don’t show this until we actually transfer it to the dashboard as a project? (TA)
 // {firstProject &&
 //   <div>
-//     <b>{inviterName} added one of your projects to PARABOL</b>:
+//     <b>{inviterName} added one of your projects to Parabol</b>:
 //     <EmptySpace height={32} />
 //     <span style={projectNameStyle}>“{firstProject}”</span>
 //     <EmptySpace height={32} />
@@ -162,9 +162,9 @@ TeamInvite.propTypes = {
 export const teamInviteText = (props) => `
 Hello ${props.inviteeName || props.inviteeEmail},
 
-${props.inviterName} has invited you to join the ${props.teamName} on PARABOL.
+${props.inviterName} has invited you to join the ${props.teamName} on Parabol.
 
-PARABOL is a place where your team will develop a weekly rhythm.
+Parabol is a place where your team will develop a weekly rhythm.
 
 Get started here: ${props.inviteLink}
 

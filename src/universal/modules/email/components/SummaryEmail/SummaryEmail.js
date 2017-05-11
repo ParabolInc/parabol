@@ -166,7 +166,7 @@ const SummaryEmail = (props) => {
                     <div style={message}>
                       <b style={greetingStyles}>{makeSuccessExpression()}!</b><br />
                       {`
-                      Way to go on your first PARABOL Meeting!
+                      Way to go on your first Parabol Meeting!
                       You are unlocking new superpowers.
                       High-performing teams have regular habits!
                       Create a 30-minute meeting at the start of each week.

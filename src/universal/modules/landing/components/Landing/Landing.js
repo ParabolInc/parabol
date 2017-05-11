@@ -59,18 +59,18 @@ const Landing = (props) => {
         {/* Video */}
         <div className={css(styles.section)}>
           <div className={css(styles.container)}>
-            <h2 className={css(styles.sectionHeading, styles.firstHeading)}>PARABOL 101</h2>
+            <h2 className={css(styles.sectionHeading, styles.firstHeading)}>Parabol 101</h2>
             <p className={css(styles.copyGroup, styles.firstCopy)}>
-              {'Curious about how PARABOL works? Here’s a demo video of our beta software. '}
+              {'Curious about how Parabol works? Here’s a demo video of our beta software. '}
               {'Check back frequently for updates as our software evolves!'}
               <br />
               <br />
               <b>
                 <a
                   href="https://docs.google.com/presentation/d/1bxpUB6hLSSZRnkPngZOPggEaQm5_qv5TmgLa9maiglc/edit?usp=sharing"
-                  title="Learn More: The Theory Behind PARABOL"
+                  title="Learn More: The Theory Behind Parabol"
                 >
-                  {'Learn More: The Theory Behind PARABOL'}
+                  {'Learn More: The Theory Behind Parabol'}
                 </a>
               </b>
             </p>
@@ -123,7 +123,7 @@ const Landing = (props) => {
             <br />
             <div className={css(styles.copyGroup)}>
               <p className={css(styles.copyParagraph)}>
-                {'PARABOL Beta is an open-source software solution crafted with care by the folks at Parabol, Inc.'}
+                {'Parabol Beta is an open-source software solution crafted with care by the folks at Parabol, Inc.'}
                 <br />
                 To get involved,{' '}
                 <a

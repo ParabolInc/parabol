@@ -56,7 +56,7 @@ const WelcomeEmail = (props) => {
           We’re <i>so glad</i> you’re here!!
         </Callout>
         <EmptySpace height={48} />
-        <b>PARABOL</b> is a place where you can:
+        <b>Parabol</b> is a place where you can:
         <EmptySpace height={32} />
         <Features vSpacing={0} />
         <EmptySpace height={32} />
@@ -79,7 +79,7 @@ WelcomeEmail.propTypes = {
 export const welcomeEmailText = (props) => `
 Hello ${props.email},
 
-Thank you for signing up for PARABOL!
+Thank you for signing up for Parabol!
 
 Greater team momentum is only a few clicks away. Can you feel it? It's
 like a refreshing breeze through your hair.

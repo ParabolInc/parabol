@@ -24,7 +24,7 @@ const Header = (props) => {
               <tbody>
                 <tr>
                   <td style={cellStyle}>
-                    PARABOL
+                    Parabol
                   </td>
                 </tr>
               </tbody>
