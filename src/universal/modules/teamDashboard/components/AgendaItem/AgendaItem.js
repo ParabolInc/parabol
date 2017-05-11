@@ -155,6 +155,7 @@ const styleThunk = () => ({
     fontWeight: 700,
     lineHeight,
     position: 'relative',
+    wordBreak: 'break-word',
 
     '::before': {
       content: '"“"',
