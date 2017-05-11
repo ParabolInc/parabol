@@ -7,7 +7,7 @@ import {requireAuth, requireSUOrTeamMember} from 'server/utils/authorization';
 export default {
   getMeetingById: {
     type: Meeting,
-    description: 'A query for a team\'s meeting',
+    description: 'A query for a team’s meeting',
     args: {
       id: {
         type: new GraphQLNonNull(GraphQLID),

@@ -10,7 +10,7 @@ import {
 
 const signoutSuccess = {
   title: 'Tootles!',
-  message: 'You\'ve been logged out successfully.'
+  message: 'You’ve been logged out successfully.'
 };
 
 export default function signout(dispatch, router) {

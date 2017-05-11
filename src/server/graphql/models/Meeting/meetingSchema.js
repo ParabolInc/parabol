@@ -123,7 +123,7 @@ const MeetingInvitee = new GraphQLObjectType({
     },
     picture: {
       type: GraphQLURLType,
-      description: 'url of user\'s profile picture'
+      description: 'url of user’s profile picture'
     },
     preferredName: {
       type: GraphQLString,

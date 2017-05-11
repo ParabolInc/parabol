@@ -90,7 +90,7 @@ const OrgMembers = (props) => {
         const {error} = await cashay.mutate('inactivateUser', {variables});
         if (error) {
           dispatch(showError({
-            title: 'Oh dear...',
+            title: 'Oh dear…',
             message: error._error || 'Cannot pause user'
           }));
         }
@@ -98,7 +98,7 @@ const OrgMembers = (props) => {
         dispatch(
           showInfo({
             title: 'We got you covered',
-            message: 'We\'ll unpause that user the next time they log in so you don\'t pay a penny more than necessary'
+            message: 'We’ll unpause that user the next time they log in so you don’t pay a penny more than necessary'
           })
         );
         // pop toast until we do find a way to display locally?

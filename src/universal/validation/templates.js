@@ -5,7 +5,7 @@ import {PROJECT_MAX_CHARS} from 'universal/utils/constants';
 
 export const avatar = {
   size: (value) => value
-    .int('Hey! Don\'t monkey with that!')
+    .int('Hey! Don’t monkey with that!')
     .test((raw) => {
       if (raw > APP_MAX_AVATAR_FILE_SIZE) {
         return `File too large! It must be <${APP_MAX_AVATAR_FILE_SIZE / 1024}kB`;
@@ -34,11 +34,11 @@ export const inviteesRaw = (value) => value
         const parseable = emailAddresses.parseAddressList(lastGoodString);
         if (parseable) {
           const startingIdx = lastGoodString.lastIndexOf(',') + 1;
-          return `The email after ${lastGoodString.substr(startingIdx)} doesn't look quite right`;
+          return `The email after ${lastGoodString.substr(startingIdx)} doesn’t look quite right`;
         }
         i = lastGoodString.lastIndexOf(',');
       }
-      return 'That first email doesn\'t look right';
+      return 'That first email doesn’t look right';
     }
     return undefined;
   });
@@ -50,13 +50,13 @@ export const requiredId = (value) => value.required().matches(idRegex);
 export const requiredEmail = (value) => value
   .trim()
   .required('You should enter an email here')
-  .matches(emailRegex, 'That doesn\'t look like an email address');
+  .matches(emailRegex, 'That doesn’t look like an email address');
 
 export const makeInviteeTemplate = (inviteEmails, teamMemberEmails, pendingApprovalEmails = []) => {
   return (value) => value
     .trim()
     .required('You should enter an email here')
-    .matches(emailRegex, 'That doesn\'t look like an email address')
+    .matches(emailRegex, 'That doesn’t look like an email address')
     .test((inviteTeamMember) => {
       return inviteEmails.includes(inviteTeamMember) && 'That person has already been invited!';
     })
@@ -67,7 +67,7 @@ export const makeInviteeTemplate = (inviteEmails, teamMemberEmails, pendingAppro
 export const orgName = (value) => value
   .trim()
   .required('Your new org needs a name!')
-  .min(2, 'C\'mon, you call that an organization?')
+  .min(2, 'C’mon, you call that an organization?')
   .max(100, 'Maybe just the legal name?');
 
 export const orgRejectionReason = (value) => value
@@ -77,20 +77,19 @@ export const orgRejectionReason = (value) => value
 
 export const preferredName = (value) => value
   .trim()
-  .required('That\'s not much of a name, is it?')
-  .min(2, 'C\'mon, you call that a name?')
+  .required('That’s not much of a name, is it?')
+  .min(2, 'C’mon, you call that a name?')
   .max(100, 'I want your name, not your life story');
 
 export const task = (value) => value
   .trim()
-  .min(2, 'That doesn\'t seem like much of a task')
+  .min(2, 'That doesn’t seem like much of a task')
   .max(PROJECT_MAX_CHARS, 'Try shortening down the task name');
 
 export const teamName = (value) => value
   .trim()
-  .required('"The nameless wonder" is better than nothing')
-  .min(2, 'The "A Team" had a longer name than that')
-  .max(50, 'That isn\'t very memorable. Maybe shorten it up?');
+  .required('“The nameless wonder” is better than nothing')
+  .min(2, 'The “A Team” had a longer name than that')
+  .max(50, 'That isn’t very memorable. Maybe shorten it up?');
 
 export const url = (value) => value.matches(urlRegex);
-

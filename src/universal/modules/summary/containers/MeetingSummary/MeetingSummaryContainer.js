@@ -88,7 +88,7 @@ export default class MeetingSummaryContainer extends Component {
       return <LoadingView />;
     }
     const {teamId} = meeting;
-    const title = `Action Meeting #${meeting.meetingNumber} Summary for ${meeting.teamName}`;
+    const title = `Parabol Meeting #${meeting.meetingNumber} Summary for ${meeting.teamName}`;
     const meetingUrl = makeHref(`/meeting/${teamId}`);
     const teamDashUrl = `/team/${teamId}`;
 

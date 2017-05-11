@@ -121,7 +121,7 @@ export const User = new GraphQLObjectType({
     },
     picture: {
       type: GraphQLURLType,
-      description: 'url of user\'s profile picture'
+      description: 'url of user’s profile picture'
     },
     updatedAt: {
       type: GraphQLISO8601Type,
@@ -191,7 +191,7 @@ export const UserInput = new GraphQLInputObjectType({
     id: {type: GraphQLID, description: 'The unique userId'},
     picture: {
       type: GraphQLURLType,
-      description: 'A link to the user\'s profile image.'
+      description: 'A link to the user’s profile image.'
     },
     preferredName: {
       type: GraphQLString,

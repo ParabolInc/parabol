@@ -8,12 +8,12 @@ import {setNextUrl} from 'universal/redux/authDuck';
 
 const unauthorizedDefault = {
   title: 'Unauthorized',
-  message: 'Hey! You\'re not supposed to be there. Bringing you someplace safe.'
+  message: 'Hey! You’re not supposed to be there. Bringing you someplace safe.'
 };
 
 const unauthenticatedDefault = {
   title: 'Unauthenticated',
-  message: 'Hey! You haven\'t signed in yet. Taking you to the sign in page.'
+  message: 'Hey! You haven’t signed in yet. Taking you to the sign in page.'
 };
 
 const mapStateToProps = (state) => {

@@ -12,7 +12,9 @@ const ExpiredTrialCallOut = (props) => {
   const control = <CreditCardModalContainer orgId={orgId} toggle={button} />;
   return (
     <CallOutPanel control={control} heading={'Your trial expired!'}>
-      <span>Your 30-day trial expired on <b>{trialEnd}</b>. Add your <br />credit card to continue using Action with your teams.</span>
+      <span>
+        {'Your 30-day trial expired on '}<b>{trialEnd}</b>{'. Add your '}<br />{'credit card to continue using Parabol with your teams.'}
+      </span>
     </CallOutPanel>
   );
 };

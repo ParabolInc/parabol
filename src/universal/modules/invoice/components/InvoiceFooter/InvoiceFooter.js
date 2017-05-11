@@ -12,7 +12,7 @@ const InvoiceFooter = (props) => {
   return (
     <div className={css(styles.footer)}>
       <div className={css(styles.heading)}>
-        {'Thank you for using Action!'}
+        {'Thank you for using Parabol!'}
       </div>
       <div className={css(styles.copy)}>
         {'Questions? Concerns?'}<br />

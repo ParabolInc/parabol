@@ -169,7 +169,7 @@ export default {
   },
   createOrgPicturePutUrl: {
     type: GraphQLURLType,
-    description: 'Create a PUT URL on the CDN for an organization\'s profile picture',
+    description: 'Create a PUT URL on the CDN for an organization’s profile picture',
     args: {
       contentType: {
         type: GraphQLString,
@@ -213,7 +213,7 @@ export default {
       },
       role: {
         type: GraphQLString,
-        description: 'the user\'s new role'
+        description: 'the user’s new role'
       }
     },
     async
@@ -237,7 +237,7 @@ export default {
           })
           .count();
         if (leaderCount === 1) {
-          throw errorObj({_error: 'You\'re the last leader, you can\'t give that up'});
+          throw errorObj({_error: 'You’re the last leader, you can’t give that up'});
         }
       }
 

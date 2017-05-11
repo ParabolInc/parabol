@@ -10,9 +10,9 @@ export const invalidInvitation = {
 };
 
 export const inviteNotFound = {
-  title: 'Invitation not found, but don\'t worry',
+  title: 'Invitation not found, but don’t worry',
   message: `
-              Hey we couldn't find that invitation. If you'd like to
+              Hey we couldn’t find that invitation. If you’d like to
               create your own team, you can start that process here.
             `,
   action: {
@@ -33,16 +33,16 @@ export const teamAlreadyJoined = {
 };
 
 export const successfulJoin = {
-  title: 'You\'re in!',
+  title: 'You’re in!',
   message: `
-            Welcome to Action. Let's get you set up.
+            Welcome to Parabol. Let’s get you set up.
           `
 };
 
 export const successfulExistingJoin = {
-  title: 'You\'re in!',
+  title: 'You’re in!',
   message: `
-            Welcome to the new team. 
+            Welcome to the new team.
           `
 };
 

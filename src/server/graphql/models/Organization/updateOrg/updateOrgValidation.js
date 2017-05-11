@@ -7,7 +7,7 @@ export default function updateOrgValidation() {
     picture: url,
     name: (value) => value
       .trim()
-      .min(2, 'The "A Team" had a longer name than that')
-      .max(50, 'That isn\'t very memorable. Maybe shorten it up?')
+      .min(2, 'The “A Team” had a longer name than that')
+      .max(50, 'That isn’t very memorable. Maybe shorten it up?')
   });
 }
