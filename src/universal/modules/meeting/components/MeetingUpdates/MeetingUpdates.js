@@ -29,6 +29,7 @@ const MeetingUpdates = (props) => {
               colorPalette="cool"
               icon="arrow-circle-right"
               iconPlacement="right"
+              key={`update${localPhaseItem}`}
               label={isLastMember ? 'Move on to the Agenda' : 'Next team member '}
               onClick={gotoNext}
               size="small"
