@@ -4,3 +4,4 @@ export default async function resolvePromiseMap(promiseMap) {
   const values = await Promise.all(promises);
   return new Map(values.map((value, i) => [keys[i], value]));
 }
+

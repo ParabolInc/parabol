@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import TeamArchive from 'universal/modules/teamDashboard/components/TeamArchive/TeamArchive';
@@ -35,7 +36,7 @@ query {
 // };
 
 const mapStateToProps = (state, props) => {
-  const {teamId} = props.params;
+  const {match: {params: {teamId}}} = props;
   const teamArchiveContainer = cashay.query(teamArchiveQuery, {
     op: 'teamArchiveContainer',
     key: teamId,
@@ -49,23 +50,27 @@ const mapStateToProps = (state, props) => {
   });
   const {archivedProjects} = teamArchiveContainer.data;
   return {
-    archivedProjects
+    archivedProjects,
+    teamId
   };
 };
 
 const TeamArchiveContainer = (props) => {
-  const {archivedProjects, params: {teamId}} = props;
+  const {archivedProjects, teamId, teamName} = props;
   return (
     <TeamArchive
       archivedProjects={archivedProjects}
       teamId={teamId}
+      teamName={teamName}
     />
   );
 };
 
 TeamArchiveContainer.propTypes = {
   archivedProjects: PropTypes.array.isRequired,
-  params: PropTypes.object.isRequired
+  match: PropTypes.object.isRequired,
+  teamId: PropTypes.string.isRequired,
+  teamName: PropTypes.string
 };
 
 export default connect(mapStateToProps)(TeamArchiveContainer);

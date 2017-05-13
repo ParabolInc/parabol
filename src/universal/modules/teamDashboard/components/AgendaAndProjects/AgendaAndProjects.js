@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
@@ -6,11 +7,14 @@ import TeamColumnsContainer from 'universal/modules/teamDashboard/containers/Tea
 import TeamProjectsHeaderContainer from 'universal/modules/teamDashboard/containers/TeamProjectsHeader/TeamProjectsHeaderContainer';
 import AgendaHeader from 'universal/modules/teamDashboard/components/AgendaHeader/AgendaHeader';
 import AgendaListAndInputContainer from 'universal/modules/teamDashboard/containers/AgendaListAndInput/AgendaListAndInputContainer';
+import Helmet from 'react-helmet';
 
 const AgendaAndProjects = (props) => {
-  const {hideAgenda, teamId, styles} = props;
+  const {hideAgenda, teamId, teamName, styles} = props;
+  // const pageTitle = `${team.name} Team Dashboard | Parabol`;
   return (
     <div className={css(styles.root)}>
+      <Helmet title={`${teamName} | Parabol`} />
       <div className={css(styles.headers)}>
         <div className={css(styles.agendaLayout)}>
           <AgendaHeader hideAgenda={hideAgenda} teamId={teamId} />
@@ -35,9 +39,9 @@ const AgendaAndProjects = (props) => {
 
 AgendaAndProjects.propTypes = {
   hideAgenda: PropTypes.bool,
-  params: PropTypes.object,
   styles: PropTypes.object,
   teamId: PropTypes.string,
+  teamName: PropTypes.string,
   teamMembers: PropTypes.array
 };
 

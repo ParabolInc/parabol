@@ -1,11 +1,11 @@
 /* eslint react/no-danger:0 */
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import {Provider} from 'react-redux';
-import {RouterContext} from 'react-router';
 import {renderToString} from 'react-dom/server';
 import makeSegmentSnippet from '@segment/snippet';
 import getWebpackPublicPath from 'server/utils/getWebpackPublicPath';
-
+import {StaticRouter} from 'react-router';
 
 const webpackPublicPath = getWebpackPublicPath();
 const segKey = process.env.SEGMENT_WRITE_KEY;
@@ -15,16 +15,21 @@ const segmentSnippet = segKey && makeSegmentSnippet.min({
 });
 
 // Injects the server rendered state and app into a basic html template
-export default function Html({store, assets, StyleSheetServer, renderProps, clientKeyLoader}) {
+export default function Html({store, assets, clientKeyLoader}) {
+  // const ActionContainer = require('../../build/prerender');
+  const {default: ActionContainer, StyleSheetServer} = require('../../build/prerender');
   const {manifest, app, vendor} = assets;
   // TURN ON WHEN WE SEND STATE TO CLIENT
   // const initialState = `window.__INITIAL_STATE__ = ${JSON.stringify(store.getState())}`;
   // <script dangerouslySetInnerHTML={{__html: initialState}}/>
+  const context = {};
   const {html, css} = StyleSheetServer.renderStatic(() => {
     try {
       return renderToString(
         <Provider store={store}>
-          <RouterContext {...renderProps} />
+          <StaticRouter location={'/'} context={context}>
+            <ActionContainer />
+          </StaticRouter>
         </Provider>
       );
     } catch (e) {
@@ -57,8 +62,6 @@ export default function Html({store, assets, StyleSheetServer, renderProps, clie
 
 Html.propTypes = {
   clientKeyLoader: PropTypes.string.isRequired,
-  StyleSheetServer: PropTypes.object,
   store: PropTypes.object.isRequired,
-  assets: PropTypes.object,
-  renderProps: PropTypes.object
+  assets: PropTypes.object
 };

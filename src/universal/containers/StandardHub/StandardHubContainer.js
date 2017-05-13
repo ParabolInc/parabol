@@ -1,8 +1,10 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import {cashay} from 'cashay';
 import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
 import {connect} from 'react-redux';
 import StandardHub from 'universal/components/StandardHub/StandardHub';
+import {withRouter} from 'react-router-dom';
 
 const notificationsQuery = `
 query {
@@ -35,20 +37,20 @@ const mapStateToProps = (state) => {
 };
 
 const StandardHubContainer = (props) => {
-  const {location, notificationCount, user: {picture, preferredName, email}} = props;
+  const {history, notificationCount, user: {picture, preferredName, email}} = props;
   return (
     <StandardHub
       email={email}
-      location={location}
       notificationCount={notificationCount}
       picture={picture}
       preferredName={preferredName}
+      history={history}
     />
   );
 };
 
 StandardHubContainer.propTypes = {
-  location: PropTypes.string,
+  history: PropTypes.object.isRequired,
   notificationCount: PropTypes.number,
   user: PropTypes.shape({
     email: PropTypes.string,
@@ -57,4 +59,5 @@ StandardHubContainer.propTypes = {
   }).isRequired
 };
 
-export default connect(mapStateToProps)(StandardHubContainer);
+// router required to update nested content on route changes
+export default withRouter(connect(mapStateToProps)(StandardHubContainer));

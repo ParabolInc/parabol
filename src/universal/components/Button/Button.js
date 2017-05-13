@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import tinycolor from 'tinycolor2';
 import {css} from 'aphrodite-local-styles/no-important';

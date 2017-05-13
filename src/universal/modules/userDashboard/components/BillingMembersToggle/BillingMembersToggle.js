@@ -1,23 +1,24 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import {BILLING_PAGE, MEMBERS_PAGE} from 'universal/utils/constants';
 import ToggleNav from 'universal/components/ToggleNav/ToggleNav';
-import {withRouter} from 'react-router';
+import {withRouter} from 'react-router-dom';
 
 const BillingMembersToggle = (props) => {
-  const {activeOrgDetail, router, orgId} = props;
+  const {activeOrgDetail, history, orgId} = props;
 
   const items = [
     {
       label: 'Billing',
       icon: 'credit-card',
       isActive: activeOrgDetail === BILLING_PAGE,
-      onClick: () => router.push(`/me/organizations/${orgId}/billing`)
+      onClick: () => history.push(`/me/organizations/${orgId}/billing`)
     },
     {
       label: 'Members',
       icon: 'users',
       isActive: activeOrgDetail === MEMBERS_PAGE,
-      onClick: () => router.push(`/me/organizations/${orgId}/members`)
+      onClick: () => history.push(`/me/organizations/${orgId}/members`)
     }
   ];
 
@@ -29,7 +30,7 @@ const BillingMembersToggle = (props) => {
 BillingMembersToggle.propTypes = {
   activeOrgDetail: PropTypes.string.isRequired,
   orgId: PropTypes.string.isRequired,
-  router: PropTypes.object.isRequired
+  history: PropTypes.object.isRequired
 };
 
 export default withRouter(BillingMembersToggle);

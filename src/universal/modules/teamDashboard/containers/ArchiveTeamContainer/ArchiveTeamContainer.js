@@ -1,19 +1,20 @@
-import React, {Component, PropTypes} from 'react';
-import {connect} from 'react-redux';
-import {withRouter} from 'react-router';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import {withRouter} from 'react-router-dom';
 import {cashay} from 'cashay';
 import ArchiveTeam from 'universal/modules/teamDashboard/components/ArchiveTeam/ArchiveTeam';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
 
-@connect()
 @withRouter
 export default class ArchiveTeamContainer extends Component {
+  static contextTypes = {
+    store: PropTypes.object
+  };
 
   static propTypes = {
-    dispatch: PropTypes.func.isRequired,
     teamId: PropTypes.string.isRequired,
     teamName: PropTypes.string.isRequired,
-    router: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired
   }
 
   constructor(props) {
@@ -31,11 +32,12 @@ export default class ArchiveTeamContainer extends Component {
 
   archiveTeam = () => {
     return new Promise((resolve) => {
-      const {dispatch, teamId, router} = this.props;
+      const {store: {dispatch}} = this.context;
+      const {teamId, history} = this.props;
       const variables = {teamId};
       cashay.mutate('archiveTeam', {variables});
       dispatch(segmentEventTrack('Archive Team', { teamId }));
-      router.push('/me');
+      history.push('/me');
       resolve();
     });
   }

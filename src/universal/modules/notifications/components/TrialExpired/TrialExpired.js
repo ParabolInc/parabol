@@ -1,5 +1,6 @@
-import React, {PropTypes} from 'react';
-import {withRouter} from 'react-router';
+import PropTypes from 'prop-types';
+import React from 'react';
+import {withRouter} from 'react-router-dom';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import Button from 'universal/components/Button/Button';
@@ -11,12 +12,12 @@ import ui from 'universal/styles/ui';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
 
 const TrialExpired = (props) => {
-  const {dispatch, orgId, router, styles} = props;
+  const {dispatch, orgId, history, styles} = props;
   const addBilling = () => {
     dispatch(
       segmentEventTrack('Notification TrialExpired Click')
     );
-    router.push(`/me/organizations/${orgId}`);
+    history.push(`/me/organizations/${orgId}`);
   };
   return (
     <Row>
@@ -48,7 +49,7 @@ const TrialExpired = (props) => {
 TrialExpired.propTypes = {
   dispatch: PropTypes.func.isRequired,
   orgId: PropTypes.string.isRequired,
-  router: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
   styles: PropTypes.string
 };
 
