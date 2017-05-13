@@ -58,6 +58,7 @@ stages:
           if [ "${CIRCLE_BRANCH}" == "production" ]; then
             export DEPLOY_ENV="production"
           elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+            curl -X POST -H 'Content-type: application/json' --data '{"text":"Running Pre-build..."}' $SLACK_STAGING_URL
             export DEPLOY_ENV="staging"
           else
             export DEPLOY_ENV="development"
@@ -98,6 +99,7 @@ stages:
           if [ "${CIRCLE_BRANCH}" == "production" ]; then
             export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION}"
           elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+            curl -X POST -H 'Content-type: application/json' --data '{"text":"Deploying..."}' $SLACK_STAGING_URL
             export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}"
           fi
           if [ -n "${GITHUB_REMOTE}" ]; then
