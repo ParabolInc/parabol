@@ -1,8 +1,8 @@
-import React, {PropTypes, Component} from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import Helmet from 'react-helmet';
-import {withRouter} from 'react-router';
 import requireAuthAndRole from 'universal/decorators/requireAuthAndRole/requireAuthAndRole';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import {showError} from 'universal/modules/toast/ducks/toastDuck';
@@ -22,7 +22,7 @@ query {
   }
 }`;
 
-function createImposter(userId, dispatch, router) {
+function createImposter(userId, dispatch, history) {
   const variables = {userId};
   cashay.mutate('createImposterToken', {variables}).then(async ({data, error}) => {
     if (error) {
@@ -38,7 +38,7 @@ function createImposter(userId, dispatch, router) {
     // Assume the identity of the new user:
     await signinAndUpdateToken(dispatch, profile, jwt);
     // Navigate to a default location, the application root:
-    router.replace('/');
+    history.replace('/');
   });
 }
 
@@ -52,7 +52,7 @@ const mutationHandlers = {
 };
 
 const mapStateToProps = (state, props) => {
-  const {params: {newUserId}} = props;
+  const {match: {params: {newUserId}}} = props;
   const userId = state.auth.obj.sub;
   const {user} = cashay.query(impersonateTokenQuery, {
     op: 'impersonate',
@@ -75,22 +75,22 @@ const showDucks = () => {
 };
 
 @connect(mapStateToProps)
-@withRouter
 @requireAuthAndRole('su', {silent: true})
 export default class Impersonate extends Component {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
+    match: PropTypes.object.isRequired,
     newUserId: PropTypes.string,
-    router: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired
   };
 
   componentWillMount() {
-    const {dispatch, newUserId, router} = this.props;
+    const {dispatch, newUserId, history} = this.props;
 
     if (!newUserId) {
       return;
     }
-    createImposter(newUserId, dispatch, router);
+    createImposter(newUserId, dispatch, history);
   }
 
   render() {

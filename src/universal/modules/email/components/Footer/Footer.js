@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import EmptySpace from '../EmptySpace/EmptySpace';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -83,7 +84,7 @@ const Footer = (props) => {
 };
 
 Footer.propTypes = {
-  color: React.PropTypes.string.isRequired
+  color: PropTypes.string.isRequired
 };
 
 export default Footer;

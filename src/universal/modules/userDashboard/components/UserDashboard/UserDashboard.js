@@ -1,27 +1,44 @@
-import React, {PropTypes} from 'react';
-import DashboardWrapper from 'universal/components/DashboardWrapper/DashboardWrapper';
-import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
-import {DragDropContext as dragDropContext} from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
+import PropTypes from 'prop-types';
+import React from 'react';
+import {Switch} from 'react-router-dom';
+import userDashReducer from 'universal/modules/userDashboard/ducks/userDashDuck';
+import withReducer from '../../../../decorators/withReducer/withReducer';
+import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 
 const UserDashboard = (props) => {
-  const {children, location: {pathname}} = props;
-  const title = pathname === '/me' ? 'My Dashboard | Parabol' : 'My Settings | Parabol';
+  const {match} = props;
   return (
-    <DashboardWrapper location={pathname} title={title}>
-      {children}
-    </DashboardWrapper>
+    <Switch>
+      <AsyncRoute
+        exact
+        path={match.url}
+        mod={() => System.import('universal/modules/userDashboard/components/UserDashMain/UserDashMain')}
+      />
+      <AsyncRoute
+        path={`${match.url}/settings`}
+        mod={() => System.import('universal/modules/userDashboard/containers/UserSettings/UserSettingsContainer')}
+      />
+      <AsyncRoute
+        exact
+        path={`${match.url}/organizations`}
+        mod={() => System.import('universal/modules/userDashboard/containers/Organizations/OrganizationsContainer')}
+      />
+      <AsyncRoute
+        path={`${match.url}/organizations/:orgId/:orgArea?`}
+        mod={() => System.import('universal/modules/userDashboard/containers/Organization/OrganizationContainer')}
+      />
+      <AsyncRoute
+        path={`${match.url}/notifications`}
+        mod={() => System.import('universal/modules/notifications/containers/Notifications/NotificationsContainer')}
+      />
+    </Switch>
   );
 };
 
 UserDashboard.propTypes = {
-  children: PropTypes.any,
-  location: PropTypes.object
+  match: PropTypes.object.isRequired
 };
 
-export default
-dragDropContext(HTML5Backend)(
-  socketWithPresence(
-    UserDashboard
-  )
+export default withReducer({userDashboard: userDashReducer})(
+  UserDashboard
 );

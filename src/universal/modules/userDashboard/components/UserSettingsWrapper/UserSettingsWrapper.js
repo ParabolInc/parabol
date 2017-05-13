@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import {
   DashContent,
   DashHeader,
@@ -34,11 +35,11 @@ const mapStateToProps = (state) => {
 };
 
 const UserSettings = (props) => {
-  const {settingsLocation, children} = props;
+  const {children} = props;
   return (
     <DashMain>
       <DashHeader>
-        <SettingsHeader location={settingsLocation} />
+        <SettingsHeader />
       </DashHeader>
       <DashContent padding="0 0 0 1rem">
         {children}
@@ -50,7 +51,6 @@ const UserSettings = (props) => {
 
 UserSettings.propTypes = {
   notificationCount: PropTypes.number,
-  settingsLocation: PropTypes.string,
   children: PropTypes.any
 };
 

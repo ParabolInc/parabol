@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import GraphiQL from 'graphiql';
 import fetch from 'isomorphic-fetch';
 import {connect} from 'react-redux';

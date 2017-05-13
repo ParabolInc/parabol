@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import Organization from 'universal/modules/userDashboard/components/Organization/Organization';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
@@ -20,7 +21,7 @@ query {
 `;
 
 const mapStateToProps = (state, props) => {
-  const {params: {orgId, orgArea}} = props;
+  const {match: {params: {orgId, orgArea}}} = props;
   const {billingLeaders, organization: org} = cashay.query(organizationContainerQuery, {
     op: 'organizationContainer',
     key: orgId,

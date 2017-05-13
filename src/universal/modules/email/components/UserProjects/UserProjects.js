@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import EmptySpace from '../../components/EmptySpace/EmptySpace';
 import ProjectsTable from '../ProjectsTable/ProjectsTable';
 import appTheme from 'universal/styles/theme/appTheme';

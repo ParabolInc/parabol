@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -12,11 +13,13 @@ import {
   makeDateString
 } from 'universal/components/Dashboard';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
+import Helmet from 'react-helmet';
 
 const UserDashMain = (props) => {
   const {styles} = props;
   return (
     <DashMain>
+      <Helmet title="My Dashboard | Parabol" />
       <DashHeader>
         <DashHeaderInfo title="My Dashboard">
           <div className={css(styles.headerCopy)}>

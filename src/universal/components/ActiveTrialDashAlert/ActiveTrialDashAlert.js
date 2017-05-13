@@ -1,8 +1,9 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
-import {Link} from 'react-router';
+import {Link} from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
 import {DashAlert} from 'universal/components/Dashboard';
 import {segmentEventTrack} from 'universal/redux/segmentActions';

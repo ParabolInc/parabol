@@ -1,59 +1,60 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
-import {Link, withRouter} from 'react-router';
+import {NavLink} from 'react-router-dom';
 import DashNavItemBaseStyles from './DashNavItemBaseStyles';
-import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 
 const DashNavItem = (props) => {
-  const {label, href, styles, router} = props;
-  const flagChildren = href === '/me';
-  const isActive = router.isActive(href, flagChildren);
-  const linkStyles = css(
-    styles.link,
-    isActive && styles.active
-  );
+  const {label, href, styles} = props;
   return (
-    <Link
-      className={linkStyles}
+    <NavLink
+      activeClassName={css(styles.link, styles.active)}
+      className={css(styles.link)}
+      exact={href === '/me'}
       title={label}
       to={href}
     >
       {label}
-    </Link>
+    </NavLink>
   );
 };
 
 DashNavItem.propTypes = {
   href: PropTypes.string,
   label: PropTypes.string,
-  router: PropTypes.object,
   styles: PropTypes.object
 };
 
 const styleThunk = () => ({
   link: {
     ...DashNavItemBaseStyles,
-
-    ...makeHoverFocus({
+    ':hover': {
       backgroundColor: appTheme.palette.dark50a,
       color: 'inherit',
       cursor: 'pointer',
       textDecoration: 'none'
-    })
+    },
+    ':focus': {
+      color: 'inherit',
+      cursor: 'pointer',
+      textDecoration: 'none'
+    }
   },
 
   active: {
     backgroundColor: appTheme.palette.dark,
-
-    ...makeHoverFocus({
+    cursor: 'default',
+    textDecoration: 'none',
+    ':hover': {
       backgroundColor: appTheme.palette.dark,
-      cursor: 'default'
-    })
+      color: 'inherit',
+      cursor: 'pointer',
+      textDecoration: 'none'
+    }
   }
 });
 
-export default withRouter(
-  withStyles(styleThunk)(DashNavItem)
-);
+// router for navlink unblock
+export default withStyles(styleThunk)(DashNavItem);

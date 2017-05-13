@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import Button from 'universal/components/Button/Button';
 import InputField from 'universal/components/InputField/InputField';
 import Panel from 'universal/components/Panel/Panel';
@@ -9,11 +10,11 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
-import {SETTINGS} from 'universal/utils/constants';
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
 import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
 import UserAvatarInput from 'universal/modules/userDashboard/components/UserAvatarInput/UserAvatarInput';
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
+import Helmet from 'react-helmet';
 
 const renderActivity = (activity) => {
   if (activity === ACTIVITY_WELCOME) {
@@ -32,7 +33,8 @@ const UserSettings = (props) => {
   const pictureOrDefault = picture || defaultUserAvatar;
   const toggle = <EditableAvatar picture={pictureOrDefault} size={96} />;
   return (
-    <UserSettingsWrapper settingsLocation={SETTINGS}>
+    <UserSettingsWrapper>
+      <Helmet title="My Settings | Parabol" />
       <div className={css(styles.body)}>
         <Panel label="My Information">
           <form className={css(styles.form)} onSubmit={handleSubmit(onSubmit)}>
@@ -78,7 +80,6 @@ UserSettings.propTypes = {
   handleSubmit: PropTypes.func,
   nextPage: PropTypes.string,          // from settingsDuck
   onSubmit: PropTypes.func,
-  router: PropTypes.object,
   user: PropTypes.shape({
     email: PropTypes.string,
     id: PropTypes.string,

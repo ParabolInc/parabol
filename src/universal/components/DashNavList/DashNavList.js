@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import DashNavItem from '../Dashboard/DashNavItem';
@@ -19,7 +20,6 @@ const DashNavList = (props) => {
               <DashNavItem
                 href={`/team/${team.id}`}
                 label={team.name}
-                isPaid={team.isPaid}
               />
             </div>
           )}

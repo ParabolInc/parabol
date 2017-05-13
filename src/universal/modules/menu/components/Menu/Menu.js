@@ -1,4 +1,5 @@
-import React, {PropTypes, Children, cloneElement} from 'react';
+import PropTypes from 'prop-types';
+import React, { Children, cloneElement } from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';

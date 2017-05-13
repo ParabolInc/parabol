@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import Layout from '../../components/Layout/Layout';
 import Button from '../../components/Button/Button';
 import EmptySpace from '../../components/EmptySpace/EmptySpace';

@@ -1,5 +1,6 @@
-import React, {PropTypes} from 'react';
-import {Link} from 'react-router';
+import PropTypes from 'prop-types';
+import React from 'react';
+import {Link} from 'react-router-dom';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';

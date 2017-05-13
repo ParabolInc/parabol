@@ -1,9 +1,9 @@
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {cashay} from 'cashay';
 import {showLock} from 'universal/components/Auth0ShowLock/Auth0ShowLock';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
-import {withRouter} from 'react-router';
 import {showError, showSuccess, showWarning} from 'universal/modules/toast/ducks/toastDuck';
 import {setAuthToken} from 'universal/redux/authDuck';
 import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
@@ -17,9 +17,11 @@ import {
   successfulJoin,
   successfulExistingJoin
 } from 'universal/modules/invitation/helpers/notifications';
+import withReducer from 'universal/decorators/withReducer/withReducer';
+import userSettingsReducer from 'universal/modules/userDashboard/ducks/settingsDuck';
 
 const mapStateToProps = (state, props) => {
-  const {params: {id}} = props;
+  const {match: {params: {id}}} = props;
   const auth = state.auth.obj;
   return {
     auth,
@@ -29,14 +31,14 @@ const mapStateToProps = (state, props) => {
 };
 
 @connect(mapStateToProps)
-@withRouter
+@withReducer({userDashboardSettings: userSettingsReducer})
 export default class Invitation extends Component {
   static propTypes = {
     auth: PropTypes.object,
     dispatch: PropTypes.func.isRequired,
     inviteToken: PropTypes.string.isRequired,
-    router: PropTypes.object.isRequired,
-    withRouter: PropTypes.object
+    match: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired
   };
 
   // use DidMount to be SSR friendly
@@ -65,7 +67,7 @@ export default class Invitation extends Component {
         this.processInvitation();
       } else {
         // If user already has an account, let them accept the new team via the UI:
-        router.push('/me');
+        history.push('/me');
       }
       */
 
@@ -75,13 +77,13 @@ export default class Invitation extends Component {
       // if (!processedInvitation) {
       this.processInvitation();
       // } else {
-      //   router.push('/me');
+      //   history.push('/me');
       // }
     }
   };
 
   processInvitation = () => {
-    const {dispatch, inviteToken, router} = this.props;
+    const {dispatch, inviteToken, history} = this.props;
     const options = {
       variables: {
         inviteToken
@@ -95,7 +97,7 @@ export default class Invitation extends Component {
              * This should be *very* difficult to have occur:
              */
             dispatch(showError(teamAlreadyJoined));
-            router.push('/me/settings');
+            history.push('/me/settings');
           } else if (error.subtype === 'invalidToken') {
             dispatch(showError(invalidInvitation));
           } else if (error.subtype === 'notFound') {
@@ -106,7 +108,7 @@ export default class Invitation extends Component {
             console.warn('unable to accept invitation:');
             console.warn(error);
           }
-          // router.push('/');
+          // history.push('/');
         } else if (data) {
           const authToken = data.acceptInvitation;
           const {tms} = jwtDecode(authToken);
@@ -114,10 +116,10 @@ export default class Invitation extends Component {
           if (tms.length <= 1) {
             dispatch(showSuccess(successfulJoin));
             dispatch(setWelcomeActivity(`/team/${tms[0]}`));
-            router.push('/me/settings');
+            history.push('/me/settings');
           } else {
             dispatch(showSuccess(successfulExistingJoin));
-            router.push(`/team/${tms[tms.length - 1]}`);
+            history.push(`/team/${tms[tms.length - 1]}`);
           }
         }
       })

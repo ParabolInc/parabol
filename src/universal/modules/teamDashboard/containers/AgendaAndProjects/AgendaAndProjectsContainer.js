@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import AgendaAndProjects from 'universal/modules/teamDashboard/components/AgendaAndProjects/AgendaAndProjects';
@@ -12,7 +13,7 @@ query {
 }`;
 
 const mapStateToProps = (state, props) => {
-  const {params: {teamId}} = props;
+  const {match: {params: {teamId}}} = props;
   const userId = state.auth.obj.sub;
   const {myTeamMember} = cashay.query(agendaAndProjectsQuery, {
     variables: {teamId},
@@ -23,27 +24,30 @@ const mapStateToProps = (state, props) => {
     }
   }).data;
   return {
-    hideAgenda: myTeamMember.hideAgenda
+    hideAgenda: myTeamMember.hideAgenda,
+    teamId
   };
 };
 
 const AgendaAndProjectsContainer = (props) => {
   const {
-    params: {teamId},
+    teamId,
+    teamName,
     hideAgenda
   } = props;
   return (
     <AgendaAndProjects
       hideAgenda={hideAgenda}
       teamId={teamId}
+      teamName={teamName}
     />
   );
 };
 
 AgendaAndProjectsContainer.propTypes = {
   hideAgenda: PropTypes.bool,
-  params: PropTypes.object,
-  teamId: PropTypes.string
+  teamId: PropTypes.string,
+  teamName: PropTypes.string
 };
 
 export default connect(mapStateToProps)(AgendaAndProjectsContainer);

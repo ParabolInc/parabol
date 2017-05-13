@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -16,6 +17,7 @@ import ArchiveTeamContainer from 'universal/modules/teamDashboard/containers/Arc
 import ui from 'universal/styles/ui';
 import IntegrationsContainer from '../../../integrations/containers/Integrations/IntegrationsContainer';
 import Button from '../../../../components/Button/Button';
+import Helmet from 'react-helmet';
 
 const TeamSettings = (props) => {
   const {
@@ -111,6 +113,7 @@ const TeamSettings = (props) => {
 
   return (
     <div className={css(styles.root)}>
+      <Helmet title={`${team.name} Settings | Parabol`} />
       <div className={css(styles.panels)}>
         <Panel label="Manage Team">
           <div className={css(styles.panelBorder)}>

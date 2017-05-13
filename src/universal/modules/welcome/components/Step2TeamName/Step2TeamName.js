@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import InputField from 'universal/components/InputField/InputField';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
 import withStyles from 'universal/styles/withStyles';

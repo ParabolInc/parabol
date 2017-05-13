@@ -1,8 +1,6 @@
-import React, {Component, PropTypes} from 'react';
-import requireAuth from 'universal/decorators/requireAuth/requireAuth';
+import React, { Component } from 'react';
 import UserSettings from 'universal/modules/userDashboard/components/UserSettings/UserSettings';
 import {connect} from 'react-redux';
-import {withRouter} from 'react-router';
 import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import {
@@ -13,7 +11,10 @@ import {reduxForm, initialize} from 'redux-form';
 import {cashay} from 'cashay';
 import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
 import shouldValidate from 'universal/validation/shouldValidate';
+import PropTypes from 'prop-types';
 import raven from 'raven-js';
+import withReducer from 'universal/decorators/withReducer/withReducer';
+import userSettingsReducer from 'universal/modules/userDashboard/ducks/settingsDuck';
 
 const updateSuccess = {
   title: 'Settings saved!',
@@ -37,11 +38,9 @@ const validate = (values) => {
   return schema(values).errors;
 };
 
-// use requireAuth to get the user doc
-@requireAuth
+@withReducer({userDashboardSettings: userSettingsReducer})
 @reduxForm({form: 'userSettings', shouldValidate, validate})
 @connect(mapStateToProps)
-@withRouter
 export default class UserSettingsContainer extends Component {
   static propTypes = {
     activity: PropTypes.string,
@@ -53,7 +52,7 @@ export default class UserSettingsContainer extends Component {
       picture: PropTypes.string,
       preferredName: PropTypes.string
     }),
-    router: PropTypes.object,
+    history: PropTypes.object,
     untouch: PropTypes.func,
     userId: PropTypes.string
   };
@@ -67,21 +66,21 @@ export default class UserSettingsContainer extends Component {
     const {preferredName} = submissionData;
     if (preferredName !== user.preferredName) {
       this.updateProfile(preferredName)
-      .then(this.onSubmitComplete())
-      .catch((e) => raven.captureException(e));
+        .then(this.onSubmitComplete())
+        .catch((e) => raven.captureException(e));
     }
 
     return undefined; // no work to do
   };
 
   onSubmitComplete() {
-    const {activity, dispatch, nextPage, untouch, router} = this.props;
+    const {activity, dispatch, nextPage, untouch, history} = this.props;
     dispatch(showSuccess(updateSuccess));
     if (activity === ACTIVITY_WELCOME) {
       dispatch(clearActivity());
     }
     if (nextPage) {
-      router.push(nextPage);
+      history.push(nextPage);
     }
     untouch('preferredName');
   }
@@ -114,3 +113,4 @@ export default class UserSettingsContainer extends Component {
     );
   }
 }
+

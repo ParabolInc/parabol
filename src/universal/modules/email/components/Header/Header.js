@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import EmptySpace from '../EmptySpace/EmptySpace';
 import ui from 'universal/styles/ui';
@@ -38,7 +39,7 @@ const Header = (props) => {
 };
 
 Header.propTypes = {
-  color: React.PropTypes.string.isRequired
+  color: PropTypes.string.isRequired
 };
 
 export default Header;

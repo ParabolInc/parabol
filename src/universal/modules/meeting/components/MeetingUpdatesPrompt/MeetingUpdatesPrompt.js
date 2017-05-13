@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
 
 const MeetingUpdatesPrompt = (props) => {

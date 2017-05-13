@@ -2,7 +2,7 @@ import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 
 const DashNavItemBaseStyles = {
-  backgroundColor: ui.dashSidebarBackgroundColor,
+  // backgroundColor: ui.dashSidebarBackgroundColor,
   borderRadius: `${ui.buttonBorderRadius} 0 0 ${ui.buttonBorderRadius}`,
   color: 'inherit',
   display: 'block',
