@@ -15,14 +15,6 @@ stages:
       GITHUB_REMOTE_STAGING: "dokku@action-staging.parabol.co:web"
       PRODUCTION_BACKUP_VOLUME: "/mnt/volume-nyc1-01/action-production"
     steps:
-      - type: shell
-      - name: Slack setup
-      - command: |
-        if [ "${CIRCLE_BRANCH}" == "production" ]; then
-          curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI..."}' $SLACK_PROD_URL
-        elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
-          curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI..."}' $SLACK_STAGING_URL
-        fi
       - type: add-ssh-keys
         fingerprints:
           - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
@@ -31,6 +23,15 @@ stages:
 
       - type: cache-restore
         key: action-{{ checksum "yarn.lock" }}
+
+      - type: shell
+      - name: Slack setup
+      - command: |
+        if [ "${CIRCLE_BRANCH}" == "production" ]; then
+          curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI..."}' $SLACK_PROD_URL
+        elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+          curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI..."}' $SLACK_STAGING_URL
+        fi
 
       - type: shell
         name: Install dependencies
