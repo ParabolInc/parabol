@@ -46,7 +46,7 @@ export default function createSSR(req, res) {
     <head>
       <link rel="stylesheet" type="text/css" href="/static/css/font-awesome.css"/>
     </head>
-    <body>
+    <body> 
       <div id="root"></div>
       <script src="/static/vendors.dll.js"></script>
       <script src="/static/app.js"></script>
