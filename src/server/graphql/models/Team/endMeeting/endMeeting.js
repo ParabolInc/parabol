@@ -119,7 +119,9 @@ export default {
     // dispatch segment events:
     getSegmentTraitsForUsers(
       // extract user part of id from x::y invitee:
-      completedMeeting.invitees.map((invitee) => invitee.id.split('::')[0])
+      completedMeeting.invitees
+        .filter((invitee) => invitee.present)
+        .map((invitee) => invitee.id.split('::')[0])
     ).then((segmentTraits) =>
       segmentTraits.forEach((traits) => {
         segmentIo.track({
