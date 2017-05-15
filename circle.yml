@@ -27,7 +27,7 @@ stages:
       - type: shell
         name: Install dependencies
         command: |
-          apt-get update && apt-get -yq install build-essential
+          apt-get update && apt-get -yq install build-essential curl
           if [ ! -x "$(which yarn)" ] ; then
             npm i -g yarn
           fi
