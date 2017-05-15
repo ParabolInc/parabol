@@ -38,8 +38,8 @@ export default [
   {
     channel: ARCHIVED_PROJECTS,
     string: `
-    subscription($teamId: ID!) {
-      archivedProjects(teamId: $teamId) {
+    subscription($teamMemberId: ID!) {
+      archivedProjects(teamMemberId: $teamMemberId) {
         content
         id
         status

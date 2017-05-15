@@ -30,7 +30,7 @@ import {
 const dechannelfy = {
   [AGENDA]: (variableString) => ({teamId: variableString}),
   [AGENDA_PROJECTS]: (agendaId) => ({agendaId}),
-  [ARCHIVED_PROJECTS]: (variableString) => ({teamId: variableString}),
+  [ARCHIVED_PROJECTS]: (variableString) => ({teamMemberId: variableString}),
   [INTEGRATIONS]: (teamMemberId) => ({teamMemberId}),
   [INVITATIONS]: (variableString) => ({teamId: variableString}),
   [NOTIFICATIONS]: (variableString) => ({userId: variableString}),
