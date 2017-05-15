@@ -33,11 +33,12 @@ stages:
       - type: shell
       - name: Slack setup
       - command: |
-        if [ "${CIRCLE_BRANCH}" == "production" ]; then
-          curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI..."}' $SLACK_PROD_URL
-        elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
-          curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI..."}' $SLACK_STAGING_URL
-        fi
+          curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Test CI..."}' $SLACK_STAGING_URL
+          if [ "${CIRCLE_BRANCH}" == "production" ]; then
+            curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI..."}' $SLACK_PROD_URL
+          elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+            curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI..."}' $SLACK_STAGING_URL
+          fi
 
       - type: cache-save
         key: action-{{ checksum "yarn.lock" }}
