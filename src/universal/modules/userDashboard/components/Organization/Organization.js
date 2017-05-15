@@ -1,11 +1,12 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import FontAwesome from 'react-fontawesome';
-import {Link} from 'react-router';
+import {Link} from 'react-router-dom';
 import goBackLabel from 'universal/styles/helpers/goBackLabel';
-import {BILLING_PAGE, ORGANIZATIONS} from 'universal/utils/constants';
+import {BILLING_PAGE} from 'universal/utils/constants';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
 import appTheme from 'universal/styles/theme/appTheme';
 import BillingMembersToggle from 'universal/modules/userDashboard/components/BillingMembersToggle/BillingMembersToggle';
@@ -17,6 +18,7 @@ import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
 import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
 import OrgAvatarInput from 'universal/modules/userDashboard/components/OrgAvatarInput/OrgAvatarInput';
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
+import Helmet from 'react-helmet';
 
 const inlineBlockStyle = {
   display: 'inline-block',
@@ -39,7 +41,8 @@ const Organization = (props) => {
   const pictureOrDefault = orgAvatar || defaultOrgAvatar;
   const toggle = <EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled />;
   return (
-    <UserSettingsWrapper settingsLocation={ORGANIZATIONS}>
+    <UserSettingsWrapper>
+      <Helmet title={`${orgName} | Parabol`} />
       <div className={css(styles.wrapper)}>
         <Link className={css(styles.goBackLabel)} to="/me/organizations" title="Back to Organizations">
           <FontAwesome name="arrow-circle-left" style={inlineBlockStyle} />

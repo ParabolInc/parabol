@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import {createGoogleCalendarInviteURL, makeIcsUrl} from 'universal/utils/makeCalendarInvites';

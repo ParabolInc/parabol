@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
@@ -13,7 +14,6 @@ import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
 import addOrgSchema from 'universal/validation/addOrgSchema';
 import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer';
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
-import {withRouter} from 'react-router';
 import shouldValidate from 'universal/validation/shouldValidate';
 import {MONTHLY_PRICE} from 'universal/utils/constants';
 import StripeTokenField from 'universal/modules/newTeam/components/NewTeamForm/StripeTokenField';
@@ -32,7 +32,7 @@ const NewTeamForm = (props) => {
     last4,
     isNewOrg,
     organizations,
-    router,
+    history,
     setLast4,
     styles
   } = props;
@@ -43,11 +43,11 @@ const NewTeamForm = (props) => {
   };
 
   const handleCreateNew = () => {
-    router.push('/newteam/1');
+    history.push('/newteam/1');
   };
   const addBilling = <Button colorPalette="cool" isBlock label="Add Billing Information" size="small" />;
   const resetOrgSelection = () => {
-    router.push('/newteam');
+    history.push('/newteam');
   };
   return (
     <form className={css(styles.form)} onSubmit={handleSubmit}>
@@ -152,7 +152,7 @@ NewTeamForm.propTypes = {
   last4: PropTypes.string,
   isNewOrg: PropTypes.bool,
   organizations: PropTypes.array,
-  router: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
   setLast4: PropTypes.func.isRequired,
   styles: PropTypes.object
 };
@@ -228,4 +228,7 @@ const styleThunk = () => ({
   }
 });
 
-export default reduxForm({form: 'newTeam', shouldValidate, validate})(withRouter(withStyles(styleThunk)(NewTeamForm)));
+export default reduxForm({form: 'newTeam', shouldValidate, validate})(
+  withStyles(styleThunk)(
+    NewTeamForm)
+);

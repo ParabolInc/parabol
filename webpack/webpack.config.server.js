@@ -41,6 +41,7 @@ export default {
       __PRODUCTION__: true,
       __WEBPACK__: true,
       __APP_VERSION__: JSON.stringify(npmPackage.version),
+
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
     new WebpackShellPlugin({

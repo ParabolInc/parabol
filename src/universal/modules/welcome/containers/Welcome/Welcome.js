@@ -1,10 +1,13 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import {connect} from 'react-redux';
 import {formValueSelector} from 'redux-form';
-import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import {goToPage} from 'universal/modules/welcome/ducks/welcomeDuck';
 import Welcome from 'universal/modules/welcome/components/Welcome/Welcome';
-import {withRouter} from 'react-router';
+import welcomeReducer from 'universal/modules/welcome/ducks/welcomeDuck';
+import withReducer from '../../../../decorators/withReducer/withReducer';
+import {cashay} from 'cashay';
+import {getAuthedOptions, getAuthQueryString} from 'universal/redux/getAuthedUser';
 
 const selector = formValueSelector('welcomeWizard');
 const rawSelector = formValueSelector('welcomeWizardRawInvitees');
@@ -16,11 +19,12 @@ const mapStateToProps = (state, props) => ({
   preferredName: selector(state, 'preferredName') || (props.user && props.user.preferredName),
   teamName: selector(state, 'teamName'),
   tms: state.auth.obj.tms,
+  user: cashay.query(getAuthQueryString, getAuthedOptions(state.auth.obj.sub)).data.user,
   welcome: state.welcome
 });
 
 const WelcomeContainer = (props) => {
-  const {dispatch, invitees, inviteesRaw, preferredName, teamName, router, tms, user, welcome} = props;
+  const {dispatch, invitees, inviteesRaw, preferredName, teamName, history, tms, user, welcome} = props;
   const {completed} = welcome;
   const progressDotClickFactory = (dot) => (e) => {
     e.preventDefault();
@@ -29,7 +33,7 @@ const WelcomeContainer = (props) => {
     }
   };
   if (tms && completed === 0) {
-    router.push('/me');
+    history.push('/me');
     return null;
   }
   return (
@@ -52,7 +56,7 @@ WelcomeContainer.propTypes = {
   invitees: PropTypes.array,
   inviteesRaw: PropTypes.string,
   preferredName: PropTypes.string,
-  router: PropTypes.object,
+  history: PropTypes.object,
   teamName: PropTypes.string,
   tms: PropTypes.array,
   user: PropTypes.object.isRequired,
@@ -63,8 +67,8 @@ WelcomeContainer.propTypes = {
   })
 };
 
-export default connect(mapStateToProps)(
-  requireAuth(
-    withRouter(WelcomeContainer)
+export default withReducer({welcome: welcomeReducer})(
+  connect(mapStateToProps)(
+    WelcomeContainer
   )
 );

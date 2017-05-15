@@ -30,6 +30,7 @@ module.exports = {
       'react-portal-hoc',
       'react-redux',
       'react-router',
+      'react-router-dom',
       'redbox-react',
       'redux',
       'redux-form',

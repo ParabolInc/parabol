@@ -1,12 +1,13 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import Team from 'universal/modules/teamDashboard/components/Team/Team';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
-import DashboardWrapper from 'universal/components/DashboardWrapper/DashboardWrapper';
-import socketWithPresence from 'universal/decorators/socketWithPresence/socketWithPresence';
-import {DragDropContext as dragDropContext} from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
+import {matchPath, Switch} from 'react-router-dom';
+import withReducer from 'universal/decorators/withReducer/withReducer';
+import teamDashReducer from 'universal/modules/teamDashboard/ducks/teamDashDuck';
+import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 
 const teamContainerSub = `
 query {
@@ -29,7 +30,7 @@ query {
 
 
 const mapStateToProps = (state, props) => {
-  const {teamId} = props.params;
+  const {match: {params: {teamId}}} = props;
   const {hasDashAlert} = state.dash;
   const teamContainer = cashay.query(teamContainerSub, {
     op: 'teamContainer',
@@ -47,42 +48,58 @@ const mapStateToProps = (state, props) => {
 
 const TeamContainer = (props) => {
   const {
-    children,
+    location: {pathname},
+    match,
     hasDashAlert,
     team,
     teamMembers
   } = props;
-  const readyEnough = team.id;
-  const pageTitle = team !== null ? `${team.name} Team Dashboard | Parabol` : 'Team Dashboard | Parabol';
+  if (!team.id) {
+    return <LoadingView />;
+  }
+
+  const isSettings = Boolean(matchPath(pathname, {
+    path: '/team/:teamId/settings'
+  }));
   return (
-    <DashboardWrapper title={pageTitle}>
-      {readyEnough ?
-        <Team
-          hasDashAlert={hasDashAlert}
-          team={team}
-          teamMembers={teamMembers}
-        >
-          {children}
-        </Team>
-          :
-        <LoadingView />
-      }
-    </DashboardWrapper>
+    <Team
+      hasDashAlert={hasDashAlert}
+      isSettings={isSettings}
+      team={team}
+      teamMembers={teamMembers}
+    >
+      <Switch>
+        {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539*/}
+        <AsyncRoute
+          exact
+          path={match.path}
+          teamName={team.name}
+          mod={() => System.import('universal/modules/teamDashboard/containers/AgendaAndProjects/AgendaAndProjectsContainer')}
+        />
+        <AsyncRoute
+          path={`${match.path}/settings`}
+          mod={() => System.import('universal/modules/teamDashboard/containers/TeamSettings/TeamSettingsContainer')}
+        />
+        <AsyncRoute
+          path={`${match.path}/archive`}
+          teamName={team.name}
+          mod={() => System.import('universal/modules/teamDashboard/containers/TeamArchive/TeamArchiveContainer')}
+        />
+      </Switch>
+    </Team>
   );
 };
 
 TeamContainer.propTypes = {
-  children: PropTypes.any.isRequired,
   hasDashAlert: PropTypes.bool,
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired
+  }),
+  match: PropTypes.object.isRequired,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired
 };
 
-export default
-dragDropContext(HTML5Backend)(
-  socketWithPresence(
-    connect(mapStateToProps)(
-      TeamContainer
-    )
-  )
+export default withReducer({teamDashboard: teamDashReducer})(
+  connect(mapStateToProps)(TeamContainer)
 );

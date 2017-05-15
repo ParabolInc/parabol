@@ -3,7 +3,7 @@
 // import {css} from 'aphrodite-local-styles/no-important';
 // import appTheme from 'universal/styles/theme/appTheme';
 // import FontAwesome from 'react-fontawesome';
-// import {Link} from 'react-router';
+// import {Link} from 'react-router-dom';
 //
 // const faStyle = {
 //   lineHeight: 'inherit',

@@ -13,13 +13,13 @@ const signoutSuccess = {
   message: 'You\'ve been logged out successfully.'
 };
 
-export default function signout(dispatch, router) {
+export default function signout(dispatch, history) {
   const reloadPendingState = window.sessionStorage.getItem(APP_UPGRADE_PENDING_KEY);
   dispatch(segmentEventTrack('User Logout'));
   dispatch(removeAuthToken());
   /* reset the app state, but preserve any pending notifications: */
-  if (router) {
-    router.replace('/');
+  if (history) {
+    history.replace('/');
   }
   dispatch(resetAppState());
   if (reloadPendingState !== APP_UPGRADE_PENDING_RELOAD) {

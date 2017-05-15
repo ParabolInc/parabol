@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import {css} from 'aphrodite-local-styles/no-important';
 import withStyles from 'universal/styles/withStyles';
 import ui from 'universal/styles/ui';
@@ -7,13 +8,13 @@ import Row from 'universal/components/Row/Row';
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import {cashay} from 'cashay';
-import {withRouter} from 'react-router';
+import {withRouter} from 'react-router-dom';
 
 const PromoteToBillingLeader = (props) => {
   const {
     notificationId,
     orgId,
-    router,
+    history,
     styles,
     varList
   } = props;
@@ -21,7 +22,7 @@ const PromoteToBillingLeader = (props) => {
   const acknowledge = () => {
     const variables = {notificationId};
     cashay.mutate('clearNotification', {variables});
-    router.push(`/me/organizations/${orgId}`);
+    history.push(`/me/organizations/${orgId}`);
   };
   return (
     <Row>
@@ -49,7 +50,7 @@ const PromoteToBillingLeader = (props) => {
 PromoteToBillingLeader.propTypes = {
   notificationId: PropTypes.string.isRequired,
   orgId: PropTypes.string.isRequired,
-  router: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
   styles: PropTypes.object,
   varList: PropTypes.array.isRequired
 };

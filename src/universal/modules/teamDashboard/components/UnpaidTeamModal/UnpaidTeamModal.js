@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import {DashModal} from 'universal/components/Dashboard';
 import Button from 'universal/components/Button/Button';
 import Type from 'universal/components/Type/Type';
@@ -37,7 +38,6 @@ UnpaidTeamModal.propTypes = {
   isALeader: PropTypes.bool,
   isClosing: PropTypes.bool,
   modalLayout: PropTypes.oneOf(ui.modalLayout),
-  router: PropTypes.object,
   orgId: PropTypes.string,
   problem: PropTypes.string,
   solution: PropTypes.string,

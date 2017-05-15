@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -10,18 +11,13 @@ import DashNavListContainer from 'universal/containers/DashNavList/DashNavListCo
 import DashNavItem from './DashNavItem';
 import StandardHubContainer from 'universal/containers/StandardHub/StandardHubContainer';
 import Logo from 'universal/styles/theme/images/brand/parabol-beta-lockup.svg';
-import {Link, withRouter} from 'react-router';
+import {NavLink} from 'react-router-dom';
 
 const DashSidebar = (props) => {
-  const {location, router, styles} = props;
-  const newTeamIsActive = router.isActive('/newteam') || router.isActive('/newteam/1');
-  const addNewStyles = css(
-    styles.addTeam,
-    newTeamIsActive && styles.addTeamDisabled
-  );
+  const {styles} = props;
   return (
     <div className={css(styles.root)}>
-      <StandardHubContainer location={location} />
+      <StandardHubContainer />
       <nav className={css(styles.nav)}>
         <div className={css(styles.singleNavItem)}>
           <DashNavItem
@@ -33,14 +29,14 @@ const DashSidebar = (props) => {
           My Teams
         </div>
         <DashNavListContainer />
-        <Link className={addNewStyles} title="Add New Team" to="/newteam">
+        <NavLink className={css(styles.addTeam)} activeClassName={css(styles.addTeamDisabled)} title="Add New Team" to="/newteam">
           <div className={css(styles.addTeamIcon)}>
             <FontAwesome name="plus-square" />
           </div>
           <div className={css(styles.addTeamLabel)}>
             Add New Team
           </div>
-        </Link>
+        </NavLink>
       </nav>
       <div className={css(styles.brand)}>
         <a href="http://www.parabol.co/" rel="noopener noreferrer" title="Action by Parabol, Inc." target="_blank">
@@ -52,8 +48,6 @@ const DashSidebar = (props) => {
 };
 
 DashSidebar.propTypes = {
-  location: PropTypes.string,
-  router: PropTypes.object,
   styles: PropTypes.object
 };
 
@@ -149,6 +143,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withRouter(
-  withStyles(styleThunk)(DashSidebar)
-);
+export default withStyles(styleThunk)(DashSidebar);

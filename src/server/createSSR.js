@@ -1,6 +1,5 @@
 import {createStore, applyMiddleware} from 'redux';
 import makeReducer from 'universal/redux/makeReducer';
-import {match} from 'react-router';
 import thunkMiddleware from 'redux-thunk';
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
@@ -15,6 +14,7 @@ const metaAndTitle = `
   <title>Action | Parabol Inc</title>
   <style>${printStyles}</style>
 `;
+
 const clientIds = {
   auth0: process.env.AUTH0_CLIENT_ID,
   auth0Domain: process.env.AUTH0_DOMAIN,
@@ -27,36 +27,21 @@ const clientIds = {
 
 const clientKeyLoader = `window.__ACTION__ = ${JSON.stringify(clientIds)}`;
 
+let cachedPage;
 export default function createSSR(req, res) {
   const finalCreateStore = applyMiddleware(thunkMiddleware)(createStore);
   const store = finalCreateStore(makeReducer(), {});
   if (process.env.NODE_ENV === 'production') {
-    /* eslint-disable global-require */
-    const makeRoutes = require('../../build/prerender').default;
-    // get the same StyleSheetServer that the universal uses
-    const {cashay, cashaySchema, StyleSheetServer} = require('../../build/prerender');
-    const assets = require('../../build/assets.json');
-    /* eslint-enable */
-    cashay.create({
-      store,
-      schema: cashaySchema,
-      httpTransport: {}
-    });
-    const routes = makeRoutes(store);
-    match({routes, location: req.url}, (error, redirectLocation, renderProps) => {
-      if (error) {
-        res.status(500).send(error.message);
-      } else if (redirectLocation) {
-        res.redirect(redirectLocation.pathname + redirectLocation.search);
-      } else if (renderProps) {
-        const htmlString = renderToStaticMarkup(
-          <Html store={store} assets={assets} StyleSheetServer={StyleSheetServer} renderProps={renderProps} clientKeyLoader={clientKeyLoader} />
-        );
-        res.send(`<!DOCTYPE html>${htmlString}`.replace('<head>', `<head>${metaAndTitle}`));
-      } else {
-        res.status(404).send('Not found');
-      }
-    });
+    if (!cachedPage) {
+      /* eslint-disable global-require */
+      const assets = require('../../build/assets.json');
+      /* eslint-enable */
+      const htmlString = renderToStaticMarkup(
+        <Html store={store} assets={assets} clientKeyLoader={clientKeyLoader} />
+      );
+      cachedPage = `<!DOCTYPE html>${htmlString}`.replace('<head>', `<head>${metaAndTitle}`);
+    }
+    res.send(cachedPage);
   } else {
     const devHtml = `
     <!DOCTYPE html>

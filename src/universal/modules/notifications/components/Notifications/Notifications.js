@@ -1,12 +1,13 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
-import {NOTIFICATIONS} from 'universal/modules/../utils/constants';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import NotificationRow from 'universal/modules/notifications/components/NotificationRow/NotificationRow';
 import Panel from 'universal/components/Panel/Panel';
+import Helmet from 'react-helmet';
 
 const Notifications = (props) => {
   const {
@@ -15,7 +16,8 @@ const Notifications = (props) => {
     styles
   } = props;
   return (
-    <UserSettingsWrapper settingsLocation={NOTIFICATIONS}>
+    <UserSettingsWrapper>
+      <Helmet title="My Notifications | Parabol" />
       <div className={css(styles.wrapper)}>
         <Panel label="Notifications">
           {notifications.length ?

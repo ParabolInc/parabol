@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
@@ -8,7 +9,7 @@ import Tag from 'universal/components/Tag/Tag';
 import FontAwesome from 'react-fontawesome';
 import makeDateString from 'universal/utils/makeDateString';
 import makeMonthString from 'universal/utils/makeMonthString';
-import {Link} from 'react-router';
+import {Link} from 'react-router-dom';
 import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineFormat';
 import {UPCOMING} from 'universal/utils/constants';
 

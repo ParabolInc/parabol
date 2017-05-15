@@ -196,27 +196,23 @@ export default {
         description: 'the new team member that will be the leader'
       }
     },
-    async
-    resolve(source, {teamMemberId}, {authToken, socket}) {
+    async resolve(source, {teamMemberId}, {authToken, socket}) {
       const r = getRethink();
 
       // AUTH
       requireWebsocket(socket);
       const [, teamId] = teamMemberId.split('::');
       const myTeamMemberId = `${authToken.sub}::${teamId}`;
-      await
-        requireSUOrLead(authToken, myTeamMemberId);
+      await requireSUOrLead(authToken, myTeamMemberId);
 
       // VALIDATION
-      const promoteeOnTeam = await
-        r.table('TeamMember').get(teamMemberId);
+      const promoteeOnTeam = await r.table('TeamMember').get(teamMemberId);
       if (!promoteeOnTeam) {
         throw errorObj({_error: `Member ${teamMemberId} is not on the team`});
       }
 
       // RESOLUTION
-      await
-        r.table('TeamMember')
+      await r.table('TeamMember')
         // remove leadership from the caller
           .get(myTeamMemberId)
           .update({

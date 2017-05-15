@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import Organizations from 'universal/modules/userDashboard/components/Organizations/Organizations';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
@@ -33,13 +34,14 @@ const mapStateToProps = (state) => {
 };
 
 const OrganizationsContainer = (props) => {
-  const {organizations} = props;
+  const {history, organizations} = props;
   return (
-    <Organizations organizations={organizations} />
+    <Organizations history={history} organizations={organizations} />
   );
 };
 
 OrganizationsContainer.propTypes = {
+  history: PropTypes.object.isRequired,
   organizations: PropTypes.array
 };
 

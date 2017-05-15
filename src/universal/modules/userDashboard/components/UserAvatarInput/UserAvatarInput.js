@@ -1,10 +1,11 @@
-import React, {PropTypes} from 'react';
+import React from 'react';
 import {reduxForm, Field} from 'redux-form';
 import {cashay} from 'cashay';
 import makeAvatarSchema from 'universal/validation/makeAvatarSchema';
 import shouldValidate from 'universal/validation/shouldValidate';
 import sendAssetToS3 from 'universal/utils/sendAssetToS3';
 import FileInput from 'universal/components/FileInput/FileInput';
+import PropTypes from 'prop-types';
 import raven from 'raven-js';
 
 const validate = (values) => {

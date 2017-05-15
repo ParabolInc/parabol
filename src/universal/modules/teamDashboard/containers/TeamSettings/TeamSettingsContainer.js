@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import {connect} from 'react-redux';
 import TeamSettings from 'universal/modules/teamDashboard/components/TeamSettings/TeamSettings';
 import {cashay} from 'cashay';
@@ -32,7 +33,7 @@ query {
 }`;
 
 const mapStateToProps = (state, props) => {
-  const {params: {teamId}} = props;
+  const {match: {params: {teamId}}} = props;
   const teamMemberId = `${state.auth.obj.sub}::${teamId}`;
   const {invitations, orgApprovals, team, teamMembers} = cashay.query(teamSettingsQuery, {
     op: 'teamSettingsContainer',
@@ -87,7 +88,7 @@ TeamSettingsContainer.propTypes = {
   invitations: PropTypes.array.isRequired,
   myTeamMemberId: PropTypes.string.isRequired,
   orgApprovals: PropTypes.array.isRequired,
-  params: PropTypes.object.isRequired,
+  match: PropTypes.object.isRequired,
   team: PropTypes.object.isRequired,
   teamMembers: PropTypes.array.isRequired
 };

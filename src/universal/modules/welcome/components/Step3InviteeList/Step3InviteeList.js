@@ -1,11 +1,13 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import {reduxForm, destroy} from 'redux-form';
 import Button from 'universal/components/Button/Button';
 import LabeledFieldArray from 'universal/containers/LabeledFieldArray/LabeledFieldArrayContainer';
 import {cashay} from 'cashay';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import {segmentEventTrack} from 'universal/redux/segmentActions';
-import {Link, withRouter} from 'react-router';
+import {withRouter} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import makeStep3Schema from 'universal/validation/makeStep3Schema';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
@@ -21,7 +23,7 @@ const emailInviteSuccess = {
 };
 
 const Step3InviteeList = (props) => {
-  const {dispatch, existingInvites, handleSubmit, invitees, router, styles, teamId} = props;
+  const {dispatch, existingInvites, handleSubmit, invitees, history, styles, teamId} = props;
   const onInviteTeamSubmit = () => {
     if (invitees && invitees.length > 0) {
       const serverInvitees = invitees.map((invitee) => {
@@ -40,7 +42,7 @@ const Step3InviteeList = (props) => {
       };
       cashay.mutate('inviteTeamMembers', options);
     }
-    router.push(`/team/${teamId}`);  // redirect leader to their new team
+    history.push(`/team/${teamId}`);  // redirect leader to their new team
 
     // loading that user dashboard is really expensive and causes dropped frames, so let's lighten the load
     setTimeout(() => {
@@ -72,7 +74,7 @@ const Step3InviteeList = (props) => {
             label="Looks Good!"
             onMouseEnter={() => {
               // optimistically fetch the big ol payload
-              System.import('universal/modules/userDashboard/components/UserDashboard/UserDashboard');
+              System.import('universal/modules/teamDashboard/containers/Team/TeamContainer');
             }}
             size="medium"
             type="submit"
@@ -86,7 +88,7 @@ const Step3InviteeList = (props) => {
       to={`/team/${teamId}`}
       className={css(styles.noThanks)}
       onMouseEnter={() => {
-        System.import('universal/modules/userDashboard/components/UserDashboard/UserDashboard');
+        System.import('universal/modules/teamDashboard/containers/Team/TeamContainer');
       }}
       onClick={() => {
         dispatch(
@@ -105,7 +107,7 @@ Step3InviteeList.propTypes = {
   existingInvites: PropTypes.array,
   handleSubmit: PropTypes.func.isRequired,
   invitees: PropTypes.array,
-  router: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
   styles: PropTypes.object,
   teamId: PropTypes.string.isRequired
 };

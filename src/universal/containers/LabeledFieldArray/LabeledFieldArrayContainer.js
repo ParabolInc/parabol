@@ -1,4 +1,5 @@
-import React, {PropTypes, Component} from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import {FieldArray} from 'redux-form';
 import FieldArrayRow from 'universal/components/FieldArrayRow/FieldArrayRow';
 

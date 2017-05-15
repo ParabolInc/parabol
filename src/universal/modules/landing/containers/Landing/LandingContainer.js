@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import Landing from 'universal/modules/landing/components/Landing/Landing';
 import Helmet from 'react-helmet';
 import {showLock} from 'universal/components/Auth0ShowLock/Auth0ShowLock';
@@ -10,20 +11,23 @@ import {
   APP_UPGRADE_PENDING_RELOAD,
   APP_UPGRADE_PENDING_DONE
 } from 'universal/utils/constants';
+import {connect} from 'react-redux';
+import injectGlobals from 'universal/styles/hepha';
+import globalStyles from 'universal/styles/theme/globalStyles';
+
+const mapStateToProps = (state) => {
+  return {
+    nextUrl: state.auth.nextUrl
+  };
+};
 
 @loginWithToken
+@connect(mapStateToProps)
 export default class LandingContainer extends Component {
   static propTypes = {
     auth: PropTypes.object,
-    user: PropTypes.shape({
-      email: PropTypes.string,
-      id: PropTypes.string,
-      picture: PropTypes.string,
-      preferredName: PropTypes.string
-    }),
     dispatch: PropTypes.func.isRequired,
-    router: PropTypes.object.isRequired,
-    location: PropTypes.object
+    nextUrl: PropTypes.string
   };
 
   constructor(props) {
@@ -36,15 +40,17 @@ export default class LandingContainer extends Component {
         window.sessionStorage.getItem(APP_UPGRADE_PENDING_KEY) ===
           APP_UPGRADE_PENDING_RELOAD) {
       this.setState({refreshNeeded: true});
+    } else {
+      injectGlobals(globalStyles);
     }
   }
 
   componentDidMount() {
     const {
       dispatch,
-      location: { pathname }
+      nextUrl
     } = this.props;
-    if (pathname === '/login') {
+    if (nextUrl) {
       showLock(dispatch);
     }
     const upgradePendingState = window.sessionStorage.getItem(APP_UPGRADE_PENDING_KEY);
@@ -90,3 +96,5 @@ export default class LandingContainer extends Component {
     );
   }
 }
+
+export {StyleSheetServer} from 'aphrodite-local-styles/no-important';

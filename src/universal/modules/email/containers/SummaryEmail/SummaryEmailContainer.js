@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import SummaryEmail from 'universal/modules/email/components/SummaryEmail/SummaryEmail';
 import makeAppLink from 'server/utils/makeAppLink';
 

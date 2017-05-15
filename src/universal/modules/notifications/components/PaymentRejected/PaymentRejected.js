@@ -1,5 +1,6 @@
-import React, {PropTypes} from 'react';
-import {withRouter} from 'react-router';
+import PropTypes from 'prop-types';
+import React from 'react';
+import {withRouter} from 'react-router-dom';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import Button from 'universal/components/Button/Button';
@@ -10,10 +11,10 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
 const PaymentRejected = (props) => {
-  const {orgId, router, styles, varList} = props;
+  const {orgId, history, styles, varList} = props;
   const [last4, brand] = varList;
   const addBilling = () => {
-    router.push(`/me/organizations/${orgId}`);
+    history.push(`/me/organizations/${orgId}`);
   };
   return (
     <Row>
@@ -45,7 +46,7 @@ const PaymentRejected = (props) => {
 
 PaymentRejected.propTypes = {
   orgId: PropTypes.string.isRequired,
-  router: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
   styles: PropTypes.object,
   varList: PropTypes.array.isRequired
 };

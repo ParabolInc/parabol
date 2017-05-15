@@ -1,9 +1,14 @@
 version: 2
 executorType: docker
 containerInfo:
-  - image: node:7.6.0
+  - image: node:7.10.0
   - image: rethinkdb:2.3.5
   - image: redis:3.2.8
+experimental:
+  notify:
+    branches:
+      only:
+        - staging
 stages:
   build:
     workDir: /home/ubuntu/action
@@ -19,6 +24,15 @@ stages:
         fingerprints:
           - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
 
+      - type: shell
+        name: Slack setup
+        command: |
+          if [ "${CIRCLE_BRANCH}" == "production" ]; then
+            curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI and Deployment..."}' $SLACK_PROD_URL
+          elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+            curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI and Deployment..."}' $SLACK_STAGING_URL
+          fi
+
       - type: checkout
 
       - type: cache-restore
@@ -28,9 +42,6 @@ stages:
         name: Install dependencies
         command: |
           apt-get update && apt-get -yq install build-essential
-          if [ ! -x "$(which yarn)" ] ; then
-            npm i -g yarn
-          fi
           yarn
 
       - type: cache-save

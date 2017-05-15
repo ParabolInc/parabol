@@ -1,8 +1,8 @@
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import {cashay} from 'cashay';
 import {connect} from 'react-redux';
 import Helmet from 'react-helmet';
-import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import SummaryEmail from 'universal/modules/email/components/SummaryEmail/SummaryEmail';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import makeHref from 'universal/utils/makeHref';
@@ -48,7 +48,7 @@ const mutationHandlers = {
 };
 
 const mapStateToProps = (state, props) => {
-  const {params: {meetingId}} = props;
+  const {match: {params: {meetingId}}} = props;
   const {meeting} = cashay.query(meetingSummaryQuery, {
     op: 'meetingSummaryContainer',
     key: '',
@@ -62,22 +62,23 @@ const mapStateToProps = (state, props) => {
     }
   }).data;
   return {
-    meeting
+    meeting,
+    meetingId
   };
 };
 
-@requireAuth
 @connect(mapStateToProps)
 @maintainSocket
 export default class MeetingSummaryContainer extends Component {
   static propTypes = {
     dispatch: PropTypes.func,
+    match: PropTypes.object.isRequired,
     meeting: PropTypes.object.isRequired,
-    params: PropTypes.object.isRequired
+    meetingId: PropTypes.string.isRequired
   };
 
   componentWillMount() {
-    const {params: {meetingId}} = this.props;
+    const {meetingId} = this.props;
     const variables = {meetingId};
     cashay.mutate('summarizeMeeting', {variables});
   }

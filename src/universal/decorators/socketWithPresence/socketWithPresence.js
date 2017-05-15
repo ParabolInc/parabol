@@ -1,8 +1,8 @@
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {reduxSocket} from 'redux-socket-cluster';
 import {cashay} from 'cashay';
-import requireAuth from 'universal/decorators/requireAuth/requireAuth';
 import reduxSocketOptions from 'universal/redux/reduxSocketOptions';
 import {
   ADD_TO_TEAM,
@@ -18,7 +18,7 @@ import socketCluster from 'socketcluster-client';
 import presenceSubscriber from 'universal/subscriptions/presenceSubscriber';
 import parseChannel from 'universal/utils/parseChannel';
 import {showInfo, showWarning} from 'universal/modules/toast/ducks/toastDuck';
-import {withRouter} from 'react-router';
+import {matchPath, withRouter} from 'react-router-dom';
 import {
   APP_VERSION_KEY,
   APP_UPGRADE_PENDING_KEY,
@@ -41,17 +41,21 @@ const mapStateToProps = (state) => {
 const tmsSubs = [];
 
 export default (ComposedComponent) => {
-  @requireAuth
   @reduxSocket({}, reduxSocketOptions)
   @connect(mapStateToProps)
   @withRouter
   class SocketWithPresence extends Component {
     static propTypes = {
       dispatch: PropTypes.func,
-      params: PropTypes.shape({
-        teamId: PropTypes.string
+      match: PropTypes.shape({
+        params: PropTypes.shape({
+          teamId: PropTypes.string
+        })
       }),
-      router: PropTypes.object,
+      history: PropTypes.object,
+      location: PropTypes.shape({
+        pathname: PropTypes.string.isRequired
+      }),
       tms: PropTypes.array,
       user: PropTypes.object,
       userId: PropTypes.string
@@ -93,10 +97,12 @@ export default (ComposedComponent) => {
         }));
       } else if (type === KICK_OUT) {
         const {teamId, teamName} = data;
-        const {router} = this.props;
-        const onExTeamRoute = router.isActive(`/team/${teamId}`) || router.isActive(`/meeting/${teamId}`);
+        const {history, location: {pathname}} = this.props;
+        const onExTeamRoute = Boolean(matchPath(pathname, {
+          path: `(/team/:${teamId}|/meeting/${teamId})`
+        }));
         if (onExTeamRoute) {
-          router.push('/me');
+          history.push('/me');
         }
         dispatch(showWarning({
           title: 'So long!',
@@ -171,7 +177,7 @@ export default (ComposedComponent) => {
     }
 
     versionHandler = (versionOnServer) => {
-      const {dispatch, router} = this.props;
+      const {dispatch, history} = this.props;
       const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY);
       if (versionOnServer !== versionInStorage) {
         dispatch(showWarning({
@@ -181,7 +187,7 @@ export default (ComposedComponent) => {
           action: {
             label: 'Log out and upgrade',
             callback: () => {
-              router.replace('/signout');
+              history.replace('/signout');
             }
           }
         }));

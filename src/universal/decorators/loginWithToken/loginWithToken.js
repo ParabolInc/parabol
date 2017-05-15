@@ -1,31 +1,34 @@
-import React, {Component, PropTypes} from 'react';
-import {getAuthQueryString, getAuthedOptions} from 'universal/redux/getAuthedUser';
-import {cashay} from 'cashay';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import {withRouter} from 'react-router';
+import {withRouter} from 'react-router-dom';
 import {unsetNextUrl} from 'universal/redux/authDuck';
+import {getAuthedOptions, getAuthQueryString} from '../../redux/getAuthedUser';
+import {cashay} from 'cashay';
 
 const mapStateToProps = (state) => {
   const {auth} = state;
   return {
     auth,
+    // query required because we need a query before a mutation
     user: cashay.query(getAuthQueryString, getAuthedOptions(auth.obj.sub)).data.user
+
   };
 };
 
 const handleAuthChange = (props) => {
-  const {auth, dispatch, router} = props;
+  const {auth, dispatch, history} = props;
 
   if (auth.obj.sub) {
     // note if you join a team & leave it, tms will be an empty array
     const isNew = !auth.obj.hasOwnProperty('tms');
     if (isNew) {
-      router.push('/welcome');
+      history.push('/welcome');
     } else if (auth.nextUrl) {
-      router.push(auth.nextUrl);
+      history.push(auth.nextUrl);
       dispatch(unsetNextUrl());
     } else {
-      router.push('/me');
+      history.push('/me');
     }
   }
 };
@@ -37,7 +40,7 @@ export default (ComposedComponent) => {
     static propTypes = {
       auth: PropTypes.object,
       dispatch: PropTypes.func,
-      router: PropTypes.object.isRequired
+      history: PropTypes.object.isRequired
     };
 
     componentWillMount() {

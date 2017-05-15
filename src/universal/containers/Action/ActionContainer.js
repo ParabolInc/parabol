@@ -1,26 +1,29 @@
-import React, {Component, PropTypes} from 'react';
-import {connect} from 'react-redux';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import Action from 'universal/components/Action/Action';
 import injectGlobals from 'universal/styles/hepha';
 import globalStyles from 'universal/styles/theme/globalStyles';
 import {segmentEventPage} from 'universal/redux/segmentActions';
+import {withRouter} from 'react-router-dom';
 
-const updateAnalyticsPage = (dispatch, lastPage, nextPage, params) => {
+const updateAnalyticsPage = (dispatch, lastPage, nextPage) => {
   if (typeof document === 'undefined' || typeof window.analytics === 'undefined') return;
   const name = document && document.title || '';
   const properties = {
     title: name,
     referrer: lastPage,
-    path: nextPage,
-    params
+    path: nextPage
   };
   dispatch(segmentEventPage(name, null, properties));
 };
 
-@connect()
+@withRouter
 export default class ActionContainer extends Component {
+  static contextTypes = {
+    store: PropTypes.object
+  };
+
   static propTypes = {
-    children: PropTypes.element.isRequired,
     dispatch: PropTypes.func,
     location: PropTypes.shape({
       pathname: PropTypes.string.isRequired
@@ -29,21 +32,23 @@ export default class ActionContainer extends Component {
   };
 
   componentWillMount() {
-    const {dispatch, location: {pathname: nextPage}} = this.props;
+    const {dispatch} = this.context.store;
+    const {location: {pathname: nextPage}} = this.props;
     updateAnalyticsPage(dispatch, '', nextPage);
     injectGlobals(globalStyles);
   }
 
   componentDidUpdate(prevProps) {
     const {location: {pathname: lastPage}} = prevProps;
-    const {dispatch, location: {pathname: nextPage}, params} = this.props;
+    const {location: {pathname: nextPage}} = this.props;
     if (lastPage !== nextPage) {
+      const {dispatch} = this.context.store;
       /*
        * Perform page update after component renders. That way,
        * document.title will be current after any child <Helmet />
        * element(s) are rendered.
        */
-      updateAnalyticsPage(dispatch, lastPage, nextPage, params);
+      updateAnalyticsPage(dispatch, lastPage, nextPage);
     }
   }
 

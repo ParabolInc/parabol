@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import {DashModal} from 'universal/components/Dashboard';
 import Type from 'universal/components/Type/Type';
 import withStyles from 'universal/styles/withStyles';

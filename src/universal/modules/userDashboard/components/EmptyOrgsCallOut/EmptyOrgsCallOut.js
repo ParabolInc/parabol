@@ -1,15 +1,16 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import ui from 'universal/styles/ui';
 import Button from 'universal/components/Button/Button';
 import CallOutPanel from 'universal/components/CallOutPanel/CallOutPanel';
-import {withRouter} from 'react-router';
+import {withRouter} from 'react-router-dom';
 
 const EmptyOrgsCallOut = (props) => {
   const {
-    router
+    history
   } = props;
 
-  const gotoNewTeam = () => { router.push('/newteam/1'); };
+  const gotoNewTeam = () => { history.push('/newteam/1'); };
   const button = (
     <Button
       colorPalette="cool"
@@ -27,7 +28,7 @@ const EmptyOrgsCallOut = (props) => {
 };
 
 EmptyOrgsCallOut.propTypes = {
-  router: PropTypes.object
+  history: PropTypes.object
 };
 
 export default withRouter(EmptyOrgsCallOut);
