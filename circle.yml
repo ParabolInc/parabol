@@ -31,8 +31,8 @@ stages:
           yarn
 
       - type: shell
-      - name: Slack setup
-      - command: |
+        name: Slack setup
+        command: |
           curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Test CI..."}' $SLACK_STAGING_URL
           if [ "${CIRCLE_BRANCH}" == "production" ]; then
             curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI..."}' $SLACK_PROD_URL
@@ -41,7 +41,6 @@ stages:
           fi
 
       - type: cache-save
-        name: cache yarn
         key: action-{{ checksum "yarn.lock" }}
         paths:
           - /home/ubuntu/action/node_modules
