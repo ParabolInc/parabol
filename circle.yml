@@ -41,6 +41,7 @@ stages:
           fi
 
       - type: cache-save
+        name: cache yarn
         key: action-{{ checksum "yarn.lock" }}
         paths:
           - /home/ubuntu/action/node_modules
