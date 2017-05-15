@@ -406,13 +406,13 @@ export default class MeetingContainer extends Component {
           />
           }
           {localPhase === AGENDA_ITEMS &&
-          <MeetingAgendaItems
-            agendaItem={agenda[localPhaseItem - 1]}
-            isLast={localPhaseItem === agenda.length}
-            gotoNext={this.gotoNext}
-            members={members}
-            hideMoveMeetingControls={hideMoveMeetingControls}
-          />
+            <MeetingAgendaItems
+              agendaItem={agenda[localPhaseItem - 1]}
+              isLast={localPhaseItem === agenda.length}
+              gotoNext={this.gotoNext}
+              localPhaseItem={localPhaseItem}members={members}
+              hideMoveMeetingControls={hideMoveMeetingControls}
+            />
           }
           {localPhase === LAST_CALL &&
           <MeetingAgendaLastCallContainer

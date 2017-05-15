@@ -15,6 +15,7 @@ const MeetingAgendaItems = (props) => {
     agendaItem,
     isLast,
     gotoNext,
+    localPhaseItem,
     members,
     styles,
     hideMoveMeetingControls
@@ -50,6 +51,7 @@ const MeetingAgendaItems = (props) => {
                   colorPalette="cool"
                   icon="arrow-circle-right"
                   iconPlacement="right"
+                  key={`agendaItem${localPhaseItem}`}
                   label={isLast ? 'Wrap up the meeting' : 'Next Agenda Item'}
                   onClick={gotoNext}
                   size="small"
@@ -73,6 +75,7 @@ MeetingAgendaItems.propTypes = {
   agendaItem: PropTypes.object.isRequired,
   isLast: PropTypes.bool,
   gotoNext: PropTypes.func.isRequired,
+  localPhaseItem: PropTypes.number.isRequired,
   members: PropTypes.array.isRequired,
   styles: PropTypes.object.isRequired,
   hideMoveMeetingControls: PropTypes.bool
