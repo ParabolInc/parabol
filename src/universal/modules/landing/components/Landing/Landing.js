@@ -24,10 +24,13 @@ const Landing = (props) => {
               <img className={css(styles.brandLogo)} src={parabolLogoMark} />
             </a>
             <h1 className={css(styles.mainHeading)}>
-              {'The Real-Time Prioritization Dashboard'}
+              {'The Unified Dashboard for All Disciplines'}
             </h1>
             <h2 className={css(styles.mainSubheading)}>
-              {'Enable true cross-functional collaboration and clarity by syncing teams across all preferred tools to a single dashboard.'}
+              {'Today’s teams have many tools, but only one set of priorities.'}
+              <br />
+              {`PARABOL enables cross-functional collaboration and clarity by
+                syncing teams in a single daily dashboard with a weekly ritual.`}
             </h2>
             <Button
               buttonStyle="solid"
