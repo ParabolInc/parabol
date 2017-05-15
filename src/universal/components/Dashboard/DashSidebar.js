@@ -43,8 +43,8 @@ const DashSidebar = (props) => {
         </Link>
       </nav>
       <div className={css(styles.brand)}>
-        <a href="http://www.parabol.co/" rel="noopener noreferrer" title="Parabol Beta" target="_blank">
-          <img alt="Parabol Beta" className={css(styles.logo)} src={Logo} />
+        <a href="http://www.parabol.co/" rel="noopener noreferrer" title="Parabol" target="_blank">
+          <img alt="Parabol" className={css(styles.logo)} src={Logo} />
         </a>
       </div>
     </div>

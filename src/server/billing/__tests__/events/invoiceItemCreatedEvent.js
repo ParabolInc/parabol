@@ -15,7 +15,7 @@ export default {
       currency: 'usd',
       customer: 'cus_00000000000000',
       date: 1488299133,
-      description: 'Unused time on Parabol Beta Monthly Subscription after 28 Feb 2017',
+      description: 'Unused time on Parabol Monthly Subscription after 28 Feb 2017',
       discountable: false,
       invoice: null,
       livemode: false,

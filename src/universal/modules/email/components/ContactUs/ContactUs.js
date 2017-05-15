@@ -49,7 +49,7 @@ const ContactUs = (props) => {
                   title="How to Navigate Uncertainty using the Action Rhythm"
                 >
                   Learn More
-                </a> about the Parabol Meeting Process.
+                </a> about the Action Meeting Process.
               </span>
             }
             <EmptySpace height={props.vSpacing} />

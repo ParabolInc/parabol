@@ -33,9 +33,9 @@ const getStartTime = (createdAt) => {
 };
 
 export const createGoogleCalendarInviteURL = (createdAt, meetingUrl, teamName) => {
-  const text = `Parabol Meeting for ${teamName}`;
+  const text = `Action Meeting for ${teamName}`;
   // eslint-disable-next-line max-len
-  return encodeURI(`http://www.google.com/calendar/render?action=TEMPLATE&text=${text}&details=${description}&dates=${getStartTime(createdAt)}&trp=true&location=${meetingUrl}&sprop=${meetingUrl}&sprop=name:${teamName} Parabol Meeting`);
+  return encodeURI(`http://www.google.com/calendar/render?action=TEMPLATE&text=${text}&details=${description}&dates=${getStartTime(createdAt)}&trp=true&location=${meetingUrl}&sprop=${meetingUrl}&sprop=name:${teamName} Action Meeting`);
 };
 
 export const createICS = (createdAt, meetingUrl, teamName) => {
@@ -56,7 +56,7 @@ LOCATION:${meetingUrl}
 SUMMARY:Star Wars Day Party
 DESCRIPTION:${description}
 CLASS:PUBLIC
-SUMMARY:Parabol Meeting for ${teamName}
+SUMMARY:Action Meeting for ${teamName}
 CLASS:PUBLIC
 DTSTAMP:${startTime}
 RRULE:FREQ=WEEKLY;COUNT=8
