@@ -1,11 +1,11 @@
-import {createStore, applyMiddleware} from 'redux';
-import makeReducer from 'universal/redux/makeReducer';
-import thunkMiddleware from 'redux-thunk';
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import Html from './Html';
-import printStyles from 'universal/styles/theme/printStyles';
+import {applyMiddleware, createStore} from 'redux';
+import thunkMiddleware from 'redux-thunk';
 import getWebpackPublicPath from 'server/utils/getWebpackPublicPath';
+import makeReducer from 'universal/redux/makeReducer';
+import printStyles from 'universal/styles/theme/printStyles';
+import Html from './Html';
 
 const metaAndTitle = `
   <meta charSet="utf-8"/>
@@ -32,16 +32,13 @@ export default function createSSR(req, res) {
   const finalCreateStore = applyMiddleware(thunkMiddleware)(createStore);
   const store = finalCreateStore(makeReducer(), {});
   if (process.env.NODE_ENV === 'production') {
-    if (!cachedPage) {/* eslint-disable global-require */
-    const  assets = require('../../build/assets.json');
-    /* eslint-enable */
-
-        const htmlString = renderToStaticMarkup(
-          // eslint-disable-next-line max-len<Html store={store} assets={assets}  clientKeyLoader={clientKeyLoader} />
-        );
-        cachedPage =`<!DOCTYPE html>${htmlString}`.replace('<head>', `<head>${metaAndTitle}`);
-      }
-        res.send(cachedPage);
+    if (!cachedPage) {
+       // eslint-disable-next-line global-require
+      const assets = require('../../build/assets.json');
+      const htmlString = renderToStaticMarkup(<Html store={store} assets={assets} clientKeyLoader={clientKeyLoader} />);
+      cachedPage = `<!DOCTYPE html>${htmlString}`.replace('<head>', `<head>${metaAndTitle}`);
+    }
+    res.send(cachedPage);
   } else {
     const devHtml = `
     <!DOCTYPE html>
