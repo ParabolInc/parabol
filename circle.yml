@@ -25,6 +25,12 @@ stages:
         key: action-{{ checksum "yarn.lock" }}
 
       - type: shell
+        name: Install dependencies
+        command: |
+          apt-get update && apt-get -yq install build-essential
+          yarn
+
+      - type: shell
       - name: Slack setup
       - command: |
         if [ "${CIRCLE_BRANCH}" == "production" ]; then
@@ -32,12 +38,6 @@ stages:
         elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
           curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI..."}' $SLACK_STAGING_URL
         fi
-
-      - type: shell
-        name: Install dependencies
-        command: |
-          apt-get update && apt-get -yq install build-essential
-          yarn
 
       - type: cache-save
         key: action-{{ checksum "yarn.lock" }}
