@@ -65,7 +65,11 @@ export default {
       await Promise.all(updates);
       const adjustmentPromises = users.map((user) => {
         const orgIds = user.userOrgs.map(({id}) => id);
-        return adjustUserCount(user.id, orgIds, AUTO_PAUSE_USER);
+        try {
+          return adjustUserCount(user.id, orgIds, AUTO_PAUSE_USER);
+        } catch (e) {
+          console.warn(`Error adjusting user count: ${e}`);
+        }
       });
 
       await Promise.all(adjustmentPromises);
