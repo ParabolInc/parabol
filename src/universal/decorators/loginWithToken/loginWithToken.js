@@ -11,8 +11,7 @@ const mapStateToProps = (state) => {
   return {
     auth,
     // query required because we need a query before a mutation
-    user: cashay.query(getAuthQueryString, getAuthedOptions(auth.obj.sub)).data.user
-
+    user: __CLIENT__ ? cashay.query(getAuthQueryString, getAuthedOptions(auth.obj.sub)).data.user : {}
   };
 };
 
