@@ -8,8 +8,8 @@ const EMAIL_DESTINATION = 'terry@parabol.co, terry_acker@yahoo.com';
 const EMAIL_TEMPLATE = 'summaryEmail';
 const EMAIL_ALL_PROPS = {
   summaryEmail: {
-    title: 'Action Meeting Summary',
-    previewText: 'Action Meeting Summary'
+    title: 'Action Meeting Summary from Parabol',
+    previewText: 'Action Meeting Summary from Parabol'
   }
 };
 

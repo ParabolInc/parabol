@@ -126,7 +126,7 @@ const Landing = (props) => {
             <br />
             <div className={css(styles.copyGroup)}>
               <p className={css(styles.copyParagraph)}>
-                {'Parabol is an open-source software solution crafted with care by the folks at Parabol, Inc.'}
+                {'The “Action” codebase by Parabol is an open-source software solution.'}
                 <br />
                 To get involved,{' '}
                 <a
