@@ -2,6 +2,7 @@ import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 import shortid from 'shortid';
 import {
+  FAILED,
   PAID,
   PENDING,
   UPCOMING,
@@ -231,10 +232,10 @@ export default async function generateInvoice(invoice, stripeLineItems, orgId, i
 
   const [type] = invoiceId.split('_');
   const isUpcoming = type === 'upcoming';
-  const amountDue = invoice.amount_due;
+
   let status = isUpcoming ? UPCOMING : PENDING;
-  if (status === PENDING && amountDue <= 0) {
-    status = PAID;
+  if (status === PENDING && invoice.closed === true) {
+    status = invoice.paid ? PAID : FAILED;
   }
   const paidAt = status === PAID && now;
 
