@@ -50,6 +50,9 @@ export default class LandingContainer extends Component {
       dispatch,
       nextUrl
     } = this.props;
+    require.ensure([], (require) => {
+      require('auth0-lock');
+    });
     if (nextUrl) {
       showLock(dispatch);
     }
