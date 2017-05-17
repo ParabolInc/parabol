@@ -118,7 +118,7 @@ const styleThunk = (theme, {maxHeight}) => ({
     borderRadius: '.25rem',
     maxHeight: maxHeight || '10rem',
     outline: 0,
-    overflowY: 'scroll',
+    overflowY: 'auto',
     paddingBottom: ui.menuGutterVertical,
     paddingTop: ui.menuGutterVertical,
     textAlign: 'left',

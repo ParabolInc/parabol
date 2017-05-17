@@ -62,13 +62,15 @@ class ProjectColumn extends Component {
       status,
       projects,
       myTeamMemberId,
+      queryKey,
       teams,
       userId
     } = this.props;
     const label = themeLabels.projectStatus[status].slug;
     const sortOrder = getNextSortOrder(projects, dndNoise());
     if (area === TEAM_DASH) {
-      const handleAddProject = handleAddProjectFactory(status, myTeamMemberId, sortOrder);
+      const teamMemberId = queryKey.indexOf('::') === -1 ? myTeamMemberId : queryKey;
+      const handleAddProject = handleAddProjectFactory(status, teamMemberId, sortOrder);
       return <AddProjectButton onClick={handleAddProject} label={label} />;
     } else if (area === USER_DASH) {
       if (teams.length === 1) {
@@ -208,7 +210,7 @@ const styleThunk = () => ({
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
-    overflow: 'scroll',
+    overflow: 'auto',
     position: 'relative',
     width: '25%'
   },

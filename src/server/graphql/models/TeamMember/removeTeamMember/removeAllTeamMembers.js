@@ -66,14 +66,6 @@ export default async function removeAllTeamMembers(maybeTeamMemberIds, exchange)
             .nth(0)('id')
         }), {nonAtomic: true});
     })
-    // flag all actions as complete since the user can't edit them now, anyways
-    .do(() => {
-      return r.table('Action')
-        .getAll(r.args(teamMemberIds), {index: 'teamMemberId'})
-        .update({
-          isComplete: true
-        });
-    })
     // remove the teamId from the user tms array
     .do(() => {
       return r.table('User')
