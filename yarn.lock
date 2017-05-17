@@ -2281,9 +2281,9 @@ disturbed@^1.0.6:
   dependencies:
     node-uuid "^1.4.7"
 
-dnd-core@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/dnd-core/-/dnd-core-2.3.0.tgz#f7b29ac37e2c78efe89e911ca5a534f280390450"
+dnd-core@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/dnd-core/-/dnd-core-2.4.0.tgz#c4a5bc2aea75164f8a295d769d5f551810e7d411"
   dependencies:
     asap "^2.0.3"
     invariant "^2.0.0"
@@ -5691,6 +5691,13 @@ prop-types@^15.0.0, prop-types@^15.5.4, prop-types@^15.5.6, prop-types@^15.5.7, 
   dependencies:
     fbjs "^0.8.9"
 
+prop-types@^15.5.10:
+  version "15.5.10"
+  resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.5.10.tgz#2797dfc3126182e3a95e3dfbb2e893ddd7456154"
+  dependencies:
+    fbjs "^0.8.9"
+    loose-envify "^1.3.1"
+
 proxy-addr@~1.1.3:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/proxy-addr/-/proxy-addr-1.1.4.tgz#27e545f6960a44a627d9b44467e35c1b6b4ce2f3"
@@ -5856,21 +5863,22 @@ react-deep-force-update@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/react-deep-force-update/-/react-deep-force-update-2.0.1.tgz#4f7f6c12c3e7de42f345992a3c518236fa1ecad3"
 
-react-dnd-html5-backend@^2.2.4:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/react-dnd-html5-backend/-/react-dnd-html5-backend-2.3.0.tgz#a45ce593f5c6944aa01114b368117c56c954804e"
+react-dnd-html5-backend@^2.4.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/react-dnd-html5-backend/-/react-dnd-html5-backend-2.4.1.tgz#439d2bcaf8bd8b87a51386beb51c128826182ddd"
   dependencies:
     lodash "^4.2.0"
 
-react-dnd@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/react-dnd/-/react-dnd-2.3.0.tgz#aede61c06b968554dcf2a2445657cdbb3100be49"
+react-dnd@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/react-dnd/-/react-dnd-2.4.0.tgz#96f0042cd4cd375b4f0c3413f6ec84d267b7d792"
   dependencies:
     disposables "^1.0.1"
-    dnd-core "^2.3.0"
+    dnd-core "^2.4.0"
     hoist-non-react-statics "^1.2.0"
     invariant "^2.1.0"
     lodash "^4.2.0"
+    prop-types "^15.5.8"
 
 react-dom@^15.0.1, react-dom@^15.5.4:
   version "15.5.4"
@@ -5996,7 +6004,7 @@ react-transform-hmr@1.0.4:
     global "^4.3.0"
     react-proxy "^1.1.7"
 
-react@^15.0.1, react@^15.4.2, react@^15.5.4:
+react@^15.0.1, react@^15.5.4:
   version "15.5.4"
   resolved "https://registry.yarnpkg.com/react/-/react-15.5.4.tgz#fa83eb01506ab237cdc1c8c3b1cea8de012bf047"
   dependencies:
@@ -6179,12 +6187,12 @@ redux-segment@^1.6.1:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/redux-segment/-/redux-segment-1.6.1.tgz#813d0734ae7b5de14e863202afd20c24de79022e"
 
-redux-socket-cluster@^0.10.1:
-  version "0.10.2"
-  resolved "https://registry.yarnpkg.com/redux-socket-cluster/-/redux-socket-cluster-0.10.2.tgz#33763c510d48919e77b3f2d55eebed386947bb41"
+redux-socket-cluster@^0.10.3:
+  version "0.10.3"
+  resolved "https://registry.yarnpkg.com/redux-socket-cluster/-/redux-socket-cluster-0.10.3.tgz#91c2fa15a7c440a3cd0f3b10bd6e52d15e6c10b6"
   dependencies:
     es6-promisify "^4.1.0"
-    react "^15.4.2"
+    prop-types "^15.5.10"
 
 redux-storage-engine-localstorage@^1.1.4:
   version "1.1.4"
