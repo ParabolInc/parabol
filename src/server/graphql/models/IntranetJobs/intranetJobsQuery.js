@@ -70,6 +70,7 @@ export default {
         } catch (e) {
           console.warn(`Error adjusting user count: ${e}`);
         }
+        return undefined;
       });
 
       await Promise.all(adjustmentPromises);

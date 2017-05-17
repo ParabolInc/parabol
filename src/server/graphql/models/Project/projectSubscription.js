@@ -77,7 +77,7 @@ export default {
       const r = getRethink();
 
       // AUTH
-      const [userId, teamId] = teamMemberId.split('::');
+      const [, teamId] = teamMemberId.split('::');
       requireSUOrTeamMember(authToken, teamId);
       const requestedFields = getRequestedFields(refs);
       // const removalFields = ['id', 'isArchived'];

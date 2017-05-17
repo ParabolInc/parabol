@@ -10,16 +10,16 @@ exports.up = async (r) => {
       }
     });
     if (contentWithTag !== project.content) {
-      promises.push(r.table('Project').get(project.id).update({content: contentWithTag}))
+      promises.push(r.table('Project').get(project.id).update({content: contentWithTag}));
     }
   });
   try {
     await Promise.all(promises);
   } catch (e) {
-    console.log('ERR", e');
+    console.log('ERR', e);
   }
 };
 
-exports.down = async (r) => {
+exports.down = async () => {
   // noop
 };
