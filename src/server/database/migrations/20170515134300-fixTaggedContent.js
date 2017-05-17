@@ -3,7 +3,7 @@ exports.up = async (r) => {
     .pluck('id', 'content', 'tags');
   const promises = [];
   projects.forEach((project) => {
-    let contentWithTag = project.content;
+    let contentWithTag = project.content || '';
     project.tags.forEach((tag) => {
       if (contentWithTag.indexOf(tag) === -1) {
         contentWithTag += ` ${tag}`;
