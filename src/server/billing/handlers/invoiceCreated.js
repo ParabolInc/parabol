@@ -1,7 +1,6 @@
-// use relative important statements since we use this in the backfillInvoices migration
-import fetchAllLines from '../helpers/fetchAllLines';
-import stripe from '../stripe';
-import generateInvoice from '../helpers/generateInvoice';
+import fetchAllLines from 'server/billing/helpers/fetchAllLines';
+import stripe from 'server/billing/stripe';
+import generateInvoice from 'server/billing/helpers/generateInvoice';
 
 export default async function handleInvoiceCreated(invoiceId) {
   const stripeLineItems = await fetchAllLines(invoiceId);
