@@ -176,6 +176,7 @@ const makeItemDict = (stripeLineItems) => {
 const maybeReduceUnknowns = async (unknownLineItems, itemDict, stripeSubscriptionId) => {
   const r = getRethink();
   const unknowns = [];
+  console.log(`found ${unknownLineItems.length} unknownLineItems.`);
   for (let i = 0; i < unknownLineItems.length; i++) {
     const unknownLineItem = unknownLineItems[i];
     // this could be inefficient but if all goes as planned, we'll never use this function
@@ -186,6 +187,7 @@ const maybeReduceUnknowns = async (unknownLineItems, itemDict, stripeSubscriptio
       .nth(0)
       .default(null);
     if (hook) {
+      console.log(`found hook for ${hook.id}`);
       const {id, type, userId} = hook;
       // push it back to stripe for posterity
       stripe.invoiceItems.update(id, {
@@ -196,6 +198,7 @@ const maybeReduceUnknowns = async (unknownLineItems, itemDict, stripeSubscriptio
       });
       addToDict(itemDict, unknownLineItem);
     } else {
+      console.log(`no hook found for ${hook.id}`);
       unknowns.push(unknownLineItem);
     }
   }
