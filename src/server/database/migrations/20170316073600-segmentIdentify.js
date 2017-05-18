@@ -1,7 +1,7 @@
-exports.up = async (r) => {
+exports.up = async () => {
 
 };
 
-exports.down = async (r) => {
+exports.down = async () => {
 
 };
