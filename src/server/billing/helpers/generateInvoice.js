@@ -50,13 +50,17 @@ const reduceItemsByType = (typesDict, email, invoiceId) => {
       // for each time period
       const startTime = startTimes[k];
       const lineItems = startTimeDict[startTime];
+      const firstLineItem = lineItems[0];
       if (lineItems.length !== 2) {
-        console.warn(`We did not get 2 line items. What do? Invoice: ${invoiceId}, ${JSON.stringify(lineItems)}`);
-        continue;
+        if (firstLineItem.quantity !== 1) {
+          console.warn(`We did not get 2 line items and qty > 1. What do? Invoice: ${invoiceId}, ${JSON.stringify(lineItems)}`);
+          continue;
+        }
       }
+      const secondLineItemAmount = lineItems[1] ? lineItems[1].amount : 0;
       reducedItems[k] = {
         id: shortid.generate(),
-        amount: lineItems[0].amount + lineItems[1].amount,
+        amount: firstLineItem.amount + secondLineItemAmount,
         email,
         [dateField]: fromEpochSeconds(startTime)
       };
@@ -127,6 +131,7 @@ const makeDetailedLineItems = async (itemDict, invoiceId) => {
     const userId = userIds[i];
     const email = emailLookup[userId];
     const typesDict = itemDict[userId];
+    console.log('calling reduceItemsByType', userId)
     const reducedItemsByType = reduceItemsByType(typesDict, email, invoiceId);
     const pausedItems = reducedItemsByType[PAUSE_USER];
     const unpausedItems = reducedItemsByType[UNPAUSE_USER];
@@ -188,14 +193,19 @@ const maybeReduceUnknowns = async (unknownLineItems, itemDict, stripeSubscriptio
       .default(null);
     if (hook) {
       console.log(`found hook for ${hook.id}`);
-      const {id, type, userId} = hook;
+      const {type, userId} = hook;
       // push it back to stripe for posterity
-      stripe.invoiceItems.update(id, {
+      stripe.invoiceItems.update(unknownLineItem.id, {
         metadata: {
           type,
           userId
         }
       });
+      // mutate the original line item
+      unknownLineItem.metadata = {
+        type,
+        userId
+      };
       addToDict(itemDict, unknownLineItem);
     } else {
       console.log(`no hook found for ${hook.id}`);
