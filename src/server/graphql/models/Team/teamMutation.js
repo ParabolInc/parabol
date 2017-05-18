@@ -96,7 +96,7 @@ export default {
               .filter({isNotRemoved: true})
               .count();
             if (nextPhaseItem < 1 || nextPhaseItem > teamMembersCount) {
-              throw errorObj({_error: 'We don\'t have that many team members!'});
+              throw errorObj({_error: 'We don’t have that many team members!'});
             }
           } else if (arrayName === 'agenda') {
             const agendaItemCount = await r.table('AgendaItem')
@@ -104,11 +104,11 @@ export default {
               .filter({isActive: true})
               .count();
             if (nextPhaseItem < 1 || nextPhaseItem > agendaItemCount) {
-              throw errorObj({_error: 'We don\'t have that many agenda items!'});
+              throw errorObj({_error: 'We don’t have that many agenda items!'});
             }
           }
           if (nextPhaseInfo.visitOnce && meetingPhaseInfo.index > nextPhaseInfo.index) {
-            throw errorObj({_error: 'You can\'t visit first call twice!'});
+            throw errorObj({_error: 'You can’t visit first call twice!'});
           }
         } else if (nextPhaseItem) {
           throw errorObj({_error: `${nextPhase} does not have phase items, but you said ${nextPhaseItem}`});

@@ -63,7 +63,7 @@ export default class LandingContainer extends Component {
         APP_UPGRADE_PENDING_FALSE);
       dispatch(showInfo({
         title: 'New stuff!',
-        message: 'Action has been upgraded, log in to see what\'s new.',
+        message: 'Parabol has been upgraded, log in to see what’s new.',
         action: {
           label: 'Ok'
         },
@@ -90,7 +90,7 @@ export default class LandingContainer extends Component {
     }
     return (
       <div>
-        <Helmet title="Welcome to Action by Parabol" />
+        <Helmet title="Parabol" />
         <Landing handleLoginClick={loginClickHandler} {...this.props} />
       </div>
     );

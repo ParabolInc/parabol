@@ -63,7 +63,7 @@ describe('customerSubscriptionUpdated', () => {
     expect(exchange.publish).toBeCalled();
   });
 
-  test('exits if it isn\'t a switch from trialing to active', async () => {
+  test('exits if it isn’t a switch from trialing to active', async () => {
     // SETUP
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
@@ -90,4 +90,3 @@ describe('customerSubscriptionUpdated', () => {
     expect(exchange.publish).toBeCalled();
   });
 });
-

@@ -6,7 +6,7 @@
 
 ## New Beta!
 
-[Sign up for Action Beta](http://www.parabol.co/beta) & be first in line to try it out!
+[Sign up for Parabol Beta](http://www.parabol.co/beta) & be first in line to try it out!
 
 ## Overview
 
@@ -17,7 +17,7 @@ by [Parabol, Inc](http://parabol.co)
 
 Curious what this is all about? Each week we publish a distillation of our
 progress, philosophy, and more in
-[Parabol Focus](https://medium.com/parabol-focus).
+[Parabol Focus](https://focus.parabol.co/).
 
 Live beta product: http://action.parabol.co/
 

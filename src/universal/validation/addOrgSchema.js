@@ -8,7 +8,7 @@ export default function addOrgSchema() {
     teamName,
     orgName,
     stripeToken: (value) => value
-      .required('Don\'t forget to add your credit card')
+      .required('Don’t forget to add your credit card')
       .matches(idRegex)
   });
 }
