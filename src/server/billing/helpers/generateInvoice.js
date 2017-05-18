@@ -131,7 +131,6 @@ const makeDetailedLineItems = async (itemDict, invoiceId) => {
     const userId = userIds[i];
     const email = emailLookup[userId];
     const typesDict = itemDict[userId];
-    console.log('calling reduceItemsByType', userId)
     const reducedItemsByType = reduceItemsByType(typesDict, email, invoiceId);
     const pausedItems = reducedItemsByType[PAUSE_USER];
     const unpausedItems = reducedItemsByType[UNPAUSE_USER];
@@ -181,7 +180,6 @@ const makeItemDict = (stripeLineItems) => {
 const maybeReduceUnknowns = async (unknownLineItems, itemDict, stripeSubscriptionId) => {
   const r = getRethink();
   const unknowns = [];
-  console.log(`found ${unknownLineItems.length} unknownLineItems.`);
   for (let i = 0; i < unknownLineItems.length; i++) {
     const unknownLineItem = unknownLineItems[i];
     // this could be inefficient but if all goes as planned, we'll never use this function
@@ -192,7 +190,6 @@ const maybeReduceUnknowns = async (unknownLineItems, itemDict, stripeSubscriptio
       .nth(0)
       .default(null);
     if (hook) {
-      console.log(`found hook for ${hook.id}`);
       const {type, userId} = hook;
       // push it back to stripe for posterity
       stripe.invoiceItems.update(unknownLineItem.id, {
@@ -208,7 +205,6 @@ const maybeReduceUnknowns = async (unknownLineItems, itemDict, stripeSubscriptio
       };
       addToDict(itemDict, unknownLineItem);
     } else {
-      console.log(`no hook found for ${hook.id}`);
       unknowns.push(unknownLineItem);
     }
   }
@@ -240,7 +236,7 @@ export default async function generateInvoice(invoice, stripeLineItems, orgId, i
   const calculatedTotal = invoiceLineItems.reduce((sum, {amount}) => sum + amount, 0) + nextMonthCharges.amount;
   // const stripeTotal = invoice.total + invoice.starting_balance;
   if (calculatedTotal !== invoice.total) {
-    console.log('Calculated invoice does not match stripe invoice', invoiceId, calculatedTotal, invoice.total);
+    console.warn('Calculated invoice does not match stripe invoice', invoiceId, calculatedTotal, invoice.total);
   }
 
   const [type] = invoiceId.split('_');
