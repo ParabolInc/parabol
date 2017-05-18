@@ -1,9 +1,9 @@
+import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
-import {GraphQLNonNull, GraphQLID, GraphQLList} from 'graphql';
 import getRequestedFields from 'server/graphql/getRequestedFields';
-import {Project} from './projectSchema';
 import {requireSUOrTeamMember, requireTeamIsPaid} from 'server/utils/authorization';
 import makeChangefeedHandler from 'server/utils/makeChangefeedHandler';
+import {Project} from './projectSchema';
 
 export default {
   agendaProjects: {
@@ -68,13 +68,16 @@ export default {
   archivedProjects: {
     type: new GraphQLList(Project),
     args: {
-      teamId: {
+      teamMemberId: {
         type: new GraphQLNonNull(GraphQLID),
-        description: 'The unique team ID'
+        description: 'The unique teamMember ID'
       }
     },
-    async resolve(source, {teamId}, {authToken, socket, subbedChannelName}, refs) {
+    async resolve(source, {teamMemberId}, {authToken, socket, subbedChannelName}, refs) {
       const r = getRethink();
+
+      // AUTH
+      const [, teamId] = teamMemberId.split('::');
       requireSUOrTeamMember(authToken, teamId);
       const requestedFields = getRequestedFields(refs);
       // const removalFields = ['id', 'isArchived'];
@@ -82,7 +85,12 @@ export default {
       r.table('Project')
       // use a compound index so we can easily paginate later
         .between([teamId, r.minval], [teamId, r.maxval], {index: 'teamIdCreatedAt'})
-        .filter((project) => project('tags').contains('#archived'))
+        .filter((project) => project('tags').contains('#archived')
+          .and(r.branch(
+            project('tags').contains('#private'),
+            project('teamMemberId').eq(teamMemberId),
+            true
+          )))
         .pluck(requestedFields)
         .changes({includeInitial: true})
         .run({cursor: true}, changefeedHandler);

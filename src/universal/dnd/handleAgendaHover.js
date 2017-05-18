@@ -1,7 +1,7 @@
 import {cashay} from 'cashay';
 import checkDragForUpdate from 'universal/dnd/checkDragForUpdate';
-import {DND_THROTTLE, AGENDA_ITEMS} from 'universal/utils/constants';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
+import {AGENDA_ITEMS, DND_THROTTLE} from 'universal/utils/constants';
 
 let lastSentAt = 0;
 export default function handleAgendaHover(targetProps, monitor) {
@@ -10,10 +10,13 @@ export default function handleAgendaHover(targetProps, monitor) {
   const {agenda, agendaPhaseItem, dragState, facilitatorPhase, teamId} = targetProps;
   // dont let current or previous items get dragged
   const {id} = monitor.getItem();
-  const startedAgendaItems = actionMeeting[facilitatorPhase].index >= actionMeeting[AGENDA_ITEMS].index;
-  const currentItemIdx = startedAgendaItems ? agenda.findIndex((i) => i.isComplete === false) : -1;
-  const dragItemIdx = agenda.findIndex((i) => i.id === id);
-  if (dragItemIdx <= currentItemIdx) return;
+  let startedAgendaItems;
+  if (facilitatorPhase) {
+    startedAgendaItems = actionMeeting[facilitatorPhase].index >= actionMeeting[AGENDA_ITEMS].index;
+    const currentItemIdx = startedAgendaItems ? agenda.findIndex((i) => i.isComplete === false) : -1;
+    const dragItemIdx = agenda.findIndex((i) => i.id === id);
+    if (dragItemIdx <= currentItemIdx) return;
+  }
 
   const updatedVariables = checkDragForUpdate(monitor, dragState, agenda, false);
   if (!updatedVariables) return;
