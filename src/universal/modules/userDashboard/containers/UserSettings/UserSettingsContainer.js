@@ -18,7 +18,7 @@ import userSettingsReducer from 'universal/modules/userDashboard/ducks/settingsD
 
 const updateSuccess = {
   title: 'Settings saved!',
-  message: 'We won\'t forget who you are.',
+  message: 'We won’t forget who you are.',
   level: 'success'
 };
 

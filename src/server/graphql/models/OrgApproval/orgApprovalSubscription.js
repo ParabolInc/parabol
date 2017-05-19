@@ -15,7 +15,7 @@ export default {
     args: {
       teamId: {
         type: new GraphQLNonNull(GraphQLID),
-        description: 'the teamId curious about why someone hasn\'t received an invite yet'
+        description: 'the teamId curious about why someone hasn’t received an invite yet'
       }
     },
     async resolve(source, {teamId}, {authToken, socket, subbedChannelName}, refs) {

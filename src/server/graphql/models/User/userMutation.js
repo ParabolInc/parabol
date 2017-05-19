@@ -55,7 +55,7 @@ export default {
   },
   createUserPicturePutUrl: {
     type: GraphQLURLType,
-    description: 'Create a PUT URL on the CDN for the currently authenticated user\'s profile picture',
+    description: 'Create a PUT URL on the CDN for the currently authenticated user’s profile picture',
     args: {
       contentType: {
         type: GraphQLString,
