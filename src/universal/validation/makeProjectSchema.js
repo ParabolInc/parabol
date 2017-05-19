@@ -12,7 +12,7 @@ export default function makeProjectSchema() {
       .max(PROJECT_MAX_CHARS, 'Whoa! That looks like 2 projects'),
     status: (value) => value
       // status may be empty eg unarchive card
-      .test((str) => str && !columnArray.includes(str) && 'That isn\'t a status!'),
+      .test((str) => str && !columnArray.includes(str) && 'That isn’t a status!'),
     teamMemberId: compositeId,
     sortOrder: (value) => value.float()
   });

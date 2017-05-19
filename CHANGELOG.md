@@ -4,6 +4,30 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.18.1 - 18-May-2017
+### Added
+- Removed references to "Action" as product name, now we're just going
+  what people call us, "Parabol"
+- Tech debt avoidance: switched to `react-router` v4 and now using
+  `prop-types` module
+- Added Slack notifications to CircleCI builds
+- Copy updates on landing page
+- During Check-In round, we now say "Here" instead of "Present" for
+  our friends in the UK
+- #990 new new Project card design
+
+### Fixed
+- #893 make card on team dash while user filter in on
+- #924 Catch errors during auto-pause users cron job
+- #970 Only send Segment Meeting Completed event for folks who were
+  in the meeting
+- #971 private not private when archived
+- #972 tags don't exist in content
+- #988 word-wrap for agenda placeholders
+- #992 meeting link focus
+- #994 DnD agenda items in team dash
+
+
 ## v0.18.0 - 04-May-2017
 ### Added
 - Tags (#archive, #private)

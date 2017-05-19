@@ -12,7 +12,7 @@ const rootStyle = {
 
 const PatternsContainer = () =>
   <div style={rootStyle}>
-    <Helmet title="Welcome to the Action Pattern Library" />
+    <Helmet title="Welcome to the Parabol Pattern Library" />
 
     <Spinner fillColor="warm" width={64} />
 

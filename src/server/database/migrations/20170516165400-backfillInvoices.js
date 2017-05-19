@@ -22,20 +22,15 @@ exports.up = async (r) => {
     return;
   }
 
-  console.log('fetching all invoices');
   const stripeInvoices = await fetchAllInvoices();
-  console.log(`fetched ${stripeInvoices.length} invoices`)
   const invoiceIdsInDB = await r.table('Invoice')('id');
-  console.log(`filtering out ${invoiceIdsInDB.length} invoices`);
   const invoicesToHandle = stripeInvoices.filter((invoice) => !invoiceIdsInDB.includes(invoice.id));
-  console.log(`${invoicesToHandle.length} invoices to handle`)
   for (let i = 0; i < invoicesToHandle.length; i++) {
-    console.log('creating invoice', i);
     const invoice = invoicesToHandle[i];
     await handleInvoiceCreated(invoice.id); // eslint-disable-line no-await-in-loop
   }
 };
 
-exports.down = async (r) => {
+exports.down = async () => {
   // noop
 };

@@ -25,10 +25,13 @@ const Landing = (props) => {
               <img className={css(styles.brandLogo)} src={parabolLogoMark} />
             </a>
             <h1 className={css(styles.mainHeading)}>
-              {'ACTION: The Real-Time Prioritization Dashboard'}
+              {'The Unified Dashboard for All Disciplines'}
             </h1>
             <h2 className={css(styles.mainSubheading)}>
-              {'Enable true cross-functional collaboration and clarity by syncing teams across all preferred tools to a single dashboard.'}
+              {'Today’s teams have many tools, but only one set of priorities.'}
+              <br />
+              {`PARABOL enables cross-functional collaboration and clarity by
+                syncing teams in a single daily dashboard with a weekly ritual.`}
             </h2>
             <Button
               buttonStyle="solid"
@@ -60,18 +63,18 @@ const Landing = (props) => {
         {/* Video */}
         <div className={css(styles.section)}>
           <div className={css(styles.container)}>
-            <h2 className={css(styles.sectionHeading, styles.firstHeading)}>Parabol Action 101</h2>
+            <h2 className={css(styles.sectionHeading, styles.firstHeading)}>Parabol 101</h2>
             <p className={css(styles.copyGroup, styles.firstCopy)}>
-              {'Curious about how Parabol Action works? Here’s a demo video of our beta software. '}
+              {'Curious about how Parabol works? Here’s a demo video of our beta software. '}
               {'Check back frequently for updates as our software evolves!'}
               <br />
               <br />
               <b>
                 <a
-                  href="https://docs.google.com/presentation/d/1u9iiVkZKlaEaY7lSDXckdjuSSfX-1lA-swtOjiu6F9g/edit?usp=sharing"
-                  title="Learn More: The Theory Behind Action"
+                  href="https://docs.google.com/presentation/d/1bxpUB6hLSSZRnkPngZOPggEaQm5_qv5TmgLa9maiglc/edit?usp=sharing"
+                  title="Learn More: The Theory Behind Parabol"
                 >
-                  Learn More: The Theory Behind Action
+                  {'Learn More: The Theory Behind Parabol'}
                 </a>
               </b>
             </p>
@@ -124,7 +127,7 @@ const Landing = (props) => {
             <br />
             <div className={css(styles.copyGroup)}>
               <p className={css(styles.copyParagraph)}>
-                {'Action is an open-source software solution crafted with care by the folks at Parabol.'}
+                {'The “Action” codebase by Parabol is an open-source software solution.'}
                 <br />
                 To get involved,{' '}
                 <a

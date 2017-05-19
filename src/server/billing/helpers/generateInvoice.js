@@ -50,13 +50,17 @@ const reduceItemsByType = (typesDict, email, invoiceId) => {
       // for each time period
       const startTime = startTimes[k];
       const lineItems = startTimeDict[startTime];
+      const firstLineItem = lineItems[0];
       if (lineItems.length !== 2) {
-        console.warn(`We did not get 2 line items. What do? Invoice: ${invoiceId}, ${JSON.stringify(lineItems)}`);
-        continue;
+        if (firstLineItem.quantity !== 1) {
+          console.warn(`We did not get 2 line items and qty > 1. What do? Invoice: ${invoiceId}, ${JSON.stringify(lineItems)}`);
+          continue;
+        }
       }
+      const secondLineItemAmount = lineItems[1] ? lineItems[1].amount : 0;
       reducedItems[k] = {
         id: shortid.generate(),
-        amount: lineItems[0].amount + lineItems[1].amount,
+        amount: firstLineItem.amount + secondLineItemAmount,
         email,
         [dateField]: fromEpochSeconds(startTime)
       };
@@ -186,14 +190,19 @@ const maybeReduceUnknowns = async (unknownLineItems, itemDict, stripeSubscriptio
       .nth(0)
       .default(null);
     if (hook) {
-      const {id, type, userId} = hook;
+      const {type, userId} = hook;
       // push it back to stripe for posterity
-      stripe.invoiceItems.update(id, {
+      stripe.invoiceItems.update(unknownLineItem.id, {
         metadata: {
           type,
           userId
         }
       });
+      // mutate the original line item
+      unknownLineItem.metadata = {
+        type,
+        userId
+      };
       addToDict(itemDict, unknownLineItem);
     } else {
       unknowns.push(unknownLineItem);
@@ -227,7 +236,7 @@ export default async function generateInvoice(invoice, stripeLineItems, orgId, i
   const calculatedTotal = invoiceLineItems.reduce((sum, {amount}) => sum + amount, 0) + nextMonthCharges.amount;
   // const stripeTotal = invoice.total + invoice.starting_balance;
   if (calculatedTotal !== invoice.total) {
-    console.log('Calculated invoice does not match stripe invoice', invoiceId, calculatedTotal, invoice.total);
+    console.warn('Calculated invoice does not match stripe invoice', invoiceId, calculatedTotal, invoice.total);
   }
 
   const [type] = invoiceId.split('_');
