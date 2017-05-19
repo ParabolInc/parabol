@@ -16,7 +16,8 @@ import Panel from 'universal/components/Panel/Panel';
 import ArchiveTeamContainer from 'universal/modules/teamDashboard/containers/ArchiveTeamContainer/ArchiveTeamContainer';
 import ui from 'universal/styles/ui';
 import IntegrationsContainer from '../../../integrations/containers/Integrations/IntegrationsContainer';
-import Button from '../../../../components/Button/Button';
+import Button from 'universal/components/Button/Button';
+import Type from 'universal/components/Type/Type';
 import Helmet from 'react-helmet';
 
 const TeamSettings = (props) => {
@@ -159,9 +160,22 @@ const TeamSettings = (props) => {
             })}
           </div>
         </Panel>
+        {beta &&
+          <Panel label="Integrations">
+            <div className={css(styles.panelRow)}>
+              <IntegrationsContainer
+                teamMemberId={myTeamMember.id}
+                toggle={<Button colorPalette="cool" label="Integrations" size="smallest" buttonStyle="solid" />}
+              />
+              <Type width="auto" marginTop=".5rem" scale="s2">
+                <b>Note</b>: {'This is an unlocked BETA feature.'}
+              </Type>
+            </div>
+          </Panel>
+        }
         {myTeamMember.isLead &&
           <Panel label="Danger Zone">
-            <div className={css(styles.dangerZoneChildren)}>
+            <div className={css(styles.panelRow)}>
               <ArchiveTeamContainer
                 teamId={team.id}
                 teamName={team.name}
@@ -170,12 +184,6 @@ const TeamSettings = (props) => {
           </Panel>
         }
       </div>
-      {beta &&
-        <IntegrationsContainer
-          teamMemberId={myTeamMember.id}
-          toggle={<Button colorPalette="cool" label="Integrations" size="medium" buttonStyle="solid" />}
-        />
-      }
     </div>
   );
 };
@@ -230,7 +238,7 @@ const styleThunk = () => ({
     borderTop: `1px solid ${ui.panelBorderColor}`
   },
 
-  dangerZoneChildren: {
+  panelRow: {
     borderTop: `1px solid ${ui.panelBorderColor}`,
     padding: `${ui.panelGutter}`
   }
