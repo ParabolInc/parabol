@@ -17,16 +17,18 @@ export function showLock(dispatch) {
     injectGlobals(auth0Overrides);
   }
   // eslint-disable-next-line global-require
-  const Auth0Lock = require('auth0-lock');
-  const {auth0, auth0Domain} = window.__ACTION__;
-  const lock = new Auth0Lock(auth0, auth0Domain);
-  lock.show({
-    authParams: {
-      scope: 'openid rol tms bet'
-    }
-  }, (error, profile, authToken) => {
-    if (error) throw error;
-    signinAndUpdateToken(dispatch, profile, authToken);
+  require.ensure([], (require) => {
+    const Auth0Lock = require('auth0-lock');
+    const {auth0, auth0Domain} = window.__ACTION__;
+    const lock = new Auth0Lock(auth0, auth0Domain);
+    lock.show({
+      authParams: {
+        scope: 'openid rol tms bet'
+      }
+    }, (error, profile, authToken) => {
+      if (error) throw error;
+      signinAndUpdateToken(dispatch, profile, authToken);
+    });
   });
 }
 
