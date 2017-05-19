@@ -55,5 +55,10 @@ export default {
     margin: '0'
   },
 
+  pre: {
+    maxWidth: '100%',
+    overflow: 'auto'
+  },
+
   ...basePlaceholderStyles
 };
