@@ -163,14 +163,14 @@ const TeamSettings = (props) => {
         {beta &&
           <Panel label="Integrations">
             <div className={css(styles.panelRow)}>
-              <IntegrationsContainer
-                teamMemberId={myTeamMember.id}
-                toggle={<Button colorPalette="cool" label="Integrations" size="smallest" buttonStyle="solid" />}
-              />
-              <Type width="auto" marginTop=".5rem" scale="s2">
-                <b>Note</b>: {'This is an unlocked BETA feature.'}
+              <Type width="auto" scale="s2">
+                <b>Note</b>: {'Integrations are an unlocked BETA feature.'}
               </Type>
             </div>
+            <IntegrationsContainer
+              teamMemberId={myTeamMember.id}
+              // toggle={<Button colorPalette="cool" label="Integrations" size="smallest" buttonStyle="solid" />}
+            />
           </Panel>
         }
         {myTeamMember.isLead &&

@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import Row from 'universal/components/Row/Row';
 import Button from '../../../../components/Button/Button';
 import ServiceDropdownInput from 'universal/modules/integrations/components/ServiceDropdownInput/ServiceDropdownInput';
-
 
 const ServiceRow = (props) => {
   const {
@@ -15,6 +15,7 @@ const ServiceRow = (props) => {
     dropdownText,
     handleItemClick,
     logo,
+    name,
     openOauth,
     options,
     removeOauth,
@@ -22,12 +23,10 @@ const ServiceRow = (props) => {
   } = props;
   return (
     <Row>
-      <div className={css(styles.logo)}>
-        <img height={50} width={50} src={logo} />
+      <img className={css(styles.logo)} height={48} width={48} src={logo} />
+      <div className={css(styles.name)}>
+        {name}
       </div>
-      {/* <div className={css(styles.name)}>*/}
-      {/* {name}*/}
-      {/* </div>*/}
       <div />
       {
         accessToken ?
@@ -67,6 +66,7 @@ ServiceRow.propTypes = {
   dropdownText: PropTypes.string,
   handleItemClick: PropTypes.func,
   logo: PropTypes.string,
+  name: PropTypes.string,
   openOauth: PropTypes.func,
   options: PropTypes.array,
   removeOauth: PropTypes.func,
@@ -79,7 +79,11 @@ const styleThunk = () => ({
   },
 
   logo: {
-    flexShrink: 0
+    border: `.0625rem solid ${appTheme.palette.mid30l}`,
+    borderRadius: ui.borderRadiusSmall,
+    display: 'block',
+    flexShrink: 0,
+    marginRight: ui.rowGutter
   },
 
   manageService: {
@@ -90,6 +94,8 @@ const styleThunk = () => ({
     color: appTheme.palette.dark,
     display: 'inline-block',
     fontSize: appTheme.typography.s4,
+    fontWeight: 700,
+    flex: 1,
     lineHeight: '1.625rem',
     verticalAlign: 'middle'
   }
