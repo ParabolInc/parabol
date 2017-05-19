@@ -23,7 +23,7 @@ const ServiceRow = (props) => {
   } = props;
   return (
     <Row>
-      <img className={css(styles.logo)} height={48} width={48} src={logo} />
+      <img className={css(styles.logo)} height={44} width={44} src={logo} />
       <div className={css(styles.name)}>
         {name}
       </div>
