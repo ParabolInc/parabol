@@ -54,7 +54,7 @@ const ServiceRow = (props) => {
               />
             </div>
           </div> :
-          <Button colorPalette="cool" label="Add integration" size="smallest" buttonStyle="solid" onClick={openOauth} />
+          <Button colorPalette="cool" label="Add Integration" size="smallest" buttonStyle="solid" onClick={openOauth} />
       }
     </Row>
   );
