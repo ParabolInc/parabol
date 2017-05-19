@@ -4,7 +4,7 @@ import {parse} from 'url';
 
 getDotenv();
 
-const startMigration = async () => {
+const startMigration = () => {
   const [,, direction, count] = process.argv;
   const all = count === '--all';
   if (process.env.NODE_ENV === 'test') {
@@ -16,12 +16,10 @@ const startMigration = async () => {
   process.env.port = port;
   process.env.db = path.slice(1);
   process.env.r = process.cwd();
-
-  try {
-    await migrate[direction]({all, root: __dirname});
-  } finally {
+  const close = () => {
     process.exit();
-  }
+  };
+  migrate[direction]({all, root: __dirname}).then(close, close);
 };
 
 startMigration();
