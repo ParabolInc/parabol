@@ -209,7 +209,7 @@ const styleThunk = () => ({
   },
 
   panels: {
-    maxWidth: '42rem',
+    maxWidth: '48rem',
     padding: '0 1rem'
   },
 

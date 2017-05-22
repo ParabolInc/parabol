@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import withStyles from 'universal/styles/withStyles';
+import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import slackLogo from 'universal/styles/theme/images/graphics/Slack_Mark.svg';
 import {cashay} from 'cashay';
@@ -69,7 +71,7 @@ class IntegrateSlack extends Component {
   }
 
   render() {
-    const {service} = this.props;
+    const {service, styles} = this.props;
     return (
       <div>
         <ServiceRow
@@ -83,12 +85,19 @@ class IntegrateSlack extends Component {
           options={this.state.options}
           removeOauth={this.removeOauth}
         />
+        {service &&
+          <div className={css(styles.channelHeader)}>
+            <div>Channels</div>
+            <div>ID</div>
+          </div>
+        }
         {service && service.syncs.map((sync) => {
           const channel = this.state.channelList.find((c) => c.id === sync.slackChannelId);
           if (!channel) return null;
           return (
-            <div key={channel.id}>
-              {channel.id} - {channel.name}
+            <div className={css(styles.channel)} key={channel.id}>
+              <div>#{channel.name}</div>
+              <div>{channel.id}</div>
             </div>
           );
         })}
@@ -100,25 +109,34 @@ class IntegrateSlack extends Component {
 
 IntegrateSlack.propTypes = {
   service: PropTypes.object,
+  styles: PropTypes.object,
   teamMemberId: PropTypes.string.isRequired
-
 };
 
+const marginLeft = '4.75rem'; // gutter + avatar + gutter
+const paddingLeft = 0;
+const paddingRight = ui.rowGutter;
+const padding = '.5rem';
+
 const styleThunk = () => ({
-  logo: {
-    flexShrink: 0
+  channelHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    fontWeight: 700,
+    marginLeft,
+    padding,
+    paddingLeft,
+    paddingRight
   },
 
-  manageService: {
-    display: 'flex'
-  },
-
-  name: {
-    color: appTheme.palette.dark,
-    display: 'inline-block',
-    fontSize: appTheme.typography.s4,
-    lineHeight: '1.625rem',
-    verticalAlign: 'middle'
+  channel: {
+    borderTop: `1px solid ${appTheme.palette.mid30l}`,
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginLeft,
+    padding,
+    paddingLeft,
+    paddingRight
   }
 });
 
