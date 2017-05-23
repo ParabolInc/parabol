@@ -12,6 +12,8 @@ import Markdown from '../../../../components/Markdown/Markdown';
 import emojiArray from 'universal/utils/emojiArray';
 import MentionEmoji from '../../../../components/MentionEmoji/MentionEmoji';
 import stringScore from 'string-score';
+import {Editor, EditorState} from 'draft-js';
+
 
 class OutcomeCardTextArea extends Component {
   static propTypes = {
@@ -139,8 +141,13 @@ class OutcomeCardTextArea extends Component {
   }
 
   render() {
-    const {isEditing} = this.props;
-    return isEditing ? this.renderEditing() : this.renderMarkdown();
+    return <Editor
+      editorState={this.props.textAreaValue}
+      onChange={this.props.setValue}
+      onBlur={this.props.handleCardUpdate}
+    />
+    //const {isEditing} = this.props;3
+    //return isEditing ? this.renderEditing() : this.renderMarkdown();
   }
 }
 

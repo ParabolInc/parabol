@@ -17,7 +17,7 @@ module.exports = {
       'html-entities', // server
       'markdown-it',
       'react',
-      'react-async-hoc',
+      //'react-async-hoc',
       'react-copy-to-clipboard',
       'react-dnd',
       'react-dnd-html5-backend',

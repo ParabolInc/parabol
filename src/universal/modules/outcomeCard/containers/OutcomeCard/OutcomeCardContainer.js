@@ -7,6 +7,7 @@ import labels from 'universal/styles/theme/labels';
 import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/OutcomeCard';
 import targetIsDescendant from 'universal/utils/targetIsDescendant';
 import removeTagFromString from 'universal/utils/removeTagFromString';
+import {convertFromRaw, convertToRaw, EditorState} from 'draft-js';
 
 const teamMembersQuery = `
 query {
@@ -39,7 +40,7 @@ class OutcomeCardContainer extends Component {
       hasHover: false,
       isEditing: !content,
       openArea: 'content',
-      textAreaValue: content
+      textAreaValue: content ? EditorState.createWithContent(convertFromRaw(JSON.parse(content))) : EditorState.createEmpty()
     };
   }
 
@@ -57,7 +58,7 @@ class OutcomeCardContainer extends Component {
     const {content} = this.props.outcome;
     if (content !== nextContent) {
       this.setState({
-        textAreaValue: nextContent
+      textAreaValue: nextContent ? EditorState.createWithContent(convertFromRaw(JSON.parse(nextContent))) : EditorState.createEmpty()
       });
     }
   }
@@ -109,7 +110,7 @@ class OutcomeCardContainer extends Component {
         variables: {
           updatedProject: {
             id: projectId,
-            content: textAreaValue
+            content: JSON.stringify(convertToRaw(textAreaValue.getCurrentContent()))
           }
         }
       });
