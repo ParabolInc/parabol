@@ -1,13 +1,13 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import {connect} from 'react-redux';
-import {findDOMNode} from 'react-dom';
 import {cashay} from 'cashay';
-import labels from 'universal/styles/theme/labels';
+import {ContentState, convertFromRaw, convertToRaw, EditorState} from 'draft-js';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
+import {findDOMNode} from 'react-dom';
+import {connect} from 'react-redux';
 import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/OutcomeCard';
-import targetIsDescendant from 'universal/utils/targetIsDescendant';
+import labels from 'universal/styles/theme/labels';
 import removeTagFromString from 'universal/utils/removeTagFromString';
-import {convertFromRaw, convertToRaw, EditorState} from 'draft-js';
+import targetIsDescendant from 'universal/utils/targetIsDescendant';
 
 const teamMembersQuery = `
 query {
@@ -46,8 +46,8 @@ class OutcomeCardContainer extends Component {
 
   componentWillMount() {
     // const {outcome: {content}} = this.props;
-    const {isEditing} = this.state;
-    if (isEditing) {
+    const {outcome: {content}} = this.props;
+    if (!content) {
       // if there is no content, delete it if the user clicks away from the card
       document.addEventListener('click', this.handleDocumentClick);
     }
@@ -57,8 +57,10 @@ class OutcomeCardContainer extends Component {
     const {content: nextContent} = nextProps.outcome;
     const {content} = this.props.outcome;
     if (content !== nextContent) {
+      const newContentState = nextContent ? convertFromRaw(JSON.parse(nextContent)) : ContentState.createFromText('');
+      const newEditorState = EditorState.push(this.state.textAreaValue, newContentState);
       this.setState({
-      textAreaValue: nextContent ? EditorState.createWithContent(convertFromRaw(JSON.parse(nextContent))) : EditorState.createEmpty()
+        textAreaValue: newEditorState
       });
     }
   }

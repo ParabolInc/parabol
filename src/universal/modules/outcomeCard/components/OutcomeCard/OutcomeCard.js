@@ -125,7 +125,7 @@ OutcomeCard.propTypes = {
   setEditing: PropTypes.func,
   setValue: PropTypes.func,
   teamMembers: PropTypes.array,
-  textAreaValue: PropTypes.string,
+  textAreaValue: PropTypes.object,
   updatedAt: PropTypes.instanceOf(Date),
   unarchiveProject: PropTypes.func.isRequired,
   unsetEditing: PropTypes.func

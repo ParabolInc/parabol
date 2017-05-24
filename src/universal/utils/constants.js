@@ -122,7 +122,7 @@ export const PAID = 'PAID';
 export const FAILED = 'FAILED';
 
 /* character limits */
-export const PROJECT_MAX_CHARS = 512;
+export const PROJECT_MAX_CHARS = 51200;
 
 /* Action Tags */
 export const tags = [
