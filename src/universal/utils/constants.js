@@ -127,14 +127,18 @@ export const PROJECT_MAX_CHARS = 51200;
 /* Action Tags */
 export const tags = [
   {
-    value: 'private',
+    name: 'private',
     description: 'Only you will be able to see this project'
   },
   {
-    value: 'archived',
+    name: 'archived',
     description: 'Hidden from your main board'
   }
 ];
+export const tagLookup = {
+  private: 'Only you will be able to see this project',
+  archived: 'Hidden from your main board'
+};
 
 /* Integrations */
 export const GITHUB = 'github';

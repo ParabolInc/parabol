@@ -1,14 +1,33 @@
+import {css} from 'aphrodite-local-styles/no-important';
 import createEmojiPlugin from 'draft-js-emoji-plugin';
+import 'draft-js-emoji-plugin/lib/plugin.css';
+import createLinkifyPlugin from 'draft-js-linkify-plugin';
+import 'draft-js-linkify-plugin/lib/plugin.css';
+import createMarkdownShortcutsPlugin from 'draft-js-markdown-shortcuts-plugin';
+import createMentionPlugin from 'draft-js-mention-plugin';
+import 'draft-js-mention-plugin/lib/plugin.css';
 import Editor from 'draft-js-plugins-editor';
+import {fromJS} from 'immutable';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
+import TagSuggestion from 'universal/components/TagSuggestion/TagSuggestion';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-// import MentionTeamMember from '../../../../components/MentionTeamMember/MentionTeamMember';
-import 'draft-js-emoji-plugin/lib/plugin.css';
-import 'draft-js-linkify-plugin/lib/plugin.css';
-import createLinkifyPlugin from 'draft-js-linkify-plugin';
+import {tags} from 'universal/utils/constants';
+import createKeyShortcutsPlugin from 'universal/utils/createKeyShortcutsPlugin';
+
+
+const immutableTags = fromJS(tags);
+
+const tagSuggestionFilter = (searchValue, suggestions) => {
+  const value = searchValue.toLowerCase();
+  const filteredSuggestions = suggestions.filter((suggestion) => (
+    !value || suggestion.get('name').toLowerCase().startsWith(value)
+  ));
+  const size = filteredSuggestions.size < 5 ? filteredSuggestions.size : 5;
+  return filteredSuggestions.setSize(size);
+};
 
 class OutcomeCardTextArea extends Component {
   static propTypes = {
@@ -27,23 +46,52 @@ class OutcomeCardTextArea extends Component {
     unsetEditing: PropTypes.func
   };
 
+
   constructor(props) {
     super(props);
     const emojiPlugin = createEmojiPlugin();
     const linkifyPlugin = createLinkifyPlugin();
+    const tagPlugin = createMentionPlugin({
+      entityMutability: 'IMMUTABLE',
+      mentionTrigger: '#',
+      mentionPrefix: '#',
+      theme: {
+        mentionSuggestionsEntryFocused: css(props.styles.tagSyggestionsEntryFocused)
+      }
+    });
+    const markdownPlugin = createMarkdownShortcutsPlugin();
+    const keyShortcutsPlugin = createKeyShortcutsPlugin();
     this.plugins = [
+      keyShortcutsPlugin,
       emojiPlugin,
-      linkifyPlugin
+      tagPlugin,
+      linkifyPlugin,
+      markdownPlugin
     ];
     this.EmojiSuggestions = emojiPlugin.EmojiSuggestions;
+    this.MentionSuggestions = tagPlugin.MentionSuggestions;
 
+  }
+
+  state = {
+    suggestions: immutableTags
+  };
+
+  onSearchChange = ({value}) => {
+    this.setState({
+      suggestions: tagSuggestionFilter(value, immutableTags)
+    });
+  };
+
+  onAddMention = () => {
+    // get the mention object selected
   }
 
   componentWillReceiveProps(nextProps) {
     //if (nextProps.textAreaValue !== this.props.textAreaValue) {
-      //this.emojiPlugin = createEmojiPlugin();
-      //this.EmojiSuggestions = this.emojiPlugin.EmojiSuggestions;
-      //this.plugins = [this.emojiPlugin];
+    //this.emojiPlugin = createEmojiPlugin();
+    //this.EmojiSuggestions = this.emojiPlugin.EmojiSuggestions;
+    //this.plugins = [this.emojiPlugin];
     //}
     //this.emojiPlugin = createEmojiPlugin();
     //this.EmojiSuggestions = this.emojiPlugin.EmojiSuggestions;
@@ -167,7 +215,13 @@ class OutcomeCardTextArea extends Component {
           onBlur={this.props.handleCardUpdate}
           plugins={this.plugins}
         />
-          <this.EmojiSuggestions/>
+        <this.EmojiSuggestions/>
+        <this.MentionSuggestions
+          entryComponent={TagSuggestion}
+          onSearchChange={this.onSearchChange}
+          suggestions={this.state.suggestions}
+          onAddMention={this.onAddMention}
+        />
       </div>
     )
   }
@@ -255,6 +309,11 @@ const styleThunk = () => ({
     ':active': {
       ...contentPrivateFA
     }
+  },
+
+  tagSyggestionsEntryFocused: {
+    backgroundColor: appTheme.palette.dark,
+    color: '#fff'
   },
 
   privateContentOnHover: {
