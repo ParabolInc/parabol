@@ -6,7 +6,7 @@ import 'draft-js-linkify-plugin/lib/plugin.css';
 import createMarkdownShortcutsPlugin from 'draft-js-markdown-shortcuts-plugin';
 import createMentionPlugin from 'draft-js-mention-plugin';
 import 'draft-js-mention-plugin/lib/plugin.css';
-import Editor from 'draft-js-plugins-editor';
+
 import {fromJS} from 'immutable';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
@@ -15,8 +15,9 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {tags} from 'universal/utils/constants';
-import createKeyShortcutsPlugin from 'universal/utils/createKeyShortcutsPlugin';
-
+//import createKeyShortcutsPlugin from 'universal/utils/createKeyShortcutsPlugin';
+import createDocLinkPlugin from 'universal/utils/draft-js-linkify-plugin/src/index';
+import ProjectEditor from 'universal/components/ProjectEditor/ProjectEditor';
 
 const immutableTags = fromJS(tags);
 
@@ -50,7 +51,7 @@ class OutcomeCardTextArea extends Component {
   constructor(props) {
     super(props);
     const emojiPlugin = createEmojiPlugin();
-    const linkifyPlugin = createLinkifyPlugin();
+    const linkifyPlugin = createDocLinkPlugin();
     const tagPlugin = createMentionPlugin({
       entityMutability: 'IMMUTABLE',
       mentionTrigger: '#',
@@ -59,22 +60,24 @@ class OutcomeCardTextArea extends Component {
         mentionSuggestionsEntryFocused: css(props.styles.tagSyggestionsEntryFocused)
       }
     });
-    const markdownPlugin = createMarkdownShortcutsPlugin();
-    const keyShortcutsPlugin = createKeyShortcutsPlugin();
+    //const markdownPlugin = createMarkdownShortcutsPlugin();
+    //const keyShortcutsPlugin = createKeyShortcutsPlugin();
     this.plugins = [
-      keyShortcutsPlugin,
+      //keyShortcutsPlugin,
       emojiPlugin,
       tagPlugin,
       linkifyPlugin,
-      markdownPlugin
+      //markdownPlugin
     ];
     this.EmojiSuggestions = emojiPlugin.EmojiSuggestions;
     this.MentionSuggestions = tagPlugin.MentionSuggestions;
+    this.LinkEditor = linkifyPlugin.LinkEditor;
 
   }
 
   state = {
-    suggestions: immutableTags
+    suggestions: immutableTags,
+    readOnly: false
   };
 
   onSearchChange = ({value}) => {
@@ -160,7 +163,7 @@ class OutcomeCardTextArea extends Component {
   //
   //  const mentionMenuStyle = css(styles.mentionMenu);
   //  return (
-  //    <MentionWrapper
+  //    <MentionWrapper.js
   //      getRef={setRef}
   //      className={contentStyles}
   //      disabled={isArchived}
@@ -178,7 +181,7 @@ class OutcomeCardTextArea extends Component {
   //      <MentionMenu className={mentionMenuStyle} trigger="#" item={MentionTag} resolve={tagQuery}/>
   //      <MentionMenu className={mentionMenuStyle} trigger=":" item={MentionEmoji} resolve={emojiQuery}
   //                   replace={emojiReplace}/>
-  //    </MentionWrapper>
+  //    </MentionWrapper.js>
   //
   //  );
   //}
@@ -206,23 +209,22 @@ class OutcomeCardTextArea extends Component {
   //  );
   //}
 
+  //setEditing = (e) => {
+  //  console.log('keyup')
+  //  this.setState({readOnly: false})
+  //  this.editor.focus()
+  //};
+  //
+  //setFocus = (e) => {
+  //
+  //}
   render() {
     return (
-      <div>
-        <Editor
+        <ProjectEditor
           editorState={this.props.textAreaValue}
           onChange={this.props.setValue}
           onBlur={this.props.handleCardUpdate}
-          plugins={this.plugins}
         />
-        <this.EmojiSuggestions/>
-        <this.MentionSuggestions
-          entryComponent={TagSuggestion}
-          onSearchChange={this.onSearchChange}
-          suggestions={this.state.suggestions}
-          onAddMention={this.onAddMention}
-        />
-      </div>
     )
   }
 }

@@ -27,7 +27,7 @@ module.exports = {
       'react-helmet',
       'react-hotkey-hoc',
       'react-notification-system',
-      'react-portal-hoc',
+      //'react-portal-hoc',
       'react-redux',
       'react-router',
       'react-router-dom',
