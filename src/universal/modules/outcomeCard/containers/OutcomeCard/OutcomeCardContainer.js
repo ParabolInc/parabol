@@ -59,9 +59,7 @@ class OutcomeCardContainer extends Component {
     if (content !== nextContent) {
       const newContentState = nextContent ? convertFromRaw(JSON.parse(nextContent)) : ContentState.createFromText('');
       const newEditorState = EditorState.push(this.state.textAreaValue, newContentState);
-      this.setState({
-        textAreaValue: newEditorState
-      });
+      this.setValue(newEditorState)
     }
   }
 

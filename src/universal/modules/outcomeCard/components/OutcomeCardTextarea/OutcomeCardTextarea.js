@@ -324,15 +324,6 @@ const styleThunk = () => ({
 
   markdown: {
     wordBreak: 'break-word'
-  },
-
-  mentionMenu: {
-    background: '#fff',
-    border: `1px solid ${ui.cardBorderCoor}`,
-    borderRadius: ui.borderRadiusSmall,
-    boxShadow: ui.menuBoxShadow,
-    color: ui.palette.dark,
-    padding: ui.borderRadiusSmall
   }
 });
 

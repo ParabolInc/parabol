@@ -1,4 +1,5 @@
 import React, {Children, Component} from 'react';
+import {getVisibleSelectionRect} from 'draft-js';
 
 const mentionModal = (ComposedComponent) => {
   class MentionWrapper extends Component {
@@ -6,6 +7,11 @@ const mentionModal = (ComposedComponent) => {
       options: [],
       lastQuery: undefined
     };
+
+    componentWillMount() {
+      const {query, resolve} = this.props;
+      this.makeOptions(query, resolve);
+    }
 
     componentWillReceiveProps(nextProps) {
       const {query, resolve} = nextProps;
@@ -17,9 +23,12 @@ const mentionModal = (ComposedComponent) => {
     makeOptions = async (query, resolve) => {
       const options = await resolve(query);
       if (options.length > 0) {
+        const targetRect = getVisibleSelectionRect(window);
         this.setState({
+          //active: 0,
           options,
-          //lastQuery: query
+          top: targetRect && targetRect.top + 32,
+          left: targetRect && targetRect.left
         });
       } else {
         this.closeMenu();
@@ -58,6 +67,7 @@ const mentionModal = (ComposedComponent) => {
       //setTimeout(() => {
       this.setState({
         options: [],
+        //isOpen: false,
         //lastQuery: undefined,
         triggerIdx: undefined
       })
@@ -135,21 +145,16 @@ const mentionModal = (ComposedComponent) => {
     }
 
     render() {
-      const {children, component, getRef, ...inputProps} = this.props;
-      const {active, child, left, top, options} = this.state;
-      const {item, className, style} = child;
-      if (top === undefined) return null;
+      const {active, modal, picker, children, component, getRef, ...inputProps} = this.props;
+      const {options, top, left} = this.state;
       return (
         <ComposedComponent
+          {...this.props}
           active={active}
-          className={className}
-          left={left}
-          isOpen={options.length > 0}
-          item={item}
+          isOpen={options.length > 0 && top !== undefined && modal === picker}
           options={options}
-          selectItem={this.selectItem}
-          style={style}
           top={top}
+          left={left}
         />
       );
     }
