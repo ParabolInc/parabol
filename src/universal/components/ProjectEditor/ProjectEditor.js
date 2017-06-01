@@ -1,7 +1,10 @@
 import {Editor, EditorState, getVisibleSelectionRect, Modifier} from 'draft-js';
 import React, {Component} from 'react';
 import stringScore from 'string-score';
-import EmojiPicker from 'universal/components/EmojiPicker/EmojiPicker';
+import EditorSuggestions from 'universal/components/EditorSuggestions/EditorSuggestions';
+import MentionEmoji from 'universal/components/MentionEmoji/MentionEmoji';
+import MentionTag from 'universal/components/MentionTag/MentionTag';
+import {tags} from 'universal/utils/constants';
 import emojiArray from 'universal/utils/emojiArray';
 import customStyleMap from './customStyleMap';
 import handleKeyCommand from './handleKeyCommand';
@@ -49,6 +52,10 @@ const resolveEmoji = async (query) => {
     .filter((obj, idx, arr) => obj.score > 0 && arr[0].score - obj.score < 0.3);
 };
 
+const resolveHashTag = async (query) => {
+  return tags.filter((tag) => tag.name.startsWith(query));
+};
+
 class ProjectEditor extends Component {
 
   state = {
@@ -56,7 +63,7 @@ class ProjectEditor extends Component {
     suggestions: []
   };
 
-  autoComplete = (mention) => {
+  autoCompleteEmoji = (mention) => {
     const {editorState, onChange} = this.props;
     const contentState = editorState.getCurrentContent();
     const selectionState = editorState.getSelection();
@@ -82,6 +89,32 @@ class ProjectEditor extends Component {
     this.removeModal();
   };
 
+  autoCompleteHashTag = (mention) => {
+    const {editorState, onChange} = this.props;
+    const contentState = editorState.getCurrentContent();
+    const selectionState = editorState.getSelection();
+    const contentStateWithEntity = contentState
+      .createEntity('TAG', 'IMMUTABLE', {value: mention});
+    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+    const {start, end} = getWordAtCaret(editorState);
+    const emojiTextSelection = selectionState.merge({
+      anchorOffset: start,
+      focusOffset: end
+    });
+    //const stringToInsert = nextChar === ' ' ? mention : `${mention} `;
+    const contentWithTag = Modifier.replaceText(
+      contentState,
+      emojiTextSelection,
+      `#${mention}`,
+      null,
+      entityKey
+    );
+
+    const newEditorState = EditorState.push(editorState, contentWithTag, 'insert-tag');
+    onChange(newEditorState);
+    this.removeModal();
+  };
+
   removeModal() {
     this.setState({
       modal: undefined
@@ -97,12 +130,18 @@ class ProjectEditor extends Component {
       return;
     }
     if (word && !entity) {
-      if (word[0] === ':') {
-        const query = word.slice(1);
+      const trigger = word[0];
+      const query = word.slice(1);
+      if (trigger === ':') {
         this.setState({
-          modal: 'emoji'
+          modal: MentionEmoji
         });
         this.makeOptions(query, resolveEmoji);
+      } else if (trigger === '#') {
+        this.setState({
+          modal: MentionTag
+        });
+        this.makeOptions(query, resolveHashTag);
       } else {
         this.removeModal();
       }
@@ -145,7 +184,7 @@ class ProjectEditor extends Component {
     if (modal) {
       e.preventDefault();
       const {value, emoji} = suggestions[active];
-      this.autoComplete(emoji);
+      this.handleItemClick(active)();
       return 'handled';
     }
     return 'not-handled';
@@ -167,10 +206,22 @@ class ProjectEditor extends Component {
   };
 
   handleItemClick = (idx) => (e) => {
-    e.preventDefault();
-    const {suggestions} = this.state;
+    if (e) {
+      e.preventDefault();
+    }
+    const {modal, suggestions} = this.state;
     const item = suggestions[idx];
-    this.autoComplete(item.emoji);
+    switch (modal) {
+      case MentionTag:
+        this.autoCompleteHashTag(item.name);
+        return;
+      case MentionEmoji:
+        this.autoCompleteEmoji(item.emoji);
+        return;
+      default:
+        return;
+    }
+    ;
   };
 
   //https://github.com/facebook/draft-js/issues/494 DnD throws errors
@@ -191,13 +242,14 @@ class ProjectEditor extends Component {
           onTab={this.handleReturn}
           handleReturn={this.handleReturn}
         />
-        <EmojiPicker
+        <EditorSuggestions
           handleItemClick={this.handleItemClick}
           suggestions={suggestions}
           active={active}
           left={left}
           top={top}
-          isOpen={modal === 'emoji'}
+          isOpen={Boolean(modal)}
+          mention={modal}
         />
       </divs>
     );
