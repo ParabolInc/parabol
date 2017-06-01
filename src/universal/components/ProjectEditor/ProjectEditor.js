@@ -26,7 +26,6 @@ const getWordAtCaret = (editorState) => {
   const wordEndOffset = maybeWordEndOffset === -1 ? fullBlockText.length : maybeWordEndOffset;
   const wordEndIdx = wordStartIdx + wordEndOffset + 1;
   const word = fullBlockText.slice(wordStartIdx, wordEndIdx);
-  console.log('end', fullBlockText[wordEndIdx])
   return {
     start: wordStartIdx,
     end: wordEndIdx,
@@ -57,12 +56,12 @@ class ProjectEditor extends Component {
     suggestions: []
   };
 
-  autoComplete = (editorState, mention) => {
-    const {onChange} = this.props;
+  autoComplete = (mention) => {
+    const {editorState, onChange} = this.props;
     const contentState = editorState.getCurrentContent();
     const selectionState = editorState.getSelection();
     const contentStateWithEntity = contentState
-      .createEntity('EMOJI', 'IMMUTABLE', { emojiUnicode: mention });
+      .createEntity('EMOJI', 'IMMUTABLE', {emojiUnicode: mention});
     const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
     const {start, end, nextChar} = getWordAtCaret(editorState);
     const emojiTextSelection = selectionState.merge({
@@ -100,7 +99,6 @@ class ProjectEditor extends Component {
     if (word && !entity) {
       if (word[0] === ':') {
         const query = word.slice(1);
-        console.log('setting modal');
         this.setState({
           modal: 'emoji'
         });
@@ -144,11 +142,10 @@ class ProjectEditor extends Component {
 
   handleReturn = (e) => {
     const {suggestions, active, modal} = this.state;
-    const {editorState, onChange} = this.props;
     if (modal) {
       e.preventDefault();
       const {value, emoji} = suggestions[active];
-      this.autoComplete(editorState, emoji);
+      this.autoComplete(emoji);
       return 'handled';
     }
     return 'not-handled';
@@ -169,8 +166,16 @@ class ProjectEditor extends Component {
     }
   };
 
+  handleItemClick = (idx) => (e) => {
+    e.preventDefault();
+    const {suggestions} = this.state;
+    const item = suggestions[idx];
+    this.autoComplete(item.emoji);
+  };
+
+  //https://github.com/facebook/draft-js/issues/494 DnD throws errors
   render() {
-    const {editorState, onChange, onBlur} = this.props;
+    const {editorState, onChange} = this.props;
     const {active, left, modal, suggestions, top} = this.state;
     return (
       <divs>
@@ -186,7 +191,14 @@ class ProjectEditor extends Component {
           onTab={this.handleReturn}
           handleReturn={this.handleReturn}
         />
-        <EmojiPicker suggestions={suggestions} active={active} left={left} top={top} isOpen={modal === 'emoji'}/>
+        <EmojiPicker
+          handleItemClick={this.handleItemClick}
+          suggestions={suggestions}
+          active={active}
+          left={left}
+          top={top}
+          isOpen={modal === 'emoji'}
+        />
       </divs>
     );
   }
