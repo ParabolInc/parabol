@@ -34,7 +34,8 @@ const getWordAtCaret = (editorState) => {
     end: wordEndIdx,
     nextChar: fullBlockText[wordEndIdx],
     word,
-    entity: currentBlock.getEntityAt(startOffset)
+    // offset by -1 otherwise a menu will pop up at the end of an entity
+    entity: currentBlock.getEntityAt(startOffset -1)
   }
 };
 
