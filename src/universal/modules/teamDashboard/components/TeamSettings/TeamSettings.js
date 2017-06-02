@@ -16,7 +16,6 @@ import Panel from 'universal/components/Panel/Panel';
 import ArchiveTeamContainer from 'universal/modules/teamDashboard/containers/ArchiveTeamContainer/ArchiveTeamContainer';
 import ui from 'universal/styles/ui';
 import IntegrationsContainer from '../../../integrations/containers/Integrations/IntegrationsContainer';
-import Button from 'universal/components/Button/Button';
 import Type from 'universal/components/Type/Type';
 import Helmet from 'react-helmet';
 
