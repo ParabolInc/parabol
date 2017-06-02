@@ -11,12 +11,6 @@ import customStyleMap from './customStyleMap';
 import getWordAtCaret from './getWordAtCaret';
 import handleKeyCommand from './handleKeyCommand';
 import keyBindingFn from './keyBindingFn';
-import maybeLinkify from 'universal/components/ProjectEditor/maybeLinkify';
-
-
-
-
-
 
 const resolveEmoji = async (query) => {
   if (!query) {
@@ -38,10 +32,25 @@ const resolveHashTag = async (query) => {
 
 class ProjectEditor extends Component {
 
+  constructor(props) {
+    super(props);
+    this.handleKeyCommand = handleKeyCommand.bind(this);
+  }
+
   state = {
     active: 0,
     suggestions: []
   };
+
+  componentWillReceiveProps(nextProps) {
+    const {undoLink} = this.state;
+    // the ability to hit backspace to undo linkification goes away after a click or keypress
+    if (undoLink && this.props.editorState !== nextProps.editorState) {
+      this.setState({
+        undoLink: undefined
+      })
+    }
+  }
 
   autoCompleteEmoji = (mention) => {
     const {editorState, onChange} = this.props;
@@ -129,37 +138,6 @@ class ProjectEditor extends Component {
       } else {
         this.removeModal();
       }
-    } else if (lastWord) {
-      //console.log('Ent', entity)
-      //// the last char is a space
-      //const links = linkify.match(lastWord);
-      //if (links) {
-      //  const {url} = links[0];
-      //  const contentState = editorState.getCurrentContent();
-      //  const selectionState = editorState.getSelection();
-      //  const contentStateWithEntity = contentState
-      //    .createEntity('LINK', 'MUTABLE', {url});
-      //  const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-      //  const urlTextSelection = selectionState.merge({
-      //    anchorOffset: start,
-      //    focusOffset: end
-      //  });
-      //  const contentWithUrl = Modifier.replaceText(
-      //    contentState,
-      //    urlTextSelection,
-      //    lastWord,
-      //    null,
-      //    entityKey
-      //  );
-      //  const spaceCorrected = Modifier.insertText(
-      //    contentWithUrl,
-      //    contentWithUrl.getSelectionAfter(),
-      //    ' ',
-      //  );
-      //  const newEditorState = EditorState.push(editorState, spaceCorrected, 'apply-url');
-      //  onChange(newEditorState);
-      //  return;
-      //}
     }
     onChange(editorState);
   }
@@ -247,7 +225,7 @@ class ProjectEditor extends Component {
           onChange={this.handleChange}
           keyBindingFn={keyBindingFn}
           customStyleMap={customStyleMap}
-          handleKeyCommand={handleKeyCommand(onChange, modal)}
+          handleKeyCommand={this.handleKeyCommand}
           onUpArrow={this.handleUpArrow}
           onDownArrow={this.handleDownArrow}
           onEscape={this.handleEscape}
@@ -269,13 +247,3 @@ class ProjectEditor extends Component {
 }
 
 export default ProjectEditor;
-
-/*
-
- {/!*<this.EmojiSuggestions/>*!/}
- {/!*<this.MentionSuggestions*!/}
- {/!*entryComponent={TagSuggestion}*!/}
- {/!*onSearchChange={this.onSearchChange}*!/}
- {/!*suggestions={this.state.suggestions}*!/}
- {/!*onAddMention={this.onAddMention}*!/}
- {/!*!/>*!/}*/

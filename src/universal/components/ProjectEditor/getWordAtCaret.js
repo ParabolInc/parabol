@@ -25,8 +25,8 @@ const getWordAtCaret = (editorState) => {
       entity: currentBlock.getEntityAt(startOffset - 1)
     };
   }
-  const maybeWordEndOffset = fullBlockText.slice(wordStartIdx + 1).search(FIRST_WHITESPACE);
-  const wordEndOffset = maybeWordEndOffset === -1 ? fullBlockText.length : maybeWordEndOffset;
+  const offsetFromStart = fullBlockText.slice(wordStartIdx).search(FIRST_WHITESPACE);
+  const wordEndOffset = offsetFromStart === -1 ? fullBlockText.length : wordStartIdx + offsetFromStart;
   const wordEndIdx = wordStartIdx + wordEndOffset + 1;
   const word = fullBlockText.slice(wordStartIdx, wordEndIdx);
   return {
