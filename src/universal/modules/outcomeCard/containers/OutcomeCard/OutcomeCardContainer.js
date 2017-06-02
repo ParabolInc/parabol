@@ -8,6 +8,7 @@ import OutcomeCard from 'universal/modules/outcomeCard/components/OutcomeCard/Ou
 import labels from 'universal/styles/theme/labels';
 import removeTagFromString from 'universal/utils/removeTagFromString';
 import targetIsDescendant from 'universal/utils/targetIsDescendant';
+import editorDecorators from 'universal/components/ProjectEditor/decorators';
 
 const teamMembersQuery = `
 query {
@@ -40,7 +41,7 @@ class OutcomeCardContainer extends Component {
       hasHover: false,
       isEditing: !content,
       openArea: 'content',
-      textAreaValue: content ? EditorState.createWithContent(convertFromRaw(JSON.parse(content))) : EditorState.createEmpty()
+      textAreaValue: content ? EditorState.createWithContent(convertFromRaw(JSON.parse(content)), editorDecorators) : EditorState.createEmpty(editorDecorators)
     };
   }
 

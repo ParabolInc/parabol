@@ -1,4 +1,5 @@
 import {Editor, EditorState, getVisibleSelectionRect, Modifier} from 'draft-js';
+
 import React, {Component} from 'react';
 import stringScore from 'string-score';
 import EditorSuggestions from 'universal/components/EditorSuggestions/EditorSuggestions';
@@ -7,37 +8,15 @@ import MentionTag from 'universal/components/MentionTag/MentionTag';
 import {tags} from 'universal/utils/constants';
 import emojiArray from 'universal/utils/emojiArray';
 import customStyleMap from './customStyleMap';
+import getWordAtCaret from './getWordAtCaret';
 import handleKeyCommand from './handleKeyCommand';
 import keyBindingFn from './keyBindingFn';
+import maybeLinkify from 'universal/components/ProjectEditor/maybeLinkify';
 
-const LAST_NON_WHITESPACE = /\S+$/;
-const FIRST_WHITESPACE = /\s/;
 
-const getWordAtCaret = (editorState) => {
-  const selection = editorState.getSelection();
-  if (!selection.getHasFocus()) return {blur: true};
-  const currentContent = editorState.getCurrentContent();
-  const currentBlock = currentContent.getBlockForKey(selection.getStartKey());
-  const startOffset = selection.getStartOffset();
-  const fullBlockText = currentBlock.getText();
-  const textToCaretLeft = fullBlockText.slice(0, startOffset);
-  const wordStartIdx = textToCaretLeft.search(LAST_NON_WHITESPACE);
-  if (wordStartIdx === -1) {
-    return {};
-  }
-  const maybeWordEndOffset = fullBlockText.slice(wordStartIdx + 1).search(FIRST_WHITESPACE);
-  const wordEndOffset = maybeWordEndOffset === -1 ? fullBlockText.length : maybeWordEndOffset;
-  const wordEndIdx = wordStartIdx + wordEndOffset + 1;
-  const word = fullBlockText.slice(wordStartIdx, wordEndIdx);
-  return {
-    start: wordStartIdx,
-    end: wordEndIdx,
-    nextChar: fullBlockText[wordEndIdx],
-    word,
-    // offset by -1 otherwise a menu will pop up at the end of an entity
-    entity: currentBlock.getEntityAt(startOffset -1)
-  }
-};
+
+
+
 
 const resolveEmoji = async (query) => {
   if (!query) {
@@ -124,30 +103,63 @@ class ProjectEditor extends Component {
 
   handleChange = (editorState) => {
     const {onChange} = this.props;
-    const {word, entity, blur} = getWordAtCaret(editorState);
+    const {word, lastWord, entity, blur, start, end} = getWordAtCaret(editorState);
     if (blur) {
       this.props.onBlur(editorState);
       this.removeModal();
       return;
     }
-    if (word && !entity) {
-      const trigger = word[0];
-      const query = word.slice(1);
-      if (trigger === ':') {
-        this.setState({
-          modal: MentionEmoji
-        });
-        this.makeOptions(query, resolveEmoji);
-      } else if (trigger === '#') {
-        this.setState({
-          modal: MentionTag
-        });
-        this.makeOptions(query, resolveHashTag);
+    if (word) {
+      if (!entity) {
+        const trigger = word[0];
+        const query = word.slice(1);
+        if (trigger === ':') {
+          this.setState({
+            modal: MentionEmoji
+          });
+          this.makeOptions(query, resolveEmoji);
+        } else if (trigger === '#') {
+          this.setState({
+            modal: MentionTag
+          });
+          this.makeOptions(query, resolveHashTag);
+        } else {
+          this.removeModal();
+        }
       } else {
         this.removeModal();
       }
-    } else {
-      this.removeModal();
+    } else if (lastWord) {
+      //console.log('Ent', entity)
+      //// the last char is a space
+      //const links = linkify.match(lastWord);
+      //if (links) {
+      //  const {url} = links[0];
+      //  const contentState = editorState.getCurrentContent();
+      //  const selectionState = editorState.getSelection();
+      //  const contentStateWithEntity = contentState
+      //    .createEntity('LINK', 'MUTABLE', {url});
+      //  const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+      //  const urlTextSelection = selectionState.merge({
+      //    anchorOffset: start,
+      //    focusOffset: end
+      //  });
+      //  const contentWithUrl = Modifier.replaceText(
+      //    contentState,
+      //    urlTextSelection,
+      //    lastWord,
+      //    null,
+      //    entityKey
+      //  );
+      //  const spaceCorrected = Modifier.insertText(
+      //    contentWithUrl,
+      //    contentWithUrl.getSelectionAfter(),
+      //    ' ',
+      //  );
+      //  const newEditorState = EditorState.push(editorState, spaceCorrected, 'apply-url');
+      //  onChange(newEditorState);
+      //  return;
+      //}
     }
     onChange(editorState);
   }
@@ -222,7 +234,6 @@ class ProjectEditor extends Component {
       default:
         return;
     }
-    ;
   };
 
   //https://github.com/facebook/draft-js/issues/494 DnD throws errors

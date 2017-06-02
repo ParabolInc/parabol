@@ -1,15 +1,6 @@
-import {getDefaultKeyBinding, KeyBindingUtil, RichUtils} from 'draft-js';
-
-const {hasCommandModifier} = KeyBindingUtil;
-
-const customHandleKeyCommand = (editorState, command) => {
-  switch (command) {
-    case 'strikethrough':
-      return RichUtils.toggleInlineStyle(editorState, 'STRIKETHROUGH');
-    default:
-      return null;
-  }
-};
+import {EditorState, Modifier, RichUtils} from 'draft-js';
+import maybeLinkify from './maybeLinkify';
+import maybeDelinkify from 'universal/components/ProjectEditor/maybeDelinkify';
 
 const handleKeyCommand = (onChange, modal) => (command, editorState) => {
   if (modal) {
@@ -18,7 +9,37 @@ const handleKeyCommand = (onChange, modal) => (command, editorState) => {
     }
   }
   console.log('command', command)
-  const newState = RichUtils.handleKeyCommand(editorState, command) || customHandleKeyCommand(editorState, command);
+  if (command === 'strikethrough') {
+    onChange(RichUtils.toggleInlineStyle(editorState, 'STRIKETHROUGH'));
+    return 'handled';
+  }
+
+  if (command === 'space') {
+    const maybeLinkifiedEditorState = maybeLinkify(editorState);
+    const contentState = Modifier.insertText(
+      maybeLinkifiedEditorState.getCurrentContent(),
+      maybeLinkifiedEditorState.getSelection(),
+      ' '
+    );
+    const newEditorState = EditorState.push(maybeLinkifiedEditorState, contentState);
+    onChange(newEditorState);
+    return 'handled';
+  }
+
+  if (command === 'split-block') {
+    const maybeLinkifiedEditorState = maybeLinkify(editorState);
+    const contentState = Modifier.splitBlock(
+      maybeLinkifiedEditorState.getCurrentContent(),
+      maybeLinkifiedEditorState.getSelection()
+    );
+    onChange(EditorState.push(maybeLinkifiedEditorState, contentState, 'split-block'));
+    return 'handled';
+  }
+
+  if (command === 'backspace') {
+   return maybeDelinkify(editorState, onChange);
+  }
+  const newState = RichUtils.handleKeyCommand(editorState, command);
   if (newState) {
     onChange(newState);
     return 'handled';
