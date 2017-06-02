@@ -4,6 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v0.18.2 - 02-Jun-2017
+### Added
+- Enhanced design of beta integrations configuration panel, starting with Slack
+
+### Fixed
+- Various dependency updates fixing potential security vulnerabilities
+
 ## v0.18.1 - 18-May-2017
 ### Added
 - Removed references to "Action" as product name, now we're just going
