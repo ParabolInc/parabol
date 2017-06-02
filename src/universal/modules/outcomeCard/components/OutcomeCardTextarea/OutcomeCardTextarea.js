@@ -138,6 +138,50 @@ class OutcomeCardTextArea extends Component {
     );
   }
 
+  function replaceIt(markdown) {
+	//get start and finish points of selected text in active textarea element
+    var start = document.activeElement.selectionStart;
+    var end = document.activeElement.selectionEnd;
+
+    //select and remove text for markdown replacement 
+    var selectedText = document.activeElement.value.slice(start, end);
+    var before = document.activeElement.value.slice(0, start);
+    var after = document.activeElement.value.slice(end);
+    var text;
+
+    //depending on which shortcut used, edit text 
+    switch(markdown) {
+        case "cmdk":
+        	text = before + ("[" + selectedText + "]()") + after;
+        	document.activeElement.value = text; break;
+        case "cmdb":
+        	text = before + ("**" + selectedText + "**") + after;
+        	document.activeElement.value = text; break;
+        case "cmdi": 
+        	text = before + ("_" + selectedText + "_") + after;
+        	document.activeElement.value = text; break;
+    }
+  }
+
+  function KeyPress(e) {
+    //onKeyDown handler
+    //only enable markdown shortcuts if user within text area & card is in edit mode (class content_fhpdck)
+    if (((document.activeElement.tagName === "TEXTAREA") || (document.activeElement.tagName === "INPUT" && document.activeElement.type === "text")) && (document.activeElement.classList.contains("content_fhpdck"))) {
+          var evtobj = window.event ? event : e
+          //check which key pressed, run corresponding edit
+          if (evtobj.keyCode == 75 && evtobj.metaKey) {
+            replaceIt("cmdk");
+          } else if (evtobj.keyCode == 66 && evtobj.metaKey) {
+            replaceIt("cmdb");
+          } else if (evtobj.keyCode == 73 && evtobj.metaKey) {
+            replaceIt("cmdi");
+        } else {
+          null;
+        }
+      }
+  }
+  document.onkeydown = KeyPress;
+  
   render() {
     const {isEditing} = this.props;
     return isEditing ? this.renderEditing() : this.renderMarkdown();
