@@ -1,34 +1,15 @@
-import {Editor, EditorState, getVisibleSelectionRect, Modifier} from 'draft-js';
-
+import {Editor, getVisibleSelectionRect} from 'draft-js';
 import React, {Component} from 'react';
-import stringScore from 'string-score';
 import EditorSuggestions from 'universal/components/EditorSuggestions/EditorSuggestions';
 import MentionEmoji from 'universal/components/MentionEmoji/MentionEmoji';
 import MentionTag from 'universal/components/MentionTag/MentionTag';
-import {tags} from 'universal/utils/constants';
-import emojiArray from 'universal/utils/emojiArray';
+import getWordAt from 'universal/components/ProjectEditor/getWordAt';
 import customStyleMap from './customStyleMap';
-import getWordAtCaret from './getWordAtCaret';
 import handleKeyCommand from './handleKeyCommand';
+import completeEntity from 'universal/components/ProjectEditor/operations/completeEnitity';
+import getAnchorLocation from './getAnchorLocation';
 import keyBindingFn from './keyBindingFn';
-
-const resolveEmoji = async (query) => {
-  if (!query) {
-    return emojiArray.slice(2, 8);
-  }
-  return emojiArray.map((obj) => ({
-    ...obj,
-    score: stringScore(obj.value, query)
-  }))
-    .sort((a, b) => a.score < b.score ? 1 : -1)
-    .slice(0, 6)
-    // ":place of worship:" shouldn't pop up when i type ":poop"
-    .filter((obj, idx, arr) => obj.score > 0 && arr[0].score - obj.score < 0.3);
-};
-
-const resolveHashTag = async (query) => {
-  return tags.filter((tag) => tag.name.startsWith(query));
-};
+import {resolveEmoji, resolveHashTag} from './resolvers';
 
 class ProjectEditor extends Component {
 
@@ -52,92 +33,43 @@ class ProjectEditor extends Component {
     }
   }
 
-  autoCompleteEmoji = (mention) => {
-    const {editorState, onChange} = this.props;
-    const contentState = editorState.getCurrentContent();
-    const selectionState = editorState.getSelection();
-    const contentStateWithEntity = contentState
-      .createEntity('EMOJI', 'IMMUTABLE', {emojiUnicode: mention});
-    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-    const {start, end, nextChar} = getWordAtCaret(editorState);
-    const emojiTextSelection = selectionState.merge({
-      anchorOffset: start,
-      focusOffset: end
-    });
-    //const stringToInsert = nextChar === ' ' ? mention : `${mention} `;
-    const contentWithEmoji = Modifier.replaceText(
-      contentState,
-      emojiTextSelection,
-      mention,
-      null,
-      entityKey
-    );
-
-    const newEditorState = EditorState.push(editorState, contentWithEmoji, 'insert-emoji');
-    onChange(newEditorState);
-    this.removeModal();
-  };
-
-  autoCompleteHashTag = (mention) => {
-    const {editorState, onChange} = this.props;
-    const contentState = editorState.getCurrentContent();
-    const selectionState = editorState.getSelection();
-    const contentStateWithEntity = contentState
-      .createEntity('TAG', 'IMMUTABLE', {value: mention});
-    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-    const {start, end} = getWordAtCaret(editorState);
-    const emojiTextSelection = selectionState.merge({
-      anchorOffset: start,
-      focusOffset: end
-    });
-    //const stringToInsert = nextChar === ' ' ? mention : `${mention} `;
-    const contentWithTag = Modifier.replaceText(
-      contentState,
-      emojiTextSelection,
-      `#${mention}`,
-      null,
-      entityKey
-    );
-
-    const newEditorState = EditorState.push(editorState, contentWithTag, 'insert-tag');
-    onChange(newEditorState);
-    this.removeModal();
-  };
-
-  removeModal() {
-    this.setState({
-      modal: undefined
-    })
+  removeModal = () => {
+    if (this.state.modal) {
+      this.setState({
+        modal: undefined
+      })
+    }
   };
 
   handleChange = (editorState) => {
-    const {onChange} = this.props;
-    const {word, lastWord, entity, blur, start, end} = getWordAtCaret(editorState);
-    if (blur) {
+    if (!editorState.getSelection().getHasFocus()) {
       this.props.onBlur(editorState);
       this.removeModal();
       return;
     }
-    if (word) {
-      if (!entity) {
-        const trigger = word[0];
-        const query = word.slice(1);
-        if (trigger === ':') {
-          this.setState({
-            modal: MentionEmoji
-          });
-          this.makeOptions(query, resolveEmoji);
-        } else if (trigger === '#') {
-          this.setState({
-            modal: MentionTag
-          });
-          this.makeOptions(query, resolveHashTag);
-        } else {
-          this.removeModal();
-        }
+    const {onChange} = this.props;
+    const {block, anchorOffset} = getAnchorLocation(editorState);
+    const blockText = block.getText();
+    const entity = block.getEntityAt(anchorOffset);
+    const {word} = getWordAt(blockText, anchorOffset);
+    if (word && !entity) {
+      const trigger = word[0];
+      const query = word.slice(1);
+      if (trigger === ':') {
+        this.setState({
+          modal: MentionEmoji
+        });
+        this.makeOptions(query, resolveEmoji);
+      } else if (trigger === '#') {
+        this.setState({
+          modal: MentionTag
+        });
+        this.makeOptions(query, resolveHashTag);
       } else {
         this.removeModal();
       }
+    } else {
+      this.removeModal();
     }
     onChange(editorState);
   }
@@ -202,16 +134,15 @@ class ProjectEditor extends Component {
     }
     const {modal, suggestions} = this.state;
     const item = suggestions[idx];
-    switch (modal) {
-      case MentionTag:
-        this.autoCompleteHashTag(item.name);
-        return;
-      case MentionEmoji:
-        this.autoCompleteEmoji(item.emoji);
-        return;
-      default:
-        return;
+    const {onChange, editorState} = this.props;
+    if (modal === MentionTag) {
+      const {name} = item;
+      onChange(completeEntity(editorState, 'insert-tag', {value: name}, `#${name}`));
+    } else if (modal === MentionEmoji) {
+      const unicode = item.emoji;
+      onChange(completeEntity(editorState, 'insert-emoji', {unicode}, unicode))
     }
+    this.removeModal();
   };
 
   //https://github.com/facebook/draft-js/issues/494 DnD throws errors
