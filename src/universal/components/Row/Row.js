@@ -11,7 +11,7 @@ const Row = (props) => {
   } = props;
 
   return (
-    <div className={css(styles.userRow)}>
+    <div className={css(styles.row)}>
       {children}
     </div>
   );
@@ -23,7 +23,7 @@ Row.propTypes = {
 };
 
 const styleThunk = () => ({
-  userRow: {
+  row: {
     alignItems: 'center',
     borderTop: `1px solid ${ui.rowBorderColor}`,
     display: 'flex',
