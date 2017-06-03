@@ -1,10 +1,10 @@
 import {EditorState, Modifier} from 'draft-js';
 
-const makeRemoveLink = (block, anchorOffset, focusOffset) => (editorState) => {
+const makeRemoveLink = (blockKey, anchorOffset, focusOffset) => (editorState) => {
   const selection = editorState.getSelection();
   const selectionWithLink = selection.merge({
-    anchorKey: block,
-    focusKey: block,
+    anchorKey: blockKey,
+    focusKey: blockKey,
     anchorOffset,
     focusOffset
   });

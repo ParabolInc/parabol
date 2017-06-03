@@ -1,47 +1,55 @@
-import portal from 'react-portal-hoc';
-import React from 'react';
 import {css} from 'aphrodite-local-styles/no-important';
+import React from 'react';
+import portal from 'react-portal-hoc';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
+import makeRemoveLink from 'universal/components/ProjectEditor/operations/makeRemoveLink';
+import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocation';
+import getWordAt from 'universal/components/ProjectEditor/getWordAt';
 
 const dontTellDraft = (e) => {
   e.preventDefault();
 };
 
-const EditorSuggestions = (props) => {
+const EditorLinkViewer = (props) => {
   const {
     isClosing,
-    suggestions,
-    active,
     left,
     top,
-    handleItemClick,
+    entityData,
     styles,
-    mention: Mention
   } = props;
-
-  if (!Mention) return null;
-
-  const menuStyle = {
+  if (!entityData) return null;
+  const {href} = entityData;
+  const linkViewer = {
     left,
     top,
     position: 'absolute'
   };
   const menuStyles = css(
-    styles.mentionMenu,
+    styles.modal,
     isClosing && styles.closing
   );
 
+  const removeLink = (e) => {
+    const {editorState, onChange, removeModal} = props;
+    const {block, anchorOffset} = getAnchorLocation(editorState);
+    const blockText = block.getText();
+    const {begin, end} = getWordAt(blockText, anchorOffset);
+    onChange(makeRemoveLink(block.getKey(), begin, end)(editorState));
+    removeModal();
+  };
   return (
-    <div style={menuStyle} className={menuStyles}>
-      {suggestions.map((suggestion, idx) => {
-        return (
-          <div key={idx} onMouseDown={dontTellDraft} onClick={handleItemClick(idx)}>
-            <Mention active={active === idx} {...suggestion}/>
-          </div>
-        )
-      })}
+
+    <div style={linkViewer} className={menuStyles}>
+      <span>
+        <a href={href} rel="noopener noreferrer" onMouseDown={dontTellDraft} target="_blank">{href}</a>
+      </span>
+      <span> - </span>
+      <span>Change</span>
+      <span> | </span>
+      <span onMouseDown={dontTellDraft} onClick={removeLink}>Remove</span>
     </div>
   )
 };
@@ -76,7 +84,7 @@ const styleThunk = (theme, props) => ({
     animationName: animateOut
   },
 
-  mentionMenu: {
+  modal: {
     background: '#fff',
     border: `1px solid ${ui.cardBorderCoor}`,
     borderRadius: ui.borderRadiusSmall,
@@ -110,5 +118,5 @@ const styleThunk = (theme, props) => ({
 });
 
 export default portal({closeAfter: 100})(
-  withStyles(styleThunk)(EditorSuggestions)
+  withStyles(styleThunk)(EditorLinkViewer)
 )

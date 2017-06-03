@@ -10,6 +10,7 @@ import completeEntity from 'universal/components/ProjectEditor/operations/comple
 import getAnchorLocation from './getAnchorLocation';
 import keyBindingFn from './keyBindingFn';
 import {resolveEmoji, resolveHashTag} from './resolvers';
+import EditorLinkViewer from 'universal/components/EditorLinkViewer/EditorLinkViewer';
 
 class ProjectEditor extends Component {
 
@@ -34,9 +35,11 @@ class ProjectEditor extends Component {
   }
 
   removeModal = () => {
-    if (this.state.modal) {
+    const {suggestionModal, linkModalData} = this.state;
+    if (suggestionModal || linkModalData) {
       this.setState({
-        modal: undefined
+        suggestionModal: undefined,
+        linkModalData: undefined
       })
     }
   };
@@ -50,33 +53,47 @@ class ProjectEditor extends Component {
     const {onChange} = this.props;
     const {block, anchorOffset} = getAnchorLocation(editorState);
     const blockText = block.getText();
-    const entity = block.getEntityAt(anchorOffset);
+    const entityKey = block.getEntityAt(anchorOffset);
     const {word} = getWordAt(blockText, anchorOffset);
-    if (word && !entity) {
+    if (word && !entityKey) {
       const trigger = word[0];
       const query = word.slice(1);
       if (trigger === ':') {
         this.setState({
-          modal: MentionEmoji
+          suggestionModal: MentionEmoji
         });
         this.makeOptions(query, resolveEmoji);
       } else if (trigger === '#') {
         this.setState({
-          modal: MentionTag
+          suggestionModal: MentionTag
         });
         this.makeOptions(query, resolveHashTag);
+      } else {
+        this.removeModal();
+      }
+    } else if (entityKey) {
+      const contentState = editorState.getCurrentContent();
+      const entity = contentState.getEntity(entityKey);
+      if (entity.getType() === 'LINK') {
+        const targetRect = getVisibleSelectionRect(window);
+        this.setState({
+          linkModalData: entity.getData(),
+          top: targetRect && targetRect.top + 32,
+          left: targetRect && targetRect.left
+        });
       } else {
         this.removeModal();
       }
     } else {
       this.removeModal();
     }
+
     onChange(editorState);
   }
 
   handleUpArrow = (e) => {
-    const {modal} = this.state;
-    if (modal) {
+    const {suggestionModal} = this.state;
+    if (suggestionModal) {
 
       e.preventDefault();
       this.setState((state) => ({
@@ -86,8 +103,8 @@ class ProjectEditor extends Component {
   }
 
   handleDownArrow = (e) => {
-    const {modal, suggestions} = this.state;
-    if (modal) {
+    const {suggestionModal, suggestions} = this.state;
+    if (suggestionModal) {
       e.preventDefault();
       this.setState((state) => ({
         active: Math.min(state.active + 1, suggestions.length - 1)
@@ -96,15 +113,15 @@ class ProjectEditor extends Component {
   };
 
   handleEscape = (e) => {
-    const {modal} = this.state;
-    if (modal) {
+    const {suggestionModal} = this.state;
+    if (suggestionModal) {
       this.removeModal()
     }
   };
 
   handleReturn = (e) => {
-    const {suggestions, active, modal} = this.state;
-    if (modal) {
+    const {suggestions, active, suggestionModal} = this.state;
+    if (suggestionModal) {
       e.preventDefault();
       const {value, emoji} = suggestions[active];
       this.handleItemClick(active)();
@@ -132,13 +149,13 @@ class ProjectEditor extends Component {
     if (e) {
       e.preventDefault();
     }
-    const {modal, suggestions} = this.state;
+    const {suggestionModal, suggestions} = this.state;
     const item = suggestions[idx];
     const {onChange, editorState} = this.props;
-    if (modal === MentionTag) {
+    if (suggestionModal === MentionTag) {
       const {name} = item;
       onChange(completeEntity(editorState, 'insert-tag', {value: name}, `#${name}`));
-    } else if (modal === MentionEmoji) {
+    } else if (suggestionModal === MentionEmoji) {
       const unicode = item.emoji;
       onChange(completeEntity(editorState, 'insert-emoji', {unicode}, unicode))
     }
@@ -148,7 +165,7 @@ class ProjectEditor extends Component {
   //https://github.com/facebook/draft-js/issues/494 DnD throws errors
   render() {
     const {editorState, onChange} = this.props;
-    const {active, left, modal, suggestions, top} = this.state;
+    const {active, left, linkModalData, suggestionModal, suggestions, top} = this.state;
     return (
       <divs>
         <Editor
@@ -169,8 +186,17 @@ class ProjectEditor extends Component {
           active={active}
           left={left}
           top={top}
-          isOpen={Boolean(modal)}
-          mention={modal}
+          isOpen={Boolean(suggestionModal)}
+          mention={suggestionModal}
+        />
+        <EditorLinkViewer
+          isOpen={Boolean(linkModalData)}
+          entityData={linkModalData}
+          left={left}
+          top={top}
+          editorState={editorState}
+          onChange={onChange}
+          removeModal={this.removeModal}
         />
       </divs>
     );

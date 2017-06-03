@@ -1,13 +1,14 @@
 import EditorLink from './EditorLink';
 import {CompositeDecorator} from 'draft-js';
+import Hashtag from 'universal/components/ProjectEditor/Hashtag';
 
-const findLinkEntities = (contentBlock, callback, contentState) => {
+const findEntity = (entityType) => (contentBlock, callback, contentState) => {
   contentBlock.findEntityRanges(
     (character) => {
       const entityKey = character.getEntity();
       return (
         entityKey !== null &&
-        contentState.getEntity(entityKey).getType() === 'LINK'
+        contentState.getEntity(entityKey).getType() === entityType
       );
     },
     callback
@@ -16,9 +17,13 @@ const findLinkEntities = (contentBlock, callback, contentState) => {
 
 const decorators = new CompositeDecorator([
   {
-    strategy: findLinkEntities,
+    strategy: findEntity('LINK'),
     component: EditorLink,
   },
+  {
+    strategy: findEntity('TAG'),
+    component: Hashtag
+  }
 ]);
 
 export default decorators;

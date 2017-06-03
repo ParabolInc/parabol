@@ -2,15 +2,15 @@ import {EditorState, Modifier} from 'draft-js';
 import makeRemoveLink from 'universal/components/ProjectEditor/operations/makeRemoveLink';
 
 
-const makeAddLink = (block, anchorOffset, focusOffset, url) => (editorState) => {
+const makeAddLink = (blockKey, anchorOffset, focusOffset, url) => (editorState) => {
   const contentState = editorState.getCurrentContent();
   const contentStateWithEntity = contentState
-    .createEntity('LINK', 'MUTABLE', {url});
+    .createEntity('LINK', 'MUTABLE', {href: url});
   const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
   const selectionState = editorState.getSelection();
   const linkSelectionState = selectionState.merge({
-    anchorKey: block,
-    focusKey: block,
+    anchorKey: blockKey,
+    focusKey: blockKey,
     anchorOffset,
     focusOffset
   });
@@ -24,7 +24,7 @@ const makeAddLink = (block, anchorOffset, focusOffset, url) => (editorState) => 
   });
   return {
     editorState: EditorState.push(editorState, contentWithUrl, 'apply-link'),
-    undoLinkify: makeRemoveLink(block, anchorOffset, focusOffset)
+    undoLinkify: makeRemoveLink(blockKey, anchorOffset, focusOffset)
   };
 };
 

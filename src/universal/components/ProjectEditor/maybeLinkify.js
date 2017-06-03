@@ -11,8 +11,8 @@ const maybeLinkify = (editorState) => {
   const {block, anchorOffset} = getAnchorLocation(editorState);
   const blockText = block.getText();
   const {begin, end, word} = getWordAt(blockText, anchorOffset, true);
-  const entity = block.getEntityAt(anchorOffset);
-  if (word && !entity) {
+  const entityKey = block.getEntityAt(anchorOffset);
+  if (word && !entityKey) {
     const links = linkify.match(word);
     if (links) {
       const {url} = links[0];

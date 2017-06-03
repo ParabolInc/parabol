@@ -9,7 +9,7 @@ const getSearchText = (editorState) => {
   const blockText = currentBlock.getText();
   return {
     ...getWordAt(blockText, anchorOffset),
-    entity: currentBlock.getEntityAt(anchorOffset),
+    entityKey: currentBlock.getEntityAt(anchorOffset),
     block: currentBlock
   };
 };
