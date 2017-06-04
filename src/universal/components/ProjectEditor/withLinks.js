@@ -101,6 +101,9 @@ const withLinks = (ComposedComponent) => {
 
       if (command === 'backspace' && undoLink) {
         onChange(undoLink(editorState));
+        this.setState({
+          undoLink: undefined
+        });
         return 'handled';
       }
 

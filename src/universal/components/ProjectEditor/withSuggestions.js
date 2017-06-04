@@ -67,10 +67,6 @@ const withSuggestions = (ComposedComponent) => {
     };
 
     removeModal = () => {
-      const {removeModal} = this.props;
-      if (removeModal) {
-        removeModal();
-      }
       this.setState({
         active: undefined,
         suggestions: undefined,

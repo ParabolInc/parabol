@@ -23,15 +23,15 @@ class ProjectEditor extends Component {
 
   state = {};
 
-  componentWillReceiveProps(nextProps) {
-    const {undoLink} = this.state;
-    // the ability to hit backspace to undo linkification goes away after a click or keypress
-    if (undoLink && this.props.editorState !== nextProps.editorState) {
-      this.setState({
-        undoLink: undefined
-      });
-    }
-  }
+  //componentWillReceiveProps(nextProps) {
+  //  const {undoLink} = this.state;
+  //  // the ability to hit backspace to undo linkification goes away after a click or keypress
+  //  if (undoLink && this.props.editorState !== nextProps.editorState) {
+  //    this.setState({
+  //      undoLink: undefined
+  //    });
+  //  }
+  //}
 
   removeModal = () => {
     const {removeModal} = this.props;
