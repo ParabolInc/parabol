@@ -20,17 +20,17 @@ const suggestionTypes = {
 class EditorSuggestions extends Component {
 
   handleItemClick = (idx) => (e) => {
-    const {editorState, onChange, suggestions, suggestionType, removeModal} = this.props;
+    const {editorState, setEditorState, suggestions, suggestionType, removeModal} = this.props;
     //if (e) {
     //  e.preventDefault();
     //}
     const item = suggestions[idx];
     if (suggestionType === 'tag') {
       const {name} = item;
-      onChange(completeEntity(editorState, 'insert-tag', {value: name}, `#${name}`));
+      setEditorState(completeEntity(editorState, 'insert-tag', {value: name}, `#${name}`));
     } else if (suggestionType === 'emoji') {
       const unicode = item.emoji;
-      onChange(completeEntity(editorState, 'insert-emoji', {unicode}, unicode))
+      setEditorState(completeEntity(editorState, 'insert-emoji', {unicode}, unicode))
     }
     removeModal();
   };

@@ -77,7 +77,7 @@ const withLinks = (ComposedComponent) => {
       return {};
     };
 
-    renderChangerModal = (editorState, onChange) => {
+    renderChangerModal = (editorState, setEditorState) => {
       const {linkChangerData} = this.state;
       const targetRect = getVisibleSelectionRect(window);
       return (
@@ -86,14 +86,14 @@ const withLinks = (ComposedComponent) => {
           top={targetRect && targetRect.top + 32}
           left={targetRect && targetRect.left}
           editorState={editorState}
-          onChange={onChange}
+          setEditorState={setEditorState}
           removeModal={this.removeModal}
           linkData={linkChangerData}
         />
       );
     };
 
-    renderViewerModal = (editorState, onChange) => {
+    renderViewerModal = (editorState, setEditorState) => {
       const {linkViewerData} = this.state;
       const targetRect = getVisibleSelectionRect(window);
       return (
@@ -102,17 +102,17 @@ const withLinks = (ComposedComponent) => {
           top={targetRect && targetRect.top + 32}
           left={targetRect && targetRect.left}
           editorState={editorState}
-          onChange={onChange}
+          setEditorState={setEditorState}
           removeModal={this.removeModal}
           linkData={linkViewerData}
         />
       )
     };
 
-    handleKeyCommand = (command, editorState, onChange) => {
+    handleKeyCommand = (command, editorState, setEditorState) => {
       const {handleKeyCommand} = this.props;
       if (handleKeyCommand) {
-        const result = handleKeyCommand(command, editorState, onChange);
+        const result = handleKeyCommand(command, editorState, setEditorState);
         if (result === 'handled' || result === true) {
           return result;
         }
@@ -128,15 +128,15 @@ const withLinks = (ComposedComponent) => {
           this.setState({
             undoLink: undoLinkify
           });
-          onChange(linkedEditorState);
+          setEditorState(linkedEditorState);
         } else {
-          onChange(whitespacedEditorState);
+          setEditorState(whitespacedEditorState);
         }
         return 'handled';
       }
 
       if (command === 'backspace' && undoLink) {
-        onChange(undoLink(editorState));
+        setEditorState(undoLink(editorState));
         this.setState({
           undoLink: undefined
         });
@@ -146,7 +146,7 @@ const withLinks = (ComposedComponent) => {
       if (command === 'add-hyperlink') {
         const selectionState = getCtrlKSelection(editorState);
         if (selectionState !== editorState.getSelection()) {
-          onChange(EditorState.forceSelection(editorState, selectionState));
+          setEditorState(EditorState.forceSelection(editorState, selectionState));
         }
         // TODO if they ctrl + k a link, then grab the href of that
         this.setState({
@@ -180,10 +180,10 @@ const withLinks = (ComposedComponent) => {
       return undefined;
     };
 
-    handleChange = (editorState, onChange) => {
+    handleChange = (editorState, setEditorState) => {
       const {handleChange} = this.props;
       if (handleChange) {
-        handleChange(editorState, onChange);
+        handleChange(editorState, setEditorState);
       }
       const {block, anchorOffset} = getAnchorLocation(editorState);
       const entityKey = block.getEntityAt(anchorOffset);
@@ -195,7 +195,7 @@ const withLinks = (ComposedComponent) => {
           this.removeModal();
         }
       }
-      onChange(editorState);
+      setEditorState(editorState);
     };
 
     render() {

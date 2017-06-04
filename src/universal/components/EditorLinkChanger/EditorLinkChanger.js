@@ -6,6 +6,15 @@ import getSelectionText from 'universal/components/ProjectEditor/getSelectionTex
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
+import shouldValidate from 'universal/validation/shouldValidate';
+import {reduxForm, Field} from 'redux-form';
+import InputField from 'universal/components/InputField/InputField';
+import changerValidation from './changerValidation';
+
+const validate = (values) => {
+  const schema = changerValidation();
+  return schema(values).errors;
+};
 
 const dontTellDraft = (e) => {
   e.preventDefault();
@@ -18,7 +27,10 @@ const EditorLinkChanger = (props) => {
     left,
     top,
     linkData,
-    styles
+    styles,
+    removeModal,
+    handleSubmit,
+    submitting
   } = props;
 
   const {selectionState, href} = linkData;
@@ -27,27 +39,44 @@ const EditorLinkChanger = (props) => {
     isClosing && styles.closing
   );
   const text = getSelectionText(editorState, selectionState);
+  const onSubmit = (submissionData) => {
+    const schema = changerValidation();
+    const {data} = schema(submissionData);
+    console.log('submitting', data)
+  };
 
+  const handleBlur = (e) => {
+    removeModal();
+  }
   return (
-    <div className={menuStyles} onMouseDown={dontTellDraft}>
-      {text !== null &&
-      <div className={css(styles.textBlock)}>
-        <span>Text</span>
-        <input/>
-      </div>
-      }
-
-      <div className={css(styles.hrefBlock)}>
-        <span>Link</span>
-        <input/>
-      </div>
-      <div className={css(styles.buttonBlock)}>
-        <Button
-          colorPalette="cool"
-          size="small"
-          label="Add"
-        />
-      </div>
+    <div className={menuStyles} onBlur={handleBlur}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        {text !== null &&
+          <div className={css(styles.textBlock)}>
+            <span>Text</span>
+            <Field
+              component={InputField}
+              name="text"
+            />
+          </div>
+        }
+        <div className={css(styles.hrefBlock)}>
+          <span>Link</span>
+          <Field
+            component={InputField}
+            name="link"
+          />
+        </div>
+        <div className={css(styles.buttonBlock)}>
+          <Button
+            colorPalette="cool"
+            label="Add"
+            size="small"
+            type="submit"
+            onClick={handleSubmit(onSubmit)}
+          />
+        </div>
+      </form>
     </div>
   )
 };
@@ -124,5 +153,7 @@ const styleThunk = (theme, props) => ({
 });
 
 export default portal({closeAfter: 100})(
-  withStyles(styleThunk)(EditorLinkChanger)
+  reduxForm({form: 'linkChanger', validate, shouldValidate})(
+    withStyles(styleThunk)(EditorLinkChanger)
+  )
 )

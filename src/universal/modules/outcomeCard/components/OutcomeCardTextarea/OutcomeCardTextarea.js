@@ -40,65 +40,37 @@ class OutcomeCardTextArea extends Component {
     isPrivate: PropTypes.bool,
     name: PropTypes.string,
     setEditing: PropTypes.func,
-    setValue: PropTypes.func,
+    setEditorState: PropTypes.func,
     styles: PropTypes.object,
     teamMembers: PropTypes.array,
-    textAreaValue: PropTypes.object,
+    editorState: PropTypes.object,
     unsetEditing: PropTypes.func
   };
 
+  //state = {
+  //  suggestions: immutableTags,
+  //  readOnly: false
+  //};
+  //
+  //onSearchChange = ({value}) => {
+  //  this.setState({
+  //    suggestions: tagSuggestionFilter(value, immutableTags)
+  //  });
+  //};
+  //
+  //onAddMention = () => {
+  //  // get the mention object selected
+  //}
 
-  constructor(props) {
-    super(props);
-    const emojiPlugin = createEmojiPlugin();
-    const linkifyPlugin = createDocLinkPlugin();
-    const tagPlugin = createMentionPlugin({
-      entityMutability: 'IMMUTABLE',
-      mentionTrigger: '#',
-      mentionPrefix: '#',
-      theme: {
-        mentionSuggestionsEntryFocused: css(props.styles.tagSyggestionsEntryFocused)
-      }
-    });
-    //const markdownPlugin = createMarkdownShortcutsPlugin();
-    //const keyShortcutsPlugin = createKeyShortcutsPlugin();
-    this.plugins = [
-      //keyShortcutsPlugin,
-      emojiPlugin,
-      tagPlugin,
-      linkifyPlugin,
-      //markdownPlugin
-    ];
-    this.EmojiSuggestions = emojiPlugin.EmojiSuggestions;
-    this.MentionSuggestions = tagPlugin.MentionSuggestions;
-    this.LinkEditor = linkifyPlugin.LinkEditor;
-
-  }
-
-  state = {
-    suggestions: immutableTags,
-    readOnly: false
-  };
-
-  onSearchChange = ({value}) => {
-    this.setState({
-      suggestions: tagSuggestionFilter(value, immutableTags)
-    });
-  };
-
-  onAddMention = () => {
-    // get the mention object selected
-  }
-
-  componentWillReceiveProps(nextProps) {
-    //if (nextProps.textAreaValue !== this.props.textAreaValue) {
-    //this.emojiPlugin = createEmojiPlugin();
-    //this.EmojiSuggestions = this.emojiPlugin.EmojiSuggestions;
-    //this.plugins = [this.emojiPlugin];
-    //}
-    //this.emojiPlugin = createEmojiPlugin();
-    //this.EmojiSuggestions = this.emojiPlugin.EmojiSuggestions;
-  }
+  //componentWillReceiveProps(nextProps) {
+  //  //if (nextProps.editorState !== this.props.editorState) {
+  //  //this.emojiPlugin = createEmojiPlugin();
+  //  //this.EmojiSuggestions = this.emojiPlugin.EmojiSuggestions;
+  //  //this.plugins = [this.emojiPlugin];
+  //  //}
+  //  //this.emojiPlugin = createEmojiPlugin();
+  //  //this.EmojiSuggestions = this.emojiPlugin.EmojiSuggestions;
+  //}
 
   //submitOnEnter = (e) => {
   //  // hitting enter (not shift+enter or any wacky combo) submits the textarea
@@ -112,9 +84,9 @@ class OutcomeCardTextArea extends Component {
   //};
   //
   //handleChange = (e, newVal) => {
-  //  const {setValue} = this.props;
+  //  const {setEditorState} = this.props;
   //  const value = e.target.value || newVal;
-  //  setValue(value);
+  //  setEditorState(value);
   //};
 
   //renderEditing() {
@@ -123,7 +95,7 @@ class OutcomeCardTextArea extends Component {
   //    isArchived,
   //    isPrivate,
   //    styles,
-  //    textAreaValue
+  //    editorState
   //  } = this.props;
   //  const contentStyles = css(
   //    styles.content,
@@ -174,7 +146,7 @@ class OutcomeCardTextArea extends Component {
   //      onDrop={null}
   //      onKeyDown={this.submitOnEnter}
   //      autoFocus
-  //      value={textAreaValue || ''}
+  //      value={editorState || ''}
   //      rows={3}
   //    >
   //      {/* <MentionMenu className={mentionMenuStyle} trigger="@" item={MentionTeamMember} resolve={atQuery} />*/}
@@ -193,7 +165,7 @@ class OutcomeCardTextArea extends Component {
   //    isPrivate,
   //    setEditing,
   //    styles,
-  //    textAreaValue
+  //    editorState
   //  } = this.props;
   //  const markdownStyles = css(
   //    styles.markdown,
@@ -204,7 +176,7 @@ class OutcomeCardTextArea extends Component {
   //  );
   //  return (
   //    <div onClick={!isArchived && setEditing} className={markdownStyles}>
-  //      <Markdown source={textAreaValue}/>
+  //      <Markdown source={editorState}/>
   //    </div>
   //  );
   //}
@@ -221,8 +193,8 @@ class OutcomeCardTextArea extends Component {
   render() {
     return (
         <ProjectEditor
-          editorState={this.props.textAreaValue}
-          onChange={this.props.setValue}
+          editorState={this.props.editorState}
+          setEditorState={this.props.setEditorState}
           onBlur={this.props.handleCardUpdate}
         />
     )

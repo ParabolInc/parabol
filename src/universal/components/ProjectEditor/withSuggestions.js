@@ -10,10 +10,10 @@ const withSuggestions = (ComposedComponent) => {
   class WithSuggestions extends Component {
     state = {};
 
-    handleUpArrow = (e, editorState, onChange) => {
+    handleUpArrow = (e, editorState, setEditorState) => {
       const {handleUpArrow} = this.props;
       if (handleUpArrow) {
-        handleUpArrow(e, editorState, onChange);
+        handleUpArrow(e, editorState, setEditorState);
       }
       e.preventDefault();
       const {active} = this.state;
@@ -22,10 +22,10 @@ const withSuggestions = (ComposedComponent) => {
       });
     };
 
-    handleDownArrow = (e, editorState, onChange) => {
+    handleDownArrow = (e, editorState, setEditorState) => {
       const {handleDownArrow} = this.props;
       if (handleDownArrow) {
-        handleDownArrow(e, editorState, onChange);
+        handleDownArrow(e, editorState, setEditorState);
       }
       e.preventDefault();
       const {active, suggestions} = this.state;
@@ -35,34 +35,34 @@ const withSuggestions = (ComposedComponent) => {
     };
 
 
-    handleSelect = (e, editorState, onChange) => {
+    handleSelect = (e, editorState, setEditorState) => {
       const {active, suggestions, suggestionType} = this.state;
       e.preventDefault();
       const item = suggestions[active];
       if (suggestionType === 'tag') {
         const {name} = item;
-        onChange(completeEntity(editorState, 'insert-tag', {value: name}, `#${name}`));
+        setEditorState(completeEntity(editorState, 'insert-tag', {value: name}, `#${name}`));
       } else if (suggestionType === 'emoji') {
         const unicode = item.emoji;
-        onChange(completeEntity(editorState, 'insert-emoji', {unicode}, unicode))
+        setEditorState(completeEntity(editorState, 'insert-emoji', {unicode}, unicode))
       }
       this.removeModal();
     };
 
-    handleTab = (e, editorState, onChange) => {
+    handleTab = (e, editorState, setEditorState) => {
       const {handleTab} = this.props;
       if (handleTab) {
-        handleTab(e, editorState, onChange);
+        handleTab(e, editorState, setEditorState);
       }
-      this.handleSelect(e, editorState, onChange);
+      this.handleSelect(e, editorState, setEditorState);
     };
 
-    handleReturn = (e, editorState, onChange) => {
+    handleReturn = (e, editorState, setEditorState) => {
       const {handleReturn} = this.props;
       if (handleReturn) {
-        handleReturn(e, editorState, onChange);
+        handleReturn(e, editorState, setEditorState);
       }
-      this.handleSelect(e, editorState, onChange);
+      this.handleSelect(e, editorState, setEditorState);
       return 'handled';
     };
 
@@ -105,10 +105,10 @@ const withSuggestions = (ComposedComponent) => {
       }
     };
 
-    handleChange = (editorState, onChange) => {
+    handleChange = (editorState, setEditorState) => {
       const {handleChange} = this.props;
       if (handleChange) {
-        handleChange(editorState, onChange);
+        handleChange(editorState, setEditorState);
       }
       const {block, anchorOffset} = getAnchorLocation(editorState);
       const blockText = block.getText();
@@ -123,7 +123,7 @@ const withSuggestions = (ComposedComponent) => {
           this.removeModal();
         }
       }
-      onChange(editorState);
+      setEditorState(editorState);
     }
 
     initialize = () => {
@@ -135,7 +135,7 @@ const withSuggestions = (ComposedComponent) => {
       return {};
     }
 
-    renderModal = (editorState, onChange) => {
+    renderModal = (editorState, setEditorState) => {
       const {active, suggestions, suggestionType} = this.state;
       const targetRect = getVisibleSelectionRect(window);
       return (
@@ -147,7 +147,7 @@ const withSuggestions = (ComposedComponent) => {
           top={targetRect && targetRect.top + 32}
           left={targetRect && targetRect.left}
           editorState={editorState}
-          onChange={onChange}
+          setEditorState={setEditorState}
           removeModal={this.removeModal}
           handleSelect={this.handleSelect}
         />

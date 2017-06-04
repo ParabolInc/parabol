@@ -6,23 +6,23 @@ const {hasCommandModifier} = KeyBindingUtil;
 
 const withKeyboardShortcuts = (ComposedComponent) => {
   class WithKeyboardShortcuts extends Component {
-    handleKeyCommand = (command, editorState, onChange) => {
+    handleKeyCommand = (command, editorState, setEditorState) => {
       const {handleKeyCommand} = this.props;
       if (handleKeyCommand) {
-        const result = handleKeyCommand(command, editorState, onChange);
+        const result = handleKeyCommand(command, editorState, setEditorState);
         if (result === 'handled' || result === true) {
           return result;
         }
       }
 
       if (command === 'strikethrough') {
-        onChange(RichUtils.toggleInlineStyle(editorState, 'STRIKETHROUGH'));
+        setEditorState(RichUtils.toggleInlineStyle(editorState, 'STRIKETHROUGH'));
         return 'handled';
       }
 
       const newState = RichUtils.handleKeyCommand(editorState, command);
       if (newState) {
-        onChange(newState);
+        setEditorState(newState);
         return 'handled';
       }
       return 'not-handled';

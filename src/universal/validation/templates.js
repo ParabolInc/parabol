@@ -93,3 +93,8 @@ export const teamName = (value) => value
   .max(50, 'That isn’t very memorable. Maybe shorten it up?');
 
 export const url = (value) => value.matches(urlRegex);
+
+export const linkText = (value) => value
+  .trim()
+  .min(1, 'Maybe give it a name?')
+  .max(100, 'That name is looking pretty long');

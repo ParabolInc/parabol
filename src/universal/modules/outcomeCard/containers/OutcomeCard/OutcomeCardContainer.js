@@ -41,7 +41,7 @@ class OutcomeCardContainer extends Component {
       hasHover: false,
       isEditing: !content,
       openArea: 'content',
-      textAreaValue: content ? EditorState.createWithContent(convertFromRaw(JSON.parse(content)), editorDecorators) : EditorState.createEmpty(editorDecorators)
+      editorState: content ? EditorState.createWithContent(convertFromRaw(JSON.parse(content)), editorDecorators) : EditorState.createEmpty(editorDecorators)
     };
   }
 
@@ -59,8 +59,8 @@ class OutcomeCardContainer extends Component {
     const {content} = this.props.outcome;
     if (content !== nextContent) {
       const newContentState = nextContent ? convertFromRaw(JSON.parse(nextContent)) : ContentState.createFromText('');
-      const newEditorState = EditorState.push(this.state.textAreaValue, newContentState);
-      this.setValue(newEditorState)
+      const newEditorState = EditorState.push(this.state.editorState, newContentState);
+      this.setEditorState(newEditorState)
     }
   }
 
@@ -68,9 +68,9 @@ class OutcomeCardContainer extends Component {
     document.removeEventListener('click', this.handleDocumentClick);
   }
 
-  setValue = (textAreaValue) => {
+  setEditorState = (editorState) => {
     this.setState({
-      textAreaValue
+      editorState
     });
   };
 
@@ -101,17 +101,17 @@ class OutcomeCardContainer extends Component {
   };
 
   handleCardUpdate = () => {
-    const {textAreaValue} = this.state;
+    const {editorState} = this.state;
     const {outcome: {id: projectId, content}} = this.props;
-    if (!textAreaValue) {
+    if (!editorState) {
       cashay.mutate('deleteProject', {variables: {projectId}});
-    } else if (textAreaValue !== content) {
+    } else if (editorState !== content) {
       cashay.mutate('updateProject', {
         ops: {},
         variables: {
           updatedProject: {
             id: projectId,
-            content: JSON.stringify(convertToRaw(textAreaValue.getCurrentContent()))
+            content: JSON.stringify(convertToRaw(editorState.getCurrentContent()))
           }
         }
       });
@@ -155,7 +155,7 @@ class OutcomeCardContainer extends Component {
   };
 
   render() {
-    const {hasHover, isEditing, openArea, textAreaValue} = this.state;
+    const {hasHover, isEditing, openArea, editorState} = this.state;
     const {area, isAgenda, outcome, teamMembers} = this.props;
     return (
       <OutcomeCard
@@ -171,9 +171,9 @@ class OutcomeCardContainer extends Component {
         outcome={outcome}
         unarchiveProject={this.unarchiveProject}
         setEditing={this.setEditing}
-        setValue={this.setValue}
+        setEditorState={this.setEditorState}
         teamMembers={teamMembers}
-        textAreaValue={textAreaValue}
+        editorState={editorState}
         unsetEditing={this.unsetEditing}
       />
 

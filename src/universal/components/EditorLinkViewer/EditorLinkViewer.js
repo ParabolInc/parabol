@@ -33,11 +33,11 @@ const EditorLinkViewer = (props) => {
   );
 
   const removeLink = (e) => {
-    const {editorState, onChange, removeModal} = props;
+    const {editorState, setEditorState, removeModal} = props;
     const {block, anchorOffset} = getAnchorLocation(editorState);
     const blockText = block.getText();
     const {begin, end} = getWordAt(blockText, anchorOffset);
-    onChange(makeRemoveLink(block.getKey(), begin, end)(editorState));
+    setEditorState(makeRemoveLink(block.getKey(), begin, end)(editorState));
     removeModal();
   };
 

@@ -28,10 +28,10 @@ const OutcomeCard = (props) => {
     openMenu,
     outcome,
     setEditing,
-    setValue,
+    setEditorState,
     styles,
     teamMembers,
-    textAreaValue,
+    editorState,
     unarchiveProject,
     unsetEditing
   } = props;
@@ -78,9 +78,9 @@ const OutcomeCard = (props) => {
             isPrivate={isPrivate}
             name={outcome.id}
             setEditing={setEditing}
-            setValue={setValue}
+            setEditorState={setEditorState}
             teamMembers={teamMembers}
-            textAreaValue={textAreaValue}
+            editorState={editorState}
             unsetEditing={unsetEditing}
           />
         </div>
@@ -123,9 +123,9 @@ OutcomeCard.propTypes = {
   hasOpenStatusMenu: PropTypes.bool,
   owner: PropTypes.object,
   setEditing: PropTypes.func,
-  setValue: PropTypes.func,
+  setEditorState: PropTypes.func,
   teamMembers: PropTypes.array,
-  textAreaValue: PropTypes.object,
+  editorState: PropTypes.object,
   updatedAt: PropTypes.instanceOf(Date),
   unarchiveProject: PropTypes.func.isRequired,
   unsetEditing: PropTypes.func

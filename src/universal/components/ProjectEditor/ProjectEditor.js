@@ -12,7 +12,7 @@ class ProjectEditor extends Component {
   static propTypes = {
     onBlur: PropTypes.func,
     editorState: PropTypes.object,
-    onChange: PropTypes.func,
+    setEditorState: PropTypes.func,
     handleUpArrow: PropTypes.func,
     handleDownArrow: PropTypes.func,
     handleTab: PropTypes.func,
@@ -41,45 +41,45 @@ class ProjectEditor extends Component {
   };
 
   handleChange = (editorState) => {
-    const {onBlur, onChange, handleChange} = this.props;
-    if (!editorState.getSelection().getHasFocus()) {
+    const {onBlur, setEditorState, handleChange, renderModal} = this.props;
+    if (!editorState.getSelection().getHasFocus() && !renderModal) {
       onBlur(editorState);
       this.removeModal();
       return;
     }
 
     if (handleChange) {
-      handleChange(editorState, onChange);
+      handleChange(editorState, setEditorState);
     } else {
-      onChange(handleChange);
+      setEditorState(handleChange);
     }
   };
 
   handleUpArrow = (e) => {
-    const {handleUpArrow, onChange, editorState} = this.props;
+    const {handleUpArrow, setEditorState, editorState} = this.props;
     if (handleUpArrow) {
-      handleUpArrow(e, editorState, onChange);
+      handleUpArrow(e, editorState, setEditorState);
     }
   };
 
   handleDownArrow = (e) => {
-    const {handleDownArrow, onChange, editorState} = this.props;
+    const {handleDownArrow, setEditorState, editorState} = this.props;
     if (handleDownArrow) {
-      handleDownArrow(e, editorState, onChange);
+      handleDownArrow(e, editorState, setEditorState);
     }
   };
 
   handleTab = (e) => {
-    const {handleTab, onChange, editorState} = this.props;
+    const {handleTab, setEditorState, editorState} = this.props;
     if (handleTab) {
-      handleTab(e, editorState, onChange);
+      handleTab(e, editorState, setEditorState);
     }
   };
 
   handleReturn = (e) => {
-    const {handleReturn, onChange, editorState} = this.props;
+    const {handleReturn, setEditorState, editorState} = this.props;
     if (handleReturn) {
-      return handleReturn(e, editorState, onChange);
+      return handleReturn(e, editorState, setEditorState);
     }
     return 'not-handled';
   };
@@ -93,9 +93,9 @@ class ProjectEditor extends Component {
   };
 
   handleKeyCommand = (command, editorState) => {
-    const {handleKeyCommand, onChange} = this.props;
+    const {handleKeyCommand, setEditorState} = this.props;
     if (handleKeyCommand) {
-      return handleKeyCommand(command, editorState, onChange);
+      return handleKeyCommand(command, editorState, setEditorState);
     }
   };
 
@@ -107,7 +107,7 @@ class ProjectEditor extends Component {
   };
   // https://github.com/facebook/draft-js/issues/494 DnD throws errors
   render() {
-    const {editorState, onChange, renderModal} = this.props;
+    const {editorState, setEditorState, renderModal} = this.props;
     return (
       <div>
         <Editor
@@ -122,7 +122,7 @@ class ProjectEditor extends Component {
           onTab={this.handleTab}
           handleReturn={this.handleReturn}
         />
-        {renderModal && renderModal(editorState, onChange)}
+        {renderModal && renderModal(editorState, setEditorState)}
       </div>
     );
   }
