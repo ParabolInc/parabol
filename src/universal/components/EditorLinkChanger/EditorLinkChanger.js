@@ -10,6 +10,7 @@ import shouldValidate from 'universal/validation/shouldValidate';
 import {reduxForm, Field} from 'redux-form';
 import InputField from 'universal/components/InputField/InputField';
 import changerValidation from './changerValidation';
+import targetIsDescendant from 'universal/utils/targetIsDescendant';
 
 const validate = (values) => {
   const schema = changerValidation();
@@ -20,6 +21,7 @@ const dontTellDraft = (e) => {
   e.preventDefault();
 };
 
+//const
 const EditorLinkChanger = (props) => {
   const {
     editorState,
@@ -45,16 +47,32 @@ const EditorLinkChanger = (props) => {
     console.log('submitting', data)
   };
 
-  const handleBlur = (e) => {
-    removeModal();
+  let mousedownTarget = null;
+  const handleMouseDown = (e) => {
+    mousedownTarget = e.target;
+    //targetIsDescendant(e.target, findDOMNode(this))
+    //console.log('mousedown', component);
+
   }
+  const handleBlur = (e) => {
+    if (!mousedownTarget){
+      removeModal();
+    }
+    mousedownTarget = null;
+    //const isDescendant = targetIsDescendant(mousedownTarget, component);
+    //console.log('isDescendant', isDescendant);
+    //removeModal();
+  };
+  let component;
+
   return (
-    <div className={menuStyles} onBlur={handleBlur}>
+    <div className={menuStyles} ref={(c) => {component = c}} onBlur={handleBlur} onMouseDown={handleMouseDown}>
       <form onSubmit={handleSubmit(onSubmit)}>
         {text !== null &&
           <div className={css(styles.textBlock)}>
             <span>Text</span>
             <Field
+              autoFocus
               component={InputField}
               name="text"
             />
@@ -63,6 +81,7 @@ const EditorLinkChanger = (props) => {
         <div className={css(styles.hrefBlock)}>
           <span>Link</span>
           <Field
+            autoFocus={text === null}
             component={InputField}
             name="link"
           />
