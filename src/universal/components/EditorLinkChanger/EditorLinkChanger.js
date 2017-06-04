@@ -1,12 +1,11 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import React from 'react';
 import portal from 'react-portal-hoc';
+import Button from 'universal/components/Button/Button';
+import getSelectionText from 'universal/components/ProjectEditor/getSelectionText';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import makeRemoveLink from 'universal/components/ProjectEditor/operations/makeRemoveLink';
-import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocation';
-import getWordAt from 'universal/components/ProjectEditor/getWordAt';
 
 const dontTellDraft = (e) => {
   e.preventDefault();
@@ -14,42 +13,41 @@ const dontTellDraft = (e) => {
 
 const EditorLinkChanger = (props) => {
   const {
+    editorState,
     isClosing,
     left,
     top,
-    entityData,
-    styles,
+    linkData,
+    styles
   } = props;
-  if (!entityData) return null;
-  const {href} = entityData;
-  const linkViewer = {
-    left,
-    top,
-    position: 'absolute'
-  };
+
+  const {selectionState, href} = linkData;
   const menuStyles = css(
     styles.modal,
     isClosing && styles.closing
   );
+  const text = getSelectionText(editorState, selectionState);
 
-  const removeLink = (e) => {
-    const {editorState, onChange, removeModal} = props;
-    const {block, anchorOffset} = getAnchorLocation(editorState);
-    const blockText = block.getText();
-    const {begin, end} = getWordAt(blockText, anchorOffset);
-    onChange(makeRemoveLink(block.getKey(), begin, end)(editorState));
-    removeModal();
-  };
   return (
+    <div className={menuStyles} onMouseDown={dontTellDraft}>
+      {text !== null &&
+      <div className={css(styles.textBlock)}>
+        <span>Text</span>
+        <input/>
+      </div>
+      }
 
-    <div style={linkViewer} className={menuStyles}>
-      <span>
-        <a href={href} rel="noopener noreferrer" onMouseDown={dontTellDraft} target="_blank">{href}</a>
-      </span>
-      <span> - </span>
-      <span>Change</span>
-      <span> | </span>
-      <span onMouseDown={dontTellDraft} onClick={removeLink}>Remove</span>
+      <div className={css(styles.hrefBlock)}>
+        <span>Link</span>
+        <input/>
+      </div>
+      <div className={css(styles.buttonBlock)}>
+        <Button
+          colorPalette="cool"
+          size="small"
+          label="Add"
+        />
+      </div>
     </div>
   )
 };
@@ -79,6 +77,11 @@ const animateOut = {
 };
 
 const styleThunk = (theme, props) => ({
+  buttonBlock: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    marginTop: '0.125rem'
+  },
   closing: {
     animationDuration: `${props.closeAfter}ms`,
     animationName: animateOut
@@ -93,7 +96,10 @@ const styleThunk = (theme, props) => ({
     padding: ui.borderRadiusSmall,
     zIndex: 1,
     animationName: animateIn,
-    animationDuration: '200ms'
+    animationDuration: '200ms',
+    position: 'absolute',
+    left: props.left,
+    top: props.top
   },
 
   active: {
