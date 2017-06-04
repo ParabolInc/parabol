@@ -1,6 +1,9 @@
-import portal from 'react-portal-hoc';
-import React from 'react';
 import {css} from 'aphrodite-local-styles/no-important';
+import React, {Component} from 'react';
+import portal from 'react-portal-hoc';
+import MentionEmoji from 'universal/components/MentionEmoji/MentionEmoji';
+import MentionTag from 'universal/components/MentionTag/MentionTag';
+import completeEntity from 'universal/components/ProjectEditor/operations/completeEnitity';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
@@ -9,41 +12,66 @@ const dontTellDraft = (e) => {
   e.preventDefault();
 };
 
-const EditorSuggestions = (props) => {
-  const {
-    isClosing,
-    suggestions,
-    active,
-    left,
-    top,
-    handleItemClick,
-    styles,
-    mention: Mention
-  } = props;
+const suggestionTypes = {
+  emoji: MentionEmoji,
+  tag: MentionTag
+};
 
-  if (!Mention) return null;
+class EditorSuggestions extends Component {
 
-  const menuStyle = {
-    left,
-    top,
-    position: 'absolute'
+  handleItemClick = (idx) => (e) => {
+    const {editorState, onChange, suggestions, suggestionType, removeModal} = this.props;
+    //if (e) {
+    //  e.preventDefault();
+    //}
+    const item = suggestions[idx];
+    if (suggestionType === 'tag') {
+      const {name} = item;
+      onChange(completeEntity(editorState, 'insert-tag', {value: name}, `#${name}`));
+    } else if (suggestionType === 'emoji') {
+      const unicode = item.emoji;
+      onChange(completeEntity(editorState, 'insert-emoji', {unicode}, unicode))
+    }
+    removeModal();
   };
-  const menuStyles = css(
-    styles.mentionMenu,
-    isClosing && styles.closing
-  );
 
-  return (
-    <div style={menuStyle} className={menuStyles}>
-      {suggestions.map((suggestion, idx) => {
-        return (
-          <div key={idx} onMouseDown={dontTellDraft} onClick={handleItemClick(idx)}>
-            <Mention active={active === idx} {...suggestion}/>
-          </div>
-        )
-      })}
-    </div>
-  )
+
+  render() {
+    const {
+      isClosing,
+      active,
+      suggestions,
+      suggestionType,
+      top,
+      left,
+      styles
+    } = this.props;
+
+    const SuggestionItem = suggestionTypes[suggestionType];
+
+    const menuStyle = {
+      left,
+      top,
+      position: 'absolute'
+    };
+
+    const menuStyles = css(
+      styles.mentionMenu,
+      isClosing && styles.closing
+    );
+
+    return (
+      <div style={menuStyle} className={menuStyles}>
+        {suggestions.map((suggestion, idx) => {
+          return (
+            <div key={idx} onMouseDown={dontTellDraft} onClick={this.handleItemClick(idx)}>
+              <SuggestionItem active={active === idx} {...suggestion}/>
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
 };
 
 const animateIn = {

@@ -163,7 +163,7 @@ class OutcomeCardTextArea extends Component {
   //
   //  const mentionMenuStyle = css(styles.mentionMenu);
   //  return (
-  //    <EditorLinkViewer.js
+  //    <EditorLinkChanger.js
   //      getRef={setRef}
   //      className={contentStyles}
   //      disabled={isArchived}
@@ -181,7 +181,7 @@ class OutcomeCardTextArea extends Component {
   //      <MentionMenu className={mentionMenuStyle} trigger="#" item={MentionTag} resolve={tagQuery}/>
   //      <MentionMenu className={mentionMenuStyle} trigger=":" item={MentionEmoji} resolve={emojiQuery}
   //                   replace={emojiReplace}/>
-  //    </EditorLinkViewer.js>
+  //    </EditorLinkChanger.js>
   //
   //  );
   //}

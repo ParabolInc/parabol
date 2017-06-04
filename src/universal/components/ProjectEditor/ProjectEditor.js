@@ -1,28 +1,35 @@
 import {Editor, getVisibleSelectionRect} from 'draft-js';
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import EditorSuggestions from 'universal/components/EditorSuggestions/EditorSuggestions';
-import MentionEmoji from 'universal/components/MentionEmoji/MentionEmoji';
-import MentionTag from 'universal/components/MentionTag/MentionTag';
-import getWordAt from 'universal/components/ProjectEditor/getWordAt';
-import customStyleMap from './customStyleMap';
-import handleKeyCommand from './handleKeyCommand';
-import completeEntity from 'universal/components/ProjectEditor/operations/completeEnitity';
-import getAnchorLocation from './getAnchorLocation';
-import keyBindingFn from './keyBindingFn';
-import {resolveEmoji, resolveHashTag} from './resolvers';
 import EditorLinkViewer from 'universal/components/EditorLinkViewer/EditorLinkViewer';
 
+import getWordAt from 'universal/components/ProjectEditor/getWordAt';
+import customStyleMap from './customStyleMap';
+import getAnchorLocation from './getAnchorLocation';
+import handleKeyCommand from './handleKeyCommand';
+import keyBindingFn from './keyBindingFn';
+import withSuggestions from './withSuggestions';
+
 class ProjectEditor extends Component {
+
+  static propTypes = {
+    onBlur: PropTypes.func,
+    editorState: PropTypes.object,
+    onChange: PropTypes.func,
+    checkForSuggestions: PropTypes.func,
+    handleUpArrow: PropTypes.func,
+    handleDownArrow: PropTypes.func,
+    handleTab: PropTypes.func,
+    handleReturn: PropTypes.func,
+    renderModal: PropTypes.func
+  };
 
   constructor(props) {
     super(props);
     this.handleKeyCommand = handleKeyCommand.bind(this);
   }
 
-  state = {
-    active: 0,
-    suggestions: []
-  };
+  state = {};
 
   componentWillReceiveProps(nextProps) {
     const {undoLink} = this.state;
@@ -30,144 +37,89 @@ class ProjectEditor extends Component {
     if (undoLink && this.props.editorState !== nextProps.editorState) {
       this.setState({
         undoLink: undefined
-      })
+      });
     }
   }
 
-  removeModal = () => {
-    const {suggestionModal, linkModalData} = this.state;
-    if (suggestionModal || linkModalData) {
-      this.setState({
-        suggestionModal: undefined,
-        linkModalData: undefined
-      })
-    }
-  };
-
   handleChange = (editorState) => {
+    const {onBlur, onChange, checkForSuggestions} = this.props;
     if (!editorState.getSelection().getHasFocus()) {
-      this.props.onBlur(editorState);
+      onBlur(editorState);
       this.removeModal();
       return;
     }
-    const {onChange} = this.props;
     const {block, anchorOffset} = getAnchorLocation(editorState);
     const blockText = block.getText();
     const entityKey = block.getEntityAt(anchorOffset);
     const {word} = getWordAt(blockText, anchorOffset);
+    let handled;
     if (word && !entityKey) {
-      const trigger = word[0];
-      const query = word.slice(1);
-      if (trigger === ':') {
-        this.setState({
-          suggestionModal: MentionEmoji
-        });
-        this.makeOptions(query, resolveEmoji);
-      } else if (trigger === '#') {
-        this.setState({
-          suggestionModal: MentionTag
-        });
-        this.makeOptions(query, resolveHashTag);
-      } else {
-        this.removeModal();
-      }
-    } else if (entityKey) {
+      handled = checkForSuggestions(word);
+    } else if (!handled && entityKey) {
       const contentState = editorState.getCurrentContent();
       const entity = contentState.getEntity(entityKey);
       if (entity.getType() === 'LINK') {
         const targetRect = getVisibleSelectionRect(window);
         this.setState({
-          linkModalData: entity.getData(),
-          top: targetRect && targetRect.top + 32,
-          left: targetRect && targetRect.left
+          modalComponent: EditorLinkViewer,
+          modalData: {
+            entityData: entity.getData(),
+            top: targetRect && targetRect.top + 32,
+            left: targetRect && targetRect.left
+          }
         });
-      } else {
-        this.removeModal();
+        onChange(editorState);
+        return;
       }
-    } else {
+    }
+    if (!handled) {
       this.removeModal();
     }
-
     onChange(editorState);
-  }
+  };
 
   handleUpArrow = (e) => {
-    const {suggestionModal} = this.state;
-    if (suggestionModal) {
-
-      e.preventDefault();
-      this.setState((state) => ({
-        active: Math.max(state.active - 1, 0)
-      }))
-    }
-  }
-
-  handleDownArrow = (e) => {
-    const {suggestionModal, suggestions} = this.state;
-    if (suggestionModal) {
-      e.preventDefault();
-      this.setState((state) => ({
-        active: Math.min(state.active + 1, suggestions.length - 1)
-      }))
+    const {handleUpArrow, onChange, editorState} = this.props;
+    if (handleUpArrow) {
+      handleUpArrow(e, editorState, onChange);
     }
   };
 
-  handleEscape = (e) => {
-    const {suggestionModal} = this.state;
-    if (suggestionModal) {
-      this.removeModal()
+  handleDownArrow = (e) => {
+    const {handleDownArrow, onChange, editorState} = this.props;
+    if (handleDownArrow) {
+      handleDownArrow(e, editorState, onChange);
+    }
+  };
+
+  handleTab = (e) => {
+    const {handleTab, onChange, editorState} = this.props;
+    if (handleTab) {
+      handleTab(e, editorState, onChange);
     }
   };
 
   handleReturn = (e) => {
-    const {suggestions, active, suggestionModal} = this.state;
-    if (suggestionModal) {
-      e.preventDefault();
-      const {value, emoji} = suggestions[active];
-      this.handleItemClick(active)();
-      return 'handled';
+    const {handleReturn, onChange, editorState} = this.props;
+    if (handleReturn) {
+      return handleReturn(e, editorState, onChange);
     }
     return 'not-handled';
   };
 
-  makeOptions = async (query, resolve) => {
-    const suggestions = await resolve(query);
-    if (suggestions.length > 0) {
-      const targetRect = getVisibleSelectionRect(window);
-      this.setState({
-        active: 0,
-        suggestions,
-        top: targetRect && targetRect.top + 32,
-        left: targetRect && targetRect.left
-      });
-    } else {
+  handleEscape = (e) => {
+    e.preventDefault();
+    const {renderModal} = this.state;
+    if (renderModal) {
       this.removeModal();
     }
   };
 
-  handleItemClick = (idx) => (e) => {
-    if (e) {
-      e.preventDefault();
-    }
-    const {suggestionModal, suggestions} = this.state;
-    const item = suggestions[idx];
-    const {onChange, editorState} = this.props;
-    if (suggestionModal === MentionTag) {
-      const {name} = item;
-      onChange(completeEntity(editorState, 'insert-tag', {value: name}, `#${name}`));
-    } else if (suggestionModal === MentionEmoji) {
-      const unicode = item.emoji;
-      onChange(completeEntity(editorState, 'insert-emoji', {unicode}, unicode))
-    }
-    this.removeModal();
-  };
-
-  //https://github.com/facebook/draft-js/issues/494 DnD throws errors
+  // https://github.com/facebook/draft-js/issues/494 DnD throws errors
   render() {
-    const {editorState, onChange} = this.props;
-    const {active, left, linkModalData, suggestionModal, suggestions, top} = this.state;
+    const {editorState, onChange, renderModal} = this.props;
     return (
-      <divs>
+      <div>
         <Editor
           editorState={editorState}
           onChange={this.handleChange}
@@ -177,30 +129,13 @@ class ProjectEditor extends Component {
           onUpArrow={this.handleUpArrow}
           onDownArrow={this.handleDownArrow}
           onEscape={this.handleEscape}
-          onTab={this.handleReturn}
+          onTab={this.handleTab}
           handleReturn={this.handleReturn}
         />
-        <EditorSuggestions
-          handleItemClick={this.handleItemClick}
-          suggestions={suggestions}
-          active={active}
-          left={left}
-          top={top}
-          isOpen={Boolean(suggestionModal)}
-          mention={suggestionModal}
-        />
-        <EditorLinkViewer
-          isOpen={Boolean(linkModalData)}
-          entityData={linkModalData}
-          left={left}
-          top={top}
-          editorState={editorState}
-          onChange={onChange}
-          removeModal={this.removeModal}
-        />
-      </divs>
+        {renderModal && renderModal(editorState, onChange)}
+      </div>
     );
   }
 }
 
-export default ProjectEditor;
+export default withSuggestions(ProjectEditor);
