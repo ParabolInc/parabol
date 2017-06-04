@@ -1,14 +1,13 @@
-import {Editor, getVisibleSelectionRect} from 'draft-js';
+import {Editor} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import EditorLinkViewer from 'universal/components/EditorLinkViewer/EditorLinkViewer';
-
 import getWordAt from 'universal/components/ProjectEditor/getWordAt';
 import customStyleMap from './customStyleMap';
 import getAnchorLocation from './getAnchorLocation';
-import handleKeyCommand from './handleKeyCommand';
-import keyBindingFn from './keyBindingFn';
+import withKeyboardShortcuts from './withKeyboardShortcuts';
+import withLinks from './withLinks';
 import withSuggestions from './withSuggestions';
+import {getDefaultKeyBinding} from 'draft-js';
 
 class ProjectEditor extends Component {
 
@@ -17,17 +16,14 @@ class ProjectEditor extends Component {
     editorState: PropTypes.object,
     onChange: PropTypes.func,
     checkForSuggestions: PropTypes.func,
+    checkForLinks: PropTypes.func.isRequired,
     handleUpArrow: PropTypes.func,
     handleDownArrow: PropTypes.func,
     handleTab: PropTypes.func,
     handleReturn: PropTypes.func,
-    renderModal: PropTypes.func
+    renderModal: PropTypes.func,
+    removeModal: PropTypes.func
   };
-
-  constructor(props) {
-    super(props);
-    this.handleKeyCommand = handleKeyCommand.bind(this);
-  }
 
   state = {};
 
@@ -41,8 +37,15 @@ class ProjectEditor extends Component {
     }
   }
 
+  removeModal = () => {
+    const {removeModal} = this.props;
+    if (removeModal) {
+      removeModal();
+    }
+  };
+
   handleChange = (editorState) => {
-    const {onBlur, onChange, checkForSuggestions} = this.props;
+    const {onBlur, onChange, checkForSuggestions, checkForLinks} = this.props;
     if (!editorState.getSelection().getHasFocus()) {
       onBlur(editorState);
       this.removeModal();
@@ -56,21 +59,7 @@ class ProjectEditor extends Component {
     if (word && !entityKey) {
       handled = checkForSuggestions(word);
     } else if (!handled && entityKey) {
-      const contentState = editorState.getCurrentContent();
-      const entity = contentState.getEntity(entityKey);
-      if (entity.getType() === 'LINK') {
-        const targetRect = getVisibleSelectionRect(window);
-        this.setState({
-          modalComponent: EditorLinkViewer,
-          modalData: {
-            entityData: entity.getData(),
-            top: targetRect && targetRect.top + 32,
-            left: targetRect && targetRect.left
-          }
-        });
-        onChange(editorState);
-        return;
-      }
+      handled = checkForLinks(editorState, entityKey);
     }
     if (!handled) {
       this.removeModal();
@@ -115,15 +104,29 @@ class ProjectEditor extends Component {
     }
   };
 
+  handleKeyCommand = (command, editorState) => {
+    const {handleKeyCommand, onChange} = this.props;
+    if (handleKeyCommand) {
+      return handleKeyCommand(command, editorState, onChange);
+    }
+  };
+
+  keyBindingFn = (e) => {
+    const {keyBindingFn} = this.props;
+    if (keyBindingFn) {
+      return keyBindingFn(e) || getDefaultKeyBinding(e);
+    }
+  };
   // https://github.com/facebook/draft-js/issues/494 DnD throws errors
   render() {
     const {editorState, onChange, renderModal} = this.props;
+    console.log('PE AH', this.state.addingHyperlink)
     return (
       <div>
         <Editor
           editorState={editorState}
           onChange={this.handleChange}
-          keyBindingFn={keyBindingFn}
+          keyBindingFn={this.keyBindingFn}
           customStyleMap={customStyleMap}
           handleKeyCommand={this.handleKeyCommand}
           onUpArrow={this.handleUpArrow}
@@ -138,4 +141,11 @@ class ProjectEditor extends Component {
   }
 }
 
-export default withSuggestions(ProjectEditor);
+export default
+withSuggestions(
+  withLinks(
+    withKeyboardShortcuts(
+      ProjectEditor
+    )
+  )
+);

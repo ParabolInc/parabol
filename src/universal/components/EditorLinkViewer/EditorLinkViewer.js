@@ -17,11 +17,11 @@ const EditorLinkViewer = (props) => {
     isClosing,
     left,
     top,
-    entityData,
+    linkData,
     styles,
   } = props;
-  if (!entityData) return null;
-  const {href} = entityData;
+
+  const {href} = linkData;
   const linkViewer = {
     left,
     top,
@@ -40,8 +40,8 @@ const EditorLinkViewer = (props) => {
     onChange(makeRemoveLink(block.getKey(), begin, end)(editorState));
     removeModal();
   };
-  return (
 
+  return (
     <div style={linkViewer} className={menuStyles}>
       <span>
         <a href={href} rel="noopener noreferrer" onMouseDown={dontTellDraft} target="_blank">{href}</a>

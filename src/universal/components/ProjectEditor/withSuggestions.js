@@ -68,9 +68,7 @@ const withSuggestions = (ComposedComponent) => {
       this.setState({
         active: undefined,
         suggestions: undefined,
-        suggestionType: undefined,
-        top: undefined,
-        left: undefined
+        suggestionType: undefined
       });
     };
 
@@ -95,13 +93,10 @@ const withSuggestions = (ComposedComponent) => {
       const resolve = resolvers[resolveType];
       const suggestions = await resolve(query);
       if (suggestions.length > 0) {
-        const targetRect = getVisibleSelectionRect(window);
         this.setState({
           active: 0,
           suggestions,
-          suggestionType: resolveType,
-          top: targetRect && targetRect.top + 32,
-          left: targetRect && targetRect.left
+          suggestionType: resolveType
         });
       } else {
         this.removeModal();
