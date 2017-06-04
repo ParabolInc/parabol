@@ -33,7 +33,8 @@ const OutcomeCard = (props) => {
     teamMembers,
     editorState,
     unarchiveProject,
-    unsetEditing
+    unsetEditing,
+    isDragging
   } = props;
   const isPrivate = isProjectPrivate(outcome.tags);
   const isArchived = isProjectArchived(outcome.tags);
@@ -70,6 +71,7 @@ const OutcomeCard = (props) => {
             updatedAt={outcome.updatedAt}
           />
           <OutcomeCardTextarea
+            isDragging={isDragging}
             cardHasHover={hasHover}
             content={outcome.content}
             handleCardUpdate={handleCardUpdate}

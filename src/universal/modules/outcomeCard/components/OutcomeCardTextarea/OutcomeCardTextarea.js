@@ -193,6 +193,7 @@ class OutcomeCardTextArea extends Component {
   render() {
     return (
         <ProjectEditor
+          isDragging={this.props.isDragging}
           editorState={this.props.editorState}
           setEditorState={this.props.setEditorState}
           onBlur={this.props.handleCardUpdate}

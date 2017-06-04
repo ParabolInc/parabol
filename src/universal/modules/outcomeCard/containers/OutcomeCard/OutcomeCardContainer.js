@@ -156,9 +156,10 @@ class OutcomeCardContainer extends Component {
 
   render() {
     const {hasHover, isEditing, openArea, editorState} = this.state;
-    const {area, isAgenda, outcome, teamMembers} = this.props;
+    const {area, isAgenda, outcome, teamMembers, isDragging} = this.props;
     return (
       <OutcomeCard
+        isDragging={isDragging}
         area={area}
         handleCardUpdate={this.handleCardUpdate}
         hasHover={hasHover}

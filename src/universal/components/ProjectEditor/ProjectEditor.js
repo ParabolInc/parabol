@@ -22,16 +22,6 @@ class ProjectEditor extends Component {
 
   state = {};
 
-  //componentWillReceiveProps(nextProps) {
-  //  const {undoLink} = this.state;
-  //  // the ability to hit backspace to undo linkification goes away after a click or keypress
-  //  if (undoLink && this.props.editorState !== nextProps.editorState) {
-  //    this.setState({
-  //      undoLink: undefined
-  //    });
-  //  }
-  //}
-
   removeModal = () => {
     const {removeModal} = this.props;
     if (removeModal) {
@@ -103,11 +93,27 @@ class ProjectEditor extends Component {
       return keyBindingFn(e) || getDefaultKeyBinding(e);
     }
   };
+
+  setEdit = (e) => {
+    const {readOnly} = this.state;
+    if (readOnly && !this.props.isDragging) {
+      this.setState({
+        readOnly: false,
+      });
+    }
+  }
+
+  setReadOnly = (e) => {
+    this.setState({
+      readOnly: true
+    });
+  }
   // https://github.com/facebook/draft-js/issues/494 DnD throws errors
   render() {
-    const {editorState, setEditorState, renderModal} = this.props;
+    const {editorState, setEditorState, renderModal, isDragging} = this.props;
+    const {readOnly} = this.state;
     return (
-      <div>
+      <div onMouseDown={this.setEdit} onBlur={this.setReadOnly}>
         <Editor
           editorState={editorState}
           onChange={this.handleChange}
@@ -119,6 +125,7 @@ class ProjectEditor extends Component {
           onEscape={this.handleEscape}
           onTab={this.handleTab}
           handleReturn={this.handleReturn}
+          readOnly={isDragging || readOnly}
         />
         {renderModal && renderModal(editorState, setEditorState)}
       </div>

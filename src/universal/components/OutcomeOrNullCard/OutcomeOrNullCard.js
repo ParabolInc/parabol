@@ -15,10 +15,10 @@ export default class OutcomeOrNullCard extends Component {
     return Boolean(!nextProps.isPreview || nextProps.outcome.status !== this.props.outcome.status);
   }
   render() {
-    const {area, isAgenda, myUserId, outcome} = this.props;
+    const {area, isAgenda, myUserId, outcome, isDragging} = this.props;
     const {content, createdBy, teamMember: {preferredName}} = outcome;
     const showOutcome = content || createdBy === myUserId;
-    return showOutcome ? <OutcomeCardContainer area={area} isAgenda={isAgenda} outcome={outcome} myUserId={myUserId} /> :
+    return showOutcome ? <OutcomeCardContainer area={area} isDragging={isDragging} isAgenda={isAgenda} outcome={outcome} myUserId={myUserId} /> :
     <NullCard preferredName={preferredName} />;
   }
 }
