@@ -1,9 +1,7 @@
 import {Editor} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import getWordAt from 'universal/components/ProjectEditor/getWordAt';
 import customStyleMap from './customStyleMap';
-import getAnchorLocation from './getAnchorLocation';
 import withKeyboardShortcuts from './withKeyboardShortcuts';
 import withLinks from './withLinks';
 import withSuggestions from './withSuggestions';
@@ -15,8 +13,6 @@ class ProjectEditor extends Component {
     onBlur: PropTypes.func,
     editorState: PropTypes.object,
     onChange: PropTypes.func,
-    checkForSuggestions: PropTypes.func,
-    checkForLinks: PropTypes.func.isRequired,
     handleUpArrow: PropTypes.func,
     handleDownArrow: PropTypes.func,
     handleTab: PropTypes.func,
@@ -45,26 +41,18 @@ class ProjectEditor extends Component {
   };
 
   handleChange = (editorState) => {
-    const {onBlur, onChange, checkForSuggestions, checkForLinks} = this.props;
+    const {onBlur, onChange, handleChange} = this.props;
     if (!editorState.getSelection().getHasFocus()) {
       onBlur(editorState);
       this.removeModal();
       return;
     }
-    const {block, anchorOffset} = getAnchorLocation(editorState);
-    const blockText = block.getText();
-    const entityKey = block.getEntityAt(anchorOffset);
-    const {word} = getWordAt(blockText, anchorOffset);
-    let handled;
-    if (word && !entityKey) {
-      handled = checkForSuggestions(word);
-    } else if (!handled && entityKey) {
-      handled = checkForLinks(editorState, entityKey);
+
+    if (handleChange) {
+      handleChange(editorState, onChange);
+    } else {
+      onChange(handleChange);
     }
-    if (!handled) {
-      this.removeModal();
-    }
-    onChange(editorState);
   };
 
   handleUpArrow = (e) => {
@@ -120,7 +108,6 @@ class ProjectEditor extends Component {
   // https://github.com/facebook/draft-js/issues/494 DnD throws errors
   render() {
     const {editorState, onChange, renderModal} = this.props;
-    console.log('PE AH', this.state.addingHyperlink)
     return (
       <div>
         <Editor

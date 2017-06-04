@@ -3,6 +3,8 @@ import React, {Component} from 'react';
 import EditorSuggestions from 'universal/components/EditorSuggestions/EditorSuggestions';
 import completeEntity from 'universal/components/ProjectEditor/operations/completeEnitity';
 import resolvers from 'universal/components/ProjectEditor/resolvers';
+import getWordAt from 'universal/components/ProjectEditor/getWordAt';
+import getAnchorLocation from './getAnchorLocation';
 
 const withSuggestions = (ComposedComponent) => {
   class WithSuggestions extends Component {
@@ -65,6 +67,10 @@ const withSuggestions = (ComposedComponent) => {
     };
 
     removeModal = () => {
+      const {removeModal} = this.props;
+      if (removeModal) {
+        removeModal();
+      }
       this.setState({
         active: undefined,
         suggestions: undefined,
@@ -103,6 +109,27 @@ const withSuggestions = (ComposedComponent) => {
       }
     };
 
+    handleChange = (editorState, onChange) => {
+      const {handleChange} = this.props;
+      if (handleChange) {
+        handleChange(editorState, onChange);
+      }
+      const {block, anchorOffset} = getAnchorLocation(editorState);
+      const blockText = block.getText();
+      const entityKey = block.getEntityAt(anchorOffset);
+      const {word} = getWordAt(blockText, anchorOffset);
+
+      if (word && !entityKey) {
+        this.checkForSuggestions(word);
+      } else {
+        const {suggestionType} = this.state;
+        if (suggestionType) {
+          this.removeModal();
+        }
+      }
+      onChange(editorState);
+    }
+
     initialize = () => {
       const {suggestionType} = this.state;
       if (suggestionType) {
@@ -139,7 +166,7 @@ const withSuggestions = (ComposedComponent) => {
       return <ComposedComponent
         {...this.props}
         {...modalProps}
-        checkForSuggestions={this.checkForSuggestions}
+        handleChange={this.handleChange}
       />;
     }
   }

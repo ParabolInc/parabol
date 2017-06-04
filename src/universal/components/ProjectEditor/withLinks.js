@@ -2,6 +2,7 @@ import {EditorState, getVisibleSelectionRect, KeyBindingUtil, Modifier} from 'dr
 import React, {Component} from 'react';
 import EditorLinkViewer from 'universal/components/EditorLinkViewer/EditorLinkViewer';
 import maybeLinkify from './maybeLinkify';
+import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocation';
 
 const {hasCommandModifier} = KeyBindingUtil;
 const addSpace = (editorState) => {
@@ -26,6 +27,10 @@ const withLinks = (ComposedComponent) => {
     state = {};
 
     removeModal = () => {
+      //const {removeModal} = this.props;
+      //if (removeModal) {
+      //  removeModal();
+      //}
       this.setState({
         linkData: undefined
       });
@@ -125,13 +130,30 @@ const withLinks = (ComposedComponent) => {
       return undefined;
     };
 
+    handleChange = (editorState, onChange) => {
+      const {handleChange} = this.props;
+      if (handleChange) {
+        handleChange(editorState, onChange);
+      }
+      const {block, anchorOffset} = getAnchorLocation(editorState);
+      const entityKey = block.getEntityAt(anchorOffset);
+      if (entityKey) {
+        this.checkForLinks(editorState, entityKey);
+      } else {
+        const {linkData} = this.state;
+        if (linkData) {
+          this.removeModal();
+        }
+      }
+      onChange(editorState);
+    };
+
     render() {
       const modalProps = this.initialize();
-      console.log('adding', this.state.addingHyperlink);
       return <ComposedComponent
         {...this.props}
         {...modalProps}
-        checkForLinks={this.checkForLinks}
+        handleChange={this.handleChange}
         handleKeyCommand={this.handleKeyCommand}
         keyBindingFn={this.keyBindingFn}
       />;
