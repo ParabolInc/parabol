@@ -123,7 +123,7 @@ const withSuggestions = (ComposedComponent) => {
           this.removeModal();
         }
       }
-      setEditorState(editorState);
+      //setEditorState(editorState);
     }
 
     initialize = () => {

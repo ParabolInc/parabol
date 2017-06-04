@@ -1,10 +1,10 @@
 import {EditorState, getVisibleSelectionRect, KeyBindingUtil, Modifier} from 'draft-js';
 import React, {Component} from 'react';
-import EditorLinkViewer from 'universal/components/EditorLinkViewer/EditorLinkViewer';
 import EditorLinkChanger from 'universal/components/EditorLinkChanger/EditorLinkChanger';
+import EditorLinkViewer from 'universal/components/EditorLinkViewer/EditorLinkViewer';
 import getAnchorLocation from 'universal/components/ProjectEditor/getAnchorLocation';
-import maybeLinkify from './maybeLinkify';
 import getWordAt from 'universal/components/ProjectEditor/getWordAt';
+import maybeLinkify from './maybeLinkify';
 
 const getCtrlKSelection = (editorState) => {
   const selection = editorState.getSelection();
@@ -187,15 +187,11 @@ const withLinks = (ComposedComponent) => {
       }
       const {block, anchorOffset} = getAnchorLocation(editorState);
       const entityKey = block.getEntityAt(anchorOffset);
-      if (entityKey) {
-        this.checkForLinks(editorState, entityKey);
-      } else {
-        const {linkViewerData} = this.state;
-        if (linkViewerData) {
-          this.removeModal();
-        }
+      const inALink = entityKey && this.checkForLinks(editorState, entityKey);
+      const {linkViewerData} = this.state;
+      if (!inALink && linkViewerData) {
+        this.removeModal()
       }
-      setEditorState(editorState);
     };
 
     render() {

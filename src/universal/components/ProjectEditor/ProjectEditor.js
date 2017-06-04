@@ -1,11 +1,10 @@
-import {Editor} from 'draft-js';
+import {Editor, getDefaultKeyBinding} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import customStyleMap from './customStyleMap';
 import withKeyboardShortcuts from './withKeyboardShortcuts';
 import withLinks from './withLinks';
 import withSuggestions from './withSuggestions';
-import {getDefaultKeyBinding} from 'draft-js';
 
 class ProjectEditor extends Component {
 
@@ -50,9 +49,8 @@ class ProjectEditor extends Component {
 
     if (handleChange) {
       handleChange(editorState, setEditorState);
-    } else {
-      setEditorState(handleChange);
     }
+    setEditorState(editorState);
   };
 
   handleUpArrow = (e) => {
