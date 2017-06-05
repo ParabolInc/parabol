@@ -171,7 +171,7 @@
     "react-router": "^4.1.1",
     "react-router-dom": "^4.1.1",
     "redux": "3.6.0",
-    "redux-form": "^6.7.0",
+    "redux-form": "https://github.com/mattkrick/redux-form/tarball/ef12bdcb4951c5022aa6dab1a81c2304f5819936",
     "redux-logger": "2.8.2",
     "redux-raven-middleware": "^1.2.0",
     "redux-segment": "^1.6.1",

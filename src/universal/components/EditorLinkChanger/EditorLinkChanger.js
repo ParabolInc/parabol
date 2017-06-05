@@ -39,6 +39,8 @@ const EditorLinkChanger = (props) => {
     setEdit
   } = props;
 
+  console.log('LT', left, top)
+  const pos = {left, top};
   const {selectionState} = linkData;
   const menuStyles = css(
     styles.modal,
@@ -72,7 +74,7 @@ const EditorLinkChanger = (props) => {
     }
   }
   return (
-    <div className={menuStyles} onKeyDown={handleKeyDown} onBlur={handleBlur} onMouseDown={handleMouseDown} tabIndex={-1}>
+    <div style={pos} className={menuStyles} onKeyDown={handleKeyDown} onBlur={handleBlur} onMouseDown={handleMouseDown} tabIndex={-1}>
       <form onSubmit={handleSubmit(onSubmit)}>
         {text !== null &&
           <div className={css(styles.textBlock)}>
@@ -152,9 +154,7 @@ const styleThunk = (theme, props) => ({
     zIndex: 1,
     animationName: animateIn,
     animationDuration: '200ms',
-    position: 'absolute',
-    left: props.left,
-    top: props.top,
+    position: 'absolute'
   },
 
   active: {
